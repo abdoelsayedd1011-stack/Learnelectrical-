@@ -156,11 +156,11 @@
 
   /* ---------- config fill ---------- */
   var S = window.SITE || {};
-  var name = S.name || "LearnElectrical";
+  var name = S.name || "LearnElectricals";
   var domain = String(S.domain || "www.learnelectricals.com").replace(/^https?:\/\//, "").replace(/\/.*$/, "");
   if (!/^www\./.test(domain)) domain = "www." + domain;
   document.querySelectorAll("[data-site='name']").forEach(function(el){ el.textContent = name; });
-  // Wordmark: "LearnElectrical" -> Learn<b>Electrical</b> (second word in the accent colour)
+  // Wordmark: "LearnElectricals" -> Learn<b>Electricals</b> (second word in the accent colour)
   var m = /^([A-Z]?[a-z]+)([A-Z].*)$/.exec(name);
   document.querySelectorAll("[data-site='wordmark']").forEach(function(el){
     el.textContent = m ? m[1] : name;
@@ -168,7 +168,7 @@
   });
   document.querySelectorAll("[data-site='domain']").forEach(function(el){ el.textContent = domain; });
   document.querySelectorAll("[data-site='year']").forEach(function(el){ el.textContent = new Date().getFullYear(); });
-  if (name !== "LearnElectrical" && document.title.indexOf("LearnElectrical") > -1) document.title = document.title.replace("LearnElectrical", name);
+  if (name !== "LearnElectricals" && document.title.indexOf("LearnElectricals") > -1) document.title = document.title.replace("LearnElectricals", name);
   var wa = String(S.whatsapp || "").replace(/[^\d]/g, "");
   var links = {
     whatsapp: wa ? "https://wa.me/" + wa + "?text=" + encodeURIComponent("السلام عليكم، جاي من موقع " + name) : "",

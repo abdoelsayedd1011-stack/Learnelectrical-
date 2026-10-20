@@ -8,13 +8,13 @@
 
 ## أ) الاسم والدومين وبيانات التواصل
 
-الموقع متظبط جاهز على الاسم **LearnElectrical** والدومين **www.learnelectricals.com** (في `site-config.js` و `CNAME` و `sitemap.xml` و `robots.txt` وتاجات `canonical` و `og:url` و `og:image` في كل الصفحات).
+الموقع متظبط جاهز على الاسم **LearnElectricals** والدومين **www.learnelectricals.com** (في `site-config.js` و `CNAME` و `sitemap.xml` و `robots.txt` وتاجات `canonical` و `og:url` و `og:image` في كل الصفحات).
 
 1. **وسائل التواصل:** في `site-config.js` الخانات `whatsapp` و `email` و `facebook` و `youtube` فاضية `""`. وهي فاضية، الموقع بيخبي كل أزرار ولينكات التواصل، وصفحة التواصل بتكتب «وسائل التواصل هتتضاف قريب». أول ما تكتب أي واحدة، الكروت والأزرار بتظهر لوحدها.
    - الواتساب: الرقم بالكود الدولي من غير `+` ولا مسافات، مثال: `201001234567`.
 2. **لو اشتريت دومين تاني** (مثلاً `learn-electrical.net`): في VS Code دوس `Ctrl+Shift+H` (بحث واستبدال في الفولدر كله)، اكتب `learnelectricals.com` واستبدله بالدومين الجديد من غير www، ودوس Replace All. ده بيغيّر كل الأماكن مرة واحدة.
    (لينكس/ماك: `grep -rl learnelectricals.com . | xargs sed -i 's/learnelectrical\.com/learn-electrical.net/g'`)
-3. **لو عايز تغيّر الاسم:** غيّر `name` في `site-config.js` (اللوجو والفوتر بيتغيروا لوحدهم)، وغيّر كلمة `LearnElectrical` في عناوين الصفحات بنفس طريقة البحث والاستبدال.
+3. **لو عايز تغيّر الاسم:** غيّر `name` في `site-config.js` (اللوجو والفوتر بيتغيروا لوحدهم)، وغيّر كلمة `LearnElectricals` في عناوين الصفحات بنفس طريقة البحث والاستبدال.
 
 ## ب) اشتري الدومين
 
