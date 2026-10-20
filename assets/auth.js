@@ -27,7 +27,10 @@
     tabs.login.addEventListener("click", function(){ setTab("login"); });
     tabs.signup.addEventListener("click", function(){ setTab("signup"); });
     document.querySelectorAll("[data-tab]").forEach(function(a){ a.addEventListener("click", function(e){ e.preventDefault(); setTab(a.getAttribute("data-tab")); }); });
-    if (location.hash === "#signup") setTab("signup");
+    var gated = new URLSearchParams(location.search).get("next");
+    var note = document.getElementById("gate-note");
+    if (gated && note) note.hidden = false;
+    if (location.hash === "#signup" || gated) setTab("signup");
 
     api("me").then(function(r){ if (r.ok && r.user) location.replace(nextUrl()); });
 

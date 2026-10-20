@@ -129,7 +129,7 @@
     authA.className = "nav-auth"; authA.href = "login.html"; authA.textContent = "دخول";
     if (/\/(login|account)\.html$/.test(location.pathname)) authA.setAttribute("aria-current", "page");
     nav.appendChild(authA);
-    var setUser = function(u){ if (u && u.name){ authA.href = "account.html"; authA.textContent = u.name.split(" ")[0]; } else { authA.href = "login.html"; authA.textContent = "دخول"; } };
+    var setUser = function(u){ root.classList.toggle("is-member", !!(u && u.name)); if (u && u.name){ authA.href = "account.html"; authA.textContent = u.name.split(" ")[0]; } else { authA.href = "login.html"; authA.textContent = "دخول"; } };
     try{ setUser(JSON.parse(sessionStorage.getItem("le-user") || "null")); }catch(e){}
     if (window.fetch && /^https?:$/.test(location.protocol)){
       fetch("/api/auth/me", { credentials: "same-origin" }).then(function(r){ return r.ok ? r.json() : null; }).then(function(r){
@@ -195,7 +195,8 @@
   }
   function card(l){
     var disp = '<div class="disp ' + esc(l.dispClass) + '" aria-hidden="true">' + (l.html ? l.disp : esc(l.disp)) + "</div>";
-    var head = '<div class="meta"><span class="brand">' + esc(l.brand) + '</span><span class="kind">' + esc(l.kind) + "</span></div>" +
+    var acc = l.id === "pf525" ? "من غير حساب" : l.id === "classic" ? "أول درسين من غير حساب" : "بحساب مجاني";
+    var head = '<div class="meta"><span class="brand">' + esc(l.brand) + '</span><span class="kind">' + esc(l.kind) + '</span><span class="access' + (l.id === "pf525" ? " open" : "") + '">' + acc + "</span></div>" +
                '<h4' + (l.rtlName ? ' style="direction:rtl"' : "") + ">" + esc(l.name) + "</h4>";
     if (!detail){
       return '<a class="card" href="' + esc(l.path) + '" data-id="' + l.id + '">' + disp + head + "<p>" + esc(l.line) + '</p><span class="go">افتح المعمل ←</span></a>';
