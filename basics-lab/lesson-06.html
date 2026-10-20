@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>المحوّل والباور سبلاي</title>
+<meta name="description" content="الدرس 6 في كورس أساسيات الكهربا: الترانس بيوطّي الجهد إزاي، نسبة اللفات والقدرة VA، قياس الترانس بالأفوميتر، والباور سبلاي بيحوّل AC لـ DC 24V إزاي وتقيسه وتعرف أعطاله.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="basics.css">
+<script src="basics.js"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">أساسيات الكهربا · الدرس 6 من 9</p>
+    <h1>المحوّل (الترانس) والباور سبلاي</h1>
+    <p>لوحات الكنترول والشواحن مش بتشتغل على 220V مباشرة. <b>الترانس</b> بيوطّي الجهد (مثلًا لـ 24V أو 12V)، و<b>الباور سبلاي</b> بيحوّل الـ AC لـ <b>DC ثابت</b>. هتفهم الاتنين، وتقيسهم، وتعرف أعطالهم.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل المعامل</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>الترانس بيشتغل إزاي؟</h2>
+  <div class="two">
+    <div>
+      <p>الترانس عبارة عن <b>قلب حديد</b> عليه <b>ملفين</b> مش متوصّلين ببعض خالص:</p>
+      <ul>
+        <li><b>الابتدائي (Primary):</b> بيدخل له الـ 220V. الـ AC اللي فيه بيعمل مجال مغناطيسي بيتغيّر في القلب.</li>
+        <li><b>الثانوي (Secondary):</b> المجال المغناطيسي ده بيولّد فيه جهد. والجهد ده على قد <b>عدد لفّاته</b>.</li>
+      </ul>
+    </div>
+    <figure class="fig"><img src="../classic-control-lab/img/xfmr.webp" alt="ترانس كنترول 230/24V 100VA" width="339" height="415" loading="lazy"><figcaption>ترانس كنترول 230/24V بقدرة 100VA</figcaption></figure>
+  </div>
+  <div class="formula">Vs ÷ Vp = N2 ÷ N1</div>
+  <div class="ex"><b>مثال:</b> الابتدائي 1100 لفّة والثانوي 120 لفّة، والدخول 220V ⇐ <b><span class="eq">Vs = 220 × 120 ÷ 1100 = 24V</span></b>.</div>
+  <div class="box key"><b>مهم:</b> الترانس بيشتغل على <b>AC بس</b>. لو وصّلته على DC مش هيطلّع حاجة، والابتدائي هيسحب تيار كبير ويتحرق.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>جرّب: غيّر اللفّات</h2>
+  <div class="wd"><h3>معمل الترانس</h3><div id="xfmr"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>القدرة VA والتيار في الناحيتين</h2>
+  <p>الترانس مكتوب عليه قدرته بالـ <b>VA</b> (فولت أمبير). القدرة اللي داخلة تقريبًا = القدرة اللي خارجة (الترانس كفاءته عالية)، فلما الجهد ينزل <b>التيار يزيد</b>:</p>
+  <div class="ex"><b>ترانس 100VA، 230/24V:</b><br>تيار الثانوي = 100 ÷ 24 = <b>4.2A</b> (أقصى حمل).<br>تيار الابتدائي = 100 ÷ 230 = <b>0.43A</b>.<br>يعني سلك الثانوي لازم يبقى أتخن، والفيوز على ناحية الـ 24V لازم يبقى حوالي 4A مش 0.5A.</div>
+  <h3>العزل (Isolation): ميزة أمان</h3>
+  <p>مفيش أي سلك بيوصّل الابتدائي بالثانوي، الطاقة بتعدّي بالمغناطيسية بس. عشان كده خرج ترانس الكنترول <b>معزول</b> عن كهربا الشركة، ودايرة التحكم 24V بتبقى أأمن بكتير لو حد لمسها. وفي لوحات كتير بيتوصّل طرف 0V من الثانوي بالأرضي عشان أي قصر على الجسم يفصل الفيوز.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>قياس الترانس بالأفوميتر</h2>
+  <ol>
+    <li><b>وهو مفصول:</b> قيس مقاومة الابتدائي والثانوي. الملف اللي مقاومته <b>أعلى</b> هو ناحية الجهد العالي.</li>
+    <li><b>العزل:</b> بين الابتدائي والثانوي <b>OL</b>، وبين أي ملف والقلب <b>OL</b>.</li>
+    <li><b>وهو شغّال:</b> قيس الخرج على <b>V~</b>.</li>
+  </ol>
+  <div class="wd"><h3>قيس الترانس</h3><div id="mx"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>الباور سبلاي: من AC لـ DC</h2>
+  <p>الـ PLC والحساسات والريليهات الصغيرة وشاحن الموبايل محتاجين <b>DC ثابت</b>. الباور سبلاي بيعمل كده على مراحل. دوس على كل مرحلة وشوف الموجة بتتغيّر:</p>
+  <div class="wd"><h3>مراحل الباور سبلاي</h3><div id="psu"></div></div>
+  <div class="two">
+    <figure class="fig"><img src="../classic-control-lab/img/rectifier.webp" alt="قنطرة توحيد" width="339" height="415" loading="lazy"><figcaption>قنطرة توحيد (Bridge Rectifier): 4 دايودات في علبة واحدة</figcaption></figure>
+    <figure class="fig"><img src="../classic-control-lab/img/supplyDC-on.webp" alt="باور سبلاي 24V DC على قضيب" width="339" height="339" loading="lazy"><figcaption>باور سبلاي سويتشنج 24V DC بيتركّب على قضيب DIN في اللوحة</figcaption></figure>
+  </div>
+  <div class="box"><b>السويتشنج (SMPS):</b> الباور اللي في اللوحات وشاحن الموبايل نوعه "سويتشنج". بدل الترانس الكبير التقيل، بيوحّد الـ 220V على طول، ويقطّعها بسرعة عالية جدًا (عشرات الآلاف في الثانية) على ترانس صغيّر، وبعدين يوحّد وينعّم تاني. النتيجة: خفيف وصغير وكفاءته عالية، وبيشتغل غالبًا من 100 لـ 240V.</div>
+  <h3>أطراف الباور سبلاي</h3>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>الطرف</th><th>إيه ده</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">L</td><td>فاز الدخول 220V (بني)</td></tr>
+      <tr><td class="mono">N</td><td>نيوترال الدخول (أزرق)</td></tr>
+      <tr><td class="mono">PE ⏚</td><td>أرضي جسم الباور (أخضر×أصفر)</td></tr>
+      <tr><td class="mono">+V</td><td>خرج موجب 24V DC</td></tr>
+      <tr><td class="mono">−V</td><td>خرج سالب (0V)</td></tr>
+      <tr><td class="mono">V.ADJ</td><td>بوتنشيومتر صغير تظبط بيه الخرج (مثلًا من 22 لـ 28V)</td></tr>
+      <tr><td class="mono">DC OK</td><td>لمبة خضرا بتنوّر لما الخرج سليم</td></tr>
+    </tbody></table></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s6">
+  <h2 id="s6"><span class="k">6</span>قياس الباور سبلاي وأعطاله</h2>
+  <p>الباور سبلاي بيتقاس <b>وهو شغّال</b> (فولت بس): الدخول على <b>V~</b> بين L و N، والخرج على <b>V⎓</b>، الأحمر على +V والأسود على −V.</p>
+  <div class="wd"><h3>قيس الباور سبلاي</h3><div id="mp"></div></div>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>اللي قريته</th><th>معناه</th><th>تعمل إيه</th></tr></thead>
+    <tbody>
+      <tr><td>الدخول 0V</td><td>الكهربا مش واصلة للباور</td><td>شوف القاطع أو الفيوز اللي قبله</td></tr>
+      <tr><td>الدخول 220V والخرج 0V</td><td>الباور نفسه بايظ (أو الخرج عليه قصر وفاصل)</td><td>افصل الحمل وقيس تاني؛ لو لسه صفر غيّر الباور</td></tr>
+      <tr><td>الخرج واطي (مثلًا 18V)</td><td>حمل زيادة، أو V.ADJ مش مظبوط، أو مكثفات تعبانة</td><td>اظبط V.ADJ، قلّل الحمل، أو غيّر الباور</td></tr>
+      <tr><td>الخرج 24V</td><td>سليم</td><td>دوّر على العطل في الحمل</td></tr>
+    </tbody></table></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">ترانسات الكنترول على حسب <span class="mono">IEC 61558</span>، وباور سبلاي الـ 24V DC في اللوحات بيكون عادة SELV/PELV. القيم بتتحسب من دايرة حقيقية جوه الصفحة. تقدّمك بيتسجّل على الجهاز ده بس.</p>
+</div>
+<script>
+BL.lesson('l6');
+BL.xfmr(document.getElementById('xfmr'), {lesson:'l6'});
+BL.psu(document.getElementById('psu'), {lesson:'l6'});
+(function(){
+  const P = (m, a, b) => (m.red === a && m.black === b) || (m.red === b && m.black === a);
+  const OL = m => (m.mode === 'OHM' || m.mode === 'CONT') && m.jack === 'V' && m.val === Infinity && m.red && m.black;
+  const seen = (S, k) => { S.st._s = S.st._s || {}; S.st._s[k] = 1; return S.st._s; };
+  const supply = [{a:'L0', b:'N0', v:226.4, ri:0.05, src:true}, {a:'N0', b:'E', r:0.1}];
+  const scr = (x, y) => `<circle cx="${x}" cy="${y}" r="11" fill="#c9ced2" stroke="#5d6469" stroke-width="1.5"/><path d="M${x - 6} ${y} h12 M${x} ${y - 6} v12" stroke="#5d6469" stroke-width="2"/>`;
+  const XF = {id:'xf', title:'ترانس 230/24V', kind:'ac', vb:'20 20 300 410',
+    toggles:[{k:'power', on:'الترانس متوصّل بالكهربا', off:'الترانس مفصول', init:false}],
+    elems: st => { const f = st.fault, e = [{a:'CORE', b:'E', r:0.05}];
+      if (st.power){ e.push(...supply, {a:'L0', b:'P2', r:0.01}, {a:'N0', b:'P1', r:0.01}); if (f !== 'popen') e.push({a:'P1', b:'P2', r:3000}); if (f !== 'popen' && f !== 'sopen') e.push({a:'S2', b:'S1', v:25.2, ri:0.4, src:true}); }
+      else { if (f !== 'popen') e.push({a:'P1', b:'Pm', r:9.25}, {a:'Pm', b:'P2', r:9.25}); if (f !== 'sopen') e.push({a:'S1', b:'S2', r:0.4}); }
+      if (f === 'leak') e.push({a:'Pm', b:'CORE', r:3}); return e; },
+    points:[{id:'P1', n:'P1', x:122, y:94, t:'0V', ly:126}, {id:'P2', n:'P2', x:218, y:94, t:'230V', ly:126}, {id:'S1', n:'S1', x:122, y:378, t:'0V', ly:360}, {id:'S2', n:'S2', x:218, y:378, t:'24V', ly:360}, {id:'CORE', n:'CORE', x:66, y:250, t:'القلب ⏚', lx:76, ly:290}],
+    art: st => `<rect x="20" y="20" width="300" height="410" fill="var(--wall)"/><image href="../classic-control-lab/img/xfmr.webp" x="0" y="0" width="339" height="415"/>${st.power ? '<path d="M122 94 V20 M218 94 V20" stroke-width="5" fill="none"/><path d="M122 94 V20" stroke="#1f6fd1" stroke-width="5"/><path d="M218 94 V20" stroke="#7a4a22" stroke-width="5"/>' : ''}${scr(122, 94)}${scr(218, 94)}${scr(122, 378)}${scr(218, 378)}<circle cx="66" cy="250" r="8" fill="#2e9b3c" stroke="#1f6a29"/><text x="170" y="62" text-anchor="middle" class="ar" style="font-size:11px;font-weight:700;fill:#e3e9ec">الابتدائي</text><text x="170" y="414" text-anchor="middle" class="ar" style="font-size:11px;font-weight:700;fill:#e3e9ec">الثانوي</text>`,
+    note: st => st.power ? 'الترانس <b>شغّال</b>: فولت بس!' : 'الترانس <b>مفصول</b> من الكهربا: تقدر تقيس أوم.',
+    diag:{pool:[null, 'popen', 'sopen', 'leak'], intro:'ترانس من لوحة "الكنترول مش شغّال". قيسه مفصول وشغّال واحكم.', ask:'إيه حالة الترانس؟', options:[{id:'ok', label:'الترانس سليم'}, {id:'popen', label:'الابتدائي مقطوع'}, {id:'sopen', label:'الثانوي مقطوع'}, {id:'leak', label:'الابتدائي مسرّب على القلب'}], ans:f => f || 'ok',
+      explain: f => f === 'popen' ? 'الابتدائي OL، والخرج صفر وهو شغّال: الابتدائي مقطوع (غالبًا اتحرق من حمل زيادة أو قصر في الخرج من غير فيوز).' : f === 'sopen' ? 'الابتدائي 18.5Ω سليم، بس الثانوي OL والخرج صفر: الثانوي مقطوع.' : f === 'leak' ? 'بين الابتدائي والقلب فيه قراية بدل OL: العزل باظ. خطر، غيّره.' : 'ابتدائي 18.5Ω، ثانوي 0.4Ω، العزل OL، والخرج 25V: سليم.'}};
+  const PS = {id:'ps', title:'باور سبلاي 24V', kind:'ac', vb:'0 0 340 300',
+    kindOf: (a, b) => (['VP', 'VM'].includes(a) && ['VP', 'VM'].includes(b)) ? 'dc' : 'ac',
+    toggles:[{k:'power', on:'القاطع شغّال', off:'القاطع مفصول', init:true}],
+    elems: st => { const f = st.fault, e = [...supply, {a:'E', b:'PE', r:0.05}, {a:'N0', b:'N', r:0.05}, {a:'VM', b:'VP', r:1e5}];
+      if (st.power && f !== 'noin') e.push({a:'L0', b:'L', r:0.05});
+      const vin = st.power && f !== 'noin';
+      e.push({a:'L', b:'N', r:3000});
+      if (vin && f !== 'noout') e.push({a:'VP', b:'VM', v:f === 'low' ? 18.6 : 24.1, ri:0.05, src:true});
+      return e; },
+    points:[{id:'L', n:'L', x:84, y:258, t:'L', ly:288}, {id:'N', n:'N', x:128, y:258, t:'N', ly:288}, {id:'PE', n:'PE', x:172, y:258, t:'⏚', ly:288}, {id:'+V', n:'VP', x:236, y:258, t:'+V', ly:288}, {id:'-V', n:'VM', x:280, y:258, t:'−V', ly:288}],
+    art: st => { const f = st.fault, vin = st.power && f !== 'noin', out = vin && f !== 'noout', led = !out ? '#2a3a2a' : f === 'low' ? '#e3a43a' : '#47e06a';
+      return `<rect x="0" y="0" width="340" height="300" fill="var(--wall)"/><defs><linearGradient id="al" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#a9b1b6"/><stop offset=".5" stop-color="#e9ecee"/><stop offset="1" stop-color="#8d969c"/></linearGradient></defs>
+      <rect x="0" y="118" width="340" height="26" fill="#c3c9cd"/><rect x="0" y="122" width="340" height="18" fill="#dfe3e6"/>
+      <rect x="54" y="18" width="252" height="222" rx="10" fill="#000" opacity=".15" transform="translate(4 4)"/><rect x="54" y="18" width="252" height="222" rx="10" fill="url(#al)" stroke="#7d878d"/>
+      ${Array.from({length:7}, (_, i) => `<rect x="74" y="${30 + i * 9}" width="212" height="4" rx="2" fill="#4a5156"/>`).join('')}
+      <rect x="74" y="104" width="140" height="56" rx="4" fill="#f4f6f7" stroke="#c3c9cd"/><text x="84" y="132" style="font:700 22px var(--font-mono);fill:#1d2226">24V DC</text><text x="84" y="150" style="font:500 10px var(--font-mono);fill:#56656f">SMPS 2.5A · 100–240V~</text>
+      <circle cx="262" cy="118" r="7" fill="${led}" ${out ? `style="filter:drop-shadow(0 0 5px ${led})"` : ''}/><text x="262" y="138" text-anchor="middle" style="font:700 8px var(--font-mono);fill:#1d2226">DC OK</text>
+      <circle cx="262" cy="170" r="9" fill="#e9ecee" stroke="#5d6469"/><path d="M256 170 h12" stroke="#5d6469" stroke-width="2"/><text x="262" y="192" text-anchor="middle" style="font:700 8px var(--font-mono);fill:#1d2226">V.ADJ</text>
+      <rect x="62" y="236" width="132" height="44" rx="4" fill="#3a4045"/><rect x="214" y="236" width="88" height="44" rx="4" fill="#3a4045"/>
+      ${[84, 128, 172, 236, 280].map(x => scr(x, 258)).join('')}
+      <text x="128" y="230" text-anchor="middle" class="ar" style="font-size:10px;fill:#1d2226;font-weight:700">دخول AC</text><text x="258" y="230" text-anchor="middle" class="ar" style="font-size:10px;fill:#1d2226;font-weight:700">خروج DC</text>`; },
+    note: st => st.power ? 'الباور <b>شغّال</b>: قيس فولت بس.' : 'القاطع اللي قبل الباور <b>مفصول</b>.',
+    diag:{pool:[null, 'noin', 'noout', 'low'], intro:'لوحة واقفة والفني بيقول "مفيش 24". قيس وحدّد السبب.', ask:'إيه المشكلة؟', options:[{id:'ok', label:'الباور سليم، العطل في مكان تاني'}, {id:'noin', label:'مفيش كهربا داخلة للباور'}, {id:'noout', label:'الباور بايظ (داخله 220 ومفيش خرج)'}, {id:'low', label:'الخرج واطي'}], ans:f => f || 'ok',
+      explain: f => f === 'noin' ? 'بين L و N صفر: الكهربا مش واصلة. شوف القاطع أو الفيوز أو سلك الدخول.' : f === 'noout' ? 'الدخول 226V والخرج صفر ولمبة DC OK مطفية: الباور بايظ. (افصل الحمل الأول وجرّب، يمكن الخرج عليه قصر.)' : f === 'low' ? 'الخرج 18.6V بدل 24: حمل زيادة أو V.ADJ أو الباور تعبان.' : 'الدخول 226V والخرج 24.1V: الباور سليم، دوّر على العطل بعده.'}};
+  const EX1 = [
+    {id:'x1', scen:'xf', key:'xmeas', text:'والترانس <b>مفصول</b>، قيس <b>Ω</b> للابتدائي (0V و 230V فوق).', check:m => m.mode === 'OHM' && m.jack === 'V' && P(m, 'P1', 'P2') && m.val > 12 && m.val < 30, why:'18.5Ω: سلك رفيع ولفّات كتير.'},
+    {id:'x2', scen:'xf', key:'xmeas', text:'قيس <b>Ω</b> للثانوي (0V و 24V تحت).', check:m => m.mode === 'OHM' && m.jack === 'V' && P(m, 'S1', 'S2') && m.val < 1, why:'0.4Ω: سلك تخين ولفّات قليلة. الملف الأعلى مقاومة هو ناحية الجهد الأعلى.'},
+    {id:'x3', scen:'xf', key:'xmeas', text:'اتأكد من <b>العزل</b>: بين الابتدائي والثانوي، وبين الابتدائي والقلب.', check:(m, S) => { if (OL(m)){ const ps = ['P1', 'P2'].includes(m.red) || ['P1', 'P2'].includes(m.black); if (ps && (['S1', 'S2'].includes(m.red) || ['S1', 'S2'].includes(m.black))) seen(S, 'ps'); if (ps && (m.red === 'CORE' || m.black === 'CORE')) seen(S, 'pc'); } const s = S.st._s || {}; return s.ps && s.pc; }, why:'OL في الاتنين: الملفين معزولين عن بعض وعن القلب.'},
+    {id:'x4', scen:'xf', key:'xmeas', text:'وصّل الترانس بالكهربا، وقيس الخرج على <b>V~</b>.', check:(m, S) => S.st.power && m.mode === 'ACV' && m.jack === 'V' && P(m, 'S1', 'S2') && m.val > 22 && m.val < 27, why:'25.2V من غير حمل: طبيعي يبقى أعلى من 24V بشوية، ولما يتحمّل ينزل لـ 24V.'}
+  ];
+  const EX2 = [
+    {id:'q1', scen:'ps', key:'pmeas', text:'قيس <b>الدخول</b>: V~ بين <b>L</b> و <b>N</b>.', check:m => m.mode === 'ACV' && m.jack === 'V' && P(m, 'L', 'N') && m.val > 200, why:'226V: الكهربا واصلة للباور.'},
+    {id:'q2', scen:'ps', key:'pmeas', text:'قيس <b>الخرج</b>: V⎓، الأحمر على <b>+V</b> والأسود على <b>−V</b>.', check:m => m.mode === 'DCV' && m.jack === 'V' && m.red === '+V' && m.black === '-V' && m.val > 23 && m.val < 25.5, why:'24.1V موجب: الخرج سليم والمجسات صح.'},
+    {id:'q3', scen:'ps', key:'pmeas', text:'اعكس المجسات على الخرج.', check:m => m.mode === 'DCV' && m.jack === 'V' && m.red === '-V' && m.black === '+V' && m.val < -23, why:'بقت −24.1V. لو سلكت حساس بقطبية غلط ممكن يتحرق، فاعرف القطبية دايمًا.'}
+  ];
+  window.MX = BL.meter(document.getElementById('mx'), {lesson:'l6', scenarios:[XF], exercises:EX1});
+  window.MP = BL.meter(document.getElementById('mp'), {lesson:'l6', scenarios:[PS], exercises:EX2});
+})();
+BL.quiz(document.getElementById('quiz'), [
+  {q:'ترانس ابتدائيه 1000 لفّة وثانويه 100 لفّة، دخلنا عليه 220V. الخرج كام؟', o:['22V', '2200V', '110V', '220V'], a:0, why:'Vs = 220 × 100 ÷ 1000 = 22V.'},
+  {q:'ترانس 100VA و 24V. أقصى تيار في الثانوي حوالي:', o:['4.2A', '0.43A', '24A', '100A'], a:0, why:'I = 100 ÷ 24 ≈ 4.2A.'},
+  {q:'قست ملفين في ترانس: واحد 18Ω والتاني 0.4Ω. الـ 230V على أنهي ملف؟', o:['على الـ 18Ω', 'على الـ 0.4Ω', 'أي واحد', 'مش هينفع نعرف'], a:0, why:'ملف الجهد العالي لفّاته أكتر وسلكه أرفع، فمقاومته أعلى.'},
+  {q:'إيه وظيفة المكثف في الباور سبلاي؟', o:['ينعّم النبضات ويخلّي الجهد قريب من الثابت', 'يرفع الجهد', 'يحوّل DC لـ AC', 'يحمي من الصواعق'], a:0, why:'بيشحن عند القمة ويفضّي بين النبضات.'},
+  {q:'باور 24V: الدخول 226V والخرج 0V ولمبة DC OK مطفية. أول خطوة؟', o:['افصل الحمل وقيس الخرج تاني', 'غيّر القاطع', 'اقلب L و N', 'زوّد V.ADJ للآخر'], a:0, why:'يمكن الخرج عليه قصر والباور فاصل للحماية. لو لسه صفر بعد فصل الحمل يبقى الباور بايظ.'}
+], {lesson:'l6', pass:0.8});
+</script>
+</body>
+</html>

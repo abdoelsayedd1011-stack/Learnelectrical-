@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>أعطال البيت الشائعة</title>
+<meta name="description" content="الدرس 9 والأخير في كورس أساسيات الكهربا: لعبة تدوّر فيها على أعطال البيت (لمبة مش بتنور، بريزة مفيهاش كهربا، قاطع بيفصل) بالتستر والأفوميتر، والامتحان النهائي.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="basics.css">
+<script src="basics.js"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">أساسيات الكهربا · الدرس 9 من 9</p>
+    <h1>أعطال البيت الشائعة</h1>
+    <p>الزبون بيتصل ويقول المشكلة، وانت تروح بالتستر والأفوميتر. في كل لعبة فيه عطل مستخبي: قيس، فكّر، واختار التصليح الصح. وفي الآخر الامتحان النهائي للكورس.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل المعامل</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>طريقة التفكير</h2>
+  <ol>
+    <li><b>اسمع الشكوى</b> وشوف بعينك: القاطع واقع؟ في ريحة حريق؟ في حاجة سايحة؟</li>
+    <li><b>امشي ورا الكهربا</b> من اللوحة لحد الجهاز، نقطة نقطة: فين الفاز موجود وفين اختفى؟</li>
+    <li><b>التستر</b> يقولك فين الفاز بسرعة، و<b>الأفوميتر</b> على V~ يقولك الجهد بين نقطتين.</li>
+    <li>القاطع بيفصل؟ <b>افصل الكهربا</b> وقيس <b>أوم</b>: القصر بيبان قراية قريبة من الصفر.</li>
+  </ol>
+  <div class="box key"><b>خدعة النيوترال المقطوع:</b> لو النيوترال اتقطع بعد لمبة والمفتاح ON، الفاز بيعدّي في الفتيلة ويوصل لسلك النيوترال. التستر هينوّر على <b>الطرفين</b> واللمبة مطفية! والأفوميتر بين الطرفين هيقرا صفر تقريبًا.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>اللعبة: دوّر على العطل</h2>
+  <p>اختار الشكوى. فيه عطل عشوائي مستخبي، وكل مرة تختار «عطل تاني» بيتغيّر. محتاج تحل كل شكوى صح مرة على الأقل.</p>
+  <div class="wd"><h3>شغل في البيت</h3><div id="game"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <div id="quiz"></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sf">
+  <h2 id="sf"><span class="k">★</span>الامتحان النهائي للكورس</h2>
+  <p>10 أسئلة من كل الدروس. محتاج 8 صح عشان الشهادة تتفتح.</p>
+  <div id="final"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الدواير بتتحسب فعلًا جوه الصفحة (جهد كل نقطة، مقاومة العداد 10MΩ، والتستر حوالي 1MΩ للأرض)، فالقرايات زي اللي هتشوفها في الحقيقة تقريبًا. في الواقع افصل الكهربا قبل أي فك أو تصليح. تقدّمك بيتسجّل على الجهاز ده بس.</p>
+</div>
+<script>
+BL.lesson('l9');
+(function(){
+  const supply = [{a:'L0', b:'N0', v:226.4, ri:0.05, src:true}, {a:'N0', b:'E', r:0.1}];
+  const wall = (h) => `<rect x="0" y="0" width="340" height="${h}" fill="var(--wall)"/>`;
+  const W = (d, c) => `<path d="${d}" fill="none" stroke="${c}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`;
+  const db = (on) => `<rect x="8" y="18" width="128" height="104" rx="8" fill="#000" opacity=".12" transform="translate(3 3)"/><rect x="8" y="18" width="128" height="104" rx="8" fill="#e3e7ea" stroke="#8d969c"/><rect x="14" y="24" width="116" height="92" rx="5" fill="#2b3135"/>
+    <rect x="20" y="32" width="28" height="62" rx="3" fill="#f4f6f7" stroke="#9aa3a8"/><rect x="26" y="${on ? 38 : 58}" width="16" height="20" rx="2" fill="#1d2226"/><text x="34" y="88" text-anchor="middle" style="font:700 8px var(--font-mono);fill:${on ? '#2b9a4a' : '#c0352b'}">${on ? 'ON' : 'OFF'}</text>
+    <rect x="58" y="70" width="30" height="14" rx="3" fill="#1f6fd1"/><rect x="100" y="70" width="30" height="14" rx="3" fill="#2e9b3c"/><rect x="104" y="74" width="22" height="6" fill="#f2d21b"/><text x="73" y="100" text-anchor="middle" style="font:700 9px var(--font-mono);fill:#8fc1ff">N</text><text x="115" y="100" text-anchor="middle" style="font:700 9px var(--font-mono);fill:#b9e07a">PE</text>`;
+  const lit = (sc, st, a, b) => { const s = BL.circuit.solve(sc.elems(st)); return Math.abs(s.v(a) - s.v(b)) > 180; };
+  const G1 = {id:'g1', title:'اللمبة مش بتنور', kind:'ac', vb:'0 0 340 330',
+    toggles:[{k:'power', on:'القاطع مرفوع', off:'القاطع مفصول', init:true}, {k:'sw', on:'مفتاح اللمبة ON', off:'مفتاح اللمبة OFF', init:true}],
+    elems: st => { const f = st.fault, e = supply.concat([{a:'P6', b:'N0', r:0.01}, {a:'PE', b:'E', r:0.01}, {a:'P1', b:'P2', r:0.3}]);
+      if (st.power) e.push({a:'L0', b:'P1', r:0.01}); if (st.sw && f !== 'switch') e.push({a:'P2', b:'P3', r:0.01}); if (f !== 'wire') e.push({a:'P3', b:'P4', r:0.3});
+      if (f !== 'bulb') e.push({a:'P4', b:'P5', r:484, r0:40}); if (f !== 'neutral') e.push({a:'P5', b:'P6', r:0.3}); return e; },
+    points:[{id:'1', n:'P1', x:34, y:136, t:'1', ly:160}, {id:'6', n:'P6', x:73, y:136, t:'6', ly:160}, {id:'PE', n:'PE', x:115, y:136, t:'⏚', ly:160}, {id:'2', n:'P2', x:244, y:122, t:'2', ly:146}, {id:'3', n:'P3', x:296, y:122, t:'3', ly:146}, {id:'4', n:'P4', x:146, y:236, t:'4', lx:126}, {id:'5', n:'P5', x:194, y:236, t:'5', lx:214}],
+    art: function(st){ const on = st.fault !== 'bulb' && lit(this, st, 'P4', 'P5');
+      return `${wall(330)}${db(st.power)}${W('M34 136 C34 190 200 40 244 122', '#8a5a2b')}${W('M296 122 C296 200 146 180 146 236', '#8a5a2b')}${W('M194 236 C194 290 73 250 73 136', '#1f6fd1')}
+      <g class="bn-tap"><rect x="226" y="24" width="88" height="80" rx="10" fill="#fbfbfa" stroke="#b5bcc1"/><rect x="250" y="38" width="40" height="52" rx="5" fill="#e9ecee" stroke="#c3c9cd"/><rect x="253" y="${st.sw ? 41 : 64}" width="34" height="23" rx="4" fill="#d5dadd"/><text x="270" y="18" text-anchor="middle" class="ar" style="font-size:11px;font-weight:700;fill:var(--ink)">المفتاح</text></g>
+      <rect x="120" y="224" width="100" height="26" rx="7" fill="#fbfbfa" stroke="#b5bcc1"/><path d="M170 250 V268" stroke="#9aa3a8" stroke-width="3"/>${on ? '<circle cx="170" cy="296" r="40" fill="#ffd84a" opacity=".55" style="filter:blur(6px)"/>' : ''}<rect x="161" y="266" width="18" height="14" rx="2" fill="#3a4045"/><path d="M162 280 C148 290 150 316 170 320 C190 316 192 290 178 280Z" fill="${on ? '#fff3b0' : '#f2f2ee'}" stroke="#a7afb4"/>`; },
+    diag:{auto:true, title:'الشكوى: «اللمبة مش بتنور».', ask:'النقط: 1 خرج القاطع · 2 داخل المفتاح · 3 خارج المفتاح · 4 طرف L في الدوي · 5 طرف N في الدوي · 6 بار النيوترال. قيس واختار التصليح:', again:'عطل تاني', key:'g-lamp',
+      pool:['bulb', 'wire', 'neutral', 'switch'],
+      options:[{id:'bulb', label:'غيّر اللمبة'}, {id:'wire', label:'صلّح السلك بين المفتاح واللمبة'}, {id:'neutral', label:'اربط النيوترال السايب في الدوي'}, {id:'switch', label:'غيّر المفتاح'}, {id:'mcb', label:'غيّر القاطع'}], ans:f => f,
+      explain: f => f === 'bulb' ? 'التستر نوّر على 4 ومانوّرش على 5، وبين 4 و 5 فيه 226V واللمبة مطفية: الكهربا واصلة للدوي كاملة، يبقى اللمبة نفسها محروقة. (وبعد ما تفصل، اللمبة هتقرا OL.)' : f === 'wire' ? 'الفاز موجود على 3 (خارج المفتاح) ومش موجود على 4: السلك اللي بين المفتاح والدوي مقطوع.' : f === 'neutral' ? 'التستر نوّر على 4 و 5 الاتنين، وبين 4 و 5 صفر تقريبًا: النيوترال مش واصل للدوي، فالفاز عدّى في الفتيلة ووصل لطرف N. اربط النيوترال.' : 'الفاز موجود على 2 ومش موجود على 3 والمفتاح ON: كونتاكت المفتاح بايظ. غيّره.'}};
+  const G2 = {id:'g2', title:'البريزة مفيهاش كهربا', kind:'ac', vb:'0 0 340 300',
+    toggles:[{k:'power', on:'القاطع مرفوع', off:'القاطع مفصول', init:true}],
+    elems: st => { const f = st.fault, e = supply.concat([{a:'NB', b:'N0', r:0.01}, {a:'PEB', b:'E', r:0.01}, {a:'PEB', b:'SE', r:0.3}]);
+      if (st.power && f !== 'mcb') e.push({a:'L0', b:'P1', r:0.01}); if (f !== 'lwire') e.push({a:'P1', b:'SL', r:0.3}); if (f !== 'nwire') e.push({a:'NB', b:'SN', r:0.3}); return e; },
+    points:[{id:'1', n:'P1', x:34, y:136, t:'خرج القاطع', ly:162}, {id:'NB', n:'NB', x:73, y:136, t:'N', ly:186}, {id:'PEB', n:'PEB', x:115, y:136, t:'⏚', ly:162}, {id:'SL', n:'SL', x:226, y:220, t:'L'}, {id:'SN', n:'SN', x:286, y:220, t:'N'}, {id:'SE', n:'SE', x:256, y:166, t:'PE', ly:150}],
+    art: st => `${wall(300)}${db(st.power)}${W('M34 136 C34 230 150 120 226 220', '#8a5a2b')}${W('M73 136 C73 260 200 270 286 244', '#1f6fd1')}
+      <rect x="186" y="150" width="140" height="140" rx="16" fill="#000" opacity=".12" transform="translate(3 4)"/><rect x="186" y="150" width="140" height="140" rx="16" fill="#fbfbfa" stroke="#b8bfc4"/><circle cx="256" cy="220" r="52" fill="#eceff1" stroke="#c3c9cd" stroke-width="2"/><rect x="246" y="168" width="20" height="10" rx="2" fill="#c9ced2" stroke="#7a848a"/><rect x="246" y="262" width="20" height="10" rx="2" fill="#c9ced2" stroke="#7a848a"/><circle cx="226" cy="220" r="9" fill="#1d2226"/><circle cx="286" cy="220" r="9" fill="#1d2226"/>`,
+    diag:{auto:true, title:'الشكوى: «البريزة دي مفيهاش كهربا، والقاطع مرفوع».', ask:'قيس عند اللوحة وعند البريزة واختار التصليح:', again:'عطل تاني', key:'g-socket',
+      pool:['lwire', 'nwire', 'mcb'],
+      options:[{id:'lwire', label:'صلّح سلك الفاز للبريزة'}, {id:'nwire', label:'صلّح سلك النيوترال للبريزة'}, {id:'mcb', label:'غيّر القاطع (بايظ من جوه)'}, {id:'sock', label:'غيّر البريزة نفسها'}], ans:f => f,
+      explain: f => f === 'lwire' ? 'خرج القاطع فيه فاز، بس L في البريزة مفيهاش (التستر مانوّرش، و L-PE صفر): سلك الفاز مقطوع في السكة.' : f === 'nwire' ? 'L في البريزة فيها فاز (L-PE = 226V)، بس L-N بتقرا صفر تقريبًا: النيوترال مش واصل للبريزة.' : 'القاطع مرفوع بس خرجه مفيهوش فاز (التستر مانوّرش على 1): القاطع بايظ من جوه. غيّره.'}};
+  const plug = (cx, on, nm, e) => `<path d="M${cx} 236 V140" stroke="${on ? '#2f3539' : 'transparent'}" stroke-width="5"/><circle cx="${cx}" cy="270" r="40" fill="#2a2f33"/><circle cx="${cx}" cy="270" r="32" fill="#3a4045"/>${e ? `<rect x="${cx - 9}" y="236" width="18" height="8" rx="2" fill="#c9ced2"/>` : ''}<circle cx="${cx - 22}" cy="276" r="5" fill="#d6dcdf"/><circle cx="${cx + 22}" cy="276" r="5" fill="#d6dcdf"/><text x="${cx}" y="330" text-anchor="middle" class="ar" style="font-size:11px;font-weight:700;fill:${on ? 'var(--good)' : 'var(--muted)'}">${nm} · ${on ? 'في البريزة' : 'بره البريزة'}</text>`;
+  const G3 = {id:'g3', title:'القاطع بيفصل على طول', kind:'ac', vb:'0 0 340 340', init:{power:false},
+    toggles:[{k:'power', on:'القاطع مرفوع', off:'ارفع القاطع', init:false}, {k:'pk', on:'شيل فيشة الغلاية', off:'رجّع فيشة الغلاية', init:true}, {k:'pf', on:'شيل فيشة المروحة', off:'رجّع فيشة المروحة', init:true}, {k:'pt', on:'شيل فيشة التلفزيون', off:'رجّع فيشة التلفزيون', init:true}],
+    breaker:{k:'power', In:20}, tripMsg:'<b>القاطع وقع تاني على طول!</b> لسه فيه قصر في حاجة متوصّلة. نزّله، وقيس أوم.',
+    elems: st => { const f = st.fault, e = supply.concat([{a:'P1', b:'SL', r:0.2}, {a:'NB', b:'N0', r:0.01}, {a:'NB', b:'SN', r:0.2}, {a:'PEB', b:'E', r:0.01}, {a:'PEB', b:'SE', r:0.2},
+        {a:'KL', b:'KM', r:11}, {a:'KM', b:'KN', r:11}, {a:'FL', b:'FN', r:800, r0:150}, {a:'TL', b:'TN', r:2000, r0:1e9}]);
+      if (st.power) e.push({a:'L0', b:'P1', r:0.01}); if (f === 'cable') e.push({a:'SL', b:'SN', r:0.15}); if (f === 'kettle') e.push({a:'KL', b:'KE', r:0.4}); if (f === 'fan') e.push({a:'FL', b:'FN', r:0.3});
+      if (st.pk) e.push({a:'SL', b:'KL', r:0.01}, {a:'SN', b:'KN', r:0.01}, {a:'SE', b:'KE', r:0.01});
+      if (st.pf) e.push({a:'SL', b:'FL', r:0.01}, {a:'SN', b:'FN', r:0.01}, {a:'SE', b:'FE', r:0.01});
+      if (st.pt) e.push({a:'SL', b:'TL', r:0.01}, {a:'SN', b:'TN', r:0.01});
+      return e; },
+    points:[{id:'1', n:'P1', x:34, y:136, t:'L', a:'خرج القاطع L', ly:160}, {id:'NB', n:'NB', x:73, y:136, t:'N', a:'بار النيوترال', ly:160}, {id:'PEB', n:'PEB', x:115, y:136, t:'⏚', a:'بار الأرضي', ly:160},
+      {id:'KL', n:'KL', x:38, y:276, t:'L', a:'L فيشة الغلاية', ly:304}, {id:'KN', n:'KN', x:82, y:276, t:'N', a:'N فيشة الغلاية', ly:300}, {id:'KE', n:'KE', x:60, y:240, t:'', a:'أرضي فيشة الغلاية'},
+      {id:'FL', n:'FL', x:148, y:276, t:'L', a:'L فيشة المروحة', ly:300}, {id:'FN', n:'FN', x:192, y:276, t:'N', a:'N فيشة المروحة', ly:300}, {id:'FE', n:'FE', x:170, y:240, t:'', a:'أرضي فيشة المروحة'},
+      {id:'TL', n:'TL', x:258, y:276, t:'L', a:'L فيشة التلفزيون', ly:300}, {id:'TN', n:'TN', x:302, y:276, t:'N', a:'N فيشة التلفزيون', ly:300}],
+    art: st => `${wall(340)}${db(st.power)}${W('M34 136 C34 170 160 40 176 70', '#8a5a2b')}${W('M73 136 C73 180 170 60 186 80', '#1f6fd1')}
+      <rect x="160" y="40" width="172" height="62" rx="10" fill="#fbfbfa" stroke="#b5bcc1"/>${[200, 252, 304].map(x => `<circle cx="${x}" cy="71" r="20" fill="#eceff1" stroke="#c3c9cd"/><circle cx="${x - 8}" cy="71" r="3.5" fill="#1d2226"/><circle cx="${x + 8}" cy="71" r="3.5" fill="#1d2226"/>`).join('')}<text x="246" y="32" text-anchor="middle" class="ar" style="font-size:11px;font-weight:700;fill:var(--ink)">مشترك (3 برايز)</text>
+      ${plug(60, st.pk, 'غلاية', true)}${plug(170, st.pf, 'مروحة', true)}${plug(280, st.pt, 'تلفزيون', false)}`,
+    diag:{auto:true, title:'الشكوى: «كل ما أرفع القاطع يقع على طول».', ask:'القاطع واقع. جرّب ترفعه، شيل فيش، وقيس <b>أوم والقاطع واقع</b> (الغلاية لوحدها حوالي 22Ω، القصر بيبان أقل من 1Ω). النقطة اللي فوق كل فيشة هي الأرضي. اختار السبب:', again:'عطل تاني', key:'g-trip',
+      pool:['kettle', 'fan', 'cable'],
+      options:[{id:'kettle', label:'الغلاية: الفاز ضارب على جسمها'}, {id:'fan', label:'المروحة: قصر جواها'}, {id:'cable', label:'قصر في سلك الحيطة'}, {id:'bigger', label:'القاطع ضعيف: ركّب قاطع أكبر'}], ans:f => f,
+      explain: f => f === 'kettle' ? 'فيشة الغلاية: بين L والأرضي 0.4Ω بدل OL. الفاز ضارب على الجسم المعدن، والقاطع بيفصل عشان التيار بيجري في الأرضي. شيلها والقاطع هيقف. ماتتستخدمش لحد ما تتصلّح.' : f === 'fan' ? 'فيشة المروحة: بين L و N حوالي 0.3Ω بدل 150Ω: قصر جوه المروحة (غالبًا في الملف أو السلك). شيل فيشتها والقاطع هيقف.' : 'حتى بعد ما شلت كل الفيش، بين L و N عند اللوحة 0.4Ω تقريبًا: القصر في سلك الحيطة نفسه (مسمار دخل في السلك؟ علبة محروقة؟). سيب الدايرة مفصولة لحد ما يتصلّح.'}};
+  window.M9 = BL.meter(document.getElementById('game'), {lesson:'l9', scenarios:[G1, G2, G3], exercises:[], tools:['avo', 'tester']});
+})();
+BL.quiz(document.getElementById('quiz'), [
+  {q:'اللمبة مطفية والتستر بينوّر على طرفين الدوي الاتنين. العطل غالبًا:', o:['النيوترال مقطوع', 'اللمبة محروقة', 'القاطع واقع', 'مفيش فاز'], a:0, why:'الفاز عدّى في الفتيلة ووصل لطرف النيوترال لأنه مش متوصّل.'},
+  {q:'البريزة: بين L و PE فيه 226V، وبين L و N صفر. العطل:', o:['النيوترال مش واصل للبريزة', 'الفاز مقطوع', 'الأرضي مقطوع', 'البريزة سليمة'], a:0, why:'الفاز موجود، بس سكة الرجوع (N) مقطوعة.'},
+  {q:'القاطع بيفصل على طول. أول خطوة صح:', o:['افصل الأجهزة وقيس أوم والقاطع واقع', 'ركّب قاطع أكبر', 'اربط القاطع بسلك', 'استنى شوية وارفعه تاني كتير'], a:0, why:'القاطع بيحميك. دوّر على القصر بالأوم.'},
+  {q:'إيه الغلط في إنك تركّب قاطع أكبر عشان مايفصلش؟', o:['السلك هيسخن ويولّع والعطل لسه موجود', 'هيصرف كهربا أكتر', 'مش هيشتغل', 'مفيش غلط'], a:0, why:'القاطع مقاسه على قد السلك. القاطع الأكبر بيلغي الحماية.'}
+], {lesson:'l9', pass:0.75});
+BL.quiz(document.getElementById('final'), [
+  {q:'لو زوّدنا الجهد على نفس المقاومة، التيار:', o:['يزيد', 'يقل', 'يفضل زي ما هو', 'يبقى صفر'], a:0, why:'I = V ÷ R.'},
+  {q:'كهربا البيت في مصر:', o:['220V AC 50Hz', '380V DC', '12V DC', '220V DC'], a:0, why:'سنجل فاز AC.'},
+  {q:'السلك الأخضر×الأصفر:', o:['أرضي حماية بس', 'فاز', 'نيوترال', 'أي حاجة'], a:0, why:'PE ممنوع يُستخدم لأي حاجة تانية.'},
+  {q:'قاطع التسريب RCD بيحمي من:', o:['الصعق: بيفصل لو 30mA هربوا للأرض', 'زيادة الجهد', 'الصواعق', 'انقطاع الكهربا'], a:0, why:'بيقارن الفاز بالنيوترال.'},
+  {q:'عايز تقيس بطارية 9V. المفتاح على:', o:['V⎓', 'V~', 'Ω', 'A'], a:0, why:'البطارية DC.'},
+  {q:'سخان 2000W/220V قرا OL بين طرفين الملف:', o:['الملف مقطوع', 'الملف سليم', 'الملف مسرّب', 'محتاج ميجر'], a:0, why:'المفروض 24.2Ω.'},
+  {q:'ترانس 220/24V: الثانوي لفّاته بالنسبة للابتدائي:', o:['أقل', 'أكتر', 'زي بعض', 'مفيش ثانوي'], a:0, why:'خافض للجهد ⇐ لفّات أقل.'},
+  {q:'باور سبلاي 24V: الأحمر على −V والأسود على +V، العداد هيقرا:', o:['-24V', '+24V', '0V', 'OL'], a:0, why:'المجسات معكوسة.'},
+  {q:'غلاية 2200W على 220V. القاطع والسلك المناسبين:', o:['16A و 2.5مم²', '10A و 1.5مم²', '40A و 1.5مم²', '6A و 1مم²'], a:0, why:'10A تيار ⇐ قاطع 16A وسلك 2.5مم².'},
+  {q:'مفتاح اللمبة لازم يقطع:', o:['الفاز', 'النيوترال', 'الأرضي', 'الاتنين'], a:0, why:'عشان الدوي يبقى من غير كهربا وهي مطفية.'}
+], {lesson:'l9', task:'final', pass:0.8, shuffle:true});
+</script>
+</body>
+</html>

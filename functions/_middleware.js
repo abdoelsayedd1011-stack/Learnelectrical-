@@ -1,5 +1,5 @@
 // Members-only pages: visitors without an account are sent to sign up first.
-// Open to everyone: the main pages, the PowerFlex 525 lab and classic-control lessons 1–2.
+// Open to everyone: the main pages, the PowerFlex 525 lab, and lessons 1–2 of the basics and classic-control courses.
 import { getDb, sessionUser } from "./_lib/auth.js";
 
 const MEMBER_LABS = new Set([
@@ -13,7 +13,7 @@ function membersOnly(pathname){
   if (!m) return false;
   const dir = m[1], rest = m[2];
   if (rest && !/\.html$/.test(rest) && /\./.test(rest)) return false; // scripts, images, data
-  if (dir === "classic-control-lab"){
+  if (dir === "classic-control-lab" || dir === "basics-lab"){
     const l = /^lesson-(\d+)/.exec(rest);
     return !!l && Number(l[1]) > FREE_LESSONS;
   }

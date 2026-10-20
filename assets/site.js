@@ -8,6 +8,12 @@
      disp: النص اللي على الشاشة الصغيرة   dispClass: "" | "lcd" | "red" | "grn" | "wht"
      ====================================================================== */
   var LABS = [
+    { id:"basics", path:"basics-lab/index.html", group:"basics", brand:"للمبتدئين", brandKey:"beginner",
+      name:"أساسيات الكهربا", kind:"كورس مبتدئين", disp:"220V~", dispClass:"lcd", rtlName:true,
+      line:"ابدأ من الصفر: يعني إيه جهد وتيار ومقاومة، أنواع الكهربا AC و DC وسنجل وتلاتة فاز، السلامة ومفك الاختبار، الأفوميتر التفاعلي، قياس السخان والموتور والفيوز والكلامب ميتر، المحوّل والباور سبلاي 24V، قانون أوم واختيار السلك والقاطع، توصيل اللمبة والبريزة ومفتاح السلم، وأعطال البيت.",
+      guided:9, exercises:0, params:0, faults:0,
+      inside:["أفوميتر تفاعلي: لف الأوكرة وحط المجسات وشوف القراية (وتحذير لو غلطت غلطة خطر)","قياس عملي: سخان، غلاية، لمبة، فيوز، موتور 3 فاز وسنجل فاز، ترانس وباور سبلاي، مع عطل مخفي تكتشفه","لوحة توصيل بيت: لمبة ومفتاح، بريزة بالأرضي، مفتاح سلم، لمبتين توازي","لعبة أعطال البيت وامتحان نهائي وشهادة إتمام"],
+      tags:"basics أساسيات مبتدئين beginner electricity كهربا voltage جهد current تيار resistance مقاومة ohm أوم ac dc multimeter أفوميتر افو avo tester مفك اختبار heater سخان motor موتور transformer محول ترانس power supply باور سبلاي lamp لمبة socket بريزة switch مفتاح wiring توصيل breaker قاطع wire سلك" },
     { id:"classic", path:"classic-control-lab/index.html", group:"classic", brand:"أساسيات", brandKey:"basics",
       name:"معمل الكلاسيك كنترول", kind:"كلاسيك كنترول", disp:"START", dispClass:"grn", rtlName:true,
       line:"مفاتيح وبوش بوتن وليمت سويتش، وبعدها الريلاي والتثبيت الذاتي والكونتاكتور وموتور 3 فاز DOL، والحماية: الفيوز والقاطع والأوفرلود الحراري والـ MPCB، والتايمرات (On-delay و Off-delay والدوري)، والموتور الإندكشن 3 فاز (اليافطة وعلبة الأطراف ستار/دلتا وعكس الاتجاه)، ومفاتيح الضغط والمستوى والحساسات PNP/NPN والخلية الضوئية، وتمارين التتابع والـ Jog وعكس الحركة، وفي الآخر المواضيع المتقدمة: ستار/دلتا (يدوي وأوتوماتيك)، طرق فرملة الموتور (DC و Plugging وفرامل الونش)، دايرة كباس التكييف المركزي على 24V، والسوفت ستارتر بالبايباس وريلاي العطل. تعرف كل عنصر وتوصّل الدايرة بإيدك سلك سلك، والمعمل يصحّح لوحده ويرسم دايرة كل تمرين ويسخّن الأوفرلود ويفصل والتايمر يعدّ زي الحقيقي.",
@@ -82,13 +88,14 @@
       tags:"omron e5cc temperature pid حرارة" }
   ];
   var GROUPS = [
+    { key:"basics", title:"أساسيات الكهربا", sub:"للمبتدئين خالص · قبل الكلاسيك" },
     { key:"classic", title:"كلاسيك كنترول", sub:"مفاتيح · بوش بوتن · كونتاكتورات · موتور" },
     { key:"ab", title:"انفرترات Allen-Bradley", sub:"Rockwell Automation" },
     { key:"drives", title:"انفرترات تانية", sub:"Siemens · Schneider · Delta · Danfoss" },
     { key:"servo", title:"سيرفو وكنترول حرارة", sub:"Delta · Omron" }
   ];
   var BRANDS = [
-    { key:"all", label:"الكل" }, { key:"basics", label:"كلاسيك كنترول" }, { key:"ab", label:"Allen-Bradley" }, { key:"siemens", label:"Siemens" },
+    { key:"all", label:"الكل" }, { key:"beginner", label:"للمبتدئين" }, { key:"basics", label:"كلاسيك كنترول" }, { key:"ab", label:"Allen-Bradley" }, { key:"siemens", label:"Siemens" },
     { key:"schneider", label:"Schneider" }, { key:"delta", label:"Delta" }, { key:"danfoss", label:"Danfoss" },
     { key:"omron", label:"Omron" }, { key:"multi", label:"مقارنة" }
   ];
@@ -195,7 +202,7 @@
   }
   function card(l){
     var disp = '<div class="disp ' + esc(l.dispClass) + '" aria-hidden="true">' + (l.html ? l.disp : esc(l.disp)) + "</div>";
-    var acc = l.id === "pf525" ? "من غير حساب" : l.id === "classic" ? "أول درسين من غير حساب" : "بحساب مجاني";
+    var acc = l.id === "pf525" ? "من غير حساب" : (l.id === "classic" || l.id === "basics") ? "أول درسين من غير حساب" : "بحساب مجاني";
     var head = '<div class="meta"><span class="brand">' + esc(l.brand) + '</span><span class="kind">' + esc(l.kind) + '</span><span class="access' + (l.id === "pf525" ? " open" : "") + '">' + acc + "</span></div>" +
                '<h4' + (l.rtlName ? ' style="direction:rtl"' : "") + ">" + esc(l.name) + "</h4>";
     if (!detail){
