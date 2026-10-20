@@ -1,0 +1,2116 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>معمل Omron E5CC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Same bench as the other labs: drive faceplate + operator station on one side, motor + scope on the other, terminals and parameters below. */
+:root{
+  --bg:#e9edef; --panel:#ffffff; --ink:#152027; --muted:#56656f; --line:#cfd7dc;
+  --accent:#b85f00; --accent-soft:#f6e6d3; --cur:#0d7584;
+  --good:#2b7a3d; --warn:#a86a00; --bad:#c0352b; --scope-bg:#0e1518; --grid:#22343a;
+  --font-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --font-body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1417; --panel:#182025; --ink:#e3e9ec; --muted:#93a2ab; --line:#2a353c;
+  --accent:#f0a03c; --accent-soft:#3a2a17; --cur:#4cc0cf;
+  --good:#5cc06f; --warn:#e3a43a; --bad:#ff6b5e; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f1417; --panel:#182025; --ink:#e3e9ec; --muted:#93a2ab; --line:#2a353c;
+  --accent:#f0a03c; --accent-soft:#3a2a17; --cur:#4cc0cf;
+  --good:#5cc06f; --warn:#e3a43a; --bad:#ff6b5e; color-scheme:dark }
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.6}
+.app{max-width:1260px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0;line-height:1.25}
+h1{font-size:1.75rem} h2{font-size:1.2rem} h3{font-size:1rem}
+.mono,code{font-family:var(--font-mono);direction:ltr;unicode-bidi:isolate}
+code{font-size:.9em;background:var(--accent-soft);padding:0 .3em;border-radius:4px}
+.muted{color:var(--muted)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px}
+header.top p{margin:.25rem 0 0;color:var(--muted);max-width:70ch}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.85rem;font-weight:600}
+.chip b{color:var(--accent)}
+.bench{display:grid;grid-template-columns:minmax(320px,440px) minmax(0,1fr);gap:20px;align-items:start}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:940px){.bench,.grid2{grid-template-columns:minmax(0,1fr)}}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.panel h2,.panel h3{margin-bottom:10px}
+.label{font-size:.75rem;letter-spacing:.04em;color:var(--muted);font-weight:600}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:600}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.xs{padding:1px 8px;font-size:.78rem}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.hint{font-size:.85rem;color:var(--muted);margin:.4rem 0 0}
+.tagc,.tagv{display:inline-flex;align-items:center;gap:4px;font:600 .72rem var(--font-body);border-radius:999px;padding:1px 9px;vertical-align:middle;margin-inline-start:8px}
+.tagc{background:#2f7fe0;color:#fff}
+.tagv{background:var(--panel);color:var(--muted);border:1px solid var(--line)}
+.tagc::before{content:"";width:7px;height:7px;border-radius:50%;border:1.5px solid #fff}
+.tagv::before{content:"👁";font-size:.7rem}
+.legendbar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;font-size:.85rem;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+
+.keyguide{font-size:.85rem;margin:12px 0 0;padding:0;list-style:none;display:grid;gap:4px}
+.keyguide b{font-family:var(--font-mono);background:var(--accent-soft);padding:0 .35em;border-radius:4px}
+/* ---------- operator station ---------- */
+.station{background:linear-gradient(180deg,#d6d9db,#c3c7ca);border-radius:10px;padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:14px 10px;box-shadow:inset 0 0 0 1px #a9aeb2,inset 0 2px 0 #eef0f1;direction:rtl}
+.dev{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.dev .tag{background:#1d2226;color:#f2f4f5;font:600 10.5px var(--font-body);padding:1px 8px;border-radius:3px;min-width:78px;line-height:1.5}
+.dev .term{font:600 10px var(--font-mono);color:#3b4348;direction:ltr}
+.pb{width:56px;height:56px;border-radius:50%;border:0;cursor:pointer;touch-action:none;position:relative;background:radial-gradient(circle at 50% 50%,#c4c7c9 0 60%,#7f8589 61% 70%,#5c6266 71%);box-shadow:0 3px 5px rgba(0,0,0,.35);display:grid;place-items:center;padding:0}
+.pb::after{content:"";width:62%;height:62%;border-radius:50%;background:var(--cap,#1f9a3c);box-shadow:inset 0 -4px 6px rgba(0,0,0,.35),inset 0 3px 4px rgba(255,255,255,.35),0 3px 0 rgba(0,0,0,.35);transition:transform .05s}
+.pb.down::after{transform:scale(.9);box-shadow:inset 0 -2px 4px rgba(0,0,0,.4),inset 0 2px 3px rgba(255,255,255,.25)}
+.pb.green{--cap:linear-gradient(#35c25a,#1b8a37)}
+.pb.black{--cap:linear-gradient(#4a4f53,#1f2326)}
+.pb.mush::after{width:84%;height:84%;background:radial-gradient(circle at 40% 35%,#ff6b5e,#c4211a 70%)}
+.pb.mush.latched::after{transform:scale(.88)}
+.sel2{width:56px;height:56px;border-radius:50%;border:0;cursor:pointer;padding:0;position:relative;background:radial-gradient(circle,#2a2f33 0 58%,#8a9095 59% 68%,#5c6266 69%);box-shadow:0 3px 5px rgba(0,0,0,.35)}
+.sel2 i{position:absolute;left:50%;top:50%;width:12px;height:40px;margin:-20px 0 0 -6px;border-radius:5px;background:linear-gradient(90deg,#3c4246,#71787d,#3c4246);transform:rotate(-45deg);transition:transform .15s;box-shadow:0 1px 2px #000}
+.sel2 i::after{content:"";position:absolute;left:4px;top:3px;width:4px;height:8px;border-radius:2px;background:#fff}
+.sel2[aria-pressed="true"] i{transform:rotate(45deg)}
+.sel2.key{background:radial-gradient(circle,#c9a54a 0 40%,#8a9095 41% 68%,#5c6266 69%)}
+.sel2.key i{width:8px;margin-left:-4px;background:linear-gradient(90deg,#9d7d2a,#e7c76a,#9d7d2a)}
+.selpos{display:flex;justify-content:space-between;width:80px;font:600 9.5px var(--font-body);color:#3b4348}
+.lamp{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#7b7f82,#3d4144);box-shadow:0 0 0 4px #9ba1a5,0 0 0 5px #5d6366,0 2px 4px 5px rgba(0,0,0,.25)}
+.lamp.r.on{background:radial-gradient(circle at 40% 35%,#ffd1cc,#ff3b2a 55%,#b8170c);box-shadow:0 0 0 4px #9ba1a5,0 0 0 5px #5d6366,0 0 18px 6px #ff3b2a88}
+.lamp.g.on{background:radial-gradient(circle at 40% 35%,#d8ffd8,#2fd34b 55%,#13852a);box-shadow:0 0 0 4px #9ba1a5,0 0 0 5px #5d6366,0 0 18px 6px #2fd34b88}
+.lamp.y.on{background:radial-gradient(circle at 40% 35%,#fff6c8,#ffc21a 55%,#b88400);box-shadow:0 0 0 4px #9ba1a5,0 0 0 5px #5d6366,0 0 18px 6px #ffc21a88}
+.lamp.w.on{background:radial-gradient(circle at 40% 35%,#ffffff,#cfe3ff 55%,#7ea2d0);box-shadow:0 0 0 4px #9ba1a5,0 0 0 5px #5d6366,0 0 18px 6px #cfe3ffaa}
+.meter{width:96px;height:64px;background:linear-gradient(#fbfbf6,#eceee6);border-radius:4px;box-shadow:0 0 0 3px #2a2f33,0 2px 5px 3px rgba(0,0,0,.25);position:relative;overflow:hidden}
+.meter svg{width:100%;height:100%;display:block}
+.brk{width:46px;height:64px;border-radius:4px;border:0;cursor:pointer;padding:0;background:linear-gradient(#2d3236,#1a1d20);position:relative;box-shadow:0 3px 5px rgba(0,0,0,.35)}
+.brk i{position:absolute;left:13px;width:20px;height:24px;border-radius:3px;background:linear-gradient(#f2f2f2,#b9bcbf);top:34px;transition:top .12s;box-shadow:0 2px 2px rgba(0,0,0,.5)}
+.brk[aria-pressed="true"] i{top:6px;background:linear-gradient(#ffcf4a,#e0a400)}
+.brk span{position:absolute;left:0;right:0;font:700 8px Arial;color:#ddd}
+.station .knob{width:56px;height:56px}
+.station .knob i{height:18px;transform-origin:50% 22px}
+.station .kv{font:600 11px var(--font-mono);direction:ltr;color:#1d2226}
+.rot{width:56px;height:56px;border-radius:50%;cursor:pointer;border:0;padding:0;position:relative;background:radial-gradient(circle,#2a2f33 0 52%,#8a9095 53% 66%,#5c6266 67%);box-shadow:0 3px 5px rgba(0,0,0,.35)}
+.rot i{position:absolute;left:50%;top:50%;width:10px;height:38px;margin:-19px 0 0 -5px;border-radius:5px;background:linear-gradient(90deg,#3c4246,#71787d,#3c4246);transition:transform .15s}
+.rot i::after{content:"";position:absolute;left:3px;top:2px;width:4px;height:8px;border-radius:2px;background:#ffb44d}
+/* ---------- motor + meters ---------- */
+.mview{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:12px;align-items:center}
+@media (max-width:560px){.mview{grid-template-columns:minmax(0,1fr)}}
+.mview svg{width:100%;height:auto;display:block;direction:ltr}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
+@media (max-width:560px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tile{border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0}
+.tile .v{font-family:var(--font-mono);font-size:1.15rem;font-weight:500;direction:ltr;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .v small{font-size:.7rem;color:var(--muted);margin-left:3px}
+.tile .bar{height:4px;border-radius:2px;background:var(--line);margin-top:4px;overflow:hidden}
+.tile .bar i{display:block;height:100%;width:0;background:var(--cur)}
+.tile .bar i.hot{background:var(--bad)}
+.statusline{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.pill{font-size:.78rem;font-weight:600;border-radius:999px;padding:2px 10px;border:1px solid var(--line);color:var(--muted)}
+.pill.on{color:#fff;background:var(--good);border-color:var(--good)}
+.pill.bad{color:#fff;background:var(--bad);border-color:var(--bad)}
+.pill.warn{color:#fff;background:var(--warn);border-color:var(--warn)}
+.scopewrap{position:relative;border-radius:10px;overflow:hidden;background:var(--scope-bg)}
+#scope{width:100%;height:260px;display:block}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;margin-top:8px}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:14px;height:3px;border-radius:2px;display:inline-block}
+
+/* ---------- inputs ---------- */
+.io{display:grid;gap:6px}
+.sw{width:50px;height:30px;border-radius:5px;border:0;padding:3px;background:linear-gradient(#2a2e32,#15181b);position:relative;cursor:pointer;flex:none;box-shadow:0 0 0 2px #2f7fe0aa,0 2px 3px rgba(0,0,0,.35)}
+.sw::before{content:"O";position:absolute;inset:3px 3px 3px 50%;display:grid;place-items:center;font:700 11px Arial,sans-serif;color:#bfc5c9;background:linear-gradient(#4b5157,#2b3034);border-radius:0 3px 3px 0;transition:all .1s}
+.sw::after{content:"I";position:absolute;inset:3px 50% 3px 3px;display:grid;place-items:center;font:700 11px Arial,sans-serif;color:#8d949a;background:linear-gradient(#30353a,#1f2327);border-radius:3px 0 0 3px;box-shadow:inset -2px 0 3px rgba(0,0,0,.5);transition:all .1s}
+.sw[aria-pressed="true"]::after{background:linear-gradient(#3ec95a,#1f8a36);color:#fff;box-shadow:inset 0 0 6px rgba(255,255,255,.35),0 0 8px #3ec95a88}
+.sw[aria-pressed="true"]::before{background:linear-gradient(#2b3034,#1c2023);color:#7d858b;box-shadow:inset 2px 0 3px rgba(0,0,0,.5)}
+.knob{width:70px;height:70px;border-radius:50%;cursor:ns-resize;touch-action:none;position:relative;background:radial-gradient(circle at 40% 35%,#6c747a,#2a2f33 70%);box-shadow:0 3px 6px rgba(0,0,0,.35),inset 0 0 0 3px #1c2023,0 0 0 3px #2f7fe055}
+.knob i{position:absolute;left:50%;top:6px;width:4px;height:22px;margin-left:-2px;border-radius:2px;background:#ffb44d;transform-origin:50% 29px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field select,.field input[type=number],.field input[type=text]{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 8px;min-width:0;width:100%}
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.check{display:flex;gap:8px;align-items:center;font-size:.9rem;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--accent);flex:none}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.subhead{margin:14px 0 8px;font-size:.95rem}
+.inj{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px}
+.inj .btn{text-align:right;font-weight:500;font-size:.88rem}
+.inj .btn[aria-pressed="true"]{background:var(--bad);border-color:var(--bad);color:#fff}
+
+/* ---------- wiring diagram ---------- */
+.boardscroll{overflow-x:auto;border-radius:10px;border:1px solid var(--line);background:#f4f5f1}
+#wd{width:100%;min-width:900px;height:auto;display:block;direction:ltr;user-select:none;-webkit-user-select:none}
+#wd text{pointer-events:none;font-family:"IBM Plex Mono",ui-monospace,monospace}
+#wd .ar{font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;direction:rtl;unicode-bidi:plaintext}
+#wd .clk{cursor:pointer}
+#wd .clk:hover .hl{stroke:#ff8a00}
+.wlegend{display:flex;flex-wrap:wrap;gap:12px;font-size:.8rem;margin-top:8px;color:var(--muted)}
+.wlegend span{display:flex;align-items:center;gap:6px}
+.wlegend i{width:18px;height:5px;border-radius:3px;display:inline-block}
+
+/* ---------- params ---------- */
+.ptools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.tabs{display:flex;gap:4px;background:var(--bg);border-radius:10px;padding:4px;flex-wrap:wrap}
+.tabs button{border:0;background:transparent;padding:5px 10px;border-radius:7px;cursor:pointer;font-weight:600;font-size:.82rem;direction:ltr}
+.tabs button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top}
+th{font-size:.75rem;color:var(--muted);background:var(--bg);position:sticky;top:0;z-index:1}
+tr:last-child td{border-bottom:0}
+td.code{font-family:var(--font-mono);font-weight:600;white-space:nowrap;direction:ltr;text-align:right}
+td.en{font-family:var(--font-mono);direction:ltr;text-align:right;white-space:nowrap;font-size:.82rem}
+td.val input,td.val select{width:150px;border:1px solid var(--line);background:var(--bg);border-radius:7px;padding:4px 6px;font-family:var(--font-mono);direction:ltr}
+td.val .ro{font-family:var(--font-mono);direction:ltr;display:inline-block}
+.badge{display:inline-block;font-size:.68rem;border-radius:5px;padding:0 5px;margin-inline-start:4px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.badge.s{color:var(--warn);border-color:var(--warn)}
+.badge.r{color:var(--cur);border-color:var(--cur)}
+#ptable tr{cursor:pointer}#ptable tr.sel td{background:color-mix(in srgb,var(--accent) 10%,transparent)}
+tr.changed td.code{color:var(--accent)}
+.pdet{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:0 0 10px;background:var(--bg);display:grid;gap:6px}
+.pdet .h{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}.pdet .h b{font-family:var(--font-mono);font-size:1.05rem}
+.pdet .facts{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.82rem;color:var(--muted)}.pdet .facts b{color:var(--ink);font-family:var(--font-mono);font-weight:500}
+.pdet p{margin:0;line-height:1.75}
+.reftabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.reftabs button{border:1px solid var(--line);background:transparent;border-radius:8px;padding:5px 11px;cursor:pointer;font-size:.86rem}
+.reftabs button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.refbody h4{margin:12px 0 6px;font-size:.95rem}
+.refbody ol,.refbody ul{margin:0;padding-inline-start:20px;line-height:1.85;font-size:.9rem}
+.cards{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.cards .card{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.cards h4{margin:0 0 6px}
+.toast{font-size:.85rem;font-weight:600;color:var(--good)}
+
+/* ---------- exercises & log ---------- */
+.ex{border:1px solid var(--line);border-radius:10px;margin-bottom:8px;overflow:hidden}
+.ex summary{cursor:pointer;padding:10px 12px;font-weight:600;display:flex;gap:10px;align-items:center;list-style:none}
+.ex summary::-webkit-details-marker{display:none}
+.ex summary .cnt{margin-inline-start:auto;font-family:var(--font-mono);font-size:.8rem;color:var(--muted)}
+.ex.done summary{color:var(--good)}
+.ex .body{padding:0 12px 12px}
+.ex p{margin:.2rem 0 .6rem;color:var(--muted);font-size:.9rem}
+.ex ol{margin:0;padding-inline-start:22px;display:grid;gap:4px;font-size:.9rem}
+.ex li.ok{color:var(--good)}
+.ex li.ok::marker{content:"✓ "}
+.log{max-height:300px;overflow:auto;font-size:.85rem;display:grid;gap:2px}
+.log div{display:flex;gap:8px;border-bottom:1px dashed var(--line);padding:3px 0}
+.log time{font-family:var(--font-mono);color:var(--muted);flex:none}
+.log .a{color:var(--bad);font-weight:600}
+.flt td:first-child{font-family:var(--font-mono);font-weight:600;white-space:nowrap}
+.flt tr.now td{background:color-mix(in srgb,var(--bad) 14%,transparent)}
+
+/* ---------- Omron E5CC faceplate (48 x 48 mm, 1/16 DIN) ---------- */
+.device{display:flex;justify-content:center}
+.e5{direction:ltr;width:100%;max-width:340px;user-select:none;-webkit-user-select:none;font-family:Arial,Helvetica,sans-serif;filter:drop-shadow(0 10px 18px rgba(0,0,0,.3))}
+.e5-bezel{background:linear-gradient(180deg,#2a2c2e,#151617);border-radius:8px;padding:12px 12px 9px;box-shadow:inset 0 0 0 1px #3c3f42,inset 0 2px 0 #4a4d50}
+.e5-face{background:linear-gradient(180deg,#0c0d0e,#121314);border-radius:3px;padding:10px 10px 8px;box-shadow:inset 0 0 0 1px #000,inset 0 3px 10px rgba(0,0,0,.7)}
+.e5-pvrow{display:grid;grid-template-columns:minmax(0,1fr) 26px;gap:6px;align-items:stretch}
+.seg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2%}
+.seg svg{display:block;width:100%;height:auto;overflow:visible}
+.seg .s{fill:rgba(255,255,255,.035);transition:fill .04s}
+.seg.pv svg{filter:drop-shadow(0 0 3px rgba(255,60,30,.55))}
+.seg.pv .s.on{fill:#ff3b22}
+.seg.sv svg{filter:drop-shadow(0 0 3px rgba(60,255,90,.5))}
+.seg.sv .s.on{fill:#3dff5f}
+.seg .bl .s.on{animation:vblink .5s steps(2,start) infinite}
+.seg.off .s.on{fill:rgba(255,255,255,.035)}
+@keyframes vblink{to{fill:rgba(255,255,255,.035)}}
+.e5-units{display:flex;flex-direction:column;justify-content:space-around;align-items:center;font:700 13px Arial;color:#3a3c3e}
+.e5-units span.on{color:#ff9d2b;text-shadow:0 0 6px #ff9d2b}
+.e5-inds{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;margin:9px 0 7px}
+.ind{display:flex;flex-direction:column;align-items:center;gap:2px;font:700 clamp(6.5px,1.9vw,8px) Arial;color:#8b8f93;letter-spacing:.01em;white-space:nowrap}
+.ind i{width:70%;height:4px;border-radius:1px;background:#2b2116}
+.ind.on i{background:#ffa21a;box-shadow:0 0 6px #ffa21a}
+.ind.fl i{animation:ifl .5s steps(2,start) infinite}
+@keyframes ifl{to{background:#2b2116;box-shadow:none}}
+.e5-svrow{display:grid;grid-template-columns:minmax(0,.26fr) minmax(0,1fr);gap:6px;align-items:end}
+.e5-svlbl{font:700 8px Arial;color:#55595c;line-height:1.2;padding-bottom:2px}
+.e5-keys{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:11px}
+.ek{aspect-ratio:1.3/1;min-height:44px;border:0;padding:0;border-radius:4px;background:linear-gradient(180deg,#5c6064,#3d4043 70%,#35383b);box-shadow:0 3px 0 #0a0a0a,0 4px 5px rgba(0,0,0,.5),inset 0 1px 0 #777b7f;color:#eef0f1;font:700 clamp(8px,2.6vw,11px) Arial;cursor:pointer;touch-action:none;display:grid;place-items:center;position:relative}
+.ek svg{width:44%;height:auto;fill:none;stroke:#eef0f1;stroke-width:2}
+.ek svg.f{fill:#eef0f1;stroke:none}
+.ek.down,.ek:active{transform:translateY(2px);box-shadow:0 1px 0 #0a0a0a,inset 0 1px 0 #6a6e72}
+.e5-brand{display:flex;justify-content:space-between;align-items:center;margin-top:9px;padding:0 2px}
+.e5-brand .om{font:700 12px Arial;color:#d6d9db;letter-spacing:.18em}
+.e5-brand .mdl{font:italic 700 12px Arial;color:#9da2a6}
+.e5-plate{margin:8px 4px 0;display:flex;justify-content:space-between;gap:8px;font-size:9px;color:#5c6266;font-family:var(--font-mono)}
+.combo{display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+
+/* ---------- oven view ---------- */
+.mview{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:12px;align-items:center}
+@media (max-width:560px){.mview{grid-template-columns:minmax(0,1fr)}}
+.mview svg{width:100%;height:auto;display:block;direction:ltr}
+.ovstat{font-size:.85rem;color:var(--muted);margin:.5rem 0 0}
+.ovstat b{font-family:var(--font-mono);color:var(--ink);font-weight:500}
+.bell{width:44px;height:44px;display:grid;place-items:center}
+.bell svg{width:40px;height:40px}
+.bell.on svg{animation:ring .25s linear infinite}
+@keyframes ring{0%{transform:rotate(-12deg)}50%{transform:rotate(12deg)}100%{transform:rotate(-12deg)}}
+
+/* ---------- solved applications ---------- */
+:root{--wL:#7b3f12;--wN:#1f5fbf;--wH:#c8261c;--wO:#c86f00;--wS:#2e9c3a;--wC:#0d7584;--wR:#6b3fa0;--wE:#a07d00}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--wL:#d0925c;--wN:#6aa5f2;--wH:#ff6b5e;--wO:#f0a03c;--wS:#5cc06f;--wC:#4cc0cf;--wR:#b996ea;--wE:#e3c23a} }
+:root[data-theme="dark"]{--wL:#d0925c;--wN:#6aa5f2;--wH:#ff6b5e;--wO:#f0a03c;--wS:#5cc06f;--wC:#4cc0cf;--wR:#b996ea;--wE:#e3c23a}
+.sa-legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.8rem;color:var(--muted);margin:8px 0 14px}
+.sa-legend span{display:flex;align-items:center;gap:6px}
+.sa-legend i{width:18px;height:4px;border-radius:2px;display:inline-block}
+.sa-list{display:grid;gap:14px}
+.sa-card{border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0}
+.sa-head{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
+.sa-n{flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font:700 .9rem var(--font-display)}
+.sa-head h3{margin:0 0 2px}
+.sa-head p{margin:0;color:var(--muted);font-size:.9rem}
+.sa-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:14px;align-items:start}
+@media (max-width:820px){.sa-grid{grid-template-columns:minmax(0,1fr)}}
+.sa-fig{margin:0;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:6px}
+.sa-fig figcaption{font-size:.8rem;color:var(--muted);padding:4px 6px 2px}
+.sa-svg{width:100%;height:auto;display:block;direction:ltr}
+.sa-svg text{fill:var(--ink);font:500 12.5px var(--font-mono)}
+.sa-svg text.m{fill:var(--muted);font-size:11px}
+.sa-svg text.b{font-weight:700;font-size:13.5px}
+.sa-svg text.ar{font-family:var(--font-body);font-size:12px;direction:rtl;unicode-bidi:plaintext}
+@media (max-width:560px){.sa-card{padding:10px}.sa-fig{padding:2px}}
+.sa-svg .dv{fill:var(--panel);stroke:var(--ink);stroke-width:1.4}
+.sa-svg .tm{fill:var(--bg);stroke:var(--muted);stroke-width:1}
+.sa-svg .pt{fill:var(--ink)}
+.sa-svg .sy{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.sa-svg .syf{fill:var(--panel);stroke:var(--ink);stroke-width:1.4}
+.sa-svg .w{fill:none;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+.sa-svg .w.L{stroke:var(--wL)}.sa-svg .w.N{stroke:var(--wN)}.sa-svg .w.H{stroke:var(--wH)}.sa-svg .w.O{stroke:var(--wO)}
+.sa-svg .w.S{stroke:var(--wS)}.sa-svg .w.C{stroke:var(--wC)}.sa-svg .w.R{stroke:var(--wR)}.sa-svg .w.E{stroke:var(--wE)}
+.sa-svg .dash{fill:none;stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 3}
+.sa-tbl td{font-size:.84rem}
+.sa-tbl td.code{line-height:1.35}
+.sa-tbl td.code small{display:block;font-family:var(--font-body);font-weight:400;color:var(--muted);font-size:.74rem;white-space:normal;direction:rtl;text-align:right}
+.sa-tbl .lvb{display:inline-block;font:600 .66rem var(--font-body);border-radius:5px;padding:0 6px;margin-top:3px;border:1px solid var(--line);color:var(--muted);direction:ltr}
+.sa-tbl .lvb.opr{color:var(--good);border-color:var(--good)}
+.sa-tbl .lvb.adj{color:var(--cur);border-color:var(--cur)}
+.sa-tbl .lvb.ini{color:var(--warn);border-color:var(--warn)}
+.sa-tbl .lvb.adv{color:var(--bad);border-color:var(--bad)}
+.sa-tbl td.v{font-family:var(--font-mono);direction:ltr;text-align:right;white-space:nowrap;font-weight:600}
+.sa-steps{margin:12px 0 10px;padding-inline-start:22px;display:grid;gap:4px;font-size:.9rem}
+.sa-foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.sa-go{border:0;cursor:pointer;padding:6px 14px;font-size:.85rem;margin:0}
+.sa-go:hover{filter:brightness(1.1)}
+.sa-st{font-size:.82rem;color:var(--muted)}
+
+/* ---------- guided simple mode ---------- */
+.btn.big{padding:12px 20px;font-size:1rem;min-height:48px;border-radius:10px}
+#modeBtn,#gBack{min-height:48px;padding:8px 16px}
+#modeBtn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+body.guided header.top p,body.guided .legendbar,body.guided .chip{display:none}
+body.guided[data-g="c"] .chip,body.guided[data-g="d"] .chip{display:inline-block}
+body.guided .bench{display:none}
+body.guided[data-g="c"] .bench,body.guided[data-g="d"] .bench{display:grid}
+body.guided #pnlScope{display:none}
+body.guided[data-g="c"] #pnlLoad{display:none}
+body.guided:not(.adv) .advonly{display:none}
+body.guided #advBar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+body.guided .keyguide{display:none}
+.guide{padding:20px;border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.g-head h2{font-size:1.5rem;margin-bottom:6px}
+.g-sub{margin:0 0 16px;color:var(--muted);max-width:70ch;line-height:1.8}
+.g-cards{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.g-card{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;align-items:center;text-align:right;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:14px;cursor:pointer;min-height:104px;color:inherit;font:inherit}
+.g-card:hover,.g-card:focus-visible{border-color:var(--accent);background:var(--accent-soft)}
+.g-card .n{grid-row:1/3;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font:700 1.3rem var(--font-display);background:var(--accent);color:#fff}
+.g-card.done .n{background:var(--good)}
+.g-card .t{font:600 1.02rem var(--font-display);line-height:1.35}
+.g-card .g{font-size:.86rem;color:var(--muted);line-height:1.6}
+.g-card .ico{grid-column:1/3;display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px;font-size:.78rem;color:var(--muted)}
+.g-card .ico svg{width:84px;height:34px;display:block;direction:ltr;color:var(--ink)}
+.g-bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-bottom:12px}
+.g-prog{display:flex;gap:6px;flex:1;min-width:220px;align-items:center}
+.g-prog span{flex:1;height:10px;border-radius:5px;background:var(--line);position:relative}
+.g-prog span.on{background:var(--accent)}.g-prog span.ok{background:var(--good)}
+.g-prog b{font:600 .9rem var(--font-mono);white-space:nowrap;margin-inline-start:6px}
+.g-steps{display:flex;gap:4px 14px;flex-wrap:wrap;font-size:.82rem;color:var(--muted);margin:-4px 0 12px}
+.g-steps span.on{color:var(--accent);font-weight:700}
+#gTitle{font-size:1.3rem;margin-bottom:10px}
+.g-body{display:grid;gap:14px}
+.g-lead{margin:0;font-size:1.02rem;line-height:1.8}
+.g-lead b,.g-lead code{font-family:var(--font-mono);background:var(--accent-soft);padding:0 .35em;border-radius:4px;direction:ltr;unicode-bidi:isolate}
+.g-fig{margin:0;border:1px solid var(--line);border-radius:12px;background:var(--bg);padding:10px;max-width:780px;justify-self:center;width:100%}
+.g-fig figcaption{font-size:.84rem;color:var(--muted);padding:6px 4px 0}
+.g-fig .sa-legend{margin:6px 0 0}
+.g-fig .sa-svg .hlr{fill:color-mix(in srgb,var(--accent) 22%,transparent);stroke:var(--accent);stroke-width:1.2}
+.g-fig .sa-svg .hlr+rect.tm{fill:var(--accent);stroke:var(--accent)}
+.g-fig .sa-svg .hlr+rect.tm+text{fill:#fff}
+.g-terms{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.g-terms .tc{font:600 .95rem var(--font-mono);direction:ltr;background:var(--accent-soft);border:1px solid var(--accent);border-radius:8px;padding:3px 10px}
+.g-list{margin:0;padding-inline-start:22px;display:grid;gap:6px;line-height:1.8}
+.g-check{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg);font-size:1rem;line-height:1.7}
+.g-check i{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-style:normal;font-weight:700;color:transparent;margin-top:2px}
+.g-check.ok{border-color:var(--good)}.g-check.ok i{background:var(--good);border-color:var(--good);color:#fff}
+.g-check .sub{display:block;font-size:.86rem;color:var(--muted)}
+.g-live{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.92rem;color:var(--muted)}
+.g-live b{font-family:var(--font-mono);direction:ltr;unicode-bidi:isolate;color:var(--ink)}
+.g-warn{border:1px solid var(--warn);color:var(--warn);border-radius:10px;padding:10px 14px;font-weight:600}
+.g-nav{display:flex;gap:10px;justify-content:space-between;margin-top:18px;flex-wrap:wrap}
+.g-nav .btn{flex:1;min-width:140px}
+.g-note{margin:0;font-size:.88rem;color:var(--muted)}
+.g-tbl .okc{color:var(--good);font-weight:700;font-family:var(--font-mono)}
+.g-tbl .later{font:600 .66rem var(--font-body);color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:0 6px}
+.g-spd{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:.92rem}
+.g-spd select{min-height:44px;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 10px}
+/* step (b): enter by hand */
+.g-choice{display:flex;flex-wrap:wrap;gap:10px}
+.g-choice .btn{flex:1;min-width:170px;min-height:56px;font-size:1rem;border-radius:10px;padding:8px 14px;text-align:center}
+.g-choice .btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.g-choice .btn .rec{display:block;font-size:.74rem;font-weight:500;opacity:.85;line-height:1.5}
+.g-hand{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:14px;align-items:start}
+.g-hand>div{min-width:0}
+@media (max-width:760px){.g-hand{grid-template-columns:minmax(0,1fr)}}
+@media (min-width:761px){.g-hand .g-face{position:sticky;top:8px}}
+.g-face .combo{margin-top:8px}
+.g-how{border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--bg);font-size:.92rem;line-height:1.8}
+.g-how h3{font-size:1rem;margin:0 0 4px}
+.g-how ol{margin:0;padding-inline-start:22px;display:grid;gap:4px}
+.g-how b,.g-tbl .path b{font-family:var(--font-mono);background:var(--accent-soft);padding:0 .35em;border-radius:4px;direction:ltr;unicode-bidi:isolate;font-weight:600}
+.g-how .pw,.g-tbl .pw{color:var(--bad);font-weight:600}
+.g-how .st{margin:6px 0 0;color:var(--muted);font-size:.88rem}
+.g-cnt{margin:8px 0 0;font-weight:700;font-size:1rem}
+.g-cnt.all{color:var(--good)}
+.g-tbl tr.ok td{background:color-mix(in srgb,var(--good) 14%,transparent)}
+.g-tbl .cur{display:block;font:500 .78rem var(--font-mono);direction:ltr;color:var(--muted);white-space:nowrap}
+.g-tbl .cur.bad{color:var(--bad);font-weight:700}
+.g-tbl td.path{font:400 .8rem var(--font-body);color:var(--muted);direction:rtl;text-align:right;white-space:normal;line-height:1.7;padding-top:0}
+.g-tbl td.path::before{content:'الطريق: ';font-weight:600}
+.g-tbl tr[data-pc]:has(+tr.prow) td{border-bottom:0;padding-bottom:3px}
+.g-done{border:1px solid var(--good);color:var(--good);border-radius:10px;padding:12px 14px;font-weight:700;font-size:1.05rem;background:color-mix(in srgb,var(--good) 10%,transparent)}
+.g-q1{margin:0;font-size:.9rem;color:var(--warn);font-weight:600}
+@media (max-width:560px){.guide{padding:14px}.g-card{min-height:96px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <h1>معمل Omron E5CC</h1>
+    <p>كنترولر حرارة E5CC راكب على فرن كهربا حقيقي: سخانات وعزل وتأخير وحساس. اشتغل من الكيباد زي الجهاز بالظبط، ادخل على Adjustment و Initial Setting، شغّل Autotuning وشوفه بيتعرّف على الفرن، اعمل أعطال حساس وسخان واعرف تصلحها، وحل التمارين.</p>
+  </div>
+  <div class="chips">
+    <a class="btn" href="../index.html" style="text-decoration:none">← كل المعامل</a>
+    <button class="btn" id="modeBtn" type="button" aria-pressed="false">الوضع الكامل</button>
+    <span class="chip">المستوى: <b id="chipLv">Operation</b></span>
+    <span class="chip">الحالة: <b id="chipSt">OFF</b></span>
+    <span class="chip">العطل: <b id="chipF">لا يوجد</b></span>
+  </div>
+</header>
+<div class="legendbar"><span class="tagc">تحكم</span> حاجة بتغيّرها بإيدك (زراير، سلكتورات، مقابض، باراميترات) <span class="tagv">بيان</span> حاجة بتتفرج عليها بس (الشاشة، اللمبات، العدادات، الترند)</div>
+
+<section class="panel guide" id="guide" hidden aria-label="الوضع المبسّط">
+  <div id="gStart">
+    <div class="g-head"><h2>ابدأ من هنا</h2><p class="g-sub">اختار تمرين وامشي معاه خطوة بخطوة: <b>التوصيل</b> ← <b>الباراميترات</b> ← <b>التشغيل</b> ← <b>عطل</b>. الصفحة هتوريك اللي محتاجه في كل خطوة بس. عايز المعمل كله؟ دوس «الوضع الكامل» فوق.</p></div>
+    <div class="g-cards" id="gCards"></div>
+  </div>
+  <div id="gRun" hidden>
+    <div class="g-bar">
+      <button class="btn" id="gBack" type="button">‹ رجوع للقايمة</button>
+      <div class="g-prog" id="gProg" aria-live="polite"></div>
+    </div>
+    <h2 id="gTitle"></h2>
+    <div class="g-body" id="gBody"></div>
+    <div class="g-nav">
+      <button class="btn big" id="gPrev" type="button">السابق</button>
+      <button class="btn big pri" id="gNext" type="button">التالي</button>
+    </div>
+  </div>
+</section>
+
+<div class="bench">
+  <div class="col">
+    <div class="panel" id="pnlFace">
+      <div class="device">
+        <div class="e5" aria-label="كنترولر حرارة Omron E5CC">
+          <div class="e5-bezel">
+            <div class="e5-face">
+              <div class="e5-pvrow">
+                <div class="seg pv" id="dPV" aria-label="شاشة PV"></div>
+                <div class="e5-units"><span id="uC">℃</span><span id="uF">℉</span></div>
+              </div>
+              <div class="e5-inds">
+                <div class="ind" id="iSUB1"><i></i>SUB1</div>
+                <div class="ind" id="iSUB2"><i></i>SUB2</div>
+                <div class="ind" id="iOUT1"><i></i>OUT1</div>
+                <div class="ind" id="iOUT2"><i></i>OUT2</div>
+                <div class="ind" id="iSTOP"><i></i>STOP</div>
+                <div class="ind" id="iCMW"><i></i>CMW</div>
+                <div class="ind" id="iMANU"><i></i>MANU</div>
+              </div>
+              <div class="e5-svrow">
+                <div class="e5-svlbl" id="svLbl"></div>
+                <div class="seg sv" id="dSV" aria-label="شاشة SV"></div>
+              </div>
+              <div class="e5-keys">
+                <button class="ek" data-k="LV" aria-label="Level"><svg viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="1.5"/><circle cx="10" cy="10" r="3.2"/></svg></button>
+                <button class="ek" data-k="MD" aria-label="Mode"><svg viewBox="0 0 20 20"><path d="M15.5 7.5A6 6 0 1 0 16 12"/><path d="M16.5 3.5v4.4h-4.4" /></svg></button>
+                <button class="ek" data-k="PF" aria-label="PF">PF</button>
+                <button class="ek" data-k="DN" aria-label="لتحت"><svg class="f" viewBox="0 0 12 10"><path d="M6 10 12 0H0Z"/></svg></button>
+                <button class="ek" data-k="UP" aria-label="لفوق"><svg class="f" viewBox="0 0 12 10"><path d="M6 0 12 10H0Z"/></svg></button>
+              </div>
+            </div>
+            <div class="e5-brand"><span class="om">OMRON</span><span class="mdl">E5CC</span></div>
+          </div>
+          <div class="e5-plate"><span id="plateCat">E5CC-QX2ASM-802</span><span>100–240 VAC · 50/60 Hz</span></div>
+        </div>
+      </div>
+      <div class="combo"><button class="btn xs" id="btnLM" aria-label="Level و Mode مع بعض">امسك Level + Mode مع بعض</button><span class="hint" style="margin:0">من الكيبورد: L و M و P والأسهم</span></div>
+      <p class="hint" style="text-align:center"><span class="tagc">تحكم</span> الخمس زراير <span class="tagv">بيان</span> شاشة PV الحمرا وشاشة SV الخضرا ولمبات SUB1 SUB2 OUT1 STOP CMW MANU و ℃ ℉</p>
+      <ul class="keyguide">
+        <li><b>Level ▣</b> دوسة قصيرة (أقل من ثانية): Operation ↔ Adjustment. امسكه 3 ثواني من Operation: يدخل Initial Setting (الشاشة ترمش بعد ثانية) والتحكم بيقف. من Initial امسكه ثانية يرجع Operation، ودوسة قصيرة تدخل Communications.</li>
+        <li><b>Mode ⟳</b> يحفظ القيمة اللي بتعدّلها وينقل للباراميتر اللي بعده في نفس المستوى.</li>
+        <li><b>▲ ▼</b> على شاشة PV/SV بيغيّروا الـ SV مباشرة. على أي باراميتر بيغيّروا القيمة، وامسكهم عشان يسرعوا. القيمة الجديدة بتتسجل لوحدها بعد ثانيتين أو لما تدوس Mode.</li>
+        <li><b>PF</b> في Operation و Adjustment بيعمل الوظيفة المتظبطة في <code>pf</code> (المصنع: <code>a-m</code> امسكه ثانية يقلب Auto/Manual). وانت بتعدّل رقم بيبقى Shift: يختار الخانة اللي هتتغير.</li>
+        <li><b>Level + Mode</b> مع بعض 3 ثواني: Protect Level. ونفس الحركة ثانية واحدة ترجّع Operation.</li>
+      </ul>
+    </div>
+
+    <div class="panel" id="pnlStation">
+      <h2>لوحة الفرن (أطراف E5CC)<span class="tagc">تحكم</span></h2>
+      <div class="station" id="station">
+        <div class="dev"><span class="tag">Q1 الرئيسي</span><button class="brk" id="dBrk" aria-pressed="true" aria-label="المفتاح الرئيسي Q1"><span style="top:2px">ON</span><i></i><span style="bottom:2px">OFF</span></button><span class="term">L N · 230V</span></div>
+        <div class="dev"><span class="tag">Q2 السخانات</span><button class="brk" id="dHb" aria-pressed="true" aria-label="مفتاح دايرة السخانات Q2"><span style="top:2px">ON</span><i></i><span style="bottom:2px">OFF</span></button><span class="term">16A · 2P</span></div>
+        <div class="dev"><span class="tag">باب الفرن</span><button class="sel2" id="dDoor" aria-pressed="false" aria-label="باب الفرن"><i></i></button><div class="selpos"><span>مقفول</span><span>مفتوح</span></div><span class="term" id="tDoor">SQ1 → 13/15</span></div>
+        <div class="dev"><span class="tag">الحساس</span><button class="rot" id="dSens" aria-label="سلكتور نوع الحساس"><i></i></button><span class="term" id="dSensV">TC K</span><span class="term" id="dSensT">5(+) 6(−)</span></div>
+        <div class="dev"><span class="tag">حرارة الجو</span><div class="knob" id="kAmb" tabindex="0" role="slider" aria-label="حرارة الجو"><i></i></div><span class="kv" id="kAmbV">25 °C</span><span class="term">Ambient</span></div>
+        <div class="dev"><span class="tag">ريست الليمتر</span><button class="pb black" id="dLimR" aria-label="ريست ترموستات الأمان"></button><span class="term">TS 280°C</span></div>
+        <div class="dev"><span class="tag">كتم الجرس</span><button class="sel2" id="dMute" aria-pressed="false" aria-label="كتم الجرس"><i></i></button><div class="selpos"><span>شغال</span><span>مكتوم</span></div><span class="term">Buzzer</span></div>
+        <div class="dev"><span class="tag">H0 باور</span><div class="lamp w" id="lPow"></div><span class="term">L-N</span></div>
+        <div class="dev"><span class="tag">H3 تسخين</span><div class="lamp g" id="lHeat"></div><span class="term" id="tHeat">بعد SSR</span></div>
+        <div class="dev"><span class="tag">H1 إنذار</span><div class="lamp r" id="lAl1"></div><span class="term" id="tAl1f">SUB1 · 7/8</span></div>
+        <div class="dev"><span class="tag">H2 إنذار 2</span><div class="lamp y" id="lAl2"></div><span class="term" id="tAl2f">SUB2 · 9/10</span></div>
+        <div class="dev"><span class="tag">ليمتر فصل</span><div class="lamp r" id="lLim"></div><span class="term">TS trip</span></div>
+        <div class="dev"><span class="tag">جرس الإنذار</span><div class="bell" id="bell"><svg viewBox="0 0 40 40"><path d="M20 5c-6 0-10 5-10 11v8l-4 5h28l-4-5v-8c0-6-4-11-10-11Z" fill="#c9a54a" stroke="#6b5520" stroke-width="1.5"/><circle cx="20" cy="33" r="3.5" fill="#6b5520"/></svg></div><span class="term">مع H1</span></div>
+        <div class="dev"><span class="tag">أميتر السخان</span><div class="meter"><svg viewBox="0 0 96 64" id="amMeter"></svg></div><span class="term" id="amV">0.0 A</span></div>
+      </div>
+      <p class="hint">Q1 بيغذّي الكنترولر (11 و 12) والإنذارات، و Q2 بيغذّي السخانات بس. الباب عليه ليمت سويتش SQ1 بيقفل لما الباب يتفتح، وواصل على Event Input 1 (13 مع 15). ترموستات الأمان TS ميكانيكي مستقل عن الكنترولر: لو جوه الفرن عدّى 280°C بيفصل السخانات ومش بيرجع غير بالريست. دبل كليك على مقبض الحرارة يرجّعه 25.</p>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="panel" id="pnlOven">
+      <h2>الفرن<span class="tagv">بيان</span></h2>
+      <div class="mview">
+        <svg viewBox="0 0 380 200" id="ovenSvg" aria-label="الفرن"></svg>
+        <svg viewBox="0 0 160 200" id="swSvg" aria-label="SSR و CT"></svg>
+      </div>
+      <div class="tiles">
+        <div class="tile"><div class="label">الحرارة الحقيقية جوه</div><div class="v" id="tTc">25.0<small>°C</small></div><div class="bar"><i id="bTc"></i></div></div>
+        <div class="tile"><div class="label">PV على الكنترولر</div><div class="v" id="tPV">—<small>°C</small></div></div>
+        <div class="tile"><div class="label">SV الفعّال</div><div class="v" id="tSP">0<small>°C</small></div></div>
+        <div class="tile"><div class="label">MV خرج التحكم</div><div class="v" id="tMV">0.0<small>%</small></div><div class="bar"><i id="bMV"></i></div></div>
+        <div class="tile"><div class="label">قدرة السخانات</div><div class="v" id="tPw">0.00<small>kW</small></div><div class="bar"><i id="bPw"></i></div></div>
+        <div class="tile"><div class="label">تيار CT</div><div class="v" id="tCT">0.0<small>A</small></div></div>
+        <div class="tile"><div class="label">حرارة السخان نفسه</div><div class="v" id="tTe">25<small>°C</small></div><div class="bar"><i id="bTe"></i></div></div>
+        <div class="tile"><div class="label">وقت المحاكاة</div><div class="v" id="tClk">00:00<small>min</small></div></div>
+      </div>
+      <div class="statusline" id="pills"></div>
+    </div>
+    <div class="panel" id="pnlScope">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px"><h2 style="margin:0">الترند<span class="tagv">بيان</span></h2>
+        <div class="row"><select id="scopeSpan" class="btn" aria-label="مدة العرض"><option value="120">2 دقيقة</option><option value="600" selected>10 دقايق</option><option value="1800">30 دقيقة</option></select><button class="btn" id="scopePause">إيقاف مؤقت</button></div></div>
+      <div class="scopewrap"><canvas id="scope"></canvas></div>
+      <div class="legend">
+        <span><i style="background:#ff6b5e"></i>PV °C</span>
+        <span><i style="background:#5cff7a"></i>SV °C</span>
+        <span><i style="background:#ffb44d"></i>MV % (المحور اليمين)</span>
+        <span><i style="background:#4cc0cf"></i>الحرارة الحقيقية جوه الفرن</span>
+      </div>
+      <p class="ovstat" id="perf"></p>
+    </div>
+    <div class="panel" id="pnlLoad">
+      <h2>الفرن والكهربا والأعطال<span class="tagc">تحكم</span></h2>
+      <div class="fields">
+        <div class="field"><span class="label">خرج الكنترولر (الموديل)</span><select id="outSel"><option value="Q">Q · فولت 12V لـ SSR</option><option value="R">R · ريليه ← كونتاكتور KM1</option></select></div>
+        <div class="field"><span class="label">كارت الأوبشن (العمود C)</span><select id="optSel"><option value="ev">802 · 2 Event In + CT1</option><option value="485">803 · RS-485 + CT1</option></select></div>
+        <div class="field"><span class="label">السخانات</span><select id="htrSel"><option value="1000">2 × 1.0 kW</option><option value="1250" selected>2 × 1.25 kW</option><option value="2000">2 × 2.0 kW</option></select></div>
+        <div class="field"><span class="label">جهد المصدر</span><select id="lineSel"><option>200</option><option>220</option><option selected>230</option><option>240</option></select></div>
+        <div class="field"><span class="label">الحمل جوه الفرن: <b id="ldV" class="mono">4 kg</b> صاج</span><input type="range" id="ld" min="0" max="20" step="1" value="4"></div>
+        <div class="field"><span class="label">سرعة المحاكاة</span><select id="spdSel"><option value="1">× 1 (وقت حقيقي)</option><option value="5">× 5</option><option value="10" selected>× 10</option><option value="30">× 30</option><option value="60">× 60</option></select></div>
+      </div>
+      <div class="row" style="margin-top:10px"><button class="btn" id="btnCold">❄ طلّع الحمل وحط حمل بارد مكانه</button><button class="btn" id="btnCool">⟲ برّد الفرن لحرارة الجو فوراً</button></div>
+      <h3 class="subhead">اعمل عطل</h3>
+      <div class="inj">
+        <button class="btn" data-inj="tcopen" aria-pressed="false">✂ سلك الحساس مقطوع</button>
+        <button class="btn" data-inj="tcrev" aria-pressed="false">⇄ الثرموكبل معكوس + و −</button>
+        <button class="btn" data-inj="burn" aria-pressed="false">🔥 سخان 1 اتحرق (مفتوح)</button>
+        <button class="btn" data-inj="ssr" aria-pressed="false">⚡ الـ SSR / الكونتاكتور لاحم (مقفول على طول)</button>
+        <button class="btn" data-inj="ctcut" aria-pressed="false">✂ سلك الـ CT مفصول</button>
+        <button class="btn" data-inj="ad" aria-pressed="false">✕ عطل في محوّل A/D (E333)</button>
+        <button class="btn" data-inj="mem" aria-pressed="false">✕ ذاكرة الكنترولر بايظة (E111)</button>
+        <button class="btn" data-inj="dip" aria-pressed="false">⚡ الكهربا قطعت ثانية ورجعت</button>
+      </div>
+      <p class="hint" id="loadHint"></p>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="advBar" hidden><button class="btn big" id="advBtn" type="button" aria-expanded="false">عرض المتقدم ▾</button><span class="hint" style="margin:0">مخطط التوصيل الحي، جدول الباراميترات، الأعطال، المرجع، التمارين، السجل، والتمارين المحلولة كاملة. كله لسه موجود.</span></div>
+
+<div class="panel advonly">
+  <div class="row" style="justify-content:space-between;margin-bottom:6px"><h2 style="margin:0">مخطط التوصيل الحي<span class="tagv">بيان</span><span class="tagc">الزراير اللي فيه</span></h2></div>
+  <p class="hint" style="margin-top:0">نفس اللوحة اللي فوق مرسومة بأسلاكها وأرقام أطراف الـ E5CC. السلك اللي عليه جهد أو إشارة بيبقى ملوّن، والمقطوع رمادي. تقدر تدوس على Q1 و Q2 وسويتش الباب وريست الليمتر في الرسمة.</p>
+  <div class="boardscroll"><svg id="wd" viewBox="0 0 1200 820" aria-label="مخطط التوصيل"></svg></div>
+  <div class="wlegend">
+    <span><i style="background:#7b3f12"></i>L فاز</span><span><i style="background:#1f5fbf"></i>N نيوترال</span><span><i style="background:#c8261c"></i>تيار السخانات</span>
+    <span><i style="background:#e8870c"></i>خرج OUT1</span><span><i style="background:#2e9c3a"></i>الحساس</span><span><i style="background:#0d7584"></i>CT</span><span><i style="background:#6b3fa0"></i>SUB1 SUB2</span><span><i style="background:#c9a000"></i>Event / RS-485</span>
+  </div>
+</div>
+
+<div class="panel advonly">
+  <div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 style="margin:0">الباراميترات<span class="tagc">تحكم</span></h2><span class="toast" id="ptoast"></span></div>
+  <div class="ptools">
+    <div class="tabs" id="ptabs"></div>
+    <input type="text" id="psearch" placeholder="دوّر بالرمز أو الاسم…" style="flex:1;min-width:160px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 10px">
+    <label class="check"><input type="checkbox" id="pchanged"> المتغير بس</label>
+  </div>
+  <div class="pdet" id="pdetail"></div>
+  <div class="tablewrap" style="max-height:520px;overflow:auto"><table><thead><tr><th>الرمز</th><th>الاسم</th><th>الوظيفة</th><th>القيمة</th><th>المصنع</th><th>المدى</th></tr></thead><tbody id="ptable"></tbody></table></div>
+  <p class="hint"><span class="badge s">Stop</span> باراميترات Initial Setting و Advanced و Communications: من الجدول بتتغير بس لو <code>r-s</code> = stop أو انت جوه المستوى ده من الكيباد (في الجهاز الحقيقي لازم تدخل المستوى، والتحكم بيقف). <span class="badge r">قراءة</span> بيان بس. الجدول والكيباد على نفس الباراميترات. الحرارة متخزنة بالـ °C وبتتعرض بالوحدة اللي في <code>d-u</code>.</p>
+</div>
+
+<div class="grid2 advonly">
+  <div class="panel">
+    <h2>الأعطال ورسايل الشاشة<span class="tagv">بيان</span></h2>
+    <div class="tablewrap" style="max-height:380px;overflow:auto"><table class="flt"><thead><tr><th>على الشاشة</th><th>المعنى</th><th>السبب</th><th>الحل</th></tr></thead><tbody id="fltTable"></tbody></table></div>
+  </div>
+  <div class="panel" id="refPanel">
+    <h2>المرجع الفني<span class="tagv">بيان</span></h2>
+    <div class="reftabs" id="reftabs"></div>
+    <div class="refbody" id="refBody"></div>
+  </div>
+</div>
+
+<div class="grid2 advonly">
+  <div class="panel"><h2>تمارين</h2><div id="exList"></div></div>
+  <div class="panel"><div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 style="margin:0">السجل</h2><div class="row"><button class="btn" id="btnFactory">رجّع المعمل كله للبداية</button><button class="btn" id="logClr">امسح</button></div></div><div class="log" id="log"></div></div>
+</div>
+<div class="panel advonly" id="saPanel">
+  <h2>تمارين محلولة: التوصيل والباراميترات<span class="tagc">تحكم</span></h2>
+  <p class="hint" style="margin-top:0">6 تطبيقات بتتعمل في المصانع كل يوم على الـ E5CC. كل واحد فيه رسمة التوصيل بأرقام أطراف الجهاز نفسها، وجنبها الباراميترات بالرمز اللي على الشاشة والمستوى اللي هتلاقيه فيه، والخطوات. زرار «طبّق في المعمل» بيحط القيم دي في الكنترولر اللي فوق ويظبط اللوحة زيها. باراميترات Initial Setting و Advanced مبتتغيرش والتحكم شغال، فالزرار بيعمل STOP الأول وبعدين RUN.</p>
+  <div class="sa-legend">
+    <span><i style="background:var(--wL)"></i>L فاز</span><span><i style="background:var(--wN)"></i>N نيوترال</span><span><i style="background:var(--wH)"></i>تيار السخانات</span><span><i style="background:var(--wO)"></i>خرج OUT1</span><span><i style="background:var(--wS)"></i>الحساس</span><span><i style="background:var(--wC)"></i>CT</span><span><i style="background:var(--wR)"></i>ريليه SUB</span><span><i style="background:var(--wE)"></i>Event Input</span>
+  </div>
+  <div class="sa-list" id="saList"></div>
+</div>
+<p class="hint advonly">رموز الباراميترات والمستويات وأرقام الأطراف وأكواد الأعطال وأكواد الموديل مكتوبة على أساس مانيوال E5CC (H174) من الذاكرة، وممكن تختلف حسب الموديل والإصدار (خصوصاً أطراف العمود C والأوبشن). موديل الفرن والتأخيرات أرقام تعليمية. راجع المانيوال وورقة التوصيل اللي على جنب الجهاز قبل أي توصيل حقيقي.</p>
+</div>
+<script>
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const DT=0.05;
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const rnd=(v,d)=>{const k=Math.pow(10,d);return Math.round(v*k)/k;};
+
+/* ---------------- input types (in-t) ---------------- */
+/* [label, kind, lo, hi, decimals, µV/°C for thermocouples] */
+const INT=[
+ ['Pt100 -200~850','pt',-200,850,0],['Pt100 -199.9~500.0','pt',-199.9,500,1],['Pt100 0.0~100.0','pt',0,100,1],
+ ['JPt100 -199.9~500.0','jpt',-199.9,500,1],['JPt100 0.0~100.0','jpt',0,100,1],
+ ['K -200~1300','tc',-200,1300,0,41],['K -20.0~500.0','tc',-20,500,1,41],['J -100~850','tc',-100,850,0,52],['J -20.0~400.0','tc',-20,400,1,52],
+ ['T -200~400','tc',-200,400,0,43],['T -199.9~400.0','tc',-199.9,400,1,43],['E -200~600','tc',-200,600,0,61],['L -100~850','tc',-100,850,0,55],
+ ['U -200~400','tc',-200,400,0,43],['U -199.9~400.0','tc',-199.9,400,1,43],['N -200~1300','tc',-200,1300,0,27],['R 0~1700','tc',0,1700,0,8],
+ ['S 0~1700','tc',0,1700,0,7.5],['B 100~1800','tc',100,1800,0,2],['W 0~2300','tc',0,2300,0,15],['PL II 0~1300','tc',0,1300,0,40],
+ ['ES1B 10~70','ir',10,70,0,60],['ES1B 60~120','ir',60,120,0,60],['ES1B 115~165','ir',115,165,0,60],['ES1B 140~260','ir',140,260,0,60],
+ ['4-20 mA','ma',0,0,0],['0-20 mA','ma0',0,0,0],['1-5 V','v15',0,0,0],['0-5 V','v05',0,0,0],['0-10 V','v10',0,0,0]];
+const isTempIn=()=>P['in-t']<=24;
+const isAnaIn=()=>P['in-t']>=25;
+const tdc=()=>isTempIn()?INT[P['in-t']][4]:P['dp'];
+const inLo=()=>isTempIn()?INT[P['in-t']][2]:Math.min(P['in-l'],P['in-h']);
+const inHi=()=>isTempIn()?INT[P['in-t']][3]:Math.max(P['in-l'],P['in-h']);
+
+/* ---------------- parameter data ---------------- */
+const G=[['opr','Operation'],['adj','Adjustment'],['ini','Initial Setting'],['adv','Advanced Function'],['prt','Protect'],['com','Communications']];
+const GAR={opr:'مستوى التشغيل',adj:'مستوى الضبط',ini:'الإعداد الأساسي',adv:'الإعدادات المتقدمة',prt:'الحماية',com:'الاتصالات'};
+const ONOFF=['off','on'];
+const ALT=['0 · Alarm off','1 · Upper & lower limit (deviation)','2 · Upper limit (deviation)','3 · Lower limit (deviation)','4 · Upper & lower range','5 · Upper & lower + standby','6 · Upper limit + standby','7 · Lower limit + standby','8 · Absolute upper','9 · Absolute lower','10 · Absolute upper + standby','11 · Absolute lower + standby','12 · LBA (alarm 1 only)'];
+const ALTS=ALT.map((_,i)=>String(i));
+const PD=[],PM={},P={};
+function def(k,nm,g,ar,o){const p=Object.assign({k,nm,g,ar,t:'n',mn:0,mx:0,st:1,dc:0,u:'',d:0,x:'',vis:()=>true},o||{});if(p.o)p.t='e';if(p.get)p.t='ro';PD.push(p);PM[k]=p;}
+const almVal=n=>[2,3,6,7,8,9,10,11].includes(P['alt'+n]);
+const almHL=n=>[1,4,5].includes(P['alt'+n]);
+const isPID=()=>P['cntl']===1;
+/* Operation level */
+def('sv','Set Point','opr','الحرارة المطلوبة (SV)',{tu:'abs',mnf:()=>P['sl-l'],mxf:()=>P['sl-h'],st:1,d:0,x:'القيمة اللي الكنترولر بيحاول يوصّل الفرن ليها. بتتغير من شاشة PV/SV على طول بالأسهم، والرقم الجديد بيتسجل بعد ثانيتين أو لما تدوس Mode. محصورة بين sl-l و sl-h.'});
+def('a-m','Auto/Manual','opr','أوتوماتيك ولا يدوي',{o:['a','m'],ol:['Auto','Manual'],d:0,vis:()=>P['amad']===1,x:'بيظهر بس لو amad = on في Advanced. البديل الأسهل إن زرار PF (لو pf = a-m) تمسكه ثانية. في Manual انت اللي بتحدد MV بالأسهم ولمبة MANU بتنور.'});
+def('ct1','Heater Current 1 Monitor','opr','تيار السخان من الـ CT',{get:()=>S.ctShow,fmt:v=>v<0?'----':v>55?'ffff':v.toFixed(1),u:'A',vis:()=>P['hbu']===1,x:'التيار اللي الـ CT قاسه آخر مرة الخرج كان ON. لو الخرج ON أقل من 100ms مبيقدرش يقيس ويعرض ----. فوق 55A يعرض ffff. بيتكرر في Adjustment.'});
+def('r-s','RUN/STOP','opr','تشغيل ولا إيقاف التحكم',{o:['run','stop'],ol:['RUN','STOP'],d:0,x:'stop يوقف التحكم: الخرج بيبقى على قيمة mv-s (المصنع 0%) ولمبة STOP تنور. الإنذارات بتفضل شغالة. لو Event Input متظبط على stop، الطرف هو اللي بيتحكم.'});
+[1,2].forEach(n=>{
+ def('al-'+n,'Alarm Value '+n,'opr','قيمة الإنذار '+n,{tuf:()=>[8,9,10,11].includes(P['alt'+n])?'abs':'dt',mn:-1999,mx:9999,st:1,d:0,vis:()=>almVal(n),x:'في أنواع الـ deviation (2 و 3 و 6 و 7) القيمة دي فرق عن الـ SV: مثلاً alt'+n+' = 2 و al-'+n+' = 10 يعني الإنذار يشتغل لما PV يعدّي SV + 10. في الأنواع المطلقة (8 لحد 11) القيمة دي حرارة بالظبط.'});
+ def('al'+n+'h','Alarm Upper Limit '+n,'opr','الحد العلوي للإنذار '+n,{tu:'dt',mn:0,mx:9999,st:1,d:0,vis:()=>almHL(n),x:'للأنواع 1 و 4 و 5: المسافة فوق الـ SV.'});
+ def('al'+n+'l','Alarm Lower Limit '+n,'opr','الحد السفلي للإنذار '+n,{tu:'dt',mn:0,mx:9999,st:1,d:0,vis:()=>almHL(n),x:'للأنواع 1 و 4 و 5: المسافة تحت الـ SV.'});
+});
+def('o','MV Monitor (Heating)','opr','خرج التحكم MV',{get:()=>S.mv,dc:1,u:'%',x:'نسبة الخرج اللي الكنترولر طالعها. مع SSR أو ريليه ده Time Proportional: في كل Control Period (cp) الخرج بيفضل ON نسبة MV من الوقت.'});
+def('sp-m','SP Monitor (Ramp)','opr','الـ SV الفعّال أثناء الرامب',{get:()=>S.spEff,tu:'abs',vis:()=>P['sprt']>0,x:'لو sprt شغال، الـ SV الفعّال بيطلع بالتدريج لحد الـ SV. ده اللي الكنترولر بيتحكم عليه دلوقتي.'});
+/* Adjustment level */
+def('at','AT Execute/Cancel','adj','تشغيل الـ Autotuning',{o:['off','at-2','at-1'],ol:['off','100% AT','40% AT'],d:0,vis:()=>isPID()&&P['r-s']===0,x:'at-2 (100% AT): الكنترولر يقلب الخرج 100% و 0% حوالين الـ SV (Limit Cycle)، يقيس سعة الذبذبة وزمنها، ويحسب P و I و D لوحده. at-1 (40% AT): نفس الفكرة بخرج متذبذب ±20% حوالين نقطة التشغيل، الـ Overshoot أقل بس بياخد وقت أطول. الشاشة بترمش لحد ما يخلص وترجع off. بيتلغي لو عملت STOP أو Manual أو دخلت Initial أو حصل s.err.'});
+def('cmwt','Communications Writing','adj','الكتابة من الكومنيكيشن',{o:ONOFF,d:0,vis:()=>S.opt==='485',x:'on تسمح للـ PLC أو الـ HMI يكتب في الباراميترات عن طريق RS-485، ولمبة CMW تنور.'});
+def('ct1a','Heater Current 1 Monitor','adj','تيار السخان (Adjustment)',{get:()=>S.ctShow,fmt:v=>v<0?'----':v>55?'ffff':v.toFixed(1),u:'A',disp:'ct1',vis:()=>P['hbu']===1,x:'نفس ct1. اتفرج عليه والفرن بيسخّن عشان تعرف التيار الطبيعي قبل ما تظبط hb1.'});
+def('hb1','Heater Burnout Detection 1','adj','حد إنذار احتراق السخان',{mn:0,mx:50,st:.1,dc:1,u:'A',d:0,vis:()=>P['hbu']===1,x:'لو الخرج ON والتيار اللي الـ CT قاسه بقى أقل من القيمة دي يطلع إنذار HB. 0.0 = الإنذار مقفول، 50.0 = شغال على طول. القاعدة: (التيار الطبيعي + التيار بعد احتراق سخان) ÷ 2. هنا 10.9A طبيعي و 5.4A بعد احتراق سخان، يعني حوالي 8.0A.'});
+def('hs1','HS Alarm 1','adj','حد إنذار قصر الـ SSR',{mn:0,mx:50,st:.1,dc:1,u:'A',d:50,vis:()=>P['hsu']===1,x:'لو الخرج OFF والتيار لسه ماشي في السخان وأكبر من القيمة دي يطلع إنذار HS (الـ SSR أو الكونتاكتور لاحم). 50.0 = عملياً مقفول. ظبطه مثلاً 2.0A.'});
+def('lba','LBA Detection Time','adj','زمن اكتشاف انقطاع اللوب',{mn:0,mx:9999,st:1,u:'s',d:0,vis:()=>P['alt1']===12,x:'لو alt1 = 12 (LBA): لو الخرج فضل 100% (أو 0%) والـ PV متحرّكش في الاتجاه الصح بمقدار lbal خلال الزمن ده، إنذار 1 يشتغل. بيكشف حساس معكوس أو بره الفرن أو سخان مقطوع. 0 = مقفول. خليه حوالي ضعف زمن الـ I.'});
+def('lbal','LBA Level','adj','مقدار التغير المطلوب للـ LBA',{tu:'dt',mn:.1,mx:999.9,st:.1,dc:1,d:8,vis:()=>P['alt1']===12&&P['lba']>0,x:'الحرارة لازم تتحرك على الأقل القيمة دي خلال lba ثانية وإلا يطلع LBA.'});
+def('ins','Temperature Input Shift','adj','تعويض قراءة الحساس',{tu:'dt',mn:-199.9,mx:999.9,st:.1,dc:1,d:0,vis:()=>isTempIn(),x:'رقم بيتجمع على القراءة. لو قست الفرن بترمومتر معاير ولقيته أعلى من الـ PV بـ 3 درجات، خلي ins = 3.0.'});
+def('p','Proportional Band','adj','الحزمة التناسبية P',{tu:'dt',mn:.1,mx:999.9,st:.1,dc:1,d:8,vis:isPID,x:'بالدرجات: لو الفرق بين SV و PV قد P، جزء الـ P لوحده يطلّع 100%. P صغيرة = تحكم أقوى وأسرع بس ممكن يتذبذب. P كبيرة = هادي وبطيء. الـ AT بيحسبها.'});
+def('i','Integral Time','adj','زمن التكامل I',{mn:0,mx:9999,st:1,u:'s',d:233,vis:isPID,x:'بيشيل الـ Offset: طول ما فيه فرق، الخرج بيزيد بالتدريج. صغير = بيصلّح بسرعة بس ممكن يعمل Overshoot وذبذبة. 0 = مفيش تكامل (P أو PD) ويظهر of-r.'});
+def('d','Derivative Time','adj','زمن التفاضل D',{mn:0,mx:9999,st:1,u:'s',d:40,vis:isPID,x:'بيبص على سرعة تغيّر الـ PV ويفرمل قبل ما الحرارة توصل، فيقلل الـ Overshoot. كبير أوي مع الضوضاء يخلّي الخرج يرعش. 0 = مقفول.'});
+def('of-r','Manual Reset Value','adj','قيمة الخرج عند الـ SV',{mn:0,mx:100,st:.1,dc:1,u:'%',d:50,vis:()=>isPID()&&P['i']===0,x:'لما I = 0 مفيش تكامل، فالكنترولر بيطلّع القيمة دي لما PV = SV. ظبطها على الخرج اللي بيمسك الفرن على الحرارة دي عشان الـ Offset يقل.'});
+def('hys','Hysteresis (Heating)','adj','الهستريسيس في ON/OFF',{tu:'dt',mn:.1,mx:999.9,st:.1,dc:1,d:1,vis:()=>!isPID(),x:'في ON/OFF: الخرج يفصل لما PV يوصل SV، ويرجع يشتغل لما PV ينزل تحت SV − hys. صغير = دقة أعلى بس تقطيع أكتر للكونتاكتور. كبير = تقطيع أقل وتذبذب أكبر.'});
+def('mv-s','MV at Stop','adj','الخرج وقت STOP',{mn:0,mx:100,st:.1,dc:1,u:'%',d:0,x:'الخرج اللي يطلع لما r-s = stop. المصنع 0.0 يعني السخانات مفصولة. مع ON/OFF أي قيمة فوق 0 تبقى ON.'});
+def('mv-e','MV at PV Error','adj','الخرج وقت عطل الحساس',{mn:0,mx:100,st:.1,dc:1,u:'%',d:0,x:'الخرج وقت s.err. للأفران خليه 0.0 دايماً، عشان لو الحساس اتقطع السخانات متفضلش شغالة على العمياني.'});
+def('sprt','SP Ramp Set Value','adj','سرعة طلوع الـ SV',{mn:0,mx:9999,st:1,u:'°/min',d:0,x:'لو أكبر من صفر، الـ SV الفعّال بيطلع بالسرعة دي (درجة في الدقيقة) بدل ما يقفز مرة واحدة. مفيد للأفران اللي فيها حاجات بتتشرخ لو سخنت بسرعة. 0 = off.'});
+def('ol-h','MV Upper Limit','adj','أقصى خرج',{mn:-5,mx:105,st:.1,dc:1,u:'%',d:100,vis:isPID,x:'أعلى قيمة للـ MV في PID. لو السخانات أكبر من اللازم ممكن تحددها 70% مثلاً.'});
+def('ol-l','MV Lower Limit','adj','أقل خرج',{mn:-5,mx:105,st:.1,dc:1,u:'%',d:0,vis:isPID,x:'أقل قيمة للـ MV في PID.'});
+/* Initial setting level */
+def('in-t','Input Type','ini','نوع الحساس',{mn:0,mx:29,st:1,d:5,inp:1,fmt:v=>String(v),x:'لازم يطابق الحساس المتوصل. 5 = ثرموكبل K من −200 لـ 1300 (المصنع)، 6 = K بعلامة عشرية، 0 و 1 = Pt100، 25 = 4-20mA. لو اخترت نوع غلط القراءة هتطلع غلط أو s.err. تغيير النوع بيرجّع sl-h و sl-l لحدود الحساس الجديد.'});
+def('in-h','Scaling Upper Limit','ini','القيمة عند أعلى إشارة',{mn:-1999,mx:9999,st:1,d:100,vis:isAnaIn,x:'للدخل الأنالوج بس: القيمة اللي تتعرض عند 20mA أو 5V أو 10V. ترانسميتر 0-400°C على 4-20mA: in-h = 400.'});
+def('in-l','Scaling Lower Limit','ini','القيمة عند أقل إشارة',{mn:-1999,mx:9999,st:1,d:0,vis:isAnaIn,x:'القيمة اللي تتعرض عند 4mA أو 1V أو 0.'});
+def('dp','Decimal Point','ini','العلامة العشرية',{mn:0,mx:3,st:1,d:0,vis:isAnaIn,x:'عدد الأرقام بعد العلامة في الدخل الأنالوج.'});
+def('d-u','Temperature Unit','ini','وحدة الحرارة',{o:['c','f'],ol:['°C','°F'],d:0,vis:isTempIn,x:'c = سلزيوس و f = فهرنهايت، ولمبة ℃ أو ℉ تنور جنب الـ PV.'});
+def('sl-h','SP Upper Limit','ini','أقصى SV مسموح',{tu:'abs',mnf:()=>P['sl-l']+1,mxf:()=>inHi(),st:1,d:1300,x:'محدش يقدر يكتب SV أعلى من كده. في فرن أقصاه 250°C خليه 250 عشان محدش يغلط ويكتب 1250.'});
+def('sl-l','SP Lower Limit','ini','أقل SV مسموح',{tu:'abs',mnf:()=>inLo(),mxf:()=>P['sl-h']-1,st:1,d:-200,x:'أقل SV مسموح.'});
+def('cntl','PID ON/OFF','ini','طريقة التحكم',{o:['onof','pid'],ol:['ON/OFF','2-PID'],d:1,x:'onof = ON/OFF: الخرج يا 100% يا 0% بهستريسيس hys. بسيط بس الحرارة بتتذبذب. pid = 2-PID: الخرج متدرج والحرارة بتثبت على الـ SV، ومحتاج P و I و D (من AT أو ST).'});
+def('s-hc','Standard or Heating/Cooling','ini','تسخين بس ولا تسخين وتبريد',{o:['stnd','h-c'],ol:['Standard','Heating/Cooling'],d:0,x:'stnd = تسخين بس (أو تبريد بس حسب orev). h-c = تسخين على OUT1 وتبريد على خرج تاني. الموديل ده ملوش OUT2، فلو اخترت h-c التبريد بيروح على SUB2.'});
+def('st','ST (Self-tuning)','ini','الضبط الذاتي ST',{o:ONOFF,d:1,vis:()=>isPID()&&isTempIn(),x:'لما التشغيل يبدأ أو الـ SV يتغير والحرارة بعيدة، الكنترولر يطلّع 100% ويقيس أقصى سرعة طلوع للحرارة والتأخير (Step Response)، ويحسب PID قبل ما يوصل. أسرع من AT بس أقل دقة. بيشتغل مع الحساسات الحرارية بس.'});
+def('cp','Control Period (Heating)','ini','زمن الدورة',{mn:.5,mx:99,st:.5,dc:1,u:'s',d:2,vis:isPID,x:'الخرج Time Proportional: كل cp ثانية الخرج ON نسبة MV منها. SSR: 2 ثانية أو أقل. ريليه وكونتاكتور: 20 ثانية عشان الكونتاكتور ميخلصش بسرعة. كبير أوي = الحرارة تتموج.'});
+def('orev','Direct/Reverse Operation','ini','اتجاه التحكم',{o:['or-r','or-d'],ol:['Reverse (تسخين)','Direct (تبريد)'],d:0,x:'or-r (Reverse) = الخرج يزيد لما PV يقل، وده التسخين. or-d (Direct) = الخرج يزيد لما PV يزيد، وده للتبريد. لو حطيت or-d على فرن، السخان هيشتغل لما الحرارة تعلى وهتجري.'});
+[1,2].forEach(n=>{
+ def('alt'+n,'Alarm '+n+' Type','ini','نوع الإنذار '+n,{mn:0,mx:n===1?12:11,st:1,d:2,ol:ALT,fmt:v=>String(v),x:'0 مقفول، 2 = Upper limit deviation (المصنع): يشتغل لو PV > SV + al-'+n+'. 3 = Lower deviation، 8 = Absolute upper: يشتغل لو PV > al-'+n+'. الأنواع 5 و 6 و 7 و 10 و 11 فيها Standby: مش بيشتغل وقت التسخين الأول لحد ما الحرارة تدخل المنطقة السليمة. 12 = LBA لإنذار 1 بس.'});
+ def('alh'+n,'Alarm '+n+' Hysteresis','ini','هستريسيس الإنذار '+n,{tu:'dt',mn:.1,mx:999.9,st:.1,dc:1,d:.2,vis:()=>P['alt'+n]!==0&&P['alt'+n]!==12,x:'الإنذار يفصل لما الحرارة ترجع بالقيمة دي ورا حد الإنذار، عشان اللمبة متفضلش ترعش.'});
+});
+def('ev-1','Event Input Assignment 1','ini','وظيفة الطرف EV1',{o:['none','stop','manu'],ol:['None','RUN/STOP','Auto/Manual'],d:0,vis:()=>S.opt==='ev',x:'وظيفة الدخل 13 مع الكومن 15. stop = لما الكونتاكت يقفل التحكم يقف (زي r-s = stop). manu = لما يقفل يروح Manual. هنا سويتش الباب SQ1 متوصل عليه وبيقفل لما الباب يتفتح.'});
+def('ev-2','Event Input Assignment 2','ini','وظيفة الطرف EV2',{o:['none','stop','manu'],ol:['None','RUN/STOP','Auto/Manual'],d:0,vis:()=>S.opt==='ev',x:'الدخل 14. مش متوصل عليه حاجة في اللوحة دي.'});
+def('amov','Move to Advanced Function Level','ini','الدخول على Advanced',{mn:-1999,mx:9999,st:1,d:0,vis:()=>P['icpt']===0,x:'بيظهر بس لو icpt = 0 في Protect. اكتب −169 وسيبه يتسجل، تدخل على Advanced Function Setting. الباسورد ده ثابت في كل E5 علشان محدش يدخل بالغلط.'});
+/* Advanced function setting */
+def('init','Parameter Initialization','adv','رجوع لإعدادات المصنع',{o:['off','fact'],ol:['off','Factory'],d:0,x:'fact يرجّع كل الباراميترات لقيم المصنع (ماعدا الحاجات اللي في الموديل). خد بالك: in-t و sl-h و PID كلهم هيرجعوا.'});
+def('a1lt','Alarm 1 Latch','adv','تثبيت إنذار 1',{o:ONOFF,d:0,x:'on = لما الإنذار يشتغل يفضل شغال حتى لو الحرارة رجعت، لحد ما تطفي الكنترولر وتشغّله أو تدخل Initial Setting. مفيد عشان الفني يعرف إن حصل حاجة بالليل.'});
+def('a2lt','Alarm 2 Latch','adv','تثبيت إنذار 2',{o:ONOFF,d:0,x:'زي a1lt لإنذار 2.'});
+def('hbu','HB ON/OFF','adv','تشغيل وظيفة HB',{o:ONOFF,d:1,x:'تشغيل كشف احتراق السخان من الـ CT. لو off الـ ct1 و hb1 مش بيظهروا.'});
+def('hbl','Heater Burnout Latch','adv','تثبيت إنذار HB',{o:ONOFF,d:0,x:'on = إنذار HB يفضل لحد ما تطفي وتشغّل.'});
+def('hsu','HS Alarm Use','adv','تشغيل إنذار قصر الـ SSR',{o:ONOFF,d:1,x:'تشغيل كشف الـ SSR الملحوم (تيار ماشي والخرج OFF). القيمة نفسها في hs1.'});
+const SUBO=['none','alm1','alm2','hb','hs','s.err','r-s','c-o'];
+const SUBL=['None','Alarm 1','Alarm 2','HB alarm','HS alarm','Input error','Run output','Cooling (h-c)'];
+def('sub1','Auxiliary Output 1 Assignment','adv','وظيفة SUB1 (7-8)',{o:SUBO,ol:SUBL,d:1,x:'إيه اللي يقفل ريليه SUB1. المصنع alm1. عندنا عليه لمبة H1 والجرس.'});
+def('sub2','Auxiliary Output 2 Assignment','adv','وظيفة SUB2 (9-10)',{o:SUBO,ol:SUBL,d:2,x:'إيه اللي يقفل ريليه SUB2. المصنع alm2. ممكن تخليه hb عشان لمبة H2 تنور لو سخان اتحرق.'});
+def('pf','PF Setting','adv','وظيفة زرار PF',{o:['off','run','stop','r-s','at-2','at-1','a-m'],ol:['off','RUN','STOP','RUN/STOP toggle','100% AT','40% AT','Auto/Manual'],d:6,x:'الوظيفة اللي زرار PF يعملها في Operation و Adjustment لما تمسكه ثانية. المصنع a-m.'});
+def('amad','Auto/Manual Select Addition','adv','إظهار a-m في Operation',{o:ONOFF,d:0,x:'on = يظهر باراميتر a-m في مستوى التشغيل.'});
+def('ret','Display Auto-return Time','adv','الرجوع التلقائي للشاشة',{mn:0,mx:99,st:1,u:'s',d:0,x:'لو مفيش زرار اتداس المدة دي، الشاشة ترجع لـ PV/SV. 0 = off.'});
+def('alfa','α (2-PID)','adv','معامل α في 2-PID',{mn:0,mx:1,st:.01,dc:2,d:.65,x:'بيحدد قد إيه الجزء التناسبي بيستجيب لتغيير الـ SV. α كبير = Overshoot أقل لما تغيّر SV بس الوصول أبطأ. الاضطرابات (زي فتح الباب) مش بتتأثر بـ α.'});
+def('at-g','AT Calculated Gain','adv','معامل حساب الـ AT',{mn:.1,mx:10,st:.1,dc:1,d:.8,x:'بيتضرب في P اللي الـ AT حسبها. أكبر = تحكم أهدى وثبات أكتر. أصغر = استجابة أسرع.'});
+def('at-h','AT Hysteresis','adv','هستريسيس الـ AT',{tu:'dt',mn:.1,mx:9.9,st:.1,dc:1,d:.8,x:'الهستريسيس اللي الـ AT بيستخدمه وهو بيقلب الخرج حوالين الـ SV، عشان الضوضاء متقلبش الخرج عشوائي.'});
+def('lcma','Limit Cycle MV Amplitude','adv','سعة الخرج في 40% AT',{mn:5,mx:50,st:.1,dc:1,u:'%',d:20,x:'في at-1 الخرج بيتذبذب ± القيمة دي حوالين نقطة التشغيل.'});
+def('inf','Input Digital Filter','adv','فلتر الدخل',{mn:0,mx:999.9,st:.1,dc:1,u:'s',d:0,x:'فلتر أول درجة على القراءة. بيهدّي الضوضاء بس بيزوّد التأخير، فالتحكم يبقى أصعب.'});
+/* Protect */
+def('oapt','Operation/Adjustment Protect','prt','حماية التشغيل والضبط',{mn:0,mx:3,st:1,d:0,x:'0 = كله متاح. 1 = Adjustment مقفول. 2 = كمان مستوى التشغيل يعرض PV/SV بس. 3 = زي 2 (في الجهاز الحقيقي كمان الـ SV بيتقفل).'});
+def('icpt','Initial Setting/Comms Protect','prt','حماية الإعداد الأساسي',{mn:0,mx:2,st:1,d:1,x:'0 = Initial و Communications متاحين ومعاهم amov للـ Advanced. 1 (المصنع) = متاحين من غير amov. 2 = محدش يقدر يدخل Initial Setting.'});
+def('wtpt','Setting Change Protect','prt','منع تغيير القيم',{o:ONOFF,d:0,x:'on = محدش يقدر يغيّر أي قيمة بالكيباد (ولا حتى SV) غير باراميترات Protect نفسها. الأسهم مبتعملش حاجة.'});
+def('pfpt','PF Key Protect','prt','قفل زرار PF',{o:ONOFF,d:0,x:'on = زرار PF ملوش لازمة.'});
+/* Communications */
+def('psel','Protocol Setting','com','البروتوكول',{o:['cwf','mod'],ol:['CompoWay/F','Modbus RTU'],d:0,x:'CompoWay/F بروتوكول أومرون، و mod = Modbus RTU للـ PLC والـ HMI العادية.'});
+def('u-no','Unit No.','com','رقم الجهاز',{mn:0,mx:99,st:1,d:1,x:'العنوان على شبكة RS-485. كل جهاز رقم مختلف.'});
+def('bps','Baud Rate','com','السرعة',{o:['9.6','19.2','38.4','57.6'],ol:['9600','19200','38400','57600'],d:0,x:'لازم يطابق الـ Master.'});
+def('len','Data Length','com','طول البيانات',{o:['7','8'],d:0,x:'7 أو 8 بت. Modbus RTU لازم 8.'});
+def('sbit','Stop Bits','com','بتات الوقوف',{o:['1','2'],d:1,x:'1 أو 2.'});
+def('prty','Parity','com','الباريتي',{o:['none','even','odd'],d:1,x:'لازم يطابق الـ Master.'});
+def('sdwt','Send Data Wait Time','com','وقت الانتظار قبل الرد',{mn:0,mx:99,st:1,u:'ms',d:20,x:'وقت يستناه قبل ما يرد على الـ Master.'});
+for(const p of PD)if(p.t!=='ro')P[p.k]=p.d;
+P['sv']=0;
+
+/* ---------------- errors / display messages ---------------- */
+const FL={
+ 'serr':['s.err','Input Error','الحساس مقطوع، أو متوصل غلط، أو in-t مش مطابق للحساس، أو القراءة بره مدى الدخل','افصل الكهربا وقيس الحساس (ثرموكبل K حوالي 0 لـ 50Ω، Pt100 حوالي 110Ω عند 25°C)، راجع الأطراف 4 و 5 و 6 و in-t. الكنترولر بيرجع لوحده أول ما الدخل يتصلح'],
+ 'e333':['e333','A/D Converter Error','عطل في دايرة القياس جوه الكنترولر (غالباً نويز أو صاعقة أو رطوبة)','اطفي الكنترولر وشغّله. لو فضل يطلع، الكنترولر محتاج تصليح أو تغيير'],
+ 'e111':['e111','Memory Error','الذاكرة (RAM أو EEPROM) بايظة، غالباً بعد كتابة كتير أوي أو نويز','اطفي وشغّل. لو العطل اتشال الباراميترات بترجع للمصنع (init)، راجع كل الإعدادات'],
+ 'hhhh':['hhhh','Display Range Exceeded (High)','القيمة أكبر من 9999 أو أعلى من مدى العرض (غالباً in-h/in-l و dp غلط في الدخل الأنالوج)','راجع التدريج in-h و in-l و dp. التحكم بيكمّل'],
+ 'llll':['llll','Display Range Exceeded (Low)','القيمة أقل من −1999','راجع التدريج والإشارة'],
+ 'ffff':['ffff','Heater Current Over','تيار الـ CT أكبر من 55A','راجع الـ CT وقطر الكابل والسخانات'],
+ '----':['----','CT Not Measurable','الخرج كان ON أقل من 100ms فالـ CT مقدرش يقيس، أو الخرج OFF','عادي مع MV صغير أوي. زوّد cp لو محتاج القراءة'],
+ 'hb':['HB','Heater Burnout Alarm','التيار وقت الخرج ON أقل من hb1: سخان اتحرق أو فيوز سخان ضرب أو سلك فاصل','افصل وقيس مقاومة كل سخان (حوالي 42Ω لسخان 1.25kW على 230V) وغيّر المحروق'],
+ 'hs':['HS','SSR Short (HS) Alarm','التيار ماشي والخرج OFF وأكبر من hs1: الـ SSR أو الكونتاكتور لاحم','افصل Q2 فوراً وغيّر الـ SSR أو الكونتاكتور. التمبرتشر هتجري لو سبته'],
+ 'lba':['LBA','Loop Burnout Alarm','الخرج 100% والحرارة مبتطلعش (أو 0% ومبتنزلش) خلال lba ثانية','حساس معكوس أو بره الفرن، سخان أو فيوز مقطوع، Q2 مفصول، أو ليمتر فاصل'],
+ 'lim':['TS','Safety Limiter Trip','ترموستات الأمان الميكانيكي فصل لأن جوه الفرن عدّى 280°C (الكنترولر فقد السيطرة أو SSR لاحم)','دوّر على السبب الأول (SSR، حساس معكوس، SV غلط)، استنى الفرن يبرد تحت 260°C ودوس ريست'],
+ 'door':['STOP','Door Open (Event)','الباب مفتوح و ev-1 = stop فالتحكم واقف','اقفل الباب، التحكم يرجع لوحده']};
+
+/* ---------------- state ---------------- */
+const S={
+ out:'Q',opt:'ev',hp:1250,lineV:230,ld:4,spd:10,amb:25,sensor:'tc',
+ brk:true,hbrk:true,door:false,mute:false,limTrip:false,
+ ctrl:false,boot:0,err:'',t:0,
+ Tc:25,Te:25,Ts:25,cj:31,dl:[],dlT:0,
+ pvRaw:25,pvF:25,nz:0,pv:25,serr:false,dispOv:'',
+ mv:0,mvL:0,cyc:0,out1:false,outT:0,onT:0,offT:0,sub:[false,false],
+ manual:false,manMV:0,spEff:0,spPrev:0,pvPrev:0,dTerm:0,dpv:0,u:0,ono:false,
+ at:null,stn:null,stDone:false,
+ alm:[false,false],stby:[true,true],hb:false,hs:false,lba:false,lbaT:0,lbaPV:0,lbaDir:0,
+ I:0,Pw:0,ctShow:-1,kmOps:0,kmOn:false,wh:0,
+ cmp:{sv0:0,peak:-1e9,reachT:-1,t0:0,start:0,pv0:0,act:false},onCyc:0,onState:false,
+ inj:{tcopen:false,tcrev:false,burn:false,ssr:false,ctcut:false,ad:false,mem:false,dip:false},dipT:0,adLatched:false,memLatched:false,
+ prev:{}};
+const EV={};
+
+/* ---------------- helpers ---------------- */
+function log(t,a){const d=document.createElement('div');const tm=new Date();d.innerHTML='<time>'+tm.toTimeString().slice(0,8)+'</time><span'+(a?' class="a"':'')+'></span>';d.lastChild.textContent=t;const L=$('#log');L.prepend(d);while(L.children.length>200)L.lastChild.remove();}
+const isF=()=>isTempIn()&&P['d-u']===1;
+const ptu=p=>p.tuf?p.tuf():p.tu;
+function toD(p,v){const t=ptu(p);if(!t||!isF())return v;return t==='abs'?v*1.8+32:v*1.8;}
+function fromD(p,v){const t=ptu(p);if(!t||!isF())return v;return t==='abs'?(v-32)/1.8:v/1.8;}
+function pdc(p){if(ptu(p)==='abs'||p.k==='sv'||p.k.startsWith('al-'))return tdc();return p.dc;}
+function pmn(p){return p.mnf?p.mnf():p.mn;}
+function pmx(p){return p.mxf?p.mxf():p.mx;}
+const evOn=k=>S.opt==='ev'&&((P['ev-1']===k&&S.door)||false);
+const runStop=()=>P['r-s']===1||evOn(1);
+const inSetLevel=()=>['ini','adv','com'].includes(K.lv);
+const ctlOk=()=>S.ctrl&&S.boot<=0&&!S.err;
+function statusText(){
+ if(!S.ctrl)return 'OFF';
+ if(S.boot>0)return 'Booting';
+ if(S.err)return S.err.toUpperCase();
+ if(inSetLevel())return 'Setting (Control Stopped)';
+ if(S.serr)return 'S.Err';
+ if(runStop())return 'STOP';
+ if(S.manual)return 'Manual';
+ if(S.at)return 'AT running';
+ if(S.stn)return 'ST running';
+ return 'RUN';
+}
+
+/* ---------------- sensor + input circuit ---------------- */
+function readInput(){
+ /* returns {err:bool, v:°C or engineering value} */
+ const it=INT[P['in-t']],k=it[1],T=S.Ts,cj=S.cj;
+ if(S.sensor==='tc'&&S.inj.tcopen)return {err:true};
+ if(S.sensor==='pt'&&S.inj.tcopen)return {err:true};
+ if(S.sensor==='tx'&&S.inj.tcopen){if(k==='ma'||k==='v15'||k==='pt'||k==='jpt'||k==='tc'||k==='ir')return {err:true};}
+ let mvolt=null,ohm=null,ma=null;
+ if(S.sensor==='tc')mvolt=(S.inj.tcrev?-1:1)*(T-cj)*0.041;
+ else if(S.sensor==='pt')ohm=100*(1+0.00385*T);
+ else ma=S.inj.tcopen?0:4+16*clamp(T/400,-0.02,1.04);
+ let v;
+ switch(k){
+  case 'tc':case 'ir':
+   if(ma!==null)return {err:true};
+   if(ohm!==null)mvolt=0.002;
+   v=cj+mvolt*1000/it[5];break;
+  case 'pt':case 'jpt':
+   if(ohm===null)return {err:true};
+   v=(ohm/100-1)/0.00385*(k==='jpt'?1.003:1);break;
+  case 'ma':{const c=ma!==null?ma:0;if(c<3.2||c>21.6)return {err:true};v=P['in-l']+(c-4)/16*(P['in-h']-P['in-l']);break;}
+  case 'ma0':{const c=ma!==null?ma:0;if(c>21.6)return {err:true};v=P['in-l']+c/20*(P['in-h']-P['in-l']);break;}
+  case 'v15':{if(ma!==null)return {err:true};const u=mvolt!==null?mvolt/1000:0;if(u<0.8)return {err:true};v=P['in-l']+(u-1)/4*(P['in-h']-P['in-l']);break;}
+  default:{if(ma!==null)return {err:true};const u=mvolt!==null?Math.max(0,mvolt/1000):0,fs=k==='v05'?5:10;v=P['in-l']+u/fs*(P['in-h']-P['in-l']);}
+ }
+ if(isTempIn()){const lo=it[2],hi=it[3];if(v<lo-20||v>hi+20)return {err:true};}
+ else{const d=Math.pow(10,-P['dp']);v=v;}
+ return {err:false,v};
+}
+
+/* ---------------- power ---------------- */
+function powerUp(){
+ S.ctrl=true;S.boot=1.2;S.at=null;S.stn=null;S.manual=S.manual&&false;S.stby=[true,true];S.alm=[false,false];S.hb=false;S.hs=false;S.lba=false;S.lbaT=0;
+ S.err=S.inj.ad?'e333':S.inj.mem?'e111':'';
+ if(!S.err&&S.memLatched){S.memLatched=false;for(const p of PD)if(p.t!=='ro')P[p.k]=p.d;P['cp']=S.out==='R'?20:2;log('الذاكرة اتصلحت بس الباراميترات رجعت لقيم المصنع (init). راجع الإعدادات',1);save();renderParams();}
+ if(!S.err&&S.adLatched)S.adLatched=false;
+ if(S.err==='e111')S.memLatched=true;if(S.err==='e333')S.adLatched=true;
+ K.lv='opr';K.i=0;K.ed=null;K.msg=null;
+ S.spEff=S.pv;S.u=0;S.cyc=0;
+ log('الكنترولر اشتغل'+(S.err?' وطلع '+S.err:''),!!S.err);
+ if(S.err)EV[S.err]=1;
+}
+function powerDown(){
+ S.ctrl=false;S.at=null;S.stn=null;S.out1=false;S.mv=0;S.sub=[false,false];K.lv='opr';K.ed=null;K.msg=null;
+ log('الكنترولر فصل');
+}
+
+/* ---------------- control ---------------- */
+function startAT(mode){
+ if(!ctlOk()||S.serr||!isPID()||runStop()||S.manual||inSetLevel()){log('الـ AT مش هيبدأ: لازم RUN و Auto و 2-PID ومفيش s.err');return false;}
+ S.stn=null;
+ const c=clamp(S.u,10,90);
+ S.at={mode,ph:S.pv<S.spEff?1:0,n:0,tSw:-1,per:[],amp:[],pmax:-1e9,pmin:1e9,c:mode===2?50:c,t0:S.t,tHi:0,tLo:0,phT:S.t,lastAmp:0};
+ P['at']=mode===2?1:2;EV.atStart=1;
+ log('بدأ الـ AT ('+(mode===2?'100%':'40%')+'): الكنترولر هيقلب الخرج حوالين الـ SV ويقيس الفرن');
+ renderParams();return true;
+}
+function stopAT(why){if(!S.at)return;S.at=null;P['at']=0;log('الـ AT اتلغى'+(why?': '+why:''),1);renderParams();}
+function atStep(dt){
+ const A=S.at,sp=P['sv'],h=P['at-h']/2,pv=S.pv;
+ let hi,lo;
+ if(A.mode===2){hi=Math.min(100,P['ol-h']);lo=Math.max(0,P['ol-l']);}
+ else{const a=P['lcma'];hi=clamp(A.c+a,0,100);lo=clamp(A.c-a,0,100);
+  /* if a phase drags on, the operating point is wrong: move the centre */
+  const ph=S.t-A.phT;if(A.n>0&&ph>Math.max(60,(A.per.length?A.per[A.per.length-1]:120)*1.2)){A.c=clamp(A.c+(A.ph?1:-1)*dt*0.2,5,95);}
+  if(A.n===0&&A.ph===1&&pv<sp-5){hi=Math.min(100,P['ol-h']);}
+ }
+ if(A.ph===1){A.pmin=Math.min(A.pmin,pv);if(pv>sp+h){A.ph=0;A.tHi=S.t-A.phT;A.phT=S.t;
+   if(A.tSw>=0){A.per.push(S.t-A.tSw);A.amp.push((A.pmax-A.pmin)/2);A.n++;
+    if(A.mode===1&&A.tLo>0)A.c=clamp(A.c+12*(A.tHi-A.tLo)/(A.tHi+A.tLo),5,95);}
+   A.tSw=S.t;A.pmax=-1e9;A.pminKeep=A.pmin;}
+ }else{A.pmax=Math.max(A.pmax,pv);if(pv<sp-h){A.ph=1;A.tLo=S.t-A.phT;A.phT=S.t;A.pmin=1e9;}}
+ const need=A.mode===2?3:4;
+ if(A.n>=need){
+  const Tu=A.per[A.per.length-1],a=Math.max(.05,A.amp[A.amp.length-1]),d=(hi-lo)/2;
+  const Ku=4*d/(Math.PI*a);              /* %/°C */
+  const Kp=0.6*Ku/(P['at-g']/0.8)*0.75;
+  const pb=clamp(rnd(100/Kp,1),.1,999.9),ti=clamp(Math.round(Tu*0.9),1,9999),td=clamp(Math.round(Tu*0.16),0,9999);
+  const old=[P['p'],P['i'],P['d']];
+  P['p']=pb;P['i']=ti;P['d']=td;P['at']=0;S.at=null;S.u=clamp((hi+lo)/2,0,100);
+  EV.atDone=1;S.cmp.act=false;
+  log('الـ AT خلص: Tu = '+Tu.toFixed(0)+' ث، السعة ±'+a.toFixed(2)+'°C، Ku = '+Ku.toFixed(2)+' %/°C ← P = '+pb.toFixed(1)+' ، I = '+ti+' ، D = '+td+' (كانوا '+old[0]+' / '+old[1]+' / '+old[2]+')');
+  save();renderParams();return S.u;
+ }
+ if(S.t-A.t0>4*3600){stopAT('مخلصش في 4 ساعات');}
+ return A.ph?hi:lo;
+}
+function stStart(){
+ if(P['st']!==1||!isPID()||!isTempIn()||S.at||S.manual)return;
+ const dev=S.spEff-S.pv;if(dev<25){S.stn=null;return;}
+ S.stn={t0:S.t,pv0:S.pv,smax:0,tmax:0,pvmax:S.pv,sl:0,prev:S.pv,acc:0,cnt:0};EV.stStart=1;
+ log('ST (Self-tuning) بدأ: خرج 100% وبيقيس سرعة الطلوع والتأخير');
+}
+function stStep(dt){
+ const s=S.stn;
+ s.acc+=dt;
+ if(s.acc>=1){const sl=(S.pv-s.prev)/s.acc;s.prev=S.pv;s.acc=0;s.sl+= (sl-s.sl)*0.35;
+  if(s.sl>s.smax&&S.pv-s.pv0>1){s.smax=s.sl;s.tmax=S.t;s.pvmax=S.pv;}}
+ const done=(s.smax>0&&s.sl<0.75*s.smax&&S.pv-s.pv0>4)||(S.pv>=S.spEff-(S.spEff-s.pv0)*0.35&&s.smax>0)||S.t-s.t0>3*3600;
+ if(done){
+  const R=Math.max(1e-5,s.smax/Math.min(100,P['ol-h']));const L=Math.max(2,(s.tmax-s.t0)-(s.pvmax-s.pv0)/s.smax);
+  const Kp=0.55/(R*L);
+  P['p']=clamp(rnd(100/Kp,1),.1,999.9);P['i']=clamp(Math.round(4*L),1,9999);P['d']=clamp(Math.round(.6*L),0,9999);
+  S.stn=null;EV.stDone=1;S.u=Math.min(100,P['ol-h']);
+  log('ST خلص: أقصى ميل '+(s.smax*60).toFixed(1)+' °C/min، تأخير L ≈ '+L.toFixed(0)+' ث ← P = '+P['p']+' ، I = '+P['i']+' ، D = '+P['d']);
+  save();renderParams();
+  return Math.min(100,P['ol-h']);
+ }
+ return Math.min(100,P['ol-h']);
+}
+function pidStep(dt,sp,pv){
+ const rev=P['orev']===0,sg=rev?1:-1,Kp=100/Math.max(.1,P['p']),Ti=P['i'],Td=P['d'],b=1-P['alfa'];
+ const hc=P['s-hc']===1;
+ const hiL=P['ol-h'],loL=hc?-100:P['ol-l'];
+ /* filtered derivative of PV */
+ const tf=Math.max(1,Td/8);
+ const dpvRaw=(pv-S.pvPrev)/dt;S.dpv+=(dpvRaw-S.dpv)*Math.min(1,dt/tf);
+ const Dt=-Kp*Td*sg*S.dpv;
+ let u;
+ if(Ti>0){
+  const e=sg*(sp-pv);
+  const du=Kp*sg*(b*(sp-S.spPrev)-(pv-S.pvPrev))+Kp*dt/Ti*e+(Dt-S.dTerm);
+  u=clamp(S.u+du,loL,hiL);
+ }else{u=clamp(Kp*sg*(sp-pv)+P['of-r']+Dt,loL,hiL);}
+ S.dTerm=Dt;
+ return u;
+}
+function onoffStep(sp,pv){
+ const rev=P['orev']===0,h=P['hys'];
+ if(rev){if(pv>=sp)S.ono=false;else if(pv<=sp-h)S.ono=true;}
+ else{if(pv<=sp)S.ono=false;else if(pv>=sp+h)S.ono=true;}
+ return S.ono?100:0;
+}
+
+/* ---------------- alarms ---------------- */
+function alarmCalc(n){
+ const t=P['alt'+n];if(!t)return false;
+ if(t===12)return S.lba;
+ const pv=S.pv,sp=S.spEff,dev=pv-sp,v=P['al-'+n],H=P['al'+n+'h'],L=P['al'+n+'l'],hy=P['alh'+n],was=S.alm[n-1];
+ if(S.serr)return [1,2,5,6,8,10].includes(t);
+ let on,off;
+ switch(t){
+  case 1:case 5:on=dev>H||dev<-L;off=dev<H-hy&&dev>-L+hy;break;
+  case 2:case 6:on=dev>v;off=dev<v-hy;break;
+  case 3:case 7:on=dev<-v;off=dev>-v+hy;break;
+  case 4:on=dev<=H&&dev>=-L;off=dev>H+hy||dev<-L-hy;break;
+  case 8:case 10:on=pv>v;off=pv<v-hy;break;
+  case 9:case 11:on=pv<v;off=pv>v+hy;break;
+ }
+ const sb=[5,6,7,10,11].includes(t);
+ if(sb&&S.stby[n-1]){if(!on)S.stby[n-1]=false;return false;}
+ let r=was?!off:on;
+ if(P['a'+n+'lt']===1&&was)r=true;
+ return r;
+}
+
+/* ---------------- physics + controller step ---------------- */
+const OV={Cel:240,hEl:10,Cch:5200,UA:9,UAdoor:25,tauS:{tc:6,pt:15,tx:15},delay:2,lim:280,limR:260};
+function step(dt){
+ S.t+=dt;
+ if(S.dipT>0){S.dipT-=dt;if(S.dipT<=0){S.inj.dip=false;syncInj();log('الكهربا رجعت');}}
+ const line=S.inj.dip?0:S.lineV;
+ const mains=S.brk&&line>0;
+ if(mains&&!S.ctrl)powerUp();
+ if(!mains&&S.ctrl)powerDown();
+ if(S.boot>0){S.boot-=dt;if(S.boot<=0&&!S.err){S.spEff=S.pv;S.spPrev=S.spEff;S.pvPrev=S.pv;S.u=0;}}
+ /* ---- input ---- */
+ S.cj=S.amb+6;
+ const rd=readInput();
+ if(S.ctrl&&!S.err){
+  S.serr=rd.err;
+  if(!rd.err){
+   S.nz+=((Math.random()-.5)*0.5-S.nz)*Math.min(1,dt/1.5);
+   let v=rd.v+(isTempIn()?P['ins']:0)+S.nz;
+   S.pvRaw=v;const f=P['inf'];S.pvF=f>0?S.pvF+(v-S.pvF)*Math.min(1,dt/f):v;S.pv=S.pvF;
+  }
+  if(S.inj.ad){S.err='e333';S.adLatched=true;EV.e333=1;log('E333: محوّل A/D اتعطل. التحكم وقف والخرج OFF',1);}
+  if(S.inj.mem){S.err='e111';S.memLatched=true;EV.e111=1;log('E111: الذاكرة اتعطلت. التحكم وقف والخرج OFF',1);}
+ }
+ if(S.serr&&!S.prev.serr&&S.ctrl){EV.serr=1;log('s.err: الكنترولر مش قادر يقرا الحساس. الخرج = mv-e ('+P['mv-e'].toFixed(1)+'%)',1);if(S.at)stopAT('s.err');S.stn=null;}
+ if(!S.serr&&S.prev.serr&&S.ctrl){log('الحساس رجع. الكنترولر رجع يقرا ويتحكم');EV.serrRec=1;S.spEff=Math.min(S.spEff,S.pv);}
+ S.prev.serr=S.serr;
+ /* ---- control ---- */
+ const ok=ctlOk();
+ const stopped=!ok||inSetLevel()||runStop();
+ let mv=0,direct=false;
+ if(ok){
+  const sv=P['sv'];
+  if(P['sprt']>0&&!stopped){const r=P['sprt']/60*dt;S.spEff=S.spEff<sv?Math.min(sv,S.spEff+r):Math.max(sv,S.spEff-r);}else S.spEff=sv;
+  if(Math.abs(sv-S.prev.sv)>.001&&S.prev.sv!==undefined){S.stby=[true,true];if(!stopped&&!S.at){stStart();}S.cmp={sv0:sv,start:S.t,pv0:S.pv,peak:-1e9,reachT:-1,act:Math.abs(sv-S.pv)>15,from:S.pv};}
+  S.prev.sv=sv;
+ }
+ const evMan=S.opt==='ev'&&P['ev-1']===2&&S.door;
+ const manual=S.manual||evMan;
+ if(stopped){
+  if(S.at&&ok)stopAT(inSetLevel()?'دخلت Initial Setting':'STOP');S.stn=null;
+  mv=ok&&!inSetLevel()?P['mv-s']:0;S.u=mv;S.ono=mv>0;direct=!isPID();
+  if(ok&&!inSetLevel()&&!S.prev.stopped)log('التحكم وقف (STOP). الخرج = mv-s');
+ }else if(S.serr){mv=P['mv-e'];S.u=mv;direct=!isPID();}
+ else if(manual){if(S.at)stopAT('Manual');S.stn=null;mv=S.manMV;S.u=mv;direct=!isPID();}
+ else if(S.at){mv=atStep(dt);direct=true;}
+ else if(!isPID()){mv=onoffStep(S.spEff,S.pv);direct=true;}
+ else if(S.stn){mv=stStep(dt);S.u=mv;}
+ else{mv=pidStep(dt,S.spEff,S.pv);S.u=mv;}
+ if(ok&&S.prev.stopped&&!stopped){log('التحكم شغال (RUN)');S.spEff=P['sprt']>0?S.pv:P['sv'];stStart();S.stby=[true,true];}
+ S.prev.stopped=stopped;
+ if(ok){S.spPrev=S.spEff;S.pvPrev=S.pv;}
+ S.mv=ok?mv:0;
+ /* ---- output 1 (time proportional) ---- */
+ const heatMV=Math.max(0,S.mv),coolMV=Math.max(0,-S.mv);
+ let o1=false;
+ if(ok){
+  if(direct)o1=heatMV>=50;
+  else{const cp=P['cp'];S.cyc+=dt;if(S.cyc>=cp||S.mvL<0){S.cyc=S.cyc>=cp?S.cyc-cp:0;S.mvL=heatMV;}
+   o1=S.mvL>=100||(S.mvL>0&&S.cyc<Math.max(S.mvL/100*cp,0.05));}
+ }else{S.cyc=0;S.mvL=-1;}
+ if(o1!==S.out1){if(o1){S.onT=0;}else S.offT=0;}
+ S.out1=o1;if(o1)S.onT+=dt;else S.offT+=dt;
+ /* ON/OFF cycle counter for the exercise */
+ if(ok&&!isPID()&&!stopped&&!S.serr){if(o1&&!S.onState&&S.pv>S.spEff-10)S.onCyc++;S.onState=o1;}
+ /* ---- switching device ---- */
+ let closed;
+ if(S.out==='Q')closed=o1||S.inj.ssr;
+ else{const coil=o1;if(coil&&!S.kmOn)S.kmOps++;S.kmOn=coil;closed=coil||S.inj.ssr;}
+ /* ---- heater circuit ---- */
+ const hv=S.hbrk&&mains&&!S.limTrip?line:0;
+ const nEl=S.inj.burn?1:2,R=230*230/S.hp;
+ const cond=closed&&hv>0;
+ const Iel=cond?hv/R:0;
+ S.I=Iel*nEl;S.Pw=S.I*hv;S.cond=cond;S.hv=hv;
+ S.wh+=S.Pw*dt/3600;
+ /* ---- CT + HB/HS ---- */
+ const ict=S.inj.ctcut?0:S.I;
+ if(ok){
+  if(o1&&S.onT>=0.1)S.ctShow=ict;else if(!o1&&!isPID()&&S.offT>0.1&&S.ctShow<0)S.ctShow=-1;
+  if(isPID()&&S.mvL>0&&S.mvL/100*P['cp']<0.1)S.ctShow=-1;
+  const hbOn=P['hbu']===1&&P['hb1']>0&&(P['hb1']>=50||(o1&&S.onT>=0.1&&ict<P['hb1']));
+  if(hbOn&&!S.hb){S.hb=true;EV.hb=1;log('إنذار HB: التيار '+ict.toFixed(1)+'A أقل من hb1 = '+P['hb1'].toFixed(1)+'A (سخان محروق؟)',1);}
+  else if(S.hb&&P['hbl']!==1&&(P['hb1']===0||(o1&&S.onT>=0.1&&ict>=P['hb1'])||P['hbu']!==1)){S.hb=false;log('إنذار HB راح');}
+  const hsOn=P['hsu']===1&&P['hs1']<50&&!o1&&S.offT>=0.1&&ict>P['hs1'];
+  if(hsOn&&!S.hs){S.hs=true;EV.hs=1;log('إنذار HS: فيه '+ict.toFixed(1)+'A ماشيين والخرج OFF (SSR لاحم)',1);}
+  else if(S.hs&&(o1||ict<=P['hs1']))S.hs=false;
+ }
+ /* ---- thermal model ---- */
+ const Cch=OV.Cch+S.ld*460,UA=OV.UA+(S.door?OV.UAdoor:0);
+ const qEl=OV.hEl*(S.Te-S.Tc)*(1+0.0025*Math.max(0,S.Te-S.Tc));
+ S.Te+=(S.Pw-qEl-0.4*(S.Te-S.amb))/OV.Cel*dt;
+ S.Tc+=(qEl-UA*(S.Tc-S.amb))/Cch*dt;
+ /* transport delay to the sensor tip */
+ S.dlT+=dt;if(S.dlT>=0.25){S.dlT=0;S.dl.push(S.Tc);while(S.dl.length>OV.delay/0.25)S.dl.shift();}
+ const Td=S.dl.length?S.dl[0]:S.Tc;
+ S.Ts+=(Td-S.Ts)*Math.min(1,dt/OV.tauS[S.sensor]);
+ /* ---- safety limiter ---- */
+ if(!S.limTrip&&S.Tc>OV.lim){S.limTrip=true;EV.lim=1;log('ترموستات الأمان TS فصل السخانات: جوه الفرن '+S.Tc.toFixed(0)+'°C',1);}
+ /* ---- LBA ---- */
+ if(ok&&P['alt1']===12&&P['lba']>0&&!stopped&&!S.serr){
+  const sat=S.mv>=99.9?1:S.mv<=0.1?-1:0;const rev=P['orev']===0?1:-1;
+  if(sat!==0){if(sat!==S.lbaDir){S.lbaDir=sat;S.lbaT=0;S.lbaPV=S.pv;}
+   S.lbaT+=dt;const moved=(S.pv-S.lbaPV)*sat*rev;
+   if(moved>=P['lbal']){S.lbaT=0;S.lbaPV=S.pv;if(S.lba){S.lba=false;log('LBA راح');}}
+   else if(S.lbaT>=P['lba']&&!S.lba){S.lba=true;EV.lba=1;log('إنذار LBA: الخرج '+(sat>0?'100%':'0%')+' والحرارة متحركتش '+P['lbal'].toFixed(1)+' درجة في '+P['lba']+' ث',1);}
+  }else{S.lbaDir=0;S.lbaT=0;S.lbaPV=S.pv;}
+ }else if(!ok){S.lba=false;}
+ /* ---- alarms + aux outputs ---- */
+ if(ok){for(const n of [1,2]){const a=alarmCalc(n);if(a&&!S.alm[n-1]){EV['al'+n+'On']=1;log('إنذار '+n+' اشتغل (PV = '+S.pv.toFixed(1)+')',1);}if(!a&&S.alm[n-1]){EV['al'+n+'Off']=1;log('إنذار '+n+' راح');}S.alm[n-1]=a;}}
+ else S.alm=[false,false];
+ S.sub=[P['sub1'],P['sub2']].map(f=>{if(!S.ctrl||S.err||S.boot>0)return false;switch(f){case 1:return S.alm[0];case 2:return S.alm[1];case 3:return S.hb;case 4:return S.hs;case 5:return S.serr;case 6:return !stopped;case 7:return coolMV>0&&P['s-hc']===1;}return false;});
+ /* ---- step-response bookkeeping ---- */
+ if(S.cmp.act&&ok&&!stopped){const c=S.cmp;c.peak=Math.max(c.peak,S.pv);if(c.reachT<0&&Math.abs(S.pv-c.sv0)<1)c.reachT=S.t-c.start;}
+}
+</script>
+<script>
+/* ---------------- 7-segment displays ---------------- */
+const SF={'0':63,'1':6,'2':91,'3':79,'4':102,'5':109,'6':125,'7':39,'8':127,'9':111,'a':119,'b':124,'c':88,'d':94,'e':121,'f':113,'g':61,'h':116,'i':4,'j':14,'k':117,'l':56,'m':55,'n':84,'o':92,'p':115,'q':103,'r':80,'s':109,'t':120,'u':28,'v':28,'w':42,'x':118,'y':110,'z':91,'-':64,'_':8,' ':0,'=':72,'?':83};
+function segPolys(){
+ const t=7,g=1.4,xl=9,xr=45,yt=6,ym=47,yb=88;
+ const H=(x1,x2,y)=>[[x1+g,y],[x1+g+t/2,y-t/2],[x2-g-t/2,y-t/2],[x2-g,y],[x2-g-t/2,y+t/2],[x1+g+t/2,y+t/2]];
+ const V=(x,y1,y2)=>[[x,y1+g],[x+t/2,y1+g+t/2],[x+t/2,y2-g-t/2],[x,y2-g],[x-t/2,y2-g-t/2],[x-t/2,y1+g+t/2]];
+ return [H(xl,xr,yt),V(xr,yt,ym),V(xr,ym,yb),H(xl,xr,yb),V(xl,ym,yb),V(xl,yt,ym),H(xl,xr,ym)].map(pts=>pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' '));
+}
+const SEGP=segPolys();
+function digitSVG(cls){return '<svg viewBox="0 0 60 96" class="'+(cls||'')+'"><g transform="skewX(-7) translate(9 0)">'+SEGP.map((p,i)=>'<polygon class="s" data-s="'+i+'" points="'+p+'"/>').join('')+'</g><circle class="s dp" cx="54" cy="88" r="4.2"/></svg>';}
+function mkSeg(el){el.innerHTML=digitSVG()+digitSVG()+digitSVG()+digitSVG();return [...el.children].map(sv=>({sv,s:[...sv.querySelectorAll('polygon')],dp:sv.querySelector('.dp'),k:''}));}
+function cells(str){const c=[];for(const ch of String(str)){if(ch==='.'&&c.length&&!c[c.length-1].dp)c[c.length-1].dp=true;else c.push({c:ch.toLowerCase(),dp:false});}return c;}
+function setSeg(D,str,right,blink){
+ let c=cells(str);
+ if(c.length>4)c=right?c.slice(-4):c.slice(0,4);
+ while(c.length<4)right?c.unshift({c:' ',dp:false}):c.push({c:' ',dp:false});
+ c.forEach((x,i)=>{const d=D[i],m=SF[x.c]===undefined?0:SF[x.c],bl=blink===true||(Array.isArray(blink)&&blink.includes(i));const key=m+'|'+x.dp+'|'+bl;if(d.k===key)return;d.k=key;
+  d.s.forEach((p,j)=>p.classList.toggle('on',!!(m&(1<<j))));d.dp.classList.toggle('on',x.dp);d.sv.classList.toggle('bl',bl);});
+}
+const DPV=mkSeg($('#dPV')),DSV=mkSeg($('#dSV'));
+function segText(str){const c=cells(str);return '<span style="display:inline-flex;gap:1px;vertical-align:middle;background:#0e0f10;padding:2px 3px;border-radius:3px;direction:ltr">'+c.map(x=>{const m=SF[x.c]||0;return '<svg viewBox="0 0 60 96" width="11" height="17"><g transform="skewX(-7) translate(9 0)">'+SEGP.map((p,i)=>'<polygon points="'+p+'" fill="'+(m&(1<<i)?'#ff3b22':'#2a1a18')+'"/>').join('')+'</g>'+(x.dp?'<circle cx="54" cy="88" r="4.2" fill="#ff3b22"/>':'')+'</svg>';}).join('')+'</span>';}
+
+/* ---------------- keypad state machine ---------------- */
+const LV={
+ opr:['pvsv','a-m','ct1','r-s','al-1','al1h','al1l','al-2','al2h','al2l','o','sp-m'],
+ adj:['l.adj','at','cmwt','ct1a','hb1','hs1','lba','lbal','ins','p','i','d','of-r','hys','mv-s','mv-e','sprt','ol-h','ol-l'],
+ ini:['in-t','in-h','in-l','dp','d-u','sl-h','sl-l','cntl','s-hc','st','cp','orev','alt1','alh1','alt2','alh2','ev-1','ev-2','amov'],
+ adv:['init','a1lt','a2lt','hbu','hbl','hsu','sub1','sub2','pf','amad','ret','alfa','at-g','at-h','lcma','inf'],
+ prt:['oapt','icpt','wtpt','pfpt'],
+ com:['psel','u-no','bps','len','sbit','prty','sdwt']};
+const LVN={opr:'Operation',adj:'Adjustment',ini:'Initial Setting',adv:'Advanced Function',prt:'Protect',com:'Communications'};
+const K={lv:'opr',i:0,ed:null,edT:0,shift:-1,msg:null,lastKey:0,lvDown:0,lvAct:false,mdDown:0,mdAct:false,pfDown:0,pfAct:false,flash:false,blockT:0};
+function vlist(){
+ let l=LV[K.lv];
+ if(K.lv==='opr'&&P['oapt']>=2)return ['pvsv'];
+ return l.filter(k=>k==='pvsv'||k==='l.adj'||(PM[k]&&PM[k].vis()));
+}
+function curK(){const l=vlist();if(K.i>=l.length)K.i=0;return l[K.i];}
+function goLevel(lv,why){
+ commit();const from=K.lv;K.lv=lv;K.i=0;K.shift=-1;K.flash=false;
+ if(lv==='ini'&&from!=='ini'&&from!=='com'&&from!=='adv'){EV.iniEnter=1;log('دخلت Initial Setting Level: التحكم وقف والخرج OFF لحد ما ترجع Operation');}
+ if((from==='ini'||from==='com'||from==='adv')&&(lv==='opr')){log('رجعت Operation Level: التحكم رجع يشتغل');S.alm=[false,false];S.stby=[true,true];S.hb=false;}
+ if(lv==='prt')EV.prtEnter=1;
+ if(lv==='adv')EV.advEnter=1;
+ if(why)log(why);
+ renderParams();
+}
+function commit(){
+ if(!K.ed)return;const e=K.ed;K.ed=null;K.shift=-1;
+ const p=PM[e.k];const v=p.t==='e'?e.v:fromD(p,e.v);
+ const r=setParam(e.k,v,'الكيباد');
+ if(r==='lock')flashBlock();
+}
+function flashBlock(){K.blockT=performance.now();EV.wtBlocked=1;}
+function canEdit(){return !(P['wtpt']===1&&K.lv!=='prt');}
+function arrow(dir,mult){
+ if(!ctlOk())return;
+ K.lastKey=performance.now();
+ const k=curK();
+ if(k==='l.adj')return;
+ if(!canEdit()){if(!K.blockLogged){log('wtpt = on: تغيير القيم مقفول من Protect Level');K.blockLogged=true;}flashBlock();return;}
+ if(k==='pvsv'){
+  if(S.manual||(S.opt==='ev'&&P['ev-1']===2&&S.door)){const st=mult>=100?5:mult>=10?1:.1;S.manMV=clamp(rnd(S.manMV+dir*st,1),0,100);EV.manSet=1;return;}
+  if(P['oapt']===3){flashBlock();return;}
+  editStep('sv',dir,mult);return;
+ }
+ const p=PM[k];if(!p||p.t==='ro')return;
+ editStep(k,dir,mult);
+}
+function editStep(k,dir,mult){
+ const p=PM[k];
+ if(!K.ed||K.ed.k!==k){K.ed={k,v:p.t==='e'?P[k]:toD(p,P[k])};}
+ if(p.t==='e')K.ed.v=clamp(K.ed.v+dir,0,p.o.length-1);
+ else{const dc=pdc(p);let st;
+  if(K.shift>=0)st=Math.pow(10,K.shift-dc);else{st=dc?Math.pow(10,-dc):p.st;if(p.st>st)st=p.st;st*=mult;}
+  const lo=toD(p,pmn(p)),hi=toD(p,pmx(p));
+  K.ed.v=clamp(rnd(K.ed.v+dir*st,dc),Math.min(lo,hi),Math.max(lo,hi));}
+ K.edT=performance.now();
+}
+function pfShift(){
+ const k=curK();const kk=k==='pvsv'?'sv':k;const p=PM[kk];
+ if(!p||p.t!=='n'||!canEdit()||k==='l.adj')return false;
+ if(k==='pvsv'&&S.manual)return false;
+ if(!K.ed)K.ed={k:kk,v:toD(p,P[kk])};
+ K.shift=(K.shift+1)%4;K.edT=performance.now();return true;
+}
+function doPF(){
+ if(P['pfpt']===1){log('زرار PF مقفول (pfpt = on)');return;}
+ const f=P['pf'];
+ switch(f){
+  case 1:setParam('r-s',0,'PF');break;case 2:setParam('r-s',1,'PF');break;case 3:setParam('r-s',P['r-s']?0:1,'PF');break;
+  case 4:case 5:if(S.at)stopAT('PF');else startAT(f===4?2:1);break;
+  case 6:setManual(!S.manual,'PF');break;
+ }
+}
+function setManual(m,src){
+ if(m===S.manual)return;
+ if(m){if(!ctlOk()||inSetLevel())return;S.manMV=rnd(clamp(S.mv,0,100),1);S.manual=true;EV.manu=1;log('Manual من '+src+': الخرج ثابت على '+S.manMV.toFixed(1)+'% وانت بتغيّره بالأسهم');}
+ else{S.manual=false;S.u=S.manMV;EV.autoBack=1;log('رجع Auto من '+src+' (Bumpless: الـ PID بدأ من '+S.manMV.toFixed(1)+'%)');}
+ P['a-m']=m?1:0;K.lv==='opr'&&(K.i=0);renderParams();
+}
+function lvShort(){
+ commit();
+ switch(K.lv){
+  case 'opr':if(P['oapt']>=1){log('Adjustment مقفول (oapt ≥ 1)');return;}goLevel('adj');break;
+  case 'adj':goLevel('opr');break;
+  case 'ini':if(S.opt==='485')goLevel('com');break;
+  case 'com':goLevel('ini');break;
+ }
+}
+function keyDownK(k){
+ if(!ctlOk()){return;}
+ const now=performance.now();K.lastKey=now;
+ if(k==='LV'){K.lvDown=now;K.lvAct=false;}
+ else if(k==='MD'){K.mdDown=now;K.mdAct=false;}
+ else if(k==='PF'){K.pfDown=now;K.pfAct=false;if(K.ed||['ini','adv','com','prt'].includes(K.lv)){if(pfShift())K.pfAct=true;}}
+ else if(k==='UP'||k==='DN')arrow(k==='UP'?1:-1,1);
+}
+function keyUpK(k){
+ const now=performance.now();
+ if(k==='LV'){const h=now-K.lvDown;const was=K.lvDown;K.lvDown=0;K.flash=false;if(!was||!ctlOk())return;if(!K.lvAct&&!K.mdDown&&h<1000)lvShort();}
+ else if(k==='MD'){const was=K.mdDown;K.mdDown=0;if(!was||!ctlOk())return;if(!K.mdAct&&!K.lvDown){commit();const l=vlist();K.i=(K.i+1)%l.length;syncDetail();}}
+ else if(k==='PF'){K.pfDown=0;}
+}
+function keyTick(now){
+ if(!ctlOk()){K.lvDown=K.mdDown=K.pfDown=0;K.flash=false;return;}
+ if(K.lvDown&&K.mdDown){
+  const h=now-Math.max(K.lvDown,K.mdDown);K.flash=false;
+  if(!K.lvAct&&(K.lv==='opr'||K.lv==='adj')&&h>=3000){K.lvAct=K.mdAct=true;goLevel('prt','دخلت Protect Level (Level + Mode 3 ثواني)');}
+  else if(!K.lvAct&&K.lv==='prt'&&h>=1000){K.lvAct=K.mdAct=true;goLevel('opr','خرجت من Protect Level');}
+ }else if(K.lvDown&&!K.lvAct){
+  const h=now-K.lvDown;
+  if(K.lv==='opr'||K.lv==='adj'){K.flash=h>1000;if(h>=3000){K.lvAct=true;K.flash=false;if(P['icpt']>=2)log('icpt = 2: الدخول على Initial Setting مقفول');else goLevel('ini');}}
+  else if((K.lv==='ini'||K.lv==='com')&&h>=1000){K.lvAct=true;goLevel('opr');}
+  else if(K.lv==='adv'&&h>=1000){K.lvAct=true;goLevel('ini','رجعت Initial Setting من Advanced');}
+ }
+ if(K.pfDown&&!K.pfAct&&now-K.pfDown>=1000&&(K.lv==='opr'||K.lv==='adj')){K.pfAct=true;doPF();}
+ if(K.ed&&now-K.edT>2000)commit();
+ if(P['ret']>0&&(K.lv!=='opr'||curK()!=='pvsv')&&(K.lv==='opr'||K.lv==='adj')&&now-K.lastKey>P['ret']*1000){goLevel('opr');}
+}
+let rep=null;
+function keyDown(btn){
+ const k=btn.dataset.k;btn.classList.add('down');keyDownK(k);
+ if(k==='UP'||k==='DN'){const t0=performance.now();clearTimeout(rep&&rep.tm);rep={k,tm:setTimeout(function tick(){const el=performance.now()-t0;arrow(k==='UP'?1:-1,el>3000?100:el>1300?10:1);rep.tm=setTimeout(tick,90);},450)};}
+}
+function keyUp(btn){btn.classList.remove('down');keyUpK(btn.dataset.k);if(rep){clearTimeout(rep.tm);rep=null;}}
+$$('.ek').forEach(b=>{
+ b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture&&b.setPointerCapture(e.pointerId);keyDown(b);});
+ ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,()=>{if(b.classList.contains('down'))keyUp(b);}));
+ b.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.repeat){e.preventDefault();keyDown(b);}});
+ b.addEventListener('keyup',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();keyUp(b);}});
+ b.addEventListener('contextmenu',e=>e.preventDefault());
+});
+const KB={l:'LV',m:'MD',p:'PF',ArrowUp:'UP',ArrowDown:'DN'};
+const kbBtn=k=>$('.ek[data-k="'+k+'"]');
+document.addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('input,select,textarea,[contenteditable]'))return;if(e.ctrlKey||e.metaKey||e.altKey)return;const k=KB[e.key]||KB[e.key.toLowerCase&&e.key.toLowerCase()];if(!k)return;e.preventDefault();if(e.repeat)return;keyDown(kbBtn(k));});
+document.addEventListener('keyup',e=>{const k=KB[e.key]||KB[e.key.toLowerCase&&e.key.toLowerCase()];if(!k)return;const b=kbBtn(k);if(b.classList.contains('down'))keyUp(b);});
+(function(){const b=$('#btnLM');const dn=e=>{e.preventDefault();b.setPointerCapture&&b.setPointerCapture(e.pointerId);keyDown(kbBtn('LV'));keyDown(kbBtn('MD'));b.classList.add('pri');};
+ const up=()=>{if(!b.classList.contains('pri'))return;b.classList.remove('pri');keyUp(kbBtn('LV'));keyUp(kbBtn('MD'));};
+ b.addEventListener('pointerdown',dn);['pointerup','pointercancel','lostpointercapture'].forEach(t=>b.addEventListener(t,up));
+ b.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.repeat){e.preventDefault();keyDown(kbBtn('LV'));keyDown(kbBtn('MD'));b.classList.add('pri');}});
+ b.addEventListener('keyup',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();up();}});})();
+
+/* ---------------- display content ---------------- */
+function fmtNum(v,dc){if(v>9999.5)return 'hhhh';if(v<-1999.5)return 'llll';return (+v).toFixed(dc);}
+function val7(p,v){if(p.t==='e')return p.o[v];if(p.t==='ro'){if(p.fmt)return p.fmt(v);return fmtNum(toD(p,v),pdc(p));}if(p.fmt)return p.fmt(v);return fmtNum(v,pdc(p));}
+function pvText(){
+ if(S.serr)return 's.err';
+ const v=isF()?S.pv*1.8+32:S.pv;return fmtNum(v,tdc());
+}
+let bootT=0;
+function drawPanel(now){
+ const on=S.ctrl;
+ $('#dPV').classList.toggle('off',!on);$('#dSV').classList.toggle('off',!on);
+ const ind=(id,v,fl)=>{const e=$('#'+id);e.classList.toggle('on',!!v);e.classList.toggle('fl',!!fl);};
+ let pv='    ',sv='    ',pvR=true,svR=true,pvB=false,svB=false,lbl='';
+ if(on&&S.boot>0){pv='8.8.8.8.';sv='8.8.8.8.';if(S.boot<0.6){pv=' '+String(P['in-t']).padStart(2)+' ';pv='in-t';sv=String(P['in-t']);}}
+ else if(on&&S.err){pv=S.err;sv='    ';pvR=false;}
+ else if(on){
+  const k=curK();
+  if(k==='pvsv'){pv=pvText();pvR=!S.serr;
+   const man=S.manual||(S.opt==='ev'&&P['ev-1']===2&&S.door);
+   if(man){sv=fmtNum(S.manMV,1);lbl='MV %';}
+   else{const p=PM['sv'];sv=K.ed&&K.ed.k==='sv'?fmtNum(K.ed.v,pdc(p)):fmtNum(toD(p,P['sv']),pdc(p));if(S.at)svB=true;}
+   if(K.ed&&K.ed.k==='sv'&&K.shift>=0)svB=[3-K.shift];
+  }else if(k==='l.adj'){pv='l.adj';pvR=false;sv='    ';}
+  else{const p=PM[k];pv=p.disp||k;pvR=false;
+   const v=K.ed&&K.ed.k===k?K.ed.v:(p.t==='ro'?p.get():(p.t==='e'?P[k]:toD(p,P[k])));
+   sv=val7(p,v);svR=p.t!=='e'||/^[0-9.]+$/.test(sv);
+   if(k==='at'&&S.at)svB=true;
+   if(K.ed&&K.ed.k===k&&K.shift>=0)svB=[3-K.shift];}
+  if(K.flash)pvB=true;
+  if(now-K.blockT<500)svB=true;
+  if(K.lv!=='opr'&&k!=='pvsv')lbl=LVN[K.lv].split(' ')[0];
+ }
+ setSeg(DPV,pv,pvR,pvB);setSeg(DSV,sv,svR,svB);
+ $('#svLbl').textContent=on&&!S.err&&S.boot<=0?lbl:'';
+ const ok=ctlOk();
+ const tmp=isTempIn();
+ $('#uC').classList.toggle('on',ok&&tmp&&P['d-u']===0);$('#uF').classList.toggle('on',ok&&tmp&&P['d-u']===1);
+ ind('iSUB1',S.sub[0]);ind('iSUB2',S.sub[1]);ind('iOUT1',ok&&S.out1);ind('iOUT2',false);
+ ind('iSTOP',ok&&runStop());ind('iCMW',ok&&P['cmwt']===1&&S.opt==='485');ind('iMANU',ok&&(S.manual||(S.opt==='ev'&&P['ev-1']===2&&S.door)));
+ if(on&&S.boot>0&&S.boot>0.6){['iSUB1','iSUB2','iOUT1','iOUT2','iSTOP','iCMW','iMANU'].forEach(i=>ind(i,true));$('#uC').classList.add('on');$('#uF').classList.add('on');}
+}
+
+/* ---------------- parameter writes ---------------- */
+function setParam(k,v,src){
+ const p=PM[k];if(!p||p.t==='ro')return 'ro';
+ const kp=src==='الكيباد'||src==='PF';
+ if(P['wtpt']===1&&p.g!=='prt'&&!(kp&&K.lv==='prt'))return 'lock';
+ if(!kp&&['ini','adv','com'].includes(p.g)&&!(P['r-s']===1||inSetLevel()||!S.ctrl))return 'run';
+ if(p.t==='n'){v=+v;if(isNaN(v))return 'bad';const lo=pmn(p),hi=pmx(p);v=clamp(v,Math.min(lo,hi),Math.max(lo,hi));v=rnd(v,ptu(p)&&isF()?3:Math.max(pdc(p),p.dc));if(ptu(p)&&!isF())v=rnd(v,pdc(p));}else v=clamp(Math.round(+v),0,p.o.length-1);
+ if(P[k]===v&&k!=='at')return 'same';
+ const old=P[k];P[k]=v;
+ const show=x=>p.t==='e'?(p.ol?p.ol[x]:p.o[x]):(p.ol?p.ol[x]:fmtNum(toD(p,x),pdc(p))+(p.u?' '+p.u:''));
+ if(k==='at'){P[k]=old;if(v===0){if(S.at)stopAT('اتلغى من '+src);}else{if(!S.at)startAT(v===1?2:1);}save();renderParams();return 'ok';}
+ log(k+' ('+p.nm+'): '+show(old)+' ← '+show(v)+' ('+src+')');
+ if(k==='in-t'){const it=INT[v];if(v<=24){P['sl-h']=Math.min(it[3],1300);P['sl-l']=it[2];}else{P['sl-h']=Math.max(P['in-h'],P['in-l']);P['sl-l']=Math.min(P['in-h'],P['in-l']);}P['sv']=clamp(P['sv'],P['sl-l'],P['sl-h']);S.pvF=S.pv;log('in-t اتغير: sl-h و sl-l رجعوا لحدود الدخل الجديد ('+it[0]+')');}
+ if(k==='in-h'||k==='in-l'){if(isAnaIn()){P['sl-h']=Math.max(P['in-h'],P['in-l']);P['sl-l']=Math.min(P['in-h'],P['in-l']);P['sv']=clamp(P['sv'],P['sl-l'],P['sl-h']);}}
+ if(k==='sl-h'||k==='sl-l')P['sv']=clamp(P['sv'],P['sl-l'],P['sl-h']);
+ if(k==='cntl'){if(S.at)stopAT('cntl اتغير');S.stn=null;S.u=0;}
+ if(k==='a-m')setManual(v===1,src);
+ if(k==='r-s'){EV[v?'rsStop':'rsRun']=1;}
+ if(k==='init'&&v===1){for(const q of PD)if(q.t!=='ro')P[q.k]=q.d;P['cp']=S.out==='R'?20:2;S.manual=false;log('init = fact: كل الباراميترات رجعت لقيم المصنع');EV.init=1;}
+ if(k==='amov'){if(v===-169&&kp&&K.lv==='ini'){P['amov']=0;goLevel('adv','دخلت Advanced Function Setting Level (amov = −169)');}else if(v!==0&&kp){P['amov']=0;}}
+ if(k==='wtpt'&&v===0)K.blockLogged=false;
+ if(k==='sv')EV.svSet=1;
+ save();renderParams();
+ return 'ok';
+}
+
+/* ---------------- persistence ---------------- */
+const SKEY='e5cc-lab-v1';
+let EXS={};
+function save(){try{const pv={};for(const p of PD)if(p.t!=='ro')pv[p.k]=P[p.k];localStorage.setItem(SKEY,JSON.stringify({pv,exs:EXS,su:{out:S.out,opt:S.opt,hp:S.hp,lineV:S.lineV,ld:S.ld,spd:S.spd,amb:S.amb,sensor:S.sensor,mute:S.mute}}));}catch(_){}}
+function load(){try{const o=JSON.parse(localStorage.getItem(SKEY)||'null');if(!o)return false;
+ if(o.pv)for(const k in o.pv)if(PM[k]&&PM[k].t!=='ro'&&typeof o.pv[k]==='number')P[k]=o.pv[k];
+ EXS=o.exs||{};
+ const u=o.su||{};
+ S.out=u.out==='R'?'R':'Q';S.opt=u.opt==='485'?'485':'ev';S.hp=[1000,1250,2000].includes(+u.hp)?+u.hp:1250;S.lineV=[200,220,230,240].includes(+u.lineV)?+u.lineV:230;
+ S.ld=clamp(+u.ld||0,0,20);S.spd=[1,5,10,30,60].includes(+u.spd)?+u.spd:10;S.amb=isFinite(+u.amb)&&u.amb!==undefined?clamp(+u.amb,0,45):25;S.sensor=['tc','pt','tx'].includes(u.sensor)?u.sensor:'tc';S.mute=!!u.mute;return true;
+}catch(_){return false;}}
+
+/* ---------------- operator station ---------------- */
+const SENS={tc:['TC K','5(+) 6(−)'],pt:['Pt100','4(A) 5(B) 6(B)'],tx:['4-20 mA','4(+) 6(−)']};
+function devAct(dev){
+ if(dev==='brk'){S.brk=!S.brk;log(S.brk?'Q1 اتقفل (ON)':'Q1 اتفتح (OFF): الكنترولر والسخانات فصلوا');}
+ else if(dev==='hbrk'){S.hbrk=!S.hbrk;log(S.hbrk?'Q2 السخانات اتقفل':'Q2 السخانات اتفتح');}
+ else if(dev==='door'){S.door=!S.door;EV[S.door?'doorOpen':'doorClose']=1;log(S.door?'الباب اتفتح: الحرارة بتهرب بسرعة'+(S.opt==='ev'&&P['ev-1']===1?'، و EV1 وقّف التحكم':''):'الباب اتقفل');}
+ else if(dev==='sens'){const o=['tc','pt','tx'];S.sensor=o[(o.indexOf(S.sensor)+1)%3];log('الحساس المتوصل بقى '+SENS[S.sensor][0]+'. لازم in-t يطابقه');save();buildWD();}
+ else if(dev==='lim'){if(!S.limTrip)log('الليمتر مش فاصل');else if(S.Tc>OV.limR)log('الليمتر مش هيرجع: الفرن لسه '+S.Tc.toFixed(0)+'°C (لازم أقل من '+OV.limR+')',1);else{S.limTrip=false;EV.limReset=1;log('ريست ترموستات الأمان: السخانات رجعت تاخد كهربا');}}
+ else if(dev==='mute'){S.mute=!S.mute;save();}
+ updStation();
+}
+$('#dBrk').addEventListener('click',()=>devAct('brk'));$('#dHb').addEventListener('click',()=>devAct('hbrk'));$('#dDoor').addEventListener('click',()=>devAct('door'));
+$('#dSens').addEventListener('click',()=>devAct('sens'));$('#dLimR').addEventListener('click',()=>devAct('lim'));$('#dMute').addEventListener('click',()=>devAct('mute'));
+(function(){const b=$('#dLimR');b.addEventListener('pointerdown',()=>b.classList.add('down'));['pointerup','pointerleave','pointercancel'].forEach(t=>b.addEventListener(t,()=>b.classList.remove('down')));})();
+function updStation(){
+ $('#dBrk').setAttribute('aria-pressed',S.brk);$('#dHb').setAttribute('aria-pressed',S.hbrk);$('#dDoor').setAttribute('aria-pressed',S.door);$('#dMute').setAttribute('aria-pressed',S.mute);
+ $('#dSens i').style.transform='rotate('+({tc:-45,pt:0,tx:45}[S.sensor])+'deg)';
+ $('#dSensV').textContent=SENS[S.sensor][0];$('#dSensT').textContent=SENS[S.sensor][1];
+ $('#tDoor').textContent=S.opt==='ev'?'SQ1 → 13/15':'SQ1 (مش متوصل)';
+ $('#tHeat').textContent=S.out==='Q'?'بعد SSR':'بعد KM1';
+ $('#tAl1f').textContent='SUB1 · '+SUBO[P['sub1']];$('#tAl2f').textContent='SUB2 · '+SUBO[P['sub2']];
+}
+function knob(el,out,get,set,min,max,fmt,dflt){
+ const upd=()=>{const v=get();el.firstElementChild.style.transform='rotate('+(-135+270*(v-min)/(max-min))+'deg)';out.textContent=fmt(v);};
+ let y0=null,v0=0;
+ el.addEventListener('pointerdown',e=>{e.preventDefault();el.setPointerCapture(e.pointerId);y0=e.clientY;v0=get();});
+ el.addEventListener('pointermove',e=>{if(y0===null)return;set(clamp(Math.round(v0+(y0-e.clientY)/150*(max-min)),min,max));upd();});
+ ['pointerup','pointercancel'].forEach(t=>el.addEventListener(t,()=>{if(y0!==null)save();y0=null;}));
+ el.addEventListener('wheel',e=>{e.preventDefault();set(clamp(get()-Math.sign(e.deltaY),min,max));upd();save();},{passive:false});
+ el.addEventListener('dblclick',()=>{set(dflt);upd();save();});
+ el.addEventListener('keydown',e=>{if(e.key==='ArrowUp'||e.key==='ArrowRight'){set(clamp(get()+1,min,max));upd();e.preventDefault();}else if(e.key==='ArrowDown'||e.key==='ArrowLeft'){set(clamp(get()-1,min,max));upd();e.preventDefault();}});
+ upd();return upd;
+}
+let updAmb=()=>{};
+
+/* ---------------- plant panel ---------------- */
+function plate(){$('#plateCat').textContent='E5CC-'+S.out+'X2ASM-'+(S.opt==='ev'?'802':'803');}
+$('#outSel').addEventListener('change',e=>{const old=S.out;S.out=e.target.value;const od=old==='R'?20:2,nd=S.out==='R'?20:2;PM['cp'].d=nd;if(P['cp']===od){P['cp']=nd;}plate();buildWD();updStation();renderParams();save();log('الخرج بقى '+(S.out==='Q'?'Q (فولت لـ SSR)':'R (ريليه بيشغّل كونتاكتور KM1)')+'، و cp = '+P['cp']+' ث');});
+$('#optSel').addEventListener('change',e=>{S.opt=e.target.value;if(S.opt!=='ev'&&K.lv==='com')goLevel('ini');plate();buildWD();updStation();renderParams();save();log('كارت الأوبشن: '+(S.opt==='ev'?'2 Event In + CT1':'RS-485 + CT1'));});
+$('#htrSel').addEventListener('change',e=>{S.hp=+e.target.value;loadHint();save();log('السخانات بقت 2 × '+(S.hp/1000)+' kW');});
+$('#lineSel').addEventListener('change',e=>{S.lineV=+e.target.value;loadHint();save();log('جهد المصدر بقى '+S.lineV+'V');});
+$('#spdSel').addEventListener('change',e=>{S.spd=+e.target.value;save();});
+$('#ld').addEventListener('input',e=>{S.ld=+e.target.value;$('#ldV').textContent=S.ld+' kg';loadHint();save();});
+$('#btnCold').addEventListener('click',()=>{const Cc=OV.Cch+S.ld*460,Cl=Math.max(2,S.ld)*460;S.Tc=(S.Tc*(Cc-Cl)+S.amb*Cl)/Cc;EV.coldLoad=1;log('اتحط حمل بارد ('+Math.max(2,S.ld)+' kg على '+S.amb+'°C): الحرارة جوه نزلت لـ '+S.Tc.toFixed(1)+'°C');});
+$('#btnCool').addEventListener('click',()=>{S.Tc=S.Te=S.Ts=S.amb;S.dl=[];S.pvF=S.amb;log('الفرن اتبرّد لحرارة الجو');});
+function loadHint(){
+ const R=230*230/S.hp,I=2*S.lineV/R,P2=I*S.lineV,Cc=OV.Cch+S.ld*460,Tmax=S.amb+P2/OV.UA;
+ $('#loadHint').textContent='كل سخان '+R.toFixed(0)+'Ω، يعني على '+S.lineV+'V التيار الكلي '+I.toFixed(1)+'A والقدرة '+(P2/1000).toFixed(2)+' kW (بعد احتراق سخان: '+(I/2).toFixed(1)+'A). السعة الحرارية '+(Cc/1000).toFixed(1)+' kJ/°C والفقد '+OV.UA+' W/°C، فأقصى حرارة ممكن يوصلها بالباب مقفول حوالي '+Tmax.toFixed(0)+'°C، وثابت الزمن حوالي '+(Cc/OV.UA/60).toFixed(0)+' دقيقة.';
+}
+const INJT={tcopen:'سلك الحساس اتقطع',tcrev:'الثرموكبل اتوصل معكوس',burn:'سخان 1 اتحرق',ssr:'الـ SSR / الكونتاكتور لاحم',ctcut:'سلك الـ CT اتفصل',ad:'عطل محوّل A/D',mem:'عطل الذاكرة',dip:'الكهربا قطعت ثانية'};
+$$('[data-inj]').forEach(b=>b.addEventListener('click',()=>{
+ const k=b.dataset.inj;
+ if(k==='dip'){if(!S.inj.dip){S.inj.dip=true;S.dipT=1;log('عطل: '+INJT.dip,1);}}
+ else{S.inj[k]=!S.inj[k];log((S.inj[k]?'عطل: ':'اتصلح: ')+INJT[k]+((k==='ad'||k==='mem')&&!S.inj[k]?'. لازم تطفي الكنترولر وتشغّله (Q1) عشان العطل يتمسح':''),S.inj[k]);if(k==='tcopen'&&!S.inj[k])EV.tcFixed=1;if(k==='burn'&&!S.inj[k])EV.burnFixed=1;}
+ syncInj();buildWD();
+}));
+function syncInj(){$$('[data-inj]').forEach(b=>b.setAttribute('aria-pressed',!!S.inj[b.dataset.inj]));}
+
+/* ---------------- oven drawing ---------------- */
+function tempCol(t,lo,hi,a,b){const x=clamp((t-lo)/(hi-lo),0,1);return 'rgb('+a.map((v,i)=>Math.round(v+(b[i]-v)*x)).join(',')+')';}
+function buildOven(){
+ const z=[];
+ z.push('<defs><linearGradient id="ovb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9dcde"/><stop offset="1" stop-color="#a9aeb2"/></linearGradient></defs>');
+ z.push('<rect x="14" y="14" width="300" height="168" rx="8" fill="url(#ovb)" stroke="#6d7378" stroke-width="1.5"/>');
+ z.push('<rect id="ovCh" x="34" y="32" width="196" height="132" rx="3" fill="#3a3f43"/>');
+ z.push('<path id="el1" d="M44 46 l10 8 10-8 10 8 10-8 10 8 10-8 10 8 10-8 10 8 10-8 10 8 10-8 10 8 10-8 10 8 10-8 10 8" fill="none" stroke="#555" stroke-width="3.2" stroke-linejoin="round"/>');
+ z.push('<path id="el2" d="M44 150 l10 -8 10 8 10 -8 10 8 10 -8 10 8 10 -8 10 8 10 -8 10 8 10 -8 10 8 10 -8 10 8 10 -8 10 8 10 -8" fill="none" stroke="#555" stroke-width="3.2" stroke-linejoin="round"/>');
+ z.push('<g id="el1x" visibility="hidden"><path d="M120 40l12 14M132 40l-12 14" stroke="#ff5a4a" stroke-width="2.5"/></g>');
+ z.push('<rect x="54" y="112" width="156" height="5" fill="#8a9095"/><g id="ovLoad"></g>');
+ z.push('<line x1="196" y1="14" x2="196" y2="78" stroke="#c9cdd0" stroke-width="4"/><circle id="tcTip" cx="196" cy="80" r="3.5" fill="#e8870c"/><text x="202" y="72" font-size="9" fill="#e9ebec" font-family="Arial" id="tcLbl">TC</text>');
+ z.push('<g id="heat" opacity="0"><path d="M60 26c4-6-4-10 0-16M100 26c4-6-4-10 0-16M140 26c4-6-4-10 0-16M180 26c4-6-4-10 0-16" stroke="#ff9a5a" stroke-width="2" fill="none"/></g>');
+ z.push('<g id="doorC"><rect x="30" y="28" width="204" height="140" rx="4" fill="none" stroke="#5b6166" stroke-width="7"/><rect x="34" y="32" width="196" height="132" fill="rgba(170,210,230,.16)"/><rect x="236" y="70" width="6" height="54" rx="3" fill="#4b5155"/></g>');
+ z.push('<g id="doorO" visibility="hidden"><path d="M30 28 L4 44 L4 158 L30 168 Z" fill="#7d858b" stroke="#4b5155" stroke-width="2"/><path d="M10 50 L26 40 L26 156 L10 150 Z" fill="rgba(170,210,230,.35)"/></g>');
+ z.push('<rect x="246" y="30" width="58" height="134" rx="4" fill="#2b2f33"/>');
+ z.push('<rect x="252" y="38" width="46" height="40" rx="2" fill="#111"/><text id="ovPV" x="294" y="56" text-anchor="end" font-size="14" font-weight="700" fill="#ff3b22" font-family="IBM Plex Mono,monospace"></text><text id="ovSV" x="294" y="72" text-anchor="end" font-size="10" font-weight="700" fill="#3dff5f" font-family="IBM Plex Mono,monospace"></text>');
+ z.push('<text x="275" y="94" text-anchor="middle" font-size="8" fill="#c9cfd3" font-family="Arial">E5CC</text>');
+ z.push('<circle id="ovL1" cx="262" cy="112" r="6" fill="#444"/><circle id="ovL2" cx="288" cy="112" r="6" fill="#444"/><text x="262" y="130" text-anchor="middle" font-size="7" fill="#9aa3a9" font-family="Arial">HEAT</text><text x="288" y="130" text-anchor="middle" font-size="7" fill="#9aa3a9" font-family="Arial">ALM</text>');
+ z.push('<text id="ovT" x="132" y="196" text-anchor="middle" font-size="10" fill="#7a868f" font-family="Arial"></text>');
+ $('#ovenSvg').innerHTML=z.join('');
+ buildSw();
+}
+function buildSw(){
+ const z=[];
+ if(S.out==='Q'){
+  z.push('<rect x="30" y="16" width="100" height="70" rx="4" fill="#e8e9e6" stroke="#4a5055" stroke-width="1.5"/><rect x="30" y="86" width="100" height="16" fill="#9aa1a6"/>');
+  for(let i=0;i<9;i++)z.push('<rect x="'+(33+i*11)+'" y="102" width="6" height="18" fill="#9aa1a6"/>');
+  z.push('<text x="80" y="38" text-anchor="middle" font-size="11" font-weight="700" fill="#333" font-family="Arial">SSR</text><text x="80" y="52" text-anchor="middle" font-size="8" fill="#555" font-family="Arial">25A · 3-32VDC</text><circle id="swLed" cx="80" cy="68" r="5" fill="#444"/>');
+ }else{
+  z.push('<rect x="40" y="10" width="80" height="104" rx="5" fill="#dfe1df" stroke="#4a5055" stroke-width="1.5"/><text x="80" y="28" text-anchor="middle" font-size="11" font-weight="700" fill="#333" font-family="Arial">KM1</text>');
+  z.push('<rect id="swCoil" x="56" y="70" width="48" height="26" rx="2" fill="#fff" stroke="#4a5055"/><text x="80" y="88" text-anchor="middle" font-size="9" fill="#333" font-family="Arial">A1 A2</text>');
+  z.push('<line id="swCt" x1="64" y1="56" x2="96" y2="46" stroke="#1d2226" stroke-width="3" stroke-linecap="round"/><circle cx="64" cy="56" r="2.5" fill="#1d2226"/><circle cx="96" cy="56" r="2.5" fill="#1d2226"/>');
+  z.push('<text id="swOps" x="80" y="108" text-anchor="middle" font-size="8" fill="#555" font-family="Arial"></text>');
+ }
+ z.push('<line x1="80" y1="130" x2="80" y2="196" stroke="#7b3f12" stroke-width="3" id="swW"/><ellipse cx="80" cy="160" rx="22" ry="9" fill="none" stroke="#0d7584" stroke-width="5"/><text x="108" y="164" font-size="9" fill="#555" font-family="Arial">CT1</text><text id="swI" x="8" y="164" font-size="11" font-weight="700" fill="#0d7584" font-family="IBM Plex Mono,monospace"></text>');
+ z.push('<text id="swLim" x="80" y="126" text-anchor="middle" font-size="9" fill="#c0352b" font-family="Arial"></text>');
+ $('#swSvg').innerHTML=z.join('');
+}
+function drawOven(){
+ if(!$('#ovCh'))return;
+ $('#ovCh').setAttribute('fill',tempCol(S.Tc,20,300,[58,63,67],[150,70,30]));
+ [['el1',S.inj.burn?0:1],['el2',1]].forEach(([id,ok])=>{const e=$('#'+id);const t=ok?S.Te:S.Tc;e.setAttribute('stroke',S.cond&&ok?tempCol(t,80,520,[120,90,80],[255,110,30]):tempCol(t,60,500,[85,85,85],[200,70,30]));});
+ $('#el1x').setAttribute('visibility',S.inj.burn?'visible':'hidden');
+ $('#doorC').setAttribute('visibility',S.door?'hidden':'visible');$('#doorO').setAttribute('visibility',S.door?'visible':'hidden');
+ $('#heat').setAttribute('opacity',S.door?clamp((S.Tc-S.amb)/80,0,1):0);
+ $('#tcTip').setAttribute('fill',S.inj.tcopen?'#c0352b':'#e8870c');$('#tcLbl').textContent=S.sensor==='tc'?'TC K':S.sensor==='pt'?'Pt100':'TX';
+ $('#ovPV').textContent=S.ctrl&&!S.err&&S.boot<=0?(S.serr?'S.Err':pvText()):S.err||'';
+ $('#ovSV').textContent=S.ctrl&&!S.err&&S.boot<=0?fmtNum(toD(PM['sv'],P['sv']),tdc()):'';
+ $('#ovL1').setAttribute('fill',S.cond?'#3ee05a':'#444');$('#ovL2').setAttribute('fill',S.sub[0]?'#ff5a4a':'#444');
+ $('#ovT').textContent='Inside '+S.Tc.toFixed(1)+' °C  ·  Element '+S.Te.toFixed(0)+' °C'+(S.door?'  ·  DOOR OPEN':'');
+ const n=Math.min(6,Math.ceil(S.ld/3.4));if($('#ovLoad').childElementCount!==n){let h='';for(let i=0;i<n;i++)h+='<rect x="'+(60+i*25)+'" y="96" width="20" height="16" rx="2" fill="#7d8790" stroke="#4b5155"/>';$('#ovLoad').innerHTML=h;}
+ $$('#ovLoad rect').forEach(r=>r.setAttribute('fill',tempCol(S.Tc,20,300,[125,135,144],[190,95,60])));
+ if(S.out==='Q'){$('#swLed')&&$('#swLed').setAttribute('fill',S.out1?'#ff3b22':'#444');}
+ else if($('#swCt')){const c=S.kmOn||S.inj.ssr;$('#swCt').setAttribute('y2',c?56:46);$('#swCoil').setAttribute('fill',S.out1?'#ffe08a':'#fff');$('#swOps').textContent='ops: '+S.kmOps;}
+ $('#swW').setAttribute('stroke',S.cond?'#c8261c':S.hv>0?'#7b3f12':'#c3c8cc');
+ $('#swI').textContent=S.I.toFixed(1)+'A';
+ $('#swLim').textContent=S.limTrip?'TS فاصل!':'';
+}
+
+/* ---------------- ammeter ---------------- */
+(function(){let h='';for(let i=0;i<=10;i++){const a=(-50+i*10)*Math.PI/180,x1=48+Math.sin(a)*40,y1=58-Math.cos(a)*40,x2=48+Math.sin(a)*(i%5?36:33),y2=58-Math.cos(a)*(i%5?36:33);h+='<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="#222" stroke-width="'+(i%5?.8:1.4)+'"/>';if(i%5===0)h+='<text x="'+(48+Math.sin(a)*28).toFixed(1)+'" y="'+(61-Math.cos(a)*28).toFixed(1)+'" font-size="7" text-anchor="middle" font-family="Arial" fill="#222">'+(i*2)+'</text>';}
+ h+='<text x="48" y="52" font-size="7" text-anchor="middle" font-family="Arial" fill="#555">A</text><line id="amN" x1="48" y1="58" x2="48" y2="18" stroke="#c0352b" stroke-width="1.6"/><circle cx="48" cy="58" r="3" fill="#222"/>';$('#amMeter').innerHTML=h;})();
+</script>
+<script>
+/* ---------------- wiring diagram ---------------- */
+const WDEAD='#c3c8cc';
+const TT={11:[340,'L 100-240V'],12:[380,'N'],1:[520,'OUT1 +'],2:[560,'OUT1 −'],17:[760,'CT1'],18:[800,'CT1']};
+const TB={4:[340,'A / mA+'],5:[380,'B / TC+'],6:[420,'B / TC−'],7:[520,'SUB1'],8:[560,'SUB1'],9:[600,'SUB2'],10:[640,'SUB2'],13:[760,'EV1 / B+'],14:[800,'EV2 / A−'],15:[840,'COM']};
+let WD={};
+function buildWD(){
+ const o=[],ln=(id,d,w)=>o.push('<path id="'+id+'" d="'+d+'" fill="none" stroke="'+WDEAD+'" stroke-width="'+(w||2.4)+'" stroke-linejoin="round"/>');
+ const term=(x,y)=>o.push('<rect x="'+(x-11)+'" y="'+(y-9)+'" width="22" height="18" rx="2" fill="#eceeee" stroke="#4a5055"/><circle cx="'+x+'" cy="'+y+'" r="5.5" fill="#c3c7ca" stroke="#5d6368"/><line x1="'+(x-3.5)+'" y1="'+(y+3.5)+'" x2="'+(x+3.5)+'" y2="'+(y-3.5)+'" stroke="#4a5055" stroke-width="1.4"/>');
+ const tx=(x,y,t,a)=>o.push('<text x="'+x+'" y="'+y+'" '+(a||'')+'>'+t+'</text>');
+ const dot=(x,y)=>o.push('<circle cx="'+x+'" cy="'+y+'" r="3.4" fill="#2b3238"/>');
+ const lamp=(id,x,y)=>o.push('<g id="'+id+'"><circle cx="'+x+'" cy="'+y+'" r="11" fill="#fff" stroke="#4a5055" stroke-width="1.5"/><path d="M'+(x-7.5)+' '+(y-7.5)+'l15 15M'+(x+7.5)+' '+(y-7.5)+'l-15 15" stroke="#4a5055" stroke-width="1.2"/></g>');
+ o.push('<rect x="0" y="0" width="1200" height="820" fill="#f4f5f1"/>');
+ /* supply + Q1 */
+ tx(6,44,'L','font-size="12" fill="#333"');tx(6,74,'N','font-size="12" fill="#333"');tx(6,20,'230V 50Hz','font-size="10" fill="#555"');
+ ln('wInL','M22 40H96');ln('wInN','M22 70H96');
+ o.push('<g class="clk" data-dev="brk"><rect class="hl" x="88" y="22" width="56" height="66" rx="4" fill="#fff" stroke="#4a5055" stroke-width="1.5"/>');
+ [40,70].forEach((y,i)=>o.push('<line id="bb'+i+'" x1="102" y1="'+y+'" x2="130" y2="'+y+'" stroke="#1d2226" stroke-width="3" stroke-linecap="round"/><circle cx="102" cy="'+y+'" r="2.5" fill="#1d2226"/><circle cx="130" cy="'+y+'" r="2.5" fill="#1d2226"/>'));
+ o.push('</g>');tx(116,104,'Q1 · الرئيسي','font-size="11" fill="#333" text-anchor="middle" class="ar"');
+ ln('wL','M130 40H1000',2.8);ln('wN','M130 70H1185',2.8);ln('wL2','M1000 40H1150',2.8);
+ /* H0 power lamp */
+ ln('wH0a','M222 40V45');ln('wH0b','M222 65V70');o.push('<circle id="lmpH0" cx="222" cy="55" r="9" fill="#fff" stroke="#4a5055" stroke-width="1.4"/>');tx(236,59,'H0','font-size="9" fill="#555"');dot(222,40);dot(222,70);
+ /* controller supply */
+ ln('wP11','M340 40V128');o.push('<rect x="332" y="128" width="16" height="32" rx="2" fill="#fff" stroke="#4a5055" stroke-width="1.4"/><line x1="340" y1="130" x2="340" y2="158" stroke="#4a5055"/>');tx(354,148,'F1 1A','font-size="9" fill="#555"');ln('wP11b','M340 160V281');dot(340,40);
+ ln('wP12','M380 70V281');dot(380,70);
+ /* controller box */
+ o.push('<rect x="300" y="290" width="580" height="180" rx="6" fill="#1d1f21"/><rect x="306" y="296" width="568" height="168" rx="4" fill="none" stroke="#3d4145"/>');
+ tx(590,368,'OMRON  E5CC','font-size="28" font-weight="700" fill="#e9ebec" text-anchor="middle" font-family="Arial"');
+ tx(590,390,$('#plateCat').textContent+' · '+(S.out==='Q'?'Voltage out (SSR)':'Relay out'),'font-size="12" fill="#9aa3a9" text-anchor="middle"');
+ o.push('<text id="wdSt" x="590" y="420" font-size="15" fill="#9cf29c" text-anchor="middle"></text>');
+ [['A · 1-6',380],['B · 7-12',580],['C · 13-18',800]].forEach(([t,x])=>tx(x,340,t,'font-size="10" fill="#6d767c" text-anchor="middle"'));
+ Object.entries(TT).forEach(([n,[x,f]])=>{term(x,290);tx(x,278,n,'font-size="11" font-weight="700" fill="#333" text-anchor="middle"');tx(x,318,f,'font-size="9" fill="#c9cfd3" text-anchor="middle"');});
+ Object.entries(TB).forEach(([n,[x,f]])=>{term(x,470);tx(x,496,n,'font-size="11" font-weight="700" fill="#333" text-anchor="middle"');tx(0,0,f,'font-size="9" fill="#c9cfd3" transform="translate('+(x+3)+' 456) rotate(-90)"');});
+ /* heater branch */
+ ln('wHa','M1000 40V92',2.8);dot(1000,40);
+ o.push('<g class="clk" data-dev="hbrk"><rect class="hl" x="972" y="84" width="56" height="48" rx="4" fill="#fff" stroke="#4a5055" stroke-width="1.5"/><line id="q2b" x1="1000" y1="94" x2="1000" y2="122" stroke="#1d2226" stroke-width="3" stroke-linecap="round"/><circle cx="1000" cy="94" r="2.5" fill="#1d2226"/><circle cx="1000" cy="122" r="2.5" fill="#1d2226"/></g>');
+ tx(1036,112,'Q2','font-size="11" fill="#333"');
+ ln('wHb','M1000 122V146',2.8);
+ o.push('<g class="clk" data-dev="lim"><rect class="hl" x="978" y="140" width="44" height="40" rx="4" fill="#fff" stroke="#4a5055" stroke-width="1.2"/><line id="tsb" x1="1000" y1="148" x2="1000" y2="172" stroke="#1d2226" stroke-width="3" stroke-linecap="round"/><circle cx="1000" cy="148" r="2.5" fill="#1d2226"/><circle cx="1000" cy="172" r="2.5" fill="#1d2226"/></g>');
+ tx(1030,160,'TS 280°C','font-size="10" fill="#333"');tx(1110,174,'ليمتر أمان','font-size="9" fill="#555" class="ar"');
+ ln('wHc','M1000 180V192',2.8);
+ if(S.out==='Q'){
+  o.push('<rect x="972" y="192" width="56" height="48" rx="3" fill="#e8e9e6" stroke="#4a5055" stroke-width="1.5"/>');tx(1000,212,'SSR','font-size="11" font-weight="700" fill="#333" text-anchor="middle"');
+  o.push('<line id="ssrb" x1="1000" y1="218" x2="1000" y2="236" stroke="#1d2226" stroke-width="2.4"/><circle id="ssrLed" cx="1016" cy="200" r="3.5" fill="#666"/>');
+  tx(966,203,'3+','font-size="9" fill="#555" text-anchor="end"');tx(966,229,'4−','font-size="9" fill="#555" text-anchor="end"');
+  ln('wO1','M520 281V205H972');ln('wO2','M560 281V225H972');
+ }else{
+  o.push('<line id="kmb" x1="1000" y1="196" x2="1000" y2="236" stroke="#1d2226" stroke-width="3" stroke-linecap="round"/><circle cx="1000" cy="196" r="2.5" fill="#1d2226"/><circle cx="1000" cy="236" r="2.5" fill="#1d2226"/>');
+  tx(1014,222,'KM1','font-size="11" font-weight="700" fill="#333"');
+  o.push('<rect id="kmCoil" x="880" y="200" width="50" height="30" fill="#fff" stroke="#4a5055" stroke-width="1.5"/>');tx(905,220,'KM1','font-size="10" fill="#333" text-anchor="middle"');tx(876,196,'A1','font-size="9" fill="#555" text-anchor="end"');tx(934,196,'A2','font-size="9" fill="#555"');
+  o.push('<path d="M930 215H996" stroke="#8a9095" stroke-width="1.4" stroke-dasharray="4 3"/>');
+  ln('wO1','M470 40V150H520V281');dot(470,40);ln('wO2','M560 281V215H880');ln('wO3','M930 205H950V70');dot(950,70);
+ }
+ ln('wHd','M1000 240V300',2.8);
+ o.push('<ellipse cx="1000" cy="262" rx="15" ry="6" fill="none" stroke="#0d7584" stroke-width="4"/>');tx(1022,266,'CT1','font-size="10" fill="#0d7584"');
+ ln('wCa','M986 258H800V281');ln('wCb','M988 268H760V281');
+ o.push('<g id="ctcut" visibility="hidden"><path d="M880 250l14 14M894 250l-14 14" stroke="#c0352b" stroke-width="3"/></g>');
+ ln('wHe','M1000 300H1140',2.8);dot(1080,300);dot(1040,300);
+ ln('wR1a','M1080 300V320',2.8);ln('wR2a','M1140 300V320',2.8);
+ o.push('<rect id="r1" x="1070" y="320" width="20" height="80" fill="#fff" stroke="#4a5055" stroke-width="1.5"/><rect id="r2" x="1130" y="320" width="20" height="80" fill="#fff" stroke="#4a5055" stroke-width="1.5"/>');
+ tx(1080,416,'R1','font-size="10" fill="#333" text-anchor="middle"');tx(1140,416,'R2','font-size="10" fill="#333" text-anchor="middle"');
+ o.push('<g id="r1x" visibility="hidden"><path d="M1068 350l24 20M1092 350l-24 20" stroke="#c0352b" stroke-width="3"/></g>');
+ tx(1110,450,'سخانات '+(S.hp/1000)+' kW × 2','font-size="10" fill="#555" text-anchor="middle" class="ar"');
+ ln('wR1b','M1080 400V430',2.8);ln('wR2b','M1140 400V430',2.8);
+ ln('wH3a','M1040 300V359');lamp('lmpH3',1040,370);ln('wH3b','M1040 381V430');tx(1024,374,'H3','font-size="9" fill="#555" text-anchor="end"');
+ ln('wHf','M1040 430H1185V70',2.8);dot(1080,430);dot(1140,430);dot(1185,70);
+ /* control rails for the alarm lamps */
+ ln('wLr','M160 40V770H700',2.4);ln('wNr','M182 70V800H700',2.4);dot(160,40);dot(182,70);
+ tx(706,774,'L','font-size="10" fill="#555"');tx(706,804,'N','font-size="10" fill="#555"');
+ ln('wA7','M520 479V770');dot(520,770);ln('wA8','M560 479V643');lamp('lmpH1',560,655);ln('wA8b','M560 667V800');dot(560,800);tx(544,659,'H1','font-size="9" fill="#555" text-anchor="end"');
+ ln('wBz','M560 615H600V641');o.push('<path id="bz" d="M588 641h24v4a12 12 0 0 1-24 0Z" fill="#fff" stroke="#4a5055" stroke-width="1.4"/>');ln('wBz2','M600 657V690H560');dot(560,615);dot(560,690);tx(626,690,'جرس','font-size="9" fill="#555" class="ar"');
+ ln('wA9','M600 479V600H612V770');dot(612,770);
+ ln('wA10','M640 479V643');lamp('lmpH2',640,655);ln('wA10b','M640 667V800');dot(640,800);tx(656,659,'H2','font-size="9" fill="#555"');
+ /* sensor */
+ o.push('<rect x="290" y="620" width="200" height="130" rx="8" fill="none" stroke="#b9a68a" stroke-dasharray="5 4"/>');tx(470,740,'جوه الفرن','font-size="10" fill="#8a7a62" text-anchor="end" class="ar"');
+ if(S.sensor==='tc'){
+  ln('wS5','M380 479V690L398 720');ln('wS6','M420 479V690L402 720');o.push('<circle cx="400" cy="722" r="4" fill="#2b3238"/>');tx(410,700,'TC K','font-size="11" fill="#333"');tx(360,640,'+ أخضر','font-size="9" fill="#2e9c3a" text-anchor="end" class="ar"');tx(430,640,'− أبيض','font-size="9" fill="#777" class="ar"');
+ }else if(S.sensor==='pt'){
+  ln('wS4','M340 479V712H352');o.push('<rect x="352" y="705" width="36" height="14" fill="#fff" stroke="#4a5055" stroke-width="1.5"/>');ln('wS5','M380 479V660H396V712H388');ln('wS6','M420 479V712H396');dot(396,712);tx(370,738,'Pt100','font-size="11" fill="#333" text-anchor="middle"');
+ }else{
+  o.push('<rect x="350" y="690" width="60" height="36" rx="3" fill="#fff" stroke="#4a5055" stroke-width="1.5"/>');tx(380,712,'TX 0-400','font-size="9" fill="#333" text-anchor="middle"');
+  o.push('<rect x="200" y="560" width="60" height="50" rx="3" fill="#fff" stroke="#4a5055" stroke-width="1.5"/>');tx(230,590,'24VDC','font-size="10" fill="#333" text-anchor="middle"');
+  ln('wX1','M260 572H320V700H350');ln('wS4','M340 479V560H330V716H350');ln('wS6','M420 479V540H272V600H260');
+  tx(342,744,'4-20mA loop','font-size="9" fill="#555"');
+ }
+ o.push('<g id="scut" visibility="hidden"><path d="M372 545l16 16M388 545l-16 16" stroke="#c0352b" stroke-width="3"/></g>');
+ /* event inputs / RS-485 */
+ if(S.opt==='ev'){
+  ln('wE13','M760 479V600H786');ln('wE15','M840 479V600H814');
+  o.push('<g class="clk" data-dev="door"><rect class="hl" x="770" y="570" width="60" height="56" rx="4" fill="transparent" stroke="#a9aeb2" stroke-dasharray="3 3"/><circle cx="786" cy="600" r="2.6" fill="#2b3238"/><circle cx="814" cy="600" r="2.6" fill="#2b3238"/><line id="drb" x1="786" y1="600" x2="814" y2="600" stroke="#1d2226" stroke-width="2.4" stroke-linecap="round"/></g>');
+  tx(800,644,'SQ1 باب','font-size="10" fill="#333" text-anchor="middle" class="ar"');tx(800,658,'يقفل لما الباب يتفتح','font-size="9" fill="#555" text-anchor="middle" class="ar"');
+ }else{
+  ln('wE13','M760 479V610H800');ln('wE14','M800 479V596H812');
+  o.push('<rect x="800" y="580" width="90" height="44" rx="4" fill="#fff" stroke="#4a5055" stroke-width="1.5"/>');tx(845,600,'PLC / HMI','font-size="10" fill="#333" text-anchor="middle"');tx(845,614,'RS-485','font-size="9" fill="#555" text-anchor="middle"');
+ }
+ $('#wd').innerHTML=o.join('');
+ WD={};$$('#wd [id]').forEach(e=>WD[e.id]=e);
+ $$('#wd .clk').forEach(g=>g.addEventListener('click',()=>devAct(g.dataset.dev)));
+ updWD();
+}
+function wcol(id,live,col){const e=WD[id];if(!e)return;e.setAttribute('stroke',live?col:WDEAD);e.setAttribute('stroke-width',live?3:2.2);}
+function blade(id,closed,x,y1,y2){const e=WD[id];if(!e)return;e.setAttribute('x2',closed?x:x+12);e.setAttribute('y2',closed?y2:y2+4);}
+function updWD(){
+ if(!WD.wL)return;
+ const lineIn=!S.inj.dip,mains=S.brk&&lineIn;
+ wcol('wInL',lineIn,'#7b3f12');wcol('wInN',lineIn,'#1f5fbf');
+ [0,1].forEach(i=>{const y=[40,70][i],b=WD['bb'+i];b.setAttribute('x2',S.brk?130:126);b.setAttribute('y2',S.brk?y:y-14);});
+ ['wL','wL2','wHa','wLr','wP11','wH0a'].forEach(id=>wcol(id,mains,'#7b3f12'));
+ ['wN','wNr','wP12','wH0b','wHf'].forEach(id=>wcol(id,mains,'#1f5fbf'));
+ wcol('wP11b',mains,'#7b3f12');
+ WD.lmpH0.setAttribute('fill',mains?'#fff3b0':'#fff');
+ /* heater */
+ const q2=mains&&S.hbrk,ts=q2&&!S.limTrip;
+ const qb=WD.q2b;qb.setAttribute('x2',S.hbrk?1000:1012);qb.setAttribute('y2',S.hbrk?122:118);
+ const tb=WD.tsb;tb.setAttribute('x2',S.limTrip?1012:1000);tb.setAttribute('y2',S.limTrip?168:172);
+ wcol('wHb',q2,'#7b3f12');wcol('wHc',ts,'#7b3f12');
+ const hc=S.cond;
+ ['wHd','wHe','wR1a','wR2a','wR1b','wR2b','wH3a','wH3b'].forEach(id=>wcol(id,hc,'#c8261c'));
+ if(S.inj.burn){wcol('wR1a',false);wcol('wR1b',false);}
+ WD.r1x.setAttribute('visibility',S.inj.burn?'visible':'hidden');
+ WD.r1.setAttribute('fill',hc&&!S.inj.burn?'#ffb08a':'#fff');WD.r2.setAttribute('fill',hc?'#ffb08a':'#fff');
+ WD.lmpH3.firstChild.setAttribute('fill',hc?'#3ee05a':'#fff');
+ if(S.out==='Q'){wcol('wO1',S.ctrl&&S.out1,'#e8870c');wcol('wO2',S.ctrl,'#20307a');WD.ssrLed.setAttribute('fill',S.out1?'#ff3b22':'#666');WD.ssrb.setAttribute('stroke',hc?'#c8261c':'#1d2226');}
+ else{wcol('wO1',mains,'#7b3f12');wcol('wO2',mains&&S.out1,'#e8870c');wcol('wO3',mains,'#1f5fbf');WD.kmCoil.setAttribute('fill',S.out1&&mains?'#ffe08a':'#fff');const c=S.kmOn&&mains||S.inj.ssr;WD.kmb.setAttribute('x2',c?1000:1012);WD.kmb.setAttribute('y2',c?236:230);}
+ const ctl=S.I>0&&!S.inj.ctcut;wcol('wCa',ctl,'#0d7584');wcol('wCb',ctl,'#0d7584');WD.ctcut.setAttribute('visibility',S.inj.ctcut?'visible':'hidden');
+ /* sensor */
+ const sOk=!S.inj.tcopen;['wS4','wS5','wS6','wX1'].forEach(id=>wcol(id,sOk&&(S.sensor!=='tx'||S.ctrl||true),S.sensor==='tc'?'#2e9c3a':S.sensor==='pt'?'#c0352b':'#8e959b'));
+ if(S.sensor==='tc'&&S.inj.tcrev){wcol('wS5',sOk,'#e6e6e6');wcol('wS6',sOk,'#2e9c3a');}
+ WD.scut.setAttribute('visibility',S.inj.tcopen?'visible':'hidden');
+ /* aux outputs */
+ wcol('wA7',mains,'#6b3fa0');wcol('wA9',mains,'#6b3fa0');
+ const s1=S.sub[0],s2=S.sub[1];
+ wcol('wA8',mains&&s1,'#6b3fa0');wcol('wA8b',mains&&s1,'#1f5fbf');wcol('wBz',mains&&s1&&!S.mute,'#6b3fa0');wcol('wBz2',mains&&s1&&!S.mute,'#1f5fbf');
+ wcol('wA10',mains&&s2,'#6b3fa0');wcol('wA10b',mains&&s2,'#1f5fbf');
+ WD.lmpH1.firstChild.setAttribute('fill',mains&&s1?'#ff5a4a':'#fff');WD.lmpH2.firstChild.setAttribute('fill',mains&&s2?'#ffc21a':'#fff');
+ WD.bz.setAttribute('fill',mains&&s1&&!S.mute?'#ffd76a':'#fff');
+ /* event / comms */
+ if(S.opt==='ev'){const c=S.door;wcol('wE13',S.ctrl&&c,'#c9a000');wcol('wE15',S.ctrl,'#c9a000');WD.drb.setAttribute('x2',c?814:810);WD.drb.setAttribute('y2',c?600:588);}
+ else{wcol('wE13',S.ctrl,'#c9a000');wcol('wE14',S.ctrl,'#c9a000');}
+ WD.wdSt.textContent=!S.ctrl?(mains?'':'OFF'):S.err?S.err.toUpperCase():S.boot>0?'Booting':'PV '+(S.serr?'S.Err':pvText())+'  ·  SV '+fmtNum(toD(PM.sv,P.sv),tdc())+'  ·  MV '+S.mv.toFixed(1)+'%  ·  '+statusText();
+ WD.wdSt.setAttribute('fill',S.err||S.serr?'#ff8a80':'#9cf29c');
+}
+
+/* ---------------- tiles, pills ---------------- */
+function setTile(id,v){const e=$('#'+id);e.firstChild.nodeValue=v;}
+function ui(){
+ const now=performance.now();
+ drawPanel(now);
+ const U=isF()?'°F':'°C',cv=t=>isF()?t*1.8+32:t;
+ setTile('tTc',cv(S.Tc).toFixed(1));$('#tTc small').textContent='°C'===U?'°C':'°F';
+ setTile('tPV',ctlOk()?(S.serr?'S.Err':pvText()):'—');$('#tPV small').textContent=isTempIn()?U:'';
+ setTile('tSP',ctlOk()?fmtNum(toD(PM.sv,S.spEff),tdc()):'—');$('#tSP small').textContent=isTempIn()?U:'';
+ setTile('tMV',S.mv.toFixed(1));setTile('tPw',(S.Pw/1000).toFixed(2));setTile('tCT',(S.inj.ctcut?0:S.I).toFixed(1));setTile('tTe',S.Te.toFixed(0));
+ const m=Math.floor(S.t/60);setTile('tClk',String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'));$('#tClk small').textContent='h:m';
+ const bar=(id,v,hot)=>{const e=$('#'+id);e.style.width=clamp(v,0,100)+'%';e.classList.toggle('hot',!!hot);};
+ bar('bTc',S.Tc/3,S.Tc>OV.lim-20);bar('bMV',Math.abs(S.mv));bar('bPw',S.Pw/(2*S.hp*1.1)*100);bar('bTe',S.Te/7,S.Te>600);
+ $('#lPow').classList.toggle('on',S.brk&&!S.inj.dip);$('#lHeat').classList.toggle('on',S.cond);
+ $('#lAl1').classList.toggle('on',S.sub[0]);$('#lAl2').classList.toggle('on',S.sub[1]);$('#lLim').classList.toggle('on',S.limTrip);
+ $('#bell').classList.toggle('on',S.sub[0]&&!S.mute);
+ $('#amN').setAttribute('transform','rotate('+(-50+clamp(S.I/20,0,1.05)*100)+' 48 58)');$('#amV').textContent=S.I.toFixed(1)+' A';
+ $('#chipLv').textContent=LVN[K.lv];$('#chipSt').textContent=statusText();
+ const act=activeFaults();$('#chipF').textContent=act.length?act.map(k=>FL[k][0]).join(' · '):'لا يوجد';
+ drawOven();
+}
+function activeFaults(){const a=[];if(S.serr&&S.ctrl&&!S.err)a.push('serr');if(S.err)a.push(S.err);if(S.hb)a.push('hb');if(S.hs)a.push('hs');if(S.lba)a.push('lba');if(S.limTrip)a.push('lim');if(S.ctrl&&S.opt==='ev'&&P['ev-1']===1&&S.door)a.push('door');return a;}
+function pills(){
+ const ok=ctlOk();
+ const L=[['Power',S.ctrl,'on'],['RUN',ok&&!runStop()&&!inSetLevel(),'on'],['STOP',ok&&runStop(),'warn'],['Setting: control stopped',ok&&inSetLevel(),'warn'],['Manual',ok&&S.manual,'warn'],['AT',!!S.at,'warn'],['ST',!!S.stn,'warn'],['OUT1',ok&&S.out1,'on'],['Heater current',S.cond,'on'],
+  ['Alarm 1',S.alm[0],'bad'],['Alarm 2',S.alm[1],'bad'],['HB',S.hb,'bad'],['HS',S.hs,'bad'],['LBA',S.lba,'bad'],['S.Err',ok&&S.serr,'bad'],['الباب مفتوح',S.door,'warn'],['ليمتر فاصل',S.limTrip,'bad']];
+ $('#pills').innerHTML=L.map(([t,v,c])=>'<span class="pill'+(v?' '+c:'')+'">'+t+'</span>').join('');
+}
+
+/* ---------------- trend ---------------- */
+const SC={buf:[],paused:false};
+function sample(){if(SC.paused)return;SC.buf.push([S.t,ctlOk()&&!S.serr?S.pv:NaN,ctlOk()?S.spEff:NaN,S.mv,S.Tc]);if(SC.buf.length>4000)SC.buf.shift();}
+$('#scopePause').addEventListener('click',e=>{SC.paused=!SC.paused;e.target.textContent=SC.paused?'كمّل':'إيقاف مؤقت';});
+function drawScope(){
+ const cv=$('#scope'),dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;
+ if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);}
+ const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,w,h);
+ const span=+$('#scopeSpan').value,t1=SC.buf.length?SC.buf[SC.buf.length-1][0]:0,t0=t1-span;
+ const b=SC.buf.filter(s=>s[0]>=t0);
+ let mx=100;b.forEach(s=>{if(s[1]>mx)mx=s[1];if(s[2]>mx)mx=s[2];if(s[4]>mx)mx=s[4];});
+ const hi=Math.min(450,Math.ceil((mx+15)/50)*50),lo=0,pl=34,pr=34,pw=w-pl-pr;
+ const y=v=>h-14-(clamp(v,lo,hi)-lo)/(hi-lo)*(h-24),x=t=>pl+(t-t0)/span*pw;
+ g.font='10px IBM Plex Mono,monospace';g.lineWidth=1;
+ for(let v=0;v<=hi;v+=50){g.strokeStyle='#22343a';g.beginPath();g.moveTo(pl,y(v));g.lineTo(w-pr,y(v));g.stroke();g.fillStyle='#ff9b90';g.fillText(String(v),4,y(v)+3);}
+ for(let p=0;p<=100;p+=25){const yy=h-14-p/100*(h-24);g.fillStyle='#ffcf8a';g.fillText(p+'%',w-pr+3,yy+3);}
+ const stepT=span>=1800?300:span>=600?60:20;g.fillStyle='#5f7880';
+ for(let t=Math.ceil(t0/stepT)*stepT;t<=t1;t+=stepT){if(t<0)continue;g.strokeStyle='#1a2a2f';g.beginPath();g.moveTo(x(t),4);g.lineTo(x(t),h-14);g.stroke();const mm=Math.floor(t/60),ss=Math.round(t%60);g.fillText(mm+':'+String(ss).padStart(2,'0'),x(t)-12,h-2);}
+ const line=(k,c,mvAxis,dash)=>{g.strokeStyle=c;g.lineWidth=k===1?2:1.6;g.setLineDash(dash||[]);g.beginPath();let pen=false;b.forEach(s=>{const v=s[k];if(!isFinite(v)){pen=false;return;}const yy=mvAxis?h-14-clamp(v,0,100)/100*(h-24):y(v);pen?g.lineTo(x(s[0]),yy):g.moveTo(x(s[0]),yy);pen=true;});g.stroke();g.setLineDash([]);};
+ line(3,'#ffb44d',true);line(4,'#4cc0cf',false,[4,3]);line(2,'#5cff7a');line(1,'#ff6b5e');
+}
+function perfText(){
+ const c=S.cmp;let t='';
+ if(c.act){const os=c.peak-c.sv0;t='آخر تغيير SV: من '+c.from.toFixed(0)+' لـ '+c.sv0.toFixed(0)+'°C · '+(c.reachT>=0?'وصل خلال '+Math.round(c.reachT/60*10)/10+' دقيقة محاكاة · ':'لسه موصلش · ')+'Overshoot = <b>'+Math.max(0,os).toFixed(1)+'°C</b>';}
+ const w=SC.buf.filter(s=>s[0]>S.t-300&&isFinite(s[1]));
+ if(w.length>60&&ctlOk()&&!runStop()){let a=1e9,z=-1e9;w.forEach(s=>{a=Math.min(a,s[1]);z=Math.max(z,s[1]);});t+=(t?' · ':'')+'تموّج آخر 5 دقايق: <b>'+(z-a).toFixed(1)+'°C</b> (من '+a.toFixed(1)+' لـ '+z.toFixed(1)+')';}
+ if(S.out==='R')t+=(t?' · ':'')+'مرات تشغيل KM1: <b>'+S.kmOps+'</b>';
+ t+=(t?' · ':'')+'الطاقة: <b>'+(S.wh/1000).toFixed(2)+' kWh</b>';
+ $('#perf').innerHTML=t;
+}
+
+/* ---------------- parameter table ---------------- */
+let PTAB='opr',PSEL='sv';
+function renderTabs(){$('#ptabs').innerHTML=[['all','All'],...G].map(([k,n])=>'<button data-g="'+k+'" aria-pressed="'+(PTAB===k)+'" title="'+(GAR[k]||'الكل')+'">'+n+'</button>').join('');}
+$('#ptabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;PTAB=b.dataset.g;renderTabs();renderParams();});
+$('#psearch').addEventListener('input',()=>renderParams());$('#pchanged').addEventListener('change',()=>renderParams());
+function unitOf(p){if(ptu(p))return isTempIn()?(isF()?'°F':'°C'):'';return p.u;}
+function dispV(p,v){if(p.t==='e')return p.ol?p.ol[v]:p.o[v];if(p.t==='ro')return p.fmt?p.fmt(v):fmtNum(toD(p,v),pdc(p));if(p.k==='in-t')return v+' · '+INT[v][0];if(p.ol)return p.ol[v]||String(v);return fmtNum(toD(p,v),pdc(p))+(unitOf(p)?' '+unitOf(p):'');}
+function rangeText(p){if(p.t==='ro')return '—';if(p.t==='e')return p.o.join(' / ');const a=toD(p,pmn(p)),b=toD(p,pmx(p));return fmtNum(Math.min(a,b),pdc(p))+' – '+fmtNum(Math.max(a,b),pdc(p))+(unitOf(p)?' '+unitOf(p):'');}
+const isChg=p=>p.t!=='ro'&&p.k!=='sv'&&Math.abs(P[p.k]-p.d)>1e-9;
+function renderParams(){
+ const q=$('#psearch').value.trim().toLowerCase(),ch=$('#pchanged').checked;
+ const rows=PD.filter(p=>(PTAB==='all'||p.g===PTAB)&&(!q||p.k.includes(q)||p.nm.toLowerCase().includes(q)||p.ar.includes(q))&&(!ch||isChg(p)||(p.k==='sv'&&P.sv!==0)));
+ $('#ptable').innerHTML=rows.map(p=>{
+  let cell;
+  if(p.t==='ro')cell='<span class="ro" id="pv_'+p.k+'">'+dispV(p,p.get())+'</span>';
+  else if(p.t==='e')cell='<select data-k="'+p.k+'">'+p.o.map((o,i)=>'<option value="'+i+'"'+(i===P[p.k]?' selected':'')+'>'+(p.ol?p.ol[i]:o)+'</option>').join('')+'</select>';
+  else if(p.k==='in-t'||p.k.startsWith('alt'))cell='<select data-k="'+p.k+'">'+Array.from({length:p.mx+1},(_,i)=>'<option value="'+i+'"'+(i===P[p.k]?' selected':'')+'>'+(p.k==='in-t'?i+' · '+INT[i][0]:ALT[i])+'</option>').join('')+'</select>';
+  else{const dc=pdc(p);cell='<input type="number" data-k="'+p.k+'" value="'+toD(p,P[p.k]).toFixed(dc)+'" step="'+(dc?Math.pow(10,-dc):p.st)+'">'+(unitOf(p)?' <span class="muted mono" style="font-size:.75rem">'+unitOf(p)+'</span>':'');}
+  const vis=p.vis();
+  return '<tr data-row="'+p.k+'" class="'+(isChg(p)?'changed ':'')+(p.k===PSEL?'sel':'')+'"'+(vis?'':' style="opacity:.55"')+'><td class="code">'+segText(p.disp||p.k)+' <span class="mono" style="font-size:.78rem">'+(p.disp||p.k)+'</span></td><td class="en">'+p.nm+'</td><td>'+p.ar+(['ini','adv','com'].includes(p.g)?'<span class="badge s">Stop</span>':'')+(p.t==='ro'?'<span class="badge r">قراءة</span>':'')+(vis?'':'<span class="badge">مخفي دلوقتي</span>')+'</td><td class="val">'+cell+'</td><td class="en">'+(p.t==='ro'?'—':p.k==='sv'?'0':dispV(p,p.d))+'</td><td class="en">'+rangeText(p)+'</td></tr>';}).join('')||'<tr><td colspan="6" class="muted">مفيش باراميترات بالشكل ده</td></tr>';
+ renderDetail();
+}
+$('#ptable').addEventListener('change',e=>{const el=e.target.closest('[data-k]');if(!el)return;const k=el.dataset.k,p=PM[k];let v=+el.value;if(p.t==='n'&&!(k==='in-t'||k.startsWith('alt')))v=fromD(p,v);const r=setParam(k,v,'الجدول');
+ const t=$('#ptoast');if(r==='run'){t.style.color='var(--bad)';t.textContent='الكنترولر بيتحكم: خلي r-s = stop أو ادخل '+GAR[p.g]+' من الكيباد عشان تغيّر '+k;renderParams();}else if(r==='lock'){t.style.color='var(--bad)';t.textContent='wtpt = on في Protect: التغيير مقفول';renderParams();}else if(r==='ok'){t.style.color='var(--good)';t.textContent='اتحفظ '+k+' ('+p.nm+')';}else renderParams();
+ setTimeout(()=>{t.textContent='';},2800);});
+$('#ptable').addEventListener('click',e=>{const tr=e.target.closest('tr[data-row]');if(!tr)return;PSEL=tr.dataset.row;$$('#ptable tr.sel').forEach(r=>r.classList.remove('sel'));tr.classList.add('sel');renderDetail();});
+const HOW={opr:'من شاشة PV/SV دوس Mode لحد ما يظهر',adj:'من Operation دوس Level دوسة قصيرة، وبعدين Mode لحد',ini:'من Operation امسك Level 3 ثواني (التحكم بيقف)، وبعدين Mode لحد',adv:'Protect: icpt = 0، بعدين في Initial خلي amov = −169، وبعدين Mode لحد',prt:'امسك Level + Mode مع بعض 3 ثواني، وبعدين Mode لحد',com:'من Initial Setting دوس Level دوسة قصيرة (كارت RS-485 بس)، وبعدين Mode لحد'};
+function renderDetail(){
+ const p=PM[PSEL];if(!p){$('#pdetail').hidden=true;return;}$('#pdetail').hidden=false;
+ const gname=G.find(g=>g[0]===p.g)[1];
+ const how=p.k==='sv'?'شاشة PV/SV على طول، ▲ ▼':HOW[p.g]+' '+(p.disp||p.k);
+ $('#pdetail').innerHTML='<div class="h">'+segText(p.disp||p.k)+'<b>'+(p.disp||p.k)+' · '+p.nm+'</b><span>'+p.ar+'</span></div><div class="facts"><span>القيمة: <b>'+dispV(p,p.t==='ro'?p.get():P[p.k])+'</b></span>'+(p.t!=='ro'?'<span>المصنع: <b>'+(p.k==='sv'?'0':dispV(p,p.d))+'</b></span><span>المدى: <b>'+rangeText(p)+'</b></span>':'')+'<span>المستوى: <b>'+gname+'</b></span>'+(p.vis()?'':'<span><b>مخفي على الشاشة دلوقتي</b> (شرط الظهور مش متحقق)</span>')+'</div><p class="muted" style="font-size:.85rem">توصله إزاي: '+how+'</p><p>'+p.x+'</p>'+(p.k==='in-t'?'<p class="muted" style="font-size:.85rem">النوع دلوقتي: <code>'+INT[P['in-t']][0]+'</code></p>':'');
+}
+function syncDetail(){const k=curK();if(!k||k==='l.adj')return;const kk=k==='pvsv'?'sv':k;if(kk!==PSEL&&PM[kk]){PSEL=kk;const g=PM[kk].g;if(PTAB!=='all'&&PTAB!==g){PTAB=g;renderTabs();renderParams();}else{$$('#ptable tr.sel').forEach(r=>r.classList.remove('sel'));const tr=$('#ptable tr[data-row="'+kk+'"]');tr&&tr.classList.add('sel');renderDetail();}}}
+function refreshRO(){for(const p of PD)if(p.t==='ro'){const e=$('#pv_'+p.k);if(e)e.textContent=dispV(p,p.get());}if(PM[PSEL]&&PM[PSEL].t==='ro')renderDetail();}
+
+/* ---------------- faults + reference ---------------- */
+function renderFaults(){const act=activeFaults();$('#fltTable').innerHTML=Object.keys(FL).map(c=>'<tr class="'+(act.includes(c)?'now':'')+'"><td>'+segText(FL[c][0].toLowerCase()==='stop'?'stop':FL[c][0].length<=5?FL[c][0]:'----')+'</td><td class="en">'+FL[c][1]+'</td><td>'+FL[c][2]+'</td><td>'+FL[c][3]+'</td></tr>').join('');}
+let lastFR='';
+const card=(a,b)=>'<div class="card"><h4>'+a+'</h4><p style="margin:0;font-size:.88rem">'+b+'</p></div>';
+const REF={
+ lv:['المستويات',()=>'<div class="cards">'+[
+  [segText('25')+' Operation','الشاشة العادية: PV فوق و SV تحت. Mode يعرض ct1 و r-s و al-1 و o. ▲ ▼ يغيّروا الـ SV على طول.'],
+  [segText('l.adj')+' Adjustment','Level دوسة قصيرة. فيه at و p و i و d و hys و ins و hb1 و mv-s و mv-e و sprt. التحكم شغال وانت جواه.'],
+  [segText('in-t')+' Initial Setting','امسك Level 3 ثواني. فيه in-t و d-u و sl-h و cntl و st و cp و orev و alt1. <b>التحكم بيقف</b> طول ما انت جواه.'],
+  [segText('init')+' Advanced Function','من Initial: amov = −169 (ولازم icpt = 0). فيه sub1 و sub2 و pf و at-g و alfa و init.'],
+  [segText('oapt')+' Protect','Level + Mode مع بعض 3 ثواني. oapt و icpt و wtpt و pfpt.'],
+  [segText('psel')+' Communications','من Initial دوسة Level قصيرة، لو فيه كارت RS-485 (803).']].map(([a,b])=>card(a,b)).join('')+'</div><h4>مثال: SV = 150 ونوع الحساس K</h4><ol><li>امسك <code>Level</code> 3 ثواني لحد ما يظهر '+segText('in-t')+' (الشاشة ترمش بعد ثانية).</li><li><code>▲ ▼</code> لحد 5 وسيبه ثانيتين أو دوس <code>Mode</code>.</li><li><code>Mode</code> لحد '+segText('sl-h')+' وخليه 250.</li><li>امسك <code>Level</code> ثانية ترجع Operation.</li><li>على شاشة PV/SV دوس <code>▲</code> لحد 150. الرقم بيتسجل بعد ثانيتين.</li></ol>'],
+ term:['الأطراف',()=>'<div class="tablewrap"><table><thead><tr><th>الطرف</th><th>الوظيفة</th><th>في اللوحة دي</th></tr></thead><tbody>'+[
+  ['11 / 12','تغذية 100-240 VAC','من Q1 عن طريق فيوز F1 1A'],['1 (+) / 2 (−)',S.out==='Q'?'OUT1 فولت 12VDC 21mA لـ SSR':'OUT1 ريليه 250VAC 3A','SSR أو كوبل KM1 للسخانات'],
+  ['4 / 5 / 6','الدخل: Pt100 = A على 4 و B على 5 و 6 · ثرموكبل = + على 5 و − على 6 · mA = + على 4 و − على 6','الحساس ('+SENS[S.sensor][0]+')'],
+  ['7 / 8','SUB1 ريليه 250VAC 3A','لمبة H1 والجرس ('+SUBO[P['sub1']]+')'],['9 / 10','SUB2 ريليه','لمبة H2 ('+SUBO[P['sub2']]+')'],
+  ['13 / 14 / 15',S.opt==='ev'?'EV1 / EV2 / COM (كونتاكت جاف)':'RS-485 B(+) / A(−)',S.opt==='ev'?'سويتش الباب SQ1 على 13 و 15':'PLC / HMI'],['17 / 18','CT1 (E54-CT1 أو E54-CT3)','CT حوالين سلك السخانات']].map(r=>'<tr><td class="code">'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td></tr>').join('')+'</tbody></table></div><ul><li>سلك الثرموكبل لازم يكمّل بـ Compensating cable من نفس النوع لحد أطراف الكنترولر، وبالقطبية الصح. لو اتعكس القراءة بتنزل والفرن بيسخن.</li><li>الـ Pt100 بـ 3 سلوك بنفس الطول عشان مقاومة السلك تتلغي.</li><li>متحطش سلك الحساس جنب كابلات السخانات.</li><li>الـ CT يلف حوالين سلك واحد بس من السخانات (مش L و N مع بعض) وإلا القراءة هتطلع صفر.</li></ul><p class="hint">أرقام الأطراف والعمود C مكتوبة من الذاكرة. راجع الاستيكر اللي على جنب الجهاز.</p>'],
+ ctl:['ON/OFF و PID و AT',()=>'<div class="cards">'+[
+  ['ON/OFF (cntl = onof)','الخرج 100% لحد ما PV يوصل SV، ويرجع بعد ما ينزل hys. بسبب التأخير الحرارة بتعدّي فوق الـ SV وتنزل تحت أكتر من hys. سهل ومش محتاج ضبط.'],
+  ['2-PID (cntl = pid)','P بتشوف الفرق دلوقتي، I بتصلّح الفرق اللي فاضل مع الوقت، D بتفرمل لما الحرارة طالعة بسرعة. الخرج Time Proportional على cp. الـ 2-PID بيستخدم α عشان تغيير الـ SV ميعملش Overshoot من غير ما يبطّأ صد الاضطرابات.'],
+  ['AT (at-2 / at-1)','Limit Cycle: الخرج يقلب 100%/0% حوالين الـ SV، والكنترولر يقيس زمن الذبذبة Tu وسعتها a. من دول بيحسب Ku = 4d/(πa) وبعدين P و I و D. القيم دي هنا بتطلع من الفرن نفسه: لو غيّرت الحمل أو السخانات وعملت AT تاني هتلاقيها اتغيرت.'],
+  ['ST (st = on)','وقت بداية التشغيل أو تغيير SV كبير: خرج 100% ويقيس أقصى ميل والتأخير L، ويحسب PID قبل ما يوصل. بيشتغل بس مع الحساسات الحرارية.']].map(([a,b])=>card(a,b)).join('')+'</div><h4>القيم الحالية</h4><p class="mono" style="direction:ltr;text-align:right">P = '+fmtNum(toD(PM.p,P.p),1)+' · I = '+P.i+' s · D = '+P.d+' s · α = '+P.alfa.toFixed(2)+' · cp = '+P.cp+' s</p><p class="hint">نصيحة: شغّل AT والفرن فيه الحمل الطبيعي وعلى SV قريب من شغلك. الـ AT بيعمل Overshoot أثناءه، فلو المنتج حساس استخدم at-1.</p>'],
+ alm:['الإنذارات',()=>'<div class="tablewrap"><table><thead><tr><th>alt</th><th>النوع</th><th>بيشتغل لما</th></tr></thead><tbody>'+[
+  [0,'off','—'],[1,'Upper & lower limit','PV > SV + al1h أو PV < SV − al1l'],[2,'Upper limit (deviation)','PV > SV + al-1'],[3,'Lower limit (deviation)','PV < SV − al-1'],[4,'Upper & lower range','PV جوه المدى SV − L لحد SV + H'],
+  [5,'1 + standby','زي 1 بس بيستنى الحرارة تدخل المنطقة السليمة الأول'],[6,'2 + standby','زي 2 مع standby'],[7,'3 + standby','زي 3 مع standby: مش هيصفّر وقت التسخين الأول'],[8,'Absolute upper','PV > al-1'],[9,'Absolute lower','PV < al-1'],[10,'8 + standby',''],[11,'9 + standby',''],[12,'LBA','الخرج مشبّع والحرارة مبتتحركش خلال lba']].map(r=>'<tr'+(r[0]===P.alt1?' style="font-weight:600"':'')+'><td class="code">'+r[0]+'</td><td class="en">'+r[1]+'</td><td>'+r[2]+'</td></tr>').join('')+'</tbody></table></div><p class="hint">دلوقتي: alt1 = '+P.alt1+' و al-1 = '+fmtNum(toD(PM['al-1'],P['al-1']),tdc())+' و alt2 = '+P.alt2+'. وقت s.err الإنذارات العلوية بتشتغل. a1lt = on يثبّت الإنذار.</p>'],
+ int:['أنواع الدخل in-t',()=>'<div class="tablewrap" style="max-height:340px;overflow:auto"><table><thead><tr><th>in-t</th><th>الحساس والمدى</th></tr></thead><tbody>'+INT.map((r,i)=>'<tr'+(i===P['in-t']?' style="font-weight:600;background:color-mix(in srgb,var(--accent) 10%,transparent)"':'')+'><td class="code">'+i+'</td><td class="en">'+r[0]+(r[4]?' (0.1)':'')+'</td></tr>').join('')+'</tbody></table></div><p class="hint">في المعمل: ثرموكبل K على نوع ثرموكبل تاني يقرا غلط بنسبة الحساسية (J يقرا أقل، N يقرا أعلى). Pt100 على دخل ثرموكبل يقرا حرارة الأطراف بس (والفرن هيجري). ثرموكبل على دخل Pt100 = s.err.</p>'],
+ seg:['حروف الشاشة',()=>'<p style="font-size:.9rem">الشاشة 7 سيجمنت، فالحروف بتتكتب بشكل معيّن. دي أهم الرموز:</p><div class="cards">'+['in-t','d-u','sl-h','cntl','onof','pid','orev','or-r','alt1','r-s','stop','run','at-2','hys','mv-e','s.err','e333','e111','hhhh','ct1','hb1','amov','oapt','wtpt'].map(s=>'<div class="card" style="display:flex;gap:10px;align-items:center">'+segText(s)+'<code>'+s+'</code></div>').join('')+'</div>'],
+ qs:['تشغيل لأول مرة','<ol><li>قبل الكهربا: راجع التوصيل، الحساس على 5 و 6 بالقطبية الصح، والـ CT حوالين سلك سخان واحد.</li><li>Q1 ON: الشاشة كلها تنور ثانية وبعدين PV/SV.</li><li>Initial Setting: <code>in-t</code> = نوع الحساس، <code>d-u</code>، <code>sl-h</code> = أقصى حرارة للفرن، <code>cntl</code>، <code>cp</code> (2 للـ SSR، 20 للكونتاكتور)، <code>alt1</code>.</li><li>Operation: <code>al-1</code> (مثلاً 15 درجة فوق) ، و SV.</li><li>Q2 ON وشغّل. لو PID: Adjustment ← <code>at</code> = <code>at-2</code> واستنى يخلص.</li><li>اقرا <code>ct1</code> وهو بيسخّن، وظبط <code>hb1</code> = نص المسافة بين التيار الطبيعي وتيار سخان واحد.</li><li>Protect: <code>wtpt</code> = on لو عايز تمنع العبث.</li></ol>']};
+let REFK='lv';
+function renderRef(){$('#reftabs').innerHTML=Object.entries(REF).map(([k,v])=>'<button data-k="'+k+'" aria-pressed="'+(k===REFK)+'">'+v[0]+'</button>').join('');const b=REF[REFK][1];$('#refBody').innerHTML=typeof b==='function'?b():b;}
+$('#reftabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;REFK=b.dataset.k;renderRef();});
+
+/* ---------------- exercises ---------------- */
+const EX=[
+ {t:'إعداد الدخل والوحدة',p:'الحساس المركّب ثرموكبل K والفرن أقصاه حوالي 280°C. الإعدادات دي في Initial Setting (امسك Level 3 ثواني).',s:[
+  ['سلكتور الحساس على TC K و in-t = 5',()=>S.sensor==='tc'&&P['in-t']===5],
+  ['d-u = c (سلزيوس)',()=>P['d-u']===0],
+  ['sl-h = 250 عشان محدش يكتب SV أعلى من قدرة الفرن',()=>Math.abs(P['sl-h']-250)<.5],
+  ['ارجع Operation (امسك Level ثانية) والـ PV يقرا صح من غير s.err',()=>K.lv==='opr'&&ctlOk()&&!S.serr&&Math.abs(S.pv-S.Ts)<3]]},
+ {t:'أول تسخين على SV = 150',s:[
+  ['من شاشة PV/SV دوس ▲ لحد 150 وسيبها ثانيتين تتسجل',()=>Math.abs(P.sv-150)<.5],
+  ['r-s = run ولمبة OUT1 تنور',()=>ctlOk()&&!runStop()&&S.out1],
+  ['استنى الـ PV يوصل 145 أو أكتر (غيّر سرعة المحاكاة لو مستعجل)',()=>Math.abs(P.sv-150)<.5&&S.pv>=145&&!S.serr]]},
+ {t:'ON/OFF والهستريسيس',p:'شوف الترند: الحرارة بتعدّي فوق الـ SV وتنزل تحت، والتموّج أكبر من hys بسبب تأخير الفرن.',s:[
+  ['cntl = onof',()=>P.cntl===0],
+  ['hys = 2.0',()=>Math.abs(P.hys-2)<.01],
+  ['شغّل والخرج يقفل ويفتح 3 مرات حوالين الـ SV',()=>P.cntl===0&&S.onCyc>=3],
+  ['غيّر الخرج لـ R (كونتاكتور) وعدّ 5 مرات تشغيل على KM1',()=>P.cntl===0&&S.out==='R'&&S.kmOps>=5]]},
+ {t:'Autotuning بيتعرّف على الفرن',p:'الـ AT هيقلب الخرج 100%/0% حوالين الـ SV ويحسب P و I و D من الفرن نفسه. الـ SV بيرمش طول ما هو شغال.',s:[
+  ['cntl = pid',()=>P.cntl===1],
+  ['SV = 150 ، r-s = run ، وفي Adjustment خلي at = at-2',()=>EV.atStart],
+  ['استنى الـ AT يخلص',()=>EV.atDone],
+  ['الحرارة تثبت على الـ SV ±1°C لمدة دقيقتين محاكاة',()=>EV.atDone&&S.stab>=120]]},
+ {t:'Overshoot بعد الـ AT',s:[
+  ['بعد ما الـ AT خلص والفرن ثابت على 150، غيّر SV لـ 200',()=>EV.atDone&&S.cmp.act&&Math.abs(S.cmp.sv0-200)<.5&&S.cmp.from<=160],
+  ['الحرارة توصل 200 والـ Overshoot أقل من 3°C (بص على السطر تحت الترند)',()=>S.cmp.act&&Math.abs(S.cmp.sv0-200)<.5&&S.cmp.reachT>0&&S.t-S.cmp.start-S.cmp.reachT>120&&S.cmp.peak-200<3]]},
+ {t:'إنذار 1 Deviation فوق',s:[
+  ['alt1 = 2 و al-1 = 15',()=>P.alt1===2&&Math.abs(P['al-1']-15)<.5],
+  ['خلي الـ PV يعدّي SV + 15 (مثلاً والفرن سخن نزّل الـ SV 30 درجة): H1 والجرس يشتغلوا',()=>S.alm[0]&&S.sub[0]],
+  ['استنى الحرارة تنزل والإنذار يروح لوحده',()=>!S.alm[0]&&ctlOk()]]},
+ {t:'الحساس اتقطع (s.err)',s:[
+  ['شغّل والـ PV فوق 80',()=>ctlOk()&&!runStop()&&S.pv>80&&!S.serr],
+  ['اقطع سلك الحساس من الأعطال: الشاشة تكتب s.err',()=>S.serr&&ctlOk()],
+  ['اتأكد إن MV = 0% (mv-e) ومفيش تيار في السخانات',()=>S.serr&&S.mv===0&&!S.cond],
+  ['صلّح السلك والكنترولر يرجع يتحكم لوحده',()=>!S.serr&&EV.tcFixed&&ctlOk()&&!runStop()]]},
+ {t:'احتراق سخان والـ CT',p:'التيار الطبيعي 2 سخان، ولما واحد يتحرق التيار بيبقى النص.',s:[
+  ['والفرن بيسخّن اعرض ct1 على الشاشة (Mode من PV/SV)',()=>(curK()==='ct1'||curK()==='ct1a')&&S.ctShow>8],
+  ['hb1 = 8.0 و sub2 = hb (Advanced)',()=>Math.abs(P.hb1-8)<.05&&P.sub2===3],
+  ['اعمل عطل "سخان 1 اتحرق" ولمبة H2 تنور',()=>S.hb&&S.sub[1]],
+  ['صلّح السخان والإنذار يروح',()=>EV.burnFixed&&!S.hb&&!S.inj.burn]]},
+ {t:'باب الفرن على Event Input',s:[
+  ['كارت 802 و ev-1 = stop',()=>S.opt==='ev'&&P['ev-1']===1],
+  ['افتح الباب والفرن شغال: STOP تنور والسخانات تقف',()=>S.door&&runStop()&&P['r-s']===0&&!S.cond&&ctlOk()],
+  ['اقفل الباب والتحكم يرجع لوحده',()=>!S.door&&!runStop()&&ctlOk()]]},
+ {t:'Manual بزرار PF',s:[
+  ['امسك PF ثانية: لمبة MANU تنور',()=>S.manual],
+  ['خلي MV = 30.0% بالأسهم',()=>S.manual&&Math.abs(S.manMV-30)<.05],
+  ['امسك PF تاني ترجع Auto',()=>EV.autoBack&&!S.manual]]}
+];
+function renderEx(){
+ $('#exList').innerHTML=EX.map((e,i)=>{const d=EXS[i]||[];const n=d.filter(Boolean).length;return '<details class="ex'+(n===e.s.length?' done':'')+'" data-i="'+i+'"><summary><span>'+(i+1)+'. '+e.t+'</span><span class="cnt">'+n+'/'+e.s.length+'</span></summary><div class="body">'+(e.p?'<p>'+e.p+'</p>':'')+'<ol>'+e.s.map((s,j)=>'<li class="'+(d[j]?'ok':'')+'">'+s[0]+'</li>').join('')+'</ol><button class="btn xs" data-reset="'+i+'" style="margin-top:8px">ابدأ التمرين من الأول</button></div></details>';}).join('');
+}
+$('#exList').addEventListener('click',e=>{const b=e.target.closest('[data-reset]');if(!b)return;const i=+b.dataset.reset;EXS[i]=[];
+ ({2:()=>{S.onCyc=0;S.kmOps=0;},3:()=>{delete EV.atStart;delete EV.atDone;},6:()=>delete EV.tcFixed,7:()=>delete EV.burnFixed,9:()=>delete EV.autoBack}[i]||(()=>{}))();save();renderEx();$('#exList details[data-i="'+i+'"]').open=true;});
+function checkEx(){
+ let ch=false;
+ EX.forEach((e,i)=>{const d=EXS[i]||(EXS[i]=[]);e.s.forEach((s,j)=>{if(!d[j]&&(j===0||d[j-1])){let ok=false;try{ok=!!s[1]();}catch(_){}if(ok){d[j]=true;ch=true;if(d.filter(Boolean).length===e.s.length)log('خلصت تمرين: '+e.t);}}});});
+ if(ch){const open=$$('#exList details[open]').map(d=>d.dataset.i);save();renderEx();open.forEach(i=>{const d=$('#exList details[data-i="'+i+'"]');if(d)d.open=true;});}
+}
+
+
+/* ---------------- solved applications (wiring + parameters) ---------------- */
+const SG={
+ box:(h,terms)=>'<rect x="8" y="8" width="118" height="'+h+'" rx="6" class="dv"/><text x="16" y="25" class="b">E5CC</text>'+terms.map(([y,n,l])=>'<text x="16" y="'+(y+4)+'" class="m">'+l+'</text><rect x="98" y="'+(y-8)+'" width="24" height="16" rx="2" class="tm"/><text x="110" y="'+(y+4)+'" text-anchor="middle" class="b" style="font-size:10.5px">'+n+'</text><circle cx="126" cy="'+y+'" r="2.6" class="pt"/>').join(''),
+ w:(d,c)=>'<path d="'+d+'" class="w '+c+'"/>',
+ dot:(x,y)=>'<circle cx="'+x+'" cy="'+y+'" r="2.8" class="pt"/>',
+ t:(x,y,s,c,a)=>'<text x="'+x+'" y="'+y+'"'+(c?' class="'+c+'"':'')+(a?' text-anchor="'+a+'"':'')+'>'+s+'</text>',
+ /* SSR: input pins on the left (y+14, y+40), load pins on the right */
+ ssr:(x,y)=>'<rect x="'+x+'" y="'+y+'" width="60" height="54" rx="3" class="syf"/>'+SG.t(x+30,y+31,'SSR','b','middle')+SG.t(x+4,y+11,'3+','m')+SG.t(x+4,y+51,'4−','m')+SG.t(x+56,y+11,'L1','m','end')+SG.t(x+56,y+51,'T1','m','end'),
+ /* vertical heater, 44 high, starting at (x,y) */
+ htr:(x,y)=>'<path d="M'+x+' '+y+'v6l7 4-14 6 14 6-14 6 14 6-7 4v6" class="w H"/>',
+ lamp:(x,y)=>'<circle cx="'+x+'" cy="'+y+'" r="9" class="syf"/><path d="M'+(x-6)+' '+(y-6)+'l12 12M'+(x+6)+' '+(y-6)+'l-12 12" class="sy" style="stroke-width:1.2"/>',
+ bell:(x,y)=>'<path d="M'+(x-10)+' '+(y+6)+'h20v-3a10 10 0 0 0-20 0Z" class="syf"/><path d="M'+(x-3)+' '+(y+9)+'h6" class="sy"/>',
+ /* NO contact on a vertical wire from (x,y) to (x,y+24) */
+ no:(x,y)=>'<circle cx="'+x+'" cy="'+y+'" r="2.4" class="pt"/><circle cx="'+x+'" cy="'+(y+24)+'" r="2.4" class="pt"/><path d="M'+x+' '+(y+24)+'L'+(x-10)+' '+(y+4)+'" class="sy"/>'
+};
+function saDiagTC(two){
+ const o=[SG.box(206,[[40,'11','L'],[66,'12','N'],[106,'1','OUT1 +'],[132,'2','OUT1 −'],[172,'5','TC +'],[198,'6','TC −']])];
+ o.push(SG.w('M126 40H392','L'),SG.w('M126 66H392','N'),SG.t(388,34,'L 230V','m','end'),SG.t(388,60,'N','m','end'));
+ o.push(SG.w('M126 106H200','O'),SG.w('M126 132H200','O'),SG.ssr(200,92));
+ o.push(SG.w('M260 106H292V40','L'),SG.dot(292,40));
+ if(two){o.push(SG.w('M260 132H330V146','H'),SG.htr(316,146),SG.htr(344,146),SG.w('M316 146H344M316 190H344','H'),SG.w('M330 190V204H376V66','H'),SG.dot(376,66),SG.t(330,222,'R1 ∥ R2','m','middle'));}
+ else{o.push(SG.w('M260 132H330V146','H'),SG.htr(330,146),SG.w('M330 190V204H376V66','H'),SG.dot(376,66),SG.t(342,174,'R1+R2','m'));}
+ o.push(SG.w('M126 172H222L252 185','S'),SG.w('M126 198H222L252 185','S'),'<circle cx="255" cy="185" r="4" fill="#e8870c"/>',SG.t(230,168,'+','m'),SG.t(230,212,'−','m'),SG.t(264,189,'TC K','b'));
+ return '<svg class="sa-svg" viewBox="0 0 400 232" role="img" aria-label="توصيل ثرموكبل و SSR">'+o.join('')+'</svg>';
+}
+function saDiagAlarm(){
+ const o=[SG.box(218,[[40,'11','L'],[80,'7','SUB1'],[106,'9','SUB2'],[144,'8','SUB1'],[170,'10','SUB2'],[210,'12','N']])];
+ o.push(SG.w('M126 40H392','L'),SG.t(388,34,'L 230V','m','end'),SG.w('M126 210H392','N'),SG.t(388,226,'N','m','end'));
+ o.push(SG.w('M126 80H150V40','L'),SG.dot(150,40),SG.w('M126 106H150V80','L'),SG.dot(150,80));
+ o.push(SG.w('M126 144H320V160','R'),SG.dot(260,144),SG.w('M260 144V162','R'),SG.lamp(260,171),SG.w('M260 180V210','N'),SG.bell(320,170),SG.w('M320 179V210','N'),SG.dot(260,210),SG.dot(320,210));
+ o.push(SG.t(274,175,'H1','b'),SG.t(352,175,'جرس','ar','middle'),SG.t(240,136,'SUB1 = alm1','m'));
+ o.push(SG.w('M126 170H200V181','R'),SG.lamp(200,190),SG.w('M200 199V210','N'),SG.dot(200,210),SG.t(214,194,'H2','b'),SG.t(170,162,'alm2','m'));
+ o.push(SG.t(280,64,'كونتاكت جاف: الفاز من بره','ar','middle'));
+ return '<svg class="sa-svg" viewBox="0 0 400 240" role="img" aria-label="توصيل الإنذار على لمبة وجرس">'+o.join('')+'</svg>';
+}
+function saDiagPt(){
+ const o=[SG.box(230,[[40,'11','L'],[66,'12','N'],[104,'1','OUT1'],[130,'2','OUT1'],[170,'4','Pt A'],[196,'5','Pt B'],[222,'6','Pt B']])];
+ o.push(SG.w('M126 40H392','L'),SG.w('M126 66H392','N'),SG.t(388,34,'L 230V','m','end'),SG.t(388,60,'N','m','end'));
+ o.push(SG.w('M126 104H150V40','L'),SG.dot(150,40),SG.w('M126 130H196','O'),'<rect x="196" y="120" width="40" height="20" class="syf"/>',SG.t(216,134,'KM1','m','middle'),SG.t(192,116,'A1','m','end'),SG.t(240,116,'A2','m'),SG.w('M236 130H262V66','N'),SG.dot(262,66));
+ o.push(SG.w('M310 40V82','L'),SG.dot(310,40),SG.no(310,82),SG.w('M310 106V118','H'),SG.htr(310,118),SG.w('M310 162V176H372V66','H'),SG.dot(372,66),SG.t(322,98,'KM1','m'),SG.t(322,146,'R1+R2','m'),'<path d="M236 126L302 94" class="dash"/>');
+ o.push(SG.w('M126 170H230V184','S'),'<rect x="224" y="184" width="12" height="24" class="syf"/>',SG.w('M230 208V214','S'),SG.w('M126 196H200V214H230','S'),SG.w('M126 222H230V214','S'),SG.dot(230,214),SG.t(244,200,'Pt100','b'),SG.t(300,222,'تلات سلوك بنفس الطول','ar','middle'));
+ return '<svg class="sa-svg" viewBox="0 0 400 246" role="img" aria-label="توصيل Pt100 وكونتاكتور">'+o.join('')+'</svg>';
+}
+function saDiagEv(){
+ const o=[SG.box(170,[[40,'1','OUT1 +'],[66,'2','OUT1 −'],[110,'13','EV1'],[136,'14','EV2'],[162,'15','COM']])];
+ o.push(SG.w('M126 40H200','O'),SG.w('M126 66H200','O'),SG.ssr(200,26),SG.w('M260 40H300','L'),SG.w('M260 66H300','H'),SG.t(304,44,'L','m'),SG.t(340,70,'للسخانات','ar','middle'));
+ o.push(SG.w('M126 110H250V122','E'),SG.no(250,122),SG.w('M126 162H250V146','E'),SG.t(328,132,'باب الفرن SQ1','ar','middle'),SG.t(328,150,'بيقفل لما يتفتح','ar','middle'));
+ o.push(SG.w('M126 136H176','E'),'<circle cx="179" cy="136" r="3" class="tm"/>',SG.t(212,140,'فاضي','ar','middle'));
+ o.push(SG.t(330,108,'كونتاكت جاف','ar','middle'));
+ return '<svg class="sa-svg" viewBox="0 0 400 186" role="img" aria-label="توصيل سويتش الباب على Event Input">'+o.join('')+'</svg>';
+}
+function saDiagCT(){
+ const o=[SG.box(210,[[40,'1','OUT1 +'],[66,'2','OUT1 −'],[110,'17','CT1'],[136,'18','CT1'],[176,'9','SUB2'],[202,'10','SUB2']])];
+ o.push(SG.w('M126 40H180','O'),SG.w('M126 66H180','O'),SG.ssr(180,26),SG.w('M240 40H300V14H330','L'),SG.t(334,18,'L','m'));
+ o.push(SG.w('M240 66H300V120','H'),'<ellipse cx="300" cy="100" rx="13" ry="5" fill="none" stroke="var(--wC)" stroke-width="3.5"/>',SG.htr(300,120),SG.w('M300 164V176H360','H'),SG.t(364,180,'N','m'),SG.t(314,142,'R1+R2','m'),SG.t(320,88,'CT','b'));
+ o.push(SG.w('M126 110H270V97H287','C'),SG.w('M126 136H278V103H287','C'));
+ o.push(SG.w('M126 176H160','L'),SG.t(164,180,'L','m'),SG.w('M126 202H223','R'),SG.lamp(232,202),SG.w('M241 202H280','N'),SG.t(284,206,'N','m'),SG.t(232,224,'H2 = hb','m','middle'));
+ o.push(SG.t(358,108,'سلك واحد','ar','middle'));
+ return '<svg class="sa-svg" viewBox="0 0 400 232" role="img" aria-label="توصيل الـ CT وإنذار احتراق السخان">'+o.join('')+'</svg>';
+}
+/* ps: [mnemonic, value (internal), shown value, why] */
+const SA=[
+ {t:'ثرموكبل K + SSR بتحكم ON/OFF',g:'فرن تجفيف بسيط على 150°C: الـ SSR يوصّل السخان تحت الـ SV ويفصله فوقه.',dg:()=>saDiagTC(false),fc:'كنترولر Q (خرج 12V) بيسوق SSR، والثرموكبل + على 5 و − على 6.',
+  su:{out:'Q',sensor:'tc'},
+  ps:[['in-t',5,'5','ثرموكبل K من −200 لـ 1300، لازم يطابق الحساس'],['d-u',0,'c','القراءة بالسلزيوس'],['sl-h',250,'250','محدش يكتب SV أعلى من قدرة الفرن'],['cntl',0,'onof','تحكم ON/OFF: الخرج يا 100% يا 0%'],['hys',2,'2.0','الخرج يرجع يشتغل لما الحرارة تنزل 2 درجة تحت الـ SV'],['sv',150,'150','الحرارة المطلوبة'],['r-s',0,'run','التحكم شغال']],
+  st:['اقفل Q1 وQ2، وصّل 11 و 12 على 230V، و 1(+) و 2(−) على دخل الـ SSR (3+ و 4−)، والثرموكبل + على 5 و − على 6 بكابل تعويض.','امسك Level 3 ثواني تدخل Initial Setting، ظبط in-t و d-u و sl-h و cntl، وارجع Operation بـ Level ثانية.','من Adjustment خلي hys = 2.0، وارجع لشاشة PV/SV وخلي الـ SV = 150.','المفروض: OUT1 ولمبة H3 ينوروا لحد ما الـ PV يوصل 150، وبعدها الخرج يقطع ويوصل والترند يتموج حوالين 150 بأكتر من 2 درجة شوية بسبب تأخير الفرن.']},
+ {t:'PID و Autotuning',g:'نفس الفرن بس الحرارة لازم تثبت على 150 بالظبط: نشغّل 2-PID ونخلي الـ AT يحسب P و I و D.',dg:()=>saDiagTC(true),fc:'نفس توصيل 1. الـ SSR مع cp = 2 ثانية بيدّي خرج ناعم.',
+  su:{out:'Q',sensor:'tc'},
+  ps:[['in-t',5,'5','ثرموكبل K'],['sl-h',250,'250','حد أقصى للـ SV'],['cntl',1,'pid','2-PID: خرج متدرج والحرارة تثبت'],['st',0,'off','نقفل الـ ST عشان نشوف الـ AT لوحده'],['cp',2,'2.0 s','دورة قصيرة تناسب الـ SSR'],['orev',0,'or-r','Reverse = تسخين'],['mv-e',0,'0.0 %','لو الحساس اتقطع السخان يفصل'],['sv',150,'150','الحرارة المطلوبة'],['r-s',0,'run','لازم RUN عشان الـ AT يبدأ'],['at',1,'at-2','100% AT: يقلب الخرج حوالين الـ SV ويحسب PID']],
+  at:true,
+  st:['نفس التوصيل بتاع التطبيق 1.','في Initial Setting: cntl = pid و st = off و cp = 2.0 و orev = or-r.','ارجع Operation، خلي SV = 150 و r-s = run، وادخل Adjustment (Level ثانية) وخلي at = at-2.','المفروض: الـ SV يرمش والخرج يقلب 100%/0% حوالين 150 كام مرة، وبعدين at يرجع off و P و I و D يتغيروا لقيم جديدة.','بعد الـ AT الحرارة تثبت على 150 ±1 من غير تموّج. شوف p و i و d في جدول الباراميترات.']},
+ {t:'إنذار حرارة عالية على لمبة وجرس',g:'لو الفرن عدّى الـ SV بـ 10 درجات لمبة H1 والجرس يشتغلوا، ولو عدّى 230 مطلقاً لمبة H2 تنور.',dg:saDiagAlarm,fc:'SUB1 (7-8) و SUB2 (9-10) كونتاكتات ريليه جافة: الفاز داخل على 7 و 9 والحمل خارج من 8 و 10 للنيوترال.',
+  su:{out:'Q',sensor:'tc',mute:false},
+  ps:[['in-t',5,'5','ثرموكبل K'],['alt1',2,'2','Upper limit deviation: PV > SV + al-1'],['alh1',1,'1.0','الإنذار يفصل لما الحرارة ترجع درجة، عشان اللمبة متترعش'],['alt2',8,'8','Absolute upper: PV > al-2'],['sub1',1,'alm1','SUB1 يقفل مع إنذار 1 (H1 والجرس)'],['sub2',2,'alm2','SUB2 يقفل مع إنذار 2 (H2)'],['al-1',10,'10','10 درجات فوق الـ SV'],['al-2',230,'230','أي حرارة فوق 230 خطر على الفرن'],['sv',150,'150','الحرارة المطلوبة'],['r-s',0,'run','التحكم شغال']],
+  st:['وصّل الفاز على 7 و 9 (جمبر بينهم)، و 8 على لمبة H1 والجرس على التوازي، و 10 على لمبة H2، والطرف التاني للمبات والجرس على N.','في Initial Setting: alt1 = 2 و alh1 = 1.0 و alt2 = 8. في Advanced (amov = −169): sub1 = alm1 و sub2 = alm2.','ارجع Operation واضغط Mode لحد al-1 خليه 10، و al-2 خليه 230.','استنى الفرن يوصل 150 وبعدين نزّل الـ SV لـ 130: الـ PV بقى أعلى من 130 + 10 فـ SUB1 ولمبة H1 والجرس يشتغلوا.','لما الحرارة تنزل تحت 139 الإنذار يفصل لوحده. سلكتور «كتم الجرس» بيسكّت الجرس بس اللمبة تفضل.']},
+ {t:'Pt100 + ريليه وكونتاكتور',g:'فرن 120°C محتاج دقة قراءة عالية: حساس Pt100 بـ 3 سلوك، والخرج ريليه بيشغّل كونتاكتور KM1 للسخانات.',dg:saDiagPt,fc:'موديل R: OUT1 كونتاكت ريليه بين 1 و 2 بيوصّل الفاز لكويل KM1، وكونتاكتات KM1 هي اللي شايلة تيار السخانات.',
+  su:{out:'R',sensor:'pt'},
+  ps:[['in-t',1,'1','Pt100 من −199.9 لـ 500.0 (بعلامة عشرية)'],['sl-h',250,'250.0','حد أقصى للـ SV'],['cntl',1,'pid','PID مع زمن دورة طويل'],['cp',20,'20.0 s','الكونتاكتور ميستحملش يقطع كل ثانيتين: 20 ثانية'],['orev',0,'or-r','تسخين'],['sv',120,'120.0','الحرارة المطلوبة'],['r-s',0,'run','التحكم شغال']],
+  st:['Pt100: السلك A على 4، والسلكين B على 5 و 6. التلاتة نفس النوع والطول عشان مقاومة السلك تتلغي.','الفاز على 1، و 2 على A1 بتاع KM1، و A2 على N. كونتاكتات KM1 الرئيسية بين الفاز والسخانات.','في Initial Setting: in-t = 1 وبعدها sl-h = 250.0 و cntl = pid و cp = 20.0.','ارجع Operation وخلي الـ SV = 120.0.','المفروض: القراءة بعلامة عشرية، KM1 يقفل ويفتح كل 20 ثانية وعدّاد مرات التشغيل تحت الفرن يزيد، والحرارة توصل 120 وتثبت (شغّل AT لو عايز دقة أعلى).']},
+ {t:'سويتش الباب على Event Input (RUN/STOP)',g:'أول ما حد يفتح باب الفرن السخانات تقف لوحدها، ولما يقفله التحكم يرجع من غير ما حد يلمس الكنترولر.',dg:saDiagEv,fc:'كارت 802: EV1 على 13 والكومن على 15. السويتش كونتاكت جاف ومحتاجش أي جهد.',
+  su:{out:'Q',sensor:'tc',opt:'ev'},
+  ps:[['in-t',5,'5','ثرموكبل K'],['ev-1',1,'stop','لما 13-15 يقفل التحكم يقف'],['ev-2',0,'none','EV2 مش متوصل'],['mv-s',0,'0.0 %','وقت STOP الخرج صفر والسخانات مفصولة'],['sv',150,'150','الحرارة المطلوبة'],['r-s',0,'run','التحكم شغال من الكيباد']],
+  st:['وصّل SQ1 (NO يقفل لما الباب يتفتح) بين 13 و 15. متوصّلش عليه أي جهد.','في Initial Setting: ev-1 = stop و ev-2 = none. في Adjustment: mv-s = 0.0.','ارجع Operation وخلي الـ SV = 150 والفرن يسخّن.','افتح الباب من اللوحة: لمبة STOP تنور، OUT1 يطفي، والسطر تحت الفرن يقول STOP مع إن r-s لسه run.','اقفل الباب: التحكم يرجع لوحده والحرارة تطلع تاني.']},
+ {t:'كشف احتراق سخان بالـ CT',g:'فرن فيه سخانين على التوازي: لو واحد اتحرق التيار يقل للنص، والكنترولر يعرف من الـ CT وينوّر H2.',dg:saDiagCT,fc:'CT1 على 17 و 18 حوالين سلك واحد من سلوك السخانات. SUB2 (9-10) بيشغّل لمبة H2.',
+  su:{out:'Q',sensor:'tc',hp:1250,line:230},
+  ps:[['in-t',5,'5','ثرموكبل K'],['hbu',1,'on','تشغيل كشف احتراق السخان'],['hsu',1,'on','تشغيل كشف الـ SSR اللاحم'],['sub2',3,'hb','SUB2 يقفل مع إنذار HB'],['hb1',8,'8.0 A','بين 10.9A (سليم) و 5.4A (سخان محروق)'],['hs1',2,'2.0 A','تيار وهو OFF أكتر من 2A يعني SSR لاحم'],['sv',200,'200','الحرارة المطلوبة'],['r-s',0,'run','التحكم شغال']],
+  st:['عدّي سلك واحد بس من سلوك السخانات جوه الـ CT ووصّل طرفيه على 17 و 18. لو عديت L و N مع بعض القراءة هتبقى صفر.','وصّل الفاز على 9، و 10 على لمبة H2 والطرف التاني على N.','في Advanced: hbu = on و hsu = on و sub2 = hb. في Adjustment: اتفرج على ct1 والفرن بيسخّن (حوالي 10.9A) وبعدين hb1 = 8.0 و hs1 = 2.0.','من «الأعطال» اعمل «سخان 1 اتحرق»: ct1 ينزل لحوالي 5.4A، و HB يطلع ولمبة H2 تنور.','صلّح السخان: الإنذار يروح. واعمل «الـ SSR لاحم» تشوف HS.']}
+];
+function saRender(){
+ $('#saList').innerHTML=SA.map((a,i)=>'<article class="sa-card" id="sa'+i+'"><div class="sa-head"><span class="sa-n">'+(i+1)+'</span><div><h3>'+a.t+'</h3><p>'+a.g+'</p></div></div>'+
+  '<div class="sa-grid"><figure class="sa-fig">'+a.dg()+'<figcaption>'+a.fc+'</figcaption></figure>'+
+  '<div class="tablewrap"><table class="sa-tbl"><thead><tr><th>الرمز والمستوى</th><th>القيمة</th><th>ليه</th></tr></thead><tbody>'+
+  a.ps.map(([k,v,sv,why])=>{const p=PM[k];return '<tr><td class="code">'+k+'<small>'+p.ar+'</small><span class="lvb '+p.g+'">'+LVN[p.g]+'</span></td><td class="v">'+sv+'</td><td>'+why+'</td></tr>';}).join('')+
+  '</tbody></table></div></div><ol class="sa-steps">'+a.st.map(s=>'<li>'+s+'</li>').join('')+'</ol>'+
+  '<div class="sa-foot"><button class="tagc sa-go" data-sa="'+i+'">طبّق في المعمل</button><span class="sa-st" id="saSt'+i+'"></span></div></article>').join('');
+}
+function saSel(id,v){const e=$(id);if(e.value!==String(v)){e.value=String(v);e.dispatchEvent(new Event('change'));}}
+function saApply(i){
+ const a=SA[i],src='تمرين محلول '+(i+1),su=a.su||{};
+ log('تطبيق «'+a.t+'»: الكنترولر هيتحط STOP الأول عشان باراميترات Initial و Advanced متتغيرش والتحكم شغال');
+ if(!S.brk)devAct('brk');
+ if(!S.hbrk)devAct('hbrk');
+ if(S.door)devAct('door');
+ if(P['wtpt']===1)setParam('wtpt',0,src);
+ if(inSetLevel())goLevel('opr');
+ if(S.at)stopAT('تطبيق تمرين محلول');
+ if(S.manual)setManual(false,src);
+ if(su.out)saSel('#outSel',su.out);
+ if(su.opt)saSel('#optSel',su.opt);
+ if(su.hp)saSel('#htrSel',su.hp);
+ if(su.line)saSel('#lineSel',su.line);
+ if(su.sensor&&su.sensor!==S.sensor){S.sensor=su.sensor;log('الحساس المتوصل بقى '+SENS[S.sensor][0]);buildWD();}
+ if(su.mute===false&&S.mute)S.mute=false;
+ setParam('r-s',1,src);
+ const bad=[];
+ for(const [k,v] of a.ps){if(k==='r-s'||k==='at')continue;const r=setParam(k,v,src);if(r!=='ok'&&r!=='same')bad.push(k);}
+ if(!GUI.guided)setParam('r-s',0,src);
+ save();updStation();renderParams();
+ if(bad.length)log('مقدرتش أكتب: '+bad.join(' و '),1);
+ const st=$('#saSt'+i);
+ if(GUI.guided){st.textContent='اتطبق. الكنترولر على STOP: شغّله انت في خطوة التشغيل.';log('الباراميترات اتكتبت والكنترولر لسه STOP: خليه run من الكيباد في خطوة التشغيل');guideRefresh();return;}
+ if(a.at){let n=0;st.textContent='مستني الكنترولر يجهز عشان يبدأ الـ AT…';(function go(){if(ctlOk()&&!S.serr&&!inSetLevel()){setParam('at',1,src);st.textContent=S.at?'الـ AT شغال: بص على الـ SV بيرمش والترند.':'الـ AT مبدأش، شوف السجل.';}else if(++n<40)setTimeout(go,250);else st.textContent='الـ AT مبدأش: الكنترولر مش جاهز.';})();}
+ else st.textContent='اتطبق. التحكم رجع RUN.';
+ log('خلص تطبيق «'+a.t+'». القيم في الجدول وعلى الكيباد');
+ const d=$('.device');if(d&&!GUI.guided)d.scrollIntoView({behavior:'smooth',block:'start'});
+}
+$('#saList').addEventListener('click',e=>{const b=e.target.closest('[data-sa]');if(b)saApply(+b.dataset.sa);});
+saRender();
+
+/* ---------------- guided simple mode ---------------- */
+const GKEY=SKEY+'-ui';
+const GUI={guided:true,ex:-1,step:0,done:{},adv:false,hand:null,snap:null,q1:false};
+function guiSave(){try{localStorage.setItem(GKEY,JSON.stringify({mode:GUI.guided?'guided':'full',ex:GUI.ex,step:GUI.step,done:GUI.done,hand:GUI.hand}));}catch(_){}}
+function guiLoad(){try{const o=JSON.parse(localStorage.getItem(GKEY)||'null');if(!o)return;GUI.guided=o.mode!=='full';GUI.ex=Number.isInteger(o.ex)&&SA[o.ex]?o.ex:-1;GUI.step=[0,1,2,3].includes(o.step)?o.step:0;GUI.done=o.done&&typeof o.done==='object'?o.done:{};GUI.hand=o.hand===true?true:o.hand===false?false:null;}catch(_){}}
+const GICO={
+ onoff:'<svg viewBox="0 0 92 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 34h10V12h12v22h12V12h12v22h12V12h10" stroke="#e8870c"/><path d="M4 22h84" stroke-dasharray="3 3" opacity=".6"/><path d="M82 6l6 4-6 4"/></svg>',
+ pid:'<svg viewBox="0 0 92 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 38C20 38 24 8 34 8s12 22 20 22 12-10 34-10" stroke="#ff6b5e"/><path d="M4 20h84" stroke-dasharray="3 3" opacity=".6"/><path d="M62 30l4-4 4 4M62 36l4-4 4 4" stroke="#26a356"/></svg>',
+ alarm:'<svg viewBox="0 0 92 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="22" r="11"/><circle cx="20" cy="22" r="5" fill="#d62a33" stroke="none"/><path d="M50 30h26v-3a13 13 0 0 0-26 0Z" fill="#c9a54a" stroke="#6b5520"/><path d="M58 34h10"/><path d="M40 10l6 4M86 10l-6 4"/></svg>',
+ pt:'<svg viewBox="0 0 92 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="14" width="22" height="16" rx="2"/><path d="M28 18h14M28 22h14M28 26h14" stroke="#2e9c3a"/><path d="M56 8v10M56 26v10M50 18l12 8" /><rect x="68" y="12" width="18" height="20" rx="2"/><path d="M72 18h10M72 26h10" stroke="#c8261c"/></svg>',
+ door:'<svg viewBox="0 0 92 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="34" height="32" rx="3"/><path d="M40 6l18 6v32l-18-6Z"/><circle cx="52" cy="26" r="2" fill="currentColor"/><path d="M68 34V22l10-8M78 10v4" stroke="#c9a000"/><circle cx="78" cy="22" r="2.5" fill="currentColor"/><circle cx="78" cy="34" r="2.5" fill="currentColor"/></svg>',
+ ct:'<svg viewBox="0 0 92 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M30 4v36" stroke="#c8261c" stroke-width="3"/><ellipse cx="30" cy="22" rx="16" ry="7" stroke="#0d7584" stroke-width="3"/><path d="M46 22h14l3-6 6 12 6-12 6 12 3-6h4"/><circle cx="84" cy="36" r="4" fill="#d6a300" stroke="none"/></svg>'};
+/* per-exercise guidance: goal, icon, what to press in step c, live ok(), suggested fault */
+const gRun=()=>ctlOk()&&!S.serr&&!runStop()&&!inSetLevel()&&!S.manual;
+const gHeating=()=>S.out1||S.mv>0||S.pv>=S.amb+15||Math.abs(S.pv-P.sv)<5;
+const GRS='من شاشة PV/SV دوس <b>Mode</b> لحد ما الشاشة تكتب <b>r-s</b>، ودوس <b>▼</b> تخليها <b>run</b> ودوس Mode تاني تتسجل.';
+const GD=[
+ {goal:'فرن تجفيف على 150°C: الـ SSR يوصّل السخان تحت الـ SV ويفصله فوقه.',ico:'onoff',
+  do:GRS+' لمبة OUT1 و H3 ينوروا والفرن يبدأ يسخن لحد 150.',
+  ok:()=>gRun()&&P.cntl===0&&S.out==='Q'&&S.sensor==='tc'&&gHeating(),
+  flt:{inj:'tcopen',code:'serr',t:'اقطع سلك الثرموكبل والفرن شغال: الشاشة تكتب s.err والخرج يفصل (mv-e).'}},
+ {goal:'نفس الفرن بس الحرارة تثبت على 150 بالظبط: 2-PID والـ AT يحسب P و I و D.',ico:'pid',
+  do:GRS+' بعدها دوس <b>Level</b> دوسة قصيرة تدخل Adjustment، دوس <b>Mode</b> لحد <b>at</b>، ودوس <b>▲</b> مرة تخليها <b>at-2</b> ودوس Mode: الـ SV يرمش والـ AT يبدأ.',
+  ok:()=>{if(S.at)GUI.hi=true;return gRun()&&P.cntl===1&&(!!S.at||!!GUI.hi||!!EV.atDone);},
+  flt:{inj:'ad',code:'e333',t:'اعمل «عطل في محوّل A/D»: الشاشة تكتب E333 والتحكم يقف. بعد ما تصلّحه لازم تفتح Q1 وتقفله تاني.'}},
+ {goal:'لو الفرن عدّى الـ SV بـ 10 درجات لمبة H1 والجرس يشتغلوا، وفوق 230 لمبة H2.',ico:'alarm',
+  do:GRS+' استنى الـ PV يوصل 150 (زوّد سرعة المحاكاة)، وبعدين من شاشة PV/SV دوس <b>▼</b> لحد الـ SV يبقى <b>130</b>: H1 والجرس يشتغلوا.',
+  ok:()=>{if(ctlOk()&&S.alm[0]&&S.sub[0])GUI.hi=true;return !!GUI.hi&&ctlOk();},
+  flt:{inj:'ssr',code:'alm2',t:'اعمل «الـ SSR لاحم» والفرن على 150: الحرارة تجري فوق 230 ولمبة H2 (إنذار 2) تنور، ولو سبتها الليمتر TS يفصل.'}},
+ {goal:'فرن 120°C بحساس Pt100 بـ 3 سلوك، والخرج ريليه بيشغّل كونتاكتور KM1.',ico:'pt',
+  do:GRS+' KM1 يقفل ولمبة H3 تنور، والقراءة بعلامة عشرية.',
+  ok:()=>gRun()&&S.out==='R'&&S.sensor==='pt'&&P['in-t']===1&&gHeating(),
+  flt:{inj:'tcopen',code:'serr',t:'اقطع سلك الحساس (Pt100) والفرن شغال: الشاشة تكتب s.err و KM1 يفصل.'}},
+ {goal:'أول ما حد يفتح باب الفرن السخانات تقف لوحدها، ولما يقفله التحكم يرجع.',ico:'door',
+  do:GRS+' وبعدين من اللوحة افتح <b>باب الفرن</b>: لمبة STOP تنور والخرج يفصل. اقفله تاني: التحكم يرجع لوحده.',
+  ok:()=>{if(ctlOk()&&S.door&&runStop()&&P['r-s']===0&&S.opt==='ev')GUI.hi=true;return !!GUI.hi&&!S.door&&gRun();},
+  flt:{inj:'mem',code:'e111',t:'اعمل «ذاكرة الكنترولر بايظة»: الشاشة تكتب E111. صلّحها وافتح Q1 واقفله: الباراميترات بترجع للمصنع، فارجع لخطوة 2 واكتبها تاني.'}},
+ {goal:'سخانين على التوازي: لو واحد اتحرق التيار يقل للنص والكنترولر يعرف من الـ CT وينوّر H2.',ico:'ct',
+  do:GRS+' استنى السخانات تشتغل: أميتر السخان يقرا حوالي 10.9A، ودوس Mode مرة تشوف <b>ct1</b> على الشاشة.',
+  ok:()=>gRun()&&P.hbu===1&&S.ctShow>8&&S.hp===1250,
+  flt:{inj:'burn',code:'hb',t:'اعمل «سخان 1 اتحرق» والفرن بيسخّن: ct1 ينزل لحوالي 5.4A، و HB يطلع ولمبة H2 تنور.'}}];
+const GSTEPS=['التوصيل','الباراميترات','التشغيل','جرّب عطل'];
+const GFC={alm2:['إنذار 2 (H2)','Absolute upper alarm','الحرارة عدّت al-2 = 230 لأن الـ SSR لاحم والخرج مش بيفصل','صلّح الـ SSR، واستنى الحرارة تنزل تحت 230 (ولو الليمتر فصل دوس ريست بعد ما يبرد)']};
+const gLater=k=>k==='r-s'||k==='at';
+const gSuOk=i=>{const su=SA[i].su||{};return (!su.out||S.out===su.out)&&(!su.sensor||S.sensor===su.sensor)&&(!su.opt||S.opt===su.opt)&&(!su.hp||S.hp===su.hp);};
+const gPOk=(k,v)=>PM[k].t==='e'?P[k]===v:Math.abs(P[k]-v)<1e-6;
+const gParamsOk=i=>gSuOk(i)&&SA[i].ps.every(([k,v])=>gLater(k)||gPOk(k,v));
+function gSplitSteps(a){const k=a.st.findIndex(x=>/Initial Setting|Advanced|Adjustment/.test(x));return {wire:a.st.slice(0,k<0?a.st.length:k),run:a.st.slice(k<0?a.st.length:k+1).filter(x=>!/^في Initial|^في Adjustment|^في Advanced/.test(x))};}
+/* ---- step (b) by hand: faceplate moves into the guide, keypad path per parameter ---- */
+const gRows=i=>SA[i].ps.filter(([k])=>!gLater(k));
+function gFaceBack(){const d=$('.device'),c=$('.combo'),pf=$('#pnlFace');if(d&&d.parentElement!==pf){pf.prepend(d);d.after(c);}}
+function gFaceTo(h){const d=$('.device'),c=$('.combo');if(d&&h){h.appendChild(d);h.appendChild(c);}}
+function gCurText(k){const p=PM[k];return p.t==='e'?p.o[P[k]]:fmtNum(toD(p,P[k]),pdc(p));}
+function gPath(k){
+ const p=PM[k],g=p.g;
+ if(k==='sv')return 'على شاشة PV/SV مباشرة: <b>▲</b> <b>▼</b> من غير Mode';
+ const l=(LV[g]||[]).filter(x=>x==='pvsv'||x==='l.adj'||(PM[x]&&PM[x].vis()));const i=l.indexOf(k);
+ const pos=i>0?' (<b>Mode × '+i+'</b>)':'';
+ const hid=p.vis()?'':' <span class="pw">مش ظاهر دلوقتي: اظبط اللي قبله الأول</span>';
+ const m={opr:'Operation: من شاشة PV/SV دوس <b>Mode</b> لحد ما يظهر <b>'+k+'</b>'+pos,
+  adj:'Adjustment: <b>Level</b> دوسة قصيرة، وبعدين <b>Mode</b> لحد <b>'+k+'</b>'+pos,
+  ini:'Initial Setting: امسك <b>Level</b> 3 ثواني، وبعدين <b>Mode</b> لحد <b>'+k+'</b>'+pos,
+  adv:'Advanced: من Initial Setting روح لـ <b>amov</b> واكتب <b>−169</b>، وبعدين <b>Mode</b> لحد <b>'+k+'</b>'+pos,
+  prt:'Protect: امسك <b>Level + Mode</b> 3 ثواني، وبعدين <b>Mode</b> لحد <b>'+k+'</b>'+pos,
+  com:'Communications: من Initial Setting دوس <b>Level</b> دوسة قصيرة، وبعدين <b>Mode</b> لحد <b>'+k+'</b>'+pos};
+ return (m[g]||'')+hid;
+}
+function gHowHtml(i){
+ const gs=new Set(gRows(i).map(([k])=>PM[k].g));
+ let h='<h3>طريقة الدخول على الكيباد</h3><ol>'+
+  '<li><b>Level</b> دوسة قصيرة (أقل من ثانية): Operation ↔ Adjustment. امسكه <b>3 ثواني</b> من Operation: Initial Setting (التحكم بيقف لوحده وبيرجع لما تخرج). من Initial امسكه ثانية ترجع Operation.</li>'+
+  '<li><b>Mode</b> ينقّلك باراميتر باراميتر جوه المستوى، وبيحفظ اللي عدّلته.</li>'+
+  '<li><b>▲</b> <b>▼</b> يغيّروا القيمة، امسكهم تسرع. وانت بتعدّل رقم، <b>PF</b> بيختار الخانة (آحاد ← عشرات ← مئات ← آلاف). القيمة بتتسجل بعد ثانيتين أو لما تدوس Mode، وعلامة ✓ في الجدول هتظهر لوحدها.</li>'+
+  (gs.has('adv')?'<li>Advanced: في Initial Setting روح لـ <b>amov</b> واكتب <b>−169</b> وسيبه يتسجل. لو amov مش ظاهر: امسك <b>Level + Mode</b> 3 ثواني تدخل Protect وخلي <b>icpt = 0</b>.</li>':'')+
+  '</ol><p class="st" id="gHowSt"></p>';
+ return h;
+}
+function gHowStatus(i){
+ if(!S.brk)return '<span class="pw">Q1 مفتوح: الكيباد مش هيشتغل. اقفل Q1 الرئيسي الأول.</span>';
+ if(!ctlOk())return 'الكنترولر بيبدأ… استنى الشاشة تنور.';
+ if(P['wtpt']===1)return '<span class="pw">القيم مقفولة (wtpt = on): امسك Level + Mode 3 ثواني تدخل Protect وخلي wtpt = off الأول.</span>';
+ const need=gRows(i).some(([k,v])=>!gPOk(k,v)&&['ini','adv'].includes(PM[k].g));
+ let t='انت دلوقتي في <b>'+LVN[K.lv]+'</b> وعلى الشاشة <b>'+(curK()==='pvsv'?'PV/SV':curK())+'</b>.';
+ if(need&&!inSetLevel()&&!runStop())t+=' التحكم شغال دلوقتي: أول ما تدخل Initial Setting هيقف لوحده (لمبة STOP) ويرجع لما تخرج.';
+ if(need&&P['icpt']>=2)t+=' <span class="pw">icpt = 2: الدخول على Initial Setting مقفول، فكّه من Protect الأول.</span>';
+ return t;
+}
+function gChooseHand(){
+ const i=GUI.ex,a=SA[i],su=a.su||{};
+ GUI.hand=true;GUI.snap={};a.ps.forEach(([k])=>GUI.snap[k]=P[k]);GUI.q1=false;
+ if(!S.brk){devAct('brk');GUI.q1=true;}
+ if(S.door)devAct('door');
+ if(!gSuOk(i)){if(su.out)saSel('#outSel',su.out);if(su.opt)saSel('#optSel',su.opt);if(su.hp)saSel('#htrSel',su.hp);if(su.line)saSel('#lineSel',su.line);
+  if(su.sensor&&su.sensor!==S.sensor){S.sensor=su.sensor;buildWD();}
+  if(su.mute===false&&S.mute)S.mute=false;save();updStation();log('ظبطت موديل الكنترولر والحساس زي التمرين (دي مش باراميترات كيباد). الباراميترات نفسها اكتبها انت.');}
+ guiSave();guideRender();
+}
+function setMode(g){GUI.guided=!!g;document.body.classList.toggle('guided',GUI.guided);$('#guide').hidden=!GUI.guided;$('#advBar').hidden=!GUI.guided;
+ const b=$('#modeBtn');b.textContent=GUI.guided?'الوضع الكامل':'الوضع المبسّط';b.setAttribute('aria-pressed',!GUI.guided);
+ if(GUI.guided)guideRender();else{gFaceBack();document.body.removeAttribute('data-g');}guiSave();}
+function gCards(){
+ $('#gCards').innerHTML=SA.map((a,i)=>'<button type="button" class="g-card'+(GUI.done[i]?' done':'')+'" data-ex="'+i+'"><span class="n">'+(GUI.done[i]?'✓':i+1)+'</span><span class="t">'+a.t+'</span><span class="g">'+GD[i].goal+'</span><span class="ico">'+GICO[GD[i].ico]+'<span>'+a.ps.length+' باراميتر · 4 خطوات</span></span></button>').join('');
+}
+const GSPD='<div class="g-spd"><label for="gSpd">سرعة المحاكاة</label><select id="gSpd"><option value="1">× 1 (وقت حقيقي)</option><option value="5">× 5</option><option value="10">× 10</option><option value="30">× 30</option><option value="60">× 60</option></select><span class="hint" style="margin:0">الفرن الحقيقي بياخد دقايق يسخن، زوّد السرعة عشان متستناش.</span></div>';
+function guideRender(){
+ if(!GUI.guided)return;
+ const run=GUI.ex>=0;$('#gStart').hidden=run;$('#gRun').hidden=!run;
+ if(!run){document.body.setAttribute('data-g','start');gCards();return;}
+ const i=GUI.ex,a=SA[i],g=GD[i],st=GUI.step;document.body.setAttribute('data-g','abcd'[st]);
+ $('#gProg').innerHTML=GSTEPS.map((_,k)=>'<span class="'+(k<st?'ok':k===st?'on':'')+'"></span>').join('')+'<b>'+(st+1)+'/4</b>';
+ $('#gTitle').textContent=(i+1)+'. '+a.t;
+ const sp=gSplitSteps(a);let h='<div class="g-steps">'+GSTEPS.map((n,k)=>'<span class="'+(k===st?'on':'')+'">'+(k+1)+' '+n+'</span>').join('')+'</div>';
+ if(st===0){
+  const leg=$('#saPanel .sa-legend');
+  h+='<p class="g-lead">'+a.g+'</p><figure class="g-fig">'+a.dg()+(leg?leg.outerHTML:'')+'<figcaption>'+a.fc+'</figcaption></figure><div class="g-terms" id="gTerms"></div><ol class="g-list">'+sp.wire.map(x=>'<li>'+x+'</li>').join('')+'</ol>';
+ }else if(st===1){
+  const hand=GUI.hand===true;if(hand&&!GUI.snap){GUI.snap={};a.ps.forEach(([k])=>GUI.snap[k]=P[k]);}
+  h+='<p class="g-lead">دي الباراميترات اللي التمرين محتاجها، وجنب كل واحد المستوى اللي هتلاقيه فيه على الكيباد. اختار: تكتبها بنفسك من الكيباد عشان إيدك تتعود على الجهاز، أو الكنترولر يكتبها لوحده.</p>'+
+   '<div class="g-choice" role="group" aria-label="طريقة ضبط الباراميترات"><button type="button" class="btn" id="gHand" aria-pressed="'+hand+'">ادخلها بإيدك من الكيباد<span class="rec">مُستحسن: زي الجهاز الحقيقي بالظبط</span></button><button type="button" class="btn" id="gApply" aria-pressed="'+(GUI.hand===false)+'">اضبطها أوتوماتيك<span class="rec">الكنترولر يكتبها لوحده (هيتحط STOP)<span class="tagc">تحكم</span></span></button></div>'+
+   (hand?'<p class="g-q1" id="gQ1"'+(GUI.q1?'':' hidden')+'>قفلت Q1 الرئيسي عشان الكنترولر يشتغل والكيباد يستجيب.</p><div class="g-how">'+gHowHtml(i)+'</div>':'')+
+   '<div class="'+(hand?'g-hand':'')+'">'+(hand?'<div class="g-face" id="gFaceHold"></div>':'')+'<div>'+
+   '<div class="tablewrap"><table class="sa-tbl g-tbl"><thead><tr><th>الرمز والمستوى</th><th>القيمة</th><th>ليه</th></tr></thead><tbody>'+a.ps.map(([k,v,sv,why])=>{const p=PM[k];return '<tr data-pc="'+k+'"><td class="code">'+k+'<small>'+p.ar+'</small><span class="lvb '+p.g+'">'+LVN[p.g]+'</span>'+'</td><td class="v">'+sv+' '+(gLater(k)?'<span class="later">خطوة 3</span>':'<span class="okc" data-ok="'+k+'"></span>'+(hand?'<span class="cur" data-cur="'+k+'"></span>':''))+'</td><td class="why">'+why+'</td></tr>'+(hand&&!gLater(k)?'<tr class="prow" data-prow="'+k+'"><td colspan="3" class="path" data-path="'+k+'">'+gPath(k)+'</td></tr>':'');}).join('')+'</tbody></table></div>'+
+   (hand?'<p class="g-cnt" id="gCnt" aria-live="polite"></p>':'')+'</div></div>'+
+   '<div class="g-done" id="gAllOk" hidden>كله مضبوط، التالي ←</div>'+
+   (hand?'':'<div class="g-check" id="gChkP"><i>✓</i><span>كل الباراميترات مكتوبة في الكنترولر<span class="sub">الزرار بيحط الكنترولر STOP وبيظبط الموديل والحساس زي التمرين. r-s و at هتعملهم انت في خطوة التشغيل.</span></span></div>');
+ }else if(st===2){
+  h+='<p class="g-lead">'+g.do+'</p><div id="gWarnP" class="g-warn" hidden>الباراميترات لسه متكتبتش. ارجع لخطوة 2 ودوس «اضبط الباراميترات دي».</div>'+
+   '<div class="g-check" id="gChkR"><i>✓</i><span>الكنترولر شغال زي ما التمرين عايز<span class="sub">'+(a.st.find(x=>x.startsWith('المفروض'))||a.st[a.st.length-1])+'</span></span></div>'+
+   '<div class="g-live"><span>الحالة <b id="gSt">—</b></span><span>PV <b id="gPV">—</b></span><span>SV <b id="gSV">—</b></span><span>MV <b id="gMV">0.0 %</b></span><span>تيار السخان <b id="gA">0.0 A</b></span></div>'+GSPD+
+   '<p class="g-note"><span class="tagc">تحكم</span> الكيباد ولوحة الفرن تحت <span class="tagv">بيان</span> شاشة PV/SV واللمبات والفرن</p>'+
+   (sp.run.length?'<details><summary style="cursor:pointer;font-weight:600">باقي خطوات التمرين</summary><ol class="g-list" style="margin-top:8px">'+sp.run.map(x=>'<li>'+x+'</li>').join('')+'</ol></details>':'');
+ }else{
+  h+='<p class="g-lead">خطوة اختيارية: '+g.flt.t+'</p><div class="row"><button type="button" class="btn big" id="gFault">جرّب العطل</button></div>'+
+   '<div class="g-check" id="gChkF1"><i>✓</i><span>العطل ظهر على الشاشة أو اللمبات<span class="sub" id="gFcode"></span></span></div>'+
+   '<div class="g-check" id="gChkF2"><i>✓</i><span>صلّحت العطل والكنترولر رجع يشتغل عادي<span class="sub" id="gFfix"></span></span></div>'+
+   '<p class="g-note">لوحة «الفرن والكهربا والأعطال» تحت فيها أعطال تانية تجرّبها. لما تخلص دوس «خلصت التمرين».</p>';
+ }
+ gFaceBack();$('#gBody').innerHTML=h;
+ if(st===0)gHighlight();
+ if(st===1&&GUI.hand===true)gFaceTo($('#gFaceHold'));
+ $('#gNext').disabled=false;
+ if(st===2){const e=$('#gSpd');e.value=String(S.spd);e.addEventListener('change',()=>saSel('#spdSel',e.value));}
+ $('#gPrev').disabled=st===0;$('#gNext').textContent=st===3?'خلصت التمرين ✓':'التالي';
+ GUI.hi=false;GUI.fseen=false;
+ guideTick(true);window.scrollTo({top:0,behavior:'smooth'});
+}
+function gHighlight(){
+ const svg=$('#gBody .sa-svg');if(!svg)return;const names=[];
+ $$('#gBody .sa-svg rect.tm').forEach(r=>{const x=+r.getAttribute('x'),y=+r.getAttribute('y'),t=r.nextElementSibling;const n=t&&t.tagName==='text'?t.textContent:'';
+  if(GUI.ex===4&&n==='14')return;
+  const hl=document.createElementNS('http://www.w3.org/2000/svg','rect');
+  hl.setAttribute('x',x-5);hl.setAttribute('y',y-5);hl.setAttribute('width',34);hl.setAttribute('height',26);hl.setAttribute('rx',5);hl.setAttribute('class','hlr');svg.insertBefore(hl,r);
+  if(n)names.push(n);});
+ $('#gTerms').innerHTML=names.length?'<span>الأطراف اللي هتستخدمها:</span>'+names.map(n=>'<span class="tc">'+n+'</span>').join(''):'';
+}
+let gLast='';
+function gFaultNow(code){
+ if(code==='serr')return S.serr&&ctlOk();
+ if(code==='e333'||code==='e111')return S.err===code;
+ if(code==='alm2')return S.alm[1]||S.limTrip;
+ if(code==='hb')return S.hb;
+ return false;
+}
+function guideTick(force){
+ if(!GUI.guided||GUI.ex<0)return;
+ const i=GUI.ex,st=GUI.step,g=GD[i];
+ if(st===1){const ok=gParamsOk(i),hand=GUI.hand===true;let n=0,m=0;
+  SA[i].ps.forEach(([k,v])=>{const e=$('[data-ok="'+k+'"]');if(!e)return;const good=gPOk(k,v);m++;if(good)n++;const s=good?'✓':'';if(e.textContent!==s)e.textContent=s;
+   const tr=e.closest('tr');if(tr)tr.classList.toggle('ok',good);const pr=$('[data-prow="'+k+'"]');if(pr)pr.classList.toggle('ok',good);
+   if(hand){const c=$('[data-cur="'+k+'"]');if(c){const t=good?'':'دلوقتي '+gCurText(k);if(c.textContent!==t)c.textContent=t;c.classList.toggle('bad',!good&&GUI.snap&&P[k]!==GUI.snap[k]);}
+    const pa=$('[data-path="'+k+'"]');if(pa){const ph=gPath(k);if(pa.innerHTML!==ph)pa.innerHTML=ph;}}});
+  const chk=$('#gChkP');if(chk)chk.classList.toggle('ok',ok);
+  const all=$('#gAllOk');if(all)all.hidden=!ok;
+  if(hand){const c=$('#gCnt');if(c){const t=n+' من '+m+' مضبوطين'+(n===m?' ✓':'');if(c.textContent!==t)c.textContent=t;c.classList.toggle('all',n===m);}
+   const hs=$('#gHowSt');if(hs){const t=gHowStatus(i);if(hs.innerHTML!==t)hs.innerHTML=t;}
+   const q=$('#gQ1');if(q){if(!S.brk){q.hidden=false;q.textContent='Q1 الرئيسي مفتوح: اقفله عشان الكيباد يشتغل.';}else if(GUI.q1){q.hidden=false;q.textContent='قفلت Q1 الرئيسي عشان الكنترولر يشتغل والكيباد يستجيب.';}else q.hidden=true;}
+   $('#gNext').disabled=!ok;}}
+ else if(st===2){
+  let ok=false;try{ok=!!g.ok();}catch(_){}
+  $('#gChkR').classList.toggle('ok',ok);$('#gWarnP').hidden=gParamsOk(i)||!S.ctrl;
+  const pv=ctlOk()&&!S.serr?fmtNum(toD(PM.sv,S.pv),tdc()):'—',sv=ctlOk()?fmtNum(toD(PM.sv,S.spEff),tdc()):'—';
+  const k=statusText()+'|'+pv+'|'+sv+'|'+S.mv.toFixed(1)+'|'+S.I.toFixed(1);
+  if(force||k!==gLast){gLast=k;$('#gSt').textContent=statusText();$('#gPV').textContent=pv;$('#gSV').textContent=sv;$('#gMV').textContent=S.mv.toFixed(1)+' %';$('#gA').textContent=S.I.toFixed(1)+' A';}
+  const sp=$('#gSpd');if(sp&&sp.value!==String(S.spd))sp.value=String(S.spd);
+ }else if(st===3){
+  const c=g.flt.code,f=FL[c]||GFC[c];
+  if(gFaultNow(c)){GUI.fseen=true;const t=f[0]+' '+f[1]+': '+f[2];const e=$('#gFcode');if(e.textContent!==t)e.textContent=t;const x=$('#gFfix');if(x.textContent!==f[3])x.textContent=f[3];}
+  $('#gChkF1').classList.toggle('ok',!!GUI.fseen);
+  const act=!!S.inj[g.flt.inj];
+  const fb=$('#gFault'),lb=(act?'صلّح العطل':'جرّب العطل')+'<span class="tagc">تحكم</span>';if(fb&&fb.innerHTML!==lb)fb.innerHTML=lb;
+  $('#gChkF2').classList.toggle('ok',!!GUI.fseen&&!act&&!gFaultNow(c)&&ctlOk());
+ }
+}
+function guideRefresh(){if(GUI.guided&&GUI.ex>=0)guideTick(true);}
+$('#gCards').addEventListener('click',e=>{const b=e.target.closest('[data-ex]');if(!b)return;GUI.ex=+b.dataset.ex;GUI.step=0;guiSave();guideRender();});
+$('#gBack').addEventListener('click',()=>{GUI.ex=-1;GUI.step=0;guiSave();guideRender();});
+$('#gPrev').addEventListener('click',()=>{if(GUI.step>0){GUI.step--;guiSave();guideRender();}});
+$('#gNext').addEventListener('click',()=>{if(GUI.step<3){GUI.step++;}else{GUI.done[GUI.ex]=true;log('خلصت التمرين المحلول '+(GUI.ex+1)+': '+SA[GUI.ex].t);GUI.ex=-1;GUI.step=0;}guiSave();guideRender();});
+$('#gBody').addEventListener('click',e=>{
+ if(e.target.closest('#gHand')){if(GUI.hand!==true)gChooseHand();return;}
+ if(e.target.closest('#gApply')){GUI.hand=false;GUI.snap=null;guiSave();guideRender();saApply(GUI.ex);return;}
+ if(e.target.closest('#gFault')){const b=$('[data-inj="'+GD[GUI.ex].flt.inj+'"]');if(b)b.click();guideTick(true);}
+});
+$('#modeBtn').addEventListener('click',()=>setMode(!GUI.guided));
+$('#advBtn').addEventListener('click',e=>{GUI.adv=!GUI.adv;document.body.classList.toggle('adv',GUI.adv);e.currentTarget.setAttribute('aria-expanded',GUI.adv);e.currentTarget.textContent=GUI.adv?'إخفاء المتقدم ▴':'عرض المتقدم ▾';});
+
+/* ---------------- boot ---------------- */
+$('#logClr').addEventListener('click',()=>{$('#log').innerHTML='';});
+$('#btnFactory').addEventListener('click',()=>{try{localStorage.removeItem(SKEY);}catch(_){}location.reload();});
+if(!load()){P.sv=40;P['al-1']=10;P['al-2']=20;}
+PM['cp'].d=S.out==='R'?20:2;
+$('#outSel').value=S.out;$('#optSel').value=S.opt;$('#htrSel').value=String(S.hp);$('#lineSel').value=String(S.lineV);$('#spdSel').value=String(S.spd);$('#ld').value=S.ld;$('#ldV').textContent=S.ld+' kg';
+S.Tc=S.Te=S.Ts=S.pv=S.pvF=S.amb;
+updAmb=knob($('#kAmb'),$('#kAmbV'),()=>S.amb,v=>S.amb=v,0,45,v=>v+' °C',25);
+plate();buildOven();loadHint();renderTabs();renderParams();renderFaults();renderRef();renderEx();buildWD();updStation();syncInj();pills();
+log('المعمل جاهز. Q1 مقفول والكنترولر بيبدأ. الفرن على حرارة الجو.');
+S.stab=0;
+guiLoad();setMode(GUI.guided);
+let last=performance.now(),acc=0,scT=0,slow=0,slow2=0;
+function frame(now){
+ try{
+  const rdt=Math.min(.1,(now-last)/1000);last=now;
+  keyTick(now);
+  acc+=rdt*S.spd;let n=0;const t0=S.t;
+  while(acc>=DT&&n<2500){step(DT);acc-=DT;n++;scT+=DT;if(scT>=1){scT=0;sample();}}
+  if(n>=2500)acc=0;
+  const sdt=S.t-t0;
+  if(ctlOk()&&!S.serr&&!S.at&&!runStop()&&!inSetLevel()&&Math.abs(S.pv-P.sv)<1)S.stab+=sdt;else S.stab=0;
+  ui();drawScope();
+  slow+=rdt;if(slow>.12){slow=0;updWD();pills();updStation();guideTick();}
+  slow2+=rdt;if(slow2>.4){slow2=0;refreshRO();checkEx();perfText();const fr=activeFaults().join();if(lastFR!==fr){lastFR=fr;renderFaults();}if(REFK==='ctl'||REFK==='alm'||REFK==='term')renderRef();}
+ }catch(err){console.error(err);}
+ requestAnimationFrame(frame);
+}
+requestAnimationFrame(t=>{last=t;frame(t);});
+</script>
+</body>
+</html>

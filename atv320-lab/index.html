@@ -1,0 +1,2159 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>معمل Altivar ATV320</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Same bench as the other labs: drive faceplate + operator station on one side, motor + scope on the other, wiring and parameters below. */
+:root{
+  --bg:#e9edef; --panel:#ffffff; --ink:#152027; --muted:#56656f; --line:#cfd7dc;
+  --accent:#b85f00; --accent-soft:#f6e6d3; --cur:#0d7584;
+  --good:#2b7a3d; --warn:#a86a00; --bad:#c0352b; --scope-bg:#0e1518; --grid:#22343a;
+  --w-pwr:#8a4a1c; --w-mot:#c8261c; --w-24:#d97706; --w-an:#5b6670; --w-com:#2448a8; --w-rl:#7a43b6; --w-pe:#2e9c3a;
+  --font-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --font-body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1417; --panel:#182025; --ink:#e3e9ec; --muted:#93a2ab; --line:#2a353c;
+  --accent:#f0a03c; --accent-soft:#3a2a17; --cur:#4cc0cf;
+  --good:#5cc06f; --warn:#e3a43a; --bad:#ff6b5e;
+  --w-pwr:#d39a6a; --w-mot:#ff6b5e; --w-24:#f0a03c; --w-an:#a9b6bf; --w-com:#7ea2ff; --w-rl:#b98cf5; --w-pe:#5cc06f; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f1417; --panel:#182025; --ink:#e3e9ec; --muted:#93a2ab; --line:#2a353c;
+  --accent:#f0a03c; --accent-soft:#3a2a17; --cur:#4cc0cf;
+  --good:#5cc06f; --warn:#e3a43a; --bad:#ff6b5e;
+  --w-pwr:#d39a6a; --w-mot:#ff6b5e; --w-24:#f0a03c; --w-an:#a9b6bf; --w-com:#7ea2ff; --w-rl:#b98cf5; --w-pe:#5cc06f; color-scheme:dark }
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.6}
+.app{max-width:1260px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0;line-height:1.25}
+h1{font-size:1.75rem} h2{font-size:1.2rem} h3{font-size:1rem}
+.mono,code{font-family:var(--font-mono);direction:ltr;unicode-bidi:isolate}
+code{font-size:.9em;background:var(--accent-soft);padding:0 .3em;border-radius:4px}
+.muted{color:var(--muted)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px}
+header.top p{margin:.25rem 0 0;color:var(--muted);max-width:70ch}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.85rem;font-weight:600}
+.chip b{color:var(--accent)}
+.bench{display:grid;grid-template-columns:minmax(320px,440px) minmax(0,1fr);gap:20px;align-items:start}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:940px){.bench,.grid2{grid-template-columns:minmax(0,1fr)}}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.panel h2,.panel h3{margin-bottom:10px}
+.label{font-size:.75rem;letter-spacing:.04em;color:var(--muted);font-weight:600}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:600}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.xs{padding:1px 8px;font-size:.78rem}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.hint{font-size:.85rem;color:var(--muted);margin:.4rem 0 0}
+.tagc,.tagv{display:inline-flex;align-items:center;gap:4px;font:600 .72rem var(--font-body);border-radius:999px;padding:1px 9px;vertical-align:middle;margin-inline-start:8px}
+.tagc{background:#2f7fe0;color:#fff}
+.tagv{background:var(--panel);color:var(--muted);border:1px solid var(--line)}
+.tagc::before{content:"";width:7px;height:7px;border-radius:50%;border:1.5px solid #fff}
+.tagv::before{content:"👁";font-size:.7rem}
+.legendbar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;font-size:.85rem;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+
+
+/* ---------- ATV320 faceplate (compact format, integrated 4-digit display + jog dial) ---------- */
+.device{display:flex;justify-content:center}
+.drv{direction:ltr;width:100%;max-width:380px;user-select:none;-webkit-user-select:none;font-family:Arial,Helvetica,sans-serif;filter:drop-shadow(0 10px 18px rgba(0,0,0,.3))}
+.atv{background:linear-gradient(90deg,#2b3035,#3c4248 45%,#30363b);border-radius:10px;padding:10px 12px 14px;box-shadow:inset 0 1px 0 #555c63,inset 0 0 0 1px #1e2226}
+.atv-vent{height:16px;margin:0 10% 8px;border-radius:3px;background:repeating-linear-gradient(90deg,#22272b 0 6px,#3a4046 6px 10px);box-shadow:inset 0 1px 2px rgba(0,0,0,.6)}
+.atv-band{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:0 4px 8px}
+.se-logo{display:flex;align-items:center;gap:6px;color:#e9ecee;font-size:10px;font-weight:700;line-height:1.05}
+.se-logo i{width:22px;height:22px;border-radius:3px;background:linear-gradient(#45c165,#2f9e4c);display:grid;place-items:center;color:#fff;font:900 10px Arial;font-style:normal;box-shadow:inset 0 0 0 1px #2a8a42}
+.atv-name{text-align:right;color:#e9ecee;line-height:1.05}
+.atv-name small{display:block;font-size:9px;color:#b9c0c6;letter-spacing:.06em}
+.atv-name b{font-size:15px;letter-spacing:.02em}
+.hmi{background:linear-gradient(#5c656d,#4b535b);border-radius:12px;padding:10px 10px 12px;box-shadow:inset 0 0 0 1.5px #3b4248,0 1px 0 #6b747c}
+.hmi-top{display:flex;justify-content:space-between;align-items:center;font-size:8px;font-weight:700;color:#e3e7ea;margin:0 2px 6px}
+.hmi-top span{display:flex;align-items:center;gap:4px}
+.hmi-disp{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:6px;align-items:center}
+.mled,.vled{display:flex;flex-direction:column;gap:6px;color:#f1f4f6;font-size:9.5px;font-weight:700}
+.mled span{display:flex;justify-content:flex-end;align-items:center;gap:4px}
+.vled span{display:flex;align-items:center;gap:4px}
+.hmi .led{width:7px;height:7px;border-radius:50%;background:#2f363b;box-shadow:inset 0 1px 1px rgba(0,0,0,.6);flex:none;display:inline-block}
+.hmi .led.on{background:#46ee6c;box-shadow:0 0 6px #46ee6c}
+.hmi .led.red.on{background:#ff3b24;box-shadow:0 0 6px #ff3b24}
+.hmi .led.yel.on{background:#ffc21a;box-shadow:0 0 6px #ffc21a}
+.win{background:#160807;border-radius:3px;padding:7px 6px;box-shadow:inset 0 0 0 2px #0b0b0b,inset 0 3px 8px rgba(0,0,0,.7)}
+.seg7{height:50px}
+.seg7 svg{height:100%;width:100%;display:block}
+.seg7.blink{animation:sblink .9s steps(2,start) infinite}
+.seg7.fast{animation:sblink .3s steps(2,start) infinite}
+@keyframes sblink{to{opacity:.12}}
+.hmi-keys{display:grid;grid-template-columns:52px minmax(0,1fr) 52px;align-items:center;gap:6px;margin-top:12px}
+.ak{border:0;cursor:pointer;touch-action:none;width:50px;height:34px;border-radius:7px;background:linear-gradient(#6a747d,#4f585f 60%,#465057);color:#f3f5f7;font:700 11px Arial,Helvetica,sans-serif;box-shadow:0 2px 0 #23282c,0 3px 4px rgba(0,0,0,.45),inset 0 1px 0 #8a939b;padding:0}
+.ak.down,.ak:active{transform:translateY(2px);box-shadow:0 0 0 #23282c,inset 0 1px 0 #7a838b}
+.ak.mode{width:44px;height:26px;font-size:9.5px;justify-self:end}
+.dialwrap{display:flex;justify-content:center}
+.dial{width:100%;max-width:150px;display:block;touch-action:none;cursor:grab;border-radius:50%;outline:none}
+.dial.grab{cursor:grabbing}
+.dial:focus-visible{box-shadow:0 0 0 3px var(--accent)}
+.dial .cap{transition:fill .05s}
+.hmi-rs{display:flex;justify-content:center;gap:18px;margin-top:12px}
+.ak.run{width:62px;height:32px;background:linear-gradient(#3fb85c,#2a9145 60%,#237d3b);box-shadow:0 2px 0 #12401e,0 3px 4px rgba(0,0,0,.45),inset 0 1px 0 #7fe197}
+.ak.stop{width:62px;height:32px;background:linear-gradient(#ee4b43,#cf2e27 60%,#b72520);box-shadow:0 2px 0 #4a0d0b,0 3px 4px rgba(0,0,0,.45),inset 0 1px 0 #ff8f88;font-size:9.5px;line-height:1.05}
+.atv-low{display:flex;justify-content:space-between;align-items:flex-end;margin-top:10px;padding:0 4px;gap:8px}
+.rj{width:58px;height:22px;background:#2a2f33;border-radius:3px;display:grid;place-items:center;box-shadow:inset 0 0 0 1px #1b1e21}
+.rj i{width:30px;height:12px;background:#0f1113;border-radius:2px;box-shadow:inset 0 -3px 0 #3d444a}
+.plate{font-size:8.5px;color:#c4cbd1;text-align:right;line-height:1.35}
+.plate b{color:#eef1f3;font-size:9.5px}
+@media (max-width:420px){.seg7{height:42px}.hmi-disp{grid-template-columns:38px minmax(0,1fr) 40px}.mled,.vled{font-size:8.5px}}
+.hcap{margin:10px 0 0;padding:8px 10px;border-radius:8px;background:var(--bg);border:1px solid var(--line);font-size:.86rem;min-height:3.2em}
+.hcap b{font-family:var(--font-mono);direction:ltr;unicode-bidi:isolate}
+.sw2{display:contents}
+.keyguide{font-size:.85rem;margin:12px 0 0;padding:0;list-style:none;display:grid;gap:4px}
+.keyguide b{font-family:var(--font-mono);background:var(--accent-soft);padding:0 .35em;border-radius:4px}
+
+/* ---------- operator station ---------- */
+.station{background:linear-gradient(180deg,#d6d9db,#c3c7ca);border-radius:10px;padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:14px 10px;box-shadow:inset 0 0 0 1px #a9aeb2,inset 0 2px 0 #eef0f1;direction:rtl}
+.dev{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.dev .tag{background:#1d2226;color:#f2f4f5;font:600 10.5px var(--font-body);padding:1px 8px;border-radius:3px;min-width:78px;line-height:1.5}
+.dev .term{font:600 10px var(--font-mono);color:#3b4348;direction:ltr}
+.pb{width:56px;height:56px;border-radius:50%;border:0;cursor:pointer;touch-action:none;position:relative;background:radial-gradient(circle at 50% 50%,#c4c7c9 0 60%,#7f8589 61% 70%,#5c6266 71%);box-shadow:0 3px 5px rgba(0,0,0,.35);display:grid;place-items:center;padding:0}
+.pb::after{content:"";width:62%;height:62%;border-radius:50%;background:var(--cap,#1f9a3c);box-shadow:inset 0 -4px 6px rgba(0,0,0,.35),inset 0 3px 4px rgba(255,255,255,.35),0 3px 0 rgba(0,0,0,.35);transition:transform .05s}
+.pb.down::after{transform:scale(.9);box-shadow:inset 0 -2px 4px rgba(0,0,0,.4),inset 0 2px 3px rgba(255,255,255,.25)}
+.pb.green{--cap:linear-gradient(#35c25a,#1b8a37)}
+.pb.black{--cap:linear-gradient(#4a4f53,#1f2326)}
+.pb.mush::after{width:84%;height:84%;background:radial-gradient(circle at 40% 35%,#ff6b5e,#c4211a 70%)}
+.pb.mush.latched::after{transform:scale(.88)}
+.sel2{width:56px;height:56px;border-radius:50%;border:0;cursor:pointer;padding:0;position:relative;background:radial-gradient(circle,#2a2f33 0 58%,#8a9095 59% 68%,#5c6266 69%);box-shadow:0 3px 5px rgba(0,0,0,.35)}
+.sel2 i{position:absolute;left:50%;top:50%;width:12px;height:40px;margin:-20px 0 0 -6px;border-radius:5px;background:linear-gradient(90deg,#3c4246,#71787d,#3c4246);transform:rotate(-45deg);transition:transform .15s;box-shadow:0 1px 2px #000}
+.sel2 i::after{content:"";position:absolute;left:4px;top:3px;width:4px;height:8px;border-radius:2px;background:#fff}
+.sel2[aria-pressed="true"] i{transform:rotate(45deg)}
+.sel2.key{background:radial-gradient(circle,#c9a54a 0 40%,#8a9095 41% 68%,#5c6266 69%)}
+.sel2.key i{width:8px;margin-left:-4px;background:linear-gradient(90deg,#9d7d2a,#e7c76a,#9d7d2a)}
+.selpos{display:flex;justify-content:space-between;width:80px;font:600 9.5px var(--font-body);color:#3b4348}
+.lamp{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#7b7f82,#3d4144);box-shadow:0 0 0 4px #9ba1a5,0 0 0 5px #5d6366,0 2px 4px 5px rgba(0,0,0,.25)}
+.lamp.r.on{background:radial-gradient(circle at 40% 35%,#ffd1cc,#ff3b2a 55%,#b8170c);box-shadow:0 0 0 4px #9ba1a5,0 0 0 5px #5d6366,0 0 18px 6px #ff3b2a88}
+.lamp.g.on{background:radial-gradient(circle at 40% 35%,#d8ffd8,#2fd34b 55%,#13852a);box-shadow:0 0 0 4px #9ba1a5,0 0 0 5px #5d6366,0 0 18px 6px #2fd34b88}
+.lamp.y.on{background:radial-gradient(circle at 40% 35%,#fff6c8,#ffc21a 55%,#b88400);box-shadow:0 0 0 4px #9ba1a5,0 0 0 5px #5d6366,0 0 18px 6px #ffc21a88}
+.lamp.w.on{background:radial-gradient(circle at 40% 35%,#ffffff,#cfe3ff 55%,#7ea2d0);box-shadow:0 0 0 4px #9ba1a5,0 0 0 5px #5d6366,0 0 18px 6px #cfe3ffaa}
+.meter{width:96px;height:64px;background:linear-gradient(#fbfbf6,#eceee6);border-radius:4px;box-shadow:0 0 0 3px #2a2f33,0 2px 5px 3px rgba(0,0,0,.25);position:relative;overflow:hidden}
+.meter svg{width:100%;height:100%;display:block}
+.brk{width:46px;height:64px;border-radius:4px;border:0;cursor:pointer;padding:0;background:linear-gradient(#2d3236,#1a1d20);position:relative;box-shadow:0 3px 5px rgba(0,0,0,.35)}
+.brk i{position:absolute;left:13px;width:20px;height:24px;border-radius:3px;background:linear-gradient(#f2f2f2,#b9bcbf);top:34px;transition:top .12s;box-shadow:0 2px 2px rgba(0,0,0,.5)}
+.brk[aria-pressed="true"] i{top:6px;background:linear-gradient(#ffcf4a,#e0a400)}
+.brk span{position:absolute;left:0;right:0;font:700 8px Arial;color:#ddd}
+.station .knob{width:56px;height:56px}
+.station .knob i{height:18px;transform-origin:50% 22px}
+.station .kv{font:600 11px var(--font-mono);direction:ltr;color:#1d2226}
+.rot{width:56px;height:56px;border-radius:50%;cursor:pointer;border:0;padding:0;position:relative;background:radial-gradient(circle,#2a2f33 0 52%,#8a9095 53% 66%,#5c6266 67%);box-shadow:0 3px 5px rgba(0,0,0,.35)}
+.rot i{position:absolute;left:50%;top:50%;width:10px;height:38px;margin:-19px 0 0 -5px;border-radius:5px;background:linear-gradient(90deg,#3c4246,#71787d,#3c4246);transition:transform .15s}
+.rot i::after{content:"";position:absolute;left:3px;top:2px;width:4px;height:8px;border-radius:2px;background:#ffb44d}
+
+/* ---------- motor + meters ---------- */
+.mview{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:12px;align-items:center}
+@media (max-width:560px){.mview{grid-template-columns:minmax(0,1fr)}}
+.mview svg{width:100%;height:auto;display:block;direction:ltr}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
+@media (max-width:560px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tile{border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0}
+.tile .v{font-family:var(--font-mono);font-size:1.15rem;font-weight:500;direction:ltr;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .v small{font-size:.7rem;color:var(--muted);margin-left:3px}
+.tile .bar{height:4px;border-radius:2px;background:var(--line);margin-top:4px;overflow:hidden}
+.tile .bar i{display:block;height:100%;width:0;background:var(--cur)}
+.tile .bar i.hot{background:var(--bad)}
+.statusline{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.pill{font-size:.78rem;font-weight:600;border-radius:999px;padding:2px 10px;border:1px solid var(--line);color:var(--muted)}
+.pill.on{color:#fff;background:var(--good);border-color:var(--good)}
+.pill.bad{color:#fff;background:var(--bad);border-color:var(--bad)}
+.pill.warn{color:#fff;background:var(--warn);border-color:var(--warn)}
+.scopewrap{position:relative;border-radius:10px;overflow:hidden;background:var(--scope-bg)}
+#scope{width:100%;height:260px;display:block}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;margin-top:8px}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:14px;height:3px;border-radius:2px;display:inline-block}
+
+/* ---------- inputs ---------- */
+.io{display:grid;gap:6px}
+.sw{width:50px;height:30px;border-radius:5px;border:0;padding:3px;background:linear-gradient(#2a2e32,#15181b);position:relative;cursor:pointer;flex:none;box-shadow:0 0 0 2px #2f7fe0aa,0 2px 3px rgba(0,0,0,.35)}
+.sw::before{content:"O";position:absolute;inset:3px 3px 3px 50%;display:grid;place-items:center;font:700 11px Arial,sans-serif;color:#bfc5c9;background:linear-gradient(#4b5157,#2b3034);border-radius:0 3px 3px 0;transition:all .1s}
+.sw::after{content:"I";position:absolute;inset:3px 50% 3px 3px;display:grid;place-items:center;font:700 11px Arial,sans-serif;color:#8d949a;background:linear-gradient(#30353a,#1f2327);border-radius:3px 0 0 3px;box-shadow:inset -2px 0 3px rgba(0,0,0,.5);transition:all .1s}
+.sw[aria-pressed="true"]::after{background:linear-gradient(#3ec95a,#1f8a36);color:#fff;box-shadow:inset 0 0 6px rgba(255,255,255,.35),0 0 8px #3ec95a88}
+.sw[aria-pressed="true"]::before{background:linear-gradient(#2b3034,#1c2023);color:#7d858b;box-shadow:inset 2px 0 3px rgba(0,0,0,.5)}
+.knob{width:70px;height:70px;border-radius:50%;cursor:ns-resize;touch-action:none;position:relative;background:radial-gradient(circle at 40% 35%,#6c747a,#2a2f33 70%);box-shadow:0 3px 6px rgba(0,0,0,.35),inset 0 0 0 3px #1c2023,0 0 0 3px #2f7fe055}
+.knob i{position:absolute;left:50%;top:6px;width:4px;height:22px;margin-left:-2px;border-radius:2px;background:#ffb44d;transform-origin:50% 29px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field select,.field input[type=number],.field input[type=text]{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 8px;min-width:0;width:100%}
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.check{display:flex;gap:8px;align-items:center;font-size:.9rem;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--accent);flex:none}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.subhead{margin:14px 0 8px;font-size:.95rem}
+.inj{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px}
+.inj .btn{text-align:right;font-weight:500;font-size:.88rem}
+.inj .btn[aria-pressed="true"]{background:var(--bad);border-color:var(--bad);color:#fff}
+
+/* ---------- wiring diagram ---------- */
+.boardscroll{overflow-x:auto;border-radius:10px;border:1px solid var(--line);background:#f4f5f1}
+#wd{width:100%;min-width:900px;height:auto;display:block;direction:ltr;user-select:none;-webkit-user-select:none}
+#wd text{pointer-events:none;font-family:"IBM Plex Mono",ui-monospace,monospace}
+#wd .ar{font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;direction:rtl;unicode-bidi:plaintext}
+#wd .clk{cursor:pointer}
+#wd .clk:hover .hl{stroke:#ff8a00}
+.wlegend{display:flex;flex-wrap:wrap;gap:12px;font-size:.8rem;margin-top:8px;color:var(--muted)}
+.wlegend span{display:flex;align-items:center;gap:6px}
+.wlegend i{width:18px;height:5px;border-radius:3px;display:inline-block}
+
+/* ---------- params ---------- */
+.ptools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.tabs{display:flex;gap:4px;background:var(--bg);border-radius:10px;padding:4px;flex-wrap:wrap}
+.tabs button{border:0;background:transparent;padding:5px 10px;border-radius:7px;cursor:pointer;font-weight:600;font-size:.82rem;direction:ltr}
+.tabs button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top}
+th{font-size:.75rem;color:var(--muted);background:var(--bg);position:sticky;top:0;z-index:1}
+tr:last-child td{border-bottom:0}
+td.code{font-family:var(--font-mono);font-weight:600;white-space:nowrap;direction:ltr;text-align:right}
+td.en{font-family:var(--font-mono);direction:ltr;text-align:right;white-space:nowrap;font-size:.82rem}
+td.val input,td.val select{width:150px;border:1px solid var(--line);background:var(--bg);border-radius:7px;padding:4px 6px;font-family:var(--font-mono);direction:ltr}
+td.val .ro{font-family:var(--font-mono);direction:ltr;display:inline-block}
+.badge{display:inline-block;font-size:.68rem;border-radius:5px;padding:0 5px;margin-inline-start:4px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.badge.s{color:var(--warn);border-color:var(--warn)}
+.badge.r{color:var(--cur);border-color:var(--cur)}
+#ptable tr{cursor:pointer}#ptable tr.sel td{background:color-mix(in srgb,var(--accent) 10%,transparent)}
+tr.changed td.code{color:var(--accent)}
+.pdet{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:0 0 10px;background:var(--bg);display:grid;gap:6px}
+.pdet .h{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}.pdet .h b{font-family:var(--font-mono);font-size:1.05rem}
+.pdet .facts{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.82rem;color:var(--muted)}.pdet .facts b{color:var(--ink);font-family:var(--font-mono);font-weight:500}
+.pdet p{margin:0;line-height:1.75}
+.reftabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.reftabs button{border:1px solid var(--line);background:transparent;border-radius:8px;padding:5px 11px;cursor:pointer;font-size:.86rem}
+.reftabs button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.refbody h4{margin:12px 0 6px;font-size:.95rem}
+.refbody ol,.refbody ul{margin:0;padding-inline-start:20px;line-height:1.85;font-size:.9rem}
+.cards{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.cards .card{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.cards h4{margin:0 0 6px}
+.toast{font-size:.85rem;font-weight:600;color:var(--good)}
+
+/* ---------- exercises & log ---------- */
+.ex{border:1px solid var(--line);border-radius:10px;margin-bottom:8px;overflow:hidden}
+.ex summary{cursor:pointer;padding:10px 12px;font-weight:600;display:flex;gap:10px;align-items:center;list-style:none}
+.ex summary::-webkit-details-marker{display:none}
+.ex summary .cnt{margin-inline-start:auto;font-family:var(--font-mono);font-size:.8rem;color:var(--muted)}
+.ex.done summary{color:var(--good)}
+.ex .body{padding:0 12px 12px}
+.ex p{margin:.2rem 0 .6rem;color:var(--muted);font-size:.9rem}
+.ex ol{margin:0;padding-inline-start:22px;display:grid;gap:4px;font-size:.9rem}
+.ex li.ok{color:var(--good)}
+.ex li.ok::marker{content:"✓ "}
+.log{max-height:300px;overflow:auto;font-size:.85rem;display:grid;gap:2px}
+.log div{display:flex;gap:8px;border-bottom:1px dashed var(--line);padding:3px 0}
+.log time{font-family:var(--font-mono);color:var(--muted);flex:none}
+.log .a{color:var(--bad);font-weight:600}
+.flt td:first-child{font-family:var(--font-mono);font-weight:600;white-space:nowrap}
+.flt tr.now td{background:color-mix(in srgb,var(--bad) 14%,transparent)}
+/* ---------- solved applications ---------- */
+.sol{border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:14px;background:var(--panel)}
+.sol-h{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between}
+.sol-h h3{margin:0;font-size:1.02rem}
+.sol-go{border:0;cursor:pointer;font-size:.85rem;padding:5px 14px;margin:0}
+.sol-go:hover{filter:brightness(1.1)}
+.sol-goal{margin:.35rem 0 .8rem;color:var(--muted);font-size:.9rem}
+.sol-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:14px;align-items:start}
+@media (max-width:860px){.sol-grid{grid-template-columns:minmax(0,1fr)}}
+.sol-svg{margin:0;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:4px}
+.sol-svg svg{width:100%;height:auto;display:block;direction:ltr}
+.sol-tb{font-size:.84rem}
+.sol-tb td{padding:6px 8px}
+.sol-tb .sol-c{display:block;font-family:var(--font-mono);font-weight:600;direction:ltr;text-align:right}
+.sol-tb .sol-n{display:block;font-family:var(--font-mono);font-size:.74rem;color:var(--muted);direction:ltr;text-align:right}
+.sol-tb .sol-path{display:inline-block;unicode-bidi:isolate;font-family:var(--font-mono);font-size:.72rem;direction:ltr;background:var(--accent-soft);border-radius:4px;padding:0 4px;margin-top:2px;white-space:nowrap}
+.sol-tb td.sol-v{font-family:var(--font-mono);font-weight:600;white-space:nowrap;direction:ltr;text-align:right}
+.sol-tb td.sol-v small{color:var(--muted);font-weight:400}
+.sol-tb td.sol-v .badge{display:table;margin:3px 0 0}
+.sol-steps{margin:12px 0 0;padding-inline-start:22px;display:grid;gap:4px;font-size:.9rem}
+.sol-st{margin:8px 0 0;font-size:.86rem;font-weight:600;min-height:1.2em}
+.sol-st:empty{display:none}
+.sol-svg text{font-family:var(--font-body)}
+.sol-svg .sd-l{font-size:11px;font-weight:500;fill:var(--ink)}
+.sol-svg .sd-tl{font-family:var(--font-mono);font-size:10.5px;font-weight:600;fill:var(--ink)}
+.sol-svg .sd-h{font-family:var(--font-display);font-size:13px;font-weight:700;fill:var(--ink)}
+.sol-svg .sd-m{fill:var(--muted)}
+.sd-box{fill:var(--panel);stroke:var(--muted);stroke-width:1.2}
+.sd-t{fill:var(--bg);stroke:var(--muted)}
+.sd-dot,.sd-k{fill:var(--ink)}
+.sd-o,.sd-dev{fill:var(--panel);stroke:var(--ink);stroke-width:1.4}
+.sd-sym{fill:none;stroke:var(--ink);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.sd-dash{fill:none;stroke:var(--ink);stroke-width:1.2;stroke-dasharray:3 2.5}
+.sd-es{fill:var(--bad);stroke:var(--ink);stroke-width:1}
+.w{fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.w.p{stroke:var(--w-pwr)}.w.m{stroke:var(--w-mot)}.w.c24{stroke:var(--w-24)}.w.an{stroke:var(--w-an)}.w.com{stroke:var(--w-com)}.w.rl{stroke:var(--w-rl)}.w.pe{stroke:var(--w-pe)}
+@media (max-width:480px){.sol{padding:10px}}
+@media (max-width:560px){.sol-tb thead{display:none}.sol-tb tr{display:grid;grid-template-columns:minmax(0,1fr) auto;border-bottom:1px solid var(--line)}.sol-tb tr:last-child{border-bottom:0}.sol-tb td{border:0}.sol-tb td:nth-child(3){grid-column:1/-1;padding-top:0;color:var(--muted)}}
+
+/* ---------- guided simple mode ---------- */
+.btn.big{padding:12px 20px;font-size:1rem;min-height:48px;border-radius:10px}
+#modeBtn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+body.guided header.top p,body.guided .legendbar,body.guided .chip,body.guided #solvedLink{display:none}
+body.guided[data-g="c"] .chip,body.guided[data-g="d"] .chip{display:inline-block}
+body.guided .bench{display:none}
+body.guided[data-g="c"] .bench,body.guided[data-g="d"] .bench{display:grid}
+body.guided #pnlScope{display:none}
+body.guided[data-g="c"] #pnlLoad{display:none}
+body.guided:not(.adv) .advonly{display:none}
+body.guided #advBar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+body.guided .keyguide{display:none}
+.guide{padding:20px;border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.g-head h2{font-size:1.5rem;margin-bottom:6px}
+.g-sub{margin:0 0 16px;color:var(--muted);max-width:70ch;line-height:1.8}
+.g-cards{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.g-card{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;align-items:center;text-align:right;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:14px;cursor:pointer;min-height:104px;color:inherit;font:inherit}
+.g-card:hover,.g-card:focus-visible{border-color:var(--accent);background:var(--accent-soft)}
+.g-card .n{grid-row:1/3;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font:700 1.3rem var(--font-display);background:var(--accent);color:#fff}
+.g-card.done .n{background:var(--good)}
+.g-card .t{font:600 1.02rem var(--font-display);line-height:1.35}
+.g-card .g{font-size:.86rem;color:var(--muted);line-height:1.6}
+.g-card .ico{grid-column:1/3;display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px;font-size:.78rem;color:var(--muted)}
+.g-card .ico svg{width:84px;height:34px;display:block;direction:ltr;color:var(--ink)}
+.g-bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-bottom:12px}
+.g-bar .btn{min-height:44px}
+.g-prog{display:flex;gap:6px;flex:1;min-width:220px;align-items:center}
+.g-prog span{flex:1;height:10px;border-radius:5px;background:var(--line);position:relative}
+.g-prog span.on{background:var(--accent)}.g-prog span.ok{background:var(--good)}
+.g-prog b{font:600 .9rem var(--font-mono);white-space:nowrap;margin-inline-start:6px}
+.g-steps{display:flex;gap:4px 14px;flex-wrap:wrap;font-size:.82rem;color:var(--muted);margin:-4px 0 12px}
+.g-steps span.on{color:var(--accent);font-weight:700}
+#gTitle{font-size:1.3rem;margin-bottom:10px}
+.g-body{display:grid;gap:14px}
+.g-lead{margin:0;font-size:1.02rem;line-height:1.8}
+.g-fig{margin:0;border:1px solid var(--line);border-radius:12px;padding:10px;max-width:780px;justify-self:center;width:100%}
+.g-fig svg{width:100%;height:auto;display:block;direction:ltr}
+.g-fig .hlr{fill:color-mix(in srgb,var(--accent) 22%,transparent);stroke:var(--accent);stroke-width:1.2}
+.g-fig .hlr+rect.sd-t{fill:var(--accent);stroke:var(--accent)}
+.g-terms{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.g-terms .tc{font:600 .95rem var(--font-mono);direction:ltr;background:var(--accent-soft);border:1px solid var(--accent);border-radius:8px;padding:3px 10px}
+.g-list{margin:0;padding-inline-start:22px;display:grid;gap:6px;line-height:1.8}
+.g-check{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg);font-size:1rem;line-height:1.7}
+.g-check i{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-style:normal;font-weight:700;color:transparent;margin-top:2px}
+.g-check.ok{border-color:var(--good)}.g-check.ok i{background:var(--good);border-color:var(--good);color:#fff}
+.g-check .sub{display:block;font-size:.86rem;color:var(--muted)}
+.g-live{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.92rem;color:var(--muted)}
+.g-live b{font-family:var(--font-mono);direction:ltr;unicode-bidi:isolate;color:var(--ink)}
+.g-warn{border:1px solid var(--warn);color:var(--warn);border-radius:10px;padding:10px 14px;font-weight:600}
+.g-nav{display:flex;gap:10px;justify-content:space-between;margin-top:18px;flex-wrap:wrap}
+.g-nav .btn{flex:1;min-width:140px}
+.g-note{margin:0;font-size:.88rem;color:var(--muted)}
+.g-tbl .okc{color:var(--good);font-weight:700;font-family:var(--font-mono)}
+.g-st{margin:0;font-size:.9rem;font-weight:600;min-height:1.2em}
+/* step (b): enter the parameters by hand */
+.g-choice{display:flex;gap:10px;flex-wrap:wrap}
+.g-choice .btn{flex:1;min-width:200px;position:relative}
+.g-choice .btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.g-choice .btn .rec{font-size:.72rem;font-weight:600;border:1px solid currentColor;border-radius:999px;padding:0 7px;margin-inline-start:6px;vertical-align:middle}
+.g-hint{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg);font-size:.92rem;line-height:1.8}
+.g-hint h4{margin:0 0 4px;font-size:1rem}
+.g-hint ol,.g-hint ul{margin:4px 0 0;padding-inline-start:22px}
+.g-hint kbd{font:600 .8rem var(--font-mono);border:1px solid var(--line);border-radius:4px;padding:0 5px;background:var(--panel);direction:ltr;unicode-bidi:isolate}
+.g-hint code{direction:ltr;unicode-bidi:isolate}
+.g-hint .pw{color:var(--warn);font-weight:600;margin:6px 0 0}
+.g-hand{display:grid;grid-template-columns:minmax(280px,380px) minmax(0,1fr);gap:14px;align-items:start}
+.g-hand .g-face{min-width:0}
+.g-hand .g-face .device{margin-bottom:0}
+.g-hand-r{display:grid;gap:10px;min-width:0}
+.g-cnt{margin:0;font:700 1.1rem var(--font-display);display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-height:44px}
+.g-cnt b{font-family:var(--font-mono);direction:ltr;unicode-bidi:isolate}
+.g-cnt.ok{color:var(--good)}
+.g-tbl tr.ok td{background:color-mix(in srgb,var(--good) 16%,transparent)}
+.g-tbl tr.ok .sol-c{color:var(--good)}
+.g-tbl .cur{display:block;font-size:.74rem;color:var(--muted);font-weight:400;white-space:nowrap}
+.g-tbl .cur.bad{color:var(--bad);font-weight:700}
+.g-tbl .cur:empty{display:none}
+@media (max-width:860px){.g-hand{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:560px){.guide{padding:14px}.g-card{min-height:96px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <h1>معمل Schneider Altivar Machine ATV320</h1>
+    <p>انفرتر ATV320U40N4C (4 كيلووات، 380–500 فولت 3 فاز، 9.5 أمبير) شغّال على موتور حقيقي. اشتغل من الشاشة المدمجة بأربع أرقام والـ Jog dial زي الجهاز بالظبط، شغّل من أطراف LI بالزراير، غيّر الباراميترات من قوايم rEF و MOn و COnF، اعمل أعطال واعرف تصلحها، وحل التمارين.</p>
+  </div>
+  <div class="chips">
+    <a class="btn" href="../index.html" style="text-decoration:none">← كل المعامل</a>
+    <button class="btn" id="modeBtn" type="button" aria-pressed="false">الوضع الكامل</button>
+    <a class="btn" id="solvedLink" href="#solved" style="text-decoration:none">تمارين محلولة ↓</a>
+    <span class="chip">المرجع: <b id="chipRef">AI1</b></span>
+    <span class="chip">الحالة: <b id="chipSt">OFF</b></span>
+    <span class="chip">العطل: <b id="chipF">لا يوجد</b></span>
+  </div>
+</header>
+<div class="legendbar"><span class="tagc">تحكم</span> حاجة بتغيّرها بإيدك (زراير، سلكتورات، مقابض، باراميترات) <span class="tagv">بيان</span> حاجة بتتفرج عليها بس (الشاشة، اللمبات، العدادات، الاسكوب)</div>
+
+<section class="panel guide" id="guide" hidden aria-label="الوضع المبسّط">
+  <div id="gStart">
+    <div class="g-head"><h2>ابدأ من هنا</h2><p class="g-sub">اختار تمرين وامشي معاه خطوة بخطوة: <b>التوصيل</b> ← <b>الباراميترات</b> ← <b>التشغيل</b> ← <b>عطل</b>. الصفحة هتوريك اللي محتاجه في كل خطوة بس. عايز المعمل كله؟ دوس «الوضع الكامل» فوق.</p></div>
+    <div class="g-cards" id="gCards"></div>
+  </div>
+  <div id="gRun" hidden>
+    <div class="g-bar">
+      <button class="btn" id="gBack" type="button">‹ رجوع للقايمة</button>
+      <div class="g-prog" id="gProg" aria-live="polite"></div>
+    </div>
+    <h2 id="gTitle"></h2>
+    <div class="g-body" id="gBody"></div>
+    <div class="g-nav">
+      <button class="btn big" id="gPrev" type="button">السابق</button>
+      <button class="btn big pri" id="gNext" type="button">التالي</button>
+    </div>
+  </div>
+</section>
+
+<div class="bench">
+  <div class="col">
+    <div class="panel" id="pnlFace">
+      <div class="device">
+        <div class="drv" aria-label="انفرتر Schneider Altivar Machine ATV320">
+          <div class="atv">
+            <div class="atv-vent"></div>
+            <div class="atv-band">
+              <div class="se-logo"><i>SE</i><span>Schneider<br>Electric</span></div>
+              <div class="atv-name"><small>Altivar Machine</small><b>ATV320</b></div>
+            </div>
+            <div class="hmi">
+              <div class="hmi-top">
+                <span><i class="led red" id="ledChg"></i>CHARGE</span>
+                <span>CANopen <i class="led" id="ledCanR"></i>RUN <i class="led red" id="ledCanE"></i>ERR</span>
+              </div>
+              <div class="hmi-disp">
+                <div class="mled"><span>REF<i class="led" id="ledRef"></i></span><span>MON<i class="led" id="ledMon"></i></span><span>CONF<i class="led" id="ledConf"></i></span></div>
+                <div class="win"><div class="seg7" id="seg" role="img" aria-label="الشاشة"></div></div>
+                <div class="vled"><span><i class="led" id="ledVal"></i>Value</span><span><i class="led" id="ledUnit"></i>Unit</span></div>
+              </div>
+              <div class="hmi-keys">
+                <button class="ak" data-k="ESC" aria-label="ESC">ESC</button>
+                <div class="dialwrap"><svg class="dial" id="dial" viewBox="0 0 120 120" role="slider" tabindex="0" aria-label="Jog dial: لفه بالسحب في دايرة أو بعجلة الماوس أو بالأسهم، واضغط في نصه أو Enter للـ ENT"></svg></div>
+                <button class="ak mode" data-k="MODE" aria-label="MODE">MODE</button>
+              </div>
+              <div class="hmi-rs">
+                <button class="ak run" data-k="RUN" aria-label="تشغيل RUN">RUN</button>
+                <button class="ak stop" data-k="STOP" aria-label="إيقاف ومسح عطل STOP/RESET">STOP<br>RESET</button>
+              </div>
+            </div>
+            <div class="atv-low">
+              <div class="rj" title="منفذ RJ45: Modbus / CANopen"><i></i></div>
+              <div class="plate"><b>ATV320U40N4C</b><br>4 kW · 380–500V 3PH · 9.5A</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="hint" style="text-align:center"><span class="tagc">تحكم</span> ESC و MODE والـ Jog dial و RUN و STOP <span class="tagv">بيان</span> الشاشة ولمبات REF/MON/CONF و Value/Unit و CHARGE</p>
+      <div class="hcap" id="hcap" aria-live="polite"></div>
+      <ul class="keyguide">
+        <li><b>MODE</b> يلف بين المودات الـ 3: <code>rEF-</code> (المرجع) ثم <code>MOn-</code> (القراءات) ثم <code>COnF</code> (الباراميترات)، واللمبة اللي جنب REF أو MON أو CONF بتقولك انت فين.</li>
+        <li><b>Jog dial</b> لفه (اسحب في دايرة، أو عجلة الماوس، أو الأسهم وهو متعلّم عليه) عشان تتنقل بين الأكواد أو تغيّر القيمة. اللف السريع بيكبّر الخطوة. دوسة على أي حتة في الطوق تتحرك خطوة، ولو مسكتها تكرر.</li>
+        <li><b>ENT</b> = تدوس في نص الـ Jog dial (أو Enter). يدخل على القايمة أو الباراميتر، والقيمة ترمش يعني بتعدّل، ودوسة تانية تحفظ. باراميترات زي <code>tCC</code> و <code>CFG</code> و <code>GFS</code> لازم تمسك ENT <b>ثانيتين</b>.</li>
+        <li><b>ESC</b> يلغي التعديل أو يرجع خطوة لورا.</li>
+        <li><b>RUN</b> و <b>STOP/RESET</b>: RUN بيشتغل بس لما قناة الأوامر محلية (<code>Fr1 = LCC</code>، أو <code>CHCF = SEP</code> و <code>Cd1 = LCC</code>). STOP بيوقف دايماً لو <code>PSt = YES</code>، ولو فيه عطل اتشال سببه بيمسحه.</li>
+      </ul>
+    </div>
+
+    <div class="panel" id="pnlStation">
+      <h2>لوحة التشغيل (أطراف الكنترول)<span class="tagc">تحكم</span></h2>
+      <div class="station" id="station">
+        <div class="dev"><span class="tag">المفتاح الرئيسي</span><button class="brk" id="dBrk" aria-pressed="true" aria-label="المفتاح الرئيسي"><span style="top:2px">ON</span><i></i><span style="bottom:2px">OFF</span></button><span class="term">R/L1 S/L2 T/L3</span></div>
+        <div class="dev"><span class="tag">طوارئ STO</span><button class="pb mush" id="dEst" aria-label="زرار الطوارئ على STO"></button><span class="term">+24 → STO · NC</span></div>
+        <div class="dev"><span class="tag" id="tg1">تشغيل أمامي</span><button class="sel2" id="dS1" aria-pressed="false" aria-label="سلكتور LI1"><i></i></button><button class="pb mush" id="dP1" aria-label="زرار STOP على LI1" hidden></button><div class="selpos" id="sp1"><span>O</span><span>FWD</span></div><span class="term">LI1</span></div>
+        <div class="dev"><span class="tag" id="tg2">عكس</span><button class="sel2" id="dS2" aria-pressed="false" aria-label="سلكتور LI2"><i></i></button><button class="pb green" id="dP2" aria-label="زرار START على LI2" hidden></button><div class="selpos" id="sp2"><span>O</span><span>REV</span></div><span class="term">LI2</span></div>
+        <div class="dev"><span class="tag">سرعات ثابتة</span><button class="rot" id="dSel" aria-label="سلكتور السرعات الثابتة"><i></i></button><span class="term" id="dSelV">0 · SP1</span><span class="term">LI3 / LI4</span></div>
+        <div class="dev"><span class="tag" id="tg5">LI5</span><button class="pb black" id="dP5" aria-label="زرار LI5"></button><span class="term">LI5 · NO</span></div>
+        <div class="dev"><span class="tag" id="tg6">LI6</span><button class="sel2" id="dS6" aria-pressed="false" aria-label="سلكتور LI6"><i></i></button><div class="selpos"><span>O</span><span>I</span></div><span class="term">LI6</span></div>
+        <div class="dev"><span class="tag">بوتنشيوميتر</span><div class="knob" id="kPot" tabindex="0" role="slider" aria-label="البوتنشيوميتر على AI1"><i></i></div><span class="kv" id="kPotV">0%</span><span class="term">10V · AI1 · COM</span></div>
+        <div class="dev"><span class="tag">0-10V من PLC</span><div class="knob" id="kV" tabindex="0" role="slider" aria-label="إشارة 0-10 فولت على AI2"><i></i></div><span class="kv" id="kVV">0.00 V</span><span class="term">AI2 · COM</span></div>
+        <div class="dev"><span class="tag">4-20mA ترانسميتر</span><div class="knob" id="kMa" tabindex="0" role="slider" aria-label="إشارة 4-20 مللي على AI3"><i></i></div><span class="kv" id="kMaV">4.0 mA</span><span class="term">AI3 · COM</span></div>
+        <div class="dev"><span class="tag" id="tH1">H1 · R1</span><div class="lamp r" id="lH1"></div><span class="term" id="tH1f">R1B–R1C</span></div>
+        <div class="dev"><span class="tag" id="tH2">H2 · R2</span><div class="lamp g" id="lH2"></div><span class="term" id="tH2f">R2A–R2C</span></div>
+        <div class="dev"><span class="tag" id="tH3">H3 · LO1</span><div class="lamp y" id="lH3"></div><span class="term" id="tH3f">LO+ / LO-</span></div>
+        <div class="dev"><span class="tag">عداد AQ1</span><div class="meter"><svg viewBox="0 0 96 64" id="aoMeter"></svg></div><span class="term" id="aoV">0.00 V</span></div>
+      </div>
+      <p class="hint" id="stHint"></p>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="panel" id="pnlMotor">
+      <h2>الموتور والحمل<span class="tagv">بيان</span></h2>
+      <div class="mview">
+        <svg viewBox="0 0 380 170" aria-label="موتور حثي">
+          <defs>
+            <linearGradient id="mb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6c8fb3"/><stop offset=".45" stop-color="#3d5f84"/><stop offset="1" stop-color="#253d58"/></linearGradient>
+            <linearGradient id="sh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1f3f4"/><stop offset=".5" stop-color="#a7adb2"/><stop offset="1" stop-color="#6d7378"/></linearGradient>
+          </defs>
+          <rect x="6" y="76" width="46" height="18" rx="2" fill="url(#sh)"/>
+          <rect x="50" y="34" width="18" height="102" rx="3" fill="url(#mb)"/>
+          <rect x="68" y="32" width="196" height="106" rx="10" fill="url(#mb)"/>
+          <g stroke="#1d3349" stroke-width="2" opacity=".55"><line x1="78" y1="44" x2="254" y2="44"/><line x1="78" y1="56" x2="254" y2="56"/><line x1="78" y1="114" x2="254" y2="114"/><line x1="78" y1="126" x2="254" y2="126"/></g>
+          <rect x="264" y="40" width="34" height="90" rx="14" fill="url(#mb)"/>
+          <rect x="140" y="12" width="56" height="22" rx="3" fill="#36536f"/>
+          <path d="M170 12C170 0 250-2 376 4" stroke="#222" stroke-width="7" fill="none"/>
+          <rect x="102" y="66" width="122" height="40" rx="3" fill="#d6dadd"/>
+          <text x="108" y="79" font-size="8" font-weight="700" fill="#1b2226" font-family="Arial" id="mPlate1">3~ MOTOR 4 kW</text>
+          <text x="108" y="90" font-size="7" fill="#1b2226" font-family="Arial" id="mPlate2">400V 50Hz 8.1A</text>
+          <text x="108" y="100" font-size="7" fill="#1b2226" font-family="Arial" id="mPlate3">1445 r/min  cos 0.82</text>
+          <rect x="70" y="140" width="190" height="10" fill="#2b3d50"/>
+          <g transform="translate(316 85)"><circle r="30" fill="none" stroke="#8a96a2" stroke-width="2" stroke-dasharray="3 3"/><g id="fanBlades"><path d="M0 0 L5 -26 L-5 -26Z M0 0 L26 5 L26 -5Z M0 0 L-5 26 L5 26Z M0 0 L-26 -5 L-26 5Z" fill="#9aa6b1"/></g><circle r="5" fill="#556"/></g>
+          <g transform="translate(29 85)"><g id="shaftMark"><rect x="-3" y="-9" width="6" height="18" fill="#c0352b"/></g></g>
+          <text x="190" y="166" text-anchor="middle" font-size="10" fill="#7a868f" font-family="Arial" id="mDir"></text>
+        </svg>
+        <svg viewBox="0 0 160 160" id="loadSvg" aria-label="الحمل"></svg>
+      </div>
+      <div class="tiles">
+        <div class="tile"><div class="label">تردد الخرج rFr</div><div class="v" id="tF">0.0<small>Hz</small></div></div>
+        <div class="tile"><div class="label">سرعة الموتور SPd</div><div class="v" id="tN">0<small>rpm</small></div></div>
+        <div class="tile"><div class="label">التيار LCr</div><div class="v" id="tI">0.00<small>A</small></div><div class="bar"><i id="bI"></i></div></div>
+        <div class="tile"><div class="label">جهد الخرج UOP</div><div class="v" id="tV">0<small>V</small></div></div>
+        <div class="tile"><div class="label">العزم Otr</div><div class="v" id="tT">0<small>%</small></div></div>
+        <div class="tile"><div class="label">DC Bus</div><div class="v" id="tB">0<small>V</small></div><div class="bar"><i id="bB"></i></div></div>
+        <div class="tile"><div class="label">حرارة الموتور tHr</div><div class="v" id="tOL">0<small>%</small></div><div class="bar"><i id="bOL"></i></div></div>
+        <div class="tile"><div class="label">حرارة الانفرتر tHd</div><div class="v" id="tHS">0<small>%</small></div><div class="bar"><i id="bHS"></i></div></div>
+      </div>
+      <div class="statusline" id="pills"></div>
+    </div>
+    <div class="panel" id="pnlScope">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px"><h2 style="margin:0">الاسكوب<span class="tagv">بيان</span></h2>
+        <div class="row"><select id="scopeSpan" class="btn" aria-label="مدة العرض"><option value="5">5 ثواني</option><option value="15" selected>15 ثانية</option><option value="40">40 ثانية</option></select><button class="btn" id="scopePause">إيقاف مؤقت</button></div></div>
+      <div class="scopewrap"><canvas id="scope"></canvas></div>
+      <div class="legend">
+        <span><i style="background:#ffb44d"></i>مرجع التردد FrH Hz</span>
+        <span><i style="background:#4cc0cf"></i>تردد الخرج rFr Hz</span>
+        <span><i style="background:#ff6b5e"></i>التيار % من 9.5A</span>
+        <span><i style="background:#a98bff"></i>DC Bus (÷10 V)</span>
+      </div>
+    </div>
+    <div class="panel" id="pnlLoad">
+      <h2>الحمل والكهربا والأعطال<span class="tagc">تحكم</span></h2>
+      <div class="fields">
+        <div class="field"><span class="label">الموتور المركّب</span><select id="motSel"><option value="iec">4 kW · 400V · 50Hz · 1445 rpm</option><option value="nema">5 HP · 460V · 60Hz · 1750 rpm</option></select></div>
+        <div class="field"><span class="label">جهد المصدر</span><select id="lineSel"><option>380</option><option selected>400</option><option>415</option><option>460</option><option>480</option></select></div>
+        <div class="field"><span class="label">نوع الحمل</span><select id="loadSel"><option value="conv">سير ناقل (عزم ثابت)</option><option value="fan">مروحة / طلمبة (عزم ∝ السرعة²)</option><option value="hoist">ونش (الحمل بيشد لتحت)</option></select></div>
+        <div class="field"><span class="label">الحمل: <b id="lpV" class="mono">40%</b> من عزم الموتور</span><input type="range" id="lp" min="0" max="160" step="1" value="40"></div>
+        <div class="field"><span class="label">قصور الحمل ÷ قصور الموتور: <b id="jrV" class="mono">3</b></span><input type="range" id="jr" min="0" max="40" step="0.5" value="3"></div>
+        <div class="field"><span class="label">حرارة الجو: <b id="ambV" class="mono">35°C</b></span><input type="range" id="amb" min="10" max="50" step="1" value="35"></div>
+      </div>
+      <div class="io" style="margin-top:12px">
+        <label class="check"><input type="checkbox" id="dbChk"> مركّب مقاومة فرملة 72Ω على PA/+ و PB</label>
+      </div>
+      <h3 class="subhead">اعمل عطل</h3>
+      <div class="inj">
+        <button class="btn" data-inj="dip" aria-pressed="false">⚡ انقطاع كهربا لحظي (0.6 ث)</button>
+        <button class="btn" data-inj="hiline" aria-pressed="false">⬆ جهد المصدر عالي +40%</button>
+        <button class="btn" data-inj="phl" aria-pressed="false">⊘ فاز ناقص في الدخل (فيوز T/L3)</button>
+        <button class="btn" data-inj="gnd" aria-pressed="false">⏚ قصر للأرضي على الكابل</button>
+        <button class="btn" data-inj="short" aria-pressed="false">✕ قصر بين U و V</button>
+        <button class="btn" data-inj="imp" aria-pressed="false">≈ عزل ضعيف بين لفات الموتور</button>
+        <button class="btn" data-inj="shock" aria-pressed="false">⚒ خبطة حمل مفاجئة (تيار لحظي)</button>
+        <button class="btn" data-inj="opn" aria-pressed="false">✂ فاز W للموتور مفصول</button>
+        <button class="btn" data-inj="ctr" aria-pressed="false">⏏ كونتاكتور الخرج فاتح</button>
+        <button class="btn" data-inj="jam" aria-pressed="false">⛓ الحمل اتزنق (Jam)</button>
+        <button class="btn" data-inj="fan" aria-pressed="false">🌀 مروحة الانفرتر واقفة</button>
+        <button class="btn" data-inj="mabrk" aria-pressed="false">✂ سلك 4-20mA مقطوع</button>
+      </div>
+      <p class="hint" id="loadHint"></p>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="advBar" hidden><button class="btn big" id="advBtn" type="button" aria-expanded="false">عرض المتقدم ▾</button><span class="hint" style="margin:0">مخطط التوصيل الحي، الاسكوب، جدول الباراميترات، الأعطال، المرجع، التمارين، والسجل. كله لسه موجود.</span></div>
+
+<div class="panel advonly">
+  <div class="row" style="justify-content:space-between;margin-bottom:6px"><h2 style="margin:0">مخطط التوصيل الحي<span class="tagv">بيان</span><span class="tagc">الزراير اللي فيه</span></h2></div>
+  <p class="hint" style="margin-top:0">نفس اللوحة اللي فوق مرسومة بأسلاكها. السلك اللي عليه جهد بيبقى ملوّن، والمقطوع رمادي. تقدر تدوس على الزراير والسلكتورات اللي في الرسمة كمان. سويتش SW1 على Source (المصنع): الزرار بيوصّل +24 للطرف LI.</p>
+  <div class="boardscroll"><svg id="wd" viewBox="0 0 1200 820" aria-label="مخطط التوصيل"></svg></div>
+  <div class="wlegend">
+    <span><i style="background:#7b3f12"></i>L1 L2 L3</span><span><i style="background:repeating-linear-gradient(90deg,#2e9c3a 0 5px,#f3d21b 5px 10px)"></i>أرضي PE</span><span><i style="background:#c8261c"></i>U V W للموتور</span>
+    <span><i style="background:#d62f2f"></i>PA/+</span><span><i style="background:#20307a"></i>COM / 0V</span><span><i style="background:#e8870c"></i>+24V للأطراف LI و STO</span><span><i style="background:#5b6670"></i>أنالوج</span><span><i style="background:#6b3fa0"></i>ريليهات R1 R2</span>
+  </div>
+</div>
+
+<div class="panel advonly">
+  <div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 style="margin:0">الباراميترات<span class="tagc">تحكم</span></h2><span class="toast" id="ptoast"></span></div>
+  <div class="ptools">
+    <div class="tabs" id="ptabs"></div>
+    <input type="text" id="psearch" placeholder="دوّر بالكود أو الاسم…" style="flex:1;min-width:160px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 10px">
+    <label class="check"><input type="checkbox" id="pchanged"> المتغير بس</label>
+  </div>
+  <div class="pdet" id="pdetail"></div>
+  <div class="tablewrap" style="max-height:520px;overflow:auto"><table><thead><tr><th>الكود</th><th>الاسم في المانيوال</th><th>الوظيفة</th><th>القيمة</th><th>المصنع</th><th>المدى</th></tr></thead><tbody id="ptable"></tbody></table></div>
+  <p class="hint"><span class="badge s">Stop</span> يتغير والانفرتر واقف بس. <span class="badge s">ENT 2s</span> لازم تمسك ENT ثانيتين على الشاشة. <span class="badge r">قراءة</span> بيان بس. الجدول والشاشة شغالين على نفس الباراميترات، أي تغيير هنا بيبان على الشاشة والعكس. دوس على أي صف يظهر شرحه ومكانه في القوايم.</p>
+</div>
+
+<div class="grid2 advonly">
+  <div class="panel">
+    <h2>الأعطال<span class="tagv">بيان</span></h2>
+    <div class="tablewrap" style="max-height:380px;overflow:auto"><table class="flt"><thead><tr><th>الكود</th><th>الاسم</th><th>السبب</th><th>الحل</th></tr></thead><tbody id="fltTable"></tbody></table></div>
+  </div>
+  <div class="panel" id="refPanel">
+    <h2>المرجع الفني<span class="tagv">بيان</span></h2>
+    <div class="reftabs" id="reftabs"></div>
+    <div class="refbody" id="refBody"></div>
+  </div>
+</div>
+
+<div class="grid2 advonly">
+  <div class="panel"><h2>تمارين</h2><div id="exList"></div></div>
+  <div class="panel"><div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 style="margin:0">السجل</h2><div class="row"><button class="btn" id="btnFactory">رجّع المعمل كله للبداية</button><button class="btn" id="logClr">امسح</button></div></div><div class="log" id="log"></div></div>
+</div>
+<section class="panel advonly" id="solved">
+  <h2>تمارين محلولة: التوصيل والباراميترات<span class="tagc">تحكم</span></h2>
+  <p class="hint" style="margin-top:0">6 تطبيقات من اللي بتقابلها في المصانع. كل كارت فيه رسمة التوصيل بأسماء أطراف ATV320 الحقيقية، وجنبها الباراميترات ومكان كل واحد في القوايم، وبعدين خطوات التوصيل والضبط والتجربة. زرار «طبّق في المعمل» بيوقف الموتور الأول لو شغال (عشان الباراميترات اللي عليها Stop)، ويكتب القيم بنفس طريقة الجدول فتبان على الشاشة والجدول، ويظبط اللوحة ويشغّل، ويسجّل كل ده في السجل.</p>
+  <div class="wlegend" style="margin-bottom:4px"><span><i style="background:var(--w-pwr)"></i>الكهربا L1 L2 L3</span><span><i style="background:var(--w-mot)"></i>U V W للموتور</span><span><i style="background:var(--w-pe)"></i>أرضي PE</span><span><i style="background:var(--w-24)"></i>كنترول +24V</span><span><i style="background:var(--w-an)"></i>أنالوج</span><span><i style="background:var(--w-com)"></i>COM / 0V</span><span><i style="background:var(--w-rl)"></i>دواير الريليه</span></div>
+  <div id="solList"></div>
+</section>
+<p class="hint advonly">أكواد الباراميترات وأسماء الأطراف وأكواد الأعطال وقيم المصنع مكتوبة من الذاكرة على أساس مانيوال برمجة ATV320 (NVE41295)، وممكن تختلف حسب إصدار السوفتوير والموديل. راجع المانيوال اللي مع الجهاز قبل أي توصيل حقيقي.</p>
+</div>
+<script>
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const TAU=Math.PI*2, DT=0.002, SQ3=Math.sqrt(3);
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const rnd=(v,d)=>{const k=Math.pow(10,d);return Math.round(v*k)/k;};
+
+/* ---------------- hardware: ATV320U40N4C ---------------- */
+const DRV={In:9.5,kw:4,ov:820,uvRun:360,adapt:760,dbOn:780,dbOff:765,C:0.0011,hw:2.2*9.5,dbR:72,osf:545};
+const MOT={
+ iec:{V:400,f:50,rpm:1445,I:8.1,kw:4,J:0.012,Rs:1.45,plate:['3~ MOTOR 4 kW','400V 50Hz 8.1A','1445 r/min  cos 0.82']},
+ nema:{V:460,f:60,rpm:1750,I:6.6,kw:3.7,J:0.012,Rs:1.7,plate:['3~ MOTOR 5 HP','460V 60Hz 6.6A','1750 r/min  PF 0.83']}};
+for(const m of Object.values(MOT)){m.ns=60*m.f/2;m.wn=m.rpm*TAU/60;m.Tn=m.kw*1000/m.wn;m.sn=(m.ns-m.rpm)*TAU/60;m.vhz=m.V/m.f;m.I0=0.4*m.I;m.Iq=Math.sqrt(m.I*m.I-m.I0*m.I0);m.slk=5.2*m.sn;m.Tmax=2.6*m.Tn;}
+
+/* ---------------- parameter data ---------------- */
+const G=[['MOn','MOn'],['rEF','rEF'],['SIM','SIM'],['SEt','SEt'],['drC','drC'],['I_O','I_O'],['CtL','CtL'],['FUn','FUn'],['FLt','FLt'],['COM','COM'],['FCS','FCS']];
+const GAR={MOn:'القراءات (Monitoring)',rEF:'المرجع (Reference)',SIM:'التشغيل السريع (Simply start)',SEt:'الضبط (Settings)',drC:'التحكم في الموتور (Motor control)',I_O:'الدخول والخروج (Inputs/outputs)',CtL:'قنوات الأوامر (Command)',FUn:'الوظايف (Application functions)',FLt:'إدارة الأعطال (Fault management)',COM:'الاتصالات (Communication)',FCS:'إعدادات المصنع (Factory settings)'};
+const LIO=['nO','LI1','LI2','LI3','LI4','LI5','LI6'];
+const RLO=['nO','FLt','rUn','SrA','tSA','CtA'];
+const RLAR=['مش مستخدم','مفيش عطل (الريليه ماسك طول ما الجهاز سليم)','الموتور شغال','وصل للسرعة المطلوبة','حرارة الموتور tHr وصلت 100%','التيار وصل لتيار الموتور nCr'];
+const AQO=['nO','OCr','OFr','Otr','OPr','tHr'];
+const FR1=['AI1','AI2','AI3','AIU1','LCC','Mdb'];
+const FR1AR=['AI1 (البوتنشيوميتر 0-10V)','AI2 (إشارة ±10V من PLC)','AI3 (4-20mA)','AIU1 (الـ Jog dial)','LCC (الكيباد: LFr + RUN/STOP)','Mdb (Modbus)'];
+const TAR=[300,600,1800,3600,7200,10800,Infinity];
+const PD=[],PM={},P={};
+function def(c,nm,m,ar,o){const p=Object.assign({c,nm,m,g:m[0],ar,t:'n',mn:0,mx:0,st:1,dc:0,u:'',d:0,x:''},o||{});if(p.o)p.t='e';if(p.get)p.t='ro';PD.push(p);PM[c]=p;}
+const mot=()=>MOT[S.mot];
+/* MOn */
+def('rFr','Output frequency',['MOn'],'تردد الخرج',{get:()=>S.fOut,dc:1,u:'Hz',x:'التردد اللي الانفرتر طالعه دلوقتي على U V W. بالسالب يعني بيلف عكسي. ده اللي الشاشة بتعرضه في MOn والموتور شغال.'});
+def('FrH','Frequency ref.',['MOn','rEF'],'مرجع التردد',{get:()=>S.fCmd,dc:1,u:'Hz',x:'التردد المطلوب بعد ما الانفرتر يختار المصدر (Fr1 أو السرعات الثابتة) ويطبّق LSP و HSP، وقبل الرامب.'});
+def('LCr','Motor current',['MOn'],'تيار الموتور',{get:()=>S.I,dc:2,u:'A',x:'التيار الفعلي في الموتور. الانفرتر مقنن 9.5A مستمر، و 1.5 مرة لمدة 60 ثانية.'});
+def('SPd','Motor speed',['MOn'],'سرعة الموتور',{get:()=>S.wm*60/TAU,dc:0,u:'rpm',x:'سرعة العمود بالـ rpm. الانفرتر بيحسبها من التردد والانزلاق.'});
+def('UOP','Motor voltage',['MOn'],'جهد الموتور',{get:()=>S.V,dc:0,u:'V',x:'الجهد بين فازين على الخرج.'});
+def('ULn','Mains voltage',['MOn'],'جهد التغذية',{get:()=>S.bus/Math.SQRT2/.98,dc:0,u:'V',x:'جهد الكهربا الداخلة محسوب من الـ DC bus. لما الموتور بيفرمل بيعلى لأن الـ bus بيعلى.'});
+def('Otr','Motor torque',['MOn'],'العزم',{get:()=>S.T/mot().Tn*100,dc:0,u:'%',x:'العزم كنسبة من عزم الموتور المقنن. بالسالب يعني الموتور بيرجّع طاقة.'});
+def('OPr','Output power',['MOn'],'القدرة',{get:()=>S.P/(P.nPr*1000)*100,dc:0,u:'%',x:'قدرة الخرج كنسبة من nPr.'});
+def('tHr','Motor thermal state',['MOn'],'الحالة الحرارية للموتور',{get:()=>S.olM,dc:0,u:'%',x:'100% = الموتور سخن زي ما يكون شغال على ItH على طول. عند حوالي 118% يفصل OLF.'});
+def('tHd','Drive thermal state',['MOn'],'الحالة الحرارية للانفرتر',{get:()=>tHd(),dc:0,u:'%',x:'حرارة الانفرتر (المشتت والـ IGBT). عند حوالي 118% يفصل OHF.'});
+def('HMIS','Drive state',['MOn'],'حالة الانفرتر',{get:()=>0,fmt:()=>stCode()||'—',x:'كود الحالة: rdY جاهز، nSt وقوف حر (STO مفتوح أو nSt)، rUn شغال، ACC بيسرّع، dEC بيهدّي، CLI في حد التيار، Obr تباطؤ متكيّف (brA)، dCb حقن DC، tUn ضبط تلقائي.'});
+def('LFt','Last fault',['MOn'],'آخر عطل',{get:()=>0,fmt:()=>S.lastF||'nOF',x:'كود آخر عطل حصل. nOF يعني مفيش.'});
+def('rtH','Run time',['MOn'],'ساعات التشغيل',{get:()=>S.hrs,dc:2,u:'h',x:'مجموع الوقت اللي الموتور كان شغال فيه.'});
+/* rEF */
+def('AIU1','Image input AIU1',['rEF'],'مرجع الـ Jog dial',{mn:0,mx:100,st:1,dc:0,u:'%',d:0,x:'لما Fr1 = AIU1 الـ Jog dial نفسه يبقى بوتنشيوميتر: 0% = LSP و 100% = HSP. ادخل rEF- واختار AIU1 ودوس ENT، وبعدين لف والسرعة تتغير على طول. التشغيل لسه من الأطراف.'});
+def('LFr','HMI frequency ref.',['rEF'],'مرجع التردد من الكيباد',{mn:0,mx:400,mxf:()=>P.HSP,st:.1,dc:1,u:'Hz',d:0,x:'المرجع بالهرتز لما Fr1 = LCC (تحكم محلي). في الحالة دي RUN و STOP اللي على الكيباد هما اللي بيشغّلوا ويوقفوا.'});
+/* SIM */
+def('tCC','2/3 wire control',['SIM','I_O'],'تحكم 2 سلك أو 3 سلك',{o:['2C','3C'],d:0,rl:1,l2:1,x:'2C: LI1 تشغيل أمامي (مفتاح ثابت)، والعكس على rrS. 3C: LI1 = Stop (زرار NC لازم يفضل مقفول)، و LI2 = Start أمامي (زرار NO لحظي). تغييره بيرجّع تخصيص الأطراف للمصنع، وعشان كده لازم تمسك ENT ثانيتين.'});
+def('CFG','Macro configuration',['SIM'],'الماكرو الجاهز',{o:['StS','HdG','GEn'],d:0,rl:1,l2:1,x:'StS = Start/Stop (المصنع). HdG = مناولة (رامبات قصيرة). GEn = استخدام عام (JOG على LI4). تغييره بيرجّع تخصيص الأطراف حسب الماكرو، ولازم ENT ثانيتين. (السلوك هنا تقريبي.)'});
+def('bFr','Standard mot. freq',['SIM','drC'],'نظام الموتور 50/60',{o:['50','60'],d:0,rl:1,x:'50 = موتور IEC (مصر وأوروبا)، 60 = NEMA. تغييره بيرجّع FrS و UnS و nSP و HSP و tFr لقيم تناسبه.'});
+def('nPr','Rated motor power',['SIM','drC'],'قدرة الموتور',{mn:.37,mx:7.5,st:.01,dc:2,u:'kW',d:4,rl:1,x:'قدرة لوحة الموتور بالكيلووات.'});
+def('UnS','Rated motor volt.',['SIM','drC'],'جهد الموتور',{mn:200,mx:480,st:1,u:'V',d:400,rl:1,x:'جهد لوحة الموتور. لو أعلى من الحقيقي الموتور يتشبع ويسحب تيار وهو فاضي.'});
+def('nCr','Rated mot. current',['SIM','drC'],'تيار الموتور',{mn:2.4,mx:14.3,st:.1,dc:1,u:'A',d:8.8,rl:1,x:'تيار لوحة الموتور. بيدخل في حسابات التحكم الاتجاهي (UUC) وعتبة CtA.'});
+def('FrS','Rated motor freq.',['SIM','drC'],'تردد الموتور',{mn:10,mx:400,st:.1,dc:1,u:'Hz',d:50,rl:1,x:'تردد لوحة الموتور. عنده الانفرتر يطلع UnS. وكمان ACC و dEC محسوبين من 0 لحد FrS.'});
+def('nSP','Rated motor speed',['SIM','drC'],'سرعة الموتور',{mn:0,mx:9999,st:1,u:'rpm',d:1430,rl:1,x:'سرعة لوحة الموتور. منها الانفرتر بيحسب الانزلاق اللي يعوّضه.'});
+def('tUn','Autotuning',['SIM','drC'],'الضبط التلقائي',{o:['nO','YES','dOnE'],d:0,rl:1,x:'خليه YES ودوس ENT والموتور واقف و STO مقفول: الانفرتر يحقن تيار ويقيس مقاومة الموتور من غير ما يلف (حوالي 3 ثواني، الشاشة تكتب tUn)، ويكتبها في rSA. لما يخلص يبقى dOnE. لو الموتور مش متوصل يطلع tnF.'});
+def('ItH','Mot. therm. current',['SIM','SEt'],'تيار الحماية الحرارية',{mn:1.9,mx:14.3,st:.1,dc:1,u:'A',d:8.8,x:'اكتب هنا تيار لوحة الموتور. حماية الموتور الحرارية (tHr و OLF) بتتحسب عليه.'});
+def('ACC','Acceleration',['SIM','SEt'],'زمن التسارع',{mn:0,mx:999.9,st:.1,dc:1,u:'s',d:3,x:'الزمن من 0 لحد FrS (تردد الموتور المقنن). لو قليل أوي والحمل تقيل الانفرتر يدخل في حد التيار CLI.'});
+def('dEC','Deceleration',['SIM','SEt'],'زمن التباطؤ',{mn:0,mx:999.9,st:.1,dc:1,u:'s',d:3,x:'الزمن من FrS لحد 0. لو قليل مع قصور كبير الطاقة ترجع للـ DC bus، و brA بيطوّله لوحده. لو brA = nO ومفيش مقاومة يطلع ObF.'});
+def('LSP','Low speed',['SIM','SEt'],'أقل سرعة',{mn:0,mx:400,mxf:()=>P.HSP,st:.1,dc:1,u:'Hz',d:0,x:'التردد عند أقل مرجع (0V أو 0%). الموتور مش هينزل تحته وهو شغال.'});
+def('HSP','High speed',['SIM','SEt'],'أعلى سرعة',{mn:0,mx:400,mnf:()=>P.LSP,mxf:()=>P.tFr,st:.1,dc:1,u:'Hz',d:50,x:'التردد عند أعلى مرجع (10V أو 20mA أو 100%). مايعدّيش tFr.'});
+/* SEt */
+def('AC2','Acceleration 2',['SEt'],'زمن التسارع 2',{mn:0,mx:999.9,st:.1,dc:1,u:'s',d:5,x:'بيشتغل بدل ACC لما الطرف المتخصص لـ rPS يتقفل.'});
+def('dE2','Deceleration 2',['SEt'],'زمن التباطؤ 2',{mn:0,mx:999.9,st:.1,dc:1,u:'s',d:5,x:'بيشتغل بدل dEC مع rPS.'});
+def('UFr','IR compensation',['SEt','drC'],'تعويض هبوط الجهد',{mn:0,mx:200,st:1,u:'%',d:100,x:'نسبة تعويض مقاومة الموتور في السرعات الواطية. في UUC بيضرب rSA. زيادة = تيار وسخونية وتشبع، قليل = عزم ضعيف تحت 5 هرتز.'});
+def('SLP','Slip compensation',['SEt','drC'],'تعويض الانزلاق',{mn:0,mx:300,st:1,u:'%',d:100,x:'في UUC الانفرتر بيزوّد التردد شوية مع الحمل عشان السرعة تفضل ثابتة. 0 = من غير تعويض.'});
+def('IdC','DC inject. current',['SEt'],'تيار حقن الـ DC',{mn:.5,mx:14.3,st:.1,dc:1,u:'A',d:6.1,x:'تيار الـ DC اللي بيتحقن في الموتور لما Stt = dCI.'});
+def('tdC','DC injection time',['SEt'],'زمن حقن الـ DC',{mn:.1,mx:30,st:.1,dc:1,u:'s',d:.5,x:'مدة حقن الـ DC في Stt = dCI.'});
+def('JGF','Jog frequency',['SEt','FUn'],'سرعة الـ JOG',{mn:0,mx:10,st:.1,dc:1,u:'Hz',d:10,x:'السرعة اللي يلف عليها لما طرف JOG مقفول ومعاه أمر تشغيل. الرامب في الـ JOG ثابت 0.1 ثانية.'});
+def('SP2','Preset speed 2',['SEt','FUn'],'سرعة ثابتة 2',{mn:0,mx:400,st:.1,dc:1,u:'Hz',d:10,x:'بتشتغل لما طرف PS2 بس مقفول.'});
+def('SP3','Preset speed 3',['SEt','FUn'],'سرعة ثابتة 3',{mn:0,mx:400,st:.1,dc:1,u:'Hz',d:15,x:'بتشتغل لما طرف PS4 بس مقفول.'});
+def('SP4','Preset speed 4',['SEt','FUn'],'سرعة ثابتة 4',{mn:0,mx:400,st:.1,dc:1,u:'Hz',d:20,x:'بتشتغل لما PS2 و PS4 الاتنين مقفولين.'});
+def('CLI','Current limitation',['SEt'],'حد التيار',{mn:0,mx:14.3,st:.1,dc:1,u:'A',d:14.3,x:'أقصى تيار. لما التيار يوصله الانفرتر يوقف التسارع، ولو زاد يقلل التردد، والشاشة تكتب CLI في HMIS. المصنع 1.5 × 9.5A.'});
+def('SFr','Switching freq.',['SEt','drC'],'تردد التقطيع',{mn:2,mx:16,st:1,u:'kHz',d:4,x:'تردد تقطيع الـ IGBT. أعلى = صوت الموتور أهدى بس الانفرتر يسخن أكتر.'});
+/* drC */
+def('tFr','Max frequency',['drC'],'أقصى تردد',{mn:10,mx:400,st:.1,dc:1,u:'Hz',d:60,rl:1,x:'السقف المطلق للتردد. HSP مايعدّيهوش.'});
+def('Ctt','Motor control type',['drC'],'طريقة التحكم في الموتور',{o:['Std','UUC','UFq','nLd'],d:1,rl:1,x:'Std = V/F عادي (ينفع لأكتر من موتور). UUC = تحكم اتجاهي من غير حساس (المصنع): بيحسب الانزلاق ويعوّض الجهد، عزم أحسن في السرعات الواطية ومحتاج tUn. UFq = V/F تربيعي للمراوح والطلمبات. nLd = توفير طاقة.'});
+def('tUS','Autotuning state',['drC'],'حالة الضبط التلقائي',{get:()=>S.tus,fmt:v=>['tAb','PEnd','PrOG','FAIL','dOnE'][v],x:'tAb = بيستخدم قيم جدول المصنع، PrOG = شغال، FAIL = فشل، dOnE = اتعمل.'});
+def('rSA','Cold stator resist.',['drC'],'مقاومة ملفات الموتور',{mn:0,mx:20,st:.01,dc:2,u:'Ω',d:2.2,x:'الانفرتر بيستخدمها في UUC عشان يعوّض هبوط الجهد. قيمة المصنع تقديرية من الجدول، والـ tUn بيقيسها صح. لو غلط العزم تحت 5 هرتز يضعف أو التيار يعلى.'});
+/* I_O */
+def('tCt','2 wire type',['I_O'],'نوع التحكم 2 سلك',{o:['LEL','trn','PFO'],d:1,rl:1,x:'LEL = مستوى: لو LI1 مقفول الموتور يشتغل، حتى بعد رجوع الكهربا أو مسح العطل (خطر). trn = انتقال (المصنع): لازم LI1 يتفتح ويتقفل تاني بعد رجوع الكهربا أو العطل. PFO = زي LEL بس الأمامي له الأولوية على العكس.'});
+def('rrS','Reverse assign.',['I_O'],'طرف العكس',{o:LIO,d:2,rl:1,x:'الطرف اللي بيلف الموتور عكسي. في 2C ده أمر تشغيل عكسي، وفي 3C زرار Start عكسي.'});
+def('AI1t','AI1 type',['I_O'],'نوع AI1',{get:()=>0,fmt:()=>'10U',x:'AI1 دخل جهد 0-10V ثابت. البوتنشيوميتر بيتغذى من 10V وطرفه التاني على COM.'});
+def('UIL1','AI1 min value',['I_O'],'أقل جهد AI1',{mn:0,mx:10,st:.1,dc:1,u:'V',d:0,x:'الجهد اللي يقابل LSP.'});
+def('UIH1','AI1 max value',['I_O'],'أعلى جهد AI1',{mn:0,mx:10,st:.1,dc:1,u:'V',d:10,x:'الجهد اللي يقابل HSP.'});
+def('AI2t','AI2 type',['I_O'],'نوع AI2',{get:()=>0,fmt:()=>'n10U',x:'AI2 دخل ±10V. لو الإشارة موجبة بس بيشتغل 0 لـ 10V.'});
+def('AI3t','AI3 type',['I_O'],'نوع AI3',{get:()=>0,fmt:()=>'0A',x:'AI3 دخل تيار 0-20mA. عشان يبقى 4-20 خلي CrL3 = 4.'});
+def('CrL3','AI3 min value',['I_O'],'أقل تيار AI3',{mn:0,mx:20,st:.1,dc:1,u:'mA',d:0,x:'التيار اللي يقابل LSP. خليه 4 للـ 4-20mA، وساعتها فقد الإشارة (أقل من 2mA تقريباً) يتعرف ويتصرف حسب LFL3.'});
+def('CrH3','AI3 max value',['I_O'],'أعلى تيار AI3',{mn:0,mx:20,st:.1,dc:1,u:'mA',d:20,x:'التيار اللي يقابل HSP.'});
+def('r1','R1 assignment',['I_O'],'وظيفة الريليه R1',{o:RLO,oa:RLAR,d:1,rl:1,x:'R1 ليه 3 أطراف: R1A (NO) و R1B (NC) و R1C (المشترك). في المصنع FLt: الريليه ماسك طول ما مفيش عطل، فلما يحصل عطل أو الكهربا تقطع R1B يقفل مع R1C. في اللوحة لمبة H1 الحمرا على R1B.'});
+def('r2','R2 assignment',['I_O'],'وظيفة الريليه R2',{o:RLO,oa:RLAR,d:0,rl:1,x:'R2 ريليه NO بس (R2A و R2C). لمبة H2 الخضرا عليه.'});
+def('LO1','LO1 assignment',['I_O'],'وظيفة الخرج LO1',{o:RLO,oa:RLAR,d:0,rl:1,x:'خرج ترانزستور Open collector على LO+ و LO-. في اللوحة لمبة 24V (H3) متغذية من +24.'});
+def('AO1','AQ1 assignment',['I_O'],'وظيفة الخرج الأنالوج AQ1',{o:AQO,oa:['مش مستخدم','تيار الموتور (0 لـ 2 × In)','تردد الموتور (0 لـ tFr)','العزم (0 لـ 2 × المقنن)','القدرة (0 لـ 2 × nPr)','حرارة الموتور (0 لـ 200%)'],d:0,rl:1,x:'الخرج الأنالوج AQ1 بيمثّل إيه. العداد في اللوحة متوصل بين AQ1 و COM.'});
+def('AO1t','AQ1 type',['I_O'],'نوع AQ1',{o:['10U','0A','4A'],oa:['0-10V','0-20mA','4-20mA'],d:0,rl:1,x:'10U = جهد 0-10V، 0A = تيار 0-20mA، 4A = تيار 4-20mA.'});
+/* CtL */
+def('CHCF','Channel config',['CtL'],'طريقة القنوات',{o:['SIM','SEP'],d:0,rl:1,x:'SIM = الأمر والمرجع من نفس القناة (Fr1). SEP = منفصلين: المرجع من Fr1 والأمر من Cd1.'});
+def('Fr1','Ref.1 channel',['CtL'],'مصدر السرعة',{o:FR1,oa:FR1AR,d:0,rl:1,x:'منين الانفرتر ياخد السرعة. AI1 = البوتنشيوميتر (المصنع)، AI2 = إشارة PLC، AI3 = 4-20mA، AIU1 = الـ Jog dial (والتشغيل من الأطراف)، LCC = الكيباد (LFr، والتشغيل من RUN و STOP لو CHCF = SIM).'});
+def('Cd1','Cmd channel 1',['CtL'],'مصدر أمر التشغيل',{o:['tEr','LCC','Mdb'],d:0,rl:1,x:'بيظهر بس لو CHCF = SEP. tEr = الأطراف، LCC = زراير RUN و STOP، Mdb = Modbus.'});
+def('PSt','Stop key priority',['CtL'],'أولوية زرار STOP',{o:['nO','YES'],d:1,rl:1,x:'YES = زرار STOP في الكيباد بيوقف حتى لو الأمر من الأطراف (وقوف حر، ولازم أمر تشغيل جديد). nO = STOP مايشتغلش غير لو الأمر محلي.'});
+/* FUn */
+def('rPt','Type of ramp',['FUn'],'شكل الرامب',{o:['LIn','S','U'],d:0,x:'LIn خطي. S = بداية ونهاية ناعمة (مناسب للسيور). U = نعومة في الآخر بس.'});
+def('brA','Dec ramp adapt.',['FUn'],'تكييف رامب التباطؤ',{o:['nO','YES','dYnA'],d:1,x:'YES (المصنع): لو الـ DC bus علي وهو بيهدّي، الانفرتر يطوّل الرامب لوحده عشان مايطلعش ObF (الشاشة تكتب Obr). dYnA = نفس الفكرة بس أسرع شوية. لو ركّبت مقاومة فرملة خليه nO، وإلا التكييف هيشتغل قبل المقاومة والتباطؤ هيطوّل على الفاضي.'});
+def('Stt','Type of stop',['FUn'],'طريقة الوقوف',{o:['rMP','FSt','nSt','dCI'],d:0,x:'rMP = على رامب dEC. FSt = وقوف سريع (الرامب ÷ 4). nSt = وقوف حر (الموتور يلف لحد ما يقف لوحده). dCI = حقن DC بتيار IdC لمدة tdC.'});
+def('nSt','Freewheel stop ass.',['FUn'],'طرف الوقوف الحر',{o:LIO,d:0,rl:1,x:'الطرف ده شغال بالعكس: لازم يفضل مقفول. لو اتفتح الموتور يقف حر والشاشة تكتب nSt. لو خصّصته لطرف مفيش عليه حاجة الانفرتر مش هيشتغل خالص.'});
+def('rPS','Ramp switching',['FUn'],'طرف تبديل الرامب',{o:LIO,d:0,rl:1,x:'لما الطرف ده يتقفل الانفرتر يستخدم AC2 و dE2 بدل ACC و dEC.'});
+def('PS2','2 preset speeds',['FUn'],'طرف السرعة الثابتة PS2',{o:LIO,d:3,rl:1,x:'لما يتقفل لوحده السرعة تبقى SP2. المصنع LI3.'});
+def('PS4','4 preset speeds',['FUn'],'طرف السرعة الثابتة PS4',{o:LIO,d:4,rl:1,x:'لوحده = SP3، ومع PS2 = SP4. المصنع LI4.'});
+def('JOG','Jog assign.',['FUn'],'طرف الـ JOG',{o:LIO,d:0,rl:1,x:'لما الطرف ده مقفول وتدّي أمر تشغيل الموتور يلف على JGF.'});
+/* FLt */
+def('rSF','Fault reset assign.',['FLt'],'طرف مسح العطل',{o:LIO,d:0,x:'الطرف اللي لما يتقفل يمسح العطل (لو سببه اتشال). في المصنع مش متخصص، والمسح بزرار STOP/RESET أو بفصل الكهربا.'});
+def('Atr','Automatic restart',['FLt'],'الإعادة التلقائية',{o:['nO','YES'],d:0,rl:1,x:'YES: بعد أعطال معينة (ObF و OSF و OHF و OLF و PHF و LFF3 و OPF1 و EPF1) لما السبب يروح الانفرتر يمسح العطل لوحده ويشتغل تاني لو أمر التشغيل لسه موجود (2 سلك). الأعطال اللي فيها قصر مش بتتمسح كده.'});
+def('tAr','Max. restart time',['FLt'],'أقصى وقت للإعادة',{o:['5','10','30','1h','2h','3h','Ct'],oa:['5 دقايق','10 دقايق','30 دقيقة','ساعة','2 ساعة','3 ساعات','على طول'],d:0,x:'لو العطل فضل موجود أكتر من المدة دي الإعادة التلقائية تبطل والعطل يفضل.'});
+def('FLr','Catch on the fly',['FLt'],'اللحاق بموتور بيلف',{o:['nO','YES'],d:0,x:'YES: لو الموتور لسه بيلف لما تدّي تشغيل (بعد وقوف حر أو انقطاع)، الانفرتر يمسك سرعته ويكمّل بدل ما يبدأ من صفر.'});
+def('EtF','External fault ass.',['FLt'],'طرف العطل الخارجي',{o:LIO,d:0,rl:1,x:'لما الطرف ده يتقفل الانفرتر يفصل EPF1. مفيد لأوفرلود خارجي أو ترموستات.'});
+def('OPL','Output Phase Loss',['FLt'],'فقد فاز الخرج',{o:['nO','YES','OAC'],d:1,x:'YES = يفصل OPF1 لو فاز اتفصل، و OPF2 لو التلاتة. OAC = فيه كونتاكتور على الخرج: لما يفتح مايطلعش OPF2. nO = مفيش مراقبة.'});
+def('IPL','Input phase loss',['FLt'],'فقد فاز الدخل',{o:['nO','YES'],d:1,x:'YES = يفصل PHF لو فاز من الكهربا الداخلة ناقص والموتور عليه حمل. nO = يكمّل، والـ DC bus بيترعش ويهبط مع الحمل.'});
+def('tHt','Motor protect. type',['FLt'],'نوع تبريد الموتور',{o:['ACL','FCL'],d:0,x:'ACL = الموتور بيتبرّد بمروحته (المصنع): في السرعات الواطية الحماية بتحسب إنه بيسخن أسرع. FCL = تبريد خارجي ثابت.'});
+def('LFL3','AI3 4-20mA loss',['FLt'],'رد الفعل لفقد إشارة AI3',{o:['nO','YES','LFF','rLS','rMP'],d:0,x:'لما AI3 ينزل تحت 2mA وهو متظبط 4-20 (CrL3 أكبر من 3). nO = تجاهل، YES = عطل LFF3 ووقوف حر، LFF = يروح على سرعة LFF، rLS = يفضل على آخر سرعة، rMP = يوقف على الرامب.'});
+def('LFF','Fallback speed',['FLt'],'سرعة الطوارئ',{mn:0,mx:400,mxf:()=>P.HSP,st:.1,dc:1,u:'Hz',d:0,x:'السرعة اللي يروح عليها لما LFL3 = LFF.'});
+/* COM */
+def('Add','Modbus Address',['COM'],'عنوان Modbus',{mn:0,mx:247,st:1,d:0,rl:1,fmt:v=>v?String(v):'OFF',x:'عنوان الانفرتر على شبكة Modbus RTU (منفذ RJ45). OFF = مقفول.'});
+def('tbr','Modbus baud rate',['COM'],'سرعة Modbus',{o:['4.8','9.6','19.2','38.4'],d:2,rl:1,x:'السرعة بالكيلوبت. لازم تبقى زي الـ PLC.'});
+def('tFO','Modbus format',['COM'],'شكل الداتا',{o:['8O1','8E1','8n1','8n2'],d:1,rl:1,x:'8 بت داتا، والـ parity (O فردي، E زوجي، n من غير)، وعدد stop bits.'});
+def('AdCO','CANopen address',['COM'],'عنوان CANopen',{mn:0,mx:127,st:1,d:0,rl:1,fmt:v=>v?String(v):'OFF',x:'عنوان CANopen. OFF = مقفول، ولمبة CANopen RUN تفضل مطفية.'});
+def('bdCO','CANopen bit rate',['COM'],'سرعة CANopen',{o:['50','125','250','500','1M'],d:2,rl:1,x:'سرعة الباص بالكيلوبت.'});
+/* FCS */
+def('FCSI','Config. source',['FCS'],'مصدر الإعدادات',{o:['Ini','CFG1'],d:0,x:'Ini = إعدادات المصنع. CFG1 = النسخة اللي حفظتها بـ SCS. GFS بيرجّع منها.'});
+def('SCS','Save config',['FCS'],'حفظ نسخة',{o:['nO','Str1'],d:0,act:1,x:'Str1 + ENT = يحفظ كل الباراميترات في CFG1، وبعدين يرجع nO لوحده.'});
+def('GFS','Go to factory settings',['FCS'],'رجّع الإعدادات',{o:['nO','YES'],d:0,act:1,l2:1,rl:1,x:'YES + ENT ثانيتين = يرجّع الباراميترات من FCSI (المصنع أو CFG1). الانفرتر لازم يكون واقف.'});
+for(const p of PD)if(p.t!=='ro')P[p.c]=p.d;
+const pMax=p=>p.mxf?Math.min(p.mx,p.mxf()):p.mx, pMin=p=>p.mnf?Math.max(p.mn,p.mnf()):p.mn;
+
+/* ---------------- faults ---------------- */
+/* [name, cause, fix, reset: pwr|rst|auto, Atr-able] */
+const FL={
+ OCF:['Overcurrent','تيار لحظي أكبر من حوالي 2.2 × 9.5A. خبطة حمل، أو بيانات الموتور غلط، أو ACC قصير أوي مع حمل تقيل','افصل الكهربا وشوف الميكانيكا والحمل، راجع بيانات الموتور واعمل tUn. العطل ده مايتمسحش غير بفصل الكهربا','pwr',0],
+ SCF1:['Motor short circuit','قصر بين فازات الخرج (الكابل أو الموتور)','افصل الكهربا وقيس العزل بين الفازات بالميجر بعد ما تفصل الكابل من الانفرتر. مايتمسحش غير بفصل الكهربا','pwr',0],
+ SCF2:['Impedant sh. circuit','قصر جزئي: عزل ضعيف بين لفات الموتور','قيس عزل الموتور ومقاومة الملفات، وغالباً الموتور محتاج إعادة لف. فصل الكهربا بس هو اللي يمسحه','pwr',0],
+ SCF3:['Ground short circuit','تيار بيتسرب للأرضي من الخرج','قيس العزل بين كل فاز والأرضي بالميجر. فصل الكهربا بس هو اللي يمسحه','pwr',0],
+ OSF:['Supply overvoltage','جهد الكهربا الداخلة عالي أوي (أعلى من حوالي 540V)','راجع جهد المصدر وتابات المحول. بيتمسح لما الجهد يرجع طبيعي','rst',1],
+ USF:['Undervoltage','الـ DC bus نزل والموتور شغال: الكهربا قطعت أو هبطت','راجع المصدر والفيوزات. العطل بيتمسح لوحده لما الكهربا ترجع (ومع trn لازم تفتح LI1 وتقفله)','auto',1],
+ ObF:['Overbraking','الـ DC bus عدّى حوالي 820V وهو بيهدّي: قصور كبير أو dEC قصير، أو ونش نازل، و brA = nO','خلي brA = YES، أو زوّد dEC، أو ركّب مقاومة فرملة على PA/+ و PB وخلي brA = nO','rst',1],
+ OHF:['Drive overheat','حرارة الانفرتر tHd عدّت حوالي 118%: المروحة واقفة أو اللوحة سخنة أو حمل زيادة','راجع المروحة والتهوية، قلل SFr أو الحمل. بيتمسح لما tHd ينزل تحت 70%','rst',1],
+ OLF:['Motor overload','حرارة الموتور tHr وصلت حوالي 118%: تيار أكبر من ItH مدة طويلة، أو سرعة واطية مع ACL','قلل الحمل، خلي ItH = تيار لوحة الموتور، واستنى الموتور يبرد (tHr تحت 100%)','rst',1],
+ OPF1:['Output phase loss','فاز من التلاتة اللي رايحين للموتور مقطوع','راجع الكابل والترامل في الموتور والانفرتر','rst',1],
+ OPF2:['3 motor phase loss','التلات فازات مقطوعين: الموتور مش متوصل أو كونتاكتور الخرج فاتح','وصّل الموتور، ولو فيه كونتاكتور على الخرج خلي OPL = OAC','rst',0],
+ PHF:['Input phase loss','فاز من الكهربا الداخلة ناقص (فيوز ضارب) والموتور عليه حمل','راجع الفيوزات والكابل الداخل. لو الانفرتر شغال على فاز واحد بقصد خلي IPL = nO','rst',1],
+ LFF3:['AI3 4-20mA loss','إشارة AI3 نزلت تحت 2mA (سلك مقطوع) و LFL3 = YES','راجع سلك الإشارة والترانسميتر، أو غيّر LFL3','rst',1],
+ tnF:['Autotuning fault','الضبط التلقائي فشل: الموتور مش متوصل أو فاز مفصول أو بيانات اللوحة بعيدة أوي','وصّل الموتور كويس وراجع nPr و UnS و nCr، وبعدين tUn = YES تاني','rst',0],
+ EPF1:['External fault','الطرف المتخصص لـ EtF اتقفل (حماية خارجية فصلت)','شوف الحماية الخارجية وافتح الطرف، وبعدين امسح العطل','rst',1],
+ InF:['Internal fault','عطل داخلي في الكنترول أو القياس (InF1 لحد InFE حسب النوع)','افصل الكهربا ووصّلها تاني، ولو فضل يبقى الجهاز محتاج صيانة','pwr',0]};
+const STNAME={rdY:'Ready',nSt:'Freewheel',rUn:'Running',ACC:'Accelerating',dEC:'Decelerating',CLI:'Current limit',Obr:'Auto-adapted decel',dCb:'DC injection',tUn:'Autotuning',FSt:'Fast stop'};
+
+/* ---------------- state ---------------- */
+const S={
+ mot:'iec',lineV:400,load:'conv',lp:40,jr:3,amb:35,dbInst:false,
+ brk:true,bus:0,busNom:566,ctrl:false,boot:0,
+ st:'off',run:false,jog:false,dir:1,fRamp:0,rv:0,fOut:0,fCmd:0,fTgt:0,slip:0,fast:false,
+ wm:0,th:0,T:0,TL:0,I:0,If:0,V:0,P:0,phi:0,olM:0,olD:0,hs:35,hrs:0,
+ fault:'',lastF:'',fq:[],atrT:0,atrWait:0,needEdge:false,tuneT:0,tus:0,dcT:0,
+ climit:false,blimit:false,db:false,src:0,code:0,lastRef:0,opT:0,phT:0,gT:0,
+ inj:{dip:false,hiline:false,phl:false,gnd:false,short:false,imp:false,shock:false,opn:false,ctr:false,jam:false,fan:false,mabrk:false},dipT:0,shockT:0,
+ io:{est:false,s1:false,p1:false,s2:false,p2:false,sel:0,p5:false,s6:false,pot:0,v:0,ma:4},
+ prev:{},rel:{r1:false,r2:false,lo:false},cfg1:null,t:0};
+const EV={};
+
+/* ---------------- logic helpers ---------------- */
+const ctlOk=()=>S.ctrl&&S.boot<=0;
+const stoOk=()=>!S.io.est;
+function liC(n){const io=S.io;switch(n){case 1:return P.tCC===0?io.s1:!io.p1;case 2:return P.tCC===0?io.s2:io.p2;case 3:return !!(io.sel&1);case 4:return !!(io.sel&2);case 5:return io.p5;case 6:return io.s6;}return false;}
+function fnOn(c){const v=P[c];return v>0&&liC(v);}
+function liFn(n){
+ if(n===1)return P.tCC===0?'Fwd':'Stop';
+ if(n===2&&P.tCC===1)return 'Fwd';
+ const f=['rrS','PS2','PS4','JOG','nSt','rPS','rSF','EtF'].filter(c=>P[c]===n);
+ return f.length?f.join('+'):'nO';
+}
+function cmdLocal(){return P.CHCF===0?P.Fr1===4:P.Cd1===1;}
+function cmdName(){return cmdLocal()?'LCC':(P.CHCF===0?(P.Fr1===5?'Mdb':'tEr'):['tEr','LCC','Mdb'][P.Cd1]);}
+function nStActive(){return P.nSt>0&&!liC(P.nSt);}
+function tHd(){return Math.max(clamp((S.hs-25)/60*100,0,200),S.olD);}
+function log(t,a){const d=document.createElement('div');const tm=new Date();d.innerHTML='<time>'+tm.toTimeString().slice(0,8)+'</time><span'+(a?' class="a"':'')+'></span>';d.lastChild.textContent=t;const L=$('#log');L.prepend(d);while(L.children.length>200)L.lastChild.remove();}
+function stCode(){
+ if(!S.ctrl)return '';
+ if(S.boot>0)return '';
+ if(S.fault)return S.fault;
+ if(S.st==='tune')return 'tUn';
+ if(S.st==='dc')return 'dCb';
+ if(S.st==='stop'){if(S.blimit)return 'Obr';return S.fast?'FSt':'dEC';}
+ if(S.st==='run'){
+  if(S.climit)return 'CLI';if(S.blimit)return 'Obr';
+  const d=Math.abs(S.fTgt)-Math.abs(S.fRamp);
+  if(Math.sign(S.fTgt)!==Math.sign(S.fRamp)&&Math.abs(S.fRamp)>.05)return 'dEC';
+  if(d>.05)return 'ACC';if(d<-.05)return 'dEC';return 'rUn';}
+ if(!stoOk()||nStActive()||Math.abs(S.wm)>3)return 'nSt';
+ return 'rdY';
+}
+function refHz(){
+ const io=S.io,mn=P.LSP,mx=Math.max(P.LSP,P.HSP);
+ const code=(fnOn('PS2')?1:0)+(fnOn('PS4')?2:0);S.code=code;
+ let f;S.src=P.Fr1;
+ if(code){f=[P.SP2,P.SP3,P.SP4][code-1];S.lastRef=f;return clamp(f,0,P.tFr);}
+ switch(P.Fr1){
+  case 0:f=mn+clamp((io.pot*10-P.UIL1)/((P.UIH1-P.UIL1)||1),0,1)*(mx-mn);break;
+  case 1:f=mn+clamp(io.v/10,0,1)*(mx-mn);break;
+  case 2:{const ma=S.inj.mabrk?0:io.ma;
+   if(ma<2&&P.CrL3>=3){const ls=P.LFL3;
+    if(ls===1){if(ctlOk()&&!S.fault)trip('LFF3');f=0;}
+    else if(ls===2)f=P.LFF;else if(ls===3)f=S.lastRef;else if(ls===4){f=S.lastRef;if(S.run&&ctlOk()){S.run=false;S.needEdge=true;log('LFL3 = rMP: الإشارة اتقطعت والانفرتر وقف على الرامب',1);}}
+    else f=mn;
+    S.aiLoss=true;return clamp(f,0,mx);}
+   S.aiLoss=false;f=mn+clamp((ma-P.CrL3)/((P.CrH3-P.CrL3)||1),0,1)*(mx-mn);break;}
+  case 3:f=mn+P.AIU1/100*(mx-mn);break;
+  case 4:f=P.LFr;break;
+  default:f=0;
+ }
+ f=clamp(f,mn,mx);S.lastRef=f;return f;
+}
+function trip(c){
+ if(S.fault)return;
+ S.fault=c;S.lastF=c;S.fq.unshift(c);if(S.fq.length>8)S.fq.length=8;
+ S.st='off';S.run=false;S.jog=false;S.rv=0;S.atrT=0;S.atrWait=1;
+ EV['f'+c]=1;log('عطل '+c+' — '+FL[c][0]+': '+FL[c][1],1);
+ if(H.scr!=='off'&&H.scr!=='boot'){H.mode='mon';H.stack=[{id:'mon',i:0}];H.scr='home';H.ed=null;H.hold=null;}
+ save();
+}
+function faultCauseGone(c){
+ switch(c){
+  case 'OSF':return !S.inj.hiline;
+  case 'OHF':return tHd()<70;
+  case 'OLF':return S.olM<100;
+  case 'PHF':return !S.inj.phl;
+  case 'LFF3':return !(S.inj.mabrk||S.io.ma<2)||P.Fr1!==2||P.LFL3!==1;
+  case 'EPF1':return !fnOn('EtF');
+  case 'OPF1':return !S.inj.opn;
+  case 'OPF2':return !S.inj.ctr||P.OPL!==1;
+  case 'tnF':return true;
+  case 'USF':return S.bus>.85*S.busNom&&S.brk&&!S.inj.dip;
+ }
+ return true;
+}
+function resetFault(src){
+ if(!S.fault)return false;
+ const c=S.fault,f=FL[c];
+ if(f[3]==='pwr'){log('العطل '+c+' مايتمسحش من '+src+'. افصل الكهربا ووصّلها تاني.',1);EV.pwrNeeded=1;return false;}
+ if(!faultCauseGone(c)){log('محاولة مسح '+c+' من '+src+' فشلت: السبب لسه موجود',1);return false;}
+ S.fault='';S.atrT=0;EV['clr'+c]=1;if(P.tCt!==0||P.tCC===1)S.needEdge=true;
+ log('اتمسح العطل '+c+' من '+src);return true;
+}
+function startCmd(from){
+ if(!ctlOk()||S.fault||!stoOk()||nStActive())return;
+ if(!S.run)log('تشغيل من '+from+(S.dir<0?' (عكسي)':''));
+ S.run=true;
+ if(from==='RUN')EV.kpStart=1;else EV.tbStart=1;
+}
+function stopCmd(from){
+ if(!S.ctrl)return;
+ if(S.run||S.st==='run')log('إيقاف من '+from);
+ S.run=false;
+ if(from==='STOP')EV.kpStop=1;else EV.tbStop=1;
+ if(S.st==='tune'){S.st='off';S.tus=3;P.tUn=0;log('tUn اتلغى');}
+}
+function stopKey(){
+ if(!ctlOk())return;
+ if(S.fault){resetFault('STOP/RESET');return;}
+ if(cmdLocal()){stopCmd('STOP');return;}
+ if(P.PSt===1){if(S.run||S.st!=='off'){log('STOP من الكيباد والأمر من الأطراف: وقوف حر، ولازم أمر تشغيل جديد');S.st='off';EV.kpStop=1;}S.run=false;S.needEdge=true;}
+ else hnote('PSt = nO: زرار STOP مش شغال والأمر من الأطراف.');
+}
+function runKey(){
+ if(!ctlOk())return;
+ if(!cmdLocal()){hnote('RUN مش شغال: قناة الأوامر '+cmdName()+'. خلي Fr1 = LCC (أو CHCF = SEP و Cd1 = LCC).');return;}
+ if(S.fault){hnote('فيه عطل '+S.fault+'. امسحه الأول.');return;}
+ if(!stoOk()){hnote('STO مفتوح (زرار الطوارئ). الشاشة بتكتب nSt.');return;}
+ S.dir=fnOn('rrS')?-1:1;startCmd('RUN');
+}
+function startTune(){
+ if(S.st!=='off'||!stoOk()||nStActive()||S.fault){P.tUn=0;hnote('الضبط التلقائي محتاج الموتور واقف و STO مقفول ومفيش عطل.');return false;}
+ S.st='tune';S.tuneT=3.2;S.tus=2;log('بدأ tUn: الانفرتر بيحقن تيار ويقيس مقاومة الموتور من غير ما يلف');return true;
+}
+function powerUp(){
+ S.ctrl=true;S.boot=1.4;S.fault='';S.run=false;S.st='off';S.needEdge=P.tCt===1||P.tCC===1;
+ H.scr='boot';H.ed=null;H.msg=null;H.hold=null;
+ log('الكنترول اشتغل. DC bus = '+S.bus.toFixed(0)+'V');
+}
+function powerDown(){
+ if(S.fault)log('الكهربا فصلت والعطل '+S.fault+' اتمسح');
+ S.ctrl=false;S.st='off';S.run=false;S.jog=false;S.fault='';H.scr='off';H.ed=null;H.msg=null;H.hold=null;
+ log('الكنترول فصل (الـ DC bus نزل)');
+}
+function lineV(){return S.lineV*(S.inj.hiline?1.4:1);}
+
+/* ---------------- physics step ---------------- */
+function step(dt){
+ const m=MOT[S.mot],io=S.io;
+ S.t+=dt;
+ if(S.dipT>0){S.dipT-=dt;if(S.dipT<=0){S.inj.dip=false;syncInj();log('الكهربا رجعت بعد الانقطاع اللحظي');}}
+ if(S.shockT>0){S.shockT-=dt;if(S.shockT<=0){S.inj.shock=false;syncInj();}}
+ const lineOk=S.brk&&!S.inj.dip;
+ const Vpk=lineV()*Math.SQRT2;
+ if(lineOk)S.busNom=Vpk*.98;
+ if(!S.ctrl&&S.bus>400)powerUp();
+ if(S.ctrl&&S.bus<300)powerDown();
+ if(S.boot>0){S.boot-=dt;if(S.boot<=0){H.scr='home';H.mode='mon';H.stack=[{id:'mon',i:0}];}}
+ const ok=ctlOk(),sto=stoOk();
+ /* ---- inputs ---- */
+ if(ok){
+  if(!sto&&S.prev.sto!==false){if(S.run||S.st!=='off')log('STO اتفتح: الخرج اتقطع والموتور بيقف حر (nSt)',1);S.run=false;S.needEdge=true;EV.stoOpen=1;}
+  S.prev.sto=sto;
+  if(!cmdLocal()&&P.CHCF===0&&P.Fr1===5){S.run=false;}
+  else if(!cmdLocal()&&!(P.CHCF===1&&P.Cd1===2)){
+   if(P.tCC===0){
+    const f=liC(1),r=fnOn('rrS'),cmd=f||r;
+    if(!cmd)S.needEdge=false;
+    const was=S.run;
+    S.run=cmd&&!S.needEdge&&!S.fault&&sto&&!nStActive();
+    if(cmd)S.dir=f?1:-1;
+    if(S.run&&!was){EV.tbStart=1;log('تشغيل من '+(f?'LI1 (أمامي)':'LI'+P.rrS+' (عكسي)'));}
+    if(!S.run&&was&&!cmd){EV.tbStop=1;log('إيقاف: أمر التشغيل اتشال');}
+   }else{
+    const stp=liC(1),f=liC(2),r=fnOn('rrS');
+    if(!stp){if(S.run)stopCmd('LI1 (Stop)');S.needEdge=false;}
+    else{
+     if(f&&!S.prev.f3){S.dir=1;S.needEdge=false;startCmd('LI2 (Start)');}
+     if(r&&!S.prev.r3){S.dir=-1;S.needEdge=false;startCmd('LI'+P.rrS+' (Start عكسي)');}
+    }
+    S.prev.f3=f;S.prev.r3=r;
+   }
+  }else if(cmdLocal())S.dir=fnOn('rrS')?-1:1;
+  const rs=fnOn('rSF');if(rs&&!S.prev.rsf)resetFault('LI'+P.rSF+' (rSF)');S.prev.rsf=rs;
+  if(fnOn('EtF'))trip('EPF1');
+ }
+ const enabled=ok&&sto&&!S.fault&&!nStActive();
+ if(!enabled){S.run=false;if(S.st!=='off'){S.st='off';}}
+ S.jog=enabled&&S.run&&fnOn('JOG');
+ const want=enabled&&S.run;
+ const ref=refHz();
+ /* ---- state machine ---- */
+ if(S.st==='tune'){
+  S.tuneT-=dt;
+  if(!enabled){S.st='off';S.tus=3;P.tUn=0;}
+  else if((S.inj.opn||S.inj.ctr)&&S.tuneT<2.2){S.st='off';S.tus=3;P.tUn=0;trip('tnF');}
+  else if(S.tuneT<=0){S.st='off';S.tus=4;P.rSA=rnd(m.Rs*(1+(Math.random()-.5)*.04),2);P.tUn=2;EV.tuned=1;save();log('tUn خلص. rSA = '+P.rSA.toFixed(2)+' Ω');hmsg('dOnE',1.5);renderParams();}
+ }
+ else if(want){if(S.st!=='run'){if(S.st==='off'&&P.FLr===1&&Math.abs(S.wm)>1){S.fRamp=clamp(S.wm*2/TAU,-P.tFr,P.tFr);log('FLr: الانفرتر لحق الموتور على '+Math.abs(S.fRamp).toFixed(1)+' Hz');EV.flr=1;}S.st='run';}}
+ else if(S.st==='run'){
+  const ss=P.Stt;
+  if(ss===2)S.st='off';
+  else if(ss===3){S.st='dc';S.dcT=P.tdC;}
+  else{S.st='stop';S.fast=ss===1;S.stopFrom=Math.abs(S.fRamp);S.stopOk=S.jr>=15&&P.dEC<=1&&(P.brA>0||S.dbInst);}
+ }
+ if(S.st==='stop'&&Math.abs(S.fRamp)<.05){
+  if(S.stopOk&&S.stopFrom>45&&!S.fault)EV.decelOk=1;
+  S.st='off';
+ }
+ if(S.st==='dc'){S.dcT-=dt;if(S.dcT<=0)S.st='off';}
+ if(S.st==='off'||S.st==='dc'||S.st==='tune'){S.fRamp=0;S.rv=0;}
+ /* ---- ramp ---- */
+ S.fCmd=ref*S.dir;
+ const tgt=S.st==='run'?(S.jog?P.JGF*S.dir:ref*S.dir):0;S.fTgt=tgt;
+ const two=fnOn('rPS'),acc=S.jog?.1:two?P.AC2:P.ACC,dec=S.jog?.1:(two?P.dE2:P.dEC)/(S.st==='stop'&&S.fast?4:1),fn=P.FrS;
+ const ra=acc>0?fn/acc:5000,rd=dec>0?fn/dec:5000;
+ if(S.st==='run'||S.st==='stop'){
+  const d=tgt-S.fRamp;
+  const away=Math.abs(tgt)>Math.abs(S.fRamp)&&(Math.sign(tgt)===Math.sign(S.fRamp)||Math.abs(S.fRamp)<1e-6);
+  const rate=away?ra:rd;
+  let wv=Math.abs(d)<1e-6?0:Math.sign(d)*rate;
+  const sc=P.rPt===0||S.jog?0:Math.max(.05,(away?acc:dec)*(P.rPt===1?.3:.15));
+  if(sc>0){const j=rate/sc;if(Math.sign(S.rv)===Math.sign(d)&&Math.abs(d)<=S.rv*S.rv/(2*j)+1e-6)wv=0;S.rv+=clamp(wv-S.rv,-j*dt,j*dt);}else S.rv=wv;
+  let df=S.rv*dt;if(Math.abs(df)>=Math.abs(d)){df=d;if(sc===0)S.rv=0;}
+  /* current limit CLI */
+  const Ilim=Math.max(.5,P.CLI);S.climit=false;
+  const motoring=S.T*S.wm>=0;
+  if(S.I>Ilim){
+   S.climit=true;
+   if(motoring){if(Math.abs(S.fRamp+df)>Math.abs(S.fRamp))df=0;if(S.I>Ilim*1.06)df=-Math.sign(S.fRamp)*Math.min(Math.abs(S.fRamp),rd*.25*dt);}
+   else if(Math.abs(S.fRamp+df)<Math.abs(S.fRamp))df=0;
+  }
+  /* brA: deceleration ramp adaptation */
+  S.blimit=false;
+  if(P.brA>0&&S.bus>DRV.adapt-(P.brA===2?10:20)&&S.T*S.wm<0){
+   const fe=S.wm*2/TAU,sl=Math.max(0,(P.brA===2?.8:.5)-(S.bus-(DRV.adapt-20))*.025),lim=fe-Math.sign(fe)*sl-(S.fOut-S.fRamp);
+   if(Math.sign(lim)===Math.sign(S.fRamp)&&Math.abs(S.fRamp+df)<Math.abs(lim)){df=lim-S.fRamp;S.blimit=true;}
+  }
+  S.fRamp=clamp(S.fRamp+df,-P.tFr,P.tFr);
+ }else{S.climit=false;S.blimit=false;}
+ /* ---- slip comp + voltage ---- */
+ const on=S.st==='run'||S.st==='stop';
+ const vec=P.Ctt===1||P.Ctt===3;
+ if(on&&vec){const poles=Math.max(2,2*Math.round(60*P.FrS/Math.max(1,P.nSP)));const sHz=Math.max(0,P.FrS-P.nSP*poles/120)*P.SLP/100;S.slip+=(sHz*clamp(S.T/m.Tn,-1.5,1.5)-S.slip)*dt/.05;}else S.slip=0;
+ S.fOut=on?S.fRamp+(Math.abs(S.fRamp)>.2?Math.sign(S.fRamp)*S.slip:0):0;
+ const f=Math.abs(S.fOut),fb=P.FrS,Vb=P.UnS;
+ let V=0,phi=0;
+ if(on&&!S.inj.ctr){
+  const Vav=Math.min(Vb*1.0,S.bus/Math.SQRT2*.97);
+  if(vec){
+   const Rest=P.rSA*P.UFr/100,low=Math.max(0,1-f/10),e=clamp((Rest-m.Rs)/m.Rs,-1,1.5);
+   phi=(Vb/fb)/m.vhz*(1+.35*e*low)*(P.Ctt===3&&S.T<.4*m.Tn&&S.st==='run'?.85:1);
+   if(f>fb)phi*=fb/f;
+   phi=Math.min(phi,Math.max(0,Vav-S.If*m.Rs*SQ3*.95)/(Math.max(f,.5)*m.vhz));
+   V=Math.min(Vav,phi*m.vhz*f+S.If*Rest*SQ3*.95);
+  }else{
+   const boost=.025*Vb*P.UFr/100,x=Math.min(1,f/fb);
+   V=P.Ctt===2?boost*(1-x)+Vb*x*x:boost*(1-x)+Vb*x;
+   V=Math.min(V,Vav);
+   phi=Math.max(0,V-S.If*m.Rs*SQ3*.95)/(Math.max(f,1.5)*m.vhz);
+  }
+  phi=clamp(phi,0,1.6);
+ }
+ /* ---- motor ---- */
+ let T=0,I=0;
+ if(on&&!S.inj.ctr){
+  S.phi=phi;
+  const ws=TAU*S.fOut/2,sl=ws-S.wm;
+  T=2*m.Tmax*phi*phi*sl*m.slk/(sl*sl+m.slk*m.slk);
+  const sat=1+12*Math.max(0,phi-1.06)**2;
+  const Iq=m.Iq*(T/m.Tn)/Math.max(phi,.15);
+  I=Math.hypot(m.I0*phi*sat,Iq);
+  if(S.inj.opn){T*=.5;I*=1.7;}
+  if(S.inj.imp)I*=1.6;
+  if(S.inj.short)I=9*DRV.In;
+  if(S.inj.shock)I=3*DRV.In;
+ }else if(on){S.phi=0;}
+ else if(S.st==='dc'){
+  T=-Math.sign(S.wm)*m.Tn*(P.IdC/m.I)*1.2*Math.min(1,Math.abs(S.wm)/(.03*m.wn));
+  I=P.IdC;V=I*m.Rs*SQ3;S.phi=0;
+ }else if(S.st==='tune'){I=S.inj.opn||S.inj.ctr?0:.6*m.I;V=.6*m.I*m.Rs*SQ3;S.phi=0;}
+ else S.phi=0;
+ S.T=T;S.I=I;S.V=V;S.If+=(I-S.If)*Math.min(1,dt/.02);
+ /* ---- load ---- */
+ const lp=S.lp/100*m.Tn,w=S.wm;let TL=0;
+ if(S.load==='conv')TL=lp*Math.tanh(w/1.5);
+ else if(S.load==='fan')TL=lp*(w/m.wn)*Math.abs(w/m.wn);
+ else TL=lp;
+ TL+=.015*m.Tn*Math.tanh(w/1)+.0004*m.Tn*w;
+ if(S.inj.jam)TL+=3.2*m.Tn*Math.tanh(w/.5);
+ S.TL=TL;
+ const J=m.J*(1+S.jr);
+ if(S.load==='hoist'&&S.st==='off')S.wm*=Math.max(0,1-dt*25);
+ else S.wm+=(T-TL)/J*dt;
+ S.th+=S.wm*dt;
+ /* ---- power + bus ---- */
+ const ws=TAU*S.fOut/2;
+ const Pout=(on||S.st==='dc'||S.st==='tune')?T*ws+3*I*I*m.Rs+(on?90*S.phi*S.phi*Math.min(1,f/m.f):0):0;
+ S.P=Pout;
+ const Pd=.025*Math.abs(Pout)+4*I*(.6+.06*P.SFr)+(S.ctrl?15:0);
+ if(S.db){if(S.bus<DRV.dbOff)S.db=false;}else if(S.dbInst&&S.bus>DRV.dbOn)S.db=true;
+ const Pdb=S.db?S.bus*S.bus/DRV.dbR:0;
+ const Pctl=S.ctrl?25:0;
+ const iL=(Pout+Pd+Pdb+Pctl)/Math.max(S.bus,40)+S.bus/8000;
+ let Vn=S.bus-dt/DRV.C*iL;
+ if(lineOk&&Vn<Vpk){let R=S.bus<.75*Vpk?8:.6;if(S.inj.phl)R*=7;Vn=(S.bus+dt/DRV.C*(Vpk/R-iL))/(1+dt/(DRV.C*R));}
+ S.bus=Math.max(0,Vn);
+ /* ---- thermal ---- */
+ const Rth=S.inj.fan?.75:.2;
+ S.hs+=(Pd-(S.hs-S.amb)/Rth)/110*dt;
+ const der=P.tHt===0&&Math.abs(S.fOut)<P.FrS/2?.6+.8*Math.abs(S.fOut)/P.FrS:1;
+ const tgtM=100*(I/Math.max(.5,P.ItH*der))**2;
+ S.olM=clamp(S.olM+(tgtM-S.olM)*dt/(tgtM>S.olM?75:150),0,200);
+ const kD=(I/DRV.In)**2-1;S.olD=clamp(S.olD+dt*kD*(kD>0?1.333:.8),0,140);
+ if(S.st!=='off')S.hrs+=dt/3600;
+ /* ---- protections ---- */
+ if(ok){
+  if(S.bus>DRV.ov)trip('ObF');
+  if(lineOk&&lineV()>DRV.osf)trip('OSF');
+  if(on&&S.bus<DRV.uvRun)trip('USF');
+  if(tHd()>=118)trip('OHF');
+  if(S.olM>=118)trip('OLF');
+  if(S.inj.short&&on)trip('SCF1');
+  if(S.inj.gnd&&(on||S.st==='dc')){S.gT+=dt;if(S.gT>.03)trip('SCF3');}else S.gT=0;
+  if(S.inj.imp&&on&&I>.2*DRV.In)trip('SCF2');
+  if(I>DRV.hw)trip('OCF');
+  if(on&&P.OPL===1&&(S.inj.opn||S.inj.ctr)&&Math.abs(S.fOut)>.5){S.opT+=dt;if(S.opT>.5)trip(S.inj.ctr?'OPF2':'OPF1');}else S.opT=0;
+  if(S.inj.phl&&P.IPL===1&&Math.abs(Pout)>.2*DRV.kw*1000){S.phT+=dt;if(S.phT>1)trip('PHF');}else S.phT=Math.max(0,S.phT-dt);
+ }
+ /* ---- auto clear USF / automatic restart ---- */
+ if(S.fault==='USF'&&faultCauseGone('USF')){S.fault='';if(P.tCt!==0||P.tCC===1)S.needEdge=!(P.Atr===1);EV.clrUSF=1;log('USF اتمسح لوحده بعد ما الكهربا رجعت');}
+ if(S.fault&&P.Atr===1&&FL[S.fault][4]){
+  S.atrT+=dt;S.atrWait-=dt;
+  if(S.atrT>TAR[P.tAr]){if(S.atrWait>-1e6){log('الإعادة التلقائية بطّلت: العطل فضل أكتر من tAr',1);S.atrWait=-1e9;}}
+  else if(S.atrWait<=0){S.atrWait=1;if(faultCauseGone(S.fault)){const c=S.fault;S.fault='';S.needEdge=false;EV.atr=1;log('إعادة تلقائية (Atr) بعد '+c);}}
+ }
+ /* ---- relays ---- */
+ const atSp=S.st==='run'&&Math.abs(S.fTgt)>.1&&Math.abs(S.fRamp-S.fTgt)<.3;
+ const rf=k=>{if(!S.ctrl)return false;switch(k){case 1:return !S.fault&&S.boot<=0;case 2:return S.st==='run'||S.st==='stop';case 3:return atSp;case 4:return S.olM>=100;case 5:return S.I>=P.nCr;}return false;};
+ S.rel.r1=rf(P.r1);S.rel.r2=rf(P.r2);S.rel.lo=rf(P.LO1);
+}
+function aqOut(){
+ if(!S.ctrl||P.AO1===0)return {v:P.AO1t===2&&S.ctrl?4:0,u:P.AO1t===0?'V':'mA',r:0};
+ const m=MOT[S.mot];let r=0;
+ switch(P.AO1){case 1:r=S.I/(2*DRV.In);break;case 2:r=Math.abs(S.fOut)/P.tFr;break;case 3:r=Math.abs(S.T)/(2*m.Tn);break;case 4:r=Math.abs(S.P)/(2*P.nPr*1000);break;case 5:r=S.olM/200;}
+ r=clamp(r,0,1);
+ return P.AO1t===0?{v:r*10,u:'V',r}:P.AO1t===1?{v:r*20,u:'mA',r}:{v:4+r*16,u:'mA',r:(4+r*16)/20};
+}
+</script>
+<script>
+function cap(el,e){try{el.setPointerCapture&&el.setPointerCapture(e.pointerId);}catch(_){}}
+/* ---------------- 7-segment renderer ---------------- */
+const SEGS={'0':'abcdef','1':'bc','2':'abged','3':'abgcd','4':'fgbc','5':'afgcd','S':'afgcd','s':'afgcd','6':'afgedc','7':'abc','8':'abcdefg','9':'abcdfg',
+ 'b':'fgedc','B':'fgedc','P':'abefg','p':'abefg','F':'aefg','f':'aefg','A':'abcefg','a':'abcefg','C':'adef','c':'ged','d':'bcdeg','D':'bcdeg','E':'adefg','e':'adefg','H':'bcefg','h':'cefg','L':'def','l':'def','n':'ceg','N':'abce f'.replace(' ',''),'o':'cdeg','O':'abcdef','r':'eg','R':'eg','t':'defg','T':'defg','U':'bcdef','u':'cde','-':'g','_':'d',' ':'','G':'acdef','g':'abcdfg','J':'bcde','j':'bcde','Y':'bcdfg','y':'bcdfg','I':'bc','i':'c','M':'abcef','m':'abcef','k':'befgc','K':'befgc','q':'abcfg','z':'abdeg','Z':'abdeg','V':'bcdef','v':'cde','W':'bcdef','X':'bcefg','x':'bcefg'};
+const SEGPOLY=(()=>{const t=8,xl=6,xr=42,yt=5,ym=45,yb=85;
+ const Hs=(x1,x2,y)=>`${x1+t/2},${y} ${x1+t},${y-t/2} ${x2-t},${y-t/2} ${x2-t/2},${y} ${x2-t},${y+t/2} ${x1+t},${y+t/2}`;
+ const Vs=(x,y1,y2)=>`${x},${y1+t/2} ${x+t/2},${y1+t} ${x+t/2},${y2-t} ${x},${y2-t/2} ${x-t/2},${y2-t} ${x-t/2},${y1+t}`;
+ return {a:Hs(xl,xr,yt),g:Hs(xl,xr,ym),d:Hs(xl,xr,yb),f:Vs(xl,yt,ym),b:Vs(xr,yt,ym),e:Vs(xl,ym,yb),c:Vs(xr,ym,yb)};})();
+function segSVG(txt,n,on,off){
+ const cells=[];for(const ch of String(txt)){if(ch==='.'&&cells.length&&!cells[cells.length-1].dp){cells[cells.length-1].dp=true;continue;}cells.push({ch:ch==='.'?' ':ch,dp:ch==='.'});}
+ while(cells.length<n)cells.unshift({ch:' ',dp:false});
+ const pitch=56,W=n*pitch+6;
+ let out='<svg viewBox="0 0 '+W+' 92" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><g transform="translate(10,0) skewX(-6)">';
+ cells.slice(-n).forEach((c,i)=>{const lit=SEGS[c.ch]??'';out+='<g transform="translate('+(i*pitch)+',0)">';
+  for(const k of 'abcdefg')out+='<polygon points="'+SEGPOLY[k]+'" fill="'+(lit.includes(k)?on:off)+'"/>';
+  out+='<circle cx="50" cy="85" r="4.5" fill="'+(c.dp?on:off)+'"/></g>';});
+ return out+'</g></svg>';
+}
+let segKey='';
+function setSeg(txt,blink){const k=txt+'|'+blink;if(k===segKey)return;segKey=k;const e=$('#seg');e.innerHTML=segSVG(txt,4,'#ff2a1a','rgba(255,42,26,.08)');e.classList.toggle('blink',blink===1);e.classList.toggle('fast',blink===2);$('#seg').setAttribute('aria-label','الشاشة: '+txt);}
+
+/* ---------------- menu tree ---------------- */
+const MENU={
+ ref:{c:'rEF-',it:['AIU1','LFr','FrH']},
+ mon:{c:'MOn-',it:['rFr','FrH','LCr','SPd','UOP','ULn','Otr','OPr','tHr','tHd','HMIS','LFt','rtH']},
+ conf:{c:'COnF',it:['@MYMn','@FCS','@FULL']},
+ MYMn:{c:'MYMn',it:['ACC','dEC','LSP','HSP','ItH','Fr1']},
+ FCS:{c:'FCS-',it:['FCSI','SCS','GFS']},
+ FULL:{c:'FULL',it:['@SIM','@SEt','@drC','@I_O','@CtL','@FUn','@FLt','@COM']},
+ SIM:{c:'SIM-',it:['tCC','CFG','bFr','nPr','UnS','nCr','FrS','nSP','tUn','ItH','ACC','dEC','LSP','HSP']},
+ SEt:{c:'SEt-',it:['ACC','dEC','AC2','dE2','LSP','HSP','ItH','UFr','SLP','IdC','tdC','JGF','SP2','SP3','SP4','CLI','SFr']},
+ drC:{c:'drC-',it:['bFr','nPr','UnS','nCr','FrS','nSP','tFr','Ctt','tUn','tUS','rSA','UFr','SLP','SFr']},
+ I_O:{c:'I_O-',it:['tCC','tCt','rrS','AI1t','UIL1','UIH1','AI2t','AI3t','CrL3','CrH3','r1','r2','LO1','AO1','AO1t']},
+ CtL:{c:'CtL-',it:['CHCF','Fr1','Cd1','PSt']},
+ FUn:{c:'FUn-',it:['rPt','brA','Stt','nSt','rPS','@PSS','@JOGm']},
+ PSS:{c:'PSS-',it:['PS2','PS4','SP2','SP3','SP4']},
+ JOGm:{c:'JOG-',it:['JOG','JGF']},
+ FLt:{c:'FLt-',it:['rSF','Atr','tAr','FLr','EtF','OPL','IPL','tHt','LFL3','LFF']},
+ COM:{c:'COM-',it:['Add','tbr','tFO','AdCO','bdCO']}};
+const MENUAR={ref:'المرجع',mon:'القراءات',conf:'الإعدادات',MYMn:'قايمتي (My menu)',FCS:'إعدادات المصنع',FULL:'القايمة الكاملة',SIM:'التشغيل السريع',SEt:'الضبط',drC:'التحكم في الموتور',I_O:'الدخول والخروج',CtL:'قنوات الأوامر',FUn:'الوظايف',PSS:'السرعات الثابتة',JOGm:'الـ JOG',FLt:'إدارة الأعطال',COM:'الاتصالات'};
+function items(id){let it=MENU[id].it;if(id==='CtL'&&P.CHCF===0)it=it.filter(c=>c!=='Cd1');return it;}
+function menuPaths(c){const out=[];const walk=(id,path)=>{for(const x of MENU[id].it){if(x[0]==='@')walk(x.slice(1),path.concat(MENU[x.slice(1)].c));else if(x===c)out.push(path.join(' › '));}};
+ for(const r of ['ref','mon','conf'])walk(r,[MENU[r].c]);return out;}
+
+/* ---------------- HMI state ---------------- */
+let H={scr:'off',mode:'mon',stack:[{id:'mon',i:0}],ed:null,msg:null,unit:false,live:false,hold:null,note:'',noteT:0,streak:0,lastStep:0};
+const UNIT={Hz:'Hz',A:'A',V:'U','%':'PCt',rpm:'rPM',h:'h',s:'S',kW:'HU',mA:'nA','Ω':'OHn',kHz:'kHz'};
+const top_=()=>H.stack[H.stack.length-1];
+const curItem=()=>{const t=top_(),it=items(t.id);if(t.i>=it.length)t.i=it.length-1;return it[t.i];};
+function hmsg(t,d,blink){H.msg={t,d:d||1,blink:blink||0};}
+function hnote(t){H.note=t;H.noteT=5;}
+function fit4(v,dc){if(!isFinite(v))return '----';for(let d=dc;d>=0;d--){let x=Number(v);if(Math.abs(x)<.5*Math.pow(10,-d))x=0;const s=x.toFixed(d);if(s.replace('.','').length<=4)return s;}return v<0?'-999':'9999';}
+function dispVal(p,v){if(p.t==='e')return p.o[v];if(p.fmt)return String(p.fmt(v)).slice(0,4);return fit4(v,p.dc);}
+function pval(p){return p.t==='ro'?p.get():P[p.c];}
+function hScreen(){
+ if(H.scr==='off')return null;
+ if(H.scr==='boot')return {t:'8.8.8.8.'};
+ if(H.msg)return {t:H.msg.t,blink:H.msg.blink};
+ switch(H.scr){
+  case 'home':
+   if(S.fault)return {t:S.fault,blink:1,fault:1};
+   if(S.st==='run'||S.st==='stop')return {t:fit4(S.fOut,1),val:1};
+   return {t:stCode()};
+  case 'list':{const x=curItem();return {t:x[0]==='@'?MENU[x.slice(1)].c:x};}
+  case 'val':{const p=PM[curItem()];if(H.unit)return {t:UNIT[p.u]||'----',unit:1};return {t:dispVal(p,pval(p)),val:1};}
+  case 'edit':{const p=PM[H.ed.c];return {t:dispVal(p,H.ed.v),val:1,blink:H.hold?2:1};}
+ }
+ return {t:''};
+}
+function setMode(m){H.mode=m;H.ed=null;H.unit=false;H.live=false;H.hold=null;H.stack=[{id:m,i:0}];H.scr=m==='mon'?'home':'list';hmsg(MENU[m].c,.7);}
+function hKey(k){
+ if(!ctlOk())return;
+ if(k==='RUN')return runKey();
+ if(k==='STOP')return stopKey();
+ H.msg=null;
+ if(k==='MODE'){const o=['ref','mon','conf'];setMode(o[(o.indexOf(H.mode)+1)%3]);EV.modeKey=1;return;}
+ if(k==='ESC'){
+  if(H.scr==='edit'){H.ed=null;H.hold=null;H.scr='list';}
+  else if(H.scr==='val'){if(H.live){log(curItem()+' = '+dispVal(PM[curItem()],P[curItem()])+' (من الـ Jog dial)');save();renderParams();}H.live=false;H.unit=false;H.scr='list';}
+  else if(H.scr==='list'){if(H.stack.length>1)H.stack.pop();else if(H.mode==='mon')H.scr='home';}
+  syncDetail();return;}
+}
+function hTurn(d){
+ if(!ctlOk())return;
+ const now=performance.now();H.streak=now-H.lastStep<130?H.streak+1:0;H.lastStep=now;
+ const mult=H.streak>30?100:H.streak>8?10:1;
+ if(H.msg&&H.scr!=='boot')H.msg=null;
+ const t=top_();
+ switch(H.scr){
+  case 'home':{H.scr='list';t.i=d>0?0:items(t.id).length-1;break;}
+  case 'list':{const n=items(t.id).length;t.i=(t.i+d+n)%n;break;}
+  case 'val':{
+   if(H.live){const p=PM[curItem()];P[p.c]=clamp(rnd(P[p.c]+d*p.st*mult,p.dc),pMin(p),pMax(p));if(p.c==='AIU1')EV.aiu=1;if(p.c==='LFr')EV.lfr=1;}
+   else if(H.mode==='mon'){const n=items(t.id).length;t.i=(t.i+d+n)%n;H.unit=false;}
+   break;}
+  case 'edit':{const p=PM[H.ed.c];
+   if(p.t==='e')H.ed.v=(H.ed.v+d+p.o.length)%p.o.length;
+   else H.ed.v=clamp(rnd(H.ed.v+d*p.st*mult,p.dc),pMin(p),pMax(p));
+   break;}
+ }
+ syncDetail();
+}
+function openParam(c){
+ const p=PM[c];H.unit=false;H.live=false;
+ if(p.t==='ro'){H.scr='val';return;}
+ if(H.mode==='ref'&&(c==='AIU1'||c==='LFr')){H.scr='val';H.live=true;return;}
+ if(p.rl&&S.st!=='off'){H.scr='val';hnote('الباراميتر '+c+' مايتغيرش والموتور شغال. وقّف الموتور الأول (القيمة ظاهرة بس من غير ما ترمش).');EV.rlBlocked=1;return;}
+ if(c==='tUn'&&!stoOk()){hnote('STO مفتوح: الضبط التلقائي مش هيشتغل.');}
+ H.ed={c,v:P[c]};H.scr='edit';
+}
+function hEnt(long){
+ if(!ctlOk())return;
+ if(H.msg)H.msg=null;
+ const t=top_();
+ switch(H.scr){
+  case 'home':H.scr='list';t.i=0;break;
+  case 'list':{const x=curItem();if(x[0]==='@'){H.stack.push({id:x.slice(1),i:0});}else openParam(x);break;}
+  case 'val':if(H.live){log(curItem()+' = '+dispVal(PM[curItem()],P[curItem()])+' (من الـ Jog dial)');save();renderParams();H.live=false;H.scr='list';}else H.unit=!H.unit;break;
+  case 'edit':{const p=PM[H.ed.c];
+   if(p.l2&&!long){hnote('الباراميتر '+p.c+' محتاج تمسك ENT ثانيتين عشان يتحفظ (القيمة هترمش بسرعة وانت ماسك).');EV.l2short=1;return;}
+   const r=setParam(p.c,H.ed.v,'الشاشة');H.scr='list';H.ed=null;
+   if(r==='run')hnote('اتلغى: الموتور شغال.');else if(r==='ok'&&!H.msg)hmsg(dispVal(p,P[p.c]),.7);
+   break;}
+ }
+ syncDetail();
+}
+function entDown(){if(!ctlOk())return;if(H.scr==='edit'&&PM[H.ed.c].l2){H.hold=performance.now();return;}hEnt(false);}
+function entUp(){if(H.hold){const el=performance.now()-H.hold;H.hold=null;if(el<2000)hEnt(false);}}
+function capText(){
+ if(H.noteT>0&&H.note)return '⚠ '+H.note;
+ if(H.scr==='off')return S.bus>50?'الكنترول فاصل والـ DC bus لسه فيه '+S.bus.toFixed(0)+'V (لمبة CHARGE منورة). متلمسش الأطراف.':'الانفرتر مطفي. اقفل المفتاح الرئيسي في لوحة التشغيل.';
+ if(H.scr==='boot')return 'اختبار الشاشة عند التشغيل: كل الأجزاء بتنور.';
+ const path=H.stack.map(s=>MENU[s.id].c).join(' › ');
+ const src=' المرجع من <b>'+FR1[P.Fr1]+'</b> والأوامر من <b>'+cmdName()+'</b>.';
+ switch(H.scr){
+  case 'home':{
+   if(S.fault){const f=FL[S.fault];return 'عطل <b>'+S.fault+'</b> ('+f[0]+') بيرمش: '+f[1]+'. '+(f[3]==='pwr'?'مايتمسحش غير بفصل الكهربا.':f[3]==='auto'?'بيتمسح لوحده لما الكهربا ترجع.':'امسحه بـ <b>STOP/RESET</b>'+(P.rSF?' أو طرف <b>LI'+P.rSF+'</b>':'')+' بعد ما تشيل السبب.');}
+   const c=stCode();
+   if(S.st==='run'||S.st==='stop')return 'مود <b>MOn-</b>: الشاشة بتعرض تردد الخرج <b>rFr</b> (لمبة Value منورة). الحالة <b>'+c+'</b> ('+(STNAME[c]||'')+').'+src;
+   return 'مود <b>MOn-</b>: الحالة <b>'+c+'</b> ('+(STNAME[c]||'')+')'+(c==='nSt'?(!stoOk()?': STO مفتوح (زرار الطوارئ)':nStActive()?': طرف nSt مفتوح':': الموتور لسه بيلف حر'):'')+'. لف الـ Jog dial تشوف القراءات، و MODE يروح لـ rEF- ثم COnF.'+src;}
+  case 'list':{const x=curItem();
+   if(x[0]==='@'){const id=x.slice(1);return '<b>'+path+'</b> › <b>'+MENU[id].c+'</b> = '+MENUAR[id]+'. ENT يدخل، لف للي بعدها، ESC يرجع.';}
+   const p=PM[x];return '<b>'+path+'</b> › <b>'+x+'</b> = '+p.nm+' · '+p.ar+'. '+(p.t==='ro'?'ENT يعرض القيمة.':H.mode==='ref'?'ENT وبعدين لف: القيمة بتتغير على طول.':'ENT يفتح القيمة للتعديل'+(p.l2?' (والحفظ بـ ENT ثانيتين)':'')+'.')+' ESC يرجع.';}
+  case 'val':{const p=PM[curItem()];
+   if(H.live)return '<b>'+p.c+'</b> = '+dispVal(p,P[p.c])+' '+p.u+': لف الـ Jog dial والقيمة بتتغير على طول'+((p.c==='AIU1'&&P.Fr1!==3)||(p.c==='LFr'&&P.Fr1!==4)?' (بس مش هتأثر: Fr1 = '+FR1[P.Fr1]+')':'')+'. ENT أو ESC للرجوع.';
+   return '<b>'+p.c+'</b> = '+dispVal(p,pval(p))+' '+(p.u||'')+' ('+p.ar+'). '+(H.mode==='mon'?'لف تروح للقراءة اللي بعدها. ENT يعرض الوحدة (لمبة Unit). ESC يرجع للكود.':'ESC يرجع.');}
+  case 'edit':{const p=PM[H.ed.c];return 'تعديل <b>'+p.c+'</b>: القيمة بترمش. لف الـ Jog dial ('+(p.t==='e'?p.o.join(' / '):pMin(p)+' لـ '+pMax(p)+' '+p.u+'، واللف السريع يكبّر الخطوة')+'). '+(p.l2?'<b>امسك ENT ثانيتين</b> للحفظ':'ENT يحفظ')+'، ESC يلغي.';}
+ }
+ return '';
+}
+
+/* ---------------- keys + jog dial ---------------- */
+function buildDial(){let r='';for(let i=0;i<30;i++)r+='<rect x="58.4" y="5.5" width="3.2" height="13" rx="1.6" fill="#262b30" transform="rotate('+(i*12)+' 60 60)"/>';
+ $('#dial').innerHTML='<defs><radialGradient id="dg" cx="40%" cy="32%"><stop offset="0" stop-color="#757e86"/><stop offset=".65" stop-color="#474e55"/><stop offset="1" stop-color="#30363b"/></radialGradient><radialGradient id="dcg" cx="40%" cy="35%"><stop offset="0" stop-color="#848d95"/><stop offset="1" stop-color="#596168"/></radialGradient></defs><circle cx="60" cy="62.5" r="57" fill="rgba(0,0,0,.45)"/><circle cx="60" cy="60" r="57" fill="url(#dg)" stroke="#3dbb52" stroke-width="2.4"/><g id="dRot">'+r+'<circle cx="60" cy="25" r="2.4" fill="#d9dee2"/></g><circle class="cap" id="dCap" cx="60" cy="60" r="29" fill="url(#dcg)" stroke="#2b3035" stroke-width="1.5"/><text x="60" y="63.5" text-anchor="middle" font-size="9" font-weight="700" fill="#e3e7ea" opacity=".75" font-family="Arial" pointer-events="none">ENT</text>';}
+buildDial();
+let dialRot=0;
+function spin(d){dialRot+=d;const g=$('#dRot');if(g)g.setAttribute('transform','rotate('+dialRot.toFixed(1)+' 60 60)');}
+function dialStep(d){spin(d*12);hTurn(d);}
+(function bindDial(){
+ const sv=$('#dial');let a0=null,acc=0,moved=0,r0=0,wacc=0,rep=null,center=false;
+ const geo=e=>{const r=sv.getBoundingClientRect(),x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2);return {a:Math.atan2(y,x)*180/Math.PI,d:Math.hypot(x,y)/(r.width/2),x};};
+ const stopRep=()=>{if(rep){clearTimeout(rep);rep=null;}};
+ sv.addEventListener('pointerdown',e=>{e.preventDefault();sv.focus({preventScroll:true});cap(sv,e);const g=geo(e);a0=g.a;r0=g.d;acc=0;moved=0;sv.classList.add('grab');
+  center=r0<.52;
+  if(center){$('#dCap').setAttribute('fill','#4a5157');entDown();}
+  else{const d=g.x>=0?1:-1;dialStep(d);const tick=()=>{dialStep(d);rep=setTimeout(tick,110);};rep=setTimeout(tick,450);}});
+ sv.addEventListener('pointermove',e=>{if(a0===null)return;const g=geo(e);let d=g.a-a0;if(d>180)d-=360;if(d<-180)d+=360;a0=g.a;
+  if(g.d<.25)return;moved+=Math.abs(d);if(moved>10){stopRep();if(center&&H.hold){H.hold=null;}center=false;$('#dCap').setAttribute('fill','url(#dcg)');}
+  if(moved<=10)return;acc+=d;spin(d);
+  while(acc>=12){acc-=12;hTurn(1);}while(acc<=-12){acc+=12;hTurn(-1);}});
+ const end=()=>{if(a0===null)return;a0=null;sv.classList.remove('grab');stopRep();$('#dCap').setAttribute('fill','url(#dcg)');if(center)entUp();center=false;};
+ sv.addEventListener('pointerup',end);sv.addEventListener('pointercancel',()=>{a0=null;stopRep();H.hold=null;center=false;sv.classList.remove('grab');$('#dCap').setAttribute('fill','url(#dcg)');});
+ sv.addEventListener('lostpointercapture',end);
+ sv.addEventListener('wheel',e=>{e.preventDefault();wacc+=e.deltaY;while(wacc<=-40){wacc+=40;dialStep(1);}while(wacc>=40){wacc-=40;dialStep(-1);}},{passive:false});
+ sv.addEventListener('keydown',e=>{const k=e.key;if(k==='ArrowUp'||k==='ArrowRight'){e.preventDefault();dialStep(1);}else if(k==='ArrowDown'||k==='ArrowLeft'){e.preventDefault();dialStep(-1);}else if((k==='Enter'||k===' ')&&!e.repeat){e.preventDefault();$('#dCap').setAttribute('fill','#4a5157');entDown();}else if(k==='Escape'){e.preventDefault();hKey('ESC');}});
+ sv.addEventListener('keyup',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('#dCap').setAttribute('fill','url(#dcg)');entUp();}});
+ sv.addEventListener('contextmenu',e=>e.preventDefault());
+})();
+$$('.ak').forEach(b=>{
+ const dn=()=>{b.classList.add('down');hKey(b.dataset.k);};const up=()=>b.classList.remove('down');
+ b.addEventListener('pointerdown',e=>{e.preventDefault();cap(b,e);dn();});
+ ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,up));
+ b.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.repeat){e.preventDefault();dn();}});
+ b.addEventListener('keyup',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();up();}});
+ b.addEventListener('contextmenu',e=>e.preventDefault());
+});
+
+/* ---------------- parameter writes ---------------- */
+function ioDefaults(cfg,tcc){
+ const d={rrS:tcc===0?2:0,PS2:3,PS4:4,JOG:0,nSt:0,rPS:0,rSF:0,EtF:0,r1:1,r2:0,LO1:0,AO1:0};
+ if(cfg===1){d.ACC=1;d.dEC=1;}
+ if(cfg===2){d.JOG=4;d.PS4=0;d.rSF=5;}
+ return d;
+}
+function setParam(c,v,src,quiet){
+ const p=PM[c];if(!p||p.t==='ro')return 'ro';
+ if(p.rl&&S.st!=='off')return 'run';
+ if(p.t==='n'){v=+v;if(isNaN(v))return 'bad';v=clamp(rnd(v,p.dc),pMin(p),pMax(p));}else{v=clamp(Math.round(+v),0,p.o.length-1);}
+ if(p.act){
+  if(c==='SCS'&&v===1){S.cfg1={};for(const q of PD)if(q.t!=='ro'&&!q.act)S.cfg1[q.c]=P[q.c];P.SCS=0;log('SCS: اتحفظت نسخة من كل الباراميترات في CFG1');hmsg('dOnE',1);EV.scs=1;save();renderParams();return 'ok';}
+  if(c==='GFS'&&v===1){
+   const fromC=P.FCSI===1&&S.cfg1;
+   if(P.FCSI===1&&!S.cfg1){hnote('مفيش نسخة في CFG1. اعمل SCS = Str1 الأول.');return 'bad';}
+   const keep={FCSI:P.FCSI};
+   for(const q of PD)if(q.t!=='ro')P[q.c]=fromC&&q.c in S.cfg1?S.cfg1[q.c]:q.d;
+   Object.assign(P,keep);P.GFS=0;S.tus=0;
+   log('GFS: الباراميترات رجعت من '+(fromC?'CFG1':'إعدادات المصنع')+' ('+src+')');hmsg('dOnE',1.2);EV.gfs=1;save();renderParams();updLabels();return 'ok';}
+  return 'same';
+ }
+ if(P[c]===v)return 'same';
+ const old=P[c];P[c]=v;
+ if(!quiet)log(c+' ('+p.nm+'): '+dispVal(p,old)+' ← '+dispVal(p,v)+' ('+src+')');
+ if(c==='tUn'){if(v===1){if(!startTune())P.tUn=old;}}
+ if(c==='bFr'){const sixty=v===1;Object.assign(P,{FrS:sixty?60:50,UnS:sixty?460:400,nSP:sixty?1750:1430,HSP:sixty?60:50,tFr:sixty?72:60});log('bFr: FrS و UnS و nSP و HSP و tFr اتغيروا حسب '+(sixty?'60':'50')+' هرتز');}
+ if(c==='tCC'||c==='CFG'){Object.assign(P,ioDefaults(P.CFG,P.tCC));S.needEdge=true;log('تخصيص الأطراف رجع للمصنع حسب '+(c==='tCC'?'tCC = '+p.o[v]:'الماكرو '+p.o[v]));if(c==='tCC')EV['tcc'+v]=1;}
+ if(c==='HSP')P.LSP=Math.min(P.LSP,P.HSP);
+ if(c==='tFr')P.HSP=Math.min(P.HSP,P.tFr);
+ save();renderParams();updLabels();updStation();
+ return 'ok';
+}
+
+/* ---------------- persistence ---------------- */
+const SKEY='atv320-lab-v1';
+let EXS={};
+function save(){try{const pv={};for(const p of PD)if(p.t!=='ro')pv[p.c]=P[p.c];localStorage.setItem(SKEY,JSON.stringify({pv,cfg1:S.cfg1,fq:S.fq,lastF:S.lastF,hrs:S.hrs,tus:S.tus,exs:EXS,su:{mot:S.mot,lineV:S.lineV,load:S.load,lp:S.lp,jr:S.jr,amb:S.amb,dbInst:S.dbInst}}));}catch(_){}}
+function load(){try{const o=JSON.parse(localStorage.getItem(SKEY)||'null');if(!o)return;
+ if(o.pv)for(const c in o.pv){const p=PM[c];if(p&&p.t!=='ro'&&typeof o.pv[c]==='number'){P[c]=p.t==='e'?clamp(Math.round(o.pv[c]),0,p.o.length-1):clamp(o.pv[c],p.mn,p.mx);}}
+ S.cfg1=o.cfg1&&typeof o.cfg1==='object'?o.cfg1:null;S.fq=Array.isArray(o.fq)?o.fq.filter(c=>FL[c]).slice(0,8):[];S.lastF=FL[o.lastF]?o.lastF:'';S.hrs=+o.hrs||0;S.tus=[0,4].includes(o.tus)?o.tus:0;EXS=o.exs&&typeof o.exs==='object'?o.exs:{};
+ if(o.su)Object.assign(S,{mot:MOT[o.su.mot]?o.su.mot:'iec',lineV:[380,400,415,460,480].includes(+o.su.lineV)?+o.su.lineV:400,load:['conv','fan','hoist'].includes(o.su.load)?o.su.load:'conv',lp:clamp(+o.su.lp||0,0,160),jr:clamp(+o.su.jr||0,0,40),amb:clamp(+o.su.amb||35,10,50),dbInst:!!o.su.dbInst});
+}catch(_){}}
+
+/* ---------------- operator station ---------------- */
+const io=S.io;
+function devAct(dev,ev){
+ if(dev==='brk'&&ev==='click'){S.brk=!S.brk;log(S.brk?'المفتاح الرئيسي اتقفل (ON)':'المفتاح الرئيسي اتفتح (OFF)');}
+ else if(dev==='est'&&ev==='click'){io.est=!io.est;log(io.est?'زرار الطوارئ اتداس: STO اتفتح':'زرار الطوارئ اتفك: STO مقفول تاني');}
+ else if(dev==='li1'){if(P.tCC===0){if(ev==='click')io.s1=!io.s1;}else{if(ev==='down')io.p1=true;else if(ev==='up')io.p1=false;}}
+ else if(dev==='li2'){if(P.tCC===0){if(ev==='click')io.s2=!io.s2;}else{if(ev==='down')io.p2=true;else if(ev==='up')io.p2=false;}}
+ else if(dev==='sel'&&ev==='click')io.sel=(io.sel+1)%4;
+ else if(dev==='li5'){if(ev==='down')io.p5=true;else if(ev==='up')io.p5=false;}
+ else if(dev==='li6'&&ev==='click')io.s6=!io.s6;
+ updStation();
+}
+const MOMENT=d=>d==='li5'||((d==='li1'||d==='li2')&&P.tCC===1);
+function bindDev(el,dev){
+ el.addEventListener('pointerdown',e=>{if(!MOMENT(dev))return;e.preventDefault();cap(el,e);devAct(dev,'down');});
+ ['pointerup','pointercancel','lostpointercapture'].forEach(t=>el.addEventListener(t,()=>{if(MOMENT(dev))devAct(dev,'up');}));
+ el.addEventListener('click',()=>{if(!MOMENT(dev))devAct(dev,'click');});
+ el.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.repeat&&MOMENT(dev)){e.preventDefault();devAct(dev,'down');}});
+ el.addEventListener('keyup',e=>{if((e.key==='Enter'||e.key===' ')&&MOMENT(dev)){e.preventDefault();devAct(dev,'up');}});
+}
+bindDev($('#dBrk'),'brk');bindDev($('#dEst'),'est');bindDev($('#dS1'),'li1');bindDev($('#dP1'),'li1');bindDev($('#dS2'),'li2');bindDev($('#dP2'),'li2');bindDev($('#dSel'),'sel');bindDev($('#dP5'),'li5');bindDev($('#dS6'),'li6');
+const FNAR={Fwd:'تشغيل أمامي',Stop:'STOP (NC)',rrS:'عكس',PS2:'PS2',PS4:'PS4',JOG:'JOG',nSt:'وقوف حر',rPS:'رامب 2',rSF:'مسح العطل',EtF:'عطل خارجي',nO:'مش متخصص'};
+const fnAr=s=>s.split('+').map(x=>FNAR[x]||x).join(' + ');
+function updStation(){
+ const three=P.tCC===1;
+ $('#dBrk').setAttribute('aria-pressed',S.brk);
+ $('#dEst').classList.toggle('latched',io.est);
+ $('#dS1').hidden=three;$('#dP1').hidden=!three;$('#sp1').style.visibility=three?'hidden':'visible';
+ $('#dS2').hidden=three;$('#dP2').hidden=!three;$('#sp2').style.visibility=three?'hidden':'visible';
+ $('#dS1').setAttribute('aria-pressed',io.s1);$('#dS2').setAttribute('aria-pressed',io.s2);$('#dS6').setAttribute('aria-pressed',io.s6);
+ $('#dP1').classList.toggle('down',io.p1);$('#dP2').classList.toggle('down',io.p2);$('#dP5').classList.toggle('down',io.p5);
+ $('#tg1').textContent=three?'STOP (NC)':'تشغيل أمامي';
+ $('#tg2').textContent=three?'START':fnAr(liFn(2));
+ $('#tg5').textContent='LI5 · '+fnAr(liFn(5));$('#tg6').textContent='LI6 · '+fnAr(liFn(6));
+ $('#dSel i').style.transform='rotate('+(-45+io.sel*30)+'deg)';
+ const sp=['SP1 (المرجع)','SP2','SP3','SP4'][(io.sel&1&&P.PS2===3?1:0)+(io.sel&2&&P.PS4===4?2:0)];
+ $('#dSelV').textContent=io.sel+' · LI3='+(io.sel&1)+' LI4='+(io.sel>>1&1)+' · '+sp;
+ $('#stHint').innerHTML=three?'وضع <b>3 سلك</b> (<code>tCC = 3C</code>): زرار <b>STOP</b> على LI1 مقفول (NC) ولما تدوسه يفتح، وزرار <b>START</b> على LI2 بيتداس ويتساب. العكس بيحتاج <code>rrS</code> على طرف تاني.':'وضع <b>2 سلك</b> (<code>tCC = 2C</code>): سلكتور LI1 ثابت، مقفول = شغال أمامي و مفتوح = وقف. '+(P.tCt===1?'<code>tCt = trn</code>: بعد رجوع الكهربا أو مسح العطل أو STO لازم تفتح LI1 وتقفله تاني.':'<code>tCt = '+PM.tCt.o[P.tCt]+'</code>: لو LI1 مقفول الموتور يشتغل لوحده بعد رجوع الكهربا أو مسح العطل. خلي بالك.')+' زرار الطوارئ بيقطع STO. دبل كليك على أي مقبض يصفّره.';
+}
+function knob(el,out,get,set,min,max,fmt,dflt){
+ const upd=()=>{const v=get();el.firstElementChild.style.transform='rotate('+(-135+270*(v-min)/(max-min))+'deg)';out.textContent=fmt(v);};
+ let y0=null,v0=0;
+ el.addEventListener('pointerdown',e=>{e.preventDefault();cap(el,e);y0=e.clientY;v0=get();});
+ el.addEventListener('pointermove',e=>{if(y0===null)return;set(clamp(v0+(y0-e.clientY)/150*(max-min),min,max));upd();});
+ ['pointerup','pointercancel'].forEach(t=>el.addEventListener(t,()=>{y0=null;}));
+ el.addEventListener('wheel',e=>{e.preventDefault();set(clamp(get()-Math.sign(e.deltaY)*(max-min)/50,min,max));upd();},{passive:false});
+ el.addEventListener('dblclick',()=>{set(dflt);upd();});
+ el.addEventListener('keydown',e=>{const s=(max-min)/50;if(e.key==='ArrowUp'||e.key==='ArrowRight'){set(clamp(get()+s,min,max));upd();e.preventDefault();}else if(e.key==='ArrowDown'||e.key==='ArrowLeft'){set(clamp(get()-s,min,max));upd();e.preventDefault();}});
+ upd();return upd;
+}
+const updPot=knob($('#kPot'),$('#kPotV'),()=>io.pot,v=>io.pot=v,0,1,v=>Math.round(v*100)+'% · '+(v*10).toFixed(1)+'V',0);
+const updV=knob($('#kV'),$('#kVV'),()=>io.v,v=>io.v=v,0,10,v=>v.toFixed(2)+' V',0);
+const updMa=knob($('#kMa'),$('#kMaV'),()=>io.ma,v=>io.ma=v,0,20,v=>(S.inj.mabrk?0:v).toFixed(1)+' mA',4);
+
+/* ---------------- load, supply, faults panel ---------------- */
+function bindRange(id,key,fmt){const el=$('#'+id),o=$('#'+id+'V');el.value=S[key];o.textContent=fmt(S[key]);el.addEventListener('input',()=>{S[key]=+el.value;o.textContent=fmt(S[key]);loadHint();save();});}
+bindRange('lp','lp',v=>v+'%');bindRange('jr','jr',v=>String(v));bindRange('amb','amb',v=>v+'°C');
+function loadHint(){
+ const m=MOT[S.mot],J=m.J*(1+S.jr),E=.5*J*m.wn*m.wn/1000;
+ const t={conv:'سير ناقل: العزم ثابت تقريباً من أول ما يتحرك.',fan:'مروحة / طلمبة: العزم بيزيد مع مربع السرعة، فالتيار واطي في السرعات الواطية. جرّب Ctt = UFq.',hoist:'ونش: الحمل بيشد لتحت على طول. وهو طالع (أمامي) الموتور بيشيل، ووهو نازل (عكسي) الحمل بيلف الموتور والطاقة بترجع للـ DC bus. لما الخرج يقف الفرامل الميكانيكية بتمسك.'}[S.load];
+ $('#loadHint').textContent=t+' القصور الكلي '+J.toFixed(3)+' kg·m²، وطاقة الحركة عند السرعة المقننة حوالي '+E.toFixed(2)+' kJ، ودي اللي بترجع للـ DC bus لما توقف.';
+}
+$('#motSel').addEventListener('change',e=>{S.mot=e.target.value;updMotor();loadHint();save();log('الموتور اتغيّر: '+MOT[S.mot].plate.join(' · '));});
+$('#lineSel').addEventListener('change',e=>{S.lineV=+e.target.value;save();log('جهد المصدر بقى '+S.lineV+'V');});
+$('#loadSel').addEventListener('change',e=>{S.load=e.target.value;buildLoad();loadHint();save();});
+$('#dbChk').addEventListener('change',e=>{S.dbInst=e.target.checked;save();buildWD();log(S.dbInst?'اتركّبت مقاومة فرملة 72Ω على PA/+ و PB':'اتشالت مقاومة الفرملة');});
+function updMotor(){const m=MOT[S.mot];['mPlate1','mPlate2','mPlate3'].forEach((id,i)=>$('#'+id).textContent=m.plate[i]);}
+const INJT={dip:'انقطاع كهربا لحظي 0.6 ثانية',hiline:'جهد المصدر عالي +40%',phl:'فاز ناقص في الدخل',gnd:'قصر للأرضي على كابل الموتور',short:'قصر بين U و V',imp:'عزل ضعيف بين لفات الموتور',shock:'خبطة حمل مفاجئة',opn:'فاز W للموتور مفصول',ctr:'كونتاكتور الخرج فاتح',jam:'الحمل اتزنق',fan:'مروحة الانفرتر وقفت',mabrk:'سلك 4-20mA اتقطع'};
+$$('[data-inj]').forEach(b=>b.addEventListener('click',()=>{
+ const k=b.dataset.inj;
+ if(k==='dip'){if(!S.inj.dip){S.inj.dip=true;S.dipT=.6;log('عطل: '+INJT.dip,1);}}
+ else if(k==='shock'){S.inj.shock=true;S.shockT=.15;log('عطل: '+INJT.shock,1);}
+ else{S.inj[k]=!S.inj[k];log((S.inj[k]?'عطل: ':'اتصلح: ')+INJT[k],S.inj[k]);}
+ syncInj();updMa();
+}));
+function syncInj(){$$('[data-inj]').forEach(b=>b.setAttribute('aria-pressed',!!S.inj[b.dataset.inj]));}
+
+/* ---------------- motor + load drawing ---------------- */
+function buildLoad(){
+ const s=$('#loadSvg');
+ if(S.load==='conv')s.innerHTML='<rect x="8" y="60" width="144" height="36" rx="18" fill="none" stroke="#2b3238" stroke-width="5"/><circle cx="26" cy="78" r="15" fill="#6d7378"/><circle cx="134" cy="78" r="15" fill="#6d7378"/><g id="ldA"><line x1="26" y1="78" x2="26" y2="64" stroke="#e8870c" stroke-width="3"/></g><g id="ldB"><line x1="134" y1="78" x2="134" y2="64" stroke="#e8870c" stroke-width="3"/></g><g id="ldBox"></g><rect x="20" y="96" width="6" height="40" fill="#8a9095"/><rect x="134" y="96" width="6" height="40" fill="#8a9095"/><text x="80" y="150" text-anchor="middle" font-size="11" fill="#7a868f" font-family="Arial">CONVEYOR</text>';
+ else if(S.load==='fan')s.innerHTML='<circle cx="80" cy="76" r="62" fill="none" stroke="#7a868f" stroke-width="4"/><g id="ldFan"></g><circle cx="80" cy="76" r="9" fill="#3b4348"/><text x="80" y="156" text-anchor="middle" font-size="11" fill="#7a868f" font-family="Arial">FAN / PUMP</text>';
+ else s.innerHTML='<rect x="10" y="8" width="140" height="8" fill="#6d7378"/><circle cx="80" cy="34" r="20" fill="#6d7378"/><g id="ldDrum"><line x1="80" y1="34" x2="80" y2="16" stroke="#e8870c" stroke-width="3"/><line x1="80" y1="34" x2="98" y2="34" stroke="#e8870c" stroke-width="3"/></g><line id="ldRope" x1="100" y1="34" x2="100" y2="90" stroke="#2b3238" stroke-width="2.5"/><g id="ldW"><rect x="84" y="0" width="32" height="26" rx="2" fill="#b85f00"/><text x="100" y="17" text-anchor="middle" font-size="9" fill="#fff" font-family="Arial">LOAD</text></g><text x="40" y="156" text-anchor="middle" font-size="11" fill="#7a868f" font-family="Arial">HOIST</text>';
+ if(S.load==='fan'){let h='';for(let i=0;i<6;i++)h+='<path d="M80 76 C 70 40, 95 30, 104 46 Z" fill="#9aa6b1" transform="rotate('+i*60+' 80 76)"/>';$('#ldFan').innerHTML=h;}
+ if(S.load==='conv'){let h='';for(let i=0;i<3;i++)h+='<rect class="bx" x="0" y="42" width="22" height="16" rx="2" fill="#c8a165" stroke="#7a5a2a"/>';$('#ldBox').innerHTML=h;}
+}
+function drawMotor(){
+ const deg=S.th*180/Math.PI;
+ $('#fanBlades').setAttribute('transform','rotate('+(deg%360)+')');
+ $('#shaftMark').setAttribute('transform','rotate('+(deg%360)+')');
+ const rpm=S.wm*60/TAU;
+ $('#mDir').textContent=Math.abs(rpm)<1?'':(rpm>0?'Forward ↻ ':'Reverse ↺ ')+Math.abs(rpm).toFixed(0)+' rpm';
+ if(S.load==='conv'&&$('#ldA')){const a=deg%360;$('#ldA').setAttribute('transform','rotate('+a+' 26 78)');$('#ldB').setAttribute('transform','rotate('+a+' 134 78)');
+  const off=((S.th*.6)%150+150)%150;$$('#ldBox .bx').forEach((b,i)=>{const x=((off+i*50)%150)-6;b.setAttribute('x',x);b.style.opacity=x<0||x>134?0:1;});}
+ else if(S.load==='fan'&&$('#ldFan'))$('#ldFan').setAttribute('transform','rotate('+(deg%360)+' 80 76)');
+ else if($('#ldDrum')){$('#ldDrum').setAttribute('transform','rotate('+(deg%360)+' 80 34)');const y=46+(((-S.th*.8)%80)+80)%80;$('#ldRope').setAttribute('y2',y);$('#ldW').setAttribute('transform','translate(0 '+y+')');}
+}
+
+/* ---------------- AQ1 meter ---------------- */
+(function(){let h='';for(let i=0;i<=10;i++){const a=(-50+i*10)*Math.PI/180,x1=48+Math.sin(a)*40,y1=58-Math.cos(a)*40,x2=48+Math.sin(a)*(i%5?36:33),y2=58-Math.cos(a)*(i%5?36:33);h+='<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="#222" stroke-width="'+(i%5?.8:1.4)+'"/>';if(i%5===0)h+='<text class="aoL" data-i="'+i+'" x="'+(48+Math.sin(a)*28).toFixed(1)+'" y="'+(61-Math.cos(a)*28).toFixed(1)+'" font-size="7" text-anchor="middle" font-family="Arial" fill="#222">'+i+'</text>';}
+ h+='<text id="aoU" x="48" y="52" font-size="7" text-anchor="middle" font-family="Arial" fill="#555">V</text><line id="aoN" x1="48" y1="58" x2="48" y2="18" stroke="#c0352b" stroke-width="1.6"/><circle cx="48" cy="58" r="3" fill="#222"/>';$('#aoMeter').innerHTML=h;})();
+
+/* ---------------- wiring diagram ---------------- */
+const CT=[['10V',280],['AI1',322],['COM',364],['AI2',406],['AI3',448],['COM',490],['AQ1',532],['LO+',590],['LO-',632],['+24',690],['STO',735],['LI1',780],['LI2',825],['LI3',870],['LI4',915],['LI5',960],['LI6',1005],['COM',1050],['P24',1095]];
+const PWR=[['R/L1',300],['S/L2',340],['T/L3',380],['PE',430],['PA/+',540],['PB',580],['PC/-',620],['U/T1',760],['V/T2',800],['W/T3',840]];
+const LIX={1:780,2:825,3:870,4:915,5:960,6:1005};
+const DEVW={sto:735,li1:780,li2:825,li5:960,li6:1005};
+const WDEAD='#c3c8cc';
+let WD={};
+function buildWD(){
+ const o=[],ln=(id,d,w)=>o.push('<path id="'+id+'" d="'+d+'" fill="none" stroke="'+WDEAD+'" stroke-width="'+(w||2.4)+'" stroke-linejoin="round"/>');
+ const term=(x,y)=>o.push('<rect x="'+(x-11)+'" y="'+(y-9)+'" width="22" height="18" rx="2" fill="#eceeee" stroke="#4a5055"/><circle cx="'+x+'" cy="'+y+'" r="5.5" fill="#c3c7ca" stroke="#5d6368"/><line x1="'+(x-3.5)+'" y1="'+(y+3.5)+'" x2="'+(x+3.5)+'" y2="'+(y-3.5)+'" stroke="#4a5055" stroke-width="1.4"/>');
+ const tx=(x,y,t,a)=>o.push('<text x="'+x+'" y="'+y+'" '+(a||'')+'>'+t+'</text>');
+ const dot=(x,y)=>o.push('<circle cx="'+x+'" cy="'+y+'" r="3.4" fill="#2b3238"/>');
+ o.push('<rect x="0" y="0" width="1200" height="820" fill="#f4f5f1"/>');
+ /* drive box */
+ o.push('<rect x="250" y="170" width="920" height="300" rx="8" fill="#353b41"/><rect x="256" y="176" width="908" height="288" rx="6" fill="none" stroke="#4c545b"/>');
+ o.push('<rect x="470" y="236" width="44" height="44" rx="4" fill="#3dbb52"/>');tx(492,264,'SE','font-size="15" font-weight="900" fill="#fff" text-anchor="middle" font-family="Arial"');
+ tx(820,262,'Altivar Machine ATV320','font-size="22" font-weight="700" fill="#e9ebec" text-anchor="middle" font-family="Arial"');
+ tx(820,284,'ATV320U40N4C · 4 kW · 380–500V · 9.5A','font-size="12" fill="#9aa3a9" text-anchor="middle"');
+ o.push('<text id="wdSt" x="820" y="320" font-size="15" fill="#9cf29c" text-anchor="middle"></text>');
+ /* supply + breaker */
+ [['L3',40],['L2',58],['L1',76]].forEach(([n,y])=>{tx(8,y+4,n,'font-size="11" fill="#333"');ln('wIn'+n,'M24 '+y+'H112');});
+ ln('wL1','M148 76H300V161');ln('wL2','M148 58H340V161');ln('wL3','M148 40H380V161');
+ o.push('<g id="phlX" visibility="hidden"><path d="M372 120l16 16M388 120l-16 16" stroke="#c0352b" stroke-width="3"/></g>');
+ o.push('<g class="clk" data-dev="brk"><rect class="hl" x="100" y="22" width="60" height="70" rx="4" fill="#fff" stroke="#4a5055" stroke-width="1.5"/>');
+ [40,58,76].forEach((y,i)=>o.push('<line id="bb'+i+'" x1="114" y1="'+y+'" x2="146" y2="'+y+'" stroke="#1d2226" stroke-width="3" stroke-linecap="round"/><circle cx="114" cy="'+y+'" r="2.5" fill="#1d2226"/><circle cx="146" cy="'+y+'" r="2.5" fill="#1d2226"/>'));
+ o.push('</g>');tx(130,108,'Q1 · المفتاح','font-size="11" fill="#333" text-anchor="middle" class="ar"');
+ o.push('<path d="M430 161V112" stroke="#2e9c3a" stroke-width="3"/><path d="M430 161V112" stroke="#f3d21b" stroke-width="3" stroke-dasharray="5 5"/><path d="M418 112h24M422 106h16M426 100h8" stroke="#2e9c3a" stroke-width="2"/>');
+ /* braking resistor */
+ if(S.dbInst){ln('wPA','M540 161V100',2.6);ln('wPB','M580 161V100',2.6);o.push('<rect x="510" y="56" width="100" height="44" rx="4" fill="#fff" stroke="#4a5055" stroke-width="1.5"/><rect id="dbRes" x="525" y="66" width="70" height="14" fill="none" stroke="#4a5055" stroke-width="1.5"/>');tx(560,93,'BR 72Ω','font-size="10" fill="#333" text-anchor="middle"');}
+ else{o.push('<rect x="510" y="56" width="100" height="44" rx="4" fill="none" stroke="#a9aeb2" stroke-dasharray="4 4"/>');tx(560,82,'من غير مقاومة فرملة','font-size="10.5" fill="#8a9095" text-anchor="middle" class="ar"');}
+ /* motor */
+ ln('wU','M760 161V60H961',2.6);ln('wV','M800 161V80H956',2.6);ln('wW','M840 161V100H961',2.6);
+ o.push('<g id="ctrBox"><rect x="880" y="48" width="34" height="64" rx="3" fill="#fff" stroke="#4a5055"/></g>');tx(897,126,'KM2','font-size="9" fill="#555" text-anchor="middle"');
+ o.push('<g id="opnX" visibility="hidden"><path d="M926 92l14 16M940 92l-14 16" stroke="#c0352b" stroke-width="3"/></g>');
+ o.push('<circle id="wdM" cx="1000" cy="80" r="44" fill="#fff" stroke="#4a5055" stroke-width="2"/>');tx(1000,80,'M','font-size="26" font-weight="700" fill="#2b3238" text-anchor="middle" font-family="Arial"');tx(1000,100,'3~','font-size="13" fill="#2b3238" text-anchor="middle"');
+ tx(1056,40,'','id="wdMp" font-size="10" fill="#555"');
+ PWR.forEach(([n,x])=>{term(x,170);tx(x,194,n,'font-size="9" fill="#c9cfd3" text-anchor="middle"');});
+ tx(560,214,'أطراف الباور','font-size="12" fill="#9aa3a9" text-anchor="middle" class="ar"');
+ /* relays */
+ tx(200,184,'L 220VAC','font-size="10" fill="#333" text-anchor="middle"');tx(40,184,'N','font-size="10" fill="#333" text-anchor="middle"');
+ ln('wRL','M200 192V420',2.6);ln('wRN','M40 192V420',2.6);
+ const R=[['R1A',204],['R1C',240],['R1B',276],['R2A',336],['R2C',372]];
+ R.forEach(([n,y])=>{term(250,y);tx(232,y-5,n,'font-size="8" fill="#555" text-anchor="end"');});
+ ln('wR1c','M239 240H200');dot(200,240);ln('wR2c','M239 372H200');dot(200,372);
+ ln('wR1b','M239 276H142');ln('wH1n','M118 276H40');dot(40,276);
+ ln('wR2a','M239 336H142');ln('wH2n','M118 336H40');dot(40,336);
+ [[276,'lmp1','H1'],[336,'lmp2','H2']].forEach(([y,id,n])=>{o.push('<g id="'+id+'"><circle cx="130" cy="'+y+'" r="12" fill="#fff" stroke="#4a5055" stroke-width="1.5"/><path d="M122 '+(y-8)+'l16 16M138 '+(y-8)+'l-16 16" stroke="#4a5055" stroke-width="1.2"/></g>');tx(130,y+26,n,'font-size="9" fill="#555" text-anchor="middle"');});
+ o.push('<line id="r1b" x1="270" y1="240" x2="270" y2="276" stroke="#e9ebec" stroke-width="2.2" stroke-linecap="round"/><path d="M262 204H270M262 276H270M262 240H270" stroke="#9aa3a9" stroke-width="1.5"/>');
+ o.push('<line id="r2b" x1="270" y1="372" x2="270" y2="336" stroke="#e9ebec" stroke-width="2.2" stroke-linecap="round"/><path d="M262 336H270M262 372H270" stroke="#9aa3a9" stroke-width="1.5"/>');
+ tx(282,230,'R1','font-size="11" font-weight="700" fill="#e9ebec"');tx(282,256,'','id="r1f" font-size="9.5" fill="#9aa3a9"');
+ tx(282,362,'R2','font-size="11" font-weight="700" fill="#e9ebec"');tx(282,388,'','id="r2f" font-size="9.5" fill="#9aa3a9"');
+ /* control strip */
+ CT.forEach(([n,x],i)=>{term(x,470);tx(x,496,n,'font-size="9.5" fill="#333" text-anchor="middle"');tx(0,0,'','id="cf'+i+'" font-size="9" fill="#c9cfd3" transform="translate('+(x+3)+' 455) rotate(-90)"');});
+ tx(420,372,'أنالوج','font-size="12" fill="#9aa3a9" text-anchor="middle" class="ar"');tx(880,372,'ديجيتال LI و STO','font-size="12" fill="#9aa3a9" text-anchor="middle" class="ar"');
+ /* COM bus + +24 bus */
+ ln('wCOM','M280 790H1050',2.6);ln('wP24','M690 750H1005',2.6);ln('w24t','M690 479V750',2.4);
+ [364,490].forEach((x,i)=>{ln('wCm'+i,'M'+x+' 479V790');dot(x,790);});ln('wCm2','M1050 479V790');dot(1050,790);dot(690,750);
+ /* pot on AI1 */
+ ln('wT10','M280 479V560');ln('wTpb','M280 640V790');dot(280,790);
+ o.push('<path id="potR" d="M280 560l-7 5 14 10-14 10 14 10-14 10 14 10-14 10 14 10-7 5" fill="none" stroke="#2b3238" stroke-width="1.8"/>');
+ ln('wTA1','M322 479V600H292');o.push('<path id="potA" d="M290 600l8-5v10z" fill="#2b3238"/>');
+ tx(300,668,'بوتنشيوميتر 10kΩ','font-size="10.5" fill="#333" text-anchor="middle" class="ar"');
+ /* AI2 PLC */
+ ln('wTA2','M406 479V602');ln('wTA2r','M406 638V790');dot(406,790);o.push('<circle cx="406" cy="620" r="18" fill="#fff" stroke="#4a5055" stroke-width="1.5"/>');tx(406,624,'0-10V','font-size="8.5" fill="#333" text-anchor="middle"');tx(406,668,'PLC','font-size="10.5" fill="#333" text-anchor="middle"');
+ /* AI3 transmitter */
+ ln('wTA3','M448 479V602');ln('wTA3r','M448 638V790');dot(448,790);o.push('<rect x="431" y="602" width="34" height="36" rx="3" fill="#fff" stroke="#4a5055" stroke-width="1.5"/>');tx(448,618,'4-20','font-size="9" fill="#333" text-anchor="middle"');tx(448,630,'mA','font-size="9" fill="#333" text-anchor="middle"');tx(448,668,'ترانسميتر','font-size="10.5" fill="#333" text-anchor="middle" class="ar"');
+ o.push('<g id="cut" visibility="hidden"><path d="M438 540l20 20M458 540l-20 20" stroke="#c0352b" stroke-width="3"/></g>');
+ /* AQ1 meter */
+ ln('wAQ','M532 479V602');ln('wAQr','M532 638V790');dot(532,790);o.push('<circle cx="532" cy="620" r="18" fill="#fff" stroke="#4a5055" stroke-width="1.5"/>');tx(532,625,'AQ1','font-size="9" fill="#333" text-anchor="middle"');tx(532,668,'عداد','font-size="10.5" fill="#333" text-anchor="middle" class="ar"');tx(532,684,'','id="wdAo" font-size="10" fill="#555" text-anchor="middle"');
+ /* LO1 lamp */
+ ln('wLOp','M590 479V602');ln('wLOl','M590 638V720H690');dot(690,720);ln('wLOn','M632 479V790');dot(632,790);
+ o.push('<g id="lmp3"><circle cx="590" cy="620" r="12" fill="#fff" stroke="#4a5055" stroke-width="1.5"/><path d="M582 612l16 16M598 612l-16 16" stroke="#4a5055" stroke-width="1.2"/></g>');tx(570,668,'H3 24V','font-size="9.5" fill="#555" text-anchor="middle"');
+ /* STO + LI devices */
+ Object.entries(DEVW).forEach(([dv,x])=>{
+  ln('wt'+dv,'M'+x+' 479V592');ln('wb'+dv,'M'+x+' 638V750');dot(x,750);
+  o.push('<circle cx="'+x+'" cy="592" r="2.6" fill="#2b3238"/><circle cx="'+x+'" cy="638" r="2.6" fill="#2b3238"/><line id="bl'+dv+'" x1="'+x+'" y1="638" x2="'+x+'" y2="592" stroke="#1d2226" stroke-width="2.4" stroke-linecap="round"/>');
+  tx(x,666,'','id="dn'+dv+'" font-size="8.5" fill="#333" text-anchor="middle"');
+  o.push('<rect class="clk" data-dev="'+dv+'" x="'+(x-20)+'" y="580" width="40" height="92" fill="transparent"/>');
+ });
+ /* preset selector on LI3/LI4 */
+ [870,915].forEach((x,i)=>{ln('wtS'+i,'M'+x+' 479V592');ln('wbS'+i,'M'+x+' 638V750');dot(x,750);o.push('<circle cx="'+x+'" cy="592" r="2.6" fill="#2b3238"/><circle cx="'+x+'" cy="638" r="2.6" fill="#2b3238"/><line id="blS'+i+'" x1="'+x+'" y1="638" x2="'+x+'" y2="592" stroke="#1d2226" stroke-width="2.4" stroke-linecap="round"/>');});
+ o.push('<rect class="clk" data-dev="sel" x="848" y="576" width="90" height="72" rx="6" fill="transparent" stroke="#8a9095" stroke-dasharray="4 3"/>');tx(892,666,'سلكتور السرعات','font-size="9.5" fill="#333" text-anchor="middle" class="ar"');
+ tx(1095,520,'24V خارجي','font-size="9" fill="#8a9095" text-anchor="middle" class="ar"');tx(1095,534,'مش متوصل','font-size="9" fill="#8a9095" text-anchor="middle" class="ar"');
+ tx(740,812,'سويتش SW1 على Source: الزرار بيوصّل 24+ للطرف، و COM هو صفر المشترك','font-size="10.5" fill="#555" text-anchor="middle" class="ar"');tx(0,0,'','font-size="10.5" fill="#555" text-anchor="middle" class="ar"');
+ $('#wd').innerHTML=o.join('');
+ WD={};$$('#wd [id]').forEach(e=>WD[e.id]=e);
+ $$('#wd .clk').forEach(g=>{const dv=g.dataset.dev;
+  g.addEventListener('pointerdown',e=>{if(!MOMENT(dv))return;e.preventDefault();cap(g,e);devAct(dv,'down');});
+  ['pointerup','pointercancel','lostpointercapture'].forEach(t=>g.addEventListener(t,()=>{if(MOMENT(dv))devAct(dv,'up');}));
+  g.addEventListener('click',()=>{if(!MOMENT(dv))devAct(dv,'click');});});
+ updLabels();updWD();
+}
+function wcol(id,live,col){const e=WD[id];if(!e)return;e.setAttribute('stroke',live?col:WDEAD);e.setAttribute('stroke-width',live?3:2.2);}
+function updLabels(){
+ if(!WD.cf0)return;
+ const lab={0:'+10V ref',1:'Pot (Fr1=AI1)',2:'0V',3:'±10V in',4:'0-20mA in',5:'0V',6:AQO[P.AO1]+' '+PM.AO1t.o[P.AO1t],7:'LO1 '+RLO[P.LO1],8:'LO1 −',9:'+24V out',10:'Safe Torque Off',17:'0V',18:'ext 24V'};
+ CT.forEach((c,i)=>{let t=lab[i];if(c[0].startsWith('LI'))t=liFn(+c[0][2]);WD['cf'+i].textContent=t||'';});
+ WD.r1f.textContent=RLO[P.r1];WD.r2f.textContent=RLO[P.r2];
+ const nm={sto:'E-STOP',li1:P.tCC===0?'FWD':'STOP',li2:P.tCC===0?'S2':'START',li5:'PB LI5',li6:'S6'};
+ Object.keys(DEVW).forEach(d=>WD['dn'+d].textContent=nm[d]);
+ $('#tH1f').textContent='R1B–R1C · لما R1 يسيب ('+RLO[P.r1]+')';$('#tH2f').textContent='R2A–R2C · '+RLO[P.r2];$('#tH3f').textContent='LO+ · '+RLO[P.LO1];
+}
+function updWD(){
+ if(!WD.wU)return;
+ const lineIn=!S.inj.dip,lineOn=S.brk&&lineIn;
+ ['L1','L2','L3'].forEach((n,i)=>{wcol('wIn'+n,lineIn,['#7b3f12','#1b1b1b','#7d7d7d'][i]);wcol('w'+n,lineOn&&!(n==='L3'&&S.inj.phl),['#7b3f12','#1b1b1b','#7d7d7d'][i]);});
+ WD.phlX.setAttribute('visibility',S.inj.phl?'visible':'hidden');
+ [0,1,2].forEach(i=>{const y=[40,58,76][i],b=WD['bb'+i];b.setAttribute('x2',S.brk?146:142);b.setAttribute('y2',S.brk?y:y-14);});
+ const out=S.st!=='off';wcol('wU',out,'#c8261c');wcol('wV',out,'#c8261c');wcol('wW',out&&!S.inj.opn,'#c8261c');
+ WD.opnX.setAttribute('visibility',S.inj.opn?'visible':'hidden');
+ WD.ctrBox.firstChild.setAttribute('fill',S.inj.ctr?'#ffd9d4':'#fff');
+ WD.wdM.setAttribute('stroke',out&&!S.inj.ctr?'#c8261c':'#4a5055');
+ WD.wdMp.textContent=Math.abs(S.wm)>.5?(S.wm*60/TAU).toFixed(0)+' rpm':'';
+ if(WD.wPA){wcol('wPA',S.bus>50,'#d62f2f');wcol('wPB',S.db,'#d62f2f');WD.dbRes.setAttribute('fill',S.db?'#ff7a3d':'none');}
+ const sc=stCode();
+ WD.wdSt.textContent=S.ctrl?((sc||'')+'  ·  '+(S.fOut>=0?'+':'')+S.fOut.toFixed(1)+' Hz'):(S.bus>50?'DC bus '+S.bus.toFixed(0)+'V':'OFF');
+ WD.wdSt.setAttribute('fill',S.fault?'#ff8a80':'#9cf29c');
+ /* relays */
+ wcol('wRL',true,'#7b3f12');wcol('wRN',true,'#1f5fbf');
+ const r1=S.rel.r1,r2=S.rel.r2;
+ wcol('wR1c',true,'#6b3fa0');wcol('wR1b',!r1,'#6b3fa0');wcol('wH1n',!r1,'#1f5fbf');
+ WD.r1b.setAttribute('y2',r1?204:276);
+ wcol('wR2c',true,'#6b3fa0');wcol('wR2a',r2,'#6b3fa0');wcol('wH2n',r2,'#1f5fbf');
+ WD.r2b.setAttribute('x2',r2?270:280);WD.r2b.setAttribute('y2',r2?336:344);
+ WD.lmp1.firstChild.setAttribute('fill',!r1?'#ff5a4a':'#fff');WD.lmp2.firstChild.setAttribute('fill',r2?'#3ee05a':'#fff');
+ /* analog */
+ const c=S.ctrl;wcol('wT10',c,'#d62f2f');wcol('wTpb',c,'#20307a');wcol('wTA1',c,'#5b6670');
+ const yw=(640-io.pot*80).toFixed(1);WD.wTA1.setAttribute('d','M322 479V'+yw+'H292');WD.potA.setAttribute('d','M290 '+yw+'l8-5v10z');
+ wcol('wTA2',io.v>.05,'#5b6670');wcol('wTA2r',io.v>.05,'#20307a');
+ const ma=S.inj.mabrk?0:io.ma;wcol('wTA3',ma>.5,'#5b6670');wcol('wTA3r',ma>.5,'#20307a');WD.cut.setAttribute('visibility',S.inj.mabrk?'visible':'hidden');
+ const aq=aqOut();wcol('wAQ',aq.v>.05,'#5b6670');wcol('wAQr',aq.v>.05,'#20307a');WD.wdAo.textContent=aq.v.toFixed(2)+' '+aq.u;
+ ['wCOM','wCm0','wCm1','wCm2'].forEach(id=>wcol(id,c,'#20307a'));
+ /* +24 and digital */
+ wcol('w24t',c,'#e8870c');wcol('wP24',c,'#e8870c');
+ const lo=S.rel.lo;wcol('wLOp',c&&lo,'#e8870c');wcol('wLOl',c,'#e8870c');wcol('wLOn',c&&lo,'#20307a');WD.lmp3.firstChild.setAttribute('fill',lo?'#ffc21a':'#fff');
+ const cl={sto:stoOk(),li1:liC(1),li2:liC(2),li5:liC(5),li6:liC(6)};
+ Object.entries(DEVW).forEach(([d,x])=>{wcol('wt'+d,c&&cl[d],'#e8870c');wcol('wb'+d,c,'#e8870c');const b=WD['bl'+d];b.setAttribute('x2',cl[d]?x:x-14);b.setAttribute('y2',cl[d]?592:598);});
+ [870,915].forEach((x,i)=>{const on=liC(3+i);wcol('wtS'+i,c&&on,'#e8870c');wcol('wbS'+i,c,'#e8870c');const b=WD['blS'+i];b.setAttribute('x2',on?x:x-14);b.setAttribute('y2',on?592:598);});
+}
+
+/* ---------------- tiles, pills, LEDs ---------------- */
+function setTile(id,v){const e=$('#'+id);e.firstChild.nodeValue=v.replace(/^-(0(\.0+)?)$/,'$1');}
+let capKey='';
+function ui(){
+ const s=hScreen(),on=!!s;
+ if(on)setSeg(s.t,s.blink||0);else setSeg('    ',0);
+ const L=(id,v)=>$('#'+id).classList.toggle('on',!!v);
+ L('ledRef',on&&H.scr!=='boot'&&H.mode==='ref');L('ledMon',on&&H.scr!=='boot'&&H.mode==='mon');L('ledConf',on&&H.scr!=='boot'&&H.mode==='conf');
+ L('ledVal',on&&s.val);L('ledUnit',on&&s.unit);L('ledChg',S.bus>50);
+ L('ledCanR',S.ctrl&&P.AdCO>0);L('ledCanE',false);
+ const ct=capText();if(ct!==capKey){capKey=ct;$('#hcap').innerHTML=ct;}
+ $('#lH1').classList.toggle('on',!S.rel.r1);$('#lH2').classList.toggle('on',S.rel.r2);$('#lH3').classList.toggle('on',S.rel.lo);
+ const aq=aqOut(),full=aq.u==='V'?10:20;$('#aoN').setAttribute('transform','rotate('+(-50+aq.v/full*100)+' 48 58)');$('#aoV').textContent=aq.v.toFixed(2)+' '+aq.u+' · '+(P.AO1?AQO[P.AO1]:'AO1 = nO');
+ if($('#aoU').textContent!==aq.u){$('#aoU').textContent=aq.u;$$('.aoL').forEach(t=>t.textContent=(+t.dataset.i)*(full/10));}
+ const m=MOT[S.mot];
+ setTile('tF',S.fOut.toFixed(1));setTile('tN',(S.wm*60/TAU).toFixed(0));setTile('tI',S.I.toFixed(2));setTile('tV',S.V.toFixed(0));
+ setTile('tT',(S.T/m.Tn*100).toFixed(0));setTile('tB',S.bus.toFixed(0));setTile('tOL',S.olM.toFixed(0));setTile('tHS',tHd().toFixed(0));
+ const bar=(id,v,hot)=>{const e=$('#'+id);e.style.width=clamp(v,0,100)+'%';e.classList.toggle('hot',!!hot);};
+ bar('bI',S.I/(DRV.In*1.5)*100,S.I>DRV.In);bar('bB',S.bus/DRV.ov*100,S.bus>DRV.adapt);bar('bOL',S.olM/118*100,S.olM>100);bar('bHS',tHd()/118*100,tHd()>100);
+ $('#chipRef').textContent=S.code?['','SP2','SP3','SP4'][S.code]:FR1[P.Fr1];$('#chipSt').textContent=S.ctrl?(stCode()||'…'):'OFF';$('#chipF').textContent=S.fault?S.fault+' '+FL[S.fault][0]:'لا يوجد';
+ drawMotor();
+}
+function pills(){
+ const sc=stCode();
+ const L=[['Power',S.ctrl,'on'],['rdY',sc==='rdY','on'],['rUn',S.st==='run'||S.st==='stop','on'],['JOG',S.jog,'on'],['Reverse',S.fOut<-.05,'warn'],['CLI',S.climit,'warn'],['Obr (brA)',S.blimit,'warn'],['مقاومة الفرملة شغالة',S.db,'warn'],['nSt / STO',S.ctrl&&sc==='nSt','warn'],['tHr ≥ 100%',S.olM>=100,'warn'],['Fault',!!S.fault,'bad']];
+ $('#pills').innerHTML=L.map(([t,v,c])=>'<span class="pill'+(v?' '+c:'')+'">'+t+'</span>').join('');
+}
+
+/* ---------------- scope ---------------- */
+const SC={buf:[],paused:false};
+function sample(){if(SC.paused)return;SC.buf.push([S.st==='off'?0:S.fCmd,S.fOut,S.I/DRV.In*100,S.bus/10]);if(SC.buf.length>820)SC.buf.shift();}
+$('#scopePause').addEventListener('click',e=>{SC.paused=!SC.paused;e.target.textContent=SC.paused?'كمّل':'إيقاف مؤقت';});
+function drawScope(){
+ const cv=$('#scope'),dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;
+ if(!w)return;
+ if(cv.width!==Math.round(w*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);}
+ const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,w,h);
+ const lo=-80,hi=200,y=v=>h-(clamp(v,lo,hi)-lo)/(hi-lo)*h;
+ g.strokeStyle='#22343a';g.lineWidth=1;g.font='10px IBM Plex Mono,monospace';g.fillStyle='#5f7880';
+ for(let v=lo;v<=hi;v+=40){g.beginPath();g.moveTo(0,y(v));g.lineTo(w,y(v));g.stroke();g.fillText(v,4,y(v)-2);}
+ g.strokeStyle='#3b5660';g.beginPath();g.moveTo(0,y(0));g.lineTo(w,y(0));g.stroke();
+ const n=Math.round(+$('#scopeSpan').value/.05),b=SC.buf.slice(-n);
+ ['#ffb44d','#4cc0cf','#ff6b5e','#a98bff'].forEach((c,k)=>{g.strokeStyle=c;g.lineWidth=1.8;g.beginPath();b.forEach((s,i)=>{const x=w-(b.length-1-i)*w/(n-1);i?g.lineTo(x,y(s[k])):g.moveTo(x,y(s[k]));});g.stroke();});
+}
+
+/* ---------------- parameter table ---------------- */
+let PTAB='SIM',PSEL='ACC';
+function renderTabs(){$('#ptabs').innerHTML=[['all','All'],...G].map(([k,n])=>'<button data-g="'+k+'" aria-pressed="'+(PTAB===k)+'" title="'+(GAR[k]||'الكل')+'">'+n+'</button>').join('');}
+$('#ptabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;PTAB=b.dataset.g;renderTabs();renderParams();});
+$('#psearch').addEventListener('input',()=>renderParams());$('#pchanged').addEventListener('change',()=>renderParams());
+function rangeText(p){if(p.t==='ro')return '—';if(p.t==='e')return p.o.join(' / ');return pMin(p)+' – '+pMax(p)+(p.u?' '+p.u:'');}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function renderParams(){
+ const q=$('#psearch').value.trim().toLowerCase(),ch=$('#pchanged').checked;
+ const rows=PD.filter(p=>(PTAB==='all'||p.m.includes(PTAB))&&(!q||p.c.toLowerCase().includes(q)||p.nm.toLowerCase().includes(q)||p.ar.includes(q))&&(!ch||(p.t!=='ro'&&!p.act&&P[p.c]!==p.d)));
+ $('#ptable').innerHTML=rows.map(p=>{
+  let cell;
+  if(p.t==='ro')cell='<span class="ro" id="pv_'+p.c+'">'+esc(dispVal(p,p.get()))+'</span>';
+  else if(p.t==='e')cell='<select data-c="'+p.c+'" aria-label="'+p.c+'">'+p.o.map((o,i)=>'<option value="'+i+'"'+(i===P[p.c]?' selected':'')+'>'+o+(p.oa?' — '+p.oa[i]:'')+'</option>').join('')+'</select>';
+  else cell='<input type="number" data-c="'+p.c+'" aria-label="'+p.c+'" value="'+(+P[p.c]).toFixed(p.dc)+'" min="'+pMin(p)+'" max="'+pMax(p)+'" step="'+p.st+'">'+(p.u?' <span class="muted mono" style="font-size:.75rem">'+p.u+'</span>':'');
+  const chg=p.t!=='ro'&&!p.act&&P[p.c]!==p.d;
+  return '<tr data-row="'+p.c+'" class="'+(chg?'changed ':'')+(p.c===PSEL?'sel':'')+'"><td class="code">'+p.c+'</td><td class="en">'+p.nm+'</td><td>'+p.ar+(p.rl?'<span class="badge s">Stop</span>':'')+(p.l2?'<span class="badge s">ENT 2s</span>':'')+(p.t==='ro'?'<span class="badge r">قراءة</span>':'')+'</td><td class="val">'+cell+'</td><td class="en">'+(p.t==='ro'?'—':esc(dispVal(p,p.d)))+'</td><td class="en">'+rangeText(p)+'</td></tr>';}).join('')||'<tr><td colspan="6" class="muted">مفيش باراميترات بالشكل ده</td></tr>';
+ renderDetail();
+}
+$('#ptable').addEventListener('change',e=>{const el=e.target.closest('[data-c]');if(!el)return;const c=el.dataset.c,r=setParam(c,+el.value,'الجدول');
+ const t=$('#ptoast');if(r==='run'){t.style.color='var(--bad)';t.textContent='وقّف الموتور الأول عشان تغيّر '+c;renderParams();}else if(r==='ok'){t.style.color='var(--good)';t.textContent='اتحفظ '+c+' = '+dispVal(PM[c],P[c]);}else if(r==='bad'){t.style.color='var(--bad)';t.textContent='القيمة مش مقبولة';renderParams();}
+ setTimeout(()=>{t.textContent='';},2600);});
+$('#ptable').addEventListener('click',e=>{const tr=e.target.closest('tr[data-row]');if(!tr)return;PSEL=tr.dataset.row;$$('#ptable tr.sel').forEach(r=>r.classList.remove('sel'));tr.classList.add('sel');renderDetail();});
+function renderDetail(){
+ const p=PM[PSEL];if(!p){$('#pdetail').hidden=true;return;}$('#pdetail').hidden=false;
+ const paths=menuPaths(p.c);
+ $('#pdetail').innerHTML='<div class="h"><b>'+p.c+'</b><span class="mono" style="font-size:.85rem">'+p.nm+'</span><span>'+p.ar+'</span></div><div class="facts"><span>القيمة: <b>'+esc(dispVal(p,pval(p)))+(p.u?' '+p.u:'')+'</b></span>'+(p.t!=='ro'?'<span>المصنع: <b>'+esc(dispVal(p,p.d))+'</b></span><span>المدى: <b>'+rangeText(p)+'</b></span>':'')+'<span>مكانه على الشاشة: <b>'+(paths.join(' · ')||'—')+'</b></span>'+(p.rl?'<span><b>يتغير والموتور واقف بس</b></span>':'')+(p.l2?'<span><b>الحفظ بـ ENT ثانيتين</b></span>':'')+'</div><p>'+p.x+'</p>'+(p.oa?'<p class="muted" style="font-size:.85rem">الاختيارات: '+p.o.map((o,i)=>'<code>'+o+'</code> '+p.oa[i]).join(' · ')+'</p>':'');
+}
+function syncDetail(){if(H.scr==='list'||H.scr==='val'||H.scr==='edit'){const c=H.scr==='edit'?H.ed.c:curItem();if(c&&c[0]!=='@'&&PM[c]&&c!==PSEL){PSEL=c;const g=PM[c].m;if(PTAB!=='all'&&!g.includes(PTAB)){PTAB=g[0];renderTabs();renderParams();}else{$$('#ptable tr.sel').forEach(r=>r.classList.remove('sel'));const tr=$('#ptable tr[data-row="'+c+'"]');tr&&tr.classList.add('sel');renderDetail();}}}}
+function refreshRO(){for(const p of PD)if(p.t==='ro'){const e=$('#pv_'+p.c);if(e)e.textContent=dispVal(p,p.get());}
+ for(const p of PD)if(p.c==='AIU1'||p.c==='LFr'||p.c==='tUn'){const e=$('#ptable [data-c="'+p.c+'"]');if(e&&document.activeElement!==e){const v=p.t==='e'?String(P[p.c]):(+P[p.c]).toFixed(p.dc);if(e.value!==v)e.value=v;}}
+ if(PM[PSEL]&&(PM[PSEL].t==='ro'||PSEL==='AIU1'||PSEL==='LFr'))renderDetail();}
+
+/* ---------------- faults + reference ---------------- */
+function renderFaults(){$('#fltTable').innerHTML=Object.keys(FL).map(c=>'<tr class="'+(S.fault===c?'now':'')+'"><td>'+c+'</td><td class="en">'+FL[c][0]+'</td><td>'+FL[c][1]+'</td><td>'+FL[c][2]+(FL[c][4]?' <span class="badge">Atr</span>':'')+(FL[c][3]==='pwr'?' <span class="badge s">فصل كهربا</span>':'')+'</td></tr>').join('');}
+let lastFR=null;
+const tbl=(head,rows)=>'<div class="tablewrap"><table><thead><tr>'+head.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map((c,i)=>'<td'+(i===0?' class="code"':'')+'>'+c+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
+const REF={
+ hmi:['الشاشة والقوايم',()=>'<div class="cards">'+[
+  ['rEF- (REF)','المرجع: AIU1 (الـ Jog dial كبوتنشيوميتر)، LFr (مرجع الكيباد بالهرتز مع LCC)، FrH (المرجع الحالي). ENT وبعدين لف: القيمة بتتغير على طول.'],
+  ['MOn- (MON)','لما الموتور واقف بتظهر الحالة (rdY / nSt)، ولما يشتغل التردد. لف تشوف rFr و LCr و SPd و tHr و tHd و HMIS و LFt… و ENT يعرض القيمة ومرة كمان الوحدة.'],
+  ['COnF (CONF)','MYMn (قايمة مختصرة)، FCS- (حفظ واسترجاع ومصنع)، FULL (كل القوايم: SIM- و SEt- و drC- و I_O- و CtL- و FUn- و FLt- و COM-).'],
+  ['التعديل','ENT على الكود ← القيمة ترمش ← لف ← ENT يحفظ (القيمة تثبت لحظة) أو ESC يلغي. tCC و CFG و GFS محتاجين ENT ثانيتين.'],
+  ['الأعطال','الكود بيرمش في MOn. STOP/RESET أو طرف rSF يمسحوه بعد ما السبب يروح. OCF و SCF1/2/3 و InF محتاجين فصل الكهربا.'],
+  ['اللمبات','REF/MON/CONF = انت في أنهي مود. Value = اللي ظاهر رقم. Unit = اللي ظاهر وحدة. CHARGE = الـ DC bus لسه مشحون.']].map(([a,b])=>'<div class="card"><h4 class="mono">'+a+'</h4><p style="margin:0;font-size:.88rem">'+b+'</p></div>').join('')+'</div><h4>مثال: تغيير ACC لـ 5 ثواني</h4><ol><li>دوس <code>MODE</code> لحد ما لمبة CONF تنور والشاشة تكتب <code>MYMn</code>.</li><li>لف لحد <code>FULL</code> ودوس ENT، وبعدين لف لحد <code>SIM-</code> ودوس ENT.</li><li>لف لحد <code>ACC</code> ودوس ENT: القيمة <code>3.0</code> بترمش.</li><li>لف لحد <code>5.0</code> ودوس ENT: القيمة تثبت ثانية وترجع الكود.</li><li><code>ESC</code> كذا مرة للرجوع، أو <code>MODE</code> لـ MOn.</li></ol><h4>شجرة القوايم</h4>'+tbl(['القايمة','الباراميترات'],Object.keys(MENU).map(k=>[MENU[k].c,MENU[k].it.map(x=>x[0]==='@'?'<b>'+MENU[x.slice(1)].c+'</b>':x).join(' ')]))],
+ ctl:['أطراف الكنترول',()=>tbl(['الطرف','الوظيفة دلوقتي','ملاحظات'],[
+  ['R1A / R1B / R1C','R1 = '+RLO[P.r1],'ريليه C/O: R1A مفتوح و R1B مقفول مع R1C والريليه سايب. 250V AC 3A تقريباً'],
+  ['R2A / R2C','R2 = '+RLO[P.r2],'ريليه NO'],
+  ['STO','Safe Torque Off','لازم يتغذى +24 عشان الخرج يشتغل. من المصنع عليه جمبر من +24، هنا زرار طوارئ NC'],
+  ['P24','دخل 24V خارجي','يشغّل الكنترول والانفرتر مفصول (مش متوصل هنا)'],
+  ['LI1',liFn(1),P.tCC===0?'2C: تشغيل أمامي':'3C: Stop لازم يفضل مقفول'],['LI2',liFn(2),''],['LI3',liFn(3),''],['LI4',liFn(4),''],['LI5',liFn(5),'ينفع كمان دخل بلس'],['LI6',liFn(6),'ينفع كمان PTC بسويتش SW2'],
+  ['+24','خرج 24V DC','لتغذية الزراير (Source) حوالي 100mA'],['COM','0V مشترك','للأنالوج والديجيتال'],
+  ['10V','مرجع 10V','لتغذية البوتنشيوميتر 1–10kΩ'],['AI1','0–10V','UIL1 / UIH1'],['AI2','±10V','دخل ثنائي القطبية'],['AI3','0–20mA','CrL3 / CrH3 ، والفقد LFL3'],
+  ['AQ1','خرج أنالوج = '+AQO[P.AO1],'AO1t: 0-10V أو 0-20mA أو 4-20mA'],['LO+ / LO-','خرج ترانزستور = '+RLO[P.LO1],'Open collector حوالي 30V 100mA']])+'<p class="hint">سويتش SW1: Source (المصنع) أو Sink Int أو Sink Ext. في Source الزرار بيوصّل +24 للطرف LI.</p>'],
+ pwr:['أطراف الباور','<div class="tablewrap"><table><thead><tr><th>الطرف</th><th>الوظيفة</th></tr></thead><tbody>'+[['R/L1 S/L2 T/L3','دخل 3 فاز 380-500V من المفتاح والفيوزات'],['PE','الأرضي، لازم يتوصل قبل أي حاجة'],['PA/+ PB','مقاومة الفرملة (الترانزستور جوه الانفرتر)'],['PA/+ PC/-','الـ DC bus'],['U/T1 V/T2 W/T3','خرج الموتور']].map(r=>'<tr><td class="code">'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('')+'</tbody></table></div><ul><li>متدخلش الكهربا على U V W أبداً.</li><li>لو فيه كونتاكتور على الخرج خلي <code>OPL = OAC</code> ومتفتحوش والموتور شغال.</li><li>بعد فصل الكهربا استنى لمبة CHARGE تطفى (في الحقيقة 15 دقيقة على الأقل) وقيس الـ DC bus قبل ما تلمس حاجة.</li><li>الميجر يتعمل على الكابل والموتور بعد فصلهم من الانفرتر.</li></ul>'],
+ spd:['السرعات والمرجع',()=>tbl(['PS4','PS2','السرعة','القيمة'],[[0,0,'Fr1 = '+FR1[P.Fr1],'—'],[0,1,'SP2',P.SP2.toFixed(1)+' Hz'],[1,0,'SP3',P.SP3.toFixed(1)+' Hz'],[1,1,'SP4',P.SP4.toFixed(1)+' Hz']].map(r=>[r[0]?'●':'○',r[1]?'●':'○',r[2],r[3]]))+'<p class="hint">PS2 على '+LIO[P.PS2]+' و PS4 على '+LIO[P.PS4]+'. السلكتور في اللوحة: 1 = LI3، 2 = LI4، 3 = الاتنين. المرجع من الأنالوج بيتحسب من LSP لحد HSP، و ACC و dEC من 0 لحد FrS.</p>'],
+ brk:['الفرملة و brA','<ul><li>لما تهدّي حمل تقيل بسرعة الموتور بيشتغل مولّد والطاقة ترجع للـ DC bus.</li><li><code>brA = YES</code> (المصنع): لو الـ bus علي الانفرتر يطوّل رامب التباطؤ لوحده (HMIS = <code>Obr</code>). مفيش عطل بس الوقوف بياخد وقت أطول من dEC.</li><li><code>brA = nO</code> ومفيش مقاومة: الـ bus يعدّي حوالي 820V ويطلع <code>ObF</code>.</li><li>مع مقاومة على PA/+ و PB: خلي <code>brA = nO</code>، والترانزستور يشغّل المقاومة فوق حوالي 780V والوقوف يبقى على dEC بالظبط.</li><li><code>Stt = nSt</code> وقوف حر من غير طاقة راجعة، و <code>dCI</code> حقن DC (الطاقة بتسخن الموتور).</li></ul>'],
+ qs:['تشغيل لأول مرة','<ol><li>اقفل المفتاح الرئيسي واستنى <code>rdY</code> (أو <code>nSt</code> لو STO مفتوح).</li><li><code>COnF › FULL › SIM-</code>: <code>bFr</code> و <code>nPr</code> و <code>UnS</code> و <code>nCr</code> و <code>FrS</code> و <code>nSP</code> من لوحة الموتور.</li><li><code>tUn = YES</code> والموتور بارد وواقف، واستنى <code>dOnE</code>.</li><li><code>ItH</code> = تيار اللوحة، و <code>ACC</code> و <code>dEC</code> و <code>LSP</code> و <code>HSP</code>.</li><li>اختار التحكم: <code>tCC</code> (2C / 3C) و <code>Fr1</code>.</li><li>شغّل على سرعة واطية واتأكد من الاتجاه. لو عكس، بدّل سلكين من U V W والكهربا مفصولة.</li><li><code>FCS- › SCS = Str1</code> عشان تحفظ نسخة.</li></ol>']};
+let REFK='hmi';
+function renderRef(){$('#reftabs').innerHTML=Object.entries(REF).map(([k,v])=>'<button data-k="'+k+'" aria-pressed="'+(k===REFK)+'">'+v[0]+'</button>').join('');const b=REF[REFK][1];$('#refBody').innerHTML=typeof b==='function'?b():b;}
+$('#reftabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;REFK=b.dataset.k;renderRef();});
+
+/* ---------------- exercises ---------------- */
+const fAbs=()=>Math.abs(S.fOut);
+const EX=[
+ {t:'السرعة من الـ Jog dial',p:'التشغيل من LI1 والسرعة من الـ Jog dial نفسه (AIU1).',k:['aiu','tbStart','tbStop'],s:[
+  ['COnF › FULL › CtL- › Fr1 = AIU1',()=>P.Fr1===3],
+  ['اقفل سلكتور LI1 (تشغيل أمامي)',()=>S.st==='run'&&P.Fr1===3],
+  ['ادخل rEF- › AIU1، دوس ENT ولف لحد ما التردد يثبت على 30 Hz (±1)',()=>EV.aiu&&S.st==='run'&&S.src===3&&Math.abs(fAbs()-30)<1],
+  ['افتح LI1 واستنى الموتور يقف',()=>S.st==='off'&&!liC(1)&&P.Fr1===3]]},
+ {t:'بيانات لوحة الموتور و tUn',p:'الموتور 4kW 400V 50Hz 8.1A 1445 rpm. عدّل من SIM- على الشاشة أو من الجدول.',k:['tuned'],s:[
+  ['nCr = 8.1 و ItH = 8.1',()=>P.nCr===8.1&&P.ItH===8.1],
+  ['nSP = 1445',()=>P.nSP===1445],
+  ['tUn = YES والموتور واقف، واستنى dOnE',()=>EV.tuned&&P.tUn===2],
+  ['شغّل على 50 Hz بحمل 60% أو أكتر والتيار أقل من 8.1A',()=>S.st==='run'&&fAbs()>48.5&&S.lp>=60&&S.I<8.1&&S.mot==='iec']]},
+ {t:'تحكم 3 سلك (tCC)',p:'tCC بيتغير بـ ENT ثانيتين، وبيرجّع الأطراف للمصنع.',k:['tcc1','start3','stop3','tcc0'],s:[
+  ['tCC = 3C (امسك ENT ثانيتين)',()=>P.tCC===1],
+  ['شغّل بزرار START الأخضر (LI2)',()=>EV.start3&&S.st==='run'],
+  ['وقّف بزرار STOP (LI1)',()=>EV.stop3&&S.st==='off'],
+  ['رجّع tCC = 2C',()=>P.tCC===0&&EV.stop3]]},
+ {t:'عطل ObF و brA',p:'الطاقة اللي في الحمل التقيل بترجع للـ DC bus لما تهدّي بسرعة.',k:['fObF','clrObF','decelOk'],s:[
+  ['brA = nO، وقصور الحمل 15 أو أكتر، و dEC = 1.0 أو أقل',()=>P.brA===0&&S.jr>=15&&P.dEC<=1],
+  ['شغّل فوق 45 Hz ووقّف لحد ما يطلع ObF',()=>EV.fObF],
+  ['امسح العطل بـ STOP/RESET',()=>EV.clrObF],
+  ['brA = YES (أو ركّب المقاومة)، ووقّف تاني من فوق 45 Hz من غير عطل',()=>EV.decelOk]]},
+ {t:'السرعات الثابتة',k:[],s:[
+  ['SP3 = 35 Hz',()=>P.SP3===35],
+  ['لف سلكتور السرعات على 2 (LI4 = PS4 مقفول لوحده)',()=>S.code===2],
+  ['شغّل والموتور يثبت على 35 Hz',()=>S.st==='run'&&S.code===2&&Math.abs(fAbs()-35)<.8]]},
+ {t:'الريليهات والخرج الأنالوج',k:[],s:[
+  ['r2 = rUn',()=>P.r2===2],
+  ['شغّل واستنى لمبة H2 تنور',()=>P.r2===2&&S.rel.r2],
+  ['AO1 = OCr وشوف العداد بيتحرك مع التيار',()=>P.AO1===1&&aqOut().v>.5],
+  ['LO1 = SrA ولمبة H3 تنور لما يوصل للسرعة',()=>P.LO1===3&&S.rel.lo]]},
+ {t:'إشارة 4-20mA اتقطعت',k:['fLFF3','clrLFF3'],s:[
+  ['Fr1 = AI3 و CrL3 = 4 و LFL3 = YES',()=>P.Fr1===2&&P.CrL3===4&&P.LFL3===1],
+  ['شغّل والإشارة فوق 12mA',()=>S.st==='run'&&P.Fr1===2&&io.ma>12&&!S.inj.mabrk],
+  ['اقطع السلك من زرار الأعطال',()=>EV.fLFF3],
+  ['صلّح السلك وامسح العطل',()=>EV.clrLFF3&&!S.inj.mabrk&&!S.fault]]},
+ {t:'STO وزرار الطوارئ',p:'STO بيقطع العزم من غير عطل، والشاشة بتكتب nSt.',k:['stoOpen'],s:[
+  ['شغّل الموتور فوق 20 Hz',()=>S.st==='run'&&fAbs()>20],
+  ['دوس زرار الطوارئ وهو شغال',()=>EV.stoOpen&&io.est],
+  ['استنى الموتور يقف والشاشة تكتب nSt',()=>io.est&&stCode()==='nSt'&&Math.abs(S.wm)<3],
+  ['فك الزرار وشغّل تاني (مع trn لازم تفتح LI1 وتقفله)',()=>!io.est&&S.st==='run']]},
+ {t:'قصر على الخرج (SCF1)',k:['fSCF1','pwrNeeded','clrPwr'],s:[
+  ['شغّل واعمل قصر بين U و V',()=>EV.fSCF1],
+  ['جرّب تمسحه بـ STOP/RESET وشوف إنه مش بيتمسح',()=>EV.pwrNeeded],
+  ['شيل القصر، افصل المفتاح الرئيسي واستنى الشاشة تطفى، ورجّعه',()=>EV.clrPwr&&!S.inj.short&&S.ctrl&&!S.fault]]},
+ {t:'تحكم محلي من الكيباد (LCC)',k:['lfr','kpStart','kpStop'],s:[
+  ['Fr1 = LCC',()=>P.Fr1===4],
+  ['rEF- › LFr = 25.0 Hz',()=>P.LFr===25],
+  ['دوس RUN والموتور يثبت على 25 Hz',()=>EV.kpStart&&S.st==='run'&&Math.abs(fAbs()-25)<.6],
+  ['دوس STOP',()=>EV.kpStop&&S.st==='off']]},
+];
+function renderEx(){
+ $('#exList').innerHTML=EX.map((e,i)=>{const d=EXS[i]||[];const n=d.filter(Boolean).length;return '<details class="ex'+(n===e.s.length?' done':'')+'" data-i="'+i+'"><summary><span>'+(i+1)+'. '+e.t+'</span><span class="cnt">'+n+'/'+e.s.length+'</span></summary><div class="body">'+(e.p?'<p>'+e.p+'</p>':'')+'<ol>'+e.s.map((s,j)=>'<li class="'+(d[j]?'ok':'')+'">'+s[0]+'</li>').join('')+'</ol><button class="btn xs" data-reset="'+i+'" style="margin-top:8px">ابدأ التمرين من الأول</button></div></details>';}).join('');
+}
+$('#exList').addEventListener('click',e=>{const b=e.target.closest('[data-reset]');if(!b)return;const i=+b.dataset.reset;EXS[i]=[];(EX[i].k||[]).forEach(k=>delete EV[k]);save();renderEx();$('#exList details[data-i="'+i+'"]').open=true;});
+function checkEx(){
+ let ch=false;
+ EX.forEach((e,i)=>{const d=EXS[i]||(EXS[i]=[]);e.s.forEach((s,j)=>{if(!d[j]&&(j===0||d[j-1])){let ok=false;try{ok=!!s[1]();}catch(_){}if(ok){d[j]=true;ch=true;if(d.filter(Boolean).length===e.s.length)log('خلصت تمرين: '+e.t);}}});});
+ if(ch){const open=$$('#exList details[open]').map(d=>d.dataset.i);save();renderEx();open.forEach(i=>{const d=$('#exList details[data-i="'+i+'"]');if(d)d.open=true;});}
+}
+/* event hooks for exercises */
+const _start=startCmd;startCmd=function(from){_start(from);if(P.tCC===1&&String(from).startsWith('LI2')&&S.run)EV.start3=1;};
+const _stop=stopCmd;stopCmd=function(from){_stop(from);if(String(from).startsWith('LI1'))EV.stop3=1;};
+const _pd=powerDown;powerDown=function(){if(S.fault&&FL[S.fault][3]==='pwr')EV.clrPwr=1;_pd();};
+
+/* ---------------- solved applications ---------------- */
+const SD={
+ svg:(h,lbl,b)=>'<svg viewBox="0 0 360 '+h+'" role="img" aria-label="'+lbl+'">'+b+'</svg>',
+ box:(title,terms)=>'<rect class="sd-box" x="4" y="4" width="352" height="66" rx="6"/><text class="sd-h" x="14" y="23">ATV320</text><text class="sd-l sd-m" x="226" y="22" text-anchor="middle" direction="rtl">'+title+'</text>'+terms.map(([n,x])=>'<rect class="sd-t" x="'+(x-9)+'" y="52" width="18" height="14" rx="2"/><circle class="sd-dot" cx="'+x+'" cy="59" r="2.2"/><text class="sd-tl" x="'+x+'" y="45" text-anchor="middle">'+n+'</text>').join(''),
+ w:(c,d)=>'<path class="w '+c+'" d="'+d+'"/>',
+ dot:(x,y)=>'<circle class="sd-dot" cx="'+x+'" cy="'+y+'" r="2.8"/>',
+ t:(x,y,s,o)=>{o=o||{};return '<text class="sd-l'+(o.m?' sd-m':'')+'" x="'+x+'" y="'+y+'" text-anchor="'+(o.a||'middle')+'"'+(o.ar?' direction="rtl"':'')+'>'+s+'</text>';},
+ oc:(x,y)=>'<circle class="sd-o" cx="'+x+'" cy="'+y+'" r="2.4"/>',
+ act:(hx,hy,k)=>{if(k==='none')return '';const e=hx-16;
+  if(k==='es')return '<path class="sd-dash" d="M'+hx+' '+hy+'H'+e+'"/><path class="sd-es" d="M'+e+' '+(hy-7)+'a7 7 0 0 0 0 14Z"/>';
+  const h=k==='pb'?'M'+(e+3)+' '+(hy-6)+'H'+e+'V'+(hy+6)+'H'+(e+3):'M'+(e+4)+' '+(hy-6)+'H'+e+'V'+(hy+6)+'H'+(e-4);
+  return '<path class="sd-dash" d="M'+hx+' '+hy+'H'+e+'"/><path class="sd-sym" d="'+h+'"/>';},
+ no:(x,y,k)=>'<path class="sd-sym" d="M'+x+' '+(y+24)+'L'+(x-10)+' '+(y+3)+'"/>'+SD.oc(x,y)+SD.oc(x,y+26)+SD.act(x-5,y+14,k),
+ nc:(x,y,k)=>'<path class="sd-sym" d="M'+x+' '+(y+24)+'L'+(x+7)+' '+(y-2)+'M'+x+' '+y+'H'+(x+10)+'"/>'+SD.oc(x,y)+SD.oc(x,y+26)+SD.act(x+3,y+12,k),
+ pot:(x,y)=>'<rect class="sd-dev" x="'+(x-6)+'" y="'+y+'" width="12" height="44" rx="1"/><path class="sd-k" d="M'+(x+7)+' '+(y+22)+'l8-4.5v9z"/>',
+ lamp:(x,y)=>'<circle class="sd-dev" cx="'+x+'" cy="'+y+'" r="9"/><path class="sd-sym" d="M'+(x-6.4)+' '+(y-6.4)+'l12.8 12.8M'+(x+6.4)+' '+(y-6.4)+'l-12.8 12.8"/>',
+ meter:(x,y,u)=>'<circle class="sd-dev" cx="'+x+'" cy="'+y+'" r="11"/><text class="sd-tl" x="'+x+'" y="'+(y+4)+'" text-anchor="middle">'+u+'</text>',
+ motor:(x,y)=>'<circle class="sd-dev" cx="'+x+'" cy="'+y+'" r="20"/><text class="sd-h" x="'+x+'" y="'+(y+3)+'" text-anchor="middle">M</text><text class="sd-tl" x="'+x+'" y="'+(y+14)+'" text-anchor="middle">3~</text>',
+ gnd:(x,y)=>'<path class="sd-sym" d="M'+(x-9)+' '+y+'H'+(x+9)+'M'+(x-6)+' '+(y+4)+'H'+(x+6)+'M'+(x-3)+' '+(y+8)+'H'+(x+3)+'"/>'
+};
+const SOL=[
+ {t:'تشغيل محلي من الكيباد (RUN / STOP)',
+  g:'الموتور يشتغل ويقف من زراير RUN و STOP اللي على وش الانفرتر، والسرعة تتكتب بالهرتز من الشاشة. مناسب للتجربة أول مرة، وللصيانة، ولمكنة لوحدها من غير لوحة زراير.',
+  svg:()=>{const W=SD.w,t=SD.t;return SD.svg(215,'توصيل الباور والموتور وجمبر STO',
+   SD.box('الباور والموتور',[['R/L1',30],['S/L2',66],['T/L3',102],['PE',140],['U/T1',186],['V/T2',222],['W/T3',258],['+24',300],['STO',336]])+
+   W('p','M30 66V96M66 66V96M102 66V96M30 122V176M66 122V176M102 122V176')+W('pe','M140 66V150')+W('m','M186 66V158H202M222 66V138M258 66V158H242')+W('c24','M300 66V96H336V66')+
+   SD.no(30,96,'none')+SD.no(66,96,'none')+SD.no(102,96,'none')+'<path class="sd-dash" d="M25 110H97"/>'+t(48,152,'Q1')+
+   t(30,190,'L1')+t(66,190,'L2')+t(102,190,'L3')+t(66,206,'3~ 400V 50Hz',{m:1})+SD.gnd(140,150)+SD.motor(222,158)+t(222,200,'4 kW · 8.1 A',{m:1})+
+   t(318,112,'جمبر',{ar:1,m:1})+t(318,146,'الكيباد',{ar:1})+t(318,162,'RUN · STOP',{m:1}));},
+  p:[['Fr1','LCC','المرجع والأمر الاتنين من الكيباد (مع CHCF = SIM): RUN و STOP يشتغلوا، والسرعة من LFr'],
+     ['PSt','YES','زرار STOP يوقف في أي وقت'],
+     ['HSP',50,'أعلى سرعة، و LFr مايعدّيهاش'],
+     ['ACC',5,'من 0 لـ 50 Hz في 5 ثواني، طلوع ناعم من غير حد تيار'],
+     ['dEC',5,'من 50 لـ 0 في 5 ثواني'],
+     ['LFr',30,'السرعة المطلوبة بالهرتز، بتتغير على طول وهو شغال']],
+  s:['وصّل الكهربا L1 L2 L3 من المفتاح Q1 على <code>R/L1 S/L2 T/L3</code>، والموتور على <code>U/T1 V/T2 W/T3</code>، والأرضي على <code>PE</code> قبل أي حاجة.',
+     'سيب جمبر المصنع بين <code>+24</code> و <code>STO</code>. من غيره الشاشة تكتب <code>nSt</code> والموتور مش هيدور.',
+     '<code>MODE</code> لحد لمبة CONF ← <code>FULL › CtL- › Fr1</code> ← ENT ← لف لـ <code>LCC</code> ← ENT. وبعدين <code>SIM-</code>: <code>HSP</code> و <code>ACC</code> و <code>dEC</code>.',
+     '<code>MODE</code> لحد لمبة REF ← <code>rEF- › LFr</code> ← ENT ← لف لحد <code>30.0</code> ← ENT.',
+     'دوس <b>RUN</b>: الموتور يطلع لـ 30 Hz في 3 ثواني (5 × 30 ÷ 50)، والشاشة في MOn تعرض <code>rFr</code> حوالي 31 (المرجع 30 + تعويض الانزلاق SLP مع الحمل في UUC) ولمبة Value منورة.',
+     'دوس <b>STOP</b>: يقف على dEC والشاشة ترجع <code>rdY</code>.'],
+  io:{},go:'kp',see:'الموتور بيطلع لـ 30 Hz من RUN'},
+
+ {t:'تشغيل 2 سلك: سلكتور أمامي/عكس + بوتنشيوميتر',
+  g:'سلكتور تشغيل أمامي وسلكتور عكس على الباب، والسرعة من بوتنشيوميتر 10kΩ. أشهر توصيلة في السيور والخلاطات والمراوح.',
+  svg:()=>{const W=SD.w,t=SD.t;return SD.svg(218,'توصيل 2 سلك وبوتنشيوميتر',
+   SD.box('تحكم 2 سلك',[['10V',30],['AI1',70],['COM',110],['+24',180],['LI1',236],['LI2',296]])+
+   W('an','M30 66V96M70 66V118H45')+W('com','M30 140V184H110V66')+W('c24','M180 66V176H296M236 66V104M236 130V176M296 66V104M296 130V176')+
+   SD.pot(30,96)+SD.dot(236,176)+SD.no(236,104,'sel')+SD.no(296,104,'sel')+
+   t(70,202,'POT 10kΩ')+t(236,196,'S1 FWD')+t(296,196,'S2 REV')+t(236,211,'أمامي',{ar:1,m:1})+t(296,211,'عكس',{ar:1,m:1}));},
+  p:[['tCC','2C','تحكم 2 سلك: مفتاح ثابت، مقفول = شغال ومفتوح = وقف (الحفظ بـ ENT ثانيتين)'],
+     ['tCt','trn','بعد رجوع الكهربا أو مسح عطل لازم S1 يتفتح ويتقفل، عشان المكنة ماتقومش لوحدها'],
+     ['rrS','LI2','السلكتور S2 على LI2 = تشغيل عكسي'],
+     ['Fr1','AI1','السرعة من البوتنشيوميتر'],
+     ['UIL1',0,'0V على AI1 = LSP'],
+     ['UIH1',10,'10V على AI1 = HSP'],
+     ['HSP',50,'أعلى سرعة والبوت على الآخر'],
+     ['LSP',10,'أقل سرعة 10 Hz حتى لو البوت على الصفر، عشان تبريد الموتور'],
+     ['ACC',5,'زمن الطلوع'],['dEC',5,'زمن الوقوف']],
+  s:['البوتنشيوميتر: الطرف العلوي على <code>10V</code> والسفلي على <code>COM</code> والوسط (wiper) على <code>AI1</code>. استخدم كابل مشيلد، والشيلد يتربط في الأرضي من ناحية الانفرتر بس.',
+     '<code>+24</code> يروح للمشترك بتاع السلكتورين، و S1 يرجع على <code>LI1</code> و S2 على <code>LI2</code> (سويتش SW1 على Source).',
+     'من <code>COnF › FULL</code>: <code>tCC</code> و <code>tCt</code> و <code>rrS</code> و <code>UIL1</code> و <code>UIH1</code> في <code>I_O-</code>، و <code>Fr1</code> في <code>CtL-</code>، و <code>LSP</code> و <code>HSP</code> و <code>ACC</code> و <code>dEC</code> في <code>SIM-</code>. اعمل <code>tCC</code> الأول لأنه بيرجّع الأطراف للمصنع.',
+     'لف البوت على النص (5V) واقفل S1: الموتور يطلع لـ 10 + 0.5 × (50 − 10) = <b>30 Hz</b>.',
+     'افتح S1 واقفل S2: يهدّي ويرجع يلف عكسي على 30 Hz، و <code>rFr</code> بالسالب.',
+     'جرّب: افصل المفتاح الرئيسي و S1 مقفول ورجّعه. الموتور مش هيقوم لوحده (<code>trn</code>) لحد ما تفتح S1 وتقفله.'],
+  io:{pot:.5},go:'s1',see:'S1 مقفول والبوت 50% → 30 Hz'},
+
+ {t:'تشغيل 3 سلك: زراير START/STOP + عكس + طوارئ',
+  g:'زرار STOP أحمر NC وزرار START أخضر NO لحظيين زي دايرة الكونتاكتور بالظبط، وزرار REV للعكس، وزرار طوارئ على STO. الشائع في الطلمبات والكسارات والمكن اللي عليه عامل.',
+  svg:()=>{const W=SD.w,t=SD.t;let d='M142 66V176H318';[186,230,274,318].forEach(x=>d+='M'+x+' 66V104M'+x+' 130V176');
+   return SD.svg(220,'توصيل 3 سلك وزرار طوارئ',
+   SD.box('تحكم 3 سلك',[['10V',24],['AI1',58],['COM',92],['+24',142],['STO',186],['LI1',230],['LI2',274],['LI5',318]])+
+   W('an','M24 66V96M58 66V118H39')+W('com','M24 140V184H92V66')+W('c24',d)+
+   SD.pot(24,96)+SD.dot(186,176)+SD.dot(230,176)+SD.dot(274,176)+
+   SD.nc(186,104,'es')+SD.nc(230,104,'pb')+SD.no(274,104,'pb')+SD.no(318,104,'pb')+
+   t(58,202,'POT')+t(186,196,'E-STOP')+t(186,210,'NC',{m:1})+t(230,196,'STOP')+t(230,210,'NC',{m:1})+t(274,196,'START')+t(274,210,'NO',{m:1})+t(318,196,'REV')+t(318,210,'NO',{m:1}));},
+  p:[['tCC','3C','LI1 = Stop (NC) و LI2 = Start أمامي (NO). بيرجّع تخصيص الأطراف للمصنع، فاعمله الأول (ENT ثانيتين)'],
+     ['rrS','LI5','زرار Start عكسي على LI5'],
+     ['Fr1','AI1','السرعة من البوت'],
+     ['HSP',50,'أعلى سرعة'],['LSP',0,'أقل سرعة'],
+     ['Stt','rMP','STOP يوقف على رامب dEC'],
+     ['PSt','YES','STOP اللي على الكيباد يوقف كمان']],
+  s:['زرار STOP (NC) بين <code>+24</code> و <code>LI1</code>: لازم يفضل مقفول، فلو السلك اتقطع الموتور يقف لوحده (Fail-safe).',
+     'زرار START (NO) بين <code>+24</code> و <code>LI2</code>، وزرار REV (NO) بين <code>+24</code> و <code>LI5</code>.',
+     'زرار الطوارئ (NC) بين <code>+24</code> و <code>STO</code> مكان جمبر المصنع: لما يتداس العزم يتقطع على طول والشاشة تكتب <code>nSt</code> من غير عطل.',
+     '<code>COnF › FULL › I_O- › tCC = 3C</code> (امسك ENT ثانيتين)، وبعدين <code>rrS = LI5</code> من نفس القايمة.',
+     'البوت على 60% ودوس START وسيبه: الموتور يمسك ويطلع لـ 0.6 × 50 = <b>30 Hz</b>.',
+     'دوس REV وسيبه: يهدّي ويعكس لـ −30 Hz. دوس STOP: يقف على dEC.'],
+  io:{pot:.6},go:'start',see:'START اتداس → 30 Hz'},
+
+ {t:'سرعات ثابتة من سلكتور 4 أوضاع (PS2 / PS4)',
+  g:'مكنة بتشتغل على كام سرعة معروفة (تعبئة، غسيل، تنشيف…): السلكتور يختار السرعة من غير PLC ولا ما العامل يلعب في البوت.',
+  svg:()=>{const W=SD.w,t=SD.t;let d='M146 66V176H312';[200,256,312].forEach(x=>d+='M'+x+' 66V104M'+x+' 130V176');
+   return SD.svg(220,'توصيل السرعات الثابتة',
+   SD.box('سرعات ثابتة',[['10V',24],['AI1',58],['COM',92],['+24',146],['LI1',200],['LI3',256],['LI4',312]])+
+   W('an','M24 66V96M58 66V118H39')+W('com','M24 140V184H92V66')+W('c24',d)+
+   SD.pot(24,96)+SD.dot(200,176)+SD.dot(256,176)+SD.no(200,104,'sel')+SD.no(256,104,'sel')+SD.no(312,104,'none')+'<path class="sd-dash" d="M251 118H307"/>'+
+   t(58,202,'POT = SP1')+t(200,196,'S1 RUN')+t(200,210,'تشغيل',{ar:1,m:1})+t(284,196,'SA')+t(284,210,'سلكتور السرعات',{ar:1,m:1}));},
+  p:[['tCC','2C','S1 مفتاح تشغيل ثابت'],
+     ['Fr1','AI1','السلكتور على 0 = السرعة من البوت (SP1)'],
+     ['HSP',50,'أعلى سرعة للبوت'],
+     ['PS2','LI3','LI3 لوحده مقفول = SP2'],
+     ['PS4','LI4','LI4 لوحده = SP3، ومع LI3 = SP4'],
+     ['SP2',15,'سرعة 1 على السلكتور'],
+     ['SP3',30,'سرعة 2 على السلكتور'],
+     ['SP4',45,'سرعة 3 على السلكتور']],
+  s:['سلكتور السرعات SA ليه كونتاكتين: واحد بين <code>+24</code> و <code>LI3</code> والتاني بين <code>+24</code> و <code>LI4</code>. S1 (تشغيل) بين <code>+24</code> و <code>LI1</code>، والبوت زي التمرين 2.',
+     'من <code>COnF › FULL › FUn- › PSS-</code>: <code>PS2 = LI3</code> و <code>PS4 = LI4</code> وبعدين <code>SP2</code> و <code>SP3</code> و <code>SP4</code>.',
+     'الجدول: 0 = الاتنين مفتوحين ← البوت. 1 = LI3 ← SP2 = 15 Hz. 2 = LI4 ← SP3 = 30 Hz. 3 = الاتنين ← SP4 = 45 Hz.',
+     'السلكتور على 3 واقفل S1: الموتور يثبت على <b>45 Hz</b>، وفوق جنب "المرجع" مكتوب SP4.',
+     'لف السلكتور على 1 و 2 والموتور شغال: السرعة بتتغير على رامب ACC و dEC.'],
+  io:{pot:.3,sel:3},go:'s1',see:'السلكتور على 3 → SP4 = 45 Hz'},
+
+ {t:'السرعة من PLC أو ترانسميتر 4-20mA على AI3',
+  g:'خرج أنالوج من PLC (أو ترانسميتر) بيدّي السرعة بالتيار. الـ 4-20mA مش بيتأثر بطول الكابل، ولو السلك اتقطع الانفرتر يفصل بعطل بدل ما يجري على سرعة غلط.',
+  svg:()=>{const W=SD.w,t=SD.t;return SD.svg(208,'توصيل 4-20mA على AI3',
+   SD.box('مرجع بالتيار',[['AI3',60],['COM',110],['+24',200],['LI1',260]])+
+   W('an','M60 66V108')+W('com','M110 66V108')+W('c24','M200 66V176H260M260 66V104M260 130V176')+
+   '<rect class="sd-dev" x="34" y="108" width="102" height="46" rx="4"/>'+t(60,127,'+')+t(110,127,'−')+t(85,146,'4-20 mA')+
+   t(85,174,'PLC AO')+t(85,190,'أو ترانسميتر',{ar:1,m:1})+SD.no(260,104,'sel')+t(260,196,'S1 RUN'));},
+  p:[['tCC','2C','S1 مفتاح تشغيل ثابت'],
+     ['Fr1','AI3','السرعة من دخل التيار'],
+     ['CrL3',4,'4mA = LSP، وأقل من 2mA تقريباً يبقى السلك مقطوع'],
+     ['CrH3',20,'20mA = HSP'],
+     ['HSP',50,'أعلى سرعة عند 20mA'],['LSP',0,'السرعة عند 4mA'],
+     ['LFL3','YES','السلك يتقطع = عطل LFF3 والموتور يقف حر']],
+  s:['خرج الـ PLC: (+) على <code>AI3</code> و (−) على <code>COM</code> بكابل مشيلد. لو ترانسميتر 2 سلك: <code>+24</code> على (+) الترانسميتر، و (−) بتاعه على <code>AI3</code>.',
+     'S1 بين <code>+24</code> و <code>LI1</code> للتشغيل.',
+     '<code>Fr1 = AI3</code> من <code>CtL-</code>، و <code>CrL3</code> و <code>CrH3</code> من <code>I_O-</code>، و <code>LFL3</code> من <code>FLt-</code>.',
+     'الإشارة 12mA واقفل S1: (12 − 4) ÷ 16 × 50 = <b>25 Hz</b>.',
+     'من "اعمل عطل" دوس "سلك 4-20mA مقطوع": الشاشة تكتب <code>LFF3</code> بيرمش والموتور يقف حر. صلّح السلك، امسح بـ STOP/RESET، وافتح S1 وقفله.'],
+  io:{ma:12},go:'s1',see:'12mA → 25 Hz'},
+
+ {t:'لمبات عطل وتشغيل ووصل للسرعة + عداد سرعة على AQ1',
+  g:'لمبة حمرا للعطل ولمبة خضرا للتشغيل على الريليهات (220V)، ولمبة 24V لما الموتور يوصل للسرعة على LO1، وعداد على الباب بيقرا التردد من AQ1.',
+  svg:()=>{const W=SD.w,t=SD.t;return SD.svg(215,'توصيل الريليهات واللمبات والعداد',
+   SD.box('الريليهات والخروج',[['R1C',22],['R1B',58],['R2C',98],['R2A',134],['+24',178],['LO+',214],['LO-',250],['AQ1',294],['COM',334]])+
+   W('rl','M22 66V164M58 66V104M58 122V164M98 66V164M134 66V104M134 122V164')+W('c24','M178 66V150H205M214 66V141')+
+   W('com','M250 66V176H334M334 66V176M294 133V176')+W('an','M294 66V111')+
+   SD.lamp(58,113)+SD.lamp(134,113)+SD.lamp(214,150)+SD.meter(294,122,'V')+SD.dot(294,176)+
+   t(22,180,'L')+t(58,180,'N')+t(98,180,'L')+t(134,180,'N')+t(78,200,'220V AC',{m:1})+
+   t(80,117,'H1')+t(80,130,'FLt',{m:1})+t(156,117,'H2')+t(156,130,'rUn',{m:1})+t(214,176,'H3')+t(214,189,'SrA',{m:1})+
+   t(294,194,'0-10V')+t(294,208,'عداد',{ar:1,m:1}));},
+  p:[['r1','FLt','R1 ماسك طول ما مفيش عطل، فـ R1B–R1C يقفل وقت العطل أو لو الكهربا قطعت ← H1 تنور'],
+     ['r2','rUn','R2A–R2C يقفل والموتور شغال ← H2'],
+     ['LO1','SrA','LO+ يوصل لما التردد يوصل للمرجع ← H3'],
+     ['AO1','OFr','AQ1 = تردد الموتور: 0V عند 0 و 10V عند tFr (60 Hz مصنع)'],
+     ['AO1t','10U','خرج جهد 0-10V للعداد'],
+     ['Fr1','AI1','التشغيل والسرعة زي التمرين 2'],
+     ['HSP',50,'أعلى سرعة'],['LSP',0,'أقل سرعة']],
+  s:['H1: الفاز L على <code>R1C</code>، و <code>R1B</code> على اللمبة، والطرف التاني على N. H2: L على <code>R2C</code>، و <code>R2A</code> على اللمبة، وبعدين N. (كونتاكت الريليه حوالي 3A 250V، فاللمبة أو كويل الكونتاكتور بس.)',
+     'H3 لمبة 24V: <code>+24</code> على اللمبة والطرف التاني على <code>LO+</code>، و <code>LO-</code> على <code>COM</code>.',
+     'العداد 0-10V بين <code>AQ1</code> و <code>COM</code>، واكتب على التدريج 0 لـ 60 Hz.',
+     'والموتور واقف: <code>r1</code> و <code>r2</code> و <code>LO1</code> و <code>AO1</code> و <code>AO1t</code> من <code>COnF › FULL › I_O-</code>.',
+     'البوت على 80% واقفل S1 على LI1: H2 تنور على طول، و H3 تنور لما يثبت على 40 Hz، والعداد يقف على حوالي 40 ÷ 60 × 10 = <b>6.7V</b> (بيقرا rFr، فبيزيد شوية مع تعويض الانزلاق).',
+     'اعمل عطل (مثلاً "فاز W للموتور مفصول"): H1 الحمرا تنور و H2 تطفى.'],
+  io:{pot:.8},go:'s1',see:'40 Hz، H2 و H3 منورين، والعداد حوالي 6.7V'}
+];
+function solPath(c){const ps=menuPaths(c);return ps.find(p=>p.includes('FULL'))||ps[0]||'';}
+function solVal(c,v){const p=PM[c];return p.t==='e'?String(v):(+v).toFixed(p.dc)+(p.u?' <small>'+p.u+'</small>':'');}
+function renderSol(){
+ $('#solList').innerHTML=SOL.map((a,i)=>{
+  const rows=a.p.map(([c,v,why])=>{const p=PM[c];
+   return '<tr><td><span class="sol-c">'+c+'</span><span class="sol-n">'+p.nm+'</span><span class="sol-path">'+esc(solPath(c))+'</span></td><td class="sol-v">'+solVal(c,v)+(p.l2?'<span class="badge s">ENT 2s</span>':p.rl?'<span class="badge s">Stop</span>':'')+'</td><td>'+why+'</td></tr>';}).join('');
+  return '<article class="sol" id="sol'+(i+1)+'"><div class="sol-h"><h3>'+(i+1)+'. '+a.t+'</h3><button class="tagc sol-go" data-sol="'+i+'">طبّق في المعمل</button></div><p class="sol-goal">'+a.g+'</p>'+
+   '<div class="sol-grid"><figure class="sol-svg">'+a.svg()+'</figure><div class="tablewrap"><table class="sol-tb"><thead><tr><th>الباراميتر ومكانه</th><th>القيمة</th><th>ليه</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>'+
+   '<ol class="sol-steps">'+a.s.map(x=>'<li>'+x+'</li>').join('')+'</ol><p class="sol-st" id="solSt'+i+'" aria-live="polite"></p></article>';}).join('');
+}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function waitFor(fn,ms){const t0=performance.now();while(performance.now()-t0<ms){if(fn())return true;await sleep(60);}return !!fn();}
+let solBusy=false;
+async function applySol(i){
+ const a=SOL[i],st=$('#solSt'+i);
+ const say=(t,bad)=>{st.textContent=t;st.style.color=bad?'var(--bad)':'var(--good)';const g=$('#gSolSt');if(g){g.textContent=t;g.style.color=bad?'var(--bad)':'var(--good)';}};
+ if(solBusy){say('فيه تمرين تاني بيتطبّق دلوقتي، استنى ثانية.',1);return;}
+ solBusy=true;
+ try{
+  log('تمرين محلول '+(i+1)+': '+a.t+' ← بنطبّق التوصيل والباراميترات');
+  const injOn=Object.keys(S.inj).filter(k=>S.inj[k]);
+  if(injOn.length){injOn.forEach(k=>S.inj[k]=false);S.dipT=0;S.shockT=0;syncInj();updMa();log('اتشالت الأعطال المعمولة: '+injOn.map(k=>INJT[k]).join('، '));}
+  if(io.est){io.est=false;log('زرار الطوارئ اتفك: STO مقفول');}
+  if(!S.brk){S.brk=true;log('المفتاح الرئيسي اتقفل (ON)');}
+  updStation();say('بنجهّز…');
+  if(!await waitFor(ctlOk,6000)){say('الانفرتر لسه مش جاهز. جرّب تاني بعد ثانيتين.',1);return;}
+  if(S.run||S.st!=='off'){
+   say('الموتور شغال: بنوقفه الأول عشان الباراميترات اللي عليها Stop…');
+   log('الموتور شغال: بنوقفه الأول (فيه باراميترات مابتتغيرش غير والموتور واقف)');
+   Object.assign(io,{s1:false,s2:false,p2:false,p5:false,s6:false,sel:0});
+   if(P.tCC===1)io.p1=true;
+   if(cmdLocal())stopCmd('تمرين محلول');else S.run=false;
+   updStation();
+   const ok=await waitFor(()=>S.st==='off',25000);
+   io.p1=false;updStation();
+   if(!ok){say('الموتور ماوقفش. وقّفه بنفسك وجرّب تاني.',1);return;}
+  }
+  if(S.fault&&FL[S.fault][3]==='pwr'){
+   log('العطل '+S.fault+' محتاج فصل كهربا: بنفصل المفتاح الرئيسي ونرجّعه');say('بنفصل الكهربا عشان العطل '+S.fault+'…');
+   S.brk=false;updStation();await waitFor(()=>!S.ctrl,15000);S.brk=true;updStation();
+   if(!await waitFor(ctlOk,6000)){say('الانفرتر لسه مش جاهز. جرّب تاني.',1);return;}
+  }
+  if(S.fault)resetFault('تمرين محلول');
+  if(S.fault){say('فيه عطل '+S.fault+' مش بيتمسح: '+FL[S.fault][2],1);return;}
+  Object.assign(io,{s1:false,s2:false,p1:false,p2:false,p5:false,s6:false,sel:0});updStation();
+  const src='تمرين محلول '+(i+1),bad=[];
+  const put=(c,v,quiet)=>{const p=PM[c];const n=p.t==='e'?(typeof v==='number'?v:p.o.indexOf(v)):+v;const r=setParam(c,n,src,quiet);if(r==='run'||r==='bad'||r==='ro')bad.push(c);return r;};
+  const has=c=>a.p.some(r=>r[0]===c),tr=a.p.find(r=>r[0]==='tCC');
+  put('tCC',tr?tr[1]:'2C',!tr);
+  const base=Object.assign(ioDefaults(0,P.tCC),{CHCF:0,UIL1:0,UIH1:10});
+  ['CHCF','rrS','PS2','PS4','JOG','nSt','rPS','rSF','EtF','UIL1','UIH1'].forEach(c=>{if(!has(c))put(c,base[c],true);});
+  a.p.forEach(([c,v])=>{if(c!=='tCC')put(c,v);});
+  if(bad.length){say('مقدرناش نكتب: '+bad.join('، ')+'. وقّف الموتور وجرّب تاني.',1);return;}
+  if(a.io.pot!=null){io.pot=a.io.pot;updPot();}
+  if(a.io.ma!=null){io.ma=a.io.ma;updMa();}
+  if(a.io.v!=null){io.v=a.io.v;updV();}
+  if(a.io.sel!=null)io.sel=a.io.sel;
+  Object.assign(H,{mode:'mon',stack:[{id:'mon',i:0}],scr:'home',ed:null,hold:null,live:false,unit:false});
+  updStation();updLabels();renderParams();buildWD();
+  log('تمرين محلول '+(i+1)+' اتكتب: '+a.p.map(([c,v])=>c+' = '+v).join('، '));
+  if(GUI.guided){say('اتكتبت ✓ الباراميترات واللوحة جاهزين. دوس «التالي» وشغّل بنفسك.');guideRefresh();return;}
+  await sleep(350);
+  if(a.go==='s1'){io.s1=true;log('السلكتور S1 على LI1 اتقفل');}
+  else if(a.go==='kp'){runKey();}
+  else if(a.go==='start'){io.p2=true;updStation();log('زرار START على LI2 اتداس');await sleep(350);io.p2=false;}
+  updStation();
+  say('اتطبّق ✓ '+a.see+'. بص على الانفرتر والموتور فوق.');
+  const dv=$('.drv');if(dv)dv.scrollIntoView({behavior:'smooth',block:'center'});
+ }finally{solBusy=false;}
+}
+$('#solList').addEventListener('click',e=>{const b=e.target.closest('[data-sol]');if(b)applySol(+b.dataset.sol);});
+
+/* ---------------- guided simple mode ---------------- */
+const GKEY=SKEY+'-ui';
+const GUI={guided:true,ex:-1,step:0,done:{},adv:false,hand:'',snap:null,pw:false};
+function guiSave(){try{localStorage.setItem(GKEY,JSON.stringify({mode:GUI.guided?'guided':'full',ex:GUI.ex,step:GUI.step,done:GUI.done,hand:GUI.hand||''}));}catch(_){}}
+function guiLoad(){try{const o=JSON.parse(localStorage.getItem(GKEY)||'null');if(!o)return;GUI.guided=o.mode!=='full';GUI.ex=Number.isInteger(o.ex)&&SOL[o.ex]?o.ex:-1;GUI.step=[0,1,2,3].includes(o.step)?o.step:0;GUI.done=o.done&&typeof o.done==='object'?o.done:{};GUI.hand=['hand','auto'].includes(o.hand)?o.hand:'';}catch(_){}}
+const GICO={
+ kp:'<svg viewBox="0 0 92 44" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="80" height="36" rx="5"/><rect x="18" y="9" width="40" height="14" rx="2" fill="#160807" stroke="none"/><text x="38" y="20" font-size="10" font-family="monospace" fill="#ff2a1a" stroke="none" text-anchor="middle">30.0</text><circle cx="72" cy="16" r="6"/><rect x="18" y="28" width="22" height="8" rx="2" fill="#2a9145" stroke="none"/><rect x="46" y="28" width="22" height="8" rx="2" fill="#cf2e27" stroke="none"/></svg>',
+ sel:'<svg viewBox="0 0 92 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="16" cy="22" r="11"/><path d="M16 22l6-8"/><circle cx="44" cy="22" r="11"/><path d="M44 22l-6-8"/><rect x="66" y="8" width="10" height="28" rx="1"/><path d="M80 22l6-3v6z" fill="currentColor"/></svg>',
+ pb:'<svg viewBox="0 0 92 44" fill="none" stroke="currentColor" stroke-width="2"><circle cx="16" cy="22" r="12"/><circle cx="16" cy="22" r="6" fill="#26a356" stroke="none"/><circle cx="44" cy="22" r="12"/><circle cx="44" cy="22" r="6" fill="#2a2f33" stroke="none"/><circle cx="74" cy="22" r="12"/><circle cx="74" cy="22" r="9" fill="#d62a33" stroke="none"/></svg>',
+ pos:'<svg viewBox="0 0 92 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="30" cy="24" r="14"/><path d="M30 24l9-10"/><path d="M14 8l4 3M30 4v5M46 8l-4 3M54 18l-5 2"/><path d="M62 34h26M62 26h20M62 18h14M62 10h8" stroke-width="3"/></svg>',
+ plc:'<svg viewBox="0 0 92 44" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="8" width="34" height="28" rx="3"/><path d="M10 20h22M10 27h14"/><path d="M38 22h12"/><text x="68" y="19" font-size="9" font-family="monospace" fill="currentColor" stroke="none" text-anchor="middle">4-20</text><text x="68" y="31" font-size="9" font-family="monospace" fill="currentColor" stroke="none" text-anchor="middle">mA</text></svg>',
+ lamp:'<svg viewBox="0 0 92 44" fill="none" stroke="currentColor" stroke-width="2"><circle cx="14" cy="22" r="9" fill="#d62a33" stroke="none"/><circle cx="38" cy="22" r="9" fill="#26a356" stroke="none"/><circle cx="62" cy="22" r="9" fill="#ffc21a" stroke="none"/><path d="M74 34a10 10 0 0 1 16-12" /><path d="M78 32l6-8" stroke-width="2.5"/></svg>'};
+const GD=[
+ {goal:'شغّل الموتور من زراير RUN و STOP اللي على الانفرتر، والسرعة 30 Hz من الشاشة.',ico:'kp',do:'دوس زرار <b>RUN</b> الأخضر اللي على الانفرتر: الموتور يطلع لـ 30 Hz (LFr) في حوالي 3 ثواني. <b>STOP</b> يوقفه.',ok:()=>S.st==='run'&&cmdLocal()&&Math.abs(S.fOut)>25,flt:{inj:'hiline',t:'ارفع «جهد المصدر عالي +40%» والموتور شغال: الانفرتر يفصل OSF على طول. رجّع الجهد (نفس الزرار) وامسح بـ STOP/RESET.'}},
+ {goal:'سلكتور أمامي وسلكتور عكس على LI1 و LI2، والسرعة من البوتنشيوميتر.',ico:'sel',do:'في لوحة التشغيل: لف سلكتور <b>تشغيل أمامي</b> (LI1) عشان يقفل. البوت جاهز على 50% فالموتور يثبت على 30 Hz. جرّب تفتحه وتقفل سلكتور <b>عكس</b>.',ok:()=>S.st==='run'&&io.s1&&P.Fr1===0&&Math.abs(S.fOut)>25,flt:{inj:'gnd',t:'اعمل «قصر للأرضي على الكابل» والموتور شغال: يطلع SCF3. العطل ده مايتمسحش من STOP: شيل القصر (نفس الزرار)، افصل المفتاح الرئيسي لحد ما الشاشة تطفي، ورجّعه.'}},
+ {goal:'زرار START لحظي وزرار STOP NC على الأطراف (3 سلك) وزرار طوارئ على STO.',ico:'pb',do:'دوس زرار <b>START</b> الأخضر (LI2) في لوحة التشغيل دوسة واحدة وسيبه: الانفرتر يمسك لوحده ويطلع لـ 30 Hz. زرار <b>STOP</b> الأحمر (LI1) يوقفه.',ok:()=>S.st==='run'&&P.tCC===1&&Math.abs(S.fOut)>25,flt:{inj:'ctr',t:'افتح «كونتاكتور الخرج» والموتور شغال: الموتور يقف ويطلع OPF2. اقفله تاني (نفس الزرار)، امسح بـ STOP/RESET، ودوس START من جديد.'}},
+ {goal:'4 سرعات جاهزة من سلكتور على LI3 و LI4.',ico:'pos',do:'سلكتور السرعات جاهز على <b>3</b>. اقفل سلكتور <b>تشغيل أمامي</b> (LI1): الموتور يثبت على SP4 = 45 Hz. جرّب تلف السلكتور على 1 و 2 وهو شغال.',ok:()=>S.st==='run'&&S.code===3&&Math.abs(S.fOut)>40,flt:{inj:'phl',t:'اعمل «فاز ناقص في الدخل» والموتور شغال على 45 Hz: بعد حوالي ثانية يفصل PHF. رجّع الفاز، امسح بـ STOP/RESET، وافتح LI1 واقفله تاني.'}},
+ {goal:'طلمبة بتاخد سرعتها 4-20mA من PLC على AI3، ولو السلك اتقطع تفصل بعطل.',ico:'plc',do:'الإشارة جاهزة على 12mA. اقفل سلكتور <b>تشغيل أمامي</b> (LI1): الموتور يطلع لـ 25 Hz. لف مقبض 4-20mA وشوف السرعة بتتغير.',ok:()=>S.st==='run'&&P.Fr1===2&&!S.inj.mabrk&&Math.abs(S.fOut)>20,flt:{inj:'mabrk',t:'اقطع «سلك 4-20mA» والموتور شغال: يطلع LFF3 والموتور يقف حر. صلّح السلك (نفس الزرار)، امسح بـ STOP/RESET، وافتح LI1 واقفله تاني.'}},
+ {goal:'لمبة حمرا للعطل ولمبة خضرا للتشغيل على الريليهات، ولمبة وصول للسرعة على LO1، وعداد على AQ1.',ico:'lamp',do:'البوت جاهز على 80%. اقفل سلكتور <b>تشغيل أمامي</b> (LI1): H2 الخضرا تنور على طول، و H3 الصفرا لما يثبت على 40 Hz، والعداد يقرا حوالي 6.7V.',ok:()=>S.st==='run'&&S.rel.r2&&Math.abs(S.fOut)>35,flt:{inj:'opn',t:'افصل «فاز W للموتور» والموتور شغال: يطلع OPF1، H1 الحمرا تنور و H2 تطفي. رجّع الفاز (نفس الزرار) وامسح بـ STOP/RESET.'}}];
+const GSTEPS=['التوصيل','الباراميترات','التشغيل','جرّب عطل'];
+const gNum=(c,v)=>{const p=PM[c];return p.t==='e'?(typeof v==='number'?v:p.o.indexOf(v)):+v;};
+const gParamsOk=i=>SOL[i].p.every(([c,v])=>P[c]===gNum(c,v));
+const GPRX=/COnF|<code>MODE<\/code>|CtL-|I_O-|FLt-|FUn-|SIM-/;
+function gSplitSteps(a){const k=a.s.findIndex(x=>GPRX.test(x));if(k<0)return {wire:a.s.slice(),run:[]};return {wire:a.s.slice(0,k),run:a.s.slice(k+1).filter(x=>!GPRX.test(x))};}
+function setGMode(g){GUI.guided=!!g;document.body.classList.toggle('guided',GUI.guided);$('#guide').hidden=!GUI.guided;$('#advBar').hidden=!GUI.guided;
+ const b=$('#modeBtn');b.textContent=GUI.guided?'الوضع الكامل':'الوضع المبسّط';b.setAttribute('aria-pressed',!GUI.guided);
+ if(GUI.guided)guideRender();else{gFaceHome();document.body.removeAttribute('data-g');}guiSave();}
+function gCards(){
+ $('#gCards').innerHTML=SOL.map((a,i)=>'<button type="button" class="g-card'+(GUI.done[i]?' done':'')+'" data-ex="'+i+'"><span class="n">'+(GUI.done[i]?'✓':i+1)+'</span><span class="t">'+a.t+'</span><span class="g">'+GD[i].goal+'</span><span class="ico">'+GICO[GD[i].ico]+'<span>'+a.p.length+' باراميتر · 4 خطوات</span></span></button>').join('');
+}
+function guideRender(){
+ if(!GUI.guided)return;
+ const run=GUI.ex>=0;$('#gStart').hidden=run;$('#gRun').hidden=!run;
+ if(!run){document.body.setAttribute('data-g','start');gCards();return;}
+ const i=GUI.ex,a=SOL[i],g=GD[i],st=GUI.step;document.body.setAttribute('data-g','abcd'[st]);
+ $('#gProg').innerHTML=GSTEPS.map((_,k)=>'<span class="'+(k<st?'ok':k===st?'on':'')+'"></span>').join('')+'<b>'+(st+1)+'/4</b>';
+ $('#gTitle').textContent=(i+1)+'. '+a.t;
+ const sp=gSplitSteps(a);let h='<div class="g-steps">'+GSTEPS.map((n,k)=>'<span class="'+(k===st?'on':'')+'">'+(k+1)+' '+n+'</span>').join('')+'</div>';
+ if(st===0){
+  h+='<p class="g-lead">'+a.g+'</p><figure class="sol-svg g-fig">'+a.svg()+$('#solved .wlegend').outerHTML+'</figure><div class="g-terms" id="gTerms"></div><ol class="g-list">'+sp.wire.map(x=>'<li>'+x+'</li>').join('')+'</ol>';
+ }else if(st===1){
+  const hand=GUI.hand==='hand',auto=GUI.hand==='auto';
+  if(hand&&!GUI.snap){GUI.snap={};a.p.forEach(([c])=>GUI.snap[c]=P[c]);}
+  const tbl='<div class="tablewrap"><table class="sol-tb g-tbl"><thead><tr><th>الباراميتر ومكانه</th><th>القيمة</th><th>ليه</th></tr></thead><tbody>'+a.p.map(([c,v,why])=>{const p=PM[c];return '<tr data-pc="'+c+'"><td><span class="sol-c">'+c+'</span><span class="sol-n">'+p.nm+'</span><span class="sol-path">'+esc(solPath(c))+'</span></td><td class="sol-v">'+solVal(c,v)+' <span class="okc" data-ok="'+c+'"></span>'+(p.l2?'<span class="badge s">ENT 2s</span>':p.rl?'<span class="badge s">Stop</span>':'')+(hand?'<span class="cur" data-cur="'+c+'"></span>':'')+'</td><td>'+why+'</td></tr>';}).join('')+'</tbody></table></div>';
+  h+='<p class="g-lead">دي الباراميترات اللي التمرين محتاجها. الأحسن تدخلها بإيدك من الكيباد عشان إيدك تتعود على الجهاز، أو خلّي الانفرتر يكتبها لوحده.</p>'+
+   '<div class="g-choice" role="group" aria-label="طريقة ضبط الباراميترات"><button type="button" class="btn big" id="gHand" aria-pressed="'+hand+'">ادخلها بإيدك من الكيباد<span class="rec">الأحسن</span><span class="tagc">تحكم</span></button><button type="button" class="btn big" id="gAuto" aria-pressed="'+auto+'">اضبطها أوتوماتيك<span class="tagc">تحكم</span></button></div>';
+  if(hand){
+   h+=gHandHint(a)+'<div class="g-hand"><div class="g-face" id="gFace"></div><div class="g-hand-r"><p class="g-cnt" id="gCnt" aria-live="polite"></p><div id="gRl" class="g-warn" hidden>وقّف الموتور الأول: فيه باراميترات عليها Stop مابتتغيرش والموتور شغال.</div>'+tbl+
+    '<div class="row"><button type="button" class="btn" id="gAutoRest" style="min-height:44px">اضبط الباقي أوتوماتيك<span class="tagc">تحكم</span></button><span class="g-note">لو زهقت أو اتلخبطت، الانفرتر يكمّل الباقي.</span></div><p class="g-st" id="gSolSt" aria-live="polite"></p></div></div>';
+  }else{
+   h+=tbl;
+   if(auto)h+='<div class="row"><div class="g-check" id="gChkP"><i>✓</i><span>كل الباراميترات مكتوبة في الانفرتر<span class="sub">الزرار بيوقف الانفرتر الأول لو شغال، ويظبط اللوحة (البوت، الإشارة، السلكتور) زي التمرين. دوسه تاني لو عايز تعيد.</span></span></div></div><p class="g-st" id="gSolSt" aria-live="polite"></p>';
+   else h+='<p class="g-note">اختار طريقة من فوق عشان تكمّل.</p>';
+  }
+ }else if(st===2){
+  h+='<p class="g-lead">'+g.do+'</p><div id="gWarnP" class="g-warn" hidden>الباراميترات لسه متكتبتش. ارجع لخطوة 2 ودوس «اضبط الباراميترات دي».</div>'+
+   '<div class="g-check" id="gChkR"><i>✓</i><span>الموتور شغال زي ما التمرين عايز<span class="sub">'+a.see+'</span></span></div>'+
+   '<div class="g-live"><span>الحالة <b id="gSt">—</b></span><span>تردد الخرج <b id="gHz">0.0 Hz</b></span><span>التيار <b id="gA">0.00 A</b></span><span>الأمر / المرجع <b id="gSrc">—</b></span></div>'+
+   '<p class="g-note"><span class="tagc">تحكم</span> الانفرتر ولوحة التشغيل تحت <span class="tagv">بيان</span> الشاشة واللمبات والموتور</p>'+
+   (sp.run.length?'<details><summary style="cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center">باقي خطوات التمرين</summary><ol class="g-list" style="margin-top:8px">'+sp.run.map(x=>'<li>'+x+'</li>').join('')+'</ol></details>':'');
+ }else{
+  h+='<p class="g-lead">خطوة اختيارية: '+g.flt.t+'</p><div class="row"><button type="button" class="btn big" id="gFault">جرّب العطل</button></div>'+
+   '<div class="g-check" id="gChkF1"><i>✓</i><span>العطل ظهر على الشاشة ولمبة H1 نوّرت<span class="sub" id="gFcode"></span></span></div>'+
+   '<div class="g-check" id="gChkF2"><i>✓</i><span>رجّعت اللي عملته، ومسحت العطل (<b>STOP/RESET</b> على الانفرتر، أو فصل المفتاح الرئيسي للأعطال اللي محتاجة كده)</span></div>'+
+   '<p class="g-note">لوحة «الحمل والكهربا والأعطال» تحت فيها أعطال تانية تجرّبها. لما تخلص دوس «خلصت التمرين».</p>';
+ }
+ gFaceHome();$('#gBody').innerHTML=h;
+ if(st===0)gHighlight();else if(st===1&&GUI.hand==='hand')gFaceShow();
+ $('#gPrev').disabled=st===0;$('#gNext').disabled=false;$('#gNext').textContent=st===3?'خلصت التمرين ✓':'التالي';
+ GUI.fseen=false;
+ guideTick(true);window.scrollTo({top:0,behavior:'smooth'});
+}
+function gHighlight(){
+ const svg=$('#gBody .g-fig svg');if(!svg)return;const names=[];
+ $$('#gBody .g-fig rect.sd-t').forEach(r=>{const x=+r.getAttribute('x'),y=+r.getAttribute('y'),hl=document.createElementNS('http://www.w3.org/2000/svg','rect');
+  hl.setAttribute('x',x-4);hl.setAttribute('y',y-18);hl.setAttribute('width',26);hl.setAttribute('height',36);hl.setAttribute('rx',4);hl.setAttribute('class','hlr');svg.insertBefore(hl,r);
+  let t=r.nextElementSibling;while(t&&!t.classList.contains('sd-tl'))t=t.nextElementSibling;if(t)names.push(t.textContent);});
+ $('#gTerms').innerHTML=names.length?'<span>الأطراف اللي هتستخدمها:</span>'+names.map(n=>'<span class="tc">'+n+'</span>').join(''):'';
+}
+let gLast='';
+function guideTick(force){
+ if(!GUI.guided||GUI.ex<0)return;
+ const i=GUI.ex,st=GUI.step,g=GD[i];
+ if(st===1){
+  const rows=SOL[i].p;let n=0;
+  rows.forEach(([c,v])=>{const ok=P[c]===gNum(c,v);if(ok)n++;const e=$('[data-ok="'+c+'"]');if(e){const s=ok?'✓':'';if(e.textContent!==s)e.textContent=s;}
+   const tr=$('#gBody tr[data-pc="'+c+'"]');if(tr)tr.classList.toggle('ok',ok);
+   const cu=$('[data-cur="'+c+'"]');if(cu){const t=ok?'':'دلوقتي '+dispVal(PM[c],P[c]);if(cu.textContent!==t)cu.textContent=t;cu.classList.toggle('bad',!ok&&!!GUI.snap&&GUI.snap[c]!==P[c]);}});
+  const all=n===rows.length,chk=$('#gChkP');if(chk)chk.classList.toggle('ok',all);
+  const cnt=$('#gCnt');if(cnt){const t=all?'كله مضبوط، التالي ←':'<b>'+n+'</b> من <b>'+rows.length+'</b> مضبوطين';if(cnt.innerHTML!==t)cnt.innerHTML=t;cnt.classList.toggle('ok',all);}
+  const rl=$('#gRl');if(rl){const need=S.st!=='off'&&rows.some(([c,v])=>PM[c].rl&&P[c]!==gNum(c,v));if(rl.hidden!==!need)rl.hidden=!need;}
+  if(GUI.hand==='hand'){const nb=$('#gNext');if(nb.disabled!==!all)nb.disabled=!all;}
+ }
+ else if(st===2){
+  let ok=false;try{ok=!!g.ok();}catch(_){}
+  $('#gChkR').classList.toggle('ok',ok);$('#gWarnP').hidden=gParamsOk(i)||S.st!=='off';
+  const sc=S.ctrl?(stCode()||'…'):'OFF',ref=S.code?['','SP2','SP3','SP4'][S.code]:FR1[P.Fr1];
+  const k=sc+'|'+S.fOut.toFixed(1)+'|'+S.I.toFixed(2)+'|'+cmdName()+ref;
+  if(force||k!==gLast){gLast=k;$('#gSt').textContent=sc+(STNAME[sc]?' '+STNAME[sc]:'');$('#gHz').textContent=Math.abs(S.fOut).toFixed(1)+' Hz';$('#gA').textContent=S.I.toFixed(2)+' A';$('#gSrc').textContent=(S.ctrl?cmdName():'—')+' / '+ref;}
+ }else if(st===3){
+  if(S.fault){GUI.fseen=S.fault;const t=S.fault+' '+FL[S.fault][0]+': '+FL[S.fault][2];const e=$('#gFcode');if(e.textContent!==t)e.textContent=t;}
+  $('#gChkF1').classList.toggle('ok',!!GUI.fseen);
+  const act=!!S.inj[g.flt.inj];
+  const fb=$('#gFault'),lb=(act?'صلّح العطل':'جرّب العطل')+'<span class="tagc">تحكم</span>';if(fb&&fb.innerHTML!==lb)fb.innerHTML=lb;
+  $('#gChkF2').classList.toggle('ok',!!GUI.fseen&&!S.fault&&!act);
+ }
+}
+function gFaceHome(){const pf=$('#pnlFace'),dv=$('.device'),hc=$('#hcap');if(!pf||!dv||dv.parentNode===pf)return;const hint=pf.querySelector('p.hint');pf.insertBefore(dv,hint);hint.after(hc);}
+function gFaceShow(){const slot=$('#gFace');if(!slot)return;slot.appendChild($('.device'));slot.appendChild($('#hcap'));}
+function gHandOn(){GUI.hand='hand';GUI.snap={};SOL[GUI.ex].p.forEach(([c])=>GUI.snap[c]=P[c]);GUI.pw=false;
+ if(!S.brk){S.brk=true;GUI.pw=true;updStation();log('المفتاح الرئيسي اتقفل (ON) عشان الكيباد يشتغل');}
+ guiSave();guideRender();}
+function gMenuId(code){for(const k in MENU)if(MENU[k].c===code)return k;return '';}
+function gHandHint(a){
+ const groups={};a.p.forEach(([c])=>{const ps=menuPaths(c),p=ps.find(x=>x.includes('FULL'))||ps[0]||'';(groups[p]=groups[p]||[]).push(c);});
+ const where=Object.keys(groups).map(p=>{const last=p.split(' › ').pop(),id=gMenuId(last);return '<li>في قايمة <code>'+esc(p)+'</code>'+(MENUAR[id]?' ('+MENUAR[id]+')':'')+': <b style="direction:ltr;unicode-bidi:isolate;font-family:var(--font-mono)">'+groups[p].join('، ')+'</b></li>';}).join('');
+ const l2=a.p.filter(([c])=>PM[c].l2).map(([c])=>c),rl=a.p.filter(([c])=>PM[c].rl).map(([c])=>c),hasT=a.p.some(([c])=>c==='tCC');
+ return '<div class="g-hint"><h4>طريقة الدخول على الـ ATV320</h4><ol>'+
+  '<li>دوس <kbd>MODE</kbd> لحد ما لمبة <b>CONF</b> تنور (الشاشة تكتب <code>COnF</code> وبعدها <code>MYMn</code>).</li>'+
+  '<li>لف الـ Jog dial (اسحبه في دايرة، أو دوس على الطوق: يمين = قدام، شمال = ورا) لحد <code>FULL</code> ودوس <kbd>ENT</kbd> = دوسة في <b>نص</b> الـ Jog dial.</li>'+
+  '<li>لف للجروب (<code>SIM-</code> أو <code>I_O-</code> أو <code>CtL-</code>…) و <kbd>ENT</kbd>، بعدين لف لكود الباراميتر و <kbd>ENT</kbd>: القيمة ترمش.</li>'+
+  '<li>لف للقيمة المطلوبة (اللف السريع يكبّر الخطوة) و <kbd>ENT</kbd> يحفظ'+(l2.length?'. <b>'+l2.join('، ')+'</b>: امسك ENT <b>ثانيتين</b> لحد ما يتحفظ':'')+'. <kbd>ESC</kbd> يرجع خطوة لورا وتلاقي باقي باراميترات نفس الجروب.</li></ol>'+
+  '<ul>'+where+'</ul>'+
+  (hasT?'<p class="g-note">ابدأ بـ <code>tCC</code> الأول لأنه بيرجّع تخصيص الأطراف للمصنع.</p>':'')+
+  (rl.length?'<p class="g-note">'+rl.join('، ')+' عليها Stop: مابتتغيرش غير والموتور واقف.</p>':'')+
+  (GUI.pw?'<p class="pw">قفلنا المفتاح الرئيسي Q1 (ON) عشان الشاشة تنور والكيباد يشتغل.</p>':'')+'</div>';
+}
+function guideRefresh(){if(GUI.guided&&GUI.ex>=0)guideTick(true);}
+$('#gCards').addEventListener('click',e=>{const b=e.target.closest('[data-ex]');if(!b)return;GUI.ex=+b.dataset.ex;GUI.step=0;guiSave();guideRender();});
+$('#gBack').addEventListener('click',()=>{GUI.ex=-1;GUI.step=0;guiSave();guideRender();});
+$('#gPrev').addEventListener('click',()=>{if(GUI.step>0){GUI.step--;guiSave();guideRender();}});
+$('#gNext').addEventListener('click',()=>{if(GUI.step<3){GUI.step++;}else{GUI.done[GUI.ex]=true;log('خلصت التمرين المحلول '+(GUI.ex+1)+': '+SOL[GUI.ex].t);GUI.ex=-1;GUI.step=0;}guiSave();guideRender();});
+$('#gBody').addEventListener('click',e=>{
+ if(e.target.closest('#gHand')){gHandOn();return;}
+ if(e.target.closest('#gAuto')){GUI.hand='auto';GUI.snap=null;guiSave();guideRender();applySol(GUI.ex);return;}
+ if(e.target.closest('#gAutoRest')){applySol(GUI.ex);return;}
+ if(e.target.closest('#gFault')){const b=$('[data-inj="'+GD[GUI.ex].flt.inj+'"]');if(b)b.click();guideTick(true);}
+});
+$('#modeBtn').addEventListener('click',()=>setGMode(!GUI.guided));
+$('#advBtn').addEventListener('click',e=>{GUI.adv=!GUI.adv;document.body.classList.toggle('adv',GUI.adv);e.currentTarget.setAttribute('aria-expanded',GUI.adv);e.currentTarget.textContent=GUI.adv?'إخفاء المتقدم ▴':'عرض المتقدم ▾';});
+
+/* ---------------- boot ---------------- */
+$('#logClr').addEventListener('click',()=>{$('#log').innerHTML='';});
+$('#btnFactory').addEventListener('click',()=>{try{localStorage.removeItem(SKEY);}catch(_){}location.reload();});
+load();
+$('#motSel').value=S.mot;$('#lineSel').value=String(S.lineV);$('#loadSel').value=S.load;$('#dbChk').checked=S.dbInst;
+['lp','jr','amb'].forEach(k=>{$('#'+k).value=S[k];$('#'+k+'V').textContent=k==='jr'?String(S[k]):S[k]+(k==='amb'?'°C':'%');});
+S.hs=S.amb;
+updMotor();buildLoad();loadHint();renderTabs();renderParams();renderFaults();renderRef();renderEx();renderSol();buildWD();updStation();syncInj();pills();
+log('المعمل جاهز. المفتاح الرئيسي مقفول والـ DC bus بيشحن.');
+guiLoad();setGMode(GUI.guided);
+let last=performance.now(),acc=0,scT=0,slow=0,slow2=0;
+function frame(now){
+ try{
+  const dt=Math.min(.1,(now-last)/1000);last=now;acc+=dt;let n=0;
+  while(acc>=DT&&n<100){step(DT);acc-=DT;n++;scT+=DT;if(scT>=.05){scT=0;sample();}}
+  if(n>=100)acc=0;
+  if(H.msg){H.msg.d-=dt;if(H.msg.d<=0)H.msg=null;}
+  if(H.noteT>0)H.noteT-=dt;
+  if(H.hold&&performance.now()-H.hold>=2000){H.hold=null;hEnt(true);}
+  ui();drawScope();
+  slow+=dt;if(slow>.1){slow=0;updWD();pills();updStation();guideTick();}
+  slow2+=dt;if(slow2>.4){slow2=0;refreshRO();checkEx();if(lastFR!==S.fault){lastFR=S.fault;renderFaults();}if(REFK==='spd'||REFK==='ctl')renderRef();save();}
+ }catch(err){console.error(err);}
+ requestAnimationFrame(frame);
+}
+requestAnimationFrame(t=>{last=t;frame(t);});
+</script>
+</body>
+</html>
