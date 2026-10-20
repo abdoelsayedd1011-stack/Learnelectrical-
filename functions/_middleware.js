@@ -13,7 +13,7 @@ function membersOnly(pathname){
   if (!m) return false;
   const dir = m[1], rest = m[2];
   if (rest && !/\.html$/.test(rest) && /\./.test(rest)) return false; // scripts, images, data
-  if (dir === "classic-control-lab" || dir === "basics-lab"){
+  if (dir === "classic-control-lab" || dir === "basics-lab" || dir === "instrumentation-lab"){
     const l = /^lesson-(\d+)/.exec(rest);
     return !!l && Number(l[1]) > FREE_LESSONS;
   }

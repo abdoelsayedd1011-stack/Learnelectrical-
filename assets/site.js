@@ -20,6 +20,12 @@
       guided:89, exercises:0, params:0, faults:0,
       inside:["جديد: ماكينة متحركة تحت اللوحة بتشتغل لما دايرتك تشتغل (سير تعبئة، ونش، طلمبة وخزان، مروحة، كمبروسر، مخرطة، عداد سرعة) + قصة من المصنع لكل تمرين بالعربي وسطر «المطلوب منك»، وأصوات حقيقية (تكة السلك وانت بتوصّل، طقة الكونتاكتور، زنّة الموتور، شرارة القصر، جرس النجاح) مع زرار كتم الصوت، ونقط وساعة لكل تمرين وشارات ولوحة شرف على صفحة المعمل","تعريف بالعربي وشكل حقيقي ورمز IEC و NEMA لكل عنصر، ورسمة دايرة (قوى + تحكم) مرسومة أوتوماتيك لكل تمرين","9 دروس: العناصر البسيطة، الريلاي والتثبيت الذاتي والإنترلوك، الكونتاكتور ودايرة القوى والتحكم، الحماية (فيوز وقاطع وأوفرلود و MPCB)، التايمرات (TON و TOF والدوري ومتعدد الوظائف)، الموتور الإندكشن 3 فاز (اليافطة، علبة الأطراف، ستار/دلتا، عكس الاتجاه)، مفاتيح الضغط والمستوى والحساسات (بريشر سويتش، عوامة، PNP/NPN، خلية ضوئية)، وتمارين التتابع والـ Jog وعكس الحركة (إنترلوك كهربي وميكانيكي، ونش بليمت سويتش، ماكينة خرط بـ4 كونتاكتورات)، والمواضيع المتقدمة: ستار/دلتا، الفرملة، كباس التكييف المركزي، والسوفت ستارتر","كل التمارين العملية الـ24 من كراسة المدرّب مفتوحة (كل تمرين دايرة قوى + تحكم + لمبات إشارة) + 89 تمرين موجّه على لوحة توصيل مقسومة دايرة قوى ودايرة تحكم، مع غلطات مقصودة تكتشفها (قصر، Jog بيثبّت، NPN متوصّل كأنه PNP، كباري الستار غلط، إنترلوك Y/Δ ناقص، LP على NO، بايباس من START)، وشهادة إتمام بتتطبع لما تخلّص الكورس"],
       tags:"sounds أصوات story قصة points نقط leaderboard لوحة شرف badges شارات classic control كلاسيك كنترول protection حماية fuse فيوز mcb قاطع overload أوفرلود mpcb contactor كونتاكتور relay ريلاي push button بوش بوتن limit switch ليمت سويتش selector سلكتور lamp لمبة wiring توصيل timer تايمر on-delay off-delay flasher sequence تتابع braking فرملة dc injection plugging soft starter سوفت ستارتر bypass بايباس hvac تكييف compressor كباس hp lp thermostat ثرموستات certificate شهادة motor موتور induction إندكشن nameplate يافطة star delta ستار دلتا pressure switch بريشر سويتش float عوامة level مستوى sensor حساس pnp npn photocell خلية ضوئية jog interlock إنترلوك reversing عكس الاتجاه hoist ونش lathe مخرطة schematic رسمة دايرة" },
+    { id:"instr", path:"instrumentation-lab/index.html", group:"instr", brand:"إنسترومنتيشن", brandKey:"instr",
+      name:"كورس الإنسترومنتيشن", kind:"حساسات وإشارات", disp:"12.0mA", dispClass:"lcd", rtlName:true,
+      line:"الدايرة المقفولة و Tag الأجهزة، إشارة ⁦4⁠–⁠20mA⁩ و ⁦0⁠–⁠10V⁩ وأعطال اللوب، حساسات PNP و NPN، الإنكودر الإنكريمنتال (A/B/Z و PPR و x4) والأبسليوت و Gray code، الثيرموكبل K و J والتعويض البارد، PT100 بـ 2 و 3 و 4 سلك و NTC، اللود سيل والقنطرة و mV/V ومعايرة الإنديكيتور، الضغط والمستوى والفلو، والمعايرة والأعطال.",
+      guided:10, exercises:0, params:0, faults:0,
+      inside:["لوب ⁦4⁠–⁠20mA⁩ حي: اقطع السلك، اعكس القطبية، اعمل قصر، وشوف الأفوميتر والـ PLC بيقروا إيه","إنكودر بتلفّه بإيدك وتشوف نبضات A و B و Z على السكوب وتعدّها x1 و x2 و x4، وقرص Gray code","بنش ثيرموكبل بجداول NIST وبنش PT100 بـ 2 و 3 و 4 سلك يوريك غلطة طول الكابل بالدرجة","لود سيل: حط أوزان وشوف الـ mV، وعاير الإنديكيتور خطوة بخطوة، وطلّع الخلية البايظة بالأفوميتر","لعبة أعطال الموقع وامتحان نهائي وشهادة إتمام"],
+      tags:"instrumentation إنسترومنتيشن انسترومنتيشن sensor حساس transmitter ترانسميتر 4-20ma 4-20 analog أنالوج 0-10v loop لوب plc pid encoder إنكودر انكودر incremental absolute ppr gray quadrature temperature حرارة thermocouple ثيرموكبل ثرموكبل pt100 rtd ntc load cell لود سيل ميزان strain gauge wheatstone قنطرة indicator إنديكيتور calibration معايرة pressure ضغط level مستوى flow فلو pnp npn proximity" },
     { id:"ab1336", path:"ab1336-simulator/index.html", group:"ab", brand:"Allen-Bradley", brandKey:"ab",
       name:"1336 PLUS II", kind:"انفرتر", disp:"Stopped +0.00 Hz", dispClass:"lcd",
       line:"Sensorless Vector، كيباد HIM بشاشة سطرين، أطراف TB3 وكروت L4 و L5 و L6.",
@@ -90,12 +96,13 @@
   var GROUPS = [
     { key:"basics", title:"أساسيات الكهربا", sub:"للمبتدئين خالص · قبل الكلاسيك" },
     { key:"classic", title:"كلاسيك كنترول", sub:"مفاتيح · بوش بوتن · كونتاكتورات · موتور" },
+    { key:"instr", title:"إنسترومنتيشن", sub:"إنكودر · حساسات حرارة · لود سيل · ⁦4⁠–⁠20mA⁩" },
     { key:"ab", title:"انفرترات Allen-Bradley", sub:"Rockwell Automation" },
     { key:"drives", title:"انفرترات تانية", sub:"Siemens · Schneider · Delta · Danfoss" },
     { key:"servo", title:"سيرفو وكنترول حرارة", sub:"Delta · Omron" }
   ];
   var BRANDS = [
-    { key:"all", label:"الكل" }, { key:"beginner", label:"للمبتدئين" }, { key:"basics", label:"كلاسيك كنترول" }, { key:"ab", label:"Allen-Bradley" }, { key:"siemens", label:"Siemens" },
+    { key:"all", label:"الكل" }, { key:"beginner", label:"للمبتدئين" }, { key:"basics", label:"كلاسيك كنترول" }, { key:"instr", label:"إنسترومنتيشن" }, { key:"ab", label:"Allen-Bradley" }, { key:"siemens", label:"Siemens" },
     { key:"schneider", label:"Schneider" }, { key:"delta", label:"Delta" }, { key:"danfoss", label:"Danfoss" },
     { key:"omron", label:"Omron" }, { key:"multi", label:"مقارنة" }
   ];
@@ -202,7 +209,7 @@
   }
   function card(l){
     var disp = '<div class="disp ' + esc(l.dispClass) + '" aria-hidden="true">' + (l.html ? l.disp : esc(l.disp)) + "</div>";
-    var acc = l.id === "pf525" ? "من غير حساب" : (l.id === "classic" || l.id === "basics") ? "أول درسين من غير حساب" : "بحساب مجاني";
+    var acc = l.id === "pf525" ? "من غير حساب" : (l.id === "classic" || l.id === "basics" || l.id === "instr") ? "أول درسين من غير حساب" : "بحساب مجاني";
     var head = '<div class="meta"><span class="brand">' + esc(l.brand) + '</span><span class="kind">' + esc(l.kind) + '</span><span class="access' + (l.id === "pf525" ? " open" : "") + '">' + acc + "</span></div>" +
                '<h4' + (l.rtlName ? ' style="direction:rtl"' : "") + ">" + esc(l.name) + "</h4>";
     if (!detail){

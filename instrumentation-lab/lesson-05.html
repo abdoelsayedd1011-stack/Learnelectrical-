@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الإنكودر الأبسليوت والأعطال</title>
+<meta name="description" content="الدرس 5 في كورس الإنسترومنتيشن: الإنكودر الأبسليوت سنجل تيرن ومالتي تيرن، الـ Gray code وليه بت واحد بس بيتغيّر، الريزولوشن بالبت، SSI و BiSS و Profinet و EtherCAT و CANopen، الريزولفر، الهومينج، التركيب الميكانيكي والكابلنج، الشيلد والنويز، وجدول أعطال ولعبة تشخيص.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="instr.css">
+<script src="instr.js"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">الإنسترومنتيشن · الدرس 5 من 10</p>
+    <h1>الإنكودر ٢: الأبسليوت والتركيب والأعطال</h1>
+    <p>الإنكريمنتال بيعدّ، بس لو الكهربا قطعت بينسى هو فين. الإنكودر <b>الأبسليوت</b> بيعرف مكانه في أي لحظة من غير ما يعدّ. هنا هتفهم الـ <b>Gray code</b> اللي جواه، والبروتوكولات، وإزاي تركّب الإنكودر صح، وتطلّع أعطاله زي فني صيانة شاطر.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل المعامل</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>إنكريمنتال ولا أبسليوت؟</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th></th><th>إنكريمنتال</th><th>أبسليوت</th></tr></thead>
+    <tbody>
+      <tr><td>بيطلّع إيه</td><td>نبضات A و B و Z</td><td>رقم (كود) لكل مكان في اللفة</td></tr>
+      <tr><td>بعد قطع الكهربا</td><td>بينسى: محتاج Homing</td><td>عارف مكانه على طول</td></tr>
+      <tr><td>التوصيل</td><td>كارت عدّاد / HSC</td><td>SSI، BiSS، Profinet، EtherCAT، CANopen…</td></tr>
+      <tr><td>السعر</td><td>أرخص</td><td>أغلى</td></tr>
+      <tr><td>أمثلة</td><td>سرعة موتور، مكنة قص بالطول</td><td>ونش، بوابة سد، روبوت، مكبس، تلسكوب كرين</td></tr>
+    </tbody></table></div>
+  <ul>
+    <li><b>Single-turn:</b> بيعرف المكان جوه اللفة الواحدة بس (مثلًا 4096 مكان). لو لف لفة كاملة يرجع لنفس الرقم.</li>
+    <li><b>Multi-turn:</b> بيعدّ كمان <b>عدد اللفات</b> (مثلًا 4096 لفة) بتروس داخلية أو عدّاد بيشتغل بطاقة الحركة نفسها (Wiegand)، أو ببطارية في بعض الأنواع. ده اللي بيتركّب على الونش والكرين.</li>
+  </ul>
+  <div class="box key"><b>الريزولوشن بالبت:</b> إنكودر <b>12 bit</b> single-turn = <span class="eq">2¹² = 4096</span> مكان في اللفة ⇐ كل خطوة <span class="eq">360 ÷ 4096 ≈ 0.088°</span>. ومالتي تيرن <b>25 bit</b> غالبًا = 13 bit للمكان (8192) + 12 bit للفات (4096 لفة).</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>الـ Gray code: ليه بت واحد بس؟</h2>
+  <p>القرص الأبسليوت عليه <b>كذا حلقة</b>، كل حلقة بت، وتحت كل حلقة حساس. القراية في أي مكان بتدّي رقم. المشكلة في <b>لحظة الانتقال</b>: الحساسات عمرها ما بتتقلب في نفس اللحظة بالظبط. في Binary العادي، من 7 (<span class="mono">0111</span>) لـ 8 (<span class="mono">1000</span>) بيتغيّر <b>4 بتات</b>، فلثانية صغيرة ممكن تقرا 15 أو 0 أو أي رقم! والمكنة تتجنن.</p>
+  <p>الحل: <b>Gray code</b> مترتّب بحيث إن بين أي مكانين جنب بعض <b>بت واحد بس بيتغيّر</b>. فأسوأ حاجة تحصل إنك تقرا المكان القديم أو الجديد، مفيش رقم غريب.</p>
+  <div class="formula">Gray = Bin XOR (Bin >> 1)</div>
+  <div class="wd"><h3>قرص أبسليوت 4 بت</h3><div id="gray"></div></div>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>المكان</th><th>Binary</th><th>Gray</th></tr></thead>
+    <tbody>
+      <tr><td>6</td><td class="mono">0110</td><td class="mono">0101</td></tr>
+      <tr><td>7</td><td class="mono">0111</td><td class="mono">0100</td></tr>
+      <tr><td>8</td><td class="mono">1000</td><td class="mono">1100</td></tr>
+      <tr><td>9</td><td class="mono">1001</td><td class="mono">1101</td></tr>
+    </tbody></table></div>
+  <p class="muted">الإنكودر نفسه أو الكارت بيحوّل الـ Gray لـ Binary قبل ما يبعته، وفي SSI ممكن تختار من الباراميترات تستقبله Gray أو Binary. لو اخترت غلط هتلاقي القراية بتنط بشكل غريب.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>البروتوكولات والريزولفر</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>الواجهة</th><th>الفكرة</th></tr></thead>
+    <tbody>
+      <tr><td><b>SSI</b></td><td>الكارت بيبعت نبضات Clock والإنكودر بيرد بالبتات واحدة ورا التانية (RS-422). بسيط وشائع. لازم تظبط عدد البتات و Gray/Binary.</td></tr>
+      <tr><td><b>BiSS-C</b></td><td>شبه SSI بس أسرع وفيه تشيك (CRC) وتشخيص. شائع في السيرفو.</td></tr>
+      <tr><td><b>Profinet / EtherCAT / EtherNet/IP</b></td><td>الإنكودر جهاز على الشبكة بعنوان، بتعمله Configuration بملف GSDML أو ESI. بيبعت المكان والسرعة والتشخيص.</td></tr>
+      <tr><td><b>CANopen / Profibus</b></td><td>شبكات فيلد باص أقدم وشائعة في الأوناش والموبايل.</td></tr>
+      <tr><td><b>Resolver</b></td><td>مش إنكودر ديجيتال: ترانس دوّار بيطلّع إشارتين sin و cos. مفيش إلكترونيات جواه فبيستحمل حرارة واهتزاز جامد. شائع في موتورات السيرفو القديمة والمناطق القاسية.</td></tr>
+    </tbody></table></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>الهومينج (Homing) بالإنكريمنتال</h2>
+  <p>مع الإنكريمنتال، أول ما المكنة تشتغل بتعمل <b>Homing</b>: تتحرك ببطء لحد ما تلمس <b>ليميت سويتش مرجعي (Reference switch)</b>، وبعدين تكمّل لحد أول <b>نبضة Z</b> بعده، وتصفّر العدّاد هناك. ليه الاتنين؟ الليميت دقته ملّيمترات وبيتأثر بالسرعة، والـ Z دقيق جدًا بس بيتكرر كل لفة، فالليميت بيقول "إحنا في اللفة دي" والـ Z بيحدد النقطة بالظبط.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>التركيب الميكانيكي</h2>
+  <ul>
+    <li><b>Solid shaft (عمود مصمت):</b> بيتربط بعمود الماكينة بـ <b>كابلنج مرن</b> (Bellows أو Jaw أو Disc). الكابلنج المرن بيمتص عدم الاستقامة (Misalignment). <b>متربطش بكابلنج جامد أبدًا</b>: أي ميل بسيط هيكسر البلي.</li>
+    <li><b>Hollow shaft (عمود مفرّغ):</b> بيدخل على عمود الموتور مباشرة ويتربط بحلقة ربط، وجسمه بيتمسك بـ <b>ذراع عزم مرن (Torque arm / Stator coupling)</b> يمنعه يلف ويسمح بالطوحان البسيط.</li>
+    <li>متخبطش الإنكودر بالشاكوش وإنت بتركّبه: القرص الإزاز جوه بيتكسر.</li>
+    <li>اعمل علامة بالقلم على العمود والكابلنج بعد الربط: لو بعدين لقيتها اتحركت، يبقى فيه زحلقة.</li>
+  </ul>
+</section>
+
+<section class="panel lsec" aria-labelledby="s6">
+  <h2 id="s6"><span class="k">6</span>الكابل والشيلد والنويز</h2>
+  <ul>
+    <li>كابل مشيلد ومجدول أزواج (A مع A̅، B مع B̅). الشيلد في إشارات الإنكودر السريعة غالبًا <b>بيتأرّض من الطرفين</b> بكلامب 360° على جسم الكونيكتور واللوحة، مع خط أرضي متساوي الجهد قوي بين الموتور واللوحة (شوف توصية الشركة: دي غير قاعدة الـ ⁦4⁠–⁠20 mA⁩).</li>
+    <li>ابعده عن كابلات الموتورات والإنفرترات: صينية منفصلة أو فاصل معدني.</li>
+    <li><b>طول الكابل:</b> TTL أحادي (5V) يدوب أمتار قليلة، والـ Line Driver RS-422 ممكن لحد 100 م تقريبًا، والـ HTL برضه مسافات طويلة بس التردد بيقل مع الطول. الداتا شيت بيدّي جدول طول × تردد.</li>
+    <li>هبوط الجهد: إنكودر 5V على كابل طويل ممكن يوصله 4.5V بس. بعض الإنكودرات فيها خطوط Sense للباور.</li>
+  </ul>
+</section>
+
+<section class="panel lsec" aria-labelledby="s7">
+  <h2 id="s7"><span class="k">7</span>جدول الأعطال</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>العرض</th><th>السبب المحتمل</th><th>تعمل إيه</th></tr></thead>
+    <tbody>
+      <tr><td>عدّات زيادة لما الإنفرتر يشتغل</td><td>نويز، شيلد، كابلات مع بعض</td><td>أرّض الشيلد، افصل الكابلات، Line Driver</td></tr>
+      <tr><td>العدّ بالعكس</td><td>A و B متبدّلين</td><td>بدّلهم أو اعكس من الباراميتر</td></tr>
+      <tr><td>نص العدد / مفيش اتجاه</td><td>قناة مقطوعة</td><td>قيس كل قناة بالسكوب أو الأفوميتر</td></tr>
+      <tr><td>بيضيع في السرعة العالية بس</td><td>التردد أكبر من الكارت أو الإنكودر</td><td>احسب f، كارت أسرع، فلتر أقل</td></tr>
+      <tr><td>زحف بطيء في المكان</td><td>كابلنج أو عجلة قياس بتزحلق</td><td>علامة قلم، اربط، غيّر العجلة</td></tr>
+      <tr><td>صوت وبلي بايظ</td><td>تركيب جامد / ميل</td><td>كابلنج مرن، ذراع عزم</td></tr>
+      <tr><td>الأبسليوت بيقرا أرقام بتنط</td><td>Gray/Binary غلط، عدد بتات SSI غلط</td><td>راجع الباراميترات مع الداتا شيت</td></tr>
+    </tbody></table></div>
+  <div class="wd"><h3>لعبة: طلّع عطل الإنكودر</h3><div id="game"></div></div>
+  <div class="box safe"><b>أمان:</b> الإنكودر غالبًا على موتور شغّال. قبل ما تفك الكابلنج أو تلمس العمود: اعمل <b>Lock-out</b> للموتور واتأكد إنه مش هيلف. وفي الونش، الحمل المعلّق ممكن يلف الموتور حتى وهو مفصول: ثبّت الحمل الأول.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">قواعد تأريض الشيلد وطول الكابل بتختلف من شركة لشركة؛ اتّبع دليل التركيب بتاع الإنكودر والإنفرتر. تقدّمك بيتسجّل على الجهاز ده بس.</p>
+</div>
+<script>
+IL.lesson('l5');
+window.GRAY = IL.grayDisc(document.getElementById('gray'), {lesson:'l5'});
+window.GAME = IL.caseGame(document.getElementById('game'), IL.ENC_CASES, {lesson:'l5', task:'efault', need:6, goal:'حلّ <b>6</b> حالات صح على الأقل. افتح "افحص" قبل ما تجاوب: زي الموقع بالظبط.'});
+IL.quiz(document.getElementById('quiz'), [
+  {q:'إنكودر أبسليوت single-turn 12 bit. فيه كام مكان في اللفة؟', o:['4096', '1200', '1024', '12'], a:0, why:'2¹² = 4096.'},
+  {q:'ميزة الـ Gray code الأساسية:', o:['بت واحد بس بيتغيّر بين أي مكانين جنب بعض', 'أسرع في النقل', 'بيوفّر بتات', 'بيعدّ اللفات'], a:0, why:'فمفيش قراية غريبة في لحظة الانتقال.'},
+  {q:'ونش لازم يعرف مكانه بعد قطع الكهربا من غير Homing. تختار:', o:['أبسليوت Multi-turn', 'إنكريمنتال 1000 PPR', 'أبسليوت Single-turn', 'بروكسيميتي'], a:0, why:'الحركة أكتر من لفة، والمالتي تيرن بيفتكر عدد اللفات.'},
+  {q:'إنكودر عموده مصمت يتربط بالموتور إزاي؟', o:['بكابلنج مرن', 'بكابلنج جامد', 'باللحام', 'بسير'], a:0, why:'المرن بيمتص الـ Misalignment ويحمي البلي.'},
+  {q:'Homing بالإنكريمنتال الأدق بيستخدم:', o:['ليميت مرجعي وبعده أول نبضة Z', 'نبضة A بس', 'الليميت بس', 'التايمر'], a:0, why:'الليميت يحدد اللفة والـ Z يحدد النقطة بالظبط.'},
+  {q:'الريزولفر بيطلّع:', o:['إشارتين sin و cos أنالوج', 'نبضات A و B', 'كود Gray', '⁦4⁠–⁠20 mA⁩'], a:0, why:'هو ترانس دوّار ومالوش إلكترونيات جواه.'}
+], {lesson:'l5', pass:0.8});
+</script>
+</body>
+</html>

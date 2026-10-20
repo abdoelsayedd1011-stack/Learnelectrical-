@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>يعني إيه إنسترومنتيشن؟</title>
+<meta name="description" content="الدرس 1 في كورس الإنسترومنتيشن: لوب التحكم (حساس، ترانسميتر، كنترولر، صمّام)، PV و SP و OUT، الرينج LRV و URV والسبان، الدقة والريزولوشن، وقراءة تاجات الـ P&ID زي TT-101 و TIC.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="instr.css">
+<script src="instr.js"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">الإنسترومنتيشن · الدرس 1 من 10</p>
+    <h1>يعني إيه إنسترومنتيشن؟</h1>
+    <p>أي ماكينة في مصنع محتاجة <b>تحس</b> (حرارة، ضغط، وزن، سرعة) وبعدين <b>تقرر</b> وبعدين <b>تتحرك</b>. الإنسترومنتيشن هو الجزء اللي بيحس وبيوصّل الإحساس ده للـ PLC. في الدرس ده هتفهم اللوب كله، وتشغّل لوب تسخين حقيقي بإيدك، وتتعلم تقرا التاجات اللي على الرسومات والأجهزة.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل المعامل</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>المصنع زي جسم الإنسان</h2>
+  <p>فكّر فيها كده: <b>الحساس</b> زي إيدك اللي بتحس إن الميّة سخنة، و<b>الـ PLC أو الكنترولر</b> زي المخ اللي بيقرر "دي سخنة زيادة"، و<b>الصمّام أو الموتور</b> زي إيدك التانية اللي بتقفل الحنفية. من غير الإحساس، المخ مش هيعرف يعمل حاجة.</p>
+  <div class="cards" id="devCards"></div>
+  <div class="box key"><b>الخلاصة:</b> الإنسترومنتيشن = أجهزة <b>القياس</b> (Measurement) وأجهزة <b>التحكم في العملية</b> (Process Control). أي غلطة في القراية، المصنع كله هيتصرّف غلط وهو فاكر إنه صح.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>لوب التحكم: 4 أجزاء</h2>
+  <ol>
+    <li><b>الحساس / العنصر (Sensor / Element):</b> الحاجة اللي بتحس فعلًا بالمتغيّر، زي الثيرموكبل أو PT100 أو الإسترين جيدج. خرجه إشارة ضعيفة (مللي فولت أو أوم).</li>
+    <li><b>الترانسميتر (Transmitter):</b> بياخد إشارة الحساس الضعيفة ويحوّلها لإشارة قياسية قوية بتعيش مسافات طويلة: غالبًا <b>⁦4⁠–⁠20 mA⁩</b>.</li>
+    <li><b>الكنترولر (Controller):</b> PLC أو كنترولر حرارة زي E5CC. بيقارن القراية باللي إنت عايزه ويطلّع أمر.</li>
+    <li><b>الأكتيوتر (Actuator / Final element):</b> اللي بينفّذ: صمّام تحكم، إنفرتر (VFD) بيغيّر سرعة طلمبة، أو سخان بـ SSR.</li>
+  </ol>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>الكلمة</th><th>معناها</th><th>مثال في تانك التسخين</th></tr></thead>
+    <tbody>
+      <tr><td><b>PV</b> Process Variable</td><td>القيمة الحقيقية اللي بنقيسها دلوقتي</td><td>الحرارة 63 °C</td></tr>
+      <tr><td><b>SP</b> Set Point</td><td>القيمة اللي إنت عايزها</td><td>70 °C</td></tr>
+      <tr><td><b>Error</b></td><td>الفرق: SP − PV</td><td>7 °C</td></tr>
+      <tr><td><b>OUT / MV</b> Output</td><td>أمر الكنترولر للأكتيوتر (⁦0⁠–⁠100 %⁩)</td><td>الصمّام مفتوح 65 %</td></tr>
+    </tbody></table></div>
+  <div class="box"><b>Auto و Manual:</b> في <b>Auto</b> الكنترولر هو اللي بيحرّك الصمّام على حسب الـ Error (لوب مقفول). في <b>Manual</b> إنت اللي بتحدد الفتحة بإيدك والكنترولر بيتفرّج (لوب مفتوح). في الموقع بنحوّل لـ Manual وقت الصيانة أو لما الحساس بايظ.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>جرّب بإيدك: لوب تسخين تانك</h2>
+  <p>ده تانك ميّة بيتسخّن ببخار. الـ <span class="term">TT-101</span> بيقيس الحرارة ويبعت ⁦4⁠–⁠20 mA⁩ للكنترولر <span class="term">TIC-101</span>، والكنترولر بيفتح ويقفل صمّام البخار <span class="term">TV-101</span>. حرّك الـ SP، جرّب Manual، وافتح ميّة باردة وشوف الكنترولر بيتصرّف إزاي. (الوقت هنا أسرع 8 مرات من الحقيقة.)</p>
+  <div class="wd"><h3>لوب التحكم في الحرارة</h3><div id="loop"></div></div>
+  <div class="ex"><b>من الموقع:</b> تانك CIP في مصنع ألبان، الـ SP 75 °C. لو الـ PV فضل 60 والصمّام 100 % مفتوح، المشكلة مش في الكنترولر: يا البخار ضعيف، يا الصمّام مش بيفتح فعلًا (هوا الأكتيوتر مقطوع)، يا الحساس بيقرا غلط. <b>دايمًا قارن القراية بترمومتر يدوي</b> قبل ما تلعب في إعدادات الـ PID.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>الرينج: LRV و URV والسبان</h2>
+  <p>كل ترانسميتر بيتظبط على <b>رينج</b>: أقل قيمة (<b>LRV</b> Lower Range Value) بتطلع عندها 4 mA، وأعلى قيمة (<b>URV</b> Upper Range Value) بتطلع عندها 20 mA. و<b>السبان (Span)</b> = URV − LRV.</p>
+  <div class="formula">Span = URV − LRV</div>
+  <div class="ex"><b>مثال:</b> <span class="term">TT-101</span> رينجه ⁦0⁠–⁠150 °C⁩ ⇐ السبان 150 °C. عند 75 °C (نص الرينج) الخرج = 12 mA. ولو رينجه −50 لـ 150 °C ⇐ السبان 200 °C، والـ 4 mA معناها −50 °C مش صفر!</div>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>الكلمة</th><th>معناها</th><th>مثال</th></tr></thead>
+    <tbody>
+      <tr><td><b>Accuracy</b> الدقة</td><td>القراية قريبة من الحقيقة قد إيه</td><td>±0.1 % من السبان ⇐ في رينج ⁦0⁠–⁠150 °C⁩ يعني ±0.15 °C</td></tr>
+      <tr><td><b>Resolution</b> الريزولوشن</td><td>أصغر تغيير الجهاز يقدر يبيّنه</td><td>الشاشة بتعرض 0.1 °C</td></tr>
+      <tr><td><b>Repeatability</b></td><td>بيدّي نفس القراية لو قسنا نفس الحاجة كذا مرة</td><td>±0.05 %</td></tr>
+    </tbody></table></div>
+  <div class="box key"><b>متتخدعش:</b> شاشة بتعرض <b>رقمين بعد العلامة</b> (ريزولوشن عالي) مش معناها إن الجهاز دقيق. ممكن تعرض 72.48 °C والحقيقة 75 °C. الريزولوشن غير الدقة.</div>
+  <p>وقاعدة مهمة: اختار الرينج على قد الشغل. ترانسميتر ضغط رينجه ⁦0⁠–⁠100 bar⁩ وإنت شغّال على 3 bar، دقته ±0.1 % من 100 = ±0.1 bar، يعني الغلط ممكن يبقى 3 % من قرايتك!</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>التاجات: TT-101 يعني إيه؟</h2>
+  <p>في رسومات الـ <b>P&amp;ID</b> (رسمة المواسير والأجهزة) وعلى يافطة كل جهاز في الموقع، الجهاز ليه <b>تاج (Tag)</b> على حسب نظام <span class="term">ISA-5.1</span>: <b>الحرف الأول = إيه اللي بيتقاس</b>، و<b>الحروف اللي بعده = وظيفة الجهاز</b>، وبعدهم <b>رقم اللوب</b>.</p>
+  <div class="tags-row"><span class="tag-b">TT<br>101</span><span class="tag-b">TIC<br>101</span><span class="tag-b">PDT<br>205</span><span class="tag-b">LSH<br>310</span></div>
+  <div class="two">
+    <div class="tblw"><table class="tbl"><thead><tr><th>الحرف الأول</th><th>بيقيس</th></tr></thead><tbody>
+      <tr><td class="mono">T</td><td>حرارة Temperature</td></tr><tr><td class="mono">P</td><td>ضغط Pressure</td></tr><tr><td class="mono">F</td><td>فلو (تدفق) Flow</td></tr><tr><td class="mono">L</td><td>مستوى Level</td></tr><tr><td class="mono">W</td><td>وزن Weight</td></tr><tr><td class="mono">S</td><td>سرعة Speed</td></tr><tr><td class="mono">Z</td><td>مكان Position</td></tr></tbody></table></div>
+    <div class="tblw"><table class="tbl"><thead><tr><th>بعده</th><th>الوظيفة</th></tr></thead><tbody>
+      <tr><td class="mono">T</td><td>ترانسميتر</td></tr><tr><td class="mono">E</td><td>عنصر (الحساس نفسه)</td></tr><tr><td class="mono">I</td><td>بيان (شاشة / عدّاد)</td></tr><tr><td class="mono">C</td><td>كنترولر</td></tr><tr><td class="mono">S</td><td>سويتش</td></tr><tr><td class="mono">V</td><td>صمّام</td></tr><tr><td class="mono">A · H · L</td><td>إنذار · عالي · واطي</td></tr><tr><td class="mono">D (بعد الأول)</td><td>فرق (Differential)</td></tr></tbody></table></div>
+  </div>
+  <div class="ex"><b>مثال:</b> <span class="term">TIC-101</span> = كنترولر حرارة بشاشة في اللوب 101، وكل الأجهزة اللي في نفس اللوب واخدة نفس الرقم: <span class="term">TE-101</span> الحساس، <span class="term">TT-101</span> الترانسميتر، <span class="term">TV-101</span> الصمّام. لما حد يقولك "TT-101 بايظ" تعرف تروح فين على طول.</div>
+  <div class="wd"><h3>تمرين: فك التاج</h3><div id="tags"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s6">
+  <h2 id="s6"><span class="k">6</span>من الموقع</h2>
+  <div class="fault-box"><b>أعطال شائعة في الموقع:</b><ul>
+    <li><b>الكنترولر سايب على Manual</b> من آخر صيانة، والناس بتقول "الـ PID مش شغّال". بص على المود الأول.</li>
+    <li><b>الرينج في الترانسميتر غير الرينج في الـ PLC</b>: الترانسميتر ⁦0⁠–⁠10 bar⁩ والـ PLC متبرمج ⁦0⁠–⁠16 bar⁩ ⇐ القراية غلط بنسبة ثابتة.</li>
+    <li><b>التاج على الجهاز غير اللي في الرسمة</b> بعد تعديل: اكتب أي تغيير في الرسومات (As-built) عشان اللي بعدك ميتوهش.</li>
+  </ul></div>
+  <div class="box safe"><b>أمان:</b> الإشارات 24V DC مش خطيرة على جسمك، بس اللوب ممكن يكون ماسك صمّام أو سخان. قبل ما تفصل أي ترانسميتر، بلّغ الأوبريشن وحوّل اللوب لـ Manual عشان الكنترولر ميتجننش ويقفل أو يفتح الصمّام على الآخر. وفي المناطق الخطرة (Ex / Hazardous area) فيه قواعد خاصة لفتح الأجهزة.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">نظام التاجات على حسب <span class="mono">ISA-5.1</span>، وبعض المصانع بتستخدم نظام ترقيم خاص بيها (KKS مثلًا). تقدّمك بيتسجّل على الجهاز ده بس.</p>
+</div>
+<script>
+IL.lesson('l1');
+document.getElementById('devCards').innerHTML = [
+  ['transmitter', {lcd:'72.5', unit:'°C'}, 'ترانسميتر', 'بيحوّل القراية لـ ⁦4⁠–⁠20 mA⁩'],
+  ['tchead', {tag:'TE'}, 'حساس حرارة', 'ثيرموكبل أو PT100 جوه جراب'],
+  ['encoder', {}, 'إنكودر', 'بيقيس سرعة ومكان العمود'],
+  ['scell', {}, 'لود سيل', 'بيقيس الوزن والقوة'],
+  ['aicard', {ch:[true, true, false, false]}, 'كارت PLC أنالوج', 'بيستقبل الـ ⁦4⁠–⁠20 mA⁩']
+].map(d => `<div class="card">${IL.art.svg(d[0], Object.assign({label:d[2]}, d[1]))}<h3>${d[2]}</h3><p>${d[3]}</p></div>`).join('');
+window.LOOP = IL.heatLoop(document.getElementById('loop'), {lesson:'l1'});
+IL.drill(document.getElementById('tags'), IL.tagGen, {lesson:'l1', task:'tags', need:5, goal:'فك <b>5</b> تاجات صح عشان التمرين يتعلّم عليه.'});
+IL.quiz(document.getElementById('quiz'), [
+  {q:'إيه اللي بيحوّل إشارة الحساس الضعيفة (mV أو أوم) لـ ⁦4⁠–⁠20 mA⁩؟', o:['الترانسميتر', 'الصمّام', 'الكنترولر', 'الباور سبلاي'], a:0, why:'الترانسميتر هو اللي بيكبّر ويوحّد الإشارة عشان تمشي مسافة طويلة.'},
+  {q:'الـ SP بتاع تانك 70 °C والـ PV 64 °C. الـ Error كام؟', o:['+6 °C', '−6 °C', '134 °C', '64 °C'], a:0, why:'Error = SP − PV = 70 − 64 = 6.'},
+  {q:'ترانسميتر حرارة رينجه −50 لـ 150 °C. السبان كام؟', o:['200 °C', '150 °C', '100 °C', '50 °C'], a:0, why:'Span = URV − LRV = 150 − (−50) = 200.'},
+  {q:'الكنترولر على Manual. لو الحرارة نزلت فجأة، الصمّام هيعمل إيه؟', o:['هيفضل على نفس الفتحة', 'هيفتح أكتر لوحده', 'هيقفل', 'هيعمل إنذار ويفصل'], a:0, why:'في Manual اللوب مفتوح: الكنترولر مش بيصحّح.'},
+  {q:'التاج <b>LSH-310</b> معناه:', o:['سويتش مستوى عالي في اللوب 310', 'ترانسميتر مستوى', 'كنترولر سرعة', 'صمّام مستوى'], a:0, why:'L = مستوى، S = سويتش، H = عالي.'},
+  {q:'شاشة بتعرض 72.48 °C والحرارة الحقيقية 75 °C. ده معناه:', o:['الريزولوشن عالي بس الدقة وحشة', 'الدقة عالية', 'الجهاز مظبوط', 'الريزولوشن وحش'], a:0, why:'عدد الأرقام بعد العلامة ريزولوشن، والبعد عن الحقيقة هو الدقة.'}
+], {lesson:'l1', pass:0.8});
+</script>
+</body>
+</html>

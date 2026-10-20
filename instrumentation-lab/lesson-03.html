@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الحساسات الديجيتال</title>
+<meta name="description" content="الدرس 3 في كورس الإنسترومنتيشن: البروكسيميتي الإندكتيف والكاباسيتيف، الفوتوسيل بأنواعه، الليميت سويتش، NO و NC، والفرق بين PNP و NPN وتوصيلهم بكارت دخل الـ PLC Sinking و Sourcing، وحساسات 2 سلك وتيار التسريب. بنش توصيل تفاعلي.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="instr.css">
+<script src="instr.js"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">الإنسترومنتيشن · الدرس 3 من 10</p>
+    <h1>الحساسات الديجيتال</h1>
+    <p>مش كل حساس بيقيس قيمة. أغلب الحساسات في الماكينات بتقول حاجة واحدة: <b>فيه أو مفيش</b>. العلبة وصلت؟ الباب مقفول؟ الأسطوانة خلّصت مشوارها؟ هنا هتعرف الأنواع، وتفهم <b>PNP و NPN</b> أخيرًا، وتوصّلهم بإيدك على كارت الـ PLC.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل المعامل</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>أنواع الحساسات الديجيتال</h2>
+  <div class="cards">
+    <div class="card"><svg viewBox="0 0 160 70" role="img" aria-label="ليميت سويتش"><rect x="50" y="20" width="60" height="40" rx="4" fill="#c9a43a" stroke="#6b5200"/><path d="M80 20V8" stroke="#5d6469" stroke-width="3"/><path d="M80 8L112 2" stroke="#5d6469" stroke-width="3"/><circle cx="112" cy="2" r="5" fill="#2a3035"/><text x="80" y="45" text-anchor="middle" style="font:700 8px var(--font-mono);fill:#3b2d00">LS</text></svg><h3>ليميت سويتش</h3><p>ميكانيكي: حاجة بتخبط في الدراع فيقفل أو يفتح كونتاكت. رخيص وبسيط، بس بيتآكل.</p></div>
+    <div class="card"><svg viewBox="0 0 160 70" role="img" aria-label="بروكسيميتي إندكتيف"><rect x="20" y="24" width="10" height="22" fill="#2f6fb3"/><rect x="30" y="24" width="90" height="22" fill="#c3cad0" stroke="#6b757c"/><path d="M8 18q-10 17 0 34" fill="none" stroke="var(--accent)" stroke-width="2"/><path d="M14 22q-7 13 0 26" fill="none" stroke="var(--accent)" stroke-width="2"/><rect x="120" y="28" width="30" height="14" rx="2" fill="#2a3035"/></svg><h3>بروكسيميتي إندكتيف</h3><p>بيعمل مجال مغناطيسي ويحس بـ <b>المعادن بس</b> من غير لمس. مسافته صغيرة (⁦2⁠–⁠15⁩ مم). الأشهر في الماكينات.</p></div>
+    <div class="card"><svg viewBox="0 0 160 70" role="img" aria-label="بروكسيميتي كاباسيتيف"><rect x="20" y="24" width="10" height="22" fill="#5a6b78"/><rect x="30" y="24" width="90" height="22" fill="#e6e1d1" stroke="#8a8370"/><circle cx="72" cy="35" r="5" fill="#c46a00"/><rect x="120" y="28" width="30" height="14" rx="2" fill="#2a3035"/></svg><h3>بروكسيميتي كاباسيتيف</h3><p>بيحس بـ <b>أي حاجة</b>: بلاستيك، خشب، بودرة، ميّة ورا جدار تانك. فيه مسمار حساسية بتظبطه.</p></div>
+    <div class="card"><svg viewBox="0 0 160 70" role="img" aria-label="فوتوسيل"><rect x="6" y="20" width="30" height="30" rx="3" fill="#2a3035"/><circle cx="36" cy="35" r="5" fill="#ff5b4f"/><path d="M41 35H120" stroke="#ff5b4f" stroke-width="2" stroke-dasharray="5 4"/><rect x="122" y="20" width="30" height="30" rx="3" fill="#2a3035"/></svg><h3>فوتوسيل (Photoelectric)</h3><p>شعاع نور (أحمر أو إنفرارد). بيحس بأي حاجة بتقطع أو بتعكس الشعاع، ومسافته ممكن تبقى أمتار.</p></div>
+  </div>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>نوع الفوتوسيل</th><th>إزاي</th><th>المسافة</th><th>ينفع لـ</th></tr></thead>
+    <tbody>
+      <tr><td><b>Through-beam</b> (مرسل ومستقبل)</td><td>المرسل في ناحية والمستقبل في الناحية التانية، والحاجة بتقطع الشعاع</td><td>لحد 20+ متر</td><td>أبعد مسافة وأضمن حاجة، بس محتاج سلك للناحيتين</td></tr>
+      <tr><td><b>Retro-reflective</b> (عاكس)</td><td>المرسل والمستقبل في جسم واحد، وقصاده عاكس (ريفلكتور)</td><td>لحد 10 متر تقريبًا</td><td>سلك من ناحية واحدة. للحاجات اللامعة استخدم النوع <b>Polarized</b></td></tr>
+      <tr><td><b>Diffuse</b> (انعكاس من الحاجة)</td><td>النور بيرتد من الحاجة نفسها</td><td>قصيرة (سنتيمترات لحد متر)</td><td>أسهل تركيب، بس بيتأثر بلون الحاجة (الأسود بيعكس أقل)</td></tr>
+    </tbody></table></div>
+  <div class="box"><b>مسافة الإحساس Sn للإندكتيف:</b> المكتوبة في الداتا شيت محسوبة على <b>حديد</b>. الستانلس والألومنيوم والنحاس بيتحسّوا من مسافة أقل (Correction factor زي 0.7 أو 0.4). والحساس <b>Flush</b> (وشه مستوي مع الصامولة) مسافته أقل من الـ <b>Non-flush</b> (وشه بارز) بس ينفع يتدفن في الحديد. جرّبها في البنش تحت.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>NO و NC</h2>
+  <p><b>NO</b> (Normally Open) = الخرج <b>مقفول (OFF)</b> طول ما مفيش حاجة، ويشتغل لما يحس. <b>NC</b> (Normally Closed) = الخرج <b>شغّال</b> طول ما مفيش حاجة، ويفصل لما يحس. في الفوتوسيل بتسمع كمان <b>Light-on / Dark-on</b>.</p>
+  <div class="box key"><b>قاعدة أمان:</b> أي حاجة بتوقّف الماكينة (ليميت نهاية مشوار، حماية) بتتعمل <b>NC</b>. ليه؟ لو السلك اتقطع، الـ PLC هيشوف "OFF" ويوقف الماكينة بدل ما يفضل فاكر إن كله تمام.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>PNP و NPN: مين بيزق ومين بيسحب</h2>
+  <p>الحساسات الإلكترونية الـ 3 سلك جواها ترانزستور بيشتغل زي سويتش على السلك الأسود:</p>
+  <div class="two">
+    <div class="box good"><b>PNP = Sourcing (بيطلّع موجب)</b><br>لما يحس، السلك الأسود بيبقى <b>+24V</b>. يعني الحساس "بيزق" تيار للـ PLC. الـ COM بتاع الكارت على <b>0V</b>. ده الأشهر في أوروبا ومصانعنا.</div>
+    <div class="box key"><b>NPN = Sinking (بيسحب لـ 0V)</b><br>لما يحس، السلك الأسود بيتوصّل على <b>0V</b>. يعني الحساس "بيسحب" التيار من الـ PLC. الـ COM بتاع الكارت على <b>+24V</b>. شائع في الماكينات اليابانية والصينية.</div>
+  </div>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>لون السلك</th><th>الاختصار</th><th>بيروح فين</th></tr></thead>
+    <tbody>
+      <tr><td><span class="term" style="background:#7a4a22;color:#fff">بني</span></td><td class="mono">BN</td><td>+24V</td></tr>
+      <tr><td><span class="term" style="background:#1f6fd1;color:#fff">أزرق</span></td><td class="mono">BU</td><td>0V</td></tr>
+      <tr><td><span class="term" style="background:#1d1d1d;color:#fff">أسود</span></td><td class="mono">BK</td><td>الخرج (NO غالبًا) ⇐ دخل الـ PLC</td></tr>
+      <tr><td><span class="term" style="background:#fff;color:#111">أبيض</span></td><td class="mono">WH</td><td>خرج تاني (NC أو مكمّل) في الحساسات الـ 4 سلك</td></tr>
+    </tbody></table></div>
+  <div class="box"><b>الكارت والاسم اللي بيلخبط:</b> كل شركة بتسمّي الكارت بطريقة (بعضهم يقول "Sinking input" عن الكارت اللي بياخد PNP!). متعتمدش على الاسم: <b>بص الـ COM بتاع الكارت رايح فين</b>. لو على 0V ⇐ الكارت محتاج +24V على الدخل ⇐ <b>حساس PNP</b>. لو على +24V ⇐ <b>حساس NPN</b>. وفيه كروت ليها COM ينفع يتوصّل في الاتجاهين.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>البنش: وصّل الحساس بالـ PLC</h2>
+  <p>عندك باور 24V، حساس بروكسيميتي 3 سلك، وكارت دخل PLC. وصّل الأسلاك بالدوس على الأطراف، وبعدين دوس "اختبر التوصيل" وقرّب الحديدة بالسلايدر. اللمبة بتاعة <b>I0.0</b> لازم تنوّر لما الحديدة تقرب بس. جرّب كمان تغيّر الخامة.</p>
+  <div class="wd"><h3>بنش PNP و NPN</h3><div id="bench"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>حساسات 2 سلك وتيار التسريب</h2>
+  <p>فيه حساسات بسلكين بس (بتتوصّل توالي مع الحمل زي سويتش). عشان تعيش وهي "OFF" لازم تسرّب تيار صغير (<b>Leakage current</b>، حوالي ⁦0.5⁠–⁠1.5 mA⁩)، ولما تبقى "ON" بيقع عليها جهد (حوالي ⁦5⁠–⁠8V⁩).</p>
+  <div class="ex"><b>من الموقع:</b> حساس 2 سلك على كارت PLC حساس، أو على ريليه صغير: لمبة الدخل <b>منوّرة خفيف على طول</b> أو الريليه بيرزّ، حتى من غير حديدة. السبب تيار التسريب. الحل: مقاومة <b>Bleeder</b> على التوازي مع الدخل تشرب التسريب (القيمة والقدرة على حسب الداتا شيت)، أو تغيّر لحساس 3 سلك.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s6">
+  <h2 id="s6"><span class="k">6</span>أعطال شائعة في الموقع</h2>
+  <div class="fault-box"><b>أعطال شائعة في الموقع:</b><ul>
+    <li><b>حساس جديد مش شغّال خالص مع الـ PLC</b> رغم إن لمبته بتنوّر: جايب NPN مكان PNP (أو العكس). اللمبة على الحساس بتنوّر لأنه شايف، بس الكارت مش فاهمه. شوف الإستيكر قبل التركيب.</li>
+    <li><b>لمبة الحساس بترمش</b>: غالبًا قصر في الخرج (السلك الأسود لامس الأرضي أو 0V) أو حمل زيادة.</li>
+    <li><b>الحساس بيشوف ساعات وساعات لأ</b>: الحديدة على حدود مسافة الإحساس (الحساس اتخبط ورجع لورا)، أو الخامة اتغيّرت لألومنيوم. خلي التركيب على حوالي <b>⁦70⁠–⁠80 %⁩ من Sn</b>.</li>
+    <li><b>الفوتوسيل الريفلكتور بيعدّي علب لامعة</b>: العلبة نفسها بتعكس الشعاع زي العاكس. استخدم Polarized retro-reflective.</li>
+    <li><b>تراب على عدسة الفوتوسيل أو برادة حديد لازقة على البروكسي</b> ⇐ إشارة غلط. النضافة جزء من الصيانة.</li>
+  </ul></div>
+  <div class="box safe"><b>أمان:</b> 24V DC آمن على الجسم، بس ماتعملش قصر بين +24 و 0V بالمفك وإنت بتقيس: الباور هيفصل وممكن الماكينة كلها تقف. وأي حساس على باب حماية أو ستارة ضوئية (Light curtain) ده <b>جزء من دايرة الأمان</b>: متعملوش بايباس أبدًا.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">ألوان الأسلاك على حسب <span class="mono">IEC 60947-5-2</span> للحساسات الـ 3 و 4 سلك. مسافات الإحساس ومعاملات التصحيح تقريبية، والداتا شيت هو المرجع. تقدّمك بيتسجّل على الجهاز ده بس.</p>
+</div>
+<script>
+IL.lesson('l3');
+window.DI = IL.diBench(document.getElementById('bench'), {lesson:'l3', exercises:[
+  {key:'pnp', title:'حساس PNP', sensor:'PNP', card:'sink', task:'<b>المطلوب:</b> حساس <b>PNP</b> وكارت <b>COM على 0V</b>. وصّل البني والأزرق بالباور، والأسود على I0.0، والـ COM بتاع الكارت على 0V.', ok:'الحساس بيطلّع +24V على السلك الأسود لما يحس، والتيار بيدخل الكارت من I0.0 ويخرج من الـ COM لـ 0V.'},
+  {key:'npn', title:'حساس NPN', sensor:'NPN', card:'source', task:'<b>المطلوب:</b> حساس <b>NPN</b> وكارت <b>COM على +24V</b>. فكّر: الحساس هيسحب الدخل لـ 0V، فالـ COM لازم يروح فين؟', ok:'التيار طالع من +24V للـ COM، وبيعدّي في دخل الكارت، ويخرج من I0.0 للسلك الأسود اللي الحساس بيسحبه لـ 0V.'}
+]});
+IL.quiz(document.getElementById('quiz'), [
+  {q:'حساس <b>PNP</b> لما يحس، السلك الأسود بيبقى عليه:', o:['+24V', '0V', 'مفتوح', '12V'], a:0, why:'PNP = Sourcing: بيطلّع الموجب.'},
+  {q:'كارت دخل الـ COM بتاعه على <b>+24V</b>. الحساس المناسب:', o:['NPN', 'PNP', 'أي واحد', 'محتاج حساس 2 سلك بس'], a:0, why:'الدخل لازم يتسحب لـ 0V عشان التيار يمشي، وده شغل الـ NPN.'},
+  {q:'حساس بروكسيميتي إندكتيف مش بيحس بعلبة بلاستيك. ليه؟', o:['الإندكتيف بيحس بالمعادن بس', 'الحساس بايظ', 'محتاج NPN', 'المسافة كبيرة أكيد'], a:0, why:'للبلاستيك استخدم كاباسيتيف أو فوتوسيل.'},
+  {q:'ليميت نهاية مشوار الأسانسير يتعمل NO ولا NC؟', o:['NC: لو السلك اتقطع الماكينة تقف', 'NO: أرخص', 'مش فارقة', 'NO عشان ميستهلكش'], a:0, why:'Fail-safe: قطع السلك = وقوف.'},
+  {q:'السلك البني في حساس 3 سلك بيروح على:', o:['+24V', '0V', 'دخل الـ PLC', 'الأرضي'], a:0, why:'BN +24V، BU 0V، BK الخرج.'},
+  {q:'حساس 2 سلك ولمبة دخل الـ PLC منوّرة خفيف على طول من غير حاجة. السبب غالبًا:', o:['تيار التسريب بتاع الحساس وهو OFF', 'الحساس NPN', 'الكابل مقطوع', 'الـ PLC بايظ'], a:0, why:'الحل مقاومة Bleeder أو حساس 3 سلك.'}
+], {lesson:'l3', pass:0.8});
+</script>
+</body>
+</html>
