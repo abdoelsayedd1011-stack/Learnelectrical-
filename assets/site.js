@@ -86,7 +86,7 @@
       guided:6, exercises:12, params:100, faults:12,
       inside:["توصيل الدرايف والموتور والإنكودر", "وضع السرعة ووضع الموضع", "ضبط الجين وشكل الحركة", "الإنذارات وإزاي تحلّها"],
       tags:"delta asda b2 servo سيرفو plc pulse درايف وموتور سيرفو، أوضاع PT و PR و S و T، ونبضات من PLC.  درايف وموتور سيرفو ASDA-B2   أوضاع التحكم PT و PR و S و T   6 تمارين محلولة خطوة بخطوة ونبضات من PLC " },
-    { id:"e5cc", path:"e5cc-lab/index.html", group:"servo", brand:"Omron", brandKey:"omron",
+    { id:"e5cc", path:"e5cc-lab/index.html", group:"temp", brand:"Omron", brandKey:"omron",
       name:"E5CC", kind:"كنترول حرارة", disp:"25 <span class=\"sv\">150</span>", dispClass:"red", html:true,
       line:"كنترولر حرارة Omron: توصيل الحساس وضبط الحرارة.",
       guided:6, exercises:10, params:76, faults:12,
@@ -99,7 +99,8 @@
     { key:"instr", title:"إنسترومنتيشن", sub:"إنكودر · حساسات حرارة · لود سيل · ⁦4⁠–⁠20mA⁩" },
     { key:"ab", title:"انفرترات Allen-Bradley", sub:"Rockwell Automation" },
     { key:"drives", title:"انفرترات تانية", sub:"Siemens · Schneider · Delta · Danfoss" },
-    { key:"servo", title:"سيرفو وكنترول حرارة", sub:"Delta · Omron" }
+    { key:"servo", title:"سيرفو", sub:"درايفات وموتورات سيرفو" },
+    { key:"temp", title:"كنترول حرارة", sub:"Omron" }
   ];
   var BRANDS = [
     { key:"all", label:"الكل" }, { key:"beginner", label:"للمبتدئين" }, { key:"basics", label:"كلاسيك كنترول" }, { key:"instr", label:"إنسترومنتيشن" }, { key:"ab", label:"Allen-Bradley" }, { key:"siemens", label:"Siemens" },
