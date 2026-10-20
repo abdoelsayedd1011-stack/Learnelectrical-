@@ -3,10 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>معمل السيرفو دلتا</title>
+<title>محاكي السيرفو دلتا</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<script>try{const t=localStorage.getItem('servo-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(_){}</script>
 <style>
 /* Layout: same bench as the inverter lab. Drive faceplate on one side, motor + scope on the other, CN1 wiring and plant below. */
 :root{
@@ -302,6 +303,7 @@ body.guided[data-g="c"] .chip,body.guided[data-g="d"] .chip{display:inline-block
 body.guided:not(.adv) .bench,body.guided:not(.adv) #ioGrid,body.guided:not(.adv) .advonly,body.guided:not(.adv) #pnlScope{display:none}
 body.guided:not(.adv)[data-g="c"] #ioCol{display:none}
 body.guided[data-g="c"] .bench,body.guided[data-g="d"] .bench,body.guided[data-g="c"] #ioGrid,body.guided[data-g="d"] #ioGrid{display:grid}
+body.guided:not([data-g="start"]) #machPanel{display:none}
 body.guided #advBar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
 body.guided .keyguide{display:none}
 body.guided .b2-keys{grid-template-rows:44px 44px}
@@ -375,18 +377,94 @@ body.guided .iorow .sw{width:60px;height:44px}
 .g-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .g-row .btn{min-height:44px}
 #modeBtn,header .chips a.btn{min-height:44px;display:inline-flex;align-items:center}
+/* ---------- v6: polish (bidi, phone wiring figure, quick controls, alarm card, machines, tuning) ---------- */
+bdi.nw{white-space:nowrap}
+.trainnote{font-size:.82rem;color:var(--muted);border-inline-start:3px solid var(--warn);padding:2px 10px;margin:8px 0 0;line-height:1.7}
+.theme-b{min-width:44px;min-height:44px;justify-content:center}
+@media (max-width:620px){
+ .figscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-inline:-4px;padding-bottom:4px}
+ .figscroll>.sadg{min-width:600px}
+ .figscroll+.fighint{display:block}
+}
+.g-body{grid-template-columns:minmax(0,1fr)}.g-fig,.sa-fig{min-width:0}
+.fighint{display:none;font-size:.76rem;color:var(--muted);margin:2px 0 0}
+.g-quick{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--bg);display:grid;gap:10px}
+.g-quick h3{font-size:.95rem;margin:0}
+.qrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.qbtn{display:inline-flex;align-items:center;gap:8px;min-height:44px;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:6px 12px;font:600 .9rem var(--font-body);cursor:pointer;color:inherit}
+.qbtn .lamp{width:12px;height:12px;border-radius:50%;background:var(--line);flex:none}
+.qbtn[aria-pressed="true"]{border-color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--panel))}
+.qbtn[aria-pressed="true"] .lamp{background:var(--good);box-shadow:0 0 6px var(--good)}
+.qbtn small{font:500 .72rem var(--font-body);color:var(--muted)}
+.qbtn:hover{border-color:var(--accent)}
+.qbtn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.qbtn.pri small{color:#fff}
+.qslider{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;font-size:.88rem}
+.qslider b{font:600 .9rem var(--font-mono);direction:ltr;min-width:64px;text-align:left}
+.qslider input{min-height:32px}
+.miniscope{width:100%;height:150px;}
+#mPlot{height:190px}
+.mshake{animation:mshake .09s linear infinite}@media (prefers-reduced-motion:reduce){.mshake{animation:none}}
+@keyframes mshake{0%{transform:translate(0,0)}25%{transform:translate(.8px,-.6px)}50%{transform:translate(-.7px,.5px)}75%{transform:translate(.6px,.7px)}}
+.miniscope{display:block;border-radius:10px;background:var(--scope-bg)}
+.mlegend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.76rem;color:var(--muted)}
+.mlegend span{display:flex;align-items:center;gap:5px}.mlegend i{width:14px;height:3px;border-radius:2px;display:inline-block}
+.alcard{border:1px solid var(--bad);border-radius:10px;padding:10px 14px;background:color-mix(in srgb,var(--bad) 8%,var(--panel));display:grid;gap:4px;font-size:.9rem;line-height:1.7}
+.alcard .h{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;color:var(--bad);font-weight:700}
+.alcard .h b{font-family:var(--font-mono)}
+.alcard .k{color:var(--muted);font-weight:600}
+/* practical machines */
+#machPanel h2{margin-bottom:4px}
+.mtabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin:10px 0 12px;scrollbar-width:thin}
+.mtabs button{flex:none;display:flex;align-items:center;gap:8px;min-height:44px;border:1px solid var(--line);background:var(--bg);color:inherit;border-radius:10px;padding:6px 12px;font:600 .88rem var(--font-body);cursor:pointer}
+.mtabs button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.mtabs button .ok{color:var(--good);font-weight:700}
+.mgrid{display:grid;gap:14px;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start}
+@media (max-width:900px){.mgrid{grid-template-columns:minmax(0,1fr)}}
+.mstory{margin:0 0 10px;line-height:1.8}
+.mstage{border:1px solid var(--line);border-radius:12px;background:var(--sa-bg);padding:6px;position:relative}
+.mstage svg{width:100%;height:auto;display:block;direction:ltr}
+.mstage svg text{font-family:var(--font-mono)}
+.mread{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.mread .tile .v{font-size:.86rem}
+.mres{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:.92rem;line-height:1.7;background:var(--bg)}
+.mres.ok{border-color:var(--good);background:color-mix(in srgb,var(--good) 10%,var(--panel))}
+.mres.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 8%,var(--panel))}
+.mres b.big{font-size:1.05rem}
+.mstep{border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:8px}
+.mstep>h3{display:flex;gap:8px;align-items:center;font-size:.98rem;margin:0}
+.mstep>h3 .n{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .85rem var(--font-display);flex:none}
+.mstep.done>h3 .n{background:var(--good)}
+.mdata{margin:0;padding:0;list-style:none;display:grid;gap:2px;font-size:.88rem}
+.mdata li{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding:3px 0}
+.mdata li b{font-family:var(--font-mono);font-weight:600;text-align:left}
+.gearin{display:flex;flex-wrap:wrap;gap:8px;align-items:end}
+.gearin label{display:grid;gap:2px;font-size:.78rem;color:var(--muted);font-weight:600}
+.gearin input{width:120px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px;font:600 1rem var(--font-mono);direction:ltr;min-height:44px}
+.gearin .frac{font:700 1.4rem var(--font-mono);padding-bottom:8px}
+.formula{font-size:.86rem;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;line-height:1.9}
+.formula .mono{white-space:nowrap}
+.mnote{font-size:.84rem;color:var(--muted);margin:0;line-height:1.7}
+.mstage .mut{fill:var(--muted)}.mstage .ln{stroke:var(--muted);fill:none}.mstage .acc{fill:var(--accent)}
+.mnote.bad{color:var(--bad);font-weight:600}.mnote.okc{color:var(--good);font-weight:600}
+.tune{display:grid;gap:8px}
+.tune .qslider{grid-template-columns:minmax(0,1fr) auto}.tune .qslider>span{grid-column:1/-1}
+.qslider input{direction:ltr}
+.tune .qslider span{font-size:.8rem;line-height:1.35}
+.tune .qslider span code{font-size:.78rem}
 </style>
 </head>
 <body>
 <div class="app">
 <header class="top">
   <div>
-    <h1>معمل السيرفو · Delta ASDA-B2</h1>
+    <h1>محاكي السيرفو · Delta ASDA-B2</h1>
     <p>درايف ASD-B2-0421-B مع موتور ECMA-C20604RS (400 وات، 3000 لفة). اشتغل من الكيباد زي الجهاز الحقيقي، وصّل أطراف CN1، ابعت نبضات من PLC، اتفرج على السرعة والعزم في الاسكوب، وحل التمارين.</p>
   </div>
   <div class="chips">
-    <a class="btn" href="../index.html" style="text-decoration:none">← كل المعامل</a>
+    <a class="btn" href="../index.html" style="text-decoration:none">← كل الكورسات</a>
     <button class="btn" id="modeBtn" type="button" aria-pressed="false">الوضع الكامل</button>
+    <button class="btn theme-b" id="themeBtn" type="button" aria-label="الوضع الغامق">☾</button>
     <span class="chip">وضع التحكم: <b id="chipMode">PT</b></span>
     <span class="chip">السيرفو: <b id="chipSon">OFF</b></span>
     <span class="chip">الحالة: <b id="chipAl">جاهز</b></span>
@@ -396,7 +474,7 @@ body.guided .iorow .sw{width:60px;height:44px}
 
 <section class="panel guide" id="guide" hidden aria-label="الوضع المبسّط">
   <div id="gStart">
-    <div class="g-head"><h2>ابدأ من هنا</h2><p class="g-sub">اختار تمرين وامشي معاه خطوة بخطوة: <b>التوصيل</b> ← <b>الباراميترات</b> ← <b>التشغيل</b> ← <b>عطل</b>. الصفحة هتوريك اللي محتاجه في كل خطوة بس. عايز المعمل كله؟ دوس «الوضع الكامل» فوق.</p></div>
+    <div class="g-head"><h2>ابدأ من هنا</h2><p class="g-sub">اختار تمرين وامشي معاه خطوة بخطوة: <b>التوصيل</b> ← <b>الباراميترات</b> ← <b>التشغيل</b> ← <b>عطل</b>. الصفحة هتوريك اللي محتاجه في كل خطوة بس. عايز المحاكي كله؟ دوس «الوضع الكامل» فوق.</p><p class="trainnote">أرقام الباراميترات والأطراف هنا للتدريب. قبل أي شغل على ماكينة حقيقية راجعها على مانيوال Delta ASDA-B2 بتاع الإصدار اللي عندك.</p></div>
     <div class="g-cards" id="gCards"></div>
   </div>
   <div id="gRun" hidden>
@@ -579,11 +657,19 @@ body.guided .iorow .sw{width:60px;height:44px}
   </div>
 </div>
 
+<section class="panel" id="machPanel" aria-label="أمثلة عملية">
+  <h2>أمثلة عملية: ماكينات بتتحرك بالسيرفو<span class="tagc">تحكم</span></h2>
+  <p class="hint" style="margin-top:0">4 ماكينات من المصانع، والسيرفو اللي في المحاكي هو اللي بيحرّكها فعلًا: لو الجير غلط الماكينة هتروح مكان غلط، ولو الجين مش مظبوط هتشوف overshoot أو رعشة، ولو الماكينة اتزنقت هيطلع AL009.</p>
+  <div class="mtabs" id="mTabs" role="tablist"></div>
+  <div id="mBody"></div>
+  <p class="trainnote">أرقام الباراميترات هنا للتدريب. راجعها على مانيوال Delta قبل ما تكتبها في درايف حقيقي.</p>
+</section>
+
 <div class="panel" id="advBar" hidden><button class="btn big" id="advBtn" type="button" aria-expanded="false">عرض المتقدم ▾</button><span class="hint" style="margin:0">التمارين المحلولة، لوحة التوصيل التفاعلي، الاسكوب، جدول الباراميترات، المرجع، التمارين اللي بتتصحح، والسجل. كله لسه موجود.</span></div>
 
 <div class="panel advonly" id="saPanel">
-  <h2>تمارين محلولة: التوصيل والباراميترات<span class="tagv">بيان</span><span class="tagc">طبّق في المعمل</span></h2>
-  <p class="hint" style="margin-top:0">6 تطبيقات بتتعمل كل يوم في المصانع بالـ ASDA-B2. كل واحد فيه رسمة التوصيل بأرقام أطراف CN1 الحقيقية، والباراميترات اللي تتكتب، وخطوات التشغيل والاختبار. زرار «طبّق في المعمل» بيوقف السيرفو، ويكتب الباراميترات في الدرايف اللي فوق (نفس الكيباد والجدول)، ويعمل Power cycle عشان الوضع يتطبق، ويظبط مفاتيح CN1 والحمل زي الرسمة.</p>
+  <h2>تمارين محلولة: التوصيل والباراميترات<span class="tagv">بيان</span><span class="tagc">طبّق في المحاكي</span></h2>
+  <p class="hint" style="margin-top:0">6 تطبيقات بتتعمل كل يوم في المصانع بالـ ASDA-B2. كل واحد فيه رسمة التوصيل بأرقام أطراف CN1 الحقيقية، والباراميترات اللي تتكتب، وخطوات التشغيل والاختبار. زرار «طبّق في المحاكي» بيوقف السيرفو، ويكتب الباراميترات في الدرايف اللي فوق (نفس الكيباد والجدول)، ويعمل Power cycle عشان الوضع يتطبق، ويظبط مفاتيح CN1 والحمل زي الرسمة.</p>
   <div class="reftabs" id="saTabs" role="tablist"></div>
   <div id="saBody"></div>
 </div>
@@ -898,7 +984,7 @@ const SIMAL=[1,2,3,4,5,6,7,8,9,11,13,14,15,30,31];
 const CN1=[
  [1,'DO4+','DO','خرج ديجيتال 4 موجب'],[2,'DO3−','DO','خرج 3 سالب'],[3,'DO3+','DO','خرج 3 موجب'],[4,'DO2−','DO','خرج 2 سالب'],[5,'DO2+','DO','خرج 2 موجب'],
  [6,'DO1−','DO','خرج 1 سالب (افتراضي SRDY)'],[7,'DO1+','DO','خرج 1 موجب'],[8,'DI4−','DI','مدخل 4'],[9,'DI1−','DI','مدخل 1 (افتراضي SON)'],[10,'DI2−','DI','مدخل 2'],
- [11,'COM+','PWR','مشترك المداخل: 24V للـ Sink، أو 0V للـ Source'],[12,'GND','AN','أرضي الأنالوج'],[13,'GND','AN','أرضي الأنالوج'],[14,'NC','—','مش متوصل'],
+ [11,'COM+','PWR','مشترك المداخل: 24V للـ Sink، أو 0V للـ Source'],[12,'GND','AN','أرضي الأنالوج'],[13,'GND','AN','أرضي الأنالوج'],[14,'COM−','PWR','أرضي الـ 24V (0V) للمداخل والمخارج'],
  [15,'MON2','AN','خرج مراقبة أنالوج 2 (±8V)'],[16,'MON1','AN','خرج مراقبة أنالوج 1 (±8V)'],[17,'VDD','PWR','خرج 24V داخلي (أقصى 500mA) للمداخل'],[18,'T_REF','AN','أمر العزم الأنالوج ±10V'],
  [19,'GND','AN','أرضي الأنالوج'],[20,'VCC','PWR','خرج 12V داخلي للبوتنشيوميتر'],[21,'OA','ENC','خرج الإنكودر A (line driver)'],[22,'/OA','ENC','خرج الإنكودر A مقلوب'],
  [23,'/OB','ENC','خرج الإنكودر B مقلوب'],[24,'/OZ','ENC','خرج الإنكودر Z مقلوب'],[25,'OB','ENC','خرج الإنكودر B'],[26,'DO4−','DO','خرج 4 سالب'],[27,'DO5−','DO','خرج 5 سالب (افتراضي ALRM)'],
@@ -1053,6 +1139,21 @@ function setCtl(on){
 }
 function setMain(on){if(on===S.main)return;S.main=on;log(on?'الكهربا الرئيسية R S T رجعت':'الكهربا الرئيسية R S T اتفصلت — CHARGE هتفضل منورة لحد ما الكباستور يفضى');}
 
+/* ---------------- PLC motion generator (used by the practical machines) ---------------- */
+/* trapezoidal pulse train like a PLC positioning instruction (DRVA/DRVI): n pulses, vmax pps, acc pps/s */
+const MV={on:false,n:0,sent:0,v:0,vmax:0,acc:0,dir:1,frac:0,home:null,plc:0};
+const MACH={clamp:null,sample:null,tick:null};
+const GQ={cv:null};
+function mvStep(dt){
+ if(!X.son||S.alarm){if(MV.on){MV.on=false;MV.v=0;MV.aborted=true;}return 0;}
+ if(MV.home){if(MV.home()){MV.on=false;MV.v=0;MV.home=null;MV.homeHit=true;return 0;}MV.v=Math.min(MV.vmax,MV.v+MV.acc*dt);}
+ else{const rem=MV.n-MV.sent;if(rem<=0){MV.on=false;MV.v=0;return 0;}
+  const vd=Math.min(MV.vmax,Math.sqrt(2*MV.acc*rem));MV.v+=clamp(vd-MV.v,-MV.acc*dt,MV.acc*dt);MV.v=Math.max(MV.v,Math.min(MV.acc*dt,50));}
+ MV.frac+=MV.v*dt;let k=Math.floor(MV.frac);MV.frac-=k;
+ if(!MV.home)k=Math.min(k,MV.n-MV.sent);
+ MV.sent+=k;MV.plc+=k*MV.dir;return k;
+}
+
 /* ---------------- simulation step ---------------- */
 function step(){
  const p=S.P,m=MOT(),dt=DT;
@@ -1103,6 +1204,7 @@ function step(){
  if(g.run||g.left>0){g.acc+=g.kpps*1000*dt;let n=Math.floor(g.acc);g.acc-=n;if(!g.run){n=Math.min(n,g.left);g.left-=n;if(g.left===0)FL.burstDoneAt=performance.now();}raw=n;g.sent+=n*g.dir;}
  const ptt=p['P1-00']&0xF;let pul=0,gd=g.dir;
  if(S.wiring){if(!W.pulseOK)raw=0;gd=W.signPol?g.dir*W.signPol:1;}
+ if(MV.on){const k=mvStep(dt);if(k){raw=k;gd=MV.dir;}}
  if(raw&&ctl){if(g.type==='pd')pul=ptt===2?raw*gd:ptt===1?raw:0;else if(g.type==='cw')pul=ptt===1?raw*gd:ptt===2?(gd>0?raw:0):0;else pul=ptt===0?raw*gd:0;}
  if((p['P1-00']>>8)&1)pul=-pul;
  if(f[0x45])pul=0;
@@ -1202,11 +1304,12 @@ function step(){
  for(let i=1;i<=5;i++){const code=p[pc(2,17+i)],fn=code&0xFF,no=(code>>8)&1;const v=!!st[fn];const out=ctl&&fn?(no?v:!v):false;X.doOut[i]=out;if(fn===8&&out)coil=true;}
  X.brkRel=coil?Math.min(1,X.brkRel+dt/0.04):Math.max(0,X.brkRel-dt/0.03);
  const Tb=S.brake&&X.brkRel<0.5?2.5*m.Tn:0;
- const Tdrv=Tm+Tg-visc*X.w,Tst=coul+Tb;
+ const Tdrv=Tm+Tg-visc*X.w,Tst=coul+Tb+(S.jam?4*m.Tn:0);
  let acc;
  if(X.w===0){acc=Math.abs(Tdrv)<=Tst?0:(Tdrv-Math.sign(Tdrv)*Tst)/Jt;X.w=acc*dt;}
  else{acc=(Tdrv-Math.sign(X.w)*Tst)/Jt;const wn=X.w+acc*dt;X.w=(wn*X.w<0)?0:wn;}
  X.th+=X.w*dt;
+ if(MACH.clamp)MACH.clamp();
  if(S.load==='vert'){const h=X.h0+X.th/TAU*10;if(h<0){X.th=-X.h0/10*TAU;if(X.w<0)X.w=0;}else if(h>400){X.th=(400-X.h0)/10*TAU;if(X.w>0)X.w=0;}
   const hh=X.h0+X.th/TAU*10;X.limLo=hh<15;X.limHi=hh>385;X.hgt=hh;}
  X.acc=acc;
@@ -1425,10 +1528,11 @@ function sample(){
  SC.i=(SC.i+1)%SC.n;
 }
 function niceMax(v){if(v<1e-9)return 1;const e=Math.pow(10,Math.floor(Math.log10(v)));for(const k of [1,2,2.5,5,10])if(k*e>=v)return k*e;return 10*e;}
-function drawScope(){
- const cv=$('#scope'),dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
+function drawScope(cvIn){
+ const cv=cvIn||$('#scope');if(!cv.clientWidth)return;
+ const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
  if(cv.width!==Math.round(W*dpr)||cv.height!==Math.round(H*dpr)){cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);}
- const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H);
+ const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H);c.direction='ltr';
  const npts=Math.min(SC.n,Math.round(SC.span*500)),h1=H*0.58,h2=H-h1;
  const series=k=>{const a=[];for(let j=0;j<npts;j++){a.push(SC.buf[k][(SC.i-npts+j+SC.n*2)%SC.n]);}return a;};
  const s=[0,1,2,3].map(series);
@@ -1667,7 +1771,7 @@ tp('MU',925,176,'U','mU','dn');tp('MV',970,176,'V','mV','dn');tp('MW',1015,176,'
 [['L1C','L1C','ac'],['L2C','L2C','ac'],['R','R','ac'],['S','S','ac'],['T','T','ac'],['DPE','PE','PE'],['DU','U','mU'],['DV','V','mV'],['DW','W','mW'],['DPE2','PE','PE']].forEach(([id,l,k],i)=>tp(id,290+i*48+(i>=6?28:0),282,l,k,'up'));
 tp('CN2',840,282,'CN2','enc','up');
 // CN1 strip on the drive bottom edge: wires go down into duct H2
-const CN1L=[['COMP','COM+',11],['DI1','DI1',9],['DI2','DI2',10],['DI3','DI3',34],['DI4','DI4',8],['DI5','DI5',33],['DI6','DI6',32],['DI7','DI7',31],['DI8','DI8',30],['COMN','COM−',45]];
+const CN1L=[['COMP','COM+',11],['DI1','DI1',9],['DI2','DI2',10],['DI3','DI3',34],['DI4','DI4',8],['DI5','DI5',33],['DI6','DI6',32],['DI7','DI7',31],['DI8','DI8',30],['COMN','COM−',14]];
 const CN1R=[['DO1P','DO1+',7],['DO1N','DO1−',6],['DO2P','DO2+',5],['DO2N','DO2−',4],['PULSE','PULSE',43],['NPULSE','/PULSE',41],['SIGN','SIGN',36],['NSIGN','/SIGN',37],['VREF','V-REF',42],['GND','GND',44]];
 CN1L.concat(CN1R).forEach(([id,l,pin],i)=>tp(id,272+i*29.5,566,`${l} ${pin}`,id==='COMP'?'P24':id==='COMN'?'M0V':/PULSE|SIGN/.test(id)?(id[0]==='N'?'pulN':'pul'):/VREF|GND/.test(id)?'sig':'ctl','dn'));
 // operator door / field devices: terminals on top edge, wires go up into duct H2
@@ -1991,8 +2095,8 @@ function frame(now){
 function frameBody(now){
  let el=(now-last)/1000;last=now;if(el>0.1)el=0.1;acc+=el;
  if(S.wiring)wApply();
- let n=0;while(acc>=DT&&n<600){step();acc-=DT;n++;scAcc+=DT;if(scAcc>=0.002){scAcc-=0.002;sample();}}
- renderDisplay(now);updateMotorView();drawScope();
+ let n=0;while(acc>=DT&&n<600){step();acc-=DT;n++;scAcc+=DT;if(scAcc>=0.002){scAcc-=0.002;sample();if(MACH.sample)MACH.sample();}}
+ renderDisplay(now);updateMotorView();drawScope();if(MACH.tick)MACH.tick(now);if(GQ.cv)drawScope(GQ.cv);
  if((S.ui.mode==='par'||S.ui.mode==='edit')&&S.ui.par!==pdSel&&DEF[S.ui.par])showPDetail(S.ui.par);
  updateFlags();
  if(now-lastSlow>150){lastSlow=now;if(S.wiring)renderBoardDyn();updateStatus();updateIO();updateEx();updatePTable(false);if(typeof guideTick==='function')guideTick();}
@@ -2094,7 +2198,7 @@ const SX={
 const SX_LEG='<div class="sa-leg"><span><i style="background:var(--w-pw)"></i>باور 220V</span><span><i style="background:var(--w-mo)"></i>الموتور U V W</span><span><i style="background:var(--w-en)"></i>كابل الإنكودر CN2</span><span><i style="background:var(--w-dc)"></i>+24V</span><span><i style="background:var(--w-cm)"></i>0V (COM−)</span><span><i style="background:var(--w-an)"></i>أنالوج</span><span><i style="background:var(--w-pu)"></i>نبضات</span><span><i style="background:var(--muted);height:2px"></i>- - ميكانيكي</span></div>';
 const SA_PWR='وصّل الكهربا: L و N من البريكر Q1 على L1C و L2C (كنترول) وعلى R و S (باور، الـ 400W بيشتغل على فاز واحد)، والأرضي على PE.';
 const SA_MOT='الموتور على U V W بنفس الترتيب (أحمر، أبيض، أسود) وأرضيه، وكابل الإنكودر في CN2. لو اتبدلوا الموتور يجري أو يزن.';
-const SA_COM='+24V من المصدر على COM+ (pin 11)، و 0V على COM− (pin 45). كل مفاتيح المداخل بتقفل بين طرف الـ DI و 0V.';
+const SA_COM='+24V من المصدر على COM+ (pin 11)، و 0V على COM− (pin 14). كل مفاتيح المداخل بتقفل بين طرف الـ DI و 0V.';
 const SA_SAFE='الطوارئ NC بين DI8 (pin 30) و 0V، وحساس النهاية العكسي NL على DI6 (pin 32) والأمامي PL على DI7 (pin 31) كـ NC. من غيرهم يطلع AL013 أو AL014 / AL015، ولو مفيش حساسات اعمل جمبر على 0V.';
 const SA_BASE={'P1-01':0x1000,'P1-00':0x0002,'P1-02':0,'P1-06':0,'P1-07':0,'P1-08':0,'P1-09':1000,'P1-10':2000,'P1-15':0,'P1-17':0,'P1-33':0,'P1-34':200,'P1-35':200,'P1-36':0,'P1-40':3000,'P1-41':100,'P1-42':0,'P1-43':0,'P1-44':16,'P1-45':10,'P1-54':12800,'P1-55':3000,'P1-57':0,'P2-34':5000,'P2-35':480000,'P2-36':1000,'P2-37':1000,'P3-06':0,'P4-05':20,'P4-22':0,'P4-23':0,'P2-30':0};
 const SA=[
@@ -2104,8 +2208,8 @@ const SA=[
   su:{load:'disk',ratio:1,fric:5,brake:false},io:{},
   st:[SA_PWR,SA_MOT,'مفيش أسلاك تحكم غير الحماية: '+SA_SAFE,'اكتب الباراميترات اللي في الجدول.','ادخل P4-05 ودوس SET مرتين: الشاشة تكتب JOG.','امسك ▲: الموتور يلف CCW بـ 300 r/min، وامسك ▼ يلف CW. سيب الزرار يقف في 50 ms.','اخرج بـ MODE، ورجّع P2-30 = 0 بعد التجربة.'],
   go:'ادخل P4-05 ودوس SET مرتين لحد ما تظهر JOG، وامسك ▲: الموتور يلف 300 r/min.',
-  svg(){const B=SX.base({al:'توصيل اختبار الـ JOG',x1:250,terms:[[11,'COM+'],[32,'NL'],[31,'PL'],[30,'EMGS'],[45,'COM−']]});let s=B.s;
-   s+=SX.di(B,32,'nc','ls','LS-')+SX.di(B,31,'nc','ls','LS+')+SX.di(B,30,'nc','es','ES')+SX.com(B,11,45,32);
+  svg(){const B=SX.base({al:'توصيل اختبار الـ JOG',x1:250,terms:[[11,'COM+'],[32,'NL'],[31,'PL'],[30,'EMGS'],[14,'COM−']]});let s=B.s;
+   s+=SX.di(B,32,'nc','ls','LS-')+SX.di(B,31,'nc','ls','LS+')+SX.di(B,30,'nc','es','ES')+SX.com(B,11,14,32);
    s+=SX.kp(292,192)+SX.t(344,262,'P4-05 ← SET ← SET','')+SX.t(344,276,'امسك ▲ أو ▼','ar');return s+'</svg>';}},
  {t:'وضع السرعة S بأمر \u20660-10V\u2069 على V-REF',md:2,
   g:'سير أو عمود بيلف بسرعة بتتغير من PLC أو بوتنشيوميتر: \u20660-10V\u2069 على V_REF (pin 42) و GND (pin 44). السرعة = الجهد × P1-40 ÷ 10، يعني 5V = 1500 r/min. السيرفو بيمسك بمفتاح SON على DI1 (pin 9).',
@@ -2113,8 +2217,8 @@ const SA=[
   su:{load:'disk',ratio:1,fric:5,brake:false},io:{vref:5},
   st:[SA_PWR,SA_MOT,SA_COM,'مفتاح SON بين DI1 (pin 9) و 0V، وزرار ARST بين DI5 (pin 33) و 0V. '+SA_SAFE,'إشارة \u20660-10V\u2069 من الـ PLC أو البوت: الموجب على V_REF (pin 42) والسالب على GND (pin 44)، بكابل شيلد بعيد عن كابل الموتور.','اكتب الباراميترات اللي في الجدول.','اطفي الكنترول وولّعها (Power cycle) عشان وضع S يشتغل: الشريحة فوق تكتب «وضع التحكم: S».','اقفل DI1 (SON): السيرفو يمسك والموتور واقف لو الجهد صفر.','V-REF على 5V: الموتور يطلع 1500 r/min في حوالي ربع ثانية. جرّب 10V: 3000 r/min.'],
   go:'اقفل مفتاح DI1 (SON) في «أطراف CN1». V-REF جاهز على 5V، فالموتور يطلع 1500 r/min.',
-  svg(){const B=SX.base({al:'توصيل وضع السرعة',terms:[[11,'COM+'],[9,'SON'],[33,'ARST'],[32,'NL'],[31,'PL'],[30,'EMGS'],[45,'COM−'],[42,'V_REF'],[44,'GND']]});let s=B.s;
-   s+=SX.di(B,9,'no','sel','S1')+SX.di(B,33,'no','pb','B1')+SX.di(B,32,'nc','ls','LS-')+SX.di(B,31,'nc','ls','LS+')+SX.di(B,30,'nc','es','ES')+SX.com(B,11,45,9);
+  svg(){const B=SX.base({al:'توصيل وضع السرعة',terms:[[11,'COM+'],[9,'SON'],[33,'ARST'],[32,'NL'],[31,'PL'],[30,'EMGS'],[14,'COM−'],[42,'V_REF'],[44,'GND']]});let s=B.s;
+   s+=SX.di(B,9,'no','sel','S1')+SX.di(B,33,'no','pb','B1')+SX.di(B,32,'nc','ls','LS-')+SX.di(B,31,'nc','ls','LS+')+SX.di(B,30,'nc','es','ES')+SX.com(B,11,14,9);
    s+=SX.box(B,[42,44],'an','\u20660-10V\u2069','PLC أو بوت');return s+'</svg>';}},
  {t:'وضع النبضات PT: Pulse + Direction من PLC',md:0,
   g:'أشهر توصيلة مع PLC: كل نبضة خطوة، وإشارة الاتجاه بتحدد لقدام ولا لورا، والدرايف يمشّي الموتور بالظبط. بالجير الإلكتروني 16/1 كل 10000 نبضة = لفة واحدة (الإنكودر 160000 نبضة في اللفة).',
@@ -2122,8 +2226,8 @@ const SA=[
   su:{load:'disk',ratio:1,fric:5,brake:false},io:{gen:{type:'pd',kpps:50,dir:1,n:10000}},
   st:[SA_PWR,SA_MOT,SA_COM,'SON على DI1 (pin 9)، و ARST على DI5 (pin 33)، والطوارئ NC على DI8 (pin 30). حساسات NL و PL على DI6 و DI7 زي التمرين 2.','نبضات الـ PLC (line driver): Y0 على PULSE (pin 43) و /PULSE (pin 41)، و Y1 للاتجاه على SIGN (pin 37) و /SIGN (pin 36)، بكابل مجدول ومعزول. لو الـ PLC open collector وصّل 24V على PULL HI (pin 35).','اكتب الباراميترات اللي في الجدول.','Power cycle عشان وضع PT يشتغل.','اقفل DI1 (SON) وابعت 10000 نبضة: الموتور يلف لفة واحدة بالظبط ولمبة TPOS تنور.','اعكس الاتجاه من الـ PLC وابعت تاني: يرجع لفة.'],
   go:'اقفل DI1 (SON)، وبعدين في «نبضات من PLC» دوس «ابعت» (10000 نبضة): الموتور يلف لفة واحدة.',
-  svg(){const B=SX.base({al:'توصيل وضع النبضات',terms:[[11,'COM+'],[9,'SON'],[33,'ARST'],[30,'EMGS'],[45,'COM−'],[43,'PULSE'],[41,'/PULSE'],[37,'SIGN'],[36,'/SIGN']]});let s=B.s;
-   s+=SX.di(B,9,'no','sel','S1')+SX.di(B,33,'no','pb','B1')+SX.di(B,30,'nc','es','ES')+SX.com(B,11,45,9);
+  svg(){const B=SX.base({al:'توصيل وضع النبضات',terms:[[11,'COM+'],[9,'SON'],[33,'ARST'],[30,'EMGS'],[14,'COM−'],[43,'PULSE'],[41,'/PULSE'],[37,'SIGN'],[36,'/SIGN']]});let s=B.s;
+   s+=SX.di(B,9,'no','sel','S1')+SX.di(B,33,'no','pb','B1')+SX.di(B,30,'nc','es','ES')+SX.com(B,11,14,9);
    s+=SX.box(B,[43,41,37,36],'pu','PLC','Y0 نبضات · Y1 اتجاه');return s+'</svg>';}},
  {t:'وضع PR: مواضع جاهزة بتتختار بالمداخل',md:1,
   g:'من غير نبضات: المواضع مكتوبة جوه الدرايف (P1-15 وبعده)، والـ PLC أو الزراير بتختار رقم الموضع بـ POS0 و POS1، وحافة CTRG تنفّذه. مناسب لترابيزة أو سير بيقف في محطات ثابتة.',
@@ -2131,8 +2235,8 @@ const SA=[
   su:{load:'disk',ratio:1,fric:5,brake:false},io:{},
   st:[SA_PWR,SA_MOT,SA_COM,'SON على DI1 (pin 9)، وزرار CTRG على DI2 (pin 10)، و POS0 على DI3 (pin 34)، و POS1 على DI4 (pin 8)، و ARST على DI5 (pin 33)، والطوارئ NC على DI8 (pin 30).','اكتب الباراميترات اللي في الجدول.','Power cycle عشان وضع PR يشتغل.','اقفل DI1 (SON)، وبعدين اقفل DI2 (CTRG) وافتحه: الموتور يروح الموضع 1 (10 لفات) بـ 600 r/min ويقف و TPOS ينور.','اقفل DI3 (POS0) واعمل حافة CTRG تاني: يرجع للصفر بـ 1000 r/min.'],
   go:'اقفل DI1 (SON)، وبعدين اقفل DI2 (CTRG) وافتحه: الموتور يروح 10 لفات ويقف.',
-  svg(){const B=SX.base({al:'توصيل وضع المواضع الداخلية',terms:[[11,'COM+'],[9,'SON'],[10,'CTRG'],[34,'POS0'],[8,'POS1'],[33,'ARST'],[30,'EMGS'],[45,'COM−']]});let s=B.s;
-   s+=SX.di(B,9,'no','sel','S1')+SX.di(B,10,'no','pb','B2')+SX.di(B,34,'no','sel','S3')+SX.di(B,8,'no','sel','S4')+SX.di(B,33,'no','pb','B1')+SX.di(B,30,'nc','es','ES')+SX.com(B,11,45,9);
+  svg(){const B=SX.base({al:'توصيل وضع المواضع الداخلية',terms:[[11,'COM+'],[9,'SON'],[10,'CTRG'],[34,'POS0'],[8,'POS1'],[33,'ARST'],[30,'EMGS'],[14,'COM−']]});let s=B.s;
+   s+=SX.di(B,9,'no','sel','S1')+SX.di(B,10,'no','pb','B2')+SX.di(B,34,'no','sel','S3')+SX.di(B,8,'no','sel','S4')+SX.di(B,33,'no','pb','B1')+SX.di(B,30,'nc','es','ES')+SX.com(B,11,14,9);
    return s+'</svg>';}},
  {t:'وضع العزم T: شد ثابت بأمر T-REF وحد سرعة',md:3,
   g:'ماكينة لف أو سير محتاج شد ثابت: الـ PLC بيدي \u20660-10V\u2069 على T_REF (pin 18) و GND (pin 19)، والعزم = الجهد × P1-41 ÷ 10 %. لازم حد سرعة، لأن لو الخامة اتقطعت الموتور هيجري لأقصى سرعة.',
@@ -2140,8 +2244,8 @@ const SA=[
   su:{load:'conv',ratio:5,fric:5,brake:false},io:{tref:3},
   st:[SA_PWR,SA_MOT,SA_COM,'SON على DI1 (pin 9)، و ARST على DI5 (pin 33)، والحساس الأمامي PL على DI7 (pin 31)، والطوارئ NC على DI8 (pin 30).','أمر العزم \u20660-10V\u2069 من الـ PLC: الموجب على T_REF (pin 18) والسالب على GND (pin 19).','اكتب الباراميترات اللي في الجدول.','Power cycle عشان وضع T يشتغل.','اقفل DI1 (SON) و T-REF على 3V: العزم حوالي 30% والسير يسرّع لحد 1000 r/min ويثبت هناك.','قلّل T-REF لـ 1V: العزم 10% بس، يا دوب يغلب احتكاك السير.'],
   go:'اقفل DI1 (SON). T-REF جاهز على 3V (30% عزم): السير يسرّع لحد حد السرعة 1000 r/min.',
-  svg(){const B=SX.base({al:'توصيل وضع العزم',terms:[[11,'COM+'],[9,'SON'],[33,'ARST'],[31,'PL'],[30,'EMGS'],[45,'COM−'],[18,'T_REF'],[19,'GND']]});let s=B.s;
-   s+=SX.di(B,9,'no','sel','S1')+SX.di(B,33,'no','pb','B1')+SX.di(B,31,'nc','ls','LS+')+SX.di(B,30,'nc','es','ES')+SX.com(B,11,45,9);
+  svg(){const B=SX.base({al:'توصيل وضع العزم',terms:[[11,'COM+'],[9,'SON'],[33,'ARST'],[31,'PL'],[30,'EMGS'],[14,'COM−'],[18,'T_REF'],[19,'GND']]});let s=B.s;
+   s+=SX.di(B,9,'no','sel','S1')+SX.di(B,33,'no','pb','B1')+SX.di(B,31,'nc','ls','LS+')+SX.di(B,30,'nc','es','ES')+SX.com(B,11,14,9);
    s+=SX.box(B,[18,19],'an','\u20660-10V\u2069','عزم من PLC');return s+'</svg>';}},
  {t:'محور رأسي: حساسات النهاية والطوارئ والفرامل',md:4,brk:true,
   g:'محور رأسي بسكرو 10 مم بيطلع وينزل بسرعتين داخليتين (SPD0 لفوق و SPD1 لتحت). حساس تحت على NL (DI6) وحساس فوق على PL (DI7) كـ NC، والطوارئ على DI8، و ARST على DI5، وفرامل الموتور بتفك من خرج BRKR.',
@@ -2149,21 +2253,23 @@ const SA=[
   su:{load:'vert',ratio:3,fric:5,brake:true},io:{},
   st:[SA_PWR,SA_MOT+' الموتور هنا بفرامل.',SA_COM,'SON على DI1 (pin 9)، SPD0 على DI3 (pin 34)، SPD1 على DI4 (pin 8)، ARST على DI5 (pin 33)، حساس تحت NC على DI6 (pin 32)، حساس فوق NC على DI7 (pin 31)، والطوارئ NC على DI8 (pin 30).','ملف ريليه الفرامل KB بين +24V و DO4+ (pin 1)، و DO4− (pin 26) على 0V. كونتاكت KB بيدي 24V لفرامل الموتور.','اكتب الباراميترات اللي في الجدول.','Power cycle عشان وضع Sz يشتغل.','اقفل DI1 (SON): الفرامل تفك بعد 50 ms والمحور ماسك مكانه.','اقفل DI3 (SPD0): المحور يطلع لحد حساس فوق PL، الدرايف يوقفه والشاشة ترمش AL015. افتح DI3.','اقفل DI4 (SPD1): ينزل لحد حساس تحت NL ويكتب AL014.'],
   go:'اقفل DI1 (SON) وبعدين DI3 (SPD0): المحور يطلع لحد حساس فوق PL ويقف.',
-  svg(){const B=SX.base({al:'توصيل المحور الرأسي',w:460,brk:true,terms:[[11,'COM+'],[9,'SON'],[34,'SPD0'],[8,'SPD1'],[33,'ARST'],[32,'NL'],[31,'PL'],[30,'EMGS'],[45,'COM−'],[1,'DO4+'],[26,'DO4−']]});let s=B.s;
-   s+=SX.di(B,9,'no','sel','S1')+SX.di(B,34,'no','sel','S3')+SX.di(B,8,'no','sel','S4')+SX.di(B,33,'no','pb','B1')+SX.di(B,32,'nc','ls','LS-')+SX.di(B,31,'nc','ls','LS+')+SX.di(B,30,'nc','es','ES')+SX.com(B,11,45,9);
+  svg(){const B=SX.base({al:'توصيل المحور الرأسي',w:460,brk:true,terms:[[11,'COM+'],[9,'SON'],[34,'SPD0'],[8,'SPD1'],[33,'ARST'],[32,'NL'],[31,'PL'],[30,'EMGS'],[14,'COM−'],[1,'DO4+'],[26,'DO4−']]});let s=B.s;
+   s+=SX.di(B,9,'no','sel','S1')+SX.di(B,34,'no','sel','S3')+SX.di(B,8,'no','sel','S4')+SX.di(B,33,'no','pb','B1')+SX.di(B,32,'nc','ls','LS-')+SX.di(B,31,'nc','ls','LS+')+SX.di(B,30,'nc','es','ES')+SX.com(B,11,14,9);
    s+=SX.box(B,[1,26],'dc','KB','ريليه الفرامل');return s+'</svg>';}}
 ];
 let SAK=0;
+/* wrap Latin runs (PT: Pulse + Direction, V-REF, 0-10V) so RTL lines don't scramble or split them */
+const bd=t=>String(t).replace(/[A-Za-z0-9\u2066][A-Za-z0-9 +&\-\/:.\u2066\u2069]*[A-Za-z0-9\u2069]|[A-Za-z0-9]/g,m=>'<bdi class="nw">'+m+'</bdi>');
 const fmtSA=(c,v)=>{const d=DEF[c];return d&&d.hex?hex4(v):String(v);};
 function renderSA(){
- $('#saTabs').innerHTML=SA.map((a,i)=>'<button role="tab" data-i="'+i+'" aria-pressed="'+(i===SAK)+'" aria-selected="'+(i===SAK)+'">'+(i+1)+'. '+a.t+'</button>').join('');
+ $('#saTabs').innerHTML=SA.map((a,i)=>'<button role="tab" data-i="'+i+'" aria-pressed="'+(i===SAK)+'" aria-selected="'+(i===SAK)+'">'+(i+1)+'. '+bd(a.t)+'</button>').join('');
  const a=SA[SAK];
  const rows=a.p.map(([c,v,why])=>'<tr><td class="code">'+c+'<small>'+DEF[c].n+' · '+DEF[c].ar+'</small></td><td class="v">'+fmtSA(c,v)+'</td><td class="why">'+why+'</td></tr>').join('');
- $('#saBody').innerHTML='<div class="sa-card"><h3>'+(SAK+1)+'. '+a.t+'</h3><p class="goal">'+a.g+'</p>'+
-  '<div class="sa-grid"><figure class="sa-fig">'+a.svg()+SX_LEG+'</figure>'+
+ $('#saBody').innerHTML='<div class="sa-card"><h3>'+(SAK+1)+'. '+bd(a.t)+'</h3><p class="goal">'+a.g+'</p>'+
+  '<div class="sa-grid"><figure class="sa-fig"><div class="figscroll">'+a.svg()+'</div><p class="fighint">اسحب الرسمة يمين وشمال عشان تقرا أرقام الأطراف.</p>'+SX_LEG+'</figure>'+
   '<div class="tablewrap"><table class="sa-tbl"><thead><tr><th>الباراميتر</th><th>القيمة</th><th>ليه</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>'+
   '<ol class="sa-steps">'+a.st.map(x=>'<li>'+x+'</li>').join('')+'</ol>'+
-  '<div class="row"><button class="tagc sa-go" data-go="'+SAK+'">طبّق في المعمل</button><p class="sa-note">الزرار بيفصل SON ويستنى السيرفو يبقى OFF (فيه باراميترات زي P1-01 و P1-44 بتتغير والسيرفو OFF بس)، وبيرجّع الباراميترات اللي ممكن تبوّظ التطبيق لقيمتها العادية، ويعمل Power cycle عشان الوضع يتطبق.</p></div></div>';
+  '<div class="row"><button class="tagc sa-go" data-go="'+SAK+'">طبّق في المحاكي</button><p class="sa-note">الزرار بيفصل SON ويستنى السيرفو يبقى OFF (فيه باراميترات زي P1-01 و P1-44 بتتغير والسيرفو OFF بس)، وبيرجّع الباراميترات اللي ممكن تبوّظ التطبيق لقيمتها العادية، ويعمل Power cycle عشان الوضع يتطبق.</p></div></div>';
 }
 $('#saTabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;SAK=+b.dataset.i;renderSA();});
 $('#saBody').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)saApply(+b.dataset.go);});
@@ -2265,23 +2371,62 @@ function setMode(g){GUI.guided=!!g;document.body.classList.toggle('guided',GUI.g
  const b=$('#modeBtn');b.textContent=GUI.guided?'الوضع الكامل':'الوضع المبسّط';b.setAttribute('aria-pressed',String(!GUI.guided));
  if(GUI.guided)guideRender();else{document.body.removeAttribute('data-g');faceHome();}guiSave();}
 function gCards(){
- $('#gCards').innerHTML=SA.map((a,i)=>'<button type="button" class="g-card'+(GUI.done[i]?' done':'')+'" data-ex="'+i+'"><span class="n">'+(GUI.done[i]?'✓':i+1)+'</span><span class="t">'+a.t+'</span><span class="g">'+GD[i].goal+'</span><span class="ico">'+GICO[GD[i].ico]+'<span>'+a.p.length+' باراميتر · 4 خطوات</span></span></button>').join('');
+ $('#gCards').innerHTML=SA.map((a,i)=>'<button type="button" class="g-card'+(GUI.done[i]?' done':'')+'" data-ex="'+i+'"><span class="n">'+(GUI.done[i]?'✓':i+1)+'</span><span class="t">'+bd(a.t)+'</span><span class="g">'+bd(GD[i].goal)+'</span><span class="ico">'+GICO[GD[i].ico]+'<span>'+a.p.length+' باراميتر · 4 خطوات</span></span></button>').join('');
 }
 /* the real faceplate (same nodes, listeners kept) travels into step (b) and back home */
 const FACE_HOME=$('#pnlFace'),FACE_NODES=[$('#pnlFace .device')],FACE_ANCHOR=$('#faceHint');
 function faceTo(box){if(!box)return;FACE_NODES.forEach(n=>{if(n.parentNode!==box)box.appendChild(n);});}
 function faceHome(){FACE_NODES.forEach(n=>{if(n.parentNode!==FACE_HOME)FACE_HOME.insertBefore(n,FACE_ANCHOR);});}
 const G_CYC='<div class="g-row" data-pend hidden><span class="g-warn">P1-01 اتغير: الوضع الجديد بيشتغل بعد ما تطفي الكنترول وتولّعها.</span><button type="button" class="btn" data-cycle>اطفي وولّع الكنترول (Power cycle)</button></div>';
+/* quick controls inside steps 3 and 4, so a phone user doesn't scroll to the CN1 panel */
+const SCOPE_LEG='<div class="mlegend"><span><i style="background:#ffb44d"></i>أمر السرعة</span><span><i style="background:#4cc0cf"></i>السرعة الفعلية</span><span><i style="background:#ff6b5e"></i>العزم %</span><span><i style="background:#a98bff"></i>خطأ الموضع</span></div>';
+function gQuickHTML(i){
+ const di=(n,l)=>'<button type="button" class="qbtn" data-qdi="'+n+'" aria-pressed="false"><span class="lamp"></span>'+l+'<small>DI'+n+' · pin '+DIPIN[n]+'</small></button>';
+ const sl=(k,l)=>'<label class="qslider"><span>'+l+'</span><input type="range" min="-10" max="10" step="0.1" data-qv="'+k+'"><b data-qvv="'+k+'">0.0 V</b></label>';
+ let h='<div class="g-quick"><h3>التحكم السريع <span class="tagc">تحكم</span></h3>';
+ if(i===0)h+='<div id="gFace2"></div><p class="mnote">ده نفس كيباد الدرايف. في JOG امسك ▲ أو ▼، و MODE يخرج.</p><div class="qrow"><button type="button" class="qbtn" data-qact="arst">ARST امسح<small>DI5 · pin 33</small></button></div>';
+ else{
+  h+='<div class="qrow">'+di(1,'SON');
+  if(i===2)h+='<button type="button" class="qbtn pri" data-qact="send">ابعت 10000 نبضة<small>50 kpps</small></button><button type="button" class="qbtn" data-qact="dir" aria-pressed="false"><span class="lamp"></span>اتجاه عكسي<small>SIGN</small></button>';
+  if(i===3)h+='<button type="button" class="qbtn pri" data-qact="ctrg">CTRG نفّذ<small>DI2 · pin 10</small></button>'+di(3,'POS0');
+  if(i===5)h+=di(3,'SPD0 لفوق')+di(4,'SPD1 لتحت');
+  h+='<button type="button" class="qbtn" data-qact="arst">ARST امسح<small>DI5 · pin 33</small></button></div>';
+  if(i===1)h+=sl('vref','V-REF');
+  if(i===4)h+=sl('tref','T-REF');
+ }
+ return h+'<canvas class="miniscope" id="gScope" aria-label="اسكوب صغير"></canvas>'+SCOPE_LEG+'</div>';
+}
+function alarmCardHTML(code){
+ const a=ALREF.find(r=>r[0]===code);if(!a)return '';
+ return '<div class="alcard" role="status"><div class="h"><b>AL'+String(code).padStart(3,'0')+'</b><span>'+a[1]+'</span></div><div>'+a[2]+'</div><div><span class="k">السبب غالبًا: </span>'+a[3]+'</div><div><span class="k">تعمل إيه: </span>'+a[4]+'</div><div><span class="k">المسح: </span>'+a[5]+'</div></div>';
+}
+function gQuickTick(){
+ $$('#gBody [data-qdi]').forEach(b=>{const v=String(!!S.di[+b.dataset.qdi]);if(b.getAttribute('aria-pressed')!==v)b.setAttribute('aria-pressed',v);});
+ const d=$('#gBody [data-qact="dir"]');if(d)d.setAttribute('aria-pressed',String(S.gen.dir<0));
+ $$('#gBody [data-qv]').forEach(r=>{const k=r.dataset.qv,v=S[k];if(document.activeElement!==r&&+r.value!==v)r.value=v;const o=$('#gBody [data-qvv="'+k+'"]');if(o)o.textContent=v.toFixed(1)+' V';});
+ const al=curAl(),c=$('#gAlCard');if(c&&GQ.al!==al){GQ.al=al;c.innerHTML=al?alarmCardHTML(al):'';}
+}
+function pulseDI(n){S.di[n]=true;log('DI'+n+' اتقفل');setTimeout(()=>{S.di[n]=false;log('DI'+n+' اتفتح');},250);}
+function gQuickClick(e){
+ const q=e.target.closest('[data-qdi]');if(q){const n=+q.dataset.qdi;S.di[n]=!S.di[n];log('DI'+n+' '+(S.di[n]?'اتقفل':'اتفتح'));gQuickTick();return true;}
+ const a=e.target.closest('[data-qact]');if(!a)return false;
+ const k=a.dataset.qact;
+ if(k==='arst')pulseDI(5);
+ else if(k==='ctrg')pulseDI(2);
+ else if(k==='send'){const n=10000;S.gen.left=n;S.gen.burstN=n;S.gen.burstFb=X.posFb;S.gen.acc=0;S.gen.kpps=50;KN.f&&KN.f.draw();log('PLC بعت 10,000 نبضة بـ 50 kpps');}
+ else if(k==='dir'){S.gen.dir=-S.gen.dir;$('#genDir').value=String(S.gen.dir);log('اتجاه النبضات: '+(S.gen.dir>0?'CCW (+)':'CW (−)'));}
+ gQuickTick();return true;
+}
 function guideRender(){
  if(!GUI.guided)return;
  const run=GUI.ex>=0;$('#gStart').hidden=run;$('#gRun').hidden=!run;
  if(!run){document.body.setAttribute('data-g','start');gCards();faceHome();return;}
  const i=GUI.ex,a=SA[i],g=GD[i],st=GUI.step;document.body.setAttribute('data-g','abcd'[st]);
  $('#gProg').innerHTML=GSTEPS.map((_,k)=>'<span class="'+(k<st?'ok':k===st?'on':'')+'"></span>').join('')+'<b>'+(st+1)+'/4</b>';
- $('#gTitle').textContent=(i+1)+'. '+a.t;
+ $('#gTitle').innerHTML=(i+1)+'. '+bd(a.t);
  const sp=gSplitSteps(a);let h='<div class="g-steps">'+GSTEPS.map((n,k)=>'<span class="'+(k===st?'on':'')+'">'+(k+1)+' '+n+'</span>').join('')+'</div>';
  if(st===0){
-  h+='<p class="g-lead">'+a.g+'</p><figure class="g-fig">'+a.svg()+SX_LEG+'</figure><div class="g-terms" id="gTerms"></div><ol class="g-list">'+sp.wire.map(x=>'<li>'+x+'</li>').join('')+'</ol>';
+  h+='<p class="g-lead">'+a.g+'</p><figure class="g-fig"><div class="figscroll">'+a.svg()+'</div><p class="fighint">اسحب الرسمة يمين وشمال عشان تقرا أرقام الأطراف.</p>'+SX_LEG+'</figure><div class="g-terms" id="gTerms"></div><ol class="g-list">'+sp.wire.map(x=>'<li>'+x+'</li>').join('')+'</ol>';
  }else if(st===1){
   const hand=GUI.hand==='hand';
   h+='<p class="g-lead">دي الباراميترات اللي التمرين محتاجها. تحب تدخلها بإيدك من الكيباد عشان إيدك تتعود، ولا الدرايف يكتبها لوحده؟</p>'+
@@ -2298,22 +2443,24 @@ function guideRender(){
    h+=tbl+'<div class="g-check" id="gChkP"><i>✓</i><span>كل الباراميترات مكتوبة في الدرايف والوضع اتطبق<span class="sub">زرار «اضبطها أوتوماتيك» بيفصل السيرفو الأول، ويكتب الباراميترات، ويعمل Power cycle، ويظبط مفاتيح CN1 والحمل زي التمرين.</span></span></div>';
   }
  }else if(st===2){
-  h+='<p class="g-lead">'+g.do+'</p><div id="gWarnP" class="g-warn" hidden>الباراميترات لسه متكتبتش. ارجع لخطوة 2 واكتبها من الكيباد أو دوس «اضبطها أوتوماتيك».</div>'+G_CYC+
+  h+='<p class="g-lead">'+g.do+'</p><div id="gWarnP" class="g-warn" hidden>الباراميترات لسه متكتبتش. ارجع لخطوة 2 واكتبها من الكيباد أو دوس «اضبطها أوتوماتيك».</div>'+G_CYC+'<div id="gAlCard"></div>'+gQuickHTML(i)+
    '<div class="g-check" id="gChkS"><i>✓</i><span>السيرفو ON<span class="sub">'+(i===0?'من P2-30 = 1 (من غير سلك)':'مفتاح DI1 (SON، pin 9) في «أطراف CN1» مقفول')+'</span></span></div>'+
    '<div class="g-check" id="gChkM"><i>✓</i><span>وضع التحكم '+(a.md===null?'أي وضع (الـ JOG بيشتغل في كل الأوضاع)':MODES[a.md])+'<span class="sub" id="gModeNow"></span></span></div>'+
    '<div class="g-check" id="gChkR"><i>✓</i><span>الموتور عمل اللي التمرين عايزه<span class="sub">'+a.go+'</span></span></div>'+
    '<div class="g-live"><span>الحالة <b id="gSt">—</b></span><span>السرعة <b id="gRpm">0 r/min</b></span><span>العزم <b id="gTq">0 %</b></span><span>الموضع <b id="gPos">0.000 rev</b></span></div>'+
    '<p class="g-note"><span class="tagc">تحكم</span> الكيباد ومفاتيح DI ومقابض V-REF و T-REF والنبضات تحت <span class="tagv">بيان</span> الشاشة واللمبات والموتور</p>'+
+   (i===2?'<p class="g-note">عايز تشوف النبضات دي بتحرّك ماكينة بجد؟ <button type="button" class="btn" data-gomach="0" style="min-height:44px">جرّب مثال ترابيزة البول سكرو</button></p>':'')+
    (sp.run.length?'<details><summary style="cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center">باقي خطوات التمرين</summary><ol class="g-list" style="margin-top:8px">'+sp.run.map(x=>'<li>'+x+'</li>').join('')+'</ol></details>':'');
  }else{
   h+='<p class="g-lead">خطوة اختيارية: '+g.flt.t+'</p><div class="g-row"><button type="button" class="btn big" id="gFault">'+g.flt.lbl[0]+'</button><button type="button" class="btn" data-cycle>Power cycle</button></div>'+
-   '<div class="g-check" id="gChkF1"><i>✓</i><span>الإنذار ظهر على الشاشة<span class="sub" id="gFcode"></span></span></div>'+
+   '<div id="gAlCard"></div>'+gQuickHTML(i)+'<div class="g-check" id="gChkF1"><i>✓</i><span>الإنذار ظهر على الشاشة<span class="sub" id="gFcode"></span></span></div>'+
    '<div class="g-check" id="gChkF2"><i>✓</i><span>'+g.flt.clr+'</span></div>'+
    '<div class="g-live"><span>الشاشة <b id="gAl">—</b></span><span>الحمل الحراري <b id="gHeat">0 %</b></span><span>السرعة <b id="gRpm2">0 r/min</b></span></div>'+
    '<p class="g-note">لوحة «الحمل والتوصيل» تحت فيها أعطال تانية تجرّبها، وجدول الإنذارات بيقولك تعمل إيه. لما تخلص دوس «خلصت التمرين».</p>';
  }
  $('#gBody').innerHTML=h;
- if(st===1&&GUI.hand==='hand'){faceTo($('#gFace'));GUI.hv0={};a.p.forEach(([c])=>GUI.hv0[c]=S.P[c]);if(S.wiring)setWiring(false);if(!S.ctl){setCtl(true);$('#swCtl').setAttribute('aria-pressed','true');}}else faceHome();
+ GQ.cv=$('#gScope');GQ.al=-1;
+ if(i===0&&st>=2)faceTo($('#gFace2'));else if(st===1&&GUI.hand==='hand'){faceTo($('#gFace'));GUI.hv0={};a.p.forEach(([c])=>GUI.hv0[c]=S.P[c]);if(S.wiring)setWiring(false);if(!S.ctl){setCtl(true);$('#swCtl').setAttribute('aria-pressed','true');}}else faceHome();
  if(st===0)gHighlight();
  $('#gPrev').disabled=st===0;$('#gNext').disabled=false;$('#gNext').textContent=st===3?'خلصت التمرين ✓':'التالي';
  GUI.fseen=0;if(st!==2)GUI.hi=false;
@@ -2328,7 +2475,8 @@ function gHighlight(){
 }
 function gTxt(sel,t){const e=$(sel);if(e&&e.textContent!==t)e.textContent=t;}
 function guideTick(force){
- if(!GUI.guided||GUI.ex<0)return;
+ if(!GUI.guided||GUI.ex<0){GQ.cv=null;return;}
+ if(GUI.step>=2)gQuickTick();
  const i=GUI.ex,st=GUI.step,g=GD[i],a=SA[i];
  const pend=(S.P['P1-01']&0xFF)!==S.mode;$$('#gBody [data-pend]').forEach(e=>{e.hidden=!pend;});
  if(st===1){const ok=gParamsOk(i);let n=0,rw=false;a.p.forEach(([c,v])=>{const e=$('[data-ok="'+c+'"]');const m=S.P[c]===v;if(m)n++;if(e){const s=m?'✓':'';if(e.textContent!==s)e.textContent=s;const tr=e.closest('tr');if(tr)tr.classList.toggle('ok',m);}
@@ -2363,7 +2511,10 @@ $('#gPrev').addEventListener('click',()=>{if(GUI.step>0){GUI.step--;guiSave();gu
 $('#gNext').addEventListener('click',()=>{
  if(GUI.step===1&&GUI.hand==='hand'&&!X.son)saBench(GUI.ex);
  if(GUI.step<3){GUI.step++;}else{GUI.done[GUI.ex]=true;log('خلصت التمرين المحلول '+(GUI.ex+1)+': '+SA[GUI.ex].t);GUI.ex=-1;GUI.step=0;}guiSave();guideRender();});
+$('#gBody').addEventListener('input',e=>{const r=e.target.closest('[data-qv]');if(!r)return;S[r.dataset.qv]=+r.value;(r.dataset.qv==='vref'?KN.v:KN.t)?.draw();gQuickTick();});
 $('#gBody').addEventListener('click',e=>{
+ if(gQuickClick(e))return;
+ {const m=e.target.closest('[data-gomach]');if(m){GUI.ex=-1;GUI.step=0;guiSave();guideRender();machSelect(+m.dataset.gomach);$('#machPanel').scrollIntoView({behavior:'smooth',block:'start'});return;}}
  if(e.target.closest('#gHand')){if(GUI.hand!=='hand'){GUI.hand='hand';guiSave();guideRender();}return;}
  if(e.target.closest('#gAuto')){GUI.hand='auto';guiSave();guideRender();saApply(GUI.ex);return;}
  if(e.target.closest('[data-cycle]')){powerCycle('من الخطوات');guideTick(true);return;}
@@ -2373,6 +2524,320 @@ $('#gBody').addEventListener('click',e=>{
 $('#modeBtn').addEventListener('click',()=>setMode(!GUI.guided));
 $('#advBtn').addEventListener('click',e=>{GUI.adv=!GUI.adv;document.body.classList.toggle('adv',GUI.adv);e.currentTarget.setAttribute('aria-expanded',String(GUI.adv));e.currentTarget.textContent=GUI.adv?'إخفاء المتقدم ▴':'عرض المتقدم ▾';});
 guiLoad();setMode(GUI.guided);
+</script>
+<script>
+'use strict';
+/* ================= practical machines driven by the simulated servo (PT mode, pulses from a PLC) ================= */
+const MACHS=[
+ {id:'screw',t:'ترابيزة بول سكرو',u:'mm',lead:10,unit:0.01,lo:0,hi:300,off:63.4,ratio:12,fric:5,load:'disk',vmax:150,acc:1500,homeV:25,tol:0.02,tgt:120,dec:2,
+  story:'ماكينة تخريم: ترابيزة عليها القطعة ماشية على بول سكرو خطوته 10 مم، والموتور متركب على السكرو مباشرة بكوبلنج. الـ PLC بيحسب بالـ 0.01 مم: لو عايز 120.00 مم بيبعت 12000 نبضة. شغلتك: تظبط الجير الإلكتروني بحيث كل نبضة = 0.01 مم بالظبط، وتعمل Home، وتودّي الترابيزة للهدف.',
+  data:[['خطوة البول سكرو','10 mm لكل لفة'],['التوصيل','كوبلنج مباشر 1:1'],['وحدة الـ PLC','0.01 mm لكل نبضة'],['المشوار','0 لـ 300 mm'],['الإنكودر','160000 لكل لفة']],
+  sol:[160,1],solTxt:['نبضات الـ PLC في لفة الموتور = <bdi class="mono">10 ÷ 0.01 = 1000</bdi>','<bdi class="mono">N/M = 160000 ÷ 1000 = 160/1</bdi>']},
+ {id:'index',t:'ترابيزة تقسيم 8 محطات',u:'°',lead:36,unit:0.01,wrap:true,off:17.3,ratio:6,fric:5,load:'disk',vmax:120,acc:600,homeV:15,tol:0.05,tgt:45,dec:2,
+  story:'ماكينة تجميع: ترابيزة دوّارة عليها 8 محطات، كل حركة 45° والمثقاب فوق بيشتغل على المحطة اللي تحته. الموتور داخل على جيربوكس 10:1، يعني 10 لفات موتور = لفة ترابيزة. الـ PLC بيحسب بالـ 0.01°. لو الجير غلط بالكسر الصغير، الغلط بيتجمع مع كل محطة والمثقاب ينزل جنب القطعة.',
+  data:[['الجيربوكس','10 : 1'],['الحركة','45° لكل محطة'],['وحدة الـ PLC','0.01° لكل نبضة'],['لفة الترابيزة','36000 نبضة'],['الإنكودر','160000 لكل لفة']],
+  sol:[400,9],solTxt:['لفة الترابيزة = <bdi class="mono">360 ÷ 0.01 = 36000</bdi> نبضة','لفة الموتور = <bdi class="mono">36000 ÷ 10 = 3600</bdi> نبضة (الجيربوكس 10:1)','<bdi class="mono">N/M = 160000 ÷ 3600 = 400/9</bdi> (اقسم الاتنين على 400)']},
+ {id:'cut',t:'تغذية وقص بالطول',u:'mm',lead:200,unit:0.1,off:0,ratio:4,fric:15,load:'conv',vmax:600,acc:4000,homeV:0,tol:0.5,tgt:350,dec:1,noHome:true,
+  story:'خط صاج أو بلاستيك: بكرة تغذية قطرها 63.66 مم (المحيط 200 مم) بتسحب الخامة، وبعد ما تقف السكينة بتنزل تقص. الـ PLC بيحسب بالـ 0.1 مم. لو الجير غلط كل القطع هتطلع بطول غلط، ولو الجين بيعمل overshoot القطعة هتطلع أطول شوية.',
+  data:[['قطر بكرة التغذية','63.66 mm'],['المحيط (اللفة)','≈ 200 mm'],['وحدة الـ PLC','0.1 mm لكل نبضة'],['طول القطعة','تختاره انت'],['الإنكودر','160000 لكل لفة']],
+  sol:[80,1],solTxt:['محيط البكرة = <bdi class="mono">π × 63.66 ≈ 200 mm</bdi>','نبضات الـ PLC في اللفة = <bdi class="mono">200 ÷ 0.1 = 2000</bdi>','<bdi class="mono">N/M = 160000 ÷ 2000 = 80/1</bdi>']},
+ {id:'belt',t:'محور سير مسنن Pick & Place',u:'mm',lead:100,unit:0.01,lo:0,hi:500,off:212,ratio:3,fric:5,load:'disk',vmax:800,acc:4000,homeV:50,tol:0.05,tgt:420,dec:2,pick:80,place:420,
+  story:'محور X بيشيل علب من السير ويحطها في الكرتونة: سير مسنن على بكرة 20 سنة وخطوة السنة 5 مم، يعني لفة الموتور = 100 مم. الـ PLC بيحسب بالـ 0.01 مم. المحطة اللي بياخد منها عند 80 مم، واللي بيحط فيها عند 420 مم.',
+  data:[['البكرة','20 سنة × 5 mm'],['لفة الموتور','100 mm'],['وحدة الـ PLC','0.01 mm لكل نبضة'],['المشوار','0 لـ 500 mm'],['الإنكودر','160000 لكل لفة']],
+  sol:[16,1],solTxt:['لفة الموتور = <bdi class="mono">20 × 5 = 100 mm</bdi>','نبضات الـ PLC في اللفة = <bdi class="mono">100 ÷ 0.01 = 10000</bdi>','<bdi class="mono">N/M = 160000 ÷ 10000 = 16/1</bdi>']}];
+const MS={k:0,active:false,mk:-1,th0:0,off:0,homed:false,homing:false,homeT0:0,res:null,last:null,seq:[],cuts:[],lastCut:0,knife:0,grip:0,hasBox:false,boxAt:'pick',
+ t:0,buf:{n:1500,i:0,a:new Float32Array(1500),c:new Float32Array(1500),e:new Float32Array(1500),q:new Float32Array(1500),f:0},tgt:null,okSet:{},crash:false,pend:0,alShown:-1};
+const MK=()=>MACHS[MS.k];
+const phys=()=>MS.off+(X.th-MS.th0)/TAU*MK().lead;
+const plcPos=()=>MV.plc*MK().unit;
+const fmtUH=(v,M)=>'<bdi class="mono">'+fmtU(v,M)+'</bdi>';
+const fmtU=(v,M)=>(M||MK()).wrap?(((v%360)+360)%360).toFixed(2)+'°':v.toFixed((M||MK()).dec)+' mm';
+const gearNow=()=>S.P['P1-44']/S.P['P1-45'];
+const unitNow=M=>gearNow()/ENC*(M||MK()).lead;
+const machReady=()=>MS.active&&S.ctl&&S.mode===0&&X.son&&(S.P['P1-00']&0xF)===2&&!S.alarm;
+function machDetach(){if(!MS.active)return;MS.active=false;MACH.clamp=null;MV.on=false;MV.home=null;S.jam=false;MS.seq=[];MS.homing=false;}
+function machClamp(){const M=MK();if(M.lo==null)return;const p=phys(),a=M.lo-6,b=M.hi+6;
+ if(p<a){X.th=MS.th0+(a-MS.off)/M.lead*TAU;if(X.w<0)X.w=0;MS.crash=true;}else if(p>b){X.th=MS.th0+(b-MS.off)/M.lead*TAU;if(X.w>0)X.w=0;MS.crash=true;}}
+/* get the drive into PT + pulse/direction, servo ON, bench like the machine */
+function machSetup(){
+ const M=MK();saBusy++;
+ if(S.wiring)setWiring(false);
+ MV.on=false;MV.home=null;S.jam=false;S.gen.run=false;S.gen.left=0;$('#genRun').setAttribute('aria-pressed','false');$('#genRun').classList.remove('pri');
+ setSel('#motSel','C20604RS');setSel('#regenSel','int');['#fEnc','#fSwap','#fShort'].forEach(x=>setChk(x,false));
+ setSel('#loadSel',M.load);setSel('#ratio',M.ratio,'input');setSel('#fric',M.fric,'input');setChk('#brakeChk',false);setSel('#genType','pd');
+ S.di=[null,false,false,false,false,false,true,true,true];S.vref=0;S.tref=0;KN.v&&KN.v.draw();KN.t&&KN.t.draw();
+ if(!S.ctl)setCtl(true);if(!S.main)setMain(true);
+ writeP('P2-30',0);writeP('P1-43',0);writeP('P1-42',0);for(let j=0;j<6&&X.son;j++)step();
+ const base={'P1-01':0x1000,'P1-00':0x0002,'P2-32':0,'P2-35':480000,'P1-54':1600,'P1-55':3000,'P2-34':5000,'P1-08':0,'P3-06':0,'P1-02':0,'P1-57':0};
+ const bad=[];for(const c in base){const r=writeP(c,base[c]);if(r!=='SAVED')bad.push(c+' '+r);}
+ if(S.mode!==0||S.alarm)powerCycle('مثال '+M.t);
+ S.alarm=0;S.di[1]=true;for(let j=0;j<4&&!X.son;j++)step();
+ if(MS.mk!==MS.k){MS.mk=MS.k;MS.th0=X.th;MS.off=M.off;MS.homed=!!M.noHome;MV.plc=0;MS.cuts=[];MS.lastCut=0;MS.boxAt='pick';MS.hasBox=false;MS.last=null;MS.buf.f=0;}
+ MS.active=true;MACH.clamp=machClamp;MS.res=null;MS.seq=[];
+ log('المثال «'+M.t+'» جاهز: وضع PT، Pulse + Direction، SON مقفول'+(bad.length?' — ماتكتبش: '+bad.join('، '):''));
+ machRender();
+}
+function writeGear(N,Mm){
+ const M=MK();N=Math.round(N);Mm=Math.round(Mm);
+ if(!(N>=1&&Mm>=1)){machMsg('اكتب أرقام صحيحة أكبر من صفر','bad');return;}
+ const r=N/Mm;if(r<1/50||r>25600){machMsg('N/M لازم يكون بين 1/50 و 25600 في الـ ASDA-B2 (راجع المانيوال)','bad');return;}
+ MV.on=false;MS.seq=[];const was=S.di[1];S.di[1]=false;for(let j=0;j<6&&X.son;j++)step();
+ const r1=writeP('P1-44',N),r2=writeP('P1-45',Mm);S.di[1]=was;for(let j=0;j<4&&was&&!X.son;j++)step();
+ if(r1!=='SAVED'||r2!=='SAVED'){machMsg('ماتكتبش: P1-44 '+r1+' · P1-45 '+r2,'bad');return;}
+ log('الجير الإلكتروني: P1-44 = '+N+' و P1-45 = '+Mm+' (نبضة = '+fmtNum(N/Mm/ENC*M.lead)+' '+(M.wrap?'°':'mm')+')');
+ const ok=Math.abs(r-M.sol[0]/M.sol[1])<1e-9;machMsg(ok?'اتكتب ✓ الجير مظبوط: نبضة = '+M.unit+' '+(M.wrap?'°':'mm'):'اتكتب. جرّب الحركة وشوف الماكينة هتروح فين.',ok?'ok':'');
+ updatePTable(true);machRender();
+}
+const fmtNum=v=>{if(v===0)return '0';const a=Math.abs(v);return a>=1?v.toFixed(3):a>=0.001?v.toFixed(5):v.toExponential(2);};
+function startMove(T,tag){
+ const M=MK();if(!machReady()){machMsg('جهّز الدرايف الأول (الزرار اللي فوق)','bad');return false;}
+ if(!MS.homed){machMsg('اعمل Home الأول: الـ PLC لسه ميعرفش الماكينة فين','bad');return false;}
+ const tp=Math.round(T/M.unit),d=tp-MV.plc;MS.crash=false;
+ MS.tgt=T;MS.res={T,dir:Math.sign(d)||1,t0:MS.t,from:phys(),mx:0,cmdEnd:null,lastOut:null,tag:tag||''};
+ if(!d){MS.res.cmdEnd=MS.t;return true;}
+ Object.assign(MV,{on:true,home:null,n:Math.abs(d),sent:0,v:0,frac:0,dir:Math.sign(d),vmax:M.vmax/M.unit,acc:M.acc/M.unit,aborted:false});
+ return true;
+}
+function machHome(){
+ const M=MK();if(!machReady()){machMsg('جهّز الدرايف الأول','bad');return;}
+ MS.seq=[];
+ if(M.noHome){MV.plc=0;MS.off-=phys();MS.cuts=[];MS.lastCut=0;MS.homed=true;MS.last=null;MS.tgt=null;machMsg('العداد اتصفّر والسكينة جاهزة','ok');return;}
+ MS.prevP=phys();MS.homing=true;MS.homeT0=performance.now();MS.homed=false;MS.res=null;
+ Object.assign(MV,{on:true,n:0,sent:0,v:0,frac:0,dir:-1,vmax:M.homeV/M.unit,acc:M.homeV/M.unit*4,aborted:false,homeHit:false,
+  home:()=>{const p=phys();let hit;if(M.wrap)hit=Math.floor(MS.prevP/360)!==Math.floor(p/360);else hit=p<=0;MS.prevP=p;return hit;}});
+ log('Home: الـ PLC بيرجّع الماكينة ببطء لحد حساس الهوم');
+}
+let machMsgT=0;
+function machMsg(t,c){const e=$('#mMsg');if(!e)return;e.textContent=t;e.className='mnote '+(c==='bad'?'bad':c==='ok'?'okc':'');machMsgT=performance.now();}
+/* ---- sampling at 2 ms of simulated time: plot buffers + move evaluation ---- */
+MACH.sample=()=>{
+ if(!MS.active)return;MS.t+=0.002;const M=MK(),b=MS.buf,p=phys();
+ b.a[b.i]=p;b.c[b.i]=MS.homed?plcPos():NaN;b.e[b.i]=(X.posCmd-X.posFb)/ENC*M.lead;b.q[b.i]=X.son?X.Ta/MOT().Tn*100:0;b.i=(b.i+1)%b.n;b.f=Math.min(b.n,b.f+1);
+ const r=MS.res;if(!r||r.done)return;
+ const e=p-r.T,be=e*r.dir;if(be>r.mx)r.mx=be;
+ if(r.cmdEnd===null&&!MV.on)r.cmdEnd=MS.t;
+ if(S.alarm||MV.aborted){r.done=true;r.fail=S.alarm||'abort';finishMove();return;}
+ if(r.cmdEnd!==null){if(Math.abs(e)>M.tol)r.lastOut=MS.t;
+  const since=MS.t-Math.max(r.cmdEnd,r.lastOut||0);
+  if(since>=0.25||MS.t-r.cmdEnd>2.5){r.done=true;r.settled=since>=0.25;r.final=p;r.settle=Math.max(0,(r.lastOut||r.cmdEnd)-r.cmdEnd);finishMove();}}
+};
+function finishMove(){const r=MS.res;MS.last=r;
+ const M=MK();
+ if(!r.fail){const ok=M.wrap?Math.abs(((r.final-r.T)%360+540)%360-180)<=M.tol:Math.abs(r.final-r.T)<=M.tol;r.ok=ok&&r.settled;
+  if(r.ok)MS.okSet[MS.k]=true;}
+}
+function resultHTML(){
+ const M=MK(),r=MS.last;
+ if(MS.homing)return ['','<b class="big">Home شغال…</b> الماكينة راجعة ببطء لحد الحساس.'+(performance.now()-MS.homeT0>8000?' <b>بطيء أوي؟</b> سرعة الهوم بالنبضات، فلو الجير غلط الحركة كلها بتبطأ أو تسرع. صلّح الجير الأول.':'')];
+ if(MS.res&&!MS.res.done)return ['','<b class="big">بيتحرك…</b> الهدف '+fmtUH(MS.res.T)+(MS.res.tag?' · '+MS.res.tag:'')];
+ if(!r)return ['',MS.homed?'جاهز. اختار الهدف ودوس «ابدأ الحركة».':(MS.active?'':'جهّز الدرايف، وبعدين ')+'ظبط الجير (خطوة 2) واعمل Home عشان الـ PLC يعرف الصفر.'];
+ if(r.fail){const c=typeof r.fail==='number'?r.fail:0;return ['bad','<b class="big">✗ الحركة وقفت'+(c?' بإنذار AL'+String(c).padStart(3,'0'):'')+'</b>'+(c===9?' خطأ الموضع عدّى P2-35: الـ PLC فضل يبعت نبضات والموتور مش قادر يلحق (زنقة، خبط في نهاية المشوار، أو حمل تقيل).':MS.crash?' الماكينة خبطت في نهاية المشوار.':'')];}
+ const ov=Math.max(0,r.mx),pct=Math.abs(r.T-r.from)>1e-6?ov/Math.abs(r.T-r.from)*100:0,err=M.wrap?((r.final-r.T)%360+540)%360-180:r.final-r.T;
+ let h=(r.ok?'<b class="big">✓ وصلت '+fmtUH(r.final)+'</b>':'<b class="big">✗ وقفت عند '+fmtUH(r.final)+' بدل '+fmtUH(r.T)+'</b>')+'<br>الغلط <bdi class="mono">'+err.toFixed(M.dec+1)+' '+(M.wrap?'°':'mm')+'</bdi> · Overshoot <bdi class="mono">'+ov.toFixed(M.dec)+' '+(M.wrap?'°':'mm')+' ('+pct.toFixed(1)+'%)</bdi>'+(r.settled?' · استقر بعد <bdi class="mono">'+(r.settle*1000).toFixed(0)+' ms</bdi>':' · مستقرش على الهدف');
+ const uN=unitNow(M);
+ if(!r.ok){if(Math.abs(uN-M.unit)/M.unit>1e-6)h+='<br><b>السبب: الجير.</b> بالجير الحالي كل نبضة = <bdi class="mono">'+fmtNum(uN)+' '+(M.wrap?'°':'mm')+'</bdi> بدل <bdi class="mono">'+M.unit+'</bdi>. صلّح P1-44 / P1-45.';
+  else if(!r.settled)h+='<br><b>السبب: الجين.</b> الموتور فضل يتأرجح حوالين الهدف. قلّل KVP أو ظبط P1-37 على القصور الحقيقي.';
+  else if(MS.crash)h+='<br>الماكينة خبطت في نهاية المشوار.';}
+ else if(pct>5)h+='<br>وصلت، بس الـ overshoot كبير: في الماكينة الحقيقية ده خبط في القطعة أو زنة. ظبط P1-37 والجين تحت.';
+ if(M.id==='cut'&&MS.cuts.length)h+='<br>آخر القطع: '+MS.cuts.map(c=>'<b class="mono">'+c.len.toFixed(1)+'</b>'+(c.ok?' ✓':' ✗')).join(' · ');
+ return [r.ok?'ok':'bad',h];
+}
+/* ---- per-frame: sequences, homing completion, drawing ---- */
+MACH.tick=now=>{
+ if(!MS.active){if($('#mStage'))machDraw();return;}
+ const M=MK();
+ if(MS.homing&&!MV.on){if(MV.homeHit&&Math.abs(X.w)<0.05*RPM){MS.homing=false;MV.homeHit=false;MV.plc=M.wrap?Math.round((((phys()+180)%360+360)%360-180)/unitNow(M)):Math.round(phys()/unitNow(M));MS.homed=true;machMsg('Home خلص: الدرايف مسك الصفر عند حافة الحساس، والـ PLC عرف مكانه','ok');log('Home خلص');}
+  else if(!MV.homeHit){MS.homing=false;}}
+ if(MS.seq.length&&!MS.homing){const s=MS.seq[0];
+  if(s.mv!=null||s.rel!=null){if(!s.started){s.started=true;const T=s.rel!=null?Math.round((plcPos()+s.rel)/M.unit)*M.unit:s.mv;if(!startMove(T,s.tag)){MS.seq=[];}}else if(MS.res&&MS.res.done){if(MS.res.fail)MS.seq=[];else MS.seq.shift();}}
+  else if(s.act){s.t=(s.t||0)+1/60;const k=Math.min(1,s.t/s.dur);
+   if(s.act==='cut'){MS.knife=k<.5?k*2:2-k*2;if(k>=.5&&!s.did){s.did=true;const len=phys()-MS.lastCut;MS.lastCut=phys();MS.cuts.unshift({len,ok:Math.abs(len-MS.cutL)<=M.tol});MS.cuts=MS.cuts.slice(0,6);if(MS.cuts[0].ok)MS.okSet[MS.k]=true;}}
+   else if(s.act==='grip'||s.act==='drop'){MS.grip=k<.5?k*2:2-k*2;if(k>=.5&&!s.did){s.did=true;const at=phys();if(s.act==='grip'){if(Math.abs(at-M.pick)<2&&MS.boxAt==='pick'){MS.hasBox=true;MS.boxAt='car';}else machMsg('الجريبر نزل في مكان فاضي! المحور مش عند محطة الأخد','bad');}
+     else if(MS.hasBox){MS.hasBox=false;if(Math.abs(at-M.place)<=1){MS.boxAt='place';MS.okSet[MS.k]=true;}else{MS.boxAt='floor';MS.dropX=at;machMsg('العلبة وقعت برا الكرتونة: المحور وقف عند '+at.toFixed(2)+' mm','bad');}}}}
+   if(k>=1){MS.knife=0;MS.grip=0;MS.seq.shift();}}}
+ machDraw();
+ const sv=$('#mSvg');if(sv){const vb=X.son&&vibrating();if(sv.classList.contains('mshake')!==vb)sv.classList.toggle('mshake',vb);}
+};
+/* ---- drawing ---- */
+const MOTOR_SVG=(x,y,s)=>`<g transform="translate(${x} ${y}) scale(${s||1})">
+ <path d="M26 -26 C26 -46 14 -44 2 -48" stroke="#15181b" stroke-width="5" fill="none"/><path d="M42 -26 C42 -52 24 -56 2 -60" stroke="#3a2a6e" stroke-width="4" fill="none"/>
+ <rect x="20" y="-30" width="12" height="8" rx="1.5" fill="#111"/><rect x="36" y="-30" width="12" height="8" rx="1.5" fill="#111"/>
+ <rect x="0" y="-18" width="16" height="36" rx="6" fill="#1b1f22"/><rect x="14" y="-22" width="52" height="44" rx="3" fill="url(#mcB)"/>
+ <rect x="22" y="-9" width="32" height="16" rx="1.5" fill="#c9cdd0"/><text x="38" y="2" text-anchor="middle" style="font:700 7px Arial;fill:#1f6fd0">DELTA</text>
+ <rect x="66" y="-26" width="8" height="52" rx="1" fill="#2b3035"/><rect x="74" y="-4" width="12" height="8" fill="url(#mcS)"/>
+ <text x="4" y="-64" class="mut" style="font:600 8px var(--font-mono)">CN2</text><text x="-4" y="-30" class="mut" style="font:600 8px var(--font-mono)">UVW</text></g>`;
+const DEFS='<defs><linearGradient id="mcB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#454b51"/><stop offset=".5" stop-color="#1f2326"/><stop offset="1" stop-color="#121416"/></linearGradient><linearGradient id="mcS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef0f1"/><stop offset=".5" stop-color="#a7adb2"/><stop offset="1" stop-color="#6d7378"/></linearGradient><linearGradient id="mcR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9dde0"/><stop offset="1" stop-color="#8c949a"/></linearGradient></defs>';
+function machSVG(){
+ const M=MK();let s='<svg viewBox="0 0 400 180" id="mSvg" role="img" aria-label="'+M.t+'">'+DEFS;
+ if(M.id==='screw'){
+  s+='<rect x="96" y="112" width="296" height="8" rx="2" fill="#7d868c"/><rect x="96" y="120" width="296" height="6" fill="#5b646a"/>';
+  s+=MOTOR_SVG(4,92,0.95)+'<rect x="86" y="86" width="16" height="12" rx="2" fill="#9aa3a9"/>';
+  s+='<rect x="104" y="80" width="12" height="24" rx="2" fill="#4a5258"/><rect x="380" y="80" width="12" height="24" rx="2" fill="#4a5258"/>';
+  s+='<clipPath id="scrClip"><rect x="116" y="87" width="264" height="10"/></clipPath><rect x="116" y="87" width="264" height="10" fill="url(#mcR)"/><g clip-path="url(#scrClip)"><g id="mThread">';
+  for(let x=108;x<392;x+=6)s+='<path d="M'+x+' 97 L'+(x+4)+' 87" stroke="#6d7378" stroke-width="1.6"/>';
+  s+='</g></g>';
+  s+='<rect id="mStopL" x="0" y="104" width="6" height="16" fill="#c0352b"/><rect id="mStopR" x="0" y="104" width="6" height="16" fill="#c0352b"/>';
+  s+='<g id="mCar"><rect x="-34" y="72" width="68" height="36" rx="3" fill="#2f7fe0"/><rect x="-38" y="66" width="76" height="8" rx="2" fill="#1f5fbf"/><rect x="-14" y="54" width="28" height="12" rx="2" fill="#e0a43a"/><rect x="-2" y="84" width="4" height="16" fill="#163f7f"/></g>';
+  s+='<g id="mHome"><rect x="-5" y="128" width="10" height="8" rx="1" fill="#46535b"/><circle cx="0" cy="141" r="3" id="mHomeLed" fill="#46535b"/></g>';
+  s+=rulerSVG(M,150)+'<g id="mTgt"><path d="M0 146 l-6 -9 h12z" class="acc"/></g>';
+ }else if(M.id==='index'){
+  s+=MOTOR_SVG(6,140,0.8)+'<rect x="78" y="124" width="38" height="32" rx="3" fill="#5b646a"/><text x="97" y="144" text-anchor="middle" style="font:700 9px var(--font-mono);fill:#fff">10:1</text><path d="M116 140 H170" stroke="#9aa3a9" stroke-width="6"/>';
+  s+='<circle cx="250" cy="92" r="80" fill="#3a4148"/><g id="mDisc"><circle cx="250" cy="92" r="76" fill="#8a949a" stroke="#5b646a" stroke-width="3"/><circle cx="250" cy="92" r="18" fill="#5b646a"/>';
+  for(let k=0;k<8;k++){const a=k*45*Math.PI/180,x=250+54*Math.sin(a),y=92-54*Math.cos(a);s+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="13" fill="'+(k===0?'#e0a43a':'#c9cdd0')+'" stroke="#46535b"/><text x="'+x.toFixed(1)+'" y="'+(y+4).toFixed(1)+'" text-anchor="middle" style="font:700 11px var(--font-mono);fill:#1b2226">'+(k+1)+'</text>';}
+  s+='<path d="M250 26 v10" stroke="#c0352b" stroke-width="3"/></g>';
+  s+='<rect x="234" y="0" width="32" height="14" rx="2" fill="#2f7fe0"/><path id="mDrill" d="M246 14 h8 v8 l-4 6 l-4 -6z" fill="#46535b"/><path d="M262 2 h0" />';
+  s+='<path d="M250 16 v6" stroke="#ffb44d" stroke-width="2"/><text x="300" y="12" class="mut" style="font:600 9px var(--font-mono)">الشغل هنا ▼</text>';
+  s+='<rect x="330" y="86" width="8" height="12" rx="1" fill="#46535b"/><text x="342" y="96" class="mut" style="font:600 8px var(--font-mono)">HOME</text><circle id="mHomeLed" cx="334" cy="80" r="3" fill="#46535b"/>';
+ }else if(M.id==='cut'){
+  s+='<circle cx="22" cy="70" r="20" fill="#5b646a"/><circle cx="22" cy="70" r="6" fill="#2b3035"/><path d="M22 50 L60 72" stroke="#b9c2c8" stroke-width="3"/>';
+  s+='<g id="mRollT"><circle cx="66" cy="62" r="10" fill="#8a949a"/><path d="M66 54 v16" stroke="#46535b" stroke-width="2"/></g><g id="mRoll"><circle cx="66" cy="86" r="14" fill="#9aa3a9"/><path d="M66 74 v24" stroke="#46535b" stroke-width="2.5"/></g>';
+  s+=MOTOR_SVG(18,140,0.75)+'<path d="M84 140 L66 100" stroke="#2b3035" stroke-width="4"/>';
+  s+='<rect x="60" y="72" width="112" height="4" fill="#b9c2c8"/><g id="mStrip"></g>';
+  s+='<rect x="160" y="96" width="240" height="6" fill="#7d868c"/>';
+  s+='<rect x="152" y="16" width="36" height="16" rx="2" fill="#46535b"/><g id="mKnife"><rect x="166" y="32" width="8" height="26" fill="#c9cdd0" stroke="#46535b"/><path d="M164 58 h12 l-6 10z" fill="#e8ecef" stroke="#46535b"/></g>';
+  s+=rulerSVG(M,124)+'<g id="mTgt"><path d="M0 120 l-6 -9 h12z" class="acc"/></g><g id="mBin"></g>';
+ }else{
+  s+='<rect x="20" y="22" width="372" height="10" rx="2" fill="#5b646a"/>';
+  s+='<rect x="30" y="34" width="352" height="12" rx="6" fill="none" stroke="#1b1f22" stroke-width="3" stroke-dasharray="3 2" id="mBelt"/>';
+  s+='<g id="mPul"><circle cx="36" cy="40" r="10" fill="#9aa3a9"/><path d="M36 31 v18 M27 40 h18" stroke="#46535b" stroke-width="2"/></g><circle cx="376" cy="40" r="10" fill="#9aa3a9"/>';
+  s+='<circle cx="36" cy="40" r="4" fill="#1b1f22"/><text x="36" y="16" text-anchor="middle" class="mut" style="font:600 8px var(--font-mono)">M</text>';
+  s+='<rect x="54" y="136" width="56" height="8" fill="#7d868c"/><rect x="306" y="120" width="70" height="24" fill="none" stroke="#a86a00" stroke-width="3"/><path d="M306 120 v24 h70 v-24" fill="#c98a3a" opacity=".35"/>';
+  s+='<text x="82" y="160" text-anchor="middle" class="mut" style="font:600 9px var(--font-body)">أخد 80</text><text x="341" y="160" text-anchor="middle" class="mut" style="font:600 9px var(--font-body)">حط 420</text>';
+  s+='<rect id="mBox" x="0" y="0" width="22" height="18" rx="2" fill="#e0a43a" stroke="#8a5a10"/>';
+  s+='<g id="mCar"><rect x="-20" y="30" width="40" height="22" rx="3" fill="#2f7fe0"/><rect id="mRod" x="-3" y="52" width="6" height="30" fill="#9aa3a9"/><g id="mGrip"><rect x="-13" y="80" width="26" height="6" rx="1" fill="#46535b"/><rect x="-13" y="84" width="4" height="10" fill="#46535b"/><rect x="9" y="84" width="4" height="10" fill="#46535b"/></g></g>';
+  s+='<g id="mHome"><rect x="-4" y="12" width="8" height="8" fill="#46535b"/><circle id="mHomeLed" cx="0" cy="8" r="3" fill="#46535b"/></g>';
+  s+=rulerSVG(M,172,true)+'<g id="mTgt"><path d="M0 64 l-6 -9 h12z" class="acc"/></g>';
+ }
+ return s+'</svg>';
+}
+const MX={screw:[140,360,0,300],belt:[48,364,0,500],cut:[170,390,0,440]};
+const xOf=(M,v)=>{const m=MX[M.id];return m[0]+(v-m[2])/(m[3]-m[2])*(m[1]-m[0]);};
+function rulerSVG(M,y,top){const m=MX[M.id],st=M.id==='cut'?50:M.id==='belt'?100:50;let s='<path d="M'+m[0]+' '+y+' H'+m[1]+'" stroke="currentColor" class="ln" stroke-width="1"/>';
+ for(let v=m[2];v<=m[3];v+=st){const x=xOf(M,v);s+='<path d="M'+x+' '+y+' v'+(top?-4:4)+'" class="ln" stroke-width="1"/><text x="'+x+'" y="'+(y+(top?-6:13))+'" text-anchor="middle" class="mut" style="font:500 8px var(--font-mono)">'+v+'</text>';}
+ return s;}
+function machDraw(){
+ const svg=$('#mSvg');if(!svg)return;const M=MK(),p=MS.active?phys():M.off,set=(id,a,v)=>{const e=svg.querySelector('#'+id);if(e&&e.getAttribute(a)!==v)e.setAttribute(a,v);};
+ const lit=(on)=>on?'#5cc06f':'#46535b';
+ if(M.id==='screw'){const x=xOf(M,p);set('mCar','transform','translate('+x.toFixed(2)+' 0)');set('mThread','transform','translate('+(((p*0.6)%6+6)%6).toFixed(2)+' 0)');
+  set('mStopL','x',(xOf(M,M.lo-6)-40).toFixed(1));set('mStopR','x',(xOf(M,M.hi+6)+34).toFixed(1));set('mHome','transform','translate('+xOf(M,0).toFixed(1)+' 0)');set('mHomeLed','fill',lit(MS.active&&p<=0.05));}
+ else if(M.id==='index'){set('mDisc','transform','rotate('+(-p).toFixed(2)+' 250 92)');set('mHomeLed','fill',lit(MS.active&&Math.abs(((p%360)+540)%360-180)<0.5));}
+ else if(M.id==='cut'){const fed=p-MS.lastCut,w=Math.max(0,Math.min(230,fed*(220/440)));
+  const g=svg.querySelector('#mStrip'),h='<rect x="170" y="72" width="'+w.toFixed(1)+'" height="4" fill="#b9c2c8"/>';if(g.innerHTML!==h)g.innerHTML=h;
+  set('mRoll','transform','rotate('+(-(p/200*360)%360).toFixed(1)+' 66 86)');set('mRollT','transform','rotate('+((p/62.8*360)%360).toFixed(1)+' 66 62)');
+  set('mKnife','transform','translate(0 '+(MS.knife*14).toFixed(1)+')');
+  const bh=MS.cuts.map((c,i)=>'<rect x="'+(200+i*30)+'" y="'+(146)+'" width="26" height="5" rx="1" fill="'+(c.ok?'#5cc06f':'#ff6b5e')+'"/>').join('');const b=svg.querySelector('#mBin');if(b.innerHTML!==bh)b.innerHTML=bh;}
+ else{const x=xOf(M,p);set('mCar','transform','translate('+x.toFixed(2)+' 0)');set('mPul','transform','rotate('+(-(p/100*360)%360).toFixed(1)+' 36 40)');set('mBelt','stroke-dashoffset',(-p*0.5%5).toFixed(2));
+  const d=MS.grip*42;set('mRod','height',(30+d).toFixed(1));set('mGrip','transform','translate(0 '+d.toFixed(1)+')');
+  set('mHome','transform','translate('+xOf(M,0).toFixed(1)+' 0)');set('mHomeLed','fill',lit(MS.active&&p<=0.05));
+  let bx,by;if(MS.boxAt==='car'){bx=x-11;by=76+d;}else if(MS.boxAt==='place'){bx=xOf(M,M.place)-11;by=124;}else if(MS.boxAt==='floor'){bx=xOf(M,MS.dropX)-11;by=154;}else{bx=xOf(M,M.pick)-11;by=118;}
+  set('mBox','x',bx.toFixed(1));set('mBox','y',by.toFixed(1));}
+ if(MX[M.id]){const T=M.id==='cut'?+($('#mT')?.value||M.tgt):MS.tgt??+($('#mT')?.value||M.tgt),e=svg.querySelector('#mTgt');if(e){const tx=M.id==='cut'?xOf(M,T):xOf(M,T);set('mTgt','transform','translate('+tx.toFixed(1)+' 0)');}}
+}
+/* ---- mini plot: what the PLC thinks vs where the machine really is ---- */
+function machPlot(){
+ const cv=$('#mPlot');if(!cv||!cv.clientWidth)return;const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
+ if(cv.width!==Math.round(W*dpr)||cv.height!==Math.round(H*dpr)){cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);}
+ const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H);c.direction='ltr';
+ const b=MS.buf,n=b.f;c.strokeStyle='#22343a';c.lineWidth=1;for(let k=1;k<6;k++){const x=W*k/6;c.beginPath();c.moveTo(x,0);c.lineTo(x,H);c.stroke();}for(let k=1;k<4;k++){const y=H*k/4;c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke();}
+ if(n<2)return;
+ let lo=Infinity,hi=-Infinity;const get=(a,j)=>a[(b.i-n+j+b.n)%b.n];
+ for(let j=0;j<n;j++){const a=get(b.a,j),q=get(b.c,j);if(a<lo)lo=a;if(a>hi)hi=a;if(q===q){if(q<lo)lo=q;if(q>hi)hi=q;}}
+ const T=MS.tgt;if(T!=null&&MS.res){lo=Math.min(lo,T);hi=Math.max(hi,T);}
+ const pad=Math.max((hi-lo)*0.12,MK().tol*4);lo-=pad;hi+=pad;
+ const H1=H*0.62,Y=v=>H1-6-(v-lo)/(hi-lo)*(H1-12),X_=j=>W*(j+b.n-n)/(b.n-1);
+ c.strokeStyle='#3b5560';c.beginPath();c.moveTo(0,H1);c.lineTo(W,H1);c.stroke();
+ if(T!=null){c.strokeStyle='#e3a43a';c.setLineDash([5,4]);c.beginPath();c.moveTo(0,Y(T));c.lineTo(W,Y(T));c.stroke();c.setLineDash([]);}
+ const line=(arr,col)=>{c.strokeStyle=col;c.lineWidth=1.8;c.beginPath();let on=false;for(let j=0;j<n;j+=2){const v=get(arr,j);if(v!==v){on=false;continue;}const x=X_(j),y=Y(v);on?c.lineTo(x,y):c.moveTo(x,y);on=true;}c.stroke();};
+ line(b.c,'#ffb44d');line(b.a,'#4cc0cf');
+ const H2=H-H1,strip=(arr,col,lbl,unit,y0)=>{let m=0;for(let j=0;j<n;j++){const v=Math.abs(get(arr,j));if(v>m)m=v;}m=niceMax(Math.max(m*1.1,1e-6));c.strokeStyle=col;c.lineWidth=1.4;c.beginPath();for(let j=0;j<n;j+=2){const x=X_(j),y=H1+H2/2-get(arr,j)/m*(H2/2-4);j?c.lineTo(x,y):c.moveTo(x,y);}c.stroke();c.fillStyle=col;c.fillText(lbl+' ±'+m+unit,6,H1+y0);};
+ c.font='10px IBM Plex Mono, monospace';strip(b.e,'#ff6b5e','err',' '+(MK().wrap?'°':'mm'),12);strip(b.q,'#a98bff','T',' %',24);
+ c.font='11px IBM Plex Mono, monospace';c.fillStyle='#9fb3bb';c.fillText(hi.toFixed(MK().dec)+' '+(MK().wrap?'°':'mm'),6,13);c.fillText(lo.toFixed(MK().dec),6,H1-6);c.textAlign='right';c.fillText('3s',W-6,H-6);c.textAlign='left';
+}
+/* ---- panel ---- */
+const MICO={screw:'⟷',index:'⟳',cut:'✂',belt:'⇄'};
+function machRender(){
+ const M=MK();
+ $('#mTabs').innerHTML=MACHS.map((m,i)=>'<button type="button" role="tab" data-mk="'+i+'" aria-pressed="'+(i===MS.k)+'" aria-selected="'+(i===MS.k)+'"><span aria-hidden="true">'+MICO[m.id]+'</span>'+bd(m.t)+(MS.okSet[i]?'<span class="ok">✓</span>':'')+'</button>').join('');
+ const N=S.P['P1-44'],Mm=S.P['P1-45'];
+ const tgtCtl=M.id==='index'?'<button type="button" class="qbtn pri" data-ma="next">المحطة الجاية +45°</button><button type="button" class="qbtn" data-ma="five">5 محطات ورا بعض</button>'
+  :M.id==='cut'?'<div class="gearin"><label>طول القطعة (mm)<input type="number" id="mT" value="'+(MS.cutL||M.tgt)+'" min="20" max="440" step="0.1"></label></div><button type="button" class="qbtn pri" data-ma="cut1">اقطع قطعة</button><button type="button" class="qbtn" data-ma="cut3">اقطع 3 قطع</button>'
+  :'<div class="gearin"><label>الهدف (mm)<input type="number" id="mT" value="'+(MS.tgt??M.tgt)+'" min="'+M.lo+'" max="'+M.hi+'" step="0.01"></label></div><button type="button" class="qbtn pri" data-ma="go">ابدأ الحركة</button>'+(M.id==='belt'?'<button type="button" class="qbtn" data-ma="cycle">دورة كاملة: خد ← حط</button>':'');
+ $('#mBody').innerHTML='<p class="mstory">'+bd(M.story)+'</p><div class="mgrid"><div style="display:grid;gap:10px;min-width:0">'+
+  '<div class="mstage" id="mStage">'+machSVG()+'</div>'+
+  '<div class="g-row" id="mSetupRow"><button type="button" class="btn big pri" data-ma="setup">جهّز الدرايف للمثال ده</button><span class="mnote">بيحط وضع PT ونبضات Pulse + Direction ويقفل SON (الجير بتكتبه انت).</span></div>'+
+  '<div class="qrow"><button type="button" class="qbtn" data-ma="home">'+(M.noHome?'صفّر العداد':'Home')+'<small>'+(M.noHome?'':'لحد الحساس')+'</small></button>'+tgtCtl+'</div>'+
+  '<div class="qrow"><button type="button" class="qbtn" data-ma="jam" aria-pressed="false"><span class="lamp"></span>زنقة ميكانيكية</button><button type="button" class="qbtn" data-ma="arst">ARST امسح الإنذار</button><button type="button" class="qbtn" data-ma="son" aria-pressed="false"><span class="lamp"></span>SON</button></div>'+
+  '<p class="mnote" id="mMsg" aria-live="polite"></p>'+
+  '<div class="mres" id="mRes" aria-live="polite"></div><div class="g-warn" id="mVib" hidden>الموتور بيزن: العزم بيرعش جامد حوالين الصفر. قلّل KVP (P2-04) أو رجّع P1-37 للقصور الحقيقي.</div><div id="mAl"></div>'+
+  '<div class="mread"><div class="tile"><div class="label">مكان الماكينة الحقيقي</div><div class="v" id="mrP">—</div></div><div class="tile"><div class="label">الـ PLC فاكر</div><div class="v" id="mrC">—</div></div><div class="tile"><div class="label">خطأ المتابعة</div><div class="v" id="mrE">—</div></div></div>'+
+  '<canvas class="miniscope" id="mPlot" aria-label="رسم المكان مع الوقت"></canvas><div class="mlegend"><span><i style="background:#ffb44d"></i>الـ PLC بعت (بوحدته)</span><span><i style="background:#4cc0cf"></i>الماكينة فعلًا</span><span><i style="background:#e3a43a"></i>- - الهدف</span><span><i style="background:#ff6b5e"></i>خطأ المتابعة</span><span><i style="background:#a98bff"></i>العزم %</span></div>'+
+  '</div><div style="display:grid;gap:12px;min-width:0">'+
+  '<div class="mstep" id="mS1"><h3><span class="n">1</span>بيانات الماكينة</h3><ul class="mdata">'+M.data.map(d=>'<li><span>'+bd(d[0])+'</span><b>'+bd(d[1])+'</b></li>').join('')+'</ul></div>'+
+  '<div class="mstep" id="mS2"><h3><span class="n">2</span>الجير الإلكتروني P1-44 / P1-45</h3>'+
+   '<p class="mnote">الدرايف بيضرب كل نبضة جاية من الـ PLC في N/M، والنتيجة بنبضات الإنكودر (160000 في اللفة). يعني: <b>N/M = 160000 ÷ نبضات الـ PLC في لفة الموتور</b>.</p>'+
+   '<div class="gearin"><label>N · P1-44<input type="number" id="mN" value="'+N+'" min="1" step="1"></label><span class="frac">/</span><label>M · P1-45<input type="number" id="mM" value="'+Mm+'" min="1" step="1"></label><button type="button" class="qbtn pri" data-ma="gear">اكتب في الدرايف</button></div>'+
+   '<div class="formula" id="mForm"></div>'+
+   '<details><summary style="cursor:pointer;font-weight:600;min-height:40px;display:flex;align-items:center">وريني الحل</summary><div class="formula">'+M.solTxt.join('<br>')+'</div><button type="button" class="btn" data-ma="sol" style="margin-top:6px;min-height:44px">حط الحل في الخانات</button></details></div>'+
+  '<div class="mstep" id="mS3"><h3><span class="n">3</span>ضبط الجين: شوف الفرق في الحركة</h3>'+tuneHTML()+'</div>'+
+  '</div></div>';
+ MS.alShown=-1;machUpdate(true);machDraw();
+}
+function tuneHTML(){const M=MK();
+ const sl=(c,l,mn,mx,st,sub)=>'<label class="qslider"><span><code>'+c+'</code> '+l+(sub?'<br><small class="muted">'+sub+'</small>':'')+'</span><input type="range" min="'+mn+'" max="'+mx+'" step="'+st+'" data-tp="'+c+'" value="'+S.P[c]+'"><b data-tv="'+c+'">'+S.P[c]+'</b></label>';
+ return '<p class="mnote">قصور الماكينة دي حوالي <b>'+M.ratio+'×</b> قصور الموتور، يعني <code>P1-37</code> الصح ≈ <b>'+M.ratio*10+'</b>. جرّب الأزرار، وبعدين ابدأ حركة وبص على الرسم والـ overshoot.</p>'+
+  '<div class="qrow"><button type="button" class="qbtn" data-tune="slow">بطيء</button><button type="button" class="qbtn" data-tune="good">مظبوط</button><button type="button" class="qbtn" data-tune="over">Overshoot</button><button type="button" class="qbtn" data-tune="vib">بيزن ويرعش</button></div>'+
+  '<div class="tune">'+sl('P2-00','جين الموضع KPP',5,300,1,'أعلى = بيلحق أسرع، وزيادة = overshoot')+sl('P2-04','جين السرعة KVP',50,3000,10,'التكامل P2-06 بيتظبط معاه لوحده = خُمس KVP')+sl('P1-37','نسبة القصور ×0.1',0,400,5,'أقل من الحقيقي = بطيء ومرن، أكتر بكتير = زنة')+'</div>'+
+  '<p class="mnote">في الماكينة الحقيقية ابدأ بالضبط الأوتوماتيك <code>P2-32</code> وبعدين ظبط بإيدك. هنا الضبط يدوي (<code>P2-32 = 0</code>) عشان تشوف أثر كل رقم.</p>';}
+/* presets checked by a scripted sweep on each machine: slow = late arrival, over = visible overshoot that still settles, vib = torque buzz */
+const TUNE={slow:M=>({'P2-00':10,'P2-04':150,'P1-37':M.ratio*10,'P2-02':50}),good:M=>({'P2-00':60,'P2-04':600,'P1-37':M.ratio*10,'P2-02':50}),
+ over:M=>Object.assign({'P1-37':0,'P2-02':100},{screw:{'P2-00':60,'P2-04':600,'P2-02':50},index:{'P2-00':60,'P2-04':150},cut:{'P2-00':150,'P2-04':150},belt:{'P2-00':80,'P2-04':150}}[M.id]),
+ vib:M=>({'P2-00':60,'P2-04':2600,'P1-37':Math.min(400,M.ratio*40),'P2-02':50})};
+function setTune(o){if(S.P['P2-32']!==0)writeP('P2-32',0);for(const c in o){writeP(c,o[c]);if(c==='P2-04')writeP('P2-06',clamp(Math.round(o[c]/5),0,1023));}updatePTable(true);machUpdate(true);}
+function machUpdate(force){
+ if(!$('#mBody').firstChild)return;const M=MK(),ready=machReady();
+ $('#mSetupRow').hidden=ready;
+ const st=$('#mBody [data-ma="son"]');if(st)st.setAttribute('aria-pressed',String(!!X.son));
+ const jm=$('#mBody [data-ma="jam"]');if(jm)jm.setAttribute('aria-pressed',String(!!S.jam));
+ const N=+($('#mN')?.value||0),Mm=+($('#mM')?.value||0),u=N>0&&Mm>0?N/Mm/ENC*M.lead:NaN,uD=unitNow(M),U=M.wrap?'°':'mm';
+ const f=$('#mForm');if(f){const mo=t=>'<bdi class="mono">'+t+'</bdi>',h='بالأرقام اللي فوق: نبضة الـ PLC = '+mo('N/M ÷ 160000 × '+M.lead+' '+U)+' = <b>'+mo((isFinite(u)?fmtNum(u):'—')+' '+U)+'</b> (المطلوب '+mo(M.unit+' '+U)+')<br>في الدرايف دلوقتي '+mo(S.P['P1-44']+'/'+S.P['P1-45'])+' يعني نبضة = '+mo(fmtNum(uD)+' '+U)+(Math.abs(uD-M.unit)/M.unit<1e-9?' ✓':' ✗');if(f.innerHTML!==h)f.innerHTML=h;}
+ $('#mS2').classList.toggle('done',Math.abs(uD-M.unit)/M.unit<1e-9);
+ $$('#mBody [data-tp]').forEach(r=>{const c=r.dataset.tp;if(document.activeElement!==r&&+r.value!==S.P[c])r.value=S.P[c];const o=$('#mBody [data-tv="'+c+'"]');if(o&&o.textContent!==String(S.P[c]))o.textContent=S.P[c];});
+ const [cls,h]=resultHTML(),rs=$('#mRes');if(rs.innerHTML!==h)rs.innerHTML=h;rs.className='mres '+cls;
+ const vbe=$('#mVib');if(vbe){const vb=MS.active&&X.son&&vibrating();if(vbe.hidden===vb)vbe.hidden=!vb;}
+ const al=S.alarm;if(MS.alShown!==al){MS.alShown=al;$('#mAl').innerHTML=al?alarmCardHTML(al):'';}
+ const t=(id,v)=>{const e=$(id);if(e&&e.textContent!==v)e.textContent=v;};
+ t('#mrP',MS.active?fmtU(phys()):'—');t('#mrC',MS.active&&MS.homed?fmtU(plcPos()):'؟');
+ t('#mrE',MS.active?((X.posCmd-X.posFb)/ENC*M.lead).toFixed(M.dec+1)+' '+U:'—');
+ if(machMsgT&&performance.now()-machMsgT>7000){machMsgT=0;const e=$('#mMsg');if(e)e.textContent='';}
+}
+function machSelect(k){if(k!==MS.k){machDetach();MS.k=k;MS.tgt=null;MS.res=null;MS.last=null;}machRender();}
+$('#mTabs').addEventListener('click',e=>{const b=e.target.closest('[data-mk]');if(b)machSelect(+b.dataset.mk);});
+$('#mBody').addEventListener('input',e=>{const r=e.target.closest('[data-tp]');if(r){const o={};o[r.dataset.tp]=+r.value;setTune(o);}if(e.target.id==='mN'||e.target.id==='mM')machUpdate(true);});
+$('#mBody').addEventListener('click',e=>{
+ const tb=e.target.closest('[data-tune]');if(tb){setTune(TUNE[tb.dataset.tune](MK()));machMsg({slow:'جين واطي: الماكينة بتتأخر ورا الأمر وتوصل متأخر',good:'P1-37 = القصور الحقيقي وجين متوسط',over:'P1-37 = 0 و KVP واطي: الدرايف فاكر الحمل خفيف، فالحلقة ضعيفة على الكتلة الحقيقية، تعدّي الهدف وترجع. بص على الخط الأحمر في الرسم',vib:'KVP عالي و P1-37 أكبر بكتير من الحقيقي: الحلقة بقت حادة أوي والعزم بيرعش (الزنة اللي بتسمعها في الماكينة)، والموتور بيسخن'}[tb.dataset.tune]);return;}
+ const b=e.target.closest('[data-ma]');if(!b)return;const a=b.dataset.ma,M=MK();
+ if(a==='setup')machSetup();
+ else if(a==='gear')writeGear(+$('#mN').value,+$('#mM').value);
+ else if(a==='sol'){$('#mN').value=M.sol[0];$('#mM').value=M.sol[1];machUpdate(true);}
+ else if(a==='home')machHome();
+ else if(a==='go'){const T=+$('#mT').value;if(!isFinite(T)||T<M.lo||T>M.hi){machMsg('الهدف لازم بين '+M.lo+' و '+M.hi+' mm','bad');return;}MS.seq=[];startMove(T);}
+ else if(a==='next'){MS.seq=[];startMove((Math.round(plcPos()/45)+1)*45,'محطة');}
+ else if(a==='five'){MS.seq=[];const b0=Math.round(plcPos()/45);for(let k=1;k<=5;k++)MS.seq.push({mv:(b0+k)*45,tag:'محطة '+k+' من 5'});}
+ else if(a==='cut1'||a==='cut3'){const L=+$('#mT').value;if(!(L>=20&&L<=440)){machMsg('الطول بين 20 و 440 mm','bad');return;}if(!MS.homed){machMsg('دوس «صفّر العداد» الأول','bad');return;}MS.cutL=L;MS.seq=[];for(let k=0;k<(a==='cut3'?3:1);k++)MS.seq.push({fn:true},{act:'cut',dur:0.5});
+  MS.seq=MS.seq.map(s=>s.fn?{rel:L,tag:'تغذية '+L+' mm'}:s);}
+ else if(a==='cycle'){if(MS.boxAt!=='pick'){MS.boxAt='pick';MS.hasBox=false;}MS.seq=[{mv:M.pick,tag:'لمحطة الأخد'},{act:'grip',dur:0.6},{mv:M.place,tag:'لمحطة الحط'},{act:'drop',dur:0.6}];}
+ else if(a==='jam'){S.jam=!S.jam;log(S.jam?'زنقة ميكانيكية: الماكينة مش قادرة تتحرك':'الزنقة اتشالت');}
+ else if(a==='arst'){pulseDI(5);}
+ else if(a==='son'){S.di[1]=!S.di[1];log('DI1 (SON) '+(S.di[1]?'اتقفل':'اتفتح'));}
+ machUpdate(true);
+});
+setInterval(()=>{if($('#machPanel').offsetParent){machUpdate();machPlot();}},120);
+const _saBench=saBench;saBench=function(i){machDetach();return _saBench(i);};
+machRender();
+/* theme toggle (same idea as the other course pages) */
+(function(){const b=$('#themeBtn'),dark=()=>{const t=document.documentElement.getAttribute('data-theme');return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches;};
+ const upd=()=>{const d=dark();b.textContent=d?'☀':'☾';b.setAttribute('aria-label',d?'الوضع الفاتح':'الوضع الغامق');b.title=b.getAttribute('aria-label');};
+ b.addEventListener('click',()=>{const t=dark()?'light':'dark';document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('servo-theme',t);}catch(_){}upd();});upd();})();
 </script>
 </body>
 </html>
