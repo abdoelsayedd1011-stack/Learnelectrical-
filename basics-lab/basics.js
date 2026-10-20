@@ -1,4 +1,4 @@
-/* أساسيات الكهربا للمبتدئين: shared engine for the hub and the 9 lessons.
+/* أساسيات الكهربا للمبتدئين: shared engine for the hub and the 13 lessons.
    Modules: store/progress · theme · lesson shell · quiz · circuit solver · small widgets ·
    multimeter (BL.meter) · wiring bench (BL.bench). Lesson pages hold the content + data. */
 (function(){
@@ -36,21 +36,29 @@ function themeBtn(){
 BL.COURSE = [
   {id:'l1', n:1, file:'lesson-01.html', title:'يعني إيه كهربا؟', sub:'الجهد والتيار والمقاومة والقدرة بتشبيه الميّة، وإزاي فاتورة الكهربا بتتحسب',
     tasks:[['ohm','تجربة الميّة والكهربا'],['bill','حساب الكيلووات ساعة'],['quiz','أسئلة الدرس']]},
-  {id:'l2', n:2, file:'lesson-02.html', title:'أنواع الكهربا', sub:'المستمرة والمترددة، سنجل فاز وتلاتة فاز، وألوان الأسلاك والأرضي',
+  {id:'vi', n:2, file:'lesson-02.html', title:'الجهد والتيار', sub:'الفولت بيزق والأمبير بيمشي: الدايرة المقفولة، اتجاه التيار، الوحدات وتحويلها، وإزاي تقيسهم',
+    tasks:[['flow','تجربة الدايرة'],['units','تمرين تحويل الوحدات'],['meter','فين تحط العداد'],['quiz','أسئلة الدرس']]},
+  {id:'cond', n:3, file:'lesson-03.html', title:'التوصيلية والمواد الموصلة والعازلة', sub:'النحاس والألومنيوم والبلاستيك والميّة: مين يوصّل ومين يعزل، وطول وتخانة السلك بيأثروا إزاي',
+    tasks:[['mat','جهاز اختبار المواد'],['wire','حاسبة مقاومة السلك'],['quiz','أسئلة الدرس']]},
+  {id:'sp', n:4, file:'lesson-04.html', title:'التوصيل على التوالي والتوازي', sub:'لمبات ورا بعض وجنب بعض: التيار والجهد في كل لمبة، ليه البيت كله توازي، والبطاريات',
+    tasks:[['build','تجربة التوالي والتوازي'],['total','تمرين حساب المقاومة الكلية'],['quiz','أسئلة الدرس']]},
+  {id:'pw', n:5, file:'lesson-05.html', title:'القدرة والطاقة', sub:'الوات والكيلووات والحصان، الكيلووات ساعة وفاتورة البيت، الحرارة في السلك، والكفاءة',
+    tasks:[['tri','مثلث القدرة'],['house','حاسبة أجهزة البيت'],['quiz','أسئلة الدرس']]},
+  {id:'l2', n:6, file:'lesson-06.html', title:'أنواع الكهربا', sub:'المستمرة والمترددة، سنجل فاز وتلاتة فاز، وألوان الأسلاك والأرضي',
     tasks:[['wave','شكل الموجة'],['wires','تمرين ألوان الأسلاك'],['quiz','أسئلة الدرس']]},
-  {id:'l3', n:3, file:'lesson-03.html', title:'السلامة والعدّة', sub:'مفك الاختبار، قاطع التسريب، والعدّة اللي لازم تبقى معاك',
+  {id:'l3', n:7, file:'lesson-07.html', title:'السلامة والعدّة', sub:'مفك الاختبار، قاطع التسريب، والعدّة اللي لازم تبقى معاك',
     tasks:[['tester','تجربة مفك الاختبار'],['rcd','تجربة قاطع التسريب'],['dodont','اعمل / ماتعملش'],['quiz','أسئلة الدرس']]},
-  {id:'l4', n:4, file:'lesson-04.html', title:'الأفوميتر (AVO)', sub:'تقيس فولت وأوم وتوصيل وتيار من غير ما تتعوّر ولا تحرق العداد',
+  {id:'l4', n:8, file:'lesson-08.html', title:'الأفوميتر (AVO)', sub:'تقيس فولت وأوم وتوصيل وتيار من غير ما تتعوّر ولا تحرق العداد',
     tasks:[['ex-socket','جهد البريزة'],['ex-bat9','بطارية 9V'],['ex-bat15','بطارية 1.5V'],['ex-wire','سلك سليم ومقطوع'],['ex-res','قيمة مقاومة'],['quiz','أسئلة الدرس']]},
-  {id:'l5', n:5, file:'lesson-05.html', title:'قياس الأجهزة عمليًا', sub:'السخان والغلاية واللمبة والفيوز والموتور، وقياس التيار بالكلامب',
+  {id:'l5', n:9, file:'lesson-09.html', title:'قياس الأجهزة عمليًا', sub:'السخان والغلاية واللمبة والفيوز والموتور، وقياس التيار بالكلامب',
     tasks:[['heater','السخان'],['kettle','الغلاية'],['lamp','لمبة الفتيلة'],['fuse','الفيوز'],['motor3','موتور 3 فاز'],['motor1','موتور سنجل فاز'],['clamp','الكلامب ميتر'],['diag','3 تشخيصات صح'],['quiz','أسئلة الدرس']]},
-  {id:'l6', n:6, file:'lesson-06.html', title:'المحوّل (الترانس) والباور سبلاي', sub:'إزاي الترانس بيوطّي الجهد، والباور سبلاي بيحوّل الكهربا المترددة لمستمرة، وإزاي تقيسهم',
+  {id:'l6', n:10, file:'lesson-10.html', title:'المحوّل (الترانس) والباور سبلاي', sub:'إزاي الترانس بيوطّي الجهد، والباور سبلاي بيحوّل الكهربا المترددة لمستمرة، وإزاي تقيسهم',
     tasks:[['xfmr','تجربة الترانس'],['xmeas','قياس الترانس'],['psu','مراحل الباور سبلاي'],['pmeas','قياس الباور سبلاي'],['quiz','أسئلة الدرس']]},
-  {id:'l7', n:7, file:'lesson-07.html', title:'قانون أوم والقدرة واختيار السلك والقاطع', sub:'تحسب التيار من القدرة، وتختار القاطع ومقاس السلك صح',
+  {id:'l7', n:11, file:'lesson-11.html', title:'قانون أوم والقدرة واختيار السلك والقاطع', sub:'تحسب التيار من القدرة، وتختار القاطع ومقاس السلك صح',
     tasks:[['calc','الحاسبة'],['drill','اختار القاطع والسلك'],['quiz','أسئلة الدرس']]},
-  {id:'l8', n:8, file:'lesson-08.html', title:'توصيل اللمبة والبريزة', sub:'وصّل بإيدك: لمبة بمفتاح، بريزة بأرضي، مفتاح سلم، ولمبتين على التوازي',
+  {id:'l8', n:12, file:'lesson-12.html', title:'توصيل اللمبة والبريزة', sub:'وصّل بإيدك: لمبة بمفتاح، بريزة بأرضي، مفتاح سلم، ولمبتين على التوازي',
     tasks:[['w-a','لمبة ومفتاح'],['w-b','بريزة بأرضي'],['w-c','مفتاح السلم'],['w-d','لمبتين توازي'],['quiz','أسئلة الدرس']]},
-  {id:'l9', n:9, file:'lesson-09.html', title:'أعطال البيت الشائعة', sub:'لعبة تدوّر فيها على العطل بالتستر والأفوميتر، والامتحان النهائي',
+  {id:'l9', n:13, file:'lesson-13.html', title:'أعطال البيت الشائعة', sub:'لعبة تدوّر فيها على العطل بالتستر والأفوميتر، والامتحان النهائي',
     tasks:[['g-lamp','اللمبة مش بتنور'],['g-socket','البريزة مفيهاش كهربا'],['g-trip','القاطع بيفصل'],['quiz','أسئلة الدرس'],['final','الامتحان النهائي']]}
 ];
 BL.lessonById = id => BL.COURSE.find(l => l.id === id);
@@ -774,7 +782,7 @@ BL.meter = function(host, cfg){
     if (S.mode === 'A'){
       if (S.jack === 'A' && hasV){ m.danger = '<b>غلط خطر!</b> العداد على أمبير والأحمر في <b>10A</b> وانت حاطط المجسين على نقطتين بينهم جهد. ده <b>قصر مباشر</b> زي ما تحط مسمار في البريزة! الأمبير بيتقاس والعداد <b>على التوالي</b> مع الحمل، والأسهل والأأمن: <b>الكلامب ميتر</b>.'; return m; }
       if (S.jack !== 'A'){ m.text = '----'; m.unit = 'A'; m.note = 'عشان تقيس أمبير لازم الطرف الأحمر يتنقل لفتحة <b>10A</b>. (ومتنساش ترجّعه بعدها).'; return m; }
-      m.val = 0; m.text = '0.00'; m.unit = 'A'; m.note = 'قياس الأمبير بالأفوميتر محتاج تفتح الدايرة وتحط العداد على التوالي. في الشغل العملي استخدم <b>الكلامب ميتر</b> (الدرس 5).'; return m;
+      m.val = 0; m.text = '0.00'; m.unit = 'A'; m.note = 'قياس الأمبير بالأفوميتر محتاج تفتح الدايرة وتحط العداد على التوالي. في الشغل العملي استخدم <b>الكلامب ميتر</b> (الدرس 9).'; return m;
     }
     if (S.mode === 'ACV' || S.mode === 'DCV'){
       m.unit = S.mode === 'ACV' ? 'V~' : 'V⎓';
@@ -1149,4 +1157,490 @@ BL.bench = function(host, cfg){
   setEx(0);
   return {S, setEx, wire(a, b, c){ S.pend = null; if (c) S.color = c; termClick(a); termClick(b); }, clear(){ S.wires = []; saveWires(); render(); }, check, analyze, power(v){ S.power = v; if (v) S.st.tripped = false; render(); return S.power; }, flip(id){ S.st.sw[id] = !S.st.sw[id]; render(); }, lamps: () => Object.assign({}, S.st.lamp), solution: () => (ex().solution || []).slice()};
 };
+
+/* =====================================================================
+   Lessons 2–5 (الجهد والتيار · التوصيلية · التوالي والتوازي · القدرة والطاقة)
+   Pure physics in BL.phys (script-tested), widgets below it.
+   ===================================================================== */
+const PH = BL.phys = {};
+/* number helpers: trim zeros, accept Arabic digits and comma */
+function nf(v, d){ if (!isFinite(v)) return '∞'; d = d == null ? 3 : d; let s = (Math.round(v * Math.pow(10, d)) / Math.pow(10, d)).toFixed(d); if (s.indexOf('.') >= 0) s = s.replace(/0+$/, '').replace(/\.$/, ''); return s === '-0' ? '0' : s; }
+BL.nf = nf;
+function sig(v, n){ if (!isFinite(v)) return '∞'; if (v === 0) return '0'; const a = Math.abs(v), d = Math.max(0, (n || 3) - 1 - Math.floor(Math.log10(a))); return nf(v, Math.min(d, 9)); }
+BL.sig = sig;
+function pnum(s){ s = String(s == null ? '' : s).trim().replace(/[٠-٩]/g, c => '٠١٢٣٤٥٦٧٨٩'.indexOf(c)).replace(/[۰-۹]/g, c => '۰۱۲۳۴۵۶۷۸۹'.indexOf(c)).replace(/[٫,]/g, '.').replace(/\s+/g, ''); if (!s || !/^[-+]?(\d+\.?\d*|\.\d+)(e[-+]?\d+)?$/i.test(s)) return NaN; return +s; }
+BL.pnum = pnum;
+const near = (a, b, tol) => isFinite(a) && Math.abs(a - b) <= (tol == null ? 1e-6 : tol) * Math.max(1, Math.abs(b));
+PH.near = near;
+/* engineering text for Ω / A / V / W */
+function eng(v, u){
+  if (!isFinite(v)) return '∞ ' + u;
+  const a = Math.abs(v);
+  if (a === 0) return '0 ' + u;
+  if (a >= 1e6) return sig(v / 1e6, 3) + ' M' + u;
+  if (a >= 1e3) return sig(v / 1e3, 3) + ' k' + u;
+  if (a >= 1) return sig(v, 3) + ' ' + u;
+  if (a >= 1e-3) return sig(v * 1e3, 3) + ' m' + u;
+  return sig(v * 1e6, 3) + ' µ' + u;
+}
+BL.eng = eng;
+
+/* ---------- L2: simple circuit (battery + switch + lamp 12Ω) ---------- */
+PH.LAMP_R = 12;
+PH.flow = (V, closed, R) => { R = R || PH.LAMP_R; const I = closed ? V / R : 0; return {I, Vlamp:I * R, Vsw:closed ? 0 : V, P:I * I * R}; };
+/* units */
+PH.PFX = {'µ':1e-6, 'm':1e-3, '':1, 'k':1e3};
+PH.conv = (val, from, to) => { const f = PH.PFX[from.slice(0, -1)], t = PH.PFX[to.slice(0, -1)]; if (f == null || t == null || from.slice(-1) !== to.slice(-1)) return NaN; return val * f / t; };
+
+BL.flow = function(host, opt){
+  const g = U('fl'), L = opt.lesson;
+  host.innerHTML = `<div class="wd-art"><svg viewBox="0 0 360 262" role="img" aria-label="دايرة بسيطة: بطارية ومفتاح وأميتر ولمبة وفولتميتر على طرفين اللمبة">
+  <defs><radialGradient id="${g}g"><stop offset="0" stop-color="#fff7c2"/><stop offset=".45" stop-color="#ffd84a" stop-opacity=".85"/><stop offset="1" stop-color="#ffb300" stop-opacity="0"/></radialGradient>
+  <linearGradient id="${g}b" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2a2f33"/><stop offset=".45" stop-color="#4b545b"/><stop offset="1" stop-color="#1c2023"/></linearGradient></defs>
+  <path d="M50 100 V60 H140 M188 60 H290 V200 H50 V160" fill="none" stroke="#b5651d" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path class="f-dots flow" d="M50 160 V200 H290 V60 H188 M140 60 H50 V100" fill="none" stroke="#2f8de4" stroke-width="7" stroke-dasharray="0.01 11.99" stroke-linecap="round"/>
+  <path class="f-conv flow" d="M50 100 V60 H140 M188 60 H290 V200 H50 V160" fill="none" stroke="#ff9a1f" stroke-width="3" stroke-dasharray="7 5" stroke-linecap="round"/>
+  <g class="f-arr"></g>
+  <g transform="translate(32 100)"><rect width="36" height="60" rx="5" fill="url(#${g}b)"/><rect x="10" y="-6" width="16" height="7" rx="2" fill="#b9c1c6"/><rect y="20" width="36" height="20" fill="#e2a31a"/><text x="18" y="34" text-anchor="middle" class="f-bv" style="font-size:10px;font-weight:700;fill:#1c2023">6V</text><text x="18" y="14" text-anchor="middle" style="font-size:13px;fill:#fff">+</text><text x="18" y="55" text-anchor="middle" style="font-size:15px;fill:#fff">−</text></g>
+  <g class="bn-tap f-swg" tabindex="0" role="button" aria-label="المفتاح: دوس عشان تفتحه أو تقفله"><rect x="128" y="22" width="72" height="52" fill="transparent"/><circle cx="140" cy="60" r="4.5" fill="var(--sym)"/><circle cx="188" cy="60" r="4.5" fill="var(--sym)"/><line class="f-lever" x1="140" y1="60" x2="186" y2="60" stroke="var(--sym)" stroke-width="4" stroke-linecap="round"/></g>
+  <text x="164" y="88" text-anchor="middle" class="dev-ars f-swt">المفتاح مقفول</text>
+  <g transform="translate(240 60)"><circle r="15" fill="var(--panel)" stroke="var(--sym)" stroke-width="2"/><text y="5" text-anchor="middle" style="font-size:14px;font-weight:700;fill:var(--ink)">A</text></g>
+  <text x="240" y="92" text-anchor="middle" class="dev-ars">أميتر (توالي)</text>
+  <g transform="translate(290 130)"><circle class="f-glow" r="44" fill="url(#${g}g)" opacity="0"/><circle r="20" fill="#f4f1e6" fill-opacity=".6" stroke="#9aa3a8" stroke-width="1.5" class="f-bulb"/><path d="M-9 0 l4.5 -7 l4.5 7 l4.5 -7 l4.5 7" fill="none" stroke="#6b5a3a" stroke-width="1.8" class="f-fil" transform="translate(0 1)"/></g>
+  <path d="M290 95 H338 V115 M338 145 V165 H290" fill="none" stroke="var(--muted)" stroke-width="1.6" stroke-dasharray="4 3"/>
+  <g transform="translate(338 130)"><circle r="15" fill="var(--panel)" stroke="var(--sym)" stroke-width="2"/><text y="5" text-anchor="middle" style="font-size:14px;font-weight:700;fill:var(--ink)">V</text></g>
+  <text x="354" y="222" text-anchor="end" class="dev-ars">فولتميتر على طرفين اللمبة (توازي)</text>
+  <text x="180" y="252" text-anchor="middle" class="dev-ar f-dir"></text>
+  </svg></div>
+  <div class="read"><div><span>جهد البطارية</span><b class="f-V"></b></div><div><span>الأميتر (التيار)</span><b class="f-I"></b></div><div><span>الفولتميتر على اللمبة</span><b class="f-VL"></b></div><div><span>الجهد على طرفين المفتاح</span><b class="f-VS"></b></div></div>
+  <div class="wd-ctl"><label>عدد الخلايا (كل خلية 1.5V): <b class="f-nl"></b><input type="range" min="0" max="8" step="1" value="4" class="f-n" aria-label="عدد خلايا البطارية"></label>
+  <button type="button" class="btn f-sw" aria-pressed="true">المفتاح: مقفول (الدايرة كاملة)</button>
+  <button type="button" class="btn f-md" aria-pressed="false">اعرض الاتجاه الاصطلاحي</button></div>
+  <p class="msg f-msg" aria-live="polite"></p>
+  <ul class="mm-ex f-ch"><li data-c="half">خلّي الأميتر يقرا <b>0.5A</b> والمفتاح مقفول.</li><li data-c="open">افتح المفتاح والبطارية فيها جهد: شوف التيار بقى كام، وشوف الجهد على طرفين المفتاح.</li><li data-c="conv">بدّل لعرض الاتجاه الاصطلاحي وقارن بحركة الإلكترونات.</li></ul>`;
+  const q = s => $(s, host);
+  const st = {n:4, closed:true, conv:false, seen:new Set()};
+  function upd(){
+    const V = st.n * 1.5, r = PH.flow(V, st.closed);
+    q('.f-nl').textContent = st.n + ' × 1.5 = ' + nf(V) + ' V'; q('.f-bv').textContent = nf(V) + 'V';
+    q('.f-V').textContent = nf(V, 1) + ' V'; q('.f-I').textContent = nf(r.I, 3) + ' A'; q('.f-VL').textContent = nf(r.Vlamp, 2) + ' V'; q('.f-VS').textContent = nf(r.Vsw, 2) + ' V';
+    q('.f-lever').setAttribute('x2', st.closed ? 186 : 178); q('.f-lever').setAttribute('y2', st.closed ? 60 : 30);
+    q('.f-swt').textContent = st.closed ? 'المفتاح مقفول' : 'المفتاح مفتوح';
+    const sw = q('.f-sw'); sw.setAttribute('aria-pressed', st.closed); sw.textContent = st.closed ? 'المفتاح: مقفول (الدايرة كاملة)' : 'المفتاح: مفتوح (الدايرة مقطوعة)';
+    const md = q('.f-md'); md.setAttribute('aria-pressed', st.conv); md.textContent = st.conv ? 'اعرض حركة الإلكترونات' : 'اعرض الاتجاه الاصطلاحي';
+    const dur = r.I > 0 ? Math.max(0.25, Math.min(5, 0.9 / r.I)) : 1;
+    const dots = q('.f-dots'), conv = q('.f-conv');
+    dots.style.display = st.conv ? 'none' : ''; conv.style.display = st.conv ? '' : 'none';
+    [dots, conv].forEach(p => { p.style.setProperty('--dur', dur + 's'); p.style.animationPlayState = r.I > 0 ? 'running' : 'paused'; p.style.opacity = r.I > 0 ? 1 : (p === dots ? .35 : 0); });
+    // direction arrows: electrons − → + (anticlockwise here), conventional + → − (clockwise)
+    const cw = st.conv, col = cw ? '#ff9a1f' : '#2f8de4';
+    const arr = (x, y, ang) => `<path d="M-7 -6 L5 0 L-7 6 Z" fill="${col}" transform="translate(${x} ${y}) rotate(${ang})"/>`;
+    q('.f-arr').innerHTML = r.I > 0 ? (cw ? arr(215, 47, 0) + arr(170, 213, 180) : arr(215, 47, 180) + arr(170, 213, 0)) : '';
+    q('.f-dir').textContent = r.I > 0 ? (cw ? 'الاتجاه الاصطلاحي: من + لـ − (ده اللي في الكتب والرسومات)' : 'الإلكترونات: من − لـ + (عكس الاصطلاحي)') : (st.closed ? 'مفيش جهد: مفيش زق ⇐ مفيش تيار' : 'الدايرة مفتوحة: مفيش تيار');
+    const b = Math.min(1, r.P / 12);
+    q('.f-glow').setAttribute('opacity', b.toFixed(2)); q('.f-bulb').setAttribute('fill', b > .04 ? '#ffe680' : '#f4f1e6'); q('.f-fil').setAttribute('stroke', b > .04 ? '#ff9a00' : '#6b5a3a');
+    const m = q('.f-msg');
+    if (!st.closed && V > 0) m.innerHTML = `الدايرة مفتوحة ⇐ <b>التيار صفر</b> واللمبة طافية، بس <b>الجهد لسه موجود</b>: ${nf(V, 1)}V على طرفين المفتاح. عشان كده المفتاح المفتوح لسه فيه كهربا!`;
+    else if (st.closed && V === 0) m.textContent = 'مفيش بطارية ⇐ مفيش جهد يزق ⇐ مفيش تيار، حتى والدايرة مقفولة.';
+    else if (st.closed) m.innerHTML = `التيار = ${nf(V, 1)}V ÷ ${PH.LAMP_R}Ω = <b>${nf(r.I, 3)}A</b>. كل ما تزوّد الخلايا الزق بيزيد والتيار بيزيد.`;
+    else m.textContent = 'مفيش جهد ومفيش دايرة.';
+    if (st.closed && near(r.I, 0.5)) st.seen.add('half');
+    if (!st.closed && V > 0) st.seen.add('open');
+    if (st.conv && r.I > 0) st.seen.add('conv');
+    $$('.f-ch li', host).forEach(li => li.classList.toggle('ok', st.seen.has(li.dataset.c) || BL.has(L, 'flow')));
+    if (['half', 'open', 'conv'].every(k => st.seen.has(k))) BL.mark(L, 'flow');
+  }
+  q('.f-n').addEventListener('input', e => { st.n = +e.target.value; upd(); });
+  const tog = () => { st.closed = !st.closed; upd(); };
+  q('.f-sw').addEventListener('click', tog); q('.f-swg').addEventListener('click', tog);
+  q('.f-swg').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); tog(); } });
+  q('.f-md').addEventListener('click', () => { st.conv = !st.conv; upd(); });
+  upd();
+  return {st, upd, set(n, closed, conv){ st.n = n; st.closed = closed; st.conv = !!conv; q('.f-n').value = n; upd(); }};
+};
+
+BL.units = function(host, opt){
+  const L = opt.lesson, need = opt.need || 5;
+  const UN = ['µA', 'mA', 'A', 'mV', 'V', 'kV'];
+  const BANK = [
+    [1500, 'mV', 'V', 'بطارية قلم مكتوب عليها'], [9, 'V', 'mV', 'بطارية 9 فولت'], [11, 'kV', 'V', 'كابل جهد متوسط'], [220, 'V', 'kV', 'كهربا البيت'],
+    [380, 'V', 'kV', 'تلاتة فاز في المصنع'], [66, 'kV', 'V', 'خط ضغط عالي'], [50, 'mA', 'A', 'لمبة LED'], [30, 'mA', 'A', 'قاطع التسريب بيفصل عند'],
+    [0.25, 'A', 'mA', 'مروحة صغيرة'], [2.1, 'A', 'mA', 'شاحن موبايل'], [500, 'µA', 'mA', 'ساعة حيطة'], [0.0002, 'A', 'µA', 'حساس صغير'],
+    [4, 'mA', 'A', 'إشارة حساس في مصنع'], [0.5, 'V', 'mV', 'إشارة حساس حرارة'], [3300, 'mA', 'A', 'بطارية موبايل بتشحن بـ'], [0.012, 'kV', 'V', 'بطارية عربية']
+  ];
+  host.innerHTML = `<div class="wd" style="background:var(--panel)"><h3>محوّل سريع</h3>
+   <div class="wd-ctl"><input class="inp u-v" type="text" inputmode="decimal" value="1.5" aria-label="القيمة" style="width:7em;font-family:var(--font-mono);direction:ltr"><select class="inp u-f" aria-label="الوحدة">${UN.map(u => `<option${u === 'V' ? ' selected' : ''}>${u}</option>`).join('')}</select></div>
+   <div class="read u-out"></div></div>
+   <div class="chal u-chal"><b>تمرين التحويل:</b> جاوب <b>${need} أسئلة صح</b>. القاعدة: من الكبير للصغير اضرب في 1000، ومن الصغير للكبير اقسم على 1000.
+   <p class="u-q" style="margin:8px 0 4px;font-weight:600"></p>
+   <div class="wd-ctl"><input class="inp u-a" type="text" inputmode="decimal" aria-label="إجابتك" style="width:8em;font-family:var(--font-mono);direction:ltr"><span class="u-to mono"></span><button type="button" class="btn u-chk" style="flex:0 1 auto">اتأكد</button><button type="button" class="btn u-nx" style="flex:0 1 auto">سؤال تاني</button></div>
+   <p class="msg u-msg" aria-live="polite"></p><p class="muted u-sc" style="font-size:.88rem"></p></div>`;
+  const q = s => $(s, host);
+  function conv(){
+    const v = pnum(q('.u-v').value), f = q('.u-f').value, base = f.slice(-1), fam = UN.filter(u => u.slice(-1) === base);
+    q('.u-out').innerHTML = fam.map(u => `<div><span>${u}</span><b>${isFinite(v) ? sig(PH.conv(v, f, u), 6) + ' ' + u : '--'}</b></div>`).join('');
+  }
+  q('.u-v').addEventListener('input', conv); q('.u-f').addEventListener('change', conv); conv();
+  let order = shuffle(BANK.map((_, i) => i)), k = 0, ok = 0, tried = false;
+  const cur = () => BANK[order[k % order.length]];
+  function ask(){ const c = cur(); q('.u-q').innerHTML = `${c[3]} <span class="eq">${nf(c[0], 6)} ${c[1]}</span> = كام <span class="eq">${c[2]}</span>؟`; q('.u-to').textContent = c[2]; q('.u-a').value = ''; q('.u-msg').textContent = ''; q('.u-msg').className = 'msg u-msg'; tried = false; }
+  function score(){ q('.u-sc').textContent = `صح لحد دلوقتي: ${Math.min(ok, need)} من ${need}`; if (BL.has(L, 'units')) q('.u-chal').classList.add('ok'); }
+  function check(){
+    const c = cur(), v = pnum(q('.u-a').value), right = PH.conv(c[0], c[1], c[2]), m = q('.u-msg');
+    if (!isFinite(v)){ m.className = 'msg u-msg bad'; m.textContent = 'اكتب رقم.'; return false; }
+    if (near(v, right, 1e-6)){
+      m.className = 'msg u-msg ok'; m.textContent = `صح: ${nf(c[0], 6)} ${c[1]} = ${sig(right, 6)} ${c[2]}`;
+      if (!tried) ok++; tried = true; score(); if (ok >= need) BL.mark(L, 'units'), q('.u-chal').classList.add('ok');
+      setTimeout(() => { if (q('.u-msg').classList.contains('ok')){ k++; ask(); } }, 1400);
+      return true;
+    }
+    m.className = 'msg u-msg bad';
+    const big = PH.PFX[c[1].slice(0, -1)] > PH.PFX[c[2].slice(0, -1)];
+    m.textContent = `لأ. انت رايح من ${big ? 'وحدة كبيرة لوحدة أصغر ⇐ اضرب في 1000' : 'وحدة صغيرة لوحدة أكبر ⇐ اقسم على 1000'}${Math.abs(Math.log10(PH.PFX[c[1].slice(0, -1)] / PH.PFX[c[2].slice(0, -1)])) > 4 ? ' (هنا خطوتين: 1000 × 1000)' : ''}.`;
+    tried = true; return false;
+  }
+  q('.u-chk').addEventListener('click', check);
+  q('.u-a').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); check(); } });
+  q('.u-nx').addEventListener('click', () => { k++; ask(); });
+  ask(); score();
+  return {cur, answer(v){ q('.u-a').value = v; return check(); }, next(){ k++; ask(); }, get ok(){ return ok; }};
+};
+
+/* ---------- L3: materials & wire resistance ---------- */
+/* rho in Ω·mm²/m at 20°C (= 10⁶ × Ω·m), alpha per °C */
+PH.MAT = {
+  ag:{n:'فضة', rho:0.0159, a:0.0038, col:'#c9ccd0', cls:'c'},
+  cu:{n:'نحاس', rho:0.0172, a:0.00393, col:'#c8753a', cls:'c'},
+  au:{n:'دهب', rho:0.0244, a:0.0034, col:'#d8b13a', cls:'c'},
+  al:{n:'ألومنيوم', rho:0.0282, a:0.00403, col:'#aab3b9', cls:'c'},
+  fe:{n:'حديد (صلب)', rho:0.14, a:0.005, col:'#6f777d', cls:'c'},
+  nicr:{n:'نيكل كروم (سلك السخان)', rho:1.1, a:0.0004, col:'#8d8a72', cls:'c'},
+  gr:{n:'جرافيت (سن القلم الرصاص)', rho:30, a:-0.0005, col:'#3a3d40', cls:'w'},
+  salt:{n:'ميّة بملح', R:300, col:'#7fc4ef', cls:'w'},
+  tap:{n:'ميّة الحنفية', R:25000, col:'#9fd3f5', cls:'w'},
+  wet:{n:'إيد مبلولة', R:1000, col:'#e3a98a', cls:'w'},
+  dry:{n:'إيد ناشفة', R:100000, col:'#e8b898', cls:'w'},
+  wwood:{n:'خشب مبلول', R:2e6, col:'#8a5a30', cls:'w'},
+  wood:{n:'خشب ناشف', R:Infinity, col:'#c08a52', cls:'i'},
+  pvc:{n:'بلاستيك PVC', R:Infinity, col:'#dfe5e8', cls:'i'},
+  rub:{n:'كاوتش (مطاط)', R:Infinity, col:'#2b2b2b', cls:'i'},
+  gl:{n:'زجاج', R:Infinity, col:'#bfe4ef', cls:'i'},
+  cer:{n:'سيراميك (بورسلين)', R:Infinity, col:'#f3efe6', cls:'i'},
+  air:{n:'هوا (مفيش حاجة)', R:Infinity, col:'none', cls:'i'}
+};
+PH.TEST_L = 0.1; PH.TEST_A = 1;           // the sample on the tester: 10 cm long, 1 mm² cross-section
+PH.TEST_V = 3; PH.TEST_LAMP = 10;          // 3 V battery, lamp 10 Ω (rated 0.9 W)
+PH.matR = id => { const m = PH.MAT[id]; return m.R != null ? m.R : m.rho * PH.TEST_L / PH.TEST_A; };
+PH.matTest = id => { const R = PH.matR(id), I = isFinite(R) ? PH.TEST_V / (PH.TEST_LAMP + R) : 0, P = I * I * PH.TEST_LAMP; return {R, I, b:Math.min(1, P / (PH.TEST_V * PH.TEST_V / PH.TEST_LAMP)), meter:R > 40e6 ? 'OL' : null, I220:isFinite(R) ? 220 / R : 0}; };
+PH.wire = (o) => {          // o: {mat, L (m), A (mm²), I (A), T (°C), V (supply, default 220)}
+  const m = PH.MAT[o.mat], T = o.T == null ? 20 : o.T, rho = m.rho * (1 + m.a * (T - 20));
+  const R = rho * o.L / o.A, Rloop = 2 * R, dV = (o.I || 0) * Rloop, Vs = o.V || 220;
+  return {rho, R, G:1 / R, Rloop, dV, pct:dV / Vs * 100, Ploss:(o.I || 0) * (o.I || 0) * Rloop};
+};
+PH.SECT = [0.5, 0.75, 1, 1.5, 2.5, 4, 6, 10, 16, 25, 35, 50];
+PH.minSect = (o, maxPct) => (PH.SECT.find(A => PH.wire(Object.assign({}, o, {A})).pct <= maxPct + 1e-9) || null);
+
+function fmtOhm(R){ if (!isFinite(R)) return 'OL'; if (R < 0.1) return nf(R, 4) + ' Ω'; if (R < 1) return nf(R, 3) + ' Ω'; return eng(R, 'Ω'); }
+BL.fmtOhm = fmtOhm;
+
+BL.matTester = function(host, opt){
+  const g = U('mt'), L = opt.lesson, need = opt.need || 8, ids = Object.keys(PH.MAT);
+  host.innerHTML = `<div class="wd-art"><svg viewBox="0 0 360 210" role="img" aria-label="جهاز اختبار: بطارية 3 فولت ولمبة ومسكتين بينهم العيّنة">
+  <defs><radialGradient id="${g}g"><stop offset="0" stop-color="#fff7c2"/><stop offset=".45" stop-color="#ffd84a" stop-opacity=".85"/><stop offset="1" stop-color="#ffb300" stop-opacity="0"/></radialGradient></defs>
+  <path d="M60 70 V40 H180 M180 40 H300 V150 H232 M128 150 H60 V110" fill="none" stroke="#b5651d" stroke-width="4" stroke-linejoin="round"/>
+  <path class="m-flow flow" d="M60 70 V40 H300 V150 H232 M128 150 H60 V110" fill="none" stroke="#ffe27a" stroke-width="2.2" stroke-dasharray="6 18" stroke-linecap="round"/>
+  <g transform="translate(44 70)"><rect width="32" height="40" rx="4" fill="#2f3539"/><rect y="12" width="32" height="15" fill="#e2a31a"/><text x="16" y="23.5" text-anchor="middle" style="font-size:9px;font-weight:700;fill:#1c2023">3V</text><rect x="10" y="-5" width="12" height="6" rx="2" fill="#b9c1c6"/></g>
+  <g transform="translate(180 40)"><circle class="m-glow" r="38" fill="url(#${g}g)" opacity="0"/><circle r="17" fill="#f4f1e6" fill-opacity=".6" stroke="#9aa3a8" stroke-width="1.5" class="m-bulb"/><path d="M-8 0 l4 -6 l4 6 l4 -6 l4 6" fill="none" stroke="#6b5a3a" stroke-width="1.6" class="m-fil"/></g>
+  <path d="M120 142 l14 8 l-14 8 z M240 142 l-14 8 l14 8 z" fill="#c62828"/>
+  <rect class="m-smp" x="132" y="141" width="96" height="18" rx="4" fill="#c8753a" stroke="rgba(0,0,0,.35)"/>
+  <text class="dev-ar m-smpn" x="180" y="185" text-anchor="middle"></text>
+  <g transform="translate(300 190)"><rect x="-46" y="-16" width="92" height="28" rx="6" fill="#2d3337"/><rect x="-40" y="-12" width="80" height="20" rx="3" fill="var(--lcd)"/><text class="m-lcd" x="34" y="3.5" text-anchor="end" style="font:600 13px var(--font-mono);fill:var(--lcd-ink)">--</text></g>
+  <text x="300" y="168" text-anchor="middle" class="dev-ars">الأوميتر على العيّنة</text>
+  </svg></div>
+  <p class="muted" style="font-size:.88rem">العيّنة: <b>10 سم</b> طول و<b>1 مم²</b> مقطع (للحاجات الصلبة). اختار مادة وحطّها بين المسكتين:</p>
+  <div class="tabs m-tabs">${ids.map(id => `<button type="button" class="btn" data-m="${id}" aria-pressed="false">${PH.MAT[id].n}</button>`).join('')}</div>
+  <div class="read"><div><span>النوع</span><b class="m-cls" style="font-family:var(--font-body)"></b></div><div><span>المقاومة (العداد)</span><b class="m-R"></b></div><div><span>التيار في اللمبة</span><b class="m-I"></b></div></div>
+  <p class="msg m-msg" aria-live="polite"></p>
+  <p class="chal m-chal">جرّب <b>${need} مواد مختلفة</b> على الأقل، منهم موصلات وعوازل وحاجات "بين بين". <span class="m-cnt"></span></p>`;
+  const q = s => $(s, host), seen = new Set();
+  const CLS = {c:'موصل كويس', w:'موصل ضعيف', i:'عازل'};
+  function pick(id){
+    const m = PH.MAT[id], t = PH.matTest(id);
+    $$('[data-m]', host).forEach(b => b.setAttribute('aria-pressed', b.dataset.m === id));
+    const smp = q('.m-smp'); smp.setAttribute('fill', m.col === 'none' ? 'transparent' : m.col); smp.setAttribute('stroke', m.col === 'none' ? 'var(--muted)' : 'rgba(0,0,0,.35)'); smp.setAttribute('stroke-dasharray', m.col === 'none' ? '4 3' : '');
+    smp.setAttribute('fill-opacity', id === 'gl' || id === 'tap' || id === 'salt' ? .7 : 1);
+    q('.m-smpn').textContent = m.n;
+    q('.m-lcd').textContent = t.meter || fmtOhm(t.R).replace(' ', '');
+    q('.m-cls').textContent = CLS[m.cls]; q('.m-cls').style.color = m.cls === 'c' ? 'var(--good)' : m.cls === 'i' ? 'var(--bad)' : 'var(--warn)';
+    q('.m-R').textContent = t.meter || fmtOhm(t.R); q('.m-I').textContent = eng(t.I, 'A');
+    q('.m-glow').setAttribute('opacity', t.b.toFixed(2)); q('.m-bulb').setAttribute('fill', t.b > .05 ? '#ffe680' : '#f4f1e6'); q('.m-fil').setAttribute('stroke', t.b > .05 ? '#ff9a00' : '#6b5a3a');
+    const fl = q('.m-flow'); fl.style.opacity = t.I > 0.01 ? 1 : 0; fl.style.setProperty('--dur', Math.max(.3, 0.09 / Math.max(t.I, 1e-3)) + 's');
+    let txt;
+    if (m.cls === 'c') txt = `<b>${m.n}</b> موصل: مقاومة العيّنة ${fmtOhm(t.R)} بس، فاللمبة نوّرت ${t.b > .97 ? 'عادي' : 'بس أضعف شوية'}.${id === 'nicr' ? ' النيكل كروم مقاومته أعلى من النحاس 64 مرة تقريبًا، وعشان كده بيسخن ويتعمل منه سلك السخان والمكواة.' : id === 'fe' ? ' الحديد بيوصّل بس أضعف من النحاس 8 مرات، عشان كده مش بنعمل منه أسلاك.' : ''}${t.R < 0.1 ? ' (العداد الحقيقي هيقرا حوالي 0.1–0.3Ω بسبب أسلاك المجسات نفسها.)' : ''}`;
+    else if (m.cls === 'i') txt = `<b>${m.n}</b> عازل: العداد قرا <b>OL</b> (مقاومة كبيرة جدًا) ومفيش تيار.${id === 'air' ? ' الهوا عازل كويس، بس الجهد العالي جدًا (زي البرق أو الضغط العالي) يقدر يكسره ويعمل شرارة.' : id === 'wood' ? ' بس <b>لو اتبلّ</b> بيبقى موصل (جرّب الخشب المبلول).' : ''}`;
+    else txt = `<b>${m.n}</b> موصل ضعيف: العداد قرا <b>${fmtOhm(t.R)}</b>${t.b < .05 ? '، واللمبة ماتنورش لأن 3V تيارها صغير' : '، واللمبة نوّرت ضعيف'}.${['salt', 'tap', 'wet', 'dry', 'wwood'].includes(id) ? ` بس على <b>220V</b> التيار يبقى حوالي <b>${eng(t.I220, 'A')}</b>${t.I220 >= 0.03 ? ' وده كفاية <b>يموّت</b> (أكتر من 30mA)' : t.I220 >= 0.001 ? ' وده تحسّه كلسعة' : ''}.` : ''}${id === 'wet' ? ' عشان كده ماتلمسش كهربا وإيدك مبلولة أبدًا.' : ''}`;
+    q('.m-msg').innerHTML = txt;
+    seen.add(id); cnt();
+    if (seen.size >= need && ['c', 'i', 'w'].every(c => [...seen].some(x => PH.MAT[x].cls === c))) { BL.mark(L, 'mat'); q('.m-chal').classList.add('ok'); }
+    return t;
+  }
+  function cnt(){ q('.m-cnt').textContent = `(جرّبت ${seen.size})`; if (BL.has(L, 'mat')) q('.m-chal').classList.add('ok'); }
+  host.addEventListener('click', e => { const b = e.target.closest('[data-m]'); if (b) pick(b.dataset.m); });
+  pick('cu');
+  return {pick, seen};
+};
+
+BL.wireCalc = function(host, opt){
+  const L = opt.lesson, mats = ['cu', 'al', 'fe', 'ag', 'nicr'];
+  host.innerHTML = `<div class="wd-ctl">
+   <label style="flex:1 1 140px">المادة: <select class="inp w-m">${mats.map(m => `<option value="${m}">${PH.MAT[m].n}</option>`).join('')}</select></label>
+   <label style="flex:1 1 140px">المقطع: <select class="inp w-a">${PH.SECT.map(a => `<option value="${a}"${a === 2.5 ? ' selected' : ''}>${a} مم²</option>`).join('')}</select></label>
+   <label>الطول (متر، من اللوحة للجهاز): <b class="w-ll"></b><input type="range" class="w-l" min="1" max="200" step="1" value="25" aria-label="طول السلك بالمتر"></label>
+   <label style="flex:1 1 140px">التيار (أمبير): <input type="number" class="inp w-i" min="0" max="200" step="0.5" value="16"></label>
+   <label>حرارة السلك: <b class="w-tl"></b><input type="range" class="w-t" min="20" max="90" step="5" value="20" aria-label="حرارة السلك"></label></div>
+   <div class="read"><div><span>مقاومة السلك الواحد R</span><b class="w-R"></b></div><div><span>التوصيلية G = 1/R</span><b class="w-G"></b></div><div><span>رايح جاي (فاز + نيوترال)</span><b class="w-RL"></b></div><div><span>هبوط الجهد ΔV = I × R</span><b class="w-dV"></b></div><div><span>الجهد اللي بيوصل للجهاز</span><b class="w-Vd"></b></div><div><span>حرارة ضايعة في السلك</span><b class="w-P"></b></div></div>
+   <p class="msg w-msg" aria-live="polite"></p>
+   <div class="chal w-chal"><b>تحدّي:</b> سخان بيسحب <b>16A</b>، والسلك <b>نحاس</b> طوله <b>40 متر</b> من اللوحة. إيه <b>أصغر مقطع</b> يخلّي هبوط الجهد <b>3% أو أقل</b>؟ (استخدم الحاسبة فوق)
+   <div class="wd-ctl" style="margin-top:6px"><select class="inp w-ans" aria-label="إجابتك"><option value="">اختار</option>${PH.SECT.slice(2, 9).map(a => `<option value="${a}">${a} مم²</option>`).join('')}</select><button type="button" class="btn w-chk" style="flex:0 1 auto">اتأكد</button><span class="msg w-cm" aria-live="polite"></span></div></div>`;
+  const q = s => $(s, host);
+  function get(){ return {mat:q('.w-m').value, A:+q('.w-a').value, L:+q('.w-l').value, I:Math.max(0, +q('.w-i').value || 0), T:+q('.w-t').value}; }
+  function upd(){
+    const o = get(), r = PH.wire(o);
+    q('.w-ll').textContent = o.L + ' m'; q('.w-tl').textContent = o.T + ' °C';
+    q('.w-R').textContent = fmtOhm(r.R); q('.w-G').textContent = sig(r.G, 3) + ' S'; q('.w-RL').textContent = fmtOhm(r.Rloop);
+    q('.w-dV').textContent = nf(r.dV, 2) + ' V (' + nf(r.pct, 1) + '%)'; q('.w-Vd').textContent = nf(Math.max(0, 220 - r.dV), 1) + ' V'; q('.w-P').textContent = nf(r.Ploss, 1) + ' W';
+    const m = q('.w-msg'); m.className = 'msg w-msg ' + (r.pct <= 3 ? 'ok' : r.pct <= 5 ? '' : 'bad');
+    m.innerHTML = (r.pct <= 3 ? 'ممتاز: الهبوط 3% أو أقل.' : r.pct <= 5 ? 'مقبول على القد (بين 3% و5%). لو الجهاز حساس كبّر المقطع.' : 'الهبوط كبير (أكتر من 5%): الجهاز هيشتغل ضعيف والسلك بيسخن. كبّر المقطع أو قصّر المسافة.') + (o.mat === 'al' ? ' الألومنيوم محتاج مقطع أكبر بحوالي 1.6 مرة عشان يدّي نفس مقاومة النحاس.' : '') + (o.T > 20 ? ` السلك السخن مقاومته زادت ${nf((PH.wire(o).R / PH.wire(Object.assign({}, o, {T:20})).R - 1) * 100, 0)}%.` : '');
+  }
+  host.addEventListener('input', upd); host.addEventListener('change', upd); upd();
+  if (BL.has(L, 'wire')) q('.w-chal').classList.add('ok');
+  const ans = PH.minSect({mat:'cu', L:40, I:16, T:20}, 3);
+  q('.w-chk').addEventListener('click', () => {
+    const v = +q('.w-ans').value, m = q('.w-cm'), r = v ? PH.wire({mat:'cu', L:40, I:16, A:v}) : null;
+    if (!v){ m.className = 'msg w-cm bad'; m.textContent = 'اختار مقطع.'; return; }
+    if (v === ans){ m.className = 'msg w-cm ok'; m.textContent = `صح: ${v}مم² ⇐ الهبوط ${nf(r.dV, 1)}V يعني ${nf(r.pct, 1)}%.`; q('.w-chal').classList.add('ok'); BL.mark(L, 'wire'); }
+    else if (v < ans){ m.className = 'msg w-cm bad'; m.textContent = `لأ: ${v}مم² الهبوط فيه ${nf(r.pct, 1)}%، أكتر من 3%.`; }
+    else { m.className = 'msg w-cm bad'; m.textContent = `${v}مم² ينفع (${nf(r.pct, 1)}%)، بس فيه مقطع أصغر منه برضه ينفع وأرخص.`; }
+  });
+  return {get, upd, ans};
+};
+
+/* ---------- L4: series / parallel ---------- */
+PH.rSer = rs => rs.reduce((a, r) => a + r, 0);
+PH.rPar = rs => { if (!rs.length) return Infinity; if (rs.some(r => r === 0)) return 0; return 1 / rs.reduce((a, r) => a + 1 / r, 0); };
+PH.LAMP_V = 12;   // lamps on the builder are rated 12 V
+/* cfg: {mode:'series'|'parallel'|'mixed', V, R:[r1,r2,r3], burned:[b1,b2,b3], n:2|3}
+   → {lamps:[{V,I,P,on}], Rt, It, Pt}. mixed = L1 in series with (L2 ∥ L3). Ideal source. */
+PH.sp = function(c){
+  const n = c.mode === 'mixed' ? 3 : (c.n || 3), V = c.V, idx = [...Array(n).keys()], out = idx.map(() => ({V:0, I:0, P:0}));
+  let Rt, It;
+  if (c.mode === 'series'){
+    if (idx.some(i => c.burned[i])){ Rt = Infinity; It = 0; const b = idx.filter(i => c.burned[i]); if (b.length === 1) out[b[0]].V = V; /* open: full V across the gap */ else b.forEach(i => out[i].V = NaN); }
+    else { Rt = PH.rSer(idx.map(i => c.R[i])); It = V / Rt; idx.forEach(i => { out[i].I = It; out[i].V = It * c.R[i]; }); }
+  } else if (c.mode === 'parallel'){
+    const live = idx.filter(i => !c.burned[i]); Rt = PH.rPar(live.map(i => c.R[i])); It = 0;
+    idx.forEach(i => { out[i].V = V; out[i].I = c.burned[i] ? 0 : V / c.R[i]; It += out[i].I; });
+  } else {
+    const br = [1, 2].filter(i => !c.burned[i]), Rp = PH.rPar(br.map(i => c.R[i]));
+    if (c.burned[0] || !isFinite(Rp)){
+      Rt = Infinity; It = 0;
+      if (c.burned[0] && isFinite(Rp)) out[0].V = V; else if (!c.burned[0]){ out[1].V = out[2].V = V; } else { out[0].V = NaN; out[1].V = out[2].V = NaN; }
+    } else {
+      Rt = c.R[0] + Rp; It = V / Rt; out[0].I = It; out[0].V = It * c.R[0];
+      const Vp = It * Rp; [1, 2].forEach(i => { out[i].V = Vp; out[i].I = c.burned[i] ? 0 : Vp / c.R[i]; });
+    }
+  }
+  out.forEach((o, i) => { o.P = o.I * o.I * c.R[i]; o.on = o.I > 1e-9; o.b = Math.min(1, o.P / (PH.LAMP_V * PH.LAMP_V / c.R[i])); o.over = o.V > PH.LAMP_V * 1.1 && !c.burned[i]; });
+  return {lamps:out, Rt, It, Pt:out.reduce((a, o) => a + o.P, 0)};
+};
+
+function bulb(x, y, o, burned, lab, g, i){
+  const b = burned ? 0 : o.b;
+  return `<g class="bn-tap sp-l" data-l="${i}" tabindex="0" role="button" aria-label="${lab}: دوس عشان تحرقها أو تصلّحها" transform="translate(${x} ${y})">
+   <circle r="34" fill="url(#${g}g)" opacity="${b.toFixed(2)}"/>
+   <circle r="16" fill="${b > .03 ? '#ffe680' : '#f4f1e6'}" fill-opacity=".85" stroke="${burned ? 'var(--bad)' : '#9aa3a8'}" stroke-width="${burned ? 2.5 : 1.5}"/>
+   ${burned ? '<path d="M-8 2 l3 -6 l2 3 M8 2 l-3 -6 l-2 3" fill="none" stroke="#6b5a3a" stroke-width="1.6"/><path d="M-6 -12 L6 12 M6 -12 L-6 12" stroke="var(--bad)" stroke-width="2.4"/>' : `<path d="M-8 2 l4 -6 l4 6 l4 -6 l4 6" fill="none" stroke="${b > .03 ? '#ff9a00' : '#6b5a3a'}" stroke-width="1.6"/>`}
+   <text y="-21" text-anchor="middle" style="font-size:11px;font-weight:700;fill:var(--ink);paint-order:stroke;stroke:var(--panel);stroke-width:3px">${lab}</text></g>`;
+}
+BL.spLab = function(host, opt){
+  const g = U('sp'), L = opt.lesson, RV = [6, 12, 24];
+  const st = {mode:'series', V:12, R:[12, 12, 12], burned:[false, false, false], n:3, seen:new Set()};
+  host.innerHTML = `<div class="tabs sp-modes" role="group" aria-label="طريقة التوصيل"><button type="button" class="btn" data-mode="series">توالي (ورا بعض)</button><button type="button" class="btn" data-mode="parallel">توازي (جنب بعض)</button><button type="button" class="btn" data-mode="mixed">مختلط</button></div>
+  <div class="wd-art"><svg class="sp-svg" viewBox="0 0 360 250" role="img" aria-label="دايرة لمبات"></svg></div>
+  <div class="tblw"><table class="tbl sp-tbl"></table></div>
+  <div class="wd-ctl"><label>جهد البطارية: <b class="sp-vl"></b><input type="range" class="sp-v" min="0" max="24" step="1.5" value="12" aria-label="جهد البطارية"></label></div>
+  <div class="wd-ctl sp-rs"></div>
+  <p class="msg sp-msg" aria-live="polite"></p>
+  <ul class="mm-ex sp-ch"><li data-c="s-burn">توالي: احرق لمبة (دوس عليها) وشوف الباقي.</li><li data-c="p-burn">توازي: احرق لمبة وشوف الباقي.</li><li data-c="m">مختلط: شوف ليه L1 أنور من L2 و L3.</li></ul>`;
+  const q = s => $(s, host);
+  function wire(d, I, key){ const dur = I > 0 ? Math.max(.25, Math.min(5, 0.5 / I)) : 1; return `<path d="${d}" fill="none" stroke="#b5651d" stroke-width="4" stroke-linejoin="round"/>${I > 1e-9 ? `<path class="flow" d="${d}" fill="none" stroke="#ffe27a" stroke-width="2" stroke-dasharray="6 18" stroke-linecap="round" style="--dur:${dur}s"/>` : ''}`; }
+  function lab(x, y, o){ const t = isNaN(o.V) ? '?' : nf(o.V, 2) + 'V · ' + nf(o.I, 2) + 'A'; return `<text x="${x}" y="${y}" text-anchor="middle" style="font:600 10.5px var(--font-mono);fill:var(--cur);paint-order:stroke;stroke:var(--panel);stroke-width:3px">${t}</text>`; }
+  const batt = (V) => `<g transform="translate(26 100)"><rect width="34" height="54" rx="5" fill="#2f3539"/><rect y="18" width="34" height="18" fill="#e2a31a"/><text x="17" y="31" text-anchor="middle" style="font-size:10px;font-weight:700;fill:#1c2023">${nf(V, 1)}V</text><rect x="10" y="-5" width="14" height="6" rx="2" fill="#b9c1c6"/><text x="17" y="13" text-anchor="middle" style="font-size:12px;fill:#fff">+</text></g>`;
+  function draw(r){
+    const n = st.mode === 'mixed' ? 3 : st.n, Ls = r.lamps; let s = `<defs><radialGradient id="${g}g"><stop offset="0" stop-color="#fff7c2"/><stop offset=".45" stop-color="#ffd84a" stop-opacity=".85"/><stop offset="1" stop-color="#ffb300" stop-opacity="0"/></radialGradient></defs>`;
+    const It = r.It;
+    if (st.mode === 'series'){
+      const xs = n === 3 ? [120, 200, 280] : [150, 250];
+      s += wire('M43 100 V50 H330 V205 H43 V154', It);
+      xs.forEach((x, i) => { s += bulb(x, 50, Ls[i], st.burned[i], 'L' + (i + 1) + ' · ' + st.R[i] + 'Ω', g, i) + lab(x, 88, Ls[i]); });
+    } else if (st.mode === 'parallel'){
+      const xs = n === 3 ? [140, 220, 300] : [170, 280];
+      s += wire(`M43 100 V45 H${xs[n - 1]}`, It) + wire(`M${xs[n - 1]} 210 H43 V154`, It);
+      xs.forEach((x, i) => { s += wire(`M${x} 45 V210`, Ls[i].I) + bulb(x, 120, Ls[i], st.burned[i], 'L' + (i + 1) + ' · ' + st.R[i] + 'Ω', g, i) + lab(x, 160, Ls[i]); });
+    } else {
+      s += wire('M43 100 V45 H220', It) + wire('M300 210 H43 V154', It) + wire('M220 45 H300', Ls[2].I) + wire('M220 210 H300', Ls[2].I);
+      s += wire('M220 45 V210', Ls[1].I) + wire('M300 45 V210', Ls[2].I);
+      s += bulb(130, 45, Ls[0], st.burned[0], 'L1 · ' + st.R[0] + 'Ω', g, 0) + lab(130, 82, Ls[0]);
+      s += bulb(220, 128, Ls[1], st.burned[1], 'L2 · ' + st.R[1] + 'Ω', g, 1) + lab(220, 168, Ls[1]);
+      s += bulb(300, 128, Ls[2], st.burned[2], 'L3 · ' + st.R[2] + 'Ω', g, 2) + lab(300, 168, Ls[2]);
+    }
+    s += batt(st.V);
+    s += `<text x="186" y="240" text-anchor="middle" style="font:600 11px var(--font-mono);fill:var(--ink)">R total = ${isFinite(r.Rt) ? nf(r.Rt, 2) + ' Ω' : '∞ (open)'} · I total = ${nf(It, 2)} A</text>`;
+    q('.sp-svg').innerHTML = s;
+  }
+  function upd(){
+    const r = PH.sp(st), n = st.mode === 'mixed' ? 3 : st.n;
+    $$('[data-mode]', host).forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === st.mode));
+    q('.sp-vl').textContent = nf(st.V, 1) + ' V';
+    draw(r);
+    q('.sp-tbl').innerHTML = `<thead><tr><th>اللمبة</th><th>R</th><th>V</th><th>I</th><th>P</th><th>النور</th></tr></thead><tbody>${r.lamps.map((o, i) => `<tr><td>L${i + 1}${st.burned[i] ? ' <b style="color:var(--bad)">محروقة</b>' : ''}</td><td class="mono">${st.R[i]}Ω</td><td class="mono">${isNaN(o.V) ? '?' : nf(o.V, 2) + 'V'}</td><td class="mono">${nf(o.I, 3)}A</td><td class="mono">${nf(o.P, 2)}W</td><td><span class="bar" style="display:block;min-width:50px"><i style="width:${Math.round(o.b * 100)}%;background:#f0b400"></i></span>${o.over ? '<b style="color:var(--bad)">⚠</b>' : ''}</td></tr>`).join('')}<tr><td><b>الكلّي</b></td><td class="mono">${isFinite(r.Rt) ? nf(r.Rt, 2) + 'Ω' : '∞'}</td><td class="mono">${nf(st.V, 1)}V</td><td class="mono">${nf(r.It, 3)}A</td><td class="mono">${nf(r.Pt, 2)}W</td><td></td></tr></tbody>`;
+    q('.sp-rs').innerHTML = (st.mode === 'mixed' ? '' : `<div class="tabs" style="flex:1 1 100%"><span style="align-self:center;font-size:.9rem">عدد اللمبات:</span>${[2, 3].map(k => `<button type="button" class="btn" data-n="${k}" aria-pressed="${st.n === k}">${k}</button>`).join('')}</div>`) +
+      [...Array(n).keys()].map(i => `<label style="flex:1 1 100%;gap:4px 6px"><span style="min-width:2.4em">L${i + 1}:</span>${RV.map(v => `<button type="button" class="btn" style="flex:0 1 auto;min-width:56px" data-r="${i}" data-v="${v}" aria-pressed="${st.R[i] === v}">${v}Ω</button>`).join('')}<button type="button" class="btn" style="flex:0 1 auto" data-burn="${i}" aria-pressed="${st.burned[i]}">${st.burned[i] ? 'صلّحها' : 'احرقها'}</button></label>`).join('');
+    const m = q('.sp-msg'), anyB = [...Array(n).keys()].some(i => st.burned[i]), over = r.lamps.some(o => o.over);
+    let t;
+    if (st.mode === 'series') t = anyB ? `<b>توالي + لمبة محروقة = الدايرة اتقطعت.</b> كل اللمبات طفيت، والجهد كله (${nf(st.V, 1)}V) بقى على طرفين اللمبة المحروقة. زي زينة رمضان القديمة: لمبة واحدة تبوظ والسلسلة كلها تطفي.` : `توالي: <b>نفس التيار</b> (${nf(r.It, 2)}A) في كل اللمبات، والجهد اتقسم عليهم ومجموعه = ${nf(st.V, 1)}V. اللمبة اللي مقاومتها أكبر بتاخد جهد أكبر.`;
+    else if (st.mode === 'parallel') t = anyB ? `<b>توازي + لمبة محروقة:</b> الباقي شغّال عادي لأن كل لمبة ليها سكتها. ده بالظبط اللي بيحصل في البيت.` : `توازي: <b>نفس الجهد</b> (${nf(st.V, 1)}V) على كل لمبة، والتيارات بتتجمع: ${r.lamps.slice(0, n).map(o => nf(o.I, 2)).join(' + ')} = ${nf(r.It, 2)}A. المقاومة الكلية (${nf(r.Rt, 2)}Ω) أصغر من أصغر لمبة.`;
+    else t = st.burned[0] ? 'L1 محروقة: هي في السكة الرئيسية، فكله طفي.' : `مختلط: تيار L1 كله (${nf(r.lamps[0].I, 2)}A) بيتقسم على L2 و L3، فـ L1 أنور منهم. R = ${st.R[0]} + (${st.R[1]} ∥ ${st.R[2]}) = ${isFinite(r.Rt) ? nf(r.Rt, 2) : '∞'}Ω.`;
+    if (over) t += ' <b style="color:var(--bad)">⚠ فيه لمبة واخدة أكتر من جهدها (12V): في الحقيقة هتنوّر جامد وتتحرق بسرعة.</b>';
+    m.innerHTML = t;
+    if (st.mode === 'series' && anyB && st.V > 0) st.seen.add('s-burn');
+    if (st.mode === 'parallel' && anyB && st.V > 0 && r.lamps.some(o => o.on)) st.seen.add('p-burn');
+    if (st.mode === 'mixed' && !st.burned[0] && r.lamps[0].on && (r.lamps[1].on || r.lamps[2].on)) st.seen.add('m');
+    $$('.sp-ch li', host).forEach(li => li.classList.toggle('ok', st.seen.has(li.dataset.c) || BL.has(L, 'build')));
+    if (['s-burn', 'p-burn', 'm'].every(k => st.seen.has(k))) BL.mark(L, 'build');
+    return r;
+  }
+  host.addEventListener('click', e => {
+    const t = e.target.closest('[data-mode],[data-n],[data-r],[data-burn],[data-l]'); if (!t) return;
+    if (t.dataset.mode){ st.mode = t.dataset.mode; }
+    else if (t.dataset.n) st.n = +t.dataset.n;
+    else if (t.dataset.r != null && t.dataset.v) st.R[+t.dataset.r] = +t.dataset.v;
+    else if (t.dataset.burn != null) st.burned[+t.dataset.burn] = !st.burned[+t.dataset.burn];
+    else if (t.dataset.l != null) st.burned[+t.dataset.l] = !st.burned[+t.dataset.l];
+    upd();
+  });
+  host.addEventListener('keydown', e => { if (e.key !== 'Enter' && e.key !== ' ') return; const t = e.target.closest('[data-l]'); if (!t) return; e.preventDefault(); st.burned[+t.dataset.l] = !st.burned[+t.dataset.l]; upd(); const f = host.querySelector(`[data-l="${t.dataset.l}"]`); if (f) f.focus(); });
+  q('.sp-v').addEventListener('input', e => { st.V = +e.target.value; upd(); });
+  upd();
+  return {st, upd, set(o){ Object.assign(st, o); if (o.V != null) q('.sp-v').value = o.V; return upd(); }};
+};
+
+PH.SPQ = [
+  {t:'s', r:[4, 8]}, {t:'s', r:[10, 20, 30]}, {t:'s', r:[100, 220]}, {t:'s', r:[2.2, 4.7, 3.3]},
+  {t:'p', r:[6, 3]}, {t:'p', r:[12, 6]}, {t:'p', r:[10, 10]}, {t:'p', r:[20, 30]}, {t:'p', r:[4, 12]}, {t:'p', r:[12, 12, 6]}, {t:'p', r:[6, 6, 6]}, {t:'p', r:[30, 60, 20]},
+  {t:'m', r:[4, 12, 6]}, {t:'m', r:[2, 6, 3]}, {t:'m', r:[10, 20, 20]}
+];
+PH.spqAns = p => p.t === 's' ? PH.rSer(p.r) : p.t === 'p' ? PH.rPar(p.r) : p.r[0] + PH.rPar(p.r.slice(1));
+BL.spDrill = function(host, opt){
+  const L = opt.lesson, need = opt.need || 4;
+  host.innerHTML = `<div class="chal t-chal"><b>احسب المقاومة الكلية</b> لـ ${need} دواير صح. اكتب الرقم بالأوم.
+   <p class="t-q" style="margin:8px 0 4px;font-weight:600;line-height:1.9"></p>
+   <div class="wd-ctl"><input class="inp t-a" type="text" inputmode="decimal" aria-label="المقاومة الكلية بالأوم" style="width:7em;font-family:var(--font-mono);direction:ltr"><span class="mono">Ω</span><button type="button" class="btn t-chk" style="flex:0 1 auto">اتأكد</button><button type="button" class="btn t-nx" style="flex:0 1 auto">دايرة تانية</button></div>
+   <p class="msg t-msg" aria-live="polite"></p><p class="muted t-sc" style="font-size:.88rem"></p></div>`;
+  const q = s => $(s, host);
+  let order = shuffle(PH.SPQ.map((_, i) => i)), k = 0, ok = 0, tried = false;
+  const cur = () => PH.SPQ[order[k % order.length]];
+  const rs = p => p.r.map(r => `<span class="eq">${r}Ω</span>`);
+  function ask(){ const p = cur(); q('.t-q').innerHTML = p.t === 's' ? `على <b>التوالي</b>: ${rs(p).join(' + ')}` : p.t === 'p' ? `على <b>التوازي</b>: ${rs(p).join(' ∥ ')}` : `<b>مختلط:</b> ${rs(p)[0]} توالي مع (${rs(p).slice(1).join(' ∥ ')} توازي)`; q('.t-a').value = ''; q('.t-msg').textContent = ''; q('.t-msg').className = 'msg t-msg'; tried = false; }
+  function sc(){ q('.t-sc').textContent = `صح: ${Math.min(ok, need)} من ${need}`; if (BL.has(L, 'total')) q('.t-chal').classList.add('ok'); }
+  function check(){
+    const p = cur(), v = pnum(q('.t-a').value), a = PH.spqAns(p), m = q('.t-msg');
+    if (!isFinite(v)){ m.className = 'msg t-msg bad'; m.textContent = 'اكتب رقم.'; return false; }
+    if (near(v, a, 0.01)){ m.className = 'msg t-msg ok'; m.textContent = `صح: ${nf(a, 2)}Ω.`; if (!tried) ok++; tried = true; sc(); if (ok >= need){ BL.mark(L, 'total'); q('.t-chal').classList.add('ok'); } setTimeout(() => { if (q('.t-msg').classList.contains('ok')){ k++; ask(); } }, 1400); return true; }
+    m.className = 'msg t-msg bad'; tried = true;
+    m.textContent = p.t === 's' ? 'لأ. في التوالي بس اجمعهم.' : p.t === 'p' ? (p.r.length === 2 ? 'لأ. لاتنين: (R1 × R2) ÷ (R1 + R2). والنتيجة لازم تبقى أصغر من أصغر واحدة.' : 'لأ. 1/R = 1/R1 + 1/R2 + 1/R3. ولو كلهم زي بعض: R ÷ عددهم.') : 'لأ. احسب التوازي الأول، وبعدين اجمع عليه المقاومة اللي على التوالي.';
+    return false;
+  }
+  q('.t-chk').addEventListener('click', check); q('.t-a').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); check(); } });
+  q('.t-nx').addEventListener('click', () => { k++; ask(); });
+  ask(); sc();
+  return {cur, answer(v){ q('.t-a').value = v; return check(); }, get ok(){ return ok; }};
+};
+
+/* ---------- L5: power & energy ---------- */
+PH.HP = 746;
+PH.pvi = function(pair, a, b){
+  let P, V, I, R;
+  switch (pair){
+    case 'VI': V = a; I = b; P = V * I; R = V / I; break;
+    case 'VR': V = a; R = b; I = V / R; P = V * V / R; break;
+    case 'IR': I = a; R = b; V = I * R; P = I * I * R; break;
+    case 'PV': P = a; V = b; I = P / V; R = V * V / P; break;
+    case 'PI': P = a; I = b; V = P / I; R = P / (I * I); break;
+    case 'PR': P = a; R = b; I = Math.sqrt(P / R); V = Math.sqrt(P * R); break;
+  }
+  return {P, V, I, R};
+};
+PH.house = function(items, price, V){
+  V = V || 220; let W = 0, day = 0;
+  const rows = items.map(it => { const on = it.on !== false, w = on ? it.w * (it.q || 1) : 0, d = on ? w * Math.max(0, Math.min(24, it.h)) / 1000 : 0; W += w; day += d; return {w, day:d, month:d * 30}; });
+  return {rows, W, I:W / V, day, month:day * 30, cost:day * 30 * (price || 0)};
+};
+BL.pvi = function(host, opt){
+  const L = opt.lesson;
+  const PAIRS = {VI:['الجهد V (فولت)', 'التيار I (أمبير)', 220, 9.09], VR:['الجهد V (فولت)', 'المقاومة R (أوم)', 220, 24.2], IR:['التيار I (أمبير)', 'المقاومة R (أوم)', 10, 2], PV:['القدرة P (وات)', 'الجهد V (فولت)', 2000, 220], PI:['القدرة P (وات)', 'التيار I (أمبير)', 60, 5], PR:['القدرة P (وات)', 'المقاومة R (أوم)', 2000, 24.2]};
+  const LBL = {VI:'V و I', VR:'V و R', IR:'I و R', PV:'P و V', PI:'P و I', PR:'P و R'};
+  const FX = {VI:['P = V × I', 'R = V ÷ I'], VR:['I = V ÷ R', 'P = V² ÷ R'], IR:['V = I × R', 'P = I² × R'], PV:['I = P ÷ V', 'R = V² ÷ P'], PI:['V = P ÷ I', 'R = P ÷ I²'], PR:['I = √(P ÷ R)', 'V = √(P × R)']};
+  host.innerHTML = `<div class="two"><div class="wd-art" style="display:grid;place-items:center"><svg viewBox="0 0 220 170" role="img" aria-label="مثلث القدرة: P فوق، V و I تحت" style="max-width:240px">
+   <path d="M110 12 L206 158 H14 Z" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"/><path d="M50 100 H170 M110 100 V158" stroke="var(--accent)" stroke-width="2"/>
+   <text class="pv-P" x="110" y="80" text-anchor="middle" style="font:700 30px var(--font-mono);fill:var(--ink)">P</text><text class="pv-V" x="72" y="142" text-anchor="middle" style="font:700 26px var(--font-mono);fill:var(--ink)">V</text><text class="pv-I" x="148" y="142" text-anchor="middle" style="font:700 26px var(--font-mono);fill:var(--ink)">I</text><text x="110" y="137" text-anchor="middle" style="font:700 16px var(--font-mono);fill:var(--muted)">×</text></svg>
+   <p class="muted" style="font-size:.86rem;text-align:center">غطّي اللي انت عايزه: P = V × I، و V = P ÷ I، و I = P ÷ V</p></div>
+   <div style="display:grid;gap:8px;align-content:start"><div class="tabs pv-pairs" role="group" aria-label="انت عارف إيه؟"><span style="flex:1 1 100%;font-size:.9rem">انت عارف:</span>${Object.keys(PAIRS).map(k => `<button type="button" class="btn" data-pair="${k}" style="flex:1 1 30%"><span class="eq">${LBL[k]}</span></button>`).join('')}</div>
+   <div class="wd-ctl"><label style="flex:1 1 140px"><span class="pv-la"></span> <input type="number" class="inp pv-a" min="0" step="any"></label><label style="flex:1 1 140px"><span class="pv-lb"></span> <input type="number" class="inp pv-b" min="0" step="any"></label></div></div></div>
+   <div class="read"><div><span>القدرة P</span><b class="pv-oP"></b></div><div><span>الجهد V</span><b class="pv-oV"></b></div><div><span>التيار I</span><b class="pv-oI"></b></div><div><span>المقاومة R</span><b class="pv-oR"></b></div><div><span>بالكيلووات / بالحصان</span><b class="pv-oK"></b></div></div>
+   <p class="msg pv-fx"></p>
+   <div class="chal pv-chal"><b>تحدّي:</b> ملف سخان مقاومته <b>24.2Ω</b> متوصّل على <b>220V</b>. قدرته كام وات؟
+   <div class="wd-ctl" style="margin-top:6px"><input class="inp pv-ans" type="text" inputmode="decimal" aria-label="إجابتك بالوات" style="width:7em;font-family:var(--font-mono);direction:ltr"><span class="mono">W</span><button type="button" class="btn pv-chk" style="flex:0 1 auto">اتأكد</button><span class="msg pv-m" aria-live="polite"></span></div></div>`;
+  const q = s => $(s, host); let pair = 'VI';
+  function setPair(k){ pair = k; const p = PAIRS[k]; q('.pv-la').textContent = p[0] + ':'; q('.pv-lb').textContent = p[1] + ':'; q('.pv-a').value = p[2]; q('.pv-b').value = p[3]; $$('[data-pair]', host).forEach(b => b.setAttribute('aria-pressed', b.dataset.pair === k)); upd(); }
+  function upd(){
+    const a = +q('.pv-a').value, b = +q('.pv-b').value, ok = a > 0 && b > 0, r = ok ? PH.pvi(pair, a, b) : null;
+    q('.pv-oP').textContent = ok ? sig(r.P, 4) + ' W' : '--'; q('.pv-oV').textContent = ok ? sig(r.V, 4) + ' V' : '--'; q('.pv-oI').textContent = ok ? sig(r.I, 4) + ' A' : '--'; q('.pv-oR').textContent = ok ? sig(r.R, 4) + ' Ω' : '--';
+    q('.pv-oK').textContent = ok ? sig(r.P / 1000, 3) + ' kW · ' + sig(r.P / PH.HP, 3) + ' HP' : '--';
+    q('.pv-fx').innerHTML = ok ? 'المعادلات اللي اتحسبت بيها: ' + FX[pair].map(f => `<span class="eq">${f}</span>`).join(' و ') : 'اكتب رقمين أكبر من صفر.';
+    ['P', 'V', 'I'].forEach(x => q('.pv-' + x).style.fill = pair.indexOf(x) >= 0 ? 'var(--muted)' : 'var(--accent)');
+    return r;
+  }
+  host.addEventListener('click', e => { const b = e.target.closest('[data-pair]'); if (b) setPair(b.dataset.pair); });
+  q('.pv-a').addEventListener('input', upd); q('.pv-b').addEventListener('input', upd);
+  setPair('VI');
+  if (BL.has(L, 'tri')) q('.pv-chal').classList.add('ok');
+  q('.pv-chk').addEventListener('click', () => { const v = pnum(q('.pv-ans').value), m = q('.pv-m'); if (near(v, 2000, 0.005)){ m.className = 'msg pv-m ok'; m.textContent = 'صح: P = V² ÷ R = 220 × 220 ÷ 24.2 = 2000W.'; q('.pv-chal').classList.add('ok'); BL.mark(L, 'tri'); } else { m.className = 'msg pv-m bad'; m.textContent = 'لأ. عندك V و R ⇐ استخدم P = V² ÷ R.'; } });
+  return {setPair, upd, set(a, b){ q('.pv-a').value = a; q('.pv-b').value = b; return upd(); }};
+};
+
+BL.house = function(host, opt){
+  const L = opt.lesson, items = opt.items.map(x => Object.assign({q:1}, x));
+  host.innerHTML = `<div class="tblw"><table class="tbl hs-t"><thead><tr><th>الجهاز</th><th>وات</th><th>عدد</th><th>ساعة/يوم</th></tr></thead><tbody>${items.map((it, i) => `<tr data-i="${i}"><td style="text-align:right"><label style="display:flex;gap:6px;align-items:center;min-height:40px;cursor:pointer"><input type="checkbox" class="hs-on" ${it.on === false ? '' : 'checked'} style="width:20px;height:20px;flex:none"><span>${it.name}<br><span class="muted hs-k" style="font-size:.78rem"></span></span></label></td><td><input type="number" class="inp hs-w" min="0" step="1" value="${it.w}" aria-label="قدرة ${esc(it.name)}" style="width:4.4em;padding:4px;font-family:var(--font-mono);direction:ltr"></td><td><input type="number" class="inp hs-q" min="1" max="50" step="1" value="${it.q}" aria-label="عدد ${esc(it.name)}" style="width:3.2em;padding:4px;font-family:var(--font-mono);direction:ltr"></td><td><input type="number" class="inp hs-h" min="0" max="24" step="0.5" value="${it.h}" aria-label="ساعات تشغيل ${esc(it.name)}" style="width:3.8em;padding:4px;font-family:var(--font-mono);direction:ltr"></td></tr>`).join('')}</tbody></table></div>
+   <div class="wd-ctl"><label style="flex:1 1 auto">سعر الكيلووات ساعة (جنيه): <input class="inp hs-p" type="number" min="0" step="0.05" value="${opt.price}" style="width:7em;font-family:var(--font-mono);direction:ltr"></label></div>
+   <div class="read"><div><span>لو كله شغّال مع بعض</span><b class="hs-W"></b></div><div><span>التيار على 220V</span><b class="hs-I"></b></div><div><span>في اليوم</span><b class="hs-d"></b></div><div><span>في الشهر (30 يوم)</span><b class="hs-m"></b></div><div><span>الفاتورة التقريبية</span><b class="hs-c"></b></div></div>
+   <p class="msg hs-msg"></p>
+   <div class="chal hs-chal"><b>تحدّي:</b> تكييف <b>1500W</b> شغّال <b>8 ساعات</b> وسخان <b>2000W</b> شغّال <b>ساعتين</b>. الاتنين بيستهلكوا كام <b>kWh في اليوم</b>؟
+   <div class="wd-ctl" style="margin-top:6px"><input class="inp hs-ans" type="text" inputmode="decimal" aria-label="إجابتك بالكيلووات ساعة" style="width:7em;font-family:var(--font-mono);direction:ltr"><span class="mono">kWh</span><button type="button" class="btn hs-chk" style="flex:0 1 auto">اتأكد</button><span class="msg hs-cm" aria-live="polite"></span></div></div>`;
+  const q = s => $(s, host);
+  function read(){ $$('tr[data-i]', host).forEach(tr => { const it = items[+tr.dataset.i]; it.on = $('.hs-on', tr).checked; it.w = Math.max(0, +$('.hs-w', tr).value || 0); it.q = Math.max(0, Math.round(+$('.hs-q', tr).value || 0)); it.h = Math.max(0, Math.min(24, +$('.hs-h', tr).value || 0)); }); }
+  function upd(){
+    read(); const p = +q('.hs-p').value || 0, r = PH.house(items, p);
+    $$('tr[data-i]', host).forEach(tr => { const i = +tr.dataset.i; $('.hs-k', tr).innerHTML = items[i].on ? `<span class="eq">${nf(r.rows[i].month, 1)} kWh</span> في الشهر` : 'مطفي'; tr.style.opacity = items[i].on ? 1 : .55; });
+    q('.hs-W').textContent = nf(r.W, 0) + ' W'; q('.hs-I').textContent = nf(r.I, 1) + ' A'; q('.hs-d').textContent = nf(r.day, 2) + ' kWh'; q('.hs-m').textContent = nf(r.month, 1) + ' kWh'; q('.hs-c').textContent = nf(r.cost, 0) + ' جنيه';
+    let top = -1, tv = 0; r.rows.forEach((x, i) => { if (x.month > tv){ tv = x.month; top = i; } });
+    q('.hs-msg').innerHTML = (top >= 0 ? `أكتر جهاز بياكل: <b>${items[top].name}</b> (${nf(tv / r.month * 100, 0)}% من الاستهلاك). ` : '') + (r.I > 40 ? '<b style="color:var(--bad)">لو كله اشتغل مع بعض التيار أكبر من قاطع الشقة الرئيسي المعتاد (40A): لازم توزّع التشغيل.</b>' : `لو كله اشتغل مع بعض التيار ${nf(r.I, 1)}A، أقل من قاطع الشقة الرئيسي المعتاد 40A.`);
+    return r;
+  }
+  host.addEventListener('input', upd); host.addEventListener('change', upd); upd();
+  if (BL.has(L, 'house')) q('.hs-chal').classList.add('ok');
+  q('.hs-chk').addEventListener('click', () => { const v = pnum(q('.hs-ans').value), m = q('.hs-cm'); if (near(v, 16, 0.005)){ m.className = 'msg hs-cm ok'; m.textContent = 'صح: 1.5kW × 8 = 12، و 2kW × 2 = 4، المجموع 16 kWh.'; q('.hs-chal').classList.add('ok'); BL.mark(L, 'house'); } else { m.className = 'msg hs-cm bad'; m.textContent = 'لأ. كل جهاز: (وات ÷ 1000) × الساعات، وبعدين اجمعهم.'; } });
+  return {items, upd};
+};
+
 })();
