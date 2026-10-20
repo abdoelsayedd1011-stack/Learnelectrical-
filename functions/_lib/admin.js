@@ -2,7 +2,7 @@
 import { sessionUser, HttpError } from "./auth.js";
 
 // اكتب إيميلات الإدارة هنا بحروف صغيرة، مثال: ["you@example.com"]. وهي فاضية محدش يقدر يدخل لوحة الإدارة.
-export const ADMIN_EMAILS = [];
+export const ADMIN_EMAILS = ["abdoelsayedd1011@gmail.com"];
 
 export function isAdmin(user){
   return !!(user && user.email && ADMIN_EMAILS.map(e => String(e).trim().toLowerCase()).includes(String(user.email).toLowerCase()));
