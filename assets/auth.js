@@ -61,7 +61,47 @@
       document.getElementById("acc-email").textContent = u.email;
       document.getElementById("acc-plan").textContent = u.plan === "free" ? "مجاني" : "مدفوع";
       document.getElementById("acc-since").textContent = new Date(u.created_at).toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" });
+      var sync = window.LESync ? window.LESync.ready : Promise.resolve();
+      sync.then(loadCerts, loadCerts);
     });
+    /* ---- شهاداتي ---- */
+    var certSec = document.getElementById("certs-sec"), certList = document.getElementById("cert-list");
+    function esc(t){ return String(t == null ? "" : t).replace(/[&<>"']/g, function(c){ return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+    function fmtDate(t){ try { return new Date(t).toLocaleDateString("ar-EG-u-nu-latn", { year: "numeric", month: "long", day: "numeric" }); } catch (e){ return new Date(t).toISOString().slice(0, 10); } }
+    function certCard(c){
+      var pct = c.total ? Math.round(c.done / c.total * 100) : 0, h = '<article class="cert-item' + (c.cert ? " has" : "") + '"><div class="ci-head"><h3>' + esc(c.title) + "</h3>";
+      if (c.cert) h += '<span class="ci-tag ok">✓ الشهادة طلعت</span></div>' +
+        '<p class="ci-meta">باسم <b>' + esc(c.cert.name) + "</b> · " + esc(fmtDate(c.cert.issued_at)) + ' · كود <span class="ltr mono">' + esc(c.cert.code) + "</span></p>" +
+        '<div class="btn-row"><a class="btn btn-primary" href="cert.html?c=' + encodeURIComponent(c.cert.code) + '">افتح الشهادة ←</a></div>';
+      else if (c.complete) h += '<span class="ci-tag ok">خلّصته ✓</span></div>' +
+        '<form class="ci-form" data-course="' + esc(c.id) + '" novalidate><label class="field"><span>الاسم اللي هيتكتب على الشهادة</span><input name="name" maxlength="60" autocomplete="name" required value="' + esc(c.name) + '"></label>' +
+        '<p class="auth-msg" role="alert" hidden></p><button class="btn btn-primary" type="submit">اطلع شهادة</button></form>';
+      else h += '<span class="ci-tag">' + (c.total ? pct + "%" : "") + "</span></div>" +
+        (c.total ? '<div class="ci-bar" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100" aria-label="التقدّم ' + pct + '%"><i style="width:' + pct + '%"></i></div><p class="ci-meta">' + c.done + " من " + c.total + " خطوة. الشهادة بتفتح لما تخلّص الكورس كله.</p>" : "") +
+        '<div class="btn-row"><a class="btn btn-ghost" href="' + esc(c.hub) + '">' + (c.done ? "كمّل الكورس ←" : "ابدأ الكورس ←") + "</a></div>";
+      return h + "</article>";
+    }
+    function loadCerts(){
+      fetch("/api/cert", { credentials: "same-origin", cache: "no-store" }).then(function(r){ return r.json(); }).then(function(r){
+        if (!r.ok || !r.signed) return;
+        certList.innerHTML = r.courses.map(certCard).join("");
+        certSec.hidden = false;
+      }).catch(function(){});
+    }
+    certList.addEventListener("submit", function(e){
+      var f = e.target.closest(".ci-form"); if (!f) return;
+      e.preventDefault();
+      var m = f.querySelector(".auth-msg"), b = f.querySelector("button");
+      showMsg(m, ""); b.disabled = true;
+      fetch("/api/cert/issue", { method: "POST", credentials: "same-origin", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ course: f.getAttribute("data-course"), name: f.elements.name.value }) })
+        .then(function(r){ return r.json(); }, function(){ return { ok: false, message: OFFLINE }; })
+        .then(function(r){
+          if (r.ok && r.cert){ location.href = "cert.html?c=" + encodeURIComponent(r.cert.code); return; }
+          b.disabled = false; showMsg(m, r.message || OFFLINE);
+        });
+    });
+
     out.addEventListener("click", function(){
       out.disabled = true;
       api("logout", {}).then(function(){ try{ sessionStorage.removeItem("le-user"); }catch(x){} location.replace("index.html"); });

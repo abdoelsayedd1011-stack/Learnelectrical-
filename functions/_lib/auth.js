@@ -18,6 +18,7 @@ const MSG = {
   too_many: "محاولات كتير غلط. استنى ربع ساعة وجرّب تاني.",
   not_logged_in: "انت مش داخل بحساب.",
   too_big: "التقدّم ده أكبر من المسموح.",
+  not_complete: "لسه مخلّصتش الكورس ده. كمّل كل الدروس والتمارين الأول.",
   server: "حصلت مشكلة في السيرفر. جرّب تاني بعد شوية."
 };
 
@@ -46,7 +47,8 @@ export async function getDb(env){
       env.DB.prepare("CREATE TABLE IF NOT EXISTS sessions (token_hash TEXT PRIMARY KEY, user_id INTEGER NOT NULL, expires_at INTEGER NOT NULL)"),
       env.DB.prepare("CREATE INDEX IF NOT EXISTS sessions_user ON sessions (user_id)"),
       env.DB.prepare("CREATE TABLE IF NOT EXISTS login_fails (email TEXT PRIMARY KEY, count INTEGER NOT NULL, first_at INTEGER NOT NULL)"),
-      env.DB.prepare("CREATE TABLE IF NOT EXISTS progress (user_id INTEGER NOT NULL, k TEXT NOT NULL, v TEXT NOT NULL, updated_at INTEGER NOT NULL, PRIMARY KEY (user_id, k))")
+      env.DB.prepare("CREATE TABLE IF NOT EXISTS progress (user_id INTEGER NOT NULL, k TEXT NOT NULL, v TEXT NOT NULL, updated_at INTEGER NOT NULL, PRIMARY KEY (user_id, k))"),
+      env.DB.prepare("CREATE TABLE IF NOT EXISTS certificates (code TEXT PRIMARY KEY, user_id INTEGER NOT NULL, name TEXT NOT NULL, course TEXT NOT NULL, issued_at INTEGER NOT NULL, UNIQUE (user_id, course))")
     ]);
     schemaReady = true;
   }
