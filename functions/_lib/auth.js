@@ -17,6 +17,7 @@ const MSG = {
   wrong_login: "الإيميل أو الباسورد غلط. لو دي أول مرة ليك، اعمل «حساب جديد» الأول.",
   too_many: "محاولات كتير غلط. استنى ربع ساعة وجرّب تاني.",
   not_logged_in: "انت مش داخل بحساب.",
+  too_big: "التقدّم ده أكبر من المسموح.",
   server: "حصلت مشكلة في السيرفر. جرّب تاني بعد شوية."
 };
 
@@ -44,7 +45,8 @@ export async function getDb(env){
       env.DB.prepare("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT NOT NULL UNIQUE, name TEXT NOT NULL, pass_hash TEXT NOT NULL, pass_salt TEXT NOT NULL, plan TEXT NOT NULL DEFAULT 'free', created_at INTEGER NOT NULL)"),
       env.DB.prepare("CREATE TABLE IF NOT EXISTS sessions (token_hash TEXT PRIMARY KEY, user_id INTEGER NOT NULL, expires_at INTEGER NOT NULL)"),
       env.DB.prepare("CREATE INDEX IF NOT EXISTS sessions_user ON sessions (user_id)"),
-      env.DB.prepare("CREATE TABLE IF NOT EXISTS login_fails (email TEXT PRIMARY KEY, count INTEGER NOT NULL, first_at INTEGER NOT NULL)")
+      env.DB.prepare("CREATE TABLE IF NOT EXISTS login_fails (email TEXT PRIMARY KEY, count INTEGER NOT NULL, first_at INTEGER NOT NULL)"),
+      env.DB.prepare("CREATE TABLE IF NOT EXISTS progress (user_id INTEGER NOT NULL, k TEXT NOT NULL, v TEXT NOT NULL, updated_at INTEGER NOT NULL, PRIMARY KEY (user_id, k))")
     ]);
     schemaReady = true;
   }
@@ -127,7 +129,7 @@ export async function sessionUser(db, request){
   const row = await db.prepare("SELECT u.id, u.name, u.email, u.plan, u.created_at, s.expires_at FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ?").bind(th).first();
   if (!row) return null;
   if (row.expires_at < Date.now()){ await db.prepare("DELETE FROM sessions WHERE token_hash = ?").bind(th).run(); return null; }
-  return { token_hash: th, user: publicUser(row) };
+  return { token_hash: th, id: row.id, user: publicUser(row) };
 }
 
 export function publicUser(u){ return { name: u.name, email: u.email, plan: u.plan, created_at: u.created_at }; }
