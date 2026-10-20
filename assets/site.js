@@ -143,7 +143,7 @@
   /* ---------- config fill ---------- */
   var S = window.SITE || {};
   var name = S.name || "LearnElectrical";
-  var domain = String(S.domain || "www.learnelectrical.com").replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+  var domain = String(S.domain || "www.learnelectricals.com").replace(/^https?:\/\//, "").replace(/\/.*$/, "");
   if (!/^www\./.test(domain)) domain = "www." + domain;
   document.querySelectorAll("[data-site='name']").forEach(function(el){ el.textContent = name; });
   // Wordmark: "LearnElectrical" -> Learn<b>Electrical</b> (second word in the accent colour)

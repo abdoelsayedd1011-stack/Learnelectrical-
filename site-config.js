@@ -4,7 +4,7 @@
    ========================================================= */
 var SITE = {
   name: "LearnElectrical",         // اسم الموقع اللي هيظهر في العنوان والفوتر (لو اسم إنجليزي متلزق زي LearnElectrical، الكلمة التانية بتتلوّن)
-  domain: "www.learnelectrical.com", // الدومين من غير https
+  domain: "www.learnelectricals.com", // الدومين من غير https
   whatsapp: "",                    // رقم الواتساب بالكود الدولي من غير + ولا مسافات، مثال: 201001234567
   email: "",                       // مثال: info@yourdomain.com
   facebook: "",                    // لينك الصفحة كامل، مثال: https://facebook.com/yourpage

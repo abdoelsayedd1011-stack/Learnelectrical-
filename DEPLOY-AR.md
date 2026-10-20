@@ -8,12 +8,12 @@
 
 ## أ) الاسم والدومين وبيانات التواصل
 
-الموقع متظبط جاهز على الاسم **LearnElectrical** والدومين **www.learnelectrical.com** (في `site-config.js` و `CNAME` و `sitemap.xml` و `robots.txt` وتاجات `canonical` و `og:url` و `og:image` في كل الصفحات).
+الموقع متظبط جاهز على الاسم **LearnElectrical** والدومين **www.learnelectricals.com** (في `site-config.js` و `CNAME` و `sitemap.xml` و `robots.txt` وتاجات `canonical` و `og:url` و `og:image` في كل الصفحات).
 
 1. **وسائل التواصل:** في `site-config.js` الخانات `whatsapp` و `email` و `facebook` و `youtube` فاضية `""`. وهي فاضية، الموقع بيخبي كل أزرار ولينكات التواصل، وصفحة التواصل بتكتب «وسائل التواصل هتتضاف قريب». أول ما تكتب أي واحدة، الكروت والأزرار بتظهر لوحدها.
    - الواتساب: الرقم بالكود الدولي من غير `+` ولا مسافات، مثال: `201001234567`.
-2. **لو اشتريت دومين تاني** (مثلاً `learn-electrical.net`): في VS Code دوس `Ctrl+Shift+H` (بحث واستبدال في الفولدر كله)، اكتب `learnelectrical.com` واستبدله بالدومين الجديد من غير www، ودوس Replace All. ده بيغيّر كل الأماكن مرة واحدة.
-   (لينكس/ماك: `grep -rl learnelectrical.com . | xargs sed -i 's/learnelectrical\.com/learn-electrical.net/g'`)
+2. **لو اشتريت دومين تاني** (مثلاً `learn-electrical.net`): في VS Code دوس `Ctrl+Shift+H` (بحث واستبدال في الفولدر كله)، اكتب `learnelectricals.com` واستبدله بالدومين الجديد من غير www، ودوس Replace All. ده بيغيّر كل الأماكن مرة واحدة.
+   (لينكس/ماك: `grep -rl learnelectricals.com . | xargs sed -i 's/learnelectrical\.com/learn-electrical.net/g'`)
 3. **لو عايز تغيّر الاسم:** غيّر `name` في `site-config.js` (اللوجو والفوتر بيتغيروا لوحدهم)، وغيّر كلمة `LearnElectrical` في عناوين الصفحات بنفس طريقة البحث والاستبدال.
 
 ## ب) اشتري الدومين
@@ -29,16 +29,16 @@
 1. اعمل حساب على `pages.cloudflare.com` أو `app.netlify.com`.
 2. Cloudflare: **Workers & Pages → Create → Pages → Upload assets**. Netlify: **Add new site → Deploy manually**.
 3. اسحب فولدر `website` كله وارميه في المربع، واستنى لحد ما يقولك تم. هياخد لينك تجريبي (مثال `xxx.pages.dev` أو `xxx.netlify.app`)، افتحه وجرّب.
-4. من إعدادات المشروع: **Custom domains → Add** واكتب `www.learnelectrical.com`.
+4. من إعدادات المشروع: **Custom domains → Add** واكتب `www.learnelectricals.com`.
 5. في DNS عند المسجّل: اعمل سجل **CNAME** اسمه `www` قيمته اللينك التجريبي اللي هم إدّوهولك (اللي بيظهرلك في الشاشة بالظبط).
-6. للدومين من غير www (`learnelectrical.com`): ضيفه هو كمان في Custom domains واختار إنه يعمل **Redirect** لـ `www`. Netlify هيقولك تعمل سجل `A` على `75.2.60.5`، وCloudflare بيظبطها لوحده لو الدومين عندهم.
+6. للدومين من غير www (`learnelectricals.com`): ضيفه هو كمان في Custom domains واختار إنه يعمل **Redirect** لـ `www`. Netlify هيقولك تعمل سجل `A` على `75.2.60.5`، وCloudflare بيظبطها لوحده لو الدومين عندهم.
 
 ### 2) GitHub Pages (ببلاش)
 
 1. اعمل حساب على github.com، وبعدين **New repository** (مثال `learnelectrical`)، خليه Public.
 2. **Add file → Upload files** وارفع **محتويات** فولدر `website` (مش الفولدر نفسه)، ودوس Commit. اتأكد إن `CNAME` و `.nojekyll` اترفعوا.
 3. **Settings → Pages**: Source = `Deploy from a branch`، Branch = `main` / `root`، Save.
-4. في نفس الصفحة، Custom domain = `www.learnelectrical.com` واعمل Save.
+4. في نفس الصفحة، Custom domain = `www.learnelectricals.com` واعمل Save.
 5. في DNS عند المسجّل:
    - سجل **CNAME**: الاسم `www` ← القيمة `<اسم-المستخدم>.github.io`
    - أربع سجلات **A** للدومين من غير www (الاسم `@`):
@@ -61,7 +61,7 @@
    - Netlify: Domain management → HTTPS (بيتعمل لوحده) .
    - Cloudflare: SSL/TLS → Edge Certificates → Always Use HTTPS.
    - cPanel: **SSL/TLS Status** → Run AutoSSL، وبعدين فعّل Force HTTPS Redirect من Domains.
-2. افتح `https://www.learnelectrical.com` واتأكد إن القفل ظاهر.
+2. افتح `https://www.learnelectricals.com` واتأكد إن القفل ظاهر.
 
 ## هـ) لما تحدّث الموقع بعدين
 
