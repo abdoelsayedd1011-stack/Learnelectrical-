@@ -1,6 +1,6 @@
 // Progress sync: each course/simulator keeps its progress in localStorage; /assets/sync.js mirrors
 // the whitelisted keys here so a member's progress follows them to any device.
-import { getDb, readBody, sessionUser, json, fail, HttpError } from "../_lib/auth.js";
+import { getDb, readBody, sessionUser, touchUser, json, fail, HttpError } from "../_lib/auth.js";
 
 // Same keys as KEYS in /assets/sync.js (courses, guided-mode progress and saved state of each simulator).
 const PROGRESS_KEY = /^(?:basics-lab-v1|instr-lab-v1|classic-lab-v1|vfd-(?:wbx|tc|ex)|[a-z0-9]{2,12}-lab-v1(?:-ui)?)$/;
@@ -12,6 +12,7 @@ export async function onRequestGet({ request, env }){
     const db = await getDb(env);
     const s = await sessionUser(db, request);
     if (!s) return json({ ok: true, signed: false });
+    await touchUser(db, s.id);
     const rows = await db.prepare("SELECT k, v, updated_at FROM progress WHERE user_id = ?").bind(s.id).all();
     const items = {};
     for (const r of rows.results || []) items[r.k] = { v: r.v, t: r.updated_at };

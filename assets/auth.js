@@ -34,6 +34,22 @@
 
     api("me").then(function(r){ if (r.ok && r.user) location.replace(nextUrl()); });
 
+    /* نسيت الباسورد؟ → رسالة واتساب للإدارة فيها الإيميل */
+    var fBtn = document.getElementById("forgot-btn"), fBox = document.getElementById("forgot"), fWa = document.getElementById("forgot-wa");
+    if (fBtn && fBox){
+      var waNum = String((window.SITE || {}).whatsapp || "").replace(/[^\d]/g, "");
+      var setWa = function(){
+        if (!fWa || !waNum) return;
+        var em = (fLogin.elements.email.value || "").trim();
+        fWa.href = "https://wa.me/" + waNum + "?text=" + encodeURIComponent("السلام عليكم، نسيت باسورد حسابي على " + ((window.SITE || {}).name || "LearnElectricals") + (em ? ". الإيميل: " + em : ". الإيميل: "));
+        fWa.hidden = false;
+      };
+      fBtn.addEventListener("click", function(){
+        var open = fBox.hidden; fBox.hidden = !open; fBtn.setAttribute("aria-expanded", open ? "true" : "false"); if (open) setWa();
+      });
+      fLogin.elements.email.addEventListener("input", setWa);
+    }
+
     [["login", fLogin], ["signup", fSignup]].forEach(function(p){
       var form = p[1], msg = form.querySelector(".auth-msg"), btn = form.querySelector("button[type=submit]");
       form.addEventListener("submit", function(e){
@@ -44,6 +60,27 @@
           if (r.ok){ try{ sessionStorage.setItem("le-user", JSON.stringify(r.user)); }catch(x){} location.replace(nextUrl()); return; }
           btn.disabled = false; showMsg(msg, r.message || OFFLINE);
         });
+      });
+    });
+  }
+
+  /* ---------- reset.html ---------- */
+  var fReset = document.getElementById("form-reset");
+  if (fReset){
+    var token = new URLSearchParams(location.search).get("t") || "";
+    // نشيل التوكن من شريط العنوان عشان ميتسجلش في الهيستوري ولا يتبعت لأي لينك
+    try { history.replaceState(null, "", location.pathname); } catch (e){}
+    if (!/^[0-9a-f]{64}$/.test(token)){ fReset.hidden = true; document.getElementById("reset-bad").hidden = false; }
+    var rMsg = fReset.querySelector(".auth-msg"), rBtn = fReset.querySelector("button[type=submit]");
+    fReset.addEventListener("submit", function(e){
+      e.preventDefault();
+      var p1 = fReset.elements.password.value, p2 = fReset.elements.password2.value;
+      if (p1.length < 8){ showMsg(rMsg, "الباسورد لازم يكون 8 حروف أو أرقام على الأقل."); return; }
+      if (p1 !== p2){ showMsg(rMsg, "الباسوردين مش زي بعض. اكتبهم تاني."); return; }
+      showMsg(rMsg, ""); rBtn.disabled = true;
+      api("reset", { token: token, password: p1 }).then(function(r){
+        if (r.ok){ try{ sessionStorage.setItem("le-user", JSON.stringify(r.user)); }catch(x){} location.replace("account.html"); return; }
+        rBtn.disabled = false; showMsg(rMsg, r.message || OFFLINE);
       });
     });
   }

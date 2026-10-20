@@ -18,6 +18,9 @@ const MSG = {
   too_many: "محاولات كتير غلط. استنى ربع ساعة وجرّب تاني.",
   not_logged_in: "انت مش داخل بحساب.",
   too_big: "التقدّم ده أكبر من المسموح.",
+  bad_token: "اللينك ده مش شغال أو مدته خلصت. اطلب لينك جديد على واتساب.",
+  forbidden: "الصفحة دي للإدارة بس.",
+  not_found: "العضو ده مش موجود.",
   not_complete: "لسه مخلّصتش الكورس ده. كمّل كل الدروس والتمارين الأول.",
   server: "حصلت مشكلة في السيرفر. جرّب تاني بعد شوية."
 };
@@ -48,8 +51,11 @@ export async function getDb(env){
       env.DB.prepare("CREATE INDEX IF NOT EXISTS sessions_user ON sessions (user_id)"),
       env.DB.prepare("CREATE TABLE IF NOT EXISTS login_fails (email TEXT PRIMARY KEY, count INTEGER NOT NULL, first_at INTEGER NOT NULL)"),
       env.DB.prepare("CREATE TABLE IF NOT EXISTS progress (user_id INTEGER NOT NULL, k TEXT NOT NULL, v TEXT NOT NULL, updated_at INTEGER NOT NULL, PRIMARY KEY (user_id, k))"),
-      env.DB.prepare("CREATE TABLE IF NOT EXISTS certificates (code TEXT PRIMARY KEY, user_id INTEGER NOT NULL, name TEXT NOT NULL, course TEXT NOT NULL, issued_at INTEGER NOT NULL, UNIQUE (user_id, course))")
+      env.DB.prepare("CREATE TABLE IF NOT EXISTS certificates (code TEXT PRIMARY KEY, user_id INTEGER NOT NULL, name TEXT NOT NULL, course TEXT NOT NULL, issued_at INTEGER NOT NULL, UNIQUE (user_id, course))"),
+      env.DB.prepare("CREATE TABLE IF NOT EXISTS resets (token_hash TEXT PRIMARY KEY, user_id INTEGER NOT NULL, expires_at INTEGER NOT NULL, used INTEGER NOT NULL DEFAULT 0)")
     ]);
+    // Columns added after launch: "duplicate column" on databases that already have them is fine.
+    try { await env.DB.prepare("ALTER TABLE users ADD COLUMN last_seen INTEGER").run(); } catch (e) {}
     schemaReady = true;
   }
   return env.DB;
@@ -100,7 +106,7 @@ export function sameString(a, b){
   return d === 0;
 }
 
-async function sha256(s){ return hex(await crypto.subtle.digest("SHA-256", enc.encode(s))); }
+export async function sha256(s){ return hex(await crypto.subtle.digest("SHA-256", enc.encode(s))); }
 
 function readCookie(request, name){
   const m = (request.headers.get("cookie") || "").match(new RegExp("(?:^|;\\s*)" + name + "=([^;]+)"));
@@ -133,6 +139,14 @@ export async function sessionUser(db, request){
   if (row.expires_at < Date.now()){ await db.prepare("DELETE FROM sessions WHERE token_hash = ?").bind(th).run(); return null; }
   return { token_hash: th, id: row.id, user: publicUser(row) };
 }
+
+// "Last active" for the admin list; written at most every 5 minutes per member.
+export async function touchUser(db, userId){
+  const now = Date.now();
+  try { await db.prepare("UPDATE users SET last_seen = ? WHERE id = ? AND (last_seen IS NULL OR last_seen < ?)").bind(now, userId, now - 5 * 60 * 1000).run(); } catch (e) {}
+}
+
+export function newToken(){ return hex(crypto.getRandomValues(new Uint8Array(32))); }
 
 export function publicUser(u){ return { name: u.name, email: u.email, plan: u.plan, created_at: u.created_at }; }
 
