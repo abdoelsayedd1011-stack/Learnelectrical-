@@ -12,7 +12,7 @@
       name:"معمل الكلاسيك كنترول", kind:"كلاسيك كنترول", disp:"START", dispClass:"grn", rtlName:true,
       line:"مفاتيح وبوش بوتن وليمت سويتش، وبعدها الريلاي والتثبيت الذاتي والكونتاكتور وموتور 3 فاز DOL، والحماية: الفيوز والقاطع والأوفرلود الحراري والـ MPCB، والتايمرات (On-delay و Off-delay والدوري)، والموتور الإندكشن 3 فاز (اليافطة وعلبة الأطراف ستار/دلتا وعكس الاتجاه)، ومفاتيح الضغط والمستوى والحساسات PNP/NPN والخلية الضوئية، وتمارين التتابع والـ Jog وعكس الحركة، وفي الآخر المواضيع المتقدمة: ستار/دلتا (يدوي وأوتوماتيك)، طرق فرملة الموتور (DC و Plugging وفرامل الونش)، دايرة كباس التكييف المركزي على 24V، والسوفت ستارتر بالبايباس وريلاي العطل. تعرف كل عنصر وتوصّل الدايرة بإيدك سلك سلك، والمعمل يصحّح لوحده ويرسم دايرة كل تمرين ويسخّن الأوفرلود ويفصل والتايمر يعدّ زي الحقيقي.",
       guided:89, exercises:0, params:0, faults:0,
-      inside:["جديد: ماكينة متحركة تحت اللوحة بتشتغل لما دايرتك تشتغل (سير تعبئة، ونش، طلمبة وخزان، مروحة، كمبروسر، مخرطة، عداد سرعة) + قصة من المصنع لكل تمرين بالمصري وسطر «المطلوب منك»، وأصوات حقيقية (تكة السلك وانت بتوصّل، طقة الكونتاكتور، زنّة الموتور، شرارة القصر، جرس النجاح) مع زرار كتم الصوت، ونقط وساعة لكل تمرين وشارات ولوحة شرف على صفحة المعمل","تعريف بالمصري وشكل حقيقي ورمز IEC و NEMA لكل عنصر، ورسمة دايرة (قوى + تحكم) مرسومة أوتوماتيك لكل تمرين","9 دروس: العناصر البسيطة، الريلاي والتثبيت الذاتي والإنترلوك، الكونتاكتور ودايرة القوى والتحكم، الحماية (فيوز وقاطع وأوفرلود و MPCB)، التايمرات (TON و TOF والدوري ومتعدد الوظائف)، الموتور الإندكشن 3 فاز (اليافطة، علبة الأطراف، ستار/دلتا، عكس الاتجاه)، مفاتيح الضغط والمستوى والحساسات (بريشر سويتش، عوامة، PNP/NPN، خلية ضوئية)، وتمارين التتابع والـ Jog وعكس الحركة (إنترلوك كهربي وميكانيكي، ونش بليمت سويتش، ماكينة خرط بـ4 كونتاكتورات)، والمواضيع المتقدمة: ستار/دلتا، الفرملة، كباس التكييف المركزي، والسوفت ستارتر","كل التمارين العملية الـ24 من كراسة المدرّب مفتوحة (كل تمرين دايرة قوى + تحكم + لمبات إشارة) + 89 تمرين موجّه على لوحة توصيل مقسومة دايرة قوى ودايرة تحكم، مع غلطات مقصودة تكتشفها (قصر، Jog بيثبّت، NPN متوصّل كأنه PNP، كباري الستار غلط، إنترلوك Y/Δ ناقص، LP على NO، بايباس من START)، وشهادة إتمام بتتطبع لما تخلّص الكورس"],
+      inside:["جديد: ماكينة متحركة تحت اللوحة بتشتغل لما دايرتك تشتغل (سير تعبئة، ونش، طلمبة وخزان، مروحة، كمبروسر، مخرطة، عداد سرعة) + قصة من المصنع لكل تمرين بالعربي وسطر «المطلوب منك»، وأصوات حقيقية (تكة السلك وانت بتوصّل، طقة الكونتاكتور، زنّة الموتور، شرارة القصر، جرس النجاح) مع زرار كتم الصوت، ونقط وساعة لكل تمرين وشارات ولوحة شرف على صفحة المعمل","تعريف بالعربي وشكل حقيقي ورمز IEC و NEMA لكل عنصر، ورسمة دايرة (قوى + تحكم) مرسومة أوتوماتيك لكل تمرين","9 دروس: العناصر البسيطة، الريلاي والتثبيت الذاتي والإنترلوك، الكونتاكتور ودايرة القوى والتحكم، الحماية (فيوز وقاطع وأوفرلود و MPCB)، التايمرات (TON و TOF والدوري ومتعدد الوظائف)، الموتور الإندكشن 3 فاز (اليافطة، علبة الأطراف، ستار/دلتا، عكس الاتجاه)، مفاتيح الضغط والمستوى والحساسات (بريشر سويتش، عوامة، PNP/NPN، خلية ضوئية)، وتمارين التتابع والـ Jog وعكس الحركة (إنترلوك كهربي وميكانيكي، ونش بليمت سويتش، ماكينة خرط بـ4 كونتاكتورات)، والمواضيع المتقدمة: ستار/دلتا، الفرملة، كباس التكييف المركزي، والسوفت ستارتر","كل التمارين العملية الـ24 من كراسة المدرّب مفتوحة (كل تمرين دايرة قوى + تحكم + لمبات إشارة) + 89 تمرين موجّه على لوحة توصيل مقسومة دايرة قوى ودايرة تحكم، مع غلطات مقصودة تكتشفها (قصر، Jog بيثبّت، NPN متوصّل كأنه PNP، كباري الستار غلط، إنترلوك Y/Δ ناقص، LP على NO، بايباس من START)، وشهادة إتمام بتتطبع لما تخلّص الكورس"],
       tags:"sounds أصوات story قصة points نقط leaderboard لوحة شرف badges شارات classic control كلاسيك كنترول protection حماية fuse فيوز mcb قاطع overload أوفرلود mpcb contactor كونتاكتور relay ريلاي push button بوش بوتن limit switch ليمت سويتش selector سلكتور lamp لمبة wiring توصيل timer تايمر on-delay off-delay flasher sequence تتابع braking فرملة dc injection plugging soft starter سوفت ستارتر bypass بايباس hvac تكييف compressor كباس hp lp thermostat ثرموستات certificate شهادة motor موتور induction إندكشن nameplate يافطة star delta ستار دلتا pressure switch بريشر سويتش float عوامة level مستوى sensor حساس pnp npn photocell خلية ضوئية jog interlock إنترلوك reversing عكس الاتجاه hoist ونش lathe مخرطة schematic رسمة دايرة" },
     { id:"ab1336", path:"ab1336-simulator/index.html", group:"ab", brand:"Allen-Bradley", brandKey:"ab",
       name:"1336 PLUS II", kind:"انفرتر", disp:"Stopped +0.00 Hz", dispClass:"lcd",
@@ -121,6 +121,23 @@
     nav.addEventListener("click", function(e){ if (e.target.closest("a")) setOpen(false); });
     document.addEventListener("keydown", function(e){ if (e.key === "Escape" && nav.classList.contains("open")){ setOpen(false); menuBtn.focus(); } });
     document.addEventListener("click", function(e){ if (nav.classList.contains("open") && !e.target.closest(".site-header")) setOpen(false); });
+  }
+
+  /* ---------- account link (membership) ---------- */
+  if (nav){
+    var authA = document.createElement("a");
+    authA.className = "nav-auth"; authA.href = "login.html"; authA.textContent = "دخول";
+    if (/\/(login|account)\.html$/.test(location.pathname)) authA.setAttribute("aria-current", "page");
+    nav.appendChild(authA);
+    var setUser = function(u){ if (u && u.name){ authA.href = "account.html"; authA.textContent = u.name.split(" ")[0]; } else { authA.href = "login.html"; authA.textContent = "دخول"; } };
+    try{ setUser(JSON.parse(sessionStorage.getItem("le-user") || "null")); }catch(e){}
+    if (window.fetch && /^https?:$/.test(location.protocol)){
+      fetch("/api/auth/me", { credentials: "same-origin" }).then(function(r){ return r.ok ? r.json() : null; }).then(function(r){
+        if (!r || !r.ok) return;
+        setUser(r.user);
+        try{ if (r.user) sessionStorage.setItem("le-user", JSON.stringify(r.user)); else sessionStorage.removeItem("le-user"); }catch(e){}
+      }, function(){});
+    }
   }
 
   /* ---------- config fill ---------- */
