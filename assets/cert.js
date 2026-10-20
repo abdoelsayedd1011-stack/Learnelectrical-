@@ -30,7 +30,7 @@
       $("c-code").textContent = c.code;
       $("c-url").textContent = domain + "/cert.html";
       try { $("c-qr").innerHTML = QR.svg(link, { label: "QR للتأكد من الشهادة " + c.code }); } catch (e){}
-      document.title = "شهادة " + c.name + " · " + c.course_title + " | " + (S.name || "LearnElectrical");
+      document.title = "شهادة " + c.name + " · " + c.course_title + " | " + (S.name || "LearnElectricals");
       state.hidden = true; bad.hidden = true; ok.hidden = false;
     })
     .catch(function(){ state.textContent = "مقدرناش نوصل للسيرفر دلوقتي. جرّب تاني بعد شوية."; });
