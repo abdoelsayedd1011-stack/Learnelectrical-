@@ -230,6 +230,8 @@
         if (!r || !r.ok) return;
         setUser(r.user);
         try{ if (r.user) sessionStorage.setItem("le-user", JSON.stringify(r.user)); else sessionStorage.removeItem("le-user"); }catch(e){}
+        // "online now" in the admin list: ping while the page is open and visible
+        if (r.user) setInterval(function(){ if (document.visibilityState === "visible") fetch("/api/auth/me", { credentials: "same-origin" }).catch(function(){}); }, 120000);
       }, function(){});
     }
   }

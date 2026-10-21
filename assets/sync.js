@@ -141,6 +141,8 @@
     return push().then(function(){
       if (changed && !noReload && reloadOnce()) return { signed: true, reloading: true };
       timer = setInterval(function(){ push(); }, PUSH_EVERY);
+      // "online now" in the admin list: ping while the page is open and visible
+      setInterval(function(){ if (document.visibilityState === "visible") fetch("/api/auth/me", { credentials: "same-origin" }).catch(function(){}); }, 120000);
       var leave = function(){ push(true); };
       document.addEventListener("visibilitychange", function(){ if (document.visibilityState === "hidden") leave(); });
       window.addEventListener("pagehide", leave);

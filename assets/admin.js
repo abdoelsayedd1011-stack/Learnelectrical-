@@ -80,12 +80,16 @@
       Object.keys(SIM_NAMES).forEach(function(k){ if (s[k]) rows.push({ label: "محاكي " + SIM_NAMES[k], n: s[k] }); });
       bars($("synced"), rows, r.total);
       bars($("certs"), Object.keys(COURSE_NAMES).map(function(k){ return { label: COURSE_NAMES[k], n: (r.certs || {})[k] || 0 }; }), 0);
+      var on = r.online || 0;
+      $("online-now").innerHTML = '<i class="dot' + (on ? " on" : "") + '" aria-hidden="true"></i>' + (on ? "متصلين دلوقتي: <b>" + on + "</b>" : "مفيش حد متصل دلوقتي");
       $("active-week").textContent = "دخلوا الموقع آخر 7 أيام: " + r.active_week + " من " + r.total;
     });
   }
 
   /* ---------- الأعضاء ---------- */
-  var list = $("mem-list"), more = $("mem-more"), count = $("mem-count"), q = "", offset = 0, seq = 0, meEmail = "", paywall = false;
+  var list = $("mem-list"), more = $("mem-more"), count = $("mem-count"), q = "", offset = 0, seq = 0, meEmail = "", paywall = false, pagedMore = false;
+  var ONLINE_MS = 4 * 60 * 1000;
+  function isOnline(m){ return m.last_seen && Date.now() - m.last_seen < ONLINE_MS; }
   function isPro(m){ return m.plan === "pro" && m.pro_until > Date.now(); }
   function planTag(m){
     if (isPro(m)) return '<span class="mem-plan paid">Pro لحد ' + esc(fmtDate(m.pro_until)) + "</span>";
@@ -95,9 +99,9 @@
   function memberRow(m){
     var self = m.email === meEmail;
     return '<li class="mem" data-id="' + m.id + '" data-name="' + esc(m.name) + '" data-email="' + esc(m.email) + '" data-until="' + (isPro(m) ? m.pro_until : "") + '">' +
-      '<div class="mem-top"><div class="mem-who"><b>' + esc(m.name) + (m.admin ? ' <span class="mem-tag">إدارة</span>' : "") + '</b><span class="ltr mem-email">' + esc(m.email) + "</span></div>" +
+      '<div class="mem-top"><div class="mem-who"><b>' + (isOnline(m) ? '<i class="dot on" title="متصل دلوقتي" aria-label="متصل دلوقتي"></i>' : "") + esc(m.name) + (m.admin ? ' <span class="mem-tag">إدارة</span>' : "") + '</b><span class="ltr mem-email">' + esc(m.email) + "</span></div>" +
       planTag(m) + "</div>" +
-      '<dl class="mem-facts"><div><dt>اشترك</dt><dd>' + esc(fmtDate(m.created_at)) + "</dd></div><div><dt>آخر دخول</dt><dd>" + esc(ago(m.last_seen)) + "</dd></div>" +
+      '<dl class="mem-facts"><div><dt>اشترك</dt><dd>' + esc(fmtDate(m.created_at)) + "</dd></div><div><dt>آخر دخول</dt><dd>" + (isOnline(m) ? '<span class="on-txt">متصل دلوقتي</span>' : esc(ago(m.last_seen))) + "</dd></div>" +
       "<div><dt>تقدّم متزامن</dt><dd>" + (m.synced ? m.synced + " حاجة" : "لأ") + "</dd></div><div><dt>شهادات</dt><dd>" + m.certs + "</dd></div></dl>" +
       '<div class="mem-act"><button class="btn btn-ghost" type="button" data-act="reset">لينك باسورد جديد</button><button class="btn btn-ghost" type="button" data-act="plan">تفعيل اشتراك</button>' +
       (self ? "" : '<button class="btn btn-ghost danger" type="button" data-act="ask-delete">امسح العضو</button>') + "</div>" +
@@ -119,7 +123,7 @@
   var timer = null;
   $("mem-q").addEventListener("input", function(){ clearTimeout(timer); var v = this.value.trim(); timer = setTimeout(function(){ q = v; loadMembers(true); }, 250); });
   $("mem-search").addEventListener("submit", function(e){ e.preventDefault(); clearTimeout(timer); q = $("mem-q").value.trim(); loadMembers(true); });
-  more.addEventListener("click", function(){ loadMembers(false); });
+  more.addEventListener("click", function(){ pagedMore = true; loadMembers(false); });
 
   function panel(li, html){ var p = li.querySelector(".mem-panel"); p.innerHTML = html; p.hidden = !html; return p; }
   list.addEventListener("click", function(e){
@@ -246,5 +250,11 @@
     $("adm-sub").textContent = "أهلاً يا " + r.user.name.split(" ")[0] + ". كل الأرقام من قاعدة البيانات مباشرة.";
     $("adm").hidden = false;
     loadStats(); loadReqs(); loadMembers(true);
+    // keep «متصل دلوقتي» fresh while the dashboard is open (skip the list while a member panel is open or after «more»)
+    setInterval(function(){
+      if (document.visibilityState !== "visible") return;
+      loadStats();
+      if (!list.querySelector(".mem-panel:not([hidden])") && !pagedMore && !q) loadMembers(true);
+    }, 60000);
   });
 })();

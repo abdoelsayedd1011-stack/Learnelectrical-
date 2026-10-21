@@ -144,10 +144,10 @@ export async function sessionUser(db, request){
   return { token_hash: th, id: row.id, user: publicUser(row) };
 }
 
-// "Last active" for the admin list; written at most every 5 minutes per member.
+// "Last active" for the admin list (and its «متصل دلوقتي» dot); written at most once a minute per member.
 export async function touchUser(db, userId){
   const now = Date.now();
-  try { await db.prepare("UPDATE users SET last_seen = ? WHERE id = ? AND (last_seen IS NULL OR last_seen < ?)").bind(now, userId, now - 5 * 60 * 1000).run(); } catch (e) {}
+  try { await db.prepare("UPDATE users SET last_seen = ? WHERE id = ? AND (last_seen IS NULL OR last_seen < ?)").bind(now, userId, now - 60 * 1000).run(); } catch (e) {}
 }
 
 export function newToken(){ return hex(crypto.getRandomValues(new Uint8Array(32))); }
