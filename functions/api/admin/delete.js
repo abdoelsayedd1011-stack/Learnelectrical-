@@ -17,6 +17,7 @@ export async function onRequestPost({ request, env }){
       db.prepare("DELETE FROM progress WHERE user_id = ?").bind(id),
       db.prepare("DELETE FROM certificates WHERE user_id = ?").bind(id),
       db.prepare("DELETE FROM resets WHERE user_id = ?").bind(id),
+      db.prepare("DELETE FROM user_courses WHERE user_id = ?").bind(id),
       db.prepare("DELETE FROM login_fails WHERE email = ?").bind(u.email),
       db.prepare("DELETE FROM users WHERE id = ?").bind(id)
     ]);

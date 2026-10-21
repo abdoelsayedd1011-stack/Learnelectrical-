@@ -110,15 +110,20 @@
       var pro = u.plan === "pro" && u.pro_until > Date.now(), dt = function(t){ return new Date(t).toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" }); };
       var planEl = document.getElementById("acc-plan");
       planEl.textContent = pro ? "\u2066Pro\u2069 لحد " + dt(u.pro_until) : u.plan === "pro" && u.pro_until ? "مجاني (الاشتراك خلص " + dt(u.pro_until) + ")" : "مجاني";
-      // لينك «اشترك» بيظهر لما أرقام الدفع والأسعار تتكتب في site-config.js (SITE.pay)
+      // لينك «اشترك» بيظهر لما أرقام الدفع وسعر واحد على الأقل يتكتبوا («الأسعار» في لوحة الإدارة، أو SITE.pay في site-config.js)
       var P = (window.SITE || {}).pay || {};
-      if (((P.instapay || P.vodafoneCash) && (+P.monthly > 0 || +P.yearly > 0)) || ((P.intlLink || P.intlNote) && (+P.usdMonthly > 0 || +P.usdYearly > 0))){
-        var sa = document.createElement("a"); sa.href = "subscribe.html"; sa.className = "acc-sub"; sa.textContent = pro ? "جدّد ←" : "اشترك ←";
+      var addSub = function(x){
+        x = x && x.ok ? x : {};
+        var cs = x.courses || {}, anyCourse = Object.keys(cs).some(function(k){ return cs[k] && cs[k].price > 0; });
+        var eg = (x.instapay || x.vodafone || P.instapay || P.vodafoneCash) && (anyCourse || +x.monthly > 0 || +x.yearly > 0 || +P.monthly > 0 || +P.yearly > 0);
+        if (!eg && !((P.intlLink || P.intlNote) && (+P.usdMonthly > 0 || +P.usdYearly > 0))) return;
+        var sa = document.createElement("a"); sa.href = "subscribe.html"; sa.className = "acc-sub"; sa.textContent = pro ? "جدّد ←" : "اشتري كورس ←";
         planEl.appendChild(document.createTextNode(" · ")); planEl.appendChild(sa);
-      }
+      };
+      fetch("/api/prices").then(function(x){ return x.json(); }).then(addSub, function(){ addSub(null); });
       // جاي من صفحة محتاجة اشتراك (لما الاشتراك يتفعّل في functions/_lib/plan.js)
       if (new URLSearchParams(location.search).get("need") === "pro" && !pro){
-        showMsg(msg, "الصفحة اللي كنت رايحلها محتاجة اشتراك \u2066Pro\u2069. ");
+        showMsg(msg, "الصفحة اللي كنت رايحلها محتاجة تشتري الكورس بتاعها أو تشترك في كل الكورسات. ");
         var na = document.createElement("a"); na.href = "subscribe.html"; na.textContent = "اعرف إزاي تشترك ←"; msg.appendChild(na);
       }
       document.getElementById("acc-since").textContent = new Date(u.created_at).toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" });

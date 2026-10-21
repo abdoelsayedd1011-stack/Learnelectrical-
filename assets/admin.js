@@ -1,5 +1,5 @@
 /* لوحة الإدارة: أرقام الأعضاء، رسم الاشتراكات اليومية، طلبات الاشتراك، اللي اشتراكهم هيخلص، قايمة الأعضاء (بحث وفلاتر وتنزيل Excel)،
-   نافذة العضو (الاشتراك، الأجهزة، التقدّم، الشهادات، الملاحظات، الإيقاف، لينك باسورد، المسح)، إعلان فوق الموقع، وسجل العمليات.
+   نافذة العضو (الاشتراك، كورساته، الأجهزة، التقدّم، الشهادات، الملاحظات، الإيقاف، لينك باسورد، المسح)، الأسعار، إعلان فوق الموقع، وسجل العمليات.
    الصفحة نفسها مفتوحة، بس كل /api/admin/* بيرجّع 403 لأي حد مش في ADMIN_EMAILS. */
 (function(){
   "use strict";
@@ -92,17 +92,19 @@
   var PLAN_AR = { monthly: "شهري", yearly: "سنوي" }, PLAN_DAYS = { monthly: 30, yearly: 365 };
   var METHOD_AR = { instapay: "InstaPay", vodafone: "فودافون كاش", intl: "من خارج مصر" };
   var prList = $("pr-list"), prDone = $("pr-done"), prCount = $("pr-count");
+  function prodName(r){ return r.plan === "course" ? "كورس " + ((PRODUCT_NAMES[r.product]) || r.product) : "كل الكورسات " + (PLAN_AR[r.plan] || r.plan); }
+  var PRODUCT_NAMES = { basics: "أساسيات الكهربا", classic: "الكلاسيك كنترول", drw: "قراية الرسومات الكهربية", instr: "الإنسترومنتيشن", plc: "الـ PLC", vfd: "الانفرتر VFD", srv: "السيرفو موتور والدرايف" };
   function money(r){ return "⁦" + r.amount + "⁩ " + (r.currency === "USD" ? "دولار" : ((window.SITE || {}).pay || {}).currency || "جنيه"); }
   function reqRow(r){
     var done = r.status !== "pending";
     var cur = isPro({ plan: r.user_plan, pro_until: r.pro_until }) ? "Pro لحد " + fmtDate(r.pro_until) : "مجاني";
-    var tag = r.status === "approved" ? '<span class="mem-plan paid">اتفعّل' + (r.granted_until ? " لحد " + esc(fmtDate(r.granted_until)) : "") + "</span>" : r.status === "rejected" ? '<span class="mem-plan">اترفض</span>' : '<span class="pr-amount">' + esc(money(r)) + "</span>";
+    var tag = r.status === "approved" ? '<span class="mem-plan paid">اتفعّل' + (r.plan !== "course" && r.granted_until ? " لحد " + esc(fmtDate(r.granted_until)) : "") + "</span>" : r.status === "rejected" ? '<span class="mem-plan">اترفض</span>' : '<span class="pr-amount">' + esc(money(r)) + "</span>";
     return '<li class="mem" data-rid="' + r.id + '" data-name="' + esc(r.name || "") + '"><div class="mem-top"><div class="mem-who"><b>' + esc(r.name || "عضو اتمسح") + '</b><span class="ltr mem-email">' + esc(r.email || "") + "</span></div>" + tag + "</div>" +
-      '<dl class="mem-facts"><div><dt>الاشتراك</dt><dd>' + esc(PLAN_AR[r.plan] || r.plan) + " (" + (PLAN_DAYS[r.plan] || 30) + " يوم)</dd></div><div><dt>عن طريق</dt><dd>" + esc(METHOD_AR[r.method] || r.method) + "</dd></div>" +
+      '<dl class="mem-facts"><div><dt>اشترى</dt><dd>' + esc(prodName(r)) + (r.plan === "course" ? " (على طول)" : " (" + (PLAN_DAYS[r.plan] || 30) + " يوم)") + "</dd></div><div><dt>عن طريق</dt><dd>" + esc(METHOD_AR[r.method] || r.method) + "</dd></div>" +
       (r.sender ? '<div><dt>حوّل من</dt><dd class="ltr">' + esc(r.sender) + "</dd></div>" : "") +
       "<div><dt>اتبعت</dt><dd>" + esc(ago(r.created_at)) + "</dd></div>" + (done ? "<div><dt>المبلغ</dt><dd>" + esc(money(r)) + "</dd></div>" : "<div><dt>دلوقتي</dt><dd>" + esc(cur) + "</dd></div>") + "</dl>" +
       (r.note ? '<p class="pr-note">' + esc(r.note) + "</p>" : "") +
-      (done ? "" : '<div class="mem-act"><button class="btn btn-primary" type="button" data-pr="approve">فعّل ' + (r.plan === "yearly" ? "سنة" : "شهر") + '</button><button class="btn btn-ghost danger" type="button" data-pr="ask-reject">ارفض</button></div>') +
+      (done ? "" : '<div class="mem-act"><button class="btn btn-primary" type="button" data-pr="approve">فعّل ' + (r.plan === "course" ? "الكورس" : r.plan === "yearly" ? "سنة" : "شهر") + '</button><button class="btn btn-ghost danger" type="button" data-pr="ask-reject">ارفض</button></div>') +
       '<div class="mem-panel" hidden></div></li>';
   }
   function loadReqs(){
@@ -135,11 +137,11 @@
     post("/api/admin/pay", { id: id, action: act }).then(function(r){
       if (!r.ok){ b.disabled = false; show('<p class="auth-msg" role="alert">' + esc(r.message || OFFLINE) + "</p>"); if (r.error === "already_done") loadReqs(); return; }
       li.querySelector(".mem-act").remove();
-      show('<p class="mem-pl" role="status">' + (r.status === "approved" ? "اتفعّل اشتراك Pro لـ " + esc(name) + " لحد " + esc(fmtDate(r.pro_until)) + " ✓" : "اترفض الطلب.") + "</p>");
+      show('<p class="mem-pl" role="status">' + (r.status === "approved" ? (r.course ? "اتفعّل كورس " + esc(PRODUCT_NAMES[r.course] || r.course) + " لـ " + esc(name) + " ✓" : "اتفعّل اشتراك Pro لـ " + esc(name) + " لحد " + esc(fmtDate(r.pro_until)) + " ✓") : "اترفض الطلب.") + "</p>");
       var n = prList.querySelectorAll(".mem-act").length;
       prCount.textContent = n ? "مستنيين مراجعة: " + n + "." : "خلّصت كل الطلبات ✓"; prBadge(n);
       if (r.status === "approved"){
-        refreshRow(r.user_id, { plan: "pro", pro_until: r.pro_until });
+        if (!r.course) refreshRow(r.user_id, { plan: "pro", pro_until: r.pro_until });
         if (mdId === r.user_id) openMember(mdId);
       }
       if (!prDone.hidden) loadDone();
@@ -204,7 +206,7 @@
   var md = $("md"), mdBody = $("md-body"), mdId = 0, mdData = null, mdOpener = null;
   var ACTION_AR = { suspend: "وقّف الحساب", unsuspend: "رجّع الحساب", kick: "خرّجه من جهاز", plan: "غيّر الاشتراك", plan_cancel: "لغى الاشتراك",
     pay_approve: "وافق على طلب اشتراك", pay_reject: "رفض طلب اشتراك", note: "عدّل الملاحظات", banner: "غيّر الإعلان", "delete": "مسح عضو",
-    reset_link: "عمل لينك باسورد جديد", "export": "نزّل Excel" };
+    reset_link: "عمل لينك باسورد جديد", "export": "نزّل Excel", course_grant: "إدّاله كورس", course_remove: "شال كورس", prices: "غيّر الأسعار" };
   var STATUS_AR = { pending: "مستني مراجعة", approved: "اتفعّل", rejected: "اترفض" };
   function fmtWhen(t){ try { return new Date(t).toLocaleString("ar-EG-u-nu-latn", { day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit" }); } catch (e){ return fmtDate(t); } }
   function country(c){ if (!c) return ""; try { return new Intl.DisplayNames(["ar"], { type: "region" }).of(c) || c; } catch (e){ return c; } }
@@ -226,6 +228,18 @@
       (pro ? '<div class="mem-act"><button class="btn btn-ghost danger" type="button" data-md="ask-cancel">ألغِ الاشتراك ورجّعه مجاني</button></div>' : "") +
       '<div class="md-confirm" data-c="cancel" hidden><p>تلغي اشتراك <b>' + esc(m.name) + '</b> وترجّعه مجاني دلوقتي؟</p><div class="mem-act"><button class="btn danger-solid" type="button" data-md="cancel-plan">أيوه، ألغيه</button><button class="btn btn-ghost" type="button" data-md="no">لأ</button></div></div>' +
       (d.paywall ? "" : '<p class="adm-note">الاشتراك المدفوع لسه مش مقفول على الموقع، فالأعضاء كلهم شايفين كل حاجة. اللي هتعمله هنا بيتسجّل ويشتغل أول ما الاشتراك يتفعّل.</p>'));
+
+    // كورساته (اشتراها أو الإدارة إدّتهاله) — على طول، من غير مدة
+    var own = d.owned || [], ownIds = own.map(function(c){ return c.course; });
+    var left = (d.products || []).filter(function(p){ return ownIds.indexOf(p.id) < 0; });
+    var SRC_AR = { pay: "اشتراه", admin: "من الإدارة" };
+    h += box("own", "كورساته", (own.length ? '<ul class="md-list">' + own.map(function(c){
+      return '<li><div class="md-li-main"><b>' + esc(c.title) + "</b><span>" + esc(SRC_AR[c.source] || c.source) + " · " + esc(fmtDate(c.granted_at)) + (c.note ? " · " + esc(c.note) : "") + "</span></div>" +
+        '<button class="btn btn-ghost danger md-sm" type="button" data-md="ask-uncourse" data-course="' + esc(c.course) + '">شيله</button></li>' +
+        '<li class="md-confirm" data-c="uncourse-' + esc(c.course) + '" hidden><p>تشيل كورس <b>' + esc(c.title) + "</b> من " + esc(m.name) + '؟</p><div class="mem-act"><button class="btn danger-solid" type="button" data-md="uncourse" data-course="' + esc(c.course) + '">أيوه، شيله</button><button class="btn btn-ghost" type="button" data-md="no">لأ</button></div></li>';
+    }).join("") + "</ul>" : '<p class="adm-empty">مفيش كورسات متسجّلة عليه.' + (pro ? " (مشترك Pro، فكل الكورسات مفتوحة له)" : "") + "</p>") +
+      (left.length ? '<div class="md-own"><label class="sr-only" for="md-course">الكورس</label><select id="md-course">' + left.map(function(p){ return '<option value="' + esc(p.id) + '">' + esc(p.title) + "</option>"; }).join("") +
+        '</select><button class="btn btn-ghost" type="button" data-md="give">إدّيله كورس</button></div>' : ""));
 
     // الأجهزة
     var dv = d.devices;
@@ -250,7 +264,7 @@
 
     // طلبات الدفع
     h += box("pay", "طلبات الاشتراك", d.pays.length ? '<ul class="md-list">' + d.pays.map(function(r){
-      return '<li><div class="md-li-main"><b>' + esc(PLAN_AR[r.plan] || r.plan) + " · " + esc(money(r)) + "</b><span>" + esc(METHOD_AR[r.method] || r.method) + (r.sender ? ' · <span class="ltr">' + esc(r.sender) + "</span>" : "") + " · " + esc(fmtDate(r.created_at)) + "</span></div>" +
+      return '<li><div class="md-li-main"><b>' + esc(prodName(r)) + " · " + esc(money(r)) + "</b><span>" + esc(METHOD_AR[r.method] || r.method) + (r.sender ? ' · <span class="ltr">' + esc(r.sender) + "</span>" : "") + " · " + esc(fmtDate(r.created_at)) + "</span></div>" +
         '<span class="mem-plan' + (r.status === "approved" ? " paid" : "") + '">' + esc(STATUS_AR[r.status] || r.status) + "</span></li>";
     }).join("") + "</ul>" : '<p class="adm-empty">مبعتش طلبات اشتراك.</p>');
 
@@ -325,6 +339,9 @@
     }
     else if (a === "ask-cancel") confirmBox("cancel", true);
     else if (a === "cancel-plan") act(b, "plan", "/api/admin/plan", { id: id, until: null }, "اتلغى الاشتراك، ورجع مجاني.");
+    else if (a === "give"){ var cid = $("md-course").value; act(b, "own", "/api/admin/course", { id: id, course: cid, action: "grant" }, "اتفعّل كورس " + (PRODUCT_NAMES[cid] || cid) + " ✓"); }
+    else if (a === "ask-uncourse") confirmBox("uncourse-" + b.getAttribute("data-course"), true);
+    else if (a === "uncourse") act(b, "own", "/api/admin/course", { id: id, course: b.getAttribute("data-course"), action: "remove" }, "اتشال الكورس.");
     else if (a === "kick") act(b, "dev", "/api/admin/kick", { id: id, sid: b.getAttribute("data-sid") }, "خرج من الجهاز ده. أول ما يفتح الموقع عليه هيلاقي صفحة الدخول.");
     else if (a === "kick-all") act(b, "dev", "/api/admin/kick", { id: id, all: true }, "خرج من كل الأجهزة ✓");
     else if (a === "note") act(b, "note", "/api/admin/note", { id: id, note: $("md-note").value }, "اتحفظت الملاحظات ✓");
@@ -372,6 +389,43 @@
     }).join("");
   }
   $("ex-list").addEventListener("click", function(e){ var b = e.target.closest("[data-open]"); if (b) openMember(+b.getAttribute("data-open")); });
+
+  /* ---------- الأسعار ---------- */
+  var pxForm = $("px-form"), pxMsg = $("px-msg"), pxProducts = [];
+  function pxSay(t){ pxMsg.textContent = t; pxMsg.hidden = !t; }
+  function pxVal(v){ return v ? String(v) : ""; }
+  function fillPrices(r){
+    pxProducts = r.products; var p = r.prices;
+    $("px-list").innerHTML = r.products.map(function(x){
+      var c = p.courses[x.id] || {};
+      return '<li class="px-row" data-id="' + esc(x.id) + '"><b>' + esc(x.title) + "</b>" +
+        '<label class="field">السعر<input type="number" min="0" step="1" inputmode="decimal" class="ltr" data-f="price" value="' + esc(pxVal(c.price)) + '" aria-label="سعر ' + esc(x.title) + '"></label>' +
+        '<label class="field">قبل الخصم<input type="number" min="0" step="1" inputmode="decimal" class="ltr" data-f="was" value="' + esc(pxVal(c.was)) + '" placeholder="اختياري" aria-label="السعر قبل الخصم لـ ' + esc(x.title) + '"></label>' +
+        '<label class="bn-on"><input type="checkbox" data-f="on"' + (c.on ? " checked" : "") + "> للبيع</label></li>";
+    }).join("");
+    $("px-monthly").value = pxVal(p.monthly); $("px-yearly").value = pxVal(p.yearly);
+    $("px-instapay").value = p.instapay || ""; $("px-vodafone").value = p.vodafone || ""; $("px-whatsapp").value = p.whatsapp || "";
+    $("px-note").textContent = "سعر كل كورس بالجنيه، بيدفعه مرة واحدة ويفضل معاه. السعر الفاضي أو المقفول = «قريب» ومفيش زرار شرا." +
+      (r.paywall ? "" : " الدروس لسه مفتوحة لكل الأعضاء (القفل مش متفعّل)، فالأسعار بتظهر بس، ومحدش بيتقفل عليه حاجة.");
+  }
+  function loadPrices(){ return get("/api/admin/prices").then(function(r){ if (r.ok) fillPrices(r); }); }
+  pxForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    var courses = {}, btn = pxForm.querySelector("button[type=submit]");
+    pxForm.querySelectorAll(".px-row").forEach(function(li){
+      courses[li.getAttribute("data-id")] = { price: li.querySelector('[data-f=price]').value.trim(), was: li.querySelector('[data-f=was]').value.trim(), on: li.querySelector('[data-f=on]').checked };
+    });
+    btn.disabled = true; pxSay("");
+    post("/api/admin/prices", { courses: courses, monthly: $("px-monthly").value.trim(), yearly: $("px-yearly").value.trim(),
+      instapay: $("px-instapay").value.trim(), vodafone: $("px-vodafone").value.trim(), whatsapp: $("px-whatsapp").value.trim() }).then(function(r){
+      btn.disabled = false;
+      if (!r.ok){ pxSay(r.error === "bad_request" ? "فيه سعر مكتوب غلط. اكتب أرقام بس." : (r.message || OFFLINE)); return; }
+      fillPrices(r);
+      var noPrice = r.products.filter(function(x){ var c = r.prices.courses[x.id]; return !c.price; }).length;
+      pxSay("اتحفظ ✓ الأسعار هتظهر على الموقع في خلال دقيقة." + (noPrice ? " (" + noPrice + " كورس من غير سعر هيظهر «قريب»)" : ""));
+      loadLog(0);
+    });
+  });
 
   /* ---------- إعلان فوق الموقع ---------- */
   var bnForm = $("bn-form"), bnMsg = $("bn-msg");
@@ -444,7 +498,7 @@
     meEmail = r.user.email;
     $("adm-sub").textContent = "أهلاً يا " + r.user.name.split(" ")[0] + ". كل الأرقام من قاعدة البيانات مباشرة.";
     $("adm").hidden = false; tabsTop();
-    loadStats(); loadReqs(); loadMembers(true); loadBanner(); loadLog(0);
+    loadStats(); loadReqs(); loadMembers(true); loadPrices(); loadBanner(); loadLog(0);
     // keep «متصل دلوقتي» fresh while the dashboard is open (skip the list while a member is open, after «more», or while searching/filtering)
     setInterval(function(){
       if (document.visibilityState !== "visible") return;

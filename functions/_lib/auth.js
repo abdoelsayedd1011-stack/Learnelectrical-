@@ -29,6 +29,9 @@ const MSG = {
   not_complete: "لسه مخلّصتش الكورس ده. كمّل كل الدروس والتمارين الأول.",
   suspended: "الحساب ده موقوف، كلّم الإدارة.",
   self_action: "مينفعش تعمل كده في حسابك انت.",
+  already_owned: "الكورس ده عندك خلاص.",
+  not_for_sale: "الكورس ده لسه مش متاح للشرا.",
+  bad_phone: "الرقم مكتوب غلط. اكتبه أرقام بس، مثال: 01001234567",
   server: "حصلت مشكلة في السيرفر. جرّب تاني بعد شوية."
 };
 
@@ -64,7 +67,9 @@ export async function getDb(env){
       env.DB.prepare("CREATE TABLE IF NOT EXISTS settings (k TEXT PRIMARY KEY, v TEXT NOT NULL, updated_at INTEGER NOT NULL)"),
       // «سجل العمليات»: what each admin did, newest first in /admin.html.
       env.DB.prepare("CREATE TABLE IF NOT EXISTS admin_log (id INTEGER PRIMARY KEY AUTOINCREMENT, at INTEGER NOT NULL, admin_id INTEGER, admin_email TEXT NOT NULL, action TEXT NOT NULL, target_id INTEGER, target_email TEXT, details TEXT)"),
-      env.DB.prepare("CREATE INDEX IF NOT EXISTS admin_log_at ON admin_log (at)")
+      env.DB.prepare("CREATE INDEX IF NOT EXISTS admin_log_at ON admin_log (at)"),
+      // Courses a member owns for life (bought one course, or given by an admin). See _lib/products.js.
+      env.DB.prepare("CREATE TABLE IF NOT EXISTS user_courses (user_id INTEGER NOT NULL, course TEXT NOT NULL, granted_at INTEGER NOT NULL, source TEXT NOT NULL, note TEXT, PRIMARY KEY (user_id, course))")
     ]);
     // Columns added after launch: "duplicate column" on databases that already have them is fine.
     try { await env.DB.prepare("ALTER TABLE users ADD COLUMN last_seen INTEGER").run(); } catch (e) {}

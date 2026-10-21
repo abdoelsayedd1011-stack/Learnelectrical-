@@ -1,16 +1,17 @@
 // Paid plan (Pro) — prepared but OFF. While the paywall is off, every member opens every page exactly as before
-// (guests: PowerFlex 525 + lessons 1–2 of each course; members: everything), and «تفعيل اشتراك» in the admin
+// (guests: PowerFlex 525 + the free lessons of each course; members: everything), and «تفعيل اشتراك» in the admin
 // dashboard only records users.plan / users.pro_until.
 //
 // How to turn it on (no other code changes needed):
 //   • Cloudflare dashboard → Pages project → Settings → Variables and Secrets → add PAYWALL_ON = true → redeploy, or
 //   • change `PAYWALL_ON = false` below to `true` and deploy.
 //   (The env variable wins when it is set; PAYWALL_ON = false in the dashboard turns it back off.)
-// Then member-only pages need plan 'pro' with pro_until in the future; free members are sent to
-// /account.html?need=pro. The free pages stay open for everyone, and admins (ADMIN_EMAILS) always get in.
-// Activate / extend / cancel a member from /admin.html («تفعيل اشتراك»), or approve their payment request there
-// («طلبات الاشتراك», see /subscribe.html and functions/api/pay/). Before switching on, fill the `pay` block in
-// site-config.js (numbers + prices) and update the «مجاني» wording on the course pages and FAQs.
+// Then a member-only page needs one of: the course it belongs to (bought once for life, see _lib/products.js),
+// plan 'pro' with pro_until in the future («كل الكورسات» monthly / yearly), or an admin account (ADMIN_EMAILS).
+// Others are sent to /subscribe.html?course=<id>. The free pages and free lessons stay open for everyone.
+// Set the prices, the for-sale switches and the payment numbers from /admin.html («الأسعار»); approve payment
+// requests there («طلبات الاشتراك»), or give a member a course from their window («إدّيله كورس»).
+// Before switching on, update the «مجاني» wording on the course pages and FAQs.
 
 export const PAYWALL_ON = false;
 

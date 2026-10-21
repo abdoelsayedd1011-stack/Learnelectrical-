@@ -229,6 +229,44 @@
     document.addEventListener("click", function(e){ if (nav.classList.contains("open") && !e.target.closest(".site-header")) setOpen(false); });
   }
 
+  /* ---------- أسعار الكورسات (من «الأسعار» في لوحة الإدارة، /api/prices) ----------
+     كارت كل كورس في الكتالوج وصفحة كل كورس في courses/ بتظهر السعر لو متحدد، وزرار «اشتري الكورس».
+     اللي اشترى الكورس بيشوف «اشتريته ✓». */
+  var PRODUCT_OF = { basics:"basics", classic:"classic", instr:"instr", plc:"plc", drw:"drw", vfdc:"vfd", srv:"srv" };
+  var PR = null, ME, priceHooks = [];
+  function curName(){ return ((window.SITE || {}).pay || {}).currency || "جنيه"; }
+  function fmtN(n){ return String(Math.round(n * 100) / 100); }
+  function priceHtml(c){ return "<b><bdi>" + fmtN(c.price) + "</bdi> " + esc(curName()) + "</b>" + (c.was ? ' <s><bdi>' + fmtN(c.was) + "</bdi> " + esc(curName()) + "</s>" : ""); }
+  function owns(id){ return !!(ME && ME.courses && ME.courses.indexOf(id) > -1); }
+  function proNow(){ return !!(ME && ME.plan === "pro" && ME.pro_until > Date.now()); }
+  // {kind:"own"|"pro"|"price", c} or null when there's nothing to show
+  function priceState(id){
+    if (!id) return null;
+    if (owns(id)) return { kind: "own" };
+    var c = PR && PR.courses && PR.courses[id];
+    if (proNow() && PR && PR.paywall) return { kind: "pro" };
+    return c && c.price ? { kind: "price", c: c } : null;
+  }
+  function fillLanding(){
+    document.querySelectorAll("[data-price]").forEach(function(el){
+      var id = el.getAttribute("data-price"), st = priceState(id);
+      if (!st){ el.hidden = true; return; }
+      el.innerHTML = st.kind === "own" ? '<p class="lp-own">اشتريته ✓</p>' : st.kind === "pro" ? '<p class="lp-own">معاك في الاشتراك ✓</p>'
+        : '<p class="lp-price">' + priceHtml(st.c) + '</p><a class="btn btn-ghost" href="/subscribe.html?course=' + encodeURIComponent(id) + '">اشتري الكورس ←</a>';
+      el.hidden = false;
+    });
+  }
+  function pricesReady(){ fillLanding(); priceHooks.forEach(function(f){ f(); }); }
+  var meWait = true;
+  function gotMe(u){ if (!meWait && ME === u) return; meWait = false; ME = u; if (PR) pricesReady(); }
+  var needPrices = document.querySelector("[data-price],[data-catalog]");
+  if (needPrices && window.fetch && /^https?:$/.test(location.protocol)){
+    fetch("/api/prices").then(function(r){ return r.ok ? r.json() : null; }).then(function(r){
+      if (!r || !r.ok) return;
+      PR = r; if (!meWait) pricesReady();
+    }).catch(function(){});
+  }
+
   /* ---------- account link (membership) ---------- */
   if (nav){
     var authA = document.createElement("a");
@@ -244,15 +282,15 @@
     try{ setUser(JSON.parse(sessionStorage.getItem("le-user") || "null")); }catch(e){}
     if (window.fetch && /^https?:$/.test(location.protocol)){
       fetch("/api/auth/me", { credentials: "same-origin" }).then(function(r){ return r.ok ? r.json() : null; }).then(function(r){
-        if (!r || !r.ok) return;
-        setUser(r.user);
+        if (!r || !r.ok){ gotMe(null); return; }
+        setUser(r.user); gotMe(r.user);
         if (r.ended && !document.getElementById("out-note")) try{ sessionStorage.setItem("le-ended", "1"); }catch(e){} // this device was signed out (login.html says so)
         try{ if (r.user) sessionStorage.setItem("le-user", JSON.stringify(r.user)); else sessionStorage.removeItem("le-user"); }catch(e){}
         // "online now" in the admin list: ping while the page is open and visible
         if (r.user) setInterval(function(){ if (document.visibilityState === "visible") fetch("/api/auth/me", { credentials: "same-origin" }).catch(function(){}); }, 120000);
-      }, function(){});
-    }
-  }
+      }, function(){ gotMe(null); });
+    } else gotMe(null);
+  } else gotMe(null);
 
   /* ---------- إعلان فوق الموقع (من لوحة الإدارة، /api/banner) ---------- */
   // الزائر لو قفله ميظهرش تاني لنفس الكلام؛ لو الإدارة غيّرت النص يظهر من جديد.
@@ -327,20 +365,24 @@
     if (l.faults) f.push(l.faults + " عطل");
     return f;
   }
+  var SIM_WITH = { drives: "مع كورس الانفرتر", servo: "مع كورس السيرفو", temp: "مع كورس الإنسترومنتيشن" };
   function goText(l){ return l.brand === "كورس" ? "ابدأ الكورس ←" : "افتح المحاكي ←"; }
   function card(l){
     var disp = '<div class="disp ' + esc(l.dispClass) + '" aria-hidden="true">' + (l.html ? l.disp : esc(l.disp)) + "</div>";
-    var acc = l.id === "pf525" ? "من غير حساب" : l.brand === "كورس" ? "أول درسين من غير حساب" : "بحساب مجاني";
+    var acc = l.id === "pf525" ? "من غير حساب" : l.brand === "كورس" ? "3 دروس من غير حساب" : PR && PR.paywall ? SIM_WITH[l.group] || "بحساب مجاني" : "بحساب مجاني";
+    var st = priceState(PRODUCT_OF[l.id]);
+    var pl = !st ? "" : '<p class="price-line' + (st.kind === "price" ? "" : " own") + '">' + (st.kind === "own" ? "اشتريته ✓" : st.kind === "pro" ? "معاك في الاشتراك ✓" : priceHtml(st.c)) + "</p>";
+    var buy = st && st.kind === "price" ? '<a class="buy" href="subscribe.html?course=' + PRODUCT_OF[l.id] + '">اشتري الكورس<span class="sr-only"> ' + esc(l.name) + "</span></a>" : "";
     var head = '<div class="meta"><span class="brand">' + esc(l.brand) + '</span><span class="kind">' + esc(l.kind) + '</span><span class="access' + (l.id === "pf525" ? " open" : "") + '">' + acc + "</span></div>" +
                '<h4' + (l.rtlName ? ' style="direction:rtl"' : "") + ">" + esc(l.name) + "</h4>";
     if (!detail){
-      return '<a class="card" href="' + esc(l.path) + '" data-id="' + l.id + '">' + disp + head + "<p>" + esc(l.line) + '</p><span class="go">' + goText(l) + '</span></a>';
+      return '<a class="card" href="' + esc(l.path) + '" data-id="' + l.id + '">' + disp + head + "<p>" + esc(l.line) + "</p>" + pl + '<span class="go">' + goText(l) + '</span></a>';
     }
     var fl = facts(l).map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("");
     var ins = l.inside.map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("");
     return '<article class="card detail" data-id="' + l.id + '">' + disp + head + "<p>" + esc(l.line) + "</p>" +
-      (fl ? '<ul class="facts">' + fl + "</ul>" : "") + '<ul class="inside">' + ins + "</ul>" +
-      '<a class="go" href="' + esc(l.path) + '">' + goText(l) + '<span class="sr-only"> ' + esc(l.name) + "</span></a></article>";
+      (fl ? '<ul class="facts">' + fl + "</ul>" : "") + '<ul class="inside">' + ins + "</ul>" + pl +
+      '<div class="go-row"><a class="go" href="' + esc(l.path) + '">' + goText(l) + '<span class="sr-only"> ' + esc(l.name) + "</span></a>" + buy + "</div></article>";
   }
   function match(l){
     if (state.brand !== "all" && l.brandKey !== state.brand) return false;
@@ -372,6 +414,7 @@
       render();
     });
   }
+  priceHooks.push(render);
   if (searchEl) searchEl.addEventListener("input", function(){ state.q = searchEl.value.trim(); render(); });
   var reset = document.querySelector("[data-reset]");
   if (reset) reset.addEventListener("click", function(){ state = { brand:"all", q:"" }; if (searchEl) searchEl.value = ""; if (chipsEl) chipsEl.querySelectorAll(".chip").forEach(function(c){ c.setAttribute("aria-pressed", c.getAttribute("data-brand") === "all" ? "true" : "false"); }); render(); });

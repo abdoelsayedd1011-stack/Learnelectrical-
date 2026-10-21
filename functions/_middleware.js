@@ -1,12 +1,15 @@
 // Members-only pages: visitors without an account are sent to sign up first.
-// Open to everyone: the main pages, the PowerFlex 525 lab, the interview question bank, and lessons 1–2 of every course
-// (basics, classic control, instrumentation, PLC, drawings). The PLC brand simulators (Siemens/Delta/AB) are members-only.
+// Open to everyone: the main pages, the PowerFlex 525 lab, the interview question bank, and the free lessons of every
+// course (FREE_LESSONS_BY_DIR: lessons 1–2 and one lesson from the middle). The PLC brand simulators (Siemens/Delta/AB) are members-only.
 // Members' lab/course pages also get /assets/sync.js injected so their progress syncs with the account.
-// Paywall (off by default, see _lib/plan.js): when on, those member-only pages also need an active Pro plan.
+// Paywall (off by default, see _lib/plan.js): when on, a member-only page also needs the member to own the course it
+// belongs to (_lib/products.js: bought once, or given by an admin), or an active Pro plan («كل الكورسات»), or to be an admin.
+// Otherwise they're sent to /subscribe.html?course=<id>.
 // Suspended members count as signed out (sessionUser in _lib/auth.js).
 import { getDb, sessionUser, COOKIE } from "./_lib/auth.js";
 import { isAdmin } from "./_lib/admin.js";
 import { paywallOn, isPro } from "./_lib/plan.js";
+import { productOfDir, ownsCourse } from "./_lib/products.js";
 
 const MEMBER_LABS = new Set([
   "ab1336-simulator", "pf40-lab", "v20-lab", "atv320-lab", "atv630-lab",
@@ -14,7 +17,17 @@ const MEMBER_LABS = new Set([
   "mrje-servo", "sigma7-servo", "kinetix300-servo",
   "acs580-lab", "g120-lab", "fre800-lab", "ga500-lab", "ig5a-lab", "gd20-lab", "c2000-lab", "frenic-lab"
 ]);
-const FREE_LESSONS = 2;
+// Lessons open to everyone (no account, no purchase): 1, 2 and the middle lesson, ceil(lessons / 2).
+// When a course gets more lessons, update its middle lesson here and the «مفتوح للكل» tags on its page in /courses/.
+const FREE_LESSONS_BY_DIR = {
+  "basics-lab": [1, 2, 7],          // 13 lessons
+  "classic-control-lab": [1, 2, 5], // 9
+  "instrumentation-lab": [1, 2, 5], // 10
+  "plc-lab": [1, 2, 5],             // 10
+  "drawings-lab": [1, 2, 4],        // 7
+  "vfd-course": [1, 2, 6],          // 12
+  "servo-course": [1, 2, 6]         // 12
+};
 const COURSE_DIRS = new Set(["classic-control-lab", "basics-lab", "instrumentation-lab", "plc-lab", "drawings-lab", "vfd-course", "servo-course"]);
 const SYNC_DIRS = new Set([...MEMBER_LABS, ...COURSE_DIRS, "pf525-lab", "interview"]);
 const SYNC_TAG = '<script src="/assets/sync.js" defer></script>';
@@ -27,7 +40,7 @@ function membersOnly(pathname){
   if (COURSE_DIRS.has(dir)){
     if (dir === "plc-lab" && /^(?:siemens|delta|ab)(?:\.html)?$/.test(rest)) return true; // brand simulators
     const l = /^lesson-(\d+)/.exec(rest);
-    return !!l && Number(l[1]) > FREE_LESSONS;
+    return !!l && !(FREE_LESSONS_BY_DIR[dir] || [1, 2]).includes(Number(l[1]));
   }
   return MEMBER_LABS.has(dir);
 }
@@ -62,9 +75,10 @@ export async function onRequest(ctx){
   const url = new URL(ctx.request.url);
   const sync = syncDir(url.pathname) && hasSessionCookie(ctx.request);
   if (!membersOnly(url.pathname)) return sync ? withSync(ctx) : ctx.next();
-  let s = null;
+  let s = null, db = null;
   try {
-    s = await sessionUser(await getDb(ctx.env), ctx.request);
+    db = await getDb(ctx.env);
+    s = await sessionUser(db, ctx.request);
   } catch (e) {
     return ctx.next(); // accounts backend unavailable: don't lock everyone out
   }
@@ -74,7 +88,12 @@ export async function onRequest(ctx){
     return new Response(null, { status: 302, headers: { location: to.pathname + to.search, "cache-control": "no-store" } });
   };
   if (!s) return go(hasSessionCookie(ctx.request) ? "/login.html?out=1" : "/login.html"); // out=1: this device was signed out (see login.html)
-  if (paywallOn(ctx.env) && !isPro(s.user) && !isAdmin(s.user)) return go("/account.html?need=pro");
+  if (paywallOn(ctx.env) && !isPro(s.user) && !isAdmin(s.user)){
+    const course = productOfDir(url.pathname.split("/")[1]);
+    let owns = false;
+    try { owns = !!course && await ownsCourse(db, s.id, course); } catch (e) {}
+    if (!owns) return go(course ? "/subscribe.html?course=" + course : "/subscribe.html");
+  }
   const res = await withSync(ctx);
   const out = new Response(res.body, res);
   out.headers.set("cache-control", "private, no-store");

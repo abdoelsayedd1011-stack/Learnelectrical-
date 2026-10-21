@@ -1,5 +1,6 @@
 import { getDb, sessionUser, touchUser, readCookie, clearCookie, COOKIE, json, fail } from "../../_lib/auth.js";
 import { isAdmin } from "../../_lib/admin.js";
+import { ownedCourses } from "../../_lib/products.js";
 
 export async function onRequestGet({ request, env }){
   try {
@@ -12,6 +13,9 @@ export async function onRequestGet({ request, env }){
       return json({ ok: true, user: null });
     }
     await touchUser(db, s.id, s.token_hash);
-    return json({ ok: true, user: isAdmin(s.user) ? { ...s.user, admin: true } : s.user });
+    // courses: ids of the courses this member owns for life («اشتريته ✓» on the course cards)
+    const user = { ...s.user, courses: (await ownedCourses(db, s.id)).map(c => c.course) };
+    if (isAdmin(s.user)) user.admin = true;
+    return json({ ok: true, user });
   } catch (e) { return fail(e); }
 }

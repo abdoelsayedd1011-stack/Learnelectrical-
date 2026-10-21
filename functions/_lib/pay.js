@@ -5,6 +5,9 @@
 import { HttpError } from "./auth.js";
 
 export const PLANS = ["monthly", "yearly"];
+// plan = "course" for a single course bought for life; then product = the course id (_lib/products.js).
+// For the monthly / yearly «كل الكورسات» plan, product = plan.
+export const COURSE_PLAN = "course";
 export const METHODS = ["instapay", "vodafone", "intl"];
 export const MAX_PENDING = 3;   // pending requests per member
 export const MAX_PER_DAY = 6;   // requests of any status per member in 24 hours
@@ -17,6 +20,7 @@ export async function payTable(db){
       db.prepare("CREATE INDEX IF NOT EXISTS pay_requests_user ON pay_requests (user_id, status)"),
       db.prepare("CREATE INDEX IF NOT EXISTS pay_requests_status ON pay_requests (status, created_at)")
     ]);
+    try { await db.prepare("ALTER TABLE pay_requests ADD COLUMN product TEXT").run(); } catch (e) {} // added with «كل كورس بسعر»
     ready = true;
   }
   return db;
@@ -29,6 +33,6 @@ export function cleanText(v, max){
 }
 
 export function publicRequest(r){
-  return { id: r.id, plan: r.plan, amount: r.amount, currency: r.currency, method: r.method, sender: r.sender, note: r.note,
+  return { id: r.id, plan: r.plan, product: r.product || r.plan, amount: r.amount, currency: r.currency, method: r.method, sender: r.sender, note: r.note,
     status: r.status, created_at: r.created_at, decided_at: r.decided_at || null, pro_until: r.pro_until || null };
 }
