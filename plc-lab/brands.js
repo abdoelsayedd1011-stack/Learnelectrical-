@@ -636,7 +636,7 @@ PL.brandSim = function(host, cfg){
     scn.innerHTML = `<div class="bx-scn-h"><span class="bx-lv">${lv[0]}</span><span class="muted">تمرين ${exs.indexOf(ex) + 1} من ${exs.length}</span>${d ? '<span class="bx-done">✓ خلّصته</span>' : ''}</div>
       <h3>${esc(ex.title)}</h3><p class="bx-story">${ex.story || ''}</p>
       ${ex.skills ? `<div class="bx-skills">${ex.skills.map(s => `<span>${s}</span>`).join('')}</div>` : ''}
-      <div class="bx-task">${ex.task}</div>
+      <div class="bx-task">${Array.isArray(ex.task) ? `<b>المطلوب:</b><ol class="bx-req">${ex.task.map(t => `<li>${t}</li>`).join('')}</ol>` : ex.task}</div>
       <details class="bx-iod"${ex.lvl <= 2 ? ' open' : ''}><summary>جدول الـ I/O والـ Tags</summary>${ioRows()}</details>`;
   }
 
