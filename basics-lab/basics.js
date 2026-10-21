@@ -319,7 +319,7 @@ BL.ohm = function(host, opt){
   <path class="o-nwall" d="" fill="url(#${g}p)" stroke="#7d878d"/>
   <line class="o-wflow flow" x1="96" y1="117" x2="338" y2="117" stroke="#e8f6ff" stroke-width="3" stroke-dasharray="6 18" stroke-linecap="round"/>
   <g transform="translate(296 117)"><circle r="24" fill="var(--panel)" stroke="#7d878d" stroke-width="2"/><g class="o-wheel"><path d="M0-20V20M-20 0H20M-14-14L14 14M14-14L-14 14" stroke="#1f6fbf" stroke-width="4" stroke-linecap="round"/></g><circle r="5" fill="#7d878d"/></g>
-  <text x="198" y="150" text-anchor="middle" class="dev-ars">الزنقة = المقاومة</text>
+  <text x="198" y="150" text-anchor="middle" class="dev-ars">التضييق = المقاومة</text>
   <text x="296" y="160" text-anchor="middle" class="dev-ars">التُربينة = اللمبة</text>
   <line x1="12" y1="172" x2="348" y2="172" stroke="var(--line)" stroke-dasharray="4 4"/>
   <text x="180" y="192" text-anchor="middle" class="dev-ar">الكهربا</text>
@@ -331,7 +331,7 @@ BL.ohm = function(host, opt){
   </svg></div>
   <div class="read"><div><span>الجهد V</span><b class="o-V">12 V</b></div><div><span>المقاومة R</span><b class="o-R">12 Ω</b></div><div><span>التيار I = V ÷ R</span><b class="o-I">1.00 A</b></div><div><span>القدرة P = V × I</span><b class="o-P">12 W</b></div></div>
   <div class="wd-ctl"><label>الجهد (الضغط): <b class="o-vl">12 V</b><input type="range" min="0" max="24" step="1" value="12" class="o-sv" aria-label="الجهد بالفولت"></label>
-  <label>المقاومة (الزنقة): <b class="o-rl">12 Ω</b><input type="range" min="2" max="48" step="1" value="12" class="o-sr" aria-label="المقاومة بالأوم"></label></div>
+  <label>المقاومة (التضييق): <b class="o-rl">12 Ω</b><input type="range" min="2" max="48" step="1" value="12" class="o-sr" aria-label="المقاومة بالأوم"></label></div>
   <p class="chal o-chal">تحدّي: حرّك الجهد والمقاومة لحد ما <b>التيار يبقى 2 أمبير بالظبط</b>. (فكّر: I = V ÷ R)</p>`;
   const sv = $('.o-sv', host), sr = $('.o-sr', host);
   function upd(){
