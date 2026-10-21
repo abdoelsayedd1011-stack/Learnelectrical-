@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pressure, level and flow </title>
+<meta name="description" content=" Instrumentation course|Lesson 9 of the instrumentation course: gauge, absolute and DP pressure transmitters, units, manifolds, level by pressure h = P/ρg, radar, ultrasonic and float, and magnetic, vortex, turbine, Coriolis and orifice flowmeters. An interactive tank and an instrument selection drill.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/instrumentation-lab/lesson-09.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/instrumentation-lab/lesson-09.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/instrumentation-lab/lesson-09.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/instrumentation-lab/lesson-09.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="/en/instrumentation-lab/instr.css?v=20261021i">
+<script src="/en/instrumentation-lab/instr.js?v=20261021i"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">Instrumentation · Lesson 9 of 10</p>
+    <h1>Pressure, level and flow</h1>
+    <p>These three variables are the daily work of any plant handling liquids: water, steam, oil, milk, chemicals. You will learn the types of pressure transmitter, how a simple pressure reading at the bottom of a tank tells you the level (and when it lies to you), and how to choose the right flowmeter without wasting the plant's money.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="/en/labs.html">← All courses</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>Pressure: gauge, absolute and DP</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Type</th><th>Measured relative to</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><b>Gauge (g)</b></td><td>Atmospheric pressure: reads zero in open air</td><td>Pump, compressor, hydraulics</td></tr>
+      <tr><td><b>Absolute (a)</b></td><td>Perfect vacuum: reads about 1.013 bar in open air</td><td>Vacuum, distillation, saturated steam pressure</td></tr>
+      <tr><td><b>Differential (DP)</b></td><td>The difference between two ports, H and L</td><td>A clogging filter, orifice flow, closed tank level</td></tr>
+    </tbody></table></div>
+  <div class="box"><b>Units:</b> <span class="eq">1 bar = 100 kPa ≈ 14.5 psi ≈ 10.2 m water ≈ 1.02 kg/cm²</span> and <span class="eq">1 mbar = 100 Pa</span>. Check the range and unit on the transmitter nameplate before you program the PLC.</div>
+  <div class="two">
+    <figure class="fig" id="ptFig"></figure>
+    <div>
+      <p><b>Manifold:</b> a valve block between the pipe and the transmitter so you can isolate and calibrate it without stopping the line. On a DP it has <b>3 or 5 valves</b>: one valve for each side (H and L) and an <b>equalizing</b> valve between them.</p>
+      <ol class="steps-l">
+        <li>To take a DP out of service: open the equalizing valve first (so one side never sees the full line pressure on its own), then close H and L.</li>
+        <li>To put it back: open H, then close the equalizing valve, then open L.</li>
+      </ol>
+    </div>
+  </div>
+  <div class="box safe"><b>Safety:</b> never undo a pressure transmitter while it is under pressure. Close the isolation valve, release the pressure through the vent valve, and check the gauge reads zero. 10 bar will blow the transmitter into your face, and steam and chemicals are worse. Any transmitter in an Ex area must follow that area's permit to work.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Level by pressure: h = P ÷ ρg</h2>
+  <p>A column of liquid creates pressure at the bottom according to its height and density. So if you put a pressure transmitter at the bottom of the tank, you can calculate the level:</p>
+  <div class="formula">P = ρ × g × h  ⇒  h = P ÷ (ρ × g)</div>
+  <div class="ex"><b>Example:</b> a water tank (ρ = 1000) and the transmitter measures 29.4 kPa ⇒ <span class="eq">h = 29400 ÷ (1000 × 9.81) ≈ 3 m</span>. The same pressure in a diesel tank (ρ = 840) means <span class="eq">≈ 3.57 m</span>! So the transmitter must know the density.</div>
+  <div class="wd"><h3>Level tank</h3><div id="tank"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>Other ways to measure level</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Method</th><th>How</th><th>Pros / cons</th></tr></thead>
+    <tbody>
+      <tr><td><b>Radar</b> (80 GHz or guided wave)</td><td>A wave reflects off the surface and the time is measured</td><td>Not affected by density, temperature or vapour. The most common today</td></tr>
+      <tr><td><b>Ultrasonic</b></td><td>Sound reflects off the surface</td><td>Cheap, but confused by foam, vapour, dust and temperature</td></tr>
+      <tr><td><b>Float</b></td><td>A float that rises and falls</td><td>Simple, but has moving parts that stick</td></tr>
+      <tr><td><b>Capacitive</b></td><td>The liquid changes the capacitance between a rod and the tank</td><td>For liquids and powders, needs calibrating to the material</td></tr>
+      <tr><td><b>Level switch</b> (vibrating fork or float)</td><td>ON/OFF at one point</td><td>Overflow and dry-run protection</td></tr>
+      <tr><td><b>Load cells</b> (lesson 8)</td><td>Weighs the tank</td><td>The most accurate for mixing and batching, unaffected by foam or density</td></tr>
+    </tbody></table></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>Flow</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Type</th><th>The idea</th><th>Good for</th><th>Not for</th></tr></thead>
+    <tbody>
+      <tr><td><b>Magnetic</b></td><td>A conductive liquid cuts a magnetic field and a voltage appears (Faraday's law)</td><td>Water, sewage, juices, slurry</td><td>Non-conductive liquids: oil, diesel, DM water, gas</td></tr>
+      <tr><td><b>Vortex</b></td><td>A body in the pipe sheds vortices at a frequency set by the velocity</td><td>Steam, gas, clean liquids</td><td>Very low velocities</td></tr>
+      <tr><td><b>Turbine</b></td><td>A rotor spins and the pulses follow the flow</td><td>Clean liquids, fuel</td><td>Liquids with solids (they wear the blades)</td></tr>
+      <tr><td><b>Coriolis</b></td><td>Vibrating tubes, and the mass makes them twist</td><td>Mass directly with high accuracy + density</td><td>Large sizes (very expensive)</td></tr>
+      <tr><td><b>Orifice + DP</b></td><td>A restriction in the pipe creates a pressure difference</td><td>Steam, gas, large sizes, cheap</td><td>Causes pressure loss, and a narrow range</td></tr>
+    </tbody></table></div>
+  <div class="formula">Q = k × √ΔP</div>
+  <div class="ex"><b>The square root:</b> with an orifice the flow is proportional to the <b>square root</b> of the pressure difference. At half the flow range, the DP is only a quarter of its range (<span class="eq">0.5² = 0.25</span>). That is why you must enable <b>square root extraction</b> in the transmitter <b>or</b> in the PLC, not both! If it is done twice or forgotten entirely, the reading is wrong at every point except zero and 100 %.</div>
+  <div class="box key"><b>A magmeter must run full:</b> the pipe must <b>always be full</b> at a magmeter (fit it on a rising line or at a low point), and the <b>liquid must be grounded</b> with grounding rings or a ground electrode, especially in plastic pipes.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>Drill: pick the right instrument</h2>
+  <div class="wd"><h3>Pick the instrument</h3><div id="pick"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s6">
+  <h2 id="s6"><span class="k">6</span>Common field faults</h2>
+  <div class="fault-box"><b>Common field faults:</b><ul>
+    <li><b>A pressure transmitter reads a fixed value and doesn't move:</b> the isolation valve is closed, or the impulse line is blocked or frozen in winter.</li>
+    <li><b>A DP level transmitter reads wrong after start-up:</b> the low-side line has condensate in it (wet leg) or is empty, depending on the design, or someone left the equalizing valve open.</li>
+    <li><b>A magmeter shows flow with the pump stopped:</b> the pipe is not full or the grounding is poor.</li>
+    <li><b>Orifice flow is wrong mid-range:</b> square root done twice or not at all.</li>
+    <li><b>Pressure-based level reads high in a closed tank:</b> it is measuring the gas pressure on top. Use DP.</li>
+  </ul></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Get at least 5 of 6 right to mark the lesson as done.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">Densities are approximate at room temperature. Conductivity and velocity limits vary from flowmeter to flowmeter: the datasheet is the reference. Your progress is saved on this device only.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script src="/site-config.js?v=20261021v"></script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script src="/assets/i18n-en.js?v=20261021v"></script>
+<script>
+IL.lesson('l9');
+document.getElementById('ptFig').innerHTML = IL.art.svg('transmitter', {label:'Pressure transmitter', lcd:'6.25', unit:'bar'}) + '<figcaption>A pressure transmitter with a local display and a 4–20 mA + HART output</figcaption>';
+window.LVL = IL.levelTank(document.getElementById('tank'), {lesson:'l9'});
+(function(){ let bag = []; IL.drill(document.getElementById('pick'), () => { if (!bag.length) bag = IL.shuffle(IL.PICK); return bag.pop(); }, {lesson:'l9', task:'pick', need:6, goal:'Pick <b>6</b> correctly to complete this drill.'}); })();
+IL.quiz(document.getElementById('quiz'), [
+  {q:'An <b>absolute</b> pressure transmitter open to air reads about:', o:['1 bar', '0 bar', '−1 bar', '10 bar'], a:0, why:'Absolute measures from perfect vacuum, and the atmosphere is about 1.013 bar.'},
+  {q:'A water tank 2 m high. The pressure at the bottom is about:', o:['19.6 kPa', '2 kPa', '200 kPa', '0.2 kPa'], a:0, why:'1000 × 9.81 × 2 = 19620 Pa.'},
+  {q:'A level transmitter is set for water and the tank is filled with diesel (lighter). The reading is:', o:['Lower than reality, and the tank may overflow', 'Higher than reality', 'Correct', 'Zero'], a:0, why:'The same level creates less pressure.'},
+  {q:'A magnetic flowmeter does not work with:', o:['Diesel and oil (non-conductive)', 'Water', 'Sewage', 'Juice'], a:0, why:'The liquid must be electrically conductive.'},
+  {q:'How do you correctly take a DP out of service with the manifold?', o:['Open the equalizing valve first, then close H and L', 'Close H only', 'Open the vent straight away', 'Close L first and leave H open'], a:0, why:'So the sensor never sees the full line pressure from one side.'},
+  {q:'Orifice: the flow is now half of its range. The DP is:', o:['A quarter of the DP range', 'Half', 'Double', 'Unchanged'], a:0, why:'ΔP ∝ Q² ⇒ 0.5² = 0.25.'}
+], {lesson:'l9', pass:0.8});
+</script>
+</body>
+</html>

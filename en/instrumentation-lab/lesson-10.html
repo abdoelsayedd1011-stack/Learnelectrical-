@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calibration, troubleshooting + final exam </title>
+<meta name="description" content=" Instrumentation course|Lesson 10 of the instrumentation course: the loop check step by step, 5-point calibration at 0, 25, 50, 75 and 100 %, the as-found and as-left sheet and error as a percentage of span, the calibrator (source, measure and simulate), the field fault game, and the course final exam.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/instrumentation-lab/lesson-10.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/instrumentation-lab/lesson-10.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/instrumentation-lab/lesson-10.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/instrumentation-lab/lesson-10.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="/en/instrumentation-lab/instr.css?v=20261021i">
+<script src="/en/instrumentation-lab/instr.js?v=20261021i"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">Instrumentation · Lesson 10 of 10</p>
+    <h1>Calibration, troubleshooting + final exam</h1>
+    <p>The last lesson: this is where everything comes together. You will do a <b>loop check</b> the way it is done at project handover, calibrate a transmitter at 5 points and record the <b>as-found and as-left</b>, play the field fault game, and finally take the final exam that unlocks your certificate.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="/en/labs.html">← All courses</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>The loop check</h2>
+  <p>Before any new plant starts up (or after a modification), every loop is checked from the sensor to the HMI screen: that the wiring goes to the right place, the range is right, and the alarms work.</p>
+  <ol class="steps-l">
+    <li><b>Visual inspection:</b> the installed device matches the tag, model and range in the datasheet, the glands are tight, the shield is grounded correctly.</li>
+    <li><b>Wiring check:</b> continuity of every wire, and insulation between wires and earth (with an insulation tester, <b>with the devices disconnected</b>).</li>
+    <li><b>Signal injection:</b> with the calibrator apply 0, 50 and 100 % (real pressure or simulate) and check that the PLC and HMI show the same value.</li>
+    <li><b>Alarms and interlocks:</b> reach the high and low points and check that the alarm appears and the interlock operates.</li>
+    <li><b>For valves:</b> send 0, 25, 50, 75 and 100 % and check the valve opens correctly and the feedback signal comes back.</li>
+    <li><b>Record and sign:</b> a loop check sheet signed by instrumentation and operations.</li>
+  </ol>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>The calibrator: source, measure and simulate</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Mode</th><th>What it does</th><th>When you use it</th></tr></thead>
+    <tbody>
+      <tr><td><b>Measure</b></td><td>Measures mA (and often supplies 24V to the loop)</td><td>Reading the transmitter output while you calibrate it</td></tr>
+      <tr><td><b>Source</b></td><td>Drives the mA itself (active)</td><td>Testing a PLC card or a valve: "send 12 mA and check the PLC says 50 %"</td></tr>
+      <tr><td><b>Simulate</b></td><td>Acts like a 2-wire transmitter (passive), powered by the loop</td><td>Disconnect the transmitter, put the calibrator in its place and control the current</td></tr>
+    </tbody></table></div>
+  <p>There are also pressure calibrators (with a hand pump), temperature calibrators (a dry block, or simulating thermocouple mV and PT100 Ω), and test weights for scales. <b>The calibrator itself must have a valid calibration certificate</b>, and be at least 4 times more accurate than the device you are calibrating (TUR 4:1).</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>5-point calibration</h2>
+  <p>We apply 0, 25, 50, 75 and 100 % of range (sometimes going up and down to check hysteresis), and calculate the error as a percentage of span:</p>
+  <div class="formula">Error % = (measured mA − expected mA) ÷ 16 × 100</div>
+  <ul>
+    <li><b>As-found:</b> the reading as you found it, <b>before</b> any adjustment. Very important: it tells quality whether the product made in the previous period was within spec.</li>
+    <li><b>As-left:</b> the reading <b>after</b> adjustment. It must be within tolerance.</li>
+    <li><b>Adjustment:</b> zero first (at LRV), then span (at URV), then go back and check the zero, because on some devices the two interact.</li>
+  </ul>
+  <div class="wd"><h3>Calibrate PT-101</h3><div id="cal"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>How to think about any fault</h2>
+  <ol class="steps-l">
+    <li><b>Believe the operator, but verify:</b> compare the reading with something independent (a gauge, a thermometer, a sight glass).</li>
+    <li><b>Split the loop in two:</b> measure the mA. If the current is right and the PLC is wrong ⇒ the problem is in the card or the scaling. If the current is wrong ⇒ it is in the transmitter, the sensor or the process.</li>
+    <li><b>Read the number:</b> 0 mA = open loop. Above 21 = a short or a fail. Steady while the process changes = isolation valve / blocked line / weak supply. Unstable = noise.</li>
+    <li><b>Ask what has changed:</b> maintenance yesterday? Rain? A new VFD? Welding?</li>
+    <li><b>Fix and record</b> the cause, not just the symptom.</li>
+  </ol>
+  <div class="wd"><h3>Game: field faults</h3><div id="game"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Get at least 5 of 6 right.</p>
+  <div id="quiz"></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sf">
+  <h2 id="sf"><span class="k">★</span>Final exam</h2>
+  <p>15 questions from the whole course. You need at least <b>12 correct</b>. If you pass, and you have also finished every experiment in the lessons, the certificate appears on the course page.</p>
+  <div id="final"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">The tolerances and calibration procedures here are training examples; your plant's procedures, its quality system (ISO 9001 / ISO/IEC 17025) and the datasheet are the reference. Your progress is saved on this device only.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script src="/site-config.js?v=20261021v"></script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script src="/assets/i18n-en.js?v=20261021v"></script>
+<script>
+IL.lesson('l10');
+window.CAL = IL.calTable(document.getElementById('cal'), {lesson:'l10'});
+window.GAME = IL.caseGame(document.getElementById('game'), IL.FIELD_CASES, {lesson:'l10', task:'fgame', need:7, goal:'Solve at least <b>7</b> of the 10 cases correctly.'});
+IL.quiz(document.getElementById('quiz'), [
+  {q:'A 0–10 bar transmitter at 5 bar gives 12.08 mA. The error as a percentage of span:', o:['+0.5 %', '+0.08 %', '+8 %', '−0.5 %'], a:0, why:'0.08 ÷ 16 × 100 = 0.5 %.'},
+  {q:'When is the as-found recorded?', o:['Before any adjustment', 'After the adjustment', 'Not needed', 'A year after installation'], a:0, why:'To know how far off the device was in production.'},
+  {q:'You want to test the PLC card on its own, without the transmitter. The calibrator is set to:', o:['Source mA', 'Measure mA', 'Ω', 'Simulate thermocouple'], a:0, why:'You drive the current yourself and watch the card.'},
+  {q:'Adjustment starts with:', o:['Zero at LRV', 'Span at URV', 'Either', 'Mid-range'], a:0, why:'A zero error affects every point.'},
+  {q:'The meter in the loop reads a correct 12 mA, but the HMI shows a wrong value. The problem is most likely in:', o:['The scaling or the card in the PLC', 'The transmitter', 'The sensor', 'The cable'], a:0, why:'The current is fine, so it is downstream.'},
+  {q:'TUR 4:1 means:', o:['The calibrator is at least 4 times more accurate than the device', 'Calibrate at 4 points', 'Every 4 months', '4 mA'], a:0, why:'Test uncertainty ratio.'}
+], {lesson:'l10', pass:0.8});
+IL.quiz(document.getElementById('final'), [
+  {q:'In a loop, the <b>SP</b> is:', o:['The wanted value', 'The actual value', 'The controller output', 'The range'], a:0, why:'Set point.'},
+  {q:'A −50 … 150 °C transmitter gives 12 mA. The temperature is:', o:['50 °C', '75 °C', '100 °C', '0 °C'], a:0, why:'−50 + 0.5 × 200 = 50.'},
+  {q:'A loop current below 3.6 mA means, per NAMUR:', o:['A fault (break or fail low)', 'A zero value', 'Over range', 'Normal'], a:0, why:'Live zero.'},
+  {q:'Measuring mA with a meter is done:', o:['In series in the loop', 'In parallel across the transmitter', 'Across the supply', 'To earth'], a:0, why:'Current is measured in series.'},
+  {q:'A PNP sensor is wired to a card whose COM is at:', o:['0V', '+24V', 'Earth', 'Anything'], a:0, why:'A PNP puts +24 on the input and the current returns from COM to 0V.'},
+  {q:'A 1024 PPR encoder on x4. Counts per turn:', o:['4096', '1024', '2048', '256'], a:0, why:'1024 × 4.'},
+  {q:'A leading B by 90° means:', o:['One particular direction (CW, for example); if B leads, it is the other way', 'High speed', 'A fault', 'Z has fired'], a:0, why:'The phase difference sets the direction.'},
+  {q:'A 2000 PPR encoder at 1500 rpm. The frequency:', o:['50 kHz', '25 kHz', '3 kHz', '500 kHz'], a:0, why:'2000 × 1500 ÷ 60 = 50000.'},
+  {q:'The advantage of Gray code on an absolute encoder:', o:['Only one bit changes between any two neighbouring positions', 'Faster', 'Cheaper', 'Counts turns'], a:0, why:'No strange readings during a transition.'},
+  {q:'A thermocouple with CJC turned off and the panel at 30 °C. The reading is:', o:['About 30 °C low', '30 high', 'Correct', 'OPEN'], a:0, why:'It measures the difference without adding the cold junction.'},
+  {q:'Plain copper wire instead of compensating cable, with the head hotter than the panel. The reading is:', o:['Lower than the truth', 'Higher', 'Correct', 'Only unstable'], a:0, why:'The cold junction is now at the hot head and the instrument compensates for the panel temperature.'},
+  {q:'A PT100 at 100 °C has a resistance of about:', o:['138.5 Ω', '100 Ω', '119.4 Ω', '175.9 Ω'], a:0, why:'IEC 60751.'},
+  {q:'A 2-wire PT100 with 5 Ω in each wire. The error:', o:['About +26 °C', '+5 °C', '−26 °C', 'None'], a:0, why:'10 Ω ÷ 0.385.'},
+  {q:'A 2 mV/V load cell on 10 V with a 500 kg capacity. At 250 kg the output is:', o:['10 mV', '20 mV', '5 mV', '2 mV'], a:0, why:'2 × 10 × 0.5.'},
+  {q:'A closed tank with gas pressure on top. The best pressure-type level transmitter:', o:['DP with the low side on the gas', 'Gauge at the bottom', 'Absolute at the top', 'A magnetic flowmeter'], a:0, why:'DP cancels the gas pressure.'}
+], {lesson:'l10', task:'final', pass:0.8, shuffle:true});
+</script>
+</body>
+</html>

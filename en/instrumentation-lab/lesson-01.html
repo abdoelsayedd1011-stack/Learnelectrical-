@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>What is instrumentation? </title>
+<meta name="description" content=" Instrumentation course|Lesson 1 of the instrumentation course: the control loop (sensor, transmitter, controller, valve), PV, SP and OUT, range, LRV, URV and span, accuracy and resolution, and reading P&amp;ID tags like TT-101 and TIC.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/instrumentation-lab/lesson-01.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/instrumentation-lab/lesson-01.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/instrumentation-lab/lesson-01.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/instrumentation-lab/lesson-01.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="/en/instrumentation-lab/instr.css?v=20261021i">
+<script src="/en/instrumentation-lab/instr.js?v=20261021i"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">Instrumentation · Lesson 1 of 10</p>
+    <h1>What is instrumentation?</h1>
+    <p>Every machine in a plant needs to <b>sense</b> (temperature, pressure, weight, speed), then <b>decide</b>, then <b>act</b>. Instrumentation is the part that senses and passes that information to the PLC. In this lesson you will understand the whole loop, run a real heating loop yourself, and learn to read the tags on drawings and devices.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="/en/labs.html">← All courses</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>A plant is like the human body</h2>
+  <p>Think of it like this: the <b>sensor</b> is like your hand feeling that the water is hot, the <b>PLC or controller</b> is like the brain deciding "that's too hot", and the <b>valve or motor</b> is like your other hand turning off the tap. Without the sensing, the brain can't do anything.</p>
+  <div class="cards" id="devCards"></div>
+  <div class="box key"><b>Key point:</b> instrumentation = <b>measurement</b> devices and <b>process control</b> devices. Any error in a reading and the whole plant acts wrongly while believing it is right.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>The control loop: 4 parts</h2>
+  <ol>
+    <li><b>Sensor / element:</b> the part that actually senses the variable, like a thermocouple, a PT100 or a strain gauge. Its output is a weak signal (millivolts or ohms).</li>
+    <li><b>Transmitter:</b> takes the weak sensor signal and turns it into a strong standard signal that survives long distances: usually <b>4–20 mA</b>.</li>
+    <li><b>Controller:</b> a PLC or a temperature controller like the E5CC. It compares the reading with what you want and sends out a command.</li>
+    <li><b>Actuator / final element:</b> the part that acts: a control valve, a VFD changing a pump's speed, or a heater on an SSR.</li>
+  </ol>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Term</th><th>Meaning</th><th>Example in the heating tank</th></tr></thead>
+    <tbody>
+      <tr><td><b>PV</b> Process Variable</td><td>The actual value we are measuring now</td><td>Temperature 63 °C</td></tr>
+      <tr><td><b>SP</b> Set Point</td><td>The value you want</td><td>70 °C</td></tr>
+      <tr><td><b>Error</b></td><td>The difference: SP − PV</td><td>7 °C</td></tr>
+      <tr><td><b>OUT / MV</b> Output</td><td>The controller's command to the actuator (0–100 %)</td><td>Valve 65 % open</td></tr>
+    </tbody></table></div>
+  <div class="box"><b>Auto and Manual:</b> in <b>Auto</b> the controller moves the valve according to the error (closed loop). In <b>Manual</b> you set the opening yourself and the controller just watches (open loop). In the field we switch to Manual during maintenance or when the sensor has failed.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>Try it yourself: a tank heating loop</h2>
+  <p>This is a water tank heated by steam. <span class="term">TT-101</span> measures the temperature and sends 4–20 mA to the controller <span class="term">TIC-101</span>, and the controller opens and closes the steam valve <span class="term">TV-101</span>. Move the SP, try Manual, and open the cold water to see how the controller reacts. (Time here runs 8 times faster than real life.)</p>
+  <div class="wd"><h3>Temperature control loop</h3><div id="loop"></div></div>
+  <div class="ex"><b>From the field:</b> a CIP tank in a dairy, SP 75 °C. If the PV stays at 60 with the valve 100 % open, the problem is not the controller: either the steam is weak, or the valve is not really opening (the actuator air is cut off), or the sensor reads wrong. <b>Always compare the reading with a hand thermometer</b> before you touch the PID settings.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>Range: LRV, URV and span</h2>
+  <p>Every transmitter is set to a <b>range</b>: the lowest value (<b>LRV</b>, Lower Range Value) gives 4 mA, and the highest value (<b>URV</b>, Upper Range Value) gives 20 mA. The <b>span</b> = URV − LRV.</p>
+  <div class="formula">Span = URV − LRV</div>
+  <div class="ex"><b>Example:</b> <span class="term">TT-101</span> has a range of 0–150 °C ⇒ the span is 150 °C. At 75 °C (mid-range) the output = 12 mA. If its range is −50 to 150 °C ⇒ the span is 200 °C, and 4 mA means −50 °C, not zero!</div>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Term</th><th>Meaning</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><b>Accuracy</b></td><td>How close the reading is to the truth</td><td>±0.1 % of span ⇒ on a 0–150 °C range that is ±0.15 °C</td></tr>
+      <tr><td><b>Resolution</b></td><td>The smallest change the device can show</td><td>The display shows 0.1 °C</td></tr>
+      <tr><td><b>Repeatability</b></td><td>Gives the same reading when measuring the same thing several times</td><td>±0.05 %</td></tr>
+    </tbody></table></div>
+  <div class="box key"><b>Don't be fooled:</b> a display showing <b>two decimal places</b> (high resolution) does not mean the device is accurate. It can show 72.48 °C when the truth is 75 °C. Resolution is not accuracy.</div>
+  <p>An important rule: choose a range that fits the job. A pressure transmitter with a 0–100 bar range working at 3 bar has an accuracy of ±0.1 % of 100 = ±0.1 bar, so the error could be 3 % of your reading!</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>Tags: what does TT-101 mean?</h2>
+  <p>On <b>P&amp;ID</b> drawings (piping and instrumentation diagrams) and on the nameplate of every device in the field, each instrument has a <b>tag</b> following <span class="term">ISA-5.1</span>: <b>the first letter = what is measured</b>, <b>the following letters = the device's function</b>, and then the <b>loop number</b>.</p>
+  <div class="tags-row"><span class="tag-b">TT<br>101</span><span class="tag-b">TIC<br>101</span><span class="tag-b">PDT<br>205</span><span class="tag-b">LSH<br>310</span></div>
+  <div class="two">
+    <div class="tblw"><table class="tbl"><thead><tr><th>First letter</th><th>Measures</th></tr></thead><tbody>
+      <tr><td class="mono">T</td><td>Temperature</td></tr><tr><td class="mono">P</td><td>Pressure</td></tr><tr><td class="mono">F</td><td>Flow</td></tr><tr><td class="mono">L</td><td>Level</td></tr><tr><td class="mono">W</td><td>Weight</td></tr><tr><td class="mono">S</td><td>Speed</td></tr><tr><td class="mono">Z</td><td>Position</td></tr></tbody></table></div>
+    <div class="tblw"><table class="tbl"><thead><tr><th>Next letters</th><th>Function</th></tr></thead><tbody>
+      <tr><td class="mono">T</td><td>Transmitter</td></tr><tr><td class="mono">E</td><td>Element (the sensor itself)</td></tr><tr><td class="mono">I</td><td>Indicator (display / gauge)</td></tr><tr><td class="mono">C</td><td>Controller</td></tr><tr><td class="mono">S</td><td>Switch</td></tr><tr><td class="mono">V</td><td>Valve</td></tr><tr><td class="mono">A · H · L</td><td>Alarm · high · low</td></tr><tr><td class="mono">D (after the first)</td><td>Differential</td></tr></tbody></table></div>
+  </div>
+  <div class="ex"><b>Example:</b> <span class="term">TIC-101</span> = a temperature controller with a display in loop 101, and every device in the same loop shares the number: <span class="term">TE-101</span> the sensor, <span class="term">TT-101</span> the transmitter, <span class="term">TV-101</span> the valve. When someone tells you "TT-101 has failed", you know exactly where to go.</div>
+  <div class="wd"><h3>Drill: decode the tag</h3><div id="tags"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s6">
+  <h2 id="s6"><span class="k">6</span>From the field</h2>
+  <div class="fault-box"><b>Common field faults:</b><ul>
+    <li><b>The controller was left in Manual</b> after the last maintenance, and people say "the PID isn't working". Check the mode first.</li>
+    <li><b>The range in the transmitter differs from the range in the PLC</b>: the transmitter is 0–10 bar and the PLC is programmed for 0–16 bar ⇒ the reading is off by a fixed ratio.</li>
+    <li><b>The tag on the device differs from the drawing</b> after a modification: record every change on the drawings (as-built) so the next person doesn't get lost.</li>
+  </ul></div>
+  <div class="box safe"><b>Safety:</b> 24V DC signals are not dangerous to you, but the loop may be holding a valve or a heater. Before you disconnect any transmitter, inform operations and put the loop in Manual so the controller doesn't go wild and drive the valve fully open or shut. In hazardous areas (Ex) there are special rules for opening devices.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Get at least 5 of 6 right to mark the lesson as done.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">Tagging follows <span class="mono">ISA-5.1</span>; some plants use their own numbering system (KKS, for example). Your progress is saved on this device only.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script src="/site-config.js?v=20261021v"></script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script src="/assets/i18n-en.js?v=20261021v"></script>
+<script>
+IL.lesson('l1');
+document.getElementById('devCards').innerHTML = [
+  ['transmitter', {lcd:'72.5', unit:'°C'}, 'Transmitter', 'Turns the reading into 4–20 mA'],
+  ['tchead', {tag:'TE'}, 'Temperature sensor', 'A thermocouple or PT100 in a thermowell'],
+  ['encoder', {}, 'Encoder', 'Measures shaft speed and position'],
+  ['scell', {}, 'Load cell', 'Measures weight and force'],
+  ['aicard', {ch:[true, true, false, false]}, 'PLC analog card', 'Receives the 4–20 mA']
+].map(d => `<div class="card">${IL.art.svg(d[0], Object.assign({label:d[2]}, d[1]))}<h3>${d[2]}</h3><p>${d[3]}</p></div>`).join('');
+window.LOOP = IL.heatLoop(document.getElementById('loop'), {lesson:'l1'});
+IL.drill(document.getElementById('tags'), IL.tagGen, {lesson:'l1', task:'tags', need:5, goal:'Decode <b>5</b> tags correctly to complete this drill.'});
+IL.quiz(document.getElementById('quiz'), [
+  {q:'What turns the weak sensor signal (mV or ohms) into 4–20 mA?', o:['The transmitter', 'The valve', 'The controller', 'The power supply'], a:0, why:'The transmitter amplifies and standardises the signal so it can travel a long distance.'},
+  {q:'A tank SP is 70 °C and the PV is 64 °C. What is the error?', o:['+6 °C', '−6 °C', '134 °C', '64 °C'], a:0, why:'Error = SP − PV = 70 − 64 = 6.'},
+  {q:'A temperature transmitter with a range of −50 to 150 °C. What is the span?', o:['200 °C', '150 °C', '100 °C', '50 °C'], a:0, why:'Span = URV − LRV = 150 − (−50) = 200.'},
+  {q:'The controller is in Manual. If the temperature suddenly drops, what will the valve do?', o:['Stay at the same opening', 'Open further by itself', 'Close', 'Alarm and trip'], a:0, why:'In Manual the loop is open: the controller does not correct.'},
+  {q:'The tag <b>LSH-310</b> means:', o:['A level switch high in loop 310', 'A level transmitter', 'A speed controller', 'A level valve'], a:0, why:'L = level, S = switch, H = high.'},
+  {q:'A display shows 72.48 °C and the real temperature is 75 °C. This means:', o:['High resolution but poor accuracy', 'High accuracy', 'The device is correct', 'Poor resolution'], a:0, why:'The number of decimals is resolution; the distance from the truth is accuracy.'}
+], {lesson:'l1', pass:0.8});
+</script>
+</body>
+</html>

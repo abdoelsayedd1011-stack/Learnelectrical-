@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Temperature 1: thermocouples </title>
+<meta name="description" content=" Instrumentation course|Lesson 6 of the instrumentation course: thermocouples and the Seebeck effect, types K, J, T, N, S, R and B and their ranges, cold junction compensation (CJC), NIST tables, compensating cable and the error with copper, IEC and ANSI polarity and colours, junction types, thermowells and break detection. An interactive thermocouple bench with real tables.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/instrumentation-lab/lesson-06.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/instrumentation-lab/lesson-06.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/instrumentation-lab/lesson-06.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/instrumentation-lab/lesson-06.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="/en/instrumentation-lab/instr.css?v=20261021i">
+<script src="/en/instrumentation-lab/instr.js?v=20261021i"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">Instrumentation · Lesson 6 of 10</p>
+    <h1>Temperature 1: thermocouples</h1>
+    <p>The thermocouple is the simplest temperature sensor there is: two wires of different metals welded together at one end. It handles up to 1700 °C, it's cheap and it's fast. But it has a "secret" that, if you don't understand it, will have you reading wrong for the rest of your career: <b>the cold junction</b>. In this lesson you will understand it and try it yourself on a bench with real tables.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="/en/labs.html">← All courses</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>The idea: two metals and a temperature difference = millivolts</h2>
+  <p>If you weld two wires of different metals (like nickel-chromium and nickel-aluminium) at one end and heat that end, a <b>very small voltage</b> (millivolts) appears between the other two ends. This is called the <b>Seebeck effect</b>.</p>
+  <ul>
+    <li><b>Hot / measuring junction:</b> the weld point inside the furnace.</li>
+    <li><b>Cold / reference junction:</b> where the thermocouple wires end and connect to copper (the instrument terminals).</li>
+  </ul>
+  <div class="box key"><b>The most important sentence in this lesson:</b> a thermocouple does not measure temperature. It measures the <b>temperature difference</b> between the hot and cold junctions: <span class="eq">mV = E(T hot) − E(T cold)</span>. So the instrument must know the cold junction temperature and add it. This is called <b>CJC (cold junction compensation)</b>.</div>
+  <div class="ex"><b>In numbers:</b> Type K, furnace at 400 °C and panel at 30 °C. The table says <span class="eq">E(400) = 16.397 mV</span> and <span class="eq">E(30) ≈ 1.203 mV</span> ⇒ the meter reads <span class="eq">15.194 mV</span>. Convert that straight from the table and you get about <b>371 °C</b> (29 degrees out!). A proper instrument adds 1.203 ⇒ <span class="eq">16.397 mV ⇒ 400 °C</span>.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>The types</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Type</th><th>The two metals</th><th>Approx. working range</th><th>Approx. sensitivity</th><th>Used in</th></tr></thead>
+    <tbody>
+      <tr><td><b>K</b></td><td>Chromel / Alumel</td><td class="mono">−200 … 1250 °C</td><td class="mono">≈ 41 µV/°C</td><td>The most common: furnaces, exhausts, plastics</td></tr>
+      <tr><td><b>J</b></td><td>Iron / Constantan</td><td class="mono">−40 … 750 °C</td><td class="mono">≈ 52 µV/°C</td><td>Older plastics and injection moulding machines</td></tr>
+      <tr><td><b>T</b></td><td>Copper / Constantan</td><td class="mono">−200 … 350 °C</td><td class="mono">≈ 43 µV/°C</td><td>Refrigeration and food</td></tr>
+      <tr><td><b>N</b></td><td>Nicrosil / Nisil</td><td class="mono">−200 … 1250 °C</td><td class="mono">≈ 39 µV/°C (at 500)</td><td>More stable than K at high temperature</td></tr>
+      <tr><td><b>S / R</b></td><td>Platinum-rhodium / Platinum</td><td class="mono">0 … 1600 °C</td><td class="mono">≈ 10 µV/°C</td><td>Glass, steel and ceramics furnaces</td></tr>
+      <tr><td><b>B</b></td><td>Pt30%Rh / Pt6%Rh</td><td class="mono">250 … 1800 °C</td><td class="mono">≈ 10 µV/°C at 1000</td><td>The highest temperatures, and hardly needs CJC</td></tr>
+    </tbody></table></div>
+  <p>The sensitivity is not constant: a thermocouple is non-linear, which is why instruments use <b>NIST tables</b> (or equations derived from them), not a simple multiplier. Here is part of the table (mV with the cold junction at 0 °C):</p>
+  <div class="tblw"><table class="tbl" id="tcTable"></table></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>The bench: heat it, reverse it, break it</h2>
+  <p>You have a thermocouple inside a furnace, its head outside the furnace (warmed by radiation), and a cable to an instrument in the panel. Change the temperatures and the type, and try turning CJC off, fitting plain copper wire and reversing the polarity. The calculations here come from the real NIST tables.</p>
+  <div class="wd"><h3>Thermocouple bench</h3><div id="bench"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>Compensating cable: why not copper?</h2>
+  <p>The moment the thermocouple wire connects to copper, that point becomes the <b>cold junction</b>. Connect copper at the head and the cold junction is at the head (which could be 70 or 100 °C next to the furnace), while the instrument compensates for the panel temperature. The error = the difference between them.</p>
+  <ul>
+    <li><b>Extension cable:</b> exactly the same metals as the thermocouple (for K, J and T).</li>
+    <li><b>Compensating cable:</b> a cheaper metal that gives the same mV at low temperature (up to about 100–200 °C), common with S and R because platinum is expensive.</li>
+    <li>Junction boxes and terminals along the way must be of the same type, or close together at the same temperature.</li>
+  </ul>
+  <div class="box"><b>The best plant solution:</b> a <b>head-mount transmitter</b> that converts the mV to 4–20 mA inside the head itself, with its CJC measuring the head temperature. After that, plain shielded copper cable to the panel and no problems at all.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>Polarity and colours</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Type</th><th>IEC 60584-3 (+ / −)</th><th>ANSI MC96.1 (+ / −)</th></tr></thead>
+    <tbody>
+      <tr><td><b>K</b></td><td><span class="term" style="background:#2e9b3c;color:#fff">Green</span> / <span class="term">White</span></td><td><span class="term" style="background:#f2d21b;color:#111">Yellow</span> / <span class="term" style="background:#d32f2f;color:#fff">Red</span></td></tr>
+      <tr><td><b>J</b></td><td><span class="term" style="background:#1d1d1d;color:#fff">Black</span> / <span class="term">White</span></td><td><span class="term">White</span> / <span class="term" style="background:#d32f2f;color:#fff">Red</span></td></tr>
+      <tr><td><b>T</b></td><td><span class="term" style="background:#7a4a22;color:#fff">Brown</span> / <span class="term">White</span></td><td><span class="term" style="background:#1f6fd1;color:#fff">Blue</span> / <span class="term" style="background:#d32f2f;color:#fff">Red</span></td></tr>
+      <tr><td><b>N</b></td><td><span class="term" style="background:#e07aa8;color:#fff">Pink</span> / <span class="term">White</span></td><td><span class="term" style="background:#f08a24;color:#fff">Orange</span> / <span class="term" style="background:#d32f2f;color:#fff">Red</span></td></tr>
+    </tbody></table></div>
+  <div class="box safe"><b>A well-known trap:</b> in IEC the negative is always <b>white</b>, and in ANSI the negative is always <b>red</b>. A technician used to "red is positive" will reverse an American thermocouple. Old cables to German (DIN) or British (BS) standards have different colours again. <b>If unsure:</b> warm the tip with your hand or with a lighter held at a distance, and the mV must rise positive.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s6">
+  <h2 id="s6"><span class="k">6</span>Junction types and thermowells</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Type</th><th>How</th><th>Pros / cons</th></tr></thead>
+    <tbody>
+      <tr><td><b>Grounded</b></td><td>The weld point is welded to the metal sheath</td><td>Fastest response, but connected to earth so it can cause a ground loop and noise</td></tr>
+      <tr><td><b>Ungrounded</b></td><td>Insulated inside the sheath with powder (MgO)</td><td>A little slower, but electrically isolated: the safest for measurement</td></tr>
+      <tr><td><b>Exposed</b></td><td>The weld point sticks out of the sheath</td><td>Fastest of all (air and gas), but corrodes quickly</td></tr>
+    </tbody></table></div>
+  <p><b>Thermowell:</b> a heavy metal pocket fitted into the pipe or tank, with the sensor inserted inside it. It protects the sensor from pressure, flow velocity and chemicals, and lets you change the sensor without draining the line. Its drawback is slower response: put a little thermal paste inside if allowed.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s7">
+  <h2 id="s7"><span class="k">7</span>Drill: from mV to degrees</h2>
+  <p>Use the table in section 2. Remember: <b>add the cold junction mV first, then convert</b>.</p>
+  <div class="wd"><h3>Thermocouple drill</h3><div id="drill"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s8">
+  <h2 id="s8"><span class="k">8</span>Common field faults</h2>
+  <div class="fault-box"><b>Common field faults:</b><ul>
+    <li><b>The instrument reads room temperature while the furnace is hot:</b> the thermocouple is shorted (the two wires touching at a cool spot, creating a new hot junction there) or the instrument is reading another channel.</li>
+    <li><b>The reading falls while the furnace heats up:</b> reversed polarity somewhere.</li>
+    <li><b>A fixed error of 20–40 degrees:</b> wrong thermocouple type set in the instrument (J set as K), copper cable, or CJC turned off.</li>
+    <li><b>OPEN or full scale:</b> the thermocouple is open (usually burnt out at the hot junction). Measure its resistance: a good one is a few ohms, an open one OL.</li>
+    <li><b>The reading is unstable:</b> a grounded thermocouple near heaters or motors, or a cable next to power cables.</li>
+    <li><b>A Type K drifts upward after a while at 800–1000 °C:</b> "green rot" and metallurgical change. Use Type N or a new sensor.</li>
+  </ul></div>
+  <div class="box safe"><b>Safety:</b> the thermocouple itself is millivolts and not dangerous, but the furnace and heaters next to it are 400V. And if you pull a sensor out of a thermowell on a steam line, make sure the thermowell is intact: if it is holed, steam will blow into your face.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Get at least 5 of 6 right to mark the lesson as done.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">mV values from the <span class="mono">NIST ITS-90</span> tables (IEC 60584-1), with linear interpolation between them on the bench, so it may differ from a real instrument by fractions of a degree. Colours per IEC 60584-3 and ANSI MC96.1. Your progress is saved on this device only.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script src="/site-config.js?v=20261021v"></script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script src="/assets/i18n-en.js?v=20261021v"></script>
+<script>
+IL.lesson('l6');
+(function(){
+  const T = [-50, 0, 25, 50, 100, 200, 300, 400, 500, 600, 700, 800, 1000, 1200], tps = ['K', 'J', 'T'];
+  const cell = (t, ty) => { const [lo, hi] = [IL.calc.TC[ty].tab[0][0], IL.calc.TC[ty].tab[IL.calc.TC[ty].tab.length - 1][0]]; return t < lo || t > hi ? '—' : IL.fmt(IL.calc.tcMv(ty, t), 3); };
+  document.getElementById('tcTable').innerHTML = `<thead><tr><th>°C</th>${tps.map(t => `<th>Type ${t} (mV)</th>`).join('')}</tr></thead><tbody>${T.map(t => `<tr><td class="mono">${t}</td>${tps.map(ty => `<td class="mono">${cell(t, ty)}</td>`).join('')}</tr>`).join('')}</tbody>`;
+})();
+window.TC = IL.tcBench(document.getElementById('bench'), {lesson:'l6'});
+IL.drill(document.getElementById('drill'), IL.tcGen, {lesson:'l6', task:'tcdrill', need:4, goal:'Get <b>4</b> right to complete this drill.'});
+IL.quiz(document.getElementById('quiz'), [
+  {q:'A thermocouple outputs mV according to:', o:['The temperature difference between the hot and cold junctions', 'The hot junction temperature only', 'The wire length', 'The current in it'], a:0, why:'That is why CJC is needed.'},
+  {q:'CJC was turned off by mistake, and the panel is at 35 °C. The reading will be:', o:['About 35 degrees lower than the truth', '35 higher', 'Correct', 'Always zero'], a:0, why:'The instrument does not add E(35), so it shows roughly Th − Tcold.'},
+  {q:'You wired a Type K thermocouple from the head to the panel with plain copper wire. The head is at 90 °C and the panel at 30 °C. The error is roughly:', o:['The reading is about 60 °C low', 'Correct, because copper conducts well', '60 high', '30 high'], a:0, why:'The cold junction is now at the head (90) and the instrument compensates for 30.'},
+  {q:'An ANSI Type K thermocouple: the red wire is:', o:['The negative', 'The positive', 'The shield', 'Not used'], a:0, why:'ANSI: red is always negative. K = yellow (+), red (−).'},
+  {q:'How does the instrument know the thermocouple has broken?', o:['It sends a small current; if the circuit breaks the voltage rises, so it shows OPEN or full scale', 'It doesn\'t know', 'It measures the resistance every second with a meter', 'It reads zero'], a:0, why:'Burnout detection, usually upscale so the heater switches off.'},
+  {q:'The best way to connect a thermocouple to a PLC 200 m away:', o:['A head-mount transmitter giving 4–20 mA', '200 m of compensating cable', 'Plain copper', 'Bare thermocouple wire'], a:0, why:'4–20 mA travels far and resists noise, and the CJC is done in the head.'}
+], {lesson:'l6', pass:0.8});
+</script>
+</body>
+</html>

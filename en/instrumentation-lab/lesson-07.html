@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Temperature 2: PT100, RTD and NTC </title>
+<meta name="description" content=" Instrumentation course|Lesson 7 of the instrumentation course: PT100 and PT1000, the IEC 60751 table and the Callendar–Van Dusen equation, Class A and B, 2-, 3- and 4-wire connection and the lead-wire error in numbers, self-heating, the 4–20 mA head transmitter, NTC and PTC, and checking a PT100 with a multimeter. Interactive bench.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/instrumentation-lab/lesson-07.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/instrumentation-lab/lesson-07.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/instrumentation-lab/lesson-07.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/instrumentation-lab/lesson-07.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="/en/instrumentation-lab/instr.css?v=20261021i">
+<script src="/en/instrumentation-lab/instr.js?v=20261021i"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">Instrumentation · Lesson 7 of 10</p>
+    <h1>Temperature 2: PT100, RTD and NTC</h1>
+    <p>The <b>PT100</b> is the king of accuracy in plants: a platinum resistance that rises with temperature in a precise, well-known way. More accurate and stable than a thermocouple up to about 500 °C. But it has an enemy called <b>lead-wire resistance</b>. Here you will see that error in numbers, understand why there are 2, 3 and 4 wires, and measure the sensor with a multimeter.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="/en/labs.html">← All courses</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>What is an RTD? And a PT100?</h2>
+  <p><b>RTD</b> = resistance temperature detector: a sensor whose resistance changes with temperature. The best known is made of <b>platinum (Pt)</b>:</p>
+  <ul>
+    <li><b>PT100</b> = platinum with a resistance of <b>100 Ω at 0 °C</b>.</li>
+    <li><b>PT1000</b> = platinum with a resistance of <b>1000 Ω at 0 °C</b> (the change is 10 times bigger, so it is less affected by the leads).</li>
+    <li>The coefficient <b>α = 0.00385</b> means the resistance rises by about <b>0.385 Ω per degree</b> on a PT100.</li>
+  </ul>
+  <div class="formula">R(T) = R0 × (1 + A·T + B·T²)</div>
+  <p class="muted">This is the Callendar–Van Dusen equation (above zero), with <span class="mono">A = 3.9083×10⁻³</span> and <span class="mono">B = −5.775×10⁻⁷</span>. Below zero there is an extra term C. The instrument does this by itself; you just need to know the table:</p>
+  <div class="tblw"><table class="tbl" id="ptTable"></table></div>
+  <div class="ex"><b>The rule of thumb to keep in your head:</b> <span class="eq">T ≈ (R − 100) ÷ 0.385</span>. Example: 119.4 Ω ⇒ <span class="eq">19.4 ÷ 0.385 ≈ 50 °C</span>. This estimate drifts a little at high temperature (at 200 °C it gives 197), so use the table for accuracy.</div>
+  <figure class="fig" id="ptFig"></figure>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Accuracy: Class A and Class B</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Class (IEC 60751)</th><th>Tolerance</th><th>At 0 °C</th><th>At 100 °C</th></tr></thead>
+    <tbody>
+      <tr><td><b>AA</b></td><td class="mono">±(0.10 + 0.0017·|T|)</td><td class="mono">±0.10</td><td class="mono">±0.27</td></tr>
+      <tr><td><b>A</b></td><td class="mono">±(0.15 + 0.002·|T|)</td><td class="mono">±0.15</td><td class="mono">±0.35</td></tr>
+      <tr><td><b>B</b></td><td class="mono">±(0.30 + 0.005·|T|)</td><td class="mono">±0.30</td><td class="mono">±0.80</td></tr>
+    </tbody></table></div>
+  <p>Class B is the most common and the cheapest. Note that this tolerance is for the sensor only; the cable and the instrument add errors of their own.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>2-wire, 3-wire and 4-wire</h2>
+  <p>The instrument measures the resistance <b>at its own terminals</b>, so it measures the sensor + the leads. A 50 m copper cable of 0.5 mm² has, per wire:</p>
+  <div class="formula">R = 0.0175 × 50 ÷ 0.5 = 1.75 Ω</div>
+  <div class="ex"><b>In numbers:</b> if each wire is <b>5 Ω</b> (a long, thin cable) in a <b>2-wire</b> connection, the instrument reads <b>10 Ω extra</b>. And 10 Ω on a PT100 = <span class="eq">10 ÷ 0.385 ≈ 26 °C</span> of error! The sensor is at 100 °C and the display says 126.</div>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Connection</th><th>The instrument measures</th><th>When</th></tr></thead>
+    <tbody>
+      <tr><td><b>2-wire</b></td><td class="mono">R(T) + 2 × R(lead)</td><td>A very short cable, a PT1000, or a head-mount transmitter</td></tr>
+      <tr><td><b>3-wire</b></td><td>Subtracts one lead's resistance, assuming the two leads are equal</td><td>The most common in plants</td></tr>
+      <tr><td><b>4-wire</b></td><td>Measures the voltage at the sensor with two wires that carry no current</td><td>Calibration and precision measurement</td></tr>
+    </tbody></table></div>
+  <div class="wd"><h3>PT100 bench</h3><div id="bench"></div></div>
+  <div class="box"><b>Colours:</b> per IEC 60751, one end of the sensor has a <b>red</b> wire and the other <b>white</b>. On 3-wire there are two wires of the same colour on the same end (red-red-white or red-white-white depending on the maker), and on 4-wire two red and two white. The key point: <b>two wires of the same colour = the same end</b>.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>Self-heating and the head transmitter</h2>
+  <p><b>Self-heating:</b> to measure resistance the instrument must pass a current through it (usually about 1 mA or less). That current warms the sensor a little <span class="eq">(P = I² × R)</span>. In still air it can cause a noticeable error, so instruments use a very small current. Don't measure a working PT100 with an old meter that uses a high current and then wonder why the reading creeps up.</p>
+  <p><b>Head-mount transmitter:</b> a small transmitter inside the sensor head that converts the resistance to 4–20 mA over a range you choose, for example <b>0–150 °C</b>: at 0 ⇒ 4 mA, at 75 ⇒ 12 mA, at 150 ⇒ 20 mA. The cable to the panel is then plain copper and its resistance doesn't matter (lesson 2).</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>Checking a PT100 with a multimeter</h2>
+  <ol class="steps-l">
+    <li>Disconnect the sensor from the instrument or transmitter (never measure ohms on something connected).</li>
+    <li>Meter on Ω. Measure between <b>red and white</b>: at room temperature (25–30 °C) you should find about <b>110–112 Ω</b>.</li>
+    <li>Measure between the two wires of the <b>same colour</b>: you should find <b>only wire resistance</b> (under 1–2 Ω).</li>
+    <li>Measure between any wire and the sensor body (the sheath): it must be <b>OL</b> (insulated). If you find a value, there is moisture or leakage.</li>
+    <li>Put the sensor in boiling water or melting ice: 138.5 Ω or 100 Ω (correcting for atmospheric pressure when boiling).</li>
+  </ol>
+  <div class="wd"><h3>Drill: from ohms to degrees</h3><div id="drill"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s6">
+  <h2 id="s6"><span class="k">6</span>NTC and PTC</h2>
+  <p>These are <b>thermistors</b>, not platinum: cheap and very sensitive but non-linear.</p>
+  <ul>
+    <li><b>NTC</b> (negative): its resistance <b>falls</b> exponentially with temperature. The most common is <b>10 kΩ at 25 °C</b> with <b>β = 3950</b>. Found in air conditioners, fridges, VFDs (heatsink temperature) and power supplies.</li>
+    <li><b>PTC</b> (positive): low resistance up to a certain temperature, then it <b>rises suddenly</b>. Fitted inside motor windings (3 sensors in series) for thermal protection, connected to a protection relay or a VFD PTC input. Healthy and cold: about 100–750 Ω for all three; hot or open: many kilohms.</li>
+  </ul>
+  <div class="formula">R(T) = R25 × e^( β × (1/T − 1/298.15) )</div>
+  <div class="wd"><h3>NTC and PT100 curves</h3><div id="ntc"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s7">
+  <h2 id="s7"><span class="k">7</span>Common field faults</h2>
+  <div class="fault-box"><b>Common field faults:</b><ul>
+    <li><b>The reading is steadily higher than the truth:</b> a PT100 wired 2-wire on a long cable, or the instrument set to 2-wire with a 3-wire sensor. Measure the lead resistance and calculate.</li>
+    <li><b>The reading rises over time in humid weather:</b> a corroding terminal (contact resistance) or water in the head. On 3-wire this shows up as an error because it is in one wire only.</li>
+    <li><b>The instrument shows its minimum / under range:</b> a short in the cable or the sensor.</li>
+    <li><b>The instrument shows its maximum / sensor break:</b> the sensor or a lead is open.</li>
+    <li><b>The reading is very slow:</b> the sensor is not touching the bottom of the thermowell, or the thermowell is too thick.</li>
+    <li><b>A PT100 wired to a PT1000 input</b> on the instrument: it shows about −200 °C. Check the input type.</li>
+  </ul></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Get at least 5 of 6 right to mark the lesson as done.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">PT100 values are calculated with the <span class="mono">IEC 60751</span> equation (Callendar–Van Dusen), and copper resistivity is <span class="mono">0.0175 Ω·mm²/m</span> at 20 °C. NTC and PTC values vary from model to model: the datasheet is the reference. Your progress is saved on this device only.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script src="/site-config.js?v=20261021v"></script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script src="/assets/i18n-en.js?v=20261021v"></script>
+<script>
+IL.lesson('l7');
+(function(){
+  const T = [-50, 0, 20, 25, 50, 100, 150, 200, 300, 400];
+  document.getElementById('ptTable').innerHTML = `<thead><tr><th>°C</th>${T.map(t => `<th class="mono">${t}</th>`).join('')}</tr></thead><tbody><tr><td>PT100 (Ω)</td>${T.map(t => `<td class="mono">${IL.fmt(IL.calc.rtdR(t), 2)}</td>`).join('')}</tr><tr><td>PT1000 (Ω)</td>${T.map(t => `<td class="mono">${IL.fmt(IL.calc.rtdR(t, 1000), 1)}</td>`).join('')}</tr></tbody>`;
+  document.getElementById('ptFig').innerHTML = IL.art.svg('pt100', {label:'PT100 sensor with an M12 connector', tag:'PT100 · Class A · 4-wire'}) + '<figcaption>A PT100 sensor with an M12 connector (common on food and pharma lines)</figcaption>';
+})();
+window.RTD = IL.rtdBench(document.getElementById('bench'), {lesson:'l7'});
+IL.drill(document.getElementById('drill'), IL.ptGen, {lesson:'l7', task:'ptdrill', need:4, goal:'Get <b>4</b> right to complete this drill.'});
+IL.ntcCurve(document.getElementById('ntc'));
+IL.quiz(document.getElementById('quiz'), [
+  {q:'A PT100 at 0 °C has a resistance of:', o:['100 Ω', '0 Ω', '138.5 Ω', '1000 Ω'], a:0, why:'That is what the number 100 means.'},
+  {q:'A PT100 reads 138.5 Ω. The temperature is roughly:', o:['100 °C', '38.5 °C', '138 °C', '50 °C'], a:0, why:'From the table R(100) = 138.51 Ω.'},
+  {q:'A 2-wire PT100 with 5 Ω in each wire. The error is roughly:', o:['+26 °C', '+5 °C', '+10 °C', 'No error'], a:0, why:'10 Ω ÷ 0.385 ≈ 26 °C.'},
+  {q:'In which connection does lead resistance have almost no effect at all?', o:['4-wire', '2-wire', '3-wire', 'All the same'], a:0, why:'The measuring wires carry no current.'},
+  {q:'You measure a PT100 at room temperature with a meter. Normal is about:', o:['110 Ω', '0 Ω', '1 kΩ', 'OL'], a:0, why:'At 25 °C ≈ 109.7 Ω.'},
+  {q:'The sensor fitted inside motor windings for protection is usually:', o:['A PTC', 'A PT1000', 'A Type S thermocouple', 'Always a 10k NTC'], a:0, why:'A PTC\'s resistance rises sharply at the trip temperature and drops out the relay.'}
+], {lesson:'l7', pass:0.8});
+</script>
+</body>
+</html>

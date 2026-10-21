@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Encoders 2: absolute, mounting and faults </title>
+<meta name="description" content=" Instrumentation course|Lesson 5 of the instrumentation course: single-turn and multi-turn absolute encoders, Gray code and why only one bit changes, resolution in bits, SSI, BiSS, Profinet, EtherCAT and CANopen, resolvers, homing, mechanical mounting and couplings, shielding and noise, and a fault table and diagnosis game.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/instrumentation-lab/lesson-05.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/instrumentation-lab/lesson-05.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/instrumentation-lab/lesson-05.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/instrumentation-lab/lesson-05.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="/en/instrumentation-lab/instr.css?v=20261021i">
+<script src="/en/instrumentation-lab/instr.js?v=20261021i"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">Instrumentation · Lesson 5 of 10</p>
+    <h1>Encoders 2: absolute, mounting and faults</h1>
+    <p>An incremental encoder counts, but if the power goes off it forgets where it is. An <b>absolute</b> encoder knows its position at any moment without counting. Here you will understand the <b>Gray code</b> inside it, the protocols, how to mount an encoder properly, and how to find its faults like a sharp maintenance technician.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="/en/labs.html">← All courses</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>Incremental or absolute?</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th></th><th>Incremental</th><th>Absolute</th></tr></thead>
+    <tbody>
+      <tr><td>Outputs</td><td>A, B and Z pulses</td><td>A number (code) for each position in the turn</td></tr>
+      <tr><td>After a power cut</td><td>Forgets: needs homing</td><td>Knows its position straight away</td></tr>
+      <tr><td>Connection</td><td>Counter card / HSC</td><td>SSI, BiSS, Profinet, EtherCAT, CANopen…</td></tr>
+      <tr><td>Price</td><td>Cheaper</td><td>More expensive</td></tr>
+      <tr><td>Examples</td><td>Motor speed, cut-to-length machine</td><td>Hoist, dam gate, robot, press, crane telescope</td></tr>
+    </tbody></table></div>
+  <ul>
+    <li><b>Single-turn:</b> knows the position within one turn only (4096 positions, for example). After a full turn it comes back to the same number.</li>
+    <li><b>Multi-turn:</b> also counts <b>the number of turns</b> (4096 turns, for example) using internal gears or a counter powered by the motion itself (Wiegand), or a battery in some types. This is what goes on hoists and cranes.</li>
+  </ul>
+  <div class="box key"><b>Resolution in bits:</b> a <b>12-bit</b> single-turn encoder = <span class="eq">2¹² = 4096</span> positions per turn ⇒ each step <span class="eq">360 ÷ 4096 ≈ 0.088°</span>. A <b>25-bit</b> multi-turn is usually 13 bits for position (8192) + 12 bits for turns (4096 turns).</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Gray code: why only one bit?</h2>
+  <p>An absolute disc has <b>several rings</b>, one bit per ring, with a sensor under each ring. The reading at any position gives a number. The problem is the <b>moment of transition</b>: the sensors never switch at exactly the same instant. In plain binary, going from 7 (<span class="mono">0111</span>) to 8 (<span class="mono">1000</span>) changes <b>4 bits</b>, so for a split second you could read 15 or 0 or any number! And the machine goes crazy.</p>
+  <p>The fix: <b>Gray code</b> is arranged so that between any two neighbouring positions <b>only one bit changes</b>. So the worst that can happen is reading the old or the new position, never a strange number.</p>
+  <div class="formula">Gray = Bin XOR (Bin >> 1)</div>
+  <div class="wd"><h3>4-bit absolute disc</h3><div id="gray"></div></div>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Position</th><th>Binary</th><th>Gray</th></tr></thead>
+    <tbody>
+      <tr><td>6</td><td class="mono">0110</td><td class="mono">0101</td></tr>
+      <tr><td>7</td><td class="mono">0111</td><td class="mono">0100</td></tr>
+      <tr><td>8</td><td class="mono">1000</td><td class="mono">1100</td></tr>
+      <tr><td>9</td><td class="mono">1001</td><td class="mono">1101</td></tr>
+    </tbody></table></div>
+  <p class="muted">The encoder or the card converts Gray to binary before sending it on, and with SSI you can choose in the parameters to receive it as Gray or binary. Choose wrong and the reading jumps around strangely.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>Protocols and the resolver</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Interface</th><th>The idea</th></tr></thead>
+    <tbody>
+      <tr><td><b>SSI</b></td><td>The card sends clock pulses and the encoder answers with the bits one after another (RS-422). Simple and common. You must set the number of bits and Gray/binary.</td></tr>
+      <tr><td><b>BiSS-C</b></td><td>Like SSI but faster, with a check (CRC) and diagnostics. Common on servos.</td></tr>
+      <tr><td><b>Profinet / EtherCAT / EtherNet/IP</b></td><td>The encoder is a device on the network with an address, configured with a GSDML or ESI file. It sends position, speed and diagnostics.</td></tr>
+      <tr><td><b>CANopen / Profibus</b></td><td>Older fieldbus networks, common on cranes and mobile machines.</td></tr>
+      <tr><td><b>Resolver</b></td><td>Not a digital encoder: a rotating transformer that outputs two signals, sin and cos. No electronics inside, so it withstands severe heat and vibration. Common on older servo motors and in harsh areas.</td></tr>
+    </tbody></table></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>Homing with an incremental encoder</h2>
+  <p>With an incremental encoder, the machine does a <b>homing</b> run at start-up: it moves slowly until it hits a <b>reference switch</b>, then carries on to the first <b>Z pulse</b> after it and zeroes the counter there. Why both? The switch is only accurate to millimetres and depends on speed, while Z is very accurate but repeats every turn, so the switch says "we are in this turn" and Z marks the exact point.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>Mechanical mounting</h2>
+  <ul>
+    <li><b>Solid shaft:</b> connected to the machine shaft with a <b>flexible coupling</b> (bellows, jaw or disc). The flexible coupling absorbs misalignment. <b>Never use a rigid coupling</b>: any slight misalignment will break the bearing.</li>
+    <li><b>Hollow shaft:</b> slides straight onto the motor shaft and is fixed with a clamping ring, and its body is held by a <b>flexible torque arm (stator coupling)</b> that stops it turning and allows slight runout.</li>
+    <li>Never hammer the encoder when fitting it: the glass disc inside will break.</li>
+    <li>Put a pen mark across the shaft and the coupling after tightening: if you later find it has moved, something is slipping.</li>
+  </ul>
+</section>
+
+<section class="panel lsec" aria-labelledby="s6">
+  <h2 id="s6"><span class="k">6</span>Cable, shield and noise</h2>
+  <ul>
+    <li>A shielded cable with twisted pairs (A with A̅, B with B̅). For fast encoder signals the shield is usually <b>grounded at both ends</b> with a 360° clamp on the connector body and the panel, together with a heavy equipotential bonding conductor between motor and panel (follow the maker's recommendation: this differs from the 4–20 mA rule).</li>
+    <li>Keep it away from motor and VFD cables: a separate tray or a metal divider.</li>
+    <li><b>Cable length:</b> single-ended TTL (5V) manages only a few metres, an RS-422 line driver up to about 100 m, and HTL also covers long distances but the frequency drops with length. The datasheet gives a length × frequency table.</li>
+    <li>Voltage drop: a 5V encoder on a long cable may receive only 4.5V. Some encoders have sense lines for the supply.</li>
+  </ul>
+</section>
+
+<section class="panel lsec" aria-labelledby="s7">
+  <h2 id="s7"><span class="k">7</span>Fault table</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Symptom</th><th>Likely cause</th><th>What to do</th></tr></thead>
+    <tbody>
+      <tr><td>Extra counts when the VFD runs</td><td>Noise, shield, cables run together</td><td>Ground the shield, separate the cables, line driver</td></tr>
+      <tr><td>Counts the wrong way</td><td>A and B swapped</td><td>Swap them or reverse with the parameter</td></tr>
+      <tr><td>Half the count / no direction</td><td>A channel is open</td><td>Measure each channel with a scope or multimeter</td></tr>
+      <tr><td>Lost at high speed only</td><td>Frequency above the card or encoder limit</td><td>Calculate f, faster card, less filtering</td></tr>
+      <tr><td>Slow position drift</td><td>Coupling or measuring wheel slipping</td><td>Pen mark, tighten, replace the wheel</td></tr>
+      <tr><td>Noise and a failed bearing</td><td>Rigid mounting / misalignment</td><td>Flexible coupling, torque arm</td></tr>
+      <tr><td>The absolute reading jumps around</td><td>Wrong Gray/binary, wrong SSI bit count</td><td>Check the parameters against the datasheet</td></tr>
+    </tbody></table></div>
+  <div class="wd"><h3>Game: find the encoder fault</h3><div id="game"></div></div>
+  <div class="box safe"><b>Safety:</b> the encoder is usually on a running motor. Before undoing the coupling or touching the shaft: <b>lock out</b> the motor and make sure it cannot turn. On a hoist, a suspended load can turn the motor even when it is switched off: secure the load first.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Get at least 5 of 6 right to mark the lesson as done.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">Shield grounding and cable length rules vary between makers; follow the installation manual of the encoder and the drive. Your progress is saved on this device only.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script src="/site-config.js?v=20261021v"></script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script src="/assets/i18n-en.js?v=20261021v"></script>
+<script>
+IL.lesson('l5');
+window.GRAY = IL.grayDisc(document.getElementById('gray'), {lesson:'l5'});
+window.GAME = IL.caseGame(document.getElementById('game'), IL.ENC_CASES, {lesson:'l5', task:'efault', need:6, goal:'Solve at least <b>6</b> cases correctly. Open "Check" before you answer: just like in the field.'});
+IL.quiz(document.getElementById('quiz'), [
+  {q:'A 12-bit single-turn absolute encoder. How many positions per turn?', o:['4096', '1200', '1024', '12'], a:0, why:'2¹² = 4096.'},
+  {q:'The main advantage of Gray code:', o:['Only one bit changes between any two neighbouring positions', 'Faster transmission', 'Saves bits', 'Counts turns'], a:0, why:'So there is no strange reading during a transition.'},
+  {q:'A hoist must know its position after a power cut without homing. You choose:', o:['A multi-turn absolute encoder', 'A 1000 PPR incremental encoder', 'A single-turn absolute encoder', 'A proximity sensor'], a:0, why:'The travel is more than one turn, and a multi-turn encoder remembers the turn count.'},
+  {q:'How is a solid-shaft encoder connected to the motor?', o:['With a flexible coupling', 'With a rigid coupling', 'By welding', 'With a belt'], a:0, why:'A flexible coupling absorbs misalignment and protects the bearing.'},
+  {q:'The most accurate incremental homing uses:', o:['A reference switch followed by the first Z pulse', 'The A pulse only', 'The switch only', 'A timer'], a:0, why:'The switch picks the turn and Z marks the exact point.'},
+  {q:'A resolver outputs:', o:['Two analog signals, sin and cos', 'A and B pulses', 'Gray code', '4–20 mA'], a:0, why:'It is a rotating transformer with no electronics inside.'}
+], {lesson:'l5', pass:0.8});
+</script>
+</body>
+</html>

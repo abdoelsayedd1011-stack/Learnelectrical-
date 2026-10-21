@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Analog signals: 4–20 mA and 0–10 V </title>
+<meta name="description" content=" Instrumentation course|Lesson 2 of the instrumentation course: why current and not voltage, why 4 mA and not zero (live zero, NAMUR NE43), 2-, 3- and 4-wire transmitters, loop supply and the 250 Ω resistor, scaling mA to a value, measuring loop current, HART, and a loop simulator with faults.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/instrumentation-lab/lesson-02.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/instrumentation-lab/lesson-02.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/instrumentation-lab/lesson-02.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/instrumentation-lab/lesson-02.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="/en/instrumentation-lab/instr.css?v=20261021i">
+<script src="/en/instrumentation-lab/instr.js?v=20261021i"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">Instrumentation · Lesson 2 of 10</p>
+    <h1>Analog signals: 4–20 mA and 0–10 V</h1>
+    <p>Most transmitters in the world speak one language: <b>a current from 4 to 20 milliamps</b>. In this lesson you will understand why current and not voltage, why it starts at 4 and not zero, how to convert mA to a value, how to measure the loop properly, and how to tell the fault from the meter reading.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="/en/labs.html">← All courses</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>Why current and not voltage?</h2>
+  <p>Imagine a transmitter 300 metres from the panel. If it sends a <b>voltage</b> (0–10V), the long wire has resistance, and any current flowing in it causes a <b>voltage drop</b>, so the PLC reads less than the truth. The long cable also picks up <b>noise</b> from motor and VFD cables.</p>
+  <p>But in a <b>series circuit</b> the current is <b>the same everywhere</b> (Kirchhoff's law). The transmitter sets the current itself, so the wire resistance does not change it as long as the supply is sufficient. That is what lets 4–20 mA travel long distances and resist noise.</p>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th></th><th>4–20 mA</th><th>0–10 V</th></tr></thead>
+    <tbody>
+      <tr><td>Distance</td><td>Hundreds of metres, no problem</td><td>Short (inside the panel or nearby)</td></tr>
+      <tr><td>Wire resistance</td><td>No effect (if the supply is sufficient)</td><td>Causes a reading error</td></tr>
+      <tr><td>Broken wire detection</td><td>Yes: 0 mA = fault</td><td>No: 0 V = a zero value</td></tr>
+      <tr><td>Used for</td><td>Field transmitters</td><td>Potentiometers, VFDs, nearby devices</td></tr>
+    </tbody></table></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Why 4 and not zero? (live zero)</h2>
+  <p>If the signal is 0–20 mA and you read <b>0 mA</b>, you can't tell: is the value really zero, or has the wire broken? But with 4–20, the lowest real value = <b>4 mA</b>. So if you read much less than that, there is definitely a <b>fault</b>. Those 4 mA also power a 2-wire transmitter (it lives on them).</p>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Current</th><th>Meaning per <span class="mono">NAMUR NE43</span></th></tr></thead>
+    <tbody>
+      <tr><td class="mono">Below 3.6 mA</td><td>Fault: broken wire or the transmitter signalling a fail-low alarm</td></tr>
+      <tr><td class="mono">3.8–4 mA</td><td>Slightly under range (value below LRV) but the signal is healthy</td></tr>
+      <tr><td class="mono">4–20 mA</td><td>Normal measurement</td></tr>
+      <tr><td class="mono">20–20.5 mA</td><td>Slightly over range but healthy</td></tr>
+      <tr><td class="mono">Above 21 mA</td><td>Fault: a short or the transmitter signalling a fail-high alarm</td></tr>
+    </tbody></table></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>2-wire, 3-wire and 4-wire transmitters</h2>
+  <div class="two">
+    <div class="card"><svg viewBox="0 0 220 110" role="img" aria-label="2-wire transmitter"><rect x="8" y="30" width="44" height="50" rx="5" class="w-pn w-in" stroke-width="1.5"/><text x="30" y="58" text-anchor="middle" class="w-tx" style="font-size:10px">24V</text><rect x="160" y="30" width="52" height="50" rx="5" fill="#2c6aac"/><text x="186" y="58" text-anchor="middle" style="font-size:10px;fill:#fff">TX</text><path d="M52 40H160" stroke="#d32f2f" stroke-width="3"/><path d="M160 70H120V96H80V70H52" fill="none" stroke="#1f6fd1" stroke-width="3"/><rect x="88" y="88" width="24" height="14" class="w-pn w-in"/><text x="100" y="99" text-anchor="middle" class="w-tx" style="font-size:8px">AI</text><text x="106" y="34" text-anchor="middle" class="w-tx" style="font-size:9px">+24V</text></svg>
+      <h3>2-wire (loop powered)</h3><p>The same two wires carry the power and return the signal. The transmitter lives on the 4 mA. This is the most common: pressure, temperature, level.</p></div>
+    <div class="card"><svg viewBox="0 0 220 110" role="img" aria-label="3-wire transmitter"><rect x="8" y="22" width="44" height="66" rx="5" class="w-pn w-in" stroke-width="1.5"/><text x="30" y="58" text-anchor="middle" class="w-tx" style="font-size:10px">24V</text><rect x="160" y="22" width="52" height="66" rx="5" fill="#2c6aac"/><text x="186" y="58" text-anchor="middle" style="font-size:10px;fill:#fff">TX</text><path d="M52 32H160" stroke="#d32f2f" stroke-width="3"/><path d="M52 78H160" stroke="#1f6fd1" stroke-width="3"/><path d="M160 55H112V100" stroke="#30363b" stroke-width="3" fill="none"/><rect x="100" y="94" width="24" height="14" class="w-pn w-in"/><text x="112" y="105" text-anchor="middle" class="w-tx" style="font-size:8px">AI</text><text x="134" y="51" class="w-tx" style="font-size:8px">mA</text></svg>
+      <h3>3-wire</h3><p>+24V and 0V are shared, and the third wire is the signal output. Common on devices that draw more than 4 mA (small flowmeters, sensors with a display).</p></div>
+    <div class="card"><svg viewBox="0 0 220 110" role="img" aria-label="4-wire transmitter"><rect x="8" y="22" width="44" height="66" rx="5" class="w-pn w-in" stroke-width="1.5"/><text x="30" y="52" text-anchor="middle" class="w-tx" style="font-size:9px">230V</text><text x="30" y="64" text-anchor="middle" class="w-tx" style="font-size:9px">AC</text><rect x="160" y="22" width="52" height="66" rx="5" fill="#2c6aac"/><text x="186" y="58" text-anchor="middle" style="font-size:10px;fill:#fff">TX</text><path d="M52 32H160M52 44H160" stroke="#7a4a22" stroke-width="3"/><path d="M160 66H110V98M160 80H130V98" stroke="#30363b" stroke-width="3" fill="none"/><rect x="100" y="94" width="40" height="14" class="w-pn w-in"/><text x="120" y="105" text-anchor="middle" class="w-tx" style="font-size:8px">AI + −</text></svg>
+      <h3>4-wire</h3><p>Two separate power wires (usually 230V AC or 24V) and two signal wires. Like magnetic flowmeters, analysers and indicators. The output is usually <b>active</b>: it drives the current itself.</p></div>
+  </div>
+  <div class="box key"><b>Active or passive?</b> Whatever supplies power to the loop is <b>active</b>. Exactly one side must be active: either the card supplies 24V (a 2-wire card) and the transmitter is passive, or the transmitter is active (4-wire) and the card is passive. If both are active or both passive, the loop won't work (or something burns).</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>The 24V supply and the 250Ω resistor</h2>
+  <p>An analog card usually has a <b>250Ω resistor</b> (or close) inside. The current flows through it and creates a voltage per Ohm's law: <span class="eq">V = I × R</span>. So 4 mA ⇒ <b>1 V</b>, and 20 mA ⇒ <b>5 V</b>. That is what the card actually measures (which is why you hear "a 1–5V signal").</p>
+  <div class="formula">V(250Ω) = mA × 0.25</div>
+  <p>A 2-wire transmitter needs a minimum voltage at its terminals (usually <b>10.5 to 12 V</b>; read the datasheet). So the supply must cover the transmitter + all the resistances in the loop at the highest current:</p>
+  <div class="formula">V supply ≥ V min(TX) + 0.020 × R loop</div>
+  <div class="ex"><b>Example:</b> 24V supply, transmitter needs 10.5V ⇒ maximum loop resistance = <span class="eq">(24 − 10.5) ÷ 0.020 = 675 Ω</span>. So 250Ω for the card + 250Ω for a HART resistor + the wire, and all is fine. But at 12V ⇒ <span class="eq">(12 − 10.5) ÷ 0.020 = 75 Ω</span> only! Try it in the simulator below.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>Converting mA to a value and back</h2>
+  <p>The 16 mA (from 4 to 20) represent the whole span. So the equation is:</p>
+  <div class="formula">PV = LRV + (mA − 4) ÷ 16 × (URV − LRV)</div>
+  <div class="formula">mA = 4 + (PV − LRV) ÷ (URV − LRV) × 16</div>
+  <div class="ex"><b>Example 1:</b> a 0–10 bar pressure transmitter giving 12 mA ⇒ <span class="eq">0 + (12 − 4)/16 × 10 = 5 bar</span>.<br><b>Example 2:</b> a −50 … 150 °C temperature transmitter giving 8 mA ⇒ <span class="eq">−50 + 4/16 × 200 = 0 °C</span>. Note that 8 mA here means zero degrees!<br><b>Example 3:</b> level 0–4 m with the level at 3 m ⇒ <span class="eq">4 + 3/4 × 16 = 16 mA</span>.</div>
+  <div class="wd"><h3>Scaling calculator</h3><div id="calc"></div></div>
+  <div class="wd"><h3>Scaling drill</h3><div id="drill"></div></div>
+  <div class="box"><b>Inside the PLC:</b> the card converts the mA to a raw number. In Siemens, for example, 4 mA = 0 and 20 mA = <span class="mono">27648</span>, and a broken wire = <span class="mono">32767</span>. Allen-Bradley and others use different numbers. Then a scale block (like <span class="mono">NORM_X / SCALE_X</span>) converts the number to the engineering value.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s6">
+  <h2 id="s6"><span class="k">6</span>Loop simulator: create the faults yourself</h2>
+  <p>This is a real loop: a 24V supply, a 2-wire pressure transmitter with a 0–10 bar range, a multimeter on mA wired in series, and a PLC card. Change the pressure and watch the current, then create the faults one at a time and see what the meter and the PLC say.</p>
+  <div class="wd"><h3>4–20 mA loop</h3><div id="sim"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s7">
+  <h2 id="s7"><span class="k">7</span>How to measure loop current properly</h2>
+  <ol class="steps-l">
+    <li>Inform operations and put the loop in Manual (the reading will drop out for a moment when you open the loop).</li>
+    <li>Meter on <b>mA DC</b> with the red lead in the <b>mA</b> socket (not the 10A socket).</li>
+    <li><b>Open</b> the loop: undo one wire from a terminal and put the meter <b>in series</b> in its place.</li>
+    <li>Read the current and compare it with the value expected from the equation.</li>
+    <li>Put the wire back, tighten it well, and return the loop to Auto.</li>
+  </ol>
+  <div class="box safe"><b>Don't:</b> never put the meter on mA <b>in parallel</b> across the transmitter or card terminals. Its resistance is very low, so it shorts them: the reading is wrong, the PLC sees overrange, and the meter fuse may blow. In parallel you measure <b>volts</b> only.</div>
+  <div class="box"><b>Without opening the loop:</b> many transmitters have a <b>TEST</b> terminal with a diode: put the meter across it and read the current without undoing anything. There is also the <b>mA clamp</b> (process clamp meter) that measures 4–20 mA around the wire. Or measure <b>the voltage across the 250Ω resistor</b> and divide by 0.25.</div>
+  <div class="box"><b>HART:</b> a protocol that superimposes a small digital signal (a 1200/2200 Hz tone) on top of the 4–20 mA without changing the average. With a HART communicator you can read the tag, range and diagnostics and change the range from the panel. It needs a loop resistance of <b>at least 250Ω</b> to work.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s8">
+  <h2 id="s8"><span class="k">8</span>The cable: shielded, twisted and grounded at one end</h2>
+  <ul>
+    <li>Use a <b>shielded twisted pair</b> cable (a twisted pair with an aluminium foil or braid shield): the twist cancels magnetic noise, and the shield catches electrical noise.</li>
+    <li><b>Ground the shield at one end only</b>, usually at the panel (the instrument earth bar), and cut back and insulate the other end inside the transmitter. If it is grounded at both ends, current can flow in it due to ground potential differences (a ground loop) and cause noise.</li>
+    <li>Keep signal cables away from power and VFD cables: separate trays, and if they must cross, cross at 90°.</li>
+  </ul>
+</section>
+
+<section class="panel lsec" aria-labelledby="s9">
+  <h2 id="s9"><span class="k">9</span>Common field faults</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Meter reads</th><th>PLC says</th><th>Most likely</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">0 mA</td><td>Wire break / −25 %</td><td>Broken wire, blown loop fuse, reversed polarity, or no power</td></tr>
+      <tr><td class="mono">3.6 or 21+ mA</td><td>Fault</td><td>The transmitter itself is reporting a fault (check its display or use HART)</td></tr>
+      <tr><td class="mono">Above 22 mA and steady</td><td>Overrange</td><td>A short in the cable or water in the junction box</td></tr>
+      <tr><td>Stuck at a number and won't rise</td><td>A fixed value</td><td>Weak supply or high loop resistance (low voltage at the transmitter)</td></tr>
+      <tr><td>Unstable</td><td>The reading jumps around</td><td>Shield not grounded, cable next to a VFD cable, or a loose terminal</td></tr>
+    </tbody></table></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Get at least 5 of 6 right to mark the lesson as done.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">The numbers (10.5V, 250Ω, 27648) are common values, not fixed ones: the transmitter and card datasheets are the reference. Your progress is saved on this device only.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script src="/site-config.js?v=20261021v"></script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script src="/assets/i18n-en.js?v=20261021v"></script>
+<script>
+IL.lesson('l2');
+IL.scaleCalc(document.getElementById('calc'));
+IL.drill(document.getElementById('drill'), IL.scaleGen, {lesson:'l2', task:'scale', need:4, goal:'Solve <b>4</b> conversions correctly to complete this drill.'});
+window.SIM = IL.loopSim(document.getElementById('sim'), {lesson:'l2'});
+IL.quiz(document.getElementById('quiz'), [
+  {q:'Why does the signal start at 4 mA and not zero?', o:['To tell a zero value from a broken wire, and so a 2-wire transmitter can live on it', 'Because the PLC cannot read zero', 'To save electricity', 'No real reason'], a:0, why:'Live zero: 0 mA = a fault, not a value.'},
+  {q:'A 0–10 bar transmitter gives 16 mA. What is the pressure?', o:['7.5 bar', '8 bar', '6 bar', '10 bar'], a:0, why:'(16 − 4)/16 × 10 = 7.5 bar.'},
+  {q:'The meter in the loop reads 0 mA and the PLC says wire break. What do you suspect first?', o:['A broken wire or no power to the loop', 'The transmitter needs calibrating', 'Wrong range', 'Noise'], a:0, why:'No current at all = the circuit is open.'},
+  {q:'You want to measure loop current with a meter on mA. How do you connect it?', o:['In series: open the loop and put it in the path', 'In parallel across the transmitter terminals', 'Between signal and earth', 'Across the power supply terminals'], a:0, why:'Current is always measured in series.'},
+  {q:'What voltage does 4–20 mA make across a 250Ω resistor?', o:['1 to 5 V', '0 to 10 V', '4 to 20 V', '0 to 5 V'], a:0, why:'0.004 × 250 = 1V and 0.020 × 250 = 5V.'},
+  {q:'Where is the signal cable shield grounded?', o:['At one end (usually the panel end)', 'At both ends', 'Not at all', 'Always at the transmitter only'], a:0, why:'Grounding at both ends can create a ground loop.'}
+], {lesson:'l2', pass:0.8});
+</script>
+</body>
+</html>
