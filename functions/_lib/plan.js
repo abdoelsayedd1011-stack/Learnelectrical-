@@ -13,7 +13,7 @@
 // requests there («طلبات الاشتراك»), or give a member a course from their window («إدّيله كورس»).
 // Before switching on, update the «مجاني» wording on the course pages and FAQs.
 
-export const PAYWALL_ON = false;
+export const PAYWALL_ON = true;
 
 export function paywallOn(env){
   const v = env && env.PAYWALL_ON;
