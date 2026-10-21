@@ -94,7 +94,7 @@
    CL.bench(host, ex, {key, onPass, onChange}) → wiring bench UI (click terminal → terminal, undo, clear,
         show solution, power, live operation, auto-check). Returns {devs, wires(), wire(a,b), power(on), act(id,act), destroy}.
    CL.sim(host, DEVSPEC, {onAct})         → interactive device: realistic drawing + IEC symbol + continuity + truth table.
-   CL.quiz(host, qs, keyPrefix, onChange) → tap-to-answer quiz with instant feedback, saved.
+   CL.quiz(host, qs, keyPrefix, onChange) → select-then-check quiz (marks show after «check»), correct answers saved.
    CL.sym.iec(dev|{act,blocks,tag}), CL.sym.nema(kind), CL.art.<name>(dev)   → SVG strings.
    CL.store.get/set/has/bench/summary/last/resetLesson
    CL.CURRICULUM                          → hub list (fundamentals, practical exercises, advanced).
@@ -3448,19 +3448,52 @@ function simProt(d, T, ui){
 
 /* =========================== quiz =========================== */
 CL.quiz = function(host, qs, pref, onChange){
-  host.innerHTML = `<div class="qz-list">${qs.map((q, i) => `<div class="qz" data-i="${i}"><p class="qz-q">${i + 1}. ${q.q}</p><div class="qz-a">${q.a.map((a, j) => `<button type="button" class="btn qz-o" data-j="${j}">${a}</button>`).join('')}</div><p class="qz-f" aria-live="polite"></p></div>`).join('')}</div>`;
+  host.innerHTML = `<div class="qz-list">${qs.map((q, i) => `<div class="qz" data-i="${i}"><p class="qz-q">${i + 1}. ${q.q}</p><div class="qz-a">${q.a.map((a, j) => `<button type="button" class="btn qz-o" data-j="${j}">${a}</button>`).join('')}</div><p class="qz-f" aria-live="polite"></p></div>`).join('')}</div><div class="qz-chk"><button type="button" class="btn pri" data-qz="check" aria-disabled="true">صحّح إجاباتي</button><span class="qz-cnt" aria-live="polite"></span></div>`;
+  // tapping an option only selects it; right/wrong shows after «check». Correct → saved + locked, wrong → marked and cleared
+  const sel = qs.map(() => null), done = qs.map(() => false), boxes = [...host.querySelectorAll('.qz')];
+  const T = {need:'جاوب على كل الأسئلة الأول', cnt:(n, t) => `جاوبت ${n} من ${t}`};
   const mark = (box, q, j, restore) => {
-    const btns = box.querySelectorAll('.qz-o'), f = box.querySelector('.qz-f');
+    const i = +box.dataset.i, btns = box.querySelectorAll('.qz-o'), f = box.querySelector('.qz-f');
+    btns.forEach(b => { b.classList.remove('sel'); b.removeAttribute('aria-pressed'); });
     if (j === q.c){
-      btns.forEach(b => b.classList.remove('no')); btns[j].classList.add('ok'); box.classList.add('ok');
+      done[i] = true;
+      btns.forEach(b => { b.classList.remove('no'); b.disabled = true; }); btns[j].classList.add('ok'); box.classList.add('ok');
       f.className = 'qz-f ok'; f.innerHTML = '✓ صح. ' + (q.why || '');
-      if (!restore){ CL.store.set(pref + '/' + box.dataset.i, 1); if (onChange) onChange(); }
+      if (!restore) CL.store.set(pref + '/' + i, 1);
     } else {
       btns[j].classList.add('no'); f.className = 'qz-f no'; f.innerHTML = '✗ مش دي. ' + ((q.w && q.w[j]) || 'فكّر تاني وجرّب إجابة تانية.');
     }
   };
-  host.querySelectorAll('.qz').forEach(box => { const i = +box.dataset.i, q = qs[i]; if (CL.store.has(pref + '/' + i)) mark(box, q, q.c, true); });
-  host.addEventListener('click', e => { const b = e.target.closest('.qz-o'); if (!b) return; const box = b.closest('.qz'); mark(box, qs[+box.dataset.i], +b.dataset.j); });
+  const cnt = warn => {
+    const c = host.querySelector('.qz-cnt'), btn = host.querySelector('[data-qz=check]'), wrap = host.querySelector('.qz-chk');
+    const left = qs.map((_, i) => i).filter(i => !done[i]);
+    if (!left.length){ wrap.hidden = true; return; }
+    wrap.hidden = false;
+    const n = qs.length - left.length + left.filter(i => sel[i] != null).length, all = left.every(i => sel[i] != null);
+    btn.setAttribute('aria-disabled', all ? 'false' : 'true');
+    c.className = 'qz-cnt' + (warn && !all ? ' warn' : '');
+    c.textContent = T.cnt(n, qs.length) + (warn && !all ? ' · ' + T.need : '');
+  };
+  const check = () => {
+    const left = qs.map((_, i) => i).filter(i => !done[i]);
+    const miss = left.find(i => sel[i] == null);
+    if (miss != null){ cnt(true); if (boxes[miss].scrollIntoView) boxes[miss].scrollIntoView({block:'center', behavior:'smooth'}); return; }
+    left.forEach(i => { mark(boxes[i], qs[i], sel[i]); sel[i] = null; });
+    cnt();
+    if (onChange) onChange();
+  };
+  boxes.forEach(box => { const i = +box.dataset.i, q = qs[i]; if (CL.store.has(pref + '/' + i)) mark(box, q, q.c, true); });
+  cnt();
+  host.addEventListener('click', e => {
+    const b = e.target.closest('.qz-o');
+    if (b){
+      const box = b.closest('.qz'), i = +box.dataset.i; if (done[i] || b.disabled) return;
+      sel[i] = +b.dataset.j;
+      box.querySelectorAll('.qz-o').forEach(x => { const on = x === b; x.classList.toggle('sel', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); if (on) x.classList.remove('no'); });
+      cnt(); return;
+    }
+    if (e.target.closest('[data-qz=check]')) check();
+  });
 };
 
 /* =========================== lesson runner (guided, one element at a time) =========================== */

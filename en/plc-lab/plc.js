@@ -148,33 +148,68 @@ PL.lesson = function(id){
 };
 PL.hubTheme = headBtns;
 
+/* ---------------- select, then confirm ----------------
+   tapping an option only selects it (.sel); right/wrong shows after the learner presses the check / confirm button */
+const QZ_T = {check:'Check my answers', need:'Answer every question first', cnt:(n, t) => `Answered ${n} of ${t}`, ok:`Confirm`}; // backtick: its own English entry (the quote-key 'تأكيد' is the alarm «Acknowledge»)
+const QZ_CF = () => `<div class="dr-cf"><button type="button" class="btn pri dr-ok" disabled>${QZ_T.ok}</button></div>`;
+function qzSel(box, o){ $$('.qz-o', box).forEach(x => { const on = x === o; x.classList.toggle('sel', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); }); }
+function qzUnsel(box){ $$('.qz-o', box).forEach(x => { x.classList.remove('sel'); x.removeAttribute('aria-pressed'); }); }
+// one-question cards: returns the confirmed option button, or null while the learner is still choosing
+function pickConfirm(e, box){
+  const o = e.target.closest('.qz-o');
+  if (o){ if (!o.disabled){ qzSel(box, o); const c = $('.dr-ok', box); if (c) c.disabled = false; } return null; }
+  if (!e.target.closest('.dr-ok')) return null;
+  const p = $('.qz-o.sel', box); if (!p) return null;
+  qzUnsel(box); const cf = $('.dr-cf', box); if (cf) cf.hidden = true;
+  return p;
+}
+
 /* ---------------- quiz ----------------
    qs: [{q, o:[...], a:index, why}] ; opt: {lesson, task, pass(0..1), row, shuffle} */
 PL.quiz = function(host, qs, opt){
   opt = opt || {};
   const pass = opt.pass == null ? 0.8 : opt.pass;
-  let order, ans;
+  let order, ans, sel;
   function start(){
     order = (opt.shuffle ? shuffle(qs) : qs.slice()).map(q => { const idx = q.o.map((_, i) => i); const oi = opt.keepOrder || q.keep ? idx : shuffle(idx); return {q, oi}; });
-    ans = order.map(() => null); render();
+    ans = order.map(() => null); sel = order.map(() => null); render();
   }
   function render(){
-    host.innerHTML = `<div class="qz-list">${order.map((it, k) => `<div class="qz" data-k="${k}"><p class="qz-q">${k + 1}. ${it.q.q}</p><div class="qz-a${opt.row ? ' row' : ''}">${it.oi.map(i => `<button type="button" class="btn qz-o" data-i="${i}">${it.q.o[i]}</button>`).join('')}</div><p class="qz-f" aria-live="polite"></p></div>`).join('')}</div><div class="qz-sum" hidden aria-live="polite"></div>`;
+    host.innerHTML = `<div class="qz-list">${order.map((it, k) => `<div class="qz" data-k="${k}"><p class="qz-q">${k + 1}. ${it.q.q}</p><div class="qz-a${opt.row ? ' row' : ''}">${it.oi.map(i => `<button type="button" class="btn qz-o" data-i="${i}">${it.q.o[i]}</button>`).join('')}</div><p class="qz-f" aria-live="polite"></p></div>`).join('')}</div><div class="qz-chk"><button type="button" class="btn pri" data-qz="check" aria-disabled="true">${QZ_T.check}</button><span class="qz-cnt" aria-live="polite"></span></div><div class="qz-sum" hidden aria-live="polite"></div>`;
+    cnt();
   }
   host.addEventListener('click', e => {
     const b = e.target.closest('.qz-o');
     if (b){
-      const box = b.closest('.qz'), k = +box.dataset.k, it = order[k];
-      if (ans[k] != null) return;
-      const i = +b.dataset.i, ok = i === it.q.a; ans[k] = ok;
-      $$('.qz-o', box).forEach(x => { x.disabled = true; if (+x.dataset.i === it.q.a) x.classList.add('ok'); });
-      if (!ok) b.classList.add('no'); else box.classList.add('ok');
-      const f = $('.qz-f', box); f.className = 'qz-f ' + (ok ? 'ok' : 'no'); f.innerHTML = (ok ? 'Correct. ' : 'Not that one. ') + (it.q.why || '');
-      if (ans.every(x => x != null)) finish();
+      const box = b.closest('.qz'), k = +box.dataset.k;
+      if (ans[k] != null || b.disabled) return;
+      sel[k] = +b.dataset.i; qzSel(box, b); cnt();
       return;
     }
+    if (e.target.closest('[data-qz=check]')){ check(); return; }
     if (e.target.closest('[data-qz=again]')) start();
   });
+  function cnt(warn){
+    const c = $('.qz-cnt', host), btn = $('[data-qz=check]', host); if (!c) return;
+    const n = sel.filter(x => x != null).length, all = n === sel.length;
+    btn.setAttribute('aria-disabled', all ? 'false' : 'true');
+    c.className = 'qz-cnt' + (warn && !all ? ' warn' : '');
+    c.textContent = QZ_T.cnt(n, sel.length) + (warn && !all ? ' · ' + QZ_T.need : '');
+  }
+  function check(){
+    if (ans.some(x => x != null)) return;
+    const miss = sel.findIndex(x => x == null);
+    if (miss > -1){ cnt(true); const u = host.querySelector(`.qz[data-k="${miss}"]`); if (u && u.scrollIntoView) u.scrollIntoView({block:'center', behavior:'smooth'}); return; }
+    order.forEach((it, k) => {
+      const box = host.querySelector(`.qz[data-k="${k}"]`), i = sel[k], ok = i === it.q.a; ans[k] = ok;
+      qzUnsel(box);
+      $$('.qz-o', box).forEach(x => { x.disabled = true; const j = +x.dataset.i; if (j === it.q.a) x.classList.add('ok'); else if (j === i) x.classList.add('no'); });
+      if (ok) box.classList.add('ok');
+      const f = $('.qz-f', box); f.className = 'qz-f ' + (ok ? 'ok' : 'no'); f.innerHTML = (ok ? 'Correct. ' : 'Not that one. ') + (it.q.why || '');
+    });
+    $('.qz-chk', host).hidden = true;
+    finish();
+  }
   function finish(){
     const n = ans.filter(Boolean).length, tot = ans.length, ok = n / tot >= pass - 1e-9;
     const sum = $('.qz-sum', host); sum.hidden = false; sum.className = 'qz-sum ' + (ok ? 'ok' : 'no');
@@ -183,7 +218,7 @@ PL.quiz = function(host, qs, opt){
     if (opt.onDone) opt.onDone(n, tot, ok);
   }
   start();
-  const api = {solve(wrong){ order.forEach((it, k) => { const i = wrong && k === 0 ? it.oi.find(j => j !== it.q.a) : it.q.a; const b = host.querySelector(`.qz[data-k="${k}"] .qz-o[data-i="${i}"]`); if (b) b.click(); }); return $('.qz-sum', host).textContent; }, answer(k, i){ const b = host.querySelector(`.qz[data-k="${k}"] .qz-o[data-i="${i}"]`); if (b) b.click(); }, order: () => order.map(x => x.q), restart: start};
+  const api = {solve(wrong){ order.forEach((it, k) => { const i = wrong && k === 0 ? it.oi.find(j => j !== it.q.a) : it.q.a; const b = host.querySelector(`.qz[data-k="${k}"] .qz-o[data-i="${i}"]`); if (b) b.click(); }); check(); return $('.qz-sum', host).textContent; }, answer(k, i){ const b = host.querySelector(`.qz[data-k="${k}"] .qz-o[data-i="${i}"]`); if (b) b.click(); }, check, order: () => order.map(x => x.q), restart: start};
   (PL._q = PL._q || []).push(api); api.host = host; api.opt = opt;
   return api;
 };
@@ -203,7 +238,7 @@ PL.drill = function(host, gen, opt){
       card.innerHTML = `<div class="dr-q">${cur.q}</div><form class="dr-in"><input class="inp" inputmode="decimal" autocomplete="off" aria-label="Your answer" placeholder="Your answer"><span class="mono dr-u">${esc(cur.unit || '')}</span><button class="btn pri" type="submit">Check</button></form><p class="qz-f" aria-live="polite"></p>`;
     } else {
       const oi = shuffle(cur.o.map((_, i) => i));
-      card.innerHTML = `<div class="dr-q">${cur.q}</div><div class="qz-a${cur.row ? ' row' : ''}">${oi.map(i => `<button type="button" class="btn qz-o" data-i="${i}">${cur.o[i]}</button>`).join('')}</div><p class="qz-f" aria-live="polite"></p>`;
+      card.innerHTML = `<div class="dr-q">${cur.q}</div><div class="qz-a${cur.row ? ' row' : ''}">${oi.map(i => `<button type="button" class="btn qz-o" data-i="${i}">${cur.o[i]}</button>`).join('')}</div>${QZ_CF()}<p class="qz-f" aria-live="polite"></p>`;
     }
     score();
   }
@@ -217,11 +252,11 @@ PL.drill = function(host, gen, opt){
     if (ok >= need) fin();
     nx.focus({preventScroll:true});
   }
-  card.addEventListener('click', e => { const b = e.target.closest('.qz-o'); if (b && !answered) result(+b.dataset.i === cur.a, b); });
+  card.addEventListener('click', e => { if (answered) return; const b = pickConfirm(e, card); if (b) result(+b.dataset.i === cur.a, b); });
   card.addEventListener('submit', e => { e.preventDefault(); if (answered) return; const v = num($('input', card).value); if (!isFinite(v)){ const f = $('.qz-f', card); f.className = 'qz-f no'; f.textContent = 'Type a number.'; return; } result(!!cur.check(v)); });
   nx.addEventListener('click', next);
   next();
-  return {get cur(){ return cur; }, answer(v){ if (cur.input){ $('input', card).value = v; $('.dr-in button', card).click(); } else { const b = card.querySelector(`.qz-o[data-i="${v}"]`); if (b) b.click(); } }, next, get ok(){ return ok; }};
+  return {get cur(){ return cur; }, answer(v){ if (cur.input){ $('input', card).value = v; $('.dr-in button', card).click(); } else { const b = card.querySelector(`.qz-o[data-i="${v}"]`); if (b){ b.click(); $('.dr-ok', card).click(); } } }, next, get ok(){ return ok; }};
 };
 
 /* ================= ladder engine (pure, no DOM) =================
