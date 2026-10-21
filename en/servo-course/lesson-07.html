@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Electronic gearing</title>
+<meta name="description" content="Lesson 7 of the servo course: the N/M electronic gear, calculating pulses per revolution from the ball screw lead, the pulley and the gearbox, and the pulse frequency at maximum speed. An interactive calculator and 3 exercises on real machines.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/servo-course/lesson-07.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/servo-course/lesson-07.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/servo-course/lesson-07.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/servo-course/lesson-07.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="servo.css?v=20261021e">
+<script src="servo.js?v=20261021e"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">Servo motor and drive · Lesson 7 of 12</p>
+    <h1>Electronic gearing</h1>
+    <p>The PLC wants to say "move 250 mm", and the encoder counts hundreds of thousands per revolution. The electronic gear is what links them. You will learn the formula and calculate the gear for a <b>ball screw</b>, a <b>belt</b> and a <b>rotary table with a gearbox</b>.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="/en/labs.html">All courses →</a><a class="btn lang-btn" href="/servo-course/lesson-07.html" lang="ar" hreflang="ar" data-keep aria-label="اقرا الصفحة دي بالعربي" title="اقرا الصفحة دي بالعربي" onclick="try{localStorage.setItem('le-lang','ar')}catch(e){}">ع</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>The problem: the PLC thinks in mm, the encoder in counts</h2>
+  <p>A 17-bit encoder counts <b>131072</b> per revolution. If the PLC sent one pulse per count, then for the motor to turn at 3000 rpm it would need to output <span class="eq">131072 × 50 = 6.5 MHz</span>, and no ordinary PLC can do that. Also, you want to say "move 250 mm", not "move 3276800 counts".</p>
+  <p>The solution: <b>the electronic gear</b>. The drive multiplies every incoming pulse by a fraction <b>N / M</b> and converts it to encoder counts. So you choose <b>how many mm one pulse is</b>.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>The formula in two steps</h2>
+  <div class="formula ar">Pulses per rev = travel per motor rev ÷ pulse value</div>
+  <div class="formula ar">N / M = encoder counts per rev ÷ pulses per rev</div>
+  <div class="ex"><b>Example:</b> a ball screw with a <b class="eq">10 mm</b> lead directly on the motor, a <b class="eq">10000</b> count encoder, and you want <b>1 pulse = <span class="eq">0.01 mm</span></b>.<br>
+  Pulses per rev = <span class="eq">10 ÷ 0.01 = 1000</span>.<br>
+  Gear = <span class="eq">10000 ÷ 1000 = 10/1</span>. So each pulse = 10 counts = 0.01 mm. ✓</div>
+  <div class="box"><b>Travel per motor revolution</b> is calculated from the mechanics:<ul>
+    <li>Ball screw: the lead (pitch). If there is a gearbox or belt between the motor and the screw, divide by the ratio.</li>
+    <li>Pulley and belt: number of teeth × belt pitch (or π × diameter).</li>
+    <li>Rotary table with a 1:10 gearbox: one motor revolution = 360 ÷ 10 = 36°.</li></ul></div>
+  <div class="box key"><b>It differs from brand to brand:</b> some drives write the gear as N/M (the numerator and denominator may have other parameter names), and some ask for the "number of pulses per revolution" directly and calculate it themselves. The idea is the same, but check in the manual <b>which side is the numerator and which the denominator</b>, and the allowed range of the fraction.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>The calculator and the challenge</h2>
+  <div class="wd"><h3>Electronic gear calculator</h3><div id="gear"></div></div>
+  <div class="box"><b>The trade-off:</b> a smaller unit = higher resolution but a higher frequency. A larger unit = a lower frequency but each pulse is a bigger "jump". Choose the smallest unit whose frequency the PLC can output at maximum speed.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>Quick calculation drills</h2>
+  <div class="wd"><h3>Calculate</h3><div id="gdrill"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Answer at least 5 of 6 correctly so the lesson is marked complete.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">The numbers and values in this lesson (voltages, frequencies, gains, limits) are approximate training values based on general field experience, and they differ from brand to brand and model to model: <b>your drive's manual is the reference</b> before any setup on a real machine. Alarm and parameter names also differ from one manufacturer to another. Your progress is saved on this device.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Mitsubishi, Yaskawa and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script>
+SV.lesson('l7');
+window.GEAR = SV.gearCalc(document.getElementById('gear'), {lesson:'l7'});
+window.GDR = SV.drill(document.getElementById('gdrill'), SV.gearGen, {lesson:'l7', task:'gdrill', need:4, goal:'Answer <b>4</b> correctly to complete the drill.'});
+SV.quiz(document.getElementById('quiz'), [
+  {q:'A 5 mm screw, and you want 1 pulse = 0.001 mm. Pulses per rev:', o:['5000', '500', '50000', '5'], a:0, why:'5 ÷ 0.001.'},
+  {q:'A 131072 encoder and 10000 pulses per rev. The N/M gear:', o:['8192/625', '625/8192', '131072/1', '10000/131072'], a:0, why:'131072/10000 reduced = 8192/625.'},
+  {q:'A rotary table with a 1:5 gearbox. One motor revolution = how many degrees on the table?', o:['72°', '5°', '360°', '1800°'], a:0, why:'360 ÷ 5.'},
+  {q:'10000 pulses per rev and the motor at 3000 rpm. The frequency:', o:['500 kHz', '50 kHz', '5 kHz', '3 MHz'], a:0, why:'10000 × 3000 ÷ 60.'},
+  {q:'The PLC output tops out at 100 kHz and cannot reach the speed. The easiest fix without changing hardware:', o:['Increase the pulse value (fewer pulses per rev) and recalculate the gear', 'Raise the gain', 'Change the encoder', 'Remove the gear'], a:0, why:'A lower frequency at the cost of pulse resolution.'},
+  {q:'Why is the electronic gear important?', o:['It links the pulse to the machine unit (mm or degree) and reduces the required frequency', 'It increases the motor torque', 'It replaces the gearbox', 'It protects against overload'], a:0, why:'It converts command pulses to encoder counts.'}
+], {lesson:'l7', pass:0.8});
+</script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+</body>
+</html>

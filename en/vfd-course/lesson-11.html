@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Safety and installation</title>
+<meta name="description" content="Lesson 11 of the VFD course: DC bus discharge and measuring before you touch, LOTO, why STO is not isolation, EMC, shielding and motor cable length, derating for temperature, altitude and carrier, and harmonics and line reactors.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/vfd-course/lesson-11.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/vfd-course/lesson-11.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/vfd-course/lesson-11.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/vfd-course/lesson-11.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="vfd.css?v=20261021e">
+<script src="vfd.js?v=20261021e"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">VFD course · Lesson 11 of 12</p>
+    <h1>Safety and installation</h1>
+    <p>A VFD runs on a high DC voltage, puts out fast pulses that make noise, and gets hot. This lesson is about how to work on it without getting hurt, and how to install it so it lives for years without strange faults.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="/en/labs.html">All courses →</a><a class="btn lang-btn" href="/vfd-course/lesson-11.html" lang="ar" hreflang="ar" data-keep aria-label="اقرا الصفحة دي بالعربي" title="اقرا الصفحة دي بالعربي" onclick="try{localStorage.setItem('le-lang','ar')}catch(e){}">ع</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>Before you touch</h2>
+  <div class="box safe"><b>The golden rule:</b> switch off and lock (LOTO), wait the time printed on the drive, and measure yourself. A dark CHARGE lamp or a dark display is no guarantee.</div>
+  <ul><li><b>STO</b> (Safe Torque Off) stops the motor from turning, but it <b>does not disconnect the power</b>. The terminals are still live.</li><li>A motor turned by its load (a fan in the wind, a pump with water flowing back through it) <b>generates voltage</b> at the drive terminals even with the power off. Lock the load mechanically.</li><li>Use a multimeter rated at least <b>CAT III</b>, on a <b>V DC</b> range that covers 1000 V.</li></ul>
+  <div class="wd"><h3>Put the safety steps in order</h3><div id="lock"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Try it: DC bus discharge</h2>
+  <div class="wd"><h3>Measure before you open</h3><div id="dc"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>EMC and the motor cable</h2>
+  <ul><li>PWM pulses are very fast, so they make noise that reaches sensors, encoders and analog signals. The fix: a <b>shielded motor cable</b>, with the shield earthed <b>360°</b> in the gland (not a twisted «pigtail»), and control cables kept apart from power cables.</li>
+   <li><b>A long motor cable</b> (longer than the manual allows, usually tens of metres): leakage currents through the cable capacitance cause false OC and ground fault trips, and wave reflection produces voltage spikes at the motor that can reach twice the DC bus and damage its insulation. The fix: an <b>output reactor</b>, a <b>dV/dt filter</b> or a <b>sine filter</b>, and a lower carrier.</li>
+   <li><b>The built-in EMC filter</b>: on isolated (IT) supplies, or with an earth leakage device, it usually has to be disconnected (with a screw or jumper). See the manual.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>Derating and mounting</h2>
+  <p>A drive carries its rated current under certain conditions (temperature, altitude, carrier). If conditions are harder, you must reduce the allowed current or choose a bigger size.</p>
+  <div class="tblw"><table class="tbl"><thead><tr><th>Factor</th><th>Example rule (from a typical catalogue)</th></tr></thead><tbody>
+   <tr><td>Altitude</td><td>1 % per 100 m above 1000 m</td></tr><tr><td>Panel temperature</td><td>About 2 % per degree above 40 °C (or above 50, depending on the model)</td></tr><tr><td>Carrier</td><td>The higher it goes above the default setting, the lower the allowed current</td></tr></tbody></table></div>
+  <ul><li>Mount it <b>vertically</b>, with space above and below for air (the manual says how many cm).</li><li>The panel needs a <b>fan and filter</b> that remove the heat: roughly 2–3 % of the drive power comes out as heat.</li></ul>
+  <div class="wd"><h3>Drill: work out the derating</h3><div id="derate"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>Harmonics</h2>
+  <p>The rectifier draws current from the supply in pulses rather than a sine, so it produces <b>harmonics</b> that heat transformers and cables and affect other equipment. The fixes: a <b>line reactor</b> or a <b>DC choke</b> (they reduce harmonics and protect the drive from supply spikes), and on large loads, harmonic filters or low-harmonic / AFE drives.</p>
+  <div class="box">If there is an <b>earth leakage device (RCD)</b> before the drive, it must be a type suitable for drives (usually <b>Type B</b> for three phase) with a suitable sensitivity, or it will trip for no reason.</div>
+</section>
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Get at least 5 of 6 right to complete the lesson.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">The numbers and examples here are common training values, and parameter and terminal names differ from brand to brand and model to model: <b>your drive's manual is the reference</b>. Your progress is saved on this device.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script>
+VF.lesson('l11');
+window.LK = VF.order(document.getElementById('lock'), [
+  'Stop the motor from the drive (Stop)',
+  'Switch off the main breaker and lock and tag it (LOTO)',
+  'Make sure the load cannot turn the motor (close a valve / secure the load)',
+  'Wait the discharge time printed on the drive',
+  'Measure between DC+ and DC− with a multimeter on V DC and confirm it is below 50 V',
+  'Also measure the input and output terminals, then start work'
+], {lesson:'l11', task:'lock', goal:'Put all <b>6</b> steps in the right order to complete this exercise.', why:['The motor stops on its ramp first.', 'Nobody can switch the power back on while you work.', 'A spinning motor generates voltage.', 'The capacitors need time.', 'Do not trust the clock or the lamp.']});
+window.DS = VF.discharge(document.getElementById('dc'), {lesson:'l11'});
+VF.drill(document.getElementById('derate'), VF.derateGen, {lesson:'l11', task:'derate', need:4, goal:'Get <b>4</b> right to complete this drill.'});
+VF.quiz(document.getElementById('quiz'), [
+  {q:'What does STO do?', o:['It blocks torque, but the terminals are still live', 'It disconnects the power completely', 'It discharges the capacitors', 'It resets the drive'], a:0, why:'It is not electrical isolation.'},
+  {q:'How is the motor cable shield earthed?', o:['360° in the cable gland at both ends', 'A twisted pigtail at one end', 'It is not earthed', 'To DC−'], a:0, why:'The lowest-impedance path for high-frequency noise.'},
+  {q:'A 32 A drive at 2000 m, with the rule 1 % per 100 m above 1000. The allowed current:', o:['28.8 A', '32 A', '30 A', '25.6 A'], a:0, why:'10 % less.'},
+  {q:'A very long motor cable can cause:', o:['False ground fault / OC trips and voltage spikes at the motor', 'Higher speed', 'Lower DC bus voltage', 'No problem'], a:0, why:'Cable capacitance and wave reflection.'},
+  {q:'A line reactor helps with:', o:['Reducing harmonics and protecting the drive from supply spikes', 'Raising the speed', 'Braking', 'The PID'], a:0, why:'It adds inductance before the rectifier.'},
+  {q:'You switched off 3 minutes ago and the CHARGE lamp is out. Do you touch?', o:['No, wait the stated time and measure first', 'Yes', 'Yes, if the display is dark', 'Yes, with gloves'], a:0, why:'Measuring is the only guarantee.'}
+], {lesson:'l11', pass:0.8});
+</script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+</body>
+</html>

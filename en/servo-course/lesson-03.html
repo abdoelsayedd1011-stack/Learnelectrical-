@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The encoder: the servo's eye</title>
+<meta name="description" content="Lesson 3 of the servo course: the incremental encoder with A, B, Z and PPR, the single-turn and multi-turn absolute encoder and its battery, resolution in bits, and why it matters for smooth motion.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/servo-course/lesson-03.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/servo-course/lesson-03.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/servo-course/lesson-03.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/servo-course/lesson-03.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="servo.css?v=20261021e">
+<script src="servo.js?v=20261021e"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">Servo motor and drive · Lesson 3 of 12</p>
+    <h1>The encoder: the servo's eye</h1>
+    <p>No encoder, no servo. In this lesson you will learn the difference between <b>incremental</b> and <b>absolute</b> with a power-loss experiment, calculate the <b>resolution</b> in PPR and bits, and understand why that huge resolution matters.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="/en/labs.html">All courses →</a><a class="btn lang-btn" href="/servo-course/lesson-03.html" lang="ar" hreflang="ar" data-keep aria-label="اقرا الصفحة دي بالعربي" title="اقرا الصفحة دي بالعربي" onclick="try{localStorage.setItem('le-lang','ar')}catch(e){}">ع</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>Why is the encoder the most important part?</h2>
+  <p>The drive uses the encoder for <b>3 things</b> at the same time:</p>
+  <ol>
+    <li><b>Position:</b> where the motor is (for the position loop).</li>
+    <li><b>Speed:</b> calculated from the change in position over time (for the speed loop).</li>
+    <li><b>Magnet angle:</b> to send current into the right winding (commutation).</li>
+  </ol>
+  <p>That is why any problem with the encoder or its cable = the drive trips straight away with an alarm. You cannot fit an encoder without the drive "recognising" it, and on many models the encoder is aligned to the magnet angle at the factory, so <b>do not remove the encoder from the motor</b>.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Incremental or absolute?</h2>
+  <div class="two">
+    <div class="box"><b>Incremental:</b> outputs pulses <b>A and B</b> 90° apart (from which the drive knows the direction) and one <b>Z</b> pulse per revolution. The drive <b>counts</b>. If power is lost, the count is lost and a <b>homing</b> is needed. Resolution is given in <b>PPR</b> (pulses per revolution), and the drive counts all four edges: <span class="eq">2500 PPR × 4 = 10000</span> counts.</div>
+    <div class="box"><b>Absolute:</b> every position in the revolution has <b>its own code</b>, so it knows its position as soon as power returns. A <b>single-turn</b> encoder knows the position within the revolution, and a <b>multi-turn</b> one counts the revolutions too (with a battery, internal gears or other battery-less methods). Resolution is given in <b>bits</b>: <span class="eq">17-bit = 131072</span> counts.</div>
+  </div>
+  <div class="wd"><h3>Try it: cut the power</h3><div id="enc"></div></div>
+  <div class="ex"><b>From the field:</b> a <b>Battery low / Absolute data lost</b> alarm on an absolute servo means the battery is weak. <b>Replace it with the drive powered (not switched off)</b> so the encoder does not lose the turn count, otherwise you will need to set the origin again. The exact method is in each brand's manual.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>Resolution: how many counts per revolution?</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Encoder</th><th>Counts per rev</th><th>One count</th><th>On a 10 mm screw</th></tr></thead>
+    <tbody>
+      <tr><td>2500 PPR × 4</td><td class="mono">10000</td><td class="mono">0.036°</td><td class="mono">1 µm</td></tr>
+      <tr><td>17-bit</td><td class="mono">131072</td><td class="mono">0.0027°</td><td class="mono">0.076 µm</td></tr>
+      <tr><td>20-bit</td><td class="mono">1048576</td><td class="mono">0.00034°</td><td class="mono">0.0095 µm</td></tr>
+      <tr><td>23-bit</td><td class="mono">8388608</td><td class="mono">0.000043°</td><td class="mono">0.0012 µm</td></tr>
+    </tbody></table></div>
+  <p>So why do we need that huge resolution if the machine accuracy is <bdi dir="ltr">0.01 mm</bdi>? Because the drive <b>calculates the speed</b> from the position difference every fraction of a millisecond. At low speed, a low-resolution encoder gives "steps" in the speed reading, and the motor will hum and not run smoothly. <b>High resolution = smoother motion and higher gain.</b></p>
+  <div class="box key"><b>Do not confuse them:</b> encoder resolution is not machine accuracy. Machine accuracy also depends on the ball screw (backlash and lead accuracy), the coupling and the installation.</div>
+  <div class="wd"><h3>Drill: calculate the resolution</h3><div id="res"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Answer at least 5 of 6 correctly so the lesson is marked complete.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">The numbers and values in this lesson (voltages, frequencies, gains, limits) are approximate training values based on general field experience, and they differ from brand to brand and model to model: <b>your drive's manual is the reference</b> before any setup on a real machine. Alarm and parameter names also differ from one manufacturer to another. Your progress is saved on this device.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Mitsubishi, Yaskawa and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script>
+SV.lesson('l3');
+window.ENC = SV.encoderSim(document.getElementById('enc'), {lesson:'l3'});
+window.RES = SV.drill(document.getElementById('res'), SV.resGen, {lesson:'l3', task:'res', need:4, goal:'Answer <b>4</b> correctly to complete the drill.'});
+SV.quiz(document.getElementById('quiz'), [
+  {q:'How does the drive know the direction of rotation from an incremental encoder?', o:['Which one leads the other: A or B', 'From the Z pulse', 'From the number of pulses', 'From the voltage'], a:0, why:'The 90° shift between A and B gives the direction.'},
+  {q:'A 2500 PPR encoder and the drive counts x4. Counts per revolution:', o:['10000', '2500', '5000', '625'], a:0, why:'2500 × 4.'},
+  {q:'A 17-bit encoder = how many counts per revolution?', o:['131072', '17000', '65536', '1024'], a:0, why:'2^17.'},
+  {q:'After power returns, which one needs homing?', o:['The incremental', 'The multi-turn absolute', 'Both', 'Neither'], a:0, why:'The incremental starts counting from zero.'},
+  {q:'A Battery low alarm on an absolute servo. The correct action:', o:['Replace the battery with the drive powered', 'Switch off and replace it whenever you like', 'Ignore it', 'Replace the motor'], a:0, why:'So the turn count is not lost (details are in the manual).'},
+  {q:'Why does high resolution make motion smoother?', o:['The speed calculation is more precise, so the gain can go up without humming', 'It increases the torque', 'It reduces the current', 'It removes backlash'], a:0, why:'Speed is calculated from the position difference, and higher resolution = a cleaner speed reading.'}
+], {lesson:'l3', pass:0.8});
+</script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+</body>
+</html>

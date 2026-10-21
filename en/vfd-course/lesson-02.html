@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Inside the drive</title>
+<meta name="description" content="Lesson 2 of the VFD course: the rectifier, the DC bus and its capacitors at 1.35 × supply voltage, the chopper and braking resistor, the IGBTs and the control board, with an animated drawing.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/vfd-course/lesson-02.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/vfd-course/lesson-02.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/vfd-course/lesson-02.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/vfd-course/lesson-02.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="vfd.css?v=20261021e">
+<script src="vfd.js?v=20261021e"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">VFD course · Lesson 2 of 12</p>
+    <h1>Inside the drive</h1>
+    <p>From the outside a VFD is a box with a display and terminals. Inside it is 3 stages in a row: it turns AC into DC, stores it, then chops it up fast to make new AC exactly the way we want. Understand these stages and you will understand every VFD fault after this.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="/en/labs.html">All courses →</a><a class="btn lang-btn" href="/vfd-course/lesson-02.html" lang="ar" hreflang="ar" data-keep aria-label="اقرا الصفحة دي بالعربي" title="اقرا الصفحة دي بالعربي" onclick="try{localStorage.setItem('le-lang','ar')}catch(e){}">ع</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>AC → DC → AC</h2>
+  <ol><li><b>Rectifier:</b> AC from the supply → DC with ripple.</li><li><b>DC bus:</b> capacitors smooth and store it, and its voltage is almost constant.</li><li><b>Inverter (IGBTs):</b> chops the DC fast and outputs AC at variable frequency and voltage to the motor.</li></ol>
+  <div class="box key">Above them is the <b>control board</b> that decides all of this, and some drives have a <b>braking chopper</b> on the DC bus.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Open the drive</h2>
+  <p>Tap each part of the drawing, and change the supply voltage to see how the DC bus voltage changes. Under each part is the waveform at that point.</p>
+  <div class="wd"><h3>Inside the drive</h3><div id="inside"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>DC bus voltage</h2>
+  <p>The capacitors charge almost to the peak of the wave. On three phase, under load, the well-known figure is:</p>
+  <div class="formula">V<sub>DC</sub> ≈ 1.35 × V<sub>LL</sub></div>
+  <div class="tblw"><table class="tbl"><thead><tr><th>Supply</th><th>DC bus, roughly</th></tr></thead><tbody>
+   <tr><td>Single phase 230 V</td><td>≈ 325 V (230 × 1.41)</td></tr><tr><td>3 phase 400 V</td><td>≈ 540 V (with no load it can reach 565 V)</td></tr><tr><td>3 phase 480 V</td><td>≈ 650 V</td></tr></tbody></table></div>
+  <div class="ex"><b>Why does this number matter?</b> The drive watches it all the time: if it drops too low ⇒ a <b>UV</b> (undervoltage) fault, meaning the supply sagged or a phase was lost. If it rises too high ⇒ an <b>OV</b> (overvoltage) fault, usually meaning the motor is sending energy back while braking. Many drives show it on the display as a monitor parameter (DC bus voltage).</div>
+  <div class="wd"><h3>Drill: work out the DC bus</h3><div id="bus"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>Safety</h2>
+  <div class="box safe"><b>Danger:</b> the capacitors stay charged for <b>minutes</b> after you switch off the power (usually 5 to 15 minutes, and the figure is printed on the drive). A dark display does not mean the voltage is gone. Wait the stated time and measure between DC+ and DC− with a multimeter before you touch any terminal. We will practise this in lesson 11.</div>
+</section>
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Get at least 5 of 6 right to complete the lesson.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">The numbers and examples here are common training values, and parameter and terminal names differ from brand to brand and model to model: <b>your drive's manual is the reference</b>. Your progress is saved on this device.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script>
+VF.lesson('l2');
+window.INS = VF.inside(document.getElementById('inside'), {lesson:'l2'});
+VF.drill(document.getElementById('bus'), VF.busGen, {lesson:'l2', task:'bus', need:4, goal:'Get <b>4</b> right to complete this drill.'});
+VF.quiz(document.getElementById('quiz'), [
+  {q:'The order of the stages inside a drive:', o:['Rectifier → DC bus → IGBT', 'IGBT → rectifier → DC bus', 'DC bus → rectifier → IGBT', 'Transformer → rectifier → motor'], a:0, why:'AC → DC → AC.'},
+  {q:'A drive on a 400V 3-phase supply. The DC bus is roughly:', o:['540 V', '400 V', '230 V', '1000 V'], a:0, why:'400 × 1.35 ≈ 540.'},
+  {q:'The job of the capacitors in the DC bus:', o:['Smoothing and storing energy', 'Power factor correction for the supply', 'Running the fan', 'Measuring the current'], a:0, why:'They keep the DC almost constant.'},
+  {q:'What does the IGBT do?', o:['Switches on and off fast to make a variable voltage from the DC', 'Rectifies the AC', 'Stores energy', 'Measures speed'], a:0, why:'That is PWM.'},
+  {q:'The DC bus dropped to 70 % of its value. The expected fault:', o:['UV', 'OV', 'OC', 'OH'], a:0, why:'Undervoltage.'},
+  {q:'You switched off the power and the display went dark. When can you touch the power terminals?', o:['After the time printed on the drive, and after you measure the DC bus below 50 V', 'Right away', 'After one minute', 'When the display light goes out'], a:0, why:'The capacitors stay charged.'}
+], {lesson:'l2', pass:0.8});
+</script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+</body>
+</html>

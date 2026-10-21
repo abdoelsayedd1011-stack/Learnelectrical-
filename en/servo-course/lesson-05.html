@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wiring the servo</title>
+<meta name="description" content="Lesson 5 of the servo course: power wiring on L1 L2 L3, the U V W output and its mandatory order, the encoder cable, the 24 V brake and its relay, the braking resistor on P+ and C, and the CN1 and STO terminals. An interactive wiring bench.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/servo-course/lesson-05.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/servo-course/lesson-05.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/servo-course/lesson-05.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/servo-course/lesson-05.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="servo.css?v=20261021e">
+<script src="servo.js?v=20261021e"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">Servo motor and drive · Lesson 5 of 12</p>
+    <h1>Wiring the servo</h1>
+    <p>We will wire a servo drive from start to finish: power, motor, encoder, brake, braking resistor, the PLC and the safety circuit. And you will see for yourself why <b>swapping U and W</b> on a servo is nothing like on an induction motor.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="/en/labs.html">All courses →</a><a class="btn lang-btn" href="/servo-course/lesson-05.html" lang="ar" hreflang="ar" data-keep aria-label="اقرا الصفحة دي بالعربي" title="اقرا الصفحة دي بالعربي" onclick="try{localStorage.setItem('le-lang','ar')}catch(e){}">ع</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>Power: L1 L2 L3</h2>
+  <ul>
+    <li>A small drive is usually <bdi dir="ltr">200–240 V</bdi> single- or 3-phase, and a large one 400 V. <b>Read the nameplate</b>, and for single phase the manual tells you which two terminals to use.</li>
+    <li>Before it there is a suitable <b>circuit breaker</b>, a main <b>contactor</b> (it opens in an emergency) and sometimes a <b>noise filter</b>.</li>
+    <li>Many drives also have separate <b>control power</b> terminals (names like L1C and L2C, or 24 V) so the display and the encoder stay on when the main power is switched off.</li>
+  </ul>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>The motor: U V W and PE — the order is mandatory</h2>
+  <p>On an induction motor, swapping two phases simply reverses the motor. <b>On a servo this is not allowed.</b> The drive sends current according to the encoder angle, so if the phases are swapped the torque comes out in the wrong direction: the motor shakes or runs away on its own until an alarm trips. Reversing the direction is done with <b>a parameter</b> in the drive.</p>
+  <ul>
+    <li>U to U, V to V, W to W, and the PE earth to earth. Use the ready-made cable if there is one.</li>
+    <li><b>Do not put a contactor between the drive and the motor</b> that opens while it is running (unless the manual says otherwise). And do not put power factor correction capacitors on the output.</li>
+  </ul>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>The encoder, the brake and the braking resistor</h2>
+  <ul>
+    <li><b>Encoder cable (CN2 or a similar name):</b> shielded and twisted, the shield earthed 360° in the connector, and kept away from power cables. In a cable chain you need a high-flex cable.</li>
+    <li><b>The brake:</b> <bdi dir="ltr">24 V DC</bdi> from a power supply (preferably a separate one), through a <b>relay</b> driven by the drive's <b>BRK</b> output, with a diode or varistor across it to stop the spark when it switches off.</li>
+    <li><b>The braking resistor:</b> a small drive has an internal resistor (there is a jumper between two terminals such as P+ and D). For heavy loads you remove the jumper, connect an external resistor on P+ and C, <b>and set the parameter</b> to its value and power.</li>
+  </ul>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>Control: CN1 and STO</h2>
+  <ul>
+    <li><b>CN1 (I/O):</b> carries the signals between the PLC and the drive: <b>Servo ON</b>, <b>Alarm reset</b>, the pulse inputs, the limit switches, and the <b>Ready</b>, <b>Alarm</b> and <b>In-position</b> outputs. The names and pin numbers differ from brand to brand.</li>
+    <li><b>STO (Safe Torque Off):</b> two inputs from the safety circuit (safety relay, E-stop, guard doors). When they open, the drive cuts the torque <b>in hardware</b> whatever the program says. The drive usually comes with a jumper connector for STO for testing, <b>but on a real machine it must be wired to the safety circuit</b>.</li>
+  </ul>
+  <div class="wd"><h3>Wire the drive yourself</h3><div id="wire"></div></div>
+  <div class="box safe"><b>Safety:</b> all wiring is done with the power off and after the CHARGE lamp goes out. And the first run is done with the motor uncoupled from the load, or with the axis in the middle, away from the ends.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Answer at least 5 of 6 correctly so the lesson is marked complete.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">The numbers and values in this lesson (voltages, frequencies, gains, limits) are approximate training values based on general field experience, and they differ from brand to brand and model to model: <b>your drive's manual is the reference</b> before any setup on a real machine. Alarm and parameter names also differ from one manufacturer to another. Your progress is saved on this device.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Mitsubishi, Yaskawa and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script>
+SV.lesson('l5');
+window.WIRE = SV.wiring(document.getElementById('wire'), {lesson:'l5'});
+SV.quiz(document.getElementById('quiz'), [
+  {q:'You want to reverse the servo direction. The correct way:', o:['Change the direction parameter in the drive', 'Swap U and W', 'Swap L1 and L2', 'Reverse the encoder cable'], a:0, why:'Swapping the phases on a servo ruins the control.'},
+  {q:'You connected the mains to U V W by mistake. What happens?', o:['The IGBTs may blow and the drive burns out', 'The motor reverses', 'Nothing', 'An encoder alarm'], a:0, why:'The mains must go to L1 L2 L3 only.'},
+  {q:'The motor brake is wired:', o:['24 V DC through a relay driven by the BRK output', 'On U V W', 'On L1 L2', 'On CN2'], a:0, why:'And the drive controls when it releases.'},
+  {q:'You are connecting an external braking resistor. You must also:', o:['Remove the internal resistor jumper and set the parameter', 'Remove the earth', 'Disconnect the encoder', 'Nothing else'], a:0, why:'Otherwise the drive will not calculate its protection correctly.'},
+  {q:'The function of STO:', o:['Cut the torque in hardware for people\'s safety', 'Stop the motor with the brake', 'Clear the alarms', 'Change the mode'], a:0, why:'Safe Torque Off.'},
+  {q:'The encoder cable must be:', o:['Shielded, earthed and away from power cables', 'Any ordinary wire', 'In the same conduit as U V W', 'Unshielded so the noise can escape'], a:0, why:'Noise on the encoder = an encoder error or wrong motion.'}
+], {lesson:'l5', pass:0.8});
+</script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+</body>
+</html>

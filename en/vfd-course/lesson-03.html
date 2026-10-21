@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PWM and V/f</title>
+<meta name="description" content="Lesson 3 of the VFD course: how IGBTs make an almost-sine wave with PWM, the carrier frequency, the V/f ratio, boost, and what happens above 50 Hz.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/vfd-course/lesson-03.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/vfd-course/lesson-03.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/vfd-course/lesson-03.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/vfd-course/lesson-03.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="vfd.css?v=20261021e">
+<script src="vfd.js?v=20261021e"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">VFD course · Lesson 3 of 12</p>
+    <h1>PWM and V/f</h1>
+    <p>An IGBT is a switch: either on or off. How can a switch alone make a smooth sine wave at any frequency? The answer: <b>PWM</b>. And why, when we lower the frequency, do we have to lower the voltage with it? The answer: <b>V/f</b>. Both are in this simulator.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="/en/labs.html">All courses →</a><a class="btn lang-btn" href="/vfd-course/lesson-03.html" lang="ar" hreflang="ar" data-keep aria-label="اقرا الصفحة دي بالعربي" title="اقرا الصفحة دي بالعربي" onclick="try{localStorage.setItem('le-lang','ar')}catch(e){}">ع</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>PWM in a nutshell</h2>
+  <p>The drive compares a <b>reference</b> wave (a sine at the frequency you want) with a very fast triangular <b>carrier</b> wave (thousands of times a second). When the reference is above the carrier the IGBT turns on, and when it is below it turns off. The result is pulses whose width grows and shrinks with the sine.</p>
+  <p>The motor windings (their inductance) smooth these pulses, so the current through them comes out <b>almost a sine</b>. For a lower frequency the reference gets slower. For a lower voltage the reference gets smaller, so the pulses get narrower.</p>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Try it yourself</h2>
+  <div class="wd"><h3>PWM and V/f simulator</h3><div id="pwm"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>Why constant V/f?</h2>
+  <p>The magnetic flux in the motor is proportional to <b>voltage ÷ frequency</b>. For the motor to stay strong (full torque) at any speed, this ratio has to stay constant:</p>
+  <div class="formula">V/f = 400 V ÷ 50 Hz = 8 V/Hz</div>
+  <div class="tblw"><table class="tbl"><thead><tr><th>Situation</th><th>What happens</th></tr></thead><tbody>
+   <tr><td>High voltage at low frequency</td><td>The motor saturates: high current and heat</td></tr>
+   <tr><td>Low voltage at high frequency</td><td>Weak flux and less torque</td></tr>
+   <tr><td>Below ~10 Hz</td><td>Winding resistance eats part of the voltage ⇒ <b>boost</b> compensates</td></tr>
+   <tr><td>Above rated frequency (50 Hz)</td><td>The voltage does not rise above the motor voltage ⇒ <b>field weakening</b>: higher speed with less torque</td></tr></tbody></table></div>
+  <div class="box">There is a <b>quadratic</b> V/f curve (variable torque) for pumps and fans: it gives less voltage at low speed because the load is light there, so it saves more.</div>
+  <div class="wd"><h3>Drill: work out the voltage</h3><div id="vf"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>Carrier frequency</h2>
+  <div class="tblw"><table class="tbl"><thead><tr><th>Carrier</th><th>Motor</th><th>Drive</th></tr></thead><tbody>
+   <tr><td>Low (2–4 kHz)</td><td>An audible whine</td><td>Runs cooler, better with long cables</td></tr>
+   <tr><td>High (8–16 kHz)</td><td>Quiet, with smoother current</td><td>Runs hotter ⇒ needs derating, and more EMC noise</td></tr></tbody></table></div>
+  <div class="ex"><b>From the field:</b> an office next to the pump room complained about a whine. We raised the carrier from 4 to 8 kHz and the noise went away, but we checked the derating table in the manual to make sure the drive could still carry the motor current.</div>
+</section>
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Get at least 5 of 6 right to complete the lesson.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">The numbers and examples here are common training values, and parameter and terminal names differ from brand to brand and model to model: <b>your drive's manual is the reference</b>. Your progress is saved on this device.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script>
+VF.lesson('l3');
+window.PW = VF.pwm(document.getElementById('pwm'), {lesson:'l3'});
+VF.drill(document.getElementById('vf'), VF.vfGen, {lesson:'l3', task:'vf', need:4, goal:'Get <b>4</b> right to complete this drill.'});
+VF.quiz(document.getElementById('quiz'), [
+  {q:'PWM means:', o:['Pulses of varying width that make an average voltage close to a sine', 'A fixed frequency', 'DC current', 'A variable resistor'], a:0, why:'Pulse Width Modulation.'},
+  {q:'A 400 V / 50 Hz motor at 25 Hz in V/f. The voltage is roughly:', o:['200 V', '400 V', '100 V', '25 V'], a:0, why:'8 V/Hz × 25.'},
+  {q:'The same motor at 60 Hz. The voltage:', o:['400 V (it does not rise)', '480 V', '600 V', '0 V'], a:0, why:'Field weakening above rated frequency.'},
+  {q:'Boost is used to:', o:['Strengthen torque at very low speed', 'Raise the maximum speed', 'Reduce noise', 'Stop fast'], a:0, why:'It compensates the voltage drop across the winding resistance.'},
+  {q:'Raising the carrier frequency gives:', o:['A quieter motor but a hotter drive', 'A faster motor', 'Higher torque', 'Higher DC voltage'], a:0, why:'Switching losses in the IGBTs go up.'},
+  {q:'The motor current looks close to a sine even though the voltage is pulses, because:', o:['The winding inductance smooths it', 'Every drive has a sine filter', 'The motor is DC', 'The cable does that'], a:0, why:'A coil resists changes in current.'}
+], {lesson:'l3', pass:0.8});
+</script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+</body>
+</html>

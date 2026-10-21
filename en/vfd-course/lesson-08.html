@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Braking and stopping</title>
+<meta name="description" content="Lesson 8 of the VFD course: ramp and coast stops, why a fast stop causes an OV fault, the chopper and braking resistor, and DC injection, with a heavy-flywheel and DC bus voltage simulation.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/vfd-course/lesson-08.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/vfd-course/lesson-08.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/vfd-course/lesson-08.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/vfd-course/lesson-08.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="vfd.css?v=20261021e">
+<script src="vfd.js?v=20261021e"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">VFD course · Lesson 8 of 12</p>
+    <h1>Braking and stopping</h1>
+    <p>Starting is easy; stopping is what causes trouble. When you stop a heavy load fast, the motor turns into a generator and sends the energy back into the drive. Try it yourself: you will cause an OV fault, then fix it.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="/en/labs.html">All courses →</a><a class="btn lang-btn" href="/vfd-course/lesson-08.html" lang="ar" hreflang="ar" data-keep aria-label="اقرا الصفحة دي بالعربي" title="اقرا الصفحة دي بالعربي" onclick="try{localStorage.setItem('le-lang','ar')}catch(e){}">ع</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>Ways to stop</h2>
+  <div class="tblw"><table class="tbl"><thead><tr><th>Method</th><th>What happens</th><th>When</th></tr></thead><tbody>
+   <tr><td><b>Ramp to stop</b></td><td>The drive lowers the frequency over the decel time</td><td>The most common: conveyors, pumps</td></tr>
+   <tr><td><b>Coast to stop</b></td><td>The drive cuts its output and the load stops on friction</td><td>Heavy fans, or when the time does not matter</td></tr>
+   <tr><td><b>DC injection</b></td><td>The drive puts DC on the windings, which brakes and holds</td><td>At the end of a stop so the shaft does not creep (the energy is burnt in the motor)</td></tr>
+   <tr><td><b>Braking resistor</b></td><td>The chopper burns the returned energy in a resistor</td><td>Fast stops of heavy loads, hoists, centrifuges</td></tr>
+   <tr><td><b>Regen / AFE</b></td><td>Sends the energy back to the supply</td><td>Large loads that brake a lot (lifts, big hoists)</td></tr></tbody></table></div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Why OV?</h2>
+  <p>When the drive lowers the frequency faster than the load would stop on its own, the load turns the motor faster than the new synchronous speed ⇒ the motor works as a <b>generator</b> and charges the capacitors. The rectifier cannot send energy back to the supply, so the voltage rises to the OV limit (on a 400 V drive, roughly 800 V DC) and the drive trips.</p>
+  <div class="box">Many drives have <b>OV stall prevention / a bus regulator</b>: when the voltage rises, it lengthens the decel by itself. That prevents the fault, but the stop takes longer than you set. If you use a braking resistor, you usually have to turn this feature off.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>Try it: a heavy flywheel</h2>
+  <div class="wd"><h3>Braking simulator</h3><div id="brake"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>The right braking resistor</h2>
+  <ul><li><b>The resistance (Ω)</b> must not be below the minimum value in the manual, or the chopper burns.</li><li><b>The power (W)</b> must suit the energy and the braking duty cycle: a load that stops every minute is not the same as one that stops once an hour.</li><li>The resistor gets very hot: outside or on top of the panel, away from cables.</li><li>Use the resistor's <b>thermal switch</b> on a drive input or in the contactor circuit.</li><li>Enable the chopper in the parameters (on many brands it is off from the factory).</li></ul>
+  <div class="ex"><b>From the field:</b> a centrifuge kept tripping on OV. The technician set a 120-second decel «to be done with it». Production complained. The fix was a braking resistor with the value from the manual, and the decel came down to 20 seconds with no faults.</div>
+</section>
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Get at least 5 of 6 right to complete the lesson.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">The numbers and examples here are common training values, and parameter and terminal names differ from brand to brand and model to model: <b>your drive's manual is the reference</b>. Your progress is saved on this device.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script>
+VF.lesson('l8');
+window.BK = VF.brake(document.getElementById('brake'), {lesson:'l8'});
+VF.quiz(document.getElementById('quiz'), [
+  {q:'An OV fault during decel is caused by:', o:['The load sending energy back to the DC bus', 'Low supply voltage', 'A short in the cable', 'A hot motor'], a:0, why:'Regeneration.'},
+  {q:'Fixes for OV while stopping (pick the most complete):', o:['A longer decel, a braking resistor, or coast if suitable', 'A shorter accel', 'A higher carrier', 'More boost'], a:0, why:'They all reduce or burn the returned energy.'},
+  {q:'Coast to stop means:', o:['The drive cuts its output and the load stops by itself', 'Stopping as fast as possible', 'DC braking', 'Reversing'], a:0, why:'There is no control over the stop.'},
+  {q:'A braking resistor below the minimum value in the manual:', o:['The chopper may burn from the current', 'Better braking', 'No difference', 'The motor heats up'], a:0, why:'The chopper current exceeds its limit.'},
+  {q:'Where does DC injection burn the energy?', o:['In the motor itself', 'In the resistor', 'In the supply', 'In the capacitor'], a:0, why:'That is why you keep it short.'},
+  {q:'What does the bus regulator / OV stall prevention do?', o:['Lengthens the decel by itself when the voltage rises', 'Shortens the decel', 'Turns on the chopper', 'Disconnects the supply'], a:0, why:'It prevents OV at the cost of time.'}
+], {lesson:'l8', pass:0.8});
+</script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Inside the drive</title>
+<meta name="description" content="Lesson 4 of the servo course: the power circuit of a servo drive (rectifier, DC bus, IGBTs and braking resistor), the three loops: current, speed and position, and the following error.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/servo-course/lesson-04.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/servo-course/lesson-04.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/servo-course/lesson-04.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/servo-course/lesson-04.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="servo.css?v=20261021e">
+<script src="servo.js?v=20261021e"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">Servo motor and drive · Lesson 4 of 12</p>
+    <h1>Inside the drive</h1>
+    <p>The drive has two parts: a <b>power circuit</b> exactly like a VFD, and a <b>control</b> section with three nested loops that run thousands of times per second. In this lesson you will see both in an interactive diagram.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="/en/labs.html">All courses →</a><a class="btn lang-btn" href="/servo-course/lesson-04.html" lang="ar" hreflang="ar" data-keep aria-label="اقرا الصفحة دي بالعربي" title="اقرا الصفحة دي بالعربي" onclick="try{localStorage.setItem('le-lang','ar')}catch(e){}">ع</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>The power circuit: exactly like a VFD</h2>
+  <p>If you understand the VFD, you will find the power circuit of a servo drive is the same:</p>
+  <ol>
+    <li><b>Rectifier:</b> converts the <bdi dir="ltr">AC</bdi> coming in on L1 L2 L3 to DC.</li>
+    <li><b>DC bus:</b> large capacitors charged to about <bdi dir="ltr">310 V DC</bdi> in a 220 V drive (and about <bdi dir="ltr">540 V DC</bdi> in a 400 V drive).</li>
+    <li><b>Inverter (IGBT):</b> 6 transistors chop the DC with PWM and output 3 phases on U V W.</li>
+    <li><b>Braking resistor (regen):</b> when the motor brakes it returns energy, and this energy raises the DC bus voltage. The drive switches in the resistor to burn it off as heat.</li>
+  </ol>
+  <div class="box safe"><b>Safety:</b> the capacitors stay charged for <b>minutes</b> after the power is switched off. Wait for the <b>CHARGE</b> lamp to go out (and the time written on the drive), and measure with a multimeter between P+ and N before you touch any terminal.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>The control: 3 nested loops</h2>
+  <p>The real difference between a servo drive and a VFD is in the control: the drive has <b>3 nested (cascade) loops</b>, and each loop gives the command to the one inside it:</p>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Loop</th><th>Compares</th><th>Outputs</th><th>Typical rate</th></tr></thead>
+    <tbody>
+      <tr><td><b>Position</b> (outer)</td><td>Target × actual position</td><td>A speed command</td><td>Tens of Hz</td></tr>
+      <tr><td><b>Speed</b> (middle)</td><td>Target × actual speed</td><td>A torque (current) command</td><td>Hundreds of Hz</td></tr>
+      <tr><td><b>Current</b> (inner)</td><td>Target × actual current</td><td>PWM voltage to the motor</td><td>Several kHz</td></tr>
+    </tbody></table></div>
+  <div class="ex"><b>Analogy:</b> you are driving a car and want to stop at a sign. <b>Position loop:</b> "50 metres left, so I drive at 40 km/h". <b>Speed loop:</b> "I am doing 30 and want 40, more throttle". <b>Current loop:</b> your foot, turning "more" into the right pedal press. Each one must be <b>faster</b> than the one outside it, otherwise the car shakes.</div>
+  <div class="wd"><h3>Inside the drive (tap the blocks)</h3><div id="diag"></div></div>
+  <div class="box key"><b>Following error (the error during motion):</b> while moving, the actual position always lags slightly behind the target, because the position loop needs an "error" to ask for speed. This difference is called the <b>following error or position deviation</b>, and if it grows beyond a set limit the drive raises an alarm. <b>Feed-forward</b> reduces it by sending the required speed straight away without waiting for the error.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>Put the signal path in order</h2>
+  <div class="wd"><h3>From the command to the motor and back</h3><div id="order"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Answer at least 5 of 6 correctly so the lesson is marked complete.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">The numbers and values in this lesson (voltages, frequencies, gains, limits) are approximate training values based on general field experience, and they differ from brand to brand and model to model: <b>your drive's manual is the reference</b> before any setup on a real machine. Alarm and parameter names also differ from one manufacturer to another. Your progress is saved on this device.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Mitsubishi, Yaskawa and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script>
+SV.lesson('l4');
+window.DIAG = SV.driveDiagram(document.getElementById('diag'), {lesson:'l4'});
+window.ORD = SV.order(document.getElementById('order'), [
+  'The PLC sends the position command',
+  'The position loop compares with the encoder and asks for speed',
+  'The speed loop compares and asks for torque (current)',
+  'The current loop calculates the required voltage',
+  'The IGBTs output PWM on U V W',
+  'The motor turns and the encoder returns the new position'
+], {lesson:'l4', task:'order', goal:'Put <b>the 6 steps</b> in the right order.', done:'Exactly ✓ And then this cycle repeats from the start, thousands of times per second.'});
+SV.quiz(document.getElementById('quiz'), [
+  {q:'The fastest loop in a servo drive:', o:['The current loop', 'The speed loop', 'The position loop', 'They all run at the same rate'], a:0, why:'It is the innermost one and runs in kHz.'},
+  {q:'What does the position loop output to the loop inside it?', o:['A speed command', 'A current command', 'A PWM voltage', 'Pulses to the PLC'], a:0, why:'Position loop → speed command.'},
+  {q:'The DC bus voltage in a 220 V drive is about:', o:['310 V DC', '24 V DC', '220 V DC', '600 V DC'], a:0, why:'220 × 1.41 ≈ 310.'},
+  {q:'Where does the energy returned while the motor brakes go?', o:['To the DC bus, and the excess to the braking resistor', 'To the encoder', 'To the mechanical brake', 'Back to the PLC'], a:0, why:'It raises the capacitor voltage, and the resistor burns it off.'},
+  {q:'The following error is:', o:['The difference between target and actual position during motion', 'An encoder fault', 'A gear error', 'PLC delay'], a:0, why:'Position deviation.'},
+  {q:'Before you touch the drive terminals after switching off:', o:['Wait for the CHARGE lamp to go out and measure the DC bus', 'Switch off and start work straight away', 'Switch off the 24 V only', 'Just do Servo OFF'], a:0, why:'The capacitors stay charged for minutes.'}
+], {lesson:'l4', pass:0.8});
+</script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+</body>
+</html>

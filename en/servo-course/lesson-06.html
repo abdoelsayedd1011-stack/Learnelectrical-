@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Control modes</title>
+<meta name="description" content="Lesson 6 of the servo course: pulse position mode (Pulse/Direction, CW/CCW and A/B), speed mode with an analogue command, torque mode with a speed limit, and internal positions. An interactive simulator of the four modes.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/servo-course/lesson-06.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/servo-course/lesson-06.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/servo-course/lesson-06.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/servo-course/lesson-06.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="servo.css?v=20261021e">
+<script src="servo.js?v=20261021e"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">Servo motor and drive · Lesson 6 of 12</p>
+    <h1>Control modes</h1>
+    <p>A servo can run in <b>position</b>, <b>speed</b> or <b>torque</b> mode, or execute <b>positions stored inside it</b>. In this lesson you will try each mode yourself on a simulator and learn to read the pulse formats.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="/en/labs.html">All courses →</a><a class="btn lang-btn" href="/servo-course/lesson-06.html" lang="ar" hreflang="ar" data-keep aria-label="اقرا الصفحة دي بالعربي" title="اقرا الصفحة دي بالعربي" onclick="try{localStorage.setItem('le-lang','ar')}catch(e){}">ع</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>4 basic modes</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Mode</th><th>Where the command comes from</th><th>Loops the drive closes</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><b>Position</b></td><td>Pulses from the PLC, or a network</td><td>Position + speed + current</td><td>Cut-to-length, CNC axis</td></tr>
+      <tr><td><b>Speed</b></td><td>Analogue ±10 V, or internal speeds</td><td>Speed + current</td><td>Synchronised conveyors, spindle</td></tr>
+      <tr><td><b>Torque</b></td><td>Analogue ±10 V, or an internal value</td><td>Current only</td><td>Winding material at constant tension, pressing</td></tr>
+      <tr><td><b>Internal positions</b> (PR / indexer)</td><td>A table inside the drive + digital inputs</td><td>Position + speed + current</td><td>A table that stops at 4 stations</td></tr>
+    </tbody></table></div>
+  <p>The mode is set by a parameter (and sometimes you can switch between two modes with an input). The names differ: Delta, for example, calls them PT, PR, S and T, and other manufacturers use other names, but the idea is the same.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Try the four modes</h2>
+  <div class="wd"><h3>Mode simulator</h3><div id="modes"></div></div>
+  <div class="box key"><b>Notice:</b> in torque mode the motor does not control the speed. If the load is suddenly removed (the material breaks) it will run up to the <b>speed limit</b>, so you must always set it.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>Pulse formats</h2>
+  <ul>
+    <li><b>Pulse + Direction:</b> one wire for the pulses and one for the direction (high = forward, for example). The most common with a PLC.</li>
+    <li><b>CW / CCW:</b> one pulse wire for each direction.</li>
+    <li><b>A / B (quadrature):</b> like an encoder, 90° apart. Used when a servo follows the encoder of another machine.</li>
+  </ul>
+  <p>The drive must be set to the same format the PLC outputs (the pulse format and logic parameter). If it is not set correctly, the motor may turn in one direction only, not turn at all, or move half the distance.</p>
+  <div class="wd"><h3>Drill: read the pulses</h3><div id="fmt"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Answer at least 5 of 6 correctly so the lesson is marked complete.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">The numbers and values in this lesson (voltages, frequencies, gains, limits) are approximate training values based on general field experience, and they differ from brand to brand and model to model: <b>your drive's manual is the reference</b> before any setup on a real machine. Alarm and parameter names also differ from one manufacturer to another. Your progress is saved on this device.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Mitsubishi, Yaskawa and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script>
+SV.lesson('l6');
+window.MODES = SV.modes(document.getElementById('modes'), {lesson:'l6'});
+window.FMT = SV.drill(document.getElementById('fmt'), SV.fmtGen, {lesson:'l6', task:'fmt', need:5, goal:'Answer <b>5</b> correctly to complete the drill.'});
+SV.quiz(document.getElementById('quiz'), [
+  {q:'In pulse position mode, the pulse <b>frequency</b> sets:', o:['The speed', 'The distance', 'The torque', 'The direction'], a:0, why:'The number of pulses = distance, and their frequency = speed.'},
+  {q:'Speed mode: <span class="eq">+10 V = 3000 rpm</span>. At <span class="eq">−2 V</span>:', o:['600 rpm reverse', '600 rpm forward', '2000 rpm', 'Stopped'], a:0, why:'3000 × 2 ÷ 10 = 600, and the signal is negative.'},
+  {q:'A material winder needs constant tension. The best mode:', o:['Torque with a speed limit', 'Position', 'Speed', 'Internal positions'], a:0, why:'Tension = torque.'},
+  {q:'In torque mode, the material breaks. The motor:', o:['Runs up to the speed limit', 'Stops', 'Reverses', 'Raises an encoder error'], a:0, why:'There is no load to resist, and the limit is what holds it.'},
+  {q:'With internal positions, how does the PLC choose the position?', o:['Digital inputs (in binary) + a trigger signal', 'Pulses', 'Analogue', 'From the keypad only'], a:0, why:'POS0, POS1… + CTRG, for example.'},
+  {q:'A leading B by 90° in A/B pulses means:', o:['One direction (forward, say), and if B leads it is the reverse', 'High speed', 'A fault', 'Standstill'], a:0, why:'Exactly like an encoder.'}
+], {lesson:'l6', pass:0.8});
+</script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+</body>
+</html>

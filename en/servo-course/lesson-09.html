@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Homing and limits</title>
+<meta name="description" content="Lesson 9 of the servo course: homing with a home sensor and the Z pulse or with a limit switch, NC limit switches and why, software limits, and the absolute encoder. An interactive axis with sensors.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/servo-course/lesson-09.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/servo-course/lesson-09.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/servo-course/lesson-09.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/servo-course/lesson-09.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="servo.css?v=20261021e">
+<script src="servo.js?v=20261021e"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">Servo motor and drive · Lesson 9 of 12</p>
+    <h1>Homing and limits</h1>
+    <p>The machine must know its <b>zero</b>, and it must <b>not crash</b> into the end. You will run a homing yourself on a ball screw axis, try the software limits and the limit switches, and see why limits are wired NC.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="/en/labs.html">All courses →</a><a class="btn lang-btn" href="/servo-course/lesson-09.html" lang="ar" hreflang="ar" data-keep aria-label="اقرا الصفحة دي بالعربي" title="اقرا الصفحة دي بالعربي" onclick="try{localStorage.setItem('le-lang','ar')}catch(e){}">ع</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>Homing: the zero point</h2>
+  <p>With an incremental encoder, when the drive starts up it <b>does not know where the axis is</b>. Homing means moving to a fixed mark on the machine and saying "zero is here".</p>
+  <ul>
+    <li><b>Home sensor (home / dog):</b> a proximity sensor or limit switch that marks the area roughly.</li>
+    <li><b>The Z pulse:</b> after leaving the sensor, the drive looks for the first Z pulse from the encoder. Its position is exactly the same every time, so the zero is <b>accurate to one pulse</b>, not to the sensor's accuracy.</li>
+    <li>Other methods: homing on the limit switch, on a hard stop with a torque limit (stopper), or "current position = zero". Every drive or PLC has a numbered list of methods in its manual.</li>
+  </ul>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Limits: 3 layers of protection</h2>
+  <ol>
+    <li><b>Software limits:</b> numbers in the drive or the PLC (for example from <bdi dir="ltr">−50</bdi> to <bdi dir="ltr">280 mm</bdi>). The first and gentlest protection, <b>but they only work after homing</b>.</li>
+    <li><b>Limit switches (hardware):</b> wired to inputs on the drive (forward / reverse inhibit) or the PLC. When one is hit, the drive blocks motion in that direction only.</li>
+    <li><b>Hard stop:</b> a mechanical stop at the end. If the axis reaches it, everything before it has failed.</li>
+  </ol>
+  <div class="box key"><b>Why are limits NC?</b> If the wire breaks, an NC limit appears "hit" and the machine stops (safe). With NO, if the wire breaks nobody knows until the axis crashes.</div>
+  <div class="wd"><h3>Ball screw axis with sensors</h3><div id="axis"></div></div>
+  <div class="ex"><b>With an absolute encoder:</b> you set the zero (origin) <b>once</b> at installation, the drive remembers it even if power is lost, and the software limits work straight away. But if you replace the motor or undo the coupling, you must set the zero again.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Answer at least 5 of 6 correctly so the lesson is marked complete.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">The numbers and values in this lesson (voltages, frequencies, gains, limits) are approximate training values based on general field experience, and they differ from brand to brand and model to model: <b>your drive's manual is the reference</b> before any setup on a real machine. Alarm and parameter names also differ from one manufacturer to another. Your progress is saved on this device.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Mitsubishi, Yaskawa and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script>
+SV.lesson('l9');
+window.AXIS = SV.axis(document.getElementById('axis'), {lesson:'l9'});
+SV.quiz(document.getElementById('quiz'), [
+  {q:'Why does homing look for the Z pulse after the home sensor?', o:['Its position is fixed to one pulse, more accurate than the sensor', 'To save time', 'For the brake', 'There is no need for it'], a:0, why:'The sensor is accurate to a millimetre, the Z pulse is very precise.'},
+  {q:'When do software limits work (with an incremental encoder)?', o:['Only after homing', 'Always', 'Only before homing', 'When the limit switch is hit'], a:0, why:'Without a known zero, the numbers mean nothing.'},
+  {q:'A limit switch is best wired:', o:['NC', 'NO', 'It makes no difference', 'Without a wire'], a:0, why:'A broken wire = a safe stop.'},
+  {q:'The axis hit the +LS. The drive normally:', o:['Blocks positive motion and allows negative', 'Blocks motion in both directions for ever', 'Carries on as normal', 'Runs a homing by itself'], a:0, why:'Forward inhibit.'},
+  {q:'An absolute encoder. After power returns:', o:['The position is known and no homing is needed', 'A homing is needed', 'You must replace the battery', 'The software limits stop working'], a:0, why:'It knows its position straight away.'},
+  {q:'The last layer of protection on an axis:', o:['The mechanical hard stop', 'The software limit', 'The limit switch', 'The PLC'], a:0, why:'If it gets there, everything before it has failed.'}
+], {lesson:'l9', pass:0.8});
+</script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+</body>
+</html>

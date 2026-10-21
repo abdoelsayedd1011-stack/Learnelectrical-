@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Control modes and autotune</title>
+<meta name="description" content="Lesson 7 of the VFD course: V/f versus sensorless vector versus vector with encoder, slip and speed accuracy, torque at low speed, and static and rotating autotune, with a loaded-conveyor challenge at 5 Hz.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/vfd-course/lesson-07.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/vfd-course/lesson-07.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/vfd-course/lesson-07.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/vfd-course/lesson-07.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="vfd.css?v=20261021e">
+<script src="vfd.js?v=20261021e"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">VFD course · Lesson 7 of 12</p>
+    <h1>Control modes and autotune</h1>
+    <p>The same drive can run the motor with more than one «brain». V/f is simple and suits fans, while vector understands the motor from the inside, so it gives far more torque and accuracy at low speed. Try both on a loaded conveyor and see the difference for yourself.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="/en/labs.html">All courses →</a><a class="btn lang-btn" href="/vfd-course/lesson-07.html" lang="ar" hreflang="ar" data-keep aria-label="اقرا الصفحة دي بالعربي" title="اقرا الصفحة دي بالعربي" onclick="try{localStorage.setItem('le-lang','ar')}catch(e){}">ع</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>Slip: why speed drops with load</h2>
+  <p>An induction motor turns a little slower than synchronous speed, and this difference (<b>slip</b>) grows with load. A motor with 1500 rpm synchronous speed may turn at 1450 rpm at full load: that is 50 rpm of slip.</p>
+  <div class="ex"><b>The problem at low speed:</b> at 5 Hz the synchronous speed is only 150 rpm, and the slip is still about 50 rpm! That is a 33 % speed error. And V/f torque gets weak there too.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>The 3 modes</h2>
+  <div class="tblw"><table class="tbl"><thead><tr><th>Mode</th><th>How it works</th><th>Speed accuracy</th><th>Torque at low speed</th><th>Suits</th></tr></thead><tbody>
+   <tr><td><b>V/f</b></td><td>Voltage and frequency at a fixed ratio</td><td>Limited by slip</td><td>Weak below ~5–10 Hz</td><td>Fans, pumps, several motors on one drive</td></tr>
+   <tr><td><b>Sensorless Vector</b></td><td>Estimates flux and torque from current and voltage</td><td>Good (compensates slip)</td><td>High down to ~1 Hz</td><td>Conveyors, mixers, extruders</td></tr>
+   <tr><td><b>Vector with encoder</b></td><td>Closed loop: the encoder measures the real speed</td><td>Excellent</td><td>Full, even at zero speed</td><td>Hoists, winders, precision machines</td></tr></tbody></table></div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>Challenge: a loaded conveyor at low speed</h2>
+  <div class="wd"><h3>Control modes</h3><div id="modes"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>Autotune</h2>
+  <p>Vector needs to know the «inside» of the motor: winding resistance, inductance and magnetising current. The autotune measures them itself.</p>
+  <ul class="steps-l"><li>Enter the nameplate data first (lesson 6). Without it the autotune measures wrongly.</li><li><b>Static</b> (the motor does not turn): when you cannot uncouple the load. Faster, and accurate enough for most jobs.</li><li><b>Rotating</b> (the motor turns): more accurate, but the motor must be uncoupled from the load or lightly loaded, with no danger if it turns.</li><li>The motor is cold, the cable is in its final connection (its length is part of the measurement), and no output contactor is open.</li></ul>
+  <div class="box safe"><b>Safety:</b> in a rotating autotune the motor turns by itself. Make sure nobody is near the machine and the load is uncoupled, especially on a hoist.</div>
+  <div class="wd"><h3>Drill: pick the right mode</h3><div id="pick"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Get at least 5 of 6 right to complete the lesson.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">The numbers and examples here are common training values, and parameter and terminal names differ from brand to brand and model to model: <b>your drive's manual is the reference</b>. Your progress is saved on this device.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script>
+VF.lesson('l7');
+window.MD = VF.modes(document.getElementById('modes'), {lesson:'l7'});
+VF.drill(document.getElementById('pick'), VF.pickGen, {lesson:'l7', task:'pick', need:4, goal:'Get <b>4</b> right to complete this drill.'});
+VF.quiz(document.getElementById('quiz'), [
+  {q:'4 motors on one drive. The mode:', o:['V/f', 'Sensorless Vector', 'Vector with encoder', 'Any of them'], a:0, why:'Vector needs to know one motor.'},
+  {q:'Slip means:', o:['The difference between synchronous speed and actual speed', 'Accel time', 'Carrier frequency', 'Starting current'], a:0, why:'And it grows with load.'},
+  {q:'Before an autotune you must:', o:['Enter the motor nameplate data', 'Raise the carrier', 'Remove the earth', 'Enable the PID'], a:0, why:'The calculation is based on it.'},
+  {q:'A hoist must hold its load at zero speed. The mode:', o:['Vector with encoder', 'V/f', 'Quadratic V/f', 'Coast'], a:0, why:'Closed loop.'},
+  {q:'A rotating autotune needs:', o:['The motor uncoupled from the load or lightly loaded', 'A hot motor', 'The cable disconnected', 'The output contactor open'], a:0, why:'The motor will turn by itself.'},
+  {q:'At 5 Hz with full load in V/f, the problem is:', o:['A large speed error and weak torque', 'High voltage', 'OV', 'No problem'], a:0, why:'The slip is large compared with the speed.'}
+], {lesson:'l7', pass:0.8});
+</script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PID and applications</title>
+<meta name="description" content="Lesson 9 of the VFD course: the PID inside the drive for a constant-pressure pump (SP, PV and a 4–20 mA transmitter), tuning Kp and Ti, sleep and wake, and settings for fans, conveyors, hoists and compressors.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/vfd-course/lesson-09.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/vfd-course/lesson-09.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/vfd-course/lesson-09.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/vfd-course/lesson-09.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="vfd.css?v=20261021e">
+<script src="vfd.js?v=20261021e"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">VFD course · Lesson 9 of 12</p>
+    <h1>PID and applications</h1>
+    <p>Most drives have a <b>PID controller</b> inside. That means you can wire a pressure transmitter straight to the drive, and it changes the pump speed by itself so the pressure stays constant however often people open and close taps. No PLC needed.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="/en/labs.html">All courses →</a><a class="btn lang-btn" href="/vfd-course/lesson-09.html" lang="ar" hreflang="ar" data-keep aria-label="اقرا الصفحة دي بالعربي" title="اقرا الصفحة دي بالعربي" onclick="try{localStorage.setItem('le-lang','ar')}catch(e){}">ع</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>The idea</h2>
+  <ul><li><b>SP</b> (setpoint): the pressure you want, for example 4 bar, from the keypad or from a signal.</li><li><b>PV / feedback</b>: the real pressure from a 4–20 mA transmitter on AI2 (range 0–10 bar, for example).</li><li><b>The output</b>: pump speed. If the pressure is below the setpoint ⇒ higher speed, and the other way round.</li></ul>
+  <div class="tblw"><table class="tbl"><thead><tr><th>Setting</th><th>What it does</th><th>If too large</th></tr></thead><tbody>
+   <tr><td><b>Kp</b> (proportional gain)</td><td>Reacts in proportion to the error</td><td>Oscillation</td></tr>
+   <tr><td><b>Ti</b> (integral time)</td><td>Removes the remaining error over time. <b>The shorter it is</b>, the stronger</td><td>If far too short: oscillation and overshoot</td></tr>
+   <tr><td><b>Td</b> (derivative)</td><td>Looks at how fast the error changes</td><td>Usually left at zero on pumps</td></tr></tbody></table></div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Try it: a constant-pressure pump</h2>
+  <p>The current settings are too «eager» and the pressure oscillates. Tune them, then change the demand and watch the drive bring the pressure back.</p>
+  <div class="wd"><h3>Constant-pressure pump with PID</h3><div id="pid"></div></div>
+  <div class="box"><b>A quick tuning method:</b> start with a small Kp and a long Ti (slow but stable). Raise Kp until it starts to oscillate, then go back to about half. Then shorten Ti until the error goes away quickly without oscillation.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>Sleep and wake</h2>
+  <p>At night there is no demand and the pump turns at low speed just to hold the pressure. The drive can stop it (<b>sleep</b>) when the speed stays below a limit for a set time, and wake it up (<b>wake</b>) when the pressure drops below a limit. Try it in the simulator: close all the taps (0 %) and wait.</p>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>Settings by application</h2>
+  <div class="tblw"><table class="tbl"><thead><tr><th>Application</th><th>Key settings</th></tr></thead><tbody>
+   <tr><td>Pump / fan</td><td>Quadratic V/f, PID, sleep, min speed, flying start for fans</td></tr>
+   <tr><td>Conveyor</td><td>Sensorless vector, suitable accel/decel or S-curve, preset speeds</td></tr>
+   <tr><td>Hoist / crane</td><td>Vector (preferably with encoder), braking resistor, mechanical brake control from a relay</td></tr>
+   <tr><td>Compressor / mixer</td><td>High starting torque, a min speed for lubrication and cooling</td></tr></tbody></table></div>
+  <div class="wd"><h3>Drill: the key setting for the application</h3><div id="app"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Get at least 5 of 6 right to complete the lesson.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">The numbers and examples here are common training values, and parameter and terminal names differ from brand to brand and model to model: <b>your drive's manual is the reference</b>. Your progress is saved on this device.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script>
+VF.lesson('l9');
+window.PD = VF.pid(document.getElementById('pid'), {lesson:'l9'});
+VF.drill(document.getElementById('app'), VF.appGen, {lesson:'l9', task:'app', need:4, goal:'Get <b>4</b> right to complete this drill.'});
+VF.quiz(document.getElementById('quiz'), [
+  {q:'In a constant-pressure pump with PID, the PV comes from:', o:['The pressure transmitter', 'The keypad', 'The motor nameplate', 'The braking resistor'], a:0, why:'Feedback.'},
+  {q:'The pressure swings up and down. The first step:', o:['Lower Kp or lengthen Ti', 'Raise Kp', 'Shorten Ti', 'Set the accel to zero'], a:0, why:'The controller is overcorrecting.'},
+  {q:'A short Ti means:', o:['Stronger, faster integral action', 'Weaker integral action', 'No integral action', 'Higher Kp'], a:0, why:'The error accumulates faster.'},
+  {q:'Sleep mode is useful for:', o:['Stopping the pump when there is no demand and saving electricity', 'Raising the pressure', 'Braking', 'Autotune'], a:0, why:'And it wakes up when the pressure drops.'},
+  {q:'A fan may be windmilling before start. The setting:', o:['Flying start', 'DC injection for 30 seconds', 'Coast', 'S-curve'], a:0, why:'It catches the motor at its speed instead of tripping on OC.'},
+  {q:'A 0–10 bar transmitter outputs 10.4 mA. The pressure:', o:['4 bar', '6.4 bar', '10.4 bar', '2.5 bar'], a:0, why:'(10.4−4)/16 × 10.'}
+], {lesson:'l9', pass:0.8});
+</script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+</body>
+</html>
