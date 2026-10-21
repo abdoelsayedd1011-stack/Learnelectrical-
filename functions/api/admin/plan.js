@@ -3,7 +3,7 @@
 //       {id, until: null}          → back to 'free'
 import { getDb, readBody, json, fail, HttpError } from "../../_lib/auth.js";
 import { requireAdmin } from "../../_lib/admin.js";
-import { paywallOn } from "../../_lib/plan.js";
+import { paywallOn, setPlan } from "../../_lib/plan.js";
 
 export async function onRequestPost({ request, env }){
   try {
@@ -21,8 +21,7 @@ export async function onRequestPost({ request, env }){
       if (d.getUTCDate() !== +m[3] || until <= Date.now() || until > Date.now() + 20 * 365 * 864e5) throw new HttpError(400, "bad_request");
       plan = "pro";
     }
-    const r = await db.prepare("UPDATE users SET plan = ?, pro_until = ? WHERE id = ?").bind(plan, until, id).run();
-    if (!r.meta || !r.meta.changes) throw new HttpError(404, "not_found");
+    if (!(await setPlan(db, id, until))) throw new HttpError(404, "not_found");
     return json({ ok: true, id, plan, pro_until: until, paywall: paywallOn(env) });
   } catch (e) { return fail(e); }
 }

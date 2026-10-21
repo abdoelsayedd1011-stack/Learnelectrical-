@@ -8,8 +8,9 @@
 //   (The env variable wins when it is set; PAYWALL_ON = false in the dashboard turns it back off.)
 // Then member-only pages need plan 'pro' with pro_until in the future; free members are sent to
 // /account.html?need=pro. The free pages stay open for everyone, and admins (ADMIN_EMAILS) always get in.
-// Activate / extend / cancel a member from /admin.html («تفعيل اشتراك»). Before switching on, add a way to pay
-// and a pricing page, and update the «مجاني» wording on the course pages and FAQs.
+// Activate / extend / cancel a member from /admin.html («تفعيل اشتراك»), or approve their payment request there
+// («طلبات الاشتراك», see /subscribe.html and functions/api/pay/). Before switching on, fill the `pay` block in
+// site-config.js (numbers + prices) and update the «مجاني» wording on the course pages and FAQs.
 
 export const PAYWALL_ON = false;
 
@@ -22,4 +23,25 @@ export function paywallOn(env){
 // user: a row/publicUser with plan and pro_until (ms since epoch)
 export function isPro(user, now = Date.now()){
   return !!user && user.plan === "pro" && Number(user.pro_until) > now;
+}
+
+// 23:59:59 Cairo time (UTC+2) on the Cairo calendar day that contains `ms`.
+export function cairoEndOfDay(ms){
+  const d = new Date(ms + 2 * 3600 * 1000);
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 23, 59, 59) - 2 * 3600 * 1000;
+}
+
+// Set a member's plan: until = ms (Pro until then) or null (back to free). Returns false when the member doesn't exist.
+// Used by /api/admin/plan («تفعيل اشتراك») and /api/admin/pay (approving a payment request).
+export async function setPlan(db, id, until){
+  const plan = until ? "pro" : "free";
+  const r = await db.prepare("UPDATE users SET plan = ?, pro_until = ? WHERE id = ?").bind(plan, until || null, id).run();
+  return !!(r.meta && r.meta.changes);
+}
+
+// Days of Pro each paid plan buys. A renewal adds them on top of a Pro plan that hasn't ended yet.
+export const PLAN_DAYS = { monthly: 30, yearly: 365 };
+export function extendedUntil(user, days, now = Date.now()){
+  const base = isPro(user, now) ? Number(user.pro_until) : now;
+  return cairoEndOfDay(base + days * 864e5);
 }

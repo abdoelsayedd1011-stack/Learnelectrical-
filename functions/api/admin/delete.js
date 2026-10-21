@@ -1,4 +1,4 @@
-// Admin: delete a member with their sessions, synced progress, certificates and reset links.
+// Admin: delete a member with their sessions, synced progress, certificates, reset links and payment requests.
 import { getDb, readBody, json, fail, HttpError } from "../../_lib/auth.js";
 import { requireAdmin } from "../../_lib/admin.js";
 
@@ -19,6 +19,7 @@ export async function onRequestPost({ request, env }){
       db.prepare("DELETE FROM login_fails WHERE email = ?").bind(u.email),
       db.prepare("DELETE FROM users WHERE id = ?").bind(id)
     ]);
+    try { await db.prepare("DELETE FROM pay_requests WHERE user_id = ?").bind(id).run(); } catch (e) {} // table exists once someone asked to pay
     return json({ ok: true });
   } catch (e) { return fail(e); }
 }

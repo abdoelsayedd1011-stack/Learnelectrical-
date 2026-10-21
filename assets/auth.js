@@ -97,9 +97,19 @@
       document.getElementById("acc-name").textContent = u.name;
       document.getElementById("acc-email").textContent = u.email;
       var pro = u.plan === "pro" && u.pro_until > Date.now(), dt = function(t){ return new Date(t).toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" }); };
-      document.getElementById("acc-plan").textContent = pro ? "Pro لحد " + dt(u.pro_until) : u.plan === "pro" && u.pro_until ? "مجاني (الاشتراك خلص " + dt(u.pro_until) + ")" : "مجاني";
+      var planEl = document.getElementById("acc-plan");
+      planEl.textContent = pro ? "\u2066Pro\u2069 لحد " + dt(u.pro_until) : u.plan === "pro" && u.pro_until ? "مجاني (الاشتراك خلص " + dt(u.pro_until) + ")" : "مجاني";
+      // لينك «اشترك» بيظهر لما أرقام الدفع والأسعار تتكتب في site-config.js (SITE.pay)
+      var P = (window.SITE || {}).pay || {};
+      if (((P.instapay || P.vodafoneCash) && (+P.monthly > 0 || +P.yearly > 0)) || ((P.intlLink || P.intlNote) && (+P.usdMonthly > 0 || +P.usdYearly > 0))){
+        var sa = document.createElement("a"); sa.href = "subscribe.html"; sa.className = "acc-sub"; sa.textContent = pro ? "جدّد ←" : "اشترك ←";
+        planEl.appendChild(document.createTextNode(" · ")); planEl.appendChild(sa);
+      }
       // جاي من صفحة محتاجة اشتراك (لما الاشتراك يتفعّل في functions/_lib/plan.js)
-      if (new URLSearchParams(location.search).get("need") === "pro" && !pro) showMsg(msg, "الصفحة اللي كنت رايحلها محتاجة اشتراك Pro. كلّمنا عشان نفعّلهولك، وبعدها ارجع لها تاني.");
+      if (new URLSearchParams(location.search).get("need") === "pro" && !pro){
+        showMsg(msg, "الصفحة اللي كنت رايحلها محتاجة اشتراك \u2066Pro\u2069. ");
+        var na = document.createElement("a"); na.href = "subscribe.html"; na.textContent = "اعرف إزاي تشترك ←"; msg.appendChild(na);
+      }
       document.getElementById("acc-since").textContent = new Date(u.created_at).toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" });
       var sync = window.LESync ? window.LESync.ready : Promise.resolve();
       sync.then(loadCerts, loadCerts);

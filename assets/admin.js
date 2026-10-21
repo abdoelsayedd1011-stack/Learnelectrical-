@@ -1,4 +1,4 @@
-/* لوحة الإدارة: أرقام الأعضاء، رسم الاشتراكات اليومية، قايمة الأعضاء، لينك باسورد جديد، تفعيل اشتراك Pro، ومسح عضو.
+/* لوحة الإدارة: أرقام الأعضاء، رسم الاشتراكات اليومية، قايمة الأعضاء، لينك باسورد جديد، تفعيل اشتراك Pro، طلبات الاشتراك، ومسح عضو.
    الصفحة نفسها مفتوحة، بس كل /api/admin/* بيرجّع 403 لأي حد مش في ADMIN_EMAILS. */
 (function(){
   "use strict";
@@ -178,6 +178,64 @@
     }
   });
 
+
+  /* ---------- طلبات الاشتراك (subscribe.html → «أنا حوّلت») ---------- */
+  var PLAN_AR = { monthly: "شهري", yearly: "سنوي" }, PLAN_DAYS = { monthly: 30, yearly: 365 };
+  var METHOD_AR = { instapay: "InstaPay", vodafone: "فودافون كاش", intl: "من خارج مصر" };
+  var prList = $("pr-list"), prDone = $("pr-done"), prCount = $("pr-count");
+  function money(r){ return "⁦" + r.amount + "⁩ " + (r.currency === "USD" ? "دولار" : ((window.SITE || {}).pay || {}).currency || "جنيه"); }
+  function reqRow(r){
+    var done = r.status !== "pending";
+    var cur = isPro({ plan: r.user_plan, pro_until: r.pro_until }) ? "Pro لحد " + fmtDate(r.pro_until) : "مجاني";
+    var tag = r.status === "approved" ? '<span class="mem-plan paid">اتفعّل' + (r.granted_until ? " لحد " + esc(fmtDate(r.granted_until)) : "") + "</span>" : r.status === "rejected" ? '<span class="mem-plan">اترفض</span>' : '<span class="pr-amount">' + esc(money(r)) + "</span>";
+    return '<li class="mem" data-rid="' + r.id + '" data-name="' + esc(r.name || "") + '"><div class="mem-top"><div class="mem-who"><b>' + esc(r.name || "عضو اتمسح") + '</b><span class="ltr mem-email">' + esc(r.email || "") + "</span></div>" + tag + "</div>" +
+      '<dl class="mem-facts"><div><dt>الاشتراك</dt><dd>' + esc(PLAN_AR[r.plan] || r.plan) + " (" + (PLAN_DAYS[r.plan] || 30) + " يوم)</dd></div><div><dt>عن طريق</dt><dd>" + esc(METHOD_AR[r.method] || r.method) + "</dd></div>" +
+      (r.sender ? '<div><dt>حوّل من</dt><dd class="ltr">' + esc(r.sender) + "</dd></div>" : "") +
+      "<div><dt>اتبعت</dt><dd>" + esc(ago(r.created_at)) + "</dd></div>" + (done ? "<div><dt>المبلغ</dt><dd>" + esc(money(r)) + "</dd></div>" : "<div><dt>دلوقتي</dt><dd>" + esc(cur) + "</dd></div>") + "</dl>" +
+      (r.note ? '<p class="pr-note">' + esc(r.note) + "</p>" : "") +
+      (done ? "" : '<div class="mem-act"><button class="btn btn-primary" type="button" data-pr="approve">فعّل ' + (r.plan === "yearly" ? "سنة" : "شهر") + '</button><button class="btn btn-ghost danger" type="button" data-pr="ask-reject">ارفض</button></div>') +
+      '<div class="mem-panel" hidden></div></li>';
+  }
+  function loadReqs(){
+    return get("/api/admin/pay").then(function(r){
+      if (!r.ok){ prCount.textContent = r.message || OFFLINE; return; }
+      prList.innerHTML = r.requests.map(reqRow).join("");
+      prCount.textContent = r.requests.length ? "مستنيين مراجعة: " + r.requests.length + ". اتأكد إن التحويل وصلك بنفس المبلغ قبل ما تفعّل." : "مفيش طلبات مستنية دلوقتي.";
+    });
+  }
+  function loadDone(){
+    return get("/api/admin/pay?status=recent").then(function(r){
+      if (!r.ok) return;
+      prDone.innerHTML = r.requests.length ? r.requests.map(reqRow).join("") : '<li class="adm-empty">لسه مفيش.</li>';
+    });
+  }
+  $("pr-recent").addEventListener("click", function(){
+    var open = prDone.hidden; prDone.hidden = !open; this.setAttribute("aria-expanded", open ? "true" : "false"); if (open) loadDone();
+  });
+  prList.addEventListener("click", function(e){
+    var b = e.target.closest("button[data-pr]"); if (!b) return;
+    var li = b.closest(".mem"), id = +li.getAttribute("data-rid"), name = li.getAttribute("data-name"), act = b.getAttribute("data-pr");
+    var pnl = li.querySelector(".mem-panel"), show = function(h){ pnl.innerHTML = h; pnl.hidden = !h; };
+    if (act === "ask-reject"){
+      show('<div class="mem-confirm"><p>ترفض طلب <b>' + esc(name) + '</b>؟ اشتراكه مش هيتغيّر، وهيشوف إن الطلب اترفض.</p><div class="mem-act"><button class="btn danger-solid" type="button" data-pr="reject">أيوه، ارفض</button><button class="btn btn-ghost" type="button" data-pr="close">لأ</button></div></div>');
+      pnl.querySelector("[data-pr=close]").focus(); return;
+    }
+    if (act === "close"){ show(""); return; }
+    b.disabled = true;
+    post("/api/admin/pay", { id: id, action: act }).then(function(r){
+      if (!r.ok){ b.disabled = false; show('<p class="auth-msg" role="alert">' + esc(r.message || OFFLINE) + "</p>"); if (r.error === "already_done") loadReqs(); return; }
+      li.querySelector(".mem-act").remove();
+      show('<p class="mem-pl" role="status">' + (r.status === "approved" ? "اتفعّل اشتراك Pro لـ " + esc(name) + " لحد " + esc(fmtDate(r.pro_until)) + " ✓" : "اترفض الطلب.") + "</p>");
+      var n = prList.querySelectorAll(".mem-act").length;
+      prCount.textContent = n ? "مستنيين مراجعة: " + n + "." : "خلّصت كل الطلبات ✓";
+      if (r.status === "approved"){
+        var m = list.querySelector('.mem[data-id="' + r.user_id + '"]');
+        if (m){ m.setAttribute("data-until", r.pro_until); m.querySelector(".mem-plan").outerHTML = planTag({ plan: "pro", pro_until: r.pro_until }); }
+      }
+      if (!prDone.hidden) loadDone();
+    });
+  });
+
   /* ---------- البداية ---------- */
   function gate(msg, login){ $("adm-sub").textContent = ""; $("adm-gate-msg").textContent = msg; $("adm-login").hidden = !login; $("adm-gate").hidden = false; }
   get("/api/auth/me").then(function(r){
@@ -187,6 +245,6 @@
     meEmail = r.user.email;
     $("adm-sub").textContent = "أهلاً يا " + r.user.name.split(" ")[0] + ". كل الأرقام من قاعدة البيانات مباشرة.";
     $("adm").hidden = false;
-    loadStats(); loadMembers(true);
+    loadStats(); loadReqs(); loadMembers(true);
   });
 })();
