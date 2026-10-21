@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reading Electrical Drawings course</title>
+<meta name="description" content="Reading Electrical Drawings course: drawing types, IEC and ANSI/NEMA symbols, device tags, terminal numbers and cross-references, control circuits, single line and power circuits, panel layouts and terminals, and fault tracing from the drawing. 7 interactive lessons and a completion certificate.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/drawings-lab/">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/drawings-lab/">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/drawings-lab/">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/drawings-lab/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="/en/drawings-lab/drawings.css?v=20261021v">
+<script src="/en/drawings-lab/drawings.js?v=20261021v"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">LearnElectricals · Reading Electrical Drawings</p>
+    <h1>Reading Electrical Drawings</h1>
+    <p>Drawings are the electrician's language: if you can read them, you can find a fault in any panel, even one you have never seen before. In this course you will learn the <b>types of drawings</b>, read <b>IEC and NEMA symbols</b>, understand <b>terminal numbers and cross-references</b>, and read the <b>control circuit</b>, the <b>single line</b> and the <b>panel and terminal drawings</b>. At the end you will <b>trace faults from the drawing</b> with a multimeter.</p>
+    <div class="course"><span class="tot">7 lessons · drawings you can zoom and run · simulations · final exam and certificate</span><a class="btn" href="#certSec">Completion certificate</a></div>
+  </div>
+  <div class="chips"><a class="btn" href="/en/labs.html">All courses →</a></div>
+</header>
+
+<div class="hub-devs" aria-hidden="true" id="devs"></div>
+
+<div class="next-course"><b>Before you start:</b> this course assumes you understand voltage and current, can use a multimeter, and know how contactors and relays work. If not yet, start with the <a href="/en/courses/basics.html">Electrical Basics course →</a> and the <a href="/en/courses/classic.html">Classic Control course →</a>, then come back here.</div>
+
+<section class="panel sec" aria-labelledby="how">
+  <h2 id="how">How to study here</h2>
+  <ol class="hub-how">
+    <li><b>Read</b> the explanation: one idea per part, in plain words</li>
+    <li><b>Open the drawing</b>: pinch or press + to zoom, and tap any device or reference</li>
+    <li><b>Run the circuit</b>: press the buttons and see where the current flows</li>
+    <li><b>Answer</b> the exercises and questions to complete the lesson</li>
+  </ol>
+</section>
+
+<section class="sec" aria-labelledby="ls">
+  <h2 id="ls">Lessons <small>in order; each lesson builds on the one before</small></h2>
+  <ul class="lessons" id="list"></ul>
+</section>
+
+<section class="panel sec cert" aria-labelledby="certh" id="certSec">
+  <h2 id="certh">Course Completion Certificate</h2>
+  <div id="certBody"></div>
+</section>
+
+<p class="foot">Symbols follow <span class="mono">IEC 60617</span> and <span class="mono">ANSI/NEMA</span>, device tags follow <span class="mono">IEC 81346</span>, and device terminals follow <span class="mono">IEC 60947</span>. The drawings here are teaching examples: <b>the machine's own drawings and their legend page are the reference</b>. Work on panels only if you are qualified and authorised, and isolate and lock off (LOTO) before any work. Your progress is saved on this device only.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script src="/assets/i18n-en.js?v=20261021v"></script>
+<script>
+(function(){
+  DR.hubTheme();
+  const esc = DR.esc, list = document.getElementById('list');
+  document.getElementById('devs').innerHTML = DR.hubArt();
+  function renderList(){
+    list.innerHTML = DR.COURSE.map(l => {
+      const s = DR.summary(l.id), pct = Math.round(s.done / s.total * 100), full = s.done === s.total;
+      return `<li><a class="les${full ? ' done' : ''}" href="${l.file}"><span class="n">${full ? '✓' : l.n}</span><span class="t">${esc(l.title)}</span><span class="s">${esc(l.sub)}</span><span class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Progress ${pct}%"><i style="width:${pct}%"></i></span><span class="st">${s.done ? (full ? 'Done ✓' : 'Continue ' + pct + '% →') : 'Start →'}</span></a></li>`;
+    }).join('');
+  }
+  const body = document.getElementById('certBody');
+  const fmtDate = () => { try { return new Date().toLocaleDateString('en-GB', {year:'numeric', month:'long', day:'numeric'}); } catch (e){ return new Date().toISOString().slice(0, 10); } };
+  function renderCert(){
+    const all = DR.COURSE.map(l => DR.summary(l.id)), done = all.reduce((a, s) => a + s.done, 0), total = all.reduce((a, s) => a + s.total, 0), pct = Math.round(done / total * 100);
+    if (done < total){
+      const left = DR.COURSE.filter(l => { const s = DR.summary(l.id); return s.done < s.total; }).map(l => { const s = DR.summary(l.id); return `<a href="${l.file}">${esc(l.title)}</a> (${s.done}/${s.total})`; });
+      body.innerHTML = `<p class="meta"><b>${done} of ${total} steps</b> done on this device. When you finish all the exercises and quizzes in the seven lessons and pass the final exam, your certificate appears here with your name, ready to print.</p><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Progress ${pct}%"><i style="width:${pct}%"></i></div><p class="meta">Still to do: ${left.join(' · ')}</p>`;
+      return;
+    }
+    const name = DR.store.get('certName');
+    if (!name){
+      body.innerHTML = `<p class="meta">Congratulations! You have finished the whole course. Type your name as you want it on the certificate:</p><form class="cert-name" id="certForm"><label for="certIn" class="muted" hidden>Name</label><input id="certIn" name="n" autocomplete="name" maxlength="60" required placeholder="Your name"><button class="btn pri" type="submit">Get the certificate</button></form>`;
+      return;
+    }
+    let date = DR.store.get('certDate'); if (!date){ date = fmtDate(); DR.store.set('certDate', date); }
+    body.innerHTML = `<div class="cert-card" id="certCard"><div class="k">LearnElectricals · Reading Electrical Drawings</div><h3>Course Completion Certificate</h3><div class="d">This certifies that</div><div class="nm">${esc(name)}</div><div class="d">has successfully completed the <b>Reading Electrical Drawings course</b>: <b>7 lessons</b> covering drawing types, IEC and ANSI/NEMA symbols, device tags, terminal numbers and cross-references, control circuits, single line and power circuits, panel layouts and terminals, and fault tracing from the drawing, and passed the final exam.</div><div class="sig"><span>Date: ${esc(date)}</span><span>www.learnelectricals.com</span></div></div><div class="cert-act"><button type="button" class="btn pri" id="certPrint">Print the certificate</button><button type="button" class="btn" id="certRename">Change the name</button><a class="btn" href="/en/labs.html">All courses →</a></div>`;
+  }
+  body.addEventListener('submit', e => { e.preventDefault(); const v = (document.getElementById('certIn').value || '').trim(); if (v){ DR.store.set('certName', v); renderCert(); } });
+  body.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; if (b.id === 'certPrint') window.print(); else if (b.id === 'certRename'){ DR.store.set('certName', ''); renderCert(); } });
+  renderList(); renderCert();
+  window.addEventListener('pageshow', e => { if (e.persisted){ DR.store.reload(); renderList(); renderCert(); } });
+})();
+</script>
+</body>
+</html>
