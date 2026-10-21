@@ -100,7 +100,7 @@ function reduce(edges0, S, T){
 PL.rungGroups = rungGroups;
 
 /* ---------- translate engine addresses inside a text (test messages, machine drawings) ---------- */
-const ARX = /\b(?:[IQM]\d{1,2}\.[0-7]|IW64|MW\d{1,3})\b/g;
+const ARX = /\b(?:[IQM]\d{1,2}\.[0-7]|IW64|MW\d{1,3}|HC\d)\b/g;
 function xlate(B, T, s){ return String(s).replace(ARX, a => B.short(a, T)); }
 function xlateSvg(B, T, svg){ return svg.replace(/>([^<]+)</g, (m, t) => '>' + t.replace(ARX, a => esc(B.short(a, T))) + '<'); }
 
@@ -114,7 +114,8 @@ const SIE = BR.sie = {id:'sie', name:'Siemens', cpu:'CPU 1214C DC/DC/DC', WY:42,
   rnAr: i => iso('Network ' + (i + 1))};
 SIE.inst = (T, a) => { const t = tagByA(T, a); return t ? t.n : (a[0] === 'T' ? 'IEC_Timer_' : 'IEC_Counter_') + a.slice(1) + '_DB'; };
 SIE.ctr = (prog, a) => { let up = false, dn = false; (prog || []).forEach(rg => rg.rows.forEach(row => row.forEach(el => { if (el && el.a === a){ if (el.t === 'CTU') up = true; if (el.t === 'CTD') dn = true; } }))); return up || !dn ? 'QU' : 'QD'; };
-SIE.abs = function(a){ const k = ENG.kind(a); if (k === 'I' || k === 'Q' || k === 'M' || k === 'IW') return '%' + a; if (k === 'MW') return '%MD' + a.slice(2); if (k === 'TB') return ''; return ''; };
+/* S7-1200 HSC_1 … HSC_6: the current count is read from %ID1000, %ID1004 … (DInt) */
+SIE.abs = function(a){ const k = ENG.kind(a); if (k === 'I' || k === 'Q' || k === 'M' || k === 'IW') return '%' + a; if (k === 'MW') return '%MD' + a.slice(2); if (k === 'HC') return '%ID' + (1000 + 4 * +a.slice(2)); if (k === 'TB') return ''; return ''; };
 SIE.sym = function(a, T, prog){
   const k = ENG.kind(a);
   if (k === 'T') return `"${SIE.inst(T, a)}".Q`;
@@ -124,19 +125,22 @@ SIE.sym = function(a, T, prog){
 };
 SIE.short = (a, T) => { const k = ENG.kind(a); return k === 'T' || k === 'C' ? `"${SIE.inst(T, a)}"` : SIE.abs(a) || a; };
 SIE.word = (a, T) => { const k = ENG.kind(a); if (k === 'T') return `"${SIE.inst(T, a)}".ET`; if (k === 'C') return `"${SIE.inst(T, a)}".CV`; const t = tagByA(T, a); return t ? `"${t.n}"` : SIE.abs(a); };
-SIE.dtype = a => ({I:'Bool', Q:'Bool', M:'Bool', IW:'Int', MW:'Real', T:'IEC_TIMER', C:'IEC_COUNTER'}[ENG.kind(a)] || '');
+SIE.dtype = a => ({I:'Bool', Q:'Bool', M:'Bool', IW:'Int', MW:'Real', T:'IEC_TIMER', C:'IEC_COUNTER', HC:'DInt'}[ENG.kind(a)] || '');
+SIE.hsc = a => 'HSC_' + (1 + +String(a).slice(2));
 SIE.pal = [
   {id:'NO', t:'NO', mn:'-| |-', ar:'كونتاكت NO'}, {id:'NC', t:'NC', mn:'-|/|-', ar:'كونتاكت NC'}, {id:'P', t:'P', mn:'-|P|-', ar:'Edge طالع'}, {id:'N', t:'N', mn:'-|N|-', ar:'Edge نازل'}, {id:'CMP', t:'CMP', mn:'CMP', ar:'مقارنة'},
   {id:'OUT', t:'OUT', mn:'-( )-', ar:'كويل'}, {id:'S', t:'S', mn:'-(S)-', ar:'Set'}, {id:'R', t:'R', mn:'-(R)-', ar:'Reset', acc:['Q', 'M']}, {id:'RT', t:'R', mn:'-(RT)-', ar:'صفّر تايمر', acc:['T']},
-  {id:'TON', t:'TON', mn:'TON', ar:'تأخير تشغيل'}, {id:'TOF', t:'TOF', mn:'TOF', ar:'تأخير فصل'}, {id:'TP', t:'TP', mn:'TP', ar:'نبضة'}, {id:'CTU', t:'CTU', mn:'CTU', ar:'عدّاد طالع'}, {id:'CTD', t:'CTD', mn:'CTD', ar:'عدّاد نازل'}, {id:'SCL', t:'SCL', mn:'NORM_X+SCALE_X', ar:'تحويل أنالوج'}];
-SIE.idOf = el => el.t === 'R' && ENG.kind(el.a) === 'T' ? 'RT' : el.t;
-SIE.help = {NO:'بيوصّل لما البت = 1', NC:'بيوصّل لما البت = 0', P:'بيوصّل سكان واحد لما البت يطلع من 0 لـ 1 (P_TRIG)', N:'بيوصّل سكان واحد لما البت ينزل من 1 لـ 0', CMP:'بيوصّل لو المقارنة صح (Int / Real / Time)',
+  {id:'TON', t:'TON', mn:'TON', ar:'تأخير تشغيل'}, {id:'TOF', t:'TOF', mn:'TOF', ar:'تأخير فصل'}, {id:'TP', t:'TP', mn:'TP', ar:'نبضة'}, {id:'CTU', t:'CTU', mn:'CTU', ar:'عدّاد طالع'}, {id:'CTD', t:'CTD', mn:'CTD', ar:'عدّاد نازل'}, {id:'SCL', t:'SCL', mn:'NORM_X+SCALE_X', ar:'تحويل أنالوج'},
+  {id:'HSCR', t:'R', mn:'CTRL_HSC', ar:'تصفير العدّاد السريع', acc:['HC'], hsc:true}];
+SIE.idOf = el => el.t === 'R' && ENG.kind(el.a) === 'T' ? 'RT' : el.t === 'R' && ENG.kind(el.a) === 'HC' ? 'HSCR' : el.t;
+SIE.help = {NO:'بيوصّل لما البت = 1', NC:'بيوصّل لما البت = 0', P:'بيوصّل سكان واحد لما البت يطلع من 0 لـ 1 (P_TRIG)', N:'بيوصّل سكان واحد لما البت ينزل من 1 لـ 0', CMP:'بيوصّل لو المقارنة صح (Int / DInt / Real / Time). عدّ الـ HSC نوعه DInt (32 بت)',
   OUT:'البت = الكهربا الداخلة', S:'لو جاله كهربا البت يبقى 1 ويفضل', R:'لو جاله كهربا البت يبقى 0', RT:'RESET_TIMER: بيصفّر التايمر', TON:'IEC timer: Q بيبقى 1 بعد PT من IN', TOF:'IEC timer: Q بيفضل 1 لمدة PT بعد ما IN يقع', TP:'IEC timer: نبضة بطول PT',
-  CTU:'IEC counter: CV بيزيد مع كل نبضة على CU، و QU = 1 لما CV ≥ PV، والـ R يصفّره', CTD:'IEC counter: CV بينقص مع CD، و LD بيحمّل PV', SCL:'NORM_X يحوّل الـ raw (⁦0⁠–⁠27648⁩) لـ ⁦0.0⁠–⁠1.0⁩، و SCALE_X يحوّله للوحدة الحقيقية'};
+  CTU:'IEC counter: CV بيزيد مع كل نبضة على CU، و QU = 1 لما CV ≥ PV، والـ R يصفّره', CTD:'IEC counter: CV بينقص مع CD، و LD بيحمّل PV', SCL:'NORM_X يحوّل الـ raw (⁦0⁠–⁠27648⁩) لـ ⁦0.0⁠–⁠1.0⁩، و SCALE_X يحوّله للوحدة الحقيقية',
+  HSCR:'CTRL_HSC: لما الـ EN يبقى 1 و CV = TRUE بيكتب NEW_CV في العدّاد السريع. هنا NEW_CV = 0 يعني تصفير'};
 SIE.pt = {lab:'PT (ثواني)', get:pt => pt, set:v => Math.round(v * 10) / 10, show:tiaTime, step:0.1};
 SIE.pv = {lab:'PV'};
 SIE.cmpShow = (a, b) => ENG.kind(a) === 'T' ? tiaTime(b) : ENG.kind(a) === 'MW' ? nfmt(b, 1) : String(b);
-SIE.cmpType = a => ({T:'Time', MW:'Real', C:'Int', IW:'Int'}[ENG.kind(a)] || 'Int');
+SIE.cmpType = a => ({T:'Time', MW:'Real', C:'Int', IW:'Int', HC:'DInt'}[ENG.kind(a)] || 'Int');
 SIE.cmpLab = a => ENG.kind(a) === 'T' ? 'القيمة (ثواني)' : 'القيمة';
 SIE.opName = op => op;
 SIE.parse = function(str, acc, T){
@@ -151,6 +155,7 @@ SIE.parse = function(str, acc, T){
   else if ((m = /^%?(I|Q|M)(\d{1,2})\.([89])$/.exec(u))) return {err:'رقم البت من ⁦0⁩ لـ ⁦7⁩ بس (البايت فيه 8 بت): بعد ' + iso('%' + m[1] + m[2] + '.7') + ' بييجي ' + iso('%' + m[1] + (+m[2] + 1) + '.0') + '.'};
   else if ((m = /^%?IW(\d{1,3})$/.exec(u))) a = 'IW' + (+m[1]);
   else if ((m = /^%?MD(\d{1,3})$/.exec(u))) a = 'MW' + (+m[1]);
+  else if ((m = /^%?ID(\d{4})$/.exec(u)) && +m[1] >= 1000 && +m[1] <= 1020 && (+m[1] - 1000) % 4 === 0) a = 'HC' + ((+m[1] - 1000) / 4);
   else if (/^(I|Q|M)\d/.test(u) && u[0] !== '%') a = null;
   if (!a) return {err:`مش فاهم ${iso(s)}. اكتب عنوان زي ${iso('%I0.3')} أو ${iso('%Q0.2')} أو ${iso('%M1.0')}، أو اسم Tag موجود في الجدول.`};
   const k = ENG.kind(a);
@@ -166,12 +171,12 @@ SIE.newInst = function(t, T, prog){
 };
 
 /* ---- drawing ---- */
-SIE.cellH = el => !el ? 74 : el.t === 'CTU' || el.t === 'CTD' || el.t === 'SCL' ? 104 : el.t === 'TON' || el.t === 'TOF' || el.t === 'TP' ? 88 : el.t === 'CMP' ? 82 : 74;
+SIE.cellH = el => !el ? 74 : el.t === 'R' && ENG.kind(el.a) === 'HC' ? 104 : el.t === 'CTU' || el.t === 'CTD' || el.t === 'SCL' ? 104 : el.t === 'TON' || el.t === 'TOF' || el.t === 'TP' ? 88 : el.t === 'CMP' ? 82 : 74;
 SIE.icon = function(id){
   const L = '<path d="M2 12h12M26 12h12"/>', P = '<path d="M14 4v16M26 4v16"/>', Cc = '<path d="M2 12h10M28 12h10"/><path d="M15 4q-5 8 0 16M25 4q5 8 0 16"/>';
   const box = s => `<rect x="5" y="2" width="30" height="20" rx="1.5"/><text x="20" y="15.5" text-anchor="middle" class="ic-t">${s}</text>`;
   return `<svg viewBox="0 0 40 24" class="bx-ic" aria-hidden="true">${({NO:L + P, NC:L + P + '<path d="M12 20L28 4"/>', P:L + P + '<text x="20" y="16" text-anchor="middle" class="ic-t">P</text>', N:L + P + '<text x="20" y="16" text-anchor="middle" class="ic-t">N</text>',
-    OUT:Cc, S:Cc + '<text x="20" y="16" text-anchor="middle" class="ic-t">S</text>', R:Cc + '<text x="20" y="16" text-anchor="middle" class="ic-t">R</text>', RT:Cc + '<text x="20" y="15.5" text-anchor="middle" class="ic-t" font-size="7">RT</text>', CMP:box('CMP'), SCL:box('NORM')})[id] || box(id)}</svg>`;
+    OUT:Cc, S:Cc + '<text x="20" y="16" text-anchor="middle" class="ic-t">S</text>', R:Cc + '<text x="20" y="16" text-anchor="middle" class="ic-t">R</text>', RT:Cc + '<text x="20" y="15.5" text-anchor="middle" class="ic-t" font-size="7">RT</text>', CMP:box('CMP'), SCL:box('NORM'), HSCR:box('HSC')})[id] || box(id)}</svg>`;
 };
 SIE.cell = function(c){
   const {x, w, wy, el, mon, e, T, prog} = c, cx = x + w / 2;
@@ -197,6 +202,17 @@ SIE.cell = function(c){
     s += tx(cx, wy - 22, SIE.word(el.a, T), 's', 'middle', w - 2);
     s += tx(cx, wy + 26, SIE.cmpShow(el.a, el.b), 't', 'middle', w - 4);
     if (mon) s += tx(cx, wy + 37, '= ' + SIE.cmpShow(el.a, e.num(el.a)), 's mv', 'middle', w - 2);
+    return s;
+  }
+  if (el.t === 'R' && ENG.kind(el.a) === 'HC'){
+    /* CTRL_HSC box: HSC = hardware ID of the counter, CV = TRUE (write a new value), NEW_CV = 0 */
+    const bx = x + 46, bw = w - 52, top = wy - 22, bh = 62, v = mon && c.pin;
+    s += wire(x, bx, c.pin) + `<rect x="${bx}" y="${top}" width="${bw}" height="${bh}" rx="1.5" class="bx${mon ? (v ? ' on' : ' off') : ''}"/>`;
+    s += tx(bx + bw / 2, top + 10, 'CTRL_HSC', 'b', 'middle', bw - 4) + tx(bx + bw / 2, top + 19, 'HSC_1', 's', 'middle');
+    const pinL = (yy, n) => tx(bx + 3, yy + 3, n, 's'), opL = (yy, t) => `<path d="M${bx - 6} ${yy}H${bx}" class="w"/>` + tx(bx - 8, yy + 3, t, 't', 'end', 42);
+    s += pinL(wy + 6, 'EN') + pinL(wy + 20, 'CV') + pinL(wy + 34, 'NEW_CV') + opL(wy + 20, 'TRUE') + opL(wy + 34, 'L#0');
+    s += tx(bx + bw / 2, top - 6, '"Local~' + SIE.hsc(el.a) + '"', 's', 'middle', w - 8);
+    if (mon) s += tx(bx + bw / 2, top + bh + 11, SIE.abs(el.a) + ' = ' + e.num(el.a), 's mv', 'middle', w - 8);
     return s;
   }
   if (el.t === 'OUT' || el.t === 'S' || el.t === 'R'){
@@ -260,25 +276,28 @@ DVP.abs = function(a){
   if (k === 'T' || k === 'C') return a;
   if (k === 'MW') return 'D' + a.slice(2);
   if (k === 'IW') return 'D' + a.slice(2);
+  if (k === 'HC') return 'C' + (251 + +a.slice(2));
   return a;
 };
 DVP.sym = (a, T) => { const t = tagByA(T, a); return t ? t.c || '' : ''; };
 DVP.short = a => DVP.abs(a);
 DVP.word = a => DVP.abs(a);
-DVP.dtype = a => ({I:'X', Q:'Y', M:'M', T:'T', C:'C', MW:'D'}[ENG.kind(a)] || '');
+DVP.dtype = a => ({I:'X', Q:'Y', M:'M', T:'T', C:'C', MW:'D', HC:'C'}[ENG.kind(a)] || '');
 DVP.pal = [
-  {id:'NO', t:'NO', mn:'LD', ar:'كونتاكت NO'}, {id:'NC', t:'NC', mn:'LDI', ar:'كونتاكت NC'}, {id:'P', t:'P', mn:'LDP', ar:'Edge طالع'}, {id:'N', t:'N', mn:'LDF', ar:'Edge نازل'}, {id:'CMP', t:'CMP', mn:'LD※', ar:'مقارنة'},
-  {id:'OUT', t:'OUT', mn:'OUT', ar:'كويل'}, {id:'S', t:'S', mn:'SET', ar:'Set'}, {id:'R', t:'R', mn:'RST', ar:'Reset (Y · M · T · C)', acc:['Q', 'M', 'T', 'C']}, {id:'TON', t:'TON', mn:'TMR', ar:'تايمر'}, {id:'CTU', t:'CTU', mn:'CNT', ar:'عدّاد'}];
+  {id:'NO', t:'NO', mn:'LD', ar:'كونتاكت NO', acc:['I', 'Q', 'M', 'T', 'C', 'HC']}, {id:'NC', t:'NC', mn:'LDI', ar:'كونتاكت NC', acc:['I', 'Q', 'M', 'T', 'C', 'HC']}, {id:'P', t:'P', mn:'LDP', ar:'Edge طالع'}, {id:'N', t:'N', mn:'LDF', ar:'Edge نازل'}, {id:'CMP', t:'CMP', mn:'LD※', ar:'مقارنة'},
+  {id:'OUT', t:'OUT', mn:'OUT', ar:'كويل'}, {id:'S', t:'S', mn:'SET', ar:'Set'}, {id:'R', t:'R', mn:'RST', ar:'Reset (Y · M · T · C)', acc:['Q', 'M', 'T', 'C', 'HC']}, {id:'TON', t:'TON', mn:'TMR', ar:'تايمر'}, {id:'CTU', t:'CTU', mn:'CNT', ar:'عدّاد'},
+  {id:'HSC', t:'HSC', mn:'DCNT', ar:'عدّاد سريع 32 بت', hsc:true}];
 DVP.idOf = el => el.t;
-DVP.help = {NO:'LD / AND / OR: بيوصّل لما البت = 1', NC:'LDI / ANI / ORI: بيوصّل لما البت = 0', P:'LDP / ANDP / ORP: سكان واحد لما البت يطلع 0 ← 1', N:'LDF / ANDF / ORF: سكان واحد لما البت ينزل 1 ← 0', CMP:'LD= LD> LD< LD>= LD<= LD<>: بيوصّل لو المقارنة صح (القيمة الثابتة بتتكتب K)',
-  OUT:'OUT: البت = الكهربا الداخلة', S:'SET: يخلّي البت 1 ويفضل', R:'RST: يرجّع البت 0، ولو T أو C بيصفّر القيمة', TON:'TMR T0 K50: تايمر تأخير تشغيل. T0–T199 وحدته 100ms، يعني K50 = 5 ثواني', CTU:'CNT C0 K10: عدّاد طالع (16 بت). الكونتاكت C0 بيبقى 1 لما العدّ يوصل K. بيتصفّر بـ RST C0'};
+DVP.help = {NO:'LD / AND / OR: بيوصّل لما البت = 1', NC:'LDI / ANI / ORI: بيوصّل لما البت = 0', P:'LDP / ANDP / ORP: سكان واحد لما البت يطلع 0 ← 1', N:'LDF / ANDF / ORF: سكان واحد لما البت ينزل 1 ← 0', CMP:'LD= LD> LD< LD>= LD<= LD<>: بيوصّل لو المقارنة صح (القيمة الثابتة بتتكتب K). مع عدّاد 32 بت زي C251 بتبقى DLD>= و DAND< …',
+  OUT:'OUT: البت = الكهربا الداخلة', S:'SET: يخلّي البت 1 ويفضل', R:'RST: يرجّع البت 0، ولو T أو C بيصفّر القيمة', TON:'TMR T0 K50: تايمر تأخير تشغيل. T0–T199 وحدته 100ms، يعني K50 = 5 ثواني', CTU:'CNT C0 K10: عدّاد طالع (16 بت). الكونتاكت C0 بيبقى 1 لما العدّ يوصل K. بيتصفّر بـ RST C0',
+  HSC:'DCNT C251 K10000: بيشغّل العدّاد السريع C251 (فاز A على X0 و B على X1، 32 بت). لازم يفضل متنفّذ طول الوقت عشان يعدّ، والكونتاكت C251 بيبقى 1 لما العدّ يوصل K. بيتصفّر بـ RST C251'};
 DVP.pt = {lab:'K (×100ms)', get:pt => Math.round(pt * 10), set:v => Math.max(1, Math.round(v)) / 10, show:pt => 'K' + Math.round(pt * 10), step:1};
 DVP.pv = {lab:'K'};
 DVP.cmpShow = (a, b) => 'K' + (ENG.kind(a) === 'T' ? Math.round(b * 10) : Math.round(b));
 DVP.cmpGet = (a, b) => ENG.kind(a) === 'T' ? Math.round(b * 10) : b;
 DVP.cmpSet = (a, v) => ENG.kind(a) === 'T' ? Math.round(v) / 10 : Math.round(v);
 DVP.cmpLab = a => ENG.kind(a) === 'T' ? 'K (×100ms)' : 'K';
-DVP.opName = op => 'LD' + (op === '==' ? '=' : op);
+DVP.opName = (op, a) => (a && ENG.kind(a) === 'HC' ? 'DLD' : 'LD') + (op === '==' ? '=' : op);
 DVP.parse = function(str, acc){
   const u = String(str || '').trim().toUpperCase().replace(/\s+/g, '');
   if (!u) return {err:'اكتب عنوان زي X3 أو Y2 أو M10.'};
@@ -290,6 +309,8 @@ DVP.parse = function(str, acc){
   }
   else if ((m = /^M(\d{1,3})$/.exec(u))){ if (+m[1] > 799) return {err:'استخدم من M0 لـ M799.'}; a = bitOf('M', +m[1]); }
   else if ((m = /^T(\d{1,2})$/.exec(u))) a = 'T' + (+m[1]);
+  else if (u === 'C251') a = 'HC0';
+  else if (/^C2[0-5]\d$/.test(u)) return {err:`${iso(u)} مش مستخدم هنا. الإنكودر داخل A على ${iso('X0')} و B على ${iso('X1')}، وده العدّاد السريع ${iso('C251')} (فازتين A/B). ${iso('C235')} مثلًا بيعدّ من ${iso('X0')} بس (فاز واحد) فمش هيعرف الاتجاه.`};
   else if ((m = /^C(\d{1,2})$/.exec(u))) a = 'C' + (+m[1]);
   else if ((m = /^D(\d{1,3})$/.exec(u))) a = 'MW' + (+m[1]);
   if (!a) return {err:`مش فاهم ${iso(u)}. أمثلة: ${iso('X3')} · ${iso('Y1')} · ${iso('M10')} · ${iso('T2')} · ${iso('C1')}.`};
@@ -298,11 +319,11 @@ DVP.parse = function(str, acc){
 };
 DVP.newInst = function(t, T, prog){ const a = freeAddr(t === 'CTU' ? 'C' : 'T', prog, T); return a ? {a} : null; };
 
-DVP.cellH = el => !el ? 62 : el.t === 'TON' || el.t === 'CTU' ? 66 : el.t === 'CMP' ? 64 : 62;
+DVP.cellH = el => !el ? 62 : el.t === 'TON' || el.t === 'CTU' || el.t === 'HSC' ? 66 : el.t === 'CMP' ? 64 : 62;
 DVP.icon = function(id){
   const L = '<path d="M2 12h13M25 12h13"/>', P = '<path d="M15 4v16M25 4v16"/>', br = s => `<path d="M6 3h-3v18h3M34 3h3v18h-3"/><text x="20" y="15.5" text-anchor="middle" class="ic-t">${s}</text>`;
   return `<svg viewBox="0 0 40 24" class="bx-ic" aria-hidden="true">${({NO:L + P, NC:L + P + '<path d="M13 20L27 4"/>', P:L + P + '<path d="M20 17V7M17 10l3-3 3 3"/>', N:L + P + '<path d="M20 7v10M17 14l3 3 3-3"/>', CMP:'<rect x="4" y="4" width="32" height="16"/><text x="20" y="15.5" text-anchor="middle" class="ic-t">&gt;=</text>',
-    OUT:'<path d="M2 12h10M28 12h10"/><path d="M15 4q-5 8 0 16M25 4q5 8 0 16"/>', S:br('SET'), R:br('RST'), TON:br('TMR'), CTU:br('CNT')})[id] || br(id)}</svg>`;
+    OUT:'<path d="M2 12h10M28 12h10"/><path d="M15 4q-5 8 0 16M25 4q5 8 0 16"/>', S:br('SET'), R:br('RST'), TON:br('TMR'), CTU:br('CNT'), HSC:br('DCNT')})[id] || br(id)}</svg>`;
 };
 DVP.cell = function(c){
   const {x, w, wy, el, mon, e, T} = c, cx = x + w / 2;
@@ -326,7 +347,7 @@ DVP.cell = function(c){
     const on = mon && c.cond;
     s += wire(x, x + 3) + wire(x + w - 3, x + w);
     s += `<rect x="${x + 3}" y="${wy - 12}" width="${w - 6}" height="24" class="bx${on ? ' on' : ''}"/>`;
-    s += tx(cx, wy - 2, DVP.opName(el.op), 's', 'middle', w - 10) + tx(cx, wy + 8.5, DVP.abs(el.a) + ' ' + DVP.cmpShow(el.a, el.b), 't', 'middle', w - 10);
+    s += tx(cx, wy - 2, DVP.opName(el.op, el.a), 's', 'middle', w - 10) + tx(cx, wy + 8.5, DVP.abs(el.a) + ' ' + DVP.cmpShow(el.a, el.b), 't', 'middle', w - 10);
     if (mon) s += tx(cx, wy + 23, DVP.abs(el.a) + '=' + (ENG.kind(el.a) === 'T' ? Math.round(e.num(el.a) * 10) : Math.round(e.num(el.a))), 's mv', 'middle', w - 4);
     return s;
   }
@@ -340,14 +361,15 @@ DVP.cell = function(c){
     return s;
   }
   /* application instructions: [ SET Y0 ] [ RST C0 ] [ TMR T0 K50 ] [ CNT C0 K6 ] */
-  const mn = {S:'SET', R:'RST', TON:'TMR', CTU:'CNT'}[el.t] || el.t;
-  const txt = mn + '  ' + DVP.abs(el.a) + (el.t === 'TON' ? '  K' + Math.round(el.pt * 10) : el.t === 'CTU' ? '  K' + el.pv : '');
+  const mn = {S:'SET', R:'RST', TON:'TMR', CTU:'CNT', HSC:'DCNT'}[el.t] || el.t;
+  const txt = mn + '  ' + DVP.abs(el.a) + (el.t === 'TON' ? '  K' + Math.round(el.pt * 10) : el.t === 'CTU' || el.t === 'HSC' ? '  K' + el.pv : '');
   const v = mon && c.pin, bx = x + 6, bw = w - 12;
   s += wire(x, bx) + wire(bx + bw, x + w);
   s += `<path d="M${bx + 5} ${wy - 11}h-5v22h5M${bx + bw - 5} ${wy - 11}h5v22h-5" class="sy${v ? ' onl' : ''}"/>`;
   if (v) s += `<rect x="${bx + 1}" y="${wy - 10}" width="${bw - 2}" height="20" class="fl2"/>`;
   s += tx(bx + bw / 2, wy + 4, txt, 't', 'middle', bw - 12);
   if (mon && el.t === 'TON'){ const t = e.T[el.a]; s += tx(bx + bw / 2, wy + 24, DVP.abs(el.a) + ' = ' + Math.round((t ? t.et : 0) * 10) + (t && t.q ? '  ●' : ''), 's mv', 'middle', bw); }
+  else if (mon && (el.t === 'HSC' || (el.t === 'R' && ENG.kind(el.a) === 'HC'))) s += tx(bx + bw / 2, wy + 24, DVP.abs(el.a) + ' = ' + e.num(el.a), 's mv', 'middle', bw);
   else if (mon && el.t === 'CTU'){ const k = e.C[el.a]; s += tx(bx + bw / 2, wy + 24, DVP.abs(el.a) + ' = ' + (k && k.cv != null ? k.cv : 0) + (k && k.q ? '  ●' : ''), 's mv', 'middle', bw); }
   else if (cm) s += tx(bx + bw / 2, wy + 24, cut(cm, 18), 's cm', 'middle', bw);
   return s;
@@ -358,7 +380,7 @@ DVP.il = function(prog){
   const out = [];
   const opnd = el => el.t === 'CMP' ? DVP.abs(el.a) + '  ' + DVP.cmpShow(el.a, el.b) : DVP.abs(el.a);
   const pre = {NO:['LD', 'AND', 'OR'], NC:['LDI', 'ANI', 'ORI'], P:['LDP', 'ANDP', 'ORP'], N:['LDF', 'ANDF', 'ORF']};
-  const mnem = (el, pos) => el.t === 'CMP' ? ['LD', 'AND', 'OR'][pos] + (el.op === '==' ? '=' : el.op) : pre[el.t][pos];
+  const mnem = (el, pos) => el.t === 'CMP' ? (ENG.kind(el.a) === 'HC' ? 'D' : '') + ['LD', 'AND', 'OR'][pos] + (el.op === '==' ? '=' : el.op) : pre[el.t][pos];
   function gen(x){
     if (x.k === 'L') return [[mnem(x.el, 0), opnd(x.el)]];
     if (x.k === 'T') return [['LD', 'M1000']];
@@ -368,7 +390,7 @@ DVP.il = function(prog){
       else L = L.concat(gen(y), [[x.k === 'and' ? 'ANB' : 'ORB', '']]); }
     return L;
   }
-  const outI = el => el.t === 'OUT' ? ['OUT', DVP.abs(el.a)] : el.t === 'S' ? ['SET', DVP.abs(el.a)] : el.t === 'R' ? ['RST', DVP.abs(el.a)] : el.t === 'TON' ? ['TMR', DVP.abs(el.a) + '  K' + Math.round(el.pt * 10)] : el.t === 'CTU' ? ['CNT', DVP.abs(el.a) + '  K' + el.pv] : [el.t, DVP.abs(el.a)];
+  const outI = el => el.t === 'OUT' ? ['OUT', DVP.abs(el.a)] : el.t === 'S' ? ['SET', DVP.abs(el.a)] : el.t === 'R' ? ['RST', DVP.abs(el.a)] : el.t === 'TON' ? ['TMR', DVP.abs(el.a) + '  K' + Math.round(el.pt * 10)] : el.t === 'CTU' ? ['CNT', DVP.abs(el.a) + '  K' + el.pv] : el.t === 'HSC' ? ['DCNT', DVP.abs(el.a) + '  K' + el.pv] : [el.t, DVP.abs(el.a)];
   prog.forEach((rg, i) => {
     const gs = rungGroups(rg);
     out.push({rung:i});
@@ -388,8 +410,12 @@ AB.base = function(a){
   if (k === 'I') return 'Local:1:I.Data.' + bitIdx(a);
   if (k === 'Q') return 'Local:2:O.Data.' + bitIdx(a);
   if (k === 'IW') return 'Local:3:I.Ch0Data';
+  if (k === 'HC') return 'Local:4:I.Ch' + a.slice(2) + 'Count';
   return '';
 };
+/* high-speed counter card in slot 4: the count comes in as a DINT input tag, and an output bit resets it */
+AB.hscReset = a => 'Enc_Reset';
+AB.hscResetBase = a => 'Local:4:O.Ch' + String(a).slice(2) + 'Reset';
 AB.tag = (T, a) => { const t = tagByA(T, a); return t ? t.n : AB.base(a) || a; };
 AB.op = function(a, T){
   const k = ENG.kind(a);
@@ -401,13 +427,15 @@ AB.abs = a => { const b = AB.base(a); return b ? '<' + b + '>' : ''; };
 AB.sym = (a, T) => AB.op(a, T);
 AB.short = (a, T) => AB.op(a, T);
 AB.word = (a, T) => { const k = ENG.kind(a); return k === 'T' || k === 'C' ? AB.tag(T, a) + '.ACC' : AB.tag(T, a); };
-AB.dtype = a => ({I:'BOOL', Q:'BOOL', M:'BOOL', T:'TIMER', C:'COUNTER', MW:'REAL', IW:'INT'}[ENG.kind(a)] || '');
+AB.dtype = a => ({I:'BOOL', Q:'BOOL', M:'BOOL', T:'TIMER', C:'COUNTER', MW:'REAL', IW:'INT', HC:'DINT'}[ENG.kind(a)] || '');
 AB.pal = [
   {id:'NO', t:'NO', mn:'XIC', ar:'Examine If Closed'}, {id:'NC', t:'NC', mn:'XIO', ar:'Examine If Open'}, {id:'ONS', t:'ONS', mn:'ONS', ar:'One Shot'}, {id:'CMP', t:'CMP', mn:'EQU/GRT…', ar:'مقارنة'},
   {id:'OUT', t:'OUT', mn:'OTE', ar:'Output Energize'}, {id:'S', t:'S', mn:'OTL', ar:'Output Latch'}, {id:'R', t:'R', mn:'OTU', ar:'Output Unlatch', acc:['Q', 'M']}, {id:'RES', t:'R', mn:'RES', ar:'Reset تايمر / عدّاد', acc:['T', 'C']},
-  {id:'TON', t:'TON', mn:'TON', ar:'Timer On Delay'}, {id:'TOF', t:'TOF', mn:'TOF', ar:'Timer Off Delay'}, {id:'RTO', t:'RTO', mn:'RTO', ar:'Retentive Timer On'}, {id:'CTU', t:'CTU', mn:'CTU', ar:'Count Up'}, {id:'CTD', t:'CTD', mn:'CTD', ar:'Count Down'}, {id:'SCL', t:'SCL', mn:'SCP', ar:'Scale w/ Parameters'}];
-AB.idOf = el => el.t === 'R' && (ENG.kind(el.a) === 'T' || ENG.kind(el.a) === 'C') ? 'RES' : el.t;
-AB.help = {NO:'XIC: بيوصّل لما البت = 1', NC:'XIO: بيوصّل لما البت = 0', ONS:'ONS: بيعدّي سكان واحد بس لما الشرط اللي قبله يبقى true. محتاج Tag بت تخزين (Storage bit)', CMP:'EQU = · NEQ ≠ · GRT > · GEQ ≥ · LES < · LEQ ≤ (Source A مع Source B)',
+  {id:'TON', t:'TON', mn:'TON', ar:'Timer On Delay'}, {id:'TOF', t:'TOF', mn:'TOF', ar:'Timer Off Delay'}, {id:'RTO', t:'RTO', mn:'RTO', ar:'Retentive Timer On'}, {id:'CTU', t:'CTU', mn:'CTU', ar:'Count Up'}, {id:'CTD', t:'CTD', mn:'CTD', ar:'Count Down'}, {id:'SCL', t:'SCL', mn:'SCP', ar:'Scale w/ Parameters'},
+  {id:'HRS', t:'R', mn:'OTE Enc_Reset', ar:'تصفير كارت العدّاد السريع', acc:['HC'], hsc:true}];
+AB.idOf = el => el.t === 'R' && (ENG.kind(el.a) === 'T' || ENG.kind(el.a) === 'C') ? 'RES' : el.t === 'R' && ENG.kind(el.a) === 'HC' ? 'HRS' : el.t;
+AB.help = {NO:'XIC: بيوصّل لما البت = 1', NC:'XIO: بيوصّل لما البت = 0', ONS:'ONS: بيعدّي سكان واحد بس لما الشرط اللي قبله يبقى true. محتاج Tag بت تخزين (Storage bit)', CMP:'EQU = · NEQ ≠ · GRT > · GEQ ≥ · LES < · LEQ ≤ (Source A مع Source B). بتشتغل على DINT زي عدّ الإنكودر',
+  HRS:'OTE على بت الـ Reset بتاع كارت العدّاد السريع (Local:4:O.Ch0Reset): طول ما الرانج true العدّ بيتصفّر',
   OUT:'OTE: البت = حالة الرانج', S:'OTL: يمسك البت 1 (Latch)', R:'OTU: يفك البت 0 (Unlatch)', RES:'RES: يصفّر الـ ACC وبتات التايمر أو العدّاد',
   TON:'TON: الـ DN بيبقى 1 بعد ما الـ ACC يوصل الـ Preset (بالملّي ثانية). EN = الرانج true، TT = بيعدّ', TOF:'TOF: الـ DN بيفضل 1 لمدة الـ Preset بعد ما الرانج يبقى false', RTO:'RTO: زي TON بس الـ ACC مش بيتصفّر لما الرانج يقع، لازم RES',
   CTU:'CTU: الـ ACC بيزيد مع كل false ← true، و DN = 1 لما ACC ≥ Preset. بيتصفّر بـ RES', CTD:'CTD: بينقّص الـ ACC من نفس الـ COUNTER (مع CTU عشان عدّ طالع ونازل)', SCL:'SCP: يحوّل القيمة من مدى الدخل (Input Min/Max) للمدى الحقيقي (Scaled Min/Max)'};
@@ -426,6 +454,8 @@ AB.parse = function(str, acc, T){
   if ((m = /^Local:1:I\.Data\.(\d{1,2})$/i.exec(s))) a = bitOf('I', +m[1]);
   else if ((m = /^Local:2:O\.Data\.(\d{1,2})$/i.exec(s))) a = bitOf('Q', +m[1]);
   else if (/^Local:3:I\.Ch0Data$/i.test(s)) a = 'IW64';
+  else if ((m = /^Local:4:I\.Ch(\d)Count$/i.exec(s))) a = 'HC' + m[1];
+  else if (acc.indexOf('HC') >= 0 && ((m = /^Local:4:O\.Ch(\d)Reset$/i.exec(s)) || /^Enc_Reset$/i.test(s))) a = 'HC' + (m ? m[1] : 0);
   else {
     const mm = /^(.*?)(?:\.(DN|TT|EN|ACC|PRE))?$/i.exec(s), tg = tagByN(T, mm[1]), suf = (mm[2] || '').toUpperCase();
     if (!tg) return {err:`مفيش Tag اسمه ${iso(s)} في Controller Tags. في Logix لازم تعمل الـ Tag الأول (New Tag) أو تختار واحد موجود.`};
@@ -452,7 +482,7 @@ AB.cellH = el => !el ? 66 : el.t === 'SCL' ? 128 : ['TON', 'TOF', 'RTO', 'CTU', 
 AB.icon = function(id){
   const L = '<path d="M2 12h12M26 12h12"/>', P = '<path d="M14 4v16M11 4h3M11 20h3M26 4v16M26 4h3M26 20h3"/>', Cc = '<path d="M2 12h10M28 12h10"/><path d="M15 4q-5 8 0 16M25 4q5 8 0 16"/>';
   const box = s => `<rect x="4" y="2" width="32" height="20" rx="1"/><text x="20" y="15.5" text-anchor="middle" class="ic-t">${s}</text>`;
-  return `<svg viewBox="0 0 40 24" class="bx-ic" aria-hidden="true">${({NO:L + P, NC:L + P + '<path d="M12 20L28 4"/>', ONS:box('ONS'), CMP:box('GEQ'), OUT:Cc, S:Cc + '<text x="20" y="16" text-anchor="middle" class="ic-t">L</text>', R:Cc + '<text x="20" y="16" text-anchor="middle" class="ic-t">U</text>', RES:'<path d="M2 12h6M32 12h6"/><path d="M11 4q-5 8 0 16M29 4q5 8 0 16"/><text x="20" y="15" text-anchor="middle" class="ic-t" font-size="7">RES</text>', SCL:box('SCP')})[id] || box(id)}</svg>`;
+  return `<svg viewBox="0 0 40 24" class="bx-ic" aria-hidden="true">${({NO:L + P, NC:L + P + '<path d="M12 20L28 4"/>', ONS:box('ONS'), CMP:box('GEQ'), HRS:Cc.replace('M2 12h10M28 12h10', 'M2 12h10M28 12h10') + '<text x="20" y="15" text-anchor="middle" class="ic-t" font-size="6.5">RST</text>', OUT:Cc, S:Cc + '<text x="20" y="16" text-anchor="middle" class="ic-t">L</text>', R:Cc + '<text x="20" y="16" text-anchor="middle" class="ic-t">U</text>', RES:'<path d="M2 12h6M32 12h6"/><path d="M11 4q-5 8 0 16M29 4q5 8 0 16"/><text x="20" y="15" text-anchor="middle" class="ic-t" font-size="7">RES</text>', SCL:box('SCP')})[id] || box(id)}</svg>`;
 };
 AB.cell = function(c){
   const {x, w, wy, el, mon, e, T} = c, cx = x + w / 2;
@@ -483,6 +513,14 @@ AB.cell = function(c){
     if (mon) s += tx(bx + bw - 3, top + 40, AB.cmpShow(el.a, e.num(el.a)), 's mv', 'end', bw - 6);
     s += tx(bx + 4, top + 50, 'Source B', 's dim') + tx(bx + bw - 3, top + 59, AB.cmpShow(el.a, el.b), 's', 'end', bw - 6);
     return s;
+  }
+  if (el.t === 'R' && ENG.kind(el.a) === 'HC'){
+    /* OTE on the counter card's reset bit */
+    const v = mon && c.pin, r = 8;
+    s += wire(x, cx - r - 4) + wire(cx + r + 4, x + w);
+    if (v) s += `<rect x="${cx - r - 4}" y="${wy - 12}" width="${2 * r + 8}" height="24" rx="3" class="fl"/>`;
+    s += `<path d="M${cx - r} ${wy - 11}q-6 11 0 22M${cx + r} ${wy - 11}q6 11 0 22" class="sy"/>`;
+    return s + tx(cx, wy - 16, AB.hscReset(el.a), 't', 'middle', w - 4) + tx(cx, wy + 23, '<' + AB.hscResetBase(el.a) + '>', 's al', 'middle', w - 2);
   }
   if (el.t === 'OUT' || el.t === 'S' || el.t === 'R'){
     const v = mon && c.pin, res = el.t === 'R' && (ENG.kind(el.a) === 'T' || ENG.kind(el.a) === 'C');
@@ -531,7 +569,7 @@ AB.rungText = function(rg, T){
     switch (el.t){
       case 'NO': return `XIC(${AB.op(el.a, T)})`; case 'NC': return `XIO(${AB.op(el.a, T)})`; case 'ONS': return `ONS(${t})`;
       case 'CMP': return `${AB.opName(el.op)}(${AB.word(el.a, T)},${AB.cmpShow(el.a, el.b)})`;
-      case 'OUT': return `OTE(${AB.op(el.a, T)})`; case 'S': return `OTL(${AB.op(el.a, T)})`; case 'R': return ENG.kind(el.a) === 'T' || ENG.kind(el.a) === 'C' ? `RES(${t})` : `OTU(${AB.op(el.a, T)})`;
+      case 'OUT': return `OTE(${AB.op(el.a, T)})`; case 'S': return `OTL(${AB.op(el.a, T)})`; case 'R': return ENG.kind(el.a) === 'T' || ENG.kind(el.a) === 'C' ? `RES(${t})` : ENG.kind(el.a) === 'HC' ? `OTE(${AB.hscReset(el.a)})` : `OTU(${AB.op(el.a, T)})`;
       case 'TON': case 'TOF': case 'RTO': return `${el.t}(${t},${Math.round(el.pt * 1000)},0)`;
       case 'CTU': case 'CTD': return `${el.t}(${t},${el.pv},0)`;
       case 'SCL': return `SCP(${t},${el.rhi != null ? el.rlo : 0},${el.rhi != null ? el.rhi : ENG.RAWMAX},${el.lo},${el.hi},${AB.tag(T, el.o)})`;
@@ -553,6 +591,8 @@ const ICO = {
   mon:'<circle cx="7" cy="14" r="4"/><circle cx="17" cy="14" r="4"/><path d="M11 14h2M3 14l2-7h3M21 14l-2-7h-3"/>', run:'<path d="M7 5l12 7-12 7z"/>', stop:'<rect x="6" y="6" width="12" height="12" rx="1"/>'
 };
 const ico = k => `<svg viewBox="0 0 24 24" class="tb-ic" aria-hidden="true">${ICO[k]}</svg>`;
+/* tag-table order: inputs, outputs, memory, timers, counters, words, high-speed counter last */
+const ordK = a => { const k = ENG.kind(a) || ''; return k === 'HC' ? 99 : 'IQMTCIWMW'.indexOf(k[0]); };
 
 PL.brandSim = function(host, cfg){
   const B = BR[cfg.brand], exs = cfg.exercises, PS = progStore(cfg.brand), PFX = cfg.brand;
@@ -600,7 +640,7 @@ PL.brandSim = function(host, cfg){
 
   /* ---------- engine / modes ---------- */
   const defIn = i => i.kind === 'pbnc' || i.kind === 'ncsw' || i.def ? 1 : 0;
-  const physFor = i => i.kind === 'pb' || i.kind === 'pbnc' ? (pressed[i.a] ? 1 - defIn(i) : defIn(i)) : i.kind === 'auto' ? null : (i.state != null ? i.state : defIn(i));
+  const physFor = i => i.kind === 'pb' || i.kind === 'pbnc' ? (pressed[i.a] ? 1 - defIn(i) : defIn(i)) : i.kind === 'auto' || i.kind === 'enc' ? null : (i.state != null ? i.state : defIn(i));
   function fresh(){
     e = new ENG.Engine(plcStr ? JSON.parse(plcStr) : [], {cols});
     e.force = Object.assign({}, forces);
@@ -623,11 +663,11 @@ PL.brandSim = function(host, cfg){
     progBox.innerHTML = `<span>خلّصت <b>${n} من ${exs.length}</b> تمارين</span><span class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="التقدّم ${pct}%"><i style="width:${pct}%"></i></span>`;
   }
   function ioRows(){
-    const kindAr = i => ({pb:'زرار NO', pbnc:'زرار متوصّل NC', sw:'سويتش', sensor:'حساس', ncsw:'متوصّل NC', auto:'حساس على الماكينة'}[i.kind] || '');
-    const outAr = o => ({motor:'موتور', fan:'مروحة', horn:'سارينة', valve:'بلف', heater:'سخان', lamp:'لمبة'}[o.kind] || 'كونتاكتور / حمل');
+    const kindAr = i => ({pb:'زرار NO', pbnc:'زرار متوصّل NC', sw:'سويتش', sensor:'حساس', ncsw:'متوصّل NC', auto:'حساس على الماكينة', enc:'إنكودر (للعدّاد السريع)'}[i.kind] || '');
+    const outAr = o => ({motor:'موتور', fan:'مروحة', horn:'سارينة', valve:'بلف', heater:'سخان', lamp:'لمبة', vfd:'دخل إنفرتر', brake:'فرامل الموتور'}[o.kind] || 'كونتاكتور / حمل');
     const row = (a, lab, kd) => { const t = tagByA(T, a); return `<tr><td class="mono">${esc(SI ? SIE.abs(a) : DV ? DVP.abs(a) : AB.base(a) || a)}</td><td class="mono">${esc(t ? (DV ? t.c : t.n) : '—')}</td><td>${esc(lab)}</td><td class="muted">${esc(kd)}</td></tr>`; };
     let h = (ex.io.inputs || []).map(i => row(i.a, i.label, kindAr(i))).join('') + (ex.io.outputs || []).map(o => row(o.a, o.label, outAr(o))).join('');
-    (ex.syms || []).forEach(s => { h += row(s.a, s.label, ''); });
+    (ex.syms || []).forEach(s => { h += row(s.a, s.label, s.kind || ''); });
     return `<div class="tblw"><table class="tbl bx-iot"><thead><tr><th>${SI ? 'Address' : DV ? 'Device' : 'Address'}</th><th>${SI ? 'Tag' : DV ? 'Comment' : 'Tag'}</th><th>الجهاز</th><th>النوع</th></tr></thead><tbody>${h}</tbody></table></div>`;
   }
   function renderScn(){
@@ -669,7 +709,7 @@ PL.brandSim = function(host, cfg){
 
   /* ---------- I/O (field devices) ---------- */
   function renderIO(){
-    const ins = (ex.io.inputs || []).filter(i => i.kind !== 'auto');
+    const ins = (ex.io.inputs || []).filter(i => i.kind !== 'auto' && i.kind !== 'enc');
     ioBox.innerHTML = ins.map(i => { const kd = i.kind, isPb = kd === 'pb' || kd === 'pbnc', col = i.color || (kd === 'pbnc' ? 'red' : kd === 'pb' ? 'green' : 'gray');
       return `<button type="button" class="ib ib-${kd}" data-a="${i.a}" style="--cap:${PL.LCOL[col] || '#8a949b'}" aria-pressed="false" aria-label="${esc(i.label + ' ' + B.short(i.a, T))}${isPb ? ' (اضغط وسيب)' : ''}"><span class="cap" aria-hidden="true"></span><span class="l">${esc(i.label)}</span><span class="a">${esc(B.short(i.a, T))}${kd === 'pbnc' || kd === 'ncsw' ? ' · NC' : ''}</span></button>`; }).join('');
     ioBox.hidden = !ins.length; updIO();
@@ -825,11 +865,11 @@ PL.brandSim = function(host, cfg){
     if (!AR){ ['M', 'T', 'C'].forEach(kd => { if (acc.indexOf(kd) >= 0){ const f = freeAddr(kd, prog, T); if (f && !(SI && (kd === 'T' || kd === 'C'))) add(f); } }); }
     return out;
   }
-  const chipTxt = a => SI ? (SIE.abs(a) || SIE.sym(a, T, prog)) : DV ? DVP.abs(a) : AB.op(a, T);
+  const chipTxt = (a, el) => el && el.t === 'R' && AR && ENG.kind(a) === 'HC' ? AB.hscReset(a) : SI ? (SIE.abs(a) || SIE.sym(a, T, prog)) : DV ? DVP.abs(a) : AB.op(a, T);
   const chipSub = a => { const t = tagByA(T, a); if (SI) return SIE.abs(a) ? (t ? t.n : '') : ''; if (DV) return t ? t.c : ''; return AB.base(a) && t ? AB.base(a) : ''; };
   function picker(){
     const rg = prog[sel.i], el = rg.rows[sel.r][sel.c], outCol = sel.c === cols - 1, cur = el ? B.idOf(el) : 'NONE';
-    const ents = B.pal.filter(p => outCol ? ENG.isOut(p.t) : ENG.CONTACTS.indexOf(p.t) >= 0);
+    const ents = B.pal.filter(p => (!p.hsc || ex.hsc) && (outCol ? ENG.isOut(p.t) : ENG.CONTACTS.indexOf(p.t) >= 0));
     let h = `<div class="bx-pk" role="group" aria-label="تعديل الخانة"><div class="pk-h"><b>${esc(B.rn(sel.i))} · صف ${sel.r + 1} · خانة ${sel.c + 1}</b>${outCol ? '<span class="muted"> (عمود الخرج)</span>' : ''}<button type="button" class="btn sm" data-pk="close" aria-label="اقفل">✕</button></div>`;
     h += `<div class="pk-els">${outCol ? '' : `<button type="button" class="btn pk-el" data-pk="el" data-v="W" aria-pressed="${cur === 'W'}"><svg viewBox="0 0 40 24" class="bx-ic" aria-hidden="true"><path d="M2 12h36"/></svg><span>سلك</span></button>`}${ents.map(p => `<button type="button" class="btn pk-el" data-pk="el" data-v="${p.id}" aria-pressed="${cur === p.id}">${B.icon(p.id)}<span class="mono">${esc(p.mn)}</span></button>`).join('')}<button type="button" class="btn pk-el" data-pk="el" data-v="NONE" aria-pressed="${cur === 'NONE'}"><svg viewBox="0 0 40 24" class="bx-ic" aria-hidden="true"><rect x="6" y="5" width="28" height="14" rx="2" stroke-dasharray="3 3"/></svg><span>فاضي</span></button></div>`;
     if (el && el.t !== 'W'){
@@ -843,7 +883,7 @@ PL.brandSim = function(host, cfg){
         h += `<div class="pk-par"><label>${AR ? 'Output' : 'OUT'} <select class="inp mono" data-pk="o">${(words.length ? words.map(t => t.a) : ['MW10']).map(a => `<option value="${a}"${a === el.o ? ' selected' : ''}>${esc(SI ? SIE.word(a, T) + ' ' + SIE.abs(a) : AB.tag(T, a))}</option>`).join('')}</select></label></div>`;
       } else {
         const ch = choices(ent);
-        h += `<div class="pk-addr"><span class="pk-k">${AR ? 'Tag:' : SI && (el.t === 'TON' || el.t === 'TOF' || el.t === 'TP' || el.t === 'CTU' || el.t === 'CTD') ? 'Instance DB:' : el.t === 'CMP' ? (AR ? 'Source A:' : 'IN1:') : 'العنوان:'}</span>${ch.map(a => `<button type="button" class="btn chip" data-pk="addr" data-v="${a}" aria-pressed="${el.a === a}"><span class="mono">${esc(chipTxt(a))}</span>${chipSub(a) ? `<small>${esc(chipSub(a))}</small>` : ''}</button>`).join('')}`;
+        h += `<div class="pk-addr"><span class="pk-k">${AR ? 'Tag:' : SI && (el.t === 'TON' || el.t === 'TOF' || el.t === 'TP' || el.t === 'CTU' || el.t === 'CTD') ? 'Instance DB:' : el.t === 'CMP' ? (AR ? 'Source A:' : 'IN1:') : 'العنوان:'}</span>${ch.map(a => `<button type="button" class="btn chip" data-pk="addr" data-v="${a}" aria-pressed="${el.a === a}"><span class="mono">${esc(chipTxt(a, el))}</span>${chipSub(a) ? `<small>${esc(chipSub(a))}</small>` : ''}</button>`).join('')}`;
         if (SI && ['TON', 'TOF', 'TP', 'CTU', 'CTD'].indexOf(el.t) >= 0) h += `<button type="button" class="btn chip" data-pk="newinst">+ ${el.t[0] === 'C' ? 'IEC_Counter' : 'IEC_Timer'} جديد</button>`;
         if (!AR) h += `<form class="pk-free" data-pk="free"><input class="inp mono" name="a" maxlength="24" placeholder="${SI ? (outCol ? '%Q0.5' : '%I0.5') : outCol ? 'Y5' : 'X5'}" aria-label="عنوان تاني" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="btn sm" type="submit">حط</button></form>`;
         else h += `<form class="pk-free" data-pk="free"><input class="inp mono" name="a" maxlength="40" placeholder="Tag_Name" aria-label="اسم Tag" autocomplete="off" spellcheck="false"><button class="btn sm" type="submit">حط</button></form>`;
@@ -855,13 +895,13 @@ PL.brandSim = function(host, cfg){
         }
         if (el.pt != null) h += `<div class="pk-par"><label>${esc(B.pt.lab)} <input class="inp mono" type="number" step="${B.pt.step}" min="${B.pt.step}" data-pk="pt" value="${B.pt.get(el.pt)}" inputmode="decimal"></label><span class="mono pk-prev">${esc(B.pt.show(el.pt))} = ${nfmt(el.pt, 1)} ث</span></div>`;
         if (el.pv != null){
-          h += `<div class="pk-par"><label>${esc(B.pv.lab)} <input class="inp mono" type="number" step="1" min="1" max="32767" data-pk="pv" value="${el.pv}" inputmode="numeric"></label></div>`;
+          h += `<div class="pk-par"><label>${esc(B.pv.lab)} <input class="inp mono" type="number" step="1" min="1" max="${el.t === 'HSC' ? 2147483647 : 32767}" data-pk="pv" value="${el.pv}" inputmode="numeric"></label></div>`;
           if (SI){ const bits = []; (ex.io.inputs || []).forEach(i => bits.push(i.a)); T.forEach(t => { if (ENG.kind(t.a) === 'M' && bits.indexOf(t.a) < 0) bits.push(t.a); });
             h += `<div class="pk-par"><label>${el.t === 'CTU' ? 'R' : 'LD'} <select class="inp mono" data-pk="r"><option value="">false</option>${bits.map(a => `<option value="${a}"${a === el.r ? ' selected' : ''}>${esc(SIE.abs(a) + ' ' + SIE.sym(a, T, prog))}</option>`).join('')}</select></label><span class="muted">${el.t === 'CTU' ? 'دخل الـ R بيصفّر العدّاد' : 'دخل الـ LD بيحمّل PV'}</span></div>`; }
         }
         if (el.t === 'CMP'){
           const get = B.cmpGet || ((a, b) => b);
-          h += `<div class="pk-par"><label>${AR ? 'Instruction' : DV ? 'التعليمة' : 'CMP'} <select class="inp mono" data-pk="op">${ENG.CMPOPS.map(o => `<option value="${o}"${o === el.op ? ' selected' : ''}>${esc(B.opName(o))}${AR ? ' (' + esc(o) + ')' : ''}</option>`).join('')}</select></label><label>${esc(B.cmpLab(el.a))} <input class="inp mono" type="number" step="any" data-pk="b" value="${get(el.a, el.b)}" inputmode="decimal"></label></div>`;
+          h += `<div class="pk-par"><label>${AR ? 'Instruction' : DV ? 'التعليمة' : 'CMP'} <select class="inp mono" data-pk="op">${ENG.CMPOPS.map(o => `<option value="${o}"${o === el.op ? ' selected' : ''}>${esc(B.opName(o, el.a))}${AR ? ' (' + esc(o) + ')' : ''}</option>`).join('')}</select></label><label>${esc(B.cmpLab(el.a))} <input class="inp mono" type="number" step="any" data-pk="b" value="${get(el.a, el.b)}" inputmode="decimal"></label></div>`;
         }
       }
     }
@@ -887,7 +927,7 @@ PL.brandSim = function(host, cfg){
     }
     const el = ENG.parse(t + ':' + a);
     if (old && old.pt != null && el.pt != null) el.pt = old.pt; else if (el.pt != null) el.pt = 5;
-    if (old && old.pv != null && el.pv != null) el.pv = old.pv;
+    if (old && old.pv != null && el.pv != null) el.pv = old.pv; else if (t === 'HSC') el.pv = 10000;
     if (t === 'SCL'){ el.a = 'IW64'; const w = T.find(x => ENG.kind(x.a) === 'MW'); el.o = w ? w.a : 'MW10'; if (AR){ el.rlo = 0; el.rhi = 0; } }
     if (t === 'ONS' && !a) el.a = '';
     rg.rows[sel.r][sel.c] = el; newTagOpen = AR && !el.a; changed();
@@ -948,7 +988,7 @@ PL.brandSim = function(host, cfg){
     const el = prog[sel.i].rows[sel.r][sel.c]; if (!el) return;
     const v = PL.num(t.value);
     if (kk === 'pt'){ if (v > 0) el.pt = Math.min(3600, B.pt.set(v)); }
-    else if (kk === 'pv'){ if (v > 0) el.pv = Math.min(32767, Math.round(v)); }
+    else if (kk === 'pv'){ if (v > 0) el.pv = Math.min(el.t === 'HSC' ? 2147483647 : 32767, Math.round(v)); }
     else if (kk === 'r'){ if (t.value) el.r = t.value; else delete el.r; }
     else if (kk === 'op') el.op = t.value;
     else if (kk === 'b'){ if (isFinite(v)) el.b = B.cmpSet ? B.cmpSet(el.a, v) : v; }
@@ -963,7 +1003,7 @@ PL.brandSim = function(host, cfg){
     if (kd === 'T'){ const t = e.T[a]; return SI ? tiaTime(t ? t.et : 0) : DV ? String(Math.round((t ? t.et : 0) * 10)) : String(Math.round((t ? t.et : 0) * 1000)); }
     if (kd === 'C'){ const c = e.C[a]; return String(c && c.cv != null ? c.cv : 0); }
     if (kd === 'MW') return nfmt(e.num(a), 2);
-    if (kd === 'IW') return String(Math.round(e.num(a)));
+    if (kd === 'IW' || kd === 'HC') return String(Math.round(e.num(a)));
     const v = kd === 'Q' ? e.out[a] : kd === 'I' ? (a in forces ? forces[a] : e.phys[a]) : e.bit(a);
     return SI ? (v ? 'TRUE' : 'FALSE') : v ? '1' : '0';
   }
@@ -971,7 +1011,7 @@ PL.brandSim = function(host, cfg){
   function renderTags(){
     const live = showLive();
     let rows = '';
-    const list = T.slice().sort((a, b) => 'IQMTCIWMW'.indexOf(ENG.kind(a.a)[0]) - 'IQMTCIWMW'.indexOf(ENG.kind(b.a)[0]));
+    const list = T.slice().sort((a, b) => ordK(a.a) - ordK(b.a));
     list.forEach(t => {
       const used = usedAddrs(prog).has(t.a);
       const name = t.u && !DV ? `<input class="inp mono tn" data-tn="${t.a}" value="${esc(t.n)}" maxlength="40" aria-label="اسم الـ Tag">` : `<span class="mono">${esc(t.n)}</span>`;
@@ -981,6 +1021,8 @@ PL.brandSim = function(host, cfg){
       else if (DV) rows += `<tr><td class="mono">${esc(DVP.abs(t.a))}</td><td>${cm}</td>${live ? `<td class="mono lv">${esc(liveVal(t.a))}</td>` : ''}<td>${del}</td></tr>`;
       else rows += `<tr><td>${name}</td><td class="mono">${esc(AB.base(t.a))}</td><td class="mono">${esc(AB.dtype(t.a))}</td>${live ? `<td class="mono lv">${esc(liveVal(t.a))}</td>` : ''}<td>${del}</td></tr>`;
     });
+    /* the counter card's reset bit is an alias tag too (no engine address of its own) */
+    if (AR) list.filter(t => ENG.kind(t.a) === 'HC').forEach(t => { rows += `<tr><td><span class="mono">${esc(AB.hscReset(t.a))}</span></td><td class="mono">${esc(AB.hscResetBase(t.a))}</td><td class="mono">BOOL</td>${live ? '<td class="mono">—</td>' : ''}<td></td></tr>`; });
     const head = SI ? `<th>Name</th><th>Data type</th><th>Address</th>${live ? '<th>Monitor value</th>' : ''}<th></th>` : DV ? `<th>Device</th><th>Comment</th>${live ? '<th>Value</th>' : ''}<th></th>` : `<th>Name</th><th>Alias For</th><th>Data Type</th>${live ? '<th>Value</th>' : ''}<th></th>`;
     const add = SI ? `<form class="tg-add" data-tadd="1"><input class="inp mono" name="n" placeholder="Name" maxlength="40" aria-label="الاسم" autocomplete="off" spellcheck="false"><input class="inp mono" name="a" placeholder="%M2.0" maxlength="10" aria-label="العنوان" autocomplete="off" spellcheck="false"><button class="btn sm" type="submit">Add new</button></form>`
       : DV ? `<form class="tg-add" data-tadd="1"><input class="inp mono" name="a" placeholder="M10" maxlength="6" aria-label="الجهاز" autocomplete="off" spellcheck="false"><input class="inp" name="n" placeholder="تعليق" maxlength="24" aria-label="التعليق" autocomplete="off"><button class="btn sm" type="submit">Add</button></form>`
@@ -1060,14 +1102,18 @@ PL.brandSim = function(host, cfg){
     rdT += dt; tagT += dt;
     renderPlant(); renderFace();
     if (rdT > 0.1){ rdT = 0; if (monitoring()) refreshRungs(); }
-    if (tagT > 0.4){ tagT = 0; if (tab === 'tags' && showLive() && !tagsBox.contains(document.activeElement)) $$('td.lv', tagsBox).forEach((td, j) => { const t = T.slice().sort((a, b) => 'IQMTCIWMW'.indexOf(ENG.kind(a.a)[0]) - 'IQMTCIWMW'.indexOf(ENG.kind(b.a)[0]))[j]; if (t) td.textContent = liveVal(t.a); }); if (tab === 'frc') $$('[data-fv]', frcBox).forEach(td => { td.textContent = liveVal(td.dataset.fv); }); }
+    if (tagT > 0.4){ tagT = 0; if (tab === 'tags' && showLive() && !tagsBox.contains(document.activeElement)) $$('td.lv', tagsBox).forEach((td, j) => { const t = T.slice().sort((a, b) => ordK(a.a) - ordK(b.a))[j]; if (t) td.textContent = liveVal(t.a); }); if (tab === 'frc') $$('[data-fv]', frcBox).forEach(td => { td.textContent = liveVal(td.dataset.fv); }); }
   });
 
   let wasMon = false;
   setInterval(() => { const m = monitoring(); if (m !== wasMon){ wasMon = m; renderTop(); refreshRungs(); } }, 300);
 
-  select(0);
-  const api = {host, brand:B.id, get ex(){ return ex; }, get prog(){ return prog; }, get tags(){ return T; }, get engine(){ return e; }, get mode(){ return mode; }, get plcStr(){ return plcStr; }, exercises:exs,
+  /* deep link: siemens.html#enc opens that exercise */
+  const fromHash = () => { const h = decodeURIComponent((location.hash || '').slice(1)), j = exs.findIndex(x => x.key === h); return j; };
+  select(Math.max(0, fromHash()));
+  if (fromHash() > 0) setTimeout(() => scn.scrollIntoView({block:'start'}), 60);
+  window.addEventListener('hashchange', () => { const j = fromHash(); if (j >= 0 && j !== k){ select(j); scn.scrollIntoView({block:'start', behavior:PL.reduced() ? 'auto' : 'smooth'}); } });
+  const api = {host, brand:B.id, get ex(){ return ex; }, get prog(){ return prog; }, get tags(){ return T; }, get engine(){ return e; }, get plant(){ return plantSt; }, get mode(){ return mode; }, get plcStr(){ return plcStr; }, exercises:exs,
     select, check, load(def){ prog = ENG.program(def, cols); changed(); }, press, pick(i, r, c){ sel = {i, r, c}; renderLad(); }, setEl(id){ setEl(id); }, lint, download, setMode, key:v => { key = v; },
     tool(a){ const b = toolBox.querySelector(`[data-a="${a}"]`); if (b) b.click(); }, monitoring, il: () => DV ? DVP.il(prog) : null, rungText: i => AR ? AB.rungText(prog[i], T) : null};
   (PL._bx = PL._bx || []).push(api);
@@ -1208,5 +1254,168 @@ SC.batch3 = {io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:
     {until:c => (c.mark.b || 0) >= 3, max:60, msg:'التلات دفعات ماخلصوش: الدورة وقفت في النص؟'}, {run:0.6},
     {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':0, 'Q0.3':1}, msg:'بعد 3 دفعات: كله يقف ولمبة خلص تنوّر.'}, {run:3}, {fn:c => c.mark.fills === 3 ? null : `الملو اتفتح ${c.mark.fills} مرات. المطلوب 3 دفعات بالظبط.`},
     {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':1, 'Q0.3':0}, msg:'Start جديد: يبدأ عدّ جديد من الأول ولمبة خلص تطفي.'}, {run:2}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':0}, msg:'Stop في النص: كل البلوف والخلاط يقفلوا.'}, {run:2}, {exp:{'Q0.0':0}, msg:'بعد Stop مفيش حاجة تبدأ لوحدها:'}]};
+
+/* ================= encoder positioning: sheet-metal cut-to-length line =================
+   1000 PPR encoder on a measuring roller of 200 mm circumference, counted x4 by the PLC's high-speed counter:
+   4000 counts per turn → 20 counts per mm → a 500 mm piece = 10000 counts.
+   I/O (engine addresses, each brand page shows its own names):
+   I0.0 / I0.1 encoder A / B (Siemens HSC_1 and Delta C251 inputs) · I0.2 Start · I0.3 Stop (NC) · I0.4 shear is up
+   Q0.0 feed run (inverter FWD) · Q0.1 fast speed (inverter multi-speed input, off = slow) · Q0.2 brake · Q0.3 shear down
+   HC0 = the high-speed counter value (32-bit). The machine counts it between scans, like the real counter hardware. */
+const ENC = {CPM:20, FAST:150, SLOW:25, ACC:600, DEC:500, BRAKE:125, COAST:30, LEN:500, TOL:1, DOWN:0.3, UP:0.3};
+PL.ENC = ENC;
+const eon = (e, a) => !!e.out[a];
+const etx = (x, y, s, cls, anchor) => `<text x="${x}" y="${y}" class="${cls || 'pt'}"${anchor ? ` text-anchor="${anchor}"` : ''}>${s}</text>`;
+const mm1 = v => PL.fmt(v, 1);
+const sgn = v => (v > 0.05 ? '+' : v < -0.05 ? '−' : '±') + mm1(Math.abs(v));
+
+PL.plants.cut = {
+  drives:['I0.0', 'I0.1', 'I0.4'],
+  create: o => ({pos:0, v:0, last:0, s:0, hit:false, pieces:[], frac:0, enc:0, t:0, gate:!!(o && o.gate), hc:o && o.hc != null ? o.hc : null, init:false,
+    fault:null, fight:0, runP:false, fastP:false, slowAt:null, stopAt:null, vStop:0, coast:null, coastFrom:null, flash:0, gateMiss:false, short:0, cutsLost:0, fall:1}),
+  step(st, e, dt){
+    if (!st.init){ st.init = true; if (st.hc != null) e.hscSet('HC0', st.hc); }
+    const run = eon(e, 'Q0.0'), fast = eon(e, 'Q0.1'), brake = eon(e, 'Q0.2'), down = eon(e, 'Q0.3');
+    st.t += dt; st.flash = Math.max(0, st.flash - dt); st.fall = Math.min(1, st.fall + dt * 1.6);
+    /* inverter ramps · brake · coasting */
+    if (run && brake){ st.fight += dt; if (st.fight > 0.06 && !st.fault) st.fault = 'الموتور Q0.0 شغال والفرامل Q0.2 ماسكة في نفس الوقت: الموتور هيسخن والفرامل هتتاكل. الفرامل تمسك بس والموتور واقف.'; } else st.fight = 0;
+    if (run && !brake){ const tg = fast ? ENC.FAST : ENC.SLOW; st.v = st.v < tg ? Math.min(tg, st.v + ENC.ACC * dt) : Math.max(tg, st.v - ENC.DEC * dt); }
+    else st.v = Math.max(0, st.v - (brake ? ENC.BRAKE : ENC.COAST) * dt);
+    if (run && st.s > 0.04 && !st.fault) st.fault = 'الموتور Q0.0 اشتغل والسكينة لسه مش فوق (I0.4 = 0): الصاج هيتزق في السكينة. الصاج يمشي بس لما السكينة تبقى فوق.';
+    /* run falling edge: remember where and how fast it stopped, then measure the coasting */
+    if (st.runP && !run){ st.stopAt = e.num('HC0'); st.vStop = st.v; st.coastFrom = st.pos; st.coast = null; }
+    if (st.fastP && !fast && run) st.slowAt = e.num('HC0');
+    if (st.runP && !st.fastP && fast) st.slowAt = null;
+    if (!st.runP && run){ st.slowAt = null; }
+    st.runP = run; st.fastP = fast;
+    const dx = st.v * dt; st.pos += dx;
+    if (st.coastFrom != null && st.v === 0 && !run){ st.coast = st.pos - st.coastFrom; st.coastFrom = null; }
+    /* encoder → high-speed counter (whole counts) */
+    st.frac += dx * ENC.CPM; const n = Math.floor(st.frac); st.frac -= n;
+    if (n){ st.enc += n; if (!st.gate || e.hcEn.HC0) e.hscAdd('HC0', n); else st.gateMiss = true; }
+    e.setIn('I0.0', st.v > 0 && Math.floor(st.enc / 60) % 2 ? 1 : 0); e.setIn('I0.1', st.v > 0 && Math.floor((st.enc + 30) / 60) % 2 ? 1 : 0);
+    /* shear: 0 = up … 1 = down. It touches the sheet at 0.6 and cuts at the bottom */
+    const s0 = st.s;
+    st.s = down ? Math.min(1, st.s + dt / ENC.DOWN) : Math.max(0, st.s - dt / ENC.UP);
+    if (s0 < 0.6 && st.s >= 0.6 && st.v > 0.5 && !st.fault) st.fault = `السكينة نزلت والصاج لسه ماشي (${mm1(st.v)} mm/s): البلاطة هتتقطع مايلة والسكينة ممكن تتكسر. استنى الصاج يقف خالص (تايمر صغير بعد الوقوف) وبعدين نزّل السكينة.`;
+    if (st.s >= 1 && !st.hit){ st.hit = true; const len = st.pos - st.last; st.last = st.pos; st.pieces.push({len, err:len - ENC.LEN, t:st.t}); st.flash = 0.25; st.fall = 0; }
+    if (!down && s0 > 0 && !st.hit && st.s < s0 && s0 < 1 && st.short === 0) st.short = 1;
+    if (st.s <= 0){ if (st.short === 1) st.cutsLost++; st.short = 0; st.hit = false; }
+    e.setIn('I0.4', st.s < 0.03 ? 1 : 0);
+  },
+  head: st => st.pos - st.last,
+  svg(st, e){
+    const run = eon(e, 'Q0.0'), fast = eon(e, 'Q0.1'), brake = eon(e, 'Q0.2'), down = eon(e, 'Q0.3');
+    const cv = e.num('HC0'), head = st.pos - st.last;
+    const W = 360, H = 228, Y = 128; /* sheet line */
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="خط تقطيع صاج بالطول: العدّاد ${cv} count، ${mm1(cv / ENC.CPM)} mm">`;
+    s += `<defs><linearGradient id="encSt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9d3da"/><stop offset=".5" stop-color="#9fadb7"/><stop offset="1" stop-color="#7d8b95"/></linearGradient></defs>`;
+    /* ---- HUD: counter · speed · brake ---- */
+    s += `<rect x="4" y="4" width="148" height="44" rx="7" fill="#11181c" stroke="#2f3b42"/>`;
+    s += etx(12, 17, 'HSC  HC0', 'pt enc-lab') + `<text x="144" y="38" text-anchor="end" class="enc-cv">${cv}</text>` + etx(12, 42, mm1(cv / ENC.CPM) + ' mm', 'pt enc-mm');
+    const spd = !run ? (st.v > 0.5 ? ['COAST', '#ff9a1a'] : ['STOP', '#7b858c']) : fast ? ['FAST', '#2fd35a'] : ['SLOW', '#ffc21a'];
+    s += `<rect x="158" y="4" width="62" height="20" rx="10" fill="${spd[1]}"/>` + etx(189, 18, spd[0], 'pt enc-chip', 'middle');
+    s += `<rect x="158" y="28" width="62" height="20" rx="10" fill="${brake ? '#c0352b' : '#3b4247'}"/>` + etx(189, 42, brake ? 'BRAKE' : 'brake off', 'pt enc-chip', 'middle');
+    s += `<rect x="226" y="4" width="130" height="44" rx="7" fill="none" stroke="var(--board-line)"/>`;
+    s += etx(232, 18, `${mm1(st.v)} mm/s`, 'pt') + `<rect x="232" y="24" width="118" height="6" rx="3" fill="#3b4247"/><rect x="232" y="24" width="${(118 * Math.min(1, st.v / ENC.FAST)).toFixed(1)}" height="6" rx="3" fill="${spd[1]}"/>`;
+    s += etx(350, 43, 'زحلقة', 'pt ar', 'end') + etx(232, 43, st.coast != null ? `${Math.round(st.coast * ENC.CPM)} count · ${mm1(st.coast)} mm` : '—', 'pt enc-sm');
+    /* ---- coil + feed rolls + motor ---- */
+    const cr = Math.max(17, 26 - st.pos / 3000), ca = (st.pos / (2 * Math.PI * cr) * 360) % 360;
+    s += `<g transform="translate(36 ${Y - cr - 1})"><circle r="${cr + 1}" fill="#5d6a73"/><g transform="rotate(${(-ca).toFixed(1)})">${[0, 1, 2, 3].map(i => `<circle r="${(cr - 3 - i * 3.6).toFixed(1)}" fill="none" stroke="#94a3ad" stroke-width="1.2"/>`).join('')}<path d="M0 -6V6M-6 0H6" stroke="#2a3035" stroke-width="2"/></g><circle r="4" fill="#2a3035"/></g>`;
+    s += `<path d="M36 ${Y - 1}L${W - 8} ${Y - 1}" stroke="none"/>`;
+    s += `<rect x="36" y="${Y - 1.5}" width="164" height="3" fill="url(#encSt)"/>`;
+    const fr = (st.pos * 4) % 360;
+    [Y - 8, Y + 8].forEach(cy => { s += `<g transform="translate(86 ${cy})"><circle r="6.5" fill="#8a949b" stroke="#2a3035"/><path d="M-5 0H5" stroke="#2a3035" stroke-width="1.5" transform="rotate(${(cy < Y ? -fr : fr).toFixed(1)})"/></g>`; });
+    s += PL.motorSvg(86, Y + 38, 22, (st.pos * 6) % 360, run) + etx(104, Y + 36, 'Q0.0', 'pt pm');
+    s += etx(86, Y + 66, run ? (fast ? 'سريع' : 'بطيء') : 'واقف', 'pt ar', 'middle');
+    /* ---- encoder measuring roller ---- */
+    const ex = 136, er = 11, ey = Y - 1.5 - er, ea = (st.pos / 200 * 360) % 360, led = st.v > 0.2 && Math.floor(st.enc / 25) % 2 === 1;
+    s += `<path d="M${ex} ${ey}L${ex + 22} ${ey - 26}" stroke="#5d6469" stroke-width="3"/><circle cx="${ex + 22}" cy="${ey - 26}" r="3" fill="#5d6469"/>`;
+    s += `<g transform="translate(${ex} ${ey})"><circle r="${er}" fill="#2a3035" stroke="#8a949b" stroke-width="2"/><g transform="rotate(${ea.toFixed(1)})">${[0, 60, 120, 180, 240, 300].map(a => `<path d="M0 0L0 -${er - 2}" stroke="#cfd6db" stroke-width="1.6" transform="rotate(${a})"/>`).join('')}<circle cx="0" cy="-${er - 3}" r="1.6" fill="#ff9a1a"/></g><circle r="2.5" fill="#8a949b"/></g>`;
+    s += `<rect x="${ex + 4}" y="${ey - 22}" width="20" height="14" rx="3" fill="#1d2a33" stroke="#3a9bff"/><circle cx="${ex + 19}" cy="${ey - 15}" r="2.6" fill="${led ? '#2fd35a' : '#2a3a2f'}"${led ? ' class="glowc" style="--gc:#2fd35a"' : ''}/>`;
+    s += etx(ex - 4, ey - 26, '1000 PPR', 'pt pm', 'end');
+    s += `<path d="M${ex + 24} ${ey - 15}q14 0 18 -16" fill="none" stroke="#3a9bff" stroke-width="1.4" stroke-dasharray="3 2"/>`;
+    /* ---- shear ---- */
+    const sx = 204, bladeY = Y - 30 + st.s * 31;
+    s += `<rect x="${sx - 16}" y="${Y - 52}" width="5" height="64" fill="#5d6469"/><rect x="${sx + 11}" y="${Y - 52}" width="5" height="64" fill="#5d6469"/><rect x="${sx - 18}" y="${Y - 56}" width="36" height="7" rx="2" fill="#4a5257"/>`;
+    s += `<rect x="${sx - 4}" y="${Y - 66}" width="8" height="12" fill="#3a9bff" opacity=".8"/><path d="M${sx} ${Y - 49}V${bladeY - 6}" stroke="#cfd6db" stroke-width="3"/>`;
+    s += `<path d="M${sx - 10} ${bladeY - 7}h20v5l-20 4z" fill="${down ? '#ffc21a' : '#b9c3c9'}" stroke="#2a3035"/>`;
+    s += `<rect x="${sx - 12}" y="${Y + 2}" width="12" height="9" fill="#4a5257"/>`;
+    s += PL.lampSvg(sx + 26, Y - 60, 4, PL.LCOL.green, st.s < 0.03) + etx(sx + 33, Y - 57, 'I0.4', 'pt pm');
+    s += etx(sx, Y - 70, 'Q0.3', 'pt pm', 'middle');
+    if (st.flash > 0) s += `<g opacity="${(st.flash / 0.25).toFixed(2)}"><path d="M${sx} ${Y}l-9 -7M${sx} ${Y}l9 -8M${sx} ${Y}l-7 8M${sx} ${Y}l8 7" stroke="#ffd400" stroke-width="2"/></g>`;
+    /* ---- run-out table + ruler (0 … 600 mm past the shear) ---- */
+    const t0 = sx, sc = 0.24, tx0 = x => t0 + x * sc, tEnd = W - 6;
+    s += `<rect x="${t0}" y="${Y + 2}" width="${tEnd - t0}" height="5" fill="#4a5257"/>`;
+    for (let m = 0; m <= 600; m += 50){ const x = tx0(m); if (x > tEnd) break; s += `<path d="M${x.toFixed(1)} ${Y + 7}v${m % 100 ? 3 : 6}" stroke="var(--muted)" stroke-width="1"/>`; if (m % 250 === 0) s += etx(x, Y + 22, String(m), 'pt pm', 'middle'); }
+    s += `<path d="M${tx0(450).toFixed(1)} ${Y - 24}V${Y + 2}" stroke="#ffc21a" stroke-width="1.5" stroke-dasharray="3 2"/>` + etx(tx0(450), Y - 27, '9000', 'pt pm', 'middle');
+    s += `<path d="M${tx0(500).toFixed(1)} ${Y - 14}V${Y + 2}" stroke="#2fd35a" stroke-width="2"/>` + etx(tx0(500) + 2, Y - 16, '10000', 'pt pm');
+    const hx = Math.min(tEnd, tx0(Math.max(0, head))), over = head > ENC.LEN + ENC.TOL;
+    if (head > 0.2) s += `<rect x="${t0}" y="${Y - 1.5}" width="${(hx - t0).toFixed(1)}" height="3" fill="${over ? '#ff6a5a' : 'url(#encSt)'}"/><path d="M${hx.toFixed(1)} ${Y - 6}v8" stroke="${over ? '#ff4a3d' : '#cfd6db'}" stroke-width="1.6"/>`;
+    s += etx(Math.min(tEnd - 2, Math.max(t0 + 30, hx)), Y + 34, mm1(Math.max(0, head)) + ' mm', 'pt' + (over ? ' enc-badb' : ''), 'end');
+    /* ---- falling piece + stack ---- */
+    const P = st.pieces, n = P.length, last = P[n - 1];
+    if (last && st.fall < 1){ const f = st.fall, w = Math.min(tEnd - t0, last.len * sc), y = Y - 1.5 + f * (H - 30 - Y), x = t0 + 4 + f * 30; s += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="3" fill="url(#encSt)" transform="rotate(${(f * 4).toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)})"/>`; }
+    const shown = P.slice(Math.max(0, n - 12), st.fall < 1 ? n - 1 : n);
+    shown.forEach((p, i) => { const w = Math.min(122, p.len * sc), bad = Math.abs(p.err) > ENC.TOL; s += `<rect x="${238}" y="${H - 8 - i * 3.6}" width="${w.toFixed(1)}" height="3" rx="1" fill="${bad ? '#ff6a5a' : 'url(#encSt)'}" stroke="${bad ? '#c0352b' : '#6b7a84'}" stroke-width=".5"/>`; });
+    s += `<rect x="232" y="${H - 4}" width="128" height="3" fill="#4a5257"/>`;
+    /* ---- piece counter + last error ---- */
+    s += `<rect x="128" y="${H - 50}" width="96" height="44" rx="7" fill="#11181c" stroke="#2f3b42"/>`;
+    s += etx(176, H - 34, `القطع: ${n}`, 'pt ar enc-w', 'middle');
+    if (last){ const bad = Math.abs(last.err) > ENC.TOL; s += etx(176, H - 14, `${mm1(last.len)} mm (${sgn(last.err)})`, 'pt ' + (bad ? 'enc-bad' : 'enc-ok'), 'middle'); }
+    else s += etx(176, H - 14, `الهدف 500 ± ${ENC.TOL} mm`, 'pt ar enc-w', 'middle');
+    if (st.fault) s += `<rect x="6" y="${H - 50}" width="116" height="44" rx="7" fill="#c0352b"/>` + etx(64, H - 32, '⚠ خطأ في التشغيل', 'pt pw ar', 'middle') + etx(64, H - 16, 'شوف نتيجة الاختبار', 'pt pw ar', 'middle');
+    else if (st.gate && st.gateMiss && st.v > 0) s += `<rect x="6" y="${H - 50}" width="116" height="44" rx="7" fill="#b86e00"/>` + etx(64, H - 32, 'العدّاد مش بيعدّ!', 'pt pw ar', 'middle') + etx(64, H - 16, 'محتاج DCNT C251', 'pt pw', 'middle');
+    return s + '</svg>';
+  }
+};
+
+/* ---------- the auto-check (engine addresses; the brand layer translates them) ---------- */
+const lenMsg = (c, i) => {
+  const p = c.plant.pieces[i]; if (!p) return null;
+  const e = p.err, a = Math.abs(e);
+  if (a <= ENC.TOL) return null;
+  const head = `القطعة رقم ${i + 1} طلعت ${mm1(p.len)} mm (${e > 0 ? 'زيادة' : 'ناقصة'} ${mm1(a)} mm)، والمسموح 500 ± ${ENC.TOL} mm.`;
+  if (c.plant.cutsLost) return head + ' السكينة رجعت قبل ما توصل لتحت فمقطعتش: وقت التقطيع لازم يكون أطول من وقت نزول السكينة (0.3 ثانية).';
+  if (e > 200) return head + ' الصاج ماتقطعش في وقته: العدّاد HC0 لازم يتصفّر بعد كل قطعة عشان القطعة اللي بعدها تتقاس من الأول.';
+  if (e > ENC.TOL && e < 12) return head + ' الماكينة بتزحلق شوية بعد ما الموتور يفصل والفرامل تمسك (Overshoot). بص على «زحلقة» في الشاشة واطرحها من الهدف: يعني أوقف الموتور عند 10000 ناقص الزحلقة.';
+  if (e >= 12) return head + ' الموتور وقف متأخر قوي: لازم يبطّأ عند 9000 ويقف قبل 10000.';
+  return head + ' الموتور وقف بدري: راجع رقم المقارنة اللي بتوقف عنده.';
+};
+const settled = c => { c.mark.k = c.plant.pieces.length; return null; };
+PL.BXS.cut = {
+  io:{inputs:[{a:'I0.2', label:'Start', kind:'pb'}, {a:'I0.3', label:'Stop', kind:'pbnc'}, {a:'I0.4', label:'السكينة فوق', kind:'auto'}],
+    outputs:[{a:'Q0.0', label:'تشغيل الموتور (FWD)', kind:'vfd'}, {a:'Q0.1', label:'سرعة عالية', kind:'vfd'}, {a:'Q0.2', label:'فرامل', kind:'brake'}, {a:'Q0.3', label:'السكينة تنزل', kind:'valve'}]},
+  plant:'cut', cmpDef:'HC0', hsc:true, cols:5,
+  cases:[{plantOpt:{hc:6000}, steps:[
+    {watch:c => c.plant.fault || null},
+    {watch:c => c.plant.pos - c.plant.last > 1150 ? (c.plant.gate && c.plant.gateMiss ? 'العدّاد السريع HC0 مش بيعدّ والصاج ماشي لحد ما خرج برّه الترابيزة: في دلتا العدّاد السريع مابيعدّش غير لما تعليمة DCNT بتاعته تتنفّذ، فاعمل رانج DCNT من غير شروط.' : 'الصاج عدّى أكتر من متر بعد السكينة ومحدش وقفه: لازم الموتور Q0.0 يفصل لما العدّاد HC0 يوصل لطول القطعة.') : null},
+    {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.3':0}, msg:'قبل Start: الماكينة لازم تكون واقفة.'},
+    {exp:{'Q0.2':1}, msg:'والماكينة واقفة الفرامل Q0.2 لازم تكون ماسكة عشان الصاج مايتحركش.'},
+    {press:'I0.2'}, {run:0.05}, {exp:{'Q0.0':1, 'Q0.1':1, 'Q0.2':0}, msg:'دوست Start: الموتور يدور سريع (Q0.0 و Q0.1) والفرامل تفك.'},
+    {fn:c => c.e.num('HC0') < 1500 ? null : `العدّاد HC0 كان فيه 6000 من الشغل اللي فات، ودوست Start والعدّاد لسه ${c.e.num('HC0')}: Start لازم يصفّر HC0 (بـ Edge، مرة واحدة) قبل ما القطعة تتقاس.`},
+    {until:c => !c.q('Q0.1') || !c.q('Q0.0'), max:6, msg:'الموتور فضل سريع 6 ثواني ومش بيبطّأ: لازم Q0.1 يفصل لما HC0 يوصل 9000.'},
+    {fn:c => { const n = c.e.num('HC0');
+      if (!c.q('Q0.0')) return `الموتور وقف من السرعة العالية عند ${n} count من غير ما يبطّأ، فالصاج زحلق كتير. لازم يتحوّل بطيء (Q0.1 يفصل) عند 9000 (450 mm) ويكمّل بطيء لحد الآخر.`;
+      if (n < 8900) return `الموتور بطّأ بدري عند ${n} count (${mm1(n / ENC.CPM)} mm): المطلوب يفضل سريع لحد 9000 عشان الإنتاج.`;
+      if (n > 9100) return `الموتور بطّأ متأخر عند ${n} count: المطلوب عند 9000.`;
+      return null; }},
+    {until:c => !c.q('Q0.0'), max:4, msg:'الصاج ماشي بطيء ومش بيقف: لازم Q0.0 يفصل قبل ما HC0 يوصل 10000.'},
+    {run:0.02}, {exp:{'Q0.2':1, 'Q0.3':0}, msg:'الموتور فصل: الفرامل Q0.2 تمسك على طول، والسكينة لسه ماتنزلش.'},
+    {until:c => c.plant.pieces.length >= 1, max:4, msg:'الصاج وقف بس السكينة ماقطعتش: بعد ما الصاج يقف خالص نزّل السكينة Q0.3 بتايمر (نص ثانية مثلًا).'},
+    {fn:c => lenMsg(c, 0)},
+    {until:c => c.plant.pieces.length >= 3, max:15, msg:'بعد القطعة الأولى الماكينة ماكمّلتش لوحدها: بعد ما السكينة ترجع فوق (I0.4) صفّر HC0 والصاج يمشي تاني لوحده.'},
+    {fn:c => lenMsg(c, 1) || lenMsg(c, 2)},
+    {fn:c => c.e.num('C0') === c.plant.pieces.length ? null : `عدّاد القطع فيه ${c.e.num('C0')} لكن اللي اتقطع فعلًا ${c.plant.pieces.length} قطع: اعمل CTU يعدّ كل نزلة للسكينة (من Q0.3).`},
+    {until:c => c.q('Q0.0') && c.e.num('HC0') > 4000, max:8, msg:'الماكينة مارجعتش تمشي بعد القطعة التالتة.'},
+    {fn:settled}, {press:'I0.3'},
+    {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':1, 'Q0.3':0}, msg:'دوست Stop والصاج ماشي: الموتور يقف والفرامل تمسك على طول.'},
+    {run:2.5}, {exp:{'Q0.0':0, 'Q0.3':0}, msg:'بعد Stop مفيش حاجة تتحرك لوحدها، ولا السكينة تنزل.'},
+    {fn:c => c.plant.pieces.length === c.mark.k ? null : 'بعد Stop السكينة نزلت وقطعت: Stop لازم يوقف الدورة كلها.'},
+    {press:'I0.2'}, {run:0.1}, {exp:{'Q0.0':1}, msg:'Start تاني بعد Stop: الماكينة ترجع تشتغل.'},
+    {until:c => c.plant.pieces.length >= c.mark.k + 2, max:14, msg:'بعد Start التاني الماكينة مكمّلتش تقطّع.'},
+    {fn:c => lenMsg(c, c.mark.k + 1)},
+    {press:'I0.3'}, {run:0.5}, {exp:{'Q0.0':0, 'Q0.2':1}, msg:'Stop في الآخر:'}]}]
+};
 
 })();

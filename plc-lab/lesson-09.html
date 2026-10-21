@@ -49,11 +49,39 @@
 </section>
 
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>أعطال شائعة في الموقع</h2>
+  <h2 id="s3"><span class="k">3</span>التحكم في البوزيشن بالإنكودر</h2>
+  <p>سؤال بيتسأل كتير: «ازاي أخلّي الماكينة تقف عند مكان معيّن بالظبط؟». الإجابة: <b>إنكودر</b> على حاجة بتلف مع الحركة، والـ PLC بيعدّ نبضاته ويعرف الحاجة مشيت قد إيه. خد مثال <b>ماكينة تقطيع صاج بالطول</b>:</p>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>الخطوة</th><th>الحساب</th></tr></thead>
+    <tbody>
+      <tr><td>إنكودر ⁦1000⁩ نبضة في اللفة (PPR) على بكرة قياس محيطها ⁦200⁩ mm</td><td>⁦1000⁩ نبضة لكل ⁦200⁩ mm</td></tr>
+      <tr><td>العدّاد السريع بيعدّ الطالع والنازل للإشارتين A و B (×4)</td><td><bdi dir="ltr" class="mono" style="white-space:nowrap">1000 × 4 = 4000 count</bdi> في اللفة</td></tr>
+      <tr><td>كل mm قد إيه</td><td><bdi dir="ltr" class="mono" style="white-space:nowrap">4000 ÷ 200 = 20 count</bdi> لكل mm</td></tr>
+      <tr><td>بلاطة طولها ⁦500⁩ mm</td><td><bdi dir="ltr" class="mono" style="white-space:nowrap">500 × 20 = 10000 count</bdi></td></tr>
+    </tbody></table></div>
+  <div class="box key"><b>ليه عدّاد سريع (HSC)؟</b> الصاج ماشي ⁦150⁩ mm في الثانية يعني ⁦3000⁩ نبضة في الثانية. الدخل العادي بيتقرا مرة كل سكان (كل كام ملّي ثانية) فهيفوّت نبضات كتير. الـ <b>HSC</b> بيعدّ في الهاردوير بين السكانات، والبرنامج بس بيقرا الرقم ويقارنه.</div>
+  <p><b>الدورة:</b> Start يصفّر العدّاد ← الموتور يجري <b>سريع</b> ← عند ⁦9000⁩ (450 mm) يتحوّل <b>بطيء</b> ← قبل ⁦10000⁩ بشوية يفصل والفرامل تمسك ← تستنى الصاج يقف خالص ← السكينة تنزل بتايمر ← لما ترجع فوق تصفّر العدّاد وتعدّ قطعة ← والدورة تتعاد لوحدها لحد Stop.</p>
+  <svg viewBox="0 0 340 128" role="img" aria-label="منحنى السرعة: سريع لحد 9000 count، بطيء لحد نقطة الوقوف، والصاج بيزحلق شوية بعد الفرامل" style="display:block;width:100%;max-width:520px;height:auto;margin:6px auto 0;direction:ltr">
+    <path d="M30 104H326M30 104V14" stroke="var(--muted)" stroke-width="1.2" fill="none"/>
+    <path d="M30 104L52 30H226L242 86H290L296 104" stroke="var(--accent)" stroke-width="3" fill="none" stroke-linejoin="round"/>
+    <path d="M226 22V108" stroke="#d99a00" stroke-width="1.4" stroke-dasharray="4 3"/><path d="M290 22V108" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 3"/><path d="M298 22V108" stroke="var(--good)" stroke-width="2"/>
+    <text x="226" y="18" text-anchor="middle" class="pt pm">9000</text><text x="282" y="18" text-anchor="end" class="pt pm">9950</text><text x="300" y="18" class="pt pm">10000</text>
+    <text x="128" y="24" text-anchor="middle" class="pt">FAST</text><text x="266" y="80" text-anchor="middle" class="pt">SLOW</text>
+    <text x="320" y="120" text-anchor="end" class="pt pm">count</text><text x="34" y="12" class="pt pm">v</text>
+  </svg>
+  <div class="box"><b>الزحلقة (Overshoot):</b> حتى بعد ما الموتور يفصل والفرامل تمسك، الصاج بيكمّل شوية، مثلًا <bdi dir="ltr" class="mono" style="white-space:nowrap">50 count = 2.5 mm</bdi>. لو وقفت عند ⁦10000⁩ بالظبط البلاطة هتطلع ⁦502.5⁩ mm. الحل: <b>اقف بدري بمقدار الزحلقة</b>، يعني عند <bdi dir="ltr" class="mono" style="white-space:nowrap">10000 − 50 = 9950</bdi>. وعشان كده بنبطّأ قبلها: الزحلقة من السرعة البطيئة صغيرة وثابتة، لكن من السرعة العالية بتبقى كبيرة ومتغيّرة.</div>
+  <div class="box"><b>الـ Homing ونبضة Z:</b> الإنكودر العادي (Incremental) مابيعرفش هو فين لما الكهربا تقطع، بيعدّ من آخر تصفير بس. في الماكينات اللي محتاجة مكان ثابت (زي محور بيروح ويرجع) بتعمل <b>Homing</b>: تتحرك بالراحة لحد حساس Home، وبعدين تصفّر العدّاد على نبضة الـ <b>Z</b> (نبضة واحدة في اللفة) عشان يبقى الصفر في نفس المكان كل مرة. في تقطيع الصاج مش محتاجينها: كل قطعة بتبدأ من مكان القطع اللي قبلها.</div>
+  <p>جرّب التمرين ده بشكل كل شركة، بالعدّاد السريع بتاعها:</p>
+  <div class="chips"><a class="btn" href="siemens.html#enc">Siemens · ⁦HSC_1⁩ و ⁦%ID1000⁩</a><a class="btn" href="delta.html#enc">Delta · <bdi dir="ltr" class="mono" style="white-space:nowrap">DCNT C251</bdi></a><a class="btn" href="ab.html#enc">Allen-Bradley · كارت HSC</a></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>أعطال شائعة في الموقع</h2>
   <div class="fault-box"><b>أعطال شائعة في المشاريع:</b><ul>
     <li><b>الماكينة وقفت في نص خطوة:</b> الحساس اللي بينقلها للخطوة اللي بعدها مش بيشتغل (ليميت متخبط، عوامة لازقة). افتح المونيتور وشوف أنهي خطوة شغالة وأنهي شرط ناقص.</li>
     <li><b>الدفّاع بيزق الكرتونة الغلط:</b> الـ Flag بيتمسح بدري أو متأخر، أو المسافة بين الكراتين أقل من المسافة بين الحساسين.</li>
     <li><b>الباب بيخبط في الآخر:</b> الليميت سويتش اتحرك من مكانه أو مش متوصّل NC، والموتور بيكمّل لحد ما الأوفرلود يفصل.</li>
+    <li><b>البلاطات بتطلع أطول أو أقصر من غير سبب:</b> بكرة الإنكودر بتزحلق على الصاج (زيت أو ضغط السوستة ضعيف) أو اتاكلت فمحيطها اتغيّر. نضّفها، واقيس قطعة بالمتر وظبّط رقم الـ count لكل mm.</li>
     <li><b>عين الأمان مش شغالة:</b> عدسة متوسخة أو متحركة. اختبر عين الأمان كل فترة: دي حماية للناس.</li>
   </ul></div>
 </section>
@@ -65,7 +93,7 @@
 </section>
 
 <nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
-<p class="foot">المشاريع مبسّطة للتعليم. الماكينات الحقيقية فيها كمان طوارئ بالسلك، وحمايات، ووضع يدوي للصيانة. المحاكي هنا <b>مدرّب عام</b> بعناوين على طريقة IEC / Siemens: العناوين والتعليمات بالظبط بتختلف من شركة للتانية، والمانيوال بتاع الـ PLC بتاعك هو المرجع. تقدّمك بيتسجّل على الجهاز ده بس.</p>
+<p class="foot">المشاريع مبسّطة للتعليم. الماكينات الحقيقية فيها كمان طوارئ بالسلك، وحمايات، ووضع يدوي للصيانة. المحاكي هنا <b>مدرّب عام</b> بعناوين على طريقة IEC / Siemens: العناوين والتعليمات بالظبط بتختلف من شركة للتانية، والمانيوال بتاع الـ PLC بتاعك هو المرجع. تقدّمك بيتسجّل على الجهاز ده بس.<br>© &#x2066;2026 LearnElectricals&#x2069;. كل الحقوق محفوظة. الموقع مش تابع لأي شركة من الشركات المذكورة (زي &#x2066;Siemens&#x2069; و &#x2066;Allen-Bradley&#x2069; و &#x2066;Delta&#x2069; و &#x2066;Schneider&#x2069; وغيرهم)، والأسماء والعلامات التجارية ملك أصحابها، ومستخدمة بس عشان نشرح الأجهزة.</p>
 </div>
 <script>
 PL.lesson('l9');

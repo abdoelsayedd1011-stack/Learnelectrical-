@@ -220,21 +220,22 @@ PL.drill = function(host, gen, opt){
    write the output image to the physical outputs. Exactly like a real PLC. */
 const ENG = PL.eng = {};
 const CONTACTS = ['NO', 'NC', 'P', 'N', 'CMP', 'ONS'];
-const OUTS = ['OUT', 'S', 'R', 'TON', 'TOF', 'TP', 'RTO', 'CTU', 'CTD', 'SCL'];
+const OUTS = ['OUT', 'S', 'R', 'TON', 'TOF', 'TP', 'RTO', 'CTU', 'CTD', 'SCL', 'HSC'];
 ENG.CONTACTS = CONTACTS; ENG.OUTS = OUTS;
 ENG.isOut = t => OUTS.indexOf(t) >= 0;
 ENG.isContact = t => CONTACTS.indexOf(t) >= 0 || t === 'W';
-const RX = {bit:/^(I|Q|M)(\d{1,2})\.([0-7])$/, tim:/^T(\d{1,2})$/, tsub:/^T(\d{1,2})\.(TT|EN)$/, cnt:/^C(\d{1,2})$/, word:/^(IW|MW)(\d{1,3})$/};
+const RX = {bit:/^(I|Q|M)(\d{1,2})\.([0-7])$/, tim:/^T(\d{1,2})$/, tsub:/^T(\d{1,2})\.(TT|EN)$/, cnt:/^C(\d{1,2})$/, word:/^(IW|MW)(\d{1,3})$/, hsc:/^HC(\d)$/};
 ENG.norm = a => String(a == null ? '' : a).trim().toUpperCase().replace(/\s+/g, '').replace(/,/g, '.');
-/* what kind of operand an address is: 'I' 'Q' 'M' 'T' 'C' 'IW' 'MW' or null */
-ENG.kind = a => { a = ENG.norm(a); let m; if ((m = RX.bit.exec(a))) return m[1]; if (RX.tim.test(a)) return 'T'; if (RX.tsub.test(a)) return 'TB'; if (RX.cnt.test(a)) return 'C'; if ((m = RX.word.exec(a))) return m[1]; return null; };
+/* what kind of operand an address is: 'I' 'Q' 'M' 'T' 'C' 'IW' 'MW' 'HC' (high-speed counter, 32-bit) or null */
+ENG.kind = a => { a = ENG.norm(a); let m; if ((m = RX.bit.exec(a))) return m[1]; if (RX.tim.test(a)) return 'T'; if (RX.tsub.test(a)) return 'TB'; if (RX.cnt.test(a)) return 'C'; if ((m = RX.word.exec(a))) return m[1]; if (RX.hsc.test(a)) return 'HC'; return null; };
 /* which operand kinds each element accepts */
-ENG.accepts = {NO:['I','Q','M','T','C','TB'], NC:['I','Q','M','T','C','TB'], P:['I','Q','M','T','C','TB'], N:['I','Q','M','T','C','TB'], CMP:['C','T','MW','IW'], ONS:['M'],
-  OUT:['Q','M'], S:['Q','M'], R:['Q','M','T','C'], TON:['T'], TOF:['T'], TP:['T'], RTO:['T'], CTU:['C'], CTD:['C'], SCL:['IW']};
+ENG.accepts = {NO:['I','Q','M','T','C','TB'], NC:['I','Q','M','T','C','TB'], P:['I','Q','M','T','C','TB'], N:['I','Q','M','T','C','TB'], CMP:['C','T','MW','IW','HC'], ONS:['M'],
+  OUT:['Q','M'], S:['Q','M'], R:['Q','M','T','C','HC'], TON:['T'], TOF:['T'], TP:['T'], RTO:['T'], CTU:['C'], CTD:['C'], SCL:['IW'], HSC:['HC']};
 ENG.CMPOPS = ['>=', '>', '<=', '<', '==', '<>'];
 ENG.RAWMAX = 27648; /* Siemens-style full scale for 4–20 mA → 0 … 27648 */
 
-/* 'NO:I0.0' · 'CMP:MW10:>=:80' · 'TON:T0:3' · 'CTU:C0:6' · 'SCL:IW64:MW10:0:100' · '-' wire · '' nothing */
+/* 'NO:I0.0' · 'CMP:MW10:>=:80' · 'TON:T0:3' · 'CTU:C0:6' · 'SCL:IW64:MW10:0:100' · 'R:HC0' (reset the high-speed counter)
+   'HSC:HC0:10000' (enable the high-speed counter, Delta DCNT style, with its set value) · '-' wire · '' nothing */
 ENG.parse = function(tok){
   if (tok == null || tok === '' || tok === '.') return null;
   if (typeof tok === 'object') return tok;
@@ -244,6 +245,7 @@ ENG.parse = function(tok){
   if (t === 'CMP'){ el.op = p[2] || '>='; el.b = +p[3] || 0; }
   else if (t === 'TON' || t === 'TOF' || t === 'TP' || t === 'RTO') el.pt = p[2] != null ? +p[2] : 3;
   else if (t === 'CTU' || t === 'CTD'){ el.pv = p[2] != null ? Math.round(+p[2]) : 5; if (p[3]) el.r = ENG.norm(p[3]); }
+  else if (t === 'HSC') el.pv = p[2] != null ? Math.round(+p[2]) : 0;
   else if (t === 'SCL'){ el.o = ENG.norm(p[2] || 'MW10'); el.lo = p[3] != null ? +p[3] : 0; el.hi = p[4] != null ? +p[4] : 100; if (p[5] != null && p[6] != null){ el.rlo = +p[5]; el.rhi = +p[6]; } }
   return el;
 };
@@ -311,6 +313,9 @@ ENG.Engine = function(progDef, opt){
   me.Q = {};         /* output image (program writes) */
   me.out = {};       /* physical outputs (after force) */
   me.M = {}; me.W = {}; me.T = {}; me.C = {};
+  /* high-speed counters: counted by the hardware (the machine model calls hscAdd), not by the scan.
+     HC = current value (32-bit signed, wraps like a DInt), hcEn = enabled by a DCNT-style element, hcPv = its set value */
+  me.HC = {}; me.hcEn = {}; me.hcPv = {};
   me.edge = {}; me.cin = {}; me.t = 0; me.scans = 0;
   me.prog = [];
   me.setProgram = function(def, keep){
@@ -336,6 +341,7 @@ ENG.Engine = function(progDef, opt){
     if (k === 'T') return !!(me.T[a] && me.T[a].q);
     if (k === 'C') return !!(me.C[a] && me.C[a].q);
     if (k === 'TB'){ const m = RX.tsub.exec(a), t = me.T['T' + m[1]]; return !!(t && (m[2] === 'EN' ? t.pin : t.tt)); }
+    if (k === 'HC') return me.hcPv[a] != null && me.hcPv[a] > 0 && (me.HC[a] || 0) >= me.hcPv[a];
     return false;
   };
   me.num = function(a){
@@ -344,10 +350,14 @@ ENG.Engine = function(progDef, opt){
     if (k === 'T') return me.T[a] ? me.T[a].et : 0;
     if (k === 'IW') return me.W[a] != null ? me.W[a] : 0;
     if (k === 'MW') return me.W[a] != null ? me.W[a] : 0;
+    if (k === 'HC') return me.HC[a] || 0;
     return me.bit(a) ? 1 : 0;
   };
   /* public read: physical output for Q, image for I */
-  me.get = function(a){ a = ENG.norm(a); const k = ENG.kind(a); if (k === 'Q') return me.out[a] ? 1 : 0; if (k === 'IW' || k === 'MW') return me.num(a); return me.bit(a) ? 1 : 0; };
+  me.get = function(a){ a = ENG.norm(a); const k = ENG.kind(a); if (k === 'Q') return me.out[a] ? 1 : 0; if (k === 'IW' || k === 'MW' || k === 'HC') return me.num(a); return me.bit(a) ? 1 : 0; };
+  /* the counter card / built-in HSC counts encoder edges between scans (whole counts, 32-bit wrap) */
+  me.hscAdd = function(a, n){ a = ENG.norm(a); me.HC[a] = ((me.HC[a] || 0) + Math.round(n)) | 0; };
+  me.hscSet = function(a, v){ me.HC[ENG.norm(a)] = Math.round(v) | 0; };
   me.setIn = function(a, v){ me.phys[ENG.norm(a)] = v ? 1 : 0; };
   me.setWord = function(a, v){ me.W[ENG.norm(a)] = v; };
   function cmp(v, op, b){ switch (op){ case '>': return v > b; case '>=': return v >= b - 1e-9; case '<': return v < b; case '<=': return v <= b + 1e-9; case '==': return Math.abs(v - b) < 1e-6; case '<>': return Math.abs(v - b) >= 1e-6; } return false; }
@@ -389,7 +399,9 @@ ENG.Engine = function(progDef, opt){
           if (kd === 'Q') me.Q[a] = 0; else if (kd === 'M') me.M[a] = 0;
           else if (kd === 'T'){ const t = me.timer(a); t.et = 0; t.q = false; t.run = false; }
           else if (kd === 'C'){ const c = me.counter(a); c.cv = me.up[a] ? 0 : c.pv; c.q = me.up[a] ? c.cv >= c.pv && c.pv > 0 : c.cv <= 0; }
+          else if (kd === 'HC') me.HC[a] = 0;
         } return;
+        case 'HSC': if (kd === 'HC'){ me.hcEn[a] = en ? 1 : 0; me.hcPv[a] = el.pv; } return;
         case 'TON': { if (kd !== 'T') return; const t = me.timer(a); t.pt = el.pt; if (en){ t.et = Math.min(el.pt, t.et + dt); t.q = t.et >= el.pt - 1e-9; } else { t.et = 0; t.q = false; } t.pin = en; t.tt = en && !t.q; return; }
         case 'RTO': { if (kd !== 'T') return; const t = me.timer(a); t.pt = el.pt; if (en){ t.et = Math.min(el.pt, t.et + dt); } t.q = t.et >= el.pt - 1e-9; t.pin = en; t.tt = en && !t.q; return; }
         case 'TOF': { if (kd !== 'T') return; const t = me.timer(a); t.pt = el.pt; if (en){ t.q = true; t.et = 0; } else if (t.q){ t.et = Math.min(el.pt, t.et + dt); if (t.et >= el.pt - 1e-9) t.q = false; } t.pin = en; t.tt = !en && t.q; return; }
@@ -1577,12 +1589,13 @@ PL.BRANDS = [
   {id:'dvp', file:'delta.html', name:'Delta DVP', sub:'على طريقة ISPSoft و WPLSoft', tags:['X0 · Y0', 'TMR T0 K50', 'IL'], st:{run:true, ins:{'I0.0':1, 'I0.2':1}, outs:{'Q0.0':1, 'Q0.1':1}}},
   {id:'ab', file:'ab.html', name:'Allen-Bradley', sub:'على طريقة Studio 5000', tags:['XIC · OTE', 'TON .DN', 'Tags'], st:{run:true, key:'RUN', ins:{'I0.0':1, 'I0.1':1}, outs:{'Q0.0':1}}}
 ];
+PL.BRAND_N = 9; /* exercises on each brand page */
 PL.brandCards = function(host){
   if (!host) return;
   let done = {}; try { const s = JSON.parse(localStorage.getItem('plcx-lab-v1')); if (s && s.done) done = s.done; } catch (e){}
   const n = id => Object.keys(done).filter(k => k.indexOf(id + '/') === 0).length;
   host.classList.add('bcards');
-  host.innerHTML = PL.BRANDS.map(b => { const c = n(b.id); return `<a class="bcard" href="${b.file}"><span class="bf" aria-hidden="true">${FACE[b.id](b.st)}</span><span class="bt"><b dir="ltr">${b.name}</b><span class="bs">${b.sub}</span><span class="btg">${b.tags.map(t => `<i>${t}</i>`).join('')}</span><span class="bp">${c ? `خلّصت ${c} من 8 ${c >= 8 ? '✓' : '←'}` : '8 تمارين ←'}</span></span></a>`; }).join('');
+  host.innerHTML = PL.BRANDS.map(b => { const c = n(b.id); return `<a class="bcard" href="${b.file}"><span class="bf" aria-hidden="true">${FACE[b.id](b.st)}</span><span class="bt"><b dir="ltr">${b.name}</b><span class="bs">${b.sub}</span><span class="btg">${b.tags.map(t => `<i>${t}</i>`).join('')}</span><span class="bp">${c ? `خلّصت ${Math.min(c, PL.BRAND_N)} من ${PL.BRAND_N} ${c >= PL.BRAND_N ? '✓' : '←'}` : PL.BRAND_N + ' تمارين ←'}</span></span></a>`; }).join('');
 };
 
 })();
