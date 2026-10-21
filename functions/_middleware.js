@@ -1,6 +1,6 @@
 // Members-only pages: visitors without an account are sent to sign up first.
 // Open to everyone: the main pages, the PowerFlex 525 lab, the interview question bank, and lessons 1–2 of every course
-// (basics, classic control, instrumentation, PLC, drawings).
+// (basics, classic control, instrumentation, PLC, drawings). The PLC brand simulators (Siemens/Delta/AB) are members-only.
 // Members' lab/course pages also get /assets/sync.js injected so their progress syncs with the account.
 // Paywall (off by default, see _lib/plan.js): when on, those member-only pages also need an active Pro plan.
 import { getDb, sessionUser, COOKIE } from "./_lib/auth.js";
@@ -24,6 +24,7 @@ function membersOnly(pathname){
   const dir = m[1], rest = m[2];
   if (rest && !/\.html$/.test(rest) && /\./.test(rest)) return false; // scripts, images, data
   if (COURSE_DIRS.has(dir)){
+    if (dir === "plc-lab" && /^(?:siemens|delta|ab)(?:\.html)?$/.test(rest)) return true; // brand simulators
     const l = /^lesson-(\d+)/.exec(rest);
     return !!l && Number(l[1]) > FREE_LESSONS;
   }

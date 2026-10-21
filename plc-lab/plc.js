@@ -219,18 +219,18 @@ PL.drill = function(host, gen, opt){
    Scan = read inputs into the image → execute rungs top → bottom (later rungs see what earlier ones wrote) →
    write the output image to the physical outputs. Exactly like a real PLC. */
 const ENG = PL.eng = {};
-const CONTACTS = ['NO', 'NC', 'P', 'N', 'CMP'];
-const OUTS = ['OUT', 'S', 'R', 'TON', 'TOF', 'TP', 'CTU', 'CTD', 'SCL'];
+const CONTACTS = ['NO', 'NC', 'P', 'N', 'CMP', 'ONS'];
+const OUTS = ['OUT', 'S', 'R', 'TON', 'TOF', 'TP', 'RTO', 'CTU', 'CTD', 'SCL'];
 ENG.CONTACTS = CONTACTS; ENG.OUTS = OUTS;
 ENG.isOut = t => OUTS.indexOf(t) >= 0;
 ENG.isContact = t => CONTACTS.indexOf(t) >= 0 || t === 'W';
-const RX = {bit:/^(I|Q|M)(\d{1,2})\.([0-7])$/, tim:/^T(\d{1,2})$/, cnt:/^C(\d{1,2})$/, word:/^(IW|MW)(\d{1,3})$/};
+const RX = {bit:/^(I|Q|M)(\d{1,2})\.([0-7])$/, tim:/^T(\d{1,2})$/, tsub:/^T(\d{1,2})\.(TT|EN)$/, cnt:/^C(\d{1,2})$/, word:/^(IW|MW)(\d{1,3})$/};
 ENG.norm = a => String(a == null ? '' : a).trim().toUpperCase().replace(/\s+/g, '').replace(/,/g, '.');
 /* what kind of operand an address is: 'I' 'Q' 'M' 'T' 'C' 'IW' 'MW' or null */
-ENG.kind = a => { a = ENG.norm(a); let m; if ((m = RX.bit.exec(a))) return m[1]; if (RX.tim.test(a)) return 'T'; if (RX.cnt.test(a)) return 'C'; if ((m = RX.word.exec(a))) return m[1]; return null; };
+ENG.kind = a => { a = ENG.norm(a); let m; if ((m = RX.bit.exec(a))) return m[1]; if (RX.tim.test(a)) return 'T'; if (RX.tsub.test(a)) return 'TB'; if (RX.cnt.test(a)) return 'C'; if ((m = RX.word.exec(a))) return m[1]; return null; };
 /* which operand kinds each element accepts */
-ENG.accepts = {NO:['I','Q','M','T','C'], NC:['I','Q','M','T','C'], P:['I','Q','M','T','C'], N:['I','Q','M','T','C'], CMP:['C','T','MW','IW'],
-  OUT:['Q','M'], S:['Q','M'], R:['Q','M','T','C'], TON:['T'], TOF:['T'], TP:['T'], CTU:['C'], CTD:['C'], SCL:['IW']};
+ENG.accepts = {NO:['I','Q','M','T','C','TB'], NC:['I','Q','M','T','C','TB'], P:['I','Q','M','T','C','TB'], N:['I','Q','M','T','C','TB'], CMP:['C','T','MW','IW'], ONS:['M'],
+  OUT:['Q','M'], S:['Q','M'], R:['Q','M','T','C'], TON:['T'], TOF:['T'], TP:['T'], RTO:['T'], CTU:['C'], CTD:['C'], SCL:['IW']};
 ENG.CMPOPS = ['>=', '>', '<=', '<', '==', '<>'];
 ENG.RAWMAX = 27648; /* Siemens-style full scale for 4–20 mA → 0 … 27648 */
 
@@ -242,9 +242,9 @@ ENG.parse = function(tok){
   const p = String(tok).split(':'), t = p[0].toUpperCase();
   const el = {t, a:ENG.norm(p[1] || '')};
   if (t === 'CMP'){ el.op = p[2] || '>='; el.b = +p[3] || 0; }
-  else if (t === 'TON' || t === 'TOF' || t === 'TP') el.pt = p[2] != null ? +p[2] : 3;
-  else if (t === 'CTU' || t === 'CTD') el.pv = p[2] != null ? Math.round(+p[2]) : 5;
-  else if (t === 'SCL'){ el.o = ENG.norm(p[2] || 'MW10'); el.lo = p[3] != null ? +p[3] : 0; el.hi = p[4] != null ? +p[4] : 100; }
+  else if (t === 'TON' || t === 'TOF' || t === 'TP' || t === 'RTO') el.pt = p[2] != null ? +p[2] : 3;
+  else if (t === 'CTU' || t === 'CTD'){ el.pv = p[2] != null ? Math.round(+p[2]) : 5; if (p[3]) el.r = ENG.norm(p[3]); }
+  else if (t === 'SCL'){ el.o = ENG.norm(p[2] || 'MW10'); el.lo = p[3] != null ? +p[3] : 0; el.hi = p[4] != null ? +p[4] : 100; if (p[5] != null && p[6] != null){ el.rlo = +p[5]; el.rhi = +p[6]; } }
   return el;
 };
 ENG.tok = function(el){
@@ -252,8 +252,8 @@ ENG.tok = function(el){
   if (el.t === 'W') return '-';
   if (el.t === 'CMP') return `CMP:${el.a}:${el.op}:${el.b}`;
   if (el.pt != null) return `${el.t}:${el.a}:${el.pt}`;
-  if (el.pv != null) return `${el.t}:${el.a}:${el.pv}`;
-  if (el.t === 'SCL') return `SCL:${el.a}:${el.o}:${el.lo}:${el.hi}`;
+  if (el.pv != null) return `${el.t}:${el.a}:${el.pv}` + (el.r ? ':' + el.r : '');
+  if (el.t === 'SCL') return `SCL:${el.a}:${el.o}:${el.lo}:${el.hi}` + (el.rhi != null ? `:${el.rlo}:${el.rhi}` : '');
   return `${el.t}:${el.a}`;
 };
 /* compact text form → normalised program. def: [{rows:[[tok…]…], links:[[node…]…]}] or a rung string list */
@@ -277,6 +277,7 @@ ENG.lint = function(prog){
     if (!el.a || !k){ msgs.push({rung:i, r, c, kind:'addr', text:`رانج ${i + 1}: العنصر ${el.t} محتاج عنوان صح (زي I0.0 أو Q0.0).`}); return; }
     if (ENG.accepts[el.t].indexOf(k) < 0) msgs.push({rung:i, r, c, kind:'operand', text:`رانج ${i + 1}: العنوان ${el.a} مينفعش مع ${el.t}.`});
     if (el.t === 'OUT'){ (coils[el.a] = coils[el.a] || []).push(i + 1); }
+    if (el.r && ['I', 'Q', 'M'].indexOf(ENG.kind(el.r)) < 0) msgs.push({rung:i, r, c, kind:'operand', text:`رانج ${i + 1}: دخل الـ R بتاع ${el.t} لازم يبقى بت (زي I0.3).`});
     if (el.t === 'SCL' && ENG.kind(el.o) !== 'MW') msgs.push({rung:i, r, c, kind:'operand', text:`رانج ${i + 1}: خرج الـ SCL لازم يبقى MW (زي MW10).`});
   })));
   Object.keys(coils).forEach(a => { const rs = coils[a].filter((v, j, arr) => arr.indexOf(v) === j); if (coils[a].length > 1) msgs.push({kind:'double', addr:a, text:`الكويل ${a} مكتوب ${coils[a].length} مرات (رانج ${rs.join(' و ')}). آخر رانج بس هو اللي بيكسب: ده "Double coil".`}); });
@@ -292,7 +293,7 @@ function solveRung(rg, pass){
       for (let k = 0; k < R; k++){ let ch = false; for (let r = 1; r < R; r++) if (rg.links[r - 1].indexOf(c) >= 0 && pw[r][c] !== pw[r - 1][c]){ pw[r][c] = pw[r - 1][c] = true; ch = true; } if (!ch) break; }
     }
     if (c === C - 1) break; /* output column: its input is the node, outputs do not pass on */
-    for (let r = 0; r < R; r++){ const el = rg.rows[r][c]; if (!el) continue; const ok = pass(el, r, c); cp[r][c] = ok; pw[r][c + 1] = pw[r][c] && ok; }
+    for (let r = 0; r < R; r++){ const el = rg.rows[r][c]; if (!el) continue; const ok = pass(el, r, c, pw[r][c]); cp[r][c] = ok; pw[r][c + 1] = pw[r][c] && ok; }
   }
   return {pw, cp};
 }
@@ -334,6 +335,7 @@ ENG.Engine = function(progDef, opt){
     if (k === 'M') return !!me.M[a];
     if (k === 'T') return !!(me.T[a] && me.T[a].q);
     if (k === 'C') return !!(me.C[a] && me.C[a].q);
+    if (k === 'TB'){ const m = RX.tsub.exec(a), t = me.T['T' + m[1]]; return !!(t && (m[2] === 'EN' ? t.pin : t.tt)); }
     return false;
   };
   me.num = function(a){
@@ -356,7 +358,7 @@ ENG.Engine = function(progDef, opt){
     Object.keys(me.force).forEach(a => { if (ENG.kind(a) === 'I') me.II[a] = me.force[a]; });
     /* 2. execute */
     me.prog.forEach((rg, i) => {
-      const s = solveRung(rg, (el, r, c) => {
+      const s = solveRung(rg, (el, r, c, pin) => {
         const k = i + ':' + r + ':' + c;
         switch (el.t){
           case 'W': return true;
@@ -365,6 +367,7 @@ ENG.Engine = function(progDef, opt){
           case 'P': { const v = me.bit(el.a), p = me.edge[k]; me.edge[k] = v; return v && !p; }
           case 'N': { const v = me.bit(el.a), p = me.edge[k]; me.edge[k] = v; return !v && p; }
           case 'CMP': return cmp(me.num(el.a), el.op, el.b);
+          case 'ONS': { const p = !!me.M[el.a]; me.M[el.a] = pin ? 1 : 0; return pin && !p; }
         }
         return false;
       });
@@ -387,21 +390,23 @@ ENG.Engine = function(progDef, opt){
           else if (kd === 'T'){ const t = me.timer(a); t.et = 0; t.q = false; t.run = false; }
           else if (kd === 'C'){ const c = me.counter(a); c.cv = me.up[a] ? 0 : c.pv; c.q = me.up[a] ? c.cv >= c.pv && c.pv > 0 : c.cv <= 0; }
         } return;
-        case 'TON': { if (kd !== 'T') return; const t = me.timer(a); t.pt = el.pt; if (en){ t.et = Math.min(el.pt, t.et + dt); t.q = t.et >= el.pt - 1e-9; } else { t.et = 0; t.q = false; } t.pin = en; return; }
-        case 'TOF': { if (kd !== 'T') return; const t = me.timer(a); t.pt = el.pt; if (en){ t.q = true; t.et = 0; } else if (t.q){ t.et = Math.min(el.pt, t.et + dt); if (t.et >= el.pt - 1e-9) t.q = false; } t.pin = en; return; }
+        case 'TON': { if (kd !== 'T') return; const t = me.timer(a); t.pt = el.pt; if (en){ t.et = Math.min(el.pt, t.et + dt); t.q = t.et >= el.pt - 1e-9; } else { t.et = 0; t.q = false; } t.pin = en; t.tt = en && !t.q; return; }
+        case 'RTO': { if (kd !== 'T') return; const t = me.timer(a); t.pt = el.pt; if (en){ t.et = Math.min(el.pt, t.et + dt); } t.q = t.et >= el.pt - 1e-9; t.pin = en; t.tt = en && !t.q; return; }
+        case 'TOF': { if (kd !== 'T') return; const t = me.timer(a); t.pt = el.pt; if (en){ t.q = true; t.et = 0; } else if (t.q){ t.et = Math.min(el.pt, t.et + dt); if (t.et >= el.pt - 1e-9) t.q = false; } t.pin = en; t.tt = !en && t.q; return; }
         case 'TP': { if (kd !== 'T') return; const t = me.timer(a); t.pt = el.pt;
           if (t.run){ t.et = Math.min(el.pt, t.et + dt); if (t.et >= el.pt - 1e-9){ t.run = false; t.q = false; } }
           else if (en && !t.pin){ t.run = true; t.q = true; t.et = 0; }
           else if (!en) t.et = 0;
-          t.pin = en; return; }
+          t.pin = en; t.tt = t.run; return; }
         case 'CTU': case 'CTD': { if (kd !== 'C') return; const c = me.counter(a);
           if (c.cv == null) c.cv = el.t === 'CTD' && !me.up[a] ? el.pv : 0;
           if (el.t === 'CTU' || !me.up[a]) c.pv = el.pv;
           if (me._seedCin && me.cin[k] == null) me.cin[k] = en;
           const p = !!me.cin[k]; me.cin[k] = en;
-          if (en && !p) c.cv = el.t === 'CTU' ? Math.min(32767, c.cv + 1) : Math.max(0, c.cv - 1);
+          if (el.r && me.bit(el.r)) c.cv = el.t === 'CTU' ? 0 : el.pv;
+          else if (en && !p) c.cv = el.t === 'CTU' ? Math.min(32767, c.cv + 1) : Math.max(0, c.cv - 1);
           c.q = me.up[a] ? c.cv >= c.pv && c.pv > 0 : c.cv <= 0; return; }
-        case 'SCL': if (en && ENG.kind(el.o) === 'MW'){ const raw = me.num(a); me.W[el.o] = el.lo + clamp(raw, 0, ENG.RAWMAX) / ENG.RAWMAX * (el.hi - el.lo); } return;
+        case 'SCL': if (en && ENG.kind(el.o) === 'MW'){ const raw = me.num(a); const r0 = el.rhi != null ? el.rlo : 0, r1 = el.rhi != null ? el.rhi : ENG.RAWMAX; me.W[el.o] = el.lo + clamp((raw - r0) / ((r1 - r0) || 1), 0, 1) * (el.hi - el.lo); } return;
       }
     }
   };
@@ -1468,5 +1473,116 @@ PL.timerDemo = function(host){
   ex.forEach(x => { x.danger = mkDanger(x); x.terms.forEach(t => { if (!t.pol) t.pol = 'sig'; }); });
   PL.wireEx = ex;
 })();
+
+/* ================= brand faceplates (drawings of real CPUs, used by the brand simulators and the hub cards) =================
+   st: {run, err, frc, ins:{I0.0:1}, outs:{Q0.0:1}, key:'RUN'|'REM'|'PROG', ana} — addresses are engine addresses. */
+const FACE = PL.face = {};
+const fled = (x, y, on, col, w, h) => `<rect x="${x}" y="${y}" width="${w || 6}" height="${h || 4}" rx="1" fill="${on ? col : '#1a1f22'}"${on ? ` style="filter:drop-shadow(0 0 2.5px ${col})"` : ''}/>`;
+const ftx = (x, y, s, sz, col, anchor, wt) => `<text x="${x}" y="${y}" font-family="IBM Plex Mono,ui-monospace,monospace" font-size="${sz || 5.5}" fill="${col || '#cfd6db'}"${anchor ? ` text-anchor="${anchor}"` : ''}${wt ? ` font-weight="${wt}"` : ''}>${s}</text>`;
+const screws = (x, y, n, gap) => { let s = ''; for (let i = 0; i < n; i++) s += `<circle cx="${x + i * gap}" cy="${y}" r="2.6" fill="#8a949b" stroke="#55606a" stroke-width=".8"/><path d="M${x + i * gap - 1.6} ${y}h3.2" stroke="#3a4248" stroke-width=".9"/>`; return s; };
+const rail = (y) => `<rect x="0" y="${y}" width="320" height="14" fill="#a9b1b6"/><rect x="0" y="${y + 3}" width="320" height="8" fill="#c3cacd"/>${Array.from({length:16}, (_, i) => `<rect x="${8 + i * 20}" y="${y + 5}" width="10" height="4" rx="2" fill="#8d969b"/>`).join('')}`;
+const bit = (o, a) => !!(o && o[a]);
+
+/* Siemens S7-1200 CPU 1214C DC/DC/DC: 14 DI (I0.0–I1.5), 10 DQ (Q0.0–Q1.1) */
+FACE.sie = function(st){
+  st = st || {};
+  const ins = st.ins || {}, outs = st.outs || {};
+  let s = `<svg viewBox="0 0 320 170" role="img" aria-label="CPU 1214C DC/DC/DC">${rail(78)}`;
+  s += `<rect x="22" y="10" width="276" height="150" rx="5" fill="#3b4146" stroke="#22272b"/>`;
+  s += `<rect x="22" y="10" width="276" height="26" rx="5" fill="#2a2f33"/>${screws(108, 23, 15, 12)}<rect x="30" y="16" width="64" height="14" rx="2" fill="#4a5157"/>${ftx(62, 26, '24V DC  1M', 5.5, '#aab3b9', 'middle')}`;
+  s += `<rect x="22" y="134" width="276" height="26" rx="5" fill="#2a2f33"/>${screws(108, 147, 15, 12)}`;
+  s += `<rect x="30" y="40" width="260" height="90" rx="3" fill="#4b5359"/><rect x="30" y="40" width="260" height="90" rx="3" fill="url(#sieg)" opacity=".5"/>`;
+  s += `<defs><linearGradient id="sieg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6c767d"/><stop offset="1" stop-color="#3b4146"/></linearGradient></defs>`;
+  /* status LEDs */
+  const runC = st.run ? '#36e06a' : '#ffc21a';
+  s += `<g>${fled(38, 50, true, runC, 9, 5)}${ftx(50, 54.5, 'RUN/STOP')}${fled(38, 62, !!st.err, '#ff3b30', 9, 5)}${ftx(50, 66.5, 'ERROR')}${fled(38, 74, !!st.frc, '#ffc21a', 9, 5)}${ftx(50, 78.5, 'MAINT')}</g>`;
+  /* PROFINET port */
+  s += `<rect x="38" y="92" width="22" height="18" rx="2" fill="#1d2124" stroke="#6c767d"/><rect x="42" y="96" width="14" height="9" fill="#0f1214"/>${fled(39, 112, !!st.run, '#36e06a', 4, 2)}${fled(55, 112, !!st.run, '#ffc21a', 4, 2)}${ftx(64, 104, 'X1 P1', 5, '#aab3b9')}`;
+  /* model */
+  s += ftx(196, 74, 'S7-1200', 12, '#e8edf0', 'middle', 700) + ftx(196, 86, 'CPU 1214C', 7.5, '#cfd6db', 'middle', 600) + ftx(196, 96, 'DC/DC/DC', 6.5, '#aab3b9', 'middle');
+  s += `<rect x="248" y="64" width="34" height="34" rx="3" fill="#00646e" opacity=".9"/>${ftx(265, 79, 'MC', 6.5, '#e6f4f4', 'middle', 700)}${ftx(265, 89, 'card', 5, '#bfe2e2', 'middle')}`;
+  /* I/O LEDs */
+  const row = (y, pfx, lab1, n1, lab2, n2, src) => {
+    let r = ftx(84, y + 4, lab1, 5.5, '#e8edf0', null, 700);
+    for (let i = 0; i < n1; i++) r += fled(102 + i * 10, y, bit(src, `${pfx}0.${i}`), '#36e06a', 7, 4) + ftx(105.5 + i * 10, y + 11, '.' + i, 4.5, '#aab3b9', 'middle');
+    r += ftx(186, y + 4, lab2, 5.5, '#e8edf0', null, 700);
+    for (let i = 0; i < n2; i++) r += fled(204 + i * 10, y, bit(src, `${pfx}1.${i}`), '#36e06a', 7, 4) + ftx(207.5 + i * 10, y + 11, '.' + i, 4.5, '#aab3b9', 'middle');
+    return r;
+  };
+  s += row(46, 'I', 'DIa', 8, 'DIb', 6, ins) + row(110, 'Q', 'DQa', 8, 'DQb', 2, outs);
+  return s + '</svg>';
+};
+
+/* Delta DVP-14SS2: 8 DI (X0–X7), 6 DO (Y0–Y5), slim module next to a 24 V supply */
+FACE.dvp = function(st){
+  st = st || {};
+  const ins = st.ins || {}, outs = st.outs || {};
+  let s = `<svg viewBox="0 0 320 170" role="img" aria-label="DVP-14SS2">${rail(78)}`;
+  /* 24 V power supply */
+  s += `<rect x="58" y="22" width="62" height="126" rx="4" fill="#cfd4d8" stroke="#8a949b"/><rect x="58" y="22" width="62" height="20" rx="4" fill="#3a4046"/>${screws(70, 32, 4, 13)}<rect x="58" y="128" width="62" height="20" rx="4" fill="#3a4046"/>${screws(70, 138, 4, 13)}`;
+  s += ftx(89, 66, '24V DC', 8, '#2a3035', 'middle', 700) + ftx(89, 78, 'POWER', 5.5, '#56636b', 'middle') + ftx(89, 86, 'SUPPLY', 5.5, '#56636b', 'middle') + fled(84, 98, true, '#36e06a', 10, 5) + ftx(89, 112, 'DC OK', 5, '#56636b', 'middle');
+  /* PLC body (slim) */
+  const X = 140, W = 96;
+  s += `<rect x="${X}" y="8" width="${W}" height="154" rx="4" fill="#e3e6e8" stroke="#8a949b"/>`;
+  s += `<rect x="${X}" y="8" width="${W}" height="22" rx="4" fill="#33393e"/>${screws(X + 12, 19, 7, 12)}<rect x="${X}" y="140" width="${W}" height="22" rx="4" fill="#33393e"/>${screws(X + 12, 151, 7, 12)}`;
+  s += `<rect x="${X + 6}" y="34" width="${W - 12}" height="13" rx="2" fill="#0a5aa8"/>${ftx(X + W / 2, 43.5, 'DVP-14SS2', 7, '#ffffff', 'middle', 700)}`;
+  s += fled(X + 10, 53, true, '#36e06a', 7, 4) + ftx(X + 20, 57, 'POWER', 5, '#2a3035') + fled(X + 10, 61, !!st.run, '#36e06a', 7, 4) + ftx(X + 20, 65, 'RUN', 5, '#2a3035') + fled(X + 10, 69, !!st.err, '#ff3b30', 7, 4) + ftx(X + 20, 73, 'ERROR', 5, '#2a3035');
+  /* RUN / STOP switch */
+  s += `<rect x="${X + 56}" y="52" width="30" height="22" rx="3" fill="#c3c9cd" stroke="#8a949b"/><rect x="${X + 66}" y="${st.run ? 54 : 63}" width="10" height="9" rx="2" fill="#3a4046"/>${ftx(X + 71, 51, 'RUN', 4.8, '#2a3035', 'middle', 700)}${ftx(X + 71, 80, 'STOP', 4.8, '#2a3035', 'middle', 700)}`;
+  /* COM1 */
+  s += `<circle cx="${X + 74}" cy="96" r="8" fill="#2a3035"/><circle cx="${X + 74}" cy="96" r="5" fill="#1a1f22"/>${ftx(X + 74, 110, 'COM1', 4.8, '#2a3035', 'middle')}`;
+  /* I/O LEDs */
+  s += ftx(X + 14, 88, 'X', 6, '#0a5aa8', 'middle', 700) + ftx(X + 40, 88, 'Y', 6, '#0a5aa8', 'middle', 700);
+  for (let i = 0; i < 8; i++) s += fled(X + 8, 92 + i * 6, bit(ins, 'I0.' + i), '#36e06a', 6, 3.6) + ftx(X + 22, 95.6 + i * 6, String(i), 4.6, '#2a3035', 'middle');
+  for (let i = 0; i < 6; i++) s += fled(X + 34, 92 + i * 6, bit(outs, 'Q0.' + i), '#ff3b30', 6, 3.6) + ftx(X + 48, 95.6 + i * 6, String(i), 4.6, '#2a3035', 'middle');
+  return s + '</svg>';
+};
+
+/* Allen-Bradley CompactLogix 1769-L33ER + 1769-IQ16 + 1769-OB16 (+ 1769-IF4 when ana) */
+FACE.ab = function(st){
+  st = st || {};
+  const ins = st.ins || {}, outs = st.outs || {}, key = st.key || 'REM';
+  let s = `<svg viewBox="0 0 320 170" role="img" aria-label="1769-L33ER">${rail(78)}`;
+  const X0 = st.ana ? 8 : 26;
+  /* controller */
+  s += `<rect x="${X0}" y="12" width="122" height="146" rx="4" fill="#3d4247" stroke="#1d2124"/><rect x="${X0}" y="12" width="122" height="16" rx="4" fill="#2c3034"/>`;
+  s += ftx(X0 + 8, 24, '1769-L33ER', 6.5, '#e8edf0', null, 700);
+  const L = [['RUN', st.run ? '#36e06a' : null], ['FORCE', st.frc ? '#ffb300' : null], ['SD', null], ['OK', '#36e06a']];
+  L.forEach(([n, c], i) => { s += fled(X0 + 10, 38 + i * 11, !!c, c || '#000', 9, 5) + ftx(X0 + 22, 42.5 + i * 11, n, 5.5); });
+  s += fled(X0 + 10, 86, true, '#36e06a', 9, 5) + ftx(X0 + 22, 90.5, 'NS', 5.5) + fled(X0 + 10, 97, !!st.online, '#36e06a', 9, 5) + ftx(X0 + 22, 101.5, 'LINK 1', 5.5);
+  /* keyswitch */
+  const kx = X0 + 84, ky = 56, ang = key === 'RUN' ? -45 : key === 'PROG' ? 45 : 0;
+  s += `<circle cx="${kx}" cy="${ky}" r="15" fill="#2a2e31" stroke="#6c767d" stroke-width="1.5"/><circle cx="${kx}" cy="${ky}" r="11" fill="#8a949b"/><rect x="${kx - 2.5}" y="${ky - 10}" width="5" height="20" rx="2" fill="#2a2e31" transform="rotate(${ang} ${kx} ${ky})"/>`;
+  s += ftx(kx - 20, ky - 17, 'RUN', 5.5, key === 'RUN' ? '#ffffff' : '#9aa3a8', 'middle', 700) + ftx(kx, ky - 20, 'REM', 5.5, key === 'REM' ? '#ffffff' : '#9aa3a8', 'middle', 700) + ftx(kx + 21, ky - 17, 'PROG', 5.5, key === 'PROG' ? '#ffffff' : '#9aa3a8', 'middle', 700);
+  s += `<rect x="${X0 + 66}" y="92" width="18" height="15" rx="2" fill="#1d2124" stroke="#6c767d"/><rect x="${X0 + 69}" y="95" width="12" height="8" fill="#0f1214"/><rect x="${X0 + 90}" y="92" width="18" height="15" rx="2" fill="#1d2124" stroke="#6c767d"/><rect x="${X0 + 93}" y="95" width="12" height="8" fill="#0f1214"/>`;
+  s += `<rect x="${X0 + 8}" y="116" width="106" height="34" rx="3" fill="#2c3034"/>` + ftx(X0 + 61, 131, 'Logix 5370', 7, '#cfd6db', 'middle', 600) + ftx(X0 + 61, 142, 'Controller', 5.5, '#9aa3a8', 'middle');
+  /* I/O modules */
+  const mod = (x, name, pfx, src, col) => {
+    let m = `<rect x="${x}" y="12" width="44" height="146" rx="3" fill="#3d4247" stroke="#1d2124"/><rect x="${x + 4}" y="18" width="36" height="12" rx="2" fill="#2c3034"/>${ftx(x + 22, 26.5, name, 5.5, '#e8edf0', 'middle', 700)}`;
+    m += ftx(x + 22, 38, pfx === 'I' ? 'IN' : 'OUT', 5, '#9aa3a8', 'middle');
+    for (let i = 0; i < 16; i++){ const cx = x + 6 + (i >= 8 ? 18 : 0), cy = 44 + (i % 8) * 9; m += fled(cx, cy, src && bit(src, `${pfx}${Math.floor(i / 8)}.${i % 8}`), col, 7, 4.5) + ftx(cx + 12, cy + 4.5, String(i), 4.4, '#9aa3a8', 'middle'); }
+    m += `<rect x="${x + 6}" y="122" width="32" height="30" rx="2" fill="#2c3034"/>${screws(x + 13, 130, 3, 9)}${screws(x + 13, 144, 3, 9)}`;
+    return m;
+  };
+  s += mod(X0 + 126, 'IQ16', 'I', ins, '#ffb300') + mod(X0 + 174, 'OB16', 'Q', outs, '#ffb300');
+  if (st.ana){ s += `<rect x="${X0 + 222}" y="12" width="44" height="146" rx="3" fill="#3d4247" stroke="#1d2124"/><rect x="${X0 + 226}" y="18" width="36" height="12" rx="2" fill="#2c3034"/>${ftx(X0 + 244, 26.5, 'IF4', 5.5, '#e8edf0', 'middle', 700)}${fled(X0 + 236, 44, true, '#36e06a', 14, 5)}${ftx(X0 + 244, 60, 'OK', 5, '#9aa3a8', 'middle')}${ftx(X0 + 244, 76, 'ANALOG', 4.6, '#9aa3a8', 'middle')}<rect x="${X0 + 228}" y="122" width="32" height="30" rx="2" fill="#2c3034"/>${screws(X0 + 235, 130, 3, 9)}${screws(X0 + 235, 144, 3, 9)}`; }
+  const ec = X0 + (st.ana ? 270 : 222);
+  s += `<rect x="${ec}" y="16" width="12" height="138" rx="2" fill="#2c3034" stroke="#1d2124"/>`;
+  return s + '</svg>';
+};
+
+/* hub / lesson 10 cards that link to the three brand simulators (progress read from the synced plcx-lab-v1 store) */
+PL.BRANDS = [
+  {id:'sie', file:'siemens.html', name:'Siemens S7-1200', sub:'على طريقة TIA Portal', tags:['%I0.0', 'TON T#5s', 'NORM_X'], st:{run:true, ins:{'I0.0':1, 'I0.3':1}, outs:{'Q0.0':1, 'Q0.2':1}}},
+  {id:'dvp', file:'delta.html', name:'Delta DVP', sub:'على طريقة ISPSoft و WPLSoft', tags:['X0 · Y0', 'TMR T0 K50', 'IL'], st:{run:true, ins:{'I0.0':1, 'I0.2':1}, outs:{'Q0.0':1, 'Q0.1':1}}},
+  {id:'ab', file:'ab.html', name:'Allen-Bradley', sub:'على طريقة Studio 5000', tags:['XIC · OTE', 'TON .DN', 'Tags'], st:{run:true, key:'RUN', ins:{'I0.0':1, 'I0.1':1}, outs:{'Q0.0':1}}}
+];
+PL.brandCards = function(host){
+  if (!host) return;
+  let done = {}; try { const s = JSON.parse(localStorage.getItem('plcx-lab-v1')); if (s && s.done) done = s.done; } catch (e){}
+  const n = id => Object.keys(done).filter(k => k.indexOf(id + '/') === 0).length;
+  host.classList.add('bcards');
+  host.innerHTML = PL.BRANDS.map(b => { const c = n(b.id); return `<a class="bcard" href="${b.file}"><span class="bf" aria-hidden="true">${FACE[b.id](b.st)}</span><span class="bt"><b dir="ltr">${b.name}</b><span class="bs">${b.sub}</span><span class="btg">${b.tags.map(t => `<i>${t}</i>`).join('')}</span><span class="bp">${c ? `خلّصت ${c} من 8 ${c >= 8 ? '✓' : '←'}` : '8 تمارين ←'}</span></span></a>`; }).join('');
+};
 
 })();
