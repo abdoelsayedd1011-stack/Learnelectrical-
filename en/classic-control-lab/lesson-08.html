@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sequencing, jogging and reversing exercises: practicals 5–13 with auxiliary contacts, interlocks and limit switches</title>
+<meta name="description" content="Lesson 8 of the Classic Control course: practical exercises 5 to 13 from the trainer's workbook: a motor conditional on another motor running or stopped, 3 motors in sequence, jogging with a double button, reversing with an electrical and mechanical interlock, a hoist with limit switches, direct reversing, and a lathe with 4 contactors. Every exercise has a power circuit + control + pilot lamps and its own circuit diagram, plus two deliberate mistakes: reversing without an interlock (short circuit) and a jog that seals in.">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/classic-control-lab/lesson-08.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/classic-control-lab/lesson-08.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/classic-control-lab/lesson-08.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/en/classic-control-lab/engine.css?v=20261021v">
+<link rel="stylesheet" href="/en/classic-control-lab/fx.css?v=20261021v">
+</head>
+<body>
+<div class="app">
+<header class="top site-header">
+  <div>
+    <h1>Lesson 8: Sequencing, jogging and reversing exercises (practicals 5–13)</h1>
+    <p>In this lesson we continue the practical workbook from exercise <b>5</b> to exercise <b>13</b>. They all build on what you've learned: the contactor and self-holding (lesson 3) and the overload (lesson 4). What's new here is the <b>auxiliary contact</b> as a condition between two motors, the <b>double button</b> for jogging and direct reversing, and the electrical and mechanical <b>interlock</b>, without which a reversing circuit makes a short circuit. Every exercise: a power circuit + a control circuit + pilot lamps, and its own circuit diagram.</p>
+  </div>
+  <div class="chips">
+    <a class="btn" href="/en/classic-control-lab/index.html">‹ Lessons</a>
+    <a class="btn" href="/en/labs.html">← All courses</a><span class="bar lang-slot"></span>
+  </div>
+</header>
+
+<div id="lesson"></div>
+
+<p class="foot">Symbols according to <span class="mono">IEC 60617</span> and <span class="mono">NEMA ICS 19</span>. Auxiliary contact numbers according to <span class="mono">IEC 60947-5-1</span>: <span class="mono">13-14</span>, <span class="mono">23-24</span> and <span class="mono">33-34</span> NO, and <span class="mono">21-22</span> NC (the first digit counts the contact and the second is its function: 3-4 NO, 1-2 NC). The hoist and cart travel times in the simulation are chosen so you can see the result quickly.<br>© &#x2066;2026 LearnElectricals&#x2069;. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+
+<script src="/site-config.js?v=20261021v"></script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script src="/assets/i18n-en.js?v=20261021v"></script>
+<script src="/en/classic-control-lab/engine.js?v=20261021v"></script>
+<script src="/en/classic-control-lab/fx.js?v=20261021v"></script>
+<script>
+(function(){
+/* lesson-08 exercise data: the trainer's practical exercises 5–13 (+ 2 mistake presets). Embedded by build8.sh; also loaded by the Node model test. */
+const G   = {id:'G', type:'supply3P', name:'supply'};
+const Q3  = {id:'Q1', type:'mcb', cfg:{poles:3, label:'C10'}, name:'power breaker'};
+const F1  = {id:'F1', type:'mcb', cfg:{poles:1, label:'C2'}, name:'control breaker'};
+const PB  = (id, color, label, dbl) => ({id, type:'pb', cfg:{color, label, blocks:dbl ? ['NO','NC'] : [color === 'red' ? 'NC' : 'NO']}});
+const KM  = (id, aux, name, extra) => ({id, type:'contactor', cfg:Object.assign({v:230, aux:aux || ['NO','NC']}, extra || {}), name:name || 'contactor'});
+const OL  = (Ir) => ({id:'F2', type:'ol', cfg:{Ir, lo:4, hi:6.5, model:'LRD10', range:'4-6 A'}, name:'Overload'});
+const MOT = (id, name, look) => ({id, type:'motor', cfg:{term:3, kW:2.2, In:4.9, look:look || 'motor'}, name:name || 'motor'});
+const lamp = (id, color, name) => ({id, type:'lamp', cfg:{color, v:230}, name});
+const X1  = {id:'X1', type:'tb', cfg:{n:6, bridges:[[1,2,3],[4,5,6]], labels:{1:'L',2:'L',3:'L',4:'N',5:'N',6:'N'}}, name:'Terminal block (L bar and N bar)'};
+const LS  = (id, label, cart, at) => ({id, type:'ls', cfg:{label, blocks:['NO','NC'], cart, at}, name:label});
+const S0 = PB('S0', 'red', 'STOP');
+const M1 = MOT('M1', 'motor 1'), M2 = MOT('M2', 'motor 2'), M3 = MOT('M3', 'Motor 3');
+const H1 = lamp('H1', 'green', 'M1 on'), H2 = lamp('H2', 'green', 'M2 on'), H3 = lamp('H3', 'green', 'M3 on');
+// power: Q1 → each contactor (Q1:2/4/6 feed the first two, the third takes a bridge from the second's top) → its motor. rev:true swaps L1/L3 at the motor.
+const POWER = list => { const w = [['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5']]; list.forEach(([km, m, rev], i) => { const src = i < 2 ? 'Q1' : list[1][0], st = i < 2 ? ['2','4','6'] : ['1','3','5']; w.push([src+':'+st[0], km+':1'], [src+':'+st[1], km+':3'], [src+':'+st[2], km+':5']); w.push([km+':2', m+':'+(rev ? 'W' : 'U')], [km+':4', m+':V'], [km+':6', m+':'+(rev ? 'U' : 'W')]); }); return w; };
+// reversing power with overload: Q1 → KM1 (and KM2 by bridges) → F2 (KM2 swaps L1/L3 at the overload) → motor
+const PWR_REV = [['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','KM1:1'],['Q1:4','KM1:3'],['Q1:6','KM1:5'],['KM1:1','KM2:1'],['KM1:3','KM2:3'],['KM1:5','KM2:5'],['KM1:2','F2:1'],['KM1:4','F2:3'],['KM1:6','F2:5'],['KM2:2','F2:5'],['KM2:4','F2:3'],['KM2:6','F2:1'],['F2:2','M1:U'],['F2:4','M1:V'],['F2:6','M1:W']];
+// control feeds
+const FEED_L = [['G:L1','F1:1'],['F1:2','X1:1a'],['G:N','X1:4a']];                                   // L1 → F1 → L bar ; N → N bar (each branch has its own STOP)
+const FEED_S0 = [['G:L1','F1:1'],['F1:2','S0:11'],['S0:12','X1:1a'],['G:N','X1:4a']];               // L1 → F1 → STOP → L bar
+const FEED_OL = [['G:L1','F1:1'],['F1:2','F2:95'],['F2:96','S0:11'],['S0:12','X1:1a'],['G:N','X1:4a']]; // with the overload 95-96
+const HOLD = (pb, km) => [[km+':13', pb+':13'], [km+':14', pb+':14']];                                  // seal-in contact parallel to the START button
+const LAMP = (km, h, nTerm) => [[km+':A1', h+':X1'], [h+':X2', nTerm]];
+const PWR_STEPS2 = ['L1 L2 L3 from the supply to breaker Q1.','From the Q1 outputs to KM1 terminals 1/3/5, and from the same outputs to KM2 1/3/5.','From each contactor\'s 2/4/6 to its motor U V W.'];
+const PWR_STEPS3 = ['L1 L2 L3 from the supply to breaker Q1.','From the Q1 outputs to KM1 and KM2 (1/3/5), and KM3 takes a jumper from KM2\'s top terminals.','From each contactor\'s 2/4/6 to its motor U V W.'];
+const PWR_STEPS_REV = ['L1 L2 L3 from the supply to Q1, from Q1 to KM1\'s top terminals 1/3/5, and jumpers from KM1\'s top terminals to KM2\'s top terminals.','From KM1 2/4/6 to the overload inputs 1/3/5 in order.','From KM2 crossed over: 2 to overload input 5, 4 to 3, and 6 to 1 (swapping two phases = reversing the direction).','From the overload outputs 2/4/6 to motor U V W.'];
+const off = ids => { const o = {}; ids.forEach(i => o[i] = 0); return o; };
+
+const L8EX = {
+  /* ------------------------------------------------ conditional start */
+  e5:{story:{icon:'🧃', text:'A juice factory: the packing conveyor (M2) must not run unless the filling conveyor (M1) is running, and if filling stops, packing stops with it.', ask:'Practical 5: M2 only if M1 is running.'}, machine:'conveyor', title:'Practical 5: two motors: the first at any time, and the second runs only if the first is running + lamps', short:'Practical 5: M2 only if M1 runs',
+    goal:'M1 starts and stops with its own buttons at any time. M2 only starts if M1 is running, and if M1 stops M2 stops with it. A lamp for each motor.',
+    idea:'An NO auxiliary contact (23-24) of KM1 at the start of M2\'s line: open while M1 is stopped so M2 won\'t start, and closed while M1 is running. If KM1 drops out the contact opens so KM2 drops out too.',
+    steps:{power:PWR_STEPS2, control:['Phase L1 to F1, from F1 to the L bar on the terminal block, and N to the N bar.','M1 line: from the L bar to STOP 1, then START 1 in parallel with KM1\'s seal-in (13-14), then A1 of KM1, and A2 to the N bar.','M2 line: from the L bar to KM1\'s NO auxiliary contact (23-24), then STOP 2, then START 2 in parallel with KM2\'s seal-in, then A1 of KM2, and A2 to the N bar.','Each lamp from its contactor\'s A1 to the N bar.']},
+    tip:'Try pressing START 2 before START 1: nothing. Start M1, then START 2: it runs. Stop M1: both stop.',
+    devices:[G, Q3, F1, PB('S0', 'red', 'STOP 1'), PB('S1', 'green', 'START 1'), PB('S3', 'red', 'STOP 2'), PB('S2', 'green', 'START 2'), KM('KM1', ['NO','NO']), KM('KM2', ['NO']), M1, M2, H1, H2, X1],
+    solution:POWER([['KM1','M1'],['KM2','M2']]).concat(FEED_L, [['X1:1b','S0:11'],['S0:12','S1:13'],['S1:14','KM1:A1']], HOLD('S1', 'KM1'), [['KM1:A2','X1:4b']], LAMP('KM1', 'H1', 'X1:5a'),
+      [['X1:2a','KM1:23'],['KM1:24','S3:11'],['S3:12','S2:13'],['S2:14','KM2:A1']], HOLD('S2', 'KM2'), [['KM2:A2','X1:5a']], LAMP('KM2', 'H2', 'X1:5b')),
+    seq:true, cases:[
+      {label:'nothing pressed', set:{}, expect:off(['M1','M2','H1','H2'])},
+      {label:'START 2 pressed while M1 is stopped', set:{S2:{p:1}}, expect:{M1:0, M2:0, H1:0, H2:0}},
+      {label:'Released START 2', set:{S2:{p:0}}, expect:{M1:0, M2:0, H1:0, H2:0}},
+      {label:'START 1 pressed', set:{S1:{p:1}}, expect:{M1:1, M2:0, H1:1, H2:0}},
+      {label:'Released START 1', set:{S1:{p:0}}, expect:{M1:1, M2:0, H1:1, H2:0}},
+      {label:'START 2 pressed while M1 is running', set:{S2:{p:1}}, expect:{M1:1, M2:1, H1:1, H2:1}},
+      {label:'Released START 2', set:{S2:{p:0}}, expect:{M1:1, M2:1, H1:1, H2:1}},
+      {label:'STOP 1 pressed', set:{S0:{p:1}}, expect:off(['M1','M2','H1','H2'])},
+      {label:'Released STOP 1', set:{S0:{p:0}}, expect:off(['M1','M2','H1','H2'])}],
+    patterns:[{sig:{M2:'01???????'}, msg:'M2 runs while M1 is stopped: M2\'s line must pass through contact <b>KM1 23-24 (NO)</b> before STOP 2, not straight from the L bar.'}, {sig:{M2:'000001000'}, msg:'M2 runs only while you\'re pressing: KM2\'s seal-in is missing (13-14 in parallel with START 2).'}, {sig:{M2:'000001100'}, msg:'M2 doesn\'t stop when M1 stops: KM1\'s contact must be <b>in KM2\'s coil line</b> (before the seal-in), not anywhere else.'}],
+    okMsg:'This is “conditional starting”: an auxiliary contact of the first contactor in the second\'s line. Like a filling conveyor that must not run unless the main conveyor is running.'},
+  e6:{story:{icon:'🧃', text:'The same factory but with 3 conveyors: each conveyor only if the one before it is running, and if one stops, the ones after it stop.', ask:'Practical 6: 3 motors in a conditional sequence.'}, machine:'conveyor', title:'Practical 6: 3 motors: the first at any time, the second only if the first is running, and the third only if the second is running + lamps', short:'Practical 6: 3 motors, conditional sequence',
+    goal:'M1 at any time. M2 only if M1 is running. M3 only if M2 is running. If one stops, the ones after it stop. A lamp for each motor.',
+    idea:'A chain of conditions: KM1\'s NO contact (23-24) in M2\'s line, and KM2\'s NO contact (23-24) in M3\'s line. Each line has its own STOP, START and seal-in.',
+    steps:{power:PWR_STEPS3, control:['Phase L1 to F1, from F1 to the L bar, and N to the N bar.','M1 line: L bar, then STOP 1, then START 1 in parallel with KM1\'s seal-in, then A1 of KM1, then the N bar.','M2 line: L bar, then contact KM1 23-24, then STOP 2, then START 2 in parallel with KM2\'s seal-in, then A1 of KM2, then the N bar.','M3 line: L bar, then contact KM2 23-24, then STOP 3, then START 3 in parallel with KM3\'s seal-in, then A1 of KM3, then the N bar.','Each lamp from its contactor\'s A1 to the N bar.']},
+    tip:'Spread the wires across the bar screws: only two wires per screw. Stop M2 and see M3 stop with it while M1 keeps running.',
+    devices:[G, Q3, F1, PB('S0', 'red', 'STOP 1'), PB('S1', 'green', 'START 1'), PB('S3', 'red', 'STOP 2'), PB('S2', 'green', 'START 2'), PB('S5', 'red', 'STOP 3'), PB('S4', 'green', 'START 3'), KM('KM1', ['NO','NO']), KM('KM2', ['NO','NO']), KM('KM3', ['NO']), M1, M2, M3, H1, H2, H3, X1],
+    solution:POWER([['KM1','M1'],['KM2','M2'],['KM3','M3']]).concat(FEED_L, [['X1:1b','S0:11'],['S0:12','S1:13'],['S1:14','KM1:A1']], HOLD('S1', 'KM1'), [['KM1:A2','X1:4b']], LAMP('KM1', 'H1', 'X1:5a'),
+      [['X1:2a','KM1:23'],['KM1:24','S3:11'],['S3:12','S2:13'],['S2:14','KM2:A1']], HOLD('S2', 'KM2'), [['KM2:A2','X1:5a']], LAMP('KM2', 'H2', 'X1:5b'),
+      [['X1:2b','KM2:23'],['KM2:24','S5:11'],['S5:12','S4:13'],['S4:14','KM3:A1']], HOLD('S4', 'KM3'), [['KM3:A2','X1:5b']], LAMP('KM3', 'H3', 'X1:6a')),
+    seq:true, cases:[
+      {label:'nothing pressed', set:{}, expect:off(['M1','M2','M3'])},
+      {label:'START 3 pressed while everything is stopped', set:{S4:{p:1}}, expect:{M1:0, M2:0, M3:0}},
+      {label:'Released START 3 and pressed START 2', set:{S4:{p:0}, S2:{p:1}}, expect:{M1:0, M2:0, M3:0}},
+      {label:'Released START 2 and pressed START 1', set:{S2:{p:0}, S1:{p:1}}, expect:{M1:1, M2:0, M3:0}},
+      {label:'Released START 1', set:{S1:{p:0}}, expect:{M1:1, M2:0, M3:0}},
+      {label:'START 2 pressed', set:{S2:{p:1}}, expect:{M1:1, M2:1, M3:0}},
+      {label:'Released START 2 and pressed START 3', set:{S2:{p:0}, S4:{p:1}}, expect:{M1:1, M2:1, M3:1}},
+      {label:'Released START 3', set:{S4:{p:0}}, expect:{M1:1, M2:1, M3:1}},
+      {label:'STOP 2 pressed', set:{S3:{p:1}}, expect:{M1:1, M2:0, M3:0}},
+      {label:'Released STOP 2', set:{S3:{p:0}}, expect:{M1:1, M2:0, M3:0}},
+      {label:'STOP 1 pressed', set:{S0:{p:1}}, expect:off(['M1','M2','M3'])}],
+    patterns:[{sig:{M3:'01?????????'}, msg:'M3 runs while everything is stopped: M3\'s line must pass through contact <b>KM2 23-24</b>.'}, {sig:{M2:'001????????'}, msg:'M2 runs while M1 is stopped: M2\'s line must pass through contact <b>KM1 23-24</b>.'}, {sig:{M3:'00000011110'}, msg:'M3 doesn\'t stop when M2 stops: KM2\'s contact must be in KM3\'s coil line before the seal-in.'}],
+    okMsg:'A chain of conditions: each contactor gives “permission” to the next with an auxiliary contact. If the first drops out, everything after it drops out.'},
+  e7:{story:{icon:'🏭', text:'A workshop: the welding machine (M2) must not run while the compressor (M1) is running, so the breaker doesn\'t carry both.', ask:'Practical 7: M2 only if M1 is stopped.'}, machine:'conveyor', title:'Practical 7: two motors: the first at any time, and the second runs only if the first is stopped + lamps', short:'Practical 7: M2 only if M1 is stopped',
+    goal:'M1 at any time. M2 only starts if M1 is stopped, and if M1 starts while M2 is running, M2 stops immediately. A lamp for each motor.',
+    idea:'The same idea as practical 5, but with KM1\'s <b>NC (21-22)</b> contact in M2\'s line: closed while M1 is stopped, and it opens when KM1 pulls in.',
+    steps:{power:PWR_STEPS2, control:['Phase L1 to F1, from F1 to the L bar, and N to the N bar.','M1 line: L bar, then STOP 1, then START 1 in parallel with KM1\'s seal-in, then A1 of KM1, then the N bar.','M2 line: L bar, then KM1\'s NC auxiliary contact (21-22), then STOP 2, then START 2 in parallel with KM2\'s seal-in, then A1 of KM2, then the N bar.','Each lamp from its contactor\'s A1 to the N bar.']},
+    tip:'Start M2 first, then press START 1: M2 stops and M1 starts. And while M1 is running, START 2 does nothing.',
+    devices:[G, Q3, F1, PB('S0', 'red', 'STOP 1'), PB('S1', 'green', 'START 1'), PB('S3', 'red', 'STOP 2'), PB('S2', 'green', 'START 2'), KM('KM1', ['NO','NC']), KM('KM2', ['NO']), M1, M2, H1, H2, X1],
+    solution:POWER([['KM1','M1'],['KM2','M2']]).concat(FEED_L, [['X1:1b','S0:11'],['S0:12','S1:13'],['S1:14','KM1:A1']], HOLD('S1', 'KM1'), [['KM1:A2','X1:4b']], LAMP('KM1', 'H1', 'X1:5a'),
+      [['X1:2a','KM1:21'],['KM1:22','S3:11'],['S3:12','S2:13'],['S2:14','KM2:A1']], HOLD('S2', 'KM2'), [['KM2:A2','X1:5a']], LAMP('KM2', 'H2', 'X1:5b')),
+    seq:true, cases:[
+      {label:'nothing pressed', set:{}, expect:off(['M1','M2','H1','H2'])},
+      {label:'START 2 pressed while M1 is stopped', set:{S2:{p:1}}, expect:{M1:0, M2:1, H1:0, H2:1}},
+      {label:'Released START 2', set:{S2:{p:0}}, expect:{M1:0, M2:1, H1:0, H2:1}},
+      {label:'START 1 pressed while M2 is running', set:{S1:{p:1}}, expect:{M1:1, M2:0, H1:1, H2:0}},
+      {label:'Released START 1', set:{S1:{p:0}}, expect:{M1:1, M2:0, H1:1, H2:0}},
+      {label:'START 2 pressed while M1 is running', set:{S2:{p:1}}, expect:{M1:1, M2:0, H1:1, H2:0}},
+      {label:'Released START 2', set:{S2:{p:0}}, expect:{M1:1, M2:0, H1:1, H2:0}},
+      {label:'STOP 1 pressed', set:{S0:{p:1}}, expect:off(['M1','M2','H1','H2'])},
+      {label:'Released STOP 1', set:{S0:{p:0}}, expect:off(['M1','M2','H1','H2'])},
+      {label:'START 2 again', set:{S2:{p:1}}, expect:{M1:0, M2:1, H1:0, H2:1}},
+      {label:'Released START 2', set:{S2:{p:0}}, expect:{M1:0, M2:1, H1:0, H2:1}},
+      {label:'STOP 2 pressed', set:{S3:{p:1}}, expect:off(['M1','M2','H1','H2'])}],
+    patterns:[{sig:{M2:'000001100???'}, msg:'M2 runs while M1 is running: you used an NO contact instead of KM1\'s <b>NC (21-22)</b> in M2\'s line.'}, {sig:{M2:'011110000110'}, msg:'M2 doesn\'t stop when M1 starts: contact KM1 21-22 must be in KM2\'s coil line <b>before the seal-in</b>.'}],
+    okMsg:'This is the simplest one-way “interlock”: M1 blocks M2. In practical 10 you\'ll do it both ways between two contactors.'},
+  e8:{story:{icon:'🏭', text:'A mill: the grinder (M1) at any time, the sorter (M2) only if the grinder is stopped, and the conveyor (M3) only if the grinder is running.', ask:'Practical 8.'}, machine:'conveyor', title:'Practical 8: 3 motors: the first at any time, the second only if the first is stopped, and the third only if the first is running', short:'Practical 8: M2 if M1 stopped, M3 if M1 running',
+    goal:'M1 at any time. M2 only if M1 is stopped. M3 only if M1 is running. When M1 starts M2 stops, and when M1 stops M3 stops.',
+    idea:'KM1 with two auxiliary contacts: <b>NC (21-22)</b> in M2\'s line and <b>NO (33-34)</b> in M3\'s line. The same contactor blocks one and permits the other.',
+    steps:{power:PWR_STEPS3, control:['Phase L1 to F1, from F1 to the L bar, and N to the N bar.','M1 line: L bar, then STOP 1, then START 1 in parallel with KM1\'s seal-in, then A1 of KM1, then the N bar.','M2 line: L bar, then KM1\'s NC contact (21-22), then STOP 2, then START 2 in parallel with KM2\'s seal-in, then A1 of KM2, then the N bar.','M3 line: L bar, then KM1\'s NO contact (33-34), then STOP 3, then START 3 in parallel with KM3\'s seal-in, then A1 of KM3, then the N bar.','Each lamp from its contactor\'s A1 to the N bar.']},
+    tip:'KM1 has 3 auxiliary blocks: 13-14 for the seal-in, 21-22 for M2, 33-34 for M3.',
+    devices:[G, Q3, F1, PB('S0', 'red', 'STOP 1'), PB('S1', 'green', 'START 1'), PB('S3', 'red', 'STOP 2'), PB('S2', 'green', 'START 2'), PB('S5', 'red', 'STOP 3'), PB('S4', 'green', 'START 3'), KM('KM1', ['NO','NC','NO']), KM('KM2', ['NO']), KM('KM3', ['NO']), M1, M2, M3, H1, H2, H3, X1],
+    solution:POWER([['KM1','M1'],['KM2','M2'],['KM3','M3']]).concat(FEED_L, [['X1:1b','S0:11'],['S0:12','S1:13'],['S1:14','KM1:A1']], HOLD('S1', 'KM1'), [['KM1:A2','X1:4b']], LAMP('KM1', 'H1', 'X1:5a'),
+      [['X1:2a','KM1:21'],['KM1:22','S3:11'],['S3:12','S2:13'],['S2:14','KM2:A1']], HOLD('S2', 'KM2'), [['KM2:A2','X1:5a']], LAMP('KM2', 'H2', 'X1:5b'),
+      [['X1:2b','KM1:33'],['KM1:34','S5:11'],['S5:12','S4:13'],['S4:14','KM3:A1']], HOLD('S4', 'KM3'), [['KM3:A2','X1:5b']], LAMP('KM3', 'H3', 'X1:6a')),
+    seq:true, cases:[
+      {label:'nothing pressed', set:{}, expect:off(['M1','M2','M3'])},
+      {label:'START 2 pressed while M1 is stopped', set:{S2:{p:1}}, expect:{M1:0, M2:1, M3:0}},
+      {label:'Released START 2 and pressed START 3', set:{S2:{p:0}, S4:{p:1}}, expect:{M1:0, M2:1, M3:0}},
+      {label:'Released START 3 and pressed START 1', set:{S4:{p:0}, S1:{p:1}}, expect:{M1:1, M2:0, M3:0}},
+      {label:'Released START 1', set:{S1:{p:0}}, expect:{M1:1, M2:0, M3:0}},
+      {label:'START 3 pressed while M1 is running', set:{S4:{p:1}}, expect:{M1:1, M2:0, M3:1}},
+      {label:'Released START 3', set:{S4:{p:0}}, expect:{M1:1, M2:0, M3:1}},
+      {label:'START 2 pressed while M1 is running', set:{S2:{p:1}}, expect:{M1:1, M2:0, M3:1}},
+      {label:'Released START 2', set:{S2:{p:0}}, expect:{M1:1, M2:0, M3:1}},
+      {label:'STOP 1 pressed', set:{S0:{p:1}}, expect:off(['M1','M2','M3'])},
+      {label:'Released STOP 1', set:{S0:{p:0}}, expect:off(['M1','M2','M3'])}],
+    patterns:[{sig:{M3:'001????????'}, msg:'M3 runs while M1 is stopped: M3\'s line must pass through KM1\'s <b>NO (33-34)</b> contact.'}, {sig:{M2:'0000011????'}, msg:'M2 runs while M1 is running: M2\'s line must pass through KM1\'s <b>NC (21-22)</b> contact.'}],
+    okMsg:'One contactor can give permission to one and block the other at the same time: NO for one and NC for the other.'},
+  /* ------------------------------------------------ jog */
+  e9:{story:{icon:'🎛️', text:'A printing machine: the operator needs to move the conveyor in short bursts with a JOG button to align the paper, separate from the normal START button.', ask:'Practical 9: Start/Stop + Jog.'}, machine:'conveyor', title:'Practical 9: a motor with start and stop buttons + a double button for short bursts (jog) + lamps', short:'Practical 9: Start/Stop + Jog',
+    goal:'START starts the motor and it keeps running, STOP stops it. The JOG button runs it only while you hold it (for adjustment), and when you release it, it stops without sealing in. A running lamp and a stopped lamp.',
+    idea:'The JOG button is a double button (NO + NC): its NO, in parallel with START, energises the coil, and its NC, <b>in the seal-in line</b>, opens it while you press, so the contactor finds no path to seal itself in. When you release it, the NO opens before the NC closes, so the coil drops out.',
+    steps:{power:['L1 L2 L3 from the supply to Q1, from Q1 to the contactor 1/3/5, and from 2/4/6 to motor U V W.'], control:['Phase L1 to F1, from F1 to the L bar, and N to the N bar.','L bar, then STOP, then START. START\'s input is also connected to JOG\'s input and to the seal-in contact input (13).','START\'s output to A1 of KM1, and JOG\'s NO output (14) to START\'s output (in parallel).','The seal-in through JOG\'s NC: KM1 14 to JOG 21, and JOG 22 to A1.','A2 to the N bar. The “running” lamp from A1 (via JOG 22), and the “stopped” lamp from the L bar through KM1\'s NC contact (21-22).']},
+    tip:'Use the 📌 pin on JOG to keep it pressed and see it running, then release the pin: the motor stops. Press START: it keeps running.',
+    devices:[G, Q3, F1, S0, PB('S1', 'green', 'START'), PB('S2', 'black', 'JOG', true), KM('KM1', ['NO','NC']), M1, lamp('H1', 'green', 'running'), lamp('H2', 'red', 'stopped'), X1],
+    solution:POWER([['KM1','M1']]).concat(FEED_L, [['X1:1b','S0:11'],['S0:12','S1:13'],['S1:13','S2:13'],['S2:13','KM1:13'],['S1:14','KM1:A1'],['S2:14','S1:14'],['KM1:14','S2:21'],['S2:22','KM1:A1'],['KM1:A2','X1:4b'],['S2:22','H1:X1'],['H1:X2','X1:5a'],['X1:2a','KM1:21'],['KM1:22','H2:X1'],['H2:X2','X1:5a']]),
+    seq:true, cases:[
+      {label:'nothing pressed', set:{}, expect:{M1:0, H1:0, H2:1}},
+      {label:'JOG pressed', set:{S2:{p:1}}, expect:{M1:1, H1:1, H2:0}},
+      {label:'Released JOG: it must stop', set:{S2:{p:0}}, expect:{M1:0, H1:0, H2:1}},
+      {label:'START pressed', set:{S1:{p:1}}, expect:{M1:1, H1:1, H2:0}},
+      {label:'Released START: it keeps running', set:{S1:{p:0}}, expect:{M1:1, H1:1, H2:0}},
+      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, H1:0, H2:1}},
+      {label:'STOP released', set:{S0:{p:0}}, expect:{M1:0, H1:0, H2:1}}],
+    patterns:[{sig:{M1:'0111100'}, msg:'JOG seals in: when you release it the motor keeps running. Seal-in contact KM1 13-14 must pass through <b>JOG\'s NC (21-22)</b>, not straight to START.'}, {sig:{M1:'0001000'}, msg:'START doesn\'t seal in: KM1 13-14 must return to the coil line through JOG 21-22.'}, {sig:{M1:'0001100'}, msg:'JOG doesn\'t start it: its NO (13-14) must be in parallel with START.'}],
+    okMsg:'Jog = momentary running for adjustment (moving a conveyor a little, turning a shaft to a certain position). Note: if you press JOG while the motor is running, it stops when you release it, because the NC breaks the seal-in.'},
+  w2:{story:{icon:'🔧', text:'A report: “The JOG button seals in like START!” The electrician wired the jog contact wrong.', ask:'Find the mistake and make JOG run only while you hold it.'}, machine:'conveyor', title:'Mistake: the jog button seals in', short:'Mistake: jog seals in',
+    goal:'Required: practical 9: JOG runs only while you hold it, and START seals in.',
+    idea:'The seal-in contact here returns straight to JOG\'s output instead of passing through its NC: as soon as you press JOG the contactor seals itself in, exactly like START.',
+    steps:['Switch on, press JOG and release it: the motor kept running!','Switch off, and remove the seal-in wire returning from KM1 14 to JOG\'s output.','Connect KM1 14 to JOG 21 (NC), and JOG 22 to the coil line (e.g. to X1 of the running lamp).','Switch on again: JOG runs only while you hold it.'],
+    tip:'The NC of the double button is what breaks the seal-in while you press.',
+    devices:[G, Q3, F1, S0, PB('S1', 'green', 'START'), PB('S2', 'black', 'JOG', true), KM('KM1', ['NO','NC']), M1, lamp('H1', 'green', 'running'), lamp('H2', 'red', 'stopped'), X1],
+    preset:POWER([['KM1','M1']]).concat(FEED_L, [['X1:1b','S0:11'],['S0:12','S1:13'],['S1:13','S2:13'],['S2:13','KM1:13'],['S1:14','KM1:A1'],['S2:14','S1:14'],['KM1:14','S2:14'],['KM1:A2','X1:4b'],['KM1:A1','H1:X1'],['H1:X2','X1:5a'],['X1:2a','KM1:21'],['KM1:22','H2:X1'],['H2:X2','X1:5a']]),
+    solution:POWER([['KM1','M1']]).concat(FEED_L, [['X1:1b','S0:11'],['S0:12','S1:13'],['S1:13','S2:13'],['S2:13','KM1:13'],['S1:14','KM1:A1'],['S2:14','S1:14'],['KM1:14','S2:21'],['S2:22','H1:X1'],['KM1:A2','X1:4b'],['KM1:A1','H1:X1'],['H1:X2','X1:5a'],['X1:2a','KM1:21'],['KM1:22','H2:X1'],['H2:X2','X1:5a']]),
+    seq:true, cases:[
+      {label:'nothing pressed', set:{}, expect:{M1:0, H1:0, H2:1}},
+      {label:'JOG pressed', set:{S2:{p:1}}, expect:{M1:1, H1:1, H2:0}},
+      {label:'Released JOG: it must stop', set:{S2:{p:0}}, expect:{M1:0, H1:0, H2:1}},
+      {label:'START pressed', set:{S1:{p:1}}, expect:{M1:1, H1:1, H2:0}},
+      {label:'Released START: it keeps running', set:{S1:{p:0}}, expect:{M1:1, H1:1, H2:0}},
+      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, H1:0, H2:1}}],
+    patterns:[{sig:{M1:'011110'}, msg:'JOG seals in: when you release it the motor keeps running. Seal-in contact KM1 13-14 must pass through <b>JOG\'s NC (21-22)</b>, not straight to START.'}],
+    okMsg:'Now JOG\'s NC breaks the seal-in while you press, and START still seals in normally.'},
+  /* ------------------------------------------------ reversing */
+  e10:{story:{icon:'🔄', text:'A sorting conveyor: the supervisor wants to run it forward or reverse from two buttons, and the two contactors must never pull in together.', ask:'Practical 10: reversing with an interlock and STOP.'}, machine:'conveyor', title:'Practical 10: a motor in two directions, stopped from one place + lamps', short:'Practical 10: fwd/rev + STOP',
+    goal:'The “Forward” button runs the motor forward and seals in, the “Reverse” button runs it in reverse and seals in, and one STOP stops it. And both must never be possible together. A lamp for each direction.',
+    idea:'Two contactors: KM1 connects L1 L2 L3 to U V W, and KM2 connects them with two phases swapped. <b>Electrical interlock</b>: each contactor\'s NC in the other\'s coil line, plus a <b>mechanical interlock</b> between them. If they pull in together = a short circuit between two phases.',
+    steps:{power:PWR_STEPS_REV, control:['Phase L1 to F1, then overload contact 95-96, then STOP, and from it to the L bar. N to the N bar.','Forward: L bar, then the “Forward” button in parallel with KM1\'s seal-in, then KM2\'s NC contact (21-22), then A1 of KM1, then the N bar.','Reverse: L bar, then the “Reverse” button in parallel with KM2\'s seal-in, then KM1\'s NC contact (21-22), then A1 of KM2, then the N bar.','The “Forward” lamp across KM1\'s coil, and the “Reverse” lamp across KM2\'s coil.']},
+    tip:'To change direction you must press STOP first (in practical 12 you\'ll reverse directly). Try pressing “Reverse” while the motor is turning forward: nothing.',
+    devices:[G, Q3, F1, S0, PB('S1', 'green', 'forward'), PB('S2', 'green', 'reverse'), KM('KM1', ['NO','NC'], 'Forward contactor', {mech:'KM2'}), KM('KM2', ['NO','NC'], 'Reverse contactor', {mech:'KM1'}), OL(4.9), M1, lamp('H1', 'green', 'forward'), lamp('H2', 'amber', 'reverse'), X1],
+    solution:PWR_REV.concat(FEED_OL, [['X1:1b','S1:13'],['S1:14','KM2:21'],['KM2:22','KM1:A1']], HOLD('S1', 'KM1'), [['KM1:A2','X1:4b']], LAMP('KM1', 'H1', 'X1:5a'),
+      [['X1:2a','S2:13'],['S2:14','KM1:21'],['KM1:22','KM2:A1']], HOLD('S2', 'KM2'), [['KM2:A2','X1:5a']], LAMP('KM2', 'H2', 'X1:5b')),
+    seq:true, cases:[
+      {label:'nothing pressed', set:{}, expect:{M1:0, H1:0, H2:0}},
+      {label:'“Forward” pressed', set:{S1:{p:1}}, expect:{M1:'F', H1:1, H2:0}},
+      {label:'Released “Forward”', set:{S1:{p:0}}, expect:{M1:'F', H1:1, H2:0}},
+      {label:'“Reverse” pressed while the motor is turning forward', set:{S2:{p:1}}, expect:{M1:'F', H1:1, H2:0}},
+      {label:'Released “Reverse”', set:{S2:{p:0}}, expect:{M1:'F', H1:1, H2:0}},
+      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, H1:0, H2:0}},
+      {label:'STOP released', set:{S0:{p:0}}, expect:{M1:0, H1:0, H2:0}},
+      {label:'“Reverse” pressed', set:{S2:{p:1}}, expect:{M1:'R', H1:0, H2:1}},
+      {label:'Released “Reverse”', set:{S2:{p:0}}, expect:{M1:'R', H1:0, H2:1}},
+      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, H1:0, H2:0}}],
+    shortMsg:'Both contactors pulled in together: KM1 puts L1 on U and KM2 puts L3 on U, so there\'s a short circuit between L1 and L3. The <b>interlock</b> is missing: each contactor\'s NC contact in the other\'s coil line.',
+    okMsg:'Electrical + mechanical interlock: the rule in any reversing circuit. The two lamps show you which contactor is on.'},
+  w1:{story:{icon:'💥', text:'The panel was handed over without an interlock: as soon as they pressed both buttons together, the breaker tripped on a phase-to-phase short circuit!', ask:'Add the electrical interlock and make the circuit work correctly.'}, machine:'conveyor', title:'Mistake: a reversing circuit with no interlock (short circuit)', short:'Mistake: reversing without interlock',
+    goal:'Required: practical 10: forward and reverse with two contactors, and they never run together.',
+    idea:'This circuit has no interlock: each button energises its contactor directly. If you press “Reverse” while the motor is turning forward, both close together and make a short circuit between two phases, and the breaker trips (and without a mechanical interlock the contacts weld).',
+    steps:['Switch on, press “Forward” and release it, then press “Reverse”: short circuit!','Switch off, and disconnect each button\'s wire that goes straight to the coil.','Forward: from the output of the “Forward” button (and the seal-in) to KM2\'s NC contact (21-22), and from 22 to A1 of KM1.','Reverse: from the output of the “Reverse” button (and the seal-in) to KM1\'s NC contact (21-22), and from 22 to A1 of KM2.','Switch on again: “Reverse” while the motor is turning forward = nothing.'],
+    tip:'The electrical interlock: each contactor\'s NC in the other\'s line. The contactors here have no mechanical interlock so you can see the result.',
+    devices:[G, Q3, F1, S0, PB('S1', 'green', 'forward'), PB('S2', 'green', 'reverse'), KM('KM1', ['NO','NC'], 'Forward contactor'), KM('KM2', ['NO','NC'], 'Reverse contactor'), OL(4.9), M1, lamp('H1', 'green', 'forward'), lamp('H2', 'amber', 'reverse'), X1],
+    preset:PWR_REV.concat(FEED_OL, [['X1:1b','S1:13'],['S1:14','KM1:A1']], HOLD('S1', 'KM1'), [['KM1:A2','X1:4b']], LAMP('KM1', 'H1', 'X1:5a'),
+      [['X1:2a','S2:13'],['S2:14','KM2:A1']], HOLD('S2', 'KM2'), [['KM2:A2','X1:5a']], LAMP('KM2', 'H2', 'X1:5b')),
+    solution:PWR_REV.concat(FEED_OL, [['X1:1b','S1:13'],['S1:14','KM2:21'],['KM2:22','KM1:A1']], HOLD('S1', 'KM1'), [['KM1:A2','X1:4b']], LAMP('KM1', 'H1', 'X1:5a'),
+      [['X1:2a','S2:13'],['S2:14','KM1:21'],['KM1:22','KM2:A1']], HOLD('S2', 'KM2'), [['KM2:A2','X1:5a']], LAMP('KM2', 'H2', 'X1:5b')),
+    seq:true, cases:[
+      {label:'nothing pressed', set:{}, expect:{M1:0}},
+      {label:'“Forward” pressed', set:{S1:{p:1}}, expect:{M1:'F'}},
+      {label:'Released “Forward”', set:{S1:{p:0}}, expect:{M1:'F'}},
+      {label:'“Reverse” pressed while the motor is turning forward', set:{S2:{p:1}}, expect:{M1:'F'}},
+      {label:'Released “Reverse”', set:{S2:{p:0}}, expect:{M1:'F'}},
+      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0}},
+      {label:'Released STOP and pressed “Reverse”', set:{S0:{p:0}, S2:{p:1}}, expect:{M1:'R'}},
+      {label:'Released “Reverse”', set:{S2:{p:0}}, expect:{M1:'R'}},
+      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0}}],
+    shortMsg:'Both contactors pulled in together: KM1 puts L1 on U and KM2 puts L3 on U, so there\'s a short circuit between L1 and L3. The <b>interlock</b> is missing: each contactor\'s NC contact in the other\'s coil line.',
+    okMsg:'Now each contactor blocks the path of the other. In a real panel add the mechanical interlock too: the electrical one can fail if a contact welds.'},
+  e11:{story:{icon:'🏗️', text:'A goods hoist in a warehouse: it goes up and down with two buttons, and limit switches at the top and bottom stop it by themselves before it hits.', ask:'Practical 11: a hoist with limit switches.'}, machine:'hoist', title:'Practical 11: a motor in two directions + end-of-travel limit switches (simple hoist) + lamps', short:'Practical 11: hoist with limit switches',
+    goal:'The “Up” button raises the hoist and seals in, the “Down” button lowers it and seals in, and STOP stops it. When it reaches the very top a limit switch stops it by itself, and the same at the bottom. With the interlock.',
+    idea:'The same circuit as practical 10 + a limit switch <b>NC (21-22)</b> in each line: the “top” limit in the “Up” line and the “bottom” limit in the “Down” line. When the hoist presses it, the contact opens and the coil drops out. And you can still lower it from the top because the “top” limit isn\'t in the “Down” line.',
+    steps:{power:PWR_STEPS_REV, control:['Phase L1 to F1, then 95-96, then STOP, and from it to the L bar. N to the N bar.','Up: L bar, then the “Up” button in parallel with KM1\'s seal-in, then the “top” limit NC (21-22), then KM2\'s NC contact, then A1 of KM1, then the N bar.','Down: L bar, then the “Down” button in parallel with KM2\'s seal-in, then the “bottom” limit NC (21-22), then KM1\'s NC contact, then A1 of KM2, then the N bar.','The “Up” lamp across KM1\'s coil, and the “Down” lamp across KM2\'s coil.']},
+    tip:'Press “Up” and speed up ⏩: the hoist rises to the limit and stops by itself. Press “Down”: it goes down to the other limit.',
+    devices:[G, Q3, F1, S0, PB('S1', 'green', 'Up'), PB('S2', 'green', 'Down'), KM('KM1', ['NO','NC'], 'Up contactor', {mech:'KM2'}), KM('KM2', ['NO','NC'], 'Down contactor', {mech:'KM1'}), OL(4.9), MOT('M1', 'Hoist motor'), {id:'CART', type:'cart', cfg:{motor:'M1', len:5, hoist:true, labA:'Bottom', labB:'Top', x0:0.5, title:'hoist'}, name:'hoist'}, LS('LS1', 'Top limit', 'CART', 1), LS('LS2', 'Bottom limit', 'CART', 0), lamp('H1', 'green', 'Up'), lamp('H2', 'amber', 'Down'), X1],
+    solution:PWR_REV.concat(FEED_OL, [['X1:1b','S1:13'],['S1:14','LS1:21'],['LS1:22','KM2:21'],['KM2:22','KM1:A1']], HOLD('S1', 'KM1'), [['KM1:A2','X1:4b']], LAMP('KM1', 'H1', 'X1:5a'),
+      [['X1:2a','S2:13'],['S2:14','LS2:21'],['LS2:22','KM1:21'],['KM1:22','KM2:A1']], HOLD('S2', 'KM2'), [['KM2:A2','X1:5a']], LAMP('KM2', 'H2', 'X1:5b')),
+    seq:true, cases:[
+      {label:'Hoist in the middle, nothing pressed', set:{}, expect:{M1:0, H1:0, H2:0}},
+      {label:'“Up” pressed', set:{S1:{p:1}}, expect:{M1:'F', H1:1, H2:0}},
+      {label:'Released “Up”', set:{S1:{p:0}}, expect:{M1:'F', H1:1, H2:0}},
+      {label:'Reached the very top (top limit)', wait:4, expect:{M1:0, H1:0, H2:0}},
+      {label:'“Up” again while it\'s at the top', set:{S1:{p:1}}, expect:{M1:0, H1:0, H2:0}},
+      {label:'Released “Up” and pressed “Down”', set:{S1:{p:0}, S2:{p:1}}, expect:{M1:'R', H1:0, H2:1}},
+      {label:'Released “Down”', set:{S2:{p:0}}, expect:{M1:'R', H1:0, H2:1}},
+      {label:'Reached the very bottom (bottom limit)', wait:7, expect:{M1:0, H1:0, H2:0}},
+      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, H1:0, H2:0}}],
+    patterns:[{sig:{M1:'011111110'}, msg:'The hoist doesn\'t stop at the limit: the “top” limit\'s <b>NC (21-22)</b> contact must be in the “Up” line, and the “bottom” limit\'s NC in the “Down” line.'}, {sig:{M1:'011000000'}, msg:'The hoist stops at the top but won\'t go down afterwards: the “top” limit must be in the “Up” line <b>only</b>, not in the common line.'}],
+    shortMsg:'Both contactors pulled in together: a short circuit between two phases. The interlock is missing: each contactor\'s NC in the other\'s line.',
+    okMsg:'A limit switch in each direction = mechanical protection against the hoist overrunning the end of travel. Real hoists have a second backup limit that cuts the power itself.'},
+  e12:{story:{icon:'🔄', text:'A winding machine: the operator wants to reverse the direction straight away without pressing STOP first.', ask:'Practical 12: direct reversing with double buttons.'}, machine:'gauge', title:'Practical 12: a motor in two directions, changing direction directly without pressing stop + lamps', short:'Practical 12: direct reversing',
+    goal:'Double “Forward” and “Reverse” buttons: you press “Reverse” while the motor is turning forward and it reverses straight away without STOP. STOP stops it. Electrical + mechanical interlock.',
+    idea:'Each button is a double button (NO + NC): the NO energises its own contactor, and <b>its NC in the other contactor\'s line</b> cuts that one first. Together with the contactors\' NC contacts (electrical interlock), the changeover happens in order: it cuts one, then starts the other.',
+    steps:{power:PWR_STEPS_REV, control:['Phase L1 to F1, then 95-96, then STOP, and from it to the L bar. N to the N bar.','Forward: L bar, then the “Forward” NO in parallel with KM1\'s seal-in, then the “Reverse” NC (21-22), then KM2\'s NC contact, then A1 of KM1, then the N bar.','Reverse: L bar, then the “Reverse” NO in parallel with KM2\'s seal-in, then the “Forward” NC (21-22), then KM1\'s NC contact, then A1 of KM2, then the N bar.','A lamp for each direction across its coil.']},
+    tip:'Press “Forward” and release it, then “Reverse” directly: it reverses. In reality a large motor takes time to stop, so a timer is placed in between.',
+    devices:[G, Q3, F1, S0, PB('S1', 'green', 'forward', true), PB('S2', 'green', 'reverse', true), KM('KM1', ['NO','NC'], 'Forward contactor', {mech:'KM2'}), KM('KM2', ['NO','NC'], 'Reverse contactor', {mech:'KM1'}), OL(4.9), M1, lamp('H1', 'green', 'forward'), lamp('H2', 'amber', 'reverse'), X1],
+    solution:PWR_REV.concat(FEED_OL, [['X1:1b','S1:13'],['S1:14','S2:21'],['S2:22','KM2:21'],['KM2:22','KM1:A1']], HOLD('S1', 'KM1'), [['KM1:A2','X1:4b']], LAMP('KM1', 'H1', 'X1:5a'),
+      [['X1:2a','S2:13'],['S2:14','S1:21'],['S1:22','KM1:21'],['KM1:22','KM2:A1']], HOLD('S2', 'KM2'), [['KM2:A2','X1:5a']], LAMP('KM2', 'H2', 'X1:5b')),
+    seq:true, cases:[
+      {label:'nothing pressed', set:{}, expect:{M1:0, H1:0, H2:0}},
+      {label:'“Forward” pressed', set:{S1:{p:1}}, expect:{M1:'F', H1:1, H2:0}},
+      {label:'Released “Forward”', set:{S1:{p:0}}, expect:{M1:'F', H1:1, H2:0}},
+      {label:'“Reverse” pressed directly', set:{S2:{p:1}}, expect:{M1:'R', H1:0, H2:1}},
+      {label:'Released “Reverse”', set:{S2:{p:0}}, expect:{M1:'R', H1:0, H2:1}},
+      {label:'“Forward” pressed directly', set:{S1:{p:1}}, expect:{M1:'F', H1:1, H2:0}},
+      {label:'Released “Forward”', set:{S1:{p:0}}, expect:{M1:'F', H1:1, H2:0}},
+      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, H1:0, H2:0}}],
+    shortMsg:'Both contactors pulled in together: a short circuit between two phases. The interlock is missing: each contactor\'s NC in the other\'s line.',
+    okMsg:'Direct reversing relies on the double button: its NC cuts the old direction before the NO starts the new one. On a large motor this is mechanically violent, so a delay is put between them.'},
+  /* ------------------------------------------------ lathe */
+  e13:{story:{icon:'🔩', text:'A lathe: the turning motor forward/reverse, and the tool motor up/down, each with two buttons and an interlock, and one STOP for everything.', ask:'Practical 13: 4 contactors.'}, machine:'lathe', title:'Practical 13: a lathe: a forward/reverse motor for turning and a forward/reverse motor to adjust the workpiece height', short:'Practical 13: lathe (4 contactors)',
+    goal:'Turning motor M1 runs forward or reverse (KM1/KM2) and height motor M2 goes up or down (KM3/KM4), each with two buttons and an interlock, and one STOP stops the whole machine. A lamp for each movement.',
+    idea:'Two reversing circuits like practical 10 side by side on the same breaker and the same STOP. Each pair of contactors has an electrical and mechanical interlock between them, and the two pairs are independent of each other.',
+    steps:{power:['L1 L2 L3 from the supply to Q1. From the Q1 outputs to KM1\'s top terminals, and from the same outputs to KM3\'s top terminals.','Jumpers from KM1\'s top terminals to KM2\'s top terminals, and from KM3\'s top terminals to KM4\'s top terminals.','KM1 to M1 in order (U V W), and KM2 to M1 with two phases swapped (W V U).','KM3 to M2 in order, and KM4 to M2 with two phases swapped.'], control:['Phase L1 to F1, then STOP, and from it to the L bar. N to the N bar.','Turn forward: L bar, then the “Turn fwd” button in parallel with KM1\'s seal-in, then KM2 NC, then A1 of KM1, then the N bar.','Turn reverse: L bar, then the “Turn rev” button in parallel with KM2\'s seal-in, then KM1 NC, then A1 of KM2, then the N bar.','Height up: L bar, then the “Up” button in parallel with KM3\'s seal-in, then KM4 NC, then A1 of KM3, then the N bar.','Height down: L bar, then the “Down” button in parallel with KM4\'s seal-in, then KM3 NC, then A1 of KM4, then the N bar.','4 lamps, each across its contactor\'s coil. Spread the wires across the bar screws: two wires per screw.']},
+    tip:'63 wires. Work pair by pair: M1\'s power and control, then M2. Use “Show solution” if you get lost.',
+    devices:[G, Q3, F1, S0, PB('S1', 'green', 'Turn fwd'), PB('S2', 'green', 'Turn rev'), PB('S3', 'green', 'Height: up'), PB('S4', 'green', 'Height: down'),
+      KM('KM1', ['NO','NC'], 'Turn fwd', {mech:'KM2'}), KM('KM2', ['NO','NC'], 'Turn rev', {mech:'KM1'}), KM('KM3', ['NO','NC'], 'Height up', {mech:'KM4'}), KM('KM4', ['NO','NC'], 'Height down', {mech:'KM3'}),
+      MOT('M1', 'Turning motor'), MOT('M2', 'Height motor'), lamp('H1', 'green', 'Turn fwd'), lamp('H2', 'amber', 'Turn rev'), lamp('H3', 'green', 'Up'), lamp('H4', 'amber', 'Down'), X1],
+    solution:[['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','KM1:1'],['Q1:4','KM1:3'],['Q1:6','KM1:5'],['Q1:2','KM3:1'],['Q1:4','KM3:3'],['Q1:6','KM3:5'],['KM1:1','KM2:1'],['KM1:3','KM2:3'],['KM1:5','KM2:5'],['KM3:1','KM4:1'],['KM3:3','KM4:3'],['KM3:5','KM4:5'],
+      ['KM1:2','M1:U'],['KM1:4','M1:V'],['KM1:6','M1:W'],['KM2:2','M1:W'],['KM2:4','M1:V'],['KM2:6','M1:U'],['KM3:2','M2:U'],['KM3:4','M2:V'],['KM3:6','M2:W'],['KM4:2','M2:W'],['KM4:4','M2:V'],['KM4:6','M2:U']].concat(FEED_S0,
+      [['X1:1b','S1:13'],['S1:14','KM2:21'],['KM2:22','KM1:A1']], HOLD('S1', 'KM1'), [['KM1:A2','X1:4b']], LAMP('KM1', 'H1', 'X1:5a'),
+      [['X1:2a','S2:13'],['S2:14','KM1:21'],['KM1:22','KM2:A1']], HOLD('S2', 'KM2'), [['KM2:A2','X1:5a']], LAMP('KM2', 'H2', 'X1:5b'),
+      [['X1:2b','S3:13'],['S3:14','KM4:21'],['KM4:22','KM3:A1']], HOLD('S3', 'KM3'), [['KM3:A2','X1:5b']], LAMP('KM3', 'H3', 'X1:6a'),
+      [['X1:3a','S4:13'],['S4:14','KM3:21'],['KM3:22','KM4:A1']], HOLD('S4', 'KM4'), [['KM4:A2','X1:6a']], LAMP('KM4', 'H4', 'X1:6b')),
+    seq:true, cases:[
+      {label:'nothing pressed', set:{}, expect:{M1:0, M2:0}},
+      {label:'“Turn fwd” pressed', set:{S1:{p:1}}, expect:{M1:'F', M2:0}},
+      {label:'Released “Turn fwd”', set:{S1:{p:0}}, expect:{M1:'F', M2:0}},
+      {label:'“Up” pressed while turning', set:{S3:{p:1}}, expect:{M1:'F', M2:'F'}},
+      {label:'Released “Up”', set:{S3:{p:0}}, expect:{M1:'F', M2:'F'}},
+      {label:'“Turn rev” pressed while turning forward', set:{S2:{p:1}}, expect:{M1:'F', M2:'F'}},
+      {label:'Released “Turn rev” and pressed “Down” while rising', set:{S2:{p:0}, S4:{p:1}}, expect:{M1:'F', M2:'F'}},
+      {label:'Released “Down”', set:{S4:{p:0}}, expect:{M1:'F', M2:'F'}},
+      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, M2:0}},
+      {label:'Released STOP and pressed “Turn rev”', set:{S0:{p:0}, S2:{p:1}}, expect:{M1:'R', M2:0}},
+      {label:'Released “Turn rev” and pressed “Down”', set:{S2:{p:0}, S4:{p:1}}, expect:{M1:'R', M2:'R'}},
+      {label:'Released “Down”', set:{S4:{p:0}}, expect:{M1:'R', M2:'R'}},
+      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, M2:0}}],
+    shortMsg:'Two contactors of the same pair pulled in together: a short circuit between two phases. The interlock is missing: each contactor\'s NC in the other\'s line.',
+    okMsg:'4 contactors, two independent pairs, and one STOP for everything. This is the biggest panel in the simulator: if you can build it, you can build any classic control circuit.'}
+};
+/* ---------- lesson-8 figures and custom sims ---------- */
+const esc = CL.esc;
+const simShell = (host, o, ctl) => { host.innerHTML = `<div class="sim">${o.title ? `<h3>${esc(o.title)}</h3>` : ''}<div class="sim-grid"><figure class="sim-art"></figure><figure class="sim-sym"><div class="sim-iec"></div><ul class="sim-cont"></ul></figure></div><div class="sim-ctl">${ctl}</div><div class="tblw"><table class="tbl sim-tt"></table></div>${o.note ? `<p class="sim-note">${o.note}</p>` : ''}</div>`; return {art:host.querySelector('.sim-art'), iec:host.querySelector('.sim-iec'), cont:host.querySelector('.sim-cont'), ctl:host.querySelector('.sim-ctl'), tt:host.querySelector('.sim-tt')}; };
+const schem = ex => () => CL.art.schematic(Object.assign({id:ex}, L8EX[ex])).control;
+const row = (lab, val, on, cls) => `<li class="${on ? 'on' : ''}"><span>${lab}</span><span class="${cls || 'st'}">${val}</span></li>`;
+// a small scene: motors (with direction arrow) + lamps
+function motorsScene(ms, msg, bad){
+  const W = 440, n = ms.length, gap = W / (n + 1);
+  let s = `<svg viewBox="0 0 ${W} 200" role="img" aria-label="Motor status"><g style="color:var(--ink)">`;
+  ms.forEach((m, i) => {
+    const cx = gap * (i + 1), on = !!m.on, col = on ? '#1f8a3b' : '#9aa1a6';
+    s += `<rect x="${cx - 44}" y="60" width="88" height="70" rx="10" fill="${on ? '#dff3e4' : '#e9eaec'}" stroke="${col}" stroke-width="2.5"/><circle cx="${cx}" cy="95" r="22" fill="#fff" stroke="${col}" stroke-width="2.5"/>`;
+    if (on) s += `<path d="M${cx - 12} 95a12 12 0 1 1 6 10.4" fill="none" stroke="${col}" stroke-width="3" transform="${m.dir === 'R' ? `scale(-1 1) translate(${-2 * cx} 0)` : ''}"/><path d="M${cx - 6 - (m.dir === 'R' ? -12 : 0)} ${105 - 10}l${m.dir === 'R' ? 7 : -7} 0l0 8z" fill="${col}" transform="${m.dir === 'R' ? `translate(${12} 0)` : ''}"/>`;
+    s += `<text x="${cx}" y="150" font-size="13" font-weight="700" text-anchor="middle" fill="currentColor">${esc(m.tag)}</text><text class="ar" x="${cx}" y="168" font-size="10" text-anchor="middle" fill="${on ? '#1f8a3b' : 'var(--muted)'}">${esc(m.lab || (on ? (m.dir === 'R' ? 'running reverse' : m.dir === 'F' ? 'running forward' : 'running') : 'stopped'))}</text>`;
+    s += `<circle cx="${cx + 30}" cy="40" r="9" fill="${on ? '#4ad36a' : '#cfd2d4'}" stroke="#555"/><text x="${cx + 30}" y="22" font-size="9" text-anchor="middle" fill="currentColor">${esc(m.lamp || 'H' + (i + 1))}</text>`;
+  });
+  if (msg) s += `<text class="ar" x="${W / 2}" y="190" font-size="11" text-anchor="middle" font-weight="700" fill="${bad ? 'var(--bad)' : 'currentColor'}">${esc(msg)}</text>`;
+  return s + '</g></svg>';
+}
+/* 1. conditional start: M2 only when M1 runs (NO 23-24) or only when M1 stopped (NC 21-22) */
+function simCond(host, o){
+  let m1 = 0, m2 = 0, mode = 'NO';
+  const ui = simShell(host, o, `<button type="button" class="btn pri" data-k="s1">START 1</button><button type="button" class="btn" data-k="p1">STOP 1</button><button type="button" class="btn pri" data-k="s2">START 2</button><button type="button" class="btn" data-k="p2">STOP 2</button><label>KM1's auxiliary contact in M2's line<select data-k="mode" aria-label="Condition type"><option value="NO" selected>NO 23-24: M2 only if M1 is running</option><option value="NC">NC 21-22: M2 only if M1 is stopped</option></select></label><div class="sim-clock" role="status" aria-live="polite"></div>`);
+  const allow = () => mode === 'NO' ? !!m1 : !m1;
+  function render(msg){
+    if (!allow()) m2 = 0;
+    ui.art.innerHTML = motorsScene([{tag:'M1', on:m1}, {tag:'M2', on:m2}], msg);
+    ui.iec.innerHTML = '';
+    ui.cont.innerHTML = row('KM1 (M1)', m1 ? 'pulled in' : 'stopped', m1) + row(`KM1 contact ${mode === 'NO' ? '23-24 NO' : '21-22 NC'}`, allow() ? 'Closed: M2\'s line is open to it' : 'Open: M2\'s line is cut', allow(), 'om') + row('KM2 (M2)', m2 ? 'pulled in' : 'stopped', m2);
+    ui.tt.innerHTML = `<thead><tr><th class="r">M1</th><th>NO 23-24</th><th>NC 21-22</th></tr></thead><tbody><tr><td class="r">Stopped</td><td>Open: M2 blocked</td><td>Closed: M2 allowed</td></tr><tr><td class="r">Running</td><td>Closed: M2 allowed</td><td>Open: M2 blocked</td></tr></tbody>`;
+    ui.ctl.querySelector('.sim-clock').innerHTML = msg || (mode === 'NO' ? 'The condition: M2 runs only if M1 is running, and if M1 stops M2 drops out with it.' : 'The condition: M2 runs only if M1 is stopped, and if M1 starts M2 drops out.');
+  }
+  ui.ctl.addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; const k = b.dataset.k; let msg = '';
+    if (k === 's1'){ m1 = 1; if (!allow() && m2){ msg = 'M1 started so the NC contact opened: M2 dropped out.'; } }
+    if (k === 'p1'){ m1 = 0; if (!allow() && m2) msg = 'M1 stopped so the NO contact opened: M2 dropped out with it.'; }
+    if (k === 's2'){ if (allow()) m2 = 1; else msg = mode === 'NO' ? 'You pressed START 2 while M1 is stopped: contact 23-24 is open, nothing happens.' : 'You pressed START 2 while M1 is running: contact 21-22 is open, nothing happens.'; }
+    if (k === 'p2') m2 = 0;
+    render(msg); o.onAct && o.onAct(); });
+  ui.ctl.querySelector('[data-k=mode]').addEventListener('change', e => { mode = e.target.value; render(''); o.onAct && o.onAct(); });
+  render(''); return {destroy(){}};
+}
+/* 2. jog: double button NO + NC, correct (hold through the JOG NC) vs wrong (hold straight to the JOG output) */
+function simJog(host, o){
+  let km = 0, jog = 0, wrong = false;
+  const ui = simShell(host, o, `<button type="button" class="btn pri" data-k="start">START (press and release)</button><button type="button" class="btn big" data-k="jog" aria-pressed="false">JOG: press and hold</button><button type="button" class="btn" data-k="stop">STOP</button><label>Seal-in line KM1 13-14 returns to<select data-k="mode" aria-label="Seal-in wiring"><option value="ok" selected>JOG's NC (21-22) → the coil: correct</option><option value="bad">JOG's output (14) directly: wrong</option></select></label><div class="sim-clock" role="status" aria-live="polite"></div>`);
+  const ladder = () => { const y1 = 60, y2 = 110, y3 = 160; const c = km ? '#1f8a3b' : 'currentColor';
+    let s = `<svg viewBox="0 0 440 200" role="img" aria-label="The jog circuit"><g style="color:var(--ink)" fill="none" stroke="currentColor" stroke-width="2">`;
+    s += `<path d="M30 30V190M410 30V190"/><text x="30" y="20" font-size="10" text-anchor="middle" fill="currentColor" stroke="none">L</text><text x="410" y="20" font-size="10" text-anchor="middle" fill="currentColor" stroke="none">N</text>`;
+    // START branch
+    s += `<path d="M30 ${y1}H120M170 ${y1}H300"/><path d="M120 ${y1}L166 ${y1 - 14}" stroke="${km && !jog ? '#1f8a3b' : 'currentColor'}"/><text x="145" y="${y1 - 20}" font-size="10" text-anchor="middle" fill="currentColor" stroke="none">START 13-14</text>`;
+    // JOG NO branch
+    s += `<path d="M60 ${y1}V${y2}H120M170 ${y2}H250V${y1}"/><path d="M120 ${y2}${jog ? 'H170' : 'L166 ' + (y2 - 14)}" stroke="${jog ? '#1f8a3b' : 'currentColor'}"/><text x="145" y="${y2 + 22}" font-size="10" text-anchor="middle" fill="currentColor" stroke="none">JOG 13-14 NO${jog ? ' (pressed)' : ''}</text>`;
+    // hold branch: KM1 13-14 then JOG NC (ok) or direct (bad)
+    s += `<path d="M60 ${y2}V${y3}H120M170 ${y3}H${wrong ? 250 : 200}"/><path d="M120 ${y3}${km ? 'H170' : 'L166 ' + (y3 - 14)}" stroke="${km ? '#1f8a3b' : 'currentColor'}"/><text x="145" y="${y3 + 22}" font-size="10" text-anchor="middle" fill="currentColor" stroke="none">KM1 13-14</text>`;
+    if (!wrong) s += `<path d="M250 ${y3}H300V${y1}"/><path d="M200 ${y3}${jog ? 'L246 ' + (y3 - 14) : 'H250'}M248 ${y3 - 16}V${y3 + 2}" stroke="${jog ? 'var(--bad)' : (km ? '#1f8a3b' : 'currentColor')}"/><text x="225" y="${y3 + 22}" font-size="10" text-anchor="middle" fill="currentColor" stroke="none">JOG 21-22 NC${jog ? ' (open)' : ''}</text>`;
+    else s += `<path d="M250 ${y3}V${y2}" stroke="var(--bad)" stroke-dasharray="4 3"/><text x="262" y="${y3 - 10}" font-size="9" fill="var(--bad)" stroke="none">wrong</text>`;
+    // coil
+    s += `<path d="M300 ${y1}H330M370 ${y1}H410"/><rect x="330" y="${y1 - 11}" width="40" height="22" stroke="${c}" fill="${km ? '#dff3e4' : 'none'}"/><text x="350" y="${y1 + 4}" font-size="10" text-anchor="middle" fill="currentColor" stroke="none">KM1</text>`;
+    return s + '</g></svg>'; };
+  function render(msg, bad){
+    ui.art.innerHTML = ladder(); ui.iec.innerHTML = motorsScene([{tag:'M1', on:km, lamp:'H1'}], msg, bad);
+    ui.cont.innerHTML = row('JOG NO 13-14', jog ? 'closed (pressed)' : 'open', jog) + row('JOG NC 21-22', jog ? 'open (pressed)' : 'closed', !jog, 'om') + row('KM1 / motor', km ? 'pulled in' : 'stopped', km);
+    ui.tt.innerHTML = `<thead><tr><th class="r">Action</th><th>Correct</th><th>Wrong (seal-in on JOG's output)</th></tr></thead><tbody><tr><td class="r">Press JOG</td><td>Runs</td><td>Runs</td></tr><tr><td class="r">Release JOG</td><td>Stops (the NC had cut the seal-in)</td><td>Keeps running: sealed in</td></tr><tr><td class="r">Press START and release</td><td>Keeps running</td><td>Keeps running</td></tr></tbody>`;
+    ui.ctl.querySelector('.sim-clock').innerHTML = msg || 'Hold JOG: it runs. Release it: it should stop. START: it seals in.';
+  }
+  ui.ctl.addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; const k = b.dataset.k; let msg = '', bad = false;
+    if (k === 'start'){ km = 1; msg = 'START: the coil pulled in and sealed in on KM1 13-14' + (wrong ? '.' : ' through JOG\'s NC.'); }
+    if (k === 'stop'){ km = 0; msg = 'STOP: everything stopped.'; }
+    if (k === 'jog'){ jog = jog ? 0 : 1; b.setAttribute('aria-pressed', jog ? 'true' : 'false'); b.textContent = jog ? 'JOG: held (press again to release)' : 'JOG: press and hold';
+      if (jog){ km = 1; msg = 'JOG pressed: its NO energised the coil, and its NC opened the seal-in line.'; }
+      else { if (wrong){ msg = 'You released JOG and the motor is still running! The seal-in closed from KM1 13-14 straight onto JOG\'s output: the jog has become a start.'; bad = true; } else { km = 0; msg = 'You released JOG: the coil found no path (the seal-in was cut by the NC) so it dropped out. That\'s the correct jog.'; } } }
+    render(msg, bad); o.onAct && o.onAct(); });
+  ui.ctl.querySelector('[data-k=mode]').addEventListener('change', e => { wrong = e.target.value === 'bad'; km = 0; jog = 0; const jb = ui.ctl.querySelector('[data-k=jog]'); jb.setAttribute('aria-pressed', 'false'); jb.textContent = 'JOG: press and hold'; render(''); o.onAct && o.onAct(); });
+  render(''); return {destroy(){}};
+}
+/* 3. reversing with / without interlock */
+function simRev(host, o){
+  let dir = 0, lock = true, tripped = false; // dir 0 stop, 1 right (KM1), 2 left (KM2)
+  const ui = simShell(host, o, `<button type="button" class="btn pri" data-k="r">Forward (KM1)</button><button type="button" class="btn pri" data-k="l">Reverse (KM2)</button><button type="button" class="btn" data-k="stop">STOP</button><label>Interlock<select data-k="mode" aria-label="Interlock"><option value="on" selected>Electrical (NC) + mechanical</option><option value="off">No interlock (wrong)</option></select></label><div class="sim-clock" role="status" aria-live="polite"></div>`);
+  function render(msg, bad){
+    ui.art.innerHTML = CL.art.mechInterlock({on:lock ? dir : 0});
+    ui.iec.innerHTML = motorsScene([{tag:'M1', on:!tripped && dir, dir:dir === 2 ? 'R' : 'F', lamp:dir === 2 ? 'H2' : 'H1', lab:tripped ? 'breaker tripped' : undefined}], tripped ? 'Short circuit between L1 and L3: breaker Q1 tripped' : '', tripped);
+    ui.cont.innerHTML = row('KM1 (forward)', dir === 1 ? 'pulled in' : 'stopped', dir === 1) + row('KM1 21-22 NC in KM2\'s line', dir === 1 ? 'open: KM2 blocked' : 'closed', dir !== 1, 'om') + row('KM2 (reverse)', dir === 2 ? 'pulled in' : 'stopped', dir === 2) + row('KM2 21-22 NC in KM1\'s line', dir === 2 ? 'open: KM1 blocked' : 'closed', dir !== 2, 'om');
+    ui.tt.innerHTML = `<thead><tr><th class="r">Situation</th><th>With interlock</th><th>Without interlock</th></tr></thead><tbody><tr><td class="r">Turning forward and you press reverse</td><td>Nothing: KM1's NC cuts KM2's line and the lever locks KM2</td><td>KM2 pulls in with KM1: L1 and L3 meet at the motor terminal = short circuit</td></tr><tr><td class="r">STOP, then reverse</td><td>Turns in reverse</td><td>Turns in reverse</td></tr></tbody>`;
+    ui.ctl.querySelector('.sim-clock').innerHTML = msg || (tripped ? 'Reset the breaker: press STOP, fit the interlock and try again.' : 'Press one direction, then the other direction without STOP, and see.');
+  }
+  ui.ctl.addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; const k = b.dataset.k; let msg = '', bad = false;
+    if (k === 'stop'){ dir = 0; tripped = false; msg = 'STOP: both contactors dropped out.'; }
+    else if (tripped){ msg = 'The breaker is tripped. Press STOP first.'; bad = true; }
+    else { const want = k === 'r' ? 1 : 2; if (!dir || dir === want){ dir = want; msg = want === 1 ? 'KM1 pulled in: the motor turns forward, and its NC cut KM2\'s line.' : 'KM2 pulled in: the motor turns in reverse (two phases swapped), and its NC cut KM1\'s line.'; }
+      else if (lock){ msg = 'You pressed the other direction while the motor is running: the electrical interlock (NC) cuts the line and the mechanical one locks the contactor. Nothing happened. Stop first.'; }
+      else { tripped = true; msg = 'Without an interlock: both contactors pulled in together. KM1 puts L1 on U and KM2 puts L3 on U: a short circuit between two phases, and the breaker tripped.'; bad = true; } }
+    render(msg, bad); o.onAct && o.onAct(); });
+  ui.ctl.querySelector('[data-k=mode]').addEventListener('change', e => { lock = e.target.value === 'on'; dir = 0; tripped = false; render(''); o.onAct && o.onAct(); });
+  render(''); return {destroy(){}};
+}
+/* 4. lathe: spindle M1 right/left (KM1/KM2) + tool height M2 up/down (KM3/KM4), one STOP */
+function simLathe(host, o){
+  let sp = 0, hv = 0, h = 0.5, ang = 0, raf = null, last = 0;
+  const ui = simShell(host, o, `<span class="muted">Turning M1:</span><button type="button" class="btn pri" data-k="r">Forward (KM1)</button><button type="button" class="btn pri" data-k="l">Reverse (KM2)</button><span class="muted">Height M2:</span><button type="button" class="btn pri" data-k="u">Up (KM3)</button><button type="button" class="btn pri" data-k="d">Down (KM4)</button><button type="button" class="btn big" data-k="stop">STOP all</button><div class="sim-clock" role="status" aria-live="polite"></div>`);
+  const scene = () => { const ty = 150 - h * 80; const sc = sp ? '#1f8a3b' : '#9aa1a6', hc = hv ? '#1f8a3b' : '#9aa1a6';
+    let s = `<svg viewBox="0 0 440 220" role="img" aria-label="A lathe: the spindle and the tool carrier"><g style="color:var(--ink)">`;
+    s += `<rect x="20" y="170" width="400" height="30" rx="4" fill="#565c61"/><rect x="40" y="60" width="70" height="110" rx="6" fill="#8d959b" stroke="#444"/><text class="ar" x="75" y="52" font-size="10" text-anchor="middle" fill="currentColor">M1 turning</text>`;
+    s += `<rect x="110" y="100" width="180" height="24" rx="4" fill="#c9ccd0" stroke="#444" transform="rotate(${0} 200 112)"/><g transform="rotate(${ang} 200 112)"><circle cx="200" cy="112" r="34" fill="none" stroke="${sc}" stroke-width="5" stroke-dasharray="20 14"/></g><text x="200" y="116" font-size="10" text-anchor="middle" fill="currentColor">${sp ? (sp === 1 ? 'fwd ↻' : 'rev ↺') : 'stopped'}</text>`;
+    s += `<rect x="330" y="60" width="26" height="110" fill="#8d959b" stroke="#444"/><text class="ar" x="343" y="52" font-size="10" text-anchor="middle" fill="currentColor">M2 height</text>`;
+    s += `<rect x="300" y="${ty - 10}" width="60" height="20" rx="3" fill="${hv ? '#dff3e4' : '#e9eaec'}" stroke="${hc}" stroke-width="2"/><path d="M300 ${ty}L286 ${ty - 6}V${ty + 6}z" fill="#333"/><text class="ar" x="330" y="${ty + 4}" font-size="8" text-anchor="middle" fill="currentColor">tool</text>`;
+    if (hv) s += `<path d="M372 ${ty + (hv === 1 ? 14 : -14)}L372 ${ty + (hv === 1 ? -14 : 14)}" stroke="#1f8a3b" stroke-width="3" marker-end="url(#la)"/><defs><marker id="la" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0 0L6 3L0 6z" fill="#1f8a3b"/></marker></defs>`;
+    s += `<text class="ar" x="220" y="214" font-size="10" text-anchor="middle" fill="var(--muted)">The two motors are independent: the spindle turns while the tool moves up and down at the same time, with one STOP for both.</text>`;
+    return s + '</g></svg>'; };
+  function render(msg, bad){
+    ui.art.innerHTML = scene();
+    ui.iec.innerHTML = motorsScene([{tag:'M1', on:sp, dir:sp === 2 ? 'R' : 'F', lamp:sp === 2 ? 'H2' : 'H1'}, {tag:'M2', on:hv, dir:hv === 2 ? 'R' : 'F', lamp:hv === 2 ? 'H4' : 'H3', lab:hv ? (hv === 1 ? 'rising' : 'lowering') : undefined}], msg, bad);
+    ui.cont.innerHTML = row('KM1 turn fwd', sp === 1 ? 'pulled in' : 'stopped', sp === 1) + row('KM2 turn rev', sp === 2 ? 'pulled in' : 'stopped', sp === 2) + row('KM3 up', hv === 1 ? 'pulled in' : 'stopped', hv === 1) + row('KM4 down', hv === 2 ? 'pulled in' : 'stopped', hv === 2);
+    ui.tt.innerHTML = `<thead><tr><th class="r">Pair</th><th>Contactors</th><th>Interlock</th></tr></thead><tbody><tr><td class="r">Turning M1</td><td>KM1 forward / KM2 reverse</td><td>KM1 21-22 in KM2's line and vice versa + mechanical</td></tr><tr><td class="r">Height M2</td><td>KM3 up / KM4 down</td><td>KM3 21-22 in KM4's line and vice versa + mechanical</td></tr></tbody>`;
+    ui.ctl.querySelector('.sim-clock').innerHTML = msg || 'Run the spindle in one direction, and at the same time raise or lower the tool. One STOP stops everything.';
+  }
+  const tick = t => { if (last){ const dt = Math.min(0.1, (t - last) / 1000); if (sp) ang += (sp === 1 ? 1 : -1) * 180 * dt; if (hv){ h += (hv === 1 ? 1 : -1) * 0.25 * dt; if (h >= 1){ h = 1; hv = 0; render('The tool reached the very top: on a real machine a limit switch stops it (practical 11).'); } if (h <= 0){ h = 0; hv = 0; render('The tool reached the very bottom: limit switch.'); } } if (sp || hv) ui.art.innerHTML = scene(); } last = t; raf = requestAnimationFrame(tick); };
+  ui.ctl.addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; const k = b.dataset.k; let msg = '', bad = false;
+    if (k === 'stop'){ sp = 0; hv = 0; msg = 'STOP: all four contactors dropped out.'; }
+    if (k === 'r' || k === 'l'){ const w = k === 'r' ? 1 : 2; if (sp && sp !== w){ msg = 'The spindle is running in the other direction: the interlock blocks it. Stop first.'; bad = true; } else { sp = w; msg = w === 1 ? 'KM1 pulled in: the spindle turns forward.' : 'KM2 pulled in: the spindle turns in reverse.'; } }
+    if (k === 'u' || k === 'd'){ const w = k === 'u' ? 1 : 2; if (hv && hv !== w){ msg = 'The tool is moving in the other direction: the interlock blocks it. Stop first.'; bad = true; } else { hv = w; msg = w === 1 ? 'KM3 pulled in: the tool is rising.' : 'KM4 pulled in: the tool is lowering.'; } }
+    render(msg, bad); o.onAct && o.onAct(); });
+  render(''); raf = requestAnimationFrame(tick);
+  return {destroy(){ if (raf) cancelAnimationFrame(raf); raf = null; }};
+}
+
+/* ---------- the lesson ---------- */
+CL.lesson({
+  id:'l8', n:8, title:'Lesson 8: Sequencing, jogging and reversing exercises',
+  intro:'<p>Pick a device and follow it: <b>Definition</b> → <b>Look and symbol</b> → <b>Try it</b> → <b>Wire it</b> → <b>Questions</b>. Every exercise in this lesson has its own <b>circuit drawing</b> above the wiring board, and every exercise has a power circuit, a control circuit and signal lamps, just like a trainer\'s workbook. There are two deliberate mistakes to hunt for: <b>reversing without an interlock</b> (short circuit) and <b>a jog that seals in</b>.</p>',
+  elements:[
+  /* ---------------------------------------------------------------- 1. conditional start (5–8) */
+  {id:'cond', icon:'hold', title:'A motor conditional on another motor (practicals 5–8)', goal:'An auxiliary contact of the first motor\'s contactor in the second motor\'s line: <b>NO 23-24</b> means “only if the first is running”, and <b>NC 21-22</b> means “only if the first is stopped”. With them you build sequences of 2 and 3 motors.',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p>Until now each motor ran on its own. In factories there's very often a <b>condition</b>: the pump must not run unless the cooling fan is running, or the crusher must not run unless the conveyor after it is running (so the material doesn't pile up). This condition is made with an <b>auxiliary contact</b> of the first motor's contactor, placed <b>in series</b> in the second motor's coil line.</p>
+     <div class="box key"><ul>
+      <li><b>Only if the first is running (practicals 5 and 6)</b>: KM1's <b>NO (23-24)</b> contact at the start of M2's line. While KM1 is stopped the contact is open, so M2's line is cut. KM1 pulled in? The contact closed and M2 can now start. And if KM1 drops out, the contact opens and M2 drops out with it, even if it was sealed in.</li>
+      <li><b>Only if the first is stopped (practicals 7 and 8)</b>: KM1's <b>NC (21-22)</b> contact in M2's line. M1 stopped = contact closed = M2 allowed. M1 started = contact opened = M2 drops out. Like two motors that must not run together on the same supply.</li>
+      <li><b>The chain (practical 6)</b>: 3 motors, each conditional on the one before: M2 on KM1's NO, and M3 on KM2's NO. If M1 stops, M2 drops out, and M3 drops out after it. This is called a <b>sequence</b>.</li>
+      <li><b>The numbers</b>: the contactor comes with 13-14 NO (we use it for the seal-in), and if you want more contacts you fit an <b>auxiliary block</b> on top: 23-24 NO, 21-22 NC, 33-34 NO… the first digit is a counter and the second the type (3-4 NO, 1-2 NC).</li>
+      <li><b>Each motor has its own STOP and START</b> + a “running” lamp on the contactor's A1: the lamp lights exactly with the coil.</li></ul></div>
+     <p><b>Be careful:</b> the condition must be in the <b>coil</b> line, not in the power circuit. If you put the contact in the seal-in line only, the button will run M2 for a moment while it's pressed even if the condition isn't met.</p>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'Contactor with an auxiliary block NO + NO (23-24 and 33-34)', dev:KM('KM1', ['NO','NO']), art:'contactorArt', nema:[{k:'coil', opt:{letter:'M'}}, 'mNO3', 'crNO'], cap:'On top of the contactor is an auxiliary block with two contacts: the first, 13-14, for the seal-in, and the second, 23-24, for the condition. They move with the coil: coil pulled in = both closed.'},
+      {title:'Contactor with an NO + NC block (23-24 and 21-22)', dev:KM('KM1', ['NO','NC']), art:'contactorArt', nema:[{k:'coil', opt:{letter:'M'}}, 'crNO', 'crNC'], cap:'The NC 21-22 is closed while the contactor is off and opens when it pulls in. That\'s what makes “only if the first is stopped”, and it\'s the same as the interlock contact in reversing.'},
+      {title:'Practical 5: M2 only if M1 is running (NO 23-24)', dev:G, art:schem('e5'), noSym:true, cap:'M2\'s line starts from contact KM1 23-24, then STOP 2, then START 2 and the seal-in. This contact is open as long as M1 is stopped.'},
+      {title:'Practical 7: M2 only if M1 is stopped (NC 21-22)', dev:G, art:schem('e7'), noSym:true, cap:'The same circuit but with an NC contact: M1 running = the line is cut. If M1 starts while M2 is running, M2 drops out.'},
+      {title:'Practical 6: 3 motors in sequence', dev:G, art:schem('e6'), noSym:true, cap:'Each line starts from the NO of the contactor before it: KM1 23-24 for M2\'s line, and KM2 23-24 for M3\'s line.'},
+      {title:'Practical 8: M2 only if M1 is stopped, and M3 only if M1 is running', dev:G, art:schem('e8'), noSym:true, cap:'KM1 has an NC block (21-22) for M2\'s line and an NO block (33-34) for M3\'s line. Two motors on two different conditions from the same contactor.'}]},
+    {kind:'sim', title:'Try it', lead:'Start and stop the two motors and change the type of auxiliary contact: see when M2 is allowed and when it drops out by itself.', sims:[
+      {title:'The condition between two motors: NO 23-24 or NC 21-22', custom:simCond, note:'The rule: NO = “only if running”, NC = “only if stopped”. And if the condition goes away while you\'re running, the second motor drops out immediately, because the contact is in the coil line.'}]},
+    {kind:'bench', title:'Wire it', ex:['e5','e6','e7','e8']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'You want M2 to run only if M1 is running. In KM2\'s coil line you put:', a:['KM1\'s NO contact','KM1\'s NC contact','KM2\'s NO contact'], c:0, why:'NO is open while M1 is stopped, and closes when KM1 pulls in.', w:['','NC would do the opposite: M2 runs only while M1 is stopped.','That\'s M2\'s own seal-in contact.']},
+      {q:'In practical 6 (3 motors in sequence) M1 suddenly stops. What happens:', a:['M2 and M3 keep running','Only M2 drops out','M2 drops out and M3 drops out after it'], c:2, why:'KM1 dropped out so 23-24 opened, so KM2 dropped out so its 23-24 opened, so KM3 dropped out.', w:['The auxiliary contacts are in the coil lines.','M3 was conditional on KM2, and KM2 dropped out.','']},
+      {q:'The number 21-22 on an auxiliary block means:', a:['NO contact number 2','NC contact number 2','A second coil'], c:1, why:'The first digit (2) is the contact counter, and the second (1-2) means NC. 3-4 means NO.', w:['NO is 3-4 (e.g. 23-24).','','The coil is always A1-A2.']}]}
+   ]},
+  /* ---------------------------------------------------------------- 2. jog (9) */
+  {id:'jog', icon:'pb', title:'Jogging with a double button (practical 9)', goal:'Momentary running: the motor runs only while you hold the button. A <b>double NO + NC button</b>: the NO energises the coil and the NC <b>breaks the seal-in line</b> while you press, so there\'s no seal-in.',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p><b>Jog (inching)</b> means running the motor in short bursts while you hold a button, and as soon as you release it, it stops. You need it to set up a machine: move a conveyor a little, turn a lathe spindle until the workpiece is in position, or check the direction of rotation after installation.</p>
+     <div class="box key"><ul>
+      <li><b>The problem</b>: the normal Start/Stop circuit has a <b>seal-in</b> (KM1 13-14 in parallel with START). If you just put a JOG button in parallel with START, as soon as you press it the contactor seals itself in exactly like START, and won't stop when you release it.</li>
+      <li><b>The solution</b>: a <b>double</b> JOG button: an NO block (13-14) and an NC block (21-22) on the same button. The NO, in parallel with START, energises the coil. And the NC goes <b>in series with the seal-in contact</b>: KM1 13 → 14 → JOG 21 → 22 → the coil.</li>
+      <li><b>While you press</b>: the NO is closed so the coil pulls in, but the NC is open so the seal-in is cut. <b>When you release</b>: the NO opens and the NC closes again, but the contactor has already dropped out (the button is <b>break-before-make</b>: the NC opens before the NO closes, and returns after it).</li>
+      <li><b>START</b> still works normally: START's NO energises the coil, and the seal-in through JOG's NC (closed because you're not pressing JOG) holds it.</li>
+      <li><b>The “running” lamp</b> from A1, and the <b>“stopped” lamp</b> on the contactor's NC (21-22): it lights when the contactor is off.</li></ul></div>
+     <p><b>In reality</b>: the double button is the same head with two blocks (NO and NC) side by side beneath it. Some panels do jogging with a <b>Run/Jog selector</b> instead of a double button: in the Jog position it cuts the seal-in line.</p>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'Double button: NO block (13-14) + NC block (21-22)', dev:PB('S2', 'black', 'JOG', true), nema:['pbNO', 'pbNC'], cap:'One head moves both blocks together. In the symbol, the dashed line between the two contacts means “they move together”.'},
+      {title:'Practical 9: Start/Stop + Jog', dev:G, art:schem('e9'), noSym:true, cap:'JOG NO in parallel with START. Seal-in contact KM1 13-14 passes through JOG NC 21-22 before reaching the coil. The “stopped” lamp on KM1 21-22.'},
+      {title:'The mistake: the seal-in returns straight to JOG\'s output', dev:G, art:schem('w2'), noSym:true, cap:'Here KM1 14 is connected to JOG 14 (the output), not to JOG 21: the NC isn\'t in the path, so as soon as you press JOG the contactor seals itself in.'}]},
+    {kind:'sim', title:'Try it', lead:'Hold the JOG button and release it, then try START. Switch the seal-in wiring to the wrong one and see how the jog seals in.', sims:[
+      {title:'A correct jog, or a jog that seals in', custom:simJog, note:'The whole difference is one wire: does KM1 14 go to JOG 21 (NC) or to JOG 14 (NO)?'}]},
+    {kind:'bench', title:'Wire it', ex:['e9','w2']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'Why must the jog button be a double button (NO + NC)?', a:['So it can carry more current','So the NC cuts the seal-in line while you press','So it can light two lamps'], c:1, why:'The NO energises the coil, and the NC prevents the seal-in. Without it the jog becomes a start.', w:['Current isn\'t the issue.','','The lamps have nothing to do with it.']},
+      {q:'You pressed JOG and released it, and the motor kept running. Most likely:', a:['The overload','Seal-in contact KM1 13-14 is wired without passing through JOG\'s NC','the fuse'], c:1, why:'That\'s the classic mistake: the seal-in found a path that JOG doesn\'t cut.', w:['The overload stops things, it doesn\'t start them.','','A fuse doesn\'t keep anything running.']},
+      {q:'The motor is running from START, and you press JOG and release it. What happens:', a:['It keeps running','It stops','It reverses'], c:1, why:'While you pressed JOG the NC opened and cut the seal-in, so when you released it the coil found no path.', w:['The seal-in was cut.','','There\'s no reversing here.']}]}
+   ]},
+  /* ---------------------------------------------------------------- 3. reversing (10–12) */
+  {id:'rev', icon:'cycle', title:'Reversing, interlocks and limit switches (practicals 10–12)', goal:'Two contactors on the same motor, the second swapping two phases. You need an <b>electrical interlock</b> (each contactor\'s NC in the other\'s line) and a <b>mechanical interlock</b>; without them both can pull in together = <b>a short circuit between two phases</b>. And with an NC limit switch in each direction it becomes a hoist.',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p>A 3-phase motor reverses when you swap <b>any two phases</b> (lesson 6). In a panel we do this with <b>two contactors</b>: KM1 connects L1 L2 L3 to U V W, and KM2 connects L3 L2 L1 (first and third swapped). Both have their outputs on the same motor (through the same overload).</p>
+     <div class="box"><p><b>The danger:</b> if KM1 and KM2 pull in at the same moment, KM1 puts L1 on U and KM2 puts L3 on the same U: <b>a direct short circuit between L1 and L3</b>. The breaker trips if it's fast enough, or the contactors weld. That's why a reversing circuit without an interlock is <b>a forbidden mistake</b>.</p></div>
+     <div class="box key"><ul>
+      <li><b>The electrical interlock</b>: KM2's <b>NC (21-22)</b> contact in KM1's coil line, and KM1's NC in KM2's coil line. KM1 pulled in? Its NC is open, so KM2's line is cut even if you press its button.</li>
+      <li><b>The mechanical interlock</b>: a part fitted between the two contactors (a lever): if one pulls in, it physically locks the other. It's used together with the electrical one, because the electrical one fails if a contact welds.</li>
+      <li><b>Practical 10</b>: a forward button, a reverse button and STOP. To reverse you must press STOP first.</li>
+      <li><b>Practical 11 (hoist)</b>: the same circuit + an <b>NC limit switch</b> in each line: the “top” limit in the “Up” line and the “bottom” limit in the “Down” line. When the hoist reaches the end of travel the limit opens and stops it, and it can still go the other way.</li>
+      <li><b>Practical 12 (direct reversing)</b>: both buttons are <b>double</b>: the “Reverse” button's NC in KM1's line and vice versa. You press “Reverse” while the motor turns forward: the NC cuts KM1 first, then the NO energises KM2 (break-before-make). On a large motor this is violent, so a pause timer is added.</li>
+      <li><b>Lamps</b>: a lamp for each direction on each contactor's A1.</li></ul></div>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'The mechanical interlock between the two contactors', dev:KM('KM1', ['NO','NC'], 'contactor', {mech:'KM2'}), art:() => CL.art.mechInterlock({on:1}), noSym:true, cap:'KM1 pulled in: the lever tilted and locked KM2 mechanically. The part is fitted between the two contactors on the rail.'},
+      {title:'Practical 10: forward/reverse with an electrical interlock', dev:G, art:schem('e10'), noSym:true, cap:'Each line: the button in parallel with the seal-in → the other contactor\'s NC → the coil. Overload 95-96 and STOP are in the common line.'},
+      {title:'The mistake: no interlock', dev:G, art:schem('w1'), noSym:true, cap:'Each button goes straight to its coil. Press both buttons (or the second while the first is sealed in): both contactors pull in together = short circuit.'},
+      {title:'Practical 11: a hoist with an NC limit switch in each direction', dev:G, art:schem('e11'), noSym:true, cap:'LS1 (top) NC in the “Up” line, LS2 (bottom) NC in the “Down” line. The limit opens when the hoist hits it, stopping that direction only.'},
+      {title:'Practical 12: direct reversing with two double buttons', dev:G, art:schem('e12'), noSym:true, cap:'The “Reverse” button\'s NC in KM1\'s line and the “Forward” button\'s NC in KM2\'s line, together with the contactor interlock. You reverse without STOP.'}]},
+    {kind:'sim', title:'Try it', lead:'Run forward, then press reverse without STOP: see what the interlock does. Then remove it and see the short circuit.', sims:[
+      {title:'Reversing: with and without an interlock', custom:simRev, note:'Electrical and mechanical interlocks always together. On a hoist the limit switch goes as an NC in the same line, before the interlock contact.'}]},
+    {kind:'bench', title:'Wire it', ex:['e10','w1','e11','e12']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'Two reversing contactors pulled in together. The result:', a:['The motor turns faster','A short circuit between two phases','The motor stops gently'], c:1, why:'Each contactor puts a different phase on the same motor terminal.', w:['','','There\'s nothing gentle about a short circuit.']},
+      {q:'The electrical interlock is made with:', a:['Each contactor\'s NO in the other\'s line','Each contactor\'s NC in the other\'s line','The overload'], c:1, why:'The NC opens when the contactor pulls in, cutting the other\'s line.', w:['NO would do the opposite: the second would only run if the first is running.','','The overload is for overcurrent.']},
+      {q:'On the hoist (practical 11) the “top” limit switch is wired:', a:['NO in the “Up” line','NC in the “Up” line','NC in the “Down” line'], c:1, why:'Closed while the hoist is away, and it opens when the hoist hits it, stopping only the upward movement.', w:['NO would stop the hoist rising at all.','','That\'s where the “bottom” limit goes.']}]}
+   ]},
+  /* ---------------------------------------------------------------- 4. lathe (13) */
+  {id:'lathe', icon:'motor', title:'The lathe with 4 contactors (practical 13)', goal:'Two reversing circuits side by side: the turning motor forward/reverse (KM1/KM2) and the height motor up/down (KM3/KM4), each pair with its interlock, and <b>one STOP</b> for the whole machine. The biggest panel in the simulator: 63 wires.',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p>A lathe has a <b>spindle</b> that turns the workpiece forward or reverse, and a <b>tool carrier</b> that moves up and down to set the depth of cut. Each movement is a motor, and each motor needs two directions: that's <b>4 contactors</b> and <b>two motors</b>.</p>
+     <div class="box key"><ul>
+      <li><b>The first pair</b>: KM1 (turn forward) and KM2 (turn reverse) on M1, with an electrical + mechanical interlock between them and a button for each direction.</li>
+      <li><b>The second pair</b>: KM3 (up) and KM4 (down) on M2, the same way.</li>
+      <li><b>The two pairs are independent</b>: you can turn and raise the tool at the same time. There's no condition between them.</li>
+      <li><b>One STOP</b> in the common line before the L bar: it stops all four contactors together. On a real machine this is a red mushroom-head <b>emergency</b> button.</li>
+      <li><b>Power</b>: one Q1 feeds both pairs (jumpers from KM1's top terminals to KM2, and from KM3 to KM4). Each pair's outputs go to its motor, the second with two phases swapped.</li>
+      <li><b>4 lamps</b>: a lamp for each movement on its contactor's A1.</li></ul></div>
+     <p><b>Wiring tip</b>: work <b>pair by pair</b>: M1's power and control, test it, then M2. And on a panel this big, the terminal block (L bar and N bar) is what keeps the work tidy: each line takes a point from the bar.</p>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'Practical 13: a lathe (4 contactors, two motors, one STOP)', dev:G, art:schem('e13'), noSym:true, cap:'Four control lines on the same L bar after STOP: each line is a button in parallel with the seal-in → the opposite contactor\'s NC → the coil → its lamp.'},
+      {title:'Contactor with a mechanical interlock (KM3/KM4 pair)', dev:KM('KM3', ['NO','NC'], 'contactor', {mech:'KM4'}), art:() => CL.art.mechInterlock({on:2}), noSym:true, cap:'Each pair has its own interlock part. The two pairs are separate from each other.'}]},
+    {kind:'sim', title:'Try it', lead:'Turn the spindle in one direction, and at the same time raise and lower the tool. Try reversing without stopping: the interlock prevents it. One STOP stops everything.', sims:[
+      {title:'The lathe: two motors × two directions', custom:simLathe, note:'The tool stops by itself at the very top and bottom: on a real machine that\'s a limit switch (as in practical 11).'}]},
+    {kind:'bench', title:'Wire it', ex:['e13']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'On the lathe, KM1 (turn forward) is running. Can you press “Up” (KM3)?', a:['No, the interlock prevents it','Yes, the two pairs are independent','Only after STOP'], c:1, why:'The interlock is only between KM1 and KM2, and the second pair is independent.', w:['The interlock is within each pair, not between the pairs.','','No need.']},
+      {q:'One STOP for the whole machine is wired:', a:['In each contactor\'s line separately','In the common line before the L bar','On the overload'], c:1, why:'It cuts the supply to all four lines at once.', w:['You\'d need 4 buttons.','','The overload is protection, not control.']},
+      {q:'The number of electrical interlock (NC) contacts in practical 13:', a:['2','4','8'], c:1, why:'An NC contact of each contactor in the line of its opposite: 4 contactors = 4 contacts.', w:['','','']}]}
+   ]}
+  ],
+  exercises:L8EX
+});
+})();
+</script>
+</body>
+</html>

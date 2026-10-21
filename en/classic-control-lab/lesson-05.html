@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Timers: on-delay, off-delay, cyclic and timer circuits</title>
+<meta name="description" content="Lesson 5 of the Classic Control course: the on-delay timer (TON) and contact 15-16-18, the off-delay timer (TOF), the cyclic (flasher) and multifunction timer, and timer circuits: sequence, loop, cart and pump (practical exercises 14 to 24), wired by hand with a real-time simulation.">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/classic-control-lab/lesson-05.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/classic-control-lab/lesson-05.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/classic-control-lab/lesson-05.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/en/classic-control-lab/engine.css?v=20261021v">
+<link rel="stylesheet" href="/en/classic-control-lab/fx.css?v=20261021v">
+</head>
+<body>
+<div class="app">
+<header class="top site-header">
+  <div>
+    <h1>Lesson 5: Timers</h1>
+    <p>So far the motor starts when you press and stops when you press. In industry most circuits need <b>time</b>: the second motor starts five seconds after the first, the fan keeps running for a minute after the machine stops, the pump fills for 3 seconds and stops. That's the job of the <b>timer</b>. You'll learn the <b>on-delay</b>, the <b>off-delay</b> and the <b>cyclic</b> timer, and wire by hand all the trainer's timer exercises (practicals 14 to 24) on the board, with real time and a counter running on the timer.</p>
+  </div>
+  <div class="chips">
+    <a class="btn" href="/en/classic-control-lab/index.html">‹ Lessons</a>
+    <a class="btn" href="/en/labs.html">← All courses</a><span class="bar lang-slot"></span>
+  </div>
+</header>
+
+<div id="lesson"></div>
+
+<script src="/site-config.js?v=20261021v"></script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script src="/assets/i18n-en.js?v=20261021v"></script>
+<script src="/en/classic-control-lab/engine.js?v=20261021v"></script>
+<script src="/en/classic-control-lab/fx.js?v=20261021v"></script>
+<script>
+(function(){
+/* lesson-05 exercise data (embedded into lesson-05.html by build5.py; also loaded by the Node model test) */
+const G   = {id:'G', type:'supply3P', name:'supply'};
+const SUP = {id:'Q1', type:'supplyAC', name:'the breaker'};
+const Q3  = {id:'Q1', type:'mcb', cfg:{poles:3, label:'C10'}, name:'power breaker'};
+const F1  = {id:'F1', type:'mcb', cfg:{poles:1, label:'C2'}, name:'control breaker'};
+const PB  = (id, color, label) => ({id, type:'pb', cfg:{color, label, blocks:[color === 'red' ? 'NC' : 'NO']}});
+const SEL = {id:'S1', type:'sel', cfg:{pos:['0','I'], label:'0 / I', blocks:[{k:'NO', on:[1]}]}};
+const KM  = (id, aux, name, extra) => ({id, type:'contactor', cfg:Object.assign({v:230, aux:aux || ['NO','NC']}, extra || {}), name:name || 'contactor'});
+const MOT = (id, name, look) => ({id, type:'motor', cfg:{term:3, kW:2.2, look:look || 'motor'}, name:name || 'motor'});
+const lamp = (id, color, name) => ({id, type:'lamp', cfg:{color, v:230}, name});
+const KT  = (id, mode, t, name, extra) => ({id, type:'timer', cfg:Object.assign({v:230, mode:mode || 'on', t:t || 5}, extra || {}), name:name || 'Timer'});
+const X1  = {id:'X1', type:'tb', cfg:{n:6, bridges:[[1,2,3],[4,5,6]], labels:{1:'L',2:'L',3:'L',4:'N',5:'N',6:'N'}}, name:'Terminal block (L bar and N bar)'};
+const K1  = (blocks) => ({id:'K1', type:'relay', cfg:{v:230, blocks:blocks || ['CO','CO']}, name:'Auxiliary relay'});
+const S0 = PB('S0', 'red', 'STOP'), S1 = PB('S1', 'green', 'START');
+const M1 = MOT('M1', 'motor 1'), M2 = MOT('M2', 'motor 2'), M3 = MOT('M3', 'Motor 3');
+const H1 = lamp('H1', 'green', 'M1 on'), H2 = lamp('H2', 'green', 'M2 on'), H3 = lamp('H3', 'green', 'M3 on');
+// power: Q1 → each contactor (Q1:2/4/6 feed KM1 and KM2, KM2 feeds KM3 by a bridge) → its motor. rev:true swaps L1/L3 at the motor.
+const POWER = list => { const w = [['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5']]; list.forEach(([km, m, rev], i) => { const src = i < 2 ? 'Q1' : list[1][0], st = i < 2 ? ['2','4','6'] : ['1','3','5']; w.push([src+':'+st[0], km+':1'], [src+':'+st[1], km+':3'], [src+':'+st[2], km+':5']); w.push([km+':2', m+':'+(rev ? 'W' : 'U')], [km+':4', m+':V'], [km+':6', m+':'+(rev ? 'U' : 'W')]); }); return w; };
+// control feed: L1 → F1 → STOP → L bar of X1 (1a) ; N → N bar (4a)
+const FEED = [['G:L1','F1:1'],['F1:2','S0:11'],['S0:12','X1:1a'],['G:N','X1:4a']];
+const FEED_SEL = [['G:L1','F1:1'],['F1:2','S1:13'],['S1:14','X1:1a'],['G:N','X1:4a']];
+const HOLD = (pb, km, via) => [['X1:1b', pb+':13'], [pb+':14', via || km+':A1'], [km+':13', pb+':13'], [km+':14', pb+':14']]; // START || hold → (via) → coil
+const PAR = (from, to) => [[from, to]];
+const noneOff = (ids) => { const o = {}; ids.forEach(i => o[i] = 0); return o; };
+const ex = (a, b) => Object.assign({}, a, b);
+
+const E14_CTL = FEED.concat(HOLD('S1', 'KM1'), [['KM1:A2','X1:4b'],['KM1:A1','KT1:A1'],['KT1:A2','X1:4b'],['KT1:A1','H1:X1'],['H1:X2','X1:5a'],
+  ['X1:2a','KT1:15'],['KT1:18','KM2:A1'],['KM2:A2','X1:5a'],['KM2:A1','H2:X1'],['H2:X2','X1:5b']]);
+const E14_DEVS = [G, Q3, F1, S0, S1, KM('KM1'), KM('KM2'), KT('KT1', 'on', 5, 'On-delay timer'), M1, M2, H1, H2, X1];
+const E14_CASES = [
+  {label:'nothing pressed', set:{}, expect:{M1:0, M2:0, H1:0, H2:0}},
+  {label:'START pressed', set:{S1:{p:1}}, expect:{M1:1, M2:0, H1:1, H2:0}},
+  {label:'Released START and 2 seconds passed', set:{S1:{p:0}}, wait:2, expect:{M1:1, M2:0, H1:1, H2:0}},
+  {label:'4 more seconds passed (more than t = 5 s)', set:{}, wait:4, expect:{M1:1, M2:1, H1:1, H2:1}},
+  {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, M2:0, H1:0, H2:0}},
+  {label:'STOP released', set:{S0:{p:0}}, expect:{M1:0, M2:0, H1:0, H2:0}}];
+const E14_PATTERNS = [
+  {sig:{M2:'011101'}, msg:'M2 starts <b>with M1 immediately</b>, and when you release STOP it starts again until the time runs out: the timer is in <b>Off-delay</b> mode and you need <b>On-delay</b>. Change the timer function with the FUNC button on the board (while switched off) to ON-DELAY.'},
+  {sig:{M2:'111001'}, msg:'M2 runs <b>without you pressing START</b> and stops after the time runs out: you used contact <b>15-16</b> (NC, closed normally) instead of <b>15-18</b> (NO, closes after the time). Move the coil wire from 16 to 18.'},
+  {sig:{M2:'000000'}, msg:'M2 never starts: timer KT1\'s coil must be fed together with KM1 (A1 to A1, A2 to N), and its contact <b>15-18</b> must connect the L bar to KM2\'s coil.'},
+  {sig:{M2:'011100'}, msg:'M2 starts with M1 immediately: KM2\'s coil is connected to the line without passing through timer contact 15-18.'}];
+
+const L5EX = {
+  /* ------------------------------------------------ TON */
+  e14:{story:{icon:'🧃', text:'A filling line: the filling conveyor starts first, and after 5 seconds the packing conveyor starts by itself without anyone pressing anything.', ask:'Practical 14: M2 after M1 with an On-delay timer.'}, machine:'conveyor', title:'Practical 14: two motors, the second starts automatically after the first with a delay', short:'Practical 14: M2 after M1 with a delay',
+    task:'<b>M1</b> starts with START and seals itself in, and timer <b>KT1</b> (On-delay, 5 s) has its coil <b>in parallel with KM1\'s coil</b>. After 5 seconds contact <b>15-18</b> energises <b>KM2</b> so M2 starts. STOP stops both. A lamp for each motor. Use terminal block X1: the <span class="term">L</span> bar (1-2-3 bridged) after STOP, and the <span class="term">N</span> bar (4-5-6).', goal:"START starts M1 and it keeps running, and after 5 seconds M2 starts by itself. STOP stops both. A lamp for each motor.", idea:"An On-delay timer with its coil in parallel with KM1's coil: it starts counting with M1, and after the delay its contact 15-18 closes and feeds KM2's coil.", steps:{"power": ["L1 L2 L3 from the supply to Q1, and from Q1 to KM1 and KM2 (1/3/5).", "From KM1 2/4/6 to motor M1, and from KM2 2/4/6 to motor M2."], "control": ["Phase L1 to F1, then STOP, and from STOP to the L bar on terminal block X1 (screws 1-2-3), and N to the N bar (4-5-6).", "From the L bar: the START button in parallel with KM1's seal-in (13-14), and their output to A1 of KM1.", "Timer KT1's coil in parallel with KM1's coil (A1 to A1, and A2 to the N bar).", "From the L bar to 15 of the timer, from 18 to A1 of KM2, and A2 to the N bar.", "Each lamp from its contactor's A1 to the N bar."]},
+    tip:'Supply: L1 → F1:1, F1:2 → S0:11, S0:12 → X1:1a, N → X1:4a. Seal-in: X1:1b → S1:13, S1:14 → KM1:A1, KM1:13 ↔ S1:13, KM1:14 ↔ S1:14. Timer: KM1:A1 → KT1:A1, KT1:A2 → N bar. Contact: L bar → KT1:15, KT1:18 → KM2:A1. Each lamp from the contactor\'s A1 (or a terminal connected to it) to the N bar. Each screw takes only two wires: spread them across the bar\'s screws.',
+    devices:E14_DEVS, solution:POWER([['KM1','M1'],['KM2','M2']]).concat(E14_CTL),
+    seq:true, cases:E14_CASES, patterns:E14_PATTERNS,
+    okMsg:'This is the “timer in the seal-in circuit” pattern: the timer coil gets voltage together with the contactor, and its contact completes the next step. Press START and watch the counter.'},
+  e15:{story:{icon:'🌾', text:'A mill: the small motor starts first to loosen the load, and after a delay the big one starts and the small one stops.', ask:'Practical 15: M1 stops when M2 starts.'}, machine:'conveyor', title:'Practical 15: like 14, but the first stops when the second starts', short:'Practical 15: M1 stops when M2 starts',
+    task:'The same as exercise 14, but when <b>KM2</b> starts after the delay, <b>KM1 must drop out</b>: put contact <b>KM2 21-22</b> (NC) in KM1\'s coil line. And since KT1\'s coil is with KM1 and will drop out with it, <b>KM2 must seal itself in</b> with its 13-14 contact in parallel with timer contact 15-18; otherwise it will drop out and M1 will come back (oscillation).', goal:"Like exercise 14, but when M2 starts after the delay, M1 stops and M2 keeps running alone until STOP.", idea:"KM2's NC contact (21-22) in KM1's coil line drops it out. And since the timer drops out with KM1, KM2 must seal itself in with its 13-14 contact in parallel with timer contact 15-18; otherwise it will oscillate.", steps:{"power": ["L1 L2 L3 from the supply to Q1, from Q1 to KM1 and KM2, and from them to the two motors."], "control": ["Supply as in exercise 14: F1, then STOP, then the L bar, and N to the N bar.", "KM1 line: START in parallel with KM1's seal-in, their output to KM2 contact 21-22, and from 22 to A1 of KM1.", "The timer coil in parallel with KM1's coil.", "KM2 line: from the L bar to 15 of the timer, from 18 to A1 of KM2, and KM2's seal-in (13-14) in parallel with timer contact 15-18.", "The lamps from each contactor's A1 to the N bar."]},
+    tip:'KM1 line: X1:1b → S1:13, S1:14 → KM2:21, KM2:22 → KM1:A1 (and the seal-in KM1:13/14 on S1:13/14). KM2 line: L bar → KT1:15, KT1:18 → KM2:A1, and the seal-in KM2:13 → KT1:15 and KM2:14 → KT1:18.',
+    devices:E14_DEVS,
+    solution:POWER([['KM1','M1'],['KM2','M2']]).concat(FEED, [['X1:1b','S1:13'],['S1:14','KM2:21'],['KM2:22','KM1:A1'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KM1:A2','X1:4b'],['KM1:A1','KT1:A1'],['KT1:A2','X1:4b'],['KT1:A1','H1:X1'],['H1:X2','X1:5a'],
+      ['X1:2a','KT1:15'],['KT1:18','KM2:A1'],['KM2:13','KT1:15'],['KM2:14','KT1:18'],['KM2:A2','X1:5a'],['KM2:A1','H2:X1'],['H2:X2','X1:5b']]),
+    seq:true, cases:[
+      {label:'nothing pressed', set:{}, expect:{M1:0, M2:0, H1:0, H2:0}},
+      {label:'START pressed', set:{S1:{p:1}}, expect:{M1:1, M2:0, H1:1, H2:0}},
+      {label:'Released START and 2 seconds passed', set:{S1:{p:0}}, wait:2, expect:{M1:1, M2:0, H1:1, H2:0}},
+      {label:'4 more seconds passed (after t = 5 s)', set:{}, wait:4, expect:{M1:0, M2:1, H1:0, H2:1}},
+      {label:'3 more seconds passed', set:{}, wait:3, expect:{M1:0, M2:1, H1:0, H2:1}},
+      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, M2:0, H1:0, H2:0}},
+      {label:'STOP released', set:{S0:{p:0}}, expect:{M1:0, M2:0, H1:0, H2:0}}],
+    patterns:[{sig:{M1:'0111100'}, msg:'M1 doesn\'t stop when M2 starts: contact <b>KM2 21-22</b> (NC) must be in series in KM1\'s coil line (between S1:14 and KM1:A1).'},
+      {sig:{M2:'0001000'}, msg:'M2 starts for a moment and drops out (and M1 comes back): KM2 isn\'t sealed in. When KM1 drops out the timer drops out and 15-18 opens, so <b>KM2 13-14</b> must be in parallel with the timer contact.'}],
+    okMsg:'Watch the changeover moment: KT1 closes 15-18, KM2 pulls in and seals itself in, and its 21-22 cuts KM1, so the timer drops out but KM2 keeps running.'},
+  e16:{story:{icon:'🧃', text:'3 conveyors in a row: each one starts 5 seconds after the previous one so the starting current doesn\'t hit the breaker all at once.', ask:'Practical 16: 3 motors in sequence with two timers.'}, machine:'conveyor', title:'Practical 16: 3 motors in sequence, each one a delay after the previous', short:'Practical 16: 3 motors in sequence',
+    task:'<b>M1</b> with START, after <b>KT1</b> (5 s) <b>M2</b> starts, and after <b>KT2</b> (5 s from M2 starting) <b>M3</b> starts. STOP stops them all. Each timer has its coil in parallel with the previous contactor\'s coil, and its 15-18 contact starts the next one.', goal:"START starts M1, after 5 seconds M2 starts, and after another 5 seconds M3 starts. STOP stops them all.", idea:"A chain: each timer has its coil in parallel with the previous contactor's coil, and its 15-18 contact starts the next. KT1 with KM1 starts KM2, and KT2 with KM2 starts KM3.", steps:{"power": ["L1 L2 L3 from the supply to Q1, from Q1 to KM1 and KM2, and KM3 takes a jumper from KM2's top terminals.", "From each contactor's 2/4/6 to its motor."], "control": ["Supply: F1, then STOP, then the L bar, and N to the N bar.", "START in parallel with KM1's seal-in, their output to A1 of KM1, and KT1's coil in parallel with KM1's coil.", "From the L bar to 15 of KT1, from 18 to A1 of KM2, and KT2's coil in parallel with KM2's coil.", "From the L bar to 15 of KT2, and from 18 to A1 of KM3.", "Every A2 and every lamp to the N bar."]},
+    tip:'KT1 with KM1, and KT2 with KM2 (KM2:A1 → KT2:A1). L bar → KT2:15, KT2:18 → KM3:A1. Power: Q1:2/4/6 feed KM1 and KM2, and KM3 takes from KM2:1/3/5 (jumper).',
+    devices:[G, Q3, F1, S0, S1, KM('KM1'), KM('KM2'), KM('KM3'), KT('KT1', 'on', 5, 'Timer 1'), KT('KT2', 'on', 5, 'Timer 2'), M1, M2, M3, H1, H2, H3, X1],
+    solution:POWER([['KM1','M1'],['KM2','M2'],['KM3','M3']]).concat(FEED, HOLD('S1', 'KM1'), [['KM1:A2','X1:4b'],['KM1:A1','KT1:A1'],['KT1:A2','X1:4b'],['KT1:A1','H1:X1'],['H1:X2','X1:5a'],
+      ['X1:2a','KT1:15'],['KT1:18','KM2:A1'],['KM2:A2','X1:5a'],['KM2:A1','KT2:A1'],['KT2:A1','H2:X1'],['H2:X2','X1:5b'],['KT2:A2','X1:5b'],
+      ['X1:2b','KT2:15'],['KT2:18','KM3:A1'],['KM3:A1','H3:X1'],['H3:X2','X1:6a'],['KM3:A2','X1:6a']]),
+    seq:true, cases:[
+      {label:'nothing pressed', set:{}, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}},
+      {label:'START pressed', set:{S1:{p:1}}, expect:{M1:1, M2:0, M3:0, H1:1, H2:0, H3:0}},
+      {label:'Released START and 2 seconds passed', set:{S1:{p:0}}, wait:2, expect:{M1:1, M2:0, M3:0, H1:1, H2:0, H3:0}},
+      {label:'4 seconds passed (after KT1)', set:{}, wait:4, expect:{M1:1, M2:1, M3:0, H1:1, H2:1, H3:0}},
+      {label:'5 seconds passed (after KT2)', set:{}, wait:5, expect:{M1:1, M2:1, M3:1, H1:1, H2:1, H3:1}},
+      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}}],
+    patterns:[{sig:{M3:'000110'}, msg:'M3 starts with M2 at the same moment: KT2\'s coil must be with KM2\'s coil, and KM3\'s coil takes from KT2 contact 15-18, not from KT1.'}],
+    okMsg:'A sequence chain: each timer starts when the previous one energises its contactor. The same idea repeats for any number of motors.'},
+  /* ------------------------------------------------ TOF + cyclic */
+  f1:{story:{icon:'🌀', text:'An industrial oven: when the operator switches the oven off, the cooling fan must keep running for 5 seconds and then stop by itself.', ask:'Off-delay timer: the fan keeps running after the machine stops.'}, machine:'fan', title:'Exercise: a fan that keeps running after the machine stops (Off-delay)', short:'Off-delay: fan after stopping',
+    task:'<b>M1</b> (the machine) runs with selector S1 on I, and <b>M2</b> (the cooling fan) runs with it immediately. When you turn the selector back to 0 the machine stops, but the fan <b>keeps running for 5 seconds</b> and then stops by itself. Use an <b>Off-delay</b> timer: its coil in parallel with KM1\'s coil, and its 15-18 contact feeding KM2\'s coil from after F1.', goal:"Selector on I starts machine M1 and cooling fan M2 together. On 0 the machine stops and the fan keeps running for 5 seconds, then stops by itself.", idea:"An Off-delay timer with its coil in parallel with KM1's coil: its 15-18 contact closes immediately with the coil, and when the coil drops out it stays closed for 5 seconds. That contact feeds KM2's coil from after F1.", steps:{"power": ["L1 L2 L3 from the supply to Q1, and from Q1 to KM1 and KM2.", "From KM1 to machine M1, and from KM2 to fan M2."], "control": ["Phase L1 to F1, from F1 to the selector, from the selector to A1 of KM1, and A2 to N.", "Timer KT1's coil in parallel with KM1's coil, and the machine lamp H1 in parallel with it too.", "From after F1 to 15 of the timer, from 18 to A1 of KM2, and A2 to N (via a terminal that has N).", "The fan lamp H2 in parallel with KM2's coil."]},
+    tip:'F1:2 → S1:13, S1:14 → KM1:A1, KM1:A2 → N. KM1:A1 → KT1:A1, KT1:A2 → KM1:A2. F1:2 → KT1:15, KT1:18 → KM2:A1, KM2:A2 → N (via a terminal that has N).',
+    devices:[G, Q3, F1, SEL, KM('KM1', ['NO'], 'Machine contactor'), KM('KM2', ['NO'], 'Fan contactor'), KT('KT1', 'off', 5, 'Off-delay timer'), M1, MOT('M2', 'Fan'), lamp('H1', 'green', 'Machine'), lamp('H2', 'blue', 'Fan')],
+    solution:POWER([['KM1','M1'],['KM2','M2']]).concat([['G:L1','F1:1'],['F1:2','S1:13'],['S1:14','KM1:A1'],['KM1:A2','G:N'],['KM1:A1','KT1:A1'],['KT1:A2','KM1:A2'],['KT1:A1','H1:X1'],['H1:X2','KT1:A2'],
+      ['F1:2','KT1:15'],['KT1:18','KM2:A1'],['KM2:A2','H1:X2'],['KM2:A1','H2:X1'],['H2:X2','KM2:A2']]),
+    seq:true, cases:[
+      {label:'Selector on 0', set:{S1:{pos:0}}, expect:{M1:0, M2:0, H1:0, H2:0}},
+      {label:'Selector on I', set:{S1:{pos:1}}, wait:1, expect:{M1:1, M2:1, H1:1, H2:1}},
+      {label:'Turned it back to 0 and 2 seconds passed', set:{S1:{pos:0}}, wait:2, expect:{M1:0, M2:1, H1:0, H2:1}},
+      {label:'4 more seconds passed (after t = 5 s)', set:{}, wait:4, expect:{M1:0, M2:0, H1:0, H2:0}}],
+    patterns:[{sig:{M2:'0100'}, msg:'The fan stops with the machine immediately: timer contact 15-18 isn\'t what feeds KM2, or the timer is in On-delay mode. In Off-delay, 15-18 closes immediately with the voltage and stays closed for t after the voltage is removed.'},
+      {sig:{M2:'0001'}, msg:'The fan only starts after the machine stops: that\'s a reversed On-delay. Use 15-18 with an Off-delay timer.'}],
+    okMsg:'This is the classic use of Off-delay: a fan after stopping, a pump that finishes draining, or stairwell lighting. Note the counter starts when the voltage is removed, not when it\'s applied.'},
+  c1:{story:{icon:'🚨', text:'A warning lamp on the factory gate: it flashes on and off alternately while the gate is operating.', ask:'Flasher: selector on I and the lamp is on for a second and off for a second.'}, title:'Exercise: a flashing lamp (Flasher)', short:'Flasher: a blinking lamp',
+    task:'Selector <b>S1</b> on I feeds the coil of cyclic timer <b>KT1</b> (ton = 1 s, toff = 1 s), and its contact <b>15-18</b> lights lamp <b>H1</b> alternately: one second on and one second off for as long as the selector is on I.', goal:"Selector on I: lamp H1 is on for a second and off for a second, alternately, for as long as the selector is on I.", idea:"A cyclic timer (flasher) with its coil fed from the selector, and its 15-18 contact closing and opening alternately. The contact takes the phase from the same line as the coil.", steps:["Phase L to the selector, from the selector to A1 of the timer, and A2 to N.", "A jumper from A1 to common 15 (the contact takes from the same line).", "From 18 to X1 of the lamp, and X2 to A2 of the timer."],
+    tip:'L → S1:13, S1:14 → KT1:A1, KT1:A2 → N. KT1:A1 → KT1:15 (the contact takes from the same line), KT1:18 → H1:X1, H1:X2 → KT1:A2.',
+    devices:[SUP, SEL, KT('KT1', 'cyc', 1, 'Cyclic timer', {ton:1, toff:1}), lamp('H1', 'yellow', 'Signal')],
+    solution:[['Q1:L','S1:13'],['S1:14','KT1:A1'],['KT1:A2','Q1:N'],['KT1:A1','KT1:15'],['KT1:18','H1:X1'],['H1:X2','KT1:A2']],
+    seq:true, cases:[
+      {label:'Selector on 0', set:{S1:{pos:0}}, expect:{H1:0}},
+      {label:'Selector on I (first ON period)', set:{S1:{pos:1}}, wait:0.5, expect:{H1:1}},
+      {label:'A second passed (OFF period)', set:{}, wait:1, expect:{H1:0}},
+      {label:'Another second passed (ON again)', set:{}, wait:1, expect:{H1:1}},
+      {label:'Turned it back to 0', set:{S1:{pos:0}}, expect:{H1:0}}],
+    patterns:[{sig:{H1:'01010'}, msg:''}, {sig:{H1:'01110'}, msg:'The lamp is on all the time with the selector: it\'s connected straight to the line, not through the cyclic timer\'s 15-18 contact.'}, {sig:{H1:'00100'}, msg:'The lamp lights during the OFF period: you used 15-16 instead of 15-18 (not wrong for a flasher, but the exercise asks for 15-18).'}],
+    okMsg:'The flasher starts with an ON period. If you want it lit as soon as it starts use 15-18, and if you want it to start off use 15-16.'},
+  e21:{story:{icon:'💧', text:'Two water pumps in a station: they run alternately every 5 seconds so they wear evenly, and they never run together.', ask:'Practical 21: two motors alternating with a cyclic timer.'}, machine:'conveyor', title:'Practical 21: two motors alternating on a timer (the first, then the second while the first stops…)', short:'Practical 21: alternating two motors',
+    task:'START energises auxiliary relay <b>K1</b> and seals it in (11-14), and its second contact <b>21-24</b> feeds the coil of cyclic timer <b>KT1</b> (ton = 5 s, toff = 5 s) and its common terminal 15. Contact <b>15-18</b> energises <b>KM1</b> (M1) and <b>15-16</b> energises <b>KM2</b> (M2): so 5 seconds M1, then 5 seconds M2, and so on until you press STOP. Add an electrical interlock between KM1 and KM2 (each one\'s NC in the other\'s line).', goal:"START begins the alternation: M1 for five seconds, then M2 for five seconds, and so on until STOP. The two never run together.", idea:"Auxiliary relay K1 seals itself in and feeds the cyclic timer: its 15-18 contact energises KM1 and 15-16 energises KM2 alternately. An NC electrical interlock between the two contactors.", steps:{"power": ["L1 L2 L3 from the supply to Q1, from Q1 to KM1 and KM2, and from them to the two motors."], "control": ["Supply: F1, then STOP, then the L bar, and N to the N bar.", "START in parallel with K1's seal-in (11-14), their output to A1 of K1, and A2 to the N bar.", "From the L bar to K1's second contact (21-24), and from 24 to the timer coil and to its common 15.", "From 18 to KM2's NC (21-22) and from it to A1 of KM1. And from 16 to KM1's NC and from it to A1 of KM2.", "Every A2 and every lamp to the N bar."]},
+    tip:'X1:1b → S1:13, S1:14 → K1:A1, K1:11 ↔ S1:13, K1:14 ↔ S1:14, K1:A2 → N bar. L bar → K1:21, K1:24 → KT1:A1, KT1:A1 → KT1:15. KT1:18 → KM2:21, KM2:22 → KM1:A1. KT1:16 → KM1:21, KM1:22 → KM2:A1.',
+    devices:[G, Q3, F1, S0, S1, K1(), KT('KT1', 'cyc', 5, 'Cyclic timer', {ton:5, toff:5}), KM('KM1'), KM('KM2'), M1, M2, H1, H2, X1],
+    solution:POWER([['KM1','M1'],['KM2','M2']]).concat(FEED, [['X1:1b','S1:13'],['S1:14','K1:A1'],['K1:11','S1:13'],['K1:14','S1:14'],['K1:A2','X1:4b'],
+      ['X1:2a','K1:21'],['K1:24','KT1:A1'],['KT1:A1','KT1:15'],['KT1:A2','X1:4b'],['KT1:18','KM2:21'],['KM2:22','KM1:A1'],['KM1:A1','H1:X1'],['KT1:16','KM1:21'],['KM1:22','KM2:A1'],['KM2:A1','H2:X1'],
+      ['KM1:A2','X1:5a'],['H1:X2','X1:5a'],['KM2:A2','X1:5b'],['H2:X2','X1:5b']]),
+    seq:true, cases:[
+      {label:'nothing pressed', set:{}, expect:{M1:0, M2:0, H1:0, H2:0}},
+      {label:'START pressed', set:{S1:{p:1}}, expect:{M1:1, M2:0, H1:1, H2:0}},
+      {label:'Released START and 2 seconds passed', set:{S1:{p:0}}, wait:2, expect:{M1:1, M2:0, H1:1, H2:0}},
+      {label:'4 seconds passed (after ton = 5 s)', set:{}, wait:4, expect:{M1:0, M2:1, H1:0, H2:1}},
+      {label:'5 seconds passed (after toff)', set:{}, wait:5, expect:{M1:1, M2:0, H1:1, H2:0}},
+      {label:'5 more seconds passed', set:{}, wait:5, expect:{M1:0, M2:1, H1:0, H2:1}},
+      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, M2:0, H1:0, H2:0}},
+      {label:'STOP released', set:{S0:{p:0}}, expect:{M1:0, M2:0, H1:0, H2:0}}],
+    patterns:[{sig:{M1:'0100000'}, msg:'K1 isn\'t sealed in: K1 contact 11-14 must be in parallel with the START button.'}, {sig:{M1:'0111111'}, msg:'STOP doesn\'t stop it: the supply line must pass through S0 before the L bar.'}],
+    okMsg:'Continuous alternation until STOP. The idea of the cyclic timer: one changeover contact flips between the two motors. Try changing the time on the board.'},
+  /* ------------------------------------------------ circuits */
+  e17:{story:{icon:'🏭', text:'3 mixers in a paint factory: each one takes its 5-second turn and hands over to the next, in a loop until STOP.', ask:'Practical 17: a timed loop of 3 motors.'}, machine:'conveyor', title:'Practical 17: a timed loop of 3 motors (the first, the second while the first stops, the third while the second stops, the first…)', short:'Practical 17: loop of 3 motors',
+    task:'3 stages in a loop: each stage = a contactor that <b>seals itself in</b> + a timer with its coil in parallel with it. The stage\'s timer contact <b>15-18</b> starts the next stage, and the new stage\'s <b>21-22</b> contact (NC) <b>cuts</b> the previous stage. The last timer (KT3) starts KM1 again. START begins with KM1 (in parallel with KT3 15-18), and STOP stops everything.', goal:"A loop of 3 motors: START starts M1, after 5 s M2 starts and M1 stops, after 5 s M3 starts and M2 stops, after 5 s M1 comes back… until STOP.", idea:"Each stage = a contactor that seals itself in + a timer in parallel with its coil. The stage's timer contact (15-18) starts the next one, and the new stage's NC contact (21-22) cuts the previous one. The last timer starts KM1 again.", steps:{"power": ["L1 L2 L3 from the supply to Q1, from Q1 to KM1, KM2 and KM3, and from each one to its motor."], "control": ["Supply: F1, then STOP, then the L bar, and N to the N bar.", "Stage 1: START in parallel with KM1's seal-in and with contact KT3 15-18, their output to KM2's NC, and from it to A1 of KM1. KT1 in parallel with KM1's coil.", "Stage 2: from the L bar to 15 of KT1, and from 18 (in parallel with KM2's seal-in) to KM3's NC, and from it to A1 of KM2. KT2 in parallel with KM2's coil.", "Stage 3: from the L bar to 15 of KT2, and from 18 (in parallel with KM3's seal-in) to KM1's NC, and from it to A1 of KM3. KT3 in parallel with KM3's coil.", "Every A2 and every lamp to the N bar."]},
+    tip:'KM1: X1:1b → S1:13, S1:14 → KM2:21, KM2:22 → KM1:A1, seal-in KM1:13/14 on S1:13/14, and KT3:18 → KM1:14 (KT3:15 from the L bar). KM2: L bar → KT1:15, KT1:18 → KM3:21, KM3:22 → KM2:A1, seal-in KM2:13 → KT1:15 and KM2:14 → KT1:18. KM3: L bar → KT2:15, KT2:18 → KM1:21, KM1:22 → KM3:A1, seal-in KM3:13 → KT2:15 and KM3:14 → KT2:18. Each timer\'s A1 to its contactor\'s A1.',
+    devices:[G, Q3, F1, S0, S1, KM('KM1'), KM('KM2'), KM('KM3'), KT('KT1', 'on', 5, 'Timer 1'), KT('KT2', 'on', 5, 'Timer 2'), KT('KT3', 'on', 5, 'Timer 3'), M1, M2, M3, H1, H2, H3, X1],
+    solution:POWER([['KM1','M1'],['KM2','M2'],['KM3','M3']]).concat(FEED, [
+      ['X1:1b','S1:13'],['S1:14','KM2:21'],['KM2:22','KM1:A1'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KT3:18','KM1:14'],['X1:3b','KT3:15'],['KM1:A1','KT1:A1'],['KT1:A1','H1:X1'],['KM1:A2','X1:4b'],['KT1:A2','X1:4b'],['H1:X2','X1:5a'],
+      ['X1:2a','KT1:15'],['KT1:18','KM3:21'],['KM3:22','KM2:A1'],['KM2:13','KT1:15'],['KM2:14','KT1:18'],['KM2:A1','KT2:A1'],['KT2:A1','H2:X1'],['KM2:A2','X1:5a'],['KT2:A2','X1:5b'],['H2:X2','X1:5b'],
+      ['X1:2b','KT2:15'],['KT2:18','KM1:21'],['KM1:22','KM3:A1'],['KM3:13','KT2:15'],['KM3:14','KT2:18'],['KM3:A1','KT3:A1'],['KT3:A1','H3:X1'],['KM3:A2','X1:6a'],['KT3:A2','X1:6a'],['H3:X2','X1:6b']]),
+    seq:true, cases:[
+      {label:'nothing pressed', set:{}, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}},
+      {label:'START pressed', set:{S1:{p:1}}, expect:{M1:1, M2:0, M3:0, H1:1, H2:0, H3:0}},
+      {label:'Released START and a second passed', set:{S1:{p:0}}, wait:1, expect:{M1:1, M2:0, M3:0, H1:1, H2:0, H3:0}},
+      {label:'5 seconds passed (KT1 done)', set:{}, wait:5, expect:{M1:0, M2:1, M3:0, H1:0, H2:1, H3:0}},
+      {label:'5 seconds passed (KT2 done)', set:{}, wait:5, expect:{M1:0, M2:0, M3:1, H1:0, H2:0, H3:1}},
+      {label:'5 seconds passed (KT3 done: the first again)', set:{}, wait:5, expect:{M1:1, M2:0, M3:0, H1:1, H2:0, H3:0}},
+      {label:'5 seconds passed (second round)', set:{}, wait:5, expect:{M1:0, M2:1, M3:0, H1:0, H2:1, H3:0}},
+      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}}],
+    patterns:[{sig:{M1:'01100000'}, msg:'The loop doesn\'t cycle: after KM3\'s time runs out, KT3 15-18 must start KM1 again (in parallel with START: KT3:18 to KM1:14).'}, {sig:{M1:'01111110'}, msg:'M1 doesn\'t stop when M2 starts: contact KM2 21-22 must be in series in KM1\'s coil line.'}],
+    okMsg:'A complete loop: each contactor cuts the previous one and starts its timer, and the last timer closes the loop. Watch the three counters.'},
+  e18:{story:{icon:'🍞', text:'A dough line: the mixer and the conveyor start together, after a delay the mixer stops and the press starts, and after another delay everything stops by itself.', ask:'Practical 18.'}, machine:'conveyor', title:'Practical 18: the first and second together, after a delay the first stops and the third starts, and after a delay everything stops', short:'Practical 18: M1+M2, then M3, then all stop',
+    task:'Pressing START starts <b>M1</b> and <b>M2</b>. After <b>KT1</b> (5 s) M1 stops and <b>M3</b> starts. After <b>KT2</b> (5 s from M3 starting) everything stops automatically. The trick: <b>KM2</b> is the “master” that seals itself in, and its seal-in line passes through <b>KT2 15-16</b> so it drops out at the end. KT1\'s coil is with KM2; its <b>15-16</b> feeds KM1 and <b>15-18</b> feeds KM3. KT2\'s coil is with KM3.', goal:"START starts M1 and M2 together. After 5 s M1 stops and M3 starts. After another 5 s everything stops automatically.", idea:"KM2 is the “master” that seals itself in, and its seal-in line passes through KT2 15-16 so it drops out at the end. KT1 with KM2: its 15-16 feeds KM1 and 15-18 feeds KM3. KT2 with KM3.", steps:{"power": ["L1 L2 L3 from the supply to Q1, from Q1 to KM1, KM2 and KM3, and from each one to its motor."], "control": ["Supply: F1, then STOP, then the L bar, and N to the N bar.", "START in parallel with KM2's seal-in, their output to contact KT2 15-16, and from 16 to A1 of KM2.", "KT1's coil in parallel with KM2's coil, and its common 15 from the same point.", "From KT1 16 to A1 of KM1, from KT1 18 to A1 of KM3, and KT2's coil in parallel with KM3's coil.", "Every A2 and every lamp to the N bar."]},
+    tip:'X1:1b → S1:13, S1:14 → KT2:15, KT2:16 → KM2:A1, seal-in KM2:13/14 on S1:13/14. KM2:A1 → KT1:A1, KT1:A1 → KT1:15, KT1:15 → H2:X1. KT1:16 → KM1:A1, KT1:18 → KM3:A1, KM3:A1 → KT2:A1.',
+    devices:[G, Q3, F1, S0, S1, KM('KM1'), KM('KM2'), KM('KM3'), KT('KT1', 'on', 5, 'Timer 1'), KT('KT2', 'on', 5, 'Timer 2'), M1, M2, M3, H1, H2, H3, X1],
+    solution:POWER([['KM1','M1'],['KM2','M2'],['KM3','M3']]).concat(FEED, [
+      ['X1:1b','S1:13'],['S1:14','KT2:15'],['KT2:16','KM2:A1'],['KM2:13','S1:13'],['KM2:14','S1:14'],['KM2:A1','KT1:A1'],['KT1:A1','KT1:15'],['KT1:15','H2:X1'],
+      ['KT1:16','KM1:A1'],['KM1:A1','H1:X1'],['KT1:18','KM3:A1'],['KM3:A1','KT2:A1'],['KT2:A1','H3:X1'],
+      ['KM2:A2','X1:4b'],['KT1:A2','X1:4b'],['KM1:A2','X1:5a'],['H1:X2','X1:5a'],['H2:X2','X1:5b'],['KM3:A2','X1:5b'],['KT2:A2','X1:6a'],['H3:X2','X1:6a']]),
+    seq:true, cases:[
+      {label:'nothing pressed', set:{}, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}},
+      {label:'START pressed', set:{S1:{p:1}}, expect:{M1:1, M2:1, M3:0, H1:1, H2:1, H3:0}},
+      {label:'Released START and 2 seconds passed', set:{S1:{p:0}}, wait:2, expect:{M1:1, M2:1, M3:0, H1:1, H2:1, H3:0}},
+      {label:'4 seconds passed (KT1 done)', set:{}, wait:4, expect:{M1:0, M2:1, M3:1, H1:0, H2:1, H3:1}},
+      {label:'5 seconds passed (KT2 done: everything stops)', set:{}, wait:5, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}},
+      {label:'START again', set:{S1:{p:1}}, expect:{M1:1, M2:1, M3:0, H1:1, H2:1, H3:0}},
+      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}}],
+    patterns:[{sig:{M2:'0111110'}, msg:'The circuit doesn\'t stop by itself at the end: KM2\'s seal-in line must pass through contact <b>KT2 15-16</b> (NC) so that when KT2 finishes everything drops out.'}, {sig:{M1:'0111000'}, msg:'M1 doesn\'t stop after KT1: KM1\'s coil must take from <b>KT1 15-16</b> (NC, opens after the delay), not straight from the line.'}],
+    okMsg:'This is the “timer in the seal-in circuit” pattern, but with the NC contact: 15-16 cuts at the end. Note the circuit stops by itself and waits for START again.'},
+  e19:{story:{icon:'🏭', text:'A filling machine: the main motor first, after a delay two auxiliary motors start, and after another delay the auxiliaries stop and the main one keeps going.', ask:'Practical 19.'}, machine:'conveyor', title:'Practical 19: the first, after a delay the second and third, and after a delay the second and third stop', short:'Practical 19: M1, then M2+M3, then they stop',
+    task:'<b>M1</b> with START and seals itself in. <b>KT1</b>\'s coil is with KM1; after 5 s its contact <b>15-18</b> energises <b>KT2</b> (the coil) and feeds <b>KM2</b> and <b>KM3</b> through <b>KT2 15-16</b>. After another 5 s KT2 opens 15-16 so M2 and M3 stop, and M1 keeps running until STOP. Note that KT2 takes its voltage from KT1 15-18 (not from KM2) so it doesn\'t drop out and start them again.', goal:"START starts M1 and it keeps running. After 5 s M2 and M3 start together, and after another 5 s both stop and M1 keeps going until STOP.", idea:"KT1 with KM1. Its 15-18 contact feeds KT2's coil and feeds KM2 and KM3 through KT2 15-16. When KT2 finishes it opens 15-16 so they stop. KT2 takes its voltage from KT1, not from KM2, so it doesn't drop out and start them again.", steps:{"power": ["L1 L2 L3 from the supply to Q1, from Q1 to KM1, KM2 and KM3, and from each one to its motor."], "control": ["Supply: F1, then STOP, then the L bar, and N to the N bar.", "START in parallel with KM1's seal-in, their output to A1 of KM1, and KT1's coil in parallel with KM1's coil.", "From the L bar to 15 of KT1, and from 18 to KT2's coil and to its common 15.", "From KT2 16 to A1 of KM2 and A1 of KM3 (a jumper between them).", "Every A2 and every lamp to the N bar."]},
+    tip:'L bar → KT1:15, KT1:18 → KT2:A1 and KT1:18 → KT2:15, KT2:16 → KM2:A1, KM2:A1 → KM3:A1. Lamps: KM3:A1 → H2:X1, H2:X1 → H3:X1.',
+    devices:[G, Q3, F1, S0, S1, KM('KM1'), KM('KM2'), KM('KM3'), KT('KT1', 'on', 5, 'Timer 1'), KT('KT2', 'on', 5, 'Timer 2'), M1, M2, M3, H1, H2, H3, X1],
+    solution:POWER([['KM1','M1'],['KM2','M2'],['KM3','M3']]).concat(FEED, HOLD('S1', 'KM1'), [['KM1:A1','KT1:A1'],['KT1:A1','H1:X1'],
+      ['X1:2a','KT1:15'],['KT1:18','KT2:A1'],['KT1:18','KT2:15'],['KT2:16','KM2:A1'],['KM2:A1','KM3:A1'],['KM3:A1','H2:X1'],['H2:X1','H3:X1'],
+      ['KM1:A2','X1:4b'],['KT1:A2','X1:4b'],['H1:X2','X1:5a'],['KT2:A2','X1:5a'],['KM2:A2','X1:5b'],['KM3:A2','X1:5b'],['H2:X2','X1:6a'],['H3:X2','X1:6a']]),
+    seq:true, cases:[
+      {label:'nothing pressed', set:{}, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}},
+      {label:'START pressed', set:{S1:{p:1}}, expect:{M1:1, M2:0, M3:0, H1:1, H2:0, H3:0}},
+      {label:'Released START and 2 seconds passed', set:{S1:{p:0}}, wait:2, expect:{M1:1, M2:0, M3:0, H1:1, H2:0, H3:0}},
+      {label:'4 seconds passed (KT1 done)', set:{}, wait:4, expect:{M1:1, M2:1, M3:1, H1:1, H2:1, H3:1}},
+      {label:'5 seconds passed (KT2 done)', set:{}, wait:5, expect:{M1:1, M2:0, M3:0, H1:1, H2:0, H3:0}},
+      {label:'5 more seconds passed (steady)', set:{}, wait:5, expect:{M1:1, M2:0, M3:0, H1:1, H2:0, H3:0}},
+      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}}],
+    patterns:[{sig:{M2:'0001110'}, msg:'M2 and M3 don\'t stop after the second delay: their coils must pass through <b>KT2 15-16</b>, and KT2 takes its voltage from KT1 15-18 (not from KM2\'s coil).'}],
+    okMsg:'Look at KT2: its coil stays energised from KT1 after M2 and M3 stop, which is why 15-16 stays open and they don\'t come back.'},
+  e20:{story:{icon:'🏭', text:'A tank washing cycle: all together, after a delay the second and third stop, after a delay the third comes back alone, and after a delay everything stops.', ask:'Practical 20.'}, machine:'conveyor', title:'Practical 20: all together, after a delay the second and third stop, after a delay the third comes back, and after a delay everything stops', short:'Practical 20: all → M1 → M1+M3 → stop',
+    task:'START energises <b>KM1</b> (seals itself in) and with it <b>KM2</b> through <b>KT1 15-16</b>, and <b>KM3</b> through contact <b>KM2 13-14</b>. After KT1 (5 s): KM2 and KM3 stop and <b>KT2</b> starts (from KT1 15-18). After KT2 (5 s): its <b>15-18</b> brings KM3 back, and <b>KT3</b> starts (its coil from contact <b>KM3 13-14</b>, fed from after KT1 15-18, so it doesn\'t run in the first stage). After KT3 (5 s): its <b>15-16</b> in KM1\'s seal-in line stops everything.', goal:"START starts everything. After 5 s M2 and M3 stop. After 5 s M3 comes back alone. After 5 s everything stops.", idea:"KM1 is the master that seals itself in through KT3 15-16. KT1 with KM1: its 15-16 feeds KM2 (and KM3 from contact KM2 13-14), and 15-18 starts KT2. KT2 15-18 brings KM3 back, and KT3 starts from contact KM3 13-14 fed from after KT1 15-18 so it doesn't run in the first stage.", steps:{"power": ["L1 L2 L3 from the supply to Q1, from Q1 to KM1, KM2 and KM3, and from each one to its motor."], "control": ["Supply: F1, then STOP, then the L bar, and N to the N bar.", "START in parallel with KM1's seal-in, their output to KT3 15-16, and from 16 to A1 of KM1. KT1 in parallel with KM1's coil and its common 15 from the same point.", "From KT1 16 to A1 of KM2, and from contact KM2 13-14 (fed from the same point as 15) to A1 of KM3.", "From KT1 18 to KT2's coil and its common 15, and from KT2 18 to A1 of KM3.", "KT3's coil from contact KM3 13-14, fed from KT2's common (not straight from 18).", "Every A2 and every lamp to the N bar."]},
+    tip:'X1:1b → S1:13, S1:14 → KT3:15, KT3:16 → KM1:A1, seal-in KM1:13/14. KM1:A1 → KT1:A1 → KT1:15 → KM2:13 → H1:X1 (a chain). KT1:16 → KM2:A1, KM2:A1 → H2:X1. KM2:14 → H3:X1, H3:X1 → KM3:A1, KT2:18 → KM3:A1. KT1:18 → KT2:A1 and KT2:15. KT3 must start only in the third stage: KT2:15 → KM3:13, KM3:14 → KT3:A1 (if you wire it straight to KT2:18 it gets fed from the first moment through KM2\'s contact and stops the circuit early).',
+    devices:[G, Q3, F1, S0, S1, KM('KM1'), KM('KM2'), KM('KM3'), KT('KT1', 'on', 5, 'Timer 1'), KT('KT2', 'on', 5, 'Timer 2'), KT('KT3', 'on', 5, 'Timer 3'), M1, M2, M3, H1, H2, H3, X1],
+    solution:POWER([['KM1','M1'],['KM2','M2'],['KM3','M3']]).concat(FEED, [
+      ['X1:1b','S1:13'],['S1:14','KT3:15'],['KT3:16','KM1:A1'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KM1:A1','KT1:A1'],['KT1:A1','KT1:15'],['KT1:15','KM2:13'],['KM2:13','H1:X1'],
+      ['KT1:16','KM2:A1'],['KM2:A1','H2:X1'],['KM2:14','H3:X1'],['H3:X1','KM3:A1'],['KT2:18','KM3:A1'],['KT1:18','KT2:A1'],['KT1:18','KT2:15'],['KT2:15','KM3:13'],['KM3:14','KT3:A1'],
+      ['KM1:A2','X1:4b'],['KT1:A2','X1:4b'],['KM2:A2','X1:5a'],['H1:X2','X1:5a'],['H2:X2','X1:5b'],['KM3:A2','X1:5b'],['KT2:A2','X1:6a'],['KT3:A2','X1:6a'],['H3:X2','X1:6b']]),
+    seq:true, cases:[
+      {label:'nothing pressed', set:{}, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}},
+      {label:'START pressed', set:{S1:{p:1}}, expect:{M1:1, M2:1, M3:1, H1:1, H2:1, H3:1}},
+      {label:'Released START and 2 seconds passed', set:{S1:{p:0}}, wait:2, expect:{M1:1, M2:1, M3:1, H1:1, H2:1, H3:1}},
+      {label:'4 seconds passed (KT1 done)', set:{}, wait:4, expect:{M1:1, M2:0, M3:0, H1:1, H2:0, H3:0}},
+      {label:'5 seconds passed (KT2 done: the third comes back)', set:{}, wait:5, expect:{M1:1, M2:0, M3:1, H1:1, H2:0, H3:1}},
+      {label:'5 seconds passed (KT3 done: everything stops)', set:{}, wait:5, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}},
+      {label:'STOP (nothing is running anyway)', set:{S0:{p:1}}, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}}],
+    patterns:[{sig:{M3:'0111110'}, msg:'M3 doesn\'t stop with M2 in the second stage: KM3\'s coil must take from contact <b>KM2 13-14</b> (not from the line), and it comes back later from KT2 15-18.'}, {sig:{M1:'0111110'}, msg:'The circuit doesn\'t stop at the end: KM1\'s seal-in line must pass through <b>KT3 15-16</b>.'}],
+    okMsg:'Four stages with three timers. Look at KM3: it runs twice, once from KM2\'s contact and once from KT2\'s contact.'},
+  e22:{story:{icon:'🧺', text:'An industrial washing machine: the drum turns forward for 5 seconds, pauses 2 seconds, turns in reverse for 5 seconds, and so on while the selector is on I.', ask:'Practical 22: alternating reversal with a pause.'}, machine:'gauge', title:'Practical 22: a motor alternating forward and reverse, with a pause between directions', short:'Practical 22: fwd/rev with a pause',
+    task:'Selector <b>S1</b> on I starts the cycle: pause (<b>KT3</b>, 2 s) → forward 5 s (<b>KM1</b> + <b>KT1</b>) → pause 2 s → reverse 5 s (<b>KM2</b> + <b>KT2</b>) → pause → forward… until you turn the selector back to 0. Relay <b>K1</b> (3 changeover contacts) is the “direction memory”: KT1 15-18 energises it and it seals itself in with 11-14, and KT2 15-16 resets it. The pause timer KT3 has its coil through the <b>31-32</b> (NC) contacts of both contactors (so it counts only when both are stopped), and its 15-18 contact feeds K1\'s common 21: 22 for forward and 24 for reverse. Interlock: electrical (each contactor\'s 21-22 in the other\'s line) + mechanical.', goal:"Selector on I starts a cycle: pause 2 s, forward 5 s, pause 2 s, reverse 5 s, and so on until you turn it back to 0.", idea:"Relay K1 (3 changeover contacts) is the direction memory: KT1 energises it and it seals itself in, and KT2 resets it. The pause timer KT3 counts only when both contactors are stopped (its coil passes through their NCs), and its contact feeds K1's common: 22 for forward and 24 for reverse. Electrical + mechanical interlock.", steps:{"power": ["L1 L2 L3 from the supply to Q1, and from Q1 to KM1 and KM2.", "From KM1 to the motor in order, and from KM2 to the motor with L1 and L3 swapped."], "control": ["Supply: F1, then the selector, then the L bar, and N to the N bar.", "Direction memory: from the L bar to KT2 15-16, from 16 to K1's seal-in (11-14), and from 14 to A1 of K1.", "The pause: from the L bar to KM1's NC (31-32), then KM2's NC (31-32), then KT3's coil. KT3's common from the L bar, and from 18 to K1's common (21).", "Forward: from K1 22 to KM2's NC, from it to KT1's common, from KT1 16 to A1 of KM1, and from KT1 18 to A1 of K1. KM1's seal-in from the L bar to KM2's NC.", "Reverse: from K1 24 to KM1's NC, and from it to A1 of KM2. KM2's seal-in from K1 31-34 to KM1's NC. KT2 in parallel with KM2's coil.", "Every A2 and every lamp to the N bar."]},
+    tip:'Forward: K1:22 → KM2:21, KM2:22 → KT1:15, KT1:16 → KM1:A1, KT1:18 → K1:A1, seal-in KM1:13 from the L bar and KM1:14 → KM2:21. Reverse: K1:24 → KM1:21, KM1:22 → KM2:A1, seal-in KM2:13 → K1:34 and KM2:14 → KM1:21, and K1:31 from the L bar. Direction memory: L bar → KT2:15, KT2:16 → K1:11, K1:14 → K1:A1. The pause: L bar → KM1:31, KM1:32 → KM2:31, KM2:32 → KT3:A1, KT3:15 from the L bar (not from A1, otherwise contact 15-18 would feed the coil back from the seal-in line), KT3:18 → K1:21.',
+    devices:[G, Q3, F1, SEL, K1(['CO','CO','CO']), KT('KT1', 'on', 5, 'Forward time'), KT('KT2', 'on', 5, 'Reverse time'), KT('KT3', 'on', 2, 'Pause time'), KM('KM1', ['NO','NC','NC'], 'Forward contactor', {mech:'KM2'}), KM('KM2', ['NO','NC','NC'], 'Reverse contactor', {mech:'KM1'}), M1, lamp('H1', 'green', 'forward'), lamp('H2', 'yellow', 'reverse'), X1],
+    solution:POWER([['KM1','M1'],['KM2','M1',true]]).concat(FEED_SEL, [
+      ['X1:1b','KT2:15'],['KT2:16','K1:11'],['K1:14','K1:A1'],['K1:A2','X1:4b'],
+      ['X1:2a','KM1:31'],['KM1:32','KM2:31'],['KM2:32','KT3:A1'],['X1:3b','KT3:15'],['KT3:A2','X1:4b'],['KT3:18','K1:21'],
+      ['K1:22','KM2:21'],['KM2:22','KT1:15'],['KT1:16','KM1:A1'],['KT1:18','K1:A1'],['X1:2b','KM1:13'],['KM1:14','KM2:21'],['KM1:A1','KT1:A1'],['KT1:A1','H1:X1'],['KM1:A2','X1:5a'],['KT1:A2','X1:5a'],['H1:X2','X1:5b'],
+      ['K1:24','KM1:21'],['KM1:22','KM2:A1'],['X1:3a','K1:31'],['K1:34','KM2:13'],['KM2:14','KM1:21'],['KM2:A1','KT2:A1'],['KT2:A1','H2:X1'],['KM2:A2','X1:5b'],['KT2:A2','X1:6a'],['H2:X2','X1:6a']]),
+    seq:true, cases:[
+      {label:'Selector on 0', set:{S1:{pos:0}}, expect:{M1:0, H1:0, H2:0}},
+      {label:'Selector on I and a second passed (initial pause)', set:{S1:{pos:1}}, wait:1, expect:{M1:0, H1:0, H2:0}},
+      {label:'2 seconds passed (after the 2 s pause: forward)', set:{}, wait:2, expect:{M1:'F', H1:1, H2:0}},
+      {label:'5 seconds passed (forward done: pause)', set:{}, wait:5, expect:{M1:0, H1:0, H2:0}},
+      {label:'2 seconds passed (reverse)', set:{}, wait:2, expect:{M1:'R', H1:0, H2:1}},
+      {label:'5 seconds passed (reverse done: pause)', set:{}, wait:5, expect:{M1:0, H1:0, H2:0}},
+      {label:'2 seconds passed (forward again)', set:{}, wait:2, expect:{M1:'F', H1:1, H2:0}},
+      {label:'Turned the selector back to 0', set:{S1:{pos:0}}, expect:{M1:0, H1:0, H2:0}}],
+    patterns:[{sig:{M1:'00111110'}, msg:'There\'s no pause between directions: pause timer contact KT3 15-18 must be what starts each direction (on K1\'s common 21), and KT3\'s coil must get voltage only when both contactors are stopped (31-32 in series).'},
+      {sig:{M1:'00100000'}, msg:'It turns forward once and stops: direction memory K1 doesn\'t change. KT1 15-18 must energise K1, and K1 must seal itself in with 11-14 through KT2 15-16.'}],
+    okMsg:'This is the hardest circuit in the course: a direction memory (K1) + a timer for each direction + a shared pause timer. Watch the board with speed-up ⏩ and trace what starts what.'},
+  e23:{story:{icon:'🚃', text:'A liquid filling station: the cart goes to point B and stops, the pump fills it for 3 seconds, and it goes back to A by itself.', ask:'Practical 23: cart + pump + timer + limit switch.'}, machine:'pump', title:'Practical 23: a cart on a track goes to B, a pump fills for 3 seconds, and it goes back to A', short:'Practical 23: cart + pump + limit switch',
+    task:'The cart is standing at <b>A</b> (limit switch <b>LS1</b> pressed). START energises <b>KM1</b> (forward) so it moves to <b>B</b>: <b>LS2 21-22</b> cuts KM1 and it stops, and <b>LS2 13-14</b> starts pump <b>KM3</b> through <b>KT1 15-16</b> and feeds KT1\'s coil. After 3 seconds: 15-16 opens so the pump stops, and <b>15-18</b> energises <b>KM2</b> (reverse), which seals itself in and brings the cart back until <b>LS1 21-22</b> cuts it at A. NC interlock between KM1 and KM2. 3 lamps: going / pump / returning.', goal:"The cart is at A. START: it moves to B and stops, the pump fills for 3 seconds, then it returns to A by itself and stops. 3 lamps: going / pump / returning.", idea:"Limit switch LS2 at B: its NC contact cuts KM1 and its NO contact starts the timer and the pump (through KT1 15-16). After the delay, 15-18 energises KM2, which seals itself in and brings the cart back until LS1 cuts it. NC interlock between KM1 and KM2.", steps:{"power": ["L1 L2 L3 from the supply to Q1, and from Q1 to KM1, KM2 and KM3.", "KM1 and KM2 to conveyor motor M1 (KM2 swaps L1 and L3), and KM3 to pump M2."], "control": ["Supply: F1, then STOP, then the L bar, and N to the N bar.", "Going: START in parallel with KM1's seal-in, their output to LS2's NC, then KM2's NC, then A1 of KM1.", "The pump: from the L bar to LS2's NO, from it to KT1's coil and its common 15, and from KT1 16 to A1 of KM3.", "Returning: from KT1 18 (in parallel with KM2's seal-in fed from the L bar) to LS1's NC, then KM1's NC, then A1 of KM2.", "Every A2 and every lamp to the N bar."]},
+    tip:'Going: X1:1b → S1:13, S1:14 → LS2:21, LS2:22 → KM2:21, KM2:22 → KM1:A1, seal-in KM1:13/14. Pump: L bar → LS2:13, LS2:14 → KT1:A1, KT1:A1 → KT1:15, KT1:16 → KM3:A1. Returning: KT1:18 → LS1:21, L bar → KM2:13, KM2:14 → LS1:21, LS1:22 → KM1:21, KM1:22 → KM2:A1. Power: KM2 swaps L1 and L3 on motor M1.',
+    devices:[G, Q3, F1, S0, S1, KM('KM1', ['NO','NC'], 'Forward contactor (to B)', {mech:'KM2'}), KM('KM2', ['NO','NC'], 'Reverse contactor (to A)', {mech:'KM1'}), KM('KM3', ['NO'], 'Pump contactor'),
+      MOT('M1', 'Conveyor motor'), MOT('M2', 'pump', 'pump'), {id:'CART', type:'cart', cfg:{motor:'M1', len:6, labA:'A', labB:'B'}, name:'Cart'}, {id:'T1', type:'tank', cfg:{pump:'M2', fill:0.25, drain:0.02}, name:'tank'},
+      {id:'LS1', type:'ls', cfg:{cart:'CART', at:0, label:'Limit A'}, name:'Limit switch A'}, {id:'LS2', type:'ls', cfg:{cart:'CART', at:1, label:'Limit B'}, name:'Limit switch B'},
+      KT('KT1', 'on', 3, 'Pump time'), lamp('H1', 'green', 'Going to B'), lamp('H2', 'blue', 'pump'), lamp('H3', 'yellow', 'Returning to A'), X1],
+    solution:POWER([['KM1','M1'],['KM2','M1',true],['KM3','M2']]).concat(FEED, [
+      ['X1:1b','S1:13'],['S1:14','LS2:21'],['LS2:22','KM2:21'],['KM2:22','KM1:A1'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KM1:A1','H1:X1'],['KM1:A2','X1:4b'],['H1:X2','X1:4b'],
+      ['X1:2a','LS2:13'],['LS2:14','KT1:A1'],['KT1:A1','KT1:15'],['KT1:A2','X1:5a'],['KT1:16','KM3:A1'],['KM3:A1','H2:X1'],['KM3:A2','X1:5a'],['H2:X2','X1:5b'],
+      ['KT1:18','LS1:21'],['X1:2b','KM2:13'],['KM2:14','LS1:21'],['LS1:22','KM1:21'],['KM1:22','KM2:A1'],['KM2:A1','H3:X1'],['KM2:A2','X1:5b'],['H3:X2','X1:6a']]),
+    seq:true, cases:[
+      {label:'Cart at A and nothing pressed', set:{}, expect:{M1:0, M2:0, H1:0, H2:0, H3:0}},
+      {label:'START pressed', set:{S1:{p:1}}, expect:{M1:'F', M2:0, H1:1, H2:0, H3:0}},
+      {label:'Released START and 7 seconds passed (reached B)', set:{S1:{p:0}}, wait:7, expect:{M1:0, M2:1, H1:0, H2:1, H3:0}},
+      {label:'3.5 seconds passed (pump done: returning)', set:{}, wait:3.5, expect:{M1:'R', M2:0, H1:0, H2:0, H3:1}},
+      {label:'7 seconds passed (reached A)', set:{}, wait:7, expect:{M1:0, M2:0, H1:0, H2:0, H3:0}},
+      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, M2:0, H1:0, H2:0, H3:0}}],
+    patterns:[{sig:{M2:'001000'}, msg:'The pump stops but the cart doesn\'t return: contact KT1 15-18 must energise KM2, and KM2 must seal itself in (13-14) because LS2 releases as soon as the cart moves.'},
+      {sig:{M2:'001100'}, msg:'The pump doesn\'t stop after 3 seconds: KM3\'s coil must take from KT1 <b>15-16</b> (NC, opens after the delay), and KT1\'s coil straight from LS2 13-14.'},
+      {sig:{M1:'011000'}, msg:'The cart doesn\'t stop at B: contact <b>LS2 21-22</b> (NC) must be in series in KM1\'s coil line.'}],
+    okMsg:'A complete automatic cycle: a limit switch stops one step and starts the next, and the timer sets the pump time. Watch the tank fill.'},
+  e24:{story:{icon:'🏭', text:'A cutting machine: the first motor with a button, and the second starts 5 seconds after it, stops for 5, comes back for 5, and after 5 both stop.', ask:'Practical 24: 4 timers.'}, machine:'conveyor', title:'Practical 24: the first with a switch, the second 5 s after it, stops after 5 s, comes back after 5 s, and after 5 s both stop', short:'Practical 24: M2 starts/stops/returns, then all stop',
+    task:'START starts <b>M1</b> (KM1 seals itself in through <b>KT4 15-16</b>). A chain of 4 timers: <b>KT1</b>\'s coil is with KM1; after 5 s its 15-18 feeds <b>KT2</b> and <b>KM2</b> (through KT2 15-16). After 5 s KT2 opens 15-16 (M2 stops) and closes 15-18 so <b>KT3</b> starts. After 5 s KT3 15-18 brings KM2 back, and <b>KT4</b> starts from contact <b>KM2 13-14</b> (fed from after KT2 15-18). After 5 s KT4 15-16 cuts KM1\'s seal-in so everything stops.', goal:"START starts M1. After 5 s M2 starts, after 5 s it stops, after 5 s it comes back, and after 5 s both stop.", idea:"A chain of 4 timers: KT1 with KM1 starts KT2 and KM2 (through KT2 15-16). KT2 stops M2 and starts KT3. KT3 brings KM2 back, and KT4 starts from contact KM2 13-14 only on the second return. KT4 15-16 in KM1's seal-in line stops everything.", steps:{"power": ["L1 L2 L3 from the supply to Q1, from Q1 to KM1 and KM2, and from them to the two motors."], "control": ["Supply: F1, then STOP, then the L bar, and N to the N bar.", "START in parallel with KM1's seal-in, their output to KT4 15-16, and from 16 to A1 of KM1. KT1 in parallel with KM1's coil and its common 15 from the same point.", "From KT1 18 to KT2's coil and its common 15, and from KT2 16 to A1 of KM2.", "From KT2 18 to KT3's coil and its common 15, and from KT3 18 to A1 of KM2.", "KT4's coil from contact KM2 13-14, fed from KT3's common (not straight from 18).", "Every A2 and every lamp to the N bar."]},
+    tip:'X1:1b → S1:13, S1:14 → KT4:15, KT4:16 → KM1:A1, seal-in KM1:13/14. KM1:A1 → KT1:A1 → KT1:15 → H1:X1. KT1:18 → KT2:A1 and KT2:15. KT2:16 → KM2:A1. KT2:18 → KT3:A1 and KT3:15. KT3:18 → H2:X1, H2:X1 → KM2:A1. KT4 must start only on the second return: KT3:15 → KM2:13, KM2:14 → KT4:A1 (if you wire it straight to KT3:18 it\'ll be on the same point as KM2\'s coil and get fed from the first time).',
+    devices:[G, Q3, F1, S0, S1, KM('KM1'), KM('KM2'), KT('KT1', 'on', 5, 'Timer 1'), KT('KT2', 'on', 5, 'Timer 2'), KT('KT3', 'on', 5, 'Timer 3'), KT('KT4', 'on', 5, 'Timer 4'), M1, M2, H1, H2, X1],
+    solution:POWER([['KM1','M1'],['KM2','M2']]).concat(FEED, [
+      ['X1:1b','S1:13'],['S1:14','KT4:15'],['KT4:16','KM1:A1'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KM1:A1','KT1:A1'],['KT1:A1','KT1:15'],['KT1:15','H1:X1'],
+      ['KT1:18','KT2:A1'],['KT1:18','KT2:15'],['KT2:16','KM2:A1'],['KT2:18','KT3:A1'],['KT2:18','KT3:15'],['KT3:15','KM2:13'],['KM2:14','KT4:A1'],['KT3:18','H2:X1'],['H2:X1','KM2:A1'],
+      ['KM1:A2','X1:4b'],['KT1:A2','X1:4b'],['H1:X2','X1:5a'],['KT2:A2','X1:5a'],['KM2:A2','X1:5b'],['KT3:A2','X1:5b'],['KT4:A2','X1:6a'],['H2:X2','X1:6a']]),
+    seq:true, cases:[
+      {label:'nothing pressed', set:{}, expect:{M1:0, M2:0, H1:0, H2:0}},
+      {label:'START pressed', set:{S1:{p:1}}, expect:{M1:1, M2:0, H1:1, H2:0}},
+      {label:'Released START and 2 seconds passed', set:{S1:{p:0}}, wait:2, expect:{M1:1, M2:0, H1:1, H2:0}},
+      {label:'4 seconds passed (KT1: the second starts)', set:{}, wait:4, expect:{M1:1, M2:1, H1:1, H2:1}},
+      {label:'5 seconds passed (KT2: the second stops)', set:{}, wait:5, expect:{M1:1, M2:0, H1:1, H2:0}},
+      {label:'5 seconds passed (KT3: the second comes back)', set:{}, wait:5, expect:{M1:1, M2:1, H1:1, H2:1}},
+      {label:'5 seconds passed (KT4: both stop)', set:{}, wait:5, expect:{M1:0, M2:0, H1:0, H2:0}},
+      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, M2:0, H1:0, H2:0}}],
+    patterns:[{sig:{M1:'01111110'}, msg:'Everything doesn\'t stop at the end: KM1\'s seal-in line must pass through <b>KT4 15-16</b>.'}, {sig:{M2:'00011100'}, msg:'M2 doesn\'t stop in the second stage: KM2\'s coil must take from <b>KT2 15-16</b> (opens after the delay), and come back from KT3 15-18.'}],
+    okMsg:'A chain of timers: each one starts when the previous one finishes, because contact 15-18 stays closed as long as the coil is energised. And the last one cuts the seal-in.'},
+  /* ------------------------------------------------ mistakes */
+  w1:{story:{icon:'🔧', text:'A report: “M2 starts together with M1 right away and stops after 5 seconds!” The timer is in the wrong mode.', ask:'Set the timer to On-delay and check the wiring.'}, machine:'conveyor', title:'Mistake: the timer is on Off-delay and you need On-delay', short:'Mistake: wrong timer mode',
+    task:'This circuit is exactly exercise 14, but multi-function timer <b>KT1</b> is set to mode <b>B: Off-delay</b>. Switch on and press START: M2 starts <b>with M1 immediately</b>, and when you press STOP and release it, it starts again for 5 seconds! Switch off, press <b>FUNC</b> on the timer until it\'s on <b>ON-DELAY</b>, and switch on again.', goal:"Required: exactly exercise 14: M1 with START, and M2 5 seconds after it.", idea:"The multi-function timer is set to B: Off-delay. So M2 starts with M1 immediately, and when you press STOP it starts again for 5 seconds! The function must be A: On-delay.", steps:["Switch on, press START and see M2 start immediately.", "Switch off, press FUNC on the timer until it's on ON-DELAY.", "Switch on again: M2 after 5 seconds."],
+    tip:'A multi-function timer has a function selector: A = On-delay, B = Off-delay, C = Flasher. Look at the mode name written on the timer on the board.',
+    devices:[G, Q3, F1, S0, S1, KM('KM1'), KM('KM2'), KT('KT1', 'off', 5, 'Multi-function timer', {multi:true}), M1, M2, H1, H2, X1],
+    preset:POWER([['KM1','M1'],['KM2','M2']]).concat(E14_CTL), solution:POWER([['KM1','M1'],['KM2','M2']]).concat(E14_CTL),
+    seq:true, cases:E14_CASES, patterns:E14_PATTERNS,
+    okMsg:'Exactly the same wiring; the whole difference is the timer function. On a real panel, check the function selector before you blame the wires.'},
+  w2:{story:{icon:'🔧', text:'A report: “M2 starts first, and stops after 5 seconds!” The electrician mixed up 15-16 and 15-18.', ask:'Find the wrong contact on the timer and fix it.'}, machine:'conveyor', title:'Mistake: 15-16 instead of 15-18', short:'Mistake: 15-16 instead of 15-18',
+    task:'This circuit is exercise 14 but with a wrong wire: <b>KM2</b>\'s coil is connected to timer contact <b>15-16</b> instead of <b>15-18</b>. Switch on without pressing anything: M2 will start by itself! And press START: after 5 seconds M2 stops instead of starting. Switch off and fix the wire.', goal:"Required: exercise 14: M2 starts 5 seconds after M1, not before it.", idea:"KM2's coil is connected to 15-16 (NC, closed before the delay) instead of 15-18 (NO, closes after the delay): M2 starts by itself as soon as you switch on and stops after 5 seconds.", steps:["Switch on without pressing anything: M2 will start by itself.", "Switch off, and move KM2's coil wire from terminal 16 to terminal 18 on the timer.", "Switch on again and press START."],
+    tip:'15-16 is the NC contact (closed while it\'s not timing out), and 15-18 is the NO (closes after the delay). The coil that should start after the delay must be on 18.',
+    devices:E14_DEVS,
+    preset:POWER([['KM1','M1'],['KM2','M2']]).concat(E14_CTL.map(w => w[0] === 'KT1:18' ? ['KT1:16', w[1]] : w)), solution:POWER([['KM1','M1'],['KM2','M2']]).concat(E14_CTL),
+    seq:true, cases:E14_CASES, patterns:E14_PATTERNS,
+    okMsg:'18 for what starts after the delay, and 16 for what stops after the delay. Remember it that way.'}
+};
+/* ---------- lesson-5 figures: the three timer-circuit patterns (ladder style, same classes as the engine symbols) ---------- */
+const TX = (x, y, t, anc, sz) => `<text class="sy-n" x="${x}" y="${y}" text-anchor="${anc || 'start'}" style="font-size:${sz || 11}px">${t}</text>`;
+const AR = (x, y, t, cls) => `<text class="ar ${cls || ''}" x="${x}" y="${y}" font-size="12" text-anchor="middle" fill="currentColor" font-weight="700">${t}</text>`;
+const cNO = (x, y) => `<path class="sy" d="M${x} ${y}V${y+10}M${x} ${y+40}V${y+30}L${x-9} ${y+12}"/>`;
+const cNC = (x, y) => `<path class="sy" d="M${x} ${y}V${y+10}H${x+7}M${x} ${y+40}V${y+30}L${x-9} ${y+12}"/>`;
+const tArc = (x, y, up) => up ? `<path class="sy" d="M${x-14} ${y+18}A9 9 0 0 1 ${x+4} ${y+18}" style="stroke-width:1.8"/>` : `<path class="sy" d="M${x-14} ${y+22}A9 9 0 0 0 ${x+4} ${y+22}" style="stroke-width:1.8"/>`;
+const tNO = (x, y) => cNO(x, y) + tArc(x, y, false); // timed-closing NO (15-18, On-delay)
+const tNC = (x, y) => cNC(x, y) + tArc(x, y, false); // timed-opening NC (15-16, On-delay)
+const coil = (x, y, tag, a, b) => `<rect class="sy" x="${x-14}" y="${y}" width="28" height="28"/>` + TX(x + 18, y + 18, tag) + TX(x - 18, y + 6, a || 'A1', 'end') + TX(x - 18, y + 34, b || 'A2', 'end');
+const tcoil = (x, y, tag) => coil(x, y, tag) + `<path class="sy" d="M${x-10} ${y+8}H${x+10}" style="stroke-width:3"/>`;
+const dot = (x, y) => `<circle class="sy-f" cx="${x}" cy="${y}" r="3"/>`;
+const nums = (x, y, a, b) => TX(x - 12, y + 8, a, 'end') + TX(x - 12, y + 40, b, 'end');
+const wrap = (W, H, body, label) => `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${label}"><g style="color:var(--sym)">${body}</g></svg>`;
+const buses = (W, L, N) => `<path class="sy" d="M30 ${L}H${W-20}M30 ${N}H${W-20}"/>` + TX(26, L + 4, 'L', 'end') + TX(26, N + 4, 'N', 'end');
+// pattern 1: the timer in the hold circuit (exercise 14)
+const patHold = () => {
+  const L = 40, N = 330, W = 470; let s = buses(W, L, N), x = 90;
+  s += `<path class="sy" d="M${x} ${L}V70"/>` + cNC(x, 70) + TX(x + 10, 94, 'S0') + nums(x, 70, '21', '22');
+  s += `<path class="sy" d="M${x} 110V130"/>` + cNO(x, 130) + TX(x + 8, 154, 'S1') + nums(x, 130, '13', '14');
+  s += `<path class="sy" d="M${x} 122H${x+50}V130M${x+50} 170V180H${x}M${x} 170V210"/>` + cNO(x + 50, 130) + TX(x + 58, 154, 'KM1') + TX(x + 62, 138, '13') + TX(x + 62, 170, '14') + dot(x, 122) + dot(x, 180);
+  s += coil(x, 210, 'KM1') + `<path class="sy" d="M${x} 238V${N}"/>`;
+  // timer coil in parallel with KM1 coil
+  const tx = x + 110;
+  s += `<path class="sy" d="M${x} 196H${tx}V210M${tx} 238V${N}"/>` + dot(x, 196) + tcoil(tx, 210, 'KT1') + AR(tx + 10, 262, 'Timer coil in parallel with', 'sy-s') + AR(tx + 10, 276, 'the contactor coil', 'sy-s');
+  // second rung: timed contact → KM2
+  const rx = 330;
+  s += `<path class="sy" d="M${rx} ${L}V130"/>` + tNO(rx, 130) + TX(rx + 8, 150, 'KT1') + nums(rx, 130, '15', '18') + AR(rx + 60, 170, 'closes after t', 'sy-s');
+  s += `<path class="sy" d="M${rx} 170V210"/>` + coil(rx, 210, 'KM2') + `<path class="sy" d="M${rx} 238V${N}"/>`;
+  s += AR(x + 40, 22, 'Step 1: KM1 + KT1') + AR(rx + 30, 22, 'Step 2 after t: KM2');
+  return wrap(W, 350, s, 'The timer-in-the-seal-in-circuit pattern');
+};
+// pattern 2: the timer contact replaces START (and breaks the previous step)
+const patStart = () => {
+  const L = 40, N = 330, W = 470; let s = buses(W, L, N), x = 90;
+  s += `<path class="sy" d="M${x} ${L}V70"/>` + cNC(x, 70) + TX(x + 10, 94, 'S0') + nums(x, 70, '21', '22');
+  s += `<path class="sy" d="M${x} 110V130"/>` + cNO(x, 130) + TX(x + 8, 154, 'S1') + nums(x, 130, '13', '14');
+  s += `<path class="sy" d="M${x} 122H${x+50}V130M${x+50} 170V180H${x}M${x} 170V190"/>` + cNO(x + 50, 130) + TX(x + 58, 154, 'KM1') + dot(x, 122) + dot(x, 180);
+  s += cNC(x, 190) + TX(x + 10, 214, 'KM2') + nums(x, 190, '21', '22') + AR(x + 70, 206, 'KM2 stops KM1', 'sy-s');
+  s += `<path class="sy" d="M${x} 230V250"/>` + coil(x, 250, 'KM1') + `<path class="sy" d="M${x} 278V${N}"/>`;
+  const tx = x + 110; s += `<path class="sy" d="M${x} 240H${tx}V250M${tx} 278V${N}"/>` + dot(x, 240) + tcoil(tx, 250, 'KT1');
+  const rx = 330;
+  s += `<path class="sy" d="M${rx} ${L}V130"/>` + tNO(rx, 130) + TX(rx + 8, 150, 'KT1') + nums(rx, 130, '15', '18') + AR(rx + 64, 118, 'START\'s place', 'sy-s');
+  s += `<path class="sy" d="M${rx} 122H${rx+50}V130M${rx+50} 170V180H${rx}M${rx} 170V250"/>` + cNO(rx + 50, 130) + TX(rx + 58, 154, 'KM2') + TX(rx + 62, 138, '13') + TX(rx + 62, 170, '14') + dot(rx, 122) + dot(rx, 180) + AR(rx + 60, 200, 'Seal-in needed', 'sy-s') + AR(rx + 60, 214, '(the timer will drop out)', 'sy-s');
+  s += coil(rx, 250, 'KM2') + `<path class="sy" d="M${rx} 278V${N}"/>`;
+  s += AR(x + 40, 22, 'Step 1') + AR(rx + 30, 22, 'Step 2 instead of START');
+  return wrap(W, 350, s, 'The timer-contact-instead-of-START pattern');
+};
+// pattern 3: the ring (three steps, the last timer restarts the first)
+const patRing = () => {
+  const L = 40, N = 300, W = 520; let s = buses(W, L, N);
+  const step = (x, prevT, nextKM, tag, tt) => {
+    s += `<path class="sy" d="M${x} ${L}V70"/>` + (prevT ? tNO(x, 70) + TX(x + 8, 90, prevT) + nums(x, 70, '15', '18') : cNO(x, 70) + TX(x + 8, 94, 'S1') + nums(x, 70, '13', '14'));
+    s += `<path class="sy" d="M${x} 62H${x+44}V70M${x+44} 110V120H${x}M${x} 110V130"/>` + cNO(x + 44, 70) + TX(x + 52, 94, tag) + dot(x, 62) + dot(x, 120);
+    s += cNC(x, 130) + TX(x + 10, 154, nextKM) + nums(x, 130, '21', '22');
+    s += `<path class="sy" d="M${x} 170V190"/>` + coil(x, 190, tag) + `<path class="sy" d="M${x} 218V${N}"/>`;
+    s += `<path class="sy" d="M${x} 180H${x+66}V190M${x+66} 218V${N}"/>` + dot(x, 180) + tcoil(x + 66, 190, tt);
+  };
+  step(70, null, 'KM2', 'KM1', 'KT1'); step(230, 'KT1', 'KM3', 'KM2', 'KT2'); step(390, 'KT2', 'KM1', 'KM3', 'KT3');
+  // the loop back: KT3 15-18 in parallel with S1
+  s += `<path class="sy-d" d="M70 62H46V256H500V240"/><path class="sy" d="M494 246l6 -8l6 8" style="stroke-width:1.5"/>` + AR(270, 274, 'KT3 15-18 in parallel with START: the loop goes back to the start', '') + AR(270, 292, 'and only STOP stops it', '');
+  s += AR(110, 22, 'Stage 1') + AR(270, 22, 'Stage 2') + AR(430, 22, 'Stage 3');
+  return wrap(W, 304, s, 'The loop pattern: each stage stops the previous one and its timer starts the next');
+};
+// timing diagram of exercise 18 (as a figure)
+const seqChart = () => {
+  const W = 470, rows = [['M1', [[0, 5]]], ['M2', [[0, 10]]], ['M3', [[5, 10]]]], x0 = 70, px = 34, L = 's';
+  let s = `<path class="sy" d="M${x0} 20V140"/>` + TX(x0, 160, 'START', 'middle') + `<path class="sy-d" d="M${x0 + 5 * px} 20V140M${x0 + 10 * px} 20V140"/>` + TX(x0 + 5 * px, 160, 'T1 = 5 s', 'middle') + TX(x0 + 10 * px, 160, 'T1 + T2 = 10 s', 'middle');
+  rows.forEach((r, i) => { const y = 40 + i * 36; s += TX(x0 - 10, y + 16, r[0], 'end', 13) + `<path class="sy-d" d="M${x0} ${y+20}H${x0 + 11 * px}"/>`; r[1].forEach(seg => s += `<rect x="${x0 + seg[0] * px}" y="${y}" width="${(seg[1] - seg[0]) * px}" height="20" rx="3" fill="var(--good)" opacity=".8"/>`); });
+  return wrap(W, 170, s, 'Timing chart for practical 18');
+};
+
+CL.lesson({
+  id:'l5', n:5, title:'Lesson 5: Timers',
+  intro:'<p>Pick a device and follow it: <b>Definition</b> → <b>Look and symbol</b> → <b>Try it</b> → <b>Wire it</b> → <b>Questions</b>. With timers, time really runs: on the board each timer has a <b>counter</b>, the <b>⏩</b> button speeds up time, and the <b>t −/+</b> buttons change the set time. Practicals 14 to 24 are all here, and as always: “<b>Show solution</b>” shows you dashed lines, and you do the wiring yourself.</p>',
+  elements:[
+  /* ---------------------------------------------------------------- 1. TON */
+  {id:'ton', icon:'timer', title:'On-delay timer (TON)', goal:'<b>Delay on energising</b>: the coil gets voltage, the time counts, and after <span class="term">t</span> contact <span class="term">15-16-18</span> changes over. The most common timer in panels.',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p><b>A timer (time relay)</b> is a relay that delays its contact relative to its coil by a time you set. The most common type is <b>On-delay</b> (delay on energising, marked <b>TON</b>, <b>A</b> or <b>ON</b>): when its coil <b>A1-A2</b> gets voltage, the red LED starts to light (it flashes on modern types) and the time counts. When time <b>t</b> runs out, contact <b>15-16-18</b> changes over and stays changed over as long as the coil has voltage. When the coil is switched off, everything returns immediately and the time resets to zero.</p>
+     <div class="box key"><p><b>The DIN-rail timer (what you'll find in the panel):</b></p><ul>
+      <li><b>Dial</b>: a graduated wheel from 0 to 10 (or 1 to 10) that sets the time <b>as a fraction of the range</b>.</li>
+      <li><b>Range switch</b>: 1 s, 10 s, 1 minute, 10 minutes, an hour… the actual time = dial × range. For example, the dial on 5 and the range on 10 s → 5 seconds. A common mistake: the range on 1 min when it should be 10 s, so the circuit “doesn't work” when it's just waiting.</li>
+      <li><b>LED</b>: green/yellow <b>U</b> means there's voltage on the coil, and red <b>R</b> flashes while counting and stays on when the contact changes over (it varies between types; check its datasheet).</li>
+      <li><b>A1-A2</b>: the coil (takes 24 V or 230 V depending on the model, and there are “multi-voltage” types for 24–240 V AC/DC).</li>
+      <li><b>15-16-18</b>: the timed contact (CO, changeover). <b>15</b> is the common, <b>16</b> is NC (closed while idle, <b>opens after the delay</b>), <b>18</b> is NO (open, <b>closes after the delay</b>). And if there's a second contact: 25-26-28.</li>
+      <li><b>21-22-24</b>: on some models an <b>instantaneous</b> contact: it changes over <b>immediately</b> with the coil with no delay, useful for a seal-in or a “timer running” lamp.</li></ul></div>
+     <div class="box key"><p><b>The numbering tells you the function:</b> the first digit is the contact number, and the second digit: <b>5-6-8</b> = a timed changeover contact (5 common, 6 NC, 8 NO), and <b>1-2-4</b> = an instantaneous changeover contact. Just like 95-96 and 97-98 on the overload.</p></div>
+     <p><b>Where is it used?</b> In <b>star/delta</b> starting (switches from star to delta after 5–10 seconds), in <b>sequencing</b> (the second motor a delay after the first so they don't draw starting current together), for the <b>pause</b> before reversing, and in any “wait a bit, then do it”.</p>
+     <p><b>The rule you'll follow in every exercise:</b> whatever should <b>start after the delay</b> goes on <b>18</b>. Whatever should <b>stop after the delay</b> goes on <b>16</b>. And the timer coil must stay energised during the whole count, so most of the time you wire it <b>in parallel with the coil of the contactor</b> that seals itself in.</p>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'On-delay timer on a DIN rail and its timing chart', dev:KT('KT1', 'on', 5, 'On-delay timer'), art:'timerArt', nema:['tr', 'notc', 'ncto'], cap:'Front: the graduated dial, the RANGE switch, LEDs for voltage U and counting R, terminals A1 and 15 on top, and A2, 16 and 18 at the bottom. The timing chart: the coil goes high, the contact waits t and then changes over. IEC symbol: the coil rectangle with a line inside (the delay mark), and a half circle (parachute) on the contact in the direction of the delay. NEMA: a TR coil, and NOTC (normally open, timed closed) and NCTO (normally closed, timed open) contacts with the arrow.'},
+      {title:'Timer with an instantaneous contact 21-22-24', dev:KT('KT2', 'on', 5, 'Timer with an instantaneous contact', {inst:true}), art:'timerArt', nema:['tr', 'notc'], cap:'The same timer but with an extra row of terminals: 21-22-24 is a contact that changes over immediately with the coil (no parachute in the symbol). You use it when you need a seal-in or a “timer started” signal without an extra relay.'}]},
+    {kind:'sim', title:'Try it', lead:'Apply voltage to the coil and watch the red LED and the counter: 15-18 is open and 15-16 closed until the time runs out, then they change over. Remove the voltage: they return immediately and the time resets. Change t with the slider, and try the instantaneous contact on the second timer.', sims:[
+      {title:'On-delay timer (t = 5 s)', dev:KT('KT1', 'on', 5, 'On-delay timer'), note:'The continuity rows show you 15-16 and 15-18 at every moment. Remove the voltage before the time runs out: nothing ever happens.'},
+      {title:'On-delay timer with an instantaneous contact', dev:KT('KT2', 'on', 3, 'Timer with an instantaneous contact', {inst:true}), note:'21-24 closes immediately with the coil, and 15-18 after 3 seconds.'}]},
+    {kind:'bench', title:'Wire it', ex:['e14','e15','e16','w1','w2']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'An On-delay timer\'s coil gets voltage. When does 15-18 close?', a:['Immediately','After time t runs out','When the coil is switched off'], c:1, why:'That\'s what On-delay means: the delay starts when the coil is energised, and the contact changes over after t.', w:['What closes immediately is the instantaneous contact 21-24, if there is one.','','That\'s Off-delay.']},
+      {q:'A motor must stop 10 seconds after counting starts. Its coil is wired to?', a:['15-18','15-16','21-24'], c:1, why:'16 is NC: closed and feeding the coil, and it opens after the delay so the motor stops.', w:['18 is open and closes after the delay: the motor would start after the delay, not stop.','','The instantaneous contact has no delay.']},
+      {q:'The dial is on 3 and the range switch on 1 min. What\'s the time?', a:['3 seconds','30 seconds','About 3 minutes'], c:2, why:'Time = dial × range. The dial is graduated from 0 to 10 as a fraction of the range: 3 on a 1 min range (10 divisions) ≈ 18 s on some types, and 3 minutes if the range reads “per division”. Always check the datasheet, but what will never happen is 3 seconds.', w:['3 seconds needs the 10 s range.','','']},
+      {q:'You removed the voltage from an On-delay timer after 3 of its 5 seconds. When you restore it?', a:['It finishes the remaining two seconds','It starts from the beginning (the time was reset)','It closes the contact immediately'], c:1, why:'A normal timer resets when the coil is switched off. (An “accumulating” timer continues, but that\'s a special type.)', w:['','','']}]}
+   ]},
+  /* ---------------------------------------------------------------- 2. TOF */
+  {id:'tof', icon:'timer', title:'Off-delay timer (TOF)', goal:'<b>Delay on de-energising</b>: the contact changes over <b>immediately</b> with the coil, and when the coil is switched off it stays changed over for <span class="term">t</span>, then returns. For a fan or pump that keeps going after stopping.',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p><b>Off-delay</b> (delay on de-energising, <b>TOF</b>, <b>B</b> or <b>OFF</b>) is the opposite of On-delay in when the delay happens: when the coil gets voltage, contact <b>15-18</b> closes <b>at the same moment</b>. And when the coil is <b>switched off</b>, the contact <b>stays closed</b> for time t and then opens. So whatever is on it runs with the machine and keeps going a little after it.</p>
+     <div class="box key"><ul>
+      <li><b>A cooling fan that keeps running after the machine stops</b> (a welding fan, an oven fan, cooling for a large motor).</li>
+      <li><b>A pump that finishes draining</b> or a conveyor that keeps going until it's empty after the machine stops.</li>
+      <li><b>Stairwell lighting</b>: stays lit for a minute after you release the button.</li></ul></div>
+     <div class="box key"><p><b>Two types you must tell apart:</b></p><ul>
+      <li><b>Powered off-delay</b>: coil A1-A2 always has voltage, and the <b>control signal</b> comes on a separate terminal (<b>B1</b> or <b>Y1</b>). When the signal goes away, the delay starts. Most multi-function timers work like this in mode B.</li>
+      <li><b>True off-delay (power-off delay)</b>: no control terminal; when the voltage is removed from the coil itself, the timer completes the delay from energy stored inside it (a capacitor). That's what we simulate here: remove the voltage and the contact stays on for t.</li></ul>
+      <p>The difference matters in the panel: the first type needs a permanent wire for the coil and a signal wire, and the second just one wire from the machine contactor.</p></div>
+     <p><b>A common mistake</b>: using Off-delay when you need On-delay (or the other way round). The symptoms: the load starts immediately instead of waiting, or stays on after STOP. The “Mistake: wrong timer mode” exercise in the first device shows it to you.</p>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'Off-delay timer and its timing chart', dev:KT('KT1', 'off', 5, 'Off-delay timer'), art:'timerArt', nema:['tr', 'noto', 'nctc'], cap:'The same body and the same terminals; the difference is the function (the line in the coil symbol is at the bottom instead of the top, and the parachute on the contact is reversed). The timing chart: the contact goes high with the coil immediately and goes low t after the coil. NEMA: NOTO (normally open, timed open) and NCTC (normally closed, timed closed).'}]},
+    {kind:'sim', title:'Try it', lead:'Apply voltage: 15-18 closes immediately. Remove the voltage: the counter starts and 15-18 stays closed until t runs out. Apply voltage again before the time runs out: the time resets and it stays closed.', sims:[
+      {title:'Off-delay timer (t = 5 s)', dev:KT('KT1', 'off', 5, 'Off-delay timer'), note:'Compare with the On-delay timer in the first device: here the counting starts on switch-off.'}]},
+    {kind:'bench', title:'Wire it', ex:['f1']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'A fan must keep running for a minute after the oven stops. You use?', a:['On-delay','Off-delay','Cyclic timer'], c:1, why:'The delay is needed on switch-off: Off-delay, with the fan on 15-18.', w:['On-delay would delay the fan starting, not stopping.','','']},
+      {q:'In an Off-delay timer, when does 15-18 close?', a:['Immediately with the coil','t after energising','t after switch-off'], c:0, why:'In Off-delay the contact changes over immediately, and the whole delay is on switch-off (it opens t after the coil is switched off).', w:['','That\'s On-delay.','That\'s when it opens, not when it closes.']},
+      {q:'The difference between an Off-delay with a B1 terminal and a true off-delay?', a:['No difference','The first has permanent voltage on its coil and the signal on B1; the second counts after the voltage on the coil itself is removed','The second is more accurate'], c:1, why:'A true off-delay stores energy inside so it can complete the delay without voltage.', w:['','','Accuracy is the same; the difference is how it\'s wired.']}]}
+   ]},
+  /* ---------------------------------------------------------------- 3. cyclic + multi-function */
+  {id:'cyc', icon:'cycle', title:'Cyclic and multi-function timers', goal:'<b>Flasher</b>: on for <span class="term">ton</span>, off for <span class="term">toff</span>, and again… as long as the coil has voltage. And <b>multi-function</b>: one timer with a switch to choose the function.',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p><b>The cyclic timer (flasher / repeat cycle)</b>: as long as its coil has voltage, its contact <b>15-18</b> closes for <b>ton</b>, opens for <b>toff</b>, and repeats. There are models with one dial (ton = toff) and models with two dials (<b>asymmetric</b>: different on and off times), and some let you choose whether it starts ON or OFF. Uses: <b>a flashing warning lamp</b>, <b>periodic lubrication</b> (a pump that runs 5 seconds every minute), <b>alternating two motors</b> (the first, then the second, alternately), stirring a tank.</p>
+     <div class="box key"><p><b>The multifunction timer</b>: in modern panels, instead of buying a type for each function, one timer has a <b>function switch (FUNC)</b> with letters:</p><ul>
+      <li><b>A</b>: On-delay. <b>B</b>: Off-delay (with a signal on B1). <b>C</b>: Flasher starting OFF. <b>D</b>: Flasher starting ON.</li>
+      <li><b>E / F</b>: pulse (one-shot): gives a pulse of width t on energising or on switch-off. <b>Star-delta (Y/Δ)</b>: a ready-made changeover pulse between two contacts.</li></ul>
+      <p>It also has a <b>range switch</b> (0.1 s to 100 h) and sometimes a <b>voltage switch</b>. The only risk: someone fiddles with the switch and the circuit “goes crazy”. The proper practice is to close the transparent cover or seal it after setting.</p></div>
+     <p>On our board the multi-function timer has a <b>FUNC</b> button (while switched off): On-delay → Off-delay → Flasher. The circuit itself doesn't change, only the function.</p>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'Multi-function timer in Flasher mode', dev:KT('KT1', 'cyc', 5, 'Multi-function timer', {multi:true, ton:2, toff:2, range:'0.1 s – 100 h'}), art:'timerArt', nema:['tr'], cap:'The same body plus a FUNC switch to choose the function. In the timing chart: the contact closes for ton and opens for toff as long as the coil has voltage. In the IEC symbol: a pulse mark in the coil and a dashed line on the contact. NEMA has no special symbol for cyclic: a TR coil with “Repeat cycle” written next to it.'}]},
+    {kind:'sim', title:'Try it', lead:'Apply voltage and leave it: the contact closes and opens alternately and you see the counter repeat. On the multi-function timer, choose the function from the list and see the same coil give 3 different behaviours.', sims:[
+      {title:'Cyclic timer (ton = toff = 3 s)', dev:KT('KT1', 'cyc', 3, 'Cyclic timer', {ton:3, toff:3}), note:'It starts with ON. If you want it to start with OFF, choose mode C instead of D on the multi-function timer.'},
+      {title:'Multi-function timer (A / B / C)', dev:KT('KT2', 'on', 4, 'Multi-function timer', {multi:true}), note:'Change the function and do the same test: apply voltage, wait, remove it.'}]},
+    {kind:'bench', title:'Wire it', ex:['c1','e21']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'A warning lamp must flash one second on and one second off for as long as the fault is present. You use?', a:['On-delay','Off-delay','A cyclic timer (flasher)'], c:2, why:'The cyclic timer is the one that flips its contact alternately as long as its coil has voltage.', w:['On-delay changes over only once.','','']},
+      {q:'A multi-function timer in a sequence circuit “doesn\'t work”: M2 starts with M1 immediately. The first thing to check?', a:['All the wires','The FUNC function switch: it may be on B (Off-delay) instead of A','The contactor'], c:1, why:'These are exactly the symptoms of Off-delay: the contact closes immediately. The function switch before the wires.', w:['','','']},
+      {q:'An asymmetric cyclic timer has?', a:['One dial','Two dials: ton and toff','Two contacts'], c:1, why:'The two times are independent: for example on for 5 seconds and off for a minute.', w:['','','']}]}
+   ]},
+  /* ---------------------------------------------------------------- 4. timer circuits */
+  {id:'cir', icon:'ring', title:'Timer circuits', goal:'The three patterns that every timer circuit is built from: <b>the timer in the seal-in circuit</b>, <b>the timer contact instead of START</b>, and <b>the loop</b>. Together with all the trainer exercises from 17 to 24.',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p>All timer circuits are built from three ideas. If you understand them you'll be able to draw any exercise from 14 to 24 on your own:</p>
+     <div class="box key"><p><b>1) The timer in the seal-in circuit (exercises 14, 16, 18, 19 and 20):</b> the first contactor KM1 starts with START and seals itself in, just like DOL. The timer coil is <b>in parallel with KM1's coil</b> (A1 to A1, A2 to N), so it starts counting with the first step. After the delay its <b>15-18</b> contact starts the second step (KM2), or <b>15-16</b> stops something. And when you press STOP, KM1 drops out, the timer drops out, and everything after it drops out: one STOP stops everything. If you want the second step to stay on after the first stops (as in 15), KM2 must seal itself in with its 13-14 contact in parallel with 15-18.</p></div>
+     <div class="box key"><p><b>2) The timer contact instead of START (exercises 15, 24 and 23):</b> anywhere there was a START button, you can put a <b>timer contact</b> instead: the circuit starts “by itself” after the delay. By the same logic, anywhere there was a STOP you can put <b>15-16</b> or an NC contact of another contactor: the new step stops the previous one (KM2 21-22 in KM1's line). That's how you build a <b>chain</b>: KT1 starts KM2, and KT2 (its coil with KM2) starts KM3, and so on. In exercise 24 there are four timers in a row, and the last one (15-16) cuts the seal-in so the whole circuit stops.</p></div>
+     <div class="box key"><p><b>3) The loop (exercises 17, 21 and 22):</b> a chain, but the last timer goes back to the first step: contact <b>KT3 15-18</b> in parallel with START. Each stage stops the previous one with an NC contact, seals itself in, and its timer starts the next one. The result: 1 → 2 → 3 → 1 → 2… until you press STOP. With just two motors (exercise 21) there's a simpler way: a <b>cyclic timer</b> + a memory relay. And for reversing with a pause (exercise 22): a <b>direction memory</b> relay, a timer for each direction, and a pause timer whose coil only gets voltage while both contactors are stopped (their NC contacts in series), and of course an electrical (21-22) and mechanical interlock between the forward and reverse contactors.</p></div>
+     <p><b>And a few practical rules:</b> the timer coil must stay energised during the whole count (if it's wired after its own contact, it will chatter). Contact 15-18 is normally open, so nothing on it will start by accident. For every step ask: what starts it? What seals it in? What stops it? And when the circuit loops, make sure STOP cuts <b>before</b> the L bar that everything is fed from, so it stops everything.</p>
+     <p><b>The limit switch in the cycle (exercise 23):</b> the same idea, but what switches the steps is a <b>limit switch</b>, not a timer: LS2 at B stops the going direction (21-22) and starts the pump and the timer (13-14), the timer after 3 seconds stops the pump (15-16) and starts the return (15-18), and LS1 at A stops the return. Every time ask: what stops this step, and what starts the next one.</p>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'Pattern 1: the timer in the seal-in circuit', dev:KT('KT1', 'on', 5), art:patHold, noSym:true, cap:'The control circuit only (the power is like DOL for each motor). KT1\'s coil in parallel with KM1\'s coil, and contact 15-18 in KM2\'s line. STOP stops everything because it\'s before both.'},
+      {title:'Pattern 2: the timer contact instead of START', dev:KT('KT1', 'on', 5), art:patStart, noSym:true, cap:'The second step starts with the timer contact in place of START and seals itself in, and its NC contact stops the first step (exercise 15). The seal-in is essential because the timer will drop out with KM1.'},
+      {title:'Pattern 3: the loop', dev:KT('KT1', 'on', 5), art:patRing, noSym:true, cap:'Three stages, each one stops the previous one (NC) and its timer starts the next, and the last timer goes back to the first stage in parallel with START. It loops until STOP (exercise 17).'},
+      {title:'Timing chart for practical 18', dev:KT('KT1', 'on', 5), art:seqChart, noSym:true, cap:'Before you wire any exercise, draw this timing chart: what is running in each period. It tells you how many timers you need, what starts what, and what stops what.'}]},
+    {kind:'sim', title:'Try it', lead:'Before you go to the board, review the behaviour of the two contacts you\'ll use in the chain: 15-18 (closes after the delay) and 15-16 (opens after the delay). The time here is 5 seconds, like the exercises.', sims:[
+      {title:'On-delay timer (t = 5 s)', dev:KT('KT1', 'on', 5, 'Stage timer'), note:'In the chain: whatever will start goes on 18, and whatever will stop goes on 16.'}]},
+    {kind:'bench', title:'Wire it', ex:['e17','e18','e19','e20','e22','e23','e24']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'In a sequence circuit, timer KT1\'s coil is wired?', a:['After its own 15-18 contact','In parallel with the coil of KM1, which seals itself in','Straight on the START button'], c:1, why:'It must stay energised during the whole count, and the sealed-in KM1 coil is the best place.', w:['After its own contact it will chatter: it closes, energises, then opens.','','START is a pulse; the timer will reset as soon as you release it.']},
+      {q:'You want M2 to start a delay after M1, and M1 to stop when M2 starts. KM2 needs?', a:['Just the timer contact','The timer contact + a 13-14 seal-in + an NC contact in KM1\'s line','Another timer'], c:1, why:'When KM1 drops out the timer drops out with it and 15-18 opens, so KM2 must have sealed itself in.', w:['','','']},
+      {q:'A loop of 3 motors stops after one round. The likely cause?', a:['The third timer\'s 15-18 doesn\'t go back in parallel with START','The third motor is faulty','The time is too short'], c:0, why:'Going back to the first step is what makes the loop. Without it, it\'s a chain that ends.', w:['','','']},
+      {q:'A motor alternating forward/reverse with a pause. When does the pause timer\'s coil get voltage?', a:['All the time','When the forward contactor is on','When both contactors are stopped (their NCs in series)'], c:2, why:'The pause is the period when no direction is running, so the timer counts only then, and after it the next direction starts.', w:['','','']},
+      {q:'In exercise 23, what stops the cart at B?', a:['The timer','Limit switch LS2 with its NC contact 21-22 in KM1\'s line','The STOP button'], c:1, why:'The limit switch senses the cart\'s position and cuts the going contactor, and with its NO contact it starts the pump and the timer.', w:['The timer only sets the pump time.','','']}]}
+   ]}
+  ],
+  exercises:L5EX
+});
+})();
+</script>
+</body>
+</html>

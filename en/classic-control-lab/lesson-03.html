@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The contactor</title>
+<meta name="description" content="Lesson 3 of the Classic Control course: the contactor (coil, main poles, auxiliary contacts, AC-1/AC-3), the power circuit and the control circuit, and starting a 3-phase motor DOL with self-holding and pilot lamps, wired by hand.">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/classic-control-lab/lesson-03.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/classic-control-lab/lesson-03.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/classic-control-lab/lesson-03.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/en/classic-control-lab/engine.css?v=20261021v">
+<link rel="stylesheet" href="/en/classic-control-lab/fx.css?v=20261021v">
+</head>
+<body>
+<div class="app">
+<header class="top site-header">
+  <div>
+    <h1>Lesson 3: The contactor</h1>
+    <p>The contactor is the big relay that runs the motor. You'll learn its parts and terminal numbers, the difference between the <b>power circuit</b> and the <b>control circuit</b>, and then wire your first real circuit: <b>a 3-phase motor started and stopped from one place + pilot lamps</b> (practical exercise no. 1), then from two places, from 3 places, and two motors.</p>
+  </div>
+  <div class="chips">
+    <a class="btn" href="/en/classic-control-lab/index.html">‹ Lessons</a>
+    <a class="btn" href="/en/labs.html">← All courses</a><span class="bar lang-slot"></span>
+  </div>
+</header>
+
+<div id="lesson"></div>
+
+<p class="foot">Symbols according to <span class="mono">IEC 60617</span> and <span class="mono">NEMA ICS 19</span>. Contactor terminals according to <span class="mono">IEC 60947-4-1</span>: main poles <span class="mono">1/L1-2/T1, 3/L2-4/T2, 5/L3-6/T3</span>, coil <span class="mono">A1-A2</span>, and auxiliary contacts <span class="mono">13-14</span> (NO) and <span class="mono">21-22</span> (NC). Utilisation categories <span class="mono">AC-1</span> (resistive loads) and <span class="mono">AC-3</span> (squirrel-cage motors) according to <span class="mono">IEC 60947-4-1</span>. The thermal overload and protection are in the next lesson.<br>© &#x2066;2026 LearnElectricals&#x2069;. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+
+<script src="/site-config.js?v=20261021v"></script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script src="/assets/i18n-en.js?v=20261021v"></script>
+<script src="/en/classic-control-lab/engine.js?v=20261021v"></script>
+<script src="/en/classic-control-lab/fx.js?v=20261021v"></script>
+<script>
+(function(){
+const G   = {id:'G', type:'supply3P', name:'supply'};
+const SUP = {id:'Q1', type:'supplyAC', name:'the breaker'};
+const Q3  = {id:'Q1', type:'mcb', cfg:{poles:3, label:'C10'}, name:'power breaker'};
+const F1  = {id:'F1', type:'mcb', cfg:{poles:1, label:'C2'}, name:'control breaker'};
+const PB  = (id, color, label) => ({id, type:'pb', cfg:{color, label, blocks:[color === 'red' ? 'NC' : 'NO']}});
+const SEL = {id:'S1', type:'sel', cfg:{pos:['0','I'], label:'0 / I', blocks:[{k:'NO', on:[1]}]}};
+const KM  = (id, aux, name) => ({id, type:'contactor', cfg:{v:230, aux:aux || ['NO','NC']}, name:name || 'contactor'});
+const MOT = (id, name) => ({id, type:'motor', cfg:{term:3, kW:2.2}, name:name || 'motor'});
+const lamp = (id, color, name) => ({id, type:'lamp', cfg:{color, v:230}, name});
+const KM1 = KM('KM1'), M1 = MOT('M1'), H1 = lamp('H1', 'green', 'running'), H2 = lamp('H2', 'red', 'stopped');
+// power circuit: supply → Q1 (3P) → KM contactor → motor
+const POWER = (km, m) => [['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2',km+':1'],['Q1:4',km+':3'],['Q1:6',km+':5'],[km+':2',m+':U'],[km+':4',m+':V'],[km+':6',m+':W']];
+// DOL sequence: nothing → START → release → STOP → release
+const dolCases = (motor, run, stop, extra) => [
+  {label:'nothing pressed', set:{}, expect:Object.assign({[motor]:0, [run]:0, [stop]:1}, extra && extra(0))},
+  {label:'START pressed', set:{S1:{p:1}}, expect:Object.assign({[motor]:1, [run]:1, [stop]:0}, extra && extra(1))},
+  {label:'START released', set:{S1:{p:0}}, expect:Object.assign({[motor]:1, [run]:1, [stop]:0}, extra && extra(1))},
+  {label:'STOP pressed', set:{S0:{p:1}}, expect:Object.assign({[motor]:0, [run]:0, [stop]:1}, extra && extra(0))},
+  {label:'STOP released', set:{S0:{p:0}}, expect:Object.assign({[motor]:0, [run]:0, [stop]:1}, extra && extra(0))}];
+const dolPatterns = run => [
+  {sig:{[run]:'01110'}, msg:'The motor <b>doesn\'t stop</b> with STOP: the KM1 coil is still getting power by another path. Seal-in contact 13-14 must come after STOP (in parallel with START only).'},
+  {sig:{[run]:'01111'}, msg:'The motor started and won\'t stop: there\'s a path to the coil that bypasses both STOP and START. Seal-in contact 13-14 is wired across the START terminals only.'}];
+const stopLampPattern = [{sig:{H2:'00000'}, msg:'The “stopped” lamp H2 never lights: it must be wired from after control breaker F1 → NC contact 21-22 of KM1 → H2 → N.'}, {sig:{H2:'11111'}, msg:'The “stopped” lamp H2 is always on: it should pass through NC contact 21-22 of KM1 so it goes off when the contactor pulls in.'}];
+
+CL.lesson({
+  id:'l3', n:3, title:'Lesson 3: The contactor',
+  intro:'<p>Pick an item and work through it step by step: <b>Definition</b> → <b>Look and symbol</b> → <b>Try it</b> → <b>Wire it</b> → <b>Questions</b>. The exercises here are bigger: they have a power circuit (thick wires in phase colours) and a control circuit (thin red wires). Take your time; “Show solution” is there.</p>',
+  elements:[
+  /* ---------------------------------------------------------------- 1. the contactor */
+  {id:'k', icon:'k', title:'The contactor', goal:'A big relay with 3 power poles <span class="term">1/L1…6/T3</span> and auxiliary contacts <span class="term">13-14</span> and <span class="term">21-22</span>.',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p>A <b>contactor</b> is a big relay made for switching large loads: motors, heaters and large lighting. Same idea: a <b>coil</b> pulls a <b>moving iron core</b>, and the core closes the contacts. The difference is that its main contacts carry large currents (from 9 amps to hundreds of amps) and break the arc that forms when you switch off a motor.</p>
+     <div class="box key"><p><b>Its parts and terminals:</b></p><ul>
+      <li><b>Coil</b> <span class="term">A1-A2</span>: the control voltage marked on it (230V AC, 110V, 24V AC or DC). <span class="term">A1</span> is at the top left and <span class="term">A2</span> at the bottom.</li>
+      <li><b>3 main poles</b> for a 3-phase motor: power enters at the top <span class="term">1/L1</span>, <span class="term">3/L2</span>, <span class="term">5/L3</span> and leaves at the bottom <span class="term">2/T1</span>, <span class="term">4/T2</span>, <span class="term">6/T3</span> to the motor. Odd numbers on top (from the supply), even numbers at the bottom (to the load). All are <span class="no">NO</span>.</li>
+      <li>A built-in <b>auxiliary contact</b>: usually one <span class="no">NO</span> <span class="term">13-14</span> or one <span class="nc">NC</span> <span class="term">21-22</span>. We use it in the control circuit (seal-in, lamps, interlock), <b>not</b> for the motor.</li>
+      <li><b>Add-on aux block</b>: a part that fits on the front or side of the contactor and gives you extra contacts (for example 2 NO + 2 NC). Its numbers continue: 33-34, 43-44, 51-52…</li></ul></div>
+     <p><b>AC-1 and AC-3:</b> a contactor shows two currents. <b>AC-3</b> is the current it can handle with a <b>squirrel-cage motor</b> (starting at 6-8 times the current and breaking while running), and that's what you choose a motor contactor by: for example <span class="term">AC-3: 9A / 4kW at 400V</span>. <b>AC-1</b> is higher (say 25A) because it's for resistive loads like heaters with no starting current. Never choose a motor contactor by its AC-1 current!</p>
+     <p><b>The moving core and hum:</b> an AC coil pulls the core 100 times a second, so a running contactor makes a slight <b>hum</b>. If the hum is loud or the contactor chatters: dirt between the core faces, low coil voltage, or a broken shading ring. Contactors with DC coils are silent.</p>
+     <p><b>The difference from a relay:</b> a relay is for signals (low current, small contacts, plugs into a socket), and a contactor is for power (high current, arc chutes, mounts on a DIN rail or sometimes with screws). Both are “a coil pulling contacts”, but their size and job differ.</p>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'LC1D09 contactor from the front and in side section', dev:KM1, nema:[{k:'coil', opt:{letter:'M'}}, 'mNO3', 'crNO'], cap:'Front view: coil A1 top left and A2 bottom left, the main poles in the middle (1/L1 3/L2 5/L3 on top, 2/T1 4/T2 6/T3 at the bottom), auxiliary contact 13-14 on the right, and an add-on LADN block for contact 21-22. The section: the fixed core (laminations) with the coil around it, the moving core above it carrying the contact bridge, and the return spring. In the IEC symbol: the coil is a rectangle, the main poles are NO contacts with a small arc, the auxiliaries are plain contacts, all on one dashed line. In NEMA: the coil is a circle with M inside, and the poles are two parallel lines per phase.'}]},
+    {kind:'sim', title:'Try it', lead:'Press and hold the big button (or the drawing): the coil gets its voltage, the moving core drops, and the three poles and the auxiliary contact all close <b>at the same moment</b>. Look at the contact table below.', sims:[
+      {title:'230V contactor with NO and NC auxiliary contacts', dev:KM1, note:'1-2, 3-4 and 5-6 are the power poles (for the motor), and 13-14 and 21-22 are for control. All move with one core.'}]},
+    {kind:'bench', title:'Wire it', ex:['c1','c2','c3']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'Which contactor terminals does the motor connect to?', a:['A1 and A2','2/T1, 4/T2 and 6/T3','13 and 14'], c:1, why:'The even terminals at the bottom (T = load) go to the motor, and the odd ones on top come from the supply. A1-A2 are for the coil, and 13-14 is an auxiliary contact for control.', w:['A1-A2 is the coil, for control only.','','13-14 is a small auxiliary contact that can\'t carry the motor.']},
+      {q:'You need a contactor for a 4kW motor. Which current do you choose it by?', a:['AC-1','AC-3','Either one'], c:1, why:'AC-3 is the motor category (high starting current and breaking under load). AC-1 is for resistive loads.', w:['AC-1 is for heaters, higher than the contactor\'s real capacity with a motor.','','']},
+      {q:'The contactor hums loudly and chatters. The likely cause?', a:['The contacts have welded','Dirt between the core faces or low coil voltage','The motor is big'], c:1, why:'The core doesn\'t close properly so it chatters. Clean the core and measure the coil voltage.', w:['If they had welded it wouldn\'t switch off at all.','','The motor size has nothing to do with coil hum.']}]}
+   ]},
+  /* ---------------------------------------------------------------- 2. power & control circuits */
+  {id:'pwr', icon:'pwr', title:'Power circuit and control circuit', goal:'Two circuits in every panel: power (3-phase to the motor, thick wires) and control (L1-N or 24V, thin wires).',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p>Any motor panel has <b>two circuits</b>, separate on paper and in reality:</p>
+     <div class="box key"><ul>
+      <li><b>Power circuit</b>: the 3-phase supply <span class="term">L1 L2 L3</span> → main breaker <b>Q1</b> (3-pole) → the main poles of contactor <b>KM1</b> → (the overload, next lesson) → the motor <span class="term">U V W</span>. Its wires are <b>thick</b>, sized for the motor current, drawn with thick lines, in phase colours: L1 brown, L2 black, L3 grey.</li>
+      <li><b>Control circuit</b>: takes <b>one phase and neutral</b> (<span class="term">L1-N</span> = 230V) through a small breaker <b>F1</b>, or from a <b>control transformer</b> (400V → 230V or 110V), or from a <b>24V DC</b> power supply. It holds the buttons, lamps, auxiliary contacts and the contactor coil. Its wires are thin (1 mm²), red for AC and dark blue for 24V DC.</li></ul></div>
+     <p><b>The standard drawing:</b> the power circuit on the left runs vertically from the top (supply) to the bottom (motor). The control circuit on the right: the <span class="term">L1</span> line on top and the <span class="term">N</span> line at the bottom, with each “rung” running vertically between them: STOP button, START button, coil. Lamps are rungs of their own. The auxiliary contact labelled KM1 in the control circuit is part of the same contactor whose coil is KM1: one device appears in two places in the drawing.</p>
+     <p><b>A 3-phase motor</b> has a terminal box with <span class="term">U V W</span> (or U1 V1 W1 and U2 V2 W2 on a 6-terminal motor, covered in the motor lesson). The direction of rotation is set by the phase order: <span class="term">L1→U, L2→V, L3→W</span> turns one way, and <b>if you swap any two phases</b> it turns the other way. And <b>with a phase missing</b>: the motor <b>hums and doesn't turn</b> (single-phasing) and overheats and burns out if left like that, which is why the overload matters.</p>
+     <p><b>Main breaker Q1</b> protects the power wires from short circuits, and <b>F1</b> protects the control circuit. In the simulator you'll find both breakers on the board, and you wire them yourself.</p>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'The standard drawing: power on the left, control on the right', dev:KM1, art:'dolLayout', noSym:true, cap:'Left: L1 L2 L3 → Q1 (3 poles on one dashed line) → poles of KM1 (1-3-5 on top) → motor M 3~ (U V W). Right: L1 on top and N at the bottom, F1, S0 (STOP NC), S1 (START NO) with KM1 contact 13-14 in parallel, KM1 coil (A1-A2). The “running” lamp H1 across the coil, and the “stopped” lamp H2 from after F1 through KM1\'s NC contact 21-22.'},
+      {title:'The 3-phase motor and its terminal box', dev:M1, art:'motorArt', noSym:true, cap:'The terminal box on top with U V W, the frame with cooling fins, a fan at the back, and the shaft coming out the front. In the simulator the circle under the motor shows you the direction of rotation.'}]},
+    {kind:'sim', title:'Try it', lead:'This is the motor contactor with an NO contact (for the seal-in and the “running” lamp) and an NC contact (for the “stopped” lamp). Keep the coil energised and watch poles 1-2, 3-4 and 5-6 close: they connect the 3 phases to the motor.', sims:[
+      {title:'KM1: power poles and auxiliary contacts', dev:KM1, note:'Note in the symbol: the main contacts (with the arc) and the auxiliaries are on the same dashed line, because they all move with the same core.'}]},
+    {kind:'bench', title:'Wire it', ex:['pf1','pf2']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'Where does the control circuit get its power?', a:['From all three phases','From one phase and neutral (or a control transformer or 24V)','From the motor'], c:1, why:'Control needs one small voltage: L1-N (230V), a transformer, or a 24V power supply.', w:['All three are for the motor (power).','','']},
+      {q:'The motor turns the wrong way. What do you do?', a:['Swap all three phases','Swap any two phases','Swap A1 and A2'], c:1, why:'Swapping two phases reverses the phase sequence and so the direction. Swapping all three gives the same sequence back.', w:['Swapping all three = same sequence = same direction.','','A1-A2 is the control coil; it has nothing to do with direction.']},
+      {q:'A motor hums, doesn\'t turn and heats up. The most likely cause?', a:['A missing phase (single-phasing)','The coil is burned out','The pilot lamp is burned out'], c:0, why:'With only two phases the motor can\'t start; it hums and draws a high current.', w:['','If the coil were burned out, the contactor wouldn\'t pull in at all and the motor would be silent.','']}]}
+   ]},
+  /* ---------------------------------------------------------------- 3. DOL start/stop */
+  {id:'dol', icon:'motor', title:'DOL: one motor, start and stop + pilot lamps', goal:'Practicals 1 to 4: Start / Stop with seal-in on the contactor\'s <span class="term">13-14</span>, with running / stopped lamps.',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p><b>DOL (direct on line)</b> means the motor gets the full mains voltage at once through a single contactor. The simplest and most common starting method, for small and medium motors (up to about 5-7 kW depending on the supply).</p>
+     <div class="box key"><p><b>The circuit is exactly like the relay in lesson 2</b>, except the coil is now the contactor coil, and the seal-in contact is its auxiliary contact <span class="term">13-14</span>:</p>
+     <ol><li>Power circuit: <span class="term">L1 L2 L3</span> → <b>Q1</b> → <b>KM1</b> (1/L1…6/T3) → <b>M1</b> (U V W).</li>
+     <li>Control circuit: <span class="term">L1</span> → <b>F1</b> → <b>S0</b> STOP (NC) → <b>S1</b> START (NO) || <b>KM1 13-14</b> → coil <b>KM1</b> A1-A2 → <span class="term">N</span>.</li>
+     <li>Green “running” lamp <b>H1</b>: across the coil (from after contact 13-14), or on an extra NO contact.</li>
+     <li>Red “stopped” lamp <b>H2</b>: from after F1 → KM1's contact <span class="term">21-22</span> (NC) → H2 → N. It's on while stopped and goes off as soon as it pulls in.</li></ol></div>
+     <p><b>From more than one place:</b> START buttons are wired in <b>parallel</b> (any one starts), and STOP buttons in <b>series</b> (any one stops). Those are exercises 2 and 3.</p>
+     <p><b>Two independent motors:</b> each motor has its own contactor, button and lamp, and both take from the same breaker Q1 and the same control breaker F1. That's exercise 4.</p>
+     <p><b>A note on the overload:</b> a real panel must have a thermal overload <b>F2</b> after the contactor, with its contact <span class="term">95-96</span> in the control circuit. We've left it for the next lesson (protection) to focus on the contactor here. Breaker Q1 only protects against short circuits.</p>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'Practical 1: one motor, start and stop from one place + lamps', dev:KM1, art:'dolLayout', noSym:true, cap:'This is the drawing you\'ll wire on the board. Trace every line with your finger: from L1 to N in the control circuit, and from L1 L2 L3 to U V W in the power circuit. Make sure you understand why contact 13-14 sits next to START, and why H2 is on 21-22.'}]},
+    {kind:'sim', title:'Try it', lead:'A last review before wiring: the contactor with its two auxiliary contacts. Keep the coil energised and see what 13-14 (seal-in + running lamp) and 21-22 (stopped lamp) do.', sims:[
+      {title:'KM1 for the exercise', dev:KM1}]},
+    {kind:'bench', title:'Wire it', ex:['x1','x2','x3','x4']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'In a DOL circuit, the seal-in contact is:', a:['Main pole 1-2','Auxiliary contact 13-14 in parallel with START','Auxiliary contact 21-22 in series with STOP'], c:1, why:'13-14 NO closes when the contactor pulls in and keeps feeding the coil.', w:['The main poles are only for the motor.','','21-22 NC opens when it pulls in; that\'s for the stopped lamp or the interlock.']},
+      {q:'You want to start from 3 places and stop from one. How are the buttons wired?', a:['3 START in series','3 START in parallel and one STOP in series','3 STOP in parallel'], c:1, why:'START in parallel (any one starts), STOP in series (any one stops).', w:['START in series = all 3 must be pressed together.','','STOP in parallel doesn\'t break the line.']},
+      {q:'The red “stopped” lamp is wired to:', a:['NC contact 21-22 of KM1','NO contact 13-14','In parallel with the coil'], c:0, why:'The NC is closed while the contactor is off, so the lamp is on, and it opens when it pulls in.', w:['','13-14 is for the running lamp.','Across the coil = running lamp.']}]}
+   ]}
+  ],
+
+  exercises:{
+    c1:{story:{icon:'🏭', text:'A workshop: a selector on the cabin door switches a contactor, and the contactor runs the 3-phase grinder motor.', ask:'A power circuit and a control circuit: selector → KM1 coil → the motor.'}, machine:'gauge', title:'Exercise 1: a selector switches a contactor, the contactor runs a 3-phase motor', short:'Selector → contactor → motor',
+       task:'Wire the <b>power circuit</b>: L1 L2 L3 → Q1 → KM1 (1/L1 3/L2 5/L3 on top, 2/T1 4/T2 6/T3 at the bottom) → motor <b>M1</b> (U V W in order). Then the <b>control circuit</b>: L1 → F1 → selector <b>S1</b> → KM1 coil → N. When you turn the selector to I the motor turns <b>forward</b>.', goal:"When you turn selector S1 to I, contactor KM1 pulls in and motor M1 turns forward; on 0 it stops.", idea:"Two circuits: power (3 thick phases from the breaker to the contactor to the motor) and control (one thin phase that energises the coil). The small coil closes the big contacts.", steps:{"power": ["Connect L1 L2 L3 from the supply to the inputs of breaker Q1.", "From the Q1 outputs to the contactor's top terminals 1/3/5.", "From the contactor's bottom terminals 2/4/6 to motor U V W in the same order (so it turns forward)."], "control": ["Phase L1 to control breaker F1.", "From F1 to the selector contact, and from the selector to A1 of KM1.", "A2 of KM1 to N."]},
+       tip:'Thick wires for power: L1 → Q1:1, Q1:2 → KM1:1, KM1:2 → M1:U, and the same for each phase. Control: L1 → F1:1, F1:2 → S1:13, S1:14 → KM1:A1, KM1:A2 → N. Keep the order L1→U, L2→V, L3→W so it turns forward.',
+       devices:[G, Q3, F1, SEL, KM('KM1', ['NO']), M1],
+       solution:POWER('KM1', 'M1').concat([['G:L1','F1:1'],['F1:2','S1:13'],['S1:14','KM1:A1'],['KM1:A2','G:N']]),
+       cases:[{label:'Selector on 0', set:{S1:{pos:0}}, expect:{M1:0}}, {label:'Selector on I', set:{S1:{pos:1}}, expect:{M1:'F'}}],
+       okMsg:'Turn the selector to I and watch the poles close, all three phases light up and the motor turn.'},
+    c2:{story:{icon:'💡', text:'A motor panel: the engineer wants the “running” lamp lit from the auxiliary contact, not straight from the coil.', ask:'A button feeds the KM1 coil, and contact 13-14 lights the lamp.'}, title:'Exercise 2: the NO auxiliary contact lights a lamp', short:'Aux NO and a lamp',
+       task:'Button <b>S1</b> energises the <b>KM1</b> coil, and the “running” lamp <b>H1</b> lights from auxiliary contact <span class="term">13-14</span>. (Control circuit only, from the 230V breaker.)', goal:"Button S1 energises the KM1 coil, and the “running” lamp H1 lights from the NO auxiliary contact (13-14).", idea:"The auxiliary contact moves with the main contacts: when the coil pulls in, 13-14 closes and lights the lamp. Control circuit only, on 230V.", steps:["Phase L to the input of S1, output of S1 to A1, and A2 to N.", "Phase L to terminal 13 of KM1.", "From 14 to X1 of the lamp, and X2 to N."],
+       tip:'L → S1:13, S1:14 → KM1:A1, KM1:A2 → N. Lamp: L → KM1:13, KM1:14 → H1:X1, H1:X2 → N.',
+       devices:[SUP, PB('S1', 'green', 'START'), KM1, H1],
+       solution:[['Q1:L','S1:13'],['S1:14','KM1:A1'],['KM1:A2','Q1:N'],['Q1:L','KM1:13'],['KM1:14','H1:X1'],['H1:X2','Q1:N']],
+       cases:[{label:'S1 released', set:{S1:{p:0}}, expect:{H1:0}}, {label:'S1 pressed', set:{S1:{p:1}}, expect:{H1:1}}]},
+    c3:{story:{icon:'💡', text:'The same panel: a red “stopped” lamp is on while the contactor is off, and goes off as soon as it pulls in.', ask:'An NC contact (21-22) lights the stopped lamp.'}, title:'Exercise 3: the NC auxiliary contact lights a “stopped” lamp', short:'Aux NC and a lamp',
+       task:'The same circuit, but the red “stopped” lamp <b>H2</b> lights while the contactor is <b>off</b>, and goes off when you press S1 and it pulls in. Use <span class="term">21-22</span>.', goal:"The red “stopped” lamp H2 is on while the contactor is off, and goes off when you press S1 and it pulls in.", idea:"The same circuit, but the lamp is on the NC auxiliary contact (21-22), which opens when the contactor pulls in.", steps:["Phase L to S1, output of S1 to A1, and A2 to N.", "Phase L to terminal 21 of KM1.", "From 22 to X1 of the lamp, and X2 to N."],
+       tip:'L → KM1:21, KM1:22 → H2:X1, H2:X2 → N.',
+       devices:[SUP, PB('S1', 'green', 'START'), KM1, H2],
+       solution:[['Q1:L','S1:13'],['S1:14','KM1:A1'],['KM1:A2','Q1:N'],['Q1:L','KM1:21'],['KM1:22','H2:X1'],['H2:X2','Q1:N']],
+       cases:[{label:'S1 released', set:{S1:{p:0}}, expect:{H2:1}}, {label:'S1 pressed', set:{S1:{p:1}}, expect:{H2:0}}]},
+    pf1:{story:{icon:'🔄', text:'The new motor turns backwards and the conveyor is sending the boxes back! The electrician who installed it swapped two phases by mistake.', ask:'Find the phase mistake in the power circuit and fix it.'}, machine:'conveyor', title:'Exercise 4: power circuit fault: the motor turns backwards', short:'Fault: two phases swapped',
+       task:'This circuit is already wired. Switch on and turn the selector to I: the motor <b>turns in reverse</b> when it should turn <b>forward</b>. Switch off, find the two swapped phases in the power circuit, and fix them.', goal:"The motor must turn forward when you turn the selector to I.", idea:"The direction is set by the phase order on U V W. In this circuit two phases are swapped in the power wiring, so the motor turns in reverse.", steps:["Switch on and turn the selector to I: the motor turns in reverse.", "Switch off, and trace each phase from the breaker to the motor: L1 must reach U, L2 V, and L3 W.", "Swap the two crossed wires and switch on again: it turns forward."],
+       tip:'Trace each phase: L1 must reach U, L2 V, and L3 W. Swapping any two phases reverses the direction.',
+       devices:[G, Q3, F1, SEL, KM('KM1', ['NO']), M1],
+       preset:[['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','KM1:1'],['Q1:4','KM1:3'],['Q1:6','KM1:5'],['KM1:2','M1:W'],['KM1:4','M1:V'],['KM1:6','M1:U'],['G:L1','F1:1'],['F1:2','S1:13'],['S1:14','KM1:A1'],['KM1:A2','G:N']],
+       solution:POWER('KM1', 'M1').concat([['G:L1','F1:1'],['F1:2','S1:13'],['S1:14','KM1:A1'],['KM1:A2','G:N']]),
+       cases:[{label:'Selector on 0', set:{S1:{pos:0}}, expect:{M1:0}}, {label:'Selector on I', set:{S1:{pos:1}}, expect:{M1:'F'}}],
+       okMsg:'Now the order is L1→U, L2→V, L3→W and the motor turns forward.'},
+    pf2:{story:{icon:'⚠️', text:'The motor hums, heats up and doesn\'t turn: the supervisor suspects a missing phase.', ask:'Find the missing phase in the power circuit and complete it.'}, machine:'gauge', title:'Exercise 5: power circuit fault: a missing phase and a humming motor', short:'Fault: a missing phase',
+       task:'This circuit is missing a wire in the power circuit. Switch on and turn the selector to I: the motor <b>hums and doesn\'t turn</b> (single-phasing). Switch off quickly, find the missing phase and connect it.', goal:"The motor must run normally on all three phases when you turn the selector to I.", idea:"A missing phase = single-phasing: the motor hums and doesn't turn, and the current rises in the two remaining phases. Dangerous for the motor.", steps:["Switch on and turn the selector to I: the motor hums. Switch off quickly.", "Trace the three phases from the breaker to the contactor to the motor, and look at W.", "Connect the missing phase and switch on again."],
+       tip:'All three phases must reach the motor. Look at W.',
+       devices:[G, Q3, F1, SEL, KM('KM1', ['NO']), M1],
+       preset:[['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','KM1:1'],['Q1:4','KM1:3'],['Q1:6','KM1:5'],['KM1:2','M1:U'],['KM1:4','M1:V'],['G:L1','F1:1'],['F1:2','S1:13'],['S1:14','KM1:A1'],['KM1:A2','G:N']],
+       solution:POWER('KM1', 'M1').concat([['G:L1','F1:1'],['F1:2','S1:13'],['S1:14','KM1:A1'],['KM1:A2','G:N']]),
+       cases:[{label:'Selector on 0', set:{S1:{pos:0}}, expect:{M1:0}}, {label:'Selector on I', set:{S1:{pos:1}}, expect:{M1:'F'}}],
+       okMsg:'All three phases are connected and the motor turns. In practice, the overload is what protects the motor from this situation.'},
+    x1:{story:{icon:'🧃', text:'A juice factory: the filling conveyor must start from a START button and stop from STOP, with a green “running” lamp and a red “stopped” lamp.', ask:'Practical 1: full DOL with seal-in and two lamps.'}, machine:'conveyor', title:'Practical 1: one motor, start and stop from one place + pilot lamps', short:'Practical 1: Start/Stop + lamps',
+       task:'Wire the power circuit (Q1 → KM1 → M1) and the control circuit: F1 → <b>S0</b> STOP → <b>S1</b> START || <b>KM1 13-14</b> → KM1 coil → N. The green “running” lamp <b>H1</b> across the coil, and the red “stopped” lamp <b>H2</b> from after F1 through contact <b>KM1 21-22</b>. <span class="muted">(In a real panel add overload F2 as in <a href="lesson-04.html#dolp/4">lesson 4</a>.)</span>', goal:"START starts the motor and it keeps running, STOP stops it, with a green “running” lamp and a red “stopped” lamp.", idea:"The basic DOL circuit: STOP (NC), then START (NO) in parallel with seal-in contact 13-14, then the coil. The green lamp across the coil, the red one from the NC contact (21-22). In a real panel add the overload as in lesson 4.", steps:{"power": ["L1 L2 L3 from the supply to breaker Q1.", "From Q1 to the contactor terminals 1/3/5.", "From 2/4/6 to motor U V W."], "control": ["Phase L1 to F1, then the STOP button, then the START button.", "Seal-in contact 13-14 in parallel with the START button, their output to A1, and A2 to N.", "The “running” lamp H1 across the coil (X1 to A1, X2 to N).", "The “stopped” lamp H2 from after F1 through contact 21-22, with its X2 to X2 of H1."]},
+       tip:'Control: L1 → F1:1, F1:2 → S0:11, S0:12 → S1:13, S1:14 → KM1:A1, KM1:A2 → N, seal-in KM1:13 ↔ S1:13 and KM1:14 ↔ S1:14, H1: KM1:A1 → H1:X1, H1:X2 → N. H2: F1:2 → KM1:21, KM1:22 → H2:X1, H2:X2 → H1:X2 (because N already has two wires).',
+       devices:[G, Q3, F1, PB('S0', 'red', 'STOP'), PB('S1', 'green', 'START'), KM1, M1, H1, H2],
+       solution:POWER('KM1', 'M1').concat([['G:L1','F1:1'],['F1:2','S0:11'],['S0:12','S1:13'],['S1:14','KM1:A1'],['KM1:A2','G:N'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KM1:A1','H1:X1'],['H1:X2','G:N'],['F1:2','KM1:21'],['KM1:22','H2:X1'],['H2:X2','H1:X2']]),
+       seq:true, cases:dolCases('M1', 'H1', 'H2'), patterns:dolPatterns('H1').concat(stopLampPattern),
+       okMsg:'This is the course\'s practical no. 1. Press START and release it, watch the motor and the two lamps, then STOP.'},
+    x2:{story:{icon:'🧃', text:'The conveyor got longer and the workers walk a lot: the manager wants to start and stop it from both ends.', ask:'Practical 2: start and stop from two places.'}, machine:'conveyor', title:'Practical 2: one motor, start and stop from two places + pilot lamps', short:'Practical 2: from two places',
+       task:'The same as practical 1 but with two START buttons (<b>S1</b> and <b>S2</b> in parallel) and two STOP buttons (<b>S0</b> and <b>S3</b> in series), with both lamps. <span class="muted">(In a real panel add overload F2 as in <a href="lesson-04.html#dolp/4">lesson 4</a>.)</span>', goal:"The motor starts from START 1 or START 2 and stops from STOP 1 or STOP 2, with running/stopped lamps.", idea:"The STOP buttons in series one after the other at the start of the line, and the START buttons in parallel with each other and with the seal-in contact.", steps:{"power": ["L1 L2 L3 from the supply to Q1, from Q1 to the contactor 1/3/5, and from 2/4/6 to motor U V W."], "control": ["Phase L1 to F1, then STOP 1 and STOP 2 one after the other.", "After STOP 2: START 1, START 2 and seal-in contact 13-14 in parallel (inputs together, outputs together).", "From the outputs to A1 of KM1, and A2 to N.", "The “running” lamp across the coil, and the “stopped” lamp from after F1 through 21-22."]},
+       tip:'STOP in series: F1:2 → S0:11, S0:12 → S3:11, S3:12 → S1:13. START in parallel with the seal-in: S1:13 → S2:13 → KM1:13, and S1:14 → S2:14 → KM1:14 → KM1:A1.',
+       devices:[G, Q3, F1, PB('S0', 'red', 'STOP 1'), PB('S3', 'red', 'STOP 2'), PB('S1', 'green', 'START 1'), PB('S2', 'green', 'START 2'), KM1, M1, H1, H2],
+       solution:POWER('KM1', 'M1').concat([['G:L1','F1:1'],['F1:2','S0:11'],['S0:12','S3:11'],['S3:12','S1:13'],['S1:13','S2:13'],['S2:13','KM1:13'],['S1:14','S2:14'],['S2:14','KM1:14'],['KM1:14','KM1:A1'],['KM1:A2','G:N'],['KM1:A1','H1:X1'],['H1:X2','G:N'],['F1:2','KM1:21'],['KM1:22','H2:X1'],['H2:X2','H1:X2']]),
+       seq:true, cases:[
+         {label:'nothing pressed', set:{}, expect:{M1:0, H1:0, H2:1}},
+         {label:'S1 pressed', set:{S1:{p:1}}, expect:{M1:1, H1:1, H2:0}}, {label:'S1 released', set:{S1:{p:0}}, expect:{M1:1, H1:1, H2:0}},
+         {label:'S0 pressed', set:{S0:{p:1}}, expect:{M1:0, H1:0, H2:1}}, {label:'S0 released', set:{S0:{p:0}}, expect:{M1:0, H1:0, H2:1}},
+         {label:'S2 pressed', set:{S2:{p:1}}, expect:{M1:1, H1:1, H2:0}}, {label:'S2 released', set:{S2:{p:0}}, expect:{M1:1, H1:1, H2:0}},
+         {label:'S3 pressed', set:{S3:{p:1}}, expect:{M1:0, H1:0, H2:1}}, {label:'S3 released', set:{S3:{p:0}}, expect:{M1:0, H1:0, H2:1}}],
+       patterns:[{sig:{H1:'011000000'}, msg:'S2 doesn\'t start it: it must be wired in parallel with S1 and the seal-in contact (13 to 13, and 14 to 14).'}, {sig:{H1:'011111100'}, msg:'S0 doesn\'t stop it: it must be in series with S3 before the START buttons.'}, {sig:{H1:'011001111'}, msg:'S3 doesn\'t stop it: it must be in series with S0 on the same line.'}]},
+    x3:{story:{icon:'🧃', text:'The same conveyor, but starting from 3 places along the line, and stopping from the supervisor\'s cabin only.', ask:'Practical 3: 3 START buttons and one STOP.'}, machine:'conveyor', title:'Practical 3: one motor, start from 3 places and stop from one + lamps', short:'Practical 3: from 3 places',
+       task:'3 START buttons (<b>S1</b>, <b>S2</b>, <b>S4</b>) in parallel, and one STOP button <b>S0</b>, with the contactor, motor and both lamps. <span class="muted">(In a real panel add overload F2 as in <a href="lesson-04.html#dolp/4">lesson 4</a>.)</span>', goal:"The motor starts from any of 3 START buttons and stops from one STOP, with both lamps.", idea:"The same as exercise 2 but with 3 START buttons in parallel: all the buttons and the seal-in contact have their inputs together and outputs together.", steps:{"power": ["L1 L2 L3 from the supply to Q1, from Q1 to the contactor 1/3/5, and from 2/4/6 to motor U V W."], "control": ["Phase L1 to F1, then STOP.", "After STOP: S1, S2, S4 and seal-in contact 13-14 all in parallel.", "From the outputs to A1, and A2 to N.", "The “running” lamp across the coil, and the “stopped” lamp from after F1 through 21-22."]},
+       tip:'The parallel chain: S1:13 → S2:13 → S4:13 → KM1:13, and S1:14 → S2:14 → S4:14 → KM1:14 → KM1:A1.',
+       devices:[G, Q3, F1, PB('S0', 'red', 'STOP'), PB('S1', 'green', 'START 1'), PB('S2', 'green', 'START 2'), PB('S4', 'green', 'START 3'), KM1, M1, H1, H2],
+       solution:POWER('KM1', 'M1').concat([['G:L1','F1:1'],['F1:2','S0:11'],['S0:12','S1:13'],['S1:13','S2:13'],['S2:13','S4:13'],['S4:13','KM1:13'],['S1:14','S2:14'],['S2:14','S4:14'],['S4:14','KM1:14'],['KM1:14','KM1:A1'],['KM1:A2','G:N'],['KM1:A1','H1:X1'],['H1:X2','G:N'],['F1:2','KM1:21'],['KM1:22','H2:X1'],['H2:X2','H1:X2']]),
+       seq:true, cases:[
+         {label:'nothing pressed', set:{}, expect:{M1:0, H1:0, H2:1}},
+         {label:'S1 pressed', set:{S1:{p:1}}, expect:{M1:1, H1:1, H2:0}}, {label:'S1 released', set:{S1:{p:0}}, expect:{M1:1, H1:1, H2:0}},
+         {label:'S0 pressed', set:{S0:{p:1}}, expect:{M1:0, H1:0, H2:1}}, {label:'S0 released', set:{S0:{p:0}}, expect:{M1:0, H1:0, H2:1}},
+         {label:'S2 pressed', set:{S2:{p:1}}, expect:{M1:1, H1:1, H2:0}}, {label:'S2 released', set:{S2:{p:0}}, expect:{M1:1, H1:1, H2:0}},
+         {label:'S0 pressed', set:{S0:{p:1}}, expect:{M1:0, H1:0, H2:1}}, {label:'S0 released', set:{S0:{p:0}}, expect:{M1:0, H1:0, H2:1}},
+         {label:'S4 pressed', set:{S4:{p:1}}, expect:{M1:1, H1:1, H2:0}}, {label:'S4 released', set:{S4:{p:0}}, expect:{M1:1, H1:1, H2:0}},
+         {label:'S0 pressed', set:{S0:{p:1}}, expect:{M1:0, H1:0, H2:1}}],
+       patterns:[{sig:{H1:'0110000000000'}, msg:'Only S1 starts it: S2 and S4 must be wired in parallel with it (13 to 13, and 14 to 14).'}, {sig:{H1:'0110011000000'}, msg:'S4 doesn\'t start it: wire it in parallel with S1 and S2.'}, {sig:{H1:'0110000000110'}, msg:'S2 doesn\'t start it: wire it in parallel with S1 and S4.'}]},
+    x4:{story:{icon:'🌾', text:'A mill: the grinder motor and the conveyor motor, each with its own buttons and lamp, both from the same breaker.', ask:'Practical 4: two independent motors.'}, machine:'conveyor', title:'Practical 4: two motors, each started and stopped on its own + lamps', short:'Practical 4: two motors',
+       task:'Two motors <b>M1</b> and <b>M2</b> with two contactors <b>KM1</b> and <b>KM2</b> from the same breaker Q1. Each motor has a STOP button, a START button and a green “running” lamp: (S0, S1, H1) for the first and (S3, S2, H2) for the second. Control for both from F1. <span class="muted">(In a real panel add overload F2 as in <a href="lesson-04.html#dolp/4">lesson 4</a>.)</span>', goal:"Two independent motors: each has its own STOP, START and “running” lamp, and both come from the same breaker.", idea:"Two DOL circuits side by side sharing only the breaker and F1. Remember each terminal takes two wires: branch N from A2 to A2 and from X2 to X2.", steps:{"power": ["L1 L2 L3 from the supply to Q1.", "From the Q1 outputs to KM1 terminals 1/3/5, and from the same outputs jumpers to KM2 terminals 1/3/5.", "From KM1 2/4/6 to motor M1, and from KM2 2/4/6 to motor M2 (U V W in order)."], "control": ["Phase L1 to F1, and from F1 two branches: one to STOP 1 and one to STOP 2.", "First branch: STOP 1, then START 1 in parallel with KM1's seal-in, then A1 of KM1, and A2 to N.", "Second branch: STOP 2, then START 2 in parallel with KM2's seal-in, then A1 of KM2, and its A2 to A2 of KM1.", "Each lamp across its contactor's coil, and X2 of H2 to X2 of H1."]},
+       tip:'Power: Q1:2 → KM1:1 and Q1:2 → KM2:1 (the same terminal takes two wires), and the same for each phase. Control: F1:2 → S0:11 and F1:2 → S3:11, with each branch as in exercise 1. A2 of KM2 to A2 of KM1, and X2 of H2 to X2 of H1 so N doesn\'t get more than two wires.',
+       devices:[G, Q3, F1, PB('S0', 'red', 'STOP 1'), PB('S1', 'green', 'START 1'), KM('KM1', ['NO'], 'contactor 1'), MOT('M1', 'motor 1'), lamp('H1', 'green', 'M1 on'), PB('S3', 'red', 'STOP 2'), PB('S2', 'green', 'START 2'), KM('KM2', ['NO'], 'contactor 2'), MOT('M2', 'motor 2'), lamp('H2', 'green', 'M2 on')],
+       solution:POWER('KM1', 'M1').concat([['Q1:2','KM2:1'],['Q1:4','KM2:3'],['Q1:6','KM2:5'],['KM2:2','M2:U'],['KM2:4','M2:V'],['KM2:6','M2:W'],
+         ['G:L1','F1:1'],['F1:2','S0:11'],['S0:12','S1:13'],['S1:14','KM1:A1'],['KM1:A2','G:N'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KM1:A1','H1:X1'],['H1:X2','G:N'],
+         ['F1:2','S3:11'],['S3:12','S2:13'],['S2:14','KM2:A1'],['KM2:A2','KM1:A2'],['KM2:13','S2:13'],['KM2:14','S2:14'],['KM2:A1','H2:X1'],['H2:X2','H1:X2']]),
+       seq:true, cases:[
+         {label:'nothing pressed', set:{}, expect:{M1:0, M2:0, H1:0, H2:0}},
+         {label:'S1 pressed', set:{S1:{p:1}}, expect:{M1:1, M2:0, H1:1, H2:0}}, {label:'S1 released', set:{S1:{p:0}}, expect:{M1:1, M2:0, H1:1, H2:0}},
+         {label:'S2 pressed', set:{S2:{p:1}}, expect:{M1:1, M2:1, H1:1, H2:1}}, {label:'S2 released', set:{S2:{p:0}}, expect:{M1:1, M2:1, H1:1, H2:1}},
+         {label:'S0 pressed', set:{S0:{p:1}}, expect:{M1:0, M2:1, H1:0, H2:1}}, {label:'S0 released', set:{S0:{p:0}}, expect:{M1:0, M2:1, H1:0, H2:1}},
+         {label:'S3 pressed', set:{S3:{p:1}}, expect:{M1:0, M2:0, H1:0, H2:0}}, {label:'S3 released', set:{S3:{p:0}}, expect:{M1:0, M2:0, H1:0, H2:0}}],
+       patterns:[{sig:{H2:'000110000'}, msg:'M2 stops when you press S0 (M1\'s button): each motor must have its own STOP button in its own branch only.'}, {sig:{H1:'011110000'}, msg:'M1 stops when you press S3 (M2\'s button): each motor must have its own STOP button in its own branch only.'}],
+       okMsg:'Each motor runs on its own with its contactor, buttons and lamp, and both come from the same supply.'}
+  }
+});
+})();
+</script>
+</body>
+</html>

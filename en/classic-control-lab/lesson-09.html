@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Advanced topics: star/delta, motor braking methods, the central AC compressor circuit, and the soft starter</title>
+<meta name="description" content="Lesson 9, the last in the Classic Control course: automatic star/delta with a Y-Δ timer and manual with two buttons, motor braking by DC injection, phase reversal (plugging) and an electromagnetic brake, a 24V central AC compressor control circuit (transformer, thermostat, HP/LP, anti-short-cycle timer, manual-reset alarm), and the soft starter with a bypass and fault relay. 13 exercises on the wiring board with deliberate mistakes.">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/classic-control-lab/lesson-09.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/classic-control-lab/lesson-09.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/classic-control-lab/lesson-09.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/en/classic-control-lab/engine.css?v=20261021v">
+<link rel="stylesheet" href="/en/classic-control-lab/fx.css?v=20261021v">
+</head>
+<body>
+<div class="app">
+<header class="top site-header">
+  <div>
+    <h1>Lesson 9: Advanced topics: star/delta, braking, the AC compressor, and the soft starter</h1>
+    <p>The last lesson in the course, with the four topics you'll meet in large panels: <b>star/delta</b> for the starting current, <b>braking</b> so the motor stops on time, the <b>central AC compressor circuit</b> on 24V with pressure switches and a delay, and the <b>soft starter</b>, which raises the voltage gently. Each topic: definition → look and symbol → simulation → hands-on wiring → questions, and every exercise has its own circuit diagram.</p>
+  </div>
+  <div class="chips">
+    <a class="btn" href="/en/classic-control-lab/index.html">‹ Lessons</a>
+    <a class="btn" href="/en/labs.html">← All courses</a><span class="bar lang-slot"></span>
+  </div>
+</header>
+
+<div id="lesson"></div>
+
+<p class="foot">Symbols according to <span class="mono">IEC 60617</span> and <span class="mono">NEMA ICS 19</span>, and the Y-Δ timer terminal numbers (<span class="mono">17-18 / 17-28</span>) and soft starter terminals (<span class="mono">13-14 · 23-24 · 95-96</span>) according to common catalogues. Timer and ramp times in the simulation are short so you can see the result quickly: in reality the compressor's anti-short-cycle timer is 3 minutes, and the soft starter ramp is 5–30 seconds.<br>© &#x2066;2026 LearnElectricals&#x2069;. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script src="/site-config.js?v=20261021v"></script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script src="/assets/i18n-en.js?v=20261021v"></script>
+<script src="/en/classic-control-lab/engine.js?v=20261021v"></script>
+<script src="/en/classic-control-lab/fx.js?v=20261021v"></script>
+<script>
+(function(){
+/* lesson-09 exercise data: star/delta (sd1–sd4), braking (br1–br3), A/C compressor (ac1–ac3), soft starter (ss1–ss3). Embedded by build9.sh; also loaded by the Node tests. */
+const G   = {id:'G', type:'supply3P', name:'supply'};
+const Q3  = (label) => ({id:'Q1', type:'mcb', cfg:{poles:3, label:label || 'C16'}, name:'power breaker'});
+const F1  = {id:'F1', type:'mcb', cfg:{poles:1, label:'C2'}, name:'control breaker'};
+const PB  = (id, color, label, blocks) => ({id, type:'pb', cfg:{color, label, blocks:blocks || [color === 'red' ? 'NC' : 'NO']}});
+const KM  = (id, aux, name, extra) => ({id, type:'contactor', cfg:Object.assign({v:230, aux:aux || ['NO','NC']}, extra || {}), name:name || 'contactor'});
+const OL  = (Ir, o) => ({id:'F2', type:'ol', cfg:Object.assign({Ir, lo:4, hi:6.5, model:'LRD10', range:'4-6 A'}, o || {}), name:'Overload'});
+const MOT = (id, name, o) => ({id, type:'motor', cfg:Object.assign({term:3, kW:2.2, In:4.9, look:'motor'}, o || {}), name:name || 'motor'});
+const M6  = {id:'M1', type:'motor', cfg:{term:6, kW:7.5, In:15, vD:400, vY:690, cosf:0.85, rpm:1455, tStart:1.5, load:0.8, model:'1LE1'}, name:'Motor 7.5 kW (400Δ/690Y)'};
+const lamp = (id, color, name, v) => ({id, type:'lamp', cfg:{color, v:v || 230}, name});
+const X1  = {id:'X1', type:'tb', cfg:{n:6, bridges:[[1,2,3],[4,5,6]], labels:{1:'L',2:'L',3:'L',4:'N',5:'N',6:'N'}}, name:'Terminal block (L bar and N bar)'};
+const X24 = {id:'X1', type:'tb', cfg:{n:6, bridges:[[1,2,3],[4,5,6]], labels:{1:'24V',2:'24V',3:'24V',4:'0V',5:'0V',6:'0V'}}, name:'Terminal block (24V bar and 0V bar)'};
+const S0 = PB('S0', 'red', 'STOP'), S1 = PB('S1', 'green', 'START');
+const off = ids => { const o = {}; ids.forEach(i => o[i] = 0); return o; };
+// seq cases: a key missing from a case keeps the previous case's expectation (the first case lists every output)
+const SEQ = list => { let prev = {}; return list.map(c => { const e = Object.assign({}, prev, c.expect); prev = e; return Object.assign({}, c, {expect:e}); }); };
+const HOLD = (pb, km) => [[km+':13', pb+':13'], [km+':14', pb+':14']];
+const FEED_OL = [['G:L1','F1:1'],['F1:2','F2:95'],['F2:96','S0:11'],['S0:12','X1:1a'],['G:N','X1:4a']];
+// 3-phase power: Q1 → KM1 → F2 → motor (3 terminals)
+const PWR_DOL = [['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','KM1:1'],['Q1:4','KM1:3'],['Q1:6','KM1:5'],['KM1:2','F2:1'],['KM1:4','F2:3'],['KM1:6','F2:5'],['F2:2','M1:U'],['F2:4','M1:V'],['F2:6','M1:W']];
+const PWR_REV = [['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','KM1:1'],['Q1:4','KM1:3'],['Q1:6','KM1:5'],['KM1:1','KM2:1'],['KM1:3','KM2:3'],['KM1:5','KM2:5'],['KM1:2','F2:1'],['KM1:4','F2:3'],['KM1:6','F2:5'],['KM2:2','F2:5'],['KM2:4','F2:3'],['KM2:6','F2:1'],['F2:2','M1:U'],['F2:4','M1:V'],['F2:6','M1:W']];
+// star/delta power: Q1 → KM1 (main) → F2 (in the phase line) → U1 V1 W1 ; Q1 → KM3 (delta) → W2 U2 V2 (the cross) ; KM2 (star) joins W2 U2 V2 through its bridged 2-4-6
+const PWR_SD = [['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','KM1:1'],['Q1:4','KM1:3'],['Q1:6','KM1:5'],['Q1:2','KM3:1'],['Q1:4','KM3:3'],['Q1:6','KM3:5'],
+  ['KM1:2','F2:1'],['KM1:4','F2:3'],['KM1:6','F2:5'],['F2:2','M1:U1'],['F2:4','M1:V1'],['F2:6','M1:W1'],
+  ['KM3:2','M1:W2'],['KM3:4','M1:U2'],['KM3:6','M1:V2'],['KM2:1','M1:W2'],['KM2:3','M1:U2'],['KM2:5','M1:V2'],['KM2:2','KM2:4'],['KM2:4','KM2:6']];
+const PWR_SD_STEPS = ['L1 L2 L3 from the supply to breaker Q1.','From the Q1 outputs to KM1 (main) terminals 1/3/5, and from the same outputs to KM3 (delta) terminals 1/3/5.','From KM1 2/4/6 to the inputs of overload F2 1/3/5, and from its outputs 2/4/6 to U1 V1 W1 (the overload here is in the winding line, so it\'s set to In/√3).','Delta (cross-over): KM3 2 to W2, 4 to U2, and 6 to V2.','Star: KM2 1 to W2, 3 to U2, and 5 to V2, with a jumper across its outputs 2-4 and 4-6 (this is the star point).'];
+const SD_DEVS = (mech) => [G, Q3('C32'), F1, S0, S1, KM('KM1', ['NO','NO'], 'Main contactor', {model:'LC1D18', ac3:'18A · 7.5kW'}), KM('KM2', ['NO','NC'], 'Star contactor', mech ? {mech:'KM3'} : {}), KM('KM3', ['NO','NC'], 'Delta contactor', mech ? {mech:'KM2'} : {}), {id:'KT', type:'timer', cfg:{mode:'sd', t:5, model:'RE22R Y-Δ', range:'1–30 s'}, name:'Star/delta timer'}, OL(8.7, {lo:7, hi:10, model:'LRD14', range:'7-10 A'}), M6, lamp('H1', 'green', 'running'), lamp('H2', 'amber', 'star'), lamp('H3', 'blue', 'delta'), X1];
+const SD_CTL = FEED_OL.concat([['X1:1b','S1:13'],['S1:14','KM1:A1']], HOLD('S1', 'KM1'), [['KM1:A2','X1:4b'],['KM1:A1','KT:A1'],['KT:A2','X1:5a'],['KT:A1','H1:X1'],['H1:X2','X1:4b'],
+  ['X1:2a','KT:17'],['KT:18','KM3:21'],['KM3:22','KM2:A1'],['KM2:A2','X1:5b'],['KM2:A1','H2:X1'],['H2:X2','X1:5b'],
+  ['KT:28','KM2:21'],['KM2:22','KM3:A1'],['KM3:A2','X1:6a'],['KM3:A1','H3:X1'],['H3:X2','X1:6a']]);
+const SD_CASES = SEQ([
+  {label:'nothing pressed', set:{}, expect:{M1:0, KM1:0, KM2:0, KM3:0, H1:0, H2:0, H3:0}},
+  {label:'START pressed', set:{S1:{p:1}}, expect:{M1:'Y', KM1:1, KM2:1, KM3:0, H1:1, H2:1, H3:0}},
+  {label:'Released START (the timer is counting)', set:{S1:{p:0}}, expect:{M1:'Y', KM1:1, KM2:1, KM3:0, H1:1, H2:1, H3:0}},
+  {label:'After 4 seconds (still star)', set:{}, wait:4, expect:{M1:'Y', KM1:1, KM2:1, KM3:0, H2:1, H3:0}},
+  {label:'After the time t=5 s (delta)', set:{}, wait:1.5, expect:{M1:'D', KM1:1, KM2:0, KM3:1, H1:1, H2:0, H3:1}},
+  {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, KM1:0, KM2:0, KM3:0, H1:0, H2:0, H3:0}},
+  {label:'STOP released', set:{S0:{p:0}}, expect:{M1:0, KM1:0, KM2:0, KM3:0}}]);
+const SD_SHORT = 'Star contactor KM2 and delta contactor KM3 pulled in together: the star point (W2 U2 V2 shorted together) got connected to L1 L2 L3 at the same time = a short circuit between phases, and breaker Q1 tripped. KM2 must feed from <b>17-18</b> through KM3\'s NC, and KM3 from <b>17-28</b> through KM2\'s NC (the interlock), plus a mechanical interlock.';
+
+const L9EX = {
+  /* ------------------------------------------------ 1. star / delta */
+  sd1:{story:{icon:'⭐', text:'A brick factory: if the 15 kW mixer motor starts straight in delta, the main breaker trips on the starting current. The manager wants automatic star/delta.', ask:'Star/delta with a Y-Δ timer, an interlock and lamps.'}, machine:'gauge', title:'Automatic star/delta with a Y-Δ timer + lamps', short:'Automatic star/delta',
+    goal:'START: the motor starts in star (KM1 + KM2), and after the time set on the timer it changes to delta (KM1 + KM3) by itself. STOP stops everything. A “running” lamp, a “star” lamp and a “delta” lamp.',
+    idea:'A star/delta timer has two contacts: <b>17-18</b> is closed from the first moment until the time runs out (it drives KM2, star), then opens, and 50 ms later <b>17-28</b> closes (it drives KM3, delta). Main contactor KM1 pulls in, seals itself in and feeds the timer. Each of KM2/KM3 has its NC in the other\'s line = interlock.',
+    steps:{power:PWR_SD_STEPS, control:['L1 to F1, from F1 to overload 95-96, then STOP, then the L bar. N to the N bar.','KM1 line: from the L bar to START in parallel with KM1\'s seal-in (13-14), then A1 of KM1, and A2 to the N bar. Timer KT A1-A2 in parallel with KM1\'s coil, and the “running” lamp with them.','Star line: from the L bar to KT 17, from 18 to KM3\'s NC (21-22), from 22 to A1 of KM2, and A2 to N. The “star” lamp on A1 of KM2.','Delta line: from KT 28 to KM2\'s NC (21-22), from 22 to A1 of KM3, and A2 to N. The “delta” lamp on A1 of KM3.']},
+    tip:'Set the timer to 5 seconds. Start it and watch: star (yellow lamp, current ~2×In) → after 5 s: KM2 drops out and a moment later KM3 pulls in (blue lamp). The overload is in the winding line, so Ir = In/√3 = 15/1.73 ≈ 8.7 A.',
+    devices:SD_DEVS(true), solution:PWR_SD.concat(SD_CTL), seq:true, cases:SD_CASES, shortMsg:SD_SHORT,
+    patterns:[{sig:{KM2:'0000000'}, msg:'Star contactor KM2 never pulls in: the star line must start from the L bar to <b>KT 17</b>, and from <b>18</b> (closed before the time runs out) to KM3\'s NC, then KM2\'s coil.'}, {sig:{KM3:'0000000'}, msg:'Delta contactor KM3 never pulls in: after the time the timer closes <b>17-28</b>. From 28 to KM2\'s NC (21-22), then KM3\'s coil.'}, {sig:{KM2:'0111100'}, msg:'Star KM2 doesn\'t drop out after the time: its coil must feed from <b>KT 18</b> (which opens after t), not straight from the L bar.'}],
+    okMsg:'Automatic star/delta is working: the current in star is a third of the current in delta, and the changeover happens by itself after the time, with a 50 ms gap between KM2 dropping out and KM3 pulling in.'},
+  sd2:{story:{icon:'⭐', text:'A large irrigation pump in an old panel without a timer: the operator starts in star with a button, and when the speed settles he presses delta.', ask:'Manual star/delta with two buttons and an interlock.'}, machine:'gauge', title:'Manual star/delta with two buttons (star, then delta)', short:'Manual star/delta',
+    goal:'The “Star” button starts the motor in star (KM2, and main KM1 pulls in with it and seals in). The “Delta” button (double) drops the star and pulls in the delta. STOP stops everything. A star lamp, a delta lamp and a running lamp.',
+    idea:'Without a timer the technician does the changeover. The “Delta” button\'s NC cuts the star line first, and its NO starts the delta (break-before-make). Delta only works if main KM1 is running (a KM1 NO contact in the delta line), and there\'s an NC interlock between KM2 and KM3.',
+    steps:{power:PWR_SD_STEPS, control:['L1 to F1, then overload 95-96, then STOP, then the L bar, and N to the N bar.','Star line: from the L bar to the “Star” button 13-14 in parallel with KM2\'s seal-in (13-14), then the “Delta” button\'s NC (21-22), then KM3\'s NC (21-22), then A1 of KM2, and A2 to N. The “star” lamp on A1 of KM2.','Main line: from the L bar to KM2 NO contact (33-34) in parallel with KM1\'s seal-in (13-14), then A1 of KM1, and A2 to N.','Delta line: from the L bar to KM1 NO contact (23-24), then the “Delta” button\'s NO (13-14) in parallel with KM3\'s seal-in (13-14), then KM2\'s NC (21-22), then A1 of KM3, and A2 to N. The “delta” lamp on A1 of KM3, and the “running” lamp from KM1 24.']},
+    tip:'Press “Star” and wait for the motor to get up to speed (two seconds), then “Delta”. If you press “Delta” first nothing happens: KM1 is still stopped.',
+    devices:[G, Q3('C32'), F1, S0, PB('S1', 'green', 'Star Y'), PB('S2', 'black', 'Delta Δ', ['NO','NC']), KM('KM1', ['NO','NO'], 'Main contactor', {model:'LC1D18', ac3:'18A · 7.5kW'}), KM('KM2', ['NO','NC','NO'], 'Star contactor', {mech:'KM3'}), KM('KM3', ['NO','NC'], 'Delta contactor', {mech:'KM2'}), OL(8.7, {lo:7, hi:10, model:'LRD14', range:'7-10 A'}), M6, lamp('H1', 'green', 'running'), lamp('H2', 'amber', 'star'), lamp('H3', 'blue', 'delta'), X1],
+    solution:PWR_SD.concat(FEED_OL, [['X1:1b','S1:13'],['KM2:13','S1:13'],['S1:14','S2:21'],['KM2:14','S1:14'],['S2:22','KM3:21'],['KM3:22','KM2:A1'],['KM2:A2','X1:4b'],['KM2:A1','H2:X1'],['H2:X2','X1:4b'],
+      ['X1:2a','KM2:33'],['KM2:34','KM1:A1'],['KM1:13','KM2:33'],['KM1:14','KM2:34'],['KM1:A2','X1:5a'],
+      ['X1:2b','KM1:23'],['KM1:24','S2:13'],['KM3:13','S2:13'],['S2:14','KM2:21'],['KM3:14','S2:14'],['KM2:22','KM3:A1'],['KM3:A2','X1:5b'],['KM3:A1','H3:X1'],['H3:X2','X1:5b'],['KM1:24','H1:X1'],['H1:X2','X1:6a']]),
+    seq:true, cases:SEQ([
+      {label:'nothing pressed', set:{}, expect:{M1:0, KM1:0, KM2:0, KM3:0, H1:0, H2:0, H3:0}},
+      {label:'“Delta” pressed and the motor stopped', set:{S2:{p:1}}, expect:{M1:0, KM1:0, KM2:0, KM3:0}},
+      {label:'Released “Delta”', set:{S2:{p:0}}, expect:{M1:0, KM3:0}},
+      {label:'“Star” pressed', set:{S1:{p:1}}, expect:{M1:'Y', KM1:1, KM2:1, KM3:0, H2:1, H3:0, H1:1}},
+      {label:'Released “Star”', set:{S1:{p:0}}, expect:{M1:'Y', KM1:1, KM2:1, KM3:0, H2:1}},
+      {label:'“Delta” pressed', set:{S2:{p:1}}, expect:{M1:'D', KM1:1, KM2:0, KM3:1, H2:0, H3:1}},
+      {label:'Released “Delta”', set:{S2:{p:0}}, expect:{M1:'D', KM1:1, KM2:0, KM3:1, H3:1}},
+      {label:'“Star” pressed while the motor is in delta', set:{S1:{p:1}}, expect:{M1:'D', KM2:0, KM3:1}},
+      {label:'Released “Star”', set:{S1:{p:0}}, expect:{M1:'D', KM2:0}},
+      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, KM1:0, KM2:0, KM3:0, H1:0, H2:0, H3:0}},
+      {label:'STOP released', set:{S0:{p:0}}, expect:{M1:0, KM1:0, KM2:0, KM3:0}}]),
+    shortMsg:'Star KM2 and delta KM3 pulled in together = a short circuit between phases. The “Delta” button\'s NC must cut the star line before its NO starts the delta, together with each contactor\'s NC in the other\'s line.',
+    patterns:[{sig:{KM3:'01?????????'}, msg:'Delta runs while the motor is stopped: the delta line must start from contact <b>KM1 NO (23-24)</b>, so delta only works if the main contactor is running.'}, {sig:{KM2:'00011111???'}, msg:'Star doesn\'t drop out when you press “Delta”: the star line must pass through <b>the “Delta” button\'s NC (21-22)</b>.'}, {sig:{KM1:'00011100000'}, msg:'Main KM1 drops out with the star: KM1\'s seal-in is missing (13-14 in parallel with KM2 contact 33-34).'}],
+    okMsg:'This is manual changeover: the technician waits for the motor to get up to speed, then presses “Delta”. In old panels it\'s a 3-position selector (0 - Y - Δ) with the same idea.'},
+  sd3:{story:{icon:'🔧', text:'Fault report: “The motor starts straight in delta and the breaker trips!” The electrician fitted the star jumpers on the wrong terminals.', ask:'Find the jumper mistake and fix it.'}, machine:'gauge', title:'Mistake: star jumpers on the wrong terminals (the motor starts straight in delta)', short:'Mistake: wrong star jumpers',
+    goal:'The goal is the same automatic star/delta circuit (sd1): it starts in star, and after the time, delta.',
+    idea:'In this circuit the technician wired star contactor KM2 the same way as the delta: its inputs come from L1 L2 L3 and its outputs go to W2 U2 V2, with no jumper across its outputs. The result: as soon as KM2 pulls in, the motor goes into delta immediately (each winding at 400V and a starting current of 6×In), and the timer is useless. Run it and see the “star” lamp lit while the motor is in delta.',
+    steps:['Switch on, press START, and look at the motor: “delta Δ” from the first moment, and the current is 90A instead of 30A.','Switch off, remove the wires coming from KM3\'s top terminals to KM2\'s top terminals (1, 3 and 5), and remove the wires from KM2\'s outputs (2, 4 and 6) going to the motor.','Connect KM2\'s top terminals 1, 3 and 5 to W2, U2 and V2.','Put a jumper across KM2\'s outputs: 2 to 4, and 4 to 6. This is the star point: when KM2 pulls in it shorts W2 U2 V2 together.','Run it again: star (yellow lamp, lower current) → after the time, delta.'],
+    tip:'The rule: the star contactor “shorts” the three terminals together without connecting them to any phase. The delta contactor is what brings the phases to W2 U2 V2.',
+    devices:SD_DEVS(true),
+    preset:PWR_SD.filter(w => !/^KM2:/.test(w[0])).concat([['KM3:1','KM2:1'],['KM3:3','KM2:3'],['KM3:5','KM2:5'],['KM2:2','M1:W2'],['KM2:4','M1:U2'],['KM2:6','M1:V2']], SD_CTL),
+    solution:PWR_SD.concat(SD_CTL), seq:true, cases:SD_CASES, shortMsg:SD_SHORT,
+    diagnose(byId, W){ const has = (a, b) => W.some(w => (w.a === a && w.b === b) || (w.a === b && w.b === a)); const bridged = has('KM2:2', 'KM2:4') || has('KM2:4', 'KM2:6') || has('KM2:2', 'KM2:6'); const fed = W.some(w => [w.a, w.b].some(t => /^KM2:[135]$/.test(t)) && [w.a, w.b].some(t => /^(KM3|KM1|Q1):[1-6]$/.test(t))); if (fed || (!bridged && W.some(w => [w.a, w.b].some(t => /^KM2:[2-6]$/.test(t)) && [w.a, w.b].some(t => /^M1:/.test(t))))) return 'Star contactor KM2 is wired as if it were a second delta contactor: its inputs come from the phases and its outputs go to the motor terminals, so as soon as it pulls in the motor goes <b>straight into delta</b> (each winding at 400V and a starting current of 6×In). The correct way: KM2 takes W2 U2 V2 on its top terminals, with <b>a jumper across its outputs 2-4-6</b> (the star point), and no phase goes into it at all.'; return ''; },
+    okMsg:'Now KM2 only makes the star point. The whole difference between star and delta is in these three terminals: shorted together (Y), or each on a phase (Δ).'},
+  sd4:{story:{icon:'💥', text:'The first run after maintenance: at the moment of changeover from star to delta there was a short circuit and the breaker tripped. The interlock between KM2 and KM3 is missing.', ask:'Complete the electrical interlock between the star and delta contactors.'}, machine:'gauge', title:'Mistake: the interlock between KM2 and KM3 is missing (short circuit and the breaker trips)', short:'Mistake: Y/Δ interlock missing',
+    goal:'The goal is the same automatic star/delta circuit (sd1): KM2 drops out before KM3 pulls in, and they never pull in together.',
+    idea:'Here star coil KM2 is fed straight from the L bar (not from 17-18), and delta coil KM3 straight from 17-28, with no NC interlock between them. After the time KM3 pulls in while KM2 is still pulled in: the star point gets connected to the phases = a short circuit, and breaker Q1 trips (the two contactors here have no mechanical interlock, so you can see the result).',
+    steps:['Switch on, press START and wait for the time: short circuit! Q1 tripped.','Switch off, and remove the KM2 coil wire coming from the L bar, and the KM3 coil wire coming straight from KT 28.','Star: from KT 18 to KM3\'s NC (21), and from 22 to A1 of KM2.','Delta: from KT 28 to KM2\'s NC (21), and from 22 to A1 of KM3.','Reset Q1 and run it again: star → after the time, delta, with no short circuit.'],
+    tip:'The Y-Δ timer leaves 50 ms between 17-18 opening and 17-28 closing so the arc in KM2 can go out. The NC interlock is a second protection in case someone wires it wrong or a contact welds.',
+    devices:SD_DEVS(false),
+    preset:PWR_SD.concat(FEED_OL, [['X1:1b','S1:13'],['S1:14','KM1:A1']], HOLD('S1', 'KM1'), [['KM1:A2','X1:4b'],['KM1:A1','KT:A1'],['KT:A2','X1:5a'],['KT:A1','H1:X1'],['H1:X2','X1:4b'],
+      ['X1:2a','KT:17'],['X1:2b','KM2:A1'],['KM2:A2','X1:5b'],['KM2:A1','H2:X1'],['H2:X2','X1:5b'],
+      ['KT:28','KM3:A1'],['KM3:A2','X1:6a'],['KM3:A1','H3:X1'],['H3:X2','X1:6a']]),
+    solution:PWR_SD.concat(SD_CTL), seq:true, cases:SD_CASES, shortMsg:SD_SHORT,
+    okMsg:'Now star feeds from 17-18 and delta from 17-28, and each one blocks the other\'s path with its NC. In a real panel add the mechanical interlock too.'},
+
+  /* ------------------------------------------------ 2. braking */
+  br1:{story:{icon:'🛑', text:'A large circular saw: after STOP the blade keeps turning for half a minute, which is dangerous. The engineer wants DC injection braking.', ask:'DC braking with contactor KM4 and a timer after STOP.'}, machine:'gauge', title:'DC injection braking with contactor KM4 and a timer after STOP', short:'DC braking',
+    goal:'Normal START/STOP for the motor. When you press STOP: KM4 pulls in for the timer\'s time and injects DC from the rectifier into two of the motor windings, so the motor stops in under a second instead of coasting for 6 seconds.',
+    idea:'An <b>off-delay</b> timer KT with its coil in parallel with KM1\'s coil: 15-18 closes with KM1 and stays closed for a time t after KM1 drops out. The braking line: KT 15-18 → KM1\'s NC (21-22) → KM4\'s coil. So KM4 pulls in only when KM1 drops out and while the timer is counting. KM4 connects AC to the rectifier with its auxiliary contact, and DC+ / DC− to U and V. The interlock: KM4\'s NC in KM1\'s line.',
+    steps:{power:['L1 L2 L3 to Q1, from Q1 to KM1 1/3/5, from KM1 2/4/6 to the overload, and from the overload to U V W.','From the rectifier DC+ to KM4 1, and from KM4 2 to U. From DC− to KM4 3, and from KM4 4 to V.'], control:['L1 to F1, then overload 95-96, then STOP, then the L bar, and N to the N bar.','Run line: from the L bar to START in parallel with KM1\'s seal-in, then KM4\'s NC (21-22), then A1 of KM1, and A2 to N. Timer KT A1-A2 in parallel with KM1\'s coil, and the “running” lamp with them.','Braking line (from before STOP so it works while you\'re pressing it): from overload output 96 to KT 15, from 18 to KM1\'s NC (21), from 22 to A1 of KM4, and A2 to N. The “braking” lamp on A1 of KM4.','The rectifier: from KT 15 (the same point before STOP) to KM4 13, from 14 to the rectifier\'s AC1, and AC2 to N.']},
+    tip:'Set KT to two seconds. Start the motor, let it get up to speed, and press STOP: the braking lamp lights, the motor stops in under a second, and after two seconds KM4 drops out. Without braking the motor keeps turning for 6 seconds.',
+    devices:[G, Q3('C16'), F1, S0, S1, KM('KM1', ['NO','NC'], 'Run contactor'), KM('KM4', ['NO','NC'], 'Braking contactor', {model:'LC1D09'}), {id:'KT', type:'timer', cfg:{mode:'off', t:2}, name:'Off-delay timer'}, {id:'V1', type:'rectifier', cfg:{}, name:'Braking rectifier'}, OL(4.9), MOT('M1', 'motor', {coast:6, tBrake:0.8}), lamp('H1', 'green', 'running'), lamp('H2', 'blue', 'DC braking'), X1],
+    solution:PWR_DOL.concat([['V1:DC+','KM4:1'],['KM4:2','M1:U'],['V1:DC-','KM4:3'],['KM4:4','M1:V']], FEED_OL, [['X1:1b','S1:13'],['S1:14','KM4:21'],['KM4:22','KM1:A1']], HOLD('S1', 'KM1'), [['KM1:A2','X1:4b'],['KM1:A1','KT:A1'],['KT:A2','X1:5a'],['KT:A1','H1:X1'],['H1:X2','X1:4b'],
+      ['F2:96','KT:15'],['KT:18','KM1:21'],['KM1:22','KM4:A1'],['KM4:A2','X1:5b'],['KM4:A1','H2:X1'],['H2:X2','X1:5b'],['KT:15','KM4:13'],['KM4:14','V1:AC1'],['V1:AC2','X1:6a']]),
+    seq:true, cases:SEQ([
+      {label:'nothing pressed', set:{}, expect:{M1:0, KM1:0, KM4:0, H1:0, H2:0}},
+      {label:'START pressed', set:{S1:{p:1}}, expect:{M1:1, KM1:1, KM4:0, H1:1, H2:0}},
+      {label:'Released START, after two seconds (full speed)', set:{S1:{p:0}}, wait:2, expect:{M1:1, KM1:1, KM4:0, H1:1}},
+      {label:'STOP pressed (after 0.3 s)', set:{S0:{p:1}}, wait:0.3, expect:{M1:'B', KM1:0, KM4:1, H1:0, H2:1}},
+      {label:'Released STOP (after one second)', set:{S0:{p:0}}, wait:1, expect:{M1:'S', KM4:1, H2:1}},
+      {label:'After the timer\'s time (two seconds)', set:{}, wait:2.2, expect:{M1:'S', KM1:0, KM4:0, H2:0}},
+      {label:'START again', set:{S1:{p:1}}, expect:{M1:1, KM1:1, KM4:0, H1:1, H2:0}}]),
+    shortMsg:'Braking KM4 pulled in while run KM1 is still pulled in: the phase and DC on the same motor terminal = a short circuit. KM4 must feed through <b>KM1\'s NC</b>, and KM1 through KM4\'s NC.',
+    patterns:[{sig:{KM4:'0000000'}, msg:'Braking contactor KM4 never pulls in: the braking line goes from before STOP (overload 96) to <b>KT 15</b>, and from <b>18</b> (which stays closed for a time t after KM1 drops out) to KM1\'s NC, then KM4\'s coil. And the off-delay timer\'s coil must be in parallel with KM1\'s coil.'}, {sig:{KM4:'0000001'}, msg:'KM4 pulls in with START instead of after STOP: you\'re feeding from KM1\'s NO contact instead of the <b>NC (21-22)</b>.'}],
+    okMsg:'DC braking: the direct current makes a stationary field in the stator, and the rotor turning inside it gets braked. The time on the timer must be just enough to stop, because DC heats the windings.'},
+  br2:{story:{icon:'🛑', text:'A packaging machine: the motor must stop immediately after STOP by reversing the phases for a short pulse, without turning in reverse.', ask:'Plugging braking with a pulse timer.'}, machine:'gauge', title:'Phase-reversal braking (plugging) with a short pulse timer', short:'Plugging braking',
+    goal:'Normal START/STOP forward (KM1). When you press STOP: KM2 (reverse) pulls in for one second, reversing the phases so the motor stops quickly, and then KM2 drops out before the motor starts turning in reverse.',
+    idea:'Off-delay timer KT in parallel with KM1\'s coil. The reverse line: KT 15-18 → KM1\'s NC → KM2\'s coil. After STOP: KM1 drops out so its NC closes, and the timer is still closed = KM2 pulls in for one second. The NC interlock between KM1 and KM2 is essential here because reversing without it is a short circuit. In practice a <b>zero-speed switch</b> is fitted to cut the reversing as soon as the motor stops.',
+    steps:{power:['L1 L2 L3 to Q1, from Q1 to KM1 1/3/5, and jumpers from KM1\'s top terminals to KM2\'s top terminals.','From KM1 2/4/6 to overload 1/3/5 in order, and from KM2 reversed (2 to 5, and 6 to 1).','From the overload to U V W.'], control:['L1 to F1, then overload 95-96, then STOP, then the L bar, and N to the N bar.','Forward line: from the L bar to START in parallel with KM1\'s seal-in, then KM2\'s NC (21-22), then A1 of KM1, and A2 to N. Timer KT in parallel with KM1\'s coil, and the “running” lamp.','Reverse line (from before STOP): from overload output 96 to KT 15, from 18 to KM1\'s NC (21), from 22 to A1 of KM2, and A2 to N. The “braking” lamp on A1 of KM2.']},
+    tip:'Set KT to one second. If you increase the time you\'ll find that after the motor stops it starts turning in reverse: that\'s the danger of plugging, and that\'s why factories use a zero-speed switch instead of the timer.',
+    devices:[G, Q3('C16'), F1, S0, S1, KM('KM1', ['NO','NC'], 'Forward contactor', {mech:'KM2'}), KM('KM2', ['NO','NC'], 'Reverse contactor (braking)', {mech:'KM1'}), {id:'KT', type:'timer', cfg:{mode:'off', t:1}, name:'Off-delay timer'}, OL(4.9), MOT('M1', 'motor', {coast:6}), lamp('H1', 'green', 'running forward'), lamp('H2', 'amber', 'Reverse braking'), X1],
+    solution:PWR_REV.concat(FEED_OL, [['X1:1b','S1:13'],['S1:14','KM2:21'],['KM2:22','KM1:A1']], HOLD('S1', 'KM1'), [['KM1:A2','X1:4b'],['KM1:A1','KT:A1'],['KT:A2','X1:5a'],['KT:A1','H1:X1'],['H1:X2','X1:4b'],
+      ['F2:96','KT:15'],['KT:18','KM1:21'],['KM1:22','KM2:A1'],['KM2:A2','X1:5b'],['KM2:A1','H2:X1'],['H2:X2','X1:5b']]),
+    seq:true, cases:SEQ([
+      {label:'nothing pressed', set:{}, expect:{M1:0, KM1:0, KM2:0, H1:0, H2:0}},
+      {label:'START pressed, after 1.5 s', set:{S1:{p:1}}, wait:1.5, expect:{M1:'F', KM1:1, KM2:0, H1:1}},
+      {label:'START released', set:{S1:{p:0}}, expect:{M1:'F', KM1:1, KM2:0}},
+      {label:'STOP pressed (after 0.4 s: the reverse pulse)', set:{S0:{p:1}}, wait:0.4, expect:{M1:'R', KM1:0, KM2:1, H1:0, H2:1}},
+      {label:'Released STOP, after 1.5 s (the pulse is over)', set:{S0:{p:0}}, wait:1.6, expect:{M1:'S', KM1:0, KM2:0, H2:0}},
+      {label:'START again', set:{S1:{p:1}}, wait:0.3, expect:{M1:'F', KM1:1, KM2:0, H1:1, H2:0}}]),
+    shortMsg:'KM1 and KM2 pulled in together = a short circuit between two phases. KM2 must feed through KM1\'s NC, and KM1 through KM2\'s NC.',
+    patterns:[{sig:{KM2:'000000'}, msg:'Reverse contactor KM2 never pulls in: from before STOP (overload 96) to <b>KT 15</b>, and from <b>18</b> to KM1\'s NC (21-22), then KM2\'s coil, with the off-delay timer in parallel with KM1\'s coil.'}, {sig:{KM2:'011000'}, msg:'KM2 pulls in with KM1 (or makes a short circuit): the reverse line must pass through KM1\'s <b>NC</b>, not its NO.'}],
+    okMsg:'Plugging: the most violent and fastest braking method (the reverse current is bigger than the starting current). It\'s used for machines that must stop immediately, together with a zero-speed switch.'},
+  br3:{story:{icon:'🏗️', text:'A hoist: if the power is cut while the load is hanging, the mechanical brake must hold by itself, and release only when KM1 pulls in.', ask:'The brake coil from a KM1 contact.'}, machine:'hoist', title:'Electromagnetic brake (hoist): the coil releases the brake from a KM1 contact', short:'Mechanical brake (hoist)',
+    goal:'A hoist motor with START/STOP. Brake coil Y1 gets its voltage from a KM1 auxiliary contact: the contactor pulls in = the brake releases and the motor turns. KM1 drops out = the coil de-energises and the springs clamp the brake onto the shaft immediately, and the load doesn\'t come down.',
+    idea:'A “spring-applied” mechanical brake: with no voltage the springs keep the brake closed (safe if the power is cut). When coil A1-A2 gets voltage it pulls the jaws and frees the disc. Contact <b>KM1 NO (23-24)</b> feeds the coil exactly together with the motor.',
+    steps:{power:['L1 L2 L3 to Q1, from Q1 to KM1 1/3/5, from KM1 2/4/6 to the overload, and from the overload to U V W.'], control:['L1 to F1, then overload 95-96, then STOP, then the L bar, and N to the N bar.','Run line: from the L bar to START in parallel with KM1\'s seal-in, then A1 of KM1, and A2 to N. The “running” lamp on A1.','The brake: from the L bar to KM1 NO contact (23), from 24 to A1 of brake Y1, and A2 to N.']},
+    tip:'Look at the brake cell: red = closed, blue = released. Press STOP and see the motor stop instantly (no “coasting”).',
+    devices:[G, Q3('C16'), F1, S0, PB('S1', 'green', 'Up'), KM('KM1', ['NO','NO'], 'Hoist contactor'), OL(4.9), MOT('M1', 'Hoist motor', {coast:6}), {id:'Y1', type:'brake', cfg:{motor:'M1'}, name:'Hoist brake'}, lamp('H1', 'green', 'running'), X1],
+    solution:PWR_DOL.concat(FEED_OL, [['X1:1b','S1:13'],['S1:14','KM1:A1']], HOLD('S1', 'KM1'), [['KM1:A2','X1:4b'],['KM1:A1','H1:X1'],['H1:X2','X1:4b'],['X1:2a','KM1:23'],['KM1:24','Y1:A1'],['Y1:A2','X1:5a']]),
+    seq:true, cases:SEQ([
+      {label:'Nothing pressed (the brake is closed)', set:{}, expect:{M1:'S', KM1:0, Y1:0}},
+      {label:'“Up” pressed', set:{S1:{p:1}}, expect:{M1:1, KM1:1, Y1:1, H1:1}},
+      {label:'Released the button, after 1.2 s', set:{S1:{p:0}}, wait:1.2, expect:{M1:1, KM1:1, Y1:1}},
+      {label:'STOP pressed (after 0.3 s)', set:{S0:{p:1}}, wait:0.3, expect:{M1:'S', KM1:0, Y1:0, H1:0}},
+      {label:'STOP released', set:{S0:{p:0}}, expect:{M1:'S', KM1:0, Y1:0}}]),
+    patterns:[{sig:{Y1:'11111'}, msg:'Brake coil Y1 has voltage all the time (straight from the L bar), so the brake is always released and after STOP the load comes down by inertia. The coil must feed from <b>KM1 NO contact (23-24)</b> so it de-energises with the contactor.'}, {sig:{Y1:'00000'}, msg:'Brake coil Y1 never gets voltage: the brake is closed and the motor tries to turn while it\'s locked (a continuous starting current, the overload will trip). Connect A1 from KM1 24 and A2 to N.'}],
+    okMsg:'This is the most important condition on a hoist: the brake closes by itself on any disconnection (STOP, overload, power cut). On a real hoist the coil is DC with a rectifier inside the motor, and it\'s the same idea.'},
+
+  /* ------------------------------------------------ 3. A/C compressor */
+  ac1:{story:{icon:'❄️', text:'Central air conditioning for a mall: the compressor runs from the thermostat, and stops if the high or low pressure goes outside the limits, and it mustn\'t restart immediately.', ask:'A 24V compressor control circuit: thermostat + HP/LP + anti-recycle timer.'}, machine:'compressor', title:'A 24V central AC compressor control circuit: thermostat + HP/LP + anti-short-cycle timer', short:'AC compressor (complete)',
+    goal:'A 230→24V transformer feeds the control circuit. The thermostat calls for cooling, and after the timer\'s time (anti-short-cycle) compressor KM1 and condenser fan KM2 start together. The high-pressure switch HP and the low-pressure switch LP (NC) in the safety chain stop the compressor. The crankcase heater is on as long as the compressor is stopped.',
+    idea:'The 24V safety chain: thermostat (NO, closes when it gets warm), then HP NC (opens if the pressure gets too high), then LP NC (opens if the pressure drops or there\'s no gas), then overload 95-96, then an on-delay timer. In reality the timer delays the compressor by 3 minutes (here 5 seconds) so the pressures equalise before it starts again. The crankcase heater is on <b>KM1\'s NC</b>: it\'s on only while stopped.',
+    steps:{power:['L1 L2 L3 to Q1, from Q1 to KM1 (compressor) 1/3/5 and KM2 (fan) 1/3/5.','From KM1 2/4/6 to the overload, and from the overload to the compressor U V W. From KM2 2/4/6 to the fan U V W.'], control:['The transformer: L1 to F1, from F1 to the transformer\'s H1, and H2 to N. From X1 (24V) to fuse F3, and from F3 to the 24V bar. X2 to the 0V bar.','The safety chain: from the 24V bar to thermostat B1 13-14, then HP B2 21-22, then LP B3 21-22, then overload 95-96, then A1 of timer KT, and A2 to 0V. KT 15 from the same point as A1.','Compressor and fan: from KT 18 to A1 of KM1, with A1 of KM2 alongside it, and their A2 to 0V. The “compressor running” lamp on A1 of KM2.','Crankcase heater: from the 24V bar to KM1 21 (NC), from 22 to heater E1, and its other end to 0V.']},
+    tip:'All the coils and lamps here are 24V: if you connect one to 230V it will burn out. Raise the thermostat temperature and watch the timer count, then raise the HP pressure and see the compressor drop out and the timer start again from the beginning.',
+    devices:[G, Q3('C16'), F1, {id:'T1', type:'xfmr', cfg:{v:230, vs:24}, name:'Control transformer'}, {id:'F3', type:'fuse', cfg:{poles:1, label:'2A'}, name:'24V fuse'}, {id:'B1', type:'level', cfg:{look:'thermo', at:0.6, max:40, hyst:0.05, blocks:['NO'], label:'thermostat'}, name:'Room thermostat'}, {id:'B2', type:'level', cfg:{look:'press', at:0.9, max:30, hyst:0.1, blocks:['NO','NC'], label:'HP high pressure'}, name:'High-pressure switch'}, {id:'B3', type:'level', cfg:{look:'press', below:true, at:0.15, max:30, hyst:0.05, blocks:['NO','NC'], label:'LP low pressure'}, name:'Low-pressure switch'}, {id:'KT', type:'timer', cfg:{mode:'on', t:5, v:24, model:'RE22R 24V'}, name:'Anti-short-cycle timer'}, KM('KM1', ['NO','NC'], 'Compressor contactor', {v:24, model:'LC1D18', ac3:'18A · 7.5kW'}), KM('KM2', ['NO'], 'Fan contactor', {v:24}), OL(8.4, {lo:7, hi:10, model:'LRD14', range:'7-10 A'}), MOT('M1', 'compressor', {kW:5.5, In:11, look:'pump'}), MOT('M2', 'condenser fan', {kW:0.75, In:1.9}), lamp('E1', 'amber', 'Crankcase heater', 24), lamp('H1', 'green', 'Compressor running', 24), X24],
+    solution:[['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','KM1:1'],['Q1:4','KM1:3'],['Q1:6','KM1:5'],['Q1:2','KM2:1'],['Q1:4','KM2:3'],['Q1:6','KM2:5'],['KM1:2','F2:1'],['KM1:4','F2:3'],['KM1:6','F2:5'],['F2:2','M1:U'],['F2:4','M1:V'],['F2:6','M1:W'],['KM2:2','M2:U'],['KM2:4','M2:V'],['KM2:6','M2:W'],
+      ['G:L1','F1:1'],['F1:2','T1:H1'],['T1:H2','G:N'],['T1:X1','F3:1'],['F3:2','X1:1a'],['T1:X2','X1:4a'],
+      ['X1:1b','B1:13'],['B1:14','B2:21'],['B2:22','B3:21'],['B3:22','F2:95'],['F2:96','KT:A1'],['KT:A2','X1:4b'],['F2:96','KT:15'],['KT:18','KM1:A1'],['KM1:A2','X1:5a'],['KM1:A1','KM2:A1'],['KM2:A2','X1:5b'],['KM2:A1','H1:X1'],['H1:X2','X1:5b'],
+      ['X1:2a','KM1:21'],['KM1:22','E1:X1'],['E1:X2','X1:6a']],
+    seq:true, noWarnNeutral:true, cases:SEQ([
+      {label:'Cool weather (the thermostat isn\'t calling)', set:{}, expect:{KM1:0, KM2:0, M1:0, M2:0, H1:0, E1:1, KT:0}},
+      {label:'The thermostat called for cooling', set:{B1:{a:1}}, expect:{KM1:0, KM2:0, M1:0, E1:1, KT:1}},
+      {label:'After the timer\'s time (5 s)', set:{}, wait:5.8, expect:{KM1:1, KM2:1, M1:1, M2:1, H1:1, E1:0}},
+      {label:'High pressure HP reached', set:{B2:{a:1}}, expect:{KM1:0, KM2:0, M1:0, M2:0, H1:0, E1:1, KT:0}},
+      {label:'High pressure dropped (the timer counts from the beginning)', set:{B2:{a:0}}, expect:{KM1:0, KM2:0, M1:0, M2:0, H1:0, E1:1, KT:1}},
+      {label:'After the timer\'s time', set:{}, wait:5.8, expect:{KM1:1, KM2:1, M1:1, M2:1, H1:1, E1:0, KT:1}},
+      {label:'Low pressure LP reached (low on gas)', set:{B3:{a:1}}, expect:{KM1:0, KM2:0, M1:0, M2:0, H1:0, E1:1, KT:0}},
+      {label:'Low pressure recovered, after the timer\'s time', set:{B3:{a:0}}, wait:5.8, expect:{KM1:1, KM2:1, M1:1, M2:1, H1:1, E1:0, KT:1}},
+      {label:'The thermostat is satisfied', set:{B1:{a:0}}, expect:{KM1:0, KM2:0, M1:0, M2:0, H1:0, E1:1, KT:0}}]),
+    patterns:[{sig:{KM1:'011?1?1?0'}, msg:'The compressor starts immediately without a delay: KM1\'s coil must feed from <b>KT 18</b> (which closes after the time), not straight from the safety chain.'}, {sig:{KM1:'001100???'}, msg:'The compressor doesn\'t drop out when the high pressure is reached: HP B2 must be <b>NC (21-22)</b> inside the safety chain before the timer.'}, {sig:{E1:'000000000'}, msg:'The crankcase heater doesn\'t come on: from the 24V bar to <b>KM1 21 (NC)</b> and from 22 to the heater, so it\'s on as long as the compressor is stopped.'}, {sig:{E1:'111111111'}, msg:'The crankcase heater is on even while the compressor is running: it must feed from <b>KM1\'s NC (21-22)</b>, not straight from the bar.'}],
+    okMsg:'This is the circuit you\'ll find in most central AC units: an NC safety chain, a delay before starting, and the heater protecting the compressor from liquid oil while it\'s stopped.'},
+  ac2:{story:{icon:'🔧', text:'Fault report: “The compressor hasn\'t run once since the maintenance.” The technician wired the low-pressure switch on NO instead of NC.', ask:'Find the LP switch mistake and fix it.'}, machine:'compressor', title:'Mistake: low-pressure switch LP wired NO (the compressor never runs)', short:'Mistake: LP on NO',
+    goal:'The goal is the same compressor circuit (ac1): the compressor runs after the delay when the thermostat calls and the pressures are OK.',
+    idea:'The technician wired LP on its <b>NO (13-14)</b> contact. The low-pressure switch operates (moves) when the pressure <b>drops</b> below the setting. In the normal state (pressure OK) the NO is open, so the chain is cut and the compressor will never run. The correct one is <b>NC (21-22)</b>: closed while the pressure is OK, and it opens when the gas runs low.',
+    steps:['Switch on, raise the thermostat temperature, and wait for the timer: nothing. Look at LP: “pressure OK” and its 13-14 contact is open.','Switch off, and remove the two wires on LP 13 and 14.','Connect from HP 22 to LP 21, and from LP 22 to overload 95.','Run it again: after the time the compressor starts. Drop the LP pressure (press on it) and see it drop out.'],
+    tip:'The rule for safety switches: the contact in the chain must be <b>closed in the healthy state</b> and open on danger. That\'s why HP and LP are both on NC, even though each one moves in a different direction.',
+    devices:null, preset:null, solution:null, seq:true, noWarnNeutral:true, cases:null,
+    diagnose(byId, W){ if (W.some(w => w.a === 'B3:13' || w.b === 'B3:13' || w.a === 'B3:14' || w.b === 'B3:14')) return 'Low-pressure switch LP (B3) is wired on <b>NO (13-14)</b>: this contact is open as long as the pressure is OK, so the safety chain is cut and the compressor will never run. Wire it on <b>NC (21-22)</b>: closed normally, and it opens when the pressure drops.'; return ''; },
+    okMsg:'Now LP opens only when the gas runs low. The same mistake happens with HP, and the result is more dangerous: the compressor keeps running at high pressure.'},
+  ac3:{story:{icon:'🚨', text:'The plant room: if the high pressure has tripped the compressor, an alarm must stay on until the technician comes and resets it by hand.', ask:'HP alarm with manual reset: a latching relay and a lamp.'}, machine:'compressor', title:'High-pressure alarm with manual reset: relay K1 latches and an alarm lamp', short:'HP alarm with reset',
+    goal:'If the high pressure is reached: relay K1 pulls in and seals itself in, the red alarm lamp lights, and the compressor drops out and doesn\'t come back even if the pressure drops, until the technician presses RESET. After the reset the compressor comes back after the timer\'s time.',
+    idea:'Here HP uses its <b>NO (13-14)</b> contact to drive relay K1 (24V). K1 seals itself in with its 11-14 contact in parallel with the HP contact, and the RESET button (NC) in K1\'s line releases the seal-in. And <b>K1\'s NC (21-22)</b> sits in the safety chain in place of the old HP contact. The alarm lamp is across K1\'s coil.',
+    steps:{power:['As in ac1: Q1 to KM1 and KM2, and the overload for the compressor.'], control:['The transformer, fuse and the 24V and 0V bars as in ac1.','The safety chain: from the 24V bar to thermostat B1, then <b>K1 21-22 (NC)</b>, then LP B3 21-22, then overload 95-96, then timer KT, and from KT 18 to KM1, KM2 and the heater as in ac1.','The alarm line: from the 24V bar to RESET S1 (11-12), then HP B2 13-14 (NO), then A1 of K1, and A2 to 0V. K1\'s seal-in: 11 to the HP input (S1 12) and 14 to the HP output (B2 14). Alarm lamp H2 on A1 of K1.']},
+    tip:'Raise the HP pressure and lower it again: the alarm stays on and the compressor stays stopped. Press RESET: the alarm goes off and the timer starts counting.',
+    devices:null, solution:null, seq:true, noWarnNeutral:true, cases:SEQ([
+      {label:'Cool weather', set:{}, expect:{KM1:0, M1:0, K1:0, H2:0, E1:1}},
+      {label:'The thermostat called, after the timer\'s time', set:{B1:{a:1}}, wait:5.8, expect:{KM1:1, M1:1, K1:0, H2:0, E1:0}},
+      {label:'High pressure reached', set:{B2:{a:1}}, expect:{KM1:0, M1:0, K1:1, H2:1, E1:1}},
+      {label:'The pressure dropped and the timer\'s time passed (still latched)', set:{B2:{a:0}}, wait:5.8, expect:{KM1:0, M1:0, K1:1, H2:1}},
+      {label:'RESET pressed', set:{S1:{p:1}}, expect:{K1:0, H2:0, KM1:0, E1:1}},
+      {label:'Released RESET, after the timer\'s time', set:{S1:{p:0}}, wait:5.8, expect:{KM1:1, M1:1, K1:0, H2:0, E1:0}}]),
+    patterns:[{sig:{K1:'001000'}, msg:'The alarm clears by itself when the pressure drops: <b>K1\'s seal-in</b> is missing (K1 contact 11-14 in parallel with HP contact 13-14).'}, {sig:{KM1:'010110'}, msg:'The compressor started again while the alarm is still on: <b>K1\'s NC (21-22)</b> must be inside the safety chain before the timer.'}, {sig:{K1:'000000'}, msg:'Alarm relay K1 never pulls in: from the 24V bar to RESET (NC), then HP <b>13-14 (NO)</b>, then A1 of K1, and A2 to 0V.'}, {sig:{K1:'001111'}, msg:'RESET doesn\'t clear the alarm: the RESET button (NC 11-12) must be in series in K1\'s line before the HP contact and the seal-in.'}],
+    okMsg:'A manual-reset alarm forces the technician to find the cause (a dirty condenser, a stopped fan) before the compressor comes back. This is required by HVAC codes.'},
+
+  /* ------------------------------------------------ 4. soft starter */
+  ss1:{story:{icon:'🌊', text:'A 45 kW municipal water pump: direct-on-line starting hammers the pipes with water hammer. A soft starter with a bypass was installed.', ask:'Soft starter + bypass contactor from the end-of-ramp relay.'}, machine:'gauge', title:'Soft starter with a bypass contactor from the end-of-ramp relay (13-14)', short:'Soft starter + bypass',
+    goal:'START/STOP on the soft starter\'s inputs (3-wire). The soft starter raises the voltage gradually (a ramp), and when it reaches 100% relay <b>13-14</b> closes, pulling in bypass contactor KM1, which connects the motor directly to the mains. The “running” lamp from RUN relay 23-24, and the “bypass” lamp on KM1.',
+    idea:'The thyristors heat up if they stay in circuit, so after the ramp we bypass them with a contactor in parallel: its top terminals from L1 L2 L3 and its outputs to T1 T2 T3. The overload is after the bypass point so it sees the motor current in both cases. Control: A1-A2 230V supply, IN2 (STOP) NC held on all the time, IN1 (START) a pulse.',
+    steps:{power:['L1 L2 L3 to Q1, from the Q1 outputs to the soft starter\'s L1 L2 L3, and from the same outputs to KM1 1/3/5 (the bypass).','From T1 T2 T3 to overload 1/3/5, and from KM1 2/4/6 to the same T1 T2 T3 terminals (in parallel with the thyristors).','From overload 2/4/6 to U V W.'], control:['L1 to F1, then overload 95-96, then the L bar, and N to the N bar. Soft starter supply: A1 from the L bar and A2 to N.','3-wire: from the L bar to STOP (11-12), from 12 to IN2 and to START 13, and from START 14 to IN1.','The bypass: from the L bar to 13, from 14 to A1 of KM1, and A2 to N. The “bypass” lamp on A1 of KM1.','The “running” lamp: from the L bar to 23, from 24 to the lamp, and its other end to N.']},
+    tip:'Set the ramp to 3 seconds. Press START and watch the display: 30% → 100%, the current limited to 3.5×In, and at 100% KM1 pulls in (BYPASS). STOP stops immediately (free-wheel).',
+    devices:[G, Q3('C16'), F1, S0, S1, {id:'SS', type:'softstarter', cfg:{ctl:'3w', tRamp:3, vInit:0.3, ilim:3.5, In:9}, name:'Soft starter'}, KM('KM1', ['NO'], 'Bypass contactor'), OL(4.9), MOT('M1', 'motor'), lamp('H1', 'green', 'running'), lamp('H2', 'blue', 'Bypass'), X1],
+    solution:[['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','SS:L1'],['Q1:4','SS:L2'],['Q1:6','SS:L3'],['Q1:2','KM1:1'],['Q1:4','KM1:3'],['Q1:6','KM1:5'],['SS:T1','F2:1'],['SS:T2','F2:3'],['SS:T3','F2:5'],['KM1:2','SS:T1'],['KM1:4','SS:T2'],['KM1:6','SS:T3'],['F2:2','M1:U'],['F2:4','M1:V'],['F2:6','M1:W'],
+      ['G:L1','F1:1'],['F1:2','F2:95'],['F2:96','X1:1a'],['G:N','X1:4a'],['X1:1b','SS:A1'],['SS:A2','X1:4b'],
+      ['X1:2a','S0:11'],['S0:12','SS:IN2'],['S0:12','S1:13'],['S1:14','SS:IN1'],
+      ['X1:2b','SS:13'],['SS:14','KM1:A1'],['KM1:A2','X1:5a'],['KM1:A1','H2:X1'],['H2:X2','X1:5a'],
+      ['X1:3a','SS:23'],['SS:24','H1:X1'],['H1:X2','X1:5b']],
+    seq:true, cases:SEQ([
+      {label:'nothing pressed', set:{}, expect:{M1:0, KM1:0, H1:0, H2:0}},
+      {label:'START pressed (start of the ramp)', set:{S1:{p:1}}, expect:{M1:1, KM1:0, H1:1, H2:0}},
+      {label:'Released START, after one second (still ramping)', set:{S1:{p:0}}, wait:1, expect:{M1:1, KM1:0, H1:1}},
+      {label:'After the ramp (3 s): bypass', set:{}, wait:2.5, expect:{M1:1, KM1:1, H1:1, H2:1}},
+      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, KM1:0, H1:0, H2:0}},
+      {label:'STOP released', set:{S0:{p:0}}, expect:{M1:0, KM1:0}}]),
+    patterns:[{sig:{KM1:'011100'}, msg:'The bypass contactor pulls in from the first moment with START, so the motor starts direct-on-line (6×In) and the ramp is pointless. KM1\'s coil must feed from the <b>end-of-ramp relay 13-14</b>, which closes when the voltage reaches 100%.'}, {sig:{KM1:'000000'}, msg:'The bypass never pulls in: from the L bar to <b>13</b>, and from <b>14</b> to A1 of KM1 (it closes at the end of the ramp).'}, {sig:{M1:'000000'}, msg:'The motor doesn\'t run: check the soft starter supply A1-A2; IN2 (STOP) must have voltage all the time through STOP NC, and IN1 gets a pulse from START.'}],
+    diagnose(byId, W){ const has = (a, b) => W.some(w => (w.a === a && w.b === b) || (w.a === b && w.b === a)); if (has('SS:24', 'KM1:A1') || has('S1:14', 'KM1:A1') || has('SS:IN1', 'KM1:A1')) return 'Bypass contactor KM1 is wired to the START signal / RUN relay (23-24), and these operate <b>immediately</b> with the run command: the motor is connected directly to the mains (6×In) and the ramp is skipped. The bypass must feed from the <b>end-of-ramp relay 13-14</b>, which closes only when the voltage reaches 100%.'; return ''; },
+    okMsg:'After the bypass the thyristors cool down and the motor is directly on the mains. On STOP the soft starter drops the bypass first, then ramps the voltage down (or lets the motor coast).'},
+  ss2:{story:{icon:'🌀', text:'A ventilation fan in a tunnel: it\'s run from a 2-wire selector, and if the soft starter faults an alarm lamp lights in the control room.', ask:'2-wire control + the fault relay on a lamp.'}, machine:'fan', title:'Soft starter with 2-wire control from a selector + the fault relay on an alarm lamp', short:'2-wire + fault relay',
+    goal:'A 0/I selector on the RUN input (2-wire): I = runs with a ramp, 0 = stops. The fault relay: 95-96 (NC) in the selector line cuts the run command, and 97-98 (NO) lights the red alarm lamp. The “running” lamp from 23-24.',
+    idea:'In 2-wire control the run command is maintained (a selector or a PLC contact): voltage on IN1 = run. When the soft starter finds a fault (overload, missing phase, hot thyristor) it stops the motor and switches the fault relay over. <b>Be careful</b>: with 2-wire, after RESET, if the selector is still on I the motor restarts by itself.',
+    steps:{power:['L1 L2 L3 to Q1, from Q1 to the soft starter\'s L1 L2 L3, from T1 T2 T3 to the overload, and from the overload to U V W.'], control:['L1 to F1, then overload 95-96, then the L bar, and N to the N bar. Soft starter supply A1 from the L bar and A2 to N.','The run command: from the L bar to 95, from 96 to selector 13, and from 14 to IN1.','The “running” lamp: from the L bar to 23, from 24 to the green lamp, and its other end to N.','The alarm lamp: from the L bar to 97, from 98 to the red lamp, and its other end to N.']},
+    tip:'Turn the selector to I, wait for the ramp, then press FAULT on the soft starter: the motor stops and the red lamp lights. Press RESET: the motor restarts by itself because the selector is on I.',
+    devices:[G, Q3('C16'), F1, {id:'S1', type:'sel', cfg:{pos:['0','I'], blocks:[{k:'NO', on:[1]}]}, name:'RUN selector'}, {id:'SS', type:'softstarter', cfg:{ctl:'2w', tRamp:3, vInit:0.3, ilim:3.5, In:9}, name:'Soft starter'}, OL(4.9), MOT('M1', 'motor'), lamp('H1', 'green', 'running'), lamp('H2', 'red', 'fault'), X1],
+    solution:[['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','SS:L1'],['Q1:4','SS:L2'],['Q1:6','SS:L3'],['SS:T1','F2:1'],['SS:T2','F2:3'],['SS:T3','F2:5'],['F2:2','M1:U'],['F2:4','M1:V'],['F2:6','M1:W'],
+      ['G:L1','F1:1'],['F1:2','F2:95'],['F2:96','X1:1a'],['G:N','X1:4a'],['X1:1b','SS:A1'],['SS:A2','X1:4b'],
+      ['X1:2a','SS:95'],['SS:96','S1:13'],['S1:14','SS:IN1'],['X1:2b','SS:23'],['SS:24','H1:X1'],['H1:X2','X1:5a'],['X1:3a','SS:97'],['SS:98','H2:X1'],['H2:X2','X1:5b']],
+    seq:true, cases:SEQ([
+      {label:'Selector on 0', set:{}, expect:{M1:0, H1:0, H2:0}},
+      {label:'Selector on I (ramp)', set:{S1:{pos:1}}, expect:{M1:1, H1:1, H2:0}},
+      {label:'After the ramp', set:{}, wait:3.5, expect:{M1:1, H1:1, H2:0}},
+      {label:'Soft starter fault', set:{SS:{fault:1}}, expect:{M1:0, H1:0, H2:1}},
+      {label:'RESET with the selector still on I', set:{SS:{reset:1}}, expect:{M1:1, H1:1, H2:0}},
+      {label:'Selector on 0', set:{S1:{pos:0}}, expect:{M1:0, H1:0, H2:0}}]),
+    patterns:[{sig:{H2:'000000'}, msg:'The alarm lamp doesn\'t light with the fault: it must feed from fault relay <b>97-98 (NO)</b>, which closes when a fault occurs.'}, {sig:{H2:'111011'}, msg:'The alarm lamp is lit while the unit is healthy: you\'re on <b>95-96 (NC)</b>, which opens with a fault. The lamp goes on <b>97-98</b>.'}, {sig:{H1:'000000'}, msg:'The “running” lamp doesn\'t light: from the L bar to <b>23</b> and from <b>24</b> to the lamp (the RUN relay closes with the run command).'}],
+    okMsg:'2-wire is the simplest way to wire a soft starter and suits a PLC. But watch out for the automatic restart after a reset: if that\'s dangerous, use 3-wire with a START button.'},
+  ss3:{story:{icon:'🔧', text:'Fault report: “The motor starts violently like DOL despite the soft starter!” The bypass contactor pulls in with START.', ask:'Find the bypass mistake and fix it.'}, machine:'gauge', title:'Mistake: the bypass contactor pulls in with START (the ramp is skipped)', short:'Mistake: bypass from START',
+    goal:'The goal is the same ss1 circuit: the bypass pulls in only after the ramp has finished (relay 13-14).',
+    idea:'The technician wired bypass coil KM1 to the RUN relay (23-24), which closes immediately with the START command. The result: the motor is connected directly to the mains from the first moment (a starting current of 6×In), and the soft starter raises its voltage for nothing. The panel “appears” to work, but the benefit of the soft starter is gone.',
+    steps:['Switch on and press START: look at the motor, the current is 29A (6×In) and the bypass lamp lit immediately.','Switch off, and remove the two wires from 23 and 24 going to KM1\'s coil and the “running” lamp.','The bypass: from the L bar to 13, and from 14 to A1 of KM1.','The “running” lamp: from the L bar to 23, and from 24 to the lamp.','Run it again: a 3-second ramp with limited current, then KM1 pulls in.'],
+    tip:'RUN relay (23-24) = “there\'s a run command”. End-of-ramp / bypass relay (13-14) = “the voltage has reached 100%”. Both are NO but the timing is different.',
+    devices:null, preset:null, solution:null, seq:true, cases:null, diagnose:null,
+    okMsg:'Now the bypass waits for the end of the ramp. On some units the bypass relay is called “Top of ramp” or “End of start”.'}
+};
+// ac2 / ac3 / ss3 share devices with ac1 / ss1
+L9EX.ac2.devices = L9EX.ac1.devices; L9EX.ac2.solution = L9EX.ac1.solution; L9EX.ac2.cases = L9EX.ac1.cases;
+L9EX.ac2.preset = L9EX.ac1.solution.filter(w => !(w[0] === 'B2:22' && w[1] === 'B3:21') && !(w[0] === 'B3:22' && w[1] === 'F2:95')).concat([['B2:22','B3:13'],['B3:14','F2:95']]);
+L9EX.ac3.devices = L9EX.ac1.devices.filter(d => d.id !== 'X1').concat([{id:'K1', type:'relay', cfg:{v:24, blocks:['CO','CO']}, name:'HP alarm relay'}, PB('S1', 'black', 'RESET', ['NC']), lamp('H2', 'red', 'High-pressure alarm', 24), X24]);
+L9EX.ac3.solution = L9EX.ac1.solution.filter(w => !(w[0] === 'B1:14' && w[1] === 'B2:21') && !(w[0] === 'B2:22' && w[1] === 'B3:21') && !(w[0] === 'X1:2a' && w[1] === 'KM1:21')).concat([['B1:14','K1:21'],['K1:22','B3:21'],['X1:2b','KM1:21'],
+  ['X1:2a','S1:11'],['S1:12','B2:13'],['B2:14','K1:A1'],['K1:A2','X1:6b'],['K1:11','S1:12'],['K1:14','B2:14'],['K1:A1','H2:X1'],['H2:X2','X1:6b']]);
+L9EX.ss3.devices = L9EX.ss1.devices; L9EX.ss3.solution = L9EX.ss1.solution; L9EX.ss3.cases = L9EX.ss1.cases; L9EX.ss3.diagnose = L9EX.ss1.diagnose; L9EX.ss3.patterns = L9EX.ss1.patterns;
+L9EX.ss3.preset = L9EX.ss1.solution.filter(w => !(w[0] === 'X1:2b' && w[1] === 'SS:13') && !(w[0] === 'SS:14' && w[1] === 'KM1:A1') && !(w[0] === 'X1:3a' && w[1] === 'SS:23') && !(w[0] === 'SS:24' && w[1] === 'H1:X1')).concat([['X1:2b','SS:23'],['SS:24','KM1:A1'],['SS:24','H1:X1']]);
+/* ---------- lesson-9 figures and custom sims ---------- */
+const esc = CL.esc;
+const simShell = (host, o, ctl) => { host.innerHTML = `<div class="sim">${o.title ? `<h3>${esc(o.title)}</h3>` : ''}<div class="sim-grid"><figure class="sim-art"></figure><figure class="sim-sym"><div class="sim-iec"></div><ul class="sim-cont"></ul></figure></div><div class="sim-ctl">${ctl}</div><div class="tblw"><table class="tbl sim-tt"></table></div>${o.note ? `<p class="sim-note">${o.note}</p>` : ''}</div>`; return {art:host.querySelector('.sim-art'), iec:host.querySelector('.sim-iec'), cont:host.querySelector('.sim-cont'), ctl:host.querySelector('.sim-ctl'), tt:host.querySelector('.sim-tt')}; };
+const schem = ex => () => CL.art.schematic(Object.assign({id:ex}, L9EX[ex])).control;
+const schemPw = ex => () => CL.art.schematic(Object.assign({id:ex}, L9EX[ex])).power;
+const row = (lab, val, on, cls) => `<li class="${on ? 'on' : ''}"><span>${lab}</span><span class="${cls || 'st'}">${val}</span></li>`;
+const r1 = v => Math.round(v * 10) / 10;
+// time-series chart: series = [{name, pts:[[t, v]…], color, dash}], ymax, marks = [{t, lab}]
+function chart(series, o){
+  const W = 440, H = 190, x0 = 36, x1 = W - 10, y0 = 20, y1 = H - 28, tmax = o.tmax || 10, ymax = o.ymax || 1;
+  const X = t => x0 + (x1 - x0) * Math.min(1, t / tmax), Y = v => y1 - (y1 - y0) * Math.min(1.08, v / ymax);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.label || 'Timing chart')}"><g style="color:var(--ink)">`;
+  for (let i = 0; i <= 4; i++){ const v = ymax * i / 4, y = Y(v); s += `<path d="M${x0} ${y}H${x1}" stroke="var(--line)" stroke-width="1"/><text x="${x0 - 4}" y="${y + 3}" font-size="8" text-anchor="end" fill="currentColor">${o.yfmt ? o.yfmt(v) : v}</text>`; }
+  for (let t = 0; t <= tmax; t += (o.tstep || 2)) s += `<text x="${X(t)}" y="${H - 14}" font-size="8" text-anchor="middle" fill="currentColor">${t}s</text>`;
+  (o.marks || []).forEach(m => { s += `<path d="M${X(m.t)} ${y0}V${y1}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3"/><text class="ar" x="${X(m.t)}" y="${y0 - 6}" font-size="8" text-anchor="middle" fill="var(--muted)">${esc(m.lab)}</text>`; });
+  series.forEach(sr => { if (!sr.pts.length) return; s += `<path d="${sr.pts.map((p, i) => (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ' ' + Y(p[1]).toFixed(1)).join('')}" fill="none" stroke="${sr.color}" stroke-width="2.4" ${sr.dash ? 'stroke-dasharray="5 4"' : ''}/>`; });
+  let lx = x0 + 4; series.forEach(sr => { s += `<rect x="${lx}" y="${H - 8}" width="14" height="3" fill="${sr.color}"/><text class="ar" x="${lx + 17}" y="${H - 4}" font-size="8.5" fill="currentColor">${esc(sr.name)}</text>`; lx += 20 + sr.name.length * 5.5; });
+  return s + '</g></svg>';
+}
+/* 1. star/delta: current and speed traces vs DOL */
+function simSD(host, o){
+  let t = 0, run = 0, timer = null, T = 5, mode = 'sd', pts = {I:[], n:[], dol:[]}, spd = 0, phase = 'off';
+  const In = 15;
+  const ui = simShell(host, o, `<button type="button" class="btn big pri" data-k="start">START</button><button type="button" class="btn big" data-k="stop">STOP</button><label>Timer time t: <b class="mono" data-t>5 s</b><input type="range" dir="ltr" min="2" max="9" step="1" value="5" aria-label="Star time"></label><label><input type="checkbox" data-k="dol"> Plot DOL for comparison</label><div class="sim-clock" role="status" aria-live="polite"></div>`);
+  function step(){
+    const dt = 0.1; t = r1(t + dt);
+    if (run){ const Y = t < T; phase = Y ? 'Y' : 'D'; const acc = Y ? 0.25 : 0.7; spd = Math.min(1, spd + dt * acc * (1.2 - spd)); const load = 0.8;
+      const I = Y ? Math.max(load * 0.6, 2 * (1 - spd * 0.75)) : (t < T + 0.3 ? 2.6 : Math.max(load, 6 * (1 - spd) * 0.5 + load)); pts.I.push([t, I]); pts.n.push([t, spd]);
+      const sd = Math.min(1, t * 0.9); pts.dol.push([t, Math.max(load, 6 * (1 - Math.min(1, t / 1.4)) + load * 0.3)]); void sd; }
+    else { spd = Math.max(0, spd - dt / 6); pts.n.push([t, spd]); pts.I.push([t, 0]); }
+    if (t >= 10){ clearInterval(timer); timer = null; }
+    render();
+  }
+  function render(){
+    const marks = run || pts.I.length ? [{t:T, lab:'Y→Δ at t'}] : [];
+    const series = [{name:'Current I/In', pts:pts.I, color:'#c0352b'}, {name:'Speed', pts:pts.n.map(p => [p[0], p[1] * 6]), color:'#2b7a3d'}];
+    if (ui.ctl.querySelector('[data-k=dol]').checked) series.push({name:'DOL for comparison', pts:pts.dol, color:'#56656f', dash:true});
+    ui.art.innerHTML = chart(series, {tmax:10, ymax:6, yfmt:v => v + '×', marks, label:'Motor current and speed in a star/delta start'});
+    const Y = run && phase === 'Y', D = run && phase === 'D';
+    ui.iec.innerHTML = `<div class="box" style="font-size:.9rem"><b>KM1 main:</b> ${run ? '<span class="no">pulled in</span>' : 'stopped'} · <b>KM2 star:</b> ${Y ? '<span class="no">pulled in</span>' : 'stopped'} · <b>KM3 delta:</b> ${D ? '<span class="no">pulled in</span>' : 'stopped'}<br><b>Timer 17-18:</b> ${Y ? 'closed' : 'open'} · <b>17-28:</b> ${D ? 'closed' : 'open'}</div>`;
+    ui.cont.innerHTML = row('Each winding gets', run ? (Y ? '230V (400/√3): ⅓ torque' : '400V: full torque') : '—', run) + row('Current now', pts.I.length ? r1(pts.I[pts.I.length - 1][1] * In) + ' A (' + r1(pts.I[pts.I.length - 1][1]) + '×In)' : '—', run, 'om') + row('Speed', Math.round(spd * 100) + '%', spd > 0.9);
+    ui.tt.innerHTML = `<thead><tr><th class="r">Start</th><th>Starting current</th><th>Starting torque</th><th>When</th></tr></thead><tbody><tr class="${!run ? '' : Y ? 'cur' : ''}"><td class="r">Star (Y)</td><td>≈ 2×In</td><td>⅓ the torque</td><td>A large motor on a weak supply, a light load at start (a fan, a pump)</td></tr><tr class="${D ? 'cur' : ''}"><td class="r">Delta (Δ) / DOL</td><td>6–8×In</td><td>Full torque</td><td>A small motor, or a heavy load from the start</td></tr></tbody>`;
+    ui.ctl.querySelector('.sim-clock').innerHTML = run ? `Time ${t} s · ${Y ? `Star: the timer is counting, remaining ${r1(Math.max(0, T - t))} s` : 'Delta: changeover done, the motor is at full voltage'}` : (t ? 'STOP: the motor is stopping' : 'Press START and watch the current: star ≈ 2×In, and after t it changes to delta.');
+    ui.ctl.querySelector('[data-t]').textContent = T + ' s';
+  }
+  ui.ctl.addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return;
+    if (b.dataset.k === 'start'){ run = 1; t = 0; spd = 0; pts = {I:[], n:[], dol:[]}; if (!timer) timer = setInterval(step, 100); }
+    if (b.dataset.k === 'stop'){ run = 0; phase = 'off'; }
+    render(); o.onAct && o.onAct(); });
+  ui.ctl.querySelector('input[type=range]').addEventListener('input', e => { T = +e.target.value; render(); o.onAct && o.onAct(); });
+  ui.ctl.querySelector('[data-k=dol]').addEventListener('change', () => { render(); o.onAct && o.onAct(); });
+  render(); return {destroy(){ if (timer) clearInterval(timer); }};
+}
+/* 2. braking: speed trace for coasting / DC injection / plugging / mechanical brake */
+function simBrake(host, o){
+  let t = 0, run = 0, timer = null, spd = 0, mode = 'coast', pts = [], stopAt = null, plug = 0, info = '';
+  const ui = simShell(host, o, `<button type="button" class="btn big pri" data-k="start">START</button><button type="button" class="btn big" data-k="stop">STOP</button><label>Stopping method<select data-k="mode" aria-label="Braking method"><option value="coast">No braking (coasting)</option><option value="dc">DC injection (KM4 contactor + timer)</option><option value="plug">Phase reversal / plugging (1 s pulse)</option><option value="mech">Electromagnetic brake (hoist)</option></select></label><div class="sim-clock" role="status" aria-live="polite"></div>`);
+  function step(){
+    const dt = 0.1; t = r1(t + dt);
+    if (run) spd = Math.min(1, spd + dt / 1);
+    else if (stopAt != null){ const el = t - stopAt;
+      if (mode === 'coast') spd = Math.max(0, spd - dt / 6);
+      else if (mode === 'dc') spd = el < 2 ? Math.max(0, spd - dt / 0.8) : Math.max(0, spd - dt / 6);
+      else if (mode === 'plug'){ if (el < 1){ spd = spd - dt / 1; plug = 1; } else { plug = 0; spd = spd > 0 ? Math.max(0, spd - dt / 6) : Math.min(0, spd + dt / 6); } }
+      else spd = 0; }
+    pts.push([t, spd]);
+    if (t >= 12){ clearInterval(timer); timer = null; }
+    render();
+  }
+  function render(){
+    const marks = stopAt != null ? [{t:stopAt, lab:'STOP'}].concat(mode === 'dc' ? [{t:stopAt + 2, lab:'KM4 drops out'}] : mode === 'plug' ? [{t:stopAt + 1, lab:'KM2 drops out'}] : []) : [];
+    ui.art.innerHTML = chart([{name:'Speed (+ forward / − reverse)', pts:pts.map(p => [p[0], p[1] + 1]), color:'#2b7a3d'}], {tmax:12, ymax:2, yfmt:v => Math.round((v - 1) * 100) + '%', marks, label:'Motor speed after STOP with the different braking methods'});
+    const st = run ? 'running' : stopAt == null ? 'stopped' : Math.abs(spd) < 0.02 ? 'stopped' : mode === 'dc' && t - stopAt < 2 ? 'braking with DC' : plug ? 'braking by reversal' : 'coasting';
+    ui.iec.innerHTML = `<div class="box" style="font-size:.9rem"><b>Motor:</b> ${st} · <b>Speed:</b> ${Math.round(spd * 100)}%<br>${mode === 'dc' ? `<b>KM4 (DC):</b> ${stopAt != null && t - stopAt < 2 && !run ? '<span class="no">pulled in</span>' : 'stopped'}` : mode === 'plug' ? `<b>KM2 (reverse):</b> ${plug ? '<span class="no">pulled in</span>' : 'stopped'}` : mode === 'mech' ? `<b>Brake:</b> ${run ? 'released (the coil is energised)' : '<span class="nc">closed</span>'}` : '<b>No braking:</b> the motor stops by friction only'}</div>`;
+    ui.cont.innerHTML = row('Approximate stopping time', mode === 'coast' ? '~6 s' : mode === 'dc' ? '~0.8 s' : mode === 'plug' ? '~1 s' : 'instant', mode !== 'coast') + row('Extra components', mode === 'coast' ? 'None' : mode === 'dc' ? 'Rectifier + KM4 + off-delay timer' : mode === 'plug' ? 'KM2 reverse + timer (or a zero-speed switch)' : 'A brake with a coil on the motor', true, 'om') + row('The risk', mode === 'coast' ? 'The load keeps moving' : mode === 'dc' ? 'DC heats the windings if the time is long' : mode === 'plug' ? 'If the pulse is long the motor turns in reverse' : 'The brake lining wears', false);
+    ui.tt.innerHTML = `<thead><tr><th class="r">Method</th><th>How</th><th>Used in</th></tr></thead><tbody><tr class="${mode === 'dc' ? 'cur' : ''}"><td class="r">DC injection</td><td>Direct current into two windings after the AC is cut: a stationary field brakes the rotor</td><td>Woodworking machines, washing machines, conveyors</td></tr><tr class="${mode === 'plug' ? 'cur' : ''}"><td class="r">Plugging</td><td>Two phases reversed for a moment; the reverse torque stops the motor quickly</td><td>Presses, crushers, wherever it must stop immediately</td></tr><tr class="${mode === 'mech' ? 'cur' : ''}"><td class="r">Mechanical brake</td><td>Springs close the brake, and the coil releases it when running</td><td>Hoists, lifts, any suspended load</td></tr></tbody>`;
+    ui.ctl.querySelector('.sim-clock').innerHTML = info || (run ? `Running ${t} s. Press STOP and see the speed curve.` : 'Choose the method, START, then STOP.');
+  }
+  ui.ctl.addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; info = '';
+    if (b.dataset.k === 'start'){ run = 1; t = 0; spd = 0; pts = []; stopAt = null; plug = 0; if (!timer) timer = setInterval(step, 100); }
+    if (b.dataset.k === 'stop' && run){ run = 0; stopAt = t; info = mode === 'coast' ? 'STOP: the contactor dropped out and the motor is coasting.' : mode === 'dc' ? 'STOP: KM1 dropped out, the timer is still holding, KM4 pulled in and injected DC.' : mode === 'plug' ? 'STOP: KM1 dropped out and KM2 pulled in for one second in reverse.' : 'STOP: the coil de-energised and the springs closed the brake immediately.'; }
+    render(); o.onAct && o.onAct(); });
+  ui.ctl.querySelector('select').addEventListener('change', e => { mode = e.target.value; render(); o.onAct && o.onAct(); });
+  render(); return {destroy(){ if (timer) clearInterval(timer); }};
+}
+/* 3. A/C compressor: room temperature, discharge/suction pressure, safety chain and the anti-short-cycle timer */
+function simAC(host, o){
+  let temp = 27, hp = 12, lp = 4, comp = 0, timerEl = 0, lastStop = -999, t = 0, timer = null, call = 0, hpTrip = 0, blockCond = 0, leak = 0, msg = '';
+  const SET = 24, ASC = 180; // °C set point · anti-short-cycle 3 min
+  const ui = simShell(host, o, `<button type="button" class="btn big pri" data-k="run" aria-pressed="false">▶ Run time (×30)</button><button type="button" class="btn" data-k="cond" aria-pressed="false">Block the condenser (HP rises)</button><button type="button" class="btn" data-k="leak" aria-pressed="false">Gas leak (LP drops)</button><button type="button" class="btn" data-k="reset">RESET alarm</button><div class="sim-clock" role="status" aria-live="polite"></div>`);
+  const chain = () => ({th:temp > SET + 0.5 ? 1 : temp < SET - 0.5 ? 0 : call, hpOk:hp < 28, lpOk:lp > 1.5});
+  function step(){
+    const dt = 3; t += dt; const c = chain(); call = c.th;
+    if (hp >= 28 && !hpTrip){ hpTrip = 1; msg = 'HP reached 28 bar: the alarm latched and the compressor dropped out. Fix the cause and press RESET.'; }
+    const allow = call && c.lpOk && !hpTrip;
+    if (allow && !comp){ if (t - lastStop >= ASC){ comp = 1; timerEl = 0; msg = 'The timer finished: the compressor and fan started.'; } else timerEl = t - lastStop; }
+    if (!allow && comp){ comp = 0; lastStop = t; msg = !call ? 'The thermostat is satisfied: the compressor stopped, and the timer prevents it restarting within 3 minutes.' : !c.lpOk ? 'LP low: low on gas, the compressor stopped so it doesn\'t run empty.' : msg; }
+    temp += dt * (comp ? -0.012 : 0.006);
+    hp += dt * (comp ? (blockCond ? 0.12 : (hp < 18 ? 0.05 : 0)) : (hp > 12 ? -0.04 : 0));
+    lp += dt * (leak ? -0.01 : (comp ? (lp > 3 ? -0.01 : 0) : (lp < 4 ? 0.02 : 0)));
+    render();
+  }
+  function render(){
+    const c = chain(), wait = !comp && call && c.lpOk && !hpTrip && t - lastStop < ASC ? ASC - (t - lastStop) : 0;
+    ui.art.innerHTML = `<svg viewBox="0 0 440 200" role="img" aria-label="AC status"><g style="color:var(--ink)">
+      <rect x="10" y="10" width="130" height="180" rx="10" fill="var(--panel)" stroke="var(--line)"/><text class="ar" x="75" y="34" font-size="11" text-anchor="middle" fill="currentColor" font-weight="700">Room</text><text x="75" y="80" font-size="30" text-anchor="middle" fill="${temp > SET + 0.5 ? '#c0352b' : '#2b7a3d'}" font-weight="700">${temp.toFixed(1)}°</text><text class="ar" x="75" y="104" font-size="10" text-anchor="middle" fill="var(--muted)">Setpoint ${SET}°C</text><text class="ar" x="75" y="130" font-size="10" text-anchor="middle" fill="${call ? '#2b7a3d' : 'var(--muted)'}" font-weight="700">${call ? 'Thermostat calling' : 'No demand'}</text>
+      <g transform="translate(160 10)"><rect width="130" height="180" rx="10" fill="var(--panel)" stroke="var(--line)"/><text class="ar" x="65" y="24" font-size="11" text-anchor="middle" fill="currentColor" font-weight="700">Compressor</text><circle cx="65" cy="80" r="34" fill="${comp ? '#dff3e4' : '#e9eaec'}" stroke="${comp ? '#1f8a3b' : '#9aa1a6'}" stroke-width="3"/><text x="65" y="86" font-size="16" text-anchor="middle" fill="${comp ? '#1f8a3b' : '#56656f'}" font-weight="700">${comp ? 'ON' : 'OFF'}</text><text class="ar" x="65" y="135" font-size="10" text-anchor="middle" fill="${wait ? '#a86a00' : 'var(--muted)'}" font-weight="700">${wait ? 'Timer: ' + Math.ceil(wait) + ' s left' : comp ? 'Fan running' : 'Heater on'}</text><text class="ar" x="65" y="160" font-size="10" text-anchor="middle" fill="${hpTrip ? '#c0352b' : 'var(--muted)'}" font-weight="700">${hpTrip ? '⚠ HP alarm' : ''}</text></g>
+      <g transform="translate(310 10)"><rect width="120" height="180" rx="10" fill="var(--panel)" stroke="var(--line)"/><text class="ar" x="60" y="24" font-size="11" text-anchor="middle" fill="currentColor" font-weight="700">Pressures</text>
+      <rect x="20" y="36" width="30" height="120" rx="4" fill="var(--bg)" stroke="var(--line)"/><rect x="22" y="${156 - 118 * Math.min(1, hp / 32)}" width="26" height="${118 * Math.min(1, hp / 32)}" fill="${hp >= 28 ? '#c0352b' : '#d9924f'}"/><text x="35" y="170" font-size="9" text-anchor="middle" fill="currentColor">HP ${hp.toFixed(0)}</text>
+      <rect x="70" y="36" width="30" height="120" rx="4" fill="var(--bg)" stroke="var(--line)"/><rect x="72" y="${156 - 118 * Math.min(1, lp / 8)}" width="26" height="${118 * Math.min(1, lp / 8)}" fill="${lp <= 1.5 ? '#c0352b' : '#4ea0ff'}"/><text x="85" y="170" font-size="9" text-anchor="middle" fill="currentColor">LP ${lp.toFixed(1)}</text><path d="M18 ${156 - 118 * 28 / 32}H52" stroke="#c0352b" stroke-dasharray="3 2"/><path d="M68 ${156 - 118 * 1.5 / 8}H102" stroke="#c0352b" stroke-dasharray="3 2"/></g></g></svg>`;
+    ui.iec.innerHTML = '';
+    ui.cont.innerHTML = row('B1 thermostat NO', call ? 'closed (calling for cooling)' : 'open', call) + row('K1/HP NC in the chain', hpTrip ? 'open (alarm latched)' : 'closed', !hpTrip, hpTrip ? 'om' : 'st') + row('B3 LP NC', c.lpOk ? 'closed (pressure OK)' : 'open (low on gas)', c.lpOk) + row('KT anti-short-cycle timer', wait ? 'counting: ' + Math.ceil(wait) + ' s left' : comp ? '15-18 closed' : 'stopped', !!comp, 'om') + row('KM1 compressor + KM2 fan', comp ? 'pulled in' : 'stopped', comp) + row('E1 crankcase heater (KM1 NC)', comp ? 'off' : 'running', !comp);
+    ui.tt.innerHTML = `<thead><tr><th class="r">Component</th><th>Protects against</th><th>Wired as</th></tr></thead><tbody><tr><td class="r">HP</td><td>High discharge pressure (dirty condenser, stopped fan)</td><td>NC + manual-reset alarm</td></tr><tr><td class="r">LP</td><td>Gas leak, blocked filter: the compressor runs empty and overheats</td><td>NC, automatic</td></tr><tr><td class="r">3-minute timer</td><td>Starting while the pressures are still high: the compressor tries to start against the pressure</td><td>On-delay after the thermostat</td></tr><tr><td class="r">Crankcase heater</td><td>Refrigerant condensing in the oil while stopped</td><td>On KM1's NC</td></tr></tbody>`;
+    ui.ctl.querySelector('.sim-clock').innerHTML = msg || 'Run the time: the room warms up, the thermostat calls, and the compressor starts after the timer. Try blocking the condenser or making a leak.';
+    ui.ctl.querySelector('[data-k=run]').setAttribute('aria-pressed', timer ? 'true' : 'false'); ui.ctl.querySelector('[data-k=run]').textContent = timer ? '⏸ Pause time' : '▶ Run time (×30)';
+  }
+  ui.ctl.addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; const k = b.dataset.k;
+    if (k === 'run'){ if (timer){ clearInterval(timer); timer = null; } else timer = setInterval(step, 100); }
+    if (k === 'cond'){ blockCond = blockCond ? 0 : 1; b.setAttribute('aria-pressed', blockCond ? 'true' : 'false'); msg = blockCond ? 'The condenser is blocked: the discharge pressure will rise until HP trips.' : 'The condenser has been cleaned.'; if (!timer) timer = setInterval(step, 100); }
+    if (k === 'leak'){ leak = leak ? 0 : 1; b.setAttribute('aria-pressed', leak ? 'true' : 'false'); msg = leak ? 'Gas leak: the suction pressure drops until LP trips.' : 'The leak has been fixed and the gas recharged.'; if (!leak) lp = 4; if (!timer) timer = setInterval(step, 100); }
+    if (k === 'reset'){ if (hpTrip && hp < 28){ hpTrip = 0; msg = 'RESET: the alarm is cleared, and the compressor will come back after the timer if the thermostat is calling.'; } else if (hpTrip) msg = 'The pressure is still high: fix the cause (the blocked condenser) first.'; else msg = 'No alarm.'; }
+    render(); o.onAct && o.onAct(); });
+  render(); return {destroy(){ if (timer) clearInterval(timer); }};
+}
+/* 4. soft starter: voltage / current / speed ramp with settings sliders, vs DOL */
+function simSS(host, o){
+  let t = 0, run = 0, timer = null, v = 0, spd = 0, pts = {v:[], i:[], n:[], dol:[]}, vInit = 30, tRamp = 5, ilim = 350, byp = 0, msg = '';
+  const ui = simShell(host, o, `<button type="button" class="btn big pri" data-k="start">START</button><button type="button" class="btn big" data-k="stop">STOP</button><label>Initial voltage Uini: <b class="mono" data-v>30%</b><input type="range" dir="ltr" data-s="vInit" min="20" max="70" step="5" value="30" aria-label="Initial voltage"></label><label>Ramp time: <b class="mono" data-t>5 s</b><input type="range" dir="ltr" data-s="tRamp" min="1" max="10" step="1" value="5" aria-label="Ramp time"></label><label>Current limit Ilim: <b class="mono" data-i>3.5×In</b><input type="range" dir="ltr" data-s="ilim" min="200" max="500" step="50" value="350" aria-label="Current limit"></label><div class="sim-clock" role="status" aria-live="polite"></div>`);
+  function step(){
+    const dt = 0.1; t = r1(t + dt);
+    if (run){ v = Math.min(1, Math.max(vInit / 100, v + dt * (1 - vInit / 100) / tRamp)); spd = Math.min(v, spd + dt * 0.5 * (v + 0.2)); if (v >= 1 && spd >= 0.95 && !byp){ byp = 1; msg = 'The ramp has finished: relay 13-14 closed and the bypass contactor pulled in.'; }
+      const i = byp ? 0.8 : Math.min(ilim / 100, Math.max(0.8, 6 * v * (1 - spd * 0.85))); pts.v.push([t, v]); pts.i.push([t, i]); pts.n.push([t, spd]); pts.dol.push([t, Math.max(0.8, 6 * (1 - Math.min(1, t / 1.4)))]); }
+    else { v = 0; spd = Math.max(0, spd - dt / 6); pts.n.push([t, spd]); pts.v.push([t, 0]); pts.i.push([t, 0]); }
+    if (t >= 12){ clearInterval(timer); timer = null; }
+    render();
+  }
+  function render(){
+    ui.art.innerHTML = chart([{name:'Voltage U', pts:pts.v.map(p => [p[0], p[1] * 6]), color:'#1f6fd1'}, {name:'Current I/In', pts:pts.i, color:'#c0352b'}, {name:'Speed', pts:pts.n.map(p => [p[0], p[1] * 6]), color:'#2b7a3d'}, {name:'DOL', pts:pts.dol, color:'#56656f', dash:true}], {tmax:12, ymax:6, yfmt:v => v + '×', marks:run || byp ? [{t:tRamp, lab:'End of ramp'}] : [], label:'Voltage, current and speed with the soft starter'});
+    ui.iec.innerHTML = `<div class="box" style="font-size:.9rem"><b>Display:</b> ${run ? Math.round(v * 100) + '%' : 'READY'} · <b>Status:</b> ${run ? (byp ? 'Bypass' : v < 1 ? 'ramp' : 'running 100%') : 'stopped'}<br><b>23-24 RUN:</b> ${run ? 'closed' : 'open'} · <b>13-14 bypass:</b> ${byp ? 'closed' : 'open'} · <b>95-96:</b> closed (no fault)</div>`;
+    ui.cont.innerHTML = row('Uini', vInit + '% of the voltage', true) + row('Ramp time', tRamp + ' s', true, 'om') + row('Ilim', (ilim / 100) + '×In', true) + row('Starting current', run && !byp ? r1(Math.min(ilim / 100, 6 * v)) + '×In' : '—', run && !byp, 'om');
+    ui.tt.innerHTML = `<thead><tr><th class="r">Comparison</th><th>DOL</th><th>Star/delta</th><th>Soft starter</th><th>VFD inverter</th></tr></thead><tbody><tr><td class="r">Starting current</td><td>6–8×In</td><td>2–2.5×In</td><td>2–4×In (adjustable)</td><td>≈1×In</td></tr><tr><td class="r">Starting torque</td><td>Full</td><td>⅓</td><td>Gradual</td><td>Full from zero</td></tr><tr><td class="r">Speed control</td><td>No</td><td>No</td><td>No (start and stop only)</td><td>Yes</td></tr><tr><td class="r">Price / size</td><td>Cheapest</td><td>3 contactors + 6 motor wires</td><td>One unit + 3 wires</td><td>Most expensive</td></tr></tbody>`;
+    ui.ctl.querySelector('[data-v]').textContent = vInit + '%'; ui.ctl.querySelector('[data-t]').textContent = tRamp + ' s'; ui.ctl.querySelector('[data-i]').textContent = (ilim / 100) + '×In';
+    ui.ctl.querySelector('.sim-clock').innerHTML = msg || (run ? `Time ${t} s · voltage ${Math.round(v * 100)}%` : 'Set the parameters and press START: the voltage rises from Uini to 100% over the ramp time, and the current is limited to Ilim.');
+  }
+  ui.ctl.addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; msg = '';
+    if (b.dataset.k === 'start'){ run = 1; t = 0; v = 0; spd = 0; byp = 0; pts = {v:[], i:[], n:[], dol:[]}; if (!timer) timer = setInterval(step, 100); }
+    if (b.dataset.k === 'stop'){ run = 0; byp = 0; msg = 'STOP: the bypass dropped out and the thyristors switched off; the motor is coasting (free-wheel).'; }
+    render(); o.onAct && o.onAct(); });
+  ui.ctl.querySelectorAll('input[type=range]').forEach(inp => inp.addEventListener('input', e => { const k = e.target.dataset.s; if (k === 'vInit') vInit = +e.target.value; if (k === 'tRamp') tRamp = +e.target.value; if (k === 'ilim') ilim = +e.target.value; render(); o.onAct && o.onAct(); }));
+  render(); return {destroy(){ if (timer) clearInterval(timer); }};
+}
+
+/* ---------- the lesson ---------- */
+const SDT = {id:'KT', type:'timer', cfg:{mode:'sd', t:5, model:'RE22R Y-Δ', range:'1–30 s'}, name:'Star/delta timer'};
+CL.lesson({
+  id:'l9', n:9, title:'Lesson 9: Advanced topics',
+  intro:'<p>Pick a topic and follow it: <b>Definition</b> → <b>Look and symbol</b> → <b>Try it</b> → <b>Wire it</b> → <b>Questions</b>. 13 exercises on the wiring board, including 4 deliberate mistakes to hunt for: wrong star jumpers, a missing Y/Δ interlock, LP wired NO, and a bypass that pulls in with START. If you finish all the exercises in the course, you\'ll find the <b>completion certificate</b> on the lessons page.</p>',
+  elements:[
+  /* ---------------------------------------------------------------- 1. star/delta */
+  {id:'sd', icon:'tbox', title:'Automatic and manual star/delta', goal:'3 contactors: KM1 main, KM2 star, KM3 delta, and a Y-Δ timer with two contacts <b>17-18</b> and <b>17-28</b>. The motor starts in star (⅓ current) and after the time changes to delta. With the interlock and the correct cross-over in the power circuit.',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p>When a motor starts direct-on-line (DOL) it draws <b>6 to 8 times</b> its rated current for a few seconds. A 7.5 kW motor rated at 15 A draws 100 A when starting: the supply dips and the breaker may trip. <b>Star/delta</b> starts the motor in star connection (each winding at 230V instead of 400V), so the starting current is <b>a third</b> (~2×In), and once it's up to speed it changes to delta at full voltage.</p>
+     <div class="box key"><ul>
+      <li><b>When it works</b>: the motor must have <b>6 terminals</b> and its nameplate must say <b>400Δ / 690Y</b> (the delta voltage = the supply voltage). A 230Δ/400Y motor on a 400V supply must always be connected in star, and can't use star/delta.</li>
+      <li><b>The price</b>: the starting torque is also a third. It suits loads that start light (a fan, a centrifugal pump, an unloaded compressor), and not a conveyor that's loaded from the start.</li>
+      <li><b>3 contactors</b>: <b>KM1</b>, the main, connects L1 L2 L3 to U1 V1 W1 through the overload. <b>KM2</b>, star, shorts W2 U2 V2 together (the star point) and no phase goes into it. <b>KM3</b>, delta, brings the phases to W2 U2 V2 with the cross-over: L1 to W2, L2 to U2, L3 to V2.</li>
+      <li><b>The Y-Δ timer</b>: contact <b>17-18</b> is closed from the moment it's powered until the time t (it drives the star), then opens, and <b>50 ms</b> later <b>17-28</b> closes (it drives the delta). The gap is so the arc in KM2 goes out before KM3 closes.</li>
+      <li><b>The KM2 ↔ KM3 interlock</b>: each one's NC in the other's line + a mechanical interlock. If they pull in together: the star point on L1 L2 L3 = a direct short circuit.</li>
+      <li><b>The overload in the winding line</b> (between KM1 and the motor) sees the winding current = the line current ÷ √3, so we set it to <b>In/√3</b> (15 ÷ 1.73 ≈ 8.7 A). If you put it before KM1 in the line, it's set to In.</li></ul></div>
+     <p><b>Manual</b>: the same power circuit, but the changeover is done with two buttons: “Star” starts, and “Delta” (a double button) cuts the star with its NC and starts the delta with its NO. Or a 0-Y-Δ selector. The technician waits for the motor to get up to speed and then changes over.</p>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'Star/delta timer: 17-18, then 17-28 after a 50 ms gap', dev:SDT, art:'timerArt', nema:['tr', 'notc', 'ncto'], cap:'A1-A2 the coil. 17 the common, 18 closes immediately and opens after t, 28 closes after t + 50 ms. The dial sets t (usually 1–30 seconds).'},
+      {title:'Motor terminal box: star and delta', dev:{id:'M1', type:'motor', cfg:{term:6, kW:7.5, In:15, vD:400, vY:690}}, art:() => CL.art.tbox({mode:'D', vD:400, vY:690, sup:400}), noSym:true, cap:'In automatic star/delta there are no jumpers in the box: the six terminals go out to the panel on six wires, and the contactors make the star (KM2) or the delta (KM3).'},
+      {title:'Power circuit: main + star + delta (the cross-over)', dev:{id:'M1', type:'motor', cfg:{term:6}}, art:schemPw('sd1'), noSym:true, cap:'KM1 → the overload → U1 V1 W1. KM3 connects L1 to W2, L2 to U2 and L3 to V2 (the cross-over). KM2 has its inputs on W2 U2 V2 and its outputs shorted together.'},
+      {title:'Automatic control circuit (sd1)', dev:{id:'G', type:'supply3P'}, art:schem('sd1'), noSym:true, cap:'KM1 with self-hold and the timer alongside it. 17-18 → KM3\'s NC → KM2\'s coil. And 17-28 → KM2\'s NC → KM3\'s coil.'},
+      {title:'Manual control circuit with two buttons (sd2)', dev:{id:'G', type:'supply3P'}, art:schem('sd2'), noSym:true, cap:'The “Star” button drives KM2, and KM2 drives KM1, which seals itself in. The double “Delta” button: its NC cuts the star and its NO drives KM3 through a KM1 contact.'}]},
+    {kind:'sim', title:'Try it', lead:'Press START and watch the current curve: in star ≈ 2×In, and after the time a changeover to delta with a small spike. Turn on “DOL for comparison” and see the difference.', sims:[
+      {title:'Star/delta start: current and speed over time', custom:simSD, note:'If you change to delta too early (the motor still slow) the spike is almost as big as DOL. The right time: when the motor is close to full speed (3–10 seconds depending on the load).'}]},
+    {kind:'bench', title:'Wire it', ex:['sd1','sd2','sd3','sd4']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'A motor with a 230Δ/400Y nameplate on a 400V supply. Can it use star/delta?', a:['Yes, no problem','No: it must always be connected in star, delta will burn it out','Yes, but with a longer timer'], c:1, why:'Delta gives each winding 400V when it\'s designed for 230V. Star/delta needs a 400Δ/690Y motor.', w:['','','The time isn\'t the problem; the voltage on the winding is.']},
+      {q:'The Y-Δ timer contact that drives the delta:', a:['17-18','17-28','15-18'], c:1, why:'17-28 closes after the time + 50 ms. 17-18 is for the star.', w:['That\'s the star (closed before the time).','','15-18 is a normal on-delay timer.']},
+      {q:'The overload in the winding line (between KM1 and the motor) for a 15 A motor is set to:', a:['15 A','8.7 A (15 ÷ √3)','26 A (15 × √3)'], c:1, why:'In delta the winding current = the line current ÷ √3.', w:['That\'s if the overload is in the line before KM1.','','']}]}
+   ]},
+  /* ---------------------------------------------------------------- 2. braking */
+  {id:'br', icon:'motor', title:'Motor braking methods', goal:'When you switch off, the motor keeps coasting for a few seconds. 3 ways to stop it: <b>DC injection</b> with a rectifier, a contactor and a timer, <b>phase reversal (plugging)</b> with a short pulse, and the <b>electromagnetic brake</b>, which closes on springs when the coil de-energises (the hoist).',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p>When a contactor drops out it only cuts the power, not the motion. A motor with a heavy load (a saw, a conveyor, a long shaft) keeps turning for 5–30 seconds. On many machines that's dangerous or a waste of time, so we add <b>braking</b>.</p>
+     <div class="box key"><ul>
+      <li><b>DC injection</b>: after we cut the AC we inject DC (from a rectifier) into two of the motor windings. The DC makes a stationary magnetic field, and the rotor turning inside it has a current induced in it that brakes it. The circuit: braking contactor <b>KM4</b> feeds from an <b>off-delay timer</b> whose coil is in parallel with KM1's coil: 15-18 stays closed for a time t after KM1 drops out, and in the line is <b>KM1's NC</b> so KM4 can't pull in while the motor is running. An NC interlock in both directions is essential: the phase and DC on the same terminal = a short circuit.</li>
+      <li><b>Phase reversal (plugging)</b>: we pull in reverse contactor KM2 for a moment (a 0.5–1 s pulse with an off-delay timer). The reverse torque stops the motor very quickly. The danger: if the pulse is too long the motor starts turning the other way, which is why in practice a <b>zero-speed switch</b> (zero-speed / plugging switch) is fitted on the motor shaft to cut the reversing as soon as it stops. The current during reversing is bigger than the starting current, so it isn't done frequently.</li>
+      <li><b>The electromagnetic brake</b>: a disc on the motor shaft and two jaws with springs. <b>With no voltage the springs keep it closed</b> (spring-applied, fail-safe). When coil A1-A2 gets voltage it releases the brake. We take the coil voltage from <b>a KM1 auxiliary contact</b> (or from the motor terminals with a rectifier inside the motor): the contactor pulls in = the brake releases; it drops out for any reason = the brake closes immediately and the load stays suspended. This is a requirement on hoists and lifts.</li></ul></div>
+     <p><b>Quick comparison</b>: coasting ~6 s · DC under a second (heats the windings) · plugging ~1 s (violent) · mechanical brake instant (the lining wears).</p>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'The braking rectifier and its symbol', dev:{id:'V1', type:'rectifier', cfg:{}}, noSym:true, cap:'It takes 230V AC on AC1-AC2 and outputs direct current on DC+ / DC−. In practice it comes with a transformer and a resistor that set the braking current (1.5–2×In for a few seconds).'},
+      {title:'Spring-applied electromagnetic brake on a hoist motor', dev:{id:'Y1', type:'brake', cfg:{motor:'M1'}}, noSym:true, cap:'The jaws (red = closed) on the disc. The coil is under the disc. No voltage = closed. Its symbol is the coil rectangle with the two brake lines.'},
+      {title:'DC braking (br1): off-delay timer and KM4', dev:{id:'G', type:'supply3P'}, art:schem('br1'), noSym:true, cap:'KM1 and timer KT in parallel. The braking line from before STOP: KT 15-18 → KM1 NC → KM4. KM4 also connects the rectifier with its 13-14 contact.'},
+      {title:'Plugging (br2): a reverse pulse after STOP', dev:{id:'G', type:'supply3P'}, art:schem('br2'), noSym:true, cap:'The same off-delay timer idea, but it drives reverse contactor KM2 for one second. NC interlock in both directions.'},
+      {title:'Hoist brake (br3): the coil from a KM1 contact', dev:{id:'G', type:'supply3P'}, art:schem('br3'), noSym:true, cap:'Brake coil Y1 on KM1 NO contact 23-24: it releases with the motor and closes with it.'}]},
+    {kind:'sim', title:'Try it', lead:'Start the motor, choose the stopping method, and press STOP: compare the speed curve in the four cases.', sims:[
+      {title:'Speed curve after STOP: coasting, DC, plugging, brake', custom:simBrake, note:'With plugging, notice that the speed crosses zero if the pulse is longer than needed: that\'s the reason for the zero-speed switch.'}]},
+    {kind:'bench', title:'Wire it', ex:['br1','br2','br3']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'In DC braking, braking contactor KM4 feeds from:', a:['KM1\'s NO, so it runs with it','An off-delay timer + KM1\'s NC, so it runs after it','The START button'], c:1, why:'After KM1 drops out its NC closes while the timer is still holding, so KM4 pulls in for a time t.', w:['That puts DC and the phase together = a short circuit.','','START starts the motor, it doesn\'t brake it.']},
+      {q:'A hoist\'s electromagnetic brake when the power is suddenly cut:', a:['It releases and the load comes down','It closes on the springs and the load stays suspended','Stay as they are'], c:1, why:'Spring-applied: the coil releases the brake, and the springs close it with no voltage.', w:['That would be a dangerous design.','','']},
+      {q:'Why does plugging need a zero-speed switch?', a:['To increase the torque','To cut the reversing as soon as the motor stops, before it turns the other way','To protect the overload'], c:1, why:'The timer is an estimate; the switch senses the actual speed.', w:['','','The overload is a different matter.']}]}
+   ]},
+  /* ---------------------------------------------------------------- 3. A/C compressor */
+  {id:'ac', icon:'press', title:'Central A/C compressor control circuit', goal:'A <b>24V</b> control circuit from a transformer: a thermostat calls for cooling → a safety chain <b>HP and LP (NC)</b> → a <b>3-minute timer</b> preventing short cycling → the compressor contactor and condenser fan. The crankcase heater on KM1\'s NC, and the HP alarm latches until RESET.',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p>A central air-conditioning unit (a chiller, a package unit or an older VRF) has a large compressor that starts and stops hundreds of times a day. Its control circuit is on <b>24V</b> from a control transformer (safe for the technician and the thermostat in the room), and has protections specific to the compressor.</p>
+     <div class="box key"><ul>
+      <li><b>Transformer T1</b>: 230V on the primary H1-H2, and 24V from the secondary X1-X2 to the 24V bar and the 0V bar, with a 2A fuse on the secondary. All the coils and lamps after it are 24V.</li>
+      <li><b>Thermostat B1</b>: an NO contact that closes when the room temperature goes above the setpoint (“call for cooling”). It's the start of the chain.</li>
+      <li><b>High-pressure switch HP</b> on the discharge line: <b>NC</b>, opens if the pressure gets too high (dirty condenser, stopped fan). <b>Low-pressure switch LP</b> on the suction line: <b>NC</b>, opens if the pressure drops (low on gas, blocked filter) so the compressor doesn't run empty. Both are “closed in the healthy state”, even though each one moves in a different direction.</li>
+      <li><b>Anti-short-cycle timer</b>: an on-delay of <b>3 minutes</b> after the thermostat. When the compressor stops, the pressures are high, and if it tried to start immediately it would start against the pressure, draw a large current and trip. The timer gives the pressures a chance to equalise. (5 seconds in the simulator.)</li>
+      <li><b>KM1 compressor + KM2 condenser fan</b> pull in together from timer contact 15-18.</li>
+      <li><b>Crankcase heater E1</b>: a resistor around the compressor oil, on <b>as long as the compressor is stopped</b> so the refrigerant doesn't condense in the oil. It's wired on <b>KM1's NC (21-22)</b>.</li>
+      <li><b>HP alarm with manual reset</b>: HP uses its NO contact to drive relay K1, which seals itself in, plus a red lamp, and K1's NC cuts the chain. It only comes back with the RESET button: the technician has to find the cause.</li></ul></div>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'230/24V control transformer and its symbol', dev:{id:'T1', type:'xfmr', cfg:{v:230, vs:24}}, noSym:true, cap:'H1-H2 the primary (230V), X1-X2 the secondary (24V). The secondary is treated as a new source: a 24V bar and a 0V bar, and a fuse on X1.'},
+      {title:'Room thermostat', dev:{id:'B1', type:'level', cfg:{look:'thermo', at:0.6, max:40, blocks:['NO'], lvl0:0.7, a0:1}}, noSym:true, cap:'The setpoint dial (24°C). When the room temperature goes above the setpoint, the NO contact closes = call for cooling. In IEC the symbol is a contact marked θ.'},
+      {title:'High-pressure switch HP (NC opens when the pressure rises)', dev:{id:'B2', type:'level', cfg:{look:'press', at:0.9, max:30, hyst:0.1, blocks:['NO','NC'], lvl0:0.5}}, nema:['pressNO','pressNC'], cap:'Setpoint 27 bar: above it the contact changes over, NC opens and NO closes (for the alarm). It resets when the pressure drops below (setpoint − differential).'},
+      {title:'The complete 24V circuit (ac1)', dev:{id:'G', type:'supply3P'}, art:schem('ac1'), noSym:true, cap:'Safety chain → timer → KM1 and KM2. The heater on KM1 NC. Note the two circuits: 230V for the transformer, and 24V for control.'},
+      {title:'HP alarm with manual reset (ac3)', dev:{id:'G', type:'supply3P'}, art:schem('ac3'), noSym:true, cap:'RESET (NC) → HP NO → K1 with seal-in. K1 NC in place of HP in the chain. The alarm lamp across K1\'s coil.'}]},
+    {kind:'sim', title:'Try it', lead:'Run the time (sped up ×30): the room warms up, the thermostat calls, the timer counts, and the compressor starts. Try blocking the condenser and watch HP, or a gas leak and watch LP.', sims:[
+      {title:'The AC unit: temperature, pressures and the safety chain', custom:simAC, note:'Notice that after the compressor stops it doesn\'t come back within 3 minutes, even if the thermostat calls straight away: that\'s the anti-short-cycle timer.'}]},
+    {kind:'bench', title:'Wire it', ex:['ac1','ac2','ac3']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'The low-pressure switch LP in the compressor safety chain is wired as:', a:['NO: closes when the pressure drops','NC: closed while the pressure is OK, opens when the pressure drops','It isn\'t put in the chain'], c:1, why:'Every element in the chain is “closed in the healthy state”. LP operates when the pressure drops, so it\'s its NC that opens.', w:['Then the compressor would never run.','','']},
+      {q:'The purpose of the 3-minute timer after the thermostat:', a:['Saving electricity','Preventing the compressor starting against high pressure after a short stop','Starting the fan first'], c:1, why:'Anti-short-cycle: it gives the pressures a chance to equalise.', w:['','','The fan runs together with the compressor.']},
+      {q:'The crankcase heater is on:', a:['With the compressor','While the compressor is stopped (on KM1\'s NC)','All the time'], c:1, why:'It stops the refrigerant condensing in the oil while stopped. With the compressor running it serves no purpose.', w:['','','All the time = waste and heat.']}]}
+   ]},
+  /* ---------------------------------------------------------------- 4. soft starter */
+  {id:'ss', icon:'k', title:'The soft starter', goal:'A thyristor device that raises the motor voltage gradually (a <b>ramp</b>) so the starting current drops to 2–4×In without star/delta contactors. Its terminals: L1-3/T1-3, A1/A2 control supply, START/STOP inputs, relay <b>13-14</b> for end of ramp (the bypass), <b>23-24</b> RUN, and <b>95-96 / 97-98</b> for faults.',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p>A soft starter is an electronic device between the breaker and the motor: each phase has <b>a pair of thyristors</b> that chops part of the waveform and raises the voltage from an initial value up to 100% over a time you set. The starting current drops and the motor gets up to speed gently (the belt isn't jerked, the water in the pump doesn't hammer).</p>
+     <div class="box key"><ul>
+      <li><b>The terminals</b>: power <b>1/L1 3/L2 5/L3</b> in and <b>2/T1 4/T2 6/T3</b> to the motor. Control: <b>A1-A2</b> supply for the electronics (230V or 24V depending on the model). <b>IN1 (RUN/START)</b> and <b>IN2 (STOP)</b>: in <b>2-wire</b>, voltage on IN1 = run (a selector or a PLC). In <b>3-wire</b>, START is a pulse on IN1 and STOP (NC) holds IN2, and the unit latches internally.</li>
+      <li><b>The relays</b>: <b>13-14</b> end of ramp (top of ramp / bypass): closes when the voltage reaches 100%, and with it we pull in the <b>bypass contactor</b>, which connects the motor directly to the mains so the thyristors cool down. <b>23-24</b> RUN: closes with the run command. <b>95-96</b> NC opens on a fault (we put it in the control chain) and <b>97-98</b> NO for the alarm.</li>
+      <li><b>The settings</b>: <b>Uini</b> the initial voltage (30–50%): if it's too low the motor doesn't move in the first few seconds. <b>Ramp time</b> (2–30 s). <b>Ilim</b> the current limit (2–4×In). Some models have a ramp-down (soft stop) for pumps so the water doesn't hammer (water hammer).</li>
+      <li><b>The bypass</b>: the contactor has its top terminals from L1 L2 L3 and its outputs to T1 T2 T3 (in parallel with the thyristors). The overload is after the bypass point. Some models have an internal bypass.</li>
+      <li><b>When</b>: star/delta is cheaper, but its current is a fixed ⅓, its torque ⅓, and it needs 6 motor wires. A soft starter is adjustable, 3 wires, with a soft stop. An inverter (VFD) if you want to control the <b>speed</b>, not just the start.</li></ul></div>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'Soft starter and its IEC symbol', dev:{id:'SS', type:'softstarter', cfg:{}}, noSym:true, cap:'The display shows the voltage percentage and the status. Below: the cooling fins. The knobs: Uini, ramp time, Ilim. The symbol: a box with a diagonal line (voltage change) and the thyristor symbol.'},
+      {title:'Soft starter + bypass with relay 13-14 (ss1)', dev:{id:'G', type:'supply3P'}, art:schem('ss1'), noSym:true, cap:'3-wire: STOP on IN2 and START on IN1. 13-14 → bypass coil KM1. 23-24 → the “running” lamp.'},
+      {title:'The power circuit with the bypass', dev:{id:'M1', type:'motor', cfg:{}}, art:schemPw('ss1'), noSym:true, cap:'KM1 in parallel with the soft starter: the same inputs L1 L2 L3 and the same outputs T1 T2 T3. The overload after them.'},
+      {title:'2-wire from a selector + the fault relay (ss2)', dev:{id:'G', type:'supply3P'}, art:schem('ss2'), noSym:true, cap:'95-96 in the selector line, and 97-98 on the red alarm lamp. Note: after RESET with the selector on I the motor restarts by itself.'}]},
+    {kind:'sim', title:'Try it', lead:'Set Uini, the ramp time and Ilim, and press START: see the voltage, current and speed, and compare with the dashed line (DOL).', sims:[
+      {title:'The soft starter ramp: voltage, current, speed', custom:simSS, note:'If Ilim is too low and the load heavy, the motor may not reach its speed and the unit trips on a “Start too long” fault. If Uini is too high you lose the benefit of the ramp.'}]},
+    {kind:'bench', title:'Wire it', ex:['ss1','ss2','ss3']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'The bypass contactor takes its coil supply from:', a:['RUN relay 23-24','End-of-ramp relay 13-14','The START button'], c:1, why:'13-14 closes only when the voltage reaches 100%. RUN closes immediately with the command, which cancels the ramp.', w:['It closes immediately with the run command.','','']},
+      {q:'The main difference between a soft starter and an inverter:', a:['The soft starter is more expensive','The inverter controls the speed; the soft starter only the starting and stopping','No difference'], c:1, why:'The soft starter changes only the voltage; the inverter changes the frequency and the voltage.', w:['The inverter is more expensive.','','']},
+      {q:'In 2-wire control, after a fault and RESET with the selector still on I:', a:['The motor waits for START','The motor restarts by itself','The unit stays in fault'], c:1, why:'The run command is held on IN1, so as soon as the fault clears the unit starts. If that\'s dangerous, use 3-wire.', w:['','','RESET clears the fault.']}]}
+   ]}
+  ],
+  exercises:L9EX
+});
+})();
+</script>
+</body>
+</html>

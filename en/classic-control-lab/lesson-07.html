@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pressure switches, level switches and sensors: pressure switch, float, PNP/NPN proximity sensors and photocell</title>
+<meta name="description" content="Lesson 7 of the Classic Control course: the pressure switch (RANGE and DIFF), the electric float and level switches, 3-wire PNP/NPN NO/NC inductive and capacitive proximity sensors, and the photocell, with a 24V interposing relay. Each device with its real look, IEC/NEMA symbol and simulation, and 6 exercises on the wiring board: a HAND/AUTO float pump, two floats, a 6–8 bar compressor, a photocell stopping a conveyor, dry-run protection, and the NPN/PNP mistake.">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/classic-control-lab/lesson-07.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/classic-control-lab/lesson-07.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/classic-control-lab/lesson-07.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/en/classic-control-lab/engine.css?v=20261021v">
+<link rel="stylesheet" href="/en/classic-control-lab/fx.css?v=20261021v">
+</head>
+<body>
+<div class="app">
+<header class="top site-header">
+  <div>
+    <h1>Lesson 7: Pressure switches, level switches and sensors</h1>
+    <p>So far the circuit has been operated by a person (a button or a selector) or by the machine (a limit switch). In this lesson <b>the process itself</b> is in control: the pressure in the receiver, the level in the tank, or an object passing in front of a sensor. You'll learn the <b>pressure switch</b>, the <b>float</b>, PNP/NPN <b>proximity sensors</b> and the <b>photocell</b>, and wire 6 real circuits: a pump with a float, a compressor, a conveyor with a photocell, and dry-run protection.</p>
+  </div>
+  <div class="chips">
+    <a class="btn" href="/en/classic-control-lab/index.html">‹ Lessons</a>
+    <a class="btn" href="/en/labs.html">← All courses</a><span class="bar lang-slot"></span>
+  </div>
+</header>
+
+<div id="lesson"></div>
+
+<p class="foot">Symbols according to <span class="mono">IEC 60617</span> and <span class="mono">NEMA ICS 19</span>. Sensor wire colours according to <span class="mono">IEC 60947-5-2</span>: <span class="mono">BN</span> brown +24V, <span class="mono">BU</span> blue 0V, <span class="mono">BK</span> black the output (and <span class="mono">WH</span> white the second output on 4-wire sensors). Contact numbers <span class="mono">13-14</span> NO and <span class="mono">21-22</span> NC. The pressures and times in the simulation are chosen so you can see the cycle quickly; in reality they are set to suit the machine.<br>© &#x2066;2026 LearnElectricals&#x2069;. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+
+<script src="/site-config.js?v=20261021v"></script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script src="/assets/i18n-en.js?v=20261021v"></script>
+<script src="/en/classic-control-lab/engine.js?v=20261021v"></script>
+<script src="/en/classic-control-lab/fx.js?v=20261021v"></script>
+<script>
+(function(){
+/* lesson-07 exercise data (embedded into lesson-07.html by build7.sh; also loaded by the Node model test) */
+const G   = {id:'G', type:'supply3P', name:'supply'};
+const DC  = {id:'G1', type:'supplyDC', name:'24V power supply'};
+const Q3  = {id:'Q1', type:'mcb', cfg:{poles:3, label:'C10'}, name:'power breaker'};
+const F1  = {id:'F1', type:'mcb', cfg:{poles:1, label:'C2'}, name:'control breaker'};
+const PB  = (id, color, label) => ({id, type:'pb', cfg:{color, label, blocks:[color === 'red' ? 'NC' : 'NO']}});
+const SEL = {id:'S1', type:'sel', cfg:{pos:['0','I'], label:'0 / I', blocks:[{k:'NO', on:[1]}]}};
+const SEL3 = {id:'S1', type:'sel', cfg:{pos:['HAND','0','AUTO'], start:1, label:'HAND / 0 / AUTO', blocks:[{k:'NO', on:[0]}, {k:'NO', on:[2]}]}, name:'Hand / auto selector'};
+const KM  = (id, aux, name) => ({id, type:'contactor', cfg:{v:230, aux:aux || ['NO']}, name:name || 'contactor'});
+const OL  = (Ir, extra) => ({id:'F2', type:'ol', cfg:Object.assign({Ir, lo:4, hi:6.5, model:'LRD10', range:'4-6 A'}, extra || {}), name:'Overload'});
+const RL  = (id, v, blocks, name) => ({id, type:'relay', cfg:{v:v || 230, blocks:blocks || ['CO','CO']}, name:name || 'relay'});
+const lamp = (id, color, name, v) => ({id, type:'lamp', cfg:{color, v:v || 230}, name});
+const PUMP = {id:'M1', type:'motor', cfg:{term:3, kW:2.2, In:4.9, look:'pump'}, name:'pump'};
+const COMP = {id:'M1', type:'motor', cfg:{term:3, kW:4, In:8.4, vD:400, vY:690, cosf:0.83, rpm:1450}, name:'Compressor'};
+const CONV = {id:'M1', type:'motor', cfg:{term:3, kW:2.2, In:4.9}, name:'Conveyor motor'};
+const S0 = PB('S0', 'red', 'STOP'), S1 = PB('S1', 'green', 'START');
+const LVL = (id, at, hyst, label, tank, extra) => ({id, type:'level', cfg:Object.assign({look:'float', at, hyst, tank:tank || 'T1', blocks:['NO','NC'], label}, extra || {}), name:label});
+// power: supply → Q1 → KM1 → F2 → motor
+const PWR = [['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','KM1:1'],['Q1:4','KM1:3'],['Q1:6','KM1:5'],['KM1:2','F2:1'],['KM1:4','F2:3'],['KM1:6','F2:5'],['F2:2','M1:U'],['F2:4','M1:V'],['F2:6','M1:W']];
+const FEED = [['G:L1','F1:1'],['F1:2','F2:95']]; // L1 → F1 → overload 95
+const PWR_STEPS = ['L1 L2 L3 from the supply to breaker Q1, and from Q1 to the contactor 1/3/5.','From the contactor 2/4/6 to the overload inputs, and from its outputs to motor U V W.'];
+
+const L7EX = {
+  s1:{story:{icon:'💧', text:'A water tank on a building roof: the pump fills the tank and stops when the upper float rises, and when the water drops it starts again.', ask:'A pump and an upper float with a HAND-0-AUTO selector.'}, machine:'pump', title:'Exercise 1: a pump and an upper float with a HAND-0-AUTO selector', short:'Pump + upper float HAND/AUTO',
+    goal:'HAND: the pump runs all the time. AUTO: the pump fills the tank until the upper float rises, then stops, and starts again when the level drops. 0: stopped.',
+    idea:'The 3-position selector has two blocks: the HAND block feeds the coil directly, and the AUTO block feeds it through the float\'s NC contact (21-22), which opens when the water reaches it.',
+    steps:{power:PWR_STEPS, control:['Phase L1 to F1, then overload contact 95-96, then the input of the HAND block on the selector, and a jumper from it to the input of the AUTO block.','The HAND block output straight to A1 of KM1.','The AUTO block output to the float\'s NC contact (21-22), and from 22 to A1.','A2 of KM1 to N.']},
+    tip:'Turn the selector to AUTO and speed up time ⏩: the pump fills, the float rises, the pump stops, consumption lowers the level, and it starts again.',
+    devices:[G, Q3, F1, SEL3, KM('KM1'), OL(4.9), PUMP, {id:'T1', type:'tank', cfg:{pump:'M1', fill:0.2, drain:0.04, lvl0:0.35}, name:'tank'}, LVL('LSH', 0.9, 0.3, 'Upper float')],
+    solution:PWR.concat(FEED, [['F2:96','S1:13'],['S1:13','S1:23'],['S1:14','KM1:A1'],['S1:24','LSH:21'],['LSH:22','KM1:A1'],['KM1:A2','G:N']]), seq:true,
+    cases:[{label:'Selector on 0', set:{S1:{pos:1}}, expect:{M1:0}}, {label:'HAND: runs whatever the level', set:{S1:{pos:0}}, expect:{M1:'F'}}, {label:'AUTO and the tank is low', set:{S1:{pos:2}}, expect:{M1:'F'}}, {label:'AUTO: the water reached the upper float', wait:5, expect:{M1:0}}, {label:'AUTO: the level dropped below the float', wait:7, expect:{M1:'F'}}, {label:'Turned the selector back to 0', set:{S1:{pos:1}}, expect:{M1:0}}],
+    patterns:[{sig:{M1:'011110'}, msg:'In AUTO the pump runs but doesn\'t stop when the water arrives: the float contact must be <b>NC (21-22)</b> in the AUTO line so it opens when it rises. If you use the NO (13-14) it will work the opposite way.'}, {sig:{M1:'010000'}, msg:'HAND works but AUTO doesn\'t start it while the tank is low: either the AUTO block (23-24) isn\'t getting the phase (add a jumper from 13 to 23), or you used the float\'s <b>NO (13-14)</b> contact instead of <b>NC (21-22)</b>: it must be NC so it\'s closed while the level is low and opens when the float rises.'}],
+    okMsg:'In AUTO the float is in control by itself, and in HAND you\'re in control (e.g. for maintenance). Note that HAND ignores the float: the tank can overflow if you forget it.'},
+  s2:{story:{icon:'💧', text:'The same tank, but the owner is fed up with the pump starting and stopping every minute: he wants it to start at the lower float and stop at the upper one.', ask:'Two floats with a seal-in.'}, machine:'pump', title:'Exercise 2: two floats: the lower one starts and the upper one stops (with a seal-in)', short:'Two floats, lower/upper',
+    goal:'The pump starts when the level drops below the lower float, keeps running until it reaches the upper float, and stops. And it repeats the cycle by itself.',
+    idea:'The lower float\'s NC contact starts it (closed while the float hangs down), KM1\'s 13-14 contact in parallel with it seals it in, and the upper float\'s NC contact at the start of the line breaks the seal-in when the water arrives. The difference between the two floats is the hysteresis.',
+    steps:{power:PWR_STEPS, control:['Phase L1 to F1, then 95-96, then the selector.','After the selector: the upper float\'s NC contact (21-22).','Then the lower float\'s NC contact (21-22) in parallel with seal-in contact KM1 13-14, and their output to A1.','A2 to N, and the “pump running” lamp across the coil.']},
+    tip:'Speed up time ⏩ and watch the cycle: it fills to the upper float, stops, consumption lowers the level to the lower float, and it starts again.',
+    devices:[G, Q3, F1, SEL, KM('KM1'), OL(4.9), PUMP, {id:'T1', type:'tank', cfg:{pump:'M1', fill:0.25, drain:0.08, lvl0:0.1}, name:'tank'}, LVL('LSL', 0.25, 0.05, 'Lower float'), LVL('LSH', 0.85, 0.1, 'Upper float'), lamp('H1', 'green', 'Pump running')],
+    solution:PWR.concat(FEED, [['F2:96','S1:13'],['S1:14','LSH:21'],['LSH:22','LSL:21'],['LSL:22','KM1:A1'],['KM1:13','LSL:21'],['KM1:14','LSL:22'],['KM1:A2','G:N'],['KM1:A1','H1:X1'],['H1:X2','G:N']]), seq:true,
+    cases:[{label:'Selector on 0', set:{S1:{pos:0}}, expect:{M1:0, H1:0}}, {label:'On I and the tank is empty', set:{S1:{pos:1}}, expect:{M1:'F', H1:1}}, {label:'Reached the upper float', wait:5, expect:{M1:0, H1:0}}, {label:'Level between the two floats (falling)', wait:4, expect:{M1:0, H1:0}}, {label:'Dropped below the lower float', wait:5, expect:{M1:'F', H1:1}}, {label:'Turned the selector back to 0', set:{S1:{pos:0}}, expect:{M1:0, H1:0}}],
+    patterns:[{sig:{M1:'011110'}, msg:'The pump doesn\'t stop at the upper float: its NC contact (21-22) must be in the coil line <b>before</b> the seal-in so it breaks it.'}, {sig:{M1:'01?0?0'}, msg:'It runs, but stops as soon as the level passes the lower float (before it reaches the upper one) and keeps switching on and off around the lower float: the <b>seal-in</b> is missing (KM1 13-14 in parallel with the lower float\'s NC contact).'}, {sig:{M1:'010110'}, msg:'It runs but doesn\'t stop at the upper float, and starts again when the lower one hangs down… check that the upper float contact is the NC 21-22 and is in the coil line, not the lamp line.'}],
+    okMsg:'This is the most common level control circuit: two floats + a seal-in = a large hysteresis, so the pump doesn\'t keep switching on and off.'},
+  s3:{story:{icon:'🌬️', text:'A body shop: the air compressor must charge the tank to 8 bar and stop, and start again by itself when the pressure drops to 6 bar.', ask:'A compressor with a pressure switch and a selector.'}, machine:'compressor', title:'Exercise 3: an air compressor with a 6–8 bar pressure switch', short:'Compressor 6–8 bar',
+    goal:'Selector on I: the compressor charges the tank to 8 bar and stops, and when the pressure drops to 6 bar (consumption) it starts again by itself.',
+    idea:'The pressure switch is set to RANGE = 8 bar and DIFF = 2 bar. Its NC contact (21-22) is in the contactor coil line: it opens at 8 and closes again at 6. No seal-in: the pressure switch itself holds it with its hysteresis.',
+    steps:{power:PWR_STEPS, control:['Phase L1 to F1, then 95-96, then the selector.','After the selector, the pressure switch\'s NC contact (21-22), and from 22 to A1.','A2 to N, and the “compressor running” lamp across the coil.']},
+    tip:'Speed up time ⏩ and watch the gauge: 8 bar it stops, 6 bar it starts.',
+    devices:[G, Q3, F1, SEL, KM('KM1'), OL(8.4, {lo:7, hi:10, model:'LRD14', range:'7-10 A'}), COMP, {id:'T1', type:'tank', cfg:{look:'air', pump:'M1', fill:0.1, drain:0.04, lvl0:0.5, max:10, label:'Air tank'}, name:'Air tank'}, LVL('PS', 0.8, 0.2, 'Pressure switch 6–8 bar', 'T1', {look:'press', max:10}), lamp('H1', 'green', 'Compressor running')],
+    solution:PWR.concat(FEED, [['F2:96','S1:13'],['S1:14','PS:21'],['PS:22','KM1:A1'],['KM1:A2','G:N'],['KM1:A1','H1:X1'],['H1:X2','G:N']]), seq:true,
+    cases:[{label:'Selector on 0', set:{S1:{pos:0}}, expect:{M1:0, H1:0}}, {label:'On I and the pressure is 5 bar', set:{S1:{pos:1}}, expect:{M1:'F', H1:1}}, {label:'The pressure reached 8 bar', wait:6, expect:{M1:0, H1:0}}, {label:'The pressure dropped to 6 bar', wait:6, expect:{M1:'F', H1:1}}, {label:'Turned the selector back to 0', set:{S1:{pos:0}}, expect:{M1:0, H1:0}}],
+    patterns:[{sig:{M1:'01110'}, msg:'The compressor doesn\'t stop at 8 bar: the pressure switch contact must be <b>NC (21-22)</b> in the coil line. With the NO it works the opposite way (it starts when the pressure is reached!).'}],
+    okMsg:'RANGE is the cut-out pressure (8) and DIFF is the difference before it cuts back in (2 bar → starts at 6). If DIFF is small the compressor will switch on and off constantly and wear out.'},
+  s4:{story:{icon:'📦', text:'A carton conveyor: when the carton reaches the photocell and breaks the beam, the conveyor stops by itself so the worker can pick it up.', ask:'A photocell + a relay stop the conveyor.'}, machine:'conveyor', title:'Exercise 4: a photocell stops the conveyor when the carton arrives', short:'Photocell stops the conveyor',
+    goal:'START starts the conveyor and it keeps running. When the carton reaches the photocell and breaks the beam, the conveyor stops by itself. STOP stops it at any time.',
+    idea:'The 24V DC photocell feeds a small relay K1 (24V), and K1\'s NC contact (11-12) is in the 230V contactor coil line. The sensor never touches 230V: the relay is the go-between.',
+    steps:{power:PWR_STEPS, control:['230V: phase L1 to F1, then 95-96, then STOP, then START in parallel with KM1\'s seal-in (13-14).','From the START output to K1\'s common (11), and from its NC (12) to A1 of KM1, and A2 to N. The “conveyor running” lamp across the coil.','24V: +24V to the photocell\'s BN, and BU to 0V.','The photocell output BK to A1 of K1, and K1\'s A2 to 0V (on BU).']},
+    tip:'Press START and speed up time ⏩: the cart (the carton) moves to the photocell, the beam is broken, the relay pulls in, and the conveyor stops.',
+    devices:[G, DC, Q3, F1, S0, S1, KM('KM1'), OL(4.9), CONV, {id:'CART', type:'cart', cfg:{motor:'M1', len:6, labA:'Conveyor start', labB:'Photocell'}, name:'Carton on the conveyor'}, {id:'B1', type:'prox', cfg:{kind:'photo', pnp:true, nc:false, cart:'CART', at:0.8, label:'PNP photocell'}, name:'photocell'}, RL('K1', 24, ['CO'], '24V relay'), lamp('H1', 'green', 'Conveyor running')],
+    solution:PWR.concat(FEED, [['F2:96','S0:11'],['S0:12','S1:13'],['S1:14','K1:11'],['K1:12','KM1:A1'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KM1:A2','G:N'],['KM1:A1','H1:X1'],['H1:X2','G:N'],['G1:P24','B1:BN'],['B1:BU','G1:0V'],['B1:BK','K1:A1'],['K1:A2','B1:BU']]), seq:true,
+    cases:[{label:'nothing pressed', set:{}, expect:{M1:0, H1:0}}, {label:'START pressed', set:{S1:{p:1}}, expect:{M1:'F', H1:1}}, {label:'START released', set:{S1:{p:0}}, expect:{M1:'F', H1:1}}, {label:'The carton reached the photocell', wait:6, expect:{M1:0, H1:0}}, {label:'START again while the carton is still breaking the beam', set:{S1:{p:1}}, expect:{M1:0, H1:0}}, {label:'START released', set:{S1:{p:0}}, expect:{M1:0, H1:0}}],
+    patterns:[{sig:{M1:'011111'}, msg:'The conveyor doesn\'t stop when the carton arrives: check that K1\'s contact in the coil line is the <b>NC (11-12)</b>, and that the photocell output BK goes to A1 of K1 and A2 to 0V.'}, {sig:{M1:'010000'}, msg:'The conveyor stops as soon as you release START: the <b>seal-in</b> KM1 13-14 in parallel with the START button is missing.'}],
+    okMsg:'The sensor works on 24V and the relay translates to 230V. With a PLC it\'s the same idea: the sensor goes into an input and the output drives the contactor.'},
+  s5:{story:{icon:'🏜️', text:'A pump drawing from a well: if the water runs out and the pump keeps running dry, it will burn.', ask:'Dry-run protection with a lower float and a “no water” lamp.'}, machine:'pump', title:'Exercise 5: protecting the pump against dry running with a lower float', short:'Dry-run protection',
+    goal:'The pump draws from a tank. If the water runs out (the lower float hangs down), the pump stops immediately and a “no water” lamp lights, and it doesn\'t start again by itself when the water returns.',
+    idea:'The dry-run float\'s NO contact (13-14) is closed as long as there\'s water, and it\'s placed in the control line before START and the seal-in. When it opens the contactor drops out, and when the water returns you must press START again. The “no water” lamp is on the float\'s NC contact.',
+    steps:{power:PWR_STEPS, control:['Phase L1 to F1, then 95-96, then STOP.','After STOP, the dry-run float\'s NO contact (13-14).','Then START in parallel with KM1\'s seal-in, their output to A1, and A2 to N.','The “no water” lamp H3 from after F1 through the float\'s NC contact (21-22).']},
+    tip:'Press START and speed up ⏩: the pump draws and the level falls; when it reaches the dry-run float the pump stops and the yellow lamp lights.',
+    devices:[G, Q3, F1, S0, S1, KM('KM1'), OL(4.9), PUMP, {id:'T1', type:'tank', cfg:{pump:'M1', fill:-0.12, drain:-0.03, lvl0:0.5, label:'Suction tank'}, name:'Suction tank'}, LVL('LSL', 0.15, 0.05, 'Dry-run float', 'T1', {a0:1, lvl0:0.5}), lamp('H3', 'amber', 'No water')],
+    solution:PWR.concat(FEED, [['F2:96','S0:11'],['S0:12','LSL:13'],['LSL:14','S1:13'],['S1:14','KM1:A1'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KM1:A2','G:N'],['F1:2','LSL:21'],['LSL:22','H3:X1'],['H3:X2','G:N']]), seq:true,
+    cases:[{label:'There\'s water, nothing pressed', set:{}, expect:{M1:0, H3:0}}, {label:'START pressed', set:{S1:{p:1}}, expect:{M1:'F', H3:0}}, {label:'START released', set:{S1:{p:0}}, expect:{M1:'F', H3:0}}, {label:'The water ran out', wait:5, expect:{M1:0, H3:1}}, {label:'The water came back (without START)', wait:4, expect:{M1:0, H3:0}}, {label:'START again', set:{S1:{p:1}}, expect:{M1:'F', H3:0}}, {label:'STOP pressed', set:{S1:{p:0}, S0:{p:1}}, expect:{M1:0, H3:0}}],
+    patterns:[{sig:{M1:'0111010'}, msg:'The pump doesn\'t stop when the water runs out: the dry-run float\'s <b>NO (13-14)</b> contact must be in the coil line (before START and the seal-in), not only in the lamp line.'}, {sig:{M1:'0110110'}, msg:'The pump stops when the water runs out, but starts again by itself when the water returns: the seal-in must be <b>after</b> the float contact (KM1 13-14 in parallel with START only).'}],
+    okMsg:'A pump running dry burns within minutes (the water is what cools the seals). That\'s why this protection is essential.'},
+  s6:{story:{icon:'📡', text:'A proximity sensor on a machine: the electrician wired it as if it were PNP when it\'s NPN, and the relay never pulls in.', ask:'Find the sensor wiring mistake and fix it.'}, title:'Exercise 6: mistake: an NPN sensor wired as if it were PNP', short:'Mistake: NPN wired as PNP',
+    goal:'When an object comes close to the inductive sensor, relay K1 pulls in and the “object present” lamp lights.',
+    idea:'This sensor is NPN: its BK output switches to 0V (sinking), so the load must be between +24V and BK. Whoever wired it put the relay between BK and 0V like a PNP, so both ends of the relay are at 0V and it will never pull in.',
+    steps:['Switch on and bring an object close to the sensor: the lamp doesn\'t light even though the sensor\'s LED came on.','Switch off, and remove the relay\'s two wires: BK to A1, and A2 to 0V (BU).','Connect K1\'s A1 to +24V (a jumper from the relay common 11, which already has +24V), and A2 to the sensor output BK.','Switch on again and bring the object close: the relay pulls in and the lamp lights.'],
+    tip:'The rule: PNP = load between BK and 0V. NPN = load between +24V and BK.',
+    devices:[DC, {id:'B1', type:'prox', cfg:{kind:'ind', pnp:false, nc:false, label:'Inductive sensor NPN NO'}, name:'Inductive sensor NPN'}, RL('K1', 24, ['CO'], '24V relay'), lamp('H1', 'green', 'Object present', 24)],
+    preset:[['G1:P24','B1:BN'],['B1:BU','G1:0V'],['B1:BK','K1:A1'],['K1:A2','B1:BU'],['B1:BN','K1:11'],['K1:14','H1:X1'],['H1:X2','G1:0V']],
+    solution:[['G1:P24','B1:BN'],['B1:BU','G1:0V'],['B1:BN','K1:11'],['K1:11','K1:A1'],['K1:A2','B1:BK'],['K1:14','H1:X1'],['H1:X2','G1:0V']],
+    cases:[{label:'no object', set:{B1:{a:0}}, expect:{H1:0}}, {label:'object within range', set:{B1:{a:1}}, expect:{H1:1}}],
+    patterns:[{sig:{H1:'00'}, msg:'The relay doesn\'t pull in even though the sensor sees the object: an <b>NPN</b> sensor switches its BK output to <b>0V</b>, so if the relay is between BK and 0V both its ends are at 0V and there\'s no voltage difference. Put the relay between <b>+24V and BK</b>.'}],
+    okMsg:'NPN pulls the load to 0V (sinking), and PNP gives it +24V (sourcing). In Egypt and Europe PNP is most common; in Japan NPN. Always check the label before wiring.'}
+};
+/* ---------- lesson-7 figures and custom sim ---------- */
+const esc = CL.esc, r1 = v => Math.round(v * 10) / 10;
+const simShell = (host, o, ctl) => { host.innerHTML = `<div class="sim">${o.title ? `<h3>${esc(o.title)}</h3>` : ''}<div class="sim-grid"><figure class="sim-art"></figure><figure class="sim-sym"><div class="sim-iec"></div><ul class="sim-cont"></ul></figure></div><div class="sim-ctl">${ctl}</div><div class="tblw"><table class="tbl sim-tt"></table></div>${o.note ? `<p class="sim-note">${o.note}</p>` : ''}</div>`; return {art:host.querySelector('.sim-art'), iec:host.querySelector('.sim-iec'), cont:host.querySelector('.sim-cont'), ctl:host.querySelector('.sim-ctl'), tt:host.querySelector('.sim-tt')}; };
+
+// 3-wire sensor wiring figure: PNP (sourcing) vs NPN (sinking), load between BK and 0V or between +24V and BK
+function wire3(o){
+  const pnp = o.pnp, on = o.on, loadLow = o.loadLow; // loadLow: load between BK and 0V
+  const okLoad = pnp ? loadLow : !loadLow, cur = on && okLoad;
+  const C = {bn:'#7b4a21', bu:'#3a9be0', bk:'#1f1f1f'};
+  let s = `<svg viewBox="0 0 440 250" role="img" aria-label="3-wire sensor wiring ${pnp ? 'PNP' : 'NPN'}"><g style="color:var(--ink)">`;
+  // supply rails
+  s += `<path d="M30 40H410" stroke="${C.bn}" stroke-width="4"/><text x="34" y="32" font-size="11" font-weight="700" fill="currentColor">+24V</text>`;
+  s += `<path d="M30 220H410" stroke="${C.bu}" stroke-width="4"/><text x="34" y="238" font-size="11" font-weight="700" fill="currentColor">0V</text>`;
+  // sensor body
+  s += `<rect x="90" y="80" width="120" height="100" rx="8" fill="#aab1b6" stroke="#444"/><text x="150" y="100" font-size="11" font-weight="700" text-anchor="middle" fill="#1d2226">${pnp ? 'PNP' : 'NPN'} · NO</text>`;
+  s += `<path d="M120 40V80" stroke="${C.bn}" stroke-width="3"/><text x="112" y="66" font-size="9" fill="currentColor">BN</text>`;
+  s += `<path d="M120 180V220" stroke="${C.bu}" stroke-width="3"/><text x="112" y="206" font-size="9" fill="currentColor">BU</text>`;
+  // transistor (switch) inside: PNP connects BK to +24 (top), NPN connects BK to 0V (bottom)
+  const sy = pnp ? 110 : 150;
+  s += `<path d="M120 ${sy}H160" stroke="${C.bk}" stroke-width="2"/><path d="M160 ${sy}L${on ? 180 : 176} ${on ? 130 : 118}" stroke="${cur || on ? '#1f8a3b' : '#1f1f1f'}" stroke-width="2.5" stroke-linecap="round"/><circle cx="160" cy="${sy}" r="3" fill="#1f1f1f"/><circle cx="180" cy="130" r="3" fill="#1f1f1f"/>`;
+  s += `<path d="M120 ${pnp ? 80 : 180}V${sy}" stroke="${C.bn}" stroke-width="0"/>`;
+  s += `<text x="150" y="${pnp ? 170 : 92}" font-size="8.5" text-anchor="middle" fill="#1d2226">${on ? 'Object present: transistor conducting' : 'No object: open'}</text>`;
+  s += `<path d="M180 130H210" stroke="${C.bk}" stroke-width="3"/><text x="214" y="124" font-size="9" fill="currentColor">BK</text>`;
+  // load
+  const lx = 300, ly = loadLow ? 160 : 90;
+  s += `<path d="M210 130H${lx}" stroke="${C.bk}" stroke-width="3"/>`;
+  if (loadLow) s += `<path d="M${lx} 130V${ly - 14}" stroke="${C.bk}" stroke-width="3"/><path d="M${lx} ${ly + 14}V220" stroke="${C.bu}" stroke-width="3"/>`;
+  else s += `<path d="M${lx} 130V${ly + 14}" stroke="${C.bk}" stroke-width="3"/><path d="M${lx} ${ly - 14}V40" stroke="${C.bn}" stroke-width="3"/>`;
+  s += `<rect x="${lx - 16}" y="${ly - 14}" width="32" height="28" rx="4" fill="${cur ? '#ffd24d' : '#e9eaec'}" stroke="#444"/><text x="${lx}" y="${ly + 4}" font-size="9" text-anchor="middle" fill="#1d2226">K1</text>`;
+  s += `<text x="${lx + 24}" y="${ly + 4}" font-size="9" fill="currentColor">${loadLow ? 'Load between BK and 0V' : 'Load between +24V and BK'}</text>`;
+  // verdict
+  const v = !on ? 'No object: no current in the load.' : cur ? (pnp ? 'PNP gives +24V on BK → current flows through the load to 0V ✓' : 'NPN switches BK to 0V → current flows from +24V through the load ✓') : (pnp ? 'PNP gives +24V on BK and the load is also tied to +24V: both ends at the same voltage, no current ✗' : 'NPN switches BK to 0V and the load is also tied to 0V: both ends at the same voltage, no current ✗');
+  s += `<text class="ar" x="220" y="246" font-size="10.5" text-anchor="middle" fill="${!on ? 'var(--muted)' : cur ? '#1f8a3b' : 'var(--bad)'}" font-weight="700">${v}</text>`;
+  return s + '</g></svg>';
+}
+function simPnp(host, o){
+  let pnp = true, loadLow = true, on = 0;
+  const ui = simShell(host, o, `<button type="button" class="btn big pri" data-k="obj" aria-pressed="false">Bring an object to the sensor</button><label>Sensor type<select data-k="type" aria-label="Sensor type"><option value="pnp" selected>PNP (Sourcing)</option><option value="npn">NPN (Sinking)</option></select></label><label>Load position (relay K1)<select data-k="load" aria-label="Load position"><option value="low" selected>Between BK and 0V</option><option value="high">Between +24V and BK</option></select></label><div class="sim-clock" role="status" aria-live="polite"></div>`);
+  const d = CL.makeDevice({id:'B1', type:'prox', cfg:{kind:'ind', pnp:true}});
+  function render(){
+    d.cfg.pnp = pnp; d.st.a = on; d.st.x = on ? 1 : 0;
+    ui.art.innerHTML = wire3({pnp, on, loadLow});
+    ui.iec.innerHTML = CL.art.proxArt(d);
+    const okLoad = pnp ? loadLow : !loadLow, cur = on && okLoad;
+    ui.cont.innerHTML = `<li class="${on ? 'on' : ''}"><span>Object</span><span class="st">${on ? 'Present' : 'None'}</span></li><li class="${on ? 'on' : ''}"><span>BK output</span><span class="om">${on ? (pnp ? '+24V' : '0V') : 'open'}</span></li><li class="${cur ? 'on' : ''}"><span>Relay K1</span><span class="st">${cur ? 'Pulled in ✓' : 'stopped'}</span></li>`;
+    ui.tt.innerHTML = `<thead><tr><th class="r">Type</th><th>BK output when it senses</th><th>Load is wired</th></tr></thead><tbody><tr class="${pnp ? 'cur' : ''}"><td class="r">PNP (Sourcing)</td><td>+24V</td><td>Between BK and 0V</td></tr><tr class="${pnp ? '' : 'cur'}"><td class="r">NPN (Sinking)</td><td>0V</td><td>Between +24V and BK</td></tr></tbody>`;
+    ui.ctl.querySelector('[data-k=obj]').textContent = on ? 'Move the object away' : 'Bring an object to the sensor';
+    ui.ctl.querySelector('[data-k=obj]').setAttribute('aria-pressed', on ? 'true' : 'false');
+    ui.ctl.querySelector('.sim-clock').innerHTML = okLoad ? 'The load is in the right place for this type.' : `<b>Wrong</b>: the load is in the ${pnp ? 'NPN' : 'PNP'} position, and this is a ${pnp ? 'PNP' : 'NPN'}sensor. The relay will never pull in.`;
+  }
+  ui.ctl.querySelector('[data-k=obj]').addEventListener('click', () => { on = on ? 0 : 1; render(); o.onAct(); });
+  ui.ctl.querySelector('[data-k=type]').addEventListener('change', e => { pnp = e.target.value === 'pnp'; render(); o.onAct(); });
+  ui.ctl.querySelector('[data-k=load]').addEventListener('change', e => { loadLow = e.target.value === 'low'; render(); o.onAct(); });
+  render();
+  return {destroy(){}};
+}
+const PS = (at, hyst, extra) => ({id:'PS', type:'level', cfg:Object.assign({look:'press', at, hyst, max:10, blocks:['NO','NC'], label:'pressure switch'}, extra || {}), name:'pressure switch'});
+const FL = (at, hyst, extra) => ({id:'LS', type:'level', cfg:Object.assign({look:'float', at, hyst, blocks:['NO','NC'], label:'float switch'}, extra || {}), name:'float switch'});
+const PX = (kind, pnp, nc, extra) => ({id:'B1', type:'prox', cfg:Object.assign({kind, pnp, nc}, extra || {}), name:CL.PROX_AR[kind]});
+
+CL.lesson({
+  id:'l7', n:7, title:'Lesson 7: Pressure switches, level switches and sensors',
+  intro:'<p>Pick a device and follow it: <b>Definition</b> → <b>Look and symbol</b> → <b>Try it</b> → <b>Wire it</b> → <b>Questions</b>. In this lesson the board has a <b>tank</b> that fills and empties and a <b>cart</b> on a conveyor, so the simulation runs the circuit over time: speed up ⏩ and watch the pump stop and start by itself.</p>',
+  elements:[
+  /* ---------------------------------------------------------------- 1. pressure switch */
+  {id:'press', icon:'press', title:'The pressure switch', goal:'A contact operated by pressure: <b>RANGE</b> is the cut-out pressure and <b>DIFF</b> the difference before it cuts back in. With it you control a compressor or a pressure pump without anyone watching the gauge.',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p><b>A pressure switch</b> is a switch that closes and opens a contact according to the <b>pressure</b> coming into it from a pipe. Inside it is a <b>diaphragm</b> (a rubber membrane) or a <b>piston</b> pushing against a <b>spring</b>: when the pressure overcomes the spring, the mechanism snaps over and flips the contact.</p>
+     <div class="box key"><ul>
+      <li><b>RANGE (the main setting)</b>: the pressure at which the contact flips on the way up. On a compressor = the cut-out pressure (e.g. 8 bar). Set with a large screw or wheel.</li>
+      <li><b>DIFF (the differential / hysteresis)</b>: the difference between the cut-out pressure and the cut-in pressure. 8 bar cut-out with DIFF = 2 bar means it starts again at 6 bar. If DIFF is small the compressor switches on and off constantly (chattering) and wears out, along with the contactor.</li>
+      <li><b>The contact</b>: usually <b>changeover (CO)</b>: common + NC + NO. In the compressor circuit we use <b>NC (21-22)</b>: closed while the pressure is low so the compressor runs, and it opens when the pressure is reached.</li>
+      <li><b>Types</b>: mechanical (spring) for air, water and oil, and electronic with a display (pressure sensor/switch) that also gives a contact and a 4–20 mA signal. There's also a <b>differential pressure switch</b> that measures the difference between two points (a clogged filter).</li>
+      <li><b>Where you'll find it</b>: air compressors, booster pumps in buildings, hydraulics, and protecting a pump against loss of pressure.</li></ul></div>
+     <p><b>An important difference:</b> the pressure switch <b>controls</b> the pressure (a compressor stops at 8 bar), while the <b>safety valve</b> is mechanical and opens if the pressure exceeds the danger limit in case the switch fails. Both must be present.</p>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'A mechanical pressure switch on an air tank', dev:PS(0.8, 0.2, {lvl0:0.5}), nema:['pressNO','pressNC'], cap:'The pipe comes in from below onto the diaphragm, with the spring above it, the RANGE wheel (blue) and the DIFF screw (red). The contact is on the side with its terminals. In IEC the symbol is a contact with a half circle on it (the diaphragm); in NEMA the same idea with a half circle under the contact.'},
+      {title:'The same switch with the pressure at the set point', dev:PS(0.8, 0.2, {lvl0:0.85, a0:1}), nema:['pressNC'], cap:'The diaphragm pushed the spring and the contact flipped: NC opened and NO closed. It returns when the pressure drops below (RANGE − DIFF).'}]},
+    {kind:'sim', title:'Try it', lead:'Raise the pressure with the slider: at 8 bar the contact flips. Lower it: it doesn\'t return until 6 bar. That\'s the hysteresis that stops the compressor switching on and off every second.', sims:[
+      {title:'Pressure switch RANGE = 8 bar, DIFF = 2 bar', dev:PS(0.8, 0.2, {lvl0:0.3}), note:'The continuity rows show you 21-22 (NC) and 13-14 (NO) at every moment.'}]},
+    {kind:'bench', title:'Wire it', ex:['s3']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'An air compressor: the pressure switch is set to RANGE = 8 bar and DIFF = 2 bar. The compressor:', a:['Starts at 8 and stops at 10','Stops at 8 and starts again at 6','Stops at 8 and comes back at 8'], c:1, why:'RANGE is the cut-out pressure, and DIFF is the difference before it cuts back in: 8 − 2 = 6.', w:['RANGE is the cut-out pressure, not the cut-in.','','If it came back at the same pressure it would switch on and off every moment.']},
+      {q:'In the compressor circuit, the pressure switch contact in the contactor coil line is:', a:['NO (13-14)','NC (21-22)','No difference'], c:1, why:'It must be closed while the pressure is low so the compressor runs, and open when the pressure is reached.', w:['NO is open while the pressure is low: the compressor won\'t start at all, and it would run once the pressure is reached (the opposite).','','']},
+      {q:'The compressor switches on and off every few seconds. Most likely:', a:['DIFF is set too small','RANGE is high','The overload is too big'], c:0, why:'A small difference between cut-out and cut-in = many short cycles (chattering).', w:['','RANGE sets the cut-out pressure, not the number of cycles.','The overload has nothing to do with cycling.']}]}
+   ]},
+  /* ---------------------------------------------------------------- 2. float / level */
+  {id:'float', icon:'float', title:'Float and level switches', goal:'A contact operated by the <b>liquid level</b>. One float = simple control, two floats (the lower starts, the upper stops) = a large hysteresis, and a dry-run float protects the pump.',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p><b>An electric float switch</b> is a plastic ball or pear hanging on a cable, with a <b>metal ball</b> inside (or mercury in the old days) that rolls onto a contact. When the water lifts it and tips it over, the ball rolls and flips the contact. The length of cable you hang it by sets the level difference between “floating” and “hanging”.</p>
+     <div class="box key"><ul>
+      <li><b>The contact</b>: in most floats a changeover (common + NO + NC) or just two wires. On the board: <b>13-14</b> closes when it floats, and <b>21-22</b> opens when it floats.</li>
+      <li><b>Filling a tank</b>: the pump runs while the level is low and stops when it rises → the upper float's <b>NC</b> contact in the coil line.</li>
+      <li><b>Emptying (a sump)</b>: the pump runs when the level rises and stops when it drops → an <b>NO</b> contact.</li>
+      <li><b>Two floats + a seal-in</b>: the lower starts and the upper stops, and the gap between them is the hysteresis. The pump doesn't switch on and off with every little wave.</li>
+      <li><b>Dry-run protection</b>: a float in the suction tank (or a flow switch, or a current relay): if the water runs out the pump stops. A pump running dry burns within minutes.</li>
+      <li><b>Alternatives</b>: <b>level electrodes</b> (3 metal probes + a level relay: they use the conductivity of the water itself, no moving parts), <b>ultrasonic</b>, <b>capacitive</b> on the tank wall, and a <b>magnetic float rod</b> for clean liquids.</li></ul></div>
+     <p><b>Careful</b>: a float that runs a 3-phase pump never carries the motor current: it only drives the <b>contactor coil</b>. And water conducts electricity: the tank float needs its own proper cable, and a low voltage if the tank is open.</p>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'Electric float hanging down (level below)', dev:FL(0.8, 0.05, {lvl0:0.3}), nema:['floatNO','floatNC'], cap:'The pear hangs by its cable from above, and the ball inside is on the side away from the contact. In IEC the symbol is a contact with a small circle (the float); in NEMA the contact with a lever and ball beneath it.'},
+      {title:'The same float floating (level reached)', dev:FL(0.8, 0.05, {lvl0:0.9, a0:1}), nema:['floatNC'], cap:'The water lifted it and tipped it over, the ball rolled and flipped the contact: 13-14 closed and 21-22 opened.'}]},
+    {kind:'sim', title:'Try it', lead:'Raise the level with the slider and watch the float rise and the contact flip at the set point, then lower it and see the small hysteresis.', sims:[
+      {title:'Upper float (set point 80%)', dev:FL(0.8, 0.1, {lvl0:0.4}), note:'A real float flips when it passes horizontal, so its hysteresis is the distance it swings around its hanging point.'}]},
+    {kind:'bench', title:'Wire it', ex:['s1','s2','s5']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'A rooftop tank is filled by a pump. To stop the pump when it\'s full, you wire the upper float using its contact:', a:['NO (13-14) in the coil line','NC (21-22) in the coil line','NO in parallel with the coil'], c:1, why:'Closed while the level is low so the pump runs, and it opens when the float rises.', w:['NO is open while the level is low: the pump won\'t start, and it would run once the tank is full (the opposite).','','In parallel with the coil = a short across the coil.']},
+      {q:'A drainage sump with a submersible pump: the pump must start when the sump fills. The float:', a:['NC','NO','Doesn\'t need a float'], c:1, why:'Emptying is the opposite of filling: it closes when the level rises so the pump starts.', w:['NC would run it while the sump is empty.','','']},
+      {q:'Why do we use two floats (lower and upper) with a seal-in instead of one float?', a:['In case one fails','To make a large hysteresis so the pump doesn\'t switch on and off all the time','So the pump starts faster'], c:1, why:'The gap between the two floats is the difference between the start and stop levels.', w:['Redundancy isn\'t the main goal.','','Speed has nothing to do with it.']},
+      {q:'Dry-run protection for the pump needs:', a:['An NO contact of a float in the suction tank, in the control line before the seal-in','An NC contact of a float in the discharge tank','A bigger fuse'], c:0, why:'Closed as long as there\'s water; it opens when the water runs out and cuts the contactor, and the pump doesn\'t restart by itself.', w:['','The discharge tank isn\'t the one that runs dry.','A fuse doesn\'t sense water.']}]}
+   ]},
+  /* ---------------------------------------------------------------- 3. proximity sensors */
+  {id:'sensor', icon:'sensor', title:'PNP / NPN proximity sensors', goal:'A 3-wire sensor that detects an object without touching it. <b>BN</b> +24V, <b>BU</b> 0V, <b>BK</b> the output. <b>PNP</b> gives +24V, <b>NPN</b> gives 0V. And the load is placed according to the type.',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p><b>A proximity sensor</b> detects an object near it <b>without touching it</b> and outputs an electrical signal. It has no moving parts, so it doesn't wear out like a limit switch and works millions of times.</p>
+     <div class="box key"><ul>
+      <li><b>Inductive</b>: detects <b>metals only</b> (a coil produces a field, and metal changes it). Short range: 2–15 mm depending on size (M8, M12, M18, M30). The most common on machines.</li>
+      <li><b>Capacitive</b>: detects any material (metal, plastic, water, grain) because it senses a change in capacitance. Its range is a bit longer and it has a sensitivity adjustment screw. Used for grain and liquid levels through a plastic wall.</li>
+      <li><b>The wires (IEC 60947-5-2)</b>: <b>BN brown = +24V</b>, <b>BU blue = 0V</b>, <b>BK black = the output</b>. With 4 wires there's a <b>WH white</b>, a second inverted output.</li>
+      <li><b>PNP (sourcing)</b>: when it senses, the BK output is connected to <b>+24V</b>. The load (relay / PLC input) goes <b>between BK and 0V</b>. The most common in Egypt and Europe.</li>
+      <li><b>NPN (sinking)</b>: when it senses, the BK output is connected to <b>0V</b>. The load goes <b>between +24V and BK</b>. Common in Japan and Asia.</li>
+      <li><b>NO / NC</b>: NO turns its output on when it senses; NC has its output on while nothing is there and cuts it when it senses (a safety limit).</li>
+      <li><b>Sn (nominal range)</b> and <b>Sr</b>: the range on standard steel. On copper and aluminium the range is shorter (a correction factor of 0.3–0.5).</li>
+      <li><b>It can't carry a large load</b>: the output is only 100–200 mA. That's why we put a <b>24V relay</b> in between if we're driving a 230V contactor.</li></ul></div>
+     <p><b>The most common mistake:</b> wiring an NPN as if it were a PNP (or the other way round): the sensor's LED lights and it senses, but the relay never pulls in because both its ends are at the same voltage. You'll do it with your own hands in the exercise.</p>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'Inductive sensor M18 PNP NO with a metal object', dev:PX('ind', true, false), nema:['proxNO'], cap:'A threaded cylindrical body with adjusting nuts, the sensing face at the front (yellow = inductive), an LED that lights when it senses, and a 3-wire cable BN/BK/BU. In IEC the sensor symbol is a tilted square (a rhombus) with the induction symbol and the contact beside it; in NEMA the contact with a rhombus under it.'},
+      {title:'Capacitive sensor NPN NC', dev:PX('cap', false, true), nema:['proxNC'], cap:'A blue sensing face and the sensitivity screw at the back. NPN NC: the BK output is at 0V while nothing is there, and it cuts when it senses.'}]},
+    {kind:'sim', title:'Try it', lead:'Bring the object close and watch the LED and the output. Then, in the second simulation, change the type and the load position and see when the relay pulls in and when it doesn\'t.', sims:[
+      {title:'Inductive sensor PNP NO', dev:PX('ind', true, false), note:'The row shows the BK output: +24V when it senses, no output when the object moves away.'},
+      {title:'PNP or NPN: where does the load go?', custom:simPnp, note:'The rule to remember: PNP = load below (between BK and 0V), NPN = load above (between +24V and BK).'}]},
+    {kind:'bench', title:'Wire it', ex:['s6']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'A 3-wire sensor: BN, BU and BK. The output is:', a:['BN brown','BU blue','BK black'], c:2, why:'BN +24V, BU 0V, BK the output (IEC 60947-5-2).', w:['Brown is +24V.','Blue is 0V.','']},
+      {q:'A PNP sensor: the relay is wired:', a:['Between +24V and BK','Between BK and 0V','Between BN and BU'], c:1, why:'PNP gives +24V on BK, so the load must complete the path to 0V.', w:['That\'s the NPN wiring: both ends of the relay at +24V and it won\'t pull in.','','That\'s the sensor supply, not the load.']},
+      {q:'You want to detect a plastic bottle on a conveyor:', a:['inductive sensor','A capacitive sensor or a photocell','A limit switch only'], c:1, why:'An inductive sensor only detects metal.', w:['An inductive sensor won\'t see plastic.','','It works, but it wears out and touches the product.']},
+      {q:'An inductive sensor with Sn = 8 mm on steel. On aluminium:', a:['The same range','A shorter range (correction factor)','A longer range'], c:1, why:'Non-ferrous metals reduce the range to 30–50%.', w:['','','']}]}
+   ]},
+  /* ---------------------------------------------------------------- 4. photocell */
+  {id:'photo', icon:'photo', title:'The photocell', goal:'A light sensor: an <b>emitter</b> and a <b>receiver</b>; when an object breaks the beam (or reflects it) the output changes. Long range and detects any material. The same 3-wire PNP/NPN wiring.',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p><b>A photoelectric sensor (photocell)</b> has an <b>emitter</b> that sends a beam (red or infrared) and a <b>receiver</b> that sees it. The object breaks the beam or reflects it, and the output changes. Its range is from centimetres to tens of metres, and it detects any material whatsoever.</p>
+     <div class="box key"><ul>
+      <li><b>Through-beam</b>: the emitter on one side and the receiver on the other. The longest range and most accurate, but two devices and wiring on both sides. Lift and garage doors.</li>
+      <li><b>Retro-reflective</b>: the emitter and receiver in one body, with a <b>reflector</b> facing them. The object breaks the returning beam. Easy to install, range 5–10 m.</li>
+      <li><b>Diffuse</b>: one body, and the beam bounces off <b>the object itself</b>. Short range (up to a metre) and affected by the object's colour. The easiest to install.</li>
+      <li><b>Light-on / Dark-on</b>: light-on = the output is on when the beam arrives, dark-on = the output is on when the beam is broken. Selected with a switch on the cell. In the exercise our cell is dark-on NO: it gives an output when the carton breaks the beam.</li>
+      <li><b>Wiring</b>: the same as the sensors: BN +24V, BU 0V, BK the output, PNP or NPN.</li>
+      <li><b>Common problems</b>: dust on the lens, direct sunlight on the receiver, shiny or transparent objects (need a special cell), and a misaligned reflector.</li></ul></div>
+     <p><b>On a conveyor:</b> the photocell counts cartons, or stops the conveyor when the carton reaches the filling point, or protects hands on machines (a light curtain, which is a safety category with its own rules).</p>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'Retro-reflective photocell PNP', dev:PX('photo', true, false), nema:['proxNO'], cap:'The black body has the two lenses (emitter and receiver), with the white reflector in front of it. The red dashed beam goes out and comes back. An LED lights with the output. In IEC the symbol is a rhombus with two light arrows; NEMA has no special symbol for the photocell, so the proximity sensor symbol is used.'},
+      {title:'The carton broke the beam', dev:PX('photo', true, false, {a0:1}), nema:['proxNO'], cap:'The beam isn\'t returning to the receiver: the cell (dark-on NO) gives +24V on BK.'}]},
+    {kind:'sim', title:'Try it', lead:'Move the carton with the slider until it breaks the beam and watch the output. Move it back: the beam returns and the output cuts.', sims:[
+      {title:'Retro-reflective photocell PNP NO (dark-on)', dev:PX('photo', true, false), note:'If you don\'t want the output to come on when the beam is broken, switch to light-on (or use NC).'}]},
+    {kind:'bench', title:'Wire it', ex:['s4']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'You want to detect a carton on a 3-metre-wide conveyor from one side:', a:['inductive sensor','A retro-reflective photocell','float switch'], c:1, why:'Long range and detects any material, with one device and a reflector on the other side.', w:['An inductive sensor is for metals and its range is millimetres.','','A float is for liquids.']},
+      {q:'A dark-on cell means the output is on when:', a:['beam clear','The beam is broken','The power is cut'], c:1, why:'Dark = no light reaching the receiver.', w:['That\'s light-on.','','']},
+      {q:'The cell gives an output with nothing in front of it. Most likely:', a:['The reflector has moved or the lens is dusty','the fuse','The contactor'], c:0, why:'If the beam doesn\'t return, the receiver thinks an object is breaking it.', w:['','','']}]}
+   ]}
+  ],
+  exercises:L7EX
+});
+})();
+</script>
+</body>
+</html>

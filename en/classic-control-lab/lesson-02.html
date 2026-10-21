@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The control relay and self-holding (latching)</title>
+<meta name="description" content="Lesson 2 of the Classic Control course: the control relay (coil A1/A2, CO contacts, 8/11/14-pin relays and sockets), self-holding (latching) and the relay interlock, with a definition, drawing, symbol, simulation and hands-on wiring.">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/classic-control-lab/lesson-02.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/classic-control-lab/lesson-02.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/classic-control-lab/lesson-02.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/en/classic-control-lab/engine.css?v=20261021v">
+<link rel="stylesheet" href="/en/classic-control-lab/fx.css?v=20261021v">
+</head>
+<body>
+<div class="app">
+<header class="top site-header">
+  <div>
+    <h1>Lesson 2: The control relay and self-holding</h1>
+    <p>The relay is the first device in the panel that “thinks”: a small coil that pulls in contacts. With it you'll build the most important circuit in all of classic control: <b>self-holding</b> (Start/Stop with two buttons), and then the <b>interlock</b> between two devices. Each device: a definition, its look and symbol, a simulation, hands-on wiring, and 3 questions.</p>
+  </div>
+  <div class="chips">
+    <a class="btn" href="/en/classic-control-lab/index.html">‹ Lessons</a>
+    <a class="btn" href="/en/labs.html">← All courses</a><span class="bar lang-slot"></span>
+  </div>
+</header>
+
+<div id="lesson"></div>
+
+<p class="foot">Symbols according to <span class="mono">IEC 60617</span> and <span class="mono">NEMA ICS 19</span>. Relay terminal numbers according to <span class="mono">IEC 60947-5-1</span>: the coil is <span class="mono">A1-A2</span>, and a changeover (CO) contact is <span class="mono">11</span> common, <span class="mono">12</span> NC, <span class="mono">14</span> NO (then 21-22-24, 31-32-34…). Pin numbers (1…8, 1…11, 1…14) vary between manufacturers, so check the diagram printed on the relay or socket in your hand.<br>© &#x2066;2026 LearnElectricals&#x2069;. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+
+<script src="/site-config.js?v=20261021v"></script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script src="/assets/i18n-en.js?v=20261021v"></script>
+<script src="/en/classic-control-lab/engine.js?v=20261021v"></script>
+<script src="/en/classic-control-lab/fx.js?v=20261021v"></script>
+<script>
+(function(){
+const SUP = {id:'Q1', type:'supplyAC', name:'the breaker'};
+const DC  = {id:'G1', type:'supplyDC', name:'power supply'};
+const PB  = (id, color, label, blocks) => ({id, type:'pb', cfg:{color, label, blocks:blocks || (color === 'red' ? ['NC'] : ['NO'])}});
+const RL  = (id, v, blocks, name) => ({id, type:'relay', cfg:{v:v || 230, blocks:blocks || ['CO','CO']}, name:name || 'relay'});
+const lamp = (id, color, name, v) => ({id, type:'lamp', cfg:{color, v:v || 230}, name});
+const K1CO = RL('K1', 230, ['CO','CO']);
+const K1DC = RL('K1', 24, ['CO','CO']);
+const K1NN = RL('K1', 230, ['NO','NC']);
+const K2NN = RL('K2', 230, ['NO','NC']);
+// start / stop / release sequence (seq exercises keep the state between cases)
+const holdCases = (lampId, stopId, startId) => [
+  {label:'nothing pressed', set:{}, expect:{[lampId]:0}},
+  {label:'START pressed', set:{[startId]:{p:1}}, expect:{[lampId]:1}},
+  {label:'START released', set:{[startId]:{p:0}}, expect:{[lampId]:1}},
+  {label:'STOP pressed', set:{[stopId]:{p:1}}, expect:{[lampId]:0}},
+  {label:'STOP released', set:{[stopId]:{p:0}}, expect:{[lampId]:0}}];
+const holdPatterns = lampId => [
+  {sig:{[lampId]:'01110'}, msg:'The lamp <b>doesn\'t go off</b> with STOP: the coil is still getting power by another path. The seal-in contact must come <b>after</b> STOP (in parallel with START only), not straight from L.'},
+  {sig:{[lampId]:'01111'}, msg:'The lamp came on and never goes off: there\'s a path from L to the coil that bypasses <b>both STOP and START</b>. Check that the seal-in contact is wired across the START terminals only (13 and 14), not to L.'},
+  {sig:{[lampId]:'11111'}, msg:'The lamp is always on: the coil or lamp is connected to L without passing through any contact.'}];
+
+CL.lesson({
+  id:'l2', n:2, title:'Lesson 2: Auxiliary relays and seal-in',
+  intro:'<p>Pick an item and work through it step by step: <b>Definition</b> → <b>Look and symbol</b> → <b>Try it</b> → <b>Wire it</b> → <b>Questions</b>. If you haven\'t finished lesson 1 yet, go back to it first: we use the same buttons, lamps and supply here.</p>',
+  elements:[
+  /* ---------------------------------------------------------------- 1. the relay */
+  {id:'relay', icon:'relay', title:'The auxiliary relay', goal:'Coil <span class="term">A1-A2</span> pulls in contacts <span class="term">11-12-14</span>: a small voltage controls other circuits.',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p>A <b>relay</b> is an electrical switch <b>operated by electricity, not by your hand</b>: inside is a <b>coil</b> (copper winding on an iron core) and an <b>armature</b> (a moving iron piece on a spring). When you energise the coil it becomes a magnet and pulls the armature, and the armature pushes the <b>contacts</b> so they change over. Remove the voltage: the spring returns everything.</p>
+     <p><b>Where will you find it?</b> In almost every control panel: it separates a low-voltage circuit (24V from a PLC or sensor) from another circuit at a higher voltage, it multiplies contacts (one contact becomes two, three or four), and it provides the “memory” in the seal-in circuits we'll see shortly. When it controls a large load (a motor) we use its big brother: the <b>contactor</b> (next lesson).</p>
+     <div class="box key"><p><b>Its terminals:</b></p><ul>
+      <li><b>Coil</b>: two terminals <span class="term">A1</span> and <span class="term">A2</span>. You connect the <b>coil voltage</b> printed on the relay to them: <span class="term">24V DC</span> (most common with PLCs) or <span class="term">230V AC</span> (in classic panels). A 24V relay on 230V burns out, and a 230V relay on 24V won't pull in.</li>
+      <li><b>Contacts</b>: usually <b>CO</b> (changeover), meaning each contact has 3 terminals: <span class="term">11</span> common, <span class="term">12</span> <span class="nc">NC</span>, <span class="term">14</span> <span class="no">NO</span>. With no voltage: 11 connects to 12. With voltage: 11 leaves 12 and closes onto 14. The second contact is <span class="term">21-22-24</span>, the third <span class="term">31-32-34</span>… same logic: the first digit is the contact number, and the second is 1 common / 2 NC / 4 NO.</li></ul></div>
+     <p><b>8-pin, 11-pin and 14-pin relays:</b> the most common type plugs into a <b>socket (base)</b> on a DIN rail, with pins underneath. <b>8 pin</b> = two CO contacts (2 for the coil + 3+3 for the contacts), <b>11 pin</b> = 3 CO contacts, <b>14 pin</b> = 4 CO contacts. You wire to the socket screws, and the relay itself unplugs and plugs in without undoing a single wire: if it fails you replace it in a minute.</p>
+     <p><b>LED and test lever:</b> modern relays have an <b>LED</b> that lights when the coil pulls in (so you can tell from in front of the panel whether the relay is on), and a small <b>test button</b> you press by hand to change over the contacts without powering the coil, so you can test the circuit after it. Some also have a diode or varistor inside that protects the contact driving the coil from arcing.</p>
+     <p><b>Important rule:</b> the contacts are <b>fully isolated</b> from the coil. So the coil can run on 24V DC while the contact switches 230V AC. That's the whole idea of a relay: a small circuit controls another circuit.</p>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'8-pin relay in its socket', dev:K1CO, nema:[{k:'coil', opt:{letter:'CR'}}, 'crNO', 'crNC'], cap:'The relay with its clear cover plugged into the socket on a DIN rail, with the copper coil, armature and two CO contacts inside. The socket screws: 11-12-14 and 21-22-24 for the contacts, and A1-A2 for the coil. The round drawing: the pins from below. In the IEC symbol: the rectangle is the coil, and the dashed line links it to the contacts it moves. In NEMA: the coil is a circle with CR (control relay) inside, and a contact is two parallel lines, with a slash if it\'s NC.'}]},
+    {kind:'sim', title:'Try it', lead:'Press and hold the big button (or the drawing itself): that applies voltage to A1-A2. Watch the armature pull in, the LED light, and each contact\'s 11 leave 12 and close onto 14. Let go and watch the spring return everything.', sims:[
+      {title:'230V AC relay with two CO contacts', dev:K1CO, note:'Note: both contacts change over together at the same moment, and each is electrically independent of the other and of the coil.'}]},
+    {kind:'bench', title:'Wire it', ex:['r1','r2','r3']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'In a CO contact with terminals 11-12-14, which terminal is the common and which is NO?', a:['11 common, 14 NO','12 common, 11 NO','14 common, 12 NO'], c:0, why:'A number ending in 1 is the common, ending in 2 is NC, ending in 4 is NO.', w:['','12 is the NC.','14 is the NO, not the common.']},
+      {q:'A relay marked 24V DC, and you connected the coil to 230V. What happens?', a:['It works normally','The coil burns out','It works but slower'], c:1, why:'The coil voltage must match the marking. 230V on a 24V coil = a very high current and a burn-out.', w:['','','There\'s no “slower” with a relay: it either pulls in or burns out.']},
+      {q:'What does the LED on the relay tell you?', a:['That the contact is carrying a load','That the coil is energised and working','That the relay has failed'], c:1, why:'The LED is wired in parallel with the coil, so it lights when the coil gets its voltage.', w:['The LED has nothing to do with the contacts.','','When it fails, it usually doesn\'t light.']}]}
+   ]},
+  /* ---------------------------------------------------------------- 2. self-holding */
+  {id:'hold', icon:'hold', title:'Seal-in (latching)', goal:'The START button gives a pulse, and the relay <b>keeps running by itself</b> until you press STOP. The most important circuit in classic control.',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p><b>The problem:</b> in lesson 1 the lamp lit only while you held the button. Lift your finger and it goes off. What about a motor you want running for hours? You won't stand there holding the button!</p>
+     <p><b>The solution: seal-in (self-holding / latching)</b>. We wire the START button to the coil of relay K1, and put <b>an NO contact of K1 itself in parallel with START</b>. Here's what happens:</p>
+     <ol><li>You press START → the coil gets power → K1 pulls in.</li>
+     <li>K1 pulled in, so its NO contact (11-14) closed. Now the coil gets power <b>by two paths</b>: through START and through K1's contact.</li>
+     <li>You lift your finger from START → the START path is broken, but <b>the K1 contact path is still there</b> → the coil stays on → the contact stays closed → and so on. The relay “holds itself”.</li>
+     <li>You press <b>STOP (NC, in series before everything)</b> → power is cut from both paths → the coil drops out → the contact opens → and even when you release STOP, nothing gives the first pulse again.</li></ol>
+     <div class="box key"><p><b>The rule:</b> <span class="nc">STOP (NC) in series</span>, and <span class="no">START (NO) in parallel with the seal-in contact</span>, then the coil. And if START and STOP are pressed together: STOP wins, because it cuts the whole line.</p></div>
+     <p><b>Why does this matter for safety?</b> If the power goes off and comes back, the relay has dropped out and the contact has opened, so the machine <b>won't start by itself</b> when the power returns; someone has to press START again. Most machines require this (restart protection).</p>
+     <p><b>The most common mistake:</b> wiring the seal-in contact <b>in series</b> with START instead of in parallel. Then the coil never starts, because it's waiting for its own contact to close, and the contact is waiting for the coil. You'll try it yourself in the last exercise and see how the simulator explains it.</p>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'START / STOP circuit with seal-in', dev:K1CO, art:function(){ return CL.art.dolLayout({tag:'K1', power:false, h2:false, holdT:['11','14'], ctlTitle:'Seal-in circuit'}); }, noSym:true, cap:'The drawing in standard form: L at the top and N at the bottom, with the circuit running vertically. F1 is the control breaker, S0 the STOP button (NC) in series, S1 the START button (NO) with K1\'s own seal-in contact 11-14 in parallel beside it, then the K1 coil between A1 and A2 (A2 to N). Lamp H1 is wired in parallel with the coil, so it lights while K1 is on.'}]},
+    {kind:'sim', title:'Try it', lead:'Keep the coil energised with “📌 hold” and watch contact 11-14: that\'s what keeps feeding the coil after you lift your finger from START in the real circuit.', sims:[
+      {title:'24V DC relay (like the one you\'ll wire in the first exercise)', dev:K1DC, note:'In the exercises we use the first contact 11-14 for the seal-in, and the second contact 21-24 for the lamp or something else.'}]},
+    {kind:'bench', title:'Wire it', ex:['h1','h2','h3','h4','w']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'Where is K1\'s seal-in contact wired?', a:['In series with STOP','In parallel with START','In parallel with the coil'], c:1, why:'In parallel with START: it takes over after you lift your finger.', w:['In series with STOP would leave the coil waiting for itself.','','In parallel with the coil it does nothing.']},
+      {q:'The relay is running with seal-in. The power goes off and comes back. What happens?', a:['It starts again by itself','It stays off until someone presses START','It starts after 5 seconds'], c:1, why:'When the power went off the coil dropped out and the contact opened, so nothing gives the first pulse. That\'s a safety feature.', w:['No, and that\'s intended, for safety.','','There\'s no timer here.']},
+      {q:'You pressed START and STOP at the same time. The lamp?', a:['Lights','Won\'t light','Flickers on and off'], c:1, why:'STOP (NC) in series cuts the whole line before START and the coil.', w:['STOP cuts before START.','','No flickering: the line is broken.']}]}
+   ]},
+  /* ---------------------------------------------------------------- 3. interlock */
+  {id:'lock', icon:'lock', title:'Relay interlock', goal:'Two relays, each blocking the other: an NC contact of each one in the path of the other\'s coil.',
+   steps:[
+    {kind:'text', title:'Definition', html:`
+     <p><b>Interlock</b> means “not both together”. The best-known example: a motor running forward with one contactor and reverse with another. If both closed at the same moment = a short between two phases and an explosion. So we must make sure that running one <b>blocks</b> the other.</p>
+     <div class="box key"><p><b>Electrical interlock:</b> we take an <span class="nc">NC</span> contact of K1 and put it <b>in series in the path of K2's coil</b>, and an NC contact of K2 in the path of K1's coil. When K1 runs, its NC contact opens, so K2's path is broken: however much you press K2's button, it won't start. And the other way round.</p></div>
+     <p>Each branch has its own START button and its own seal-in, and one STOP button at the start switches off both. So the circuit = two seal-in circuits side by side, each with an NC contact from the other.</p>
+     <p><b>Mechanical interlock:</b> contactors also have a plastic part fitted between the two contactors that stops both from closing together. Good practice uses both: electrical and mechanical. We'll see it in the reversing lesson.</p>
+     <p><b>Why NC and not NO?</b> Because normally (both off) the path must be open to whichever starts first. An NO contact would have blocked both from the start.</p>`},
+    {kind:'art', title:'Look and symbol', items:[
+      {title:'Electrical interlock between K1 and K2', dev:K1NN, art:'interlockLayout', noSym:true, cap:'Two branches in parallel after the common STOP button. In the left branch: S1 in parallel with K1\'s seal-in contact 13-14, then K2\'s NC contact 21-22, then the K1 coil. The right branch is the same the other way round. When K1 pulls in, its contact 21-22 (in K2\'s branch) opens, so K2 can\'t start.'}]},
+    {kind:'sim', title:'Try it', lead:'This relay has an NO block (13-14) for the seal-in and an NC block (21-22) for the interlock. Keep the coil energised and watch: 13-14 closes and 21-22 opens at the same moment.', sims:[
+      {title:'Relay with an NO block + an NC block', dev:K1NN, note:'The NC that opens when the relay pulls in is what breaks the other relay\'s path.'}]},
+    {kind:'bench', title:'Wire it', ex:['il']},
+    {kind:'quiz', title:'Questions', qs:[
+      {q:'The interlock contact placed in the path of K2\'s coil is:', a:['NO of K2','NC of K1','NO of K1'], c:1, why:'NC of K1: closed while it\'s off (allows K2), and opens when K1 runs (blocks K2).', w:['K2\'s own contact in its own path is for the seal-in, not the interlock.','','NO of K1 would let K2 run only when K1 is running, the opposite.']},
+      {q:'K1 is running and you press K2\'s START button. What happens?', a:['K2 starts and both are running','K2 won\'t start','K1 drops out and K2 starts'], c:1, why:'K1\'s NC contact is open, so the path to K2\'s coil is broken.', w:['That\'s exactly what the interlock prevents.','','Direct changeover is a different circuit (we\'ll see it in direct reversing).']},
+      {q:'Why do we use both electrical and mechanical interlocks in reversing?', a:['For looks','So that if one fails, the other still protects','For speed'], c:1, why:'A contact can weld and the mechanical part can break: both together are safer.', w:['','','It has nothing to do with speed.']}]}
+   ]}
+  ],
+
+  exercises:{
+    r1:{story:{icon:'📦', text:'A packing machine: a small button in the cabin starts a relay, and the relay lights the big run lamp outside.', ask:'The button feeds the relay coil, and an NO contact of the relay lights the lamp.'}, title:'Exercise 1: a button runs the relay, the relay lights a lamp', short:'Coil and NO contact',
+       task:'Wire button <b>S1</b> to the coil of <b>K1</b> (A1-A2), and wire lamp <b>H1</b> to K1\'s contact <span class="term">11-14</span> (NO). When you press S1: the relay pulls in and the lamp lights.', goal:"When you press S1, relay K1 pulls in and lamp H1 lights from its contact; when you release it, it drops out and the lamp goes off.", idea:"Two separate circuits: the button feeds coil A1-A2, and the coil closes contact 11-14, which lights the lamp. The lamp isn't connected to the button at all.", steps:["Coil circuit: phase L to the input of S1, output of S1 to A1 of the relay, and A2 to N.", "Contact circuit: phase L to common 11 of K1.", "From 14 (NO) go to X1 of the lamp, and X2 to N."],
+       tip:'Two separate circuits: (1) L → S1:13, S1:14 → K1:A1, K1:A2 → N. (2) L → K1:11, K1:14 → H1:X1, H1:X2 → N. Note the lamp isn\'t connected to the button at all: the relay connects it.',
+       devices:[SUP, PB('S1', 'green', 'START'), K1CO, lamp('H1', 'green', 'lamp')],
+       solution:[['Q1:L','S1:13'],['S1:14','K1:A1'],['K1:A2','Q1:N'],['Q1:L','K1:11'],['K1:14','H1:X1'],['H1:X2','Q1:N']],
+       cases:[{label:'S1 released', set:{S1:{p:0}}, expect:{H1:0, K1:0}}, {label:'S1 pressed', set:{S1:{p:1}}, expect:{H1:1, K1:1}}],
+       okMsg:'Press S1 and watch the relay\'s LED and the lamp.'},
+    r2:{story:{icon:'🏭', text:'A production line: a red “stopped” lamp is on, and when the operator presses the button and the relay pulls in, the lamp goes off.', ask:'An NC contact of the relay turns the lamp off when the coil pulls in.'}, title:'Exercise 2: an NC contact turns the lamp off when the relay pulls in', short:'NC contact',
+       task:'Same idea, but the “stopped” lamp <b>H1</b> must be <b>on</b> while the relay is off, and <b>go off</b> when you press S1 and the relay pulls in.', goal:"The “stopped” lamp H1 is on while the relay is off, and goes off when you press S1 and the relay pulls in.", idea:"The same circuit as exercise 1, but the lamp is on the NC contact (11-12), which opens when the relay pulls in.", steps:["Coil circuit as in exercise 1: L to S1, output of S1 to A1, and A2 to N.", "Phase L to common 11 of K1.", "From 12 (NC) go to X1 of the lamp, and X2 to N."],
+       tip:'Use terminal 12 (NC) instead of 14.',
+       devices:[SUP, PB('S1', 'green', 'START'), K1CO, lamp('H1', 'red', 'stopped')],
+       solution:[['Q1:L','S1:13'],['S1:14','K1:A1'],['K1:A2','Q1:N'],['Q1:L','K1:11'],['K1:12','H1:X1'],['H1:X2','Q1:N']],
+       cases:[{label:'S1 released', set:{S1:{p:0}}, expect:{H1:1}}, {label:'S1 pressed', set:{S1:{p:1}}, expect:{H1:0}}]},
+    r3:{story:{icon:'🚦', text:'A pumping station: the supervisor wants a green “running” lamp and a red “stopped” lamp from just one relay.', ask:'One coil and two contacts: NO for the green and NC for the red.'}, title:'Exercise 3: one coil and two lamps (running / stopped)', short:'Two lamps from one relay',
+       task:'When you press S1: the green “running” lamp <b>H1</b> lights and the red “stopped” lamp <b>H2</b> goes off. When released: the opposite. Use both of K1\'s contacts.', goal:"When you press S1: the green “running” lamp H1 lights and the red “stopped” lamp H2 goes off. When released: the opposite.", idea:"One coil moves two contacts: NO for the green and NC for the red. The phase must reach both commons with a jumper.", steps:["Coil circuit: L to S1, output of S1 to A1, and A2 to N.", "Phase L to common 11, and a jumper from 11 to common 21.", "From 14 (NO) to X1 of H1, and from 22 (NC) to X1 of H2.", "X2 of H1 to N, and X2 of H2 to X2 of H1 (two wires per terminal only)."],
+       tip:'L must reach common 11 and common 21 (a jumper from 11 to 21). H1 on 14 (NO) and H2 on 22 (NC). Remember each terminal takes only two wires: return X2 of H2 to X2 of H1 instead of straight to N.',
+       devices:[SUP, PB('S1', 'green', 'START'), K1CO, lamp('H1', 'green', 'running'), lamp('H2', 'red', 'stopped')],
+       solution:[['Q1:L','S1:13'],['S1:14','K1:A1'],['K1:A2','Q1:N'],['Q1:L','K1:11'],['K1:11','K1:21'],['K1:14','H1:X1'],['K1:22','H2:X1'],['H1:X2','Q1:N'],['H2:X2','H1:X2']],
+       cases:[{label:'S1 released', set:{S1:{p:0}}, expect:{H1:0, H2:1}}, {label:'S1 pressed', set:{S1:{p:1}}, expect:{H1:1, H2:0}}]},
+    h1:{story:{icon:'🔋', text:'An automatic panel on 24V: the START button starts a relay that keeps running after you lift your finger, and the STOP button stops it.', ask:'Start / Stop with seal-in on 24V DC.'}, title:'Exercise 4: Start / Stop with seal-in on 24V DC', short:'Seal-in 24V',
+       task:'Press <b>S1</b> (START): relay <b>K1</b> pulls in and lamp <b>H1</b> lights <b>and stays on</b> after you lift your finger. Press <b>S0</b> (STOP): it goes off. The lamp is on the second contact 21-24.', goal:"Press START: relay K1 pulls in and lamp H1 lights and stays on after you lift your finger. Press STOP: it goes off.", idea:"Seal-in: an NO contact of the relay in parallel with the START button, so once the relay pulls in it feeds itself. STOP (NC) at the start of the line cuts everything.", steps:["+24V to the STOP input (NC), and the STOP output to the START input (NO).", "START output to A1 of K1, and A2 to 0V.", "Seal-in: K1 contact 11-14 in parallel with the START button (one end on its input and one on its output).", "The lamp from the second contact: +24V to 21, from 24 to X1 of the lamp, and X2 to 0V.", "Test in order: press START and release it, then STOP."],
+       tip:'+24V → S0:11 (NC), S0:12 → S1:13, S1:14 → K1:A1, K1:A2 → 0V. Seal-in: K1:11 → S1:13 and K1:14 → S1:14. Lamp: +24V → K1:21, K1:24 → H1:X1, H1:X2 → 0V. Test in order: press S1 and release it, then S0.',
+       devices:[DC, PB('S0', 'red', 'STOP'), PB('S1', 'green', 'START'), K1DC, lamp('H1', 'green', 'running', 24)],
+       solution:[['G1:P24','S0:11'],['S0:12','S1:13'],['S1:14','K1:A1'],['K1:A2','G1:0V'],['K1:11','S1:13'],['K1:14','S1:14'],['G1:P24','K1:21'],['K1:24','H1:X1'],['H1:X2','G1:0V']],
+       seq:true, cases:holdCases('H1', 'S0', 'S1'), patterns:holdPatterns('H1'),
+       okMsg:'Press S1 and lift your finger: the lamp stays on. Press S0: it\'s off.'},
+    h2:{story:{icon:'🏭', text:'The same idea but in an older panel on 230V, and the engineer wants the lamp in parallel with the coil so it lights with it.', ask:'Start / Stop with seal-in on 230V, with the lamp in parallel with the coil.'}, title:'Exercise 5: the same circuit on 230V AC with the lamp across the coil', short:'Seal-in 230V',
+       task:'The same Start / Stop circuit but with a <b>230V</b> relay fed from the breaker, and lamp <b>H1</b> wired <b>in parallel with the coil</b> (between A1 and N) with no contact.', goal:"The same Start / Stop circuit but on 230V from the breaker, with lamp H1 lighting together with the relay.", idea:"The lamp is in parallel with the coil (between A1 and N) with no contact: when the coil gets power, the lamp gets it too.", steps:["Phase L to the STOP input, and the STOP output to the START input.", "START output to A1 of K1, and A2 to N.", "Seal-in: K1 contact 11-14 in parallel with the START button.", "Lamp: X1 to A1 of the relay, and X2 to N."],
+       tip:'L → S0:11, S0:12 → S1:13, S1:14 → K1:A1, K1:A2 → N, seal-in K1:11 ↔ S1:13 and K1:14 ↔ S1:14, and the lamp K1:A1 → H1:X1 and H1:X2 → N.',
+       devices:[SUP, PB('S0', 'red', 'STOP'), PB('S1', 'green', 'START'), K1CO, lamp('H1', 'green', 'running')],
+       solution:[['Q1:L','S0:11'],['S0:12','S1:13'],['S1:14','K1:A1'],['K1:A2','Q1:N'],['K1:11','S1:13'],['K1:14','S1:14'],['K1:A1','H1:X1'],['H1:X2','Q1:N']],
+       seq:true, cases:holdCases('H1', 'S0', 'S1'), patterns:holdPatterns('H1')},
+    h3:{story:{icon:'🏭', text:'A 40-metre conveyor: the workers want a START button at the start and another at the end, with one STOP button at the supervisor\'s desk.', ask:'Start from two places (START in parallel) and stop.'}, title:'Exercise 6: start from two places (START in parallel) and stop', short:'START from two places',
+       task:'Two start buttons <b>S1</b> and <b>S2</b> in two different places: either one starts K1 and it keeps running. <b>S0</b> stops it.', goal:"Either S1 or S2 starts K1 and it keeps running, and STOP stops it.", idea:"The start buttons are wired in parallel with each other and with the seal-in contact: all their inputs together and all their outputs together.", steps:["Phase L to the STOP input, and the STOP output to the input of S1.", "The inputs of S1, S2 and seal-in contact 13 all joined (a chain of jumpers).", "The outputs of S1, S2 and seal-in contact 14 all joined, and from them to A1.", "A2 to N, and the lamp across the coil (X1 to A1 and X2 to N)."],
+       tip:'The two buttons in parallel with each other and with the seal-in contact: 13 to 13 to 13, and 14 to 14 to 14 (a chain: S1:13 → S2:13 → K1:13, S1:14 → S2:14 → K1:14, and K1:14 → K1:A1).',
+       devices:[SUP, PB('S0', 'red', 'STOP'), PB('S1', 'green', 'START 1'), PB('S2', 'green', 'START 2'), K1NN, lamp('H1', 'green', 'running')],
+       solution:[['Q1:L','S0:11'],['S0:12','S1:13'],['S1:13','S2:13'],['S2:13','K1:13'],['S1:14','S2:14'],['S2:14','K1:14'],['K1:14','K1:A1'],['K1:A2','Q1:N'],['K1:A1','H1:X1'],['H1:X2','Q1:N']],
+       seq:true, cases:[
+         {label:'nothing pressed', set:{}, expect:{H1:0}},
+         {label:'S1 pressed', set:{S1:{p:1}}, expect:{H1:1}}, {label:'S1 released', set:{S1:{p:0}}, expect:{H1:1}},
+         {label:'S0 pressed', set:{S0:{p:1}}, expect:{H1:0}}, {label:'S0 released', set:{S0:{p:0}}, expect:{H1:0}},
+         {label:'S2 pressed', set:{S2:{p:1}}, expect:{H1:1}}, {label:'S2 released', set:{S2:{p:0}}, expect:{H1:1}},
+         {label:'S0 pressed again', set:{S0:{p:1}}, expect:{H1:0}}],
+       patterns:[{sig:{H1:'01100000'}, msg:'S1 works but S2 doesn\'t start it: S2 must be wired in parallel with S1 (13 to 13 and 14 to 14).'}, {sig:{H1:'00000110'}, msg:'S2 works but S1 doesn\'t start it: S1 must be wired in parallel with S2 (13 to 13 and 14 to 14).'}, {sig:{H1:'01111111'}, msg:'STOP doesn\'t stop it: S0 must be in series before both buttons and the seal-in contact.'}]},
+    h4:{story:{icon:'⛔', text:'A wire winding machine: the inspector asked for a STOP button in two places along the machine for safety.', ask:'Stop from two places (STOP in series) and start with seal-in.'}, title:'Exercise 7: stop from two places (STOP in series)', short:'STOP from two places',
+       task:'Two stop buttons <b>S0</b> and <b>S3</b> in two places: either one stops K1. <b>S1</b> starts it with seal-in.', goal:"Either S0 or S3 stops K1, and S1 starts it with seal-in.", idea:"The NC stop buttons are wired in series one after the other at the start of the line: either one opening cuts the supply to everything.", steps:["Phase L to the input of STOP 1, and the output of STOP 1 to the input of STOP 2.", "STOP 2 output to the START input, START output to A1, and A2 to N.", "Seal-in: K1 contact 13-14 in parallel with the START button.", "Lamp across the coil: X1 to A1 and X2 to N."],
+       tip:'The NC stop buttons are wired in series one after the other: L → S0:11, S0:12 → S3:11, S3:12 → S1:13…',
+       devices:[SUP, PB('S0', 'red', 'STOP 1'), PB('S3', 'red', 'STOP 2'), PB('S1', 'green', 'START'), K1NN, lamp('H1', 'green', 'running')],
+       solution:[['Q1:L','S0:11'],['S0:12','S3:11'],['S3:12','S1:13'],['S1:14','K1:A1'],['K1:A2','Q1:N'],['K1:13','S1:13'],['K1:14','S1:14'],['K1:A1','H1:X1'],['H1:X2','Q1:N']],
+       seq:true, cases:[
+         {label:'nothing pressed', set:{}, expect:{H1:0}},
+         {label:'S1 pressed', set:{S1:{p:1}}, expect:{H1:1}}, {label:'S1 released', set:{S1:{p:0}}, expect:{H1:1}},
+         {label:'S0 pressed', set:{S0:{p:1}}, expect:{H1:0}}, {label:'S0 released', set:{S0:{p:0}}, expect:{H1:0}},
+         {label:'S1 pressed again', set:{S1:{p:1}}, expect:{H1:1}}, {label:'S1 released', set:{S1:{p:0}}, expect:{H1:1}},
+         {label:'S3 pressed', set:{S3:{p:1}}, expect:{H1:0}}, {label:'S3 released', set:{S3:{p:0}}, expect:{H1:0}}],
+       patterns:[{sig:{H1:'011001111'}, msg:'S0 stops it but S3 doesn\'t: S3 must be in series on the same line (S0:12 → S3:11, and S3:12 → START).'}, {sig:{H1:'011111100'}, msg:'S3 stops it but S0 doesn\'t: S0 must be in series on the same line.'}, {sig:{H1:'011111111'}, msg:'Neither stop button stops it: the coil or the seal-in contact takes L from before the STOP buttons.'}]},
+    il:{story:{icon:'🔒', text:'A goods lift with two relays: one for up and one for down, and both must never run at the same moment.', ask:'Electrical interlock between two relays, each with seal-in, and a common STOP.'}, title:'Exercise 8: interlock between two relays', short:'Interlock K1 / K2',
+       task:'<b>S1</b> starts <b>K1</b> (lamp H1), and <b>S2</b> starts <b>K2</b> (lamp H2), each with seal-in, and <b>S0</b> stops both. The condition: <b>if one is running, the other won\'t start</b> even if you press its button.', goal:"S1 starts K1 (lamp H1) and S2 starts K2 (lamp H2), each with seal-in, and STOP stops both. And if one is running, the other won't start.", idea:"Electrical interlock: an NC contact of each relay in the other relay's coil line. When K1 pulls in, its 21-22 opens and breaks the path to K2, and the other way round.", steps:["Phase L to STOP, and after STOP two branches: one for S1 and one for S2.", "K1 branch: START 1 in parallel with K1's seal-in (13-14), then to K2's NC (21-22), and from 22 to A1 of K1.", "K2 branch the other way: START 2 in parallel with K2's seal-in, then to K1's NC (21-22), and from 22 to A1 of K2.", "A2 of both to N (A2 of K2 to A2 of K1), and each lamp across its coil."],
+       tip:'After S0 make two branches. K1 branch: S1:13 and K1:13 to S0:12, S1:14 ↔ K1:14 → K2:21, K2:22 → K1:A1. K2 branch the other way: S2:14 ↔ K2:14 → K1:21, K1:22 → K2:A1. A2 of both to N, and each lamp across its coil.',
+       devices:[SUP, PB('S0', 'red', 'STOP'), PB('S1', 'green', 'START 1'), PB('S2', 'green', 'START 2'), K1NN, K2NN, lamp('H1', 'green', 'K1 on'), lamp('H2', 'amber', 'K2 on')],
+       solution:[['Q1:L','S0:11'],['S0:12','S1:13'],['S0:12','S2:13'],['S1:13','K1:13'],['S1:14','K1:14'],['K1:14','K2:21'],['K2:22','K1:A1'],['K1:A2','Q1:N'],['S2:13','K2:13'],['S2:14','K2:14'],['K2:14','K1:21'],['K1:22','K2:A1'],['K2:A2','K1:A2'],['K1:A1','H1:X1'],['H1:X2','Q1:N'],['K2:A1','H2:X1'],['H2:X2','H1:X2']],
+       seq:true, cases:[
+         {label:'nothing pressed', set:{}, expect:{H1:0, H2:0}},
+         {label:'S1 pressed', set:{S1:{p:1}}, expect:{H1:1, H2:0}}, {label:'S1 released', set:{S1:{p:0}}, expect:{H1:1, H2:0}},
+         {label:'S2 pressed with K1 on', set:{S2:{p:1}}, expect:{H1:1, H2:0}}, {label:'S2 released', set:{S2:{p:0}}, expect:{H1:1, H2:0}},
+         {label:'S0 pressed', set:{S0:{p:1}}, expect:{H1:0, H2:0}}, {label:'S0 released', set:{S0:{p:0}}, expect:{H1:0, H2:0}},
+         {label:'S2 pressed', set:{S2:{p:1}}, expect:{H1:0, H2:1}}, {label:'S2 released', set:{S2:{p:0}}, expect:{H1:0, H2:1}},
+         {label:'S1 pressed with K2 on', set:{S1:{p:1}}, expect:{H1:0, H2:1}}, {label:'S1 released', set:{S1:{p:0}}, expect:{H1:0, H2:1}}],
+       patterns:[{sig:{H2:'00011001111'}, msg:'K2 starts while K1 is running: there\'s no interlock on K2\'s branch. Put the NC contact 21-22 of <b>K1</b> in series before K2\'s coil.'}, {sig:{H1:'01111000011'}, msg:'K1 starts while K2 is running: there\'s no interlock on K1\'s branch. Put the NC contact 21-22 of <b>K2</b> in series before K1\'s coil.'}],
+       okMsg:'Start K1, then try to start K2: it won\'t. Stop with S0 and start K2 first, then try K1.'},
+    w:{story:{icon:'🔧', text:'You got a call: “the relay pulls in only while you hold the button, and drops out as soon as you let go”. The electrician before you wired the panel and left.', ask:'Find the wiring mistake and fix it.'}, title:'Exercise 9: a faulty circuit, find the mistake and fix it', short:'Mistake: seal-in in series',
+       task:'This circuit is already wired, but it has a <b>common mistake</b>. Switch on, press START, and see what the simulator tells you. Then switch off and fix the wiring so it\'s a correct Start / Stop circuit.', goal:"A correct Start / Stop circuit is required: START starts K1 and it keeps running, and STOP stops it.", idea:"It has a common mistake in where the seal-in contact 11-14 is: it should be in parallel with the START button only, not anywhere else.", steps:["Switch on, press START and see what the simulator tells you.", "Switch off and trace the two wires of the seal-in contact: one end on the START input and one on its output.", "Fix the wrong wire and switch on again: the seal-in works and STOP stops it."],
+       tip:'The mistake is in where the seal-in contact 11-14 is. Think: what should it be in parallel with?',
+       devices:[SUP, PB('S0', 'red', 'STOP'), PB('S1', 'green', 'START'), K1CO, lamp('H1', 'green', 'running')],
+       preset:[['Q1:L','S0:11'],['S0:12','S1:13'],['S1:14','K1:11'],['K1:14','K1:A1'],['K1:A2','Q1:N'],['K1:A1','H1:X1'],['H1:X2','Q1:N']],
+       solution:[['Q1:L','S0:11'],['S0:12','S1:13'],['S1:14','K1:A1'],['K1:A2','Q1:N'],['K1:11','S1:13'],['K1:14','S1:14'],['K1:A1','H1:X1'],['H1:X2','Q1:N']],
+       seq:true, cases:holdCases('H1', 'S0', 'S1'), patterns:holdPatterns('H1'),
+       okMsg:'Now the seal-in contact is in parallel with START, as it should be.'}
+  }
+});
+})();
+</script>
+</body>
+</html>
