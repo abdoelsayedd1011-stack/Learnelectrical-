@@ -15,8 +15,28 @@
     "index.html", "labs.html", "about.html", "contact.html", "privacy.html", "refund.html",
     "login.html", "account.html", "reset.html", "subscribe.html", "cert.html", "404.html",
     "courses/basics.html", "courses/classic.html", "courses/drawings.html", "courses/instrumentation.html",
-    "courses/plc.html", "courses/inverters.html", "courses/servo.html"
-    // later phases: "plc-lab/index.html", "plc-lab/lesson-01.html", …
+    "courses/plc.html", "courses/inverters.html", "courses/servo.html",
+    "basics-lab/index.html", "basics-lab/lesson-01.html", "basics-lab/lesson-02.html", "basics-lab/lesson-03.html",
+    "basics-lab/lesson-04.html", "basics-lab/lesson-05.html", "basics-lab/lesson-06.html", "basics-lab/lesson-07.html",
+    "basics-lab/lesson-08.html", "basics-lab/lesson-09.html", "basics-lab/lesson-10.html", "basics-lab/lesson-11.html",
+    "basics-lab/lesson-12.html", "basics-lab/lesson-13.html", "classic-control-lab/index.html", "classic-control-lab/lesson-01.html",
+    "classic-control-lab/lesson-02.html", "classic-control-lab/lesson-03.html", "classic-control-lab/lesson-04.html", "classic-control-lab/lesson-05.html",
+    "classic-control-lab/lesson-06.html", "classic-control-lab/lesson-07.html", "classic-control-lab/lesson-08.html", "classic-control-lab/lesson-09.html",
+    "drawings-lab/index.html", "drawings-lab/lesson-01.html", "drawings-lab/lesson-02.html", "drawings-lab/lesson-03.html",
+    "drawings-lab/lesson-04.html", "drawings-lab/lesson-05.html", "drawings-lab/lesson-06.html", "drawings-lab/lesson-07.html",
+    "instrumentation-lab/index.html", "instrumentation-lab/lesson-01.html", "instrumentation-lab/lesson-02.html", "instrumentation-lab/lesson-03.html",
+    "instrumentation-lab/lesson-04.html", "instrumentation-lab/lesson-05.html", "instrumentation-lab/lesson-06.html", "instrumentation-lab/lesson-07.html",
+    "instrumentation-lab/lesson-08.html", "instrumentation-lab/lesson-09.html", "instrumentation-lab/lesson-10.html", "plc-lab/index.html",
+    "plc-lab/lesson-01.html", "plc-lab/lesson-02.html", "plc-lab/lesson-03.html", "plc-lab/lesson-04.html",
+    "plc-lab/lesson-05.html", "plc-lab/lesson-06.html", "plc-lab/lesson-07.html", "plc-lab/lesson-08.html",
+    "plc-lab/lesson-09.html", "plc-lab/lesson-10.html", "plc-lab/siemens.html", "plc-lab/delta.html",
+    "plc-lab/ab.html", "vfd-course/index.html", "vfd-course/lesson-01.html", "vfd-course/lesson-02.html",
+    "vfd-course/lesson-03.html", "vfd-course/lesson-04.html", "vfd-course/lesson-05.html", "vfd-course/lesson-06.html",
+    "vfd-course/lesson-07.html", "vfd-course/lesson-08.html", "vfd-course/lesson-09.html", "vfd-course/lesson-10.html",
+    "vfd-course/lesson-11.html", "vfd-course/lesson-12.html", "servo-course/index.html", "servo-course/lesson-01.html",
+    "servo-course/lesson-02.html", "servo-course/lesson-03.html", "servo-course/lesson-04.html", "servo-course/lesson-05.html",
+    "servo-course/lesson-06.html", "servo-course/lesson-07.html", "servo-course/lesson-08.html", "servo-course/lesson-09.html",
+    "servo-course/lesson-10.html", "servo-course/lesson-11.html", "servo-course/lesson-12.html"
   ];
   var SET = {}; EN_PAGES.forEach(function(p){ SET[p] = 1; });
   var root = document.documentElement;
@@ -66,18 +86,29 @@
   var I = window.LE_I18N = { lang: isEn ? "en" : "ar", isEn: isEn, pages: EN_PAGES, hasEn: hasEn, norm: norm, href: href, enUrl: enUrl, arUrl: arUrl, twin: twin, msg: msg, en: window.LE_I18N && window.LE_I18N.en || null };
 
   /* ---------- the switch in the header ---------- */
-  var bar = document.querySelector(".site-header .bar");
-  if (bar){
+  function langLink(cls){
     var a = document.createElement("a");
-    a.className = "icon-btn lang-btn";
+    a.className = cls;
     a.setAttribute("data-keep", ""); // not rewritten by the /en/ link upgrade below
     a.href = twin();
     if (isEn){ a.textContent = "ع"; a.lang = "ar"; a.hreflang = "ar"; a.setAttribute("aria-label", "اقرا الصفحة دي بالعربي"); }
     else { a.textContent = "EN"; a.lang = "en"; a.hreflang = "en"; a.setAttribute("aria-label", "Read this page in English"); }
     a.title = a.getAttribute("aria-label");
     a.addEventListener("click", function(){ store("le-lang", isEn ? "ar" : "en"); });
-    var theme = bar.querySelector(".theme-btn");
-    bar.insertBefore(a, theme || null);
+    return a;
+  }
+  var bar = document.querySelector(".site-header .bar");
+  if (bar){
+    bar.insertBefore(langLink("icon-btn lang-btn"), bar.querySelector(".theme-btn") || null);
+  } else {
+    // course pages (header.top .chips): add the switch after their own scripts ran, unless they already have one
+    var addChips = function(){
+      var chips = document.querySelector("header.top .chips");
+      if (!chips || document.querySelector(".lang-btn, .lang-b")) return;
+      chips.insertBefore(langLink("btn lang-btn"), chips.querySelector(".theme-b") || null);
+    };
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function(){ setTimeout(addChips, 0); });
+    else setTimeout(addChips, 0);
   }
 
   /* ---------- English pages: upgrade links to /en/ twins, badge the Arabic-only ones marked data-ar ---------- */
