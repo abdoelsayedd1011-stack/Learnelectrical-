@@ -5,7 +5,8 @@ import { getDb, sessionUser, COOKIE } from "./_lib/auth.js";
 
 const MEMBER_LABS = new Set([
   "ab1336-simulator", "pf40-lab", "v20-lab", "atv320-lab", "atv630-lab",
-  "ms300-lab", "fc51-lab", "e5cc-lab", "servo-simulator", "vfd-simulator"
+  "ms300-lab", "fc51-lab", "e5cc-lab", "servo-simulator", "vfd-simulator",
+  "mrje-servo", "sigma7-servo", "kinetix300-servo"
 ]);
 const FREE_LESSONS = 2;
 const SYNC_DIRS = new Set([...MEMBER_LABS, "pf525-lab", "classic-control-lab", "basics-lab", "instrumentation-lab"]);

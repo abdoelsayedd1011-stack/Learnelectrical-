@@ -3,7 +3,7 @@
 import { getDb, readBody, sessionUser, touchUser, json, fail, HttpError } from "../_lib/auth.js";
 
 // Same keys as KEYS in /assets/sync.js (courses, guided-mode progress and saved state of each simulator).
-const PROGRESS_KEY = /^(?:basics-lab-v1|instr-lab-v1|classic-lab-v1|vfd-(?:wbx|tc|ex)|[a-z0-9]{2,12}-lab-v1(?:-ui)?)$/;
+const PROGRESS_KEY = /^(?:basics-lab-v1|instr-lab-v1|classic-lab-v1|vfd-(?:wbx|tc|ex)|[a-z0-9]{2,12}-lab-v1(?:-ui)?|[a-z0-9]{2,12}-sim-v1-ui)$/;
 const MAX_VALUE = 64 * 1024, MAX_KEYS = 40, MAX_BODY = 1024 * 1024;
 const bytes = s => new TextEncoder().encode(s).length;
 

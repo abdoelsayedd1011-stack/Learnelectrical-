@@ -86,6 +86,24 @@
       guided:6, exercises:12, params:100, faults:12,
       inside:["توصيل الدرايف والموتور والإنكودر", "وضع السرعة ووضع الموضع", "ضبط الجين وشكل الحركة", "الإنذارات وإزاي تحلّها"],
       tags:"delta asda b2 servo سيرفو plc pulse درايف وموتور سيرفو، أوضاع PT و PR و S و T، ونبضات من PLC.  درايف وموتور سيرفو ASDA-B2   أوضاع التحكم PT و PR و S و T   6 تمارين محلولة خطوة بخطوة ونبضات من PLC " },
+    { id:"mrje", path:"mrje-servo/index.html", group:"servo", brand:"Mitsubishi", brandKey:"mitsubishi",
+      name:"MELSERVO MR-JE", kind:"سيرفو", disp:"AL.52", dispClass:"red",
+      line:"سيرفو Mitsubishi بأزرار MODE و UP و DOWN و SET.",
+      guided:6, exercises:0, params:0, faults:0,
+      inside:["توصيل الدرايف والموتور والإنكودر", "تشغيل من الكيباد زي الحقيقي", "وضع الموضع بالبلس وحساب الجير", "4 ماكينات بتتحرك وإنذارات تحلّها"],
+      tags:"mitsubishi ميتسوبيشي melservo mr-je mr-j4 servo سيرفو pa05 pa06 pa07 cmx cdv gear جير" },
+    { id:"sigma7", path:"sigma7-servo/index.html", group:"servo", brand:"Yaskawa", brandKey:"yaskawa",
+      name:"Sigma-7 SGD7S", kind:"سيرفو", disp:"bb", dispClass:"red",
+      line:"سيرفو Yaskawa المنتشر في المصانع، بالكيباد والـ Fn.",
+      guided:6, exercises:0, params:0, faults:0,
+      inside:["توصيل الدرايف والموتور والإنكودر", "تشغيل من الكيباد زي الحقيقي", "وضع الموضع بالبلس وحساب الجير", "4 ماكينات بتتحرك وإنذارات تحلّها"],
+      tags:"yaskawa ياسكاوا sigma 7 sgd7s servo سيرفو pn20e pn210 fn002 jog gear جير" },
+    { id:"kinetix300", path:"kinetix300-servo/index.html", group:"servo", brand:"Allen-Bradley", brandKey:"ab",
+      name:"Kinetix 300", kind:"سيرفو", disp:"diS", dispClass:"red",
+      line:"سيرفو Allen-Bradley بشاشته وزراره، وMotionView.",
+      guided:6, exercises:0, params:0, faults:0,
+      inside:["توصيل الدرايف والموتور والإنكودر", "تشغيل من الكيباد زي الحقيقي", "وضع الموضع بالبلس وحساب الجير", "4 ماكينات بتتحرك وإنذارات تحلّها"],
+      tags:"allen bradley آلن برادلي kinetix 300 2097 servo سيرفو motionview indexing gear" },
     { id:"e5cc", path:"e5cc-lab/index.html", group:"temp", brand:"Omron", brandKey:"omron",
       name:"E5CC", kind:"كنترول حرارة", disp:"25 <span class=\"sv\">150</span>", dispClass:"red", html:true,
       line:"كنترولر حرارة Omron: توصيل الحساس وضبط الحرارة.",
@@ -105,7 +123,7 @@
   var BRANDS = [
     { key:"all", label:"الكل" }, { key:"beginner", label:"للمبتدئين" }, { key:"basics", label:"كلاسيك كنترول" }, { key:"instr", label:"إنسترومنتيشن" }, { key:"ab", label:"Allen-Bradley" }, { key:"siemens", label:"Siemens" },
     { key:"schneider", label:"Schneider" }, { key:"delta", label:"Delta" }, { key:"danfoss", label:"Danfoss" },
-    { key:"omron", label:"Omron" }, { key:"multi", label:"مقارنة" }
+    { key:"omron", label:"Omron" }, { key:"mitsubishi", label:"Mitsubishi" }, { key:"yaskawa", label:"Yaskawa" }, { key:"multi", label:"مقارنة" }
   ];
   window.LABS = LABS;
 
