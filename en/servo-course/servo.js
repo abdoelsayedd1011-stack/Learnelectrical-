@@ -648,6 +648,26 @@ SV.wiring = function(host, opt){
     W.forEach((w, i) => { const y1 = y(w[0]), y2 = y(w[1]), d = `M${XL} ${y1} C${XL + 60} ${y1} ${XR - 60} ${y2} ${XR} ${y2}`; s += `<g class="bw${err && err.w.includes(w.join('|')) ? ' bad' : ''}" data-w="${i}" role="button" tabindex="0" aria-label="Remove the wire ${lab(w[0])} - ${lab(w[1])}"><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${col(w[0])}"/><path class="bw-hit" d="${d}"/></g>`; });
     [...DT.map(t => [t[0], XL]), ...RT.map(t => [t[0], XR])].forEach(([id, x]) => { s += `<g class="bt${pend === id ? ' pend' : ''}${err && err.t.has(id) ? ' err' : ''}" data-t="${id}" role="button" tabindex="0" aria-label="Terminal ${lab(id)}"><circle class="bt-hit" cx="${x}" cy="${y(id)}" r="15"/><circle class="bt-s" cx="${x}" cy="${y(id)}" r="7"/></g>`; });
     q('.wr-art').innerHTML = s + '</svg>';
+    nhUpdate();
+  }
+  /* «💡 الخطوة الجاية» (window.NH): supply, earth, motor, resistor, encoder, brake, CN1, STO; the latest wrong wire first.
+     The braking resistor may go either way round. */
+  let nhCtl = null;
+  const NH_ORD = [['dL1', 'sL1', 'supply'], ['dL2', 'sL2', 'supply'], ['dL3', 'sL3', 'supply'], ['dPE', 'mPE', 'pe'], ['dU', 'mU', 'motor'], ['dV', 'mV', 'motor'], ['dW', 'mW', 'motor'],
+    ['dP', 'r1', 'brres'], ['dC', 'r2', 'brres'], ['dCN2', 'mENC', 'encoder'], ['dBRK', 'kBR', 'brake'], ['dCN1', 'plc', 'plc'], ['dSTO', 'sr', 'safety']];
+  function nhUpdate(){
+    if (!window.NH) return;
+    if (!nhCtl) nhCtl = NH.mount(q('.wr-art'), {course:'servo', onTap(s){ pulse({t:s.hl, w:s.w ? [s.w] : []}); }});
+    const grp = id => { const i = RT.findIndex(t => t[0] === id); const g = GROUPS.find(x => i >= x[1] && i <= x[2]); return g ? g[0].replace(/^.*\((.*)\)$/, '$1') : ''; };
+    const L = id => id[0] === 'd' || !DT.some(t => t[1] === lab(id)) ? lab(id) : `${lab(id)} (${grp(id)})`;
+    const res = (a, b) => /^d[PC]$/.test(a) && /^r\d$/.test(b) && !W.some(w => w[0] !== a && /^d[PC]$/.test(w[0]) && w[1] === b);
+    for (let i = W.length - 1; i >= 0; i--){ const w = W[i]; if (RIGHT[w[0]] !== w[1] && !res(w[0], w[1])){ nhCtl.set({kind:'fix', html:NH.S.fix(L(w[0]), L(w[1])), hl:[w[0], w[1]], w}); return; } }
+    for (const [a, b0, k] of NH_ORD){
+      if (W.some(w => w[0] === a)) continue;
+      const b = /^r\d$/.test(b0) ? ['r1', 'r2'].find(r => !W.some(w => w[1] === r)) || b0 : b0;
+      nhCtl.set({kind:'next', html:`${NH.esc(NH.S.idea[k])}: ${NH.S.con(L(a), L(b))}`, hl:[a, b]}); return;
+    }
+    nhCtl.set({kind:'done', html:NH.S.done(q('[data-a=run]').textContent.trim()), hl:[]});
   }
   function side(id){ return id[0] === 'd' ? 'L' : 'R'; }
   onAct(host, '[data-t]', t => {

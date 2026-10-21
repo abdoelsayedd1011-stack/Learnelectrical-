@@ -592,6 +592,7 @@ body.wb-active #termSec h2::after{content:" · بتتحكم فيها من لوح
 .wb-safe.flash{animation:wbsF .9s 2}
 @keyframes wbsF{50%{box-shadow:0 0 0 4px rgba(211,47,47,.45)}}
 .ww.bad .ww-o{stroke:#ff1f1f;stroke-width:13;opacity:.85;animation:wwB 1s infinite}
+.wt.nh-pulse{outline:none}.wt.nh-pulse .wt-body{stroke:#f0a000;stroke-width:5;animation:nhP .6s 5}.ww.nh-pulse .ww-o{stroke:#f0a000;stroke-width:14;opacity:.9;animation:nhP .6s 5}#wbMcb.nh-pulse{outline:none}#wbMcb.nh-pulse .wb-lvbg{stroke:#f0a000;stroke-width:5;animation:nhP .6s 5}
 @keyframes wwB{50%{opacity:.25}}
 .wb-safe.warn{border-color:#e0a21b;background:#fff7e3}
 .wb-diag{margin:.3rem 0 .5rem;padding:.5rem .7rem;border-radius:10px;background:#e8f1fd;border:1px solid #9cc0ee;color:#163f73;font-size:.88rem}
@@ -918,6 +919,7 @@ tr.cur{background:var(--accent-soft)}
   <p class="foot invOnly">محاكاة تعليمية مبسّطة وغير رسمية. الأرقام والسلوك قريبين من الحقيقة لكن مش بديل عن دليل المستخدم الرسمي لكل انفرتر قبل الشغل على لوحة حقيقية.<br>© &#x2066;2026 LearnElectricals&#x2069;. كل الحقوق محفوظة. الموقع مش تابع لأي شركة من الشركات المذكورة (زي &#x2066;Siemens&#x2069; و &#x2066;Allen-Bradley&#x2069; و &#x2066;Delta&#x2069; و &#x2066;Schneider&#x2069; وغيرهم)، والأسماء والعلامات التجارية ملك أصحابها، ومستخدمة بس عشان نشرح الأجهزة.</p>
 </div>
 
+<script src="/assets/next-hint.js?v=20261021nh"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (function(){
@@ -3970,6 +3972,76 @@ function wbRender(full){
  // multimeter
  const dm=$('#wbDmm');if(dm)dm.textContent=wbDmm();
  if(full)wbDrawWires();
+ if(full||now()-(WB.nhT||0)>1000){WB.nhT=now();wbNh();}
+}
+/* ---- «💡 الخطوة الجاية» (window.NH, /assets/next-hint.js): the next wire for the chosen exercise, the latest wrong wire first.
+   Power first (MCB → drive inputs, outputs → motor, earth), then the control wires of the exercise. Off in the free workshop. */
+let wbNhCtl=null,wbNhKey='';
+function wbNhSol(){
+ const ex=wbExDef(),R=wbR(),c=n=>n==null?null:wbCtlId(n),sol=[],need=[];
+ const P=(a,b,k)=>{if(a&&b)sol.push([a,b,k]);else need.push(k);};
+ const run=(dev,k,fn)=>{P(c(wbSw(R)),'D:'+dev+':13',k);P('D:'+dev+':14',c(fn),k);};
+ const f=wbFnTerms(['fwd'])[0];
+ const pw=()=>{R.pw.L.forEach((n,i)=>P('M:out'+(i+1),'P:'+n,'supply'));R.pw.U.forEach((n,i)=>P('P:'+n,'MO:'+['U1','V1','W1'][i],'motor'));
+  P('S:PE','P:'+R.pw.PE,'pe');P('P:'+R.pw.PE,'MO:PE','pe');};
+ const com=()=>{if(R.dicom)P(c(R.dicom),c(R.gD),'com');};
+ if(ex.id==='power'){pw();if(S.drive==='a320')run('sw1','run',f||'LI1');return {sol,need};}
+ pw();
+ switch(ex.id){
+  case 'start':com();run('sw1','run',f);break;
+  case 'rev':com();run('sw1','run',f);run('sw2','dir',wbFnTerms(['rev','dir'])[0]);break;
+  case 'pot':com();run('sw1','run',f);P('D:pot:1',c(R.gA),'pot');P('D:pot:3',c(R.p10[0]),'pot');P('D:pot:2',c(R.aiV),'analog');break;
+  case 'ma':com();run('sw1','run',f);P(c(R.p24[0]),'D:tx:+','sensor');P('D:tx:-',c(R.aiMA),'analog');break;
+  case 'lamp':{const o=R.outs.find(x=>x.no)||R.outs[0];com();run('sw1','run',f);P(c(R.p24[0]),c(o.com||o.sw[0]),'relay');P(c(o.no||o.sw[1]),'D:lamp:X1','lamp');P('D:lamp:X2',c(R.gD),'lamp');break;}
+  case 'meter':com();run('sw1','run',f);P(c(R.ao),'D:meter:+','analog');P('D:meter:-',c(R.gA),'analog');break;
+  case 'jog':com();run('pb1','jog',wbFnTerms(['jogf'])[0]);break;
+  case 'estop':if(R.sto){P(c(R.p24[R.p24.length>1&&S.drive==='pf'?1:0]),'D:es:11','safety');R.sto.forEach(t=>P('D:es:12',c(t),'safety'));}
+   else{P(c(R.p24[0]),'D:es:11','stop');P('D:es:12',c(R.stopNC),'stop');}break;
+  case 'brake':P('P:'+R.pw.BR[0],'D:br:R1','brres');P('D:br:R2','P:'+R.pw.BR[1],'brres');break;
+  case 'preset':{const p=wbFnTerms(['preset','ms1','ms2','pb0','pb1','ps2','ps4','ff1','ff2']).slice(0,2);com();run('sw1','run',f);run('sw2','switch',p[0]);run('sw3','switch',p[1]);break;}
+ }
+ return {sol,need};
+}
+function wbNhLab(id){
+ const T=WB.T[id];if(!T)return id;
+ if(id.startsWith('D:')){const d=WB.dev[id.split(':')[1]];return (d?d.label+' ':'')+T.lab;}
+ if(id.startsWith('M:'))return 'القاطع '+T.lab;
+ if(id.startsWith('MO:'))return 'الموتور '+T.lab;
+ if(id==='S:PE')return 'PE المصدر';
+ if(id.startsWith('P:'))return 'الانفرتر '+T.lab;
+ return T.lab;
+}
+function wbNh(){
+ if(!window.NH)return;
+ const host=document.getElementById('wbBench');if(!host)return;
+ if(!wbNhCtl){wbNhCtl=NH.mount(host,{course:'vfd-sim',onTap:st=>{
+  const sel=t=>`.wt[data-t="${t}"]`;let first=null;
+  if(st.mcb){const m=document.getElementById('wbMcb');if(m){NH.flash(host,'#wbMcb');first=m;}}
+  (st.hl||[]).forEach(t=>{NH.flash(host,sel(t));first=first||host.querySelector(sel(t));});
+  if(st.wid!=null){NH.flash(host,`.ww[data-w="${st.wid}"]`);first=first||host.querySelector(`.ww[data-w="${st.wid}"]`);}
+  if(first&&first.scrollIntoView)first.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});}});}
+ const ex=wbExDef(),R=wbR();
+ if(!WB.on||!R||ex.id==='free'){wbNhKey='';wbNhCtl.set(null);return;}
+ const {sol,need}=wbNhSol();
+ const jumpers=WB.wires.filter(w=>w.jumper),wires=WB.wires;
+ const key=[ex.id,S.drive,wbLogic(),WB.mcb,S.dc>50,sol.map(p=>p[0]+p[1]).join(),need.join(),WB.wires.map(w=>w.id+w.a+w.b).join()].join('|');
+ if(key===wbNhKey)return;wbNhKey=key;
+ const I=NH.S.idea,ids=n=>n.flatMap(wbIdsOf);
+ const groups=[ids(R.gnd),ids(R.p24),...jumpers.map(w=>[w.a,w.b])].filter(g=>g.length>1);
+ const units=[];
+ Object.values(WB.dev).forEach(d=>{const p=WBDEV[d.type].pins;if(['sw','pb','es','br'].includes(d.type))units.push({dev:d.id,k:d.type,t:p.map(n=>'D:'+d.id+':'+n),sw:true,solo:true});});
+ [1,2,3].forEach(k=>units.push({dev:'mcb',k:'o',t:['M:out'+k]}));
+ R.pw.L.forEach(n=>units.push({dev:'pl',k:'l',t:['P:'+n]}));R.pw.U.forEach(n=>units.push({dev:'pu',k:'u',t:['P:'+n]}));
+ ['U1','V1','W1'].forEach(n=>units.push({dev:'mo',k:'m',t:['MO:'+n]}));
+ const W=wires.map(w=>[w.a,w.b]),cn=NH.canon({sol,wires:W.filter((w,i)=>!wires[i].jumper),groups,units});
+ const live=t=>wbLive(t);
+ let st=NH.net({sol,wires:W,groups,canon:cn.canon,raw:cn.raw,lab:wbNhLab,cap:2,skip:i=>wires[i].jumper,idea:p=>I[p[2]]||null,btn:($('#wbCheck')||{}).textContent||''});
+ if(st.kind==='fix'){st.wid=wires[st.w].id;st.hl=[];}
+ else if(st.kind==='next'&&ex.id==='estop'&&jumpers.length){const j=jumpers[0];st={kind:'next',html:NH.S.jumper(wbNhLab(j.a),wbNhLab(j.b)),hl:[],wid:j.id};}
+ else if(st.kind==='done'&&need.length)st={kind:'next',html:'ظبط الباراميترات تحت الأول (الدخل المطلوب مش متظبط)',hl:[]};
+ const touch=st.kind==='fix'?[wires[st.w].a,wires[st.w].b]:st.kind==='next'?st.hl:[];
+ if(touch.some(live))st={kind:st.kind,html:`${st.kind==='fix'?'صلّح الأول: ':''}افصل القاطع (MCB) واستنى CHARGE تطفي`,hl:[],mcb:WB.mcb};
+ wbNhCtl.set(st);
 }
 function wbDmm(){
  const [a,b]=WB.probe;if(!a||!b||!WB.res)return a?'حط الطرف الأسود':'— — —';

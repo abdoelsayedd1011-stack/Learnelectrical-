@@ -928,6 +928,20 @@ PL.sim = function(host, opt){
   const tabs = $('.ls-tabs', host), task = $('.ls-task', host), plantBox = $('.ls-plant', host), pctl = $('.ls-pctl', host), ioBox = $('.ls-io', host), leds = $('.ls-leds', host);
   const runB = $('.ls-run', host), chkB = $('.ls-chk', host), frcB = $('.ls-frc', host), resBox = $('.ls-res', host), lad = $('.ls-lad', host), hintBox = $('.ls-hint', host), lintBox = $('.ls-lint', host);
   const P = () => PL.plants[ex.plant || 'loads'];
+  /* «💡 الخطوة الجاية» (PL.nextStep + /assets/next-hint.js): one line above the ladder, updated after every change */
+  const nhCtl = window.NH ? NH.mount(lad, {course:'plc'}) : null;
+  let nhPrev = null, nhLast = null; const nhCk = {k:null, r:null};
+  function nhCheck(){ const k = JSON.stringify(ENG.serialize(prog)); if (nhCk.k !== k){ nhCk.k = k; nhCk.r = cases().map(c => ENG.check(prog, {io:ex.io, plant:ex.plant, plantOpt:Object.assign({}, ex.plantOpt || {}, c.plantOpt || {}), tests:c.steps}, {cols})).find(r => !r.ok) || {ok:true}; } return nhCk.r; }
+  function nhUpdate(){
+    if (!nhCtl) return;
+    const cur = ENG.serialize(prog);
+    if (nhPrev && nhPrev.ex === ex && nhPrev.p.length === cur.length) cur.forEach((rg, i) => rg.rows.forEach((row, r) => row.forEach((t, c) => { const o = ((nhPrev.p[i].rows[r] || [])[c]) || ''; if (t !== o && t && t !== '-') nhLast = {i, r, c}; })));
+    else if (!nhPrev || nhPrev.ex !== ex) nhLast = null;
+    nhPrev = {ex, p:cur};
+    if (demo){ nhCtl.set(null); return; }
+    const io = (ex.io.inputs || []).concat(ex.io.outputs || []);
+    PL.nhLadder(nhCtl, PL.nextStep(prog, ex, {cols, last:nhLast, lab:a => (io.find(x => x.a === a) || {}).label, btn:chkB.textContent.replace('✓', '').trim(), check:nhCheck}), lad, $('[data-t=add]', host), '.lhit');
+  }
 
   function defIn(i){ return i.kind === 'pbnc' || i.kind === 'ncsw' ? 1 : 0; }
   function physFor(i){ if (i.kind === 'pb' || i.kind === 'pbnc') return pressed[i.a] ? 1 - defIn(i) : defIn(i); if (i.kind === 'sw' || i.kind === 'sensor' || i.kind === 'ncsw') return i.state != null ? i.state : defIn(i); return null; }
@@ -955,13 +969,13 @@ PL.sim = function(host, opt){
     $('[data-t=undo]', host).hidden = true;
     resBox.hidden = true;
     if (tabs) tabs.innerHTML = exs.map((x, j) => `<button type="button" class="btn${PL.has(opt.lesson, x.key) ? ' done' : ''}" data-k="${j}" aria-pressed="${j === k}">${esc(x.title)}</button>`).join('');
-    renderIO(); pctlRender(); renderAll();
+    renderIO(); pctlRender(); renderAll(); nhUpdate();
     if (pvAd.refresh) pvAd.refresh();
   }
   function changed(){
     PL.progs.set(saveKey(), ENG.serialize(prog));
     if (running) e.setProgram(prog, true); else e.setProgram(prog);
-    renderLadder(); renderLint();
+    renderLadder(); renderLint(); nhUpdate();
   }
 
   /* ---------- I/O panel ---------- */
@@ -1207,13 +1221,13 @@ PL.sim = function(host, opt){
       plantSt = P().create(po);
       e = new ENG.Engine(ENG.program(ex.sol, cols), {cols});
       (ex.io.inputs || []).forEach(i => { const v = physFor(i); if (v != null) e.setIn(i.a, v); });
-      running = true; renderAll();
+      running = true; renderAll(); nhUpdate();
     },
     end(){
       if (!demo) return; const d = demo; demo = null;
       running = d.running; e = d.e; plantSt = d.plantSt; sel = d.sel;
       d.ins.forEach(x => { x.i.state = x.state; }); Object.keys(pressed).forEach(a => delete pressed[a]); Object.assign(pressed, d.pressed);
-      renderAll();
+      renderAll(); nhUpdate();
     },
     advance(dt){ P().step(plantSt, e, dt); e.scan(dt); },
     engine:() => e, plant:() => plantSt,
@@ -1356,6 +1370,19 @@ PL.wire = function(host, opt){
     (demoLive ? [] : wires).forEach(([a, b], k) => { const A = T(a), B = T(b), mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2 + 18, col = TERM_COL[A.pol] || TERM_COL[B.pol] || '#333'; const d = `M${A.x} ${A.y}Q${mx} ${my} ${B.x} ${B.y}`; s += `<g class="bw" data-w="${k}"><path d="${d}" class="bw-o"/><path d="${d}" class="bw-c" stroke="${col}"/><path d="${d}" class="bw-hit" tabindex="0" role="button" aria-label="Wire from ${esc(A.l)} to ${esc(B.l)}, tap to remove it"/></g>`; });
     ex.terms.forEach(t => { s += `<g class="bt${pend === t.id ? ' pend' : ''}" data-t="${t.id}"><circle cx="${t.x}" cy="${t.y}" r="16" class="bt-hit" tabindex="0" role="button" aria-label="Terminal ${esc(t.l)}"/><circle cx="${t.x}" cy="${t.y}" r="13" class="bt-ring${err && err.has(t.id) ? ' err' : ''}"/><circle cx="${t.x}" cy="${t.y}" r="7" class="bt-s"/><path d="M${t.x - 4} ${t.y}h8" class="bt-x"/><text x="${t.x + (t.lx || 0)}" y="${t.y + (t.ly != null ? t.ly : -12)}" class="bt-lab"${t.anc ? ` text-anchor="${t.anc}"` : ''}>${esc(t.l)}</text></g>`; });
     board.innerHTML = s + '</svg>';
+    nhUpdate();
+  }
+  /* «💡 الخطوة الجاية» (window.NH, /assets/next-hint.js): CPU power first, then each net from its supply end; the latest wrong wire first */
+  let nhCtl = null;
+  const NH_IDEA = {BN:'sensor', BU:'sensor', PB13:'start', PB14:'input', IM:'com', OL:'com', OM:'com', RL:'com', KA1:'coil', KA2:'coil', HX1:'lamp', HX2:'lamp', I0:'input', I1:'input', Q0:'output', Q1:'output'};
+  function nhUpdate(){
+    if (!window.NH) return;
+    if (!nhCtl) nhCtl = NH.mount(board, {course:'plc', onTap(s){ const my = err = new Set(s.hl); draw(); setTimeout(() => { if (err === my){ err = null; if (board.isConnected) draw(); } }, 3000); }});
+    if (demoLive){ nhCtl.set(null); return; }
+    const base = ['P24', 'P0', 'CL', 'CM', 'ACL', 'ACN'], sol = [];
+    ex.groups.forEach(g => g.slice(1).forEach(t => sol.push([g[0], t])));
+    sol.sort((a, c) => (base.includes(a[1]) ? 0 : 1) - (base.includes(c[1]) ? 0 : 1));
+    nhCtl.set(NH.net({sol, wires, lab:id => (T(id) || {}).l || id, idea:p => NH.S.idea[base.includes(p[1]) ? 'supply' : NH_IDEA[p[1]] || 'input'], btn:$('.wb-chk', host).textContent.trim()}));
   }
   function select(k){
     if (demoSt) PL.preview.stop();
@@ -1963,5 +1990,108 @@ async function simScript(ad, pl, gen, ctl){
   pl.progress(1);
   pl.say(ad.outro(), 'end');
 }
+/* ---------- «💡 الخطوة الجاية» for the ladder editors (lessons + brand pages); text and UI in /assets/next-hint.js (window.NH) ----------
+   PL.nextStep(prog, ex, o) → {kind:'next'|'fix'|'done', html, cell:{i,r,c}|null, add:bool, act} or null (no reference solution / no NH).
+   o: {cols, last:{i,r,c} (the cell the trainee changed last), disp(a) (address as the editor shows it), box(a) (a timer/counter box's name), lab(a) (I/O label),
+       btn (the test button's text), check() → {ok, msg} (the editor's own auto-check, run only when nothing is missing)}.
+   Rungs of the reference are matched to the trainee's by their outputs; inside a rung, elements are compared per place
+   (series line / output / parallel branch) as multisets, so contacts in another order or column still count. A trainee
+   program that passes the auto-check is always «done», whatever its shape. act = what the step does (used by the tests only). */
+PL.nextStep = function(prog, ex, o){
+  const N = window.NH; if (!N || !ex || !ex.sol || !prog) return null;
+  const C = o.cols || 5, S = N.S, I = S.idea, esc = N.esc;
+  const sol = ENG.program(ex.sol, C);
+  const tok = el => el && el.t !== 'W' ? ENG.tok(el) : null;
+  const ad = a => o.disp ? o.disp(a) : a;
+  const disp = el => { if (!el || el.t === 'W') return '—'; let s = el.t + ' ' + (o.box && ['TON', 'TOF', 'TP', 'RTO', 'CTU', 'CTD'].includes(el.t) ? o.box(el.a) : ad(el.a)); if (el.t === 'CMP') s += ' ' + el.op + ' ' + el.b; else if (el.pt != null) s += ' ' + el.pt + 's'; else if (el.pv != null) s += ' = ' + el.pv; else if (el.t === 'SCL') s += ' → ' + ad(el.o); return s; };
+  /* a parallel branch is keyed by what it bypasses on the series line (the latch around START, not around STOP); a branch row
+     with no links yet is not judged on that (closing it is its own step) */
+  const cover = (rg, r) => { if (!r) return ''; const row = rg.rows[r], L = rg.links[r - 1] || []; const st = row.findIndex(Boolean); if (st < 0 || st >= C - 1) return '*';
+    let end = st; while (end < C - 1 && row[end]) end++; /* the branch conducts through its contiguous cells and rejoins at the next node */
+    if (!L.includes(end) || (st > 0 && !L.includes(st))) return '*';
+    return rg.rows[0].slice(st, end).map(tok).filter(Boolean).sort().join(','); };
+  const items = rg => { const out = []; rg.rows.forEach((row, r) => { const cv = cover(rg, r); row.forEach((el, c) => { const t = tok(el); if (t){ const k = c === C - 1 ? 'out' : r ? 'br' : 'main'; out.push({t, el, r, c, k, key:k + '|' + t + (k === 'br' ? '|' + cv : '')}); } }); }); return out; };
+  const outsOf = rg => items(rg).filter(x => x.k === 'out').map(x => x.el.t + ':' + x.el.a);
+  const same = (x, y) => x.key === y.key || (x.k === 'br' && y.k === 'br' && x.t === y.t && (x.key.endsWith('|*') || y.key.endsWith('|*')));
+  const cnt = (list, x) => list.filter(y => same(x, y)).length;
+  /* 1. which trainee rung builds which reference rung */
+  const used = new Set(), match = sol.map(sr => {
+    const so = outsOf(sr), st = items(sr).map(x => x.t); let best = -1, bs = 0;
+    prog.forEach((tr, j) => { if (used.has(j)) return; const to = outsOf(tr), tt = items(tr).map(x => x.t); if (to.length && !so.some(x => to.includes(x))) return;
+      const sc = so.filter(x => to.includes(x)).length * 100 + st.filter(x => tt.includes(x)).length; if (sc > bs){ bs = sc; best = j; } });
+    if (best < 0) best = prog.findIndex((tr, j) => !used.has(j) && !items(tr).length);
+    if (best >= 0) used.add(best);
+    return best;
+  });
+  /* 2. elements the trainee has that the matched reference rung doesn't (per place) */
+  const extras = [];
+  prog.forEach((tr, j) => { const k = match.indexOf(j), have = items(tr), want = k >= 0 ? items(sol[k]) : [], seen = {};
+    const left = want.slice(); have.forEach(x => { const m = left.findIndex(y => same(x, y)); if (m >= 0) left.splice(m, 1); else extras.push(Object.assign({i:j}, x)); }); });
+  const fixOf = x => ({kind:'fix', html:S.fixEl(disp(x.el), x.i + 1), cell:{i:x.i, r:x.r, c:x.c}, act:{op:'del', i:x.i, r:x.r, c:x.c}});
+  const total = rgs => rgs.reduce((n, rg) => n + items(rg).length, 0);
+  let chk = null; const passes = () => { if (!chk) chk = o.check ? o.check() || {ok:false} : {ok:false}; return chk.ok; };
+  const done = () => ({kind:'done', html:S.doneProg(o.btn || ''), cell:null});
+  if (total(prog) >= total(sol) && passes()) return done();
+  const lx = o.last && extras.find(x => x.i === o.last.i && x.r === o.last.r && x.c === o.last.c);
+  if (lx) return fixOf(lx);
+  /* 3. the first thing the reference has and the trainee doesn't: series contacts left → right, the output, then the branches */
+  const qOut = {}; sol.forEach((sr, k) => outsOf(sr).forEach(t => { const a = ENG.parse(t).a; (qOut[a] = qOut[a] || []).push(k); }));
+  const idea = (x, sr, k) => {
+    const el = x.el, kd = ENG.kind(el.a), myOuts = items(sr).filter(y => y.k === 'out').map(y => y.el.a);
+    if (x.k === 'br' && el.t === 'NO' && myOuts.includes(el.a)) return I.latch;
+    if (el.t === 'NC' && kd === 'Q' && !myOuts.includes(el.a) && (qOut[el.a] || []).some(m => m !== k)) return I.interlock;
+    if (['TON', 'TOF', 'TP', 'RTO'].includes(el.t) || kd === 'T' || kd === 'TB') return I.timer;
+    if (['CTU', 'CTD'].includes(el.t) || kd === 'C' || kd === 'HC') return I.counter;
+    if (el.t === 'CMP') return I.compare;
+    if (el.t === 'S') return I.set;
+    if (el.t === 'R') return I.reset;
+    if (el.t === 'P' || el.t === 'N') return I.edge;
+    if (el.t === 'SCL') return I.scale;
+    if (el.t === 'OUT') return I.coil;
+    if (kd === 'I' && o.lab){ const l = o.lab(el.a); if (l) return l; }
+    return null;
+  };
+  const say = (id, t) => id ? `${esc(id)}: ${t}` : t;
+  const near = (row, c) => { for (let d = c; d >= 0; d--) if (tok(row[d])) return row[d]; for (let d = c + 1; d < C - 1; d++) if (tok(row[d])) return row[d]; return null; };
+  for (let k = 0; k < sol.length; k++){
+    const sr = sol[k], j = match[k], want = items(sr), sr0 = sr.rows[0];
+    if (j < 0) return {kind:'next', html:S.newRung(prog.length + 1), cell:null, add:true, act:{op:'rung'}};
+    const tr = prog[j], have = items(tr).filter(x => !extras.some(e => e.i === j && e.r === x.r && e.c === x.c)), ord = want.filter(x => x.k === 'main').sort((a, b) => a.c - b.c).concat(want.filter(x => x.k === 'out').sort((a, b) => a.r - b.r), want.filter(x => x.k === 'br').sort((a, b) => a.r - b.r || a.c - b.c));
+    const pool = have.slice();
+    for (const x of ord){
+      const m = pool.findIndex(y => same(x, y)); if (m >= 0){ pool.splice(m, 1); continue; }
+      const d = disp(x.el), id = idea(x, sr, k), n = j + 1;
+      /* the same element sitting in the wrong place, or a wrong element on its place: that one goes first */
+      const blk = extras.find(e => e.i === j && e.t === x.t) || extras.find(e => e.i === j && e.r === x.r && e.c === x.c) || (x.k === 'main' && tr.rows[0].every((el, cc) => cc >= C - 1 || tok(el)) && extras.find(e => e.i === j && e.k === 'main'));
+      if (blk) return fixOf(blk);
+      let r = x.r, c = x.c, html;
+      if (x.k === 'main'){ const row = tr.rows[0]; if (tok(row[c])) c = row.findIndex((el, cc) => cc < C - 1 && !tok(el)); const prev = near(sr0.slice(0, x.c), x.c - 1); html = prev && x.c > 0 ? S.putAfter(d, disp(prev), n) : S.put(d, n); }
+      else if (x.k === 'out' && x.r === 0){ r = 0; html = S.putEnd(d, n); }
+      else { const above = x.k === 'out' ? sr0[C - 1] : near(sr0, x.c); html = above ? S.putUnder(d, disp(above), n) : S.put(d, n); if (r >= tr.rows.length) r = tr.rows.length; }
+      return {kind:'next', html:say(id, html), cell:{i:j, r, c}, act:{op:'put', i:j, r, c, tok:x.t, links:x.r > 0 ? (sr.links[x.r - 1] || []).slice() : null}};
+    }
+    /* every element is there: a branch also has to be closed back onto the line (its vertical links) */
+    for (let r = 1; r < sr.rows.length; r++){
+      const first = items({rows:[sr.rows[r]]}).find(Boolean); if (!first) continue;
+      const tr2 = tr.rows.findIndex((row, rr) => rr > 0 && row.some(el => tok(el) === first.t));
+      if (tr2 < 1) continue;
+      const need = sr.links[r - 1] || [], hasL = tr.links[tr2 - 1] || [];
+      const miss = need.find(m => !hasL.includes(m));
+      if (miss != null && hasL.length < need.length){ const at = near(sr0, Math.max(0, Math.min(C - 2, miss - 1))); return {kind:'next', html:S.close(at ? disp(at) : '—', j + 1), cell:{i:j, r:tr2, c:Math.min(C - 1, Math.max(0, miss - 1))}, act:{op:'link', i:j, r:tr2, n:miss}}; }
+    }
+    /* a gap in the series line (a deleted wire) */
+    const tr0 = tr.rows[0];
+    for (let c = 0; c < C - 1; c++) if (sr0[c] && !tr0[c] && want.some(x => x.k === 'out' && x.r === 0)){ const prev = near(sr0.slice(0, c), c - 1); return {kind:'next', html:prev ? S.putAfter(S.wireCell, disp(prev), j + 1) : S.put(S.wireCell, j + 1), cell:{i:j, r:0, c}, act:{op:'put', i:j, r:0, c, tok:'-'}}; }
+  }
+  if (extras.length) return fixOf(extras[extras.length - 1]);
+  if (passes()) return done();
+  return {kind:'fix', html:chk && chk.msg ? String(chk.msg) : S.doneProg(o.btn || ''), cell:null};
+};
+/* show/refresh the hint line of a ladder editor; tapping it flashes the target cell (or the «new rung» button) for 3 s */
+PL.nhLadder = function(ctl, s, lad, addBtn, cellSel){
+  if (!ctl) return;
+  ctl.set(s);
+  ctl.onTap = st => { if (!st) return; if (st.add && addBtn) window.NH.flash(addBtn); else if (st.cell) window.NH.flash(lad, `${cellSel}[data-i="${st.cell.i}"][data-r="${st.cell.r}"][data-c="${st.cell.c}"]`); };
+};
 
 })();

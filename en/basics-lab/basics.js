@@ -1099,6 +1099,19 @@ BL.bench = function(host, cfg){
     for (const p of sol) for (const t of [p[0], p[1]]) if (!has(t)) return {t:`Terminal ${nm(t)} isn't connected.`, hl:[t]};
     return null;
   }
+  /* «💡 الخطوة الجاية» (window.NH, /assets/next-hint.js): the next wire against the exercise's reference, with its colour.
+     A switch's two ends, a 2-way switch's L1/L2 and a lamp's two ends may be swapped (the check accepts that). */
+  let nhCtl = null;
+  function nhUpdate(){
+    if (!window.NH) return; const e = ex();
+    if (!nhCtl) nhCtl = NH.mount(q('.bn-board'), {course:'basics', onTap(s){ pulse(s.hl); render(); }});
+    if (!e.solution || !e.solution.length){ nhCtl.set(null); return; }
+    const T = terms(e), units = [], sol = e.solution.map(p => [p[0], p[1], p[2]]), W = S.wires.map(w => [w[0], w[1]]);
+    e.comps.forEach(c => { const u = (a, b) => units.push({dev:c.id, k:c.type, t:[c.id + '.' + a, c.id + '.' + b], sw:true, solo:true}); if (c.type === 'sw2') u('L1', 'L2'); if (c.type === 'sw1') u('L', 'L1'); if (c.type === 'lamp') u('L', 'N'); });
+    const C = NH.canon({sol, wires:W, units});
+    const lab = t => T[t] ? `${T[t].comp.label || T[t].comp.id}: ${T[t].lab}` : t;
+    nhCtl.set(NH.net({sol, wires:W, canon:C.canon, raw:C.raw, lab, idea:p => NH.S.wire(COL_AR[p[2]] || ''), btn:q('[data-b=chk]').textContent.trim()}));
+  }
   function pulse(hl){ S.err = hl && hl.length ? {t:new Set(hl), until:Date.now() + 3000} : null; if (S.err) setTimeout(() => { if (S.err && S.err.until <= Date.now()){ S.err = null; render(); } }, 3100); }
   function analyze(){
     const e = ex(), T = terms(e), res = {pass:false, bad:[], warn:[], hl:null}, bad = (t, hl) => { res.bad.push(t); if (!res.hl && hl) res.hl = hl; };
@@ -1183,6 +1196,7 @@ BL.bench = function(host, cfg){
     const sb = q('[data-b=sol]'); sb.textContent = S.ghost ? 'Hide the solution' : 'Show me the solution'; sb.setAttribute('aria-pressed', S.ghost ? 'true' : 'false');
     const pl = q('[data-b=plug]'); pl.hidden = e.kind !== 'socket'; pl.textContent = S.st.plug ? 'Unplug the lamp' : 'Plug a lamp into the socket';
     if (S.power && ev){ const any = Object.values(ev.lamps).some(Boolean); msg(any ? 'Power is on. Tap the switch to flip it and watch the lamp.' : 'Power is on, but nothing is lit. Try flipping the switch, or test the wiring.', any ? 'ok' : ''); }
+    nhUpdate();
   }
   function renderTask(){ const e = ex(); q('.bn-task').innerHTML = `<h3>${e.title}</h3><p>${e.task}</p>${e.tip ? `<p class="muted" style="font-size:.9rem;margin-top:4px">${e.tip}</p>` : ''}${BL.has(L, e.key) ? '<p style="color:var(--good);font-weight:700;margin-top:4px">✓ You finished this exercise</p>' : ''}`; }
   function setEx(i){ S.ex = i; S.pend = null; S.ghost = false; S.power = false; S.st = freshSt(); loadWires(); q('.bn-res').innerHTML = ''; renderTask(); msg('Tap a terminal, then the other terminal, to add a wire. Tap a wire to remove it.'); render(); }

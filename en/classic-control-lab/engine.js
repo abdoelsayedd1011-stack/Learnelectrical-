@@ -2845,6 +2845,56 @@ CL.bench = function(host, ex, opt){
   // IEC 60204-1 style: N light blue, AC control red, DC control dark blue, power phases brown/black/grey
   const powerTerm = id => { const [dv, t] = id.split(':'), d = byId[dv]; if (!d) return false; const ty = d.type;
     return ty === 'supply3P' || ty === 'motor' || ty === 'mpcb' || ((ty === 'contactor' || ty === 'ol') && /^[1-6]$/.test(t)) || (ty === 'softstarter' && /^[LT][123]$/.test(t)) || ((ty === 'mcb' || ty === 'fuse') && d.cfg.poles >= 3); };
+  /* «💡 الخطوة الجاية» (window.NH, /assets/next-hint.js): the next wire, measured against ex.solution. Power first, then control in
+     the reference order; an alternative contact block (23-24 for 13-14), swapped contact/coil ends or another pole are mapped onto the
+     reference before comparing, so a correct alternative is never sent back. Off in a challenge or a hidden-fault round. */
+  let nhCtl = null;
+  const nhPw = t => powerTerm(t) && !(byId[t.split(':')[0]].type === 'supply3P' && /:N$/.test(t)), nhPP = p => nhPw(p[0]) && nhPw(p[1]);
+  const nhSol = (() => { const s = (ex.solution || []).filter(p => byId[p[0].split(':')[0]] && byId[p[1].split(':')[0]]); return s.filter(nhPP).concat(s.filter(p => !nhPP(p))); })();
+  function nhUnits(d){
+    const T = TYPES[d.type], u = [], id = t => d.id + ':' + t;
+    (d.blocks || []).forEach(bl => { if ((bl.k === 'NO' || bl.k === 'NC') && bl.t.length === 2) u.push({k:bl.k, t:bl.t.map(id), sw:true}); else if (bl.k === 'CO' && bl.t.length === 3) u.push({k:'CO', t:bl.t.map(id), sw:false}); });
+    if (T.coil) u.push({k:'coil', t:['A1', 'A2'].map(id), sw:true, solo:true});
+    if (d.type === 'lamp') u.push({k:'lamp', t:['X1', 'X2'].map(id), sw:true, solo:true});
+    if (d.type === 'contactor' || d.type === 'ol' || d.type === 'mpcb' || ((d.type === 'mcb' || d.type === 'fuse') && d.cfg.poles >= 2)){ const n = d.type === 'mcb' || d.type === 'fuse' ? d.cfg.poles : 3; for (let i = 0; i < n; i++) u.push({k:'pole', t:[id(2 * i + 1), id(2 * i + 2)], sw:true}); }
+    return u;
+  }
+  function nhCanon(W){
+    const groups = []; devs.forEach(d => { if (d.type === 'tb') TYPES.tb.links(d).forEach(l => groups.push([d.id + ':' + l[0], d.id + ':' + l[1]])); });
+    const units = []; devs.forEach(d => nhUnits(d).forEach(u => { u.dev = d.id; units.push(u); }));
+    return Object.assign({groups}, NH.canon({sol:nhSol, wires:W, groups, units}));
+  }
+  function nhIdea(p, R){
+    const I = NH.S.idea, rank = [];
+    const isNC = (d, t) => (d.blocks || []).some(bl => bl.k === 'NC' && bl.t.includes(t)), isNO = (d, t) => (d.blocks || []).some(bl => bl.k === 'NO' && bl.t.includes(t));
+    const netHas = (t, fn) => nhSol.some(q => q.some(x => R.f(x) === R.f(t) && fn(x)));
+    for (const x of p){
+      const [dv, t] = x.split(':'), d = byId[dv]; if (!d) continue; const T = TYPES[d.type];
+      if (nhPP(p)) rank.push([9, I.power]);
+      else if (nhPw(x)) rank.push([2, I.feed]);
+      else if ((d.type === 'ol' && /^9[5-8]$/.test(t)) || (d.type === 'mpcb')) rank.push([7, I.ol]);
+      else if (d.type === 'timer') rank.push([7, I.timer]);
+      else if (T.coil && isNC(d, t) && netHas(x, y => { const e = byId[y.split(':')[0]]; return e && e !== d && TYPES[e.type].coil && /^A[12]$/.test(y.split(':')[1]); })) rank.push([8.5, I.interlock]);
+      else if (T.coil && isNO(d, t)){ const bl = d.blocks.find(k => k.t.includes(t)); const ends = bl.t.map(y => R.f(d.id + ':' + y)).sort().join('|');
+        if (devs.some(e => e.type === 'pb' && (e.blocks || []).some(k => k.k === 'NO' && k.t.map(y => R.f(e.id + ':' + y)).sort().join('|') === ends))) rank.push([8, I.latch]); }
+      else if (/^A[12]$/.test(t) && T.coil) rank.push([4, I.coil]);
+      else if (d.type === 'pb' || d.type === 'estop'){ if (isNC(d, t)) rank.push([5, I.stop]); else if (isNO(d, t)) rank.push([5, CL.isJog(d) ? I.jog : I.start]); }
+      else if (d.type === 'ls') rank.push([5, I.limit]);
+      else if (d.type === 'lamp') rank.push([4.5, I.lamp]);
+    }
+    rank.sort((a, c) => c[0] - a[0]);
+    return rank.length ? rank[0][1] : null;
+  }
+  function nhOff(){ const F = CL.fx; return !!(F && ((F.challenge && F.challenge.active && F.challenge.active.key === opt.key) || (F.faults && F.faults.cur))); }
+  function nhUpdate(){
+    if (!window.NH || !nhSol.length) return;
+    if (!nhCtl){ const ref = host.querySelector('.bn-board'); if (!ref) return; nhCtl = NH.mount(ref, {course:'classic', onTap(s){ pulse(s.kind === 'fix' && s.wid != null ? {w:[s.wid], t:s.hl} : {t:s.hl}); }}); }
+    if (nhOff()){ nhCtl.set(null); return; }
+    const W = wires.map(w => [w.a, w.b]), C = nhCanon(W);
+    const s = NH.net({sol:nhSol, wires:W, cap:2, groups:C.groups, canon:C.canon, raw:C.raw, lab:termLab, idea:p => nhIdea(p, C.R), btn:pwrBtn.textContent.replace(/⚡/g, '').trim()});
+    if (s.kind === 'fix') s.wid = wires[s.w].id;
+    nhCtl.set(s);
+  }
   function wireColor(w, fr){
     const pa = fr.poles(fr.find(w.a)) || fr.poles(fr.find(w.b));
     if (pa && [...pa].some(p => p === 'N' || p === 'M' || p === 'T') && ![...pa].some(p => p in PHASES || p === 'P' || p === 'S')) return '#3a9be0';
@@ -2961,7 +3011,8 @@ CL.bench = function(host, ex, opt){
     return r;
   }
   function setGhost(v){ ghost = !!v; const sb = host.querySelector('[data-b=sol]'); if (sb){ sb.textContent = ghost ? 'Hide solution' : 'Show solution'; sb.setAttribute('aria-pressed', ghost ? 'true' : 'false'); } }
-  function setPower(on){
+  function setPower(on){ setPower0(on); nhUpdate(); }
+  function setPower0(on){
     lastAct = '';
     if (on){
       if (ghost){ setGhost(false); }
@@ -2978,7 +3029,7 @@ CL.bench = function(host, ex, opt){
       render();
     }
   }
-  function changed(){ passed = false; resEl.innerHTML = ''; persist(); render(); }
+  function changed(){ passed = false; resEl.innerHTML = ''; persist(); render(); nhUpdate(); }
   function termClick(id){
     if (powered()){ msg('⚡ Switch the power off before you touch terminals or wires.', 'bad'); return; }
     if (!pend){ if (wires.filter(w => w.a === id || w.b === id).length >= 2){ msg(`Terminal ${termLab(id)} already has two wires. You can't put more than two wires under one screw.`, 'bad'); return; } pend = id; msg(`Wire end at <b class="term">${esc(termLab(id))}</b>. Now tap the other terminal.`); render(); return; }
@@ -3086,6 +3137,7 @@ CL.bench = function(host, ex, opt){
   const skinUnsub = SKIN.sub(() => { if (!destroyed) render(); }); SKIN.preload(devs);
   CL.test.bench = api;
   render();
+  nhUpdate();
   CL.emit('exercise', EVB({devs, passed: !!(opt.passKey && CL.store.has(opt.passKey))}));
   return api;
 };

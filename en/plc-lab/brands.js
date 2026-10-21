@@ -637,6 +637,20 @@ PL.brandSim = function(host, cfg){
   const listBox = q('.bx-list'), progBox = q('.bx-prog'), scn = q('.bx-scn'), plantBox = q('.bx-plant'), pctl = q('.bx-pctl'), ioBox = q('.bx-io'), face = q('.bx-face'), modeTag = q('.bx-mode');
   const titleBar = q('.bx-title'), toolBox = q('.bx-tools'), stat = q('.bx-stat'), lad = q('.bx-lad'), tagsBox = q('.bx-tags'), ilBox = q('.bx-il'), frcBox = q('.bx-frc'), lintBox = q('.bx-lint');
   const resBox = q('.bx-res'), hintBox = q('.bx-hint'), ide = q('.bx-ide');
+  /* «💡 الخطوة الجاية» (PL.nextStep + /assets/next-hint.js): one line above the ladder; off in the factory challenges (level 4) */
+  const nhCtl = window.NH && PL.nextStep ? NH.mount(lad, {course:'plc'}) : null;
+  let nhPrev = null, nhLast = null; const nhCk = {k:null, r:null};
+  function nhCheck(){ const kk = JSON.stringify(ENG.serialize(prog)); if (nhCk.k !== kk){ nhCk.k = kk; const r = (ex.cases || [{steps:ex.tests || []}]).map(c => ENG.check(prog, {io:ex.io, plant:ex.plant, plantOpt:Object.assign({}, ex.plantOpt || {}, c.plantOpt || {}), tests:c.steps}, {cols})).find(x => !x.ok) || {ok:true}; nhCk.r = r.ok ? r : {ok:false, msg:xlate(B, T, r.msg)}; } return nhCk.r; }
+  function nhUpdate(){
+    if (!nhCtl) return;
+    const cur = ENG.serialize(prog);
+    if (nhPrev && nhPrev.ex === ex && nhPrev.p.length === cur.length) cur.forEach((rg, i) => rg.rows.forEach((row, r) => row.forEach((t, c) => { const o = ((nhPrev.p[i].rows[r] || [])[c]) || ''; if (t !== o && t && t !== '-') nhLast = {i, r, c}; })));
+    else if (!nhPrev || nhPrev.ex !== ex) nhLast = null;
+    nhPrev = {ex, p:cur};
+    if (demo || ex.lvl === 4){ nhCtl.set(null); return; }
+    const io = (ex.io.inputs || []).concat(ex.io.outputs || []);
+    PL.nhLadder(nhCtl, PL.nextStep(prog, ex, {cols, last:nhLast, disp:a => B.short(a, T), box:a => AB && B.id === 'ab' ? AB.tag(T, a) : B.short(a, T), lab:a => (io.find(x => x.a === a) || {}).label, btn:q('[data-t=chk]').textContent.replace('✓', '').trim(), check:nhCheck}), lad, q('.bx-ladt [data-t=add]'), '.hit');
+  }
 
   /* ---------- engine / modes ---------- */
   const defIn = i => i.kind === 'pbnc' || i.kind === 'ncsw' || i.def ? 1 : 0;
@@ -697,7 +711,7 @@ PL.brandSim = function(host, cfg){
     resBox.hidden = true; hintBox.hidden = true; hintBox.innerHTML = ex.hint || '';
     renderList(); renderScn(); renderIO(); pctlRender(); updChk(); setTab(tab === 'il' && !DV ? 'lad' : tab);
     msg(guide());
-    renderAll();
+    renderAll(); nhUpdate();
     if (pvAd.refresh) pvAd.refresh();
   }
   function guide(){
@@ -707,7 +721,7 @@ PL.brandSim = function(host, cfg){
   }
   function msg(h, cls){ stat.className = 'bx-stat' + (cls ? ' ' + cls : ''); stat.innerHTML = h; }
   function persist(){ PS.set(ex.key, {p:ENG.serialize(prog), t:T.filter(t => t.u).map(t => ({n:t.n, a:t.a, c:t.c || ''}))}); }
-  function changed(){ persist(); renderLad(); renderLint(); renderTop(); if (tab === 'tags') renderTags(); if (tab === 'il') renderIL(); }
+  function changed(){ persist(); renderLad(); renderLint(); renderTop(); if (tab === 'tags') renderTags(); if (tab === 'il') renderIL(); nhUpdate(); }
 
   /* ---------- I/O (field devices) ---------- */
   function renderIO(){
@@ -1123,13 +1137,13 @@ PL.brandSim = function(host, cfg){
       e = new ENG.Engine(ENG.program(ex.sol, cols), {cols});
       (ex.io.inputs || []).forEach(i => { const v = physFor(i); if (v != null) e.setIn(i.a, v); });
       P().step(plantSt, e, 0);
-      mode = 'RUN'; faceSig = ''; renderAll();
+      mode = 'RUN'; faceSig = ''; renderAll(); nhUpdate();
     },
     end(){
       if (!demo) return; const d = demo; demo = null;
       e = d.e; plantSt = d.plantSt; mode = d.mode; sel = d.sel; faceSig = '';
       d.ins.forEach(x => { x.i.state = x.state; }); Object.keys(pressed).forEach(a => delete pressed[a]); Object.assign(pressed, d.pressed);
-      renderAll();
+      renderAll(); nhUpdate();
     },
     advance(dt){ P().step(plantSt, e, dt); e.scan(dt); },
     engine:() => e, plant:() => plantSt,

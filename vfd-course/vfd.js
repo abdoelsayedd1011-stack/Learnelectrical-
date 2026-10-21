@@ -648,6 +648,28 @@ VF.wire = function(host, cfg, opt){
     }).join('');
     $$('.bt', host).forEach(g => { g.classList.toggle('pend', g.dataset.t === pend); const rg = g.querySelector('.bt-ring'); if (rg) rg.classList.toggle('err', !!(err && err.t.has(g.dataset.t))); });
     if (opt.onChange) opt.onChange(ev, W.slice());
+    nhUpdate(ev);
+  }
+  /* «💡 الخطوة الجاية» (window.NH): the latest wrong wire or short first, then the first rule still missing (rules are in wiring order).
+     A rule's own alternatives (any phase order, either PE terminal, either resistor end) count as right. */
+  let nhCtl = null;
+  function nhUpdate(ev){
+    if (!window.NH) return;
+    if (!nhCtl) nhCtl = NH.mount(q('.bn-board'), {course:'vfd', onTap(s){ pulse({t:s.hl, w:s.wk ? [s.wk] : []}); }});
+    const f = ev.f, uniq = id => T[id].lab.length > 1 && cfg.terms.filter(x => x.lab === T[id].lab).length === 1, L = id => (uniq(id) ? T[id].lab : T[id].aria) || T[id].lab, I = NH.S.idea;
+    let bad = -1; for (let i = W.length - 1; i >= 0 && bad < 0; i--) if (!allowed(W[i][0], W[i][1])) bad = i;
+    if (bad < 0 && ev.shorts.length){ const s0 = ev.shorts[0]; for (let i = W.length - 1; i >= 0 && bad < 0; i--) if (f(W[i][0]) === f(s0[0])) bad = i; }
+    if (bad >= 0){ const w = W[bad]; nhCtl.set({kind:'fix', html:NH.S.fix(L(w[0]), L(w[1])), hl:[w[0], w[1]], wk:key(w[0], w[1])}); return; }
+    for (const r of cfg.rules){
+      if (!ev.missing.includes(r)) continue;
+      let a, b;
+      if (r.all){ const all = r.a.concat(r.b); a = all[0]; b = all.find(x => f(x) !== f(a)); }
+      else { const hit = x => r.b.filter(y => f(y) === f(x)); const i = r.a.findIndex(x => hit(x).length !== 1); a = r.a[Math.max(0, i)];
+        const usedB = new Set(); r.a.forEach(x => { if (x !== a) hit(x).forEach(y => usedB.add(y)); }); b = r.b[r.a.indexOf(a)] && !usedB.has(r.b[r.a.indexOf(a)]) ? r.b[r.a.indexOf(a)] : r.b.find(y => !usedB.has(y)) || r.b[0]; }
+      const t = NH.S.con(L(a), L(b)), id = r.idea && I[r.idea];
+      nhCtl.set({kind:'next', html:id ? `${NH.esc(id)}: ${t}` : t, hl:[a, b]}); return;
+    }
+    nhCtl.set({kind:'done', html:NH.S.done(q('.vw-chk').textContent.trim()), hl:[]});
   }
   let err = null;
   function pulse(hl){ err = hl ? {t:new Set(hl.t || []), w:new Set(hl.w || []), until:Date.now() + 3000} : null; draw(); if (err) setTimeout(() => { if (err && err.until <= Date.now()){ err = null; draw(); } }, 3100); }
@@ -709,9 +731,9 @@ VF.powerBoard = function(host, opt){
     return null;
   };
   return VF.wire(host, {vb:[360, 330], art, terms, danger, max:520, aria:'لوحة توصيل الباور: الشبكة، الانفرتر، مقاومة الفرملة، والموتور',
-    rules:[{a:['L1', 'L2', 'L3'], b:['R', 'S', 'Tt'], hint:'L1 L2 L3 ‏← R S T (أي ترتيب).'}, {a:['sPE'], b:['dPEi', 'dPEo'], hint:'أرضي الشبكة ‏← PE الانفرتر.'},
-      {a:['U', 'V', 'W'], b:['mU', 'mV', 'mW'], hint:'U V W ‏← U1 V1 W1 في الموتور.'}, {a:['mPE'], b:['dPEo', 'dPEi'], hint:'أرضي الموتور ‏← PE الانفرتر.'},
-      {a:['BRp', 'BRn'], b:['R1', 'R2'], hint:'المقاومة ‏← BR+ و BR−.'}],
+    rules:[{a:['L1', 'L2', 'L3'], b:['R', 'S', 'Tt'], idea:'supply', hint:'L1 L2 L3 ‏← R S T (أي ترتيب).'}, {a:['sPE'], b:['dPEi', 'dPEo'], idea:'pe', hint:'أرضي الشبكة ‏← PE الانفرتر.'},
+      {a:['U', 'V', 'W'], b:['mU', 'mV', 'mW'], idea:'motor', hint:'U V W ‏← U1 V1 W1 في الموتور.'}, {a:['mPE'], b:['dPEo', 'dPEi'], idea:'pe', hint:'أرضي الموتور ‏← PE الانفرتر.'},
+      {a:['BRp', 'BRn'], b:['R1', 'R2'], idea:'brres', hint:'المقاومة ‏← BR+ و BR−.'}],
     danger, done:'ترتيب الدخل مش فارق. تبديل سلكين في الخرج يعكس الاتجاه.'}, Object.assign({task:'wire', goal:'وصّل الشبكة والموتور والأرضي والمقاومة، ودوس «اتأكد».'}, opt));
 };
 VF.RULES = [
@@ -766,8 +788,8 @@ VF.controlBoard = function(host, opt){
     <p class="msg cb-msg" aria-live="polite"></p><p class="chal cb-chal">التحدّي: من الأطراف شغّل <b>عكسي على <span class="eq">30 Hz</span> أو أكتر</b>، واعمل عطل وشوف اللمبة.</p>`;
   let ev = null, f = null;
   const B = VF.wire(box, {vb:[364, 320], art, terms, danger, fs:9, max:560, aria:'لوحة توصيل أطراف الكنترول',
-    rules:[{a:['p24'], b:['SWa', 'DIRa'], all:true, hint:'+24V ‏← طرف 1 في السلكتورين.'}, {a:['SWb'], b:['DI1'], hint:'طرف 2 في التشغيل ‏← DI1.'}, {a:['DIRb'], b:['DI2'], hint:'طرف 2 في الاتجاه ‏← DI2.'},
-      {a:['p10', 'ACM'], b:['P1', 'P3'], hint:'طرفين البوت ‏← +10V و ACM.'}, {a:['P2'], b:['AI1'], hint:'نص البوت ‏← AI1.'}, {a:['R1C', 'R1A'], b:['Lsrc', 'X1'], hint:'R1C و R1A بين L ولمبة العطل.'}],
+    rules:[{a:['p24'], b:['SWa', 'DIRa'], all:true, idea:'supply', hint:'+24V ‏← طرف 1 في السلكتورين.'}, {a:['SWb'], b:['DI1'], idea:'run', hint:'طرف 2 في التشغيل ‏← DI1.'}, {a:['DIRb'], b:['DI2'], idea:'dir', hint:'طرف 2 في الاتجاه ‏← DI2.'},
+      {a:['p10', 'ACM'], b:['P1', 'P3'], idea:'pot', hint:'طرفين البوت ‏← +10V و ACM.'}, {a:['P2'], b:['AI1'], idea:'pot', hint:'نص البوت ‏← AI1.'}, {a:['R1C', 'R1A'], b:['Lsrc', 'X1'], idea:'fault', hint:'R1C و R1A بين L ولمبة العطل.'}],
     danger, done:'تمام. جرّب التشغيل تحت.'},
     {lesson:opt.lesson, task:'cwire', goal:'وصّل السلكتورين والبوت ولمبة العطل، ودوس «اتأكد».', onChange(e){ ev = e; f = e.f; }});
   host.appendChild(ctl);

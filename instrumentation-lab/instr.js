@@ -810,7 +810,16 @@ IL.diBench = function(host, opt){
     q('.di-vbk').textContent = bk; q('.di-l').textContent = r.led ? 'منوّرة' : 'طافية'; q('.di-l').classList.toggle('ok', r.led);
     $$('[data-ex]', host).forEach((b, i) => { b.setAttribute('aria-pressed', String(i === S.ex)); b.classList.toggle('done', IL.has(L, opt.exercises[i].key)); });
     q('.di-task').innerHTML = e.task;
+    nhUpdate();
     return r;
+  }
+  /* «💡 الخطوة الجاية» (window.NH): sensor power, COM, then the signal BK → I0.0; any wire on the same net counts */
+  let nhCtl = null;
+  function nhUpdate(){
+    if (!window.NH) return;
+    if (!nhCtl) nhCtl = NH.mount(q('.bn-board'), {course:'instr', onTap(s){ pulse(s.hl); }});
+    const e = ex(), sol = [['BN', 'P', 'sensor'], ['BU', 'N', 'sensor'], ['COM', e.card === 'sink' ? 'N' : 'P', 'com'], ['BK', 'I0', 'input']];
+    nhCtl.set(NH.net({sol, wires:S.wires, lab:k => T[k] ? T[k][2] : k, idea:p => NH.S.idea[p[2]], btn:q('[data-b=chk]').textContent.trim()}));
   }
   function tapT(k){
     if (!S.pend){ S.pend = k; msg(`اخترت <b>${T[k][2]}</b>. دوس على الطرف التاني.`); draw(); return; }
