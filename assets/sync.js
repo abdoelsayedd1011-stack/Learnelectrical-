@@ -131,7 +131,8 @@
   }
 
   // صفحة كورس أو محاكي (جوه فولدر): نسجّلها «آخر حاجة فتحتها» قبل المزامنة
-  if (/^\/[^/]+\/[^/]*$/.test(location.pathname)){
+  // (/en/ pages count by their Arabic path: /en/plc-lab/lesson-01.html yes, /en/labs.html no)
+  if (/^\/[^/]+\/[^/]*$/.test(location.pathname.replace(/^\/en(?=\/)/, ""))){
     var title = String(document.title || "").replace(/\s*[|·–—-]\s*LearnElectricals\s*$/i, "").trim().slice(0, 120);
     lsSet(LAST, JSON.stringify({ p: location.pathname, title: title, t: Date.now() }));
   }

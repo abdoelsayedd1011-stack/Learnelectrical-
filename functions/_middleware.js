@@ -6,6 +6,8 @@
 // belongs to (_lib/products.js: bought once, or given by an admin), or an active Pro plan («كل الكورسات»), or to be an admin.
 // Otherwise they're sent to /subscribe.html?course=<id>.
 // Suspended members count as signed out (sessionUser in _lib/auth.js).
+// English pages live under /en/ and mirror the Arabic paths: /en/<dir>/... is gated exactly like /<dir>/..., and its
+// redirects go to /en/login.html and /en/subscribe.html. A bought course opens for one year (_lib/products.js ACCESS_DAYS).
 import { getDb, sessionUser, COOKIE } from "./_lib/auth.js";
 import { isAdmin } from "./_lib/admin.js";
 import { paywallOn, isPro } from "./_lib/plan.js";
@@ -71,10 +73,17 @@ async function withSync(ctx){
   return h;
 }
 
+// "/en/plc-lab/lesson-03.html" → { en: true, path: "/plc-lab/lesson-03.html" }
+function splitLang(pathname){
+  const m = /^\/en(\/.*)$/.exec(pathname);
+  return m ? { en: true, path: m[1] } : { en: false, path: pathname };
+}
+
 export async function onRequest(ctx){
   const url = new URL(ctx.request.url);
-  const sync = syncDir(url.pathname) && hasSessionCookie(ctx.request);
-  if (!membersOnly(url.pathname)) return sync ? withSync(ctx) : ctx.next();
+  const lang = splitLang(url.pathname), path = lang.path, pre = lang.en ? "/en" : "";
+  const sync = syncDir(path) && hasSessionCookie(ctx.request);
+  if (!membersOnly(path)) return sync ? withSync(ctx) : ctx.next();
   let s = null, db = null;
   try {
     db = await getDb(ctx.env);
@@ -87,12 +96,12 @@ export async function onRequest(ctx){
     to.searchParams.set("next", url.pathname + url.search);
     return new Response(null, { status: 302, headers: { location: to.pathname + to.search, "cache-control": "no-store" } });
   };
-  if (!s) return go(hasSessionCookie(ctx.request) ? "/login.html?out=1" : "/login.html"); // out=1: this device was signed out (see login.html)
+  if (!s) return go(pre + (hasSessionCookie(ctx.request) ? "/login.html?out=1" : "/login.html")); // out=1: this device was signed out (see login.html)
   if (paywallOn(ctx.env) && !isPro(s.user) && !isAdmin(s.user)){
-    const course = productOfDir(url.pathname.split("/")[1]);
+    const course = productOfDir(path.split("/")[1]);
     let owns = false;
-    try { owns = !!course && await ownsCourse(db, s.id, course); } catch (e) {}
-    if (!owns) return go(course ? "/subscribe.html?course=" + course : "/subscribe.html");
+    try { owns = !!course && await ownsCourse(db, s.id, course); } catch (e) {} // only a course that hasn't expired
+    if (!owns) return go(pre + (course ? "/subscribe.html?course=" + course : "/subscribe.html"));
   }
   const res = await withSync(ctx);
   const out = new Response(res.body, res);

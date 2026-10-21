@@ -6,7 +6,7 @@
 //   • Cloudflare dashboard → Pages project → Settings → Variables and Secrets → add PAYWALL_ON = true → redeploy, or
 //   • change `PAYWALL_ON = false` below to `true` and deploy.
 //   (The env variable wins when it is set; PAYWALL_ON = false in the dashboard turns it back off.)
-// Then a member-only page needs one of: the course it belongs to (bought once for life, see _lib/products.js),
+// Then a member-only page needs one of: the course it belongs to (bought for one year, see _lib/products.js ACCESS_DAYS),
 // plan 'pro' with pro_until in the future («كل الكورسات» monthly / yearly), or an admin account (ADMIN_EMAILS).
 // Others are sent to /subscribe.html?course=<id>. The free pages and free lessons stay open for everyone.
 // Set the prices, the for-sale switches and the payment numbers from /admin.html («الأسعار»); approve payment

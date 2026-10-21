@@ -1,6 +1,7 @@
 // Public: prices for the catalog, the course pages and /subscribe.html, cached for a minute.
-// {paywall, courses: {id: {title, price, was} | {title, price: null}}, monthly, yearly, instapay, vodafone, whatsapp}
-// A course that isn't for sale comes back with price null («قريب»). Empty values: the page falls back to site-config.js.
+// {paywall, courses: {id: {title, price, was, usd, usd_was, link} | {title, price: null}}, monthly, yearly, instapay, vodafone, whatsapp}
+// price / was: EGP; usd / usd_was: buyers outside Egypt; link: that course's card-payment link (empty: arrange on WhatsApp).
+// A course that isn't for sale comes back with price null («قريب»). monthly / yearly: the old bundle, no longer sold. Empty values: the page falls back to site-config.js.
 import { getDb, json } from "../_lib/auth.js";
 import { paywallOn } from "../_lib/plan.js";
 import { PRODUCTS, PRODUCT_IDS, getPrices, forSale } from "../_lib/products.js";
@@ -13,7 +14,8 @@ export async function onRequestGet({ env }){
   const courses = {};
   for (const id of PRODUCT_IDS){
     const on = p && forSale(p, id), c = p && p.courses[id];
-    courses[id] = { title: PRODUCTS[id].title, price: on ? c.price : null, was: on ? c.was : null };
+    courses[id] = { title: PRODUCTS[id].title, price: on ? c.price : null, was: on ? c.was : null,
+      usd: on ? c.usd : null, usd_was: on ? c.usd_was : null, link: on ? c.link : "" };
   }
   return json({ ok: true, paywall: paywallOn(env), courses, monthly: p ? p.monthly : null, yearly: p ? p.yearly : null,
     instapay: p ? p.instapay : "", vodafone: p ? p.vodafone : "", whatsapp: p ? p.whatsapp : "" }, 200, CACHE);

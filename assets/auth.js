@@ -1,7 +1,11 @@
 /* صفحات الحساب: دخول، حساب جديد، وصفحة «حسابي» */
 (function(){
   "use strict";
-  var OFFLINE = "العضوية لسه مش متفعّلة على النسخة دي من الموقع.";
+  // English pages (/en/): strings from assets/i18n-en.js; API errors are mapped by their code (LE_I18N.msg)
+  var I18N = window.LE_I18N || {}, EN = I18N.isEn && I18N.en ? I18N.en : null;
+  var OFFLINE = EN ? EN.offline : "العضوية لسه مش متفعّلة على النسخة دي من الموقع.";
+  var M = function(r, fb){ return I18N.msg ? I18N.msg(r, fb) : (r && r.message) || fb; };
+  var DLOC = EN ? "en-GB" : "ar-EG";
 
   function api(path, body){
     var opt = body ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body), credentials: "same-origin" } : { credentials: "same-origin" };
@@ -51,7 +55,8 @@
       var setWa = function(){
         if (!fWa || !waNum) return;
         var em = (fLogin.elements.email.value || "").trim();
-        fWa.href = "https://wa.me/" + waNum + "?text=" + encodeURIComponent("السلام عليكم، نسيت باسورد حسابي على " + ((window.SITE || {}).name || "LearnElectricals") + (em ? ". الإيميل: " + em : ". الإيميل: "));
+        var site = (window.SITE || {}).name || "LearnElectricals";
+        fWa.href = "https://wa.me/" + waNum + "?text=" + encodeURIComponent(EN ? EN.forgotWa(site, em) : "السلام عليكم، نسيت باسورد حسابي على " + site + (em ? ". الإيميل: " + em : ". الإيميل: "));
         fWa.hidden = false;
       };
       fBtn.addEventListener("click", function(){
@@ -68,7 +73,7 @@
         showMsg(msg, ""); btn.disabled = true;
         api(p[0], data).then(function(r){
           if (r.ok){ try{ sessionStorage.setItem("le-user", JSON.stringify(r.user)); sessionStorage.removeItem("le-ended"); }catch(x){} location.replace(nextUrl()); return; }
-          btn.disabled = false; showMsg(msg, r.message || OFFLINE);
+          btn.disabled = false; showMsg(msg, M(r, OFFLINE));
         });
       });
     });
@@ -85,12 +90,12 @@
     fReset.addEventListener("submit", function(e){
       e.preventDefault();
       var p1 = fReset.elements.password.value, p2 = fReset.elements.password2.value;
-      if (p1.length < 8){ showMsg(rMsg, "الباسورد لازم يكون 8 حروف أو أرقام على الأقل."); return; }
-      if (p1 !== p2){ showMsg(rMsg, "الباسوردين مش زي بعض. اكتبهم تاني."); return; }
+      if (p1.length < 8){ showMsg(rMsg, EN ? EN.pwShort : "الباسورد لازم يكون 8 حروف أو أرقام على الأقل."); return; }
+      if (p1 !== p2){ showMsg(rMsg, EN ? EN.pwMismatch : "الباسوردين مش زي بعض. اكتبهم تاني."); return; }
       showMsg(rMsg, ""); rBtn.disabled = true;
       api("reset", { token: token, password: p1 }).then(function(r){
         if (r.ok){ try{ sessionStorage.setItem("le-user", JSON.stringify(r.user)); }catch(x){} location.replace("account.html"); return; }
-        rBtn.disabled = false; showMsg(rMsg, r.message || OFFLINE);
+        rBtn.disabled = false; showMsg(rMsg, M(r, OFFLINE));
       });
     });
   }
@@ -101,40 +106,43 @@
     var msg = document.querySelector(".auth-msg");
     api("me").then(function(r){
       if (r.ok && !r.user){ location.replace("login.html?next=" + encodeURIComponent(location.pathname)); return; }
-      if (!r.ok){ showMsg(msg, r.message || OFFLINE); return; }
+      if (!r.ok){ showMsg(msg, M(r, OFFLINE)); return; }
       var u = r.user;
-      document.getElementById("acc-hello").textContent = "أهلاً يا " + u.name.split(" ")[0];
+      document.getElementById("acc-hello").textContent = EN ? EN.hello(u.name.split(" ")[0]) : "أهلاً يا " + u.name.split(" ")[0];
       document.getElementById("acc-name").textContent = u.name;
       document.getElementById("acc-email").textContent = u.email;
       var adm = document.getElementById("acc-admin"); if (adm) adm.hidden = !u.admin; // /api/auth/me says admin only for ADMIN_EMAILS
-      var pro = u.plan === "pro" && u.pro_until > Date.now(), dt = function(t){ return new Date(t).toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" }); };
+      var pro = u.plan === "pro" && u.pro_until > Date.now(), dt = function(t){ return new Date(t).toLocaleDateString(DLOC, { year: "numeric", month: "long", day: "numeric" }); };
       var planEl = document.getElementById("acc-plan");
-      planEl.textContent = pro ? "\u2066Pro\u2069 لحد " + dt(u.pro_until) : u.plan === "pro" && u.pro_until ? "مجاني (الاشتراك خلص " + dt(u.pro_until) + ")" : "مجاني";
-      // لينك «اشترك» بيظهر لما أرقام الدفع وسعر واحد على الأقل يتكتبوا («الأسعار» في لوحة الإدارة، أو SITE.pay في site-config.js)
+      planEl.textContent = EN ? (pro ? EN.planPro(dt(u.pro_until)) : u.plan === "pro" && u.pro_until ? EN.planEnded(dt(u.pro_until)) : EN.planFree)
+        : pro ? "\u2066Pro\u2069 لحد " + dt(u.pro_until) : u.plan === "pro" && u.pro_until ? "مجاني (الاشتراك خلص " + dt(u.pro_until) + ")" : "مجاني";
+      // لينك «اشتري كورس» بيظهر لما كورس واحد على الأقل يبقى للبيع، ومعاه طريقة دفع (أرقام الدفع، أو لينك كارت / واتساب لبرّه مصر)
       var P = (window.SITE || {}).pay || {};
       var addSub = function(x){
         x = x && x.ok ? x : {};
-        var cs = x.courses || {}, anyCourse = Object.keys(cs).some(function(k){ return cs[k] && cs[k].price > 0; });
-        var eg = (x.instapay || x.vodafone || P.instapay || P.vodafoneCash) && (anyCourse || +x.monthly > 0 || +x.yearly > 0 || +P.monthly > 0 || +P.yearly > 0);
-        if (!eg && !((P.intlLink || P.intlNote) && (+P.usdMonthly > 0 || +P.usdYearly > 0))) return;
-        var sa = document.createElement("a"); sa.href = "subscribe.html"; sa.className = "acc-sub"; sa.textContent = pro ? "جدّد ←" : "اشتري كورس ←";
+        var cs = x.courses || {}, ks = Object.keys(cs);
+        var eg = (x.instapay || x.vodafone || P.instapay || P.vodafoneCash) && ks.some(function(k){ return cs[k] && cs[k].price > 0; });
+        var intl = ks.some(function(k){ return cs[k] && cs[k].usd > 0 && (cs[k].link || x.whatsapp || (window.SITE || {}).whatsapp); });
+        if (!eg && !intl) return;
+        var sa = document.createElement("a"); sa.href = "subscribe.html"; sa.className = "acc-sub"; sa.textContent = EN ? EN.buyCourse : "اشتري كورس ←";
         planEl.appendChild(document.createTextNode(" · ")); planEl.appendChild(sa);
       };
       fetch("/api/prices").then(function(x){ return x.json(); }).then(addSub, function(){ addSub(null); });
       // جاي من صفحة محتاجة اشتراك (لما الاشتراك يتفعّل في functions/_lib/plan.js)
       if (new URLSearchParams(location.search).get("need") === "pro" && !pro){
-        showMsg(msg, "الصفحة اللي كنت رايحلها محتاجة تشتري الكورس بتاعها أو تشترك في كل الكورسات. ");
-        var na = document.createElement("a"); na.href = "subscribe.html"; na.textContent = "اعرف إزاي تشترك ←"; msg.appendChild(na);
+        showMsg(msg, EN ? EN.needPro : "الصفحة اللي كنت رايحلها محتاجة تشتري الكورس بتاعها. ");
+        var na = document.createElement("a"); na.href = "subscribe.html"; na.textContent = EN ? EN.howBuy : "اعرف إزاي تشتري ←"; msg.appendChild(na);
       }
-      document.getElementById("acc-since").textContent = new Date(u.created_at).toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" });
+      document.getElementById("acc-since").textContent = new Date(u.created_at).toLocaleDateString(DLOC, { year: "numeric", month: "long", day: "numeric" });
       var sync = window.LESync ? window.LESync.ready : Promise.resolve();
       sync.then(loadCerts, loadCerts);
     });
     /* ---- شهاداتي ---- */
     var certSec = document.getElementById("certs-sec"), certList = document.getElementById("cert-list");
     function esc(t){ return String(t == null ? "" : t).replace(/[&<>"']/g, function(c){ return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
-    function fmtDate(t){ try { return new Date(t).toLocaleDateString("ar-EG-u-nu-latn", { year: "numeric", month: "long", day: "numeric" }); } catch (e){ return new Date(t).toISOString().slice(0, 10); } }
+    function fmtDate(t){ try { return new Date(t).toLocaleDateString(EN ? "en-GB" : "ar-EG-u-nu-latn", { year: "numeric", month: "long", day: "numeric" }); } catch (e){ return new Date(t).toISOString().slice(0, 10); } }
     function certCard(c){
+      if (EN) return certCardEn(c);
       var pct = c.total ? Math.round(c.done / c.total * 100) : 0, h = '<article class="cert-item' + (c.cert ? " has" : "") + '"><div class="ci-head"><h3>' + esc(c.title) + "</h3>";
       if (c.cert) h += '<span class="ci-tag ok">✓ الشهادة طلعت</span></div>' +
         '<p class="ci-meta">باسم <b>' + esc(c.cert.name) + "</b> · " + esc(fmtDate(c.cert.issued_at)) + ' · كود <span class="ltr mono">' + esc(c.cert.code) + "</span></p>" +
@@ -145,6 +153,20 @@
       else h += '<span class="ci-tag">' + (c.total ? pct + "%" : "") + "</span></div>" +
         (c.total ? '<div class="ci-bar" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100" aria-label="التقدّم ' + pct + '%"><i style="width:' + pct + '%"></i></div><p class="ci-meta">' + c.done + " من " + c.total + " خطوة. الشهادة بتفتح لما تخلّص الكورس كله.</p>" : "") +
         '<div class="btn-row"><a class="btn btn-ghost" href="' + esc(c.hub) + '">' + (c.done ? "كمّل الكورس ←" : "ابدأ الكورس ←") + "</a></div>";
+      return h + "</article>";
+    }
+    function certCardEn(c){
+      var T = EN.cert, title = EN.courses[c.id] || c.title, hub = I18N.href ? I18N.href(c.hub) : c.hub;
+      var pct = c.total ? Math.round(c.done / c.total * 100) : 0, h = '<article class="cert-item' + (c.cert ? " has" : "") + '"><div class="ci-head"><h3>' + esc(title) + "</h3>";
+      if (c.cert) h += '<span class="ci-tag ok">' + T.done + "</span></div>" +
+        '<p class="ci-meta">' + T.nameOn(esc(c.cert.name)) + " · " + esc(fmtDate(c.cert.issued_at)) + " · " + T.code + ' <span class="ltr mono">' + esc(c.cert.code) + "</span></p>" +
+        '<div class="btn-row"><a class="btn btn-primary" href="cert.html?c=' + encodeURIComponent(c.cert.code) + '">' + T.open + "</a></div>";
+      else if (c.complete) h += '<span class="ci-tag ok">' + T.finished + "</span></div>" +
+        '<form class="ci-form" data-course="' + esc(c.id) + '" novalidate><label class="field"><span>' + T.nameLabel + '</span><input name="name" maxlength="60" autocomplete="name" required value="' + esc(c.name) + '"></label>' +
+        '<p class="auth-msg" role="alert" hidden></p><button class="btn btn-primary" type="submit">' + T.issue + "</button></form>";
+      else h += '<span class="ci-tag">' + (c.total ? pct + "%" : "") + "</span></div>" +
+        (c.total ? '<div class="ci-bar" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100" aria-label="' + T.progress(pct) + '"><i style="width:' + pct + '%"></i></div><p class="ci-meta">' + T.steps(c.done, c.total) + "</p>" : "") +
+        '<div class="btn-row"><a class="btn btn-ghost" href="' + esc(hub) + '"' + (/^\/en\//.test(hub) ? "" : ' hreflang="ar"') + ">" + (c.done ? T.cont : T.start) + (/^\/en\//.test(hub) ? "" : '<span class="ar-badge">' + EN.arBadge + "</span>") + "</a></div>";
       return h + "</article>";
     }
     function loadCerts(){
@@ -164,7 +186,7 @@
         .then(function(r){ return r.json(); }, function(){ return { ok: false, message: OFFLINE }; })
         .then(function(r){
           if (r.ok && r.cert){ location.href = "cert.html?c=" + encodeURIComponent(r.cert.code); return; }
-          b.disabled = false; showMsg(m, r.message || OFFLINE);
+          b.disabled = false; showMsg(m, M(r, OFFLINE));
         });
     });
 

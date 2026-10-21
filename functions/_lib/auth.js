@@ -32,6 +32,7 @@ const MSG = {
   already_owned: "الكورس ده عندك خلاص.",
   not_for_sale: "الكورس ده لسه مش متاح للشرا.",
   bad_phone: "الرقم مكتوب غلط. اكتبه أرقام بس، مثال: 01001234567",
+  bad_link: "لينك الدفع لازم يبدأ بـ https://",
   server: "حصلت مشكلة في السيرفر. جرّب تاني بعد شوية."
 };
 
@@ -68,7 +69,7 @@ export async function getDb(env){
       // «سجل العمليات»: what each admin did, newest first in /admin.html.
       env.DB.prepare("CREATE TABLE IF NOT EXISTS admin_log (id INTEGER PRIMARY KEY AUTOINCREMENT, at INTEGER NOT NULL, admin_id INTEGER, admin_email TEXT NOT NULL, action TEXT NOT NULL, target_id INTEGER, target_email TEXT, details TEXT)"),
       env.DB.prepare("CREATE INDEX IF NOT EXISTS admin_log_at ON admin_log (at)"),
-      // Courses a member owns for life (bought one course, or given by an admin). See _lib/products.js.
+      // Courses a member owns for a year (bought one course, or given by an admin; expires_at added later). See _lib/products.js.
       env.DB.prepare("CREATE TABLE IF NOT EXISTS user_courses (user_id INTEGER NOT NULL, course TEXT NOT NULL, granted_at INTEGER NOT NULL, source TEXT NOT NULL, note TEXT, PRIMARY KEY (user_id, course))")
     ]);
     // Columns added after launch: "duplicate column" on databases that already have them is fine.
@@ -85,6 +86,8 @@ export async function getDb(env){
     try { await env.DB.prepare("ALTER TABLE sessions ADD COLUMN last_seen INTEGER").run(); } catch (e) {}
     try { await env.DB.prepare("ALTER TABLE sessions ADD COLUMN device TEXT").run(); } catch (e) {}
     try { await env.DB.prepare("ALTER TABLE sessions ADD COLUMN country TEXT").run(); } catch (e) {}
+    // One-year course access: end of access (ms). NULL on older rows = granted_at + ACCESS_DAYS (_lib/products.js courseUntil).
+    try { await env.DB.prepare("ALTER TABLE user_courses ADD COLUMN expires_at INTEGER").run(); } catch (e) {}
     schemaReady = true;
   }
   return env.DB;

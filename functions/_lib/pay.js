@@ -5,7 +5,7 @@
 import { HttpError } from "./auth.js";
 
 export const PLANS = ["monthly", "yearly"];
-// plan = "course" for a single course bought for life; then product = the course id (_lib/products.js).
+// plan = "course" for a single course bought for one year (ACCESS_DAYS); then product = the course id (_lib/products.js).
 // For the monthly / yearly «كل الكورسات» plan, product = plan.
 export const COURSE_PLAN = "course";
 export const METHODS = ["instapay", "vodafone", "intl"];

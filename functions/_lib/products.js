@@ -1,10 +1,27 @@
-// «كل كورس بسعر»: each course is a product bought once for lifetime access. A product covers its course's own
-// pages plus the simulators listed in `dirs`. The monthly / yearly Pro plan stays as «كل الكورسات» (every product).
+// «كل كورس بسعر»: each course is a product bought for one year (ACCESS_DAYS). A product covers its course's own
+// pages plus the simulators listed in `dirs`. The monthly / yearly Pro plan («كل الكورسات») is no longer sold, but
+// existing Pro grants still open every product (see _lib/plan.js).
 // Prices, the «for sale» switch and the payment numbers are set from /admin.html («الأسعار»), stored as JSON in
 // settings (k = 'prices') and read publicly from /api/prices. site-config.js (SITE.pay) is only the fallback.
 // Ownership lives in user_courses (see _lib/auth.js); gating is in functions/_middleware.js.
 import { HttpError } from "./auth.js";
 import { cleanText } from "./pay.js";
+import { cairoEndOfDay } from "./plan.js";
+
+// A bought or granted course stays open for this many days. Buying again (or «مدّ سنة» in the admin member
+// window) while it is still open adds a year on top of the current end date.
+export const ACCESS_DAYS = 365; // 1 year. Change here only; the pages say «سنة كاملة» / "1 year" (assets/pay.js, assets/i18n-en.js, assets/admin.js, subscribe.html, refund.html)
+// Prices used when the «الأسعار» tab has no price saved for a course: EGP (price, was = before discount) and USD for
+// buyers outside Egypt (usd, usd_was). The admin tab overrides each one; a cleared box falls back to its default here.
+export const DEFAULT_PRICES = {
+  basics:  { price: 299, was: 449, usd: 25, usd_was: 39 },
+  drw:     { price: 299, was: 449, usd: 25, usd_was: 39 },
+  classic: { price: 449, was: 649, usd: 35, usd_was: 55 },
+  instr:   { price: 499, was: 749, usd: 39, usd_was: 59 },
+  vfd:     { price: 499, was: 749, usd: 39, usd_was: 59 },
+  srv:     { price: 499, was: 749, usd: 39, usd_was: 59 },
+  plc:     { price: 749, was: 999, usd: 59, usd_was: 89 }
+};
 
 // ids match _lib/courses.js (certificates) so one id means one course everywhere.
 export const PRODUCTS = {
@@ -41,8 +58,19 @@ function price(v){
 
 function emptyPrices(){
   const courses = {};
-  for (const id of PRODUCT_IDS) courses[id] = { price: null, was: null, on: false };
+  for (const id of PRODUCT_IDS) courses[id] = { price: null, was: null, usd: null, usd_was: null, link: "", on: false };
   return { courses, monthly: null, yearly: null, instapay: "", vodafone: "", whatsapp: "" };
+}
+const pos = v => Number(v) > 0 ? Number(v) : null;
+const cleanLink = v => { const s = String(v == null ? "" : v).trim(); return /^https:\/\/[^\s"<>]{3,500}$/i.test(s) ? s : ""; };
+// One course with the defaults filled in. A course that was never saved is for sale («للبيع») at its defaults.
+function withDefaults(id, c){
+  const d = DEFAULT_PRICES[id] || {};
+  if (!c) return { price: d.price || null, was: d.was || null, usd: d.usd || null, usd_was: d.usd_was || null, link: "", on: !!d.price };
+  const price = pos(c.price) || d.price || null, usd = pos(c.usd) || d.usd || null;
+  const was = pos(c.price) ? pos(c.was) : pos(c.was) || d.was || null;
+  const usdWas = pos(c.usd) ? pos(c.usd_was) : pos(c.usd_was) || d.usd_was || null;
+  return { price, was: was && price && was > price ? was : null, usd, usd_was: usdWas && usd && usdWas > usd ? usdWas : null, link: cleanLink(c.link), on: c.on === true && !!price };
 }
 
 export async function getPrices(db){
@@ -50,33 +78,31 @@ export async function getPrices(db){
   let p = null;
   try { p = r ? JSON.parse(r.v) : null; } catch (e) {}
   const out = emptyPrices();
+  for (const id of PRODUCT_IDS) out.courses[id] = withDefaults(id, p && p.courses && p.courses[id]);
   if (p && typeof p === "object"){
-    for (const id of PRODUCT_IDS){
-      const c = p.courses && p.courses[id];
-      if (c) out.courses[id] = { price: Number(c.price) > 0 ? Number(c.price) : null, was: Number(c.was) > 0 ? Number(c.was) : null, on: c.on === true };
-    }
-    out.monthly = Number(p.monthly) > 0 ? Number(p.monthly) : null;
-    out.yearly = Number(p.yearly) > 0 ? Number(p.yearly) : null;
+    // monthly / yearly («كل الكورسات») are no longer sold; kept so old requests and Pro grants still read
+    out.monthly = pos(p.monthly); out.yearly = pos(p.yearly);
     out.instapay = String(p.instapay || ""); out.vodafone = String(p.vodafone || ""); out.whatsapp = String(p.whatsapp || "");
   }
   out.updated_at = r ? r.updated_at : null;
   return out;
 }
 
-// A course is for sale when its switch is on and it has a price.
-export function forSale(prices, id){
+// A course is for sale when its switch is on and it has a price (EGP), or a USD price for buyers outside Egypt.
+export function forSale(prices, id, currency = "EGP"){
   const c = prices && prices.courses && prices.courses[id];
-  return !!(c && c.on && c.price);
+  return !!(c && c.on && (currency === "USD" ? c.usd : c.price));
 }
 
-// Body from the «الأسعار» form → cleaned prices. Empty price = not for sale («قريب»).
+// Body from the «الأسعار» form → cleaned prices. An empty box = that course's default price; untick «للبيع» for «قريب».
 export function cleanPrices(body){
   const out = emptyPrices();
   const src = body && typeof body.courses === "object" && body.courses ? body.courses : {};
   for (const id of PRODUCT_IDS){
     const c = src[id] || {};
-    const p = price(c.price), was = price(c.was);
-    out.courses[id] = { price: p, was: p && was && was > p ? was : null, on: c.on === true && !!p };
+    const link = String(c.link == null ? "" : c.link).trim();
+    if (link && !cleanLink(link)) throw new HttpError(400, "bad_link");
+    out.courses[id] = { price: price(c.price), was: price(c.was), usd: price(c.usd), usd_was: price(c.usd_was), link, on: c.on === true };
   }
   out.monthly = price(body.monthly); out.yearly = price(body.yearly);
   out.instapay = cleanText(body.instapay, 80) || "";
@@ -90,22 +116,39 @@ export async function savePrices(db, p){
   const now = Date.now();
   await db.prepare("INSERT INTO settings (k, v, updated_at) VALUES ('prices', ?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v, updated_at = excluded.updated_at")
     .bind(JSON.stringify(p), now).run();
-  return { ...p, updated_at: now };
+  return getPrices(db);
 }
 
 // ---- ownership ----
-export async function ownedCourses(db, userId){
-  const r = await db.prepare("SELECT course, granted_at, source, note FROM user_courses WHERE user_id = ? ORDER BY granted_at ASC").bind(userId).all();
-  return (r.results || []).filter(x => PRODUCTS[x.course]);
+// Each row has expires_at (ms, Cairo end of day). Rows from before one-year access (expires_at NULL) count as
+// granted_at + ACCESS_DAYS: same rule as a new purchase, dated from when they got it.
+export function courseUntil(row){
+  const e = Number(row && row.expires_at);
+  return e > 0 ? e : cairoEndOfDay(Number(row && row.granted_at || 0) + ACCESS_DAYS * 864e5);
 }
-export async function ownsCourse(db, userId, id){
-  return !!(await db.prepare("SELECT 1 AS x FROM user_courses WHERE user_id = ? AND course = ?").bind(userId, id).first());
+// Every course row of a member (expired ones too), with until (end of access) and active.
+export async function ownedCourses(db, userId, now = Date.now()){
+  const r = await db.prepare("SELECT course, granted_at, source, note, expires_at FROM user_courses WHERE user_id = ? ORDER BY granted_at ASC").bind(userId).all();
+  return (r.results || []).filter(x => PRODUCTS[x.course]).map(x => { const until = courseUntil(x); return { ...x, until, active: until > now }; });
 }
-// Returns true when the course was newly granted (false: they already had it).
-export async function grantCourse(db, userId, id, source, note){
-  const r = await db.prepare("INSERT OR IGNORE INTO user_courses (user_id, course, granted_at, source, note) VALUES (?, ?, ?, ?, ?)")
-    .bind(userId, id, Date.now(), source, note == null ? null : String(note).slice(0, 300)).run();
-  return !!(r.meta && r.meta.changes);
+// Only the courses that are open now.
+export async function activeCourses(db, userId, now = Date.now()){
+  return (await ownedCourses(db, userId, now)).filter(x => x.active);
+}
+export async function ownsCourse(db, userId, id, now = Date.now()){
+  const row = await db.prepare("SELECT granted_at, expires_at FROM user_courses WHERE user_id = ? AND course = ?").bind(userId, id).first();
+  return !!row && courseUntil(row) > now;
+}
+// Give a member a course for ACCESS_DAYS: from today, or on top of the current end date while it is still open.
+// Returns { until, renewed } (renewed: they already had a row for this course).
+export async function grantCourse(db, userId, id, source, note, now = Date.now()){
+  const old = await db.prepare("SELECT granted_at, expires_at FROM user_courses WHERE user_id = ? AND course = ?").bind(userId, id).first();
+  const base = old && courseUntil(old) > now ? courseUntil(old) : now;
+  const until = cairoEndOfDay(base + ACCESS_DAYS * 864e5);
+  const n = note == null ? null : String(note).slice(0, 300);
+  if (old) await db.prepare("UPDATE user_courses SET expires_at = ?, source = ?, note = COALESCE(?, note) WHERE user_id = ? AND course = ?").bind(until, source, n, userId, id).run();
+  else await db.prepare("INSERT INTO user_courses (user_id, course, granted_at, source, note, expires_at) VALUES (?, ?, ?, ?, ?, ?)").bind(userId, id, now, source, n, until).run();
+  return { until, renewed: !!old };
 }
 export async function removeCourse(db, userId, id){
   const r = await db.prepare("DELETE FROM user_courses WHERE user_id = ? AND course = ?").bind(userId, id).run();

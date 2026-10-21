@@ -1,0 +1,144 @@
+/* English strings for the shared scripts (site.js, auth.js, pay.js, resume.js, cert.js). Loaded only on English pages,
+   after assets/i18n.js and before site.js. The Arabic strings stay in place in each script; a key missing here falls
+   back to Arabic. Catalog entries are keyed by the LABS id in site.js. */
+(function(){
+  "use strict";
+  var I = window.LE_I18N = window.LE_I18N || {};
+  var DRIVE = ["Wire power, motor and control terminals", "Set parameters from the real keypad", "Start, stop and change speed", "Create faults and clear them"];
+  var SERVO = ["Wire the drive, motor and encoder", "Run it from the real keypad", "Position mode with pulses and gear ratio", "4 moving machines and alarms to clear"];
+  I.en = {
+    /* header, nav, theme, banner */
+    themeLight: "Light mode", themeDark: "Dark mode", menuOpen: "Open menu", menuClose: "Close menu",
+    login: "Sign in", admin: "Admin", banner: "Announcement", bannerClose: "Close announcement",
+    waHello: function(name){ return "Hi, I'm coming from the " + name + " website"; },
+    /* prices */
+    currency: "EGP", usd: "$", own: "Purchased ✓", ownUntil: function(d){ return "Yours until " + d + " ✓"; }, pro: "Included in your plan ✓",
+    buy: "Buy course", buyArrow: "Buy course →", egpNote: "in Egypt",
+    /* catalog */
+    guided: function(n){ return n + " guided exercises"; }, graded: function(n){ return n + " graded exercises"; },
+    params: function(n, about){ return (about ? "~" : "") + n + " parameters"; }, faults: function(n){ return n + " faults"; },
+    simWith: { drives: "With the VFD course", servo: "With the servo course", temp: "With the instrumentation course" },
+    goCourse: "Start course →", goSim: "Open simulator →", noAccount: "No account needed", free3: "3 free lessons", freeAcc: "Free account",
+    details: "Course details →", all: function(n){ return "All (" + n + ")"; }, shown: function(n, t){ return "Showing " + n + " of " + t; },
+    arBadge: "Arabic", arBadgeTitle: "This page is in Arabic for now",
+    ivCard: '<div class="iv-band iv-hit"><div><span class="eyebrow">Question bank</span><h2>Interview questions</h2><p>Electrical, maintenance and automation interview questions with short answers, open to everyone.</p></div><a class="btn btn-ghost" href="/interview/index.html">Study the questions →<span class="ar-badge">Arabic</span></a></div>',
+    groups: {
+      basics: { title: "Electrical basics", sub: "For complete beginners · before classic control" },
+      classic: { title: "Classic control", sub: "Switches · push buttons · contactors · motors" },
+      drawings: { title: "Reading electrical drawings", sub: "IEC & NEMA symbols · cross-references · single line · terminals" },
+      instr: { title: "Instrumentation", sub: "Encoders · temperature sensors · load cells · 4–20 mA" },
+      plc: { title: "PLC", sub: "Ladder · timers · counters · analog · projects" },
+      drives: { title: "VFDs (inverters)", sub: "Allen-Bradley · ABB · Siemens · Schneider · Mitsubishi · Yaskawa · Delta · LS · INVT · Danfoss · Fuji" },
+      servo: { title: "Servo", sub: "Servo drives and motors" },
+      temp: { title: "Temperature control", sub: "Omron" }
+    },
+    brands: { all: "All", beginner: "Beginners", basics: "Classic control", drawings: "Drawings", instr: "Instrumentation", vfdc: "VFD theory", srvc: "Servo theory", multi: "Compare" },
+    labs: {
+      basics: { name: "Electrical basics", kind: "Beginners", line: "Start here if you're new to electricity.", inside: ["Voltage, current, resistance and power", "Series, parallel and conductors", "The multimeter and measuring appliances", "Wiring a lamp and socket, home faults"], tags: "beginner basics electricity multimeter wiring" },
+      classic: { name: "Classic control course", kind: "Classic control", line: "Wire contactor and motor circuits by hand, and the course checks them.", inside: ["Relays, contactors and protection", "Timers and 3-phase motor starting", "Star/delta, braking and reversing", "24 practical exercises and a certificate"], tags: "classic control contactor relay overload timer star delta motor dol reversing" },
+      instr: { name: "Instrumentation course", kind: "Instrumentation", line: "The sensors and signals you meet in every plant.", inside: ["The 4–20 mA signal and its faults", "Encoders: incremental and absolute", "Temperature: thermocouples and PT100", "Load cells and scale calibration"], tags: "instrumentation sensor transmitter encoder thermocouple pt100 rtd load cell calibration" },
+      plc: { name: "PLC course", kind: "PLC", line: "Write Ladder programs by hand and run them on a simulator.", inside: ["Wiring PNP and NPN inputs and outputs", "Ladder: seal-in and Set/Reset", "Timers, counters and moving projects", "Exercises on Siemens, Delta and Allen-Bradley"], tags: "plc ladder programming timer counter siemens delta allen bradley automation" },
+      drw: { name: "Reading electrical drawings", kind: "Drawings", line: "Read any panel drawing and trace a fault from it.", inside: ["Drawing types, IEC and NEMA symbols", "Terminal numbers and cross-references", "Control circuits and single line", "Fault tracing from the drawing and a certificate"], tags: "drawings schematic wiring diagram symbols single line cross reference terminal" },
+      vfdc: { name: "VFD course", kind: "Start with theory", line: "Understand the drive inside before you touch one.", inside: ["Inside the drive, PWM and V/f", "Wiring and basic parameters", "Braking, PID and faults"], tags: "vfd inverter drive course theory pwm igbt braking pid faults" },
+      ab1336: { kind: "VFD", line: "The older Allen-Bradley drive still running in many plants." },
+      pf525: { kind: "VFD", line: "The best-known Allen-Bradley drive, and the best place to start." },
+      pf40: { kind: "VFD", line: "A small, common Allen-Bradley drive for small motors." },
+      v20: { kind: "VFD", line: "Siemens' budget drive, common on pumps and fans." },
+      atv320: { kind: "VFD", line: "Schneider's drive for machines and conveyors." },
+      atv630: { kind: "VFD", line: "Schneider's drive for large pumps and fans." },
+      ms300: { kind: "VFD", line: "Delta's compact drive, one of the most common anywhere." },
+      fc51: { kind: "VFD", line: "Danfoss' compact drive for simple loads." },
+      acs580: { kind: "VFD", line: "ABB's general-purpose drive with the Assistant panel." },
+      g120: { kind: "VFD", line: "Siemens' industrial drive with the BOP-2." },
+      fre800: { kind: "VFD", line: "Mitsubishi's compact drive with a dial, plus the D700 differences." },
+      ga500: { kind: "VFD", line: "Yaskawa's new drive, plus the V1000 differences." },
+      ig5a: { kind: "VFD", line: "The LS drive found in many workshops, plus the S100." },
+      gd20: { kind: "VFD", line: "INVT's budget drive, widely sold." },
+      c2000: { kind: "VFD", line: "Delta's larger drive with the KPC-CC01 keypad." },
+      frenic: { kind: "VFD", line: "Fuji's compact drive with a built-in potentiometer." },
+      vfd: { name: "All-drives comparison", kind: "Compare", disp: "7 drives", line: "7 drives side by side, to compare the same function across brands.", inside: ["The same exercise on every brand", "Compare parameters and terminals", "Wiring board with graded exercises"] },
+      srv: { name: "Servo motor & drive course", kind: "Start with theory", line: "Understand the servo inside before you touch a drive.", inside: ["Motor, encoder and the three loops", "Wiring, modes and electronic gearing", "Tuning, homing and alarms"], tags: "servo course motor drive encoder tuning homing gear alarms" },
+      servo: { kind: "Servo", line: "Delta servo: speed, position and gain tuning.", inside: ["Wire the drive, motor and encoder", "Speed mode and position mode", "Gain tuning and motion profile", "Alarms and how to clear them"] },
+      mrje: { kind: "Servo", line: "Mitsubishi servo with MODE, UP, DOWN and SET." },
+      sigma7: { kind: "Servo", line: "Yaskawa's common servo, with the keypad and Fn functions." },
+      kinetix300: { kind: "Servo", line: "Allen-Bradley servo with its display and buttons, plus MotionView." },
+      e5cc: { kind: "Temp. controller", line: "Omron temperature controller: wire the sensor and set the temperature.", inside: ["Wiring thermocouples and PT100", "Setting the target temperature", "PID and auto-tuning", "Alarms and outputs"] }
+    },
+    driveInside: DRIVE, servoInside: SERVO,
+    /* resume card */
+    resume: "Continue where you left off", resumeGo: "Continue →", resumeOthers: "Courses and simulators in progress", lastOpened: "Last thing you opened",
+    progressIn: function(n){ return "Progress in " + n; }, of: function(a, b){ return a + " of " + b; }, simOf: function(b){ return b + " simulator"; },
+    ago: function(m){
+      if (m < 2) return "just now"; if (m < 60) return m + " min ago";
+      var h = Math.round(m / 60); if (h < 24) return h === 1 ? "1 hour ago" : h + " hours ago";
+      var d = Math.round(h / 24); return d === 1 ? "yesterday" : d + " days ago";
+    },
+    /* auth */
+    offline: "Accounts aren't active on this copy of the site yet.",
+    forgotWa: function(site, em){ return "Hi, I forgot my password on " + site + ". Email: " + (em || ""); },
+    pwShort: "The password must be at least 8 characters.", pwMismatch: "The two passwords don't match. Type them again.",
+    hello: function(n){ return "Welcome, " + n; },
+    planPro: function(d){ return "Pro until " + d; }, planEnded: function(d){ return "Free (plan ended " + d + ")"; }, planFree: "Free",
+    renew: "Renew →", buyCourse: "Buy a course →",
+    needPro: "The page you were going to needs that course. ", howBuy: "See how to buy it →",
+    cert: { done: "✓ Certificate issued", nameOn: function(n){ return "Name: <b>" + n + "</b>"; }, code: "code", open: "Open certificate →", finished: "Completed ✓",
+      nameLabel: "Name to print on the certificate", issue: "Get certificate", progress: function(p){ return "Progress " + p + "%"; },
+      steps: function(a, b){ return a + " of " + b + " steps. The certificate unlocks when you finish the whole course."; }, cont: "Continue course →", start: "Start course →" },
+    courses: { basics: "Electrical Basics for Beginners", classic: "Classic Control", instr: "Instrumentation", plc: "PLC", drw: "Reading Electrical Drawings", vfd: "VFD (Inverter)", srv: "Servo Motor & Drive" },
+    /* pay */
+    payOffline: "We couldn't reach the server. Try again in a moment.",
+    payInc: { basics: "All lessons, the final exam and the certificate", classic: "All lessons, exercises and the certificate", drw: "All lessons, the final exam and the certificate", instr: "All lessons + the Omron E5CC simulator", plc: "All lessons + the Siemens, Delta and AB simulators", vfd: "All lessons + every VFD simulator", srv: "All lessons + 4 servo simulators" },
+    course: function(t){ return t + " course"; }, allCourses: function(p){ return "All courses (" + p + ")"; }, planName: { monthly: "monthly", yearly: "yearly" },
+    methods: { instapay: "InstaPay", vodafone: "Vodafone Cash", intl: "Payment from abroad" }, via: function(m){ return "via " + m; },
+    reqOk: "Activated ✓", reqNo: "Rejected", reqWait: "Under review",
+    reqCourseOk: function(d){ return d ? "The course is yours until " + d + "." : "The course is yours for 1 year."; }, reqProOk: function(d){ return "All courses until " + d; },
+    reqRejected: "We couldn't find this transfer. Contact us if something's wrong.",
+    reqSent: function(d, wa){ return "Sent " + d + (wa ? ". Send the transfer screenshot on WhatsApp so we can activate it faster." : ""); },
+    open: "Open →", until: function(d){ return "until " + d; }, expired: function(d){ return "Ended " + d; }, renewCourse: "Renew →",
+    soon: "Soon", year: "1 year", yearAccess: "1 year of access",
+    copy: "Copy", copied: "Copied ✓", copyNum: function(n){ return "Copy " + n + " number"; },
+    senderEg: "Mobile number or InstaPay address you paid from <small>(optional)</small>",
+    senderIntl: "Order number or email you paid with <small>(optional)</small>",
+    waEg: function(what, amt, method, email){ return "Hi, I paid for " + what + " (" + amt + ")" + (method ? " via " + method : "") + ".\nMy account email: " + email + "\nHere is the transfer screenshot:"; },
+    waIntl: function(what, amt, email){ return "Hi, I'm outside Egypt and I'd like to buy " + what + " (" + amt + ")." + (email ? "\nMy account email: " + email : "") + "\nHow can I pay?"; },
+    payOk: function(wa){ return "We got your request ✓ " + (wa ? "Send the transfer screenshot on WhatsApp with the button above so we can activate it faster." : "We'll check the payment and activate it."); },
+    makeAccount: "Create an account →",
+    ownNow: function(t, href){ return "The " + t + " course is yours ✓ <a href=\"" + href + "\">Open it →</a>"; },
+    needCourse: function(t){ return "The lesson you were going to is in the " + t + " course. Buy the course to open it."; },
+    proNote: function(d){ return "You have every course until " + d + "."; },
+    payCard: "Pay by card ↗", payWa: "Arrange payment on WhatsApp",
+    s1Intl: function(amt, link){ return link ? "Pay <b>" + amt + "</b> by card with the button below. Prices are in US dollars." : "Message us on WhatsApp and we'll send you a way to pay <b>" + amt + "</b> (card or transfer)."; },
+    s1IntlNoWa: function(amt){ return "Payment from abroad for <b>" + amt + "</b> opens soon."; },
+    /* cert page */
+    certChecking: "Checking the certificate…", certOffline: "We couldn't reach the server. Try again in a moment.",
+    certQr: function(c){ return "QR code to verify certificate " + c; }, certTitle: function(n, c){ return "Certificate · " + n + " · " + c; },
+    copyLink: "Copy the link:",
+    /* API error codes → English (functions/_lib/auth.js MSG) */
+    err: {
+      no_db: "Accounts aren't active on the server yet. Try again shortly.",
+      bad_request: "Something went wrong with that request. Refresh the page and try again.",
+      bad_name: "Enter your name (2 to 60 characters).",
+      bad_email: "That email address doesn't look right.",
+      bad_password: "The password must be at least 8 characters.",
+      email_taken: "There's already an account with this email. Sign in instead.",
+      wrong_login: "Wrong email or password. If you're new here, create an account first.",
+      too_many: "Too many failed attempts. Wait 15 minutes and try again.",
+      not_logged_in: "You're not signed in.",
+      too_big: "This progress is larger than allowed.",
+      bad_token: "This link doesn't work or has expired. Ask for a new one on WhatsApp.",
+      forbidden: "This page is for admins only.",
+      not_found: "Not found.",
+      too_many_pending: "You have several requests still under review. Please wait, or contact us on WhatsApp.",
+      already_done: "This request was already handled.",
+      not_complete: "You haven't finished this course yet. Complete every lesson and exercise first.",
+      suspended: "This account is suspended. Please contact us.",
+      self_action: "You can't do that to your own account.",
+      already_owned: "You already have this course.",
+      not_for_sale: "This course isn't on sale yet.",
+      bad_phone: "That number doesn't look right. Use digits only.",
+      bad_link: "The payment link must start with https://",
+      server: "Something went wrong on the server. Try again in a moment.",
+      server_any: "Something went wrong. Try again in a moment."
+    }
+  };
+})();

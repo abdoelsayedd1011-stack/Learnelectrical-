@@ -198,6 +198,24 @@
     { key:"schneider", label:"Schneider" }, { key:"delta", label:"Delta" }, { key:"danfoss", label:"Danfoss" },
     { key:"omron", label:"Omron" }, { key:"abb", label:"ABB" }, { key:"mitsubishi", label:"Mitsubishi" }, { key:"yaskawa", label:"Yaskawa" }, { key:"ls", label:"LS" }, { key:"invt", label:"INVT" }, { key:"fuji", label:"Fuji" }, { key:"multi", label:"مقارنة" }
   ];
+  /* ---------- English (/en/ pages): strings from assets/i18n-en.js, links via assets/i18n.js ---------- */
+  var I18N = window.LE_I18N || {}, EN = I18N.isEn && I18N.en ? I18N.en : null;
+  var L = function(p){ return I18N.href ? I18N.href(p) : p; }; // a link for this page's language
+  LABS.forEach(function(l){ l.course = l.brand === "كورس"; l.ar = !!EN && !(I18N.hasEn && I18N.hasEn(l.path)); });
+  if (EN){
+    LABS.forEach(function(l){
+      var t = EN.labs[l.id] || {};
+      if (l.course) l.brand = "Course"; else if (l.brandKey === "multi") l.brand = "Compare";
+      ["name", "kind", "line", "disp"].forEach(function(k){ if (t[k]) l[k] = t[k]; });
+      l.inside = t.inside || (l.group === "drives" ? EN.driveInside : l.group === "servo" ? EN.servoInside : l.inside);
+      l.tags = l.tags + " " + (t.tags || "") + " " + l.inside.join(" ");
+      l.rtlName = false;
+    });
+    GROUPS.forEach(function(g){ var t = EN.groups[g.key]; if (t){ g.title = t.title; g.sub = t.sub; } });
+    BRANDS.forEach(function(b){ if (EN.brands[b.key]) b.label = EN.brands[b.key]; });
+  }
+  LABS.forEach(function(l){ l.href = L(l.path); });
+  GROUPS.forEach(function(g){ if (g.land) g.land = L(g.land); });
   window.LABS = LABS; window.LAB_GROUPS = GROUPS;
 
   var root = document.documentElement;
@@ -211,7 +229,7 @@
     return !!(window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
   }
   document.querySelectorAll(".theme-btn").forEach(function(b){
-    function label(){ b.setAttribute("aria-label", isDark() ? "الوضع الفاتح" : "الوضع الغامق"); b.title = b.getAttribute("aria-label"); }
+    function label(){ b.setAttribute("aria-label", isDark() ? (EN ? EN.themeLight : "الوضع الفاتح") : (EN ? EN.themeDark : "الوضع الغامق")); b.title = b.getAttribute("aria-label"); }
     label();
     b.addEventListener("click", function(){
       var next = isDark() ? "light" : "dark";
@@ -222,7 +240,7 @@
   /* ---------- mobile nav ---------- */
   var menuBtn = document.querySelector(".menu-btn"), nav = document.getElementById("site-nav");
   if (menuBtn && nav){
-    function setOpen(o){ nav.classList.toggle("open", o); menuBtn.setAttribute("aria-expanded", o ? "true" : "false"); menuBtn.setAttribute("aria-label", o ? "اقفل القايمة" : "افتح القايمة"); }
+    function setOpen(o){ nav.classList.toggle("open", o); menuBtn.setAttribute("aria-expanded", o ? "true" : "false"); menuBtn.setAttribute("aria-label", o ? (EN ? EN.menuClose : "اقفل القايمة") : (EN ? EN.menuOpen : "افتح القايمة")); }
     menuBtn.addEventListener("click", function(){ setOpen(!nav.classList.contains("open")); });
     nav.addEventListener("click", function(e){ if (e.target.closest("a")) setOpen(false); });
     document.addEventListener("keydown", function(e){ if (e.key === "Escape" && nav.classList.contains("open")){ setOpen(false); menuBtn.focus(); } });
@@ -234,10 +252,22 @@
      اللي اشترى الكورس بيشوف «اشتريته ✓». */
   var PRODUCT_OF = { basics:"basics", classic:"classic", instr:"instr", plc:"plc", drw:"drw", vfdc:"vfd", srv:"srv" };
   var PR = null, ME, priceHooks = [];
-  function curName(){ return ((window.SITE || {}).pay || {}).currency || "جنيه"; }
+  function curName(){ return EN ? EN.currency : ((window.SITE || {}).pay || {}).currency || "جنيه"; }
   function fmtN(n){ return String(Math.round(n * 100) / 100); }
-  function priceHtml(c){ return "<b><bdi>" + fmtN(c.price) + "</bdi> " + esc(curName()) + "</b>" + (c.was ? ' <s><bdi>' + fmtN(c.was) + "</bdi> " + esc(curName()) + "</s>" : ""); }
+  // Arabic: EGP. English: USD first (buyers outside Egypt), EGP second.
+  function priceHtml(c){
+    if (EN && c.usd) return "<b>$" + fmtN(c.usd) + "</b>" + (c.usd_was ? " <s>$" + fmtN(c.usd_was) + "</s>" : "") + ' <small class="p-alt">· ' + esc(curName()) + " " + fmtN(c.price) + " " + esc(EN.egpNote) + "</small>";
+    if (EN) return "<b>" + esc(curName()) + " " + fmtN(c.price) + "</b>" + (c.was ? " <s>" + esc(curName()) + " " + fmtN(c.was) + "</s>" : "");
+    return "<b><bdi>" + fmtN(c.price) + "</bdi> " + esc(curName()) + "</b>" + (c.was ? ' <s><bdi>' + fmtN(c.was) + "</bdi> " + esc(curName()) + "</s>" : "");
+  }
   function owns(id){ return !!(ME && ME.courses && ME.courses.indexOf(id) > -1); }
+  // «اشتريته ✓» → «معاك لحد <date> ✓» when /api/auth/me says until when (a course opens for one year)
+  function ownText(id){
+    var u = ME && ME.course_until && ME.course_until[id];
+    if (!u) return EN ? EN.own : "اشتريته ✓";
+    var d; try { d = new Date(u).toLocaleDateString(EN ? "en-GB" : "ar-EG-u-nu-latn", { year: "numeric", month: "short", day: "numeric" }); } catch (e){ d = new Date(u).toISOString().slice(0, 10); }
+    return EN ? EN.ownUntil(d) : "معاك لحد " + d + " ✓";
+  }
   function proNow(){ return !!(ME && ME.plan === "pro" && ME.pro_until > Date.now()); }
   // {kind:"own"|"pro"|"price", c} or null when there's nothing to show
   function priceState(id){
@@ -251,8 +281,8 @@
     document.querySelectorAll("[data-price]").forEach(function(el){
       var id = el.getAttribute("data-price"), st = priceState(id);
       if (!st){ el.hidden = true; return; }
-      el.innerHTML = st.kind === "own" ? '<p class="lp-own">اشتريته ✓</p>' : st.kind === "pro" ? '<p class="lp-own">معاك في الاشتراك ✓</p>'
-        : '<p class="lp-price">' + priceHtml(st.c) + '</p><a class="btn btn-ghost" href="/subscribe.html?course=' + encodeURIComponent(id) + '">اشتري الكورس ←</a>';
+      el.innerHTML = st.kind === "own" ? '<p class="lp-own">' + esc(ownText(id)) + "</p>" : st.kind === "pro" ? '<p class="lp-own">' + (EN ? EN.pro : "معاك في الاشتراك ✓") + "</p>"
+        : '<p class="lp-price">' + priceHtml(st.c) + '</p><a class="btn btn-ghost" href="' + (EN ? "/en" : "") + "/subscribe.html?course=" + encodeURIComponent(id) + '">' + (EN ? EN.buyArrow : "اشتري الكورس ←") + "</a>";
       el.hidden = false;
     });
   }
@@ -270,15 +300,16 @@
   /* ---------- account link (membership) ---------- */
   if (nav){
     var authA = document.createElement("a");
-    authA.className = "nav-auth"; authA.href = "login.html"; authA.textContent = "دخول";
+    var LOGIN = EN ? "/en/login.html" : "/login.html", ACCOUNT = EN ? "/en/account.html" : "/account.html", LOGIN_T = EN ? EN.login : "دخول";
+    authA.className = "nav-auth"; authA.href = LOGIN; authA.textContent = LOGIN_T;
     if (/\/(login|account)\.html$/.test(location.pathname)) authA.setAttribute("aria-current", "page");
     nav.appendChild(authA);
     // «لوحة الإدارة» next to the account link, only when /api/auth/me says this account is an admin
     var admA = document.createElement("a");
-    admA.className = "nav-admin"; admA.href = "/admin.html"; admA.textContent = "لوحة الإدارة"; admA.hidden = true;
+    admA.className = "nav-admin"; admA.href = "/admin.html"; admA.textContent = EN ? EN.admin : "لوحة الإدارة"; admA.hidden = true;
     if (/\/admin\.html$/.test(location.pathname)) admA.setAttribute("aria-current", "page");
     nav.insertBefore(admA, authA);
-    var setUser = function(u){ root.classList.toggle("is-member", !!(u && u.name)); admA.hidden = !(u && u.admin); if (u && u.name){ authA.href = "account.html"; authA.textContent = u.name.split(" ")[0]; } else { authA.href = "login.html"; authA.textContent = "دخول"; } };
+    var setUser = function(u){ root.classList.toggle("is-member", !!(u && u.name)); admA.hidden = !(u && u.admin); if (u && u.name){ authA.href = ACCOUNT; authA.textContent = u.name.split(" ")[0]; } else { authA.href = LOGIN; authA.textContent = LOGIN_T; } };
     try{ setUser(JSON.parse(sessionStorage.getItem("le-user") || "null")); }catch(e){}
     if (window.fetch && /^https?:$/.test(location.protocol)){
       fetch("/api/auth/me", { credentials: "same-origin" }).then(function(r){ return r.ok ? r.json() : null; }).then(function(r){
@@ -303,9 +334,9 @@
       if (store("le-banner-x") === key) return;
       var link = b.link && /^(?:\/(?!\/)|https:\/\/)/.test(b.link) ? b.link : "";
       var bar = document.createElement("div");
-      bar.className = "site-banner"; bar.setAttribute("role", "region"); bar.setAttribute("aria-label", "إعلان");
-      bar.innerHTML = '<div class="wrap sb-in"><p class="sb-text">' + (link ? '<a href="' + esc(link) + '"' + (/^https:/.test(link) ? ' target="_blank" rel="noopener"' : "") + ">" + esc(b.text) + " ←</a>" : esc(b.text)) + "</p>" +
-        '<button type="button" class="sb-x" aria-label="اقفل الإعلان"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>';
+      bar.className = "site-banner"; bar.setAttribute("role", "region"); bar.setAttribute("aria-label", EN ? EN.banner : "إعلان");
+      bar.innerHTML = '<div class="wrap sb-in"><p class="sb-text" dir="auto">' + (link ? '<a href="' + esc(link) + '"' + (/^https:/.test(link) ? ' target="_blank" rel="noopener"' : "") + ">" + esc(b.text) + (EN ? " →" : " ←") + "</a>" : esc(b.text)) + "</p>" +
+        '<button type="button" class="sb-x" aria-label="' + (EN ? EN.bannerClose : "اقفل الإعلان") + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>';
       bar.querySelector(".sb-x").addEventListener("click", function(){ store("le-banner-x", key); bar.remove(); });
       var skip = document.querySelector(".skip");
       if (skip && skip.parentNode === document.body) skip.insertAdjacentElement("afterend", bar); else document.body.insertBefore(bar, document.body.firstChild);
@@ -329,7 +360,7 @@
   if (name !== "LearnElectricals" && document.title.indexOf("LearnElectricals") > -1) document.title = document.title.replace("LearnElectricals", name);
   var wa = String(S.whatsapp || "").replace(/[^\d]/g, "");
   var links = {
-    whatsapp: wa ? "https://wa.me/" + wa + "?text=" + encodeURIComponent("السلام عليكم، جاي من موقع " + name) : "",
+    whatsapp: wa ? "https://wa.me/" + wa + "?text=" + encodeURIComponent(EN ? EN.waHello(name) : "السلام عليكم، جاي من موقع " + name) : "",
     email: S.email ? "mailto:" + S.email : "",
     facebook: S.facebook || "",
     youtube: S.youtube || ""
@@ -359,30 +390,37 @@
 
   function facts(l){
     var f = [];
+    if (EN){
+      if (l.guided) f.push(EN.guided(l.guided)); if (l.exercises) f.push(EN.graded(l.exercises));
+      if (l.params) f.push(EN.params(l.params, l.id === "servo")); if (l.faults) f.push(EN.faults(l.faults));
+      return f;
+    }
     if (l.guided) f.push(l.guided + " تمارين محلولة");
     if (l.exercises) f.push(l.exercises + " تمارين بتتصحح");
     if (l.params) f.push((l.id === "servo" ? "حوالي " : "") + l.params + " باراميتر");
     if (l.faults) f.push(l.faults + " عطل");
     return f;
   }
-  var SIM_WITH = { drives: "مع كورس الانفرتر", servo: "مع كورس السيرفو", temp: "مع كورس الإنسترومنتيشن" };
-  function goText(l){ return l.brand === "كورس" ? "ابدأ الكورس ←" : "افتح المحاكي ←"; }
+  var SIM_WITH = EN ? EN.simWith : { drives: "مع كورس الانفرتر", servo: "مع كورس السيرفو", temp: "مع كورس الإنسترومنتيشن" };
+  function goText(l){ return EN ? (l.course ? EN.goCourse : EN.goSim) + (l.ar ? AR_BADGE : "") : l.course ? "ابدأ الكورس ←" : "افتح المحاكي ←"; }
+  var AR_BADGE = EN ? '<span class="ar-badge" title="' + esc(EN.arBadgeTitle) + '">' + esc(EN.arBadge) + "</span>" : "";
   function card(l){
     var disp = '<div class="disp ' + esc(l.dispClass) + '" aria-hidden="true">' + (l.html ? l.disp : esc(l.disp)) + "</div>";
-    var acc = l.id === "pf525" ? "من غير حساب" : l.brand === "كورس" ? "3 دروس من غير حساب" : PR && PR.paywall ? SIM_WITH[l.group] || "بحساب مجاني" : "بحساب مجاني";
+    var FREE = EN ? EN.freeAcc : "بحساب مجاني";
+    var acc = l.id === "pf525" ? (EN ? EN.noAccount : "من غير حساب") : l.course ? (EN ? EN.free3 : "3 دروس من غير حساب") : PR && PR.paywall ? SIM_WITH[l.group] || FREE : FREE;
     var st = priceState(PRODUCT_OF[l.id]);
-    var pl = !st ? "" : '<p class="price-line' + (st.kind === "price" ? "" : " own") + '">' + (st.kind === "own" ? "اشتريته ✓" : st.kind === "pro" ? "معاك في الاشتراك ✓" : priceHtml(st.c)) + "</p>";
-    var buy = st && st.kind === "price" ? '<a class="buy" href="subscribe.html?course=' + PRODUCT_OF[l.id] + '">اشتري الكورس<span class="sr-only"> ' + esc(l.name) + "</span></a>" : "";
+    var pl = !st ? "" : '<p class="price-line' + (st.kind === "price" ? "" : " own") + '">' + (st.kind === "own" ? esc(ownText(PRODUCT_OF[l.id])) : st.kind === "pro" ? (EN ? EN.pro : "معاك في الاشتراك ✓") : priceHtml(st.c)) + "</p>";
+    var buy = st && st.kind === "price" ? '<a class="buy" href="subscribe.html?course=' + PRODUCT_OF[l.id] + '">' + (EN ? EN.buy : "اشتري الكورس") + '<span class="sr-only"> ' + esc(l.name) + "</span></a>" : "";
     var head = '<div class="meta"><span class="brand">' + esc(l.brand) + '</span><span class="kind">' + esc(l.kind) + '</span><span class="access' + (l.id === "pf525" ? " open" : "") + '">' + acc + "</span></div>" +
                '<h4' + (l.rtlName ? ' style="direction:rtl"' : "") + ">" + esc(l.name) + "</h4>";
     if (!detail){
-      return '<a class="card" href="' + esc(l.path) + '" data-id="' + l.id + '">' + disp + head + "<p>" + esc(l.line) + "</p>" + pl + '<span class="go">' + goText(l) + '</span></a>';
+      return '<a class="card" href="' + esc(l.href) + '"' + (l.ar ? ' hreflang="ar"' : "") + ' data-id="' + l.id + '">' + disp + head + "<p>" + esc(l.line) + "</p>" + pl + '<span class="go">' + goText(l) + '</span></a>';
     }
     var fl = facts(l).map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("");
     var ins = l.inside.map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("");
     return '<article class="card detail" data-id="' + l.id + '">' + disp + head + "<p>" + esc(l.line) + "</p>" +
       (fl ? '<ul class="facts">' + fl + "</ul>" : "") + '<ul class="inside">' + ins + "</ul>" + pl +
-      '<div class="go-row"><a class="go" href="' + esc(l.path) + '">' + goText(l) + '<span class="sr-only"> ' + esc(l.name) + "</span></a>" + buy + "</div></article>";
+      '<div class="go-row"><a class="go" href="' + esc(l.href) + '"' + (l.ar ? ' hreflang="ar"' : "") + ">" + goText(l) + '<span class="sr-only"> ' + esc(l.name) + "</span></a>" + buy + "</div></article>";
   }
   function match(l){
     if (state.brand !== "all" && l.brandKey !== state.brand) return false;
@@ -391,19 +429,19 @@
     return state.q.toLowerCase().split(/\s+/).every(function(w){ return hay.indexOf(w) > -1; });
   }
   // بنك أسئلة الإنترفيو مش كورس ومش في LABS، بس لو حد دوّر عليه بنظهرله كارت يوديه هناك
-  var IV_Q = /interview|انترفيو|إنترفيو|مقابل|أسئل|اسئل|سؤال/i;
-  var IV_CARD = '<div class="iv-band iv-hit"><div><span class="eyebrow">بنك الأسئلة</span><h2>أسئلة الإنترفيو</h2><p>أسئلة إنترفيو الكهربا والصيانة والأوتوميشن بإجابات مختصرة، مفتوحة للكل.</p></div><a class="btn btn-ghost" href="interview/index.html">ذاكر الأسئلة ←</a></div>';
+  var IV_Q = /interview|question|انترفيو|إنترفيو|مقابل|أسئل|اسئل|سؤال/i;
+  var IV_CARD = EN ? EN.ivCard : '<div class="iv-band iv-hit"><div><span class="eyebrow">بنك الأسئلة</span><h2>أسئلة الإنترفيو</h2><p>أسئلة إنترفيو الكهربا والصيانة والأوتوميشن بإجابات مختصرة، مفتوحة للكل.</p></div><a class="btn btn-ghost" href="interview/index.html">ذاكر الأسئلة ←</a></div>';
   function render(){
     var html = "", n = 0, iv = !!state.q && IV_Q.test(state.q);
     GROUPS.forEach(function(g){
       var items = LABS.filter(function(l){ return l.group === g.key && match(l); });
       if (!items.length) return;
       n += items.length;
-      html += '<section class="group" aria-label="' + esc(g.title) + '"><h3 class="gtitle">' + esc(g.title) + ' <small class="ltr">' + esc(g.sub) + '</small>' + (g.land ? '<a class="gmore" href="' + esc(g.land) + '">تفاصيل الكورس ←</a>' : "") + '</h3><div class="grid">' + items.map(card).join("") + "</div></section>";
+      html += '<section class="group" aria-label="' + esc(g.title) + '"><h3 class="gtitle">' + esc(g.title) + ' <small class="ltr">' + esc(g.sub) + '</small>' + (g.land ? '<a class="gmore" href="' + esc(g.land) + '">' + (EN ? EN.details : "تفاصيل الكورس ←") + "</a>" : "") + '</h3><div class="grid">' + items.map(card).join("") + "</div></section>";
     });
     cat.innerHTML = (iv ? IV_CARD : "") + html;
     if (emptyEl) emptyEl.classList.toggle("show", n === 0 && !iv);
-    if (countEl) countEl.textContent = n === LABS.length ? "الكل (" + n + ")" : "ظاهر " + n + " من " + LABS.length;
+    if (countEl) countEl.textContent = n === LABS.length ? (EN ? EN.all(n) : "الكل (" + n + ")") : EN ? EN.shown(n, LABS.length) : "ظاهر " + n + " من " + LABS.length;
   }
   if (chipsEl){
     chipsEl.innerHTML = BRANDS.map(function(b){ return '<button type="button" class="chip" data-brand="' + b.key + '" aria-pressed="' + (b.key === "all") + '">' + esc(b.label) + "</button>"; }).join("");

@@ -1,7 +1,7 @@
 // Admin: payment requests from /subscribe.html.
 // GET ?status=pending (default) | recent      → requests with the member's name, email and current plan
 // POST {id, action: "approve"}  → monthly / yearly: Pro for PLAN_DAYS[plan] days from max(now, current pro_until)
-//                                 course: that course for life (user_courses, _lib/products.js)
+//                                 course: that course for a year, or a year more if it is still open (user_courses, _lib/products.js)
 // POST {id, action: "reject"}   → request rejected, nothing granted
 import { getDb, readBody, json, fail, HttpError } from "../../_lib/auth.js";
 import { requireAdmin, logAction } from "../../_lib/admin.js";
@@ -49,9 +49,10 @@ export async function onRequestPost({ request, env }){
       if (!PRODUCTS[r.product]) throw new HttpError(400, "bad_request");
       const claim = await db.prepare("UPDATE pay_requests SET status = 'approved', decided_at = ? WHERE id = ? AND status = 'pending'").bind(now, id).run();
       if (!claim.meta || !claim.meta.changes) throw new HttpError(409, "already_done");
-      await grantCourse(db, r.user_id, r.product, "pay", "طلب #" + id + " · " + r.amount + " " + r.currency);
-      await logAction(db, me, "pay_approve", { id: r.user_id, email: r.email }, "طلب #" + id + " · " + what(r) + " · " + r.amount + " " + r.currency);
-      return json({ ok: true, id, status: "approved", user_id: r.user_id, course: r.product, paywall: paywallOn(env) });
+      const g = await grantCourse(db, r.user_id, r.product, "pay", "طلب #" + id + " · " + r.amount + " " + r.currency, now);
+      await db.prepare("UPDATE pay_requests SET pro_until = ? WHERE id = ?").bind(g.until, id).run(); // shown as «لحد» on the request
+      await logAction(db, me, "pay_approve", { id: r.user_id, email: r.email }, "طلب #" + id + " · " + what(r) + " · " + r.amount + " " + r.currency + " → لحد " + new Date(g.until + 2 * 3600 * 1000).toISOString().slice(0, 10));
+      return json({ ok: true, id, status: "approved", user_id: r.user_id, course: r.product, until: g.until, paywall: paywallOn(env) });
     }
     const until = extendedUntil({ plan: r.user_plan, pro_until: r.pro_until }, PLAN_DAYS[r.plan] || 30, now);
     // Claim the request first so two admins clicking at once can't add the days twice.

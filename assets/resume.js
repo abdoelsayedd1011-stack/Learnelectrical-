@@ -7,6 +7,7 @@
   var box = document.getElementById("resume");
   if (!box || !window.fetch) return;
   var LABS = window.LABS || [];
+  var I18N = window.LE_I18N || {}, EN = I18N.isEn && I18N.en ? I18N.en : null; // English home (/en/): strings from assets/i18n-en.js
 
   function lsGet(k){ try { return localStorage.getItem(k); } catch (e){ return null; } }
   function parse(v){ try { return JSON.parse(v || "null"); } catch (e){ return null; } }
@@ -46,7 +47,7 @@
   }
   function requirements(id){
     var c = COURSES[id];
-    return fetch(c.src).then(function(r){ return r.ok ? r.text() : null; })
+    return fetch("/" + c.src).then(function(r){ return r.ok ? r.text() : null; })
       .then(function(src){ return src ? (c.list ? parseTasks(src, c.list) : parseExercises(src)) : null; }, function(){ return null; });
   }
   function courseStatus(id, s, req){
@@ -84,41 +85,43 @@
     });
   }
 
-  function dirOf(path){ var m = /^\/?([^/]+)\//.exec(path || ""); return m ? m[1] : ""; }
+  function dirOf(path){ var m = /^\/?(?:en\/)?([^/]+)\//.exec(path || ""); return m ? m[1] : ""; }
   function labByDir(d){ for (var i = 0; i < LABS.length; i++) if (dirOf(LABS[i].path) === d) return LABS[i]; return null; }
   function ago(t){
     var m = Math.round((Date.now() - t) / 60000);
     if (!(m >= 0)) return "";
+    if (EN) return EN.ago(m);
     if (m < 2) return "دلوقتي";
     if (m < 60) return "من " + m + (m <= 10 ? " دقايق" : " دقيقة");
     var h = Math.round(m / 60); if (h < 24) return h === 1 ? "من ساعة" : h === 2 ? "من ساعتين" : "من " + h + (h <= 10 ? " ساعات" : " ساعة");
     var d = Math.round(h / 24); return d === 1 ? "امبارح" : d === 2 ? "من يومين" : "من " + d + (d <= 10 ? " أيام" : " يوم");
   }
   function bar(pct, label){ return '<span class="rs-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '" aria-label="' + esc(label) + '"><i style="width:' + pct + '%"></i></span>'; }
-  function href(p){ return String(p).replace(/^\//, ""); }
+  // Arabic home: relative link as before. English home: the /en/ twin when there is one, else the Arabic page.
+  function href(p){ return EN && I18N.href ? I18N.href(String(p)) : String(p).replace(/^\//, ""); }
 
   function render(rows){
     var last = parse(lsGet("le-last-v1"));
-    if (!(last && typeof last.p === "string" && /^\/[^/]+\//.test(last.p))) last = null;
+    if (!(last && typeof last.p === "string" && /^\/(?:en\/)?[^/]+\//.test(last.p))) last = null;
     var byId = {}; rows.forEach(function(r){ byId[r.lab.id] = r; });
     var main = null, lab = last ? labByDir(dirOf(last.p)) : null;
-    if (last) main = { lab: lab, row: lab ? byId[lab.id] : null, href: href(last.p), sub: last.title && (!lab || last.title.indexOf(lab.name) < 0) ? last.title : "", t: +last.t || 0 };
+    if (last) main = { lab: lab, row: lab ? byId[lab.id] : null, href: href(last.p), sub: last.title && (!lab || last.title.indexOf(lab.name) < 0) && !(EN && /[\u0600-\u06ff]/.test(last.title)) ? last.title : "", t: +last.t || 0 };
     var going = rows.filter(function(r){ return r.done > 0 && r.pct < 100; });
-    if (!main && going.length) main = { lab: going[0].lab, row: going[0], href: going[0].lab.path, sub: "", t: 0 };
+    if (!main && going.length) main = { lab: going[0].lab, row: going[0], href: going[0].lab.href || going[0].lab.path, sub: "", t: 0 };
     if (!main) return;
-    var name = main.lab ? main.lab.name : (main.sub || "آخر حاجة فتحتها");
-    var kind = main.lab ? (main.lab.brand === "كورس" ? "" : "محاكي " + main.lab.brand) : "";
+    var name = main.lab ? main.lab.name : (main.sub || (EN ? EN.lastOpened : "آخر حاجة فتحتها"));
+    var kind = main.lab ? (main.lab.course || main.lab.brand === "كورس" ? "" : EN ? EN.simOf(main.lab.brand) : "محاكي " + main.lab.brand) : "";
     var pct = main.row ? main.row.pct : null;
-    var h = '<div class="rs-main"><div class="rs-txt"><span class="eyebrow">كمّل من حيث وقفت' + (main.t ? ' · <span class="rs-ago">' + esc(ago(main.t)) + "</span>" : "") + "</span>" +
+    var h = '<div class="rs-main"><div class="rs-txt"><span class="eyebrow">' + (EN ? EN.resume : "كمّل من حيث وقفت") + (main.t ? ' · <span class="rs-ago">' + esc(ago(main.t)) + "</span>" : "") + "</span>" +
       "<h2" + (main.lab && !main.lab.rtlName ? ' class="ltr-name"' : "") + ">" + esc(name) + "</h2>" +
       (main.sub && main.lab ? '<p class="rs-sub">' + esc(main.sub) + "</p>" : "") +
       (kind ? '<p class="rs-kind">' + esc(kind) + "</p>" : "") +
-      (pct !== null ? '<div class="rs-prog">' + bar(pct, "التقدّم في " + name) + "<b>" + pct + "%</b><small>" + main.row.done + " من " + main.row.total + "</small></div>" : "") +
-      '</div><a class="btn btn-primary rs-go" href="' + esc(main.href) + '">كمّل ←</a></div>';
+      (pct !== null ? '<div class="rs-prog">' + bar(pct, EN ? EN.progressIn(name) : "التقدّم في " + name) + "<b>" + pct + "%</b><small>" + (EN ? EN.of(main.row.done, main.row.total) : main.row.done + " من " + main.row.total) + "</small></div>" : "") +
+      '</div><a class="btn btn-primary rs-go" href="' + esc(main.href) + '">' + (EN ? EN.resumeGo : "كمّل ←") + "</a></div>";
     var others = going.filter(function(r){ return !main.lab || r.lab.id !== main.lab.id; }).sort(function(a, b){ return b.pct - a.pct; }).slice(0, 6);
     if (others.length){
-      h += '<h3 class="rs-h">كورسات ومحاكيات لسه مخلّصتهاش</h3><ul class="rs-list">' + others.map(function(r){
-        return '<li><a href="' + esc(r.lab.path) + '"><span class="rs-n"' + (r.lab.rtlName ? "" : ' dir="ltr"') + ">" + esc(r.lab.name) + "</span>" + bar(r.pct, "التقدّم في " + r.lab.name) + '<span class="rs-p">' + r.pct + "%</span></a></li>";
+      h += '<h3 class="rs-h">' + (EN ? EN.resumeOthers : "كورسات ومحاكيات لسه مخلّصتهاش") + '</h3><ul class="rs-list">' + others.map(function(r){
+        return '<li><a href="' + esc(r.lab.href || r.lab.path) + '"><span class="rs-n"' + (r.lab.rtlName ? "" : ' dir="ltr"') + ">" + esc(r.lab.name) + "</span>" + bar(r.pct, EN ? EN.progressIn(r.lab.name) : "التقدّم في " + r.lab.name) + '<span class="rs-p">' + r.pct + "%</span></a></li>";
       }).join("") + "</ul>";
     }
     box.querySelector(".rs-card").innerHTML = h;
@@ -130,7 +133,7 @@
 
   if (window.LESync) { window.LESync.ready.then(go); return; }
   var s = document.createElement("script");
-  s.src = "assets/sync.js?v=" + (box.getAttribute("data-v") || "1");
+  s.src = "/assets/sync.js?v=" + (box.getAttribute("data-v") || "1");
   s.setAttribute("data-no-reload", "");
   s.onload = function(){ if (window.LESync) window.LESync.ready.then(go); };
   s.onerror = function(){ go({ offline: true }); };
