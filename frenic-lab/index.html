@@ -1907,5 +1907,546 @@ function frame(now){
 requestAnimationFrame(t=>{last=t;frame(t);});
 
 </script>
+<!--simtour:start-->
+<style id="simtourCss">
+/* simtour: in-page animated demos (shared) */
+:root{--st-bg:#ffffff;--st-ink:#1b1f24;--st-mut:#5b6670;--st-acc:var(--accent,#b85f00);--st-line:rgba(0,0,0,.14);--st-dim:rgba(12,16,20,.48);--st-bar:#1d252b;--st-bar-ink:#f2f5f7}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--st-bg:#202a31;--st-ink:#eef3f6;--st-mut:#a7b4bc;--st-line:rgba(255,255,255,.16);--st-dim:rgba(0,0,0,.6);--st-bar:#0b1013;--st-bar-ink:#eef3f6}}
+:root[data-theme="dark"]{--st-bg:#202a31;--st-ink:#eef3f6;--st-mut:#a7b4bc;--st-line:rgba(255,255,255,.16);--st-dim:rgba(0,0,0,.6);--st-bar:#0b1013;--st-bar-ink:#eef3f6}
+.st-tbtn{white-space:nowrap}
+.st-tbtn .st-pl,.st-pv .st-pl{display:inline-block;width:0;height:0;border-style:solid;border-width:.36em 0 .36em .6em;border-color:transparent transparent transparent currentColor;margin-inline-end:.4em;vertical-align:.02em;transform:scaleX(-1)}
+.st-pvrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:2px 0 10px}
+.st-pv{min-height:44px;font-weight:700;border:1.5px solid var(--st-acc)!important;color:var(--st-acc)!important;background:transparent}
+.st-pvrow small{color:var(--muted,#6b7780);font-size:.82rem}
+#stRoot{position:fixed;inset:0;z-index:2147483000;pointer-events:none;font-family:var(--font-body,system-ui,sans-serif);direction:rtl}
+#stRoot[hidden]{display:none!important}
+.st-shield{position:fixed;inset:0;pointer-events:auto;background:transparent;touch-action:pan-y}
+.st-dimall{position:fixed;inset:0;background:var(--st-dim);transition:opacity .25s}
+.st-spot{position:fixed;left:0;top:0;width:0;height:0;border-radius:12px;box-shadow:0 0 0 3px var(--st-acc),0 0 0 200vmax var(--st-dim);transition:left .35s ease,top .35s ease,width .35s ease,height .35s ease,opacity .2s;pointer-events:none}
+.st-spot.off{opacity:0}
+.st-finger{position:fixed;left:-80px;top:-80px;width:46px;height:46px;margin:-6px 0 0 -14px;transition:left .55s cubic-bezier(.3,.7,.2,1),top .55s cubic-bezier(.3,.7,.2,1),opacity .2s;filter:drop-shadow(0 3px 5px rgba(0,0,0,.35));pointer-events:none;opacity:0}
+.st-finger.on{opacity:1}
+.st-finger.press{transform:scale(.86);transition-property:left,top,transform}
+.st-rip{position:fixed;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;border:3px solid var(--st-acc);background:color-mix(in srgb,var(--st-acc) 30%,transparent);animation:stRip .6s ease-out forwards;pointer-events:none}
+@keyframes stRip{from{transform:scale(.4);opacity:1}to{transform:scale(3.6);opacity:0}}
+.st-cap{position:fixed;left:16px;top:16px;width:min(420px,calc(100vw - 32px));background:var(--st-bg);color:var(--st-ink);border:1px solid var(--st-line);border-radius:14px;padding:12px 14px 12px;box-shadow:0 10px 30px rgba(0,0,0,.28);font-size:1rem;line-height:1.65;transition:left .3s ease,top .3s ease,opacity .2s;pointer-events:auto}
+.st-cap .st-k{display:block;font-size:.78rem;color:var(--st-mut);margin-bottom:2px;font-weight:600}
+.st-cap b{color:var(--st-acc)}
+.st-cap code,.st-cap kbd{font-family:var(--font-mono,ui-monospace,monospace);font-size:.9em;background:color-mix(in srgb,var(--st-acc) 14%,transparent);padding:0 .3em;border-radius:4px}
+.st-live{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.st-live:empty{display:none}
+.st-live span{font-family:var(--font-mono,ui-monospace,monospace);font-size:.86rem;border:1px solid var(--st-line);border-radius:999px;padding:1px 9px;direction:ltr;unicode-bidi:isolate}
+.st-bar{position:fixed;left:50%;bottom:max(10px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;background:var(--st-bar);color:var(--st-bar-ink);border-radius:16px;padding:6px 8px;box-shadow:0 8px 26px rgba(0,0,0,.35);pointer-events:auto;max-width:calc(100vw - 20px)}
+.st-bar button{min-width:44px;min-height:44px;border:0;border-radius:11px;background:rgba(255,255,255,.1);color:inherit;font:inherit;font-weight:700;font-size:.95rem;cursor:pointer;padding:0 10px}
+.st-bar button:hover{background:rgba(255,255,255,.2)}
+.st-bar button:focus-visible{outline:2px solid var(--st-acc);outline-offset:2px}
+.st-bar .st-go{background:var(--st-acc);color:#fff}
+.st-bar .st-n{font-family:var(--font-mono,ui-monospace,monospace);font-size:.82rem;opacity:.8;padding:0 4px;direction:ltr}
+.st-bar label{display:flex;align-items:center;gap:6px;font-size:.85rem;min-height:44px;padding:0 6px;cursor:pointer}
+.st-bar label input{width:18px;height:18px;accent-color:var(--st-acc)}
+.st-bar label[hidden]{display:none}
+.st-ttl{font-size:.82rem;font-weight:700;padding:0 6px;opacity:.9;max-width:38vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:520px){.st-ttl{display:none}.st-bar{gap:4px;padding:5px}.st-bar button{padding:0 8px;font-size:.9rem}}
+@media (prefers-reduced-motion: reduce){.st-spot,.st-finger,.st-cap,.st-dimall{transition:none!important}.st-rip{animation-duration:.01s}}
+</style>
+<script>
+/* simtour family: VFD guided template (shared core: S, io, KP, GUI, applySol) */
+window.SIMTOUR_VFD8=function(o){
+ const K=k=>o.kr+' [data-k="'+k+'"]';
+ const MV=()=>{const m=document.querySelector('.mview');return m&&(m.closest('.panel')||m);};
+ const chk=id=>()=>{const e=document.querySelector(id);return !!(e&&e.classList.contains('ok'));};
+ const hz=()=>Math.abs(S.fOut).toFixed(1)+' Hz';
+ const rpm=()=>Math.round(Math.abs(S.wm)*60/(2*Math.PI))+' rpm';
+ const live=()=>[hz(),rpm(),S.I.toFixed(2)+' A',(S.fault?'Fault '+fcode(S.fault):(statusText()||'Off'))];
+ const toLocal=o.local||[];const toRemote=o.remote||[];
+ const sk=o.start,stp=o.stop;
+ const runKp=(cap)=>toLocal.concat([['tap',K(sk),cap||'السبب: أمر تشغيل من زرار <b>'+o.startName+'</b> على الكيباد.']]);
+ const runDi=(cap)=>toRemote.concat([['tap','#dRun',cap||'السبب: سلكتور <b>RUN FWD</b> اتقفل، يعني الطرف <b>'+o.fwdT+'</b> أخد إشارة تشغيل.']]);
+ const waitOk=(cap)=>['until',chk('#gChkR'),40000,cap||'النتيجة: الانفرتر بيطلّع التردد على الرامب والموتور بيتسارع…','gChkR'];
+ const say=(c,ms)=>['say',c,ms||0];
+ const flt=(extra)=>[
+  ['js',A=>{const l=document.querySelector('#gBody .g-lead');A.say((l?l.innerHTML.replace(/^خطوة اختيارية:\s*/,''):'')+'');}],
+  ['wait',3800],
+  ['tap','#gFault','السبب: بنعمل العطل ده والموتور شغال.'],
+  ['until',chk('#gChkF1'),15000,'النتيجة: الانفرتر بيفصل علطول عشان يحمي نفسه والموتور…','F1'],
+  ['js',A=>{A.say('العطل ظهر على الشاشة: <b>'+(GUI.fseen?fcode(GUI.fseen):'')+'</b>. الموتور بيقف لوحده (Coast) لأن الخرج اتقطع.');}],
+  ['look',o.disp],['wait',3500],
+  ['tap','#gFault','الحل: نشيل سبب العطل الأول.'],
+  ['until',()=>!S.inj.dip,4000],
+ ].concat(extra||[],o.preReset||[],[
+  ['tap',K(o.reset),'وبعدين نمسح العطل بزرار <b>'+o.resetName+'</b>.'],
+  ['until',chk('#gChkF2'),20000,'النتيجة: العطل اتمسح والانفرتر رجع جاهز ✓','F2'],
+  ['look',()=>{const m=document.querySelector('.mview');return m&&(m.closest('.panel')||m);}]]);
+ const EX=[
+  {run:[['look',MV]].concat(runKp(),[waitOk(),say('وصل وثبت على السرعة المطلوبة ✓. لاحظ التيار: عالي شوية وهو بيسرّع، وبعدين بيهدى.'),['tap',K(stp),'ولما ندوس <b>'+o.stopName+'</b>: بيقف بالرامب، يعني بينزّل التردد بالراحة لحد صفر.'],['until',()=>Math.abs(S.fOut)<0.5,15000,'الموتور بيهدّي…'],['tap',K(sk),'نشغّله تاني عشان نجرّب العطل وهو شغال.'],['until',()=>Math.abs(S.fOut)>20,15000]]),flt:flt()},
+  {run:[['look',MV]].concat(runDi(),[waitOk(),say('شغال قدام ✓. السلكتور ثابت: طول ما هو مقفول الموتور شغال.'),].concat(o.revRun?[['tap','#dRun','نفتح <b>RUN FWD</b>…',1,'quiet'],['tap','#dRev','السبب: <b>RUN FWD</b> اتفتح و<b>RUN REV</b> اتقفل.'],['until',()=>S.fOut<-5,15000,'النتيجة: بيهدّي لصفر، وبعدين بيلف في الاتجاه العكسي…'],['tap','#dRev','نرجّعه قدام: نفتح REV ونقفل FWD.'],['tap','#dRun',''],['until',()=>S.fOut>20,15000]]:[['tap','#dRev','السبب: سلكتور <b>RUN REV</b> اتقفل (أمر الاتجاه).'],['until',()=>S.fOut<-5,15000,'النتيجة: بيهدّي لصفر، وبعدين بيلف في الاتجاه العكسي على نفس السرعة…'],['tap','#dRev','نرجّعه قدام.'],['until',()=>S.fOut>20,15000]]).concat([])),flt:flt()},
+  {run:[['look',MV]].concat(runDi('السبب: سلكتور <b>RUN FWD</b> اتقفل، والسرعة جاية من البوت الخارجي.'),[waitOk(),say('ثابت على سرعة البوت ✓.'),].concat(o.ex3ma?[['js',()=>{io.ma=8;if(typeof updMa==='function')updMa();},'السبب: إشارة الـ 4-20mA قلت لـ 8mA.'],['until',()=>Math.abs(S.fOut)<20,12000,'النتيجة: السرعة بتنزل معاها على الرامب…'],['js',()=>{io.ma=13.6;if(typeof updMa==='function')updMa();},'نرجّع الإشارة 13.6mA: السرعة بتطلع تاني.']]:[['js',()=>{io.pot=0.3;if(typeof updPot==='function')updPot();},'السبب: البوت اتلف للنص (الجهد قل).'],['until',()=>Math.abs(S.fOut)<20,12000,'النتيجة: السرعة بتنزل معاه على الرامب…'],['js',()=>{io.pot=0.6;if(typeof updPot==='function')updPot();},'نرجّع البوت مكانه: السرعة بتطلع تاني.']]).concat([['until',chk('#gChkR'),15000]])),flt:flt()},
+  {run:[['look',MV]].concat(runDi(),[waitOk('النتيجة: الموتور بيطلع على السرعة الثابتة اللي السلكتور مختارها…'),say('ثابت على السرعة رقم 2 ✓.'),['tap','#dSpd','السبب: سلكتور السرعات اتلف على 3.'],['until',()=>Math.abs(S.fOut)>Math.abs(S.fTgt)-1&&S.code===3,15000,'النتيجة: بيروح على السرعة رقم 3 بالرامب…'],['tap','#dSpd','ونرجّعه على 2.',3],['until',chk('#gChkR'),15000]]),flt:flt()},
+  {run:[['look',MV]].concat(runKp(),[waitOk('النتيجة: بيطلع على 50 Hz في زمن التسارع اللي اتكتب، والتيار تحت تيار اللوحة…'),say('وصل 50 Hz والتيار أقل من تيار لوحة الموتور ✓. ده معناه إن بيانات الموتور مظبوطة.')]),flt:flt()},
+  {run:[['look',MV]].concat(runKp(),[['until',()=>Math.abs(S.fOut)>48,25000,'النتيجة: بيطلع على 50 Hz…'],['tap',K(stp),'السبب: <b>'+o.stopName+'</b> بوقوف سريع والحمل تقيل (قصوره كبير).'],['until',()=>!!S.fault,12000,'النتيجة: الموتور بيرجّع طاقة للانفرتر وجهد الـ DC bus بيعلى…'],['js',A=>A.say('النتيجة: الانفرتر فصل بعطل <b>'+fcode(S.fault)+'</b> (جهد DC عالي) ✓.')],['look',o.disp],['wait',4000]]),
+   flt:[['tap',K(o.reset),'نمسح العطل بزرار <b>'+o.resetName+'</b>.'],['until',chk('#gChkF1'),8000],
+    ['js',()=>{setParam(o.fix6[0],o.fix6[1],'demo');},'الحل: نفعّل منظم جهد الـ DC bus في الباراميترات، فالانفرتر يطوّل الوقوف لوحده بدل ما يفصل.'],
+    ['look',MV]].concat(toLocal,[['tap',K(sk),'نشغّل تاني لـ 50 Hz…'],['until',()=>Math.abs(S.fOut)>48,25000],['tap',K(stp),'ونوقف تاني.'],['until',chk('#gChkF2'),25000,'النتيجة: وقف من غير عطل، بس أبطأ شوية ✓','F2']])}
+ ];
+ window.SIMTOUR_CFG={
+  dbg:o.dbg||(()=>{try{return JSON.stringify({st:S.st,f:S.fault,fo:+S.fOut.toFixed(1),I:+S.I.toFixed(1),inj:Object.keys(S.inj||{}).filter(k=>S.inj[k]).join(',')});}catch(e){return '';}}),lab:o.lab,name:o.name,tourEx:o.tourEx||0,machine:'الموتور',motor:()=>{const m=document.querySelector('.mview');return m&&(m.closest('.panel')||m);},disp:o.disp,live,
+  ex:EX,
+  wire:o.wire,
+  params:[
+   {t:'#gByHand',tap:1,cap:'خطوة 2 الباراميترات: اختار «ادخلها بإيدك من الكيباد» عشان إيدك تتعود، أو «اضبطها أوتوماتيك» لو مستعجل.'},
+   {t:'#gBody .g-howto',cap:'هنا مكتوب طريق الوصول لأي باراميتر على كيباد الـ '+o.short+' خطوة بخطوة.'},
+   {t:'#gBody .g-tbl',cap:'وده جدول التمرين: رقم الباراميتر، والقيمة المطلوبة، وليه. اللي لسه مش مظبوط مكتوب جنبه قيمته دلوقتي.'},
+   {t:o.disp,cap:o.dispCap||'الشاشة: بتعرض التردد والحالة، ولما تدخل القوايم بتعرض أرقام الباراميترات وقيمها، ولو حصل عطل بتكتب كوده.'}
+  ],
+  keys:o.keys,
+  edit:[['js',()=>{if(o.home)o.home();}],['until',()=>ctlOk(),12000,'لحظة لحد ما الشاشة تقوم…']].concat(o.edit,[['until',()=>Math.abs(P[o.editP]-o.editV)<1e-6,4000,null,'edit-value']]),
+  editOk:'#gBody tr[data-pc="'+o.editP+'"]',
+  run:[
+   {cap:'نخلّي المحاكي يكمّل باقي الباراميترات أوتوماتيك، وننتقل لخطوة التشغيل…',k:'التشغيل',ops:[['js',async A=>{if(typeof applySol==='function'){applySol(GUI.ex);}await A.until(()=>typeof gParamsOk==='function'&&gParamsOk(GUI.ex),25000);}]],opt:1},
+   {t:'#gBody .g-live',cap:'خطوة 3 التشغيل: هنا بتشوف الحالة، والتردد، والتيار، والتشغيل جاي منين، والسرعة جاية منين.'},
+   {t:'#station',cap:'لوحة التشغيل: سلكتورات وزراير ومقابض متوصلة على أطراف الانفرتر. دوسة على السلكتور تقفله أو تفتحه، والمقبض تلفه بالسحب لفوق وتحت أو بعجلة الماوس.'},
+   {ops:toLocal.concat([['tap',K(sk),'نشغّل من الكيباد: زرار <b>'+o.startName+'</b>.']])},
+   {t:MV,cap:'الموتور بيلف، والأرقام تحته بتتغير معاه: التردد Hz، والسرعة rpm، والتيار A، والجهد V، وجهد الـ DC bus.',act:async A=>{window.SIMTOUR.state.live=live;await A.until(()=>Math.abs(S.fOut)>20,15000);}},
+   {t:'#gChkR',cap:'لما تعمل المطلوب صح، العلامة دي بتبقى ✓ خضرا وتقدر تكمل.',ops:[['until',chk('#gChkR'),20000,null,'tour-gChkR']]}
+  ],
+  fault:[
+   {t:'#gFault',tap:1,cap:'خطوة 4 العطل: الزرار ده بيعمل عطل حقيقي في المحاكي والموتور شغال، عشان تشوف شكله وتتعلم تمسحه.'},
+   {t:o.disp,cap:'العطل بيظهر على الشاشة بكوده، والموتور بيقف لوحده. الكود ده بتدوّر عليه في جدول الأعطال.',act:async A=>{await A.until(()=>!!S.fault,8000);}},
+   {t:'#gChkF1',cap:'العلامة دي بتتأكد إنك شفت العطل.'},
+   {t:'#gFault',tap:1,cap:'الحل: شيل السبب الأول (نفس الزرار بيرجّع كل حاجة).'},
+   {ops:[['until',()=>!S.inj.dip,4000]].concat(o.preReset||[],[['tap',K(o.reset),'وبعدين امسح العطل بزرار <b>'+o.resetName+'</b>.'],['until',chk('#gChkF2'),15000]])},
+   {t:'#gChkF2',cap:'✓ العطل اتمسح والانفرتر رجع جاهز.'}
+  ]
+ };
+};
+
+// family: vfd8
+SIMTOUR_VFD8({lab:'frenic-lab',revRun:1,name:'Fuji FRENIC-Mini',short:'FRENIC-Mini',kr:'.vfd',disp:'#fjSeg',
+ start:'RUN',startName:'RUN',stop:'STOP',stopName:'STOP',reset:'PRG',resetName:'PRG/RESET',fwdT:'FWD',
+ fix6:['H69',1],
+ home:()=>{const H=KP.state;H.v='run';H.ed=null;H.mi=0;},
+ keys:[
+  ['.vfd [data-k="PRG"]','<b>PRG/RESET</b> بيفتح القايمة وبيرجع خطوة، ولو فيه عطل بيمسحه.'],
+  ['.vfd [data-k="FUNC"]','<b>FUNC/DATA</b> بيدخل وبيحفظ، وفي شاشة التشغيل بيقلب بين Hz و A و kW.'],
+  ['.vfd [data-k="UP"]','<b>▲ ▼</b> بيغيّروا (اضغط مطوّل يجري أسرع). في شاشة التشغيل بيغيّروا السرعة لما F01 = 0.'],
+  ['.vfd [data-k="RUN"]','<b>RUN</b> بيشغّل و<b>STOP</b> بيوقّف.']
+ ],
+ editP:'F07',editV:5,
+ edit:[
+  ['tap','.vfd [data-k="PRG"]','نغيّر زمن التسارع <b>F07</b> كمثال. <b>PRG</b> يفتح القايمة على جروب <b>F</b>.'],
+  ['tap','.vfd [data-k="FUNC"]','<b>FUNC/DATA</b> يدخل الجروب.'],
+  ['tap','.vfd [data-k="UP"]','<b>▲</b> لحد <b>F 07</b>.',()=>KP.state.list.indexOf('F07')],
+  ['tap','.vfd [data-k="FUNC"]','<b>FUNC/DATA</b> تظهر القيمة.'],
+  ['adj','.vfd [data-k="UP"]','.vfd [data-k="DN"]',()=>(5-P.F07)*10,'<b>▼</b> ننزّلها لحد <b>5</b> ثواني.'],
+  ['tap','.vfd [data-k="FUNC"]','<b>FUNC/DATA</b> يحفظ (SAVE).']
+ ]
+});
+
+</script>
+<script>
+/* simtour: shared in-page demo engine (interface tour + exercise previews). Same file in every simulator. */
+(function(){
+'use strict';
+if(window.SIMTOUR)return;
+const C=window.SIMTOUR_CFG;if(!C)return;
+const W=window,D=document,LAB=C.lab;
+const oST=W.setTimeout,oSI=W.setInterval,oCT=W.clearTimeout.bind(W),oCI=W.clearInterval.bind(W);
+const st=(f,t)=>oST.call(W,f,t);
+const SP=Storage.prototype,oSet=SP.setItem,oRem=SP.removeItem,oClr=SP.clear;
+const EP=Element.prototype,oCap=EP.setPointerCapture,oRel=EP.releasePointerCapture,oHas=EP.hasPointerCapture;
+const RM=()=>!!(W.matchMedia&&W.matchMedia('(prefers-reduced-motion: reduce)').matches);
+const AUTO=!W.navigator.webdriver||/[?&]tour=auto/.test(location.search);
+const $=s=>{try{if(!s)return null;if(typeof s==='function')return s()||null;if(s instanceof Element)return s;const L=D.querySelectorAll(s);for(const e of L)if(vis(e))return e;return null;}catch(e){return null;}};
+const vis=e=>!!(e&&e.isConnected&&(e.offsetWidth||e.offsetHeight||e.getClientRects().length)&&!e.closest('[hidden]'));
+const G=n=>{try{return Function('return typeof '+n+'!=="undefined"?'+n+':undefined')();}catch(e){return undefined;}};
+const call=(n,...a)=>{const f=G(n);if(typeof f==='function'){try{return f(...a);}catch(e){}}};
+const lsGet=k=>{try{return W.localStorage.getItem(k);}catch(e){return null;}};
+const lsSet=(k,v)=>{try{oSet.call(W.localStorage,k,v);}catch(e){}};
+const KEY='simtour:'+LAB;
+const ltr=s=>String(s).replace(/(<[^>]*>|&[#\w]+;)|((?<![\w&#])[A-Za-z0-9][A-Za-z0-9.,:%°\/+\-_×]*(?:\s[A-Za-z0-9][A-Za-z0-9.,:%°\/+\-_×]*)*)/g,(m,tag,tok)=>tag?tag:'<bdi dir="ltr">'+tok+'</bdi>');
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+/* ---------------- sandbox: snapshot / restore everything the demo touches ---------------- */
+const ROOTS=['S','P','GUI','EXS','EV','K','KP','H','io','W','GH','GQ','SC','M'].concat(C.snap||[]);
+function plain(o){const p=Object.getPrototypeOf(o);return p===Object.prototype||p===null||Array.isArray(o);}
+function snapGraph(roots){
+ const rec=new Map(),stk=roots.slice();
+ while(stk.length){const o=stk.pop();if(!o||typeof o!=='object'||rec.has(o))continue;let r=null;
+  if(o instanceof Set){r={t:'s',v:[...o]};r.v.forEach(x=>stk.push(x));}
+  else if(o instanceof Map){r={t:'m',v:[...o]};r.v.forEach(e=>stk.push(e[0],e[1]));}
+  else if(ArrayBuffer.isView(o)&&typeof o.slice==='function'){r={t:'t',v:o.slice()};}
+  else if(!(o instanceof Node)&&plain(o)){const ds=Object.getOwnPropertyDescriptors(o),v={};
+   for(const k in ds){const d=ds[k];if('value' in d&&k!=='length'){v[k]=d.value;if(d.value&&typeof d.value==='object')stk.push(d.value);}}
+   r={t:Array.isArray(o)?'a':'o',v,n:Array.isArray(o)?o.length:0};}
+  if(r)rec.set(o,r);}
+ return rec;
+}
+function restoreGraph(rec){
+ rec.forEach((r,o)=>{try{
+  if(r.t==='s'){o.clear();r.v.forEach(x=>o.add(x));}
+  else if(r.t==='m'){o.clear();r.v.forEach(e=>o.set(e[0],e[1]));}
+  else if(r.t==='t'){o.set(r.v);}
+  else{
+   if(r.t==='a'&&o.length!==r.n)o.length=r.n;
+   for(const k of Object.keys(o))if(!(k in r.v)){const d=Object.getOwnPropertyDescriptor(o,k);if(d&&'value' in d&&d.configurable)try{delete o[k];}catch(e){}}
+   for(const k in r.v)if(o[k]!==r.v[k]||!(k in o))try{o[k]=r.v[k];}catch(e){}
+  }}catch(e){}});
+}
+const SB={on:false,tm:[]};
+function blockStore(on){
+ if(on){
+  SP.setItem=function(k,v){if(this===W.localStorage)return;return oSet.call(this,k,v);};
+  SP.removeItem=function(k){if(this===W.localStorage)return;return oRem.call(this,k);};
+  SP.clear=function(){if(this===W.localStorage)return;return oClr.call(this);};
+ }else{SP.setItem=oSet;SP.removeItem=oRem;SP.clear=oClr;}
+}
+function wrapTimers(on){
+ if(on){
+  W.setTimeout=function(f,t,...a){const id=oST.call(W,f,t,...a);SB.tm.push([0,id]);return id;};
+  W.setInterval=function(f,t,...a){const id=oSI.call(W,f,t,...a);SB.tm.push([1,id]);return id;};
+ }else{W.setTimeout=oST;W.setInterval=oSI;}
+}
+function sbBegin(){
+ const roots=ROOTS.map(n=>[n,G(n)]);
+ SB.roots=roots;SB.rec=snapGraph(roots.map(r=>r[1]).filter(Boolean));
+ SB.forms=[...D.querySelectorAll('input,select,textarea')].filter(e=>!e.closest('#stRoot')).map(e=>[e,e.value,e.checked]);
+ SB.dom=(C.keepDom||['#log']).map(s=>{const e=D.querySelector(s);return e?[e,e.innerHTML]:null;}).filter(Boolean);
+ {const g=G('GUI');SB.guided=g?g.guided:null;}
+ SB.scroll=[W.scrollX,W.scrollY];SB.cls=D.body.className;SB.dg=D.body.getAttribute('data-g');
+ SB.tm=[];blockStore(true);wrapTimers(true);SB.on=true;
+ if(C.begin)try{C.begin();}catch(e){}
+}
+function sbEnd(){
+ if(!SB.on)return;
+ wrapTimers(false);SB.tm.forEach(([k,id])=>k?oCI(id):oCT(id));SB.tm=[];
+ if(C.beforeRestore)try{C.beforeRestore();}catch(e){}
+ {const g=G('GUI');if(g&&SB.guided!=null&&g.guided!==SB.guided){const mb=D.querySelector('#modeBtn');if(mb)try{mb.click();}catch(e){}}}
+ const back=()=>{restoreGraph(SB.rec);SB.roots.forEach(([n,v])=>{if(v!==undefined&&G(n)!==v){try{Function('v',n+'=v')(v);}catch(e){}}});};
+ back();
+ SB.forms.forEach(([e,v,c])=>{if(!e.isConnected)return;const ch=e.value!==v||e.checked!==c;if(!ch)return;try{e.value=v;e.checked=c;e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));}catch(_){}});
+ back();
+ SB.dom.forEach(([e,h])=>{if(e.isConnected)e.innerHTML=h;});
+ refresh();
+ back();
+ if(C.afterRestore)try{C.afterRestore();}catch(e){}
+ SB.on=false;blockStore(false);
+ const [x,y]=SB.scroll;st(()=>W.scrollTo({left:x,top:y,behavior:'auto'}),30);W.scrollTo({left:x,top:y,behavior:'auto'});
+}
+function refresh(){
+ (C.refresh||['calcK','updMotor','updStation','renderStation','updPot','updMa','updKPot','updDPot','syncInj','renderParams','renderEx','renderFaults','pills','renderDisplay','renderWires','renderBoardDyn']).forEach(n=>call(n));
+ if(C.rerender){try{C.rerender();}catch(e){}}
+ else if(typeof G('guideRender')==='function')call('guideRender');
+ else{const mb=D.querySelector('#modeBtn');if(mb){mb.click();mb.click();}}
+ if(gui&&D.body.getAttribute('data-g')!==SB.dg&&SB.dg!=null)D.body.setAttribute('data-g',SB.dg);
+ D.body.className=SB.cls;
+}
+
+/* ---------------- player UI ---------------- */
+let R=null;
+const FINGER='<svg viewBox="0 0 46 46" width="46" height="46" aria-hidden="true"><path d="M14 4c2.2 0 4 1.8 4 4v13.5l2-.3c1.6-.2 3 .6 3.6 2l.2.4 1.6-.2c1.7-.2 3.2.8 3.7 2.4l1.3-.1c2-.2 3.8 1.3 4 3.3l.6 6.6c.4 4.4-2.2 8.6-6.4 10.2l-.6.2H17.6c-2 0-3.8-1-4.9-2.6L5.5 32.6c-1-1.5-.7-3.5.7-4.6 1.4-1.1 3.4-1 4.6.3L10 30V8c0-2.2 1.8-4 4-4z" fill="#fff" stroke="#1b1f24" stroke-width="2" stroke-linejoin="round"/></svg>';
+function ui(){
+ if(R)return R;
+ const r=D.createElement('div');r.id='stRoot';r.hidden=true;r.setAttribute('dir','rtl');
+ r.innerHTML='<div class="st-shield"></div><div class="st-spot off"></div><div class="st-finger">'+FINGER+'</div>'+
+  '<div class="st-cap" role="status" aria-live="polite"><span class="st-k"></span><div class="st-t"></div><div class="st-live"></div></div>'+
+  '<div class="st-bar" role="toolbar" aria-label="التحكم في العرض"><span class="st-ttl"></span>'+
+  '<button type="button" class="st-pp" aria-label="إيقاف مؤقت">❚❚</button>'+
+  '<button type="button" class="st-sp" aria-label="السرعة">1×</button>'+
+  '<button type="button" class="st-nx" aria-label="الخطوة اللي بعدها">⏭</button>'+
+  '<span class="st-n" dir="ltr"></span>'+
+  '<label class="st-nomore" hidden><input type="checkbox"> متفرّجش تاني</label>'+
+  '<button type="button" class="st-go">جرّب إنت</button></div>';
+ D.body.appendChild(r);
+ R={r,shield:r.querySelector('.st-shield'),spot:r.querySelector('.st-spot'),fing:r.querySelector('.st-finger'),cap:r.querySelector('.st-cap'),k:r.querySelector('.st-k'),t:r.querySelector('.st-t'),live:r.querySelector('.st-live'),
+  ttl:r.querySelector('.st-ttl'),pp:r.querySelector('.st-pp'),sp:r.querySelector('.st-sp'),nx:r.querySelector('.st-nx'),n:r.querySelector('.st-n'),nomore:r.querySelector('.st-nomore'),go:r.querySelector('.st-go')};
+ R.pp.addEventListener('click',()=>setPause(!PL.paused));
+ R.sp.addEventListener('click',()=>{PL.speed=PL.speed===1?2:1;R.sp.textContent=PL.speed+'×';R.sp.setAttribute('aria-pressed',PL.speed===2);});
+ R.nx.addEventListener('click',()=>{PL.skip=true;if(PL.paused)setPause(false);});
+ R.go.addEventListener('click',()=>stop());
+ R.shield.addEventListener('click',()=>setPause(!PL.paused));
+ D.addEventListener('keydown',e=>{if(!PL.on)return;if(e.key==='Escape'){e.preventDefault();stop();}});
+ return R;
+}
+function setPause(p){PL.paused=p;if(R){R.pp.textContent=p?'▶':'❚❚';R.pp.setAttribute('aria-label',p?'كمّل':'إيقاف مؤقت');}}
+const PL={on:false,paused:false,speed:1,skip:false,stop:false,el:null,fingerEl:null,i:0,n:0,live:null};
+const STOP={stop:1};
+function frame(){
+ if(!PL.on||!R)return;
+ const vw=D.documentElement.clientWidth,vh=W.innerHeight;
+ let el=PL.el&&PL.el.isConnected?PL.el:null;
+ if(!el&&PL.el&&PL.sel){const e=$(PL.sel);if(e){PL.el=el=e;}}
+ let rc=null;
+ if(el){const b=el.getBoundingClientRect();const p=6;rc={l:Math.max(4,b.left-p),t:Math.max(4,b.top-p),r:Math.min(vw-4,b.right+p),b:Math.min(vh-4,b.bottom+p)};
+  if(rc.r-rc.l<8||rc.b-rc.t<8)rc=null;}
+ if(rc){R.spot.classList.remove('off');const s=R.spot.style;s.left=rc.l+'px';s.top=rc.t+'px';s.width=(rc.r-rc.l)+'px';s.height=(rc.b-rc.t)+'px';}
+ else{R.spot.classList.add('off');}
+ /* caption */
+ const cw=R.cap.offsetWidth,ch=R.cap.offsetHeight,bh=(R.r.querySelector('.st-bar').offsetHeight||56)+20;
+ let x,y;
+ if(rc){const cx=(rc.l+rc.r)/2;x=cx-cw/2;
+  if(rc.b+12+ch<vh-bh)y=rc.b+12;else if(rc.t-12-ch>8)y=rc.t-12-ch;else y=(rc.t+rc.b)/2>vh/2?10:vh-bh-ch;}
+ else{x=(vw-cw)/2;y=Math.max(10,vh*0.3-ch/2);}
+ x=Math.max(16,Math.min(vw-16-cw,x));y=Math.max(8,Math.min(vh-bh-ch,y));
+ R.cap.style.left=x+'px';R.cap.style.top=y+'px';
+ if(PL.fingerEl&&PL.fingerEl.isConnected){const b=PL.fingerEl.getBoundingClientRect();R.fing.style.left=(b.left+b.width/2)+'px';R.fing.style.top=(b.top+b.height/2)+'px';}
+ if(PL.live){let h='';try{h=PL.live().map(x=>'<span>'+esc(x)+'</span>').join('');}catch(e){}if(R.live._h!==h){R.live._h=h;R.live.innerHTML=h;}}
+ else if(R.live._h){R.live._h='';R.live.innerHTML='';}
+ requestAnimationFrame(frame);
+}
+/* time that respects pause / speed / skip */
+function sleep(ms){return new Promise(r=>st(r,ms));}
+async function wait(ms,noSpeed){
+ let acc=0,last=performance.now();
+ while(true){
+  if(PL.stop)throw STOP;
+  if(PL.skip)return;
+  const now=performance.now(),dt=now-last;last=now;
+  if(!PL.paused)acc+=dt*(noSpeed?1:PL.speed);
+  if(acc>=ms)return;
+  await sleep(Math.min(60,ms-acc+2));
+ }
+}
+async function until(fn,ms){
+ let acc=0,last=performance.now();
+ while(true){
+  if(PL.stop)throw STOP;
+  let ok=false;try{ok=!!fn();}catch(e){}
+  if(ok)return true;
+  if(PL.skip)return false;
+  const now=performance.now(),dt=now-last;last=now;if(!PL.paused)acc+=dt;
+  if(acc>=(ms||8000))return false;
+  await sleep(60);
+ }
+}
+async function gate(){while(PL.paused){if(PL.stop)throw STOP;await sleep(80);}if(PL.stop)throw STOP;}
+function inView(el){const b=el.getBoundingClientRect(),vh=W.innerHeight;return b.top>=64&&b.bottom<=vh-90;}
+async function focusEl(el){
+ PL.el=el;
+ if(!inView(el)){
+  const b=el.getBoundingClientRect(),vh=W.innerHeight;
+  const big=b.height>vh-200;
+  const top=W.scrollY+b.top-(big?70:Math.max(70,(vh-b.height)/2-40));
+  W.scrollTo({top:Math.max(0,top),behavior:RM()?'auto':'smooth'});
+  await sleep(RM()?40:520);
+ }
+}
+function setCap(html,kick){ui();R.k.textContent=kick||'';R.t.innerHTML=ltr(html||'');}
+async function fingerTo(el){
+ const same=PL.fingerEl===el&&R.fing.classList.contains('on');
+ PL.fingerEl=el;R.fing.classList.add('on');if(!same)await sleep(RM()?20:560);
+}
+function fire(el,type,x,y){
+ const o={bubbles:true,cancelable:true,composed:true,view:W,clientX:x,clientY:y,button:0,buttons:/down/.test(type)?1:0,pointerId:91,pointerType:'mouse',isPrimary:true};
+ let ev;try{ev=/^pointer|^lost/.test(type)&&W.PointerEvent?new PointerEvent(type,o):new MouseEvent(type,o);}catch(e){ev=new MouseEvent(type,o);}
+ el.dispatchEvent(ev);
+}
+function capOff(on){if(on){EP.setPointerCapture=function(){};EP.releasePointerCapture=function(){};EP.hasPointerCapture=function(){return false;};}else{EP.setPointerCapture=oCap;EP.releasePointerCapture=oRel;EP.hasPointerCapture=oHas;}}
+function ripple(el){if(!R||!el)return;const b=el.getBoundingClientRect(),d=D.createElement('i');d.className='st-rip';d.style.left=(b.left+b.width/2)+'px';d.style.top=(b.top+b.height/2)+'px';R.r.appendChild(d);st(()=>d.remove(),700);}
+async function press(el,hold,silent){
+ if(!el)return false;
+ if(!silent){await fingerTo(el);R.fing.classList.add('press');ripple(el);}
+ const b=el.getBoundingClientRect(),x=b.left+b.width/2,y=b.top+b.height/2;
+ capOff(true);
+ try{fire(el,'pointerdown',x,y);}catch(e){}
+ capOff(false);
+ try{if(typeof hold==='function'){if(!(await until(hold,25000)))PL.miss.push('hold-until');}else if(hold)await wait(hold,true);else await sleep(150);}
+ finally{
+ capOff(true);
+ try{fire(el,'pointerup',x,y);fire(el,'click',x,y);}catch(e){}
+ capOff(false);}
+ if(!silent)R.fing.classList.remove('press');
+ return true;
+}
+
+/* ---------------- ops (shared by tours and previews) ---------------- */
+const gui=()=>G('GUI')||{};
+async function goStep(n){
+ const g=gui();if(!g||g.ex==null||g.ex<0)return;
+ if(g.step===n)return;
+ if(typeof G('guideRender')==='function'){g.step=n;call('guideRender');}
+ else{let k=0;while(gui().step!==n&&k++<6){const b=D.querySelector(gui().step<n?'#gNext':'#gPrev');if(!b)break;b.disabled=false;b.click();await sleep(60);}}
+ await sleep(120);
+}
+async function openEx(i){
+ const g=gui();
+ if(i<0){if(g&&g.guided===false){const mb=D.querySelector('#modeBtn');if(mb)mb.click();await sleep(80);}if(gui().ex>=0){const b=D.querySelector('#gBack');if(b)b.click();await sleep(80);}return;}
+ if(g&&g.guided===false){const mb=D.querySelector('#modeBtn');if(mb)mb.click();await sleep(80);}
+ if(g&&g.ex===i)return;
+ if(g&&g.ex>=0){const b=D.querySelector('#gBack');if(b)b.click();await sleep(80);}
+ const c=D.querySelector('#gCards [data-ex="'+i+'"]');if(c)c.click();await sleep(120);
+}
+async function runOps(ops,mode){
+ for(const op of ops||[]){
+  await gate();
+  if(typeof op==='function'){await op(API);continue;}
+  const k=op[0],b=op[2],c2=op[3],d=op[4];let a=op[1];
+  if(k==='say'){if(b&&typeof b!=='number'){const e=$(b);if(e&&mode!=='pv')await focusEl(e);else if(e)PL.el=e;}setCap(a,PL.kick);await wait(typeof b==='number'?b:capMs(a));}
+  else if(k==='look'){const e=$(a);if(e){await focusEl(e);}if(b){setCap(b,PL.kick);await wait(c2||capMs(b));}}
+  else if(k==='tap'||k==='hold'){
+   if(typeof a==='function'){try{a=a(API);}catch(_){a=null;}}
+   const e=$(a);if(!e){PL.miss.push('tap:'+String(a));continue;}
+   const quiet=mode==='pv'||d==='quiet';
+   const capt=k==='tap'?b:c2;if(k==='hold'&&typeof b!=='number'&&typeof b!=='function'){PL.miss.push('hold-ms');}
+   if(capt)setCap(capt,PL.kick);
+   if(!quiet){await focusEl(e);await gate();}
+   let n=k==='tap'&&c2!=null&&typeof c2!=='string'?c2:k==='hold'&&typeof d==='function'?d:1;if(typeof n==='function'){try{n=+n(API)||0;}catch(e){n=0;}}
+   for(let j=0;j<n;j++){await gate();await press($(a)||e,k==='hold'?b:0,quiet);if(n>1)await wait(quiet?120:230,true);}
+   if(capt)await wait(Math.max(900,capMs(capt)*(quiet?0.75:0.55)));else await wait(quiet?250:420);
+  }
+  else if(k==='js'){try{await a(API);}catch(e){PL.miss.push('js:'+e.message);}if(b){setCap(b,PL.kick);await wait(capMs(b));}}
+  else if(k==='until'){if(c2)setCap(c2,PL.kick);const ok=await until(a,b);if(!ok&&!PL.skip){let x='';if(C.dbg)try{x=' '+C.dbg();}catch(e){}PL.miss.push('until:'+(d||String(a).slice(0,60))+x);}if(c2)await wait(900);}
+  else if(k==='adj'){/* ['adj', upSel, dnSel, ()=>steps (+up/-down), caption] */
+   let n=0;try{n=Math.round(+c2(API))||0;}catch(e){}
+   if(d)setCap(d,PL.kick);const sel=n>0?a:b,quiet=mode==='pv';const e=$(sel);
+   if(e&&n){if(!quiet){await focusEl(e);}const n0=n;let live=null;for(let j=0,lim=Math.abs(n0)*2+6;j<lim&&n;j++){await gate();const s2=n>0?a:b;await press($(s2)||e,0,quiet);await wait(Math.abs(n)>12?90:200,true);let m=n;try{m=Math.round(+c2(API))||0;}catch(_){}if(live===null)live=(m!==n0);n=live?m:n-Math.sign(n);}}
+   await wait(d?Math.max(900,capMs(d)*0.5):300);
+  }
+  else if(k==='wheel'){/* ['wheel', sel, ()=>n (+cw/-ccw), caption] */
+   let n=0;try{n=Math.round(+(typeof b==='function'?b(API):b))||0;}catch(e){}
+   if(c2)setCap(c2,PL.kick);const e=$(a);
+   if(e&&n){if(mode!=='pv'){await focusEl(e);await fingerTo(e);}const bx=e.getBoundingClientRect();
+    for(let j=0,lim=Math.abs(n)*2+6;j<lim&&n;j++){await gate();try{e.dispatchEvent(new WheelEvent('wheel',{bubbles:true,cancelable:true,deltaY:(n>0?-1:1)*(d||100),clientX:bx.left+bx.width/2,clientY:bx.top+bx.height/2}));}catch(_){}if(j%3===0&&mode!=='pv')ripple(e);await wait(Math.abs(n)>12?140:170,true);if(op[5]&&typeof b==='function'){try{n=Math.round(+b(API))||0;}catch(_){n=0;}}else n-=Math.sign(n);}}
+   await wait(c2?Math.max(900,capMs(c2)*0.5):300);
+  }
+  else if(k==='wait'){await wait(a);}
+  else if(k==='step'){await goStep(a);}
+  else if(k==='live'){PL.live=a||null;}
+ }
+}
+function capMs(h){const n=String(h||'').replace(/<[^>]*>/g,'').length;return Math.max(2300,Math.min(9000,1300+n*48));}
+const API={applyAuto:()=>applyAuto(null),$,G,call,tap:(s,h)=>press($(s),h,PL.kind==='pv'),wait,until,sleep,goStep,openEx,say:(h)=>setCap(h,PL.kick)};
+
+/* ---------------- generic tour + preview scripts ---------------- */
+function tourSteps(){
+ if(C.tour)return C.tour(API);
+ const ex=C.tourEx||0,s=[];
+ s.push({cap:'ده محاكي <b>'+C.name+'</b>. في دقيقتين هنوريك إزاي تستخدمه: التمارين، والتوصيل، والكيباد، والتشغيل، والأعطال. تقدر توقّف العرض أو تسرّعه أو تتخطى أي خطوة من الشريط اللي تحت.',k:'أهلاً'});
+ s.push({t:'#gCards',pre:async()=>{const g=gui();if(g.guided===false||g.ex>=0){await openEx(-1);if(gui().ex>=0){const b=D.querySelector('#gBack');if(b)b.click();}}await sleep(150);},cap:'دي تمارين «ابدأ من هنا»: 6 تمارين مترتبين من الأسهل للأصعب. كل كارت مكتوب عليه المطلوب وعدد الباراميترات.',k:'التمارين'});
+ s.push({t:'#gCards [data-ex="'+ex+'"]',tap:1,cap:'دوس على أي كارت يفتح التمرين. هنفتح واحد كمثال.',k:'التمارين'});
+ s.push({t:'#gProg',cap:'كل تمرين 4 خطوات: <b>التوصيل</b> ← <b>الباراميترات</b> ← <b>التشغيل</b> ← <b>العطل</b>. الشريط ده بيوريك إنت في أنهي خطوة.',k:'الخطوات'});
+ (C.wire||[{t:'#gBody .g-fig, #gBody figure, #gBody svg',cap:'خطوة 1 التوصيل: الرسمة دي بتوريك كل سلك رايح فين. الأطراف اللي هتستخدمها متعلّمة بدواير، وأساميها مكتوبة تحت الرسمة.'}]).forEach(x=>s.push(Object.assign({k:'1 التوصيل'},x)));
+ s.push({t:'#gNext',tap:1,cap:'دوس «التالي» تروح للخطوة اللي بعدها، و«السابق» يرجّعك خطوة.',k:'الخطوات'});
+ (C.params||[]).forEach(x=>s.push(Object.assign({k:'2 الباراميترات'},x)));
+ (C.keys||[]).forEach(([t,cap])=>s.push({t,cap,k:'الكيباد'}));
+ if(C.edit)s.push({ops:C.edit,k:'تغيير باراميتر'});
+ if(C.editOk)s.push({t:C.editOk,cap:'لما القيمة تبقى زي الجدول، بتظهر ✓ جنب الباراميتر، والعدّاد فوق بيزيد.',k:'تغيير باراميتر'});
+ s.push({ops:[['step',2]],k:'3 التشغيل'});
+ (C.run||[]).forEach(x=>s.push(Object.assign({k:'3 التشغيل'},x)));
+ s.push({ops:[['step',3]],k:'4 العطل'});
+ (C.fault||[]).forEach(x=>s.push(Object.assign({k:'4 العطل'},x)));
+ s.push({t:'#modeBtn',cap:'«الوضع الكامل» بيفتحلك المحاكي كله مرة واحدة: جدول الباراميترات كله، ومخطط التوصيل الحي، والأعطال، والمرجع. ترجع للتمارين بنفس الزرار.',k:'الوضع الكامل'});
+ s.push({t:'#stTour',cap:'الزرار ده بيرجّعلك الشرح ده في أي وقت، وجوه كل تمرين فيه «شوف المطلوب» يوريك النتيجة المطلوبة على '+(C.machine||'الموتور')+'. دلوقتي دورك: دوس «جرّب إنت».',k:'خلاص',end:1});
+ return s;
+}
+function pvSteps(i){
+ const X=(C.ex&&C.ex[i])||{},s=[];
+ const card=D.querySelector('#gCards [data-ex="'+i+'"] .g, #gCards [data-ex="'+i+'"] .goal');
+ const goal=X.goal||(card?card.textContent:'');
+ s.push({t:'#gTitle',cap:'المطلوب: '+esc(goal)+'<br>هنظبط المحاكي زي التمرين ونوريك النتيجة على '+(C.machine||'الموتور')+'. ركّز على اللي بيحصل.',k:'شوف المطلوب'});
+ s.push({ops:[async()=>{await prepPv(i,X);}],k:'تجهيز'});
+ s.push({ops:X.run||[],k:'التشغيل',pv:1});
+ if(X.flt!==false)s.push({ops:[['step',3]].concat(X.flt||C.fltDefault||[]),k:'العطل',pv:1});
+ s.push({t:C.motor,cap:(X.end||'ده اللي التمرين عايزه. دلوقتي دورك: امشي الخطوات بنفسك من «التوصيل».'),k:'خلاص',end:1,pv:1});
+ return s;
+}
+async function applyAuto(X){
+ await goStep(1);
+ const a=$(C.auto||'#gByAuto, #gApply, #gAuto, #gAutoBtn, #gAutoPick');
+ if(a){await press(a,0,true);await sleep(250);const b=$('#gApply');if(b&&b!==a)await press(b,0,true);}
+ if(X&&X.prep)try{await X.prep(API);}catch(e){PL.miss.push('prep:'+e.message);}
+ await until(()=>{if(C.paramsOk)return C.paramsOk();const e=D.querySelector('#gChkP');const c=D.querySelector('#gCount,#gCnt');return (e&&e.classList.contains('ok'))||(c&&c.classList.contains('ok'));},30000);
+ await sleep(300);
+ await goStep(2);
+ if(X&&X.prep2)try{await X.prep2(API);}catch(e){}
+}
+async function prepPv(i,X){
+ setCap('بنجهّز المحاكي زي التمرين (التوصيل والباراميترات)…','تجهيز');
+ if(C.quiesce)try{C.quiesce();}catch(e){}
+ await applyAuto(X);
+ const m=$(C.motor);if(m)await focusEl(m);
+ PL.live=C.live||null;
+}
+
+/* ---------------- runner ---------------- */
+async function play(kind,steps,opt){
+ if(PL.on)return;
+ ui();opt=opt||{};
+ PL.on=true;PL.stop=false;PL.skip=false;PL.miss=[];PL.done=false;PL.kind=kind;setPause(false);PL.el=null;PL.fingerEl=null;PL.live=null;
+ R.ttl.textContent=opt.title||'';R.nomore.hidden=!opt.nomore;R.nomore.querySelector('input').checked=false;
+ R.r.hidden=false;R.fing.classList.remove('on');R.r.classList.toggle('st-pvmode',kind==='pv');
+ sbBegin();
+ if(opt.ex!=null){await openEx(opt.ex);}
+ requestAnimationFrame(frame);
+ const res={kind,ex:opt.ex,ok:false,miss:PL.miss};
+ try{
+  PL.n=steps.length;
+  for(PL.i=0;PL.i<steps.length;PL.i++){
+   const s=steps[PL.i];PL.skip=false;R.n.textContent=(PL.i+1)+'/'+steps.length;PL.kick=s.k||'';
+   await gate();
+   if(s.pre)await s.pre(API);
+   if(s.t){const e=$(s.t);if(!e){if(!s.opt)PL.miss.push('missing:'+s.t);continue;}
+    await focusEl(e);PL.sel=s.t;}
+   else{PL.el=null;PL.sel=null;}
+   if(s.cap)setCap(s.cap,s.k);
+   if(s.tap&&s.t){await wait(700);await press($(s.t));}
+   if(s.ops){await runOps(s.ops,kind);}
+   if(s.act){await s.act(API);}
+   if(s.cap)await wait(s.ms||capMs(s.cap));
+   if(!s.tap){R.fing.classList.remove('on');PL.fingerEl=null;}
+   if(s.end){res.ok=true;res.end=true;if(kind==='pv'||opt.hold)await holdEnd();}
+  }
+  res.ok=true;
+ }catch(e){if(e!==STOP){res.err=String(e&&e.message||e);}}
+ PL.on=false;R.r.hidden=true;R.fing.classList.remove('on');PL.el=null;PL.fingerEl=null;
+ if(opt.nomore&&R.nomore.querySelector('input').checked)lsSet(KEY+':seen','1');
+ if(kind==='tour'&&res.end)lsSet(KEY+':seen','1');
+ res.stopped=PL.stop;
+ sbEnd();
+ W.SIMTOUR.last=res;
+ return res;
+}
+async function holdEnd(){
+ /* keep the final picture until the learner presses «جرّب إنت» (or ⏭) */
+ try{R.go.focus({preventScroll:true});}catch(e){}
+ PL.holding=true;
+ while(!PL.stop&&!PL.skip)await sleep(100);
+ PL.holding=false;
+}
+function stop(){if(PL.on){PL.stop=true;PL.paused=false;}}
+
+/* ---------------- buttons + auto start ---------------- */
+function startTour(auto){return play('tour',tourSteps(),{title:'إزاي تستخدم المحاكي',nomore:!!auto,hold:true});}
+function startPv(i){return play('pv',pvSteps(i),{title:'شوف المطلوب',ex:i});}
+function pvSeen(){try{return JSON.parse(lsGet(KEY+':pv')||'[]');}catch(e){return [];}}
+function markPv(i){const a=pvSeen();if(a.indexOf(i)<0){a.push(i);lsSet(KEY+':pv',JSON.stringify(a));}}
+function mount(){
+ const mb=D.querySelector('#modeBtn');
+ if(mb&&!D.querySelector('#stTour')){const b=D.createElement('button');b.type='button';b.className='btn st-tbtn';b.id='stTour';b.innerHTML='▶ إزاي تستخدم المحاكي';b.addEventListener('click',()=>startTour(false));mb.insertAdjacentElement('afterend',b);}
+ const tt=D.querySelector('#gTitle');
+ if(tt&&C.ex!==false&&!D.querySelector('#stPvRow')){const r=D.createElement('div');r.className='st-pvrow';r.id='stPvRow';
+  r.innerHTML='<button type="button" class="btn st-pv" id="stPv">▶ شوف المطلوب</button><small>يوريك النتيجة المطلوبة على '+(C.machine||'الموتور')+' قبل ما تبدأ</small>';
+  tt.insertAdjacentElement('afterend',r);
+  r.querySelector('#stPv').addEventListener('click',()=>{const g=gui();if(g&&g.ex>=0){markPv(g.ex);startPv(g.ex);}});}
+}
+let lastEx=null;
+function watch(){
+ const g=gui();
+ if(!PL.on&&g){
+  const ex=g.guided!==false?g.ex:-1;
+  if(lastEx!==null&&ex!==lastEx&&ex>=0&&g.step===0&&AUTO&&C.ex!==false&&pvSeen().indexOf(ex)<0){markPv(ex);st(()=>{if(!PL.on&&gui().ex===ex)startPv(ex);},500);}
+  lastEx=ex;
+ }
+ st(watch,400);
+}
+function init(){
+ mount();
+ W.SIMTOUR={startTour,startPv,stop,state:PL,cfg:C,last:null,version:1};
+ if(AUTO&&lsGet(KEY+':seen')!=='1'){st(()=>{if(!PL.on&&D.visibilityState!=='hidden')startTour(true);},1400);}
+ st(watch,1500);
+}
+if(D.readyState==='loading')D.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<!--simtour:end-->
 </body>
 </html>
