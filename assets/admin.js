@@ -221,8 +221,8 @@
     if (m.suspended) h += '<p class="md-off" role="note"><b>الحساب ده موقوف</b> من ' + esc(fmtWhen(m.suspended_at)) + (m.suspend_reason ? ": " + esc(m.suspend_reason) : "") + "</p>";
 
     // الاشتراك
-    var min = isoDay(Date.now() + 864e5), def = isoDay(pro ? m.pro_until : Date.now() + 30 * 864e5);
-    h += box("plan", "الاشتراك", '<p class="mem-pl">' + (pro ? "مشترك Pro لحد <b>" + esc(fmtDate(m.pro_until)) + "</b>. المدة بتتزوّد على اللي فاضل." : "مش مشترك دلوقتي. المدة بتبدأ من النهارده.") + "</p>" +
+    var min = isoDay(Date.now() + 864e5), def = pro ? isoDay(m.pro_until) : ""; // مفيش تاريخ مقترح لغير المشترك، عشان مايتقريش إنه مفتوحله
+    h += box("plan", "اشتراك كل الكورسات (Pro)", '<p class="mem-pl">' + (pro ? "مشترك Pro لحد <b>" + esc(fmtDate(m.pro_until)) + "</b>. المدة بتتزوّد على اللي فاضل." : "<b>مش مشترك Pro.</b> الكورسات اللي اشتراها تحت في «كورساته».") + "</p>" +
       '<div class="mem-act"><button class="btn btn-ghost" type="button" data-md="add" data-days="30">+ 30 يوم</button><button class="btn btn-ghost" type="button" data-md="add" data-days="365">+ سنة</button></div>' +
       '<div class="md-row"><label class="field mem-date" for="md-until">لحد يوم معيّن<input type="date" id="md-until" class="ltr" min="' + min + '" value="' + def + '"></label><button class="btn btn-ghost" type="button" data-md="until">ثبّت التاريخ</button></div>' +
       (pro ? '<div class="mem-act"><button class="btn btn-ghost danger" type="button" data-md="ask-cancel">ألغِ الاشتراك ورجّعه مجاني</button></div>' : "") +
