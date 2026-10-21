@@ -720,24 +720,24 @@ CL.run = function(devs, wires, seconds, opt){
 
 /* =========================== trip explanations =========================== */
 CL.tripText = function(d){
-  const w = d.st.why, I = r1(d.st.I || 0), tag = d.tag;
+  const w = d.st.why, I = r1(d.st.I || d.st.Ipk || 0), tag = d.tag;
   if (d.type === 'ol' || d.type === 'mpcb'){
     const Ir = d.cfg.Ir || 5, nm = d.type === 'ol' ? 'الأوفرلود' : 'الـ MPCB';
-    if (w === 'sp') return `${nm} <b>${tag}</b> فصل بسبب <b>فازة ناقصة</b> (Single-phasing): فازتين شايلين الحمل كله والتالتة صفر، فآلية الفرق بين الفازات فصلت بسرعة. 95-96 فتح و 97-98 قفل.`;
-    if (w === 'mag') return `${nm} <b>${tag}</b> فصل مغناطيسي لحظي: قصر (تيار ${I}A ≫ 12×Ir).`;
-    if (w === 'test') return `${nm} <b>${tag}</b> فصل بزرار TEST: 95-96 فتح و 97-98 قفل، زي ما لو كان سخن.`;
-    return `${nm} <b>${tag}</b> فصل (TRIP): التيار ${I}A أعلى من Ir=${Ir}A لفترة، البيميتال سخن وانحنى، ففتح <b>95-96</b> وقفل <b>97-98</b>. ${d.type === 'ol' ? 'استنى يبرد وبعدين دوس Reset.' : 'استنى يبرد وبعدين ارفعه تاني.'}`;
+    if (w === 'sp') return `${nm} <b>${tag}</b> فصل: <b>فازة ناقصة</b> (Single-phasing).`;
+    if (w === 'mag') return `${nm} <b>${tag}</b> فصل مغناطيسي: قصر (${I}A).`;
+    if (w === 'test') return `${nm} <b>${tag}</b> فصل بزرار TEST.`;
+    return `${nm} <b>${tag}</b> فصل: ${I}A أعلى من Ir=${Ir}A. ${d.type === 'ol' ? 'استنى وبعدين Reset.' : 'استنى وارفعه تاني.'}`;
   }
   if (d.type === 'mcb'){
     const In = ratingOf(d), cv = curveOf(d);
     if (w === 'short') return `القاطع <b>${tag}</b> فصل على قصر (Short circuit).`;
-    if (w === 'mag') return `القاطع <b>${tag}</b> (${esc(d.cfg.label)}) فصل <b>مغناطيسي لحظي</b>: التيار ${I}A أكبر من ${MAG[cv]}×In (منحنى ${cv}). ${cv === 'B' ? 'تيار بدء الموتور (6–8×In) بيعدّي حد منحنى B (3–5×In) فبيفصل مع كل تشغيلة. للموتورات استخدم منحنى <b>C</b> (5–10×In) أو D.' : 'ده قصر أو تيار بدء أكبر من اللي القاطع يستحمله: كبّر القاطع أو استخدم منحنى D.'}`;
-    return `القاطع <b>${tag}</b> فصل <b>حراري</b>: تيار ${I}A أعلى من In=${In}A لفترة (حمل زيادة).`;
+    if (w === 'mag') return `القاطع <b>${tag}</b> (${esc(d.cfg.label)}) فصل مغناطيسي: ${I}A > ${MAG[cv]}×In. ${cv === 'B' ? 'للموتور استخدم منحنى <b>C</b>.' : 'كبّر القاطع أو منحنى D.'}`;
+    return `القاطع <b>${tag}</b> فصل حراري: ${I}A أعلى من In=${In}A.`;
   }
   if (d.type === 'fuse'){
     const In = ratingOf(d);
-    if (w === 'th') return `الفيوز <b>${tag}</b> ضرب: تيار ${I}A أعلى من ${In}A لفترة فالسلك جواه انصهر. ${d.cfg.kind === 'aM' ? '' : 'فيوز gG مش بيستحمل تيار بدء الموتور لو كان على قد In بالظبط.'} بعد ما تصلّح السبب <b>غيّر الفيوز</b> (دوس عليه).`;
-    return `الفيوز <b>${tag}</b> ضرب على قصر (Short circuit): السلك جواه انصهر في لحظة. صلّح التوصيل وبعدين <b>غيّر الفيوز</b> (دوس عليه)، الفيوز مبيترجّعش زي القاطع.`;
+    if (w === 'th') return `الفيوز <b>${tag}</b> ضرب: ${I}A أعلى من ${In}A. غيّره (دوس عليه).`;
+    return `الفيوز <b>${tag}</b> ضرب على قصر. صلّح وغيّره (دوس عليه).`;
   }
   return `${tag} فصل.`;
 };
@@ -774,7 +774,7 @@ CL.check = function(ex, wires, opt){
   const nm = supplyNames(devs);
   const outs = Object.keys(ex.cases[0].expect);
   const msgs = [], rows = [];
-  if (!W.length) return {ok:false, msgs:[{lv:'bad', t:`لسه موصلتش ولا سلك. ابدأ من طرف ${nm.L} في المصدر: دوس عليه، وبعدين دوس على الطرف اللي عايز توصله بيه.`}], rows, outs};
+  if (!W.length) return {ok:false, msgs:[{lv:'bad', t:`لسه مفيش ولا سلك. ابدأ من طرف ${nm.L} في المصدر.`}], rows, outs, empty:true};
   const powerUp = () => devs.forEach(d => { if (isSupply(d)){ d.st.on = 1; d.st.trip = 0; } });
   powerUp();
   ex.cases.forEach((c, i) => {
@@ -792,13 +792,13 @@ CL.check = function(ex, wires, opt){
   if (sr > -1){
     const p = rows[sr].short.poles;
     const pair = p.map(x => x === 'L1' && nm.L === 'L' ? 'L' : x === 'P' ? '+24V' : x === 'M' ? '0V' : x).join(' و ');
-    const when = ex.cases.length > 1 ? ` لما يكون «${rows[sr].c.label}»` : '';
-    msgs.push({lv:'bad', t:ex.shortMsg ? `⚡ قصر (Short circuit) بين ${pair}${when}: ` + ex.shortMsg : `⚡ قصر (Short circuit) بين ${pair}${when}: الكهربا لقت طريق من غير ما تعدي على لمبة أو كويل، فالتيار بيعلى جدًا و${nm.brk} بيفصل. غالبًا طرف الكونتاكت التاني راح على ${nm.N} بدل ما يروح على طرف اللمبة.`});
+    const when = ex.cases.length > 1 ? ` لما «${rows[sr].c.label}»` : '';
+    msgs.push({lv:'bad', t:ex.shortMsg ? `⚡ قصر بين ${pair}${when}: ` + ex.shortMsg : `⚡ ${pair} متوصلين ببعض${when}: قصر.`, hl:{w:rows[sr].short.wires || []}});
     return {ok:false, msgs, rows, outs, short:sr};
   }
   // 2) wrong voltage
   const ov = rows.find(x => x.over && x.over.length);
-  if (ov){ const o = ov.over[0], d = byId[o.dev]; msgs.push({lv:'bad', t:`🔥 ${devLabel(d)} متصممة على ${d.cfg.v} فولت، والتوصيل ده بيديها ${o.V} فولت، فهتتحرق. راجع طرفها التاني: لازم يروح على ${nm.N}.`}); return {ok:false, msgs, rows, outs}; }
+  if (ov){ const o = ov.over[0], d = byId[o.dev]; msgs.push({lv:'bad', t:`🔥 ${devLabel(d)} ${d.cfg.v}V وواخدة ${o.V}V: طرفها التاني على ${nm.N}.`, hl:{t:TYPES[d.type].loads ? [d.id + ':' + TYPES[d.type].loads(d)[0].b] : []}}); return {ok:false, msgs, rows, outs}; }
   const allOk = rows.every(x => x.ok.every(Boolean));
   if (!allOk && ex.diagnose){ const dm = ex.diagnose(byId, W, rows); if (dm){ msgs.push({lv:'bad', t:dm}); return {ok:false, msgs, rows, outs}; } }
   if (allOk && ex.verify){ const vm = ex.verify(byId, W, rows); if (vm){ msgs.push({lv:'bad', t:vm}); return {ok:false, msgs, rows, outs}; } }
@@ -810,7 +810,7 @@ CL.check = function(ex, wires, opt){
         const d = byId[o]; if (!d || TYPES[d.type].motor || rw.exp[j]) return;
         const L = TYPES[d.type].loads(d)[0];
         const live = [L.a, L.b].some(t => { const s = rw.res.poles(rw.res.find(d.id+':'+t)); return s && [...s].some(p => p in PHASES || p === 'P' || p === 'S'); });
-        if (live && !msgs.length) msgs.push({lv:'warn', t:`الدايرة شغالة صح ✓، بس ملحوظة: وهي مطفية لسه فيه ${nm.L} واصل على طرف ${devLabel(d)}. الأصول إن الكونتاكت يقطع ناحية ${nm.L} (الفاز)، واللمبة/الكويل تبقى بين الكونتاكت و ${nm.N}، عشان اللي يغيّر اللمبة ميتكهربش.`});
+        if (live && !msgs.length) msgs.push({lv:'warn', t:`شغالة ✓، بس ${nm.L} واصل لـ ${devLabel(d)} وهي مطفية: اقطع ناحية ${nm.L}.`});
       }));
     }
     return {ok:true, msgs, rows, outs};
@@ -821,40 +821,64 @@ CL.check = function(ex, wires, opt){
     const exp = rows.map(x => x.exp[j]), okv = rows.map(x => x.ok[j]);
     if (okv.every(Boolean)) return;
     const tr = rows.find(x => !x.ok[j] && x.trips.length && x.exp[j] && (TYPES[d.type].motor || byId[x.trips[0]].type !== 'ol'));
-    if (tr){ const td = byId[tr.trips[0]]; msgs.push({lv:'bad', t:`في «${esc(tr.c.label)}»: ` + CL.tripText(td) + (ex.tripHint ? ' ' + ex.tripHint : '')}); return; }
+    if (tr){ const td = byId[tr.trips[0]]; msgs.push({lv:'bad', t:ex.tripHint ? `<b>${td.tag}</b> فصل: ${ex.tripHint}` : `في «${esc(tr.c.label)}»: ` + CL.tripText(td), hl:{t:[td.id + ':95', td.id + ':96']}}); return; }
     const act = rows.map(x => (TYPES[d.type].motor ? x.act[j].run : x.act[j]) ? 1 : 0), e = exp.map(v => v ? 1 : 0);
     const sig = act.join('');
     const pat = (ex.patterns || []).find(p => p.sig && p.sig[o] != null && (p.sig[o] === sig || (/[?\[]/.test(p.sig[o]) && new RegExp('^' + p.sig[o].replace(/\?/g, '.') + '$').test(sig)))); // '?' = any, [01] allowed
+    { const wm = wireHint(ex, W, byId, 'miss'); if (wm){ msgs.push(wm); return; } } // an unwired terminal of the reference wiring is the most concrete first problem
     if (pat){ msgs.push({lv:'bad', t:pat.msg}); return; }
-    if (TYPES[d.type].motor){ msgs.push({lv:'bad', t:motorDiag(d, rows, j, nm)}); return; }
-    if (act.every(v => !v)){ msgs.push({lv:'bad', t:openDiag(d, devs, W, nm, ex)}); return; }
+    if (TYPES[d.type].motor){ const md = motorDiag(d, rows, j, nm), mf = (rows.find(x => !x.ok[j]).res.mot[d.id] || {}).fault; const wh = (!md || mf === '1ph') ? wireHint(ex, W, byId) : null; msgs.push(wh || (md ? {lv:'bad', t:md} : null) || ({lv:'bad', t:`${devLabel(d)} مش بيلف: راجع القوى ودايرة الكويل.`})); return; }
+    if (act.every(v => !v)){ const od = openDiag(d, devs, W, nm, ex); msgs.push(typeof od === 'string' ? {lv:'bad', t:od} : Object.assign({lv:'bad'}, od)); return; }
     if (ex.seq){ // drops out as soon as a START button is released → no seal-in contact
       const i = okv.findIndex(v => !v), st = ex.cases[i] && ex.cases[i].set || {};
       const rel = Object.keys(st).filter(id => st[id] && st[id].p === 0 && byId[id] && byId[id].type === 'pb');
       const coils = devs.filter(x => TYPES[x.type].coil);
-      if (i > 0 && e[i] && !act[i] && act[i-1] && rel.length && coils.length){ msgs.push({lv:'bad', t:`${devLabel(d)} بتفصل أول ما تسيب ${rel.map(id => devLabel(byId[id])).join(' و ')}: مفيش <b>تثبيت ذاتي</b>. كونتاكت NO بتاع ${coils.map(x => x.tag).join('/')} لازم يتوصل <b>توازي</b> مع زرار START (طرف مع 13 وطرف مع 14) عشان يفضل يغذّي الكويل بعد ما تشيل صباعك.`}); return; }
+      if (i > 0 && e[i] && !act[i] && act[i-1] && rel.length && coils.length){ msgs.push({lv:'bad', t:`${devLabel(d)} بتفصل لما تسيب ${rel.map(id => byId[id].tag).join(' و ')}: ناقص سلك التثبيت 13–14.`, hl:{t:[coils[0].id + ':13', coils[0].id + ':14']}}); return; }
     }
-    if (act.every(v => v) && e.some(v => !v)){ msgs.push({lv:'bad', t:`${devLabel(d)} منورة على طول ومبتطفيش: ${nm.L} واصل للمبة من غير ما يعدي على الكونتاكت، أو في كونتاكتين توازي (واحد NO وواحد NC) فدايمًا واحد فيهم مقفول.`}); return; }
+    if (act.every(v => v) && e.some(v => !v)){ msgs.push({lv:'bad', t:`${devLabel(d)} منورة على طول: ${nm.L} واصلها من غير الكونتاكت.`}); return; }
     if (act.every((v, i) => v !== e[i])){
       msgs.push({lv:'bad', t: e[0] === 0
-        ? `${devLabel(d)} شغالة بالعكس: منورة في الوضع العادي وبتطفي لما تشغّل. يعني استخدمت كونتاكت <b>NC</b> (11-12 أو 21-22) بدل <b>NO</b> (13-14 أو 23-24).`
-        : `${devLabel(d)} شغالة بالعكس: مطفية في الوضع العادي وبتنور لما تشغّل. يعني استخدمت كونتاكت <b>NO</b> (13-14) بدل <b>NC</b> (11-12 أو 21-22).`});
+        ? `${devLabel(d)} بالعكس: استخدمت <b>NC</b> بدل <b>NO</b> (13-14).`
+        : `${devLabel(d)} بالعكس: استخدمت <b>NO</b> بدل <b>NC</b> (21-22).`});
       return;
     }
     // swapped with another output?
     const other = outs.findIndex((o2, k) => k !== j && rows.every(x => !!x.act[j] === !!x.exp[k]));
-    if (other > -1){ msgs.push({lv:'bad', t:`${devLabel(d)} و ${devLabel(byId[outs[other]])} متبدلين: كل لمبة متوصلة على كونتاكت التانية.`}); return; }
-    msgs.push({lv:'bad', t:`${devLabel(d)} مش ماشية زي المطلوب. قارن «المطلوب» و«اللي حصل» في الجدول تحت.`});
+    if (other > -1){ msgs.push({lv:'bad', t:`${devLabel(d)} و ${devLabel(byId[outs[other]])} متبدلين.`}); return; }
+    msgs.push(wireHint(ex, W, byId) || {lv:'bad', t:`${devLabel(d)} مش زي المطلوب في «${esc(rows[okv.findIndex(v => !v)].c.label)}».`});
   });
   return {ok:false, msgs: dedupe(msgs), rows, outs};
 };
 function dedupe(m){ const s = new Set(); return m.filter(x => !s.has(x.t) && s.add(x.t)); }
+function wireHint(ex, W, byId, only){ // the first concrete wiring problem, measured against ex.solution: {lv, t, hl:{t:[terms], w:[wire ids]}}
+  const sol = ex.solution || []; if (!sol.length) return null;
+  const uf = () => { const P = {}; const f = x => { if (!(x in P)) P[x] = x; while (P[x] !== x) x = P[x] = P[P[x]]; return x; }; return {f, u:(a, b) => { P[f(a)] = f(b); }, P}; };
+  const S = uf(); sol.forEach(p => S.u(p[0], p[1]));
+  const inSol = t => t in S.P, dv = t => t.split(':')[0], tn = t => t.split(':').slice(1).join(':'), tg = t => byId[dv(t)] ? byId[dv(t)].tag : dv(t);
+  const has = t => W.some(w => w.a === t || w.b === t);
+  for (const w of only ? [] : W){
+    if (!inSol(w.a) || !inSol(w.b) || S.f(w.a) === S.f(w.b)) continue;
+    for (const [k, o] of [[w.a, w.b], [w.b, w.a]]){ // k is right, o should be another terminal of the same device
+      const want = Object.keys(S.P).find(t => S.f(t) === S.f(k) && t !== k && dv(t) === dv(o) && !has(t));
+      if (want) return {lv:'bad', t:`السلك من ${tg(k)}:${tn(k)} رايح لـ ${tn(o)} والمفروض ${tn(want)}.`, hl:{w:[w.id], t:[o, want]}};
+    }
+    return {lv:'bad', t:`السلك ${tg(w.a)}:${tn(w.a)} – ${tg(w.b)}:${tn(w.b)} في مكان غلط.`, hl:{w:[w.id], t:[w.a, w.b]}};
+  }
+  for (const p of sol) for (const t of p) if (!has(t)){
+    for (const w of W) for (const [k, o] of [[w.a, w.b], [w.b, w.a]]) if (k !== t && inSol(k) && S.f(k) === S.f(t) && dv(o) === dv(t) && (!inSol(o) || S.f(o) !== S.f(t))) return {lv:'bad', t:`السلك من ${tg(k)}:${tn(k)} رايح لـ ${tn(o)} والمفروض ${tn(t)}.`, hl:{w:[w.id], t:[o, t]}};
+    return {lv:'bad', t:`الطرف ${tn(t)} في ${tg(t)} مش متوصل.`, hl:{t:[t]}}; }
+  if (only) return null;
+  const U = uf(); W.forEach(w => U.u(w.a, w.b));
+  for (const p of sol) if (U.f(p[0]) !== U.f(p[1])) return {lv:'bad', t:`ناقص سلك بين ${tg(p[0])}:${tn(p[0])} و ${tg(p[1])}:${tn(p[1])}.`, hl:{t:[p[0], p[1]]}};
+  return null;
+}
 function openDiag(d, devs, W, nm, ex0){
   const L = TYPES[d.type].loads(d)[0];
   const at = t => W.filter(w => w.a === d.id+':'+t || w.b === d.id+':'+t).length;
   const miss = [L.a, L.b].filter(t => !at(t));
-  if (miss.length === 2) return `${devLabel(d)} مش متوصلة خالص: الطرفين ${L.a} و ${L.b} من غير سلك.`;
-  if (miss.length) return `دايرة مفتوحة: الطرف ${miss[0]} في ${devLabel(d)} مش متوصل بأي سلك، فالتيار مالوش طريق يكمّل.`;
+  if (miss.length === 2) return {t:`${devLabel(d)} مش متوصلة: ${L.a} و ${L.b} من غير سلك.`, hl:{t:[d.id+':'+L.a, d.id+':'+L.b]}};
+  if (miss.length) return {t:`الطرف ${miss[0]} في ${devLabel(d)} مش متوصل.`, hl:{t:[d.id+':'+miss[0]]}};
+  { const wm = ex0 && wireHint(ex0, W, Object.fromEntries(devs.map(x => [x.id, x])), 'miss'); if (wm) return wm; }
   devs.forEach(x => { if (isSupply(x)){ x.st.on = 1; x.st.trip = 0; } });
   const r = CL.solve(devs, W, {force:true});
   const pa = r.poles(r.find(d.id+':'+L.a)), pb = r.poles(r.find(d.id+':'+L.b));
@@ -868,32 +892,32 @@ function openDiag(d, devs, W, nm, ex0){
     const combos = []; for (let m = 0; m < (1 << pbs.length); m++){ const c = pbs.filter((_, i) => m & (1 << i)); combos.push(c); } combos.sort((a, b) => a.length - b.length);
     for (const fc of [false, true]) for (const c of combos){ if (!tryIt(c, fc)) continue;
       const extra = c.filter(x => wantSet.indexOf(x.id) < 0), names = extra.map(devLabel).join(' و ');
-      if (fc) return `${who} مش بيشتغل أبدًا، وده لأن كونتاكت التثبيت (NO بتاع ${coils.map(x => x.tag).join('/')}) متوصل <b>على التوالي</b> مع زرار START. الكويل مش هيتغذى غير لو كونتاكته هو شخصيًا مقفول، وهو مش هيقفل غير لو الكويل اتغذى: الدايرة بتستنى نفسها! كونتاكت التثبيت لازم يبقى <b>توازي</b> مع START (13 مع 13، و 14 مع 14) عشان START يدّي النبضة الأولى والكونتاكت يكمّل بعدها.`;
-      if (extra.length) return `${who} مش بيشتغل غير لو دست ${names} كمان. يعني ${names} متوصل على كونتاكت <b>NO</b> (13-14) وهو المفروض على <b>NC</b> (21-22 أو 11-12) عشان يفضل موصّل في العادي ويقطع لما يتداس.`;
+      if (fc) return {t:`تثبيت ${coils.map(x => x.tag).join('/')} على التوالي مع START: خليه توازي (13–13، 14–14).`, hl:{t:[coils[0].id + ':13', coils[0].id + ':14']}};
+      if (extra.length) return `${who} محتاج ${names} يتداس: وصّله على <b>NC</b> (21-22) مش NO.`;
       break;
     }
-    return `${who} مبتشتغلش أبدًا: الطريق موجود، بس بيعدي على كونتاكتات عمرها ما بتقفل مع بعض في نفس الوقت (مثلًا NO و NC من نفس الجهاز على التوالي)، أو على كونتاكت مش هو اللي المفروض يشتغل.`;
+    return wireHint(ex0, W, Object.fromEntries(devs.map(x => [x.id, x]))) || `${who} مبيشتغلش أبدًا: كونتاكتات على التوالي عمرها ما بتقفل سوا.`;
   }
   const loadsIn = side => { const rt = r.find(d.id+':'+side); return devs.some(o => o !== d && TYPES[o.type].loads && TYPES[o.type].loads(o).some(l => r.find(o.id+':'+l.a) === rt || r.find(o.id+':'+l.b) === rt)); };
-  if ((hasL(pa) && !pb && loadsIn(L.b)) || (hasL(pb) && !pa && loadsIn(L.a))) return `اللمبات متوصلة على التوالي (ورا بعض)، فكل واحدة بتاخد جزء من الجهد ومش هتنور. وصّل كل لمبة بين الكونتاكت و ${nm.N} لوحدها (توازي).`;
-  if ((hasL(pa) && hasL(pb)) ) return `الطرفين بتوع ${devLabel(d)} الاتنين واصلين على ${nm.L}. لازم طرف ييجي من ناحية ${nm.L} (من الكونتاكت) والطرف التاني يروح على ${nm.N}.`;
-  if ((hasN(pa) && hasN(pb))) return `الطرفين بتوع ${devLabel(d)} الاتنين واصلين على ${nm.N}. طرف منهم لازم ييجي من الكونتاكت اللي جاي من ${nm.L}.`;
-  if ((hasL(pa) || hasL(pb)) && !(hasN(pa) || hasN(pb))) return `دايرة مفتوحة: ${nm.L} واصل لـ ${devLabel(d)}، بس طرفها التاني مش راجع على ${nm.N}.`;
-  if ((hasN(pa) || hasN(pb)) && !(hasL(pa) || hasL(pb))) return `دايرة مفتوحة: ${devLabel(d)} راجعة على ${nm.N}، بس مفيش طريق من ${nm.L} يوصلها (حتى لو الكونتاكتات قفلت). اتأكد إن ${nm.L} داخل على أول طرف في الكونتاكت، والطرف التاني رايح على اللمبة.`;
-  return `دايرة مفتوحة: ${devLabel(d)} مش واصلها لا ${nm.L} ولا ${nm.N}. ابدأ من ${nm.L} في المصدر → الكونتاكت → طرف اللمبة، والطرف التاني → ${nm.N}.`;
+  if ((hasL(pa) && !pb && loadsIn(L.b)) || (hasL(pb) && !pa && loadsIn(L.a))) return {t:`اللمبات على التوالي: وصّل كل لمبة بين الكونتاكت و ${nm.N}.`, hl:{t:[d.id+':'+(hasL(pa) ? L.b : L.a)]}};
+  if ((hasL(pa) && hasL(pb)) ) return {t:`طرفين ${devLabel(d)} على ${nm.L}: واحد منهم يروح ${nm.N}.`, hl:{t:[d.id+':'+L.b]}};
+  if ((hasN(pa) && hasN(pb))) return {t:`طرفين ${devLabel(d)} على ${nm.N}: واحد ييجي من الكونتاكت.`, hl:{t:[d.id+':'+L.a]}};
+  if ((hasL(pa) || hasL(pb)) && !(hasN(pa) || hasN(pb))) return {t:`${devLabel(d)} مش راجعة على ${nm.N}.`, hl:{t:[d.id+':'+(hasL(pa) ? L.b : L.a)]}};
+  if ((hasN(pa) || hasN(pb)) && !(hasL(pa) || hasL(pb))) return wireHint(ex0, W, Object.fromEntries(devs.map(x => [x.id, x]))) || {t:`مفيش ${nm.L} واصل لـ ${devLabel(d)}: راجع الكونتاكت.`, hl:{t:[d.id+':'+(hasN(pa) ? L.b : L.a)]}};
+  return wireHint(ex0, W, Object.fromEntries(devs.map(x => [x.id, x]))) || `${devLabel(d)} مش واصلها ${nm.L} ولا ${nm.N}.`;
 }
 function motorDiag(d, rows, j, nm){
   const bad = rows.find(x => !x.ok[j]); const m = bad.res.mot[d.id] || {}; const e = bad.exp[j];
-  const when = rows.length > 1 ? ` (في «${bad.c.label}»)` : '';
-  if (m.fault === '1ph') return `${devLabel(d)} واصله فازتين بس${when}: الموتور هيزن ومش هيلف، والأوفرلود هيفصل. اتأكد إن L1 و L2 و L3 الاتلاتة واصلين ${d.cfg.term === 6 ? 'U1 و V1 و W1، والكباري مظبوطة' : 'U و V و W'}.`;
-  if (m.fault === 'burn') return `${devLabel(d)} اتحرق${when}: الملفات أخدت جهد أعلى من اللي متصممة عليه (دلتا على موتور ${d.cfg.vD || 230} V) لفترة. افصل، وصّله ستار، والمحاكي بيديك موتور جديد لما تشغّل تاني.`;
-  if (e === 'Y' && m.run && m.over) return `${devLabel(d)} موصّل <b>دلتا</b> وهو موتور <b>${d.cfg.vD} Δ / ${d.cfg.vY} Y</b> على مصدر 400 V${when}: كل ملف بياخد 400 V بدل ${d.cfg.vD} V، فالتيار بيعلى لأضعاف والأوفرلود بيفصل، ولو مفيش أوفرلود الموتور يتحرق. شيل كباري الدلتا وحط كوبري الستار على W2-U2-V2.`;
-  if (e === 'D' && m.run && m.weak) return `${devLabel(d)} موصّل <b>ستار</b> وهو موتور <b>${d.cfg.vD} Δ / ${d.cfg.vY} Y</b> على 400 V${when}: كل ملف بياخد 230 V بدل 400 V، فالعزم تلت العزم ومش هيشيل الحمل. وصّله دلتا: U1-W2، V1-U2، W1-V2.`;
-  if ((e === 'F' || e === 'R') && m.run) return `${devLabel(d)} بيلف عكس الاتجاه المطلوب${when}. عشان تعكس الاتجاه بدّل فازتين بس (مثلًا L1 مع L3).`;
-  if (e === 'Y' && m.run) return `${devLabel(d)} شغال دلتا مش ستار${when}. في الستار U2 و V2 و W2 بيتقفلوا على بعض (نقطة النجمة).`;
-  if (e === 'D' && m.run) return `${devLabel(d)} شغال ستار مش دلتا${when}. في الدلتا: U1 مع W2، و V1 مع U2، و W1 مع V2.`;
+  const when = rows.length > 1 ? ` في «${bad.c.label}»` : '';
+  if (m.fault === '1ph') return `${devLabel(d)} واخد فازتين بس: وصّل L1 و L2 و L3.`;
+  if (m.fault === 'burn') return `${devLabel(d)} اتحرق${when}: دلتا على ${d.cfg.vD || 230} V. وصّله ستار.`;
+  if (e === 'Y' && m.run && m.over) return `${devLabel(d)} دلتا على 400 V${when}: لازم ستار (W2-U2-V2).`;
+  if (e === 'D' && m.run && m.weak) return `${devLabel(d)} ستار والمفروض دلتا${when}: U1-W2، V1-U2، W1-V2.`;
+  if ((e === 'F' || e === 'R') && m.run) return `${devLabel(d)} بيلف بالعكس${when}: بدّل فازتين بس.`;
+  if (e === 'Y' && m.run) return `${devLabel(d)} دلتا مش ستار${when}: اقفل U2 و V2 و W2 سوا.`;
+  if (e === 'D' && m.run) return `${devLabel(d)} ستار مش دلتا${when}: U1-W2، V1-U2، W1-V2.`;
   if (!e && m.run) return `${devLabel(d)} شغال وهو المفروض واقف${when}.`;
-  return `${devLabel(d)} مش بيلف${when}: راجع دايرة القوى (القاطع ← كونتاكتات الكونتاكتور ← الأوفرلود ← U V W) ودايرة التحكم اللي بتشغّل الكويل.`;
+  return null;
 }
 
 /* =========================== SVG symbols =========================== */
@@ -2705,7 +2729,7 @@ CL.bench = function(host, ex, opt){
   const devs = ex.devices.map(CL.makeDevice), byId = {}; devs.forEach(d => byId[d.id] = d);
   const allT = new Set(); devs.forEach(d => TYPES[d.type].terms(d).forEach(t => allT.add(d.id + ':' + t.n)));
   const dc = devs.some(d => d.type === 'supplyDC'), has3P = devs.some(d => d.type === 'supply3P'), nm = supplyNames(devs);
-  let wires = [], wid = 0, hist = [], pend = null, flash = null, lastRes = null, held = new Map(), anim = null, timer = null, lastAct = '', passed = false, destroyed = false, api = null; const prevSt = {}, prevTrip = {}; const EVB = o => Object.assign({ex, key:opt.key, host, api}, o);
+  let wires = [], wid = 0, hist = [], pend = null, flash = null, errHl = null, lastRes = null, held = new Map(), anim = null, timer = null, lastAct = '', passed = false, destroyed = false, api = null; const prevSt = {}, prevTrip = {}; const EVB = o => Object.assign({ex, key:opt.key, host, api}, o);
   const addW = (a, b) => { wires.push({id:++wid, a, b}); return wires[wires.length - 1]; };
   let saved = opt.key ? CL.store.bench(opt.key) : null, ghost = false;
   const keyOf = p => p[0] < p[1] ? p[0] + '>' + p[1] : p[1] + '>' + p[0], sameSet = (a, b) => a.length === b.length && new Set(a.map(keyOf)).size === new Set(a.concat(b).map(keyOf)).size;
@@ -2847,7 +2871,7 @@ CL.bench = function(host, ex, opt){
       if (res.tripped.length){
         const tr = res.tripped[0], p = tr.poles.map(x => x === 'L1' && nm.L === 'L' ? 'L' : x === 'P' ? '+24V' : x === 'M' ? '0V' : x).join(' و ');
         flash = {wires:new Set(tr.wires), until:Date.now() + 4000};
-        msg(`⚡ قصر بين ${p}${lastAct ? ' ' + lastAct : ''}! التيار عالي جدًا و${byId[tr.dev].tag} فصل (TRIP). افصل، صلّح التوصيل، وشغّل تاني.`, 'bad');
+        msg(`⚡ قصر بين ${p}${lastAct ? ' ' + lastAct : ''}: ${byId[tr.dev].tag} فصل. افصل وصلّح.`, 'bad');
         CL.emit('short', EVB({dev:byId[tr.dev], wires:tr.wires, poles:tr.poles}));
         setTimeout(() => { if (!destroyed) render(); }, 4100);
         res = CL.solve(devs, wires, {trip:true}); lastRes = res;
@@ -2876,6 +2900,7 @@ CL.bench = function(host, ex, opt){
     const route = L.grid ? router() : wpath;
     const fr = (() => { const cl = devs.map(d => Object.assign({}, d, {st:Object.assign({}, d.st)})); return solveOnce(cl, wires, true); })();
     if (flash && flash.until < Date.now()) flash = null;
+    if (errHl && errHl.until < Date.now()) errHl = null;
     let wSvg = '';
     if (ghost && ex.solution){ // the solution as a dashed ghost under the trainee's own wires (never added to the board)
       const groute = L.grid ? router() : wpath, gW = ex.solution.map((p, i) => ({id:'g' + i, a:p[0], b:p[1]}));
@@ -2885,14 +2910,14 @@ CL.bench = function(host, ex, opt){
     wires.forEach(w => {
       const A = TT[w.a], B = TT[w.b]; if (!A || !B) return;
       const d = route(A, B), col = wireColor(w, fr), act = res && res.active.has(res.find(w.a));
-      const bad = flash && flash.wires.has(w.id), pw = col !== '#3a9be0' && (powerTerm(w.a) || powerTerm(w.b));
+      const bad = (flash && flash.wires.has(w.id)) || (errHl && errHl.w.has(w.id)), pw = col !== '#3a9be0' && (powerTerm(w.a) || powerTerm(w.b));
       wSvg += `<g class="bw${bad ? ' bad' : ''}${pw ? ' pw' : ''}"><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${col}"/>${act ? `<path class="bw-flow" d="${d}"/>` : ''}<path class="bw-hit" d="${d}" data-w="${w.id}" tabindex="0" role="button" aria-label="سلك من ${esc(termLab(w.a))} لـ ${esc(termLab(w.b))}: اضغط عشان تشيله"/></g>`;
     });
     let tSvg = '', tHit = '';
     Object.keys(TT).forEach(id => {
       const t = TT[id], hot = res && (() => { const s = res.poles(res.find(id)); return s && [...s].some(p => p !== 'N' && p !== 'M'); })();
       tSvg += `<g class="bt${pend === id ? ' pend' : ''}${hot ? ' hot' : ''}" transform="translate(${t.x} ${t.y})"><circle class="bt-s" r="8.5"/><path class="bt-slot" d="M-4.5 -4.5L4.5 4.5"/></g>`;
-      tHit += `<circle class="bt-hit" cx="${t.x}" cy="${t.y}" r="22" data-t="${id}" tabindex="0" role="button" aria-label="طرف ${esc(termLab(id))}"/><circle class="bt-ring" cx="${t.x}" cy="${t.y}" r="13"/>`;
+      tHit += `<circle class="bt-hit" cx="${t.x}" cy="${t.y}" r="22" data-t="${id}" tabindex="0" role="button" aria-label="طرف ${esc(termLab(id))}"/><circle class="bt-ring${errHl && errHl.t.has(id) ? ' err' : ''}" cx="${t.x}" cy="${t.y}" r="13"/>`;
     });
     const fsel = document.activeElement && host.contains(document.activeElement) ? ['data-t','data-w','data-act'].map(a => document.activeElement.getAttribute(a) ? `[${a}="${document.activeElement.getAttribute(a)}"]` + (a === 'data-act' ? `[data-dev="${document.activeElement.getAttribute('data-dev')}"]` : '') : '').join('') : '';
     board.innerHTML = `<svg viewBox="0 0 ${L.VW} ${L.VH}" role="group" aria-label="لوحة التوصيل">${devSvg}${tSvg}${wSvg}${hitSvg}${tHit}</svg>`; SKIN.attach(board);
@@ -2911,6 +2936,7 @@ CL.bench = function(host, ex, opt){
     CL.emit('tick', EVB({devs, speed:sp}));
     render();
   }
+  function pulse(hl){ errHl = hl && ((hl.t && hl.t.length) || (hl.w && hl.w.length)) ? {t:new Set(hl.t || []), w:new Set(hl.w || []), until:Date.now() + 3000} : null; if (errHl){ setTimeout(() => { if (!destroyed) render(); }, 0); setTimeout(() => { if (!destroyed) render(); }, 3100); } }
   function showCheck(){
     const pc = EVB({skip:false}); CL.emit('precheck', pc); if (pc.skip) return null;
     const cfg = {}; devs.forEach(d => { if (d.type === 'ol' || d.type === 'mpcb') cfg[d.id] = {Ir:d.cfg.Ir}; if (d.type === 'timer') cfg[d.id] = {t:d.cfg.t, mode:d.cfg.mode}; });
@@ -2923,11 +2949,13 @@ CL.bench = function(host, ex, opt){
       return r;
     }
     CL.emit('fail', EVB({msgs:r.msgs}));
-    let h = `<div class="bn-bad"><div class="h">✗ لسه في حاجة مش مظبوطة</div><ul>${r.msgs.map(m => `<li>${m.t}</li>`).join('')}</ul></div>`;
-    if (r.rows.length && !(r.msgs[0] && /لسه موصلتش/.test(r.msgs[0].t))){
-      h += `<div class="tblw"><table class="tbl"><thead><tr><th class="r">الحالة</th>${r.outs.map(o => `<th>${esc(byId[o].tag)} المطلوب</th><th>اللي حصل</th>`).join('')}</tr></thead><tbody>`;
+    const m0 = r.msgs.find(m => m.lv === 'bad') || r.msgs[0] || {t:''};
+    pulse(m0.hl);
+    let h = `<div class="bn-bad"><b>✗</b> ${m0.t}</div>`;
+    if (r.rows.length && !r.empty){
+      h += `<details class="bn-cmp"><summary>المطلوب واللي حصل ▾</summary><div class="tblw"><table class="tbl"><thead><tr><th class="r">الحالة</th>${r.outs.map(o => `<th>${esc(byId[o].tag)} المطلوب</th><th>اللي حصل</th>`).join('')}</tr></thead><tbody>`;
       r.rows.forEach(rw => { h += `<tr><td class="r">${esc(rw.c.label)}</td>${r.outs.map((o, j) => { const d = byId[o], mot = TYPES[d.type].motor; const coil = !!TYPES[d.type].coil; const a = mot ? (rw.act[j].run ? (rw.act[j].dir > 0 ? 'يمين' : 'شمال') + (rw.act[j].mode === 'Y' ? ' ستار' : '') : rw.act[j].fault ? 'بيزن' : rw.act[j].brake ? 'بيفرمل DC' : Math.abs(rw.act[j].spd || 0) >= 0.1 ? 'بيلف بالقصور' : 'واقف') : rw.short ? 'قصر ⚡' : fmtExp(rw.act[j] ? 1 : 0, coil); const e = mot ? (rw.exp[j] ? (rw.exp[j] === 'R' ? 'شمال' : rw.exp[j] === 'F' ? 'يمين' : rw.exp[j] === 'Y' ? 'ستار' : rw.exp[j] === 'D' ? 'دلتا' : rw.exp[j] === 'S' ? 'واقف تمامًا' : rw.exp[j] === 'C' ? 'بيلف بالقصور' : rw.exp[j] === 'B' ? 'بيفرمل DC' : 'يلف') : 'واقف') : fmtExp(rw.exp[j], coil); return `<td>${e}</td><td class="${rw.ok[j] ? 'ok' : 'x'}">${a}</td>`; }).join('')}</tr>`; });
-      h += '</tbody></table></div>';
+      h += '</tbody></table></div></details>';
     }
     resEl.innerHTML = h;
     return r;
@@ -2938,7 +2966,7 @@ CL.bench = function(host, ex, opt){
     if (on){
       if (ghost){ setGhost(false); }
       devs.forEach(d => { if (isSupply(d)){ d.st.on = 1; d.st.trip = 0; } if (TYPES[d.type].src && !isSupply(d)) d.st.trip = 0; if (d.type === 'lamp' || d.type === 'prox') d.st.burnt = 0; if (TYPES[d.type].motor){ d.st.burnt = 0; d.st.hot = 0; d.st.fault = ''; } });
-      msg('الكهربا شغالة. شغّل الأجهزة بإيدك على اللوحة. عشان تعدّل سلك لازم تفصل الكهربا الأول.', 'ok');
+      msg('الكهربا شغالة. افصلها عشان تعدّل سلك.', 'ok');
       CL.emit('power', EVB({on:true}));
       render();
       showCheck();

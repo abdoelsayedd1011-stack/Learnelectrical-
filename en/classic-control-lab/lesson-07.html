@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="/en/classic-control-lab/engine.css?v=20261021q">
+<link rel="stylesheet" href="/en/classic-control-lab/engine.css?v=20261021w">
 <link rel="stylesheet" href="/en/classic-control-lab/fx.css?v=20261021v">
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261021r">
 </head>
@@ -40,7 +40,7 @@
 <script src="/site-config.js?v=20261021v"></script>
 <script src="/assets/i18n.js?v=20261021w"></script>
 <script src="/assets/i18n-en.js?v=20261021v"></script>
-<script src="/en/classic-control-lab/engine.js?v=20261021q"></script>
+<script src="/en/classic-control-lab/engine.js?v=20261021w"></script>
 <script src="/en/classic-control-lab/fx.js?v=20261021v"></script>
 <script>
 (function(){
@@ -64,70 +64,70 @@ const LVL = (id, at, hyst, label, tank, extra) => ({id, type:'level', cfg:Object
 // power: supply → Q1 → KM1 → F2 → motor
 const PWR = [['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','KM1:1'],['Q1:4','KM1:3'],['Q1:6','KM1:5'],['KM1:2','F2:1'],['KM1:4','F2:3'],['KM1:6','F2:5'],['F2:2','M1:U'],['F2:4','M1:V'],['F2:6','M1:W']];
 const FEED = [['G:L1','F1:1'],['F1:2','F2:95']]; // L1 → F1 → overload 95
-const PWR_STEPS = ['L1 L2 L3 from the supply to breaker Q1, and from Q1 to the contactor 1/3/5.','From the contactor 2/4/6 to the overload inputs, and from its outputs to motor U V W.'];
+const PWR_STEPS = ["L1 L2 L3 → Q1 1/3/5","Q1 2/4/6 → KM1 1/3/5","KM1 2/4/6 → F2 1/3/5","F2 2/4/6 → M1 U V W"];
 
 const L7EX = {
-  s1:{story:{icon:'💧', text:'A water tank on a building roof: the pump fills the tank and stops when the upper float rises, and when the water drops it starts again.', ask:'A pump and an upper float with a HAND-0-AUTO selector.'}, machine:'pump', title:'Exercise 1: a pump and an upper float with a HAND-0-AUTO selector', short:'Pump + upper float HAND/AUTO',
-    goal:'HAND: the pump runs all the time. AUTO: the pump fills the tank until the upper float rises, then stops, and starts again when the level drops. 0: stopped.',
-    idea:'The 3-position selector has two blocks: the HAND block feeds the coil directly, and the AUTO block feeds it through the float\'s NC contact (21-22), which opens when the water reaches it.',
-    steps:{power:PWR_STEPS, control:['Phase L1 to F1, then overload contact 95-96, then the input of the HAND block on the selector, and a jumper from it to the input of the AUTO block.','The HAND block output straight to A1 of KM1.','The AUTO block output to the float\'s NC contact (21-22), and from 22 to A1.','A2 of KM1 to N.']},
-    tip:'Turn the selector to AUTO and speed up time ⏩: the pump fills, the float rises, the pump stops, consumption lowers the level, and it starts again.',
+  s1:{story:{icon:'💧', text:"Building tank: the pump stops when the high float rises.", ask:""}, machine:'pump', title:'Exercise 1: a pump and an upper float with a HAND-0-AUTO selector', short:'Pump + upper float HAND/AUTO',
+    goal:"HAND runs, AUTO follows the float, 0 stops.",
+    idea:"HAND block feeds the coil directly; AUTO goes through float NC 21-22.",
+    steps:{power:PWR_STEPS, control:["L1 → F1:1, and F1:2 → F2:95","F2:96 → S1:13, and jumper S1:13 → S1:23","HAND: S1:14 → KM1:A1","AUTO: S1:24 → LSH:21, and LSH:22 → KM1:A1","KM1:A2 → N"]},
+    tip:"Turn to AUTO and speed up ⏩.",
     devices:[G, Q3, F1, SEL3, KM('KM1'), OL(4.9), PUMP, {id:'T1', type:'tank', cfg:{pump:'M1', fill:0.2, drain:0.04, lvl0:0.35}, name:'tank'}, LVL('LSH', 0.9, 0.3, 'Upper float')],
     solution:PWR.concat(FEED, [['F2:96','S1:13'],['S1:13','S1:23'],['S1:14','KM1:A1'],['S1:24','LSH:21'],['LSH:22','KM1:A1'],['KM1:A2','G:N']]), seq:true,
     cases:[{label:'Selector on 0', set:{S1:{pos:1}}, expect:{M1:0}}, {label:'HAND: runs whatever the level', set:{S1:{pos:0}}, expect:{M1:'F'}}, {label:'AUTO and the tank is low', set:{S1:{pos:2}}, expect:{M1:'F'}}, {label:'AUTO: the water reached the upper float', wait:5, expect:{M1:0}}, {label:'AUTO: the level dropped below the float', wait:7, expect:{M1:'F'}}, {label:'Turned the selector back to 0', set:{S1:{pos:1}}, expect:{M1:0}}],
-    patterns:[{sig:{M1:'011110'}, msg:'In AUTO the pump runs but doesn\'t stop when the water arrives: the float contact must be <b>NC (21-22)</b> in the AUTO line so it opens when it rises. If you use the NO (13-14) it will work the opposite way.'}, {sig:{M1:'010000'}, msg:'HAND works but AUTO doesn\'t start it while the tank is low: either the AUTO block (23-24) isn\'t getting the phase (add a jumper from 13 to 23), or you used the float\'s <b>NO (13-14)</b> contact instead of <b>NC (21-22)</b>: it must be NC so it\'s closed while the level is low and opens when the float rises.'}],
-    okMsg:'In AUTO the float is in control by itself, and in HAND you\'re in control (e.g. for maintenance). Note that HAND ignores the float: the tank can overflow if you forget it.'},
-  s2:{story:{icon:'💧', text:'The same tank, but the owner is fed up with the pump starting and stopping every minute: he wants it to start at the lower float and stop at the upper one.', ask:'Two floats with a seal-in.'}, machine:'pump', title:'Exercise 2: two floats: the lower one starts and the upper one stops (with a seal-in)', short:'Two floats, lower/upper',
-    goal:'The pump starts when the level drops below the lower float, keeps running until it reaches the upper float, and stops. And it repeats the cycle by itself.',
-    idea:'The lower float\'s NC contact starts it (closed while the float hangs down), KM1\'s 13-14 contact in parallel with it seals it in, and the upper float\'s NC contact at the start of the line breaks the seal-in when the water arrives. The difference between the two floats is the hysteresis.',
-    steps:{power:PWR_STEPS, control:['Phase L1 to F1, then 95-96, then the selector.','After the selector: the upper float\'s NC contact (21-22).','Then the lower float\'s NC contact (21-22) in parallel with seal-in contact KM1 13-14, and their output to A1.','A2 to N, and the “pump running” lamp across the coil.']},
-    tip:'Speed up time ⏩ and watch the cycle: it fills to the upper float, stops, consumption lowers the level to the lower float, and it starts again.',
+    patterns:[{sig:{M1:'011110'}, msg:"AUTO doesn't stop: the float in the AUTO line must be NC 21-22."}, {sig:{M1:'010000'}, msg:"AUTO doesn't start: jumper S1:13 → S1:23, and float NC 21-22."}],
+    okMsg:"HAND ignores the float: the tank can overflow."},
+  s2:{story:{icon:'💧', text:"Same tank: start at the low float, stop at the high one.", ask:""}, machine:'pump', title:'Exercise 2: two floats: the lower one starts and the upper one stops (with a seal-in)', short:'Two floats, lower/upper',
+    goal:"Start at the low float, stop at the high.",
+    idea:"Low NC starts, KM1 13-14 holds, high NC cuts it.",
+    steps:{power:PWR_STEPS, control:["L1 → F1:1, and F1:2 → F2:95","F2:96 → S1:13, and S1:14 → LSH:21","LSH:22 → LSL:21, and LSL:22 → KM1:A1","Hold-in: KM1:13 → LSL:21, and KM1:14 → LSL:22","KM1:A2 → N, and H1 across the coil"]},
+    tip:"Speed up ⏩ and watch the cycle.",
     devices:[G, Q3, F1, SEL, KM('KM1'), OL(4.9), PUMP, {id:'T1', type:'tank', cfg:{pump:'M1', fill:0.25, drain:0.08, lvl0:0.1}, name:'tank'}, LVL('LSL', 0.25, 0.05, 'Lower float'), LVL('LSH', 0.85, 0.1, 'Upper float'), lamp('H1', 'green', 'Pump running')],
     solution:PWR.concat(FEED, [['F2:96','S1:13'],['S1:14','LSH:21'],['LSH:22','LSL:21'],['LSL:22','KM1:A1'],['KM1:13','LSL:21'],['KM1:14','LSL:22'],['KM1:A2','G:N'],['KM1:A1','H1:X1'],['H1:X2','G:N']]), seq:true,
     cases:[{label:'Selector on 0', set:{S1:{pos:0}}, expect:{M1:0, H1:0}}, {label:'On I and the tank is empty', set:{S1:{pos:1}}, expect:{M1:'F', H1:1}}, {label:'Reached the upper float', wait:5, expect:{M1:0, H1:0}}, {label:'Level between the two floats (falling)', wait:4, expect:{M1:0, H1:0}}, {label:'Dropped below the lower float', wait:5, expect:{M1:'F', H1:1}}, {label:'Turned the selector back to 0', set:{S1:{pos:0}}, expect:{M1:0, H1:0}}],
-    patterns:[{sig:{M1:'011110'}, msg:'The pump doesn\'t stop at the upper float: its NC contact (21-22) must be in the coil line <b>before</b> the seal-in so it breaks it.'}, {sig:{M1:'01?0?0'}, msg:'It runs, but stops as soon as the level passes the lower float (before it reaches the upper one) and keeps switching on and off around the lower float: the <b>seal-in</b> is missing (KM1 13-14 in parallel with the lower float\'s NC contact).'}, {sig:{M1:'010110'}, msg:'It runs but doesn\'t stop at the upper float, and starts again when the lower one hangs down… check that the upper float contact is the NC 21-22 and is in the coil line, not the lamp line.'}],
-    okMsg:'This is the most common level control circuit: two floats + a seal-in = a large hysteresis, so the pump doesn\'t keep switching on and off.'},
-  s3:{story:{icon:'🌬️', text:'A body shop: the air compressor must charge the tank to 8 bar and stop, and start again by itself when the pressure drops to 6 bar.', ask:'A compressor with a pressure switch and a selector.'}, machine:'compressor', title:'Exercise 3: an air compressor with a 6–8 bar pressure switch', short:'Compressor 6–8 bar',
-    goal:'Selector on I: the compressor charges the tank to 8 bar and stops, and when the pressure drops to 6 bar (consumption) it starts again by itself.',
-    idea:'The pressure switch is set to RANGE = 8 bar and DIFF = 2 bar. Its NC contact (21-22) is in the contactor coil line: it opens at 8 and closes again at 6. No seal-in: the pressure switch itself holds it with its hysteresis.',
-    steps:{power:PWR_STEPS, control:['Phase L1 to F1, then 95-96, then the selector.','After the selector, the pressure switch\'s NC contact (21-22), and from 22 to A1.','A2 to N, and the “compressor running” lamp across the coil.']},
-    tip:'Speed up time ⏩ and watch the gauge: 8 bar it stops, 6 bar it starts.',
+    patterns:[{sig:{M1:'011110'}, msg:"It doesn't stop at the high float: LSH 21-22 in the coil line before the hold-in."}, {sig:{M1:'01?0?0'}, msg:"It cycles at the low float: hold-in KM1 13-14 across LSL is missing."}, {sig:{M1:'010110'}, msg:"It doesn't stop at the high float: LSH 21-22 in the coil line, not the lamp's."}],
+    okMsg:"Two floats + hold-in = the pump doesn't cycle every minute."},
+  s3:{story:{icon:'🌬️', text:"Body shop: a compressor fills to 8 bar and restarts at 6.", ask:""}, machine:'compressor', title:'Exercise 3: an air compressor with a 6–8 bar pressure switch', short:'Compressor 6–8 bar',
+    goal:"Stops at 8 bar, restarts at 6.",
+    idea:"Pressure switch NC 21-22 in the coil line; 2 bar difference.",
+    steps:{power:PWR_STEPS, control:["L1 → F1:1, and F1:2 → F2:95","F2:96 → S1:13, and S1:14 → PS:21","PS:22 → KM1:A1, and KM1:A2 → N","H1 across the coil"]},
+    tip:"Speed up ⏩ and watch the gauge.",
     devices:[G, Q3, F1, SEL, KM('KM1'), OL(8.4, {lo:7, hi:10, model:'LRD14', range:'7-10 A'}), COMP, {id:'T1', type:'tank', cfg:{look:'air', pump:'M1', fill:0.1, drain:0.04, lvl0:0.5, max:10, label:'Air tank'}, name:'Air tank'}, LVL('PS', 0.8, 0.2, 'Pressure switch 6–8 bar', 'T1', {look:'press', max:10}), lamp('H1', 'green', 'Compressor running')],
     solution:PWR.concat(FEED, [['F2:96','S1:13'],['S1:14','PS:21'],['PS:22','KM1:A1'],['KM1:A2','G:N'],['KM1:A1','H1:X1'],['H1:X2','G:N']]), seq:true,
     cases:[{label:'Selector on 0', set:{S1:{pos:0}}, expect:{M1:0, H1:0}}, {label:'On I and the pressure is 5 bar', set:{S1:{pos:1}}, expect:{M1:'F', H1:1}}, {label:'The pressure reached 8 bar', wait:6, expect:{M1:0, H1:0}}, {label:'The pressure dropped to 6 bar', wait:6, expect:{M1:'F', H1:1}}, {label:'Turned the selector back to 0', set:{S1:{pos:0}}, expect:{M1:0, H1:0}}],
-    patterns:[{sig:{M1:'01110'}, msg:'The compressor doesn\'t stop at 8 bar: the pressure switch contact must be <b>NC (21-22)</b> in the coil line. With the NO it works the opposite way (it starts when the pressure is reached!).'}],
-    okMsg:'RANGE is the cut-out pressure (8) and DIFF is the difference before it cuts back in (2 bar → starts at 6). If DIFF is small the compressor will switch on and off constantly and wear out.'},
-  s4:{story:{icon:'📦', text:'A carton conveyor: when the carton reaches the photocell and breaks the beam, the conveyor stops by itself so the worker can pick it up.', ask:'A photocell + a relay stop the conveyor.'}, machine:'conveyor', title:'Exercise 4: a photocell stops the conveyor when the carton arrives', short:'Photocell stops the conveyor',
-    goal:'START starts the conveyor and it keeps running. When the carton reaches the photocell and breaks the beam, the conveyor stops by itself. STOP stops it at any time.',
-    idea:'The 24V DC photocell feeds a small relay K1 (24V), and K1\'s NC contact (11-12) is in the 230V contactor coil line. The sensor never touches 230V: the relay is the go-between.',
-    steps:{power:PWR_STEPS, control:['230V: phase L1 to F1, then 95-96, then STOP, then START in parallel with KM1\'s seal-in (13-14).','From the START output to K1\'s common (11), and from its NC (12) to A1 of KM1, and A2 to N. The “conveyor running” lamp across the coil.','24V: +24V to the photocell\'s BN, and BU to 0V.','The photocell output BK to A1 of K1, and K1\'s A2 to 0V (on BU).']},
-    tip:'Press START and speed up time ⏩: the cart (the carton) moves to the photocell, the beam is broken, the relay pulls in, and the conveyor stops.',
+    patterns:[{sig:{M1:'01110'}, msg:"It doesn't stop at 8 bar: the pressure switch must be NC 21-22."}],
+    okMsg:"RANGE = 8 bar, DIFF = 2: it restarts at 6."},
+  s4:{story:{icon:'📦', text:"Carton belt: it stops when a carton breaks the beam.", ask:""}, machine:'conveyor', title:'Exercise 4: a photocell stops the conveyor when the carton arrives', short:'Photocell stops the conveyor',
+    goal:"START runs it; the photocell stops it.",
+    idea:"The 24V cell drives K1; K1 11-12 sits in the KM1 line.",
+    steps:{power:PWR_STEPS, control:["L1 → F1:1, and F1:2 → F2:95","F2:96 → S0:11, and S0:12 → S1:13","S1:14 → K1:11, and K1:12 → KM1:A1","Hold-in: KM1:13 → S1:13, and KM1:14 → S1:14","KM1:A2 → N, and H1 across the coil","24V: +24V → B1:BN, and B1:BU → 0V","B1:BK → K1:A1, and K1:A2 → B1:BU"]},
+    tip:"Press START and speed up ⏩.",
     devices:[G, DC, Q3, F1, S0, S1, KM('KM1'), OL(4.9), CONV, {id:'CART', type:'cart', cfg:{motor:'M1', len:6, labA:'Conveyor start', labB:'Photocell'}, name:'Carton on the conveyor'}, {id:'B1', type:'prox', cfg:{kind:'photo', pnp:true, nc:false, cart:'CART', at:0.8, label:'PNP photocell'}, name:'photocell'}, RL('K1', 24, ['CO'], '24V relay'), lamp('H1', 'green', 'Conveyor running')],
     solution:PWR.concat(FEED, [['F2:96','S0:11'],['S0:12','S1:13'],['S1:14','K1:11'],['K1:12','KM1:A1'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KM1:A2','G:N'],['KM1:A1','H1:X1'],['H1:X2','G:N'],['G1:P24','B1:BN'],['B1:BU','G1:0V'],['B1:BK','K1:A1'],['K1:A2','B1:BU']]), seq:true,
     cases:[{label:'nothing pressed', set:{}, expect:{M1:0, H1:0}}, {label:'START pressed', set:{S1:{p:1}}, expect:{M1:'F', H1:1}}, {label:'START released', set:{S1:{p:0}}, expect:{M1:'F', H1:1}}, {label:'The carton reached the photocell', wait:6, expect:{M1:0, H1:0}}, {label:'START again while the carton is still breaking the beam', set:{S1:{p:1}}, expect:{M1:0, H1:0}}, {label:'START released', set:{S1:{p:0}}, expect:{M1:0, H1:0}}],
-    patterns:[{sig:{M1:'011111'}, msg:'The conveyor doesn\'t stop when the carton arrives: check that K1\'s contact in the coil line is the <b>NC (11-12)</b>, and that the photocell output BK goes to A1 of K1 and A2 to 0V.'}, {sig:{M1:'010000'}, msg:'The conveyor stops as soon as you release START: the <b>seal-in</b> KM1 13-14 in parallel with the START button is missing.'}],
-    okMsg:'The sensor works on 24V and the relay translates to 230V. With a PLC it\'s the same idea: the sensor goes into an input and the output drives the contactor.'},
-  s5:{story:{icon:'🏜️', text:'A pump drawing from a well: if the water runs out and the pump keeps running dry, it will burn.', ask:'Dry-run protection with a lower float and a “no water” lamp.'}, machine:'pump', title:'Exercise 5: protecting the pump against dry running with a lower float', short:'Dry-run protection',
-    goal:'The pump draws from a tank. If the water runs out (the lower float hangs down), the pump stops immediately and a “no water” lamp lights, and it doesn\'t start again by itself when the water returns.',
-    idea:'The dry-run float\'s NO contact (13-14) is closed as long as there\'s water, and it\'s placed in the control line before START and the seal-in. When it opens the contactor drops out, and when the water returns you must press START again. The “no water” lamp is on the float\'s NC contact.',
-    steps:{power:PWR_STEPS, control:['Phase L1 to F1, then 95-96, then STOP.','After STOP, the dry-run float\'s NO contact (13-14).','Then START in parallel with KM1\'s seal-in, their output to A1, and A2 to N.','The “no water” lamp H3 from after F1 through the float\'s NC contact (21-22).']},
-    tip:'Press START and speed up ⏩: the pump draws and the level falls; when it reaches the dry-run float the pump stops and the yellow lamp lights.',
+    patterns:[{sig:{M1:'011111'}, msg:"It doesn't stop at the cell: K1 must be NC 11-12, and BK → K1:A1."}, {sig:{M1:'010000'}, msg:"It stops when you release START: hold-in KM1 13-14 is missing."}],
+    okMsg:"The sensor stays on 24V; the relay switches the 230V."},
+  s5:{story:{icon:'🏜️', text:"Well pump: if the water runs out, it burns.", ask:""}, machine:'pump', title:'Exercise 5: protecting the pump against dry running with a lower float', short:'Dry-run protection',
+    goal:"Water runs out: the pump stops, H3 lights.",
+    idea:"Dry-run float NO 13-14 before START; NC 21-22 for the lamp.",
+    steps:{power:PWR_STEPS, control:["L1 → F1:1, and F1:2 → F2:95","F2:96 → S0:11, and S0:12 → LSL:13","LSL:14 → S1:13, and S1:14 → KM1:A1","Hold-in: KM1:13 → S1:13, and KM1:14 → S1:14","KM1:A2 → N","H3: F1:2 → LSL:21, LSL:22 → H3:X1, H3:X2 → N"]},
+    tip:"Press START and speed up ⏩.",
     devices:[G, Q3, F1, S0, S1, KM('KM1'), OL(4.9), PUMP, {id:'T1', type:'tank', cfg:{pump:'M1', fill:-0.12, drain:-0.03, lvl0:0.5, label:'Suction tank'}, name:'Suction tank'}, LVL('LSL', 0.15, 0.05, 'Dry-run float', 'T1', {a0:1, lvl0:0.5}), lamp('H3', 'amber', 'No water')],
     solution:PWR.concat(FEED, [['F2:96','S0:11'],['S0:12','LSL:13'],['LSL:14','S1:13'],['S1:14','KM1:A1'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KM1:A2','G:N'],['F1:2','LSL:21'],['LSL:22','H3:X1'],['H3:X2','G:N']]), seq:true,
     cases:[{label:'There\'s water, nothing pressed', set:{}, expect:{M1:0, H3:0}}, {label:'START pressed', set:{S1:{p:1}}, expect:{M1:'F', H3:0}}, {label:'START released', set:{S1:{p:0}}, expect:{M1:'F', H3:0}}, {label:'The water ran out', wait:5, expect:{M1:0, H3:1}}, {label:'The water came back (without START)', wait:4, expect:{M1:0, H3:0}}, {label:'START again', set:{S1:{p:1}}, expect:{M1:'F', H3:0}}, {label:'STOP pressed', set:{S1:{p:0}, S0:{p:1}}, expect:{M1:0, H3:0}}],
-    patterns:[{sig:{M1:'0111010'}, msg:'The pump doesn\'t stop when the water runs out: the dry-run float\'s <b>NO (13-14)</b> contact must be in the coil line (before START and the seal-in), not only in the lamp line.'}, {sig:{M1:'0110110'}, msg:'The pump stops when the water runs out, but starts again by itself when the water returns: the seal-in must be <b>after</b> the float contact (KM1 13-14 in parallel with START only).'}],
-    okMsg:'A pump running dry burns within minutes (the water is what cools the seals). That\'s why this protection is essential.'},
-  s6:{story:{icon:'📡', text:'A proximity sensor on a machine: the electrician wired it as if it were PNP when it\'s NPN, and the relay never pulls in.', ask:'Find the sensor wiring mistake and fix it.'}, title:'Exercise 6: mistake: an NPN sensor wired as if it were PNP', short:'Mistake: NPN wired as PNP',
-    goal:'When an object comes close to the inductive sensor, relay K1 pulls in and the “object present” lamp lights.',
-    idea:'This sensor is NPN: its BK output switches to 0V (sinking), so the load must be between +24V and BK. Whoever wired it put the relay between BK and 0V like a PNP, so both ends of the relay are at 0V and it will never pull in.',
-    steps:['Switch on and bring an object close to the sensor: the lamp doesn\'t light even though the sensor\'s LED came on.','Switch off, and remove the relay\'s two wires: BK to A1, and A2 to 0V (BU).','Connect K1\'s A1 to +24V (a jumper from the relay common 11, which already has +24V), and A2 to the sensor output BK.','Switch on again and bring the object close: the relay pulls in and the lamp lights.'],
-    tip:'The rule: PNP = load between BK and 0V. NPN = load between +24V and BK.',
+    patterns:[{sig:{M1:'0111010'}, msg:"It doesn't stop when the water runs out: LSL 13-14 in the coil line, before START."}, {sig:{M1:'0110110'}, msg:"It restarts by itself: the hold-in goes across START only, after the float."}],
+    okMsg:"A pump running dry burns out in minutes."},
+  s6:{story:{icon:'📡', text:"An NPN proximity sensor wired as if it were PNP.", ask:""}, title:'Exercise 6: mistake: an NPN sensor wired as if it were PNP', short:'Mistake: NPN wired as PNP',
+    goal:"Object near: K1 pulls in, H1 lights.",
+    idea:"NPN: the load goes between +24V and BK, not BK and 0V.",
+    steps:["Power up, bring an object: the lamp stays off.","Power off, remove the K1:A1 and K1:A2 wires.","Jumper K1:11 → K1:A1, and K1:A2 → B1:BK","Power up and bring the object."],
+    tip:"PNP: load between BK and 0V. NPN: between +24V and BK.",
     devices:[DC, {id:'B1', type:'prox', cfg:{kind:'ind', pnp:false, nc:false, label:'Inductive sensor NPN NO'}, name:'Inductive sensor NPN'}, RL('K1', 24, ['CO'], '24V relay'), lamp('H1', 'green', 'Object present', 24)],
     preset:[['G1:P24','B1:BN'],['B1:BU','G1:0V'],['B1:BK','K1:A1'],['K1:A2','B1:BU'],['B1:BN','K1:11'],['K1:14','H1:X1'],['H1:X2','G1:0V']],
     solution:[['G1:P24','B1:BN'],['B1:BU','G1:0V'],['B1:BN','K1:11'],['K1:11','K1:A1'],['K1:A2','B1:BK'],['K1:14','H1:X1'],['H1:X2','G1:0V']],
     cases:[{label:'no object', set:{B1:{a:0}}, expect:{H1:0}}, {label:'object within range', set:{B1:{a:1}}, expect:{H1:1}}],
-    patterns:[{sig:{H1:'00'}, msg:'The relay doesn\'t pull in even though the sensor sees the object: an <b>NPN</b> sensor switches its BK output to <b>0V</b>, so if the relay is between BK and 0V both its ends are at 0V and there\'s no voltage difference. Put the relay between <b>+24V and BK</b>.'}],
-    okMsg:'NPN pulls the load to 0V (sinking), and PNP gives it +24V (sourcing). In Egypt and Europe PNP is most common; in Japan NPN. Always check the label before wiring.'}
+    patterns:[{sig:{H1:'00'}, msg:"The relay doesn't pull in: the sensor is NPN; put K1 between +24V and BK."}],
+    okMsg:"NPN sinks to 0V; PNP sources +24V."}
 };
 /* ---------- lesson-7 figures and custom sim ---------- */
 const esc = CL.esc, r1 = v => Math.round(v * 10) / 10;

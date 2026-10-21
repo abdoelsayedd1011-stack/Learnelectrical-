@@ -605,7 +605,7 @@ VF.wire = function(host, cfg, opt){
   const T = {}; cfg.terms.forEach(t => T[t.id] = t);
   const W = []; let pend = null;
   host.innerHTML = `<div class="bn-board"><svg viewBox="0 0 ${cfg.vb[0]} ${cfg.vb[1]}" role="img" aria-label="${esc(cfg.aria || 'Wiring board')}" style="max-width:${cfg.max || 560}px">${cfg.art || ''}<g class="vw-w"></g><g class="vw-t">${cfg.terms.map(t => `<g class="bt" data-t="${t.id}"><circle class="bt-hit" cx="${t.x}" cy="${t.y}" r="13" tabindex="0" role="button" aria-label="${esc(t.aria || t.lab)}"/><circle class="bt-ring" cx="${t.x}" cy="${t.y}" r="10"/><circle class="bt-s" cx="${t.x}" cy="${t.y}" r="6.5"/><path class="bt-x" d="M${t.x - 3} ${t.y - 3}L${t.x + 3} ${t.y + 3}" pointer-events="none"/><text class="bt-lab" x="${t.x}" y="${t.y + (t.ly || -11)}" style="font-size:${cfg.fs || 10}px">${esc(t.lab)}</text></g>`).join('')}</g></svg></div>
-  <p class="muted vw-help" style="font-size:.88rem">Tap a terminal, then the other terminal, to run a wire. Tap a wire to remove it.</p>
+  <p class="muted vw-help" style="font-size:.88rem">Tap a terminal, then the other. Tap a wire to remove it.</p>
   <div class="wd-ctl"><button type="button" class="btn pri vw-chk">Check wiring</button><button type="button" class="btn vw-undo">Remove last wire</button><button type="button" class="btn vw-clr">Clear all</button></div>
   <div class="bn-res vw-res" aria-live="polite"></div>
   <p class="chal vw-chal">${opt.goal || 'Wire everything correctly and press “Check wiring”.'}</p>`;
@@ -638,11 +638,13 @@ VF.wire = function(host, cfg, opt){
     gw.innerHTML = W.map((w, i) => {
       const a = T[w[0]], b = T[w[1]], my = (a.y + b.y) / 2 + (cfg.bend || 0), col = a.col || b.col || '#7a5cc8';
       const d = Math.abs(a.x - b.x) < 2 || Math.abs(a.y - b.y) < 2 ? `M${a.x} ${a.y}L${b.x} ${b.y}` : `M${a.x} ${a.y}C${a.x} ${my} ${b.x} ${my} ${b.x} ${b.y}`;
-      return `<g class="bw" data-w="${i}"><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${col}"/><path class="bw-hit" d="${d}" tabindex="0" role="button" aria-label="Wire from ${esc(a.lab)} to ${esc(b.lab)}, tap to remove"/></g>`;
+      return `<g class="bw${err && err.w.has(key(w[0], w[1])) ? ' bad' : ''}" data-w="${i}"><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${col}"/><path class="bw-hit" d="${d}" tabindex="0" role="button" aria-label="Wire from ${esc(a.lab)} to ${esc(b.lab)}, tap to remove"/></g>`;
     }).join('');
-    $$('.bt', host).forEach(g => g.classList.toggle('pend', g.dataset.t === pend));
+    $$('.bt', host).forEach(g => { g.classList.toggle('pend', g.dataset.t === pend); const rg = g.querySelector('.bt-ring'); if (rg) rg.classList.toggle('err', !!(err && err.t.has(g.dataset.t))); });
     if (opt.onChange) opt.onChange(ev, W.slice());
   }
+  let err = null;
+  function pulse(hl){ err = hl ? {t:new Set(hl.t || []), w:new Set(hl.w || []), until:Date.now() + 3000} : null; draw(); if (err) setTimeout(() => { if (err && err.until <= Date.now()){ err = null; draw(); } }, 3100); }
   function res(html){ q('.vw-res').innerHTML = html; }
   host.addEventListener('click', e => {
     const t = e.target.closest('.bt');
@@ -651,7 +653,7 @@ VF.wire = function(host, cfg, opt){
       if (!pend){ pend = id; draw(); return; }
       if (pend === id){ pend = null; draw(); return; }
       const k = key(pend, id);
-      if (!W.some(w => key(w[0], w[1]) === k)){ W.push([pend, id]); const m = cfg.danger && cfg.danger(pend, id); res(m ? `<div class="bn-bad"><b>Careful!</b> ${m}</div>` : ''); }
+      if (!W.some(w => key(w[0], w[1]) === k)){ W.push([pend, id]); const m = cfg.danger && cfg.danger(pend, id); res(m ? `<div class="bn-bad"><b>Careful!</b> ${m}</div>` : ''); if (m) pulse({t:[pend, id], w:[key(pend, id)]}); }
       pend = null; draw(); return;
     }
     const w = e.target.closest('.bw');
@@ -663,11 +665,11 @@ VF.wire = function(host, cfg, opt){
   q('.vw-chk').addEventListener('click', () => {
     const ev = evaluate();
     if (ev.ok){ res(`<div class="bn-ok"><b>Wiring is correct ✓</b> ${cfg.done || ''}</div>`); fin(); if (opt.onOk) opt.onOk(); return; }
-    let h = '';
-    if (ev.shorts.length) h += `<div class="bn-bad"><b>Short circuit!</b> ${ev.shorts.map(s => `<span class="eq">${esc(T[s[0]].lab)}</span> and <span class="eq">${esc(T[s[1]].lab)}</span>`).join(', ')} are connected together.</div>`;
-    if (ev.wrong.length) h += `<div class="bn-bad"><b>Wrong wires (${ev.wrong.length}):</b><ul>${ev.wrong.map(w => `<li><span class="eq">${esc(T[w[0]].lab)} ↔ ${esc(T[w[1]].lab)}</span>: ${(cfg.danger && cfg.danger(w[0], w[1])) || 'These two terminals should not be connected.'}</li>`).join('')}</ul></div>`;
-    if (ev.missing.length) h += `<div class="bn-warn"><b>Still missing:</b><ul>${ev.missing.map(r => `<li>${r.hint}</li>`).join('')}</ul></div>`;
-    res(h);
+    let m = '', hl = null; const L = id => `<span class="eq">${esc(T[id].aria || T[id].lab)}</span>`;
+    if (ev.shorts.length){ const s = ev.shorts[0]; m = `<b>Short:</b> ${L(s[0])} and ${L(s[1])} are connected together.`; hl = {t:s}; }
+    else if (ev.wrong.length){ const w = ev.wrong[0]; m = `${L(w[0])} ↔ ${L(w[1])}: ${(cfg.danger && cfg.danger(w[0], w[1])) || 'these shouldn’t be connected.'}`; hl = {t:w, w:[key(w[0], w[1])]}; }
+    else { const r = ev.missing[0], f = ev.f, all = r.a.concat(r.b); const t0 = r.all ? (all.find(x => f(x) !== f(all[0])) || all[0]) : (r.a.find(a => r.b.filter(b => f(b) === f(a)).length !== 1) || r.a[0]); m = `${L(t0)} isn’t wired right: ${r.hint}`; hl = {t:[t0]}; }
+    res(`<div class="bn-bad"><b>✗</b> ${m}</div>`); pulse(hl);
   });
   draw();
   return {W, connect(a, b){ if (!W.some(w => key(w[0], w[1]) === key(a, b))) W.push([a, b]); draw(); }, check(){ q('.vw-chk').click(); return q('.vw-res').textContent; }, evaluate, clear(){ W.length = 0; draw(); }};
@@ -692,19 +694,19 @@ VF.powerBoard = function(host, opt){
   const isSup = x => ['L1', 'L2', 'L3'].includes(x), isOut = x => ['U', 'V', 'W'].includes(x), isMot = x => ['mU', 'mV', 'mW'].includes(x), isIn = x => ['R', 'S', 'Tt'].includes(x), isPE = x => /PE/.test(x), isBR = x => ['BRp', 'BRn', 'R1', 'R2'].includes(x);
   const danger = (a, b) => {
     const has = fn => fn(a) || fn(b), both = (f1, f2) => (f1(a) && f2(b)) || (f1(b) && f2(a));
-    if (both(isSup, isOut)) return 'The supply is going into the <b>output terminals</b>! The moment you close the breaker the IGBTs burn. The supply goes on R S T only.';
-    if (both(isSup, isMot)) return 'That puts the motor straight on the supply (DOL) and the drive is pointless, and if the drive output is connected to it as well, the drive will burn.';
-    if (both(isSup, isBR)) return 'These are the brake / DC terminals, not a power input. Supply here = explosion.';
-    if (both(isMot, isIn)) return 'The motor connects to the <b>output</b> terminals U V W, not the input.';
-    if (both(isPE, x => isSup(x) || isOut(x) || isMot(x) || isIn(x))) return 'A phase to earth = ground fault. Earth goes to earth only.';
-    if (has(isBR) && !both(x => ['BRp', 'BRn'].includes(x), x => ['R1', 'R2'].includes(x))) return 'The braking resistor connects to <span class="eq">BR+</span> and <span class="eq">BR−</span> only.';
+    if (both(isSup, isOut)) return 'Supply on the <b>output</b>: the IGBTs burn. Supply goes on R S T only.';
+    if (both(isSup, isMot)) return 'That puts the motor straight on the supply. Supply goes on R S T.';
+    if (both(isSup, isBR)) return 'These are brake terminals, not a power input.';
+    if (both(isMot, isIn)) return 'The motor goes on the <b>output</b> U V W, not the input.';
+    if (both(isPE, x => isSup(x) || isOut(x) || isMot(x) || isIn(x))) return 'A phase to earth = ground fault. Earth to earth only.';
+    if (has(isBR) && !both(x => ['BRp', 'BRn'].includes(x), x => ['R1', 'R2'].includes(x))) return 'The resistor goes on <span class="eq">BR+</span> and <span class="eq">BR−</span> only.';
     return null;
   };
   return VF.wire(host, {vb:[360, 330], art, terms, danger, max:520, aria:'Power wiring board: supply, drive, braking resistor and motor',
-    rules:[{a:['L1', 'L2', 'L3'], b:['R', 'S', 'Tt'], hint:'Supply L1 L2 L3 to drive input R S T (the order does not matter here).'}, {a:['sPE'], b:['dPEi', 'dPEo'], hint:'Supply earth to the PE terminal on the drive.'},
-      {a:['U', 'V', 'W'], b:['mU', 'mV', 'mW'], hint:'Drive output U V W to motor terminals U1 V1 W1.'}, {a:['mPE'], b:['dPEo', 'dPEi'], hint:'Motor earth back to the drive PE (in the same cable).'},
-      {a:['BRp', 'BRn'], b:['R1', 'R2'], hint:'Braking resistor on BR+ and BR−.'}],
-    danger, done:'The input phase order does not matter to the drive because it rectifies it. But if you swap any two wires between the drive and the motor, the motor runs in reverse (better to reverse it with a parameter).'}, Object.assign({task:'wire', goal:'Wire the supply, motor, earth and braking resistor correctly and press “Check wiring”.'}, opt));
+    rules:[{a:['L1', 'L2', 'L3'], b:['R', 'S', 'Tt'], hint:'L1 L2 L3 → R S T (any order).'}, {a:['sPE'], b:['dPEi', 'dPEo'], hint:'Supply earth → drive PE.'},
+      {a:['U', 'V', 'W'], b:['mU', 'mV', 'mW'], hint:'U V W → motor U1 V1 W1.'}, {a:['mPE'], b:['dPEo', 'dPEi'], hint:'Motor earth → drive PE.'},
+      {a:['BRp', 'BRn'], b:['R1', 'R2'], hint:'Resistor → BR+ and BR−.'}],
+    danger, done:'Input order doesn’t matter. Swapping two output wires reverses the motor.'}, Object.assign({task:'wire', goal:'Wire supply, motor, earth and resistor, then press “Check wiring”.'}, opt));
 };
 VF.RULES = [
   ['You can put a contactor between the drive and the motor and open it while the motor runs to stop it.', false, 'Opening the contactor under load causes voltage and current spikes that can destroy the IGBTs. Stop from the drive first. (An output contactor opens and closes only with the drive stopped, as in a bypass.)'],
@@ -741,11 +743,11 @@ VF.controlBoard = function(host, opt){
   const isPow = x => ['p24', 'p10', 'COM', 'ACM'].includes(x);
   const danger = (a, b) => {
     const both = (x, y) => (a === x && b === y) || (a === y && b === x);
-    if (both('p24', 'COM')) return 'That is a short circuit on the terminals 24V supply.';
+    if (both('p24', 'COM')) return 'That shorts the 24V terminal supply.';
     if (both('p10', 'ACM')) return 'Short on the +10V: the pot goes between them, not a wire.';
-    if ((a === 'Lsrc' || b === 'Lsrc') && !(a === 'R1C' || b === 'R1C' || a === 'R1A' || b === 'R1A')) return '<b>230V on the control terminals = the board burns!</b> 230V goes through the relay contact only.';
-    if (isPow(a) && isPow(b)) return 'That connects two supplies together = short circuit.';
-    if ((a === 'P2' || b === 'P2') && (isPow(a) || isPow(b))) return 'The pot middle terminal (the wiper) gives the signal; it goes to AI1.';
+    if ((a === 'Lsrc' || b === 'Lsrc') && !(a === 'R1C' || b === 'R1C' || a === 'R1A' || b === 'R1A')) return '<b>230V on control = the board burns!</b> 230V goes on the relay only.';
+    if (isPow(a) && isPow(b)) return 'Two supplies connected together = short circuit.';
+    if ((a === 'P2' || b === 'P2') && (isPow(a) || isPow(b))) return 'The pot middle terminal goes to AI1.';
     return null;
   };
   const S = {sw:false, dir:false, pot:0.6, f:0, fault:false, ok:false, sawRev:false, sawLamp:false};
@@ -755,13 +757,13 @@ VF.controlBoard = function(host, opt){
     <label>Potentiometer: <b class="cb-potv"></b><input type="range" class="cb-pot" min="0" max="100" step="1" value="60" aria-label="Potentiometer %"></label>
     <button type="button" class="btn cb-flt">Make the drive trip</button><button type="button" class="btn cb-rst">Reset</button></div>
     <div class="read sm"><div><span>DI1 / DI2</span><b class="cb-di"></b></div><div><span>AI1</span><b class="cb-ai"></b></div><div><span>Output frequency</span><b class="cb-hz"></b></div></div>
-    <p class="msg cb-msg" aria-live="polite"></p><p class="chal cb-chal">Challenge: from the terminals (not the keypad), run the motor <b>in reverse at <span class="eq">30 Hz</span> or more</b>, then make a fault and see the fault lamp light.</p>`;
+    <p class="msg cb-msg" aria-live="polite"></p><p class="chal cb-chal">Challenge: from the terminals, run <b>in reverse at <span class="eq">30 Hz</span> or more</b>, then make a fault and watch the lamp.</p>`;
   let ev = null, f = null;
   const B = VF.wire(box, {vb:[364, 320], art, terms, danger, fs:9, max:560, aria:'Control terminal wiring board',
-    rules:[{a:['p24'], b:['SWa', 'DIRa'], all:true, hint:'+24V must reach terminal 1 of both selectors (you can jumper from one selector to the other).'}, {a:['SWb'], b:['DI1'], hint:'Terminal 2 of the run selector goes back to DI1 (Run).'}, {a:['DIRb'], b:['DI2'], hint:'Terminal 2 of the direction selector goes back to DI2 (reverse).'},
-      {a:['p10', 'ACM'], b:['P1', 'P3'], hint:'The pot ends go to +10V and ACM.'}, {a:['P2'], b:['AI1'], hint:'The pot middle terminal goes to AI1.'}, {a:['R1C', 'R1A'], b:['Lsrc', 'X1'], hint:'The fault relay contact (R1C and R1A) goes between L and the fault lamp.'}],
-    danger, done:'Now the drive takes its run command and direction from the selectors, its speed from the pot, and drives the fault lamp from the relay. Try it below.'},
-    {lesson:opt.lesson, task:'cwire', goal:'Wire the two selectors, the pot and the fault lamp correctly and press “Check wiring”.', onChange(e){ ev = e; f = e.f; }});
+    rules:[{a:['p24'], b:['SWa', 'DIRa'], all:true, hint:'+24V → terminal 1 of both selectors.'}, {a:['SWb'], b:['DI1'], hint:'Run selector terminal 2 → DI1.'}, {a:['DIRb'], b:['DI2'], hint:'Direction selector terminal 2 → DI2.'},
+      {a:['p10', 'ACM'], b:['P1', 'P3'], hint:'Pot ends → +10V and ACM.'}, {a:['P2'], b:['AI1'], hint:'Pot middle → AI1.'}, {a:['R1C', 'R1A'], b:['Lsrc', 'X1'], hint:'R1C and R1A between L and the fault lamp.'}],
+    danger, done:'Done. Try running it below.'},
+    {lesson:opt.lesson, task:'cwire', goal:'Wire both selectors, the pot and the fault lamp, then press “Check wiring”.', onChange(e){ ev = e; f = e.f; }});
   host.appendChild(ctl);
   const q = s => $(s, host), fin = chal(ctl, '.cb-chal', opt.lesson, 'run');
   function sim(){
@@ -795,13 +797,13 @@ VF.controlBoard = function(host, opt){
     q('.cb-potv').textContent = Math.round(S.pot * 100) + ' %';
     if (S.f >= 29.5 && st.di2 && !S.fault) S.sawRev = true; if (st.lamp) S.sawLamp = true;
     const m = q('.cb-msg'); let t = '', c = '';
-    if (st.live230){ t = '<b>230V reached the control terminals!</b> In real life the control board would be burnt. Remove that wire.'; c = 'bad'; }
+    if (st.live230){ t = '<b>230V reached the control terminals!</b> Remove that wire.'; c = 'bad'; }
     else if (st.short24){ t = 'Short on the 24V: none of the terminals work.'; c = 'bad'; }
-    else if (S.fault) t = st.lamp ? 'The drive tripped on a fault, and the fault relay closed its contact so the lamp is on. Press Reset.' : 'The drive tripped and the relay closed, but the lamp did not light: check the relay and lamp wiring.';
-    else if (S.sw && !st.di1) t = 'The selector is closed but DI1 is still OFF: the 24V is not reaching it. Check the wire.';
-    else if (st.di1 && st.ai < 0.2) t = 'The motor has a run command but the speed is zero: AI1 has no voltage. Turn the pot or check its wiring.';
+    else if (S.fault) t = st.lamp ? 'Fault: the relay closed and the lamp is on. Press Reset.' : 'Fault, but the lamp is off: check the relay and lamp wires.';
+    else if (S.sw && !st.di1) t = 'Selector closed but DI1 still OFF: 24V isn’t reaching it.';
+    else if (st.di1 && st.ai < 0.2) t = 'Run is on but AI1 is zero: turn the pot or check its wiring.';
     else if (st.di1) t = `Running ${st.di2 ? 'reverse' : 'forward'}: AI1 = <span class="eq">${fmt(st.ai, 1)} V</span> ⇒ <span class="eq">${fmt(st.ai, 1)} ÷ 10 × 50 = ${fmt(st.ai * 5, 1)} Hz</span>.`;
-    else t = 'Close the run selector to send a Run command to DI1.';
+    else t = 'Close the run selector (Run on DI1).';
     if (S.sawRev && S.sawLamp){ fin(); if (!S.fault){ t = 'Well done! You ran in reverse from the terminals, took the speed from the pot, and tested the fault lamp. That is exactly what you do on any panel.'; c = 'ok'; } }
     m.className = 'msg cb-msg ' + c; m.innerHTML = t;
   }

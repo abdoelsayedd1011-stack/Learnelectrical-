@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="/en/classic-control-lab/engine.css?v=20261021q">
+<link rel="stylesheet" href="/en/classic-control-lab/engine.css?v=20261021w">
 <link rel="stylesheet" href="/en/classic-control-lab/fx.css?v=20261021v">
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261021r">
 </head>
@@ -40,7 +40,7 @@
 <script src="/site-config.js?v=20261021v"></script>
 <script src="/assets/i18n.js?v=20261021w"></script>
 <script src="/assets/i18n-en.js?v=20261021v"></script>
-<script src="/en/classic-control-lab/engine.js?v=20261021q"></script>
+<script src="/en/classic-control-lab/engine.js?v=20261021w"></script>
 <script src="/en/classic-control-lab/fx.js?v=20261021v"></script>
 <script>
 (function(){
@@ -72,12 +72,12 @@ const olCases = [
   {label:'Pressed Reset on the overload', set:{F2:{reset:1}}, expect:{M1:0, H1:0, H3:0}},
   {label:'START again', set:{S1:{p:1}}, expect:{M1:1, H1:1, H3:0}}];
 const olPatterns = [
-  {sig:{M1:'0111111'}, msg:'The overload tripped (look at 97-98 and the fault lamp) but <b>the motor kept running</b>: contact 95-96 isn\'t breaking the control line. There\'s a wire running <b>in parallel</b> with it (bypassing it), so when 95-96 opened the current found another path. 95-96 must be <b>in series</b> in the control line (F1 → 95, 96 → STOP) with no wire bypassing it.'},
-  {sig:{H1:'0111111'}, msg:'The overload tripped but the contactor stayed pulled in: contact 95-96 is bypassed by a parallel wire. Remove the wire that connects before 95 straight to after 96.'},
-  {sig:{M1:'0000000'}, msg:'The motor <b>never starts</b>, and the fault lamp is on all the time: you used <b>97-98</b> (NO) in the control line instead of <b>95-96</b> (NC). 97-98 is open while the overload is healthy, so the contactor gets no power, and it would only run when the overload trips (the opposite!). Correct: 95-96 in series in the control line, and 97-98 only for the fault lamp.'},
-  {sig:{H3:'1111111'}, msg:'Fault lamp H3 is on while the overload is healthy: it\'s wired on 95-96 (NC, closed normally) instead of 97-98 (NO, closes when it trips). Swap them: 95-96 for the control line, 97-98 for the lamp.'},
-  {sig:{H3:'0000000'}, msg:'Fault lamp H3 doesn\'t light when the overload trips: it must be wired from after F1 → 97 → 98 → H3 → N.'}];
-const olConventions = [{test:(W) => W.some(w => /^(Q1):[246]$/.test(w.a) && /^F2:[135]$/.test(w.b) || /^(Q1):[246]$/.test(w.b) && /^F2:[135]$/.test(w.a)), msg:'Note: the circuit works, but the overload is wired <b>before</b> the contactor (Q1 → F2 → KM1). The proper way is <b>after</b> the contactor (Q1 → KM1 → F2 → M), because it mounts directly on the contactor with its own pins, so the current it measures is the motor current only, and maintenance is easier. Rearrange it as in the drawing.'}];
+  {sig:{M1:'0111111'}, msg:"The overload tripped but the motor runs: 95-96 is bypassed. Remove the wire across it."},
+  {sig:{H1:'0111111'}, msg:"The contactor stays in: remove the wire bypassing 95-96."},
+  {sig:{M1:'0000000'}, msg:"The motor never starts and the fault lamp is on: 95-96 for control, 97-98 for the lamp."},
+  {sig:{H3:'1111111'}, msg:"H3 is on with a healthy overload: H3 goes on 97-98, not 95-96."},
+  {sig:{H3:'0000000'}, msg:"H3 stays off on a trip: F1:2 → F2:97, and F2:98 → H3:X1."}];
+const olConventions = [{test:(W) => W.some(w => /^(Q1):[246]$/.test(w.a) && /^F2:[135]$/.test(w.b) || /^(Q1):[246]$/.test(w.b) && /^F2:[135]$/.test(w.a)), msg:"Note: the overload goes after the contactor: Q1 → KM1 → F2 → M."}];
 
 CL.lesson({
   id:'l4', n:4, title:'Lesson 4: Protection',
@@ -198,31 +198,31 @@ CL.lesson({
   ],
 
   exercises:{
-    p1:{story:{icon:'🔥', text:'A machine work lamp: a short circuit happened in the wire and the fuse blew before the wires caught fire.', ask:'Fix the short circuit and replace the fuse so the lamp lights with the button again.'}, title:'Exercise 1: the fuse protects the lamp from a short circuit', short:'Fuse + lamp + short',
-       task:'This circuit is already wired (L → fuse F1 → button S1 → lamp H1 → N), but it has <b>a wrong wire that makes a short circuit</b>. Switch on and press S1: the fuse will blow. Switch off, find the shorting wire and remove it, <b>replace the fuse</b> (tap it), and switch on again: the lamp lights with the button.', goal:"Lamp H1 lights with button S1 and fuse F1 protects it: if a short circuit happens, the fuse blows and the lamp and wires are saved.", idea:"It has a wrong wire connecting the two lamp terminals together (X1 to X2): current flows with no load = a short circuit. The fuse doesn't reset by itself; it must be replaced.", steps:["Switch on and press S1: the fuse will blow.", "Switch off, find the wire shorting the lamp and remove it.", "Replace the fuse (tap it) and switch on again: the lamp lights with the button."],
-       tip:'The short is a wire connecting the two lamp terminals together (X1 to X2): current flows with no load. The fuse doesn\'t reset by itself: tap the fuse after you fix it.',
+    p1:{story:{icon:'🔥', text:"Machine lamp: a short in the wiring blew the fuse.", ask:""}, title:'Exercise 1: the fuse protects the lamp from a short circuit', short:'Fuse + lamp + short',
+       task:'This circuit is already wired (L → fuse F1 → button S1 → lamp H1 → N), but it has <b>a wrong wire that makes a short circuit</b>. Switch on and press S1: the fuse will blow. Switch off, find the shorting wire and remove it, <b>replace the fuse</b> (tap it), and switch on again: the lamp lights with the button.', goal:"Remove the short; H1 lights with S1.", idea:"A wire joining X1 to X2 is a short. Replace the fuse by hand.", steps:["Power up, press S1: the fuse blows.","Power off, remove wire H1:X1 → H1:X2.","Tap the fuse to replace it, power up."],
+       tip:"",
        devices:[SUP, FUSE, PB('S1', 'green', 'START'), lamp('H1', 'green', 'lamp')],
        preset:[['Q1:L','F1:1'],['F1:2','S1:13'],['S1:14','H1:X1'],['H1:X2','Q1:N'],['H1:X1','H1:X2']],
        solution:[['Q1:L','F1:1'],['F1:2','S1:13'],['S1:14','H1:X1'],['H1:X2','Q1:N']],
        cases:[{label:'S1 released', set:{S1:{p:0}}, expect:{H1:0}}, {label:'S1 pressed', set:{S1:{p:1}}, expect:{H1:1}}],
-       okMsg:'The fuse is protecting the circuit again. If another short happens, the fuse blows, not the wire.'},
-    p2:{story:{icon:'🌬️', text:'A new air compressor: the breaker trips on every start, at the moment of starting, and the manager is fed up.', ask:'Choose the right breaker (B or C) and wire DOL with the selector.'}, machine:'gauge', title:'Exercise 2: choose the right breaker for the motor (B or C)', short:'Breaker B or C',
-       task:'The board has two 3-pole breakers: <b>Q1</b> curve <b>B6</b> and <b>Q2</b> curve <b>C6</b>, and the motor current is 5A. Wire the power circuit from the supply through <b>one of them</b> → KM1 → M1, and the control circuit (F1 → S1 → KM1 coil). When you turn the selector the motor must start and keep running. If you choose wrong it will trip at the moment of starting.', goal:"The motor (5A) starts and keeps running when you turn the selector, without the breaker tripping at the moment of starting.", idea:"Starting current ≈ 6×In = 30A. Curve B6 trips instantly at 18–30A so it will trip on start, and curve C6 at 30–60A so it withstands it. Choose C.", steps:{"power": ["L1 L2 L3 from the supply to the right breaker (Q2, curve C).", "From the breaker outputs to the contactor 1/3/5.", "From 2/4/6 to motor U V W."], "control": ["Phase L1 to F1, and from F1 to selector S1.", "From the selector to A1 of KM1, and A2 to N."]},
-       tip:'Motor starting current ≈ 6×In = 30A. Curve B trips instantly at 3–5×6A = 18–30A, and curve C at 5–10×6A = 30–60A.',
+       okMsg:"The fuse protects the circuit again."},
+    p2:{story:{icon:'🌬️', text:"Air compressor: the breaker trips on every start.", ask:""}, machine:'gauge', title:'Exercise 2: choose the right breaker for the motor (B or C)', short:'Breaker B or C',
+       task:'The board has two 3-pole breakers: <b>Q1</b> curve <b>B6</b> and <b>Q2</b> curve <b>C6</b>, and the motor current is 5A. Wire the power circuit from the supply through <b>one of them</b> → KM1 → M1, and the control circuit (F1 → S1 → KM1 coil). When you turn the selector the motor must start and keep running. If you choose wrong it will trip at the moment of starting.', goal:"M1 (5A) starts without tripping the breaker.", idea:"Starting current ≈ 30A: B6 trips on it, C6 rides through.", steps:{"power":["L1 L2 L3 → Q2 (C6) 1/3/5","Q2 2/4/6 → KM1 1/3/5","KM1 2/4/6 → M1 U V W"],"control":["L1 → F1:1, and F1:2 → S1:13","S1:14 → KM1:A1, and KM1:A2 → N"]},
+       tip:"",
        devices:[G, Qb, Qc, F1, SEL, KM('KM1', ['NO']), MOT('M1', 5, 0.8)],
        solution:[['G:L1','Q2:1'],['G:L2','Q2:3'],['G:L3','Q2:5'],['Q2:2','KM1:1'],['Q2:4','KM1:3'],['Q2:6','KM1:5'],['KM1:2','M1:U'],['KM1:4','M1:V'],['KM1:6','M1:W'],['G:L1','F1:1'],['F1:2','S1:13'],['S1:14','KM1:A1'],['KM1:A2','G:N']],
        cases:[{label:'Selector on 0', set:{S1:{pos:0}}, expect:{M1:0}}, {label:'Selector on I (start, then run for two seconds)', set:{S1:{pos:1}}, wait:2, expect:{M1:'F'}}],
-       tripHint:'Use breaker Q2 (curve C6) for the motor.',
-       okMsg:'The C breaker withstood the starting current. On the board, look at the motor current at start (⚡) and afterwards.'},
-    o1:{story:{icon:'🟡', text:'A drainage pump: the manager wants a yellow lamp in the cabin to light if the pump overheats and the overload trips, so he knows.', ask:'The practical exercise with protection: DOL + overload + fault lamp.'}, machine:'gauge', title:'Exercise 3: the overload in a DOL circuit + fault lamp', short:'Overload in DOL',
-       task:'Wire a complete DOL with protection: power <b>Q1 → KM1 → F2 → M1</b>, and control <b>F1 → F2 95-96 → S0 → S1 || KM1 13-14 → KM1 coil → N</b>, the “running” lamp <b>H1</b> across the coil, and the yellow “fault” lamp <b>H3</b> from after F1 through <b>F2 97-98</b>. After switching on: start the motor, raise the load with the slider to 250%, wait for the overload to trip (⏩ speeds it up), see the yellow lamp, wait for it to cool, Reset, and start again.', goal:"A complete DOL with protection: START starts the motor and it keeps running, STOP stops it, and when the overload trips the motor stops and a yellow “fault” lamp lights.", idea:"Overload F2 mounts after the contactor in the power circuit; its NC contact (95-96) goes at the start of the control line to break the coil circuit, and its NO contact (97-98) lights the fault lamp.", steps:{"power": ["L1 L2 L3 from the supply to Q1, and from Q1 to the contactor 1/3/5.", "From the contactor 2/4/6 to the overload inputs 1/3/5.", "From the overload outputs 2/4/6 to motor U V W."], "control": ["Phase L1 to F1, then overload contact 95-96, then STOP, then START.", "Seal-in contact 13-14 in parallel with START, their output to A1, and A2 to N.", "The “running” lamp H1 across the coil.", "The “fault” lamp H3 from after F1 through overload contact 97-98, with its X2 to X2 of H1.", "After switching on: raise the load to 250%, wait for it to trip (⏩ speeds it up), wait for it to cool, Reset, and start again."]},
-       tip:'Power: KM1:2 → F2:1, KM1:4 → F2:3, KM1:6 → F2:5, then F2:2 → M1:U, F2:4 → M1:V, F2:6 → M1:W. Control: F1:2 → F2:95, F2:96 → S0:11. Fault lamp: F1:2 → F2:97, F2:98 → H3:X1, H3:X2 → H1:X2.',
+       tripHint:"Use Q2 (curve C6) for the motor.",
+       okMsg:"Curve C rode through the starting current ⚡."},
+    o1:{story:{icon:'🟡', text:"Drain pump: a yellow lamp when the overload trips.", ask:""}, machine:'gauge', title:'Exercise 3: the overload in a DOL circuit + fault lamp', short:'Overload in DOL',
+       task:'Wire a complete DOL with protection: power <b>Q1 → KM1 → F2 → M1</b>, and control <b>F1 → F2 95-96 → S0 → S1 || KM1 13-14 → KM1 coil → N</b>, the “running” lamp <b>H1</b> across the coil, and the yellow “fault” lamp <b>H3</b> from after F1 through <b>F2 97-98</b>. After switching on: start the motor, raise the load with the slider to 250%, wait for the overload to trip (⏩ speeds it up), see the yellow lamp, wait for it to cool, Reset, and start again.', goal:"DOL with overload: on trip, motor stops, H3 lights.", idea:"F2 after KM1; 95-96 cuts the coil, 97-98 lights the fault lamp.", steps:{"power":["L1 L2 L3 → Q1 1/3/5","Q1 2/4/6 → KM1 1/3/5","KM1 2/4/6 → F2 1/3/5","F2 2/4/6 → M1 U V W"],"control":["L1 → F1:1, and F1:2 → F2:95","F2:96 → S0:11, and S0:12 → S1:13","S1:14 → KM1:A1, and KM1:A2 → N","Hold-in: KM1:13 → S1:13, and KM1:14 → S1:14","H1: KM1:A1 → H1:X1, and H1:X2 → N","H3: F1:2 → F2:97, and F2:98 → H3:X1","H3:X2 → H1:X2"]},
+       tip:"",
        devices:OL_DEVS, solution:POWER('Q1', 'KM1', 'F2', 'M1').concat(CTL_OL),
        seq:true, cases:olCases, patterns:olPatterns, conventions:olConventions,
-       okMsg:'This is practical 1, but with full protection. Now load the motor with the slider and watch the overload heat up (the orange bar) and trip.'},
-    o2:{story:{icon:'🏷️', text:'The overload keeps tripping on normal load: it came from the store set to a value below the motor current.', ask:'Set Ir from the motor nameplate and start it.'}, machine:'gauge', title:'Exercise 4: set Ir from the motor nameplate', short:'Setting Ir',
-       task:'This circuit is wired correctly, but the overload is set to <b>Ir = 2A</b> and the motor nameplate says <b>In = 5A</b>. Switch on and start the motor: it runs on its normal load (4A) and after a while the overload trips for no reason. Switch off, set <b>Ir</b> to the nameplate current with the “Ir −/+” buttons on the board, and switch on again.', goal:"The motor runs on its normal load without the overload tripping: set Ir to the nameplate current.", idea:"The overload is set to 2A and the motor nameplate says 5A, so it trips on normal load (4A) for no reason. Ir must equal the nameplate In.", steps:["Switch on and start the motor: after a while the overload trips while the motor is on its normal load.", "Switch off, and set Ir to 5A with the “Ir −/+” buttons on the board.", "Reset after it cools, and switch on again: it keeps running."],
-       tip:'Ir = the nameplate In (5A). Lower and it trips on normal load; higher and it doesn\'t protect.',
+       okMsg:"Load the motor to 250% and watch the overload trip."},
+    o2:{story:{icon:'🏷️', text:"The overload trips on normal load: Ir is set wrong.", ask:""}, machine:'gauge', title:'Exercise 4: set Ir from the motor nameplate', short:'Setting Ir',
+       task:'This circuit is wired correctly, but the overload is set to <b>Ir = 2A</b> and the motor nameplate says <b>In = 5A</b>. Switch on and start the motor: it runs on its normal load (4A) and after a while the overload trips for no reason. Switch off, set <b>Ir</b> to the nameplate current with the “Ir −/+” buttons on the board, and switch on again.', goal:"The motor runs on its load without tripping.", idea:"Ir = nameplate In (5A). Lower than that, it trips.", steps:["Power up and start: it trips after a while.","Power off, set Ir to 5A with «Ir −/+».","Reset once it cools, then run again."],
+       tip:"",
        devices:[G, Q3, F1, PB('S0', 'red', 'STOP'), PB('S1', 'green', 'START'), KM1, OL(2, {range:'1.6–6.5 A', lo:1.6, hi:6.5}), M1, H1, H3],
        preset:POWER('Q1', 'KM1', 'F2', 'M1').concat(CTL_OL), solution:POWER('Q1', 'KM1', 'F2', 'M1').concat(CTL_OL),
        seq:true, cases:[
@@ -230,18 +230,18 @@ CL.lesson({
          {label:'START pressed', set:{S1:{p:1}}, expect:{M1:1, H1:1, H3:0}},
          {label:'Released START and it kept running on its normal load for 100 seconds', set:{S1:{p:0}}, wait:100, expect:{M1:1, H1:1, H3:0}},
          {label:'STOP', set:{S0:{p:1}}, expect:{M1:0, H1:0, H3:0}}],
-       tripHint:'On its normal load the motor draws 4A, more than Ir=2A, so the overload sees it as an overload. Set Ir to the nameplate In (5A).',
-       okMsg:'Ir at the nameplate In: the motor runs on its load, and the overload trips only when the load really increases.'},
-    o3:{story:{icon:'⚠️', text:'The motor hums and the overload trips after a few seconds: a missing phase in the power circuit.', ask:'Find the missing phase and complete it.'}, machine:'gauge', title:'Exercise 5: a missing phase and the overload trips', short:'Missing phase',
-       task:'This circuit is missing a phase wire in the power circuit between the overload and the motor. Switch on and start the motor: it hums and doesn\'t turn, the current in the two phases rises, and the overload trips <b>quickly</b> (phase loss) and the fault lamp lights. Switch off, complete the missing phase, Reset after it cools, and switch on again.', goal:"The motor turns normally on 3 phases, and the overload trips only on a real overload.", idea:"A missing phase between the overload and the motor: the motor hums and the current rises in the two phases, and the overload senses one strip cold while the other two are hot, so it trips quickly (phase loss).", steps:["Switch on and start the motor: it hums and doesn't turn, the overload trips quickly and the fault lamp lights.", "Switch off, and trace the phases from the overload to the motor: look at W.", "Complete the missing phase, Reset after it cools, and switch on again."],
-       tip:'Look at W on the motor. The overload senses one strip cold and the other two hot, so it trips faster than on a normal overload.',
+       tripHint:"The motor draws 4A and Ir = 2A. Set Ir to 5A.",
+       okMsg:"Ir = In: it trips only on a real overload."},
+    o3:{story:{icon:'⚠️', text:"The motor hums and the overload trips: a phase is missing.", ask:""}, machine:'gauge', title:'Exercise 5: a missing phase and the overload trips', short:'Missing phase',
+       task:'This circuit is missing a phase wire in the power circuit between the overload and the motor. Switch on and start the motor: it hums and doesn\'t turn, the current in the two phases rises, and the overload trips <b>quickly</b> (phase loss) and the fault lamp lights. Switch off, complete the missing phase, Reset after it cools, and switch on again.', goal:"M1 runs on 3 phases without tripping.", idea:"A missing phase: the overload senses it and trips fast (phase loss).", steps:["Power up and start: it hums and trips.","Power off, trace F2 2/4/6 → M1; check W.","Add the phase, Reset, run again."],
+       tip:"",
        devices:OL_DEVS,
        preset:POWER('Q1', 'KM1', 'F2', 'M1').filter(w => w[0] !== 'F2:6').concat(CTL_OL), solution:POWER('Q1', 'KM1', 'F2', 'M1').concat(CTL_OL),
        seq:true, cases:olCases.slice(0, 3).concat([{label:'STOP', set:{S0:{p:1}}, expect:{M1:0, H1:0, H3:0}}]), patterns:olPatterns,
-       okMsg:'All three phases are connected and the motor turns with normal current. If a phase really breaks, the overload is what will save the motor.'},
-    m1:{story:{icon:'📦', text:'A small new panel: the engineer wants one MPCB instead of the fuse and the overload, to save space.', ask:'DOL with an MPCB and a fault lamp.'}, machine:'gauge', title:'Exercise 6: an MPCB instead of the fuse and overload in DOL', short:'MPCB in DOL',
-       task:'The same DOL but with <b>Q2 (MPCB)</b> in place of the breaker and the overload: power <b>Q2 → KM1 → M1</b>, and control <b>F1 → Q2 13-14 → S0 → S1 || KM1 13-14 → coil → N</b>, lamp H1 across the coil, and the fault lamp <b>H3</b> from after F1 through <b>Q2 21-22</b>. After switching on, load the motor to 250% and wait for it to trip.', goal:"The same DOL but with one MPCB (Q2) doing the job of the breaker and the overload, and a fault lamp that lights when it trips.", idea:"The MPCB has an auxiliary contact 13-14 that's closed while it's on (it goes at the start of the control line) and a contact 21-22 that closes when it trips (for the fault lamp).", steps:{"power": ["L1 L2 L3 from the supply to MPCB Q2.", "From the Q2 outputs to the contactor 1/3/5.", "From 2/4/6 to motor U V W."], "control": ["Phase L1 to F1, then Q2 contact 13-14, then STOP, then START.", "KM1's seal-in contact 13-14 in parallel with START, their output to A1, and A2 to N.", "The “running” lamp across the coil, and the “fault” lamp H3 from after F1 through Q2 contact 21-22.", "After switching on, load the motor to 250% and wait for it to trip."]},
-       tip:'The MPCB\'s 13-14 is closed while it\'s on: F1:2 → Q2:13, Q2:14 → S0:11. Fault lamp: F1:2 → Q2:21, Q2:22 → H3:X1.',
+       okMsg:"All three phases arrive; the current is normal."},
+    m1:{story:{icon:'📦', text:"Small panel: one MPCB instead of a fuse and an overload.", ask:""}, machine:'gauge', title:'Exercise 6: an MPCB instead of the fuse and overload in DOL', short:'MPCB in DOL',
+       task:'The same DOL but with <b>Q2 (MPCB)</b> in place of the breaker and the overload: power <b>Q2 → KM1 → M1</b>, and control <b>F1 → Q2 13-14 → S0 → S1 || KM1 13-14 → coil → N</b>, lamp H1 across the coil, and the fault lamp <b>H3</b> from after F1 through <b>Q2 21-22</b>. After switching on, load the motor to 250% and wait for it to trip.', goal:"DOL with MPCB Q2, H3 for faults.", idea:"Q2 13-14 is closed while on; 21-22 closes when it trips.", steps:{"power":["L1 L2 L3 → Q2 1/3/5","Q2 2/4/6 → KM1 1/3/5","KM1 2/4/6 → M1 U V W"],"control":["L1 → F1:1, and F1:2 → Q2:13","Q2:14 → S0:11, and S0:12 → S1:13","S1:14 → KM1:A1, and KM1:A2 → N","Hold-in: KM1:13 → S1:13, and KM1:14 → S1:14","H1: KM1:A1 → H1:X1, and H1:X2 → N","H3: F1:2 → Q2:21, and Q2:22 → H3:X1","H3:X2 → H1:X2"]},
+       tip:"",
        devices:[G, MP, F1, PB('S0', 'red', 'STOP'), PB('S1', 'green', 'START'), KM1, M1, H1, H3],
        solution:POWER('Q2', 'KM1', null, 'M1').concat([['G:L1','F1:1'],['F1:2','Q2:13'],['Q2:14','S0:11'],['S0:12','S1:13'],['S1:14','KM1:A1'],['KM1:A2','G:N'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KM1:A1','H1:X1'],['H1:X2','G:N'],['F1:2','Q2:21'],['Q2:22','H3:X1'],['H3:X2','H1:X2']]),
        seq:true, cases:[
@@ -252,31 +252,31 @@ CL.lesson({
          {label:'Load back to normal and waited 45 seconds', set:{M1:{load:0.8}}, wait:45, expect:{M1:0, H1:0, H3:1}},
          {label:'Turned the MPCB back to I', set:{Q2:{reset:1}}, expect:{M1:0, H1:0, H3:0}},
          {label:'START again', set:{S1:{p:1}}, expect:{M1:1, H1:1, H3:0}}],
-       patterns:[{sig:{M1:'0111111'}, msg:'The MPCB tripped but the motor kept running: its 13-14 contact isn\'t in the control line (or is bypassed). F1:2 → Q2:13, and Q2:14 → S0:11.'}, {sig:{H3:'1111111'}, msg:'The fault lamp is on while the MPCB is on: it\'s on 13-14 instead of 21-22. 21-22 is NC and closes only when it trips.'}],
-       okMsg:'Just two parts: MPCB + contactor. Load the motor and watch the handle drop to TRIP and 21-22 light the fault lamp.'},
-    w1:{story:{icon:'🔧', text:'A report from the factory: “The overload tripped and the motor is still running and overheating!”', ask:'Find the bypassed contact in the control circuit and fix it.'}, machine:'gauge', title:'Exercise 7: mistake: 95-96 bypassed (the motor doesn\'t stop when it trips)', short:'Mistake: 95-96 bypassed',
-       task:'This circuit looks right, but it has <b>an extra wire</b> bypassing contact 95-96. Switch on, start the motor, load it to 250% and wait for the overload to trip: the fault lamp lights but <b>the motor keeps running</b>! This is the most dangerous mistake. Switch off, find the wire and remove it, and switch on again.', goal:"When the overload trips the motor must stop immediately and the fault lamp must light.", idea:"It has an extra wire bypassing contact 95-96: the overload trips and the fault lamp lights, but the coil still gets power and the motor keeps running. The most dangerous mistake.", steps:["Switch on, start the motor, load it to 250% and wait for it to trip: the lamp lights and the motor keeps running!", "Switch off, look at the wires going into 95 and 96: there's a wire connecting before the contact straight to after it.", "Remove the extra wire and switch on again."],
-       tip:'Look at the wires going into 95 and 96: there\'s a wire connecting before the contact straight to after it.',
+       patterns:[{sig:{M1:'0111111'}, msg:"Q2 tripped but the motor runs: F1:2 → Q2:13, and Q2:14 → S0:11."}, {sig:{H3:'1111111'}, msg:"H3 is on while Q2 is on: H3 goes on 21-22, not 13-14."}],
+       okMsg:"Load the motor: Q2 trips and H3 lights."},
+    w1:{story:{icon:'🔧', text:"Fault report: «the overload tripped and the motor is still running!»", ask:""}, machine:'gauge', title:'Exercise 7: mistake: 95-96 bypassed (the motor doesn\'t stop when it trips)', short:'Mistake: 95-96 bypassed',
+       task:'This circuit looks right, but it has <b>an extra wire</b> bypassing contact 95-96. Switch on, start the motor, load it to 250% and wait for the overload to trip: the fault lamp lights but <b>the motor keeps running</b>! This is the most dangerous mistake. Switch off, find the wire and remove it, and switch on again.', goal:"On a trip: the motor stops, H3 lights.", idea:"An extra wire bypasses 95-96, so the coil stays fed.", steps:["Power up, load to 250%, wait for the trip.","Power off, find a wire from 95 to 96.","Remove the extra wire."],
+       tip:"",
        devices:OL_DEVS,
        preset:POWER('Q1', 'KM1', 'F2', 'M1').concat(CTL_OL).concat([['F2:95','S0:11']]), solution:POWER('Q1', 'KM1', 'F2', 'M1').concat(CTL_OL),
        seq:true, cases:olCases, patterns:olPatterns, conventions:olConventions,
-       okMsg:'Now when the overload trips, the motor really stops. Try it with the slider.'},
-    w2:{story:{icon:'🔧', text:'A report: “The motor doesn\'t start at all, and the fault lamp is on with no fault.”', ask:'Find the mistake in the overload contacts and fix it.'}, machine:'gauge', title:'Exercise 8: mistake: 97-98 instead of 95-96 in the control line', short:'Mistake: 97-98 instead of 95-96',
-       task:'Here they\'re swapped: the control line runs through <b>97-98</b> and the fault lamp is on <b>95-96</b>. Switch on and press START: the motor <b>won\'t start</b> and the fault lamp is on all the time. Think about why, then switch off and fix the wiring.', goal:"START starts the motor, a healthy overload doesn't prevent starting, and the fault lamp lights only when it trips.", idea:"The two contacts are swapped: the control line is on 97-98 (NO, open while the overload is healthy, so the coil gets no power) and the fault lamp is on 95-96 (lit all the time).", steps:["Switch on and press START: the motor won't start and the fault lamp is on.", "Switch off, and swap: the control line on 95-96 and the fault lamp on 97-98.", "Switch on again and try START, then 250% load."],
-       tip:'97-98 is NO and open while the overload is healthy, so the contactor gets no power. And the motor would only run if the overload tripped (exactly the opposite). 95-96 for the control line, 97-98 for the lamp.',
+       okMsg:"The overload trips and the motor stops."},
+    w2:{story:{icon:'🔧', text:"Fault report: «the motor won't start and the fault lamp is on».", ask:""}, machine:'gauge', title:'Exercise 8: mistake: 97-98 instead of 95-96 in the control line', short:'Mistake: 97-98 instead of 95-96',
+       task:'Here they\'re swapped: the control line runs through <b>97-98</b> and the fault lamp is on <b>95-96</b>. Switch on and press START: the motor <b>won\'t start</b> and the fault lamp is on all the time. Think about why, then switch off and fix the wiring.', goal:"START runs it; H3 lights only on a trip.", idea:"The two contacts are swapped: 97-98 in control, 95-96 on the lamp.", steps:["Power up, press START: nothing runs.","Power off: 95-96 for control, 97-98 for the lamp.","Power up, try START and a 250% load."],
+       tip:"",
        devices:OL_DEVS,
        preset:POWER('Q1', 'KM1', 'F2', 'M1').concat([['G:L1','F1:1'],['F1:2','F2:97'],['F2:98','S0:11'],['S0:12','S1:13'],['S1:14','KM1:A1'],['KM1:A2','G:N'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KM1:A1','H1:X1'],['H1:X2','G:N'],['F1:2','F2:95'],['F2:96','H3:X1'],['H3:X2','H1:X2']]),
        solution:POWER('Q1', 'KM1', 'F2', 'M1').concat(CTL_OL),
        seq:true, cases:olCases, patterns:olPatterns, conventions:olConventions,
-       okMsg:'95-96 in the control line and 97-98 for the lamp: the motor runs, and when it trips it stops and the yellow lamp lights.'},
-    w3:{story:{icon:'📋', text:'The panel works, but the inspector refused to accept it: the overload is mounted before the contactor.', ask:'Arrange the power circuit in the correct order: breaker, then contactor, then overload, then motor.'}, machine:'gauge', title:'Exercise 9: the overload before the contactor (works, but wrong by convention)', short:'Overload before the contactor',
-       task:'This circuit is wired <b>Q1 → F2 → KM1 → M1</b>: the overload is before the contactor. Switch it on: you\'ll find it works and the protection works. But the proper way is for the overload to come <b>after</b> the contactor (it mounts on it with its pins). Rearrange the power wires so it\'s Q1 → KM1 → F2 → M1 and the warning disappears.', goal:"The correct power order: the breaker, then the contactor, then the overload, then the motor.", idea:"The circuit works and the protection works, but the overload before the contactor is wrong by convention: the proper way is to mount it on the contactor with its pins, after it.", steps:["Switch it on and see the warning.", "Switch off, and rearrange the power wires: from the breaker to the contactor, from the contactor to the overload, and from the overload to the motor.", "Switch on again: the warning disappears."],
-       tip:'Q1:2 → KM1:1 (not F2:1), KM1:2 → F2:1, F2:2 → M1:U, and the same for each phase.',
+       okMsg:"95-96 for control and 97-98 for the lamp."},
+    w3:{story:{icon:'📋', text:"The inspector rejected the panel: the overload is before the contactor.", ask:""}, machine:'gauge', title:'Exercise 9: the overload before the contactor (works, but wrong by convention)', short:'Overload before the contactor',
+       task:'This circuit is wired <b>Q1 → F2 → KM1 → M1</b>: the overload is before the contactor. Switch it on: you\'ll find it works and the protection works. But the proper way is for the overload to come <b>after</b> the contactor (it mounts on it with its pins). Rearrange the power wires so it\'s Q1 → KM1 → F2 → M1 and the warning disappears.', goal:"Order the power side: Q1 → KM1 → F2 → M1.", idea:"It works, but the overload mounts on the contactor, after it.", steps:["Power up and read the warning.","Power off: Q1 2/4/6 → KM1 1/3/5","KM1 2/4/6 → F2 1/3/5, and F2 2/4/6 → M1"],
+       tip:"",
        devices:OL_DEVS,
        preset:[['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','F2:1'],['Q1:4','F2:3'],['Q1:6','F2:5'],['F2:2','KM1:1'],['F2:4','KM1:3'],['F2:6','KM1:5'],['KM1:2','M1:U'],['KM1:4','M1:V'],['KM1:6','M1:W']].concat(CTL_OL),
        solution:POWER('Q1', 'KM1', 'F2', 'M1').concat(CTL_OL),
        seq:true, cases:olCases, patterns:olPatterns, conventions:olConventions,
-       okMsg:'That\'s the standard order: Q1 → KM1 → F2 → M. The overload mounts on the contactor and the motor goes on its terminals.'}
+       okMsg:"Standard order: Q1 → KM1 → F2 → M."}
   }
 });
 })();

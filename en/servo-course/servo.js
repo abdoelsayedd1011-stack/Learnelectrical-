@@ -627,7 +627,7 @@ SV.wiring = function(host, opt){
   host.innerHTML = `<div class="wd-art wr-art"></div>
   <div class="wd-ctl"><button type="button" class="btn pri" data-a="run">Start the drive (Servo ON)</button><button type="button" class="btn" data-a="clear">Clear the wires</button><button type="button" class="btn" data-a="swap" hidden>Try the mistake: swap U and W</button></div>
   <div class="wr-res bn-res" aria-live="polite"></div>
-  <p class="muted" style="font-size:.88rem">Tap a terminal on the drive (left), then the terminal it connects to (right). Tap any wire to remove it.</p>
+  <p class="muted" style="font-size:.88rem">Tap a drive terminal (left), then its match (right). Tap a wire to remove it.</p>
   <p class="chal wr-chal">Connect <b>all 13 wires</b> correctly and start the drive with no alarm.</p>`;
   const q = s => $(s, host), fin = chal(host, '.wr-chal', opt.lesson, opt.task || 'wire');
   const finSwap = chal(host, '.nothing', opt.lesson, 'swap');
@@ -639,8 +639,8 @@ SV.wiring = function(host, opt){
     s += tx(XL / 2 - 6, y('dC') + 22, 'Remove the P+ D jumper', {a:'middle', ar:1, s:9, st:'fill:#ffb300'});
     GROUPS.forEach(g => { const y1 = y(RT[g[1]][0]) - 16, y2 = y(RT[g[2]][0]) + 14; s += `<rect x="${XR + 4}" y="${y1}" width="${360 - XR - 8}" height="${y2 - y1}" rx="8" class="w-pn" style="stroke:var(--line)"/>` + tx(354, y1 + 12, g[0], {a:'end', ar:1, s:9.5, c:'w-mu'}); });
     RT.forEach(t => { s += tx(XR + 14, y(t[0]) + 6, t[1], {a:'start', ar:1, s:12, w:700}); });
-    W.forEach((w, i) => { const y1 = y(w[0]), y2 = y(w[1]), d = `M${XL} ${y1} C${XL + 60} ${y1} ${XR - 60} ${y2} ${XR} ${y2}`; s += `<g class="bw" data-w="${i}" role="button" tabindex="0" aria-label="Remove the wire ${lab(w[0])} - ${lab(w[1])}"><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${col(w[0])}"/><path class="bw-hit" d="${d}"/></g>`; });
-    [...DT.map(t => [t[0], XL]), ...RT.map(t => [t[0], XR])].forEach(([id, x]) => { s += `<g class="bt${pend === id ? ' pend' : ''}" data-t="${id}" role="button" tabindex="0" aria-label="Terminal ${lab(id)}"><circle class="bt-hit" cx="${x}" cy="${y(id)}" r="15"/><circle class="bt-s" cx="${x}" cy="${y(id)}" r="7"/></g>`; });
+    W.forEach((w, i) => { const y1 = y(w[0]), y2 = y(w[1]), d = `M${XL} ${y1} C${XL + 60} ${y1} ${XR - 60} ${y2} ${XR} ${y2}`; s += `<g class="bw${err && err.w.includes(w.join('|')) ? ' bad' : ''}" data-w="${i}" role="button" tabindex="0" aria-label="Remove the wire ${lab(w[0])} - ${lab(w[1])}"><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${col(w[0])}"/><path class="bw-hit" d="${d}"/></g>`; });
+    [...DT.map(t => [t[0], XL]), ...RT.map(t => [t[0], XR])].forEach(([id, x]) => { s += `<g class="bt${pend === id ? ' pend' : ''}${err && err.t.has(id) ? ' err' : ''}" data-t="${id}" role="button" tabindex="0" aria-label="Terminal ${lab(id)}"><circle class="bt-hit" cx="${x}" cy="${y(id)}" r="15"/><circle class="bt-s" cx="${x}" cy="${y(id)}" r="7"/></g>`; });
     q('.wr-art').innerHTML = s + '</svg>';
   }
   function side(id){ return id[0] === 'd' ? 'L' : 'R'; }
@@ -652,30 +652,28 @@ SV.wiring = function(host, opt){
   });
   onAct(host, '[data-w]', t => { W.splice(+t.dataset.w, 1); runMode = null; draw(); });
   const box = (c, h) => `<div class="${c}">${h}</div>`;
-  function check(){
+  function check(){ // one concrete problem at a time (first wrong wire, then the first missing connection)
     const has = (a, b) => W.some(w => w[0] === a && w[1] === b), to = a => (W.find(w => w[0] === a) || [])[1];
-    const out = [];
     const wrongPower = W.filter(w => (/^d[UVW]$/.test(w[0]) && /^sL/.test(w[1])) || (/^dL/.test(w[0]) && /^m[UVW]$/.test(w[1])));
-    if (wrongPower.length) return {bad:true, html:box('bn-bad', '<b>Stop! A dangerous mistake:</b> the supply is going into the drive <b>output</b>, or the motor is connected to the input terminals. As soon as you switch on, the IGBTs will blow and the drive may burn. The supply goes on <b>L1 L2 L3</b> only, and the motor on <b>U V W</b> only.')};
+    if (wrongPower.length) return {bad:true, html:box('bn-bad', '<b>Stop!</b> Supply on U V W: the IGBTs will blow. Supply goes on L1 L2 L3 only.'), hl:{w:[wrongPower[0]], t:wrongPower[0]}};
     const uvw = ['dU', 'dV', 'dW'].map(to), uvwSet = uvw.every(x => /^m[UVW]$/.test(x || '')) && new Set(uvw).size === 3;
     const swapped = uvwSet && !(uvw[0] === 'mU' && uvw[1] === 'mV' && uvw[2] === 'mW');
     const regenOk = ((to('dP') === 'r1' && to('dC') === 'r2') || (to('dP') === 'r2' && to('dC') === 'r1'));
     const wrong = W.filter(w => !(RIGHT[w[0]] === w[1] || (/^d[PC]$/.test(w[0]) && /^r\d$/.test(w[1])) || (swapped && /^d[UVW]$/.test(w[0]) && /^m[UVW]$/.test(w[1]))));
-    if (wrong.length) out.push(box('bn-bad', '<b>Wires in the wrong place:</b> ' + wrong.map(w => `<span class="eq">${lab(w[0])} → ${lab(w[1])}</span>`).join(', ') + '. Each drive terminal has only one terminal it connects to.'));
-    const miss = [];
-    if (!['dL1', 'dL2', 'dL3'].every(a => has(a, RIGHT[a]))) miss.push('<b>Supply L1 L2 L3:</b> the drive has no power, the display is dark.');
-    if (!uvwSet) miss.push('<b>U V W:</b> the motor is not fully connected; the drive will show an overload or output phase loss alarm.');
-    if (!has('dPE', 'mPE')) miss.push('<b>Earth PE:</b> a shock hazard, and noise will corrupt the encoder signal.');
-    if (!has('dCN2', 'mENC')) miss.push('<b>Encoder CN2:</b> the drive is blind. It will show an <b>encoder error</b> as soon as it starts.');
-    if (!has('dBRK', 'kBR')) miss.push('<b>Brake:</b> it will not release. The motor will pull against it and show <b>overload</b>, and the brake itself will wear out.');
-    if (!regenOk) miss.push('<b>Braking resistor P+ and C:</b> on a fast stop the returned energy will raise the DC bus and cause <b>overvoltage</b>.');
-    if (!has('dCN1', 'plc')) miss.push('<b>CN1:</b> the PLC cannot send Servo ON or motion commands.');
-    if (!has('dSTO', 'sr')) miss.push('<b>STO:</b> the safety circuit is open; the drive will keep showing <b>STO</b> and give no torque.');
-    if (miss.length) out.push(box('bn-warn', '<b>Missing:</b><ul style="margin:4px 0 0">' + miss.map(m => `<li>${m}</li>`).join('') + '</ul>'));
-    if (out.length) return {bad:true, html:out.join('')};
-    if (swapped) return {swap:true, html:box('bn-bad', '<b>Alarm: overload / position deviation (or runaway).</b> The U V W terminals are <b>swapped</b>. On an induction motor, swapping two phases simply reverses the direction, but in a servo the drive steers the current by the encoder angle. If the order changes, the torque comes out in the wrong direction: the motor shudders or runs away by itself until the drive trips. <b>Always connect U to U, V to V and W to W.</b>')};
-    return {ok:true, html:box('bn-ok', '<b>Done! The drive is running with no alarm.</b> The brake released (did you hear the click?), and the motor holds its position and turns on the PLC command. Notice the U V W connector is numbered so you cannot get it wrong.')};
+    if (wrong.length){ const w = wrong[0]; return {bad:true, html:box('bn-bad', '<b>✗</b> ' + `The wire from ${lab(w[0])} goes to ${lab(w[1])}; it should be ${RIGHT[w[0]] ? lab(RIGHT[w[0]]) : 'R'}.`), hl:{w:[w], t:[w[0], w[1]]}}; }
+    if (!['dL1', 'dL2', 'dL3'].every(a => has(a, RIGHT[a]))) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'Supply L1 L2 L3 isn’t connected: the display is off.'), hl:{t:[['dL1', 'dL2', 'dL3'].find(a => !has(a, RIGHT[a]))]}};
+    if (!uvwSet) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'U V W aren’t all connected: phase-loss alarm.'), hl:{t:[['dU', 'dV', 'dW'].find(a => !/^m[UVW]$/.test(to(a) || '')) || 'dU']}};
+    if (!has('dPE', 'mPE')) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'Earth PE isn’t connected: shock hazard.'), hl:{t:['dPE']}};
+    if (!has('dCN2', 'mENC')) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'Encoder CN2 isn’t connected: Encoder error.'), hl:{t:['dCN2']}};
+    if (!has('dBRK', 'kBR')) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'Brake BRK isn’t connected: Overload alarm.'), hl:{t:['dBRK']}};
+    if (!regenOk) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'Braking resistor on P+ and C is missing: Overvoltage.'), hl:{t:[to('dP') ? 'dC' : 'dP']}};
+    if (!has('dCN1', 'plc')) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'CN1 isn’t connected: the PLC can’t send Servo ON.'), hl:{t:['dCN1']}};
+    if (!has('dSTO', 'sr')) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'STO isn’t connected: the drive stays in STO.'), hl:{t:['dSTO']}};
+    if (swapped) return {swap:true, html:box('bn-bad', '<b>Overload / Runaway alarm:</b> U V W are swapped. On a servo wire U to U, V to V, W to W.'), hl:{t:['dU', 'dV', 'dW']}};
+    return {ok:true, html:box('bn-ok', '<b>Done! The drive runs with no alarm.</b> The brake released and the motor holds position.')};
   }
+  let err = null;
+  function pulse(hl){ err = hl ? {t:new Set(hl.t || []), w:(hl.w || []).map(w => w.join('|')), until:Date.now() + 3000} : null; draw(); if (err) setTimeout(() => { if (err && err.until <= Date.now()){ err = null; draw(); } }, 3100); }
   function spin(){
     if (anim) return;
     anim = animate(q('.wr-res'), dt => {
@@ -686,6 +684,7 @@ SV.wiring = function(host, opt){
   }
   function run(){
     const r = check(); runMode = r.ok ? 'ok' : r.swap ? 'swap' : null;
+    pulse(r.hl);
     q('.wr-res').innerHTML = r.html + (runMode ? `<div class="wr-dial${runMode === 'swap' ? ' bad' : ''}"></div>` : '');
     if (r.ok){ fin(); q('[data-a=swap]').hidden = false; }
     if (r.swap) finSwap();

@@ -1331,7 +1331,7 @@ PL.parts = function(host, opt){
 const TERM_COL = {p24:'#d32f2f', p0:'#1f6fd1', sig:'#222', ac:'#7a4a22', n:'#1f6fd1'};
 PL.wire = function(host, opt){
   const L = opt.lesson, exs = opt.exercises;
-  let ex, wires = [], pend = null, passed = false, act = {}, demoLive = null, demoSt = null;
+  let ex, wires = [], pend = null, passed = false, act = {}, demoLive = null, demoSt = null, err = null;
   host.innerHTML = `<div class="tabs" role="group" aria-label="Wiring exercises">${exs.map((x, j) => `<button type="button" class="btn${PL.has(L, x.key) ? ' done' : ''}" data-k="${j}" aria-pressed="${j === 0}">${esc(x.title)}</button>`).join('')}</div>
     <div class="chal wb-task"></div><div class="bn-board wb-board"></div>
     <div class="bn-tools"><button type="button" class="btn pri wb-chk">Test wiring</button><button type="button" class="btn wb-undo">Remove last wire</button><button type="button" class="btn wb-clr">Clear all</button></div>
@@ -1348,7 +1348,7 @@ PL.wire = function(host, opt){
     const live = demoLive || (passed ? ex.live(act) : {});
     let s = `<svg viewBox="0 0 360 ${ex.h || 300}" role="img" aria-label="Wiring board">${ex.art(live)}`;
     (demoLive ? [] : wires).forEach(([a, b], k) => { const A = T(a), B = T(b), mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2 + 18, col = TERM_COL[A.pol] || TERM_COL[B.pol] || '#333'; const d = `M${A.x} ${A.y}Q${mx} ${my} ${B.x} ${B.y}`; s += `<g class="bw" data-w="${k}"><path d="${d}" class="bw-o"/><path d="${d}" class="bw-c" stroke="${col}"/><path d="${d}" class="bw-hit" tabindex="0" role="button" aria-label="Wire from ${esc(A.l)} to ${esc(B.l)}, tap to remove it"/></g>`; });
-    ex.terms.forEach(t => { s += `<g class="bt${pend === t.id ? ' pend' : ''}" data-t="${t.id}"><circle cx="${t.x}" cy="${t.y}" r="16" class="bt-hit" tabindex="0" role="button" aria-label="Terminal ${esc(t.l)}"/><circle cx="${t.x}" cy="${t.y}" r="13" class="bt-ring"/><circle cx="${t.x}" cy="${t.y}" r="7" class="bt-s"/><path d="M${t.x - 4} ${t.y}h8" class="bt-x"/><text x="${t.x + (t.lx || 0)}" y="${t.y + (t.ly != null ? t.ly : -12)}" class="bt-lab"${t.anc ? ` text-anchor="${t.anc}"` : ''}>${esc(t.l)}</text></g>`; });
+    ex.terms.forEach(t => { s += `<g class="bt${pend === t.id ? ' pend' : ''}" data-t="${t.id}"><circle cx="${t.x}" cy="${t.y}" r="16" class="bt-hit" tabindex="0" role="button" aria-label="Terminal ${esc(t.l)}"/><circle cx="${t.x}" cy="${t.y}" r="13" class="bt-ring${err && err.has(t.id) ? ' err' : ''}"/><circle cx="${t.x}" cy="${t.y}" r="7" class="bt-s"/><path d="M${t.x - 4} ${t.y}h8" class="bt-x"/><text x="${t.x + (t.lx || 0)}" y="${t.y + (t.ly != null ? t.ly : -12)}" class="bt-lab"${t.anc ? ` text-anchor="${t.anc}"` : ''}>${esc(t.l)}</text></g>`; });
     board.innerHTML = s + '</svg>';
   }
   function select(k){
@@ -1369,7 +1369,7 @@ PL.wire = function(host, opt){
   function check(){
     const f = nets(), grp = {}; ex.groups.forEach((g, i) => g.forEach(t => grp[t] = i));
     const gid = t => grp[t] != null ? grp[t] : 'x' + t;
-    let bad = null;
+    let bad = null, hl = null;
     /* wrong joins first: they can be dangerous */
     const ids = ex.terms.map(t => t.id);
     const wrong = [];
@@ -1377,10 +1377,10 @@ PL.wire = function(host, opt){
     if (wrong.length){
       const dz = ex.danger && ex.danger(wrong[0][0], wrong[0][1], f);
       const w = wrong.find(([a, b]) => ex.why && (ex.why[a] || ex.why[b])) || wrong[0], hint = ex.why ? ex.why[w[0]] || ex.why[w[1]] || '' : '';
-      bad = dz || `<b>${esc(T(w[0]).l)}</b> is connected to <b>${esc(T(w[1]).l)}</b>, and that's wrong. ${hint}`;
+      bad = dz || `<b>${esc(T(w[0]).l)}</b> is connected to <b>${esc(T(w[1]).l)}</b>: wrong. ${hint}`; hl = dz ? wrong[0] : w;
     }
-    if (!bad) for (const g of ex.groups){ for (let i = 1; i < g.length; i++) if (f(g[0]) !== f(g[i])){ bad = `<b>${esc(T(g[i]).l)}</b> is not connected to <b>${esc(T(g[0]).l)}</b> yet.${ex.why && ex.why[g[i]] ? ' ' + ex.why[g[i]] : ''}`; break; } if (bad) break; }
-    if (bad){ res.innerHTML = `<div class="bn-bad"><b>Not yet:</b> ${bad}</div>`; passed = false; actBox.hidden = true; draw(); return {ok:false, msg:bad}; }
+    if (!bad) for (const g of ex.groups){ for (let i = 1; i < g.length; i++) if (f(g[0]) !== f(g[i])){ bad = `<b>${esc(T(g[i]).l)}</b> is not connected to <b>${esc(T(g[0]).l)}</b> yet.${ex.why && ex.why[g[i]] ? ' ' + ex.why[g[i]] : ''}`; hl = [g[i], g[0]]; break; } if (bad) break; }
+    if (bad){ res.innerHTML = `<div class="bn-bad"><b>✗</b> ${bad}</div>`; passed = false; actBox.hidden = true; const my = err = new Set(hl || []); draw(); setTimeout(() => { if (err === my){ err = null; if (board.isConnected) draw(); } }, 3000); return {ok:false, msg:bad}; }
     passed = true; PL.mark(L, ex.key); taskBox.classList.add('ok'); const tb = host.querySelector(`.tabs [data-k="${exs.indexOf(ex)}"]`); if (tb) tb.classList.add('done');
     res.innerHTML = `<div class="bn-ok"><b>Wiring correct ✓</b> ${ex.ok}</div>`;
     actBox.hidden = false; actBox.innerHTML = ex.acts.map(a => `<button type="button" class="btn" data-a="${a.k}" aria-pressed="false">${a.l}</button>`).join('');
@@ -1527,9 +1527,9 @@ PL.timerDemo = function(host){
   const below = (id, l, x, y, pol) => ({id, l, x, y, pol, ly:24});
   const top = live => A.psu(8, 6) + A.cpu(222, 6, {pwr:true});
   const DC = ['P24', 'P0', 'CL', 'CM'];
-  const msgShort = '⚡ <b>Short on the power supply:</b> +24V is connected to 0V with no load in between. The supply will trip or the fuse will blow. Check the wire you just added.';
-  const msgMix = '⚡ <b>Danger:</b> you mixed <b>230V AC</b> into the <b>24V DC</b> circuit. That burns the card and the sensors and can shock someone. The two circuits must stay separate.';
-  const msgLN = '⚡ <b>Short between line and neutral!</b> The breaker will trip at once.';
+  const msgShort = '⚡ <b>Short:</b> +24V and 0V are connected together.';
+  const msgMix = '⚡ <b>Danger:</b> 230V AC is connected to the 24V DC circuit.';
+  const msgLN = '⚡ <b>Short:</b> L and N are connected together.';
   function mkDanger(ex){ return (a, b, f) => {
     const nets = {}; ex.terms.forEach(t => { const r = f(t.id); (nets[r] = nets[r] || []).push(t.id); });
     const DCT = ['P24', 'P0', 'CL', 'CM', 'IM', 'OL', 'OM', 'BN', 'BU'];
@@ -1548,46 +1548,46 @@ PL.timerDemo = function(host){
   const ex = [];
   /* PNP sensor + sinking input card (1M on 0V) */
   ex.push({key:'pnp', title:'PNP input', h:300,
-    task:'<b>Task:</b> wire the CPU power (L+ and M), a <b>PNP</b> sensor to <b>I0.0</b>, and a Start button to <b>I0.1</b>. On this card the <b>1M</b> terminal must go to <b>0V</b> (the sensor gives out +24V). Tap one terminal and then another to add a wire, and tap any wire to remove it.',
+    task:'<b>Task:</b> CPU power, <b>PNP</b> → <b>I0.0</b>, Start → <b>I0.1</b>, <b>1M</b> → <b>0V</b>.',
     terms:base().concat(leadT, pbT, [right('IM', '1M', 130, 'sig'), right('I0', 'I0.0', 180, 'sig'), right('I1', 'I0.1', 230, 'sig')]),
     groups:[['P24', 'CL', 'BN', 'PB13'], ['P0', 'CM', 'BU', 'IM'], ['BK', 'I0'], ['PB14', 'I1']],
-    why:{IM:'The card\'s COM is the current\'s return path: with PNP it goes to 0V.', BK:'The black wire is the sensor\'s output: it goes to the card input.', PB13:'One side of the button to +24V, the other to the input.', CL:'The CPU itself needs power: L+ to +24V.', CM:'And M to 0V.'},
+    why:{IM:'With PNP, 1M goes to 0V.', BK:'BK goes to the card input.', PB13:'One button terminal to +24V, the other to the input.', CL:'L+ to +24V.', CM:'M to 0V.'},
     art:live => top(live) + sensorArt('PNP', live) + pbArt(live.i1) + inCard('DI 24V DC', live),
     live:a => ({target:a.target, i0:a.target, i1:a.pb}),
     acts:[{k:'target', l:'Bring metal near the sensor'}, {k:'pb', l:'Press the Start button'}],
-    ok:'When the sensor detects it gives out +24V on the black wire, the current goes into I0.0 and returns through 1M to 0V. Try the buttons below and watch the card\'s LEDs.'});
+    ok:'BK gives +24V, and the current returns through 1M to 0V.'});
   /* NPN sensor + sourcing card (1M on +24V) */
   ex.push({key:'npn', title:'NPN input', h:300,
-    task:'<b>Task:</b> same idea, but the sensor is <b>NPN</b> (it pulls its output to 0V). So the card\'s <b>1M</b> must go to <b>+24V</b>. And the button? Think: for current to flow in I0.1, what must the button connect the input to?',
+    task:'<b>Task:</b> same as before with an <b>NPN</b> sensor: <b>1M</b> → <b>+24V</b>. What does the button connect I0.1 to?',
     terms:base().concat(leadT, pbT, [right('IM', '1M', 130, 'sig'), right('I0', 'I0.0', 180, 'sig'), right('I1', 'I0.1', 230, 'sig')]),
     groups:[['P24', 'CL', 'BN', 'IM'], ['P0', 'CM', 'BU', 'PB13'], ['BK', 'I0'], ['PB14', 'I1']],
-    why:{IM:'With NPN the COM goes to +24V: the current enters at COM and leaves through the input to the sensor.', PB13:'With this card the button must pull the input to 0V, so its other side goes to 0V, not +24V.', BK:'The black wire is the sensor\'s output: it goes to the card input.', CL:'The CPU itself needs power: L+ to +24V.', CM:'And M to 0V.'},
+    why:{IM:'With NPN, 1M goes to +24V.', PB13:'The button pulls the input to 0V.', BK:'BK goes to the card input.', CL:'L+ to +24V.', CM:'M to 0V.'},
     art:live => top(live) + sensorArt('NPN', live) + pbArt(live.i1) + inCard('DI 24V DC', live),
     live:a => ({target:a.target, i0:a.target, i1:a.pb}),
     acts:[{k:'target', l:'Bring metal near the sensor'}, {k:'pb', l:'Press the Start button'}],
-    ok:'The current leaves +24V at 1M, passes through the input circuit, and goes out of I0.0 to the black wire that the sensor pulls to 0V. The same card works for both; what matters is where COM goes.'});
+    ok:'Current flows +24V → 1M, out of I0.0 to BK.'});
   /* transistor (sourcing) output: 24 V DC loads */
   ex.push({key:'tr', title:'Transistor output', h:300,
-    task:'<b>Task:</b> a <b>transistor</b> output card (sourcing / PNP): wire the output power <b>3L+</b> to +24V and <b>3M</b> to 0V, the <b>24V DC</b> contactor coil to <b>Q0.0</b>, and the 24V pilot lamp to <b>Q0.1</b>. Where does the other side of each load go?',
+    task:'<b>Task:</b> <b>3L+</b> → +24V, <b>3M</b> → 0V, coil → <b>Q0.0</b>, lamp → <b>Q0.1</b>.',
     terms:base().concat([below('KA1', 'A1', 30, 166, 'sig'), below('KA2', 'A2', 82, 166, 'p0'), below('HX1', 'X1', 30, 270, 'sig'), below('HX2', 'X2', 82, 270, 'p0'),
       right('OL', '3L+', 130, 'p24'), right('Q0', 'Q0.0', 175, 'sig'), right('Q1', 'Q0.1', 220, 'sig'), right('OM', '3M', 265, 'p0')]),
     groups:[['P24', 'CL', 'OL'], ['P0', 'CM', 'OM', 'KA2', 'HX2'], ['Q0', 'KA1'], ['Q1', 'HX1']],
-    why:{OL:'The transistors inside the card need power: 3L+ to +24V.', OM:'And 3M to 0V.', KA2:'The output gives +24V on A1, and the other side of the load must return to 0V.', HX2:'The lamp too: its other side goes to 0V.', CL:'The CPU itself needs power: L+ to +24V.', CM:'And M to 0V.'},
+    why:{OL:'3L+ to +24V.', OM:'3M to 0V.', KA2:'A2 back to 0V.', HX2:'X2 back to 0V.', CL:'L+ to +24V.', CM:'M to 0V.'},
     art:live => top(live) + A.coil(14, 110, 'Contactor 24V DC', live.q0) + `<path d="M30 150v8M82 150v8" stroke="#2a3035" stroke-width="2"/>` + A.lamp(36, 216, live.q1) + `<text x="98" y="238" class="ar" style="font-size:10px;fill:var(--ink)">Lamp 24V</text>` + A.card(230, 96, 122, 196, 'DQ 24V DC (Tr)', [{y:175, k:'q0', c:'#ffb300'}, {y:220, k:'q1', c:'#ffb300'}], live),
     live:a => ({q0:a.q0, q1:a.q1}),
     acts:[{k:'q0', l:'The program turns on Q0.0'}, {k:'q1', l:'The program turns on Q0.1'}],
-    ok:'A transistor card is fast and doesn\'t wear out, but it\'s <b>DC only</b> and its current is small (about 0.5 A per output). For bigger loads add an interposing relay. And if the load is a DC coil, the flyback diode protects the transistor.'});
+    ok:'Transistor: fast, but <b>DC only</b> and about 0.5A.'});
   /* relay output: 230 V AC contactor */
   ex.push({key:'rly', title:'Relay output', h:300,
-    task:'<b>Task:</b> a <b>relay</b> output card drives a contactor with a <b>230V AC</b> coil. The relay is just a contact: wire the common <b>1L</b> to line <b>L</b>, <b>Q0.0</b> to A1, and A2 to neutral <b>N</b>. And don\'t forget the CPU power. Never mix AC with DC.',
+    task:'<b>Task:</b> <b>1L</b> → L, <b>Q0.0</b> → A1, A2 → N, plus CPU power. Don’t mix AC with DC.',
     terms:base().concat([{id:'ACL', l:'L', x:150, y:54, pol:'ac'}, {id:'ACN', l:'N', x:196, y:54, pol:'n'},
       below('KA1', 'A1', 30, 166, 'sig'), below('KA2', 'A2', 82, 166, 'coil'), right('RL', '1L', 130, 'sig'), right('Q0', 'Q0.0', 180, 'sig'), right('Q1', 'Q0.1', 230, 'sig')]),
     groups:[['P24', 'CL'], ['P0', 'CM'], ['ACL', 'RL'], ['Q0', 'KA1'], ['ACN', 'KA2']],
-    why:{RL:'The relays\' common takes the voltage that goes out to the loads: here, line L.', KA1:'When the relay closes it connects 1L to Q0.0, and Q0.0 goes to A1.', KA2:'A2 returns to neutral N.', CL:'The CPU itself needs power: L+ to +24V.', CM:'And M to 0V.'},
+    why:{RL:'1L takes the phase L.', KA1:'Q0.0 goes to A1.', KA2:'A2 to N.', CL:'L+ to +24V.', CM:'M to 0V.'},
     art:live => A.psu(8, 6) + `<g transform="translate(124 6)"><rect width="94" height="64" rx="6" fill="#7a4a22" stroke="#3b2410"/><text x="47" y="16" text-anchor="middle" style="font:700 10px var(--font-mono);fill:#fff">230V AC</text><text x="47" y="28" text-anchor="middle" class="ar" style="font-size:9px;fill:#f3e6d6">After the MCB</text></g>` + A.cpu(222, 6, {pwr:true}) + A.coil(14, 110, 'Contactor 230V AC', live.q0) + `<path d="M30 150v8M82 150v8" stroke="#2a3035" stroke-width="2"/>` + (live.q0 ? `<g transform="translate(20 200)">${PL.motorSvg(36, 40, 54, 30, true)}<text x="90" y="44" class="ar" style="font-size:10px;fill:var(--ink)">Motor running</text></g>` : '') + A.card(230, 96, 122, 196, 'DQ Relay', [{y:180, k:'q0', c:'#ffb300'}, {y:230, k:'q1', c:'#ffb300'}], live),
     live:a => ({q0:a.q0}),
     acts:[{k:'q0', l:'The program turns on Q0.0'}],
-    ok:'A relay switches AC or DC and up to about 2 A, but it\'s slower and its life is limited by the number of operations. Each output group has one common (1L), so don\'t mix different voltages on the same group.'});
+    ok:'Relay: AC or DC up to 2A, but slower.'});
   ex.forEach(x => { x.danger = mkDanger(x); x.terms.forEach(t => { if (!t.pol) t.pol = 'sig'; }); });
   PL.wireEx = ex;
 })();

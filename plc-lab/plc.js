@@ -1331,7 +1331,7 @@ PL.parts = function(host, opt){
 const TERM_COL = {p24:'#d32f2f', p0:'#1f6fd1', sig:'#222', ac:'#7a4a22', n:'#1f6fd1'};
 PL.wire = function(host, opt){
   const L = opt.lesson, exs = opt.exercises;
-  let ex, wires = [], pend = null, passed = false, act = {}, demoLive = null, demoSt = null;
+  let ex, wires = [], pend = null, passed = false, act = {}, demoLive = null, demoSt = null, err = null;
   host.innerHTML = `<div class="tabs" role="group" aria-label="تمارين التوصيل">${exs.map((x, j) => `<button type="button" class="btn${PL.has(L, x.key) ? ' done' : ''}" data-k="${j}" aria-pressed="${j === 0}">${esc(x.title)}</button>`).join('')}</div>
     <div class="chal wb-task"></div><div class="bn-board wb-board"></div>
     <div class="bn-tools"><button type="button" class="btn pri wb-chk">اختبر التوصيل</button><button type="button" class="btn wb-undo">شيل آخر سلك</button><button type="button" class="btn wb-clr">امسح كله</button></div>
@@ -1348,7 +1348,7 @@ PL.wire = function(host, opt){
     const live = demoLive || (passed ? ex.live(act) : {});
     let s = `<svg viewBox="0 0 360 ${ex.h || 300}" role="img" aria-label="لوحة التوصيل">${ex.art(live)}`;
     (demoLive ? [] : wires).forEach(([a, b], k) => { const A = T(a), B = T(b), mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2 + 18, col = TERM_COL[A.pol] || TERM_COL[B.pol] || '#333'; const d = `M${A.x} ${A.y}Q${mx} ${my} ${B.x} ${B.y}`; s += `<g class="bw" data-w="${k}"><path d="${d}" class="bw-o"/><path d="${d}" class="bw-c" stroke="${col}"/><path d="${d}" class="bw-hit" tabindex="0" role="button" aria-label="سلك من ${esc(A.l)} لـ ${esc(B.l)}، دوس عشان تشيله"/></g>`; });
-    ex.terms.forEach(t => { s += `<g class="bt${pend === t.id ? ' pend' : ''}" data-t="${t.id}"><circle cx="${t.x}" cy="${t.y}" r="16" class="bt-hit" tabindex="0" role="button" aria-label="طرف ${esc(t.l)}"/><circle cx="${t.x}" cy="${t.y}" r="13" class="bt-ring"/><circle cx="${t.x}" cy="${t.y}" r="7" class="bt-s"/><path d="M${t.x - 4} ${t.y}h8" class="bt-x"/><text x="${t.x + (t.lx || 0)}" y="${t.y + (t.ly != null ? t.ly : -12)}" class="bt-lab"${t.anc ? ` text-anchor="${t.anc}"` : ''}>${esc(t.l)}</text></g>`; });
+    ex.terms.forEach(t => { s += `<g class="bt${pend === t.id ? ' pend' : ''}" data-t="${t.id}"><circle cx="${t.x}" cy="${t.y}" r="16" class="bt-hit" tabindex="0" role="button" aria-label="طرف ${esc(t.l)}"/><circle cx="${t.x}" cy="${t.y}" r="13" class="bt-ring${err && err.has(t.id) ? ' err' : ''}"/><circle cx="${t.x}" cy="${t.y}" r="7" class="bt-s"/><path d="M${t.x - 4} ${t.y}h8" class="bt-x"/><text x="${t.x + (t.lx || 0)}" y="${t.y + (t.ly != null ? t.ly : -12)}" class="bt-lab"${t.anc ? ` text-anchor="${t.anc}"` : ''}>${esc(t.l)}</text></g>`; });
     board.innerHTML = s + '</svg>';
   }
   function select(k){
@@ -1369,7 +1369,7 @@ PL.wire = function(host, opt){
   function check(){
     const f = nets(), grp = {}; ex.groups.forEach((g, i) => g.forEach(t => grp[t] = i));
     const gid = t => grp[t] != null ? grp[t] : 'x' + t;
-    let bad = null;
+    let bad = null, hl = null;
     /* wrong joins first: they can be dangerous */
     const ids = ex.terms.map(t => t.id);
     const wrong = [];
@@ -1377,10 +1377,10 @@ PL.wire = function(host, opt){
     if (wrong.length){
       const dz = ex.danger && ex.danger(wrong[0][0], wrong[0][1], f);
       const w = wrong.find(([a, b]) => ex.why && (ex.why[a] || ex.why[b])) || wrong[0], hint = ex.why ? ex.why[w[0]] || ex.why[w[1]] || '' : '';
-      bad = dz || `<b>${esc(T(w[0]).l)}</b> متوصّل بـ <b>${esc(T(w[1]).l)}</b> وده غلط. ${hint}`;
+      bad = dz || `<b>${esc(T(w[0]).l)}</b> متوصّل بـ <b>${esc(T(w[1]).l)}</b>: غلط. ${hint}`; hl = dz ? wrong[0] : w;
     }
-    if (!bad) for (const g of ex.groups){ for (let i = 1; i < g.length; i++) if (f(g[0]) !== f(g[i])){ bad = `<b>${esc(T(g[i]).l)}</b> لسه مش متوصّل بـ <b>${esc(T(g[0]).l)}</b>.${ex.why && ex.why[g[i]] ? ' ' + ex.why[g[i]] : ''}`; break; } if (bad) break; }
-    if (bad){ res.innerHTML = `<div class="bn-bad"><b>لسه:</b> ${bad}</div>`; passed = false; actBox.hidden = true; draw(); return {ok:false, msg:bad}; }
+    if (!bad) for (const g of ex.groups){ for (let i = 1; i < g.length; i++) if (f(g[0]) !== f(g[i])){ bad = `<b>${esc(T(g[i]).l)}</b> لسه مش متوصّل بـ <b>${esc(T(g[0]).l)}</b>.${ex.why && ex.why[g[i]] ? ' ' + ex.why[g[i]] : ''}`; hl = [g[i], g[0]]; break; } if (bad) break; }
+    if (bad){ res.innerHTML = `<div class="bn-bad"><b>✗</b> ${bad}</div>`; passed = false; actBox.hidden = true; const my = err = new Set(hl || []); draw(); setTimeout(() => { if (err === my){ err = null; if (board.isConnected) draw(); } }, 3000); return {ok:false, msg:bad}; }
     passed = true; PL.mark(L, ex.key); taskBox.classList.add('ok'); const tb = host.querySelector(`.tabs [data-k="${exs.indexOf(ex)}"]`); if (tb) tb.classList.add('done');
     res.innerHTML = `<div class="bn-ok"><b>التوصيل صح ✓</b> ${ex.ok}</div>`;
     actBox.hidden = false; actBox.innerHTML = ex.acts.map(a => `<button type="button" class="btn" data-a="${a.k}" aria-pressed="false">${a.l}</button>`).join('');
@@ -1527,9 +1527,9 @@ PL.timerDemo = function(host){
   const below = (id, l, x, y, pol) => ({id, l, x, y, pol, ly:24});
   const top = live => A.psu(8, 6) + A.cpu(222, 6, {pwr:true});
   const DC = ['P24', 'P0', 'CL', 'CM'];
-  const msgShort = '⚡ <b>قصر على الباور:</b> الـ +24V اتوصّل بالـ 0V من غير حمل في النص. الباور هيفصل أو الفيوز هيضرب. راجع السلك اللي عملته.';
-  const msgMix = '⚡ <b>خطر:</b> خلطت <b>230V AC</b> بدايرة الـ <b>24V DC</b>. ده بيحرق الكارت والحساسات وممكن يكهرب حد. الدايرتين لازم يفضلوا منفصلين.';
-  const msgLN = '⚡ <b>قصر بين الفاز والنيوترال!</b> القاطع هيفصل فورًا.';
+  const msgShort = '⚡ <b>قصر:</b> +24V و 0V متوصلين ببعض.';
+  const msgMix = '⚡ <b>خطر:</b> 230V AC متوصلة بدايرة الـ 24V DC.';
+  const msgLN = '⚡ <b>قصر:</b> L و N متوصلين ببعض.';
   function mkDanger(ex){ return (a, b, f) => {
     const nets = {}; ex.terms.forEach(t => { const r = f(t.id); (nets[r] = nets[r] || []).push(t.id); });
     const DCT = ['P24', 'P0', 'CL', 'CM', 'IM', 'OL', 'OM', 'BN', 'BU'];
@@ -1548,46 +1548,46 @@ PL.timerDemo = function(host){
   const ex = [];
   /* PNP sensor + sinking input card (1M on 0V) */
   ex.push({key:'pnp', title:'دخل PNP', h:300,
-    task:'<b>المطلوب:</b> وصّل باور الـ CPU (L+ و M)، وحساس <b>PNP</b> على <b>I0.0</b>، وزرار Start على <b>I0.1</b>. الكارت ده الـ <b>1M</b> بتاعه لازم يروح على <b>0V</b> (الحساس بيطلّع +24V). دوس على طرف وبعدين على طرف تاني عشان تحط سلك، ودوس على أي سلك عشان تشيله.',
+    task:'<b>المطلوب:</b> باور الـ CPU، <b>PNP</b> ‏← <b>I0.0</b>، Start ‏← <b>I0.1</b>، <b>1M</b> ‏← <b>0V</b>.',
     terms:base().concat(leadT, pbT, [right('IM', '1M', 130, 'sig'), right('I0', 'I0.0', 180, 'sig'), right('I1', 'I0.1', 230, 'sig')]),
     groups:[['P24', 'CL', 'BN', 'PB13'], ['P0', 'CM', 'BU', 'IM'], ['BK', 'I0'], ['PB14', 'I1']],
-    why:{IM:'الـ COM بتاع الكارت هو طريق رجوع التيار: مع PNP بيروح على 0V.', BK:'السلك الأسود هو خرج الحساس: مكانه دخل الكارت.', PB13:'طرف من الزرار على +24V، والتاني على الدخل.', CL:'الـ CPU نفسه محتاج باور: L+ على +24V.', CM:'و M على 0V.'},
+    why:{IM:'مع PNP الـ 1M على 0V.', BK:'BK مكانه دخل الكارت.', PB13:'طرف الزرار على +24V والتاني على الدخل.', CL:'L+ على +24V.', CM:'M على 0V.'},
     art:live => top(live) + sensorArt('PNP', live) + pbArt(live.i1) + inCard('DI 24V DC', live),
     live:a => ({target:a.target, i0:a.target, i1:a.pb}),
     acts:[{k:'target', l:'قرّب حديدة من الحساس'}, {k:'pb', l:'دوس زرار Start'}],
-    ok:'الحساس لما يحس بيطلّع +24V على الأسود، التيار بيدخل I0.0 ويرجع من 1M للـ 0V. جرّب الزراير تحت وشوف لمبات الكارت.'});
+    ok:'BK بيطلّع +24V، والتيار يرجع من 1M لـ 0V.'});
   /* NPN sensor + sourcing card (1M on +24V) */
   ex.push({key:'npn', title:'دخل NPN', h:300,
-    task:'<b>المطلوب:</b> نفس الفكرة بس الحساس <b>NPN</b> (بيسحب خرجه لـ 0V). يعني الـ <b>1M</b> بتاع الكارت لازم يروح على <b>+24V</b>. والزرار؟ فكّر: علشان يبقى فيه تيار في I0.1 الزرار لازم يوصّل الدخل بـ إيه؟',
+    task:'<b>المطلوب:</b> زي اللي فات بحساس <b>NPN</b>: <b>1M</b> ‏← <b>+24V</b>. والزرار يوصّل I0.1 بإيه؟',
     terms:base().concat(leadT, pbT, [right('IM', '1M', 130, 'sig'), right('I0', 'I0.0', 180, 'sig'), right('I1', 'I0.1', 230, 'sig')]),
     groups:[['P24', 'CL', 'BN', 'IM'], ['P0', 'CM', 'BU', 'PB13'], ['BK', 'I0'], ['PB14', 'I1']],
-    why:{IM:'مع NPN الـ COM بيروح على +24V: التيار داخل من الـ COM وطالع من الدخل للحساس.', PB13:'مع الكارت ده الزرار لازم يسحب الدخل لـ 0V، فطرفه التاني على 0V مش +24V.', BK:'السلك الأسود هو خرج الحساس: مكانه دخل الكارت.', CL:'الـ CPU نفسه محتاج باور: L+ على +24V.', CM:'و M على 0V.'},
+    why:{IM:'مع NPN الـ 1M على +24V.', PB13:'الزرار يسحب الدخل لـ 0V.', BK:'BK مكانه دخل الكارت.', CL:'L+ على +24V.', CM:'M على 0V.'},
     art:live => top(live) + sensorArt('NPN', live) + pbArt(live.i1) + inCard('DI 24V DC', live),
     live:a => ({target:a.target, i0:a.target, i1:a.pb}),
     acts:[{k:'target', l:'قرّب حديدة من الحساس'}, {k:'pb', l:'دوس زرار Start'}],
-    ok:'التيار طالع من +24V على 1M، بيعدّي في دايرة الدخل، وبيخرج من I0.0 للسلك الأسود اللي الحساس بيسحبه لـ 0V. نفس الكارت ينفع للاتنين، المهم الـ COM رايح فين.'});
+    ok:'التيار من +24V لـ 1M، ويخرج من I0.0 لـ BK.'});
   /* transistor (sourcing) output: 24 V DC loads */
   ex.push({key:'tr', title:'خرج ترانزستور', h:300,
-    task:'<b>المطلوب:</b> كارت خرج <b>ترانزستور</b> (Sourcing / PNP): وصّل باور الخرج <b>3L+</b> على +24V و <b>3M</b> على 0V، وكويل الكونتاكتور <b>24V DC</b> على <b>Q0.0</b>، ولمبة البيان 24V على <b>Q0.1</b>. الطرف التاني من كل حمل بيروح فين؟',
+    task:'<b>المطلوب:</b> <b>3L+</b> ‏← +24V، <b>3M</b> ‏← 0V، الكويل ‏← <b>Q0.0</b>، اللمبة ‏← <b>Q0.1</b>.',
     terms:base().concat([below('KA1', 'A1', 30, 166, 'sig'), below('KA2', 'A2', 82, 166, 'p0'), below('HX1', 'X1', 30, 270, 'sig'), below('HX2', 'X2', 82, 270, 'p0'),
       right('OL', '3L+', 130, 'p24'), right('Q0', 'Q0.0', 175, 'sig'), right('Q1', 'Q0.1', 220, 'sig'), right('OM', '3M', 265, 'p0')]),
     groups:[['P24', 'CL', 'OL'], ['P0', 'CM', 'OM', 'KA2', 'HX2'], ['Q0', 'KA1'], ['Q1', 'HX1']],
-    why:{OL:'الترانزستورات جوه الكارت محتاجة باور: 3L+ على +24V.', OM:'و 3M على 0V.', KA2:'الخرج بيطلّع +24V على A1، والطرف التاني للحمل لازم يرجع لـ 0V.', HX2:'اللمبة كمان: طرفها التاني على 0V.', CL:'الـ CPU نفسه محتاج باور: L+ على +24V.', CM:'و M على 0V.'},
+    why:{OL:'3L+ على +24V.', OM:'3M على 0V.', KA2:'A2 يرجع لـ 0V.', HX2:'X2 يرجع لـ 0V.', CL:'L+ على +24V.', CM:'M على 0V.'},
     art:live => top(live) + A.coil(14, 110, 'كونتاكتور 24V DC', live.q0) + `<path d="M30 150v8M82 150v8" stroke="#2a3035" stroke-width="2"/>` + A.lamp(36, 216, live.q1) + `<text x="98" y="238" class="ar" style="font-size:10px;fill:var(--ink)">لمبة 24V</text>` + A.card(230, 96, 122, 196, 'DQ 24V DC (Tr)', [{y:175, k:'q0', c:'#ffb300'}, {y:220, k:'q1', c:'#ffb300'}], live),
     live:a => ({q0:a.q0, q1:a.q1}),
     acts:[{k:'q0', l:'البرنامج يشغّل Q0.0'}, {k:'q1', l:'البرنامج يشغّل Q0.1'}],
-    ok:'كارت الترانزستور سريع ومبيتآكلش، بس <b>DC بس</b> وتياره صغير (حوالي 0.5A للخرج). للأحمال الأكبر حط ريليه وسيط. ولو الحمل كويل DC، الدايود (Flyback) بيحمي الترانزستور.'});
+    ok:'ترانزستور: سريع، بس <b>DC بس</b> وحوالي 0.5A.'});
   /* relay output: 230 V AC contactor */
   ex.push({key:'rly', title:'خرج ريلاي', h:300,
-    task:'<b>المطلوب:</b> كارت خرج <b>ريلاي</b> بيشغّل كونتاكتور كويله <b>230V AC</b>. الريليه مجرد كونتاكت: وصّل الكومن <b>1L</b> على الفاز <b>L</b>، و <b>Q0.0</b> على A1، و A2 على النيوترال <b>N</b>. ومتنساش باور الـ CPU. أوعى تخلط الـ AC بالـ DC.',
+    task:'<b>المطلوب:</b> <b>1L</b> ‏← L، <b>Q0.0</b> ‏← A1، A2 ‏← N، وباور الـ CPU. متخلطش AC بـ DC.',
     terms:base().concat([{id:'ACL', l:'L', x:150, y:54, pol:'ac'}, {id:'ACN', l:'N', x:196, y:54, pol:'n'},
       below('KA1', 'A1', 30, 166, 'sig'), below('KA2', 'A2', 82, 166, 'coil'), right('RL', '1L', 130, 'sig'), right('Q0', 'Q0.0', 180, 'sig'), right('Q1', 'Q0.1', 230, 'sig')]),
     groups:[['P24', 'CL'], ['P0', 'CM'], ['ACL', 'RL'], ['Q0', 'KA1'], ['ACN', 'KA2']],
-    why:{RL:'الكومن بتاع الريليهات بياخد الجهد اللي هيطلع على الأحمال: هنا الفاز L.', KA1:'الريليه لما يقفل بيوصّل 1L بـ Q0.0، و Q0.0 رايح على A1.', KA2:'A2 بيرجع على النيوترال N.', CL:'الـ CPU نفسه محتاج باور: L+ على +24V.', CM:'و M على 0V.'},
+    why:{RL:'1L ياخد الفاز L.', KA1:'Q0.0 رايح على A1.', KA2:'A2 على N.', CL:'L+ على +24V.', CM:'M على 0V.'},
     art:live => A.psu(8, 6) + `<g transform="translate(124 6)"><rect width="94" height="64" rx="6" fill="#7a4a22" stroke="#3b2410"/><text x="47" y="16" text-anchor="middle" style="font:700 10px var(--font-mono);fill:#fff">230V AC</text><text x="47" y="28" text-anchor="middle" class="ar" style="font-size:9px;fill:#f3e6d6">بعد القاطع</text></g>` + A.cpu(222, 6, {pwr:true}) + A.coil(14, 110, 'كونتاكتور 230V AC', live.q0) + `<path d="M30 150v8M82 150v8" stroke="#2a3035" stroke-width="2"/>` + (live.q0 ? `<g transform="translate(20 200)">${PL.motorSvg(36, 40, 54, 30, true)}<text x="90" y="44" class="ar" style="font-size:10px;fill:var(--ink)">الموتور اشتغل</text></g>` : '') + A.card(230, 96, 122, 196, 'DQ Relay', [{y:180, k:'q0', c:'#ffb300'}, {y:230, k:'q1', c:'#ffb300'}], live),
     live:a => ({q0:a.q0}),
     acts:[{k:'q0', l:'البرنامج يشغّل Q0.0'}],
-    ok:'الريليه بيشيل AC أو DC وتيار لحد حوالي 2A، بس أبطأ وعمره محدود بعدد مرات الفتح والقفل. كل مجموعة مخارج ليها كومن واحد (1L)، فمتخلطش جهود مختلفة على نفس المجموعة.'});
+    ok:'ريليه: AC أو DC لحد 2A، بس أبطأ.'});
   ex.forEach(x => { x.danger = mkDanger(x); x.terms.forEach(t => { if (!t.pol) t.pol = 'sig'; }); });
   PL.wireEx = ex;
 })();

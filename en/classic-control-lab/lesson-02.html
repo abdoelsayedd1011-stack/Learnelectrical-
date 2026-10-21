@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="/en/classic-control-lab/engine.css?v=20261021q">
+<link rel="stylesheet" href="/en/classic-control-lab/engine.css?v=20261021w">
 <link rel="stylesheet" href="/en/classic-control-lab/fx.css?v=20261021v">
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261021r">
 </head>
@@ -40,7 +40,7 @@
 <script src="/site-config.js?v=20261021v"></script>
 <script src="/assets/i18n.js?v=20261021w"></script>
 <script src="/assets/i18n-en.js?v=20261021v"></script>
-<script src="/en/classic-control-lab/engine.js?v=20261021q"></script>
+<script src="/en/classic-control-lab/engine.js?v=20261021w"></script>
 <script src="/en/classic-control-lab/fx.js?v=20261021v"></script>
 <script>
 (function(){
@@ -61,9 +61,9 @@ const holdCases = (lampId, stopId, startId) => [
   {label:'STOP pressed', set:{[stopId]:{p:1}}, expect:{[lampId]:0}},
   {label:'STOP released', set:{[stopId]:{p:0}}, expect:{[lampId]:0}}];
 const holdPatterns = lampId => [
-  {sig:{[lampId]:'01110'}, msg:'The lamp <b>doesn\'t go off</b> with STOP: the coil is still getting power by another path. The seal-in contact must come <b>after</b> STOP (in parallel with START only), not straight from L.'},
-  {sig:{[lampId]:'01111'}, msg:'The lamp came on and never goes off: there\'s a path from L to the coil that bypasses <b>both STOP and START</b>. Check that the seal-in contact is wired across the START terminals only (13 and 14), not to L.'},
-  {sig:{[lampId]:'11111'}, msg:'The lamp is always on: the coil or lamp is connected to L without passing through any contact.'}];
+  {sig:{[lampId]:'01110'}, msg:"STOP doesn't switch it off: the hold-in goes after STOP, across START only."},
+  {sig:{[lampId]:'01111'}, msg:"It never goes off: wire the hold-in between S1:13 and S1:14 only."},
+  {sig:{[lampId]:'11111'}, msg:"Always on: the coil or the lamp is fed straight from L."}];
 
 CL.lesson({
   id:'l2', n:2, title:'Lesson 2: Auxiliary relays and seal-in',
@@ -136,41 +136,41 @@ CL.lesson({
   ],
 
   exercises:{
-    r1:{story:{icon:'📦', text:'A packing machine: a small button in the cabin starts a relay, and the relay lights the big run lamp outside.', ask:'The button feeds the relay coil, and an NO contact of the relay lights the lamp.'}, title:'Exercise 1: a button runs the relay, the relay lights a lamp', short:'Coil and NO contact',
-       task:'Wire button <b>S1</b> to the coil of <b>K1</b> (A1-A2), and wire lamp <b>H1</b> to K1\'s contact <span class="term">11-14</span> (NO). When you press S1: the relay pulls in and the lamp lights.', goal:"When you press S1, relay K1 pulls in and lamp H1 lights from its contact; when you release it, it drops out and the lamp goes off.", idea:"Two separate circuits: the button feeds coil A1-A2, and the coil closes contact 11-14, which lights the lamp. The lamp isn't connected to the button at all.", steps:["Coil circuit: phase L to the input of S1, output of S1 to A1 of the relay, and A2 to N.", "Contact circuit: phase L to common 11 of K1.", "From 14 (NO) go to X1 of the lamp, and X2 to N."],
-       tip:'Two separate circuits: (1) L → S1:13, S1:14 → K1:A1, K1:A2 → N. (2) L → K1:11, K1:14 → H1:X1, H1:X2 → N. Note the lamp isn\'t connected to the button at all: the relay connects it.',
+    r1:{story:{icon:'📦', text:"Packing machine: a button runs a relay, the relay lights the lamp.", ask:""}, title:'Exercise 1: a button runs the relay, the relay lights a lamp', short:'Coil and NO contact',
+       task:'Wire button <b>S1</b> to the coil of <b>K1</b> (A1-A2), and wire lamp <b>H1</b> to K1\'s contact <span class="term">11-14</span> (NO). When you press S1: the relay pulls in and the lamp lights.', goal:"S1 pulls in K1, and K1 lights H1.", idea:"Two circuits: button to coil A1-A2, contact 11-14 to the lamp.", steps:["L → S1:13","S1:14 → K1:A1, and K1:A2 → N","L → K1:11","K1:14 → H1:X1, and H1:X2 → N"],
+       tip:"",
        devices:[SUP, PB('S1', 'green', 'START'), K1CO, lamp('H1', 'green', 'lamp')],
        solution:[['Q1:L','S1:13'],['S1:14','K1:A1'],['K1:A2','Q1:N'],['Q1:L','K1:11'],['K1:14','H1:X1'],['H1:X2','Q1:N']],
        cases:[{label:'S1 released', set:{S1:{p:0}}, expect:{H1:0, K1:0}}, {label:'S1 pressed', set:{S1:{p:1}}, expect:{H1:1, K1:1}}],
-       okMsg:'Press S1 and watch the relay\'s LED and the lamp.'},
-    r2:{story:{icon:'🏭', text:'A production line: a red “stopped” lamp is on, and when the operator presses the button and the relay pulls in, the lamp goes off.', ask:'An NC contact of the relay turns the lamp off when the coil pulls in.'}, title:'Exercise 2: an NC contact turns the lamp off when the relay pulls in', short:'NC contact',
-       task:'Same idea, but the “stopped” lamp <b>H1</b> must be <b>on</b> while the relay is off, and <b>go off</b> when you press S1 and the relay pulls in.', goal:"The “stopped” lamp H1 is on while the relay is off, and goes off when you press S1 and the relay pulls in.", idea:"The same circuit as exercise 1, but the lamp is on the NC contact (11-12), which opens when the relay pulls in.", steps:["Coil circuit as in exercise 1: L to S1, output of S1 to A1, and A2 to N.", "Phase L to common 11 of K1.", "From 12 (NC) go to X1 of the lamp, and X2 to N."],
-       tip:'Use terminal 12 (NC) instead of 14.',
+       okMsg:"Press S1 and watch the relay LED and the lamp."},
+    r2:{story:{icon:'🏭', text:"Production line: a «stopped» lamp goes off when the relay pulls in.", ask:""}, title:'Exercise 2: an NC contact turns the lamp off when the relay pulls in', short:'NC contact',
+       task:'Same idea, but the “stopped” lamp <b>H1</b> must be <b>on</b> while the relay is off, and <b>go off</b> when you press S1 and the relay pulls in.', goal:"«Stopped» H1 is on; off when K1 pulls in.", idea:"Like exercise 1, but the lamp is on NC 11-12.", steps:["L → S1:13, S1:14 → K1:A1, K1:A2 → N","L → K1:11","K1:12 → H1:X1, and H1:X2 → N"],
+       tip:"Use 12 (NC) instead of 14.",
        devices:[SUP, PB('S1', 'green', 'START'), K1CO, lamp('H1', 'red', 'stopped')],
        solution:[['Q1:L','S1:13'],['S1:14','K1:A1'],['K1:A2','Q1:N'],['Q1:L','K1:11'],['K1:12','H1:X1'],['H1:X2','Q1:N']],
        cases:[{label:'S1 released', set:{S1:{p:0}}, expect:{H1:1}}, {label:'S1 pressed', set:{S1:{p:1}}, expect:{H1:0}}]},
-    r3:{story:{icon:'🚦', text:'A pumping station: the supervisor wants a green “running” lamp and a red “stopped” lamp from just one relay.', ask:'One coil and two contacts: NO for the green and NC for the red.'}, title:'Exercise 3: one coil and two lamps (running / stopped)', short:'Two lamps from one relay',
-       task:'When you press S1: the green “running” lamp <b>H1</b> lights and the red “stopped” lamp <b>H2</b> goes off. When released: the opposite. Use both of K1\'s contacts.', goal:"When you press S1: the green “running” lamp H1 lights and the red “stopped” lamp H2 goes off. When released: the opposite.", idea:"One coil moves two contacts: NO for the green and NC for the red. The phase must reach both commons with a jumper.", steps:["Coil circuit: L to S1, output of S1 to A1, and A2 to N.", "Phase L to common 11, and a jumper from 11 to common 21.", "From 14 (NO) to X1 of H1, and from 22 (NC) to X1 of H2.", "X2 of H1 to N, and X2 of H2 to X2 of H1 (two wires per terminal only)."],
-       tip:'L must reach common 11 and common 21 (a jumper from 11 to 21). H1 on 14 (NO) and H2 on 22 (NC). Remember each terminal takes only two wires: return X2 of H2 to X2 of H1 instead of straight to N.',
+    r3:{story:{icon:'🚦', text:"Pump station: a «running» lamp and a «stopped» lamp from one relay.", ask:""}, title:'Exercise 3: one coil and two lamps (running / stopped)', short:'Two lamps from one relay',
+       task:'When you press S1: the green “running” lamp <b>H1</b> lights and the red “stopped” lamp <b>H2</b> goes off. When released: the opposite. Use both of K1\'s contacts.', goal:"S1 pressed: H1 on and H2 off.", idea:"One coil: NO for green, NC for red, a jumper between commons.", steps:["L → S1:13, S1:14 → K1:A1, K1:A2 → N","L → K1:11, and jumper K1:11 → K1:21","K1:14 → H1:X1, and K1:22 → H2:X1","H1:X2 → N, and H2:X2 → H1:X2"],
+       tip:"",
        devices:[SUP, PB('S1', 'green', 'START'), K1CO, lamp('H1', 'green', 'running'), lamp('H2', 'red', 'stopped')],
        solution:[['Q1:L','S1:13'],['S1:14','K1:A1'],['K1:A2','Q1:N'],['Q1:L','K1:11'],['K1:11','K1:21'],['K1:14','H1:X1'],['K1:22','H2:X1'],['H1:X2','Q1:N'],['H2:X2','H1:X2']],
        cases:[{label:'S1 released', set:{S1:{p:0}}, expect:{H1:0, H2:1}}, {label:'S1 pressed', set:{S1:{p:1}}, expect:{H1:1, H2:0}}]},
-    h1:{story:{icon:'🔋', text:'An automatic panel on 24V: the START button starts a relay that keeps running after you lift your finger, and the STOP button stops it.', ask:'Start / Stop with seal-in on 24V DC.'}, title:'Exercise 4: Start / Stop with seal-in on 24V DC', short:'Seal-in 24V',
-       task:'Press <b>S1</b> (START): relay <b>K1</b> pulls in and lamp <b>H1</b> lights <b>and stays on</b> after you lift your finger. Press <b>S0</b> (STOP): it goes off. The lamp is on the second contact 21-24.', goal:"Press START: relay K1 pulls in and lamp H1 lights and stays on after you lift your finger. Press STOP: it goes off.", idea:"Seal-in: an NO contact of the relay in parallel with the START button, so once the relay pulls in it feeds itself. STOP (NC) at the start of the line cuts everything.", steps:["+24V to the STOP input (NC), and the STOP output to the START input (NO).", "START output to A1 of K1, and A2 to 0V.", "Seal-in: K1 contact 11-14 in parallel with the START button (one end on its input and one on its output).", "The lamp from the second contact: +24V to 21, from 24 to X1 of the lamp, and X2 to 0V.", "Test in order: press START and release it, then STOP."],
-       tip:'+24V → S0:11 (NC), S0:12 → S1:13, S1:14 → K1:A1, K1:A2 → 0V. Seal-in: K1:11 → S1:13 and K1:14 → S1:14. Lamp: +24V → K1:21, K1:24 → H1:X1, H1:X2 → 0V. Test in order: press S1 and release it, then S0.',
+    h1:{story:{icon:'🔋', text:"24V panel: START runs a relay and it stays on.", ask:""}, title:'Exercise 4: Start / Stop with seal-in on 24V DC', short:'Seal-in 24V',
+       task:'Press <b>S1</b> (START): relay <b>K1</b> pulls in and lamp <b>H1</b> lights <b>and stays on</b> after you lift your finger. Press <b>S0</b> (STOP): it goes off. The lamp is on the second contact 21-24.', goal:"START runs K1 and it stays; STOP stops it.", idea:"Self-holding: K1 11-14 across START, STOP first in line.", steps:["+24V → S0:11, and S0:12 → S1:13","S1:14 → K1:A1, and K1:A2 → 0V","Hold-in: K1:11 → S1:13, and K1:14 → S1:14","+24V → K1:21, K1:24 → H1:X1, H1:X2 → 0V"],
+       tip:"",
        devices:[DC, PB('S0', 'red', 'STOP'), PB('S1', 'green', 'START'), K1DC, lamp('H1', 'green', 'running', 24)],
        solution:[['G1:P24','S0:11'],['S0:12','S1:13'],['S1:14','K1:A1'],['K1:A2','G1:0V'],['K1:11','S1:13'],['K1:14','S1:14'],['G1:P24','K1:21'],['K1:24','H1:X1'],['H1:X2','G1:0V']],
        seq:true, cases:holdCases('H1', 'S0', 'S1'), patterns:holdPatterns('H1'),
-       okMsg:'Press S1 and lift your finger: the lamp stays on. Press S0: it\'s off.'},
-    h2:{story:{icon:'🏭', text:'The same idea but in an older panel on 230V, and the engineer wants the lamp in parallel with the coil so it lights with it.', ask:'Start / Stop with seal-in on 230V, with the lamp in parallel with the coil.'}, title:'Exercise 5: the same circuit on 230V AC with the lamp across the coil', short:'Seal-in 230V',
-       task:'The same Start / Stop circuit but with a <b>230V</b> relay fed from the breaker, and lamp <b>H1</b> wired <b>in parallel with the coil</b> (between A1 and N) with no contact.', goal:"The same Start / Stop circuit but on 230V from the breaker, with lamp H1 lighting together with the relay.", idea:"The lamp is in parallel with the coil (between A1 and N) with no contact: when the coil gets power, the lamp gets it too.", steps:["Phase L to the STOP input, and the STOP output to the START input.", "START output to A1 of K1, and A2 to N.", "Seal-in: K1 contact 11-14 in parallel with the START button.", "Lamp: X1 to A1 of the relay, and X2 to N."],
-       tip:'L → S0:11, S0:12 → S1:13, S1:14 → K1:A1, K1:A2 → N, seal-in K1:11 ↔ S1:13 and K1:14 ↔ S1:14, and the lamp K1:A1 → H1:X1 and H1:X2 → N.',
+       okMsg:"Press S1 and release: it stays on. Press S0: off."},
+    h2:{story:{icon:'🏭', text:"Old 230V panel: the lamp is in parallel with the coil.", ask:""}, title:'Exercise 5: the same circuit on 230V AC with the lamp across the coil', short:'Seal-in 230V',
+       task:'The same Start / Stop circuit but with a <b>230V</b> relay fed from the breaker, and lamp <b>H1</b> wired <b>in parallel with the coil</b> (between A1 and N) with no contact.', goal:"Start / Stop on 230V, H1 across the coil.", idea:"The lamp sits between A1 and N, so it lights with the coil.", steps:["L → S0:11, and S0:12 → S1:13","S1:14 → K1:A1, and K1:A2 → N","Hold-in: K1:11 → S1:13, and K1:14 → S1:14","K1:A1 → H1:X1, and H1:X2 → N"],
+       tip:"",
        devices:[SUP, PB('S0', 'red', 'STOP'), PB('S1', 'green', 'START'), K1CO, lamp('H1', 'green', 'running')],
        solution:[['Q1:L','S0:11'],['S0:12','S1:13'],['S1:14','K1:A1'],['K1:A2','Q1:N'],['K1:11','S1:13'],['K1:14','S1:14'],['K1:A1','H1:X1'],['H1:X2','Q1:N']],
        seq:true, cases:holdCases('H1', 'S0', 'S1'), patterns:holdPatterns('H1')},
-    h3:{story:{icon:'🏭', text:'A 40-metre conveyor: the workers want a START button at the start and another at the end, with one STOP button at the supervisor\'s desk.', ask:'Start from two places (START in parallel) and stop.'}, title:'Exercise 6: start from two places (START in parallel) and stop', short:'START from two places',
-       task:'Two start buttons <b>S1</b> and <b>S2</b> in two different places: either one starts K1 and it keeps running. <b>S0</b> stops it.', goal:"Either S1 or S2 starts K1 and it keeps running, and STOP stops it.", idea:"The start buttons are wired in parallel with each other and with the seal-in contact: all their inputs together and all their outputs together.", steps:["Phase L to the STOP input, and the STOP output to the input of S1.", "The inputs of S1, S2 and seal-in contact 13 all joined (a chain of jumpers).", "The outputs of S1, S2 and seal-in contact 14 all joined, and from them to A1.", "A2 to N, and the lamp across the coil (X1 to A1 and X2 to N)."],
-       tip:'The two buttons in parallel with each other and with the seal-in contact: 13 to 13 to 13, and 14 to 14 to 14 (a chain: S1:13 → S2:13 → K1:13, S1:14 → S2:14 → K1:14, and K1:14 → K1:A1).',
+    h3:{story:{icon:'🏭', text:"A 40 m belt: START at each end, one STOP.", ask:""}, title:'Exercise 6: start from two places (START in parallel) and stop', short:'START from two places',
+       task:'Two start buttons <b>S1</b> and <b>S2</b> in two different places: either one starts K1 and it keeps running. <b>S0</b> stops it.', goal:"S1 or S2 runs K1; S0 stops it.", idea:"START buttons and hold-in in parallel: 13 to 13, 14 to 14.", steps:["L → S0:11, and S0:12 → S1:13","S1:13 → S2:13 → K1:13","S1:14 → S2:14 → K1:14","K1:14 → K1:A1, and K1:A2 → N","H1 across the coil: K1:A1 and N"],
+       tip:"",
        devices:[SUP, PB('S0', 'red', 'STOP'), PB('S1', 'green', 'START 1'), PB('S2', 'green', 'START 2'), K1NN, lamp('H1', 'green', 'running')],
        solution:[['Q1:L','S0:11'],['S0:12','S1:13'],['S1:13','S2:13'],['S2:13','K1:13'],['S1:14','S2:14'],['S2:14','K1:14'],['K1:14','K1:A1'],['K1:A2','Q1:N'],['K1:A1','H1:X1'],['H1:X2','Q1:N']],
        seq:true, cases:[
@@ -179,10 +179,10 @@ CL.lesson({
          {label:'S0 pressed', set:{S0:{p:1}}, expect:{H1:0}}, {label:'S0 released', set:{S0:{p:0}}, expect:{H1:0}},
          {label:'S2 pressed', set:{S2:{p:1}}, expect:{H1:1}}, {label:'S2 released', set:{S2:{p:0}}, expect:{H1:1}},
          {label:'S0 pressed again', set:{S0:{p:1}}, expect:{H1:0}}],
-       patterns:[{sig:{H1:'01100000'}, msg:'S1 works but S2 doesn\'t start it: S2 must be wired in parallel with S1 (13 to 13 and 14 to 14).'}, {sig:{H1:'00000110'}, msg:'S2 works but S1 doesn\'t start it: S1 must be wired in parallel with S2 (13 to 13 and 14 to 14).'}, {sig:{H1:'01111111'}, msg:'STOP doesn\'t stop it: S0 must be in series before both buttons and the seal-in contact.'}]},
-    h4:{story:{icon:'⛔', text:'A wire winding machine: the inspector asked for a STOP button in two places along the machine for safety.', ask:'Stop from two places (STOP in series) and start with seal-in.'}, title:'Exercise 7: stop from two places (STOP in series)', short:'STOP from two places',
-       task:'Two stop buttons <b>S0</b> and <b>S3</b> in two places: either one stops K1. <b>S1</b> starts it with seal-in.', goal:"Either S0 or S3 stops K1, and S1 starts it with seal-in.", idea:"The NC stop buttons are wired in series one after the other at the start of the line: either one opening cuts the supply to everything.", steps:["Phase L to the input of STOP 1, and the output of STOP 1 to the input of STOP 2.", "STOP 2 output to the START input, START output to A1, and A2 to N.", "Seal-in: K1 contact 13-14 in parallel with the START button.", "Lamp across the coil: X1 to A1 and X2 to N."],
-       tip:'The NC stop buttons are wired in series one after the other: L → S0:11, S0:12 → S3:11, S3:12 → S1:13…',
+       patterns:[{sig:{H1:'01100000'}, msg:"S2 doesn't start it: wire it in parallel with S1 (13 to 13, 14 to 14)."}, {sig:{H1:'00000110'}, msg:"S1 doesn't start it: wire it in parallel with S2 (13 to 13, 14 to 14)."}, {sig:{H1:'01111111'}, msg:"STOP doesn't stop it: S0 must be in series before everything."}]},
+    h4:{story:{icon:'⛔', text:"Wire-winding machine: STOP in two places for safety.", ask:""}, title:'Exercise 7: stop from two places (STOP in series)', short:'STOP from two places',
+       task:'Two stop buttons <b>S0</b> and <b>S3</b> in two places: either one stops K1. <b>S1</b> starts it with seal-in.', goal:"S0 or S3 stops K1; S1 starts it.", idea:"STOP buttons (NC) in series: any one opens the line.", steps:["L → S0:11, and S0:12 → S3:11","S3:12 → S1:13, and S1:14 → K1:A1","K1:A2 → N","Hold-in: K1:13 → S1:13, and K1:14 → S1:14","K1:A1 → H1:X1, and H1:X2 → N"],
+       tip:"",
        devices:[SUP, PB('S0', 'red', 'STOP 1'), PB('S3', 'red', 'STOP 2'), PB('S1', 'green', 'START'), K1NN, lamp('H1', 'green', 'running')],
        solution:[['Q1:L','S0:11'],['S0:12','S3:11'],['S3:12','S1:13'],['S1:14','K1:A1'],['K1:A2','Q1:N'],['K1:13','S1:13'],['K1:14','S1:14'],['K1:A1','H1:X1'],['H1:X2','Q1:N']],
        seq:true, cases:[
@@ -191,10 +191,10 @@ CL.lesson({
          {label:'S0 pressed', set:{S0:{p:1}}, expect:{H1:0}}, {label:'S0 released', set:{S0:{p:0}}, expect:{H1:0}},
          {label:'S1 pressed again', set:{S1:{p:1}}, expect:{H1:1}}, {label:'S1 released', set:{S1:{p:0}}, expect:{H1:1}},
          {label:'S3 pressed', set:{S3:{p:1}}, expect:{H1:0}}, {label:'S3 released', set:{S3:{p:0}}, expect:{H1:0}}],
-       patterns:[{sig:{H1:'011001111'}, msg:'S0 stops it but S3 doesn\'t: S3 must be in series on the same line (S0:12 → S3:11, and S3:12 → START).'}, {sig:{H1:'011111100'}, msg:'S3 stops it but S0 doesn\'t: S0 must be in series on the same line.'}, {sig:{H1:'011111111'}, msg:'Neither stop button stops it: the coil or the seal-in contact takes L from before the STOP buttons.'}]},
-    il:{story:{icon:'🔒', text:'A goods lift with two relays: one for up and one for down, and both must never run at the same moment.', ask:'Electrical interlock between two relays, each with seal-in, and a common STOP.'}, title:'Exercise 8: interlock between two relays', short:'Interlock K1 / K2',
-       task:'<b>S1</b> starts <b>K1</b> (lamp H1), and <b>S2</b> starts <b>K2</b> (lamp H2), each with seal-in, and <b>S0</b> stops both. The condition: <b>if one is running, the other won\'t start</b> even if you press its button.', goal:"S1 starts K1 (lamp H1) and S2 starts K2 (lamp H2), each with seal-in, and STOP stops both. And if one is running, the other won't start.", idea:"Electrical interlock: an NC contact of each relay in the other relay's coil line. When K1 pulls in, its 21-22 opens and breaks the path to K2, and the other way round.", steps:["Phase L to STOP, and after STOP two branches: one for S1 and one for S2.", "K1 branch: START 1 in parallel with K1's seal-in (13-14), then to K2's NC (21-22), and from 22 to A1 of K1.", "K2 branch the other way: START 2 in parallel with K2's seal-in, then to K1's NC (21-22), and from 22 to A1 of K2.", "A2 of both to N (A2 of K2 to A2 of K1), and each lamp across its coil."],
-       tip:'After S0 make two branches. K1 branch: S1:13 and K1:13 to S0:12, S1:14 ↔ K1:14 → K2:21, K2:22 → K1:A1. K2 branch the other way: S2:14 ↔ K2:14 → K1:21, K1:22 → K2:A1. A2 of both to N, and each lamp across its coil.',
+       patterns:[{sig:{H1:'011001111'}, msg:"S3 doesn't stop it: put it in series after S0 (S0:12 → S3:11)."}, {sig:{H1:'011111100'}, msg:"S0 doesn't stop it: put it in series in the same line."}, {sig:{H1:'011111111'}, msg:"No STOP works: the coil or hold-in takes L before the STOP buttons."}]},
+    il:{story:{icon:'🔒', text:"Goods lift: up and down, never both together.", ask:""}, title:'Exercise 8: interlock between two relays', short:'Interlock K1 / K2',
+       task:'<b>S1</b> starts <b>K1</b> (lamp H1), and <b>S2</b> starts <b>K2</b> (lamp H2), each with seal-in, and <b>S0</b> stops both. The condition: <b>if one is running, the other won\'t start</b> even if you press its button.', goal:"K1 and K2 self-hold, never both on.", idea:"Each relay's NC sits in the other relay's coil line.", steps:["L → S0:11, and S0:12 → S1:13 and S2:13","S1:13 → K1:13, and S1:14 → K1:14","K1:14 → K2:21, and K2:22 → K1:A1","S2:13 → K2:13, and S2:14 → K2:14","K2:14 → K1:21, and K1:22 → K2:A1","K1:A2 → N, and K2:A2 → K1:A2","H1 across K1, H2 across K2"],
+       tip:"",
        devices:[SUP, PB('S0', 'red', 'STOP'), PB('S1', 'green', 'START 1'), PB('S2', 'green', 'START 2'), K1NN, K2NN, lamp('H1', 'green', 'K1 on'), lamp('H2', 'amber', 'K2 on')],
        solution:[['Q1:L','S0:11'],['S0:12','S1:13'],['S0:12','S2:13'],['S1:13','K1:13'],['S1:14','K1:14'],['K1:14','K2:21'],['K2:22','K1:A1'],['K1:A2','Q1:N'],['S2:13','K2:13'],['S2:14','K2:14'],['K2:14','K1:21'],['K1:22','K2:A1'],['K2:A2','K1:A2'],['K1:A1','H1:X1'],['H1:X2','Q1:N'],['K2:A1','H2:X1'],['H2:X2','H1:X2']],
        seq:true, cases:[
@@ -204,16 +204,16 @@ CL.lesson({
          {label:'S0 pressed', set:{S0:{p:1}}, expect:{H1:0, H2:0}}, {label:'S0 released', set:{S0:{p:0}}, expect:{H1:0, H2:0}},
          {label:'S2 pressed', set:{S2:{p:1}}, expect:{H1:0, H2:1}}, {label:'S2 released', set:{S2:{p:0}}, expect:{H1:0, H2:1}},
          {label:'S1 pressed with K2 on', set:{S1:{p:1}}, expect:{H1:0, H2:1}}, {label:'S1 released', set:{S1:{p:0}}, expect:{H1:0, H2:1}}],
-       patterns:[{sig:{H2:'00011001111'}, msg:'K2 starts while K1 is running: there\'s no interlock on K2\'s branch. Put the NC contact 21-22 of <b>K1</b> in series before K2\'s coil.'}, {sig:{H1:'01111000011'}, msg:'K1 starts while K2 is running: there\'s no interlock on K1\'s branch. Put the NC contact 21-22 of <b>K2</b> in series before K1\'s coil.'}],
-       okMsg:'Start K1, then try to start K2: it won\'t. Stop with S0 and start K2 first, then try K1.'},
-    w:{story:{icon:'🔧', text:'You got a call: “the relay pulls in only while you hold the button, and drops out as soon as you let go”. The electrician before you wired the panel and left.', ask:'Find the wiring mistake and fix it.'}, title:'Exercise 9: a faulty circuit, find the mistake and fix it', short:'Mistake: seal-in in series',
-       task:'This circuit is already wired, but it has a <b>common mistake</b>. Switch on, press START, and see what the simulator tells you. Then switch off and fix the wiring so it\'s a correct Start / Stop circuit.', goal:"A correct Start / Stop circuit is required: START starts K1 and it keeps running, and STOP stops it.", idea:"It has a common mistake in where the seal-in contact 11-14 is: it should be in parallel with the START button only, not anywhere else.", steps:["Switch on, press START and see what the simulator tells you.", "Switch off and trace the two wires of the seal-in contact: one end on the START input and one on its output.", "Fix the wrong wire and switch on again: the seal-in works and STOP stops it."],
-       tip:'The mistake is in where the seal-in contact 11-14 is. Think: what should it be in parallel with?',
+       patterns:[{sig:{H2:'00011001111'}, msg:"K2 starts while K1 runs: put K1 21-22 before the K2 coil."}, {sig:{H1:'01111000011'}, msg:"K1 starts while K2 runs: put K2 21-22 before the K1 coil."}],
+       okMsg:"Start K1, then try K2: it won't start."},
+    w:{story:{icon:'🔧', text:"Fault report: «the relay drops out as soon as you release the button».", ask:""}, title:'Exercise 9: a faulty circuit, find the mistake and fix it', short:'Mistake: seal-in in series',
+       task:'This circuit is already wired, but it has a <b>common mistake</b>. Switch on, press START, and see what the simulator tells you. Then switch off and fix the wiring so it\'s a correct Start / Stop circuit.', goal:"Fix it: START runs and holds, STOP stops.", idea:"The fault is where hold-in contact 11-14 is wired.", steps:["Power up, press START, read the result.","Power off and trace the two 11-14 wires.","Hold-in: K1:11 → S1:13, and K1:14 → S1:14"],
+       tip:"",
        devices:[SUP, PB('S0', 'red', 'STOP'), PB('S1', 'green', 'START'), K1CO, lamp('H1', 'green', 'running')],
        preset:[['Q1:L','S0:11'],['S0:12','S1:13'],['S1:14','K1:11'],['K1:14','K1:A1'],['K1:A2','Q1:N'],['K1:A1','H1:X1'],['H1:X2','Q1:N']],
        solution:[['Q1:L','S0:11'],['S0:12','S1:13'],['S1:14','K1:A1'],['K1:A2','Q1:N'],['K1:11','S1:13'],['K1:14','S1:14'],['K1:A1','H1:X1'],['H1:X2','Q1:N']],
        seq:true, cases:holdCases('H1', 'S0', 'S1'), patterns:holdPatterns('H1'),
-       okMsg:'Now the seal-in contact is in parallel with START, as it should be.'}
+       okMsg:"The hold-in is now across START."}
   }
 });
 })();

@@ -740,19 +740,19 @@ C.diEval = function(wires, sensor, card, detected){
   r.net = {bkOnI0:f('BK') === f('I0'), comP:f('COM') === P, comN:f('COM') === N, i0P:f('I0') === P, i0N:f('I0') === N};
   return r;
 };
-C.diCheck = function(wires, sensor, card){
-  const a = C.diEval(wires, sensor, card, true), b = C.diEval(wires, sensor, card, false), bad = [];
-  if (a.short) return {pass:false, bad:['<b>قصر!</b> الـ +24V متوصّل على الـ 0V مباشرة. الباور سبلاي هيفصل أو الفيوز يضرب.']};
-  if (a.reversed) bad.push('<b>الحساس متوصّل بالعكس:</b> البني لازم على +24V والأزرق على 0V. أغلب الحساسات فيها حماية فمش هتتحرق، بس مش هتشتغل.');
-  else if (!a.powered) bad.push('الحساس <b>مش واخد باور</b>: السلك <b>البني BN على +24V</b> والـ <b>أزرق BU على 0V</b>.');
-  if (a.outShort) bad.push(`<b>خرج الحساس عامل قصر:</b> السلك الأسود ${sensor === 'PNP' ? 'بيطلّع +24V وإنت واصله على 0V' : 'بيسحب لـ 0V وإنت واصله على +24V'}. الحساس هيدخل في حماية القصر (اللمبة بتاعته بترمش).`);
+C.diCheck = function(wires, sensor, card){ // one short, specific message per problem; hl = terminals to pulse
+  const a = C.diEval(wires, sensor, card, true), b = C.diEval(wires, sensor, card, false), bad = [], hls = [], B = (t, h) => { bad.push(t); hls.push(h || []); };
+  if (a.short) return {pass:false, bad:['<b>قصر:</b> +24V و 0V متوصلين ببعض.'], hl:['P', 'N']};
+  if (a.reversed) B('<b>الحساس بالعكس:</b> البني على +24V والأزرق على 0V.', ['BN', 'BU']);
+  else if (!a.powered) B('الحساس مش واخد باور: <b>BN</b> على +24V و <b>BU</b> على 0V.', ['BN', 'BU']);
+  if (a.outShort) B(`<b>قصر على الخرج:</b> BK ${sensor === 'PNP' ? 'متوصل على 0V' : 'متوصل على +24V'}.`, ['BK']);
   const wantCom = card === 'sink' ? 'N' : 'P';
-  if (!a.net.comP && !a.net.comN) bad.push(`طرف <b>COM</b> بتاع الكارت مش متوصّل. في الكارت ده الـ COM لازم يروح على <b>${wantCom === 'N' ? '0V' : '+24V'}</b>.`);
-  else if ((wantCom === 'N' && a.net.comP) || (wantCom === 'P' && a.net.comN)) bad.push(`الـ COM متوصّل على ${a.net.comP ? '+24V' : '0V'}، والكارت ده ${card === 'sink' ? '<b>Sinking</b> (بيستقبل +24V على الدخل) فالـ COM بتاعه على <b>0V</b>' : '<b>Sourcing</b> (الدخل بيتسحب لـ 0V) فالـ COM بتاعه على <b>+24V</b>'}.`);
-  if (a.net.i0P || a.net.i0N) bad.push('الدخل <b>I0.0</b> متوصّل على الباور مباشرة، فهيبقى ثابت مهما الحساس عمل. الدخل لازم ياخد من <b>السلك الأسود BK</b>.');
-  else if (!a.net.bkOnI0) bad.push('السلك <b>الأسود BK</b> (خرج الحساس) لازم يروح على دخل الـ PLC <b>I0.0</b>.');
-  if (!bad.length && !(a.led && !b.led)) bad.push(sensor === 'PNP' && card === 'source' ? 'حساس <b>PNP</b> بيطلّع +24V، والكارت Sourcing محتاج حد يسحب الدخل لـ 0V، فاللمبة عمرها ما هتنوّر. لازم يتقابلوا: PNP مع Sinking، و NPN مع Sourcing.' : 'لمبة الدخل مش بتتبع الحساس. راجع التوصيل.');
-  return {pass:!bad.length, bad, on:a, off:b};
+  if (!a.net.comP && !a.net.comN) B(`طرف <b>COM</b> في الكارت مش متوصل: يروح على <b>${wantCom === 'N' ? '0V' : '+24V'}</b>.`, ['COM']);
+  else if ((wantCom === 'N' && a.net.comP) || (wantCom === 'P' && a.net.comN)) B(`الـ COM على ${a.net.comP ? '+24V' : '0V'} والمفروض <b>${wantCom === 'N' ? '0V' : '+24V'}</b>.`, ['COM']);
+  if (a.net.i0P || a.net.i0N) B('<b>I0.0</b> على الباور مباشرة: لازم ياخد من <b>BK</b>.', ['I0']);
+  else if (!a.net.bkOnI0) B('السلك <b>BK</b> مش رايح على <b>I0.0</b>.', ['BK', 'I0']);
+  if (!bad.length && !(a.led && !b.led)) B(sensor === 'PNP' && card === 'source' ? '<b>PNP</b> مع كارت Sourcing مش هينوّر: PNP مع Sinking بس.' : 'لمبة I0.0 مش بتتبع الحساس.', ['I0']);
+  return {pass:!bad.length, bad, hl:hls[0] || [], on:a, off:b};
 };
 IL.diBench = function(host, opt){
   const L = opt.lesson, g = U('di');
@@ -793,7 +793,7 @@ IL.diBench = function(host, opt){
       ${snEff() > 0 ? `<path d="M${96 - 3 - snEff() * 4} 252V312" stroke="var(--accent)" stroke-dasharray="4 3" stroke-width="1.4"/><text x="${96 - 3 - snEff() * 4}" y="324" text-anchor="middle" style="font:600 9px var(--font-mono)" class="w-ac">Sn</text>` : ''}`;
     /* wires */
     q('.di-w').innerHTML = S.wires.map((w, i) => { const a = T[w[0]], b = T[w[1]], c = COL[w[0]] || COL[w[1]] || (w.includes('COM') ? '#7a3fb0' : '#444'); const my = Math.max(a[1], b[1]) + 30; const d = `M${a[0]} ${a[1]}C${a[0]} ${my} ${b[0]} ${my} ${b[0]} ${b[1]}`; return `<g class="bw" data-w="${i}"><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${c}"/><path class="bw-hit" d="${d}" tabindex="0" role="button" aria-label="شيل السلك من ${a[2]} لـ ${b[2]}"/></g>`; }).join('');
-    q('.di-t').innerHTML = Object.keys(T).map(k => { const [x, y, lab] = T[k]; const pend = S.pend === k; return `<g class="bt${pend ? ' pend' : ''}"><circle class="bt-s" cx="${x}" cy="${y}" r="8"/><path class="bt-x" d="M${x - 4} ${y}h8"/><circle class="bt-hit" data-t="${k}" cx="${x}" cy="${y}" r="16" tabindex="0" role="button" aria-label="طرف ${lab}"/><circle class="bt-ring" cx="${x}" cy="${y}" r="12"/><text class="bt-lab" x="${x}" y="${['BN', 'BK', 'BU'].includes(k) ? y + 24 : (k === 'P' || k === 'N') ? y - 14 : y + 4}" ${['COM', 'I0', 'I1'].includes(k) ? `text-anchor="end" dx="-14"` : ''}>${lab}</text></g>`; }).join('');
+    q('.di-t').innerHTML = Object.keys(T).map(k => { const [x, y, lab] = T[k]; const pend = S.pend === k; return `<g class="bt${pend ? ' pend' : ''}"><circle class="bt-s" cx="${x}" cy="${y}" r="8"/><path class="bt-x" d="M${x - 4} ${y}h8"/><circle class="bt-hit" data-t="${k}" cx="${x}" cy="${y}" r="16" tabindex="0" role="button" aria-label="طرف ${lab}"/><circle class="bt-ring${err && err.t.has(k) ? ' err' : ''}" cx="${x}" cy="${y}" r="12"/><text class="bt-lab" x="${x}" y="${['BN', 'BK', 'BU'].includes(k) ? y + 24 : (k === 'P' || k === 'N') ? y - 14 : y + 4}" ${['COM', 'I0', 'I1'].includes(k) ? `text-anchor="end" dx="-14"` : ''}>${lab}</text></g>`; }).join('');
     q('.di-led0').setAttribute('fill', r.led ? '#3dff6e' : '#24402c'); q('.di-led0').style.filter = r.led ? 'drop-shadow(0 0 5px #3dff6e)' : '';
     q('.di-led1').setAttribute('fill', r.I1 ? '#3dff6e' : '#24402c');
     q('.di-cardt').textContent = e.card === 'sink' ? 'DI · SINK (PNP)' : 'DI · SOURCE (NPN)';
@@ -813,12 +813,14 @@ IL.diBench = function(host, opt){
     if (S.wires.some(x => (x[0] === w[0] && x[1] === w[1]) || (x[0] === w[1] && x[1] === w[0]))){ msg('السلك ده موجود.'); draw(); return; }
     S.wires.push(w); save(); q('.di-res').innerHTML = ''; msg(`سلك من <b>${T[w[0]][2]}</b> لـ <b>${T[w[1]][2]}</b>. كمّل أو دوس "اختبر التوصيل".`); draw();
   }
+  let err = null;
+  function pulse(hl){ err = hl && hl.length ? {t:new Set(hl), until:Date.now() + 3000} : null; draw(); if (err) setTimeout(() => { if (err && err.until <= Date.now()){ err = null; draw(); } }, 3100); }
   function check(){
     const e = ex(), res = C.diCheck(S.wires, e.sensor, e.card);
     if (res.pass){
-      q('.di-res').innerHTML = `<div class="bn-ok"><b>تمام! التوصيل صح.</b> ${e.ok} قرّب الحديدة من الحساس بالسلايدر وشوف لمبة I0.0.</div>`;
+      q('.di-res').innerHTML = `<div class="bn-ok"><b>تمام! التوصيل صح.</b> ${e.ok} قرّب الحديدة وشوف I0.0.</div>`;
       IL.mark(L, e.key); draw();
-    } else q('.di-res').innerHTML = `<div class="bn-bad"><b>لسه فيه مشكلة:</b><ul>${res.bad.map(b => `<li>${b}</li>`).join('')}</ul></div>`;
+    } else { q('.di-res').innerHTML = `<div class="bn-bad"><b>✗</b> ${res.bad[0]}</div>`; pulse(res.hl); }
     return res;
   }
   onAct(host, '[data-t]', t => tapT(t.dataset.t));

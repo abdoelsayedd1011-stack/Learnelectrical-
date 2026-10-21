@@ -1074,48 +1074,54 @@ BL.bench = function(host, cfg){
     return {short:I > 50, I, lamps, live, wcur, v:s.v};
   }
   function swCombos(){ const ids = Object.keys(freshSt().sw); const out = []; for (let m = 0; m < (1 << ids.length); m++){ const sw = {}; ids.forEach((id, k) => sw[id] = !!(m & (1 << k))); out.push(sw); } return {ids, out}; }
+  function hint(){ // the first concrete wiring problem against the reference solution
+    const e = ex(), T = terms(e), sol = e.solution || [], has = t => S.wires.some(w => w[0] === t || w[1] === t), nm = t => `${T[t] ? T[t].lab : t} في ${esc((T[t] && T[t].comp.label) || '')}`;
+    for (const p of sol) for (const t of [p[0], p[1]]) if (!has(t)) return {t:`الطرف ${nm(t)} مش متوصل.`, hl:[t]};
+    return null;
+  }
+  function pulse(hl){ S.err = hl && hl.length ? {t:new Set(hl), until:Date.now() + 3000} : null; if (S.err) setTimeout(() => { if (S.err && S.err.until <= Date.now()){ S.err = null; render(); } }, 3100); }
   function analyze(){
-    const e = ex(), T = terms(e), res = {pass:false, bad:[], warn:[]};
+    const e = ex(), T = terms(e), res = {pass:false, bad:[], warn:[], hl:null}, bad = (t, hl) => { res.bad.push(t); if (!res.hl && hl) res.hl = hl; };
     if (!S.wires.length){ res.bad.push('لسه مفيش ولا سلك. ابدأ من القاطع.'); return res; }
     const {ids, out} = swCombos(), states = out.map(sw => ({sw, r:evalState({mcb:true, tripped:false, sw, lamp:{}, plug:false})}));
-    if (states.some(x => x.r.short)){ res.bad.push('<b>قصر (شورت)!</b> في وضع من أوضاع المفاتيح الفاز بيتقابل مع النيوترال أو الأرضي من غير ما يعدّي على لمبة. القاطع هيفصل على طول. راجع الأسلاك اللي داخلة على N أو PE.'); return res; }
+    if (states.some(x => x.r.short)){ res.bad.push('<b>قصر!</b> الفاز بيقابل N أو PE من غير لمبة.'); return res; }
     const lampIds = e.comps.filter(c => c.type === 'lamp').map(c => c.id);
     if (e.kind === 'socket'){
       const dead = elems({mcb:true, tripped:false, sw:{}, lamp:{}, plug:false}, {dead:true}).filter(x => !x.bond);
       const R = (a, b) => BL.circuit.resistance(dead, a, b) < 1;
       const so = e.comps.find(c => c.type === 'socket').id;
-      if (R(so + '.L', 'db.N') && R(so + '.N', 'db.L')) res.bad.push('<b>الفاز والنيوترال معكوسين</b> في البريزة. البريزة هتشتغل، بس أي جهاز مفتاحه هيقطع النيوترال بدل الفاز ويفضل جواه كهربا وهو مقفول. اعكسهم.');
+      if (R(so + '.L', 'db.N') && R(so + '.N', 'db.L')) bad('<b>L و N معكوسين</b> في البريزة: اعكسهم.', [so + '.L', so + '.N']);
       else {
-        if (!R(so + '.L', 'db.L')) res.bad.push('طرف <b>L</b> في البريزة مش واصل لخرج القاطع (الفاز).');
-        if (!R(so + '.N', 'db.N')) res.bad.push('طرف <b>N</b> في البريزة مش واصل لبار النيوترال.');
+        if (!R(so + '.L', 'db.L')) bad('طرف <b>L</b> في البريزة مش واصل للقاطع.', [so + '.L']);
+        if (!R(so + '.N', 'db.N')) bad('طرف <b>N</b> في البريزة مش واصل لبار N.', [so + '.N']);
       }
-      if (R(so + '.PE', 'db.N')) res.bad.push('<b>الأرضي متوصّل على بار النيوترال!</b> ممنوع: النيوترال بيشيل تيار، ولو اتقطع جسم الجهاز هيكهرب. الأرضي يروح على بار <b>PE</b> بس.');
-      else if (!R(so + '.PE', 'db.PE')) res.bad.push('<b>الأرضي (PE)</b> مش متوصّل! البريزة هتشتغل عادي، بس لو جهاز جسمه كهرب مفيش طريق للتيار يروح للأرض ويفصل القاطع. لازم سلك أخضر×أصفر من بار الأرضي لريشة الأرضي.');
+      if (R(so + '.PE', 'db.N')) bad('<b>الأرضي على بار N!</b> وصّله على بار PE بس.', [so + '.PE']);
+      else if (!R(so + '.PE', 'db.PE')) bad('<b>الأرضي مش متوصّل:</b> أخضر×أصفر من بار PE للبريزة.', [so + '.PE']);
       if (!res.bad.length) res.pass = true;
     } else {
       const on = st => st.sw;
       lampIds.forEach(id => {
         const litStates = states.filter(x => x.r.lamps[id] === 1), dim = states.some(x => x.r.lamps[id] > 0 && x.r.lamps[id] < 1);
-        if (dim){ res.bad.push(`<b>${esc(e.comps.find(c => c.id === id).label)}</b> بتنوّر ضعيف: اللمبتين متوصّلين <b>ورا بعض (توالي)</b> فكل واحدة واخدة نص الجهد. لازم كل لمبة طرف منها على الفاز اللي جاي من المفتاح والطرف التاني على النيوترال.`); return; }
+        if (dim){ bad(`<b>${esc(e.comps.find(c => c.id === id).label)}</b> ضعيفة: اللمبات توالي. كل لمبة بين L1 و N.`, [id + '.N']); return; }
         if (!litStates.length){
           const s1 = states[states.length - 1].r, vL = Math.abs(s1.v(id + '.L')), vN = Math.abs(s1.v(id + '.N'));
-          res.bad.push(`<b>${esc(e.comps.find(c => c.id === id).label)}</b> مش بتنوّر في أي وضع للمفتاح. ` + (vL > 60 && vN > 60 ? 'الفاز واصل للمبة بس <b>النيوترال مش واصل</b> (اختبرها بالتستر: الطرفين بينوّروا).' : vL < 60 && vN < 60 ? '<b>الفاز مش واصل</b> للمبة. اتأكد إن خرج القاطع داخل على المفتاح وخارج من المفتاح للمبة.' : 'السكة مش مقفولة.'));
+          const h = hint(), lb = `<b>${esc(e.comps.find(c => c.id === id).label)}</b> مش بتنوّر: `; if (h) bad(h.t, h.hl); else if (vL > 60 && vN > 60) bad(lb + 'النيوترال مش واصل.', [id + '.N']); else if (vL < 60 && vN < 60) bad(lb + 'الفاز مش واصل.', [id + '.L']); else bad(lb + 'السكة مفتوحة.');
           return;
         }
-        if (litStates.length === states.length){ res.bad.push(`<b>${esc(e.comps.find(c => c.id === id).label)}</b> منوّرة على طول والمفتاح مش بيأثر فيها: المفتاح مش في سكة الفاز للمبة.`); return; }
+        if (litStates.length === states.length){ res.bad.push(`<b>${esc(e.comps.find(c => c.id === id).label)}</b> منوّرة على طول: المفتاح مش في سكة الفاز.`); return; }
       });
       if (e.kind === '2way' && !res.bad.length){
         const [a, b] = ids, lit = sw => states.find(x => x.sw[a] === sw[a] && x.sw[b] === sw[b]).r.lamps[lampIds[0]] === 1;
         const okToggle = out.every(sw => lit(sw) !== lit(Object.assign({}, sw, {[a]:!sw[a]})) && lit(sw) !== lit(Object.assign({}, sw, {[b]:!sw[b]})));
-        if (!okToggle) res.bad.push('اللمبة مش بتتحكم من <b>المفتاحين</b>: لازم أي مفتاح تقلبه يغيّر حالة اللمبة. وصّل L1 بـ L1 و L2 بـ L2 بين المفتاحين (سلكين "الرابط")، والفاز على C بتاع الأول، و C بتاع التاني يروح للمبة.');
+        if (!okToggle){ const h = hint(); if (h) bad(h.t, h.hl); else res.bad.push('اللمبة مش بتتحكم من المفتاحين: L1–L1 و L2–L2.'); }
       }
       if (!res.bad.length){
         const unsafe = states.some(x => lampIds.some(id => x.r.lamps[id] === 0 && x.r.live[id]));
-        if (unsafe) res.bad.push('<b>اللمبة بتشتغل، بس التوصيل مش آمن!</b> المفتاح قاطع <b>النيوترال</b> مش الفاز. لما تطفي اللمبة الفاز بيفضل واصل لها: لو مسكت التستر على الدوي هينوّر، ولو حد بيغيّر اللمبة وهي مطفية ممكن ياخد كهربا. <b>المفتاح لازم يبقى على الفاز (البني).</b>');
+        if (unsafe) res.bad.push('<b>مش آمن:</b> المفتاح على النيوترال. حطّه على الفاز (البني).');
         else res.pass = true;
       }
       /* lamp holder polarity: switched live should land on the holder's L */
-      if (res.pass) lampIds.forEach(id => { const st = states.find(x => x.r.lamps[id] === 1); if (st && Math.abs(st.r.v(id + '.N')) > 60 && Math.abs(st.r.v(id + '.L')) < 60) res.warn.push(`في ${esc(e.comps.find(c => c.id === id).label)} الفاز داخل على طرف N والنيوترال على L. خلّي الفاز (اللي جاي من المفتاح) على <b>L</b> وهو السنّة اللي في نص الدوي، عشان القلاووظ اللي ممكن تلمسه يبقى نيوترال.`); });
+      if (res.pass) lampIds.forEach(id => { const st = states.find(x => x.r.lamps[id] === 1); if (st && Math.abs(st.r.v(id + '.N')) > 60 && Math.abs(st.r.v(id + '.L')) < 60) res.warn.push(`في ${esc(e.comps.find(c => c.id === id).label)} الفاز على N: خلّيه على <b>L</b> (السنّة).`); });
     }
     /* colours */
     S.wires.forEach(w => { const ra = (T[w[0]] || {}).role, rb = (T[w[1]] || {}).role, want = ra === 'PE' || rb === 'PE' ? 'PE' : ra === 'N' || rb === 'N' ? 'N' : 'L'; if (ra && rb && w[2] !== want && !(ra === 'N' && rb === 'L') && !(ra === 'L' && rb === 'N')) res.warn.push(`السلك من ${T[w[0]].lab} (${esc(T[w[0]].comp.label || '')}) لـ ${T[w[1]].lab} (${esc(T[w[1]].comp.label || '')}) لونه ${COL_AR[w[2]]}، والمفروض <b>${COL_AR[want]}</b>.`); });
@@ -1129,7 +1135,7 @@ BL.bench = function(host, cfg){
     const e = ex(), T = terms(e);
     if (!S.st) S.st = freshSt();
     let ev = null;
-    if (S.power){ ev = evalState(S.st); if (ev.short){ S.st.tripped = true; S.power = false; ev = null; msg('<b>القاطع فصل!</b> فيه قصر (شورت) في التوصيل. افصل وراجع الأسلاك.', 'bad'); } }
+    if (S.power){ ev = evalState(S.st); if (ev.short){ S.st.tripped = true; S.power = false; ev = null; msg('<b>القاطع فصل!</b> فيه قصر. افصل وراجع الأسلاك.', 'bad'); } }
     S.st.lamp = ev ? ev.lamps : {};
     let s = `<svg viewBox="0 0 360 ${e.H}" role="group" aria-label="لوحة التوصيل: ${esc(e.title)}"><defs>
       <linearGradient id="${g}enc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e9ecee"/><stop offset="1" stop-color="#b8c0c5"/></linearGradient>
@@ -1148,7 +1154,7 @@ BL.bench = function(host, cfg){
     S.wires.forEach((w, i) => { const A = T[w[0]], B = T[w[1]]; if (!A || !B) return; const d = route(A, B), flow = ev && ev.wcur[i] > 0.05;
       s += `<g class="bw"><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${colStroke(w[2])}"/>${flow ? `<path d="${d}" class="flow" fill="none" stroke="#fff6b0" stroke-width="2" stroke-dasharray="6 18" style="--dur:.8s;opacity:.9"/>` : ''}<path class="bw-hit" d="${d}" data-w="${i}" tabindex="0" role="button" aria-label="سلك ${COL_AR[w[2]]} من ${A.lab} لـ ${B.lab}: دوس عشان تشيله"/></g>`; });
     Object.values(T).forEach(t => { const pend = S.pend === t.id;
-      s += `<g class="bt${pend ? ' pend' : ''}"><circle class="bt-s" cx="${t.x}" cy="${t.y}" r="9"/><path class="bt-x" d="M${t.x - 5} ${t.y}h10"/><circle class="bt-hit" data-t="${t.id}" cx="${t.x}" cy="${t.y}" r="21" tabindex="0" role="button" aria-label="طرف ${t.lab} في ${esc(t.comp.label || '')}"/><circle class="bt-ring" cx="${t.x}" cy="${t.y}" r="14"/><text class="bt-lab" x="${t.x}" y="${t.y + 25}">${t.lab}</text></g>`; });
+      s += `<g class="bt${pend ? ' pend' : ''}"><circle class="bt-s" cx="${t.x}" cy="${t.y}" r="9"/><path class="bt-x" d="M${t.x - 5} ${t.y}h10"/><circle class="bt-hit" data-t="${t.id}" cx="${t.x}" cy="${t.y}" r="21" tabindex="0" role="button" aria-label="طرف ${t.lab} في ${esc(t.comp.label || '')}"/><circle class="bt-ring${S.err && S.err.t.has(t.id) ? ' err' : ''}" cx="${t.x}" cy="${t.y}" r="14"/><text class="bt-lab" x="${t.x}" y="${t.y + 25}">${t.lab}</text></g>`; });
     s += '</svg>';
     q('.bn-board').innerHTML = s;
     $$('[data-ex]', host).forEach(b => { const i = +b.dataset.ex; b.setAttribute('aria-pressed', i === S.ex ? 'true' : 'false'); b.classList.toggle('done', BL.has(L, cfg.exercises[i].key)); });
@@ -1171,7 +1177,7 @@ BL.bench = function(host, cfg){
   function check(){
     const r = analyze(), e = ex(), box = q('.bn-res');
     if (r.pass){ BL.mark(L, e.key); box.innerHTML = `<div class="bn-ok"><b>✓ التوصيل صح!</b> ${e.okText || ''}</div>${r.warn.length ? `<div class="bn-warn"><b>ملاحظة:</b><ul style="margin:0;padding-inline-start:18px">${r.warn.map(w => `<li>${w}</li>`).join('')}</ul></div>` : ''}`; renderTask(); }
-    else box.innerHTML = `<div class="bn-bad"><b>لسه فيه حاجة:</b><ul style="margin:0;padding-inline-start:18px">${r.bad.map(w => `<li>${w}</li>`).join('')}</ul></div>${r.warn.length ? `<div class="bn-warn"><ul style="margin:0;padding-inline-start:18px">${r.warn.map(w => `<li>${w}</li>`).join('')}</ul></div>` : ''}`;
+    else { box.innerHTML = `<div class="bn-bad"><b>✗</b> ${r.bad[0]}</div>`; pulse(r.hl); }
     render(); return r;
   }
   host.addEventListener('click', e => {

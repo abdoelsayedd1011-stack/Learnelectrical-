@@ -1088,48 +1088,54 @@ BL.bench = function(host, cfg){
     return {short:I > 50, I, lamps, live, wcur, v:s.v};
   }
   function swCombos(){ const ids = Object.keys(freshSt().sw); const out = []; for (let m = 0; m < (1 << ids.length); m++){ const sw = {}; ids.forEach((id, k) => sw[id] = !!(m & (1 << k))); out.push(sw); } return {ids, out}; }
+  function hint(){ // the first concrete wiring problem against the reference solution
+    const e = ex(), T = terms(e), sol = e.solution || [], has = t => S.wires.some(w => w[0] === t || w[1] === t), nm = t => `${T[t] ? T[t].lab : t} on ${esc((T[t] && T[t].comp.label) || '')}`;
+    for (const p of sol) for (const t of [p[0], p[1]]) if (!has(t)) return {t:`Terminal ${nm(t)} isn't connected.`, hl:[t]};
+    return null;
+  }
+  function pulse(hl){ S.err = hl && hl.length ? {t:new Set(hl), until:Date.now() + 3000} : null; if (S.err) setTimeout(() => { if (S.err && S.err.until <= Date.now()){ S.err = null; render(); } }, 3100); }
   function analyze(){
-    const e = ex(), T = terms(e), res = {pass:false, bad:[], warn:[]};
+    const e = ex(), T = terms(e), res = {pass:false, bad:[], warn:[], hl:null}, bad = (t, hl) => { res.bad.push(t); if (!res.hl && hl) res.hl = hl; };
     if (!S.wires.length){ res.bad.push('No wires yet. Start from the breaker.'); return res; }
     const {ids, out} = swCombos(), states = out.map(sw => ({sw, r:evalState({mcb:true, tripped:false, sw, lamp:{}, plug:false})}));
-    if (states.some(x => x.r.short)){ res.bad.push('<b>Short circuit!</b> In one of the switch positions the live meets the neutral or earth without passing through a lamp. The breaker will trip at once. Check the wires going to N or PE.'); return res; }
+    if (states.some(x => x.r.short)){ res.bad.push('<b>Short circuit!</b> Live meets N or PE without a lamp.'); return res; }
     const lampIds = e.comps.filter(c => c.type === 'lamp').map(c => c.id);
     if (e.kind === 'socket'){
       const dead = elems({mcb:true, tripped:false, sw:{}, lamp:{}, plug:false}, {dead:true}).filter(x => !x.bond);
       const R = (a, b) => BL.circuit.resistance(dead, a, b) < 1;
       const so = e.comps.find(c => c.type === 'socket').id;
-      if (R(so + '.L', 'db.N') && R(so + '.N', 'db.L')) res.bad.push('<b>Live and neutral are swapped</b> at the socket. It will work, but any appliance’s switch will then break the neutral instead of the live, and the appliance stays live inside when switched off. Swap them.');
+      if (R(so + '.L', 'db.N') && R(so + '.N', 'db.L')) bad('<b>L and N are swapped</b> at the socket: swap them.', [so + '.L', so + '.N']);
       else {
-        if (!R(so + '.L', 'db.L')) res.bad.push('The socket’s <b>L</b> terminal is not connected to the breaker output (live).');
-        if (!R(so + '.N', 'db.N')) res.bad.push('The socket’s <b>N</b> terminal is not connected to the neutral bar.');
+        if (!R(so + '.L', 'db.L')) bad('Socket <b>L</b> isn’t connected to the breaker.', [so + '.L']);
+        if (!R(so + '.N', 'db.N')) bad('Socket <b>N</b> isn’t connected to the N bar.', [so + '.N']);
       }
-      if (R(so + '.PE', 'db.N')) res.bad.push('<b>Earth is connected to the neutral bar!</b> Not allowed: the neutral carries current, and if it breaks the appliance case becomes live. Earth goes to the <b>PE</b> bar only.');
-      else if (!R(so + '.PE', 'db.PE')) res.bad.push('<b>Earth (PE)</b> is not connected! The socket will work normally, but if an appliance case becomes live there is no path for the current to earth to trip the breaker. Run a green/yellow wire from the earth bar to the socket’s earth terminal.');
+      if (R(so + '.PE', 'db.N')) bad('<b>Earth is on the N bar!</b> Move it to the PE bar.', [so + '.PE']);
+      else if (!R(so + '.PE', 'db.PE')) bad('<b>Earth isn’t connected:</b> green/yellow from the PE bar to the socket.', [so + '.PE']);
       if (!res.bad.length) res.pass = true;
     } else {
       const on = st => st.sw;
       lampIds.forEach(id => {
         const litStates = states.filter(x => x.r.lamps[id] === 1), dim = states.some(x => x.r.lamps[id] > 0 && x.r.lamps[id] < 1);
-        if (dim){ res.bad.push(`<b>${esc(e.comps.find(c => c.id === id).label)}</b> is dim: the two lamps are connected <b>one after the other (in series)</b>, so each gets half the voltage. Each lamp needs one terminal on the switched live from the switch and the other on the neutral.`); return; }
+        if (dim){ bad(`<b>${esc(e.comps.find(c => c.id === id).label)}</b> is dim: lamps in series. Each lamp between L1 and N.`, [id + '.N']); return; }
         if (!litStates.length){
           const s1 = states[states.length - 1].r, vL = Math.abs(s1.v(id + '.L')), vN = Math.abs(s1.v(id + '.N'));
-          res.bad.push(`<b>${esc(e.comps.find(c => c.id === id).label)}</b> doesn’t light in any switch position. ` + (vL > 60 && vN > 60 ? 'Live reaches the lamp but <b>the neutral doesn’t</b> (check with the tester: both terminals light it).' : vL < 60 && vN < 60 ? '<b>Live doesn’t reach</b> the lamp. Make sure the breaker output goes into the switch, and from the switch to the lamp.' : 'The path isn’t complete.'));
+          const h = hint(), lb = `<b>${esc(e.comps.find(c => c.id === id).label)}</b> doesn’t light: `; if (h) bad(h.t, h.hl); else if (vL > 60 && vN > 60) bad(lb + 'the neutral doesn’t reach it.', [id + '.N']); else if (vL < 60 && vN < 60) bad(lb + 'the live doesn’t reach it.', [id + '.L']); else bad(lb + 'the path is open.');
           return;
         }
-        if (litStates.length === states.length){ res.bad.push(`<b>${esc(e.comps.find(c => c.id === id).label)}</b> is always on and the switch does nothing: the switch isn’t in the live path to the lamp.`); return; }
+        if (litStates.length === states.length){ res.bad.push(`<b>${esc(e.comps.find(c => c.id === id).label)}</b> is always on: the switch isn’t in the live path.`); return; }
       });
       if (e.kind === '2way' && !res.bad.length){
         const [a, b] = ids, lit = sw => states.find(x => x.sw[a] === sw[a] && x.sw[b] === sw[b]).r.lamps[lampIds[0]] === 1;
         const okToggle = out.every(sw => lit(sw) !== lit(Object.assign({}, sw, {[a]:!sw[a]})) && lit(sw) !== lit(Object.assign({}, sw, {[b]:!sw[b]})));
-        if (!okToggle) res.bad.push('The lamp isn’t controlled from <b>both switches</b>: flipping either switch must change the lamp. Connect L1 to L1 and L2 to L2 between the switches (the two "strappers"), the live to C of the first switch, and C of the second switch to the lamp.');
+        if (!okToggle){ const h = hint(); if (h) bad(h.t, h.hl); else res.bad.push('The lamp isn’t controlled from both switches: L1–L1 and L2–L2.'); }
       }
       if (!res.bad.length){
         const unsafe = states.some(x => lampIds.some(id => x.r.lamps[id] === 0 && x.r.live[id]));
-        if (unsafe) res.bad.push('<b>The lamp works, but the wiring isn’t safe!</b> The switch breaks the <b>neutral</b>, not the live. When the lamp is off the live still reaches it: a tester on the lamp holder lights up, and someone changing the bulb with the lamp off can get a shock. <b>The switch must be on the live (brown).</b>');
+        if (unsafe) res.bad.push('<b>Not safe:</b> the switch is on the neutral. Move it to the live (brown).');
         else res.pass = true;
       }
       /* lamp holder polarity: switched live should land on the holder's L */
-      if (res.pass) lampIds.forEach(id => { const st = states.find(x => x.r.lamps[id] === 1); if (st && Math.abs(st.r.v(id + '.N')) > 60 && Math.abs(st.r.v(id + '.L')) < 60) res.warn.push(`In ${esc(e.comps.find(c => c.id === id).label)} the live goes to N and the neutral to L. Put the live (from the switch) on <b>L</b>, the centre contact of the holder, so the screw thread you might touch is neutral.`); });
+      if (res.pass) lampIds.forEach(id => { const st = states.find(x => x.r.lamps[id] === 1); if (st && Math.abs(st.r.v(id + '.N')) > 60 && Math.abs(st.r.v(id + '.L')) < 60) res.warn.push(`In ${esc(e.comps.find(c => c.id === id).label)} the live is on N: put it on <b>L</b> (centre contact).`); });
     }
     /* colours */
     S.wires.forEach(w => { const ra = (T[w[0]] || {}).role, rb = (T[w[1]] || {}).role, want = ra === 'PE' || rb === 'PE' ? 'PE' : ra === 'N' || rb === 'N' ? 'N' : 'L'; if (ra && rb && w[2] !== want && !(ra === 'N' && rb === 'L') && !(ra === 'L' && rb === 'N')) res.warn.push(`The wire from ${T[w[0]].lab} (${esc(T[w[0]].comp.label || '')}) to ${T[w[1]].lab} (${esc(T[w[1]].comp.label || '')}) is ${COL_AR[w[2]].toLowerCase()}; it should be <b>${COL_AR[want].toLowerCase()}</b>.`); });
@@ -1143,7 +1149,7 @@ BL.bench = function(host, cfg){
     const e = ex(), T = terms(e);
     if (!S.st) S.st = freshSt();
     let ev = null;
-    if (S.power){ ev = evalState(S.st); if (ev.short){ S.st.tripped = true; S.power = false; ev = null; msg('<b>The breaker tripped!</b> There is a short circuit in the wiring. Switch off and check the wires.', 'bad'); } }
+    if (S.power){ ev = evalState(S.st); if (ev.short){ S.st.tripped = true; S.power = false; ev = null; msg('<b>The breaker tripped!</b> Short circuit. Switch off and check the wires.', 'bad'); } }
     S.st.lamp = ev ? ev.lamps : {};
     let s = `<svg viewBox="0 0 360 ${e.H}" role="group" aria-label="Wiring board: ${esc(e.title)}"><defs>
       <linearGradient id="${g}enc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e9ecee"/><stop offset="1" stop-color="#b8c0c5"/></linearGradient>
@@ -1162,7 +1168,7 @@ BL.bench = function(host, cfg){
     S.wires.forEach((w, i) => { const A = T[w[0]], B = T[w[1]]; if (!A || !B) return; const d = route(A, B), flow = ev && ev.wcur[i] > 0.05;
       s += `<g class="bw"><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${colStroke(w[2])}"/>${flow ? `<path d="${d}" class="flow" fill="none" stroke="#fff6b0" stroke-width="2" stroke-dasharray="6 18" style="--dur:.8s;opacity:.9"/>` : ''}<path class="bw-hit" d="${d}" data-w="${i}" tabindex="0" role="button" aria-label="${COL_AR[w[2]]} wire from ${A.lab} to ${B.lab}: tap to remove it"/></g>`; });
     Object.values(T).forEach(t => { const pend = S.pend === t.id;
-      s += `<g class="bt${pend ? ' pend' : ''}"><circle class="bt-s" cx="${t.x}" cy="${t.y}" r="9"/><path class="bt-x" d="M${t.x - 5} ${t.y}h10"/><circle class="bt-hit" data-t="${t.id}" cx="${t.x}" cy="${t.y}" r="21" tabindex="0" role="button" aria-label="Terminal ${t.lab} on ${esc(t.comp.label || '')}"/><circle class="bt-ring" cx="${t.x}" cy="${t.y}" r="14"/><text class="bt-lab" x="${t.x}" y="${t.y + 25}">${t.lab}</text></g>`; });
+      s += `<g class="bt${pend ? ' pend' : ''}"><circle class="bt-s" cx="${t.x}" cy="${t.y}" r="9"/><path class="bt-x" d="M${t.x - 5} ${t.y}h10"/><circle class="bt-hit" data-t="${t.id}" cx="${t.x}" cy="${t.y}" r="21" tabindex="0" role="button" aria-label="Terminal ${t.lab} on ${esc(t.comp.label || '')}"/><circle class="bt-ring${S.err && S.err.t.has(t.id) ? ' err' : ''}" cx="${t.x}" cy="${t.y}" r="14"/><text class="bt-lab" x="${t.x}" y="${t.y + 25}">${t.lab}</text></g>`; });
     s += '</svg>';
     q('.bn-board').innerHTML = s;
     $$('[data-ex]', host).forEach(b => { const i = +b.dataset.ex; b.setAttribute('aria-pressed', i === S.ex ? 'true' : 'false'); b.classList.toggle('done', BL.has(L, cfg.exercises[i].key)); });
@@ -1185,7 +1191,7 @@ BL.bench = function(host, cfg){
   function check(){
     const r = analyze(), e = ex(), box = q('.bn-res');
     if (r.pass){ BL.mark(L, e.key); box.innerHTML = `<div class="bn-ok"><b>✓ The wiring is correct!</b> ${e.okText || ''}</div>${r.warn.length ? `<div class="bn-warn"><b>Note:</b><ul style="margin:0;padding-inline-start:18px">${r.warn.map(w => `<li>${w}</li>`).join('')}</ul></div>` : ''}`; renderTask(); }
-    else box.innerHTML = `<div class="bn-bad"><b>Not quite yet:</b><ul style="margin:0;padding-inline-start:18px">${r.bad.map(w => `<li>${w}</li>`).join('')}</ul></div>${r.warn.length ? `<div class="bn-warn"><ul style="margin:0;padding-inline-start:18px">${r.warn.map(w => `<li>${w}</li>`).join('')}</ul></div>` : ''}`;
+    else { box.innerHTML = `<div class="bn-bad"><b>✗</b> ${r.bad[0]}</div>`; pulse(r.hl); }
     render(); return r;
   }
   host.addEventListener('click', e => {

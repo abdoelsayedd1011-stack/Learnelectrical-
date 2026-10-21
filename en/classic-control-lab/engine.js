@@ -720,24 +720,24 @@ CL.run = function(devs, wires, seconds, opt){
 
 /* =========================== trip explanations =========================== */
 CL.tripText = function(d){
-  const w = d.st.why, I = r1(d.st.I || 0), tag = d.tag;
+  const w = d.st.why, I = r1(d.st.I || d.st.Ipk || 0), tag = d.tag;
   if (d.type === 'ol' || d.type === 'mpcb'){
     const Ir = d.cfg.Ir || 5, nm = d.type === 'ol' ? 'The overload' : 'The MPCB';
-    if (w === 'sp') return `${nm} <b>${tag}</b> tripped on a <b>missing phase</b> (single-phasing): two phases carry the whole load and the third is zero, so the phase-difference mechanism tripped quickly. 95-96 opened and 97-98 closed.`;
-    if (w === 'mag') return `${nm} <b>${tag}</b> tripped instantly (magnetic): short circuit (current ${I}A ≫ 12×Ir).`;
-    if (w === 'test') return `${nm} <b>${tag}</b> tripped with the TEST button: 95-96 opened and 97-98 closed, just as if it were hot.`;
-    return `${nm} <b>${tag}</b> tripped (TRIP): the current ${I}A was above Ir=${Ir}A for a while, the bimetal heated and bent, so it opened <b>95-96</b> and closed <b>97-98</b>. ${d.type === 'ol' ? 'Wait for it to cool, then press Reset.' : 'Wait for it to cool, then switch it on again.'}`;
+    if (w === 'sp') return `${nm} <b>${tag}</b> tripped: <b>missing phase</b> (single-phasing).`;
+    if (w === 'mag') return `${nm} <b>${tag}</b> tripped (magnetic): short circuit (${I}A).`;
+    if (w === 'test') return `${nm} <b>${tag}</b> tripped with the TEST button.`;
+    return `${nm} <b>${tag}</b> tripped: ${I}A above Ir=${Ir}A. ${d.type === 'ol' ? 'Wait, then Reset.' : 'Wait, then switch it on again.'}`;
   }
   if (d.type === 'mcb'){
     const In = ratingOf(d), cv = curveOf(d);
     if (w === 'short') return `Breaker <b>${tag}</b> tripped on a short circuit.`;
-    if (w === 'mag') return `Breaker <b>${tag}</b> (${esc(d.cfg.label)}) tripped <b>instantly (magnetic)</b>: the current ${I}A is more than ${MAG[cv]}×In (curve ${cv}). ${cv === 'B' ? 'Motor starting current (6–8×In) exceeds the curve B limit (3–5×In), so it trips on every start. For motors use curve <b>C</b> (5–10×In) or D.' : 'That\'s a short circuit or a starting current larger than the breaker can take: use a bigger breaker or curve D.'}`;
-    return `Breaker <b>${tag}</b> tripped <b>thermally</b>: current ${I}A above In=${In}A for a while (overload).`;
+    if (w === 'mag') return `Breaker <b>${tag}</b> (${esc(d.cfg.label)}) tripped (magnetic): ${I}A > ${MAG[cv]}×In. ${cv === 'B' ? 'For a motor use curve <b>C</b>.' : 'Use a bigger breaker or curve D.'}`;
+    return `Breaker <b>${tag}</b> tripped (thermal): ${I}A above In=${In}A.`;
   }
   if (d.type === 'fuse'){
     const In = ratingOf(d);
-    if (w === 'th') return `Fuse <b>${tag}</b> blew: current ${I}A above ${In}A for a while, so the wire inside melted. ${d.cfg.kind === 'aM' ? '' : 'A gG fuse can\'t take the motor starting current if it\'s sized exactly at In.'} After you fix the cause, <b>replace the fuse</b> (tap it).`;
-    return `Fuse <b>${tag}</b> blew on a short circuit: the wire inside melted in an instant. Fix the wiring, then <b>replace the fuse</b> (tap it). A fuse can't be reset like a breaker.`;
+    if (w === 'th') return `Fuse <b>${tag}</b> blew: ${I}A above ${In}A. Replace it (tap it).`;
+    return `Fuse <b>${tag}</b> blew on a short. Fix it, then replace it (tap it).`;
   }
   return `${tag} tripped.`;
 };
@@ -774,7 +774,7 @@ CL.check = function(ex, wires, opt){
   const nm = supplyNames(devs);
   const outs = Object.keys(ex.cases[0].expect);
   const msgs = [], rows = [];
-  if (!W.length) return {ok:false, msgs:[{lv:'bad', t:`You haven't connected a single wire yet. Start from terminal ${nm.L} on the supply: tap it, then tap the terminal you want to connect it to.`}], rows, outs};
+  if (!W.length) return {ok:false, msgs:[{lv:'bad', t:`No wires yet. Start from terminal ${nm.L} on the supply.`}], rows, outs, empty:true};
   const powerUp = () => devs.forEach(d => { if (isSupply(d)){ d.st.on = 1; d.st.trip = 0; } });
   powerUp();
   ex.cases.forEach((c, i) => {
@@ -793,12 +793,12 @@ CL.check = function(ex, wires, opt){
     const p = rows[sr].short.poles;
     const pair = p.map(x => x === 'L1' && nm.L === 'L' ? 'L' : x === 'P' ? '+24V' : x === 'M' ? '0V' : x).join(' and ');
     const when = ex.cases.length > 1 ? ` when “${rows[sr].c.label}”` : '';
-    msgs.push({lv:'bad', t:ex.shortMsg ? `⚡ Short circuit between ${pair}${when}: ` + ex.shortMsg : `⚡ Short circuit between ${pair}${when}: the current found a path without passing through a lamp or coil, so it rises very high and${nm.brk} trips. Most likely the contact's second terminal went to ${nm.N} instead of to the lamp terminal.`});
+    msgs.push({lv:'bad', t:ex.shortMsg ? `⚡ Short between ${pair}${when}: ` + ex.shortMsg : `⚡ ${pair} are connected together${when}: short circuit.`, hl:{w:rows[sr].short.wires || []}});
     return {ok:false, msgs, rows, outs, short:sr};
   }
   // 2) wrong voltage
   const ov = rows.find(x => x.over && x.over.length);
-  if (ov){ const o = ov.over[0], d = byId[o.dev]; msgs.push({lv:'bad', t:`🔥 ${devLabel(d)} is rated for ${d.cfg.v} V, and this wiring gives it ${o.V} V, so it will burn out. Check its other terminal: it must go to ${nm.N}.`}); return {ok:false, msgs, rows, outs}; }
+  if (ov){ const o = ov.over[0], d = byId[o.dev]; msgs.push({lv:'bad', t:`🔥 ${devLabel(d)} is ${d.cfg.v} V but gets ${o.V} V: other end to ${nm.N}.`, hl:{t:TYPES[d.type].loads ? [d.id + ':' + TYPES[d.type].loads(d)[0].b] : []}}); return {ok:false, msgs, rows, outs}; }
   const allOk = rows.every(x => x.ok.every(Boolean));
   if (!allOk && ex.diagnose){ const dm = ex.diagnose(byId, W, rows); if (dm){ msgs.push({lv:'bad', t:dm}); return {ok:false, msgs, rows, outs}; } }
   if (allOk && ex.verify){ const vm = ex.verify(byId, W, rows); if (vm){ msgs.push({lv:'bad', t:vm}); return {ok:false, msgs, rows, outs}; } }
@@ -810,7 +810,7 @@ CL.check = function(ex, wires, opt){
         const d = byId[o]; if (!d || TYPES[d.type].motor || rw.exp[j]) return;
         const L = TYPES[d.type].loads(d)[0];
         const live = [L.a, L.b].some(t => { const s = rw.res.poles(rw.res.find(d.id+':'+t)); return s && [...s].some(p => p in PHASES || p === 'P' || p === 'S'); });
-        if (live && !msgs.length) msgs.push({lv:'warn', t:`The circuit works ✓, but note: while it's off, ${nm.L} is still connected to a terminal of ${devLabel(d)}. Good practice is for the contact to switch the ${nm.L} side (the phase), with the lamp/coil between the contact and ${nm.N}, so whoever changes the lamp doesn't get a shock.`});
+        if (live && !msgs.length) msgs.push({lv:'warn', t:`Works ✓, but ${nm.L} still reaches ${devLabel(d)} when off: switch the ${nm.L} side.`});
       }));
     }
     return {ok:true, msgs, rows, outs};
@@ -821,40 +821,64 @@ CL.check = function(ex, wires, opt){
     const exp = rows.map(x => x.exp[j]), okv = rows.map(x => x.ok[j]);
     if (okv.every(Boolean)) return;
     const tr = rows.find(x => !x.ok[j] && x.trips.length && x.exp[j] && (TYPES[d.type].motor || byId[x.trips[0]].type !== 'ol'));
-    if (tr){ const td = byId[tr.trips[0]]; msgs.push({lv:'bad', t:`In “${esc(tr.c.label)}”: ` + CL.tripText(td) + (ex.tripHint ? ' ' + ex.tripHint : '')}); return; }
+    if (tr){ const td = byId[tr.trips[0]]; msgs.push({lv:'bad', t:ex.tripHint ? `<b>${td.tag}</b> tripped: ${ex.tripHint}` : `In “${esc(tr.c.label)}”: ` + CL.tripText(td), hl:{t:[td.id + ':95', td.id + ':96']}}); return; }
     const act = rows.map(x => (TYPES[d.type].motor ? x.act[j].run : x.act[j]) ? 1 : 0), e = exp.map(v => v ? 1 : 0);
     const sig = act.join('');
     const pat = (ex.patterns || []).find(p => p.sig && p.sig[o] != null && (p.sig[o] === sig || (/[?\[]/.test(p.sig[o]) && new RegExp('^' + p.sig[o].replace(/\?/g, '.') + '$').test(sig)))); // '?' = any, [01] allowed
+    { const wm = wireHint(ex, W, byId, 'miss'); if (wm){ msgs.push(wm); return; } } // an unwired terminal of the reference wiring is the most concrete first problem
     if (pat){ msgs.push({lv:'bad', t:pat.msg}); return; }
-    if (TYPES[d.type].motor){ msgs.push({lv:'bad', t:motorDiag(d, rows, j, nm)}); return; }
-    if (act.every(v => !v)){ msgs.push({lv:'bad', t:openDiag(d, devs, W, nm, ex)}); return; }
+    if (TYPES[d.type].motor){ const md = motorDiag(d, rows, j, nm), mf = (rows.find(x => !x.ok[j]).res.mot[d.id] || {}).fault; const wh = (!md || mf === '1ph') ? wireHint(ex, W, byId) : null; msgs.push(wh || (md ? {lv:'bad', t:md} : null) || ({lv:'bad', t:`${devLabel(d)} doesn't turn: check power and the coil circuit.`})); return; }
+    if (act.every(v => !v)){ const od = openDiag(d, devs, W, nm, ex); msgs.push(typeof od === 'string' ? {lv:'bad', t:od} : Object.assign({lv:'bad'}, od)); return; }
     if (ex.seq){ // drops out as soon as a START button is released → no seal-in contact
       const i = okv.findIndex(v => !v), st = ex.cases[i] && ex.cases[i].set || {};
       const rel = Object.keys(st).filter(id => st[id] && st[id].p === 0 && byId[id] && byId[id].type === 'pb');
       const coils = devs.filter(x => TYPES[x.type].coil);
-      if (i > 0 && e[i] && !act[i] && act[i-1] && rel.length && coils.length){ msgs.push({lv:'bad', t:`${devLabel(d)} drops out as soon as you release ${rel.map(id => devLabel(byId[id])).join(' and ')}: there's no <b>seal-in</b>. The NO contact of ${coils.map(x => x.tag).join('/')} must be wired in <b>parallel</b> with the START button (one end to 13 and one to 14) so it keeps feeding the coil after you lift your finger.`}); return; }
+      if (i > 0 && e[i] && !act[i] && act[i-1] && rel.length && coils.length){ msgs.push({lv:'bad', t:`${devLabel(d)} drops out when you release ${rel.map(id => byId[id].tag).join(' and ')}: seal-in wire 13–14 missing.`, hl:{t:[coils[0].id + ':13', coils[0].id + ':14']}}); return; }
     }
-    if (act.every(v => v) && e.some(v => !v)){ msgs.push({lv:'bad', t:`${devLabel(d)} is always on and never goes off: ${nm.L} reaches the lamp without passing through the contact, or there are two contacts in parallel (one NO and one NC) so one of them is always closed.`}); return; }
+    if (act.every(v => v) && e.some(v => !v)){ msgs.push({lv:'bad', t:`${devLabel(d)} is always on: ${nm.L} bypasses the contact.`}); return; }
     if (act.every((v, i) => v !== e[i])){
       msgs.push({lv:'bad', t: e[0] === 0
-        ? `${devLabel(d)} works backwards: on in the normal state and off when you operate. You used an <b>NC</b> contact (11-12 or 21-22) instead of <b>NO</b> (13-14 or 23-24).`
-        : `${devLabel(d)} works backwards: off in the normal state and on when you operate. You used an <b>NO</b> contact (13-14) instead of <b>NC</b> (11-12 or 21-22).`});
+        ? `${devLabel(d)} works backwards: you used <b>NC</b> instead of <b>NO</b> (13-14).`
+        : `${devLabel(d)} works backwards: you used <b>NO</b> instead of <b>NC</b> (21-22).`});
       return;
     }
     // swapped with another output?
     const other = outs.findIndex((o2, k) => k !== j && rows.every(x => !!x.act[j] === !!x.exp[k]));
-    if (other > -1){ msgs.push({lv:'bad', t:`${devLabel(d)} and ${devLabel(byId[outs[other]])} are swapped: each lamp is wired to the other one's contact.`}); return; }
-    msgs.push({lv:'bad', t:`${devLabel(d)} doesn't behave as required. Compare “Expected” and “Result” in the table below.`});
+    if (other > -1){ msgs.push({lv:'bad', t:`${devLabel(d)} and ${devLabel(byId[outs[other]])} are swapped.`}); return; }
+    msgs.push(wireHint(ex, W, byId) || {lv:'bad', t:`${devLabel(d)} isn't right in “${esc(rows[okv.findIndex(v => !v)].c.label)}”.`});
   });
   return {ok:false, msgs: dedupe(msgs), rows, outs};
 };
 function dedupe(m){ const s = new Set(); return m.filter(x => !s.has(x.t) && s.add(x.t)); }
+function wireHint(ex, W, byId, only){ // the first concrete wiring problem, measured against ex.solution: {lv, t, hl:{t:[terms], w:[wire ids]}}
+  const sol = ex.solution || []; if (!sol.length) return null;
+  const uf = () => { const P = {}; const f = x => { if (!(x in P)) P[x] = x; while (P[x] !== x) x = P[x] = P[P[x]]; return x; }; return {f, u:(a, b) => { P[f(a)] = f(b); }, P}; };
+  const S = uf(); sol.forEach(p => S.u(p[0], p[1]));
+  const inSol = t => t in S.P, dv = t => t.split(':')[0], tn = t => t.split(':').slice(1).join(':'), tg = t => byId[dv(t)] ? byId[dv(t)].tag : dv(t);
+  const has = t => W.some(w => w.a === t || w.b === t);
+  for (const w of only ? [] : W){
+    if (!inSol(w.a) || !inSol(w.b) || S.f(w.a) === S.f(w.b)) continue;
+    for (const [k, o] of [[w.a, w.b], [w.b, w.a]]){ // k is right, o should be another terminal of the same device
+      const want = Object.keys(S.P).find(t => S.f(t) === S.f(k) && t !== k && dv(t) === dv(o) && !has(t));
+      if (want) return {lv:'bad', t:`The wire from ${tg(k)}:${tn(k)} goes to ${tn(o)}; it should be ${tn(want)}.`, hl:{w:[w.id], t:[o, want]}};
+    }
+    return {lv:'bad', t:`Wire ${tg(w.a)}:${tn(w.a)} – ${tg(w.b)}:${tn(w.b)} is in the wrong place.`, hl:{w:[w.id], t:[w.a, w.b]}};
+  }
+  for (const p of sol) for (const t of p) if (!has(t)){
+    for (const w of W) for (const [k, o] of [[w.a, w.b], [w.b, w.a]]) if (k !== t && inSol(k) && S.f(k) === S.f(t) && dv(o) === dv(t) && (!inSol(o) || S.f(o) !== S.f(t))) return {lv:'bad', t:`The wire from ${tg(k)}:${tn(k)} goes to ${tn(o)}; it should be ${tn(t)}.`, hl:{w:[w.id], t:[o, t]}};
+    return {lv:'bad', t:`Terminal ${tn(t)} on ${tg(t)} isn't connected.`, hl:{t:[t]}}; }
+  if (only) return null;
+  const U = uf(); W.forEach(w => U.u(w.a, w.b));
+  for (const p of sol) if (U.f(p[0]) !== U.f(p[1])) return {lv:'bad', t:`Missing wire between ${tg(p[0])}:${tn(p[0])} and ${tg(p[1])}:${tn(p[1])}.`, hl:{t:[p[0], p[1]]}};
+  return null;
+}
 function openDiag(d, devs, W, nm, ex0){
   const L = TYPES[d.type].loads(d)[0];
   const at = t => W.filter(w => w.a === d.id+':'+t || w.b === d.id+':'+t).length;
   const miss = [L.a, L.b].filter(t => !at(t));
-  if (miss.length === 2) return `${devLabel(d)} isn't connected at all: terminals ${L.a} and ${L.b} have no wire.`;
-  if (miss.length) return `Open circuit: terminal ${miss[0]} on ${devLabel(d)} isn't connected to any wire, so the current has no path to complete.`;
+  if (miss.length === 2) return {t:`${devLabel(d)} isn't connected: ${L.a} and ${L.b} have no wire.`, hl:{t:[d.id+':'+L.a, d.id+':'+L.b]}};
+  if (miss.length) return {t:`Terminal ${miss[0]} on ${devLabel(d)} isn't connected.`, hl:{t:[d.id+':'+miss[0]]}};
+  { const wm = ex0 && wireHint(ex0, W, Object.fromEntries(devs.map(x => [x.id, x])), 'miss'); if (wm) return wm; }
   devs.forEach(x => { if (isSupply(x)){ x.st.on = 1; x.st.trip = 0; } });
   const r = CL.solve(devs, W, {force:true});
   const pa = r.poles(r.find(d.id+':'+L.a)), pb = r.poles(r.find(d.id+':'+L.b));
@@ -868,32 +892,32 @@ function openDiag(d, devs, W, nm, ex0){
     const combos = []; for (let m = 0; m < (1 << pbs.length); m++){ const c = pbs.filter((_, i) => m & (1 << i)); combos.push(c); } combos.sort((a, b) => a.length - b.length);
     for (const fc of [false, true]) for (const c of combos){ if (!tryIt(c, fc)) continue;
       const extra = c.filter(x => wantSet.indexOf(x.id) < 0), names = extra.map(devLabel).join(' and ');
-      if (fc) return `${who} never starts, because the seal-in contact (NO of ${coils.map(x => x.tag).join('/')}) is wired <b>in series</b> with the START button. The coil only gets supply if its own contact is closed, and that contact only closes if the coil gets supply: the circuit waits for itself! The seal-in contact must be in <b>parallel</b> with START (13 to 13 and 14 to 14) so START gives the first pulse and the contact carries on after it.`;
-      if (extra.length) return `${who} only runs if you also press ${names} . So ${names} is wired to an <b>NO</b> contact (13-14) when it should be on <b>NC</b> (21-22 or 11-12), so it conducts normally and breaks when pressed.`;
+      if (fc) return {t:`${coils.map(x => x.tag).join('/')} seal-in is in series with START: make it parallel (13–13, 14–14).`, hl:{t:[coils[0].id + ':13', coils[0].id + ':14']}};
+      if (extra.length) return `${who} needs ${names} pressed: wire it on <b>NC</b> (21-22), not NO.`;
       break;
     }
-    return `${who} never works: the path exists, but it goes through contacts that are never closed at the same time (for example NO and NC of the same device in series), or through a contact that isn't the one meant to operate.`;
+    return wireHint(ex0, W, Object.fromEntries(devs.map(x => [x.id, x]))) || `${who} never works: series contacts that never close together.`;
   }
   const loadsIn = side => { const rt = r.find(d.id+':'+side); return devs.some(o => o !== d && TYPES[o.type].loads && TYPES[o.type].loads(o).some(l => r.find(o.id+':'+l.a) === rt || r.find(o.id+':'+l.b) === rt)); };
-  if ((hasL(pa) && !pb && loadsIn(L.b)) || (hasL(pb) && !pa && loadsIn(L.a))) return `The lamps are wired in series (one after the other), so each gets part of the voltage and none will light. Wire each lamp between the contact and ${nm.N} on its own (parallel).`;
-  if ((hasL(pa) && hasL(pb)) ) return `Both terminals of ${devLabel(d)} are connected to ${nm.L}. One end must come from the ${nm.L} side (from the contact) and the other must go to ${nm.N}.`;
-  if ((hasN(pa) && hasN(pb))) return `Both terminals of ${devLabel(d)} are connected to ${nm.N}. One of them must come from the contact fed from ${nm.L}.`;
-  if ((hasL(pa) || hasL(pb)) && !(hasN(pa) || hasN(pb))) return `Open circuit: ${nm.L} reaches ${devLabel(d)}, but its other terminal doesn't return to ${nm.N}.`;
-  if ((hasN(pa) || hasN(pb)) && !(hasL(pa) || hasL(pb))) return `Open circuit: ${devLabel(d)} returns to ${nm.N}, but there's no path from ${nm.L} to reach it (even when the contacts close). Make sure ${nm.L} goes into the first terminal of the contact, and the second terminal goes to the lamp.`;
-  return `Open circuit: ${devLabel(d)} gets neither ${nm.L} nor ${nm.N}. Start from ${nm.L} on the supply → the contact → the lamp terminal, and the other terminal → ${nm.N}.`;
+  if ((hasL(pa) && !pb && loadsIn(L.b)) || (hasL(pb) && !pa && loadsIn(L.a))) return {t:`Lamps in series: wire each lamp between its contact and ${nm.N}.`, hl:{t:[d.id+':'+(hasL(pa) ? L.b : L.a)]}};
+  if ((hasL(pa) && hasL(pb)) ) return {t:`Both ends of ${devLabel(d)} are on ${nm.L}: one must go to ${nm.N}.`, hl:{t:[d.id+':'+L.b]}};
+  if ((hasN(pa) && hasN(pb))) return {t:`Both ends of ${devLabel(d)} are on ${nm.N}: one must come from the contact.`, hl:{t:[d.id+':'+L.a]}};
+  if ((hasL(pa) || hasL(pb)) && !(hasN(pa) || hasN(pb))) return {t:`${devLabel(d)} doesn't return to ${nm.N}.`, hl:{t:[d.id+':'+(hasL(pa) ? L.b : L.a)]}};
+  if ((hasN(pa) || hasN(pb)) && !(hasL(pa) || hasL(pb))) return wireHint(ex0, W, Object.fromEntries(devs.map(x => [x.id, x]))) || {t:`No ${nm.L} reaches ${devLabel(d)}: check the contact.`, hl:{t:[d.id+':'+(hasN(pa) ? L.b : L.a)]}};
+  return wireHint(ex0, W, Object.fromEntries(devs.map(x => [x.id, x]))) || `${devLabel(d)} gets neither ${nm.L} nor ${nm.N}.`;
 }
 function motorDiag(d, rows, j, nm){
   const bad = rows.find(x => !x.ok[j]); const m = bad.res.mot[d.id] || {}; const e = bad.exp[j];
-  const when = rows.length > 1 ? ` (in “${bad.c.label}”)` : '';
-  if (m.fault === '1ph') return `${devLabel(d)} gets only two phases${when}: the motor will hum and not turn, and the overload will trip. Make sure all three L1, L2 and L3 reach ${d.cfg.term === 6 ? 'U1, V1 and W1, and the links are right' : 'U, V and W'}.`;
-  if (m.fault === 'burn') return `${devLabel(d)} burned out${when}: the windings got a higher voltage than they are rated for (delta on a ${d.cfg.vD || 230} V motor) for a while. Switch off, connect it in star, and the simulator gives you a new motor when you start again.`;
-  if (e === 'Y' && m.run && m.over) return `${devLabel(d)} is connected in <b>delta</b> but it's a <b>${d.cfg.vD} Δ / ${d.cfg.vY} Y</b> motor on a 400 V supply${when}: each winding gets 400 V instead of ${d.cfg.vD} V, so the current rises several times over and the overload trips; without an overload the motor burns out. Remove the delta links and fit the star link across W2-U2-V2.`;
-  if (e === 'D' && m.run && m.weak) return `${devLabel(d)} is connected in <b>star</b> but it's a <b>${d.cfg.vD} Δ / ${d.cfg.vY} Y</b> motor on 400 V${when}: each winding gets 230 V instead of 400 V, so the torque is a third and it won't carry the load. Connect it in delta: U1-W2, V1-U2, W1-V2.`;
-  if ((e === 'F' || e === 'R') && m.run) return `${devLabel(d)} turns the wrong way${when}. To reverse, swap just two phases (for example L1 with L3).`;
-  if (e === 'Y' && m.run) return `${devLabel(d)} runs in delta, not star${when}. In star, U2, V2 and W2 are joined together (the star point).`;
-  if (e === 'D' && m.run) return `${devLabel(d)} runs in star, not delta${when}. In delta: U1 to W2, V1 to U2, and W1 to V2.`;
+  const when = rows.length > 1 ? ` in “${bad.c.label}”` : '';
+  if (m.fault === '1ph') return `${devLabel(d)} gets only two phases: connect L1, L2 and L3.`;
+  if (m.fault === 'burn') return `${devLabel(d)} burned out${when}: delta on ${d.cfg.vD || 230} V. Connect it in star.`;
+  if (e === 'Y' && m.run && m.over) return `${devLabel(d)} is in delta on 400 V${when}: needs star (W2-U2-V2).`;
+  if (e === 'D' && m.run && m.weak) return `${devLabel(d)} is in star, should be delta${when}: U1-W2, V1-U2, W1-V2.`;
+  if ((e === 'F' || e === 'R') && m.run) return `${devLabel(d)} turns the wrong way${when}: swap just two phases.`;
+  if (e === 'Y' && m.run) return `${devLabel(d)} runs delta, not star${when}: join U2, V2 and W2.`;
+  if (e === 'D' && m.run) return `${devLabel(d)} runs star, not delta${when}: U1-W2, V1-U2, W1-V2.`;
   if (!e && m.run) return `${devLabel(d)} runs when it should be stopped${when}.`;
-  return `${devLabel(d)} doesn't turn${when}: check the power circuit (breaker → contactor contacts → overload → U V W) and the control circuit that energises the coil.`;
+  return null;
 }
 
 /* =========================== SVG symbols =========================== */
@@ -2705,7 +2729,7 @@ CL.bench = function(host, ex, opt){
   const devs = ex.devices.map(CL.makeDevice), byId = {}; devs.forEach(d => byId[d.id] = d);
   const allT = new Set(); devs.forEach(d => TYPES[d.type].terms(d).forEach(t => allT.add(d.id + ':' + t.n)));
   const dc = devs.some(d => d.type === 'supplyDC'), has3P = devs.some(d => d.type === 'supply3P'), nm = supplyNames(devs);
-  let wires = [], wid = 0, hist = [], pend = null, flash = null, lastRes = null, held = new Map(), anim = null, timer = null, lastAct = '', passed = false, destroyed = false, api = null; const prevSt = {}, prevTrip = {}; const EVB = o => Object.assign({ex, key:opt.key, host, api}, o);
+  let wires = [], wid = 0, hist = [], pend = null, flash = null, errHl = null, lastRes = null, held = new Map(), anim = null, timer = null, lastAct = '', passed = false, destroyed = false, api = null; const prevSt = {}, prevTrip = {}; const EVB = o => Object.assign({ex, key:opt.key, host, api}, o);
   const addW = (a, b) => { wires.push({id:++wid, a, b}); return wires[wires.length - 1]; };
   let saved = opt.key ? CL.store.bench(opt.key) : null, ghost = false;
   const keyOf = p => p[0] < p[1] ? p[0] + '>' + p[1] : p[1] + '>' + p[0], sameSet = (a, b) => a.length === b.length && new Set(a.map(keyOf)).size === new Set(a.concat(b).map(keyOf)).size;
@@ -2847,7 +2871,7 @@ CL.bench = function(host, ex, opt){
       if (res.tripped.length){
         const tr = res.tripped[0], p = tr.poles.map(x => x === 'L1' && nm.L === 'L' ? 'L' : x === 'P' ? '+24V' : x === 'M' ? '0V' : x).join(' and ');
         flash = {wires:new Set(tr.wires), until:Date.now() + 4000};
-        msg(`⚡ Short circuit between ${p}${lastAct ? ' ' + lastAct : ''}! The current is very high and${byId[tr.dev].tag} tripped (TRIP). Switch off, fix the wiring, and switch on again.`, 'bad');
+        msg(`⚡ Short between ${p}${lastAct ? ' ' + lastAct : ''}: ${byId[tr.dev].tag} tripped. Switch off and fix.`, 'bad');
         CL.emit('short', EVB({dev:byId[tr.dev], wires:tr.wires, poles:tr.poles}));
         setTimeout(() => { if (!destroyed) render(); }, 4100);
         res = CL.solve(devs, wires, {trip:true}); lastRes = res;
@@ -2876,6 +2900,7 @@ CL.bench = function(host, ex, opt){
     const route = L.grid ? router() : wpath;
     const fr = (() => { const cl = devs.map(d => Object.assign({}, d, {st:Object.assign({}, d.st)})); return solveOnce(cl, wires, true); })();
     if (flash && flash.until < Date.now()) flash = null;
+    if (errHl && errHl.until < Date.now()) errHl = null;
     let wSvg = '';
     if (ghost && ex.solution){ // the solution as a dashed ghost under the trainee's own wires (never added to the board)
       const groute = L.grid ? router() : wpath, gW = ex.solution.map((p, i) => ({id:'g' + i, a:p[0], b:p[1]}));
@@ -2885,14 +2910,14 @@ CL.bench = function(host, ex, opt){
     wires.forEach(w => {
       const A = TT[w.a], B = TT[w.b]; if (!A || !B) return;
       const d = route(A, B), col = wireColor(w, fr), act = res && res.active.has(res.find(w.a));
-      const bad = flash && flash.wires.has(w.id), pw = col !== '#3a9be0' && (powerTerm(w.a) || powerTerm(w.b));
+      const bad = (flash && flash.wires.has(w.id)) || (errHl && errHl.w.has(w.id)), pw = col !== '#3a9be0' && (powerTerm(w.a) || powerTerm(w.b));
       wSvg += `<g class="bw${bad ? ' bad' : ''}${pw ? ' pw' : ''}"><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${col}"/>${act ? `<path class="bw-flow" d="${d}"/>` : ''}<path class="bw-hit" d="${d}" data-w="${w.id}" tabindex="0" role="button" aria-label="Wire from ${esc(termLab(w.a))} to ${esc(termLab(w.b))}: tap to remove it"/></g>`;
     });
     let tSvg = '', tHit = '';
     Object.keys(TT).forEach(id => {
       const t = TT[id], hot = res && (() => { const s = res.poles(res.find(id)); return s && [...s].some(p => p !== 'N' && p !== 'M'); })();
       tSvg += `<g class="bt${pend === id ? ' pend' : ''}${hot ? ' hot' : ''}" transform="translate(${t.x} ${t.y})"><circle class="bt-s" r="8.5"/><path class="bt-slot" d="M-4.5 -4.5L4.5 4.5"/></g>`;
-      tHit += `<circle class="bt-hit" cx="${t.x}" cy="${t.y}" r="22" data-t="${id}" tabindex="0" role="button" aria-label="Terminal ${esc(termLab(id))}"/><circle class="bt-ring" cx="${t.x}" cy="${t.y}" r="13"/>`;
+      tHit += `<circle class="bt-hit" cx="${t.x}" cy="${t.y}" r="22" data-t="${id}" tabindex="0" role="button" aria-label="Terminal ${esc(termLab(id))}"/><circle class="bt-ring${errHl && errHl.t.has(id) ? ' err' : ''}" cx="${t.x}" cy="${t.y}" r="13"/>`;
     });
     const fsel = document.activeElement && host.contains(document.activeElement) ? ['data-t','data-w','data-act'].map(a => document.activeElement.getAttribute(a) ? `[${a}="${document.activeElement.getAttribute(a)}"]` + (a === 'data-act' ? `[data-dev="${document.activeElement.getAttribute('data-dev')}"]` : '') : '').join('') : '';
     board.innerHTML = `<svg viewBox="0 0 ${L.VW} ${L.VH}" role="group" aria-label="Wiring board">${devSvg}${tSvg}${wSvg}${hitSvg}${tHit}</svg>`; SKIN.attach(board);
@@ -2911,6 +2936,7 @@ CL.bench = function(host, ex, opt){
     CL.emit('tick', EVB({devs, speed:sp}));
     render();
   }
+  function pulse(hl){ errHl = hl && ((hl.t && hl.t.length) || (hl.w && hl.w.length)) ? {t:new Set(hl.t || []), w:new Set(hl.w || []), until:Date.now() + 3000} : null; if (errHl){ setTimeout(() => { if (!destroyed) render(); }, 0); setTimeout(() => { if (!destroyed) render(); }, 3100); } }
   function showCheck(){
     const pc = EVB({skip:false}); CL.emit('precheck', pc); if (pc.skip) return null;
     const cfg = {}; devs.forEach(d => { if (d.type === 'ol' || d.type === 'mpcb') cfg[d.id] = {Ir:d.cfg.Ir}; if (d.type === 'timer') cfg[d.id] = {t:d.cfg.t, mode:d.cfg.mode}; });
@@ -2923,11 +2949,13 @@ CL.bench = function(host, ex, opt){
       return r;
     }
     CL.emit('fail', EVB({msgs:r.msgs}));
-    let h = `<div class="bn-bad"><div class="h">✗ Something isn't right yet</div><ul>${r.msgs.map(m => `<li>${m.t}</li>`).join('')}</ul></div>`;
-    if (r.rows.length && !(r.msgs[0] && /You haven't connected/.test(r.msgs[0].t))){
-      h += `<div class="tblw"><table class="tbl"><thead><tr><th class="r">State</th>${r.outs.map(o => `<th>${esc(byId[o].tag)} expected</th><th>result</th>`).join('')}</tr></thead><tbody>`;
+    const m0 = r.msgs.find(m => m.lv === 'bad') || r.msgs[0] || {t:''};
+    pulse(m0.hl);
+    let h = `<div class="bn-bad"><b>✗</b> ${m0.t}</div>`;
+    if (r.rows.length && !r.empty){
+      h += `<details class="bn-cmp"><summary>Expected vs result ▾</summary><div class="tblw"><table class="tbl"><thead><tr><th class="r">State</th>${r.outs.map(o => `<th>${esc(byId[o].tag)} expected</th><th>result</th>`).join('')}</tr></thead><tbody>`;
       r.rows.forEach(rw => { h += `<tr><td class="r">${esc(rw.c.label)}</td>${r.outs.map((o, j) => { const d = byId[o], mot = TYPES[d.type].motor; const coil = !!TYPES[d.type].coil; const a = mot ? (rw.act[j].run ? (rw.act[j].dir > 0 ? 'forward' : 'reverse') + (rw.act[j].mode === 'Y' ? ' star' : '') : rw.act[j].fault ? 'humming' : rw.act[j].brake ? 'DC braking' : Math.abs(rw.act[j].spd || 0) >= 0.1 ? 'coasting' : 'stopped') : rw.short ? 'short ⚡' : fmtExp(rw.act[j] ? 1 : 0, coil); const e = mot ? (rw.exp[j] ? (rw.exp[j] === 'R' ? 'reverse' : rw.exp[j] === 'F' ? 'forward' : rw.exp[j] === 'Y' ? 'star' : rw.exp[j] === 'D' ? 'delta' : rw.exp[j] === 'S' ? 'fully stopped' : rw.exp[j] === 'C' ? 'coasting' : rw.exp[j] === 'B' ? 'DC braking' : 'turns') : 'stopped') : fmtExp(rw.exp[j], coil); return `<td>${e}</td><td class="${rw.ok[j] ? 'ok' : 'x'}">${a}</td>`; }).join('')}</tr>`; });
-      h += '</tbody></table></div>';
+      h += '</tbody></table></div></details>';
     }
     resEl.innerHTML = h;
     return r;
@@ -2938,7 +2966,7 @@ CL.bench = function(host, ex, opt){
     if (on){
       if (ghost){ setGhost(false); }
       devs.forEach(d => { if (isSupply(d)){ d.st.on = 1; d.st.trip = 0; } if (TYPES[d.type].src && !isSupply(d)) d.st.trip = 0; if (d.type === 'lamp' || d.type === 'prox') d.st.burnt = 0; if (TYPES[d.type].motor){ d.st.burnt = 0; d.st.hot = 0; d.st.fault = ''; } });
-      msg('Power is on. Operate the devices by hand on the board. To change a wire you must switch off first.', 'ok');
+      msg('Power is on. Switch off to change a wire.', 'ok');
       CL.emit('power', EVB({on:true}));
       render();
       showCheck();

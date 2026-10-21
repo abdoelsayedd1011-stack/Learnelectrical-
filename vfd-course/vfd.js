@@ -605,7 +605,7 @@ VF.wire = function(host, cfg, opt){
   const T = {}; cfg.terms.forEach(t => T[t.id] = t);
   const W = []; let pend = null;
   host.innerHTML = `<div class="bn-board"><svg viewBox="0 0 ${cfg.vb[0]} ${cfg.vb[1]}" role="img" aria-label="${esc(cfg.aria || 'لوحة توصيل')}" style="max-width:${cfg.max || 560}px">${cfg.art || ''}<g class="vw-w"></g><g class="vw-t">${cfg.terms.map(t => `<g class="bt" data-t="${t.id}"><circle class="bt-hit" cx="${t.x}" cy="${t.y}" r="13" tabindex="0" role="button" aria-label="${esc(t.aria || t.lab)}"/><circle class="bt-ring" cx="${t.x}" cy="${t.y}" r="10"/><circle class="bt-s" cx="${t.x}" cy="${t.y}" r="6.5"/><path class="bt-x" d="M${t.x - 3} ${t.y - 3}L${t.x + 3} ${t.y + 3}" pointer-events="none"/><text class="bt-lab" x="${t.x}" y="${t.y + (t.ly || -11)}" style="font-size:${cfg.fs || 10}px">${esc(t.lab)}</text></g>`).join('')}</g></svg></div>
-  <p class="muted vw-help" style="font-size:.88rem">دوس على طرف وبعدين على الطرف التاني عشان تمد سلك. دوس على السلك عشان تشيله.</p>
+  <p class="muted vw-help" style="font-size:.88rem">دوس طرف وبعدين التاني. دوس السلك تشيله.</p>
   <div class="wd-ctl"><button type="button" class="btn pri vw-chk">اتأكد من التوصيل</button><button type="button" class="btn vw-undo">شيل آخر سلك</button><button type="button" class="btn vw-clr">امسح الكل</button></div>
   <div class="bn-res vw-res" aria-live="polite"></div>
   <p class="chal vw-chal">${opt.goal || 'وصّل كل الأسلاك صح ودوس «اتأكد».'}</p>`;
@@ -638,11 +638,13 @@ VF.wire = function(host, cfg, opt){
     gw.innerHTML = W.map((w, i) => {
       const a = T[w[0]], b = T[w[1]], my = (a.y + b.y) / 2 + (cfg.bend || 0), col = a.col || b.col || '#7a5cc8';
       const d = Math.abs(a.x - b.x) < 2 || Math.abs(a.y - b.y) < 2 ? `M${a.x} ${a.y}L${b.x} ${b.y}` : `M${a.x} ${a.y}C${a.x} ${my} ${b.x} ${my} ${b.x} ${b.y}`;
-      return `<g class="bw" data-w="${i}"><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${col}"/><path class="bw-hit" d="${d}" tabindex="0" role="button" aria-label="سلك من ${esc(a.lab)} لـ ${esc(b.lab)}، دوس عشان تشيله"/></g>`;
+      return `<g class="bw${err && err.w.has(key(w[0], w[1])) ? ' bad' : ''}" data-w="${i}"><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${col}"/><path class="bw-hit" d="${d}" tabindex="0" role="button" aria-label="سلك من ${esc(a.lab)} لـ ${esc(b.lab)}، دوس عشان تشيله"/></g>`;
     }).join('');
-    $$('.bt', host).forEach(g => g.classList.toggle('pend', g.dataset.t === pend));
+    $$('.bt', host).forEach(g => { g.classList.toggle('pend', g.dataset.t === pend); const rg = g.querySelector('.bt-ring'); if (rg) rg.classList.toggle('err', !!(err && err.t.has(g.dataset.t))); });
     if (opt.onChange) opt.onChange(ev, W.slice());
   }
+  let err = null;
+  function pulse(hl){ err = hl ? {t:new Set(hl.t || []), w:new Set(hl.w || []), until:Date.now() + 3000} : null; draw(); if (err) setTimeout(() => { if (err && err.until <= Date.now()){ err = null; draw(); } }, 3100); }
   function res(html){ q('.vw-res').innerHTML = html; }
   host.addEventListener('click', e => {
     const t = e.target.closest('.bt');
@@ -651,7 +653,7 @@ VF.wire = function(host, cfg, opt){
       if (!pend){ pend = id; draw(); return; }
       if (pend === id){ pend = null; draw(); return; }
       const k = key(pend, id);
-      if (!W.some(w => key(w[0], w[1]) === k)){ W.push([pend, id]); const m = cfg.danger && cfg.danger(pend, id); res(m ? `<div class="bn-bad"><b>خلّي بالك!</b> ${m}</div>` : ''); }
+      if (!W.some(w => key(w[0], w[1]) === k)){ W.push([pend, id]); const m = cfg.danger && cfg.danger(pend, id); res(m ? `<div class="bn-bad"><b>خلّي بالك!</b> ${m}</div>` : ''); if (m) pulse({t:[pend, id], w:[key(pend, id)]}); }
       pend = null; draw(); return;
     }
     const w = e.target.closest('.bw');
@@ -663,11 +665,11 @@ VF.wire = function(host, cfg, opt){
   q('.vw-chk').addEventListener('click', () => {
     const ev = evaluate();
     if (ev.ok){ res(`<div class="bn-ok"><b>التوصيل سليم ✓</b> ${cfg.done || ''}</div>`); fin(); if (opt.onOk) opt.onOk(); return; }
-    let h = '';
-    if (ev.shorts.length) h += `<div class="bn-bad"><b>قصر!</b> ${ev.shorts.map(s => `<span class="eq">${esc(T[s[0]].lab)}</span> و <span class="eq">${esc(T[s[1]].lab)}</span>`).join('، ')} متوصّلين ببعض.</div>`;
-    if (ev.wrong.length) h += `<div class="bn-bad"><b>أسلاك غلط (${ev.wrong.length}):</b><ul>${ev.wrong.map(w => `<li><span class="eq">${esc(T[w[0]].lab)} ↔ ${esc(T[w[1]].lab)}</span>: ${(cfg.danger && cfg.danger(w[0], w[1])) || 'الطرفين دول مش المفروض يتوصّلوا ببعض.'}</li>`).join('')}</ul></div>`;
-    if (ev.missing.length) h += `<div class="bn-warn"><b>لسه ناقص:</b><ul>${ev.missing.map(r => `<li>${r.hint}</li>`).join('')}</ul></div>`;
-    res(h);
+    let m = '', hl = null; const L = id => `<span class="eq">${esc(T[id].aria || T[id].lab)}</span>`;
+    if (ev.shorts.length){ const s = ev.shorts[0]; m = `<b>قصر:</b> ${L(s[0])} و ${L(s[1])} متوصلين ببعض.`; hl = {t:s}; }
+    else if (ev.wrong.length){ const w = ev.wrong[0]; m = `${L(w[0])} ↔ ${L(w[1])}: ${(cfg.danger && cfg.danger(w[0], w[1])) || 'مش المفروض يتوصّلوا.'}`; hl = {t:w, w:[key(w[0], w[1])]}; }
+    else { const r = ev.missing[0], f = ev.f, all = r.a.concat(r.b); const t0 = r.all ? (all.find(x => f(x) !== f(all[0])) || all[0]) : (r.a.find(a => r.b.filter(b => f(b) === f(a)).length !== 1) || r.a[0]); m = `${L(t0)} مش متوصل صح: ${r.hint}`; hl = {t:[t0]}; }
+    res(`<div class="bn-bad"><b>✗</b> ${m}</div>`); pulse(hl);
   });
   draw();
   return {W, connect(a, b){ if (!W.some(w => key(w[0], w[1]) === key(a, b))) W.push([a, b]); draw(); }, check(){ q('.vw-chk').click(); return q('.vw-res').textContent; }, evaluate, clear(){ W.length = 0; draw(); }};
@@ -692,19 +694,19 @@ VF.powerBoard = function(host, opt){
   const isSup = x => ['L1', 'L2', 'L3'].includes(x), isOut = x => ['U', 'V', 'W'].includes(x), isMot = x => ['mU', 'mV', 'mW'].includes(x), isIn = x => ['R', 'S', 'Tt'].includes(x), isPE = x => /PE/.test(x), isBR = x => ['BRp', 'BRn', 'R1', 'R2'].includes(x);
   const danger = (a, b) => {
     const has = fn => fn(a) || fn(b), both = (f1, f2) => (f1(a) && f2(b)) || (f1(b) && f2(a));
-    if (both(isSup, isOut)) return 'الشبكة داخلة على <b>أطراف الخرج</b>! أول ما تقفل القاطع الـ IGBT هتتحرق. الشبكة على R S T بس.';
-    if (both(isSup, isMot)) return 'كده الموتور على الشبكة مباشرة (DOL) والانفرتر ملوش لازمة، ولو اتوصّل خرج الانفرتر معاه هيتحرق.';
-    if (both(isSup, isBR)) return 'دي أطراف الفرملة / الـ DC، مش دخل كهربا. الشبكة هنا = انفجار.';
-    if (both(isMot, isIn)) return 'الموتور بيتوصّل على أطراف <b>الخرج</b> U V W، مش الدخل.';
-    if (both(isPE, x => isSup(x) || isOut(x) || isMot(x) || isIn(x))) return 'فازة على الأرضي = قصر أرضي (Ground fault). الأرضي بيروح لأرضي بس.';
-    if (has(isBR) && !both(x => ['BRp', 'BRn'].includes(x), x => ['R1', 'R2'].includes(x))) return 'مقاومة الفرملة بتتوصّل على أطراف <span class="eq">BR+</span> و <span class="eq">BR−</span> بس.';
+    if (both(isSup, isOut)) return 'الشبكة على <b>الخرج</b>: الـ IGBT هتتحرق. الشبكة على R S T بس.';
+    if (both(isSup, isMot)) return 'كده الموتور على الشبكة مباشرة. الشبكة على R S T.';
+    if (both(isSup, isBR)) return 'دي أطراف الفرملة، مش دخل كهربا.';
+    if (both(isMot, isIn)) return 'الموتور على <b>الخرج</b> U V W، مش الدخل.';
+    if (both(isPE, x => isSup(x) || isOut(x) || isMot(x) || isIn(x))) return 'فازة على الأرضي = قصر أرضي. الأرضي لأرضي بس.';
+    if (has(isBR) && !both(x => ['BRp', 'BRn'].includes(x), x => ['R1', 'R2'].includes(x))) return 'المقاومة على <span class="eq">BR+</span> و <span class="eq">BR−</span> بس.';
     return null;
   };
   return VF.wire(host, {vb:[360, 330], art, terms, danger, max:520, aria:'لوحة توصيل الباور: الشبكة، الانفرتر، مقاومة الفرملة، والموتور',
-    rules:[{a:['L1', 'L2', 'L3'], b:['R', 'S', 'Tt'], hint:'الشبكة L1 L2 L3 على دخل الانفرتر R S T (الترتيب هنا مش مهم).'}, {a:['sPE'], b:['dPEi', 'dPEo'], hint:'أرضي الشبكة على طرف PE في الانفرتر.'},
-      {a:['U', 'V', 'W'], b:['mU', 'mV', 'mW'], hint:'خرج الانفرتر U V W على أطراف الموتور U1 V1 W1.'}, {a:['mPE'], b:['dPEo', 'dPEi'], hint:'أرضي الموتور يرجع على PE الانفرتر (من نفس الكابل).'},
-      {a:['BRp', 'BRn'], b:['R1', 'R2'], hint:'مقاومة الفرملة على BR+ و BR−.'}],
-    danger, done:'ترتيب فازات الدخل مش فارق مع الانفرتر لأنه بيوحّدها. إنما لو بدّلت أي سلكين بين الانفرتر والموتور، الموتور هيلف عكس (والأحسن تعكس الاتجاه من الباراميتر).'}, Object.assign({task:'wire', goal:'وصّل الشبكة والموتور والأرضي ومقاومة الفرملة صح ودوس «اتأكد».'}, opt));
+    rules:[{a:['L1', 'L2', 'L3'], b:['R', 'S', 'Tt'], hint:'L1 L2 L3 ‏← R S T (أي ترتيب).'}, {a:['sPE'], b:['dPEi', 'dPEo'], hint:'أرضي الشبكة ‏← PE الانفرتر.'},
+      {a:['U', 'V', 'W'], b:['mU', 'mV', 'mW'], hint:'U V W ‏← U1 V1 W1 في الموتور.'}, {a:['mPE'], b:['dPEo', 'dPEi'], hint:'أرضي الموتور ‏← PE الانفرتر.'},
+      {a:['BRp', 'BRn'], b:['R1', 'R2'], hint:'المقاومة ‏← BR+ و BR−.'}],
+    danger, done:'ترتيب الدخل مش فارق. تبديل سلكين في الخرج يعكس الاتجاه.'}, Object.assign({task:'wire', goal:'وصّل الشبكة والموتور والأرضي والمقاومة، ودوس «اتأكد».'}, opt));
 };
 VF.RULES = [
   ['ينفع تحط كونتاكتور بين الانفرتر والموتور وتفتحه والموتور شغّال عشان توقّفه.', false, 'فتح الكونتاكتور تحت حمل بيعمل نطّات جهد وتيار ممكن تحرق الـ IGBT. وقّف من الانفرتر الأول. (الكونتاكتور في الخرج بيتفتح ويتقفل والانفرتر واقف بس، زي الـ Bypass.)'],
@@ -741,11 +743,11 @@ VF.controlBoard = function(host, opt){
   const isPow = x => ['p24', 'p10', 'COM', 'ACM'].includes(x);
   const danger = (a, b) => {
     const both = (x, y) => (a === x && b === y) || (a === y && b === x);
-    if (both('p24', 'COM')) return 'كده إنت عامل قصر على باور الـ 24V بتاع الأطراف.';
-    if (both('p10', 'ACM')) return 'قصر على الـ +10V: البوت لازم يبقى بينهم، مش سلك.';
-    if ((a === 'Lsrc' || b === 'Lsrc') && !(a === 'R1C' || b === 'R1C' || a === 'R1A' || b === 'R1A')) return '<b>230V على أطراف الكنترول = الكارت يتحرق!</b> الـ 230V بتعدّي في كونتاكت الريليه بس.';
-    if (isPow(a) && isPow(b)) return 'ده بيوصّل مصدرين ببعض = قصر.';
-    if ((a === 'P2' || b === 'P2') && (isPow(a) || isPow(b))) return 'الطرف النص في البوت (الـ Wiper) هو اللي بيطلّع الإشارة، يروح على AI1.';
+    if (both('p24', 'COM')) return 'كده قصر على باور الـ 24V.';
+    if (both('p10', 'ACM')) return 'قصر على الـ +10V: البوت بينهم، مش سلك.';
+    if ((a === 'Lsrc' || b === 'Lsrc') && !(a === 'R1C' || b === 'R1C' || a === 'R1A' || b === 'R1A')) return '<b>230V على الكنترول = الكارت يتحرق!</b> الـ 230V على الريليه بس.';
+    if (isPow(a) && isPow(b)) return 'مصدرين متوصلين ببعض = قصر.';
+    if ((a === 'P2' || b === 'P2') && (isPow(a) || isPow(b))) return 'الطرف النص في البوت يروح على AI1.';
     return null;
   };
   const S = {sw:false, dir:false, pot:0.6, f:0, fault:false, ok:false, sawRev:false, sawLamp:false};
@@ -755,13 +757,13 @@ VF.controlBoard = function(host, opt){
     <label>البوتنشيوميتر: <b class="cb-potv"></b><input type="range" class="cb-pot" min="0" max="100" step="1" value="60" aria-label="البوتنشيوميتر %"></label>
     <button type="button" class="btn cb-flt">اعمل عطل في الانفرتر</button><button type="button" class="btn cb-rst">Reset</button></div>
     <div class="read sm"><div><span>DI1 / DI2</span><b class="cb-di"></b></div><div><span>AI1</span><b class="cb-ai"></b></div><div><span>تردد الخرج</span><b class="cb-hz"></b></div></div>
-    <p class="msg cb-msg" aria-live="polite"></p><p class="chal cb-chal">التحدّي: من الأطراف (مش الكيباد) شغّل الموتور <b>عكسي على <span class="eq">30 Hz</span> أو أكتر</b>، واعمل عطل وشوف لمبة العطل نوّرت.</p>`;
+    <p class="msg cb-msg" aria-live="polite"></p><p class="chal cb-chal">التحدّي: من الأطراف شغّل <b>عكسي على <span class="eq">30 Hz</span> أو أكتر</b>، واعمل عطل وشوف اللمبة.</p>`;
   let ev = null, f = null;
   const B = VF.wire(box, {vb:[364, 320], art, terms, danger, fs:9, max:560, aria:'لوحة توصيل أطراف الكنترول',
-    rules:[{a:['p24'], b:['SWa', 'DIRa'], all:true, hint:'الـ +24V لازم يوصل لطرف 1 في السلكتورين (ينفع كوبري من سلكتور للتاني).'}, {a:['SWb'], b:['DI1'], hint:'طرف 2 في سلكتور التشغيل يرجع على DI1 (Run).'}, {a:['DIRb'], b:['DI2'], hint:'طرف 2 في سلكتور الاتجاه يرجع على DI2 (عكسي).'},
-      {a:['p10', 'ACM'], b:['P1', 'P3'], hint:'طرفين البوت على +10V و ACM.'}, {a:['P2'], b:['AI1'], hint:'الطرف النص في البوت على AI1.'}, {a:['R1C', 'R1A'], b:['Lsrc', 'X1'], hint:'كونتاكت ريليه العطل (R1C و R1A) بين الـ L ولمبة العطل.'}],
-    danger, done:'كده الانفرتر هياخد أمر التشغيل والاتجاه من السلكتورين، والسرعة من البوت، ولمبة العطل من الريليه. جرّب تحت.'},
-    {lesson:opt.lesson, task:'cwire', goal:'وصّل السلكتورين والبوت ولمبة العطل صح ودوس «اتأكد».', onChange(e){ ev = e; f = e.f; }});
+    rules:[{a:['p24'], b:['SWa', 'DIRa'], all:true, hint:'+24V ‏← طرف 1 في السلكتورين.'}, {a:['SWb'], b:['DI1'], hint:'طرف 2 في التشغيل ‏← DI1.'}, {a:['DIRb'], b:['DI2'], hint:'طرف 2 في الاتجاه ‏← DI2.'},
+      {a:['p10', 'ACM'], b:['P1', 'P3'], hint:'طرفين البوت ‏← +10V و ACM.'}, {a:['P2'], b:['AI1'], hint:'نص البوت ‏← AI1.'}, {a:['R1C', 'R1A'], b:['Lsrc', 'X1'], hint:'R1C و R1A بين L ولمبة العطل.'}],
+    danger, done:'تمام. جرّب التشغيل تحت.'},
+    {lesson:opt.lesson, task:'cwire', goal:'وصّل السلكتورين والبوت ولمبة العطل، ودوس «اتأكد».', onChange(e){ ev = e; f = e.f; }});
   host.appendChild(ctl);
   const q = s => $(s, host), fin = chal(ctl, '.cb-chal', opt.lesson, 'run');
   function sim(){
@@ -795,13 +797,13 @@ VF.controlBoard = function(host, opt){
     q('.cb-potv').textContent = Math.round(S.pot * 100) + ' %';
     if (S.f >= 29.5 && st.di2 && !S.fault) S.sawRev = true; if (st.lamp) S.sawLamp = true;
     const m = q('.cb-msg'); let t = '', c = '';
-    if (st.live230){ t = '<b>230V وصلت لأطراف الكنترول!</b> في الحقيقة كارت الكنترول كان اتحرق. شيل السلك ده.'; c = 'bad'; }
+    if (st.live230){ t = '<b>230V وصلت للكنترول!</b> شيل السلك ده.'; c = 'bad'; }
     else if (st.short24){ t = 'قصر على الـ 24V: الأطراف كلها مش شغّالة.'; c = 'bad'; }
-    else if (S.fault) t = st.lamp ? 'الانفرتر فاصل بعطل، وريليه العطل قفل الكونتاكت فاللمبة نوّرت. دوس Reset.' : 'الانفرتر فاصل بعطل والريليه قفل، بس اللمبة منوّرتش: راجع سلك الريليه واللمبة.';
-    else if (S.sw && !st.di1) t = 'السلكتور مقفول بس DI1 لسه OFF: الـ 24V مش واصلة له. راجع السلك.';
-    else if (st.di1 && st.ai < 0.2) t = 'الموتور عنده أمر تشغيل بس السرعة صفر: AI1 مفيهوش جهد. لِف البوت أو راجع توصيله.';
+    else if (S.fault) t = st.lamp ? 'عطل: الريليه قفل واللمبة نوّرت. دوس Reset.' : 'عطل بس اللمبة منوّرتش: راجع سلك الريليه واللمبة.';
+    else if (S.sw && !st.di1) t = 'السلكتور مقفول و DI1 لسه OFF: الـ 24V مش واصلة.';
+    else if (st.di1 && st.ai < 0.2) t = 'فيه Run بس AI1 صفر: لِف البوت أو راجع توصيله.';
     else if (st.di1) t = `شغّال ${st.di2 ? 'عكسي' : 'أمامي'}: AI1 = <span class="eq">${fmt(st.ai, 1)} V</span> ⇐ <span class="eq">${fmt(st.ai, 1)} ÷ 10 × 50 = ${fmt(st.ai * 5, 1)} Hz</span>.`;
-    else t = 'اقفل سلكتور التشغيل عشان تبعت أمر Run على DI1.';
+    else t = 'اقفل سلكتور التشغيل (Run على DI1).';
     if (S.sawRev && S.sawLamp){ fin(); if (!S.fault){ t = 'تمام! شغّلت عكسي من الأطراف، والسرعة من البوت، وجرّبت لمبة العطل. ده بالظبط اللي بتعمله في أي لوحة.'; c = 'ok'; } }
     m.className = 'msg cb-msg ' + c; m.innerHTML = t;
   }

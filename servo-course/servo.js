@@ -627,7 +627,7 @@ SV.wiring = function(host, opt){
   host.innerHTML = `<div class="wd-art wr-art"></div>
   <div class="wd-ctl"><button type="button" class="btn pri" data-a="run">شغّل الدرايف (Servo ON)</button><button type="button" class="btn" data-a="clear">امسح الأسلاك</button><button type="button" class="btn" data-a="swap" hidden>جرّب الغلطة: بدّل U و W</button></div>
   <div class="wr-res bn-res" aria-live="polite"></div>
-  <p class="muted" style="font-size:.88rem">دوس على طرف في الدرايف (شمال) وبعدين على الطرف اللي يتوصّل بيه (يمين). دوس على أي سلك عشان تشيله.</p>
+  <p class="muted" style="font-size:.88rem">دوس طرف في الدرايف (شمال) وبعدين طرفه (يمين). دوس السلك تشيله.</p>
   <p class="chal wr-chal">وصّل <b>الـ 13 سلك</b> صح وشغّل الدرايف من غير ولا إنذار.</p>`;
   const q = s => $(s, host), fin = chal(host, '.wr-chal', opt.lesson, opt.task || 'wire');
   const finSwap = chal(host, '.nothing', opt.lesson, 'swap');
@@ -639,8 +639,8 @@ SV.wiring = function(host, opt){
     s += tx(XL / 2 - 6, y('dC') + 22, 'شيل جمبر P+ D', {a:'middle', ar:1, s:9, st:'fill:#ffb300'});
     GROUPS.forEach(g => { const y1 = y(RT[g[1]][0]) - 16, y2 = y(RT[g[2]][0]) + 14; s += `<rect x="${XR + 4}" y="${y1}" width="${360 - XR - 8}" height="${y2 - y1}" rx="8" class="w-pn" style="stroke:var(--line)"/>` + tx(354, y1 + 12, g[0], {a:'end', ar:1, s:9.5, c:'w-mu'}); });
     RT.forEach(t => { s += tx(XR + 14, y(t[0]) + 6, t[1], {a:'start', ar:/[؀-ۿ]/.test(t[1]), s:12, w:700}); });
-    W.forEach((w, i) => { const y1 = y(w[0]), y2 = y(w[1]), d = `M${XL} ${y1} C${XL + 60} ${y1} ${XR - 60} ${y2} ${XR} ${y2}`; s += `<g class="bw" data-w="${i}" role="button" tabindex="0" aria-label="شيل السلك ${lab(w[0])} - ${lab(w[1])}"><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${col(w[0])}"/><path class="bw-hit" d="${d}"/></g>`; });
-    [...DT.map(t => [t[0], XL]), ...RT.map(t => [t[0], XR])].forEach(([id, x]) => { s += `<g class="bt${pend === id ? ' pend' : ''}" data-t="${id}" role="button" tabindex="0" aria-label="طرف ${lab(id)}"><circle class="bt-hit" cx="${x}" cy="${y(id)}" r="15"/><circle class="bt-s" cx="${x}" cy="${y(id)}" r="7"/></g>`; });
+    W.forEach((w, i) => { const y1 = y(w[0]), y2 = y(w[1]), d = `M${XL} ${y1} C${XL + 60} ${y1} ${XR - 60} ${y2} ${XR} ${y2}`; s += `<g class="bw${err && err.w.includes(w.join('|')) ? ' bad' : ''}" data-w="${i}" role="button" tabindex="0" aria-label="شيل السلك ${lab(w[0])} - ${lab(w[1])}"><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${col(w[0])}"/><path class="bw-hit" d="${d}"/></g>`; });
+    [...DT.map(t => [t[0], XL]), ...RT.map(t => [t[0], XR])].forEach(([id, x]) => { s += `<g class="bt${pend === id ? ' pend' : ''}${err && err.t.has(id) ? ' err' : ''}" data-t="${id}" role="button" tabindex="0" aria-label="طرف ${lab(id)}"><circle class="bt-hit" cx="${x}" cy="${y(id)}" r="15"/><circle class="bt-s" cx="${x}" cy="${y(id)}" r="7"/></g>`; });
     q('.wr-art').innerHTML = s + '</svg>';
   }
   function side(id){ return id[0] === 'd' ? 'L' : 'R'; }
@@ -652,30 +652,28 @@ SV.wiring = function(host, opt){
   });
   onAct(host, '[data-w]', t => { W.splice(+t.dataset.w, 1); runMode = null; draw(); });
   const box = (c, h) => `<div class="${c}">${h}</div>`;
-  function check(){
+  function check(){ // one concrete problem at a time (first wrong wire, then the first missing connection)
     const has = (a, b) => W.some(w => w[0] === a && w[1] === b), to = a => (W.find(w => w[0] === a) || [])[1];
-    const out = [];
     const wrongPower = W.filter(w => (/^d[UVW]$/.test(w[0]) && /^sL/.test(w[1])) || (/^dL/.test(w[0]) && /^m[UVW]$/.test(w[1])));
-    if (wrongPower.length) return {bad:true, html:box('bn-bad', '<b>توقف! غلطة خطيرة:</b> الكهربا داخلة على <b>خرج</b> الدرايف أو الموتور متوصّل على أطراف الدخل. أول ما تشغّل، الـ IGBT هيضرب والدرايف ممكن يتحرق. الكهربا تدخل على <b>L1 L2 L3</b> بس، والموتور على <b>U V W</b> بس.')};
+    if (wrongPower.length) return {bad:true, html:box('bn-bad', '<b>توقف!</b> الكهربا على U V W: الـ IGBT هيضرب. الكهربا على L1 L2 L3 بس.'), hl:{w:[wrongPower[0]], t:wrongPower[0]}};
     const uvw = ['dU', 'dV', 'dW'].map(to), uvwSet = uvw.every(x => /^m[UVW]$/.test(x || '')) && new Set(uvw).size === 3;
     const swapped = uvwSet && !(uvw[0] === 'mU' && uvw[1] === 'mV' && uvw[2] === 'mW');
     const regenOk = ((to('dP') === 'r1' && to('dC') === 'r2') || (to('dP') === 'r2' && to('dC') === 'r1'));
     const wrong = W.filter(w => !(RIGHT[w[0]] === w[1] || (/^d[PC]$/.test(w[0]) && /^r\d$/.test(w[1])) || (swapped && /^d[UVW]$/.test(w[0]) && /^m[UVW]$/.test(w[1]))));
-    if (wrong.length) out.push(box('bn-bad', '<b>أسلاك في مكان غلط:</b> ' + wrong.map(w => `<span class="eq">${lab(w[0])} ← ${lab(w[1])}</span>`).join('، ') + '. كل طرف في الدرايف ليه طرف واحد بس يتوصّل بيه.'));
-    const miss = [];
-    if (!['dL1', 'dL2', 'dL3'].every(a => has(a, RIGHT[a]))) miss.push('<b>الكهربا L1 L2 L3:</b> الدرايف مش واخد باور، الشاشة مطفية.');
-    if (!uvwSet) miss.push('<b>U V W:</b> الموتور مش متوصّل كله، الدرايف هيطلع إنذار أوفرلود أو فقد فاز في الخرج.');
-    if (!has('dPE', 'mPE')) miss.push('<b>الأرضي PE:</b> خطر صعق، ونويز هيبوّظ إشارة الإنكودر.');
-    if (!has('dCN2', 'mENC')) miss.push('<b>الإنكودر CN2:</b> الدرايف أعمى. هيطلع <b>Encoder error</b> أول ما يشتغل.');
-    if (!has('dBRK', 'kBR')) miss.push('<b>الفرامل:</b> مش هتفتح. الموتور هيشد ضدها ويطلع <b>Overload</b> والفرامل نفسها هتتاكل.');
-    if (!regenOk) miss.push('<b>مقاومة الفرملة P+ و C:</b> على الوقفة السريعة الطاقة الراجعة هترفع الـ DC bus ويطلع <b>Overvoltage</b>.');
-    if (!has('dCN1', 'plc')) miss.push('<b>CN1:</b> الـ PLC مش هيقدر يبعت Servo ON ولا أوامر حركة.');
-    if (!has('dSTO', 'sr')) miss.push('<b>STO:</b> دايرة الأمان مفتوحة، الدرايف هيفضل يعرض <b>STO</b> ومش هيدّي عزم.');
-    if (miss.length) out.push(box('bn-warn', '<b>ناقص:</b><ul style="margin:4px 0 0">' + miss.map(m => `<li>${m}</li>`).join('') + '</ul>'));
-    if (out.length) return {bad:true, html:out.join('')};
-    if (swapped) return {swap:true, html:box('bn-bad', '<b>إنذار: Overload / Position deviation (أو Runaway).</b> أطراف U V W <b>متبدّلة</b>. في موتور الإندكشن تبديل فازتين بيعكس الاتجاه عادي، لكن في السيرفو الدرايف بيوجّه التيار على حسب زاوية الإنكودر. لو الترتيب اتغيّر، العزم بيطلع في الاتجاه الغلط: الموتور يرتعش أو يجري لوحده لحد ما الدرايف يفصل. <b>وصّل U على U و V على V و W على W دايمًا.</b>')};
-    return {ok:true, html:box('bn-ok', '<b>تمام! الدرايف شغّال من غير إنذار.</b> الفرامل فتحت (سمعت التكة؟)، والموتور ماسك مكانه وبيلف بأمر الـ PLC. لاحظ إن الكونكتور U V W مرقّم عشان متغلطش.')};
+    if (wrong.length){ const w = wrong[0]; return {bad:true, html:box('bn-bad', '<b>✗</b> ' + `السلك من ${lab(w[0])} رايح لـ ${lab(w[1])} والمفروض ${RIGHT[w[0]] ? lab(RIGHT[w[0]]) : 'R'}.`), hl:{w:[w], t:[w[0], w[1]]}}; }
+    if (!['dL1', 'dL2', 'dL3'].every(a => has(a, RIGHT[a]))) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'الكهربا L1 L2 L3 مش متوصلة: الشاشة مطفية.'), hl:{t:[['dL1', 'dL2', 'dL3'].find(a => !has(a, RIGHT[a]))]}};
+    if (!uvwSet) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'U V W مش متوصلين كلهم: إنذار فقد فاز.'), hl:{t:[['dU', 'dV', 'dW'].find(a => !/^m[UVW]$/.test(to(a) || '')) || 'dU']}};
+    if (!has('dPE', 'mPE')) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'الأرضي PE مش متوصل: خطر صعق.'), hl:{t:['dPE']}};
+    if (!has('dCN2', 'mENC')) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'الإنكودر CN2 مش متوصل: Encoder error.'), hl:{t:['dCN2']}};
+    if (!has('dBRK', 'kBR')) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'الفرامل BRK مش متوصلة: هتطلع Overload.'), hl:{t:['dBRK']}};
+    if (!regenOk) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'مقاومة الفرملة على P+ و C ناقصة: Overvoltage.'), hl:{t:[to('dP') ? 'dC' : 'dP']}};
+    if (!has('dCN1', 'plc')) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'CN1 مش متوصل: الـ PLC مش هيبعت Servo ON.'), hl:{t:['dCN1']}};
+    if (!has('dSTO', 'sr')) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'STO مش متوصل: الدرايف هيفضل على STO.'), hl:{t:['dSTO']}};
+    if (swapped) return {swap:true, html:box('bn-bad', '<b>إنذار Overload / Runaway:</b> U V W متبدّلين. في السيرفو وصّل U على U و V على V و W على W.'), hl:{t:['dU', 'dV', 'dW']}};
+    return {ok:true, html:box('bn-ok', '<b>تمام! الدرايف شغّال من غير إنذار.</b> الفرامل فتحت والموتور ماسك مكانه.')};
   }
+  let err = null;
+  function pulse(hl){ err = hl ? {t:new Set(hl.t || []), w:(hl.w || []).map(w => w.join('|')), until:Date.now() + 3000} : null; draw(); if (err) setTimeout(() => { if (err && err.until <= Date.now()){ err = null; draw(); } }, 3100); }
   function spin(){
     if (anim) return;
     anim = animate(q('.wr-res'), dt => {
@@ -686,6 +684,7 @@ SV.wiring = function(host, opt){
   }
   function run(){
     const r = check(); runMode = r.ok ? 'ok' : r.swap ? 'swap' : null;
+    pulse(r.hl);
     q('.wr-res').innerHTML = r.html + (runMode ? `<div class="wr-dial${runMode === 'swap' ? ' bad' : ''}"></div>` : '');
     if (r.ok){ fin(); q('[data-a=swap]').hidden = false; }
     if (r.swap) finSwap();
