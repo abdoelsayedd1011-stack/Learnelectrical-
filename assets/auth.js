@@ -96,7 +96,10 @@
       document.getElementById("acc-hello").textContent = "أهلاً يا " + u.name.split(" ")[0];
       document.getElementById("acc-name").textContent = u.name;
       document.getElementById("acc-email").textContent = u.email;
-      document.getElementById("acc-plan").textContent = u.plan === "free" ? "مجاني" : "مدفوع";
+      var pro = u.plan === "pro" && u.pro_until > Date.now(), dt = function(t){ return new Date(t).toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" }); };
+      document.getElementById("acc-plan").textContent = pro ? "Pro لحد " + dt(u.pro_until) : u.plan === "pro" && u.pro_until ? "مجاني (الاشتراك خلص " + dt(u.pro_until) + ")" : "مجاني";
+      // جاي من صفحة محتاجة اشتراك (لما الاشتراك يتفعّل في functions/_lib/plan.js)
+      if (new URLSearchParams(location.search).get("need") === "pro" && !pro) showMsg(msg, "الصفحة اللي كنت رايحلها محتاجة اشتراك Pro. كلّمنا عشان نفعّلهولك، وبعدها ارجع لها تاني.");
       document.getElementById("acc-since").textContent = new Date(u.created_at).toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" });
       var sync = window.LESync ? window.LESync.ready : Promise.resolve();
       sync.then(loadCerts, loadCerts);

@@ -1,7 +1,10 @@
 // Members-only pages: visitors without an account are sent to sign up first.
 // Open to everyone: the main pages, the PowerFlex 525 lab, and lessons 1–2 of the basics and classic-control courses.
 // Members' lab/course pages also get /assets/sync.js injected so their progress syncs with the account.
+// Paywall (off by default, see _lib/plan.js): when on, those member-only pages also need an active Pro plan.
 import { getDb, sessionUser, COOKIE } from "./_lib/auth.js";
+import { isAdmin } from "./_lib/admin.js";
+import { paywallOn, isPro } from "./_lib/plan.js";
 
 const MEMBER_LABS = new Set([
   "ab1336-simulator", "pf40-lab", "v20-lab", "atv320-lab", "atv630-lab",
@@ -55,17 +58,19 @@ export async function onRequest(ctx){
   const url = new URL(ctx.request.url);
   const sync = syncDir(url.pathname) && hasSessionCookie(ctx.request);
   if (!membersOnly(url.pathname)) return sync ? withSync(ctx) : ctx.next();
-  let member = false;
+  let s = null;
   try {
-    member = !!(await sessionUser(await getDb(ctx.env), ctx.request));
+    s = await sessionUser(await getDb(ctx.env), ctx.request);
   } catch (e) {
     return ctx.next(); // accounts backend unavailable: don't lock everyone out
   }
-  if (!member){
-    const to = new URL("/login.html", url);
+  const go = page => {
+    const to = new URL(page, url);
     to.searchParams.set("next", url.pathname + url.search);
     return new Response(null, { status: 302, headers: { location: to.pathname + to.search, "cache-control": "no-store" } });
-  }
+  };
+  if (!s) return go("/login.html");
+  if (paywallOn(ctx.env) && !isPro(s.user) && !isAdmin(s.user)) return go("/account.html?need=pro");
   const res = await withSync(ctx);
   const out = new Response(res.body, res);
   out.headers.set("cache-control", "private, no-store");

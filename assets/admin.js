@@ -1,4 +1,4 @@
-/* لوحة الإدارة: أرقام الأعضاء، رسم الاشتراكات اليومية، قايمة الأعضاء، لينك باسورد جديد، ومسح عضو.
+/* لوحة الإدارة: أرقام الأعضاء، رسم الاشتراكات اليومية، قايمة الأعضاء، لينك باسورد جديد، تفعيل اشتراك Pro، ومسح عضو.
    الصفحة نفسها مفتوحة، بس كل /api/admin/* بيرجّع 403 لأي حد مش في ADMIN_EMAILS. */
 (function(){
   "use strict";
@@ -85,15 +85,21 @@
   }
 
   /* ---------- الأعضاء ---------- */
-  var list = $("mem-list"), more = $("mem-more"), count = $("mem-count"), q = "", offset = 0, seq = 0, meEmail = "";
+  var list = $("mem-list"), more = $("mem-more"), count = $("mem-count"), q = "", offset = 0, seq = 0, meEmail = "", paywall = false;
+  function isPro(m){ return m.plan === "pro" && m.pro_until > Date.now(); }
+  function planTag(m){
+    if (isPro(m)) return '<span class="mem-plan paid">Pro لحد ' + esc(fmtDate(m.pro_until)) + "</span>";
+    return '<span class="mem-plan">' + (m.plan === "pro" && m.pro_until ? "مجاني · Pro خلص" : "مجاني") + "</span>";
+  }
+  function isoDay(t){ var d = new Date(t + 2 * 3600 * 1000); return d.toISOString().slice(0, 10); } // بتوقيت القاهرة
   function memberRow(m){
     var self = m.email === meEmail;
-    return '<li class="mem" data-id="' + m.id + '" data-name="' + esc(m.name) + '" data-email="' + esc(m.email) + '">' +
+    return '<li class="mem" data-id="' + m.id + '" data-name="' + esc(m.name) + '" data-email="' + esc(m.email) + '" data-until="' + (isPro(m) ? m.pro_until : "") + '">' +
       '<div class="mem-top"><div class="mem-who"><b>' + esc(m.name) + (m.admin ? ' <span class="mem-tag">إدارة</span>' : "") + '</b><span class="ltr mem-email">' + esc(m.email) + "</span></div>" +
-      '<span class="mem-plan' + (m.plan === "free" ? "" : " paid") + '">' + (m.plan === "free" ? "مجاني" : "مدفوع") + "</span></div>" +
+      planTag(m) + "</div>" +
       '<dl class="mem-facts"><div><dt>اشترك</dt><dd>' + esc(fmtDate(m.created_at)) + "</dd></div><div><dt>آخر دخول</dt><dd>" + esc(ago(m.last_seen)) + "</dd></div>" +
       "<div><dt>تقدّم متزامن</dt><dd>" + (m.synced ? m.synced + " حاجة" : "لأ") + "</dd></div><div><dt>شهادات</dt><dd>" + m.certs + "</dd></div></dl>" +
-      '<div class="mem-act"><button class="btn btn-ghost" type="button" data-act="reset">لينك باسورد جديد</button>' +
+      '<div class="mem-act"><button class="btn btn-ghost" type="button" data-act="reset">لينك باسورد جديد</button><button class="btn btn-ghost" type="button" data-act="plan">تفعيل اشتراك</button>' +
       (self ? "" : '<button class="btn btn-ghost danger" type="button" data-act="ask-delete">امسح العضو</button>') + "</div>" +
       '<div class="mem-panel" hidden></div></li>';
   }
@@ -105,7 +111,7 @@
       if (!r.ok){ count.textContent = r.message || OFFLINE; return; }
       var html = r.members.map(memberRow).join("");
       if (reset) list.innerHTML = html; else list.insertAdjacentHTML("beforeend", html);
-      offset = r.offset + r.members.length;
+      offset = r.offset + r.members.length; paywall = !!r.paywall;
       count.textContent = r.total ? (q ? "لقينا " + r.total + " عضو" : "كل الأعضاء: " + r.total) + (offset < r.total ? " (معروض " + offset + ")" : "") : (q ? "مفيش عضو بالاسم أو الإيميل ده." : "لسه مفيش أعضاء.");
       more.hidden = offset >= r.total;
     });
@@ -135,6 +141,28 @@
       var done = function(){ ok.textContent = "اتنسخ ✓"; setTimeout(function(){ ok.textContent = ""; }, 2500); };
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(inp.value).then(done, function(){ inp.select(); });
       else { inp.select(); try { document.execCommand("copy"); done(); } catch (x){} }
+    } else if (act === "plan"){
+      var until = +li.getAttribute("data-until") || 0, def = isoDay(until || Date.now() + 30 * 864e5), min = isoDay(Date.now() + 864e5);
+      var pp = panel(li, '<div class="mem-pro" role="group" aria-labelledby="pl-' + id + '"><p id="pl-' + id + '" class="mem-pl">' + (until ? "<b>" + esc(name) + "</b> مشترك Pro لحد " + esc(fmtDate(until)) + ". تقدر تمدّ الاشتراك أو تلغيه." : "فعّل اشتراك Pro لـ <b>" + esc(name) + "</b> لحد اليوم اللي تختاره.") + "</p>" +
+        '<label class="field mem-date" for="pu-' + id + '">Pro لحد يوم<input type="date" id="pu-' + id + '" class="ltr" min="' + min + '" value="' + def + '"></label>' +
+        '<div class="mem-act"><button class="btn btn-primary" type="button" data-act="plan-save">' + (until ? "حدّث الاشتراك" : "فعّل الاشتراك") + "</button>" +
+        (until ? '<button class="btn btn-ghost danger" type="button" data-act="plan-cancel">ألغِ الاشتراك</button>' : "") +
+        '<button class="btn btn-ghost" type="button" data-act="cancel">اقفل</button></div>' +
+        (paywall ? "" : '<p class="adm-note">الاشتراك المدفوع لسه مش مقفول على الموقع، فالأعضاء كلهم شايفين كل حاجة. اللي هتعمله هنا بيتسجّل ويشتغل أول ما الاشتراك يتفعّل.</p>') +
+        '<p class="auth-msg" role="alert" hidden></p></div>');
+      pp.querySelector("input").focus();
+    } else if (act === "plan-save" || act === "plan-cancel"){
+      var day = act === "plan-save" ? li.querySelector(".mem-date input").value : null, m2 = li.querySelector(".mem-pro .auth-msg");
+      if (act === "plan-save" && !/^\d{4}-\d{2}-\d{2}$/.test(day || "")){ m2.textContent = "اختار يوم في المستقبل."; m2.hidden = false; return; }
+      b.disabled = true;
+      post("/api/admin/plan", { id: id, until: day }).then(function(r){
+        b.disabled = false;
+        if (!r.ok){ m2.textContent = r.error === "bad_request" ? "اختار يوم في المستقبل." : (r.message || OFFLINE); m2.hidden = false; return; }
+        var mm = { plan: r.plan, pro_until: r.pro_until };
+        li.setAttribute("data-until", isPro(mm) ? r.pro_until : "");
+        li.querySelector(".mem-plan").outerHTML = planTag(mm);
+        panel(li, '<p class="mem-pl" role="status">' + (r.plan === "pro" ? "اتفعّل اشتراك Pro لـ " + esc(name) + " لحد " + esc(fmtDate(r.pro_until)) + " ✓" : "اتلغى اشتراك " + esc(name) + "، ورجع مجاني.") + "</p>");
+      });
     } else if (act === "ask-delete"){
       var p2 = panel(li, '<div class="mem-confirm" role="group" aria-labelledby="cf-' + id + '"><p id="cf-' + id + '">متأكد إنك عايز تمسح حساب <b>' + esc(name) + "</b>؟ هيتمسح معاه تقدّمه وشهاداته، ومفيش رجوع.</p>" +
         '<div class="mem-act"><button class="btn danger-solid" type="button" data-act="delete">أيوه، امسحه</button><button class="btn btn-ghost" type="button" data-act="cancel">لأ، سيبه</button></div></div>');

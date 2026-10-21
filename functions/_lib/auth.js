@@ -56,6 +56,8 @@ export async function getDb(env){
     ]);
     // Columns added after launch: "duplicate column" on databases that already have them is fine.
     try { await env.DB.prepare("ALTER TABLE users ADD COLUMN last_seen INTEGER").run(); } catch (e) {}
+    try { await env.DB.prepare("ALTER TABLE users ADD COLUMN plan TEXT NOT NULL DEFAULT 'free'").run(); } catch (e) {}
+    try { await env.DB.prepare("ALTER TABLE users ADD COLUMN pro_until INTEGER").run(); } catch (e) {} // Pro ends here (ms); see _lib/plan.js
     schemaReady = true;
   }
   return env.DB;
@@ -134,7 +136,7 @@ export async function sessionUser(db, request){
   const token = readCookie(request, COOKIE);
   if (!token || !/^[0-9a-f]{64}$/.test(token)) return null;
   const th = await sha256(token);
-  const row = await db.prepare("SELECT u.id, u.name, u.email, u.plan, u.created_at, s.expires_at FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ?").bind(th).first();
+  const row = await db.prepare("SELECT u.id, u.name, u.email, u.plan, u.pro_until, u.created_at, s.expires_at FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ?").bind(th).first();
   if (!row) return null;
   if (row.expires_at < Date.now()){ await db.prepare("DELETE FROM sessions WHERE token_hash = ?").bind(th).run(); return null; }
   return { token_hash: th, id: row.id, user: publicUser(row) };
@@ -148,7 +150,7 @@ export async function touchUser(db, userId){
 
 export function newToken(){ return hex(crypto.getRandomValues(new Uint8Array(32))); }
 
-export function publicUser(u){ return { name: u.name, email: u.email, plan: u.plan, created_at: u.created_at }; }
+export function publicUser(u){ return { name: u.name, email: u.email, plan: u.plan, pro_until: u.pro_until || null, created_at: u.created_at }; }
 
 // Simple per-email lockout after repeated wrong passwords.
 export async function checkFails(db, email){
