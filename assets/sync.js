@@ -11,6 +11,8 @@
     "vfd-wbx": "progress", "vfd-tc": "progress", "vfd-ex": "progress", "servo-lab-v1-ui": "progress",
     "mrje-sim-v1-ui": "progress", "sigma7-sim-v1-ui": "progress", "kinetix300-sim-v1-ui": "progress" };
   DEV.forEach(function(d){ KEYS[d + "-lab-v1"] = "state"; KEYS[d + "-lab-v1-ui"] = "progress"; });
+  // last: آخر كورس/محاكي اتفتح {p: المسار، title، t: الوقت} — الأحدث يكسب. الصفحة الرئيسية بتقراه في كارت «كمّل من حيث وقفت»
+  var LAST = "le-last-v1"; KEYS[LAST] = "last";
   var META = "le-sync-meta", RELOADED = "le-sync-reloaded", PUSH_EVERY = 15000, BATCH = 60000;
   var script = document.currentScript;
   var noReload = !!(script && script.hasAttribute("data-no-reload"));
@@ -55,6 +57,10 @@
     var a, b;
     try { a = JSON.parse(L); b = JSON.parse(S); } catch (e){ return L; }
     var m;
+    if (KEYS[k] === "last"){
+      var ta = isObj(a) ? +a.t || 0 : 0, tb = isObj(b) ? +b.t || 0 : 0;
+      return tb > ta ? S : L;
+    }
     if (KEYS[k] === "state"){
       if (!isObj(a)) return isObj(b) ? S : L;
       if (!isObj(b)) return L;
@@ -65,7 +71,7 @@
     return out === JSON.stringify(a) ? L : out;
   }
 
-  var signed = false, busy = false, timer = null;
+  var signed = false, busy = false, timer = null, offline = false;
   function post(items, keepalive){
     return fetch("/api/progress", { method: "POST", credentials: "same-origin", keepalive: !!keepalive,
       headers: { "content-type": "application/json" }, body: JSON.stringify({ items: items }) })
@@ -111,7 +117,7 @@
         saveMeta();
         return changed;
       })
-      .catch(function(){ return false; });
+      .catch(function(){ offline = true; return false; });
   }
 
   function reloadOnce(){
@@ -123,8 +129,14 @@
     return true;
   }
 
+  // صفحة كورس أو محاكي (جوه فولدر): نسجّلها «آخر حاجة فتحتها» قبل المزامنة
+  if (/^\/[^/]+\/[^/]*$/.test(location.pathname)){
+    var title = String(document.title || "").replace(/\s*[|·–—-]\s*LearnElectricals\s*$/i, "").trim().slice(0, 120);
+    lsSet(LAST, JSON.stringify({ p: location.pathname, title: title, t: Date.now() }));
+  }
+
   var ready = pull().then(function(changed){
-    if (!signed) return { signed: false };
+    if (!signed) return { signed: false, offline: offline };
     return push().then(function(){
       if (changed && !noReload && reloadOnce()) return { signed: true, reloading: true };
       timer = setInterval(function(){ push(); }, PUSH_EVERY);
