@@ -597,7 +597,7 @@ const ordK = a => { const k = ENG.kind(a) || ''; return k === 'HC' ? 99 : 'IQMTC
 PL.brandSim = function(host, cfg){
   const B = BR[cfg.brand], exs = cfg.exercises, PS = progStore(cfg.brand), PFX = cfg.brand;
   const AR = B.id === 'ab', DV = B.id === 'dvp', SI = B.id === 'sie';
-  let k = 0, ex, cols, prog, T, plcStr = null, mode = 'STOP', key = 'REM', online = false, monOn = true, e, plantSt, sel = null, tab = 'lad', backup = null, rdT = 0, acc = 0, faceSig = '', newTagOpen = false;
+  let k = 0, ex, cols, prog, T, plcStr = null, mode = 'STOP', key = 'REM', online = false, monOn = true, e, plantSt, sel = null, tab = 'lad', backup = null, rdT = 0, acc = 0, faceSig = '', newTagOpen = false, demo = null;
   const fails = {}, forces = {}, pressed = {};
   const P = () => PL.plants[ex.plant || 'loads'];
   const xk = () => PFX + '/' + ex.key;
@@ -648,7 +648,7 @@ PL.brandSim = function(host, cfg){
     if (plantSt) P().step(plantSt, e, 0);
   }
   const same = () => plcStr != null && plcStr === JSON.stringify(ENG.serialize(prog));
-  const monitoring = () => mode === 'RUN' && same() && (SI ? online && monOn : DV ? monOn : online);
+  const monitoring = () => !demo && mode === 'RUN' && same() && (SI ? online && monOn : DV ? monOn : online);
   function setMode(m){
     if (m === mode) return;
     mode = m;
@@ -682,6 +682,7 @@ PL.brandSim = function(host, cfg){
 
   /* ---------- select exercise ---------- */
   function select(j){
+    if (demo) PL.preview.stop();
     k = j; ex = exs[j]; cols = ex.cols || 5; sel = null; backup = null; newTagOpen = false;
     const saved = PS.get(ex.key);
     T = (ex.tags || []).map(t => Object.assign({}, t));
@@ -697,6 +698,7 @@ PL.brandSim = function(host, cfg){
     renderList(); renderScn(); renderIO(); pctlRender(); updChk(); setTab(tab === 'il' && !DV ? 'lad' : tab);
     msg(guide());
     renderAll();
+    if (pvAd.refresh) pvAd.refresh();
   }
   function guide(){
     return SI ? `ابدأ: اكتب البرنامج تحت، وبعدين <b>Download to device</b> (الـ CPU بيبقى RUN لوحده)، ودوس <b>Monitoring</b> عشان تشوف الكهربا ماشية. وجرّب بالزراير اللي تحت الماكينة.`
@@ -1097,6 +1099,7 @@ PL.brandSim = function(host, cfg){
   let tagT = 0;
   PL.animate(host, dt => {
     acc += dt; let n = 0;
+    if (demo) acc = 0; /* the machine preview drives the clock itself */
     while (acc >= 0.02 && n < 6){ acc -= 0.02; n++; P().step(plantSt, e, 0.02); if (mode === 'RUN') e.scan(0.02); }
     if (n === 6) acc = 0;
     rdT += dt; tagT += dt;
@@ -1108,12 +1111,43 @@ PL.brandSim = function(host, cfg){
   let wasMon = false;
   setInterval(() => { const m = monitoring(); if (m !== wasMon){ wasMon = m; renderTop(); refreshRungs(); } }, 300);
 
+  /* ---------- machine preview («▶ شوف المكنة شغّالة»): the hidden solution runs in the PLC, the editor is hidden ---------- */
+  const L = s => `<bdi dir="ltr">${s}</bdi>`;
+  const pvAd = {host, watchEl:plantBox, title:'المكنة شغالة صح',
+    mount(box){ q('.bx-stage').before(box); }, key:() => 'x/' + PFX + '/' + ex.key, ex:() => ex, has:() => !!(ex && ex.sol),
+    begin(po){
+      demo = {e, plantSt, mode, sel, ins:(ex.io.inputs || []).map(i => ({i, state:i.state})), pressed:Object.assign({}, pressed)};
+      sel = null;
+      (ex.io.inputs || []).forEach(i => { i.state = defIn(i); pressed[i.a] = false; });
+      plantSt = P().create(po);
+      e = new ENG.Engine(ENG.program(ex.sol, cols), {cols});
+      (ex.io.inputs || []).forEach(i => { const v = physFor(i); if (v != null) e.setIn(i.a, v); });
+      P().step(plantSt, e, 0);
+      mode = 'RUN'; faceSig = ''; renderAll();
+    },
+    end(){
+      if (!demo) return; const d = demo; demo = null;
+      e = d.e; plantSt = d.plantSt; mode = d.mode; sel = d.sel; faceSig = '';
+      d.ins.forEach(x => { x.i.state = x.state; }); Object.keys(pressed).forEach(a => delete pressed[a]); Object.assign(pressed, d.pressed);
+      renderAll();
+    },
+    advance(dt){ P().step(plantSt, e, dt); e.scan(dt); },
+    engine:() => e, plant:() => plantSt,
+    setIn(a, v){ const i = (ex.io.inputs || []).find(x => x.a === a); if (!i){ e.setIn(a, v); return; }
+      if (i.kind === 'pb' || i.kind === 'pbnc') pressed[a] = v !== defIn(i); else i.state = v;
+      const pv = physFor(i); e.setIn(a, pv == null ? v : pv); updIO(); },
+    inBtn:a => ioBox.querySelector(`.ib[data-a="${a}"]`), outEl:() => face, plantEl:() => plantBox,
+    lab:a => { const x = (ex.io.inputs || []).concat(ex.io.outputs || []).find(y => y.a === a); return x ? x.label : ''; },
+    addr:a => B.short(a, T), xl:s => xlate(B, T, s),
+    outro:() => '<b>كده المكنة اشتغلت زي المطلوب.</b> دلوقتي دورك: اكتب البرنامج تحت، ' + (SI ? `اعمل ${L('Download to device')} وبعدين ${L('Monitoring')}` : DV ? `اعمل ${L('Write to PLC')} وحوّل الـ PLC لـ ${L('RUN')}` : `اعمل ${L('Go Online')} ← ${L('Download')} ← ${L('Run Mode')}`) + '، وجرّب بالزراير، وبعدين دوس «اختبر البرنامج».'};
+  PL.preview.attach(pvAd);
+
   /* deep link: siemens.html#enc opens that exercise */
   const fromHash = () => { const h = decodeURIComponent((location.hash || '').slice(1)), j = exs.findIndex(x => x.key === h); return j; };
   select(Math.max(0, fromHash()));
   if (fromHash() > 0) setTimeout(() => scn.scrollIntoView({block:'start'}), 60);
   window.addEventListener('hashchange', () => { const j = fromHash(); if (j >= 0 && j !== k){ select(j); scn.scrollIntoView({block:'start', behavior:PL.reduced() ? 'auto' : 'smooth'}); } });
-  const api = {host, brand:B.id, get ex(){ return ex; }, get prog(){ return prog; }, get tags(){ return T; }, get engine(){ return e; }, get plant(){ return plantSt; }, get mode(){ return mode; }, get plcStr(){ return plcStr; }, exercises:exs,
+  const api = {host, preview:pvAd, get demo(){ return !!demo; }, brand:B.id, get ex(){ return ex; }, get prog(){ return prog; }, get tags(){ return T; }, get engine(){ return e; }, get plant(){ return plantSt; }, get mode(){ return mode; }, get plcStr(){ return plcStr; }, exercises:exs,
     select, check, load(def){ prog = ENG.program(def, cols); changed(); }, press, pick(i, r, c){ sel = {i, r, c}; renderLad(); }, setEl(id){ setEl(id); }, lint, download, setMode, key:v => { key = v; },
     tool(a){ const b = toolBox.querySelector(`[data-a="${a}"]`); if (b) b.click(); }, monitoring, il: () => DV ? DVP.il(prog) : null, rungText: i => AR ? AB.rungText(prog[i], T) : null};
   (PL._bx = PL._bx || []).push(api);

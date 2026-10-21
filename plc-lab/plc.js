@@ -855,7 +855,7 @@ PL.ladFig = function(el, def, o){ o = o || {}; const cols = o.cols || 5, prog = 
 
 PL.sim = function(host, opt){
   const cols = opt.cols || 5, exs = opt.exercises;
-  let ex, prog, e, plantSt, running = false, sel = null, acc = 0, rdT = 0, forceMode = false, lastRes = null, backup = null;
+  let ex, prog, e, plantSt, running = false, sel = null, acc = 0, rdT = 0, forceMode = false, lastRes = null, backup = null, demo = null;
   const forces = {};
   const pressed = {}; /* push-button hold state */
   const saveKey = () => opt.lesson + '/' + ex.key;
@@ -883,6 +883,7 @@ PL.sim = function(host, opt){
     (ex.io.inputs || []).forEach(i => { const v = physFor(i); if (v != null) e.setIn(i.a, v); });
   }
   function select(k){
+    if (demo) PL.preview.stop();
     stop();
     ex = exs[k]; sel = null; lastRes = null; backup = null;
     const saved = PL.progs.get(saveKey());
@@ -900,6 +901,7 @@ PL.sim = function(host, opt){
     resBox.hidden = true;
     if (tabs) tabs.innerHTML = exs.map((x, j) => `<button type="button" class="btn${PL.has(opt.lesson, x.key) ? ' done' : ''}" data-k="${j}" aria-pressed="${j === k}">${esc(x.title)}</button>`).join('');
     renderIO(); pctlRender(); renderAll();
+    if (pvAd.refresh) pvAd.refresh();
   }
   function changed(){
     PL.progs.set(saveKey(), ENG.serialize(prog));
@@ -981,11 +983,12 @@ PL.sim = function(host, opt){
   runB.addEventListener('click', () => running ? stop() : start());
   const loop = PL.animate(host, dt => {
     acc += dt; let n = 0;
+    if (demo) acc = 0; /* the machine preview drives the clock itself */
     while (acc >= 0.02 && n < 6){ acc -= 0.02; n++; P().step(plantSt, e, 0.02); if (running) e.scan(0.02); }
     if (n === 6) acc = 0;
     rdT += dt;
     renderPlant(); renderLeds();
-    if (running && rdT > 0.09){ rdT = 0; refreshRungs(); }
+    if (running && !demo && rdT > 0.09){ rdT = 0; refreshRungs(); }
   });
 
   /* ---------- check ---------- */
@@ -1023,7 +1026,7 @@ PL.sim = function(host, opt){
 
   /* ---------- ladder drawing ---------- */
   const lab = a => { const all = (ex.io.inputs || []).concat(ex.io.outputs || []).concat(ex.syms || []); const f = all.find(x => x.a === a); return f ? f.label : ''; };
-  const rungSvg = (rg, i) => drawRung(rg, i, {cols, running, e, sel, lab, hit:true});
+  const rungSvg = (rg, i) => drawRung(rg, i, {cols, running:running && !demo, e, sel, lab, hit:true});
   function renderLadder(){
     const focus = document.activeElement && lad.contains(document.activeElement) && document.activeElement.dataset ? Object.assign({}, document.activeElement.dataset) : null;
     lad.innerHTML = prog.map((rg, i) => `<div class="ls-rung${sel && sel.i === i ? ' cur' : ''}" data-i="${i}"><div class="ls-rh" dir="rtl"><b>رانج ${i + 1}</b><span class="sp"></span><button type="button" class="btn sm" data-rt="row+" ${rg.rows.length >= 3 ? 'disabled' : ''} aria-label="زوّد صف (فرع) في رانج ${i + 1}">+ فرع</button><button type="button" class="btn sm" data-rt="row-" ${rg.rows.length <= 1 ? 'disabled' : ''} aria-label="شيل آخر صف من رانج ${i + 1}">− صف</button><button type="button" class="btn sm" data-rt="del" ${prog.length <= 1 ? 'disabled' : ''} aria-label="امسح رانج ${i + 1}">✕</button></div>${rungSvg(rg, i)}</div>${sel && sel.i === i ? pickerHtml() : ''}`).join('');
@@ -1139,8 +1142,35 @@ PL.sim = function(host, opt){
     changed();
   });
 
+  /* ---------- machine preview («▶ شوف المكنة شغّالة»): the hidden solution runs on a fresh engine + machine ---------- */
+  const pvAd = {host, watchEl:plantBox, title:'المكنة شغالة صح',
+    mount(box){ task.after(box); }, key:() => 'l/' + opt.lesson + '/' + ex.key, ex:() => ex, has:() => !!(ex && ex.sol),
+    begin(po){
+      demo = {running, e, plantSt, sel, ins:(ex.io.inputs || []).map(i => ({i, state:i.state})), pressed:Object.assign({}, pressed)};
+      sel = null;
+      (ex.io.inputs || []).forEach(i => { i.state = defIn(i); pressed[i.a] = false; });
+      plantSt = P().create(po);
+      e = new ENG.Engine(ENG.program(ex.sol, cols), {cols});
+      (ex.io.inputs || []).forEach(i => { const v = physFor(i); if (v != null) e.setIn(i.a, v); });
+      running = true; renderAll();
+    },
+    end(){
+      if (!demo) return; const d = demo; demo = null;
+      running = d.running; e = d.e; plantSt = d.plantSt; sel = d.sel;
+      d.ins.forEach(x => { x.i.state = x.state; }); Object.keys(pressed).forEach(a => delete pressed[a]); Object.assign(pressed, d.pressed);
+      renderAll();
+    },
+    advance(dt){ P().step(plantSt, e, dt); e.scan(dt); },
+    engine:() => e, plant:() => plantSt,
+    setIn(a, v){ const i = (ex.io.inputs || []).find(x => x.a === a); if (!i){ e.setIn(a, v); return; }
+      if (i.kind === 'pb' || i.kind === 'pbnc') pressed[a] = v !== defIn(i); else i.state = v;
+      const pv = physFor(i); e.setIn(a, pv == null ? v : pv); updIO(); renderLeds(); },
+    inBtn:a => ioBox.querySelector(`.ib[data-a="${a}"]`), outEl:a => leds.querySelector(`.led[data-a="${a}"]`), plantEl:() => plantBox,
+    lab:a => lab(a), addr:a => a, xl:s => s,
+    outro:() => '<b>كده المكنة اشتغلت زي المطلوب.</b> دلوقتي دورك: اكتب البرنامج اللي يخليها تشتغل كده، شغّل <bdi dir="ltr">RUN</bdi> وجرّب بالزراير، وبعدين دوس «اختبر البرنامج».'};
+  PL.preview.attach(pvAd);
   select(0);
-  const api = {host, get ex(){ return ex; }, get prog(){ return prog; }, get engine(){ return e; }, get plant(){ return plantSt; }, get running(){ return running; },
+  const api = {host, preview:pvAd, get demo(){ return !!demo; }, get ex(){ return ex; }, get prog(){ return prog; }, get engine(){ return e; }, get plant(){ return plantSt; }, get running(){ return running; },
     select, start, stop, check, load(def){ prog = ENG.program(def, cols); changed(); }, press:setPress, exercises:exs, lesson:opt.lesson,
     pick(i, r, c){ sel = {i, r, c}; renderLadder(); }, setEl(t){ setEl(t); }, lint: () => ENG.lint(prog)};
   (PL._sims = PL._sims || []).push(api);
@@ -1252,7 +1282,7 @@ PL.parts = function(host, opt){
 const TERM_COL = {p24:'#d32f2f', p0:'#1f6fd1', sig:'#222', ac:'#7a4a22', n:'#1f6fd1'};
 PL.wire = function(host, opt){
   const L = opt.lesson, exs = opt.exercises;
-  let ex, wires = [], pend = null, passed = false, act = {};
+  let ex, wires = [], pend = null, passed = false, act = {}, demoLive = null, demoSt = null;
   host.innerHTML = `<div class="tabs" role="group" aria-label="تمارين التوصيل">${exs.map((x, j) => `<button type="button" class="btn${PL.has(L, x.key) ? ' done' : ''}" data-k="${j}" aria-pressed="${j === 0}">${esc(x.title)}</button>`).join('')}</div>
     <div class="chal wb-task"></div><div class="bn-board wb-board"></div>
     <div class="bn-tools"><button type="button" class="btn pri wb-chk">اختبر التوصيل</button><button type="button" class="btn wb-undo">شيل آخر سلك</button><button type="button" class="btn wb-clr">امسح كله</button></div>
@@ -1266,17 +1296,19 @@ PL.wire = function(host, opt){
     return f;
   }
   function draw(){
-    const live = passed ? ex.live(act) : {};
+    const live = demoLive || (passed ? ex.live(act) : {});
     let s = `<svg viewBox="0 0 360 ${ex.h || 300}" role="img" aria-label="لوحة التوصيل">${ex.art(live)}`;
-    wires.forEach(([a, b], k) => { const A = T(a), B = T(b), mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2 + 18, col = TERM_COL[A.pol] || TERM_COL[B.pol] || '#333'; const d = `M${A.x} ${A.y}Q${mx} ${my} ${B.x} ${B.y}`; s += `<g class="bw" data-w="${k}"><path d="${d}" class="bw-o"/><path d="${d}" class="bw-c" stroke="${col}"/><path d="${d}" class="bw-hit" tabindex="0" role="button" aria-label="سلك من ${esc(A.l)} لـ ${esc(B.l)}، دوس عشان تشيله"/></g>`; });
+    (demoLive ? [] : wires).forEach(([a, b], k) => { const A = T(a), B = T(b), mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2 + 18, col = TERM_COL[A.pol] || TERM_COL[B.pol] || '#333'; const d = `M${A.x} ${A.y}Q${mx} ${my} ${B.x} ${B.y}`; s += `<g class="bw" data-w="${k}"><path d="${d}" class="bw-o"/><path d="${d}" class="bw-c" stroke="${col}"/><path d="${d}" class="bw-hit" tabindex="0" role="button" aria-label="سلك من ${esc(A.l)} لـ ${esc(B.l)}، دوس عشان تشيله"/></g>`; });
     ex.terms.forEach(t => { s += `<g class="bt${pend === t.id ? ' pend' : ''}" data-t="${t.id}"><circle cx="${t.x}" cy="${t.y}" r="16" class="bt-hit" tabindex="0" role="button" aria-label="طرف ${esc(t.l)}"/><circle cx="${t.x}" cy="${t.y}" r="13" class="bt-ring"/><circle cx="${t.x}" cy="${t.y}" r="7" class="bt-s"/><path d="M${t.x - 4} ${t.y}h8" class="bt-x"/><text x="${t.x + (t.lx || 0)}" y="${t.y + (t.ly != null ? t.ly : -12)}" class="bt-lab"${t.anc ? ` text-anchor="${t.anc}"` : ''}>${esc(t.l)}</text></g>`; });
     board.innerHTML = s + '</svg>';
   }
   function select(k){
+    if (demoSt) PL.preview.stop();
     ex = exs[k]; wires = []; pend = null; passed = false; act = {};
     taskBox.innerHTML = ex.task; taskBox.classList.toggle('ok', PL.has(L, ex.key));
     $$('.tabs [data-k]', host).forEach(b => b.setAttribute('aria-pressed', +b.dataset.k === k));
     res.innerHTML = ''; actBox.hidden = true; draw();
+    if (pvAd.refresh) pvAd.refresh();
   }
   function tapTerm(id){
     if (pend == null){ pend = id; draw(); return; }
@@ -1312,8 +1344,33 @@ PL.wire = function(host, opt){
   $('.wb-undo', host).addEventListener('click', () => { wires.pop(); passed = false; actBox.hidden = true; draw(); });
   $('.wb-clr', host).addEventListener('click', () => { wires = []; pend = null; passed = false; actBox.hidden = true; res.innerHTML = ''; draw(); });
   $$('.tabs [data-k]', host).forEach(b => b.addEventListener('click', () => select(+b.dataset.k)));
+  /* machine preview: what the correct wiring does (the wires themselves stay hidden: wiring is the learner's job) */
+  const EFF = {target:'الحساس حسّ بالحديدة', i0:'لمبة I0.0 على كارت الدخل نوّرت', i1:'لمبة I0.1 على كارت الدخل نوّرت', q0:'خرج Q0.0 نوّر والحمل اللي عليه اشتغل', q1:'خرج Q0.1 نوّر واللمبة نوّرت', pb:'الزرار اتداس'};
+  const pvAd = {host, watchEl:board, title:'التوصيل الصح بيعمل إيه', goLabel:'شوف هتشتغل إزاي', goSub:'اتفرج على اللوحة وهي متوصّلة صح وشغالة قبل ما توصّل إنت.',
+    mount(box){ taskBox.after(box); }, key:() => 'w/' + L + '/' + ex.key, ex:() => ex, has:() => !!ex,
+    begin(){ demoSt = {passed, act:Object.assign({}, act), hidden:actBox.hidden, html:actBox.innerHTML, pend}; pend = null; demoLive = ex.live({}); draw(); },
+    end(){ if (!demoSt) return; const d = demoSt; demoSt = null; demoLive = null; actBox.hidden = d.hidden; actBox.innerHTML = d.html; act = d.act; passed = d.passed; pend = d.pend; draw(); },
+    outro:() => '<b>ده اللي المفروض يحصل.</b> دلوقتي دورك: وصّل الأسلاك بنفسك (دوس على طرف وبعدين على طرف تاني)، ودوس «اختبر التوصيل».',
+    async script(pl, gen){
+      const tx = PL.preview.tx, hold = ms => pl.hold(gen, ms), da = {};
+      pl.say('<b>اتفرج:</b> ده اللي هيحصل لما التوصيل يبقى صح. الأسلاك مستخبّية عشان التوصيل عليك إنت.', 'intro'); pl.hl(board, 2400); await hold(2800);
+      actBox.hidden = false; actBox.innerHTML = ex.acts.map(a => `<button type="button" class="btn" data-a="${a.k}" aria-pressed="false" tabindex="-1">${a.l}</button>`).join('');
+      const effOf = (was, now) => Object.keys(EFF).filter(k => !!now[k] !== !!was[k]).map(k => now[k] ? tx(EFF[k]) : tx(EFF[k]).replace('نوّرت', 'طفت').replace('اشتغل', 'وقف').replace('حسّ بالحديدة', 'فصل').replace('اتداس', 'اتساب'));
+      for (let j = 0; j < ex.acts.length; j++){
+        pl.progress(j / ex.acts.length);
+        const a = ex.acts[j], b = actBox.querySelector(`[data-a="${a.k}"]`);
+        for (const on of [true, false]){
+          pl.say(on ? tx(a.l) : 'ونرجّعها زي ما كانت', 'act'); await pl.point(gen, b);
+          const was = ex.live(da); da[a.k] = on; b.setAttribute('aria-pressed', on); demoLive = ex.live(da); draw(); pl.hl(board, 900);
+          const eff = effOf(was, demoLive);
+          pl.say((on ? tx(a.l) : 'رجّعناها') + (eff.length ? ' <span class="pv-arr">←</span> ' + eff.join(' و') : ''), 'fx'); await hold(on ? 2300 : 1400);
+        }
+      }
+      pl.progress(1); pl.say(pvAd.outro(), 'end');
+    }};
+  PL.preview.attach(pvAd);
   select(0);
-  const api = {connect(a, b){ tapTerm(a); tapTerm(b); }, check, select, solve(){ wires = []; ex.groups.forEach(g => { for (let i = 1; i < g.length; i++) wires.push([g[i - 1], g[i]]); }); draw(); return check(); }, get wires(){ return wires; }, get ex(){ return ex; }};
+  const api = {preview:pvAd, connect(a, b){ tapTerm(a); tapTerm(b); }, check, select, solve(){ wires = []; ex.groups.forEach(g => { for (let i = 1; i < g.length; i++) wires.push([g[i - 1], g[i]]); }); draw(); return check(); }, get wires(){ return wires; }, get ex(){ return ex; }};
   (PL._wires = PL._wires || []).push(api);
   return api;
 };
@@ -1597,5 +1654,258 @@ PL.brandCards = function(host){
   host.classList.add('bcards');
   host.innerHTML = PL.BRANDS.map(b => { const c = n(b.id); return `<a class="bcard" href="${b.file}"><span class="bf" aria-hidden="true">${FACE[b.id](b.st)}</span><span class="bt"><b dir="ltr">${b.name}</b><span class="bs">${b.sub}</span><span class="btg">${b.tags.map(t => `<i>${t}</i>`).join('')}</span><span class="bp">${c ? `خلّصت ${Math.min(c, PL.BRAND_N)} من ${PL.BRAND_N} ${c >= PL.BRAND_N ? '✓' : '←'}` : PL.BRAND_N + ' تمارين ←'}</span></span></a>`; }).join('');
 };
+
+/* ================= machine preview: «▶ شوف المكنة شغّالة» =================
+   Plays an exercise's machine like a short video INSIDE the real simulator, before the learner writes anything:
+   the exercise's hidden solution runs on a fresh engine + machine model, a tap marker presses the real input buttons
+   following the exercise's own auto-check steps (ex.demo overrides them), and captions narrate cause → effect
+   («دوست Start ← KM1 اشتغل»، «بعد 5 ثواني ← ...»). The ladder editor is hidden while it plays.
+   The learner's program, I/O state, engine and machine are snapshotted by the simulator and restored exactly on close;
+   nothing is saved and nothing is marked complete. Simulators plug in through an adapter:
+     {host, watchEl, mount(box), key(), ex(), has(), begin(plantOpt), end(), advance(dt), engine(), plant(),
+      setIn(a, raw), inBtn(a), outEl(a), plantEl(), lab(a), addr(a), xl(text), outro, script?(player, ctl)} */
+const PV_SEEN = 'plc-preview-seen-v1', PV_AUTO = 'plc-preview-auto';
+const PV = PL.preview = {cur:null, rate:1};
+function pvSeen(){ try { return JSON.parse(lsGet(PV_SEEN)) || {}; } catch (e){ return {}; } }
+PV.seen = k => !!pvSeen()[k];
+PV.markSeen = k => { const o = pvSeen(); o[k] = 1; lsSet(PV_SEEN, JSON.stringify(o)); };
+PV.autoOn = () => lsGet(PV_AUTO) !== 'off';
+PV.setAuto = on => lsSet(PV_AUTO, on ? 'on' : 'off');
+const PV_CANCEL = {cancel:true};
+
+/* Arabic caption text: escape, and isolate every Latin/number run (I0.0, 5, KM1, %Q0.1, "Start_PB") as LTR */
+const PV_W = '["%#]?[A-Za-z0-9][A-Za-z0-9.%#_:+\\-\\/"\\[\\]]*';
+const PV_TOK = new RegExp(PV_W + '(?:[ ]+' + PV_W + ')*', 'g');
+const PV_IC = {pause:'<path d="M8 5v14M16 5v14"/>', play:'<path d="M7 5l12 7-12 7z"/>', skip:'<path d="M5 5l9 7-9 7zM18 5v14"/>', rep:'<path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5"/>'};
+const pvIc = k => `<svg viewBox="0 0 24 24" class="pv-ic" aria-hidden="true">${PV_IC[k]}</svg>`;
+function ptx(s){
+  s = String(s == null ? '' : s); let out = '', last = 0;
+  s.replace(PV_TOK, (m, i) => { out += esc(s.slice(last, i)) + '<bdi dir="ltr">' + esc(m) + '</bdi>'; last = i + m.length; return m; });
+  return out + esc(s.slice(last));
+}
+PV.tx = ptx;
+const secs = n => { const v = Math.round(n * 10) / 10; return `<bdi dir="ltr">${fmt(v, v % 1 ? 1 : 0)}</bdi> ${v >= 3 && v <= 10 ? 'ثواني' : 'ثانية'}`; };
+
+/* ---------- the player: control bar (fixed at the bottom while playing) + tap marker inside the simulator ---------- */
+function Player(host, o){
+  const bar = document.createElement('div');
+  bar.className = 'pv-bar'; bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'عرض المكنة وهي شغالة');
+  bar.innerHTML = `<div class="pv-in"><div class="pv-top"><span class="pv-rec" aria-hidden="true"></span><b class="pv-t">${esc(o.title)}</b><span class="pv-ff" hidden>⏩<span class="pv-fft"> بنسرّع الوقت</span></span><span class="sp"></span>
+    <button type="button" class="btn sm pv-pause" aria-label="وقّف مؤقتًا" aria-pressed="false">${pvIc('pause')}</button><button type="button" class="btn sm pv-spd" aria-label="السرعة">1×</button><button type="button" class="btn sm pv-skip" aria-label="روح للآخر">${pvIc('skip')}</button><button type="button" class="btn sm pv-rep" aria-label="شوفها من الأول">${pvIc('rep')}</button><button type="button" class="btn sm pri pv-try">يلا جرّب إنت</button></div>
+    <div class="pv-cap" aria-live="polite"></div><div class="pv-pr" aria-hidden="true"><i></i></div>
+    ${o.auto ? '<div class="pv-end"><button type="button" class="btn sm pv-noauto">متشغّلهاش لوحدها تاني</button></div>' : ''}</div>`;
+  document.body.appendChild(bar); document.body.classList.add('pv-playing');
+  const fing = document.createElement('div'); fing.className = 'pv-fing'; fing.setAttribute('aria-hidden', 'true'); fing.innerHTML = '<i></i>';
+  host.classList.add('pv-host'); host.appendChild(fing);
+  const cap = bar.querySelector('.pv-cap'), prI = bar.querySelector('.pv-pr i'), ffB = bar.querySelector('.pv-ff'), pauseB = bar.querySelector('.pv-pause'), spdB = bar.querySelector('.pv-spd');
+  const P = {bar, sp:1, paused:false, gen:0, hls:[]};
+  P.frame = gen => new Promise((res, rej) => requestAnimationFrame(ts => {
+    if (gen !== P.gen) return rej(PV_CANCEL);
+    const dt = P.last ? Math.min(0.1, (ts - P.last) / 1000) : 0; P.last = ts;
+    res(P.paused ? 0 : dt * P.sp * PV.rate);
+  }));
+  P.hold = async (gen, ms) => { let t = 0; while (t < ms) t += (await P.frame(gen)) * 1000; };
+  P.say = (html, cls) => { cap.className = 'pv-cap' + (cls ? ' ' + cls : ''); cap.innerHTML = html; };
+  P.ff = on => { ffB.hidden = !on; };
+  P.progress = f => { prI.style.width = Math.round(Math.max(0, Math.min(1, f)) * 100) + '%'; };
+  P.hl = (el, ms) => { if (!el) return; el.classList.add('pv-hl'); P.hls.push(el); setTimeout(() => el.classList.remove('pv-hl'), ms || 1600); };
+  P.point = async (gen, el, opt) => {
+    if (!el || !el.getBoundingClientRect) return;
+    const red = reduced();
+    const r0 = el.getBoundingClientRect(), vh = window.innerHeight, bh = bar.getBoundingClientRect().height;
+    if (r0.top < 8 || r0.bottom > vh - bh - 8) { const y = window.scrollY + r0.top - Math.max(12, (vh - bh - r0.height) / 2); window.scrollTo({top:Math.max(0, y), behavior:red ? 'auto' : 'smooth'}); await P.hold(gen, red ? 60 : 380); }
+    const r = el.getBoundingClientRect(), hr = host.getBoundingClientRect();
+    const x = r.left - hr.left + r.width / 2, y = r.top - hr.top + Math.min(r.height / 2, 40);
+    fing.classList.toggle('mv', !red && fing.classList.contains('show'));
+    fing.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+    fing.classList.add('show');
+    await P.hold(gen, red ? 80 : 520);
+    if (!opt || !opt.noTap){ fing.classList.remove('tap'); void fing.offsetWidth; fing.classList.add('tap'); P.hl(el, 1300); await P.hold(gen, 160); }
+  };
+  P.hideFinger = () => fing.classList.remove('show', 'mv', 'tap');
+  P.reset = () => { P.paused = false; pauseB.innerHTML = pvIc('pause'); pauseB.setAttribute('aria-pressed', 'false'); pauseB.setAttribute('aria-label', 'وقّف مؤقتًا'); bar.classList.remove('done'); P.ff(false); P.progress(0); P.say(''); P.hideFinger(); P.last = 0; };
+  P.finish = () => { bar.classList.add('done'); P.ff(false); P.progress(1); P.hideFinger(); };
+  P.destroy = () => { P.gen++; bar.remove(); document.body.classList.remove('pv-playing'); fing.remove(); host.classList.remove('pv-host'); P.hls.forEach(el => el.classList.remove('pv-hl')); };
+  pauseB.addEventListener('click', () => { P.paused = !P.paused; pauseB.innerHTML = pvIc(P.paused ? 'play' : 'pause'); pauseB.setAttribute('aria-pressed', P.paused); pauseB.setAttribute('aria-label', P.paused ? 'كمّل' : 'وقّف مؤقتًا'); bar.classList.toggle('paused', P.paused); });
+  spdB.addEventListener('click', () => { P.sp = P.sp === 1 ? 2 : 1; spdB.textContent = P.sp + '×'; });
+  bar.querySelector('.pv-skip').addEventListener('click', () => o.onSkip());
+  bar.querySelector('.pv-rep').addEventListener('click', () => o.onReplay());
+  bar.querySelector('.pv-try').addEventListener('click', () => o.onTry());
+  const na = bar.querySelector('.pv-noauto'); if (na) na.addEventListener('click', () => { PV.setAuto(false); na.textContent = 'تمام، مش هتشتغل لوحدها تاني'; na.disabled = true; });
+  return P;
+}
+
+/* ---------- play / stop ---------- */
+PV.play = function(ad, opt){
+  opt = opt || {};
+  if (PV.cur) PV.cur.close();
+  if (!ad.has()) return null;
+  const ctl = {ad, closed:false, done:false, expOk:0, expBad:0, err:null, steps:0};
+  let pl, gen = 0;
+  PV.markSeen(ad.key());
+  function run(){
+    ctl.done = false; ctl.expOk = 0; ctl.expBad = 0; ctl.err = null;
+    pl.reset(); gen = ++pl.gen;
+    const ex = ad.ex(), c0 = ex.cases ? ex.cases[0] : null;
+    ad.begin(Object.assign({}, ex.plantOpt || {}, c0 && c0.plantOpt || {}));
+    ad.host.classList.add('pv-on');
+    const p = ad.script ? ad.script(pl, gen, ctl) : simScript(ad, pl, gen, ctl);
+    p.then(() => { if (gen === pl.gen){ ctl.done = true; pl.finish(); } }, err => {
+      if (err === PV_CANCEL) return;
+      ctl.err = String(err && err.message || err); console.warn('preview:', err);
+      if (gen === pl.gen){ ctl.done = true; pl.finish(); }
+    });
+  }
+  function stopRun(){ pl.gen++; ad.end(); ad.host.classList.remove('pv-on'); }
+  ctl.close = () => { if (ctl.closed) return; ctl.closed = true; stopRun(); pl.destroy(); if (PV.cur === ctl) PV.cur = null; if (ad.onClose) ad.onClose(); };
+  ctl.replay = () => { stopRun(); run(); };
+  ctl.skip = () => { if (ctl.done) return; pl.gen++; ctl.done = true; ctl.skipped = true; pl.say(ad.outro(), 'end'); pl.finish(); };
+  ctl.pause = v => { if (!!v !== pl.paused) pl.bar.querySelector('.pv-pause').click(); };
+  pl = Player(ad.host, {title:ad.title || 'المكنة شغالة', auto:opt.auto, onTry:ctl.close, onReplay:ctl.replay, onSkip:ctl.skip});
+  ctl.player = pl;
+  PV.cur = ctl;
+  run();
+  return ctl;
+};
+PV.stop = () => { if (PV.cur) PV.cur.close(); };
+if (HAS_DOM) document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && PV.cur) PV.cur.close(); });
+
+/* launch button + auto-play the first time each exercise's machine comes into view */
+PV.attach = function(ad){
+  const box = document.createElement('div'); box.className = 'pv-launch';
+  box.innerHTML = `<button type="button" class="btn pv-go">▶ ${esc(ad.goLabel || 'شوف المكنة شغّالة')}</button><span class="muted">${esc(ad.goSub || 'اتفرج على المكنة وهي شغالة صح قبل ما تكتب البرنامج.')}</span>`;
+  ad.mount(box);
+  box.querySelector('.pv-go').addEventListener('click', () => PV.play(ad));
+  let vis = false, tmr = 0;
+  const tryAuto = () => {
+    clearTimeout(tmr);
+    if (!vis || PV.cur || !PV.autoOn() || !ad.has() || PV.seen(ad.key())) return;
+    tmr = setTimeout(() => { if (vis && !PV.cur && PV.autoOn() && ad.has() && !PV.seen(ad.key())) PV.play(ad, {auto:true}); }, 700);
+  };
+  ad.refresh = () => { box.hidden = !ad.has(); tryAuto(); };
+  if ('IntersectionObserver' in G) new IntersectionObserver(es => { vis = es[0].isIntersecting; tryAuto(); }, {threshold:0.6}).observe(ad.watchEl);
+  ad.refresh();
+  return box;
+};
+
+/* ---------- the generic script: replay the exercise's own check steps on the live machine ---------- */
+async function simScript(ad, pl, gen, ctl){
+  const ex = ad.ex(), c0 = ex.cases ? ex.cases[0] : null;
+  const steps = ex.demo || (c0 ? c0.steps : ex.tests) || [];
+  const ins = (ex.io && ex.io.inputs) || [], outs = (ex.io && ex.io.outputs) || [];
+  const E = () => ad.engine();
+  const inp = a => ins.find(i => i.a === a);
+  const def = a => { const i = inp(a); return i && (i.kind === 'pbnc' || i.kind === 'ncsw' || i.def) ? 1 : 0; };
+  const ctx = {get e(){ return ad.engine(); }, get plant(){ return ad.plant(); }, get t(){ return ad.engine().t; }, q: a => ad.engine().get(a), hist:[], mark:{}};
+  const hold = ms => pl.hold(gen, ms);
+  const nm = a => { const l = ad.lab(a), ad2 = ad.addr(a); return `<b>${ptx(l || ad2)}</b>${l ? ` <bdi dir="ltr" class="pv-a">${esc(ad2)}</bdi>` : ''}`; };
+  const isLamp = a => { const o = outs.find(x => x.a === a) || {}; return o.kind === 'lamp' || /لمب/.test(o.label || ''); };
+  const chip = (a, on) => `<span class="pv-st${on ? ' on' : ''}">${ptx(ad.lab(a) || ad.addr(a))} <bdi dir="ltr">${on ? 'ON' : 'OFF'}</bdi></span>`;
+  const verb = (a, on) => isLamp(a) ? (on ? 'نوّرت' : 'طفت') : (on ? 'اشتغل' : 'وقف');
+  let prev = {}, prevAuto = {}, cause = {txt:'', t:0, key:'start', el:null};
+  const snapOuts = () => outs.forEach(o => { prev[o.a] = E().get(o.a) ? 1 : 0; });
+  const autos = ins.filter(i => i.kind === 'auto');
+  const snapAuto = () => autos.forEach(i => { prevAuto[i.a] = E().get(i.a) ? 1 : 0; });
+  const said = {}, watches = [];
+  const DT = 0.01;
+  /* one 10 ms step of machine + PLC; the check's watch steps keep their bookkeeping (ctx.mark) like in the auto-check */
+  let curUntil = null, untilHit = false;
+  const step = () => { ad.advance(DT); watches.forEach(w => { try { w(ctx); } catch (er){} }); if (curUntil && !untilHit){ try { if (curUntil(ctx)) untilHit = true; } catch (er){ untilHit = true; } } };
+  function changes(){ const ch = []; outs.forEach(o => { const v = E().get(o.a) ? 1 : 0; if (v !== prev[o.a]){ ch.push({a:o.a, on:v}); prev[o.a] = v; } }); return ch; }
+  function watchAutos(){ autos.forEach(i => { const v = E().get(i.a) ? 1 : 0; if (v !== prevAuto[i.a]){ prevAuto[i.a] = v; cause = {txt:`${nm(i.a)} ${v ? 'حسّ' : 'فصل'}`, t:E().t, key:'auto:' + i.a + v, el:null}; } }); }
+  async function narrate(ch, done){
+    /* outputs that switch a scan or two later belong to the same moment */
+    for (let k = 0; k < 4 && !done(); k++){ step(); watchAutos(); changes().forEach(c => { const j = ch.findIndex(x => x.a === c.a); if (j >= 0) ch.splice(j, 1); else ch.push(c); }); }
+    if (!ch.length) return;
+    const now = E().t, dtc = now - cause.t, quick = dtc <= 0.8 && cause.txt;
+    const pre = quick ? cause.txt : cause.t > 0 || cause.key !== 'start' ? `بعد ${secs(dtc)}` : '';
+    const eff = ch.map(x => `${nm(x.a)} ${verb(x.a, x.on)}`).join(' و');
+    const key = (quick ? cause.key : 'time') + '|' + ch.map(x => x.a + x.on).join();
+    pl.say(`${pre ? pre + ' <span class="pv-arr">←</span> ' : ''}${eff}`, 'fx');
+    if (quick && cause.el) pl.hl(cause.el, 1700);
+    ch.forEach(x => pl.hl(ad.outEl(x.a), 1700));
+    pl.hl(ad.plantEl(), 900);
+    const rep = said[key]; said[key] = 1;
+    if (!rep) await hold(1600);
+    cause = {txt:'', t:E().t, key:'after', el:null};
+  }
+  async function sim(sec, until){
+    const t0 = E().t, fast = sec > 1.5 ? 4 : 1;
+    curUntil = until || null; untilHit = false;
+    const done = () => { if (until){ if (untilHit) return true; try { if (until(ctx)) return true; } catch (er){ return true; } } return E().t - t0 >= sec - 1e-9; };
+    let budget = 0;
+    pl.ff(fast > 1);
+    const f = until ? 3 : fast;
+    while (!done()){
+      budget += (await pl.frame(gen)) * f;
+      while (budget >= DT && !done()){
+        budget -= DT; step(); watchAutos();
+        const ch = changes();
+        if (ch.length){ budget = 0; pl.ff(false); await narrate(ch, done); pl.ff(fast > 1); break; }
+      }
+    }
+    pl.ff(false); curUntil = null;
+  }
+  async function setIn(a, v, how){
+    const i = inp(a);
+    if (!i || i.kind === 'auto' || i.kind === 'enc'){ E().setIn(a, v); return; }
+    const cur = E().phys[a] != null ? E().phys[a] : def(a);
+    if (how !== 'force' && cur === v && how !== 'press') return;
+    const act = v !== def(a), k = i.kind;
+    let txt;
+    if (k === 'pb' || k === 'pbnc') txt = how === 'press' ? `دوس ${nm(a)} وسيبه` : act ? `دوس ${nm(a)} وخليك دايس` : `سيب ${nm(a)}`;
+    else if (k === 'sw') txt = v ? `شغّل السويتش ${nm(a)}` : `اقفل السويتش ${nm(a)}`;
+    else if (k === 'sensor') txt = v ? `الحساس ${nm(a)} حسّ` : `الحساس ${nm(a)} فصل`;
+    else if (k === 'ncsw') txt = v ? `${nm(a)} رجع طبيعي` : `${nm(a)} فصل`;
+    else txt = `${nm(a)} = <bdi dir="ltr">${v}</bdi>`;
+    let note = '';
+    if ((k === 'pbnc' || k === 'ncsw') && act && !said['nc:' + a]){ said['nc:' + a] = 1; note = ` <span class="pv-note">(متوصّل <bdi dir="ltr">NC</bdi>: وهو ساكت الإشارة <bdi dir="ltr">1</bdi>، ولما ${k === 'pbnc' ? 'تدوسه' : 'يفصل'} تبقى <bdi dir="ltr">0</bdi>)</span>`; }
+    pl.say(txt + note, 'act');
+    await pl.point(gen, ad.inBtn(a));
+    ad.setIn(a, v);
+    cause = {txt:txt.replace(/^دوس /, 'دوست ').replace(/^سيب /, 'سيبت ').replace(/^شغّل /, 'شغّلت ').replace(/^اقفل /, 'قفلت ').replace(' وسيبه', '').replace(' وخليك دايس', ''), t:E().t, key:'in:' + a + v, el:ad.inBtn(a)};
+    if (note) await hold(1500);
+  }
+  function plantTxt(p){
+    if ('obst' in p) return p.obst ? 'عربية وقفت تحت الباب (عين الأمان شايفاها)' : 'العربية مشيت من تحت الباب';
+    if ('level' in p) return `مستوى التانك بقى <bdi dir="ltr">${esc(p.level)}%</bdi>`;
+    return 'حصل تغيير في المكنة';
+  }
+
+  /* ---- go ---- */
+  for (let k = 0; k < 5; k++) ad.advance(DT); /* same 0.05 s settle as the auto-check */
+  snapOuts(); snapAuto();
+  pl.say(`<b>اتفرج:</b> البرنامج الصح شغال جوه الـ <bdi dir="ltr">PLC</bdi> ومستخبّي عنك. هندوس على الزراير زي ما انت هتعمل، وشوف المكنة بتعمل إيه.`, 'intro');
+  pl.hl(ad.plantEl(), 2000);
+  await hold(2400);
+  ctl.steps = steps.length;
+  for (let si = 0; si < steps.length; si++){
+    pl.progress(si / steps.length);
+    const st = steps[si];
+    if (st.watch) watches.push(st.watch);
+    if (st.set) for (const a of Object.keys(st.set)) await setIn(a, st.set[a] ? 1 : 0);
+    if (st.plant){ pl.say(plantTxt(st.plant), 'act'); await pl.point(gen, ad.plantEl(), {noTap:true}); Object.assign(ad.plant(), st.plant); cause = {txt:plantTxt(st.plant), t:E().t, key:'plant' + JSON.stringify(st.plant), el:null}; await hold(900); }
+    if (st.word) Object.keys(st.word).forEach(a => E().setWord(a, st.word[a]));
+    if (st.press){ const a = st.press; await setIn(a, 1 - def(a), 'press'); await sim(st.t || 0.3); ad.setIn(a, def(a)); await sim(0.15); }
+    if (st.hold) await setIn(st.hold, 1 - def(st.hold), 'force');
+    if (st.release) await setIn(st.release, def(st.release), 'force');
+    if (st.run != null) await sim(st.run);
+    if (st.until) await sim(st.max || 30, st.until);
+    if (st.exp){
+      const ks = Object.keys(st.exp), good = ks.every(a => (E().get(a) ? 1 : 0) === (st.exp[a] ? 1 : 0));
+      if (good) ctl.expOk++; else { ctl.expBad++; (ctl.badAt = ctl.badAt || []).push(si + ' t=' + E().t.toFixed(2) + ' lvl=' + (ad.plant().level != null ? ad.plant().level.toFixed(1) : '') + ': ' + ks.map(x => x + '=' + (E().get(x) ? 1 : 0)).join(' ') + ' ' + (st.msg || '')); }
+      if (st.msg){
+        const m = ad.xl(String(st.msg)).replace(/[\s:：]+$/, '');
+        const key = 'exp:' + m;
+        pl.say(`<span class="pv-ok">✓</span> ${ptx(m)}<span class="pv-chips">${ks.map(a => chip(a, !!(E().get(a)))).join('')}</span>`, 'exp');
+        ks.forEach(a => pl.hl(ad.outEl(a), 1400));
+        await hold(said[key] ? 500 : 1400); said[key] = 1;
+      }
+    }
+    if (st.fn){ try { st.fn(ctx); } catch (er){} }
+  }
+  pl.progress(1);
+  pl.say(ad.outro(), 'end');
+}
 
 })();
