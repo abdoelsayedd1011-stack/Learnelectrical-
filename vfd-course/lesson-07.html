@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>أوضاع التحكم والـ Autotune</title>
+<meta name="description" content="الدرس 7 في كورس الانفرتر: الفرق بين V/f و Sensorless Vector و Vector بإنكودر، الـ Slip ودقة السرعة، العزم على السرعات الواطية، والـ Autotune الثابت والدوّار، مع تحدّي سير محمّل على 5 Hz.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="vfd.css?v=20261021r">
+<script src="vfd.js?v=20261021r"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس الانفرتر · الدرس 7 من 12</p>
+    <h1>أوضاع التحكم والـ Autotune</h1>
+    <p>نفس الانفرتر يقدر يشغّل الموتور بأكتر من «مخ». الـ V/f بسيط ومناسب للمراوح، والـ Vector بيفهم الموتور من جوه فبيطلّع عزم ودقة أعلى بكتير على السرعات الواطية. جرّب الاتنين على سير محمّل وشوف الفرق بعينك.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>الـ Slip: ليه السرعة بتقل مع الحمل</h2>
+  <p>الموتور الإندكشن بيلف أبطأ شوية من السرعة التزامنية، والفرق ده (<b>Slip</b>) بيزيد مع الحمل. موتور <bdi dir="ltr">1500 rpm</bdi> تزامني ممكن يلف <bdi dir="ltr">1450 rpm</bdi> على الحمل الكامل: يعني <bdi dir="ltr">50 rpm</bdi> Slip.</p>
+  <div class="ex"><b>المشكلة على السرعة الواطية:</b> على <bdi dir="ltr">5 Hz</bdi> السرعة التزامنية <bdi dir="ltr">150 rpm</bdi> بس، والـ Slip لسه حوالي <bdi dir="ltr">50 rpm</bdi>! يعني غلط <bdi dir="ltr">33 %</bdi> في السرعة. وكمان الـ V/f بيضعف عزمه هناك.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>الـ 3 أوضاع</h2>
+  <div class="tblw"><table class="tbl"><thead><tr><th>الوضع</th><th>إزاي بيشتغل</th><th>دقة السرعة</th><th>العزم على سرعة واطية</th><th>مناسب لـ</th></tr></thead><tbody>
+   <tr><td><b>V/f</b></td><td>جهد وتردد بنسبة ثابتة</td><td>على قد الـ Slip</td><td>ضعيف تحت ~⁦5–10 Hz⁩</td><td>مراوح، طلمبات، أكتر من موتور على انفرتر</td></tr>
+   <tr><td><b>Sensorless Vector</b></td><td>بيحسب الفيض والعزم من التيار والجهد</td><td>كويسة (بيعوّض الـ Slip)</td><td>عالي لحد ~1 Hz</td><td>سيور، خلاطات، إكسترودر</td></tr>
+   <tr><td><b>Vector بإنكودر</b></td><td>Closed loop: الإنكودر بيقيس السرعة الحقيقية</td><td>ممتازة</td><td>كامل حتى على صفر سرعة</td><td>ونش، Winder، مكن دقيق</td></tr></tbody></table></div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>التحدّي: سير محمّل على سرعة واطية</h2>
+  <div class="wd"><h3>أوضاع التحكم</h3><div id="modes"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>الـ Autotune</h2>
+  <p>الـ Vector محتاج يعرف «جوه» الموتور: مقاومة الملفات، الإندكتانس، تيار المغنطة. الـ Autotune بيقيسهم بنفسه.</p>
+  <ul class="steps-l"><li>دخّل بيانات اليافطة الأول (الدرس 6). من غيرها الـ Autotune هيقيس غلط.</li><li><b>Static</b> (الموتور مش بيلف): لما مينفعش تفك الحمل. أسرع، ودقته كويسة لمعظم الشغل.</li><li><b>Rotating</b> (الموتور بيلف): أدق، بس لازم الموتور يبقى مفكوك من الحمل أو حمله خفيف، ومفيش خطر لو لف.</li><li>الموتور يكون بارد، والكابل متوصّل نهائي (طوله بيدخل في القياس)، ومفيش كونتاكتور مفتوح في الخرج.</li></ul>
+  <div class="box safe"><b>أمان:</b> في الـ Rotating autotune الموتور بيلف لوحده. اتأكد إن مفيش حد جنب المكنة وإن الحمل مفكوك، وخصوصًا في الونش.</div>
+  <div class="wd"><h3>تمرين: اختار الوضع المناسب</h3><div id="pick"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأرقام والأمثلة هنا قيم تدريب شائعة، وأسماء الباراميترات والأطراف بتختلف من ماركة لماركة ومن موديل لموديل: <b>مانيوال الانفرتر بتاعك هو المرجع</b>. تقدّمك بيتسجّل على الجهاز ده.<br>© &#x2066;2026 LearnElectricals&#x2069;. كل الحقوق محفوظة. الموقع مش تابع لأي شركة من الشركات المذكورة (زي &#x2066;Siemens&#x2069; و &#x2066;Allen-Bradley&#x2069; و &#x2066;Delta&#x2069; و &#x2066;Schneider&#x2069; وغيرهم)، والأسماء والعلامات التجارية ملك أصحابها، ومستخدمة بس عشان نشرح الأجهزة.</p>
+</div>
+<script>
+VF.lesson('l7');
+window.MD = VF.modes(document.getElementById('modes'), {lesson:'l7'});
+VF.drill(document.getElementById('pick'), VF.pickGen, {lesson:'l7', task:'pick', need:4, goal:'جاوب <b>4</b> صح عشان التمرين يتعلّم عليه.'});
+VF.quiz(document.getElementById('quiz'), [
+  {q:'4 مواتير على انفرتر واحد. الوضع:', o:['V/f', 'Sensorless Vector', 'Vector بإنكودر', 'أي واحد'], a:0, why:'الـ Vector بيحتاج موتور واحد يعرفه.'},
+  {q:'الـ Slip معناه:', o:['الفرق بين السرعة التزامنية والسرعة الفعلية', 'زمن الـ Accel', 'تردد الكارير', 'تيار البدء'], a:0, why:'وبيزيد مع الحمل.'},
+  {q:'قبل الـ Autotune لازم:', o:['تدخّل بيانات يافطة الموتور', 'ترفع الكارير', 'تشيل الأرضي', 'تفعّل الـ PID'], a:0, why:'الحسبة مبنية عليها.'},
+  {q:'ونش لازم يمسك الحمل على صفر سرعة. الوضع:', o:['Vector بإنكودر', 'V/f', 'V/f تربيعي', 'Coast'], a:0, why:'Closed loop.'},
+  {q:'الـ Rotating autotune محتاج:', o:['الموتور مفكوك من الحمل أو حمله خفيف', 'الموتور سخن', 'الكابل مفصول', 'كونتاكتور الخرج مفتوح'], a:0, why:'الموتور هيلف لوحده.'},
+  {q:'على 5 Hz بحمل كامل في V/f، المشكلة:', o:['غلط كبير في السرعة وعزم ضعيف', 'الجهد عالي', 'OV', 'مفيش مشكلة'], a:0, why:'الـ Slip كبير بالنسبة للسرعة.'}
+], {lesson:'l7', pass:0.8});
+</script>
+</body>
+</html>

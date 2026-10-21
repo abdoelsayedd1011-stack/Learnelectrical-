@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الفرملة والوقوف</title>
+<meta name="description" content="الدرس 8 في كورس الانفرتر: الوقوف بالـ Ramp والـ Coast، ليه الوقوف السريع بيعمل عطل OV، الشوبر ومقاومة الفرملة، والـ DC injection، مع محاكاة حدافة تقيلة وجهد الـ DC bus.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="vfd.css?v=20261021r">
+<script src="vfd.js?v=20261021r"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس الانفرتر · الدرس 8 من 12</p>
+    <h1>الفرملة والوقوف</h1>
+    <p>التشغيل سهل، الوقوف هو اللي بيعمل مشاكل. لما توقّف حمل تقيل بسرعة، الموتور بيتحوّل لمولّد ويرجّع الطاقة للانفرتر. جرّب بإيدك: هتعمل عطل OV، وبعدين تحله.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>طرق الوقوف</h2>
+  <div class="tblw"><table class="tbl"><thead><tr><th>الطريقة</th><th>إيه اللي بيحصل</th><th>إمتى</th></tr></thead><tbody>
+   <tr><td><b>Ramp to stop</b></td><td>الانفرتر بينزّل التردد على الـ Decel time</td><td>الأشهر: سيور، طلمبات</td></tr>
+   <tr><td><b>Coast to stop</b></td><td>الانفرتر بيقطع الخرج والحمل يقف على قد الاحتكاك</td><td>مراوح تقيلة، أو لما الوقت مش مهم</td></tr>
+   <tr><td><b>DC injection</b></td><td>الانفرتر بيحط DC على الملفات فيعمل فرملة ومسك</td><td>آخر الوقوف عشان العمود ميزحفش (الطاقة بتتحرق في الموتور)</td></tr>
+   <tr><td><b>مقاومة فرملة</b></td><td>الشوبر بيحرق الطاقة الراجعة في مقاومة</td><td>وقوف سريع لحمل تقيل، ونش، سنترفيوج</td></tr>
+   <tr><td><b>Regen / AFE</b></td><td>بيرجّع الطاقة للشبكة</td><td>أحمال كبيرة بتفرمل كتير (أسانسير، ونش كبير)</td></tr></tbody></table></div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>ليه OV؟</h2>
+  <p>لما الانفرتر ينزّل التردد أسرع من ما الحمل يقف لوحده، الحمل بيلف الموتور أسرع من السرعة التزامنية الجديدة ⇐ الموتور يشتغل <b>مولّد</b> ويشحن الكباسيتورات. الموحّد مش بيقدر يرجّع الطاقة للشبكة، فالجهد يعلى لحد حد الـ OV (في انفرتر <bdi dir="ltr">400 V</bdi> حوالي <bdi dir="ltr">800 V DC</bdi> تقريبًا) والانفرتر يفصل.</p>
+  <div class="box">كتير من الانفرترات فيها <b>OV stall prevention / Bus regulator</b>: لما الجهد يعلى بتطوّل الـ Decel لوحدها. ده بيمنع العطل بس الوقوف بيبقى أطول من اللي كتبته. لو بتستخدم مقاومة فرملة، غالبًا لازم تقفل الخاصية دي.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>جرّب: حدافة تقيلة</h2>
+  <div class="wd"><h3>محاكي الفرملة</h3><div id="brake"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>مقاومة الفرملة صح</h2>
+  <ul><li><b>قيمة المقاومة (Ω)</b> مش أقل من أقل قيمة في المانيوال، وإلا الشوبر يتحرق.</li><li><b>القدرة (W)</b> على قد الطاقة ونسبة الفرملة (Duty cycle): حمل بيقف كل دقيقة غير حمل بيقف مرة في الساعة.</li><li>المقاومة بتسخن جدًا: برّه اللوحة أو فوقها، وبعيد عن الكابلات.</li><li>استخدم <b>الثيرمال سويتش</b> بتاع المقاومة على دخل في الانفرتر أو في دايرة الكونتاكتور.</li><li>فعّل الشوبر من الباراميترات (في ماركات كتير مقفول من المصنع).</li></ul>
+  <div class="ex"><b>من الموقع:</b> سنترفيوج بيفصل OV. الفني حط Decel 120 ثانية «عشان يخلص». الإنتاج اشتكى. الحل كان مقاومة فرملة بالقيمة اللي في المانيوال، والـ Decel نزل لـ 20 ثانية من غير ولا عطل.</div>
+</section>
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأرقام والأمثلة هنا قيم تدريب شائعة، وأسماء الباراميترات والأطراف بتختلف من ماركة لماركة ومن موديل لموديل: <b>مانيوال الانفرتر بتاعك هو المرجع</b>. تقدّمك بيتسجّل على الجهاز ده.<br>© &#x2066;2026 LearnElectricals&#x2069;. كل الحقوق محفوظة. الموقع مش تابع لأي شركة من الشركات المذكورة (زي &#x2066;Siemens&#x2069; و &#x2066;Allen-Bradley&#x2069; و &#x2066;Delta&#x2069; و &#x2066;Schneider&#x2069; وغيرهم)، والأسماء والعلامات التجارية ملك أصحابها، ومستخدمة بس عشان نشرح الأجهزة.</p>
+</div>
+<script>
+VF.lesson('l8');
+window.BK = VF.brake(document.getElementById('brake'), {lesson:'l8'});
+VF.quiz(document.getElementById('quiz'), [
+  {q:'عطل OV وقت الـ Decel سببه:', o:['الحمل بيرجّع طاقة للـ DC bus', 'جهد الشبكة واطي', 'قصر في الكابل', 'الموتور سخن'], a:0, why:'Regeneration.'},
+  {q:'حلول OV وقت الوقوف (اختار الأشمل):', o:['Decel أطول، أو مقاومة فرملة، أو Coast لو مناسب', 'Accel أقصر', 'كارير أعلى', 'Boost أكبر'], a:0, why:'كلها بتقلّل أو بتحرق الطاقة الراجعة.'},
+  {q:'الـ Coast to stop معناه:', o:['الانفرتر بيقطع الخرج والحمل يقف لوحده', 'وقوف بأسرع وقت', 'فرملة DC', 'عكس اتجاه'], a:0, why:'مفيش تحكم في الوقوف.'},
+  {q:'مقاومة فرملة قيمتها أقل من أقل قيمة في المانيوال:', o:['الشوبر ممكن يتحرق من التيار', 'أحسن فرملة', 'مفيش فرق', 'الموتور يسخن'], a:0, why:'تيار الشوبر أعلى من حده.'},
+  {q:'الـ DC injection بيحرق الطاقة فين؟', o:['في الموتور نفسه', 'في المقاومة', 'في الشبكة', 'في الكباسيتور'], a:0, why:'عشان كده متطوّلوش.'},
+  {q:'الـ Bus regulator / OV stall prevention بيعمل إيه؟', o:['بيطوّل الـ Decel لوحده لما الجهد يعلى', 'بيقصّر الـ Decel', 'بيفتح الشوبر', 'بيفصل الشبكة'], a:0, why:'بيمنع OV على حساب الوقت.'}
+], {lesson:'l8', pass:0.8});
+</script>
+</body>
+</html>

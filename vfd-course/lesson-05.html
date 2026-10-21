@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>أطراف الكنترول</title>
+<meta name="description" content="الدرس 5 في كورس الانفرتر: الدخل الديجيتال وتشغيل ⁦2-Wire⁩ و ⁦3-Wire⁩ وعكس الاتجاه والسرعات الثابتة، إشارة السرعة ⁦0–10V⁩ من بوتنشيوميتر و ⁦4–20mA⁩ من PLC، وخرج الريليه والأنالوج، مع لوحة توصيل وانفرتر بيشتغل.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="vfd.css?v=20261021r">
+<script src="vfd.js?v=20261021r"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس الانفرتر · الدرس 5 من 12</p>
+    <h1>أطراف الكنترول</h1>
+    <p>الكيباد حلو للتجربة، بس في المصنع الانفرتر بياخد أوامره من <b>الأطراف</b>: سلكتور أو زرار أو PLC للتشغيل، وبوت أو إشارة أنالوج للسرعة، وبيرد بريليه يقول «أنا شغّال» أو «أنا في عطل». هتوصّل ده كله وتشغّل بإيدك.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>الدخل الديجيتال (DI)</h2>
+  <p>كل دخل ديجيتال بيتبرمج لوظيفة (من الباراميترات): Run أمامي، Run عكسي، Stop، سرعة ثابتة، Reset، عطل خارجي… الدخل بيشتغل لما يوصله <b><bdi dir="ltr">24 V</bdi></b> من باور الأطراف (في وضع PNP / Source)، أو لما يتوصّل بالـ 0V (في وضع NPN / Sink). فيه جمبر أو سويتش أو باراميتر بيحدد ده.</p>
+  <div class="tblw"><table class="tbl"><thead><tr><th>الطريقة</th><th>إزاي</th><th>ملاحظة</th></tr></thead><tbody>
+   <tr><td><b>⁦2-Wire⁩</b></td><td>سلكتور (كونتاكت ماسك): مقفول = شغّال، مفتوح = واقف</td><td>لو الكهربا رجعت والسلكتور مقفول، الموتور ممكن يقوم لوحده. خلّي بالك!</td></tr>
+   <tr><td><b>⁦3-Wire⁩</b></td><td>زرار Start لحظي (NO) + زرار Stop (NC)، والانفرتر بيمسك نفسه</td><td>زي التثبيت الذاتي في الكلاسيك. أأمن بعد انقطاع الكهربا</td></tr></tbody></table></div>
+  <div class="ex"><b>السرعات الثابتة (Preset speeds):</b> دخلين ديجيتال بيدّوك 4 سرعات: <bdi dir="ltr">00</bdi> = السرعة من الأنالوج أو أول Preset، <bdi dir="ltr">01</bdi> = Preset 1، <bdi dir="ltr">10</bdi> = Preset 2، <bdi dir="ltr">11</bdi> = Preset 3. مثلًا سير بيشتغل بطيء وقت التحميل وسريع في النقل.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>إشارة السرعة (AI)</h2>
+  <ul>
+   <li><b>بوتنشيوميتر</b> (غالبًا <bdi dir="ltr">10 kΩ</bdi>): طرف على <b>+10V</b>، طرف على <b>0V/ACM</b>، والطرف النص (Wiper) على <b>AI</b>. لو السرعة بتزيد بالعكس، بدّل الطرفين البرّانيين.</li>
+   <li><b><bdi dir="ltr">⁦0–10 V⁩</bdi></b> من PLC: سهلة بس بتتأثر بالنويز والمسافة.</li>
+   <li><b><bdi dir="ltr">⁦4–20 mA⁩</bdi></b>: الأحسن للمسافات الطويلة، والانفرتر يقدر يكتشف لو السلك اتقطع (أقل من 4 mA). اتأكد إن الدخل متظبط على تيار مش جهد (سويتش أو باراميتر).</li>
+  </ul>
+  <div class="formula">f = f<sub>min</sub> + (signal − min) ÷ span × (f<sub>max</sub> − f<sub>min</sub>)</div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>الخرج: ريليه وأنالوج</h2>
+  <ul><li><b>ريليه</b> (كونتاكت جاف NO/NC): بيتبرمج Fault أو Run أو Ready أو «وصل للسرعة». بيشيل جهد <bdi dir="ltr">230 V AC</bdi> صغير للمبة أو لدخل PLC.</li><li><b>خرج أنالوج</b> (<bdi dir="ltr">⁦0–10 V⁩</bdi> أو <bdi dir="ltr">⁦4–20 mA⁩</bdi>): بيبعت السرعة أو التيار لعداد أو للـ PLC.</li><li><b>STO</b> (Safe Torque Off): دخلين أمان بيقطعوا العزم بالهاردوير. غالبًا عليهم جمبر من المصنع، ولو الجمبر اتشال الانفرتر مش هيشتغل.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>وصّل وشغّل</h2>
+  <p>وصّل سلكتور التشغيل على DI1، وسلكتور الاتجاه على DI2، والبوت على AI1، ولمبة العطل على الريليه. وبعدين جرّب في المربع اللي تحت: الانفرتر هنا بيشتغل على التوصيل بتاعك، صح أو غلط.</p>
+  <div id="ctl"></div>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>تمرين: من الإشارة للتردد</h2>
+  <div class="wd"><h3>تمرين: إشارة السرعة</h3><div id="scale"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأرقام والأمثلة هنا قيم تدريب شائعة، وأسماء الباراميترات والأطراف بتختلف من ماركة لماركة ومن موديل لموديل: <b>مانيوال الانفرتر بتاعك هو المرجع</b>. تقدّمك بيتسجّل على الجهاز ده.<br>© &#x2066;2026 LearnElectricals&#x2069;. كل الحقوق محفوظة. الموقع مش تابع لأي شركة من الشركات المذكورة (زي &#x2066;Siemens&#x2069; و &#x2066;Allen-Bradley&#x2069; و &#x2066;Delta&#x2069; و &#x2066;Schneider&#x2069; وغيرهم)، والأسماء والعلامات التجارية ملك أصحابها، ومستخدمة بس عشان نشرح الأجهزة.</p>
+</div>
+<script>
+VF.lesson('l5');
+window.CB = VF.controlBoard(document.getElementById('ctl'), {lesson:'l5'});
+VF.drill(document.getElementById('scale'), VF.scaleGen, {lesson:'l5', task:'scale', need:4, goal:'جاوب <b>4</b> صح عشان التمرين يتعلّم عليه.'});
+VF.quiz(document.getElementById('quiz'), [
+  {q:'في الـ ⁦3-Wire⁩ زرار الـ Stop بيبقى:', o:['NC', 'NO', 'سلكتور', 'مش محتاجينه'], a:0, why:'فتحه = Stop، وكمان لو السلك اتقطع الموتور يقف.'},
+  {q:'عيب الـ ⁦2-Wire⁩ بسلكتور:', o:['ممكن الموتور يقوم لوحده لما الكهربا ترجع والسلكتور مقفول', 'محتاج 3 أسلاك', 'مش بيعرف يعكس', 'محتاج PLC'], a:0, why:'الأمر لسه موجود.'},
+  {q:'البوت بيتوصّل:', o:['أطرافه على +10V و ACM، والنص على AI', 'النص على +10V', 'التلاتة على AI', 'على DI1'], a:0, why:'الـ Wiper بيطلّع جهد متغيّر.'},
+  {q:'⁦4–20 mA⁩ متظبطة على ⁦0–50 Hz⁩. الإشارة 12 mA. التردد:', o:['25 Hz', '30 Hz', '12 Hz', '24 Hz'], a:0, why:'(12−4)/16 × 50.'},
+  {q:'ميزة الـ ⁦4–20 mA⁩ على الـ ⁦0–10 V⁩:', o:['أقوى ضد النويز والمسافة وبتكشف قطع السلك', 'أرخص', 'أسرع', 'مش محتاجة أرضي'], a:0, why:'التيار مش بيقع في السلك، والـ 4 mA live zero.'},
+  {q:'الانفرتر مش بيشتغل خالص ومكتوب على الشاشة حاجة عن الـ Safe Torque Off. أول حاجة تبص عليها:', o:['جمبر أو أسلاك أطراف STO', 'الموتور', 'الكارير', 'الـ PID'], a:0, why:'من غير STO الانفرتر مش هيطلّع عزم.'}
+], {lesson:'l5', pass:0.8});
+</script>
+</body>
+</html>

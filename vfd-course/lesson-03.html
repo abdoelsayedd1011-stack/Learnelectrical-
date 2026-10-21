@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الـ PWM والـ V/f</title>
+<meta name="description" content="الدرس 3 في كورس الانفرتر: إزاي الـ IGBT بتعمل موجة شبه الـ sine بالـ PWM، تردد الكارير، نسبة الجهد للتردد V/f، الـ Boost، وإيه اللي بيحصل فوق 50 Hz.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="vfd.css?v=20261021r">
+<script src="vfd.js?v=20261021r"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس الانفرتر · الدرس 3 من 12</p>
+    <h1>الـ PWM والـ V/f</h1>
+    <p>الـ IGBT مفتاح: يا مفتوح يا مقفول. إزاي من مفتاح بس نعمل موجة sine ناعمة بأي تردد؟ الإجابة: <b>PWM</b>. وليه لما بنقلّل التردد لازم نقلّل الجهد معاه؟ الإجابة: <b>V/f</b>. الاتنين في المحاكي ده.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>الـ PWM في كلمتين</h2>
+  <p>الانفرتر بيقارن موجة <b>مرجع</b> (sine بالتردد اللي إنت عايزه) بموجة <b>كارير</b> مثلثة سريعة جدًا (آلاف المرات في الثانية). لما المرجع أعلى من الكارير الـ IGBT بيفتح، ولما يقل بيقفل. النتيجة نبضات عرضها بيكبر ويصغر مع الـ sine.</p>
+  <p>ملفات الموتور (الإندكتانس) بتنعّم النبضات دي، فالتيار اللي بيعدّي فيها بيطلع <b>شبه sine</b>. لو عايز تردد أقل، المرجع يبقى أبطأ. ولو عايز جهد أقل، المرجع يبقى أصغر فالنبضات تضيق.</p>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>جرّب بإيدك</h2>
+  <div class="wd"><h3>محاكي الـ PWM والـ V/f</h3><div id="pwm"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>ليه V/f ثابت؟</h2>
+  <p>الفيض المغناطيسي في الموتور بيتناسب مع <b>الجهد ÷ التردد</b>. عشان الموتور يفضل قوي (عزمه كامل) على أي سرعة، لازم النسبة دي تفضل ثابتة:</p>
+  <div class="formula">V/f = 400 V ÷ 50 Hz = 8 V/Hz</div>
+  <div class="tblw"><table class="tbl"><thead><tr><th>الحالة</th><th>اللي بيحصل</th></tr></thead><tbody>
+   <tr><td>جهد عالي على تردد واطي</td><td>الموتور بيتشبّع، تيار عالي وسخونية</td></tr>
+   <tr><td>جهد واطي على تردد عالي</td><td>الفيض ضعيف والعزم بيقل</td></tr>
+   <tr><td>تحت <bdi dir="ltr">~10 Hz</bdi></td><td>مقاومة الملفات بتاكل جزء من الجهد ⇐ <b>Boost</b> بيعوّض</td></tr>
+   <tr><td>فوق التردد المقنن (<bdi dir="ltr">50 Hz</bdi>)</td><td>الجهد مش بيزيد عن جهد الموتور ⇐ <b>Field weakening</b>: سرعة أعلى بعزم أقل</td></tr></tbody></table></div>
+  <div class="box">فيه منحنى V/f <b>تربيعي</b> (Quadratic / Variable torque) للطلمبات والمراوح: بيدّي جهد أقل على السرعات الواطية لأن الحمل خفيف هناك، فبيوفّر أكتر.</div>
+  <div class="wd"><h3>تمرين: احسب الجهد</h3><div id="vf"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>تردد الكارير</h2>
+  <div class="tblw"><table class="tbl"><thead><tr><th>الكارير</th><th>الموتور</th><th>الانفرتر</th></tr></thead><tbody>
+   <tr><td>واطي (<bdi dir="ltr">⁦2–4 kHz⁩</bdi>)</td><td>صوت صفير مسموع</td><td>بيسخن أقل، والكابل الطويل أحسن</td></tr>
+   <tr><td>عالي (<bdi dir="ltr">⁦8–16 kHz⁩</bdi>)</td><td>هادي وتياره أنعم</td><td>بيسخن أكتر ⇐ لازم Derating، ونويز EMC أكتر</td></tr></tbody></table></div>
+  <div class="ex"><b>من الموقع:</b> مكتب جنب غرفة الطلمبات بيشتكي من صفير. رفعنا الكارير من 4 لـ 8 kHz والصوت راح، بس اتأكدنا من جدول الـ Derating في المانيوال إن الانفرتر لسه شايل تيار الموتور.</div>
+</section>
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأرقام والأمثلة هنا قيم تدريب شائعة، وأسماء الباراميترات والأطراف بتختلف من ماركة لماركة ومن موديل لموديل: <b>مانيوال الانفرتر بتاعك هو المرجع</b>. تقدّمك بيتسجّل على الجهاز ده.<br>© &#x2066;2026 LearnElectricals&#x2069;. كل الحقوق محفوظة. الموقع مش تابع لأي شركة من الشركات المذكورة (زي &#x2066;Siemens&#x2069; و &#x2066;Allen-Bradley&#x2069; و &#x2066;Delta&#x2069; و &#x2066;Schneider&#x2069; وغيرهم)، والأسماء والعلامات التجارية ملك أصحابها، ومستخدمة بس عشان نشرح الأجهزة.</p>
+</div>
+<script>
+VF.lesson('l3');
+window.PW = VF.pwm(document.getElementById('pwm'), {lesson:'l3'});
+VF.drill(document.getElementById('vf'), VF.vfGen, {lesson:'l3', task:'vf', need:4, goal:'جاوب <b>4</b> صح عشان التمرين يتعلّم عليه.'});
+VF.quiz(document.getElementById('quiz'), [
+  {q:'الـ PWM معناه:', o:['نبضات عرضها بيتغيّر عشان تعمل جهد متوسط شبه الـ sine', 'تردد ثابت', 'تيار DC', 'مقاومة متغيّرة'], a:0, why:'Pulse Width Modulation.'},
+  {q:'موتور 400 V / 50 Hz على 25 Hz في V/f. الجهد تقريبًا:', o:['200 V', '400 V', '100 V', '25 V'], a:0, why:'8 V/Hz × 25.'},
+  {q:'نفس الموتور على 60 Hz. الجهد:', o:['400 V (مش بيزيد)', '480 V', '600 V', '0 V'], a:0, why:'Field weakening فوق التردد المقنن.'},
+  {q:'الـ Boost بيتستخدم عشان:', o:['يقوّي العزم على السرعات الواطية جدًا', 'يزوّد السرعة القصوى', 'يقلّل الصوت', 'يوقّف بسرعة'], a:0, why:'بيعوّض هبوط الجهد في مقاومة الملفات.'},
+  {q:'رفع تردد الكارير بيعمل:', o:['موتور أهدى بس الانفرتر يسخن أكتر', 'موتور أسرع', 'عزم أعلى', 'جهد DC أعلى'], a:0, why:'خسائر التبديل في الـ IGBT بتزيد.'},
+  {q:'التيار في الموتور شكله قريب من الـ sine رغم إن الجهد نبضات لأن:', o:['إندكتانس الملفات بتنعّمه', 'الانفرتر فيه فلتر sine دايمًا', 'الموتور DC', 'الكابل بيعمل كده'], a:0, why:'الملف بيقاوم تغيّر التيار.'}
+], {lesson:'l3', pass:0.8});
+</script>
+</body>
+</html>

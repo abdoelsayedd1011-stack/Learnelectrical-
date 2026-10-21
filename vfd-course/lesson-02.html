@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>جوه الانفرتر</title>
+<meta name="description" content="الدرس 2 في كورس الانفرتر: الموحّد والـ DC bus والكباسيتورات وجهده 1.35 × جهد الشبكة، الشوبر ومقاومة الفرملة، الـ IGBT، وكارت الكنترول، برسمة متحركة.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="vfd.css?v=20261021r">
+<script src="vfd.js?v=20261021r"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس الانفرتر · الدرس 2 من 12</p>
+    <h1>جوه الانفرتر</h1>
+    <p>من برّه الانفرتر علبة فيها شاشة وأطراف. من جوه هو 3 مراحل ورا بعض: يحوّل الـ AC لـ DC، يخزّنه، وبعدين يقطّعه بسرعة عشان يعمل AC جديد على مزاجنا. لو فهمت المراحل دي هتفهم كل أعطال الانفرتر بعد كده.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>AC ← DC ← AC</h2>
+  <ol><li><b>الموحّد (Rectifier):</b> AC من الشبكة ← DC فيه تموّج.</li><li><b>الـ DC bus:</b> كباسيتورات بتنعّم وتخزّن، وجهدها ثابت تقريبًا.</li><li><b>الإنفرتر (IGBT):</b> بيقطّع الـ DC بسرعة ويطلّع AC بتردد وجهد متغيّرين للموتور.</li></ol>
+  <div class="box key">وفوقهم <b>كارت الكنترول</b> اللي بيقرر كل ده، وفيه انفرترات فيها <b>شوبر فرملة</b> على الـ DC bus.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>افتح الانفرتر</h2>
+  <p>دوس على كل جزء في الرسمة، وغيّر جهد الشبكة وشوف جهد الـ DC bus بيتغيّر إزاي. تحت كل جزء شكل الموجة عنده.</p>
+  <div class="wd"><h3>جوه الانفرتر</h3><div id="inside"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>جهد الـ DC bus</h2>
+  <p>الكباسيتورات بتشحن لحد قمة الموجة تقريبًا. في التلاتة فاز وتحت حمل الرقم المعروف:</p>
+  <div class="formula">V<sub>DC</sub> ≈ 1.35 × V<sub>LL</sub></div>
+  <div class="tblw"><table class="tbl"><thead><tr><th>الشبكة</th><th>الـ DC bus تقريبًا</th></tr></thead><tbody>
+   <tr><td>سنجل فاز <bdi dir="ltr">230 V</bdi></td><td><bdi dir="ltr">≈ 325 V</bdi> (<bdi dir="ltr">230 × 1.41</bdi>)</td></tr><tr><td>3 فاز <bdi dir="ltr">400 V</bdi></td><td><bdi dir="ltr">≈ 540 V</bdi> (من غير حمل ممكن يوصل <bdi dir="ltr">565 V</bdi>)</td></tr><tr><td>3 فاز <bdi dir="ltr">480 V</bdi></td><td><bdi dir="ltr">≈ 650 V</bdi></td></tr></tbody></table></div>
+  <div class="ex"><b>ليه الرقم ده مهم؟</b> الانفرتر بيراقبه طول الوقت: لو وطي أوي ⇐ عطل <b>UV</b> (Undervoltage) يعني الشبكة وقعت أو فازة ضاعت. ولو علي أوي ⇐ عطل <b>OV</b> (Overvoltage) يعني غالبًا الموتور بيرجّع طاقة وهو بيفرمل. وكتير من الانفرترات بتعرضه على الشاشة كباراميتر قراية (DC Bus Voltage).</div>
+  <div class="wd"><h3>تمرين: احسب الـ DC bus</h3><div id="bus"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>أمان</h2>
+  <div class="box safe"><b>خطر:</b> الكباسيتورات بتفضل مشحونة <b>دقايق</b> بعد ما تفصل الكهربا (عادة من 5 لـ 15 دقيقة، والرقم مكتوب على الانفرتر). الشاشة الطافية مش معناها إن الجهد راح. استنى الوقت المكتوب وقيس بين DC+ و DC− بالأفوميتر قبل ما تلمس أي طرف. هنتدرّب على ده في الدرس 11.</div>
+</section>
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأرقام والأمثلة هنا قيم تدريب شائعة، وأسماء الباراميترات والأطراف بتختلف من ماركة لماركة ومن موديل لموديل: <b>مانيوال الانفرتر بتاعك هو المرجع</b>. تقدّمك بيتسجّل على الجهاز ده.<br>© &#x2066;2026 LearnElectricals&#x2069;. كل الحقوق محفوظة. الموقع مش تابع لأي شركة من الشركات المذكورة (زي &#x2066;Siemens&#x2069; و &#x2066;Allen-Bradley&#x2069; و &#x2066;Delta&#x2069; و &#x2066;Schneider&#x2069; وغيرهم)، والأسماء والعلامات التجارية ملك أصحابها، ومستخدمة بس عشان نشرح الأجهزة.</p>
+</div>
+<script>
+VF.lesson('l2');
+window.INS = VF.inside(document.getElementById('inside'), {lesson:'l2'});
+VF.drill(document.getElementById('bus'), VF.busGen, {lesson:'l2', task:'bus', need:4, goal:'جاوب <b>4</b> صح عشان التمرين يتعلّم عليه.'});
+VF.quiz(document.getElementById('quiz'), [
+  {q:'ترتيب المراحل جوه الانفرتر:', o:['موحّد ← DC bus ← IGBT', 'IGBT ← موحّد ← DC bus', 'DC bus ← موحّد ← IGBT', 'محوّل ← موحّد ← موتور'], a:0, why:'AC ← DC ← AC.'},
+  {q:'انفرتر على شبكة 400V 3 فاز. الـ DC bus تقريبًا:', o:['540 V', '400 V', '230 V', '1000 V'], a:0, why:'400 × 1.35 ≈ 540.'},
+  {q:'وظيفة الكباسيتورات في الـ DC bus:', o:['تنعيم وتخزين الطاقة', 'تحسين معامل القدرة للشبكة', 'تشغيل المروحة', 'قياس التيار'], a:0, why:'بتخلّي الـ DC ثابت تقريبًا.'},
+  {q:'الـ IGBT بيعمل إيه؟', o:['بيفتح ويقفل بسرعة عشان يعمل جهد متغيّر من الـ DC', 'بيوحّد الـ AC', 'بيخزّن الطاقة', 'بيقيس السرعة'], a:0, why:'ده الـ PWM.'},
+  {q:'الـ DC bus وقع لـ 70 % من قيمته. العطل المتوقع:', o:['UV', 'OV', 'OC', 'OH'], a:0, why:'Undervoltage.'},
+  {q:'فصلت الكهربا والشاشة طفت. إمتى تلمس أطراف الباور؟', o:['بعد الوقت المكتوب على الجهاز وبعد ما تقيس DC bus أقل من 50 V', 'على طول', 'بعد دقيقة', 'لما لمبة الشاشة تطفى'], a:0, why:'الكباسيتورات بتفضل مشحونة.'}
+], {lesson:'l2', pass:0.8});
+</script>
+</body>
+</html>

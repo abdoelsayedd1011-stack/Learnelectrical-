@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الأعطال الشائعة وحلّها</title>
+<meta name="description" content="الدرس 10 في كورس الانفرتر: أعطال OC و OV و UV و Motor overload و Overtemperature و Ground fault وفقد الفازة وفقد الإشارة الأنالوج، أسبابها وحلّها، ولعبة تشخيص أعطال من الموقع.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="vfd.css?v=20261021r">
+<script src="vfd.js?v=20261021r"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس الانفرتر · الدرس 10 من 12</p>
+    <h1>الأعطال الشائعة وحلّها</h1>
+    <p>كل انفرتر بيكلّمك بكود عطل. الكود مش العطل نفسه، ده <b>العَرَض</b>: OC معناه التيار عدّى الحد، بس ليه؟ في الدرس ده هتتعلم تقرا الكود، تجمع المعلومات، وتلاقي السبب الحقيقي قبل ما تدوس Reset.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>قبل الـ Reset</h2>
+  <ol class="steps-l"><li><b>اكتب الكود</b> وبص على <b>سجل الأعطال</b> (Fault history): العطل حصل إمتى؟ وكان التيار والتردد والـ DC bus كام لحظتها؟ (معظم الانفرترات بتحفظهم.)</li><li><b>اسأل:</b> حصل في الـ Accel؟ في الـ Decel؟ وهو شغّال ثابت؟ أول ما الكهربا جت؟</li><li><b>افحص</b> اللي الكود بيشاور عليه (كابل، موتور، شبكة، تهوية، باراميتر).</li><li><b>صلّح السبب</b> وبعدين Reset. لو الـ Reset بقى روتين يومي يبقى المشكلة لسه موجودة.</li></ol>
+  <div class="box safe"><b>متكرّرش الـ Reset على OC أو Ground fault.</b> كل مرة بتشغّل على قصر بتضرب الـ IGBT أكتر. افصل وافحص الكابل والموتور بالميجر (بعد ما تفصلهم عن الانفرتر).</div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>جدول الأعطال</h2>
+  <div class="tblw"><table class="tbl ct-tab"><thead><tr><th>العطل</th><th>معناه</th><th>أشهر الأسباب</th><th><bdi dir="ltr">PF525</bdi></th><th><bdi dir="ltr">V20</bdi></th><th><bdi dir="ltr">ATV320</bdi></th></tr></thead><tbody><tr><td><b>Overcurrent</b></td><td>تيار عالي جدًا لحظيًا</td><td>Accel قصير، قصر في الكابل أو الموتور، حمل اتزنق</td><td class="mono">F012</td><td class="mono">F0001</td><td class="mono">OCF / SCF</td></tr><tr><td><b>Overvoltage</b></td><td>الـ DC bus عالي</td><td>Decel قصير، حمل بيسحب الموتور، جهد شبكة عالي</td><td class="mono">F005</td><td class="mono">F0002</td><td class="mono">ObF</td></tr><tr><td><b>Undervoltage</b></td><td>الـ DC bus واطي</td><td>هبوط أو انقطاع في الشبكة، فازة ضايعة</td><td class="mono">F004</td><td class="mono">F0003</td><td class="mono">USF</td></tr><tr><td><b>Motor overload</b></td><td>الموتور سخن (محسوب)</td><td>حمل زيادة، تيار الموتور غلط في الباراميترات، سرعة واطية لمدة طويلة</td><td class="mono">F007</td><td class="mono">F0011*</td><td class="mono">OLF</td></tr><tr><td><b>Drive overtemp</b></td><td>الانفرتر نفسه سخن</td><td>مروحة بايظة، تراب، لوحة سخنة، كارير عالي</td><td class="mono">F008</td><td class="mono">F0004</td><td class="mono">OHF</td></tr><tr><td><b>Ground fault</b></td><td>تيار بيهرب للأرضي</td><td>عزل كابل أو موتور، رطوبة</td><td class="mono">F013</td><td class="mono">—</td><td class="mono">SCF3 / GrF</td></tr><tr><td><b>Input phase loss</b></td><td>فازة ناقصة في الدخل</td><td>فيوز ضارب، طرف سايب</td><td class="mono">—</td><td class="mono">—</td><td class="mono">PHF</td></tr><tr><td><b>Output phase loss</b></td><td>فازة مفتوحة للموتور</td><td>طرف سايب، كونتاكتور خرج فاتح</td><td class="mono">—</td><td class="mono">—</td><td class="mono">OPF</td></tr><tr><td><b>Analog loss</b></td><td>إشارة ⁦4–20⁩ راحت</td><td>سلك مقطوع</td><td class="mono">F029</td><td class="mono">—</td><td class="mono">LFF</td></tr></tbody></table></div>
+  <p class="muted" style="font-size:.88rem">الأكواد للتوضيح وممكن تختلف من إصدار لإصدار (* في V20 أوفرلود الموتور ليه أكتر من كود). المانيوال هو المرجع، ومحاكيات الأجهزة على الموقع فيها أكواد كل جهاز.</p>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>لعبة: شخّص العطل</h2>
+  <p>في كل حالة اقرا الكود والقصة، افحص اللي محتاجه، واختار السبب.</p>
+  <div class="wd"><h3>أعطال من الموقع</h3><div id="game"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأرقام والأمثلة هنا قيم تدريب شائعة، وأسماء الباراميترات والأطراف بتختلف من ماركة لماركة ومن موديل لموديل: <b>مانيوال الانفرتر بتاعك هو المرجع</b>. تقدّمك بيتسجّل على الجهاز ده.<br>© &#x2066;2026 LearnElectricals&#x2069;. كل الحقوق محفوظة. الموقع مش تابع لأي شركة من الشركات المذكورة (زي &#x2066;Siemens&#x2069; و &#x2066;Allen-Bradley&#x2069; و &#x2066;Delta&#x2069; و &#x2066;Schneider&#x2069; وغيرهم)، والأسماء والعلامات التجارية ملك أصحابها، ومستخدمة بس عشان نشرح الأجهزة.</p>
+</div>
+<script>
+VF.lesson('l10');
+window.GAME = VF.caseGame(document.getElementById('game'), VF.FAULTS, {lesson:'l10', task:'game', need:9, goal:'حلّ <b>9</b> حالات صح على الأقل من 12.'});
+VF.quiz(document.getElementById('quiz'), [
+  {q:'OC أول ما تدوس Start حتى من غير حمل. أول فحص:', o:['عزل الكابل والموتور بالميجر (بعد فصلهم عن الانفرتر)', 'زوّد الـ Accel', 'غيّر الكارير', 'Reset تاني'], a:0, why:'غالبًا قصر.'},
+  {q:'OV بيحصل وقت الوقوف بس. الحل:', o:['Decel أطول أو مقاومة فرملة', 'Accel أطول', 'كابل أطول', 'Boost'], a:0, why:'طاقة راجعة.'},
+  {q:'UV كل ما كمبروسر كبير يقوم في المصنع. السبب:', o:['هبوط جهد الشبكة', 'الموتور', 'الـ PID', 'الكارير'], a:0, why:'الشبكة ضعيفة لحظة تشغيل الكمبروسر DOL.'},
+  {q:'OL الموتور بعد ساعة والتيار أقل من اليافطة. غالبًا:', o:['تيار الموتور في الباراميترات أقل من الحقيقي', 'الشبكة', 'الـ Decel', 'Ground fault'], a:0, why:'الحماية بتتحسب عليه.'},
+  {q:'OH في الصيف بعد الضهر:', o:['التهوية: فلتر، مروحة، تراب على الهيت سينك', 'الموتور صغير', 'Accel', 'الكابل'], a:0, why:'الحرارة لازم تخرج.'},
+  {q:'إيه أول حاجة تعملها لما الانفرتر يفصل بعطل؟', o:['تكتب الكود وتبص على سجل الأعطال', 'Reset على طول', 'تغيّر الانفرتر', 'تفصل الموتور'], a:0, why:'المعلومة بتضيع لو عملت Reset على طول.'}
+], {lesson:'l10', pass:0.8});
+</script>
+</body>
+</html>

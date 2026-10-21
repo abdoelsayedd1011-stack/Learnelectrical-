@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الباراميترات الأساسية</title>
+<meta name="description" content="الدرس 6 في كورس الانفرتر: إدخال بيانات يافطة الموتور في الباراميترات (جهد وتيار وتردد وسرعة وقدرة وأقطاب)، Accel و Decel، أقل وأعلى سرعة، ومصدر أمر التشغيل والسرعة، مع أمثلة من PowerFlex 525 و SINAMICS V20 و Altivar 320.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="vfd.css?v=20261021r">
+<script src="vfd.js?v=20261021r"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس الانفرتر · الدرس 6 من 12</p>
+    <h1>الباراميترات الأساسية</h1>
+    <p>الانفرتر الجديد ميعرفش حاجة عن الموتور اللي متوصّل عليه. أول حاجة بتعملها: تقراله <b>يافطة الموتور</b>، وبعدين تقوله يقوم في قد إيه ويقف في قد إيه، وياخد أوامره منين. الباراميترات دي موجودة في كل ماركة بأسماء مختلفة.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>قبل ما تبدأ</h2>
+  <ul><li>لو الانفرتر مستعمل أو مش متأكد من إعداداته: <b>رجّعه لضبط المصنع</b> (Factory reset) الأول.</li><li>معظم الانفرترات فيها <b>Quick setup</b> أو مجموعة «Basic» فيها الباراميترات المهمة بس. ابدأ منها.</li><li>اكتب أي باراميتر غيّرته في ورقة أو احفظه في الكمبيوتر، عشان لو الانفرتر اتغيّر.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>يافطة الموتور ← الباراميترات</h2>
+  <p>أهم 5 أرقام: <b>الجهد</b> و<b>التيار</b> (على حسب توصيلة الموتور: دلتا ولا ستار)، <b>التردد</b>، <b>السرعة</b>، و<b>القدرة</b>. الانفرتر بيحسب منهم حماية الأوفرلود والـ Slip والـ Autotune.</p>
+  <div class="tblw"><table class="tbl"><thead><tr><th>الوظيفة</th><th><bdi dir="ltr">PowerFlex 525</bdi></th><th><bdi dir="ltr">SINAMICS V20</bdi></th><th><bdi dir="ltr">Altivar 320</bdi></th></tr></thead><tbody><tr><td>جهد الموتور</td><td class="mono">P031</td><td class="mono">P0304</td><td class="mono">UnS</td></tr><tr><td>تردد الموتور</td><td class="mono">P032</td><td class="mono">P0310</td><td class="mono">FrS</td></tr><tr><td>تيار الموتور</td><td class="mono">P033 / P034</td><td class="mono">P0305</td><td class="mono">nCr</td></tr><tr><td>سرعة الموتور</td><td class="mono">P036</td><td class="mono">P0311</td><td class="mono">nSP</td></tr><tr><td>قدرة الموتور</td><td class="mono">P037</td><td class="mono">P0307</td><td class="mono">nPr</td></tr><tr><td>Accel</td><td class="mono">P041</td><td class="mono">P1120</td><td class="mono">ACC</td></tr><tr><td>Decel</td><td class="mono">P042</td><td class="mono">P1121</td><td class="mono">dEC</td></tr><tr><td>أقل سرعة</td><td class="mono">P043</td><td class="mono">P1080</td><td class="mono">LSP</td></tr><tr><td>أعلى سرعة</td><td class="mono">P044</td><td class="mono">P1082</td><td class="mono">HSP</td></tr><tr><td>مصدر أمر التشغيل</td><td class="mono">P046</td><td class="mono">P0700</td><td class="mono">tCC / Cd1</td></tr><tr><td>مصدر السرعة</td><td class="mono">P047</td><td class="mono">P1000</td><td class="mono">Fr1</td></tr></tbody></table></div>
+  <p class="muted" style="font-size:.88rem">الجدول للتوضيح إن الفكرة واحدة والاسم مختلف. راجع المانيوال لنفس الموديل والإصدار.</p>
+    <div class="wd"><h3>تمرين: من اليافطة للانفرتر</h3><div id="plate"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>الـ Ramp: Accel و Decel</h2>
+  <p><b>Accel time</b> = الوقت من 0 لأعلى سرعة (أو للتردد المقنن في بعض الماركات). <b>Decel time</b> = الوقت من أعلى سرعة لـ 0. الوقت بيتناسب مع فرق التردد.</p>
+  <div class="ex"><b>مثال:</b> Accel = <bdi dir="ltr">10 s</bdi> من 0 لـ <bdi dir="ltr">50 Hz</bdi>. الموتور هيوصل <bdi dir="ltr">25 Hz</bdi> في <bdi dir="ltr">5 s</bdi>. ولو قصّرت الـ Accel أوي على حمل تقيل ⇐ عطل <b>OC</b>. ولو قصّرت الـ Decel أوي ⇐ عطل <b>OV</b>.</div>
+  <div class="wd"><h3>تمرين: احسب زمن الـ Ramp</h3><div id="ramp"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>السرعات ومصدر الأوامر</h2>
+  <ul>
+   <li><b>أقل سرعة (Min freq):</b> للطلمبات عشان متشتغلش من غير تصرّف، وللموتور المبرّد بمروحته عشان ميسخنش على سرعات واطية لفترات طويلة.</li>
+   <li><b>أعلى سرعة (Max freq):</b> متعدّيش حدود الموتور والجيربوكس والطلمبة. الـ 60 Hz على موتور 50 Hz ممكنة غالبًا بس بعزم أقل.</li>
+   <li><b>مصدر أمر التشغيل:</b> كيباد، أطراف (⁦2-Wire⁩ / ⁦3-Wire⁩)، أو اتصال (Modbus، Ethernet/IP، Profinet…).</li>
+   <li><b>مصدر السرعة:</b> بوت الكيباد، AI1، AI2، سرعات ثابتة، أو الاتصال.</li>
+   <li><b>Stop mode:</b> Ramp ولا Coast (الدرس 8).</li>
+  </ul>
+  <div class="box key"><b>أشهر سبب إن الموتور «مش بيلف»:</b> أمر التشغيل جاي من مكان والانفرتر مستنّيه من مكان تاني. أول ما تشك، بص على باراميتر مصدر الأمر ومصدر السرعة.</div>
+</section>
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأرقام والأمثلة هنا قيم تدريب شائعة، وأسماء الباراميترات والأطراف بتختلف من ماركة لماركة ومن موديل لموديل: <b>مانيوال الانفرتر بتاعك هو المرجع</b>. تقدّمك بيتسجّل على الجهاز ده.<br>© &#x2066;2026 LearnElectricals&#x2069;. كل الحقوق محفوظة. الموقع مش تابع لأي شركة من الشركات المذكورة (زي &#x2066;Siemens&#x2069; و &#x2066;Allen-Bradley&#x2069; و &#x2066;Delta&#x2069; و &#x2066;Schneider&#x2069; وغيرهم)، والأسماء والعلامات التجارية ملك أصحابها، ومستخدمة بس عشان نشرح الأجهزة.</p>
+</div>
+<script>
+VF.lesson('l6');
+window.PL = VF.plate(document.getElementById('plate'), {lesson:'l6', need:2});
+VF.drill(document.getElementById('ramp'), VF.rampGen, {lesson:'l6', task:'ramp', need:4, goal:'جاوب <b>4</b> صح عشان التمرين يتعلّم عليه.'});
+VF.quiz(document.getElementById('quiz'), [
+  {q:'يافطة موتور 230/400 V Δ/Y و 8.4/4.9 A، ومتوصّل ستار على انفرتر 400V. التيار اللي تدخّله:', o:['4.9 A', '8.4 A', '13.3 A', '6.6 A'], a:0, why:'الستار = 400V = 4.9A.'},
+  {q:'موتور 50 Hz سرعته 2890 rpm. عدد الأقطاب:', o:['2', '4', '6', '8'], a:0, why:'التزامنية 3000 = 120×50÷2.'},
+  {q:'Accel = 20 s (0 → 50 Hz). من 0 لـ 30 Hz:', o:['12 s', '20 s', '6 s', '30 s'], a:0, why:'20 × 30 ÷ 50.'},
+  {q:'الانفرتر بيفصل OC أول ما الحمل التقيل يقوم. أول باراميتر تبص عليه:', o:['زمن الـ Accel', 'أعلى سرعة', 'مصدر السرعة', 'اللغة'], a:0, why:'Accel قصير = تيار عالي.'},
+  {q:'ليه بندخّل تيار الموتور الصح في الانفرتر؟', o:['عشان حماية الأوفرلود تتحسب صح', 'عشان الشاشة', 'عشان الكارير', 'مش مهم'], a:0, why:'الانفرتر بيحمي الموتور على الرقم ده.'},
+  {q:'الموتور مش بيلف وبيقول Run والتردد صفر. غالبًا:', o:['مصدر السرعة مش مظبوط', 'الموتور محروق', 'OV', 'الكابل مقلوب'], a:0, why:'Run من غير مرجع سرعة.'}
+], {lesson:'l6', pass:0.8});
+</script>
+</body>
+</html>

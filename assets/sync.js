@@ -8,7 +8,7 @@
   var DEV = ["ab1336", "pf525", "pf40", "v20", "atv320", "atv630", "ms300", "fc51", "e5cc", "acs580", "g120", "fre800", "ga500", "ig5a", "gd20", "c2000", "frenic"];
   // progress: دمج كامل · state: حالة الجهاز (باراميترات وإعدادات) — الجهاز الحالي يكسب، والتمارين (exs) بتتجمع
   var KEYS = { "basics-lab-v1": "progress", "instr-lab-v1": "progress", "classic-lab-v1": "progress",
-    "plc-lab-v1": "progress", "plcx-lab-v1": "progress", "drw-lab-v1": "progress", "iv-v1": "progress",
+    "plc-lab-v1": "progress", "plcx-lab-v1": "progress", "drw-lab-v1": "progress", "vfdc-lab-v1": "progress", "iv-v1": "progress",
     "vfd-wbx": "progress", "vfd-tc": "progress", "vfd-ex": "progress", "servo-lab-v1-ui": "progress",
     "mrje-sim-v1-ui": "progress", "sigma7-sim-v1-ui": "progress", "kinetix300-sim-v1-ui": "progress" };
   DEV.forEach(function(d){ KEYS[d + "-lab-v1"] = "state"; KEYS[d + "-lab-v1-ui"] = "progress"; });

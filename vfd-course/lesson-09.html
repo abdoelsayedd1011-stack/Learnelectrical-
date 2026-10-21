@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الـ PID والتطبيقات</title>
+<meta name="description" content="الدرس 9 في كورس الانفرتر: الـ PID جوه الانفرتر لطلمبة ضغط ثابت (SP و PV وترانسميتر ⁦4–20mA⁩)، ظبط Kp و Ti، الـ Sleep و Wake، وإعدادات المراوح والسيور والونش والكمبروسر.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="vfd.css?v=20261021r">
+<script src="vfd.js?v=20261021r"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس الانفرتر · الدرس 9 من 12</p>
+    <h1>الـ PID والتطبيقات</h1>
+    <p>معظم الانفرترات فيها <b>كنترولر PID</b> جوه. يعني تقدر تحط ترانسميتر ضغط على الانفرتر مباشرة، وهو يغيّر سرعة الطلمبة لوحده عشان الضغط يفضل ثابت مهما الناس فتحت وقفلت حنفيات. من غير PLC.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>الفكرة</h2>
+  <ul><li><b>SP</b> (Setpoint): الضغط اللي إنت عايزه، مثلًا <bdi dir="ltr">4 bar</bdi>، من الكيباد أو من إشارة.</li><li><b>PV / Feedback</b>: الضغط الحقيقي من ترانسميتر <bdi dir="ltr">⁦4–20 mA⁩</bdi> على AI2 (رينج <bdi dir="ltr">⁦0–10 bar⁩</bdi> مثلًا).</li><li><b>الخرج</b>: سرعة الطلمبة. لو الضغط أقل من المطلوب ⇐ سرعة أعلى، والعكس.</li></ul>
+  <div class="tblw"><table class="tbl"><thead><tr><th>الإعداد</th><th>بيعمل إيه</th><th>لو كبير أوي</th></tr></thead><tbody>
+   <tr><td><b>Kp</b> (Proportional gain)</td><td>رد الفعل على قد الغلط</td><td>هزّ (Oscillation)</td></tr>
+   <tr><td><b>Ti</b> (Integral time)</td><td>بيشيل الغلط الباقي مع الوقت. <b>كل ما يقصر</b> يبقى أقوى</td><td>لو قصير أوي: هزّ وتجاوز</td></tr>
+   <tr><td><b>Td</b> (Derivative)</td><td>بيبص على سرعة التغيير</td><td>غالبًا بيتساب صفر في الطلمبات</td></tr></tbody></table></div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>جرّب: طلمبة ضغط ثابت</h2>
+  <p>الإعدادات الحالية «حماسية» زيادة والضغط بيهز. ظبطها، وبعدين غيّر الاستهلاك وشوف الانفرتر بيرجّع الضغط إزاي.</p>
+  <div class="wd"><h3>طلمبة ضغط ثابت بالـ PID</h3><div id="pid"></div></div>
+  <div class="box"><b>طريقة ظبط سريعة:</b> ابدأ بـ Kp صغير و Ti طويل (بطيء بس مستقر). قرّب Kp لحد ما يبدأ يهز، وارجع لنصّه تقريبًا. بعدين قصّر Ti لحد ما الغلط يروح بسرعة من غير هزّ.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>الـ Sleep و الـ Wake</h2>
+  <p>بالليل مفيش استهلاك والطلمبة بتلف على سرعة واطية عشان تمسك الضغط بس. الانفرتر يقدر يوقّفها (<b>Sleep</b>) لما السرعة تفضل تحت حد معيّن لوقت معيّن، ويصحّيها (<b>Wake</b>) لما الضغط ينزل تحت حد. جرّب في المحاكي: اقفل كل الحنفيات (0 %) واستنى.</p>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>إعدادات حسب التطبيق</h2>
+  <div class="tblw"><table class="tbl"><thead><tr><th>التطبيق</th><th>أهم الإعدادات</th></tr></thead><tbody>
+   <tr><td>طلمبة / مروحة</td><td>V/f تربيعي، PID، Sleep، أقل سرعة، Flying start للمراوح</td></tr>
+   <tr><td>سير ناقل</td><td>Sensorless Vector، Accel/Decel مناسبين أو S-curve، سرعات ثابتة</td></tr>
+   <tr><td>ونش / رافعة</td><td>Vector (ويُفضّل بإنكودر)، مقاومة فرملة، تحكم الفرامل الميكانيكية من ريليه</td></tr>
+   <tr><td>كمبروسر / خلاط</td><td>عزم بدء عالي، أقل سرعة للتزييت والتبريد</td></tr></tbody></table></div>
+  <div class="wd"><h3>تمرين: أهم إعداد للتطبيق</h3><div id="app"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأرقام والأمثلة هنا قيم تدريب شائعة، وأسماء الباراميترات والأطراف بتختلف من ماركة لماركة ومن موديل لموديل: <b>مانيوال الانفرتر بتاعك هو المرجع</b>. تقدّمك بيتسجّل على الجهاز ده.<br>© &#x2066;2026 LearnElectricals&#x2069;. كل الحقوق محفوظة. الموقع مش تابع لأي شركة من الشركات المذكورة (زي &#x2066;Siemens&#x2069; و &#x2066;Allen-Bradley&#x2069; و &#x2066;Delta&#x2069; و &#x2066;Schneider&#x2069; وغيرهم)، والأسماء والعلامات التجارية ملك أصحابها، ومستخدمة بس عشان نشرح الأجهزة.</p>
+</div>
+<script>
+VF.lesson('l9');
+window.PD = VF.pid(document.getElementById('pid'), {lesson:'l9'});
+VF.drill(document.getElementById('app'), VF.appGen, {lesson:'l9', task:'app', need:4, goal:'جاوب <b>4</b> صح عشان التمرين يتعلّم عليه.'});
+VF.quiz(document.getElementById('quiz'), [
+  {q:'في طلمبة ضغط ثابت بالـ PID، الـ PV جاي من:', o:['ترانسميتر الضغط', 'الكيباد', 'يافطة الموتور', 'مقاومة الفرملة'], a:0, why:'Feedback.'},
+  {q:'الضغط بيهز طالع نازل. أول خطوة:', o:['قلّل Kp أو طوّل Ti', 'زوّد Kp', 'قصّر Ti', 'زوّد الـ Accel لصفر'], a:0, why:'الكنترولر بيصحّح بزيادة.'},
+  {q:'الـ Ti القصير معناه:', o:['تكامل أقوى وأسرع', 'تكامل أضعف', 'مفيش تكامل', 'Kp أعلى'], a:0, why:'الغلط بيتجمع أسرع.'},
+  {q:'الـ Sleep mode بيفيد في:', o:['وقف الطلمبة لما مفيش استهلاك وتوفير الكهربا', 'زيادة الضغط', 'الفرملة', 'الـ Autotune'], a:0, why:'وتصحى لما الضغط ينزل.'},
+  {q:'مروحة ممكن تكون بتلف من الهوا قبل التشغيل. الإعداد:', o:['Flying start', 'DC injection 30 ثانية', 'Coast', 'S-curve'], a:0, why:'بيمسك الموتور على سرعته بدل ما يعمل OC.'},
+  {q:'ترانسميتر ⁦0–10 bar⁩ بيطلّع 10.4 mA. الضغط:', o:['4 bar', '6.4 bar', '10.4 bar', '2.5 bar'], a:0, why:'(10.4−4)/16 × 10.'}
+], {lesson:'l9', pass:0.8});
+</script>
+</body>
+</html>

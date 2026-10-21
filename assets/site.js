@@ -38,6 +38,12 @@
       guided:7, exercises:0, params:0, faults:0,
       inside:["أنواع الرسومات والرموز IEC و NEMA", "أرقام الأطراف والكروس ريفرنس", "دايرة التحكم والـ Single line", "تتبّع العطل من الرسمة وشهادة"],
       tags:"drawings رسومات رسمة الرسومات الكهربية قراية قراءة electrical drawing schematic diagram مخطط مخططات wiring diagram رسمة توصيل circuit دايرة control circuit دايرة التحكم power circuit دايرة القوى single line diagram sld سينجل لاين ون لاين one line symbols رموز iec ansi nema terminal ترمنال terminal strip x1 x2 cross reference كروس ريفرنس device tag -k1 -q1 -f1 a1 a2 13-14 21-22 95-96 panel layout رسمة اللوحة din rail دين ريل ferrule فيرول cable schedule جدول الكابلات p&id mdb mcc لوحة توزيع breaker قاطع contactor كونتاكتور overload أوفرلود dol عكس الحركة reversing troubleshooting تتبّع الأعطال أفوميتر eplan autocad electrical أوتوكاد" },
+    { id:"vfdc", path:"vfd-course/index.html", group:"drives", brand:"كورس", brandKey:"vfdc",
+      name:"كورس الانفرتر (VFD)", kind:"ابدأ بالشرح", disp:"50.00 Hz", dispClass:"lcd", rtlName:true,
+      line:"افهم الانفرتر من جوه قبل ما تمسك أي جهاز.",
+      guided:12, exercises:0, params:0, faults:0,
+      inside:["جوه الانفرتر والـ PWM والـ V/f", "التوصيل والباراميترات الأساسية", "الفرملة والـ PID والأعطال"],
+      tags:"vfd course كورس الانفرتر انفرتر إنفرتر inverter drive درايف شرح نظري theory dc bus igbt pwm v/f vector sensorless autotune braking resistor فرملة ov oc uv pid sleep 2-wire 3-wire 4-20ma 0-10v باراميترات parameters nameplate يافطة الموتور أعطال faults commissioning تشغيل سلامة emc derating harmonics هارمونيكس" },
     { id:"ab1336", path:"ab1336-simulator/index.html", group:"drives", brand:"Allen-Bradley", brandKey:"ab",
       name:"1336 PLUS II", kind:"انفرتر", disp:"Stopped +0.00 Hz", dispClass:"lcd",
       line:"انفرتر Allen-Bradley القديم اللي لسه شغال في مصانع كتير.",
@@ -182,7 +188,7 @@
     { key:"temp", title:"كنترول حرارة", sub:"Omron" }
   ];
   var BRANDS = [
-    { key:"all", label:"الكل" }, { key:"beginner", label:"للمبتدئين" }, { key:"basics", label:"كلاسيك كنترول" }, { key:"drawings", label:"رسومات كهربية" }, { key:"instr", label:"إنسترومنتيشن" }, { key:"plc", label:"PLC" }, { key:"ab", label:"Allen-Bradley" }, { key:"siemens", label:"Siemens" },
+    { key:"all", label:"الكل" }, { key:"beginner", label:"للمبتدئين" }, { key:"basics", label:"كلاسيك كنترول" }, { key:"drawings", label:"رسومات كهربية" }, { key:"instr", label:"إنسترومنتيشن" }, { key:"plc", label:"PLC" }, { key:"vfdc", label:"شرح الانفرتر" }, { key:"ab", label:"Allen-Bradley" }, { key:"siemens", label:"Siemens" },
     { key:"schneider", label:"Schneider" }, { key:"delta", label:"Delta" }, { key:"danfoss", label:"Danfoss" },
     { key:"omron", label:"Omron" }, { key:"abb", label:"ABB" }, { key:"mitsubishi", label:"Mitsubishi" }, { key:"yaskawa", label:"Yaskawa" }, { key:"ls", label:"LS" }, { key:"invt", label:"INVT" }, { key:"fuji", label:"Fuji" }, { key:"multi", label:"مقارنة" }
   ];

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>السلامة والتركيب</title>
+<meta name="description" content="الدرس 11 في كورس الانفرتر: تفريغ الـ DC bus والقياس قبل اللمس، LOTO، الـ STO مش عزل، الـ EMC والشيلد وطول كابل الموتور، الـ Derating بالحرارة والارتفاع والكارير، والهارمونيكس والـ Line reactor.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="vfd.css?v=20261021r">
+<script src="vfd.js?v=20261021r"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس الانفرتر · الدرس 11 من 12</p>
+    <h1>السلامة والتركيب</h1>
+    <p>الانفرتر شغّال بجهد DC عالي، وبيطلّع نبضات سريعة بتعمل نويز، وبيسخن. الدرس ده عن إزاي تشتغل عليه من غير ما تتأذي، وإزاي تركّبه فيعيش سنين من غير أعطال غريبة.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>قبل ما تلمس</h2>
+  <div class="box safe"><b>القاعدة الذهبية:</b> افصل واقفل (LOTO)، استنى الوقت المكتوب على الانفرتر، وقيس بنفسك. لمبة CHARGE طافية أو شاشة طافية مش ضمان.</div>
+  <ul><li><b>الـ STO</b> (Safe Torque Off) بيمنع الموتور يلف، بس <b>مش بيفصل الكهربا</b>. الأطراف لسه عليها جهد.</li><li>الموتور اللي بيتلف من الحمل (مروحة في الهوا، طلمبة الميّة راجعة فيها) <b>بيولّد جهد</b> على أطراف الانفرتر حتى والكهربا مفصولة. اقفل الحمل ميكانيكيًا.</li><li>استخدم أفوميتر <b>CAT III</b> على الأقل، على رينج <b>V DC</b> اللي يكفي <bdi dir="ltr">1000 V</bdi>.</li></ul>
+  <div class="wd"><h3>رتّب خطوات الأمان</h3><div id="lock"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>جرّب: تفريغ الـ DC bus</h2>
+  <div class="wd"><h3>قيس قبل ما تفتح</h3><div id="dc"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>الـ EMC وكابل الموتور</h2>
+  <ul><li>نبضات الـ PWM سريعة جدًا، فبتعمل نويز بيوصل للحساسات والإنكودر وإشارات الأنالوج. الحل: <b>كابل موتور مشيلد</b>، شيلد متأرّض <b>360°</b> في الجلاند (مش ديل ملفوف «Pigtail»)، وفصل كابلات الكنترول عن الباور.</li>
+   <li><b>كابل موتور طويل</b> (أطول من اللي في المانيوال، غالبًا عشرات الأمتار): تيارات تسريب عبر سعة الكابل بتعمل أعطال OC و Ground fault وهمية، وكمان انعكاس الموجة بيطلّع نطّات جهد على الموتور ممكن توصل ضعف الـ DC bus وتضرب عزله. الحل: <b>Output reactor</b> أو <b>dV/dt filter</b> أو <b>sine filter</b> وكارير أقل.</li>
+   <li><b>فلتر الـ EMC</b> الداخلي: في الشبكات المعزولة (IT) أو مع جهاز تسريب أرضي غالبًا لازم يتفصل (بمسمار أو جمبر). شوف المانيوال.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>الـ Derating والتركيب</h2>
+  <p>الانفرتر بيشيل تياره المقنن في ظروف معيّنة (حرارة، ارتفاع، كارير). لو الظروف أصعب، لازم تقلّل التيار المسموح أو تختار مقاس أكبر.</p>
+  <div class="tblw"><table class="tbl"><thead><tr><th>العامل</th><th>مثال قاعدة (من كتالوج نموذجي)</th></tr></thead><tbody>
+   <tr><td>الارتفاع</td><td>1 % لكل <bdi dir="ltr">100 m</bdi> فوق <bdi dir="ltr">1000 m</bdi></td></tr><tr><td>حرارة اللوحة</td><td>حوالي 2 % لكل درجة فوق <bdi dir="ltr">40 °C</bdi> (أو فوق 50 حسب الموديل)</td></tr><tr><td>الكارير</td><td>كل ما يعلى فوق الإعداد الافتراضي، التيار المسموح يقل</td></tr></tbody></table></div>
+  <ul><li>ركّبه <b>رأسي</b>، وسيب مسافة فوقه وتحته للهوا (المانيوال بيقول كام سم).</li><li>اللوحة محتاجة <b>مروحة وفلتر</b> بيشيلوا الحرارة: تقريبًا <bdi dir="ltr">⁦2–3 %⁩</bdi> من قدرة الانفرتر بتطلع حرارة.</li></ul>
+  <div class="wd"><h3>تمرين: احسب الـ Derating</h3><div id="derate"></div></div>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>الهارمونيكس</h2>
+  <p>الموحّد بيسحب التيار من الشبكة على شكل نبضات مش sine، فبيطلّع <b>هارمونيكس</b> بتسخّن المحوّلات والكابلات وبتأثر على أجهزة تانية. الحلول: <b>Line reactor</b> أو <b>DC choke</b> (بيقلّلوا الهارمونيكس وبيحموا الانفرتر من نطّات الشبكة)، وفي الأحمال الكبيرة فلاتر هارمونيكس أو انفرترات Low harmonic / AFE.</p>
+  <div class="box">لو فيه <b>جهاز تسريب أرضي (RCD)</b> قبل الانفرتر، لازم يكون نوع مناسب للانفرترات (غالبًا <b>Type B</b> للتلاتة فاز) وحساسيته مناسبة، وإلا هيفصل من غير سبب.</div>
+</section>
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأرقام والأمثلة هنا قيم تدريب شائعة، وأسماء الباراميترات والأطراف بتختلف من ماركة لماركة ومن موديل لموديل: <b>مانيوال الانفرتر بتاعك هو المرجع</b>. تقدّمك بيتسجّل على الجهاز ده.<br>© &#x2066;2026 LearnElectricals&#x2069;. كل الحقوق محفوظة. الموقع مش تابع لأي شركة من الشركات المذكورة (زي &#x2066;Siemens&#x2069; و &#x2066;Allen-Bradley&#x2069; و &#x2066;Delta&#x2069; و &#x2066;Schneider&#x2069; وغيرهم)، والأسماء والعلامات التجارية ملك أصحابها، ومستخدمة بس عشان نشرح الأجهزة.</p>
+</div>
+<script>
+VF.lesson('l11');
+window.LK = VF.order(document.getElementById('lock'), [
+  'وقّف الموتور من الانفرتر (Stop)',
+  'افصل القاطع الرئيسي واقفله بقفل وتاج (LOTO)',
+  'اتأكد إن الحمل مش هيلف الموتور (اقفل محبس / اربط الحمل)',
+  'استنى وقت التفريغ المكتوب على الانفرتر',
+  'قيس بين DC+ و DC− بأفوميتر على V DC واتأكد إنه أقل من 50 V',
+  'قيس كمان على أطراف الدخل والخرج، وبعدين ابدأ الشغل'
+], {lesson:'l11', task:'lock', goal:'رتّب الـ <b>6</b> خطوات صح عشان التمرين يتعلّم عليه.', why:['الموتور يقف بالـ Ramp الأول.', 'محدش يرجّع الكهربا وإنت شغّال.', 'الموتور اللي بيلف بيولّد جهد.', 'الكباسيتورات محتاجة وقت.', 'متصدّقش الوقت ولا اللمبة.']});
+window.DS = VF.discharge(document.getElementById('dc'), {lesson:'l11'});
+VF.drill(document.getElementById('derate'), VF.derateGen, {lesson:'l11', task:'derate', need:4, goal:'جاوب <b>4</b> صح عشان التمرين يتعلّم عليه.'});
+VF.quiz(document.getElementById('quiz'), [
+  {q:'الـ STO بيعمل إيه؟', o:['بيمنع العزم بس الأطراف لسه عليها جهد', 'بيفصل الكهربا تمامًا', 'بيفرّغ الكباسيتورات', 'بيعمل Reset'], a:0, why:'مش عزل كهربي.'},
+  {q:'الشيلد بتاع كابل الموتور يتأرّض إزاي؟', o:['360° في الكابل جلاند من الناحيتين', 'ديل ملفوف في طرف واحد', 'ميتأرّضش', 'على DC−'], a:0, why:'أقل مسار للنويز العالي التردد.'},
+  {q:'انفرتر 32 A على 2000 m والقاعدة 1 % لكل 100 m فوق 1000. التيار المسموح:', o:['28.8 A', '32 A', '30 A', '25.6 A'], a:0, why:'10 % أقل.'},
+  {q:'كابل موتور طويل جدًا ممكن يعمل:', o:['أعطال Ground fault / OC وهمية ونطّات جهد على الموتور', 'سرعة أعلى', 'جهد DC bus أقل', 'مفيش مشكلة'], a:0, why:'سعة الكابل وانعكاس الموجة.'},
+  {q:'الـ Line reactor بيفيد في:', o:['تقليل الهارمونيكس وحماية الانفرتر من نطّات الشبكة', 'زيادة السرعة', 'الفرملة', 'الـ PID'], a:0, why:'بيحط إندكتانس قبل الموحّد.'},
+  {q:'فصلت الكهربا من 3 دقايق ولمبة CHARGE طفت. تلمس؟', o:['لأ، استنى الوقت المكتوب وقيس الأول', 'أيوه', 'أيوه لو الشاشة طافية', 'أيوه بجوانتي'], a:0, why:'القياس هو الضمان.'}
+], {lesson:'l11', pass:0.8});
+</script>
+</body>
+</html>
