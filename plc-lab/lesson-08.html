@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الإشارات الأنالوج في الـ PLC</title>
+<meta name="description" content="الدرس 8 في كورس الـ PLC: إشارة 4–20mA من الترانسميتر لكارت الدخل الأنالوج، الـ Raw counts (0–27648 مثلاً)، التحويل للقيمة الحقيقية (Scaling)، كشف قطع السلك، وتانك بإنذارات High و Low وتحكم في الطلمبة بهيستيريسيس على المحاكي.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="plc.css">
+<script src="plc.js"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">الـ PLC · الدرس 8 من 10</p>
+    <h1>الإشارات الأنالوج في الـ PLC</h1>
+    <p>الحساس الديجيتال بيقول "فيه أو مفيش". لكن ترانسميتر المستوى بيقول "التانك فيه <b>2.35 متر</b>". الرقم ده بيوصل للـ PLC كتيار ⁦4⁠–⁠20mA⁩، والكارت بيحوّله لرقم خام (<b>Raw</b>)، وانت لازم تحوّله للقيمة الحقيقية قبل ما تستخدمه. ده اسمه <b>Scaling</b>.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>من التانك للرقم</h2>
+  <ol>
+    <li><b>الترانسميتر</b> بيقيس (مثلاً مستوى ⁦0⁠–⁠4⁩ متر) ويطلّع تيار: 4mA = فاضي، 20mA = مليان.</li>
+    <li><b>كارت AI</b> فيه ADC بيحوّل التيار لرقم. في Siemens مثلاً: 4mA ⇐ <b>0</b>، و 20mA ⇐ <b>27648</b>.</li>
+    <li><b>البرنامج</b> بيحوّل الرقم لمتر أو % (Scaling) ويستخدمه في المقارنات والإنذارات.</li>
+  </ol>
+  <p>لو مش فاكر ليه بنبدأ من 4 مش صفر، ارجع لـ <a href="../instrumentation-lab/lesson-02.html">درس إشارة ⁦4⁠–⁠20mA⁩ في كورس الإنسترومنتيشن</a>.</p>
+  <div class="formula">Value = Lo + Raw ÷ 27648 × (Hi − Lo)</div>
+  <div class="wd"><h3>سلسلة الإشارة</h3><div id="chain"></div></div>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>التيار</th><th>Raw (Siemens)</th><th>المستوى ⁦0⁠–⁠4 m⁩</th></tr></thead>
+    <tbody>
+      <tr><td>4 mA</td><td class="mono">0</td><td>0 m</td></tr>
+      <tr><td>8 mA</td><td class="mono">6912</td><td>1 m</td></tr>
+      <tr><td>12 mA</td><td class="mono">13824</td><td>2 m</td></tr>
+      <tr><td>16 mA</td><td class="mono">20736</td><td>3 m</td></tr>
+      <tr><td>20 mA</td><td class="mono">27648</td><td>4 m</td></tr>
+    </tbody></table></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>تمرين التحويل</h2>
+  <p>اكتب الإجابة بالرقم. مسموح بفرق صغير في التقريب.</p>
+  <div class="wd"><h3>Raw ↔ قيمة ↔ mA</h3><div id="drill"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>في البرنامج: SCL والمقارنة</h2>
+  <p>كل شركة ليها تعليمة: <b>NORM_X + SCALE_X</b> في TIA Portal، <b>SCP</b> في Allen-Bradley، أو تكتب القانون بنفسك بعمليات حسابية. في المحاكي فيه بلوك <b>Scale</b> بياخد <span class="mono">IW64</span> ويطلّع القيمة في <span class="mono">MW10</span> بالرينج اللي تحدده.</p>
+  <div class="ladfig" id="fScl"></div>
+  <div class="box key"><b>الهيستيريسيس (Hysteresis):</b> لو الطلمبة بتشتغل تحت 20% وبتفصل فوق 20%، هتفضل تفصل وتوصل كل ثانية وتحرق الكونتاكتور. الصح: <b>تشتغل عند 20% وتفصل عند 80%</b>، وده بيتعمل بـ Set عند الحد الواطي و Reset عند الحد العالي.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>مشروع: تانك بإنذارات</h2>
+  <p>ترانسميتر مستوى على <b>IW64</b>، وطلمبة ملو <b>Q0.0</b>، والتانك بيصرف لوحده (الاستهلاك). اكتب البرنامج، شغّل RUN، وسيب التانك يشتغل لوحده. جرّب كمان زرار "اقطع سلك الترانسميتر" وفكّر: البرنامج المفروض يعمل إيه؟</p>
+  <div class="wd"><h3>محاكي: التانك</h3><div id="sim1"></div></div>
+  <div class="ex"><b>من الموقع:</b> لما سلك الترانسميتر يتقطع، الكارت بيطلّع قيمة غلط، والـ Scale هيقول "0%"، فالبرنامج هيشغّل الطلمبة ويملا التانك لحد ما يفيض! البرامج الحقيقية بتستخدم بت الـ Diagnostic بتاع الكارت أو بتقارن الـ Raw بحدود معقولة، ولو فيه عطل توقف الطلمبة وتطلّع إنذار. ومعاه عوامة High-High بالسلك كحماية أخيرة.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>أعطال شائعة في الموقع</h2>
+  <div class="fault-box"><b>أعطال شائعة في الموقع:</b><ul>
+    <li><b>القراءة ثابتة على قيمة غريبة (32767 أو سالب):</b> سلك مقطوع أو الترانسميتر مش واخد باور.</li>
+    <li><b>القراءة غلط بنسبة ثابتة:</b> رينج الـ Scale في البرنامج مختلف عن رينج الترانسميتر (البرنامج ⁦0⁠–⁠10⁩ bar والترانسميتر ⁦0⁠–⁠16⁩).</li>
+    <li><b>الكارت متظبط على ⁦0⁠–⁠10V⁩ والترانسميتر ⁦4⁠–⁠20mA⁩:</b> لازم نوع القناة يتظبط في الهاردوير كونفيج (وأحيانًا جمبر على الكارت).</li>
+    <li><b>القراءة بتترعش:</b> كابل من غير شيلد أو جنب كابلات موتور. افصلهم، واعمل فلتر في الكارت أو في البرنامج.</li>
+  </ul></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الرينج ⁦0⁠–⁠27648⁩ هو بتاع كروت Siemens S7-1200 / S7-1500 لإشارة ⁦4⁠–⁠20mA⁩. ماركات تانية بتستخدم ⁦0⁠–⁠32000⁩ أو ⁦0⁠–⁠4000⁩ أو ⁦0⁠–⁠65535⁩، أو بتديك القيمة جاهزة بالهندسي: الداتا شيت بتاع الكارت هو المرجع. المحاكي هنا <b>مدرّب عام</b> بعناوين على طريقة IEC / Siemens: العناوين والتعليمات بالظبط بتختلف من شركة للتانية، والمانيوال بتاع الـ PLC بتاعك هو المرجع. تقدّمك بيتسجّل على الجهاز ده بس.</p>
+</div>
+<script>
+PL.lesson('l8');
+PL.scaleDemo(document.getElementById('chain'));
+window.DR = PL.drill(document.getElementById('drill'), PL.scaleGen, {lesson:'l8', task:'scale', need:4, goal:'جاوب <b>4</b> صح عشان التمرين يتعلّم عليه.'});
+PL.ladFig(document.getElementById('fScl'), [{rows:[['-', '-', '-', '-', 'SCL:IW64:MW10:0:100']]}, {rows:[['CMP:MW10:<=:20', '-', '-', '-', 'S:Q0.0']]}, {rows:[['CMP:MW10:>=:80', '-', '-', '-', 'R:Q0.0']]}], {labels:{'Q0.0':'طلمبة'}});
+window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l8', exercises:[
+  {key:'tank', title:'تانك بإنذارات', task:'<b>المطلوب:</b> (1) Scale من <b>IW64</b> لـ <b>MW10</b> بالنسبة ⁦0⁠–⁠100 %⁩. (2) الطلمبة <b>Q0.0</b> تشتغل لما المستوى ≤ <b>20%</b> وتفصل لما يبقى ≥ <b>80%</b>. (3) إنذار High <b>Q0.1</b> لما المستوى ≥ <b>90%</b>. (4) إنذار Low <b>Q0.2</b> لما المستوى ≤ <b>10%</b>.',
+    io:{inputs:[], outputs:[{a:'Q0.0', label:'طلمبة'}, {a:'Q0.1', label:'High'}, {a:'Q0.2', label:'Low'}]}, syms:[{a:'IW64', label:'مستوى raw'}, {a:'MW10', label:'مستوى %'}], plant:'tank', plantOpt:{level:50}, cmpDef:'MW10',
+    tests:[{run:1}, {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':0}, msg:'المستوى 50%:'}, {fn:c => Math.abs(c.e.num('MW10') - c.plant.level) < 1.5 ? null : `MW10 = ${PL.fmt(c.e.num('MW10'), 1)} والمستوى الحقيقي ${Math.round(c.plant.level)}%: راجع بلوك الـ Scale (من IW64 لـ MW10، ⁦0⁠–⁠100⁩).`},
+      {until:c => c.plant.level <= 19.8 || c.q('Q0.0'), max:25, msg:'التانك مانزلش لحد 20%: الطلمبة شغالة من غير سبب؟'}, {fn:c => c.q('Q0.0') && c.plant.level > 21.5 ? `الطلمبة اشتغلت والمستوى ${Math.round(c.plant.level)}%: المفروض تستنى لحد 20%.` : null}, {run:0.02}, {exp:{'Q0.0':1}, msg:'المستوى نزل تحت 20%: الطلمبة لازم تشتغل.'},
+      {until:c => c.plant.level >= 50, max:30, msg:'المستوى مش بيطلع: الطلمبة بتفصل وتوصل حوالين 20%. محتاج هيستيريسيس: Set عند 20% و Reset عند 80%.'}, {exp:{'Q0.0':1}, msg:'المستوى 50% والطلمبة شغالة من تحت: لازم تفضل شغالة لحد 80% (هيستيريسيس).'},
+      {until:c => !c.q('Q0.0') || c.plant.level >= 85, max:30, msg:'المستوى ماوصلش 80%.'}, {fn:c => c.q('Q0.0') ? 'المستوى عدّى 80% والطلمبة لسه شغالة: لازم تفصل عند 80%.' : c.plant.level < 78.5 ? `الطلمبة فصلت بدري عند ${Math.round(c.plant.level)}%: المفروض تكمّل لحد 80%.` : null}, {run:3}, {exp:{'Q0.0':0}, msg:'المستوى نازل تحت 80% شوية: الطلمبة تفضل واقفة لحد 20%.'},
+      {plant:{level:93}}, {run:0.4}, {exp:{'Q0.1':1, 'Q0.2':0}, msg:'المستوى 93%:'}, {plant:{level:60}}, {run:0.4}, {exp:{'Q0.1':0, 'Q0.2':0}, msg:'المستوى 60%:'}, {plant:{level:7, use:false}}, {run:0.4}, {exp:{'Q0.2':1, 'Q0.0':1, 'Q0.1':0}, msg:'المستوى 7%:'}],
+    hint:'رانج 1: سيبه سلك ← Scale (IW64 ← MW10، ⁦0⁠–⁠100⁩). رانج 2: مقارنة MW10 &lt;= 20 ← (S) Q0.0. رانج 3: MW10 &gt;= 80 ← (R) Q0.0. رانج 4: MW10 &gt;= 90 ← Q0.1. رانج 5: MW10 &lt;= 10 ← Q0.2.',
+    sol:[{rows:[['-', '-', '-', '-', 'SCL:IW64:MW10:0:100']]}, {rows:[['CMP:MW10:<=:20', '-', '-', '-', 'S:Q0.0']]}, {rows:[['CMP:MW10:>=:80', '-', '-', '-', 'R:Q0.0']]}, {rows:[['CMP:MW10:>=:90', '-', '-', '-', 'OUT:Q0.1']]}, {rows:[['CMP:MW10:<=:10', '-', '-', '-', 'OUT:Q0.2']]}],
+    ok:'ده تحكم On/Off بهيستيريسيس، وهو اللي شغّال في تانكات مية كتير. جرّب دلوقتي "اقطع سلك الترانسميتر" وشوف خطورة إن البرنامج يصدّق القراية.'}
+]});
+PL.quiz(document.getElementById('quiz'), [
+  {q:'في كارت Siemens، ترانسميتر بيطلّع <b>12mA</b>. الـ Raw تقريبًا:', o:['13824', '27648', '6912', '12000'], a:0, why:'12mA = 50% ⇐ نص 27648.'},
+  {q:'ترانسميتر ضغط ⁦0⁠–⁠10⁩ bar والـ Raw = <b>20736</b>. الضغط:', o:['7.5 bar', '2.07 bar', '5 bar', '10 bar'], a:0, why:'20736 ÷ 27648 = 75%.'},
+  {q:'الطلمبة بتشتغل وتفصل كل ثانية عند حد المستوى. الحل:', o:['هيستيريسيس: تشتغل عند حد وتفصل عند حد تاني', 'تايمر TP', 'تغيير الترانسميتر', 'عدّاد'], a:0, why:'Set عند الواطي و Reset عند العالي.'},
+  {q:'القراية فجأة بقت 0% والتانك مليان قدامك. أول حاجة تشك فيها:', o:['سلك الترانسميتر مقطوع أو الباور بتاعه', 'التانك فضي فعلاً', 'البرنامج اتمسح', 'الطلمبة'], a:0, why:'0mA مش 4mA: ده عطل مش قراية.'},
+  {q:'البرنامج بيقول 16 bar والضغط الحقيقي 10. الترانسميتر ⁦0⁠–⁠10⁩ bar. غالبًا:', o:['رينج الـ Scale في البرنامج ⁦0⁠–⁠16⁩ غلط', 'الكارت بايظ', 'الترانسميتر عايز يتغيّر', 'السلك مقطوع'], a:0, why:'الرينج في البرنامج لازم يطابق رينج الترانسميتر.'},
+  {q:'ليه منستخدمش <span class="mono">==</span> في مقارنة قيمة أنالوج؟', o:['القيمة ممكن تعدّي الرقم من غير ما تساويه بالظبط', 'ممنوعة في الـ PLC', 'بطيئة', 'مش بتشتغل مع MW'], a:0, why:'استخدم >= أو <=.'}
+], {lesson:'l8', pass:0.8});
+</script>
+
+</body>
+</html>

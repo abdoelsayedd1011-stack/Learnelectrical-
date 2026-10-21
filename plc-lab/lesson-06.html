@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>العدادات والمقارنة</title>
+<meta name="description" content="الدرس 6 في كورس الـ PLC: العدّاد الطالع CTU والنازل CTD، القيمة المضبوطة PV والحالية CV والـ Reset، عدّاد كراتين على سير تعبئة متحرك، وتعليمات المقارنة (أكبر، أصغر، يساوي) في جراج عربيات. تمارين بتتختبر أوتوماتيك.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="plc.css">
+<script src="plc.js"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">الـ PLC · الدرس 6 من 10</p>
+    <h1>العدادات والمقارنة</h1>
+    <p>كتير من الماكينات شغلها "عدّ": 6 علب في الكرتونة، 100 لفة في البكرة، عدد العربيات في الجراج. في الدرس ده هتستخدم <b>العدّاد CTU و CTD</b>، وتقارن الأرقام بتعليمات <b>المقارنة</b>، على ماكينات بتتحرك قدامك.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>العدّاد CTU و CTD</h2>
+  <ul>
+    <li><b>CTU</b> (Count Up): كل ما الكهربا اللي داخلاله تتغيّر من 0 لـ 1، القيمة الحالية <b>CV</b> تزيد 1. ولما CV توصل للقيمة المضبوطة <b>PV</b>، البت بتاعه (C0) يبقى 1.</li>
+    <li><b>CTD</b> (Count Down): بينقّص 1 مع كل نبضة.</li>
+    <li><b>Reset</b>: كويل R على C0 بيرجّع CV صفر والبت 0.</li>
+  </ul>
+  <div class="box key"><b>العدّاد بيعد الحواف مش الوقت:</b> لو العلبة وقفت قدام الحساس دقيقة، هتتعد مرة واحدة بس. يعني العدّاد جواه "Edge" لوحده. بس خلي بالك: الحساس اللي بيرمش (Bounce) هيتعد كذا مرة.</div>
+  <div class="ladfig" id="fCtu"></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>مشروع: عدّاد التعبئة</h2>
+  <p>سير بيودّي علب لكرتونة، وعين (فوتوسيل) <b>I0.2</b> عند آخره بتشوف كل علبة وهي بتقع. الكرتونة تاخد <b>6 علب</b> بالظبط. بعدها السير يقف ولمبة تنوّر لحد ما العامل يحط كرتونة جديدة ويدوس Reset.</p>
+  <div class="wd"><h3>محاكي: سير التعبئة</h3><div id="sim1"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>تعليمات المقارنة</h2>
+  <p>المقارنة بتتحط مكان الكونتاكت: لو الشرط صح الكهربا تعدّي. وتقدر تقارن قيمة عدّاد (C0)، أو وقت تايمر (T0)، أو قيمة أنالوج (MW10).</p>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>الرمز</th><th>المعنى</th><th>مثال</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">==</td><td>يساوي</td><td class="mono">C0 == 3</td></tr>
+      <tr><td class="mono">&lt;&gt;</td><td>لا يساوي</td><td class="mono">C0 &lt;&gt; 0</td></tr>
+      <tr><td class="mono">&gt; و &gt;=</td><td>أكبر، أكبر أو يساوي</td><td class="mono">MW10 &gt;= 80</td></tr>
+      <tr><td class="mono">&lt; و &lt;=</td><td>أصغر، أصغر أو يساوي</td><td class="mono">T0 &lt; 2.5</td></tr>
+    </tbody></table></div>
+  <div class="ex"><b>من الموقع:</b> في القيم الأنالوج (حرارة، مستوى) متستخدمش <span class="mono">==</span> أبدًا: القيمة ممكن تعدّي من 79.9 لـ 80.1 من غير ما تساوي 80 بالظبط. استخدم <span class="mono">&gt;=</span> أو <span class="mono">&lt;=</span>.</div>
+  <p>في المحاكي: اختار <b>مقارنة</b> في الخانة، وبعدين العنوان (C0) والشرط والرقم.</p>
+  <div class="wd"><h3>محاكي: الجراج</h3><div id="sim2"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>أعطال شائعة في الموقع</h2>
+  <div class="fault-box"><b>أعطال شائعة في البرامج والموقع:</b><ul>
+    <li><b>العدّاد بيعد زيادة:</b> الحساس بيرمش (علبة لامعة، اهتزاز). الحل: تايمر TON صغير كـ Debounce، أو ظبط الحساس.</li>
+    <li><b>العدّاد مش بيعد خالص:</b> الحساس واقف 1 على طول (متغطّي تراب) فمفيش حواف.</li>
+    <li><b>الكرتونة بتاخد علبة زيادة:</b> السير بيقف متأخر، أو الحساس قبل نقطة الوقوع والعلبة اللي بعدها بتلحق تعدّي. مكان الحساس مهم زي البرنامج.</li>
+    <li><b>العدّاد رجع صفر لوحده بعد قطع الكهربا:</b> العدّاد مش Retentive. لو العدّ مهم (عدّاد إنتاج)، خليه Retentive.</li>
+  </ul></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">في Allen-Bradley تعليمتين CTU و CTD ممكن يشتغلوا على نفس العدّاد C5:0، وفي TIA Portal فيه بلوك CTUD واحد. في المحاكي CTU و CTD على نفس العنوان بيشتغلوا على نفس القيمة، والعدّاد مش بينزل تحت الصفر. المحاكي هنا <b>مدرّب عام</b> بعناوين على طريقة IEC / Siemens: العناوين والتعليمات بالظبط بتختلف من شركة للتانية، والمانيوال بتاع الـ PLC بتاعك هو المرجع. تقدّمك بيتسجّل على الجهاز ده بس.</p>
+</div>
+<script>
+PL.lesson('l6');
+PL.ladFig(document.getElementById('fCtu'), [{rows:[['NO:I0.2', '-', '-', '-', 'CTU:C0:6']]}, {rows:[['NO:I0.3', '-', '-', '-', 'R:C0']]}, {rows:[['NO:C0', '-', '-', '-', 'OUT:Q0.1']]}], {labels:{'I0.2':'عين', 'I0.3':'Reset', 'Q0.1':'كملت'}});
+window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l6', exercises:[
+  {key:'ctu', title:'عدّاد التعبئة', task:'<b>المطلوب:</b> <b>Start</b> (I0.0) يشغّل السير <b>Q0.0</b> بتثبيت، و<b>Stop</b> (I0.1، NC) يوقفه. العين <b>I0.2</b> تعد العلب بعدّاد <b>C0</b> (PV = 6). لما العدّ يوصل 6: السير يقف ولمبة <b>Q0.1</b> تنوّر. زرار <b>كرتونة جديدة</b> (I0.3) يصفّر العدّاد ويطفي اللمبة، وبعدين Start يكمّل.',
+    io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}, {a:'I0.3', label:'كرتونة جديدة', kind:'pb', color:'blue'}, {a:'I0.2', label:'عين', kind:'auto'}], outputs:[{a:'Q0.0', label:'السير'}, {a:'Q0.1', label:'كملت'}]}, plant:'pack', cmpDef:'C0',
+    tests:[{run:0.2}, {press:'I0.0'}, {run:1}, {exp:{'Q0.0':1}, msg:'دوست Start: السير لازم يدور ويفضل داير.'}, {run:16},
+      {fn:c => c.plant.carton > 6 ? `الكرتونة خدت ${c.plant.carton} علب! السير لازم يقف أول ما العدّ يوصل 6.` : c.plant.carton < 6 ? `الكرتونة فيها ${c.plant.carton} علب بس والسير ${c.q('Q0.0') ? 'لسه دايرة' : 'وقف'}. لازم يكمّل لحد 6.` : null},
+      {exp:{'Q0.0':0, 'Q0.1':1}, msg:'بعد 6 علب: السير يقف واللمبة تنوّر.'}, {press:'I0.0'}, {run:1}, {exp:{'Q0.0':0}, msg:'الكرتونة مليانة ودوست Start من غير Reset: السير مايدورش.'},
+      {press:'I0.3'}, {run:0.3}, {exp:{'Q0.1':0, 'Q0.0':0}, msg:'دوست كرتونة جديدة: اللمبة تطفي والسير لسه واقف لحد Start.'},
+      {press:'I0.0'}, {run:3}, {exp:{'Q0.0':1}, msg:'Start بعد الكرتونة الجديدة:'}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'دوست Stop في النص:'},
+      {fn:c => c.e.num('C0') > 0 && c.e.num('C0') < 6 ? null : `العدّ لازم يفضل محفوظ لما تدوس Stop (العدّاد = ${c.e.num('C0')}).`}],
+    hint:'رانج 1: Start وفرع Q0.0 ← Stop (NO) ← <b>NC C0</b> ← كويل Q0.0. رانج 2: NO I0.2 ← CTU C0 (6). رانج 3: NO I0.3 ← R C0. رانج 4: NO C0 ← Q0.1.',
+    sol:[{rows:[['NO:I0.0', 'NO:I0.1', 'NC:C0', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.2', '-', '-', '-', 'CTU:C0:6']]}, {rows:[['NO:I0.3', '-', '-', '-', 'R:C0']]}, {rows:[['NO:C0', '-', '-', '-', 'OUT:Q0.1']]}],
+    ok:'لاحظ إن الـ NC C0 بيفك التثبيت أول ما العدّ يكمل، فالسير مش بيرجع يدور غير بـ Start جديد.'}
+]});
+window.SIM2 = PL.sim(document.getElementById('sim2'), {lesson:'l6', exercises:[
+  {key:'cmp', title:'الجراج', task:'<b>المطلوب:</b> جراج فيه <b>6 أماكن</b>. حساس الدخول <b>I0.0</b> يزوّد العدّاد <b>C0</b> (CTU)، وحساس الخروج <b>I0.1</b> ينقّصه (CTD على نفس C0). اللمبة الخضرا <b>Q0.0</b> تنوّر لو العربيات <b>أقل من 6</b>، والحمرا <b>Q0.1</b> لو <b>6 أو أكتر</b>. استخدم <b>تعليمات المقارنة</b>.',
+    io:{inputs:[{a:'I0.0', label:'عربية داخلة', kind:'pb'}, {a:'I0.1', label:'عربية خارجة', kind:'pb', color:'blue'}], outputs:[{a:'Q0.0', label:'فيه أماكن'}, {a:'Q0.1', label:'كامل'}]}, plant:'parking', cmpDef:'C0',
+    tests:[{run:0.2}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'الجراج فاضي:'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'3 عربيات جوه:'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {run:0.1}, {exp:{'Q0.0':0, 'Q0.1':1}, msg:'6 عربيات جوه: كامل.'},
+      {press:'I0.1'}, {run:0.1}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'عربية خرجت (5 جوه):'}, {press:'I0.1'}, {press:'I0.1'}, {press:'I0.1'}, {press:'I0.1'}, {press:'I0.1'}, {press:'I0.1'}, {run:0.1}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'الجراج فضي:'},
+      {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {run:0.1}, {exp:{'Q0.1':1, 'Q0.0':0}, msg:'6 تاني:'},
+      {fn:c => c.e.prog.some(rg => rg.rows.some(row => row.some(el => el && el.t === 'CMP'))) ? null : 'شغال، بس التمرين عايزك تستخدم تعليمة مقارنة واحدة على الأقل (C0 < 6 أو C0 >= 6).'}],
+    hint:'رانج 1: NO I0.0 ← CTU C0. رانج 2: NO I0.1 ← CTD C0. رانج 3: مقارنة C0 &lt; 6 ← Q0.0. رانج 4: مقارنة C0 &gt;= 6 ← Q0.1.',
+    sol:[{rows:[['NO:I0.0', '-', '-', '-', 'CTU:C0:6']]}, {rows:[['NO:I0.1', '-', '-', '-', 'CTD:C0:6']]}, {rows:[['CMP:C0:<:6', '-', '-', '-', 'OUT:Q0.0']]}, {rows:[['CMP:C0:>=:6', '-', '-', '-', 'OUT:Q0.1']]}],
+    ok:'المقارنة بتخليك تعمل أي عدد من الحدود على نفس القيمة: "قرّب يتملي" عند 5، "كامل" عند 6…'}
+]});
+PL.quiz(document.getElementById('quiz'), [
+  {q:'CTU بـ PV = 10. البت C0 بيبقى 1 لما:', o:['CV توصل 10 أو أكتر', 'أول نبضة', 'CV = 0', 'الـ Reset يتداس'], a:0, why:'Done لما CV ≥ PV.'},
+  {q:'علبة وقفت قدام الحساس 5 ثواني. العدّاد هيعد:', o:['مرة واحدة', '5 مرات', 'كل سكان مرة', 'ولا مرة'], a:0, why:'العدّاد بيعد الحافة من 0 لـ 1.'},
+  {q:'إزاي ترجّع العدّاد صفر؟', o:['كويل R (Reset) على C0', 'تقفل الـ PLC', 'كونتاكت NC على C0', 'CTU تاني'], a:0, why:'Reset بيصفّر CV والبت.'},
+  {q:'حرارة على MW10 وعايز إنذار لما توصل 80. الأنسب:', o:['MW10 >= 80', 'MW10 == 80', 'MW10 <> 80', 'MW10 < 80'], a:0, why:'== ممكن ماتتحققش أبدًا مع قيمة بتتغيّر بكسور.'},
+  {q:'عدّاد الكراتين بيعد زيادة من غير سبب واضح. أول حاجة تشك فيها:', o:['الحساس بيرمش (Bounce)', 'الـ PLC بايظ', 'الـ PV غلط', 'الباور'], a:0, why:'كل رمشة = حافة جديدة.'},
+  {q:'في الجراج: CTU على الدخول و CTD على الخروج لنفس العدّاد. القيمة CV بتمثّل:', o:['عدد العربيات جوه', 'عدد العربيات اللي دخلت بس', 'الوقت', 'عدد الأماكن الفاضية دايمًا'], a:0, why:'دخل + و خرج −.'}
+], {lesson:'l6', pass:0.8});
+</script>
+
+</body>
+</html>

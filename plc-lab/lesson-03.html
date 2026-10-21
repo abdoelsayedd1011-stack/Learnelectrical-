@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>أول برنامج Ladder</title>
+<meta name="description" content="الدرس 3 في كورس الـ PLC: لغة Ladder، الكونتاكت NO و NC والكويل، AND و OR والفرع الموازي، فخ زرار الـ Stop المتوصّل NC، وجدول عناوين Siemens و Allen-Bradley و Delta و Mitsubishi. محاكي Ladder تفاعلي بيختبر برنامجك.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="plc.css">
+<script src="plc.js"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">الـ PLC · الدرس 3 من 10</p>
+    <h1>أول برنامج Ladder</h1>
+    <p>الـ <b>Ladder</b> شكله زي السلّم: خطين على الجنب (الباور) وبينهم <b>رانجات</b> (Rungs). كل رانج فيه شروط (كونتاكتات) على الشمال، ونتيجة (كويل) على اليمين. لو "الكهربا" عرفت تعدّي من الشمال لليمين، الكويل يشتغل. بسيطة، بس فيها فخ مشهور هتقع فيه وتطلع منه في الدرس ده.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>الكونتاكت والكويل</h2>
+  <div class="cards">
+    <div class="card"><div class="ladfig" id="fNO"></div><h3>كونتاكت NO <span class="mono">-| |-</span></h3><p>"اسأل: البت ده 1؟" لو 1 يوصّل. مش لازم يكون زرار NO في الحقيقة، ده سؤال عن البت.</p></div>
+    <div class="card"><div class="ladfig" id="fNC"></div><h3>كونتاكت NC <span class="mono">-|/|-</span></h3><p>"اسأل: البت ده 0؟" لو 0 يوصّل، ولو 1 يفصل.</p></div>
+    <div class="card"><div class="ladfig" id="fCO"></div><h3>كويل <span class="mono">-( )-</span></h3><p>بيكتب في البت: 1 لو الكهربا وصلتله، 0 لو موصلتش. ودايمًا في آخر الرانج على اليمين.</p></div>
+  </div>
+  <div class="box key"><b>الفكرة اللي بتفرق:</b> الكونتاكت في البرنامج مش سلك حقيقي. هو بيبص على <b>البت</b> في الذاكرة (I0.0 = 1 ولا 0). ونفس البت تقدر تسأل عليه بـ NO في رانج و NC في رانج تاني، وعدد مرات مفتوح.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>AND و OR</h2>
+  <div class="two">
+    <div class="box"><b>AND = توالي:</b> كونتاكتين ورا بعض. الكويل يشتغل لو الاتنين 1.<div class="ladfig" id="fAND"></div></div>
+    <div class="box"><b>OR = توازي (فرع):</b> كونتاكتين جنب بعض. الكويل يشتغل لو أي واحد فيهم 1.<div class="ladfig" id="fOR"></div></div>
+  </div>
+  <p><b>إزاي تعمل فرع في المحاكي:</b> دوس على الكونتاكت اللي على الخط الأساسي، واختار <b>"⫴ فرع موازي للخانة دي"</b>. هيظهر صف تاني تحته فيه كونتاكت جديد متوصّل من الناحيتين. اختارله العنوان وخلاص. وتقدر تتحكم في الوصلات الرأسية بنفسك بأزرار "وصلة شمال" و "وصلة يمين".</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>المحاكي: AND و OR</h2>
+  <p>التمرين الأول: <b>المكبس</b> مايشتغلش غير لو العامل ضاغط بإيديه الاتنين (أمان). التاني: لمبة السلم تنوّر من أي مفتاح. اكتب البرنامج، دوس <b>RUN</b> وجرّب بالسويتشات، وبعدين <b>"اختبر البرنامج"</b>: المحاكي هيجرّب كل الاحتمالات لوحده.</p>
+  <div class="wd"><h3>محاكي Ladder</h3><div id="sim1"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>الفخ: زرار الـ Stop المتوصّل NC</h2>
+  <p>زرار الـ Stop في الحقيقة بيتوصّل <b>NC</b> (مقفول طول ما محدش داسه). ليه؟ عشان لو السلك اتقطع الماكينة تقف لوحدها (Fail-safe). يعني طول ما محدش داسه، الـ PLC شايف <b>I0.1 = 1</b>. ولما تدوسه يبقى <b>0</b>.</p>
+  <div class="two">
+    <div class="box safe"><b>غلط:</b> "الزرار NC، يبقى أحطله كونتاكت NC في البرنامج". النتيجة: البت = 1 طول الوقت، فالـ NC بيفصل طول الوقت، والموتور <b>مش هيشتغل أبدًا</b>.<div class="ladfig" id="fBAD"></div></div>
+    <div class="box good"><b>صح:</b> كونتاكت <b>NO</b> على I0.1. البت = 1 (محدش داس) ⇐ يوصّل. داس Stop ⇐ البت 0 ⇐ يفصل. والسلك لو اتقطع ⇐ 0 ⇐ يفصل برضه.<div class="ladfig" id="fGOOD"></div></div>
+  </div>
+  <div class="box key"><b>القاعدة:</b> في البرنامج انت بتسأل عن <b>الحالة اللي عايز تشتغل فيها</b>. الـ Stop المتوصّل NC بيبقى 1 في الحالة الطبيعية ⇐ تسأل عليه بـ <b>NO</b>. نفس الكلام لكونتاكت الأوفرلود NC (⁦95⁠–⁠96⁩) وكل حاجات الحماية.</div>
+  <div class="wd"><h3>جرّب الفخ بنفسك</h3><div id="sim2"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>العناوين في الشركات المختلفة</h2>
+  <div class="tblw"><table class="tbl addr-t">
+    <thead><tr><th>الحاجة</th><th>IEC / Siemens (المحاكي)</th><th>Allen-Bradley (SLC / MicroLogix)</th><th>Delta / Mitsubishi</th></tr></thead>
+    <tbody>
+      <tr><td class="ar">دخل</td><td>I0.0 … I0.7، I1.0</td><td>I:0/0 … I:0/15</td><td>X0 … X7، X10</td></tr>
+      <tr><td class="ar">خرج</td><td>Q0.0 … Q0.7</td><td>O:0/0 … O:0/15</td><td>Y0 … Y7</td></tr>
+      <tr><td class="ar">بت ذاكرة</td><td>M0.0 (Siemens بيقولها Merker)</td><td>B3:0/0</td><td>M0</td></tr>
+      <tr><td class="ar">تايمر</td><td>T0 (أو IEC_Timer في TIA)</td><td>T4:0 (.DN = خلص)</td><td>T0</td></tr>
+      <tr><td class="ar">عدّاد</td><td>C0</td><td>C5:0 (.DN)</td><td>C0</td></tr>
+      <tr><td class="ar">دخل أنالوج</td><td>IW64</td><td>I:1.0</td><td>D (رجيستر بعد FROM / AI)</td></tr>
+    </tbody></table></div>
+  <div class="brand-note"><b>مهم:</b> الجدول للتقريب. في Allen-Bradley الحديثة (CompactLogix و Micro800) بتستخدم أسماء Tags زي <span class="mono">Start_PB</span> بدل العناوين، وفي دلتا وميتسوبيشي الأرقام بتاعة X و Y بتتعد بالـ Octal (X0…X7 وبعدها X10). <b>المحاكي هنا مدرّب عام</b>، والمانيوال بتاع الموديل هو المرجع.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s6">
+  <h2 id="s6"><span class="k">6</span>أعطال شائعة في الموقع</h2>
+  <div class="fault-box"><b>أعطال شائعة في البرامج:</b><ul>
+    <li><b>الموتور مش بيشتغل والبرنامج "شكله صح":</b> كونتاكت NC في البرنامج على زرار Stop أو أوفرلود متوصّل NC. افتح المونيتور وبص: الكونتاكت أخضر ولا لأ؟</li>
+    <li><b>الفرع مش متوصّل من ناحية:</b> فرع موازي ناقصه الوصلة الرأسية من ناحية، فالكونتاكت اللي تحت ملوش لازمة. المحاكي بيوريك ده بالكهربا الخضرا.</li>
+    <li><b>عنوان غلط:</b> كتبت I0.1 بدل I0.2. سمّي كل عنوان (Symbol / Tag) باسم الحاجة عشان الغلط يبان.</li>
+  </ul></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">رموز الـ Ladder على حسب IEC 61131-3. المحاكي هنا <b>مدرّب عام</b> بعناوين على طريقة IEC / Siemens: العناوين والتعليمات بالظبط بتختلف من شركة للتانية، والمانيوال بتاع الـ PLC بتاعك هو المرجع. تقدّمك بيتسجّل على الجهاز ده بس.</p>
+</div>
+<script>
+PL.lesson('l3');
+const F = (id, d, l) => PL.ladFig(document.getElementById(id), d, {labels:l || {}});
+F('fNO', [{rows:[['NO:I0.0', '', '', '', '']]}], {'I0.0':'Start'}); F('fNC', [{rows:[['NC:I0.0', '', '', '', '']]}]); F('fCO', [{rows:[['', '', '', '', 'OUT:Q0.0']]}], {'Q0.0':'موتور'});
+F('fAND', [{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0']]}]);
+F('fOR', [{rows:[['NO:I0.0', '-', '-', '-', 'OUT:Q0.0'], ['NO:I0.1']], links:[[1]]}]);
+F('fBAD', [{rows:[['NO:I0.0', 'NC:I0.1', '-', '-', 'OUT:Q0.0']]}], {'I0.0':'تشغيل', 'I0.1':'Stop NC', 'Q0.0':'موتور'});
+F('fGOOD', [{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0']]}], {'I0.0':'تشغيل', 'I0.1':'Stop NC', 'Q0.0':'موتور'});
+const combos = (f, names) => [0, 1, 2, 3].map(k => { const a = k & 1, b = k >> 1 & 1; return [{set:{'I0.0':a, 'I0.1':b}}, {run:0.1}, {exp:{'Q0.0':f(a, b)}, msg:`لما ${names[0]} = ${a} و ${names[1]} = ${b}:`}]; }).flat();
+window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l3', exercises:[
+  {key:'and', title:'AND: المكبس', task:'<b>المطلوب:</b> المكبس <b>Q0.0</b> يشتغل بس لو العامل ضاغط على <b>I0.0</b> (إيد شمال) <b>و</b> <b>I0.1</b> (إيد يمين) مع بعض.',
+    io:{inputs:[{a:'I0.0', label:'إيد شمال', kind:'sw'}, {a:'I0.1', label:'إيد يمين', kind:'sw'}], outputs:[{a:'Q0.0', label:'المكبس', kind:'motor'}]},
+    tests:combos((a, b) => a & b, ['I0.0', 'I0.1']), hint:'كونتاكتين NO ورا بعض على نفس الخط: I0.0 وبعده I0.1، وفي الآخر كويل Q0.0.',
+    sol:[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0']]}], ok:'الاتنين في التوالي: لو أي واحد فيهم 0 الكهربا بتقف.'},
+  {key:'or', title:'OR: لمبة السلم', task:'<b>المطلوب:</b> لمبة السلم <b>Q0.0</b> تنوّر لو مفتاح الدور الأرضي <b>I0.0</b> <b>أو</b> مفتاح الدور الأول <b>I0.1</b> شغال (أو الاتنين).',
+    io:{inputs:[{a:'I0.0', label:'مفتاح تحت', kind:'sw'}, {a:'I0.1', label:'مفتاح فوق', kind:'sw'}], outputs:[{a:'Q0.0', label:'لمبة', kind:'lamp', color:'yellow'}]},
+    tests:combos((a, b) => a | b, ['I0.0', 'I0.1']), hint:'حط I0.0 وبعده سلك لحد الكويل Q0.0. دوس على I0.0 واختار "فرع موازي للخانة دي"، والكونتاكت الجديد خليه I0.1.',
+    sol:[{rows:[['NO:I0.0', '-', '-', '-', 'OUT:Q0.0'], ['NO:I0.1']], links:[[1]]}], ok:'الفرع الموازي = OR: أي طريق مفتوح الكهربا بتعدّي منه.'}
+]});
+window.SIM2 = PL.sim(document.getElementById('sim2'), {lesson:'l3', exercises:[
+  {key:'nc', title:'زرار Stop NC', task:'<b>المطلوب:</b> الطلمبة <b>Q0.0</b> تشتغل طول ما سلكتور التشغيل <b>I0.0</b> على ON، وتقف لما حد يدوس <b>Stop</b> (متوصّل NC على <b>I0.1</b>). البرنامج مكتوب جاهز بس فيه الفخ. شغّل RUN وجرّب، وبعدين صلّحه.',
+    io:{inputs:[{a:'I0.0', label:'سلكتور', kind:'sw'}, {a:'I0.1', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'طلمبة', kind:'motor'}]},
+    start:[{rows:[['NO:I0.0', 'NC:I0.1', '-', '-', 'OUT:Q0.0']]}],
+    tests:[{set:{'I0.0':1}}, {run:0.2}, {exp:{'Q0.0':1}, msg:'السلكتور ON ومحدش داس Stop، والطلمبة لازم تشتغل.'}, {hold:'I0.1'}, {run:0.2}, {exp:{'Q0.0':0}, msg:'حد ضاغط Stop:'}, {release:'I0.1'}, {run:0.2}, {exp:{'Q0.0':1}, msg:'سابوا الـ Stop والسلكتور لسه ON:'}, {set:{'I0.0':0}}, {run:0.2}, {exp:{'Q0.0':0}, msg:'السلكتور OFF:'}],
+    hint:'بص على لمبة I0.1 تحت: منوّرة ومحدش داس! يعني البت = 1 في الحالة الطبيعية. غيّر الكونتاكت بتاعه لـ NO.',
+    sol:[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0']]}], ok:'كده فهمت أشهر غلطة في الـ PLC: النوع في البرنامج بيتحدّد على حسب البت، مش على حسب نوع الزرار.'}
+]});
+PL.quiz(document.getElementById('quiz'), [
+  {q:'كونتاكت <b>NO</b> في البرنامج على I0.0 بيوصّل لما:', o:['البت I0.0 = 1', 'البت I0.0 = 0', 'الزرار يكون NO بس', 'دايمًا'], a:0, why:'الكونتاكت في البرنامج سؤال عن البت.'},
+  {q:'كونتاكتين على التوالي في رانج واحد معناهم:', o:['AND', 'OR', 'NOT', 'تايمر'], a:0, why:'لازم الاتنين يوصّلوا.'},
+  {q:'زرار Stop متوصّل <b>NC</b> على I0.1. في البرنامج تحطله:', o:['كونتاكت NO', 'كونتاكت NC', 'كويل', 'مش محتاج يتحط'], a:0, why:'في الحالة الطبيعية البت = 1، وعايزها توصّل.'},
+  {q:'لو حطيت NC في البرنامج على زرار Stop المتوصّل NC، اللي هيحصل:', o:['الموتور مش هيشتغل أبدًا', 'الموتور هيشتغل عادي', 'الموتور مش هيقف أبدًا', 'الـ PLC هيقف STOP'], a:0, why:'البت = 1 طول الوقت فالـ NC بيفصل طول الوقت.'},
+  {q:'ليه زرار الـ Stop بيتوصّل NC في الحقيقة؟', o:['لو السلك اتقطع الماكينة تقف لوحدها', 'أرخص', 'عشان الـ PLC مبيفهمش NO', 'عشان يوفّر كهربا'], a:0, why:'Fail-safe: أي قطع = إيقاف.'},
+  {q:'الدخل <b>I0.0</b> في Siemens يقابله في Delta / Mitsubishi تقريبًا:', o:['X0', 'Y0', 'M0', 'D0'], a:0, why:'X مداخل، Y مخارج.'}
+], {lesson:'l3', pass:0.8});
+</script>
+
+</body>
+</html>

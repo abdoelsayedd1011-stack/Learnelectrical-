@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الذاكرة والـ Flags والـ Edge</title>
+<meta name="description" content="الدرس 7 في كورس الـ PLC: بتات الذاكرة M (الريليه المساعد الوهمي)، الـ Flags، الحافة الطالعة والنازلة (Rising و Falling edge) والـ One-shot، وزرار واحد للتشغيل والإيقاف (Toggle)، وإنذار بذاكرة وتأكيد. تمارين بتتختبر أوتوماتيك.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="plc.css">
+<script src="plc.js"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">الـ PLC · الدرس 7 من 10</p>
+    <h1>الذاكرة والـ Flags والـ Edge</h1>
+    <p>في لوحة الريلاي كنت بتحط <b>ريليه مساعد</b> عشان تفتكر حاجة أو تاخد منها كونتاكتات زيادة. في الـ PLC ده اسمه <b>بت ذاكرة M</b>، وعندك منه آلاف. وهتتعلّم كمان أهم أداة في البرامج الحقيقية: الـ <b>Edge</b>، اللي بيخلّي حاجة تحصل <b>مرة واحدة بس</b> لحظة التغيير.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>بتات الذاكرة M</h2>
+  <p><b>M0.0</b> و <b>M0.1</b>… بتات جوه الـ CPU مش متوصّلة بأي طرف. تكتب فيها بكويل وتسأل عليها بكونتاكتات، زي الريليه المساعد بالظبط بس من غير سلك ولا تمن. بنستخدمها كـ <b>Flags</b> (علامات): "الماكينة في وضع أوتوماتيك"، "حصل إنذار"، "الخطوة 2 شغالة".</p>
+  <div class="box key"><b>Retentive ولا لأ؟</b> البتات العادية بتتمسح لما الكهربا تقطع أو الـ PLC يروح STOP. فيه منطقة <b>Retentive</b> بتفتكر قيمتها. العدّادات المهمة (إنتاج اليوم) خليها Retentive، وأوامر التشغيل لأ.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>الحافة: Rising و Falling edge</h2>
+  <div class="two">
+    <div class="box"><b>P (Rising edge) ↑:</b> بيوصّل <b>سكان واحد بس</b> لحظة ما البت يتغيّر من 0 لـ 1، حتى لو فضل 1 ساعة.</div>
+    <div class="box"><b>N (Falling edge) ↓:</b> بيوصّل سكان واحد لحظة ما البت يتغيّر من 1 لـ 0. مثلاً "العلبة لسه معدّية من الحساس".</div>
+  </div>
+  <div class="ladfig" id="fEdge"></div>
+  <p>ليه مهم؟ السكان بيتكرر مئات المرات في الثانية. لو عايز تعمل حاجة <b>مرة واحدة</b> مع كل دوسة (تعدّ، تقلب حالة، تنقل خطوة)، لازم Edge. وإلا هتحصل في كل سكان طول ما الزرار متداس.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>تمرين: زرار واحد يشغّل ويطفي</h2>
+  <p>لمبة بزرار واحد: دوسة تنوّر، الدوسة اللي بعدها تطفي. جرّب الأول من غير Edge (كونتاكت NO عادي) وشوف إيه اللي بيحصل لما تفضل ماسك الزرار.</p>
+  <div class="wd"><h3>محاكي: Toggle</h3><div id="sim1"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>تمرين: إنذار بذاكرة</h2>
+  <p>حساس ضغط عالي ممكن يشتغل لحظة ويرجع. لو اللمبة هتنوّر طول ما الحساس شغال بس، محدش هيلحق يشوفها. الحل: <b>Flag</b> بيفتكر إن الإنذار حصل لحد ما المشغّل يأكّد (Acknowledge).</p>
+  <div class="wd"><h3>محاكي: الإنذار</h3><div id="sim2"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>أعطال شائعة في الموقع</h2>
+  <div class="fault-box"><b>أعطال شائعة في البرامج:</b><ul>
+    <li><b>اللمبة بترمش أو بتقف في حالة عشوائية:</b> Toggle من غير Edge. الحالة بتتقلب كل سكان طول ما الزرار متداس.</li>
+    <li><b>نفس بت M مستخدم لحاجتين:</b> حد كتب M0.0 في جزء جديد من البرنامج وهو مستخدم قبل كده. اعمل جدول بالـ M المستخدمة وسمّيها.</li>
+    <li><b>Edge مابيشتغلش في TIA:</b> نفس بت الذاكرة الخاص بالـ Edge مستخدم في أكتر من كونتاكت P. كل Edge ليه بت ذاكرة لوحده.</li>
+    <li><b>الماكينة كمّلت من مكانها بعد رجوع الكهربا:</b> بتات الخطوات كانت Retentive. فكّر في كل بت: لازم يتمسح ولا يتحفظ؟</li>
+  </ul></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">في TIA Portal كونتاكت P محتاج بت ذاكرة خاص بيه (Edge memory bit) غير البت اللي بتسأل عليه، وفي Allen-Bradley تعليمة ONS أو OSR، وفي دلتا وميتسوبيشي LDP و LDF و PLS. المحاكي هنا <b>مدرّب عام</b> بعناوين على طريقة IEC / Siemens: العناوين والتعليمات بالظبط بتختلف من شركة للتانية، والمانيوال بتاع الـ PLC بتاعك هو المرجع. تقدّمك بيتسجّل على الجهاز ده بس.</p>
+</div>
+<script>
+PL.lesson('l7');
+PL.ladFig(document.getElementById('fEdge'), [{rows:[['P:I0.0', '-', '-', '-', 'CTU:C0:5']]}, {rows:[['N:I0.2', '-', '-', '-', 'OUT:M0.1']]}], {labels:{'I0.0':'زرار', 'I0.2':'حساس', 'M0.1':'علبة عدّت'}});
+const count = {watch:c => { const v = c.q('Q0.0'); if (c.mark.last != null && v !== c.mark.last) c.mark.n = (c.mark.n || 0) + 1; c.mark.last = v; return null; }};
+window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l7', exercises:[
+  {key:'toggle', title:'Toggle بزرار واحد', task:'<b>المطلوب:</b> كل دوسة على الزرار <b>I0.0</b> تقلب حالة اللمبة <b>Q0.0</b>: مطفية ⇐ تنوّر، منوّرة ⇐ تطفي. ولو حد فضل ماسك الزرار، اللمبة تتقلب <b>مرة واحدة بس</b>. (تقدر تستخدم M0.0 كبت مساعد.)',
+    io:{inputs:[{a:'I0.0', label:'زرار', kind:'pb'}], outputs:[{a:'Q0.0', label:'لمبة', kind:'lamp', color:'yellow'}]},
+    tests:[count, {run:0.2}, {exp:{'Q0.0':0}, msg:'في البداية:'}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'أول دوسة: اللمبة تنوّر وتفضل منوّرة بعد ما تسيب.'}, {run:1}, {exp:{'Q0.0':1}, msg:'بعد ثانية:'},
+      {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':0}, msg:'تاني دوسة: تطفي.'}, {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':1}, msg:'تالت دوسة: تنوّر.'},
+      {fn:c => { c.mark.n = 0; return null; }}, {hold:'I0.0'}, {run:2}, {release:'I0.0'}, {run:0.3},
+      {fn:c => c.mark.n === 1 ? null : `وانت ماسك الزرار ثانيتين اللمبة اتقلبت ${c.mark.n} مرة. لازم مرة واحدة بس: استخدم كونتاكت P (Rising edge).`}, {exp:{'Q0.0':0}, msg:'بعد الدوسة الطويلة:'}],
+    hint:'رانج 1: كونتاكت <b>P</b> على I0.0 ← كويل M0.0 (نبضة سكان واحد). رانج 2 (XOR): صف فوق NO M0.0 ← NC Q0.0، وصف موازي تحته NC M0.0 ← NO Q0.0، والاتنين ← كويل Q0.0.',
+    sol:[{rows:[['P:I0.0', '-', '-', '-', 'OUT:M0.0']]}, {rows:[['NO:M0.0', 'NC:Q0.0', '-', '-', 'OUT:Q0.0'], ['NC:M0.0', 'NO:Q0.0']], links:[[2]]}],
+    ok:'النبضة M0.0 عايشة سكان واحد بس، فالقلبة بتحصل مرة واحدة مهما طوّلت في الدوسة.'}
+]});
+window.SIM2 = PL.sim(document.getElementById('sim2'), {lesson:'l7', exercises:[
+  {key:'alarm', title:'إنذار وتأكيد', task:'<b>المطلوب:</b> لما حساس الضغط <b>I0.0</b> يشتغل (ولو لحظة): لمبة الإنذار <b>Q0.0</b> والسارينة <b>Q0.1</b> يشتغلوا ويفضلوا. زرار التأكيد <b>I0.1</b> يسكّت السارينة على طول، بس اللمبة تفضل منوّرة لحد ما الضغط يرجع طبيعي. وأي إنذار جديد يرجّع السارينة تاني. استخدم M0.0 (إنذار حصل) و M0.1 (اتأكد).',
+    io:{inputs:[{a:'I0.0', label:'ضغط عالي', kind:'sensor'}, {a:'I0.1', label:'تأكيد', kind:'pb', color:'blue'}], outputs:[{a:'Q0.0', label:'لمبة إنذار', kind:'lamp', color:'red'}, {a:'Q0.1', label:'سارينة', kind:'horn'}]},
+    tests:[{run:0.2}, {press:'I0.1'}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'من غير إنذار:'},
+      {set:{'I0.0':1}}, {run:0.3}, {set:{'I0.0':0}}, {run:1.5}, {exp:{'Q0.0':1, 'Q0.1':1}, msg:'الضغط علي لحظة ورجع: اللمبة والسارينة لازم يفضلوا شغالين (ذاكرة).'},
+      {press:'I0.1'}, {run:0.3}, {exp:{'Q0.1':0, 'Q0.0':0}, msg:'أكّدت والضغط طبيعي: كله يطفي.'},
+      {set:{'I0.0':1}}, {run:0.5}, {exp:{'Q0.0':1, 'Q0.1':1}, msg:'إنذار جديد (حتى بعد تأكيد قديم): السارينة لازم ترجع.'}, {press:'I0.1'}, {run:1}, {exp:{'Q0.1':0, 'Q0.0':1}, msg:'أكّدت والضغط لسه عالي: السارينة تسكت واللمبة تفضل.'},
+      {set:{'I0.0':0}}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'الضغط رجع طبيعي بعد التأكيد:'}],
+    hint:'رانج 1: <b>P</b> I0.0 ← S M0.0، ومعاها خرج موازي R M0.1. رانج 2: I0.1 ← S M0.1. رانج 3: NO M0.1 ← NC I0.0 ← R M0.0. رانج 4: M0.0 ← Q0.0. رانج 5: M0.0 ← NC M0.1 ← Q0.1.',
+    sol:[{rows:[['P:I0.0', '-', '-', '-', 'S:M0.0'], ['', '', '', '', 'R:M0.1']], links:[[4]]}, {rows:[['NO:I0.1', '-', '-', '-', 'S:M0.1']]}, {rows:[['NO:M0.1', 'NC:I0.0', '-', '-', 'R:M0.0']]}, {rows:[['NO:M0.0', '-', '-', '-', 'OUT:Q0.0']]}, {rows:[['NO:M0.0', 'NC:M0.1', '-', '-', 'OUT:Q0.1']]}],
+    ok:'ده بالظبط تسلسل الإنذارات في أي ماكينة: الإنذار بيتحفظ، التأكيد بيسكّت الصوت، والمسح بيحصل لما السبب يروح.'}
+]});
+PL.quiz(document.getElementById('quiz'), [
+  {q:'بت M0.0 في الـ PLC يشبه في لوحة الريلاي:', o:['ريليه مساعد', 'كونتاكتور موتور', 'فيوز', 'زرار'], a:0, why:'بت داخلي تكتب فيه وتسأل عليه.'},
+  {q:'كونتاكت P (Rising edge) على زرار متداس 3 ثواني بيوصّل:', o:['سكان واحد بس لحظة الدوسة', 'طول الـ 3 ثواني', 'لما تسيب الزرار', 'مش بيوصّل'], a:0, why:'P = لحظة التغيير من 0 لـ 1.'},
+  {q:'عايز تعد العلب لحظة ما <b>تخرج</b> من قدام الحساس:', o:['N (Falling edge)', 'P (Rising edge)', 'NO عادي', 'TON'], a:0, why:'الخروج = الحساس من 1 لـ 0.'},
+  {q:'Toggle بزرار واحد من غير Edge. لما تفضل ماسك الزرار:', o:['اللمبة تتقلب كل سكان وتقف على حالة عشوائية', 'تتقلب مرة واحدة', 'مش بتتقلب خالص', 'الـ PLC يقف'], a:0, why:'الشرط متحقق في كل سكان.'},
+  {q:'بت Retentive معناه:', o:['بيحتفظ بقيمته بعد قطع الكهربا', 'بيتمسح كل سكان', 'بيتقري من الدخل', 'سريع'], a:0, why:'مفيد للعدّادات والإعدادات.'},
+  {q:'إنذار ضغط عالي جه لحظة وراح. عشان المشغّل يعرف:', o:['نحفظه في Flag (S M0.0) لحد التأكيد', 'نربط اللمبة بالحساس مباشرة', 'نستخدم TOF ثانية', 'مش مهم'], a:0, why:'الإنذار لازم يتحفظ لحد ما حد يأكّده.'}
+], {lesson:'l7', pass:0.8});
+</script>
+
+</body>
+</html>

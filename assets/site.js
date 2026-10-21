@@ -4,7 +4,7 @@
 
   /* ======================================================================
      كتالوج الكورسات — عشان تضيف كورس أو محاكي جديد: ضيف عنصر واحد هنا وحط فولدره جنب index.html
-     group: "classic" | "ab" | "drives" | "servo"     brandKey: للفلتر
+     group: "basics" | "classic" | "drawings" | "instr" | "plc" | "drives" | "servo" | "temp"     brandKey: للفلتر
      disp: النص اللي على الشاشة الصغيرة   dispClass: "" | "lcd" | "red" | "grn" | "wht"
      ====================================================================== */
   var LABS = [
@@ -26,6 +26,18 @@
       guided:10, exercises:0, params:0, faults:0,
       inside:["إشارة ⁦4⁠–⁠20mA⁩ وأعطالها", "الإنكودر: إنكريمنتال وأبسليوت", "حساسات الحرارة: ثيرموكبل و PT100", "اللود سيل ومعايرة الميزان"],
       tags:"instrumentation إنسترومنتيشن انسترومنتيشن sensor حساس transmitter ترانسميتر 4-20ma 4-20 analog أنالوج 0-10v loop لوب plc pid encoder إنكودر انكودر incremental absolute ppr gray quadrature temperature حرارة thermocouple ثيرموكبل ثرموكبل pt100 rtd ntc load cell لود سيل ميزان strain gauge wheatstone قنطرة indicator إنديكيتور calibration معايرة pressure ضغط level مستوى flow فلو pnp npn proximity الدايرة المقفولة و Tag الأجهزة، إشارة ⁦4⁠–⁠20mA⁩ و ⁦0⁠–⁠10V⁩ وأعطال اللوب، حساسات PNP و NPN، الإنكودر الإنكريمنتال (A/B/Z و PPR و x4) والأبسليوت و Gray code، الثيرموكبل K و J والتعويض البارد، PT100 بـ 2 و 3 و 4 سلك و NTC، اللود سيل والقنطرة و mV/V ومعايرة الإنديكيتور، الضغط والمستوى والفلو، والمعايرة والأعطال.  لوب ⁦4⁠–⁠20mA⁩ حي: اقطع السلك، اعكس القطبية، اعمل قصر، وشوف الأفوميتر والـ PLC بيقروا إيه   إنكودر بتلفّه بإيدك وتشوف نبضات A و B و Z على السكوب وتعدّها x1 و x2 و x4، وقرص Gray code   بنش ثيرموكبل بجداول NIST وبنش PT100 بـ 2 و 3 و 4 سلك يوريك غلطة طول الكابل بالدرجة   لود سيل: حط أوزان وشوف الـ mV، وعاير الإنديكيتور خطوة بخطوة، وطلّع الخلية البايظة بالأفوميتر   لعبة أعطال الموقع وامتحان نهائي وشهادة إتمام " },
+    { id:"plc", path:"plc-lab/index.html", group:"plc", brand:"كورس", brandKey:"plc",
+      name:"كورس الـ PLC", kind:"PLC", disp:"Q0.0 ON", dispClass:"grn", rtlName:true,
+      line:"تكتب برامج Ladder بإيدك وتشغّلها على محاكي.",
+      guided:10, exercises:0, params:0, faults:0,
+      inside:["توصيل الدخل والخرج PNP و NPN", "Ladder: تثبيت ذاتي و Set/Reset", "تايمرات وعدادات ومقارنة", "مشاريع بماكينات بتتحرك وشهادة"],
+      tags:"plc بي ال سي بى ال سى بلc programmable logic controller كنترولر مبرمج برمجة programming ladder لادر ladder logic lad iec 61131 siemens سيمنز s7 s7-1200 tia portal allen bradley rslogix studio 5000 delta دلتا ispsoft mitsubishi gx works scan cycle دورة السكان input output دخل خرج di do sinking sourcing pnp npn relay ريلاي transistor ترانزستور contact كونتاكت coil كويل no nc and or seal in latch تثبيت ذاتي set reset إنترلوك interlock timer تايمر ton tof tp counter عداد ctu ctd compare مقارنة flag memory ذاكرة m bit edge rising falling analog أنالوج 4-20ma scaling raw counts star delta ستار دلتا traffic light إشارة مرور tank تانك conveyor سير troubleshooting تربل شوتنج force فورس online monitor أوتوميشن automation" },
+    { id:"drw", path:"drawings-lab/index.html", group:"drawings", brand:"كورس", brandKey:"drawings",
+      name:"كورس قراية الرسومات الكهربية", kind:"رسومات كهربية", disp:"-K1 /3.4", dispClass:"wht", rtlName:true,
+      line:"تقرا أي رسمة لوحة وتتتبّع منها العطل.",
+      guided:7, exercises:0, params:0, faults:0,
+      inside:["أنواع الرسومات والرموز IEC و NEMA", "أرقام الأطراف والكروس ريفرنس", "دايرة التحكم والـ Single line", "تتبّع العطل من الرسمة وشهادة"],
+      tags:"drawings رسومات رسمة الرسومات الكهربية قراية قراءة electrical drawing schematic diagram مخطط مخططات wiring diagram رسمة توصيل circuit دايرة control circuit دايرة التحكم power circuit دايرة القوى single line diagram sld سينجل لاين ون لاين one line symbols رموز iec ansi nema terminal ترمنال terminal strip x1 x2 cross reference كروس ريفرنس device tag -k1 -q1 -f1 a1 a2 13-14 21-22 95-96 panel layout رسمة اللوحة din rail دين ريل ferrule فيرول cable schedule جدول الكابلات p&id mdb mcc لوحة توزيع breaker قاطع contactor كونتاكتور overload أوفرلود dol عكس الحركة reversing troubleshooting تتبّع الأعطال أفوميتر eplan autocad electrical أوتوكاد" },
     { id:"ab1336", path:"ab1336-simulator/index.html", group:"drives", brand:"Allen-Bradley", brandKey:"ab",
       name:"1336 PLUS II", kind:"انفرتر", disp:"Stopped +0.00 Hz", dispClass:"lcd",
       line:"انفرتر Allen-Bradley القديم اللي لسه شغال في مصانع كتير.",
@@ -162,13 +174,15 @@
   var GROUPS = [
     { key:"basics", title:"أساسيات الكهربا", sub:"للمبتدئين خالص · قبل الكلاسيك", land:"courses/basics.html" },
     { key:"classic", title:"كلاسيك كنترول", sub:"مفاتيح · بوش بوتن · كونتاكتورات · موتور", land:"courses/classic.html" },
+    { key:"drawings", title:"قراية الرسومات الكهربية", sub:"رموز IEC و NEMA · كروس ريفرنس · Single line · ترمنالات", land:"courses/drawings.html" },
     { key:"instr", title:"إنسترومنتيشن", sub:"إنكودر · حساسات حرارة · لود سيل · ⁦4⁠–⁠20mA⁩", land:"courses/instrumentation.html" },
+    { key:"plc", title:"PLC", sub:"Ladder · تايمرات · عدادات · أنالوج · مشاريع", land:"courses/plc.html" },
     { key:"drives", title:"الانفرترات", sub:"Allen-Bradley · ABB · Siemens · Schneider · Mitsubishi · Yaskawa · Delta · LS · INVT · Danfoss · Fuji", land:"courses/inverters.html" },
     { key:"servo", title:"سيرفو", sub:"درايفات وموتورات سيرفو", land:"courses/servo.html" },
     { key:"temp", title:"كنترول حرارة", sub:"Omron" }
   ];
   var BRANDS = [
-    { key:"all", label:"الكل" }, { key:"beginner", label:"للمبتدئين" }, { key:"basics", label:"كلاسيك كنترول" }, { key:"instr", label:"إنسترومنتيشن" }, { key:"ab", label:"Allen-Bradley" }, { key:"siemens", label:"Siemens" },
+    { key:"all", label:"الكل" }, { key:"beginner", label:"للمبتدئين" }, { key:"basics", label:"كلاسيك كنترول" }, { key:"drawings", label:"رسومات كهربية" }, { key:"instr", label:"إنسترومنتيشن" }, { key:"plc", label:"PLC" }, { key:"ab", label:"Allen-Bradley" }, { key:"siemens", label:"Siemens" },
     { key:"schneider", label:"Schneider" }, { key:"delta", label:"Delta" }, { key:"danfoss", label:"Danfoss" },
     { key:"omron", label:"Omron" }, { key:"abb", label:"ABB" }, { key:"mitsubishi", label:"Mitsubishi" }, { key:"yaskawa", label:"Yaskawa" }, { key:"ls", label:"LS" }, { key:"invt", label:"INVT" }, { key:"fuji", label:"Fuji" }, { key:"multi", label:"مقارنة" }
   ];
@@ -276,7 +290,7 @@
   function goText(l){ return l.brand === "كورس" ? "ابدأ الكورس ←" : "افتح المحاكي ←"; }
   function card(l){
     var disp = '<div class="disp ' + esc(l.dispClass) + '" aria-hidden="true">' + (l.html ? l.disp : esc(l.disp)) + "</div>";
-    var acc = l.id === "pf525" ? "من غير حساب" : (l.id === "classic" || l.id === "basics" || l.id === "instr") ? "أول درسين من غير حساب" : "بحساب مجاني";
+    var acc = l.id === "pf525" ? "من غير حساب" : l.brand === "كورس" ? "أول درسين من غير حساب" : "بحساب مجاني";
     var head = '<div class="meta"><span class="brand">' + esc(l.brand) + '</span><span class="kind">' + esc(l.kind) + '</span><span class="access' + (l.id === "pf525" ? " open" : "") + '">' + acc + "</span></div>" +
                '<h4' + (l.rtlName ? ' style="direction:rtl"' : "") + ">" + esc(l.name) + "</h4>";
     if (!detail){
@@ -294,16 +308,19 @@
     var hay = (l.name + " " + l.brand + " " + l.line + " " + l.kind + " " + l.tags + " " + l.inside.join(" ")).toLowerCase();
     return state.q.toLowerCase().split(/\s+/).every(function(w){ return hay.indexOf(w) > -1; });
   }
+  // بنك أسئلة الإنترفيو مش كورس ومش في LABS، بس لو حد دوّر عليه بنظهرله كارت يوديه هناك
+  var IV_Q = /interview|انترفيو|إنترفيو|مقابل|أسئل|اسئل|سؤال/i;
+  var IV_CARD = '<div class="iv-band iv-hit"><div><span class="eyebrow">بنك الأسئلة</span><h2>أسئلة الإنترفيو</h2><p>أسئلة إنترفيو الكهربا والصيانة والأوتوميشن بإجابات مختصرة، مفتوحة للكل.</p></div><a class="btn btn-ghost" href="interview/index.html">ذاكر الأسئلة ←</a></div>';
   function render(){
-    var html = "", n = 0;
+    var html = "", n = 0, iv = !!state.q && IV_Q.test(state.q);
     GROUPS.forEach(function(g){
       var items = LABS.filter(function(l){ return l.group === g.key && match(l); });
       if (!items.length) return;
       n += items.length;
       html += '<section class="group" aria-label="' + esc(g.title) + '"><h3 class="gtitle">' + esc(g.title) + ' <small class="ltr">' + esc(g.sub) + '</small>' + (g.land ? '<a class="gmore" href="' + esc(g.land) + '">تفاصيل الكورس ←</a>' : "") + '</h3><div class="grid">' + items.map(card).join("") + "</div></section>";
     });
-    cat.innerHTML = html;
-    if (emptyEl) emptyEl.classList.toggle("show", n === 0);
+    cat.innerHTML = (iv ? IV_CARD : "") + html;
+    if (emptyEl) emptyEl.classList.toggle("show", n === 0 && !iv);
     if (countEl) countEl.textContent = n === LABS.length ? "الكل (" + n + ")" : "ظاهر " + n + " من " + LABS.length;
   }
   if (chipsEl){

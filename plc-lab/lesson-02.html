@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>توصيل الـ PLC</title>
+<meta name="description" content="الدرس 2 في كورس الـ PLC: باور 24V DC، كارت الدخل Sinking و Sourcing مع حساسات PNP و NPN والزراير، كارت الخرج ريلاي وترانزستور، وتوصيل الكونتاكتورات واللمبات. بنش توصيل تفاعلي بيختبر توصيلك.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="plc.css">
+<script src="plc.js"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">الـ PLC · الدرس 2 من 10</p>
+    <h1>توصيل الـ PLC</h1>
+    <p>قبل أي برنامج لازم الـ PLC يتوصّل صح: <b>باور 24V DC</b>، والزراير والحساسات على <b>الدخل</b>، والكونتاكتورات واللمبات على <b>الخرج</b>. نص أعطال الـ PLC في الموقع أصلها توصيل غلط، خصوصًا <b>PNP و NPN</b> والكومن. هنا هتوصّل بإيدك على البنش.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>الباور: 24V DC</h2>
+  <p>أغلب الـ PLCs الصناعية شغّالة على <b>24V DC</b>: باور سبلاي بياخد 220V AC ويطلّع 24V. الطرف الموجب اسمه <span class="term">+24V</span> أو <span class="term">L+</span>، والسالب <span class="term">0V</span> أو <span class="term">M</span>. وفيه موديلات الـ CPU بتاعتها بتاخد 220V AC مباشرة (مكتوب عليها <span class="term">AC/DC/RLY</span> مثلاً)، بس المداخل برضه 24V DC.</p>
+  <div class="box key"><b>قاعدة:</b> الـ 0V بتاع الباور يبقى هو هو 0V الكروت والحساسات (نفس المرجع). ولو فيه أكتر من باور سبلاي، اربط الـ 0V بتوعهم مع بعض إلا لو المانيوال قال غير كده.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>كارت الدخل: Sinking و Sourcing</h2>
+  <p>كل دخل جوه الكارت عبارة عن <b>مقاومة ولمبة LED (أوبتوكبلر)</b> بين طرف الدخل (I0.0) والكومن (<span class="term">1M</span>). عشان الدخل يبقى 1 لازم تيار يعدّي فيه، يعني لازم فرق جهد 24V بين الطرفين:</p>
+  <div class="two">
+    <div class="box good"><b>الكومن على 0V (الأشهر في أوروبا)</b><br>الدخل بيشتغل لما يجيله <b>+24V</b>. الزرار طرف منه على +24V والتاني على I0.0. والحساس المناسب <b>PNP</b> (بيطلّع +24V).</div>
+    <div class="box key"><b>الكومن على +24V</b><br>الدخل بيشتغل لما يتسحب لـ <b>0V</b>. الزرار بين I0.0 و 0V. والحساس المناسب <b>NPN</b> (بيسحب لـ 0V). شائع في ماكينات يابانية وصينية.</div>
+  </div>
+  <div class="box"><b>الأسامي بتلخبط:</b> شركات بتسمّي الحالة الأولى "Sinking input" (الكارت بيسحب التيار) وشركات بتقول عن الحساس PNP إنه "Sourcing". متحفظش الاسم: <b>بص الكومن رايح فين</b>. ودي الطريقة اللي هتشتغل بيها في كل الماركات.</div>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>لون السلك</th><th>بيروح فين</th></tr></thead>
+    <tbody>
+      <tr><td><span class="term" style="background:#7a4a22;color:#fff">BN بني</span></td><td>+24V</td></tr>
+      <tr><td><span class="term" style="background:#1f6fd1;color:#fff">BU أزرق</span></td><td>0V</td></tr>
+      <tr><td><span class="term" style="background:#1d1d1d;color:#fff">BK أسود</span></td><td>الخرج ⇐ دخل الـ PLC (I0.0)</td></tr>
+    </tbody></table></div>
+  <p>لو عايز تفهم الحساسات نفسها أكتر (إندكتيف، فوتوسيل، 2 سلك)، شوف <a href="../instrumentation-lab/lesson-03.html">درس الحساسات الديجيتال في كورس الإنسترومنتيشن</a>.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>كارت الخرج: ريلاي ولا ترانزستور؟</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th></th><th>ريلاي (Relay)</th><th>ترانزستور (Transistor)</th></tr></thead>
+    <tbody>
+      <tr><td>الجهد</td><td>AC أو DC (لحد 250V AC)</td><td>24V DC بس</td></tr>
+      <tr><td>التيار للخرج</td><td>حوالي 2A</td><td>حوالي 0.5A</td></tr>
+      <tr><td>السرعة</td><td>بطيء (ملّي ثواني) وليه صوت</td><td>سريع جدًا، ينفع نبضات (Stepper، PWM)</td></tr>
+      <tr><td>العمر</td><td>محدود بعدد مرات الفتح والقفل</td><td>طويل جدًا</td></tr>
+      <tr><td>الكومن</td><td><span class="term">1L</span> بياخد الجهد اللي هيطلع</td><td><span class="term">3L+</span> و <span class="term">3M</span> باور للترانزستورات</td></tr>
+    </tbody></table></div>
+  <div class="ex"><b>من الموقع:</b> كونتاكتور كويله 220V AC؟ ينفع على خرج ريلاي مباشرة. على خرج ترانزستور لازم <b>ريليه وسيط 24V DC</b> (Interface relay) يشغّل الكونتاكتور. وده كمان بيحمي الكارت لو الكويل اتحرق.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>البنش: وصّل بإيدك</h2>
+  <p>4 تمارين. دوس على طرف (هيتلوّن أصفر) وبعدين على الطرف التاني عشان تحط سلك. دوس على السلك نفسه عشان تشيله. لما تخلّص دوس <b>"اختبر التوصيل"</b>، ولو صح هتقدر تجرّب الحساس والزرار والمخارج.</p>
+  <div class="wd"><h3>بنش التوصيل</h3><div id="bench"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>أعطال شائعة في الموقع</h2>
+  <div class="fault-box"><b>أعطال شائعة في الموقع:</b><ul>
+    <li><b>حساس جديد لمبته بتنوّر بس الـ PLC مش شايفه:</b> حساس NPN على كارت كومنه على 0V (أو العكس). شوف الإستيكر واعرف الكومن رايح فين.</li>
+    <li><b>كل المداخل طفت مرة واحدة:</b> باور الـ 24V وقع. غالبًا قصر في سلك حساس (البني لامس الأزرق أو جسم الماكينة).</li>
+    <li><b>خرج ترانزستور اتحرق:</b> حمل تياره أكبر من المسموح، أو قصر في سلك الكويل، أو كويل DC من غير دايود.</li>
+    <li><b>ريلاي الخرج لزق (Welded):</b> الكونتاكتور مش بيفصل حتى والـ PLC مطفّي الخرج. حصلت من حمل كبير أو تشغيل كتير. لازم يتغيّر الكارت أو الريليه.</li>
+    <li><b>220V على كارت 24V:</b> أخطر غلطة في التوصيل. اتأكد من الجهد بالأفوميتر قبل ما توصّل أي كومن.</li>
+  </ul></div>
+  <div class="box safe"><b>أمان:</b> افصل الكهربا قبل ما تفك أو توصّل أي طرف. كارت الخرج الريلاي ممكن يكون عليه 220V حتى والـ PLC نفسه مفصول، لأن الكومن بتاعه جاي من مصدر تاني.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">ألوان أسلاك الحساسات على حسب IEC 60947-5-2. أسماء الأطراف (1M و 3L+ و 1L) مثال، وكل موديل ليه رسمة أطراف في المانيوال. المحاكي هنا <b>مدرّب عام</b> بعناوين على طريقة IEC / Siemens: العناوين والتعليمات بالظبط بتختلف من شركة للتانية، والمانيوال بتاع الـ PLC بتاعك هو المرجع. تقدّمك بيتسجّل على الجهاز ده بس.</p>
+</div>
+<script>
+PL.lesson('l2');
+PL.wire(document.getElementById('bench'), {lesson:'l2', exercises:PL.wireEx});
+PL.quiz(document.getElementById('quiz'), [
+  {q:'كارت دخل الكومن <b>1M</b> بتاعه على <b>0V</b>. الحساس المناسب:', o:['PNP', 'NPN', 'أي حساس', 'حساس أنالوج'], a:0, why:'الدخل محتاج +24V، والـ PNP بيطلّع +24V.'},
+  {q:'كارت دخل الكومن بتاعه على <b>+24V</b>. الزرار يتوصّل:', o:['بين الدخل و 0V', 'بين الدخل و +24V', 'بين +24V و 0V', 'على الكومن بس'], a:0, why:'التيار طالع من الكومن، والزرار لازم يسحب الدخل لـ 0V.'},
+  {q:'عندك كونتاكتور كويله <b>230V AC</b>. الأنسب:', o:['خرج ريلاي (أو ريليه وسيط مع الترانزستور)', 'خرج ترانزستور مباشرة', 'كارت AI', 'كارت DI'], a:0, why:'الترانزستور DC بس.'},
+  {q:'محتاج تطلّع نبضات سريعة لموتور ستيبر:', o:['خرج ترانزستور', 'خرج ريلاي', 'كارت DI', 'مش ممكن بالـ PLC'], a:0, why:'الريلاي بطيء وعمره بيخلص بسرعة.'},
+  {q:'السلك الأسود (BK) في حساس 3 سلك:', o:['خرج الحساس، بيروح على دخل الـ PLC', '+24V', '0V', 'الأرضي'], a:0, why:'BN +24V، BU 0V، BK الخرج.'},
+  {q:'في كارت خرج ريلاي، الكومن <b>1L</b>:', o:['بياخد الجهد اللي هيطلع على الأحمال اللي في المجموعة دي', 'لازم يكون 0V دايمًا', 'بيتوصّل على الأرضي', 'مش بيتوصّل'], a:0, why:'الريليه مجرد كونتاكت بين 1L و Q0.x.'}
+], {lesson:'l2', pass:0.8});
+</script>
+
+</body>
+</html>

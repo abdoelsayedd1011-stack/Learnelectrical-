@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>إنترفيو الـ PLC</title>
+<meta name="description" content="أسئلة إنترفيو في الـ PLC: السكان سايكل، المداخل Sinking و Sourcing وحساسات PNP و NPN، منطق NO و NC في اللادر، التايمرز والكاونترز، سكيل الإشارات الأنالوج، أنواع البيانات، و Modbus RTU و TCP و Profinet.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="iv.css">
+<script src="iv.js"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">LearnElectricals · أسئلة الإنترفيو · القسم ⁦5⁩ من ⁦9⁩</p>
+    <h1>الـ ⁦PLC⁩</h1>
+    <p>أسئلة الـ ⁦PLC⁩ في الإنترفيو بتختبر فهمك للفكرة مش ماركة معيّنة. اتكلّم بالمفاهيم (⁦Scan⁩، ⁦Edge⁩، ⁦Scaling⁩) واذكر أمثلة من الماركة اللي اشتغلت عليها (⁦Siemens⁩ أو ⁦Allen-Bradley⁩ أو ⁦Mitsubishi⁩ أو ⁦Delta⁩…). أشهر فخ: سؤال «زرار الـ ⁦Stop NC⁩، تكتبه في البرنامج إيه؟».</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ كل الأقسام</a><a class="btn" href="../labs.html">← كل الكورسات</a></div>
+</header>
+
+<section class="panel tools" id="tools" aria-label="البحث والفلترة">
+  <div class="srch"><label for="q" class="vh">دوّر في أسئلة القسم</label><input id="q" type="search" autocomplete="off" placeholder="دوّر في أسئلة القسم ده… (مثلًا: ⁦Modbus⁩ أو التايمر)"></div>
+  <div class="frow">
+    <div class="flt" role="group" aria-label="المستوى">
+      <button type="button" class="chip" data-lv="" aria-pressed="true">الكل <span>⁦26⁩</span></button><button type="button" class="chip" data-lv="1" aria-pressed="false">مبتدئ <span>⁦9⁩</span></button><button type="button" class="chip" data-lv="2" aria-pressed="false">متوسط <span>⁦12⁩</span></button><button type="button" class="chip" data-lv="3" aria-pressed="false">خبير <span>⁦5⁩</span></button>
+    </div>
+    <div class="flt" role="group" aria-label="حالتك">
+      <button type="button" class="chip" data-st="" aria-pressed="true">أي حالة</button><button type="button" class="chip" data-st="n" aria-pressed="false">مش عارفها</button><button type="button" class="chip" data-st="u" aria-pressed="false">لسه</button><button type="button" class="chip" data-st="y" aria-pressed="false">عارفها</button>
+    </div>
+  </div>
+  <div class="acts"><button type="button" class="btn pri" id="testBtn">اختبر نفسك</button><button type="button" class="btn" id="openAll" aria-pressed="false">افتح كل الشرح</button><button type="button" class="btn" id="printBtn">اطبع</button></div>
+  <div class="prog"><p class="cnt" id="cnt" aria-live="polite"></p><div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="الأسئلة اللي عارفها"><i></i></div><p class="known" id="known"></p></div>
+</section>
+
+<section class="panel test" id="test" hidden aria-label="اختبر نفسك"></section>
+
+<section class="qs" id="list" data-topic="plc" aria-label="الأسئلة">
+<article class="q" id="plc-01" data-lv="1">
+  <div class="qh"><span class="qn">1</span><span class="lv lv1">مبتدئ</span></div>
+  <h2 class="qt">الـ ⁦PLC⁩ بيتكوّن من إيه؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>باور سبلاي، ⁦CPU⁩ (المعالج والذاكرة)، كروت دخل وخرج ديجيتال وأنالوج، ومنافذ كوميونيكيشن. بيقرا المداخل وينفّذ البرنامج ويغيّر المخارج.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<p>الـ ⁦PLC⁩ ممكن يبقى ⁦Compact⁩ (كل حاجة في جسم واحد زي ⁦S7-1200⁩ أو ⁦FX⁩) أو ⁦Modular⁩ (CPU وكروت على ⁦Rack⁩ زي ⁦S7-1500⁩ أو ⁦ControlLogix⁩).</p>
+<p>وفيه ⁦Remote I/O⁩ بيتوصّل بالشبكة عشان توفّر كابلات للأماكن البعيدة.</p>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-02" data-lv="1">
+  <div class="qh"><span class="qn">2</span><span class="lv lv1">مبتدئ</span></div>
+  <h2 class="qt">اشرح الـ ⁦Scan Cycle⁩.</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>الـ ⁦PLC⁩ بيعمل دورة مستمرة: ⁦(1)⁩ يقرا كل المداخل ويحطها في صورة المداخل ⁦(Process Image)⁩، ⁦(2)⁩ ينفّذ البرنامج من أوله لآخره، ⁦(3)⁩ يكتب النتايج على المخارج، ⁦(4)⁩ يعمل شغل داخلي وكوميونيكيشن. وبعدين يعيد.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<p>زمن الدورة ⁦(Scan Time)⁩ غالبًا من أقل من ⁦1 ms⁩ لعشرات الـ ⁦ms⁩ حسب حجم البرنامج.</p>
+<p>النتيجة العملية:</p>
+<ul><li>إشارة أقصر من زمن الدورة ممكن الـ ⁦PLC⁩ ميشوفهاش، فبنستخدم ⁦Interrupt⁩ أو ⁦High Speed Counter⁩</li><li>البرنامج بيشوف حالة المداخل ثابتة طول الدورة، حتى لو اتغيّرت في النص</li><li>المخارج بتتحدّث مرة واحدة آخر الدورة</li></ul>
+<div class="mist"><b>اللي بيغلط فيه الناس:</b> تفتكر إن البرنامج بيتنفّذ «في نفس اللحظة» كله. ترتيب الـ ⁦Rungs⁩ بيفرق، والسطر اللي تحت ممكن يغيّر نتيجة اللي فوقه.</div>
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-03" data-lv="2">
+  <div class="qh"><span class="qn">3</span><span class="lv lv2">متوسط</span></div>
+  <h2 class="qt">لو نفس الـ ⁦Output (Coil)⁩ اتكتب في مكانين في البرنامج، إيه اللي بيحصل؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>آخر مكان في الترتيب هو اللي بيكسب، لأن المخرج بيتكتب على الكارت آخر الدورة بآخر قيمة. ده اسمه ⁦Double Coil⁩، وهو غلط برمجي مشهور بيخلّي المخرج يتصرّف بشكل غريب.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<p>الحل: اكتب المخرج في مكان واحد بس، واجمع الشروط بـ ⁦OR⁩ قبله، أو استخدم ⁦Set/Reset⁩ بحرص.</p>
+<p>في بعض البيئات الـ ⁦Compiler⁩ بيدّيك ⁦Warning⁩ لما ده يحصل.</p>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-04" data-lv="1">
+  <div class="qh"><span class="qn">4</span><span class="lv lv1">مبتدئ</span></div>
+  <h2 class="qt">إيه الفرق بين حساس ⁦PNP⁩ و ⁦NPN⁩؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>الـ ⁦PNP⁩ بيوصّل ⁦+24 V⁩ على سلك الإشارة لما يشتغل ⁦(Sourcing)⁩. الـ ⁦NPN⁩ بيوصّل الـ ⁦0 V⁩ على سلك الإشارة لما يشتغل ⁦(Sinking)⁩. الألوان المعتادة في حساسات ⁦3⁩ أسلاك: بني ⁦+24 V⁩، أزرق ⁦0 V⁩، أسود إشارة.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<p>في ⁦PNP⁩ الحمل (أو دخل الـ ⁦PLC⁩) متوصّل بين سلك الإشارة والـ ⁦0 V⁩. في ⁦NPN⁩ الحمل بين ⁦+24 V⁩ وسلك الإشارة.</p>
+<p>⁦PNP⁩ هو الأكتر انتشارًا في أوروبا ومعظم المصانع عندنا، ⁦NPN⁩ منتشر في المعدات الآسيوي.</p>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-05" data-lv="2">
+  <div class="qh"><span class="qn">5</span><span class="lv lv2">متوسط</span></div>
+  <h2 class="qt">يعني إيه ⁦Sinking⁩ و ⁦Sourcing Input⁩؟ ومين يتوصّل مع مين؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>الدخل الـ ⁦Sinking⁩ بيستقبل تيار داخل له، فالـ ⁦Common⁩ بتاعه بيتوصّل على ⁦0 V⁩، وده بيتوصّل معاه حساس ⁦PNP (Sourcing)⁩. الدخل الـ ⁦Sourcing⁩ بيطلّع تيار، فالـ ⁦Common⁩ بيتوصّل على ⁦+24 V⁩، وبيتوصّل معاه حساس ⁦NPN (Sinking)⁩. القاعدة: لازم واحد يطلّع تيار والتاني يستقبل.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<p>كروت كتير بتبقى ⁦Sink/Source⁩ حسب توصيل الـ ⁦Common⁩ (S/S أو ⁦COM⁩)، فتقدر تختار.</p>
+<p>تنبيه: التسميات مش موحّدة بين الصانعين. مثلًا ⁦Mitsubishi⁩ بتسمي التوصيل اللي فيه التيار طالع من الدخل (مع ⁦NPN⁩) «⁦Sink Input⁩». عشان كده متعتمدش على الاسم، بص على رسمة التوصيل: الـ ⁦COM⁩ رايح فين.</p>
+<div class="mist"><b>اللي بيغلط فيه الناس:</b> توصّل حساس ⁦PNP⁩ على كارت الـ ⁦Common⁩ بتاعه ⁦+24 V⁩. اللمبة بتاعة الحساس هتنوّر والـ ⁦PLC⁩ مش هيشوف حاجة.</div>
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-06" data-lv="2">
+  <div class="qh"><span class="qn">6</span><span class="lv lv2">متوسط</span></div>
+  <h2 class="qt">زرار ⁦Stop⁩ متوصّل ⁦NC⁩ في الـ ⁦PLC⁩. تكتبه في البرنامج كونتاكت ⁦NO⁩ ولا ⁦NC⁩؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p><b>⁦NO⁩</b> (⁦XIC⁩ أو كونتاكت مفتوح). الكونتاكت في البرنامج بيسأل «الـ ⁦Bit⁩ ده بـ ⁦1⁩؟» مش بيقلّد الزرار. الزرار الـ ⁦NC⁩ في الحالة العادية مقفول فالدخل بـ ⁦1⁩، فالكونتاكت ⁦NO⁩ في البرنامج يبقى مقفول والدايرة تمشي. لما تدوس ⁦Stop⁩ الدخل يبقى ⁦0⁩ فالكونتاكت يفتح والموتور يقف.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<p>لو كتبته ⁦NC⁩ في البرنامج، الموتور مش هيشتغل غير وانت دايس ⁦Stop⁩. ده أشهر سؤال فخ في الـ ⁦PLC⁩.</p>
+<p>نفس المنطق لأي حساس أمان أو ⁦Limit Switch⁩ متوصّل ⁦NC⁩: غالبًا بيتكتب في البرنامج كونتاكت ⁦NO⁩.</p>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-07" data-lv="1">
+  <div class="qh"><span class="qn">7</span><span class="lv lv1">مبتدئ</span></div>
+  <h2 class="qt">إيه أنواع التايمرز؟ واشرح ⁦TON⁩.</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>⁦TON (On-delay)⁩: لما الدخل يبقى ⁦1⁩ بيبدأ يعدّ، ولما الوقت يوصل للـ ⁦Preset⁩ الخرج يبقى ⁦1⁩، ولو الدخل وقع قبلها أو بعدها يرجع صفر. ⁦TOF (Off-delay)⁩: الخرج يبقى ⁦1⁩ مع الدخل على طول، ولما الدخل يقع يستنى الوقت وبعدين يقع. ⁦TP (Pulse)⁩: يطلّع نبضة بطول ثابت. ⁦RTO⁩ أو ⁦TONR⁩: بيعدّ ويحتفظ بالوقت لو الدخل وقع، ومحتاج ⁦Reset⁩.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<p>أمثلة: ⁦TON⁩ لتأخير تشغيل موتور بعد موتور، ⁦TOF⁩ لمروحة تبريد تكمّل بعد الوقوف، ⁦RTO⁩ لحساب ساعات تشغيل معدة.</p>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-08" data-lv="1">
+  <div class="qh"><span class="qn">8</span><span class="lv lv1">مبتدئ</span></div>
+  <h2 class="qt">الكاونترز ⁦CTU⁩ و ⁦CTD⁩ بيشتغلوا إزاي؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>الـ ⁦CTU⁩ بيزوّد العدد بواحد مع كل <b>نبضة صاعدة</b> (من ⁦0⁩ لـ ⁦1⁩) على دخله، ولما يوصل للـ ⁦Preset⁩ الخرج يبقى ⁦1⁩. الـ ⁦CTD⁩ بينقص. الـ ⁦CTUD⁩ الاتنين. وكلهم محتاجين ⁦Reset⁩ يرجّع العدد.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<p>مثال: عدّ الكراتين على سير بحساس، وبعد ⁦12⁩ كرتونة يدّي إشارة لماكينة التغليف ويعمل ⁦Reset⁩.</p>
+<p>لو النبضات أسرع من الـ ⁦Scan Time⁩، الكاونتر العادي هيفوّت منها، فلازم ⁦High Speed Counter (HSC)⁩ مربوط على دخل سريع.</p>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-09" data-lv="2">
+  <div class="qh"><span class="qn">9</span><span class="lv lv2">متوسط</span></div>
+  <h2 class="qt">يعني إيه ⁦Edge Detection (Rising/Falling Edge)⁩ وليه نستخدمه؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>بيطلّع ⁦1⁩ لمدة دورة ⁦Scan⁩ واحدة بس لحظة ما الإشارة تتغيّر من ⁦0⁩ لـ ⁦1 (Rising)⁩ أو من ⁦1⁩ لـ ⁦0 (Falling)⁩. بنستخدمه عشان أمر يتنفّذ مرة واحدة مهما فضل الزرار مضغوط.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<p>أمثلة: زيادة عدّاد مرة واحدة لكل ضغطة، تسجيل وقت بداية عطل، إرسال رسالة مرة واحدة.</p>
+<p>أسماؤه: ⁦P⁩ و ⁦N⁩ في ⁦Siemens⁩، ⁦ONS⁩ أو ⁦OSR⁩ في ⁦Allen-Bradley⁩، ⁦PLS⁩ و ⁦PLF⁩ أو ⁦LDP⁩ في ⁦Mitsubishi⁩.</p>
+<div class="mist"><b>اللي بيغلط فيه الناس:</b> تستخدم ⁦Edge⁩ على ⁦Bit⁩ متغيّر في أكتر من مكان، أو تستخدم نفس الـ ⁦Memory Bit⁩ بتاع الـ ⁦Edge⁩ في اتنين ⁦Edge⁩ مختلفين، فيشتغلوا غلط.</div>
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-10" data-lv="2">
+  <div class="qh"><span class="qn">10</span><span class="lv lv2">متوسط</span></div>
+  <h2 class="qt">إزاي تعمل ⁦Scaling⁩ لإشارة أنالوج؟ مثال: ترانسميتر ضغط ⁦0-10 bar⁩ على ⁦4-20 mA⁩ في ⁦Siemens⁩.</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>المعادلة الخطية: القيمة الهندسية = (⁦Raw − RawMin) ÷ (RawMax − RawMin) × (EngMax − EngMin) + EngMin⁩. في ⁦Siemens S7-1200/1500⁩ الـ ⁦4 mA⁩ بتقرا ⁦0⁩ والـ ⁦20 mA⁩ بتقرا ⁦27648⁩ (لو الكارت مظبوط على ⁦4-20 mA⁩). فقيمة ⁦Raw 13824 = 5 bar⁩.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<div class="formula" dir="ltr"><span>Eng = (Raw − Raw_min) / (Raw_max − Raw_min) × (Eng_max − Eng_min) + Eng_min</span></div>
+<p>في ⁦Siemens⁩ بتستخدم ⁦NORM_X⁩ وبعدها ⁦SCALE_X⁩ (أو ⁦SCALE⁩ في الأقدم).</p>
+<p>بالـ ⁦mA⁩ مباشرة: ⁦12 mA = 50% = 5 bar⁩.</p>
+<p>في ماركات تانية الـ ⁦Raw Range⁩ مختلف (مثلًا ⁦0-4000⁩ أو ⁦0-32000⁩ أو حسب إعدادات الكارت)، فارجع للمانيوال.</p>
+<div class="mist"><b>اللي بيغلط فيه الناس:</b> تظبط الكارت على ⁦0-20 mA⁩ والترانسميتر ⁦4-20 mA⁩، فالصفر بيقرا ⁦20%⁩ من المدى.</div>
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-11" data-lv="2">
+  <div class="qh"><span class="qn">11</span><span class="lv lv2">متوسط</span></div>
+  <h2 class="qt">إزاي الـ ⁦PLC⁩ يعرف إن سلك إشارة ⁦4-20 mA⁩ اتقطع؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>أي قيمة تحت حوالي ⁦3.6 mA⁩ (أو قريب منها حسب الكارت) معناها عطل، لأن الترانسميتر السليم عمره ما ينزل تحت ⁦4 mA⁩ (تقريبًا ⁦3.8⁩ كحد أدنى للقياس). كتير من الكروت فيها ⁦Diagnostic⁩ لقطع السلك بيظهر ⁦Bit⁩ أو قيمة خاصة (زي ⁦32767⁩ في ⁦Siemens⁩ لـ ⁦Overflow/Wire Break⁩).</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<p>توصية ⁦NAMUR NE43⁩: من ⁦3.8⁩ لـ ⁦20.5 mA⁩ قياس عادي، و ⁦3.6⁩ أو أقل، و ⁦21⁩ أو أكتر، معناهم عطل في الترانسميتر أو الدايرة.</p>
+<p>في البرنامج: اعمل إنذار وقيمة أمان بدل ما تستخدم القراية الغلط في التحكم.</p>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-12" data-lv="1">
+  <div class="qh"><span class="qn">12</span><span class="lv lv1">مبتدئ</span></div>
+  <h2 class="qt">إيه أنواع البيانات الأساسية في الـ ⁦PLC⁩؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>⁦BOOL⁩ (بت واحد ⁦0⁩ أو ⁦1⁩)، ⁦INT⁩ (16 Bit من ⁦−32768⁩ لـ ⁦32767⁩)، ⁦DINT (32 Bit)⁩، ⁦REAL⁩ (رقم بكسور ⁦32 Bit⁩)، وكمان ⁦WORD⁩ و ⁦DWORD⁩ للبتات، و ⁦TIME⁩ و ⁦STRING⁩.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<ul><li>تحويل ⁦INT⁩ لـ ⁦REAL⁩ قبل القسمة عشان متخسرش الكسور</li><li>العداد اللي بيعدّ كتير لازم يبقى ⁦DINT⁩ عشان ميعملش ⁦Overflow⁩ بعد ⁦32767⁩</li><li>الأنالوج الخام غالبًا ⁦INT⁩، والمحسوب ⁦REAL⁩</li></ul>
+<div class="mist"><b>اللي بيغلط فيه الناس:</b> تقسم ⁦INT⁩ على ⁦INT⁩ وتستغرب إن النتيجة اتقرّبت (مثلًا ⁦7 ÷ 2 = 3⁩).</div>
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-13" data-lv="2">
+  <div class="qh"><span class="qn">13</span><span class="lv lv2">متوسط</span></div>
+  <h2 class="qt">إيه الفرق بين ⁦Retentive⁩ و ⁦Non-retentive⁩ في الذاكرة؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>الـ ⁦Retentive⁩ بيحتفظ بقيمته بعد فصل الكهربا أو تحويل الـ ⁦PLC⁩ من ⁦Stop⁩ لـ ⁦Run⁩. الـ ⁦Non-retentive⁩ بيرجع صفر.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<p>نستخدم الـ ⁦Retentive⁩ في: عدّادات الإنتاج، ساعات التشغيل، الـ ⁦Setpoints⁩ اللي المشغّل دخلها، والوصفات.</p>
+<p>لازم تفكّر في الأمان: أوامر التشغيل ⁦(Run Bits)⁩ يفضّل متبقاش ⁦Retentive⁩، عشان الماكينة متقومش لوحدها بعد رجوع الكهربا.</p>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-14" data-lv="2">
+  <div class="qh"><span class="qn">14</span><span class="lv lv2">متوسط</span></div>
+  <h2 class="qt">البرنامج في ⁦Siemens⁩ بيتنظّم إزاي؟ (⁦OB⁩ و ⁦FC⁩ و ⁦FB⁩ و ⁦DB⁩)</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>الـ ⁦OB (Organization Block)⁩ هو اللي نظام التشغيل بيناديه، زي ⁦OB1⁩ الدورة الرئيسية و ⁦OB35⁩ أو ⁦Cyclic Interrupt⁩ للـ ⁦PID⁩. الـ ⁦FC⁩ فانكشن من غير ذاكرة خاصة. الـ ⁦FB⁩ فانكشن ليه ذاكرة خاصة ⁦(Instance DB)⁩ بتحفظ قيمه. الـ ⁦DB⁩ داتا بلوك لتخزين البيانات.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<p>مثال: تعمل ⁦FB⁩ واحد للموتور ⁦(Start/Stop/Fault/Hours)⁩ وتستدعيه ⁦20⁩ مرة لـ ⁦20⁩ موتور، كل واحد بـ ⁦Instance DB⁩.</p>
+<p>في ⁦Allen-Bradley⁩ الفكرة قريبة: ⁦Tasks⁩ و ⁦Programs⁩ و ⁦Routines⁩ و ⁦AOI (Add-On Instruction)⁩ و ⁦Tags⁩.</p>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-15" data-lv="1">
+  <div class="qh"><span class="qn">15</span><span class="lv lv1">مبتدئ</span></div>
+  <h2 class="qt">إيه لغات البرمجة في ⁦IEC 61131-3⁩؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>⁦LD (Ladder)⁩ وده الأشهر للكهربائيين، ⁦FBD (Function Block Diagram)⁩، ⁦ST (Structured Text)⁩ زي لغات البرمجة النصية، ⁦SFC (Sequential Function Chart)⁩ للتسلسل، و ⁦IL (Instruction List)⁩ وده اتلغى في الإصدار الأخير.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<ul><li>⁦Ladder⁩: منطق ديجيتال وتتبّع أعطال سهل للفنيين</li><li>⁦ST⁩: حسابات ومعادلات ولوبس</li><li>⁦SFC⁩: الماكينات اللي شغّالة خطوات ⁦(Steps)⁩</li><li>⁦FBD⁩: تحكم أنالوج و ⁦PID⁩</li></ul>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-16" data-lv="1">
+  <div class="qh"><span class="qn">16</span><span class="lv lv1">مبتدئ</span></div>
+  <h2 class="qt">إيه الفرق بين مخرج ⁦Relay⁩ ومخرج ⁦Transistor⁩ في الـ ⁦PLC⁩؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>الـ ⁦Relay⁩: بيشغّل ⁦AC⁩ أو ⁦DC⁩، معزول، بيستحمل تيار أعلى (حوالي ⁦2 A⁩)، بس بطيء وعمر الكونتاكت محدود بعدد المرات. الـ ⁦Transistor: DC⁩ بس (غالبًا ⁦24 V⁩)، سريع جدًا ومناسب للنبضات (⁦Pulse Train⁩ للسيرفو والستيبر) والـ ⁦PWM⁩، وعمره طويل، بس تياره أقل (غالبًا ⁦0.5 A⁩) وحساس للحمل الزيادة.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<p>مع الأحمال الحثية (كويلات) على مخرج ترانزستور: لازم دايود حماية أو تأكد إن الكارت فيه حماية داخلية.</p>
+<p>مع مخرج ⁦Relay⁩ بيشغّل كتير جدًا (كل ثانية مثلًا)، هيبوظ بسرعة: استخدم ⁦Transistor⁩ أو ⁦SSR⁩.</p>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-17" data-lv="2">
+  <div class="qh"><span class="qn">17</span><span class="lv lv2">متوسط</span></div>
+  <h2 class="qt">لمبة الـ ⁦Output⁩ منوّرة على الـ ⁦PLC⁩ بس الحمل مش شغّال. تدوّر فين؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>الـ ⁦PLC⁩ قام بدوره، المشكلة بعد الكارت. قيس الجهد على طرف المخرج بالنسبة للـ ⁦Common⁩ الصح. بعدين: فيوز المخرج أو الـ ⁦Common⁩، مصدر جهد الحمل (⁦24 V⁩ أو ⁦230 V⁩) موجود؟ السلك للحمل، ريليه وسيط ⁦(Interposing)⁩، والحمل نفسه.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<ul><li>في الكروت الترانزستور: لو الحمل محتاج تيار أكبر من الكارت، المخرج هيدخل حماية أو يتحرق</li><li>في الكروت اللي ليها ⁦Common⁩ منفصل لكل مجموعة: اتأكد إن الـ ⁦Common⁩ متوصّل</li><li>لو فيه ⁦Force⁩ على المخرج من البرنامج، شيله واختبر صح</li></ul>
+<p>والعكس: لو الحمل شغّال واللمبة طافية، غالبًا فيه ⁦Force⁩ أو توصيل غلط أو تسريب من مخرج ⁦Triac⁩.</p>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-18" data-lv="1">
+  <div class="qh"><span class="qn">18</span><span class="lv lv1">مبتدئ</span></div>
+  <h2 class="qt">⁦Modbus RTU⁩ و ⁦Modbus TCP⁩، إيه الفرق؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>الاتنين نفس البروتوكول. الـ ⁦RTU⁩ على خط ⁦Serial⁩ غالبًا ⁦RS-485⁩ (سلكين ⁦A⁩ و ⁦B⁩)، بيتظبط فيه السرعة ⁦(Baud)⁩ والـ ⁦Parity⁩ و ⁦Stop Bits⁩ ورقم الجهاز (⁦Slave ID⁩ من ⁦1⁩ لـ ⁦247⁩). الـ ⁦TCP⁩ على ⁦Ethernet⁩ على بورت ⁦502⁩، والجهاز بيتعرف بالـ ⁦IP⁩ (وفيه ⁦Unit ID⁩).</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<p>النظام ⁦Master/Slave⁩ (أو ⁦Client/Server⁩ في ⁦TCP⁩): الماستر بيسأل والجهاز بيرد، الجهاز مبيبعتش لوحده.</p>
+<p>أشهر الـ ⁦Function Codes⁩:</p>
+<ul><li>⁦01⁩ قراية ⁦Coils⁩، و ⁦02⁩ قراية ⁦Discrete Inputs⁩</li><li>⁦03⁩ قراية ⁦Holding Registers⁩، و ⁦04⁩ قراية ⁦Input Registers⁩</li><li>⁦05⁩ كتابة ⁦Coil⁩ واحد، و ⁦06⁩ كتابة ⁦Register⁩ واحد</li><li>⁦15⁩ كتابة ⁦Coils⁩ كتير، و ⁦16⁩ كتابة ⁦Registers⁩ كتير</li></ul>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-19" data-lv="3">
+  <div class="qh"><span class="qn">19</span><span class="lv lv3">خبير</span></div>
+  <h2 class="qt">ربطت انفرتر بالـ ⁦PLC⁩ على ⁦Modbus RTU⁩ ومفيش رد. تراجع إيه؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>نفس الـ ⁦Baud⁩ والـ ⁦Parity⁩ والـ ⁦Stop Bits⁩ في الناحيتين، رقم الـ ⁦Slave⁩ صح ومش متكرر، سلكين ⁦A⁩ و ⁦B⁩ متوصّلين صح (جرّب تبدّلهم لأن التسميات مش موحّدة)، مقاومة إنهاء ⁦120 Ω⁩ في أول وآخر الخط، والانفرتر مظبوط إنه ياخد الأوامر من الكوميونيكيشن.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<p>وبعد ما الرد يرجع، مشاكل البيانات المعتادة:</p>
+<ul><li><b>الإزاحة بواحد</b> ⁦(Offset)⁩: الجهاز بيقول ⁦Register 40001⁩ والـ ⁦PLC⁩ محتاج العنوان ⁦0⁩. أو العكس</li><li>أرقام ⁦32 Bit⁩ (REAL أو ⁦DINT⁩) على اتنين ⁦Registers⁩: ترتيب الـ ⁦Words⁩ أو الـ ⁦Bytes (Swap)⁩ بيفرق</li><li>قيم مضروبة في ⁦10⁩ أو ⁦100⁩ (مثلًا ⁦500⁩ يعني ⁦50.0 Hz⁩)</li><li>الـ ⁦Timeout⁩ قليل أو الـ ⁦Polling⁩ سريع زيادة على عدد أجهزة كبير</li><li>لو فيه أكتر من جهاز وفي مشاكل عشوائية: الخط محتاج ⁦Bias⁩، أو التوصيل ⁦Star⁩ مش ⁦Daisy chain⁩</li></ul>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-20" data-lv="3">
+  <div class="qh"><span class="qn">20</span><span class="lv lv3">خبير</span></div>
+  <h2 class="qt">ليه شبكة ⁦RS-485⁩ لازم تبقى ⁦Daisy Chain⁩ ومقاومات إنهاء في الطرفين؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>لأن الـ ⁦RS-485⁩ خط نقل بيانات ⁦(Transmission Line)⁩. أي فرع طويل (⁦Star⁩ أو ⁦Stub⁩) بيعمل انعكاسات للإشارة تبوّظ البيانات، خصوصًا في السرعات العالية. ومقاومات الإنهاء ⁦120 Ω⁩ (بتساوي معاوقة الكابل تقريبًا) بتمتص الإشارة في آخر الخط فمترجعش.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<ul><li>الطول لحد حوالي ⁦1200 m⁩ في السرعات القليلة</li><li>الحمل القياسي حوالي ⁦32⁩ جهاز ⁦(Unit Load)⁩ على الخط، وفيه ترانسيفرات بتسمح بأكتر</li><li>كابل ⁦Twisted Pair⁩ مع شيلد، وسلك تالت للـ ⁦Common (0 V)⁩ مفضّل</li><li>المقاومات في أول وآخر الخط بس، مش في كل جهاز</li></ul>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-21" data-lv="2">
+  <div class="qh"><span class="qn">21</span><span class="lv lv2">متوسط</span></div>
+  <h2 class="qt">إيه الفرق بين ⁦Profibus⁩ و ⁦Profinet⁩؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>⁦Profibus DP⁩ شبكة ⁦Serial⁩ على ⁦RS-485⁩، كل جهاز ليه عنوان رقمي ⁦(Station Address)⁩، وفيه مقاومات إنهاء في أول وآخر الخط (في الكونيكتور)، والسرعة لحد ⁦12 Mbps. Profinet⁩ على ⁦Ethernet⁩ صناعي، كل جهاز ليه <b>⁦Device Name⁩</b> والـ ⁦Controller⁩ هو اللي بيدّيله ⁦IP⁩ على أساس الاسم، وبتضيفه في المشروع بملف ⁦GSDML⁩.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<p>في ⁦Profibus⁩ بتستخدم ملف ⁦GSD⁩. في ⁦Profinet⁩ الشبكة ممكن تبقى ⁦Line⁩ أو ⁦Star⁩ أو ⁦Ring⁩ (مع سويتشات أو ⁦MRP⁩).</p>
+<p>⁦Profinet⁩ أسرع وبيسمح بالتشخيص والوصول للأجهزة من نفس الكابل.</p>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-22" data-lv="3">
+  <div class="qh"><span class="qn">22</span><span class="lv lv3">خبير</span></div>
+  <h2 class="qt">غيّرت جهاز ⁦Profinet⁩ (مثلًا انفرتر أو ⁦Remote I/O⁩) والـ ⁦PLC⁩ مش شايفه. ليه؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>غالبًا الجهاز الجديد مالوش <b>⁦Device Name⁩</b> أو اسمه مختلف عن اللي في المشروع. في ⁦Profinet⁩ الـ ⁦PLC⁩ بيدوّر على الجهاز بالاسم. لازم تدّيه نفس الاسم ⁦(Assign Device Name)⁩ من السوفت وير أو تستخدم خاصية الاستبدال التلقائي (لو الشبكة متظبطة على ⁦Topology⁩).</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<p>مراجعات تانية: الـ ⁦Firmware⁩ أو الموديل مختلف عن اللي في المشروع ⁦(GSDML)⁩، الكابل والسويتش، والـ ⁦IP⁩ متكرر.</p>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-23" data-lv="2">
+  <div class="qh"><span class="qn">23</span><span class="lv lv2">متوسط</span></div>
+  <h2 class="qt">إيه خطورة الـ ⁦Force⁩ والـ ⁦Online Changes⁩؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>الـ ⁦Force⁩ بيخلّي المدخل أو المخرج بقيمة ثابتة مهما كان المنطق أو الحالة الحقيقية، فممكن يشغّل معدة والناس فاكرينها واقفة، أو يلغي حماية. التعديل أونلاين ممكن يغيّر تصرّف الماكينة وهي شغالة.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<p>قواعد شغل:</p>
+<ul><li>متعملش ⁦Force⁩ على حاجة ليها علاقة بالأمان</li><li>بلّغ المشغّل قبل أي تعديل، وخلّي حد جنب الماكينة</li><li>شيل كل الـ ⁦Forces⁩ قبل ما تمشي، وسجّل اللي عملته</li><li>خد ⁦Backup⁩ قبل أي تعديل</li></ul>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-24" data-lv="3">
+  <div class="qh"><span class="qn">24</span><span class="lv lv3">خبير</span></div>
+  <h2 class="qt">الـ ⁦CPU⁩ دخل ⁦Stop⁩ أو ⁦Fault⁩ فجأة. إيه الأسباب المحتملة؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>أشهرها: الـ ⁦Watchdog⁩ (زمن الـ ⁦Scan⁩ عدّى الحد بسبب ⁦Loop⁩ طويل أو برنامج تقيل)، خطأ برمجي زي قسمة على صفر أو عنوان مش موجود أو ⁦Array⁩ خارج الحدود، كارت ⁦I/O⁩ وقع أو اتشال، مشكلة في الباور سبلاي، أو بطارية/ذاكرة.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<p>أول حاجة: افتح الـ ⁦Diagnostic Buffer (Siemens)⁩ أو ⁦Major/Minor Faults (Allen-Bradley)⁩ أو ⁦Error Code (Mitsubishi)⁩، وهيقولك السبب والمكان.</p>
+<p>مثال: في ⁦S7-300/400⁩ لو حصل خطأ برمجي ومفيش ⁦OB121⁩ في البرنامج، الـ ⁦CPU⁩ بيروح ⁦Stop⁩. تصرّف الأجيال الأحدث بيختلف، فشوف المانيوال.</p>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-25" data-lv="3">
+  <div class="qh"><span class="qn">25</span><span class="lv lv3">خبير</span></div>
+  <h2 class="qt">اشرح الـ ⁦P⁩ و ⁦I⁩ و ⁦D⁩ في الـ ⁦PID⁩ باختصار.</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>الـ ⁦P (Proportional)⁩: بيصحّح بنسبة الخطأ الحالي، لو كبّرته الاستجابة أسرع بس ممكن يتذبذب، ولوحده بيسيب خطأ ثابت. الـ ⁦I (Integral)⁩: بيجمّع الخطأ مع الوقت فيشيل الخطأ الثابت، بس لو كتير يعمل ⁦Overshoot⁩ وبطء في الاستقرار. الـ ⁦D (Derivative)⁩: بيبص على سرعة تغيّر الخطأ فيقلل الـ ⁦Overshoot⁩، بس حساس جدًا للتشويش.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<ul><li>معظم لوبات المصانع (ضغط، تدفق، مستوى) ⁦PI⁩ بس</li><li>الحرارة ممكن تحتاج ⁦D⁩ شوية لأنها بطيئة</li><li><b>⁦Anti-windup⁩</b>: لما الخرج يوصل ⁦100%⁩ والخطأ لسه موجود، الـ ⁦I⁩ بيفضل يجمّع، فلما الحاجة ترجع بيعمل ⁦Overshoot⁩ كبير. الحل إن الـ ⁦I⁩ يقف لما الخرج يتشبّع</li><li>الـ ⁦PID⁩ لازم يتنادى على زمن ثابت ⁦(Cyclic Interrupt)⁩، مش في الدورة العادية اللي زمنها متغيّر</li></ul>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<article class="q" id="plc-26" data-lv="2">
+  <div class="qh"><span class="qn">26</span><span class="lv lv2">متوسط</span></div>
+  <h2 class="qt">إزاي تعمل ⁦Backup⁩ وتوثّق برنامج ⁦PLC⁩؟</h2>
+  <div class="qa"><span class="ql">الإجابة المختصرة</span><p>خد نسخة من البرنامج من الـ ⁦PLC⁩ نفسه ⁦(Upload)⁩ مش بس من اللابتوب، باسم فيه التاريخ ورقم النسخة، واحفظها في مكان مشترك. اكتب ⁦Comments⁩ على الـ ⁦Tags⁩ والـ ⁦Rungs⁩، وسجّل كل تعديل: إيه اللي اتغيّر، ليه، ومين.</p></div>
+  <details class="more"><summary>اشرحها أكتر</summary><div class="md">
+<p>وكمان خد ⁦Backup⁩ لباراميترات الانفرترات والسيرفوهات والـ ⁦HMI⁩، لأن تغيير جهاز من غيرها بيضيّع ساعات.</p>
+<p>في المصانع الكبيرة فيه أنظمة ⁦Version Control⁩ للبرامج.</p>
+
+  </div></details>
+  <div class="mk" role="group" aria-label="إنت عارف السؤال ده؟"><button type="button" class="btn" data-v="y">عارفها ✓</button><button type="button" class="btn" data-v="n">لسه مش عارفها</button></div>
+</article>
+<p class="empty" id="empty" hidden>مفيش أسئلة على البحث أو الفلتر ده. جرّب كلمة تانية أو اختار «الكل».</p>
+</section>
+
+<nav class="tnav" aria-label="الأقسام"><a class="btn" href="vfd.html">→ الانفرتر</a><a class="btn" href="instrumentation.html">الإنسترومنتيشن ←</a></nav>
+
+<p class="foot">الإجابات دي عامة وبتغطي الشائع في الشغل. أرقام الباراميترات وأكواد الأعطال بتختلف من ماركة للتانية، والمانيوال والكود المحلي هما المرجع. علامات «عارفها» و«مش عارفها» بتتسجّل على الجهاز ده بس.</p>
+</div>
+<script>IV.topic();</script>
+</body>
+</html>

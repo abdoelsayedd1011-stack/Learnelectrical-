@@ -16,9 +16,11 @@
   var COURSES = {
     basics:  { key: "basics-lab-v1",  src: "basics-lab/basics.js",          list: "BL.COURSE" },
     classic: { key: "classic-lab-v1", src: "classic-control-lab/engine.js", list: null },
-    instr:   { key: "instr-lab-v1",   src: "instrumentation-lab/instr.js",  list: "IL.COURSE" }
+    instr:   { key: "instr-lab-v1",   src: "instrumentation-lab/instr.js",  list: "IL.COURSE" },
+    plc:     { key: "plc-lab-v1",     src: "plc-lab/plc.js",                list: "PL.COURSE" },
+    drw:     { key: "drw-lab-v1",     src: "drawings-lab/drawings.js",      list: "DR.COURSE" }
   };
-  // basics / instr: `{id:'l1', … tasks:[['ohm','…'],…]}` → "l1/ohm" في state.done
+  // basics / instr / plc / drw: `{id:'l1', … tasks:[['ohm','…'],…]}` → "l1/ohm" في state.done
   function parseTasks(src, list){
     var start = src.indexOf(list + " = [");
     if (start < 0) return null;

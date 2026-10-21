@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>يعني إيه PLC؟</title>
+<meta name="description" content="الدرس 1 في كورس الـ PLC: الـ PLC بدل دواير الريلاي، دورة السكان (اقرا المداخل، نفّذ البرنامج، اكتب المخارج) بأنيميشن تفاعلي، أجزاء الـ PLC (CPU، باور، كروت DI و DO و AI و AO)، وأشهر الشركات.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="plc.css">
+<script src="plc.js"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">الـ PLC · الدرس 1 من 10</p>
+    <h1>يعني إيه PLC؟</h1>
+    <p>الـ <b>PLC</b> (Programmable Logic Controller) كمبيوتر صغير متقوّي للمصانع: بيستحمل الحرارة والتراب والتشويش، وبيقرا الزراير والحساسات، ويشغّل الموتورات والبلوف على حسب <b>برنامج</b> إنت كاتبه. هنا هتعرف ليه المصانع سابت دواير الريلاي، وإزاي الـ PLC "بيفكّر" في دورة اسمها <b>السكان</b>.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>من الريلايهات للـ PLC</h2>
+  <p>زمان أي ماكينة كانت بتتحكم بـ <b>دواير ريلاي وكونتاكتورات وتايمرات</b> متوصّلة بالسلك. الدايرة دي هي "البرنامج". لو عايز تغيّر حاجة صغيرة (تأخير 5 ثواني، أو شرط زيادة) لازم تفك وتوصّل وتزوّد ريليهات.</p>
+  <div class="two">
+    <div class="box"><b>لوحة ريلاي (Relay logic)</b><ul><li>البرنامج = السلك نفسه</li><li>أي تعديل = شغل يدوي ومواد</li><li>كل تايمر وريليه مساعد = قطعة بتتحط في اللوحة وبتبوظ</li><li>التربل شوتنج بالأفوميتر سلك سلك</li></ul></div>
+    <div class="box good"><b>PLC</b><ul><li>الزراير والحساسات بتتوصّل على <b>الدخل</b>، والكونتاكتورات على <b>الخرج</b>، وخلاص</li><li>المنطق كله <b>برنامج</b>: تعدّله من اللابتوب في دقايق</li><li>مئات التايمرات والعدادات والريليهات المساعدة جوه البرنامج، من غير ما تشتري ولا قطعة</li><li>تشوف البرنامج وهو شغال (Online) وتعرف العطل فين</li></ul></div>
+  </div>
+  <div class="ex"><b>مثال:</b> ماكينة تعبئة كان فيها 30 ريليه و 8 تايمرات. بعد الـ PLC: نفس الزراير والحساسات والكونتاكتورات، بس كل الريليهات المساعدة والتايمرات بقوا سطور في البرنامج. واللوحة بقت أصغر وأسهل في الصيانة.</div>
+  <div class="box key"><b>خلي بالك:</b> الـ PLC مش بيلغي الكونتاكتورات ولا الأوفرلود ولا القواطع. الكونتاكتور لسه هو اللي بيشيل تيار الموتور، والـ PLC بس بيشغّل الكويل بتاعه. ودواير <b>الطوارئ (E-Stop)</b> لازم تفضل بتفصل بالسلك أو بـ Safety relay، مش بالبرنامج العادي بس.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>دورة السكان (Scan cycle)</h2>
+  <p>الـ PLC مش بيبص على الزراير "طول الوقت" زي السلك. هو بيعمل 3 خطوات ورا بعض ويعيدهم للأبد، وكل لفة اسمها <b>سكان</b>:</p>
+  <ol>
+    <li><b>اقرا المداخل (Read inputs):</b> يصوّر حالة كل الأطراف مرة واحدة ويحفظها في <b>Input image</b>.</li>
+    <li><b>نفّذ البرنامج (Execute):</b> يمشي على البرنامج من أوله لآخره ويحسب النتايج.</li>
+    <li><b>اكتب المخارج (Write outputs):</b> يطلّع النتايج على كروت الخرج مرة واحدة.</li>
+  </ol>
+  <p>السكان بياخد عادة من <b>⁦1⁠–⁠20⁩ ملّي ثانية</b> على حسب طول البرنامج. جرّب بنفسك بالبطيء:</p>
+  <div class="wd"><h3>دورة السكان بالبطيء</h3><div id="scan"></div></div>
+  <div class="box"><b>اللي لازم تفتكره:</b> البرنامج بيشتغل على <b>الصورة</b> اللي اتاخدت في أول السكان، والمخارج مش بتتغيّر غير في آخره. ولو إشارة جت وراحت في وقت أقل من سكان واحد، ممكن الـ PLC ما يشوفهاش خالص.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>أجزاء الـ PLC</h2>
+  <p>الـ PLC إما <b>Compact</b> (كله في علبة واحدة: CPU ومداخل ومخارج، زي الموديلات الصغيرة) أو <b>Modular</b> (راك بتركّب عليه الكروت اللي محتاجها). دوس على كل كارت:</p>
+  <div class="wd"><h3>راك PLC</h3><div id="parts"></div></div>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>الكارت</th><th>بيتوصّل عليه</th><th>الإشارة</th></tr></thead>
+    <tbody>
+      <tr><td><b>DI</b> دخل ديجيتال</td><td>زراير، ليميت سويتش، بروكسيميتي، فوتوسيل، كونتاكت أوفرلود</td><td>⁦0 / 24V DC⁩</td></tr>
+      <tr><td><b>DO</b> خرج ديجيتال</td><td>كويل كونتاكتور، ريليه، لمبة بيان، سولينويد بلف</td><td>ريلاي أو ترانزستور</td></tr>
+      <tr><td><b>AI</b> دخل أنالوج</td><td>ترانسميتر ضغط / مستوى / حرارة / فلو</td><td>⁦4⁠–⁠20mA⁩ أو ⁦0⁠–⁠10V⁩</td></tr>
+      <tr><td><b>AO</b> خرج أنالوج</td><td>سرعة إنفرتر، بلف كنترول</td><td>⁦4⁠–⁠20mA⁩ أو ⁦0⁠–⁠10V⁩</td></tr>
+    </tbody></table></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>الشركات المشهورة</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>الشركة</th><th>أمثلة</th><th>برنامج البرمجة</th></tr></thead>
+    <tbody>
+      <tr><td>Siemens</td><td>S7-1200، S7-1500، ⁦LOGO!⁩</td><td>TIA Portal</td></tr>
+      <tr><td>Allen-Bradley (Rockwell)</td><td>Micro800، CompactLogix، ControlLogix</td><td>CCW، Studio 5000</td></tr>
+      <tr><td>Schneider</td><td>Modicon M221، M241، M340</td><td>EcoStruxure Machine Expert</td></tr>
+      <tr><td>Mitsubishi</td><td>FX5U، iQ-R</td><td>GX Works</td></tr>
+      <tr><td>Delta</td><td>DVP، AS series</td><td>ISPSoft</td></tr>
+      <tr><td>Omron</td><td>CP1E، NX1P</td><td>CX-Programmer، Sysmac Studio</td></tr>
+    </tbody></table></div>
+  <p>كلهم بيدعموا لغة <b>Ladder</b> (LD)، ومعاها لغات تانية من معيار <b>IEC 61131-3</b>: FBD (بلوكات)، ST (كود نصي)، SFC (خطوات). إحنا هنركّز على الـ Ladder لأنه شبه دواير الكونتاكتورات اللي الكهربائي فاهمها.</p>
+  <div class="brand-note"><b>عن المحاكي:</b> المحاكي اللي هتستخدمه من الدرس التالت <b>مدرّب عام</b>. المنطق هو هو في كل الشركات، بس الشكل والعناوين بتختلف شوية.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>أعطال شائعة في الموقع</h2>
+  <div class="fault-box"><b>أعطال شائعة في الموقع:</b><ul>
+    <li><b>الـ PLC على STOP</b> بعد ما حد نزّل برنامج أو بعد عطل: كل المخارج واقفة. بص على لمبة RUN/STOP قبل أي حاجة.</li>
+    <li><b>لمبة ERROR / SF منوّرة</b>: كارت مش متركّب صح، كارت ناقص عن الإعداد اللي في البرنامج، أو عطل في الباور.</li>
+    <li><b>باور الـ 24V واقع</b>: قصر في سلك حساس بيوقّع الباور كله، فكل المداخل تطفي مرة واحدة.</li>
+    <li><b>بطارية الذاكرة خلصت</b> في الموديلات القديمة: البرنامج أو القيم بتضيع لما الكهربا تقطع. خلي معاك نسخة من البرنامج دايمًا.</li>
+  </ul></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأرقام (زمن السكان، عدد الكروت) أمثلة تقريبية وبتختلف حسب الموديل. المحاكي هنا <b>مدرّب عام</b> بعناوين على طريقة IEC / Siemens: العناوين والتعليمات بالظبط بتختلف من شركة للتانية، والمانيوال بتاع الـ PLC بتاعك هو المرجع. تقدّمك بيتسجّل على الجهاز ده بس.</p>
+</div>
+<script>
+PL.lesson('l1');
+PL.scanDemo(document.getElementById('scan'), {lesson:'l1'});
+PL.parts(document.getElementById('parts'), {lesson:'l1'});
+PL.quiz(document.getElementById('quiz'), [
+  {q:'ترتيب دورة السكان الصح:', o:['اقرا المداخل ← نفّذ البرنامج ← اكتب المخارج', 'نفّذ البرنامج ← اقرا المداخل ← اكتب المخارج', 'اكتب المخارج ← اقرا المداخل ← نفّذ البرنامج', 'كله في نفس اللحظة'], a:0, why:'وبعد ما يكتب المخارج يرجع يقرا تاني.'},
+  {q:'الضاغط اتداس واتساب في وقت أقل من سكان واحد. اللي ممكن يحصل:', o:['الـ PLC ممكن ما يشوفوش خالص', 'الـ PLC هيشوفه أكيد', 'الـ PLC هيقف STOP', 'الخرج هيشتغل مرتين'], a:0, why:'المداخل بتتقري مرة واحدة في أول كل سكان.'},
+  {q:'حساس ضغط بيطلّع ⁦4⁠–⁠20mA⁩ يتوصّل على كارت:', o:['AI', 'DI', 'DO', 'AO'], a:0, why:'Analog Input.'},
+  {q:'كويل كونتاكتور الموتور يتوصّل على:', o:['كارت DO', 'كارت DI', 'كارت AI', 'الـ CPU مباشرة'], a:0, why:'خرج ديجيتال (ريلاي أو ترانزستور).'},
+  {q:'أهم ميزة للـ PLC عن لوحة الريلاي:', o:['تغيير المنطق بالبرنامج من غير ما تفك سلك', 'مش محتاج كونتاكتورات خالص', 'مش محتاج باور', 'مبيبوظش أبدًا'], a:0, why:'الكونتاكتورات والحماية لسه موجودين، بس المنطق بقى برنامج.'},
+  {q:'زرار الطوارئ E-Stop:', o:['لازم يفصل بالسلك أو بـ Safety relay، مش بالبرنامج العادي بس', 'يتوصّل على DI عادي ويكفي', 'مش محتاجينه مع الـ PLC', 'يتوصّل على AI'], a:0, why:'الأمان مايعتمدش على برنامج ممكن يتغيّر أو PLC ممكن يهنّج.'}
+], {lesson:'l1', pass:0.8});
+</script>
+
+</body>
+</html>

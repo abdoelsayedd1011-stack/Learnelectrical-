@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>التثبيت الذاتي والـ Set/Reset</title>
+<meta name="description" content="الدرس 4 في كورس الـ PLC: تشغيل وإيقاف موتور DOL بالتثبيت الذاتي (Seal-in) في الـ Ladder، الأوفرلود ولمبة التريب، تعليمات Set و Reset وأولوية الإيقاف، والإنترلوك في عكس الحركة. 3 تمارين على المحاكي بتتختبر أوتوماتيك.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="plc.css">
+<script src="plc.js"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">الـ PLC · الدرس 4 من 10</p>
+    <h1>التثبيت الذاتي والـ Set/Reset</h1>
+    <p>زرار الـ Start بيتداس ويتساب، بس الموتور لازم يفضل شغال. في الكلاسيك كنترول كنا بنعمل ده بكونتاكت مساعد من الكونتاكتور. في الـ PLC نفس الفكرة بالظبط بس <b>بالبرنامج</b>. وهنشوف طريقة تانية بـ <b>Set و Reset</b>، وإزاي نمنع الموتور يشتغل أمام وخلف في نفس الوقت.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>التثبيت الذاتي (Seal-in / Latch)</h2>
+  <p>نفس دايرة الـ DOL اللي في <a href="../classic-control-lab/lesson-02.html">درس الريلاي المساعد والتثبيت الذاتي</a>: كونتاكت من الخرج نفسه (Q0.0) <b>موازي</b> لزرار الـ Start. أول ما الموتور يشتغل، الكونتاكت ده بيمسك الدايرة حتى لو سبت الزرار.</p>
+  <div class="ladfig" id="fSeal"></div>
+  <ol>
+    <li>دوست Start ⇐ I0.0 = 1 ⇐ الكهربا عدّت ⇐ Q0.0 = 1.</li>
+    <li>في السكان اللي بعده، كونتاكت <b>Q0.0</b> (اللي تحت) بقى مقفول.</li>
+    <li>سبت Start ⇐ الكهربا لسه بتعدّي من فرع Q0.0 ⇐ الموتور مكمّل.</li>
+    <li>دوست Stop (متوصّل NC) ⇐ I0.1 = 0 ⇐ الكونتاكت NO بتاعه فصل ⇐ Q0.0 = 0 والتثبيت اتفك.</li>
+  </ol>
+  <div class="box key"><b>ليه الـ Stop قبل التثبيت مش بعده؟</b> لازم الـ Stop والأوفرلود يكونوا على الخط الأساسي <b>بعد</b> نقطة اتحاد Start مع Q0.0، عشان يقطعوا الاتنين. لو حطيت الـ Stop جوه فرع الـ Start بس، التثبيت هيفضل ماسك والموتور مش هيقف.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>التمرين: موتور DOL بأوفرلود</h2>
+  <p>كونتاكت الأوفرلود <span class="term">95–96</span> متوصّل NC على I0.2: يعني طبيعي = 1، ولما يفصل = 0. وعايزين لمبة Trip تنوّر لما يفصل. فكّر: اللمبة محتاجة كونتاكت إيه؟</p>
+  <div class="wd"><h3>محاكي: موتور DOL</h3><div id="sim1"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>Set و Reset</h2>
+  <p>طريقة تانية: كويل <b>Set</b> <span class="mono">-(S)-</span> يخلّي البت 1 <b>ويفضل 1</b> حتى لو الشرط راح. وكويل <b>Reset</b> <span class="mono">-(R)-</span> يرجّعه 0. يعني الـ Set والـ Reset فيهم "ذاكرة" من نفسهم من غير تثبيت.</p>
+  <div class="ladfig" id="fSR"></div>
+  <div class="box key"><b>مين يكسب لو الاتنين مع بعض؟</b> الـ PLC بيمشي من فوق لتحت، و<b>آخر رانج بيكتب في البت هو اللي بيكسب</b>. فلو حطيت الـ Reset <b>بعد</b> الـ Set، الإيقاف ليه الأولوية (وده اللي عايزينه للأمان). ولاحظ: هنا الـ Stop المتوصّل NC بنسأل عليه بكونتاكت <b>NC</b>، لأننا عايزين نعمل Reset لما البت = 0 (حد داس).</div>
+  <div class="wd"><h3>محاكي: Set و Reset</h3><div id="sim2"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>الإنترلوك: أمام وخلف</h2>
+  <p>موتور بيلف في الاتجاهين بكونتاكتورين KM1 (أمام) و KM2 (خلف). لو الاتنين اشتغلوا مع بعض ⇐ <b>قصر بين فازتين</b>. الحل: كل خرج فيه كونتاكت <b>NC</b> من الخرج التاني (Interlock). وكمان في اللوحة بيتعمل نفس الإنترلوك بكونتاكت مساعد NC من الكونتاكتورات نفسها، عشان لو كونتاكتور لزق.</p>
+  <div class="wd"><h3>محاكي: أمام وخلف</h3><div id="sim3"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>أعطال شائعة في الموقع</h2>
+  <div class="fault-box"><b>أعطال شائعة في البرامج:</b><ul>
+    <li><b>الموتور بيقف أول ما تسيب Start:</b> التثبيت ناقص، أو الفرع بتاعه مش متوصّل من الناحيتين.</li>
+    <li><b>الموتور مش بيقف بالـ Stop:</b> الـ Stop جوه فرع الـ Start بس، أو الـ Reset قبل الـ Set والـ Start لسه متداس.</li>
+    <li><b>الموتور رجع يشتغل لوحده بعد الكهربا ما رجعت:</b> البت كان Retentive (بيتحفظ مع قطع الكهربا) مع Set. الموتورات لازم تحتاج Start تاني بعد رجوع الكهربا.</li>
+    <li><b>الكونتاكتورين أمام وخلف اشتغلوا لحظة:</b> مفيش إنترلوك في البرنامج أو في السلك، أو تغيير الاتجاه من غير وقفة.</li>
+  </ul></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الدوائر هنا للتعليم. في الحقيقة الإنترلوك بين كونتاكتورين عكس الحركة بيتعمل كمان بالسلك (كونتاكت مساعد NC) مش بالبرنامج بس. المحاكي هنا <b>مدرّب عام</b> بعناوين على طريقة IEC / Siemens: العناوين والتعليمات بالظبط بتختلف من شركة للتانية، والمانيوال بتاع الـ PLC بتاعك هو المرجع. تقدّمك بيتسجّل على الجهاز ده بس.</p>
+</div>
+<script>
+PL.lesson('l4');
+PL.ladFig(document.getElementById('fSeal'), [{rows:[['NO:I0.0', 'NO:I0.1', 'NO:I0.2', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}], {labels:{'I0.0':'Start', 'I0.1':'Stop NC', 'I0.2':'أوفرلود', 'Q0.0':'موتور'}});
+PL.ladFig(document.getElementById('fSR'), [{rows:[['NO:I0.0', '-', '-', '-', 'S:Q0.0']]}, {rows:[['NC:I0.1', '-', '-', '-', 'R:Q0.0']]}], {labels:{'I0.0':'Start', 'I0.1':'Stop NC', 'Q0.0':'موتور'}});
+const ioM = {inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'موتور', kind:'motor'}]};
+window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l4', exercises:[
+  {key:'seal', title:'DOL بأوفرلود', task:'<b>المطلوب:</b> <b>Start</b> (I0.0) يشغّل الموتور <b>Q0.0</b> ويفضل شغال بعد ما تسيبه. <b>Stop</b> (I0.1، متوصّل NC) أو فصل <b>الأوفرلود</b> (I0.2، متوصّل NC) يوقفوه. ولمبة <b>Trip</b> على <b>Q0.1</b> تنوّر طول ما الأوفرلود فاصل. وبعد ما الأوفرلود يرجع، الموتور مايشتغلش لوحده.',
+    io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}, {a:'I0.2', label:'أوفرلود', kind:'ncsw'}], outputs:[{a:'Q0.0', label:'موتور', kind:'motor'}, {a:'Q0.1', label:'Trip', kind:'lamp', color:'amber'}]},
+    tests:[{run:0.2}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'في البداية من غير ما حد يدوس حاجة:'},
+      {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'دوست Start وسبته: الموتور لازم يفضل شغال (التثبيت الذاتي).'},
+      {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'دوست Stop:'},
+      {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':1}, msg:'Start تاني:'},
+      {set:{'I0.2':0}}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':1}, msg:'الأوفرلود فصل (I0.2 بقى 0):'},
+      {set:{'I0.2':1}}, {run:0.5}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'الأوفرلود رجع: الموتور مايشتغلش لوحده ولمبة Trip تطفي.'},
+      {hold:'I0.1'}, {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Stop متداس وحد داس Start: الـ Stop لازم يكسب.'}, {release:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'سابوا الـ Stop:'}],
+    hint:'رانج 1: Start (NO) ← Stop (NO لأنه متوصّل NC) ← أوفرلود (NO) ← كويل Q0.0، وفرع موازي للـ Start فيه Q0.0. رانج 2: الأوفرلود بـ <b>NC</b> ← كويل Q0.1 (عايزينها تنوّر لما البت = 0).',
+    sol:[{rows:[['NO:I0.0', 'NO:I0.1', 'NO:I0.2', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NC:I0.2', '-', '-', '-', 'OUT:Q0.1']]}],
+    ok:'ده أشهر برنامج في الدنيا. لاحظ إن الأوفرلود استخدمناه NO في رانج و NC في رانج تاني: نفس البت، سؤالين مختلفين.'}
+]});
+window.SIM2 = PL.sim(document.getElementById('sim2'), {lesson:'l4', exercises:[
+  {key:'sr', title:'Set و Reset', task:'<b>المطلوب:</b> نفس التشغيل والإيقاف بس <b>من غير تثبيت</b>: استخدم كويل <b>Set</b> على Q0.0 مع Start، وكويل <b>Reset</b> على Q0.0 مع Stop (متوصّل NC). ولو الاتنين متداسين مع بعض، <b>الإيقاف يكسب</b>.',
+    io:ioM,
+    tests:[{run:0.2}, {press:'I0.0'}, {run:0.4}, {exp:{'Q0.0':1}, msg:'دوست Start وسبته:'}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'دوست Stop:'},
+      {hold:'I0.0'}, {run:0.2}, {hold:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Start و Stop متداسين مع بعض: الإيقاف لازم يكسب. حط رانج الـ Reset بعد رانج الـ Set.'}, {release:'I0.1'}, {release:'I0.0'}, {run:0.2},
+      {fn:c => { const ts = []; c.e.prog.forEach(rg => rg.rows.forEach(row => row.forEach(el => { if (el && el.a === 'Q0.0') ts.push(el.t); }))); return ts.indexOf('S') >= 0 && ts.indexOf('R') >= 0 ? null : 'البرنامج شغال، بس التمرين ده عايزك تستخدم كويل Set وكويل Reset على Q0.0.'; }}],
+    hint:'رانج 1: NO I0.0 ← (S) Q0.0. رانج 2: <b>NC</b> I0.1 ← (R) Q0.0. الـ NC هنا صح لأننا عايزين الـ Reset يحصل لما البت = 0 (حد داس Stop).',
+    sol:[{rows:[['NO:I0.0', '-', '-', '-', 'S:Q0.0']]}, {rows:[['NC:I0.1', '-', '-', '-', 'R:Q0.0']]}],
+    ok:'Set/Reset مريحين في البرامج الكبيرة، بس خلي بالك من ترتيب الرانجات: آخر واحد بيكسب.'}
+]});
+window.SIM3 = PL.sim(document.getElementById('sim3'), {lesson:'l4', exercises:[
+  {key:'fr', title:'أمام وخلف', task:'<b>المطلوب:</b> <b>I0.0</b> يشغّل أمام <b>Q0.0</b>، و<b>I0.1</b> يشغّل خلف <b>Q0.1</b>، كل واحد بتثبيت. <b>Stop</b> (I0.2، NC) يوقف أي واحد. وممنوع الاتنين يشتغلوا مع بعض <b>ولو لسكان واحد</b>، ولو الموتور شغال أمام ودوست خلف مايحصلش حاجة لحد ما تدوس Stop.',
+    io:{inputs:[{a:'I0.0', label:'أمام', kind:'pb'}, {a:'I0.1', label:'خلف', kind:'pb', color:'blue'}, {a:'I0.2', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'KM1 أمام'}, {a:'Q0.1', label:'KM2 خلف'}]}, plant:'fr',
+    tests:[{watch:c => c.q('Q0.0') && c.q('Q0.1') ? 'Q0.0 و Q0.1 اشتغلوا مع بعض: قصر بين الفازات! محتاج كونتاكت NC من كل خرج في رانج التاني.' : null},
+      {run:0.2}, {press:'I0.0'}, {run:0.4}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'دوست أمام وسبته:'},
+      {press:'I0.1'}, {run:0.4}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'الموتور شغال أمام ودوست خلف: لازم مايحصلش حاجة.'},
+      {press:'I0.2'}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'دوست Stop:'},
+      {press:'I0.1'}, {run:0.4}, {exp:{'Q0.0':0, 'Q0.1':1}, msg:'دوست خلف:'}, {press:'I0.0'}, {run:0.3}, {exp:{'Q0.1':1, 'Q0.0':0}, msg:'شغال خلف ودوست أمام:'},
+      {press:'I0.2'}, {run:0.3}, {hold:'I0.0'}, {hold:'I0.1'}, {run:0.4}, {release:'I0.0'}, {release:'I0.1'}, {run:0.3}, {press:'I0.2'}, {run:0.2}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'بعد Stop:'}],
+    hint:'رانج 1: I0.0 (وفرع Q0.0 للتثبيت) ← I0.2 (NO) ← <b>NC Q0.1</b> ← كويل Q0.0. رانج 2 نفس الشكل: I0.1 (وفرع Q0.1) ← I0.2 ← <b>NC Q0.0</b> ← كويل Q0.1.',
+    sol:[{rows:[['NO:I0.0', 'NO:I0.2', 'NC:Q0.1', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.1', 'NO:I0.2', 'NC:Q0.0', '-', 'OUT:Q0.1'], ['NO:Q0.1']], links:[[1]]}],
+    ok:'الإنترلوك في البرنامج تمام. في اللوحة الحقيقية زوّد كمان كونتاكت مساعد NC من KM1 في كويل KM2 والعكس.'}
+]});
+PL.quiz(document.getElementById('quiz'), [
+  {q:'كونتاكت التثبيت الذاتي بيتحط:', o:['موازي لزرار Start', 'توالي مع زرار Stop', 'موازي لزرار Stop', 'بعد الكويل'], a:0, why:'عشان يمسك مكان الـ Start بعد ما يتساب.'},
+  {q:'الـ Stop لازم يكون على الخط الأساسي بعد نقطة اتحاد الـ Start والتثبيت. ليه؟', o:['عشان يقطع الاتنين', 'عشان شكل الرسم', 'مش فارقة', 'عشان يسرّع السكان'], a:0, why:'لو جوه فرع الـ Start بس، التثبيت هيفضل ماسك.'},
+  {q:'رانج 1 فيه Set Q0.0 ورانج 2 فيه Reset Q0.0، والشرطين متحققين مع بعض. Q0.0 هيبقى:', o:['0', '1', 'بيرمش', 'مش معروف'], a:0, why:'آخر رانج بيكتب هو اللي بيكسب.'},
+  {q:'زرار Stop متوصّل NC وعايز تعمل بيه <b>Reset</b>. الكونتاكت في البرنامج:', o:['NC', 'NO', 'P', 'مش محتاج كونتاكت'], a:0, why:'عايز الـ Reset يشتغل لما البت = 0 (حد داس).'},
+  {q:'الإنترلوك بين أمام وخلف في البرنامج بيتعمل بـ:', o:['كونتاكت NC من كل خرج في رانج التاني', 'كونتاكت NO من كل خرج في رانج التاني', 'تايمر', 'عدّاد'], a:0, why:'لو أمام شغال، NC بتاعه بيمنع خلف.'},
+  {q:'ليه الإنترلوك كمان بيتعمل بالسلك في اللوحة؟', o:['لو كونتاكتور لزق أو حصل خطأ في البرنامج', 'عشان الـ PLC بطيء', 'مش لازم خالص', 'عشان يوفّر مخارج'], a:0, why:'الأمان طبقتين: سلك وبرنامج.'}
+], {lesson:'l4', pass:0.8});
+</script>
+
+</body>
+</html>

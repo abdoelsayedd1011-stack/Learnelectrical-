@@ -1,5 +1,6 @@
 // Members-only pages: visitors without an account are sent to sign up first.
-// Open to everyone: the main pages, the PowerFlex 525 lab, and lessons 1–2 of the basics and classic-control courses.
+// Open to everyone: the main pages, the PowerFlex 525 lab, the interview question bank, and lessons 1–2 of every course
+// (basics, classic control, instrumentation, PLC, drawings).
 // Members' lab/course pages also get /assets/sync.js injected so their progress syncs with the account.
 // Paywall (off by default, see _lib/plan.js): when on, those member-only pages also need an active Pro plan.
 import { getDb, sessionUser, COOKIE } from "./_lib/auth.js";
@@ -13,7 +14,8 @@ const MEMBER_LABS = new Set([
   "acs580-lab", "g120-lab", "fre800-lab", "ga500-lab", "ig5a-lab", "gd20-lab", "c2000-lab", "frenic-lab"
 ]);
 const FREE_LESSONS = 2;
-const SYNC_DIRS = new Set([...MEMBER_LABS, "pf525-lab", "classic-control-lab", "basics-lab", "instrumentation-lab"]);
+const COURSE_DIRS = new Set(["classic-control-lab", "basics-lab", "instrumentation-lab", "plc-lab", "drawings-lab"]);
+const SYNC_DIRS = new Set([...MEMBER_LABS, ...COURSE_DIRS, "pf525-lab", "interview"]);
 const SYNC_TAG = '<script src="/assets/sync.js" defer></script>';
 
 function membersOnly(pathname){
@@ -21,7 +23,7 @@ function membersOnly(pathname){
   if (!m) return false;
   const dir = m[1], rest = m[2];
   if (rest && !/\.html$/.test(rest) && /\./.test(rest)) return false; // scripts, images, data
-  if (dir === "classic-control-lab" || dir === "basics-lab" || dir === "instrumentation-lab"){
+  if (COURSE_DIRS.has(dir)){
     const l = /^lesson-(\d+)/.exec(rest);
     return !!l && Number(l[1]) > FREE_LESSONS;
   }

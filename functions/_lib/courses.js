@@ -5,13 +5,15 @@
 export const COURSES = {
   basics:  { title: "أساسيات الكهربا للمبتدئين", key: "basics-lab-v1",   src: "/basics-lab/basics.js",          list: "BL.COURSE", hub: "/basics-lab/index.html" },
   classic: { title: "الكلاسيك كنترول",            key: "classic-lab-v1",  src: "/classic-control-lab/engine.js", list: null,        hub: "/classic-control-lab/index.html" },
-  instr:   { title: "الإنسترومنتيشن",             key: "instr-lab-v1",    src: "/instrumentation-lab/instr.js",  list: "IL.COURSE", hub: "/instrumentation-lab/index.html" }
+  instr:   { title: "الإنسترومنتيشن",             key: "instr-lab-v1",    src: "/instrumentation-lab/instr.js",  list: "IL.COURSE", hub: "/instrumentation-lab/index.html" },
+  plc:     { title: "الـ PLC",                     key: "plc-lab-v1",      src: "/plc-lab/plc.js",                list: "PL.COURSE", hub: "/plc-lab/index.html" },
+  drw:     { title: "قراية الرسومات الكهربية",     key: "drw-lab-v1",      src: "/drawings-lab/drawings.js",      list: "DR.COURSE", hub: "/drawings-lab/index.html" }
 };
 
 const CACHE_MS = 10 * 60 * 1000;
 const cache = {};
 
-// basics / instr: `{id:'l1', … tasks:[['ohm','…'],…]}` → "l1/ohm" in state.done
+// basics / instr / plc / drw: `{id:'l1', … tasks:[['ohm','…'],…]}` → "l1/ohm" in state.done
 function parseTasks(src, list){
   const start = src.indexOf(list + " = [");
   if (start < 0) return null;
