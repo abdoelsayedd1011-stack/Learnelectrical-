@@ -61,6 +61,12 @@ DR.$ = $; DR.$$ = $$;
 const fmt = (v, d) => { const p = Math.pow(10, d); const r = Math.round(v * p) / p; return (Object.is(r, -0) ? 0 : r).toFixed(d); };
 DR.fmt = fmt;
 function shuffle(a){ a = a.slice(); for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+/* answer options: shuffled, but catch-all choices («الاتنين», «ولا واحد», "Both", "None"…) always stay last */
+const QZ_PIN = /^(الاتنين|الاثنين|كلهم|ولا واحد|ولا حاجة|مفيش فرق|مش فارقة|زي بعض|كلهم زي بعض|both|neither|none|all of them|all the same|no difference|it makes no difference)$/i;
+function qzOrder(o, keep){ const idx = o.map((_, i) => i); if (keep) return idx; const pin = idx.filter(i => QZ_PIN.test(String(o[i]).replace(/<[^>]*>/g, '').replace(/[⁦-⁩⁠.!]/g, '').trim())); return shuffle(idx.filter(i => !pin.includes(i))).concat(pin); }
+/* Latin / number runs inside an RTL option ("+24V", "0.05 A", "DC−", "حوالي +26 °C") would flip: isolate them as LTR */
+const QZ_LTR = /[+\-−±]?[0-9A-Za-zΩµ°][0-9A-Za-zΩµ°%.,:/·×_\-–−+ ]*[0-9A-Za-zΩµ°%+\-−]|[+\-−±]?[0-9A-Za-zΩµ°]/g;
+function qzTxt(s){ s = String(s); if (document.documentElement.dir !== 'rtl') return s; return s.split(/(<[^>]+>|&[#\w]+;)/).map((p, i) => i % 2 ? p : p.replace(QZ_LTR, m => '<bdi dir="ltr">' + m + '</bdi>')).join(''); }
 DR.shuffle = shuffle;
 const pick = a => a[Math.floor(Math.random() * a.length)];
 DR.pick = pick;
@@ -135,11 +141,11 @@ DR.quiz = function(host, qs, opt){
   const pass = opt.pass == null ? 0.8 : opt.pass;
   let order, ans, sel;
   function start(){
-    order = (opt.shuffle ? shuffle(qs) : qs.slice()).map(q => { const idx = q.o.map((_, i) => i); const oi = opt.keepOrder || q.keep ? idx : shuffle(idx); return {q, oi}; });
+    order = (opt.shuffle ? shuffle(qs) : qs.slice()).map(q => { const idx = q.o.map((_, i) => i); const oi = opt.keepOrder || q.keep ? idx : qzOrder(q.o); return {q, oi}; });
     ans = order.map(() => null); sel = order.map(() => null); render();
   }
   function render(){
-    host.innerHTML = `<div class="qz-list">${order.map((it, k) => `<div class="qz" data-k="${k}"><p class="qz-q">${k + 1}. ${it.q.q}</p><div class="qz-a${opt.row ? ' row' : ''}">${it.oi.map(i => `<button type="button" class="btn qz-o" data-i="${i}">${it.q.o[i]}</button>`).join('')}</div><p class="qz-f" aria-live="polite"></p></div>`).join('')}</div><div class="qz-chk"><button type="button" class="btn pri" data-qz="check" aria-disabled="true">${QZ_T.check}</button><span class="qz-cnt" aria-live="polite"></span></div><div class="qz-sum" hidden aria-live="polite"></div>`;
+    host.innerHTML = `<div class="qz-list">${order.map((it, k) => `<div class="qz" data-k="${k}"><p class="qz-q">${k + 1}. ${it.q.q}</p><div class="qz-a${opt.row ? ' row' : ''}">${it.oi.map(i => `<button type="button" class="btn qz-o" data-i="${i}">${qzTxt(it.q.o[i])}</button>`).join('')}</div><p class="qz-f" aria-live="polite"></p></div>`).join('')}</div><div class="qz-chk"><button type="button" class="btn pri" data-qz="check" aria-disabled="true">${QZ_T.check}</button><span class="qz-cnt" aria-live="polite"></span></div><div class="qz-sum" hidden aria-live="polite"></div>`;
     cnt();
   }
   host.addEventListener('click', e => {
@@ -203,8 +209,8 @@ DR.drill = function(host, gen, opt){
     if (cur.input){
       card.innerHTML = `<div class="dr-q">${cur.q}</div><form class="dr-in"><input class="inp" inputmode="decimal" autocomplete="off" aria-label="إجابتك" placeholder="إجابتك"><span class="mono dr-u">${esc(cur.unit || '')}</span><button class="btn pri" type="submit">تأكيد</button></form><p class="qz-f" aria-live="polite"></p>`;
     } else {
-      const oi = shuffle(cur.o.map((_, i) => i));
-      card.innerHTML = `<div class="dr-q">${cur.q}</div><div class="qz-a${cur.row ? ' row' : ''}${cur.cls ? ' ' + cur.cls : ''}">${oi.map(i => `<button type="button" class="btn qz-o" data-i="${i}">${cur.o[i]}</button>`).join('')}</div>${QZ_CF()}<p class="qz-f" aria-live="polite"></p>`;
+      const oi = qzOrder(cur.o, cur.keep);
+      card.innerHTML = `<div class="dr-q">${cur.q}</div><div class="qz-a${cur.row ? ' row' : ''}${cur.cls ? ' ' + cur.cls : ''}">${oi.map(i => `<button type="button" class="btn qz-o" data-i="${i}">${qzTxt(cur.o[i])}</button>`).join('')}</div>${QZ_CF()}<p class="qz-f" aria-live="polite"></p>`;
     }
     score();
   }
@@ -235,8 +241,8 @@ DR.caseGame = function(host, cases, opt){
   const q = s => $(s, host), fin = chal(host, '.cg-chal', opt.lesson, opt.task), card = q('.cg-card');
   function score(){ q('.cg-sc').innerHTML = `الحالة <b>${Math.min(k + 1, cases.length)}</b> من ${cases.length} · صح: <b>${ok}</b>`; q('.cg-bar').style.width = (ok / need * 100 > 100 ? 100 : ok / need * 100) + '%'; }
   function show(){
-    const c = cases[order[k]], oi = shuffle(c.o.map((_, i) => i));
-    card.innerHTML = `<h4>${c.t}</h4><div class="dr-q" style="font-weight:500">${c.s}</div>${c.clues && c.clues.length ? `<div class="chips-t">${c.clues.map((cl, i) => `<button type="button" class="btn" data-cl="${i}" aria-expanded="false">افحص: ${cl[0]}</button>`).join('')}</div><div class="cg-clue"></div>` : ''}<p style="margin:4px 0 0;font-weight:600">السبب غالبًا إيه؟</p><div class="qz-a">${oi.map(i => `<button type="button" class="btn qz-o" data-i="${i}">${c.o[i]}</button>`).join('')}</div>${QZ_CF()}<p class="qz-f" aria-live="polite"></p>`;
+    const c = cases[order[k]], oi = qzOrder(c.o, c.keep);
+    card.innerHTML = `<h4>${c.t}</h4><div class="dr-q" style="font-weight:500">${c.s}</div>${c.clues && c.clues.length ? `<div class="chips-t">${c.clues.map((cl, i) => `<button type="button" class="btn" data-cl="${i}" aria-expanded="false">افحص: ${cl[0]}</button>`).join('')}</div><div class="cg-clue"></div>` : ''}<p style="margin:4px 0 0;font-weight:600">السبب غالبًا إيه؟</p><div class="qz-a">${oi.map(i => `<button type="button" class="btn qz-o" data-i="${i}">${qzTxt(c.o[i])}</button>`).join('')}</div>${QZ_CF()}<p class="qz-f" aria-live="polite"></p>`;
     q('.cg-next').hidden = true; ans = 0; score();
   }
   card.addEventListener('click', e => {
@@ -1148,8 +1154,8 @@ DR.numGen = (() => { const pool = [
   () => { const it = pick([['-K', 'ريلاي أو كونتاكتور'], ['-Q', 'قاطع أو جهاز فصل قوى'], ['-F', 'حماية (فيوز / أوفرلود / MCB)'], ['-S', 'زرار أو مفتاح'], ['-H', 'لمبة بيان'], ['-M', 'موتور'], ['-B', 'حساس'], ['-X', 'ترمنال'], ['-W', 'كابل'], ['-T', 'محوّل'], ['-A', 'PLC أو موديول']]); const n = 1 + Math.floor(Math.random() * 9); const others = shuffle(['ريلاي أو كونتاكتور', 'قاطع أو جهاز فصل قوى', 'حماية (فيوز / أوفرلود / MCB)', 'زرار أو مفتاح', 'لمبة بيان', 'موتور', 'حساس', 'ترمنال', 'كابل', 'محوّل', 'PLC أو موديول'].filter(x => x !== it[1])).slice(0, 3); const o = shuffle([it[1]].concat(others)); return {q:`التاج <span class="term">${it[0]}${n}</span> في رسمة IEC غالبًا يعني:`, o, a:o.indexOf(it[1]), why:`الحرف الأول بيقول نوع الجهاز: <span class="term">${it[0]}</span> = ${it[1]}.`}; },
   () => { const it = pick([['CR', 'ريلاي تحكم'], ['M', 'كونتاكتور موتور (Starter)'], ['OL', 'أوفرلود'], ['PB', 'زرار'], ['LS', 'ليميت سويتش'], ['TR', 'تايمر'], ['FU', 'فيوز'], ['CB', 'قاطع']]); const all = ['ريلاي تحكم', 'كونتاكتور موتور (Starter)', 'أوفرلود', 'زرار', 'ليميت سويتش', 'تايمر', 'فيوز', 'قاطع']; const o = shuffle([it[1]].concat(shuffle(all.filter(x => x !== it[1])).slice(0, 3))); return {q:`في رسمة أمريكاني (NEMA) الجهاز <span class="term">${it[0]}</span> يعني:`, o, a:o.indexOf(it[1]), why:`${it[0]} = ${it[1]}.`}; },
   () => { const p = 2 + Math.floor(Math.random() * 8), c = 1 + Math.floor(Math.random() * 8); return {q:`جنب كونتاكت مكتوب <span class="term">/${p}.${c}</span>. معناها:`, o:[`الكويل بتاعه في صفحة ${p} عمود ${c}`, `السلك رقم ${p}${c}`, `الترمنال ${p} في الشريط ${c}`, `الكونتاكت رقم ${c} من ${p}`], a:0, why:'المرجع = صفحة.عمود. الأرقام اللي فوق إطار الصفحة هي أرقام الأعمدة.'}; },
-  () => ({q:'المكتوب <span class="term">-K1:13</span> معناه:', o:['الطرف 13 على الكونتاكتور -K1', 'السلك 13 في الصفحة 1', 'الكونتاكتور رقم 13', 'العمود 13'], a:0, why:'الجهاز وبعده نقطتين وبعدهم رقم الطرف.'}),
-  () => ({q:'السلك اللي عليه فيرول <span class="term">104</span> من الطرفين معناه:', o:['رقم السلك (كل النقط المتوصّلة ببعض واخدة نفس الرقم)', 'طوله 104 سم', 'مقطعه 1.04 mm²', 'رقم الترمنال'], a:0, why:'رقم السلك بيتكتب على الفيرول من الناحيتين. كل سلك متوصّل بنفس النقطة الكهربية بياخد نفس الرقم.'})
+  () => ({q:'المكتوب <span class="term">-K1:13</span> معناه:', o:['الطرف 13 على ⁦-K1⁩', 'السلك 13 في صفحة 1', 'الكونتاكتور رقم 13', 'العمود 13 في صفحة 1'], a:0, why:'الجهاز وبعده نقطتين وبعدهم رقم الطرف.'}),
+  () => ({q:'السلك اللي عليه فيرول <span class="term">104</span> من الطرفين معناه:', o:['رقم السلك', 'طوله 104 سم', 'مقطعه 1.04 mm²', 'رقم الترمنال اللي داخل عليه'], a:0, why:'رقم السلك بيتكتب على الفيرول من الناحيتين. كل سلك متوصّل بنفس النقطة الكهربية بياخد نفس الرقم.'})
 ]; return () => pick(pool)(); })();
 
 /* ================= L4: control circuit simulator ================= */
@@ -1268,13 +1274,13 @@ DR.rateGen = (() => { const kva = [500, 630, 800, 1000, 1250, 1600, 2000]; const
   () => { const s = pick(kva), I = s / (1.732 * 0.4); const r = Math.round(I); return {q:`محوّل <span class="eq">${s} kVA · 11/0.4 kV</span>. تيار الثانوي الكامل تقريبًا كام أمبير؟`, input:true, unit:'A', check:x => Math.abs(x - I) / I <= 0.04, ans:`${r} A`, why:`I = S ÷ (1.732 × V) = ${s} ÷ (1.732 × 0.4) ≈ ${r} A.`}; },
   () => { const s = pick(kva), uk = pick([4, 5, 6]), I = s / (1.732 * 0.4), Isc = I / (uk / 100) / 1000; const r = Math.round(Isc * 10) / 10; return {q:`محوّل <span class="eq">${s} kVA · 400 V · uk ${uk}%</span>. تيار القصر عند أطرافه تقريبًا كام kA؟`, input:true, unit:'kA', check:x => Math.abs(x - Isc) / Isc <= 0.06, ans:`${r} kA`, why:`I = ${Math.round(I)} A، و Isc ≈ I ÷ uk = ${Math.round(I)} ÷ ${uk / 100} ≈ ${r} kA. القاطع الرئيسي لازم الـ Icu بتاعه أكبر من كده.`}; },
   () => { const kw = pick([5.5, 7.5, 11, 15, 22, 30, 37, 45, 55]), I = kw * 1000 / (1.732 * 400 * 0.85 * 0.9); const r = Math.round(I); return {q:`موتور <span class="eq">${kw} kW · 400 V</span>. تياره تقريبًا (pf 0.85 وكفاءة 0.9)؟`, input:true, unit:'A', check:x => Math.abs(x - I) / I <= 0.12, ans:`≈ ${r} A`, why:`I = P ÷ (1.732 × V × pf × η) ≈ ${r} A. وقاعدة سريعة على 400V: حوالي <b>2 A لكل kW</b>.`}; },
-  () => ({q:'على الرسمة مكتوب <span class="eq">4C×25 mm² Cu/XLPE/SWA/PVC</span>. الـ <b>SWA</b> معناها:', o:['مسلّح بسلك صلب (Steel Wire Armour)', 'عازل سيليكون', 'كابل مرن', 'شيلد نحاس'], a:0, why:'SWA = Steel Wire Armour، طبقة سلك صلب بتحمي الكابل ميكانيكيًا ومعاها بيتعمل الأرضي في الجلاند.'}),
-  () => ({q:'كابل <span class="eq">4C×185 mm²</span>. الـ 185 هي:', o:['مقطع العرق الواحد بالـ mm²', 'مجموع مقطع العروق', 'الطول بالمتر', 'التيار المسموح'], a:0, why:'4C = 4 عروق، و185 = مقطع كل عرق.'}),
+  () => ({q:'على الرسمة مكتوب <span class="eq">4C×25 mm² Cu/XLPE/SWA/PVC</span>. الـ <b>SWA</b> معناها:', o:['مسلّح بسلك صلب', 'عازل سيليكون للحرارة', 'كابل مرن بشيلد', 'شيلد نحاس مضفّر'], a:0, why:'SWA = Steel Wire Armour، طبقة سلك صلب بتحمي الكابل ميكانيكيًا ومعاها بيتعمل الأرضي في الجلاند.'}),
+  () => ({q:'كابل <span class="eq">4C×185 mm²</span>. الـ 185 هي:', o:['مقطع العرق الواحد', 'مجموع مقطع العروق', 'طول الكابل بالمتر', 'التيار المسموح بالأمبير'], a:0, why:'4C = 4 عروق، و185 = مقطع كل عرق.'}),
   () => ({q:'قاطع <span class="eq">MCCB 250 A · Ir 0.8</span>. هيفصل أوفرلود على حوالي كام؟', o:['200 A', '250 A', '312 A', '80 A'], a:0, why:'Ir × In = 0.8 × 250 = 200 A. الـ In مقاس الفريم والـ Ir الظبط.'}),
-  () => ({q:'قاطع مكتوب عليه <span class="eq">Icu 36 kA</span>. ده:', o:['أقصى تيار قصر يقدر يفصله', 'التيار المقنّن', 'تيار الأوفرلود', 'تيار الكويل'], a:0, why:'Icu = Ultimate breaking capacity. لازم يكون أكبر من تيار القصر المتوقّع عند مكانه.'}),
+  () => ({q:'قاطع مكتوب عليه <span class="eq">Icu 36 kA</span>. ده:', o:['أقصى تيار قصر يفصله', 'التيار المقنّن بتاعه', 'تيار فصل الأوفرلود', 'أقصى تيار يعدّي ساعة'], a:0, why:'Icu = Ultimate breaking capacity. لازم يكون أكبر من تيار القصر المتوقّع عند مكانه.'}),
   () => ({q:'الشرط المايلة الـ 3 <span class="eq">///</span> على خط في الـ Single line معناها:', o:['الخط ده 3 فازات', '3 كابلات احتياطي', 'كابل تالف', 'أرضي'], a:0, why:'الـ Single line بيرسم خط واحد، والشرط بتقولك هو بيمثّل كام موصّل.'}),
-  () => ({q:'محوّل مكتوب عليه <span class="eq">Dyn11</span>. الـ <b>n</b> معناها:', o:['النيوترال طالع من الثانوي الستار', 'التردد', 'عدد اللفات', 'فيه مروحة'], a:0, why:'D = الابتدائي دلتا، y = الثانوي ستار، n = نيوترال طالع، و11 = فرق الزاوية 330°.'}),
-  () => ({q:'كونتاكتور مكتوب عليه <span class="eq">AC-3 18 A</span>. الـ AC-3 معناها:', o:['فئة استخدام لتشغيل وفصل موتورات القفص', 'جهد الكويل', 'عدد الأقطاب', 'التيار المقنّن للكويل'], a:0, why:'AC-1 أحمال مقاومة، AC-3 موتورات قفص سنجابي بتتفصل وهي دايرة.'})
+  () => ({q:'محوّل مكتوب عليه <span class="eq">Dyn11</span>. الـ <b>n</b> معناها:', o:['النيوترال طالع من الثانوي', 'التردد 50Hz', 'عدد لفات الثانوي', 'تبريد طبيعي من غير مروحة'], a:0, why:'D = الابتدائي دلتا، y = الثانوي ستار، n = نيوترال طالع، و11 = فرق الزاوية 330°.'}),
+  () => ({q:'كونتاكتور مكتوب عليه <span class="eq">AC-3 18 A</span>. الـ AC-3 معناها:', o:['فئة لتشغيل موتورات القفص', 'جهد الكويل 230V AC', 'عدد الأقطاب الرئيسية', 'الكونتاكتور للأحمال المقاومة بس'], a:0, why:'AC-1 أحمال مقاومة، AC-3 موتورات قفص سنجابي بتتفصل وهي دايرة.'})
 ]; return () => pick(pool)(); })();
 
 /* ================= L6: panel explorer + wire follow ================= */
@@ -1324,12 +1330,12 @@ DR.tsGame = function(host, opt){
   const brk = wireAt(S0.b);
   const wn3 = M.net(S0.b), wnA2 = M.net(K1c.b);
   const CASES = [
-    {t:'كله مطفي', s:'مفيش ولا لمبة منوّرة على باب اللوحة (حتى لمبة STOP)، والموتور مش بيدور لما تدوس Start.', cond:{on:{S1:true}}, hold:'زميلك ماسك زرار <b>Start</b>.', fault:{[F1.id]:'open'}, o:['فيوز التحكم ⁦-F1⁩ ضارب', 'زرار Stop بايظ', 'كويل ⁦-K1⁩ محروق', 'الأوفرلود فاصل'], a:0, why:'جهد على <span class="eq">-F1:1</span> ومفيش على <span class="eq">-F1:2</span>: الفيوز مفتوح. قبل ما تغيّره دوّر ليه ضرب (قصر في سلك أو كويل).'},
-    {t:'Start مش بيعمل حاجة', s:'لمبة STOP منوّرة. بتدوس Start والكونتاكتور مش بيلقط خالص.', cond:{on:{S1:true}}, hold:'زميلك ماسك زرار <b>Start</b>.', fault:{[S0.id]:'open'}, o:['كونتاكت ⁦-S0⁩ (11-12) مفتوح', 'كويل ⁦-K1⁩ محروق', 'فيوز ⁦-F1⁩ ضارب', 'لمبة ⁦-H1⁩ محروقة'], a:0, why:'<span class="eq">-S0:11 = 230 V</span> و <span class="eq">-S0:12 = 0 V</span> والزرار مش مضغوط: الكونتاكت الـ NC مش بيوصّل (متّسخ أو السوستة مكسورة).'},
+    {t:'كله مطفي', s:'مفيش ولا لمبة منوّرة على باب اللوحة (حتى لمبة STOP)، والموتور مش بيدور لما تدوس Start.', cond:{on:{S1:true}}, hold:'زميلك ماسك زرار <b>Start</b>.', fault:{[F1.id]:'open'}, o:['فيوز ⁦-F1⁩ ضارب', 'زرار Stop بايظ', 'كويل ⁦-K1⁩ محروق', 'الأوفرلود ⁦-F2⁩ فاصل'], a:0, why:'جهد على <span class="eq">-F1:1</span> ومفيش على <span class="eq">-F1:2</span>: الفيوز مفتوح. قبل ما تغيّره دوّر ليه ضرب (قصر في سلك أو كويل).'},
+    {t:'Start مش بيعمل حاجة', s:'لمبة STOP منوّرة. بتدوس Start والكونتاكتور مش بيلقط خالص.', cond:{on:{S1:true}}, hold:'زميلك ماسك زرار <b>Start</b>.', fault:{[S0.id]:'open'}, o:['كونتاكت ⁦-S0⁩ مفتوح', 'كويل ⁦-K1⁩ محروق', 'فيوز ⁦-F1⁩ ضارب', 'لمبة ⁦-H1⁩ محروقة'], a:0, why:'<span class="eq">-S0:11 = 230 V</span> و <span class="eq">-S0:12 = 0 V</span> والزرار مش مضغوط: الكونتاكت الـ NC مش بيوصّل (متّسخ أو السوستة مكسورة).'},
     {t:'الكويل مش بيلقط وعليه جهد', s:'لمبة STOP منوّرة. بتدوس Start والكونتاكتور مش بيلقط، وريحة حريق خفيفة من اللوحة.', cond:{on:{S1:true}}, hold:'زميلك ماسك زرار <b>Start</b>.', fault:{[K1c.id]:'open'}, o:['كويل ⁦-K1⁩ مفتوح (محروق)', 'زرار Start بايظ', 'سلك النيوترال مقطوع عند A2', 'الأوفرلود فاصل'], a:0, why:'<span class="eq">A1 = 230 V</span> و <span class="eq">A2 = 0 V</span> = الجهد كامل على الكويل ومش بيلقط: الكويل نفسه مفتوح. قيس مقاومته وهو مفصول للتأكيد.'},
-    {t:'جهد على الطرفين!', s:'بتدوس Start والكونتاكتور مش بيلقط. الكويل جديد ومقاومته سليمة.', cond:{on:{S1:true}}, hold:'زميلك ماسك زرار <b>Start</b>.', fault:{[K1c.id]:'liftB'}, o:[`سلك النيوترال (N) عند ⁦A2⁩ مقطوع أو مفكوك`, 'الكويل محروق', 'زرار Stop بايظ', 'فيوز ⁦-F1⁩ ضارب'], a:0, why:'لو <span class="eq">A1 = 230 V</span> و <span class="eq">A2 = 230 V</span> كمان، يبقى مفيش فرق جهد على الكويل: الرجوع (N) مقطوع بعده. الكويل السليم بيوصّل الجهد للطرف التاني لما مفيش تيار.'},
-    {t:'الموتور بيشتغل بس وإنت ضاغط', s:'الموتور بيدور طول ما إنت ماسك Start، وأول ما تسيبه يقف.', cond:{on:{S1:true}}, hold:'زميلك ماسك زرار <b>Start</b> (الموتور شغّال دلوقتي).', fault:{[K1s.id]:'open'}, o:['كونتاكت التثبيت ⁦-K1⁩ ⁦13-14⁩ (أو سلكه) مش بيوصّل', 'زرار Stop بايظ', 'الأوفرلود ضعيف', 'كويل ⁦-K1⁩ محروق'], a:0, why:'ده عَرَض التثبيت الذاتي: الكونتاكت ⁦13-14⁩ المتوازي مع Start هو اللي بيمسك الكويل. قيس: والكونتاكتور لاقط، <span class="eq">-K1:13 = 230 V</span> ولازم <span class="eq">-K1:14</span> يبقى 230 V من خلاله. افحص الكونتاكت المساعد وسلوكه.'},
-    {t:'لمبة TRIP منوّرة', s:'الموتور وقف لوحده في نص الوردية، ولمبة TRIP الصفرا منوّرة.', cond:{on:{F2:true, S1:true}}, hold:'زميلك ماسك زرار <b>Start</b>.', fault:{}, o:['الأوفرلود ⁦-F2⁩ فاصل (عيّنه وشوف تيار الموتور)', 'فيوز ⁦-F1⁩ ضارب', 'كويل ⁦-K1⁩ محروق', 'زرار Start بايظ'], a:0, why:'<span class="eq">-F2:95 = 230 V</span> و <span class="eq">-F2:96 = 0 V</span>، و ⁦97-98⁩ قفل فلمبة TRIP نوّرت. قبل الـ Reset: قيس تيار الموتور وشوف الحمل والفاز والتهوية.'},
+    {t:'جهد على الطرفين!', s:'بتدوس Start والكونتاكتور مش بيلقط. الكويل جديد ومقاومته سليمة.', cond:{on:{S1:true}}, hold:'زميلك ماسك زرار <b>Start</b>.', fault:{[K1c.id]:'liftB'}, o:[`سلك N عند ⁦A2⁩ مفكوك`,`الكويل محروق`,`زرار Stop بايظ`,`فيوز التحكم ⁦-F1⁩ ضارب`], a:0, why:'لو <span class="eq">A1 = 230 V</span> و <span class="eq">A2 = 230 V</span> كمان، يبقى مفيش فرق جهد على الكويل: الرجوع (N) مقطوع بعده. الكويل السليم بيوصّل الجهد للطرف التاني لما مفيش تيار.'},
+    {t:'الموتور بيشتغل بس وإنت ضاغط', s:'الموتور بيدور طول ما إنت ماسك Start، وأول ما تسيبه يقف.', cond:{on:{S1:true}}, hold:'زميلك ماسك زرار <b>Start</b> (الموتور شغّال دلوقتي).', fault:{[K1s.id]:'open'}, o:['كونتاكت التثبيت ⁦13-14⁩', 'زرار Stop بايظ', 'الأوفرلود ⁦-F2⁩ متظبط واطي', 'كويل ⁦-K1⁩ محروق ومش بيمسك'], a:0, why:'ده عَرَض التثبيت الذاتي: الكونتاكت ⁦13-14⁩ المتوازي مع Start هو اللي بيمسك الكويل. قيس: والكونتاكتور لاقط، <span class="eq">-K1:13 = 230 V</span> ولازم <span class="eq">-K1:14</span> يبقى 230 V من خلاله. افحص الكونتاكت المساعد وسلوكه.'},
+    {t:'لمبة TRIP منوّرة', s:'الموتور وقف لوحده في نص الوردية، ولمبة TRIP الصفرا منوّرة.', cond:{on:{F2:true, S1:true}}, hold:'زميلك ماسك زرار <b>Start</b>.', fault:{}, o:['الأوفرلود ⁦-F2⁩ فاصل', 'فيوز ⁦-F1⁩ ضارب', 'كويل ⁦-K1⁩ محروق', 'زرار Start ⁦-S1⁩ بايظ'], a:0, why:'<span class="eq">-F2:95 = 230 V</span> و <span class="eq">-F2:96 = 0 V</span>، و ⁦97-98⁩ قفل فلمبة TRIP نوّرت. قبل الـ Reset: قيس تيار الموتور وشوف الحمل والفاز والتهوية.'},
     {t:'جهد قبل وجهد مفيش بعد', s:'لمبة STOP منوّرة. بتدوس Start ومفيش حاجة. الزراير جديدة ومجرّبة.', cond:{on:{S1:true}}, hold:'زميلك ماسك زرار <b>Start</b>.', fault:{[brk.i]:'open'}, o:[`السلك رقم ${wn3} بين ⁦-S0:12⁩ و ⁦-S1:13⁩ مقطوع`, 'كويل ⁦-K1⁩ محروق', 'فيوز ⁦-F1⁩ ضارب', 'الأوفرلود فاصل'], a:0, why:`<span class="eq">-S0:12 = 230 V</span> و <span class="eq">-S1:13 = 0 V</span>، والاتنين على نفس رقم السلك (${wn3}) يعني المفروض نفس الجهد: السلك اللي بينهم مقطوع أو الترمنال مفكوك.`},
     {t:'الموتور شغّال واللمبة طافية', s:'الموتور دوّار تمام، بس لمبة RUN الخضرا مش منوّرة.', cond:{on:{}, prev:{K1:true}}, hold:'الموتور <b>شغّال</b> دلوقتي.', fault:{[H1.id]:'open'}, o:['لمبة ⁦-H1⁩ محروقة', 'كونتاكت ⁦-K1⁩ ⁦33-34⁩ بايظ', 'فيوز ⁦-F1⁩ ضارب', 'الأوفرلود فاصل'], a:0, why:'<span class="eq">-H1:X1 = 230 V</span> و <span class="eq">X2 = 0 V</span>: الجهد واصل للمبة ومش بتنوّر يبقى اللمبة نفسها. لو X1 كان 0 V كانت المشكلة في الكونتاكت ⁦33-34⁩.'}
   ];
@@ -1344,8 +1350,8 @@ DR.tsGame = function(host, opt){
     R = DR.solve(M, {on:c.cond.on, prev:c.cond.prev || {}, fault:c.fault, Vs:230});
     q('.tsg-case').innerHTML = `<h4>${c.t}</h4><div class="tsg-sym">${c.s}</div><p style="margin:0">${c.hold} قيس بالأفوميتر على الرسمة، وبعدين اختار العطل.</p>`;
     q('.ts-m').textContent = '--- V'; q('.mlog').innerHTML = '';
-    const oi = shuffle(c.o.map((_, i) => i));
-    q('.ts-q').innerHTML = `<p style="margin:0;font-weight:600">العطل غالبًا إيه؟</p><div class="qz-a">${oi.map(i => `<button type="button" class="btn qz-o" data-i="${i}">${c.o[i]}</button>`).join('')}</div>${QZ_CF()}<p class="qz-f" aria-live="polite"></p>`;
+    const oi = qzOrder(c.o, c.keep);
+    q('.ts-q').innerHTML = `<p style="margin:0;font-weight:600">العطل غالبًا إيه؟</p><div class="qz-a">${oi.map(i => `<button type="button" class="btn qz-o" data-i="${i}">${qzTxt(c.o[i])}</button>`).join('')}</div>${QZ_CF()}<p class="qz-f" aria-live="polite"></p>`;
     q('.ts-next').hidden = true; v.qa('.tp.m').forEach(x => x.classList.remove('m')); score();
   }
   function measure(id){

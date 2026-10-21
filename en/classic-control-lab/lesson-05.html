@@ -37,7 +37,7 @@
 <script src="/site-config.js?v=20261021v"></script>
 <script src="/assets/i18n.js?v=20261021w"></script>
 <script src="/assets/i18n-en.js?v=20261021v"></script>
-<script src="/en/classic-control-lab/engine.js?v=20261021w"></script>
+<script src="/en/classic-control-lab/engine.js?v=20261021qz"></script>
 <script src="/en/classic-control-lab/fx.js?v=20261021v"></script>
 <script>
 (function(){
@@ -421,8 +421,8 @@ CL.lesson({
     {kind:'quiz', title:'Questions', qs:[
       {q:'An On-delay timer\'s coil gets voltage. When does 15-18 close?', a:['Immediately','After time t runs out','When the coil is switched off'], c:1, why:'That\'s what On-delay means: the delay starts when the coil is energised, and the contact changes over after t.', w:['What closes immediately is the instantaneous contact 21-24, if there is one.','','That\'s Off-delay.']},
       {q:'A motor must stop 10 seconds after counting starts. Its coil is wired to?', a:['15-18','15-16','21-24'], c:1, why:'16 is NC: closed and feeding the coil, and it opens after the delay so the motor stops.', w:['18 is open and closes after the delay: the motor would start after the delay, not stop.','','The instantaneous contact has no delay.']},
-      {q:'The dial is on 3 and the range switch on 1 min. What\'s the time?', a:['3 seconds','30 seconds','About 3 minutes'], c:2, why:'Time = dial × range. The dial is graduated from 0 to 10 as a fraction of the range: 3 on a 1 min range (10 divisions) ≈ 18 s on some types, and 3 minutes if the range reads “per division”. Always check the datasheet, but what will never happen is 3 seconds.', w:['3 seconds needs the 10 s range.','','']},
-      {q:'You removed the voltage from an On-delay timer after 3 of its 5 seconds. When you restore it?', a:['It finishes the remaining two seconds','It starts from the beginning (the time was reset)','It closes the contact immediately'], c:1, why:'A normal timer resets when the coil is switched off. (An “accumulating” timer continues, but that\'s a special type.)', w:['','','']}]}
+      {q:'The dial is on 3 and the range switch on 1 min. What\'s the time?', a:['About 3 seconds','About 30 seconds','About 3 minutes'], c:2, why:'Time = dial × range. The dial is graduated from 0 to 10 as a fraction of the range: 3 on a 1 min range (10 divisions) ≈ 18 s on some types, and 3 minutes if the range reads “per division”. Always check the datasheet, but what will never happen is 3 seconds.', w:['3 seconds needs the 10 s range.','','']},
+      {q:'You removed the voltage from an On-delay timer after 3 of its 5 seconds. When you restore it?', a:['It finishes the last two seconds','It starts again from zero','It closes the contact at once'], c:1, why:'A normal timer resets when the coil is switched off. (An “accumulating” timer continues, but that\'s a special type.)', w:['','','']}]}
    ]},
   /* ---------------------------------------------------------------- 2. TOF */
   {id:'tof', icon:'timer', title:'Off-delay timer (TOF)', goal:'<b>Delay on de-energising</b>: the contact changes over <b>immediately</b> with the coil, and when the coil is switched off it stays changed over for <span class="term">t</span>, then returns. For a fan or pump that keeps going after stopping.',
@@ -445,8 +445,8 @@ CL.lesson({
     {kind:'bench', title:'Wire it', ex:['f1']},
     {kind:'quiz', title:'Questions', qs:[
       {q:'A fan must keep running for a minute after the oven stops. You use?', a:['On-delay','Off-delay','Cyclic timer'], c:1, why:'The delay is needed on switch-off: Off-delay, with the fan on 15-18.', w:['On-delay would delay the fan starting, not stopping.','','']},
-      {q:'In an Off-delay timer, when does 15-18 close?', a:['Immediately with the coil','t after energising','t after switch-off'], c:0, why:'In Off-delay the contact changes over immediately, and the whole delay is on switch-off (it opens t after the coil is switched off).', w:['','That\'s On-delay.','That\'s when it opens, not when it closes.']},
-      {q:'The difference between an Off-delay with a B1 terminal and a true off-delay?', a:['No difference','The first has permanent voltage on its coil and the signal on B1; the second counts after the voltage on the coil itself is removed','The second is more accurate'], c:1, why:'A true off-delay stores energy inside so it can complete the delay without voltage.', w:['','','Accuracy is the same; the difference is how it\'s wired.']}]}
+      {q:'In an Off-delay timer, when does 15-18 close?', a:['At once with the coil','t after energising','t after switch-off'], c:0, why:'In Off-delay the contact changes over immediately, and the whole delay is on switch-off (it opens t after the coil is switched off).', w:['','That\'s On-delay.','That\'s when it opens, not when it closes.']},
+      {q:'The difference between an Off-delay with a B1 terminal and a true off-delay?', a:['None, two names for one timer','First uses B1, second the coil','The second times more accurately'], c:1, why:'A true off-delay stores energy inside so it can complete the delay without voltage.', w:['','','Accuracy is the same; the difference is how it\'s wired.']}]}
    ]},
   /* ---------------------------------------------------------------- 3. cyclic + multi-function */
   {id:'cyc', icon:'cycle', title:'Cyclic and multi-function timers', goal:'<b>Flasher</b>: on for <span class="term">ton</span>, off for <span class="term">toff</span>, and again… as long as the coil has voltage. And <b>multi-function</b>: one timer with a switch to choose the function.',
@@ -465,9 +465,9 @@ CL.lesson({
       {title:'Multi-function timer (A / B / C)', dev:KT('KT2', 'on', 4, 'Multi-function timer', {multi:true}), note:'Change the function and do the same test: apply voltage, wait, remove it.'}]},
     {kind:'bench', title:'Wire it', ex:['c1','e21']},
     {kind:'quiz', title:'Questions', qs:[
-      {q:'A warning lamp must flash one second on and one second off for as long as the fault is present. You use?', a:['On-delay','Off-delay','A cyclic timer (flasher)'], c:2, why:'The cyclic timer is the one that flips its contact alternately as long as its coil has voltage.', w:['On-delay changes over only once.','','']},
-      {q:'A multi-function timer in a sequence circuit “doesn\'t work”: M2 starts with M1 immediately. The first thing to check?', a:['All the wires','The FUNC function switch: it may be on B (Off-delay) instead of A','The contactor'], c:1, why:'These are exactly the symptoms of Off-delay: the contact closes immediately. The function switch before the wires.', w:['','','']},
-      {q:'An asymmetric cyclic timer has?', a:['One dial','Two dials: ton and toff','Two contacts'], c:1, why:'The two times are independent: for example on for 5 seconds and off for a minute.', w:['','','']}]}
+      {q:'A warning lamp must flash one second on and one second off for as long as the fault is present. You use?', a:['On-delay','Off-delay','Flasher'], c:2, why:'The cyclic timer is the one that flips its contact alternately as long as its coil has voltage.', w:['On-delay changes over only once.','','']},
+      {q:'A multi-function timer in a sequence circuit “doesn\'t work”: M2 starts with M1 immediately. The first thing to check?', a:['All the wiring, from scratch','The FUNC function switch','The coil of contactor KM2'], c:1, why:'These are exactly the symptoms of Off-delay: the contact closes immediately. The function switch before the wires.', w:['','','']},
+      {q:'An asymmetric cyclic timer has?', a:['One dial for both times','Two dials: ton and toff','Two separate contacts'], c:1, why:'The two times are independent: for example on for 5 seconds and off for a minute.', w:['','','']}]}
    ]},
   /* ---------------------------------------------------------------- 4. timer circuits */
   {id:'cir', icon:'ring', title:'Timer circuits', goal:'The three patterns that every timer circuit is built from: <b>the timer in the seal-in circuit</b>, <b>the timer contact instead of START</b>, and <b>the loop</b>. Together with all the trainer exercises from 17 to 24.',
@@ -488,11 +488,11 @@ CL.lesson({
       {title:'On-delay timer (t = 5 s)', dev:KT('KT1', 'on', 5, 'Stage timer'), note:'In the chain: whatever will start goes on 18, and whatever will stop goes on 16.'}]},
     {kind:'bench', title:'Wire it', ex:['e17','e18','e19','e20','e22','e23','e24']},
     {kind:'quiz', title:'Questions', qs:[
-      {q:'In a sequence circuit, timer KT1\'s coil is wired?', a:['After its own 15-18 contact','In parallel with the coil of KM1, which seals itself in','Straight on the START button'], c:1, why:'It must stay energised during the whole count, and the sealed-in KM1 coil is the best place.', w:['After its own contact it will chatter: it closes, energises, then opens.','','START is a pulse; the timer will reset as soon as you release it.']},
-      {q:'You want M2 to start a delay after M1, and M1 to stop when M2 starts. KM2 needs?', a:['Just the timer contact','The timer contact + a 13-14 seal-in + an NC contact in KM1\'s line','Another timer'], c:1, why:'When KM1 drops out the timer drops out with it and 15-18 opens, so KM2 must have sealed itself in.', w:['','','']},
-      {q:'A loop of 3 motors stops after one round. The likely cause?', a:['The third timer\'s 15-18 doesn\'t go back in parallel with START','The third motor is faulty','The time is too short'], c:0, why:'Going back to the first step is what makes the loop. Without it, it\'s a chain that ends.', w:['','','']},
-      {q:'A motor alternating forward/reverse with a pause. When does the pause timer\'s coil get voltage?', a:['All the time','When the forward contactor is on','When both contactors are stopped (their NCs in series)'], c:2, why:'The pause is the period when no direction is running, so the timer counts only then, and after it the next direction starts.', w:['','','']},
-      {q:'In exercise 23, what stops the cart at B?', a:['The timer','Limit switch LS2 with its NC contact 21-22 in KM1\'s line','The STOP button'], c:1, why:'The limit switch senses the cart\'s position and cuts the going contactor, and with its NO contact it starts the pump and the timer.', w:['The timer only sets the pump time.','','']}]}
+      {q:'In a sequence circuit, timer KT1\'s coil is wired?', a:['After its own 15-18','In parallel with KM1\'s coil','Straight on the START button'], c:1, why:'It must stay energised during the whole count, and the sealed-in KM1 coil is the best place.', w:['After its own contact it will chatter: it closes, energises, then opens.','','START is a pulse; the timer will reset as soon as you release it.']},
+      {q:'You want M2 to start a delay after M1, and M1 to stop when M2 starts. KM2 needs?', a:['Just the timer contact','Timer + seal-in + NC in KM1','A second timer after the first'], c:1, why:'When KM1 drops out the timer drops out with it and 15-18 opens, so KM2 must have sealed itself in.', w:['','','']},
+      {q:'A loop of 3 motors stops after one round. The likely cause?', a:['The third 15-18 isn\'t back at START','The third motor is faulty','The timer settings are too short'], c:0, why:'Going back to the first step is what makes the loop. Without it, it\'s a chain that ends.', w:['','','']},
+      {q:'A motor alternating forward/reverse with a pause. When does the pause timer\'s coil get voltage?', a:['All the time','With the forward contactor','While both are stopped'], c:2, why:'The pause is the period when no direction is running, so the timer counts only then, and after it the next direction starts.', w:['','','']},
+      {q:'In exercise 23, what stops the cart at B?', a:['The timer, after its delay','LS2\'s NC in KM1\'s line','The STOP button at the start'], c:1, why:'The limit switch senses the cart\'s position and cuts the going contactor, and with its NO contact it starts the pump and the timer.', w:['The timer only sets the pump time.','','']}]}
    ]}
   ],
   exercises:L5EX

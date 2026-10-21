@@ -39,7 +39,7 @@
 <script src="/site-config.js?v=20261021v"></script>
 <script src="/assets/i18n.js?v=20261021w"></script>
 <script src="/assets/i18n-en.js?v=20261021v"></script>
-<script src="/en/classic-control-lab/engine.js?v=20261021w"></script>
+<script src="/en/classic-control-lab/engine.js?v=20261021qz"></script>
 <script src="/en/classic-control-lab/fx.js?v=20261021v"></script>
 <script>
 (function(){
@@ -476,7 +476,7 @@ CL.lesson({
       {title:'Star/delta start: current and speed over time', custom:simSD, note:'If you change to delta too early (the motor still slow) the spike is almost as big as DOL. The right time: when the motor is close to full speed (3–10 seconds depending on the load).'}]},
     {kind:'bench', title:'Wire it', ex:['sd1','sd2','sd3','sd4']},
     {kind:'quiz', title:'Questions', qs:[
-      {q:'A motor with a 230Δ/400Y nameplate on a 400V supply. Can it use star/delta?', a:['Yes, no problem','No: it must always be connected in star, delta will burn it out','Yes, but with a longer timer'], c:1, why:'Delta gives each winding 400V when it\'s designed for 230V. Star/delta needs a 400Δ/690Y motor.', w:['','','The time isn\'t the problem; the voltage on the winding is.']},
+      {q:'A motor with a 230Δ/400Y nameplate on a 400V supply. Can it use star/delta?', a:['Yes, no problem','No, star only','Yes, with a longer timer'], c:1, why:'Delta gives each winding 400V when it\'s designed for 230V. Star/delta needs a 400Δ/690Y motor.', w:['','','The time isn\'t the problem; the voltage on the winding is.']},
       {q:'The Y-Δ timer contact that drives the delta:', a:['17-18','17-28','15-18'], c:1, why:'17-28 closes after the time + 50 ms. 17-18 is for the star.', w:['That\'s the star (closed before the time).','','15-18 is a normal on-delay timer.']},
       {q:'The overload in the winding line (between KM1 and the motor) for a 15 A motor is set to:', a:['15 A','8.7 A (15 ÷ √3)','26 A (15 × √3)'], c:1, why:'In delta the winding current = the line current ÷ √3.', w:['That\'s if the overload is in the line before KM1.','','']}]}
    ]},
@@ -500,9 +500,9 @@ CL.lesson({
       {title:'Speed curve after STOP: coasting, DC, plugging, brake', custom:simBrake, note:'With plugging, notice that the speed crosses zero if the pulse is longer than needed: that\'s the reason for the zero-speed switch.'}]},
     {kind:'bench', title:'Wire it', ex:['br1','br2','br3']},
     {kind:'quiz', title:'Questions', qs:[
-      {q:'In DC braking, braking contactor KM4 feeds from:', a:['KM1\'s NO, so it runs with it','An off-delay timer + KM1\'s NC, so it runs after it','The START button'], c:1, why:'After KM1 drops out its NC closes while the timer is still holding, so KM4 pulls in for a time t.', w:['That puts DC and the phase together = a short circuit.','','START starts the motor, it doesn\'t brake it.']},
-      {q:'A hoist\'s electromagnetic brake when the power is suddenly cut:', a:['It releases and the load comes down','It closes on the springs and the load stays suspended','Stay as they are'], c:1, why:'Spring-applied: the coil releases the brake, and the springs close it with no voltage.', w:['That would be a dangerous design.','','']},
-      {q:'Why does plugging need a zero-speed switch?', a:['To increase the torque','To cut the reversing as soon as the motor stops, before it turns the other way','To protect the overload'], c:1, why:'The timer is an estimate; the switch senses the actual speed.', w:['','','The overload is a different matter.']}]}
+      {q:'In DC braking, braking contactor KM4 feeds from:', a:['KM1\'s NO (runs with it)','Off-delay + KM1\'s NC','The START button directly'], c:1, why:'After KM1 drops out its NC closes while the timer is still holding, so KM4 pulls in for a time t.', w:['That puts DC and the phase together = a short circuit.','','START starts the motor, it doesn\'t brake it.']},
+      {q:'A hoist\'s electromagnetic brake when the power is suddenly cut:', a:['It releases, the load drops','Springs close it, it holds','It stays as it was'], c:1, why:'Spring-applied: the coil releases the brake, and the springs close it with no voltage.', w:['That would be a dangerous design.','','']},
+      {q:'Why does plugging need a zero-speed switch?', a:['To raise braking torque','Cuts reverse once stopped','To protect the overload'], c:1, why:'The timer is an estimate; the switch senses the actual speed.', w:['','','The overload is a different matter.']}]}
    ]},
   /* ---------------------------------------------------------------- 3. A/C compressor */
   {id:'ac', icon:'press', title:'Central A/C compressor control circuit', goal:'A <b>24V</b> control circuit from a transformer: a thermostat calls for cooling → a safety chain <b>HP and LP (NC)</b> → a <b>3-minute timer</b> preventing short cycling → the compressor contactor and condenser fan. The crankcase heater on KM1\'s NC, and the HP alarm latches until RESET.',
@@ -527,9 +527,9 @@ CL.lesson({
       {title:'The AC unit: temperature, pressures and the safety chain', custom:simAC, note:'Notice that after the compressor stops it doesn\'t come back within 3 minutes, even if the thermostat calls straight away: that\'s the anti-short-cycle timer.'}]},
     {kind:'bench', title:'Wire it', ex:['ac1','ac2','ac3']},
     {kind:'quiz', title:'Questions', qs:[
-      {q:'The low-pressure switch LP in the compressor safety chain is wired as:', a:['NO: closes when the pressure drops','NC: closed while the pressure is OK, opens when the pressure drops','It isn\'t put in the chain'], c:1, why:'Every element in the chain is “closed in the healthy state”. LP operates when the pressure drops, so it\'s its NC that opens.', w:['Then the compressor would never run.','','']},
-      {q:'The purpose of the 3-minute timer after the thermostat:', a:['Saving electricity','Preventing the compressor starting against high pressure after a short stop','Starting the fan first'], c:1, why:'Anti-short-cycle: it gives the pressures a chance to equalise.', w:['','','The fan runs together with the compressor.']},
-      {q:'The crankcase heater is on:', a:['With the compressor','While the compressor is stopped (on KM1\'s NC)','All the time'], c:1, why:'It stops the refrigerant condensing in the oil while stopped. With the compressor running it serves no purpose.', w:['','','All the time = waste and heat.']}]}
+      {q:'The low-pressure switch LP in the compressor safety chain is wired as:', a:['NO: closes on low pressure','NC: opens on low pressure','Not part of the chain'], c:1, why:'Every element in the chain is “closed in the healthy state”. LP operates when the pressure drops, so it\'s its NC that opens.', w:['Then the compressor would never run.','','']},
+      {q:'The purpose of the 3-minute timer after the thermostat:', a:['Saving electricity','No start against high pressure','Starting the fan first, then it'], c:1, why:'Anti-short-cycle: it gives the pressures a chance to equalise.', w:['','','The fan runs together with the compressor.']},
+      {q:'The crankcase heater is on:', a:['While it\'s running','While it\'s stopped','All the time, day and night'], c:1, why:'It stops the refrigerant condensing in the oil while stopped. With the compressor running it serves no purpose.', w:['','','All the time = waste and heat.']}]}
    ]},
   /* ---------------------------------------------------------------- 4. soft starter */
   {id:'ss', icon:'k', title:'The soft starter', goal:'A thyristor device that raises the motor voltage gradually (a <b>ramp</b>) so the starting current drops to 2–4×In without star/delta contactors. Its terminals: L1-3/T1-3, A1/A2 control supply, START/STOP inputs, relay <b>13-14</b> for end of ramp (the bypass), <b>23-24</b> RUN, and <b>95-96 / 97-98</b> for faults.',
@@ -551,9 +551,9 @@ CL.lesson({
       {title:'The soft starter ramp: voltage, current, speed', custom:simSS, note:'If Ilim is too low and the load heavy, the motor may not reach its speed and the unit trips on a “Start too long” fault. If Uini is too high you lose the benefit of the ramp.'}]},
     {kind:'bench', title:'Wire it', ex:['ss1','ss2','ss3']},
     {kind:'quiz', title:'Questions', qs:[
-      {q:'The bypass contactor takes its coil supply from:', a:['RUN relay 23-24','End-of-ramp relay 13-14','The START button'], c:1, why:'13-14 closes only when the voltage reaches 100%. RUN closes immediately with the command, which cancels the ramp.', w:['It closes immediately with the run command.','','']},
-      {q:'The main difference between a soft starter and an inverter:', a:['The soft starter is more expensive','The inverter controls the speed; the soft starter only the starting and stopping','No difference'], c:1, why:'The soft starter changes only the voltage; the inverter changes the frequency and the voltage.', w:['The inverter is more expensive.','','']},
-      {q:'In 2-wire control, after a fault and RESET with the selector still on I:', a:['The motor waits for START','The motor restarts by itself','The unit stays in fault'], c:1, why:'The run command is held on IN1, so as soon as the fault clears the unit starts. If that\'s dangerous, use 3-wire.', w:['','','RESET clears the fault.']}]}
+      {q:'The bypass contactor takes its coil supply from:', a:['RUN relay 23-24','End-of-ramp relay 13-14','The START button with a seal-in'], c:1, why:'13-14 closes only when the voltage reaches 100%. RUN closes immediately with the command, which cancels the ramp.', w:['It closes immediately with the run command.','','']},
+      {q:'The main difference between a soft starter and an inverter:', a:['The soft starter costs more','The inverter controls speed','No difference at all'], c:1, why:'The soft starter changes only the voltage; the inverter changes the frequency and the voltage.', w:['The inverter is more expensive.','','']},
+      {q:'In 2-wire control, after a fault and RESET with the selector still on I:', a:['The motor waits for START','The motor restarts by itself','The unit stays in fault until switched off'], c:1, why:'The run command is held on IN1, so as soon as the fault clears the unit starts. If that\'s dangerous, use 3-wire.', w:['','','RESET clears the fault.']}]}
    ]}
   ],
   exercises:L9EX

@@ -40,7 +40,7 @@
 <script src="/site-config.js?v=20261021v"></script>
 <script src="/assets/i18n.js?v=20261021w"></script>
 <script src="/assets/i18n-en.js?v=20261021v"></script>
-<script src="/en/classic-control-lab/engine.js?v=20261021w"></script>
+<script src="/en/classic-control-lab/engine.js?v=20261021qz"></script>
 <script src="/en/classic-control-lab/fx.js?v=20261021v"></script>
 <script>
 (function(){
@@ -91,9 +91,9 @@ CL.lesson({
       {title:'230V contactor with NO and NC auxiliary contacts', dev:KM1, note:'1-2, 3-4 and 5-6 are the power poles (for the motor), and 13-14 and 21-22 are for control. All move with one core.'}]},
     {kind:'bench', title:'Wire it', ex:['c1','c2','c3']},
     {kind:'quiz', title:'Questions', qs:[
-      {q:'Which contactor terminals does the motor connect to?', a:['A1 and A2','2/T1, 4/T2 and 6/T3','13 and 14'], c:1, why:'The even terminals at the bottom (T = load) go to the motor, and the odd ones on top come from the supply. A1-A2 are for the coil, and 13-14 is an auxiliary contact for control.', w:['A1-A2 is the coil, for control only.','','13-14 is a small auxiliary contact that can\'t carry the motor.']},
+      {q:'Which contactor terminals does the motor connect to?', a:['A1 and A2','2/T1, 4/T2, 6/T3','13, 14, 21 and 22'], c:1, why:'The even terminals at the bottom (T = load) go to the motor, and the odd ones on top come from the supply. A1-A2 are for the coil, and 13-14 is an auxiliary contact for control.', w:['A1-A2 is the coil, for control only.','','13-14 is a small auxiliary contact that can\'t carry the motor.']},
       {q:'You need a contactor for a 4kW motor. Which current do you choose it by?', a:['AC-1','AC-3','Either one'], c:1, why:'AC-3 is the motor category (high starting current and breaking under load). AC-1 is for resistive loads.', w:['AC-1 is for heaters, higher than the contactor\'s real capacity with a motor.','','']},
-      {q:'The contactor hums loudly and chatters. The likely cause?', a:['The contacts have welded','Dirt between the core faces or low coil voltage','The motor is big'], c:1, why:'The core doesn\'t close properly so it chatters. Clean the core and measure the coil voltage.', w:['If they had welded it wouldn\'t switch off at all.','','The motor size has nothing to do with coil hum.']}]}
+      {q:'The contactor hums loudly and chatters. The likely cause?', a:['The contacts have welded','Dirt, or low coil voltage','The motor is too big for it'], c:1, why:'The core doesn\'t close properly so it chatters. Clean the core and measure the coil voltage.', w:['If they had welded it wouldn\'t switch off at all.','','The motor size has nothing to do with coil hum.']}]}
    ]},
   /* ---------------------------------------------------------------- 2. power & control circuits */
   {id:'pwr', icon:'pwr', title:'Power circuit and control circuit', goal:'Two circuits in every panel: power (3-phase to the motor, thick wires) and control (L1-N or 24V, thin wires).',
@@ -113,9 +113,9 @@ CL.lesson({
       {title:'KM1: power poles and auxiliary contacts', dev:KM1, note:'Note in the symbol: the main contacts (with the arc) and the auxiliaries are on the same dashed line, because they all move with the same core.'}]},
     {kind:'bench', title:'Wire it', ex:['pf1','pf2']},
     {kind:'quiz', title:'Questions', qs:[
-      {q:'Where does the control circuit get its power?', a:['From all three phases','From one phase and neutral (or a control transformer or 24V)','From the motor'], c:1, why:'Control needs one small voltage: L1-N (230V), a transformer, or a 24V power supply.', w:['All three are for the motor (power).','','']},
+      {q:'Where does the control circuit get its power?', a:['From all three phases','Phase and neutral (or 24V)','From the motor terminals'], c:1, why:'Control needs one small voltage: L1-N (230V), a transformer, or a 24V power supply.', w:['All three are for the motor (power).','','']},
       {q:'The motor turns the wrong way. What do you do?', a:['Swap all three phases','Swap any two phases','Swap A1 and A2'], c:1, why:'Swapping two phases reverses the phase sequence and so the direction. Swapping all three gives the same sequence back.', w:['Swapping all three = same sequence = same direction.','','A1-A2 is the control coil; it has nothing to do with direction.']},
-      {q:'A motor hums, doesn\'t turn and heats up. The most likely cause?', a:['A missing phase (single-phasing)','The coil is burned out','The pilot lamp is burned out'], c:0, why:'With only two phases the motor can\'t start; it hums and draws a high current.', w:['','If the coil were burned out, the contactor wouldn\'t pull in at all and the motor would be silent.','']}]}
+      {q:'A motor hums, doesn\'t turn and heats up. The most likely cause?', a:['A missing phase','The contactor coil is burned out','The pilot lamp is burned out'], c:0, why:'With only two phases the motor can\'t start; it hums and draws a high current.', w:['','If the coil were burned out, the contactor wouldn\'t pull in at all and the motor would be silent.','']}]}
    ]},
   /* ---------------------------------------------------------------- 3. DOL start/stop */
   {id:'dol', icon:'motor', title:'DOL: one motor, start and stop + pilot lamps', goal:'Practicals 1 to 4: Start / Stop with seal-in on the contactor\'s <span class="term">13-14</span>, with running / stopped lamps.',
@@ -137,8 +137,8 @@ CL.lesson({
     {kind:'bench', title:'Wire it', ex:['x1','x2','x3','x4']},
     {kind:'quiz', title:'Questions', qs:[
       {q:'In a DOL circuit, the seal-in contact is:', a:['Main pole 1-2','Auxiliary contact 13-14 in parallel with START','Auxiliary contact 21-22 in series with STOP'], c:1, why:'13-14 NO closes when the contactor pulls in and keeps feeding the coil.', w:['The main poles are only for the motor.','','21-22 NC opens when it pulls in; that\'s for the stopped lamp or the interlock.']},
-      {q:'You want to start from 3 places and stop from one. How are the buttons wired?', a:['3 START in series','3 START in parallel and one STOP in series','3 STOP in parallel'], c:1, why:'START in parallel (any one starts), STOP in series (any one stops).', w:['START in series = all 3 must be pressed together.','','STOP in parallel doesn\'t break the line.']},
-      {q:'The red “stopped” lamp is wired to:', a:['NC contact 21-22 of KM1','NO contact 13-14','In parallel with the coil'], c:0, why:'The NC is closed while the contactor is off, so the lamp is on, and it opens when it pulls in.', w:['','13-14 is for the running lamp.','Across the coil = running lamp.']}]}
+      {q:'You want to start from 3 places and stop from one. How are the buttons wired?', a:['3 STARTs in series, STOP in series','3 STARTs in parallel, STOP in series','3 STARTs in parallel, STOP in parallel'], c:1, why:'START in parallel (any one starts), STOP in series (any one stops).', w:['START in series = all 3 must be pressed together.','','STOP in parallel doesn\'t break the line.']},
+      {q:'The red “stopped” lamp is wired to:', a:['NC 21-22 of KM1','NO 13-14 of KM1','In parallel with KM1\'s coil'], c:0, why:'The NC is closed while the contactor is off, so the lamp is on, and it opens when it pulls in.', w:['','13-14 is for the running lamp.','Across the coil = running lamp.']}]}
    ]}
   ],
 

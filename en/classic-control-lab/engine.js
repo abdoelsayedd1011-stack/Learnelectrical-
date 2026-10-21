@@ -3476,7 +3476,14 @@ function simProt(d, T, ui){
 
 /* =========================== quiz =========================== */
 CL.quiz = function(host, qs, pref, onChange){
-  host.innerHTML = `<div class="qz-list">${qs.map((q, i) => `<div class="qz" data-i="${i}"><p class="qz-q">${i + 1}. ${q.q}</p><div class="qz-a">${q.a.map((a, j) => `<button type="button" class="btn qz-o" data-j="${j}">${a}</button>`).join('')}</div><p class="qz-f" aria-live="polite"></p></div>`).join('')}</div><div class="qz-chk"><button type="button" class="btn pri" data-qz="check" aria-disabled="true">Check my answers</button><span class="qz-cnt" aria-live="polite"></span></div>`;
+  // options are shuffled on every visit (data-j keeps the original index); catch-all choices («الاتنين», "Both", "None"…) always stay last
+  const PIN = /^(الاتنين|الاثنين|كلهم|ولا واحد|ولا حاجة|مفيش فرق|مش فارقة|زي بعض|كلهم زي بعض|both|neither|none|all of them|all the same|no difference|it makes no difference)$/i;
+  const pinned = a => PIN.test(String(a).replace(/<[^>]*>/g, '').replace(/[\u2066-\u2069\u2060.!]/g, '').trim());
+  // Latin / number runs inside RTL options ("+24V", "6–8", "DC−") would flip: isolate them as LTR
+  const LTR = /[+\-−±]?[0-9A-Za-zΩµ°][0-9A-Za-zΩµ°%.,:/·×_\-–−+ ]*[0-9A-Za-zΩµ°%+\-−]|[+\-−±]?[0-9A-Za-zΩµ°]/g;
+  const ltr = s => document.documentElement.dir !== 'rtl' ? String(s) : String(s).split(/(<[^>]+>|&[#\w]+;)/).map((p, i) => i % 2 ? p : p.replace(LTR, m => '<bdi dir="ltr">' + m + '</bdi>')).join('');
+  const order = q => { const idx = q.a.map((_, j) => j); if (q.keep) return idx; const r = idx.filter(j => !pinned(q.a[j])); for (let k = r.length - 1; k > 0; k--){ const x = Math.floor(Math.random() * (k + 1)); [r[k], r[x]] = [r[x], r[k]]; } return r.concat(idx.filter(j => pinned(q.a[j]))); };
+  host.innerHTML = `<div class="qz-list">${qs.map((q, i) => `<div class="qz" data-i="${i}"><p class="qz-q">${i + 1}. ${q.q}</p><div class="qz-a">${order(q).map(j => `<button type="button" class="btn qz-o" data-j="${j}">${ltr(q.a[j])}</button>`).join('')}</div><p class="qz-f" aria-live="polite"></p></div>`).join('')}</div><div class="qz-chk"><button type="button" class="btn pri" data-qz="check" aria-disabled="true">Check my answers</button><span class="qz-cnt" aria-live="polite"></span></div>`;
   // tapping an option only selects it; right/wrong shows after «check». Correct → saved + locked, wrong → marked and cleared
   const sel = qs.map(() => null), done = qs.map(() => false), boxes = [...host.querySelectorAll('.qz')];
   const T = {need:'Answer every question first', cnt:(n, t) => `Answered ${n} of ${t}`};
@@ -3485,11 +3492,11 @@ CL.quiz = function(host, qs, pref, onChange){
     btns.forEach(b => { b.classList.remove('sel'); b.removeAttribute('aria-pressed'); });
     if (j === q.c){
       done[i] = true;
-      btns.forEach(b => { b.classList.remove('no'); b.disabled = true; }); btns[j].classList.add('ok'); box.classList.add('ok');
+      btns.forEach(b => { b.classList.remove('no'); b.disabled = true; }); box.querySelector(`.qz-o[data-j="${j}"]`).classList.add('ok'); box.classList.add('ok');
       f.className = 'qz-f ok'; f.innerHTML = '✓ Correct. ' + (q.why || '');
       if (!restore) CL.store.set(pref + '/' + i, 1);
     } else {
-      btns[j].classList.add('no'); f.className = 'qz-f no'; f.innerHTML = '✗ Not that one. ' + ((q.w && q.w[j]) || 'Think again and try another answer.');
+      box.querySelector(`.qz-o[data-j="${j}"]`).classList.add('no'); f.className = 'qz-f no'; f.innerHTML = '✗ Not that one. ' + ((q.w && q.w[j]) || 'Think again and try another answer.');
     }
   };
   const cnt = warn => {
