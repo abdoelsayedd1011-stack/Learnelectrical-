@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Common household faults</title>
+<meta name="description" content="Lesson 13, the last in the Electrical Basics course: a game where you track down household faults (a lamp that won’t light, a socket with no power, a breaker that keeps tripping) with a tester screwdriver and a multimeter, plus the final exam.">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/basics-lab/lesson-13.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/basics-lab/lesson-13.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/basics-lab/lesson-13.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="/basics-lab/basics.css">
+<link rel="stylesheet" href="/en/basics-lab/basics-en.css?v=20261021v">
+<script src="/en/basics-lab/basics.js?v=20261021v"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">Electrical basics · Lesson 13 of 13</p>
+    <h1>Common household faults</h1>
+    <p>The customer calls and describes the problem, and you go with your tester and multimeter. In each game there is a hidden fault: measure, think, and choose the right repair. And at the end comes the final exam for the course.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="/en/labs.html">← All courses</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>How to think</h2>
+  <ol>
+    <li><b>Listen to the complaint</b> and look for yourself: has the breaker tripped? Is there a burning smell? Has anything melted?</li>
+    <li><b>Follow the electricity</b> from the panel to the appliance, point by point: where is the line present, and where does it disappear?</li>
+    <li><b>The tester</b> shows you quickly where the line is, and <b>the multimeter</b> on V~ tells you the voltage between two points.</li>
+    <li>Does the breaker trip? <b>Switch the power off</b> and measure <b>ohms</b>: a short shows as a reading close to zero.</li>
+  </ol>
+  <div class="box key"><b>The open-neutral trick:</b> if the neutral is broken after a lamp and the switch is ON, the line passes through the filament and reaches the neutral wire. The tester lights on <b>both terminals</b> while the lamp is off! And the multimeter between the two terminals reads almost zero.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>The game: find the fault</h2>
+  <p>Choose the complaint. There is a random hidden fault, and it changes every time you choose "Another fault". You need to solve each complaint correctly at least once.</p>
+  <div class="wd"><h3>Call-outs at home</h3><div id="game"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson questions</h2>
+  <div id="quiz"></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sf">
+  <h2 id="sf"><span class="k">★</span>The course final exam</h2>
+  <p>12 questions from all the lessons. You need 10 right to unlock the certificate.</p>
+  <div id="final"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">The circuits are really solved inside the page (the voltage at every point, a 10MΩ meter resistance, and about 1MΩ to earth for the tester), so the readings are close to what you would see in real life. In real life, switch the power off before any dismantling or repair. Your progress is saved on this device only.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others). Names and trademarks belong to their owners and are used only to identify the devices being taught.</p>
+</div>
+<script>
+BL.lesson('l9');
+(function(){
+  const supply = [{a:'L0', b:'N0', v:226.4, ri:0.05, src:true}, {a:'N0', b:'E', r:0.1}];
+  const wall = (h) => `<rect x="0" y="0" width="340" height="${h}" fill="var(--wall)"/>`;
+  const W = (d, c) => `<path d="${d}" fill="none" stroke="${c}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`;
+  const db = (on) => `<rect x="8" y="18" width="128" height="104" rx="8" fill="#000" opacity=".12" transform="translate(3 3)"/><rect x="8" y="18" width="128" height="104" rx="8" fill="#e3e7ea" stroke="#8d969c"/><rect x="14" y="24" width="116" height="92" rx="5" fill="#2b3135"/>
+    <rect x="20" y="32" width="28" height="62" rx="3" fill="#f4f6f7" stroke="#9aa3a8"/><rect x="26" y="${on ? 38 : 58}" width="16" height="20" rx="2" fill="#1d2226"/><text x="34" y="88" text-anchor="middle" style="font:700 8px var(--font-mono);fill:${on ? '#2b9a4a' : '#c0352b'}">${on ? 'ON' : 'OFF'}</text>
+    <rect x="58" y="70" width="30" height="14" rx="3" fill="#1f6fd1"/><rect x="100" y="70" width="30" height="14" rx="3" fill="#2e9b3c"/><rect x="104" y="74" width="22" height="6" fill="#f2d21b"/><text x="73" y="100" text-anchor="middle" style="font:700 9px var(--font-mono);fill:#8fc1ff">N</text><text x="115" y="100" text-anchor="middle" style="font:700 9px var(--font-mono);fill:#b9e07a">PE</text>`;
+  const lit = (sc, st, a, b) => { const s = BL.circuit.solve(sc.elems(st)); return Math.abs(s.v(a) - s.v(b)) > 180; };
+  const G1 = {id:'g1', title:'The lamp won’t light', kind:'ac', vb:'0 0 340 330',
+    toggles:[{k:'power', on:'Breaker ON', off:'Breaker OFF', init:true}, {k:'sw', on:'Lamp switch ON', off:'Lamp switch OFF', init:true}],
+    elems: st => { const f = st.fault, e = supply.concat([{a:'P6', b:'N0', r:0.01}, {a:'PE', b:'E', r:0.01}, {a:'P1', b:'P2', r:0.3}]);
+      if (st.power) e.push({a:'L0', b:'P1', r:0.01}); if (st.sw && f !== 'switch') e.push({a:'P2', b:'P3', r:0.01}); if (f !== 'wire') e.push({a:'P3', b:'P4', r:0.3});
+      if (f !== 'bulb') e.push({a:'P4', b:'P5', r:484, r0:40}); if (f !== 'neutral') e.push({a:'P5', b:'P6', r:0.3}); return e; },
+    points:[{id:'1', n:'P1', x:34, y:136, t:'1', ly:160}, {id:'6', n:'P6', x:73, y:136, t:'6', ly:160}, {id:'PE', n:'PE', x:115, y:136, t:'⏚', ly:160}, {id:'2', n:'P2', x:244, y:122, t:'2', ly:146}, {id:'3', n:'P3', x:296, y:122, t:'3', ly:146}, {id:'4', n:'P4', x:146, y:236, t:'4', lx:126}, {id:'5', n:'P5', x:194, y:236, t:'5', lx:214}],
+    art: function(st){ const on = st.fault !== 'bulb' && lit(this, st, 'P4', 'P5');
+      return `${wall(330)}${db(st.power)}${W('M34 136 C34 190 200 40 244 122', '#8a5a2b')}${W('M296 122 C296 200 146 180 146 236', '#8a5a2b')}${W('M194 236 C194 290 73 250 73 136', '#1f6fd1')}
+      <g class="bn-tap"><rect x="226" y="24" width="88" height="80" rx="10" fill="#fbfbfa" stroke="#b5bcc1"/><rect x="250" y="38" width="40" height="52" rx="5" fill="#e9ecee" stroke="#c3c9cd"/><rect x="253" y="${st.sw ? 41 : 64}" width="34" height="23" rx="4" fill="#d5dadd"/><text x="270" y="18" text-anchor="middle" class="ar" style="font-size:11px;font-weight:700;fill:var(--ink)">Switch</text></g>
+      <rect x="120" y="224" width="100" height="26" rx="7" fill="#fbfbfa" stroke="#b5bcc1"/><path d="M170 250 V268" stroke="#9aa3a8" stroke-width="3"/>${on ? '<circle cx="170" cy="296" r="40" fill="#ffd84a" opacity=".55" style="filter:blur(6px)"/>' : ''}<rect x="161" y="266" width="18" height="14" rx="2" fill="#3a4045"/><path d="M162 280 C148 290 150 316 170 320 C190 316 192 290 178 280Z" fill="${on ? '#fff3b0' : '#f2f2ee'}" stroke="#a7afb4"/>`; },
+    diag:{auto:true, title:'The complaint: "The lamp won’t light."', ask:'The points: 1 breaker output · 2 switch input · 3 switch output · 4 L terminal of the lamp holder · 5 N terminal of the lamp holder · 6 neutral bar. Measure and choose the repair:', again:'Another fault', key:'g-lamp',
+      pool:['bulb', 'wire', 'neutral', 'switch'],
+      options:[{id:'bulb', label:'Replace the bulb'}, {id:'wire', label:'Repair the wire between the switch and the lamp'}, {id:'neutral', label:'Tighten the loose neutral in the lamp holder'}, {id:'switch', label:'Replace the switch'}, {id:'mcb', label:'Replace the breaker'}], ans:f => f,
+      explain: f => f === 'bulb' ? 'The tester lit on 4 but not on 5, and there are 226V between 4 and 5 while the lamp is off: the full voltage reaches the holder, so the bulb itself has burnt out. (With the power off, the bulb will read OL.)' : f === 'wire' ? 'The line is present on 3 (switch output) but not on 4: the wire between the switch and the lamp holder is broken.' : f === 'neutral' ? 'The tester lit on both 4 and 5, and there is almost zero between 4 and 5: the neutral isn’t reaching the holder, so the line passed through the filament to the N terminal. Connect the neutral.' : 'The line is present on 2 but not on 3 with the switch ON: the switch contact has failed. Replace it.'}};
+  const G2 = {id:'g2', title:'The socket has no power', kind:'ac', vb:'0 0 340 300',
+    toggles:[{k:'power', on:'Breaker ON', off:'Breaker OFF', init:true}],
+    elems: st => { const f = st.fault, e = supply.concat([{a:'NB', b:'N0', r:0.01}, {a:'PEB', b:'E', r:0.01}, {a:'PEB', b:'SE', r:0.3}]);
+      if (st.power && f !== 'mcb') e.push({a:'L0', b:'P1', r:0.01}); if (f !== 'lwire') e.push({a:'P1', b:'SL', r:0.3}); if (f !== 'nwire') e.push({a:'NB', b:'SN', r:0.3}); return e; },
+    points:[{id:'1', n:'P1', x:34, y:136, t:'MCB out', ly:162}, {id:'NB', n:'NB', x:73, y:136, t:'N', ly:186}, {id:'PEB', n:'PEB', x:115, y:136, t:'⏚', ly:162}, {id:'SL', n:'SL', x:226, y:220, t:'L'}, {id:'SN', n:'SN', x:286, y:220, t:'N'}, {id:'SE', n:'SE', x:256, y:166, t:'PE', ly:150}],
+    art: st => `${wall(300)}${db(st.power)}${W('M34 136 C34 230 150 120 226 220', '#8a5a2b')}${W('M73 136 C73 260 200 270 286 244', '#1f6fd1')}
+      <rect x="186" y="150" width="140" height="140" rx="16" fill="#000" opacity=".12" transform="translate(3 4)"/><rect x="186" y="150" width="140" height="140" rx="16" fill="#fbfbfa" stroke="#b8bfc4"/><circle cx="256" cy="220" r="52" fill="#eceff1" stroke="#c3c9cd" stroke-width="2"/><rect x="246" y="168" width="20" height="10" rx="2" fill="#c9ced2" stroke="#7a848a"/><rect x="246" y="262" width="20" height="10" rx="2" fill="#c9ced2" stroke="#7a848a"/><circle cx="226" cy="220" r="9" fill="#1d2226"/><circle cx="286" cy="220" r="9" fill="#1d2226"/>`,
+    diag:{auto:true, title:'The complaint: "This socket has no power, and the breaker is on."', ask:'Measure at the panel and at the socket, then choose the repair:', again:'Another fault', key:'g-socket',
+      pool:['lwire', 'nwire', 'mcb'],
+      options:[{id:'lwire', label:'Repair the line wire to the socket'}, {id:'nwire', label:'Repair the neutral wire to the socket'}, {id:'mcb', label:'Replace the breaker (faulty inside)'}, {id:'sock', label:'Replace the socket itself'}], ans:f => f,
+      explain: f => f === 'lwire' ? 'The breaker output has the line, but L at the socket doesn’t (the tester didn’t light, and L-PE is zero): the line wire is broken along the way.' : f === 'nwire' ? 'L at the socket has the line (L-PE = 226V), but L-N reads almost zero: the neutral isn’t reaching the socket.' : 'The breaker is on but its output has no line (the tester didn’t light on 1): the breaker has failed inside. Replace it.'}};
+  const plug = (cx, on, nm, e) => `<path d="M${cx} 236 V140" stroke="${on ? '#2f3539' : 'transparent'}" stroke-width="5"/><circle cx="${cx}" cy="270" r="40" fill="#2a2f33"/><circle cx="${cx}" cy="270" r="32" fill="#3a4045"/>${e ? `<rect x="${cx - 9}" y="236" width="18" height="8" rx="2" fill="#c9ced2"/>` : ''}<circle cx="${cx - 22}" cy="276" r="5" fill="#d6dcdf"/><circle cx="${cx + 22}" cy="276" r="5" fill="#d6dcdf"/><text x="${cx}" y="330" text-anchor="middle" class="ar" style="font-size:11px;font-weight:700;fill:${on ? 'var(--good)' : 'var(--muted)'}">${nm} · ${on ? 'in' : 'out'}</text>`;
+  const G3 = {id:'g3', title:'The breaker keeps tripping', kind:'ac', vb:'0 0 340 340', init:{power:false},
+    toggles:[{k:'power', on:'Breaker ON', off:'Switch the breaker on', init:false}, {k:'pk', on:'Unplug the kettle', off:'Plug the kettle back in', init:true}, {k:'pf', on:'Unplug the fan', off:'Plug the fan back in', init:true}, {k:'pt', on:'Unplug the TV', off:'Plug the TV back in', init:true}],
+    breaker:{k:'power', In:20}, tripMsg:'<b>The breaker tripped again straight away!</b> There is still a short in something connected. Switch it off and measure ohms.',
+    elems: st => { const f = st.fault, e = supply.concat([{a:'P1', b:'SL', r:0.2}, {a:'NB', b:'N0', r:0.01}, {a:'NB', b:'SN', r:0.2}, {a:'PEB', b:'E', r:0.01}, {a:'PEB', b:'SE', r:0.2},
+        {a:'KL', b:'KM', r:11}, {a:'KM', b:'KN', r:11}, {a:'FL', b:'FN', r:800, r0:150}, {a:'TL', b:'TN', r:2000, r0:1e9}]);
+      if (st.power) e.push({a:'L0', b:'P1', r:0.01}); if (f === 'cable') e.push({a:'SL', b:'SN', r:0.15}); if (f === 'kettle') e.push({a:'KL', b:'KE', r:0.4}); if (f === 'fan') e.push({a:'FL', b:'FN', r:0.3});
+      if (st.pk) e.push({a:'SL', b:'KL', r:0.01}, {a:'SN', b:'KN', r:0.01}, {a:'SE', b:'KE', r:0.01});
+      if (st.pf) e.push({a:'SL', b:'FL', r:0.01}, {a:'SN', b:'FN', r:0.01}, {a:'SE', b:'FE', r:0.01});
+      if (st.pt) e.push({a:'SL', b:'TL', r:0.01}, {a:'SN', b:'TN', r:0.01});
+      return e; },
+    points:[{id:'1', n:'P1', x:34, y:136, t:'L', a:'Breaker output L', ly:160}, {id:'NB', n:'NB', x:73, y:136, t:'N', a:'Neutral bar', ly:160}, {id:'PEB', n:'PEB', x:115, y:136, t:'⏚', a:'Earth bar', ly:160},
+      {id:'KL', n:'KL', x:38, y:276, t:'L', a:'Kettle plug L', ly:304}, {id:'KN', n:'KN', x:82, y:276, t:'N', a:'Kettle plug N', ly:300}, {id:'KE', n:'KE', x:60, y:240, t:'', a:'Kettle plug earth'},
+      {id:'FL', n:'FL', x:148, y:276, t:'L', a:'Fan plug L', ly:300}, {id:'FN', n:'FN', x:192, y:276, t:'N', a:'Fan plug N', ly:300}, {id:'FE', n:'FE', x:170, y:240, t:'', a:'Fan plug earth'},
+      {id:'TL', n:'TL', x:258, y:276, t:'L', a:'TV plug L', ly:300}, {id:'TN', n:'TN', x:302, y:276, t:'N', a:'TV plug N', ly:300}],
+    art: st => `${wall(340)}${db(st.power)}${W('M34 136 C34 170 160 40 176 70', '#8a5a2b')}${W('M73 136 C73 180 170 60 186 80', '#1f6fd1')}
+      <rect x="160" y="40" width="172" height="62" rx="10" fill="#fbfbfa" stroke="#b5bcc1"/>${[200, 252, 304].map(x => `<circle cx="${x}" cy="71" r="20" fill="#eceff1" stroke="#c3c9cd"/><circle cx="${x - 8}" cy="71" r="3.5" fill="#1d2226"/><circle cx="${x + 8}" cy="71" r="3.5" fill="#1d2226"/>`).join('')}<text x="246" y="32" text-anchor="middle" class="ar" style="font-size:11px;font-weight:700;fill:var(--ink)">Extension (3 sockets)</text>
+      ${plug(60, st.pk, 'Kettle', true)}${plug(170, st.pf, 'Fan', true)}${plug(280, st.pt, 'TV', false)}`,
+    diag:{auto:true, title:'The complaint: "Every time I switch the breaker on, it trips straight away."', ask:'The breaker has tripped. Try switching it on, unplug things, and measure <b>ohms with the breaker off</b> (the kettle alone is about 22Ω; a short shows as less than 1Ω). The point above each plug is its earth. Choose the cause:', again:'Another fault', key:'g-trip',
+      pool:['kettle', 'fan', 'cable'],
+      options:[{id:'kettle', label:'The kettle: line shorted to its body'}, {id:'fan', label:'The fan: a short inside it'}, {id:'cable', label:'A short in the wall cable'}, {id:'bigger', label:'The breaker is too weak: fit a bigger one'}], ans:f => f,
+      explain: f => f === 'kettle' ? 'The kettle plug: 0.4Ω between L and earth instead of OL. The line is shorted to the metal body, and the breaker trips because current flows into the earth. Unplug it and the breaker will stay on. Don’t use it until it is repaired.' : f === 'fan' ? 'The fan plug: about 0.3Ω between L and N instead of 150Ω: a short inside the fan (usually in the winding or the cord). Unplug it and the breaker will stay on.' : 'Even after unplugging everything, there is about 0.4Ω between L and N at the panel: the short is in the wall cable itself (a nail through the cable? a burnt box?). Leave the circuit off until it is repaired.'}};
+  window.M9 = BL.meter(document.getElementById('game'), {lesson:'l9', scenarios:[G1, G2, G3], exercises:[], tools:['avo', 'tester']});
+})();
+BL.quiz(document.getElementById('quiz'), [
+  {q:'The lamp is off and the tester lights on both terminals of the lamp holder. The fault is most likely:', o:['An open neutral', 'A burnt-out bulb', 'A tripped breaker', 'No line'], a:0, why:'The line passed through the filament and reached the neutral terminal, because the neutral isn’t connected.'},
+  {q:'A socket: 226V between L and PE, and zero between L and N. The fault:', o:['The neutral isn’t reaching the socket', 'The line is broken', 'The earth is broken', 'The socket is fine'], a:0, why:'The line is there, but the return path (N) is broken.'},
+  {q:'The breaker keeps tripping. The right first step:', o:['Unplug the appliances and measure ohms with the breaker off', 'Fit a bigger breaker', 'Bypass the breaker with a wire', 'Wait a bit and keep switching it back on'], a:0, why:'The breaker is protecting you. Find the short with ohms.'},
+  {q:'What is wrong with fitting a bigger breaker so it stops tripping?', o:['The cable will overheat and catch fire, and the fault is still there', 'It will use more electricity', 'It won’t work', 'Nothing is wrong'], a:0, why:'The breaker is sized to the cable. A bigger breaker removes the protection.'}
+], {lesson:'l9', pass:0.75});
+BL.quiz(document.getElementById('final'), [
+  {q:'If we raise the voltage across the same resistance, the current:', o:['Increases', 'Decreases', 'Stays the same', 'Becomes zero'], a:0, why:'I = V ÷ R.'},
+  {q:'3 lamps are connected in series and one of them burns out. The others:', o:['All go out', 'Stay lit normally', 'Get brighter', 'Only one goes out'], a:0, why:'Series is a single path; if it breaks, the current stops.'},
+  {q:'A copper wire’s length is doubled. Its resistance:', o:['Doubles', 'Halves', 'Stays the same', 'Becomes zero'], a:0, why:'R = ρL/A.'},
+  {q:'Home electricity in Egypt is:', o:['220V AC 50Hz', '380V DC', '12V DC', '220V DC'], a:0, why:'Single-phase AC.'},
+  {q:'The green/yellow wire is:', o:['Protective earth only', 'Line', 'Neutral', 'Anything'], a:0, why:'PE must never be used for anything else.'},
+  {q:'An RCD protects against:', o:['Electric shock: it trips if 30mA leaks to earth', 'Overvoltage', 'Lightning', 'Power cuts'], a:0, why:'It compares the line with the neutral.'},
+  {q:'You want to measure a 9V battery. The selector goes on:', o:['V⎓', 'V~', 'Ω', 'A'], a:0, why:'A battery is DC.'},
+  {q:'A 2000W/220V water heater reads OL across its element terminals:', o:['The element is open', 'The element is fine', 'The element is leaking', 'It needs a megger'], a:0, why:'It should be 24.2Ω.'},
+  {q:'A 220/24V transformer: compared with the primary, the secondary has:', o:['Fewer turns', 'More turns', 'The same turns', 'No secondary'], a:0, why:'Step-down ⇒ fewer turns.'},
+  {q:'A 24V power supply: red on −V and black on +V. The meter will read:', o:['-24V', '+24V', '0V', 'OL'], a:0, why:'The probes are reversed.'},
+  {q:'A 2200W kettle on 220V. The right breaker and cable:', o:['16A and 2.5mm²', '10A and 1.5mm²', '40A and 1.5mm²', '6A and 1mm²'], a:0, why:'10A of current ⇒ a 16A breaker and 2.5mm² cable.'},
+  {q:'A lamp switch must break:', o:['The line', 'The neutral', 'The earth', 'Both'], a:0, why:'So the lamp holder is dead while the lamp is off.'}
+], {lesson:'l9', task:'final', pass:0.8, shuffle:true});
+</script>
+<script src="/assets/i18n.js?v=20261021v"></script>
+</body>
+</html>
