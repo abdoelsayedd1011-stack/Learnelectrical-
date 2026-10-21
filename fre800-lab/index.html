@@ -1,0 +1,1925 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>محاكي Mitsubishi FR-E800</title>
+<meta name="description" content="محاكي انفرتر Mitsubishi FR-E800 بالكيباد والـ M dial: تمارين موجهة للتوصيل والباراميترات والتشغيل والأعطال، مع ملاحظات FR-D700.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Same bench as the other device simulators. */
+:root{
+  --bg:#e9edef; --panel:#ffffff; --ink:#152027; --muted:#56656f; --line:#cfd7dc;
+  --accent:#b85f00; --accent-soft:#f6e6d3; --cur:#0d7584;
+  --good:#2b7a3d; --warn:#a86a00; --bad:#c0352b; --scope-bg:#0e1518; --grid:#22343a;
+  --font-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --font-body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1417; --panel:#182025; --ink:#e3e9ec; --muted:#93a2ab; --line:#2a353c;
+  --accent:#f0a03c; --accent-soft:#3a2a17; --cur:#4cc0cf;
+  --good:#5cc06f; --warn:#e3a43a; --bad:#ff6b5e; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f1417; --panel:#182025; --ink:#e3e9ec; --muted:#93a2ab; --line:#2a353c;
+  --accent:#f0a03c; --accent-soft:#3a2a17; --cur:#4cc0cf;
+  --good:#5cc06f; --warn:#e3a43a; --bad:#ff6b5e; color-scheme:dark }
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.6}
+.app{max-width:1260px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0;line-height:1.25}
+h1{font-size:1.75rem} h2{font-size:1.2rem} h3{font-size:1rem}
+.mono,code{font-family:var(--font-mono);direction:ltr;unicode-bidi:isolate}
+code{font-size:.9em;background:var(--accent-soft);padding:0 .3em;border-radius:4px}
+.muted{color:var(--muted)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px}
+header.top p{margin:.25rem 0 0;color:var(--muted);max-width:70ch}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.85rem;font-weight:600}
+.chip b{color:var(--accent)}
+.bench{display:grid;grid-template-columns:minmax(320px,440px) minmax(0,1fr);gap:20px;align-items:start}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:940px){.bench,.grid2{grid-template-columns:minmax(0,1fr)}}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.panel h2,.panel h3{margin-bottom:10px}
+.label{font-size:.75rem;letter-spacing:.04em;color:var(--muted);font-weight:600}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:600}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.xs{padding:1px 8px;font-size:.78rem}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.hint{font-size:.85rem;color:var(--muted);margin:.4rem 0 0}
+.tagc,.tagv{display:inline-flex;align-items:center;gap:4px;font:600 .72rem var(--font-body);border-radius:999px;padding:1px 9px;vertical-align:middle;margin-inline-start:8px}
+.tagc{background:#2f7fe0;color:#fff}
+.tagv{background:var(--panel);color:var(--muted);border:1px solid var(--line)}
+.tagc::before{content:"";width:7px;height:7px;border-radius:50%;border:1.5px solid #fff}
+.tagv::before{content:"👁";font-size:.7rem}
+.legendbar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;font-size:.85rem;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+
+
+/* ---------- faceplate common ---------- */
+.device{display:flex;justify-content:center}
+.keyguide{font-size:.85rem;margin:12px 0 0;padding:0;list-style:none;display:grid;gap:4px}
+.keyguide b{font-family:var(--font-mono);background:var(--accent-soft);padding:0 .35em;border-radius:4px}
+.station .selpos{direction:ltr}
+.keyguide{font-size:.85rem;margin:12px 0 0;padding:0;list-style:none;display:grid;gap:4px}
+.keyguide b{font-family:var(--font-mono);background:var(--accent-soft);padding:0 .35em;border-radius:4px}
+
+/* ---------- operator station ---------- */
+.station{background:linear-gradient(180deg,#d6d9db,#c3c7ca);border-radius:10px;padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:14px 10px;box-shadow:inset 0 0 0 1px #a9aeb2,inset 0 2px 0 #eef0f1;direction:rtl}
+.dev{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.dev .tag{background:#1d2226;color:#f2f4f5;font:600 10.5px var(--font-body);padding:1px 8px;border-radius:3px;min-width:78px;line-height:1.5}
+.dev .term{font:600 10px var(--font-mono);color:#3b4348;direction:ltr}
+.pb{width:56px;height:56px;border-radius:50%;border:0;cursor:pointer;touch-action:none;position:relative;background:radial-gradient(circle at 50% 50%,#c4c7c9 0 60%,#7f8589 61% 70%,#5c6266 71%);box-shadow:0 3px 5px rgba(0,0,0,.35);display:grid;place-items:center;padding:0}
+.pb::after{content:"";width:62%;height:62%;border-radius:50%;background:var(--cap,#1f9a3c);box-shadow:inset 0 -4px 6px rgba(0,0,0,.35),inset 0 3px 4px rgba(255,255,255,.35),0 3px 0 rgba(0,0,0,.35);transition:transform .05s}
+.pb.down::after{transform:scale(.9);box-shadow:inset 0 -2px 4px rgba(0,0,0,.4),inset 0 2px 3px rgba(255,255,255,.25)}
+.pb.green{--cap:linear-gradient(#35c25a,#1b8a37)}
+.pb.black{--cap:linear-gradient(#4a4f53,#1f2326)}
+.pb.mush::after{width:84%;height:84%;background:radial-gradient(circle at 40% 35%,#ff6b5e,#c4211a 70%)}
+.pb.mush.latched::after{transform:scale(.88)}
+.sel2{width:56px;height:56px;border-radius:50%;border:0;cursor:pointer;padding:0;position:relative;background:radial-gradient(circle,#2a2f33 0 58%,#8a9095 59% 68%,#5c6266 69%);box-shadow:0 3px 5px rgba(0,0,0,.35)}
+.sel2 i{position:absolute;left:50%;top:50%;width:12px;height:40px;margin:-20px 0 0 -6px;border-radius:5px;background:linear-gradient(90deg,#3c4246,#71787d,#3c4246);transform:rotate(-45deg);transition:transform .15s;box-shadow:0 1px 2px #000}
+.sel2 i::after{content:"";position:absolute;left:4px;top:3px;width:4px;height:8px;border-radius:2px;background:#fff}
+.sel2[aria-pressed="true"] i{transform:rotate(45deg)}
+.sel2.key{background:radial-gradient(circle,#c9a54a 0 40%,#8a9095 41% 68%,#5c6266 69%)}
+.sel2.key i{width:8px;margin-left:-4px;background:linear-gradient(90deg,#9d7d2a,#e7c76a,#9d7d2a)}
+.selpos{display:flex;justify-content:space-between;width:80px;font:600 9.5px var(--font-body);color:#3b4348}
+.lamp{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#7b7f82,#3d4144);box-shadow:0 0 0 4px #9ba1a5,0 0 0 5px #5d6366,0 2px 4px 5px rgba(0,0,0,.25)}
+.lamp.r.on{background:radial-gradient(circle at 40% 35%,#ffd1cc,#ff3b2a 55%,#b8170c);box-shadow:0 0 0 4px #9ba1a5,0 0 0 5px #5d6366,0 0 18px 6px #ff3b2a88}
+.lamp.g.on{background:radial-gradient(circle at 40% 35%,#d8ffd8,#2fd34b 55%,#13852a);box-shadow:0 0 0 4px #9ba1a5,0 0 0 5px #5d6366,0 0 18px 6px #2fd34b88}
+.lamp.y.on{background:radial-gradient(circle at 40% 35%,#fff6c8,#ffc21a 55%,#b88400);box-shadow:0 0 0 4px #9ba1a5,0 0 0 5px #5d6366,0 0 18px 6px #ffc21a88}
+.lamp.w.on{background:radial-gradient(circle at 40% 35%,#ffffff,#cfe3ff 55%,#7ea2d0);box-shadow:0 0 0 4px #9ba1a5,0 0 0 5px #5d6366,0 0 18px 6px #cfe3ffaa}
+.meter{width:96px;height:64px;background:linear-gradient(#fbfbf6,#eceee6);border-radius:4px;box-shadow:0 0 0 3px #2a2f33,0 2px 5px 3px rgba(0,0,0,.25);position:relative;overflow:hidden}
+.meter svg{width:100%;height:100%;display:block}
+.brk{width:46px;height:64px;border-radius:4px;border:0;cursor:pointer;padding:0;background:linear-gradient(#2d3236,#1a1d20);position:relative;box-shadow:0 3px 5px rgba(0,0,0,.35)}
+.brk i{position:absolute;left:13px;width:20px;height:24px;border-radius:3px;background:linear-gradient(#f2f2f2,#b9bcbf);top:34px;transition:top .12s;box-shadow:0 2px 2px rgba(0,0,0,.5)}
+.brk[aria-pressed="true"] i{top:6px;background:linear-gradient(#ffcf4a,#e0a400)}
+.brk span{position:absolute;left:0;right:0;font:700 8px Arial;color:#ddd}
+.station .knob{width:56px;height:56px}
+.station .knob i{height:18px;transform-origin:50% 22px}
+.station .kv{font:600 11px var(--font-mono);direction:ltr;color:#1d2226}
+.rot{width:56px;height:56px;border-radius:50%;cursor:pointer;border:0;padding:0;position:relative;background:radial-gradient(circle,#2a2f33 0 52%,#8a9095 53% 66%,#5c6266 67%);box-shadow:0 3px 5px rgba(0,0,0,.35)}
+.rot i{position:absolute;left:50%;top:50%;width:10px;height:38px;margin:-19px 0 0 -5px;border-radius:5px;background:linear-gradient(90deg,#3c4246,#71787d,#3c4246);transition:transform .15s}
+.rot i::after{content:"";position:absolute;left:3px;top:2px;width:4px;height:8px;border-radius:2px;background:#ffb44d}
+
+/* ---------- motor + meters ---------- */
+.mview{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:12px;align-items:center}
+@media (max-width:560px){.mview{grid-template-columns:minmax(0,1fr)}}
+.mview svg{width:100%;height:auto;display:block;direction:ltr}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
+@media (max-width:560px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tile{border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0}
+.tile .v{font-family:var(--font-mono);font-size:1.15rem;font-weight:500;direction:ltr;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .v small{font-size:.7rem;color:var(--muted);margin-left:3px}
+.tile .bar{height:4px;border-radius:2px;background:var(--line);margin-top:4px;overflow:hidden}
+.tile .bar i{display:block;height:100%;width:0;background:var(--cur)}
+.tile .bar i.hot{background:var(--bad)}
+.statusline{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.pill{font-size:.78rem;font-weight:600;border-radius:999px;padding:2px 10px;border:1px solid var(--line);color:var(--muted)}
+.pill.on{color:#fff;background:var(--good);border-color:var(--good)}
+.pill.bad{color:#fff;background:var(--bad);border-color:var(--bad)}
+.pill.warn{color:#fff;background:var(--warn);border-color:var(--warn)}
+.scopewrap{position:relative;border-radius:10px;overflow:hidden;background:var(--scope-bg)}
+#scope{width:100%;height:260px;display:block}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;margin-top:8px}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:14px;height:3px;border-radius:2px;display:inline-block}
+
+/* ---------- inputs ---------- */
+.io{display:grid;gap:6px}
+.sw{width:50px;height:30px;border-radius:5px;border:0;padding:3px;background:linear-gradient(#2a2e32,#15181b);position:relative;cursor:pointer;flex:none;box-shadow:0 0 0 2px #2f7fe0aa,0 2px 3px rgba(0,0,0,.35)}
+.sw::before{content:"O";position:absolute;inset:3px 3px 3px 50%;display:grid;place-items:center;font:700 11px Arial,sans-serif;color:#bfc5c9;background:linear-gradient(#4b5157,#2b3034);border-radius:0 3px 3px 0;transition:all .1s}
+.sw::after{content:"I";position:absolute;inset:3px 50% 3px 3px;display:grid;place-items:center;font:700 11px Arial,sans-serif;color:#8d949a;background:linear-gradient(#30353a,#1f2327);border-radius:3px 0 0 3px;box-shadow:inset -2px 0 3px rgba(0,0,0,.5);transition:all .1s}
+.sw[aria-pressed="true"]::after{background:linear-gradient(#3ec95a,#1f8a36);color:#fff;box-shadow:inset 0 0 6px rgba(255,255,255,.35),0 0 8px #3ec95a88}
+.sw[aria-pressed="true"]::before{background:linear-gradient(#2b3034,#1c2023);color:#7d858b;box-shadow:inset 2px 0 3px rgba(0,0,0,.5)}
+.knob{width:70px;height:70px;border-radius:50%;cursor:ns-resize;touch-action:none;position:relative;background:radial-gradient(circle at 40% 35%,#6c747a,#2a2f33 70%);box-shadow:0 3px 6px rgba(0,0,0,.35),inset 0 0 0 3px #1c2023,0 0 0 3px #2f7fe055}
+.knob i{position:absolute;left:50%;top:6px;width:4px;height:22px;margin-left:-2px;border-radius:2px;background:#ffb44d;transform-origin:50% 29px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field select,.field input[type=number],.field input[type=text]{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 8px;min-width:0;width:100%}
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.check{display:flex;gap:8px;align-items:center;font-size:.9rem;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--accent);flex:none}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.subhead{margin:14px 0 8px;font-size:.95rem}
+.inj{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px}
+.inj .btn{text-align:right;font-weight:500;font-size:.88rem}
+.inj .btn[aria-pressed="true"]{background:var(--bad);border-color:var(--bad);color:#fff}
+
+/* ---------- wiring diagram ---------- */
+.boardscroll{overflow-x:auto;border-radius:10px;border:1px solid var(--line);background:#f4f5f1}
+#wd{width:100%;min-width:900px;height:auto;display:block;direction:ltr;user-select:none;-webkit-user-select:none}
+#wd text{pointer-events:none;font-family:"IBM Plex Mono",ui-monospace,monospace}
+#wd .ar{font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;direction:rtl;unicode-bidi:plaintext}
+#wd .clk{cursor:pointer}
+#wd .clk:hover .hl{stroke:#ff8a00}
+.wlegend{display:flex;flex-wrap:wrap;gap:12px;font-size:.8rem;margin-top:8px;color:var(--muted)}
+.wlegend span{display:flex;align-items:center;gap:6px}
+.wlegend i{width:18px;height:5px;border-radius:3px;display:inline-block}
+
+/* ---------- params ---------- */
+.ptools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.tabs{display:flex;gap:4px;background:var(--bg);border-radius:10px;padding:4px;flex-wrap:wrap}
+.tabs button{border:0;background:transparent;padding:5px 10px;border-radius:7px;cursor:pointer;font-weight:600;font-size:.82rem;direction:ltr}
+.tabs button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top}
+th{font-size:.75rem;color:var(--muted);background:var(--bg);position:sticky;top:0;z-index:1}
+tr:last-child td{border-bottom:0}
+td.code{font-family:var(--font-mono);font-weight:600;white-space:nowrap;direction:ltr;text-align:right}
+td.en{font-family:var(--font-mono);direction:ltr;text-align:right;white-space:nowrap;font-size:.82rem}
+td.val input,td.val select{width:150px;border:1px solid var(--line);background:var(--bg);border-radius:7px;padding:4px 6px;font-family:var(--font-mono);direction:ltr}
+td.val .ro{font-family:var(--font-mono);direction:ltr;display:inline-block}
+.badge{display:inline-block;font-size:.68rem;border-radius:5px;padding:0 5px;margin-inline-start:4px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.badge.s{color:var(--warn);border-color:var(--warn)}
+.badge.r{color:var(--cur);border-color:var(--cur)}
+#ptable tr{cursor:pointer}#ptable tr.sel td{background:color-mix(in srgb,var(--accent) 10%,transparent)}
+tr.changed td.code{color:var(--accent)}
+.pdet{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:0 0 10px;background:var(--bg);display:grid;gap:6px}
+.pdet .h{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}.pdet .h b{font-family:var(--font-mono);font-size:1.05rem}
+.pdet .facts{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.82rem;color:var(--muted)}.pdet .facts b{color:var(--ink);font-family:var(--font-mono);font-weight:500}
+.pdet p{margin:0;line-height:1.75}
+.reftabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.reftabs button{border:1px solid var(--line);background:transparent;border-radius:8px;padding:5px 11px;cursor:pointer;font-size:.86rem}
+.reftabs button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.refbody h4{margin:12px 0 6px;font-size:.95rem}
+.refbody ol,.refbody ul{margin:0;padding-inline-start:20px;line-height:1.85;font-size:.9rem}
+.cards{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.cards .card{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.cards h4{margin:0 0 6px}
+.toast{font-size:.85rem;font-weight:600;color:var(--good)}
+
+/* ---------- exercises & log ---------- */
+.ex{border:1px solid var(--line);border-radius:10px;margin-bottom:8px;overflow:hidden}
+.ex summary{cursor:pointer;padding:10px 12px;font-weight:600;display:flex;gap:10px;align-items:center;list-style:none}
+.ex summary::-webkit-details-marker{display:none}
+.ex summary .cnt{margin-inline-start:auto;font-family:var(--font-mono);font-size:.8rem;color:var(--muted)}
+.ex.done summary{color:var(--good)}
+.ex .body{padding:0 12px 12px}
+.ex p{margin:.2rem 0 .6rem;color:var(--muted);font-size:.9rem}
+.ex ol{margin:0;padding-inline-start:22px;display:grid;gap:4px;font-size:.9rem}
+.ex li.ok{color:var(--good)}
+.ex li.ok::marker{content:"✓ "}
+.log{max-height:300px;overflow:auto;font-size:.85rem;display:grid;gap:2px}
+.log div{display:flex;gap:8px;border-bottom:1px dashed var(--line);padding:3px 0}
+.log time{font-family:var(--font-mono);color:var(--muted);flex:none}
+.log .a{color:var(--bad);font-weight:600}
+.flt td:first-child{font-family:var(--font-mono);font-weight:600;white-space:nowrap}
+.flt tr.now td{background:color-mix(in srgb,var(--bad) 14%,transparent)}
+
+/* ---------- solved applications ---------- */
+:root{--w-pwr:#7b3f12;--w-mot:#c8261c;--w-pe:#2e9c3a;--w-dig:#d97706;--w-com:#20307a;--w-ana:#4f6b7d;--w-rly:#6b3fa0;--w-db:#d62f2f}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--w-pwr:#d39058;--w-mot:#ff7a6e;--w-pe:#5cc06f;--w-dig:#f5a742;--w-com:#93a6ff;--w-ana:#9fbcd0;--w-rly:#b993ec;--w-db:#ff7a7a} }
+:root[data-theme="dark"]{--w-pwr:#d39058;--w-mot:#ff7a6e;--w-pe:#5cc06f;--w-dig:#f5a742;--w-com:#93a6ff;--w-ana:#9fbcd0;--w-rly:#b993ec;--w-db:#ff7a7a}
+.soltabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.soltabs button{border:1px solid var(--line);background:transparent;border-radius:8px;padding:5px 11px;cursor:pointer;font-size:.86rem;text-align:right}
+.soltabs button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.solcard{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:12px;min-width:0}
+.solcard .goal{margin:0;color:var(--muted);font-size:.92rem}
+.solgrid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:900px){.solgrid{grid-template-columns:minmax(0,1fr)}}
+.solfig{margin:0;min-width:0}
+.solsvg{width:100%;height:auto;display:block;direction:ltr;background:var(--bg);border:1px solid var(--line);border-radius:8px}
+.solsvg text{font-family:var(--font-mono);fill:var(--ink);font-size:10px}
+.solsvg .sv-tn{font-size:9.5px;font-weight:600}
+.solsvg .sv-b{font-family:var(--font-display);font-size:12px;font-weight:700}
+.solsvg .sv-s{fill:var(--muted);font-size:9px}
+.solsvg .sv-ar{font-family:var(--font-body);direction:rtl;unicode-bidi:plaintext;font-size:10px;fill:var(--muted)}
+.solsvg .sv-box{fill:var(--panel);stroke:var(--ink);stroke-width:1.4}
+.solsvg .sv-term{fill:var(--panel);stroke:var(--ink);stroke-width:1.3}
+.solsvg .sv-pin{fill:var(--ink)}
+.solsvg .sv-dev{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.solsvg .sv-dash{stroke-dasharray:3 3;stroke-width:1.2}
+.solsvg .sv-grp{fill:none;stroke:var(--muted);stroke-width:1;stroke-dasharray:4 3}
+.solsvg .sw{fill:none;stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+.solsvg .sw-pwr{stroke:var(--w-pwr)} .solsvg .sw-mot{stroke:var(--w-mot)} .solsvg .sw-pe{stroke:var(--w-pe);stroke-dasharray:6 3}
+.solsvg .sw-dig{stroke:var(--w-dig)} .solsvg .sw-com{stroke:var(--w-com)} .solsvg .sw-ana{stroke:var(--w-ana)} .solsvg .sw-rly{stroke:var(--w-rly)} .solsvg .sw-db{stroke:var(--w-db)}
+.solsvg .sd{stroke:none} .solsvg .sd-dig{fill:var(--w-dig)} .solsvg .sd-ana{fill:var(--w-ana)} .solsvg .sd-rly{fill:var(--w-rly)}
+.solsvg .lmp{stroke:var(--ink);stroke-width:1.4} .solsvg .lmp-w{fill:#cfe3ff} .solsvg .lmp-r{fill:#ff6b5e} .solsvg .lmp-g{fill:#5cc06f}
+.solsvg .sv-fill{fill:var(--panel);stroke:var(--ink);stroke-width:1.5}
+.solcard .wlegend{margin-top:6px}
+.solcard table{font-size:.84rem}
+.solcard td.code{color:var(--accent)}
+.solcard td.v{font-family:var(--font-mono);direction:ltr;text-align:right;font-weight:600;font-size:.8rem;min-width:70px}
+.solcard td.code small{display:block;font-weight:400;font-size:.72rem;color:var(--muted);white-space:normal}
+.solcard td{padding:6px 8px}
+.solcard h3{margin:0 0 6px;font-size:.95rem}
+.solcard ol.steps{margin:0;padding-inline-start:22px;display:grid;gap:5px;font-size:.9rem;line-height:1.75}
+.solcard .solnote{font-size:.8rem;color:var(--muted);margin:6px 0 0}
+.solact{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.tagc.solbtn{border:0;cursor:pointer;font-size:.85rem;padding:5px 14px;margin:0}
+button.tagc.solbtn:hover{background:#2368bd}
+button.tagc.solbtn:disabled{opacity:.6;cursor:wait}
+/* ---------- guided simple mode ---------- */
+.btn.big{padding:12px 20px;font-size:1rem;min-height:48px;border-radius:10px}
+#modeBtn{min-height:44px}
+#modeBtn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+body.guided header.top p,body.guided .legendbar,body.guided .chip{display:none}
+body.guided[data-g="c"] .chip,body.guided[data-g="d"] .chip{display:inline-block}
+body.guided .bench{display:none}
+body.guided[data-g="c"] .bench,body.guided[data-g="d"] .bench{display:grid}
+body.guided #pnlScope{display:none}
+body.guided[data-g="c"] #pnlLoad{display:none}
+body.guided:not(.adv) .advonly{display:none}
+body.guided #advBar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+body.guided .keyguide,body.guided #faceHint{display:none}
+.guide{padding:20px;border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.g-head h2{font-size:1.5rem;margin-bottom:6px}
+.g-sub{margin:0 0 16px;color:var(--muted);max-width:70ch;line-height:1.8}
+.g-cards{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.g-card{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;align-items:center;text-align:right;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:14px;cursor:pointer;min-height:104px;color:inherit;font:inherit}
+.g-card:hover,.g-card:focus-visible{border-color:var(--accent);background:var(--accent-soft)}
+.g-card .n{grid-row:1/3;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font:700 1.3rem var(--font-display);background:var(--accent);color:#fff}
+.g-card.done .n{background:var(--good)}
+.g-card .t{font:600 1.02rem var(--font-display);line-height:1.35}
+.g-card .g{font-size:.86rem;color:var(--muted);line-height:1.6}
+.g-card .ico{grid-column:1/3;display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px;font-size:.78rem;color:var(--muted)}
+.g-card .ico svg{width:84px;height:34px;display:block;direction:ltr;color:var(--ink)}
+.g-bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-bottom:12px}
+.g-bar .btn{min-height:44px}
+.g-prog{display:flex;gap:6px;flex:1;min-width:220px;align-items:center}
+.g-prog span{flex:1;height:10px;border-radius:5px;background:var(--line);position:relative}
+.g-prog span.on{background:var(--accent)}.g-prog span.ok{background:var(--good)}
+.g-prog b{font:600 .9rem var(--font-mono);white-space:nowrap;margin-inline-start:6px}
+.g-steps{display:flex;gap:4px 14px;flex-wrap:wrap;font-size:.82rem;color:var(--muted);margin:-4px 0 12px}
+.g-steps span.on{color:var(--accent);font-weight:700}
+#gTitle{font-size:1.3rem;margin-bottom:10px}
+.g-body{display:grid;gap:14px}
+.g-lead{margin:0;font-size:1.02rem;line-height:1.8}
+.g-fig{margin:0;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:10px;max-width:780px;justify-self:center;width:100%;min-width:0}
+.g-fig .solsvg{width:100%}
+.g-fig .solsvg .hlr{fill:color-mix(in srgb,var(--accent) 22%,transparent);stroke:var(--accent);stroke-width:1.2}
+.g-fig .solsvg .hlr+circle.sv-term{fill:var(--accent);stroke:var(--accent)}
+.g-terms{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.g-terms .tc{font:600 .95rem var(--font-mono);direction:ltr;background:var(--accent-soft);border:1px solid var(--accent);border-radius:8px;padding:3px 10px}
+.g-list{margin:0;padding-inline-start:22px;display:grid;gap:6px;line-height:1.8}
+.g-check{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg);font-size:1rem;line-height:1.7}
+.g-check i{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-style:normal;font-weight:700;color:transparent;margin-top:2px}
+.g-check.ok{border-color:var(--good)}.g-check.ok i{background:var(--good);border-color:var(--good);color:#fff}
+.g-check .sub{display:block;font-size:.86rem;color:var(--muted)}
+.g-live{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.92rem;color:var(--muted)}
+.g-live b{font-family:var(--font-mono);direction:ltr;unicode-bidi:isolate;color:var(--ink)}
+.g-warn{border:1px solid var(--warn);color:var(--warn);border-radius:10px;padding:10px 14px;font-weight:600}
+.g-nav{display:flex;gap:10px;justify-content:space-between;margin-top:18px;flex-wrap:wrap}
+.g-nav .btn{flex:1;min-width:140px}
+.g-note{margin:0;font-size:.88rem;color:var(--muted)}
+.g-tbl{font-size:.9rem;width:100%}
+.g-tbl td.code{color:var(--accent);white-space:nowrap}
+.g-tbl td.code small{display:block;font-weight:400;font-size:.72rem;color:var(--muted);white-space:normal}
+.g-tbl td.v{font-family:var(--font-mono);direction:ltr;text-align:right;font-weight:600;white-space:nowrap}
+.g-tbl .okc{color:var(--good);font-weight:700;font-family:var(--font-mono)}
+.g-tbl tr.ok td{background:color-mix(in srgb,var(--good) 14%,transparent)}
+.g-tbl .cur{display:inline-block;color:var(--bad);font-weight:600;font-size:.8rem;margin-inline-start:6px;white-space:nowrap}
+.g-tbl .cur:empty{display:none}
+.g-tbl .gpath{display:none;color:var(--muted);font-size:.72rem;font-weight:400;white-space:normal;margin-top:2px}
+.g-hand .g-tbl .gpath{display:block}
+.g-choice{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.g-choice .btn{min-height:52px;position:relative;line-height:1.4}
+.g-choice .btn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.g-choice .rec{display:inline-block;font-size:.72rem;font-weight:600;color:var(--good);border:1px solid var(--good);border-radius:999px;padding:0 8px;margin-inline-start:8px;vertical-align:middle}
+.g-howto{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg);font-size:.92rem;line-height:1.9}
+.g-howto h4{margin:0 0 4px;font-size:.95rem}
+.g-howto kbd{font:600 .82em var(--font-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;background:var(--panel);direction:ltr;unicode-bidi:isolate;white-space:nowrap}
+.g-howto p{margin:0}
+.g-handgrid{display:grid;gap:14px;grid-template-columns:minmax(0,1fr);align-items:start}
+@media (min-width:900px){.g-handgrid{grid-template-columns:minmax(280px,380px) minmax(0,1fr)}}
+.g-face{min-width:0}
+.g-face .device{margin:0}
+.g-face .vfd{max-width:360px;margin:0 auto}
+.g-count{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-weight:700;font-size:1rem;min-height:44px}
+.g-count b{font-family:var(--font-mono);direction:ltr;unicode-bidi:isolate;color:var(--accent)}
+.g-count.ok{color:var(--good)}.g-count.ok b{color:var(--good)}
+.g-count .runlock{color:var(--bad);font-weight:600;font-size:.9rem}
+.g-pwr{font-size:.88rem;color:var(--warn);font-weight:600;margin:0}
+@media (max-width:560px){.guide{padding:14px}.g-card{min-height:96px}.g-tbl thead{display:none}.g-tbl tr{display:grid;grid-template-columns:minmax(0,1fr) auto;border-bottom:1px solid var(--line)}.g-tbl tr:last-child{border-bottom:0}.g-tbl td{border-bottom:0;padding:6px 10px 2px}.g-tbl td.why{grid-column:1/-1;padding:0 10px 8px;color:var(--muted)}}
+/* ---------- generic faceplate parts ---------- */
+.vfd{direction:ltr;width:100%;max-width:360px;user-select:none;-webkit-user-select:none;font-family:Arial,Helvetica,sans-serif;filter:drop-shadow(0 10px 18px rgba(0,0,0,.3))}
+.vfd [data-k]{cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent}
+.vfd [data-k]:focus-visible{outline:2px solid #f0a03c;outline-offset:2px}
+.vfd button[data-k]{font-family:Arial,Helvetica,sans-serif;padding:0;margin:0}
+.vfd [data-k].down{transform:translateY(1px);filter:brightness(.85)}
+.seg7 svg{width:100%;height:100%;display:block}
+.seg7 .lit{}
+@keyframes segbl{50%{opacity:.08}}
+.seg7 .bl{animation:segbl .7s steps(1,end) infinite}
+.vfd .led{display:inline-block;width:7px;height:7px;border-radius:50%;background:#3c3f42;box-shadow:inset 0 1px 1px rgba(0,0,0,.6);vertical-align:middle}
+.vfd .led.on.g{background:#3fe36a;box-shadow:0 0 6px #3fe36a}
+.vfd .led.on.r{background:#ff3b24;box-shadow:0 0 6px #ff3b24}
+.vfd .led.on.y{background:#ffc21a;box-shadow:0 0 6px #ffc21a}
+.vfd .led.on.o{background:#ff8a1a;box-shadow:0 0 6px #ff8a1a}
+.vfd .led.fl{animation:ledfl2 .5s steps(2,start) infinite}
+@keyframes ledfl2{to{background:#3c3f42;box-shadow:none}}
+.vfd .kpot{border-radius:50%;cursor:grab;touch-action:none;position:relative}
+.vfd .kpot::after{content:"";position:absolute;left:50%;top:7%;width:4px;height:26%;margin-left:-2px;border-radius:2px;background:#fff}
+.vfd .dial{border-radius:50%;cursor:grab;touch-action:none;position:relative}
+.lcdtxt{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;white-space:pre;overflow:hidden}
+.drvnote{border:1px dashed var(--warn);border-radius:10px;padding:10px 14px;color:var(--muted);font-size:.85rem;margin:0}
+#chipRef,#chipSt,#chipF,#gSrc,#gRef,#gSt{unicode-bidi:plaintext}
+
+.mel{max-width:300px;background:linear-gradient(90deg,#cfd2d3,#eef0f0 25%,#eceeee 75%,#c9cccd);border-radius:8px;padding:10px 14px 12px;box-shadow:inset 0 0 0 1px #a7abad}
+.mel-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.mel-logo{display:flex;align-items:center;gap:5px;font:900 10.5px Arial,sans-serif;color:#222;letter-spacing:.02em}
+.mel-logo svg{width:20px;height:17px}
+.mel-led{width:9px;height:9px;border-radius:50%;background:#7a7d7a}
+.mel-led.on{background:#ff8a1a;box-shadow:0 0 6px #ff8a1a}
+.mel-panel{background:linear-gradient(#2f3336,#222528);border-radius:10px;padding:10px 12px 12px;box-shadow:0 2px 0 #111,inset 0 1px 0 #4e5459}
+.mel-disp{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;background:#0d0f10;border-radius:5px;padding:7px 6px;box-shadow:inset 0 2px 6px #000}
+.mel-ind,.mel-unit{display:flex;flex-direction:column;gap:4px;font:700 8px Arial;color:#9ba3a8}
+.mel-ind span,.mel-unit span,.mel-mode span{display:flex;align-items:center;gap:3px}
+.mel-seg{height:52px}
+.mel-mode{display:flex;justify-content:center;gap:16px;font:700 9px Arial;color:#c9d0d4;margin:8px 0 6px}
+.mel-mid{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;margin:4px 0 10px}
+.mel-dial{position:relative;border-radius:50%;cursor:grab;touch-action:none;width:92px;height:92px;background:radial-gradient(circle at 50% 45%,#5b6166,#2b2f32 62%,#1a1c1e);box-shadow:0 0 0 4px #15181a,0 0 0 6px #464c50,0 4px 8px rgba(0,0,0,.6);margin:0 auto}
+.mel-dial i{position:absolute;left:50%;top:9px;width:9px;height:9px;margin-left:-4.5px;border-radius:50%;background:#c3c9cc;box-shadow:inset 0 1px 2px rgba(0,0,0,.6)}
+.mel-dial::before{content:"M";position:absolute;inset:0;display:grid;place-items:center;font:700 13px Arial;color:#8e979c}
+.mk{height:36px;border-radius:6px;border:0;background:linear-gradient(#e4e7e8,#bfc4c6);color:#1b1e20;font:700 11px/1.05 Arial;box-shadow:0 3px 0 #6c7276,inset 0 1px 0 #fff}
+.mk small{font-size:8px}
+.mk.run{background:linear-gradient(#3ca34f,#26803a);color:#fff;box-shadow:0 3px 0 #124a1c}
+.mk.stop{background:linear-gradient(#d8402f,#a82a1d);color:#fff;box-shadow:0 3px 0 #5d140b;font-size:10px}
+.mel-bot{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mel-body{margin-top:10px;display:grid;gap:8px}
+.mel-vents{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.mel-vents i{height:18px;border-radius:3px;background:repeating-linear-gradient(#8d9294 0 2px,#d7dadb 2px 5px)}
+.mel-plate{background:#f6f7f7;border:1px solid #b3b7b9;border-radius:3px;padding:3px 8px;display:flex;justify-content:space-between;gap:6px;font:9px Arial;color:#222;flex-wrap:wrap}
+
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <h1>محاكي Mitsubishi FR-E800</h1>
+    <p>انفرتر <span class="mono">FR-E840-0095</span> (3.7 كيلووات، 380-480 فولت، 9.5 أمبير) شغّال على موتور. اشتغل من الكيباد زي الجهاز بالظبط (MODE و SET و PU/EXT و RUN و STOP/RESET والـ M dial اللي بيلف)، شغّل من STF و STR، غيّر الباراميترات (Pr.)، اعمل أعطال واعرف تصلحها، وحل التمارين. الكلام هنا ينفع كمان لـ FR-D700 لأن الكيباد وأغلب الباراميترات شبه بعض.</p>
+  </div>
+  <div class="chips">
+    <a class="btn" href="../labs.html" style="text-decoration:none">← الكورسات</a>
+    <button class="btn" id="modeBtn" type="button" aria-pressed="false">الوضع الكامل</button>
+    <span class="chip">السرعة من: <b id="chipRef">—</b></span>
+    <span class="chip">الحالة: <b id="chipSt">OFF</b></span>
+    <span class="chip">العطل: <b id="chipF">لا يوجد</b></span>
+  </div>
+</header>
+<div class="legendbar"><span class="tagc">تحكم</span> حاجة بتغيّرها بإيدك (زراير، سلكتورات، مقابض، باراميترات) <span class="tagv">بيان</span> حاجة بتتفرج عليها بس (الشاشة، اللمبات، العدادات، الاسكوب)</div>
+
+<section class="panel guide" id="guide" hidden aria-label="الوضع المبسّط">
+  <div id="gStart">
+    <div class="g-head"><h2>ابدأ من هنا</h2><p class="g-sub">اختار تمرين وامشي معاه خطوة بخطوة: <b>التوصيل</b> ← <b>الباراميترات</b> ← <b>التشغيل</b> ← <b>عطل</b>. الصفحة هتوريك اللي محتاجه في كل خطوة بس. عايز المحاكي كله؟ دوس «الوضع الكامل» فوق.</p></div>
+    <div class="g-cards" id="gCards"></div>
+  </div>
+  <div id="gRun" hidden>
+    <div class="g-bar">
+      <button class="btn" id="gBack" type="button">‹ رجوع للقايمة</button>
+      <div class="g-prog" id="gProg" aria-live="polite"></div>
+    </div>
+    <h2 id="gTitle"></h2>
+    <div class="g-body" id="gBody"></div>
+    <div class="g-nav">
+      <button class="btn big" id="gPrev" type="button">السابق</button>
+      <button class="btn big pri" id="gNext" type="button">التالي</button>
+    </div>
+  </div>
+</section>
+
+<div class="bench">
+  <div class="col">
+    <div class="panel">
+      <div class="device">
+<div class="vfd mel" aria-label="انفرتر Mitsubishi FR-E800">
+  <div class="mel-top"><span class="mel-logo"><svg viewBox="0 0 30 26" aria-hidden="true"><path d="M15 1l4 7-4 7-4-7zM6.5 15.5h8l-4 7h-8zM23.5 15.5h-8l4 7h8z" fill="#e60012"/></svg>MITSUBISHI ELECTRIC</span><span class="mel-led" id="mPow"></span></div>
+  <div class="mel-panel">
+    <div class="mel-disp">
+      <div class="mel-ind"><span><i class="led" id="mRun"></i>RUN</span><span><i class="led" id="mMon"></i>MON</span><span><i class="led" id="mPrm"></i>PRM</span></div>
+      <div class="seg7 mel-seg" id="melSeg" title="بيان: الشاشة 4 أرقام"></div>
+      <div class="mel-unit"><span><i class="led" id="mHz"></i>Hz</span><span><i class="led" id="mA"></i>A</span></div>
+    </div>
+    <div class="mel-mode"><span><i class="led" id="mPU"></i>PU</span><span><i class="led" id="mEXT"></i>EXT</span><span><i class="led" id="mNET"></i>NET</span></div>
+    <div class="mel-mid">
+      <button class="mk run" data-k="RUN" aria-label="RUN تشغيل">RUN</button>
+      <div class="mel-dial" data-dial="1" tabindex="0" role="slider" aria-label="M dial (اللف يغيّر القيمة)"><i></i></div>
+      <button class="mk stop" data-k="STOP" aria-label="STOP/RESET">STOP<br><small>RESET</small></button>
+    </div>
+    <div class="mel-bot">
+      <button class="mk" data-k="MODE" aria-label="MODE">MODE</button>
+      <button class="mk" data-k="SET" aria-label="SET">SET</button>
+      <button class="mk" data-k="PUEXT" aria-label="PU/EXT">PU<br>EXT</button>
+    </div>
+  </div>
+  <div class="mel-body"><div class="mel-vents"><i></i><i></i><i></i><i></i><i></i></div><div class="mel-plate"><b>FR-E840-0095</b><span>3.7K · 3PH 380–480V · 9.5A</span></div></div>
+</div>
+
+      </div>
+      <p class="hint" id="faceHint" style="text-align:center"><span class="tagc">تحكم</span> الزراير والـ M dial (اسحبه في دواير أو استخدم عجلة الماوس) <span class="tagv">بيان</span> الشاشة واللمبات (Hz و A، RUN، MON و PRM، PU و EXT)</p>
+      <ul class="keyguide">
+<li><b>M dial</b> (العجلة): لفها تغيّر التردد في PU أو تختار الباراميتر وتغيّر قيمته. لف بسرعة = خطوات أكبر.</li><li><b>SET</b> يكتب القيمة (القيمة ورقمها ينوّروا بالتبادل)، وفي المونيتور يقلب Hz و A و V.</li><li><b>MODE</b> يلف: المونيتور ← الباراميترات (P.) ← سجل الأعطال.</li><li><b>PU/EXT</b> يقلب بين PU (الكيباد) و EXT (الأطراف) لما Pr.79 = 0. الكتابة في الباراميترات في PU بس، وإلا يظهر Er4.</li><li><b>RUN</b> تشغيل في PU. <b>STOP/RESET</b> إيقاف ومسح العطل.</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h2>لوحة التشغيل (أطراف الكنترول)<span class="tagc">تحكم</span></h2>
+      <div class="station" id="station"></div>
+      <p class="hint">الـ FR-E800 جاي من المصنع Sink logic: الدخل (STF و STR و RL و RM و RH و MRS و RES) يشتغل لما يتقفل على SD. البوت بيتغذّى من طرف 10 (5V) عشان كده طرف 2 مصنعياً 0-5V. في التمارين: كونتاكت الأوفرلود الخارجي على MRS (لما Pr.183 = 7 OH)، و RL و RM سرعات. دبل كليك على أي مقبض يصفّره.</p>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="panel">
+      <h2>الموتور والحمل<span class="tagv">بيان</span></h2>
+      <div class="mview">
+        <svg viewBox="0 0 380 170" aria-label="موتور حثي">
+          <defs>
+            <linearGradient id="mb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6c8fb3"/><stop offset=".45" stop-color="#3d5f84"/><stop offset="1" stop-color="#253d58"/></linearGradient>
+            <linearGradient id="sh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1f3f4"/><stop offset=".5" stop-color="#a7adb2"/><stop offset="1" stop-color="#6d7378"/></linearGradient>
+          </defs>
+          <rect x="6" y="76" width="46" height="18" rx="2" fill="url(#sh)"/>
+          <rect x="50" y="34" width="18" height="102" rx="3" fill="url(#mb)"/>
+          <rect x="68" y="32" width="196" height="106" rx="10" fill="url(#mb)"/>
+          <g stroke="#1d3349" stroke-width="2" opacity=".55"><line x1="78" y1="44" x2="254" y2="44"/><line x1="78" y1="56" x2="254" y2="56"/><line x1="78" y1="114" x2="254" y2="114"/><line x1="78" y1="126" x2="254" y2="126"/></g>
+          <rect x="264" y="40" width="34" height="90" rx="14" fill="url(#mb)"/>
+          <rect x="140" y="12" width="56" height="22" rx="3" fill="#36536f"/>
+          <path d="M170 12C170 0 250-2 376 4" stroke="#222" stroke-width="7" fill="none"/>
+          <rect x="102" y="66" width="122" height="40" rx="3" fill="#d6dadd"/>
+          <text x="108" y="79" font-size="8" font-weight="700" fill="#1b2226" font-family="Arial" id="mPlate1">3~ MOTOR 4 kW</text>
+          <text x="108" y="90" font-size="7" fill="#1b2226" font-family="Arial" id="mPlate2">400V 50Hz 8.2A</text>
+          <text x="108" y="100" font-size="7" fill="#1b2226" font-family="Arial" id="mPlate3">1440 r/min  cos 0.82</text>
+          <rect x="70" y="140" width="190" height="10" fill="#2b3d50"/>
+          <g transform="translate(316 85)"><circle r="30" fill="none" stroke="#8a96a2" stroke-width="2" stroke-dasharray="3 3"/><g id="fanBlades"><path d="M0 0 L5 -26 L-5 -26Z M0 0 L26 5 L26 -5Z M0 0 L-5 26 L5 26Z M0 0 L-26 -5 L-26 5Z" fill="#9aa6b1"/></g><circle r="5" fill="#556"/></g>
+          <g transform="translate(29 85)"><g id="shaftMark"><rect x="-3" y="-9" width="6" height="18" fill="#c0352b"/></g></g>
+          <text x="190" y="166" text-anchor="middle" font-size="10" fill="#7a868f" font-family="Arial" id="mDir"></text>
+        </svg>
+        <svg viewBox="0 0 160 160" id="loadSvg" aria-label="الحمل"></svg>
+      </div>
+      <div class="tiles">
+        <div class="tile"><div class="label">تردد الخرج</div><div class="v" id="tF">0.00<small>Hz</small></div></div>
+        <div class="tile"><div class="label">سرعة الموتور</div><div class="v" id="tN">0<small>rpm</small></div></div>
+        <div class="tile"><div class="label">التيار</div><div class="v" id="tI">0.00<small>A</small></div><div class="bar"><i id="bI"></i></div></div>
+        <div class="tile"><div class="label">جهد الخرج</div><div class="v" id="tV">0<small>V</small></div></div>
+        <div class="tile"><div class="label">العزم</div><div class="v" id="tT">0<small>%</small></div></div>
+        <div class="tile"><div class="label">DC Bus</div><div class="v" id="tB">0<small>V</small></div><div class="bar"><i id="bB"></i></div></div>
+        <div class="tile"><div class="label">حمل الموتور الحراري</div><div class="v" id="tOL">0<small>%</small></div><div class="bar"><i id="bOL"></i></div></div>
+        <div class="tile"><div class="label">حرارة الانفرتر</div><div class="v" id="tHS">35<small>°C</small></div><div class="bar"><i id="bHS"></i></div></div>
+      </div>
+      <div class="statusline" id="pills"></div>
+    </div>
+    <div class="panel" id="pnlScope">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px"><h2 style="margin:0">الاسكوب<span class="tagv">بيان</span></h2>
+        <div class="row"><select id="scopeSpan" class="btn" aria-label="مدة العرض"><option value="5">5 ثواني</option><option value="15" selected>15 ثانية</option><option value="40">40 ثانية</option></select><button class="btn" id="scopePause">إيقاف مؤقت</button></div></div>
+      <div class="scopewrap"><canvas id="scope"></canvas></div>
+      <div class="legend">
+        <span><i style="background:#ffb44d"></i>أمر التردد Hz</span>
+        <span><i style="background:#4cc0cf"></i>تردد الخرج Hz</span>
+        <span><i style="background:#ff6b5e"></i>التيار % من 9.5A</span>
+        <span><i style="background:#a98bff"></i>DC Bus (÷10 V)</span>
+      </div>
+    </div>
+    <div class="panel" id="pnlLoad">
+      <h2>الحمل والكهربا والأعطال<span class="tagc">تحكم</span></h2>
+      <div class="fields">
+        <div class="field"><span class="label">الموتور المركّب</span><select id="motSel"><option value="iec">4 kW · 400V · 50Hz · 1440 rpm</option><option value="nema">5 HP · 460V · 60Hz · 1750 rpm</option></select></div>
+        <div class="field"><span class="label">جهد المصدر</span><select id="lineSel"><option>380</option><option selected>400</option><option>415</option><option>460</option><option>480</option></select></div>
+        <div class="field"><span class="label">نوع الحمل</span><select id="loadSel"><option value="conv">سير ناقل (عزم ثابت)</option><option value="fan">مروحة / طلمبة (عزم ∝ السرعة²)</option><option value="hoist">ونش (الحمل بيشد لتحت)</option></select></div>
+        <div class="field"><span class="label">الحمل: <b id="lpV" class="mono">40%</b> من عزم الموتور</span><input type="range" id="lp" min="0" max="160" step="1" value="40"></div>
+        <div class="field"><span class="label">قصور الحمل ÷ قصور الموتور: <b id="jrV" class="mono">3</b></span><input type="range" id="jr" min="0" max="40" step="0.5" value="3"></div>
+        <div class="field"><span class="label">حرارة الجو: <b id="ambV" class="mono">35°C</b></span><input type="range" id="amb" min="10" max="50" step="1" value="35"></div>
+      </div>
+      <div class="io" style="margin-top:12px">
+        <label class="check"><input type="checkbox" id="dbChk"> مركّب مقاومة فرملة 100Ω على + و PR</label>
+      </div>
+      <h3 class="subhead">اعمل عطل</h3>
+      <div class="inj">
+        <button class="btn" data-inj="dip" aria-pressed="false">⚡ انقطاع كهربا لحظي (0.8 ث)</button>
+        <button class="btn" data-inj="hiline" aria-pressed="false">⬆ جهد المصدر عالي +18%</button>
+        <button class="btn" data-inj="loline" aria-pressed="false">⬇ جهد المصدر واطي −34%</button>
+        <button class="btn" data-inj="gnd" aria-pressed="false">⏚ تسريب أرضي على فاز U</button>
+        <button class="btn" data-inj="short" aria-pressed="false">✕ قصر بين U و V</button>
+        <button class="btn" data-inj="phase" aria-pressed="false">✂ فاز W مفصول عند الموتور</button>
+        <button class="btn" data-inj="jam" aria-pressed="false">⛓ الحمل اتزنق (Jam)</button>
+        <button class="btn" data-inj="belt" aria-pressed="false">⭘ السير اتقطع (Load Loss)</button>
+        <button class="btn" data-inj="fan" aria-pressed="false">🌀 مروحة الانفرتر واقفة</button>
+        <button class="btn" data-inj="mabrk" aria-pressed="false">✂ سلك 4-20mA مقطوع</button>
+        <button class="btn" data-inj="ext" aria-pressed="false">⛔ الحماية الخارجية فصلت</button>
+      </div>
+      <p class="hint" id="loadHint"></p>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="advBar" hidden><button class="btn big" id="advBtn" type="button" aria-expanded="false">عرض المتقدم ▾</button><span class="hint" style="margin:0">التمارين المحلولة كاملة، مخطط التوصيل الحي، جدول الباراميترات، الأعطال، المرجع، التمارين، والسجل. كله لسه موجود.</span></div>
+
+<div class="panel advonly" id="solPanel">
+  <h2 style="margin:0 0 4px">تمارين محلولة: التوصيل والباراميترات<span class="tagc">تحكم</span></h2>
+  <p class="hint" style="margin:0 0 12px">6 تطبيقات على الـ FR-E800. كل واحد فيه رسمة التوصيل على الأطراف الحقيقية، وجنبها الباراميترات اللي بتتظبط، والخطوات. زرار <b>طبّق في المحاكي</b> بيكتب الباراميترات في الانفرتر اللي فوق ويظبط اللوحة زي الرسمة.</p>
+  <div class="soltabs" id="solTabs" role="group" aria-label="اختار التطبيق"></div>
+  <div id="solBody"></div>
+</div>
+
+<div class="panel advonly">
+  <h2 style="margin:0 0 6px">مخطط التوصيل الحي<span class="tagv">بيان</span><span class="tagc">الزراير اللي فيه</span></h2>
+  <p class="hint" style="margin-top:0">نفس اللوحة اللي فوق مرسومة بأسلاكها على أطراف الـ FR-E800 (Sink logic: الكومن SD). السلك اللي عليه جهد بيبقى ملوّن، والمقطوع رمادي. تقدر تدوس على الزراير والسلكتورات اللي في الرسمة كمان.</p>
+  <div class="boardscroll"><svg id="wd" viewBox="0 0 1200 860" aria-label="مخطط التوصيل"></svg></div>
+  <div class="wlegend">
+    <span><i style="background:#7b3f12"></i>L1 L2 L3</span><span><i style="background:repeating-linear-gradient(90deg,#2e9c3a 0 5px,#f3d21b 5px 10px)"></i>أرضي PE</span><span><i style="background:#c8261c"></i>U V W للموتور</span>
+    <span><i style="background:#d62f2f"></i>مقاومة الفرملة</span><span><i style="background:#20307a"></i>Common</span><span><i style="background:#e8870c"></i>دخول ديجيتال</span><span><i style="background:#5b6670"></i>أنالوج</span><span><i style="background:#6b3fa0"></i>ريليهات ومخارج</span>
+  </div>
+</div>
+
+<div class="panel advonly">
+  <div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 style="margin:0">الباراميترات<span class="tagc">تحكم</span></h2><span class="toast" id="ptoast"></span></div>
+  <div class="ptools">
+    <div class="tabs" id="ptabs"></div>
+    <input type="text" id="psearch" placeholder="دوّر برقم أو اسم…" style="flex:1;min-width:160px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 10px">
+    <label class="check"><input type="checkbox" id="pchanged"> المتغير بس</label>
+  </div>
+  <div class="pdet" id="pdetail"></div>
+  <div class="tablewrap" style="max-height:520px;overflow:auto"><table><thead><tr><th>رقم</th><th>الاسم على الشاشة</th><th>الوظيفة</th><th>القيمة</th><th>المصنع</th><th>المدى</th></tr></thead><tbody id="ptable"></tbody></table></div>
+  <p class="hint"><span class="badge s">Stop</span> يتغير والانفرتر واقف بس. <span class="badge r">قراءة</span> بيان بس. الجدول والكيباد بيشتغلوا على نفس الباراميترات، أي تغيير هنا بيبان على الشاشة والعكس. دوس على أي صف يظهر شرحه.</p>
+</div>
+
+<div class="grid2 advonly">
+  <div class="panel">
+    <h2>الأعطال<span class="tagv">بيان</span></h2>
+    <div class="tablewrap" style="max-height:360px;overflow:auto"><table class="flt"><thead><tr><th>الكود</th><th>على الشاشة</th><th>السبب</th><th>الحل</th></tr></thead><tbody id="fltTable"></tbody></table></div>
+  </div>
+  <div class="panel" id="refPanel">
+    <h2>المرجع الفني<span class="tagv">بيان</span></h2>
+    <div class="reftabs" id="reftabs"></div>
+    <div class="refbody" id="refBody"></div>
+  </div>
+</div>
+
+<div class="grid2 advonly">
+  <div class="panel"><h2>تمارين</h2><div id="exList"></div></div>
+  <div class="panel"><div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 style="margin:0">السجل</h2><div class="row"><button class="btn" id="btnFactory">رجّع المحاكي كله للبداية</button><button class="btn" id="logClr">امسح</button></div></div><div class="log" id="log"></div></div>
+</div>
+<p class="drvnote">⚠ أرقام الباراميترات والأطراف وأكواد الأعطال والقيم الافتراضية مكتوبة للتدريب على أساس مانيوال FR-E800 و FR-E700/D700 من الذاكرة، وبعض الحاجات متبسّطة (مثلاً طرف 4 وإشارة AU مش متمثّلين، والقيم الافتراضية لموديلات 50 Hz). الموديلات بتختلف (FR-E820 و FR-E840 و FR-D720 و FR-D740)، فلازم تراجع مانيوال Mitsubishi اللي مع الجهاز قبل أي توصيل أو ضبط حقيقي.</p>
+</div>
+<script>
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const TAU=Math.PI*2, DT=0.002, SQ3=Math.sqrt(3);
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const rnd=(v,d)=>{const k=Math.pow(10,d);return Math.round(v*k)/k;};
+const z2=n=>String(n).padStart(2,'0');
+/* ---------------- motors ---------------- */
+const MOT={
+ iec:{V:400,f:50,rpm:1440,I:8.2,kw:4,J:0.015,Rs:1.5,plate:['3~ MOTOR 4 kW','400V 50Hz 8.2A','1440 r/min  cos 0.82']},
+ nema:{V:460,f:60,rpm:1750,I:6.6,kw:3.73,J:0.016,Rs:1.9,plate:['3~ MOTOR 5 HP','460V 60Hz 6.6A','1750 r/min  PF 0.83']}};
+for(const m of Object.values(MOT)){m.ns=60*m.f/2;m.wn=m.rpm*TAU/60;m.Tn=m.kw*1000/m.wn;m.sn=(m.ns-m.rpm)*TAU/60;m.vhz=m.V/m.f;m.I0=0.42*m.I;m.Iq=Math.sqrt(m.I*m.I-m.I0*m.I0);m.slk=5.2*m.sn;m.Tmax=2.7*m.Tn;m.ir=m.Rs*m.I*SQ3;}
+/* ---------------- parameters ---------------- */
+const PD=[],PM={},P={};
+function def(c,nm,ar,o){const p=Object.assign({c,g:null,nm,ar,t:'n',mn:0,mx:0,st:1,dc:0,u:'',d:0,x:''},o||{});if(p.g==null)p.g=DRIVE.grpOf(c);if(p.o){p.t='e';p.ok=Object.keys(p.o).map(Number).sort((a,b)=>a-b);}if(p.get)p.t='ro';PD.push(p);PM[c]=p;return p;}
+function pval(p){return p.t==='ro'?p.get():P[p.c];}
+function fmtV(p,v){if(p.t==='e')return v+' '+(p.o[v]!=null?p.o[v]:'');if(p.fmt)return p.fmt(v);return (+v).toFixed(p.dc)+(p.u?' '+p.u:'');}
+function valStr(p,v){if(p.fmt)return p.fmt(v);if(p.t==='e')return String(v);return (+v).toFixed(p.dc);}
+/* ---------------- state ---------------- */
+const S={
+ mot:'iec',lineV:400,load:'conv',lp:40,jr:3,amb:35,dbInst:false,
+ brk:true,bus:0,busNom:566,ctrl:false,boot:0,
+ st:'off',run:false,jog:false,dir:1,kdir:1,fRamp:0,rv:0,fOut:0,fCmd:0,fTgt:0,slip:0,
+ wm:0,th:0,T:0,TL:0,I:0,If:0,Iq:0,V:0,P:0,phi:0,olM:0,olD:0,hs:35,hrs:0,kwh:0,ton:0,
+ fault:null,fq:[],retries:0,retryT:0,okRunT:0,stallT:0,llT:0,gT:0,startT:0,phT:0,lossT:0,
+ climit:false,blimit:false,db:false,src:'kp',srcStart:'kp',code:0,need2w:true,maF:4,vF:0,kpRef:0,loc:false,
+ inj:{dip:false,hiline:false,loline:false,gnd:false,short:false,phase:false,jam:false,belt:false,fan:false,mabrk:false,ext:false},dipT:0,
+ io:{di:{},pot:0,ma:4,kpot:0,rstBtn:false},
+ prev:{},out:{r1:false,r2:false},lock:0,stopOk:false,stopFrom:0,t:0,aiHold:0};
+const EV={};
+let K={di:{}};
+function log(t,a){const d=document.createElement('div');const tm=new Date();d.innerHTML='<time>'+tm.toTimeString().slice(0,8)+'</time><span'+(a?' class="a"':'')+'></span>';d.lastChild.textContent=t;const L=$('#log');if(!L)return;L.prepend(d);while(L.children.length>200)L.lastChild.remove();}
+/* ---------------- 7-segment renderer ---------------- */
+const SEGS={'0':'abcdef','1':'bc','2':'abged','3':'abgcd','4':'fgbc','5':'afgcd','6':'afgedc','7':'abc','8':'abcdefg','9':'abcdfg',
+ 'A':'abcefg','a':'abcdeg','b':'fgedc','B':'fgedc','C':'adef','c':'ged','d':'bcdeg','D':'bcdeg','E':'adefg','e':'abdefg','F':'aefg','f':'aefg','G':'acdef','g':'abcdfg','H':'bcefg','h':'cefg','I':'ef','i':'e','J':'bcde','j':'bcd','K':'befg','k':'befg','L':'def','l':'ef','M':'aceg','m':'aceg','N':'abcef','n':'ceg','O':'abcdef','o':'cdeg','P':'abefg','p':'abefg','Q':'abcfg','q':'abcfg','R':'eg','r':'eg','S':'afgcd','s':'afgcd','T':'defg','t':'defg','U':'bcdef','u':'cde','V':'bcdef','v':'cde','W':'bdf','w':'bdf','X':'bcefg','x':'bcefg','Y':'bcdfg','y':'bcdfg','Z':'abged','z':'abged','-':'g','_':'d','=':'dg','"':'bf',"'":'f','[':'adef',']':'abcd',' ':'','°':'abfg'};
+const SEGPOLY=(()=>{const t=8,xl=6,xr=42,yt=5,ym=45,yb=85;
+ const Hh=(x1,x2,y)=>`${x1+t/2},${y} ${x1+t},${y-t/2} ${x2-t},${y-t/2} ${x2-t/2},${y} ${x2-t},${y+t/2} ${x1+t},${y+t/2}`;
+ const Vv=(x,y1,y2)=>`${x},${y1+t/2} ${x+t/2},${y1+t} ${x+t/2},${y2-t} ${x},${y2-t/2} ${x-t/2},${y2-t} ${x-t/2},${y1+t}`;
+ return {a:Hh(xl,xr,yt),g:Hh(xl,xr,ym),d:Hh(xl,xr,yb),f:Vv(xl,yt,ym),b:Vv(xr,yt,ym),e:Vv(xl,ym,yb),c:Vv(xr,ym,yb)};})();
+/* cells: string -> [{ch,dp,bl}] right aligned to n */
+function cellsOf(str,n){const c=[];for(const ch of String(str)){if(ch==='.'&&c.length&&!c[c.length-1].dp){c[c.length-1].dp=true;continue;}c.push({ch,dp:false,bl:false});}while(c.length<n)c.unshift({ch:' ',dp:false,bl:false});return c.slice(-n);}
+function cellsL(str,n){const r=[];for(const ch of String(str)){if(ch==='.'&&r.length&&!r[r.length-1].dp){r[r.length-1].dp=true;continue;}r.push({ch,dp:false,bl:false});}while(r.length<n)r.push({ch:' ',dp:false,bl:false});return r.slice(0,n);}
+function segSVG(cells,on,col,off){
+ col=col||'#ff3b24';off=off||'rgba(255,60,40,.08)';
+ const pitch=56,n=cells.length;let o='<svg viewBox="0 0 '+(n*pitch+8)+' 92" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><g transform="translate(10,0) skewX(-6)">';
+ cells.forEach((c,i)=>{const lit=on?(SEGS[c.ch]!=null?SEGS[c.ch]:(SEGS[c.ch.toUpperCase()]||'')):'';o+='<g transform="translate('+i*pitch+',0)"'+(on&&c.bl?' class="bl"':'')+'>';
+  for(const k of 'abcdefg'){const L=lit.includes(k);o+='<polygon points="'+SEGPOLY[k]+'" fill="'+(L?col:off)+'"/>';}
+  o+='<circle cx="50" cy="85" r="4.5" fill="'+(on&&c.dp?col:off)+'"/></g>';});
+ return o+'</g></svg>';
+}
+const segCache={};
+function segDraw(el,cells,on,col,off){if(!el)return;const k=on+'|'+cells.map(c=>c.ch+(c.dp?'.':'')+(c.bl?'*':'')).join('');if(segCache[el.id]===k)return;segCache[el.id]=k;el.innerHTML=segSVG(cells,on,col,off);}
+function htmlSet(el,h){if(el&&el._h!==h){el._h=h;el.innerHTML=h;}}
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const bd=h=>String(h).split(/(<[^>]*>)/).map(s=>s[0]==='<'?s:s.replace(/(?<![&#\w])[A-Za-z0-9][A-Za-z0-9.\-\/+%]*(?::?\s[A-Za-z0-9][A-Za-z0-9.\-\/+%]*)*(?![\w;])/g,m=>'<bdi>'+m+'</bdi>')).join('');
+
+</script>
+<script>
+/* ================= Mitsubishi FR-E800 (FR-E840-0095) ================= */
+const TFO={0:'RL',1:'RM',2:'RH',7:'OH',24:'MRS',60:'STF',61:'STR',62:'RES',9999:'No function'};
+const TFN={0:'ms1',1:'ms2',2:'ms3',7:'extNC',24:'coast',60:'fwd',61:'rev',62:'rst'};
+const OUTO={0:'RUN',1:'SU',3:'OL',99:'ALM'};
+const ROG={0:'run',1:'atspd',3:'ol',99:'fault'};
+const SIMPLE=['Pr.0','Pr.1','Pr.2','Pr.3','Pr.4','Pr.5','Pr.6','Pr.7','Pr.8','Pr.9','Pr.79','Pr.125','Pr.126','Pr.160','ALLC'];
+const prN=c=>c==='ALLC'?9999:parseInt(c.slice(3),10);
+const DRIVE={
+ id:'fre800',key:'fre800-lab-v1',short:'FR-E800',model:'FR-E840-0095 · 3.7K',
+ wdName:'MITSUBISHI FR-E800',wdSub:'FR-E840-0095 · 3.7 kW · 9.5A · Sink logic (الدخل بيتقفل على SD)',wdBox:'#2b2e31',wdCol:'#f2f4f5',
+ hw:{In:9.5,ov:810,uv:380,busLim:770,dbOn:780,dbOff:755,dbR:100,hsTrip:100},
+ v10:5,
+ grpOf:c=>{if(c==='ALLC')return 'CLR';const n=prN(c);return n<=9?'BAS':n<=27?'SPD':n<=80?'OPR':n<=160?'ANA':n<=192?'TRM':'PRT';},
+ G:[['BAS','Basic (Pr.0–9)'],['SPD','Speeds/ramps'],['OPR','Operation'],['ANA','Analog / display'],['TRM','I/O terminals'],['PRT','Protection'],['CLR','Clear']],
+ GAR:{BAS:'الأساسي',SPD:'السرعات والأزمنة',OPR:'وضع التشغيل والموتور',ANA:'الأنالوج والعرض',TRM:'وظايف الأطراف',PRT:'الحماية',CLR:'رجوع للمصنع'},
+ tabLbl:k=>({BAS:'Basic',SPD:'Speed',OPR:'Oper',ANA:'Analog',TRM:'I/O',PRT:'Prot',CLR:'ALLC'})[k]||k,
+ kpRef0:0,
+ SRCL:{kp:'PU (M dial)',ai1:'Terminal 2',ai2:'Terminal 4',preset:'Multi-speed',zero:'0'},
+ FNN:{fwd:'STF',rev:'STR',ms1:'RL',ms2:'RM',ms3:'RH',extNC:'OH',coast:'MRS',rst:'RES',none:'No function'},
+ T:{com:'SD',comLbl:'SD (Sink: الدخل يشتغل لما يتقفل على SD)',comLbl2:'SD',fwd:'STF',rev:'STR',ms1:'RL',ms2:'RM',ext:'MRS',rst:'RES',v10:'T10',aiv:'T2',acom:'T5',aii:'T4',acom2:'T5',ao:'AM',aocom:'T5',
+  r1:{c:'C',a:'A',b:'B',nm:'A,B,C',lamps:['r','w']},r2:{c:'SE',a:'RUN',nm:'RUN',lamp:'g',kind:'oc'}},
+ CT:[['STF','STF'],['STR','STR'],['RH','RH'],['RM','RM'],['RL','RL'],['MRS','MRS'],['RES','RES'],['SD','SD','Sink com'],['PC','PC','+24V'],['T10','10','+5V'],['T2','2',()=>P['Pr.73']===1?'0-5V':'0-10V'],['T5','5','Analog com'],['T4','4','4-20mA'],['AM','AM','0-10V out'],['RUN','RUN','Open coll.'],['SE','SE','RUN com'],['A','A','NO'],['B','B','NC'],['C','C','Com'],['S1','S1','Safety'],['S2','S2','Safety'],['SIC','SIC','Safety com']],
+ PWR:[['R/L1','L1'],['S/L2','L2'],['T/L3','L3'],['⏚','PE'],['+','B1'],['PR','B2'],['−','DC-'],['U','U'],['V','V'],['W','W']],
+ JUMPS:[[['S1','S2','PC'],'جمبر S1 S2 على PC']],
+ kpPath:p=>'PU/EXT لحد PU ← MODE (يظهر P.) ← لف الـ M dial لحد '+p.c.replace('Pr.','P.')+' ← SET ← لف ← SET'+(SIMPLE.includes(p.c)?'':' (لازم Pr.160 = 0 الأول عشان يبان)'),
+ resetHow:'بزرار <b>STOP/RESET</b>',faultLamp:' والشاشة بتعرض كود يبدأ بـ E.',
+ BASE:[['Pr.9',8.2],['Pr.3',50],['Pr.19',400],['Pr.20',50]],
+ firstParams:['Pr.160','Pr.79'],
+ FL:{
+  oc_a:{c:'E.OC1',d:'E.OC1',n:'Overcurrent trip during acceleration',w:'التيار عدّى الحد وهو بيسرّع: Pr.7 قليل أو Pr.0 كبير أو الحمل تقيل، أو قصر على الخرج',f:'زوّد Pr.7، قلل Pr.0، وقيس عزل الكابل والموتور'},
+  oc_n:{c:'E.OC2',d:'E.OC2',n:'Overcurrent trip during constant speed',w:'التيار عدّى الحد والسرعة ثابتة: الحمل اتزنق فجأة أو قصر في الكابل',f:'شوف الحمل، وقيس بين الفازات وبين كل فاز والأرضي'},
+  oc_d:{c:'E.OC3',d:'E.OC3',n:'Overcurrent trip during deceleration/stop',w:'التيار عدّى الحد وهو بيهدّي: Pr.8 قليل أوي',f:'زوّد Pr.8، وراجع الكابل'},
+  ov_a:{c:'E.OV1',d:'E.OV1',n:'Regenerative overvoltage during acceleration',w:'الـ DC bus علي وهو بيسرّع (الحمل بيلف الموتور أسرع)',f:'قلل Pr.7 أو فعّل Pr.882'},
+  ov_n:{c:'E.OV2',d:'E.OV2',n:'Regenerative overvoltage during constant speed',w:'الحمل بيرجّع طاقة والسرعة ثابتة، أو جهد المصدر عالي',f:'راجع جهد المصدر، فعّل Pr.882، أو ركّب مقاومة فرملة'},
+  ov_d:{c:'E.OV3',d:'E.OV3',n:'Regenerative overvoltage during deceleration/stop',w:'الطاقة الراجعة من الحمل وهو بيهدّي عليت الـ DC bus: Pr.8 قليل والقصور كبير و Pr.882 = 0',f:'زوّد Pr.8، أو Pr.882 = 1 (Regeneration avoidance)، أو ركّب مقاومة على + و PR مع Pr.30 = 1'},
+  old:{c:'E.THT',d:'E.THT',n:'Inverter overload trip',w:'الانفرتر نفسه شايل أكتر من مقننه مدة طويلة',f:'قلل الحمل أو استخدم انفرتر أكبر'},
+  olm:{c:'E.THM',d:'E.THM',n:'Motor overload trip (electronic thermal)',w:'الحماية الحرارية الإلكترونية للموتور (Pr.9) وصلت الحد',f:'قلل الحمل، اتأكد إن Pr.9 = تيار لوحة الموتور، واستنى الموتور يبرد'},
+  oh:{c:'E.FIN',d:'E.FIN',n:'Heatsink overheat',w:'المشتت سخن: المروحة واقفة أو اللوحة سخنة',f:'راجع المروحة والتهوية وحرارة اللوحة'},
+  pl:{c:'E.IPF',d:'E.IPF',n:'Instantaneous power failure',w:'الكهربا قطعت لحظة والانفرتر شغال',f:'راجع المصدر، وبعدين STOP/RESET'},
+  uv:{c:'E.UVT',d:'E.UVT',n:'Undervoltage',w:'جهد المصدر واطي والـ DC bus نزل تحت الحد',f:'راجع جهد المصدر والكابلات والكونتاكتور'},
+  gf:{c:'E.GF',d:'E.GF',n:'Output side earth (ground) fault overcurrent',w:'تيار بيتسرب للأرضي من الخرج (بيتكشف عند البدء)',f:'افصل الكهربا والموتور وقيس العزل بالميجر'},
+  lf:{c:'E.LF',d:'E.LF',n:'Output phase loss',w:'فاز من U V W مفصول و Pr.251 = 1',f:'راجع كابل الموتور والأطراف والكونتاكتور اللي على الخرج'},
+  ext:{c:'E.OHT',d:'E.OHT',n:'External thermal relay operation',w:'الطرف المتظبط OH (وظيفة 7) فتح: الأوفرلود الخارجي فصل',f:'شوف الأوفرلود أو الثرموستات اللي فصل وسيبه يبرد، وبعدين STOP/RESET'},
+  stall:{c:'E.OLT',d:'E.OLT',n:'Stall prevention stop',w:'الانفرتر فضل في حد التيار (Pr.22) والتردد نزل ومش قادر يكمل',f:'شوف الحمل، وزوّد Pr.7، وراجع Pr.22'},
+  lci:{c:'E.LCI',d:'E.LCI',n:'4 mA input loss',w:'إشارة 4-20mA على طرف 4 ضاعت (حسب الإعداد). المحاكي مش بيستخدم طرف 4 في التمارين',f:'صلّح سلك الإشارة'}},
+ ALIAS:{sc:'oc',ail:'lci'},
+ K:()=>{
+  const p=P,m=p['Pr.79'],K={di:{}};
+  const pu=m===1||((m===0||m===6)&&S.loc);
+  if(m===1)S.loc=true;else if(m===2||m===3||m===4)S.loc=false;
+  [['STF','Pr.178'],['STR','Pr.179'],['RL','Pr.180'],['RM','Pr.181'],['RH','Pr.182'],['MRS','Pr.183'],['RES','Pr.184']].forEach(([t,c])=>{const f=TFN[p[c]];if(f)K.di[t]=f;});
+  K.pu=pu;K.mode=m;
+  K.runSrc=pu||m===4?'kp':'term';K.refSrc=pu||m===3?'kp':'ai1';K.wire='2w1';
+  K.kpHz=S.kpRef;
+  if(!pu)K.ms=b=>{const L=b.ms1,M=b.ms2,H=b.ms3;if(!L&&!M&&!H)return null;
+   const v=c=>p[c]===9999?null:p[c];
+   let f=L&&M&&H?v('Pr.27'):L&&M?v('Pr.24'):L&&H?v('Pr.25'):M&&H?v('Pr.26'):null;
+   if(f==null)f=L?p['Pr.6']:M?p['Pr.5']:p['Pr.4'];return f;};
+  K.fmax=p['Pr.1'];K.fmin=p['Pr.2'];K.revDis=p['Pr.78']===1;K.kpDir=p['Pr.40']===1?-1:1;
+  K.accRef=p['Pr.20'];K.acc=p['Pr.7'];K.dec=p['Pr.8'];K.stopMode='ramp';
+  K.fbase=p['Pr.3'];K.vbase=p['Pr.19']===9999?S.lineV:p['Pr.19'];K.vmax=K.vbase;
+  K.ctl=p['Pr.80']===9999?'vf':'svc';K.rpmN=MOT[S.mot].rpm;K.poles=p['Pr.81']===9999?4:p['Pr.81'];
+  K.boost=p['Pr.0'];K.olI=p['Pr.9'];K.ilim=p['Pr.22']/100*DRV.In;K.ovStall=p['Pr.882']===1;K.ovLvl=770;K.db=p['Pr.30']===1;
+  K.stallTrip=true;K.stallTime=3;K.phLoss=p['Pr.251']===1;K.carrier=p['Pr.72'];
+  K.ai1={v0:0,v1:p['Pr.73']===1?5:10,f0:p['C2'],f1:p['Pr.125']};
+  K.ai2={v0:4,v1:20,f0:0,f1:p['Pr.126'],loss:'none'};
+  K.ro={r1:ROG[p['Pr.192']]||'none',r2:ROG[p['Pr.190']]||'none'};
+  K.ao={fn:({1:'freq',2:'cur',3:'volt'})[p['Pr.158']]||'none',gain:100};
+  K.kpStopTerm=true;
+  return K;
+ },
+ onSet:(c,v)=>{
+  if(c==='ALLC'&&v===1){resetParams();S.loc=false;log('ALLC = 1: كل الباراميترات رجعت لقيم المصنع');}
+  if(c==='Pr.79'){if(v===0)S.loc=false;log('Pr.79 = '+v+': '+PM['Pr.79'].o[v]);}
+ }
+};
+/* ---------- parameters ---------- */
+def('Pr.0','Torque boost','رفع الجهد عند البداية',{mn:0,mx:30,st:.1,dc:1,u:'%',d:4,x:'جهد زيادة في السرعات الواطية (V/F). كبير أوي = تيار عالي و E.OC1.'});
+def('Pr.1','Maximum frequency','أقصى تردد',{mn:0,mx:120,st:.01,dc:2,u:'Hz',d:120,x:'أقصى تردد الانفرتر يطلّعه مهما كان المرجع. المصنع 120 Hz.'});
+def('Pr.2','Minimum frequency','أقل تردد',{mn:0,mx:120,st:.01,dc:2,u:'Hz',d:0,x:''});
+def('Pr.3','Base frequency','التردد الأساسي',{mn:0,mx:590,st:.01,dc:2,u:'Hz',d:50,rl:1,x:'تردد لوحة الموتور. (في موديلات اليابان والأمريكا المصنع 60 Hz.)'});
+def('Pr.4','Multi-speed setting (high speed)','السرعة العالية (RH)',{mn:0,mx:590,st:.01,dc:2,u:'Hz',d:50,x:'لما RH يتقفل على SD.'});
+def('Pr.5','Multi-speed setting (middle speed)','السرعة المتوسطة (RM)',{mn:0,mx:590,st:.01,dc:2,u:'Hz',d:30,x:'لما RM يتقفل.'});
+def('Pr.6','Multi-speed setting (low speed)','السرعة الواطية (RL)',{mn:0,mx:590,st:.01,dc:2,u:'Hz',d:10,x:'لما RL يتقفل.'});
+def('Pr.7','Acceleration time','زمن التسارع',{mn:0,mx:3600,st:.1,dc:1,u:'s',d:5,x:'الزمن من 0 لـ Pr.20.'});
+def('Pr.8','Deceleration time','زمن التباطؤ',{mn:0,mx:3600,st:.1,dc:1,u:'s',d:5,x:'الزمن من Pr.20 لـ 0. لو قليل والحمل تقيل يطلع E.OV3.'});
+def('Pr.9','Electronic thermal O/L relay','الحماية الحرارية للموتور',{mn:0,mx:500,st:.01,dc:2,u:'A',d:9.5,x:'اكتب تيار لوحة الموتور. المصنع = تيار الانفرتر المقنن. لو اتعدّى مدة طويلة يطلع E.THM.'});
+def('Pr.19','Base frequency voltage','جهد التردد الأساسي',{mn:0,mx:1000,st:.1,dc:1,u:'V',d:9999,rl:1,fmt:v=>v===9999?'9999':(+v).toFixed(1),x:'جهد لوحة الموتور. 9999 = نفس جهد المصدر.'});
+def('Pr.20','Acceleration/deceleration reference frequency','تردد مرجع الأزمنة',{mn:1,mx:590,st:.01,dc:2,u:'Hz',d:50,x:'Pr.7 و Pr.8 محسوبين من 0 للتردد ده.'});
+def('Pr.22','Stall prevention operation level','حد التيار (Stall prevention)',{mn:0,mx:200,st:.1,dc:1,u:'%',d:150,x:'نسبة من تيار الانفرتر المقنن. الانفرتر بيقلل التسارع أو التردد عشان ميعدّيش الحد.'});
+[24,25,26,27].forEach((n,i)=>def('Pr.'+n,'Multi-speed setting (speed '+(i+4)+')','السرعة '+(i+4),{mn:0,mx:9999,st:.01,dc:2,u:'Hz',d:9999,fmt:v=>v===9999?'9999':(+v).toFixed(2),x:['RL + RM','RL + RH','RM + RH','RL + RM + RH'][i]+'. 9999 = مش مستخدمة (السرعة الواطية تاخد الأولوية).'}));
+def('Pr.30','Regenerative function selection','اختيار الفرملة',{o:{0:'Built-in brake (no resistor)',1:'Brake resistor (MRS type)'},d:0,x:'1 = فيه مقاومة فرملة على + و PR.'});
+def('Pr.40','RUN key rotation direction selection','اتجاه زرار RUN',{o:{0:'Forward',1:'Reverse'},d:0,x:'اتجاه الدوران لما تشغّل من زرار RUN.'});
+def('Pr.72','PWM frequency selection','تردد التقطيع',{mn:0,mx:15,st:1,u:'kHz',d:1,x:'أعلى = الموتور أهدى والانفرتر أسخن.'});
+def('Pr.73','Analog input selection','نوع إشارة طرف 2',{o:{0:'0–10V',1:'0–5V'},d:1,x:'المصنع 1 (0-5V) لأن طرف 10 بيطلّع 5V للبوت. لو الإشارة جاية من PLC بـ 0-10V خليه 0.'});
+def('Pr.77','Parameter write selection','السماح بكتابة الباراميترات',{o:{0:'Write only during stop',1:'Write disabled',2:'Write always'},d:0,x:'1 = مقفول (يطلع Er1 لو حاولت تكتب).'});
+def('Pr.78','Reverse rotation prevention selection','منع العكس',{o:{0:'Both directions',1:'Reverse disabled',2:'Forward disabled'},d:0,x:''});
+def('Pr.79','Operation mode selection','وضع التشغيل',{o:{0:'External/PU switchover (PU/EXT key)',1:'PU fixed',2:'External fixed',3:'External/PU combined 1',4:'External/PU combined 2',6:'Switchover'},d:0,x:'0 (المصنع) = بيبدأ EXT وزرار PU/EXT يقلب. 1 = PU بس (RUN والـ M dial). 2 = EXT بس (STF/STR والسرعة من الأطراف). 3 = التشغيل من STF/STR والتردد من الـ M dial (أو multi-speed). 4 = التشغيل من RUN والتردد من طرف 2.'});
+def('Pr.80','Motor capacity','قدرة الموتور',{mn:.1,mx:9999,st:.01,dc:2,u:'kW',d:9999,rl:1,fmt:v=>v===9999?'9999':(+v).toFixed(2),x:'9999 = V/F. لو كتبت القدرة يشتغل Advanced magnetic flux vector (محتاج Pr.81 كمان).'});
+def('Pr.81','Number of motor poles','عدد أقطاب الموتور',{o:{2:'2',4:'4',6:'6',8:'8',9999:'9999 (V/F)'},d:9999,rl:1,x:''});
+def('Pr.125','Terminal 2 frequency setting gain frequency','التردد عند أعلى إشارة على طرف 2',{mn:0,mx:590,st:.01,dc:2,u:'Hz',d:50,x:'التردد عند 5V (أو 10V لو Pr.73 = 0). (60 Hz في موديلات اليابان.)'});
+def('Pr.126','Terminal 4 frequency setting gain frequency','التردد عند 20mA على طرف 4',{mn:0,mx:590,st:.01,dc:2,u:'Hz',d:50,x:'طرف 4 بيشتغل لما إشارة AU تبقى ON.'});
+def('Pr.158','AM terminal function selection','وظيفة خرج AM',{o:{1:'Output frequency',2:'Output current',3:'Output voltage'},d:1,x:'AM بالنسبة لطرف 5. 10V = أقصى قيمة.'});
+def('Pr.160','User group read selection','الباراميترات اللي بتبان',{o:{0:'Simple + extended',9999:'Simple mode only'},d:9999,x:'9999 = في الكيباد يبان Pr.0…Pr.9 و Pr.79 و Pr.125 و Pr.126 و Pr.160 بس. 0 = كل الباراميترات (زي Pr.178 و Pr.882). (القيمة الافتراضية بتختلف حسب الموديل.)'});
+[['Pr.178','STF',60],['Pr.179','STR',61],['Pr.180','RL',0],['Pr.181','RM',1],['Pr.182','RH',2],['Pr.183','MRS',24],['Pr.184','RES',62]].forEach(([c,t,d])=>def(c,t+' terminal function selection','وظيفة طرف '+t,{o:TFO,d,x:'60 STF، 61 STR، 0 RL، 1 RM، 2 RH، 7 OH (أوفرلود خارجي ← E.OHT)، 24 MRS (قطع الخرج)، 62 RES.'}));
+def('Pr.190','RUN terminal function selection','وظيفة خرج RUN',{o:OUTO,d:0,x:'خرج ترانزستور (Open collector) بين RUN و SE.'});
+def('Pr.192','A,B,C terminal function selection','وظيفة ريليه A B C',{o:OUTO,d:99,x:'99 ALM (المصنع): مع العطل A-C بيقفل و B-C بيفتح.'});
+def('Pr.251','Output phase loss protection selection','حماية فقد فاز الخرج',{o:{0:'Without',1:'With'},d:1,x:'1 = لو فاز من U V W اتفصل يطلع E.LF.'});
+def('Pr.882','Regeneration avoidance operation selection','منع الـ Overvoltage',{o:{0:'Disabled',1:'Enabled',2:'Enabled during constant speed'},d:0,x:'المصنع 0. لو 1: لما الـ DC bus يعلى وهو بيهدّي، الانفرتر يطوّل التباطؤ لوحده عشان ميطلعش E.OV3.'});
+def('C2','Terminal 2 frequency setting bias frequency','التردد عند 0V على طرف 2',{mn:0,mx:590,st:.01,dc:2,u:'Hz',d:0,g:'ANA',x:'(Pr.902)'});
+def('ALLC','All parameter clear','رجوع للمصنع',{o:{0:'—',1:'Clear'},d:0,rl:1,act:1,x:'1 = كل الباراميترات ترجع للمصنع.'});
+/* ---------- operation panel ---------- */
+const KP=(function(){
+ const H={m:'mon',mi:0,pv:'list',pi:0,list:[],ev:null,fs:null,flk:null,msg:null,ps:false,ai:0,boot:0,lastD:0};
+ const lst=()=>PD.filter(p=>p.t!=='ro'&&(P['Pr.160']===0||SIMPLE.includes(p.c))).map(p=>p.c);
+ const msg=(t,s)=>{H.msg={t,s:s||1.5};};
+ const num=(v,dc)=>{let s=(+v).toFixed(dc);while(s.replace('.','').replace('-','').length>4&&s.includes('.'))s=(+v).toFixed(--dc);return s;};
+ const pDisp=c=>c==='ALLC'?'ALLC':'P.'+String(prN(c)).padStart(3,' ');
+ const vDisp=(p,v)=>p.t==='e'?String(v):(v===9999&&p.fmt?'9999':num(v,p.dc));
+ const canWrite=c=>{const m=P['Pr.79'];if(['Pr.79','Pr.160','Pr.77'].includes(c))return 'ok';if(P['Pr.77']===1)return 'Er1';if(!(K.pu||m===3||m===4)){EV.er4=1;return 'Er4';}return 'ok';};
+ function dial(n){
+  if(!ctlOk())return;
+  const now=performance.now(),dt=now-H.lastD;H.lastD=now;const mul=dt<40?100:dt<90?10:1;
+  if(S.fault&&H.m==='flt'){return;}
+  if(H.m==='mon'){
+   if(K.runSrc==='kp'&&K.refSrc==='kp'||K.mode===3||K.pu){if(!H.fs)H.fs={v:S.kpRef,t:0};H.fs.v=clamp(rnd(H.fs.v+n*.01*mul,2),0,P['Pr.1']);H.fs.t=0;}
+   return;}
+  if(H.m==='prm'){
+   if(H.pv==='list'){H.list=lst();const i=H.list.indexOf(H.list[H.pi]);H.pi=clamp((i<0?0:i)+n,0,H.list.length-1);selParam(H.list[H.pi]);}
+   else if(H.pv==='val'){const p=PM[H.ev.c];if(p.t==='e'){const i=p.ok.indexOf(H.ev.v);H.ev.v=p.ok[clamp((i<0?0:i)+n,0,p.ok.length-1)];}else{let v=H.ev.v===9999&&p.fmt?p.mn:H.ev.v;H.ev.v=clamp(rnd(v+n*p.st*mul,p.dc),p.mn,p.mx);}}
+   return;}
+  if(H.m==='alm'){H.ai=clamp(H.ai+n,0,Math.max(0,S.fq.length-1));}
+ }
+ function key(k,o){
+  if(!ctlOk())return;
+  if(o.rep)return;
+  H.msg=null;
+  if(k==='STOP'){
+   if(S.fault){if(clearFault('STOP/RESET'))EV.kClr=1;H.m='mon';return;}
+   if(K.runSrc==='kp'){stopKey();return;}
+   if(S.run||S.st==='run'){stopKey();H.ps=true;log('PU stop: STOP في الكيباد وقّف الموتور والتشغيل من STF/STR. افتح STF وارجع اقفله.');}
+   return;}
+  if(k==='RUN'){if(K.runSrc!=='kp'){msg('EXT');return;}const r=startKey();if(r==='flt')msg('Err');return;}
+  if(k==='PUEXT'){const m=P['Pr.79'];if(m!==0&&m!==6){msg(m===1?'PU':'EXT');return;}if(S.st!=='off'){msg('Err');return;}S.loc=!S.loc;calcK();EV.locrem=1;log('PU/EXT: وضع التشغيل بقى '+(S.loc?'PU (من الكيباد)':'EXT (من الأطراف)'));save();return;}
+  if(k==='MODE'){H.fs=null;H.flk=null;if(H.m==='prm'&&H.pv==='val'){H.pv='list';return;}H.m=H.m==='mon'?'prm':H.m==='prm'?'alm':'mon';if(H.m==='prm'){H.pv='list';H.list=lst();H.pi=clamp(H.pi,0,H.list.length-1);}H.ai=0;return;}
+  if(k==='SET'){
+   if(H.m==='mon'){if(H.fs){S.kpRef=H.fs.v;S.kfDirty=1;calcK();log('M dial + SET: تردد الـ PU اتكتب '+S.kpRef.toFixed(2)+' Hz');H.flk={a:'F',b:num(S.kpRef,2),t:2};H.fs=null;save();}else H.mi=(H.mi+1)%3;return;}
+   if(H.m==='prm'){
+    if(H.pv==='list'){const c=H.list[H.pi];if(!c)return;H.ev={c,v:P[c]};H.pv='val';return;}
+    const c=H.ev.c,p=PM[c],w=canWrite(c);
+    if(w!=='ok'){msg(w,2);H.pv='list';return;}
+    if(p.rl&&S.st!=='off'){msg('Er2',2);H.pv='list';return;}
+    const r=setParam(c,H.ev.v,'الكيباد');
+    if(r==='ok'||r==='same'){EV['kpw_'+c]=1;H.flk={a:pDisp(c),b:vDisp(p,P[c]),t:2};}else msg('Err',2);
+    H.pv='list';return;}
+   return;}
+ }
+ function cells(){
+  if(S.boot>0)return cellsOf('8.8.8.8.',4);
+  if(H.msg)return cellsL(H.msg.t,4);
+  if(H.flk){const ph=Math.floor(H.flk.t*2.5)%2;return cellsOf(ph?H.flk.a:H.flk.b,4);}
+  if(S.fault&&H.m==='flt')return cellsL(fdisp(S.fault),4);
+  if(H.ps&&H.m==='mon')return cellsL('PS',4);
+  if(H.m==='mon'){
+   if(H.fs){const c=cellsOf(num(H.fs.v,2),4);c.forEach(x=>x.bl=true);return c;}
+   if(H.mi===0)return cellsOf(num(Math.abs(S.fOut),2),4);
+   if(H.mi===1)return cellsOf(num(S.I,2),4);
+   return cellsOf(num(S.V,1),4);}
+  if(H.m==='prm'){
+   if(H.pv==='list')return cellsOf(pDisp(H.list[H.pi]||'Pr.0'),4);
+   const p=PM[H.ev.c];const c=cellsOf(vDisp(p,H.ev.v),4);return c;}
+  if(H.m==='alm'){const c=S.fq[H.ai];return c?cellsL(fdisp(c),4):cellsL('E---',4);}
+  return cellsOf('',4);
+ }
+ return {
+  repKeys:[],dial,key,
+  onPower:on=>{H.m='mon';H.fs=null;H.flk=null;H.ps=false;if(on&&P['Pr.79']===0)S.loc=false;calcK();},
+  onBoot:()=>{H.m=S.fault?'flt':'mon';},
+  onFault:()=>{H.m='flt';H.fs=null;H.flk=null;H.pv='list';},
+  onClear:()=>{if(H.m==='flt')H.m='mon';H.ps=false;},
+  draw:dt=>{
+   if(H.msg){H.msg.s-=dt;if(H.msg.s<=0)H.msg=null;}
+   if(H.flk){H.flk.t-=dt;if(H.flk.t<=0)H.flk=null;}
+   if(H.fs){H.fs.t+=dt;if(H.fs.t>6)H.fs=null;}
+   if(H.ps&&!fnOn('fwd')&&!fnOn('rev'))H.ps=false;
+   if(S.fault&&H.m==='mon'&&!H.fs)H.m='flt';
+   const on=S.ctrl;const cl=cells();
+   segDraw($('#melSeg'),cl,on,'#ff4a2a','rgba(255,74,42,.07)');
+   const el=$('#melSeg');const txt=cl.map(c=>c.ch+(c.dp?'.':'')).join('').trim();if(el.dataset.t!==txt){el.dataset.t=txt;el.setAttribute('aria-label',txt);}
+   const L=(id,v,c,fl)=>{const e=$(id);if(e)e.className='led'+(on&&v?' on '+(c||'g')+(fl?' fl':''):'');};
+   const mon=H.m==='mon'&&!H.msg&&!H.flk;
+   L('#mHz',mon&&(H.mi===0||H.fs),'o');L('#mA',mon&&H.mi===1&&!H.fs,'o');
+   L('#mRun',S.st!=='off','g',S.fOut<-.05);L('#mMon',H.m==='mon'||H.m==='flt','g');L('#mPrm',H.m==='prm','g');
+   const m=K.mode;L('#mPU',K.pu||m===3||m===4,'g');L('#mEXT',!K.pu,'g');L('#mNET',false);
+   $('#mPow').className='mel-led'+(S.bus>50?' on':'');
+  },
+  get state(){return H;},
+  howto:'دوس <kbd>PU/EXT</kbd> لحد ما لمبة <b>PU</b> تنور (لازم تكتب في PU، في EXT يطلع <code>Er4</code>) ← <kbd>MODE</kbd> لحد ما يظهر <code>P.  0</code> ولمبة PRM تنور ← لف الـ <b>M dial</b> لحد رقم الباراميتر ← <kbd>SET</kbd> تظهر القيمة ← لف الـ dial تغيّرها (لف بسرعة = خطوات أكبر) ← <kbd>SET</kbd>: القيمة ورقم الباراميتر ينوّروا بالتبادل يعني اتكتب. <kbd>MODE</kbd> يرجعك. الباراميترات المتقدمة (زي Pr.178 و Pr.882) مش بتبان غير لما <code>Pr.160 = 0</code>.'
+ };
+})();
+/* ---------- solved exercises ---------- */
+const SOLX=()=>[
+ {t:'تشغيل من الكيباد (PU)',g:'العامل يشغّل من زرار RUN والسرعة من الـ M dial. Pr.79 = 0: الانفرتر بيصحى في EXT، وزرار <b>PU/EXT</b> يقلبه PU (لمبة PU تنور).',svg:SV.kp,
+  p:[['Pr.79',0,'PU/EXT بالزرار'],['Pr.1',50,'أقصى تردد 50 Hz'],['Pr.7',5,'تسارع 5 ثواني'],['Pr.8',5,'تباطؤ 5 ثواني']],
+  steps:['وصّل 3 فاز على R/L1 S/L2 T/L3 والموتور على U V W والأرضي على ⏚.','اكتب الجدول. دوس <b>PU/EXT</b> لحد ما لمبة PU تنور.','لف الـ M dial في شاشة المونيتور: الرقم ينوّر ويطفي. وقّف على <b>30.00</b> ودوس <b>SET</b> (يظهر F و 30.00 بالتبادل).','دوس <b>RUN</b>: الموتور يطلع لـ 30 Hz في 3 ثواني ولمبة RUN تنور.','دوس <b>STOP/RESET</b>: يهدّي ويقف.'],
+  io:{kpRef:30},su:{load:'conv',lp:40,jr:3},hint:'PU/EXT ← PU، وبعدين RUN ← 30 Hz'},
+ {t:'2-Wire: STF أمامي و STR عكسي',g:'Pr.79 = 3 (combined 1): التشغيل من STF و STR والتردد من الـ M dial (30 Hz). كونتاكت أوفرلود خارجي NC على طرف MRS بعد ما تخلي وظيفته OH (Pr.183 = 7).',svg:()=>SV.w2('PU 30 Hz'),
+  p:[['Pr.160',0,'عشان Pr.183 يبان في الكيباد'],['Pr.79',3,'تشغيل من الأطراف، تردد من الكيباد'],['Pr.178',60,'STF'],['Pr.179',61,'STR'],['Pr.183',7,'MRS بقى OH (أوفرلود خارجي)'],['Pr.7',5,'تسارع'],['Pr.8',5,'تباطؤ']],
+  steps:['السلكتور: الكومن على <code>SD</code>، وضع FWD على <code>STF</code> ووضع REV على <code>STR</code> (Sink logic: الطرف يشتغل لما يتقفل على SD).','كونتاكت الأوفرلود الخارجي (NC) بين <code>MRS</code> و <code>SD</code>.','اكتب الجدول وانت في PU، و Pr.79 = 3 في الآخر (لمبتين PU و EXT ينوّروا).','اقفل STF (زرار RUN FWD): الموتور يطلع لـ 30 Hz.','اقفل STR: STF و STR مع بعض = وقوف. افتح STF يلف عكسي. افتح الاتنين يقف.'],
+  io:{kpRef:30},su:{load:'conv',lp:40,jr:3},hint:'اقفل STF ← 30 Hz'},
+ {t:'السرعة من بوت على طرف 2 (0-5V)',g:'البوت بيتغذّى من طرف 10 (5V) ونهايته على 5، والوسط على 2. عشان كده المصنع Pr.73 = 1 (0-5V). 5V = Pr.125 = 50 Hz.',svg:SV.pot,
+  p:[['Pr.79',2,'External fixed'],['Pr.73',1,'طرف 2 = 0-5V'],['Pr.125',50,'5V = 50 Hz'],['C2',0,'0V = 0 Hz'],['Pr.1',50,'أقصى تردد']],
+  steps:['البوت (1kΩ، 2W): الطرف العالي على <code>10</code>، الواطي على <code>5</code>، والوسط على <code>2</code>. كابل مسلّك.','سلكتور التشغيل بين <code>STF</code> و <code>SD</code>.','اكتب الجدول (Pr.79 = 2 في الآخر: لمبة EXT).','لف البوت لـ 3V واقفل STF: الموتور يثبت على 30 Hz.','لف البوت: التردد يمشي معاه من 0 لـ 50 Hz.'],
+  io:{pot:.6},su:{load:'fan',lp:60,jr:3},hint:'EXT، البوت على 3V، واقفل STF ← 30 Hz'},
+ {t:'Multi-speed من RL و RM',g:'خط تعبئة 3 سرعات: RL لوحده = Pr.6، RM لوحده = Pr.5، RL و RM مع بعض = Pr.24 (السرعة 4). الـ Multi-speed بتغلب الأنالوج في EXT.',svg:()=>SV.preset([['0','طرف 2'],['1','10Hz'],['2','25Hz'],['3','40Hz']]),
+  p:[['Pr.79',2,'External fixed'],['Pr.6',10,'RL = 10 Hz'],['Pr.5',25,'RM = 25 Hz'],['Pr.24',40,'RL + RM = 40 Hz'],['Pr.180',0,'RL'],['Pr.181',1,'RM']],
+  steps:['سلكتور التشغيل بين <code>STF</code> و <code>SD</code>.','سلكتور السرعات: كونتاكت على <code>RL</code> وكونتاكت على <code>RM</code> من SD.','اكتب الجدول.','حط السلكتور على 2 (RM بس) واقفل STF: الموتور يثبت على 25 Hz.','غيّر الوضع: 1 = 10، 2 = 25، 3 = 40 Hz. الوضع 0 = التردد من طرف 2.'],
+  io:{spd:2},su:{load:'conv',lp:40,jr:3},hint:'EXT، السلكتور على 2، اقفل STF ← 25 Hz'},
+ {t:'بيانات الموتور والتسارع والتباطؤ',g:'تكتب Pr.9 = تيار لوحة الموتور (الحماية الحرارية)، و Pr.3 و Pr.19 من اللوحة، وتظبط الأزمنة. Pr.79 = 1 يعني PU بس.',svg:SV.plate,
+  p:[['Pr.9',8.2,'تيار اللوحة'],['Pr.3',50,'تردد اللوحة'],['Pr.19',400,'جهد اللوحة'],['Pr.1',50,'أقصى تردد'],['Pr.7',8,'تسارع 8 ثواني'],['Pr.8',8,'تباطؤ 8 ثواني'],['Pr.79',1,'PU fixed']],
+  steps:['اقرا لوحة الموتور: 4 kW · 400V · 50 Hz · 8.2A · 1440 rpm.','اكتب الجدول والانفرتر واقف (Pr.3 و Pr.19 بيتكتبوا في الوقوف بس، وإلا Er2).','تردد الـ PU جاهز 50 Hz (أو لفه بالـ dial و SET).','دوس RUN: يطلع لـ 50 Hz في 8 ثواني والتيار تحت 8.2A بحمل 60%.','دوس STOP/RESET: يقف في 8 ثواني.'],
+  io:{kpRef:50},su:{load:'conv',lp:60,jr:3},hint:'PU، 50 Hz، RUN ← التيار تحت 8.2A'},
+ {t:'عطل E.OV3 وحله',g:'حمل قصوره كبير وانت عايز توقفه في ثانية. الطاقة الراجعة بتعلّي الـ DC bus، و Pr.882 = 0 (المصنع) ومفيش مقاومة فرملة، فالانفرتر يفصل E.OV3.',svg:SV.heavy,
+  p:[['Pr.160',0,'عشان Pr.882 يبان'],['Pr.882',0,'Regeneration avoidance مقفول'],['Pr.8',1,'تباطؤ ثانية واحدة'],['Pr.7',5,'تسارع 5 ثواني'],['Pr.30',0,'مفيش مقاومة'],['Pr.79',1,'PU fixed']],
+  steps:['نفس توصيل الباور، والحمل قصوره 20 ضعف الموتور.','اكتب الجدول.','تردد الـ PU 50 Hz، دوس RUN واستنى يوصل.','دوس STOP/RESET: الـ DC bus يعلى ويفصل <code>E.OV3</code>.','الحل: STOP/RESET يمسح، وبعدين Pr.882 = 1 أو Pr.8 = 6 وجرّب تاني.'],
+  io:{kpRef:50},su:{load:'conv',lp:20,jr:20,db:false},hint:'PU، RUN لحد 50، وبعدين STOP ← E.OV3'}];
+DRIVE.SOL=SOLX;
+DRIVE.GD=()=>[
+ {goal:'شغّل ووقّف الموتور من RUN و STOP، والتردد من الـ M dial.',ico:'kp',do:'دوس <b>PU/EXT</b> لحد ما لمبة <b>PU</b> تنور، وبعدين <b>RUN</b>. التردد جاهز على <b>30 Hz</b>، وتغيّره بلف الـ M dial وبعدين SET.',ok:()=>S.st==='run'&&K.runSrc==='kp'&&S.src==='kp'&&Math.abs(S.fOut)>20,flt:{inj:'dip',t:'اعمل «انقطاع كهربا لحظي» والموتور شغال: يطلع <code>E.IPF</code> Instantaneous power failure.'}},
+ {goal:'STF أمامي و STR عكسي، والتردد من الكيباد (Pr.79 = 3).',ico:'sel',do:'لمبتين PU و EXT منورين. في لوحة التشغيل دوس <b>RUN FWD</b> (STF): الموتور يطلع لـ <b>30 Hz</b>. جرّب <b>RUN REV</b> (STR) مع STF: يقف.',ok:()=>S.st==='run'&&P['Pr.79']===3&&tc('STF')&&Math.abs(S.fOut)>20,flt:{inj:'ext',t:'افتح «الحماية الخارجية» (MRS = OH) والموتور شغال: يطلع <code>E.OHT</code>. اقفلها وامسح بـ STOP/RESET.'}},
+ {goal:'التردد من بوت على طرف 2 (0-5V من طرف 10) والتشغيل من STF.',ico:'pot',do:'لمبة <b>EXT</b> منورة، والبوت جاهز على 3V. دوس <b>RUN FWD</b> (STF): الموتور يثبت على حوالي <b>30 Hz</b>. لف البوت والسرعة تمشي معاه.',ok:()=>S.st==='run'&&!K.pu&&S.src==='ai1'&&Math.abs(S.fOut)>20,flt:{inj:'phase',t:'اعمل «فاز W مفصول عند الموتور» والموتور شغال: يطلع <code>E.LF</code> Output phase loss.'}},
+ {goal:'3 سرعات من RL و RM (Multi-speed).',ico:'pos',do:'السلكتور جاهز على <b>2</b> (RM مقفول). دوس <b>RUN FWD</b> (STF): الموتور يثبت على <b>25 Hz</b> من Pr.5.',ok:()=>S.st==='run'&&S.src==='preset'&&S.code===2&&Math.abs(S.fOut)>20,flt:{inj:'gnd',t:'اعمل «تسريب أرضي على فاز U» والموتور شغال: يطلع <code>E.GF</code>.'}},
+ {goal:'اكتب بيانات الموتور والأزمنة، وشغّل على 50 Hz من PU.',ico:'mot',do:'لمبة <b>PU</b> منورة (Pr.79 = 1)، والتردد 50 Hz. دوس <b>RUN</b>: يطلع في 8 ثواني لـ <b>50 Hz</b> والتيار تحت 8.2A بحمل 60%.',okTxt:'الموتور على 50 Hz والتيار أقل من تيار اللوحة',ok:()=>S.st==='run'&&Math.abs(S.fOut)>48.5&&S.I<8.2&&S.lp>=60&&S.mot==='iec',flt:{inj:'short',t:'اعمل «قصر بين U و V» والموتور شغال: يطلع <code>E.OC2</code> فوراً.'}},
+ {goal:'اعمل عطل E.OV3 بوقوف سريع لحمل تقيل، واعرف تحله.',ico:'flt',do:'PU، والتردد 50 Hz. دوس <b>RUN</b> واستنى يوصل 50، وبعدين <b>STOP/RESET</b>: الـ DC bus يعلى والانفرتر يفصل <code>E.OV3</code>.',okTxt:'ظهر عطل E.OV3',ok:()=>!!EV.f_ov,
+  flt:{t:'اقرا الكود، ودوس <b>STOP/RESET</b> يمسحه. الحل: <code>Pr.882 = 1</code> أو زوّد <code>Pr.8</code> لـ 6 ثواني، وبعدين شغّل لحد 50 ووقّف تاني.',reset:()=>{delete EV.decelOk;},
+   c1:['مسحت العطل',()=>!!EV.f_ov&&!S.fault],c2:['صلّحت ووقّفت من 50 Hz من غير عطل',()=>!!EV.decelOk&&!S.fault]}}];
+DRIVE.EXX=()=>[{t:'تعديل باراميتر من الكيباد',p:'من غير الجدول: بالكيباد والـ M dial بس.',s:[['في PU: MODE ← لف لـ P. 7 ← SET ← خليها 8.0 ← SET',()=>EV['kpw_Pr.7']&&Math.abs(P['Pr.7']-8)<1e-6],['جرّب تكتب باراميتر في EXT وشوف Er4، وبعدين ارجع PU',()=>!!EV.er4]]}];
+DRIVE.REF=()=>({
+ key:['الكيباد (Operation panel)','<ol><li>الشاشة 4 أرقام، وجنبها لمبات: <code>Hz</code> و <code>A</code> (الوحدة؛ الاتنين مطفيين = جهد)، <code>RUN</code> (منورة = أمامي، بتنور وتطفي = عكسي)، <code>MON</code> و <code>PRM</code> (المونيتور أو الباراميترات)، و <code>PU</code> <code>EXT</code> <code>NET</code> (وضع التشغيل).</li><li><code>MODE</code> يلف: المونيتور ← الباراميترات (P.) ← سجل الأعطال.</li><li>في المونيتور: <code>SET</code> يقلب Hz ← A ← V. في PU لف الـ <b>M dial</b>: التردد ينوّر ويطفي، و <code>SET</code> يكتبه (F والقيمة بالتبادل).</li><li><code>PU/EXT</code> يقلب PU و EXT لما Pr.79 = 0 والانفرتر واقف.</li><li><code>STOP/RESET</code>: يوقف في PU، ويمسح العطل. لو دوسته والتشغيل من STF في EXT يظهر <code>PS</code> (PU stop) ولازم تفتح STF وتقفله.</li><li>رسايل: <code>Er1</code> الكتابة مقفولة (Pr.77)، <code>Er2</code> الكتابة والانفرتر شغال، <code>Er4</code> الكتابة في EXT.</li></ol><p class="hint">FR-D700 (الأقدم) نفس فكرة الكيباد والـ dial وأغلب أرقام الباراميترات (Pr.0…9، Pr.79، Pr.160، Pr.178…). الفرق في بعض الأطراف والوظايف والأكواد، فراجع المانيوال بتاعه.</p>'],
+ ctl:['أطراف الكنترول',()=>tbl(['الطرف','الوظيفة دلوقتي','ملاحظات'],[
+  ['STF',TFO[P['Pr.178']],'Pr.178'],['STR',TFO[P['Pr.179']],'Pr.179 · STF و STR مع بعض = وقوف'],['RH',TFO[P['Pr.182']],'Pr.182 · Pr.4'],['RM',TFO[P['Pr.181']],'Pr.181 · Pr.5'],['RL',TFO[P['Pr.180']],'Pr.180 · Pr.6'],['MRS',TFO[P['Pr.183']],'Pr.183 · 24 = قطع الخرج، 7 = OH'],['RES',TFO[P['Pr.184']],'Pr.184'],
+  ['SD','Sink common','الدخل يشتغل لما يتقفل على SD (Sink logic المصنع)'],['PC','+24V','كومن في Source logic'],['10','+5V','تغذية البوت (1kΩ)'],['2',P['Pr.73']===1?'0-5V':'0-10V','Pr.73 · Pr.125'],['5','Analog common',''],['4','4-20mA','بيشتغل مع إشارة AU · Pr.126'],['AM',PM['Pr.158'].o[P['Pr.158']],'Pr.158'],
+  ['RUN SE',OUTO[P['Pr.190']],'Open collector · Pr.190'],['A B C',OUTO[P['Pr.192']],'A-C NO · B-C NC · Pr.192'],['S1 S2 SIC','Safety stop','جمبر المصنع على PC']])],
+ pwr:['أطراف الباور',tbl(['الطرف','الوظيفة'],[['R/L1 S/L2 T/L3','دخل 3 فاز'],['U V W','خرج الموتور'],['+ PR','مقاومة الفرملة · Pr.30'],['+ −','الـ DC bus'],['⏚','الأرضي']])+'<ul><li>متدخلش الكهربا على U V W.</li><li>استنى 10 دقايق بعد الفصل قبل ما تلمس الأطراف.</li></ul>'],
+ src:['Pr.79 وضع التشغيل',()=>tbl(['Pr.79','التشغيل من','التردد من'],[['0'+(P['Pr.79']===0?' ●':''),'PU: RUN · EXT: STF/STR','PU: M dial · EXT: طرف 2/4 و multi-speed'],['1'+(P['Pr.79']===1?' ●':''),'RUN','M dial'],['2'+(P['Pr.79']===2?' ●':''),'STF/STR','طرف 2/4 و multi-speed'],['3'+(P['Pr.79']===3?' ●':''),'STF/STR','M dial و multi-speed'],['4'+(P['Pr.79']===4?' ●':''),'RUN','طرف 2/4']])+'<h4>Multi-speed</h4>'+tbl(['السلكتور','RM','RL','السرعة'],[0,1,2,3].map(c=>[String(c)+(c===(io.spd||0)?' ◀':''),c&2?'●':'○',c&1?'●':'○',c===0?'طرف 2':c===1?P['Pr.6']+' Hz':c===2?P['Pr.5']+' Hz':(P['Pr.24']===9999?P['Pr.6']:P['Pr.24'])+' Hz']))],
+ qs:['تشغيل لأول مرة','<ol><li>اتأكد من جمبر S1 S2 مع PC.</li><li>اقفل الكهربا: الشاشة 0.00 ولمبة EXT (Pr.79 = 0).</li><li>PU/EXT ← PU.</li><li>Pr.160 = 0 لو هتحتاج باراميترات متقدمة.</li><li>Pr.9 (تيار الموتور)، Pr.3 و Pr.19، Pr.1، Pr.7، Pr.8.</li><li>جرّب RUN على تردد واطي واتأكد من الاتجاه.</li><li>Pr.79 حسب التطبيق.</li></ol>']});
+DRIVE.solNote='الزرار بيدخّل كمان بيانات لوحة الموتور (Pr.9 و Pr.3 و Pr.19). الباراميترات اللي بتتكتب في الوقوف بس (زي Pr.3 و Pr.19) بتخلي الزرار يوقّف الانفرتر الأول. في الكيباد الكتابة بتبقى في PU بس.';
+
+</script>
+<script>
+/* ================= generic drive engine (physics, faults, run logic) ================= */
+const DRV=Object.assign({In:9,ov:820,uv:380,busLim:760,dbOn:780,dbOff:755,C:0.0009,hwK:2.4,dbR:100,hsTrip:100},DRIVE.hw||{});
+DRV.hw=DRV.hwK*DRV.In;
+const FL=DRIVE.FL,T=DRIVE.T;
+const CTN={};DRIVE.CT.forEach(([id,nm])=>CTN[id]=nm);
+const tn=id=>CTN[id]||id;
+for(const p of PD)if(p.t!=='ro')P[p.c]=p.d;
+function calcK(){try{K=DRIVE.K();}catch(e){console.error(e);}}
+function fnOf(t){return (K.di&&K.di[t])||'none';}
+function tc(t){return !!S.io.di[t];}
+function termsWith(fn){return Object.keys(K.di||{}).filter(t=>K.di[t]===fn);}
+function fnOn(fn){return termsWith(fn).some(tc);}
+function maIn(){return S.inj.mabrk?0:S.io.ma;}
+const ctlOk=()=>S.ctrl&&S.boot<=0;
+function phase(){if(S.st==='off'||S.st==='dc')return 's';const d=Math.abs(S.fTgt)-Math.abs(S.fRamp);if(S.st==='stop'||d<-.05)return 'd';if(d>.05)return 'a';return 'n';}
+function fres(k,depth){depth=depth||0;if(depth>6||!k)return null;const ph=phase();if(FL[k+'_'+ph])return k+'_'+ph;if(FL[k])return k;if(FL[k+'_n'])return k+'_n';const a=DRIVE.ALIAS&&DRIVE.ALIAS[k];return a?fres(a,depth+1):null;}
+const fdisp=k=>FL[k]?FL[k].d:'';
+const fcode=k=>FL[k]?(FL[k].c||FL[k].d):'';
+function trip(k){
+ if(S.fault)return;const r=fres(k);if(!r)return;
+ const wasRun=S.run||S.st==='run';
+ S.fault=r;S.fbase=k;S.fq.unshift(r);if(S.fq.length>10)S.fq.length=10;
+ S.st='off';S.run=false;S.jog=false;S.rv=0;S.need2w=true;
+ EV['f_'+k]=1;EV['f_'+r]=1;EV.anyF=1;
+ log('عطل '+fcode(r)+' — '+FL[r].n+': '+FL[r].w,1);
+ if(KP.onFault)KP.onFault(r);
+ if(K.retries>0&&(DRIVE.AUTOFLT||[]).includes(k)&&wasRun){S.retryT=1.5;S.retryRun=true;}else S.retryT=0;
+ save();
+}
+function clearFault(src){
+ if(!S.fault)return false;
+ const c=S.fault,b=S.fbase;S.fault=null;S.retryT=0;EV['clr_'+c]=1;EV['clr_'+b]=1;EV.anyClr=1;S.need2w=true;
+ if(KP.onClear)KP.onClear(c);
+ log('اتمسح العطل '+fcode(c)+(src?' من '+src:''));return true;
+}
+function statusText(){
+ if(!S.ctrl)return '';
+ if(S.fault)return fcode(S.fault)+' '+FL[S.fault].n;
+ switch(S.st){case 'off':return S.boot>0?'Booting':'Stopped';case 'dc':return 'DC Braking';case 'stop':return S.blimit?'OV Stall':'Decel';}
+ if(S.climit)return 'Current Limit';
+ if(S.blimit)return 'OV Stall';
+ const d=Math.abs(S.fTgt)-Math.abs(S.fRamp);
+ if(Math.sign(S.fTgt)!==Math.sign(S.fRamp)&&Math.abs(S.fRamp)>.05)return 'Decel';
+ if(d>.05)return 'Accel';if(d<-.05)return 'Decel';
+ return 'At Speed';
+}
+function lin(x,a){if(!a)return 0;const t=clamp((x-a.v0)/((a.v1-a.v0)||1e-3),0,1);return a.f0+t*(a.f1-a.f0);}
+function refHz(dt){
+ const io=S.io,ft=Math.max(.002,K.aiFilt||.05);
+ S.vF+=(io.pot*(DRIVE.v10||10)-S.vF)*Math.min(1,dt/ft);S.maF+=(maIn()-S.maF)*Math.min(1,dt/ft);
+ const bits={ms1:fnOn('ms1'),ms2:fnOn('ms2'),ms3:fnOn('ms3'),ms4:fnOn('ms4')};
+ const code=(bits.ms1?1:0)+(bits.ms2?2:0)+(bits.ms3?4:0)+(bits.ms4?8:0);S.code=code;
+ let f=null,src=K.refSrc;
+ if(K.ms){const r=K.ms(bits,code);if(r!=null){f=r;src='preset';}}
+ S.aiLost=false;
+ if(f==null){
+  switch(src){
+   case 'kp':f=K.kpHz||0;break;
+   case 'pot':f=io.kpot*(K.potMax!=null?K.potMax:K.fmax);break;
+   case 'ai1':f=lin(S.vF,K.ai1);break;
+   case 'ai2':{const lost=maIn()<2&&K.ai2&&K.ai2.v0>=3;S.aiLost=lost;
+     if(lost){const a=K.ai2.loss||'none';
+      if(a==='fault'){if(ctlOk()&&S.st!=='off')trip('ail');f=0;}
+      else if(a==='stop'){if(S.run){S.run=false;S.need2w=true;log('إشارة 4-20mA ضاعت: الانفرتر وقف',1);}f=0;}
+      else if(a==='hold')f=S.aiHold;
+      else if(a==='zero')f=0;
+      else f=lin(S.maF,K.ai2);}
+     else{f=lin(S.maF,K.ai2);S.aiHold=f;}
+     break;}
+   case 'ai12':f=lin(S.vF,K.ai1)+lin(S.maF,K.ai2);break;
+   case 'preset':f=K.presetHz||0;break;
+   default:f=0;
+  }
+ }
+ S.src=src;
+ const lo=K.fmin||0,hi=Math.min(K.fmax,K.fhi!=null?K.fhi:K.fmax);
+ return clamp(f,Math.min(lo,hi),hi);
+}
+function canStart(){return ctlOk()&&!S.fault&&!(DRIVE.inhibit&&DRIVE.inhibit())&&!termsWith('stop3').some(t=>!tc(t))&&!fnOn('coast');}
+function startReq(from){
+ if(!canStart())return false;
+ if(!S.run)log('تشغيل من '+from);
+ S.run=true;S.need2w=false;
+ if(from==='الكيباد')EV.kStart=1;else EV.tStart=1;
+ return true;
+}
+/* keypad RUN: returns 'ok' or a reason */
+function startKey(){
+ if(!ctlOk())return 'off';
+ if(K.runSrc!=='kp')return 'src';
+ if(S.fault)return 'flt';
+ if(!canStart())return 'en';
+ startReq('الكيباد');return 'ok';
+}
+function stopCmd(from,mode){
+ if(!S.ctrl)return;
+ if(S.run||S.st==='run')log('إيقاف من '+from);
+ S.run=false;S.need2w=true;S.stopMode=mode;
+ if(from==='الكيباد')EV.kStop=1;else EV.tStop=1;
+}
+/* keypad STOP (without reset). returns true if it acted */
+function stopKey(){
+ if(!ctlOk())return false;
+ if(K.runSrc==='kp'){stopCmd('الكيباد');return true;}
+ if(K.kpStopTerm!==false&&(S.run||S.st==='run')){stopCmd('الكيباد');log('زرار STOP في الكيباد وقّف الموتور والتشغيل من الأطراف: لازم تفتح طرف التشغيل وتقفله تاني');return true;}
+ return false;
+}
+function setDir(d,from){
+ if(d===S.dir)return;
+ if(d<0&&K.revDis){return;}
+ S.dir=d;if(from)log('الاتجاه بقى '+(d>0?'Forward':'Reverse')+' من '+from);
+ if(S.st==='run'&&Math.abs(S.fRamp)>1)EV.revRun=1;
+}
+function kpRefStep(sg,mult){
+ const st=mult>=100?1:mult>=10?.5:.1;
+ const c=DRIVE.kpRefParam;const hi=K.fmax;
+ if(c&&PM[c]){P[c]=clamp(rnd(P[c]+sg*st*(PM[c].kpScale||1),PM[c].dc),PM[c].mn,PM[c].mx);}
+ else S.kpRef=clamp(rnd(S.kpRef+sg*st,2),0,hi);
+ S.kfDirty=1;calcK();
+}
+function powerUp(){
+ S.ctrl=true;S.boot=1.6;S.fault=null;S.run=false;S.st='off';S.retries=0;S.need2w=true;S.ton=0;
+ if(KP.onPower)KP.onPower(true);
+ log('الكنترول اشتغل. DC bus = '+S.bus.toFixed(0)+'V');
+}
+function powerDown(){
+ S.ctrl=false;S.st='off';S.run=false;S.jog=false;S.fault=null;S.retryT=0;
+ if(KP.onPower)KP.onPower(false);
+ log('الكنترول فصل (الـ DC bus نزل)');
+}
+function step(dt){
+ const m=MOT[S.mot],io=S.io;
+ S.t+=dt;
+ if(S.dipT>0){S.dipT-=dt;if(S.dipT<=0){S.inj.dip=false;syncInj();log('الكهربا رجعت بعد الانقطاع اللحظي');}}
+ const lineOk=S.brk&&!S.inj.dip;
+ const Vpk=S.lineV*(S.inj.hiline?1.18:S.inj.loline?.66:1)*Math.SQRT2;
+ if(lineOk)S.busNom=S.lineV*Math.SQRT2*.98;
+ if(!S.ctrl&&S.bus>400)powerUp();
+ if(S.ctrl&&S.bus<300)powerDown();
+ if(S.ctrl)S.ton+=dt;
+ if(S.boot>0){S.boot-=dt;if(S.boot<=0&&KP.onBoot)KP.onBoot();}
+ const ok=ctlOk();
+ /* external fault terminal follows the injection / station selector */
+ if(T.ext){const fn=fnOf(T.ext);io.di[T.ext]=fn==='extNC'?!S.inj.ext:fn==='extNO'?S.inj.ext:false;}
+ S.srcStart=K.runSrc;
+ if(ok){
+  if(termsWith('extNO').some(tc)||termsWith('extNC').some(t=>!tc(t)))trip('ext');
+  const rs=fnOn('rst');if(rs&&!S.prev.rst){if(clearFault('طرف '+tn(termsWith('rst').find(tc))))EV.tClr=1;}S.prev.rst=rs;
+  const cs=fnOn('coast');if(cs&&!S.prev.coast&&(S.run||S.st==='run')){stopCmd('طرف الوقوف الحر','coast');}S.prev.coast=cs;
+  if(K.runSrc==='term'){
+   const fw=fnOn('fwd')||fnOn('run'),rv=fnOn('rev'),dirT=fnOn('dir');
+   if(K.wire==='3w'){
+    const stopOk=!termsWith('stop3').some(t=>!tc(t));
+    const st=fnOn('start3')||fnOn('fwd'),sr=fnOn('start3r')||fnOn('rev');
+    if(!stopOk){if(S.run)stopCmd('طرف STOP');}
+    else{
+     if(st&&!S.prev.st3){setDir(dirT?-1:1,'الأطراف');startReq('الأطراف');}
+     if(sr&&!S.prev.sr3){setDir(-1,'الأطراف');startReq('الأطراف');}
+     if(S.run&&termsWith('dir').length)setDir(dirT?-1:1,'طرف الاتجاه');
+    }
+    S.prev.st3=st;S.prev.sr3=sr;
+   }else if(K.wire==='2w2'){
+    if(!fw&&!S.fault)S.need2w=false;
+    if(fw){setDir((rv||dirT)?-1:1,'الأطراف');if(!S.run&&!S.need2w)startReq('الأطراف');}
+    else if(S.run&&S.prev.fw)stopCmd('الأطراف');
+   }else{
+    const want=fw!==rv;
+    if(!fw&&!rv&&!S.fault)S.need2w=false;
+    if(want){if(!(rv&&K.revDis)){setDir(fw?1:-1,fw?'طرف '+tn(termsWith('fwd')[0]||''):'طرف '+tn(termsWith('rev')[0]||''));if(!S.run&&!S.need2w)startReq('الأطراف');}}
+    else if(S.run&&(S.prev.fw||S.prev.rv))stopCmd('الأطراف');
+   }
+   S.prev.fw=fw;S.prev.rv=rv;
+  }else{
+   const d=K.kpDir!=null?K.kpDir:S.kdir;setDir(K.revDis&&d<0?1:d,null);
+  }
+ }
+ const enabled=ok&&!S.fault;
+ if(!enabled){S.run=false;if(S.st!=='off')S.st='off';}
+ const want=enabled&&S.run;
+ const ref=refHz(dt);
+ /* state machine */
+ if(want){if(S.st!=='run'){if(S.st==='off')S.startT=.06;S.st='run';S.stallT=0;}}
+ else if(S.st==='run'){
+  const md=S.stopMode||K.stopMode||'ramp';S.stopMode=null;
+  if(md==='coast')S.st='off';
+  else{S.st='stop';S.stopFrom=Math.abs(S.fRamp);}
+ }
+ if(S.st==='stop'&&Math.abs(S.fRamp)<.05){
+  if(!S.fault&&S.stopFrom>45&&S.jr>=15)EV.decelOk=1;
+  S.st='off';
+ }
+ if(S.st==='off'){S.fRamp=0;S.rv=0;}
+ /* ramp */
+ S.fCmd=ref*S.dir;
+ const tgt=S.st==='run'?ref*S.dir:0;
+ S.fTgt=tgt;
+ const fref=Math.max(1,K.accRef||K.fmax);
+ const ra=K.acc>0?fref/K.acc:5000,rd=K.dec>0?fref/K.dec:5000;
+ if(S.st==='run'||S.st==='stop'){
+  const d=tgt-S.fRamp;
+  const away=Math.abs(tgt)>Math.abs(S.fRamp)&&(Math.sign(tgt)===Math.sign(S.fRamp)||Math.abs(S.fRamp)<1e-6);
+  const rate=away?ra:rd;
+  let df=Math.abs(d)<1e-6?0:Math.sign(d)*rate*dt;
+  if(Math.abs(df)>=Math.abs(d))df=d;
+  const Ilim=K.ilim||DRV.In*1.5;S.climit=false;
+  const motoring=S.T*S.wm>=0;
+  if(K.ilimOn!==false&&S.I>Ilim){
+   S.climit=true;
+   if(motoring){if(Math.abs(S.fRamp+df)>Math.abs(S.fRamp))df=0;if(S.I>Ilim*1.06)df=-Math.sign(S.fRamp)*Math.min(Math.abs(S.fRamp),Math.max(rd*.25,40*(S.I/Ilim-1)*fref)*dt);}
+   else if(Math.abs(S.fRamp+df)<Math.abs(S.fRamp))df=0;
+  }
+  S.blimit=false;
+  const lvl=K.ovLvl||DRV.busLim;
+  if(K.ovStall&&!(S.dbInst&&K.db)&&S.bus>lvl-20&&S.T*S.wm<0){
+   const fe=S.wm*2/TAU,sl=Math.max(0,.5-(S.bus-(lvl-20))*.025),lim=fe-Math.sign(fe)*sl-(S.fOut-S.fRamp);
+   if(Math.sign(lim)===Math.sign(S.fRamp)&&Math.abs(S.fRamp+df)<Math.abs(lim)){df=lim-S.fRamp;S.blimit=true;}
+  }
+  if(S.I>Ilim*.95&&motoring&&S.st==='run'&&Math.abs(tgt)>Math.abs(S.fRamp)+.5&&Math.abs(S.fRamp+df)-Math.abs(S.fRamp)<ra*dt*.1)S.stallT+=dt;else S.stallT=Math.max(0,S.stallT-dt);
+  if(K.stallTrip&&S.stallT>(K.stallTime||4))trip('stall');
+  S.fRamp=clamp(S.fRamp+df,-K.fmax,K.fmax);
+ }else{S.climit=false;S.blimit=false;}
+ /* slip + voltage */
+ const on=S.st==='run'||S.st==='stop';
+ if(on&&K.ctl==='svc'){const sHz=Math.max(0,K.fbase-K.rpmN*K.poles/120);S.slip+=(sHz*clamp(S.T/m.Tn,-1.5,1.5)-S.slip)*dt/.05;}else S.slip=0;
+ S.fOut=on?S.fRamp+(Math.abs(S.fRamp)>.2?Math.sign(S.fRamp)*S.slip:0):0;
+ const f=Math.abs(S.fOut),fb=Math.max(1,K.fbase),Vb=K.vbase,Vmx=K.vmax||K.vbase;
+ let V=0,phi=0;
+ if(on){
+  const Vav=Math.min(Vmx,S.bus/Math.SQRT2*.97);
+  if(K.ctl==='svc'){
+   phi=(Vb/fb)/m.vhz;
+   if(f>fb)phi*=fb/f;
+   phi=Math.min(phi,Math.max(0,Vav-S.If*m.Rs*SQ3*.95)/(Math.max(f,.5)*m.vhz));
+   V=Math.min(Vav,phi*m.vhz*f+S.If*m.Rs*SQ3*.95);
+  }else{
+   const boost=(K.boost||0)/100*Vb;
+   if(f<=fb)V=boost*(1-f/fb)+Vb*f/fb;
+   else V=Vb+(Vmx-Vb)*Math.min(1,(f-fb)/Math.max(1,K.fmax-fb));
+   V=Math.min(V,Vav);
+   phi=Math.max(0,V-S.If*m.Rs*SQ3*.95)/(Math.max(f,1.5)*m.vhz);
+  }
+  phi=clamp(phi,0,1.6);
+ }
+ /* motor */
+ let Tq=0,I=0;S.Iq=0;
+ if(on){
+  S.phi=phi;
+  const ws=TAU*S.fOut/2,sl=ws-S.wm;
+  Tq=2*m.Tmax*phi*phi*sl*m.slk/(sl*sl+m.slk*m.slk);
+  const sat=1+12*Math.max(0,phi-1.06)**2;
+  const Iq=m.Iq*Math.sqrt(1+27.04)*phi*Math.abs(sl)/Math.sqrt(sl*sl+m.slk*m.slk);
+  I=Math.hypot(m.I0*phi*sat,Iq);S.Iq=Iq;
+  if(S.inj.phase){Tq*=.55;I*=1.6;}
+  if(S.inj.short)I=9*DRV.In;
+ }else S.phi=0;
+ S.T=Tq;S.I=I;S.V=V;S.If+=(I-S.If)*Math.min(1,dt/.02);
+ /* load */
+ const lp=(S.inj.belt?0:S.lp)/100*m.Tn,w=S.wm;let TL=0;
+ if(S.load==='conv')TL=lp*Math.tanh(w/1.5);
+ else if(S.load==='fan')TL=lp*(w/m.wn)*Math.abs(w/m.wn);
+ else TL=lp;
+ TL+=.015*m.Tn*Math.tanh(w/1)+.0004*m.Tn*w;
+ if(S.inj.jam)TL+=3.2*m.Tn*Math.tanh(w/.5);
+ S.TL=TL;
+ const J=m.J*(1+(S.inj.belt?0:S.jr));
+ if(S.load==='hoist'&&!S.inj.belt&&S.st==='off')S.wm*=Math.max(0,1-dt*25);
+ else S.wm+=(Tq-TL)/J*dt;
+ S.th+=S.wm*dt;
+ /* power + bus */
+ const ws=TAU*S.fOut/2;
+ const Pout=on?Tq*ws+3*I*I*m.Rs+90*S.phi*S.phi*Math.min(1,f/m.f):0;
+ S.P=Pout;if(Pout>0)S.kwh+=Pout*dt/3.6e6;
+ const Pd=.015*Math.abs(Pout)+2.0*I*(.6+.05*(K.carrier||4))+(S.ctrl?15:0);
+ if(S.db){if(S.bus<DRV.dbOff)S.db=false;}else if(S.dbInst&&K.db&&S.bus>DRV.dbOn)S.db=true;
+ if(!(S.dbInst&&K.db)&&S.db)S.db=false;
+ const Pdb=S.db?S.bus*S.bus/DRV.dbR:0;
+ const Pctl=S.ctrl?30:0;
+ const iL=(Pout+Pd+Pdb+Pctl)/Math.max(S.bus,40)+S.bus/9000;
+ let Vn=S.bus-dt/DRV.C*iL;
+ if(lineOk&&Vn<Vpk){const R=S.bus<.75*Vpk?20:1.2;Vn=(S.bus+dt/DRV.C*(Vpk/R-iL))/(1+dt/(DRV.C*R));}
+ S.bus=Math.max(0,Vn);
+ /* thermal */
+ const Rth=S.inj.fan?1.2:.25;
+ S.hs+=(Pd-(S.hs-S.amb)/Rth)/60*dt;
+ const olI=Math.max(.1,K.olI||m.I);
+ const kM=(I/olI)**2-1;S.olM=K.olOn===false?Math.max(0,S.olM-dt):clamp(S.olM+dt*kM*(kM>0?1.333*60/(K.olTime||60):.8),0,120);
+ const kD=(I/DRV.In)**2-1;S.olD=clamp(S.olD+dt*kD*(kD>0?1.333:.8),0,120);
+ if(on)S.hrs+=dt/3600;
+ /* protections */
+ if(ok){
+  if(S.startT>0){S.startT-=dt;if(on){if(S.inj.short)trip('sc');else if(S.inj.gnd)trip('gf');}}
+  if(S.bus>DRV.ov)trip('ov');
+  if(on&&!lineOk&&S.bus<.9*S.busNom){S.llT+=dt;if(S.llT>.004)trip('pl');}else S.llT=0;
+  if(on&&S.bus<DRV.uv)trip('uv');
+  if(S.hs>DRV.hsTrip)trip('oh');
+  if(S.olM>=100)trip('olm');
+  if(S.olD>=100)trip('old');
+  if(S.If>DRV.hw||(S.inj.short&&I>DRV.hw))trip(S.inj.short?'sc':'oc');
+  if(S.inj.gnd&&on){S.gT+=dt;if(S.gT>.03)trip('gf');}else S.gT=0;
+  if(S.inj.phase&&on&&K.phLoss){S.phT+=dt;if(S.phT>.3)trip('lf');}else S.phT=0;
+ }
+ /* auto restart */
+ if(S.fault&&S.retryT>0){S.retryT-=dt;if(S.retryT<=0){
+  if(S.retries<K.retries){S.retries++;const c=S.fault;clearFault('الإعادة التلقائية');log('إعادة تلقائية رقم '+S.retries+' بعد '+fcode(c));if(S.retryRun){S.run=true;S.need2w=false;}}
+ }}
+ if(S.st==='run'&&!S.fault){S.okRunT+=dt;if(S.okRunT>30)S.retries=0;}else S.okRunT=0;
+ /* outputs */
+ const atSp=S.st==='run'&&Math.abs(S.fTgt)>.1&&Math.abs(S.fRamp-S.fTgt)<.5;
+ const dof=fn=>{if(!S.ctrl)return false;switch(fn){case 'ready':return ok&&!S.fault;case 'fault':return !!S.fault;case 'run':return S.st==='run'||S.st==='stop';case 'atspd':return atSp;case 'rev':return S.fOut<-.05;case 'ol':return S.olM>80;}return false;};
+ S.out.r1=dof(K.ro&&K.ro.r1);S.out.r2=dof(K.ro&&K.ro.r2);
+}
+function aoVolts(){
+ if(!S.ctrl||!K.ao)return 0;
+ let r=0;const m=MOT[S.mot];
+ switch(K.ao.fn){case 'freq':r=Math.abs(S.fOut)/Math.max(1,K.fmax);break;case 'cur':r=S.I/(2*DRV.In);break;case 'volt':r=S.V/Math.max(1,K.vbase);break;case 'torq':r=Math.abs(S.T)/(2*m.Tn);break;}
+ return clamp(r*10*(K.ao.gain||100)/100,0,10);
+}
+
+/* ================= keypad infrastructure ================= */
+let rep=null;
+const longK=()=>KP.longKeys||[],repK=()=>KP.repKeys||['UP','DN'];
+function kpDown(el){
+ const k=el.dataset.k;el.classList.add('down');
+ if(rep){clearTimeout(rep.tm);rep=null;}
+ if(longK().includes(k)){rep={k,long:false,tm:setTimeout(()=>{if(rep){rep.long=true;KP.key(k,{long:true});}},900)};return;}
+ KP.key(k,{});
+ if(repK().includes(k)){const t0=performance.now();rep={k,tm:setTimeout(function tick(){const e=performance.now()-t0;const m=e>3500?100:e>1500?10:2;KP.key(k,{rep:m});if(rep)rep.tm=setTimeout(tick,110);},450)};}
+}
+function kpUp(el){
+ if(!el.classList.contains('down'))return;el.classList.remove('down');
+ if(rep){clearTimeout(rep.tm);if(rep.k===el.dataset.k&&longK().includes(rep.k)&&!rep.long)KP.key(rep.k,{});rep=null;}
+}
+function bindKeys(root){
+ $$(root+' [data-k]').forEach(b=>{
+  b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture&&b.setPointerCapture(e.pointerId);kpDown(b);});
+  ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,()=>kpUp(b)));
+  b.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.repeat){e.preventDefault();kpDown(b);}});
+  b.addEventListener('keyup',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();kpUp(b);}});
+  b.addEventListener('contextmenu',e=>e.preventDefault());
+ });
+ /* setting dial (endless, detents) */
+ $$(root+' [data-dial]').forEach(el=>{
+  let a0=null,acc=0,rot=0;
+  const ang=e=>{const r=el.getBoundingClientRect();return Math.atan2(e.clientX-(r.left+r.width/2),-(e.clientY-(r.top+r.height/2)))*180/Math.PI;};
+  const turn=n=>{rot+=n*18;el.style.transform='rotate('+rot+'deg)';KP.dial&&KP.dial(n);};
+  el.addEventListener('pointerdown',e=>{e.preventDefault();el.setPointerCapture(e.pointerId);a0=ang(e);acc=0;});
+  el.addEventListener('pointermove',e=>{if(a0===null)return;let d=ang(e)-a0;if(d>180)d-=360;if(d<-180)d+=360;a0=ang(e);acc+=d;while(acc>=18){acc-=18;turn(1);}while(acc<=-18){acc+=18;turn(-1);}});
+  ['pointerup','pointercancel'].forEach(t=>el.addEventListener(t,()=>{a0=null;}));
+  el.addEventListener('wheel',e=>{e.preventDefault();turn(e.deltaY<0?1:-1);},{passive:false});
+  el.addEventListener('keydown',e=>{if(e.key==='ArrowUp'||e.key==='ArrowRight'){turn(1);e.preventDefault();}else if(e.key==='ArrowDown'||e.key==='ArrowLeft'){turn(-1);e.preventDefault();}});
+ });
+ /* keypad potentiometer */
+ $$(root+' [data-kpot]').forEach(el=>{
+  const io=S.io;
+  const upd=()=>{el.style.transform='rotate('+(-135+270*io.kpot)+'deg)';el.setAttribute('aria-valuenow',Math.round(io.kpot*100));};
+  let a0=null,v0=0;
+  const ang=e=>{const r=el.getBoundingClientRect();return Math.atan2(e.clientX-(r.left+r.width/2),-(e.clientY-(r.top+r.height/2)))*180/Math.PI;};
+  el.addEventListener('pointerdown',e=>{e.preventDefault();el.setPointerCapture(e.pointerId);a0=ang(e);v0=io.kpot;});
+  el.addEventListener('pointermove',e=>{if(a0===null)return;let d=ang(e)-a0;if(d>180)d-=360;if(d<-180)d+=360;io.kpot=clamp(v0+d/270,0,1);a0=ang(e);v0=io.kpot;upd();});
+  ['pointerup','pointercancel'].forEach(t=>el.addEventListener(t,()=>{a0=null;}));
+  el.addEventListener('wheel',e=>{e.preventDefault();io.kpot=clamp(io.kpot-Math.sign(e.deltaY)*.02,0,1);upd();},{passive:false});
+  el.addEventListener('keydown',e=>{if(e.key==='ArrowUp'||e.key==='ArrowRight'){io.kpot=clamp(io.kpot+.02,0,1);upd();e.preventDefault();}else if(e.key==='ArrowDown'||e.key==='ArrowLeft'){io.kpot=clamp(io.kpot-.02,0,1);upd();e.preventDefault();}});
+  el.addEventListener('dblclick',()=>{io.kpot=0;upd();});
+  upd();window.updKPot=upd;
+ });
+}
+bindKeys('.vfd');
+
+/* ================= parameter writes + persistence ================= */
+function resetParams(){for(const p of PD)if(p.t!=='ro')P[p.c]=p.d;S.kpRef=DRIVE.kpRef0||0;if(DRIVE.onReset)DRIVE.onReset();calcK();}
+function setParam(c,v,src){
+ const p=PM[c];if(!p||p.t==='ro')return 'ro';
+ if(DRIVE.locked&&DRIVE.locked(c))return 'lock';
+ if(p.rl&&S.st!=='off')return 'run';
+ v=+v;if(isNaN(v))return 'bad';
+ if(p.t==='n')v=clamp(rnd(v,p.dc),p.mn,p.mx);else if(!p.ok.includes(v))return 'bad';
+ if(P[c]===v&&!p.act)return 'same';
+ const old=P[c];P[c]=v;
+ log(c+' '+p.nm+': '+fmtV(p,old)+' ← '+fmtV(p,v)+' ('+src+')');
+ if(DRIVE.onSet)DRIVE.onSet(c,v,old,src);
+ calcK();save();renderParams();updLabels();
+ return 'ok';
+}
+const SKEY=DRIVE.key;
+let EXS={};
+function save(){try{const pv={};for(const p of PD)if(p.t!=='ro')pv[p.c]=P[p.c];localStorage.setItem(SKEY,JSON.stringify({pv,fq:S.fq,hrs:S.hrs,kwh:S.kwh,exs:EXS,kpRef:S.kpRef,kdir:S.kdir,loc:S.loc,su:{mot:S.mot,lineV:S.lineV,load:S.load,lp:S.lp,jr:S.jr,amb:S.amb,dbInst:S.dbInst}}));}catch(_){}}
+function load(){try{const o=JSON.parse(localStorage.getItem(SKEY)||'null');if(!o)return;
+ if(o.pv)for(const c in o.pv){const p=PM[c];if(p&&p.t!=='ro'&&typeof o.pv[c]==='number'&&(p.t!=='e'||p.ok.includes(o.pv[c])))P[c]=o.pv[c];}
+ S.fq=Array.isArray(o.fq)?o.fq.filter(c=>FL[c]).slice(0,10):[];S.hrs=+o.hrs||0;S.kwh=+o.kwh||0;EXS=o.exs||{};S.kpRef=+o.kpRef||0;S.kdir=o.kdir===-1?-1:1;S.loc=!!o.loc;
+ if(o.su)Object.assign(S,{mot:MOT[o.su.mot]?o.su.mot:'iec',lineV:+o.su.lineV||400,load:['conv','fan','hoist'].includes(o.su.load)?o.su.load:'conv',lp:+o.su.lp||0,jr:+o.su.jr||0,amb:+o.su.amb||35,dbInst:!!o.su.dbInst});
+}catch(_){}}
+
+/* ================= operator station ================= */
+const io=S.io;
+const DIDEV=[['fwd','run'],['rev','rev'],['ms1','spd'],['ms2','spd'],['ext','ext'],['rst','rst']].filter(([k])=>T[k]);
+const fnName=fn=>(DRIVE.FNN&&DRIVE.FNN[fn])||fn;
+const isMom=()=>fnOf(T.fwd)==='start3';
+function devHTML(tag,inner,terms,extra){return '<div class="dev"><span class="tag"'+(extra||'')+'>'+tag+'</span>'+inner+terms.map(t=>'<span class="term">'+t+'</span>').join('')+'</div>';}
+function buildStation(){
+ const h=[];const L=DRIVE.ST||{};
+ h.push(devHTML('المفتاح الرئيسي','<button class="brk" id="dBrk" aria-pressed="true" aria-label="المفتاح الرئيسي"><span style="top:2px">ON</span><i></i><span style="bottom:2px">OFF</span></button>',['L1 L2 L3']));
+ if(T.fwd)h.push(devHTML('RUN FWD','<button class="pb green" id="dRun" aria-label="زرار التشغيل على طرف '+tn(T.fwd)+'"></button>',['<span id="tRunT"></span>'],' id="tRun"'));
+ if(T.rev)h.push(devHTML('RUN REV','<button class="sel2" id="dRev" aria-pressed="false" aria-label="سلكتور على طرف '+tn(T.rev)+'"><i></i></button><div class="selpos"><span>OFF</span><span>ON</span></div>',['<span id="tRevT"></span>'],' id="tRev"'));
+ if(T.ms1)h.push(devHTML('سرعات ثابتة','<button class="rot" id="dSpd" aria-label="سلكتور السرعات الثابتة"><i></i></button>',['<span id="dSpdV">0</span>',tn(T.ms1)+' / '+tn(T.ms2)]));
+ if(T.ext)h.push(devHTML('حماية خارجية','<button class="sel2 key" id="dExt" aria-pressed="true" aria-label="كونتاكت الحماية الخارجية على طرف '+tn(T.ext)+'"><i></i></button><div class="selpos"><span>فصلت</span><span>OK</span></div>',['<span id="tExtT"></span>']));
+ if(T.rst)h.push(devHTML('RESET','<button class="pb black" id="dRst" aria-label="زرار مسح العطل على طرف '+tn(T.rst)+'"></button>',['<span id="tRstT"></span>']));
+ h.push(devHTML('بوتنشيوميتر خارجي','<div class="knob" id="kPot" tabindex="0" role="slider" aria-label="البوتنشيوميتر الخارجي على طرف '+tn(T.aiv)+'"><i></i></div><span class="kv" id="kPotV">0.00 V</span>',[tn(T.v10)+' / '+tn(T.aiv)+' / '+tn(T.acom)]));
+ h.push(devHTML('4-20mA ترانسميتر','<div class="knob" id="kMa" tabindex="0" role="slider" aria-label="إشارة 4-20 مللي على طرف '+tn(T.aii)+'"><i></i></div><span class="kv" id="kMaV">4.0 mA</span>',[tn(T.aii)+' / '+tn(T.acom2||T.acom)]));
+ const r1=T.r1,r2=T.r2,lc=r1.lamps||['w','r'];
+ h.push(devHTML('H1 · '+tn(r1.a)+' NO','<div class="lamp '+lc[0]+'" id="lH1"></div>',['<span id="fH1"></span>',tn(r1.a)+'-'+tn(r1.c)]));
+ if(r1.b)h.push(devHTML('H2 · '+tn(r1.b)+' NC','<div class="lamp '+lc[1]+'" id="lH2"></div>',['<span id="fH2"></span>',tn(r1.b)+'-'+tn(r1.c)]));
+ h.push(devHTML('H3 · '+tn(r2.a),'<div class="lamp '+(r2.lamp||'g')+'" id="lH3"></div>',['<span id="fH3"></span>',tn(r2.a)+'-'+tn(r2.c)]));
+ h.push(devHTML('عداد الخرج الأنالوج','<div class="meter"><svg viewBox="0 0 96 64" id="aoMeter"></svg></div>',['<span id="aoV">0.00 V</span>',tn(T.ao)+' / '+tn(T.aocom)]));
+ $('#station').innerHTML=h.join('');
+}
+buildStation();
+function devAct(dev,ev){
+ if(dev==='brk'&&ev==='click'){S.brk=!S.brk;log(S.brk?'المفتاح الرئيسي اتقفل (ON)':'المفتاح الرئيسي اتفتح (OFF)');}
+ else if(dev==='run'){if(!isMom()){if(ev==='click')io.di[T.fwd]=!io.di[T.fwd];}else if(ev==='down')io.di[T.fwd]=true;else if(ev==='up')io.di[T.fwd]=false;}
+ else if(dev==='rev'&&ev==='click')io.di[T.rev]=!io.di[T.rev];
+ else if(dev==='spd'&&ev==='click'){io.spd=((io.spd||0)+1)%4;io.di[T.ms1]=!!(io.spd&1);io.di[T.ms2]=!!(io.spd&2);}
+ else if(dev==='ext'&&ev==='click'){S.inj.ext=!S.inj.ext;log(S.inj.ext?'الحماية الخارجية فصلت (طرف '+tn(T.ext)+')':'الحماية الخارجية رجعت OK',S.inj.ext);syncInj();}
+ else if(dev==='rst'){if(ev==='down')io.di[T.rst]=true;else if(ev==='up')io.di[T.rst]=false;}
+ updStation();
+}
+function bindDev(el,dev,moment){
+ if(!el)return;
+ const mom=()=>moment&&!(dev==='run'&&!isMom());
+ el.addEventListener('pointerdown',e=>{if(!moment)return;e.preventDefault();el.setPointerCapture&&el.setPointerCapture(e.pointerId);devAct(dev,mom()?'down':'click');});
+ ['pointerup','pointercancel','lostpointercapture'].forEach(t=>el.addEventListener(t,()=>{if(moment&&mom())devAct(dev,'up');}));
+ if(moment){el.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.repeat){e.preventDefault();devAct(dev,mom()?'down':'click');}});el.addEventListener('keyup',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();if(mom())devAct(dev,'up');}});}
+ else el.addEventListener('click',()=>devAct(dev,'click'));
+}
+bindDev($('#dBrk'),'brk');bindDev($('#dRun'),'run',1);bindDev($('#dRev'),'rev');bindDev($('#dSpd'),'spd');bindDev($('#dExt'),'ext');bindDev($('#dRst'),'rst',1);
+const ROL={ready:'جاهز / مفيش عطل',fault:'عطل',run:'شغّال',atspd:'وصل للسرعة',rev:'عكسي',ol:'إنذار أوفرلود',none:'مش مستخدم'};
+function updStation(){
+ const s=(id,f)=>{const e=$(id);if(e)f(e);};
+ s('#dBrk',e=>e.setAttribute('aria-pressed',S.brk));
+ s('#dRun',e=>e.classList.toggle('down',!!io.di[T.fwd]));
+ s('#dRev',e=>e.setAttribute('aria-pressed',!!io.di[T.rev]));
+ s('#dExt',e=>e.setAttribute('aria-pressed',!S.inj.ext));
+ s('#dRst',e=>e.classList.toggle('down',!!io.di[T.rst]));
+ s('#dSpd i',e=>e.style.transform='rotate('+(-45+(io.spd||0)*30)+'deg)');
+ s('#dSpdV',e=>e.textContent=(io.spd||0)+' · '+(io.spd||0).toString(2).padStart(2,'0'));
+ s('#tRunT',e=>e.textContent=tn(T.fwd)+' · '+fnName(fnOf(T.fwd))+(isMom()?' لحظي':''));
+ s('#tRevT',e=>e.textContent=tn(T.rev)+' · '+fnName(fnOf(T.rev)));
+ s('#tExtT',e=>e.textContent=tn(T.ext)+' · '+fnName(fnOf(T.ext)));
+ s('#tRstT',e=>e.textContent=tn(T.rst)+' · '+fnName(fnOf(T.rst)));
+ s('#fH1',e=>e.textContent=ROL[K.ro&&K.ro.r1]||'');s('#fH2',e=>e.textContent='عكس H1');s('#fH3',e=>e.textContent=ROL[K.ro&&K.ro.r2]||'');
+}
+function knob(el,out,get,set,min,max,fmt,dflt){
+ const upd=()=>{const v=get();el.firstElementChild.style.transform='rotate('+(-135+270*(v-min)/(max-min))+'deg)';out.textContent=fmt(v);};
+ let y0=null,v0=0;
+ el.addEventListener('pointerdown',e=>{e.preventDefault();el.setPointerCapture(e.pointerId);y0=e.clientY;v0=get();});
+ el.addEventListener('pointermove',e=>{if(y0===null)return;set(clamp(v0+(y0-e.clientY)/150*(max-min),min,max));upd();});
+ ['pointerup','pointercancel'].forEach(t=>el.addEventListener(t,()=>{y0=null;}));
+ el.addEventListener('wheel',e=>{e.preventDefault();set(clamp(get()-Math.sign(e.deltaY)*(max-min)/50,min,max));upd();},{passive:false});
+ el.addEventListener('dblclick',()=>{set(dflt);upd();});
+ el.addEventListener('keydown',e=>{const s=(max-min)/50;if(e.key==='ArrowUp'||e.key==='ArrowRight'){set(clamp(get()+s,min,max));upd();e.preventDefault();}else if(e.key==='ArrowDown'||e.key==='ArrowLeft'){set(clamp(get()-s,min,max));upd();e.preventDefault();}});
+ upd();return upd;
+}
+const updPot=knob($('#kPot'),$('#kPotV'),()=>io.pot,v=>io.pot=v,0,1,v=>(v*(DRIVE.v10||10)).toFixed(2)+' V',0);
+const updMa=knob($('#kMa'),$('#kMaV'),()=>io.ma,v=>io.ma=v,0,20,v=>(S.inj.mabrk?0:v).toFixed(1)+' mA',4);
+
+/* ================= load, supply, faults panel ================= */
+function bindRange(id,key,fmt){const el=$('#'+id),o=$('#'+id+'V');el.value=S[key];o.textContent=fmt(S[key]);el.addEventListener('input',()=>{S[key]=+el.value;o.textContent=fmt(S[key]);loadHint();save();});}
+bindRange('lp','lp',v=>v+'%');bindRange('jr','jr',v=>String(v));bindRange('amb','amb',v=>v+'°C');
+function loadHint(){
+ const m=MOT[S.mot],J=m.J*(1+S.jr),E=.5*J*m.wn*m.wn/1000;
+ const t={conv:'سير ناقل: العزم ثابت تقريباً من أول ما يتحرك.',fan:'مروحة / طلمبة: العزم بيزيد مع مربع السرعة، فالتيار واطي في السرعات الواطية.',hoist:'ونش: الحمل بيشد لتحت على طول. وهو طالع الموتور بيشيل، ووهو نازل الحمل بيلف الموتور والطاقة بترجع للـ DC bus.'}[S.load];
+ $('#loadHint').textContent=t+' القصور الكلي '+J.toFixed(3)+' kg·m²، وطاقة الحركة عند السرعة المقننة حوالي '+E.toFixed(2)+' kJ، ودي اللي بترجع للـ DC bus لما توقف بسرعة. مكثفات انفرتر صغير زي ده بتشيل جزء صغير بس قبل ما يفصل OverVoltage.';
+}
+$('#motSel').addEventListener('change',e=>{S.mot=e.target.value;updMotor();loadHint();save();log('الموتور اتغيّر: '+MOT[S.mot].plate.join(' · '));});
+$('#lineSel').addEventListener('change',e=>{S.lineV=+e.target.value;save();log('جهد المصدر بقى '+S.lineV+'V');});
+$('#loadSel').addEventListener('change',e=>{S.load=e.target.value;buildLoad();loadHint();save();});
+$('#dbChk').addEventListener('change',e=>{S.dbInst=e.target.checked;save();buildWD();log(S.dbInst?'اتركّبت مقاومة الفرملة':'اتشالت مقاومة الفرملة');});
+function updMotor(){const m=MOT[S.mot];['mPlate1','mPlate2','mPlate3'].forEach((id,i)=>$('#'+id).textContent=m.plate[i]);}
+const INJT={dip:'انقطاع كهربا 0.8 ثانية',hiline:'جهد المصدر عالي +18%',loline:'جهد المصدر واطي −34%',gnd:'تسريب أرضي على فاز U',short:'قصر بين U و V',phase:'فاز W مفصول عند الموتور',jam:'الحمل اتزنق',belt:'السير اتقطع (الحمل راح)',fan:'مروحة الانفرتر وقفت',mabrk:'سلك 4-20mA اتقطع',ext:'الحماية الخارجية فصلت'};
+$$('[data-inj]').forEach(b=>b.addEventListener('click',()=>{
+ const k=b.dataset.inj;
+ if(k==='dip'){if(!S.inj.dip){S.inj.dip=true;S.dipT=.8;log('عطل: '+INJT.dip,1);}}
+ else{S.inj[k]=!S.inj[k];if(k==='hiline'&&S.inj.hiline)S.inj.loline=false;if(k==='loline'&&S.inj.loline)S.inj.hiline=false;log((S.inj[k]?'عطل: ':'اتصلح: ')+INJT[k],S.inj[k]);}
+ syncInj();updMa();updStation();
+}));
+function syncInj(){$$('[data-inj]').forEach(b=>b.setAttribute('aria-pressed',!!S.inj[b.dataset.inj]));}
+if(!T.ext){const b=$('[data-inj="ext"]');if(b)b.remove();}
+
+/* ================= motor + load drawing ================= */
+function buildLoad(){
+ const s=$('#loadSvg');
+ if(S.load==='conv')s.innerHTML='<rect x="8" y="60" width="144" height="36" rx="18" fill="none" stroke="#2b3238" stroke-width="5" id="ldBelt"/><circle cx="26" cy="78" r="15" fill="#6d7378"/><circle cx="134" cy="78" r="15" fill="#6d7378"/><g id="ldA"><line x1="26" y1="78" x2="26" y2="64" stroke="#e8870c" stroke-width="3"/></g><g id="ldB"><line x1="134" y1="78" x2="134" y2="64" stroke="#e8870c" stroke-width="3"/></g><g id="ldBox"></g><rect x="20" y="96" width="6" height="40" fill="#8a9095"/><rect x="134" y="96" width="6" height="40" fill="#8a9095"/><text x="80" y="150" text-anchor="middle" font-size="11" fill="#7a868f" font-family="Arial">CONVEYOR</text>';
+ else if(S.load==='fan')s.innerHTML='<circle cx="80" cy="76" r="62" fill="none" stroke="#7a868f" stroke-width="4"/><g id="ldFan"></g><circle cx="80" cy="76" r="9" fill="#3b4348"/><text x="80" y="156" text-anchor="middle" font-size="11" fill="#7a868f" font-family="Arial">FAN / PUMP</text>';
+ else s.innerHTML='<rect x="10" y="8" width="140" height="8" fill="#6d7378"/><circle cx="80" cy="34" r="20" fill="#6d7378"/><g id="ldDrum"><line x1="80" y1="34" x2="80" y2="16" stroke="#e8870c" stroke-width="3"/><line x1="80" y1="34" x2="98" y2="34" stroke="#e8870c" stroke-width="3"/></g><line id="ldRope" x1="100" y1="34" x2="100" y2="90" stroke="#2b3238" stroke-width="2.5"/><g id="ldW"><rect x="84" y="0" width="32" height="26" rx="2" fill="#b85f00"/><text x="100" y="17" text-anchor="middle" font-size="9" fill="#fff" font-family="Arial">LOAD</text></g><text x="40" y="156" text-anchor="middle" font-size="11" fill="#7a868f" font-family="Arial">HOIST</text>';
+ if(S.load==='fan'){let h='';for(let i=0;i<6;i++)h+='<path d="M80 76 C 70 40, 95 30, 104 46 Z" fill="#9aa6b1" transform="rotate('+i*60+' 80 76)"/>';$('#ldFan').innerHTML=h;}
+ if(S.load==='conv'){let h='';for(let i=0;i<3;i++)h+='<rect class="bx" x="0" y="42" width="22" height="16" rx="2" fill="#c8a165" stroke="#7a5a2a"/>';$('#ldBox').innerHTML=h;}
+}
+function drawMotor(){
+ if(!$('#loadSvg').firstChild)return;
+ const deg=S.th*180/Math.PI;
+ $('#fanBlades').setAttribute('transform','rotate('+(deg%360)+')');
+ $('#shaftMark').setAttribute('transform','rotate('+(deg%360)+')');
+ const rpm=S.wm*60/TAU;
+ $('#mDir').textContent=Math.abs(rpm)<1?'':(rpm>0?'Forward ↻ ':'Reverse ↺ ')+Math.abs(rpm).toFixed(0)+' rpm';
+ const lth=S.inj.belt?0:S.th;
+ if(S.load==='conv'&&$('#ldA')){const a=(lth*180/Math.PI)%360;$('#ldA').setAttribute('transform','rotate('+a+' 26 78)');$('#ldB').setAttribute('transform','rotate('+a+' 134 78)');$('#ldBelt').setAttribute('stroke-dasharray',S.inj.belt?'30 14':'none');
+  const off=((lth*.6)%150+150)%150;$$('#ldBox .bx').forEach((b,i)=>{const x=((off+i*50)%150)-6;b.setAttribute('x',x);b.style.opacity=x<0||x>134?0:1;});}
+ else if(S.load==='fan'&&$('#ldFan'))$('#ldFan').setAttribute('transform','rotate('+((lth*180/Math.PI)%360)+' 80 76)');
+ else if($('#ldDrum')){$('#ldDrum').setAttribute('transform','rotate('+((lth*180/Math.PI)%360)+' 80 34)');const y=46+(((-lth*.8)%80)+80)%80;$('#ldRope').setAttribute('y2',y);$('#ldW').setAttribute('transform','translate(0 '+y+')');}
+}
+(function(){let h='';for(let i=0;i<=10;i++){const a=(-50+i*10)*Math.PI/180,x1=48+Math.sin(a)*40,y1=58-Math.cos(a)*40,x2=48+Math.sin(a)*(i%5?36:33),y2=58-Math.cos(a)*(i%5?36:33);h+='<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="#222" stroke-width="'+(i%5?.8:1.4)+'"/>';if(i%5===0)h+='<text x="'+(48+Math.sin(a)*28).toFixed(1)+'" y="'+(61-Math.cos(a)*28).toFixed(1)+'" font-size="7" text-anchor="middle" font-family="Arial" fill="#222">'+i+'</text>';}
+ h+='<text x="48" y="52" font-size="7" text-anchor="middle" font-family="Arial" fill="#555">V</text><line id="aoN" x1="48" y1="58" x2="48" y2="18" stroke="#c0352b" stroke-width="1.6"/><circle cx="48" cy="58" r="3" fill="#222"/>';$('#aoMeter').innerHTML=h;})();
+
+/* ================= live wiring diagram ================= */
+const WDEAD='#c3c8cc';let WD={};
+const CTX={};(()=>{const n=DRIVE.CT.length,x0=290,x1=1150,s=(x1-x0)/Math.max(1,n-1);DRIVE.CT.forEach(([id],i)=>CTX[id]=x0+i*s);CTX._s=s;})();
+const PWX={};(()=>{let x=300,prev='';DRIVE.PWR.forEach(([nm,role],i)=>{const cat=/^L/.test(role)?'in':role==='PE'?'pe':/^[UVW]$/.test(role)?'out':'dc';if(i&&cat!==prev)x+=14;PWX[role]=x;PWX['#'+i]=x;x+=40;prev=cat;});})();
+const wid=id=>String(id).replace(/[^A-Za-z0-9]/g,'_');
+function buildWD(){
+ const o=[],ln=(id,d,w)=>o.push('<path id="'+id+'" d="'+d+'" fill="none" stroke="'+WDEAD+'" stroke-width="'+(w||2.4)+'" stroke-linejoin="round"/>');
+ const tw=Math.min(22,CTX._s-4);
+ const term=(x,y,w)=>{w=w||22;o.push('<rect x="'+(x-w/2)+'" y="'+(y-9)+'" width="'+w+'" height="18" rx="2" fill="#eceeee" stroke="#4a5055"/><circle cx="'+x+'" cy="'+y+'" r="'+Math.min(5.5,w/2-2)+'" fill="#c3c7ca" stroke="#5d6368"/><line x1="'+(x-3)+'" y1="'+(y+3)+'" x2="'+(x+3)+'" y2="'+(y-3)+'" stroke="#4a5055" stroke-width="1.4"/>');};
+ const tx=(x,y,t,a)=>o.push('<text x="'+x+'" y="'+y+'" '+(a||'')+'>'+t+'</text>');
+ const dot=(x,y)=>o.push('<circle cx="'+x+'" cy="'+y+'" r="3.4" fill="#2b3238"/>');
+ const lamp=(id,x,y)=>o.push('<g id="'+id+'"><circle cx="'+x+'" cy="'+y+'" r="11" fill="#fff" stroke="#4a5055" stroke-width="1.5"/><path d="M'+(x-7)+' '+(y-7)+'l14 14M'+(x+7)+' '+(y-7)+'l-14 14" stroke="#4a5055" stroke-width="1.2"/></g>');
+ o.push('<rect x="0" y="0" width="1200" height="860" fill="#f4f5f1"/>');
+ o.push('<rect x="250" y="170" width="920" height="300" rx="8" fill="'+(DRIVE.wdBox||'#232527')+'"/><rect x="256" y="176" width="908" height="288" rx="6" fill="none" stroke="#3d4145"/>');
+ tx(700,262,DRIVE.wdName,'font-size="30" font-weight="900" fill="'+(DRIVE.wdCol||'#e9ebec')+'" text-anchor="middle" font-family="Arial"');
+ tx(700,286,DRIVE.wdSub,'font-size="12" fill="#9aa3a9" text-anchor="middle"');
+ o.push('<text id="wdSt" x="700" y="322" font-size="15" fill="#9cf29c" text-anchor="middle"></text>');
+ [['L3',40],['L2',58],['L1',76]].forEach(([n,y])=>{tx(8,y+4,n,'font-size="11" fill="#333"');ln('wIn'+n,'M24 '+y+'H112');});
+ ln('wL1','M148 76H'+PWX.L1+'V161');ln('wL2','M148 58H'+PWX.L2+'V161');ln('wL3','M148 40H'+PWX.L3+'V161');
+ o.push('<g class="clk" data-dev="brk"><rect class="hl" x="100" y="22" width="60" height="70" rx="4" fill="#fff" stroke="#4a5055" stroke-width="1.5"/>');
+ [40,58,76].forEach((y,i)=>o.push('<line id="bb'+i+'" x1="114" y1="'+y+'" x2="146" y2="'+y+'" stroke="#1d2226" stroke-width="3" stroke-linecap="round"/><circle cx="114" cy="'+y+'" r="2.5" fill="#1d2226"/><circle cx="146" cy="'+y+'" r="2.5" fill="#1d2226"/>'));
+ o.push('</g>');tx(130,108,'Q1 · المفتاح','font-size="11" fill="#333" text-anchor="middle" class="ar"');
+ if(PWX.PE)o.push('<path d="M'+PWX.PE+' 161V112" stroke="#2e9c3a" stroke-width="3"/><path d="M'+PWX.PE+' 161V112" stroke="#f3d21b" stroke-width="3" stroke-dasharray="5 5"/><path d="M'+(PWX.PE-12)+' 112h24M'+(PWX.PE-8)+' 106h16M'+(PWX.PE-4)+' 100h8" stroke="#2e9c3a" stroke-width="2"/>');
+ const b1=PWX.B1,b2=PWX.B2;
+ if(b1&&b2){const cx=(b1+b2)/2;
+  if(S.dbInst){ln('wBRp','M'+b1+' 161V100',2.6);ln('wBRn','M'+b2+' 161V100',2.6);o.push('<rect x="'+(cx-50)+'" y="56" width="100" height="44" rx="4" fill="#fff" stroke="#4a5055" stroke-width="1.5"/><rect id="dbRes" x="'+(cx-35)+'" y="66" width="70" height="14" fill="none" stroke="#4a5055" stroke-width="1.5"/>');tx(cx,93,'DB '+DRV.dbR+'Ω','font-size="10" fill="#333" text-anchor="middle"');}
+  else{o.push('<rect x="'+(cx-50)+'" y="56" width="100" height="44" rx="4" fill="none" stroke="#a9aeb2" stroke-dasharray="4 4"/>');tx(cx,82,'من غير مقاومة','font-size="11" fill="#8a9095" text-anchor="middle" class="ar"');}}
+ ln('wU','M'+PWX.U+' 161V60H961',2.6);ln('wV','M'+PWX.V+' 161V80H956',2.6);ln('wW','M'+PWX.W+' 161V100H961',2.6);
+ o.push('<g id="wCut" visibility="hidden"><path d="M930 92l14 16M944 92l-14 16" stroke="#c0352b" stroke-width="3"/></g>');
+ o.push('<circle id="wdM" cx="1000" cy="80" r="44" fill="#fff" stroke="#4a5055" stroke-width="2"/>');tx(1000,80,'M','font-size="26" font-weight="700" fill="#2b3238" text-anchor="middle" font-family="Arial"');tx(1000,100,'3~','font-size="13" fill="#2b3238" text-anchor="middle"');
+ tx(1056,40,'','id="wdMp" font-size="10" fill="#555"');
+ DRIVE.PWR.forEach(([n,r],i)=>{const x=PWX['#'+i];term(x,170,26);tx(x,194,n,'font-size="9" fill="#c9cfd3" text-anchor="middle"');});
+ tx(PWX.L1+150,214,'أطراف الباور','font-size="12" fill="#9aa3a9" text-anchor="middle" class="ar"');
+ /* relays / outputs on the left */
+ const r1=T.r1,r2=T.r2,oc=r2.kind==='oc';
+ tx(200,176,'L 220VAC','font-size="10" fill="#333" text-anchor="middle"');tx(40,176,'N','font-size="10" fill="#333" text-anchor="middle"');
+ ln('wRL','M200 184V420',2.6);ln('wRN','M40 184V420',2.6);
+ const RL=[[r1.c,196,'COM'],[r1.a,224,'NO']];if(r1.b)RL.push([r1.b,252,'NC']);RL.push([r2.c,318,oc?'COM':'COM'],[r2.a,346,oc?'OUT':'NO']);
+ RL.forEach(([t,y,k])=>{term(250,y);tx(234,y-6,tn(t)+' '+k,'font-size="8" fill="#555" text-anchor="end"');});
+ ln('wR2','M239 196H200');dot(200,196);ln('wR6','M239 318H200');dot(200,318);
+ const LP=[[r1.a,224,'H1','wR1']];if(r1.b)LP.push([r1.b,252,'H2','wR3']);LP.push([r2.a,346,'H3','wR5']);
+ LP.forEach(([t,y,h,id])=>{ln(id,'M239 '+y+'H142');ln(id+'n','M118 '+y+'H40');dot(40,y);lamp('lmp'+h,130,y);tx(130,y+24,h,'font-size="9" fill="#555" text-anchor="middle"');});
+ o.push('<line id="rb1" x1="270" y1="196" x2="270" y2="224" stroke="#e9ebec" stroke-width="2.2" stroke-linecap="round"/><path d="M262 196H270M262 224H276'+(r1.b?'M262 252H276':'')+'" stroke="#9aa3a9" stroke-width="1.5"/>');
+ o.push('<line id="rb2" x1="270" y1="318" x2="270" y2="346" stroke="#e9ebec" stroke-width="2.2" stroke-linecap="round"/><path d="M262 318H270M262 346H276" stroke="#9aa3a9" stroke-width="1.5"/>');
+ tx(286,226,r1.nm||'Relay 1','font-size="11" font-weight="700" fill="#e9ebec"');tx(286,240,'','id="rf1" font-size="9.5" fill="#9aa3a9"');
+ tx(286,336,r2.nm||'Relay 2','font-size="11" font-weight="700" fill="#e9ebec"');tx(286,350,'','id="rf2" font-size="9.5" fill="#9aa3a9"');
+ if(oc)tx(120,380,'(خرج ترانزستور: في الحقيقة لمبة 24V DC)','font-size="9" fill="#555" text-anchor="middle" class="ar"');
+ /* control terminals */
+ DRIVE.CT.forEach(([id,nm])=>{const x=CTX[id];term(x,470,tw);tx(x,496,nm,'font-size="'+(CTX._s<34?8:9.5)+'" fill="#333" text-anchor="middle"');tx(0,0,'','id="tf'+wid(id)+'" font-size="9" fill="#c9cfd3" transform="translate('+(x+3)+' 455) rotate(-90)"');});
+ tx(700,372,'أطراف الكنترول','font-size="12" fill="#9aa3a9" text-anchor="middle" class="ar"');
+ /* digital inputs to the common bus */
+ const xc=CTX[T.com],dis=DIDEV.map(([k,dv])=>[T[k],dv]);
+ const xs=dis.map(d=>CTX[d[0]]).concat([xc]);const bx0=Math.min(...xs),bx1=Math.max(...xs);
+ ln('wCom','M'+xc+' 479V760M'+bx0+' 760H'+bx1,2.6);
+ tx(xc+6,778,T.comLbl||tn(T.com),'font-size="10" fill="#555" class="ar"');
+ dis.forEach(([t,dv])=>{const x=CTX[t],w=wid(t);
+  ln('wt'+w,'M'+x+' 479V592');ln('wb'+w,'M'+x+' 638V760');dot(x,760);
+  o.push('<circle cx="'+x+'" cy="592" r="2.6" fill="#2b3238"/><circle cx="'+x+'" cy="638" r="2.6" fill="#2b3238"/><line id="bl'+w+'" x1="'+x+'" y1="638" x2="'+x+'" y2="592" stroke="#1d2226" stroke-width="2.4" stroke-linecap="round"/>');
+  tx(x,666,{run:'RUN',rev:'REV',spd:'SPD',ext:'EXT',rst:'RST'}[dv],'font-size="8.5" fill="#333" text-anchor="middle"');
+  o.push('<rect class="clk" data-dev="'+dv+'" x="'+(x-14)+'" y="580" width="28" height="92" fill="transparent"/>');
+ });
+ /* analog: pot v10-aiv-acom, mA on aii, AO meter */
+ const x10=CTX[T.v10],xv=CTX[T.aiv],xa=CTX[T.acom],xi=CTX[T.aii],xa2=CTX[T.acom2||T.acom],xo=CTX[T.ao],xoc=CTX[T.aocom];
+ let ra=Math.min(x10,xa),rb=Math.max(x10,xa);if(rb-ra<60){const c=(ra+rb)/2;ra=c-30;rb=c+30;}
+ ln('wA10','M'+x10+' 479V600H'+(x10<xa?ra+6:rb-6));ln('wAc','M'+xa+' 479V600H'+(x10<xa?rb-6:ra+6));
+ let zz='M'+(ra+6)+' 600';const nz=Math.max(4,Math.round((rb-ra-12)/8));for(let i=0;i<nz;i++)zz+='l'+((rb-ra-12)/nz/2).toFixed(2)+' '+(i%2?7:-7)+' l'+((rb-ra-12)/nz/2).toFixed(2)+' '+(i%2?-7:7);
+ o.push('<path id="potR" d="'+zz+'" fill="none" stroke="#2b3238" stroke-width="1.8"/>');
+ ln('wAv','M'+xv+' 479V560H'+xv+'V588');o.push('<path id="potA" d="M'+xv+' 588l-5-8h10z" fill="#2b3238"/>');
+ WD._ra=ra;WD._rb=rb;
+ tx((ra+rb)/2,630,'بوت خارجي','font-size="10" fill="#333" text-anchor="middle" class="ar"');
+ ln('wAi','M'+xi+' 479V630');o.push('<rect x="'+(xi-15)+'" y="630" width="30" height="34" rx="3" fill="#fff" stroke="#4a5055" stroke-width="1.5"/>');tx(xi,645,'4-20','font-size="8.5" fill="#333" text-anchor="middle"');tx(xi,657,'mA','font-size="8.5" fill="#333" text-anchor="middle"');ln('wAib','M'+xi+' 664V700H'+xa2+(xa2!==xa?'V479':''));
+ if(xa2===xa)ln('wAcx','M'+xa+' 600V700');
+ o.push('<g id="cut" visibility="hidden"><path d="M'+(xi-10)+' 530l20 20M'+(xi+10)+' 530l-20 20" stroke="#c0352b" stroke-width="3"/></g>');
+ ln('wAo','M'+xo+' 479V632');o.push('<circle cx="'+xo+'" cy="648" r="15" fill="#fff" stroke="#4a5055" stroke-width="1.5"/>');tx(xo,653,'V','font-size="12" fill="#333" text-anchor="middle"');ln('wAob','M'+xo+' 663V716H'+xoc+'V479');
+ tx(xo,740,'','id="wdAo" font-size="10" fill="#555" text-anchor="middle"');
+ (DRIVE.WDX||[]).forEach(f=>o.push(f(CTX)));
+ $('#wd').innerHTML=o.join('');
+ WD=Object.assign({_ra:ra,_rb:rb},{});$$('#wd [id]').forEach(e=>WD[e.id]=e);
+ $$('#wd .clk').forEach(g=>{const dv=g.dataset.dev;
+  if(dv==='run'||dv==='rst'){const mom=()=>dv==='rst'||isMom();g.addEventListener('pointerdown',e=>{e.preventDefault();g.setPointerCapture&&g.setPointerCapture(e.pointerId);devAct(dv,mom()?'down':'click');});['pointerup','pointercancel','lostpointercapture'].forEach(t=>g.addEventListener(t,()=>{if(mom())devAct(dv,'up');}));}
+  else g.addEventListener('click',()=>devAct(dv,'click'));});
+ updLabels();updWD();
+}
+function wcol(id,live,col){const e=WD[id];if(!e)return;e.setAttribute('stroke',live?col:WDEAD);e.setAttribute('stroke-width',live?3:2.2);}
+function updLabels(){
+ if(!WD.wU)return;
+ DRIVE.CT.forEach(([id,nm,lab])=>{const e=WD['tf'+wid(id)];if(!e)return;const f=K.di&&K.di[id];e.textContent=f!==undefined?fnName(f):(typeof lab==='function'?lab():(lab||''));});
+ if(WD.rf1)WD.rf1.textContent=ROL[K.ro&&K.ro.r1]||'';if(WD.rf2)WD.rf2.textContent=ROL[K.ro&&K.ro.r2]||'';
+ updStation();
+}
+function updWD(){
+ if(!WD.wU)return;
+ const lineIn=!S.inj.dip,lineOn=S.brk&&lineIn;
+ ['L1','L2','L3'].forEach((n,i)=>{wcol('wIn'+n,lineIn,['#7b3f12','#1b1b1b','#7d7d7d'][i]);wcol('w'+n,lineOn,['#7b3f12','#1b1b1b','#7d7d7d'][i]);});
+ [0,1,2].forEach(i=>{const y=[40,58,76][i],b=WD['bb'+i];b.setAttribute('x2',S.brk?146:142);b.setAttribute('y2',S.brk?y:y-14);});
+ const out=S.st!=='off';['wU','wV'].forEach(id=>wcol(id,out,'#c8261c'));wcol('wW',out&&!S.inj.phase,'#c8261c');WD.wCut.setAttribute('visibility',S.inj.phase?'visible':'hidden');
+ WD.wdM.setAttribute('stroke',out?'#c8261c':'#4a5055');
+ WD.wdMp.textContent=Math.abs(S.wm)>.5?(S.wm*60/TAU).toFixed(0)+' rpm':'';
+ if(WD.wBRp){wcol('wBRp',S.db,'#d62f2f');wcol('wBRn',S.db,'#20307a');WD.dbRes.setAttribute('fill',S.db?'#ff7a3d':'none');}
+ WD.wdSt.textContent=S.ctrl?(statusText()+'  ·  '+(S.fOut>=0?'+':'')+S.fOut.toFixed(2)+' Hz'):(S.bus>50?'DC bus '+S.bus.toFixed(0)+'V':'OFF');
+ WD.wdSt.setAttribute('fill',S.fault?'#ff8a80':'#9cf29c');
+ wcol('wRL',true,'#7b3f12');wcol('wRN',true,'#1f5fbf');wcol('wR2',true,'#6b3fa0');wcol('wR6',true,'#6b3fa0');
+ const r1=S.out.r1,r2=S.out.r2;
+ wcol('wR1',r1,'#6b3fa0');wcol('wR1n',r1,'#1f5fbf');wcol('wR3',!r1,'#6b3fa0');wcol('wR3n',!r1,'#1f5fbf');wcol('wR5',r2,'#6b3fa0');wcol('wR5n',r2,'#1f5fbf');
+ WD.rb1.setAttribute('y2',r1?224:(T.r1.b?252:214));WD.rb1.setAttribute('x2',r1?270:(T.r1.b?270:280));WD.rb2.setAttribute('x2',r2?270:280);WD.rb2.setAttribute('y2',r2?346:338);
+ const lc=T.r1.lamps||['w','r'],LC={w:'#e6f0ff',r:'#ff5a4a',g:'#3ee05a',y:'#ffc21a'};
+ WD.lmpH1.firstChild.setAttribute('fill',r1?LC[lc[0]]:'#fff');if(WD.lmpH2)WD.lmpH2.firstChild.setAttribute('fill',!r1?LC[lc[1]]:'#fff');WD.lmpH3.firstChild.setAttribute('fill',r2?LC[T.r2.lamp||'g']:'#fff');
+ const c=S.ctrl;wcol('wCom',c,'#20307a');
+ DIDEV.forEach(([k])=>{const t=T[k],x=CTX[t],w=wid(t),cl=tc(t);wcol('wt'+w,c&&cl,'#e8870c');wcol('wb'+w,c,'#20307a');const b=WD['bl'+w];if(b){b.setAttribute('x2',cl?x:x-14);b.setAttribute('y2',cl?592:598);}});
+ wcol('wA10',c,'#d62f2f');wcol('wAc',c,'#20307a');wcol('wAcx',c,'#20307a');wcol('wAv',c&&io.pot>.005,'#5b6670');
+ const ax=WD._ra+6+io.pot*(WD._rb-WD._ra-12),xv=CTX[T.aiv];WD.wAv.setAttribute('d','M'+xv+' 479V560H'+ax.toFixed(1)+'V588');WD.potA.setAttribute('d','M'+ax.toFixed(1)+' 590l-5-8h10z');
+ const ma=maIn();wcol('wAi',ma>.5,'#5b6670');wcol('wAib',ma>.5,'#20307a');WD.cut.setAttribute('visibility',S.inj.mabrk?'visible':'hidden');
+ const ao=aoVolts();wcol('wAo',ao>.05,'#5b6670');wcol('wAob',ao>.05,'#20307a');WD.wdAo.textContent=ao.toFixed(2)+' V';
+ if(DRIVE.updWDX)DRIVE.updWDX(WD,wcol);
+}
+
+/* ================= tiles, pills, scope ================= */
+function setTile(id,v){const e=$('#'+id);e.firstChild.nodeValue=v.replace(/^-(0(\.0+)?)$/,'$1');}
+let blinkT=0;
+function ui(dt){
+ KP.draw(dt);blinkT+=dt;
+ $('#lH1').classList.toggle('on',S.out.r1);if($('#lH2'))$('#lH2').classList.toggle('on',!S.out.r1);$('#lH3').classList.toggle('on',S.out.r2);
+ const ao=aoVolts();$('#aoN').setAttribute('transform','rotate('+(-50+ao*10)+' 48 58)');$('#aoV').textContent=ao.toFixed(2)+' V';
+ setTile('tF',S.fOut.toFixed(2));setTile('tN',(S.wm*60/TAU).toFixed(0));setTile('tI',S.I.toFixed(2));setTile('tV',S.V.toFixed(0));
+ setTile('tT',(S.T/MOT[S.mot].Tn*100).toFixed(0));setTile('tB',S.bus.toFixed(0));setTile('tOL',S.olM.toFixed(0));setTile('tHS',S.hs.toFixed(0));
+ const bar=(id,v,hot)=>{const e=$('#'+id);e.style.width=clamp(v,0,100)+'%';e.classList.toggle('hot',!!hot);};
+ bar('bI',S.I/(DRV.In*1.5)*100,S.I>DRV.In);bar('bB',S.bus/DRV.ov*100,S.bus>DRV.busLim);bar('bOL',S.olM,S.olM>80);bar('bHS',S.hs/DRV.hsTrip*100,S.hs>85);
+ $('#chipRef').textContent=S.ctrl?(DRIVE.SRCL[S.src]||S.src):'—';$('#chipSt').textContent=S.ctrl?statusText():'OFF';$('#chipF').textContent=S.fault?fcode(S.fault)+' '+FL[S.fault].n:'لا يوجد';
+ drawMotor();
+}
+function pills(){
+ const L=[['Power',S.ctrl,'on'],['Ready',S.ctrl&&S.boot<=0&&!S.fault,'on'],['Running',S.st!=='off','on'],['Reverse',S.fOut<-.05,'warn'],['Current Limit',S.climit,'warn'],['OV Stall',S.blimit,'warn'],['DB شغالة',S.db,'warn'],['Overload',S.olM>80,'warn'],['Fault',!!S.fault,'bad']];
+ $('#pills').innerHTML=L.map(([t,v,c])=>'<span class="pill'+(v?' '+c:'')+'">'+t+'</span>').join('');
+}
+const SC={buf:[],paused:false};
+function sample(){if(SC.paused)return;SC.buf.push([S.fCmd*(S.st==='off'?0:1),S.fOut,S.I/DRV.In*100,S.bus/10]);if(SC.buf.length>820)SC.buf.shift();}
+$('#scopePause').addEventListener('click',e=>{SC.paused=!SC.paused;e.target.textContent=SC.paused?'كمّل':'إيقاف مؤقت';});
+function drawScope(){
+ const cv=$('#scope'),dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;
+ if(!w)return;
+ if(cv.width!==Math.round(w*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);}
+ const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,w,h);
+ const lo=-80,hi=120,y=v=>h-(clamp(v,lo,hi)-lo)/(hi-lo)*h;
+ g.strokeStyle='#22343a';g.lineWidth=1;g.font='10px IBM Plex Mono,monospace';g.fillStyle='#5f7880';
+ for(let v=lo;v<=hi;v+=20){g.beginPath();g.moveTo(0,y(v));g.lineTo(w,y(v));g.stroke();g.fillText(v,4,y(v)-2);}
+ g.strokeStyle='#3b5660';g.beginPath();g.moveTo(0,y(0));g.lineTo(w,y(0));g.stroke();
+ const n=Math.round(+$('#scopeSpan').value/.05),b=SC.buf.slice(-n);
+ ['#ffb44d','#4cc0cf','#ff6b5e','#a98bff'].forEach((c,k)=>{g.strokeStyle=c;g.lineWidth=1.8;g.beginPath();b.forEach((s,i)=>{const x=w-(b.length-1-i)*w/(n-1);i?g.lineTo(x,y(s[k])):g.moveTo(x,y(s[k]));});g.stroke();});
+}
+
+/* ================= parameter table ================= */
+let PTAB=DRIVE.ptab0||'all',PSEL=DRIVE.psel0||PD[0].c;
+const G=DRIVE.G,GAR=DRIVE.GAR||{};
+function renderTabs(){$('#ptabs').innerHTML=[['all','All'],...G].map(([k,n])=>'<button data-g="'+k+'" aria-pressed="'+(PTAB===k)+'" title="'+esc(n+' · '+(GAR[k]||'الكل'))+'">'+(k==='all'?'All':(DRIVE.tabLbl?DRIVE.tabLbl(k):k))+'</button>').join('');}
+$('#ptabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;PTAB=b.dataset.g;renderTabs();renderParams();});
+$('#psearch').addEventListener('input',()=>renderParams());$('#pchanged').addEventListener('change',()=>renderParams());
+function rangeText(p){if(p.t==='ro')return '—';if(p.t==='e')return p.ok.length+' اختيارات';return p.mn+' – '+p.mx+(p.u?' '+p.u:'');}
+const isChg=p=>p.t!=='ro'&&P[p.c]!==p.d;
+function renderParams(){
+ const q=$('#psearch').value.trim().toLowerCase(),ch=$('#pchanged').checked;
+ const rows=PD.filter(p=>(PTAB==='all'||p.g===PTAB)&&(!q||p.c.toLowerCase().includes(q)||p.nm.toLowerCase().includes(q)||p.ar.includes(q))&&(!ch||isChg(p)));
+ $('#ptable').innerHTML=rows.map(p=>{
+  let cell;
+  if(p.t==='ro')cell='<span class="ro" id="pv'+wid(p.c)+'">'+esc(fmtV(p,p.get()))+'</span>';
+  else if(p.t==='e')cell='<select data-n="'+p.c+'">'+p.ok.map(v=>'<option value="'+v+'"'+(v===P[p.c]?' selected':'')+'>'+esc(v+' · '+p.o[v])+'</option>').join('')+'</select>';
+  else cell='<input type="number" data-n="'+p.c+'" value="'+(+P[p.c]).toFixed(p.dc)+'" min="'+p.mn+'" max="'+p.mx+'" step="'+p.st+'">'+(p.u?' <span class="muted mono" style="font-size:.75rem">'+p.u+'</span>':'');
+  return '<tr data-row="'+p.c+'" class="'+(isChg(p)?'changed ':'')+(p.c===PSEL?'sel':'')+'"><td class="code">'+p.c+'</td><td class="en">'+esc(p.nm)+'</td><td>'+p.ar+(p.rl?'<span class="badge s">Stop</span>':'')+(p.t==='ro'?'<span class="badge r">قراءة</span>':'')+'</td><td class="val">'+cell+'</td><td class="en">'+(p.t==='ro'?'—':esc(fmtV(p,p.d)))+'</td><td class="en">'+rangeText(p)+'</td></tr>';}).join('')||'<tr><td colspan="6" class="muted">مفيش باراميترات بالشكل ده</td></tr>';
+ renderDetail();
+}
+$('#ptable').addEventListener('change',e=>{const el=e.target.closest('[data-n]');if(!el)return;const c=el.dataset.n,r=setParam(c,+el.value,'الجدول');
+ const t=$('#ptoast');
+ if(r==='run'){t.style.color='var(--bad)';t.textContent='وقّف الانفرتر الأول عشان تغيّر '+c;renderParams();}
+ else if(r==='lock'){t.style.color='var(--bad)';t.textContent='الباراميتر ده مقفول دلوقتي';renderParams();}
+ else if(r==='ok'){t.style.color='var(--good)';t.textContent='اتحفظ '+c+' '+PM[c].nm;}
+ setTimeout(()=>{t.textContent='';},2600);});
+$('#ptable').addEventListener('click',e=>{const tr=e.target.closest('tr[data-row]');if(!tr)return;PSEL=tr.dataset.row;$$('#ptable tr.sel').forEach(r=>r.classList.remove('sel'));tr.classList.add('sel');renderDetail();});
+function renderDetail(){
+ const p=PM[PSEL];if(!p){$('#pdetail').hidden=true;return;}$('#pdetail').hidden=false;
+ $('#pdetail').innerHTML='<div class="h"><b>'+p.c+' '+esc(p.nm)+'</b><span>'+p.ar+'</span></div><div class="facts"><span>القيمة: <b>'+esc(fmtV(p,pval(p)))+'</b></span>'+(p.t!=='ro'?'<span>المصنع: <b>'+esc(fmtV(p,p.d))+'</b></span><span>المدى: <b>'+rangeText(p)+'</b></span>':'')+'<span>مكانه في الكيباد: <b>'+DRIVE.kpPath(p)+'</b></span>'+(p.rl?'<span><b>يتغير والانفرتر واقف بس</b></span>':'')+'</div><p>'+p.x+'</p>'+(p.t==='e'?'<p class="muted" style="font-size:.85rem">الاختيارات: '+p.ok.map(v=>'<code>'+esc(v+' '+p.o[v])+'</code>').join(' · ')+'</p>':'');
+}
+function selParam(c){if(!PM[c]||c===PSEL)return;PSEL=c;const g=PM[c].g;if(PTAB!=='all'&&PTAB!==g){PTAB=g;renderTabs();renderParams();}else{$$('#ptable tr.sel').forEach(r=>r.classList.remove('sel'));const tr=$('#ptable tr[data-row="'+c+'"]');tr&&tr.classList.add('sel');renderDetail();}}
+function refreshRO(){for(const p of PD)if(p.t==='ro'){const e=$('#pv'+wid(p.c));if(e)e.textContent=fmtV(p,p.get());}if(PM[PSEL]&&PM[PSEL].t==='ro')renderDetail();
+ if(S.kfDirty){S.kfDirty=0;const c=DRIVE.kpRefParam;if(c){const r=$('#ptable [data-n="'+c+'"]');if(r)r.value=(+P[c]).toFixed(PM[c].dc);}}}
+
+/* ================= faults + reference ================= */
+function renderFaults(){$('#fltTable').innerHTML=Object.keys(FL).map(c=>'<tr class="'+(S.fault===c?'now':'')+'"><td>'+esc(FL[c].c||FL[c].d)+'</td><td class="en">'+esc(FL[c].d)+' · '+esc(FL[c].n)+'</td><td>'+FL[c].w+'</td><td>'+FL[c].f+'</td></tr>').join('');}
+let lastFR=-1;
+const tbl=(head,rows)=>'<div class="tablewrap"><table><thead><tr>'+head.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map((c,i)=>'<td'+(i===0?' class="code"':'')+'>'+c+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
+const REF=DRIVE.REF();
+let REFK=Object.keys(REF)[0];
+function renderRef(){$('#reftabs').innerHTML=Object.entries(REF).map(([k,v])=>'<button data-k="'+k+'" aria-pressed="'+(k===REFK)+'">'+v[0]+'</button>').join('');const b=REF[REFK][1];$('#refBody').innerHTML=typeof b==='function'?b():b;}
+$('#reftabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;REFK=b.dataset.k;renderRef();});
+
+/* ================= solved applications: wiring svg builders ================= */
+const SV=(function(){
+const W=(d,k)=>'<path class="sw sw-'+k+'" d="'+d+'"/>';
+const DOT=(x,y,k)=>'<circle class="sd sd-'+k+'" cx="'+x+'" cy="'+y+'" r="3"/>';
+const TT=(x,y,s,c,a)=>'<text'+(c?' class="'+c+'"':'')+' x="'+x+'" y="'+y+'"'+(a?' text-anchor="'+a+'"':'')+'>'+s+'</text>';
+const T_=(x,y,s,c,a)=>{if(c&&c.indexOf('sv-ar')>=0&&a!=='middle')a=a==='end'?'start':'end';return TT(x,y,s,c,a);};
+const svg=(h,lab,body)=>'<svg class="solsvg" viewBox="0 0 360 '+h+'" role="img" aria-label="'+lab+'">'+body+'</svg>';
+function strip(terms,sub){
+ let s='<rect class="sv-box" x="8" y="8" width="344" height="50" rx="6"/>'+T_(16,24,DRIVE.short,'sv-b')+T_(344,24,sub||'أطراف الكنترول','sv-ar','end');
+ terms.forEach(([id,x])=>{s+='<circle class="sv-term" cx="'+x+'" cy="58" r="3.8"/>'+T_(x,49,tn(id),'sv-tn','middle');});
+ return s;
+}
+function ct(x,cy,nc,act,lab){
+ let s='<circle class="sv-pin" cx="'+x+'" cy="'+(cy-11)+'" r="2.2"/><circle class="sv-pin" cx="'+x+'" cy="'+(cy+11)+'" r="2.2"/>';
+ s+=nc?'<path class="sv-dev" d="M'+x+' '+(cy-11)+'h-10M'+x+' '+(cy+11)+'L'+(x-13)+' '+(cy-13)+'"/>':'<path class="sv-dev" d="M'+x+' '+(cy+11)+'L'+(x-11)+' '+(cy-8)+'"/>';
+ const mx=x-(nc?6.5:5.5);
+ if(act){s+='<path class="sv-dev sv-dash" d="M'+mx+' '+cy+'H'+(x-22)+'"/>';
+  s+=act==='pb'?'<path class="sv-dev" d="M'+(x-26)+' '+(cy-5)+'h4v10h-4"/>':'<path class="sv-dev" d="M'+(x-28)+' '+(cy-5)+'h4v10h4"/>';}
+ if(lab)s+=T_(x+5,cy-14,lab);
+ return s;
+}
+function ctW(x,cy,yb,nc,act,lab){return W('M'+x+' 62V'+(cy-11),'dig')+W('M'+x+' '+(cy+11)+'V'+yb,'dig')+ct(x,cy,nc,act,lab);}
+function motor(x,cy,lab){return '<circle class="sv-fill" cx="'+x+'" cy="'+cy+'" r="24"/>'+T_(x,cy-1,'M','sv-b','middle')+T_(x,cy+13,'3~','','middle')+(lab?T_(x+30,cy+4,lab,'sv-s'):'');}
+const POT=(x12,x13,x14,y)=>W('M'+x12+' 62V'+y+'H'+(x12+4),'ana')+W('M'+x14+' 62V'+y+'H'+(x14-4),'ana')+'<path class="sv-dev" d="M'+(x12+4)+' '+y+'l'+((x14-x12-8)/16).toFixed(2)+'-7'+Array.from({length:7},(_,i)=>' '+((x14-x12-8)/8).toFixed(2)+(i%2?'-14':' 14')).join('')+' '+((x14-x12-8)/16).toFixed(2)+'-7"/>'+W('M'+x13+' 62V'+(y-16),'ana')+'<path class="sv-pin" d="M'+x13+' '+(y-5)+'l-5-11h10z"/>';
+const pn=r=>{const e=DRIVE.PWR.find(p=>p[1]===r);return e?e[0]:r;};
+function power(o){
+ o=o||{};
+ let s=T_(70,14,'3~ 400V 50Hz','sv-s','middle');
+ [40,70,100].forEach((x,i)=>{s+=W('M'+x+' 20V52','pwr')+W('M'+x+' 68V96','pwr')+'<circle class="sv-pin" cx="'+x+'" cy="68" r="2"/><path class="sv-dev" d="M'+x+' 68L'+(x-8)+' 53"/>'+T_(x-5,34,'L'+(i+1),'sv-s','end');});
+ s+='<path class="sv-dev sv-dash" d="M32 60H108"/>'+T_(112,64,'Q1 قاطع','sv-ar');
+ s+=W('M130 20V96','pe')+T_(134,34,'PE','sv-s');
+ s+='<rect class="sv-box" x="16" y="96" width="328" height="64" rx="6"/>';
+ [['L1',40],['L2',70],['L3',100],['PE',130]].forEach(([r,x])=>{s+='<circle class="sv-term" cx="'+x+'" cy="96" r="3.6"/>'+T_(x,110,pn(r),'sv-tn','middle');});
+ s+=T_(160,124,DRIVE.short,'sv-b')+T_(160,140,DRIVE.model,'sv-s');
+ [['U',72],['V',90],['W',108]].forEach(([r,x])=>{s+='<circle class="sv-term" cx="'+x+'" cy="160" r="3.6"/>'+T_(x,153,pn(r),'sv-tn','middle')+W('M'+x+' 164V'+(o.db?196:191),'mot');});
+ if(o.db){
+  s+=motor(90,220,'');
+  s+='<path class="sv-dev" d="M114 220H138"/><rect class="sv-fill" x="138" y="196" width="12" height="48" rx="2"/>'+T_(144,256,'حمل قصوره عالي','sv-ar','middle');
+  [['B1',214],['B2',290]].forEach(([r,x])=>{s+='<circle class="sv-term" cx="'+x+'" cy="160" r="3.6"/>'+T_(x,153,pn(r),'sv-tn','middle');});
+  s+=W('M214 164V214H230','db')+W('M290 164V214H274','db')+'<rect class="sv-fill" x="230" y="206" width="44" height="16" rx="2"/>'+T_(252,240,'DB '+DRV.dbR+'Ω','','middle');
+ }else if(o.heavy){
+  s+=motor(90,215,'');
+  s+='<path class="sv-dev" d="M114 215H140"/><rect class="sv-fill" x="140" y="187" width="16" height="56" rx="3"/>'+T_(150,258,'حدّافة / حمل قصوره كبير','sv-ar','middle');
+  s+=T_(250,200,'من غير مقاومة فرملة','sv-ar','middle')+T_(250,216,'الطاقة كلها بترجع للـ DC bus','sv-ar','middle');
+ }else if(o.plate){
+  s+=motor(90,215,'');
+  s+='<rect class="sv-box" x="150" y="182" width="190" height="70" rx="4"/>'+T_(160,198,'لوحة الموتور (Nameplate)','sv-ar','start')+T_(160,214,'4 kW · 400 V Δ/Y · 50 Hz','sv-s')+T_(160,228,'8.2 A · 1440 r/min','sv-s')+T_(160,242,'cos φ 0.82 · 4 poles','sv-s');
+ }else{
+  s+=motor(90,215,'4 kW · 1440 rpm');
+  const J=DRIVE.JUMPS||[];let x=200;
+  if(!J.length)s+=T_(270,190,'أطراف الكنترول فاضية','sv-ar','middle');
+  J.forEach(([ids,lab])=>{const x0=x;ids.forEach((id,k)=>{s+='<circle class="sv-term" cx="'+(x0+k*24)+'" cy="160" r="3.6"/>'+T_(x0+k*24,153,id,'sv-tn','middle');});const x1=x0+(ids.length-1)*24;s+=W('M'+x0+' 164v12h'+(x1-x0)+'v-12','dig')+T_((x0+x1)/2,194,lab,'sv-ar','middle');x=x1+40;});
+ }
+ return s;
+}
+const LEG={pwr:'L1 L2 L3',mot:'U V W للموتور',pe:'أرضي PE',dig:'كنترول ديجيتال',ana:'أنالوج',rly:'ريليه',db:'مقاومة الفرملة'};
+const leg=ks=>'<div class="wlegend">'+ks.map(k=>'<span><i style="background:var(--w-'+k+')"></i>'+LEG[k]+'</span>').join('')+'</div>';
+const comL=()=>T.comLbl2||tn(T.com);
+return {
+ kp:()=>svg(250,'توصيل الباور: قاطع وانفرتر وموتور',power({}))+leg(['pwr','pe','mot']),
+ plate:()=>svg(262,'توصيل الباور وبيانات لوحة الموتور',power({plate:true}))+leg(['pwr','pe','mot']),
+ heavy:()=>svg(262,'موتور بحمل قصوره كبير ومن غير مقاومة فرملة',power({heavy:true}))+leg(['pwr','pe','mot']),
+ db:()=>svg(262,'مقاومة فرملة',power({db:true}))+leg(['pwr','pe','mot','db']),
+ w2:(ref)=>svg(232,'توصيل 2-Wire: سلكتور أمامي/عكسي على '+tn(T.fwd)+' و '+tn(T.rev),strip([[T.com,30],[T.fwd,110],[T.rev,190]])+
+   W('M30 62V205H190','dig')+DOT(110,205,'dig')+DOT(190,205,'dig')+ctW(110,130,205,false,'sel','FWD')+ctW(190,130,205,false,'sel','REV')+
+   '<rect class="sv-grp" x="76" y="98" width="142" height="60" rx="6"/>'+T_(150,224,'سلكتور FWD · 0 · REV','sv-ar','middle')+T_(34,224,comL(),'sv-s')+
+   '<rect class="sv-box" x="240" y="90" width="108" height="76" rx="6"/>'+T_(294,110,'السرعة من','sv-ar','middle')+T_(294,126,'الكيباد','sv-ar','middle')+T_(294,146,ref||'','','middle'))+leg(['dig']),
+ pot:()=>svg(232,'تشغيل من '+tn(T.fwd)+' وبوت 0-'+(DRIVE.v10||10)+'V على '+tn(T.v10)+' '+tn(T.aiv)+' '+tn(T.acom),strip([[T.com,28],[T.fwd,96],[T.v10,200],[T.aiv,250],[T.acom,300]])+
+   W('M28 62V205H96','dig')+DOT(96,205,'dig')+ctW(96,130,205,false,'sel','RUN')+T_(32,224,comL(),'sv-s')+
+   POT(200,250,300,150)+T_(250,178,'بوت 10kΩ','sv-ar','middle')+T_(250,196,'0-'+(DRIVE.v10||10)+'V','sv-s','middle'))+leg(['dig','ana']),
+ ma:()=>svg(232,'تشغيل من '+tn(T.fwd)+' وإشارة 4-20mA على '+tn(T.aii),strip([[T.com,28],[T.fwd,96],[T.aii,220],[T.acom2||T.acom,290]])+
+   W('M28 62V205H96','dig')+DOT(96,205,'dig')+ctW(96,130,205,false,'sel','RUN')+T_(32,224,comL(),'sv-s')+
+   W('M220 62V140','ana')+W('M290 62V140','ana')+'<rect class="sv-box" x="200" y="140" width="110" height="40" rx="4"/>'+T_(255,157,'PLC / ترانسميتر','sv-ar','middle')+T_(255,172,'4-20mA','','middle')+T_(212,134,'+','sv-s')+T_(296,134,'−','sv-s'))+leg(['dig','ana']),
+ preset:(rows)=>svg(240,'سلكتور سرعات على '+tn(T.ms1)+' و '+tn(T.ms2),strip([[T.com,28],[T.fwd,84],[T.ms1,150],[T.ms2,214]])+
+   W('M28 62V205H214','dig')+[84,150,214].map(x=>DOT(x,205,'dig')).join('')+ctW(84,130,205,false,'sel','RUN')+ctW(150,130,205,false,'sel',tn(T.ms1))+ctW(214,130,205,false,'sel',tn(T.ms2))+
+   '<rect class="sv-grp" x="118" y="98" width="118" height="60" rx="6"/>'+T_(176,224,'سلكتور 4 أوضاع','sv-ar','middle')+T_(32,224,comL(),'sv-s')+
+   T_(300,84,'الوضع','sv-ar','middle')+rows.map(([a,b],i)=>T_(262,102+i*16,a+' → '+b)).join(''))+leg(['dig'])
+};
+})();
+
+/* ================= solved applications ================= */
+const SOL=DRIVE.SOL(),GD=DRIVE.GD();
+let SOLK=0;
+function rowsHTML(a){return a.p.map(([c,v,r])=>{const p=PM[c];return '<tr><td class="code">'+c+'<small>'+esc(p.nm)+'</small></td><td class="v">'+esc(fmtV(p,v))+'</td><td>'+r+'</td></tr>';}).join('');}
+function renderSol(){
+ $('#solTabs').innerHTML=SOL.map((a,i)=>'<button data-k="'+i+'" aria-pressed="'+(i===SOLK)+'">'+(i+1)+'. '+bd(a.t)+'</button>').join('');
+ $('#solBody').innerHTML=SOL.map((a,i)=>'<article class="solcard" data-k="'+i+'"'+(i===SOLK?'':' hidden')+'>'+
+  '<div><h3 style="font-size:1.05rem">'+(i+1)+'. '+bd(a.t)+'</h3><p class="goal">'+a.g+'</p></div>'+
+  '<div class="solgrid"><figure class="solfig">'+a.svg()+'</figure>'+
+  '<div><h3>الباراميترات</h3><div class="tablewrap"><table><thead><tr><th>الباراميتر</th><th>القيمة</th><th>ليه</th></tr></thead><tbody>'+rowsHTML(a)+'</tbody></table></div>'+
+  '<p class="solnote">'+(DRIVE.solNote||'الباراميترات اللي عليها Stop في الجدول الكبير بتتغير والانفرتر واقف بس، فالزرار بيوقّفه برامب ويستنى الموتور يقف قبل ما يكتب.')+'</p></div></div>'+
+  '<div><h3>الخطوات</h3><ol class="steps">'+a.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol></div>'+
+  '<div class="solact"><button class="tagc solbtn" data-apply="'+i+'">طبّق في المحاكي</button><span class="hint" style="margin:0">'+a.hint+'</span><span class="toast" data-solt="'+i+'"></span></div>'+
+  '</article>').join('');
+}
+$('#solTabs').addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(!b)return;SOLK=+b.dataset.k;$$('#solTabs button').forEach(x=>x.setAttribute('aria-pressed',x===b));$$('#solBody .solcard').forEach(c=>c.hidden=+c.dataset.k!==SOLK);});
+$('#solBody').addEventListener('click',e=>{const b=e.target.closest('[data-apply]');if(b)applySol(+b.dataset.apply,b);});
+function setRange(id,v){const el=$('#'+id);el.value=v;el.dispatchEvent(new Event('input'));}
+function applySol(i,btn){
+ const a=SOL[i],src='تمرين محلول '+(i+1),tst=$('[data-solt="'+i+'"]');
+ const busy=S.run||S.st!=='off'||Math.abs(S.wm)>.03*MOT[S.mot].wn;
+ io.di[T.fwd]=false;if(T.rev)io.di[T.rev]=false;
+ if(busy){stopCmd(src);log('الانفرتر كان دوّار: بيوقف الأول ويستنى الموتور يقف، لأن فيه باراميترات بتتغير والانفرتر واقف بس');if(tst){tst.style.color='var(--warn)';tst.textContent='بيوقّف الموتور الأول…';}}
+ if(!S.brk){S.brk=true;log('المفتاح الرئيسي اتقفل عشان التمرين المحلول');}
+ if(btn)btn.disabled=true;
+ const t0=performance.now();
+ (function wait(){
+  const moving=S.st!=='off'||Math.abs(S.wm)>.03*MOT[S.mot].wn;
+  if(moving&&performance.now()-t0<25000){setTimeout(wait,100);return;}
+  if(S.st!=='off'){stopCmd(src,'coast');S.st='off';}
+  if(btn)btn.disabled=false;
+  doApply(i,a,src,tst);
+ })();
+}
+function doApply(i,a,src,tst){
+ if(S.fault)clearFault(src);
+ if(S.mot!=='iec'){const ms=$('#motSel');ms.value='iec';ms.dispatchEvent(new Event('change'));}
+ if(a.pre)a.pre();
+ const first=DRIVE.firstParams||[];
+ const list=(DRIVE.BASE||[]).filter(([c])=>!a.p.some(r=>r[0]===c)).concat(a.p);
+ list.sort((x,y)=>(first.indexOf(y[0])>=0?first.length-first.indexOf(y[0]):0)-(first.indexOf(x[0])>=0?first.length-first.indexOf(x[0]):0));
+ const bad=[];
+ list.forEach(([c,v])=>{const r=setParam(c,v,src);if(r!=='ok'&&r!=='same')bad.push(c+' ('+r+')');});
+ io.di={};io.spd=0;S.inj.ext=false;
+ const A=a.io||{};
+ if(A.pot!=null)io.pot=A.pot;if(A.ma!=null)io.ma=A.ma;if(A.kpot!=null)io.kpot=A.kpot;
+ if(A.spd!=null){io.spd=A.spd;io.di[T.ms1]=!!(A.spd&1);io.di[T.ms2]=!!(A.spd&2);}
+ if(A.kpRef!=null){if(DRIVE.kpRefParam)setParam(DRIVE.kpRefParam,A.kpRef,src);else S.kpRef=A.kpRef;}
+ if(a.post)a.post();
+ const su=a.su||{};
+ if(su.load&&S.load!==su.load){const ls=$('#loadSel');ls.value=su.load;ls.dispatchEvent(new Event('change'));}
+ if(su.lp!=null)setRange('lp',su.lp);
+ if(su.jr!=null)setRange('jr',su.jr);
+ if(su.db!=null&&S.dbInst!==!!su.db){const d=$('#dbChk');d.checked=!!su.db;d.dispatchEvent(new Event('change'));}
+ calcK();updStation();updPot();updMa();if(window.updKPot)window.updKPot();syncInj();
+ renderParams();save();
+ if(bad.length)log('التمرين المحلول '+(i+1)+': الباراميترات دي متكتبتش: '+bad.join('، '),1);
+ log('اتطبّق التمرين المحلول '+(i+1)+': '+a.t+' ('+a.p.length+' باراميتر). '+a.hint);
+ if(tst){tst.style.color='';tst.textContent=bad.length?'اتطبّق مع ملاحظات، شوف السجل':'اتطبّق ✓';setTimeout(()=>{tst.textContent='';},4000);}
+ if(window.GUI&&GUI.guided){if(window.guideRefresh)guideRefresh();}else{const b=$('.bench');if(b)b.scrollIntoView({behavior:'smooth',block:'start'});}
+}
+window.applySol=applySol;
+renderSol();
+
+/* ================= exercises (full view) ================= */
+const pEq=(c,v)=>Math.abs((+P[c])-(+v))<1e-6;
+const gParamsOk=i=>SOL[i].p.every(([c,v])=>pEq(c,v));
+const EX=SOL.map((a,i)=>({t:a.t,p:a.g,s:[['اكتب الباراميترات بتاعة التمرين ('+a.p.length+') من الكيباد أو الجدول',()=>gParamsOk(i)],[GD[i].okTxt||'شغّل زي ما التمرين بيقول',GD[i].ok],[GD[i].flt.c2?GD[i].flt.c2[0]:'جرّب عطل وامسحه',GD[i].flt.c2?GD[i].flt.c2[1]:()=>EV.anyF&&EV.anyClr&&!S.fault]]})).concat(DRIVE.EXX?DRIVE.EXX():[]);
+function renderEx(){
+ $('#exList').innerHTML=EX.map((e,i)=>{const d=EXS[i]||[];const n=d.filter(Boolean).length;return '<details class="ex'+(n===e.s.length?' done':'')+'" data-i="'+i+'"><summary><span>'+(i+1)+'. '+e.t+'</span><span class="cnt">'+n+'/'+e.s.length+'</span></summary><div class="body">'+(e.p?'<p>'+e.p+'</p>':'')+'<ol>'+e.s.map((s,j)=>'<li class="'+(d[j]?'ok':'')+'">'+s[0]+'</li>').join('')+'</ol><button class="btn xs" data-reset="'+i+'" style="margin-top:8px">ابدأ التمرين من الأول</button></div></details>';}).join('');
+}
+$('#exList').addEventListener('click',e=>{const b=e.target.closest('[data-reset]');if(!b)return;const i=+b.dataset.reset;EXS[i]=[];delete EV.anyF;delete EV.anyClr;delete EV.decelOk;save();renderEx();$('#exList details[data-i="'+i+'"]').open=true;});
+function checkEx(){
+ let ch=false;
+ EX.forEach((e,i)=>{const d=EXS[i]||(EXS[i]=[]);e.s.forEach((s,j)=>{if(!d[j]&&(j===0||d[j-1])){let ok=false;try{ok=!!s[1]();}catch(_){}if(ok){d[j]=true;ch=true;if(d.filter(Boolean).length===e.s.length)log('خلصت تمرين: '+e.t);}}});});
+ if(ch){const open=$$('#exList details[open]').map(d=>d.dataset.i);save();renderEx();open.forEach(i=>{const d=$('#exList details[data-i="'+i+'"]');if(d)d.open=true;});}
+}
+
+/* ================= guided simple mode ================= */
+const GKEY=SKEY+'-ui';
+const GUI={guided:true,ex:-1,step:0,done:{},adv:false,hand:''};window.GUI=GUI;
+function guiSave(){try{localStorage.setItem(GKEY,JSON.stringify({mode:GUI.guided?'guided':'full',ex:GUI.ex,step:GUI.step,done:GUI.done,hand:GUI.hand}));}catch(_){}}
+function guiLoad(){try{const o=JSON.parse(localStorage.getItem(GKEY)||'null');if(!o)return;GUI.guided=o.mode!=='full';GUI.ex=Number.isInteger(o.ex)&&SOL[o.ex]?o.ex:-1;GUI.step=[0,1,2,3].includes(o.step)?o.step:0;GUI.done=o.done&&typeof o.done==='object'?o.done:{};GUI.hand=o.hand==='auto'?'auto':o.hand==='hand'?'hand':'';}catch(_){}}
+const GICO={
+ kp:'<svg viewBox="0 0 92 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="6" width="50" height="32" rx="4"/><rect x="10" y="11" width="38" height="12" rx="2" fill="currentColor" opacity=".25" stroke="none"/><circle cx="18" cy="31" r="3" fill="#26a356" stroke="none"/><circle cx="30" cy="31" r="3" fill="#d62a33" stroke="none"/><circle cx="42" cy="31" r="3"/><path d="M66 14l6-6 6 6M66 30l6 6 6-6"/></svg>',
+ sel:'<svg viewBox="0 0 92 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="16" cy="22" r="11"/><path d="M16 22l6-8"/><circle cx="44" cy="22" r="11"/><path d="M44 22l-6-8"/><path d="M62 22h24M78 15l8 7-8 7"/></svg>',
+ pot:'<svg viewBox="0 0 92 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="22" r="12"/><path d="M18 22l7-8"/><path d="M38 30h4l3-10 3 10 3-10 3 10 3-10 3 10h4"/><path d="M52 8v8"/><path d="M48 16l4-4 4 4"/><path d="M72 30h14M79 10v20" /></svg>',
+ pos:'<svg viewBox="0 0 92 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="30" cy="24" r="14"/><path d="M30 24l9-10"/><path d="M14 8l4 3M30 4v5M46 8l-4 3M54 18l-5 2"/><path d="M62 34h26M62 26h20M62 18h14M62 10h8" stroke-width="3"/></svg>',
+ mot:'<svg viewBox="0 0 92 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="6" y="10" width="40" height="26" rx="5"/><path d="M46 23h10"/><rect x="14" y="16" width="22" height="12" rx="1" fill="currentColor" opacity=".25" stroke="none"/><path d="M62 36L74 10L86 36" /><path d="M66 28h16"/></svg>',
+ flt:'<svg viewBox="0 0 92 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M24 6L44 40H4z"/><path d="M24 18v10M24 33v1"/><path d="M58 22h12M64 16v12"/><path d="M80 12a10 10 0 1 0 6 9" /><path d="M86 8v6h-6"/></svg>'};
+const GSTEPS=['التوصيل','الباراميترات','التشغيل','جرّب عطل'];
+const GSRC={kp:'Keypad',term:'Terminals'};
+function gSplitSteps(a){const k=a.steps.findIndex(x=>/ادخل الجدول|اكتب الجدول|ادخل الباراميترات|اكتب الباراميترات|دخّل بيانات/.test(x));return {wire:a.steps.slice(0,k<0?a.steps.length:k),run:a.steps.slice(k<0?a.steps.length:k+1)};}
+function setMode(g){GUI.guided=!!g;document.body.classList.toggle('guided',GUI.guided);$('#guide').hidden=!GUI.guided;$('#advBar').hidden=!GUI.guided;
+ const b=$('#modeBtn');b.textContent=GUI.guided?'الوضع الكامل':'الوضع المبسّط';b.setAttribute('aria-pressed',!GUI.guided);
+ if(GUI.guided)guideRender();else{document.body.removeAttribute('data-g');document.body.classList.remove('g-hand');gFaceHome();}guiSave();}
+function gCards(){
+ $('#gCards').innerHTML=SOL.map((a,i)=>'<button type="button" class="g-card'+(GUI.done[i]?' done':'')+'" data-ex="'+i+'"><span class="n">'+(GUI.done[i]?'✓':i+1)+'</span><span class="t">'+bd(a.t)+'</span><span class="g">'+bd(GD[i].goal)+'</span><span class="ico">'+GICO[GD[i].ico]+'<span>'+a.p.length+' باراميتر · 4 خطوات</span></span></button>').join('');
+}
+function guideRender(){
+ if(!GUI.guided)return;
+ const run=GUI.ex>=0;$('#gStart').hidden=run;$('#gRun').hidden=!run;
+ if(!run){document.body.setAttribute('data-g','start');gFaceHome();gCards();return;}
+ const i=GUI.ex,a=SOL[i],g=GD[i],st=GUI.step;document.body.setAttribute('data-g','abcd'[st]);
+ $('#gProg').innerHTML=GSTEPS.map((_,k)=>'<span class="'+(k<st?'ok':k===st?'on':'')+'"></span>').join('')+'<b>'+(st+1)+'/4</b>';
+ $('#gTitle').innerHTML=(i+1)+'. '+bd(a.t);
+ const sp=gSplitSteps(a);let h='<div class="g-steps">'+GSTEPS.map((n,k)=>'<span class="'+(k===st?'on':'')+'">'+(k+1)+' '+n+'</span>').join('')+'</div>';
+ if(st===0){
+  h+='<p class="g-lead">'+a.g+'</p><figure class="g-fig">'+a.svg()+'</figure><div class="g-terms" id="gTerms"></div><ol class="g-list">'+sp.wire.map(x=>'<li>'+x+'</li>').join('')+'</ol>';
+ }else if(st===1){
+  const hand=GUI.hand==='hand';
+  const tb='<div class="tablewrap"><table class="g-tbl"><thead><tr><th>الباراميتر</th><th>القيمة</th><th>ليه</th></tr></thead><tbody>'+a.p.map(([c,v,why])=>{const p=PM[c];return '<tr data-pc="'+c+'"><td class="code">'+c+'<small>'+esc(p.nm)+(p.ar?' · '+p.ar:'')+'</small><small class="gpath">'+DRIVE.kpPath(p)+(p.rl?' · بيتغير والانفرتر واقف بس':'')+'</small></td><td class="v">'+esc(fmtV(p,v))+' <span class="okc" data-ok="'+c+'"></span><span class="cur" data-cur="'+c+'"></span></td><td class="why">'+why+'</td></tr>';}).join('')+'</tbody></table></div>';
+  h+='<p class="g-lead">دي الباراميترات اللي التمرين محتاجها. تحب تدخلها بإيدك من كيباد الانفرتر عشان إيدك تتعود، ولا الزرار يكتبها لوحده؟</p>'+
+   '<div class="g-choice" role="group" aria-label="طريقة ضبط الباراميترات"><button type="button" class="btn" id="gByHand" aria-pressed="'+hand+'">ادخلها بإيدك من الكيباد<span class="rec">الأحسن للتدريب</span></button><button type="button" class="btn" id="gByAuto" aria-pressed="'+(GUI.hand==='auto')+'">اضبطها أوتوماتيك<span class="tagc">تحكم</span></button></div>';
+  if(hand){
+   h+='<p class="g-pwr" id="gPwrNote" hidden></p>'+
+    '<div class="g-howto"><h4>طريقة الدخول على الـ '+DRIVE.short+'</h4><p>'+KP.howto+'</p></div>'+
+    '<div class="g-count" id="gCount" aria-live="polite"><span><b id="gCntN">0</b> من <b id="gCntM">'+a.p.length+'</b> مضبوطين</span><span class="runlock" id="gRunLock" hidden>وقّف الموتور الأول عشان الباراميترات اللي عليها Stop تتغير</span><span id="gAllOk" hidden>كله مضبوط، التالي ←</span></div>'+
+    '<div class="g-handgrid"><div class="g-face" id="gFace"></div>'+tb+'</div>';
+  }else{
+   h+=tb+'<div class="row"><button type="button" class="btn big pri" id="gApply">اضبط الباراميترات دي<span class="tagc">تحكم</span></button><div class="g-check" id="gChkP"><i>✓</i><span>كل الباراميترات مكتوبة في الانفرتر<span class="sub">الزرار بيوقف الانفرتر الأول لو شغال، وبيكتب بيانات لوحة الموتور كمان، وبيظبط اللوحة والحمل زي التمرين.</span></span></div></div>'+
+    '<div class="g-count" id="gCount" aria-live="polite"><span><b id="gCntN">0</b> من <b id="gCntM">'+a.p.length+'</b> مضبوطين</span><span id="gAllOk" hidden>كله مضبوط، التالي ←</span></div>';
+  }
+ }else if(st===2){
+  h+='<p class="g-lead">'+g.do+'</p><div id="gWarnP" class="g-warn" hidden>الباراميترات لسه متكتبتش. ارجع لخطوة 2 ودوس «اضبط الباراميترات دي».</div>'+
+   '<div class="g-check" id="gChkR"><i>✓</i><span>'+(g.okTxt||'الموتور شغال زي ما التمرين عايز')+'<span class="sub">'+a.hint+'</span></span></div>'+
+   '<div class="g-live"><span>الحالة <b id="gSt">—</b></span><span>تردد الخرج <b id="gHz">0.0 Hz</b></span><span>التيار <b id="gA">0.00 A</b></span><span>التشغيل من <b id="gSrc">—</b></span><span>السرعة من <b id="gRef">—</b></span></div>'+
+   '<p class="g-note"><span class="tagc">تحكم</span> الكيباد ولوحة التشغيل تحت <span class="tagv">بيان</span> الشاشة واللمبات والموتور</p>'+
+   (sp.run.length?'<details><summary style="cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center">باقي خطوات التمرين</summary><ol class="g-list" style="margin-top:8px">'+sp.run.map(x=>'<li>'+x+'</li>').join('')+'</ol></details>':'');
+ }else{
+  const f=g.flt;
+  if(f.c1){
+   h+='<p class="g-lead">'+f.t+'</p>'+
+    '<div class="g-check" id="gChkF1"><i>✓</i><span>'+f.c1[0]+'<span class="sub" id="gFcode"></span></span></div>'+
+    '<div class="g-check" id="gChkF2"><i>✓</i><span>'+f.c2[0]+'</span></div>'+
+    '<p class="g-note">لما تخلص دوس «خلصت التمرين».</p>';
+  }else{
+   h+='<p class="g-lead">خطوة اختيارية: '+f.t+'</p><div class="row"><button type="button" class="btn big" id="gFault">جرّب العطل</button></div>'+
+    '<div class="g-check" id="gChkF1"><i>✓</i><span>العطل ظهر على الشاشة'+(DRIVE.faultLamp||'')+'<span class="sub" id="gFcode"></span></span></div>'+
+    '<div class="g-check" id="gChkF2"><i>✓</i><span>رجّعت اللي عملته، ومسحت العطل '+DRIVE.resetHow+'</span></div>'+
+    '<p class="g-note">لوحة «الحمل والكهربا والأعطال» تحت فيها أعطال تانية تجرّبها. لما تخلص دوس «خلصت التمرين».</p>';
+  }
+ }
+ gFaceHome();$('#gBody').innerHTML=h;document.body.classList.toggle('g-hand',st===1&&GUI.hand==='hand');
+ if(st===0)gHighlight();
+ if(st===1&&GUI.hand==='hand')gFaceShow();
+ $('#gPrev').disabled=st===0;$('#gNext').disabled=false;$('#gNext').textContent=st===3?'خلصت التمرين ✓':'التالي';
+ GUI.fseen=false;GUI.fstart=EV.anyF?1:0;gLast='';
+ if(st===3&&g.flt.c1&&g.flt.reset)g.flt.reset();
+ guideTick(true);window.scrollTo({top:0,behavior:'smooth'});
+}
+const gFaceEl=$('.bench .device'),gFaceAnchor=$('#faceHint');
+function gFaceHome(){if(gFaceEl&&gFaceAnchor&&gFaceEl.parentNode!==gFaceAnchor.parentNode)gFaceAnchor.parentNode.insertBefore(gFaceEl,gFaceAnchor);}
+function gFaceShow(){const f=$('#gFace');if(!f||!gFaceEl)return;f.appendChild(gFaceEl);
+ if(!S.brk){S.brk=true;log('المفتاح الرئيسي اتقفل عشان الكيباد يشتغل (الوضع المبسّط)');updStation();const n=$('#gPwrNote');if(n){n.hidden=false;n.textContent='ولّعت المفتاح الرئيسي Q1 عشان الكيباد يشتغل. استنى الشاشة تقوم.';}}}
+function gHighlight(){
+ const svg=$('#gBody .solsvg');if(!svg)return;const names=[];
+ $$('#gBody .solsvg circle.sv-term').forEach(c=>{const x=+c.getAttribute('cx'),y=+c.getAttribute('cy'),hl=document.createElementNS('http://www.w3.org/2000/svg','circle');
+  hl.setAttribute('cx',x);hl.setAttribute('cy',y);hl.setAttribute('r',9);hl.setAttribute('class','hlr');c.parentNode.insertBefore(hl,c);
+  const t=c.nextElementSibling;if(t&&t.classList.contains('sv-tn')&&names.indexOf(t.textContent)<0)names.push(t.textContent);});
+ $('#gTerms').innerHTML=names.length?'<span>الأطراف اللي هتستخدمها:</span>'+names.map(n=>'<span class="tc">'+n+'</span>').join(''):'';
+}
+let gLast='';
+function guideTick(force){
+ if(!GUI.guided||GUI.ex<0)return;
+ const i=GUI.ex,st=GUI.step,g=GD[i];
+ if(st===1){const ok=gParamsOk(i);let n=0,rl=false;SOL[i].p.forEach(([c,v])=>{const e=$('[data-ok="'+c+'"]');if(!e)return;const q=pEq(c,v);if(q)n++;const s=q?'✓':'';if(e.textContent!==s)e.textContent=s;
+   const tr=e.closest('tr');if(tr)tr.classList.toggle('ok',q);const cu=$('[data-cur="'+c+'"]');if(cu){const p=PM[c];let t='';if(!q){t='دلوقتي '+fmtV(p,P[c]);if(p.rl&&S.st!=='off'){t+=' · وقّف الموتور الأول';rl=true;}}if(cu.textContent!==t)cu.textContent=t;}});
+  const e=$('#gChkP');if(e)e.classList.toggle('ok',ok);
+  const cn=$('#gCntN');if(cn&&cn.textContent!==String(n))cn.textContent=String(n);const gc=$('#gCount');if(gc)gc.classList.toggle('ok',ok);const ao=$('#gAllOk');if(ao)ao.hidden=!ok;const rlk=$('#gRunLock');if(rlk)rlk.hidden=!rl;
+  const nx=$('#gNext');if(nx)nx.disabled=GUI.hand==='hand'&&!ok;const pn=$('#gPwrNote');if(pn&&!pn.hidden&&ctlOk()&&pn.dataset.up!=='1'){pn.dataset.up='1';pn.textContent='ولّعت المفتاح الرئيسي Q1 عشان الكيباد يشتغل. الشاشة قامت، ابدأ.';}}
+ else if(st===2){
+  let ok=false;try{ok=!!g.ok();}catch(_){}
+  const cr=$('#gChkR');if(!cr)return;cr.classList.toggle('ok',ok);$('#gWarnP').hidden=gParamsOk(i)||S.st!=='off'||!!S.fault;
+  const stx=statusText()||'Off',k=stx+'|'+S.fOut.toFixed(1)+'|'+S.I.toFixed(2)+'|'+S.srcStart+'|'+S.src;
+  if(force||k!==gLast){gLast=k;$('#gSt').textContent=stx;$('#gHz').textContent=Math.abs(S.fOut).toFixed(1)+' Hz';$('#gA').textContent=S.I.toFixed(2)+' A';$('#gSrc').textContent=S.ctrl?(GSRC[S.srcStart]||S.srcStart):'—';$('#gRef').textContent=S.ctrl?(DRIVE.SRCL[S.src]||S.src):'—';}
+ }else if(st===3){
+  const f1=$('#gChkF1');if(!f1)return;
+  if(S.fault){GUI.fseen=S.fault;const t=fcode(S.fault)+' '+FL[S.fault].n+': '+FL[S.fault].f;const e=$('#gFcode');if(e&&e.textContent!==t)e.textContent=t;}
+  const f=g.flt;
+  if(f.c1){let a=false,b=false;try{a=!!f.c1[1]();b=!!f.c2[1]();}catch(_){}f1.classList.toggle('ok',a);$('#gChkF2').classList.toggle('ok',b);return;}
+  f1.classList.toggle('ok',!!GUI.fseen);
+  const act=f.inj?!!S.inj[f.inj]:f.on();
+  const fb=$('#gFault'),lb=(f.lbl||['جرّب العطل','صلّح العطل'])[act?1:0]+'<span class="tagc">تحكم</span>';if(fb&&fb.innerHTML!==lb)fb.innerHTML=lb;
+  $('#gChkF2').classList.toggle('ok',!!GUI.fseen&&!S.fault&&!act);
+ }
+}
+function guideRefresh(){if(GUI.guided&&GUI.ex>=0)guideTick(true);}
+window.guideTick=guideTick;window.guideRefresh=guideRefresh;
+$('#gCards').addEventListener('click',e=>{const b=e.target.closest('[data-ex]');if(!b)return;GUI.ex=+b.dataset.ex;GUI.step=0;guiSave();guideRender();});
+$('#gBack').addEventListener('click',()=>{GUI.ex=-1;GUI.step=0;guiSave();guideRender();});
+$('#gPrev').addEventListener('click',()=>{if(GUI.step>0){GUI.step--;guiSave();guideRender();}});
+$('#gNext').addEventListener('click',()=>{if(GUI.step<3){GUI.step++;}else{GUI.done[GUI.ex]=true;log('خلصت التمرين المحلول '+(GUI.ex+1)+': '+SOL[GUI.ex].t);GUI.ex=-1;GUI.step=0;}guiSave();guideRender();});
+$('#gBody').addEventListener('click',e=>{
+ if(e.target.closest('#gApply')){applySol(GUI.ex,e.target.closest('#gApply'));return;}
+ if(e.target.closest('#gByHand')){if(GUI.hand!=='hand'){GUI.hand='hand';guiSave();guideRender();}return;}
+ if(e.target.closest('#gByAuto')){GUI.hand='auto';guiSave();guideRender();applySol(GUI.ex,$('#gApply'));return;}
+ if(e.target.closest('#gFault')){const f=GD[GUI.ex].flt;if(f.inj){const b=$('[data-inj="'+f.inj+'"]');if(b)b.click();}else if(f.fn)f.fn();guideTick(true);}
+});
+$('#modeBtn').addEventListener('click',()=>setMode(!GUI.guided));
+$('#advBtn').addEventListener('click',e=>{GUI.adv=!GUI.adv;document.body.classList.toggle('adv',GUI.adv);e.currentTarget.setAttribute('aria-expanded',GUI.adv);e.currentTarget.textContent=GUI.adv?'إخفاء المتقدم ▴':'عرض المتقدم ▾';});
+
+/* ================= boot ================= */
+$('#logClr').addEventListener('click',()=>{$('#log').innerHTML='';});
+$('#btnFactory').addEventListener('click',()=>{try{localStorage.removeItem(SKEY);localStorage.removeItem(GKEY);}catch(_){}location.reload();});
+S.kpRef=DRIVE.kpRef0||0;
+load();calcK();
+$('#motSel').value=S.mot;$('#lineSel').value=String(S.lineV);$('#loadSel').value=S.load;$('#dbChk').checked=S.dbInst;
+['lp','jr','amb'].forEach(k=>{$('#'+k).value=S[k];$('#'+k+'V').textContent=k==='jr'?String(S[k]):S[k]+(k==='amb'?'°C':'%');});
+S.hs=S.amb;
+if(KP.init)KP.init();
+updMotor();buildLoad();loadHint();renderTabs();renderParams();renderFaults();renderRef();renderEx();buildWD();updStation();syncInj();pills();
+log('المحاكي جاهز. المفتاح الرئيسي مقفول والـ DC bus بيشحن.');
+guiLoad();setMode(GUI.guided);
+let last=performance.now(),acc=0,scT=0,slow=0,slow2=0;
+function frame(now){
+ try{
+  const dt=Math.min(.1,(now-last)/1000);last=now;acc+=dt;let n=0;
+  calcK();
+  while(acc>=DT&&n<100){step(DT);acc-=DT;n++;scT+=DT;if(scT>=.05){scT=0;sample();}}
+  if(n>=100)acc=0;
+  ui(dt);drawScope();
+  slow+=dt;if(slow>.1){slow=0;updWD();pills();guideTick();}
+  slow2+=dt;if(slow2>.4){slow2=0;refreshRO();checkEx();if(lastFR!==S.fault){lastFR=S.fault;renderFaults();}if(REF[REFK]&&typeof REF[REFK][1]==='function')renderRef();save();}
+ }catch(err){console.error(err);}
+ requestAnimationFrame(frame);
+}
+requestAnimationFrame(t=>{last=t;frame(t);});
+
+</script>
+</body>
+</html>
