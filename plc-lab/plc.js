@@ -1665,7 +1665,7 @@ PL.brandCards = function(host){
      {host, watchEl, mount(box), key(), ex(), has(), begin(plantOpt), end(), advance(dt), engine(), plant(),
       setIn(a, raw), inBtn(a), outEl(a), plantEl(), lab(a), addr(a), xl(text), outro, script?(player, ctl)} */
 const PV_SEEN = 'plc-preview-seen-v1', PV_AUTO = 'plc-preview-auto';
-const PV = PL.preview = {cur:null, rate:1};
+const PV = PL.preview = {cur:null, rate:0.6};
 function pvSeen(){ try { return JSON.parse(lsGet(PV_SEEN)) || {}; } catch (e){ return {}; } }
 PV.seen = k => !!pvSeen()[k];
 PV.markSeen = k => { const o = pvSeen(); o[k] = 1; lsSet(PV_SEEN, JSON.stringify(o)); };
@@ -1826,16 +1826,16 @@ async function simScript(ad, pl, gen, ctl){
     ch.forEach(x => pl.hl(ad.outEl(x.a), 1700));
     pl.hl(ad.plantEl(), 900);
     const rep = said[key]; said[key] = 1;
-    if (!rep) await hold(1600);
+    if (!rep) await hold(2400);
     cause = {txt:'', t:E().t, key:'after', el:null};
   }
   async function sim(sec, until){
-    const t0 = E().t, fast = sec > 1.5 ? 4 : 1;
+    const t0 = E().t, fast = sec > 3 ? 2 : 1;
     curUntil = until || null; untilHit = false;
     const done = () => { if (until){ if (untilHit) return true; try { if (until(ctx)) return true; } catch (er){ return true; } } return E().t - t0 >= sec - 1e-9; };
     let budget = 0;
     pl.ff(fast > 1);
-    const f = until ? 3 : fast;
+    const f = until ? 1.5 : fast;
     while (!done()){
       budget += (await pl.frame(gen)) * f;
       while (budget >= DT && !done()){
@@ -1899,7 +1899,7 @@ async function simScript(ad, pl, gen, ctl){
         const key = 'exp:' + m;
         pl.say(`<span class="pv-ok">✓</span> ${ptx(m)}<span class="pv-chips">${ks.map(a => chip(a, !!(E().get(a)))).join('')}</span>`, 'exp');
         ks.forEach(a => pl.hl(ad.outEl(a), 1400));
-        await hold(said[key] ? 500 : 1400); said[key] = 1;
+        await hold(said[key] ? 700 : 2000); said[key] = 1;
       }
     }
     if (st.fn){ try { st.fn(ctx); } catch (er){} }
