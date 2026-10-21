@@ -160,11 +160,11 @@
       tags:"omron e5cc temperature pid حرارة كنترولر حرارة على فرن، ON/OFF و PID و Autotuning وإنذارات.  كنترولر حرارة متوصل على فرن   ON/OFF و PID و Autotuning   إنذارات الحرارة وأخطاء الحساس " }
   ];
   var GROUPS = [
-    { key:"basics", title:"أساسيات الكهربا", sub:"للمبتدئين خالص · قبل الكلاسيك" },
-    { key:"classic", title:"كلاسيك كنترول", sub:"مفاتيح · بوش بوتن · كونتاكتورات · موتور" },
-    { key:"instr", title:"إنسترومنتيشن", sub:"إنكودر · حساسات حرارة · لود سيل · ⁦4⁠–⁠20mA⁩" },
-    { key:"drives", title:"الانفرترات", sub:"Allen-Bradley · ABB · Siemens · Schneider · Mitsubishi · Yaskawa · Delta · LS · INVT · Danfoss · Fuji" },
-    { key:"servo", title:"سيرفو", sub:"درايفات وموتورات سيرفو" },
+    { key:"basics", title:"أساسيات الكهربا", sub:"للمبتدئين خالص · قبل الكلاسيك", land:"courses/basics.html" },
+    { key:"classic", title:"كلاسيك كنترول", sub:"مفاتيح · بوش بوتن · كونتاكتورات · موتور", land:"courses/classic.html" },
+    { key:"instr", title:"إنسترومنتيشن", sub:"إنكودر · حساسات حرارة · لود سيل · ⁦4⁠–⁠20mA⁩", land:"courses/instrumentation.html" },
+    { key:"drives", title:"الانفرترات", sub:"Allen-Bradley · ABB · Siemens · Schneider · Mitsubishi · Yaskawa · Delta · LS · INVT · Danfoss · Fuji", land:"courses/inverters.html" },
+    { key:"servo", title:"سيرفو", sub:"درايفات وموتورات سيرفو", land:"courses/servo.html" },
     { key:"temp", title:"كنترول حرارة", sub:"Omron" }
   ];
   var BRANDS = [
@@ -172,7 +172,7 @@
     { key:"schneider", label:"Schneider" }, { key:"delta", label:"Delta" }, { key:"danfoss", label:"Danfoss" },
     { key:"omron", label:"Omron" }, { key:"abb", label:"ABB" }, { key:"mitsubishi", label:"Mitsubishi" }, { key:"yaskawa", label:"Yaskawa" }, { key:"ls", label:"LS" }, { key:"invt", label:"INVT" }, { key:"fuji", label:"Fuji" }, { key:"multi", label:"مقارنة" }
   ];
-  window.LABS = LABS;
+  window.LABS = LABS; window.LAB_GROUPS = GROUPS;
 
   var root = document.documentElement;
   function store(k, v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } }
@@ -300,7 +300,7 @@
       var items = LABS.filter(function(l){ return l.group === g.key && match(l); });
       if (!items.length) return;
       n += items.length;
-      html += '<section class="group" aria-label="' + esc(g.title) + '"><h3 class="gtitle">' + esc(g.title) + ' <small class="ltr">' + esc(g.sub) + '</small></h3><div class="grid">' + items.map(card).join("") + "</div></section>";
+      html += '<section class="group" aria-label="' + esc(g.title) + '"><h3 class="gtitle">' + esc(g.title) + ' <small class="ltr">' + esc(g.sub) + '</small>' + (g.land ? '<a class="gmore" href="' + esc(g.land) + '">تفاصيل الكورس ←</a>' : "") + '</h3><div class="grid">' + items.map(card).join("") + "</div></section>";
     });
     cat.innerHTML = html;
     if (emptyEl) emptyEl.classList.toggle("show", n === 0);
