@@ -3,6 +3,7 @@
 // (basics, classic control, instrumentation, PLC, drawings). The PLC brand simulators (Siemens/Delta/AB) are members-only.
 // Members' lab/course pages also get /assets/sync.js injected so their progress syncs with the account.
 // Paywall (off by default, see _lib/plan.js): when on, those member-only pages also need an active Pro plan.
+// Suspended members count as signed out (sessionUser in _lib/auth.js).
 import { getDb, sessionUser, COOKIE } from "./_lib/auth.js";
 import { isAdmin } from "./_lib/admin.js";
 import { paywallOn, isPro } from "./_lib/plan.js";
@@ -72,7 +73,7 @@ export async function onRequest(ctx){
     to.searchParams.set("next", url.pathname + url.search);
     return new Response(null, { status: 302, headers: { location: to.pathname + to.search, "cache-control": "no-store" } });
   };
-  if (!s) return go("/login.html");
+  if (!s) return go(hasSessionCookie(ctx.request) ? "/login.html?out=1" : "/login.html"); // out=1: this device was signed out (see login.html)
   if (paywallOn(ctx.env) && !isPro(s.user) && !isAdmin(s.user)) return go("/account.html?need=pro");
   const res = await withSync(ctx);
   const out = new Response(res.body, res);

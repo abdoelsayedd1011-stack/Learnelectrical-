@@ -235,17 +235,43 @@
     authA.className = "nav-auth"; authA.href = "login.html"; authA.textContent = "دخول";
     if (/\/(login|account)\.html$/.test(location.pathname)) authA.setAttribute("aria-current", "page");
     nav.appendChild(authA);
-    var setUser = function(u){ root.classList.toggle("is-member", !!(u && u.name)); if (u && u.name){ authA.href = "account.html"; authA.textContent = u.name.split(" ")[0]; } else { authA.href = "login.html"; authA.textContent = "دخول"; } };
+    // «لوحة الإدارة» next to the account link, only when /api/auth/me says this account is an admin
+    var admA = document.createElement("a");
+    admA.className = "nav-admin"; admA.href = "/admin.html"; admA.textContent = "لوحة الإدارة"; admA.hidden = true;
+    if (/\/admin\.html$/.test(location.pathname)) admA.setAttribute("aria-current", "page");
+    nav.insertBefore(admA, authA);
+    var setUser = function(u){ root.classList.toggle("is-member", !!(u && u.name)); admA.hidden = !(u && u.admin); if (u && u.name){ authA.href = "account.html"; authA.textContent = u.name.split(" ")[0]; } else { authA.href = "login.html"; authA.textContent = "دخول"; } };
     try{ setUser(JSON.parse(sessionStorage.getItem("le-user") || "null")); }catch(e){}
     if (window.fetch && /^https?:$/.test(location.protocol)){
       fetch("/api/auth/me", { credentials: "same-origin" }).then(function(r){ return r.ok ? r.json() : null; }).then(function(r){
         if (!r || !r.ok) return;
         setUser(r.user);
+        if (r.ended && !document.getElementById("out-note")) try{ sessionStorage.setItem("le-ended", "1"); }catch(e){} // this device was signed out (login.html says so)
         try{ if (r.user) sessionStorage.setItem("le-user", JSON.stringify(r.user)); else sessionStorage.removeItem("le-user"); }catch(e){}
         // "online now" in the admin list: ping while the page is open and visible
         if (r.user) setInterval(function(){ if (document.visibilityState === "visible") fetch("/api/auth/me", { credentials: "same-origin" }).catch(function(){}); }, 120000);
       }, function(){});
     }
+  }
+
+  /* ---------- إعلان فوق الموقع (من لوحة الإدارة، /api/banner) ---------- */
+  // الزائر لو قفله ميظهرش تاني لنفس الكلام؛ لو الإدارة غيّرت النص يظهر من جديد.
+  if (window.fetch && /^https?:$/.test(location.protocol) && document.body){
+    var bannerKey = function(t){ var h = 5381; for (var i = 0; i < t.length; i++) h = ((h << 5) + h + t.charCodeAt(i)) | 0; return "b" + (h >>> 0).toString(36); };
+    fetch("/api/banner").then(function(r){ return r.ok ? r.json() : null; }).then(function(r){
+      var b = r && r.banner;
+      if (!b || !b.text) return;
+      var key = bannerKey(b.text + "|" + (b.link || ""));
+      if (store("le-banner-x") === key) return;
+      var link = b.link && /^(?:\/(?!\/)|https:\/\/)/.test(b.link) ? b.link : "";
+      var bar = document.createElement("div");
+      bar.className = "site-banner"; bar.setAttribute("role", "region"); bar.setAttribute("aria-label", "إعلان");
+      bar.innerHTML = '<div class="wrap sb-in"><p class="sb-text">' + (link ? '<a href="' + esc(link) + '"' + (/^https:/.test(link) ? ' target="_blank" rel="noopener"' : "") + ">" + esc(b.text) + " ←</a>" : esc(b.text)) + "</p>" +
+        '<button type="button" class="sb-x" aria-label="اقفل الإعلان"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>';
+      bar.querySelector(".sb-x").addEventListener("click", function(){ store("le-banner-x", key); bar.remove(); });
+      var skip = document.querySelector(".skip");
+      if (skip && skip.parentNode === document.body) skip.insertAdjacentElement("afterend", bar); else document.body.insertBefore(bar, document.body.firstChild);
+    }).catch(function(){});
   }
 
   /* ---------- config fill ---------- */

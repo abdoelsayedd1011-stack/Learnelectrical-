@@ -13,7 +13,7 @@ export async function onRequestGet({ request, env }){
     const db = await getDb(env);
     const s = await sessionUser(db, request);
     if (!s) return json({ ok: true, signed: false });
-    await touchUser(db, s.id);
+    await touchUser(db, s.id, s.token_hash);
     const rows = await db.prepare("SELECT k, v, updated_at FROM progress WHERE user_id = ?").bind(s.id).all();
     const items = {};
     for (const r of rows.results || []) items[r.k] = { v: r.v, t: r.updated_at };

@@ -3,10 +3,11 @@
 // POST {id, action: "approve"}  → Pro for PLAN_DAYS[plan] days from max(now, current pro_until), request approved
 // POST {id, action: "reject"}   → request rejected, plan unchanged
 import { getDb, readBody, json, fail, HttpError } from "../../_lib/auth.js";
-import { requireAdmin } from "../../_lib/admin.js";
+import { requireAdmin, logAction } from "../../_lib/admin.js";
 import { paywallOn, setPlan, extendedUntil, PLAN_DAYS } from "../../_lib/plan.js";
 import { payTable } from "../../_lib/pay.js";
 
+const PLAN_AR = { monthly: "شهري", yearly: "سنوي" };
 const COLS = "r.id, r.user_id, r.plan, r.amount, r.currency, r.method, r.sender, r.note, r.status, r.created_at, r.decided_at, r.pro_until AS granted_until, u.name, u.email, u.plan AS user_plan, u.pro_until";
 
 export async function onRequestGet({ request, env }){
@@ -27,16 +28,17 @@ export async function onRequestPost({ request, env }){
   try {
     const db = await getDb(env);
     const body = await readBody(request);
-    await requireAdmin(db, request);
+    const me = await requireAdmin(db, request);
     await payTable(db);
     const id = Number(body.id), action = String(body.action || "");
     if (!Number.isInteger(id) || id < 1 || (action !== "approve" && action !== "reject")) throw new HttpError(400, "bad_request");
-    const r = await db.prepare("SELECT r.id, r.user_id, r.plan, r.status, u.plan AS user_plan, u.pro_until FROM pay_requests r LEFT JOIN users u ON u.id = r.user_id WHERE r.id = ?").bind(id).first();
+    const r = await db.prepare("SELECT r.id, r.user_id, r.plan, r.amount, r.currency, r.status, u.email, u.plan AS user_plan, u.pro_until FROM pay_requests r LEFT JOIN users u ON u.id = r.user_id WHERE r.id = ?").bind(id).first();
     if (!r) throw new HttpError(404, "not_found");
     if (r.status !== "pending") throw new HttpError(409, "already_done");
     const now = Date.now();
     if (action === "reject"){
-      await db.prepare("UPDATE pay_requests SET status = 'rejected', decided_at = ? WHERE id = ? AND status = 'pending'").bind(now, id).run();
+      const rej = await db.prepare("UPDATE pay_requests SET status = 'rejected', decided_at = ? WHERE id = ? AND status = 'pending'").bind(now, id).run();
+      if (rej.meta && rej.meta.changes) await logAction(db, me, "pay_reject", { id: r.user_id, email: r.email }, "طلب #" + id + " · " + (PLAN_AR[r.plan] || r.plan) + " · " + r.amount + " " + r.currency);
       return json({ ok: true, id, status: "rejected" });
     }
     if (r.user_plan === null || r.user_plan === undefined) throw new HttpError(404, "not_found"); // member was deleted
@@ -45,6 +47,7 @@ export async function onRequestPost({ request, env }){
     const claim = await db.prepare("UPDATE pay_requests SET status = 'approved', decided_at = ?, pro_until = ? WHERE id = ? AND status = 'pending'").bind(now, until, id).run();
     if (!claim.meta || !claim.meta.changes) throw new HttpError(409, "already_done");
     if (!(await setPlan(db, r.user_id, until))) throw new HttpError(404, "not_found");
+    await logAction(db, me, "pay_approve", { id: r.user_id, email: r.email }, "طلب #" + id + " · " + (PLAN_AR[r.plan] || r.plan) + " · " + r.amount + " " + r.currency + " → لحد " + new Date(until + 2 * 3600 * 1000).toISOString().slice(0, 10));
     return json({ ok: true, id, status: "approved", user_id: r.user_id, plan: "pro", pro_until: until, paywall: paywallOn(env) });
   } catch (e) { return fail(e); }
 }

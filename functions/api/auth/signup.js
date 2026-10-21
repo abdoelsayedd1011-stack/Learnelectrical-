@@ -9,7 +9,7 @@ export async function onRequestPost({ request, env }){
     const salt = newSalt();
     const res = await db.prepare("INSERT INTO users (email, name, pass_hash, pass_salt, created_at) VALUES (?, ?, ?, ?, ?)")
       .bind(email, name, await hashPassword(password, salt), salt, Date.now()).run();
-    const cookie = await startSession(db, request, res.meta.last_row_id);
+    const cookie = await startSession(db, request, res.meta.last_row_id, env);
     return json({ ok: true, user: { name, email, plan: "free" } }, 201, { "set-cookie": cookie });
   } catch (e) {
     if (String(e && e.message).includes("UNIQUE")) return fail(new HttpError(409, "email_taken"));

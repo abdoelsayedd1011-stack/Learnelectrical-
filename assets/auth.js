@@ -32,7 +32,17 @@
     if (gated && note) note.hidden = false;
     if (location.hash === "#signup" || gated) setTab("signup");
 
-    api("me").then(function(r){ if (r.ok && r.user) location.replace(nextUrl()); });
+    // signed out on this device (a newer device, the admin, or a suspended account): say so gently and open «دخول»
+    var outNote = document.getElementById("out-note");
+    var showOut = function(){
+      if (!outNote || !outNote.hidden) return;
+      outNote.hidden = false; if (note) note.hidden = true; setTab("login");
+      try{ sessionStorage.removeItem("le-ended"); }catch(x){}
+    };
+    var ended = false; try{ ended = sessionStorage.getItem("le-ended") === "1"; }catch(x){}
+    if (new URLSearchParams(location.search).get("out") === "1" || ended) showOut();
+
+    api("me").then(function(r){ if (r.ok && r.user) location.replace(nextUrl()); else if (r.ok && r.ended) showOut(); });
 
     /* نسيت الباسورد؟ → رسالة واتساب للإدارة فيها الإيميل */
     var fBtn = document.getElementById("forgot-btn"), fBox = document.getElementById("forgot"), fWa = document.getElementById("forgot-wa");
@@ -57,7 +67,7 @@
         var data = {}; new FormData(form).forEach(function(v, k){ data[k] = v; });
         showMsg(msg, ""); btn.disabled = true;
         api(p[0], data).then(function(r){
-          if (r.ok){ try{ sessionStorage.setItem("le-user", JSON.stringify(r.user)); }catch(x){} location.replace(nextUrl()); return; }
+          if (r.ok){ try{ sessionStorage.setItem("le-user", JSON.stringify(r.user)); sessionStorage.removeItem("le-ended"); }catch(x){} location.replace(nextUrl()); return; }
           btn.disabled = false; showMsg(msg, r.message || OFFLINE);
         });
       });
@@ -96,6 +106,7 @@
       document.getElementById("acc-hello").textContent = "أهلاً يا " + u.name.split(" ")[0];
       document.getElementById("acc-name").textContent = u.name;
       document.getElementById("acc-email").textContent = u.email;
+      var adm = document.getElementById("acc-admin"); if (adm) adm.hidden = !u.admin; // /api/auth/me says admin only for ADMIN_EMAILS
       var pro = u.plan === "pro" && u.pro_until > Date.now(), dt = function(t){ return new Date(t).toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" }); };
       var planEl = document.getElementById("acc-plan");
       planEl.textContent = pro ? "\u2066Pro\u2069 لحد " + dt(u.pro_until) : u.plan === "pro" && u.pro_until ? "مجاني (الاشتراك خلص " + dt(u.pro_until) + ")" : "مجاني";

@@ -1,4 +1,5 @@
-/* لوحة الإدارة: أرقام الأعضاء، رسم الاشتراكات اليومية، قايمة الأعضاء، لينك باسورد جديد، تفعيل اشتراك Pro، طلبات الاشتراك، ومسح عضو.
+/* لوحة الإدارة: أرقام الأعضاء، رسم الاشتراكات اليومية، طلبات الاشتراك، اللي اشتراكهم هيخلص، قايمة الأعضاء (بحث وفلاتر وتنزيل Excel)،
+   نافذة العضو (الاشتراك، الأجهزة، التقدّم، الشهادات، الملاحظات، الإيقاف، لينك باسورد، المسح)، إعلان فوق الموقع، وسجل العمليات.
    الصفحة نفسها مفتوحة، بس كل /api/admin/* بيرجّع 403 لأي حد مش في ADMIN_EMAILS. */
 (function(){
   "use strict";
@@ -83,105 +84,9 @@
       var on = r.online || 0;
       $("online-now").innerHTML = '<i class="dot' + (on ? " on" : "") + '" aria-hidden="true"></i>' + (on ? "متصلين دلوقتي: <b>" + on + "</b>" : "مفيش حد متصل دلوقتي");
       $("active-week").textContent = "دخلوا الموقع آخر 7 أيام: " + r.active_week + " من " + r.total;
+      showExpiring(r.expiring || []);
     });
   }
-
-  /* ---------- الأعضاء ---------- */
-  var list = $("mem-list"), more = $("mem-more"), count = $("mem-count"), q = "", offset = 0, seq = 0, meEmail = "", paywall = false, pagedMore = false;
-  var ONLINE_MS = 4 * 60 * 1000;
-  function isOnline(m){ return m.last_seen && Date.now() - m.last_seen < ONLINE_MS; }
-  function isPro(m){ return m.plan === "pro" && m.pro_until > Date.now(); }
-  function planTag(m){
-    if (isPro(m)) return '<span class="mem-plan paid">Pro لحد ' + esc(fmtDate(m.pro_until)) + "</span>";
-    return '<span class="mem-plan">' + (m.plan === "pro" && m.pro_until ? "مجاني · Pro خلص" : "مجاني") + "</span>";
-  }
-  function isoDay(t){ var d = new Date(t + 2 * 3600 * 1000); return d.toISOString().slice(0, 10); } // بتوقيت القاهرة
-  function memberRow(m){
-    var self = m.email === meEmail;
-    return '<li class="mem" data-id="' + m.id + '" data-name="' + esc(m.name) + '" data-email="' + esc(m.email) + '" data-until="' + (isPro(m) ? m.pro_until : "") + '">' +
-      '<div class="mem-top"><div class="mem-who"><b>' + (isOnline(m) ? '<i class="dot on" title="متصل دلوقتي" aria-label="متصل دلوقتي"></i>' : "") + esc(m.name) + (m.admin ? ' <span class="mem-tag">إدارة</span>' : "") + '</b><span class="ltr mem-email">' + esc(m.email) + "</span></div>" +
-      planTag(m) + "</div>" +
-      '<dl class="mem-facts"><div><dt>اشترك</dt><dd>' + esc(fmtDate(m.created_at)) + "</dd></div><div><dt>آخر دخول</dt><dd>" + (isOnline(m) ? '<span class="on-txt">متصل دلوقتي</span>' : esc(ago(m.last_seen))) + "</dd></div>" +
-      "<div><dt>تقدّم متزامن</dt><dd>" + (m.synced ? m.synced + " حاجة" : "لأ") + "</dd></div><div><dt>شهادات</dt><dd>" + m.certs + "</dd></div></dl>" +
-      '<div class="mem-act"><button class="btn btn-ghost" type="button" data-act="reset">لينك باسورد جديد</button><button class="btn btn-ghost" type="button" data-act="plan">تفعيل اشتراك</button>' +
-      (self ? "" : '<button class="btn btn-ghost danger" type="button" data-act="ask-delete">امسح العضو</button>') + "</div>" +
-      '<div class="mem-panel" hidden></div></li>';
-  }
-  function loadMembers(reset){
-    var my = ++seq;
-    if (reset){ offset = 0; }
-    get("/api/admin/members?q=" + encodeURIComponent(q) + "&offset=" + offset).then(function(r){
-      if (my !== seq) return;
-      if (!r.ok){ count.textContent = r.message || OFFLINE; return; }
-      var html = r.members.map(memberRow).join("");
-      if (reset) list.innerHTML = html; else list.insertAdjacentHTML("beforeend", html);
-      offset = r.offset + r.members.length; paywall = !!r.paywall;
-      count.textContent = r.total ? (q ? "لقينا " + r.total + " عضو" : "كل الأعضاء: " + r.total) + (offset < r.total ? " (معروض " + offset + ")" : "") : (q ? "مفيش عضو بالاسم أو الإيميل ده." : "لسه مفيش أعضاء.");
-      more.hidden = offset >= r.total;
-    });
-  }
-  var timer = null;
-  $("mem-q").addEventListener("input", function(){ clearTimeout(timer); var v = this.value.trim(); timer = setTimeout(function(){ q = v; loadMembers(true); }, 250); });
-  $("mem-search").addEventListener("submit", function(e){ e.preventDefault(); clearTimeout(timer); q = $("mem-q").value.trim(); loadMembers(true); });
-  more.addEventListener("click", function(){ pagedMore = true; loadMembers(false); });
-
-  function panel(li, html){ var p = li.querySelector(".mem-panel"); p.innerHTML = html; p.hidden = !html; return p; }
-  list.addEventListener("click", function(e){
-    var b = e.target.closest("button[data-act]"); if (!b) return;
-    var li = b.closest(".mem"), id = +li.getAttribute("data-id"), name = li.getAttribute("data-name"), act = b.getAttribute("data-act");
-    if (act === "reset"){
-      b.disabled = true;
-      post("/api/admin/reset-link", { id: id }).then(function(r){
-        b.disabled = false;
-        if (!r.ok){ panel(li, '<p class="auth-msg" role="alert">' + esc(r.message || OFFLINE) + "</p>"); return; }
-        var msg = "أهلاً " + name.split(" ")[0] + "، ده لينك تعمل بيه باسورد جديد لحسابك على " + SITE_NAME + " (شغال مرة واحدة لمدة 24 ساعة):\n" + r.link;
-        var p = panel(li, '<p class="mem-pl">لينك باسورد جديد لـ <b>' + esc(name) + '</b>، شغال مرة واحدة لحد ' + esc(new Date(r.expires_at).toLocaleString("ar-EG-u-nu-latn", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })) + ":</p>" +
-          '<label class="sr-only" for="lnk-' + id + '">اللينك</label><input class="mem-link ltr" id="lnk-' + id + '" readonly value="' + esc(r.link) + '">' +
-          '<div class="mem-act"><button class="btn btn-primary" type="button" data-act="copy">انسخ اللينك</button><a class="btn btn-wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(msg) + '">ابعته واتساب</a><span class="copy-ok" role="status"></span></div>');
-        p.querySelector("input").focus(); p.querySelector("input").select();
-      });
-    } else if (act === "copy"){
-      var inp = li.querySelector(".mem-link"), ok = li.querySelector(".copy-ok");
-      var done = function(){ ok.textContent = "اتنسخ ✓"; setTimeout(function(){ ok.textContent = ""; }, 2500); };
-      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(inp.value).then(done, function(){ inp.select(); });
-      else { inp.select(); try { document.execCommand("copy"); done(); } catch (x){} }
-    } else if (act === "plan"){
-      var until = +li.getAttribute("data-until") || 0, def = isoDay(until || Date.now() + 30 * 864e5), min = isoDay(Date.now() + 864e5);
-      var pp = panel(li, '<div class="mem-pro" role="group" aria-labelledby="pl-' + id + '"><p id="pl-' + id + '" class="mem-pl">' + (until ? "<b>" + esc(name) + "</b> مشترك Pro لحد " + esc(fmtDate(until)) + ". تقدر تمدّ الاشتراك أو تلغيه." : "فعّل اشتراك Pro لـ <b>" + esc(name) + "</b> لحد اليوم اللي تختاره.") + "</p>" +
-        '<label class="field mem-date" for="pu-' + id + '">Pro لحد يوم<input type="date" id="pu-' + id + '" class="ltr" min="' + min + '" value="' + def + '"></label>' +
-        '<div class="mem-act"><button class="btn btn-primary" type="button" data-act="plan-save">' + (until ? "حدّث الاشتراك" : "فعّل الاشتراك") + "</button>" +
-        (until ? '<button class="btn btn-ghost danger" type="button" data-act="plan-cancel">ألغِ الاشتراك</button>' : "") +
-        '<button class="btn btn-ghost" type="button" data-act="cancel">اقفل</button></div>' +
-        (paywall ? "" : '<p class="adm-note">الاشتراك المدفوع لسه مش مقفول على الموقع، فالأعضاء كلهم شايفين كل حاجة. اللي هتعمله هنا بيتسجّل ويشتغل أول ما الاشتراك يتفعّل.</p>') +
-        '<p class="auth-msg" role="alert" hidden></p></div>');
-      pp.querySelector("input").focus();
-    } else if (act === "plan-save" || act === "plan-cancel"){
-      var day = act === "plan-save" ? li.querySelector(".mem-date input").value : null, m2 = li.querySelector(".mem-pro .auth-msg");
-      if (act === "plan-save" && !/^\d{4}-\d{2}-\d{2}$/.test(day || "")){ m2.textContent = "اختار يوم في المستقبل."; m2.hidden = false; return; }
-      b.disabled = true;
-      post("/api/admin/plan", { id: id, until: day }).then(function(r){
-        b.disabled = false;
-        if (!r.ok){ m2.textContent = r.error === "bad_request" ? "اختار يوم في المستقبل." : (r.message || OFFLINE); m2.hidden = false; return; }
-        var mm = { plan: r.plan, pro_until: r.pro_until };
-        li.setAttribute("data-until", isPro(mm) ? r.pro_until : "");
-        li.querySelector(".mem-plan").outerHTML = planTag(mm);
-        panel(li, '<p class="mem-pl" role="status">' + (r.plan === "pro" ? "اتفعّل اشتراك Pro لـ " + esc(name) + " لحد " + esc(fmtDate(r.pro_until)) + " ✓" : "اتلغى اشتراك " + esc(name) + "، ورجع مجاني.") + "</p>");
-      });
-    } else if (act === "ask-delete"){
-      var p2 = panel(li, '<div class="mem-confirm" role="group" aria-labelledby="cf-' + id + '"><p id="cf-' + id + '">متأكد إنك عايز تمسح حساب <b>' + esc(name) + "</b>؟ هيتمسح معاه تقدّمه وشهاداته، ومفيش رجوع.</p>" +
-        '<div class="mem-act"><button class="btn danger-solid" type="button" data-act="delete">أيوه، امسحه</button><button class="btn btn-ghost" type="button" data-act="cancel">لأ، سيبه</button></div></div>');
-      p2.querySelector("[data-act=cancel]").focus();
-    } else if (act === "cancel"){
-      panel(li, ""); var ask = li.querySelector("[data-act=ask-delete]"); if (ask) ask.focus();
-    } else if (act === "delete"){
-      b.disabled = true;
-      post("/api/admin/delete", { id: id }).then(function(r){
-        if (!r.ok){ b.disabled = false; panel(li, '<p class="auth-msg" role="alert">' + esc(r.message || OFFLINE) + "</p>"); return; }
-        li.remove(); count.textContent = "اتمسح حساب " + name + "."; loadStats();
-      });
-    }
-  });
-
 
   /* ---------- طلبات الاشتراك (subscribe.html → «أنا حوّلت») ---------- */
   var PLAN_AR = { monthly: "شهري", yearly: "سنوي" }, PLAN_DAYS = { monthly: 30, yearly: 365 };
@@ -204,6 +109,7 @@
     return get("/api/admin/pay").then(function(r){
       if (!r.ok){ prCount.textContent = r.message || OFFLINE; return; }
       prList.innerHTML = r.requests.map(reqRow).join("");
+      prBadge(r.requests.length);
       prCount.textContent = r.requests.length ? "مستنيين مراجعة: " + r.requests.length + ". اتأكد إن التحويل وصلك بنفس المبلغ قبل ما تفعّل." : "مفيش طلبات مستنية دلوقتي.";
     });
   }
@@ -231,14 +137,303 @@
       li.querySelector(".mem-act").remove();
       show('<p class="mem-pl" role="status">' + (r.status === "approved" ? "اتفعّل اشتراك Pro لـ " + esc(name) + " لحد " + esc(fmtDate(r.pro_until)) + " ✓" : "اترفض الطلب.") + "</p>");
       var n = prList.querySelectorAll(".mem-act").length;
-      prCount.textContent = n ? "مستنيين مراجعة: " + n + "." : "خلّصت كل الطلبات ✓";
+      prCount.textContent = n ? "مستنيين مراجعة: " + n + "." : "خلّصت كل الطلبات ✓"; prBadge(n);
       if (r.status === "approved"){
-        var m = list.querySelector('.mem[data-id="' + r.user_id + '"]');
-        if (m){ m.setAttribute("data-until", r.pro_until); m.querySelector(".mem-plan").outerHTML = planTag({ plan: "pro", pro_until: r.pro_until }); }
+        refreshRow(r.user_id, { plan: "pro", pro_until: r.pro_until });
+        if (mdId === r.user_id) openMember(mdId);
       }
       if (!prDone.hidden) loadDone();
+      loadLog(0);
     });
   });
+
+  /* ---------- الأعضاء: صف صغير لكل عضو، والتفاصيل والأزرار في نافذة العضو ---------- */
+  var list = $("mem-list"), more = $("mem-more"), count = $("mem-count"), q = "", filter = "", offset = 0, seq = 0, meEmail = "", paywall = false, pagedMore = false;
+  var ONLINE_MS = 4 * 60 * 1000, rows = {};
+  var FILTER_AR = { pro: "المشتركين", free: "المجانيين", suspended: "الموقوفين", idle: "اللي مدخلوش من 30 يوم" };
+  function isOnline(m){ return m.last_seen && Date.now() - m.last_seen < ONLINE_MS; }
+  function isPro(m){ return m.plan === "pro" && m.pro_until > Date.now(); }
+  function planTag(m){
+    if (isPro(m)) return '<span class="mem-plan paid">Pro لحد ' + esc(fmtDate(m.pro_until)) + "</span>";
+    return '<span class="mem-plan">' + (m.plan === "pro" && m.pro_until ? "مجاني · Pro خلص" : "مجاني") + "</span>";
+  }
+  function isoDay(t){ var d = new Date(t + 2 * 3600 * 1000); return d.toISOString().slice(0, 10); } // بتوقيت القاهرة
+  function memberRow(m){
+    rows[m.id] = m;
+    return '<li class="mem mem-row' + (m.suspended ? " is-off" : "") + '" data-id="' + m.id + '"><button type="button" class="mem-open" data-open="' + m.id + '" aria-haspopup="dialog">' +
+      '<span class="mem-top"><span class="mem-who"><b>' + (isOnline(m) ? '<i class="dot on" title="متصل دلوقتي" aria-label="متصل دلوقتي"></i>' : "") + esc(m.name) + (m.admin ? ' <span class="mem-tag">إدارة</span>' : "") + (m.suspended ? ' <span class="mem-tag off">موقوف</span>' : "") + '</b><span class="ltr mem-email">' + esc(m.email) + "</span></span>" +
+      planTag(m) + "</span>" +
+      '<span class="mem-line">' + (isOnline(m) ? '<span class="on-txt">متصل دلوقتي</span>' : m.last_seen ? "آخر دخول " + esc(ago(m.last_seen)) : "لسه مدخلش") + " · اشترك " + esc(fmtDate(m.created_at)) + (m.certs ? " · " + m.certs + " شهادة" : "") + '<span class="mem-go" aria-hidden="true">التفاصيل ←</span></span>' +
+      "</button></li>";
+  }
+  function xlsHref(){ return "/api/admin/export?q=" + encodeURIComponent(q) + "&f=" + encodeURIComponent(filter); }
+  function loadMembers(reset){
+    var my = ++seq;
+    if (reset){ offset = 0; pagedMore = false; }
+    $("mem-xls").href = xlsHref();
+    get("/api/admin/members?q=" + encodeURIComponent(q) + "&f=" + encodeURIComponent(filter) + "&offset=" + offset).then(function(r){
+      if (my !== seq) return;
+      if (!r.ok){ count.textContent = r.message || OFFLINE; return; }
+      var html = r.members.map(memberRow).join("");
+      if (reset) list.innerHTML = html; else list.insertAdjacentHTML("beforeend", html);
+      offset = r.offset + r.members.length; paywall = !!r.paywall;
+      var narrowed = q || filter;
+      count.textContent = r.total ? (narrowed ? "لقينا " + r.total + " عضو" + (filter ? " من " + FILTER_AR[filter] : "") : "كل الأعضاء: " + r.total) + (offset < r.total ? " (معروض " + offset + ")" : "") : (narrowed ? "مفيش أعضاء بالبحث أو الفلتر ده." : "لسه مفيش أعضاء.");
+      more.hidden = offset >= r.total;
+    });
+  }
+  var timer = null;
+  $("mem-q").addEventListener("input", function(){ clearTimeout(timer); var v = this.value.trim(); timer = setTimeout(function(){ q = v; loadMembers(true); }, 250); });
+  $("mem-search").addEventListener("submit", function(e){ e.preventDefault(); clearTimeout(timer); q = $("mem-q").value.trim(); loadMembers(true); });
+  more.addEventListener("click", function(){ pagedMore = true; loadMembers(false); });
+  $("mem-chips").addEventListener("click", function(e){
+    var c = e.target.closest(".chip"); if (!c) return;
+    filter = c.getAttribute("data-f") || "";
+    this.querySelectorAll(".chip").forEach(function(x){ x.setAttribute("aria-pressed", x === c ? "true" : "false"); });
+    loadMembers(true);
+  });
+  function refreshRow(id, patch){
+    var m = rows[id], li = list.querySelector('.mem[data-id="' + id + '"]');
+    if (!m || !li) return;
+    Object.keys(patch).forEach(function(k){ m[k] = patch[k]; });
+    li.outerHTML = memberRow(m);
+  }
+  list.addEventListener("click", function(e){ var b = e.target.closest("[data-open]"); if (b) openMember(+b.getAttribute("data-open")); });
+
+  /* ---------- نافذة العضو ---------- */
+  var md = $("md"), mdBody = $("md-body"), mdId = 0, mdData = null, mdOpener = null;
+  var ACTION_AR = { suspend: "وقّف الحساب", unsuspend: "رجّع الحساب", kick: "خرّجه من جهاز", plan: "غيّر الاشتراك", plan_cancel: "لغى الاشتراك",
+    pay_approve: "وافق على طلب اشتراك", pay_reject: "رفض طلب اشتراك", note: "عدّل الملاحظات", banner: "غيّر الإعلان", "delete": "مسح عضو",
+    reset_link: "عمل لينك باسورد جديد", "export": "نزّل Excel" };
+  var STATUS_AR = { pending: "مستني مراجعة", approved: "اتفعّل", rejected: "اترفض" };
+  function fmtWhen(t){ try { return new Date(t).toLocaleString("ar-EG-u-nu-latn", { day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit" }); } catch (e){ return fmtDate(t); } }
+  function country(c){ if (!c) return ""; try { return new Intl.DisplayNames(["ar"], { type: "region" }).of(c) || c; } catch (e){ return c; } }
+  function box(key, title, inner){ return '<section class="md-box" data-box="' + key + '"><h3>' + title + "</h3>" + inner + '<p class="auth-msg md-msg" role="status" hidden></p></section>'; }
+  function flash(key, text){ var b = mdBody.querySelector('[data-box="' + key + '"] .md-msg'); if (b){ b.textContent = text || ""; b.hidden = !text; } }
+  function renderMd(d){
+    var m = d.member, pro = isPro(m), on = isOnline(m);
+    $("md-who").innerHTML = '<b id="md-name">' + (on ? '<i class="dot on" aria-label="متصل دلوقتي"></i>' : '<i class="dot" aria-hidden="true"></i>') + esc(m.name) +
+      (m.admin ? ' <span class="mem-tag">إدارة</span>' : "") + (m.suspended ? ' <span class="mem-tag off">موقوف</span>' : "") + '</b><span class="ltr mem-email">' + esc(m.email) + "</span>";
+    var h = '<dl class="mem-facts"><div><dt>اشترك</dt><dd>' + esc(fmtDate(m.created_at)) + "</dd></div><div><dt>آخر دخول</dt><dd>" + (on ? '<span class="on-txt">متصل دلوقتي</span>' : esc(ago(m.last_seen))) + "</dd></div>" +
+      "<div><dt>الخطة</dt><dd>" + (pro ? "Pro" : (m.plan === "pro" && m.pro_until ? "مجاني · Pro خلص" : "مجاني")) + "</dd></div><div><dt>الاشتراك لحد</dt><dd>" + (pro ? esc(fmtDate(m.pro_until)) : "—") + "</dd></div></dl>";
+    if (m.suspended) h += '<p class="md-off" role="note"><b>الحساب ده موقوف</b> من ' + esc(fmtWhen(m.suspended_at)) + (m.suspend_reason ? ": " + esc(m.suspend_reason) : "") + "</p>";
+
+    // الاشتراك
+    var min = isoDay(Date.now() + 864e5), def = isoDay(pro ? m.pro_until : Date.now() + 30 * 864e5);
+    h += box("plan", "الاشتراك", '<p class="mem-pl">' + (pro ? "مشترك Pro لحد <b>" + esc(fmtDate(m.pro_until)) + "</b>. المدة بتتزوّد على اللي فاضل." : "مش مشترك دلوقتي. المدة بتبدأ من النهارده.") + "</p>" +
+      '<div class="mem-act"><button class="btn btn-ghost" type="button" data-md="add" data-days="30">+ 30 يوم</button><button class="btn btn-ghost" type="button" data-md="add" data-days="365">+ سنة</button></div>' +
+      '<div class="md-row"><label class="field mem-date" for="md-until">لحد يوم معيّن<input type="date" id="md-until" class="ltr" min="' + min + '" value="' + def + '"></label><button class="btn btn-ghost" type="button" data-md="until">ثبّت التاريخ</button></div>' +
+      (pro ? '<div class="mem-act"><button class="btn btn-ghost danger" type="button" data-md="ask-cancel">ألغِ الاشتراك ورجّعه مجاني</button></div>' : "") +
+      '<div class="md-confirm" data-c="cancel" hidden><p>تلغي اشتراك <b>' + esc(m.name) + '</b> وترجّعه مجاني دلوقتي؟</p><div class="mem-act"><button class="btn danger-solid" type="button" data-md="cancel-plan">أيوه، ألغيه</button><button class="btn btn-ghost" type="button" data-md="no">لأ</button></div></div>' +
+      (d.paywall ? "" : '<p class="adm-note">الاشتراك المدفوع لسه مش مقفول على الموقع، فالأعضاء كلهم شايفين كل حاجة. اللي هتعمله هنا بيتسجّل ويشتغل أول ما الاشتراك يتفعّل.</p>'));
+
+    // الأجهزة
+    var dv = d.devices;
+    h += box("dev", "الأجهزة <small>(" + dv.length + " من " + d.max_devices + ")</small>", (dv.length ? '<ul class="md-list">' + dv.map(function(x){
+      return '<li><div class="md-li-main"><b>' + esc(x.device) + (x.current ? ' <span class="mem-tag">الجهاز ده</span>' : "") + "</b><span>" + (x.country ? esc(country(x.country)) + " · " : "") +
+        (x.created_at ? "دخل " + esc(fmtDate(x.created_at)) : "") + (x.last_seen ? " · آخر نشاط " + esc(ago(x.last_seen)) : "") + "</span></div>" +
+        (x.current ? "" : '<button class="btn btn-ghost danger md-sm" type="button" data-md="kick" data-sid="' + esc(x.sid) + '">خرّجه</button>') + "</li>";
+    }).join("") + "</ul>" : '<p class="adm-empty">مش داخل من أي جهاز دلوقتي.</p>') +
+      (dv.some(function(x){ return !x.current; }) ? '<div class="mem-act"><button class="btn btn-ghost danger" type="button" data-md="kick-all">خرّجه من كل الأجهزة</button></div>' : "") +
+      '<p class="adm-note">بالكتير ' + d.max_devices + " أجهزة في نفس الوقت. لو دخل من جهاز زيادة، أقدم جهاز بيخرج لوحده.</p>");
+
+    // التقدّم
+    h += box("prog", "التقدّم في الكورسات", '<ul class="adm-bars">' + d.courses.map(function(c){
+      var pct = c.total ? Math.round(c.done / c.total * 100) : 0;
+      return '<li><span class="b-l">' + esc(c.title) + '</span><span class="b-n">' + (c.started ? (c.total ? pct + "%" : "؟") : "—") + '</span><span class="b-t" aria-hidden="true"><i style="width:' + pct + '%"></i></span></li>';
+    }).join("") + "</ul>");
+
+    // الشهادات
+    h += box("cert", "الشهادات", d.certs.length ? '<ul class="md-list">' + d.certs.map(function(c){
+      return '<li><div class="md-li-main"><b>' + esc(c.course_title) + "</b><span>" + esc(c.name) + " · " + esc(fmtDate(c.issued_at)) + '</span></div><a class="ltr md-code" href="cert.html?c=' + encodeURIComponent(c.code) + '" target="_blank" rel="noopener">' + esc(c.code) + "</a></li>";
+    }).join("") + "</ul>" : '<p class="adm-empty">لسه مخدش شهادات.</p>');
+
+    // طلبات الدفع
+    h += box("pay", "طلبات الاشتراك", d.pays.length ? '<ul class="md-list">' + d.pays.map(function(r){
+      return '<li><div class="md-li-main"><b>' + esc(PLAN_AR[r.plan] || r.plan) + " · " + esc(money(r)) + "</b><span>" + esc(METHOD_AR[r.method] || r.method) + (r.sender ? ' · <span class="ltr">' + esc(r.sender) + "</span>" : "") + " · " + esc(fmtDate(r.created_at)) + "</span></div>" +
+        '<span class="mem-plan' + (r.status === "approved" ? " paid" : "") + '">' + esc(STATUS_AR[r.status] || r.status) + "</span></li>";
+    }).join("") + "</ul>" : '<p class="adm-empty">مبعتش طلبات اشتراك.</p>');
+
+    // ملاحظات
+    h += box("note", "ملاحظات الإدارة <small>(محدش بيشوفها غير الإدارة)</small>", '<label class="sr-only" for="md-note">ملاحظات</label><textarea id="md-note" class="md-note" rows="3" maxlength="2000" placeholder="أي حاجة عايز تفتكرها عن العضو ده">' + esc(m.admin_note || "") + "</textarea>" +
+      '<div class="mem-act"><button class="btn btn-primary" type="button" data-md="note">احفظ الملاحظات</button>' + (m.admin_note_at ? '<span class="md-when">آخر تعديل ' + esc(ago(m.admin_note_at)) + "</span>" : "") + "</div>");
+
+    // الحساب: إيقاف، باسورد، مسح
+    var acc = "";
+    if (!m.self){
+      acc += m.suspended
+        ? '<div class="mem-act"><button class="btn btn-primary" type="button" data-md="unsuspend">رجّع الحساب</button></div>'
+        : '<div class="mem-act"><button class="btn btn-ghost danger" type="button" data-md="ask-suspend">وقّف الحساب</button></div>' +
+          '<div class="md-confirm" data-c="suspend" hidden><p>لو وقّفت حساب <b>' + esc(m.name) + "</b> هيخرج من كل الأجهزة دلوقتي، ومش هيقدر يدخل لحد ما ترجّعه.</p>" +
+          '<label class="field" for="md-reason">السبب (اختياري، للإدارة بس)<input id="md-reason" type="text" maxlength="200"></label>' +
+          '<div class="mem-act"><button class="btn danger-solid" type="button" data-md="suspend">أيوه، وقّفه</button><button class="btn btn-ghost" type="button" data-md="no">لأ</button></div></div>';
+    }
+    acc += '<div class="mem-act"><button class="btn btn-ghost" type="button" data-md="reset">لينك باسورد جديد</button>' + (m.self ? "" : '<button class="btn btn-ghost danger" type="button" data-md="ask-delete">امسح العضو</button>') + "</div>" +
+      '<div class="md-reset" hidden></div>' +
+      '<div class="md-confirm" data-c="delete" hidden><p>متأكد إنك عايز تمسح حساب <b>' + esc(m.name) + "</b>؟ هيتمسح معاه تقدّمه وشهاداته، ومفيش رجوع.</p>" +
+      '<div class="mem-act"><button class="btn danger-solid" type="button" data-md="delete">أيوه، امسحه</button><button class="btn btn-ghost" type="button" data-md="no">لأ، سيبه</button></div></div>';
+    h += box("acc", "الحساب", acc);
+
+    if (d.log.length) h += box("log", "آخر العمليات على العضو ده", '<ul class="md-list md-log">' + d.log.map(function(l){
+      return '<li><div class="md-li-main"><b>' + esc(ACTION_AR[l.action] || l.action) + "</b>" + (l.details ? '<span class="md-det">' + esc(l.details) + "</span>" : "") + "<span>" + esc(fmtWhen(l.at)) + "</span></div></li>";
+    }).join("") + "</ul>");
+    mdBody.innerHTML = h;
+  }
+  function openMember(id, after){
+    mdId = id;
+    if (!md.open){
+      mdOpener = document.activeElement;
+      $("md-who").innerHTML = '<b id="md-name">بنحمّل…</b>'; mdBody.innerHTML = "";
+      if (md.showModal) md.showModal(); else md.setAttribute("open", "");
+      document.documentElement.classList.add("md-lock");
+    }
+    return get("/api/admin/member?id=" + id).then(function(r){
+      if (id !== mdId) return;
+      if (!r.ok){ mdBody.innerHTML = '<p class="auth-msg" role="alert">' + esc(r.message || OFFLINE) + "</p>"; return; }
+      var y = mdBody.scrollTop;
+      mdData = r; renderMd(r); mdBody.scrollTop = y;
+      var m = r.member; refreshRow(id, { plan: m.plan, pro_until: m.pro_until, suspended: m.suspended, last_seen: m.last_seen, name: m.name });
+      if (after) after();
+    });
+  }
+  function closeMd(){ if (md.close) md.close(); else md.removeAttribute("open"); }
+  md.addEventListener("close", function(){ mdId = 0; document.documentElement.classList.remove("md-lock"); if (mdOpener && mdOpener.focus && document.body.contains(mdOpener)) mdOpener.focus(); });
+  $("md-x").addEventListener("click", closeMd);
+  md.addEventListener("click", function(e){ if (e.target === md) closeMd(); }); // الضغط على الخلفية بيقفل
+  function confirmBox(key, show){ var c = mdBody.querySelector('[data-c="' + key + '"]'); if (c){ c.hidden = !show; if (show){ var f = c.querySelector("input,button"); if (f) f.focus(); } } }
+  // POST then reload the details; text = what to say in that box when it worked
+  function act(b, boxKey, path, body, text){
+    b.disabled = true; flash(boxKey, "");
+    return post(path, body).then(function(r){
+      b.disabled = false;
+      if (!r.ok){ flash(boxKey, r.error === "bad_request" && boxKey === "plan" ? "اختار يوم في المستقبل." : (r.message || OFFLINE)); return r; }
+      var msg = typeof text === "function" ? text(r) : text;
+      openMember(mdId, function(){ flash(boxKey, msg); });
+      loadLog(0);
+      return r;
+    });
+  }
+  mdBody.addEventListener("click", function(e){
+    var b = e.target.closest("button[data-md]"); if (!b || !mdData) return;
+    var a = b.getAttribute("data-md"), m = mdData.member, id = m.id, name = m.name;
+    if (a === "no"){ var c = b.closest(".md-confirm"); if (c) c.hidden = true; return; }
+    if (a === "add") act(b, "plan", "/api/admin/plan", { id: id, add_days: +b.getAttribute("data-days") }, function(r){ return "اتمدّ الاشتراك لحد " + fmtDate(r.pro_until) + " ✓"; });
+    else if (a === "until"){
+      var day = $("md-until").value;
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(day || "")){ flash("plan", "اختار يوم في المستقبل."); return; }
+      act(b, "plan", "/api/admin/plan", { id: id, until: day }, function(r){ return "Pro لحد " + fmtDate(r.pro_until) + " ✓"; });
+    }
+    else if (a === "ask-cancel") confirmBox("cancel", true);
+    else if (a === "cancel-plan") act(b, "plan", "/api/admin/plan", { id: id, until: null }, "اتلغى الاشتراك، ورجع مجاني.");
+    else if (a === "kick") act(b, "dev", "/api/admin/kick", { id: id, sid: b.getAttribute("data-sid") }, "خرج من الجهاز ده. أول ما يفتح الموقع عليه هيلاقي صفحة الدخول.");
+    else if (a === "kick-all") act(b, "dev", "/api/admin/kick", { id: id, all: true }, "خرج من كل الأجهزة ✓");
+    else if (a === "note") act(b, "note", "/api/admin/note", { id: id, note: $("md-note").value }, "اتحفظت الملاحظات ✓");
+    else if (a === "ask-suspend") confirmBox("suspend", true);
+    else if (a === "suspend") act(b, "acc", "/api/admin/suspend", { id: id, suspend: true, reason: $("md-reason").value }, "اتوقف الحساب وخرج من كل الأجهزة.");
+    else if (a === "unsuspend") act(b, "acc", "/api/admin/suspend", { id: id, suspend: false }, "رجع الحساب، ويقدر يدخل تاني ✓");
+    else if (a === "ask-delete") confirmBox("delete", true);
+    else if (a === "delete"){
+      b.disabled = true;
+      post("/api/admin/delete", { id: id }).then(function(r){
+        if (!r.ok){ b.disabled = false; flash("acc", r.message || OFFLINE); return; }
+        var li = list.querySelector('.mem[data-id="' + id + '"]'); if (li) li.remove();
+        mdOpener = null; closeMd(); count.textContent = "اتمسح حساب " + name + "."; loadStats(); loadLog(0);
+      });
+    }
+    else if (a === "reset"){
+      b.disabled = true;
+      post("/api/admin/reset-link", { id: id }).then(function(r){
+        b.disabled = false;
+        var box = mdBody.querySelector(".md-reset");
+        if (!r.ok){ flash("acc", r.message || OFFLINE); return; }
+        var msg = "أهلاً " + name.split(" ")[0] + "، ده لينك تعمل بيه باسورد جديد لحسابك على " + SITE_NAME + " (شغال مرة واحدة لمدة 24 ساعة):\n" + r.link;
+        box.innerHTML = '<p class="mem-pl">لينك باسورد جديد، شغال مرة واحدة لحد ' + esc(new Date(r.expires_at).toLocaleString("ar-EG-u-nu-latn", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })) + ":</p>" +
+          '<label class="sr-only" for="md-lnk">اللينك</label><input class="mem-link ltr" id="md-lnk" readonly value="' + esc(r.link) + '">' +
+          '<div class="mem-act"><button class="btn btn-primary" type="button" data-md="copy">انسخ اللينك</button><a class="btn btn-wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(msg) + '">ابعته واتساب</a><span class="copy-ok" role="status"></span></div>';
+        box.hidden = false; box.querySelector("input").focus(); box.querySelector("input").select();
+        loadLog(0);
+      });
+    }
+    else if (a === "copy"){
+      var inp = $("md-lnk"), ok = mdBody.querySelector(".copy-ok");
+      var done = function(){ ok.textContent = "اتنسخ ✓"; setTimeout(function(){ ok.textContent = ""; }, 2500); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(inp.value).then(done, function(){ inp.select(); });
+      else { inp.select(); try { document.execCommand("copy"); done(); } catch (x){} }
+    }
+  });
+
+  /* ---------- هتخلص خلال 7 أيام ---------- */
+  function showExpiring(rows){
+    $("ex-sec").hidden = !rows.length;
+    $("ex-list").innerHTML = rows.map(function(m){
+      var d = Math.max(0, Math.ceil((m.pro_until - Date.now()) / 864e5));
+      return '<li><button type="button" class="ex-item" data-open="' + m.id + '" aria-haspopup="dialog"><span class="mem-who"><b>' + esc(m.name) + (m.suspended ? ' <span class="mem-tag off">موقوف</span>' : "") + '</b><span class="ltr mem-email">' + esc(m.email) + '</span></span><span class="ex-left">' +
+        (d <= 1 ? "بكرة" : "بعد " + d + " أيام") + "<small>" + esc(fmtDate(m.pro_until)) + "</small></span></button></li>";
+    }).join("");
+  }
+  $("ex-list").addEventListener("click", function(e){ var b = e.target.closest("[data-open]"); if (b) openMember(+b.getAttribute("data-open")); });
+
+  /* ---------- إعلان فوق الموقع ---------- */
+  var bnForm = $("bn-form"), bnMsg = $("bn-msg");
+  function loadBanner(){
+    return get("/api/admin/banner").then(function(r){
+      if (!r.ok) return;
+      $("bn-text").value = r.banner.text || ""; $("bn-link").value = r.banner.link || ""; $("bn-on").checked = !!r.banner.on;
+    });
+  }
+  bnForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    var btn = bnForm.querySelector("button[type=submit]"), text = $("bn-text").value.trim(), on = $("bn-on").checked;
+    var say = function(t){ bnMsg.textContent = t; bnMsg.hidden = !t; };
+    if (on && !text){ say("اكتب نص الإعلان الأول."); return; }
+    btn.disabled = true; say("");
+    post("/api/admin/banner", { text: text, link: $("bn-link").value.trim(), on: on }).then(function(r){
+      btn.disabled = false;
+      if (!r.ok){ say(r.error === "bad_request" ? "اللينك لازم يبدأ بـ / (صفحة في الموقع) أو https://" : (r.message || OFFLINE)); return; }
+      say(r.banner.on ? "اتحفظ ✓ الإعلان هيظهر للزوار في خلال دقيقة." : "اتحفظ ✓ الإعلان مقفول دلوقتي.");
+      loadLog(0);
+    });
+  });
+
+  /* ---------- سجل العمليات ---------- */
+  var lgOffset = 0, lgPage = 20;
+  function loadLog(off){
+    return get("/api/admin/log?offset=" + off).then(function(r){
+      if (!r.ok){ $("lg-count").textContent = r.message || OFFLINE; return; }
+      lgOffset = r.offset; lgPage = r.page;
+      $("lg-list").innerHTML = r.rows.length ? r.rows.map(function(l){
+        var who = l.target_id ? (l.target_name || l.target_email || "عضو اتمسح") : "";
+        return '<li><div class="lg-what"><b>' + esc(ACTION_AR[l.action] || l.action) + "</b>" +
+          (who ? (l.target_name ? ' <button type="button" class="link-btn" data-open="' + l.target_id + '">' + esc(who) + "</button>" : " " + esc(who)) : "") + "</div>" +
+          (l.details ? '<p class="lg-det">' + esc(l.details) + "</p>" : "") +
+          '<span class="lg-meta">' + esc(fmtWhen(l.at)) + '</span><span class="lg-meta ltr">' + esc(l.admin_email) + "</span></li>";
+      }).join("") : '<li class="adm-empty">لسه مفيش عمليات.</li>';
+      $("lg-count").textContent = r.total ? "كل العمليات: " + r.total + (r.total > r.page ? " · صفحة " + (Math.floor(r.offset / r.page) + 1) + " من " + Math.ceil(r.total / r.page) : "") : "";
+      $("lg-newer").disabled = r.offset <= 0;
+      $("lg-older").disabled = r.offset + r.rows.length >= r.total;
+    });
+  }
+  $("lg-newer").addEventListener("click", function(){ loadLog(Math.max(0, lgOffset - lgPage)); });
+  $("lg-older").addEventListener("click", function(){ loadLog(lgOffset + lgPage); });
+  $("lg-list").addEventListener("click", function(e){ var b = e.target.closest("[data-open]"); if (b) openMember(+b.getAttribute("data-open")); });
+
+  /* ---------- أقسام اللوحة (شريط فوق ثابت تحت الهيدر) ---------- */
+  function prBadge(n){ var b = $("tab-pr"); b.textContent = n || ""; b.hidden = !n; b.setAttribute("aria-label", n + " طلب مستني"); }
+  var tabs = $("adm-tabs"), header = document.querySelector(".site-header");
+  function tabsTop(){ var h = header ? header.offsetHeight : 0; tabs.style.top = h + "px"; document.documentElement.style.setProperty("--adm-sticky", (h + tabs.offsetHeight + 8) + "px"); }
+  window.addEventListener("resize", tabsTop);
+  var tabLinks = [].slice.call(tabs.querySelectorAll("a"));
+  if ("IntersectionObserver" in window){
+    var seen = {};
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ seen[e.target.id] = e.isIntersecting; });
+      var cur = tabLinks.filter(function(a){ return seen[a.getAttribute("href").slice(1)]; })[0];
+      if (!cur) return;
+      tabLinks.forEach(function(a){ if (a === cur) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current"); });
+      var box = cur.parentNode; if (box.scrollWidth > box.clientWidth) box.scrollTo({ left: cur.offsetLeft - (box.clientWidth - cur.offsetWidth) / 2, behavior: "smooth" });
+    }, { rootMargin: "-30% 0px -60% 0px" });
+    tabLinks.forEach(function(a){ var s = $(a.getAttribute("href").slice(1)); if (s) io.observe(s); });
+  }
 
   /* ---------- البداية ---------- */
   function gate(msg, login){ $("adm-sub").textContent = ""; $("adm-gate-msg").textContent = msg; $("adm-login").hidden = !login; $("adm-gate").hidden = false; }
@@ -248,13 +443,13 @@
     if (!r.user.admin){ gate("الصفحة دي للإدارة بس. الحساب اللي انت داخل بيه مش من حسابات الإدارة.", false); return; }
     meEmail = r.user.email;
     $("adm-sub").textContent = "أهلاً يا " + r.user.name.split(" ")[0] + ". كل الأرقام من قاعدة البيانات مباشرة.";
-    $("adm").hidden = false;
-    loadStats(); loadReqs(); loadMembers(true);
-    // keep «متصل دلوقتي» fresh while the dashboard is open (skip the list while a member panel is open or after «more»)
+    $("adm").hidden = false; tabsTop();
+    loadStats(); loadReqs(); loadMembers(true); loadBanner(); loadLog(0);
+    // keep «متصل دلوقتي» fresh while the dashboard is open (skip the list while a member is open, after «more», or while searching/filtering)
     setInterval(function(){
       if (document.visibilityState !== "visible") return;
       loadStats();
-      if (!list.querySelector(".mem-panel:not([hidden])") && !pagedMore && !q) loadMembers(true);
+      if (!md.open && !pagedMore && !q && !filter) loadMembers(true);
     }, 60000);
   });
 })();

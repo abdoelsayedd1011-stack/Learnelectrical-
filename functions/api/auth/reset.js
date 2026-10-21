@@ -23,7 +23,7 @@ export async function onRequestPost({ request, env }){
       db.prepare("DELETE FROM resets WHERE user_id = ?").bind(u.id)
     ]);
     await clearFails(db, u.email);
-    const cookie = await startSession(db, request, u.id);
+    const cookie = await startSession(db, request, u.id, env);
     return json({ ok: true, user: publicUser(u) }, 200, { "set-cookie": cookie });
   } catch (e) { return fail(e); }
 }

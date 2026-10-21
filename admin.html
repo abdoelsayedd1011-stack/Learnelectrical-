@@ -13,8 +13,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=20261021s">
-<link rel="stylesheet" href="assets/members.css?v=20261021s">
+<link rel="stylesheet" href="assets/site.css?v=20261021t">
+<link rel="stylesheet" href="assets/members.css?v=20261021t">
 <script>try{var t=localStorage.getItem("site-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
@@ -41,7 +41,14 @@
 </div></section>
 <section class="section adm-gate" id="adm-gate" hidden><div class="wrap"><div class="auth-card"><p id="adm-gate-msg"></p><div class="btn-row" style="margin-top:14px"><a class="btn btn-primary" id="adm-login" href="login.html?next=%2Fadmin.html" hidden>ادخل بحساب الإدارة</a><a class="btn btn-ghost" href="index.html">الرئيسية</a></div></div></div></section>
 <div id="adm" hidden>
-<section class="section adm-sec" aria-labelledby="st-h"><div class="wrap">
+<nav class="adm-tabs" id="adm-tabs" aria-label="أقسام لوحة الإدارة"><div class="wrap"><div class="adm-tabs-in">
+  <a href="#sec-stats" class="chip">الأرقام</a>
+  <a href="#sec-pay" class="chip">الاشتراكات<span class="adm-badge" id="tab-pr" hidden></span></a>
+  <a href="#sec-mem" class="chip">الأعضاء</a>
+  <a href="#sec-banner" class="chip">إعلان الموقع</a>
+  <a href="#sec-log" class="chip">سجل العمليات</a>
+</div></div></nav>
+<section class="section adm-sec" aria-labelledby="st-h" id="sec-stats"><div class="wrap">
   <h2 id="st-h" class="adm-h">الأعضاء</h2>
   <div class="stats adm-stats">
     <div class="stat"><b id="st-total">–</b><span>كل الأعضاء</span></div>
@@ -59,21 +66,56 @@
     <div class="adm-box"><h3>شهادات طلعت</h3><ul class="adm-bars" id="certs"></ul><p class="adm-note" id="active-week"></p></div>
   </div>
 </div></section>
-<section class="section adm-sec" aria-labelledby="pr-h"><div class="wrap">
+<section class="section adm-sec" aria-labelledby="pr-h" id="sec-pay"><div class="wrap">
   <h2 id="pr-h" class="adm-h">طلبات الاشتراك</h2>
   <p class="count-line" id="pr-count" aria-live="polite"></p>
   <ul class="pr-list" id="pr-list"></ul>
   <div class="btn-row" style="margin-top:12px"><button class="btn btn-ghost" type="button" id="pr-recent" aria-expanded="false">آخر الطلبات اللي اتراجعت</button></div>
   <ul class="pr-list" id="pr-done" style="margin-top:12px" hidden></ul>
 </div></section>
-<section class="section adm-sec" aria-labelledby="mem-h"><div class="wrap">
+<section class="section adm-sec" aria-labelledby="ex-h" id="ex-sec" hidden><div class="wrap">
+  <h2 id="ex-h" class="adm-h">هتخلص خلال 7 أيام</h2>
+  <ul class="ex-list" id="ex-list"></ul>
+</div></section>
+<section class="section adm-sec" aria-labelledby="mem-h" id="sec-mem"><div class="wrap">
   <h2 id="mem-h" class="adm-h">قايمة الأعضاء</h2>
   <form class="adm-search search" id="mem-search" role="search"><label class="sr-only" for="mem-q">دوّر بالإيميل أو الاسم</label><input id="mem-q" type="search" placeholder="دوّر بالإيميل أو الاسم" autocomplete="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></form>
+  <div class="mem-tools">
+    <div class="chips mem-chips" id="mem-chips" role="group" aria-label="فلتر الأعضاء">
+      <button type="button" class="chip" data-f="" aria-pressed="true">الكل</button>
+      <button type="button" class="chip" data-f="pro" aria-pressed="false">مشترك</button>
+      <button type="button" class="chip" data-f="free" aria-pressed="false">مجاني</button>
+      <button type="button" class="chip" data-f="suspended" aria-pressed="false">موقوف</button>
+      <button type="button" class="chip" data-f="idle" aria-pressed="false">مدخلش من 30 يوم</button>
+    </div>
+    <a class="btn btn-ghost mem-xls" id="mem-xls" href="/api/admin/export" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 19h14"/></svg>تنزيل Excel</a>
+  </div>
   <p class="count-line" id="mem-count" aria-live="polite"></p>
   <ul class="mem-list" id="mem-list"></ul>
   <div class="btn-row" style="justify-content:center;margin-top:16px"><button class="btn btn-ghost" type="button" id="mem-more" hidden>اعرض أكتر</button></div>
 </div></section>
+<section class="section adm-sec" aria-labelledby="bn-h" id="sec-banner"><div class="wrap">
+  <h2 id="bn-h" class="adm-h">إعلان فوق الموقع</h2>
+  <form class="adm-box bn-form" id="bn-form" novalidate>
+    <p class="adm-note" style="margin:0">شريط صغير بيظهر فوق كل صفحات الموقع. الزائر يقدر يقفله، ومش هيظهر له تاني إلا لو غيّرت الكلام.</p>
+    <label class="field" for="bn-text">نص الإعلان<textarea id="bn-text" maxlength="200" rows="2" placeholder="مثال: خصم 20% على الاشتراك السنوي لحد آخر الشهر"></textarea></label>
+    <label class="field" for="bn-link">لينك (اختياري)<input id="bn-link" class="ltr" type="text" inputmode="url" maxlength="300" placeholder="/subscribe.html"></label>
+    <label class="bn-on"><input type="checkbox" id="bn-on"> الإعلان شغّال</label>
+    <p class="auth-msg" id="bn-msg" role="status" hidden></p>
+    <div class="mem-act"><button class="btn btn-primary" type="submit">احفظ الإعلان</button></div>
+  </form>
+</div></section>
+<section class="section adm-sec" aria-labelledby="lg-h" id="sec-log"><div class="wrap">
+  <h2 id="lg-h" class="adm-h">سجل العمليات</h2>
+  <p class="count-line" id="lg-count" aria-live="polite"></p>
+  <ol class="lg-list" id="lg-list"></ol>
+  <div class="btn-row lg-pager"><button class="btn btn-ghost" type="button" id="lg-newer" disabled>الأحدث</button><button class="btn btn-ghost" type="button" id="lg-older" disabled>الأقدم</button></div>
+</div></section>
 </div>
+<dialog class="md" id="md" aria-labelledby="md-name">
+  <div class="md-head"><div class="md-who" id="md-who"><b id="md-name">…</b></div><button class="icon-btn md-x" type="button" id="md-x" aria-label="اقفل"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="md-body" id="md-body"></div>
+</dialog>
 </main>
 <footer class="site-footer">
   <div class="wrap">
@@ -119,8 +161,8 @@
     </div>
   </div>
 </footer>
-<script src="site-config.js?v=20261021s"></script>
-<script src="assets/site.js?v=20261021s"></script>
-<script src="assets/admin.js?v=20261021s"></script>
+<script src="site-config.js?v=20261021t"></script>
+<script src="assets/site.js?v=20261021t"></script>
+<script src="assets/admin.js?v=20261021t"></script>
 </body>
 </html>
