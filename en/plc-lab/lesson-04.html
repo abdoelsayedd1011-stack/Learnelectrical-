@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Seal-in and Set/Reset</title>
+<meta name="description" content="Lesson 4 of the PLC course: starting and stopping a DOL motor with a seal-in (latch) in Ladder, the overload and the trip lamp, Set and Reset instructions and stop priority, and the interlock for forward/reverse. 3 simulator exercises that are tested automatically.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/plc-lab/lesson-04.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/plc-lab/lesson-04.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/plc-lab/lesson-04.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/plc-lab/lesson-04.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="plc.css?v=ec27b04d">
+<script src="plc.js?v=d690cb37"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">PLC · Lesson 4 of 10</p>
+    <h1>Seal-in and Set/Reset</h1>
+    <p>The Start button is pressed and released, but the motor must keep running. In classic control we did this with an auxiliary contact of the contactor. In a PLC it is exactly the same idea, but <b>in the program</b>. We will also see another method with <b>Set and Reset</b>, and how to stop a motor from running forward and reverse at the same time.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="../labs.html">All courses →</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>Seal-in (latch)</h2>
+  <p>The same DOL circuit as in the <a href="../classic-control-lab/lesson-02.html">auxiliary relay and seal-in lesson</a>: a contact of the output itself (Q0.0) <b>in parallel</b> with the Start button. As soon as the motor starts, that contact holds the circuit even when you release the button.</p>
+  <div class="ladfig" id="fSeal"></div>
+  <ol>
+    <li>Press Start → I0.0 = 1 → power flows → Q0.0 = 1.</li>
+    <li>In the next scan, the <b>Q0.0</b> contact (the lower one) is now closed.</li>
+    <li>Release Start → power still flows through the Q0.0 branch → the motor keeps running.</li>
+    <li>Press Stop (wired NC) → I0.1 = 0 → its NO contact opens → Q0.0 = 0 and the seal-in drops out.</li>
+  </ol>
+  <div class="box key"><b>Why is Stop before the seal-in and not after it?</b> Stop and the overload must be on the main line <b>after</b> the point where Start and Q0.0 join, so they cut both. If you put Stop inside the Start branch only, the seal-in keeps holding and the motor will not stop.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Exercise: a DOL motor with overload</h2>
+  <p>The overload contact <span class="term">95–96</span> is wired NC to I0.2: normal = 1, tripped = 0. We want a Trip lamp that lights when it trips. Think: which contact does the lamp need?</p>
+  <div class="wd"><h3>Simulator: DOL motor</h3><div id="sim1"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>Set and Reset</h2>
+  <p>Another method: a <b>Set</b> coil <span class="mono">-(S)-</span> makes the bit 1 <b>and it stays 1</b> even when the condition goes away. A <b>Reset</b> coil <span class="mono">-(R)-</span> sets it back to 0. So Set and Reset have their own "memory" without a seal-in.</p>
+  <div class="ladfig" id="fSR"></div>
+  <div class="box key"><b>Who wins if both are active?</b> The PLC runs from top to bottom, and <b>the last rung that writes the bit wins</b>. So if you put Reset <b>after</b> Set, stop has priority (which is what we want for safety). Note: here we ask about the NC-wired Stop with an <b>NC</b> contact, because we want to Reset when the bit = 0 (someone pressed it).</div>
+  <div class="wd"><h3>Simulator: Set and Reset</h3><div id="sim2"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>Interlock: forward and reverse</h2>
+  <p>A motor turns in both directions with two contactors, KM1 (forward) and KM2 (reverse). If both turn on together → <b>a phase-to-phase short circuit</b>. The fix: each output has an <b>NC</b> contact of the other output (interlock). In the panel the same interlock is also made with NC auxiliary contacts of the contactors themselves, in case a contactor welds.</p>
+  <div class="wd"><h3>Simulator: forward and reverse</h3><div id="sim3"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>Common faults on site</h2>
+  <div class="fault-box"><b>Common program faults:</b><ul>
+    <li><b>The motor stops as soon as you release Start:</b> the seal-in is missing, or its branch is not connected on both sides.</li>
+    <li><b>The motor does not stop with Stop:</b> Stop is inside the Start branch only, or Reset is before Set while Start is still pressed.</li>
+    <li><b>The motor restarted by itself when the power came back:</b> the bit was retentive (kept through a power loss) and used with Set. Motors must need a new Start after the power returns.</li>
+    <li><b>The forward and reverse contactors were both on for a moment:</b> there is no interlock in the program or in the wiring, or the direction was changed without a pause.</li>
+  </ul></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson questions</h2>
+  <p>Answer at least 5 of 6 correctly to mark the lesson done.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">The circuits here are for learning. In real installations the interlock between forward and reverse contactors is also hard-wired (an NC auxiliary contact), not only in the program. The simulator here is a <b>generic trainer</b> with IEC / Siemens style addresses: the exact addresses and instructions differ from one brand to another, and the manual of your PLC is the reference. Your progress is saved on this device only.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script>
+PL.lesson('l4');
+PL.ladFig(document.getElementById('fSeal'), [{rows:[['NO:I0.0', 'NO:I0.1', 'NO:I0.2', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}], {labels:{'I0.0':'Start', 'I0.1':'Stop NC', 'I0.2':'Overload', 'Q0.0':'Motor'}});
+PL.ladFig(document.getElementById('fSR'), [{rows:[['NO:I0.0', '-', '-', '-', 'S:Q0.0']]}, {rows:[['NC:I0.1', '-', '-', '-', 'R:Q0.0']]}], {labels:{'I0.0':'Start', 'I0.1':'Stop NC', 'Q0.0':'Motor'}});
+const ioM = {inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'Motor', kind:'motor'}]};
+window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l4', exercises:[
+  {key:'seal', title:'DOL with overload', task:'<b>Task:</b> <b>Start</b> (I0.0) starts motor <b>Q0.0</b> and it keeps running after you release it. <b>Stop</b> (I0.1, wired NC) or a tripped <b>overload</b> (I0.2, wired NC) stops it. A <b>Trip</b> lamp on <b>Q0.1</b> lights while the overload is tripped. And after the overload resets, the motor must not start by itself.',
+    io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}, {a:'I0.2', label:'Overload', kind:'ncsw'}], outputs:[{a:'Q0.0', label:'Motor', kind:'motor'}, {a:'Q0.1', label:'Trip', kind:'lamp', color:'amber'}]},
+    tests:[{run:0.2}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'At the start, with nobody pressing anything:'},
+      {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'You pressed Start and released it: the motor must keep running (seal-in).'},
+      {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'You pressed Stop:'},
+      {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':1}, msg:'Start again:'},
+      {set:{'I0.2':0}}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':1}, msg:'The overload tripped (I0.2 went to 0):'},
+      {set:{'I0.2':1}}, {run:0.5}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'The overload reset: the motor must not start by itself, and the Trip lamp goes off.'},
+      {hold:'I0.1'}, {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Stop held down and someone pressed Start: Stop must win.'}, {release:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Stop released:'}],
+    hint:'Rung 1: Start (NO) → Stop (NO because it\'s wired NC) → overload (NO) → coil Q0.0, with a branch parallel to Start holding Q0.0. Rung 2: the overload as <b>NC</b> → coil Q0.1 (we want it lit when the bit = 0).',
+    sol:[{rows:[['NO:I0.0', 'NO:I0.1', 'NO:I0.2', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NC:I0.2', '-', '-', '-', 'OUT:Q0.1']]}],
+    ok:'The best-known program in the world. Notice we used the overload as NO in one rung and NC in another: the same bit, two different questions.'}
+]});
+window.SIM2 = PL.sim(document.getElementById('sim2'), {lesson:'l4', exercises:[
+  {key:'sr', title:'Set and Reset', task:'<b>Task:</b> the same start and stop but <b>without seal-in</b>: use a <b>Set</b> coil on Q0.0 with Start, and a <b>Reset</b> coil on Q0.0 with Stop (wired NC). If both are pressed together, <b>stop wins</b>.',
+    io:ioM,
+    tests:[{run:0.2}, {press:'I0.0'}, {run:0.4}, {exp:{'Q0.0':1}, msg:'You pressed Start and released it:'}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'You pressed Stop:'},
+      {hold:'I0.0'}, {run:0.2}, {hold:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Start and Stop pressed together: stop must win. Put the Reset rung after the Set rung.'}, {release:'I0.1'}, {release:'I0.0'}, {run:0.2},
+      {fn:c => { const ts = []; c.e.prog.forEach(rg => rg.rows.forEach(row => row.forEach(el => { if (el && el.a === 'Q0.0') ts.push(el.t); }))); return ts.indexOf('S') >= 0 && ts.indexOf('R') >= 0 ? null : 'The program works, but this exercise wants you to use a Set coil and a Reset coil on Q0.0.'; }}],
+    hint:'Rung 1: NO I0.0 → (S) Q0.0. Rung 2: <b>NC</b> I0.1 → (R) Q0.0. NC is right here because we want the Reset to happen when the bit = 0 (someone pressed Stop).',
+    sol:[{rows:[['NO:I0.0', '-', '-', '-', 'S:Q0.0']]}, {rows:[['NC:I0.1', '-', '-', '-', 'R:Q0.0']]}],
+    ok:'Set/Reset are handy in big programs, but watch the order of the rungs: the last one wins.'}
+]});
+window.SIM3 = PL.sim(document.getElementById('sim3'), {lesson:'l4', exercises:[
+  {key:'fr', title:'Forward and reverse', task:'<b>Task:</b> <b>I0.0</b> starts forward <b>Q0.0</b>, and <b>I0.1</b> starts reverse <b>Q0.1</b>, each with seal-in. <b>Stop</b> (I0.2, NC) stops either one. Both must never run together, <b>not even for one scan</b>, and if the motor is running forward and you press reverse, nothing happens until you press Stop.',
+    io:{inputs:[{a:'I0.0', label:'Forward', kind:'pb'}, {a:'I0.1', label:'Reverse', kind:'pb', color:'blue'}, {a:'I0.2', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'KM1 Fwd'}, {a:'Q0.1', label:'KM2 Rev'}]}, plant:'fr',
+    tests:[{watch:c => c.q('Q0.0') && c.q('Q0.1') ? 'Q0.0 and Q0.1 were on together: phase-to-phase short! You need an NC contact of each output in the other one\'s rung.' : null},
+      {run:0.2}, {press:'I0.0'}, {run:0.4}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'You pressed Forward and released it:'},
+      {press:'I0.1'}, {run:0.4}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'The motor is running forward and you pressed Reverse: nothing must happen.'},
+      {press:'I0.2'}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'You pressed Stop:'},
+      {press:'I0.1'}, {run:0.4}, {exp:{'Q0.0':0, 'Q0.1':1}, msg:'You pressed Reverse:'}, {press:'I0.0'}, {run:0.3}, {exp:{'Q0.1':1, 'Q0.0':0}, msg:'Running in reverse and you pressed Forward:'},
+      {press:'I0.2'}, {run:0.3}, {hold:'I0.0'}, {hold:'I0.1'}, {run:0.4}, {release:'I0.0'}, {release:'I0.1'}, {run:0.3}, {press:'I0.2'}, {run:0.2}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'After Stop:'}],
+    hint:'Rung 1: I0.0 (with a Q0.0 branch for seal-in) → I0.2 (NO) → <b>NC Q0.1</b> → coil Q0.0. Rung 2 the same: I0.1 (with a Q0.1 branch) → I0.2 → <b>NC Q0.0</b> → coil Q0.1.',
+    sol:[{rows:[['NO:I0.0', 'NO:I0.2', 'NC:Q0.1', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.1', 'NO:I0.2', 'NC:Q0.0', '-', 'OUT:Q0.1'], ['NO:Q0.1']], links:[[1]]}],
+    ok:'The interlock in the program is done. In a real panel also add an NC auxiliary contact of KM1 in KM2\'s coil circuit, and the other way round.'}
+]});
+PL.quiz(document.getElementById('quiz'), [
+  {q:'The seal-in contact goes:', o:['In parallel with the Start button', 'In series with the Stop button', 'In parallel with the Stop button', 'After the coil'], a:0, why:'So it takes over from Start once Start is released.'},
+  {q:'Stop must be on the main line after the point where Start and the seal-in join. Why?', o:['So it breaks both', 'For the look of the drawing', 'It makes no difference', 'To speed up the scan'], a:0, why:'If it were only in the Start branch, the seal-in would keep holding.'},
+  {q:'Rung 1 has Set Q0.0 and rung 2 has Reset Q0.0, and both conditions are true together. Q0.0 will be:', o:['0', '1', 'Flashing', 'Unknown'], a:0, why:'The last rung that writes wins.'},
+  {q:'A Stop button is wired NC and you want it to do a <b>Reset</b>. The contact in the program:', o:['NC', 'NO', 'P', 'No contact needed'], a:0, why:'You want the Reset to act when the bit = 0 (someone pressed it).'},
+  {q:'The forward/reverse interlock in the program is made with:', o:['An NC contact of each output in the other one\'s rung', 'An NO contact of each output in the other one\'s rung', 'Timer', 'Counter'], a:0, why:'If forward is on, its NC contact blocks reverse.'},
+  {q:'Why is the interlock also wired in the panel?', o:['In case a contactor welds or the program has a mistake', 'Because the PLC is slow', 'It isn\'t needed at all', 'To save outputs'], a:0, why:'Safety in two layers: wiring and program.'}
+], {lesson:'l4', pass:0.8});
+</script>
+
+</body>
+</html>

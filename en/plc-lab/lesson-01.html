@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>What is a PLC?</title>
+<meta name="description" content="Lesson 1 of the PLC course: the PLC instead of relay circuits, the scan cycle (read inputs, execute the program, write outputs) with an interactive animation, the parts of a PLC (CPU, power supply, DI, DO, AI and AO cards) and the best-known brands.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/plc-lab/lesson-01.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/plc-lab/lesson-01.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/plc-lab/lesson-01.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/plc-lab/lesson-01.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="plc.css?v=ec27b04d">
+<script src="plc.js?v=d690cb37"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">PLC · Lesson 1 of 10</p>
+    <h1>What is a PLC?</h1>
+    <p>A <b>PLC</b> (Programmable Logic Controller) is a small, rugged computer for factories: it handles heat, dust and electrical noise, reads buttons and sensors, and runs motors and valves according to a <b>program</b> you write. Here you will see why factories left relay circuits behind, and how a PLC "thinks" in a cycle called the <b>scan</b>.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="../labs.html">All courses →</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>From relays to the PLC</h2>
+  <p>In the past, every machine was controlled by <b>relay circuits, contactors and timers</b> wired together. That circuit was the "program". To change something small (a 5-second delay, or one more condition) you had to unwire, rewire and add relays.</p>
+  <div class="two">
+    <div class="box"><b>Relay panel (relay logic)</b><ul><li>The program = the wiring itself</li><li>Every change = manual work and material</li><li>Every timer and auxiliary relay = a part in the panel that can fail</li><li>Troubleshooting with a multimeter, wire by wire</li></ul></div>
+    <div class="box good"><b>PLC</b><ul><li>Buttons and sensors are wired to the <b>inputs</b>, contactors to the <b>outputs</b>, and that is it</li><li>All the logic is a <b>program</b>: change it from a laptop in minutes</li><li>Hundreds of timers, counters and auxiliary relays inside the program, without buying a single part</li><li>Watch the program while it runs (online) and find where the fault is</li></ul></div>
+  </div>
+  <div class="ex"><b>Example:</b> a filling machine had 30 relays and 8 timers. After the PLC: the same buttons, sensors and contactors, but all the auxiliary relays and timers became lines in the program. The panel became smaller and easier to maintain.</div>
+  <div class="box key"><b>Note:</b> a PLC does not replace contactors, overloads or breakers. The contactor still carries the motor current; the PLC only switches its coil. And <b>emergency stop (E-Stop)</b> circuits must still disconnect through hard wiring or a safety relay, not through the normal program alone.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>The scan cycle</h2>
+  <p>A PLC does not watch the buttons "all the time" like a wire does. It runs 3 steps in a row and repeats them forever. Each round is called a <b>scan</b>:</p>
+  <ol>
+    <li><b>Read inputs:</b> it takes a snapshot of all terminals at once and stores it in the <b>input image</b>.</li>
+    <li><b>Execute:</b> it runs through the program from start to end and calculates the results.</li>
+    <li><b>Write outputs:</b> it sends the results to the output cards all at once.</li>
+  </ol>
+  <p>A scan usually takes <b>1–20 milliseconds</b>, depending on the program length. Try it yourself in slow motion:</p>
+  <div class="wd"><h3>The scan cycle in slow motion</h3><div id="scan"></div></div>
+  <div class="box"><b>Remember:</b> the program works on the <b>image</b> taken at the start of the scan, and the outputs only change at the end. If a signal comes and goes in less than one scan, the PLC may never see it.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>Parts of a PLC</h2>
+  <p>A PLC is either <b>compact</b> (everything in one box: CPU, inputs and outputs, like the small models) or <b>modular</b> (a rack where you mount the cards you need). Tap each card:</p>
+  <div class="wd"><h3>PLC rack</h3><div id="parts"></div></div>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Card</th><th>What connects to it</th><th>Signal</th></tr></thead>
+    <tbody>
+      <tr><td><b>DI</b> digital input</td><td>Buttons, limit switches, proximity sensors, photocells, overload contacts</td><td>0 / 24V DC</td></tr>
+      <tr><td><b>DO</b> digital output</td><td>Contactor coils, relays, pilot lamps, solenoid valves</td><td>Relay or transistor</td></tr>
+      <tr><td><b>AI</b> analog input</td><td>Pressure / level / temperature / flow transmitters</td><td>4–20mA or 0–10V</td></tr>
+      <tr><td><b>AO</b> analog output</td><td>Drive (VFD) speed, control valves</td><td>4–20mA or 0–10V</td></tr>
+    </tbody></table></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>Well-known brands</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Brand</th><th>Examples</th><th>Programming software</th></tr></thead>
+    <tbody>
+      <tr><td>Siemens</td><td>S7-1200, S7-1500, LOGO!</td><td>TIA Portal</td></tr>
+      <tr><td>Allen-Bradley (Rockwell)</td><td>Micro800, CompactLogix, ControlLogix</td><td>CCW, Studio 5000</td></tr>
+      <tr><td>Schneider</td><td>Modicon M221, M241, M340</td><td>EcoStruxure Machine Expert</td></tr>
+      <tr><td>Mitsubishi</td><td>FX5U, iQ-R</td><td>GX Works</td></tr>
+      <tr><td>Delta</td><td>DVP, AS series</td><td>ISPSoft</td></tr>
+      <tr><td>Omron</td><td>CP1E, NX1P</td><td>CX-Programmer, Sysmac Studio</td></tr>
+    </tbody></table></div>
+  <p>All of them support <b>Ladder</b> (LD), plus other languages of the <b>IEC 61131-3</b> standard: FBD (blocks), ST (structured text) and SFC (steps). We focus on Ladder because it looks like the contactor circuits electricians already know.</p>
+  <div class="brand-note"><b>About the simulator:</b> the simulator you will use from lesson 3 is a <b>generic trainer</b>. The logic is the same in every brand; only the look and the addresses differ a little.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>Common faults on site</h2>
+  <div class="fault-box"><b>Common faults on site:</b><ul>
+    <li><b>The PLC is in STOP</b> after someone downloaded a program or after a fault: all outputs are off. Check the RUN/STOP LED before anything else.</li>
+    <li><b>The ERROR / SF LED is on</b>: a card is not seated correctly, a card is missing compared with the configuration in the program, or there is a power fault.</li>
+    <li><b>The 24V supply has dropped</b>: a short in one sensor wire pulls down the whole supply, so all inputs go off at once.</li>
+    <li><b>The memory battery is empty</b> on older models: the program or the values are lost when the power goes off. Always keep a copy of the program.</li>
+  </ul></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson questions</h2>
+  <p>Answer at least 5 of 6 correctly to mark the lesson done.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">The numbers (scan time, number of cards) are typical examples and vary by model. The simulator here is a <b>generic trainer</b> with IEC / Siemens style addresses: the exact addresses and instructions differ from one brand to another, and the manual of your PLC is the reference. Your progress is saved on this device only.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script>
+PL.lesson('l1');
+PL.scanDemo(document.getElementById('scan'), {lesson:'l1'});
+PL.parts(document.getElementById('parts'), {lesson:'l1'});
+PL.quiz(document.getElementById('quiz'), [
+  {q:'The correct order of the scan cycle:', o:['Read inputs → execute program → write outputs', 'Execute program → read inputs → write outputs', 'Write outputs → read inputs → execute program', 'All at the same instant'], a:0, why:'And after writing the outputs it reads the inputs again.'},
+  {q:'A push button was pressed and released in less than one scan. What can happen:', o:['The PLC may not see it at all', 'The PLC will surely see it', 'The PLC will go to STOP', 'The output will turn on twice'], a:0, why:'The inputs are read once at the start of every scan.'},
+  {q:'A pressure sensor giving 4–20 mA is wired to which card:', o:['AI', 'DI', 'DO', 'AO'], a:0, why:'Analog Input.'},
+  {q:'The motor contactor coil is wired to:', o:['A DO card', 'A DI card', 'An AI card', 'The CPU directly'], a:0, why:'A digital output (relay or transistor).'},
+  {q:'The main advantage of a PLC over a relay panel:', o:['Changing the logic in the program without undoing a wire', 'No contactors needed at all', 'No power needed', 'It never fails'], a:0, why:'The contactors and protection are still there, but the logic became a program.'},
+  {q:'The emergency stop button (E-Stop):', o:['Must cut out through wiring or a safety relay, not through the normal program alone', 'Wiring it to a normal DI is enough', 'Not needed with a PLC', 'Is wired to an AI'], a:0, why:'Safety must not depend on a program that can change or a PLC that can freeze.'}
+], {lesson:'l1', pass:0.8});
+</script>
+
+</body>
+</html>

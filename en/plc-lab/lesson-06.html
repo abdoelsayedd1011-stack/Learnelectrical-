@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Counters and comparison</title>
+<meta name="description" content="Lesson 6 of the PLC course: the CTU up counter and CTD down counter, the preset value PV, the current value CV and Reset, a box counter on a moving filling conveyor, and compare instructions (greater than, less than, equal) in a car park. Exercises that are tested automatically.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/plc-lab/lesson-06.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/plc-lab/lesson-06.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/plc-lab/lesson-06.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/plc-lab/lesson-06.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="plc.css?v=ec27b04d">
+<script src="plc.js?v=d690cb37"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">PLC · Lesson 6 of 10</p>
+    <h1>Counters and comparison</h1>
+    <p>Many machines are all about "counting": 6 cans per box, 100 turns per reel, the number of cars in a car park. In this lesson you will use the <b>CTU and CTD counters</b> and compare numbers with <b>compare</b> instructions, on machines that move in front of you.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="../labs.html">All courses →</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>The CTU and CTD counters</h2>
+  <ul>
+    <li><b>CTU</b> (count up): each time its input power changes from 0 to 1, the current value <b>CV</b> goes up by 1. When CV reaches the preset value <b>PV</b>, its bit (C0) becomes 1.</li>
+    <li><b>CTD</b> (count down): it subtracts 1 with each pulse.</li>
+    <li><b>Reset</b>: an R coil on C0 sets CV back to zero and the bit to 0.</li>
+  </ul>
+  <div class="box key"><b>A counter counts edges, not time:</b> if a can stays in front of the sensor for a minute, it is counted only once. So the counter has an edge built in. But note: a sensor that flickers (bounce) will be counted several times.</div>
+  <div class="ladfig" id="fCtu"></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Project: the filling counter</h2>
+  <p>A conveyor carries cans into a box, and a photocell <b>I0.2</b> at its end sees each can as it drops. The box takes exactly <b>6 cans</b>. Then the conveyor stops and a lamp lights until the operator puts a new box and presses Reset.</p>
+  <div class="wd"><h3>Simulator: filling conveyor</h3><div id="sim1"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>Compare instructions</h2>
+  <p>A compare goes in place of a contact: if the condition is true, power flows. You can compare a counter value (C0), a timer time (T0) or an analog value (MW10).</p>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Symbol</th><th>Meaning</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">==</td><td>Equal</td><td class="mono">C0 == 3</td></tr>
+      <tr><td class="mono">&lt;&gt;</td><td>Not equal</td><td class="mono">C0 &lt;&gt; 0</td></tr>
+      <tr><td class="mono">&gt; and &gt;=</td><td>Greater than, greater than or equal</td><td class="mono">MW10 &gt;= 80</td></tr>
+      <tr><td class="mono">&lt; and &lt;=</td><td>Less than, less than or equal</td><td class="mono">T0 &lt; 2.5</td></tr>
+    </tbody></table></div>
+  <div class="ex"><b>On site:</b> never use <span class="mono">==</span> with analog values (temperature, level): the value can jump from 79.9 to 80.1 without ever being exactly 80. Use <span class="mono">&gt;=</span> or <span class="mono">&lt;=</span>.</div>
+  <p>In the simulator: choose <b>Compare</b> in the cell, then the address (C0), the condition and the number.</p>
+  <div class="wd"><h3>Simulator: car park</h3><div id="sim2"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>Common faults on site</h2>
+  <div class="fault-box"><b>Common program and site faults:</b><ul>
+    <li><b>The counter counts too many:</b> the sensor flickers (shiny can, vibration). The fix: a short TON timer as a debounce, or adjust the sensor.</li>
+    <li><b>The counter does not count at all:</b> the sensor is stuck at 1 (covered in dust), so there are no edges.</li>
+    <li><b>The box gets one can too many:</b> the conveyor stops too late, or the sensor is before the drop point and the next can gets through. Sensor position matters as much as the program.</li>
+    <li><b>The counter went back to zero by itself after a power loss:</b> the counter is not retentive. If the count matters (a production counter), make it retentive.</li>
+  </ul></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson questions</h2>
+  <p>Answer at least 5 of 6 correctly to mark the lesson done.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">In Allen-Bradley the CTU and CTD instructions can both work on the same counter C5:0, and TIA Portal has a single CTUD block. In the simulator, CTU and CTD on the same address work on the same value, and the counter does not go below zero. The simulator here is a <b>generic trainer</b> with IEC / Siemens style addresses: the exact addresses and instructions differ from one brand to another, and the manual of your PLC is the reference. Your progress is saved on this device only.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script>
+PL.lesson('l6');
+PL.ladFig(document.getElementById('fCtu'), [{rows:[['NO:I0.2', '-', '-', '-', 'CTU:C0:6']]}, {rows:[['NO:I0.3', '-', '-', '-', 'R:C0']]}, {rows:[['NO:C0', '-', '-', '-', 'OUT:Q0.1']]}], {labels:{'I0.2':'Eye', 'I0.3':'Reset', 'Q0.1':'Full'}});
+window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l6', exercises:[
+  {key:'ctu', title:'Packing counter', task:'<b>Task:</b> <b>Start</b> (I0.0) starts conveyor <b>Q0.0</b> with seal-in, and <b>Stop</b> (I0.1, NC) stops it. Eye <b>I0.2</b> counts the cans with counter <b>C0</b> (PV = 6). When the count reaches 6: the conveyor stops and lamp <b>Q0.1</b> lights. The <b>New carton</b> button (I0.3) resets the counter and turns the lamp off, then Start carries on.',
+    io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}, {a:'I0.3', label:'New carton', kind:'pb', color:'blue'}, {a:'I0.2', label:'Eye', kind:'auto'}], outputs:[{a:'Q0.0', label:'Conveyor'}, {a:'Q0.1', label:'Full'}]}, plant:'pack', cmpDef:'C0',
+    tests:[{run:0.2}, {press:'I0.0'}, {run:1}, {exp:{'Q0.0':1}, msg:'You pressed Start: the conveyor must run and keep running.'}, {run:16},
+      {fn:c => c.plant.carton > 6 ? `The carton got ${c.plant.carton} cans! The conveyor must stop as soon as the count reaches 6.` : c.plant.carton < 6 ? `The carton has only ${c.plant.carton} cans and the conveyor ${c.q('Q0.0') ? 'is still running' : 'stopped'}. It must go on to 6.` : null},
+      {exp:{'Q0.0':0, 'Q0.1':1}, msg:'After 6 cans: the conveyor stops and the lamp lights.'}, {press:'I0.0'}, {run:1}, {exp:{'Q0.0':0}, msg:'The carton is full and you pressed Start without a reset: the conveyor must not run.'},
+      {press:'I0.3'}, {run:0.3}, {exp:{'Q0.1':0, 'Q0.0':0}, msg:'You pressed New carton: the lamp goes off and the conveyor stays stopped until Start.'},
+      {press:'I0.0'}, {run:3}, {exp:{'Q0.0':1}, msg:'Start after the new carton:'}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'You pressed Stop halfway:'},
+      {fn:c => c.e.num('C0') > 0 && c.e.num('C0') < 6 ? null : `The count must be kept when you press Stop (counter = ${c.e.num('C0')}).`}],
+    hint:'Rung 1: Start with a Q0.0 branch → Stop (NO) → <b>NC C0</b> → coil Q0.0. Rung 2: NO I0.2 → CTU C0 (6). Rung 3: NO I0.3 → R C0. Rung 4: NO C0 → Q0.1.',
+    sol:[{rows:[['NO:I0.0', 'NO:I0.1', 'NC:C0', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.2', '-', '-', '-', 'CTU:C0:6']]}, {rows:[['NO:I0.3', '-', '-', '-', 'R:C0']]}, {rows:[['NO:C0', '-', '-', '-', 'OUT:Q0.1']]}],
+    ok:'Notice that NC C0 breaks the seal-in as soon as the count is complete, so the conveyor only runs again with a new Start.'}
+]});
+window.SIM2 = PL.sim(document.getElementById('sim2'), {lesson:'l6', exercises:[
+  {key:'cmp', title:'The car park', task:'<b>Task:</b> a car park with <b>6 spaces</b>. Entry sensor <b>I0.0</b> adds to counter <b>C0</b> (CTU), and exit sensor <b>I0.1</b> subtracts from it (CTD on the same C0). Green lamp <b>Q0.0</b> lights if there are <b>fewer than 6</b> cars, and red <b>Q0.1</b> if there are <b>6 or more</b>. Use <b>compare instructions</b>.',
+    io:{inputs:[{a:'I0.0', label:'Car in', kind:'pb'}, {a:'I0.1', label:'Car out', kind:'pb', color:'blue'}], outputs:[{a:'Q0.0', label:'Spaces free'}, {a:'Q0.1', label:'Full'}]}, plant:'parking', cmpDef:'C0',
+    tests:[{run:0.2}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'The car park is empty:'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'3 cars inside:'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {run:0.1}, {exp:{'Q0.0':0, 'Q0.1':1}, msg:'6 cars inside: full.'},
+      {press:'I0.1'}, {run:0.1}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'A car left (5 inside):'}, {press:'I0.1'}, {press:'I0.1'}, {press:'I0.1'}, {press:'I0.1'}, {press:'I0.1'}, {press:'I0.1'}, {run:0.1}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'The car park is empty again:'},
+      {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {run:0.1}, {exp:{'Q0.1':1, 'Q0.0':0}, msg:'6 again:'},
+      {fn:c => c.e.prog.some(rg => rg.rows.some(row => row.some(el => el && el.t === 'CMP'))) ? null : 'It works, but this exercise wants you to use at least one compare instruction (C0 < 6 or C0 >= 6).'}],
+    hint:'Rung 1: NO I0.0 → CTU C0. Rung 2: NO I0.1 → CTD C0. Rung 3: compare C0 &lt; 6 → Q0.0. Rung 4: compare C0 &gt;= 6 → Q0.1.',
+    sol:[{rows:[['NO:I0.0', '-', '-', '-', 'CTU:C0:6']]}, {rows:[['NO:I0.1', '-', '-', '-', 'CTD:C0:6']]}, {rows:[['CMP:C0:<:6', '-', '-', '-', 'OUT:Q0.0']]}, {rows:[['CMP:C0:>=:6', '-', '-', '-', 'OUT:Q0.1']]}],
+    ok:'Compare lets you set any number of limits on the same value: "nearly full" at 5, "full" at 6…'}
+]});
+PL.quiz(document.getElementById('quiz'), [
+  {q:'CTU with PV = 10. Bit C0 becomes 1 when:', o:['CV reaches 10 or more', 'The first pulse', 'CV = 0', 'Reset is pressed'], a:0, why:'Done when CV ≥ PV.'},
+  {q:'A can stopped in front of the sensor for 5 seconds. The counter counts:', o:['Once', '5 times', 'Once every scan', 'Not at all'], a:0, why:'The counter counts the edge from 0 to 1.'},
+  {q:'How do you set the counter back to zero?', o:['An R (Reset) coil on C0', 'Switch the PLC off', 'An NC contact on C0', 'Another CTU'], a:0, why:'Reset clears CV and the bit.'},
+  {q:'A temperature on MW10 and you want an alarm when it reaches 80. Best choice:', o:['MW10 >= 80', 'MW10 == 80', 'MW10 <> 80', 'MW10 < 80'], a:0, why:'== may never be true with a value that changes in fractions.'},
+  {q:'The carton counter counts extra for no clear reason. The first thing to suspect:', o:['The sensor is chattering (bounce)', 'The PLC is faulty', 'The PV is wrong', 'The power supply'], a:0, why:'Every chatter = a new edge.'},
+  {q:'In the car park: CTU on entry and CTD on exit for the same counter. The value CV represents:', o:['The number of cars inside', 'The number of cars that came in only', 'The time', 'Always the number of free spaces'], a:0, why:'In is +, out is −.'}
+], {lesson:'l6', pass:0.8});
+</script>
+
+</body>
+</html>

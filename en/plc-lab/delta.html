@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Delta DVP and ISPSoft / WPLSoft simulator</title>
+<meta name="description" content="PLC exercises on a simulator that looks like the Delta software and a DVP-14SS2: X0, Y0 and M0 addresses in octal, LD, LDI, OUT, SET and RST instructions, a TMR T0 K50 timer and a CNT C0 K10 counter, and an Instruction List view. 9 exercises from real plants that are tested automatically, including position control with an encoder and C251.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/plc-lab/delta.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/plc-lab/delta.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/plc-lab/delta.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/plc-lab/delta.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="plc.css?v=ec27b04d">
+<script src="plc.js?v=d690cb37"></script>
+<link rel="stylesheet" href="brand.css?v=18fbcdd2">
+<script src="brands.js?v=0b7b3050"></script>
+</head>
+<body>
+<div class="app">
+<header class="top bx-top">
+  <div>
+    <p class="kick">PLC · Practice on real brands</p>
+    <h1>Delta DVP · ISPSoft and WPLSoft style</h1>
+    <p>Delta is one of the PLCs you will meet most often in plants. Here you will write with <b>X0</b>, <b>Y0</b> and <b>M0</b> addresses, a <b>TMR T0 K50</b> timer (that is 5 seconds), and read the same program as an <b>Instruction List</b>, the way Delta technicians read it. 9 exercises, including cut-to-length with an encoder and the high-speed counter <b>C251</b>, and the last one is a 3-batch mixing tank challenge.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Course</a><a class="btn" href="siemens.html">Siemens S7-1200</a><a class="btn" href="ab.html">Allen-Bradley</a></div>
+</header>
+<div class="bx-note-top" style="--br:#0a5aa8"><b>This is a training simulator, not the original software.</b> The screen is modelled on the Delta software (<span class="mono">ISPSoft</span> and <span class="mono">WPLSoft</span>) and a <span class="mono">DVP-14SS2</span> so the real thing feels familiar: the addresses (<span class="mono">X0</span> · <span class="mono">Y0</span> · <span class="mono">M0</span> · <span class="mono">T0</span> · <span class="mono">C0</span>) and the instruction names follow Delta. But this is not Delta software and it does not talk to a real PLC.</div>
+
+<section class="panel lsec" aria-labelledby="lg">
+  <h2 id="lg"><span class="k">1</span>What you will see in the Delta software</h2>
+  <div class="tblw"><table class="tbl bx-legend">
+    <tbody>
+      <tr><td>Input · output · memory</td><td><span class="mono">X0</span> · <span class="mono">Y0</span> · <span class="mono">M0</span>. X and Y numbers are <b>octal</b>: after <span class="mono">X7</span> comes <span class="mono">X10</span> (there is no X8 or X9). The <span class="mono">DVP-14SS2</span> has <span class="mono">X0–X7</span> and <span class="mono">Y0–Y5</span></td></tr>
+      <tr><td>Contacts</td><td><span class="mono">LD / AND / OR</span> for NO, <span class="mono">LDI / ANI / ORI</span> for NC, and <span class="mono">LDP / LDF</span> for edges</td></tr>
+      <tr><td>Output</td><td><span class="mono">OUT Y0</span> · <span class="mono">SET Y0</span> · <span class="mono">RST Y0</span>; in the diagram they appear in brackets <span class="mono">[ SET Y0 ]</span></td></tr>
+      <tr><td>Timer and counter</td><td><span class="mono">TMR T0 K50</span>: <span class="mono">T0–T199</span> count in 100ms units, so <span class="mono">K50</span> = 5 seconds. <span class="mono">CNT C0 K10</span> is reset with <span class="mono">RST C0</span></td></tr>
+      <tr><td>Compare</td><td><span class="mono">LD= · LD&gt; · LD&gt;= …</span> such as <span class="mono">LD&gt;= C0 K5</span></td></tr>
+      <tr><td>High-speed counter</td><td><span class="mono">C251</span> counts an A/B encoder on <span class="mono">X0</span> and <span class="mono">X1</span> (32-bit): it runs with <span class="mono">DCNT C251 K10000</span>, is compared with <span class="mono">DLD&gt;=</span> / <span class="mono">DAND&lt;</span>, and is reset with <span class="mono">RST C251</span></td></tr>
+      <tr><td>Running</td><td><span class="mono">Write to PLC</span> → <span class="mono">RUN</span> switch → <span class="mono">Ladder Monitor</span> (the active contact is highlighted)</td></tr>
+    </tbody></table></div>
+</section>
+
+<section class="sec" aria-labelledby="ws">
+  <h2 id="ws">Exercises <small>from easy to hard: tap a cell and choose the instruction</small></h2>
+  <div id="bx"></div>
+</section>
+
+<p class="foot">The look and the names follow the Delta software and the DVP-SS2; the final reference is the Delta manual for your model. Your exercise progress is saved on this device, and synced with your account when you are signed in.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script>
+(function(){
+  PL.hubTheme();
+  const S = PL.BXS, A = s => `<bdi dir="ltr" class="mono">${s}</bdi>`;
+  const cm = list => list.map(([n, a, c]) => ({n, a, c}));
+  /* encoder cut-to-length: shared programs (engine addresses) */
+  const seal5 = {rows:[['NO:I0.2', 'NO:I0.3', '-', '-', 'OUT:M0.0'], ['NO:M0.0']], links:[[1]]};
+  const encRst = edge => ({rows:[[edge, '-', '-', '-', 'R:HC0'], ['NO:T1', 'NO:I0.4']], links:[[2]]});
+  const encBody = (stop, slow) => [{rows:[['NO:M0.0', 'CMP:HC0:>=:' + stop, '-', '-', 'TON:T0:0.3']]}, {rows:[['NO:T0', '-', '-', '-', 'TON:T1:0.5']]}, {rows:[['NO:T0', 'NC:T1', '-', '-', 'OUT:Q0.3']]},
+    {rows:[['NO:M0.0', 'CMP:HC0:<:' + stop, 'NO:I0.4', '-', 'OUT:Q0.0']]}, {rows:[['NO:Q0.0', slow ? 'CMP:HC0:<:' + slow : '-', '-', '-', 'OUT:Q0.1']]}, {rows:[['NC:Q0.0', '-', '-', '-', 'OUT:Q0.2']]}, {rows:[['NO:Q0.3', '-', '-', '-', 'CTU:C0:9999']]}];
+  const encSol = (pre, edge) => (pre || [seal5]).concat([encRst(edge || 'P:I0.2')], encBody(9950, 9000));
+  /* known-wrong programs: no overshoot compensation · never slows down · cuts before the sheet stops · no reset after a cut · Start does not reset */
+  const encNeg = (pre, edge) => { const P = pre || [seal5], E = edge || 'P:I0.2', noSettle = encBody(9950, 9000); noSettle.splice(0, 3, {rows:[['NO:M0.0', 'CMP:HC0:>=:9950', 'NC:T1', '-', 'OUT:Q0.3']]}, {rows:[['NO:Q0.3', '-', '-', '-', 'TON:T1:0.5']]});
+    return [P.concat([encRst(E)], encBody(10000, 9000)), P.concat([encRst(E)], encBody(9950, 0)), P.concat([encRst(E)], noSettle), P.concat([{rows:[[E, '-', '-', '-', 'R:HC0']]}], encBody(9950, 9000)), P.concat([{rows:[['NO:T1', 'NO:I0.4', '-', '-', 'R:HC0']]}], encBody(9950, 9000))]; };
+  const dcnt = {rows:[['-', '-', '-', '-', 'HSC:HC0:10000']]};
+  const ex = [
+    {key:'pump', lvl:1, title:'Pump with dry-run protection', skills:['LD', 'LDI', 'OUT', 'Seal-in'], ...S.pump_dry,
+      story:'A pump draws water from a ground tank in a factory building. If the water runs out and the pump runs dry, the seal is ruined. There\'s a float on <b>X2</b> that gives 1 as long as there is water.',
+      tags:cm([['X0', 'I0.0', 'Start'], ['X1', 'I0.1', 'Stop'], ['X2', 'I0.2', 'Water float'], ['Y0', 'Q0.0', 'Pump'], ['Y1', 'Q0.1', 'No water']]),
+      task:[`${A('X0')} starts pump ${A('Y0')} and it keeps running after you release it.`, `${A('X1')} (${A('Stop')} wired ${A('NC')}) or float ${A('X2')} when the water runs out stops it.`, `Lamp ${A('Y1')} lights while there's no water.`, `When the water comes back the pump must not start by itself.`],
+      hint:`Rung 1: ${A('LD X0')} with ${A('OR Y0')} under it (seal-in) → ${A('AND X1')} → ${A('AND X2')} → ${A('OUT Y0')}. Rung 2: ${A('LDI X2')} → ${A('OUT Y1')}. Open the IL tab and see the same thing written out.`,
+      sol:[{rows:[['NO:I0.0', 'NO:I0.1', 'NO:I0.2', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NC:I0.2', '-', '-', '-', 'OUT:Q0.1']]}],
+      neg:[[{rows:[['NO:I0.0', 'NO:I0.1', 'NO:I0.2', '-', 'OUT:Q0.0']]}, {rows:[['NC:I0.2', '-', '-', '-', 'OUT:Q0.1']]}]],
+      ok:'In IL the first rung became: LD X0 · OR Y0 · AND X1 · AND X2 · OUT Y0. That\'s what you\'ll find in any printed Delta program.'},
+    {key:'twohand', lvl:1, title:'Two-hand press', skills:['TMR', 'K5', 'Safety'], ...S.twohand,
+      story:'A sheet punching press: the operator must press with both hands together so no hand can be under the press. And if someone tapes a button down, the press must not run.',
+      tags:cm([['X0', 'I0.0', 'Left hand'], ['X1', 'I0.1', 'Right hand'], ['Y0', 'Q0.0', 'Press']]),
+      task:[`${A('Y0')} runs only if ${A('X0')} and ${A('X1')} are pressed <b>within half a second</b> of each other.`, `It keeps running while both are held.`, `If the operator lets go of one hand it stops, and it only comes back if both are released and pressed again.`],
+      hint:`Rung 1: ${A('LD X0')} and ${A('OR X1')} → ${A('TMR T0 K5')} (the timer starts with the first hand). Rung 2: ${A('LD X0')} → ${A('AND X1')} → (${A('LDI T0')} or ${A('Y0')} in parallel) → ${A('OUT Y0')}. So it runs if the second hand comes before T0 is done, and then Y0 holds itself.`,
+      sol:[{rows:[['NO:I0.0', '-', '-', '-', 'TON:T0:0.5'], ['NO:I0.1']], links:[[1]]}, {rows:[['NO:I0.0', 'NO:I0.1', 'NC:T0', '-', 'OUT:Q0.0'], ['', '', 'NO:Q0.0']], links:[[2, 3]]}],
+      neg:[[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0']]}]],
+      ok:'This is two-hand control logic. In real life a dedicated safety relay is also used, but the idea is the same.'},
+    {key:'toggle', lvl:2, title:'Floodlight on one button (LDP)', skills:['LDP', 'M0', 'XOR'], ...S.toggle,
+      story:'A floodlight in a store with just one button at the door: one press on, one press off. If someone holds the press too long, the floodlight must not keep flashing.',
+      tags:cm([['X0', 'I0.0', 'Light button'], ['Y0', 'Q0.0', 'Floodlight'], ['M0', 'M0.0', 'Pulse']]),
+      task:[`Each press of ${A('X0')} toggles the state of ${A('Y0')}.`, `If someone keeps holding the button, it toggles <b>once only</b>.`, `Use ${A('LDP')} and ${A('M0')}.`],
+      hint:`Rung 1: ${A('LDP X0')} → ${A('OUT M0')} (M0 is 1 for one scan only). Rung 2: ${A('LD M0')} → ${A('ANI Y0')}, and in parallel with them ${A('LDI M0')} → ${A('AND Y0')}, and both → ${A('OUT Y0')}.`,
+      sol:[{rows:[['P:I0.0', '-', '-', '-', 'OUT:M0.0']]}, {rows:[['NO:M0.0', 'NC:Q0.0', '-', '-', 'OUT:Q0.0'], ['NC:M0.0', 'NO:Q0.0']], links:[[2]]}],
+      neg:[[{rows:[['NO:I0.0', 'NC:Q0.0', '-', '-', 'OUT:Q0.0'], ['NC:I0.0', 'NO:Q0.0']], links:[[2]]}]],
+      ok:'Delta also has a ready-made instruction called ALT that does the same toggle, but you should understand this method first.'},
+    {key:'sd', lvl:2, title:'Star/delta with TMR K50', skills:['TMR', 'K50 = 5s', 'Interlock'], ...S.sd,
+      story:'A refrigeration compressor in a dairy, a 37 kW motor that starts in star and after 5 seconds goes to delta. On Delta the time is written as K in units of 100 ms.',
+      tags:cm([['X0', 'I0.0', 'Start'], ['X1', 'I0.1', 'Stop'], ['Y0', 'Q0.0', 'KM1 main'], ['Y1', 'Q0.1', 'KM2 delta'], ['Y2', 'Q0.2', 'KM3 star']]),
+      task:[`${A('X0')} turns on ${A('Y0')} and ${A('Y2')} (star).`, `After 5 seconds star drops out and ${A('Y1')} (delta) comes in.`, `${A('X1')} (${A('NC')}) stops everything.`, `Never ${A('Y1')} and ${A('Y2')} together.`],
+      hint:`Rung 1: seal-in for ${A('Y0')}. Rung 2: ${A('LD Y0')} → ${A('TMR T0 K50')}. Rung 3: ${A('LD Y0')} ${A('ANI T0')} ${A('ANI Y1')} → ${A('OUT Y2')}. Rung 4: ${A('LD Y0')} ${A('AND T0')} ${A('ANI Y2')} → ${A('OUT Y1')}.`,
+      sol:[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:Q0.0', '-', '-', '-', 'TON:T0:5']]}, {rows:[['NO:Q0.0', 'NC:T0', 'NC:Q0.1', '-', 'OUT:Q0.2']]}, {rows:[['NO:Q0.0', 'NO:T0', 'NC:Q0.2', '-', 'OUT:Q0.1']]}],
+      neg:[[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:Q0.0', '-', '-', '-', 'TON:T0:0.5']]}, {rows:[['NO:Q0.0', 'NC:T0', 'NC:Q0.1', '-', 'OUT:Q0.2']]}, {rows:[['NO:Q0.0', 'NO:T0', 'NC:Q0.2', '-', 'OUT:Q0.1']]}]],
+      ok:'The most common mistake on Delta: someone writes K5 thinking it\'s 5 seconds when it\'s half a second. Now you know.'},
+    {key:'cnt', lvl:2, title:'Carton counter CNT', skills:['CNT C0 K6', 'RST C0'], ...S.ctu,
+      story:'A biscuit plant: an eye counts the packs on the conveyor, and each carton holds 6. When it\'s full the conveyor stops and the lamp lights until the worker puts in a new carton.',
+      tags:cm([['X0', 'I0.0', 'Start'], ['X1', 'I0.1', 'Stop'], ['X2', 'I0.2', 'Can eye'], ['X3', 'I0.3', 'New carton'], ['Y0', 'Q0.0', 'Conveyor'], ['Y1', 'Q0.1', 'Full']]),
+      task:[`${A('X0')} starts conveyor ${A('Y0')} with seal-in and ${A('X1')} (${A('NC')}) stops it.`, `Eye ${A('X2')} counts with ${A('CNT C0 K6')}.`, `When it reaches 6: the conveyor stops and ${A('Y1')} lights.`, `${A('X3')} does ${A('RST C0')} and the lamp goes off, then ${A('Start')} carries on.`],
+      hint:`Rung 1: ${A('LD X0')} ${A('OR Y0')} ${A('AND X1')} ${A('ANI C0')} → ${A('OUT Y0')}. Rung 2: ${A('LD X2')} → ${A('CNT C0 K6')}. Rung 3: ${A('LD X3')} → ${A('RST C0')}. Rung 4: ${A('LD C0')} → ${A('OUT Y1')}.`,
+      sol:[{rows:[['NO:I0.0', 'NO:I0.1', 'NC:C0', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.2', '-', '-', '-', 'CTU:C0:6']]}, {rows:[['NO:I0.3', '-', '-', '-', 'R:C0']]}, {rows:[['NO:C0', '-', '-', '-', 'OUT:Q0.1']]}],
+      neg:[[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.2', '-', '-', '-', 'CTU:C0:6']]}, {rows:[['NO:I0.3', '-', '-', '-', 'R:C0']]}, {rows:[['NO:C0', '-', '-', '-', 'OUT:Q0.1']]}], [{rows:[['NO:I0.0', 'NO:I0.1', 'NC:C0', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.2', '-', '-', '-', 'CTU:C0:7']]}, {rows:[['NO:I0.3', '-', '-', '-', 'R:C0']]}, {rows:[['NO:C0', '-', '-', '-', 'OUT:Q0.1']]}]],
+      ok:'On Delta, C0–C99 are ordinary 16-bit counters, and C200 and up are 32-bit up/down counters (DCNT).'},
+    {key:'traffic', lvl:3, title:'Traffic light with 3 timers', skills:['TMR', 'Sequence'], ...S.traffic,
+      story:'A light at the exit where the trucks leave the factory onto the road. Times: green 5 seconds, yellow 2, red 5 (longer in reality, shortened here so you can watch it).',
+      tags:cm([['X0', 'I0.0', 'Run'], ['Y0', 'Q0.0', 'Red'], ['Y1', 'Q0.1', 'Yellow'], ['Y2', 'Q0.2', 'Green']]),
+      task:[`When ${A('X0')} is ${A('ON')}: green ${A('Y2')} 5 s → yellow ${A('Y1')} 2 s → red ${A('Y0')} 5 s → back to green.`, `Only one lamp at any time.`, `${A('OFF')} turns everything off.`],
+      hint:`3 timers in a chain: ${A('LD X0')} ${A('ANI T2')} → ${A('TMR T0 K50')}. ${A('LD T0')} → ${A('TMR T1 K20')}. ${A('LD T1')} → ${A('TMR T2 K50')}. Green: ${A('LD X0')} ${A('ANI T0')}. Yellow: ${A('LD T0')} ${A('ANI T1')}. Red: ${A('LD T1')}.`,
+      sol:[{rows:[['NO:I0.0', 'NC:T2', '-', '-', 'TON:T0:5']]}, {rows:[['NO:T0', '-', '-', '-', 'TON:T1:2']]}, {rows:[['NO:T1', '-', '-', '-', 'TON:T2:5']]}, {rows:[['NO:I0.0', 'NC:T0', '-', '-', 'OUT:Q0.2']]}, {rows:[['NO:T0', 'NC:T1', '-', '-', 'OUT:Q0.1']]}, {rows:[['NO:T1', '-', '-', '-', 'OUT:Q0.0']]}],
+      neg:[[{rows:[['NO:I0.0', 'NC:T2', '-', '-', 'TON:T0:5']]}, {rows:[['NO:T0', '-', '-', '-', 'TON:T1:0.2']]}, {rows:[['NO:T1', '-', '-', '-', 'TON:T2:5']]}, {rows:[['NO:I0.0', 'NC:T0', '-', '-', 'OUT:Q0.2']]}, {rows:[['NO:T0', 'NC:T1', '-', '-', 'OUT:Q0.1']]}, {rows:[['NO:T1', '-', '-', '-', 'OUT:Q0.0']]}]],
+      ok:'Chained timers like these are the basis of any time-based control. In the monitor watch T0 count up to 50.'},
+    {key:'sortfix', lvl:5, title:'Fix the sorting conveyor', skills:['Troubleshooting', 'SET / RST', 'LDF'], ...S.sort,
+      story:'A sorting conveyor in a carton plant: height sensor <b>X1</b> sees a tall carton some distance before the pusher. The program in the PLC pushes at the wrong place: tall cartons go through and the pusher hits thin air.',
+      tags:cm([['X0', 'I0.0', 'Run'], ['X1', 'I0.1', 'Height sensor'], ['X2', 'I0.2', 'At the pusher'], ['Y0', 'Q0.0', 'Conveyor'], ['Y1', 'Q0.1', 'Pusher'], ['M0', 'M0.0', 'Tall one coming']]),
+      task:[`Conveyor ${A('Y0')} runs while ${A('X0')} ${A('ON')}.`, `A tall carton that ${A('X1')} saw must be pushed off by ${A('Y1')} when it reaches the pusher (${A('X2')}).`, `A short one carries on.`, `Fix the program: you must <b>remember</b> that a tall one is coming.`],
+      start:[{rows:[['NO:I0.0', '-', '-', '-', 'OUT:Q0.0']]}, {rows:[['NO:I0.1', '-', '-', '-', 'OUT:Q0.1']]}],
+      hint:`The mistake: the pusher works with the height sensor itself, and that sensor is before the pusher. The fix: ${A('LD X1')} → ${A('SET M0')}. And ${A('LD X2')} ${A('AND M0')} → ${A('OUT Y1')}. And ${A('LDF X2')} (the carton has left the pusher) → ${A('RST M0')}.`,
+      sol:[{rows:[['NO:I0.0', '-', '-', '-', 'OUT:Q0.0']]}, {rows:[['NO:I0.1', '-', '-', '-', 'S:M0.0']]}, {rows:[['NO:I0.2', 'NO:M0.0', '-', '-', 'OUT:Q0.1']]}, {rows:[['N:I0.2', '-', '-', '-', 'R:M0.0']]}],
+      neg:[[{rows:[['NO:I0.0', '-', '-', '-', 'OUT:Q0.0']]}, {rows:[['NO:I0.2', '-', '-', '-', 'OUT:Q0.1']]}]],
+      ok:'This idea (see at one place and act at another) is done on long lines with a shift register (on Delta, SFTL).'},
+    {key:'enc', lvl:3, title:'Cut-to-length with an encoder (C251)', skills:['DCNT', 'C251', 'DLD>=', 'RST C251', 'Overshoot'], ...S.cut, plantOpt:{gate:true},
+      io:Object.assign({}, S.cut.io, {inputs:[{a:'I0.0', label:'Encoder A', kind:'enc'}, {a:'I0.1', label:'Encoder B', kind:'enc'}].concat(S.cut.io.inputs)}),
+      syms:[{a:'HC0', label:'Encoder count (32-bit)', kind:'DCNT'}],
+      story:'A sheet-metal plant: the line uncoils a steel coil and cuts it into <b><bdi dir="ltr" class="mono">500 mm</bdi></b> sheets. A measuring wheel with a <b><bdi dir="ltr" class="mono">200 mm</bdi></b> circumference rides on the sheet, with a <b><bdi dir="ltr" class="mono">1000 PPR</bdi></b> encoder: A goes to <bdi dir="ltr" class="mono">X0</bdi> and B to <bdi dir="ltr" class="mono">X1</bdi> (the fast inputs on the <bdi dir="ltr" class="mono">DVP-14SS2</bdi>), and high-speed counter <bdi dir="ltr" class="mono">C251</bdi> counts <bdi dir="ltr" class="mono">A/B ×4</bdi>, so <b><bdi dir="ltr" class="mono">4000 count</bdi></b> per turn = <b><bdi dir="ltr" class="mono">20 count</bdi> per <bdi dir="ltr" class="mono">mm</bdi></b>, so <bdi dir="ltr" class="mono">500 mm</bdi> = <b><bdi dir="ltr" class="mono">10000 count</bdi></b>. This counter is 32-bit, so the compare is written with a D, like <bdi dir="ltr" class="mono">DLD&gt;=</bdi>.',
+      tags:cm([['X0', 'I0.0', 'Encoder A'], ['X1', 'I0.1', 'Encoder B'], ['X2', 'I0.2', 'Start'], ['X3', 'I0.3', 'Stop'], ['X4', 'I0.4', 'Knife up'], ['Y0', 'Q0.0', 'Motor run'], ['Y1', 'Q0.1', 'High speed'], ['Y2', 'Q0.2', 'Brake'], ['Y3', 'Q0.3', 'Knife down'], ['M0', 'M0.0', 'Line on'], ['C251', 'HC0', 'Encoder count'], ['T0', 'T0', 'Wait to stop'], ['T1', 'T1', 'Cut time'], ['C0', 'C0', 'Piece count']]),
+      task:[`${A('X2')} (Start) starts ${A('M0')} with seal-in, and ${A('X3')} (Stop, wired ${A('NC')}) stops everything at any moment.`,
+        `Run the high-speed counter: ${A('DCNT C251 K10000')} in a rung with no conditions (in IL it becomes ${A('LD M1000')}).`,
+        `${A('LDP X2')} does ${A('RST C251')} (reset with every Start).`,
+        `${A('Y0')} runs while ${A('M0')} is on, ${A('C251')} hasn't reached the stop point yet (${A('DLD<')}), and the knife is up (${A('X4')}).`,
+        `${A('Y1')} (fast) is on together with the run until ${A('K9000')} (450 mm), then slow. And ${A('Y2')} (brake) applies while ${A('Y0')} is off.`,
+        `The sheet slides a little after stopping: stop at ${A('10000')} minus the overshoot (shown on the screen) so the piece comes out ${A('500 ± 1 mm')}.`,
+        `After stopping, ${A('TMR T0 K3')} (0.3 s), then ${A('Y3')} for ${A('TMR T1 K5')}, and when ${A('X4')} is back: ${A('RST C251')} and the cycle repeats by itself.`,
+        `${A('CNT C0 K9999')} counts the pieces from ${A('Y3')}.`],
+      hint:`Rung 1: seal-in for ${A('M0')}. Rung 2: straight wire → ${A('DCNT C251 K10000')}. Rung 3: ${A('LDP X2')} with a branch ${A('LD T1 · AND X4')} under it → ${A('RST C251')}. Rung 4: ${A('LD M0 · DAND>= C251 K9950')} → ${A('TMR T0 K3')}. Rung 5: ${A('T0')} → ${A('TMR T1 K5')}. Rung 6: ${A('LD T0 · ANI T1')} → ${A('OUT Y3')}. Rung 7: ${A('LD M0 · DAND< C251 K9950 · AND X4')} → ${A('OUT Y0')}. Rung 8: ${A('LD Y0 · DAND< C251 K9000')} → ${A('OUT Y1')}. Rung 9: ${A('LDI Y0')} → ${A('OUT Y2')}. Rung 10: ${A('LD Y3')} → ${A('CNT C0 K9999')}. The overshoot is about 50 counts (2.5 mm), hence 9950.`,
+      start:[seal5],
+      sol:encSol([seal5, dcnt]), neg:encNeg([seal5, dcnt]).concat([encSol([seal5])]),
+      ok:'This is a real cut-to-length machine program on Delta. The high-speed counter counts in hardware between scans, and the program reads its value. Notice that C251 isn\'t like C0: it\'s 32-bit and it\'s reset with RST C251. And for a fixed starting point you use the encoder\'s Z (index) pulse for homing.'},
+    {key:'batch', lvl:4, title:'Factory challenge: 3 mixing batches', skills:['SET / RST', 'TMR', 'CNT', 'LDF'], ...S.batch3,
+      story:'A detergent plant: a mixing tank makes <b>3 batches one after another automatically</b> from a single Start press. Each batch: fill up to the High float, mix for 4 seconds, drain until the Low float drops out. After the third, a "Done" lamp lights.',
+      tags:cm([['X0', 'I0.0', 'Start'], ['X1', 'I0.1', 'Stop'], ['X2', 'I0.2', 'Low float'], ['X3', 'I0.3', 'High float'], ['Y0', 'Q0.0', 'Fill valve'], ['Y1', 'Q0.1', 'Mixer'], ['Y2', 'Q0.2', 'Drain valve'], ['Y3', 'Q0.3', 'Done']]),
+      task:[`${A('X0')} starts a new count and the first batch.`, `${A('Y0')} opens until ${A('X3')}.`, `${A('Y1')} mixes for 4 seconds.`, `${A('Y2')} drains until ${A('X2')} drops out.`, `If it's still fewer than 3 batches, the next batch starts by itself, and after the third ${A('Y3')} lights.`, `${A('X1')} (${A('NC')}) closes everything.`],
+      hint:`Use ${A('Y0')}, ${A('Y1')} and ${A('Y2')} themselves as steps with SET/RST. ${A('LDP X0')} ${A('AND X1')} → ${A('SET Y0')} and ${A('RST C0')}. ${A('LD Y0')} ${A('AND X3')} → ${A('SET Y1')} and ${A('RST Y0')}. ${A('LD Y1')} → ${A('TMR T0 K40')}. ${A('LD T0')} → ${A('SET Y2')} and ${A('RST Y1')}. ${A('LD Y2')} ${A('ANI X2')} → ${A('CNT C0 K3')} and ${A('RST Y2')}. ${A('LDF Y2')} ${A('AND X1')} ${A('ANI C0')} → ${A('SET Y0')}. ${A('LD C0')} → ${A('OUT Y3')}. And a last rung ${A('LDI X1')} → ${A('RST')} for all three.`,
+      sol:[{rows:[['P:I0.0', 'NO:I0.1', '-', '-', 'S:Q0.0'], ['', '', '', '', 'R:C0']], links:[[4]]}, {rows:[['NO:Q0.0', 'NO:I0.3', '-', '-', 'S:Q0.1'], ['', '', '', '', 'R:Q0.0']], links:[[4]]}, {rows:[['NO:Q0.1', '-', '-', '-', 'TON:T0:4']]}, {rows:[['NO:T0', '-', '-', '-', 'S:Q0.2'], ['', '', '', '', 'R:Q0.1']], links:[[4]]}, {rows:[['NO:Q0.2', 'NC:I0.2', '-', '-', 'CTU:C0:3'], ['', '', '', '', 'R:Q0.2']], links:[[4]]}, {rows:[['N:Q0.2', 'NO:I0.1', 'NC:C0', '-', 'S:Q0.0']]}, {rows:[['NO:C0', '-', '-', '-', 'OUT:Q0.3']]}, {rows:[['NC:I0.1', '-', '-', '-', 'R:Q0.0'], ['', '', '', '', 'R:Q0.1'], ['', '', '', '', 'R:Q0.2']], links:[[4], [4]]}],
+      neg:[[{rows:[['P:I0.0', 'NO:I0.1', '-', '-', 'S:Q0.0']]}, {rows:[['NO:Q0.0', 'NO:I0.3', '-', '-', 'S:Q0.1'], ['', '', '', '', 'R:Q0.0']], links:[[4]]}, {rows:[['NO:Q0.1', '-', '-', '-', 'TON:T0:4']]}, {rows:[['NO:T0', '-', '-', '-', 'S:Q0.2'], ['', '', '', '', 'R:Q0.1']], links:[[4]]}, {rows:[['NO:Q0.2', 'NC:I0.2', '-', '-', 'S:Q0.3'], ['', '', '', '', 'R:Q0.2']], links:[[4]]}]],
+      ok:'This is real batch control: steps, a timer and a batch counter. The same idea is used in pharmaceutical and food plants, just with more steps.'}
+  ];
+  window.BX = PL.brandSim(document.getElementById('bx'), {brand:'dvp', exercises:ex});
+})();
+</script>
+
+</body>
+</html>

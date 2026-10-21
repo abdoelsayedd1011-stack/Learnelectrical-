@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Siemens S7-1200 and TIA Portal simulator</title>
+<meta name="description" content="PLC exercises on a simulator that looks like TIA Portal and a CPU 1214C: %I0.0 and %Q0.0 addresses, IEC timers with T#5s, CTU counters, NORM_X and SCALE_X for analog, download to device, online monitoring and the force table. 9 exercises from real plants that are tested automatically, including position control with an encoder.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/plc-lab/siemens.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/plc-lab/siemens.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/plc-lab/siemens.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/plc-lab/siemens.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="plc.css?v=ec27b04d">
+<script src="plc.js?v=d690cb37"></script>
+<link rel="stylesheet" href="brand.css?v=18fbcdd2">
+<script src="brands.js?v=0b7b3050"></script>
+</head>
+<body>
+<div class="app">
+<header class="top bx-top">
+  <div>
+    <p class="kick">PLC · Practice on real brands</p>
+    <h1>Siemens S7-1200 · TIA Portal style</h1>
+    <p>The same logic as the course, seen through Siemens eyes: <b>%I0.0</b> instead of I0.0, an <b>IEC_Timer_0_DB</b> timer with <b>T#5s</b>, <b>Download to device</b>, <b>Monitoring</b> and power flow in green. 9 exercises from real plants, including cut-to-length with an encoder and an <b>HSC</b>, and the last one is a complete filling-line challenge.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Course</a><a class="btn" href="delta.html">Delta DVP</a><a class="btn" href="ab.html">Allen-Bradley</a></div>
+</header>
+<div class="bx-note-top" style="--br:#00646e"><b>This is a training simulator, not the original software.</b> The screen is modelled on <span class="mono">TIA Portal</span> and a <span class="mono">CPU 1214C</span> so the real software feels familiar when you open it: the addresses (<span class="mono">%I0.0</span> · <span class="mono">%Q0.0</span> · <span class="mono">%M0.0</span> · <span class="mono">%IW64</span>) and the instruction names follow Siemens. But this is not Siemens software and it does not talk to a real PLC.</div>
+
+<section class="panel lsec" aria-labelledby="lg">
+  <h2 id="lg"><span class="k">1</span>What you will see in TIA Portal</h2>
+  <div class="tblw"><table class="tbl bx-legend">
+    <tbody>
+      <tr><td>Input · output · memory</td><td><span class="mono">%I0.0</span> · <span class="mono">%Q0.0</span> · <span class="mono">%M0.0</span>, and each address has a name in the <b>PLC tags</b> that appears in quotes, like <span class="mono">"Start_PB"</span></td></tr>
+      <tr><td>Contacts and coils</td><td><span class="mono">-| |-</span> · <span class="mono">-|/|-</span> · <span class="mono">-|P|-</span> · <span class="mono">-( )-</span> · <span class="mono">-(S)-</span> · <span class="mono">-(R)-</span></td></tr>
+      <tr><td>Timer</td><td>A <span class="mono">TON</span> / <span class="mono">TOF</span> / <span class="mono">TP</span> block with <span class="mono">IN · PT · Q · ET</span>; the time is written <span class="mono">T#5s</span>, each timer has an instance DB like <span class="mono">"IEC_Timer_0_DB"</span>, and you use <span class="mono">"IEC_Timer_0_DB".Q</span></td></tr>
+      <tr><td>Counter</td><td><span class="mono">CTU</span> with <span class="mono">CU · R · PV</span> and outputs <span class="mono">QU · CV</span>. Reset is an input of the block itself</td></tr>
+      <tr><td>High-speed counter</td><td>An encoder on <span class="mono">HSC_1</span> (A on <span class="mono">%I0.0</span> and B on <span class="mono">%I0.1</span>), the count as a <span class="mono">DInt</span> in <span class="mono">%ID1000</span>, reset with <span class="mono">CTRL_HSC</span></td></tr>
+      <tr><td>Analog</td><td><span class="mono">%IW64</span> from 0 to 27648 → <span class="mono">NORM_X</span> → <span class="mono">SCALE_X</span> → <span class="mono">%MD10</span> (Real)</td></tr>
+      <tr><td>Running</td><td><span class="mono">Download to device</span> → <span class="mono">Monitoring</span>: green = power flows, blue dashed = no power. The bar turns orange while you are online</td></tr>
+    </tbody></table></div>
+</section>
+
+<section class="sec" aria-labelledby="ws">
+  <h2 id="ws">Exercises <small>from easy to hard: tap a cell and choose the instruction</small></h2>
+  <div id="bx"></div>
+</section>
+
+<p class="foot">The look and the names follow TIA Portal and the S7-1200; the final reference is the Siemens manual for your model. Your exercise progress is saved on this device, and synced with your account when you are signed in.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script>
+(function(){
+  PL.hubTheme();
+  const S = PL.BXS, A = s => `<bdi dir="ltr" class="mono">${s}</bdi>`;
+  const tg = (pairs) => pairs.map(([n, a]) => ({n, a}));
+  const seal = [{rows:[['NO:I0.0', 'NO:I0.1', 'NO:I0.2', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NC:I0.2', '-', '-', '-', 'OUT:Q0.1']]}];
+  /* encoder cut-to-length: shared programs (engine addresses) */
+  const seal5 = {rows:[['NO:I0.2', 'NO:I0.3', '-', '-', 'OUT:M0.0'], ['NO:M0.0']], links:[[1]]};
+  const encRst = edge => ({rows:[[edge, '-', '-', '-', 'R:HC0'], ['NO:T1', 'NO:I0.4']], links:[[2]]});
+  const encBody = (stop, slow) => [{rows:[['NO:M0.0', 'CMP:HC0:>=:' + stop, '-', '-', 'TON:T0:0.3']]}, {rows:[['NO:T0', '-', '-', '-', 'TON:T1:0.5']]}, {rows:[['NO:T0', 'NC:T1', '-', '-', 'OUT:Q0.3']]},
+    {rows:[['NO:M0.0', 'CMP:HC0:<:' + stop, 'NO:I0.4', '-', 'OUT:Q0.0']]}, {rows:[['NO:Q0.0', slow ? 'CMP:HC0:<:' + slow : '-', '-', '-', 'OUT:Q0.1']]}, {rows:[['NC:Q0.0', '-', '-', '-', 'OUT:Q0.2']]}, {rows:[['NO:Q0.3', '-', '-', '-', 'CTU:C0:9999']]}];
+  const encSol = (pre, edge) => (pre || [seal5]).concat([encRst(edge || 'P:I0.2')], encBody(9950, 9000));
+  /* known-wrong programs: no overshoot compensation · never slows down · cuts before the sheet stops · no reset after a cut · Start does not reset */
+  const encNeg = (pre, edge) => { const P = pre || [seal5], E = edge || 'P:I0.2', noSettle = encBody(9950, 9000); noSettle.splice(0, 3, {rows:[['NO:M0.0', 'CMP:HC0:>=:9950', 'NC:T1', '-', 'OUT:Q0.3']]}, {rows:[['NO:Q0.3', '-', '-', '-', 'TON:T1:0.5']]});
+    return [P.concat([encRst(E)], encBody(10000, 9000)), P.concat([encRst(E)], encBody(9950, 0)), P.concat([encRst(E)], noSettle), P.concat([{rows:[[E, '-', '-', '-', 'R:HC0']]}], encBody(9950, 9000)), P.concat([{rows:[['NO:T1', 'NO:I0.4', '-', '-', 'R:HC0']]}], encBody(9950, 9000))]; };
+  const ex = [
+    {key:'seal', lvl:1, title:'DOL motor with overload', skills:['-| |-', '-|/|-', 'Seal-in'], ...S.seal_ol,
+      story:'Plastics plant: the crusher motor runs DOL through contactor <b>KM1</b>, with an overload relay. The operator wants a start button, a stop button, and a lamp that shows when the overload has tripped.',
+      tags:tg([['Start_PB', 'I0.0'], ['Stop_PB', 'I0.1'], ['Overload', 'I0.2'], ['Motor_KM1', 'Q0.0'], ['Trip_Lamp', 'Q0.1']]),
+      task:[`${A('"Start_PB"')} starts ${A('"Motor_KM1"')} and it keeps running after you release it.`, `${A('"Stop_PB"')} (wired ${A('NC')}) or a tripped ${A('"Overload"')} (wired ${A('NC')}) stops it.`, `${A('"Trip_Lamp"')} lights while the overload is tripped.`, `After the overload resets, the motor must not start by itself.`],
+      hint:`<b>Network 1:</b> ${A('-| |- "Start_PB"')} with a branch ${A('-| |- "Motor_KM1"')} under it (seal-in), then ${A('-| |- "Stop_PB"')} and ${A('-| |- "Overload"')} → ${A('-( )- "Motor_KM1"')}. Stop and the overload are NO in the program because they're wired NC: the bit = 1 while they're healthy. <b>Network 2:</b> ${A('-|/|- "Overload"')} → ${A('-( )- "Trip_Lamp"')}.`,
+      sol:seal, neg:[[{rows:[['NO:I0.0', 'NO:I0.1', 'NO:I0.2', '-', 'OUT:Q0.0']]}, {rows:[['NC:I0.2', '-', '-', '-', 'OUT:Q0.1']]}], [{rows:[['NO:I0.0', 'NC:I0.1', 'NC:I0.2', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NC:I0.2', '-', '-', '-', 'OUT:Q0.1']]}]],
+      ok:'The best-known program in the world. In TIA notice that the contact shows the address %I0.0 with the tag name above it.'},
+    {key:'fr', lvl:1, title:'Forward/reverse with interlock', skills:['Interlock', '-|/|-'], ...S.fr,
+      story:'A hoist in a warehouse: one motor raises and lowers it through two contactors, <b>KM_Fwd</b> and <b>KM_Rev</b>. If both close together it\'s a phase-to-phase short.',
+      tags:tg([['Fwd_PB', 'I0.0'], ['Rev_PB', 'I0.1'], ['Stop_PB', 'I0.2'], ['KM_Fwd', 'Q0.0'], ['KM_Rev', 'Q0.1']]),
+      task:[`${A('"Fwd_PB"')} starts ${A('"KM_Fwd"')} and ${A('"Rev_PB"')} starts ${A('"KM_Rev"')}, each with seal-in.`, `${A('"Stop_PB"')} (${A('NC')}) stops either one.`, `Never both together, not even for one scan.`, `If it's running forward and you press reverse, nothing happens until ${A('Stop')}.`],
+      hint:`Each network has: the button and the seal-in branch → ${A('-| |- "Stop_PB"')} → <b>${A('-|/|-')} the other output</b> → the coil. So in Network 1 put ${A('-|/|- "KM_Rev"')} and in Network 2 put ${A('-|/|- "KM_Fwd"')}.`,
+      sol:[{rows:[['NO:I0.0', 'NO:I0.2', 'NC:Q0.1', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.1', 'NO:I0.2', 'NC:Q0.0', '-', 'OUT:Q0.1'], ['NO:Q0.1']], links:[[1]]}],
+      neg:[[{rows:[['NO:I0.0', 'NO:I0.2', '-', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.1', 'NO:I0.2', '-', '-', 'OUT:Q0.1'], ['NO:Q0.1']], links:[[1]]}]],
+      ok:'The interlock in the program is done. In the panel you also interlock with an NC auxiliary contact of each contactor.'},
+    {key:'sd', lvl:2, title:'Star/delta with an IEC timer', skills:['TON', 'T#5s', 'IEC_Timer_0_DB'], ...S.sd,
+      story:'A 55 kW water pump at a station: it must start in <b>star</b> because of the starting current, and after 5 seconds change to <b>delta</b>. In TIA, when you add a TON it asks you for an instance DB.',
+      tags:tg([['Start_PB', 'I0.0'], ['Stop_PB', 'I0.1'], ['KM_Main', 'Q0.0'], ['KM_Delta', 'Q0.1'], ['KM_Star', 'Q0.2']]),
+      task:[`${A('"Start_PB"')} turns on ${A('"KM_Main"')} and ${A('"KM_Star"')} together.`, `After ${A('T#5s')} star drops out and ${A('"KM_Delta"')} comes in.`, `${A('"Stop_PB"')} (${A('NC')}) stops everything.`, `Never star and delta together.`],
+      hint:`Network 1: seal-in for ${A('"KM_Main"')}. Network 2: ${A('-| |- "KM_Main"')} → a ${A('TON')} block (tap the last cell and pick TON: ${A('"IEC_Timer_0_DB"')} is created by itself) and ${A('PT = T#5s')}. Network 3: ${A('"KM_Main"')} and ${A('-|/|- "IEC_Timer_0_DB".Q')} and ${A('-|/|- "KM_Delta"')} → ${A('"KM_Star"')}. Network 4: ${A('"KM_Main"')} and ${A('-| |- "IEC_Timer_0_DB".Q')} and ${A('-|/|- "KM_Star"')} → ${A('"KM_Delta"')}.`,
+      sol:[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:Q0.0', '-', '-', '-', 'TON:T0:5']]}, {rows:[['NO:Q0.0', 'NC:T0', 'NC:Q0.1', '-', 'OUT:Q0.2']]}, {rows:[['NO:Q0.0', 'NO:T0', 'NC:Q0.2', '-', 'OUT:Q0.1']]}],
+      solTags:[{n:'IEC_Timer_0_DB', a:'T0'}],
+      neg:[[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:Q0.0', '-', '-', '-', 'TON:T0:3']]}, {rows:[['NO:Q0.0', 'NC:T0', '-', '-', 'OUT:Q0.2']]}, {rows:[['NO:Q0.0', 'NO:T0', '-', '-', 'OUT:Q0.1']]}]],
+      ok:'In monitoring, watch ET count T#1s_200ms … up to T#5s; then Q turns green.'},
+    {key:'alarm', lvl:2, title:'Alarm with acknowledge (Ack)', skills:['-|P|-', '-(S)-', '-(R)-', '%M'], ...S.alarm,
+      story:'An air compressor in a textile mill: the high-pressure switch can blip for a moment and come back. The alarm must be latched until the technician acknowledges it, and the acknowledge silences the horn.',
+      tags:tg([['Press_High', 'I0.0'], ['Ack_PB', 'I0.1'], ['Alarm_Lamp', 'Q0.0'], ['Horn', 'Q0.1'], ['Alarm_Mem', 'M0.0'], ['Alarm_Acked', 'M0.1']]),
+      task:[`When ${A('"Press_High"')} comes on, even for a moment: ${A('"Alarm_Lamp"')} and ${A('"Horn"')} come on and stay on.`, `${A('"Ack_PB"')} silences the horn, and the lamp stays on until the pressure is back to normal.`, `Any new alarm brings the horn back.`, `Use ${A('"Alarm_Mem"')} and ${A('"Alarm_Acked"')}.`],
+      hint:`N1: ${A('-|P| "Press_High"')} → ${A('-(S)- "Alarm_Mem"')} with a parallel output ${A('-(R)- "Alarm_Acked"')}. N2: ${A('"Ack_PB"')} → ${A('-(S)- "Alarm_Acked"')}. N3: ${A('"Alarm_Acked"')} and ${A('-|/|- "Press_High"')} → ${A('-(R)- "Alarm_Mem"')}. N4: ${A('"Alarm_Mem"')} → the lamp. N5: ${A('"Alarm_Mem"')} and ${A('-|/|- "Alarm_Acked"')} → the horn.`,
+      sol:[{rows:[['P:I0.0', '-', '-', '-', 'S:M0.0'], ['', '', '', '', 'R:M0.1']], links:[[4]]}, {rows:[['NO:I0.1', '-', '-', '-', 'S:M0.1']]}, {rows:[['NO:M0.1', 'NC:I0.0', '-', '-', 'R:M0.0']]}, {rows:[['NO:M0.0', '-', '-', '-', 'OUT:Q0.0']]}, {rows:[['NO:M0.0', 'NC:M0.1', '-', '-', 'OUT:Q0.1']]}],
+      neg:[[{rows:[['NO:I0.0', '-', '-', '-', 'OUT:Q0.0']]}, {rows:[['NO:I0.0', '-', '-', '-', 'OUT:Q0.1']]}]],
+      ok:'This is the alarm sequence on any machine. In TIA the P contact needs a memory bit for the edge; the simulator makes it for you.'},
+    {key:'ctu', lvl:2, title:'Can counter CTU', skills:['CTU', 'CU · R · PV', 'QU'], ...S.ctu,
+      story:'A juice filling line: a photo-eye counts the cans, and each carton holds 6 cans. When it\'s full the conveyor stops until the worker puts in a new carton.',
+      tags:tg([['Start_PB', 'I0.0'], ['Stop_PB', 'I0.1'], ['Box_Eye', 'I0.2'], ['New_Carton', 'I0.3'], ['Belt_Motor', 'Q0.0'], ['Carton_Full', 'Q0.1']]),
+      task:[`${A('"Start_PB"')} starts ${A('"Belt_Motor"')} with seal-in and ${A('"Stop_PB"')} (${A('NC')}) stops it.`, `${A('"Box_Eye"')} counts into ${A('CTU')} with ${A('PV = 6')}.`, `When it reaches 6: the conveyor stops and ${A('"Carton_Full"')} lights.`, `${A('"New_Carton"')} resets the counter through the block's ${A('R')} input, then ${A('Start')} carries on.`],
+      hint:`N1: conveyor seal-in with ${A('-|/|- "IEC_Counter_0_DB".QU')} in it so it drops out when the count is complete. N2: ${A('-| |- "Box_Eye"')} → ${A('CTU')}, and in the picker choose ${A('R = %I0.3')} and ${A('PV = 6')}. N3: ${A('"IEC_Counter_0_DB".QU')} → ${A('"Carton_Full"')}.`,
+      sol:[{rows:[['NO:I0.0', 'NO:I0.1', 'NC:C0', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.2', '-', '-', '-', 'CTU:C0:6:I0.3']]}, {rows:[['NO:C0', '-', '-', '-', 'OUT:Q0.1']]}], solTags:[{n:'IEC_Counter_0_DB', a:'C0'}],
+      neg:[[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.2', '-', '-', '-', 'CTU:C0:6:I0.3']]}, {rows:[['NO:C0', '-', '-', '-', 'OUT:Q0.1']]}], [{rows:[['NO:I0.0', 'NO:I0.1', 'NC:C0', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.2', '-', '-', '-', 'CTU:C0:6']]}, {rows:[['NO:C0', '-', '-', '-', 'OUT:Q0.1']]}]],
+      ok:'In TIA there\'s no Reset coil for an IEC counter: R is an input on the block itself, and that\'s what you used.'},
+    {key:'tank', lvl:3, title:'Analog tank NORM_X and SCALE_X', skills:['%IW64', 'NORM_X', 'SCALE_X', 'Real', 'Hysteresis'], ...S.tank,
+      story:'A cooling-water tank with a 4–20 mA level transmitter on analog input <span class="mono" dir="ltr">%IW64</span> (0–27648). The pump must keep it between 20% and 80%, and there are High and Low alarms.',
+      tags:tg([['Level_Raw', 'IW64'], ['Level_PCT', 'MW10'], ['Pump', 'Q0.0'], ['Alarm_High', 'Q0.1'], ['Alarm_Low', 'Q0.2']]), syms:[{a:'IW64', label:'Level transmitter (raw)'}, {a:'MW10', label:'Level %'}],
+      task:[`Convert ${A('%IW64')} to a ${A('0.0–100.0')} percentage in ${A('"Level_PCT"')} (${A('%MD10')}) with ${A('NORM_X')} and ${A('SCALE_X')}.`, `${A('"Pump"')} starts when the level is ${A('≤ 20')} and stops when it's ${A('≥ 80')}.`, `${A('"Alarm_High"')} when the level is ${A('≥ 90')}.`, `${A('"Alarm_Low"')} when the level is ${A('≤ 10')}.`],
+      hint:`N1: straight wire → ${A('NORM_X+SCALE_X')} (MIN 0.0 and MAX 100.0, OUT ${A('%MD10')}). N2: ${A('CMP <= Real')} on ${A('"Level_PCT"')} with 20 → ${A('-(S)- "Pump"')}. N3: ${A('>= 80')} → ${A('-(R)- "Pump"')}. N4: ${A('>= 90')} → High. N5: ${A('<= 10')} → Low.`,
+      sol:[{rows:[['-', '-', '-', '-', 'SCL:IW64:MW10:0:100']]}, {rows:[['CMP:MW10:<=:20', '-', '-', '-', 'S:Q0.0']]}, {rows:[['CMP:MW10:>=:80', '-', '-', '-', 'R:Q0.0']]}, {rows:[['CMP:MW10:>=:90', '-', '-', '-', 'OUT:Q0.1']]}, {rows:[['CMP:MW10:<=:10', '-', '-', '-', 'OUT:Q0.2']]}],
+      neg:[[{rows:[['-', '-', '-', '-', 'SCL:IW64:MW10:0:100']]}, {rows:[['CMP:MW10:<=:20', '-', '-', '-', 'OUT:Q0.0']]}, {rows:[['CMP:MW10:>=:90', '-', '-', '-', 'OUT:Q0.1']]}, {rows:[['CMP:MW10:<=:10', '-', '-', '-', 'OUT:Q0.2']]}]],
+      ok:'In real TIA, NORM_X and SCALE_X are two blocks one after the other with a temporary Real variable between them. Try "Cut the transmitter wire" and see what the reading becomes.'},
+    {key:'trfix', lvl:5, title:'Fix the gate traffic light', skills:['Troubleshooting', 'Monitoring', 'TON'], ...S.traffic,
+      story:'The traffic light at the factory gate: drivers complain that <b>the yellow is too long</b> and that <b>red and yellow light together</b>. The program in the CPU is below. Download it, turn on Monitoring and find the two mistakes.',
+      tags:tg([['Run_SW', 'I0.0'], ['Red', 'Q0.0'], ['Yellow', 'Q0.1'], ['Green', 'Q0.2'], ['T_Green', 'T0'], ['T_Yellow', 'T1'], ['T_Red', 'T2']]),
+      task:[`When ${A('"Run_SW"')} is ${A('ON')}: green 5 s → yellow 2 s → red 5 s → back to green.`, `Only one lamp at any time.`, `${A('OFF')} turns everything off.`, `Fix the existing program.`],
+      start:[{rows:[['NO:I0.0', 'NC:T2', '-', '-', 'TON:T0:5']]}, {rows:[['NO:T0', '-', '-', '-', 'TON:T1:3']]}, {rows:[['NO:T1', '-', '-', '-', 'TON:T2:5']]}, {rows:[['NO:I0.0', 'NC:T0', '-', '-', 'OUT:Q0.2']]}, {rows:[['NO:T0', '-', '-', '-', 'OUT:Q0.1']]}, {rows:[['NO:T1', '-', '-', '-', 'OUT:Q0.0']]}],
+      hint:`Two mistakes: (1) ${A('"T_Yellow"')} has a PT of ${A('T#3s')} but ${A('T#2s')} is required. (2) Network 5 (yellow) is missing ${A('-|/|- "T_Yellow".Q')}: without it yellow stays on with red.`,
+      sol:[{rows:[['NO:I0.0', 'NC:T2', '-', '-', 'TON:T0:5']]}, {rows:[['NO:T0', '-', '-', '-', 'TON:T1:2']]}, {rows:[['NO:T1', '-', '-', '-', 'TON:T2:5']]}, {rows:[['NO:I0.0', 'NC:T0', '-', '-', 'OUT:Q0.2']]}, {rows:[['NO:T0', 'NC:T1', '-', '-', 'OUT:Q0.1']]}, {rows:[['NO:T1', '-', '-', '-', 'OUT:Q0.0']]}],
+      neg:[[{rows:[['NO:I0.0', 'NC:T2', '-', '-', 'TON:T0:5']]}, {rows:[['NO:T0', '-', '-', '-', 'TON:T1:2']]}, {rows:[['NO:T1', '-', '-', '-', 'TON:T2:5']]}, {rows:[['NO:I0.0', 'NC:T0', '-', '-', 'OUT:Q0.2']]}, {rows:[['NO:T0', '-', '-', '-', 'OUT:Q0.1']]}, {rows:[['NO:T1', '-', '-', '-', 'OUT:Q0.0']]}]],
+      ok:'This is the right way to troubleshoot: watch the program online and compare what happens with what should happen.'},
+    {key:'enc', lvl:3, title:'Cut-to-length with an encoder (HSC)', skills:['HSC_1', '%ID1000', 'CMP DInt', 'CTRL_HSC', 'Overshoot'], ...S.cut,
+      io:Object.assign({}, S.cut.io, {inputs:[{a:'I0.0', label:'Encoder A', kind:'enc'}, {a:'I0.1', label:'Encoder B', kind:'enc'}].concat(S.cut.io.inputs)}),
+      syms:[{a:'HC0', label:'Encoder count (HSC_1)', kind:'DInt'}],
+      story:'A sheet-metal plant: the line uncoils a steel coil and cuts it into <b><bdi dir="ltr" class="mono">500 mm</bdi></b> sheets. A measuring wheel with a <b><bdi dir="ltr" class="mono">200 mm</bdi></b> circumference rides on the sheet, with a <b><bdi dir="ltr" class="mono">1000 PPR</bdi></b> encoder wired to <b>HSC_1</b> (A on <bdi dir="ltr" class="mono">%I0.0</bdi> and B on <bdi dir="ltr" class="mono">%I0.1</bdi>). The HSC counts <bdi dir="ltr" class="mono">A/B ×4</bdi>, so <b><bdi dir="ltr" class="mono">4000 count</bdi></b> per turn = <b><bdi dir="ltr" class="mono">20 count</bdi> per <bdi dir="ltr" class="mono">mm</bdi></b>, so <bdi dir="ltr" class="mono">500 mm</bdi> = <b><bdi dir="ltr" class="mono">10000 count</bdi></b>. The count is read from <bdi dir="ltr" class="mono">%ID1000</bdi>. The VFD has a run input and a high-speed input, and the motor has a brake.',
+      tags:tg([['Enc_A', 'I0.0'], ['Enc_B', 'I0.1'], ['Start_PB', 'I0.2'], ['Stop_PB', 'I0.3'], ['Cutter_Up', 'I0.4'], ['Feed_Run', 'Q0.0'], ['Feed_Fast', 'Q0.1'], ['Brake', 'Q0.2'], ['Cutter_Down', 'Q0.3'], ['Auto_On', 'M0.0'], ['Enc_Count', 'HC0'], ['T_Settle', 'T0'], ['T_Cut', 'T1'], ['Piece_Count', 'C0']]),
+      task:[`${A('"Start_PB"')} starts ${A('"Auto_On"')} with seal-in, and ${A('"Stop_PB"')} (wired ${A('NC')}) stops everything at any moment.`,
+        `${A('-|P|- "Start_PB"')} resets the counter with ${A('CTRL_HSC')} (the count ${A('"Enc_Count"')} = ${A('%ID1000')}, type ${A('DInt')}).`,
+        `${A('"Feed_Run"')} runs while the line is on, the count hasn't reached the stop point yet, and the knife is up (${A('"Cutter_Up"')}).`,
+        `${A('"Feed_Fast"')} is on together with the run until ${A('9000')} (450 mm); after that the feed carries on slow.`,
+        `${A('"Brake"')} applies while ${A('"Feed_Run"')} is off.`,
+        `The sheet slides a little after stopping: stop at ${A('10000')} minus the overshoot (shown on the screen) so the piece comes out ${A('500 ± 1 mm')}.`,
+        `After stopping wait ${A('T#300ms')} (${A('"T_Settle"')}), then ${A('"Cutter_Down"')} for ${A('T#500ms')} (${A('"T_Cut"')}).`,
+        `When the knife is back up reset the counter, and the cycle repeats by itself until ${A('Stop')}. And ${A('CTU "Piece_Count"')} counts the pieces.`],
+      hint:`N1: seal-in for ${A('"Auto_On"')}. N2: ${A('-|P|- "Start_PB"')} → ${A('CTRL_HSC')}, with a parallel branch under it ${A('"T_Cut".Q')} and ${A('"Cutter_Up"')} (reset after each piece). N3: ${A('"Auto_On"')} and ${A('CMP >= DInt "Enc_Count" 9950')} → ${A('TON "T_Settle" T#300ms')}. N4: ${A('"T_Settle".Q')} → ${A('TON "T_Cut" T#500ms')}. N5: ${A('"T_Settle".Q')} and ${A('-|/|- "T_Cut".Q')} → ${A('"Cutter_Down"')}. N6: ${A('"Auto_On"')} and ${A('CMP < 9950')} and ${A('"Cutter_Up"')} → ${A('"Feed_Run"')}. N7: ${A('"Feed_Run"')} and ${A('CMP < 9000')} → ${A('"Feed_Fast"')}. N8: ${A('-|/|- "Feed_Run"')} → ${A('"Brake"')}. N9: ${A('"Cutter_Down"')} → ${A('CTU')}. The overshoot is about 50 counts (2.5 mm), hence 9950.`,
+      start:[{rows:[['NO:I0.2', 'NO:I0.3', '-', '-', 'OUT:M0.0'], ['NO:M0.0']], links:[[1]]}],
+      sol:encSol(), neg:encNeg(),
+      ok:'This is the same logic real cut-to-length machines use: fast → slow → stop → overshoot compensation. On a real S7-1200 the HSC itself can compare with a reference value and switch an output without waiting for the scan, which cuts the error further. And for a fixed starting point you use the encoder\'s Z (index) pulse for homing.'},
+    {key:'line', lvl:4, title:'Factory challenge: a complete filling line', skills:['Seal-in', 'CTU + R', 'TON', '%M'], ...S.line,
+      story:'The same juice line, now automatic: there\'s a <b>2-second warning</b> before the conveyor moves (for the worker\'s hands), the count stops the conveyor at 6 cans, and when the worker changes the carton <b>the conveyor restarts by itself</b> after the warning, without anyone pressing Start.',
+      tags:tg([['Start_PB', 'I0.0'], ['Stop_PB', 'I0.1'], ['Box_Eye', 'I0.2'], ['New_Carton', 'I0.3'], ['Belt_Motor', 'Q0.0'], ['Carton_Full', 'Q0.1'], ['Line_On', 'M0.0']]),
+      task:[`${A('"Start_PB"')} starts the line ${A('"Line_On"')} with seal-in, and ${A('"Stop_PB"')} stops it.`, `${A('CTU')} on ${A('"Box_Eye"')} with ${A('PV = 6')}, and ${A('R')} from ${A('"New_Carton"')}.`, `${A('"Belt_Motor"')} runs ${A('T#2s')} after the line is on and the carton isn't full.`, `${A('"Carton_Full"')} lights when the count is complete.`],
+      hint:`N1: seal-in for ${A('"Line_On"')}. N2: ${A('CTU')} and ${A('R = %I0.3')}. N3: ${A('"Line_On"')} and ${A('-|/|- "IEC_Counter_0_DB".QU')} → ${A('TON T#2s')}. N4: ${A('"IEC_Timer_0_DB".Q')} → the conveyor. N5: ${A('.QU')} → the lamp. The idea is that the same timer gives the warning at the start and after every carton.`,
+      sol:[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:M0.0'], ['NO:M0.0']], links:[[1]]}, {rows:[['NO:I0.2', '-', '-', '-', 'CTU:C0:6:I0.3']]}, {rows:[['NO:M0.0', 'NC:C0', '-', '-', 'TON:T0:2']]}, {rows:[['NO:T0', '-', '-', '-', 'OUT:Q0.0']]}, {rows:[['NO:C0', '-', '-', '-', 'OUT:Q0.1']]}],
+      solTags:[{n:'IEC_Counter_0_DB', a:'C0'}, {n:'IEC_Timer_0_DB', a:'T0'}],
+      neg:[[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:M0.0'], ['NO:M0.0']], links:[[1]]}, {rows:[['NO:I0.2', '-', '-', '-', 'CTU:C0:6:I0.3']]}, {rows:[['NO:M0.0', 'NC:C0', '-', '-', 'OUT:Q0.0']]}, {rows:[['NO:C0', '-', '-', '-', 'OUT:Q0.1']]}]],
+      ok:'A real filling-line program, exactly. It\'s the same logic written on many lines, just with alarms and a total counter.'}
+  ];
+  window.BX = PL.brandSim(document.getElementById('bx'), {brand:'sie', exercises:ex});
+})();
+</script>
+
+</body>
+</html>

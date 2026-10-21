@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Allen-Bradley CompactLogix and Studio 5000 simulator</title>
+<meta name="description" content="PLC exercises on a simulator that looks like Studio 5000 and a CompactLogix: named tags and Local:1:I.Data.0, the XIC, XIO, OTE, OTL, OTU and ONS instructions, a TON timer with Preset, Accum and DN, CTU, CTD and RES counters, GEQ, LES and SCP for analog, and the RUN, REM and PROG key switch. 9 exercises that are tested automatically, including position control with an encoder.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/plc-lab/ab.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/plc-lab/ab.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/plc-lab/ab.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/plc-lab/ab.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="plc.css?v=ec27b04d">
+<script src="plc.js?v=d690cb37"></script>
+<link rel="stylesheet" href="brand.css?v=18fbcdd2">
+<script src="brands.js?v=0b7b3050"></script>
+</head>
+<body>
+<div class="app">
+<header class="top bx-top">
+  <div>
+    <p class="kick">PLC · Practice on real brands</p>
+    <h1>Allen-Bradley · Studio 5000 style</h1>
+    <p>In Allen-Bradley there are no addresses in the program: everything is a <b>tag</b> with a name like <b>Start_PB</b>, a contact is called <b>XIC</b>, and a timer counts in milliseconds and gives you <b>.DN</b>. Here you will create tags, download and turn the key, just like a real controller. 9 exercises, including cut-to-length with an encoder and a high-speed counter card, and the last one is an automatic warehouse door challenge.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Course</a><a class="btn" href="siemens.html">Siemens S7-1200</a><a class="btn" href="delta.html">Delta DVP</a></div>
+</header>
+<div class="bx-note-top" style="--br:#b3121f"><b>This is a training simulator, not the original software.</b> The screen is modelled on <span class="mono">Studio 5000 Logix Designer</span> and a <span class="mono">CompactLogix 1769-L33ER</span> controller so the real software feels familiar: the tags and the instruction names (<span class="mono">XIC</span> · <span class="mono">XIO</span> · <span class="mono">OTE</span> · <span class="mono">TON</span> · <span class="mono">CTU</span>) follow Allen-Bradley. But this is not Rockwell software and it does not talk to a real PLC.</div>
+
+<section class="panel lsec" aria-labelledby="lg">
+  <h2 id="lg"><span class="k">1</span>What you will see in Studio 5000</h2>
+  <div class="tblw"><table class="tbl bx-legend">
+    <tbody>
+      <tr><td>Tags</td><td>Everything has a name in the <b>Controller Tags</b>. Inputs and outputs are <b>aliases</b> to the card: <span class="mono">Start_PB</span> → <span class="mono">Local:1:I.Data.0</span>. Rungs are numbered from <b>0</b></td></tr>
+      <tr><td>Contacts and coils</td><td><span class="mono">XIC</span> = NO · <span class="mono">XIO</span> = NC · <span class="mono">OTE</span> coil · <span class="mono">OTL</span> / <span class="mono">OTU</span> = Set / Reset · <span class="mono">ONS</span> = one shot (edge)</td></tr>
+      <tr><td>Timer</td><td><span class="mono">TON</span> / <span class="mono">TOF</span> / <span class="mono">RTO</span> with a tag of type <span class="mono">TIMER</span>: <span class="mono">Preset</span> and <span class="mono">Accum</span> in milliseconds (5 seconds = <span class="mono">5000</span>), and the bits <span class="mono">.EN</span>, <span class="mono">.TT</span> and <span class="mono">.DN</span></td></tr>
+      <tr><td>Counter</td><td><span class="mono">CTU</span> / <span class="mono">CTD</span> on a tag of type <span class="mono">COUNTER</span>; <span class="mono">.DN</span> when <span class="mono">ACC ≥ PRE</span>, and <span class="mono">RES</span> resets it</td></tr>
+      <tr><td>Compare and analog</td><td><span class="mono">EQU · NEQ · GRT · GEQ · LES · LEQ</span>, and <span class="mono">SCP</span> converts the card reading (4000–20000 = 4–20mA) to a percentage</td></tr>
+      <tr><td>High-speed counter</td><td>The encoder on a high-speed counter card: the count is a tag of type <span class="mono">DINT</span> (<span class="mono">Enc_Count</span> on <span class="mono">Local:4:I.Ch0Count</span>), reset with an <span class="mono">OTE</span> on the bit <span class="mono">Local:4:O.Ch0Reset</span>, and compared with <span class="mono">GEQ</span> / <span class="mono">LES</span> as usual</td></tr>
+      <tr><td>Running</td><td><span class="mono">Go Online</span> → <span class="mono">Download</span> → <span class="mono">Run Mode</span>, or turn the key <span class="mono">RUN · REM · PROG</span>. In Run the active instruction lights green</td></tr>
+    </tbody></table></div>
+</section>
+
+<section class="sec" aria-labelledby="ws">
+  <h2 id="ws">Exercises <small>from easy to hard: tap a cell and choose the instruction</small></h2>
+  <div id="bx"></div>
+</section>
+
+<p class="foot">The look and the names follow Studio 5000 and CompactLogix (with almost the same instructions in Micro800 and CCW); the final reference is the Rockwell manual for your model. Your exercise progress is saved on this device, and synced with your account when you are signed in.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script>
+(function(){
+  PL.hubTheme();
+  const S = PL.BXS, A = s => `<bdi dir="ltr" class="mono">${s}</bdi>`;
+  const tg = (pairs) => pairs.map(([n, a]) => ({n, a}));
+  /* encoder cut-to-length: shared programs (engine addresses) */
+  const seal5 = {rows:[['NO:I0.2', 'NO:I0.3', '-', '-', 'OUT:M0.0'], ['NO:M0.0']], links:[[1]]};
+  const encRst = () => ({rows:[['NO:I0.2', 'ONS:M1.0', '-', '-', 'R:HC0'], ['NO:T1', 'NO:I0.4']], links:[[2]]});
+  const encBody = (stop, slow) => [{rows:[['NO:M0.0', 'CMP:HC0:>=:' + stop, '-', '-', 'TON:T0:0.3']]}, {rows:[['NO:T0', '-', '-', '-', 'TON:T1:0.5']]}, {rows:[['NO:T0', 'NC:T1', '-', '-', 'OUT:Q0.3']]},
+    {rows:[['NO:M0.0', 'CMP:HC0:<:' + stop, 'NO:I0.4', '-', 'OUT:Q0.0']]}, {rows:[['NO:Q0.0', slow ? 'CMP:HC0:<:' + slow : '-', '-', '-', 'OUT:Q0.1']]}, {rows:[['NC:Q0.0', '-', '-', '-', 'OUT:Q0.2']]}, {rows:[['NO:Q0.3', '-', '-', '-', 'CTU:C0:9999']]}];
+  const encSol = (pre, edge) => (pre || [seal5]).concat([encRst(edge || 'P:I0.2')], encBody(9950, 9000));
+  /* known-wrong programs: no overshoot compensation · never slows down · cuts before the sheet stops · no reset after a cut · Start does not reset */
+  const encNeg = (pre, edge) => { const P = pre || [seal5], E = edge || 'P:I0.2', noSettle = encBody(9950, 9000); noSettle.splice(0, 3, {rows:[['NO:M0.0', 'CMP:HC0:>=:9950', 'NC:T1', '-', 'OUT:Q0.3']]}, {rows:[['NO:Q0.3', '-', '-', '-', 'TON:T1:0.5']]});
+    return [P.concat([encRst(E)], encBody(10000, 9000)), P.concat([encRst(E)], encBody(9950, 0)), P.concat([encRst(E)], noSettle), P.concat([{rows:[['NO:I0.2', 'ONS:M1.0', '-', '-', 'R:HC0']]}], encBody(9950, 9000)), P.concat([{rows:[['NO:T1', 'NO:I0.4', '-', '-', 'R:HC0']]}], encBody(9950, 9000))]; };
+  const ex = [
+    {key:'seal', lvl:1, title:'Conveyor start/stop', skills:['XIC', 'XIO', 'OTE', 'Seal-in'], ...S.seal_lamp,
+      story:'A bag conveyor in a cement plant. A green Start button and a red Stop button wired NC, and a green lamp on the panel showing the conveyor is running.',
+      tags:tg([['Start_PB', 'I0.0'], ['Stop_PB', 'I0.1'], ['Conveyor', 'Q0.0'], ['Run_Lamp', 'Q0.1']]),
+      task:[`${A('Start_PB')} starts ${A('Conveyor')} and it keeps running after you release it.`, `${A('Stop_PB')} (wired ${A('NC')}) stops it.`, `${A('Run_Lamp')} lights with the conveyor.`, `If ${A('Stop')} is held down, ${A('Start')} doesn't start it.`],
+      hint:`Rung 0: ${A('XIC(Start_PB)')} with a branch ${A('XIC(Conveyor)')} under it, then ${A('XIC(Stop_PB)')} (XIC, not XIO, because it's wired NC: the bit = 1 while nobody presses it) → ${A('OTE(Conveyor)')}, and a parallel output ${A('OTE(Run_Lamp)')}. Look under the rung: the rung text writes itself.`,
+      sol:[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0'], ['NO:Q0.0', '', '', '', 'OUT:Q0.1']], links:[[1, 4]]}],
+      neg:[[{rows:[['NO:I0.0', 'NC:I0.1', '-', '-', 'OUT:Q0.0'], ['NO:Q0.0', '', '', '', 'OUT:Q0.1']], links:[[1, 4]]}], [{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0'], ['', '', '', '', 'OUT:Q0.1']], links:[[4]]}]],
+      ok:'The rung text under the rung is the same as you see in Studio 5000 when you double-click the rung number: [XIC(Start_PB) ,XIC(Conveyor) ]XIC(Stop_PB)…'},
+    {key:'fr', lvl:1, title:'Forward/reverse with interlock', skills:['XIO', 'Interlock'], ...S.fr,
+      story:'A roller door in a cold store opens and closes with one motor and two contactors. Both together = phase-to-phase short.',
+      tags:tg([['Fwd_PB', 'I0.0'], ['Rev_PB', 'I0.1'], ['Stop_PB', 'I0.2'], ['KM_Fwd', 'Q0.0'], ['KM_Rev', 'Q0.1']]),
+      task:[`${A('Fwd_PB')} starts ${A('KM_Fwd')} and ${A('Rev_PB')} starts ${A('KM_Rev')}, each with seal-in.`, `${A('Stop_PB')} (${A('NC')}) stops.`, `Never both together, and if it's running forward and you press reverse, nothing happens.`],
+      hint:`Rung 0: ${A('[XIC(Fwd_PB) ,XIC(KM_Fwd) ]XIC(Stop_PB)XIO(KM_Rev)OTE(KM_Fwd)')}. Rung 1 the other way round: ${A('XIO(KM_Fwd)')} before ${A('OTE(KM_Rev)')}.`,
+      sol:[{rows:[['NO:I0.0', 'NO:I0.2', 'NC:Q0.1', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.1', 'NO:I0.2', 'NC:Q0.0', '-', 'OUT:Q0.1'], ['NO:Q0.1']], links:[[1]]}],
+      neg:[[{rows:[['NO:I0.0', 'NO:I0.2', '-', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.1', 'NO:I0.2', '-', '-', 'OUT:Q0.1'], ['NO:Q0.1']], links:[[1]]}]],
+      ok:'The XIO interlock is done. In the panel you also interlock with an NC auxiliary contact.'},
+    {key:'ons', lvl:2, title:'Floodlight on one button (ONS)', skills:['ONS', 'Storage bit', 'XOR'], ...S.toggle,
+      story:'A floodlight in a maintenance workshop on one button: one press on, one press off. In Logix the pulse is made with <b>ONS</b>, and each ONS needs its own storage bit.',
+      tags:tg([['Light_PB', 'I0.0'], ['Flood_Lamp', 'Q0.0'], ['Toggle_Pulse', 'M0.0'], ['PB_Storage', 'M1.0']]),
+      task:[`Each press of ${A('Light_PB')} toggles ${A('Flood_Lamp')}.`, `If someone keeps holding the button, it toggles once only.`, `Use ${A('ONS')} with storage bit ${A('PB_Storage')}, and the pulse ${A('Toggle_Pulse')}.`],
+      hint:`Rung 0: ${A('XIC(Light_PB)ONS(PB_Storage)OTE(Toggle_Pulse)')}. Rung 1: ${A('[XIC(Toggle_Pulse)XIO(Flood_Lamp) ,XIO(Toggle_Pulse)XIC(Flood_Lamp) ]OTE(Flood_Lamp)')}.`,
+      sol:[{rows:[['NO:I0.0', 'ONS:M1.0', '-', '-', 'OUT:M0.0']]}, {rows:[['NO:M0.0', 'NC:Q0.0', '-', '-', 'OUT:Q0.0'], ['NC:M0.0', 'NO:Q0.0']], links:[[2]]}],
+      neg:[[{rows:[['NO:I0.0', '-', '-', '-', 'OUT:M0.0']]}, {rows:[['NO:M0.0', 'NC:Q0.0', '-', '-', 'OUT:Q0.0'], ['NC:M0.0', 'NO:Q0.0']], links:[[2]]}]],
+      ok:'ONS passes the condition for one scan only. Careful: each ONS must have its own storage bit, and don\'t use it anywhere else.'},
+    {key:'sd', lvl:2, title:'Star/delta with TON and .DN', skills:['New Tag: TIMER', 'TON', 'Preset 5000', '.DN'], ...S.sd,
+      story:'A large extract fan in a paint plant: it starts in star and after 5 seconds goes to delta. In Logix you must create a tag of type <b>TIMER</b> first, before you use the TON.',
+      tags:tg([['Start_PB', 'I0.0'], ['Stop_PB', 'I0.1'], ['KM_Main', 'Q0.0'], ['KM_Delta', 'Q0.1'], ['KM_Star', 'Q0.2']]),
+      task:[`${A('Start_PB')} turns on ${A('KM_Main')} and ${A('KM_Star')}.`, `After 5 seconds (${A('Preset = 5000')}) star drops out and ${A('KM_Delta')} comes in.`, `${A('Stop_PB')} (${A('NC')}) stops everything, and star and delta must never be on together.`, `You'll need to create a new tag of type ${A('TIMER')} (for example ${A('Star_TMR')}).`],
+      hint:`Put ${A('TON')} in the last cell, open <b>+ New Tag</b>, type ${A('Star_TMR')} and ${A('TIMER')} → Create. Rung 1: ${A('XIC(KM_Main)TON(Star_TMR,5000,0)')}. Rung 2: ${A('XIC(KM_Main)XIO(Star_TMR.DN)XIO(KM_Delta)OTE(KM_Star)')}. Rung 3: ${A('XIC(KM_Main)XIC(Star_TMR.DN)XIO(KM_Star)OTE(KM_Delta)')}.`,
+      sol:[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:Q0.0', '-', '-', '-', 'TON:T0:5']]}, {rows:[['NO:Q0.0', 'NC:T0', 'NC:Q0.1', '-', 'OUT:Q0.2']]}, {rows:[['NO:Q0.0', 'NO:T0', 'NC:Q0.2', '-', 'OUT:Q0.1']]}],
+      solTags:[{n:'Star_TMR', a:'T0'}],
+      neg:[[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:Q0.0', '-', '-', '-', 'TON:T0:0.5']]}, {rows:[['NO:Q0.0', 'NC:T0', 'NC:Q0.1', '-', 'OUT:Q0.2']]}, {rows:[['NO:Q0.0', 'NO:T0', 'NC:Q0.2', '-', 'OUT:Q0.1']]}]],
+      ok:'While online, notice Accum counting up to 5000 and EN and DN lighting. The most common mistake: Preset = 5, thinking it\'s seconds when it\'s 5 milliseconds.'},
+    {key:'park', lvl:2, title:'Car park with CTU, CTD and compare', skills:['CTU', 'CTD', 'LES', 'GEQ', '.ACC'], ...S.parking,
+      story:'The staff car park has 6 spaces. A sensor at the gate for each car coming in and one for each car going out, and a sign outside: green "Spaces free" or red "Full".',
+      tags:tg([['Car_In', 'I0.0'], ['Car_Out', 'I0.1'], ['Free_Lamp', 'Q0.0'], ['Full_Lamp', 'Q0.1'], ['Car_CTR', 'C0']]),
+      task:[`${A('Car_In')} does ${A('CTU')} on ${A('Car_CTR')}, and ${A('Car_Out')} does ${A('CTD')} on the same tag.`, `${A('Free_Lamp')} if ${A('Car_CTR.ACC')} is less than 6 (${A('LES')}).`, `${A('Full_Lamp')} if it's 6 or more (${A('GEQ')}).`],
+      hint:`Rung 0: ${A('XIC(Car_In)CTU(Car_CTR,6,0)')}. Rung 1: ${A('XIC(Car_Out)CTD(Car_CTR,6,0)')}. Rung 2: ${A('LES(Car_CTR.ACC,6)OTE(Free_Lamp)')}. Rung 3: ${A('GEQ(Car_CTR.ACC,6)OTE(Full_Lamp)')}.`,
+      sol:[{rows:[['NO:I0.0', '-', '-', '-', 'CTU:C0:6']]}, {rows:[['NO:I0.1', '-', '-', '-', 'CTD:C0:6']]}, {rows:[['CMP:C0:<:6', '-', '-', '-', 'OUT:Q0.0']]}, {rows:[['CMP:C0:>=:6', '-', '-', '-', 'OUT:Q0.1']]}],
+      neg:[[{rows:[['NO:I0.0', '-', '-', '-', 'CTU:C0:6']]}, {rows:[['NC:C0', '-', '-', '-', 'OUT:Q0.0']]}, {rows:[['NO:C0', '-', '-', '-', 'OUT:Q0.1']]}], [{rows:[['NO:I0.0', '-', '-', '-', 'CTU:C0:6']]}, {rows:[['NO:I0.1', '-', '-', '-', 'CTD:C0:6']]}, {rows:[['CMP:C0:<=:6', '-', '-', '-', 'OUT:Q0.0']]}, {rows:[['CMP:C0:>=:6', '-', '-', '-', 'OUT:Q0.1']]}]],
+      ok:'In Logix, CTU and CTD work on the same COUNTER, which makes up/down counting easy.'},
+    {key:'tank', lvl:3, title:'Analog tank with SCP', skills:['Local:3:I.Ch0Data', 'SCP', 'LEQ / GEQ', 'OTL / OTU'], ...S.tank, plant:'tank_ab', ana:true,
+      story:'A chemical tank with a 4–20 mA transmitter on a <b>1769-IF4</b> card. The card is set to engineering units: <b>4000</b> = 4 mA and <b>20000</b> = 20 mA. We need the percentage in a REAL tag.',
+      tags:tg([['LT101', 'IW64'], ['Level_PCT', 'MW10'], ['Pump', 'Q0.0'], ['Alarm_HI', 'Q0.1'], ['Alarm_LO', 'Q0.2']]), syms:[{a:'IW64', label:'Level transmitter (4000…20000)'}, {a:'MW10', label:'Level % (REAL)'}],
+      task:[`${A('SCP')} from ${A('LT101')} (${A('Input Min 4000')}, ${A('Input Max 20000')}) to ${A('Level_PCT')} from 0 to 100.`, `${A('Pump')} gets ${A('OTL')} when the level is ${A('≤ 20')} and ${A('OTU')} when it's ${A('≥ 80')}.`, `${A('Alarm_HI')} when the level is ${A('≥ 90')}.`, `${A('Alarm_LO')} when the level is ${A('≤ 10')}.`],
+      hint:`Rung 0: straight wire → ${A('SCP(LT101,4000,20000,0,100,Level_PCT)')}. Rung 1: ${A('LEQ(Level_PCT,20)OTL(Pump)')}. Rung 2: ${A('GEQ(Level_PCT,80)OTU(Pump)')}. Rung 3: ${A('GEQ(Level_PCT,90)OTE(Alarm_HI)')}. Rung 4: ${A('LEQ(Level_PCT,10)OTE(Alarm_LO)')}.`,
+      sol:[{rows:[['-', '-', '-', '-', 'SCL:IW64:MW10:0:100:4000:20000']]}, {rows:[['CMP:MW10:<=:20', '-', '-', '-', 'S:Q0.0']]}, {rows:[['CMP:MW10:>=:80', '-', '-', '-', 'R:Q0.0']]}, {rows:[['CMP:MW10:>=:90', '-', '-', '-', 'OUT:Q0.1']]}, {rows:[['CMP:MW10:<=:10', '-', '-', '-', 'OUT:Q0.2']]}],
+      neg:[[{rows:[['-', '-', '-', '-', 'SCL:IW64:MW10:0:100:0:27648']]}, {rows:[['CMP:MW10:<=:20', '-', '-', '-', 'S:Q0.0']]}, {rows:[['CMP:MW10:>=:80', '-', '-', '-', 'R:Q0.0']]}, {rows:[['CMP:MW10:>=:90', '-', '-', '-', 'OUT:Q0.1']]}, {rows:[['CMP:MW10:<=:10', '-', '-', '-', 'OUT:Q0.2']]}]],
+      ok:'If you had set Input Min and Max wrong (like Siemens\' 0–27648) the reading would be wrong. Every card has its own range: check the module configuration.'},
+    {key:'packfix', lvl:5, title:'Fix the carton counter', skills:['Troubleshooting', 'XIO', 'RES'], ...S.ctu,
+      story:'A tea packing line. The shift says: "The conveyor won\'t run at all, and when the technician forced it, it ran and didn\'t stop at 6, and the new carton doesn\'t reset the counter." The program is below. Download, go online and watch.',
+      tags:tg([['Start_PB', 'I0.0'], ['Stop_PB', 'I0.1'], ['Box_Eye', 'I0.2'], ['New_Carton', 'I0.3'], ['Conveyor', 'Q0.0'], ['Full_Lamp', 'Q0.1'], ['Box_CTR', 'C0']]),
+      task:[`${A('Start_PB')} starts ${A('Conveyor')} with seal-in and ${A('Stop_PB')} (${A('NC')}) stops it.`, `${A('Box_Eye')} counts into ${A('Box_CTR')} (${A('Preset 6')}).`, `At 6 the conveyor stops and ${A('Full_Lamp')} lights.`, `${A('New_Carton')} resets the counter, then ${A('Start')} carries on.`, `Fix the existing program.`],
+      start:[{rows:[['NO:I0.0', 'NO:I0.1', 'NO:C0', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.2', '-', '-', '-', 'CTU:C0:6']]}, {rows:[['NO:C0', '-', '-', '-', 'OUT:Q0.1']]}],
+      hint:`Two mistakes: (1) in Rung 0, ${A('Box_CTR.DN')} is placed as ${A('XIC')} but it should be ${A('XIO')}: the conveyor runs while the count isn't complete. (2) There's no ${A('RES(Box_CTR)')}: add a rung with ${A('XIC(New_Carton)RES(Box_CTR)')}.`,
+      sol:[{rows:[['NO:I0.0', 'NO:I0.1', 'NC:C0', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.2', '-', '-', '-', 'CTU:C0:6']]}, {rows:[['NO:I0.3', '-', '-', '-', 'R:C0']]}, {rows:[['NO:C0', '-', '-', '-', 'OUT:Q0.1']]}],
+      neg:[[{rows:[['NO:I0.0', 'NO:I0.1', 'NC:C0', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.2', '-', '-', '-', 'CTU:C0:6']]}, {rows:[['NO:C0', '-', '-', '-', 'OUT:Q0.1']]}]],
+      ok:'Online, the XIC on DN clearly wasn\'t green, and that was the point where the power stopped. That\'s troubleshooting exactly.'},
+    {key:'enc', lvl:3, title:'Cut-to-length with an encoder (HSC)', skills:['HSC card', 'DINT', 'GEQ · LES', 'ONS', 'Overshoot'], ...S.cut,
+      syms:[{a:'HC0', label:'Encoder count from the high-speed counter card', kind:'DINT'}],
+      story:'A sheet-metal plant: the line uncoils a steel coil and cuts it into <b><bdi dir="ltr" class="mono">500 mm</bdi></b> sheets. A measuring wheel with a <b><bdi dir="ltr" class="mono">200 mm</bdi></b> circumference rides on the sheet, with a <b><bdi dir="ltr" class="mono">1000 PPR</bdi></b> encoder wired to a <b>high-speed counter card</b> in slot 4 (the controller\'s normal inputs can\'t keep up with these pulses). The card counts <bdi dir="ltr" class="mono">A/B ×4</bdi>, so <b><bdi dir="ltr" class="mono">4000 count</bdi></b> per turn = <b><bdi dir="ltr" class="mono">20 count</bdi> per <bdi dir="ltr" class="mono">mm</bdi></b>, so <bdi dir="ltr" class="mono">500 mm</bdi> = <b><bdi dir="ltr" class="mono">10000 count</bdi></b>. The count reaches the program in a <bdi dir="ltr" class="mono">DINT</bdi> tag aliased to <bdi dir="ltr" class="mono">Local:4:I.Ch0Count</bdi>, and it\'s reset with bit <bdi dir="ltr" class="mono">Local:4:O.Ch0Reset</bdi>.',
+      tags:tg([['Start_PB', 'I0.2'], ['Stop_PB', 'I0.3'], ['Cutter_Up', 'I0.4'], ['Feed_Run', 'Q0.0'], ['Feed_Fast', 'Q0.1'], ['Brake', 'Q0.2'], ['Cutter_Down', 'Q0.3'], ['Auto_On', 'M0.0'], ['Start_ONS', 'M1.0'], ['Enc_Count', 'HC0'], ['Settle_TMR', 'T0'], ['Cut_TMR', 'T1'], ['Piece_CTR', 'C0']]),
+      task:[`${A('Start_PB')} starts ${A('Auto_On')} with seal-in, and ${A('Stop_PB')} (wired ${A('NC')}) stops everything at any moment.`,
+        `${A('XIC(Start_PB) ONS(Start_ONS)')} does ${A('OTE(Enc_Reset)')} to reset ${A('Enc_Count')} once with every Start.`,
+        `${A('Feed_Run')} runs while the line is on, ${A('Enc_Count')} hasn't reached the stop point yet (${A('LES')}), and the knife is up (${A('Cutter_Up')}).`,
+        `${A('Feed_Fast')} is on together with the run until ${A('9000')} (450 mm), then slow. And ${A('Brake')} applies while ${A('Feed_Run')} is off.`,
+        `The sheet slides a little after stopping: stop at ${A('10000')} minus the overshoot (shown on the screen) so the piece comes out ${A('500 ± 1 mm')}.`,
+        `After stopping, ${A('Settle_TMR')} (${A('Preset 300')}), then ${A('Cutter_Down')} for ${A('Cut_TMR')} (${A('Preset 500')}).`,
+        `When ${A('Cutter_Up')} is back: ${A('Enc_Reset')}, and the cycle repeats by itself until ${A('Stop')}. And ${A('CTU(Piece_CTR)')} counts the pieces.`],
+      hint:`Rung 0: seal-in for ${A('Auto_On')}. Rung 1: ${A('XIC(Start_PB) ONS(Start_ONS)')} with a branch ${A('XIC(Cut_TMR.DN) XIC(Cutter_Up)')} under it → ${A('OTE(Enc_Reset)')}. Rung 2: ${A('XIC(Auto_On) GEQ(Enc_Count,9950)')} → ${A('TON(Settle_TMR,300)')}. Rung 3: ${A('Settle_TMR.DN')} → ${A('TON(Cut_TMR,500)')}. Rung 4: ${A('XIC(Settle_TMR.DN) XIO(Cut_TMR.DN)')} → ${A('OTE(Cutter_Down)')}. Rung 5: ${A('XIC(Auto_On) LES(Enc_Count,9950) XIC(Cutter_Up)')} → ${A('OTE(Feed_Run)')}. Rung 6: ${A('XIC(Feed_Run) LES(Enc_Count,9000)')} → ${A('OTE(Feed_Fast)')}. Rung 7: ${A('XIO(Feed_Run)')} → ${A('OTE(Brake)')}. Rung 8: ${A('XIC(Cutter_Down)')} → ${A('CTU(Piece_CTR)')}. The overshoot is about 50 counts (2.5 mm), hence 9950.`,
+      start:[seal5],
+      sol:encSol(), neg:encNeg(),
+      ok:'This is the same logic real cut-to-length machines use on Logix. Real high-speed counter cards also have a compare inside the card that switches an output without waiting for the scan, which cuts the error further. And for a fixed starting point you use the encoder\'s Z (index) pulse for homing.'},
+    {key:'door', lvl:4, title:'Factory challenge: automatic warehouse door', skills:['Interlock', 'Limit switches', 'OTL / OTU', 'Photo-eye'], ...S.garage,
+      story:'A large roller door for trucks in a warehouse: top and bottom limit switches, and a safety eye at floor level. If a truck comes under the door while it\'s closing, it must go back up by itself. And a warning lamp lights while the door is moving.',
+      tags:tg([['Open_PB', 'I0.0'], ['Close_PB', 'I0.1'], ['Stop_PB', 'I0.2'], ['LS_Up', 'I0.3'], ['LS_Down', 'I0.4'], ['Photo_Eye', 'I0.5'], ['Door_Up', 'Q0.0'], ['Door_Down', 'Q0.1'], ['Warn_Lamp', 'Q0.2'], ['Rev_Req', 'M0.0']]),
+      task:[`${A('Open_PB')} raises ${A('Door_Up')} up to ${A('LS_Up')}, and ${A('Close_PB')} lowers ${A('Door_Down')} down to ${A('LS_Down')}, both with seal-in.`, `${A('Stop_PB')} (${A('NC')}) stops it, and up and down must never be on together.`, `If ${A('Photo_Eye')} sees something while the door is closing: it stops <b>and goes back up by itself</b> (use ${A('OTL(Rev_Req)')}), and it doesn't close while something is under it.`, `${A('Warn_Lamp')} lights while the door is moving.`],
+      hint:`Rung 0: ${A('XIC(Door_Down)XIC(Photo_Eye)OTL(Rev_Req)')}. Rung 1: ${A('[XIC(Open_PB) ,XIC(Door_Up) ,XIC(Rev_Req) ]XIC(Stop_PB)XIO(LS_Up)XIO(Door_Down)OTE(Door_Up)')}. Rung 2: ${A('XIC(Door_Up)OTU(Rev_Req)')}. Rung 3: ${A('[XIC(Close_PB) ,XIC(Door_Down) ]XIC(Stop_PB)XIO(LS_Down)XIO(Photo_Eye)XIO(Door_Up)OTE(Door_Down)')}. Rung 4: ${A('[XIC(Door_Up) ,XIC(Door_Down) ]OTE(Warn_Lamp)')}.`,
+      sol:[{rows:[['NO:Q0.1', 'NO:I0.5', '-', '-', '-', 'S:M0.0']]}, {rows:[['NO:I0.0', 'NO:I0.2', 'NC:I0.3', 'NC:Q0.1', '-', 'OUT:Q0.0'], ['NO:Q0.0'], ['NO:M0.0']], links:[[1], [1]]}, {rows:[['NO:Q0.0', '-', '-', '-', '-', 'R:M0.0']]}, {rows:[['NO:I0.1', 'NO:I0.2', 'NC:I0.4', 'NC:I0.5', 'NC:Q0.0', 'OUT:Q0.1'], ['NO:Q0.1']], links:[[1]]}, {rows:[['NO:Q0.0', '-', '-', '-', '-', 'OUT:Q0.2'], ['NO:Q0.1']], links:[[1]]}],
+      neg:[[{rows:[['NO:I0.0', 'NO:I0.2', 'NC:I0.3', 'NC:Q0.1', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.1', 'NO:I0.2', 'NC:I0.4', 'NC:Q0.0', '-', 'OUT:Q0.1'], ['NO:Q0.1']], links:[[1]]}, {rows:[['NO:Q0.0', '-', '-', '-', '-', 'OUT:Q0.2'], ['NO:Q0.1']], links:[[1]]}]],
+      ok:'This is the logic of any automatic door. In real life a safety edge is also fitted on the door\'s bottom edge as a second protection.'}
+  ];
+  window.BX = PL.brandSim(document.getElementById('bx'), {brand:'ab', exercises:ex});
+})();
+</script>
+
+</body>
+</html>

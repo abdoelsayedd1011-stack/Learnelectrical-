@@ -8,6 +8,8 @@ const G = typeof window !== 'undefined' ? window : globalThis;
 const HAS_DOM = typeof document !== 'undefined';
 const PL = G.PL = {};
 const KEY = 'plc-lab-v1', PKEY = 'plc-lab-v1-prog';
+/* language: the English twins under /en/plc-lab/ run the same code; the build swaps the strings (i18n.py) */
+const EN = PL.EN = HAS_DOM && /^en\b/i.test(document.documentElement.getAttribute('lang') || '');
 
 /* ---------------- store ---------------- */
 function lsGet(k){ try { return G.localStorage ? G.localStorage.getItem(k) : null; } catch (e){ return null; } }
@@ -114,9 +116,21 @@ function chal(host, sel, lesson, task){ const c = $(sel, host); if (c && PL.has(
 PL.chal = chal;
 
 /* ---------------- lesson shell ---------------- */
+/* «EN» / «ع»: the same page in the other language (/plc-lab/x.html ⇄ /en/plc-lab/x.html) */
+function langBtn(){
+  const a = document.createElement('a'); a.className = 'btn lang-b';
+  const p = location.pathname, en = /^\/en(?=\/)/.test(p);
+  a.href = (en ? p.replace(/^\/en(?=\/)/, '') : '/en' + p) + location.hash;
+  if (en){ a.textContent = 'ع'; a.lang = 'ar'; a.hreflang = 'ar'; a.setAttribute('aria-label', 'اقرا الصفحة دي بالعربي'); }
+  else { a.textContent = 'EN'; a.lang = 'en'; a.hreflang = 'en'; a.setAttribute('aria-label', 'Read this page in English'); }
+  a.title = a.getAttribute('aria-label');
+  a.addEventListener('click', () => lsSet('le-lang', en ? 'ar' : 'en'));
+  return a;
+}
+function headBtns(){ const ch = $('header.top .chips'); if (ch){ ch.appendChild(langBtn()); ch.appendChild(themeBtn()); } }
 PL.lesson = function(id){
   const L = PL.lessonById(id); PL.cur = L;
-  const ch = $('header.top .chips'); if (ch) ch.appendChild(themeBtn());
+  headBtns();
   const prog = $('#lprog');
   function renderProg(){
     if (!prog) return;
@@ -132,7 +146,7 @@ PL.lesson = function(id){
   }
   G.addEventListener('pageshow', e => { if (e.persisted){ PL.store.reload(); renderProg(); } });
 };
-PL.hubTheme = () => { const ch = $('header.top .chips'); if (ch) ch.appendChild(themeBtn()); };
+PL.hubTheme = headBtns;
 
 /* ---------------- quiz ----------------
    qs: [{q, o:[...], a:index, why}] ; opt: {lesson, task, pass(0..1), row, shuffle} */
@@ -1345,7 +1359,7 @@ PL.wire = function(host, opt){
   $('.wb-clr', host).addEventListener('click', () => { wires = []; pend = null; passed = false; actBox.hidden = true; res.innerHTML = ''; draw(); });
   $$('.tabs [data-k]', host).forEach(b => b.addEventListener('click', () => select(+b.dataset.k)));
   /* machine preview: what the correct wiring does (the wires themselves stay hidden: wiring is the learner's job) */
-  const EFF = {target:'الحساس حسّ بالحديدة', i0:'لمبة I0.0 على كارت الدخل نوّرت', i1:'لمبة I0.1 على كارت الدخل نوّرت', q0:'خرج Q0.0 نوّر والحمل اللي عليه اشتغل', q1:'خرج Q0.1 نوّر واللمبة نوّرت', pb:'الزرار اتداس'};
+  const EFF = {target:['الحساس حسّ بالحديدة', 'الحساس فصل'], i0:['لمبة I0.0 على كارت الدخل نوّرت', 'لمبة I0.0 على كارت الدخل طفت'], i1:['لمبة I0.1 على كارت الدخل نوّرت', 'لمبة I0.1 على كارت الدخل طفت'], q0:['خرج Q0.0 نوّر والحمل اللي عليه اشتغل', 'خرج Q0.0 نوّر والحمل اللي عليه وقف'], q1:['خرج Q0.1 نوّر واللمبة نوّرت', 'خرج Q0.1 نوّر واللمبة طفت'], pb:['الزرار اتداس', 'الزرار اتساب']};
   const pvAd = {host, watchEl:board, title:'التوصيل الصح بيعمل إيه', goLabel:'شوف هتشتغل إزاي', goSub:'اتفرج على اللوحة وهي متوصّلة صح وشغالة قبل ما توصّل إنت.',
     mount(box){ taskBox.after(box); }, key:() => 'w/' + L + '/' + ex.key, ex:() => ex, has:() => !!ex,
     begin(){ demoSt = {passed, act:Object.assign({}, act), hidden:actBox.hidden, html:actBox.innerHTML, pend}; pend = null; demoLive = ex.live({}); draw(); },
@@ -1355,7 +1369,7 @@ PL.wire = function(host, opt){
       const tx = PL.preview.tx, hold = ms => pl.hold(gen, ms), da = {};
       pl.say('<b>اتفرج:</b> ده اللي هيحصل لما التوصيل يبقى صح. الأسلاك مستخبّية عشان التوصيل عليك إنت.', 'intro'); pl.hl(board, 2400); await hold(2800);
       actBox.hidden = false; actBox.innerHTML = ex.acts.map(a => `<button type="button" class="btn" data-a="${a.k}" aria-pressed="false" tabindex="-1">${a.l}</button>`).join('');
-      const effOf = (was, now) => Object.keys(EFF).filter(k => !!now[k] !== !!was[k]).map(k => now[k] ? tx(EFF[k]) : tx(EFF[k]).replace('نوّرت', 'طفت').replace('اشتغل', 'وقف').replace('حسّ بالحديدة', 'فصل').replace('اتداس', 'اتساب'));
+      const effOf = (was, now) => Object.keys(EFF).filter(k => !!now[k] !== !!was[k]).map(k => tx(EFF[k][now[k] ? 0 : 1]));
       for (let j = 0; j < ex.acts.length; j++){
         pl.progress(j / ex.acts.length);
         const a = ex.acts[j], b = actBox.querySelector(`[data-a="${a.k}"]`);
@@ -1680,6 +1694,7 @@ const PV_IC = {pause:'<path d="M8 5v14M16 5v14"/>', play:'<path d="M7 5l12 7-12 
 const pvIc = k => `<svg viewBox="0 0 24 24" class="pv-ic" aria-hidden="true">${PV_IC[k]}</svg>`;
 function ptx(s){
   s = String(s == null ? '' : s); let out = '', last = 0;
+  if (EN) return esc(s);
   s.replace(PV_TOK, (m, i) => { out += esc(s.slice(last, i)) + '<bdi dir="ltr">' + esc(m) + '</bdi>'; last = i + m.length; return m; });
   return out + esc(s.slice(last));
 }
@@ -1799,7 +1814,7 @@ async function simScript(ad, pl, gen, ctl){
   const ctx = {get e(){ return ad.engine(); }, get plant(){ return ad.plant(); }, get t(){ return ad.engine().t; }, q: a => ad.engine().get(a), hist:[], mark:{}};
   const hold = ms => pl.hold(gen, ms);
   const nm = a => { const l = ad.lab(a), ad2 = ad.addr(a); return `<b>${ptx(l || ad2)}</b>${l ? ` <bdi dir="ltr" class="pv-a">${esc(ad2)}</bdi>` : ''}`; };
-  const isLamp = a => { const o = outs.find(x => x.a === a) || {}; return o.kind === 'lamp' || /لمب/.test(o.label || ''); };
+  const isLamp = a => { const o = outs.find(x => x.a === a) || {}; return o.kind === 'lamp' || /لمب|lamp|light/i.test(o.label || ''); };
   const chip = (a, on) => `<span class="pv-st${on ? ' on' : ''}">${ptx(ad.lab(a) || ad.addr(a))} <bdi dir="ltr">${on ? 'ON' : 'OFF'}</bdi></span>`;
   const verb = (a, on) => isLamp(a) ? (on ? 'نوّرت' : 'طفت') : (on ? 'اشتغل' : 'وقف');
   let prev = {}, prevAuto = {}, cause = {txt:'', t:0, key:'start', el:null};
@@ -1852,9 +1867,9 @@ async function simScript(ad, pl, gen, ctl){
     const cur = E().phys[a] != null ? E().phys[a] : def(a);
     if (how !== 'force' && cur === v && how !== 'press') return;
     const act = v !== def(a), k = i.kind;
-    let txt;
-    if (k === 'pb' || k === 'pbnc') txt = how === 'press' ? `دوس ${nm(a)} وسيبه` : act ? `دوس ${nm(a)} وخليك دايس` : `سيب ${nm(a)}`;
-    else if (k === 'sw') txt = v ? `شغّل السويتش ${nm(a)}` : `اقفل السويتش ${nm(a)}`;
+    let txt, done; /* txt: what we do now · done: the same thing said as the cause of what follows */
+    if (k === 'pb' || k === 'pbnc'){ txt = how === 'press' ? `دوس ${nm(a)} وسيبه` : act ? `دوس ${nm(a)} وخليك دايس` : `سيب ${nm(a)}`; done = how === 'press' || act ? `دوست ${nm(a)}` : `سيبت ${nm(a)}`; }
+    else if (k === 'sw'){ txt = v ? `شغّل السويتش ${nm(a)}` : `اقفل السويتش ${nm(a)}`; done = v ? `شغّلت السويتش ${nm(a)}` : `قفلت السويتش ${nm(a)}`; }
     else if (k === 'sensor') txt = v ? `الحساس ${nm(a)} حسّ` : `الحساس ${nm(a)} فصل`;
     else if (k === 'ncsw') txt = v ? `${nm(a)} رجع طبيعي` : `${nm(a)} فصل`;
     else txt = `${nm(a)} = <bdi dir="ltr">${v}</bdi>`;
@@ -1863,7 +1878,7 @@ async function simScript(ad, pl, gen, ctl){
     pl.say(txt + note, 'act');
     await pl.point(gen, ad.inBtn(a));
     ad.setIn(a, v);
-    cause = {txt:txt.replace(/^دوس /, 'دوست ').replace(/^سيب /, 'سيبت ').replace(/^شغّل /, 'شغّلت ').replace(/^اقفل /, 'قفلت ').replace(' وسيبه', '').replace(' وخليك دايس', ''), t:E().t, key:'in:' + a + v, el:ad.inBtn(a)};
+    cause = {txt:done || txt, t:E().t, key:'in:' + a + v, el:ad.inBtn(a)};
     if (note) await hold(1500);
   }
   function plantTxt(p){

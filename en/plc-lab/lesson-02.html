@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wiring the PLC</title>
+<meta name="description" content="Lesson 2 of the PLC course: the 24V DC supply, sinking and sourcing input cards with PNP and NPN sensors and push buttons, relay and transistor output cards, and wiring contactors and lamps. An interactive wiring bench that checks your wiring.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/plc-lab/lesson-02.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/plc-lab/lesson-02.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/plc-lab/lesson-02.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/plc-lab/lesson-02.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="plc.css?v=ec27b04d">
+<script src="plc.js?v=d690cb37"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">PLC · Lesson 2 of 10</p>
+    <h1>Wiring the PLC</h1>
+    <p>Before any program, the PLC must be wired correctly: a <b>24V DC supply</b>, buttons and sensors on the <b>inputs</b>, and contactors and lamps on the <b>outputs</b>. Half of the PLC faults on site come from wrong wiring, especially <b>PNP and NPN</b> and the common. Here you will wire it yourself on the bench.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="../labs.html">All courses →</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>Power: 24V DC</h2>
+  <p>Most industrial PLCs run on <b>24V DC</b>: a power supply takes 230V AC and gives 24V. The positive terminal is called <span class="term">+24V</span> or <span class="term">L+</span>, and the negative <span class="term">0V</span> or <span class="term">M</span>. Some CPU models take 230V AC directly (marked <span class="term">AC/DC/RLY</span>, for example), but their inputs are still 24V DC.</p>
+  <div class="box key"><b>Rule:</b> the 0V of the supply is the same 0V as the cards and the sensors (one common reference). If you have more than one power supply, connect their 0V together unless the manual says otherwise.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Input card: sinking and sourcing</h2>
+  <p>Each input inside the card is a <b>resistor and an LED (optocoupler)</b> between the input terminal (I0.0) and the common (<span class="term">1M</span>). For the input to be 1, current must flow through it, so there must be 24V between the two terminals:</p>
+  <div class="two">
+    <div class="box good"><b>Common on 0V (most common in Europe)</b><br>The input turns on when it receives <b>+24V</b>. One side of the button goes to +24V and the other to I0.0. The matching sensor is <b>PNP</b> (it outputs +24V).</div>
+    <div class="box key"><b>Common on +24V</b><br>The input turns on when it is pulled to <b>0V</b>. The button goes between I0.0 and 0V. The matching sensor is <b>NPN</b> (it pulls to 0V). Common on Japanese and Chinese machines.</div>
+  </div>
+  <div class="box"><b>The names are confusing:</b> some brands call the first case a "sinking input" (the card sinks the current), and some describe a PNP sensor as "sourcing". Don't memorize the name: <b>check where the common goes</b>. That method works on every brand.</div>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Wire colour</th><th>Where it goes</th></tr></thead>
+    <tbody>
+      <tr><td><span class="term" style="background:#7a4a22;color:#fff">BN brown</span></td><td>+24V</td></tr>
+      <tr><td><span class="term" style="background:#1f6fd1;color:#fff">BU blue</span></td><td>0V</td></tr>
+      <tr><td><span class="term" style="background:#1d1d1d;color:#fff">BK black</span></td><td>Output → PLC input (I0.0)</td></tr>
+    </tbody></table></div>
+  <p>To learn more about the sensors themselves (inductive, photocell, 2-wire), see the <a href="../instrumentation-lab/lesson-03.html">digital sensors lesson in the Instrumentation course</a>.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>Output card: relay or transistor?</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th></th><th>Relay</th><th>Transistor</th></tr></thead>
+    <tbody>
+      <tr><td>Voltage</td><td>AC or DC (up to 250V AC)</td><td>24V DC only</td></tr>
+      <tr><td>Current per output</td><td>About 2A</td><td>About 0.5A</td></tr>
+      <tr><td>Speed</td><td>Slow (milliseconds) and audible</td><td>Very fast; suitable for pulses (stepper, PWM)</td></tr>
+      <tr><td>Life</td><td>Limited by the number of switching operations</td><td>Very long</td></tr>
+      <tr><td>Common</td><td><span class="term">1L</span> takes the voltage that will be switched out</td><td><span class="term">3L+</span> and <span class="term">3M</span> power the transistors</td></tr>
+    </tbody></table></div>
+  <div class="ex"><b>On site:</b> a contactor with a 230V AC coil? It can go directly on a relay output. On a transistor output you need a <b>24V DC interface relay</b> to switch the contactor. That also protects the card if the coil burns out.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>The bench: wire it yourself</h2>
+  <p>4 exercises. Tap a terminal (it turns yellow), then tap the other terminal to add a wire. Tap a wire to remove it. When you finish, press <b>"Test wiring"</b>; if it is correct, you can try the sensor, the button and the outputs.</p>
+  <div class="wd"><h3>Wiring bench</h3><div id="bench"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>Common faults on site</h2>
+  <div class="fault-box"><b>Common faults on site:</b><ul>
+    <li><b>A new sensor's LED lights but the PLC does not see it:</b> an NPN sensor on a card with its common on 0V (or the opposite). Read the label and find where the common goes.</li>
+    <li><b>All inputs went off at once:</b> the 24V supply dropped. Usually a short in a sensor wire (brown touching blue or the machine frame).</li>
+    <li><b>A transistor output burned out:</b> the load current is higher than allowed, the coil wire is shorted, or a DC coil has no diode.</li>
+    <li><b>An output relay is welded:</b> the contactor does not release even when the PLC turns the output off. Caused by a heavy load or frequent switching. The card or the relay must be replaced.</li>
+    <li><b>230V on a 24V card:</b> the most dangerous wiring mistake. Check the voltage with a multimeter before you connect any common.</li>
+  </ul></div>
+  <div class="box safe"><b>Safety:</b> isolate the power before you disconnect or connect any terminal. A relay output card can carry 230V even when the PLC itself is off, because its common comes from another source.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson questions</h2>
+  <p>Answer at least 5 of 6 correctly to mark the lesson done.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">Sensor wire colours follow IEC 60947-5-2. Terminal names (1M, 3L+ and 1L) are examples; every model has its own terminal drawing in the manual. The simulator here is a <b>generic trainer</b> with IEC / Siemens style addresses: the exact addresses and instructions differ from one brand to another, and the manual of your PLC is the reference. Your progress is saved on this device only.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script>
+PL.lesson('l2');
+PL.wire(document.getElementById('bench'), {lesson:'l2', exercises:PL.wireEx});
+PL.quiz(document.getElementById('quiz'), [
+  {q:'An input card with its common <b>1M</b> on <b>0V</b>. The right sensor is:', o:['PNP', 'NPN', 'Any sensor', 'An analog sensor'], a:0, why:'The input needs +24V, and a PNP gives out +24V.'},
+  {q:'An input card with its common on <b>+24V</b>. The button is wired:', o:['Between the input and 0V', 'Between the input and +24V', 'Between +24V and 0V', 'To the common only'], a:0, why:'The current comes out of the common, and the button must pull the input to 0V.'},
+  {q:'You have a contactor with a <b>230V AC</b> coil. Best choice:', o:['A relay output (or an interposing relay with the transistor)', 'A transistor output directly', 'An AI card', 'A DI card'], a:0, why:'A transistor is DC only.'},
+  {q:'You need to send fast pulses to a stepper motor:', o:['Transistor output', 'Relay output', 'A DI card', 'Not possible with a PLC'], a:0, why:'A relay is slow and wears out quickly.'},
+  {q:'The black wire (BK) on a 3-wire sensor:', o:['The sensor output, goes to the PLC input', '+24V', '0V', 'Earth'], a:0, why:'BN +24V, BU 0V, BK output.'},
+  {q:'On a relay output card, the common <b>1L</b>:', o:['Takes the voltage that goes out to the loads in that group', 'Must always be 0V', 'Goes to earth', 'Isn\'t connected'], a:0, why:'The relay is just a contact between 1L and Q0.x.'}
+], {lesson:'l2', pass:0.8});
+</script>
+
+</body>
+</html>

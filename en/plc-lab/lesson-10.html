@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Troubleshooting and the final exam</title>
+<meta name="description" content="Lesson 10 of the PLC course: online monitoring and the input and output LEDs, forcing and its uses and dangers, the most common program faults (double coil, wrong NC logic, missing seal-in) fixed on the simulator, and the final exam for the certificate.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/plc-lab/lesson-10.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/plc-lab/lesson-10.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/plc-lab/lesson-10.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/plc-lab/lesson-10.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="plc.css?v=ec27b04d">
+<script src="plc.js?v=d690cb37"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">PLC · Lesson 10 of 10</p>
+    <h1>Troubleshooting and the final exam</h1>
+    <p>The machine has stopped and everyone is looking at you. The PLC gives you powerful tools to find the fault in minutes: the <b>card LEDs</b>, <b>online monitoring</b> and <b>forcing</b>. Here you will use them to fix 3 programs with the most common mistakes, and then take the final exam.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="../labs.html">All courses →</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>The approach: from the outside in</h2>
+  <ol>
+    <li><b>The CPU:</b> is it in RUN? Is the ERROR or FORCE LED on?</li>
+    <li><b>Input LEDs:</b> when you press the button or the sensor operates, does the I0.x LED on the card light? If not → the fault is in the wire, the sensor or the power, not in the program.</li>
+    <li><b>The program online:</b> open the rung and see where the power (green) stops. That contact is the missing condition.</li>
+    <li><b>Output LEDs:</b> the Q0.x LED is on but the contactor is not running? → the fault is after the card: a fuse, a wire, a coil.</li>
+  </ol>
+  <div class="box key"><b>Online monitoring:</b> what you see in the simulator in RUN (the green lines and the values inside the timers) is exactly what you see when you open the program "online" on a real PLC. It is the most important troubleshooting tool there is.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Forcing</h2>
+  <p>A force lets you hold an input or output at 1 or 0 <b>whatever the real state is</b>. On an input: test the program as if the sensor were active. On an output: test the contactor and the wiring without the program.</p>
+  <div class="box safe"><b>Danger:</b> forcing an output really switches the device on, even when the interlock in the program says no. Forcing an input can make the program "think" a guard door is closed when it is open. Use it only when you are sure nobody is near the machine, and remove it as soon as you finish. A forgotten force = a mystery fault a month later.</div>
+  <p>In the simulator below: press <b>Force</b>, then tap any I or Q LED on the PLC bar: once for Force 1, again for Force 0, and a third time to remove it. Try Force 1 on Q0.0 and see the motor run without the program switching it on.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>Fix the programs</h2>
+  <p>Each of the three programs has a well-known mistake. Press RUN, try it, remember the troubleshooting steps, and fix it until the test passes.</p>
+  <div class="wd"><h3>Simulator: programs with faults</h3><div id="sim1"></div></div>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>Mistake</th><th>Symptom</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td><b>Double coil</b> (the same coil in two rungs)</td><td>The output only follows the last rung; the first one acts as if it does not exist</td><td>One rung per coil, with the other conditions as parallel branches in it</td></tr>
+      <tr><td><b>Wrong NC logic</b></td><td>The motor never starts, or an alarm lamp is always on</td><td>A device wired NC (Stop, overload) is 1 in the normal state → ask about it with NO</td></tr>
+      <tr><td><b>Missing or misplaced seal-in</b></td><td>The motor stops as soon as you release Start, or Stop does not stop it</td><td>The output contact in parallel with Start only, and Stop on the main line</td></tr>
+    </tbody></table></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>Common faults on site</h2>
+  <div class="fault-box"><b>Common faults on site:</b><ul>
+    <li><b>The FORCE LED is on at the CPU:</b> someone forgot a force. Check the force table before you look anywhere else.</li>
+    <li><b>The program on the laptop is not the one in the PLC:</b> someone edited online and did not save. Upload or compare before any change, and keep a dated copy.</li>
+    <li><b>The machine keeps stopping at the same point:</b> a sensor at the edge of its range, or a wire that opens with vibration. A trace or trend on the input reveals it.</li>
+    <li><b>After replacing a card:</b> the settings (analog channel type, address) in the hardware configuration do not match the old card.</li>
+  </ul></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson questions</h2>
+  <p>Answer at least 4 of 5 correctly to mark the lesson done.</p>
+  <div id="quiz"></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sf">
+  <h2 id="sf"><span class="k">★</span>Final exam</h2>
+  <p>15 questions from the whole course. You need <b>at least 12 correct</b> to pass. If you don't pass, review the lessons and try again (the questions are shuffled every time). When you finish all the lessons and pass here, the certificate appears on the <a href="index.html#certSec">course page</a>.</p>
+  <div id="final"></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sb">
+  <h2 id="sb"><span class="k">→</span>Practice on real brands</h2>
+  <p>Finished the course? Now try the same programs in the style of the brand you will work with: <b>Siemens</b> in the TIA Portal style, <b>Delta</b> in the ISPSoft and WPLSoft style, and <b>Allen-Bradley</b> in the Studio 5000 style. Each simulator has a CPU with its LEDs, download, online monitoring, forcing, and 9 exercises from real plants, including a troubleshooting exercise, cut-to-length with an encoder, and a whole-plant challenge.</p>
+  <div id="brandCards"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">In TIA Portal forcing is done in the force table, in Allen-Bradley from Forces, and in other brands with Set/Reset from the device monitor. In every brand there is a FORCE LED on the CPU that stays on while any force is active. The simulator here is a <b>generic trainer</b> with IEC / Siemens style addresses: the exact addresses and instructions differ from one brand to another, and the manual of your PLC is the reference. Your progress is saved on this device only.<br>© 2026 LearnElectricals. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+</div>
+<script src="/assets/i18n.js?v=20261021v"></script>
+<script>
+PL.lesson('l10');
+PL.brandCards(document.getElementById('brandCards'));
+const ioS = {inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'Motor', kind:'motor'}]};
+const noDouble = {fn:c => PL.eng.lint(c.e.prog).some(m => m.kind === 'double') ? 'It works, but there is still a double coil. Keep Q0.0 in one rung only.' : null};
+window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l10', force:true, exercises:[
+  {key:'dbl', title:'Double coil', task:'<b>Complaint:</b> "We added a Start button in the control room (<b>I0.2</b>) and since then the local Start button (<b>I0.0</b>) stopped working, and the new button runs the motor only while you hold it." <b>Task:</b> Both buttons must start motor <b>Q0.0</b> with seal-in, and <b>Stop</b> (I0.1, NC) stops it.',
+    io:{inputs:[{a:'I0.0', label:'Local Start', kind:'pb'}, {a:'I0.2', label:'Remote Start', kind:'pb', color:'blue'}, {a:'I0.1', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'Motor', kind:'motor'}]},
+    start:[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.2', '-', '-', '-', 'OUT:Q0.0']]}],
+    tests:[{run:0.2}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'Pressed and released local Start:'}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Stop:'}, {press:'I0.2'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'Pressed and released remote Start: it must keep running.'}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Stop:'}, noDouble],
+    hint:'Delete rung 2. In rung 1 add a second parallel branch to Start with I0.2 (click I0.0 and choose "Parallel branch" again).',
+    sol:[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0'], ['NO:Q0.0'], ['NO:I0.2']], links:[[1], [1]]}],
+    ok:'Golden rule: each coil in one rung only. If you need many conditions, use branches, or use Set/Reset.'},
+  {key:'ncfix', title:'Wrong NC logic', task:'<b>Complaint:</b> "The motor will not start at all, and the <b>Trip</b> lamp is always on even though the overload is healthy." <b>Stop</b> is on I0.1 and the overload on I0.2, both wired <b>NC</b>. Check the input LEDs on the PLC bar first.',
+    io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}, {a:'I0.2', label:'Overload', kind:'ncsw'}], outputs:[{a:'Q0.0', label:'Motor', kind:'motor'}, {a:'Q0.1', label:'Trip', kind:'lamp', color:'amber'}]},
+    start:[{rows:[['NO:I0.0', 'NC:I0.1', 'NC:I0.2', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.2', '-', '-', '-', 'OUT:Q0.1']]}],
+    tests:[{run:0.2}, {exp:{'Q0.1':0}, msg:'Overload healthy: the Trip lamp must be off.'}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'Start:'}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Stop:'}, {press:'I0.0'}, {run:0.3}, {set:{'I0.2':0}}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':1}, msg:'Overload tripped:'}, {set:{'I0.2':1}}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'Overload reset:'}],
+    hint:'The I0.1 and I0.2 LEDs are on and nobody touched anything: both bits = 1 in the normal state. In rung 1 make them NO, and in rung 2 the Trip lamp needs <b>NC</b> I0.2.',
+    sol:[{rows:[['NO:I0.0', 'NO:I0.1', 'NO:I0.2', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NC:I0.2', '-', '-', '-', 'OUT:Q0.1']]}],
+    ok:'The input LEDs told you the truth before you opened the program. Always start there.'},
+  {key:'sealfix', title:'Seal-in in the wrong place', task:'<b>Complaint:</b> "The pump stops as soon as we release Start. And someone said that when he pressed Stop while it was running, it did not stop!" (Try: hold Start, and press Stop at the same time.) Fix the program.',
+    io:ioS,
+    start:[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0'], ['', 'NO:Q0.0']], links:[[1, 2]]}],
+    tests:[{run:0.2}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'Pressed and released Start: the pump must keep running.'}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Stop:'}, {hold:'I0.0'}, {run:0.3}, {release:'I0.0'}, {run:0.3}, {hold:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Pump running and someone holds Stop: it must stop (Stop is never bypassed).'}, {release:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'After Stop is released:'}],
+    hint:'The seal-in contact Q0.0 is parallel to <b>Stop</b> instead of Start! So it bypasses Stop. Remove it from cell 2 and put it parallel to cell 1 (I0.0).',
+    sol:[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}],
+    ok:'In real life a fault like this is dangerous: Stop does not stop. Test every program change with every button and every state.'}
+]});
+PL.quiz(document.getElementById('quiz'), [
+  {q:'You pressed Start and the I0.0 LED on the card <b>did not light</b>. The fault is most likely:', o:['In the button, the wire or the power, not the program', 'In the program', 'In the output card', 'In the contactor'], a:0, why:'The input LED tells you whether the signal reached the card.'},
+  {q:'The Q0.0 LED on the card is on but the contactor is not running. You suspect:', o:['A fuse, a wire or the contactor coil', 'The program', 'The Start button', 'The input card'], a:0, why:'The PLC did its job.'},
+  {q:'The same coil Q0.0 is in rung 3 and rung 8. What happens:', o:['Only rung 8 decides Q0.0', 'Both work as OR', 'Both work as AND', 'The PLC shows an error'], a:0, why:'The last write in the scan wins.'},
+  {q:'The FORCE LED is on at the CPU. It means:', o:['An input or output is forced to a value', 'The battery is empty', 'The PLC is in STOP', 'There is a short circuit'], a:0, why:'Remove the force as soon as you finish.'},
+  {q:'When is forcing an output dangerous?', o:['Always when someone is near the machine, because it bypasses the interlocks', 'Never', 'Only on analog', 'Only in STOP'], a:0, why:'A force is stronger than the program.'}
+], {lesson:'l10', pass:0.8});
+PL.quiz(document.getElementById('final'), [
+  {q:'Order of the scan cycle:', o:['Read inputs → execute program → write outputs', 'Execute → read → write', 'Write → execute → read', 'All at the same time'], a:0},
+  {q:'An input card has its common on 0V. The right sensor:', o:['PNP', 'NPN', 'Any type', 'Analog'], a:0},
+  {q:'A contactor with a 230V AC coil connects directly to:', o:['Relay output', 'Transistor output', 'A digital input', 'An analog input'], a:0},
+  {q:'A Stop button is wired NC. In the program (in the seal-in rung) you use:', o:['NO', 'NC', 'P', 'N'], a:0},
+  {q:'The self-holding (seal-in) contact goes in parallel with:', o:['The Start button', 'The Stop button', 'The overload', 'The coil'], a:0},
+  {q:'Set in rung 2 and Reset in rung 5 for the same bit, and both conditions are true. The bit:', o:['0', '1', 'Flashing', 'Unknown'], a:0},
+  {q:'A stair light stays on for two minutes after you release the button:', o:['TOF', 'TON', 'CTU', 'TP only'], a:0},
+  {q:'In star-delta, star and delta:', o:['Need an interlock between them so they never run together', 'Run together for the first second', 'Do not need a timer', 'Are the same contactor'], a:0},
+  {q:'CTU with PV = 5. Its bit becomes 1 when:', o:['The count reaches 5 or more', 'The first pulse', 'The count is zero', 'Reset'], a:0},
+  {q:'You want something to happen only once per button press:', o:['Rising edge (P)', 'A normal NO', 'TON', 'NC'], a:0},
+  {q:'A 4–20mA transmitter on a card with range 0–27648. At 12mA the raw value is about:', o:['13824', '27648', '0', '6912'], a:0},
+  {q:'A level transmitter 0–4 m suddenly reads 0 while the tank is full:', o:['A broken wire or the transmitter has no power', 'The tank is empty', 'The scaling was wrong from the start', 'Pump'], a:0},
+  {q:'A tank pump switches off and on every second at the limit. The fix:', o:['Hysteresis (one ON limit and one OFF limit)', '== instead of >=', 'TP', 'Force'], a:0},
+  {q:'Input I0.0 in Siemens corresponds in Allen-Bradley (SLC / MicroLogix) to:', o:['I:0/0', 'O:0/0', 'B3:0/0', 'X0'], a:0},
+  {q:'The machine is stopped and you want to find the missing condition quickly:', o:['Open the program online (Monitor)', 'Force all outputs', 'Delete the program', 'Replace the CPU'], a:0}
+], {lesson:'l10', task:'final', pass:0.8, shuffle:true});
+</script>
+
+</body>
+</html>
