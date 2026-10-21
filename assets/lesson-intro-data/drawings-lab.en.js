@@ -1,0 +1,32 @@
+/* Reading Electrical Drawings: "Before you start" summary per lesson (see /assets/lesson-intro.js). */
+window.LE_INTRO = window.LE_INTRO || {};
+LE_INTRO["drawings-lab.en"] = {
+"01": {b: ["Each drawing type answers one question",
+           "Ask what you need to know, then open that drawing",
+           "Check the **Revision** before trusting a drawing"],
+       t: [["Single line", "Power map from source to loads"], ["Title block", "Page, revision and date"], ["=A1 +CP1 -K1", "Plant area, panel, device"], ["As-built", "The drawing as actually built"]]},
+"02": {b: ["Drawings show power off and buttons released",
+           "**IEC** is European; **ANSI/NEMA** is American",
+           "In NEMA, a slanted line on a contact means **NC**"],
+       t: [["NO", "Open in the normal state"], ["NC", "Closed in the normal state"], ["Legend", "The symbols page up front"], ["Mechanical link", "Dashed line: they move together"]]},
+"03": {b: ["The tag names the device: **-K1** contactor, **-X2** terminals",
+           "**33-34**: third contact, and it’s NO",
+           "**/3.4** means page 3, column 4"],
+       t: [["Device tag", "A letter and a number"], ["Ferrule", "Wire number on its end"], ["Cross reference", "Where the coil or contact is"], ["Contact mirror", "Contact table under the coil"]]},
+"04": {b: ["Start at the source; follow each path to the load",
+           "Series = **AND**, parallel = **OR**",
+           "**13-14** across START is what seals in the coil"],
+       t: [["Seal-in", "The coil holds itself on"], ["Ladder", "The American control drawing style"], ["Interlock", "Stops -K1 and -K2 together"], ["Foreign voltage", "Voltage fed from another panel"]]},
+"05": {b: ["One line stands for all phases; source on top",
+           "Transformer current: **I = S ÷ (√3 × V)**",
+           "Motor on **400V**: about **2A** per kW"],
+       t: [["Busbar", "The thick line in a panel"], ["kA / Icu", "Short-circuit current a breaker withstands"], ["4G2.5", "4 cores incl. earth, 2.5 mm²"], ["Power circuit", "Each phase drawn separately"]]},
+"06": {b: ["The panel layout shows where each tag sits",
+           "Terminal diagram: field → core → terminal → PLC",
+           "Treat every terminal as live until you measure"],
+       t: [["Panel layout", "Device positions on the plate"], ["-X1 / -X2", "Terminal strips"], ["BN / BU / BK", "+24V, 0V and signal"], ["Ferrule", "Wire number at both ends"]]},
+"07": {b: ["Symptom → right drawing → path → measure",
+           "Fault lies between last live and first dead point",
+           "Measure volts to **N**; ohms only after **LOTO**"],
+       t: [["Half-split", "Start measuring mid-path"], ["LOTO", "Lock out before touching"], ["Continuity", "Test with the circuit dead"], ["CAT III", "Multimeter safety category"]]}
+};
