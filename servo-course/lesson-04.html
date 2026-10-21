@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الدرايف من جوه</title>
+<meta name="description" content="الدرس 4 في كورس السيرفو: دايرة القوى في درايف السيرفو (موحّد و DC bus و IGBT ومقاومة الفرملة)، والتلات لوبات: التيار والسرعة والمكان، والـ Following error.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="servo.css?v=20261021s">
+<script src="servo.js?v=20261021s"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">السيرفو موتور والدرايف · الدرس 4 من 12</p>
+    <h1>الدرايف من جوه</h1>
+    <p>الدرايف فيه حتتين: <b>دايرة قوى</b> زي الانفرتر بالظبط، و<b>كنترول</b> فيه تلات لوبات جوه بعض بيشتغلوا آلاف المرات في الثانية. في الدرس ده هتشوف الاتنين في دايجرام تفاعلي.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>دايرة القوى: زي الانفرتر بالظبط</h2>
+  <p>لو فاهم الانفرتر هتلاقي دايرة القوى في درايف السيرفو هي هي:</p>
+  <ol>
+    <li><b>موحّد (Rectifier):</b> بيحوّل <bdi dir="ltr">AC</bdi> اللي داخل على L1 L2 L3 لـ DC.</li>
+    <li><b>DC bus:</b> كباستورات كبيرة بتتشحن لحوالي <bdi dir="ltr">310 V DC</bdi> في درايف 220V (وحوالي <bdi dir="ltr">540 V DC</bdi> في درايف 400V).</li>
+    <li><b>الإنفرتر (IGBT):</b> 6 ترانزستورات بتقطّع الـ DC بالـ PWM وتطلّع تلاتة فاز على U V W.</li>
+    <li><b>مقاومة الفرملة (Regen):</b> لما الموتور يفرمل بيرجّع طاقة، والطاقة دي بترفع جهد الـ DC bus. الدرايف بيوصّل المقاومة عشان يحرقها حرارة.</li>
+  </ol>
+  <div class="box safe"><b>أمان:</b> الكباستورات بتفضل مشحونة <b>دقايق</b> بعد فصل الكهربا. استنى لمبة <b>CHARGE</b> تطفي (والوقت المكتوب على الدرايف)، وقيس بالأفوميتر بين P+ و N قبل ما تلمس أي طرف.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>الكنترول: 3 لوبات جوه بعض</h2>
+  <p>الفرق الحقيقي بين السيرفو والانفرتر في الكنترول: الدرايف فيه <b>3 لوبات متداخلة (Cascade)</b>، كل لوب بيدّي الأمر للي جواه:</p>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>اللوب</th><th>بيقارن</th><th>بيطلّع</th><th>سرعته تقريبًا</th></tr></thead>
+    <tbody>
+      <tr><td><b>المكان</b> (برّه)</td><td>المكان المطلوب × الحقيقي</td><td>سرعة مطلوبة</td><td>عشرات الـ Hz</td></tr>
+      <tr><td><b>السرعة</b> (النص)</td><td>السرعة المطلوبة × الحقيقية</td><td>عزم (تيار) مطلوب</td><td>مئات الـ Hz</td></tr>
+      <tr><td><b>التيار</b> (جوّه)</td><td>التيار المطلوب × الحقيقي</td><td>جهد PWM للموتور</td><td>كذا kHz</td></tr>
+    </tbody></table></div>
+  <div class="ex"><b>تشبيه:</b> إنت سايق عربية وعايز توقف عند علامة. <b>لوب المكان:</b> "لسه فاضل 50 متر، يبقى أمشي 40 كم/س". <b>لوب السرعة:</b> "أنا ماشي 30 وعايز 40، أدوس بنزين أكتر". <b>لوب التيار:</b> رجلك اللي بتترجم "أكتر" لدوسة مظبوطة. كل واحد لازم يبقى <b>أسرع</b> من اللي برّه منه، وإلا العربية هتتهز.</div>
+  <div class="wd"><h3>الدرايف من جوه (دوس على البلوكات)</h3><div id="diag"></div></div>
+  <div class="box key"><b>Following error (الغلط أثناء الحركة):</b> وهو بيتحرك، المكان الحقيقي دايمًا متأخر شوية عن المطلوب، لأن لوب المكان محتاج "غلط" عشان يطلب سرعة. الفرق ده اسمه <b>Following error أو Position deviation</b>، ولو كبر عن حد معيّن الدرايف بيطلّع إنذار. الـ <b>Feed-forward</b> بيقلّله بإنه يبعت السرعة المطلوبة على طول من غير ما يستنى الغلط.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>رتّب مسار الإشارة</h2>
+  <div class="wd"><h3>من الأمر للموتور ورجوع</h3><div id="order"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأرقام والقيم في الدرس ده (جهود، ترددات، جينات، حدود) أرقام تقريبية للتدريب ومكتوبة من الخبرة العامة، وبتختلف من ماركة وموديل للتاني: <b>مانيوال الدرايف هو المرجع</b> قبل أي إعداد على ماكينة حقيقية. أسماء الإنذارات والباراميترات كمان بتختلف من شركة للتانية. تقدّمك بيتسجّل على الجهاز ده.<br>© &#x2066;2026 LearnElectricals&#x2069;. كل الحقوق محفوظة. الموقع مش تابع لأي شركة من الشركات المذكورة (زي &#x2066;Siemens&#x2069; و &#x2066;Allen-Bradley&#x2069; و &#x2066;Delta&#x2069; و &#x2066;Mitsubishi&#x2069; و &#x2066;Yaskawa&#x2069; وغيرهم)، والأسماء والعلامات التجارية ملك أصحابها، ومستخدمة بس عشان نشرح الأجهزة.</p>
+</div>
+<script>
+SV.lesson('l4');
+window.DIAG = SV.driveDiagram(document.getElementById('diag'), {lesson:'l4'});
+window.ORD = SV.order(document.getElementById('order'), [
+  'الـ PLC يبعت أمر المكان',
+  'لوب المكان يقارن بالإنكودر ويطلب سرعة',
+  'لوب السرعة يقارن ويطلب عزم (تيار)',
+  'لوب التيار يحسب الجهد المطلوب',
+  'الـ IGBT يطلّع PWM على U V W',
+  'الموتور يلف والإنكودر يرجّع المكان الجديد'
+], {lesson:'l4', task:'order', goal:'رتّب <b>الـ 6 خطوات</b> صح.', done:'بالظبط ✓ وبعدين اللفة دي بتتكرر تاني من الأول، آلاف المرات في الثانية.'});
+SV.quiz(document.getElementById('quiz'), [
+  {q:'أسرع لوب في درايف السيرفو:', o:['لوب التيار', 'لوب السرعة', 'لوب المكان', 'كلهم نفس السرعة'], a:0, why:'هو الجوّاني، وبيشتغل بالـ kHz.'},
+  {q:'لوب المكان بيطلّع إيه للي جواه؟', o:['سرعة مطلوبة', 'تيار مطلوب', 'جهد PWM', 'نبضات للـ PLC'], a:0, why:'Position loop → speed command.'},
+  {q:'جهد الـ DC bus في درايف 220V تقريبًا:', o:['310 V DC', '24 V DC', '220 V DC', '600 V DC'], a:0, why:'220 × 1.41 ≈ 310.'},
+  {q:'الطاقة اللي بترجع والموتور بيفرمل بتروح فين؟', o:['الـ DC bus، والزيادة في مقاومة الفرملة', 'الإنكودر', 'الفرامل الميكانيكية', 'بترجع للـ PLC'], a:0, why:'بترفع جهد الكباستورات، والمقاومة بتحرقها.'},
+  {q:'الـ Following error هو:', o:['الفرق بين المكان المطلوب والحقيقي أثناء الحركة', 'عطل في الإنكودر', 'غلط في الجير', 'تأخير الـ PLC'], a:0, why:'Position deviation.'},
+  {q:'قبل ما تلمس أطراف الدرايف بعد الفصل:', o:['تستنى لمبة CHARGE تطفي وتقيس الـ DC bus', 'تفصل وتشتغل على طول', 'تفصل الـ 24V بس', 'تعمل Servo OFF بس'], a:0, why:'الكباستورات بتفضل مشحونة دقايق.'}
+], {lesson:'l4', pass:0.8});
+</script>
+</body>
+</html>

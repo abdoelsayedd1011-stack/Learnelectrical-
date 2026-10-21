@@ -19,7 +19,8 @@
     instr:   { key: "instr-lab-v1",   src: "instrumentation-lab/instr.js",  list: "IL.COURSE" },
     plc:     { key: "plc-lab-v1",     src: "plc-lab/plc.js",                list: "PL.COURSE" },
     drw:     { key: "drw-lab-v1",     src: "drawings-lab/drawings.js",      list: "DR.COURSE" },
-    vfdc:    { key: "vfdc-lab-v1",    src: "vfd-course/vfd.js",             list: "VF.COURSE" }   // كارت الكتالوج id "vfdc" (الـ "vfd" للمحاكي الشامل)، والشهادة id "vfd"
+    vfdc:    { key: "vfdc-lab-v1",    src: "vfd-course/vfd.js",             list: "VF.COURSE" },   // كارت الكتالوج id "vfdc" (الـ "vfd" للمحاكي الشامل)، والشهادة id "vfd"
+    srv:     { key: "srvc-lab-v1",    src: "servo-course/servo.js",         list: "SV.COURSE" }   // كارت الكتالوج والشهادة id "srv" (الـ "servo" لمحاكي Delta)
   };
   // basics / instr / plc / drw: `{id:'l1', … tasks:[['ohm','…'],…]}` → "l1/ohm" في state.done
   function parseTasks(src, list){

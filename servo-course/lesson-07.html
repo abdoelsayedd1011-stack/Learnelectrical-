@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الجير الإلكتروني</title>
+<meta name="description" content="الدرس 7 في كورس السيرفو: الجير الإلكتروني N/M، حساب نبضات اللفة من خطوة البول سكرو والبكرة والجيربوكس، وتردد النبضات على أقصى سرعة. حاسبة تفاعلية و3 تمارين على مكن حقيقية.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="servo.css?v=20261021s">
+<script src="servo.js?v=20261021s"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">السيرفو موتور والدرايف · الدرس 7 من 12</p>
+    <h1>الجير الإلكتروني</h1>
+    <p>الـ PLC عايز يقول "اتحرك 250 mm"، والإنكودر بيعدّ مئات الآلاف في اللفة. الجير الإلكتروني هو اللي بيربطهم. هتتعلم القانون، وتحسب الجير لـ <b>بول سكرو</b> و<b>سير</b> و<b>ترابيزة بجيربوكس</b>.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>المشكلة: الـ PLC بيفكّر بالمللي والإنكودر بالعدّات</h2>
+  <p>الإنكودر 17-bit بيعدّ <b>131072</b> في اللفة. لو الـ PLC هيبعت نبضة لكل عدّة، عشان الموتور يلف 3000 rpm هيحتاج يطلّع <span class="eq">131072 × 50 = 6.5 MHz</span>، ومفيش PLC عادي يعمل كده. وكمان إنت عايز تقول "اتحرك 250 mm" مش "اتحرك 3276800 عدّة".</p>
+  <p>الحل: <b>الجير الإلكتروني (Electronic gear)</b>. الدرايف بيضرب كل نبضة جاية في كسر <b>N / M</b> ويحوّلها لعدّات إنكودر. فإنت بتختار <b>النبضة الواحدة = كام mm</b>.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>القانون في خطوتين</h2>
+  <div class="formula ar">نبضات اللفة = حركة لفة الموتور ÷ قيمة النبضة</div>
+  <div class="formula ar">N / M = عدّات الإنكودر في اللفة ÷ نبضات اللفة</div>
+  <div class="ex"><b>مثال:</b> بول سكرو خطوته <b class="eq">10 mm</b> على الموتور مباشرة، إنكودر <b class="eq">10000</b> عدّة، وعايز <b>1 نبضة = <span class="eq">0.01 mm</span></b>.<br>
+  نبضات اللفة = <span class="eq">10 ÷ 0.01 = 1000</span>.<br>
+  الجير = <span class="eq">10000 ÷ 1000 = 10/1</span>. يعني كل نبضة = 10 عدّات = 0.01 mm. ✓</div>
+  <div class="box"><b>حركة لفة الموتور</b> بتتحسب من الميكانيكا:<ul>
+    <li>بول سكرو: الخطوة (Pitch). لو فيه جيربوكس أو سير بين الموتور والسكرو، اقسم على النسبة.</li>
+    <li>بكرة وسير: عدد السنون × خطوة السير (أو π × القطر).</li>
+    <li>ترابيزة بجيربوكس 1:10: لفة الموتور = 360 ÷ 10 = 36°.</li></ul></div>
+  <div class="box key"><b>بيختلف من ماركة للتانية:</b> بعض الدرايفات بتكتب الجير كـ N/M (ممكن البسط والمقام بأسماء باراميترات تانية)، وبعضها بتطلب "عدد النبضات في اللفة" على طول وهي تحسب. الفكرة واحدة، بس اتأكد من المانيوال <b>أنهي ناحية البسط وأنهي المقام</b> وحدود الكسر المسموح.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>الحاسبة والتحدّي</h2>
+  <div class="wd"><h3>حاسبة الجير الإلكتروني</h3><div id="gear"></div></div>
+  <div class="box"><b>التوازن:</b> وحدة أصغر = دقة أعلى بس تردد أعلى. وحدة أكبر = تردد أقل بس كل نبضة "قفزة" أكبر. اختار أصغر وحدة الـ PLC يقدر يطلّع ترددها على أقصى سرعة.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>تمارين حساب سريعة</h2>
+  <div class="wd"><h3>احسب</h3><div id="gdrill"></div></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأرقام والقيم في الدرس ده (جهود، ترددات، جينات، حدود) أرقام تقريبية للتدريب ومكتوبة من الخبرة العامة، وبتختلف من ماركة وموديل للتاني: <b>مانيوال الدرايف هو المرجع</b> قبل أي إعداد على ماكينة حقيقية. أسماء الإنذارات والباراميترات كمان بتختلف من شركة للتانية. تقدّمك بيتسجّل على الجهاز ده.<br>© &#x2066;2026 LearnElectricals&#x2069;. كل الحقوق محفوظة. الموقع مش تابع لأي شركة من الشركات المذكورة (زي &#x2066;Siemens&#x2069; و &#x2066;Allen-Bradley&#x2069; و &#x2066;Delta&#x2069; و &#x2066;Mitsubishi&#x2069; و &#x2066;Yaskawa&#x2069; وغيرهم)، والأسماء والعلامات التجارية ملك أصحابها، ومستخدمة بس عشان نشرح الأجهزة.</p>
+</div>
+<script>
+SV.lesson('l7');
+window.GEAR = SV.gearCalc(document.getElementById('gear'), {lesson:'l7'});
+window.GDR = SV.drill(document.getElementById('gdrill'), SV.gearGen, {lesson:'l7', task:'gdrill', need:4, goal:'جاوب <b>4</b> صح عشان التمرين يتعلّم عليه.'});
+SV.quiz(document.getElementById('quiz'), [
+  {q:'سكرو 5 mm، وعايز 1 نبضة = 0.001 mm. نبضات اللفة:', o:['5000', '500', '50000', '5'], a:0, why:'5 ÷ 0.001.'},
+  {q:'إنكودر 131072 ونبضات اللفة 10000. الجير N/M:', o:['8192/625', '625/8192', '131072/1', '10000/131072'], a:0, why:'131072/10000 مختصر = 8192/625.'},
+  {q:'ترابيزة بجيربوكس 1:5. لفة الموتور = كام درجة في الترابيزة؟', o:['72°', '5°', '360°', '1800°'], a:0, why:'360 ÷ 5.'},
+  {q:'نبضات اللفة 10000 والموتور 3000 rpm. التردد:', o:['500 kHz', '50 kHz', '5 kHz', '3 MHz'], a:0, why:'10000 × 3000 ÷ 60.'},
+  {q:'الـ PLC خرجه آخره 100 kHz ومش قادر يوصل للسرعة. أسهل حل من غير تغيير هاردوير:', o:['تكبّر قيمة النبضة (نبضات لفة أقل) وتعيد حساب الجير', 'تزوّد الجين', 'تغيّر الإنكودر', 'تشيل الجير'], a:0, why:'تردد أقل على حساب دقة النبضة.'},
+  {q:'ليه الجير الإلكتروني مهم؟', o:['يربط النبضة بوحدة المكنة (mm أو درجة) ويقلل التردد المطلوب', 'يزوّد عزم الموتور', 'يلغي الجيربوكس', 'يحمي من الأوفرلود'], a:0, why:'تحويل نبضات الأمر لعدّات إنكودر.'}
+], {lesson:'l7', pass:0.8});
+</script>
+</body>
+</html>

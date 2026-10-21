@@ -146,6 +146,12 @@
       guided:0, exercises:0, params:0, faults:0,
       inside:["نفس التمرين على كل الماركات", "مقارنة الباراميترات والأطراف", "لوحة توصيل وتمارين بتتصحح"],
       tags:"compare all drives vfd مقارنة شامل كل الانفرترات في صفحة واحدة، ولوحة التوصيل العملي، ومقارنة نفس الوظيفة بين الماركات.  7 انفرترات في صفحة واحدة   لوحة توصيل عملي مشتركة   مقارنة نفس الوظيفة بين الماركات " },
+    { id:"srv", path:"servo-course/index.html", group:"servo", brand:"كورس", brandKey:"srvc",
+      name:"كورس السيرفو موتور والدرايف", kind:"ابدأ بالشرح", disp:"S-ON", dispClass:"red", rtlName:true,
+      line:"افهم السيرفو من جوه قبل ما تمسك أي درايف.",
+      guided:12, exercises:0, params:0, faults:0,
+      inside:["الموتور والإنكودر والتلات لوبات", "التوصيل والأوضاع والجير الإلكتروني", "التيونينج والهومينج والإنذارات"],
+      tags:"servo course كورس السيرفو سيرفو موتور درايف servo motor servo drive شرح نظري theory closed loop لوب مقفول stepper ستيبر pmsm encoder إنكودر انكودر incremental absolute 17-bit brake فرامل regen مقاومة فرملة u v w sto cn1 cn2 pulse direction نبضات position speed torque electronic gear جير إلكتروني tuning تيونينج gain جين inertia autotune homing هومينج limit switch software limit ethercat profinet modbus alarms إنذارات overload position deviation overvoltage overspeed" },
     { id:"servo", path:"servo-simulator/index.html", group:"servo", brand:"Delta", brandKey:"delta",
       name:"ASDA-B2 Servo", kind:"سيرفو", disp:"00000", dispClass:"red",
       line:"سيرفو Delta: سرعة وموضع وضبط الجين.",
@@ -188,7 +194,7 @@
     { key:"temp", title:"كنترول حرارة", sub:"Omron" }
   ];
   var BRANDS = [
-    { key:"all", label:"الكل" }, { key:"beginner", label:"للمبتدئين" }, { key:"basics", label:"كلاسيك كنترول" }, { key:"drawings", label:"رسومات كهربية" }, { key:"instr", label:"إنسترومنتيشن" }, { key:"plc", label:"PLC" }, { key:"vfdc", label:"شرح الانفرتر" }, { key:"ab", label:"Allen-Bradley" }, { key:"siemens", label:"Siemens" },
+    { key:"all", label:"الكل" }, { key:"beginner", label:"للمبتدئين" }, { key:"basics", label:"كلاسيك كنترول" }, { key:"drawings", label:"رسومات كهربية" }, { key:"instr", label:"إنسترومنتيشن" }, { key:"plc", label:"PLC" }, { key:"vfdc", label:"شرح الانفرتر" }, { key:"srvc", label:"شرح السيرفو" }, { key:"ab", label:"Allen-Bradley" }, { key:"siemens", label:"Siemens" },
     { key:"schneider", label:"Schneider" }, { key:"delta", label:"Delta" }, { key:"danfoss", label:"Danfoss" },
     { key:"omron", label:"Omron" }, { key:"abb", label:"ABB" }, { key:"mitsubishi", label:"Mitsubishi" }, { key:"yaskawa", label:"Yaskawa" }, { key:"ls", label:"LS" }, { key:"invt", label:"INVT" }, { key:"fuji", label:"Fuji" }, { key:"multi", label:"مقارنة" }
   ];

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>التيونينج وضبط الجين</title>
+<meta name="description" content="الدرس 8 في كورس السيرفو: نسبة الـ Inertia، جين المكان Kp وجين السرعة Kv وزمن التكامل Ti، الأوتو تيون، والفرق بين البطء والـ Overshoot والزنّة. محاكي استجابة تفاعلي.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="servo.css?v=20261021s">
+<script src="servo.js?v=20261021s"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">السيرفو موتور والدرايف · الدرس 8 من 12</p>
+    <h1>التيونينج وضبط الجين</h1>
+    <p>نفس الموتور ونفس الدرايف ممكن يبقوا <b>ناعمين وسريعين</b> أو <b>بيزنوا ويرتعشوا</b>، والفرق كله في ضبط الجين. هتجرّب <b>Auto-tune</b> وبعدين تظبط بإيدك وتشوف المنحنى بيتغيّر قدّامك.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>التيونينج يعني إيه؟</h2>
+  <p>الدرايف جديد من المصنع مش عارف الموتور شايل إيه: سير خفيف ولا ترابيزة 200 kg. <b>التيونينج</b> إنك تقول للدرايف "الحمل كده" وتظبط سرعة رد فعل اللوبات عشان الحركة تبقى <b>سريعة ومن غير اهتزاز</b>.</p>
+  <div class="box key"><b>نسبة الـ Inertia (JL/JM):</b> قصور الحمل الدوّار (منسوب لعمود الموتور) ÷ قصور الموتور نفسه. نسبة 10 يعني الحمل "أتقل" من الروتور 10 مرات. الدرايف بيستخدمها عشان يحوّل "عايز تسارع كذا" لعزم مظبوط. لو الرقم في الباراميتر غلط، كل الجينات هتبقى غلط. وكل ما النسبة تكبر (فوق 10 لـ 30 حسب الموتور) التحكم بيصعب، وساعتها موتور Inertia أعلى أو جيربوكس بيحلّوا.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>الجينات والأعراض</h2>
+  <div class="tblw"><table class="tbl">
+    <thead><tr><th>الباراميتر</th><th>لو واطي</th><th>لو عالي</th></tr></thead>
+    <tbody>
+      <tr><td><b>Kv</b> جين السرعة (Hz)</td><td>بطيء، بيتأثر بالحمل</td><td>زنّة وصفير، اهتزاز سريع، الموتور يسخن</td></tr>
+      <tr><td><b>Ti</b> زمن تكامل السرعة</td><td>(Ti صغير = تكامل قوي) اهتزاز بطيء</td><td>(Ti كبير) بياخد وقت يقفل آخر غلط</td></tr>
+      <tr><td><b>Kp</b> جين المكان (rad/s)</td><td>Following error كبير وبطء في الوقوف</td><td>Overshoot ورنين عند الوقوف</td></tr>
+      <tr><td><b>نسبة الـ Inertia</b></td><td>(أقل من الحقيقة) Overshoot وحركة مايعة</td><td>(أكبر بكتير) زي Kv عالي: زنّة</td></tr>
+    </tbody></table></div>
+  <ul>
+    <li><b>Overshoot:</b> المحور بيعدّي الهدف ويرجع.</li>
+    <li><b>Settling time:</b> الوقت من آخر الأمر لحد ما المحور يدخل في نطاق الـ <b>In-position</b> ويثبت.</li>
+    <li><b>Sluggish (بطيء):</b> بيوصل متأخر ومن غير Overshoot.</li>
+  </ul>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>جرّب: Auto-tune وبعدين بإيدك</h2>
+  <div class="wd"><h3>ضبط الجين على حمل حقيقي</h3><div id="tune"></div></div>
+  <ol class="steps-l">
+    <li>اتأكد الميكانيكا سليمة (مفيش زنق ولا لعب في الكوبلنج).</li>
+    <li>اعمل <b>Auto-tune</b> (أو خلّي الدرايف يقيس نسبة الـ Inertia) على حركة شبه الحقيقية.</li>
+    <li>زوّد <b>Kv</b> بالتدريج لحد ما تسمع زنّة، وبعدين نزّل 20 لـ 30%.</li>
+    <li>زوّد <b>Kp</b> لحد ما الوقوف يبقى سريع من غير Overshoot.</li>
+    <li>ظبط <b>Ti</b> لو فيه غلط صغير بيقعد. ولو فيه رنين عند تردد معيّن استخدم <b>Notch filter</b>.</li>
+  </ol>
+  <div class="box">الأوتو تيون في الدرايفات الحديثة بيختلف: فيه Online (بيتعلّم وهو شغّال) و Offline (حركة اختبار)، وفيه "مستوى الصلابة (Rigidity)" بتختاره. الأسماء والخطوات في مانيوال كل ماركة.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأرقام والقيم في الدرس ده (جهود، ترددات، جينات، حدود) أرقام تقريبية للتدريب ومكتوبة من الخبرة العامة، وبتختلف من ماركة وموديل للتاني: <b>مانيوال الدرايف هو المرجع</b> قبل أي إعداد على ماكينة حقيقية. أسماء الإنذارات والباراميترات كمان بتختلف من شركة للتانية. تقدّمك بيتسجّل على الجهاز ده.<br>© &#x2066;2026 LearnElectricals&#x2069;. كل الحقوق محفوظة. الموقع مش تابع لأي شركة من الشركات المذكورة (زي &#x2066;Siemens&#x2069; و &#x2066;Allen-Bradley&#x2069; و &#x2066;Delta&#x2069; و &#x2066;Mitsubishi&#x2069; و &#x2066;Yaskawa&#x2069; وغيرهم)، والأسماء والعلامات التجارية ملك أصحابها، ومستخدمة بس عشان نشرح الأجهزة.</p>
+</div>
+<script>
+SV.lesson('l8');
+window.TUNE = SV.tuning(document.getElementById('tune'), {lesson:'l8'});
+SV.quiz(document.getElementById('quiz'), [
+  {q:'نسبة الـ Inertia في الباراميتر 0 والحمل الحقيقي 10. غالبًا هتشوف:', o:['Overshoot وحركة مايعة', 'حركة مثالية', 'Encoder error', 'Overvoltage'], a:0, why:'الدرايف فاكر الحمل خفيف فبيدّي عزم أقل من المطلوب.'},
+  {q:'الموتور بيصفّر ويزن وهو واقف. أول حاجة:', o:['تنزّل جين السرعة Kv', 'تزوّد Kp', 'تزوّد نسبة الـ Inertia', 'تغيّر الإنكودر'], a:0, why:'الزنّة غالبًا من Kv عالي أو رنين.'},
+  {q:'المحور بيوصل متأخر ومن غير Overshoot (Sluggish). جرّب:', o:['تزوّد Kp (وKv لو لزم)', 'تنزّل Kp', 'تقلل نسبة الـ Inertia لصفر', 'تفصل الفرامل'], a:0, why:'الجين واطي.'},
+  {q:'إمتى لازم تعمل تيونينج من جديد؟', o:['لما الحمل يتغيّر (ترابيزة أتقل مثلًا)', 'كل يوم الصبح', 'لما الـ PLC يتغيّر', 'مش لازم أبدًا'], a:0, why:'نسبة الـ Inertia اتغيّرت.'},
+  {q:'الـ Settling time هو:', o:['الوقت لحد ما المحور يثبت جوه نطاق In-position', 'زمن التسارع', 'زمن الهومينج', 'وقت تشغيل الدرايف'], a:0, why:'بعد ما الأمر يخلص.'},
+  {q:'الترتيب المعقول للضبط اليدوي:', o:['Inertia ثم Kv ثم Kp ثم Ti', 'Kp ثم Inertia', 'Ti الأول', 'كله مع بعض عشوائي'], a:0, why:'من جوّه لبرّه: السرعة قبل المكان.'}
+], {lesson:'l8', pass:0.8});
+</script>
+</body>
+</html>
