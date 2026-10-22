@@ -193,6 +193,24 @@
     { key:"servo", title:"سيرفو", sub:"درايفات وموتورات سيرفو", land:"courses/servo.html" },
     { key:"temp", title:"كنترول حرارة", sub:"Omron" }
   ];
+  /* محتوى كل كورس بالترتيب (عناوين الدروس) — بيظهر على كارت الكورس في الكتالوج وعلى الغلاف (assets/courses/covers/).
+     لو غيّرت عنوان درس أو زوّدت درس: عدّله هنا وفي toc في assets/i18n-en.js */
+  var TOC = {
+    basics: { n:"13 درس", x:["أفوميتر تفاعلي", "امتحان وشهادة"],
+      l:["يعني إيه كهربا؟", "الجهد والتيار", "الموصلات والعوازل", "التوالي والتوازي", "القدرة والطاقة", "أنواع الكهربا", "السلامة والعدّة", "الأفوميتر (AVO)", "قياس الأجهزة عمليًا", "المحوّل والباور سبلاي", "قانون أوم واختيار السلك والقاطع", "توصيل اللمبة والبريزة", "أعطال البيت الشائعة"] },
+    classic: { n:"9 دروس", x:["89 تمرين موجّه", "24 تمرين عملي", "شهادة إتمام"],
+      l:["عناصر التحكم البسيطة", "الريلاي المساعد والتثبيت الذاتي", "الكونتاكتور", "الحماية: الفيوز والقاطع والأوفرلود", "التايمرات: On-delay و Off-delay والدوري", "الموتور الإندكشن 3 فاز", "مفاتيح الضغط والمستوى والحساسات", "التتابع والـ Jog وعكس الحركة", "ستار/دلتا والفرملة والسوفت ستارتر"] },
+    instr: { n:"10 دروس", x:["امتحان نهائي وشهادة"],
+      l:["يعني إيه إنسترومنتيشن؟", "إشارة ⁦4–20mA⁩ و ⁦0–10V⁩", "الحساسات الديجيتال", "الإنكودر الإنكريمنتال", "الإنكودر الأبسليوت والأعطال", "الثيرموكبل (Thermocouple)", "PT100 و RTD و NTC", "اللود سيل والميزان", "الضغط والمستوى والفلو", "المعايرة والتربل شوتنج"] },
+    plc: { n:"10 دروس", x:["تمارين Siemens · Delta · AB", "امتحان وشهادة"],
+      l:["يعني إيه PLC؟", "توصيل الـ PLC", "أول برنامج Ladder", "التثبيت الذاتي والـ Set/Reset", "التايمرات", "العدادات والمقارنة", "الذاكرة والـ Flags والـ Edge", "الإشارات الأنالوج في الـ PLC", "مشاريع عملية", "التربل شوتنج والامتحان النهائي"] },
+    drw: { n:"7 دروس", x:["امتحان نهائي وشهادة"],
+      l:["أنواع الرسومات الكهربية", "الرموز: IEC و ANSI/NEMA", "ترقيم الأجهزة والأطراف والكروس ريفرنس", "قراية دايرة التحكم", "الـ Single line ودايرة القوى", "رسمة اللوحة والـ Terminal strip", "تتبّع العطل من الرسمة + الامتحان"] },
+    vfdc: { n:"12 درس", x:["16 محاكي انفرتر"],
+      l:["ليه الانفرتر؟", "جوه الانفرتر", "الـ PWM والـ V/f", "توصيل الباور", "أطراف الكنترول", "الباراميترات الأساسية", "أوضاع التحكم والـ Autotune", "الفرملة والوقوف", "الـ PID والتطبيقات", "الأعطال الشائعة وحلّها", "السلامة والتركيب", "التشغيل لأول مرة + الامتحان"] },
+    srv: { n:"12 درس", x:["4 محاكيات سيرفو"],
+      l:["يعني إيه سيرفو؟", "جوه السيرفو موتور", "الإنكودر: عين السيرفو", "الدرايف من جوه", "توصيل السيرفو", "أوضاع التشغيل", "الجير الإلكتروني", "التيونينج وضبط الجين", "الهومينج والحدود", "التحكم من الـ PLC", "الأعطال الشائعة", "التشغيل لأول مرة + الامتحان"] }
+  };
   var BRANDS = [
     { key:"all", label:"الكل" }, { key:"beginner", label:"للمبتدئين" }, { key:"basics", label:"كلاسيك كنترول" }, { key:"drawings", label:"رسومات كهربية" }, { key:"instr", label:"إنسترومنتيشن" }, { key:"plc", label:"PLC" }, { key:"vfdc", label:"شرح الانفرتر" }, { key:"srvc", label:"شرح السيرفو" }, { key:"ab", label:"Allen-Bradley" }, { key:"siemens", label:"Siemens" },
     { key:"schneider", label:"Schneider" }, { key:"delta", label:"Delta" }, { key:"danfoss", label:"Danfoss" },
@@ -388,64 +406,54 @@
   var emptyEl = document.querySelector("[data-empty]"), countEl = document.querySelector("[data-count]");
   var state = { brand:"all", q:"" };
 
-  function facts(l){
-    var f = [];
-    if (EN){
-      if (l.guided) f.push(EN.guided(l.guided)); if (l.exercises) f.push(EN.graded(l.exercises));
-      if (l.params) f.push(EN.params(l.params, l.id === "servo")); if (l.faults) f.push(EN.faults(l.faults));
-      return f;
-    }
-    if (l.guided) f.push(l.guided + " تمارين محلولة");
-    if (l.exercises) f.push(l.exercises + " تمارين بتتصحح");
-    if (l.params) f.push((l.id === "servo" ? "حوالي " : "") + l.params + " باراميتر");
-    if (l.faults) f.push(l.faults + " عطل");
-    return f;
-  }
-  var SIM_WITH = EN ? EN.simWith : { drives: "مع كورس الانفرتر", servo: "مع كورس السيرفو", temp: "مع كورس الإنسترومنتيشن" };
-  function goText(l){ return EN ? (l.course ? EN.goCourse : EN.goSim) + (l.ar ? AR_BADGE : "") : l.course ? "ابدأ الكورس ←" : "افتح المحاكي ←"; }
+  // الكتالوج بيعرض الكورسات بس (brand "كورس")؛ المحاكيات بتتفتح من جوه كورساتها (صفحة الكورس وصفحة الهبوط)
+  var COURSES = [];
+  GROUPS.forEach(function(g){ LABS.forEach(function(l){ if (l.course && l.group === g.key){ l.land = g.land || ""; COURSES.push(l); } }); });
+  function goText(l){ return EN ? EN.goCourse + (l.ar ? AR_BADGE : "") : "ابدأ الكورس ←"; }
   var AR_BADGE = EN ? '<span class="ar-badge" title="' + esc(EN.arBadgeTitle) + '">' + esc(EN.arBadge) + "</span>" : "";
-  // غلاف مرسوم لكل كورس (assets/courses/covers/<id>-ar|en.webp، 800×420) بدل شاشة الجهاز؛ المحاكيات بتفضل بشاشتها
-  var COVERS = { basics:1, classic:1, instr:1, plc:1, drw:1, vfdc:1, srv:1 }, coverN = 0;
+  // غلاف كل كورس زي البروشور: الاسم وكل الدروس بالترتيب (assets/courses/covers/<id>-ar|en.webp، 960×1200)
+  var coverN = 0;
+  function tocOf(l){ return (EN && EN.toc && EN.toc[l.id]) || TOC[l.id] || null; }
   function card(l){
-    var disp = COVERS[l.id] ? '<div class="cover"><img src="/assets/courses/covers/' + l.id + (EN ? "-en" : "-ar") + '.webp" width="800" height="420" alt="' + esc((EN ? "Cover: " : "غلاف ") + l.name) + '"' + (coverN++ ? ' loading="lazy"' : "") + ' decoding="async"></div>'
-      : '<div class="disp ' + esc(l.dispClass) + '" aria-hidden="true">' + (l.html ? l.disp : esc(l.disp)) + "</div>";
-    var FREE = EN ? EN.freeAcc : "بحساب مجاني";
-    var acc = l.id === "pf525" ? (EN ? EN.noAccount : "من غير حساب") : l.course ? (EN ? EN.free3 : "3 دروس من غير حساب") : PR && PR.paywall ? SIM_WITH[l.group] || FREE : FREE;
+    var toc = tocOf(l);
+    var cover = '<div class="cover"><img src="/assets/courses/covers/' + l.id + (EN ? "-en" : "-ar") + '.webp?v=b2" width="960" height="1200" alt="' + esc((EN ? "Cover: " : "غلاف ") + l.name) + '"' + (coverN++ ? ' loading="lazy"' : "") + ' decoding="async"></div>';
+    var acc = EN ? EN.free3 : "3 دروس من غير حساب";
     var st = priceState(PRODUCT_OF[l.id]);
     var pl = !st ? "" : '<p class="price-line' + (st.kind === "price" ? "" : " own") + '">' + (st.kind === "own" ? esc(ownText(PRODUCT_OF[l.id])) : st.kind === "pro" ? (EN ? EN.pro : "معاك في الاشتراك ✓") : priceHtml(st.c)) + "</p>";
     var buy = st && st.kind === "price" ? '<a class="buy" href="subscribe.html?course=' + PRODUCT_OF[l.id] + '">' + (EN ? EN.buy : "اشتري الكورس") + '<span class="sr-only"> ' + esc(l.name) + "</span></a>" : "";
-    var head = '<div class="meta"><span class="brand">' + esc(l.brand) + '</span><span class="kind">' + esc(l.kind) + '</span><span class="access' + (l.id === "pf525" ? " open" : "") + '">' + acc + "</span></div>" +
+    var head = '<div class="meta"><span class="brand">' + esc(l.brand) + '</span><span class="kind">' + esc(l.kind) + '</span><span class="access">' + acc + "</span></div>" +
                '<h4' + (l.rtlName ? ' style="direction:rtl"' : "") + ">" + esc(l.name) + "</h4>";
-    if (!detail){
-      return '<a class="card" href="' + esc(l.href) + '"' + (l.ar ? ' hreflang="ar"' : "") + ' data-id="' + l.id + '">' + disp + head + "<p>" + esc(l.line) + "</p>" + pl + '<span class="go">' + goText(l) + '</span></a>';
+    var body = "<p>" + esc(l.line) + "</p>";
+    if (toc){
+      body += '<ul class="facts">' + [toc.n].concat(toc.x).map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>" +
+        '<p class="toc-h">' + (EN ? esc(EN.contents) : "محتوى الكورس بالترتيب") + "</p>" +
+        '<ol class="toc">' + toc.l.map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("") + "</ol>";
     }
-    var fl = facts(l).map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("");
-    var ins = l.inside.map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("");
-    return '<article class="card detail" data-id="' + l.id + '">' + disp + head + "<p>" + esc(l.line) + "</p>" +
-      (fl ? '<ul class="facts">' + fl + "</ul>" : "") + '<ul class="inside">' + ins + "</ul>" + pl +
-      '<div class="go-row"><a class="go" href="' + esc(l.href) + '"' + (l.ar ? ' hreflang="ar"' : "") + ">" + goText(l) + '<span class="sr-only"> ' + esc(l.name) + "</span></a>" + buy + "</div></article>";
+    if (!detail){
+      return '<a class="card course" href="' + esc(l.href) + '"' + (l.ar ? ' hreflang="ar"' : "") + ' data-id="' + l.id + '">' + cover + head + body + pl + '<span class="go">' + goText(l) + '</span></a>';
+    }
+    var land = l.land ? '<a class="more" href="' + esc(l.land) + '">' + (EN ? EN.details : "تفاصيل الكورس ←") + '<span class="sr-only"> ' + esc(l.name) + "</span></a>" : "";
+    return '<article class="card detail course" data-id="' + l.id + '">' + cover + head + body + pl +
+      '<div class="go-row"><a class="go" href="' + esc(l.href) + '"' + (l.ar ? ' hreflang="ar"' : "") + ">" + goText(l) + '<span class="sr-only"> ' + esc(l.name) + "</span></a>" + buy + land + "</div></article>";
   }
   function match(l){
     if (state.brand !== "all" && l.brandKey !== state.brand) return false;
     if (!state.q) return true;
-    var hay = (l.name + " " + l.brand + " " + l.line + " " + l.kind + " " + l.tags + " " + l.inside.join(" ")).toLowerCase();
+    var toc = tocOf(l);
+    var hay = (l.name + " " + l.brand + " " + l.line + " " + l.kind + " " + l.tags + " " + l.inside.join(" ") + (toc ? " " + toc.l.join(" ") : "")).toLowerCase();
     return state.q.toLowerCase().split(/\s+/).every(function(w){ return hay.indexOf(w) > -1; });
   }
   // بنك أسئلة الإنترفيو مش كورس ومش في LABS، بس لو حد دوّر عليه بنظهرله كارت يوديه هناك
   var IV_Q = /interview|question|انترفيو|إنترفيو|مقابل|أسئل|اسئل|سؤال/i;
   var IV_CARD = EN ? EN.ivCard : '<div class="iv-band iv-hit"><div><span class="eyebrow">بنك الأسئلة</span><h2>أسئلة الإنترفيو</h2><p>أسئلة إنترفيو الكهربا والصيانة والأوتوميشن بإجابات مختصرة، مفتوحة للكل.</p></div><a class="btn btn-ghost" href="interview/index.html">ذاكر الأسئلة ←</a></div>';
   function render(){
-    var html = "", n = 0, iv = !!state.q && IV_Q.test(state.q); coverN = 0;
-    GROUPS.forEach(function(g){
-      var items = LABS.filter(function(l){ return l.group === g.key && match(l); });
-      if (!items.length) return;
-      n += items.length;
-      html += '<section class="group" aria-label="' + esc(g.title) + '"><h3 class="gtitle">' + esc(g.title) + ' <small class="ltr">' + esc(g.sub) + '</small>' + (g.land ? '<a class="gmore" href="' + esc(g.land) + '">' + (EN ? EN.details : "تفاصيل الكورس ←") + "</a>" : "") + '</h3><div class="grid">' + items.map(card).join("") + "</div></section>";
-    });
-    cat.innerHTML = (iv ? IV_CARD : "") + html;
+    var iv = !!state.q && IV_Q.test(state.q); coverN = 0;
+    var items = COURSES.filter(match), n = items.length;
+    cat.innerHTML = (iv ? IV_CARD : "") + (n ? '<div class="grid course-grid">' + items.map(card).join("") + "</div>" : "");
     if (emptyEl) emptyEl.classList.toggle("show", n === 0 && !iv);
-    if (countEl) countEl.textContent = n === LABS.length ? (EN ? EN.all(n) : "الكل (" + n + ")") : EN ? EN.shown(n, LABS.length) : "ظاهر " + n + " من " + LABS.length;
+    if (countEl) countEl.textContent = n === COURSES.length ? (EN ? EN.all(n) : "الكل (" + n + ")") : EN ? EN.shown(n, COURSES.length) : "ظاهر " + n + " من " + COURSES.length;
   }
+  BRANDS = BRANDS.filter(function(b){ return b.key === "all" || COURSES.some(function(l){ return l.brandKey === b.key; }); });
   if (chipsEl){
     chipsEl.innerHTML = BRANDS.map(function(b){ return '<button type="button" class="chip" data-brand="' + b.key + '" aria-pressed="' + (b.key === "all") + '">' + esc(b.label) + "</button>"; }).join("");
     chipsEl.addEventListener("click", function(e){
