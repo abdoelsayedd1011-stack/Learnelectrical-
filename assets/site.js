@@ -423,23 +423,25 @@
     vfdc:{ ac:"#ff8a4c", ar:"الانفرتر VFD", en:"VFD (Inverter)" },
     srv:{ ac:"#ff5c7a", ar:"السيرفو موتور والدرايف", en:"Servo Motor & Drive" }
   };
-  var CVV = "c4";
+  var CVV = "p6";
   function coverHtml(l, toc){
     var c = CV[l.id], src = "/assets/courses/covers/" + l.id;
     if (!c || !toc) return '<div class="cover"><img src="' + src + (EN ? "-en" : "-ar") + '.webp?v=b3" width="960" height="1200" alt="" decoding="async"></div><h4 class="sr-only">' + esc(l.name) + "</h4>";
     var pad = function(i){ return (i < 9 ? "0" : "") + (i + 1); };
     return '<div class="cover vc" style="--ac:' + c.ac + '">' +
       '<div class="vc-body">' +
-        // الفيديو جنب الكلام (في بداية الكارت عشان يطفو على الجنب)، والكلام بيلف حواليه
-        '<div class="vc-side"><div class="vc-frame">' +
-          '<video class="vc-vid" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true" tabindex="-1" poster="' + src + "-poster.webp?v=" + CVV + '">' +
-            '<source src="' + src + "-loop.webm?v=" + CVV + '" type="video/webm"><source src="' + src + "-loop.mp4?v=" + CVV + '" type="video/mp4"></video>' +
-        '</div><p class="vc-live"><i aria-hidden="true"></i>' + (EN ? "Exercise from the course" : "تمرين من جوّه الكورس") + "</p></div>" +
         '<p class="vc-kick"><i aria-hidden="true"></i>' + (EN ? "COURSE · " : "كورس · ") + esc(toc.n) + "</p>" +
         '<h4 class="vc-title"><span class="sr-only">' + esc(l.name) + '</span><span aria-hidden="true">' + esc(EN ? c.en : c.ar) + "</span></h4>" +
         (toc.x && toc.x.length ? '<p class="vc-chips">' + toc.x.map(function(x){ return "<span>" + esc(x) + "</span>"; }).join("") + "</p>" : "") +
         '<p class="vc-h">' + (EN ? EN.contents : "محتوى الكورس بالترتيب") + "</p>" +
-        '<ol class="vc-list">' + toc.l.map(function(x, i){ return '<li><b aria-hidden="true">' + pad(i) + "</b><span>" + esc(x) + "</span></li>"; }).join("") + "</ol>" +
+        // الدروس على جنب، والتمرين شغّال جنبها بطول القايمة كلها
+        '<div class="vc-cols">' +
+          '<ol class="vc-list">' + toc.l.map(function(x, i){ return '<li><b aria-hidden="true">' + pad(i) + "</b><span>" + esc(x) + "</span></li>"; }).join("") + "</ol>" +
+          '<div class="vc-side"><div class="vc-frame">' +
+            '<video class="vc-vid" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true" tabindex="-1" poster="' + src + "-poster.webp?v=" + CVV + '">' +
+              '<source src="' + src + "-loop.webm?v=" + CVV + '" type="video/webm"><source src="' + src + "-loop.mp4?v=" + CVV + '" type="video/mp4"></video>' +
+          '</div><p class="vc-live"><i aria-hidden="true"></i>' + (EN ? "Exercise from the course" : "تمرين من جوّه الكورس") + "</p></div>" +
+        "</div>" +
       "</div>" +
       '<p class="vc-foot"><span>' + (EN ? "3 lessons free, no account" : "3 دروس من غير حساب") + '</span><span class="vc-wm" dir="ltr" aria-hidden="true">Learn<b>Electricals</b></span></p>' +
       "</div>";
