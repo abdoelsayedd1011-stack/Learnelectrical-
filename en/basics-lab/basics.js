@@ -376,6 +376,12 @@ BL.bill = function(host, opt){
   host.innerHTML = `<div class="tblw"><table class="tbl"><thead><tr><th>Appliance</th><th>Power</th><th>Hours per day</th><th>kWh per month</th></tr></thead><tbody>${items.map((it, i) => `<tr><td>${it.name}</td><td class="mono">${it.w} W</td><td><input class="inp b-h" type="number" min="0" max="24" step="0.5" value="${it.h}" data-i="${i}" aria-label="Hours of use, ${esc(it.name)}" style="width:5.5em;font-family:var(--font-mono);direction:ltr"></td><td class="mono b-k" data-i="${i}"></td></tr>`).join('')}</tbody></table></div>
   <div class="wd-ctl"><label style="flex:1 1 auto">Price per kWh (EGP, from your bill): <input class="inp b-p" type="number" min="0" step="0.05" value="${opt.price}" style="width:7em;font-family:var(--font-mono);direction:ltr"></label></div>
   <div class="read"><div><span>Total per month</span><b class="b-sum"></b></div><div><span>Approximate cost</span><b class="b-cost"></b></div></div>
+  <div class="ex b-ex"><b>Worked example (a 70 W fan running 5 hours a day):</b><br>
+  1) watts ÷ 1000 = kilowatts ⇒ <span class="mono">70 ÷ 1000 = 0.07 kW</span><br>
+  2) × hours per day ⇒ <span class="mono">0.07 × 5 = 0.35 kWh a day</span><br>
+  3) × 30 days ⇒ <span class="mono">0.35 × 30 = 10.5 kWh a month</span><br>
+  4) × price per kWh ⇒ <span class="mono">10.5 × 1.35 ≈ 14 EGP</span><br>
+  Now do the same steps for the heater below.</div>
   <div class="chal b-chal">Challenge: a <b>2000 W</b> water heater runs <b>3 hours</b> every day. How many <b>kWh per month (30 days)</b> does it use?
   <div class="wd-ctl" style="margin-top:6px"><input class="inp b-ans" type="number" step="any" aria-label="Your answer in kWh" style="width:7em;font-family:var(--font-mono);direction:ltr"><button type="button" class="btn b-chk" style="flex:0 1 auto">Check</button><span class="msg b-msg" aria-live="polite"></span></div></div>`;
   function upd(){
@@ -389,7 +395,7 @@ BL.bill = function(host, opt){
   $('.b-chk', host).addEventListener('click', () => {
     const v = +$('.b-ans', host).value, m = $('.b-msg', host);
     if (Math.abs(v - 180) < 0.01){ m.className = 'msg b-msg ok'; m.textContent = 'Correct: 2000 W = 2 kW × 3 hours = 6 kWh per day × 30 = 180 kWh.'; chal.classList.add('ok'); BL.mark(opt.lesson, 'bill'); }
-    else { m.className = 'msg b-msg bad'; m.textContent = 'No. Convert watts to kilowatts first (÷ 1000), multiply by the hours, then by 30 days.'; }
+    else { m.className = 'msg b-msg bad'; m.textContent = 'No. Follow the steps in the example above: 2000 ÷ 1000 = 2 kW, × 3 hours, × 30 days.'; }
   });
 };
 

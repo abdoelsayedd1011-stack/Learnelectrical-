@@ -362,6 +362,12 @@ BL.bill = function(host, opt){
   host.innerHTML = `<div class="tblw"><table class="tbl"><thead><tr><th>الجهاز</th><th>القدرة</th><th>ساعات في اليوم</th><th>kWh في الشهر</th></tr></thead><tbody>${items.map((it, i) => `<tr><td>${it.name}</td><td class="mono">${it.w} W</td><td><input class="inp b-h" type="number" min="0" max="24" step="0.5" value="${it.h}" data-i="${i}" aria-label="ساعات تشغيل ${esc(it.name)}" style="width:5.5em;font-family:var(--font-mono);direction:ltr"></td><td class="mono b-k" data-i="${i}"></td></tr>`).join('')}</tbody></table></div>
   <div class="wd-ctl"><label style="flex:1 1 auto">سعر الكيلووات ساعة (بالجنيه، حسب شريحتك): <input class="inp b-p" type="number" min="0" step="0.05" value="${opt.price}" style="width:7em;font-family:var(--font-mono);direction:ltr"></label></div>
   <div class="read"><div><span>المجموع في الشهر</span><b class="b-sum"></b></div><div><span>التكلفة التقريبية</span><b class="b-cost"></b></div></div>
+  <div class="ex b-ex"><b>مثال محلول (مروحة 70 وات شغالة 5 ساعات في اليوم):</b><br>
+  1) الوات ÷ 1000 = كيلووات ⇐ <span class="mono" dir="ltr">70 ÷ 1000 = 0.07 kW</span><br>
+  2) × ساعات اليوم ⇐ <span class="mono" dir="ltr">0.07 × 5 = 0.35 kWh</span> في اليوم<br>
+  3) × 30 يوم ⇐ <span class="mono" dir="ltr">0.35 × 30 = 10.5 kWh</span> في الشهر<br>
+  4) × سعر الكيلو ⇐ <span class="mono" dir="ltr">10.5 × 1.35 ≈ 14</span> جنيه<br>
+  اعمل نفس الخطوات على السخان اللي تحت.</div>
   <div class="chal b-chal">تحدّي: سخان <b>2000 وات</b> شغال <b>3 ساعات</b> كل يوم، يستهلك كام <b>kWh في الشهر (30 يوم)</b>؟
   <div class="wd-ctl" style="margin-top:6px"><input class="inp b-ans" type="number" step="any" aria-label="إجابتك بالكيلووات ساعة" style="width:7em;font-family:var(--font-mono);direction:ltr"><button type="button" class="btn b-chk" style="flex:0 1 auto">اتأكد</button><span class="msg b-msg" aria-live="polite"></span></div></div>`;
   function upd(){
@@ -375,7 +381,7 @@ BL.bill = function(host, opt){
   $('.b-chk', host).addEventListener('click', () => {
     const v = +$('.b-ans', host).value, m = $('.b-msg', host);
     if (Math.abs(v - 180) < 0.01){ m.className = 'msg b-msg ok'; m.textContent = 'صح: 2000W = 2kW × 3 ساعات = 6 kWh في اليوم × 30 = 180 kWh.'; chal.classList.add('ok'); BL.mark(opt.lesson, 'bill'); }
-    else { m.className = 'msg b-msg bad'; m.textContent = 'لأ. حوّل الوات لكيلووات الأول (÷ 1000)، واضرب في الساعات، وبعدين في 30 يوم.'; }
+    else { m.className = 'msg b-msg bad'; m.textContent = 'لأ. امشي على خطوات المثال اللي فوق: 2000 ÷ 1000 = 2 kW، × 3 ساعات، × 30 يوم.'; }
   });
 };
 
