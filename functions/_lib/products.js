@@ -13,14 +13,15 @@ import { cairoEndOfDay } from "./plan.js";
 export const ACCESS_DAYS = 365; // 1 year. Change here only; the pages say «سنة كاملة» / "1 year" (assets/pay.js, assets/i18n-en.js, assets/admin.js, subscribe.html, refund.html)
 // Prices used when the «الأسعار» tab has no price saved for a course: EGP (price, was = before discount) and USD for
 // buyers outside Egypt (usd, usd_was). The admin tab overrides each one; a cleared box falls back to its default here.
+// link: the course's Gumroad page (card payment from outside Egypt); the admin can override it in «الأسعار».
 export const DEFAULT_PRICES = {
-  basics:  { price: 299, was: 449, usd: 25, usd_was: 39 },
-  drw:     { price: 299, was: 449, usd: 25, usd_was: 39 },
-  classic: { price: 449, was: 649, usd: 35, usd_was: 55 },
-  instr:   { price: 499, was: 749, usd: 39, usd_was: 59 },
-  vfd:     { price: 499, was: 749, usd: 39, usd_was: 59 },
-  srv:     { price: 499, was: 749, usd: 39, usd_was: 59 },
-  plc:     { price: 749, was: 999, usd: 59, usd_was: 89 }
+  basics:  { price: 299, was: 449, usd: 25, usd_was: 39, link: "https://learnelectricals.gumroad.com/l/Basic" },
+  drw:     { price: 299, was: 449, usd: 25, usd_was: 39, link: "https://learnelectricals.gumroad.com/l/Drawing" },
+  classic: { price: 449, was: 649, usd: 35, usd_was: 55, link: "https://learnelectricals.gumroad.com/l/Classiccontrol" },
+  instr:   { price: 499, was: 749, usd: 39, usd_was: 59, link: "https://learnelectricals.gumroad.com/l/Instrumentation" },
+  vfd:     { price: 499, was: 749, usd: 39, usd_was: 59, link: "https://learnelectricals.gumroad.com/l/VFD" },
+  srv:     { price: 499, was: 749, usd: 39, usd_was: 59, link: "https://learnelectricals.gumroad.com/l/Servo" },
+  plc:     { price: 749, was: 999, usd: 59, usd_was: 89, link: "https://learnelectricals.gumroad.com/l/PLC" }
 };
 
 // ids match _lib/courses.js (certificates) so one id means one course everywhere.
@@ -66,11 +67,11 @@ const cleanLink = v => { const s = String(v == null ? "" : v).trim(); return /^h
 // One course with the defaults filled in. A course that was never saved is for sale («للبيع») at its defaults.
 function withDefaults(id, c){
   const d = DEFAULT_PRICES[id] || {};
-  if (!c) return { price: d.price || null, was: d.was || null, usd: d.usd || null, usd_was: d.usd_was || null, link: "", on: !!d.price };
+  if (!c) return { price: d.price || null, was: d.was || null, usd: d.usd || null, usd_was: d.usd_was || null, link: d.link || "", on: !!d.price };
   const price = pos(c.price) || d.price || null, usd = pos(c.usd) || d.usd || null;
   const was = pos(c.price) ? pos(c.was) : pos(c.was) || d.was || null;
   const usdWas = pos(c.usd) ? pos(c.usd_was) : pos(c.usd_was) || d.usd_was || null;
-  return { price, was: was && price && was > price ? was : null, usd, usd_was: usdWas && usd && usdWas > usd ? usdWas : null, link: cleanLink(c.link), on: c.on === true && !!price };
+  return { price, was: was && price && was > price ? was : null, usd, usd_was: usdWas && usd && usdWas > usd ? usdWas : null, link: cleanLink(c.link) || d.link || "", on: c.on === true && !!price };
 }
 
 export async function getPrices(db){
