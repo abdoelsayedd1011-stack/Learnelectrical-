@@ -104,7 +104,7 @@
   // video: show only when the manifest lists this lesson
   function apply(m){
     var list = m && m.videos;
-    if (!Array.isArray(list)) return;
+    if (en || !Array.isArray(list)) return; // the videos are narrated in Arabic: English lessons stay without one
     var want = dir + "/lesson-" + num;
     for (var i = 0; i < list.length; i++){
       var v = list[i], key = typeof v === "string" ? v : (v && v.id);
