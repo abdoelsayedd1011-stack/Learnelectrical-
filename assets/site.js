@@ -412,24 +412,70 @@
   function goText(l){ return EN ? EN.goCourse + (l.ar ? AR_BADGE : "") : "ابدأ الكورس ←"; }
   var AR_BADGE = EN ? '<span class="ar-badge" title="' + esc(EN.arBadgeTitle) + '">' + esc(EN.arBadge) + "</span>" : "";
   // غلاف كل كورس زي البروشور: الاسم وكل الدروس بالترتيب (assets/courses/covers/<id>-ar|en.webp، 960×1200)
-  var coverN = 0;
   function tocOf(l){ return (EN && EN.toc && EN.toc[l.id]) || TOC[l.id] || null; }
+  // الغلاف: فيديو قصير للتمرين نفسه وهو شغّال في الخلفية، والكلام فوقه HTML حقيقي (عربي/إنجليزي بنفس الفيديو)
+  var CV = {
+    basics:{ ac:"#f5b83d", ar:"أساسيات الكهربا", en:"Electrical Basics" },
+    classic:{ ac:"#4fd17f", ar:"الكلاسيك كنترول", en:"Classic Control" },
+    instr:{ ac:"#36c9e0", ar:"الإنسترومنتيشن", en:"Instrumentation" },
+    plc:{ ac:"#a48bff", ar:"الـ PLC", en:"PLC Programming" },
+    drw:{ ac:"#5aa2ff", ar:"قراية الرسومات الكهربية", en:"Reading Electrical Drawings" },
+    vfdc:{ ac:"#ff8a4c", ar:"الانفرتر VFD", en:"VFD (Inverter)" },
+    srv:{ ac:"#ff5c7a", ar:"السيرفو موتور والدرايف", en:"Servo Motor & Drive" }
+  };
+  var CVV = "c4";
+  function coverHtml(l, toc){
+    var c = CV[l.id], src = "/assets/courses/covers/" + l.id;
+    if (!c || !toc) return '<div class="cover"><img src="' + src + (EN ? "-en" : "-ar") + '.webp?v=b3" width="960" height="1200" alt="" decoding="async"></div><h4 class="sr-only">' + esc(l.name) + "</h4>";
+    var pad = function(i){ return (i < 9 ? "0" : "") + (i + 1); };
+    return '<div class="cover vc" style="--ac:' + c.ac + '">' +
+      '<video class="vc-vid" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true" tabindex="-1" poster="' + src + "-poster.webp?v=" + CVV + '">' +
+        '<source src="' + src + "-loop.webm?v=" + CVV + '" type="video/webm"><source src="' + src + "-loop.mp4?v=" + CVV + '" type="video/mp4"></video>' +
+      '<div class="vc-shade" aria-hidden="true"></div>' +
+      '<div class="vc-body">' +
+        '<p class="vc-kick"><i aria-hidden="true"></i>' + (EN ? "COURSE · " : "كورس · ") + esc(toc.n) + "</p>" +
+        '<h4 class="vc-title"><span class="sr-only">' + esc(l.name) + '</span><span aria-hidden="true">' + esc(EN ? c.en : c.ar) + "</span></h4>" +
+        (toc.x && toc.x.length ? '<p class="vc-chips">' + toc.x.map(function(x){ return "<span>" + esc(x) + "</span>"; }).join("") + "</p>" : "") +
+        '<p class="vc-h">' + (EN ? EN.contents : "محتوى الكورس بالترتيب") + "</p>" +
+        '<ol class="vc-list">' + toc.l.map(function(x, i){ return '<li><b aria-hidden="true">' + pad(i) + "</b><span>" + esc(x) + "</span></li>"; }).join("") + "</ol>" +
+        '<p class="vc-foot"><span>' + (EN ? "3 lessons free, no account" : "3 دروس من غير حساب") + '</span><span class="vc-wm" dir="ltr" aria-hidden="true">Learn<b>Electricals</b></span></p>' +
+      "</div></div>";
+  }
+  // الفيديو بيشتغل بس وهو قدّام العين، ويقف لما يخرج من الشاشة. ومع تقليل الحركة أو توفير البيانات بيفضل صورة ثابتة
+  var vcIO = null;
+  function vcStill(){
+    try { if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return true; } catch(e) {}
+    var cn = navigator.connection; return !!(cn && cn.saveData);
+  }
+  function vcPlay(v){ var pr; try { pr = v.play(); } catch(e) {} if (pr && pr.catch) pr.catch(function(){}); }
+  function vcWire(root){
+    var vids = root.querySelectorAll("video.vc-vid"); if (!vids.length || vcStill()) return;
+    if (!("IntersectionObserver" in window)){ return; }
+    if (!vcIO) vcIO = new IntersectionObserver(function(es){
+      es.forEach(function(e){ var v = e.target; if (e.isIntersecting){ if (v.preload !== "auto") v.preload = "auto"; vcPlay(v); } else if (!v.paused) v.pause(); });
+    }, { rootMargin: "120px 0px", threshold: 0.15 });
+    vids.forEach(function(v){ vcIO.observe(v); });
+  }
   function card(l){
     var toc = tocOf(l);
-    // الدروس مكتوبة على الغلاف بس، فبنحطها في الـ alt عشان القارئ الصوتي
-    var alt = (EN ? "Cover: " : "غلاف ") + l.name + (toc ? (EN ? ". Lessons: " : ". الدروس: ") + toc.l.map(function(x, i){ return (i + 1) + ". " + x; }).join(EN ? ", " : "، ") : "");
-    var cover = '<div class="cover"><img src="/assets/courses/covers/' + l.id + (EN ? "-en" : "-ar") + '.webp?v=b3" width="960" height="1200" alt="' + esc(alt) + '"' + (coverN++ ? ' loading="lazy"' : "") + ' decoding="async"></div>';
+    var cover = coverHtml(l, toc);
     var st = priceState(PRODUCT_OF[l.id]);
     var pl = !st ? "" : '<p class="price-line' + (st.kind === "price" ? "" : " own") + '">' + (st.kind === "own" ? esc(ownText(PRODUCT_OF[l.id])) : st.kind === "pro" ? (EN ? EN.pro : "معاك في الاشتراك ✓") : priceHtml(st.c)) + "</p>";
     var buy = st && st.kind === "price" ? '<a class="buy" href="subscribe.html?course=' + PRODUCT_OF[l.id] + '">' + (EN ? EN.buy : "اشتري الكورس") + '<span class="sr-only"> ' + esc(l.name) + "</span></a>" : "";
-    // تحت الغلاف: الاسم مخفي للشاشة بس (sr-only) عشان القارئ الصوتي والبحث، وبعده السعر والزراير بس — الدروس مكتوبة على الغلاف نفسه
-    var head = '<h4 class="sr-only">' + esc(l.name) + "</h4>";
+    // تحت الغلاف: السعر والزراير بس — الاسم والدروس مكتوبين على الغلاف نفسه كنص حقيقي
     if (!detail){
-      return '<a class="card course" href="' + esc(l.href) + '"' + (l.ar ? ' hreflang="ar"' : "") + ' data-id="' + l.id + '">' + cover + head + pl + '<span class="go">' + goText(l) + '</span></a>';
+      return '<a class="card course" href="' + esc(l.href) + '"' + (l.ar ? ' hreflang="ar"' : "") + ' data-id="' + l.id + '">' + cover + pl + '<span class="go">' + goText(l) + '</span></a>';
     }
     var land = l.land ? '<a class="more" href="' + esc(l.land) + '">' + (EN ? EN.details : "تفاصيل الكورس ←") + '<span class="sr-only"> ' + esc(l.name) + "</span></a>" : "";
-    return '<article class="card detail course" data-id="' + l.id + '">' + cover + head + pl +
+    return '<article class="card detail course" data-id="' + l.id + '">' + cover + pl +
       '<div class="go-row"><a class="go" href="' + esc(l.href) + '"' + (l.ar ? ' hreflang="ar"' : "") + ">" + goText(l) + '<span class="sr-only"> ' + esc(l.name) + "</span></a>" + buy + land + "</div></article>";
+  }
+  // لو سطر طويل على عرض الكارت، نصغّره شوية بدل ما يتقص
+  function vcFit(root){
+    root.querySelectorAll(".vc-list span, .vc-title > span[aria-hidden]").forEach(function(el){
+      el.style.fontSize = ""; var i = 0;
+      while (el.scrollWidth > el.clientWidth + 1 && i++ < 8){ el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) * 0.94) + "px"; }
+    });
   }
   function match(l){
     if (state.brand !== "all" && l.brandKey !== state.brand) return false;
@@ -442,9 +488,10 @@
   var IV_Q = /interview|question|انترفيو|إنترفيو|مقابل|أسئل|اسئل|سؤال/i;
   var IV_CARD = EN ? EN.ivCard : '<div class="iv-band iv-hit"><div><span class="eyebrow">بنك الأسئلة</span><h2>أسئلة الإنترفيو</h2><p>أسئلة إنترفيو الكهربا والصيانة والأوتوميشن بإجابات مختصرة، مفتوحة للكل.</p></div><a class="btn btn-ghost" href="interview/index.html">ذاكر الأسئلة ←</a></div>';
   function render(){
-    var iv = !!state.q && IV_Q.test(state.q); coverN = 0;
+    var iv = !!state.q && IV_Q.test(state.q);
     var items = COURSES.filter(match), n = items.length;
     cat.innerHTML = (iv ? IV_CARD : "") + (n ? '<div class="grid course-grid">' + items.map(card).join("") + "</div>" : "");
+    vcWire(cat); vcFit(cat);
     if (emptyEl) emptyEl.classList.toggle("show", n === 0 && !iv);
     if (countEl) countEl.textContent = n === COURSES.length ? (EN ? EN.all(n) : "الكل (" + n + ")") : EN ? EN.shown(n, COURSES.length) : "ظاهر " + n + " من " + COURSES.length;
   }
@@ -463,4 +510,6 @@
   var reset = document.querySelector("[data-reset]");
   if (reset) reset.addEventListener("click", function(){ state = { brand:"all", q:"" }; if (searchEl) searchEl.value = ""; if (chipsEl) chipsEl.querySelectorAll(".chip").forEach(function(c){ c.setAttribute("aria-pressed", c.getAttribute("data-brand") === "all" ? "true" : "false"); }); render(); });
   render();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ vcFit(cat); });
+  var vcT; window.addEventListener("resize", function(){ clearTimeout(vcT); vcT = setTimeout(function(){ vcFit(cat); }, 150); });
 })();
