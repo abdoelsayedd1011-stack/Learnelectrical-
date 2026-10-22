@@ -15,7 +15,7 @@ export const ACCESS_DAYS = 365; // 1 year. Change here only; the pages say «س�
 // buyers outside Egypt (usd, usd_was). The admin tab overrides each one; a cleared box falls back to its default here.
 // link: the course's Gumroad page (card payment from outside Egypt); the admin can override it in «الأسعار».
 export const DEFAULT_PRICES = {
-  basics:  { price: 299, was: 449, usd: 25, usd_was: 39, link: "https://learnelectricals.gumroad.com/l/Basic" },
+  basics:  { price: 299, was: 449, usd: 25, usd_was: 39, link: "https://learnelectricals.gumroad.com/l/cmweg" },
   drw:     { price: 299, was: 449, usd: 25, usd_was: 39, link: "https://learnelectricals.gumroad.com/l/Drawing" },
   classic: { price: 449, was: 649, usd: 35, usd_was: 55, link: "https://learnelectricals.gumroad.com/l/Classiccontrol" },
   instr:   { price: 499, was: 749, usd: 39, usd_was: 59, link: "https://learnelectricals.gumroad.com/l/Instrumentation" },
