@@ -416,24 +416,19 @@
   function tocOf(l){ return (EN && EN.toc && EN.toc[l.id]) || TOC[l.id] || null; }
   function card(l){
     var toc = tocOf(l);
-    var cover = '<div class="cover"><img src="/assets/courses/covers/' + l.id + (EN ? "-en" : "-ar") + '.webp?v=b2" width="960" height="1200" alt="' + esc((EN ? "Cover: " : "غلاف ") + l.name) + '"' + (coverN++ ? ' loading="lazy"' : "") + ' decoding="async"></div>';
-    var acc = EN ? EN.free3 : "3 دروس من غير حساب";
+    // الدروس مكتوبة على الغلاف بس، فبنحطها في الـ alt عشان القارئ الصوتي
+    var alt = (EN ? "Cover: " : "غلاف ") + l.name + (toc ? (EN ? ". Lessons: " : ". الدروس: ") + toc.l.map(function(x, i){ return (i + 1) + ". " + x; }).join(EN ? ", " : "، ") : "");
+    var cover = '<div class="cover"><img src="/assets/courses/covers/' + l.id + (EN ? "-en" : "-ar") + '.webp?v=b3" width="960" height="1200" alt="' + esc(alt) + '"' + (coverN++ ? ' loading="lazy"' : "") + ' decoding="async"></div>';
     var st = priceState(PRODUCT_OF[l.id]);
     var pl = !st ? "" : '<p class="price-line' + (st.kind === "price" ? "" : " own") + '">' + (st.kind === "own" ? esc(ownText(PRODUCT_OF[l.id])) : st.kind === "pro" ? (EN ? EN.pro : "معاك في الاشتراك ✓") : priceHtml(st.c)) + "</p>";
     var buy = st && st.kind === "price" ? '<a class="buy" href="subscribe.html?course=' + PRODUCT_OF[l.id] + '">' + (EN ? EN.buy : "اشتري الكورس") + '<span class="sr-only"> ' + esc(l.name) + "</span></a>" : "";
-    var head = '<div class="meta"><span class="brand">' + esc(l.brand) + '</span><span class="kind">' + esc(l.kind) + '</span><span class="access">' + acc + "</span></div>" +
-               '<h4' + (l.rtlName ? ' style="direction:rtl"' : "") + ">" + esc(l.name) + "</h4>";
-    var body = "<p>" + esc(l.line) + "</p>";
-    if (toc){
-      body += '<ul class="facts">' + [toc.n].concat(toc.x).map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>" +
-        '<p class="toc-h">' + (EN ? esc(EN.contents) : "محتوى الكورس بالترتيب") + "</p>" +
-        '<ol class="toc">' + toc.l.map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("") + "</ol>";
-    }
+    // تحت الغلاف: الاسم مخفي للشاشة بس (sr-only) عشان القارئ الصوتي والبحث، وبعده السعر والزراير بس — الدروس مكتوبة على الغلاف نفسه
+    var head = '<h4 class="sr-only">' + esc(l.name) + "</h4>";
     if (!detail){
-      return '<a class="card course" href="' + esc(l.href) + '"' + (l.ar ? ' hreflang="ar"' : "") + ' data-id="' + l.id + '">' + cover + head + body + pl + '<span class="go">' + goText(l) + '</span></a>';
+      return '<a class="card course" href="' + esc(l.href) + '"' + (l.ar ? ' hreflang="ar"' : "") + ' data-id="' + l.id + '">' + cover + head + pl + '<span class="go">' + goText(l) + '</span></a>';
     }
     var land = l.land ? '<a class="more" href="' + esc(l.land) + '">' + (EN ? EN.details : "تفاصيل الكورس ←") + '<span class="sr-only"> ' + esc(l.name) + "</span></a>" : "";
-    return '<article class="card detail course" data-id="' + l.id + '">' + cover + head + body + pl +
+    return '<article class="card detail course" data-id="' + l.id + '">' + cover + head + pl +
       '<div class="go-row"><a class="go" href="' + esc(l.href) + '"' + (l.ar ? ' hreflang="ar"' : "") + ">" + goText(l) + '<span class="sr-only"> ' + esc(l.name) + "</span></a>" + buy + land + "</div></article>";
   }
   function match(l){
