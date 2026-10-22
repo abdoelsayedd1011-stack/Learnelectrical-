@@ -429,17 +429,20 @@
     if (!c || !toc) return '<div class="cover"><img src="' + src + (EN ? "-en" : "-ar") + '.webp?v=b3" width="960" height="1200" alt="" decoding="async"></div><h4 class="sr-only">' + esc(l.name) + "</h4>";
     var pad = function(i){ return (i < 9 ? "0" : "") + (i + 1); };
     return '<div class="cover vc" style="--ac:' + c.ac + '">' +
-      '<video class="vc-vid" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true" tabindex="-1" poster="' + src + "-poster.webp?v=" + CVV + '">' +
-        '<source src="' + src + "-loop.webm?v=" + CVV + '" type="video/webm"><source src="' + src + "-loop.mp4?v=" + CVV + '" type="video/mp4"></video>' +
-      '<div class="vc-shade" aria-hidden="true"></div>' +
       '<div class="vc-body">' +
+        // الفيديو جنب الكلام (في بداية الكارت عشان يطفو على الجنب)، والكلام بيلف حواليه
+        '<div class="vc-side"><div class="vc-frame">' +
+          '<video class="vc-vid" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true" tabindex="-1" poster="' + src + "-poster.webp?v=" + CVV + '">' +
+            '<source src="' + src + "-loop.webm?v=" + CVV + '" type="video/webm"><source src="' + src + "-loop.mp4?v=" + CVV + '" type="video/mp4"></video>' +
+        '</div><p class="vc-live"><i aria-hidden="true"></i>' + (EN ? "Exercise from the course" : "تمرين من جوّه الكورس") + "</p></div>" +
         '<p class="vc-kick"><i aria-hidden="true"></i>' + (EN ? "COURSE · " : "كورس · ") + esc(toc.n) + "</p>" +
         '<h4 class="vc-title"><span class="sr-only">' + esc(l.name) + '</span><span aria-hidden="true">' + esc(EN ? c.en : c.ar) + "</span></h4>" +
         (toc.x && toc.x.length ? '<p class="vc-chips">' + toc.x.map(function(x){ return "<span>" + esc(x) + "</span>"; }).join("") + "</p>" : "") +
         '<p class="vc-h">' + (EN ? EN.contents : "محتوى الكورس بالترتيب") + "</p>" +
         '<ol class="vc-list">' + toc.l.map(function(x, i){ return '<li><b aria-hidden="true">' + pad(i) + "</b><span>" + esc(x) + "</span></li>"; }).join("") + "</ol>" +
-        '<p class="vc-foot"><span>' + (EN ? "3 lessons free, no account" : "3 دروس من غير حساب") + '</span><span class="vc-wm" dir="ltr" aria-hidden="true">Learn<b>Electricals</b></span></p>' +
-      "</div></div>";
+      "</div>" +
+      '<p class="vc-foot"><span>' + (EN ? "3 lessons free, no account" : "3 دروس من غير حساب") + '</span><span class="vc-wm" dir="ltr" aria-hidden="true">Learn<b>Electricals</b></span></p>' +
+      "</div>";
   }
   // الفيديو بيشتغل بس وهو قدّام العين، ويقف لما يخرج من الشاشة. ومع تقليل الحركة أو توفير البيانات بيفضل صورة ثابتة
   var vcIO = null;
@@ -472,7 +475,7 @@
   }
   // لو سطر طويل على عرض الكارت، نصغّره شوية بدل ما يتقص
   function vcFit(root){
-    root.querySelectorAll(".vc-list span, .vc-title > span[aria-hidden]").forEach(function(el){
+    root.querySelectorAll(".vc-title > span[aria-hidden]").forEach(function(el){
       el.style.fontSize = ""; var i = 0;
       while (el.scrollWidth > el.clientWidth + 1 && i++ < 8){ el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) * 0.94) + "px"; }
     });
