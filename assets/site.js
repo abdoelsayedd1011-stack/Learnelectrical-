@@ -404,8 +404,11 @@
   var SIM_WITH = EN ? EN.simWith : { drives: "مع كورس الانفرتر", servo: "مع كورس السيرفو", temp: "مع كورس الإنسترومنتيشن" };
   function goText(l){ return EN ? (l.course ? EN.goCourse : EN.goSim) + (l.ar ? AR_BADGE : "") : l.course ? "ابدأ الكورس ←" : "افتح المحاكي ←"; }
   var AR_BADGE = EN ? '<span class="ar-badge" title="' + esc(EN.arBadgeTitle) + '">' + esc(EN.arBadge) + "</span>" : "";
+  // غلاف مرسوم لكل كورس (assets/courses/covers/<id>-ar|en.webp، 800×420) بدل شاشة الجهاز؛ المحاكيات بتفضل بشاشتها
+  var COVERS = { basics:1, classic:1, instr:1, plc:1, drw:1, vfdc:1, srv:1 }, coverN = 0;
   function card(l){
-    var disp = '<div class="disp ' + esc(l.dispClass) + '" aria-hidden="true">' + (l.html ? l.disp : esc(l.disp)) + "</div>";
+    var disp = COVERS[l.id] ? '<div class="cover"><img src="/assets/courses/covers/' + l.id + (EN ? "-en" : "-ar") + '.webp" width="800" height="420" alt="' + esc((EN ? "Cover: " : "غلاف ") + l.name) + '"' + (coverN++ ? ' loading="lazy"' : "") + ' decoding="async"></div>'
+      : '<div class="disp ' + esc(l.dispClass) + '" aria-hidden="true">' + (l.html ? l.disp : esc(l.disp)) + "</div>";
     var FREE = EN ? EN.freeAcc : "بحساب مجاني";
     var acc = l.id === "pf525" ? (EN ? EN.noAccount : "من غير حساب") : l.course ? (EN ? EN.free3 : "3 دروس من غير حساب") : PR && PR.paywall ? SIM_WITH[l.group] || FREE : FREE;
     var st = priceState(PRODUCT_OF[l.id]);
@@ -432,7 +435,7 @@
   var IV_Q = /interview|question|انترفيو|إنترفيو|مقابل|أسئل|اسئل|سؤال/i;
   var IV_CARD = EN ? EN.ivCard : '<div class="iv-band iv-hit"><div><span class="eyebrow">بنك الأسئلة</span><h2>أسئلة الإنترفيو</h2><p>أسئلة إنترفيو الكهربا والصيانة والأوتوميشن بإجابات مختصرة، مفتوحة للكل.</p></div><a class="btn btn-ghost" href="interview/index.html">ذاكر الأسئلة ←</a></div>';
   function render(){
-    var html = "", n = 0, iv = !!state.q && IV_Q.test(state.q);
+    var html = "", n = 0, iv = !!state.q && IV_Q.test(state.q); coverN = 0;
     GROUPS.forEach(function(g){
       var items = LABS.filter(function(l){ return l.group === g.key && match(l); });
       if (!items.length) return;
