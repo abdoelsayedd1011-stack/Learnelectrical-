@@ -77,3 +77,9 @@
 - `og.png` هي الصورة اللي بتظهر لما حد يشير اللينك على فيسبوك أو واتساب (`assets/og.png`).
 - الخطوط بتتحمّل من Google Fonts؛ لو النت قطع الصفحة بتستخدم خط النظام عادي.
 - معملين (`vfd-simulator` و `servo-simulator`) مفيهمش زرار يرجع للرئيسية من جوه المعمل؛ الزائر يرجع بزرار Back في المتصفح.
+
+## الدخول بجوجل
+زرار «ادخل بجوجل» بيظهر لما يتحط متغيرين في Cloudflare Pages ← Settings ← Variables and Secrets:
+`GOOGLE_CLIENT_ID` و `GOOGLE_CLIENT_SECRET` (من Google Cloud Console ← Credentials ← OAuth client ID، نوع Web application،
+Authorized redirect URI: `https://www.learnelectricals.com/api/auth/google/callback`).
+أي تغيير في المتغيرين بيشتغل مع أول نشرة جديدة (Retry deployment أو أي push).
