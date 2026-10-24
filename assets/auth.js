@@ -58,7 +58,11 @@
     // back from Google (or a blocked account) with ?err=code
     var errCode = new URLSearchParams(location.search).get("err");
     if (errCode){
-      var AR_ERR = { no_google: "الدخول بجوجل لسه مش متفعّل على الموقع. ادخل بالإيميل والباسورد.", google_failed: "معرفناش نكمّل الدخول بجوجل. جرّب تاني.", suspended: "الحساب ده موقوف، كلّم الإدارة." };
+      var AR_ERR = { no_google: "الدخول بجوجل لسه مش متفعّل على الموقع. ادخل بالإيميل والباسورد.", google_failed: "معرفناش نكمّل الدخول بجوجل. جرّب تاني.",
+        google_state: "المتصفح ده مش بيحفظ الكوكيز، فمعرفناش نكمّل الدخول بجوجل. افتح الموقع في Chrome أو Safari وجرّب تاني، أو ادخل بالإيميل والباسورد.",
+        google_secret: "إعداد جوجل على الموقع فيه خطأ (كود 2). ادخل بالإيميل والباسورد مؤقتًا.",
+        google_token: "إعداد جوجل على الموقع فيه خطأ (كود 3). ادخل بالإيميل والباسورد مؤقتًا.",
+        suspended: "الحساب ده موقوف، كلّم الإدارة." };
       var t = EN ? (EN.err && EN.err[errCode]) : AR_ERR[errCode];
       if (t){ setTab("login"); showMsg(fLogin.querySelector(".auth-msg"), t); }
     }
