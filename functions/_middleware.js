@@ -34,7 +34,15 @@ const COURSE_DIRS = new Set(["classic-control-lab", "basics-lab", "instrumentati
 const SYNC_DIRS = new Set([...MEMBER_LABS, ...COURSE_DIRS, "pf525-lab", "interview"]);
 const SYNC_TAG = '<script src="/assets/sync.js" defer></script>';
 
+// Lesson explainer videos (/media/lessons/<dir>/lesson-NN.mp4 + .jpg poster) are gated exactly like their lesson page.
+function mediaLessonPage(pathname){
+  const v = /^\/media\/lessons\/([^/]+)\/(lesson-\d+)\.(?:mp4|jpg)$/.exec(pathname);
+  return v && COURSE_DIRS.has(v[1]) ? "/" + v[1] + "/" + v[2] + ".html" : null;
+}
+
 function membersOnly(pathname){
+  const page = mediaLessonPage(pathname);
+  if (page) return membersOnly(page);
   const m = /^\/([^/]+)\/(.*)$/.exec(pathname);
   if (!m) return false;
   const dir = m[1], rest = m[2];
@@ -98,7 +106,7 @@ export async function onRequest(ctx){
   };
   if (!s) return go(pre + (hasSessionCookie(ctx.request) ? "/login.html?out=1" : "/login.html")); // out=1: this device was signed out (see login.html)
   if (paywallOn(ctx.env) && !isPro(s.user) && !isAdmin(s.user)){
-    const course = productOfDir(path.split("/")[1]);
+    const course = productOfDir((mediaLessonPage(path) || path).split("/")[1]);
     let owns = false;
     try { owns = !!course && await ownsCourse(db, s.id, course); } catch (e) {} // only a course that hasn't expired
     if (!owns) return go(pre + (course ? "/subscribe.html?course=" + course : "/subscribe.html"));
