@@ -1,6 +1,6 @@
 // Members-only pages: visitors without an account are sent to sign up first.
 // Open to everyone: the main pages, the PowerFlex 525 lab, the interview question bank, and the free lessons of every
-// course (FREE_LESSONS_BY_DIR: lessons 1–2 and one lesson from the middle). The PLC brand simulators (Siemens/Delta/AB) are members-only.
+// course (FREE_LESSONS_BY_DIR: lesson 1 only). The PLC brand simulators (Siemens/Delta/AB) are members-only.
 // Members' lab/course pages also get /assets/sync.js injected so their progress syncs with the account.
 // Paywall (off by default, see _lib/plan.js): when on, a member-only page also needs the member to own the course it
 // belongs to (_lib/products.js: bought once, or given by an admin), or an active Pro plan («كل الكورسات»), or to be an admin.
@@ -19,16 +19,16 @@ const MEMBER_LABS = new Set([
   "mrje-servo", "sigma7-servo", "kinetix300-servo",
   "acs580-lab", "g120-lab", "fre800-lab", "ga500-lab", "ig5a-lab", "gd20-lab", "c2000-lab", "frenic-lab"
 ]);
-// Lessons open to everyone (no account, no purchase): 1, 2 and the middle lesson, ceil(lessons / 2).
-// When a course gets more lessons, update its middle lesson here and the «مفتوح للكل» tags on its page in /courses/.
+// Lessons open to everyone (no account, no purchase): lesson 1 of every course.
+// To open more, add their numbers here and the «مفتوح للكل» tags on the course page in /courses/.
 const FREE_LESSONS_BY_DIR = {
-  "basics-lab": [1, 2, 7],          // 13 lessons
-  "classic-control-lab": [1, 2, 5], // 9
-  "instrumentation-lab": [1, 2, 5], // 10
-  "plc-lab": [1, 2, 5],             // 10
-  "drawings-lab": [1, 2, 4],        // 7
-  "vfd-course": [1, 2, 6],          // 12
-  "servo-course": [1, 2, 6]         // 12
+  "basics-lab": [1],                // 13 lessons
+  "classic-control-lab": [1],       // 9
+  "instrumentation-lab": [1],       // 10
+  "plc-lab": [1],                   // 10
+  "drawings-lab": [1],              // 7
+  "vfd-course": [1],                // 12
+  "servo-course": [1]               // 12
 };
 const COURSE_DIRS = new Set(["classic-control-lab", "basics-lab", "instrumentation-lab", "plc-lab", "drawings-lab", "vfd-course", "servo-course"]);
 const SYNC_DIRS = new Set([...MEMBER_LABS, ...COURSE_DIRS, "pf525-lab", "interview"]);
@@ -50,7 +50,7 @@ function membersOnly(pathname){
   if (COURSE_DIRS.has(dir)){
     if (dir === "plc-lab" && /^(?:siemens|delta|ab)(?:\.html)?$/.test(rest)) return true; // brand simulators
     const l = /^lesson-(\d+)/.exec(rest);
-    return !!l && !(FREE_LESSONS_BY_DIR[dir] || [1, 2]).includes(Number(l[1]));
+    return !!l && !(FREE_LESSONS_BY_DIR[dir] || [1]).includes(Number(l[1]));
   }
   return MEMBER_LABS.has(dir);
 }

@@ -18,7 +18,7 @@
     guided: function(n){ return n + " guided exercises"; }, graded: function(n){ return n + " graded exercises"; },
     params: function(n, about){ return (about ? "~" : "") + n + " parameters"; }, faults: function(n){ return n + " faults"; },
     simWith: { drives: "With the VFD course", servo: "With the servo course", temp: "With the instrumentation course" },
-    goCourse: "Start course →", goSim: "Open simulator →", noAccount: "No account needed", free3: "3 free lessons", freeAcc: "Free account",
+    goCourse: "Start course →", goSim: "Open simulator →", noAccount: "No account needed", free3: "1 free lesson", freeAcc: "Free account",
     contents: "Course contents, in order",
     toc: {
       basics: { n:"13 lessons", x:["Live multimeter", "Exam & certificate"],
