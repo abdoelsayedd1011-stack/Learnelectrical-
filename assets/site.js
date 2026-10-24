@@ -443,7 +443,7 @@
           '</div><p class="vc-live"><i aria-hidden="true"></i>' + (EN ? "Exercise from the course" : "تمرين من جوّه الكورس") + "</p></div>" +
         "</div>" +
       "</div>" +
-      '<p class="vc-foot"><span>' + (EN ? "3 lessons free, no account" : "3 دروس من غير حساب") + '</span><span class="vc-wm" dir="ltr" aria-hidden="true">Learn<b>Electricals</b></span></p>' +
+      '<p class="vc-foot"><span>' + (EN ? "1 free lesson, free account" : "درس مجاني بحساب مجاني") + '</span><span class="vc-wm" dir="ltr" aria-hidden="true">Learn<b>Electricals</b></span></p>' +
       "</div>";
   }
   // الفيديو بيشتغل بس وهو قدّام العين، ويقف لما يخرج من الشاشة. ومع تقليل الحركة أو توفير البيانات بيفضل صورة ثابتة

@@ -9,6 +9,8 @@
 // English pages live under /en/ and mirror the Arabic paths: /en/<dir>/... is gated exactly like /<dir>/..., and its
 // redirects go to /en/login.html and /en/subscribe.html. A bought course opens for one year (_lib/products.js ACCESS_DAYS).
 import { getDb, sessionUser, COOKIE } from "./_lib/auth.js";
+// LOGIN WALL: every page needs an account, except the pages listed in PUBLIC_PAGES (sign in / sign up, password
+// reset, legal pages, contact, certificate check, 404). Scripts, styles, images and /api/ are not pages and stay open.
 import { isAdmin } from "./_lib/admin.js";
 import { paywallOn, isPro } from "./_lib/plan.js";
 import { productOfDir, ownsCourse } from "./_lib/products.js";
@@ -31,6 +33,20 @@ const FREE_LESSONS_BY_DIR = {
   "servo-course": [1]               // 12
 };
 const COURSE_DIRS = new Set(["classic-control-lab", "basics-lab", "instrumentation-lab", "plc-lab", "drawings-lab", "vfd-course", "servo-course"]);
+const PUBLIC_PAGES = new Set(["/login.html", "/reset.html", "/privacy.html", "/refund.html", "/contact.html", "/cert.html", "/404.html"]);
+
+// "/", "/plc-lab/", "/about.html", "/courses/plc" are pages; "/assets/site.js", "/og.png" are not.
+function isPage(pathname){
+  if (/^\/(?:api|cdn-cgi)\//.test(pathname)) return false;
+  const last = pathname.split("/").pop();
+  return last === "" || /\.html$/.test(last) || !/\./.test(last);
+}
+function needsLogin(pathname){
+  if (!isPage(pathname)) return false;
+  const p = /\.html$/.test(pathname) || pathname.endsWith("/") ? pathname : pathname + ".html";
+  return !PUBLIC_PAGES.has(p);
+}
+
 const SYNC_DIRS = new Set([...MEMBER_LABS, ...COURSE_DIRS, "pf525-lab", "interview"]);
 const SYNC_TAG = '<script src="/assets/sync.js" defer></script>';
 
@@ -91,7 +107,8 @@ export async function onRequest(ctx){
   const url = new URL(ctx.request.url);
   const lang = splitLang(url.pathname), path = lang.path, pre = lang.en ? "/en" : "";
   const sync = syncDir(path) && hasSessionCookie(ctx.request);
-  if (!membersOnly(path)) return sync ? withSync(ctx) : ctx.next();
+  const gated = membersOnly(path), wall = needsLogin(path);
+  if (!gated && !wall) return sync ? withSync(ctx) : ctx.next();
   let s = null, db = null;
   try {
     db = await getDb(ctx.env);
@@ -105,13 +122,14 @@ export async function onRequest(ctx){
     return new Response(null, { status: 302, headers: { location: to.pathname + to.search, "cache-control": "no-store" } });
   };
   if (!s) return go(pre + (hasSessionCookie(ctx.request) ? "/login.html?out=1" : "/login.html")); // out=1: this device was signed out (see login.html)
-  if (paywallOn(ctx.env) && !isPro(s.user) && !isAdmin(s.user)){
+  const free = !paywallOn(ctx.env) || isPro(s.user) || isAdmin(s.user);
+  if (gated && !free){
     const course = productOfDir((mediaLessonPage(path) || path).split("/")[1]);
     let owns = false;
     try { owns = !!course && await ownsCourse(db, s.id, course); } catch (e) {} // only a course that hasn't expired
     if (!owns) return go(pre + (course ? "/subscribe.html?course=" + course : "/subscribe.html"));
   }
-  const res = await withSync(ctx);
+  const res = sync || gated ? await withSync(ctx) : await ctx.next();
   const out = new Response(res.body, res);
   out.headers.set("cache-control", "private, no-store");
   return out;
