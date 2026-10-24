@@ -9,8 +9,9 @@
 // English pages live under /en/ and mirror the Arabic paths: /en/<dir>/... is gated exactly like /<dir>/..., and its
 // redirects go to /en/login.html and /en/subscribe.html. A bought course opens for one year (_lib/products.js ACCESS_DAYS).
 import { getDb, sessionUser, COOKIE } from "./_lib/auth.js";
-// LOGIN WALL: every page needs an account, except the pages listed in PUBLIC_PAGES (sign in / sign up, password
-// reset, legal pages, contact, certificate check, 404). Scripts, styles, images and /api/ are not pages and stay open.
+// LOGIN WALL: the site's own pages stay open to look around (home, about, simulators list, subscribe, contact,
+// legal, and the course pages in /courses/), but every page inside a course, simulator or the interview bank
+// (any other folder) needs a signed-in member. Scripts, styles, images and /api/ are not pages and stay open.
 import { isAdmin } from "./_lib/admin.js";
 import { paywallOn, isPro } from "./_lib/plan.js";
 import { productOfDir, ownsCourse } from "./_lib/products.js";
@@ -33,18 +34,18 @@ const FREE_LESSONS_BY_DIR = {
   "servo-course": [1]               // 12
 };
 const COURSE_DIRS = new Set(["classic-control-lab", "basics-lab", "instrumentation-lab", "plc-lab", "drawings-lab", "vfd-course", "servo-course"]);
-const PUBLIC_PAGES = new Set(["/login.html", "/reset.html", "/privacy.html", "/refund.html", "/contact.html", "/cert.html", "/404.html"]);
+const OPEN_DIRS = new Set(["courses"]); // folders whose pages stay open without an account
 
-// "/", "/plc-lab/", "/about.html", "/courses/plc" are pages; "/assets/site.js", "/og.png" are not.
+// "/plc-lab/", "/plc-lab/lesson-01.html", "/interview/" are pages; "/assets/site.js", "/og.png" are not.
 function isPage(pathname){
   if (/^\/(?:api|cdn-cgi)\//.test(pathname)) return false;
   const last = pathname.split("/").pop();
   return last === "" || /\.html$/.test(last) || !/\./.test(last);
 }
+// Top-level pages ("/", "/about.html") and /courses/ are open; a page inside any other folder needs an account.
 function needsLogin(pathname){
-  if (!isPage(pathname)) return false;
-  const p = /\.html$/.test(pathname) || pathname.endsWith("/") ? pathname : pathname + ".html";
-  return !PUBLIC_PAGES.has(p);
+  const m = /^\/([^/]+)\/./.exec(pathname.endsWith("/") ? pathname + "x" : pathname);
+  return !!m && !OPEN_DIRS.has(m[1]) && isPage(pathname);
 }
 
 const SYNC_DIRS = new Set([...MEMBER_LABS, ...COURSE_DIRS, "pf525-lab", "interview"]);
