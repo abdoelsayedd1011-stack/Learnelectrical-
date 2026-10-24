@@ -4,6 +4,7 @@
 //      Authorized redirect URI: https://www.learnelectricals.com/api/auth/google/callback
 //   2. Cloudflare Pages project → Settings → Variables and Secrets: GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET (secret).
 // Without GOOGLE_CLIENT_ID the button stays hidden (/api/auth/me says google:false).
+// Variables set in Cloudflare only apply from the next deployment, so push any commit after setting them.
 export const OAUTH_COOKIE = "le_oauth";
 
 export function oauthCookie(request, value, maxAge){
