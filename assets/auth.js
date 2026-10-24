@@ -46,7 +46,22 @@
     var ended = false; try{ ended = sessionStorage.getItem("le-ended") === "1"; }catch(x){}
     if (new URLSearchParams(location.search).get("out") === "1" || ended) showOut();
 
-    api("me").then(function(r){ if (r.ok && r.user) location.replace(nextUrl()); else if (r.ok && r.ended) showOut(); });
+    api("me").then(function(r){
+      if (r.ok && r.user){ location.replace(nextUrl()); return; }
+      if (r.ok && r.ended) showOut();
+      // «ادخل بجوجل»: only when GOOGLE_CLIENT_ID is set in Cloudflare (functions/api/auth/google.js)
+      if (r.ok && r.google){
+        var nx = nextUrl(); if (nx.charAt(0) !== "/") nx = location.pathname.replace(/[^\/]*$/, "") + nx;
+        document.querySelectorAll("[data-google]").forEach(function(el){ el.hidden = false; if (el.tagName === "A") el.href = "/api/auth/google?next=" + encodeURIComponent(nx); });
+      }
+    });
+    // back from Google (or a blocked account) with ?err=code
+    var errCode = new URLSearchParams(location.search).get("err");
+    if (errCode){
+      var AR_ERR = { no_google: "الدخول بجوجل لسه مش متفعّل على الموقع. ادخل بالإيميل والباسورد.", google_failed: "معرفناش نكمّل الدخول بجوجل. جرّب تاني.", suspended: "الحساب ده موقوف، كلّم الإدارة." };
+      var t = EN ? (EN.err && EN.err[errCode]) : AR_ERR[errCode];
+      if (t){ setTab("login"); showMsg(fLogin.querySelector(".auth-msg"), t); }
+    }
 
     /* نسيت الباسورد؟ → رسالة واتساب للإدارة فيها الإيميل */
     var fBtn = document.getElementById("forgot-btn"), fBox = document.getElementById("forgot"), fWa = document.getElementById("forgot-wa");
@@ -136,7 +151,28 @@
       document.getElementById("acc-since").textContent = new Date(u.created_at).toLocaleDateString(DLOC, { year: "numeric", month: "long", day: "numeric" });
       var sync = window.LESync ? window.LESync.ready : Promise.resolve();
       sync.then(loadCerts, loadCerts);
+      // «تغيير الباسورد»: a Google-made account has none yet, so no current password is asked
+      var pwNone = document.getElementById("pw-none"), pwCur = document.getElementById("pw-cur-f");
+      if (pwNone && pwCur && u.has_password === false){ pwNone.hidden = false; pwCur.hidden = true; }
     });
+    /* ---- تغيير الباسورد من الحساب، من غير لينك ---- */
+    var fPw = document.getElementById("form-password");
+    if (fPw){
+      var pMsg = fPw.querySelector(".auth-msg"), pBtn = fPw.querySelector("button[type=submit]");
+      fPw.addEventListener("submit", function(e){
+        e.preventDefault();
+        var p1 = fPw.elements.password.value, p2 = fPw.elements.password2.value;
+        if (p1.length < 8){ showMsg(pMsg, EN ? EN.pwShort : "الباسورد لازم يكون 8 حروف أو أرقام على الأقل."); return; }
+        if (p1 !== p2){ showMsg(pMsg, EN ? EN.pwMismatch : "الباسوردين مش زي بعض. اكتبهم تاني."); return; }
+        showMsg(pMsg, ""); pBtn.disabled = true;
+        api("password", { current: fPw.elements.current.value, password: p1 }).then(function(r){
+          pBtn.disabled = false;
+          if (!r.ok){ showMsg(pMsg, M(r, OFFLINE)); return; }
+          fPw.reset(); showMsg(pMsg, EN ? EN.pwSaved : "تم حفظ الباسورد الجديد، والأجهزة التانية خرجت من الحساب.");
+          var pn = document.getElementById("pw-none"), pc = document.getElementById("pw-cur-f"); if (pn) pn.hidden = true; if (pc) pc.hidden = false;
+        });
+      });
+    }
     /* ---- شهاداتي ---- */
     var certSec = document.getElementById("certs-sec"), certList = document.getElementById("cert-list");
     function esc(t){ return String(t == null ? "" : t).replace(/[&<>"']/g, function(c){ return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }

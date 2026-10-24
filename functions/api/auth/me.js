@@ -9,8 +9,10 @@ export async function onRequestGet({ request, env }){
     if (!s){
       // A session cookie the server no longer knows: signed out from the dashboard, by a newer device, or suspended.
       // «ended» lets the login page say so gently; the dead cookie is cleared.
-      if (/^[0-9a-f]{64}$/.test(readCookie(request, COOKIE) || "")) return json({ ok: true, user: null, ended: true }, 200, { "set-cookie": clearCookie(request) });
-      return json({ ok: true, user: null });
+      // google: the login page shows «ادخل بجوجل» only when GOOGLE_CLIENT_ID is set in Cloudflare (see /api/auth/google)
+      const google = !!env.GOOGLE_CLIENT_ID;
+      if (/^[0-9a-f]{64}$/.test(readCookie(request, COOKIE) || "")) return json({ ok: true, user: null, ended: true, google }, 200, { "set-cookie": clearCookie(request) });
+      return json({ ok: true, user: null, google });
     }
     await touchUser(db, s.id, s.token_hash);
     // courses: ids of the courses open to this member now («اشتريته ✓» on the course cards); course_until: id → end of access (ms)

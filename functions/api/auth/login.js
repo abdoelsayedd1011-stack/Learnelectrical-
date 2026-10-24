@@ -11,6 +11,7 @@ export async function onRequestPost({ request, env }){
     const u = await db.prepare("SELECT id, name, email, plan, pro_until, created_at, pass_hash, pass_salt, suspended FROM users WHERE email = ?").bind(email).first();
     // Hash even when the user doesn't exist so timing doesn't reveal registered emails.
     const h = await hashPassword(password, u ? u.pass_salt : newSalt());
+    if (u && !u.pass_hash){ await noteFail(db, email); throw new HttpError(401, "use_google"); } // created with Google, no password yet
     if (!u || !sameString(h, u.pass_hash)){ await noteFail(db, email); throw new HttpError(401, "wrong_login"); }
     await clearFails(db, email);
     if (u.suspended) throw new HttpError(403, "suspended"); // only after the right password, so it doesn't reveal accounts

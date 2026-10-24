@@ -33,6 +33,10 @@ const MSG = {
   not_for_sale: "الكورس ده لسه مش متاح للشرا.",
   bad_phone: "الرقم مكتوب غلط. اكتبه أرقام بس، مثال: 01001234567",
   bad_link: "لينك الدفع لازم يبدأ بـ https://",
+  wrong_password: "الباسورد الحالي غلط.",
+  use_google: "الحساب ده بيدخل بجوجل. اضغط «ادخل بجوجل»، وبعدين تقدر تحدّد باسورد من صفحة حسابي.",
+  no_google: "الدخول بجوجل لسه مش متفعّل على الموقع. ادخل بالإيميل والباسورد.",
+  google_failed: "معرفناش نكمّل الدخول بجوجل. جرّب تاني.",
   server: "حصلت مشكلة في السيرفر. جرّب تاني بعد شوية."
 };
 
@@ -187,10 +191,11 @@ export async function sessionUser(db, request){
   const token = readCookie(request, COOKIE);
   if (!token || !/^[0-9a-f]{64}$/.test(token)) return null;
   const th = await sha256(token);
-  const row = await db.prepare("SELECT u.id, u.name, u.email, u.plan, u.pro_until, u.created_at, u.suspended, s.expires_at FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ?").bind(th).first();
+  const row = await db.prepare("SELECT u.id, u.name, u.email, u.plan, u.pro_until, u.created_at, u.suspended, u.pass_hash, s.expires_at FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ?").bind(th).first();
   if (!row || row.suspended) return null; // a suspended member counts as signed out everywhere
   if (row.expires_at < Date.now()){ await db.prepare("DELETE FROM sessions WHERE token_hash = ?").bind(th).run(); return null; }
-  return { token_hash: th, id: row.id, user: publicUser(row) };
+  // has_password: false for an account that was created with «ادخل بجوجل» and never set a password
+  return { token_hash: th, id: row.id, user: { ...publicUser(row), has_password: !!row.pass_hash } };
 }
 
 // "Last active" for the admin list (and its «متصل دلوقتي» dot); written at most once a minute per member,
