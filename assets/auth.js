@@ -155,9 +155,6 @@
       document.getElementById("acc-since").textContent = new Date(u.created_at).toLocaleDateString(DLOC, { year: "numeric", month: "long", day: "numeric" });
       var sync = window.LESync ? window.LESync.ready : Promise.resolve();
       sync.then(loadCerts, loadCerts);
-      // «تغيير الباسورد»: a Google-made account has none yet, so no current password is asked
-      var pwNone = document.getElementById("pw-none"), pwCur = document.getElementById("pw-cur-f");
-      if (pwNone && pwCur && u.has_password === false){ pwNone.hidden = false; pwCur.hidden = true; }
     });
     /* ---- تغيير الباسورد من الحساب، من غير لينك ---- */
     var fPw = document.getElementById("form-password");
@@ -169,11 +166,10 @@
         if (p1.length < 8){ showMsg(pMsg, EN ? EN.pwShort : "الباسورد لازم يكون 8 حروف أو أرقام على الأقل."); return; }
         if (p1 !== p2){ showMsg(pMsg, EN ? EN.pwMismatch : "الباسوردين مش زي بعض. اكتبهم تاني."); return; }
         showMsg(pMsg, ""); pBtn.disabled = true;
-        api("password", { current: fPw.elements.current.value, password: p1 }).then(function(r){
+        api("password", { password: p1 }).then(function(r){
           pBtn.disabled = false;
           if (!r.ok){ showMsg(pMsg, M(r, OFFLINE)); return; }
           fPw.reset(); showMsg(pMsg, EN ? EN.pwSaved : "تم حفظ الباسورد الجديد، والأجهزة التانية خرجت من الحساب.");
-          var pn = document.getElementById("pw-none"), pc = document.getElementById("pw-cur-f"); if (pn) pn.hidden = true; if (pc) pc.hidden = false;
         });
       });
     }
