@@ -8,7 +8,7 @@
   var SITE_NAME = (window.SITE || {}).name || "LearnElectricals";
   var COURSE_NAMES = { basics: "أساسيات الكهربا", classic: "الكلاسيك كنترول", instr: "الإنسترومنتيشن" };
   var SIM_NAMES = { pf525: "PowerFlex 525", pf40: "PowerFlex 40", ab1336: "1336 PLUS II", v20: "SINAMICS V20", atv320: "Altivar ATV320",
-    atv630: "Altivar ATV630", ms300: "Delta MS300", fc51: "Danfoss FC 51", e5cc: "Omron E5CC", servo: "Delta ASDA-B2", vfd: "محاكي الانفرتر الشامل" };
+    atv630: "Altivar ATV630", ms300: "Delta MS300", fc51: "Danfoss FC 51", vlt2800: "Danfoss VLT 2800", e5cc: "Omron E5CC", servo: "Delta ASDA-B2", vfd: "محاكي الانفرتر الشامل" };
 
   function esc(t){ return String(t == null ? "" : t).replace(/[&<>"']/g, function(c){ return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function get(path){

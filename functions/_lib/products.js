@@ -32,7 +32,7 @@ export const PRODUCTS = {
   instr:   { title: "الإنسترومنتيشن",            dirs: ["instrumentation-lab", "e5cc-lab"] }, // E5CC: temperature control (thermocouple / PT100)
   plc:     { title: "الـ PLC",                    dirs: ["plc-lab"] },                         // includes the Siemens / Delta / AB brand pages
   vfd:     { title: "الانفرتر VFD",               dirs: ["vfd-course", "vfd-simulator", "ab1336-simulator", "pf40-lab", "v20-lab", "atv320-lab", "atv630-lab",
-                                                         "ms300-lab", "fc51-lab", "acs580-lab", "g120-lab", "fre800-lab", "ga500-lab", "ig5a-lab", "gd20-lab", "c2000-lab", "frenic-lab"] },
+                                                         "ms300-lab", "fc51-lab", "vlt2800-lab", "acs580-lab", "g120-lab", "fre800-lab", "ga500-lab", "ig5a-lab", "gd20-lab", "c2000-lab", "frenic-lab"] },
   srv:     { title: "السيرفو موتور والدرايف",     dirs: ["servo-course", "servo-simulator", "mrje-servo", "sigma7-servo", "kinetix300-servo"] }
 };
 export const PRODUCT_IDS = Object.keys(PRODUCTS);
