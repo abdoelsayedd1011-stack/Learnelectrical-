@@ -13,7 +13,7 @@ export async function onRequestGet({ request, env }){
     const db = await getDb(env);
     const me = await requireAdmin(db, request);
     const id = memberId(new URL(request.url).searchParams.get("id"));
-    const u = await db.prepare("SELECT id, email, name, plan, pro_until, created_at, last_seen, COALESCE(suspended, 0) AS suspended, suspend_reason, suspended_at, admin_note, admin_note_at FROM users WHERE id = ?").bind(id).first();
+    const u = await db.prepare("SELECT id, email, name, country, plan, pro_until, created_at, last_seen, COALESCE(suspended, 0) AS suspended, suspend_reason, suspended_at, admin_note, admin_note_at FROM users WHERE id = ?").bind(id).first();
     if (!u) throw new HttpError(404, "not_found");
     await payTable(db);
     const now = Date.now(), ids = Object.keys(COURSES);

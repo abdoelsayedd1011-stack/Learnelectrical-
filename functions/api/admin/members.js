@@ -18,7 +18,7 @@ export async function onRequestGet({ request, env }){
     const bindQ = st => binds.length ? st.bind(...binds) : st;
     const [count, rows] = await Promise.all([
       bindQ(db.prepare("SELECT COUNT(*) AS n FROM users u" + where)).first(),
-      bindQ(db.prepare("SELECT u.id, u.email, u.name, u.plan, u.pro_until, u.created_at, u.last_seen, COALESCE(u.suspended, 0) AS suspended, (SELECT COUNT(*) FROM progress p WHERE p.user_id = u.id) AS synced, (SELECT COUNT(*) FROM certificates c WHERE c.user_id = u.id) AS certs FROM users u" + where + " ORDER BY u.created_at DESC, u.id DESC LIMIT " + PAGE + " OFFSET " + offset)).all()
+      bindQ(db.prepare("SELECT u.id, u.email, u.name, u.plan, u.pro_until, u.created_at, u.last_seen, COALESCE(u.suspended, 0) AS suspended, (SELECT COUNT(*) FROM progress p WHERE p.user_id = u.id) AS synced, (SELECT COUNT(*) FROM certificates c WHERE c.user_id = u.id) AS certs, COALESCE(u.country, (SELECT s.country FROM sessions s WHERE s.user_id = u.id AND s.country IS NOT NULL ORDER BY COALESCE(s.last_seen, s.created_at, 0) DESC LIMIT 1)) AS country FROM users u" + where + " ORDER BY u.created_at DESC, u.id DESC LIMIT " + PAGE + " OFFSET " + offset)).all()
     ]);
     const members = (rows.results || []).map(r => ({ ...r, admin: isAdmin(r) }));
     return json({ ok: true, total: count.n, offset, page: PAGE, members, filter: f, paywall: paywallOn(env) });

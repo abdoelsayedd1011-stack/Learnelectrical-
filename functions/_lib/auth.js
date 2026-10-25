@@ -85,6 +85,8 @@ export async function getDb(env){
     try { await env.DB.prepare("ALTER TABLE users ADD COLUMN suspended_at INTEGER").run(); } catch (e) {}
     try { await env.DB.prepare("ALTER TABLE users ADD COLUMN admin_note TEXT").run(); } catch (e) {} // private admin notes, never sent to the member
     try { await env.DB.prepare("ALTER TABLE users ADD COLUMN admin_note_at INTEGER").run(); } catch (e) {}
+    // Country the member last signed in from (Cloudflare request.cf.country, 2 letters); older members fall back to their sessions.
+    try { await env.DB.prepare("ALTER TABLE users ADD COLUMN country TEXT").run(); } catch (e) {}
     // Per-device info for «الأجهزة»: browser + OS summary and country only (no IP address is stored).
     try { await env.DB.prepare("ALTER TABLE sessions ADD COLUMN created_at INTEGER").run(); } catch (e) {}
     try { await env.DB.prepare("ALTER TABLE sessions ADD COLUMN last_seen INTEGER").run(); } catch (e) {}
@@ -177,6 +179,7 @@ export async function startSession(db, request, userId, env){
   const country = /^[A-Z]{2}$/.test(String(cf.country || "")) ? cf.country : null;
   await db.batch([
     db.prepare("DELETE FROM sessions WHERE user_id = ? AND expires_at < ?").bind(userId, now),
+    db.prepare("UPDATE users SET country = COALESCE(?, country) WHERE id = ?").bind(country, userId),
     db.prepare("INSERT INTO sessions (token_hash, user_id, expires_at, created_at, last_seen, device, country) VALUES (?, ?, ?, ?, ?, ?, ?)")
       .bind(await sha256(token), userId, now + SESSION_DAYS * 864e5, now, now, deviceLabel(request.headers.get("user-agent")), country),
     // sessions from before devices were tracked have no created_at: they count as the oldest

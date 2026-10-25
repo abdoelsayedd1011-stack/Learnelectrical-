@@ -61,6 +61,8 @@
       h.addEventListener("click", function(){ show(+h.getAttribute("data-i")); });
     });
   }
+  function flagOf(c){ return /^[A-Z]{2}$/.test(c || "") ? String.fromCodePoint(127397 + c.charCodeAt(0), 127397 + c.charCodeAt(1)) : ""; }
+  function countryName(c){ if (!c) return ""; try { return new Intl.DisplayNames(["ar"], { type: "region" }).of(c) || c; } catch (e){ return c; } }
   function bars(el, rows, total){
     if (!rows.length){ el.innerHTML = '<li class="adm-empty">لسه مفيش.</li>'; return; }
     var max = Math.max(1, total || Math.max.apply(null, rows.map(function(r){ return r.n; })));
@@ -85,6 +87,8 @@
       $("online-now").innerHTML = '<i class="dot' + (on ? " on" : "") + '" aria-hidden="true"></i>' + (on ? "متصلين دلوقتي: <b>" + on + "</b>" : "مفيش حد متصل دلوقتي");
       $("active-week").textContent = "دخلوا الموقع آخر 7 أيام: " + r.active_week + " من " + r.total;
       showExpiring(r.expiring || []);
+      var ce = $("countries");
+      if (ce) bars(ce, (r.countries || []).map(function(x){ return { label: x.country ? flagOf(x.country) + " " + countryName(x.country) : "مش معروف", n: x.n }; }), r.total);
     });
   }
 
@@ -165,7 +169,7 @@
     return '<li class="mem mem-row' + (m.suspended ? " is-off" : "") + '" data-id="' + m.id + '"><button type="button" class="mem-open" data-open="' + m.id + '" aria-haspopup="dialog">' +
       '<span class="mem-top"><span class="mem-who"><b>' + (isOnline(m) ? '<i class="dot on" title="متصل دلوقتي" aria-label="متصل دلوقتي"></i>' : "") + esc(m.name) + (m.admin ? ' <span class="mem-tag">إدارة</span>' : "") + (m.suspended ? ' <span class="mem-tag off">موقوف</span>' : "") + '</b><span class="ltr mem-email">' + esc(m.email) + "</span></span>" +
       planTag(m) + "</span>" +
-      '<span class="mem-line">' + (isOnline(m) ? '<span class="on-txt">متصل دلوقتي</span>' : m.last_seen ? "آخر دخول " + esc(ago(m.last_seen)) : "لسه مدخلش") + " · اشترك " + esc(fmtDate(m.created_at)) + (m.certs ? " · " + m.certs + " شهادة" : "") + '<span class="mem-go" aria-hidden="true">التفاصيل ←</span></span>' +
+      '<span class="mem-line">' + (isOnline(m) ? '<span class="on-txt">متصل دلوقتي</span>' : m.last_seen ? "آخر دخول " + esc(ago(m.last_seen)) : "لسه مدخلش") + (m.country ? " · " + flagOf(m.country) + " " + esc(countryName(m.country)) : "") + " · اشترك " + esc(fmtDate(m.created_at)) + (m.certs ? " · " + m.certs + " شهادة" : "") + '<span class="mem-go" aria-hidden="true">التفاصيل ←</span></span>' +
       "</button></li>";
   }
   function xlsHref(){ return "/api/admin/export?q=" + encodeURIComponent(q) + "&f=" + encodeURIComponent(filter); }
@@ -216,7 +220,8 @@
     var m = d.member, pro = isPro(m), on = isOnline(m);
     $("md-who").innerHTML = '<b id="md-name">' + (on ? '<i class="dot on" aria-label="متصل دلوقتي"></i>' : '<i class="dot" aria-hidden="true"></i>') + esc(m.name) +
       (m.admin ? ' <span class="mem-tag">إدارة</span>' : "") + (m.suspended ? ' <span class="mem-tag off">موقوف</span>' : "") + '</b><span class="ltr mem-email">' + esc(m.email) + "</span>";
-    var h = '<dl class="mem-facts"><div><dt>اشترك</dt><dd>' + esc(fmtDate(m.created_at)) + "</dd></div><div><dt>آخر دخول</dt><dd>" + (on ? '<span class="on-txt">متصل دلوقتي</span>' : esc(ago(m.last_seen))) + "</dd></div>" +
+    var mc = m.country || ((d.devices || []).filter(function(x){ return x.country; })[0] || {}).country;
+    var h = '<dl class="mem-facts"><div><dt>الدولة</dt><dd>' + (mc ? flagOf(mc) + " " + esc(countryName(mc)) : "مش معروفة") + '</dd></div><div><dt>اشترك</dt><dd>' + esc(fmtDate(m.created_at)) + "</dd></div><div><dt>آخر دخول</dt><dd>" + (on ? '<span class="on-txt">متصل دلوقتي</span>' : esc(ago(m.last_seen))) + "</dd></div>" +
       "<div><dt>الخطة</dt><dd>" + (pro ? "Pro" : (m.plan === "pro" && m.pro_until ? "مجاني · Pro خلص" : "مجاني")) + "</dd></div><div><dt>الاشتراك لحد</dt><dd>" + (pro ? esc(fmtDate(m.pro_until)) : "—") + "</dd></div></dl>";
     if (m.suspended) h += '<p class="md-off" role="note"><b>الحساب ده موقوف</b> من ' + esc(fmtWhen(m.suspended_at)) + (m.suspend_reason ? ": " + esc(m.suspend_reason) : "") + "</p>";
 

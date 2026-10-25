@@ -12,14 +12,15 @@ export async function onRequestGet({ request, env }){
     const db = await getDb(env);
     await requireAdmin(db, request);
     const now = Date.now(), since = now - 32 * 864e5;
-    const [total, recent, groups, certs, active, online, expiring] = await Promise.all([
+    const [total, recent, groups, certs, active, online, expiring, countries] = await Promise.all([
       db.prepare("SELECT COUNT(*) AS n FROM users").first(),
       db.prepare("SELECT created_at FROM users WHERE created_at >= ?").bind(since).all(),
       db.prepare("SELECT CASE WHEN k LIKE 'vfd-%' THEN 'vfd' ELSE substr(k, 1, instr(k, '-') - 1) END AS g, COUNT(DISTINCT user_id) AS n FROM progress GROUP BY g").all(),
       db.prepare("SELECT course, COUNT(*) AS n FROM certificates GROUP BY course").all(),
       db.prepare("SELECT COUNT(*) AS n FROM users WHERE last_seen >= ?").bind(now - 7 * 864e5).first(),
       db.prepare("SELECT COUNT(*) AS n FROM users WHERE last_seen >= ?").bind(now - ONLINE_MS).first(),
-      db.prepare("SELECT id, name, email, pro_until, last_seen, COALESCE(suspended, 0) AS suspended FROM users WHERE plan = 'pro' AND pro_until > ? AND pro_until <= ? ORDER BY pro_until ASC LIMIT 100").bind(now, now + 7 * 864e5).all()
+      db.prepare("SELECT id, name, email, pro_until, last_seen, COALESCE(suspended, 0) AS suspended FROM users WHERE plan = 'pro' AND pro_until > ? AND pro_until <= ? ORDER BY pro_until ASC LIMIT 100").bind(now, now + 7 * 864e5).all(),
+      db.prepare("SELECT c AS country, COUNT(*) AS n FROM (SELECT COALESCE(u.country, (SELECT s.country FROM sessions s WHERE s.user_id = u.id AND s.country IS NOT NULL ORDER BY COALESCE(s.last_seen, s.created_at, 0) DESC LIMIT 1)) AS c FROM users u) GROUP BY c ORDER BY n DESC").all()
     ]);
     // 30 buckets, oldest first, keyed by Cairo calendar day
     const days = [];
@@ -29,6 +30,6 @@ export async function onRequestGet({ request, env }){
     const sum = k => days.slice(30 - k).reduce((a, d) => a + d.n, 0);
     const synced = {}; (groups.results || []).forEach(r => { if (r.g) synced[r.g] = r.n; });
     const issued = {}; (certs.results || []).forEach(r => { issued[r.course] = r.n; });
-    return json({ ok: true, total: total.n, today: sum(1), week: sum(7), month: sum(30), active_week: active.n, online: online.n, days, synced, certs: issued, expiring: expiring.results || [] });
+    return json({ ok: true, total: total.n, today: sum(1), week: sum(7), month: sum(30), active_week: active.n, online: online.n, days, synced, certs: issued, expiring: expiring.results || [], countries: countries.results || [] });
   } catch (e) { return fail(e); }
 }
