@@ -393,6 +393,24 @@ body.guided .keyguide{display:none}
 .g-hand .g-tbl small.g-path{display:block}
 .g-hand .g-tbl small.g-path b{font-family:var(--font-mono);direction:ltr;unicode-bidi:isolate}
 @media (max-width:560px){.guide{padding:14px}.g-card{min-height:96px}.g-tbl thead{display:none}.g-tbl tr{display:grid;grid-template-columns:minmax(0,1fr) auto;border-bottom:1px solid var(--line)}.g-tbl tr:last-child{border-bottom:0}.g-tbl td{border-bottom:0;padding:6px 8px 2px}.g-tbl td.pr{grid-column:1/-1;padding:0 8px 8px}}
+
+/* photo keypad (real MS300 picture) with the live display, LEDs, keys and keypad knob on top */
+.msp{width:min(340px,100%);margin:0 auto}
+.msp-photo{position:relative;width:100%;aspect-ratio:822/957;border-radius:10px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.35)}
+.msp-photo>img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.msp-photo>*:not(img){position:absolute}
+.msp-win svg{width:100%;height:100%;display:block}
+.msp-led{width:1.5%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);background:transparent}
+.msp-led.on{background:#ff3a26;box-shadow:0 0 6px #ff3a26}
+.msp-led.g.on{background:#45ec6c;box-shadow:0 0 6px #45ec6c}
+.msp-led.fl{animation:ledfl .5s steps(2,start) infinite}
+.msp-knob{border-radius:50%;background:none;box-shadow:none;cursor:ns-resize}
+.msp-knob i{position:absolute;inset:0;width:100%;height:100%;margin:0;top:0;left:0;background:none;border-radius:50%;transform-origin:50% 50%}
+.msp-knob i b{position:absolute;inset:0;background:url(ms-knob.png) center/100% 100% no-repeat;transform:rotate(140deg);border-radius:50%}
+.msp-k{border:0;background:transparent;border-radius:8px;cursor:pointer;padding:0}
+.msp-k.down,.msp-k:active{background:rgba(0,0,0,.3)}
+.msp-k:focus-visible,.msp-knob:focus-visible{outline:3px solid #ffb02e;outline-offset:2px}
+.msp-plate{margin-top:8px}
 </style>
 </head>
 <body>
@@ -435,42 +453,28 @@ body.guided .keyguide{display:none}
   <div class="col">
     <div class="panel" id="pnlFace">
       <div class="device">
-        <div class="ms" aria-label="انفرتر Delta VFD-MS300">
-          <div class="ms-cap"></div>
-          <div class="ms-shell">
-            <div class="ms-head"><div class="dlogo" id="dlogo1"></div><span class="mdl">AC MOTOR DRIVE</span></div>
-            <div class="ms-kp">
-              <div class="ms-drow">
-                <div class="ms-leds">
-                  <span class="ms-led"><i class="g" id="ledRun"></i>RUN</span>
-                  <span class="ms-led"><i id="ledStop"></i>STOP</span>
-                </div>
-                <div class="ms-win" title="شاشة LED خمس خانات"><svg id="seg" viewBox="0 0 250 84" aria-label="الشاشة"></svg></div>
-                <div class="ms-leds">
-                  <span class="ms-led"><i class="g" id="ledFwd"></i>FWD</span>
-                  <span class="ms-led"><i class="g" id="ledRev"></i>REV</span>
-                  <span class="ms-led"><i id="ledPlc"></i>PLC</span>
-                </div>
-                <div class="ms-pot"><svg class="arc" viewBox="0 0 62 62" aria-hidden="true"><path d="M13 49A26 26 0 1 1 49 49" fill="none" stroke="#d9dbdd" stroke-width="1.6" stroke-dasharray="2 3"/><text x="9" y="60" font-size="7" fill="#d9dbdd" font-family="Arial">MIN</text><text x="40" y="60" font-size="7" fill="#d9dbdd" font-family="Arial">MAX</text></svg><div class="kpot" id="kKp" tabindex="0" role="slider" aria-label="بكرة الكيباد"><i></i></div></div>
-              </div>
-              <div class="ms-keys">
-                <button class="mk run" data-k="RUN" aria-label="RUN">RUN</button>
-                <button class="mk" data-k="UP" aria-label="لفوق"><svg viewBox="0 0 14 10" width="16" height="12"><path d="M7 0 14 10H0Z" fill="#f3f4f5"/></svg></button>
-                <button class="mk mode" data-k="MODE" aria-label="MODE">MODE</button>
-                <button class="mk stop" data-k="STOP" aria-label="STOP RESET">STOP<span>RESET</span></button>
-                <button class="mk ld" data-k="LD" aria-label="شمال أو لتحت"><svg viewBox="0 0 34 10" width="34" height="11"><path d="M0 5 9 0V10Z" fill="#f3f4f5"/><path d="M15 9.5 21 .5M17 0" stroke="#f3f4f5" stroke-width="1.4"/><path d="M24 0 34 0 29 10Z" fill="#f3f4f5"/></svg></button>
-                <button class="mk ent" data-k="ENT" aria-label="ENTER">ENTER</button>
-              </div>
-            </div>
-            <div class="ms-front">
-              <div class="big"><div class="dlogo" id="dlogo2"></div><span class="nm">MS300</span></div>
-              <div class="ms-vent"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-              <div class="ms-plate"><div><b>VFD9A0MS43ANSAA</b> · 3.7kW · 460V · 9A</div><div class="chg">CHARGE<i id="busLed"></i></div></div>
-            </div>
+        <div class="ms msp" aria-label="انفرتر Delta VFD-MS300">
+          <div class="msp-photo">
+            <img src="ms-panel.jpg" alt="" aria-hidden="true" width="822" height="957">
+            <div class="msp-win" style="left:9.73%;top:9.61%;width:54.1%;height:11.3%"><svg id="seg" viewBox="0 0 250 84" aria-label="الشاشة"></svg></div>
+            <i class="msp-led g" id="ledRun" title="RUN" style="left:9.0%;top:11.7%"></i>
+            <i class="msp-led g" id="ledFwd" title="FWD" style="left:9.0%;top:15.4%"></i>
+            <i class="msp-led g" id="ledRev" title="REV" style="left:9.0%;top:18.9%"></i>
+            <i class="msp-led" id="ledStop" title="STOP" style="left:64.6%;top:12.0%"></i>
+            <i class="msp-led" id="ledPlc" title="PLC" style="left:64.6%;top:15.8%"></i>
+            <div class="kpot msp-knob" id="kKp" tabindex="0" role="slider" aria-label="بكرة الكيباد" style="left:75.3%;top:8.57%;width:16.06%;height:13.8%"><i><b></b></i></div>
+            <button class="msp-k" data-k="RUN" aria-label="RUN" style="left:7.9%;top:32.6%;width:22.5%;height:11.0%"></button>
+            <button class="msp-k" data-k="UP" aria-label="لفوق" style="left:37.96%;top:32.7%;width:22.5%;height:11.0%"></button>
+            <button class="msp-k" data-k="MODE" aria-label="MODE" style="left:68.0%;top:32.9%;width:22.6%;height:11.0%"></button>
+            <button class="msp-k" data-k="STOP" aria-label="STOP RESET" style="left:7.9%;top:45.45%;width:22.5%;height:11.0%"></button>
+            <button class="msp-k" data-k="LD" aria-label="شمال أو لتحت" style="left:37.96%;top:45.66%;width:22.5%;height:11.0%"></button>
+            <button class="msp-k" data-k="ENT" aria-label="ENTER" style="left:67.8%;top:45.87%;width:22.6%;height:11.0%"></button>
           </div>
+          <div class="ms-plate msp-plate" dir="ltr"><div><b>VFD9A0MS43ANSAA</b> · 3.7kW · 460V · 9A</div><div class="chg">CHARGE<i id="busLed"></i></div></div>
+          <span hidden><i id="dlogo1"></i><i id="dlogo2"></i></span>
         </div>
       </div>
-      <p class="hint" style="text-align:center"><span class="tagc">تحكم</span> الستة زراير وبكرة الكيباد <span class="tagv">بيان</span> الشاشة ولمبات RUN و STOP و FWD و REV و PLC ولمبة CHARGE</p>
+      <p class="hint" style="text-align:center"><span class="tagc">تحكم</span> الستة زراير وبكرة الكيباد (اسحبها لفوق ولتحت) <span class="tagv">بيان</span> الشاشة ولمبات RUN و STOP و FWD و REV و PLC ولمبة CHARGE</p>
       <ul class="keyguide">
         <li><b>MODE</b> ضغطة قصيرة تلف على الشاشات: <code>F</code> أمر السرعة ← <code>H</code> تردد الخرج ← <code>U</code> شاشة المستخدم (<code>00-04</code>) ← <code>A</code> التيار ← <code>Frd/rEu</code> الاتجاه ← <code>PLC</code> ← الباراميترات <code>00-</code>. جوه الباراميترات بيرجع مستوى لورا.</li>
         <li><b>MODE</b> ضغطة طويلة (ثانية تقريبًا): تشغّل أو تقفل <b>الشيفت</b>، يعني تعدّل خانة خانة. الخانة اللي بترمش هي اللي بتتغير.</li>
@@ -1305,7 +1309,7 @@ function keyUp(btn){
  if(btn.dataset.k==='MODE'){clearTimeout(modeT);if(!modeLong)kpKey('MODE',1);modeLong=false;}
  if(rep){clearTimeout(rep.tm);rep=null;}
 }
-$$('.mk').forEach(b=>{
+$$('.mk,.msp-k').forEach(b=>{
  b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){};keyDown(b);});
  ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,()=>{if(b.classList.contains('down'))keyUp(b);}));
  b.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.repeat){e.preventDefault();keyDown(b);}});
