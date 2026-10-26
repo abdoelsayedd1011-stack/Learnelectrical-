@@ -191,13 +191,19 @@
   ];
   var GROUPS = [
     { key:"basics", title:"أساسيات الكهربا", sub:"للمبتدئين خالص · قبل الكلاسيك", land:"courses/basics.html" },
+    { id:"clm223", path:"clm223-lab/index.html", group:"temp", brand:"Endress+Hauser", brandKey:"eh",
+      name:"Liquisys M", kind:"قياس Conductivity", disp:"1.238 <span class=\"sv\">mS</span>", dispClass:"lcd", html:true,
+      line:"محوّل قياس توصيلية المياه من Endress+Hauser، بدرس كامل ومحاكي على برج تبريد.",
+      guided:0, exercises:9, params:23, faults:4,
+      inside:["درس: الـ Conductivity وثابت الخلية وتعويض الحرارة", "معايرة بمحلول 1.413 mS/cm", "ريليه الـ Blowdown والخرج 4-20mA", "أعطال الحساس والإنذارات"],
+      tags:"endress hauser liquisys m clm223 clm253 conductivity توصيلية tds برج تبريد blowdown معايرة cell constant ATC" },
     { key:"classic", title:"كلاسيك كنترول", sub:"مفاتيح · بوش بوتن · كونتاكتورات · موتور", land:"courses/classic.html" },
     { key:"drawings", title:"قراية الرسومات الكهربية", sub:"رموز IEC و NEMA · كروس ريفرنس · Single line · ترمنالات", land:"courses/drawings.html" },
     { key:"instr", title:"إنسترومنتيشن", sub:"إنكودر · حساسات حرارة · لود سيل · ⁦4⁠–⁠20mA⁩", land:"courses/instrumentation.html" },
     { key:"plc", title:"PLC", sub:"Ladder · تايمرات · عدادات · أنالوج · مشاريع", land:"courses/plc.html" },
     { key:"drives", title:"الانفرترات", sub:"Allen-Bradley · ABB · Siemens · Schneider · Mitsubishi · Yaskawa · Delta · LS · INVT · Danfoss · Fuji", land:"courses/inverters.html" },
     { key:"servo", title:"سيرفو", sub:"درايفات وموتورات سيرفو", land:"courses/servo.html" },
-    { key:"temp", title:"كنترول حرارة", sub:"Omron" }
+    { key:"temp", title:"كنترول حرارة وقياس", sub:"Omron · Endress+Hauser" }
   ];
   /* محتوى كل كورس بالترتيب (عناوين الدروس) — بيظهر على كارت الكورس في الكتالوج وعلى الغلاف (assets/courses/covers/).
      لو غيّرت عنوان درس أو زوّدت درس: عدّله هنا وفي toc في assets/i18n-en.js */
@@ -220,7 +226,7 @@
   var BRANDS = [
     { key:"all", label:"الكل" }, { key:"beginner", label:"للمبتدئين" }, { key:"basics", label:"كلاسيك كنترول" }, { key:"drawings", label:"رسومات كهربية" }, { key:"instr", label:"إنسترومنتيشن" }, { key:"plc", label:"PLC" }, { key:"vfdc", label:"شرح الانفرتر" }, { key:"srvc", label:"شرح السيرفو" }, { key:"ab", label:"Allen-Bradley" }, { key:"siemens", label:"Siemens" },
     { key:"schneider", label:"Schneider" }, { key:"delta", label:"Delta" }, { key:"danfoss", label:"Danfoss" },
-    { key:"omron", label:"Omron" }, { key:"abb", label:"ABB" }, { key:"mitsubishi", label:"Mitsubishi" }, { key:"yaskawa", label:"Yaskawa" }, { key:"ls", label:"LS" }, { key:"invt", label:"INVT" }, { key:"fuji", label:"Fuji" }, { key:"multi", label:"مقارنة" }
+    { key:"omron", label:"Omron" }, { key:"eh", label:"Endress+Hauser" }, { key:"abb", label:"ABB" }, { key:"mitsubishi", label:"Mitsubishi" }, { key:"yaskawa", label:"Yaskawa" }, { key:"ls", label:"LS" }, { key:"invt", label:"INVT" }, { key:"fuji", label:"Fuji" }, { key:"multi", label:"مقارنة" }
   ];
   /* ---------- English (/en/ pages): strings from assets/i18n-en.js, links via assets/i18n.js ---------- */
   var I18N = window.LE_I18N || {}, EN = I18N.isEn && I18N.en ? I18N.en : null;

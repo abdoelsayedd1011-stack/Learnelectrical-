@@ -65,6 +65,7 @@
       atv630: { kind: "VFD", line: "Schneider's drive for large pumps and fans." },
       ms300: { kind: "VFD", line: "Delta's compact drive, one of the most common anywhere." },
       fc51: { kind: "VFD", line: "Danfoss' compact drive for simple loads." },
+      clm223: { kind: "Conductivity", line: "Endress+Hauser conductivity transmitter, with a full lesson and a cooling-tower simulator." },
       vlt2800: { kind: "VFD", line: "The classic Danfoss drive found in many plants, with its real keypad." },
       acs580: { kind: "VFD", line: "ABB's general-purpose drive with the Assistant panel." },
       g120: { kind: "VFD", line: "Siemens' industrial drive with the BOP-2." },

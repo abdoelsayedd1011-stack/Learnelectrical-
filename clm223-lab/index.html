@@ -1,0 +1,919 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>محاكي Endress+Hauser Liquisys M (Conductivity)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#e9edef; --panel:#ffffff; --ink:#152027; --muted:#56656f; --line:#cfd7dc;
+  --accent:#b85f00; --accent-soft:#f6e6d3; --cur:#0d7584; --water:#2f7fb5; --water-soft:#d6e9f5;
+  --good:#2b7a3d; --warn:#a86a00; --bad:#c0352b; --scope-bg:#0e1518; --grid:#22343a;
+  --font-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --font-body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1417; --panel:#182025; --ink:#e3e9ec; --muted:#93a2ab; --line:#2a353c;
+  --accent:#f0a03c; --accent-soft:#3a2a17; --cur:#4cc0cf; --water:#5aa7dc; --water-soft:#14303f;
+  --good:#5cc06f; --warn:#e3a43a; --bad:#ff6b5e; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f1417; --panel:#182025; --ink:#e3e9ec; --muted:#93a2ab; --line:#2a353c;
+  --accent:#f0a03c; --accent-soft:#3a2a17; --cur:#4cc0cf; --water:#5aa7dc; --water-soft:#14303f;
+  --good:#5cc06f; --warn:#e3a43a; --bad:#ff6b5e; color-scheme:dark }
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.7}
+h1,h2,h3,h4{font-family:var(--font-display);line-height:1.35;margin:0 0 .5rem}
+h1{font-size:1.5rem} h2{font-size:1.2rem} h3{font-size:1.05rem}
+p{margin:.3rem 0 .7rem}
+.app{max-width:1280px;margin:0 auto;padding:16px 16px 60px;display:grid;gap:16px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px}
+header.top p{color:var(--muted);max-width:75ch;margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.85rem;font-weight:600}
+.chip b{color:var(--accent)}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:7px 14px;cursor:pointer;font:600 .92rem var(--font-body);min-height:40px;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.xs{min-height:32px;padding:3px 10px;font-size:.82rem}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:5;background:var(--bg);padding:6px 0}
+.tabs button{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:8px 18px;font:700 .95rem var(--font-body);cursor:pointer;min-height:42px}
+.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.hint{font-size:.85rem;color:var(--muted);margin:.4rem 0 0}
+.tagc,.tagv{display:inline-flex;align-items:center;font:600 .72rem var(--font-body);border-radius:999px;padding:1px 9px;margin-inline-start:6px;vertical-align:middle}
+.tagc{background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent)}
+.tagv{background:color-mix(in srgb,var(--cur) 18%,transparent);color:var(--cur)}
+.mono,.ltr{font-family:var(--font-mono);direction:ltr;unicode-bidi:isolate}
+code{font-family:var(--font-mono);background:var(--accent-soft);padding:0 .35em;border-radius:4px;direction:ltr;unicode-bidi:isolate}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:start;vertical-align:top}
+th{font-family:var(--font-display);font-size:.85rem;color:var(--muted)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+
+/* ---------- lesson ---------- */
+.lesson{display:grid;gap:14px}
+.chap{border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden}
+.chap>summary{cursor:pointer;list-style:none;padding:14px 16px;display:flex;gap:12px;align-items:center;font:700 1.05rem var(--font-display)}
+.chap>summary::-webkit-details-marker{display:none}
+.chap>summary .n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:.95rem}
+.chap>summary::after{content:"＋";margin-inline-start:auto;color:var(--muted)}
+.chap[open]>summary::after{content:"－"}
+.chap .body{padding:0 18px 18px}
+.fig{margin:10px 0;border:1px solid var(--line);border-radius:10px;padding:10px;background:color-mix(in srgb,var(--bg) 55%,var(--panel))}
+.fig svg{width:100%;height:auto;display:block;direction:ltr}
+.fig figcaption{font-size:.85rem;color:var(--muted);margin-top:6px}
+.cards{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));margin:8px 0}
+.card{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel)}
+.card b{display:block;font-family:var(--font-display);margin-bottom:2px}
+.note{border-inline-start:4px solid var(--accent);background:var(--accent-soft);border-radius:8px;padding:8px 12px;margin:10px 0}
+.quiz .q{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0}
+.quiz .q p{margin:0 0 6px;font-weight:600}
+.quiz label{display:flex;gap:8px;align-items:center;padding:6px 8px;border-radius:8px;cursor:pointer}
+.quiz label:hover{background:var(--accent-soft)}
+.quiz .fb{font-size:.88rem;margin-top:4px}
+.quiz .ok{color:var(--good)} .quiz .no{color:var(--bad)}
+
+/* ---------- simulator ---------- */
+.bench{display:grid;grid-template-columns:minmax(300px,440px) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.bench{grid-template-columns:minmax(0,1fr)}}
+.col{display:grid;gap:16px;min-width:0}
+.dev{position:relative;width:100%;max-width:440px;margin:0 auto;aspect-ratio:678/671;border-radius:10px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.dev>img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.dev>*:not(img){position:absolute}
+.lcd{left:19.3%;top:17.6%;width:62.7%;height:34.4%;background:linear-gradient(170deg,#cfd8c6,#bcc6b2);border-radius:2px;box-shadow:inset 0 0 8px rgba(0,0,0,.25)}
+.lcd.off{background:#8d9585}
+.lcd svg{width:100%;height:100%;display:block;direction:ltr;unicode-bidi:isolate}
+.lcd .ink{fill:#232823}
+.lcd .ghost{fill:rgba(35,40,35,.06)}
+.lcd.off .ink{fill:transparent}
+.bl{animation:blk 1s steps(1,end) infinite}
+@keyframes blk{50%{opacity:0}}
+.k{border:0;background:transparent;border-radius:8px;cursor:pointer;padding:0;touch-action:manipulation}
+.k.down,.k:active{background:rgba(0,0,0,.32)}
+.k:focus-visible{outline:3px solid #ffb02e;outline-offset:1px}
+.led{width:2.4%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);background:transparent}
+.led.on.g{background:#c8ff3c;box-shadow:0 0 7px #b4ff2a}
+.led.on.r{background:#ff3a26;box-shadow:0 0 7px #ff3a26}
+.led.on.y{background:#ffd23a;box-shadow:0 0 7px #ffd23a}
+.led.fl{animation:blk .6s steps(1,end) infinite}
+.esc{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.cap{min-height:3.2em;font-size:.88rem;background:var(--accent-soft);border-radius:8px;padding:8px 10px;margin-top:10px}
+.keyguide{font-size:.86rem;margin:10px 0 0;padding:0;list-style:none;display:grid;gap:5px}
+.keyguide b{font-family:var(--font-mono);background:var(--accent-soft);padding:0 .35em;border-radius:4px}
+.proc svg{width:100%;height:auto;display:block;direction:ltr}
+.ctl{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:10px}
+.ctl label{display:grid;gap:2px;font-size:.88rem}
+.ctl input[type=range]{width:100%}
+.ctl select{font:inherit;padding:6px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);min-height:40px}
+.ctl .v{font-family:var(--font-mono);color:var(--accent);font-weight:600}
+.faults{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.faults .btn[aria-pressed="true"]{background:var(--bad);border-color:var(--bad);color:#fff}
+.reads{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:10px}
+.read{border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.read small{display:block;color:var(--muted);font-size:.78rem}
+.read b{font-family:var(--font-mono);font-size:1.15rem}
+.meter{height:12px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:4px}
+.meter i{display:block;height:100%;background:var(--cur);width:0}
+canvas#trend{width:100%;height:190px;display:block;background:var(--scope-bg);border-radius:10px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.8rem;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:4px;border-radius:2px;vertical-align:middle;margin-inline-end:4px}
+.log{max-height:170px;overflow:auto;font-size:.82rem;border:1px solid var(--line);border-radius:10px;padding:6px 10px;margin:8px 0 0}
+.log div{border-bottom:1px dashed var(--line);padding:3px 0}
+.log time{color:var(--muted);font-family:var(--font-mono);margin-inline-end:8px}
+/* exercises */
+.ex{border:1px solid var(--line);border-radius:10px;margin:8px 0;background:var(--panel)}
+.ex summary{cursor:pointer;padding:10px 12px;display:flex;justify-content:space-between;gap:8px;font-weight:700}
+.ex.done summary{color:var(--good)}
+.ex .body{padding:0 14px 12px}
+.ex ol{margin:6px 0;padding-inline-start:22px}
+.ex li{margin:4px 0}
+.ex li.ok{color:var(--good)}
+.ex li.ok::marker{content:"✓  "}
+.cnt{font-family:var(--font-mono);color:var(--muted)}
+/* params */
+.ptabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.ptabs button{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:5px 12px;cursor:pointer;font:600 .85rem var(--font-body)}
+.ptabs button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+#ptable td.code{font-family:var(--font-mono);font-weight:700;white-space:nowrap}
+#ptable select,#ptable input{font:inherit;padding:4px 6px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);max-width:170px}
+#ptable tr.changed td.code{color:var(--accent)}
+.trainnote{font-size:.82rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <h1>Liquisys M: قياس الـ Conductivity</h1>
+    <p>محوّل Endress+Hauser Liquisys M (CLM223/253) لقياس توصيلية المياه، بكيبادّه الحقيقي ومتوصل على حوض برج تبريد. اتعلّم الأول يعني إيه Conductivity وثابت الخلية وتعويض الحرارة، وبعدين اشتغل على الجهاز: اكتب الإعدادات، اعمل معايرة بمحلول قياسي، اضبط ريليه الـ Blowdown والخرج 4-20mA، واعمل أعطال واعرف تصلّحها.</p>
+  </div>
+  <div class="chips">
+    <a class="btn" href="../courses/instrumentation.html">← كورس أجهزة القياس</a>
+    <span class="chip">الريليهات: <b id="chipMode">AUTO</b></span>
+    <span class="chip">الخرج: <b id="chipMa">—</b></span>
+    <span class="chip">الإنذار: <b id="chipAl">لا يوجد</b></span>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="أقسام الصفحة">
+  <button role="tab" data-tab="learn" aria-selected="true">١. الشرح</button>
+  <button role="tab" data-tab="sim" aria-selected="false">٢. المحاكي</button>
+  <button role="tab" data-tab="ex" aria-selected="false">٣. التمارين <span class="cnt" id="exCnt"></span></button>
+  <button role="tab" data-tab="par" aria-selected="false">٤. الإعدادات كلها</button>
+</nav>
+
+<!-- ======================================================= LESSON -->
+<section id="tab-learn" class="lesson" role="tabpanel">
+  <details class="chap" open>
+    <summary><span class="n">1</span>يعني إيه Conductivity (التوصيلية)؟</summary>
+    <div class="body">
+      <p>المياه النقية جداً تقريباً مبتوصّلش كهربا. اللي بيخلّيها توصّل هو <b>الأملاح الذايبة</b> فيها: الملح بيتفكك لأيونات موجبة وسالبة (زي <span class="ltr">Na⁺</span> و <span class="ltr">Cl⁻</span>)، والأيونات دي هي اللي بتشيل التيار بين قطبين. كل ما الأملاح تزيد، التوصيلية تزيد.</p>
+      <p>عشان كده الـ Conductivity أسرع وأرخص طريقة نعرف بيها <b>نقاوة المياه</b> أو <b>تركيز</b> محلول: في محطات المياه، والـ RO، والغلايات، وأبراج التبريد، وخطوط الـ CIP في مصانع الأغذية.</p>
+      <div class="cards">
+        <div class="card"><b>الوحدة</b><span class="ltr">S/cm</span> (سيمنز على سنتيمتر). في الشغل بنستخدم <span class="ltr">µS/cm</span> و <span class="ltr">mS/cm</span>.</div>
+        <div class="card"><b>التحويل</b><span class="ltr">1 mS/cm = 1000 µS/cm</span>. الشاشة في صورتك بتقول <span class="ltr">0.199 mS/cm = 199 µS/cm</span>.</div>
+        <div class="card"><b>الـ TDS</b>تقدير تقريبي للأملاح: <span class="ltr">TDS (ppm) ≈ 0.5 لـ 0.7 × µS/cm</span>. المعامل بيختلف حسب نوع الأملاح.</div>
+        <div class="card"><b>العكس: المقاومة</b>في المياه فائقة النقاوة بيقيسوا المقاومة النوعية <span class="ltr">MΩ·cm</span>. المياه النقية تماماً = <span class="ltr">18.2 MΩ·cm = 0.055 µS/cm</span>.</div>
+      </div>
+      <figure class="fig">
+        <svg viewBox="0 0 760 150" role="img" aria-label="مقياس توصيلية أنواع المياه">
+          <defs><linearGradient id="gw" x1="0" x2="1"><stop offset="0" stop-color="#d9f0ff"/><stop offset=".5" stop-color="#5aa7dc"/><stop offset="1" stop-color="#1d3f63"/></linearGradient></defs>
+          <rect x="20" y="58" width="720" height="22" rx="11" fill="url(#gw)"/>
+          <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
+            <text x="40" y="100">0.055</text><text x="160" y="100">1</text><text x="280" y="100">10</text><text x="400" y="100">100</text><text x="520" y="100">1 000</text><text x="640" y="100">10 000</text><text x="725" y="100">50 000</text>
+            <text x="380" y="140" font-size="12">µS/cm (مقياس لوغاريتمي)</text>
+          </g>
+          <g font-family="IBM Plex Sans Arabic,sans-serif" font-size="13" fill="currentColor" text-anchor="middle">
+            <text x="45" y="40">مياه فائقة النقاوة</text><text x="235" y="40">خارج الـ RO</text><text x="430" y="40">مياه شرب</text><text x="570" y="40">برج تبريد</text><text x="705" y="40">مياه بحر</text>
+          </g>
+          <g stroke="currentColor" stroke-width="1.5"><path d="M45 46v12M235 46v12M430 46v12M570 46v12M705 46v12"/></g>
+        </svg>
+        <figcaption>كل خطوة على المقياس = 10 أضعاف. عشان كده لازم نختار الحساس المناسب لمدى المياه بتاعتنا.</figcaption>
+      </figure>
+    </div>
+  </details>
+
+  <details class="chap">
+    <summary><span class="n">2</span>الحساس وثابت الخلية (Cell constant)</summary>
+    <div class="body">
+      <p>أبسط حساس هو <b>حساس قطبين</b> (Conductive, 2-electrode): قطبين معدن أو جرافيت بينهم مسافة. الجهاز بيطلّع جهد متردد (AC، عشان القطبين ميتأكسدوش ويتغطوا) ويقيس التيار، فيعرف <b>التوصيل G</b> بين القطبين.</p>
+      <p>بس التوصيل ده بيعتمد على شكل الحساس: لو القطبين أكبر أو أقرب لبعض التيار يزيد. عشان نشيل تأثير الشكل بنضرب في <b>ثابت الخلية k</b>:</p>
+      <p class="note" style="font-family:var(--font-mono);direction:ltr;text-align:center">κ = G × k &nbsp;&nbsp;&nbsp;&nbsp; k = L / A &nbsp;(cm⁻¹)</p>
+      <figure class="fig">
+        <svg viewBox="0 0 760 230" role="img" aria-label="حساس قطبين وثابت الخلية">
+          <rect x="60" y="40" width="260" height="160" rx="14" fill="var(--water-soft)" stroke="var(--water)"/>
+          <rect x="120" y="70" width="20" height="100" fill="#8a949b"/><rect x="240" y="70" width="20" height="100" fill="#8a949b"/>
+          <g fill="var(--water)"><circle cx="170" cy="95" r="6"/><circle cx="210" cy="130" r="6"/><circle cx="185" cy="155" r="6"/></g>
+          <g fill="#c0352b"><circle cx="200" cy="85" r="6"/><circle cx="165" cy="135" r="6"/><circle cx="220" cy="160" r="6"/></g>
+          <path d="M140 60h100" stroke="currentColor" stroke-width="1.5" marker-start="url(#ar)" marker-end="url(#ar)"/>
+          <defs><marker id="ar" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+          <g font-family="IBM Plex Mono,monospace" font-size="14" fill="currentColor"><text x="182" y="54">L</text><text x="100" y="125">A</text></g>
+          <g font-family="IBM Plex Sans Arabic,sans-serif" font-size="14" fill="currentColor">
+            <text x="745" y="70" direction="rtl">• L = المسافة بين القطبين</text>
+            <text x="745" y="100" direction="rtl">• A = مساحة القطب</text>
+            <text x="745" y="130" direction="rtl">• الأيونات (الأحمر والأزرق) بتشيل التيار</text>
+            <text x="745" y="160" direction="rtl">• k صغير (0.01) = قطبين كبار وقريبين: للمياه النقية</text>
+            <text x="745" y="190" direction="rtl">• k كبير (10) = قطبين صغيرين وبعاد: للمياه المالحة</text>
+          </g>
+        </svg>
+      </figure>
+      <div class="tablewrap"><table>
+        <thead><tr><th>ثابت الخلية k</th><th>المدى المناسب تقريباً</th><th>الاستخدام</th></tr></thead>
+        <tbody>
+          <tr><td class="ltr">0.01</td><td class="ltr">0.04 – 20 µS/cm</td><td>مياه فائقة النقاوة، مياه غلايات الضغط العالي</td></tr>
+          <tr><td class="ltr">0.1</td><td class="ltr">0.5 – 200 µS/cm</td><td>خارج الـ RO، مياه مقطرة</td></tr>
+          <tr><td class="ltr">1</td><td class="ltr">10 µS/cm – 20 mS/cm</td><td>مياه شرب، أبراج تبريد، مياه صرف</td></tr>
+          <tr><td class="ltr">10</td><td class="ltr">1 – 200 mS/cm</td><td>محاليل مركّزة، مياه بحر</td></tr>
+        </tbody></table></div>
+      <p class="hint">في المحاليل الوسخة أو المركّزة جداً (حمض أو صودا الـ CIP) بيستخدموا <b>الحساس الحثّي (Inductive / Toroidal)</b>: ملفين جوه جسم بلاستيك ومفيش معدن لامس المياه، فمبيتآكلش ولا بيتغطّى.</p>
+      <div class="note">الحساس الحقيقي بيجي مع <b>شهادة</b> فيها ثابت الخلية المظبوط بتاعه (مثلاً <span class="ltr">k = 1.047</span> مش 1.000 بالظبط). لازم تكتب الرقم ده في الجهاز، وإلا القراءة كلها هتبقى غلط بنفس النسبة.</div>
+    </div>
+  </details>
+
+  <details class="chap">
+    <summary><span class="n">3</span>الحرارة وتعويض الحرارة (ATC)</summary>
+    <div class="body">
+      <p>التوصيلية بتتغير كتير مع الحرارة: في أغلب المياه بتزيد حوالي <b>2% لكل درجة</b>. يعني نفس المياه ممكن تقرا <span class="ltr">1.00 mS/cm</span> الصبح على 20°C و <span class="ltr">1.20 mS/cm</span> الضهر على 30°C، مع إن الأملاح ما اتغيرتش.</p>
+      <p>عشان نقارن صح، الجهاز بيحسب التوصيلية <b>كأن المياه على 25°C</b> (حرارة المرجع). ده اسمه <b>تعويض الحرارة</b>، والحرارة بتتقاس بحساس <span class="ltr">Pt100</span> أو <span class="ltr">Pt1000</span> جوه حساس الـ Conductivity نفسه. لما يكون شغال، الشاشة بتكتب <b>ATC</b> (Automatic Temperature Compensation). لو كتبت الحرارة بإيدك بدل الحساس بتبقى <b>MTC</b>.</p>
+      <p class="note" style="font-family:var(--font-mono);direction:ltr;text-align:center">κ25 = κT / (1 + α × (T − 25))</p>
+      <p><b>α</b> = معامل الحرارة بالـ <span class="ltr">%/K</span>. للمياه العادية حوالي <span class="ltr">2.0 – 2.1</span>. مثال: المياه على 33.7°C وبتقرا من غير تعويض <span class="ltr">0.234 mS/cm</span>، مع α = 2.1:</p>
+      <p class="mono" style="text-align:center">0.234 / (1 + 0.021 × 8.7) = 0.234 / 1.183 = 0.198 mS/cm</p>
+      <figure class="fig">
+        <svg viewBox="0 0 760 220" role="img" aria-label="تأثير الحرارة على التوصيلية والتعويض">
+          <path d="M70 180H720M70 180V20" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <path d="M90 150L700 40" stroke="#c0352b" stroke-width="3" fill="none"/>
+          <path d="M90 105H700" stroke="var(--good)" stroke-width="3" stroke-dasharray="8 6" fill="none"/>
+          <path d="M330 180V20" stroke="var(--muted)" stroke-dasharray="3 4"/>
+          <g font-family="IBM Plex Sans Arabic,sans-serif" font-size="13" fill="currentColor">
+            <text x="740" y="34" direction="rtl" fill="#c0352b">القراءة من غير تعويض (κT)</text>
+            <text x="740" y="98" direction="rtl" fill="var(--good)">بعد التعويض (κ25) ثابتة</text>
+            <text x="300" y="200">الحرارة °C</text><text x="335" y="34">25°C</text>
+          </g>
+        </svg>
+        <figcaption>الخط الأحمر بيطلع مع الحرارة، والأخضر (بعد التعويض) ثابت لأن الأملاح ما اتغيرتش. ده بالظبط اللي هتشوفه في المحاكي لما تحرّك الحرارة.</figcaption>
+      </figure>
+    </div>
+  </details>
+
+  <details class="chap">
+    <summary><span class="n">4</span>المعايرة بمحلول قياسي</summary>
+    <div class="body">
+      <p>مع الوقت الحساس بيتغطّى بطبقة (كلس أو بيوفيلم) فثابت الخلية الفعلي بيتغير والقراءة تقل. عشان كده بنعمل <b>معايرة</b>: نغطّس الحساس في محلول معروف توصيليته، والجهاز يحسب ثابت الخلية الجديد.</p>
+      <ol>
+        <li>اغسل الحساس بمياه مقطرة ونشّفه.</li>
+        <li>اغطسه في المحلول القياسي، مثلاً <b>KCl بتوصيلية <span class="ltr">1.413 mS/cm</span> على 25°C</b>، واتأكد إن مفيش فقاعات هوا بين القطبين.</li>
+        <li>دوس <b>CAL</b>، اكتب قيمة المحلول، ودوس <b>E</b>.</li>
+        <li>استنى القراءة تثبت ودوس <b>E</b>: الجهاز يحسب <span class="ltr">k الجديد = k القديم × (قيمة المحلول ÷ القراءة)</span> ويعرضه.</li>
+        <li>لو الرقم معقول دوس <b>E</b> تحفظه. لو بعيد جداً (أكتر من ±20%) يبقى الحساس وسخ أو المحلول بايظ: نضّف وكرّر.</li>
+      </ol>
+      <div class="note">أثناء المعايرة الجهاز بيعمل <b>HOLD</b>: الخرج 4-20mA والريليهات بيتثبتوا على آخر حالة، عشان الـ PLC ميفتكرش إن المياه اتغيرت فجأة ويفتح بلف أو يطلّع إنذار.</div>
+    </div>
+  </details>
+
+  <details class="chap">
+    <summary><span class="n">5</span>الجهاز نفسه: الشاشة والزراير واللمبات</summary>
+    <div class="body">
+      <div class="tablewrap"><table>
+        <thead><tr><th>الزرار / اللمبة</th><th>بيعمل إيه</th></tr></thead>
+        <tbody>
+          <tr><td><b>CAL</b></td><td>يدخل المعايرة. أثناءها الجهاز في HOLD.</td></tr>
+          <tr><td><b>E</b></td><td>من شاشة القياس يدخل قايمة الإعدادات. جوه القايمة يأكّد القيمة ويروح للي بعدها.</td></tr>
+          <tr><td><b>+ و −</b></td><td>في شاشة القياس يقلبوا بين القراءات. في الإعدادات يغيّروا القيمة (امسك عشان يسرّع). <b>الاتنين مع بعض</b> = خروج لشاشة القياس.</td></tr>
+          <tr><td><b>⇕ (AUTO/MANUAL)</b></td><td>يقلب الريليهات بين أوتوماتيك (لمبة <span class="ltr">↻</span>) ويدوي (لمبة <span class="ltr">☝</span>).</td></tr>
+          <tr><td><b>REL</b></td><td>في اليدوي يختار الريليه (لمبة 1 أو 2)، وبـ + و − تشغّله أو تطفيه. مفيد عشان تجرّب البلف أو الإنذار من غير ما تستنى المياه.</td></tr>
+          <tr><td><b>REL 1 / REL 2</b></td><td>بتنوّر لما الريليه شغال (الكونتاكت مقفول).</td></tr>
+          <tr><td><b>ALARM</b></td><td>بتنوّر لما فيه عطل (حساس، كابل، قراءة برّه المدى) بعد زمن التأخير.</td></tr>
+          <tr><td><b>MEAS / ATC</b> على الشاشة</td><td>MEAS = شاشة القياس العادية. ATC = تعويض الحرارة من الحساس، MTC = حرارة مكتوبة يدوي.</td></tr>
+        </tbody></table></div>
+      <p>الإعدادات متقسّمة <b>جروبات بحروف</b>، وكل وظيفة ليها كود بيظهر تحت على الشمال في الشاشة:</p>
+      <div class="cards">
+        <div class="card"><b>A · Setup 1</b>الوحدة، ثابت الخلية، والـ Damping (تنعيم القراءة).</div>
+        <div class="card"><b>B · Setup 2</b>الحرارة: ATC أو MTC، نوع التعويض، معامل α، حرارة المرجع، والـ Offset.</div>
+        <div class="card"><b>C · Current output</b>الخرج 4-20mA: المدى، والقيمة عند 4 وعند 20، وتيار العطل.</div>
+        <div class="card"><b>F · Alarm</b>زمن تأخير الإنذار، وهل الخرج يروح 22mA وقت العطل.</div>
+        <div class="card"><b>R · Relays</b>وظيفة كل ريليه (Max / Min / Alarm)، ونقطة التشغيل والإطفاء، والتأخير.</div>
+        <div class="card"><b>S · Service</b>الـ HOLD اليدوي، والرجوع لإعدادات المصنع.</div>
+      </div>
+      <p class="trainnote">أكواد الوظايف وترتيبها هنا مبسّطة للتدريب. على الجهاز الحقيقي فيه جروبات ووظايف أكتر وبيطلب كود دخول، فارجع لكتالوج Liquisys M الرسمي قبل الضبط على ماكينة.</p>
+    </div>
+  </details>
+
+  <details class="chap">
+    <summary><span class="n">6</span>التطبيق: الـ Blowdown في برج التبريد</summary>
+    <div class="body">
+      <p>في برج التبريد المياه بتتبخر، والبخار بيطلع نقي ويسيب الأملاح ورا. فالأملاح بتتركّز والتوصيلية تعلى، ولو سيبناها هيترسّب كلس في المبادلات والمواسير.</p>
+      <p>الحل: لما التوصيلية توصل حد معيّن (مثلاً <span class="ltr">1.60 mS/cm</span>) الجهاز يقفل <b>ريليه 1</b> فيفتح <b>بلف الـ Blowdown</b> يصرّف شوية مياه مركّزة، والعوّامة تعوّضها بمياه جديدة (Make-up) خفيفة، فالتوصيلية تنزل. لما توصل <span class="ltr">1.40</span> الريليه يفصل والبلف يقفل. الفرق بين النقطتين اسمه <b>الهيستيريسيس</b>، ومن غيره البلف هيفتح ويقفل كل ثانية.</p>
+      <figure class="fig">
+        <svg viewBox="0 0 760 250" role="img" aria-label="دايرة الـ Blowdown في برج التبريد">
+          <rect x="60" y="90" width="300" height="120" rx="10" fill="var(--water-soft)" stroke="var(--water)" stroke-width="2"/>
+          <text x="210" y="160" text-anchor="middle" font-family="IBM Plex Sans Arabic,sans-serif" font-size="15" fill="currentColor">حوض البرج</text>
+          <g stroke="var(--muted)" stroke-width="2" fill="none"><path d="M120 80q10-20 0-40M180 80q10-20 0-40M240 80q10-20 0-40"/></g>
+          <text x="150" y="30" font-family="IBM Plex Sans Arabic,sans-serif" font-size="13" fill="var(--muted)">تبخير (مياه نقية بتطلع)</text>
+          <path d="M20 120H60" stroke="var(--water)" stroke-width="5"/><text x="8" y="110" font-family="IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor">Make-up</text>
+          <path d="M360 190H520" stroke="var(--water)" stroke-width="5"/>
+          <g transform="translate(470 190)"><path d="M-14-12L14 12V-12L-14 12z" fill="var(--panel)" stroke="currentColor" stroke-width="2"/><path d="M0 0V-26" stroke="currentColor" stroke-width="2"/><rect x="-12" y="-40" width="24" height="14" fill="var(--panel)" stroke="currentColor"/></g>
+          <text x="470" y="230" text-anchor="middle" direction="rtl" font-family="IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor">بلف Blowdown</text>
+          <path d="M300 150H330V60H560" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="5 4"/>
+          <circle cx="300" cy="150" r="7" fill="var(--accent)"/>
+          <rect x="560" y="30" width="150" height="70" rx="8" fill="var(--panel)" stroke="currentColor" stroke-width="2"/>
+          <text x="635" y="62" text-anchor="middle" font-family="IBM Plex Sans Arabic,sans-serif" font-size="14" fill="currentColor">Liquisys M</text>
+          <text x="635" y="84" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor">1.52 mS/cm</text>
+          <path d="M600 100V150H470V150" stroke="#c0352b" stroke-width="2" fill="none" stroke-dasharray="4 4"/>
+          <text x="610" y="130" font-family="IBM Plex Sans Arabic,sans-serif" font-size="12" fill="#c0352b">ريليه 1</text>
+          <path d="M710 65H750" stroke="var(--cur)" stroke-width="2"/><text x="655" y="118" font-family="IBM Plex Mono,monospace" font-size="11" fill="var(--cur)">4-20mA → PLC</text>
+          <text x="250" y="140" font-family="IBM Plex Sans Arabic,sans-serif" font-size="12" fill="var(--accent)">الحساس</text>
+        </svg>
+      </figure>
+      <p><b>معامل التركيز (Cycles of concentration)</b> = توصيلية البرج ÷ توصيلية الـ Make-up. لو الـ Make-up <span class="ltr">0.30 mS/cm</span> والبرج شغال على <span class="ltr">1.50</span> يبقى 5 Cycles. كل ما الـ Cycles تزيد بتوفّر مياه، بس خطر الكلس بيزيد.</p>
+      <p>والخرج <b>4-20mA</b> بيروح للـ PLC أو الـ SCADA عشان يسجّل ويرسم ترند. مثلاً لو المدى <span class="ltr">0 – 2.00 mS/cm</span>: 4mA = صفر، 12mA = 1.00، و 20mA = 2.00.</p>
+    </div>
+  </details>
+
+  <details class="chap">
+    <summary><span class="n">7</span>التركيب والأعطال المشهورة</summary>
+    <div class="body">
+      <ul>
+        <li>الحساس لازم يكون <b>مغطوس كله</b> والمياه ماشية حواليه، وبعيد عن الفقاعات (مش في أعلى ماسورة أفقي).</li>
+        <li>كابل الحساس بعيد عن كابلات الموتورات والانفرترات، وبالطول اللي المصنّع يسمح بيه.</li>
+        <li>نضّف الحساس دورياً (مياه وصابون، أو حمض خفيف للكلس) واعمل معايرة بعدها.</li>
+      </ul>
+      <div class="tablewrap"><table>
+        <thead><tr><th>العَرَض</th><th>السبب الغالب</th><th>الحل</th></tr></thead>
+        <tbody>
+          <tr><td>القراءة قريبة من الصفر فجأة + ALARM</td><td>الحساس طلع من المياه أو فيه فقاعة هوا كبيرة</td><td>تأكد إن المياه مغطّياه والخط مليان</td></tr>
+          <tr><td>القراءة بتقل بالتدريج على أسابيع</td><td>الحساس اتغطّى بكلس أو بيوفيلم</td><td>نضّف واعمل معايرة. لو المعايرة رفضت يبقى غيّره</td></tr>
+          <tr><td>القراءة بتطلع وتنزل مع الحرارة</td><td>التعويض مقفول أو α غلط</td><td>شغّل التعويض الخطي وظبط α (B3 و B4)</td></tr>
+          <tr><td>الحرارة بتقرا رقم غريب + إنذار</td><td>حساس الحرارة Pt100 مفصول أو مقصور</td><td>راجع الكابل، أو حط MTC مؤقتاً لحد ما تصلّح</td></tr>
+          <tr><td>القراءة كلها غلط بنسبة ثابتة</td><td>ثابت الخلية المكتوب مش زي شهادة الحساس</td><td>اكتب k من الشهادة (A2) أو اعمل معايرة</td></tr>
+          <tr><td>القراءة فوق المدى جداً</td><td>قصر في كابل الحساس أو مياه داخلة في الكونكتور</td><td>افصل وقيس الكابل ونشّف الكونكتور</td></tr>
+          <tr><td>البلف بيفتح ويقفل بسرعة</td><td>نقطة التشغيل والإطفاء قريبين قوي</td><td>كبّر الهيستيريسيس أو زوّد تأخير الريليه</td></tr>
+        </tbody></table></div>
+    </div>
+  </details>
+
+  <details class="chap">
+    <summary><span class="n">8</span>اختبر نفسك</summary>
+    <div class="body quiz" id="quiz"></div>
+  </details>
+  <p style="text-align:center"><button class="btn pri" type="button" data-go="sim">يلا على المحاكي ←</button></p>
+</section>
+
+<!-- ======================================================= SIMULATOR -->
+<section id="tab-sim" role="tabpanel" hidden>
+<div class="bench">
+  <div class="col">
+    <div class="panel">
+      <h2>الجهاز<span class="tagc">تحكم</span><span class="tagv">بيان</span></h2>
+      <div class="dev" id="dev">
+        <img src="clm-panel.jpg" alt="" aria-hidden="true" width="678" height="671">
+        <div class="lcd" id="lcd"><svg id="lcdSvg" direction="ltr" viewBox="0 0 850 461" role="img" aria-label="شاشة Liquisys M"></svg></div>
+        <button class="k" data-k="CAL" aria-label="CAL" style="left:19.4%;top:65.3%;width:12.5%;height:12.8%"></button>
+        <button class="k" data-k="PLUS" aria-label="+" style="left:36.2%;top:65.3%;width:12.4%;height:12.8%"></button>
+        <button class="k" data-k="REL" aria-label="REL" style="left:52.9%;top:65.3%;width:12.2%;height:12.5%"></button>
+        <button class="k" data-k="E" aria-label="E" style="left:19.6%;top:82.1%;width:12.4%;height:12.8%"></button>
+        <button class="k" data-k="MINUS" aria-label="-" style="left:36.4%;top:82.1%;width:12.3%;height:12.8%"></button>
+        <button class="k" data-k="AM" aria-label="AUTO / MANUAL" style="left:52.95%;top:81.9%;width:12.3%;height:12.8%"></button>
+        <i class="led y" id="L1" title="1" style="left:67.5%;top:66.1%"></i>
+        <i class="led y" id="L2" title="2" style="left:67.5%;top:73.5%"></i>
+        <i class="led g" id="LA" title="AUTO" style="left:67.3%;top:82.7%"></i>
+        <i class="led g" id="LM" title="MANUAL" style="left:67.3%;top:89.9%"></i>
+        <i class="led r" id="LAL" title="ALARM" style="left:83.1%;top:66.1%"></i>
+        <i class="led r" id="LR1" title="REL 1" style="left:83.1%;top:82.7%"></i>
+        <i class="led r" id="LR2" title="REL 2" style="left:83.1%;top:89.9%"></i>
+      </div>
+      <div class="esc"><button class="btn xs" type="button" id="escBtn">＋ و − مع بعض (خروج)</button><button class="btn xs" type="button" id="pwrBtn" aria-pressed="true">⏻ الكهربا: ON</button></div>
+      <div class="cap" id="cap" aria-live="polite"></div>
+      <ul class="keyguide">
+        <li><b>E</b> يدخل الإعدادات (جروبات A و B و C و F و R و S)، وجوه الوظيفة يأكّد ويروح للي بعدها.</li>
+        <li><b>+ −</b> في القياس يقلبوا القراءة (التوصيلية والحرارة، من غير تعويض، الخرج mA). في الإعدادات يغيّروا القيمة اللي بترمش.</li>
+        <li><b>+ و −</b> مع بعض = رجوع لشاشة القياس (على الموبايل استخدم الزرار اللي تحت الجهاز).</li>
+        <li><b>CAL</b> معايرة بمحلول قياسي. <b>⇕</b> AUTO / MANUAL للريليهات، و<b>REL</b> يختار الريليه في اليدوي.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="panel proc">
+      <h2>حوض برج التبريد<span class="tagv">بيان</span></h2>
+      <svg id="procSvg" viewBox="0 0 640 300" role="img" aria-label="رسم الحوض والحساس والبلف"></svg>
+      <div class="reads">
+        <div class="read"><small>التوصيلية الحقيقية على 25°C</small><b id="rTrue">—</b></div>
+        <div class="read"><small>على حرارة المياه (من غير تعويض)</small><b id="rRaw">—</b></div>
+        <div class="read"><small>اللي الجهاز بيعرضه</small><b id="rDisp">—</b></div>
+        <div class="read"><small>الخرج للـ PLC</small><b id="rMa">—</b><div class="meter"><i id="mMa"></i></div></div>
+        <div class="read"><small>معامل التركيز (Cycles)</small><b id="rCyc">—</b></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>التحكم في العملية<span class="tagc">تحكم</span></h2>
+      <div class="ctl">
+        <label>حمل التبريد (التبخير) <span class="v" id="vEvap"></span><input type="range" id="sEvap" min="0" max="100" step="1" value="60"></label>
+        <label>توصيلية مياه الـ Make-up <span class="v" id="vMk"></span><input type="range" id="sMk" min="0.10" max="0.80" step="0.01" value="0.30"></label>
+        <label>حرارة المياه <span class="v" id="vT"></span><input type="range" id="sT" min="10" max="60" step="0.1" value="33.7"></label>
+        <label>مكان الحساس
+          <select id="loc"><option value="tank">في حوض البرج</option><option value="cal">في كوباية محلول المعايرة 1.413 mS/cm</option><option value="air">برّه المياه (في الهوا)</option></select></label>
+      </div>
+      <h3 style="margin-top:14px">أعطال<span class="tagc">تحكم</span></h3>
+      <div class="faults">
+        <button class="btn xs" type="button" data-f="foul" aria-pressed="false">الحساس عليه كلس</button>
+        <button class="btn xs" type="button" data-f="pt" aria-pressed="false">Pt100 مفصول</button>
+        <button class="btn xs" type="button" data-f="short" aria-pressed="false">قصر في كابل الحساس</button>
+        <button class="btn xs" type="button" data-f="valve" aria-pressed="false">بلف الـ Blowdown مزنّق</button>
+      </div>
+      <p class="hint">الحساس المركّب ثابته الحقيقي من الشهادة <b class="ltr">k = 1.047 cm⁻¹</b>، والجهاز جاي من المصنع على 1.000.</p>
+    </div>
+
+    <div class="panel">
+      <h2>الترند<span class="tagv">بيان</span></h2>
+      <canvas id="trend" width="900" height="260"></canvas>
+      <div class="legend"><span><i style="background:#4cc0cf"></i>المعروض mS/cm</span><span><i style="background:#f0a03c"></i>نقطة تشغيل وإطفاء ريليه 1</span><span><i style="background:#ff6b5e"></i>ريليه 1 (البلف)</span></div>
+      <div class="log" id="log" aria-live="polite"></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ======================================================= EXERCISES -->
+<section id="tab-ex" role="tabpanel" hidden>
+  <div class="panel">
+    <h2>التمارين</h2>
+    <p class="hint">كل خطوة بتتعلّم ✓ لوحدها أول ما تعملها في المحاكي. افتح تاب المحاكي جنبها أو اقلب بينهم.</p>
+    <div id="exList"></div>
+  </div>
+</section>
+
+<!-- ======================================================= PARAMETERS -->
+<section id="tab-par" role="tabpanel" hidden>
+  <div class="panel">
+    <h2>كل الإعدادات<span class="tagc">تحكم</span></h2>
+    <p class="hint">نفس اللي في الكيباد. أي تغيير هنا بيبان على الجهاز والعكس. الكود اللي باللون البرتقالي اتغيّر عن المصنع.</p>
+    <div class="ptabs" id="ptabs"></div>
+    <div class="tablewrap"><table><thead><tr><th>الكود</th><th>الوظيفة</th><th>القيمة</th><th>المصنع</th><th>شرح</th></tr></thead><tbody id="ptable"></tbody></table></div>
+    <p style="margin-top:12px"><button class="btn" type="button" id="factory">رجّع كل الإعدادات للمصنع</button></p>
+  </div>
+</section>
+</div>
+
+<script>
+'use strict';
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const SKEY='clm223-lab-v1';
+const lsGet=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}};
+
+/* ---------------- parameters (simplified Liquisys M function groups) ---------------- */
+const GRP=[['A','SETUP 1','الإعداد الأساسي'],['B','SETUP 2','الحرارة والتعويض'],['C','OUTPUT','الخرج 4-20mA'],['F','ALARM','الإنذار'],['R','RELAY','الريليهات'],['S','SERVICE','الخدمة']];
+const PD=[
+ {c:'A1',g:'A',nm:'Unit',ar:'وحدة القياس',o:{0:'µS/cm',1:'mS/cm'},d:1,x:'اختار µS/cm للمياه النقية والخفيفة، و mS/cm للمياه الأتقل (أبراج التبريد والصرف).'},
+ {c:'A2',g:'A',nm:'Cell constant',ar:'ثابت الخلية k',mn:0.010,mx:20,st:0.001,dc:3,u:'1/cm',d:1.000,x:'لازم يطابق شهادة الحساس. الحساس هنا ثابته 1.047. المعايرة بتحدّثه لوحدها.'},
+ {c:'A3',g:'A',nm:'Damping',ar:'تنعيم القراءة',mn:0,mx:60,st:1,dc:0,u:'s',d:5,x:'كل ما يزيد القراءة تبقى أهدى بس أبطأ. صفر = بدون تنعيم.'},
+ {c:'B1',g:'B',nm:'Temperature mode',ar:'مصدر الحرارة',o:{0:'ATC (Pt100)',1:'MTC (يدوي)'},d:0,x:'ATC = من حساس الحرارة اللي جوه الحساس. MTC = رقم ثابت تكتبه في B2 (لما حساس الحرارة بايظ مثلاً).'},
+ {c:'B2',g:'B',nm:'MTC temperature',ar:'الحرارة اليدوية',mn:0,mx:100,st:0.1,dc:1,u:'°C',d:25,x:'بتتستخدم بس لما B1 = MTC.'},
+ {c:'B3',g:'B',nm:'Compensation',ar:'نوع تعويض الحرارة',o:{0:'None',1:'Linear'},d:1,x:'Linear = تعويض خطي بمعامل α (B4). None = القراءة على حرارة المياه الفعلية من غير تعويض.'},
+ {c:'B4',g:'B',nm:'Alpha',ar:'معامل الحرارة α',mn:0,mx:5,st:0.01,dc:2,u:'%/K',d:2.10,x:'للمياه العادية 2.0 لـ 2.1 %/K.'},
+ {c:'B5',g:'B',nm:'Reference temp.',ar:'حرارة المرجع',o:{20:'20 °C',25:'25 °C'},d:25,x:'الحرارة اللي بنحسب عليها التوصيلية. الأشهر 25°C.'},
+ {c:'B6',g:'B',nm:'Temp. offset',ar:'تصحيح الحرارة',mn:-5,mx:5,st:0.1,dc:1,u:'°C',d:0,x:'لو حرارة الجهاز مختلفة عن ترمومتر مرجعي، صحّحها هنا.'},
+ {c:'C1',g:'C',nm:'Output range',ar:'مدى الخرج',o:{0:'4-20 mA',1:'0-20 mA'},d:0,x:'4-20mA أحسن لأن 0mA يبقى معناه سلك مقطوع مش قراية صفر.'},
+ {c:'C2',g:'C',nm:'Value at 4 mA',ar:'القيمة عند 4mA',mn:0,mx:20,st:0.01,dc:2,u:'mS/cm',d:0,x:'التوصيلية اللي يقابلها أقل خرج.'},
+ {c:'C3',g:'C',nm:'Value at 20 mA',ar:'القيمة عند 20mA',mn:0.01,mx:20,st:0.01,dc:2,u:'mS/cm',d:2,x:'التوصيلية اللي يقابلها أعلى خرج.'},
+ {c:'F1',g:'F',nm:'Alarm delay',ar:'تأخير الإنذار',mn:0,mx:60,st:1,dc:0,u:'s',d:5,x:'العطل لازم يستمر المدة دي قبل لمبة ALARM وتيار العطل.'},
+ {c:'F2',g:'F',nm:'Error current',ar:'تيار العطل',o:{0:'Off',1:'22 mA'},d:1,x:'لما يكون فيه عطل الخرج يروح 22mA، فالـ PLC يعرف إن القراءة مش موثوقة.'},
+ {c:'R1',g:'R',nm:'Relay 1 function',ar:'وظيفة ريليه 1',o:{0:'Off',1:'Max limit',2:'Min limit',3:'Alarm'},d:1,x:'Max = يشتغل لما القراءة تعلى (Blowdown). Min = يشتغل لما تقل. Alarm = يشتغل مع العطل.'},
+ {c:'R2',g:'R',nm:'Relay 1 ON point',ar:'نقطة تشغيل ريليه 1',mn:0,mx:20,st:0.01,dc:2,u:'mS/cm',d:1.80,x:'في Max: الريليه يشتغل لما القراءة توصل للرقم ده.'},
+ {c:'R3',g:'R',nm:'Relay 1 OFF point',ar:'نقطة إطفاء ريليه 1',mn:0,mx:20,st:0.01,dc:2,u:'mS/cm',d:1.70,x:'في Max: الريليه يفصل لما القراءة تنزل للرقم ده. الفرق = هيستيريسيس.'},
+ {c:'R4',g:'R',nm:'Relay 1 ON delay',ar:'تأخير تشغيل ريليه 1',mn:0,mx:120,st:1,dc:0,u:'s',d:0,x:'القراءة لازم تفضل فوق نقطة التشغيل المدة دي قبل ما الريليه يشتغل.'},
+ {c:'R5',g:'R',nm:'Relay 2 function',ar:'وظيفة ريليه 2',o:{0:'Off',1:'Max limit',2:'Min limit',3:'Alarm'},d:3,x:'من المصنع ريليه 2 = إنذار (لمبة وسارينة في اللوحة).'},
+ {c:'R6',g:'R',nm:'Relay 2 ON point',ar:'نقطة تشغيل ريليه 2',mn:0,mx:20,st:0.01,dc:2,u:'mS/cm',d:2.20,x:'لما R5 = Max أو Min.'},
+ {c:'R7',g:'R',nm:'Relay 2 OFF point',ar:'نقطة إطفاء ريليه 2',mn:0,mx:20,st:0.01,dc:2,u:'mS/cm',d:2.10,x:'لما R5 = Max أو Min.'},
+ {c:'S1',g:'S',nm:'Hold',ar:'HOLD يدوي',o:{0:'Off',1:'On'},d:0,x:'On = الخرج والريليهات يتثبتوا (وقت الصيانة أو تنضيف الحساس).'},
+ {c:'S2',g:'S',nm:'Factory reset',ar:'رجوع للمصنع',o:{0:'No',1:'Yes'},d:0,x:'Yes ثم E = كل الإعدادات ترجع للمصنع.'}
+];
+PD.forEach(p=>{p.t=p.o?'e':'n';if(p.o)p.ok=Object.keys(p.o).map(Number);});
+const PM={};PD.forEach(p=>PM[p.c]=p);
+const P={};function factory(){PD.forEach(p=>P[p.c]=p.d);}factory();
+const g=c=>P[c];
+
+/* ---------------- process + sensor model ---------------- */
+const K_TRUE=1.047,ALPHA_TRUE=2.0,SOL=1.413,SOL_T=22.0;
+const S={on:true,c25:1.20,T:33.7,evap:60,mk:0.30,loc:'tank',f:{foul:false,pt:false,short:false,valve:false},
+ kT:0,kDisp:0,kComp:0,kF:null,Tm:0,err:'',errT:0,alarm:false,ma:4,maHeld:4,
+ auto:true,sel:1,man:[false,false],rel:[false,false],relHeld:[false,false],onT:[0,0],hold:false,t:0,valveOpen:false};
+const H={m:'meas',view:0,gi:0,fi:0,ed:null,cal:null,msg:null,msgT:0,keys:{}};
+const EV={};
+const TR=[];
+
+function grpFns(gi){const gr=GRP[gi][0];return PD.filter(p=>p.g===gr);}
+function unitIsMs(){return g('A1')===1;}
+function fmtCond(v){ /* v in mS/cm → text in the selected unit */
+ if(v==null||!isFinite(v))return '----';
+ if(unitIsMs()){if(v>=100)return v.toFixed(1);if(v>=10)return v.toFixed(2);return v.toFixed(3);}
+ const u=v*1000;if(u>=1000)return u.toFixed(0);if(u>=100)return u.toFixed(1);return u.toFixed(2);
+}
+function unitTxt(){return unitIsMs()?'mS/cm':'µS/cm';}
+function fmtP(p,v){if(p.t==='e')return p.o[v];return (+v).toFixed(p.dc)+(p.u?' '+p.u:'');}
+function log(t){const e=$('#log');if(!e)return;const d=new Date();const row=document.createElement('div');row.innerHTML='<time>'+d.toTimeString().slice(0,8)+'</time>'+t;e.prepend(row);while(e.children.length>60)e.lastChild.remove();}
+
+function sensorTemp(){ /* what the transmitter believes the temperature is */
+ if(g('B1')===1)return g('B2');
+ if(S.f.pt)return null;
+ const T=S.loc==='cal'?SOL_T:S.T;return T+g('B6');
+}
+function step(dt){
+ S.t+=dt;
+ /* water balance: evaporation concentrates salts, blowdown + make-up dilutes */
+ const E=S.evap*0.00035,B=(S.valveOpen&&!S.f.valve)?0.035:0;
+ S.c25+=((E+B)*S.mk-B*S.c25)*dt;S.c25=clamp(S.c25,0.01,25);
+ /* sensor */
+ const realT=S.loc==='cal'?SOL_T:S.T;
+ const c25=S.loc==='cal'?SOL:S.c25;
+ const kT=c25*(1+ALPHA_TRUE/100*(realT-25));
+ let G=S.loc==='air'?0:kT/K_TRUE;
+ if(S.f.foul)G*=0.68;
+ if(S.f.short)G=200/K_TRUE;
+ S.kT=G*g('A2');                         /* uncompensated, as displayed */
+ S.Tm=sensorTemp();
+ const Tc=S.Tm==null?25:S.Tm;
+ let comp=S.kT;
+ if(g('B3')===1){const a=g('B4')/100;comp=S.kT/(1+a*(Tc-g('B5')));}
+ const tau=g('A3');
+ if(S.kF==null||tau<=0)S.kF=comp;else S.kF+=(comp-S.kF)*Math.min(1,dt/tau);
+ const prev=S.kComp;S.kComp=S.kF;S.rate=prev>0.001?Math.abs(S.kComp-prev)/prev/dt:0;S.rateF=(S.rateF==null?S.rate:S.rateF+(S.rate-S.rateF)*Math.min(1,dt/1.5));
+ /* errors */
+ let e='';
+ if(!S.on)e='';
+ else if(S.Tm==null)e='E010';
+ else if(S.kT<0.0005)e='E055';
+ else if(S.kT>100)e='E057';
+ if(e!==S.err){S.err=e;S.errT=0;if(e)log('عطل: <b>'+e+'</b> '+ERR[e]);}
+ if(e){S.errT+=dt;}
+ const al=!!e&&S.errT>=g('F1');
+ if(al!==S.alarm){S.alarm=al;if(al){log('لمبة ALARM نوّرت ('+e+')');EV.alarm=e;}}
+ /* hold: manual (S1), during calibration and while editing setup */
+ S.hold=g('S1')===1||H.m==='cal'||H.m==='fn'||H.m==='grp';
+ /* current output */
+ const lo=g('C2'),hi=g('C3'),z=g('C1')===0?4:0;
+ let ma=z+(20-z)*(S.kComp-lo)/((hi-lo)||1e-6);ma=clamp(ma,z===4?3.8:0,20.5);
+ if(S.alarm&&g('F2')===1)ma=22;
+ if(!S.on)ma=0;
+ if(S.hold&&S.on){ma=S.maHeld;}else S.maHeld=ma;
+ S.ma=ma;
+ /* relays */
+ for(let i=0;i<2;i++){
+  let want=S.rel[i];
+  if(!S.on)want=false;
+  else if(!S.auto)want=S.man[i];
+  else if(S.hold)want=S.relHeld[i];
+  else{
+   const fn=g(i?'R5':'R1'),on=g(i?'R6':'R2'),off=g(i?'R7':'R3'),v=S.kComp;
+   if(fn===0)want=false;
+   else if(fn===3)want=S.alarm;
+   else if(S.err){want=false;}
+   else if(fn===1){if(v>=on){S.onT[i]+=dt;if(S.onT[i]>=(i?0:g('R4')))want=true;}else{S.onT[i]=0;if(v<=off)want=false;}}
+   else if(fn===2){if(v<=on){S.onT[i]+=dt;if(S.onT[i]>=(i?0:g('R4')))want=true;}else{S.onT[i]=0;if(v>=off)want=false;}}
+  }
+  if(want!==S.rel[i]){S.rel[i]=want;log('ريليه '+(i+1)+(want?' اشتغل':' فصل')+(S.auto?'':' (يدوي)'));if(i===0&&want)EV.r1on=1;if(i===0&&!want)EV.r1off=1;}
+  if(!S.hold)S.relHeld[i]=S.rel[i];
+ }
+ S.valveOpen=S.rel[0];
+ if(H.msgT>0){H.msgT-=dt;if(H.msgT<=0)H.msg=null;}
+ S.trT=(S.trT||0)+dt;if(S.trT>=0.25){S.trT=0;TR.push([S.kComp,S.rel[0]?1:0,g('R2'),g('R3')]);if(TR.length>900)TR.shift();}
+}
+const ERR={E010:'حساس الحرارة (Pt100) مفصول أو مقصور',E055:'القراءة تحت أقل المدى: الحساس في الهوا أو مفصول',E057:'القراءة فوق أعلى المدى: قصر في الكابل أو مياه في الكونكتور'};
+
+/* ---------------- LCD ---------------- */
+function lcdModel(){
+ if(!S.on)return null;
+ const L={tl:'MEAS',main:'',unit:'',l2:'',l2u:'',bl:'',br:'',blink:false,hold:S.hold};
+ L.bl=g('B1')===1?'MTC':'ATC';
+ if(H.msg){L.tl='';L.main=H.msg[0];L.l2=H.msg[1]||'';return L;}
+ if(H.m==='meas'){
+  if(!S.auto){const i=S.sel-1;L.tl='MANUAL';L.main=S.err?S.err:fmtCond(S.kComp);L.unit=S.err?'':unitTxt();L.l2='REL'+S.sel+' '+(S.man[i]?'ON':'OFF');return L;}
+  if(S.err&&S.errT>0.3&&(S.t%3)>1.6){L.main=S.err;L.l2='ERROR';L.blink=true;return L;}
+  const T=S.Tm==null?'----':S.Tm.toFixed(1);
+  if(H.view===0){L.main=fmtCond(S.kComp);L.unit=unitTxt();L.l2=T;L.l2u='°C';}
+  else if(H.view===1){L.tl='UNCOMP';L.main=fmtCond(S.kT);L.unit=unitTxt();L.l2=T;L.l2u='°C';}
+  else{L.tl='OUTPUT';L.main=S.ma.toFixed(2);L.unit='mA';L.l2=fmtCond(S.kComp);L.l2u=unitTxt();}
+  return L;
+ }
+ if(H.m==='grp'){const gr=GRP[H.gi];L.tl='SETUP';L.main=gr[0];L.l2=gr[1];return L;}
+ if(H.m==='fn'){const p=grpFns(H.gi)[H.fi];const v=H.ed?H.ed.v:g(p.c);L.tl='SETUP';L.br=p.c;L.main=p.t==='e'?p.o[v]:(+v).toFixed(p.dc);L.unit=p.t==='e'?'':(p.u||'');L.l2=p.nm;L.blink=!!H.ed;return L;}
+ if(H.m==='cal'){const c=H.cal;L.tl='CAL';
+  if(c.st===0){L.main=c.sol.toFixed(3);L.unit='mS/cm';L.l2='SOLUTION';L.blink=true;L.br='C1';}
+  else if(c.st===1){const ok=calStable();L.main=S.kComp.toFixed(3);L.unit='mS/cm';L.l2=ok?'STABLE E':'WAIT';L.blink=!ok;L.br='C2';}
+  else if(c.st===2){L.main=c.kNew.toFixed(3);L.unit='1/cm';L.l2='k NEW? E';L.blink=true;L.br='C3';}
+  else {L.main='ERR';L.l2='CAL FAIL';L.blink=true;}
+  return L;}
+ return L;
+}
+let lcdKey='';
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function drawLCD(){
+ const L=lcdModel();$('#lcd').classList.toggle('off',!L);
+ const k=L?JSON.stringify(L):'off';if(k===lcdKey)return;lcdKey=k;
+ if(!L){$('#lcdSvg').innerHTML='';return;}
+ const mlen=String(L.main).replace('.','').length+(String(L.main).includes('.')?0.4:0);const big=Math.min(170,Math.floor((L.unit?610:760)/(Math.max(1,mlen)*0.6)));const s2=Math.min(110,Math.floor(500/(Math.max(1,L.l2.length)*0.6)));
+ const o=[];
+ o.push(`<text x="40" y="70" class="ink" font-family="IBM Plex Mono,monospace" font-weight="600" font-size="46">${esc(L.tl)}</text>`);
+ if(L.hold)o.push(`<text x="810" y="70" text-anchor="end" class="ink" font-family="IBM Plex Mono,monospace" font-weight="700" font-size="46">HOLD</text>`);
+ o.push(`<g class="${L.blink?'bl':''}"><text x="${L.unit?640:790}" y="265" text-anchor="end" class="ink" font-family="IBM Plex Mono,monospace" font-weight="700" font-size="${big}" letter-spacing="-4">${esc(L.main)}</text></g>`);
+ if(L.unit)o.push(`<text x="655" y="200" class="ink" font-family="IBM Plex Mono,monospace" font-weight="600" font-size="52">${esc(L.unit)}</text>`);
+ o.push(`<text x="560" y="410" text-anchor="end" class="ink" font-family="IBM Plex Mono,monospace" font-weight="700" font-size="${s2}">${esc(L.l2)}</text>`);
+ if(L.l2u)o.push(`<text x="800" y="410" text-anchor="end" class="ink" font-family="IBM Plex Mono,monospace" font-weight="700" font-size="${L.l2u.length>2?52:110}">${esc(L.l2u)}</text>`);
+ o.push(`<text x="40" y="448" class="ink" font-family="IBM Plex Mono,monospace" font-weight="600" font-size="34">${esc(L.bl)}</text>`);
+ if(L.br)o.push(`<text x="40" y="330" class="ink" font-family="IBM Plex Mono,monospace" font-weight="700" font-size="56">${esc(L.br)}</text>`);
+ $('#lcdSvg').innerHTML=o.join('');
+}
+
+/* ---------------- keypad ---------------- */
+function msg(a,b,t){H.msg=[a,b];H.msgT=t||1.6;}
+function escape(){if(H.m==='cal')log('المعايرة اتلغت');H.m='meas';H.ed=null;H.cal=null;H.msg=null;EV.esc=1;}
+function setParam(c,v,src){
+ const p=PM[c];if(!p)return;
+ if(p.t==='n')v=clamp(Math.round(v/p.st)*p.st,p.mn,p.mx);
+ v=p.t==='n'?+v.toFixed(p.dc):+v;
+ if(P[c]===v)return;
+ const old=P[c];P[c]=v;
+ log(c+' '+p.ar+': '+fmtP(p,old)+' ← <b>'+fmtP(p,v)+'</b>'+(src?' ('+src+')':''));
+ EV['set_'+c]=src||1;if(src==='الكيباد')EV['kp_'+c]=1;
+ if(c==='S2'&&v===1){factory();log('كل الإعدادات رجعت للمصنع');EV.reset=1;}
+ save();renderParams();
+}
+function key(k,mult){
+ if(!S.on)return;
+ mult=mult||1;
+ if(H.msg&&!(k==='PLUS'||k==='MINUS'))H.msg=null;
+ /* + and - together = escape */
+ if((k==='PLUS'&&H.keys.MINUS)||(k==='MINUS'&&H.keys.PLUS)){escape();return;}
+ const d=k==='PLUS'?1:k==='MINUS'?-1:0;
+ if(H.m==='meas'){
+  if(k==='AM'){S.auto=!S.auto;if(!S.auto){S.man=[S.rel[0],S.rel[1]];EV.manual=1;}log('الريليهات بقت '+(S.auto?'AUTO':'MANUAL'));return;}
+  if(!S.auto){
+   if(k==='REL'){S.sel=S.sel===1?2:1;return;}
+   if(d){if(mult>1)return;S.man[S.sel-1]=d>0;if(d>0)EV['man'+S.sel]=1;return;}
+  } else if(k==='REL'){msg('AUTO','⇕ = MAN');return;}
+  if(d){if(mult>1)return;H.view=(H.view+d+3)%3;EV['view'+H.view]=1;return;}
+  if(k==='E'){H.m='grp';H.gi=0;EV.setup=1;return;}
+  if(k==='CAL'){if(!S.auto){msg('MANUAL','⇕ = AUTO');return;}H.m='cal';H.cal={st:0,sol:SOL};EV.calStart=1;return;}
+  return;
+ }
+ if(H.m==='grp'){
+  if(d){if(mult>1)return;H.gi=(H.gi+d+GRP.length)%GRP.length;return;}
+  if(k==='E'){H.m='fn';H.fi=0;H.ed=null;startEdit();return;}
+  if(k==='CAL'){escape();return;}
+  return;
+ }
+ if(H.m==='fn'){
+  const fns=grpFns(H.gi),p=fns[H.fi];
+  if(d&&H.ed){
+   if(p.t==='e'){const i=p.ok.indexOf(H.ed.v);H.ed.v=p.ok[(i+d+p.ok.length)%p.ok.length];}
+   else H.ed.v=clamp(H.ed.v+d*p.st*mult,p.mn,p.mx);
+   return;}
+  if(k==='E'){
+   if(H.ed){setParam(p.c,H.ed.v,'الكيباد');}
+   if(p.c==='S2'&&g('S2')===1){P.S2=0;H.m='meas';H.ed=null;msg('RESET','FACTORY',2);return;}
+   H.fi++;if(H.fi>=fns.length){H.m='grp';H.gi=(H.gi+1)%GRP.length;H.ed=null;return;}
+   startEdit();return;}
+  if(k==='CAL'){escape();return;}
+  return;
+ }
+ if(H.m==='cal'){
+  const c=H.cal;
+  if(k==='CAL'){escape();return;}
+  if(c.st===0){if(d){c.sol=clamp(+(c.sol+d*0.001*mult).toFixed(3),0.010,200);return;}if(k==='E'){c.st=1;return;}}
+  else if(c.st===1){if(k==='E'){
+    if(!S.err&&S.kComp>0.005&&!calStable()){msg('WAIT','NOT STABLE',1.4);return;}
+    const m=S.kComp;
+    if(S.err||m<0.005){c.st=9;log('المعايرة فشلت: الحساس مش في المحلول');EV.calFail=1;return;}
+    const kNew=g('A2')*c.sol/m;const r=kNew/g('A2');
+    if(r<0.8||r>1.25){c.st=9;c.kNew=kNew;log('المعايرة فشلت: k الجديد '+kNew.toFixed(3)+' بعيد عن القديم بأكتر من 20% (حساس وسخ أو محلول غلط)');EV.calFail=1;return;}
+    c.kNew=kNew;c.st=2;return;}}
+  else if(c.st===2){if(k==='E'){setParam('A2',c.kNew,'المعايرة');EV.calOk=1;EV.calSol=c.sol;H.m='meas';H.cal=null;msg('CAL','OK',1.8);return;}}
+  else if(c.st===9){if(k==='E'){escape();return;}}
+ }
+}
+function calStable(){return (S.rateF||0)<0.002;}
+function startEdit(){const p=grpFns(H.gi)[H.fi];H.ed={c:p.c,v:g(p.c)};}
+
+let rep=null;
+function down(b){
+ const k=b.dataset.k;b.classList.add('down');
+ const other=k==='PLUS'?'MINUS':k==='MINUS'?'PLUS':null;
+ key(k,1);H.keys[k]=true;
+ if(k==='PLUS'||k==='MINUS'){const t0=performance.now();clearTimeout(rep&&rep.tm);rep={tm:setTimeout(function tick(){if(!H.keys[k])return;const e=performance.now()-t0;key(k,e>3000?50:e>1500?10:1);rep.tm=setTimeout(tick,110);},500)};}
+}
+function up(b){b.classList.remove('down');H.keys[b.dataset.k]=false;if(rep){clearTimeout(rep.tm);rep=null;}}
+$$('#dev [data-k]').forEach(b=>{
+ b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId);}catch(_){}down(b);});
+ ['pointerup','pointercancel','lostpointercapture'].forEach(t=>b.addEventListener(t,()=>{if(b.classList.contains('down'))up(b);}));
+ b.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.repeat){e.preventDefault();down(b);}});
+ b.addEventListener('keyup',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();up(b);}});
+ b.addEventListener('contextmenu',e=>e.preventDefault());
+});
+$('#escBtn').addEventListener('click',()=>{if(S.on)escape();});
+$('#pwrBtn').addEventListener('click',e=>{S.on=!S.on;e.currentTarget.setAttribute('aria-pressed',S.on);e.currentTarget.textContent='⏻ الكهربا: '+(S.on?'ON':'OFF');if(!S.on){H.m='meas';H.ed=null;H.cal=null;}log('الكهربا '+(S.on?'رجعت':'اتفصلت'));});
+
+/* ---------------- caption ---------------- */
+function caption(){
+ let t='';
+ if(!S.on)t='الجهاز مطفي.';
+ else if(H.msg)t='';
+ else if(H.m==='meas'){
+  if(!S.auto)t='الريليهات <b>يدوي</b>: REL يختار ريليه '+(S.sel===1?'1 (البلف)':'2 (الإنذار)')+'، و + يشغّله و − يطفيه. ⇕ يرجّع AUTO.';
+  else if(S.err)t='<b>'+S.err+'</b>: '+ERR[S.err]+'.';
+  else t=['شاشة القياس: التوصيلية بعد تعويض الحرارة، وتحتها حرارة المياه. + و − يقلبوا القراءة، E للإعدادات، CAL للمعايرة.','القراءة من غير تعويض حرارة (على حرارة المياه الفعلية). قارنها بالقراءة اللي قبلها.','الخرج اللي رايح للـ PLC بالـ mA، وتحته التوصيلية.'][H.view];
+ }
+ else if(H.m==='grp'){const gr=GRP[H.gi];t='جروب <b>'+gr[0]+'</b> · '+gr[2]+'. + و − يختاروا الجروب، E يدخل. (+ و − مع بعض = خروج)';}
+ else if(H.m==='fn'){const p=grpFns(H.gi)[H.fi];t='<b>'+p.c+'</b> '+p.ar+' = <b>'+fmtP(p,H.ed?H.ed.v:g(p.c))+'</b>. '+p.x+' + و − يغيّروا، E يحفظ ويروح للي بعدها.';}
+ else if(H.m==='cal'){const c=H.cal;t=['معايرة 1/3: اكتب توصيلية المحلول القياسي على 25°C (المكتوبة على الزجاجة) بـ + و −، ودوس E.','معايرة 2/3: حط الحساس في كوباية المحلول (من «مكان الحساس»). الشاشة بتكتب WAIT وهي بتتغير، ولما تثبت تكتب STABLE: ساعتها دوس E.','معايرة 3/3: ده ثابت الخلية الجديد. E يحفظه، CAL يلغي.','المعايرة فشلت. اتأكد إن الحساس في المحلول ونضيف، ودوس E عشان ترجع.'][c.st===9?3:c.st];}
+ const e=$('#cap');if(e.dataset.t!==t){e.dataset.t=t;e.innerHTML=t;}
+}
+
+/* ---------------- process drawing ---------------- */
+function drawProc(){
+ const lvl=S.loc==='air'?0:1;
+ const v=S.valveOpen&&!S.f.valve;
+ const shade=clamp(S.c25/3,0,1);
+ const water=`rgb(${Math.round(210-110*shade)},${Math.round(232-120*shade)},${Math.round(245-90*shade)})`;
+ const steam=S.evap>3;
+ const sx=S.loc==='tank'?250:S.loc==='cal'?520:250,sy=S.loc==='air'?40:S.loc==='cal'?225:150;
+ const o=[];
+ o.push(`<rect x="40" y="110" width="360" height="140" rx="10" fill="${water}" stroke="var(--water)" stroke-width="2"/>`);
+ if(steam)for(let i=0;i<4;i++){const x=90+i*80,ph=(S.t*2+i)%4;o.push(`<path d="M${x} ${100-ph*6}q12-14 0-28q-12-14 0-28" stroke="var(--muted)" stroke-width="2.5" fill="none" opacity="${0.25+S.evap/160}"/>`);}
+ o.push(`<text x="220" y="240" text-anchor="middle" direction="rtl" font-size="14" fill="#123" font-family="IBM Plex Sans Arabic,sans-serif">حوض البرج · <tspan direction="ltr" unicode-bidi="embed">${S.c25.toFixed(2)} mS/cm</tspan></text>`);
+ o.push(`<path d="M0 140H40" stroke="var(--water)" stroke-width="6"/><text x="4" y="130" font-size="11" fill="currentColor" font-family="IBM Plex Sans Arabic,sans-serif">Make-up</text>`);
+ o.push(`<path d="M400 225H600" stroke="${v?'var(--water)':'var(--line)'}" stroke-width="6"/>`);
+ o.push(`<g transform="translate(470 225)"><path d="M-16-13L16 13V-13L-16 13z" fill="${v?'var(--good)':S.f.valve?'var(--bad)':'var(--panel)'}" stroke="currentColor" stroke-width="2"/><path d="M0 0V-26" stroke="currentColor" stroke-width="2"/><rect x="-14" y="-42" width="28" height="16" rx="3" fill="var(--panel)" stroke="currentColor"/></g>`);
+ o.push(`<text x="470" y="270" text-anchor="middle" direction="rtl" font-size="12" fill="currentColor" font-family="IBM Plex Sans Arabic,sans-serif">بلف Blowdown ${v?'مفتوح':'مقفول'}${S.f.valve?' (مزنّق)':''}</text>`);
+ if(S.loc==='cal'){o.push(`<rect x="490" y="180" width="70" height="80" rx="6" fill="#e9f3e3" stroke="currentColor"/><text x="525" y="292" text-anchor="middle" font-size="11" fill="currentColor" font-family="IBM Plex Mono,monospace">KCl 1.413</text>`);}
+ /* sensor + cable */
+ o.push(`<path d="M${sx} ${sy-40}V${sy-80}H600V40" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="${S.f.short?'2 3':'0'}"/>`);
+ o.push(`<rect x="${sx-7}" y="${sy-40}" width="14" height="44" rx="4" fill="${S.f.foul?'#b8a882':'#7d878e'}" stroke="currentColor"/>`);
+ o.push(`<text x="${sx+14}" y="${sy-8}" font-size="11" fill="currentColor" font-family="IBM Plex Sans Arabic,sans-serif">الحساس${S.loc==='air'?' (في الهوا!)':''}</text>`);
+ /* transmitter box */
+ o.push(`<rect x="560" y="10" width="76" height="46" rx="6" fill="var(--panel)" stroke="currentColor"/><text x="598" y="30" text-anchor="middle" font-size="10" fill="currentColor" font-family="IBM Plex Sans,sans-serif">Liquisys</text><text x="598" y="47" text-anchor="middle" font-size="11" fill="currentColor" font-family="IBM Plex Mono,monospace">${S.on?fmtCond(S.kComp):'--'}</text>`);
+ o.push(`<path d="M598 56V150" stroke="#c0352b" stroke-width="2" stroke-dasharray="4 4"/><text x="606" y="110" font-size="10" fill="#c0352b" font-family="IBM Plex Sans Arabic,sans-serif">ريليه 1</text><path d="M598 150V200H470" stroke="#c0352b" stroke-width="2" stroke-dasharray="4 4" fill="none"/>`);
+ /* alarm lamp on relay 2 */
+ o.push(`<circle cx="520" cy="40" r="13" fill="${S.rel[1]?'#ff3a26':'var(--line)'}" stroke="currentColor"/><text x="500" y="44" text-anchor="end" direction="rtl" font-size="10" fill="currentColor" font-family="IBM Plex Sans Arabic,sans-serif">لمبة ريليه 2</text>`);
+ $('#procSvg').innerHTML=o.join('');
+}
+
+/* ---------------- trend ---------------- */
+function drawTrend(){
+ const c=$('#trend'),x=c.getContext('2d'),W=c.width,Hh=c.height;x.direction='ltr';x.textAlign='left';
+ x.clearRect(0,0,W,Hh);
+ const vals=TR.map(r=>r[0]).filter(isFinite);const mx=Math.max(2.5,...vals.slice(-900).map(v=>Math.min(v,20)))*1.1;
+ x.strokeStyle='#22343a';x.lineWidth=1;x.font='12px IBM Plex Mono';x.fillStyle='#93a2ab';
+ for(let i=0;i<=5;i++){const y=Hh-20-(Hh-30)*i/5;x.beginPath();x.moveTo(40,y);x.lineTo(W,y);x.stroke();x.fillText((mx*i/5).toFixed(1),2,y+4);}
+ const n=TR.length,X=i=>40+(W-40)*(i+900-n)/900,Y=v=>Hh-20-(Hh-30)*Math.min(v,mx)/mx;
+ x.fillStyle='rgba(255,107,94,.18)';TR.forEach((r,i)=>{if(r[1])x.fillRect(X(i),10,(W-40)/900+1,Hh-30);});
+ [[2,'#f0a03c'],[3,'#f0a03c']].forEach(([k,col])=>{x.strokeStyle=col;x.setLineDash([6,5]);x.beginPath();TR.forEach((r,i)=>{const y=Y(r[k]);i?x.lineTo(X(i),y):x.moveTo(X(i),y);});x.stroke();});
+ x.setLineDash([]);x.strokeStyle='#4cc0cf';x.lineWidth=2.2;x.beginPath();TR.forEach((r,i)=>{const y=Y(r[0]);i?x.lineTo(X(i),y):x.moveTo(X(i),y);});x.stroke();
+}
+
+/* ---------------- readouts + LEDs ---------------- */
+function ui(){
+ drawLCD();caption();
+ const L=(id,on,fl)=>{const e=$(id);e.classList.toggle('on',!!on);e.classList.toggle('fl',!!fl);};
+ L('#LA',S.on&&S.auto);L('#LM',S.on&&!S.auto);L('#LAL',S.on&&S.alarm,S.on&&S.alarm);
+ L('#LR1',S.on&&S.rel[0]);L('#LR2',S.on&&S.rel[1]);
+ L('#L1',S.on&&!S.auto&&S.sel===1);L('#L2',S.on&&!S.auto&&S.sel===2);
+ $('#rTrue').textContent=(S.loc==='cal'?SOL:S.c25).toFixed(3)+' mS/cm';
+ const realT=S.loc==='cal'?SOL_T:S.T;
+ $('#rRaw').textContent=((S.loc==='cal'?SOL:S.c25)*(1+ALPHA_TRUE/100*(realT-25))).toFixed(3)+' mS/cm';
+ $('#rDisp').textContent=S.on?(S.err?S.err:fmtCond(S.kComp)+' '+unitTxt()):'—';
+ $('#rMa').textContent=S.ma.toFixed(2)+' mA'+(S.hold?' (HOLD)':'');
+ $('#mMa').style.width=clamp(S.ma/22*100,0,100)+'%';
+ $('#rCyc').textContent=(S.c25/S.mk).toFixed(1);
+ $('#chipMode').textContent=S.auto?'AUTO':'MANUAL';
+ $('#chipMa').textContent=S.ma.toFixed(1)+' mA';
+ $('#chipAl').textContent=S.alarm?S.err:'لا يوجد';
+ $('#vEvap').textContent=S.evap+'%';$('#vMk').textContent=S.mk.toFixed(2)+' mS/cm';$('#vT').textContent=S.T.toFixed(1)+' °C';
+}
+
+/* ---------------- controls ---------------- */
+$('#sEvap').addEventListener('input',e=>{S.evap=+e.target.value;});
+$('#sMk').addEventListener('input',e=>{S.mk=+e.target.value;});
+$('#sT').addEventListener('input',e=>{S.T=+e.target.value;EV.tMoved=(EV.tMoved||0)+1;});
+$('#loc').addEventListener('change',e=>{S.loc=e.target.value;log('الحساس بقى '+e.target.selectedOptions[0].text);if(S.loc==='cal')EV.inCal=1;if(S.loc==='air')EV.inAir=1;});
+$$('[data-f]').forEach(b=>b.addEventListener('click',()=>{const f=b.dataset.f;S.f[f]=!S.f[f];b.setAttribute('aria-pressed',S.f[f]);log((S.f[f]?'عطل: ':'اتصلّح: ')+b.textContent);if(S.f[f])EV['f_'+f]=1;}));
+
+/* ---------------- parameter table ---------------- */
+let PTAB='A';
+function renderTabs(){$('#ptabs').innerHTML=GRP.map(([k,n,ar])=>'<button type="button" data-g="'+k+'" aria-pressed="'+(PTAB===k)+'">'+k+' · '+ar+'</button>').join('');}
+$('#ptabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;PTAB=b.dataset.g;renderTabs();renderParams();});
+function renderParams(){
+ $('#ptable').innerHTML=PD.filter(p=>p.g===PTAB).map(p=>{
+  const v=g(p.c);let cell;
+  if(p.t==='e')cell='<select data-n="'+p.c+'">'+p.ok.map(k=>'<option value="'+k+'"'+(k===v?' selected':'')+'>'+p.o[k]+'</option>').join('')+'</select>';
+  else cell='<input type="number" data-n="'+p.c+'" value="'+(+v).toFixed(p.dc)+'" min="'+p.mn+'" max="'+p.mx+'" step="'+p.st+'"> <span class="hint">'+(p.u||'')+'</span>';
+  return '<tr class="'+(v!==p.d?'changed':'')+'"><td class="code">'+p.c+'</td><td><b class="ltr">'+p.nm+'</b><br>'+p.ar+'</td><td>'+cell+'</td><td class="ltr">'+fmtP(p,p.d)+'</td><td class="hint" style="margin:0">'+p.x+'</td></tr>';}).join('');
+}
+$('#ptable').addEventListener('change',e=>{const el=e.target.closest('[data-n]');if(!el)return;setParam(el.dataset.n,+el.value,'الجدول');});
+$('#factory').addEventListener('click',()=>{factory();save();renderParams();log('كل الإعدادات رجعت للمصنع (من الجدول)');});
+
+/* ---------------- exercises ---------------- */
+const EX=[
+ {t:'اقرا الشاشة',p:'شاشة القياس فيها التوصيلية فوق والحرارة تحت. + و − بيقلبوا بين 3 قراءات.',s:[
+  ['دوس + لحد ما تشوف القراءة من غير تعويض (UNCOMP)',()=>EV.view1],
+  ['كمّل لشاشة OUTPUT وشوف الخرج بالـ mA',()=>EV.view2],
+  ['ارجع للشاشة الأساسية',()=>EV.view1&&EV.view2&&H.view===0&&H.m==='meas']]},
+ {t:'ثابت الخلية من الشهادة',p:'الحساس ثابته الحقيقي 1.047، والجهاز على 1.000، فالقراءة أقل من الحقيقة بحوالي 4.5%.',s:[
+  ['ادخل الإعدادات بـ E، وجروب A بـ E تاني',()=>EV.setup],
+  ['A2 = 1.047 من الكيباد (+ و − ثم E)',()=>EV.kp_A2&&Math.abs(g('A2')-1.047)<0.0006],
+  ['ارجع لشاشة القياس (+ و − مع بعض) وقارن المعروض بالحقيقي',()=>EV.kp_A2&&H.m==='meas'&&Math.abs(S.kComp-S.c25)/S.c25<0.02&&S.loc==='tank']]},
+ {t:'تعويض الحرارة',p:'من غير تعويض القراءة بتتغير مع الحرارة حتى لو الأملاح ثابتة.',s:[
+  ['B3 = None (اقفل التعويض)',()=>g('B3')===0],
+  ['حرّك حرارة المياه وشوف المعروض بيتغير',()=>g('B3')===0&&(EV.tMoved||0)>3],
+  ['B3 = Linear و B4 = 2.00 %/K',()=>g('B3')===1&&Math.abs(g('B4')-2)<0.001],
+  ['حرّك الحرارة تاني: المعروض يفضل قريب من الحقيقي على 25°C',()=>g('B3')===1&&Math.abs(g('B4')-2)<0.001&&(EV.tMoved||0)>6&&Math.abs(S.kComp-S.c25)/S.c25<0.03&&S.loc==='tank']]},
+ {t:'معايرة بمحلول 1.413 mS/cm',p:'رجّع A2 للمصنع (1.000) الأول لو غيّرته، وشوف المعايرة بتوصّله لـ 1.047 لوحدها.',s:[
+  ['حط الحساس في كوباية المحلول (مكان الحساس)',()=>EV.inCal],
+  ['دوس CAL: الجهاز يدخل HOLD، واكتب 1.413 ودوس E',()=>EV.calStart],
+  ['استنى القراءة تثبت ودوس E، وبعدين E تحفظ k الجديد',()=>EV.calOk&&Math.abs(EV.calSol-1.413)<0.0006&&Math.abs(g('A2')-1.047)<0.01],
+  ['رجّع الحساس للحوض',()=>EV.calOk&&S.loc==='tank']]},
+ {t:'ريليه الـ Blowdown',p:'عايزين الحوض يفضل بين 1.40 و 1.60 mS/cm.',s:[
+  ['R1 = Max limit، و R2 = 1.60، و R3 = 1.40',()=>g('R1')===1&&Math.abs(g('R2')-1.6)<0.001&&Math.abs(g('R3')-1.4)<0.001],
+  ['استنى التوصيلية توصل 1.60 والبلف يفتح (REL 1 تنوّر)',()=>g('R1')===1&&Math.abs(g('R2')-1.6)<0.001&&S.rel[0]&&S.auto],
+  ['والبلف يقفل لوحده لما توصل 1.40',()=>g('R1')===1&&Math.abs(g('R3')-1.4)<0.001&&EV.r1off&&!S.rel[0]&&S.auto&&S.c25<1.45]]},
+ {t:'الخرج 4-20mA للـ PLC',p:'الـ PLC متبرمج على مدى 0 لـ 2.00 mS/cm.',s:[
+  ['C1 = 4-20 mA، و C2 = 0.00، و C3 = 2.00',()=>g('C1')===0&&g('C2')===0&&Math.abs(g('C3')-2)<0.001],
+  ['وصّل التوصيلية المعروضة لحوالي 1.00 (افتح البلف يدوي بـ ⇕ و REL و +، أو وقّف التبخير في الوقت المناسب) وشوف الخرج حوالي 12mA (±0.5)',()=>g('C1')===0&&g('C2')===0&&Math.abs(g('C3')-2)<0.001&&Math.abs(S.ma-12)<0.5&&!S.hold]]},
+ {t:'الحساس طلع من المياه',p:'المياه نزلت والحساس بقى في الهوا.',s:[
+  ['حط الحساس «برّه المياه»',()=>EV.inAir],
+  ['استنى E055 ولمبة ALARM والخرج يروح 22mA',()=>S.alarm&&S.err==='E055'&&S.ma>21.5],
+  ['رجّعه للحوض: الإنذار يروح لوحده',()=>EV.inAir&&!S.alarm&&S.loc==='tank'&&S.on]]},
+ {t:'حساس الحرارة اتقطع',p:'من غير الحرارة الجهاز مش هيعرف يعوّض.',s:[
+  ['اعمل عطل «Pt100 مفصول» واستنى E010',()=>S.err==='E010'],
+  ['حل مؤقت: B1 = MTC و B2 = حرارة المياه تقريباً (±2°C)',()=>g('B1')===1&&Math.abs(g('B2')-S.T)<=2&&S.f.pt],
+  ['صلّح العطل ورجّع B1 = ATC',()=>!S.f.pt&&g('B1')===0&&EV.f_pt]]},
+ {t:'تجربة يدوية للريليهات',p:'قبل التشغيل بتجرّب البلف واللمبة من الجهاز نفسه.',s:[
+  ['دوس ⇕: لمبة ☝ تنوّر (MANUAL)',()=>EV.manual],
+  ['ريليه 1: دوس + والبلف يفتح',()=>!S.auto&&S.man[0]&&EV.man1],
+  ['REL يختار ريليه 2، و + تشغّل اللمبة',()=>!S.auto&&S.man[1]&&EV.man2],
+  ['رجّع AUTO بـ ⇕',()=>EV.man2&&S.auto]]}
+];
+let EXS={};
+function renderEx(){
+ const open=$$('#exList details[open]').map(d=>d.dataset.i);
+ let done=0;
+ $('#exList').innerHTML=EX.map((e,i)=>{const d=EXS[i]||[];const n=d.filter(Boolean).length;if(n===e.s.length)done++;return '<details class="ex'+(n===e.s.length?' done':'')+'" data-i="'+i+'"'+(open.includes(String(i))?' open':'')+'><summary><span>'+(i+1)+'. '+e.t+'</span><span class="cnt">'+n+'/'+e.s.length+'</span></summary><div class="body">'+(e.p?'<p>'+e.p+'</p>':'')+'<ol>'+e.s.map((s,j)=>'<li class="'+(d[j]?'ok':'')+'">'+s[0]+'</li>').join('')+'</ol><button class="btn xs" type="button" data-reset="'+i+'">ابدأ التمرين من الأول</button></div></details>';}).join('');
+ $('#exCnt').textContent='('+done+'/'+EX.length+')';
+}
+$('#exList').addEventListener('click',e=>{const b=e.target.closest('[data-reset]');if(!b)return;EXS[+b.dataset.reset]=[];save();renderEx();});
+function checkEx(){
+ let ch=false;
+ EX.forEach((e,i)=>{const d=EXS[i]||(EXS[i]=[]);e.s.forEach((s,j)=>{if(!d[j]&&(j===0||d[j-1])){let ok=false;try{ok=!!s[1]();}catch(_){}if(ok){d[j]=true;ch=true;if(d.filter(Boolean).length===e.s.length)log('✓ خلصت تمرين: '+e.t);}}});});
+ if(ch){save();renderEx();}
+}
+
+/* ---------------- quiz ---------------- */
+const QZ=[
+ ['المياه الأنقى بتبقى توصيليتها:',['أعلى','أقل','نفس الشيء'],1,'الأيونات هي اللي بتوصّل، والمياه النقية فيها أيونات أقل.'],
+ ['1.413 mS/cm تساوي كام µS/cm؟',['14.13','141.3','1413'],2,'1 mS/cm = 1000 µS/cm.'],
+ ['حساس ثابته 0.01 cm⁻¹ مناسب لـ:',['مياه بحر','مياه فائقة النقاوة','مياه صرف'],1,'k الصغير للمياه قليلة التوصيل.'],
+ ['ليه بنعمل تعويض حرارة؟',['عشان نقارن القراءات على حرارة واحدة (25°C)','عشان نحمي الحساس','عشان نزوّد المدى'],0,'التوصيلية بتزيد حوالي 2% لكل درجة، فلازم نرجّعها لحرارة مرجع.'],
+ ['في برج التبريد ريليه الـ Blowdown بيشتغل لما:',['التوصيلية تقل','التوصيلية تعلى عن نقطة التشغيل','الحرارة تقل'],1,'الأملاح بتتركز بالتبخير، فبنصرّف مياه لما التوصيلية تعلى.'],
+ ['القراءة نزلت فجأة لقريب من الصفر واللمبة ALARM نوّرت. أول حاجة تشوفها:',['ثابت الخلية','الحساس مغطوس في المياه ولا لأ','الخرج 4-20mA'],1,'الحساس في الهوا أو فقاعة كبيرة = قراءة قريبة من الصفر.'],
+ ['أثناء المعايرة الخرج 4-20mA:',['بيروح صفر','بيتثبت على آخر قيمة (HOLD)','بيروح 20mA'],1,'الـ HOLD بيمنع الـ PLC يتصرّف على قراءة المحلول.']
+];
+function renderQuiz(){
+ $('#quiz').innerHTML=QZ.map((q,i)=>'<div class="q" data-q="'+i+'"><p>'+(i+1)+'. '+q[0]+'</p>'+q[1].map((a,j)=>'<label><input type="radio" name="q'+i+'" value="'+j+'"> '+a+'</label>').join('')+'<div class="fb"></div></div>').join('')+'<p class="hint" id="qScore"></p>';
+}
+$('#quiz').addEventListener('change',e=>{
+ const q=e.target.closest('.q');if(!q)return;const i=+q.dataset.q,j=+e.target.value,ok=j===QZ[i][2];
+ const fb=q.querySelector('.fb');fb.className='fb '+(ok?'ok':'no');fb.textContent=(ok?'✓ صح. ':'✗ لأ. ')+QZ[i][3];
+ const right=$$('#quiz .fb.ok').length;$('#qScore').textContent='جاوبت صح على '+right+' من '+QZ.length;
+});
+
+/* ---------------- tabs ---------------- */
+function showTab(t){$$('.tabs [data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));['learn','sim','ex','par'].forEach(k=>$('#tab-'+k).hidden=k!==t);lsSet(SKEY+'-tab',t);if(t==='sim')drawTrend();window.scrollTo({top:0});}
+$$('.tabs [data-tab]').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+$$('[data-go]').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.go)));
+
+/* ---------------- persistence ---------------- */
+function save(){lsSet(SKEY,JSON.stringify({p:P,exs:EXS}));}
+function load(){try{const o=JSON.parse(lsGet(SKEY)||'null');if(!o)return;if(o.p)for(const c in o.p)if(PM[c]){const p=PM[c],v=o.p[c];if(typeof v==='number'&&(p.t==='n'||p.ok.includes(v)))P[c]=v;}EXS=o.exs||{};}catch(_){}}
+
+/* ---------------- boot ---------------- */
+load();renderTabs();renderParams();renderEx();renderQuiz();
+showTab(lsGet(SKEY+'-tab')||'learn');
+log('الجهاز اشتغل. ثابت الخلية في الجهاز '+g('A2').toFixed(3)+' والحساس الحقيقي 1.047.');
+let last=performance.now(),acc=0,uiT=0,trT=0;
+function loop(now){
+ const dt=Math.min(0.25,(now-last)/1000);last=now;
+ acc+=dt;while(acc>0.05){step(0.05);acc-=0.05;}
+ uiT+=dt;if(uiT>0.12){uiT=0;ui();drawProc();checkEx();}
+ trT+=dt;if(trT>0.5&&!$('#tab-sim').hidden){trT=0;drawTrend();}
+ requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

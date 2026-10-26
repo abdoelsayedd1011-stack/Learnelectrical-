@@ -18,7 +18,7 @@ import { productOfDir, ownsCourse } from "./_lib/products.js";
 
 const MEMBER_LABS = new Set([
   "ab1336-simulator", "pf40-lab", "v20-lab", "atv320-lab", "atv630-lab",
-  "ms300-lab", "fc51-lab", "vlt2800-lab", "e5cc-lab", "servo-simulator", "vfd-simulator",
+  "ms300-lab", "fc51-lab", "vlt2800-lab", "e5cc-lab", "clm223-lab", "servo-simulator", "vfd-simulator",
   "mrje-servo", "sigma7-servo", "kinetix300-servo",
   "acs580-lab", "g120-lab", "fre800-lab", "ga500-lab", "ig5a-lab", "gd20-lab", "c2000-lab", "frenic-lab"
 ]);
