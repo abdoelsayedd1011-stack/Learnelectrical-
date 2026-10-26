@@ -2902,6 +2902,11 @@ CL.bench = function(host, ex, opt){
     if (powerTerm(w.a) || powerTerm(w.b)){ if (pa && pa.has('L2')) return '#1f1f1f'; if (pa && pa.has('L3')) return '#8a8f94'; return '#7b4a21'; }
     return dc ? '#1f3f9a' : '#c62828';
   }
+  // crimped ferrule + coloured sleeve where a wire enters a terminal (the wire leaves the screw along the terminal's direction)
+  function ferrule(T, col){
+    const v = T.side === 'l' ? [-1, 0] : T.side === 'r' ? [1, 0] : [0, T.dir || -1], at = s => `${T.x + v[0] * s} ${T.y + v[1] * s}`;
+    return `<path class="bw-fe" d="M${at(3)}L${at(14)}"/><path class="bw-fe-in" d="M${at(4)}L${at(13)}"/><path class="bw-sl" d="M${at(13)}L${at(20)}" stroke="${col}"/>`;
+  }
   function wpath(A, B){
     const dy = Math.abs(B.y - A.y), dx = Math.abs(B.x - A.x), k = clamp(30 + dy * 0.35 + dx * 0.12, 30, 120);
     // a wire that leaves against its terminal's direction swings out sideways instead of crossing the device
@@ -2961,7 +2966,7 @@ CL.bench = function(host, ex, opt){
       const A = TT[w.a], B = TT[w.b]; if (!A || !B) return;
       const d = route(A, B), col = wireColor(w, fr), act = res && res.active.has(res.find(w.a));
       const bad = (flash && flash.wires.has(w.id)) || (errHl && errHl.w.has(w.id)), pw = col !== '#3a9be0' && (powerTerm(w.a) || powerTerm(w.b));
-      wSvg += `<g class="bw${bad ? ' bad' : ''}${pw ? ' pw' : ''}"><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${col}"/>${act ? `<path class="bw-flow" d="${d}"/>` : ''}<path class="bw-hit" d="${d}" data-w="${w.id}" tabindex="0" role="button" aria-label="سلك من ${esc(termLab(w.a))} لـ ${esc(termLab(w.b))}: اضغط عشان تشيله"/></g>`;
+      wSvg += `<g class="bw${bad ? ' bad' : ''}${pw ? ' pw' : ''}"><path class="bw-sh" d="${d}" transform="translate(1.5 2.5)"/><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${col}"/><path class="bw-hl" d="${d}"/>${act ? `<path class="bw-flow" d="${d}"/>` : ''}${ferrule(A, col)}${ferrule(B, col)}<path class="bw-hit" d="${d}" data-w="${w.id}" tabindex="0" role="button" aria-label="سلك من ${esc(termLab(w.a))} لـ ${esc(termLab(w.b))}: اضغط عشان تشيله"/></g>`;
     });
     let tSvg = '', tHit = '';
     Object.keys(TT).forEach(id => {
