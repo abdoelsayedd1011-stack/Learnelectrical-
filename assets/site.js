@@ -20,6 +20,12 @@
       guided:89, exercises:0, params:0, faults:0,
       inside:["الريلاي والكونتاكتور والحماية", "التايمرات وتشغيل الموتور 3 فاز", "ستار/دلتا والفرملة وعكس الاتجاه", "24 تمرين عملي وشهادة إتمام"],
       tags:"sounds أصوات story قصة points نقط leaderboard لوحة شرف badges شارات classic control كلاسيك كنترول protection حماية fuse فيوز mcb قاطع overload أوفرلود mpcb contactor كونتاكتور relay ريلاي push button بوش بوتن limit switch ليمت سويتش selector سلكتور lamp لمبة wiring توصيل timer تايمر on-delay off-delay flasher sequence تتابع braking فرملة dc injection plugging soft starter سوفت ستارتر bypass بايباس hvac تكييف compressor كباس hp lp thermostat ثرموستات certificate شهادة motor موتور induction إندكشن nameplate يافطة star delta ستار دلتا pressure switch بريشر سويتش float عوامة level مستوى sensor حساس pnp npn photocell خلية ضوئية jog interlock إنترلوك reversing عكس الاتجاه hoist ونش lathe مخرطة schematic رسمة دايرة مفاتيح وبوش بوتن وليمت سويتش، وبعدها الريلاي والتثبيت الذاتي والكونتاكتور وموتور 3 فاز DOL، والحماية: الفيوز والقاطع والأوفرلود الحراري والـ MPCB، والتايمرات (On-delay و Off-delay والدوري)، والموتور الإندكشن 3 فاز (اليافطة وعلبة الأطراف ستار/دلتا وعكس الاتجاه)، ومفاتيح الضغط والمستوى والحساسات PNP/NPN والخلية الضوئية، وتمارين التتابع والـ Jog وعكس الحركة، وفي الآخر المواضيع المتقدمة: ستار/دلتا (يدوي وأوتوماتيك)، طرق فرملة الموتور (DC و Plugging وفرامل الونش)، دايرة كباس التكييف المركزي على 24V، والسوفت ستارتر بالبايباس وريلاي العطل. تعرف كل عنصر وتوصّل الدايرة بإيدك سلك سلك، والمحاكي يصحّح لوحده ويرسم دايرة كل تمرين ويسخّن الأوفرلود ويفصل والتايمر يعدّ زي الحقيقي.  جديد: ماكينة متحركة تحت اللوحة بتشتغل لما دايرتك تشتغل (سير تعبئة، ونش، طلمبة وخزان، مروحة، كمبروسر، مخرطة، عداد سرعة) + قصة من المصنع لكل تمرين بالعربي وسطر «المطلوب منك»، وأصوات حقيقية (تكة السلك وانت بتوصّل، طقة الكونتاكتور، زنّة الموتور، شرارة القصر، جرس النجاح) مع زرار كتم الصوت، ونقط وساعة لكل تمرين وشارات ولوحة شرف على صفحة المحاكي   تعريف بالعربي وشكل حقيقي ورمز IEC و NEMA لكل عنصر، ورسمة دايرة (قوى + تحكم) مرسومة أوتوماتيك لكل تمرين   9 دروس: العناصر البسيطة، الريلاي والتثبيت الذاتي والإنترلوك، الكونتاكتور ودايرة القوى والتحكم، الحماية (فيوز وقاطع وأوفرلود و MPCB)، التايمرات (TON و TOF والدوري ومتعدد الوظائف)، الموتور الإندكشن 3 فاز (اليافطة، علبة الأطراف، ستار/دلتا، عكس الاتجاه)، مفاتيح الضغط والمستوى والحساسات (بريشر سويتش، عوامة، PNP/NPN، خلية ضوئية)، وتمارين التتابع والـ Jog وعكس الحركة (إنترلوك كهربي وميكانيكي، ونش بليمت سويتش، ماكينة خرط بـ4 كونتاكتورات)، والمواضيع المتقدمة: ستار/دلتا، الفرملة، كباس التكييف المركزي، والسوفت ستارتر   كل التمارين العملية الـ24 من كراسة المدرّب مفتوحة (كل تمرين دايرة قوى + تحكم + لمبات إشارة) + 89 تمرين موجّه على لوحة توصيل مقسومة دايرة قوى ودايرة تحكم، مع غلطات مقصودة تكتشفها (قصر، Jog بيثبّت، NPN متوصّل كأنه PNP، كباري الستار غلط، إنترلوك Y/Δ ناقص، LP على NO، بايباس من START)، وشهادة إتمام بتتطبع لما تخلّص الكورس " },
+    { id:"safety", path:"safety-lab/index.html", group:"safety", brand:"كورس", brandKey:"safety",
+      name:"كورس السيفتي PLC", kind:"سيفتي PLC", disp:"PL e", dispClass:"grn", rtlName:true,
+      line:"الطوارئ والبوابات والستاير: ريلاي RT9 و Vital 1 وسيفتي PLC ABB Pluto B20.",
+      guided:0, exercises:0, params:0, faults:0,
+      inside:["ريلاي الأمان RT9 والريست المراقَب", "Vital 1 والإشارة الديناميكية مع Adam و Eva", "Pluto B20: التوصيل وإشارات A و B و C", "البرمجة في Pluto Manager وأكواد Er"],
+      tags:"safety سيفتي أمان سلامة safety plc سيفتي بي ال سي pluto بلوتو abb jokab rt9 vital فيتال eden adam eva آدم إيفا إشارة ديناميك dynamic dynlink e-stop طوارئ emergency stop interlock بوابة light curtain ستارة ضوئية ossd two-hand pl e sil 3 category 4 iso 13849 pluto manager tc2rti" },
     { id:"instr", path:"instrumentation-lab/index.html", group:"instr", brand:"كورس", brandKey:"instr",
       name:"كورس الإنسترومنتيشن", kind:"إنسترومنتيشن", disp:"12.0mA", dispClass:"lcd", rtlName:true,
       line:"الحساسات والإشارات اللي بتقابلها في أي مصنع.",
@@ -198,6 +204,7 @@
       inside:["درس: الـ Conductivity وثابت الخلية وتعويض الحرارة", "معايرة بمحلول 1.413 mS/cm", "ريليه الـ Blowdown والخرج 4-20mA", "أعطال الحساس والإنذارات"],
       tags:"endress hauser liquisys m clm223 clm253 conductivity توصيلية tds برج تبريد blowdown معايرة cell constant ATC" },
     { key:"classic", title:"كلاسيك كنترول", sub:"مفاتيح · بوش بوتن · كونتاكتورات · موتور", land:"courses/classic.html" },
+    { key:"safety", title:"السيفتي PLC", sub:"RT9 · Vital 1 · Adam و Eva · Pluto B20", land:"safety-lab/index.html" },
     { key:"drawings", title:"قراية الرسومات الكهربية", sub:"رموز IEC و NEMA · كروس ريفرنس · Single line · ترمنالات", land:"courses/drawings.html" },
     { key:"instr", title:"إنسترومنتيشن", sub:"إنكودر · حساسات حرارة · لود سيل · ⁦4⁠–⁠20mA⁩", land:"courses/instrumentation.html" },
     { key:"plc", title:"PLC", sub:"Ladder · تايمرات · عدادات · أنالوج · مشاريع", land:"courses/plc.html" },
@@ -210,6 +217,8 @@
   var TOC = {
     basics: { n:"13 درس", x:["أفوميتر تفاعلي", "امتحان وشهادة"],
       l:["يعني إيه كهربا؟", "الجهد والتيار", "الموصلات والعوازل", "التوالي والتوازي", "القدرة والطاقة", "أنواع الكهربا", "السلامة والعدّة", "الأفوميتر (AVO)", "قياس الأجهزة عمليًا", "المحوّل والباور سبلاي", "قانون أوم واختيار السلك والقاطع", "توصيل اللمبة والبريزة", "أعطال البيت الشائعة"] },
+    safety: { n:"8 دروس", x:["محاكي بصور الأجهزة", "امتحان نهائي"],
+      l:["يعني إيه سيفتي PLC؟", "عناصر الأمان والتوصيل بقناتين", "ريلاي الأمان RT9", "Vital 1 والإشارة الديناميكية", "Pluto B20: الأطراف والشاشة", "الإشارات الديناميكية A و B و C", "البرمجة في Pluto Manager", "الأعطال وأكواد Er"] },
     classic: { n:"9 دروس", x:["89 تمرين موجّه", "24 تمرين عملي", "شهادة إتمام"],
       l:["عناصر التحكم البسيطة", "الريلاي المساعد والتثبيت الذاتي", "الكونتاكتور", "الحماية: الفيوز والقاطع والأوفرلود", "التايمرات: On-delay و Off-delay والدوري", "الموتور الإندكشن 3 فاز", "مفاتيح الضغط والمستوى والحساسات", "التتابع والـ Jog وعكس الحركة", "ستار/دلتا والفرملة والسوفت ستارتر"] },
     instr: { n:"10 دروس", x:["امتحان نهائي وشهادة"],
@@ -224,7 +233,7 @@
       l:["يعني إيه سيرفو؟", "جوه السيرفو موتور", "الإنكودر: عين السيرفو", "الدرايف من جوه", "توصيل السيرفو", "أوضاع التشغيل", "الجير الإلكتروني", "التيونينج وضبط الجين", "الهومينج والحدود", "التحكم من الـ PLC", "الأعطال الشائعة", "التشغيل لأول مرة + الامتحان"] }
   };
   var BRANDS = [
-    { key:"all", label:"الكل" }, { key:"beginner", label:"للمبتدئين" }, { key:"basics", label:"كلاسيك كنترول" }, { key:"drawings", label:"رسومات كهربية" }, { key:"instr", label:"إنسترومنتيشن" }, { key:"plc", label:"PLC" }, { key:"vfdc", label:"شرح الانفرتر" }, { key:"srvc", label:"شرح السيرفو" }, { key:"ab", label:"Allen-Bradley" }, { key:"siemens", label:"Siemens" },
+    { key:"all", label:"الكل" }, { key:"beginner", label:"للمبتدئين" }, { key:"basics", label:"كلاسيك كنترول" }, { key:"safety", label:"سيفتي PLC" }, { key:"drawings", label:"رسومات كهربية" }, { key:"instr", label:"إنسترومنتيشن" }, { key:"plc", label:"PLC" }, { key:"vfdc", label:"شرح الانفرتر" }, { key:"srvc", label:"شرح السيرفو" }, { key:"ab", label:"Allen-Bradley" }, { key:"siemens", label:"Siemens" },
     { key:"schneider", label:"Schneider" }, { key:"delta", label:"Delta" }, { key:"danfoss", label:"Danfoss" },
     { key:"omron", label:"Omron" }, { key:"eh", label:"Endress+Hauser" }, { key:"abb", label:"ABB" }, { key:"mitsubishi", label:"Mitsubishi" }, { key:"yaskawa", label:"Yaskawa" }, { key:"ls", label:"LS" }, { key:"invt", label:"INVT" }, { key:"fuji", label:"Fuji" }, { key:"multi", label:"مقارنة" }
   ];
@@ -280,7 +289,7 @@
   /* ---------- أسعار الكورسات (من «الأسعار» في لوحة الإدارة، /api/prices) ----------
      كارت كل كورس في الكتالوج وصفحة كل كورس في courses/ بتظهر السعر لو متحدد، وزرار «اشتري الكورس».
      اللي اشترى الكورس بيشوف «اشتريته ✓». */
-  var PRODUCT_OF = { basics:"basics", classic:"classic", instr:"instr", plc:"plc", drw:"drw", vfdc:"vfd", srv:"srv" };
+  var PRODUCT_OF = { basics:"basics", classic:"classic", safety:"safety", instr:"instr", plc:"plc", drw:"drw", vfdc:"vfd", srv:"srv" };
   var PR = null, ME, priceHooks = [];
   function curName(){ return EN ? EN.currency : ((window.SITE || {}).pay || {}).currency || "جنيه"; }
   function fmtN(n){ return String(Math.round(n * 100) / 100); }
@@ -429,6 +438,7 @@
   var CV = {
     basics:{ ac:"#f5b83d", ar:"أساسيات الكهربا", en:"Electrical Basics" },
     classic:{ ac:"#4fd17f", ar:"الكلاسيك كنترول", en:"Classic Control" },
+    safety:{ ac:"#ffd23a", ar:"السيفتي PLC", en:"Safety PLC" },
     instr:{ ac:"#36c9e0", ar:"الإنسترومنتيشن", en:"Instrumentation" },
     plc:{ ac:"#a48bff", ar:"الـ PLC", en:"PLC Programming" },
     drw:{ ac:"#5aa2ff", ar:"قراية الرسومات الكهربية", en:"Reading Electrical Drawings" },

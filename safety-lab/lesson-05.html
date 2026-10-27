@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pluto 20: الأطراف والشاشة</title>
+<meta name="description" content="الدرس 5: سيفتي PLC ABB Pluto B20 و S20: الدخول I0 لـ I7 و IQ10 لـ IQ17، الخروج Q0 لـ Q3، الشاشة وزرار K، والباص.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="safety.css?v=20261027sf">
+<script src="safety.js?v=20261027sf"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">السيفتي PLC · الدرس 5 من 8</p>
+    <h1>Pluto 20: الأطراف والشاشة</h1>
+    <p>الـ Pluto B20 سيفتي PLC صغير فيه 20 طرف دخل وخرج. اسمه «20» من عدد الأطراف دي. فيه نسختين: <b>B20</b> بيتكلم مع Pluto تانيين على الباص، و <b>S20</b> نفسه بس من غير باص.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="pluto.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>الشكل من قدّام</h2>
+  <figure class="dev-ph wide"><img src="img/pluto-b20.jpg" width="569" height="1086" alt="ABB Pluto B20 v2 من قدّام" loading="lazy"><figcaption>فوق: <span class="mono">CH CL I0 … I7 IQ10 IQ11 Q2 Q3</span>. تحت: <span class="mono">IQ12 … IQ17</span>، والريلاي <span class="mono">0L–Q0</span> و <span class="mono">1L–Q1</span>، و <span class="mono">ID 0V +24V</span>. في النص الشاشة وزرار K وفتحة البرمجة.</figcaption></figure>
+  <p>كل طرف ليه لمبة صغيرة جنب اسمه بتنوّر لما الدخل أو الخرج شغال. والريلاي <span class="mono">Q0</span> كونتاكت بين <span class="mono">0L</span> و <span class="mono">Q0</span>، و <span class="mono">Q1</span> بين <span class="mono">1L</span> و <span class="mono">Q1</span>، يعني كونتاكت ناشف تقدر تعدّي عليه 24V أو 230V.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>الدخول والخروج</h2>
+  <div class="tblw"><table class="tbl"><thead><tr><th>الأطراف</th><th>النوع</th><th>ملاحظات</th></tr></thead><tbody>
+  <tr><td class="mono">I0 … I7</td><td>دخل أمان</td><td>8 دخول، بتاخد 24V ثابت أو نبضات A / B / C</td></tr>
+  <tr><td class="mono">IQ10 … IQ17</td><td>دخل أمان <b>أو</b> خرج</td><td>كخرج: PNP مش أمان لحد 800 mA (لمبة، إشارة للـ PLC)، أو خرج نبضات ديناميكية A / B / C. إجمالي الـ IQ كلهم 2.5A</td></tr>
+  <tr><td class="mono">0L–Q0 / 1L–Q1</td><td>خرج أمان ريلاي</td><td>كل واحد كونتاكت مستقل: 1.5A على 250V AC-15، أو 1.5A على 24V DC-13</td></tr>
+  <tr><td class="mono">Q2 / Q3</td><td>خرج أمان ترانزستور</td><td>800 mA على 24V DC، ومراقَب بنبضات تست</td></tr>
+  <tr><td class="mono">CH / CL</td><td>باص CAN</td><td>يربط لحد 32 Pluto، و 120 أوم في أول وآخر الباص</td></tr>
+  <tr><td class="mono">ID / 0V</td><td>الـ IDFIX</td><td>شريحة صغيرة فيها هوية الجهاز (رقم المحطة)، عشان لو غيّرت الجهاز البرنامج مايتحطّش على الغلط</td></tr>
+  <tr><td class="mono">+24V / 0V</td><td>الباور</td><td>24V DC ±15%، وفيوز خارجي 6A</td></tr></tbody></table></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>الشاشة وزرار K</h2>
+  <div class="tblw"><table class="tbl"><thead><tr><th>على الشاشة</th><th>المعنى</th></tr></thead><tbody>
+  <tr><td class="mono">- -</td><td>بيقوم (Power up)</td></tr>
+  <tr><td class="mono">0 … 31</td><td>شغال (Run)، والرقم = رقم المحطة على الباص</td></tr>
+  <tr><td class="mono">Lo</td><td>مستني برنامج (Load mode)</td></tr>
+  <tr><td class="mono">HA</td><td>البرنامج واقف (Halt)</td></tr>
+  <tr><td class="mono">Er..</td><td>عطل، والرقم بيقولك نوعه (الدرس 8)</td></tr></tbody></table></div>
+  <p><b>زرار K</b> بيعمل ريست لأعطال معيّنة (زي Er40 و Er15)، وبيستخدم في تحميل البرنامج من الـ IDFIX.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>ليه الدخل بيتراقب كويس كده؟</h2>
+  <p>جوه الـ Pluto فيه <b>بروسيسورين A و B</b>، كل واحد بيقرا الدخول لوحده ويشغّل البرنامج لوحده. لو اختلفوا في قراية دخل، الشاشة تكتب <code>Er50</code> وكل الخروج تفصل. غالبًا السبب حساس بايظ بيطلّع إشارة مهزوزة.</p>
+  <div class="box key"><b>الخلاصة:</b> I = دخل أمان بس. IQ = دخل أمان أو خرج (عادي أو نبضات). Q0 و Q1 ريلاي أمان. Q2 و Q3 ترانزستور أمان.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأرقام والأطراف هنا من كتالوجات ABB (Pluto Hardware Manual و Programming Manual و RT9). قبل ما تطبّق على ماكينة حقيقية ارجع للكتالوج وتقييم المخاطر بتاع الماكينة. تقدّمك بيتسجّل على الجهاز ده.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l5');
+IL.quiz(document.getElementById('quiz'), [{"q": "الفرق بين Pluto B20 و S20:", "o": ["B20 فيه باص CAN و S20 من غير باص", "S20 فيه 46 طرف", "B20 من غير خروج أمان", "مفيش فرق"], "a": 0, "why": "S20 نفس الجهاز بس standalone من غير باص."}, {"q": "IQ12 متعرّف كخرج. ينفع يشغّل كونتاكتور الطوارئ؟", "o": ["لأ، خرج IQ مش أمان", "أيوه لو تياره أقل من 800 mA", "أيوه دايمًا", "بس لو B20 v2"], "a": 0, "why": "خروج IQ كـ PNP مش أمان. الأمان من Q0 لـ Q3."}, {"q": "الشاشة بتكتب Lo. معناها:", "o": ["مستني برنامج", "الجهد واطي", "شغال على محطة 0", "البرنامج واقف"], "a": 0, "why": "Lo = Load mode، مفيش برنامج متحمّل أو مستني تحميل."}, {"q": "Q0 و Q1 في B20 نوعهم:", "o": ["ريلاي أمان", "ترانزستور أمان", "خرج PNP عادي", "دخل"], "a": 0, "why": "Q0 و Q1 ريلاي، و Q2 و Q3 ترانزستور."}, {"q": "فايدة الـ IDFIX:", "o": ["هوية الجهاز عشان البرنامج مايتحطّش على الجهاز الغلط", "فيوز للخرج", "ذاكرة للبيانات بس", "بيعمل ريست"], "a": 0, "why": "IDFIX على ID و 0V فيه رقم يميّز الوحدة."}, {"q": "الشاشة بتكتب Er50. السبب الأقرب:", "o": ["البروسيسورين اختلفوا في قراية دخل (غالبًا حساس بايظ)", "مفيش برنامج", "الباص مفصول", "الجهد عالي"], "a": 0, "why": "Er50 = اختلاف بيانات الدخل بين A و B."}], {lesson:'l5', pass:0.8});
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>عناصر الأمان والتوصيل بقناتين</title>
+<meta name="description" content="الدرس 2: زرار الطوارئ وبوابة الأمان والستارة الضوئية والـ Two-hand، الفتح القسري، والتوصيل بقناتين.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="safety.css?v=20261027sf">
+<script src="safety.js?v=20261027sf"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">السيفتي PLC · الدرس 2 من 8</p>
+    <h1>عناصر الأمان والتوصيل بقناتين</h1>
+    <p>الأمان بيبدأ من الحساس. لو اخترت العنصر غلط أو وصّلته بسلك واحد، مفيش سيفتي PLC هيصلّح ده.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="pluto.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>أشهر عناصر الأمان</h2>
+  <div class="tblw"><table class="tbl"><thead><tr><th>العنصر</th><th>بيحمي من إيه</th><th>الخرج بتاعه</th></tr></thead><tbody>
+  <tr><td>زرار الطوارئ (E-Stop)</td><td>أي خطر: العامل يوقف الماكينة بإيده</td><td>2 NC بفتح قسري، والزرار بيتقفل لحد ما تلفّه</td></tr>
+  <tr><td>سويتش بوابة الأمان (Interlock)</td><td>فتح باب الحماية والماكينة شغالة</td><td>NC + NO أو NC + NC، أو حساس بدون لمس زي Eden</td></tr>
+  <tr><td>الستارة الضوئية (Light curtain)</td><td>دخول إيد أو جسم في منطقة خطر من غير باب</td><td>2 خرج ترانزستور <b>OSSD</b> بيعملوا تست بنفسهم</td></tr>
+  <tr><td>الـ Two-hand</td><td>إيد العامل جوه المكبس</td><td>زرارين، كل واحد NO + NC، ولازم يتدسوا مع بعض خلال 0.5 ثانية</td></tr>
+  <tr><td>السجادة (Safety mat)</td><td>حد واقف في المنطقة</td><td>تلامس لما حد يدوس</td></tr></tbody></table></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>الفتح القسري (Positive opening)</h2>
+  <p>الكونتاكت NC في زرار الطوارئ معمول بحيث لما تدوس، <b>الحركة الميكانيكية نفسها</b> تفتح الكونتاكت بالعافية، حتى لو كان ملحوم. علامته على الزرار: سهم جوه دايرة <b>⊖</b>.</p>
+  <div class="box key"><b>عشان كده:</b> الطوارئ دايمًا NC. الـ NO ممكن يتلحم مقفول ومحدش يعرف.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>ليه قناتين؟</h2>
+  <p>لو الطوارئ داخل على سلك واحد، وحصل قصر بين السلك ده و 24V، الريلاي هيفضل شايف «مقفول» حتى لو دست الطوارئ. الحل: <b>كونتاكتين مستقلين</b> على دخلين، والريلاي يقارن بينهم.</p>
+  <svg viewBox="0 0 640 230" role="img" aria-label="طوارئ بقناتين" style="width:100%;max-width:640px;direction:ltr">
+ <g font-family="IBM Plex Mono,monospace" font-size="14" fill="currentColor">
+ <rect x="20" y="70" width="120" height="90" rx="10" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="80" cy="115" r="30" fill="#d6332a"/><text x="80" y="185" text-anchor="middle">E-STOP 2×NC</text>
+ <path d="M140 95H300M140 135H300" stroke="#c62828" stroke-width="3" fill="none"/>
+ <text x="220" y="88" text-anchor="middle">CH1  11-12</text><text x="220" y="155" text-anchor="middle">CH2  21-22</text>
+ <rect x="300" y="50" width="180" height="130" rx="10" fill="none" stroke="currentColor" stroke-width="2"/>
+ <text x="390" y="78" text-anchor="middle" font-weight="700">Safety relay / PLC</text>
+ <text x="320" y="100">In 1</text><text x="320" y="140">In 2</text><text x="390" y="168" text-anchor="middle">compare</text>
+ <path d="M480 95H600M480 135H600" stroke="#2b7a3d" stroke-width="3" fill="none"/><text x="610" y="100">K1</text><text x="610" y="140">K2</text>
+ </g></svg>
+  <ul><li>لو الكونتاكتين فتحوا مع بعض: وقوف عادي.</li>
+  <li>لو واحد فتح والتاني لأ: ده عطل (سلك ملزوق أو كونتاكت ملحوم). الريلاي يوقف ويرفض الريست لحد ما الاتنين يفتحوا ويقفلوا تاني.</li>
+  <li>لو القناتين ملزوقين في بعض (قصر بين الاتنين): الريلاي العادي مش هيعرف. عشان كده الـ Pluto بيبعت <b>نبضات مختلفة</b> على كل قناة (الدرسين 4 و 6).</li></ul>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>الـ OSSD في الستارة الضوئية</h2>
+  <p>الستارة بتطلّع خرجين ترانزستور 24V اسمهم <b>OSSD1</b> و <b>OSSD2</b>. وهي شغالة بتقطع الخرج لحظات صغيرة جدًا (test pulses) عشان تتأكد إن مفيش قصر. الريلاي أو الـ Pluto بيتجاهل النبضات دي بالفلتر.</p>
+  <p>الستارة بتراقب أسلاكها بنفسها، فبتدخل على الـ Pluto كـ <b>دخلين ستاتيك</b>، ولازم واحد منهم على الأقل يكون دخل من نوع <code>I</code> (مش <code>IQ</code>).</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>الريست والتأكد من الكونتاكتورات</h2>
+  <ul><li><b>الريست اليدوي المراقَب:</b> بعد ما الطوارئ يرجع، الماكينة ماتشتغلش لوحدها. العامل يدوس RESET، والريلاي يشتغل لما الزرار <b>يتساب</b> (مش لما يتداس). كده لو الزرار لزق مش هيعمل ريست.</li>
+  <li><b>مراقبة الكونتاكتورات (Feedback):</b> الكونتاكتورين K1 و K2 فيهم كونتاكت NC مساعد بيرجع للريلاي. لو كونتاكتور اتلحم، الـ NC بتاعه يفضل مفتوح، والريلاي يرفض الريست.</li></ul>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأرقام والأطراف هنا من كتالوجات ABB (Pluto Hardware Manual و Programming Manual و RT9). قبل ما تطبّق على ماكينة حقيقية ارجع للكتالوج وتقييم المخاطر بتاع الماكينة. تقدّمك بيتسجّل على الجهاز ده.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l2');
+IL.quiz(document.getElementById('quiz'), [{"q": "علامة ⊖ على كونتاكت الطوارئ معناها:", "o": ["فتح قسري: الحركة بتفتح الكونتاكت حتى لو ملحوم", "الكونتاكت NO", "الزرار بيرجع لوحده", "الزرار للـ 230V بس"], "a": 0, "why": "Positive opening: الضغط الميكانيكي بيفتح الكونتاكت بالعافية."}, {"q": "الطوارئ بقناتين: واحدة فتحت والتانية لأ. ده معناه:", "o": ["عطل، والريلاي يرفض الريست", "عادي، كمّل", "الزرار متداس نص دوسة", "لازم تغيّر الريلاي"], "a": 0, "why": "القناتين لازم يتحركوا مع بعض. الاختلاف = سلك ملزوق أو كونتاكت ملحوم."}, {"q": "خرج الستارة الضوئية اسمه:", "o": ["OSSD", "EDM", "IDFIX", "PNP-NO"], "a": 0, "why": "Output Signal Switching Device: خرجين ترانزستور بيعملوا تست بنفسهم."}, {"q": "الريست المراقَب بيشتغل إمتى؟", "o": ["لما زرار الريست يتساب بعد ما يتداس", "أول ما تدوس", "لما الطوارئ يرجع لوحده", "كل 5 ثواني"], "a": 0, "why": "كده لو الزرار لزق مقفول، مفيش ريست."}, {"q": "ليه بنرجّع NC من الكونتاكتورات للريلاي؟", "o": ["عشان لو كونتاكتور اتلحم الريلاي يرفض الريست", "عشان نوفّر سلك", "عشان الكونتاكتور يفصل أسرع", "عشان اللمبة تنوّر"], "a": 0, "why": "ده اسمه مراقبة الكونتاكتورات (feedback / EDM)."}, {"q": "الـ Two-hand لازم الزرارين:", "o": ["يتدسوا مع بعض خلال 0.5 ثانية", "يتدسوا ورا بعض", "واحد بس يكفي", "يتدسوا 3 ثواني"], "a": 0, "why": "كده العامل لازم يستخدم الإيدين الاتنين بره منطقة الخطر."}], {lesson:'l2', pass:0.8});
+
+
+</script>
+</body>
+</html>

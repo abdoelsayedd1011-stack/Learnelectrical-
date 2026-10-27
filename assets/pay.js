@@ -22,6 +22,7 @@
   var COURSES = [
     { id: "basics", title: "أساسيات الكهربا", hub: "basics-lab/index.html", inc: "كل الدروس والامتحان والشهادة" },
     { id: "classic", title: "الكلاسيك كنترول", hub: "classic-control-lab/index.html", inc: "كل الدروس والتمارين والشهادة" },
+    { id: "safety", title: "السيفتي PLC", hub: "safety-lab/index.html", inc: "كل الدروس + محاكي Pluto و RT9 و Vital" },
     { id: "drw", title: "قراية الرسومات الكهربية", hub: "drawings-lab/index.html", inc: "كل الدروس والامتحان والشهادة" },
     { id: "instr", title: "الإنسترومنتيشن", hub: "instrumentation-lab/index.html", inc: "كل الدروس + محاكي Omron E5CC" },
     { id: "plc", title: "الـ PLC", hub: "plc-lab/index.html", inc: "كل الدروس + محاكيات Siemens و Delta و AB" },
@@ -31,7 +32,7 @@
   if (EN) COURSES.forEach(function(c){ c.title = EN.courses[c.id] || c.title; c.inc = EN.payInc[c.id] || c.inc; });
   COURSES.forEach(function(c){ c.href = EN ? L(c.hub) : c.hub; c.ar = !!EN && !/^\/en\//.test(c.href); });
   var BY_ID = {}; COURSES.forEach(function(c){ BY_ID[c.id] = c; });
-  var ALIAS = { drawings: "drw", servo: "srv", instrumentation: "instr", inverters: "vfd", vfdc: "vfd" };
+  var ALIAS = { "safety-plc": "safety", drawings: "drw", servo: "srv", instrumentation: "instr", inverters: "vfd", vfdc: "vfd" };
   var AR_BADGE = EN ? '<span class="ar-badge" title="' + esc(EN.arBadgeTitle) + '">' + esc(EN.arBadge) + "</span>" : "";
 
   var CUR = EN ? EN.currency : str(P.currency) || "جنيه";

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>يعني إيه سيفتي PLC؟</title>
+<meta name="description" content="الدرس 1 في كورس السيفتي PLC: ليه الـ PLC العادي ماينفعش للطوارئ، المعالجين، الحالة الآمنة، و PL و SIL و Category.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="safety.css?v=20261027sf">
+<script src="safety.js?v=20261027sf"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">السيفتي PLC · الدرس 1 من 8</p>
+    <h1>يعني إيه سيفتي PLC؟</h1>
+    <p>زرار الطوارئ مش زي زرار START. لو الـ PLC العادي علّق، أو ترانزستور الخرج اتلحم، الموتور هيفضل شغال والعامل إيده جوه الماكينة. السيفتي PLC معمول عشان ده مايحصلش أبدًا.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="pluto.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>الـ PLC العادي فيه إيه غلط؟</h2>
+  <p>الـ PLC العادي ممتاز في التحكم، لكنه <b>مش مصمم يكتشف عيوبه</b>. خد أمثلة بتحصل فعلًا:</p>
+  <ul><li>ترانزستور الخرج يتلحم: الخرج يفضل ON حتى لو البرنامج قال OFF.</li>
+  <li>سلك الطوارئ يلمس سلك 24V: الدخل يفضل شايف «مقفول» حتى لو حد داس الطوارئ.</li>
+  <li>البروسيسور يعلّق: آخر حالة للخروج تفضل زي ما هي.</li></ul>
+  <p>في كل حالة من دول الـ PLC العادي <b>مش هيعرف</b>، والماكينة تفضل شغالة.</p>
+  <div class="box safe"><b>القاعدة:</b> وظيفة الأمان (الطوارئ، البوابة، الستارة) ماتتعملش بـ PLC عادي لوحده. لازم ريلاي أمان أو سيفتي PLC.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>السيفتي PLC مختلف في إيه؟</h2>
+  <div class="tblw"><table class="tbl"><thead><tr><th>الحاجة</th><th>PLC عادي</th><th>سيفتي PLC (زي Pluto)</th></tr></thead><tbody>
+  <tr><td>البروسيسور</td><td>واحد</td><td><b>اتنين</b> بيشتغلوا مع بعض ويقارنوا النتيجة كل دورة</td></tr>
+  <tr><td>لو حصل خلاف</td><td>مفيش مقارنة أصلًا</td><td>يوقف الخروج كلها ويطلّع كود عطل (زي <code>Er50</code>)</td></tr>
+  <tr><td>الدخل</td><td>بيقرا 24V وخلاص</td><td>يقدر يبعت نبضات ويتأكد إن السلك مش ملزوق في 24V</td></tr>
+  <tr><td>الخرج</td><td>ترانزستور أو ريلاي عادي</td><td>خرج مراقَب: يتأكد إنه بيفصل فعلًا</td></tr>
+  <tr><td>البرنامج</td><td>أي كود</td><td>بلوكات أمان معتمدة من TÜV وباسورد</td></tr></tbody></table></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>الحالة الآمنة = صفر</h2>
+  <p>كل حاجة في السيفتي مبنية على مبدأ واحد: <b>الحالة الآمنة هي إن الكهربا تقطع</b> (de-energize). يعني:</p>
+  <ul><li>زرار الطوارئ <b>NC</b>: لو السلك اتقطع = كأنك دست الطوارئ، والماكينة توقف.</li>
+  <li>الخرج اللي بيشغّل الكونتاكتور لازم يبقى <b>1</b> عشان الموتور يشتغل، و <b>0</b> = وقوف.</li>
+  <li>في البرنامج: <b>ماينفعش «1» يعمل وقوف</b>. الوقوف دايمًا بيجي من إن الإشارة تقع لصفر.</li></ul>
+  <div class="box key"><b>افتكر:</b> أي عطل (سلك مقطوع، كهربا قاطعة، كارت محروق) لازم يودّي للوقوف، مش للتشغيل.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>PL و SIL و Category</h2>
+  <p>عشان تعرف الأمان «قوي» قد إيه، فيه مقياسين في الكتالوجات:</p>
+  <div class="tblw"><table class="tbl"><thead><tr><th>المواصفة</th><th>المقياس</th><th>أعلى درجة</th></tr></thead><tbody>
+  <tr><td><span class="mono">EN ISO 13849-1</span></td><td>PL من a لـ e، و Category من B و 1 لـ 4</td><td><b>PL e</b> و <b>Cat. 4</b></td></tr>
+  <tr><td><span class="mono">IEC 62061</span></td><td>SIL من 1 لـ 3</td><td><b>SIL 3</b></td></tr></tbody></table></div>
+  <p><b>Category 4</b> يعني: عطل واحد مايوقعش وظيفة الأمان، والعطل نفسه يتكشف. ده محتاج <b>قناتين</b> (سلكين مستقلين) ومراقبة القصر بينهم.</p>
+  <p>الـ Pluto و ريلاي RT9 الاتنين متصنّفين لحد <b>PL e / SIL 3</b>، لكن ده بيتحقق بس لو التوصيل والبرنامج صح.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>ريلاي أمان ولا سيفتي PLC؟</h2>
+  <div class="tblw"><table class="tbl"><thead><tr><th></th><th>ريلاي أمان (RT9)</th><th>سيفتي PLC (Pluto)</th></tr></thead><tbody>
+  <tr><td>بيراقب</td><td>وظيفة واحدة (طوارئ أو بوابة)</td><td>كتير مع بعض</td></tr>
+  <tr><td>التعديل</td><td>بالتوصيل بس</td><td>بالبرنامج</td></tr>
+  <tr><td>أحسن لـ</td><td>ماكينة صغيرة فيها طوارئ واحد</td><td>خط فيه طوارئ وبوابات وستاير ومناطق</td></tr></tbody></table></div>
+  <p>في الكورس هنبدأ بالـ RT9 عشان الفكرة تبقى واضحة، وبعدين ننقل للـ Pluto.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأرقام والأطراف هنا من كتالوجات ABB (Pluto Hardware Manual و Programming Manual و RT9). قبل ما تطبّق على ماكينة حقيقية ارجع للكتالوج وتقييم المخاطر بتاع الماكينة. تقدّمك بيتسجّل على الجهاز ده.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l1');
+IL.quiz(document.getElementById('quiz'), [{"q": "ليه الـ PLC العادي ماينفعش لوحده لزرار الطوارئ؟", "o": ["مش بيكتشف عيوبه زي ترانزستور ملحوم أو سلك ملزوق", "بطيء", "غالي", "مش بيقبل 24V"], "a": 0, "why": "لو الخرج اتلحم أو الدخل لزق في 24V، الـ PLC العادي مش هيحس والماكينة تفضل شغالة."}, {"q": "السيفتي PLC بيعمل إيه لو البروسيسورين طلّعوا نتيجة مختلفة؟", "o": ["يوقف الخروج ويطلّع كود عطل", "يكمّل بالنتيجة الأكبر", "يعيد البرنامج من الأول ويكمّل", "مش بيحصل حاجة"], "a": 0, "why": "الخلاف معناه إن فيه عطل، فالحالة الآمنة هي إنه يوقف (زي Er50)."}, {"q": "زرار الطوارئ بيتوصل NC ليه؟", "o": ["عشان لو السلك اتقطع الماكينة توقف", "عشان يستهلك كهربا أقل", "عشان الـ PLC يقراه أسرع", "مش مهم NO ولا NC"], "a": 0, "why": "الحالة الآمنة = قطع. السلك المقطوع لازم يتعامل كأن حد داس الطوارئ."}, {"q": "أعلى درجة في EN ISO 13849-1 هي:", "o": ["PL e", "PL a", "SIL 3", "Category B"], "a": 0, "why": "PL من a (الأضعف) لـ e (الأقوى). SIL 3 ده من IEC 62061."}, {"q": "Category 4 معناها:", "o": ["عطل واحد مايوقعش الأمان، والعطل يتكشف", "الماكينة فيها 4 طوارئ", "لازم 4 كونتاكتورات", "الريلاي بيفصل في 4 مللي ثانية"], "a": 0, "why": "Category 4 = قناتين + كشف الأعطال، فعطل واحد مايوقّعش وظيفة الأمان."}, {"q": "في برنامج السيفتي، الوقوف لازم يجي من:", "o": ["إن الإشارة تقع لصفر", "إن بِت يبقى 1", "زرار في الـ HMI", "تايمر"], "a": 0, "why": "الحالة الآمنة صفر: الوقوف دايمًا بقطع الإشارة، مش بإشارة 1."}], {lesson:'l1', pass:0.8});
+
+
+</script>
+</body>
+</html>

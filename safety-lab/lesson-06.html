@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الإشارات الديناميكية A و B و C في Pluto</title>
+<meta name="description" content="الدرس 6: إزاي الـ Pluto يبعت نبضات A و B و C على خروج IQ، ويوصّلها للطوارئ والبوابات، ويكشف القصر بين الأسلاك.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="safety.css?v=20261027sf">
+<script src="safety.js?v=20261027sf"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">السيفتي PLC · الدرس 6 من 8</p>
+    <h1>الإشارات الديناميكية A و B و C في Pluto</h1>
+    <p>في الـ RT9 القناتين بياخدوا نفس الـ 24V، فلو السلكين لزقوا في بعض الريلاي مش هيحس. الـ Pluto بيحل ده: كل قناة بتاخد <b>نبضات مختلفة</b>.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="pluto.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>A و B و C</h2>
+  <p>أي طرف <span class="mono">IQ</span> ممكن يتعرّف في البرنامج كـ <b>خرج ديناميكي A أو B أو C</b>. كل واحد بيطلّع قطار نبضات بتوقيت مختلف عن التاني:</p>
+  <svg viewBox="0 0 620 170" role="img" aria-label="الإشارات A و B و C" style="width:100%;max-width:620px;direction:ltr">
+ <g font-family="IBM Plex Mono,monospace" font-size="14" fill="currentColor">
+ <text x="10" y="40">A</text><path d="M40 45h30v-25h20v25h50v-25h20v25h50v-25h20v25h50v-25h20v25h50v-25h20v25h40" stroke="#c62828" stroke-width="3" fill="none"/>
+ <text x="10" y="95">B</text><path d="M40 100h60v-25h20v25h50v-25h20v25h50v-25h20v25h50v-25h20v25h50v-25h20v25h10" stroke="#2f6fb5" stroke-width="3" fill="none"/>
+ <text x="10" y="150">C</text><path d="M40 155h90v-25h20v25h50v-25h20v25h50v-25h20v25h50v-25h20v25h50v-25h20v25" stroke="#2b7a3d" stroke-width="3" fill="none"/>
+ </g></svg>
+  <p>والدخل (<span class="mono">I0</span> مثلًا) بيتعرّف إنه مستني إشارة معيّنة: A أو B أو C، أو <b>المقلوب</b> بتاعهم (لو في حساس بيقلب زي Eden)، أو 24V ثابت.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>طوارئ بقناتين على Pluto</h2>
+  <div class="tblw"><table class="tbl"><thead><tr><th>القناة</th><th>من</th><th>عن طريق</th><th>لـ</th><th>الدخل مستني</th></tr></thead><tbody>
+  <tr><td>1</td><td class="mono">IQ10 (A)</td><td>NC 11-12</td><td class="mono">I0</td><td>A</td></tr>
+  <tr><td>2</td><td class="mono">IQ11 (B)</td><td>NC 21-22</td><td class="mono">I1</td><td>B</td></tr></tbody></table></div>
+  <ul><li>لو سلك I0 لزق في +24V: I0 هيشوف 24V ثابت بدل نبضات A، فيفصل ويكتب <code>Er10</code> أو يعتبرها قناة مفتوحة.</li>
+  <li>لو سلك القناة 1 لزق في سلك القناة 2: I0 هيشوف خليط A و B، والـ Pluto يكتب <code>Er12</code> (قصر بين دخلين ديناميك).</li>
+  <li>لو كونتاكت واحد اتلحم: القناتين هيبقوا مختلفين لما تدوس، والبلوك يطلّع <b>TCfault</b> ويرفض الريست.</li></ul>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>أمثلة بـ Adam و Eva على Pluto</h2>
+  <p>نفس حساس Eden (Adam على الإطار و Eva على الباب) بيدخل على Pluto مباشرة، من غير Vital. الفرق إنك بتختار الإشارة (A أو B أو C) وبتقول للدخل يستنى إيه.</p>
+  <div class="tblw"><table class="tbl"><thead><tr><th>المثال</th><th>التوصيل</th><th>الدخل يتعرّف إنه مستني</th></tr></thead><tbody>
+  <tr><td>باب واحد</td><td><code>IQ10 (A)</code> ← Adam ← <code>I2</code></td><td><b>A مقلوب</b> (قلبة واحدة)</td></tr>
+  <tr><td>بابين على نفس الدخل</td><td><code>IQ10 (A)</code> ← Adam 1 ← Adam 2 ← <code>I2</code></td><td><b>A</b> (قلبتين يرجعوها زي ما هي)</td></tr>
+  <tr><td>3 أبواب</td><td><code>IQ10 (A)</code> ← Adam 1 ← Adam 2 ← Adam 3 ← <code>I2</code></td><td><b>A مقلوب</b></td></tr>
+  <tr><td>منطقتين منفصلين</td><td><code>IQ10 (A)</code> ← Adam ← <code>I2</code>، و <code>IQ11 (B)</code> ← Adam ← <code>I3</code></td><td>I2: A مقلوب، I3: B مقلوب</td></tr></tbody></table></div>
+  <p>لو الدخل متعرّف غلط (مستني A وهو جاله A مقلوب)، الـ Pluto هيعتبر الباب مفتوح على طول. أول حاجة تراجعها لما تضيف أو تشيل باب: <b>عدد الـ Adam وتعريف الدخل</b>.</p>
+  <div class="box key"><b>الحد:</b> لحد <b>10</b> Adam DYN على دخل Pluto واحد مع الحفاظ على PL e. ولو عندك أكتر، وزّعهم على أكتر من دخل.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>قواعد لازم تمشي عليها</h2>
+  <ul><li>القناتين ياخدوا <b>إشارتين مختلفتين</b> (A و B مثلًا)، مش نفس الإشارة.</li>
+  <li>طرف <span class="mono">IQ</span> متوصّل على 24V ثابت <b>مايكفيش لـ Cat. 4</b> لوحده. لازم يتجمّع مع دخل ديناميكي.</li>
+  <li>لو هتستخدم <span class="mono">IQ</span> كدخل أمان قناة واحدة، لازم يكون ديناميكي.</li>
+  <li>الستارة الضوئية (OSSD) بتدخل ستاتيك، وواحد من الدخلين على الأقل يكون <span class="mono">I</span>.</li>
+  <li>القصر بين طرفين <span class="mono">IQ</span> بيتكشف دايمًا، لكن القصر بين خرج IQ ودخل I مش بيتكشف. عشان كده خطّط مين جنب مين في الكابل.</li></ul>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>في الحساسات اللي بتقلب</h2>
+  <p>حساسات زي <b>Eden</b> بتقلب الإشارة. لو الطوارئ من A ورايح على Eden، الدخل في الآخر هيستنى <b>A مقلوب</b>. لو حساسين ورا بعض، يرجع A تاني. نفس فكرة S1 في الـ Vital.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 7 من 8 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأرقام والأطراف هنا من كتالوجات ABB (Pluto Hardware Manual و Programming Manual و RT9). قبل ما تطبّق على ماكينة حقيقية ارجع للكتالوج وتقييم المخاطر بتاع الماكينة. تقدّمك بيتسجّل على الجهاز ده.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l6');
+IL.quiz(document.getElementById('quiz'), [{"q": "ليه القناتين في Pluto ياخدوا A و B مش A و A؟", "o": ["عشان لو السلكين لزقوا في بعض يبان", "عشان الكهربا تقل", "عشان الدخل يقرا أسرع", "مش فارقة"], "a": 0, "why": "إشارتين مختلفتين = القصر بينهم بيتكشف (Er12)."}, {"q": "أنهي أطراف تقدر تطلّع نبضات A و B و C؟", "o": ["IQ10 لـ IQ17", "I0 لـ I7", "Q0 و Q1", "CH و CL"], "a": 0, "why": "خروج IQ بس اللي بتتعرّف كخرج ديناميكي."}, {"q": "سلك القناة 1 لزق في سلك القناة 2. الشاشة غالبًا هتكتب:", "o": ["Er12", "Er20", "Er50", "Lo"], "a": 0, "why": "Er12 = قصر بين دخلين ديناميك."}, {"q": "طوارئ من A ورايح على حساس Eden واحد قبل الدخل. الدخل يتعرّف إنه مستني:", "o": ["A مقلوب", "A", "B", "24V ثابت"], "a": 0, "why": "Eden بيقلب الإشارة، فحساس واحد = مقلوب."}, {"q": "IQ متوصّل على 24V ثابت كقناة طوارئ لوحده:", "o": ["مايكفيش لـ Cat. 4", "كويس لـ Cat. 4", "ممنوع خالص", "نفس الديناميك"], "a": 0, "why": "الكتالوج بيقول لازم يتجمّع مع دخل ديناميكي."}, {"q": "الستارة الضوئية OSSD تدخل على Pluto إزاي؟", "o": ["ستاتيك، وواحد على الأقل على دخل I", "لازم A و B", "على Q2 و Q3", "على CH و CL"], "a": 0, "why": "الستارة بتراقب أسلاكها بنفسها، فتدخل ستاتيك."}, {"q": "IQ10 (A) ← Adam 1 ← Adam 2 ← I2. الدخل I2 يتعرّف مستني:", "o": ["A", "A مقلوب", "B", "24V ثابت"], "a": 0, "why": "قلبتين يرجّعوا الإشارة زي ما هي."}, {"q": "أقصى عدد Adam DYN على دخل Pluto واحد:", "o": ["10", "30", "2", "100"], "a": 0, "why": "10 على الدخل الواحد، و 30 على Vital."}], {lesson:'l6', pass:0.8});
+
+
+</script>
+</body>
+</html>

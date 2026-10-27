@@ -27,13 +27,14 @@ const MEMBER_LABS = new Set([
 const FREE_LESSONS_BY_DIR = {
   "basics-lab": [1],                // 13 lessons
   "classic-control-lab": [1],       // 9
+  "safety-lab": [1],                // 8
   "instrumentation-lab": [1],       // 10
   "plc-lab": [1],                   // 10
   "drawings-lab": [1],              // 7
   "vfd-course": [1],                // 12
   "servo-course": [1]               // 12
 };
-const COURSE_DIRS = new Set(["classic-control-lab", "basics-lab", "instrumentation-lab", "plc-lab", "drawings-lab", "vfd-course", "servo-course"]);
+const COURSE_DIRS = new Set(["classic-control-lab", "safety-lab", "basics-lab", "instrumentation-lab", "plc-lab", "drawings-lab", "vfd-course", "servo-course"]);
 const OPEN_DIRS = new Set(["courses"]); // folders whose pages stay open without an account
 
 // "/plc-lab/", "/plc-lab/lesson-01.html", "/interview/" are pages; "/assets/site.js", "/og.png" are not.
@@ -66,6 +67,7 @@ function membersOnly(pathname){
   if (rest && !/\.html$/.test(rest) && /\./.test(rest)) return false; // scripts, images, data
   if (COURSE_DIRS.has(dir)){
     if (dir === "plc-lab" && /^(?:siemens|delta|ab)(?:\.html)?$/.test(rest)) return true; // brand simulators
+    if (dir === "safety-lab" && /^pluto(?:\.html)?$/.test(rest)) return true;              // the safety simulator
     const l = /^lesson-(\d+)/.exec(rest);
     return !!l && !(FREE_LESSONS_BY_DIR[dir] || [1]).includes(Number(l[1]));
   }

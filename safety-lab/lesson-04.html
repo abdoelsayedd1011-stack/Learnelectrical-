@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vital 1 والإشارة الديناميكية</title>
+<meta name="description" content="الدرس 4: كنترولر الأمان ABB Vital 1: لوب ديناميكي من T1 لـ R1 بسلك واحد لحد 30 حساس، الأطراف واللمبات والريست، و PL e.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="safety.css?v=20261027sf">
+<script src="safety.js?v=20261027sf"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">السيفتي PLC · الدرس 4 من 8</p>
+    <h1>Vital 1 والإشارة الديناميكية</h1>
+    <p>الـ Vital 1 بيحل مشكلة: عندك 10 أبواب و 5 طوارئ على الماكينة. بالـ RT9 محتاج 15 ريلاي. بالـ Vital 1 بتوصّلهم كلهم <b>توالي على سلك واحد</b> ولسه PL e.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="pluto.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>الفكرة: نبضات بدل 24V ثابت</h2>
+  <p>الـ Vital بيطلّع من <span class="mono">T1</span> <b>نبضات</b> (إشارة ديناميكية) بتعدّي على كل الحساسات واحد ورا التاني وترجع على <span class="mono">R1</span>.</p>
+  <svg viewBox="0 0 640 200" role="img" aria-label="لوب ديناميكي من T1 لـ R1" style="width:100%;max-width:640px;direction:ltr">
+ <g font-family="IBM Plex Mono,monospace" font-size="14" fill="currentColor">
+ <rect x="10" y="60" width="110" height="80" rx="10" fill="none" stroke="currentColor" stroke-width="2"/><text x="65" y="95" text-anchor="middle" font-weight="700">Vital 1</text><text x="65" y="120" text-anchor="middle">T1    R1</text>
+ <path d="M40 140V175H170V130" stroke="#2f6fb5" stroke-width="3" fill="none"/>
+ <rect x="150" y="70" width="80" height="60" rx="8" fill="#ffd400" stroke="#8a7400"/><text x="190" y="105" text-anchor="middle" fill="#222">Eden 1</text>
+ <path d="M230 100H290" stroke="#2f6fb5" stroke-width="3"/><rect x="290" y="70" width="80" height="60" rx="8" fill="#ffd400" stroke="#8a7400"/><text x="330" y="105" text-anchor="middle" fill="#222">Eden 2</text>
+ <path d="M370 100H430" stroke="#2f6fb5" stroke-width="3"/><rect x="430" y="70" width="80" height="60" rx="8" fill="#ffd400" stroke="#8a7400"/><text x="470" y="105" text-anchor="middle" fill="#222">E-stop</text>
+ <path d="M510 100H560V30H95V60" stroke="#2f6fb5" stroke-width="3" fill="none"/>
+ <text x="300" y="22" text-anchor="middle">every sensor inverts the pulses → back to R1</text>
+ </g></svg>
+  <ul><li>كل حساس سليم ومقفول (زي Eden أو طوارئ Smile) <b>بيقلب النبضات</b> ويبعتها للي بعده.</li>
+  <li>لو حساس اتفتح (باب اتفتح أو طوارئ اتداس)، النبضات بتقف والخرج يبقى 0V، فالـ Vital يفصل.</li>
+  <li>لو حصل قصر على حساس، عدد مرات القلب بيتغيّر، والـ Vital بيعرف إن فيه غلط ويفصل.</li></ul>
+  <div class="box key"><b>عشان كده</b> سلك واحد يكفي لـ PL e: القصر والقطع والسلك الملزوق في 24V كلهم بيتكشفوا من شكل النبضات.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>أمثلة بـ Adam و Eva (حساس Eden)</h2>
+  <p>أشهر حساس على لوب الـ Vital هو <b>Eden</b>، وهو قطعتين:</p>
+  <ul><li><b>Adam:</b> الحساس نفسه. بيتركّب على <b>الإطار الثابت</b>، وفيه الإلكترونيات واللمبة وفيشة M12. نوع <b>Adam DYN</b> هو اللي بيشتغل بالإشارة الديناميكية و<b>بيقلبها</b>.</li>
+  <li><b>Eva:</b> القطعة اللي على <b>الباب</b>، من غير سلك. Adam بيحسّها من 0 لـ 15 مللي من غير لمس. فيه Eva عامة، و Eva بكود خاص (unique) ماينفعش يتغشّ بقطعة تانية.</li></ul>
+  <div class="tblw"><table class="tbl"><thead><tr><th>لمبة Adam</th><th>المعنى</th></tr></thead><tbody>
+  <tr><td>أخضر</td><td>Eva قريبة (الباب مقفول) والإشارة جاية من اللي قبله: كله تمام</td></tr>
+  <tr><td>أحمر</td><td>Eva بعيدة: الباب ده مفتوح</td></tr>
+  <tr><td>بيرمش أحمر/أخضر</td><td>الباب ده مقفول، بس الإشارة مش جاية من قبله: في حاجة مفتوحة قبله في اللوب</td></tr></tbody></table></div>
+  <h3>مثال 1: 3 أبواب على Vital 1</h3>
+  <p><code>T1</code> ← Adam 1 ← Adam 2 ← Adam 3 ← <code>R1</code>. كل Adam بيقلب الإشارة، يعني 3 قلبات = <b>فردي</b>، فـ <code>S1</code> فاضي.</p>
+  <p>لو فتحت الباب 2: Adam 2 <b>أحمر</b>، و Adam 3 <b>بيرمش</b> (مقفول بس مستني إشارة)، و Adam 1 <b>أخضر</b>. على الـ Vital: T منوّرة و R مطفية. من غير ما تفتح ولا علبة عرفت إن الباب 2 هو اللي مفتوح.</p>
+  <h3>مثال 2: 4 أبواب + طوارئ</h3>
+  <p>4 Adam + زرار طوارئ Smile Tina (بيقلب هو كمان) = 5 قلبات = فردي، <code>S1</code> فاضي. لو شلت الطوارئ من اللوب يبقوا 4 = زوجي، فلازم توصّل <code>S1</code> مع <code>B1</code>، وإلا لمبة R هتفضل مطفية حتى والأبواب مقفولة.</p>
+  <div class="box key"><b>الحد:</b> لحد <b>30</b> Adam DYN على Vital 1 واحد، وبرضه PL e.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>الأطراف</h2>
+  <figure class="dev-ph"><img src="img/vital1.jpg" width="269" height="921" alt="ABB Vital 1 من قدّام" loading="lazy"><figcaption>فوق: <span class="mono">S1 X1 X4</span> و <span class="mono">+A1 B1 13 23</span>. تحت: <span class="mono">-A2 B2 14 24</span> و <span class="mono">T1 R1 Y14</span>.</figcaption></figure>
+  <div class="tblw"><table class="tbl"><thead><tr><th>الطرف</th><th>وظيفته</th></tr></thead><tbody>
+  <tr><td class="mono">A1 / A2</td><td>باور 24V DC، وفيوز 3A في A1</td></tr>
+  <tr><td class="mono">B1 / B2</td><td>24V للحساسات (+ و 0V)، محدود لـ 1.8A</td></tr>
+  <tr><td class="mono">T1</td><td>خرج النبضات: أول اللوب</td></tr>
+  <tr><td class="mono">R1</td><td>دخل النبضات: آخر اللوب</td></tr>
+  <tr><td class="mono">S1</td><td>عدد الحساسات: <b>زوجي</b> = وصّل S1 مع B1، <b>فردي</b> = سيبه فاضي</td></tr>
+  <tr><td class="mono">X1</td><td>الريست، وكونتاكتات مراقبة الكونتاكتورات</td></tr>
+  <tr><td class="mono">X4</td><td>الريست الأوتوماتيك</td></tr>
+  <tr><td class="mono">13-14 / 23-24</td><td>خرجين أمان NO (كل واحد ريلايين توالي): 6A على 250V، و 2A AC-15</td></tr>
+  <tr><td class="mono">Y14</td><td>خرج معلومات بس (200 mA). ممنوع يتستخدم في الأمان</td></tr></tbody></table></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>اللمبات</h2>
+  <p>من فوق لتحت: <b>T</b> ثم <b>1</b> ثم <b>On</b> ثم <b>2</b> ثم <b>R</b>.</p>
+  <div class="tblw"><table class="tbl"><thead><tr><th>اللمبة</th><th>منوّرة</th><th>بترمش</th><th>مطفية</th></tr></thead><tbody>
+  <tr><td>On</td><td>الباور تمام</td><td>أقل من 18V أو قصر</td><td>مفيش باور</td></tr>
+  <tr><td>T</td><td>النبضات طالعة من T1</td><td>—</td><td>مفيش نبضات</td></tr>
+  <tr><td>R</td><td>النبضات راجعة صح على R1</td><td>النبضات راجعة غلط (حساس بايظ)</td><td>مفيش حاجة راجعة: حساس مفتوح</td></tr>
+  <tr><td>1 / 2</td><td>الخرج شغال</td><td>—</td><td>الخرج فاصل</td></tr></tbody></table></div>
+  <div class="box"><b>تربل شوتنج سريع:</b> T منوّرة و R مطفية = في حتة في اللوب مفتوحة. امشي حساس حساس لحد ما تلاقي اللي لمبته مش خضرا.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>الريست ومراقبة الكونتاكتورات</h2>
+  <ul><li><b>ريست يدوي مراقَب:</b> زرار بين B1 و X1. الخرج يشتغل لما الزرار يتقفل ويتفتح. الزرار يكون بره منطقة الخطر وتشوف منه المنطقة كلها.</li>
+  <li><b>ريست أوتوماتيك:</b> اربط B1 و X1 و X4 مع بعض.</li>
+  <li><b>مراقبة الكونتاكتورات:</b> كونتاكتات NC من الكونتاكتورات بين B1 و X1 (توالي مع زرار الريست).</li></ul>
+  <p>الاستجابة: الفصل أقل من 48 مللي ثانية. وأقصى عدد مستحسن: <b>30 حساس</b> Eden أو Tina على Vital واحد.</p>
+  <p>جرّب الـ Vital على <a href="pluto.html#vital">المحاكي</a>: افتح باب، اعمل قصر على حساس، وشوف لمبة R.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 7 من 8 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأرقام والأطراف هنا من كتالوجات ABB (Pluto Hardware Manual و Programming Manual و RT9). قبل ما تطبّق على ماكينة حقيقية ارجع للكتالوج وتقييم المخاطر بتاع الماكينة. تقدّمك بيتسجّل على الجهاز ده.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l4');
+IL.quiz(document.getElementById('quiz'), [{"q": "الـ Vital 1 بيكشف القصر على حساس إزاي؟", "o": ["كل حساس بيقلب النبضات، والقصر بيغيّر عدد مرات القلب", "بيقيس التيار", "بيقارن قناتين", "مش بيكشفه"], "a": 0, "why": "R1 بيستنى عدد مرات قلب معيّن. القصر يلغي قلبة فيبان الغلط."}, {"q": "عندك 4 حساسات في اللوب. S1 تعمل فيه إيه؟", "o": ["توصّله مع B1 (عدد زوجي)", "تسيبه فاضي", "توصّله مع A2", "توصّله مع R1"], "a": 0, "why": "زوجي = S1 مع B1، فردي = S1 فاضي."}, {"q": "لمبة T منوّرة و R مطفية. معناها:", "o": ["في حساس مفتوح في اللوب", "الباور واطي", "الخرج ملحوم", "كله تمام"], "a": 0, "why": "النبضات طالعة ومش راجعة: في حتة مفتوحة."}, {"q": "لمبة R بترمش. معناها:", "o": ["النبضات راجعة غلط: حساس بايظ", "مفيش حاجة راجعة", "الريست مستني", "الجهد عالي"], "a": 0, "why": "الرمش = نبضات غير متماثلة، يعني حساس فيه عيب."}, {"q": "Y14 في الـ Vital ينفع يوقف الماكينة؟", "o": ["لأ، خرج معلومات بس", "أيوه", "بس في الريست الأوتوماتيك", "لو حطيت كونتاكتور"], "a": 0, "why": "Y14 non-failsafe، للمبة أو للـ PLC بس."}, {"q": "أقصى عدد مستحسن من حساسات Eden على Vital 1:", "o": ["30", "3", "8", "100"], "a": 0, "why": "ABB بتقول لحد 30 Eden أو Tina."}, {"q": "في Eden، القطعة اللي على الباب ومن غير سلك اسمها:", "o": ["Eva", "Adam", "Tina", "Smile"], "a": 0, "why": "Adam الحساس على الإطار، و Eva على الباب."}, {"q": "3 أبواب على Vital، والباب 2 مفتوح. لمبة Adam 3 هتبقى:", "o": ["بترمش أحمر/أخضر", "أخضر", "أحمر", "مطفية"], "a": 0, "why": "الباب 3 مقفول بس الإشارة مش جاية من قبله."}], {lesson:'l4', pass:0.8});
+
+
+</script>
+</body>
+</html>

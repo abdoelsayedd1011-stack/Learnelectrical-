@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ريلاي الأمان RT9</title>
+<meta name="description" content="الدرس 3: ريلاي الأمان ABB RT9، أطرافه وخمس طرق توصيل، الريست المراقَب والأوتوماتيك، واختبار الكونتاكتورات.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="safety.css?v=20261027sf">
+<script src="safety.js?v=20261027sf"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">السيفتي PLC · الدرس 3 من 8</p>
+    <h1>ريلاي الأمان RT9</h1>
+    <p>الـ RT9 ريلاي أمان عرضه 22.5 مللي، بيراقب وظيفة أمان واحدة (طوارئ أو بوابة أو ستارة) ويقفل خرجين NO بيشغّلوا الكونتاكتورات. متصنّف لحد Cat. 4 / PL e / SIL 3.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="pluto.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>الأطراف</h2>
+  <figure class="dev-ph"><img src="img/rt9.jpg" width="572" height="1854" alt="ريلاي الأمان ABB RT9 من قدّام" loading="lazy"><figcaption>فوق: <span class="mono">S34 X1 X4</span> و <span class="mono">+A1 S13 13 23</span>. تحت: <span class="mono">-A2 S14 14 24</span> و <span class="mono">S24 S44 Y14</span>.</figcaption></figure>
+  <div class="tblw"><table class="tbl"><thead><tr><th>الطرف</th><th>وظيفته</th></tr></thead><tbody>
+  <tr><td class="mono">A1 / A2</td><td>الباور: <b>+24V DC</b> و <b>0V</b> (±20%، 2 وات)</td></tr>
+  <tr><td class="mono">S13</td><td>خرج 24V محمي ضد القصر (حوالي 70 mA) بيغذّي الدخول S14 و S34 و S44</td></tr>
+  <tr><td class="mono">S14 / S34 / S44</td><td>دخول القنوات (+)، كل واحد بياخد 20 لـ 30 mA</td></tr>
+  <tr><td class="mono">S24</td><td>دخل على 0V، بيتستخدم في طريقة التوصيل رقم 4</td></tr>
+  <tr><td class="mono">X1</td><td>دخل الريست، وفيه كمان كونتاكتات مراقبة الكونتاكتورات</td></tr>
+  <tr><td class="mono">X4</td><td>لو وصّلته مع A1 و X1 = <b>ريست أوتوماتيك</b></td></tr>
+  <tr><td class="mono">13-14 / 23-24</td><td>خرجين أمان NO: 6A على 250V AC، و 8A إجمالي</td></tr>
+  <tr><td class="mono">Y14</td><td>خرج معلومات (مش أمان): 24V لما الريلاي متعمله ريست، و 0V لما يكون فاصل. أقصى حمل 250 mA</td></tr></tbody></table></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>اللمبات</h2>
+  <p>الخمس لمبات من فوق لتحت: <b>In1</b> ثم <b>1</b> ثم <b>On</b> ثم <b>2</b> ثم <b>In2</b>.</p>
+  <ul><li><b>On:</b> الباور تمام. لو بترمش = الجهد واطي أو حِمل زيادة على S13.</li>
+  <li><b>In1 / In2:</b> القناة الأولى والتانية مقفولين صح.</li>
+  <li><b>1 / 2:</b> ريلاي الخرج 1 و 2 شغالين، يعني 13-14 و 23-24 مقفولين.</li></ul>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>خمس طرق توصيل للدخل</h2>
+  <div class="tblw"><table class="tbl"><thead><tr><th>#</th><th>التوصيل</th><th>المستوى</th></tr></thead><tbody>
+  <tr><td>1</td><td>قناة واحدة: NO واحد من +24V</td><td>Cat. 1</td></tr>
+  <tr><td>2</td><td>قناتين: 2 NO من +24V (على S14 و S34)</td><td>Cat. 3</td></tr>
+  <tr><td>3</td><td>قناتين: NO + NC من +24V</td><td>Cat. 4</td></tr>
+  <tr><td>4</td><td>قناتين: NO من +24V، و NO على 0V (S24)، والقصر بين S14 و S24 بيتكشف</td><td>Cat. 4</td></tr>
+  <tr><td>5</td><td>سجادة أو شريط تلامس</td><td>Cat. 1</td></tr></tbody></table></div>
+  <p>في القناتين: الاتنين لازم يبقوا صح قبل الريست. ولو اتفتحوا، لازم <b>الاتنين</b> يتفتحوا ويتقفلوا تاني قبل ما الريلاي يقبل ريست جديد.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>الريست واختبار الكونتاكتورات</h2>
+  <ul><li><b>ريست يدوي مراقَب:</b> زرار RESET بين +24V و <span class="mono">X1</span>. الخرج يشتغل لما الزرار <b>يتقفل وبعدين يتفتح</b>.</li>
+  <li><b>ريست أوتوماتيك:</b> اربط <span class="mono">A1</span> و <span class="mono">X1</span> و <span class="mono">X4</span>. الخرج يشتغل أول ما الدخل يتقفل. ده بس لما تقييم المخاطر يسمح (زي غطا صغير).</li>
+  <li><b>اختبار الكونتاكتورات:</b> وصّل كونتاكت NC من K1 و NC من K2 توالي مع زرار الريست بين A1 و X1. لو كونتاكتور اتلحم، الـ NC بتاعه مفتوح فالريست مش هيوصل.</li></ul>
+  <div class="box safe"><b>تحذير:</b> على الأحمال الحثّية (الكونتاكتورات) حط مخمّد (دايود أو VDR) على الكويل، وفيوز 5A gG على الخرج. والريلاي لازم يشتغل ويفصل مرة على الأقل في السنة.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>سرعة الاستجابة</h2>
+  <p>من الدخل للخرج أقل من <b>20 مللي ثانية</b> في الفصل والتشغيل، ولو الكهربا قطعت أقل من 80 مللي ثانية. ده رقم بيدخل في حساب مسافة الأمان بتاعة الستارة.</p>
+  <p>جرّب الـ RT9 بنفسك على <a href="pluto.html#rt9">المحاكي</a>: دوس الطوارئ، اعمل ريست، والحم كونتاكتور وشوف إيه اللي هيحصل.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأرقام والأطراف هنا من كتالوجات ABB (Pluto Hardware Manual و Programming Manual و RT9). قبل ما تطبّق على ماكينة حقيقية ارجع للكتالوج وتقييم المخاطر بتاع الماكينة. تقدّمك بيتسجّل على الجهاز ده.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l3');
+IL.quiz(document.getElementById('quiz'), [{"q": "أنهي طرف في الـ RT9 بيغذّي دخول القنوات بـ 24V؟", "o": ["S13", "A2", "Y14", "X4"], "a": 0, "why": "S13 خرج 24V محمي ضد القصر بيغذّي S14 و S34 و S44."}, {"q": "عايز ريست أوتوماتيك على الـ RT9. تعمل إيه؟", "o": ["تربط A1 و X1 و X4", "تشيل زرار الريست بس", "تربط S13 مع S24", "تفصل Y14"], "a": 0, "why": "ربط A1 و X1 و X4 = ريست أوتوماتيك، ولازم تقييم المخاطر يسمح."}, {"q": "خرج Y14 ينفع يوقف الماكينة كوظيفة أمان؟", "o": ["لأ، ده خرج معلومات بس", "أيوه، زي 13-14", "أيوه لو حطيت ريلاي", "بس في الريست الأوتوماتيك"], "a": 0, "why": "Y14 خرج معلومات للـ PLC أو لمبة، مش خرج أمان."}, {"q": "التوصيل بـ NO + NC من +24V بيدّي:", "o": ["Cat. 4", "Cat. 1", "Cat. 2", "Cat. B"], "a": 0, "why": "الكونتاكتين بيتحركوا عكس بعض، فالقصر بيتكشف: Cat. 4."}, {"q": "كونتاكتور K1 اتلحم والـ NC بتاعه متوصل مع الريست. اللي هيحصل:", "o": ["الريست مش هيشتغل", "الريلاي هيشتغل عادي", "الريلاي هيتحرق", "Y14 هيبقى 24V"], "a": 0, "why": "الـ NC المفتوح بيقطع دايرة الريست، فالريلاي يرفض يشتغل."}, {"q": "لمبة On على الـ RT9 بترمش. أول حاجة تشك فيها:", "o": ["جهد التغذية واطي أو حِمل زيادة على S13", "الطوارئ متداس", "الريست بايظ", "الخرج 13-14 ملحوم"], "a": 0, "why": "الرمش = undervoltage أو overload أو current limiting على S13."}], {lesson:'l3', pass:0.8});
+
+
+</script>
+</body>
+</html>

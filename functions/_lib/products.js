@@ -18,6 +18,7 @@ export const DEFAULT_PRICES = {
   basics:  { price: 299, was: 449, usd: 25, usd_was: 39, link: "https://learnelectricals.gumroad.com/l/cmweg" },
   drw:     { price: 299, was: 449, usd: 25, usd_was: 39, link: "https://learnelectricals.gumroad.com/l/Drawing" },
   classic: { price: 449, was: 649, usd: 35, usd_was: 55, link: "https://learnelectricals.gumroad.com/l/Classiccontrol" },
+  safety:  { price: 499, was: 749, usd: 39, usd_was: 59, link: "" },
   instr:   { price: 499, was: 749, usd: 39, usd_was: 59, link: "https://learnelectricals.gumroad.com/l/Instrumentation" },
   vfd:     { price: 499, was: 749, usd: 39, usd_was: 59, link: "https://learnelectricals.gumroad.com/l/VFD" },
   srv:     { price: 499, was: 749, usd: 39, usd_was: 59, link: "https://learnelectricals.gumroad.com/l/Servo" },
@@ -28,6 +29,7 @@ export const DEFAULT_PRICES = {
 export const PRODUCTS = {
   basics:  { title: "أساسيات الكهربا",          dirs: ["basics-lab"] },
   classic: { title: "الكلاسيك كنترول",           dirs: ["classic-control-lab"] },
+  safety:  { title: "السيفتي PLC",               dirs: ["safety-lab"] },                    // RT9, Vital 1, Pluto B20
   drw:     { title: "قراية الرسومات الكهربية",   dirs: ["drawings-lab"] },
   instr:   { title: "الإنسترومنتيشن",            dirs: ["instrumentation-lab", "e5cc-lab", "clm223-lab"] }, // E5CC: temperature control (thermocouple / PT100)
   plc:     { title: "الـ PLC",                    dirs: ["plc-lab"] },                         // includes the Siemens / Delta / AB brand pages
@@ -37,7 +39,7 @@ export const PRODUCTS = {
 };
 export const PRODUCT_IDS = Object.keys(PRODUCTS);
 // Friendlier names in links (subscribe.html?course=servo) → product id
-export const ALIASES = { drawings: "drw", servo: "srv", instrumentation: "instr", inverters: "vfd", vfdc: "vfd" };
+export const ALIASES = { "safety-plc": "safety", drawings: "drw", servo: "srv", instrumentation: "instr", inverters: "vfd", vfdc: "vfd" };
 export function productId(v){
   const s = String(v || "").trim().toLowerCase();
   const id = ALIASES[s] || s;

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>البرمجة في Pluto Manager</title>
+<meta name="description" content="الدرس 7: البرمجة في Pluto Manager: العناوين I0.0 و Q0.0 و M و GM، الـ Ladder، بلوكات TC2RTI و Reset2T و Twohand1 و LightCurtain1، والتنزيل بالباسورد.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="safety.css?v=20261027sf">
+<script src="safety.js?v=20261027sf"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">السيفتي PLC · الدرس 7 من 8</p>
+    <h1>البرمجة في Pluto Manager</h1>
+    <p>الـ Pluto بيتبرمج من برنامج <b>Pluto Manager</b> على الكمبيوتر بـ USB. البرنامج Ladder عادي، بس الأمان الحقيقي بيتعمل ببلوكات جاهزة معتمدة من TÜV.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="pluto.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>العناوين</h2>
+  <p>كل عنوان شكله <code>[النوع][رقم المحطة].[رقم الطرف]</code>. رقم المحطة من 0 لـ 31 وهو اللي بيظهر على الشاشة.</p>
+  <div class="tblw"><table class="tbl"><thead><tr><th>العنوان</th><th>المعنى</th></tr></thead><tbody>
+  <tr><td class="mono">I0.0 … I0.7</td><td>دخول الأمان في محطة 0</td></tr>
+  <tr><td class="mono">I0.10 … I0.17</td><td>أطراف IQ لما تتقري كدخل</td></tr>
+  <tr><td class="mono">Q0.0 … Q0.3</td><td>خروج الأمان (ريلاي وترانزستور)</td></tr>
+  <tr><td class="mono">Q0.10 … Q0.17</td><td>أطراف IQ لما تتستخدم كخرج</td></tr>
+  <tr><td class="mono">M0.0 …</td><td>ذاكرة داخلية (local) في الجهاز ده بس</td></tr>
+  <tr><td class="mono">GM0.0 …</td><td>ذاكرة عامة (global): أي Pluto على الباص يقراها</td></tr></tbody></table></div>
+  <p>كل الدخول (I) <b>global</b>: أي Pluto على الباص يقدر يقرا دخول التاني. ده اللي بيخلّي طوارئ خط كامل يوقف كل المحطات.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>الـ Ladder العادي</h2>
+  <p>كونتاكت NO وكونتاكت NC وكويل، و <code>S(...)</code> و <code>R(...)</code> للـ Set/Reset، و <code>P(...)</code> للـ edge، وتايمرات. وتقدر تكتبه نص: <code>Q0.1 = I0.0 + I0.2*I1.0</code> (<code>*</code> = AND، <code>+</code> = OR، <code>/</code> = NOT).</p>
+  <div class="box safe"><b>القاعدة:</b> الـ Ladder العادي للمنطق والإشارات. وظيفة الأمان نفسها (طوارئ، بوابة، ستارة) اعملها بالبلوكات المعتمدة.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>بلوكات الأمان الأشهر</h2>
+  <div class="tblw"><table class="tbl"><thead><tr><th>البلوك</th><th>الدخول</th><th>الخروج</th><th>بيعمل إيه</th></tr></thead><tbody>
+  <tr><td class="mono">TC2RTI</td><td>In1, In2, Test, Reset</td><td>Q, IndReset, TCfault</td><td>قناتين + اختبار كونتاكتورات + ريست مراقَب (على نزلة الزرار). TCfault لو قناة واحدة اتفتحت واتقفلت</td></tr>
+  <tr><td class="mono">Reset2T</td><td>In1, Test, Reset</td><td>Q, IndReset</td><td>قناة واحدة مع ريست مراقَب واختبار</td></tr>
+  <tr><td class="mono">Twohand1</td><td>Right_NO, Right_NC, Left_NO, Left_NC, Test</td><td>Q</td><td>الأربعة لازم يتغيّروا خلال 0.5 ثانية، ولازم يرجعوا كلهم قبل دورة جديدة</td></tr>
+  <tr><td class="mono">LightCurtain1</td><td>OSSD1, OSSD2, Reset, Test …</td><td>Q, IndReset</td><td>للستارة الضوئية</td></tr>
+  <tr><td class="mono">Mute2</td><td>In1, In2, Test, Restart, DeltaTime, MuteTime</td><td>Q</td><td>Muting للستارة لما المنتج بيعدّي</td></tr></tbody></table></div>
+  <p>مثال الطوارئ اللي هنشغّله في المحاكي:</p>
+  <svg viewBox="0 0 640 210" role="img" aria-label="بلوك TC2RTI" style="width:100%;max-width:640px;direction:ltr">
+ <g font-family="IBM Plex Mono,monospace" font-size="14" fill="currentColor">
+ <path d="M20 20V190" stroke="currentColor" stroke-width="3"/>
+ <rect x="220" y="25" width="180" height="160" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="310" y="48" text-anchor="middle" font-weight="700">TC2RTI</text>
+ <g><path d="M20 70H90M120 70H220" stroke="currentColor" stroke-width="2"/><path d="M90 58V82M120 58V82" stroke="currentColor" stroke-width="2"/><text x="105" y="52" text-anchor="middle">I0.0</text><text x="228" y="75">In1</text>
+ <path d="M20 105H90M120 105H220" stroke="currentColor" stroke-width="2"/><path d="M90 93V117M120 93V117" stroke="currentColor" stroke-width="2"/><text x="105" y="128" text-anchor="middle">I0.1</text><text x="228" y="110">In2</text>
+ <path d="M20 140H90M120 140H220" stroke="currentColor" stroke-width="2"/><path d="M90 128V152M120 128V152" stroke="currentColor" stroke-width="2"/><text x="105" y="168" text-anchor="middle">I0.2 K1·K2 NC</text><text x="228" y="145">Test</text>
+ <path d="M150 175H220" stroke="currentColor" stroke-width="2"/><text x="150" y="196">I0.3 RESET</text><text x="228" y="180">Reset</text></g>
+ <text x="335" y="75">Q</text><path d="M400 70H520" stroke="currentColor" stroke-width="2"/><text x="530" y="75">Q0.0 , Q0.1</text>
+ <text x="300" y="120">IndReset</text><path d="M400 115H520" stroke="currentColor" stroke-width="2"/><text x="530" y="120">IQ0.16 lamp</text>
+ <text x="305" y="165">TCfault</text><path d="M400 160H520" stroke="currentColor" stroke-width="2"/><text x="530" y="165">M0.0</text>
+ </g></svg>
+  <p><b>IndReset</b> بيرمش لما الجهاز جاهز للريست، وبينوّر ثابت لما في حاجة مفتوحة. وصّله على لمبة جوه زرار الريست.</p>
+</section>
+
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>التنزيل للجهاز</h2>
+  <ol><li><b>Comp:</b> يعمل compile، ولازم يطلع <code>0 Error(s) … Result=OK</code>.</li>
+  <li><b>Down:</b> يبعت البرنامج للـ Pluto.</li>
+  <li>يطلب <b>باسورد</b> (4 لـ 6 حروف). من غيره محدش يغيّر برنامج الأمان.</li>
+  <li>تختار تبدأ التشغيل، أو تفتح Online وتدوس Start.</li></ol>
+  <div class="box safe"><b>مهم:</b> البرنامج مابيكتشفش الغلط المنطقي (زي إن الطوارئ موصّل على الخرج الغلط). بعد أي تعديل اختبر كل وظيفة أمان بإيدك، ويُفضّل حد تاني يراجع.</div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأرقام والأطراف هنا من كتالوجات ABB (Pluto Hardware Manual و Programming Manual و RT9). قبل ما تطبّق على ماكينة حقيقية ارجع للكتالوج وتقييم المخاطر بتاع الماكينة. تقدّمك بيتسجّل على الجهاز ده.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l7');
+IL.quiz(document.getElementById('quiz'), [{"q": "العنوان I1.3 معناه:", "o": ["دخل 3 في محطة 1", "دخل 13 في محطة 0", "خرج 3", "ذاكرة"], "a": 0, "why": "[النوع][المحطة].[الطرف]."}, {"q": "الفرق بين M و GM:", "o": ["M داخلية، و GM أي Pluto على الباص يقراها", "M أسرع", "GM للتايمرات", "مفيش فرق"], "a": 0, "why": "GM = Global memory."}, {"q": "في TC2RTI، الريست بيشتغل إمتى؟", "o": ["على نزلة زرار الريست بعد ما كل الدخول تبقى تمام", "أول ما تدوس", "لوحده", "لما TCfault يبقى 1"], "a": 0, "why": "ريست مراقَب على الـ negative edge."}, {"q": "TCfault في TC2RTI بيبقى 1 لما:", "o": ["قناة واحدة بس اتفتحت واتقفلت", "الاتنين اتفتحوا مع بعض", "الريست اتداس", "الخرج شغال"], "a": 0, "why": "ده كشف كونتاكت ملحوم أو سلك ملزوق."}, {"q": "بعد ما تعدّل برنامج الأمان، أهم خطوة:", "o": ["تختبر كل وظيفة أمان بإيدك", "تعمل compile بس", "تغيّر الباسورد", "تعمل ريستارت"], "a": 0, "why": "الأدوات مش بتكتشف الغلط المنطقي."}, {"q": "Twohand1 بيشغّل الخرج لما:", "o": ["الأربع دخول يتغيّروا خلال 0.5 ثانية", "إيد واحدة تدوس", "الزرارين في أي وقت", "بعد 3 ثواني"], "a": 0, "why": "التزامن 0.5 ثانية، والكل يرجع قبل الدورة الجاية."}], {lesson:'l7', pass:0.8});
+
+
+</script>
+</body>
+</html>
