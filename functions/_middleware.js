@@ -35,7 +35,9 @@ const FREE_LESSONS_BY_DIR = {
   "servo-course": [1]               // 12
 };
 const COURSE_DIRS = new Set(["classic-control-lab", "safety-lab", "basics-lab", "instrumentation-lab", "plc-lab", "drawings-lab", "vfd-course", "servo-course"]);
-const OPEN_DIRS = new Set(["courses"]); // folders whose pages stay open without an account
+const OPEN_DIRS = new Set(["courses"]);
+// Courses still being prepared: only admins can open their pages (remove the folder from here to publish)
+const HIDDEN_DIRS = new Set(["safety-lab"]); // folders whose pages stay open without an account
 
 // "/plc-lab/", "/plc-lab/lesson-01.html", "/interview/" are pages; "/assets/site.js", "/og.png" are not.
 function isPage(pathname){
@@ -132,6 +134,7 @@ export async function onRequest(ctx){
     return new Response(null, { status: 302, headers: { location: to.pathname + to.search, "cache-control": "no-store" } });
   };
   if (!s) return go(pre + (hasSessionCookie(ctx.request) ? "/login.html?out=1" : "/login.html")); // out=1: this device was signed out (see login.html)
+  if (HIDDEN_DIRS.has(path.split("/")[1]) && !isAdmin(s.user)) return new Response(null, { status: 302, headers: { location: pre + "/labs.html", "cache-control": "no-store" } });
   const free = !paywallOn(ctx.env) || isPro(s.user) || isAdmin(s.user);
   if (gated && !free){
     const course = productOfDir((mediaLessonPage(path) || path).split("/")[1]);
