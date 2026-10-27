@@ -1696,7 +1696,7 @@ function benchBlocks(d, cx0, opFn, live, y0){
 }
 function benchPb(d, ctx){
   const c = colOf(d.cfg.color), p = TYPES[d.type].op(d), mush = d.type === 'estop', id = ++UID;
-  let s = cellHead(d, d.cfg.label, CW) + `<defs><radialGradient id="bc${id}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="${c.l}"/><stop offset=".6" stop-color="${c.b}"/><stop offset="1" stop-color="${c.d}"/></radialGradient></defs>`;
+  let s = cellHead(d, d.cfg.label, CW) + '<!--dh-->' + `<defs><radialGradient id="bc${id}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="${c.l}"/><stop offset=".6" stop-color="${c.b}"/><stop offset="1" stop-color="${c.d}"/></radialGradient></defs>`;
   if (mush){
     s += `<circle cx="85" cy="58" r="36" fill="#f3c613" stroke="#a88500"/><circle cx="85" cy="58" r="${p ? 24 : 27}" fill="url(#bc${id})" stroke="${c.d}" stroke-width="1.5"/>`;
     if (p) s += `<text x="85" y="63" font-size="15" text-anchor="middle" fill="#fff">↻</text>`;
@@ -1706,6 +1706,7 @@ function benchPb(d, ctx){
     else s += `<circle cx="85" cy="58" r="${p ? 20 : 23}" fill="rgba(0,0,0,.28)"/>`;
     if (d.st.pin) s += `<rect class="bpin-badge" x="126" y="74" width="40" height="14" rx="7" fill="#d6332a"/><text x="146" y="84" font-size="8.5" font-weight="700" fill="#fff" text-anchor="middle">pressed</text>`;
   }
+  s += '<!--/dh-->';
   const B = benchBlocks(d, 85, b => TYPES[d.type].op(d, b), ctx.live);
   s += B.svg;
   let hit = `<circle class="ba${mush ? '' : ' hold'}" data-dev="${d.id}" data-act="${mush ? 'latch' : 'press'}" cx="85" cy="58" r="36" tabindex="0" role="button" aria-label="${mush ? 'E-stop: tap to press, tap again to twist it out' : 'Press and hold ' + esc(d.tag)}"/>`;
@@ -1717,11 +1718,12 @@ function benchPb(d, ctx){
 }
 function benchSel(d, ctx){
   const P = d.cfg.pos, n = P.length, angs = n === 3 ? [-45, 0, 45] : [-45, 45], a = angs[d.st.pos] || 0;
-  let s = cellHead(d, d.cfg.label || (n === 3 ? '3-position selector' : 'ON/OFF switch'), CW);
+  let s = '<!--dh-->' + cellHead(d, d.cfg.label || (n === 3 ? '3-position selector' : 'ON/OFF switch'), CW);
   s += `<circle cx="85" cy="62" r="31" fill="#c9cdd0" stroke="#7d8388"/><circle cx="85" cy="62" r="26" fill="#1d1f21"/>`;
   angs.forEach((g, i) => { const rad = (g - 90) * Math.PI / 180; s += `<text x="${85 + 41*Math.cos(rad)}" y="${62 + 41*Math.sin(rad) + 4}" font-size="11" font-weight="700" text-anchor="middle" fill="${i === d.st.pos ? 'var(--accent)' : 'var(--ink)'}">${esc(P[i].length > 2 ? P[i][0] : P[i])}</text>`; });
   s += `<g transform="rotate(${a} 85 62)"><rect x="78" y="38" width="14" height="48" rx="6" fill="#2a2d30" stroke="#000"/><rect x="83.5" y="41" width="3" height="16" rx="1.5" fill="#eee"/></g>`;
   s += `<text x="20" y="66" font-size="16" text-anchor="middle" fill="var(--muted)">⟲</text><text x="150" y="66" font-size="16" text-anchor="middle" fill="var(--muted)">⟳</text>`;
+  s += '<!--/dh-->';
   const B = benchBlocks(d, 85, b => TYPES.sel.op(d, b), ctx.live);
   s += B.svg;
   const hit = `<rect class="ba" data-dev="${d.id}" data-act="selL" x="4" y="22" width="81" height="76" tabindex="0" role="button" aria-label="Turn ${esc(d.tag)} left"/><rect class="ba" data-dev="${d.id}" data-act="selR" x="85" y="22" width="81" height="76" tabindex="0" role="button" aria-label="Turn ${esc(d.tag)} right"/>`;
@@ -1729,7 +1731,7 @@ function benchSel(d, ctx){
 }
 function benchLs(d, ctx){
   const x = d.st.x || 0, linked = !!d.cfg.cart;
-  let s = cellHead(d, d.cfg.label || 'limit switch', CW);
+  let s = cellHead(d, d.cfg.label || 'limit switch', CW) + '<!--dh-->';
   const cr = 50 + x * 86, th = Math.asin(clamp((cr + 6 - 136) / 16, 0, 0.45)), rx = 136 + 16 * Math.sin(th), ry = 86 - 16 * Math.cos(th) + 16 - 16 + 0;
   s += `<rect x="114" y="22" width="44" height="34" rx="4" fill="#c3c7ca" stroke="#6d7479"/><text x="136" y="44" font-size="10" font-weight="700" text-anchor="middle" fill="#333">LS</text><rect x="126" y="56" width="20" height="10" rx="2" fill="#3a3e41"/>`;
   s += `<line x1="136" y1="64" x2="${136 + 18*Math.sin(th)}" y2="${64 + 18*Math.cos(th)}" stroke="#4b5257" stroke-width="4" stroke-linecap="round"/><circle cx="${136 + 18*Math.sin(th)}" cy="${64 + 18*Math.cos(th)}" r="6" fill="#ecebe6" stroke="#4b5257" stroke-width="1.5"/>`;
@@ -1738,6 +1740,7 @@ function benchLs(d, ctx){
     s += `<rect x="6" y="94" width="150" height="4" fill="#7b8389"/><rect x="${cr-44}" y="72" width="36" height="18" rx="3" fill="#2f6fb5"/><rect x="${cr-10}" y="72" width="10" height="20" fill="#e0a21b"/><circle cx="${cr-36}" cy="92" r="4" fill="#2a2d30"/><circle cx="${cr-16}" cy="92" r="4" fill="#2a2d30"/>`;
     s += `<text x="${cr-26}" y="68" font-size="12" text-anchor="middle" fill="var(--muted)">${x > 0.5 ? '←' : '→'}</text>`;
   } else s += `<text class="ar" x="56" y="70" font-size="11" text-anchor="middle" fill="var(--muted)">moves with ${esc(d.cfg.cart)}</text>`;
+  s += '<!--/dh-->';
   const B = benchBlocks(d, 85, () => !!d.st.a, ctx.live);
   s += B.svg;
   const hit = linked ? '' : `<rect class="ba" data-dev="${d.id}" data-act="cart" x="4" y="58" width="108" height="42" tabindex="0" role="button" aria-label="Move the cart to the limit switch or back"/>`;
@@ -2672,8 +2675,19 @@ const SKIN = CL.skin = (function(){
     });
     return out;
   }
+  const HYB = {pb:100, estop:100, sel:100, ls:100}; let HCID = 0;
   function apply(d, ctx, r){
     if (mode() !== 'photo' || !r || !r.terms) return r;
+    if (HYB[d.type] && r.svg.indexOf('<!--dh-->') > -1){
+      let hv; try { hv = pick(d, ctx); } catch(_) { hv = null; }
+      const hit2 = hv && IT[hv.key], hw = ctx.w || CW * TYPES[d.type].span(d);
+      if (!hit2 || hit2[0] !== hw) return r;
+      const cid = 'hc' + (++HCID), keepS = /<!--dh-->([\s\S]*?)<!--\/dh-->/.exec(r.svg);
+      const badges = keepS ? (keepS[1].match(/<rect class="bpin-badge"[^>]*\/>(<text[^>]*>[^<]*<\/text>)?/g) || []).join('') : '';
+      const heads = keepS ? (keepS[1].match(/<text class="bd-id"[\s\S]*?<\/text>/g) || []).join('') : '';
+      const head = `<clipPath id="${cid}"><rect x="0" y="20" width="${hit2[0]}" height="${HYB[d.type] - 20}"/></clipPath><g clip-path="url(#${cid})"><g class="bd-phw" data-ph="${esc(d.id)}" data-key="${hv.key}" data-w="${hit2[0]}" data-h="${hit2[1]}"></g></g>`;
+      return {svg:r.svg.replace(/<!--dh-->[\s\S]*?<!--\/dh-->/, heads + head + badges), hit:r.hit, terms:r.terms, photo:hv.key};
+    }
     let v; try { v = pick(d, ctx); } catch(_) { v = null; }
     if (!v) return r;
     const it = IT[v.key], w = ctx.w || CW * TYPES[d.type].span(d);
