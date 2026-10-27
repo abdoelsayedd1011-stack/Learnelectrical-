@@ -110,8 +110,8 @@ BUILD.modbus = host => {
     const s = slaves[si];
     if (+$('#mbb' + si, host).value !== mb || $('#mbp' + si, host).value !== mp){ logTo(log, `TX ${req.map(hex).join(' ')}\nRX: timeout / framing error (إعدادات التابع ${id} لا تطابق السيد: ${$('#mbb' + si, host).value} ${$('#mbp' + si, host).value} مقابل ${mb} ${mp})`, 'bad'); $('#mbl' + si, host).className = 'led r'; return; }
     if (!termOk && Math.random() < 0.6){ logTo(log, `TX ${req.map(hex).join(' ')}\nRX: CRC error (انعكاسات على الناقل: راجع الإنهاء في الطرفين فقط)`, 'bad'); $('#mbl' + si, host).className = 'led y'; return; }
-    const ids = [0, 1, 2, 3].map(i => +$('#mbid' + i, host).value);
-    if (new Set(ids.slice(0, 3)).size < 3 && ids.slice(0, 3).filter(x => x === id).length > 1){ logTo(log, 'RX: collision / CRC error (معرّفان متطابقان يجيبان معًا)', 'bad'); return; }
+    const ids = [0, 1, 2].map(i => +$('#mbid' + i, host).value);
+    if (new Set(ids).size < 3 && ids.filter(x => x === id).length > 1){ logTo(log, 'RX: collision / CRC error (معرّفان متطابقان يجيبان معًا)', 'bad'); return; }
     const max = Object.keys(s.regs).length;
     if (fc === 6){
       if (!(a in s.regs)){ const r = [id, fc | 0x80, 2]; const cc = crc16(r); r.push(cc & 255, cc >> 8); logTo(log, `RX ${r.map(hex).join(' ')}  → Exception 02 Illegal data address`, 'bad'); return; }
