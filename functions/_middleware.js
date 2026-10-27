@@ -106,6 +106,13 @@ function splitLang(pathname){
 
 export async function onRequest(ctx){
   const url = new URL(ctx.request.url);
+  // one host for the whole site: learnelectricals.com → www.learnelectricals.com
+  // (Google sign-in only accepts the registered www callback, and login cookies are per host)
+  if (url.hostname === "learnelectricals.com"){
+    url.hostname = "www.learnelectricals.com"; url.protocol = "https:";
+    const m = ctx.request.method;
+    return Response.redirect(url.toString(), m === "GET" || m === "HEAD" ? 301 : 308);
+  }
   const lang = splitLang(url.pathname), path = lang.path, pre = lang.en ? "/en" : "";
   const sync = syncDir(path) && hasSessionCookie(ctx.request);
   const gated = membersOnly(path), wall = needsLogin(path);
