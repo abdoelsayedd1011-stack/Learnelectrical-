@@ -26,12 +26,13 @@
     { id: "instr", title: "الإنسترومنتيشن", hub: "instrumentation-lab/index.html", inc: "كل الدروس + محاكي Omron E5CC" },
     { id: "plc", title: "الـ PLC", hub: "plc-lab/index.html", inc: "كل الدروس + محاكيات Siemens و Delta و AB" },
     { id: "vfd", title: "الانفرتر VFD", hub: "vfd-course/index.html", inc: "كل الدروس + كل محاكيات الانفرترات" },
-    { id: "srv", title: "السيرفو موتور والدرايف", hub: "servo-course/index.html", inc: "كل الدروس + 4 محاكيات سيرفو" }
+    { id: "srv", title: "السيرفو موتور والدرايف", hub: "servo-course/index.html", inc: "كل الدروس + 4 محاكيات سيرفو" },
+    { id: "iiot", title: "IIoT والشبكات الصناعية", hub: "iiot-lab/index.html", inc: "كل الدروس + محاكي الشبكات (11 تمرين) والامتحان والشهادة" }
   ];
   if (EN) COURSES.forEach(function(c){ c.title = EN.courses[c.id] || c.title; c.inc = EN.payInc[c.id] || c.inc; });
   COURSES.forEach(function(c){ c.href = EN ? L(c.hub) : c.hub; c.ar = !!EN && !/^\/en\//.test(c.href); });
   var BY_ID = {}; COURSES.forEach(function(c){ BY_ID[c.id] = c; });
-  var ALIAS = { "safety-plc": "safety", drawings: "drw", servo: "srv", instrumentation: "instr", inverters: "vfd", vfdc: "vfd" };
+  var ALIAS = { "safety-plc": "safety", drawings: "drw", servo: "srv", instrumentation: "instr", inverters: "vfd", vfdc: "vfd", networks: "iiot" };
   var AR_BADGE = EN ? '<span class="ar-badge" title="' + esc(EN.arBadgeTitle) + '">' + esc(EN.arBadge) + "</span>" : "";
 
   var CUR = EN ? EN.currency : str(P.currency) || "جنيه";

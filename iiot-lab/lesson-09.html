@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OPC UA</title>
+<meta name="description" content="الدرس 9: OPC UA: الخادم والعميل والمنفذ 4840، فضاء العناوين و NodeId والجودة والطابع الزمني، الاشتراك و Deadband، الأمان بالشهادات والسياسات، وتفعيله على S7-1500.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="iiot.css?v=20261027i1">
+<script src="iiot.js?v=20261027i1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">إنترنت الأشياء الصناعي والشبكات · الدرس 9 من 14</p>
+    <h1>OPC UA</h1>
+    <p>لغة المصنع المشتركة: بدل «السجل 40011 = 4998» تقرأ «حرارة الفرن 182.5 درجة، جودة جيدة، الساعة 12:40». هكذا تتكلم أنظمة المتابعة مع أي PLC.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="net.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>لماذا OPC UA؟</h2>
+<p>الشبكات السابقة تنقل <b>سجلات وبتات</b>: السجل 40011 يحمل 4998، وعليك أن تعرف أنه التردد وأن تقسمه على 100. <b>OPC UA</b> (Open Platform Communications Unified Architecture) ينقل <b>معلومات ذات معنى</b>: متغير اسمه <span class="mono">OvenTemp</span> نوعه Double ووحدته °C وقيمته 182.5 وزمنه وجودته. لذلك صار اللغة المشتركة بين الـ PLC و SCADA و MES والبوابات، بغض النظر عن الشركة المصنّعة.</p>
+<ul><li><b>الخادم (Server):</b> يعرض البيانات: الـ PLC نفسه (S7-1500، Beckhoff، B&amp;R، Omron NJ) أو برنامج وسيط (KEPServerEX) يحوّل Modbus/PROFINET إلى OPC UA.</li>
+<li><b>العميل (Client):</b> يقرأ ويكتب ويشترك: SCADA، Node-RED، Ignition، لوحة المتابعة.</li>
+<li>العنوان: <span class="mono">opc.tcp://192.168.1.10:4840</span> (المنفذ القياسي 4840).</li>
+<li>مستقل عن النظام: يعمل على PLC و Windows و Linux و في السحابة، بتشفير وتوثيق مدمجين.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>فضاء العناوين و NodeId</h2>
+<svg viewBox="0 0 640 220" role="img" aria-label="فضاء عناوين OPC UA" style="width:100%;max-width:640px;direction:ltr">
+<g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor">
+<rect x="20" y="20" width="250" height="180" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="30" y="40" font-weight="700">Address space (server)</text>
+<text x="40" y="65">Objects</text><text x="60" y="85">└ PLC_1</text><text x="80" y="105">└ DataBlocks</text><text x="100" y="125">└ Line3</text><text x="120" y="145" fill="#0d7584">├ OvenTemp  Double</text><text x="120" y="165" fill="#0d7584">├ PartsCount Int32</text><text x="120" y="185" fill="#0d7584">└ Running    Boolean</text>
+<rect x="380" y="60" width="240" height="100" rx="8" fill="none" stroke="#b85f00" stroke-width="2"/><text x="390" y="82" font-weight="700" fill="#b85f00">Client (SCADA / gateway)</text><text x="390" y="105">Read ns=3;s="Line3".OvenTemp</text><text x="390" y="125">→ 182.5 (Good, 12:40:05.120)</text><text x="390" y="148">Subscribe: 500 ms, deadband 0.5</text>
+<path d="M270 110H380" stroke="currentColor" stroke-width="2" marker-end="url(#a2)"/><defs><marker id="a2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs>
+<text x="300" y="100" font-size="11">opc.tcp://192.168.1.10:4840</text>
+</g></svg>
+<p>كل شيء في الخادم <b>عقدة (Node)</b> في شجرة: كائنات، متغيرات، طرائق، أنواع. لكل عقدة <b>NodeId</b> فريد يتكون من <b>فضاء أسماء</b> (ns) ومعرّف: رقمي <span class="mono">ns=3;i=1005</span> أو نصي <span class="mono">ns=3;s="Line3".OvenTemp</span>. العميل <b>يتصفح (Browse)</b> الشجرة من Objects إلى الأسفل، ثم <b>يقرأ (Read)</b> أو <b>يكتب (Write)</b> أو <b>يشترك (Subscribe)</b>.</p>
+<p>كل قيمة تأتي مع <b>ثلاثية</b>: القيمة، <b>الجودة</b> (Good / Bad / Uncertain)، و<b>الطابع الزمني</b> من المصدر. لو الجودة Bad فالسبب في الحساس أو الـ PLC لا في الشبكة.</p>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>الاشتراك بدل الاستطلاع</h2>
+<p>بدل أن يسأل العميل كل 100 ms «ما القيمة؟» (Polling)، ينشئ <b>Subscription</b> بفاصل نشر (مثلًا 500 ms) ويضيف إليها <b>Monitored items</b>؛ فيرسل الخادم القيمة فقط عندما <b>تتغير</b>، مع <b>Deadband</b> (لا ترسل إلا إذا تغيرت أكثر من 0.5) و<b>قائمة انتظار</b> للتغيرات السريعة. هذا يقلل الحمل على الـ PLC كثيرًا.</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>الخدمة</th><th>ماذا تفعل</th><th>مثال</th></tr></thead><tbody>
+<tr><td>Browse</td><td>عرض أبناء عقدة</td><td>ما داخل Line3؟</td></tr>
+<tr><td>Read</td><td>قراءة سمة (القيمة، الوصف، النوع)</td><td>قيمة OvenTemp الآن</td></tr>
+<tr><td>Write</td><td>كتابة قيمة</td><td>Setpoint = 185</td></tr>
+<tr><td>Subscribe</td><td>إرسال التغيرات فقط</td><td>كل تغير في PartsCount</td></tr>
+<tr><td>Call</td><td>استدعاء طريقة في الخادم</td><td>StartBatch(recipe=7)</td></tr>
+<tr><td>History read</td><td>قراءة قيم ماضية (إن دعم الخادم)</td><td>الحرارة آخر ساعة</td></tr></tbody></table></div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>الأمان: الشهادات والسياسات</h2>
+<p>OPC UA بُني مع الأمان: كل خادم وعميل له <b>شهادة X.509</b> تعرّفه، ويختاران <b>سياسة أمان</b> (None، Basic256Sha256، Aes256_Sha256_RsaPss) و<b>وضع رسالة</b> (None، Sign، Sign &amp; Encrypt). عند أول اتصال يرفض الخادم شهادة العميل حتى <b>تثق بها يدويًا</b> في قائمة الخادم (Trust list)، والعكس.</p>
+<ul><li><b>BadCertificateUntrusted:</b> الشهادة لم تُقبل بعد: افتح إعدادات الخادم وانقل الشهادة من Rejected إلى Trusted.</li>
+<li><b>BadUserAccessDenied:</b> اسم المستخدم أو كلمة السر خطأ، أو المستخدم بلا صلاحية كتابة.</li>
+<li>سياسة <b>None</b> مقبولة للتجربة في المعمل فقط؛ في الإنتاج استخدم Sign &amp; Encrypt خاصة إذا مرت البيانات خارج شبكة الماكينة.</li>
+<li>عدد الجلسات والاشتراكات في الـ PLC محدود (مثلًا 32 جلسة في S7-1500 حسب الطراز) والرخصة قد تكون منفصلة.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>OPC UA على S7-1500 خطوة بخطوة</h2>
+<ol><li>في TIA Portal: خصائص الـ CPU → <b>OPC UA → Server → Activate OPC UA server</b>، واختر المنفذ 4840 وسياسة الأمان.</li>
+<li>في <b>Server interfaces</b> أنشئ واجهة وأسقط إليها المتغيرات التي تريد عرضها (DB أو Tags). لا تعرض كل شيء.</li>
+<li><b>Runtime licenses → OPC UA</b>: اختر الرخصة المناسبة.</li>
+<li>حمّل، ثم من حاسوبك افتح عميل مثل UaExpert على <span class="mono">opc.tcp://&lt;ip&gt;:4840</span>، اقبل الشهادة في الـ CPU، وتصفح.</li></ol>
+<div class="box key"><b>على المحاكي:</b> تصفح شجرة الخادم حتى متغيرات خط الإنتاج، اقرأ القيمة والجودة والزمن، أنشئ اشتراكًا بـ Deadband، اكتب نقطة ضبط، وعالج شهادة مرفوضة. <a class="btn pri" href="net.html#opcua" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">المعلومات هنا من المواصفات الرسمية للبروتوكولات (Modbus.org و PROFIBUS &amp; PROFINET International و CiA و ODVA و OPC Foundation و OASIS MQTT) ومن أدلة الشركات المصنّعة. قبل أي تطبيق على شبكة حقيقية ارجع إلى دليل الجهاز وسياسة أمن الشبكة في مصنعك. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l9');
+IL.quiz(document.getElementById('quiz'), [{"q": "ما الذي يضيفه OPC UA على Modbus؟", "o": ["معنى للبيانات: اسم ونوع ووحدة وجودة وزمن", "سرعة أعلى فقط", "كابلًا مختلفًا", "لا شيء"], "a": 0, "why": "نموذج معلومات بدل سجلات مجهولة."}, {"q": "المنفذ القياسي لـ OPC UA:", "o": ["4840", "502", "1883", "44818"], "a": 0, "why": "opc.tcp://host:4840."}, {"q": "ns=3;s=\"Line3\".OvenTemp هو:", "o": ["NodeId نصي في فضاء الأسماء 3", "عنوان IP", "اسم المستخدم", "مسار ملف"], "a": 0, "why": "ns = namespace، s = معرّف نصي."}, {"q": "القيمة تأتي بجودة Bad. الاستنتاج:", "o": ["المشكلة في المصدر (الحساس أو الـ PLC) لا في الشبكة", "انقطع الكابل", "الشهادة مرفوضة", "المنفذ مغلق"], "a": 0, "why": "الشبكة أوصلت الرد؛ الخادم نفسه يبلّغ أن القيمة غير صالحة."}, {"q": "ميزة الاشتراك (Subscription) مع Deadband:", "o": ["يرسل الخادم القيمة فقط عندما تتغير بأكثر من الحد", "يقرأ كل 1 ms", "يحذف القيم القديمة", "يشفر البيانات"], "a": 0, "why": "حمل أقل على الـ PLC والشبكة من الاستطلاع."}, {"q": "BadCertificateUntrusted يُحل بـ:", "o": ["نقل شهادة العميل إلى قائمة الموثوقين في الخادم", "تغيير المنفذ", "إعادة تشغيل المفتاح", "تغيير NodeId"], "a": 0, "why": "الثقة المتبادلة في الشهادات يدوية عند أول اتصال."}, {"q": "سياسة أمان None مناسبة لـ:", "o": ["التجربة في المعمل فقط", "شبكة الإنتاج", "الاتصال عبر الإنترنت", "كل الحالات"], "a": 0, "why": "في الإنتاج استخدم Sign & Encrypt."}], {lesson:'l9', pass:0.8});
+</script>
+</body>
+</html>

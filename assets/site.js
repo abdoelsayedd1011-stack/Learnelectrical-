@@ -152,6 +152,12 @@
       guided:0, exercises:0, params:0, faults:0,
       inside:["نفس التمرين على كل الماركات", "مقارنة الباراميترات والأطراف", "لوحة توصيل وتمارين بتتصحح"],
       tags:"compare all drives vfd مقارنة شامل كل الانفرترات في صفحة واحدة، ولوحة التوصيل العملي، ومقارنة نفس الوظيفة بين الماركات.  7 انفرترات في صفحة واحدة   لوحة توصيل عملي مشتركة   مقارنة نفس الوظيفة بين الماركات " },
+    { id:"iiot", path:"iiot-lab/index.html", group:"iiot", brand:"كورس", brandKey:"iiot",
+      name:"كورس إنترنت الأشياء الصناعي والشبكات الصناعية", kind:"ابدأ بالشرح", disp:"MQTT", dispClass:"red", rtlName:true,
+      line:"كل الشبكات الصناعية من الكابل للسحابة، ومحاكي شبكات من 11 تمرين، وتشخيص الأعطال.",
+      guided:14, exercises:11, params:0, faults:8,
+      inside:["IP و Modbus RTU/TCP و PROFIBUS و PROFINET و CAN", "DeviceNet و EtherNet/IP و IO-Link و HART و OPC UA و MQTT", "البوابة ولوحة المتابعة والصيانة التنبؤية وتشخيص الأعطال"],
+      tags:"iiot iot industrial internet of things انترنت الاشياء الصناعي شبكات صناعية industrial networks modbus rtu tcp rs485 profibus profinet can canopen devicenet ethernet/ip ethercat as-i io-link hart opc ua mqtt node-red gateway بوابة dashboard لوحة oee predictive maintenance صيانة تنبؤية troubleshooting تشخيص اعطال ترابل شوتينج wireshark proneta ip subnet تشخيص الشبكات" },
     { id:"srv", path:"servo-course/index.html", group:"servo", brand:"كورس", brandKey:"srvc",
       name:"كورس السيرفو موتور والدرايف", kind:"ابدأ بالشرح", disp:"S-ON", dispClass:"red", rtlName:true,
       line:"افهم السيرفو من جوه قبل ما تمسك أي درايف.",
@@ -203,6 +209,7 @@
     { key:"plc", title:"PLC", sub:"Ladder · تايمرات · عدادات · أنالوج · مشاريع", land:"courses/plc.html" },
     { key:"drives", title:"الانفرترات", sub:"Allen-Bradley · ABB · Siemens · Schneider · Mitsubishi · Yaskawa · Delta · LS · INVT · Danfoss · Fuji", land:"courses/inverters.html" },
     { key:"servo", title:"سيرفو", sub:"درايفات وموتورات سيرفو", land:"courses/servo.html" },
+    { key:"iiot", title:"IIoT والشبكات الصناعية", sub:"Modbus · PROFIBUS · PROFINET · CAN · OPC UA · MQTT · تشخيص الأعطال", land:"courses/iiot.html" },
     { key:"temp", title:"كنترول حرارة وقياس", sub:"Omron · Endress+Hauser" }
   ];
   /* محتوى كل كورس بالترتيب (عناوين الدروس) — بيظهر على كارت الكورس في الكتالوج وعلى الغلاف (assets/courses/covers/).
@@ -222,6 +229,8 @@
       l:["أنواع الرسومات الكهربية", "الرموز: IEC و ANSI/NEMA", "ترقيم الأجهزة والأطراف والكروس ريفرنس", "قراية دايرة التحكم", "الـ Single line ودايرة القوى", "رسمة اللوحة والـ Terminal strip", "تتبّع العطل من الرسمة + الامتحان"] },
     vfdc: { n:"12 درس", x:["16 محاكي انفرتر"],
       l:["ليه الانفرتر؟", "جوه الانفرتر", "الـ PWM والـ V/f", "توصيل الباور", "أطراف الكنترول", "الباراميترات الأساسية", "أوضاع التحكم والـ Autotune", "الفرملة والوقوف", "الـ PID والتطبيقات", "الأعطال الشائعة وحلّها", "السلامة والتركيب", "التشغيل لأول مرة + الامتحان"] },
+    iiot: { n:"14 درس", x:["محاكي شبكات من 11 تمرين", "امتحان نهائي"],
+      l:["ما هو IIoT والشبكات الصناعية؟", "أساسيات الإيثرنت: IP و Subnet و Switch", "RS-485 و Modbus RTU", "Modbus TCP", "PROFIBUS DP", "PROFINET", "CAN bus و CANopen و DeviceNet", "EtherNet/IP و AS-i و IO-Link و HART", "OPC UA", "MQTT", "البوابة: من الـ PLC إلى السحابة", "لوحة المتابعة والاتجاهات والإنذارات", "الصيانة التنبؤية", "تشخيص أعطال الشبكات + مشروع خط إنتاج + الامتحان"] },
     srv: { n:"12 درس", x:["4 محاكيات سيرفو"],
       l:["يعني إيه سيرفو؟", "جوه السيرفو موتور", "الإنكودر: عين السيرفو", "الدرايف من جوه", "توصيل السيرفو", "أوضاع التشغيل", "الجير الإلكتروني", "التيونينج وضبط الجين", "الهومينج والحدود", "التحكم من الـ PLC", "الأعطال الشائعة", "التشغيل لأول مرة + الامتحان"] }
   };
@@ -282,7 +291,7 @@
   /* ---------- أسعار الكورسات (من «الأسعار» في لوحة الإدارة، /api/prices) ----------
      كارت كل كورس في الكتالوج وصفحة كل كورس في courses/ بتظهر السعر لو متحدد، وزرار «اشتري الكورس».
      اللي اشترى الكورس بيشوف «اشتريته ✓». */
-  var PRODUCT_OF = { basics:"basics", classic:"classic", safety:"safety", instr:"instr", plc:"plc", drw:"drw", vfdc:"vfd", srv:"srv" };
+  var PRODUCT_OF = { basics:"basics", classic:"classic", safety:"safety", instr:"instr", plc:"plc", drw:"drw", vfdc:"vfd", srv:"srv", iiot:"iiot" };
   var PR = null, ME, priceHooks = [];
   function curName(){ return EN ? EN.currency : ((window.SITE || {}).pay || {}).currency || "جنيه"; }
   function fmtN(n){ return String(Math.round(n * 100) / 100); }
@@ -436,9 +445,10 @@
     plc:{ ac:"#a48bff", ar:"الـ PLC", en:"PLC Programming" },
     drw:{ ac:"#5aa2ff", ar:"قراية الرسومات الكهربية", en:"Reading Electrical Drawings" },
     vfdc:{ ac:"#ff8a4c", ar:"الانفرتر VFD", en:"VFD (Inverter)" },
-    srv:{ ac:"#ff5c7a", ar:"السيرفو موتور والدرايف", en:"Servo Motor & Drive" }
+    srv:{ ac:"#ff5c7a", ar:"السيرفو موتور والدرايف", en:"Servo Motor & Drive" },
+    iiot:{ ac:"#4cc0cf", ar:"IIoT والشبكات الصناعية", en:"IIoT & Industrial Networks" }
   };
-  var CVV = "p10";
+  var CVV = "p11";
   function coverHtml(l, toc){
     var c = CV[l.id], src = "/assets/courses/covers/" + l.id;
     if (!c || !toc) return '<div class="cover"><img src="' + src + (EN ? "-en" : "-ar") + '.webp?v=b3" width="960" height="1200" alt="" decoding="async"></div><h4 class="sr-only">' + esc(l.name) + "</h4>";

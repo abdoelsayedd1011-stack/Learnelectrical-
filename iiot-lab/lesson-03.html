@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RS-485 و Modbus RTU</title>
+<meta name="description" content="الدرس 3: مواصفة RS-485 والطرفان A و B ومقاومة الإنهاء والأرضي المشترك، إعدادات المنفذ، الجداول الأربعة ورموز الوظائف، شكل الإطار و CRC والاستثناءات، وقراءة محوّل تردد.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="iiot.css?v=20261027i1">
+<script src="iiot.js?v=20261027i1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">إنترنت الأشياء الصناعي والشبكات · الدرس 3 من 14</p>
+    <h1>RS-485 و Modbus RTU</h1>
+    <p>أكثر شبكة ستقابلها في الماكينات القديمة والحديثة معًا: زوج أسلاك و Modbus. من يتقن هذا الدرس يحل معظم أعطال «لا يوجد اتصال» بمحوّل التردد.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="net.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>لماذا RS-485؟</h2>
+<p><b>RS-485</b> ليس بروتوكولًا بل <b>مواصفة كهربائية</b>: تُرسل البتات كفرق جهد بين سلكين <b>A</b> و <b>B</b>. لأن الضوضاء تصيب السلكين معًا، يبقى الفرق بينهما سليمًا؛ لذلك يصل RS-485 إلى <b>1200 متر</b> ويربط حتى <b>32 جهازًا</b> (أو أكثر مع مكررات) على زوج أسلاك واحد. فوق هذه المواصفة يعمل Modbus RTU و PROFIBUS DP وغيرهما.</p>
+<div class="box key"><b>انتبه للأسماء:</b> بعض الشركات تسمي A هو D− والبعض يسميه D+. لو لم يستجب الجهاز، بدّل A و B أولًا؛ لا يتلف شيء بالعكس.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>التوصيل الصحيح</h2>
+<svg viewBox="0 0 640 230" role="img" aria-label="خط RS-485 بثلاثة أجهزة ومقاومتي إنهاء" style="width:100%;max-width:640px;direction:ltr">
+<g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
+<rect x="20" y="30" width="120" height="70" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="80" y="55" font-weight="700">PLC (Master)</text><text x="60" y="88">A</text><text x="100" y="88">B</text>
+<rect x="260" y="30" width="120" height="70" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="320" y="55" font-weight="700">VFD #1</text><text x="300" y="88">A</text><text x="340" y="88">B</text>
+<rect x="500" y="30" width="120" height="70" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="560" y="55" font-weight="700">VFD #2</text><text x="540" y="88">A</text><text x="580" y="88">B</text>
+<path d="M60 100V150H540V100" fill="none" stroke="#c62828" stroke-width="3"/><path d="M100 100V170H580V100" fill="none" stroke="#1e5fd1" stroke-width="3"/>
+<path d="M300 100V150M340 100V170" stroke="#c62828" stroke-width="3"/><path d="M340 100V170" stroke="#1e5fd1" stroke-width="3"/>
+<rect x="30" y="152" width="14" height="22" fill="#f6e6d3" stroke="#b85f00" stroke-width="2"/><text x="37" y="200" font-size="11" fill="#b85f00">120 Ω</text>
+<rect x="596" y="152" width="14" height="22" fill="#f6e6d3" stroke="#b85f00" stroke-width="2"/><text x="603" y="200" font-size="11" fill="#b85f00">120 Ω</text>
+<path d="M60 150H37M37 150V152M100 170H44M44 170V174" stroke="#b85f00" stroke-width="2" fill="none"/><path d="M540 150H603M603 150V152M580 170H610M610 170V174" stroke="#b85f00" stroke-width="2" fill="none"/>
+<text x="200" y="145" fill="#c62828">A (D−)</text><text x="200" y="185" fill="#1e5fd1">B (D+)</text><text x="320" y="215">زوج ملتوٍ محمي، الدرع مؤرَّض من طرف واحد، GND مشترك</text>
+</g></svg>
+<ol><li><b>خط واحد (Daisy chain):</b> من جهاز إلى الذي يليه. لا تفرّع نجميًا؛ الفروع تسبب انعكاسات.</li>
+<li><b>مقاومة 120 أوم في الطرفين فقط:</b> كثير من الأجهزة فيها مفتاح DIP أو جمبر للإنهاء. اثنان فقط في الشبكة كلها: أول جهاز وآخر جهاز.</li>
+<li><b>الأرضي المشترك (GND/SC):</b> سلك ثالث يربط مراجع الأجهزة، وإلا قد يتجاوز فرق الجهد المسموح (−7 إلى +12 V) ويحترق الـ transceiver.</li>
+<li><b>الدرع:</b> يُؤرَّض من طرف واحد (اللوحة) لتجنب حلقات الأرضي.</li>
+<li><b>مقاومتا الانحياز (Bias):</b> في السيد غالبًا، تثبت الخط في حالة معروفة عندما لا يرسل أحد.</li></ol>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>إعدادات المنفذ التسلسلي</h2>
+<p>يجب أن تتطابق هذه الإعدادات في <b>كل</b> الأجهزة على الخط، وإلا لن يفهم أحد أحدًا:</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>الإعداد</th><th>القيم الشائعة</th><th>ملاحظة</th></tr></thead><tbody>
+<tr><td>Baud rate</td><td class="mono">9600 · 19200 · 38400 · 115200</td><td>أعلى سرعة = مسافة أقصر. 19200 خيار متوازن</td></tr>
+<tr><td>Data bits</td><td class="mono">8</td><td>ثابت في RTU</td></tr>
+<tr><td>Parity</td><td class="mono">Even · Odd · None</td><td>المواصفة تفضّل Even. مع None غالبًا 2 stop bits</td></tr>
+<tr><td>Stop bits</td><td class="mono">1 · 2</td><td></td></tr>
+<tr><td>Slave address</td><td class="mono">1 – 247</td><td>فريد لكل تابع. 0 للبث العام (بلا رد)</td></tr></tbody></table></div>
+<div class="box safe"><b>أشهر عطل:</b> الـ PLC على 19200 والمحوّل على 9600. النتيجة: Timeout دائم أو أخطاء CRC متقطعة.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>السجلات ورموز الوظائف</h2>
+<p>يرى Modbus أي جهاز كأربعة جداول:</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>الجدول</th><th>الحجم</th><th>الاتجاه</th><th>العنوان التقليدي</th><th>رمز الوظيفة (FC)</th></tr></thead><tbody>
+<tr><td>Coils</td><td>بت</td><td>قراءة/كتابة</td><td class="mono">00001 – 09999</td><td class="mono">01 قراءة · 05 كتابة واحد · 15 كتابة عدة</td></tr>
+<tr><td>Discrete inputs</td><td>بت</td><td>قراءة فقط</td><td class="mono">10001 – 19999</td><td class="mono">02</td></tr>
+<tr><td>Input registers</td><td>16 بت</td><td>قراءة فقط</td><td class="mono">30001 – 39999</td><td class="mono">04</td></tr>
+<tr><td>Holding registers</td><td>16 بت</td><td>قراءة/كتابة</td><td class="mono">40001 – 49999</td><td class="mono">03 قراءة · 06 كتابة واحد · 16 كتابة عدة</td></tr></tbody></table></div>
+<div class="box key"><b>فخ الإزاحة (Offset):</b> العنوان 40001 في الدليل يُرسل على الخط كـ <span class="mono">0</span>، و 40108 يُرسل كـ <span class="mono">107</span>. بعض البرامج تطلب العنوان التقليدي وبعضها يطلب الإزاحة. لو حصلت على قيمة «مزاحة بسجل واحد» فهذا هو السبب.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>شكل الإطار على الخط</h2>
+<p>طلب قراءة سجلين من العنوان 40108 في التابع رقم 1:</p>
+<div class="tblw"><table class="tbl mono" style="direction:ltr"><thead><tr><th>01</th><th>03</th><th>00 6B</th><th>00 02</th><th>B6 D4</th></tr></thead><tbody>
+<tr><td>العنوان</td><td>الوظيفة</td><td>أول سجل</td><td>العدد</td><td>CRC</td></tr></tbody></table></div>
+<ul><li><b>CRC-16</b> بايتان يحسبهما المرسل؛ لو تلف بت واحد في الطريق رفض المستقبل الإطار صامتًا. أخطاء CRC المتكررة = ضوضاء أو إنهاء ناقص أو سرعة غير مناسبة.</li>
+<li>الرد: <span class="mono" dir="ltr">01 03 04 00 2B 00 00 xx xx</span>: العنوان، الوظيفة، عدد البايتات (4)، ثم القيمتان، ثم CRC.</li>
+<li><b>رد استثناء</b>: الوظيفة + 0x80 ثم رمز الخطأ: <span class="mono">01</span> وظيفة غير مدعومة، <span class="mono">02</span> عنوان سجل غير موجود، <span class="mono">03</span> قيمة غير مقبولة، <span class="mono">04</span> عطل في الجهاز.</li>
+<li><b>Timeout</b> (لا رد إطلاقًا): العنوان خطأ، أو السرعة/التماثل، أو A و B معكوسان، أو الكابل.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s6">
+  <h2 id="s6"><span class="k">6</span>مثال: قراءة محوّل تردد والتحكم فيه</h2>
+<p>معظم محوّلات التردد توفر «سجل أوامر» و«سجل مرجع تردد» و«سجلات حالة». مثال نمطي (الأرقام تختلف من شركة لأخرى، ارجع إلى الدليل):</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>السجل</th><th>المعنى</th><th>مثال</th></tr></thead><tbody>
+<tr><td class="mono">40001</td><td>كلمة الأوامر: بت 0 تشغيل، بت 1 عكس، بت 2 مسح العطل</td><td class="mono">0x0001 = تشغيل أمامي</td></tr>
+<tr><td class="mono">40002</td><td>التردد المرجعي × 100</td><td class="mono">5000 = 50.00 Hz</td></tr>
+<tr><td class="mono">40011</td><td>التردد الفعلي × 100 (قراءة)</td><td class="mono">4998</td></tr>
+<tr><td class="mono">40012</td><td>التيار × 10</td><td class="mono">123 = 12.3 A</td></tr>
+<tr><td class="mono">40020</td><td>رمز العطل الحالي</td><td class="mono">0 = لا عطل</td></tr></tbody></table></div>
+<p>لاحظ <b>التحجيم</b>: القيمة على الخط عدد صحيح 16 بت، والدليل يقول «اقسم على 100». هذا ما سنُعيد استخدامه في البوابة (الدرس 11).</p>
+<div class="box key"><b>على المحاكي:</b> اضبط منفذ السيد ليطابق محوّل التردد، اقرأ التردد والتيار بالوظيفة 03، ثم اكتب التردد المرجعي بالوظيفة 06، وفسّر أخطاء Timeout و CRC والاستثناء 02. <a class="btn pri" href="net.html#modbus" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">المعلومات هنا من المواصفات الرسمية للبروتوكولات (Modbus.org و PROFIBUS &amp; PROFINET International و CiA و ODVA و OPC Foundation و OASIS MQTT) ومن أدلة الشركات المصنّعة. قبل أي تطبيق على شبكة حقيقية ارجع إلى دليل الجهاز وسياسة أمن الشبكة في مصنعك. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l3');
+IL.quiz(document.getElementById('quiz'), [{"q": "كم مقاومة إنهاء 120 أوم توضع في شبكة RS-485 واحدة؟", "o": ["اثنتان، في أول جهاز وآخر جهاز", "واحدة في السيد فقط", "واحدة في كل جهاز", "لا تحتاج"], "a": 0, "why": "في طرفي الخط فقط؛ الزيادة تُحمّل الخط والنقص يسبب انعكاسات."}, {"q": "الـ PLC على 19200 baud ومحوّل التردد على 9600. النتيجة المتوقعة:", "o": ["Timeout دائم أو أخطاء CRC", "يعمل بسرعة أقل", "يعمل لكن القيم مزاحة بسجل", "يعمل عادي"], "a": 0, "why": "إعدادات المنفذ يجب أن تتطابق تمامًا."}, {"q": "العنوان 40108 في الدليل يُرسل على الخط كـ:", "o": ["107", "108", "40108", "0x40108"], "a": 0, "why": "سجلات 4xxxx تبدأ من 40001 = إزاحة 0."}, {"q": "رمز الوظيفة 03 يقرأ:", "o": ["Holding registers", "Coils", "Discrete inputs", "Input registers"], "a": 0, "why": "03 للسجلات القابلة للقراءة والكتابة، و 04 لسجلات الإدخال."}, {"q": "رد استثناء برمز 02 يعني:", "o": ["عنوان السجل غير موجود في الجهاز", "الوظيفة غير مدعومة", "القيمة غير مقبولة", "انقطاع الكابل"], "a": 0, "why": "Illegal data address: طلبت سجلًا خارج خريطة الجهاز."}, {"q": "لماذا نوصل سلك الأرضي المشترك مع A و B؟", "o": ["لتثبيت فرق الجهد ضمن حدود الـ transceiver وحمايته", "لزيادة السرعة", "لتقليل عدد الأجهزة", "ليس ضروريًا أبدًا"], "a": 0, "why": "بدون مرجع مشترك قد يتجاوز الجهد −7..+12 V فيتلف المنفذ."}, {"q": "السجل يعطي 4998 والدليل يقول ×100. التردد الفعلي:", "o": ["49.98 Hz", "4998 Hz", "499.8 Hz", "0.4998 Hz"], "a": 0, "why": "القيم على الخط أعداد صحيحة؛ التحجيم في الدليل."}], {lesson:'l3', pass:0.8});
+</script>
+</body>
+</html>

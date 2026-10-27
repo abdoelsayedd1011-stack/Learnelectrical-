@@ -22,7 +22,8 @@ export const DEFAULT_PRICES = {
   instr:   { price: 499, was: 749, usd: 39, usd_was: 59, link: "https://learnelectricals.gumroad.com/l/Instrumentation" },
   vfd:     { price: 499, was: 749, usd: 39, usd_was: 59, link: "https://learnelectricals.gumroad.com/l/VFD" },
   srv:     { price: 499, was: 749, usd: 39, usd_was: 59, link: "https://learnelectricals.gumroad.com/l/Servo" },
-  plc:     { price: 749, was: 999, usd: 59, usd_was: 89, link: "https://learnelectricals.gumroad.com/l/PLC" }
+  plc:     { price: 749, was: 999, usd: 59, usd_was: 89, link: "https://learnelectricals.gumroad.com/l/PLC" },
+  iiot:    { price: 599, was: 849, usd: 49, usd_was: 69, link: "" }
 };
 
 // ids match _lib/courses.js (certificates) so one id means one course everywhere.
@@ -35,11 +36,12 @@ export const PRODUCTS = {
   plc:     { title: "الـ PLC",                    dirs: ["plc-lab"] },                         // includes the Siemens / Delta / AB brand pages
   vfd:     { title: "الانفرتر VFD",               dirs: ["vfd-course", "vfd-simulator", "ab1336-simulator", "pf40-lab", "v20-lab", "atv320-lab", "atv630-lab",
                                                          "ms300-lab", "fc51-lab", "vlt2800-lab", "acs580-lab", "g120-lab", "fre800-lab", "ga500-lab", "ig5a-lab", "gd20-lab", "c2000-lab", "frenic-lab"] },
-  srv:     { title: "السيرفو موتور والدرايف",     dirs: ["servo-course", "servo-simulator", "mrje-servo", "sigma7-servo", "kinetix300-servo"] }
+  srv:     { title: "السيرفو موتور والدرايف",     dirs: ["servo-course", "servo-simulator", "mrje-servo", "sigma7-servo", "kinetix300-servo"] },
+  iiot:    { title: "IIoT والشبكات الصناعية",      dirs: ["iiot-lab"] }
 };
 export const PRODUCT_IDS = Object.keys(PRODUCTS);
 // Friendlier names in links (subscribe.html?course=servo) → product id
-export const ALIASES = { "safety-plc": "safety", drawings: "drw", servo: "srv", instrumentation: "instr", inverters: "vfd", vfdc: "vfd" };
+export const ALIASES = { "safety-plc": "safety", drawings: "drw", servo: "srv", instrumentation: "instr", inverters: "vfd", vfdc: "vfd", networks: "iiot", "industrial-networks": "iiot" };
 export function productId(v){
   const s = String(v || "").trim().toLowerCase();
   const id = ALIASES[s] || s;

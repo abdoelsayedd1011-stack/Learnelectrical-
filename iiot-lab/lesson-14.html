@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>تشخيص أعطال الشبكات ومشروع خط إنتاج</title>
+<meta name="description" content="الدرس 14: منهج التشخيص بالطبقات، عدّة الأدوات (Wireshark و PRONETA و ProfiTrace وراسم الإشارة)، عشر حالات شائعة، مشروع خط تعبئة بثلاثة أعطال مخفية، والامتحان النهائي.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="iiot.css?v=20261027i1">
+<script src="iiot.js?v=20261027i1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">إنترنت الأشياء الصناعي والشبكات · الدرس 14 من 14</p>
+    <h1>تشخيص أعطال الشبكات ومشروع خط إنتاج</h1>
+    <p>الدرس الأخير: منهج منظم للعثور على العطل في أي شبكة صناعية، عشر حالات حقيقية، ثم مشروع خط كامل تصلحه بنفسك، والامتحان النهائي.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="net.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>منهج التشخيص: من الأسفل إلى الأعلى</h2>
+<p>لا تخمّن. اسلك الطبقات بالترتيب، وفي كل طبقة سؤال واحد وأداة واحدة:</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>الطبقة</th><th>السؤال</th><th>الأداة</th><th>الأعطال الشائعة</th></tr></thead><tbody>
+<tr><td>1 الفيزيائية</td><td>هل هناك إشارة على السلك؟</td><td>مصابيح المنفذ، فاحص كابل، الأوميتر</td><td>كابل مقطوع، موصّل مفكوك، إنهاء ناقص، عكس A/B، أرضي سيئ</td></tr>
+<tr><td>2 الوصلة</td><td>هل يرى المفتاح الجهاز؟</td><td>جدول MAC في المفتاح، LLDP، <code>ip neigh</code></td><td>Duplex غير متطابق، حلقة بلا RSTP/MRP، VLAN خاطئة</td></tr>
+<tr><td>3 الشبكة</td><td>هل يصل IP؟</td><td><code>ping</code>, <code>arp -a</code>, <code>tracert</code></td><td>عنوان مكرر، قناع خاطئ، بوابة ناقصة، جدار ناري</td></tr>
+<tr><td>4 النقل</td><td>هل المنفذ مفتوح؟</td><td><code>telnet ip 502</code>, nmap, Wireshark</td><td>الخدمة متوقفة، منفذ محجوب، نفاد الاتصالات</td></tr>
+<tr><td>7 التطبيق</td><td>هل الجهاز يجيب إجابة صحيحة؟</td><td>عميل Modbus، PRONETA، Wireshark بفلتر البروتوكول</td><td>معرّف وحدة خاطئ، عنوان سجل ±1، GSD ناقص، اسم جهاز مختلف، شهادة منتهية</td></tr></tbody></table></div>
+<div class="box key"><b>نصف الأعطال في الطبقة 1.</b> قبل أي برنامج: المصابيح، ثم الموصّلات، ثم الإنهاء، ثم الجهد على الناقل.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>عُدّة التشخيص</h2>
+<ul><li><b>Wireshark</b> مع منفذ مرآة (SPAN) أو TAP: فلاتر <code>modbus</code>، <code>pn_io</code>، <code>mqtt</code>، <code>opcua</code>، <code>tcp.analysis.retransmission</code>. الإعادات المتكررة = مشكلة فيزيائية أو ازدحام.</li>
+<li><b>PRONETA</b> (Siemens، مجاني): يرسم شبكة PROFINET ويظهر الأسماء والـ IP والأجهزة بلا اسم.</li>
+<li><b>ProfiTrace / فاحص PROFIBUS:</b> يقيس جودة الإشارة لكل محطة؛ ويكشف الإنهاء الناقص فورًا.</li>
+<li><b>راسم الإشارة:</b> على RS-485 و CAN: الحواف يجب أن تكون نظيفة؛ انعكاسات = إنهاء، ضجيج = تأريض أو كابل بجوار قدرة.</li>
+<li><b>MQTT Explorer</b> و <b>UaExpert</b>: لترى بعينك ما ينشره الوسيط وما يقدمه خادم OPC UA.</li>
+<li><b>سجلات الجهاز</b> (Diagnostic buffer في TIA، Module log في Logix) قبل أي شيء آخر: غالبًا تقول السبب نصًّا.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>عشر حالات ستقابلها</h2>
+<ol>
+<li><b>Modbus RTU يقرأ أصفارًا أحيانًا:</b> ضجيج على RS-485 أو إنهاء ناقص أو طول زائد. تحقق من الإنهاء 120 Ω في الطرفين فقط والتأريض من جهة واحدة.</li>
+<li><b>Exception 02 (Illegal data address):</b> فرق العنوان بواحد (40001 = 0) أو السجل غير موجود في هذا الطراز.</li>
+<li><b>PROFIBUS: محطة تسقط عند تشغيل محرك كبير:</b> تداخل كهرومغناطيسي؛ الكابل بجوار كابل القدرة أو درع غير مربوط.</li>
+<li><b>PROFINET: جهاز جديد بلا اتصال بعد الاستبدال:</b> لم يُعطَ <b>اسم الجهاز</b>؛ أو الطوبولوجيا مضبوطة والمنفذ مختلف.</li>
+<li><b>EtherNet/IP: اتصالات تسقط عشوائيًا:</b> Multicast بلا IGMP snooping، أو نفاد CPU البطاقة؛ راجع RPI.</li>
+<li><b>CAN: Bus-off:</b> معدل بت غير متطابق لعقدة واحدة أو إنهاء ناقص؛ قِس 60 Ω بين H و L.</li>
+<li><b>ping ينجح والبروتوكول يفشل:</b> المنفذ محجوب في جدار ناري أو الخدمة غير مفعّلة في الجهاز (مثل تفعيل PUT/GET في S7).</li>
+<li><b>OPC UA: BadCertificateUntrusted:</b> شهادة العميل غير موثوقة في الخادم؛ انقلها إلى المجلد الموثوق.</li>
+<li><b>MQTT يتصل ثم ينقطع فورًا:</b> معرّف عميل مكرر (Client ID) أو Keep-alive قصير جدًا على شبكة بطيئة.</li>
+<li><b>اللوحة تظهر قيمة ثابتة:</b> البوابة متوقفة والرسالة الأخيرة Retained؛ افتقدت heartbeat.</li></ol>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>مشروع الخط الكامل</h2>
+<p>خط تعبئة: PLC Siemens S7-1200 يتحكم في PROFINET I/O وناقل على محوّل تردد Modbus RTU، وحساس ضغط IO-Link، ومحرك سيرفو CANopen. بوابة Node-RED تقرأ من الـ PLC بـ OPC UA وتنشر MQTT إلى الخادم الذي يرسم اللوحة ويحسب OEE.</p>
+<p>في المحاكي ستجد الخط يعمل مع <b>ثلاثة أعطال مخفية</b> في طبقات مختلفة. المطلوب:</p>
+<ol><li>حدد كل عطل بالأداة الصحيحة من الطبقة الصحيحة.</li><li>أصلحه بالإجراء الصحيح من القائمة.</li><li>تحقق من عودة البيانات على اللوحة.</li></ol>
+<p>وهذا هو عمل مهندس الشبكات الصناعية يومًا بيوم: لا تكتب الكود كله، بل تجعل الأجزاء تتكلم وتعرف أين تقف حين تصمت.</p>
+</section>
+<div class="box key"><b>على المحاكي:</b> في تبويب <b>الأعطال</b> شغّل المشروع، واعثر على الأعطال الثلاثة وأصلحها حتى تعود كل المؤشرات خضراء. <a class="btn pri" href="net.html#faults" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
+  <div id="quiz"></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sf">
+  <h2 id="sf"><span class="k">★</span>الامتحان النهائي</h2>
+  <p>12 سؤالًا من الكورس كله. تحتاج إلى <b>80%</b> للحصول على الشهادة.</p>
+  <div id="final"></div>
+</section>
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">المعلومات هنا من المواصفات الرسمية للبروتوكولات (Modbus.org و PROFIBUS &amp; PROFINET International و CiA و ODVA و OPC Foundation و OASIS MQTT) ومن أدلة الشركات المصنّعة. قبل أي تطبيق على شبكة حقيقية ارجع إلى دليل الجهاز وسياسة أمن الشبكة في مصنعك. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l14');
+IL.quiz(document.getElementById('quiz'), [{"q": "أول خطوة في تشخيص أي شبكة:", "o": ["الطبقة الفيزيائية: المصابيح والموصّلات والإنهاء", "إعادة تحميل البرنامج", "تغيير الـ PLC", "الاتصال بالشركة"], "a": 0, "why": "نصف الأعطال هناك."}, {"q": "ping ينجح لكن Modbus TCP يفشل. الأرجح:", "o": ["المنفذ 502 محجوب أو الخدمة غير مفعّلة", "الكابل مقطوع", "عنوان IP خاطئ", "القناع خاطئ"], "a": 0, "why": "الطبقة 3 سليمة، المشكلة في 4 أو 7."}, {"q": "إعادات TCP كثيرة في Wireshark تشير إلى:", "o": ["مشكلة فيزيائية أو ازدحام", "إعداد Modbus خاطئ", "شهادة منتهية", "اسم جهاز مكرر"], "a": 0, "why": "الحزم تضيع في الطريق."}, {"q": "جهاز PROFINET جديد بعد الاستبدال لا يتصل. أول ما تتحقق منه:", "o": ["اسم الجهاز", "لون الكابل", "جهد البطارية", "إصدار Windows"], "a": 0, "why": "PROFINET يعنون بالاسم ثم يعطي IP."}, {"q": "قياس 60 Ω بين CAN_H و CAN_L يعني:", "o": ["الإنهاء سليم (120 Ω في الطرفين)", "قصر", "ناقل مفتوح", "مقاومة واحدة فقط"], "a": 0, "why": "مقاومتان متوازيتان 120 Ω = 60 Ω."}, {"q": "MQTT يتصل ثم ينقطع فورًا مرارًا. السبب المحتمل:", "o": ["معرّف عميل مكرر", "QoS 2", "الموضوع طويل", "الوسيط بلا TLS"], "a": 0, "why": "الوسيط يفصل الاتصال الأقدم بنفس المعرّف."}, {"q": "اللوحة تعرض قيمة ثابتة منذ ساعة. ماذا تتحقق أولًا؟", "o": ["heartbeat البوابة: هل ما زالت تنشر؟", "لون المؤشر", "دقة الشاشة", "حد الإنذار"], "a": 0, "why": "الرسالة الأخيرة Retained تبدو حديثة وهي قديمة."}], {lesson:'l14', pass:0.8});
+IL.quiz(document.getElementById('final'), [{"q": "الفرق الجوهري بين IT و OT:", "o": ["OT تقدّم الإتاحة والحتمية على السرية", "OT أسرع دائمًا", "IT لا تستخدم إيثرنت", "لا فرق"], "a": 0, "why": "الماكينة يجب ألا تتوقف."}, {"q": "جهازان 192.168.1.10/24 و 192.168.2.20/24 موصولان بالمفتاح نفسه بلا راوتر:", "o": ["لا يتواصلان لأنهما في شبكتين مختلفتين", "يتواصلان عاديًا", "يتواصلان بـ Modbus فقط", "يحتاجان VLAN"], "a": 0, "why": "القناع يحدد الشبكة."}, {"q": "RS-485 يحتاج إنهاء 120 Ω:", "o": ["في طرفي الناقل فقط", "في كل جهاز", "في الطرف الأول فقط", "لا يحتاج"], "a": 0, "why": "لمنع الانعكاسات."}, {"q": "Modbus FC3 تقرأ:", "o": ["Holding registers", "Coils", "Discrete inputs", "Input registers"], "a": 0, "why": "FC4 للـ Input registers."}, {"q": "منفذ Modbus TCP:", "o": ["502", "102", "44818", "1883"], "a": 0, "why": "102 لـ S7، 44818 لـ EtherNet/IP، 1883 لـ MQTT."}, {"q": "ملف GSD في PROFIBUS/PROFINET يصف:", "o": ["الجهاز للأداة الهندسية", "برنامج الـ PLC", "الكابل", "المستخدم"], "a": 0, "why": "GSDML للـ PROFINET."}, {"q": "PROFINET يعنون الأجهزة أولًا بـ:", "o": ["اسم الجهاز", "عنوان MAC", "رقم المحطة", "الرقم التسلسلي"], "a": 0, "why": "ثم يعطيها IP من المتحكم."}, {"q": "في CAN يفوز بالتحكيم الإطار:", "o": ["ذو المعرّف الأصغر", "ذو المعرّف الأكبر", "الأطول", "الأحدث"], "a": 0, "why": "البت السائد 0 يفوز."}, {"q": "OPC UA يتميز عن Modbus بأنه:", "o": ["يحمل المعلومات مع نموذجها ووحداتها وأمنها", "أسرع بالضرورة", "يعمل على RS-485", "لا يحتاج شهادات"], "a": 0, "why": "نموذج معلومات + أمان مدمج."}, {"q": "في MQTT، الوسيط (Broker) هو:", "o": ["الخادم الذي يوزّع الرسائل بين الناشرين والمشتركين", "الحساس", "الـ PLC", "الكابل"], "a": 0, "why": "نموذج نشر/اشتراك."}, {"q": "OEE لماكينة A=90%، P=80%، Q=95%:", "o": ["68.4%", "88.3%", "265%", "72%"], "a": 0, "why": "0.9 × 0.8 × 0.95."}, {"q": "المنهج الصحيح في التشخيص:", "o": ["من الطبقة الفيزيائية صعودًا، سؤال واحد وأداة واحدة لكل طبقة", "من التطبيق نزولًا", "إعادة التشغيل أولًا", "استبدال الأجزاء بالتتابع"], "a": 0, "why": "نصف الأعطال في الطبقة 1."}], {lesson:'l14', task:'final', pass:0.8, shuffle:true, onDone:(n,t,ok)=>{ if (ok) IL.store.set('finalScore', Math.round(n/t*100)); }});
+</script>
+</body>
+</html>
