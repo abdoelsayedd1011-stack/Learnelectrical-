@@ -1748,12 +1748,13 @@ function benchLs(d, ctx){
 }
 function benchLamp(d, ctx){
   const c = colOf(d.cfg.color), on = !!ctx.en, burnt = d.st.burnt, id = ++UID;
-  let s = cellHead(d, d.name || (d.cfg.v + 'V'), CW);
+  let s = cellHead(d, d.name || (d.cfg.v + 'V'), CW) + '<!--dh-->';
   s += `<defs><radialGradient id="ll${id}" cx=".4" cy=".35" r=".75"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="${c.lens}"/><stop offset="1" stop-color="${c.b}"/></radialGradient></defs>`;
   s += `<circle cx="85" cy="58" r="33" fill="#c9cdd0" stroke="#7d8388"/><circle cx="85" cy="58" r="33" fill="none" stroke="#5f666b" stroke-width="2" stroke-dasharray="2 3"/>`;
   s += `<g class="${on ? 'lit' : ''}" style="--glow:${c.lens}"><circle cx="85" cy="58" r="24" fill="${on ? `url(#ll${id})` : c.off}" stroke="#333"/></g>`;
   if (!on) s += `<ellipse cx="78" cy="50" rx="8" ry="5" fill="rgba(255,255,255,.22)"/>`;
   if (burnt) s += `<path d="M70 43L100 73M100 43L70 73" stroke="#111" stroke-width="3"/><text class="ar" x="85" y="102" font-size="10" text-anchor="middle" fill="var(--bad)">burned out</text>`;
+  s += '<!--/dh-->';
   const x = 85, y0 = 106;
   s += `<rect x="${x-22}" y="${y0}" width="44" height="84" rx="4" fill="#efeee9" stroke="#8c8f8a"/><text x="${x}" y="${y0-4}" font-size="12" text-anchor="middle" font-weight="700" fill="var(--ink)">X1</text><text x="${x}" y="${y0+100}" font-size="12" text-anchor="middle" font-weight="700" fill="var(--ink)">X2</text>`;
   s += `<circle cx="${x}" cy="${y0+42}" r="9" fill="none" stroke="${on ? GOOD : '#5d656b'}" stroke-width="1.8"/><path d="M${x-6.4} ${y0+35.6}l12.8 12.8M${x+6.4} ${y0+35.6}l-12.8 12.8" stroke="${on ? GOOD : '#5d656b'}" stroke-width="1.8"/>`;
@@ -2675,7 +2676,7 @@ const SKIN = CL.skin = (function(){
     });
     return out;
   }
-  const HYB = {pb:100, estop:100, sel:100, ls:100}; let HCID = 0;
+  const HYB = {pb:100, estop:100, sel:100, ls:100, lamp:100}; let HCID = 0;
   function apply(d, ctx, r){
     if (mode() !== 'photo' || !r || !r.terms) return r;
     if (HYB[d.type] && r.svg.indexOf('<!--dh-->') > -1){
@@ -2684,7 +2685,7 @@ const SKIN = CL.skin = (function(){
       if (!hit2 || hit2[0] !== hw) return r;
       const cid = 'hc' + (++HCID), keepS = /<!--dh-->([\s\S]*?)<!--\/dh-->/.exec(r.svg);
       const badges = keepS ? (keepS[1].match(/<rect class="bpin-badge"[^>]*\/>(<text[^>]*>[^<]*<\/text>)?/g) || []).join('') : '';
-      const heads = keepS ? (keepS[1].match(/<text class="bd-id"[\s\S]*?<\/text>/g) || []).join('') : '';
+      const heads = keepS ? (keepS[1].match(/<text class="(bd-id|ar)"[\s\S]*?<\/text>/g) || []).join('') : '';
       const head = `<clipPath id="${cid}"><rect x="0" y="20" width="${hit2[0]}" height="${HYB[d.type] - 20}"/></clipPath><g clip-path="url(#${cid})"><g class="bd-phw" data-ph="${esc(d.id)}" data-key="${hv.key}" data-w="${hit2[0]}" data-h="${hit2[1]}"></g></g>`;
       return {svg:r.svg.replace(/<!--dh-->[\s\S]*?<!--\/dh-->/, heads + head + badges), hit:r.hit, terms:r.terms, photo:hv.key};
     }
