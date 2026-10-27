@@ -5,7 +5,7 @@ const $ = IL.$, $$ = IL.$$, esc = IL.esc;
 IL.hubTheme();
 
 const TABS = [
-  {id:'ip', t:'IP', l:'l2', h:'عناوين IP والشبكة الفرعية', goal:'اجعل الأجهزة الأربعة في شبكة فرعية واحدة بلا عنوان مكرر، ثم نفّذ ping من الحاسوب المحمول إلى الثلاثة الأخرى بنجاح.'},
+  {id:'ip', t:'IP', l:'l2', h:'PLC وشاشة HMI وحاسوبك: ضبط عناوين IP', goal:'اضبط عنوان الحاسوب المحمول يدويًا في الشبكة الفرعية نفسها للـ PLC والـ HMI، ثم نفّذ ping بنجاح و Go online من TIA Portal.'},
   {id:'modbus', t:'Modbus RTU', l:'l3', h:'Modbus RTU على RS-485', goal:'اضبط الإنهاء وإعدادات المنفذ، ثم اقرأ بنجاح ثلاث مرات من جهازين مختلفين على الأقل.'},
   {id:'mbtcp', t:'Modbus TCP', l:'l4', h:'عميل Modbus TCP', goal:'اقرأ سجل الحرارة (العنوان 0) من الـ PLC، ثم اكتب نقطة ضبط جديدة في السجل 4 بالدالة FC6 واقرأها للتأكد.'},
   {id:'profibus', t:'PROFIBUS', l:'l5', h:'PROFIBUS DP: العناوين والإنهاء و GSD', goal:'اجعل المحطات الأربع تتبادل البيانات (كل المصابيح خضراء): العنوان على القرص يطابق التهيئة، ملف GSD مثبّت، والإنهاء في طرفي الناقل فقط.'},
@@ -47,34 +47,62 @@ const BUILD = {};
 
 /* ---------------- 1. IP ---------------- */
 BUILD.ip = host => {
-  const devs = [
-    {n:'PLC S7-1200', ip:'192.168.1.10', m:'255.255.255.0'},
-    {n:'شاشة HMI', ip:'192.168.1.20', m:'255.255.255.0'},
-    {n:'البوابة (Gateway)', ip:'192.168.2.5', m:'255.255.255.0'},
-    {n:'الحاسوب المحمول', ip:'192.168.1.10', m:'255.255.255.0'}
-  ];
-  host.innerHTML = `<div class="panel"><p>أربعة أجهزة على مفتاح واحد بلا راوتر. حاليًا يوجد <b>عنوان مكرر</b> وجهاز في <b>شبكة فرعية أخرى</b>. عدّل العناوين ثم اختبر.</p>
-  <div class="grid2">${devs.map((d, i) => `<div class="dev"><h3><i class="led" id="ipl${i}"></i>${esc(d.n)}</h3><label>IP <input id="ipa${i}" value="${d.ip}"></label><label>Mask <input id="ipm${i}" value="${d.m}"></label></div>`).join('')}</div>
-  <div class="row"><button class="btn pri" id="ipping">ping من الحاسوب المحمول إلى الجميع</button></div><div class="log" id="iplog"><span class="dim">C:\\&gt; _</span></div></div>`;
-  const log = $('#iplog', host);
-  $('#ipping', host).addEventListener('click', () => {
-    log.innerHTML = '';
-    const cfg = devs.map((d, i) => ({n:d.n, ip:ip2n($('#ipa' + i, host).value), m:ip2n($('#ipm' + i, host).value), s:$('#ipa' + i, host).value.trim()}));
-    let ok = 0;
-    if (cfg.some(c => c.ip === null || c.m === null)){ logTo(log, 'عنوان أو قناع غير صالح.', 'bad'); return; }
-    const me = cfg[3];
-    const dup = s => cfg.filter(c => c.s === s).length > 1;
-    for (let i = 0; i < 3; i++){
-      const t = cfg[i];
-      logTo(log, `C:\\> ping ${t.s}`, 'dim');
-      $('#ipl' + i, host).className = 'led';
-      if (dup(t.s) || dup(me.s)){ logTo(log, `Reply from ${t.s}: TTL=64 ... Reply from ${t.s}: TTL=128  (ردّان من جهازين بعنوان واحد: <b>عنوان مكرر</b>)`, 'bad'); $('#ipl' + i, host).className = 'led r'; continue; }
-      if ((t.ip & me.m) !== (me.ip & me.m) || (t.ip & t.m) !== (me.ip & t.m)){ logTo(log, `Request timed out. (الجهاز في شبكة فرعية مختلفة عن ${me.s}: لا يوجد راوتر بينهما)`, 'bad'); $('#ipl' + i, host).className = 'led r'; continue; }
-      logTo(log, `Reply from ${t.s}: bytes=32 time<1ms TTL=64`, 'ok'); $('#ipl' + i, host).className = 'led g'; ok++;
+  /* PLC + HMI + laptop on one switch; the laptop starts on DHCP (no server → 169.254.x.x) and must be given a manual IP in the PLC's subnet */
+  const dev = { plc:{ip:'192.168.0.1', m:'255.255.255.0'}, hmi:{ip:'192.168.0.10', m:'255.255.255.0'}, lap:{auto:true, ip:'', m:'', gw:''} };
+  const APIPA = '169.254.23.7';
+  host.innerHTML = `<div class="panel"><p>شاشة HMI وجهاز PLC موصولان بمفتاح (Switch) ويعملان معًا. تريد أن تصل من <b>حاسوبك المحمول</b> إلى الـ PLC لتحميل البرنامج. الحاسوب على «الحصول على عنوان تلقائيًا» ولا يوجد خادم DHCP في اللوحة، فيعطي نفسه عنوانًا عشوائيًا 169.254.x.x ولا يرى أحدًا. اضبطه يدويًا في <b>الشبكة الفرعية نفسها</b> بعنوان غير مستخدم.</p>
+  <div class="bus"><svg viewBox="0 0 720 250" id="ipsvg">
+    <rect x="285" y="180" width="150" height="46" rx="8" fill="var(--panel)" stroke="var(--accent)" stroke-width="2"/><text x="360" y="200" text-anchor="middle" font-weight="700">Switch</text><text x="360" y="217" text-anchor="middle" font-size="10">غير مُدار · 5 منافذ</text>
+    ${[['plc',90,'PLC S7-1200'],['hmi',360,'HMI KTP700'],['lap',630,'الحاسوب المحمول']].map(([k,x,n]) => `<line id="ipw-${k}" x1="${x}" y1="105" x2="${k==='hmi'?360:(k==='plc'?330:390)}" y2="180" stroke="var(--line)" stroke-width="4"/><circle id="ipd-${k}" cx="${k==='hmi'?360:(k==='plc'?330:390)}" cy="180" r="5" fill="#777"/>
+    <rect x="${x-70}" y="30" width="140" height="75" rx="8" fill="var(--panel)" stroke="currentColor"/><circle id="ipl-${k}" cx="${x-55}" cy="45" r="6" fill="#777"/><text x="${x}" y="52" text-anchor="middle" font-weight="700" font-size="12">${n}</text><text id="ipt-${k}" x="${x}" y="74" text-anchor="middle" font-size="12" font-family="IBM Plex Mono,monospace">—</text><text id="ipm-${k}" x="${x}" y="92" text-anchor="middle" font-size="10" font-family="IBM Plex Mono,monospace">—</text>`).join('')}
+  </svg></div>
+  <div class="grid2" style="margin-top:10px">
+   <div class="dev"><h3>PLC (من TIA Portal · PROFINET interface)</h3><label>IP <input id="ip-plc" value="${dev.plc.ip}"></label><label>Subnet mask <input id="ip-plcm" value="${dev.plc.m}"></label><small class="muted">العنوان مطبوع أيضًا على ملصق داخل اللوحة.</small></div>
+   <div class="dev"><h3>HMI (Control Panel › Network)</h3><label>IP <input id="ip-hmi" value="${dev.hmi.ip}"></label><label>Subnet mask <input id="ip-hmim" value="${dev.hmi.m}"></label></div>
+   <div class="dev" style="grid-column:1/-1"><h3>الحاسوب المحمول: Ethernet › Properties › Internet Protocol Version 4 (TCP/IPv4)</h3>
+    <label><span>Obtain an IP address automatically (DHCP)</span><input type="radio" name="ipmode" id="ip-auto" checked></label>
+    <label><span>Use the following IP address</span><input type="radio" name="ipmode" id="ip-man"></label>
+    <div class="frm" id="ip-manf" style="opacity:.45"><label>IP address<input id="ip-lap" placeholder="192.168.0.?" disabled></label><label>Subnet mask<input id="ip-lapm" placeholder="255.255.255.0" disabled></label><label>Default gateway<input id="ip-lapg" placeholder="(اتركه فارغًا)" disabled></label></div>
+    <div class="row"><button class="btn pri" id="ip-ok">OK (تطبيق)</button><button class="btn" id="ip-ping">ping الـ PLC والـ HMI</button><button class="btn" id="ip-online">TIA Portal: Go online</button><button class="btn" id="ip-demo">▶ شاهد الحل خطوة بخطوة</button></div></div>
+  </div><div class="log" id="iplog"><span class="dim">C:\\&gt; _</span></div></div>`;
+  const log = $('#iplog', host), $i = id => $('#' + id, host);
+  const lapIp = () => dev.lap.auto ? APIPA : dev.lap.ip, lapM = () => dev.lap.auto ? '255.255.0.0' : dev.lap.m;
+  function paint(){
+    const cfg = {plc:[$i('ip-plc').value, $i('ip-plcm').value], hmi:[$i('ip-hmi').value, $i('ip-hmim').value], lap:[lapIp(), lapM()]};
+    for (const k in cfg){ $i('ipt-' + k).textContent = cfg[k][0] || '—'; $i('ipm-' + k).textContent = cfg[k][1] || '—'; $i('ipw-' + k).setAttribute('stroke', 'var(--good)'); $i('ipd-' + k).setAttribute('fill', '#2ecc40'); }
+    $i('ipl-lap').setAttribute('fill', dev.lap.auto ? '#ffc42d' : '#777');
+    return cfg;
+  }
+  $i('ip-auto').addEventListener('change', () => { $i('ip-manf').style.opacity = .45; ['ip-lap', 'ip-lapm', 'ip-lapg'].forEach(x => $i(x).disabled = true); });
+  $i('ip-man').addEventListener('change', () => { $i('ip-manf').style.opacity = 1; ['ip-lap', 'ip-lapm', 'ip-lapg'].forEach(x => $i(x).disabled = false); });
+  $i('ip-ok').addEventListener('click', () => { dev.lap.auto = $i('ip-auto').checked; dev.lap.ip = $i('ip-lap').value.trim(); dev.lap.m = $i('ip-lapm').value.trim(); dev.lap.gw = $i('ip-lapg').value.trim(); if (!dev.lap.auto && (ip2n(dev.lap.ip) === null || ip2n(dev.lap.m) === null)){ logTo(log, 'Windows: عنوان أو قناع غير صالح.', 'bad'); return; } paint(); logTo(log, dev.lap.auto ? `ipconfig: Autoconfiguration IPv4 Address ${APIPA} (لا يوجد DHCP؛ عنوان APIPA لا يفيد)` : `ipconfig: IPv4 Address ${dev.lap.ip}  Subnet Mask ${dev.lap.m}`, dev.lap.auto ? 'bad' : 'ok'); });
+  let pingOk = false, online = false;
+  function reach(a, b){ const A = ip2n(a[0]), B = ip2n(b[0]), MA = ip2n(a[1]), MB = ip2n(b[1]); if ([A, B, MA, MB].some(x => x === null)) return 'bad'; if (A === B) return 'dup'; if ((A & MA) !== (B & MA) || (A & MB) !== (B & MB)) return 'subnet'; return 'ok'; }
+  $i('ip-ping').addEventListener('click', () => {
+    const cfg = paint(); let ok = 0;
+    for (const k of ['plc', 'hmi']){
+      logTo(log, `C:\\> ping ${cfg[k][0]}`, 'dim'); const r = reach(cfg.lap, cfg[k]);
+      if (r === 'ok'){ logTo(log, `Reply from ${cfg[k][0]}: bytes=32 time<1ms TTL=${k === 'plc' ? 30 : 64}`, 'ok'); $i('ipl-' + k).setAttribute('fill', '#2ecc40'); ok++; }
+      else if (r === 'dup'){ logTo(log, `Windows: IP address conflict with ${cfg[k][0]} (عنوان مكرر: اختر عنوانًا آخر في الشبكة نفسها)`, 'bad'); $i('ipl-' + k).setAttribute('fill', '#ff3b26'); }
+      else { logTo(log, `Request timed out. (${cfg.lap[0]}/${cfg.lap[1]} ليس في شبكة ${cfg[k][0]}/${cfg[k][1]})`, 'bad'); $i('ipl-' + k).setAttribute('fill', '#ff3b26'); }
     }
-    $('#ipl3', host).className = dup(me.s) ? 'led r' : 'led g';
-    if (ok === 3){ logTo(log, 'الأجهزة الأربعة في شبكة واحدة بلا تكرار ✓', 'ok'); win('ip'); }
+    pingOk = ok === 2; if (pingOk) logTo(log, 'الحاسوب يرى الـ PLC والـ HMI ✓ الآن Go online.', 'ok'); check();
   });
+  $i('ip-online').addEventListener('click', () => { const cfg = paint(); const r = reach(cfg.lap, cfg.plc); logTo(log, 'TIA Portal › Go online › Accessible devices (PN/IE, Realtek PCIe GbE):', 'dim'); if (r !== 'ok'){ logTo(log, dev.lap.auto ? '  لا أجهزة. الحاسوب على DHCP بعنوان 169.254: اضبط عنوانًا يدويًا أولًا.' : '  لا أجهزة في هذه الشبكة الفرعية. راجع عنوان الحاسوب والقناع.', 'bad'); return; } logTo(log, `  plc_1  S7-1200  ${cfg.plc[0]}  MAC 28:63:36:xx  → Go online ✓ (RUN)`, 'ok'); online = true; check(); });
+  function check(){ if (pingOk && online) win('ip', 'الحاسوب في شبكة الـ PLC والـ HMI الفرعية، ping ناجح و Go online ✓'); }
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  async function type(id, v){ const el = $i(id); el.value = ''; for (const ch of v){ el.value += ch; await sleep(55); } }
+  let demo = false;
+  $i('ip-demo').addEventListener('click', async () => {
+    if (demo) return; demo = true; log.innerHTML = '';
+    logTo(log, '1) اقرأ عنوان الـ PLC من TIA أو من الملصق: 192.168.0.1 / 255.255.255.0', 'dim'); await sleep(1400);
+    logTo(log, '2) في الحاسوب: Ethernet › Properties › IPv4 › Use the following IP address', 'dim'); $i('ip-man').checked = true; $i('ip-man').dispatchEvent(new Event('change')); await sleep(900);
+    logTo(log, '3) عنوان في الشبكة نفسها وغير مستخدم: 192.168.0.100، القناع نفسه، والبوابة فارغة', 'dim');
+    await type('ip-lap', '192.168.0.100'); await sleep(300); await type('ip-lapm', '255.255.255.0'); await sleep(500); $i('ip-ok').click(); await sleep(1200);
+    logTo(log, '4) ping للتأكد', 'dim'); await sleep(500); $i('ip-ping').click(); await sleep(1500);
+    logTo(log, '5) Go online من TIA Portal', 'dim'); await sleep(500); $i('ip-online').click(); demo = false;
+  });
+  paint();
 };
 
 /* ---------------- 2. Modbus RTU ---------------- */
