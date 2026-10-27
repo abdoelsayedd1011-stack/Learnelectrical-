@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>محاكي السيفتي: Pluto B20 و RT9 و Vital 1</title>
-<meta name="description" content="محاكي أمان تفاعلي بصور الأجهزة الحقيقية: ABB Pluto B20 و RT9 و Vital 1. دوس الطوارئ وافتح البوابة واعمل ريست، والحم كونتاكتور واعمل قصر وشوف اللمبات وأكواد Er.">
+<title>محاكي السيفتي: Pluto B20 و RT9 و PNOZ و Vital 1</title>
+<meta name="description" content="محاكي أمان تفاعلي بصور الأجهزة الحقيقية: ABB Pluto B20 و RT9 و Pilz PNOZ X3P و Vital 1. دوس الطوارئ وافتح البوابة واعمل ريست، والحم كونتاكتور واعمل قصر وشوف اللمبات وأكواد Er.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
-<link rel="stylesheet" href="safety.css?v=20261027sf">
-<script src="safety.js?v=20261027sf"></script>
+<link rel="stylesheet" href="safety.css?v=20261027s2">
+<script src="safety.js?v=20261027s2"></script>
 <style>
 .tabs{display:flex;gap:8px;flex-wrap:wrap}
 .tabs button{flex:1 1 120px;min-height:48px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:600 1rem var(--font-display);cursor:pointer;color:var(--ink)}
@@ -18,7 +18,8 @@
 @media (max-width:760px){.bench{grid-template-columns:minmax(0,1fr)}}
 .devwrap{position:relative;margin:0 auto;width:100%;user-select:none;-webkit-user-select:none}
 .devwrap img{display:block;width:100%;height:auto;border-radius:10px}
-.devwrap.pl{max-width:300px}.devwrap.rt{max-width:150px}.devwrap.vi{max-width:130px}
+.devwrap.pl{max-width:300px}.devwrap.rt{max-width:150px}.devwrap.vi{max-width:130px}.devwrap.pz{max-width:240px}
+.led.sq{border-radius:3px}
 .led{position:absolute;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;opacity:0;transition:opacity .08s}
 .led.on{opacity:1}
 .led.g{background:radial-gradient(circle at 40% 35%,#eaffd6 0,#62ff4a 35%,#13a81a 70%,#0b5e10 100%);box-shadow:0 0 10px 3px rgba(90,255,80,.75)}
@@ -76,8 +77,8 @@
 <header class="top">
   <div>
     <p class="kick">السيفتي PLC · المحاكي</p>
-    <h1>محاكي الأمان: Pluto B20 و RT9 و Vital 1</h1>
-    <p>نفس الماكينة بتلات طرق حماية. دوس الطوارئ، افتح البوابة، اعمل ريست، وبعدين اعمل الأعطال بإيدك وشوف الجهاز بيعمل إيه.</p>
+    <h1>محاكي الأمان: Pluto B20 و RT9 و PNOZ X3P و Vital 1</h1>
+    <p>نفس الماكينة بأربع طرق حماية. دوس الطوارئ، افتح البوابة، اعمل ريست، وبعدين اعمل الأعطال بإيدك وشوف الجهاز بيعمل إيه.</p>
   </div>
   <div class="chips"><a class="btn" href="index.html">‹ الدروس</a></div>
 </header>
@@ -85,6 +86,7 @@
 <nav class="tabs" role="tablist" aria-label="الجهاز">
   <button type="button" role="tab" data-tab="pluto" aria-selected="true">Pluto B20</button>
   <button type="button" role="tab" data-tab="rt9" aria-selected="false">RT9</button>
+  <button type="button" role="tab" data-tab="pnoz" aria-selected="false">PNOZ X3P</button>
   <button type="button" role="tab" data-tab="vital" aria-selected="false">Vital 1</button>
 </nav>
 
@@ -158,6 +160,33 @@ function rt9Step(){
   if (!pow) R.out = false;
   return {pow, ch1, ch2, fb, q1:R.out, q2:R.out};
 }
+/* ---------------- Pilz PNOZ X3P ----------------
+   E-stop dual channel with cross-short detection: NC 1 on S11-S12, NC 2 on S21-S22.
+   Monitored reset: RESET + K5/K6 feedback NC on S33-S34 (S13-S14 open). Automatic: S13-S14 closed (through the feedback). */
+const Z = {out:false, prevReset:false, closedAt:0, tripped:false, armed:true, c1o:false, c2o:false};
+function pnozStep(){
+  const now = performance.now();
+  if (W.f.cross) Z.tripped = true;                        // channels shorted together: internal electronic fuse trips
+  if (Z.tripped && !W.f.cross && W.supply < 19.2) Z.tripped = false; // cleared by a power cycle once the short is gone
+  const pow = W.supply >= 20.4 && !Z.tripped;             // 24V −15%
+  const ch1 = pow && !W.estop, ch2 = pow && !W.estop && !W.f.cut2;
+  const fb = !K.k1 && !K.k2;
+  if (!ch1) Z.c1o = true; if (!ch2) Z.c2o = true;
+  if (Z.out && (!ch1 || !ch2)){ Z.out = false; Z.armed = false; Z.c1o = !ch1; Z.c2o = !ch2; }
+  if (!Z.armed && Z.c1o && Z.c2o && ch1 && ch2) Z.armed = true;
+  const inOk = ch1 && ch2 && Z.armed;
+  if (!inOk) Z.closedAt = 0; else if (!Z.closedAt) Z.closedAt = now;
+  const waited = Z.closedAt && now - Z.closedAt >= 300;
+  const rise = W.reset && !Z.prevReset; Z.prevReset = W.reset;
+  if (!Z.out && inOk && fb){
+    if (W.f.auto && waited){ Z.out = true; see('pz-auto'); }
+    else if (!W.f.auto && rise && waited){ Z.out = true; see('pz-reset'); }
+  }
+  if (!Z.out && rise && !fb) see('pz-weld');
+  if (!pow) Z.out = false;
+  if (Z.tripped) see('pz-cross');
+  return {pow, ch1, ch2, fb, q1:Z.out, q2:Z.out, y32:ch1 && ch2, inOk, oneLock: ch1 && ch2 && !Z.armed};
+}
 /* ---------------- Vital 1 ---------------- */
 const V = {out:false, prevReset:false};
 function vitalStep(){
@@ -221,6 +250,8 @@ const FACE = {
   pluto:{img:'img/pluto-b20-off.jpg', w:569, h:1086, cls:'pl', cap:'ABB Pluto B20 v2 · محطة 0',
     leds:{I0:[120,509],I1:[156,483],I2:[188,508],I3:[226,483],I4:[259,508],I5:[296,508],I6:[327,483],I7:[363,508],IQ10:[397,483],IQ11:[433,506],Q2:[465,482],Q3:[501,507],
           IQ12:[54,735],IQ13:[89,759],IQ14:[122,734],IQ15:[158,759],IQ16:[190,734],IQ17:[227,759],Q0:[364,734],Q1:[500,733]}},
+  pnoz:{img:'img/pnoz-x3p.jpg', w:849, h:1629, cls:'pz', cap:'Pilz PNOZ X3P 24V AC/DC',
+    leds:{POWER:[182,745],CH1:[182,835],CH2:[182,925]}},
   rt9:{img:'img/rt9-off.jpg', w:572, h:1854, cls:'rt', cap:'ABB RT9 24VDC',
     leds:{In1:[194,778],L1:[194,864],On:[192,953],L2:[193,1039],In2:[194,1125]}},
   vital:{img:'img/vital1-off.jpg', w:269, h:921, cls:'vi', cap:'ABB Vital 1 24VDC',
@@ -230,10 +261,10 @@ function buildFace(){
   const F = FACE[dev], host = $('#dev');
   host.className = 'devwrap ' + F.cls;
   let h = `<img src="${F.img}" width="${F.w}" height="${F.h}" alt="${esc(F.cap)}">`;
-  const big = dev === 'pluto' ? [4.6, 1.6] : dev === 'rt9' ? [7.6, 2.4] : [6.4, 1.9];
+  const big = dev === 'pluto' ? [4.6, 1.6] : dev === 'rt9' ? [7.6, 2.4] : dev === 'pnoz' ? [5.8, 2.2] : [6.4, 1.9];
   Object.keys(F.leds).forEach(k => { const [x, y] = F.leds[k], p = pct(x, y, F.w, F.h);
     const col = dev === 'pluto' ? (k === 'Q0' || k === 'Q1' || k === 'Q2' || k === 'Q3' ? 'r' : 'y') : 'g';
-    h += `<i class="led ${col}" data-led="${k}" style="left:${p.x}%;top:${p.y}%;width:${big[0]}%;height:${big[1]}%"></i>`; });
+    h += `<i class="led ${col}${dev === 'pnoz' ? ' sq' : ''}" data-led="${k}" style="left:${p.x}%;top:${p.y}%;width:${big[0]}%;height:${big[1]}%"></i>`; });
   if (dev === 'pluto'){
     h += `<div class="disp" id="disp" style="left:60.6%;top:52.95%;width:30.2%;height:6.45%"><span></span><span></span></div>`;
     h += `<button type="button" class="kbtn" id="kbtn" style="left:22.85%;top:57.27%;width:8%;aspect-ratio:1" aria-label="زرار K"></button>`;
@@ -247,7 +278,7 @@ function led(k, on, blink){ const e = document.querySelector(`[data-led="${k}"]`
 
 /* ---------------- machine controls ---------------- */
 function ctlHtml(){
-  const gate = dev !== 'rt9';
+  const gate = dev !== 'rt9' && dev !== 'pnoz';
   return `<button type="button" class="btn estop" data-c="estop" aria-pressed="${W.estop}"><i></i>${W.estop ? 'الطوارئ متداس' : 'دوس الطوارئ'}<small>${W.estop ? 'دوس تاني عشان تلفّه' : '2 × NC'}</small></button>`
     + (gate ? `<button type="button" class="btn" data-c="gate" aria-pressed="${W.gate}">${W.gate ? 'البوابة مفتوحة' : 'افتح البوابة'}<small>${dev === 'vital' ? 'Adam 1 + Eva' : 'Adam + Eva على I2'}</small></button>` : '')
     + (dev === 'vital' ? `<button type="button" class="btn" data-c="gate2" aria-pressed="${W.gate2}">${W.gate2 ? 'الباب التاني مفتوح' : 'افتح الباب التاني'}<small>Adam 2 + Eva</small></button>` : '')
@@ -255,6 +286,7 @@ function ctlHtml(){
     + `<button type="button" class="btn go" data-c="power" aria-pressed="${W.supply >= 19.2}">${W.supply >= 19.2 ? 'الباور 24V' : 'الباور ' + W.supply + 'V'}<small>اضغط عشان تغيّر الجهد</small></button>`;
 }
 const FAULTS = {
+  pnoz:[['weld','الحم K5','الكونتاكتور K5 يفضل لازق'],['cross','القناتين لزقوا في بعض','قصر بين S12 و S22 (cross-short)'],['cut2','قطع سلك القناة 2','S22 مقطوع'],['auto','اربط S13-S14','ريست أوتوماتيك']],
   pluto:[['weld','الحم K1','الكونتاكتور K1 يفضل لازق'],['short24','سلك القناة 1 لمس 24V','خط IQ10 لمس +24V'],['cross','القناتين لزقوا في بعض','قصر بين I0 و I1'],['cut2','قطع سلك القناة 2','سلك I1 اتقطع'],['noprog','امسح البرنامج','كأن الجهاز جديد']],
   rt9:[['weld','الحم K1','الكونتاكتور K1 يفضل لازق'],['short24','القناة 1 لمست 24V','S14 لازق في S13'],['cut2','قطع سلك القناة 2','S34 مقطوع']],
   vital:[['weld','الحم K1','الكونتاكتور K1 يفضل لازق'],['bypass','قصر على حساس','حد عمل جمبر على Adam 2'],['s1Wrong','وصّل S1 مع B1','والحساسات 3 (فردي)'],['cutLoop','قطع سلك اللوب','بين Adam 1 و Adam 2']]
@@ -271,6 +303,10 @@ function wireHtml(){
     <li>مراقبة الكونتاكتورات: <code>+24V</code> ← NC من K1 ← NC من K2 ← <code>I4</code>.</li>
     <li>الريست: <code>+24V</code> ← زرار RESET ← <code>I5</code>، ولمبته على <code>IQ16</code>.</li>
     <li>الخرج: <code>0L–Q0</code> ← كويل K1، و <code>1L–Q1</code> ← كويل K2. الموتور على K1 و K2 توالي.</li></ul>`;
+  if (dev === 'pnoz') return `<ul><li>الباور: <code>A1</code> و <code>A2</code> (24V AC/DC)، و <code>⏚</code> على الأرضي.</li>
+    <li>الطوارئ بقناتين بكشف القصر: NC 11-12 على <code>S11-S12</code>، و NC 21-22 على <code>S21-S22</code>.</li>
+    <li>${W.f.auto ? '<b>ريست أوتوماتيك:</b> NC من K5 و K6 توالي على <code>S13-S14</code>، و <code>S33-S34</code> فاضي.' : '<b>ريست مراقَب:</b> NC من K5 و K6 توالي مع زرار RESET على <code>S33-S34</code>، و <code>S13-S14</code> فاضي.'}</li>
+    <li>الخرج: <code>13-14</code> ← K5، و <code>23-24</code> ← K6، و <code>33-34</code> فاضي. <code>41-42</code> و <code>Y32</code> للـ PLC.</li></ul>`;
   if (dev === 'rt9') return `<ul><li>الباور: <code>+A1</code> = 24V و <code>-A2</code> = 0V.</li>
     <li>القناة 1: <code>S13</code> ← NC 11-12 ← <code>S14</code>. القناة 2: <code>S13</code> ← NC 21-22 ← <code>S34</code> (طريقة 2، Cat. 3).</li>
     <li>الريست المراقَب: <code>+A1</code> ← NC من K1 ← NC من K2 ← زرار RESET ← <code>X1</code>. و <code>X4</code> فاضي.</li>
@@ -295,8 +331,8 @@ function sceneSvg(st){
   const kc = c => c ? '#2f9e44' : '#7d8388';
   return `<svg viewBox="0 0 520 150" role="img" aria-label="الكونتاكتورات والموتور">
    <g font-family="IBM Plex Mono,monospace" font-size="14" fill="currentColor">
-   <rect x="20" y="30" width="90" height="90" rx="10" fill="var(--panel)" stroke="${kc(k1)}" stroke-width="4"/><text x="65" y="70" text-anchor="middle" font-weight="700">K1</text><text x="65" y="95" text-anchor="middle" font-size="12">${k1 ? 'ON' : 'OFF'}${W.f.weld ? ' ⚠' : ''}</text>
-   <rect x="140" y="30" width="90" height="90" rx="10" fill="var(--panel)" stroke="${kc(k2)}" stroke-width="4"/><text x="185" y="70" text-anchor="middle" font-weight="700">K2</text><text x="185" y="95" text-anchor="middle" font-size="12">${k2 ? 'ON' : 'OFF'}</text>
+   <rect x="20" y="30" width="90" height="90" rx="10" fill="var(--panel)" stroke="${kc(k1)}" stroke-width="4"/><text x="65" y="70" text-anchor="middle" font-weight="700">${dev === 'pnoz' ? 'K5' : 'K1'}</text><text x="65" y="95" text-anchor="middle" font-size="12">${k1 ? 'ON' : 'OFF'}${W.f.weld ? ' ⚠' : ''}</text>
+   <rect x="140" y="30" width="90" height="90" rx="10" fill="var(--panel)" stroke="${kc(k2)}" stroke-width="4"/><text x="185" y="70" text-anchor="middle" font-weight="700">${dev === 'pnoz' ? 'K6' : 'K2'}</text><text x="185" y="95" text-anchor="middle" font-size="12">${k2 ? 'ON' : 'OFF'}</text>
    <path d="M110 75H140M230 75H300" stroke="${on ? '#2f9e44' : '#7d8388'}" stroke-width="4"/>
    <g class="motor${on ? ' run' : ''}"><rect x="300" y="35" width="120" height="80" rx="12" fill="#2f6fb5"/><g transform="translate(450 75)"><circle r="30" fill="none" stroke="currentColor" stroke-width="3"/><g class="rot"><path d="M0 -26V26M-26 0H26" stroke="#f0a03c" stroke-width="5"/></g></g>
    <text x="360" y="80" text-anchor="middle" fill="#fff" font-weight="700">M</text></g>
@@ -306,6 +342,7 @@ function sceneSvg(st){
 
 /* ---------------- program view (Pluto) ---------------- */
 function progHtml(s){
+  if (dev === 'pnoz') return '<p>الـ PNOZ مالوش برنامج: نوع التوصيل والريست بيتحدد بالأسلاك والجمبرات. في الريست المراقَب لازم الدخل يفضل مقفول 300 مللي ثانية، وبعدين الريلاي يشتغل لما زرار RESET يتقفل.</p>';
   if (dev !== 'pluto') return dev === 'rt9'
     ? '<p>الـ RT9 مالوش برنامج: كل حاجة بالتوصيل. القناتين لازم يبقوا مقفولين، وبعدين الريست يشتغل لما الزرار يتساب، وبشرط إن NC بتوع K1 و K2 مقفولين.</p>'
     : '<p>الـ Vital 1 مالوش برنامج: الإعداد بالجمبرات. <code>S1</code> فاضي لأن الحساسات فردي، و <code>X4</code> فاضي عشان الريست يدوي.</p>';
@@ -327,6 +364,7 @@ function progHtml(s){
 
 /* ---------------- tasks ---------------- */
 const TASKS = {
+  pnoz:[['pz-reset','اعمل ريست وشغّل الماكينة (CH.1 و CH.2 ينوّروا)'],['pz-weld','الحم K5 وحاول تعمل ريست بعد الطوارئ'],['pz-cross','اعمل قصر بين القناتين وشوف POWER بتطفى، وبعدين شيله واطفي وشغّل'],['pz-auto','اربط S13-S14 وشوف الريلاي بيشتغل لوحده لما الطوارئ يرجع']],
   pluto:[['pl-reset','اعمل ريست وشغّل الماكينة (لمبة الريست بترمش لما الجهاز جاهز)'],['pl-k','دوس زرار K على الجهاز'],['pl-weld','الحم K1، ودوس الطوارئ، ورجّعه وحاول تعمل ريست (مش هيقبل)'],['pl-er12','اعمل قصر بين القناتين وشوف Er12'],['pl-er10','خلّي القناة 1 تلمس 24V وشوف Er10'],['pl-er20','امسح البرنامج وشوف Er20، وبعدين حمّله'],['pl-er15','نزّل الباور تحت 18V وشوف Er15، وارجعه وامسحه بزرار K'],['pl-tcf','اقطع سلك القناة 2، ورجّعه، وحاول تعمل ريست (TCfault)']],
   rt9:[['rt9-reset','اعمل ريست وشغّل الماكينة'],['rt9-stop','دوس الطوارئ وشوف In1 و In2 والخرجين بيطفوا'],['rt9-weld','الحم K1 وحاول تعمل ريست بعد الطوارئ'],['rt9-one','خلّي القناة 1 تلمس 24V، ودوس الطوارئ ورجّعه، وحاول تعمل ريست']],
   vital:[['vi-reset','اعمل ريست وشغّل الماكينة'],['vi-open','افتح البوابة وشوف لمبة R بتطفى'],['vi-s1','وصّل S1 مع B1 غلط وشوف R'],['vi-bypass','اعمل قصر على حساس وشوف R بترمش'],['vi-weld','الحم K1 وحاول تعمل ريست']]
@@ -335,6 +373,7 @@ function renderTasks(){
   $('#tasks').innerHTML = TASKS[dev].map(t => `<li class="${seen.has(t[0]) ? 'ok' : ''}">${esc(t[1])}</li>`).join('');
   const n = k => TASKS[k].filter(t => seen.has(t[0])).length;
   if (n('rt9') >= 3) IL.mark('l3', 'sim');
+  if (n('pnoz') >= 3) IL.mark('l9', 'sim');
   if (n('vital') >= 3) IL.mark('l4', 'sim');
   if (seen.has('pl-reset') && seen.has('pl-weld')) IL.mark('l7', 'sim');
   if (['pl-er12','pl-er10','pl-er20','pl-er15'].filter(k => seen.has(k)).length >= 3) IL.mark('l8', 'sim');
@@ -355,6 +394,16 @@ function tick(){
     else if (R.lock) { txt = 'القناة 1 ماتفتحتش مع الطوارئ (لازقة في 24V). الـ RT9 رافض الريست لحد ما القناتين يتفتحوا ويتقفلوا تاني.'; cls = 'bad'; }
     else if (!s.fb) { txt = 'K1 لازق: الـ NC بتاعه مفتوح فدايرة الريست (A1 ← X1) مقطوعة. الريست مش هيشتغل.'; cls = 'bad'; }
     else txt = 'القناتين تمام. دوس RESET وسيبه.';
+  } else if (dev === 'pnoz'){
+    s = pnozStep(); q1 = s.q1; q2 = s.q2;
+    led('POWER', s.pow); led('CH1', q1); led('CH2', q2);
+    if (Z.tripped) { txt = W.f.cross ? 'قصر بين القناتين: الفيوز الإلكتروني فصل ولمبة POWER طفت. شيل القصر، وبعدين اطفي الباور وشغّله.' : 'القصر اتشال. اطفي الباور وشغّله عشان الـ PNOZ يرجع.'; cls = 'bad'; }
+    else if (!s.pow) { txt = 'مفيش باور كفاية: POWER مطفية.'; cls = 'bad'; }
+    else if (q1) { txt = 'شغال: CH.1 و CH.2 منوّرين، و 13-14 و 23-24 و 33-34 مقفولين، و Y32 = High.'; cls = 'ok'; }
+    else if (!s.ch1 || !s.ch2) { txt = 'دايرة الدخل مفتوحة: Y32 = Low. رجّع الطوارئ.'; }
+    else if (s.oneLock) { txt = 'قناة واحدة بس اللي اتفتحت واتقفلت. لازم القناتين يتفتحوا مع بعض قبل الريست.'; cls = 'bad'; }
+    else if (!s.fb) { txt = 'K5 لازق: الـ NC بتاعه مفتوح في دايرة الريست، فالـ PNOZ مش هيشتغل.'; cls = 'bad'; }
+    else txt = W.f.auto ? 'S13-S14 مربوطة: هيشتغل لوحده بعد 300 مللي ثانية.' : 'الدخل تمام. دوس RESET (على S33-S34).';
   } else if (dev === 'vital'){
     s = vitalStep(); q1 = s.q1; q2 = s.q2;
     led('On', W.supply > 0, W.supply < 19.2); led('T', s.t); led('R', s.r || s.rBad, s.rBad); led('L1', q1); led('L2', q2);
@@ -387,7 +436,7 @@ function tick(){
   const lamp = document.getElementById('rlamp');
   if (lamp){ const ind = dev === 'pluto' ? (s.ind || 'off') : 'off'; lamp.className = ind === 'off' ? '' : 'lamp' + (ind === 'flash' ? ' fl' : ''); }
   $('#scene').innerHTML = adamRow() + sceneSvg(s);
-  $('#stat').innerHTML = [['K1', K.k1], ['K2', K.k2], [dev === 'pluto' ? 'Q0 / Q1' : '13-14 / 23-24', q1]].map(x => `<span class="${x[1] ? 'on' : ''}">${x[0]}: ${x[1] ? 'مقفول' : 'مفتوح'}</span>`).join('') + (W.f.weld ? '<span class="bad">K1 ملحوم</span>' : '');
+  $('#stat').innerHTML = [[dev === 'pnoz' ? 'K5' : 'K1', K.k1], [dev === 'pnoz' ? 'K6' : 'K2', K.k2], [dev === 'pluto' ? 'Q0 / Q1' : '13-14 / 23-24', q1]].concat(dev === 'pnoz' ? [['Y32', s.y32]] : []).map(x => `<span class="${x[1] ? 'on' : ''}"><bdi dir="ltr">${x[0]}</bdi>: ${x[1] ? 'مقفول' : 'مفتوح'}</span>`).join('') + (W.f.weld ? '<span class="bad">K1 ملحوم</span>' : '');
   const m = $('#msg'); m.textContent = txt; m.className = 'msg' + (cls ? ' ' + cls : '');
   if (dev === 'pluto') $('#prog').innerHTML = progHtml(s);
 }
@@ -418,20 +467,20 @@ $('#faults').addEventListener('click', e => {
   if (f === 'noprog'){ P.prog = false; P.out = false; }
   else if (f === 'download'){ P.prog = true; see('pl-er20'); }
   else { W.f[f] = !W.f[f]; if (f === 'weld' && !W.f.weld) K.k1 = false; }
-  $('#faults').innerHTML = faultsHtml(); tick();
+  $('#faults').innerHTML = faultsHtml(); $('#wire').innerHTML = wireHtml(); tick();
 });
 document.querySelectorAll('.tabs [data-tab]').forEach(b => b.addEventListener('click', () => go(b.dataset.tab)));
 function go(t){
   dev = t; document.querySelectorAll('.tabs [data-tab]').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t ? 'true' : 'false'));
   W.f = {}; W.estop = false; W.gate = false; W.gate2 = false; W.supply = 24; K.k1 = K.k2 = false;
-  R.out = false; V.out = false; P.out = false; P.prog = true;
+  R.out = false; V.out = false; P.out = false; P.prog = true; Z.out = false; Z.tripped = false; Z.armed = true;
   try { history.replaceState(null, '', '#' + t); } catch(e){}
   renderAll();
 }
 setInterval(tick, 200);
 const h = (location.hash || '').slice(1);
-go(h === 'rt9' || h === 'vital' ? h : 'pluto');
-window.SIM = {W, K, P, R, V, tick, go, seen};
+go(h === 'rt9' || h === 'vital' || h === 'pnoz' ? h : 'pluto');
+window.SIM = {W, K, P, R, V, Z, tick, go, seen};
 })();
 </script>
 </body>

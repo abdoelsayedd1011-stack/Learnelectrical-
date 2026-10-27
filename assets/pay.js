@@ -22,7 +22,7 @@
   var COURSES = [
     { id: "basics", title: "أساسيات الكهربا", hub: "basics-lab/index.html", inc: "كل الدروس والامتحان والشهادة" },
     { id: "classic", title: "الكلاسيك كنترول", hub: "classic-control-lab/index.html", inc: "كل الدروس والتمارين والشهادة" },
-    { id: "safety", title: "السيفتي PLC", hub: "safety-lab/index.html", inc: "كل الدروس + محاكي Pluto و RT9 و Vital" },
+    { id: "safety", title: "السيفتي PLC", hub: "safety-lab/index.html", inc: "كل الدروس + محاكي Pluto و RT9 و PNOZ و Vital" },
     { id: "drw", title: "قراية الرسومات الكهربية", hub: "drawings-lab/index.html", inc: "كل الدروس والامتحان والشهادة" },
     { id: "instr", title: "الإنسترومنتيشن", hub: "instrumentation-lab/index.html", inc: "كل الدروس + محاكي Omron E5CC" },
     { id: "plc", title: "الـ PLC", hub: "plc-lab/index.html", inc: "كل الدروس + محاكيات Siemens و Delta و AB" },
