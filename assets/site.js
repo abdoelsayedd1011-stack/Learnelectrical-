@@ -456,10 +456,9 @@
     vfdc:{ ac:"#ff8a4c", ar:"الانفرتر VFD", en:"VFD (Inverter)" },
     srv:{ ac:"#ff5c7a", ar:"السيرفو موتور والدرايف", en:"Servo Motor & Drive" },
     iiot:{ ac:"#4cc0cf", ar:"IIoT والشبكات الصناعية", en:"IIoT & Industrial Networks" },
-    // TODO(scada cover clip): لما assets/courses/covers/scada-loop.webm/.mp4 و scada-poster.webp يتعملوا، شيل still وزوّد CVV
-    scada:{ ac:"#e879d4", ar:"SCADA و HMI", en:"SCADA & HMI", still:"/assets/courses/scada.jpg?v=s1" }
+    scada:{ ac:"#e879d4", ar:"SCADA و HMI", en:"SCADA & HMI" }
   };
-  var CVV = "p11";
+  var CVV = "p12";
   function coverHtml(l, toc){
     var c = CV[l.id], src = "/assets/courses/covers/" + l.id;
     if (!c || !toc) return '<div class="cover"><img src="' + src + (EN ? "-en" : "-ar") + '.webp?v=b3" width="960" height="1200" alt="" decoding="async"></div><h4 class="sr-only">' + esc(l.name) + "</h4>";
