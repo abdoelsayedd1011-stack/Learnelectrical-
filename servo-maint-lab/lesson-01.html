@@ -5,7 +5,7 @@
 <meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>السلامة في صيانة أنظمة السيرفو</title>
-<meta name="description" content="الدرس 1: الطاقة المخزّنة في مكثفات الدرايف وزمن تفريغها، العزل والإقفال وفق NFPA 70E، حدود STO، تأمين المحور الرأسي Z، وأدوات الفني.">
+<meta name="description" content="الدرس 1: أين تبقى الطاقة بعد فصل القاطع، وكيف تثبت بالقياس أن الدرايف آمن، ولماذا لا يكفي STO، وكيف تؤمّن المحور الرأسي Z.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
@@ -18,155 +18,263 @@
   <div>
     <p class="kick">كورس صيانة محركات السيرفو · الدرس 1 من 13</p>
     <h1>السلامة في صيانة أنظمة السيرفو</h1>
-    <p>في السيرفو تبقى الطاقة بعد فصل القاطع: في المكثفات، وفي المغانط، وفي ثقل المحور الرأسي. قِس وأمّن قبل أن تلمس.</p>
+    <p>بعد فصل القاطع تبقى الطاقة في المكثفات والمغانط وثقل المحور Z. قِس وأمّن قبل أن تلمس.</p>
   </div>
   <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="bench.html">المحاكي</a></div>
 </header>
 
 <section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
 
+<section class="panel lsec" aria-label="مدخل الدرس">
+<div class="hook">فصل فنّي القاطع الرئيسي، فانطفأت شاشة الدرايف.<br>
+فتح الغطاء بعد دقيقة، ولمس طرف P بالمفك.<br>
+خرجت شرارة أذابت رأس المفك.<br>
+<b>كانت المكثفات ما زالت مشحونة بنحو 540 V.</b></div>
+<p>في هذا الدرس ستعرف:</p>
+<ul class="learn">
+<li>أين تبقى الطاقة بعد فصل القاطع.</li>
+<li>كيف تثبت بالقياس أن الدرايف آمن.</li>
+<li>كيف تؤمّن المحور الرأسي Z قبل العمل.</li>
+</ul>
+</section>
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>مصادر الخطر في نظام السيرفو</h2>
-<p>نظام السيرفو (Servo: محرك ودرايف وإنكودر تعمل في حلقة مغلقة) يختزن الطاقة في أكثر من مكان. فصل القاطع الرئيسي يزيل مصدرًا واحدًا فقط. قبل أي صيانة في ماكينة CNC المحاور الأربعة X و Y و Z و A، عدّد مصادر الطاقة كلها واعزل كل واحد منها:</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>المصدر</th><th>أين؟</th><th>الخطر</th><th>كيف تسيطر عليه؟</th></tr></thead><tbody>
-<tr><td>شبكة 400 V ثلاثية الطور</td><td>دخل الدرايف L1/L2/L3</td><td>صدمة وقوس كهربي</td><td>فصل وإقفال LOTO وإثبات غياب الجهد</td></tr>
-<tr><td>مكثفات الناقل المستمر DC bus</td><td>داخل الدرايف وأطراف P/N ومقاومة الكبح</td><td>≈ 540–565 V DC بعد الفصل بدقائق</td><td>الانتظار ثم <b>القياس</b> حتى أقل من 50 V</td></tr>
-<tr><td>المحرك مولّدًا</td><td>أطراف U/V/W عند دوران العمود</td><td>Back-EMF: محرك X عند 3000 rpm يولّد ≈ 216 V</td><td>امنع الدوران، ولا تلمس الأطراف والعمود يدور</td></tr>
-<tr><td>الجاذبية</td><td>المحور الرأسي Z</td><td>سقوط الرأس عند تحرير الفرامل أو فك المحرك</td><td>سند ميكانيكي بدعامة أو مسمار قفل</td></tr>
-<tr><td>موازنة هيدروليكية أو غازية</td><td>أسطوانة موازنة الرأس إن وُجدت</td><td>اندفاع الرأس لأعلى عند فك المحرك</td><td>تفريغ الضغط وفق كتيّب الماكينة</td></tr>
-<tr><td>تغذية تحكم 24 V وجهود خارجية</td><td>الفرامل، المراوح، دوائر التحكم القادمة من لوحة أخرى</td><td>جهد موجود رغم فصل القاطع الرئيسي</td><td>حدّد كل المصادر من المخطط وافصلها</td></tr>
-<tr><td>الكهرباء الساكنة ESD</td><td>بطاقة الإنكودر ولوحات الدرايف</td><td>تلف إلكترونيات حساسة دون أثر ظاهر</td><td>سوار تأريض ومفرش ESD</td></tr>
-</tbody></table></div>
-<div class="box key"><b>القاعدة الذهبية:</b> لا تثق بالمؤشرات (لمبة الشحن، شاشة الدرايف المطفأة، الملصق «انتظر 10 دقائق»). ثق بالقياس فقط، بجهاز سليم من فئة CAT III على الأقل.</div>
+  <h2 id="s1"><span class="k">1</span>الطاقة لا تختفي بفصل القاطع</h2>
+<p>خزّان الماء يبقى ممتلئًا بعد غلق المحبس. وكذلك نظام السيرفو: فصل القاطع يغلق مصدرًا واحدًا فقط.</p>
+<figure class="fig">
+<svg viewBox="0 0 360 230" role="img" aria-label="أربعة مصادر للطاقة تبقى بعد فصل القاطع: مكثفات الدرايف 540 فولت، المحرك يولّد 216 فولت إذا دار، ثقل المحور Z، وتغذية 24 فولت الخارجية" style="width:100%;max-width:420px;direction:ltr">
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="14" fill="currentColor">
+<rect x="6" y="6" width="168" height="104" rx="10" fill="none" style="stroke:var(--bad)" stroke-width="2"/>
+<text x="90" y="40" text-anchor="middle" font-size="24" style="fill:var(--bad)">⚡</text>
+<text x="90" y="68" text-anchor="middle" font-weight="700">DC bus</text>
+<text x="90" y="92" text-anchor="middle" style="fill:var(--bad)">540–565 V</text>
+<rect x="186" y="6" width="168" height="104" rx="10" fill="none" style="stroke:var(--cur)" stroke-width="2"/>
+<text x="270" y="40" text-anchor="middle" font-size="24" style="fill:var(--cur)">↻</text>
+<text x="270" y="68" text-anchor="middle" font-weight="700">motor turning</text>
+<text x="270" y="92" text-anchor="middle" style="fill:var(--cur)">X: 216 V</text>
+<rect x="6" y="120" width="168" height="104" rx="10" fill="none" style="stroke:var(--warn)" stroke-width="2"/>
+<text x="90" y="154" text-anchor="middle" font-size="24" style="fill:var(--warn)">↓</text>
+<text x="90" y="182" text-anchor="middle" font-weight="700">gravity (Z)</text>
+<text x="90" y="206" text-anchor="middle" style="fill:var(--warn)">head ≈ 300 kg</text>
+<rect x="186" y="120" width="168" height="104" rx="10" fill="none" style="stroke:var(--accent)" stroke-width="2"/>
+<text x="270" y="154" text-anchor="middle" font-size="24" style="fill:var(--accent)" font-weight="700">24 V</text>
+<text x="270" y="182" text-anchor="middle" font-weight="700">external supply</text>
+<text x="270" y="206" text-anchor="middle" style="fill:var(--accent)">brake, control</text>
+</g></svg>
+<figcaption>أربعة مصادر تبقى بعد فصل القاطع الرئيسي.</figcaption>
+</figure>
+<ul>
+<li><b>المكثفات:</b> تحتفظ بجهد الدرايف دقائق.</li>
+<li><b>المحرك:</b> يولّد جهدًا إذا دار عموده.</li>
+<li><b>الجاذبية:</b> رأس المحور Z يريد السقوط.</li>
+<li><b>تغذية خارجية:</b> 24 V للفرامل والتحكم من لوحة أخرى.</li>
+</ul>
+<div class="sum">عدّد المصادر الأربعة واعزل كلًّا منها قبل أن تلمس شيئًا.</div>
+<details class="more"><summary>للاستزادة: جدول كل مصادر الخطر</summary>
+<div class="tblw"><table class="tbl"><thead><tr><th>المصدر</th><th>أين؟</th><th>كيف تسيطر عليه؟</th></tr></thead><tbody>
+<tr><td>شبكة 400 V ثلاثية الطور</td><td>دخل الدرايف L1/L2/L3</td><td>فصل وإقفال LOTO وإثبات غياب الجهد</td></tr>
+<tr><td>مكثفات الناقل المستمر</td><td>داخل الدرايف وأطراف P/N ومقاومة الكبح</td><td>الانتظار ثم القياس حتى أقل من 50 V</td></tr>
+<tr><td>المحرك مولّدًا</td><td>أطراف U/V/W عند دوران العمود</td><td>امنع الدوران، ولا تلمس الأطراف والعمود يدور</td></tr>
+<tr><td>الجاذبية</td><td>المحور الرأسي Z</td><td>سند ميكانيكي بدعامة أو مسمار قفل</td></tr>
+<tr><td>موازنة هيدروليكية أو غازية</td><td>أسطوانة موازنة الرأس إن وُجدت</td><td>تفريغ الضغط وفق كتيّب الماكينة</td></tr>
+<tr><td>تغذية تحكم 24 V وجهود خارجية</td><td>الفرامل والمراوح ودوائر من لوحة أخرى</td><td>حدّد المصادر من المخطط وافصلها</td></tr>
+<tr><td>الكهرباء الساكنة ESD</td><td>بطاقة الإنكودر ولوحات الدرايف</td><td>سوار تأريض ومفرش ESD</td></tr>
+</tbody></table></div></details>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>مكثفات الناقل المستمر: الطاقة وزمن التفريغ</h2>
+  <h2 id="s2"><span class="k">2</span>المكثفات تحتفظ بالجهد</h2>
 <figure class="fig">
-<svg viewBox="0 0 640 300" role="img" aria-label="دائرة القدرة في درايف السيرفو: مقوّم ثلاثي الطور، مكثفا الناقل المستمر على التوالي، مقاومة التفريغ ولمبة الشحن، مفتاح الكبح ومقاومته، وجسر IGBT إلى المحرك" style="width:100%;max-width:640px;direction:ltr">
-<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor">
-<text x="20" y="98">L1</text><text x="20" y="128">L2</text><text x="20" y="158">L3</text>
-<path d="M42 94H80M42 124H80M42 154H80" stroke="currentColor" stroke-width="2"/>
-<rect x="80" y="70" width="80" height="110" rx="8" fill="none" stroke="currentColor" stroke-width="2"/>
-<text x="120" y="120" text-anchor="middle">rectifier</text><text x="120" y="138" text-anchor="middle">6 diodes</text>
-<path d="M160 90H600M160 230H600" stroke="currentColor" stroke-width="3"/>
-<text x="170" y="82" style="fill:var(--bad)" font-weight="700">DC+  ≈ 540–565 V</text><text x="170" y="250">DC−</text>
-<path d="M160 160V230" stroke="currentColor" stroke-width="2"/>
-<rect x="215" y="105" width="30" height="16" fill="none" stroke="currentColor" stroke-width="2"/><rect x="215" y="187" width="30" height="16" fill="none" stroke="currentColor" stroke-width="2"/>
-<path d="M230 90V105M230 121V187M230 203V230" stroke="currentColor" stroke-width="2"/>
-<text x="250" y="118">470 µF</text><text x="250" y="200">470 µF</text>
-<text x="250" y="158" font-size="10">450 V each</text>
-<rect x="316" y="120" width="16" height="50" fill="none" stroke="currentColor" stroke-width="2"/><path d="M324 90V120M324 170V230" stroke="currentColor" stroke-width="2"/>
-<text x="324" y="190" text-anchor="middle" font-size="10">bleed</text>
-<circle cx="368" cy="145" r="9" style="fill:var(--bad)"/><path d="M368 90V136M368 154V230" stroke="currentColor" stroke-width="2"/>
-<text x="368" y="172" text-anchor="middle" font-size="10">CHARGE</text>
-<rect x="400" y="104" width="40" height="22" fill="none" style="stroke:var(--cur)" stroke-width="2"/>
-<text x="446" y="120" font-size="10">R</text>
-<text x="420" y="146" text-anchor="middle" font-size="10">regen</text>
-<path d="M420 90V104M420 126V200M420 216V230" stroke="currentColor" stroke-width="2"/>
-<rect x="408" y="200" width="24" height="16" style="fill:var(--accent)"/>
-<text x="420" y="250" text-anchor="middle" font-size="10">chopper</text>
-<rect x="462" y="110" width="128" height="100" rx="8" fill="none" stroke="currentColor" stroke-width="2"/>
-<text x="526" y="150" text-anchor="middle">IGBT bridge</text><text x="526" y="170" text-anchor="middle" font-size="11">6 IGBT + diodes</text>
-<path d="M590 130H610M590 160H610M590 190H610" stroke="currentColor" stroke-width="2"/>
-<text x="616" y="134" font-size="11">U</text><text x="616" y="164" font-size="11">V</text><text x="616" y="194" font-size="11">W</text>
-<text x="320" y="292" text-anchor="middle" style="fill:var(--bad)">E = ½·C·V² = ½ × 235 µF × 565² ≈ 37.5 J</text>
+<svg viewBox="0 0 380 212" role="img" aria-label="درايف السيرفو مبسّطًا: المقوّم يحوّل 400 فولت متردد إلى 540 فولت مستمر مخزّنة في مكثفين، ثم جسر IGBT إلى المحرك" style="width:100%;max-width:440px;direction:ltr">
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="14" fill="currentColor">
+<text x="4" y="108" font-size="12">400 V AC</text>
+<path d="M62 104H80" stroke="currentColor" stroke-width="2"/>
+<rect x="80" y="66" width="76" height="76" rx="8" fill="none" stroke="currentColor" stroke-width="2"/>
+<text x="118" y="100" text-anchor="middle" font-size="12">rectifier</text><text x="118" y="118" text-anchor="middle" font-size="11">AC → DC</text>
+<path d="M156 50H296M156 170H296" stroke="currentColor" stroke-width="3"/>
+<path d="M156 50V66M156 142V170" stroke="currentColor" stroke-width="2"/>
+<text x="166" y="38" font-size="13" font-weight="700" style="fill:var(--bad)">P (DC+) ≈ 540 V</text><text x="166" y="192" font-size="13">N (DC−)</text>
+<rect x="176" y="74" width="28" height="18" fill="none" style="stroke:var(--bad)" stroke-width="2"/>
+<rect x="176" y="128" width="28" height="18" fill="none" style="stroke:var(--bad)" stroke-width="2"/>
+<path d="M190 50V74M190 92V128M190 146V170" stroke="currentColor" stroke-width="2"/>
+<text x="208" y="88" font-size="11">470 µF</text><text x="208" y="142" font-size="11">470 µF</text>
+<circle cx="272" cy="104" r="8" style="fill:var(--bad)"/><path d="M272 50V96M272 112V170" stroke="currentColor" stroke-width="2"/>
+<text x="272" y="126" text-anchor="middle" font-size="9">CHARGE</text>
+<rect x="296" y="66" width="60" height="88" rx="8" fill="none" stroke="currentColor" stroke-width="2"/>
+<text x="326" y="104" text-anchor="middle" font-size="13">IGBT</text><text x="326" y="122" text-anchor="middle" font-size="11">bridge</text>
+<path d="M356 110H372" stroke="currentColor" stroke-width="2"/><text x="364" y="100" text-anchor="middle" font-size="12">M</text>
+<text x="190" y="208" text-anchor="middle" font-size="13" style="fill:var(--bad)">E = ½·C·V² ≈ 37.5 J</text>
 </g></svg>
-<figcaption>الطاقة تبقى في المكثفين بعد فصل التغذية. لمبة CHARGE ومقاومة التفريغ تساعدان، لكن الإثبات الوحيد هو قياس الجهد بين DC+ و DC−.</figcaption>
+<figcaption>المكثفان يحتفظان بالجهد بعد الفصل. لمبة CHARGE مؤشر فقط، والقياس بين P و N هو الإثبات.</figcaption>
 </figure>
-<p>الدرايف يقوّم 400 V إلى جهد مستمر <span class="eq">≈ 1.35 × 400 = 540 V</span> في التشغيل بلا حمل، ويصل إلى <span class="eq">√2 × 400 ≈ 565 V</span>. هذا الجهد مخزّن في مكثفين 470 µF / 450 V على التوالي، أي سعة مكافئة 235 µF.</p>
-<div class="ex"><b>مثال — الطاقة المخزّنة في درايف محور X:</b>
-<ol><li><span class="eq">E = ½ × 235×10⁻⁶ × 565² ≈ 37.5 J</span>: طاقة تكفي لصدمة قاتلة إذا مرّت عبر الجسم، ولحرق طرف المفك وانصهاره إذا قُصرت الأطراف.</li>
-<li>نفترض أن مقاومة التفريغ الداخلية 220 kΩ (قيمة نموذجية للتعلّم). ثابت الزمن <span class="eq">τ = R·C = 220 kΩ × 235 µF ≈ 51.7 s</span>.</li>
-<li>زمن الهبوط من 565 V إلى 50 V: <span class="eq">t = τ·ln(565/50) ≈ 51.7 × 2.42 ≈ 125 s</span>، أي نحو دقيقتين في الدرايف السليم.</li>
-<li>إذا تلفت مقاومة التفريغ أو انفصلت، فقد يبقى الجهد عاليًا ساعات. لهذا يكتب الصانع زمنًا آمنًا (10 دقائق هنا) <b>وتقيس أنت دائمًا</b>.</li></ol></div>
-<p><b>المرجعية:</b> المعيار IEC 61800-5-1 (سلامة أنظمة الدرايف) يشترط أن ينخفض الجهد على الأجزاء التي يمكن لمسها إلى حد آمن خلال زمن قصير بعد الفصل، فإن لم يتحقق ذلك وجب وضع ملصق تحذير يذكر زمن التفريغ. وفي آلات التشغيل يطلب IEC 60204-1 أن ينخفض الجهد المتبقي إلى 60 V أو أقل خلال 5 ثوانٍ، وإلا وجب التحذير. الملصق يحدّد الحد الأدنى للانتظار، لا ضمان السلامة.</p>
-<h3>إجراء التحقق من تفريغ الناقل المستمر</h3>
-<ol class="steps-l">
-<li>افصل القاطع الرئيسي وأقفله، وافصل تغذية التحكم 24 V إن كانت من مصدر مستقل.</li>
-<li>انتظر الزمن المكتوب على الدرايف (10 دقائق) على الأقل، ولا تفتح الغطاء قبله.</li>
-<li>اختبر جهازك على مصدر معلوم (أو جهاز اختبار مخصّص) قبل القياس: <b>حيّ ثم ميّت ثم حيّ</b> (Live-Dead-Live).</li>
-<li>اضبط الجهاز على V DC، وقِس بين P (DC+) و N (DC−) على أطراف الدرايف أو أطراف مقاومة الكبح، ثم بين كل منهما والأرضي PE.</li>
-<li>القراءة يجب أن تكون <b>أقل من 50 V DC</b>. إن بقيت أعلى، فلا تلمس شيئًا، وانتظر أو فرّغ بأداة تفريغ معزولة ذات مقاومة مناسبة (مثلًا 2 kΩ / 50 W: τ = 0.47 s، والتيار الابتدائي ≈ 0.28 A).</li>
-<li>أعد اختبار الجهاز على المصدر المعلوم بعد القياس؛ قراءة «صفر» من جهاز تالف أخطر من عدم القياس.</li>
-</ol>
+<p>الدرايف يحوّل 400 V المتردد إلى جهد مستمر نحو 540 V. يُخزَّن هذا الجهد في مكثفين كبيرين. يسمّى هذا الجزء <b>الناقل المستمر</b> (DC bus).</p>
+<ul>
+<li>الجهد: 540 V، ويصل إلى 565 V.</li>
+<li>السعة: مكثفان 470 µF على التوالي = 235 µF.</li>
+<li>مقاومة داخلية تفرّغهما ببطء بعد الفصل.</li>
+</ul>
+<div class="ex"><b>مثال محلول — درايف محور X:</b>
+<ol>
+<li>الطاقة: <span class="eq">E = ½ × 235 µF × 565² ≈ 37.5 J</span></li>
+<li>تكفي لصدمة قاتلة، ولإذابة رأس مفك.</li>
+<li>مقاومة التفريغ نفترضها 220 kΩ.</li>
+<li>ثابت الزمن: <span class="eq">τ = 220 kΩ × 235 µF ≈ 52 s</span></li>
+<li>الهبوط إلى 50 V: <span class="eq">t = τ × ln(565/50) ≈ 125 s</span></li>
+<li>أي دقيقتان تقريبًا في الدرايف السليم.</li>
+<li>إذا تلفت المقاومة، يبقى الجهد ساعات.</li>
+</ol></div>
+<div class="sum">الملصق يقول «انتظر 10 دقائق»، لكنك تقيس دائمًا.</div>
+<details class="more"><summary>للاستزادة: ماذا تقول المعايير؟</summary>
+<ul>
+<li><b>IEC 61800-5-1:</b> يجب أن ينخفض الجهد على الأجزاء الملموسة إلى حد آمن سريعًا، وإلا وُضع ملصق بزمن التفريغ.</li>
+<li><b>IEC 60204-1:</b> في الآلات ينخفض الجهد المتبقي إلى 60 V أو أقل خلال 5 ثوانٍ، وإلا وجب التحذير.</li>
+<li>زمن الملصق حد أدنى للانتظار، لا ضمان للسلامة.</li>
+</ul></details>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>العزل والإقفال LOTO، ولماذا لا يكفي STO</h2>
-<p>المعيار NFPA 70E يعرّف «حالة العمل الآمن كهربيًّا» (Electrically Safe Work Condition) بست خطوات: حدّد كل المصادر من المخططات، افصل بالحمل ثم افتح وسيلة الفصل، تحقق بصريًّا من فتح الأقطاب، أقفل وعلّق بطاقة باسمك، اختبر غياب الجهد بجهاز مناسب، ثم أرّض عند الحاجة. في السيرفو أضف خطوتين: <b>انتظر تفريغ الناقل وقِسه</b>، و<b>أمّن المحور الرأسي ميكانيكيًّا</b>.</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>الوظيفة</th><th>ماذا تفعل؟</th><th>هل تكفي للعمل على الأطراف؟</th></tr></thead><tbody>
-<tr><td><b>STO</b> (Safe Torque Off، IEC 61800-5-2)</td><td>تمنع نبضات الإطلاق عن IGBT فلا ينتج المحرك عزمًا</td><td style="color:var(--bad)"><b>لا</b>: الناقل المستمر والأطراف ما زالت مكهربة</td></tr>
-<tr><td>Servo OFF من الـ CNC</td><td>إيقاف برمجي</td><td style="color:var(--bad)"><b>لا</b>: أمر برمجي قد يعود بخطأ أو بضغطة زر</td></tr>
-<tr><td>إيقاف الطوارئ E-Stop</td><td>إيقاف سريع (فئة 0 أو 1 حسب التصميم)</td><td style="color:var(--bad)"><b>لا</b>: صُمّم لإيقاف الحركة، لا لعزل الطاقة</td></tr>
-<tr><td>فصل القاطع الرئيسي وإقفاله + قياس الناقل</td><td>عزل كامل للطاقة الكهربية</td><td style="color:var(--good)"><b>نعم</b>، مع تأمين المحور الرأسي</td></tr>
-</tbody></table></div>
-<div class="box safe"><b>المحرك يولّد جهدًا:</b> محرك السيرفو مغانطه دائمة، فإذا دار عموده بيدك أو بنزول المحور Z ظهر على أطرافه جهد Back-EMF (القوة الدافعة الكهربية العكسية) حتى والدرايف مفصول. محرك X يولّد <span class="eq">72 V × 3000/1000 = 216 V</span> عند 3000 rpm. لا تلمس أطراف U/V/W وعمود المحرك قابل للدوران، وأعد توصيل الكابل قبل تحرير أي فرامل.</div>
-<div class="box key"><b>قبل فتح الغطاء: </b> أقفل القاطع باسمك ← انتظر الزمن ← اختبر الجهاز ← قِس P-N و P-PE و N-PE ← أعد اختبار الجهاز ← أمّن المحور Z ← ابدأ العمل.</div>
+  <h2 id="s3"><span class="k">3</span>قِس لتثبت أن الدرايف آمن</h2>
+<p>المؤشرات قد تكذب: اللمبة قد تتلف، والشاشة تنطفئ قبل المكثفات. الإثبات الوحيد هو القياس بجهاز سليم من فئة <b>CAT III</b> على الأقل.</p>
+<ol class="steps-l">
+<li>افصل القاطع الرئيسي، وضع قفلك وبطاقتك (LOTO).</li>
+<li>افصل تغذية 24 V الخارجية إن وُجدت.</li>
+<li>انتظر 10 دقائق، ولا تفتح الغطاء قبلها.</li>
+<li>اختبر الجهاز على مصدر معلوم.</li>
+<li>قِس V DC بين P و N.</li>
+<li>ثم قِس P مع PE، و N مع PE.</li>
+<li>القراءة المقبولة: <b>أقل من 50 V DC</b>.</li>
+<li>أعد اختبار الجهاز على المصدر المعلوم.</li>
+</ol>
+<p>الخطوتان 4 و 8 تسمّيان «حيّ ثم ميّت ثم حيّ» (Live-Dead-Live). قراءة «صفر» من جهاز تالف أخطر من عدم القياس.</p>
+<div class="sum">لا تلمس شيئًا قبل أن تقرأ أقل من 50 V بين P و N بجهاز مُختبَر.</div>
+<details class="more"><summary>للاستزادة: إذا بقي الجهد عاليًا</summary>
+<ul>
+<li>بعد 10 دقائق وقرأت 480 V: دائرة التفريغ معطّلة.</li>
+<li>لا تلمس شيئًا. انتظر، أو فرّغ بأداة تفريغ معزولة.</li>
+<li>مثال أداة: 2 kΩ / 50 W، فيكون τ ≈ 0.47 s والتيار الابتدائي ≈ 0.28 A.</li>
+<li>القفازات ملبوسة، والتفريغ بعد القياس لا قبله. سجّل العطل.</li>
+</ul></details>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>المحور الرأسي Z والأحمال المعلّقة</h2>
+  <h2 id="s4"><span class="k">4</span>STO وزر الطوارئ لا يعزلان الطاقة</h2>
 <figure class="fig">
-<svg viewBox="0 0 640 260" role="img" aria-label="المحور الرأسي Z: رأس المغزل معلّق على عمود لولبي، والفرامل في المحرك تمسكه، ويجب سنده بدعامة قبل فك المحرك" style="width:100%;max-width:640px;direction:ltr">
-<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor">
-<rect x="250" y="16" width="70" height="44" rx="6" fill="none" stroke="currentColor" stroke-width="2"/><text x="285" y="42" text-anchor="middle">Z motor</text>
-<rect x="320" y="26" width="28" height="24" rx="4" style="fill:var(--cur)" opacity=".85"/><text x="356" y="42">brake 12 N·m</text>
-<path d="M285 60V110" stroke="currentColor" stroke-width="4" stroke-dasharray="6 3"/>
-<text x="296" y="90">ball screw, lead 10 mm</text>
-<rect x="210" y="110" width="150" height="70" rx="8" fill="none" stroke="currentColor" stroke-width="2"/>
-<text x="285" y="140" text-anchor="middle">spindle head</text><text x="285" y="160" text-anchor="middle">m ≈ 300 kg</text>
-<path d="M170 120V170" style="stroke:var(--bad)" stroke-width="3"/><path d="M162 162l8 14 8-14" style="fill:var(--bad)"/>
-<text x="160" y="140" text-anchor="end" style="fill:var(--bad)">gravity</text>
-<rect x="235" y="180" width="100" height="60" fill="none" style="stroke:var(--good)" stroke-width="3"/>
-<path d="M235 240L335 180M235 180L335 240" style="stroke:var(--good)" stroke-width="1.5"/>
-<text x="345" y="208" style="fill:var(--good)">support block</text><text x="345" y="226" style="fill:var(--good)">under the head</text>
-<text x="20" y="40">T = m·g·L / 2π</text><text x="20" y="60">≈ 4.68 N·m</text>
+<svg viewBox="0 0 420 190" role="img" aria-label="سلسلة القدرة: القاطع ثم الناقل المستمر ثم جسر IGBT ثم المحرك. القفل LOTO يقطع الطاقة عند القاطع، أما STO فيمنع نبضات التشغيل فقط والجهد باقٍ" style="width:100%;max-width:480px;direction:ltr">
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="14" fill="currentColor">
+<rect x="6" y="60" width="78" height="50" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="45" y="90" text-anchor="middle">breaker</text>
+<rect x="112" y="60" width="90" height="50" rx="8" fill="none" style="stroke:var(--bad)" stroke-width="2"/><text x="157" y="82" text-anchor="middle">DC bus</text><text x="157" y="100" text-anchor="middle" font-size="12" style="fill:var(--bad)">540 V</text>
+<rect x="230" y="60" width="78" height="50" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="269" y="90" text-anchor="middle">IGBT</text>
+<rect x="336" y="60" width="78" height="50" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="375" y="90" text-anchor="middle">motor</text>
+<path d="M84 85H112M202 85H230M308 85H336" stroke="currentColor" stroke-width="2"/>
+<text x="45" y="34" text-anchor="middle" font-size="22" style="fill:var(--good)">🔒</text>
+<text x="45" y="140" text-anchor="middle" font-weight="700" style="fill:var(--good)">LOTO</text>
+<text x="45" y="160" text-anchor="middle" font-size="12" style="fill:var(--good)">energy OFF</text>
+<path d="M269 20V58" style="stroke:var(--warn)" stroke-width="2" stroke-dasharray="4 3"/><text x="269" y="16" text-anchor="middle" font-size="12" style="fill:var(--warn)">gate pulses ✗</text>
+<text x="269" y="140" text-anchor="middle" font-weight="700" style="fill:var(--warn)">STO</text>
+<text x="269" y="160" text-anchor="middle" font-size="12" style="fill:var(--warn)">torque OFF only</text>
+<text x="157" y="182" text-anchor="middle" font-size="12" style="fill:var(--bad)">still live with STO</text>
 </g></svg>
-<figcaption>عزم الجاذبية على محرك Z نحو 4.68 N·m دائمًا (بافتراض رأس 300 kg ولولب خطوته 10 mm). الفرامل وحدها لا تكفي ضمانًا: اسند الرأس ميكانيكيًّا قبل أي عمل.</figcaption>
+<figcaption>القفل على القاطع يقطع الطاقة. STO يمنع الحركة فقط، والناقل يبقى مكهربًا.</figcaption>
 </figure>
-<p>محرك Z قدرته 2.0 kW، وفيه فرامل تثبيت 24 V بعزم 12 N·m. الفرامل نوع «آمن عند الفصل» (Fail-safe): نابض يضغطها، والكهرباء تحرّرها. لكنها <b>فرامل تثبيت</b> (Holding brake)، لا فرامل إيقاف، وقد تتآكل أو يتسرّب إليها الزيت فتنزلق.</p>
-<div class="ex"><b>مثال — عزم الجاذبية على محور Z</b> (نفترض كتلة الرأس 300 kg وخطوة العمود اللولبي Ball screw ‏10 mm؛ قيم نموذجية للتعلّم):
-<ol><li><span class="eq">T = m·g·L / 2π = 300 × 9.81 × 0.010 / 6.283 ≈ 4.68 N·m</span>، وهذا قبل خصم كفاءة اللولب.</li>
-<li>هامش الفرامل <span class="eq">12 / 4.68 ≈ 2.6</span>. هامش جيد، لكن الفرامل الملوّثة بالزيت قد تفقد نصف عزمها.</li>
-<li>إذا سقط الرأس 0.5 m فالطاقة الحركية <span class="eq">m·g·h = 300 × 9.81 × 0.5 ≈ 1472 J</span>، أي أربعون ضعف طاقة المكثفات تقريبًا.</li>
-<li>حتى في السقوط الحر خلال زمن تعشيق الفرامل 30 ms، يقطع الرأس نظريًّا <span class="eq">½·g·t² ≈ 4.4 mm</span>. لهذا يبقى الدرايف ممسكًا بالعزم حتى تعشق الفرامل (الدرس 7).</li></ol></div>
-<h3>قبل فك محرك Z أو إنكودره أو تحرير فرامله</h3>
-<ol><li>أنزل الرأس إلى أدنى موضع آمن أو إلى دعامة بالـ CNC وهو يعمل، ثم أطفئ.</li>
-<li>ضع دعامة صلبة أو كتلة خشبية مقوّاة تحت الرأس، أو أدخل مسمار القفل الميكانيكي إن وفّره الصانع.</li>
-<li>إن وُجدت أسطوانة موازنة هيدروليكية أو غازية، ففرّغ ضغطها وفق كتيّب الماكينة قبل فصل المحرك عن اللولب.</li>
-<li>لا تحرّر الفرامل يدويًّا أو بمصدر 24 V خارجي إلا والرأس مسنود.</li>
-<li>لا تقف تحت الرأس، ولا تضع يدك بين الرأس والطاولة في أي مرحلة.</li></ol>
+<p>رفع قدمك عن دوّاسة الوقود يوقف السيارة، لكن المحرك ما زال دائرًا. كذلك <b>STO</b> (Safe Torque Off): يمنع المحرك من إنتاج العزم، والجهد باقٍ داخل الدرايف.</p>
+<ul>
+<li><b>STO:</b> يوقف العزم، ولا يعزل.</li>
+<li><b>Servo OFF من الـ CNC:</b> أمر برمجي قد يعود.</li>
+<li><b>زر الطوارئ E-Stop:</b> يوقف الحركة، ولا يعزل.</li>
+<li><b>القاطع مقفلًا + القياس:</b> هذا وحده عزل.</li>
+</ul>
+<div class="box safe"><b>المحرك مولّد:</b> مغانطه دائمة. إذا دار عموده ظهر جهد على U/V/W حتى والدرايف مفصول. يسمّى <b>Back-EMF</b>. محرك X عند 3000 rpm يولّد <span class="eq">72 × 3 = 216 V</span>.</div>
+<div class="sum">للعمل على الأطراف: اقفل القاطع وقِس. STO لا يكفي، ولا تلمس U/V/W والعمود يدور.</div>
+<details class="more"><summary>للاستزادة: خطوات NFPA 70E الست</summary>
+<ol>
+<li>حدّد كل المصادر من المخططات.</li>
+<li>افصل الحمل، ثم افتح وسيلة الفصل.</li>
+<li>تحقّق بالنظر من فتح الأقطاب.</li>
+<li>أقفل وعلّق بطاقة باسمك.</li>
+<li>اختبر غياب الجهد بجهاز مناسب.</li>
+<li>أرّض عند الحاجة.</li>
+</ol>
+<p>في السيرفو أضف: انتظار تفريغ الناقل وقياسه، وتأمين المحور Z. وظيفة STO معرّفة في IEC 61800-5-2، وإيقاف الطوارئ فئة 0 أو 1 حسب التصميم.</p></details>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
-  <h2 id="s5"><span class="k">5</span>أدوات الفني، وقرار «هل أبدأ العمل؟»</h2>
-<div class="tblw"><table class="tbl"><thead><tr><th>الأداة</th><th>المواصفة</th><th>الاستخدام في الكورس</th><th>تنبيه</th></tr></thead><tbody>
-<tr><td>ملتيميتر</td><td>CAT III 1000 V أو CAT IV 600 V</td><td>الناقل المستمر، مقاومة الملفات، وضع الديود</td><td>أطراف اختبار بأغطية واقية</td></tr>
-<tr><td>جهاز قياس العزل Megger</td><td>500 V DC</td><td>عزل ملفات المحرك (الدرس 3)</td><td><b>لا يُطبَّق أبدًا على الإنكودر أو الدرايف</b></td></tr>
-<tr><td>ميكرو أوم أو جسر قياس</td><td>قياس رباعي الأطراف</td><td>مقاومة طور 1.2–6.2 Ω بدقة</td><td>صفّر مقاومة الأسلاك أولًا</td></tr>
-<tr><td>راسم الإشارة Oscilloscope</td><td>قناتان على الأقل، 100 MHz</td><td>إشارات الإنكودر و Back-EMF</td><td>استخدم مجسًّا تفاضليًّا معزولًا على الجهود العالية؛ لا تربط مشبك الأرضي بالناقل</td></tr>
-<tr><td>مفتاح عزم Torque wrench</td><td>حسب عزم الفرامل</td><td>اختبار عزم تثبيت الفرامل (الدرس 7)</td><td>والمحور Z مسنود</td></tr>
-<tr><td>سوار ومفرش ESD</td><td>مؤرّض بمقاومة 1 MΩ</td><td>فك الإنكودر ولوحات الدرايف</td><td>لا تلمس أطراف الموصّل بأصابعك</td></tr>
-<tr><td>أداة تفريغ معزولة</td><td>مقاومة قدرة في مقبض معزول</td><td>تفريغ ناقل لم يتفرّغ ذاتيًّا</td><td>بعد القياس لا قبله، والقفازات ملبوسة</td></tr>
-<tr><td>قفل وبطاقة LOTO</td><td>قفل شخصي واحد لكل فني</td><td>القاطع الرئيسي ومصادر التحكم</td><td>المفتاح معك وحدك</td></tr>
+  <h2 id="s5"><span class="k">5</span>المحور الرأسي Z: الجاذبية لا تتوقف</h2>
+<figure class="fig">
+<svg viewBox="0 0 420 250" role="img" aria-label="المحور الرأسي Z: الرأس معلّق على عمود لولبي وتمسكه فرامل المحرك، والجاذبية تشدّه لأسفل، والدعامة تحته هي الضمان" style="width:100%;max-width:480px;direction:ltr">
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="14" fill="currentColor">
+<rect x="140" y="10" width="80" height="44" rx="6" fill="none" stroke="currentColor" stroke-width="2"/><text x="180" y="37" text-anchor="middle">Z motor</text>
+<rect x="220" y="20" width="26" height="24" rx="4" style="fill:var(--cur)" opacity=".85"/><text x="254" y="37" font-size="12">brake 12 N·m</text>
+<path d="M180 54V100" stroke="currentColor" stroke-width="4" stroke-dasharray="6 3"/>
+<text x="192" y="82" font-size="12">ball screw</text>
+<rect x="110" y="100" width="140" height="64" rx="8" fill="none" stroke="currentColor" stroke-width="2"/>
+<text x="180" y="128" text-anchor="middle">spindle head</text><text x="180" y="148" text-anchor="middle" font-size="12">≈ 300 kg</text>
+<path d="M70 110V158" style="stroke:var(--bad)" stroke-width="3"/><path d="M62 150l8 14 8-14" style="fill:var(--bad)"/>
+<text x="62" y="104" text-anchor="middle" font-size="12" style="fill:var(--bad)">gravity</text>
+<rect x="135" y="164" width="90" height="56" fill="none" style="stroke:var(--good)" stroke-width="3"/>
+<path d="M135 220L225 164M135 164L225 220" style="stroke:var(--good)" stroke-width="1.5"/>
+<text x="236" y="190" font-weight="700" style="fill:var(--good)">support block</text>
+<text x="236" y="210" font-size="12" style="fill:var(--good)">= the real guarantee</text>
+<text x="210" y="244" text-anchor="middle" font-size="12">torque on motor ≈ 4.68 N·m, always</text>
+</g></svg>
+<figcaption>الفرامل تمسك الرأس، لكنها قد تنزلق. الدعامة تحت الرأس هي الضمان.</figcaption>
+</figure>
+<p>رأس المحور Z معلّق دائمًا. تمسكه <b>فرامل تثبيت</b> (Holding brake) داخل المحرك: نابض يضغطها، و24 V تحرّرها. لكنها قد تتآكل أو يصلها الزيت فتنزلق.</p>
+<div class="ex"><b>كم يشدّ الرأس المحرك؟</b> (رأس 300 kg ولولب خطوته 10 mm، قيم نموذجية)
+<ol>
+<li><span class="eq">T = m·g·L / 2π</span></li>
+<li><span class="eq">= 300 × 9.81 × 0.010 / 6.283 ≈ 4.68 N·m</span></li>
+<li>عزم الفرامل 12 N·m، أي هامش ≈ 2.6 مرة.</li>
+<li>الفرامل الملوّثة بالزيت قد تفقد نصف عزمها.</li>
+</ol></div>
+<p>قبل فك محرك Z أو تحرير فرامله:</p>
+<ol class="steps-l">
+<li>أنزل الرأس إلى أدنى موضع آمن والماكينة تعمل.</li>
+<li>ضع دعامة صلبة تحت الرأس، أو مسمار القفل.</li>
+<li>فرّغ ضغط أسطوانة الموازنة إن وُجدت.</li>
+<li>لا تحرّر الفرامل إلا والرأس مسنود.</li>
+<li>لا تقف تحت الرأس أبدًا.</li>
+</ol>
+<div class="sum">الفرامل تمسك، والدعامة تضمن. لا تفك محرك Z والرأس على الفرامل وحدها.</div>
+<details class="more"><summary>للاستزادة: أرقام السقوط</summary>
+<ul>
+<li>سقوط 0.5 m يعني <span class="eq">m·g·h ≈ 1472 J</span>، أي نحو أربعين ضعف طاقة المكثفات.</li>
+<li>خلال زمن تعشيق الفرامل 30 ms يسقط الرأس حرًّا نحو 4.4 mm.</li>
+<li>لهذا يبقى الدرايف ممسكًا بالعزم حتى تعشق الفرامل (الدرس 7).</li>
+</ul></details>
+</section>
+<section class="panel lsec" aria-labelledby="s6">
+  <h2 id="s6"><span class="k">6</span>الأدوات، وقرار «هل أبدأ؟»</h2>
+<ul>
+<li>🔌 <b>ملتيميتر CAT III</b>: للناقل والملفات.</li>
+<li>🔒 <b>قفل وبطاقة LOTO</b>: المفتاح معك وحدك.</li>
+<li>🖐 <b>سوار ESD</b>: قبل لمس الإنكودر أو اللوحات.</li>
+<li>⚠ <b>الميجر Megger</b>: للملفات فقط، لا للإنكودر أو الدرايف.</li>
+</ul>
+<div class="tblw"><table class="tbl"><thead><tr><th>ما تجده</th><th>القرار</th></tr></thead><tbody>
+<tr><td>القاطع مقفل، والناقل 12 V بجهاز مُختبَر</td><td style="color:var(--good)"><b>ابدأ</b></td></tr>
+<tr><td>لمبة CHARGE مطفأة، ولم تقِس</td><td style="color:var(--warn)"><b>قِس أولًا</b></td></tr>
+<tr><td>بعد 10 دقائق ما زال 480 V</td><td style="color:var(--bad)"><b>توقّف</b>: التفريغ معطّل</td></tr>
+<tr><td>ستفك محرك Z والرأس على الفرامل</td><td style="color:var(--bad)"><b>توقّف</b>: اسند الرأس</td></tr>
+<tr><td>الدرايف في STO وستفك الكابل</td><td style="color:var(--bad)"><b>توقّف</b>: افصل القاطع وقِس</td></tr>
 </tbody></table></div>
-<p class="muted">معدات الوقاية الشخصية (قفازات عازلة، نظارة، ملابس مقاومة للقوس) تُختار وفق تقييم الخطر في NFPA 70E عندما يكون القياس على أجزاء مكهربة.</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>الحالة عند فتح الدرايف</th><th>القرار</th></tr></thead><tbody>
-<tr><td>القاطع مقفل، والناقل 12 V، والجهاز مُختبَر قبل القياس وبعده</td><td style="color:var(--good)"><b>ابدأ العمل</b></td></tr>
-<tr><td>لمبة CHARGE مطفأة، ولم تقِس</td><td style="color:var(--warn)"><b>قِس أولًا</b>: اللمبة قد تكون تالفة</td></tr>
-<tr><td>مرّت 10 دقائق والناقل ما زال 480 V</td><td style="color:var(--bad)"><b>توقّف</b>: مقاومة التفريغ معطّلة؛ فرّغ بالأداة المعزولة وسجّل العطل</td></tr>
-<tr><td>محرك Z سيُفك والرأس على الفرامل فقط</td><td style="color:var(--bad)"><b>توقّف</b>: اسند الرأس ميكانيكيًّا أولًا</td></tr>
-<tr><td>الدرايف في STO، والمطلوب فك كابل المحرك</td><td style="color:var(--bad)"><b>توقّف</b>: STO لا يعزل؛ افصل القاطع وقِس</td></tr>
+<div class="sum">تبدأ فقط إذا كان القاطع مقفلًا، والناقل تحت 50 V، والمحور Z مسنودًا.</div>
+<details class="more"><summary>للاستزادة: مواصفات الأدوات والأخطاء الشائعة</summary>
+<div class="tblw"><table class="tbl"><thead><tr><th>الأداة</th><th>المواصفة</th><th>تنبيه</th></tr></thead><tbody>
+<tr><td>ملتيميتر</td><td>CAT III 1000 V أو CAT IV 600 V</td><td>أطراف اختبار بأغطية واقية</td></tr>
+<tr><td>Megger</td><td>500 V DC</td><td>لا يُطبَّق على الإنكودر أو الدرايف (الدرس 3)</td></tr>
+<tr><td>ميكرو أوم</td><td>قياس رباعي الأطراف</td><td>لمقاومات الأطوار 1.2–6.2 Ω</td></tr>
+<tr><td>أوسيلوسكوب</td><td>قناتان، 100 MHz</td><td>مجس تفاضلي معزول على الجهود العالية</td></tr>
+<tr><td>مفتاح عزم</td><td>حسب عزم الفرامل</td><td>والمحور Z مسنود (الدرس 7)</td></tr>
+<tr><td>سوار ومفرش ESD</td><td>مؤرّض عبر 1 MΩ</td><td>لا تلمس أطراف الموصّل</td></tr>
+<tr><td>أداة تفريغ معزولة</td><td>مقاومة قدرة بمقبض معزول</td><td>بعد القياس لا قبله</td></tr>
 </tbody></table></div>
-<div class="tblw"><table class="tbl"><thead><tr><th>الخطأ الشائع</th><th>الصواب</th></tr></thead><tbody>
-<tr><td>القياس بين DC+ والأرضي فقط</td><td>قِس P-N أولًا، ثم كلًّا منهما مع PE</td></tr>
-<tr><td>ربط مشبك أرضي الأوسيلوسكوب بأحد أطراف الناقل</td><td>مجس تفاضلي معزول؛ مشبك الأرضي متصل بأرضي الشبكة عبر الجهاز</td></tr>
-<tr><td>اختبار العزل والإنكودر أو الفرامل متصلة</td><td>افصل موصّلي الإنكودر والفرامل قبل الميجر (الدرس 3)</td></tr>
-<tr><td>لمس الإنكودر دون سوار ESD</td><td>السوار أولًا، والقطعة في كيس مضاد للكهرباء الساكنة</td></tr>
-</tbody></table></div>
+<ul>
+<li>القياس بين P والأرضي فقط خطأ: قِس P-N أولًا.</li>
+<li>لا تربط مشبك أرضي الأوسيلوسكوب بأحد أطراف الناقل.</li>
+<li>افصل الإنكودر والفرامل قبل الميجر.</li>
+<li>معدات الوقاية الشخصية تُختار وفق تقييم الخطر في NFPA 70E.</li>
+</ul></details>
 </section>
 
 
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
-  <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
+  <p>أجب عن 5 من 6 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
   <div id="quiz"></div>
 </section>
 
@@ -175,7 +283,7 @@
 </div>
 <script>
 IL.lesson('l1');
-IL.quiz(document.getElementById('quiz'), [{"q": "كم الطاقة المخزّنة في ناقل درايف سعته 235 µF عند 565 V؟", "o": ["≈ 37.5 J", "≈ 66.4 J", "≈ 0.13 J", "≈ 75.02 J"], "a": 0, "why": "E = ½ × 235×10⁻⁶ × 565² ≈ 37.5 J."}, {"q": "فتحت الدرايف بعد 10 دقائق ولمبة CHARGE مطفأة. ما الخطوة التالية؟", "o": ["قِس P-N بجهاز مُختبَر", "ابدأ العمل فورًا", "قِس بين P والأرضي فقط", "انتظر 10 دقائق أخرى ثم اعمل"], "a": 0, "why": "المؤشرات لا تُثبت شيئًا؛ القياس بجهاز مُختبَر هو الإثبات."}, {"q": "الدرايف في حالة STO. هل يمكن فك أطراف U/V/W؟", "o": ["لا؛ STO لا يعزل الجهد", "نعم؛ العزم صفر فالأطراف آمنة", "نعم إذا أُطفئت الشاشة", "نعم بعد ضغط زر الطوارئ"], "a": 0, "why": "STO يمنع العزم فقط، والناقل المستمر يبقى مكهربًا."}, {"q": "مقاومة التفريغ 220 kΩ والسعة 235 µF. كم ثابت الزمن τ تقريبًا؟", "o": ["≈ 52 s", "≈ 5.2 s", "≈ 520 s", "≈ 0.94 s"], "a": 0, "why": "τ = 220000 × 0.000235 ≈ 51.7 s."}, {"q": "تدير عمود محرك X بمثقاب عند 3000 rpm وكابله مفكوك. كم الجهد على أطرافه تقريبًا؟", "o": ["≈ 216 V", "≈ 72 V", "صفر لأنه مفصول", "≈ 540 V"], "a": 0, "why": "Ke = 72 V لكل 1000 rpm، فعند 3000 rpm يكون الجهد ≈ 216 V."}, {"q": "ستفك محرك Z. الرأس واقف على الفرامل. ما الصواب؟", "o": ["اسند الرأس بدعامة أولًا", "فرامل 12 N·m تكفي وحدها", "حرّر الفرامل لتخفيف الحمل", "فك المحرك بسرعة"], "a": 0, "why": "الفرامل قد تنزلق؛ السند الميكانيكي إلزامي قبل فك محرك المحور الرأسي."}, {"q": "بعد 10 دقائق قرأ الجهاز 480 V بين P و N. ما المعنى؟", "o": ["دائرة التفريغ معطّلة", "القراءة طبيعية في الدرايف", "الجهاز يحتاج بطارية", "المكثفات فارغة"], "a": 0, "why": "الدرايف السليم يهبط تحت 50 V خلال الزمن المكتوب؛ بقاء 480 V يعني عطلًا في التفريغ."}], {lesson:'l1', pass:0.8});
+IL.quiz(document.getElementById('quiz'), [{"q": "كم الطاقة المخزّنة في ناقل سعته 235 µF عند 565 V؟", "o": ["≈ 37.5 J", "≈ 66.4 J", "≈ 0.13 J", "≈ 75.0 J"], "a": 0, "why": "E = ½ × 235×10⁻⁶ × 565² ≈ 37.5 J."}, {"q": "مرّت 10 دقائق ولمبة CHARGE مطفأة. ما خطوتك التالية؟", "o": ["قِس P-N بجهاز مُختبَر", "ابدأ العمل مباشرة", "قِس P مع الأرضي فقط", "انتظر ثم ابدأ دون قياس"], "a": 0, "why": "المؤشرات لا تُثبت شيئًا؛ القياس بجهاز مُختبَر هو الإثبات."}, {"q": "الدرايف في حالة STO. هل تفك أطراف U/V/W؟", "o": ["لا؛ الناقل ما زال مكهربًا", "نعم؛ العزم صفر", "نعم إذا انطفأت شاشة الدرايف", "نعم بعد الضغط على زر الطوارئ"], "a": 0, "why": "STO يوقف العزم فقط، والجهد باقٍ داخل الدرايف."}, {"q": "تدير عمود محرك X عند 3000 rpm وكابله مفكوك. كم الجهد على أطرافه؟", "o": ["≈ 216 V", "≈ 72 V", "صفر تقريبًا", "≈ 540 V"], "a": 0, "why": "72 V لكل 1000 rpm، فعند 3000 rpm ≈ 216 V."}, {"q": "ستفك محرك Z والرأس واقف على الفرامل. ما الصواب؟", "o": ["اسند الرأس بدعامة أولًا", "الفرامل 12 N·m تكفي وحدها", "حرّر الفرامل لتخفيف الحمل", "فك المحرك بسرعة"], "a": 0, "why": "الفرامل قد تنزلق؛ السند الميكانيكي إلزامي."}, {"q": "بعد 10 دقائق قرأت 480 V بين P و N. ما المعنى؟", "o": ["دائرة التفريغ معطّلة", "قراءة طبيعية في الدرايف", "بطارية جهاز القياس ضعيفة", "المكثفات فارغة"], "a": 0, "why": "الدرايف السليم يهبط تحت 50 V في الزمن المكتوب؛ بقاء 480 V عطل في التفريغ."}], {lesson:'l1', pass:0.8});
 </script>
 </body>
 </html>

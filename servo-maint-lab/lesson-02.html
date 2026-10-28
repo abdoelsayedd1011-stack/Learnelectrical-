@@ -5,7 +5,7 @@
 <meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>محرك السيرفو من الداخل ولوحة بياناته</title>
-<meta name="description" content="الدرس 2: مكوّنات محرك السيرفو PMSM، قراءة لوحة البيانات وحساب Kt والتيار الأقصى والتردد، منحنى العزم والسرعة، وتمييز أطراف القدرة والإنكودر والفرامل.">
+<meta name="description" content="الدرس 2: الأجزاء الأربعة داخل محرك السيرفو، أهم أرقام لوحة البيانات وحساب Kt، العزم المستمر والأقصى، توصيل الأطراف، وشروط المحرك البديل.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
@@ -18,162 +18,253 @@
   <div>
     <p class="kick">كورس صيانة محركات السيرفو · الدرس 2 من 13</p>
     <h1>محرك السيرفو من الداخل ولوحة بياناته</h1>
-    <p>اعرف ما في داخل المحرك، واقرأ لوحته قراءة الفني: كل رقم فيها مرجع لقياس ستجريه لاحقًا.</p>
+    <p>داخل المحرك أربعة أجزاء، وعلى لوحته خمسة أرقام. كل رقم منها مرجع لقياس ستجريه لاحقًا.</p>
   </div>
   <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="bench.html">المحاكي</a></div>
 </header>
 
 <section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
 
+<section class="panel lsec" aria-label="مدخل الدرس">
+<div class="hook">تعطّل محرك محور Y، فأحضر فنّي محركًا احتياطيًّا من المخزن.<br>
+القدرة نفسها 1.5 kW، والمقاس نفسه.<br>
+ركّبه وشغّل الماكينة، فظهر إنذار إنكودر فورًا.<br>
+<b>الاحتياطي فيه إنكودر مطلق تسلسلي، ودرايف Y ينتظر إنكودرًا تزايديًّا.</b></div>
+<p>في هذا الدرس ستعرف:</p>
+<ul class="learn">
+<li>الأجزاء الأربعة داخل محرك السيرفو.</li>
+<li>أهم خمسة أرقام على لوحة البيانات.</li>
+<li>ما الذي يجب أن يتطابق في المحرك البديل.</li>
+</ul>
+</section>
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>ما الذي داخل محرك السيرفو؟</h2>
-<p>محركات السيرفو في ماكينة CNC هي محركات <b>PMSM</b> (المحرك المتزامن ذو المغانط الدائمة، Permanent Magnet Synchronous Motor): ملفات ثلاثية الطور في الجزء الثابت (Stator)، ومغانط نيوديميوم في الدوّار (Rotor). الدوّار يدور بسرعة المجال تمامًا (متزامن)، والدرايف يحتاج أن يعرف موضع المغانط في كل لحظة؛ لهذا يُركَّب <b>الإنكودر</b> (Encoder: حسّاس الموضع) على العمود.</p>
+<p>تخيّل إبرة بوصلة تتبع مغناطيسًا يدور حولها. الملفات تصنع مجالًا يدور، والمغانط في الدوّار تتبعه بالسرعة نفسها تمامًا.</p>
+<p>يسمّى هذا المحرك <b>PMSM</b> (Permanent Magnet Synchronous Motor): محرك متزامن بمغانط دائمة.</p>
 <figure class="fig">
-<svg viewBox="0 0 640 290" role="img" aria-label="مقطع طولي في محرك سيرفو: العمود والفلنجة والمحمل الأمامي، الملفات الثابتة، الدوار ذو المغانط، المحمل الخلفي، الفرامل، الإنكودر، والموصّلان" style="width:100%;max-width:640px;direction:ltr">
-<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor">
-<rect x="20" y="132" width="110" height="26" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
-<text x="60" y="124" text-anchor="middle">shaft + key</text>
-<rect x="110" y="60" width="22" height="170" fill="none" stroke="currentColor" stroke-width="2"/>
-<text x="121" y="250" text-anchor="middle">flange</text>
-<rect x="132" y="80" width="340" height="130" rx="6" fill="none" stroke="currentColor" stroke-width="2"/>
-<rect x="134" y="118" width="22" height="54" style="fill:var(--muted)" opacity=".5"/>
-<text x="145" y="198" text-anchor="middle" font-size="10">brg</text>
-<rect x="190" y="84" width="200" height="26" style="fill:var(--cur)" opacity=".75"/>
-<rect x="190" y="180" width="200" height="26" style="fill:var(--cur)" opacity=".75"/>
-<text x="290" y="101" text-anchor="middle">stator winding U V W</text>
-<rect x="200" y="122" width="180" height="46" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
-<rect x="206" y="126" width="40" height="12" style="fill:var(--bad)"/><rect x="250" y="126" width="40" height="12" style="fill:var(--accent)"/><rect x="294" y="126" width="40" height="12" style="fill:var(--bad)"/><rect x="338" y="126" width="38" height="12" style="fill:var(--accent)"/>
-<text x="290" y="158" text-anchor="middle" font-size="11">rotor: NdFeB magnets N/S</text>
-<path d="M130 145H520" stroke="currentColor" stroke-width="2" stroke-dasharray="3 3"/>
-<rect x="400" y="118" width="22" height="54" style="fill:var(--muted)" opacity=".5"/>
-<text x="411" y="198" text-anchor="middle" font-size="10">brg</text>
-<rect x="430" y="110" width="34" height="70" rx="3" fill="none" style="stroke:var(--cur)" stroke-width="2"/>
-<text x="447" y="252" text-anchor="middle" style="fill:var(--cur)">brake (Z only)</text>
-<path d="M447 180V240" style="stroke:var(--cur)" stroke-dasharray="3 2"/>
-<rect x="472" y="96" width="70" height="98" rx="6" fill="none" style="stroke:var(--accent)" stroke-width="2"/>
-<path d="M500 104V186" style="stroke:var(--accent)" stroke-width="3"/>
-<text x="507" y="214" text-anchor="middle" style="fill:var(--accent)">encoder</text>
-<text x="507" y="230" text-anchor="middle" font-size="10">disk + sensor</text>
-<rect x="250" y="40" width="60" height="40" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
-<text x="280" y="30" text-anchor="middle">power: U V W PE (+brake)</text>
-<rect x="480" y="56" width="56" height="40" rx="4" fill="none" style="stroke:var(--accent)" stroke-width="2"/>
-<text x="508" y="46" text-anchor="middle" style="fill:var(--accent)">encoder conn.</text>
-<text x="250" y="276" text-anchor="middle">PT1000 / PTC sensor embedded in the winding</text>
-<text x="600" y="150" text-anchor="middle" font-size="11">NDE</text><text x="60" y="185" text-anchor="middle" font-size="11">DE (load)</text>
+<svg viewBox="0 0 520 216" role="img" aria-label="مقطع مبسّط في محرك السيرفو: العمود، الملفات الثابتة، الدوّار بمغانطه، الفرامل في محرك Z فقط، والإنكودر في الطرف الخلفي" style="width:100%;max-width:560px;direction:ltr">
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="14" fill="currentColor">
+<rect x="10" y="104" width="90" height="22" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+<text x="55" y="96" text-anchor="middle" font-size="12">shaft</text>
+<rect x="96" y="40" width="18" height="150" fill="none" stroke="currentColor" stroke-width="2"/>
+<text x="105" y="210" text-anchor="middle" font-size="12">flange</text>
+<rect x="114" y="54" width="250" height="122" rx="6" fill="none" stroke="currentColor" stroke-width="2"/>
+<rect x="150" y="58" width="170" height="24" style="fill:var(--cur)" opacity=".75"/>
+<rect x="150" y="148" width="170" height="24" style="fill:var(--cur)" opacity=".75"/>
+<text x="235" y="75" text-anchor="middle" font-size="13">① winding U V W</text>
+<rect x="160" y="92" width="150" height="46" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+<rect x="166" y="97" width="34" height="12" style="fill:var(--bad)"/><rect x="204" y="97" width="34" height="12" style="fill:var(--accent)"/><rect x="242" y="97" width="34" height="12" style="fill:var(--bad)"/><rect x="280" y="97" width="26" height="12" style="fill:var(--accent)"/>
+<text x="235" y="130" text-anchor="middle" font-size="13">② rotor magnets</text>
+<path d="M100 115H440" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 3"/>
+<rect x="330" y="86" width="26" height="58" rx="3" fill="none" style="stroke:var(--cur)" stroke-width="2"/>
+<text x="343" y="200" text-anchor="middle" font-size="12" style="fill:var(--cur)">④ brake (Z)</text>
+<path d="M343 144V186" style="stroke:var(--cur)" stroke-dasharray="3 2"/>
+<rect x="364" y="72" width="60" height="86" rx="6" fill="none" style="stroke:var(--accent)" stroke-width="2"/>
+<path d="M388 80V150" style="stroke:var(--accent)" stroke-width="3"/>
+<text x="440" y="56" text-anchor="middle" font-size="13" style="fill:var(--accent)">③ encoder</text>
 </g></svg>
-<figcaption>محرك سيرفو نموذجي: لا مروحة فيه، فيُبرَّد بالتوصيل عبر الفلنجة إلى جسم الماكينة. الفرامل (في محرك Z فقط) والإنكودر في الطرف الخلفي NDE.</figcaption>
+<figcaption>① الملفات ② المغانط ③ الإنكودر ④ الفرامل (في محرك Z فقط). لا مروحة: الحرارة تخرج عبر الفلنجة.</figcaption>
 </figure>
-<div class="tblw"><table class="tbl"><thead><tr><th>الجزء</th><th>وظيفته</th><th>عطله النموذجي</th><th>الدرس</th></tr></thead><tbody>
-<tr><td>الملفات U/V/W</td><td>تنتج المجال الدوار</td><td>قصر بين اللفات، ضعف العزل، فتح طور</td><td>3</td></tr>
-<tr><td>المغانط الدائمة</td><td>تنتج الفيض دون تيار مغنطة</td><td>فقدان المغنطة (Demagnetisation) من الحرارة أو التيار الزائد</td><td>3، 8</td></tr>
-<tr><td>الإنكودر</td><td>الموضع والسرعة وزاوية التبديل (Commutation)</td><td>تلوّث القرص، تلف الإلكترونيات، البطارية، انزلاق التثبيت</td><td>4، 5، 6</td></tr>
-<tr><td>الفرامل</td><td>تثبيت المحور عند فصل الطاقة</td><td>لا تتحرر، تنزلق، ملفها مفتوح</td><td>7</td></tr>
-<tr><td>المحامل والسدادة</td><td>حمل العمود ومنع دخول الزيت</td><td>صوت، اهتزاز، تسرّب سائل التبريد</td><td>8</td></tr>
-<tr><td>حسّاس الحرارة PT1000 / PTC / KTY</td><td>حماية الملفات من السخونة</td><td>مفتوح أو مقصور، فيظهر إنذار حرارة كاذب</td><td>11</td></tr>
+<ul>
+<li><b>الملفات U/V/W:</b> تصنع المجال الدوّار.</li>
+<li><b>المغانط:</b> تتبع المجال وتدير العمود.</li>
+<li><b>الإنكودر:</b> يخبر الدرايف بموضع المغانط لحظة بلحظة.</li>
+<li><b>الفرامل:</b> تمسك العمود عند الفصل (محرك Z فقط).</li>
+</ul>
+<p>محرك السيرفو بلا مروحة غالبًا. يبرد عبر الفلنجة إلى جسم الماكينة، فلا يُركَّب على حامل صغير مدهون.</p>
+<div class="sum">ملفات تصنع المجال، ومغانط تتبعه، وإنكودر يخبر الدرايف بالموضع.</div>
+<details class="more"><summary>للاستزادة: أعطال كل جزء، والمقارنة مع المحرك الحثي</summary>
+<div class="tblw"><table class="tbl"><thead><tr><th>الجزء</th><th>عطله النموذجي</th><th>الدرس</th></tr></thead><tbody>
+<tr><td>الملفات U/V/W</td><td>قصر بين اللفات، ضعف العزل، فتح طور</td><td>3</td></tr>
+<tr><td>المغانط</td><td>فقدان المغنطة من الحرارة أو التيار الزائد</td><td>3، 8</td></tr>
+<tr><td>الإنكودر</td><td>تلوّث القرص، تلف الإلكترونيات، البطارية، انزلاق التثبيت</td><td>4، 5، 6</td></tr>
+<tr><td>الفرامل</td><td>لا تتحرّر، تنزلق، ملفها مفتوح</td><td>7</td></tr>
+<tr><td>المحامل والسدادة</td><td>صوت، اهتزاز، تسرّب سائل التبريد</td><td>8</td></tr>
+<tr><td>حسّاس الحرارة PT1000 / PTC / KTY</td><td>مفتوح أو مقصور، فيظهر إنذار حرارة كاذب</td><td>11</td></tr>
 </tbody></table></div>
-<div class="tblw"><table class="tbl"><thead><tr><th>المقارنة</th><th>محرك سيرفو PMSM</th><th>محرك حثي عادي</th></tr></thead><tbody>
-<tr><td>التبريد</td><td>بلا مروحة غالبًا؛ يُبرَّد عبر الفلنجة</td><td>مروحة على العمود</td></tr>
-<tr><td>العزم الأقصى</td><td>نحو 3 أضعاف المقنّن للتسارع</td><td>نحو 2–3 أضعاف عند البدء فقط</td></tr>
-<tr><td>تبديل طورين</td><td><b>خطأ</b>: يفقد التحكم وقد يندفع أو يعطي AL.oc</td><td>يعكس الاتجاه فقط</td></tr>
-<tr><td>العمل دون درايف</td><td>لا يعمل على الشبكة مباشرة أبدًا</td><td>يعمل مباشرة على 400 V</td></tr>
-<tr><td>دوران العمود باليد</td><td>يولّد جهدًا على الأطراف (Back-EMF)</td><td>لا يولّد جهدًا يُذكر</td></tr>
+<div class="tblw"><table class="tbl"><thead><tr><th>المقارنة</th><th>سيرفو PMSM</th><th>محرك حثي</th></tr></thead><tbody>
+<tr><td>التبريد</td><td>عبر الفلنجة</td><td>مروحة على العمود</td></tr>
+<tr><td>العزم الأقصى</td><td>نحو 3 أضعاف المقنّن للتسارع</td><td>2–3 أضعاف عند البدء فقط</td></tr>
+<tr><td>تبديل طورين</td><td>اندفاع أو AL.oc</td><td>يعكس الاتجاه فقط</td></tr>
+<tr><td>على الشبكة مباشرة</td><td>لا يعمل أبدًا</td><td>يعمل على 400 V</td></tr>
+<tr><td>تدوير العمود باليد</td><td>يولّد جهدًا Back-EMF</td><td>لا يولّد جهدًا يُذكر</td></tr>
 </tbody></table></div>
-<p>المعيار IEC 60034-1 يحدّد قيم التقنين (القدرة، نوع التشغيل S1، فئة العزل الحرارية)، و IEC 60034-5 يحدّد درجة الحماية IP: محركات السيرفو غالبًا IP65 أو IP67، ويُستثنى عادة طرف العمود عند السدادة، فراجع الكتالوج.</p>
+<p>IEC 60034-1 يحدّد قيم التقنين ونوع التشغيل S1 وفئة العزل، و IEC 60034-5 يحدّد درجة الحماية IP (غالبًا IP65 أو IP67، ويُستثنى طرف العمود عادة).</p></details>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>قراءة لوحة البيانات: كل سطر ومعناه</h2>
-<p>هذه لوحة محرك محور X كما ستراها على المحاكي. القيم الأساسية من بيانات المشروع، وبعض الحقول عامة نموذجية للتعلّم.</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>الحقل</th><th>القيمة (محور X)</th><th>المعنى والاستخدام</th></tr></thead><tbody>
-<tr><td>Rated output</td><td class="mono">1.5 kW</td><td>القدرة الميكانيكية المستمرة عند السرعة المقنّنة</td></tr>
-<tr><td>Rated / Max speed</td><td class="mono">3000 / 5000 rpm</td><td>فوق 3000 يقل العزم المتاح بسبب حد الجهد</td></tr>
-<tr><td>Rated torque</td><td class="mono">4.77 N·m</td><td>العزم المستمر عند السرعة المقنّنة (S1)</td></tr>
-<tr><td>Peak torque</td><td class="mono">14.3 N·m</td><td>للتسارع والتباطؤ ثوانيَ معدودة فقط</td></tr>
-<tr><td>Rated current</td><td class="mono">4.0 A rms</td><td>تيار الطور المستمر؛ عليه يُضبط حد الحمل في الدرايف</td></tr>
-<tr><td>Kt</td><td class="mono">1.19 N·m/A</td><td>ثابت العزم: كل أمبير ينتج 1.19 N·m</td></tr>
-<tr><td>Ke</td><td class="mono">72 V/1000 rpm</td><td>ثابت الجهد Back-EMF، خط-خط rms. يُقاس في الدرس 3</td></tr>
+  <h2 id="s2"><span class="k">2</span>لوحة البيانات: خمسة أرقام تهمّك</h2>
+<figure class="fig">
+<svg viewBox="0 0 360 240" role="img" aria-label="لوحة بيانات محرك محور X، وأهم خمسة أرقام فيها مظللة: العزم المقنّن 4.77، والعزم الأقصى 14.3، والتيار 4.0 أمبير، وثابت الجهد 72، وعدد الأقطاب 8" style="width:100%;max-width:420px;direction:ltr">
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="14" fill="currentColor">
+<rect x="6" y="6" width="348" height="228" rx="10" fill="none" stroke="currentColor" stroke-width="2"/>
+<text x="180" y="30" text-anchor="middle" font-weight="700">AC SERVO MOTOR · axis X</text>
+<path d="M6 40H354" stroke="currentColor"/>
+<text x="20" y="62">Output   1.5 kW</text><text x="192" y="62">3000 / 5000 rpm</text>
+<rect x="14" y="72" width="164" height="26" rx="5" style="fill:var(--good)" opacity=".22"/>
+<text x="20" y="90">Torque  <tspan font-weight="700">4.77</tspan> N·m</text>
+<rect x="186" y="72" width="164" height="26" rx="5" style="fill:var(--warn)" opacity=".25"/>
+<text x="192" y="90">Peak <tspan font-weight="700">14.3</tspan> N·m</text>
+<rect x="14" y="104" width="164" height="26" rx="5" style="fill:var(--accent)" opacity=".2"/>
+<text x="20" y="122">Current <tspan font-weight="700">4.0</tspan> A</text>
+<rect x="186" y="104" width="164" height="26" rx="5" style="fill:var(--cur)" opacity=".22"/>
+<text x="192" y="122">Ke <tspan font-weight="700">72</tspan> V/krpm</text>
+<rect x="14" y="136" width="164" height="26" rx="5" style="fill:var(--bad)" opacity=".18"/>
+<text x="20" y="154">Poles   <tspan font-weight="700">8</tspan></text>
+<text x="192" y="154">R 2.8 Ω · L 12 mH</text>
+<text x="20" y="186" font-size="12">Encoder: 23-bit absolute, serial</text>
+<text x="20" y="208" font-size="12">Brake: none · Ins. F · IP65 · S1</text>
+</g></svg>
+<figcaption>لوحة محرك محور X. المظلَّل هو ما ستستعمله كل يوم.</figcaption>
+</figure>
+<ul>
+<li><b>العزم المقنّن 4.77 N·m:</b> ما يعطيه المحرك باستمرار.</li>
+<li><b>العزم الأقصى 14.3 N·m:</b> للتسارع، ثوانٍ فقط.</li>
+<li><b>التيار المقنّن 4.0 A:</b> عليه يُضبط حد الحمل في الدرايف.</li>
+<li><b>Ke = 72 V/1000 rpm:</b> الجهد الذي يولّده لكل 1000 rpm.</li>
+<li><b>8 أقطاب:</b> لفة واحدة للعمود = 4 دورات كهربية.</li>
+</ul>
+<p>من رقمين على اللوحة تحسب <b>ثابت العزم Kt</b> (العزم لكل أمبير):</p>
+<p class="mono">Kt = T ÷ I = 4.77 ÷ 4.0 ≈ 1.19 N·m/A</p>
+<div class="sum">العزم والتيار و Ke وعدد الأقطاب مراجع لكل قياس ستجريه لاحقًا.</div>
+<details class="more"><summary>للاستزادة: كل سطر في اللوحة</summary>
+<div class="tblw"><table class="tbl"><thead><tr><th>الحقل</th><th>القيمة (X)</th><th>المعنى</th></tr></thead><tbody>
+<tr><td>Rated output</td><td class="mono">1.5 kW</td><td>القدرة المستمرة عند السرعة المقنّنة</td></tr>
+<tr><td>Rated / Max speed</td><td class="mono">3000 / 5000 rpm</td><td>فوق 3000 يقل العزم المتاح</td></tr>
+<tr><td>Rated / Peak torque</td><td class="mono">4.77 / 14.3 N·m</td><td>المستمر / للتسارع فقط</td></tr>
+<tr><td>Rated current</td><td class="mono">4.0 A rms</td><td>تيار الطور المستمر</td></tr>
+<tr><td>Kt</td><td class="mono">1.19 N·m/A</td><td>العزم لكل أمبير</td></tr>
+<tr><td>Ke</td><td class="mono">72 V/1000 rpm</td><td>Back-EMF خط-خط rms (الدرس 3)</td></tr>
 <tr><td>R (ph-ph, 20 °C)</td><td class="mono">2.8 Ω</td><td>مرجع قياس الملفات</td></tr>
 <tr><td>L (ph-ph)</td><td class="mono">12 mH</td><td>مرجع قياس المحاثة</td></tr>
-<tr><td>Poles</td><td class="mono">8 (4 pole pairs)</td><td>دورة ميكانيكية واحدة = 4 دورات كهربية</td></tr>
-<tr><td>Encoder</td><td class="mono">23-bit abs. multi-turn, serial</td><td>نوع الإنكودر؛ يحدد الدرايف والكابل المتوافقين (الدرس 4)</td></tr>
+<tr><td>Poles</td><td class="mono">8 (4 pole pairs)</td><td>لفة ميكانيكية = 4 دورات كهربية</td></tr>
+<tr><td>Encoder</td><td class="mono">23-bit abs. multi-turn, serial</td><td>يحدّد الدرايف والكابل المتوافقين (الدرس 4)</td></tr>
 <tr><td>Brake</td><td class="mono">—</td><td>لا فرامل في X؛ محرك Z فيه فرامل 24 V</td></tr>
 <tr><td>Insulation / IP / Duty</td><td class="mono">F (155) · IP65 · S1</td><td>قيم نموذجية للتعلّم؛ تحقق من لوحة محركك</td></tr>
 </tbody></table></div>
-<h3>المعادلات التي تحتاجها من اللوحة</h3>
-<ul><li><b>ثابت العزم:</b> <span class="eq">Kt = T_rated / I_rated = 4.77 / 4.0 ≈ 1.19 N·m/A</span>.</li>
-<li><b>التيار الأقصى:</b> <span class="eq">I_peak ≈ T_peak / Kt = 14.3 / 1.19 ≈ 12.0 A</span> (تقريب خطي؛ عند التشبع يقل Kt قليلًا).</li>
-<li><b>القدرة:</b> <span class="eq">P = T·ω = 4.77 × (2π × 3000/60) ≈ 1499 W</span>، تطابق 1.5 kW.</li>
-<li><b>التردد الكهربي:</b> <span class="eq">f = (p/2) × rpm / 60 = 4 × 3000 / 60 = 200 Hz</span>.</li>
-<li><b>العلاقة بين Kt و Ke:</b> لمحرك جيبي، <span class="eq">Kt ≈ √3 × Ke[V·s/rad]</span>. ‏<span class="eq">72 / (1000 × 2π/60) = 0.688</span> و <span class="eq">√3 × 0.688 ≈ 1.19</span>. إذا لم تتفق القيمتان في لوحة ما، فراجع هل Ke مكتوب rms أم peak، خط-خط أم طوري.</li></ul>
-<figure class="fig">
-<svg viewBox="0 0 640 270" role="img" aria-label="منحنى العزم والسرعة لمحرك X: منطقة التشغيل المستمر حتى 4.77 نيوتن متر، ومنطقة التشغيل المتقطع حتى 14.3 نيوتن متر، وتهبط بعد 3000 دورة بسبب حد الجهد" style="width:100%;max-width:640px;direction:ltr">
-<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor">
-<path d="M70 220H600M70 220V20" stroke="currentColor" stroke-width="2"/>
-<path d="M70 59H362L566 140V192L362 166H70Z" style="fill:var(--warn)" opacity=".18"/>
-<path d="M70 166H362L566 192V220H70Z" style="fill:var(--good)" opacity=".28"/>
-<path d="M70 59H362L566 140" fill="none" style="stroke:var(--warn)" stroke-width="2.5"/>
-<path d="M70 166H362L566 192" fill="none" style="stroke:var(--good)" stroke-width="2.5"/>
-<text x="200" y="110" text-anchor="middle" style="fill:var(--warn)">intermittent (accel/decel)</text>
-<text x="200" y="198" text-anchor="middle" style="fill:var(--good)">continuous S1</text>
-<text x="64" y="63" text-anchor="end">14.3</text><text x="64" y="170" text-anchor="end">4.77</text><text x="64" y="224" text-anchor="end">0</text>
-<path d="M362 220v6M566 220v6" stroke="currentColor"/>
-<text x="362" y="240" text-anchor="middle">3000</text><text x="566" y="240" text-anchor="middle">5000</text>
-<text x="335" y="262" text-anchor="middle">speed (rpm)</text><text x="76" y="16">torque (N·m)</text>
-<text x="470" y="80" style="fill:var(--bad)" font-size="11">voltage limit:</text><text x="470" y="96" style="fill:var(--bad)" font-size="11">Back-EMF → DC bus</text>
-</g></svg>
-<figcaption>شكل نموذجي للتعلّم لمنحنى محرك X. فوق السرعة المقنّنة يقترب Back-EMF من جهد الناقل فيضيق المجال المتاح للعزم. المنحنى الحقيقي في كتالوج المحرك.</figcaption>
-</figure>
+<p><b>العلاقة بين Kt و Ke</b> لمحرك جيبي: <span class="eq">Kt ≈ √3 × Ke[V·s/rad]</span>. ‏<span class="eq">72 ÷ 104.7 = 0.688</span>، و <span class="eq">√3 × 0.688 ≈ 1.19</span>. إن لم تتفقا في لوحة ما، فراجع هل Ke مكتوب rms أم peak، خط-خط أم طوري.</p></details>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>مثال محلول: محاور الماكينة الأربعة</h2>
-<div class="ex"><b>المطلوب:</b> من بيانات كل محور، احسب Kt، والقدرة الفعلية، والتردد الكهربي عند السرعة المقنّنة، والتيار الأقصى، وقمة Back-EMF عند السرعة القصوى مقارنة بجهد الناقل 540 V.</div>
-<div class="tblw"><table class="tbl"><thead><tr><th>المحور</th><th>Kt = T/I</th><th>P = T·ω</th><th>f عند المقنّنة</th><th>I_peak = T_peak/Kt</th><th>Back-EMF عند السرعة القصوى</th></tr></thead><tbody>
-<tr><td>X</td><td class="mono">4.77/4.0 = 1.19</td><td class="mono">1499 W</td><td class="mono">200 Hz</td><td class="mono">≈ 12.0 A</td><td class="mono">72×5 = 360 V rms → 509 V قمة</td></tr>
-<tr><td>Y</td><td class="mono">1.19</td><td class="mono">1499 W</td><td class="mono">200 Hz</td><td class="mono">≈ 12.0 A</td><td class="mono">72×3 = 216 V rms (max 3000)</td></tr>
-<tr><td>Z</td><td class="mono">9.55/6.0 = 1.59</td><td class="mono">2000 W</td><td class="mono">133.3 Hz</td><td class="mono">≈ 18.0 A</td><td class="mono">96×3 = 288 V rms → 407 V قمة</td></tr>
-<tr><td>A</td><td class="mono">2.39/2.6 = 0.92</td><td class="mono">751 W</td><td class="mono">200 Hz</td><td class="mono">≈ 7.8 A</td><td class="mono">56×3 = 168 V rms → 238 V قمة</td></tr>
-</tbody></table></div>
-<ul><li>قمة Back-EMF لمحرك X عند 5000 rpm (509 V) قريبة من جهد الناقل 540 V؛ لهذا كانت 5000 rpm هي السرعة القصوى: فوقها لا يستطيع الدرايف دفع التيار في المحرك.</li>
-<li>التيار الأقصى نحو 3 أضعاف المقنّن في كل المحاور. إذا رأيت المحور يسحب تيار الذروة باستمرار، فالسبب ميكانيكي (احتكاك، فرامل لا تتحرر) أو إزاحة إنكودر خاطئة (الدرس 6).</li>
-<li>محركا X و Y متطابقان ميكانيكيًّا، لكن الإنكودر مختلف تمامًا: <b>لا يُبدَّل محرك بآخر لمجرد تطابق القدرة</b>؛ يجب أن يطابق نوع الإنكودر ما يدعمه الدرايف ومعامِلاته.</li></ul>
+  <h2 id="s3"><span class="k">3</span>العزم المستمر والعزم الأقصى</h2>
+<figure class="fig">
+<svg viewBox="0 0 520 250" role="img" aria-label="منحنى العزم والسرعة لمحرك X: منطقة مستمرة حتى 4.77 نيوتن متر، ومنطقة قصيرة حتى 14.3 للتسارع، ويهبط العزم بعد 3000 دورة" style="width:100%;max-width:560px;direction:ltr">
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="14" fill="currentColor">
+<path d="M60 200H500M60 200V20" stroke="currentColor" stroke-width="2"/>
+<path d="M60 50H300L470 125V178L300 155H60Z" style="fill:var(--warn)" opacity=".18"/>
+<path d="M60 155H300L470 178V200H60Z" style="fill:var(--good)" opacity=".28"/>
+<path d="M60 50H300L470 125" fill="none" style="stroke:var(--warn)" stroke-width="2.5"/>
+<path d="M60 155H300L470 178" fill="none" style="stroke:var(--good)" stroke-width="2.5"/>
+<text x="170" y="104" text-anchor="middle" style="fill:var(--warn)">short bursts (accel)</text>
+<text x="170" y="184" text-anchor="middle" style="fill:var(--good)">all day (S1)</text>
+<text x="54" y="55" text-anchor="end" font-size="12">14.3</text><text x="54" y="160" text-anchor="end" font-size="12">4.77</text><text x="54" y="204" text-anchor="end" font-size="12">0</text>
+<path d="M300 200v6M470 200v6" stroke="currentColor"/>
+<text x="300" y="222" text-anchor="middle" font-size="12">3000</text><text x="470" y="222" text-anchor="middle" font-size="12">5000</text>
+<text x="280" y="244" text-anchor="middle" font-size="12">speed (rpm)</text><text x="66" y="16" font-size="12">torque (N·m)</text>
+</g></svg>
+<figcaption>الأخضر: يعمل فيه طوال اليوم. البرتقالي: ثوانٍ للتسارع فقط. بعد 3000 rpm يقل العزم المتاح.</figcaption>
+</figure>
+<p>العدّاء يجري ببطء ساعات، ويركض بأقصى سرعته ثواني فقط. والمحرك كذلك:</p>
+<ul>
+<li><b>4.77 N·m:</b> طوال اليوم دون سخونة.</li>
+<li><b>14.3 N·m:</b> نحو 3 أضعاف، للتسارع والتباطؤ فقط.</li>
+<li>إن سحب المحور تيارًا عاليًا باستمرار، فابحث عن سبب ميكانيكي.</li>
+</ul>
+<p>فوق 3000 rpm يقترب جهد Back-EMF من جهد الدرايف (540 V)، فيضعف دفع التيار ويقل العزم. عند 5000 rpm يتساويان تقريبًا؛ لهذا هي السرعة القصوى.</p>
+<div class="sum">العزم الأقصى للتسارع فقط. والسرعة القصوى يحدّها جهد Back-EMF.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>الأطراف والموصّلات: كيف تميّزها بالقياس</h2>
-<p>للمحرك موصّلان غالبًا: موصّل القدرة (U/V/W/PE وأحيانًا الفرامل وحسّاس الحرارة) وموصّل الإنكودر. ترتيب الأطراف يختلف بين الصانعين؛ الجدول التالي <b>نموذجي للتعلّم</b>، والمرجع هو مخطط التوصيل في كتيّب المحرك.</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>الموصّل</th><th>الأطراف النموذجية</th><th>كيف تتحقق بالملتيميتر (المحرك مفصول)</th></tr></thead><tbody>
-<tr><td>القدرة (4 أو 6 أو 8 أطراف)</td><td class="mono">U · V · W · PE (+ B+ B− للفرامل)</td><td>U-V = V-W = W-U ≈ 2.8 Ω في X؛ PE إلى الجسم &lt; 0.1 Ω؛ لا اتصال بين U/V/W و PE</td></tr>
-<tr><td>الفرامل (محرك Z)</td><td class="mono">B+ · B− (24 V DC)</td><td>≈ 40 Ω عند 20 °C؛ لا اتصال بالجسم</td></tr>
-<tr><td>حسّاس الحرارة</td><td class="mono">PT1000 / KTY / PTC</td><td>PT1000 ≈ 1.08 kΩ عند 20 °C؛ PTC بضع مئات من الأوم باردًا (نموذجي)</td></tr>
-<tr><td>إنكودر X (تسلسلي مطلق)</td><td class="mono">+5V · 0V · BAT+ · BAT− · SD+ · SD− · Shield</td><td>لا تقِس مقاومة داخل الإنكودر؛ تحقق من استمرارية الكابل فقط</td></tr>
-<tr><td>إنكودر Y (تزايدي TTL)</td><td class="mono">+5V · 0V · A /A · B /B · Z /Z · U /U · V /V · W /W</td><td>15 طرفًا تقريبًا؛ الأزواج مجدولة في الكابل</td></tr>
-<tr><td>إنكودر Z (EnDat/BiSS)</td><td class="mono">Up · 0V · Up sense · 0V sense · DATA /DATA · CLOCK /CLOCK</td><td>8 أسلاك؛ أطراف Sense لتعويض هبوط الجهد</td></tr>
-<tr><td>ريزولفر المحور A</td><td class="mono">R1 R2 · S1 S3 (cos) · S2 S4 (sin)</td><td>ثلاثة ملفات معزولة؛ مقاومة كل ملف عشرات الأوم (نموذجي)</td></tr>
+  <h2 id="s4"><span class="k">4</span>مثال محلول: محرك محور X</h2>
+<div class="ex"><b>المعطيات من اللوحة:</b> 4.77 N·m، 14.3 N·m، 4.0 A، 72 V/1000 rpm، 8 أقطاب.
+<ol>
+<li>ثابت العزم: <span class="eq">Kt = 4.77 ÷ 4.0 ≈ 1.19 N·m/A</span></li>
+<li>تيار العزم الأقصى: <span class="eq">14.3 ÷ 1.19 ≈ 12 A</span></li>
+<li>أي 3 أضعاف التيار المقنّن.</li>
+<li>التردد الكهربي: <span class="eq">f = 4 × 3000 ÷ 60 = 200 Hz</span></li>
+<li>القدرة: <span class="eq">4.77 × 2π × 3000/60 ≈ 1499 W</span></li>
+<li>تطابق 1.5 kW على اللوحة.</li>
+<li>Back-EMF عند 5000 rpm: <span class="eq">72 × 5 = 360 V rms</span></li>
+<li>قمته: <span class="eq">360 × √2 ≈ 509 V</span></li>
+<li>قريبة من جهد الدرايف 540 V، فهذه السرعة القصوى.</li>
+</ol></div>
+<div class="sum">من اللوحة وحدها تحسب Kt والتيار الأقصى والتردد، وتتأكد من الأرقام.</div>
+<details class="more"><summary>للاستزادة: المحاور الأربعة في جدول</summary>
+<div class="tblw"><table class="tbl"><thead><tr><th>المحور</th><th>Kt</th><th>P</th><th>f</th><th>I_peak</th><th>Back-EMF عند السرعة القصوى</th></tr></thead><tbody>
+<tr><td>X</td><td class="mono">1.19</td><td class="mono">1499 W</td><td class="mono">200 Hz</td><td class="mono">≈ 12.0 A</td><td class="mono">360 V rms → 509 V قمة</td></tr>
+<tr><td>Y</td><td class="mono">1.19</td><td class="mono">1499 W</td><td class="mono">200 Hz</td><td class="mono">≈ 12.0 A</td><td class="mono">216 V rms (max 3000)</td></tr>
+<tr><td>Z</td><td class="mono">9.55/6.0 = 1.59</td><td class="mono">2000 W</td><td class="mono">133.3 Hz</td><td class="mono">≈ 18.0 A</td><td class="mono">288 V rms → 407 V قمة</td></tr>
+<tr><td>A</td><td class="mono">2.39/2.6 = 0.92</td><td class="mono">751 W</td><td class="mono">200 Hz</td><td class="mono">≈ 7.8 A</td><td class="mono">168 V rms → 238 V قمة</td></tr>
 </tbody></table></div>
-<div class="box safe"><b>تنبيه:</b> اختبار العزل 500 V يُطبَّق على U/V/W فقط، بعد فصل موصّل الإنكودر وأطراف الفرامل وحسّاس الحرارة (الدرس 3). والملتيميتر على وضع الأوم لا يوضع على أطراف إلكترونيات الإنكودر المتصلة بالدرايف.</div>
-<div class="box key"><b>ترتيب الأطوار:</b> في السيرفو يجب أن يتصل U بـ U و V بـ V و W بـ W تمامًا. تبديل طورين لا يعكس الاتجاه كما في المحرك الحثي، بل يجعل زاوية التبديل خاطئة فيندفع المحرك أو يهتز ثم يعطي إنذار تيار زائد AL.oc أو خطأ تتبّع AL.PoS. عكس الاتجاه يكون بمعامِل في الدرايف.</div>
+<p>تيار <span class="eq">14.3 ÷ 1.19</span> تقريب خطي؛ عند التشبع يقل Kt قليلًا.</p></details>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
-  <h2 id="s5"><span class="k">5</span>قرارات التركيب والأخطاء الشائعة</h2>
+  <h2 id="s5"><span class="k">5</span>الأطراف: U إلى U تمامًا</h2>
+<figure class="fig">
+<svg viewBox="0 0 420 210" role="img" aria-label="الدرايف يتصل بالمحرك بكابلين: كابل القدرة U V W PE يجب أن يطابق كل طرف نظيره، وكابل الإنكودر منفصل" style="width:100%;max-width:480px;direction:ltr">
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="14" fill="currentColor">
+<rect x="10" y="20" width="110" height="170" rx="10" fill="none" stroke="currentColor" stroke-width="2"/><text x="65" y="44" text-anchor="middle" font-weight="700">drive</text>
+<rect x="300" y="20" width="110" height="170" rx="10" fill="none" stroke="currentColor" stroke-width="2"/><text x="355" y="44" text-anchor="middle" font-weight="700">motor</text>
+<text x="100" y="74" text-anchor="end">U</text><text x="100" y="98" text-anchor="end">V</text><text x="100" y="122" text-anchor="end">W</text><text x="100" y="146" text-anchor="end">PE</text>
+<text x="320" y="74">U</text><text x="320" y="98">V</text><text x="320" y="122">W</text><text x="320" y="146">PE</text>
+<path d="M120 69H300M120 93H300M120 117H300" style="stroke:var(--cur)" stroke-width="2.5"/>
+<path d="M120 141H300" style="stroke:var(--good)" stroke-width="2.5"/>
+<text x="210" y="62" text-anchor="middle" font-size="12" style="fill:var(--cur)">U→U · V→V · W→W</text>
+<path d="M120 172H300" style="stroke:var(--accent)" stroke-width="2.5" stroke-dasharray="6 4"/>
+<text x="100" y="176" text-anchor="end" font-size="12">ENC</text><text x="320" y="176" font-size="12">ENC</text>
+<text x="210" y="166" text-anchor="middle" font-size="12" style="fill:var(--accent)">encoder cable</text>
+</g></svg>
+<figcaption>كابل القدرة: كل طرف إلى نظيره تمامًا. كابل الإنكودر منفصل.</figcaption>
+</figure>
+<p>للمحرك موصّلان: موصّل <b>القدرة</b> (U/V/W/PE، وأحيانًا الفرامل)، وموصّل <b>الإنكودر</b>.</p>
+<ul>
+<li>في المحرك الحثي: تبديل طورين يعكس الاتجاه.</li>
+<li>في السيرفو: تبديل طورين يُفسد التحكم.</li>
+<li>النتيجة: اندفاع أو اهتزاز، ثم إنذار <b>AL.oc</b>.</li>
+<li>عكس الاتجاه يكون بمعامِل في الدرايف.</li>
+</ul>
+<p>بالملتيميتر والمحرك مفصول: U-V = V-W = W-U ≈ 2.8 Ω في X، ولا اتصال بين الأطوار والجسم.</p>
+<div class="sum">U إلى U، و V إلى V، و W إلى W. الاتجاه يُعكس بالمعامِل لا بالأسلاك.</div>
+<details class="more"><summary>للاستزادة: أطراف كل موصّل (جدول نموذجي)</summary>
+<div class="tblw"><table class="tbl"><thead><tr><th>الموصّل</th><th>الأطراف النموذجية</th><th>التحقق (المحرك مفصول)</th></tr></thead><tbody>
+<tr><td>القدرة</td><td class="mono">U · V · W · PE (+ B+ B−)</td><td>الأطوار متساوية؛ PE إلى الجسم &lt; 0.1 Ω</td></tr>
+<tr><td>الفرامل (Z)</td><td class="mono">B+ · B− (24 V DC)</td><td>≈ 40 Ω عند 20 °C؛ لا اتصال بالجسم</td></tr>
+<tr><td>حسّاس الحرارة</td><td class="mono">PT1000 / KTY / PTC</td><td>PT1000 ≈ 1.08 kΩ عند 20 °C</td></tr>
+<tr><td>إنكودر X (تسلسلي)</td><td class="mono">+5V · 0V · BAT+ · BAT− · SD+ · SD− · Shield</td><td>استمرارية الكابل فقط</td></tr>
+<tr><td>إنكودر Y (TTL)</td><td class="mono">+5V · 0V · A /A · B /B · Z /Z · U /U · V /V · W /W</td><td>نحو 15 طرفًا؛ الأزواج مجدولة</td></tr>
+<tr><td>إنكودر Z (EnDat/BiSS)</td><td class="mono">Up · 0V · sense · DATA /DATA · CLOCK /CLOCK</td><td>8 أسلاك؛ أطراف Sense لتعويض الهبوط</td></tr>
+<tr><td>ريزولفر A</td><td class="mono">R1 R2 · S1 S3 · S2 S4</td><td>ثلاثة ملفات معزولة؛ عشرات الأوم</td></tr>
+</tbody></table></div>
+<p>ترتيب الأطراف يختلف بين الصانعين؛ المرجع مخطط كتيّب المحرك. الميجر يُطبَّق على U/V/W فقط بعد فصل الإنكودر والفرامل وحسّاس الحرارة (الدرس 3).</p></details>
+</section>
+<section class="panel lsec" aria-labelledby="s6">
+  <h2 id="s6"><span class="k">6</span>قبل تركيب محرك بديل</h2>
+<p>تطابق القدرة لا يكفي. قارن هذه البنود على اللوحتين:</p>
+<ol class="steps-l">
+<li>نوع الإنكودر: مطابق لما يدعمه الدرايف.</li>
+<li>Ke والعزم والتيار: الفرق بضعة بالمئة على الأكثر.</li>
+<li>الفرامل: موجودة في الاثنين، أو غائبة في الاثنين.</li>
+<li>التركيب: سطح معدني نظيف بمقاس الكتالوج.</li>
+<li>الوصلة: بساحب ومكبس، لا بالمطرقة.</li>
+</ol>
+<div class="sum">المحرك البديل يطابق الإنكودر و Ke والفرامل، لا القدرة وحدها.</div>
+<details class="more"><summary>للاستزادة: جدول القرار والأخطاء الشائعة</summary>
 <div class="tblw"><table class="tbl"><thead><tr><th>ما تجده</th><th>الحكم</th><th>الإجراء</th></tr></thead><tbody>
-<tr><td>اللوحة تطابق المحرك القديم في القدرة ونوع الإنكودر ومعامِلات الدرايف</td><td style="color:var(--good)">مقبول</td><td>ركّب، وحمّل معامِلات المحرك أو دع الدرايف يقرأ اللوحة الإلكترونية</td></tr>
-<tr><td>القدرة نفسها، لكن الإنكودر تزايدي بدل التسلسلي</td><td style="color:var(--bad)">مرفوض</td><td>غير متوافق مع الدرايف دون بطاقة ومعامِلات مختلفة</td></tr>
-<tr><td>Ke مختلف بأكثر من بضعة بالمئة</td><td style="color:var(--warn)">راجِع</td><td>لفّ مختلف؛ يغيّر السرعة القصوى وكسب الحلقات</td></tr>
-<tr><td>محرك بفرامل مكان محرك بلا فرامل (أو العكس)</td><td style="color:var(--warn)">راجِع</td><td>تحقق من خرج الفرامل في الدرايف وتوقيتها</td></tr>
-<tr><td>اللوحة ممسوحة أو مفقودة</td><td style="color:var(--warn)">قِس</td><td>R و L و Ke وعدد الأقطاب من التردد (الدرس 3)، ثم قارن بالكتالوج</td></tr>
+<tr><td>القدرة والإنكودر والمعامِلات مطابقة</td><td style="color:var(--good)">مقبول</td><td>ركّب وحمّل معامِلات المحرك</td></tr>
+<tr><td>القدرة نفسها، والإنكودر تزايدي بدل التسلسلي</td><td style="color:var(--bad)">مرفوض</td><td>غير متوافق دون بطاقة ومعامِلات مختلفة</td></tr>
+<tr><td>Ke مختلف بأكثر من بضعة بالمئة</td><td style="color:var(--warn)">راجِع</td><td>لفّ مختلف يغيّر السرعة القصوى وكسب الحلقات</td></tr>
+<tr><td>فرامل في أحدهما فقط</td><td style="color:var(--warn)">راجِع</td><td>تحقق من خرج الفرامل وتوقيتها</td></tr>
+<tr><td>اللوحة ممسوحة</td><td style="color:var(--warn)">قِس</td><td>R و L و Ke وعدد الأقطاب (الدرس 3)</td></tr>
 </tbody></table></div>
-<div class="tblw"><table class="tbl"><thead><tr><th>الخطأ الشائع</th><th>العاقبة</th><th>الصواب</th></tr></thead><tbody>
-<tr><td>طرق ترس أو نصف وصلة على العمود بالمطرقة</td><td>كسر قرص الإنكودر الزجاجي أو خدش مجاري المحامل</td><td>استعمل ساحبًا ومكبسًا يدفع على العمود لا على الجسم</td></tr>
-<tr><td>تركيب المحرك على سطح مدهون أو حامل صغير</td><td>يسخن لأن الفلنجة لا تجد مسارًا للحرارة</td><td>سطح معدني نظيف بالمقاس الذي يفترضه الكتالوج</td></tr>
-<tr><td>التشغيل المستمر بالعزم الأقصى</td><td>سخونة الملف، ثم ضعف المغانط</td><td>العزم المستمر ≤ المقنّن؛ الأقصى للتسارع فقط</td></tr>
-<tr><td>شد سير بقوة زائدة على عمود المحرك</td><td>حمل قطري يتلف المحمل الأمامي</td><td>التزم بالحمل القطري والمحوري المسموح في الكتالوج</td></tr>
-<tr><td>تبديل U و V لعكس الاتجاه</td><td>اندفاع أو AL.oc</td><td>اعكس الاتجاه بمعامِل الدرايف</td></tr>
-</tbody></table></div>
-<div class="box key"><b>على المحاكي:</b> اقرأ لوحة بيانات محرك X، واحسب Kt والتردد الكهربي والعزم الأقصى، ثم حدّد أطراف القدرة والإنكودر والفرامل على الموصّلات. <a class="btn pri" href="bench.html#nameplate" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+<ul>
+<li>الطرق على العمود يكسر قرص الإنكودر الزجاجي ويخدش المحامل.</li>
+<li>التشغيل المستمر بالعزم الأقصى يسخّن الملف ثم يُضعف المغانط.</li>
+<li>شد السير بقوة زائدة يتلف المحمل الأمامي؛ التزم بالحمل المسموح.</li>
+</ul></details>
+<div class="box key"><b>على المحاكي:</b> اقرأ لوحة محرك X، واحسب Kt والتردد والعزم الأقصى، ثم حدّد أطراف القدرة والإنكودر والفرامل. <a class="btn pri" href="bench.html#nameplate" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
 
 
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
-  <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
+  <p>أجب عن 5 من 6 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
   <div id="quiz"></div>
 </section>
 
@@ -182,7 +273,7 @@
 </div>
 <script>
 IL.lesson('l2');
-IL.quiz(document.getElementById('quiz'), [{"q": "محرك عزمه المقنّن 9.55 N·m وتياره 6.0 A. كم Kt؟", "o": ["≈ 1.59 N·m/A", "≈ 0.63 N·m/A", "≈ 57.30 N·m/A", "≈ 3.18 N·m/A"], "a": 0, "why": "Kt = 9.55 ÷ 6.0 ≈ 1.59 N·m/A."}, {"q": "محرك X بثمانية أقطاب يدور 3000 rpm. كم التردد الكهربي؟", "o": ["200 Hz", "50 Hz", "400.0 Hz", "100 Hz"], "a": 0, "why": "f = 4 × 3000 ÷ 60 = 200 Hz."}, {"q": "عزم محرك A الأقصى 7.2 N·m و Kt = 0.92. كم التيار اللازم تقريبًا؟", "o": ["≈ 7.8 A", "≈ 6.6 A", "≈ 2.6 A", "≈ 13.2 A"], "a": 0, "why": "I = 7.2 ÷ 0.92 ≈ 7.8 A."}, {"q": "أراد فني عكس اتجاه محور سيرفو فبدّل U و V. ما المتوقع؟", "o": ["اندفاع أو إنذار AL.oc", "ينعكس الاتجاه بسلاسة تامة", "لا يتغير شيء", "يبطؤ المحرك فقط"], "a": 0, "why": "تبديل الأطوار يُفسد زاوية التبديل؛ عكس الاتجاه يكون بمعامِل الدرايف."}, {"q": "لماذا كانت السرعة القصوى لمحرك X 5000 rpm؟", "o": ["قمة Back-EMF تبلغ جهد الناقل", "لأن المحامل لا تتحمّل سرعة أعلى", "لأن الإنكودر 23-bit", "لأن التردد يتجاوز 50 Hz"], "a": 0, "why": "عند 5000 rpm قمة Back-EMF نحو 509 V، قريبة من 540 V، فلا يستطيع الدرايف دفع التيار."}, {"q": "محرك بديل له القدرة نفسها لكن إنكودره تزايدي والدرايف يتوقع تسلسليًّا. ما القرار؟", "o": ["غير متوافق؛ لا تركّبه", "مقبول لأن القدرة متطابقة", "مقبول بعد قلب الأطوار", "مقبول إذا كان Kt مطابقًا"], "a": 0, "why": "نوع الإنكودر يجب أن يطابق ما يدعمه الدرايف ومعامِلاته."}, {"q": "ركّب فني المحرك على حامل مدهون صغير، فصار يسخن عند عزم أقل من المقنّن. السبب الأرجح؟", "o": ["ضعف تبديد الحرارة", "تيار مغنطة زائد في الملفات", "المروحة متوقفة", "الإنكودر ملوّث"], "a": 0, "why": "محرك السيرفو بلا مروحة غالبًا ويعتمد على الفلنجة لتبديد الحرارة."}], {lesson:'l2', pass:0.8});
+IL.quiz(document.getElementById('quiz'), [{"q": "محرك عزمه المقنّن 9.55 N·m وتياره 6.0 A. كم Kt؟", "o": ["≈ 1.59 N·m/A", "≈ 0.63 N·m/A", "≈ 57.3 N·m/A", "≈ 3.18 N·m/A"], "a": 0, "why": "Kt = T ÷ I = 9.55 ÷ 6.0 ≈ 1.59 N·m/A."}, {"q": "محرك X بثمانية أقطاب يدور 3000 rpm. كم التردد الكهربي؟", "o": ["200 Hz", "50 Hz", "400 Hz", "100 Hz"], "a": 0, "why": "f = 4 × 3000 ÷ 60 = 200 Hz."}, {"q": "بدّل فنّي U و V ليعكس اتجاه محور سيرفو. ما المتوقع؟", "o": ["اندفاع أو إنذار AL.oc", "ينعكس الاتجاه بسلاسة تامة", "لا يتغيّر شيء أبدًا", "يبطؤ المحرك فقط"], "a": 0, "why": "تبديل الأطوار يُفسد التحكم؛ الاتجاه يُعكس بمعامِل الدرايف."}, {"q": "ما الذي يحدّ سرعة محرك X عند 5000 rpm؟", "o": ["Back-EMF يقارب جهد الدرايف", "المحامل لا تتحمّل سرعة أعلى", "دقة الإنكودر 23-bit لا تكفي", "التردد الكهربي يتجاوز 50 Hz"], "a": 0, "why": "قمة Back-EMF عند 5000 rpm ≈ 509 V، قريبة من 540 V."}, {"q": "محرك بديل بالقدرة نفسها، وإنكودره تزايدي والدرايف ينتظر تسلسليًّا. القرار؟", "o": ["غير متوافق؛ لا تركّبه", "مقبول لتطابق القدرة", "مقبول بعد قلب الأطوار", "مقبول إن تطابق Kt"], "a": 0, "why": "نوع الإنكودر يجب أن يطابق ما يدعمه الدرايف."}, {"q": "رُكّب محرك على حامل صغير مدهون، فسخن عند عزم أقل من المقنّن. السبب؟", "o": ["الحرارة لا تخرج عبر الفلنجة", "تيار مغنطة زائد في الملفات", "مروحة التبريد الخلفية متوقفة", "قرص الإنكودر ملوّث بالزيت"], "a": 0, "why": "محرك السيرفو بلا مروحة، ويبرد عبر الفلنجة إلى جسم الماكينة."}], {lesson:'l2', pass:0.8});
 </script>
 </body>
 </html>
