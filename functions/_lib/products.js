@@ -25,7 +25,7 @@ export const DEFAULT_PRICES = {
   plc:     { price: 749, was: 999, usd: 59, usd_was: 89, link: "https://learnelectricals.gumroad.com/l/PLC" },
   iiot:    { price: 599, was: 849, usd: 49, usd_was: 69, link: "https://learnelectricals.gumroad.com/l/jpjhhd" },
   scada:   { price: 599, was: 849, usd: 49, usd_was: 69, link: "https://learnelectricals.gumroad.com/l/kaebwcv" },
-  panel:   { price: 599, was: 849, usd: 49, usd_was: 69, link: "" }
+  panel:   { price: 599, was: 849, usd: 49, usd_was: 69, link: "https://learnelectricals.gumroad.com/l/Electricalpanel" }
 };
 
 // ids match _lib/courses.js (certificates) so one id means one course everywhere.
