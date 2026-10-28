@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>لوحات المحركات MCC</title>
+<meta name="description" content="الدرس 11: بادئات DOL وستار دلتا والبادئ الناعم ومحوّل التردد، تنسيق Type 1 و Type 2، واختيار مكونات كل مخرج وحرارة حجرته في لوحة MCC.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="panel.css?v=20261028p1">
+<script src="panel.js?v=20261028p1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس تصميم اللوحات الكهربية · الدرس 11 من 12</p>
+    <h1>لوحات المحركات MCC</h1>
+    <p>كل مخرج في لوحة MCC مجموعة متناسقة لا قطع متفرقة. اختر البادئ المناسب لكل محرك في المصنع، ومكوناته من جدول التنسيق.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="designer.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>ما لوحة MCC؟ ومخارج المصنع</h2>
+<p><b>مركز التحكم في المحركات</b> (<span class="term">MCC</span>) لوحة تجمع بادئات المحركات في وحدات وظيفية، كل وحدة فيها حماية القصر والتحكم والحماية من زيادة الحمل لمحرك واحد. وهي لوحة وفق <b>IEC 61439-2</b>، ومكوّناتها وفق <b>IEC 60947-4-1</b> (الكونتاكتورات والبادئات) و <b>IEC 60947-4-2</b> (البادئات الناعمة) و <b>IEC 61800</b> (محوّلات التردد).</p>
+<ul><li><b>Form 4b</b> شائع: كل مخرج في حجرة مستقلة بأطرافه، فتُصان مضخة دون إيقاف الضاغط.</li>
+<li><b>ثابتة أو قابلة للسحب</b> (<span class="term">Fixed / Withdrawable</span>): السحب يسرّع الاستبدال في المصانع المستمرة، وتكلفته أعلى.</li>
+<li>تيار القصر عند اللوحة الرئيسية: <span class="eq">1443 / 0.06 ≈ 24.06 kA</span>، و <b>25.26 kA</b> بمعامل الجهد c = 1.05 (IEC 60909)، فيجب أن يكون تنسيق كل مخرج مختبرًا عند تيار ≥ تيار القصر في لوحة MCC.</li></ul>
+<p>مغذي لوحة MCC من اللوحة الرئيسية: <b>Ib = 346.1 A</b> بقاطع MCCB 400 A مضبوط على Ir = 360 A وكابل 240 mm² (الدروس 2 إلى 4).</p>
+<p>تيار المحرك <span class="eq">I = P / (√3 × U × cos φ × η)</span> (القيم من لوحة بيانات المحرك تتقدم على الحساب):</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>المخرج</th><th>البادئ</th><th>η / cos φ (نموذجي)</th><th>I<sub>n</sub> المحسوب</th></tr></thead><tbody>
+<tr><td>4 × مضخة 15 kW (3 عاملة + 1 احتياطية)</td><td>DOL مباشر</td><td>0.92 / 0.85</td><td>27.7 A</td></tr>
+<tr><td>ضاغط 37 kW (1)</td><td>ستار دلتا</td><td>0.94 / 0.86</td><td>66.1 A</td></tr>
+<tr><td>ضاغط 37 kW (2)</td><td>بادئ ناعم</td><td>0.94 / 0.86</td><td>66.1 A</td></tr>
+<tr><td>تشيلر 75 kW</td><td>محوّل تردد VFD</td><td>0.95 / 0.87</td><td>131 A</td></tr>
+</tbody></table></div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>البدء المباشر DOL وستار دلتا</h2>
+<p><b>DOL</b> (<span class="term">Direct On Line</span>): أبسط بادئ: قاطع حماية + كونتاكتور + مرحّل زيادة حمل. تيار البدء 6 إلى 8 أضعاف In، أي للمضخة <span class="eq">166 A إلى 222 A</span> لثوانٍ قليلة. مقبول للمحركات الصغيرة والمتوسطة إذا تحمل الشبكة هبوط الجهد عند البدء.</p>
+<div class="ex"><b>مخرج مضخة 15 kW (27.7 A):</b>
+<ul><li>قاطع حماية المحرك <span class="term">MPCB</span> بمدى 24 إلى 32 A مضبوط على <b>28 A</b> (يجمع حماية القصر وزيادة الحمل)، أو MCCB مغناطيسي فقط مع مرحّل حراري بالمدى نفسه.</li>
+<li>كونتاكتور بفئة <span class="term">AC-3</span> (تشغيل وإيقاف محرك قفصي أثناء الدوران) ≥ 27.7 A، مثلًا 32 A.</li>
+<li>المرحّل يُضبط على تيار لوحة البيانات، <b>لا</b> على 1.25 منه، وصنف الفصل <span class="term">Class 10</span> للبدء العادي.</li></ul></div>
+<p><b>ستار دلتا</b> (<span class="term">Star-Delta</span>): يبدأ المحرك موصّلًا نجمة فيصبح جهد الملف <span class="eq">400/√3 = 230 V</span>، فيقل تيار البدء وعزمه إلى <b>الثلث</b>، ثم ينتقل إلى دلتا. يحتاج محركًا ستة أطراف مصممًا للعمل دلتا على 400 V، وكابلين إلى المحرك.</p>
+<figure class="fig">
+<svg viewBox="0 0 640 330" role="img" aria-label="دائرة القدرة لبادئ ستار دلتا لضاغط 37 kW" style="width:100%;max-width:640px;direction:ltr">
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor">
+<text x="70" y="22" text-anchor="middle">L1 L2 L3</text>
+<path d="M70 30V56" stroke="currentColor" stroke-width="2"/>
+<rect x="40" y="56" width="60" height="32" rx="4" fill="none" stroke="currentColor"/><text x="70" y="77" text-anchor="middle">Q1</text>
+<text x="108" y="70" font-size="11">MCCB-MA</text><text x="108" y="84" font-size="11">Type 2</text>
+<path d="M70 88V120" stroke="currentColor" stroke-width="2"/>
+<circle cx="70" cy="120" r="4" fill="currentColor"/>
+<path d="M70 120V150M70 120H400V150" stroke="currentColor" stroke-width="2" fill="none"/>
+<rect x="40" y="150" width="60" height="32" rx="4" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="70" y="171" text-anchor="middle">KM1</text>
+<text x="108" y="164" font-size="11" style="fill:var(--accent)">main</text><text x="108" y="178" font-size="11" style="fill:var(--accent)">0.58·In = 38 A</text>
+<path d="M70 182V206" stroke="currentColor" stroke-width="2"/>
+<rect x="40" y="206" width="60" height="28" rx="4" fill="none" style="stroke:var(--cur)"/><text x="70" y="225" text-anchor="middle" style="fill:var(--cur)">F1</text>
+<text x="108" y="218" font-size="11" style="fill:var(--cur)">overload</text><text x="108" y="232" font-size="11" style="fill:var(--cur)">set 38 A</text>
+<path d="M70 234V270H220" stroke="currentColor" stroke-width="2" fill="none"/>
+<rect x="370" y="150" width="60" height="32" rx="4" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="400" y="171" text-anchor="middle">KM2</text>
+<text x="438" y="164" font-size="11" style="fill:var(--accent)">delta</text><text x="438" y="178" font-size="11" style="fill:var(--accent)">0.58·In = 38 A</text>
+<path d="M400 182V256H298" stroke="currentColor" stroke-width="2" fill="none"/>
+<circle cx="260" cy="270" r="40" fill="none" stroke="currentColor" stroke-width="2"/>
+<text x="260" y="266" text-anchor="middle">M 3~</text><text x="260" y="284" text-anchor="middle" font-size="11">37 kW</text>
+<text x="214" y="260" text-anchor="end" font-size="11">U1 V1 W1</text>
+<text x="306" y="248" font-size="11">W2 U2 V2</text>
+<path d="M298 284H480V246" stroke="currentColor" stroke-width="2" fill="none"/>
+<rect x="450" y="214" width="60" height="32" rx="4" style="fill:var(--warn-soft);stroke:var(--warn)"/><text x="480" y="235" text-anchor="middle">KM3</text>
+<text x="518" y="228" font-size="11" style="fill:var(--warn)">star</text><text x="518" y="242" font-size="11" style="fill:var(--warn)">In/3 = 22 A</text>
+<path d="M480 214V200M466 200H494" stroke="currentColor" stroke-width="2" fill="none"/>
+<text x="500" y="204" font-size="11">star point</text>
+<text x="20" y="322" font-size="11" class="svg-ar">التشغيل: KM1 + KM3 (ستار) ← مؤقت 5 إلى 10 ثوانٍ ← فصل KM3 ← توقف قصير ← KM1 + KM2 (دلتا)</text>
+</g></svg>
+<figcaption>في ستار دلتا يمر في KM1 و KM2 و F1 تيار الملف (0.58 من تيار الخط)، وفي KM3 ثلث تيار الخط. بين KM2 و KM3 تشابك كهربي وميكانيكي.</figcaption>
+</figure>
+<div class="tblw"><table class="tbl"><thead><tr><th>العنصر (ضاغط 37 kW، In = 66.1 A)</th><th>القاعدة</th><th>القيمة</th></tr></thead><tbody>
+<tr><td>KM1 رئيسي و KM2 دلتا</td><td><span class="eq">≥ In/√3 = 0.58·In</span> بفئة AC-3</td><td>38.2 A → 40 A</td></tr>
+<tr><td>KM3 ستار</td><td><span class="eq">≥ In/3</span> (بعض المصنّعين يطلب أكبر للبدء الطويل)</td><td>22.0 A → 25 A</td></tr>
+<tr><td>المرحّل F1 بعد KM1 (في دائرة الملف)</td><td>يُضبط على <span class="eq">0.58·In</span></td><td>38 A</td></tr>
+<tr><td>كابلا المحرك</td><td>كل كابل يحمل تيار الملف</td><td>Iz ≥ 38 A بعد التصحيح</td></tr>
+</tbody></table></div>
+<div class="box safe"><b>خطأ شائع:</b> ضبط المرحّل على 66 A وهو مركّب في دائرة الملف، فلا يحمي المحرك أبدًا. وخطأ آخر: الانتقال إلى دلتا قبل أن تقترب السرعة من المقننة، فيعود تيار قريب من تيار DOL.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>البادئ الناعم ومحوّل التردد VFD</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th></th><th>DOL</th><th>ستار دلتا</th><th>بادئ ناعم</th><th>VFD</th></tr></thead><tbody>
+<tr><td>تيار البدء (× In)</td><td>6–8</td><td>نحو 2–2.7</td><td>2–4 (قابل للضبط)</td><td>≈ 1–1.5</td></tr>
+<tr><td>التحكم في السرعة</td><td>لا</td><td>لا</td><td>لا (بدء وإيقاف فقط)</td><td>نعم</td></tr>
+<tr><td>التوافقيات</td><td>لا</td><td>لا</td><td>أثناء البدء فقط</td><td>مستمرة (5، 7، 11، 13)</td></tr>
+<tr><td>المفقود في اللوحة</td><td>قليل</td><td>قليل</td><td>قليل مع كونتاكتور التجاوز Bypass</td><td>نحو 2 % إلى 3 % من القدرة</td></tr>
+<tr><td>مناسب لـ</td><td>مضخات صغيرة</td><td>ضواغط ومراوح بحمل بدء خفيف</td><td>مضخات وضواغط، ويمنع المطرقة المائية</td><td>أحمال متغيرة: التشيلر، المراوح، المضخات</td></tr>
+</tbody></table></div>
+<div class="ex"><b>الضاغط الثاني 37 kW على بادئ ناعم:</b> بادئ مقنن ≥ 66 A لمدة البدء المطلوبة، بحد تيار مثلًا <span class="eq">3.5 × 66.1 ≈ 231 A</span>، مع <b>Bypass</b> داخلي يقلل الحرارة في التشغيل. التنسيق Type 2 مع البادئات الناعمة يتطلب غالبًا <b>منصهرات أشباه موصلات aR</b> لحماية الثايرستورات؛ مع MCCB وحده يكون التنسيق غالبًا Type 1. راجع جدول المصنّع.</div>
+<div class="ex"><b>التشيلر 75 kW على VFD (131 A):</b>
+<ul><li>حماية الدخل: <b>MCCB 160 A مضبوط على Ir = 144 A</b> وكابل 70 mm² (الدرسان 3 و 4)، أو منصهرات aR إذا اشترطها دليل المحوّل.</li>
+<li><b>ملف خط</b> (<span class="term">Line reactor</span> نحو 3 % إلى 4 %) إن لم يكن في المحوّل ملف DC: يخفض تشوه التيار THDi كثيرًا ويحمي مقوّم الدخل.</li>
+<li><b>مرشح EMC</b> بالفئة المطلوبة (IEC 61800-3، مثلًا C2 أو C3)، وكابل محرك مُغلّف (Shielded) يُؤرض بزاوية 360° عند الطرفين.</li>
+<li>كابل محرك طويل (عادة أكثر من نحو 100 m، حسب الدليل): مرشح <span class="term">dv/dt</span> أو مرشح جيبي لحماية عزل المحرك.</li>
+<li>المفقود: <span class="eq">3 % × 75 000 = 2250 W</span> داخل حجرة المحوّل.</li></ul></div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>تنسيق Type 1 و Type 2 وجدول المكونات</h2>
+<p>المعيار <b>IEC 60947-4-1</b> يعرّف سلوك البادئ بعد قصر عند التيار المختبر <span class="term">Iq</span>:</p>
+<div class="tblw"><table class="tbl"><thead><tr><th></th><th>Type 1</th><th>Type 2</th></tr></thead><tbody>
+<tr><td>سلامة الأشخاص والغلاف</td><td>مضمونة</td><td>مضمونة</td></tr>
+<tr><td>البادئ بعد القصر</td><td>قد يتلف ويحتاج إصلاحًا أو استبدالًا</td><td>لا تلف، ويُسمح بلحام خفيف لنقاط التلامس يُفصل بسهولة</td></tr>
+<tr><td>المرحّل الحراري</td><td>قد تتغير معايرته</td><td>تبقى معايرته</td></tr>
+<tr><td>متى يُختار</td><td>أحمال غير حرجة، تكلفة أقل</td><td><b>المصانع المستمرة: مشروعنا</b></td></tr>
+</tbody></table></div>
+<p>لا يُصمم التنسيق بالحساب؛ بل يؤخذ من <b>جدول تنسيق المصنّع</b> المختبر عند Iq معين (مثلًا 50 kA عند 400 V) لمجموعة محددة: قاطع + كونتاكتور + مرحّل من الكتالوج نفسه.</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>المخرج</th><th>حماية القصر</th><th>الكونتاكتور AC-3</th><th>زيادة الحمل</th><th>إضافات</th></tr></thead><tbody>
+<tr><td>مضخة 15 kW DOL</td><td>MPCB 24–32 A</td><td>32 A</td><td>داخل الـ MPCB، 28 A</td><td>–</td></tr>
+<tr><td>ضاغط 37 kW ستار دلتا</td><td>MCCB مغناطيسي 100 A</td><td>2 × 40 A + 25 A</td><td>مرحّل 30–40 A، 38 A</td><td>مؤقت ستار دلتا وتشابك</td></tr>
+<tr><td>ضاغط 37 kW بادئ ناعم</td><td>منصهرات aR (Type 2)</td><td>كونتاكتور خط اختياري</td><td>داخل البادئ</td><td>Bypass</td></tr>
+<tr><td>تشيلر 75 kW VFD</td><td>MCCB 160 A، Ir 144 A</td><td>كونتاكتور خط اختياري</td><td>داخل المحوّل</td><td>ملف خط + EMC</td></tr>
+</tbody></table></div>
+<p class="muted">القيم في الجدول نموذجية للتعلّم؛ اختر الأرقام الفعلية من جدول التنسيق Type 2 للمصنّع عند تيار القصر في لوحتك.</p>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>حرارة حجرة المحوّل، والفحص قبل التسليم</h2>
+<div class="ex"><b>حجرة الـ VFD (قسم 800 × 2000 × 600 mm وسط صف):</b>
+<ul><li>المفقود: 2250 W للمحوّل + نحو 350 W للملف والمرشح والقاطع والأسلاك = <b>2600 W</b>.</li>
+<li>السطح الفعال (الجانبان ملاصقان لأقسام أخرى): <span class="eq">A = 1.4·W·D + 1.8·W·H + 1.0·D·H = 0.67 + 2.88 + 1.20 = 4.75 m²</span>.</li>
+<li>بحد ΔT = 10 K يطرد السطح <span class="eq">5.5 × 4.75 × 10 ≈ 261 W</span>، والباقي 2339 W.</li>
+<li><span class="eq">V = 3.1 × 2339 / 10 ≈ 725 m³/h</span>، أو تركيب المحوّل بمشتت حراري خارج اللوحة (Through-panel) فيخرج معظم حرارته مباشرة.</li></ul></div>
+<div class="tblw"><table class="tbl"><thead><tr><th>افحص</th><th>كيف</th></tr></thead><tbody>
+<tr><td>تطابق المكونات مع جدول التنسيق</td><td>الأرقام الكتالوجية نفسها، لا «ما يعادلها» من مصنّع آخر</td></tr>
+<tr><td>ضبط المرحّلات</td><td>DOL على In، وستار دلتا على 0.58·In، وصنف الفصل حسب زمن البدء</td></tr>
+<tr><td>تشابك ستار دلتا</td><td>تشابك ميكانيكي وكهربي بين KM2 و KM3، وزمن انتقال مضبوط</td></tr>
+<tr><td>اتجاه الدوران</td><td>تشغيل لحظي قبل التشغيل الكامل، خاصة للضواغط والمضخات</td></tr>
+<tr><td>تأريض كابل المحوّل المغلف</td><td>جلبة EMC بزاوية 360° عند اللوحة والمحرك</td></tr>
+</tbody></table></div>
+<div class="box key"><b>على المحاكي:</b> ستبني أربعة مخارج MCC في حجرات Form 4b: مضخة DOL، وضاغطًا ستار دلتا، وضاغطًا ببادئ ناعم، وتشيلرًا بمحوّل تردد، وتختار لكل منها مكونات Type 2 من جدول التنسيق، ثم تتحقق من المسافات والحرارة. <a class="btn pri" href="designer.html#mcc" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">المعلومات هنا من المعايير IEC 60364 و IEC 61439 و IEC 60947 و IEC 60909 و IEC TR 60890 والكود المصري لأسس تصميم وشروط تنفيذ التركيبات الكهربية، ومن كتالوجات الشركات المصنّعة. الأرقام في الجداول للتعلّم؛ ارجع إلى المعيار المعتمد في بلدك وكتالوج المصنّع قبل أي تصميم فعلي. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l11');
+IL.quiz(document.getElementById('quiz'), [{"q": "ضاغط 37 kW بتيار 66 A يبدأ ستار دلتا، والمرحّل الحراري بعد الكونتاكتور الرئيسي في دائرة الملف. على كم يُضبط؟", "o": ["نحو 38 A", "نحو 66 A", "نحو 22 A", "نحو 83 A"], "a": 0, "why": "المرحّل في دائرة الملف يرى تيار الطور = In/√3 = 0.58 × 66 ≈ 38 A."}, {"q": "في المحرك نفسه (In = 66 A)، ما أقل تيار AC-3 مناسب لكونتاكتور الستار KM3؟", "o": ["نحو 22 A", "نحو 38 A", "نحو 66 A", "نحو 11 A"], "a": 0, "why": "كونتاكتور الستار يحمل ثلث تيار الخط تقريبًا: 66 / 3 = 22 A."}, {"q": "بعد قصر على مخرج Type 2، ما الحالة المقبولة للبادئ؟", "o": ["يعمل بعد فصل لحام خفيف للتلامس", "يُستبدل الكونتاكتور والمرحّل حتمًا", "يتلف الغلاف ولا يصاب أحد", "تتغير معايرة المرحّل الحراري"], "a": 0, "why": "Type 2: لا تلف ولا تغير في المعايرة، ويُسمح بلحام خفيف يُفصل بسهولة. التلف المسموح هو سمة Type 1."}, {"q": "بدء ستار دلتا بدلًا من DOL لمحرك واحد. كم يصبح تيار البدء من الشبكة تقريبًا؟", "o": ["ثلث تيار DOL", "نصف تيار DOL", "مثل تيار DOL", "0.58 من تيار DOL"], "a": 0, "why": "جهد الملف يقل √3 مرة وتوصيل النجمة يقلل التيار √3 مرة أخرى، فيصبح التيار والعزم الثلث."}, {"q": "محوّل تردد 75 kW مفقوده 3 %. كم تدفق مروحة يلزم لطرد حرارته وحدها بفرق 10 K (دون احتساب سطح الغلاف)؟", "o": ["نحو 698 m³/h", "نحو 225 m³/h", "نحو 2250 m³/h", "نحو 70 m³/h"], "a": 0, "why": "P = 0.03 × 75 000 = 2250 W، و V = 3.1 × 2250 / 10 ≈ 698 m³/h."}, {"q": "تريد تنسيق Type 2 لمخرج بادئ ناعم. ما الحماية من القصر التي يشترطها أغلب المصنّعين؟", "o": ["منصهرات أشباه موصلات aR", "قاطع MCB منحنى B", "منصهرات gG عادية بالتيار نفسه", "مرحّل حراري Class 30"], "a": 0, "why": "الثايرستورات لا تتحمل I²t القاطع العادي، فتلزم منصهرات aR سريعة لتحقيق Type 2."}, {"q": "مضخة 15 kW تيارها 27.7 A تبدأ DOL بقاطع MPCB. ما الاختيار الصحيح؟", "o": ["مدى 24–32 A مضبوط على 28 A", "مدى 17–23 A مضبوط على 23 A", "مدى 32–40 A مضبوط على 35 A", "مدى 24–32 A مضبوط على 32 A"], "a": 0, "why": "يُضبط المرحّل على تيار لوحة البيانات (≈ 28 A)، والمدى يجب أن يحتويه؛ الضبط الأعلى لا يحمي المحرك."}], {lesson:'l11', pass:0.8});
+</script>
+</body>
+</html>

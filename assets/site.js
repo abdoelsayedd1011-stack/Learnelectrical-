@@ -164,6 +164,12 @@
       guided:12, exercises:11, params:0, faults:4,
       inside:["WinCC Unified و TIA Portal والوسوم والاتصال بالـ PLC", "شاشات ISA-101 والوجوه الجاهزة والإنذارات ISA-18.2", "الترندات والصلاحيات والوصفات والتكرار وتشخيص الأعطال"],
       tags:"scada hmi سكادا اسكادا شاشات تشغيل شاشة لمس operator panel wincc unified wincc tia portal comfort panel mtp ignition factorytalk optix view aveva tags وسوم alarm إنذارات انذارات isa-18.2 isa-101 high performance hmi trend ترند historian أرشفة faceplate وجوه جاهزة recipe وصفات users صلاحيات iec 62443 redundancy تكرار خادم احتياطي opc ua javascript plcsim filling line خط تعبئة تشخيص اعطال troubleshooting designer مصمم شاشات" },
+    { id:"panel", path:"panel-lab/index.html", group:"panel", brand:"كورس", brandKey:"panel",
+      name:"كورس تصميم اللوحات الكهربية", kind:"ابدأ بالشرح", disp:"400A", dispClass:"grn", rtlName:true,
+      line:"احسب الأحمال واختر القاطع والكابل والبار، وافحص هبوط الجهد وتيار القصر والانتقائية، ثم صمّم لوحة توزيع رئيسية كاملة.",
+      guided:12, exercises:11, params:0, faults:0,
+      inside:["حساب الأحمال واختيار القواطع والكابلات والبارات النحاسية", "هبوط الجهد وتيار القصر والانتقائية والتأريض", "تحسين معامل القدرة وترتيب اللوحة وحرارتها ولوحات MCC"],
+      tags:"panel design تصميم اللوحات لوحة كهربية لوح كهرباء لوحات توزيع mdb smdb db main distribution board لوحة توزيع رئيسية فرعية switchboard switchgear mcc motor control center لوحة محركات load calculation حساب الأحمال demand factor معامل الطلب diversity breaker قاطع قواطع mcb mccb acb cable sizing مقطع الكابل كابلات iz voltage drop هبوط الجهد short circuit تيار القصر icu ics busbar بارات نحاس selectivity انتقائية discrimination cascading earthing تأريض أرضي tn-s tt it rcd elcb power factor معامل القدرة مكثفات capacitor bank kvar heat rise حرارة اللوحة forms of separation ip54 iec 61439 iec 60364 iec 60947 iec 60909 الكود المصري dol star delta ستار دلتا soft starter type 2 megger اختبار العزل calc designer حاسبة مصمم" },
     { id:"srv", path:"servo-course/index.html", group:"servo", brand:"كورس", brandKey:"srvc",
       name:"كورس السيرفو موتور والدرايف", kind:"ابدأ بالشرح", disp:"S-ON", dispClass:"red", rtlName:true,
       line:"افهم السيرفو من جوه قبل ما تمسك أي درايف.",
@@ -217,6 +223,7 @@
     { key:"servo", title:"سيرفو", sub:"درايفات وموتورات سيرفو", land:"courses/servo.html" },
     { key:"iiot", title:"IIoT والشبكات الصناعية", sub:"Modbus · PROFIBUS · PROFINET · CAN · OPC UA · MQTT · تشخيص الأعطال", land:"courses/iiot.html" },
     { key:"scada", title:"SCADA و HMI", sub:"WinCC Unified · ISA-101 · الإنذارات · الترندات · الوصفات · الصلاحيات", land:"courses/scada.html" },
+    { key:"panel", title:"تصميم اللوحات الكهربية", sub:"الأحمال · القواطع · الكابلات · البارات · الانتقائية · MCC", land:"courses/panel.html" },
     { key:"temp", title:"كنترول حرارة وقياس", sub:"Omron · Endress+Hauser" }
   ];
   /* محتوى كل كورس بالترتيب (عناوين الدروس) — بيظهر على كارت الكورس في الكتالوج وعلى الغلاف (assets/courses/covers/).
@@ -240,6 +247,8 @@
       l:["ما هو IIoT والشبكات الصناعية؟", "أساسيات الإيثرنت: IP و Subnet و Switch", "RS-485 و Modbus RTU", "Modbus TCP", "PROFIBUS DP", "PROFINET", "CAN bus و CANopen و DeviceNet", "EtherNet/IP و AS-i و IO-Link و HART", "OPC UA", "MQTT", "البوابة: من الـ PLC إلى السحابة", "لوحة المتابعة والاتجاهات والإنذارات", "الصيانة التنبؤية", "تشخيص أعطال الشبكات + مشروع خط إنتاج + الامتحان"] },
     scada: { n:"12 درس", x:["محطة SCADA حيّة", "مصمّم شاشات HMI", "امتحان نهائي"],
       l:["ما SCADA وما HMI؟", "المتغيرات والاتصال بالـ PLC", "تصميم الشاشات عالية الأداء (ISA-101)", "الأزرار وحقول الإدخال والمؤشرات", "الحركة والديناميكية والوجوه الجاهزة", "الإنذارات وإدارتها (ISA-18.2)", "الترندات والأرشفة", "المستخدمون والصلاحيات وأمن المنظومة", "الوصفات والسكربتات", "معمارية SCADA: الخوادم والعملاء والتكرار", "التشغيل والاختبار وتشخيص الأعطال", "مشروع خط التعبئة + الامتحان"] },
+    panel: { n:"12 درس", x:["حاسبة مصمّم اللوحات", "مصمّم اللوحات الكهربية", "امتحان نهائي"],
+      l:["ما اللوحة الكهربية؟ الأنواع والمعايير", "حساب الأحمال وتيار التصميم", "اختيار القواطع", "اختيار مقطع الكابل", "هبوط الجهد وتيار القصر", "البارات النحاسية", "التنسيق والانتقائية بين الحمايات", "التأريض والحماية من الصعق", "تحسين معامل القدرة", "ترتيب اللوحة والحرارة داخلها", "لوحات المحركات MCC", "مشروع لوحة توزيع رئيسية + الامتحان"] },
     srv: { n:"12 درس", x:["4 محاكيات سيرفو"],
       l:["يعني إيه سيرفو؟", "جوه السيرفو موتور", "الإنكودر: عين السيرفو", "الدرايف من جوه", "توصيل السيرفو", "أوضاع التشغيل", "الجير الإلكتروني", "التيونينج وضبط الجين", "الهومينج والحدود", "التحكم من الـ PLC", "الأعطال الشائعة", "التشغيل لأول مرة + الامتحان"] }
   };
@@ -300,7 +309,7 @@
   /* ---------- أسعار الكورسات (من «الأسعار» في لوحة الإدارة، /api/prices) ----------
      كارت كل كورس في الكتالوج وصفحة كل كورس في courses/ بتظهر السعر لو متحدد، وزرار «اشتري الكورس».
      اللي اشترى الكورس بيشوف «اشتريته ✓». */
-  var PRODUCT_OF = { basics:"basics", classic:"classic", safety:"safety", instr:"instr", plc:"plc", drw:"drw", vfdc:"vfd", srv:"srv", iiot:"iiot", scada:"scada" };
+  var PRODUCT_OF = { basics:"basics", classic:"classic", safety:"safety", instr:"instr", plc:"plc", drw:"drw", vfdc:"vfd", srv:"srv", iiot:"iiot", scada:"scada", panel:"panel" };
   var PR = null, ME, priceHooks = [];
   function curName(){ return EN ? EN.currency : ((window.SITE || {}).pay || {}).currency || "جنيه"; }
   function fmtN(n){ return String(Math.round(n * 100) / 100); }
@@ -456,9 +465,10 @@
     vfdc:{ ac:"#ff8a4c", ar:"الانفرتر VFD", en:"VFD (Inverter)" },
     srv:{ ac:"#ff5c7a", ar:"السيرفو موتور والدرايف", en:"Servo Motor & Drive" },
     iiot:{ ac:"#4cc0cf", ar:"IIoT والشبكات الصناعية", en:"IIoT & Industrial Networks" },
-    scada:{ ac:"#e879d4", ar:"SCADA و HMI", en:"SCADA & HMI" }
+    scada:{ ac:"#e879d4", ar:"SCADA و HMI", en:"SCADA & HMI" },
+    panel:{ ac:"#e0955c", ar:"تصميم اللوحات الكهربية", en:"Electrical Panel Design" }
   };
-  var CVV = "p12";
+  var CVV = "p13";
   function coverHtml(l, toc){
     var c = CV[l.id], src = "/assets/courses/covers/" + l.id;
     if (!c || !toc) return '<div class="cover"><img src="' + src + (EN ? "-en" : "-ar") + '.webp?v=b3" width="960" height="1200" alt="" decoding="async"></div><h4 class="sr-only">' + esc(l.name) + "</h4>";

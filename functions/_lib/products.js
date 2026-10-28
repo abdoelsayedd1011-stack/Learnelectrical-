@@ -24,7 +24,8 @@ export const DEFAULT_PRICES = {
   srv:     { price: 499, was: 749, usd: 39, usd_was: 59, link: "https://learnelectricals.gumroad.com/l/Servo" },
   plc:     { price: 749, was: 999, usd: 59, usd_was: 89, link: "https://learnelectricals.gumroad.com/l/PLC" },
   iiot:    { price: 599, was: 849, usd: 49, usd_was: 69, link: "" },
-  scada:   { price: 599, was: 849, usd: 49, usd_was: 69, link: "" }
+  scada:   { price: 599, was: 849, usd: 49, usd_was: 69, link: "" },
+  panel:   { price: 599, was: 849, usd: 49, usd_was: 69, link: "" }
 };
 
 // ids match _lib/courses.js (certificates) so one id means one course everywhere.
@@ -39,11 +40,12 @@ export const PRODUCTS = {
                                                          "ms300-lab", "fc51-lab", "vlt2800-lab", "acs580-lab", "g120-lab", "fre800-lab", "ga500-lab", "ig5a-lab", "gd20-lab", "c2000-lab", "frenic-lab"] },
   srv:     { title: "السيرفو موتور والدرايف",     dirs: ["servo-course", "servo-simulator", "mrje-servo", "sigma7-servo", "kinetix300-servo"] },
   iiot:    { title: "IIoT والشبكات الصناعية",      dirs: ["iiot-lab"] },
-  scada:   { title: "SCADA و HMI",                 dirs: ["scada-lab"] }
+  scada:   { title: "SCADA و HMI",                 dirs: ["scada-lab"] },
+  panel:   { title: "تصميم اللوحات الكهربية",      dirs: ["panel-lab"] }
 };
 export const PRODUCT_IDS = Object.keys(PRODUCTS);
 // Friendlier names in links (subscribe.html?course=servo) → product id
-export const ALIASES = { "safety-plc": "safety", drawings: "drw", servo: "srv", instrumentation: "instr", inverters: "vfd", vfdc: "vfd", networks: "iiot", "industrial-networks": "iiot", hmi: "scada", "scada-hmi": "scada" };
+export const ALIASES = { "safety-plc": "safety", drawings: "drw", servo: "srv", instrumentation: "instr", inverters: "vfd", vfdc: "vfd", networks: "iiot", "industrial-networks": "iiot", hmi: "scada", "scada-hmi": "scada", panels: "panel", "panel-design": "panel", "electrical-panels": "panel" };
 export function productId(v){
   const s = String(v || "").trim().toLowerCase();
   const id = ALIASES[s] || s;

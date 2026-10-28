@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>التنسيق والانتقائية بين الحمايات</title>
+<meta name="description" content="الدرس 7: قراءة منحنيات الزمن والتيار، الانتقائية الكاملة والجزئية وأساليبها، ضبط ACB و MCCB في مشروع مصنع، والتسلسل Cascading وفق IEC 60947-2.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="panel.css?v=20261028p1">
+<script src="panel.js?v=20261028p1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس تصميم اللوحات الكهربية · الدرس 7 من 12</p>
+    <h1>التنسيق والانتقائية بين الحمايات</h1>
+    <p>عطل في مضخة يجب ألّا يُطفئ المصنع. نضبط القواطع الثلاثة على المسار من المحوّل إلى المحرك حتى يفصل الأقرب إلى العطل وحده.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="calc.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>ما الانتقائية؟ ولماذا تهمّ المصنع؟</h2>
+<p><b>الانتقائية</b> (<span class="term">Selectivity</span> أو <span class="term">Discrimination</span>) أن يفصل القاطع الأقرب إلى العطل وحده، ويبقى القاطع الأعلى منه مغلقًا. قصر في مضخة يجب ألّا يُطفئ الـ MCC كله، فضلًا عن المصنع.</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>النوع</th><th>التعريف (IEC 60947-2 الملحق A)</th></tr></thead><tbody>
+<tr><td>انتقائية كاملة <span class="term">Total</span></td><td>القاطع السفلي وحده يفصل لكل التيارات حتى أقصى تيار قصر في مكانه</td></tr>
+<tr><td>انتقائية جزئية <span class="term">Partial</span></td><td>الانتقائية مضمونة حتى تيار معيّن فقط يسمّى حد الانتقائية <span class="term">Is</span>، وفوقه قد يفصل القاطعان</td></tr>
+</tbody></table></div>
+<div class="tblw"><table class="tbl"><thead><tr><th>الأسلوب</th><th>كيف يعمل</th><th>متى نستخدمه</th></tr></thead><tbody>
+<tr><td>بالتيار</td><td>عتبات القاطع العلوي أعلى من تيار القصر عند السفلي</td><td>عندما يكون الكابل بينهما طويلًا فيقلّ التيار</td></tr>
+<tr><td>بالزمن</td><td>العلوي ينتظر <span class="term">tsd</span> حتى يفصل السفلي</td><td>ACB وقواطع إلكترونية لها Icw كافٍ</td></tr>
+<tr><td>بالطاقة</td><td>السفلي يحدّ التيار بسرعة فلا يصل العلوي إلى عتبة فصله</td><td>بين MCCB محدِّدة للتيار؛ القيمة من جداول المصنّع</td></tr>
+<tr><td>منطقية <span class="term">ZSI</span></td><td>السفلي يرسل إشارة «رأيتُ العطل» فينتظر العلوي، وإلا فصل بسرعة</td><td>لوحات كبيرة لتقليل زمن الفصل وطاقة القوس</td></tr>
+</tbody></table></div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>قراءة منحنى الزمن والتيار</h2>
+<p>المحور الأفقي التيار والرأسي زمن الفصل، وكلاهما لوغاريتمي. منحنى القاطع الإلكتروني ثلاث مناطق تُضبط كلٌّ منها وحدها:</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>المنطقة</th><th>الضبط</th><th>وظيفته</th></tr></thead><tbody>
+<tr><td>L: زمن طويل</td><td><span class="term">Ir</span> (× In) و tr</td><td>الحماية من زيادة الحمل</td></tr>
+<tr><td>S: زمن قصير</td><td><span class="term">Isd</span> (× Ir) و <span class="term">tsd</span> (0.1–0.4 s)</td><td>قصر بعيد، مع تأخير للانتقائية</td></tr>
+<tr><td>I: لحظي</td><td><span class="term">Ii</span> (× In)، أو OFF في بعض الـ ACB</td><td>قصر قريب كبير يُفصل فورًا</td></tr>
+</tbody></table></div>
+<figure class="fig">
+<svg viewBox="0 0 640 310" role="img" aria-label="منحنيات الزمن والتيار لقاطع المحرك وقاطع مغذّي الـ MCC والقاطع الهوائي الرئيسي" style="width:100%;max-width:640px;direction:ltr">
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor">
+<path d="M70.0 20V260" stroke="currentColor" opacity=".15"/><path d="M205.0 20V260" stroke="currentColor" opacity=".15"/><path d="M340.0 20V260" stroke="currentColor" opacity=".15"/><path d="M475.0 20V260" stroke="currentColor" opacity=".15"/><path d="M610.0 20V260" stroke="currentColor" opacity=".15"/><text x="70.0" y="276" text-anchor="middle" font-size="11">10 A</text><text x="205.0" y="276" text-anchor="middle" font-size="11">100 A</text><text x="340.0" y="276" text-anchor="middle" font-size="11">1 kA</text><text x="475.0" y="276" text-anchor="middle" font-size="11">10 kA</text><text x="610.0" y="276" text-anchor="middle" font-size="11">100 kA</text><path d="M70 260.0H610" stroke="currentColor" opacity=".15"/><text x="64" y="264.0" text-anchor="end" font-size="11">0.01</text><path d="M70 220.0H610" stroke="currentColor" opacity=".15"/><text x="64" y="224.0" text-anchor="end" font-size="11">0.1</text><path d="M70 180.0H610" stroke="currentColor" opacity=".15"/><text x="64" y="184.0" text-anchor="end" font-size="11">1</text><path d="M70 140.0H610" stroke="currentColor" opacity=".15"/><text x="64" y="144.0" text-anchor="end" font-size="11">10</text><path d="M70 100.0H610" stroke="currentColor" opacity=".15"/><text x="64" y="104.0" text-anchor="end" font-size="11">100</text><path d="M70 60.0H610" stroke="currentColor" opacity=".15"/><text x="64" y="64.0" text-anchor="end" font-size="11">1000</text><path d="M70 20.0H610" stroke="currentColor" opacity=".15"/><text x="64" y="24.0" text-anchor="end" font-size="11">10000</text>
+<rect x="70" y="20" width="540" height="240" fill="none" stroke="currentColor" opacity=".5"/>
+<rect x="432.0" y="236" width="66.0" height="24" style="fill:var(--bad)" opacity=".18"/>
+<text x="465.0" y="231" text-anchor="middle" font-size="11" style="fill:var(--bad)">overlap</text>
+<path d="M498.0 20V260" style="stroke:var(--bad)" stroke-dasharray="4 4"/>
+<path d="M526.6 20V260" style="stroke:var(--bad)" stroke-dasharray="4 4"/>
+<text x="494.0" y="70" text-anchor="end" font-size="11" style="fill:var(--bad)">Isc MCC</text>
+<text x="530.6" y="70" font-size="11" style="fill:var(--bad)">Isc MDB</text>
+<path d="M143.8 40.9L143.8 84.9L149.8 88.5L155.8 92.1L161.9 95.7L167.9 99.2L173.9 102.8L180.0 106.4L186.0 110.0L192.0 113.5L198.1 117.1L204.1 120.7L210.1 124.3L216.2 127.8L222.2 131.4L228.2 135.0L234.3 138.6L240.3 142.1L246.3 145.7L252.4 149.3L258.4 152.9L264.4 156.4L270.5 160.0L276.5 163.6L282.5 167.2L288.6 170.7L288.6 256.8L498.0 256.8" fill="none" style="stroke:var(--good)" stroke-width="2.5"/>
+<path d="M285.7 40.9L285.7 81.1L289.8 83.5L294.0 86.0L298.1 88.4L302.3 90.9L306.4 93.3L310.6 95.8L314.7 98.3L318.8 100.7L323.0 103.2L327.1 105.6L331.3 108.1L335.4 110.5L339.6 113.0L343.7 115.4L347.9 117.9L352.0 120.4L356.1 122.8L360.3 125.3L364.4 127.7L368.6 130.2L372.7 132.6L376.9 135.1L381.0 137.5L385.2 140.0L385.2 220.0L432.0 220.0L432.0 248.0L526.6 248.0" fill="none" style="stroke:var(--accent)" stroke-width="2.5"/>
+<path d="M367.0 40.9L367.0 74.0L370.1 75.9L373.3 77.8L376.4 79.6L379.6 81.5L382.7 83.4L385.9 85.2L389.0 87.1L392.2 89.0L395.4 90.8L398.5 92.7L401.7 94.6L404.8 96.4L408.0 98.3L411.1 100.2L414.3 102.0L417.4 103.9L420.6 105.8L423.7 107.7L426.9 109.5L430.0 111.4L433.2 113.3L436.3 115.1L439.5 117.0L442.7 118.9L442.7 200.9L550.1 200.9" fill="none" style="stroke:var(--cur)" stroke-width="2.5"/>
+<text x="143.8" y="34" text-anchor="middle" font-size="11" style="fill:var(--good)">MCCB 32 A</text>
+<text x="285.7" y="34" text-anchor="middle" font-size="11" style="fill:var(--accent)">MCCB 400 A</text>
+<text x="373.0" y="34" text-anchor="middle" font-size="11" style="fill:var(--cur)">ACB 1600 A</text>
+<text x="340" y="298" text-anchor="middle">I (A)</text>
+<text x="20" y="14">t (s)</text>
+</g></svg>
+<figcaption>منحنيات المشروع على مقياس لوغاريتمي: قاطع مضخة 15 kW (أخضر)، ومغذّي الـ MCC (أزرق مخضرّ)، والـ ACB الرئيسي (برتقالي). المنطقة الحمراء: القاطعان يفصلان لحظيًا معًا بين 4.8 kA و 14.8 kA.</figcaption>
+</figure>
+<ul><li><b>شرط الانتقائية على المنحنيات:</b> منحنى القاطع السفلي كله يقع يسار وأسفل منحنى العلوي حتى تيار القصر في مكان السفلي، مع مراعاة نطاق التفاوت (عادةً ±10 % إلى ±20 % على العتبات).</li>
+<li>نأخذ تيار القصر من الدرس 5: <b>14.8 kA</b> عند الـ MCC و <b>24.1 kA</b> عند الـ MDB.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>ضبط المستويات الثلاثة في المشروع</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th>القاطع</th><th>Ir</th><th>Isd / tsd</th><th>Ii</th></tr></thead><tbody>
+<tr><td>ACB رئيسي 1600 A، Icw 36 kA/1 s</td><td>0.9 × 1600 = 1440 A</td><td>4 × Ir = 5760 A / 0.3 s</td><td>OFF</td></tr>
+<tr><td>مغذّي الـ MCC: MCCB 400 A إلكتروني</td><td>0.9 × 400 = 360 A (Ib = 346.1 A)</td><td>6 × Ir = 2160 A / 0.1 s</td><td>12 × In = 4800 A</td></tr>
+<tr><td>مضخة 15 kW: MCCB 50 A</td><td>32 A (Ib المحرك 27.7 A)</td><td>—</td><td>13 × Ir = 416 A</td></tr>
+</tbody></table></div>
+<h3>الفحص</h3>
+<ul><li><b>بالتيار في منطقة الحمل الزائد:</b> <span class="eq">1440/360 = 4</span> و <span class="eq">360/32 = 11.3</span>، وكلاهما أكبر من 1.6 (قاعدة عملية شائعة)، فلا تتقاطع منحنيات L.</li>
+<li><b>ACB ↔ MCC:</b> عند قصر في الـ MCC (حتى 14.8 kA) يفصل مغذّي الـ MCC لحظيًا، والـ ACB ينتظر 0.3 s. وعند قصر على أطراف خروج المغذّي في الـ MDB (24.1 kA) يبقى الـ ACB منتظرًا لأن Ii = OFF، و <span class="eq">Icw = 36 kA ≥ 24.1 kA</span>. النتيجة: <b>انتقائية كاملة</b>.</li>
+<li><b>MCC ↔ المضخة:</b> حتى 4.8 kA يفصل قاطع المضخة لحظيًا ومغذّي الـ MCC ينتظر 0.1 s. فوق 4.8 kA يصل الاثنان إلى منطقة الفصل اللحظي. النتيجة على المنحنيات: <b>انتقائية جزئية حتى نحو 4.8 kA</b> (وأقل قليلًا مع التفاوت).</li></ul>
+<div class="box key"><b>كيف نصل إلى 14.8 kA؟</b> (1) ارجع إلى <b>جدول الانتقائية</b> عند المصنّع لهذين القاطعين بالتحديد؛ فقاطع المضخة المحدِّد للتيار يجعل الانتقائية بالطاقة كاملة في حالات كثيرة. (2) ارفع Ii لمغذّي الـ MCC إلى أقصى ما يسمح به، مع التأكد أنه ما زال يحمي كابله (الدرس 5). (3) اختر لمغذّي الـ MCC قاطعًا له Icw يسمح بإلغاء الفصل اللحظي.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>التسلسل Cascading: حماية احتياطية</h2>
+<p><b>التسلسل</b> (<span class="term">Cascading</span> أو <span class="term">Back-up protection</span>): قاطع علوي محدِّد للتيار يساعد قاطعًا سفليًا Icu الخاص به أقل من تيار القصر في مكانه. يسمح به IEC 60364-4-43 (البند 434.5.1) بشرط أن تكون التوليفة مختبَرة ومنشورة في جداول المصنّع (IEC 60947-2 الملحق A).</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>مثال لوحة الإنتاج SMDB</th><th>القيمة</th></tr></thead><tbody>
+<tr><td>Isc عند SMDB (الدرس 5)</td><td>19.6 kA</td></tr>
+<tr><td>قواطع MCB النهائية (IEC 60898-1)</td><td>Icn = 10 kA &lt; 19.6 kA ✗ وحدها</td></tr>
+<tr><td>القاطع العلوي: MCCB 630 A من الشركة نفسها</td><td>جدول التسلسل يرفع التوليفة إلى 25 kA مثلًا (قيمة نموذجية للتعلّم)</td></tr>
+<tr><td>النتيجة</td><td>MCB 10 kA مقبولة بشرط ذكر التوليفة في المخطط ✓</td></tr>
+</tbody></table></div>
+<ul><li><b>الثمن:</b> عند قصر كبير يفصل القاطعان معًا، فتنطفئ اللوحة كلها. لذلك لا نستخدم التسلسل في دوائر حرجة تحتاج الانتقائية.</li>
+<li>لا يُطبَّق التسلسل بين قاطعين من شركتين مختلفتين، ولا بالحساب؛ فقط من جداول المصنّع المختبَرة.</li>
+<li>لاحظ الفرق بين <span class="term">Icu</span> (أقصى قدرة قطع) و <span class="term">Ics</span> (قدرة القطع في الخدمة، ويبقى القاطع صالحًا بعدها). في الـ MDB لمصنع يعمل بلا توقف يُفضَّل Ics = 100 % Icu.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>أخطاء شائعة وكيف تتحقق</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th>الخطأ</th><th>نتيجته</th><th>كيف تتحقق</th></tr></thead><tbody>
+<tr><td>العلوي والسفلي بنفس tsd</td><td>يفصلان معًا عند القصر البعيد</td><td>فرق 0.1 s على الأقل بين كل مستوى والذي يليه</td></tr>
+<tr><td>Ii للعلوي أقل من Isc عند السفلي</td><td>انتقائية جزئية لم يلاحظها أحد</td><td>قارن Ii العلوي بتيار القصر عند أطراف السفلي</td></tr>
+<tr><td>إلغاء Ii في قاطع Icw له أقل من Isc</td><td>القاطع يتلف قبل أن يفصل</td><td>Icw ≥ Isc للمدة tsd كاملة</td></tr>
+<tr><td>تأخير كبير لأجل الانتقائية</td><td>الكابل لا يتحمّل I²t (الدرس 5)، وطاقة القوس أكبر</td><td>أعد فحص k²S² بالزمن الجديد</td></tr>
+<tr><td>تسلسل بين قاطعين بلا جدول من المصنّع</td><td>قاطع سفلي ينفجر عند القصر</td><td>اطلب جدول Cascading للتوليفة نفسها</td></tr>
+</tbody></table></div>
+<div class="box key"><b>على المحاكي:</b> حرّك ضبط Ir و Isd و tsd و Ii للـ ACB الرئيسي ولمغذّي الـ MCC ولقاطع المضخة 15 kW على منحنيات الزمن والتيار حتى لا تتقاطع حتى تيار القصر عند كل نقطة، ولاحظ متى يكفي التسلسل. <a class="btn pri" href="calc.html#select" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">المعلومات هنا من المعايير IEC 60364 و IEC 61439 و IEC 60947 و IEC 60909 و IEC TR 60890 والكود المصري لأسس تصميم وشروط تنفيذ التركيبات الكهربية، ومن كتالوجات الشركات المصنّعة. الأرقام في الجداول للتعلّم؛ ارجع إلى المعيار المعتمد في بلدك وكتالوج المصنّع قبل أي تصميم فعلي. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l7');
+IL.quiz(document.getElementById('quiz'), [{"q": "قاطع سفلي Ir = 250 A. ما أقل Ir للقاطع العلوي يحقق نسبة 1.6 الشائعة في منطقة الحمل الزائد؟", "o": ["400 A", "250 A", "320 A", "300 A"], "a": 0, "why": "250 × 1.6 = 400 A."}, {"q": "القاطع العلوي بلا تأخير وله Ii = 5 kA، وتيار القصر عند أطراف السفلي 12 kA. ما نوع الانتقائية على المنحنيات؟", "o": ["جزئية حتى نحو 5 kA", "كاملة حتى 12 kA", "لا انتقائية إطلاقًا", "كاملة لاختلاف قيم Ir"], "a": 0, "why": "فوق 5 kA يدخل العلوي منطقة الفصل اللحظي مع السفلي."}, {"q": "مغذّي الـ MCC مضبوط على tsd = 0.1 s. ما أقل tsd مناسب للـ ACB الرئيسي فوقه؟", "o": ["0.2 s", "0.1 s", "0.05 s", "0.02 s"], "a": 0, "why": "يلزم فرق 0.1 s تقريبًا بين المستويين ليفصل السفلي أولًا."}, {"q": "لماذا يمكن ضبط Ii = OFF في الـ ACB الرئيسي لمشروعنا؟", "o": ["Icw = 36 kA أكبر من 24.1 kA", "Icu أصغر من تيار القصر", "الـ ACB لا يحتاج حماية من القصر", "Ir أكبر من Isd دائمًا"], "a": 0, "why": "القاطع يتحمّل تيار القصر طوال زمن التأخير لأن Icw ≥ Isc."}, {"q": "تيار القصر عند لوحة الإنتاج 19.6 kA وقواطع MCB الفرعية 10 kA. ما الحل المقبول؟", "o": ["تسلسل من جدول المصنّع", "أي MCCB علوي بـ Icu 36 kA", "مقبول لأن 19.6 أقل من 2 × 10", "ترك القواطع وإضافة RCD"], "a": 0, "why": "التسلسل مسموح فقط بتوليفة مختبَرة منشورة في جداول المصنّع."}, {"q": "ما الثمن الأساسي للتسلسل بين قاطعين؟", "o": ["قد يفصل العلوي معه", "ترتفع Icu للقاطع العلوي", "يقلّ تيار القصر في اللوحة", "يصبح Ir أعلى من المطلوب"], "a": 0, "why": "التسلسل يعني أن العلوي يشارك في القطع، فتضيع الانتقائية عند التيارات الكبيرة."}, {"q": "قصر بتيار 3 kA في كابل مضخة داخل الـ MCC (Ii للمضخة 416 A، ومغذّي الـ MCC: Isd 2160 A / 0.1 s و Ii 4800 A). أي قاطع يفصل؟", "o": ["قاطع المضخة وحده", "مغذّي الـ MCC وحده", "الـ ACB الرئيسي", "القاطعان معًا"], "a": 0, "why": "قاطع المضخة لحظي عند 3 kA، والمغذّي ينتظر 0.1 s لأن 3 kA أقل من Ii له."}], {lesson:'l7', pass:0.8});
+</script>
+</body>
+</html>

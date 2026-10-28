@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>هبوط الجهد وتيار القصر</title>
+<meta name="description" content="الدرس 5: حساب هبوط الجهد وحدوده وفق IEC 60364-5-52، وتيار القصر عند كل لوحة وفق IEC 60909، وفحص تحمّل الكابل k²S² ≥ I²t.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="panel.css?v=20261028p1">
+<script src="panel.js?v=20261028p1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس تصميم اللوحات الكهربية · الدرس 5 من 12</p>
+    <h1>هبوط الجهد وتيار القصر</h1>
+    <p>كابل يحمل تياره بأمان قد يُسقط جهدًا كبيرًا، وقد يحترق عزله في قصر لا يدوم إلا جزءًا من الثانية. نحسب الاثنين لكل مغذٍّ في المصنع.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="calc.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>لماذا نحسب هبوط الجهد؟ وما حدوده؟</h2>
+<p>التيار المارّ في الكابل يُسقط عليه جهدًا، فيصل إلى الحمل جهد أقل من جهد اللوحة. <b>هبوط الجهد</b> (<span class="term">ΔU</span>) هو هذا الفرق، ويُعبَّر عنه نسبةً مئوية من الجهد الاسمي.</p>
+<ul><li><b>المحرك:</b> عزم البدء يتناسب مع مربع الجهد تقريبًا؛ فهبوط 10 % يُنقص العزم نحو 19 %، فيطول زمن البدء ويسخن الملف.</li>
+<li><b>الإنارة:</b> ينخفض الضوء ويقصر عمر بعض المشغّلات (Drivers)، ويظهر الوميض عند بدء المحركات.</li>
+<li><b>الإلكترونيات:</b> مغيّرات السرعة (VFD) وأجهزة التحكم تفصل بخطأ «جهد منخفض» (Undervoltage).</li></ul>
+<div class="tblw"><table class="tbl"><thead><tr><th>نوع التغذية</th><th>الإنارة</th><th>الاستخدامات الأخرى</th><th>المرجع</th></tr></thead><tbody>
+<tr><td>A: من شبكة الجهد المنخفض العامة</td><td>3 %</td><td>5 %</td><td rowspan="2">IEC 60364-5-52 الملحق G (إرشادي)، و BS 7671 الملحق 4</td></tr>
+<tr><td>B: من محوّل خاص بالمنشأة</td><td>6 %</td><td>8 %</td></tr>
+<tr><td>حدود هذا الكورس (ومواصفات كثيرة في مصر والخليج)</td><td><b>3 %</b></td><td><b>5 %</b></td><td>الكود المصري ومواصفة الاستشاري هما المرجع الملزم</td></tr>
+</tbody></table></div>
+<div class="box key"><b>القاعدة:</b> الحد يُطبَّق على <b>المجموع</b> من أصل التركيبات (أطراف الجهد المنخفض للمحوّل في مصنعنا) حتى أبعد حمل، لا على كل كابل وحده. ومصنعنا يتغذى من محوّل خاص، فالمعيار يسمح بحدود B، لكننا نلتزم بالحدود الأشد لأنها المطلوبة في أغلب المواصفات.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>حساب هبوط الجهد خطوة بخطوة</h2>
+<div class="formula">ΔU = √3 · Ib · L · (R·cos φ + X·sin φ)</div>
+<p>هذه صيغة الدائرة ثلاثية الطور، وفي الدائرة أحادية الطور يحلّ <b>2</b> محلّ <b>√3</b> ويُقسم على 230 V بدلًا من 400 V. وفيها <span class="term">R</span> المقاومة و <span class="term">X</span> المفاعلة لكل متر من الموصل، و <span class="term">L</span> طول الكابل بالمتر.</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>مقطع Cu (mm²)</th><th>R لهبوط الجهد (mΩ/m) = 22.5/S</th><th>R لتيار القصر الأقصى (mΩ/m) = 18.5/S</th><th>X (mΩ/m)</th></tr></thead><tbody>
+<tr><td>2.5</td><td>9.00</td><td>7.40</td><td rowspan="6">0.08</td></tr>
+<tr><td>4</td><td>5.63</td><td>4.63</td></tr>
+<tr><td>6</td><td>3.75</td><td>3.08</td></tr>
+<tr><td>25</td><td>0.900</td><td>0.740</td></tr>
+<tr><td>150</td><td>0.150</td><td>0.123</td></tr>
+<tr><td>240</td><td>0.0938</td><td>0.0771</td></tr>
+</tbody></table></div>
+<p class="muted">قيم نموذجية للتعلّم: 22.5 mΩ·mm²/m مقاومية النحاس عند حرارة التشغيل، و 18.5 عند 20 °C. في التصميم الفعلي خذ R و X من جدول الشركة المصنّعة للكابل أو من جداول BS 7671 (mV/A/m).</p>
+<h3>مثال المشروع: من المحوّل حتى ضاغط 37 kW</h3>
+<div class="tblw"><table class="tbl"><thead><tr><th>المقطع</th><th>المعطيات</th><th>الحساب</th><th>ΔU</th></tr></thead><tbody>
+<tr><td>MDB → MCC</td><td>Ib = 346.1 A، 4c 240 mm² Cu XLPE، 60 m، cos φ = 0.86</td><td class="mono">√3×346.1×60×(0.0938×0.86+0.08×0.51) = 4.37 V</td><td><b>1.09 %</b></td></tr>
+<tr><td>MCC → الضاغط</td><td>Ib = 66.1 A، 25 mm²، 80 m، cos φ = 0.86</td><td class="mono">√3×66.1×80×(0.9×0.86+0.08×0.51) = 7.46 V</td><td><b>1.87 %</b></td></tr>
+<tr><td colspan="3">المجموع حتى أطراف المحرك</td><td><b>2.96 % ≤ 5 % ✓</b></td></tr>
+</tbody></table></div>
+<figure class="fig">
+<svg viewBox="0 0 640 300" role="img" aria-label="مخطط أحادي الخط للمصنع يبيّن هبوط الجهد وتيار القصر عند كل لوحة" style="width:100%;max-width:640px;direction:ltr">
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor">
+<rect x="14" y="44" width="104" height="72" rx="8" fill="none" stroke="currentColor"/>
+<circle cx="52" cy="72" r="13" fill="none" stroke="currentColor"/><circle cx="68" cy="72" r="13" fill="none" stroke="currentColor"/>
+<text x="66" y="104" text-anchor="middle" font-size="11">1000 kVA · 6 %</text>
+<path d="M118 80H170" stroke="currentColor" stroke-width="2"/>
+<path d="M170 40V260" style="stroke:var(--accent)" stroke-width="5"/>
+<text x="170" y="30" text-anchor="middle" font-weight="600">MDB</text>
+<text x="66" y="140" text-anchor="middle" style="fill:var(--bad)">Isc 24.1 kA</text>
+<path d="M170 90H400" stroke="currentColor" stroke-width="2"/>
+<text x="285" y="82" text-anchor="middle" font-size="11">4c 240 mm² · 60 m</text>
+<text x="285" y="108" text-anchor="middle" style="fill:var(--accent)">ΔU 1.09 %</text>
+<path d="M400 60V130" style="stroke:var(--accent)" stroke-width="5"/>
+<text x="400" y="50" text-anchor="middle" font-weight="600">MCC</text>
+<text x="400" y="150" text-anchor="middle" style="fill:var(--bad)">Isc 14.8 kA</text>
+<path d="M400 90H556" stroke="currentColor" stroke-width="2"/>
+<text x="478" y="82" text-anchor="middle" font-size="11">25 mm² · 80 m</text>
+<text x="478" y="108" text-anchor="middle" style="fill:var(--accent)">ΔU 1.87 %</text>
+<circle cx="580" cy="90" r="22" fill="none" stroke="currentColor" stroke-width="2"/>
+<text x="580" y="95" text-anchor="middle" font-weight="600">M</text>
+<text x="580" y="130" text-anchor="middle" font-size="11">37 kW</text>
+<text x="580" y="146" text-anchor="middle" font-size="11" style="fill:var(--bad)">3.4 kA</text>
+<text x="580" y="34" text-anchor="middle" font-weight="600" style="fill:var(--good)">Σ 2.96 %</text>
+<path d="M170 210H400" stroke="currentColor" stroke-width="2"/>
+<text x="285" y="202" text-anchor="middle" font-size="11">4c 25 mm² · 60 m</text>
+<text x="285" y="228" text-anchor="middle" style="fill:var(--accent)">ΔU 1.53 %</text>
+<path d="M400 180V250" style="stroke:var(--accent)" stroke-width="5"/>
+<text x="400" y="172" text-anchor="middle" font-weight="600">LTG DB</text>
+<text x="400" y="272" text-anchor="middle" style="fill:var(--bad)">Isc 4.8 kA</text>
+<path d="M400 210H556" stroke="currentColor" stroke-width="2"/>
+<text x="478" y="202" text-anchor="middle" font-size="11">2.5 mm² · 35 m · 5 A</text>
+<text x="478" y="228" text-anchor="middle" style="fill:var(--accent)">ΔU 1.37 %</text>
+<circle cx="580" cy="210" r="16" fill="none" stroke="currentColor" stroke-width="2"/>
+<path d="M569 199L591 221M591 199L569 221" stroke="currentColor" stroke-width="1.5"/>
+<text x="580" y="250" text-anchor="middle" font-weight="600" style="fill:var(--good)">Σ 2.90 %</text>
+</g></svg>
+<figcaption>جزء من مخطط المشروع: هبوط الجهد يتراكم من المحوّل حتى آخر حمل، وتيار القصر يقلّ كلما ابتعدنا عن المحوّل.</figcaption>
+</figure>
+<p class="muted">مقاطع الكابلات وتيارات التصميم من الدرسين 2 و 4، والأطوال افتراضية لهذا المثال.</p>
+<h3>مثال الإنارة: الحد 3 % يفرض تعديل الدائرة</h3>
+<div class="tblw"><table class="tbl"><thead><tr><th>الاختيار</th><th>MDB → LTG DB<br><span class="muted">69.6 A، 25 mm²، 60 m، cos φ 0.9</span></th><th>دائرة إنارة<br><span class="muted">35 m، أحادية، cos φ 1</span></th><th>المجموع</th></tr></thead><tbody>
+<tr><td>التصميم الأول: دائرة 10 A</td><td>1.53 %</td><td>2.5 mm²: 2.74 %</td><td style="color:var(--bad)"><b>4.27 % ✗</b></td></tr>
+<tr><td>تكبير الدائرة إلى 4 mm²</td><td>1.53 %</td><td>4 mm²: 1.71 %</td><td style="color:var(--bad)"><b>3.24 % ✗</b></td></tr>
+<tr><td>تقسيمها إلى دائرتين 5 A</td><td>1.53 %</td><td>2.5 mm²: 1.37 %</td><td style="color:var(--good)"><b>2.90 % ✓</b></td></tr>
+</tbody></table></div>
+<ul><li><b>عند بدء المحرك</b> يرتفع التيار إلى 6–7 أضعاف ويهبط cos φ إلى نحو 0.35. في مثالنا يصل الهبوط عند بدء الضاغط بطريقة DOL إلى نحو 7.4 %، وهذا مقبول عادةً إذا بقي دون 10–15 % عند أطراف المحرك (راجع مواصفة المشروع وبيانات المحرك).</li>
+<li>إذا تجاوز الهبوط الحد، فالحلول: تكبير المقطع، أو تقصير المسار، أو نقل اللوحة الفرعية أقرب إلى مركز الأحمال، أو تقسيم الدائرة.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>تيار القصر عند كل لوحة</h2>
+<p><b>تيار القصر المتوقع</b> (<span class="term">Isc</span>، أو <span class="term">Ik</span> في IEC 60909) هو التيار الذي يمرّ لو حدث قصر صريح بين الأطوار الثلاثة عند نقطة ما. نحتاجه لاختيار قدرة القطع <span class="term">Icu</span> لكل قاطع، ولفحص تحمّل الكابلات والبارات.</p>
+<div class="formula">Isc = c · Un / (√3 · Zk)<br>Zk = √(ΣR² + ΣX²)</div>
+<ul><li><b>المحوّل:</b> <span class="eq">Ztr = Uk × U² / S</span>، أي <span class="eq">0.06 × 400² / 1000 kVA</span> <span class="eq">= 9.6 mΩ</span>. ومع مفقودات نحاس نموذجية 10.5 kW تكون <span class="eq">Rtr = 1.68 mΩ</span> و <span class="eq">Xtr = 9.45 mΩ</span>.</li>
+<li><b>الطريقة السريعة:</b> <span class="eq">Isc ≈ In_tr / Uk</span> <span class="eq">= 1443 A / 0.06 = 24.1 kA</span>، بافتراض أن شبكة الجهد المتوسط لا نهائية القدرة، فالنتيجة في جانب الأمان.</li>
+<li><b>المعامل c</b> في IEC 60909: <span class="eq">cmax = 1.05</span> للجهد المنخفض (أو 1.10 إذا كان تفاوت الجهد +10 %) لحساب أكبر تيار، و <span class="eq">cmin = 0.95</span> لحساب أقل تيار. استخدمنا c = 1 في الجدول للتبسيط؛ ومع 1.05 يصبح تيار MDB نحو 25.3 kA، ويُضاف إليه إسهام المحركات الدوّارة لحظة القصر.</li></ul>
+<div class="tblw"><table class="tbl"><thead><tr><th>النقطة</th><th>ما يُضاف</th><th>ΣR (mΩ)</th><th>ΣX (mΩ)</th><th>Zk (mΩ)</th><th>Isc</th></tr></thead><tbody>
+<tr><td>MDB</td><td>المحوّل (الوصلة قصيرة فأهملناها)</td><td>1.68</td><td>9.45</td><td>9.60</td><td><b>24.1 kA</b></td></tr>
+<tr><td>SMDB الإنتاج</td><td>2×150 mm²، 40 m: R = 2.47، X = 1.60</td><td>4.15</td><td>11.05</td><td>11.80</td><td><b>19.6 kA</b></td></tr>
+<tr><td>MCC</td><td>240 mm²، 60 m: R = 4.63، X = 4.80</td><td>6.31</td><td>14.25</td><td>15.58</td><td><b>14.8 kA</b></td></tr>
+<tr><td>LTG DB</td><td>25 mm²، 60 m: R = 44.40، X = 4.80</td><td>46.08</td><td>14.25</td><td>48.23</td><td><b>4.8 kA</b></td></tr>
+<tr><td>أطراف الضاغط</td><td>من MCC: 25 mm²، 80 m: R = 59.20، X = 6.40</td><td>65.51</td><td>20.65</td><td>68.68</td><td><b>3.4 kA</b></td></tr>
+</tbody></table></div>
+<div class="box key"><b>ماذا نستفيد؟</b> قواطع الـ MDB تحتاج <span class="eq">Icu ≥ 25.3 kA</span> فنختار 36 kA أو أكثر، أما قواطع الـ MCC فيكفيها <span class="eq">Icu ≥ 14.8 kA</span> (25 kA مثلًا)، وقواطع الـ SMDB بقدرة 25 kA، وقواطع لوحة الإنارة 6 kA. اختيار Icu 50 kA لكل القواطع في كل اللوحات تكلفة بلا داعٍ.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>تحمّل الكابل الحراري: k²S² ≥ I²t</h2>
+<p>أثناء القصر يسخن الموصل بسرعة كبيرة لا تسمح بتبديد الحرارة (تسخين <b>أدياباتي</b>). تشترط IEC 60364-4-43 (البند 434.5.2) أن تفصل الحماية قبل أن يبلغ العزل حدّ حرارته الأقصى:</p>
+<div class="formula">k² · S² ≥ I² · t   ⇔   S ≥ I · √t / k</div>
+<div class="tblw"><table class="tbl"><thead><tr><th>الموصل والعزل</th><th>k</th><th>حرارة العزل: تشغيل → قصر</th></tr></thead><tbody>
+<tr><td>Cu / PVC (حتى 300 mm²)</td><td>115</td><td>70 → 160 °C</td></tr>
+<tr><td>Cu / XLPE أو EPR</td><td>143</td><td>90 → 250 °C</td></tr>
+<tr><td>Al / PVC</td><td>76</td><td>70 → 160 °C</td></tr>
+<tr><td>Al / XLPE</td><td>94</td><td>90 → 250 °C</td></tr>
+</tbody></table></div>
+<h3>مثال 1: قاطع بتأخير زمني</h3>
+<p>لو ضبطنا قاطعًا في الـ MDB بلا فصل لحظي وبتأخير <span class="eq">tsd = 0.3 s</span> لأجل الانتقائية، فالقصر عند بداية كابله يساوي تيار الـ MDB 24.1 kA:</p>
+<ul><li><span class="eq">Smin = 24056 × √0.3 / 143 = 92.2 mm²</span>: كابل الـ MCC بمقطع 240 mm² ينجح بفارق كبير.</li>
+<li>تحقُّق: <span class="eq">k²S² = 143² × 240² = 1.18×10⁹ A²s</span> وهي أكبر من <span class="eq">I²t = 24056² × 0.3 = 1.74×10⁸ A²s</span> ✓.</li>
+<li>أما كابل لوحة الإنارة 25 mm² فيفشل مع أي تأخير كهذا، ولذلك يحميه قاطع حراري مغناطيسي 100 A يفصل لحظيًا، ونفحصه بطاقة المرور كما في المثال 2.</li></ul>
+<h3>مثال 2: قاطع محدِّد للتيار وزمن أقل من 0.1 s</h3>
+<p>كابل مضخة 15 kW بمقطع 6 mm² Cu XLPE يخرج من الـ MCC حيث <span class="eq">Isc = 14.8 kA</span>: <span class="eq">k²S² = 143² × 6² = 7.4×10⁵ A²s</span>. لو حسبنا بزمن 10 ms لكان <span class="eq">I²t = 2.2×10⁶</span> فيفشل الكابل ظاهريًا. لكن القاطع المحدِّد للتيار (<span class="term">Current-limiting</span>) يفصل قبل أن يبلغ التيار قيمته القصوى، والمعيار يطلب حينئذ استخدام <b>طاقة المرور</b> (<span class="term">Let-through I²t</span>) من منحنى الشركة المصنّعة، وهي هنا نحو <span class="eq">2×10⁵ A²s</span> (قيمة نموذجية للتعلّم)، فينجح الكابل.</p>
+<div class="box key"><b>القاعدة العملية:</b> إذا كان زمن الفصل بين 0.1 s و 5 s فاحسب I²t من تيار القصر والزمن. وإذا كان أقل من 0.1 s فخذ I²t من كتالوج القاطع عند تيار القصر المحسوب.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>أخطاء شائعة وكيف تتحقق</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th>الخطأ</th><th>نتيجته</th><th>كيف تكتشفه</th></tr></thead><tbody>
+<tr><td>حساب هبوط كل كابل وحده دون الجمع</td><td>دائرة إنارة بهبوط كلي 4 % مع أن كل كابل أقل من 3 %</td><td>اجمع النسب على المسار كله من المحوّل حتى الحمل</td></tr>
+<tr><td>استخدام √3 في دائرة أحادية الطور أو القسمة على 400 V</td><td>هبوط محسوب أقل من الحقيقي بنحو النصف</td><td>الأحادية: 2 × I × L ... ÷ 230 V</td></tr>
+<tr><td>استخدام Isc الـ MDB لكل اللوحات</td><td>قواطع غالية بقدرة قطع لا حاجة إليها</td><td>احسب Zk تراكميًا عند كل لوحة</td></tr>
+<tr><td>إهمال Isc الأدنى في نهاية الكابل الطويل</td><td>لا يفصل الجزء المغناطيسي للقاطع عند القصر البعيد</td><td>احسب بـ cmin = 0.95 ومقاومة ساخنة (الدرس 8)</td></tr>
+<tr><td>استخدام k = 143 لكابل PVC</td><td>كابل يحترق عزله أثناء القصر</td><td>طابق k مع نوع العزل الفعلي</td></tr>
+<tr><td>نسيان تأخير tsd عند فحص I²t</td><td>الكابل ينجح بالحساب ويتلف فعليًا</td><td>استخدم زمن الفصل الحقيقي حسب الضبط</td></tr>
+</tbody></table></div>
+<div class="box key"><b>على المحاكي:</b> أدخل أطوال الكابلات واحسب هبوط الجهد لكل مغذٍّ حتى تبقى المجاميع ضمن 5 % للمحركات و 3 % للإنارة، واحسب Isc عند كل لوحة، وتحقق من k²S² ≥ I²t لكل كابل، وكبّر أي مغذٍّ يفشل. <a class="btn pri" href="calc.html#vdrop" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">المعلومات هنا من المعايير IEC 60364 و IEC 61439 و IEC 60947 و IEC 60909 و IEC TR 60890 والكود المصري لأسس تصميم وشروط تنفيذ التركيبات الكهربية، ومن كتالوجات الشركات المصنّعة. الأرقام في الجداول للتعلّم؛ ارجع إلى المعيار المعتمد في بلدك وكتالوج المصنّع قبل أي تصميم فعلي. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l5');
+IL.quiz(document.getElementById('quiz'), [{"q": "كابل ثلاثي الطور Cu بمقطع 50 mm² (R = 0.45 و X = 0.08 mΩ/m) يحمل 100 A لمسافة 50 m بمعامل قدرة 0.8. كم هبوط الجهد على 400 V؟", "o": ["0.88 %", "1.02 %", "0.51 %", "3.53 %"], "a": 0, "why": "√3×100×50×(0.45×0.8+0.08×0.6) = 3.53 V، أي 0.88 % من 400 V."}, {"q": "هبوط مغذّي لوحة الإنارة 1.4 % وهبوط دائرة الإنارة 2.0 %. ما الحكم وفق حد 3 % للإنارة؟", "o": ["مرفوض: المجموع 3.4 %", "مقبول: كل جزء أقل من 3 %", "مقبول: حد الإنارة 5 %", "يُحكم على الدائرة الأخيرة فقط"], "a": 0, "why": "الحد يُطبَّق على مجموع الهبوط من الأصل حتى الحمل."}, {"q": "محوّل 630 kVA، 400 V، Uk = 4 %. كم تيار القصر التقريبي عند أطرافه بالطريقة السريعة؟", "o": ["22.7 kA", "15.2 kA", "39.4 kA", "9.1 kA"], "a": 0, "why": "In = 630/(√3×0.4) = 909 A، و 909/0.04 = 22.7 kA."}, {"q": "كابل Cu XLPE بمقطع 50 mm² يتعرّض لتيار قصر 10 kA. ما أطول زمن فصل يتحمّله؟", "o": ["0.51 s", "0.72 s", "0.33 s", "1.43 s"], "a": 0, "why": "t = (k·S/I)² = (143×50/10000)² = 0.51 s."}, {"q": "مغذٍّ بكابل Cu PVC، وتيار القصر عند بدايته 20 kA، وزمن الفصل 0.2 s بسبب التأخير. ما أصغر مقطع قياسي يتحمّل؟", "o": ["95 mm²", "70 mm²", "50 mm²", "120 mm²"], "a": 0, "why": "S = 20000×√0.2/115 = 77.8 mm²، فأصغر مقطع قياسي أكبر منه 95 mm²."}, {"q": "تيار القصر 24.1 kA عند الـ MDB و 14.8 kA عند الـ MCC. هل تصلح قواطع Icu = 25 kA داخل الـ MCC؟", "o": ["نعم، تُقارن بتيار الـ MCC", "لا، يجب أن تتحمّل 24.1 kA", "لا، يجب Icu ≥ 2 × Isc", "نعم، لأن Icu لا يرتبط بـ Isc"], "a": 0, "why": "قدرة القطع تُقارن بتيار القصر المتوقع عند مكان تركيب القاطع."}, {"q": "دائرة بكابل 4 mm² Cu PVC يحميها MCB، وتيار القصر 6 kA، وطاقة المرور من الكتالوج 30 000 A²s. ما الحكم؟", "o": ["يتحمّل: k²S² = 211 600 A²s", "لا يتحمّل: 6 kA² أكبر من k²S²", "يُحسب I²t بزمن 5 s دائمًا", "لا يُحكم دون معرفة طول الكابل"], "a": 0, "why": "115² × 4² = 211 600 A²s، وهي أكبر من طاقة المرور 30 000 A²s."}], {lesson:'l5', pass:0.8});
+</script>
+</body>
+</html>
