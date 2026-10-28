@@ -6,6 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>OPC UA</title>
 <meta name="description" content="الدرس 9: OPC UA: الخادم والعميل والمنفذ 4840، فضاء العناوين و NodeId والجودة والطابع الزمني، الاشتراك و Deadband، الأمان بالشهادات والسياسات، وتفعيله على S7-1500.">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/iiot-lab/lesson-09.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/iiot-lab/lesson-09.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/iiot-lab/lesson-09.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
@@ -20,7 +23,7 @@
     <h1>OPC UA</h1>
     <p>لغة المصنع المشتركة: بدل «السجل 40011 = 4998» تقرأ «حرارة الفرن 182.5 درجة، جودة جيدة، الساعة 12:40». هكذا تتكلم أنظمة المتابعة مع أي PLC.</p>
   </div>
-  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="net.html">المحاكي</a></div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="net.html">المحاكي</a><a class="btn lang-btn" href="/en/iiot-lab/lesson-09.html" lang="en" hreflang="en" data-keep aria-label="Read this page in English" title="Read this page in English" onclick="try{localStorage.setItem('le-lang','en')}catch(e){}">EN</a></div>
 </header>
 
 <section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
@@ -41,7 +44,7 @@
 <text x="40" y="65">Objects</text><text x="60" y="85">└ PLC_1</text><text x="80" y="105">└ DataBlocks</text><text x="100" y="125">└ Line3</text><text x="120" y="145" fill="#0d7584">├ OvenTemp  Double</text><text x="120" y="165" fill="#0d7584">├ PartsCount Int32</text><text x="120" y="185" fill="#0d7584">└ Running    Boolean</text>
 <rect x="380" y="60" width="240" height="100" rx="8" fill="none" stroke="#b85f00" stroke-width="2"/><text x="390" y="82" font-weight="700" fill="#b85f00">Client (SCADA / gateway)</text><text x="390" y="105">Read ns=3;s="Line3".OvenTemp</text><text x="390" y="125">→ 182.5 (Good, 12:40:05.120)</text><text x="390" y="148">Subscribe: 500 ms, deadband 0.5</text>
 <path d="M270 110H380" stroke="currentColor" stroke-width="2" marker-end="url(#a2)"/><defs><marker id="a2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs>
-<text x="300" y="100" font-size="11">opc.tcp://192.168.1.10:4840</text>
+<text x="390" y="182" font-size="11">opc.tcp://192.168.1.10:4840</text>
 </g></svg>
 <p>كل شيء في الخادم <b>عقدة (Node)</b> في شجرة: كائنات، متغيرات، طرائق، أنواع. لكل عقدة <b>NodeId</b> فريد يتكون من <b>فضاء أسماء</b> (ns) ومعرّف: رقمي <span class="mono">ns=3;i=1005</span> أو نصي <span class="mono">ns=3;s="Line3".OvenTemp</span>. العميل <b>يتصفح (Browse)</b> الشجرة من Objects إلى الأسفل، ثم <b>يقرأ (Read)</b> أو <b>يكتب (Write)</b> أو <b>يشترك (Subscribe)</b>.</p>
 <p>كل قيمة تأتي مع <b>ثلاثية</b>: القيمة، <b>الجودة</b> (Good / Bad / Uncertain)، و<b>الطابع الزمني</b> من المصدر. لو الجودة Bad فالسبب في الحساس أو الـ PLC لا في الشبكة.</p>
@@ -88,5 +91,6 @@
 IL.lesson('l9');
 IL.quiz(document.getElementById('quiz'), [{"q": "ما الذي يضيفه OPC UA على Modbus؟", "o": ["معنى للبيانات: اسم ونوع ووحدة وجودة وزمن", "سرعة أعلى فقط", "كابلًا مختلفًا", "لا شيء"], "a": 0, "why": "نموذج معلومات بدل سجلات مجهولة."}, {"q": "المنفذ القياسي لـ OPC UA:", "o": ["4840", "502", "1883", "44818"], "a": 0, "why": "opc.tcp://host:4840."}, {"q": "ns=3;s=\"Line3\".OvenTemp هو:", "o": ["NodeId نصي في فضاء الأسماء 3", "عنوان IP", "اسم المستخدم", "مسار ملف"], "a": 0, "why": "ns = namespace، s = معرّف نصي."}, {"q": "القيمة تأتي بجودة Bad. الاستنتاج:", "o": ["المشكلة في المصدر (الحساس أو الـ PLC) لا في الشبكة", "انقطع الكابل", "الشهادة مرفوضة", "المنفذ مغلق"], "a": 0, "why": "الشبكة أوصلت الرد؛ الخادم نفسه يبلّغ أن القيمة غير صالحة."}, {"q": "ميزة الاشتراك (Subscription) مع Deadband:", "o": ["يرسل الخادم القيمة فقط عندما تتغير بأكثر من الحد", "يقرأ كل 1 ms", "يحذف القيم القديمة", "يشفر البيانات"], "a": 0, "why": "حمل أقل على الـ PLC والشبكة من الاستطلاع."}, {"q": "BadCertificateUntrusted يُحل بـ:", "o": ["نقل شهادة العميل إلى قائمة الموثوقين في الخادم", "تغيير المنفذ", "إعادة تشغيل المفتاح", "تغيير NodeId"], "a": 0, "why": "الثقة المتبادلة في الشهادات يدوية عند أول اتصال."}, {"q": "سياسة أمان None مناسبة لـ:", "o": ["التجربة في المعمل فقط", "شبكة الإنتاج", "الاتصال عبر الإنترنت", "كل الحالات"], "a": 0, "why": "في الإنتاج استخدم Sign & Encrypt."}], {lesson:'l9', pass:0.8});
 </script>
+<script src="/assets/i18n.js?v=20261028e1"></script>
 </body>
 </html>

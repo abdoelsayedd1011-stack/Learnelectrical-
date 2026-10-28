@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MQTT</title>
+<meta name="description" content="Lesson 10: MQTT: the broker, publish and subscribe; topics and the + and # wildcards; QoS 0, 1 and 2; Retain, Last Will and Keep alive; Sparkplug B; and security with TLS and ACLs.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/iiot-lab/lesson-10.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/iiot-lab/lesson-10.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/iiot-lab/lesson-10.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/iiot-lab/lesson-10.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="iiot.css?v=20261028e1">
+<script src="iiot.js?v=20261028e1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">Industrial IoT &amp; Networks · Lesson 10 of 14</p>
+    <h1>MQTT</h1>
+    <p>The protocol that carries plant data to your phone. Light enough for a ten-dollar vibration sensor to speak it, robust enough for entire plants to depend on it.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="net.html">Simulator</a><a class="btn lang-btn" href="/iiot-lab/lesson-10.html" lang="ar" hreflang="ar" data-keep aria-label="اقرأ هذه الصفحة بالعربية" title="اقرأ هذه الصفحة بالعربية">ع</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>Publish and subscribe</h2>
+<p><b>MQTT</b> is an extremely lightweight IoT protocol: devices never talk to each other directly; both connect to a <b>broker</b>. A publisher sends a message to a <b>topic</b>, and the broker distributes it to everyone who has <b>subscribed</b> to that topic. The publisher does not know who reads, and the subscriber does not know who wrote, so you can add a new dashboard or phone without touching the PLC.</p>
+<svg viewBox="0 0 640 230" role="img" aria-label="MQTT broker between publishers and subscribers" style="width:100%;max-width:640px;direction:ltr">
+<g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
+<rect x="250" y="80" width="140" height="70" rx="10" fill="none" stroke="#0d7584" stroke-width="3"/><text x="320" y="108" font-weight="700" fill="#0d7584">Broker</text><text x="320" y="128">:1883 / :8883</text>
+<rect x="20" y="30" width="150" height="46" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="95" y="49" font-weight="700">Gateway line3</text><text x="95" y="66" font-size="10">PUB line3/oven/temp 182.5</text>
+<rect x="20" y="160" width="150" height="46" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="95" y="179" font-weight="700">Vibration sensor</text><text x="95" y="196" font-size="10">PUB line3/m1/vib 4.2</text>
+<rect x="470" y="30" width="150" height="46" rx="8" fill="none" stroke="#b85f00" stroke-width="2"/><text x="545" y="49" font-weight="700" fill="#b85f00">Dashboard</text><text x="545" y="66" font-size="10">SUB line3/#</text>
+<rect x="470" y="160" width="150" height="46" rx="8" fill="none" stroke="#b85f00" stroke-width="2"/><text x="545" y="179" font-weight="700" fill="#b85f00">Phone app</text><text x="545" y="196" font-size="10">SUB +/oven/temp</text>
+<g stroke="currentColor" stroke-width="2" fill="none"><path d="M170 53 L250 95"/><path d="M170 183 L250 135"/><path d="M390 95 L470 53"/><path d="M390 135 L470 183"/></g>
+</g></svg>
+<ul><li>Port <b>1883</b> is unencrypted; <b>8883</b> uses TLS. Common brokers: Mosquitto (free), EMQX, HiveMQ, and the AWS/Azure services.</li>
+<li>A message = topic + payload (bytes: a number, text, JSON). MQTT does not prescribe the payload format.</li>
+<li>The connection is always initiated outbound by the <b>client</b>, so it passes through firewalls easily and needs no inbound ports opened at the plant.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Topics and wildcards</h2>
+<p>A topic is a string of levels separated by <span class="mono">/</span>. Design it to mirror the plant hierarchy:</p>
+<div class="formula">factory/line3/oven/temperature</div>
+<ul><li><b>+</b> matches exactly one level: <span class="mono">factory/+/oven/temperature</span> = oven temperature on every line.</li>
+<li><b>#</b> matches everything below (last position only): <span class="mono">factory/line3/#</span> = everything on line 3.</li>
+<li>Wildcards are for <b>subscribing only</b>; you always publish to a specific topic.</li>
+<li>Topics beginning with <span class="mono">$SYS/</span> carry the broker’s own statistics.</li>
+<li>Avoid spaces and uppercase letters, and do not start a topic with <span class="mono">/</span>.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>QoS, Retain and Last Will</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th>QoS</th><th>Guarantee</th><th>Use</th></tr></thead><tbody>
+<tr><td><b>0</b></td><td>At most once (fire and forget)</td><td>Frequent readings where losing one is harmless: temperature every second</td></tr>
+<tr><td><b>1</b></td><td>At least once (may be duplicated)</td><td>Alarms and counters; the most widely used</td></tr>
+<tr><td><b>2</b></td><td>Exactly once (four-step handshake)</td><td>Commands and billing; the heaviest</td></tr></tbody></table></div>
+<ul><li><b>Retain:</b> the broker keeps the last message on the topic and sends it immediately to any new subscriber. Essential for state values (is the machine running?) so a dashboard does not have to wait for the next change.</li>
+<li><b>Last Will and Testament (LWT):</b> on connecting, the client specifies a “will” message that the broker publishes on its behalf if it disconnects unexpectedly: <span class="mono">line3/gateway/status = offline</span>. This is how you tell a dead gateway from a stopped machine.</li>
+<li><b>Keep alive:</b> the client sends a heartbeat every N seconds; if none arrives within 1.5 × N, the broker considers it disconnected and publishes the will.</li>
+<li><b>Clean session / Persistent:</b> a persistent session retains the client’s subscriptions and the QoS 1/2 messages it missed while disconnected.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>Sparkplug B: MQTT with structure</h2>
+<p>MQTT defines neither the payload format nor topic names, so every gateway ends up speaking its own dialect. <b>Sparkplug B</b> is an Eclipse specification that imposes a topic structure, <span class="mono">spBv1.0/&lt;group&gt;/&lt;type&gt;/&lt;edge node&gt;/&lt;device&gt;</span>, and message types: <b>NBIRTH</b> (node birth, with all its metrics and data types), <b>DDATA</b> (device data, on change only), <b>NDEATH</b> (the will) and <b>NCMD</b> (a command to the node). The payload is compact <b>Protobuf</b> with timestamps. SCADA systems such as Ignition understand it natively and build tags automatically.</p>
+<div class="box key"><b>Rule of thumb:</b> if you are building from scratch with a system that supports it, use Sparkplug B. Otherwise, choose simple JSON with fixed keys, <span class="mono">{"v":182.5,"u":"C","t":1730000000}</span>, and document it.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>Practical examples</h2>
+<ul><li><b>Try it on your PC:</b> install Mosquitto, then in one window run <span class="mono">mosquitto_sub -t "factory/#" -v</span> and in another <span class="mono">mosquitto_pub -t factory/line3/oven/temperature -m 182.5 -r</span>.</li>
+<li><b>Directly from the PLC:</b> the LMQTT library (Siemens) or MQTT blocks on Beckhoff, Wago and Schneider M262, or via a gateway (Lesson 11), which is the most common approach.</li>
+<li><b>Security:</b> a username and password per gateway, TLS on 8883, and an <b>ACL</b> on the broker: the gateway may publish to <span class="mono">factory/line3/#</span> only and cannot read other lines.</li>
+<li><b>Message volume:</b> report by exception, not every 100 ms. Thousands of sensors × 10 messages/s will swamp any broker.</li></ul>
+<div class="box key"><b>On the simulator:</b> publish sensor readings, subscribe with wildcards, see the effect of Retain on a new subscriber, cut off the gateway to watch the will fire, and compare QoS 0 and 1 when the connection drops. <a class="btn pri" href="net.html#mqtt" style="margin-inline-start:8px">Open the simulator →</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Answer at least 6 of 7 correctly to complete the lesson.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">Sources: the official protocol specifications (Modbus.org, PROFIBUS &amp; PROFINET International, CiA, ODVA, OPC Foundation, OASIS MQTT) and manufacturers' manuals. Before applying anything on a live network, consult the device manual and your plant's network-security policy. Your progress is saved on this device.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l10');
+IL.quiz(document.getElementById('quiz'), [{"q": "In MQTT, a publisher sends its message to:", "o": ["The broker, which distributes it to subscribers", "The subscriber directly", "The PLC", "The cloud, with no broker"], "a": 0, "why": "The broker is the hub; publisher and subscriber do not know each other."}, {"q": "The subscription factory/+/oven/temperature matches:", "o": ["Oven temperature on every line", "Every topic in the plant", "Line 3 only", "Nothing; + is not allowed"], "a": 0, "why": "+ matches exactly one level."}, {"q": "The right QoS for an alarm that must arrive, even if duplicated:", "o": ["1", "0", "2", "It makes no difference"], "a": 0, "why": "At least once: delivery is guaranteed, and it is lighter than QoS 2."}, {"q": "Retain is useful for:", "o": ["Giving a new subscriber the latest value immediately", "Encrypting messages", "Reducing payload size", "Preventing duplicates"], "a": 0, "why": "The broker keeps the last message on the topic."}, {"q": "The broker publishes the Last Will when:", "o": ["The client disconnects unexpectedly without closing the connection", "A subscriber requests it", "The value changes", "The client connects"], "a": 0, "why": "It lets you distinguish a dead gateway from a stopped machine."}, {"q": "The encrypted (TLS) port for MQTT is:", "o": ["8883", "1883", "4840", "502"], "a": 0, "why": "1883 is unencrypted."}, {"q": "Sparkplug B adds to MQTT:", "o": ["A standard topic structure, message types and payload", "Higher speed", "A special cable", "A different broker"], "a": 0, "why": "NBIRTH/DDATA/NDEATH with a Protobuf payload that SCADA understands natively."}], {lesson:'l10', pass:0.8});
+</script>
+<script src="/assets/i18n.js?v=20261028e1"></script>
+</body>
+</html>

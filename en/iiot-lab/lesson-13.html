@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Predictive Maintenance</title>
+<meta name="description" content="Lesson 13: maintenance strategies, vibration with ISO limits and FFT, temperature, current and counters, baseline, limits, trend and RUL, and a complete cooling-pump example.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/iiot-lab/lesson-13.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/iiot-lab/lesson-13.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/iiot-lab/lesson-13.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/iiot-lab/lesson-13.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="iiot.css?v=20261028e1">
+<script src="iiot.js?v=20261028e1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">Industrial IoT &amp; Networks · Lesson 13 of 14</p>
+    <h1>Predictive Maintenance</h1>
+    <p>The purpose of every network so far: knowing a bearing will fail before it does. Here you learn what to measure, and how to turn the numbers into a planned maintenance decision.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="net.html">Simulator</a><a class="btn lang-btn" href="/iiot-lab/lesson-13.html" lang="ar" hreflang="ar" data-keep aria-label="اقرأ هذه الصفحة بالعربية" title="اقرأ هذه الصفحة بالعربية">ع</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>Three kinds of maintenance</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th>Type</th><th>When</th><th>Cost</th></tr></thead><tbody>
+<tr><td>Reactive</td><td>After the failure</td><td>Unplanned downtime, rush-ordered parts, consequential damage</td></tr>
+<tr><td>Preventive</td><td>Every N hours or months</td><td>Replacing parts that are still serviceable</td></tr>
+<tr><td>Predictive</td><td>When the data shows the onset of degradation</td><td>Sensors + analysis, but the downtime is planned</td></tr></tbody></table></div>
+<p>Predictive maintenance does not replace preventive maintenance; it moves part of it from “by the calendar” to “by condition” (condition-based).</p>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>What do you measure?</h2>
+<ul><li><b>Vibration:</b> the most important indicator for motors, pumps and fans. An accelerometer on the bearing housing; the <b>RMS</b> value in mm/s is compared with the <b>ISO 10816/20816</b> limits (e.g. for a medium-sized motor: good &lt; 2.8, acceptable &lt; 7.1, unacceptable &gt; 11). Spectral analysis (FFT) identifies the cause: 1× running speed = imbalance, 2× = misalignment, bearing frequencies = bearing damage.</li>
+<li><b>Temperature:</b> for bearings, motors and panels; a gradual rise above ambient beyond the usual margin = alarm. Thermal cameras for panels.</li>
+<li><b>Motor current:</b> from the variable-frequency drive itself (Modbus), with no extra sensor. Higher current at the same load = friction or a blockage.</li>
+<li><b>Run-hour and cycle counters:</b> for contactors, valves and cylinders; their life is measured in operations, not days.</li>
+<li><b>Differential pressure</b> across filters, <b>oil quality</b>, and <b>ultrasound</b> for compressed-air leaks.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>From measurement to decision</h2>
+<ol><li><b>Baseline:</b> record the machine in healthy condition for two weeks: mean and standard deviation of each indicator for each operating state.</li>
+<li><b>Limits:</b> warning at +2σ, alarm at +3σ or at the ISO limit. Always with delay and hysteresis (Lesson 12).</li>
+<li><b>Trend:</b> not the value but its <b>slope</b>: vibration rising 0.1 mm/s per week reaches the limit in N weeks. That is remaining useful life (RUL) in its simplest form.</li>
+<li><b>Context:</b> high vibration at maximum speed may well be normal; compare against the same operating state in the baseline.</li>
+<li><b>Work order:</b> the alarm creates a maintenance work order in the CMMS with the data attached, and the technician closes it with the actual root cause, so the rules improve.</li></ol>
+<div class="box key"><b>Machine learning</b> (anomaly detection, fault classification) comes <b>after</b> you have a year of clean data with an accurate failure log. Until then, limits and trends solve 80% of cases.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>Example: the cooling pump</h2>
+<p>A 15 kW pump on a variable-frequency drive. Sensors: vibration on the motor bearing (IO-Link), bearing temperature, current from the drive (Modbus RTU), discharge pressure (4-20 mA).</p>
+<ul><li>Weeks 1–2: RMS 1.9 mm/s, temperature 48 °C, current 24 A at 50 Hz.</li><li>Week 6: RMS 3.1 and rising 0.2 per week, temperature 56, current 24.5. Pressure steady.</li>
+<li>Analysis: vibration and temperature rising together with near-constant current → the bearing, not the hydraulics. FFT shows the BPFO frequency → the outer race.</li><li>Decision: order the bearing and replace it during the planned shutdown in 3 weeks, instead of a sudden failure on the night shift.</li></ul>
+</section>
+<div class="box key"><b>On the simulator:</b> in the <b>Dashboard</b> tab, select the vibration curve, draw the baseline, and identify the week in which the trend will cross the ISO limit before it actually gets there. <a class="btn pri" href="net.html#dash" style="margin-inline-start:8px">Open the simulator →</a></div>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Answer at least 6 of 7 correctly to complete the lesson.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">Sources: the official protocol specifications (Modbus.org, PROFIBUS &amp; PROFINET International, CiA, ODVA, OPC Foundation, OASIS MQTT) and manufacturers' manuals. Before applying anything on a live network, consult the device manual and your plant's network-security policy. Your progress is saved on this device.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l13');
+IL.quiz(document.getElementById('quiz'), [{"q": "Predictive maintenance intervenes:", "o": ["When the data shows the onset of degradation", "After the failure", "Every month, by the calendar", "When the operator changes"], "a": 0, "why": "By condition, not by the calendar."}, {"q": "The most important condition indicator for a motor or rotating pump is:", "o": ["Vibration RMS on the bearing housing", "The paint colour", "The supply voltage", "The number of cables"], "a": 0, "why": "It is compared with the ISO 10816/20816 limits."}, {"q": "A vibration peak at 1× running speed usually indicates:", "o": ["Imbalance", "Bearing damage", "An electrical fault", "A clogged filter"], "a": 0, "why": "2× = misalignment; bearing frequencies = bearing damage."}, {"q": "A baseline is:", "o": ["A record of the machine’s indicators while healthy, for later comparison", "The first alarm", "The ISO limit", "The minimum current"], "a": 0, "why": "Without it you cannot tell what is “abnormal”."}, {"q": "In predictive maintenance, more important than the value itself is:", "o": ["The slope of the trend over time", "The colour of the indicator", "The sensor’s name", "The network speed"], "a": 0, "why": "The slope gives an estimate of the time remaining before the limit."}, {"q": "Motor current can be obtained without an extra sensor from:", "o": ["The variable-frequency drive via Modbus", "The contactor", "The Ethernet switch", "The vibration sensor"], "a": 0, "why": "Drives publish current, frequency and power in their registers."}, {"q": "When does machine learning pay off in predictive maintenance?", "o": ["Once you have a long history of clean data with an accurate failure log", "On day one", "Before the sensors are installed", "Never"], "a": 0, "why": "Until then, limits and trends handle most cases."}], {lesson:'l13', pass:0.8});
+</script>
+<script src="/assets/i18n.js?v=20261028e1"></script>
+</body>
+</html>

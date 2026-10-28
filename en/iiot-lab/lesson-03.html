@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RS-485 and Modbus RTU</title>
+<meta name="description" content="Lesson 3: the RS-485 standard, the A and B lines, termination and common ground; port settings; the four tables and function codes; frame layout, CRC and exceptions; and reading a drive.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/iiot-lab/lesson-03.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/iiot-lab/lesson-03.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/iiot-lab/lesson-03.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/iiot-lab/lesson-03.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="iiot.css?v=20261028e1">
+<script src="iiot.js?v=20261028e1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">Industrial IoT &amp; Networks · Lesson 3 of 14</p>
+    <h1>RS-485 and Modbus RTU</h1>
+    <p>The network you will meet most often, on old and new machines alike: a twisted pair and Modbus. Master this lesson and you can solve most "no communication" faults on a drive.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="net.html">Simulator</a><a class="btn lang-btn" href="/iiot-lab/lesson-03.html" lang="ar" hreflang="ar" data-keep aria-label="اقرأ هذه الصفحة بالعربية" title="اقرأ هذه الصفحة بالعربية">ع</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>Why RS-485?</h2>
+<p><b>RS-485</b> is not a protocol but an <b>electrical standard</b>: bits are sent as a voltage difference between two wires, <b>A</b> and <b>B</b>. Because noise affects both wires equally, the difference between them survives intact; this is why RS-485 reaches <b>1200 meters</b> and connects up to <b>32 devices</b> (or more with repeaters) on a single pair. Modbus RTU, PROFIBUS DP and others run on top of this standard.</p>
+<div class="box key"><b>Watch the labels:</b> some manufacturers call A "D−" and others call it "D+". If a device does not respond, swap A and B first; reversing them damages nothing.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Wiring it correctly</h2>
+<svg viewBox="0 0 640 230" role="img" aria-label="An RS-485 line with three devices and two terminating resistors" style="width:100%;max-width:640px;direction:ltr">
+<g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
+<rect x="20" y="30" width="120" height="70" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="80" y="55" font-weight="700">PLC (Master)</text><text x="60" y="88">A</text><text x="100" y="88">B</text>
+<rect x="260" y="30" width="120" height="70" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="320" y="55" font-weight="700">VFD #1</text><text x="300" y="88">A</text><text x="340" y="88">B</text>
+<rect x="500" y="30" width="120" height="70" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="560" y="55" font-weight="700">VFD #2</text><text x="540" y="88">A</text><text x="580" y="88">B</text>
+<path d="M60 100V150H540V100" fill="none" stroke="#c62828" stroke-width="3"/><path d="M100 100V170H580V100" fill="none" stroke="#1e5fd1" stroke-width="3"/>
+<path d="M300 100V150M340 100V170" stroke="#c62828" stroke-width="3"/><path d="M340 100V170" stroke="#1e5fd1" stroke-width="3"/>
+<rect x="30" y="152" width="14" height="22" fill="#f6e6d3" stroke="#b85f00" stroke-width="2"/><text x="37" y="200" font-size="11" fill="#b85f00">120 Ω</text>
+<rect x="596" y="152" width="14" height="22" fill="#f6e6d3" stroke="#b85f00" stroke-width="2"/><text x="603" y="200" font-size="11" fill="#b85f00">120 Ω</text>
+<path d="M60 150H37M37 150V152M100 170H44M44 170V174" stroke="#b85f00" stroke-width="2" fill="none"/><path d="M540 150H603M603 150V152M580 170H610M610 170V174" stroke="#b85f00" stroke-width="2" fill="none"/>
+<text x="200" y="145" fill="#c62828">A (D−)</text><text x="200" y="185" fill="#1e5fd1">B (D+)</text><text x="320" y="215">Shielded twisted pair, shield grounded at one end, common GND</text>
+</g></svg>
+<ol><li><b>A single line (daisy chain):</b> from each device to the next. No star branches; stubs cause reflections.</li>
+<li><b>A 120 Ω resistor at the two ends only:</b> many devices have a DIP switch or jumper for termination. Exactly two on the whole network: the first device and the last.</li>
+<li><b>Common ground (GND/SC):</b> a third wire tying the device references together; without it the voltage difference can exceed the permitted range (−7 to +12 V) and burn out the transceiver.</li>
+<li><b>Shield:</b> grounded at one end only (the panel) to avoid ground loops.</li>
+<li><b>Bias resistors:</b> usually in the master; they hold the line in a known state when no one is transmitting.</li></ol>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>Serial port settings</h2>
+<p>These settings must match on <b>every</b> device on the line, or no one will understand anyone:</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>Setting</th><th>Common values</th><th>Note</th></tr></thead><tbody>
+<tr><td>Baud rate</td><td class="mono">9600 · 19200 · 38400 · 115200</td><td>Higher speed = shorter distance. 19200 is a balanced choice</td></tr>
+<tr><td>Data bits</td><td class="mono">8</td><td>Fixed in RTU</td></tr>
+<tr><td>Parity</td><td class="mono">Even · Odd · None</td><td>The specification prefers Even. With None, usually 2 stop bits</td></tr>
+<tr><td>Stop bits</td><td class="mono">1 · 2</td><td></td></tr>
+<tr><td>Slave address</td><td class="mono">1 – 247</td><td>Unique for each slave. 0 is broadcast (no reply)</td></tr></tbody></table></div>
+<div class="box safe"><b>The classic fault:</b> the PLC at 19200 and the drive at 9600. The result: constant timeouts or intermittent CRC errors.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>Registers and function codes</h2>
+<p>Modbus sees any device as four tables:</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>Table</th><th>Size</th><th>Access</th><th>Conventional address</th><th>Function code (FC)</th></tr></thead><tbody>
+<tr><td>Coils</td><td>Bit</td><td>Read/write</td><td class="mono">00001 – 09999</td><td class="mono">01 read · 05 write single · 15 write multiple</td></tr>
+<tr><td>Discrete inputs</td><td>Bit</td><td>Read only</td><td class="mono">10001 – 19999</td><td class="mono">02</td></tr>
+<tr><td>Input registers</td><td>16-bit</td><td>Read only</td><td class="mono">30001 – 39999</td><td class="mono">04</td></tr>
+<tr><td>Holding registers</td><td>16-bit</td><td>Read/write</td><td class="mono">40001 – 49999</td><td class="mono">03 read · 06 write single · 16 write multiple</td></tr></tbody></table></div>
+<div class="box key"><b>The offset trap:</b> address 40001 in the manual is sent on the wire as <span class="mono">0</span>, and 40108 is sent as <span class="mono">107</span>. Some software asks for the conventional address, some for the offset. If you get a value that is "off by one register", this is why.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>The frame on the wire</h2>
+<p>A request to read two registers starting at address 40108 on slave 1:</p>
+<div class="tblw"><table class="tbl mono" style="direction:ltr"><thead><tr><th>01</th><th>03</th><th>00 6B</th><th>00 02</th><th>B6 D4</th></tr></thead><tbody>
+<tr><td>Address</td><td>Function</td><td>First register</td><td>Count</td><td>CRC</td></tr></tbody></table></div>
+<ul><li><b>CRC-16</b> is two bytes computed by the sender; if a single bit is corrupted in transit, the receiver silently discards the frame. Repeated CRC errors = noise, missing termination or an unsuitable baud rate.</li>
+<li>The response: <span class="mono">01 03 04 00 2B 00 00 xx xx</span>: address, function, byte count (4), then the two values, then the CRC.</li>
+<li><b>Exception response</b>: the function code + 0x80, then an error code: <span class="mono">01</span> illegal function, <span class="mono">02</span> illegal data address, <span class="mono">03</span> illegal data value, <span class="mono">04</span> device failure.</li>
+<li><b>Timeout</b> (no reply at all): wrong address, wrong baud rate/parity, A and B swapped, or the cable.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s6">
+  <h2 id="s6"><span class="k">6</span>Example: reading and controlling a drive</h2>
+<p>Most drives provide a "command register", a "frequency reference register" and "status registers". A typical example (numbers vary by manufacturer; check the manual):</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>Register</th><th>Meaning</th><th>Example</th></tr></thead><tbody>
+<tr><td class="mono">40001</td><td>Command word: bit 0 run, bit 1 reverse, bit 2 fault reset</td><td class="mono">0x0001 = run forward</td></tr>
+<tr><td class="mono">40002</td><td>Frequency reference × 100</td><td class="mono">5000 = 50.00 Hz</td></tr>
+<tr><td class="mono">40011</td><td>Actual frequency × 100 (read)</td><td class="mono">4998</td></tr>
+<tr><td class="mono">40012</td><td>Current × 10</td><td class="mono">123 = 12.3 A</td></tr>
+<tr><td class="mono">40020</td><td>Active fault code</td><td class="mono">0 = no fault</td></tr></tbody></table></div>
+<p>Note the <b>scaling</b>: the value on the wire is a 16-bit integer, and the manual says "divide by 100". We will reuse this in the gateway (Lesson 11).</p>
+<div class="box key"><b>On the simulator:</b> set the master's port to match the drive, read the frequency and current with function 03, then write the frequency reference with function 06, and interpret the timeout, CRC and exception 02 errors. <a class="btn pri" href="net.html#modbus" style="margin-inline-start:8px">Open the simulator →</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Answer at least 6 of 7 correctly to complete the lesson.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">Sources: the official protocol specifications (Modbus.org, PROFIBUS &amp; PROFINET International, CiA, ODVA, OPC Foundation, OASIS MQTT) and manufacturers' manuals. Before applying anything on a live network, consult the device manual and your plant's network-security policy. Your progress is saved on this device.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l3');
+IL.quiz(document.getElementById('quiz'), [{"q": "How many 120 Ω terminating resistors go on a single RS-485 network?", "o": ["Two, at the first and last devices", "One, at the master only", "One on every device", "None are needed"], "a": 0, "why": "At the two ends of the line only; too many load the line and too few cause reflections."}, {"q": "The PLC is at 19200 baud and the drive at 9600. The expected result:", "o": ["Constant timeouts or CRC errors", "It works at a lower speed", "It works but values are off by one register", "It works normally"], "a": 0, "why": "Port settings must match exactly."}, {"q": "Address 40108 in the manual is sent on the wire as:", "o": ["107", "108", "40108", "0x40108"], "a": 0, "why": "4xxxx registers start at 40001 = offset 0."}, {"q": "Function code 03 reads:", "o": ["Holding registers", "Coils", "Discrete inputs", "Input registers"], "a": 0, "why": "03 is for read/write registers; 04 is for input registers."}, {"q": "An exception response with code 02 means:", "o": ["The register address does not exist in the device", "The function is not supported", "The value is not acceptable", "The cable is broken"], "a": 0, "why": "Illegal data address: you requested a register outside the device's map."}, {"q": "Why do we run a common ground wire alongside A and B?", "o": ["To keep the voltage difference within the transceiver's limits and protect it", "To increase the speed", "To reduce the number of devices", "It is never necessary"], "a": 0, "why": "Without a common reference the voltage can exceed −7..+12 V and destroy the port."}, {"q": "A register reads 4998 and the manual says ×100. The actual frequency is:", "o": ["49.98 Hz", "4998 Hz", "499.8 Hz", "0.4998 Hz"], "a": 0, "why": "Values on the wire are integers; the scaling is in the manual."}], {lesson:'l3', pass:0.8});
+</script>
+<script src="/assets/i18n.js?v=20261028e1"></script>
+</body>
+</html>

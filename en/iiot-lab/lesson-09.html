@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OPC UA</title>
+<meta name="description" content="Lesson 9: OPC UA: server, client and port 4840; the address space, NodeId, quality and timestamps; subscriptions and deadband; certificate-based security and policies; and enabling it on the S7-1500.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/iiot-lab/lesson-09.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/iiot-lab/lesson-09.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/iiot-lab/lesson-09.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/iiot-lab/lesson-09.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="iiot.css?v=20261028e1">
+<script src="iiot.js?v=20261028e1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">Industrial IoT &amp; Networks · Lesson 9 of 14</p>
+    <h1>OPC UA</h1>
+    <p>The common language of the plant: instead of “register 40011 = 4998” you read “oven temperature 182.5 °C, quality Good, 12:40.” This is how monitoring systems talk to any PLC.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="net.html">Simulator</a><a class="btn lang-btn" href="/iiot-lab/lesson-09.html" lang="ar" hreflang="ar" data-keep aria-label="اقرأ هذه الصفحة بالعربية" title="اقرأ هذه الصفحة بالعربية">ع</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>Why OPC UA?</h2>
+<p>The networks covered so far carry <b>registers and bits</b>: register 40011 holds 4998, and it is up to you to know that this is the frequency and must be divided by 100. <b>OPC UA</b> (Open Platform Communications Unified Architecture) carries <b>meaningful information</b>: a variable named <span class="mono">OvenTemp</span>, of type Double, in °C, with the value 182.5 plus its timestamp and quality. That is why it has become the common language between PLCs, SCADA, MES and gateways, regardless of vendor.</p>
+<ul><li><b>Server:</b> exposes the data: the PLC itself (S7-1500, Beckhoff, B&amp;R, Omron NJ) or middleware (KEPServerEX) that converts Modbus/PROFINET to OPC UA.</li>
+<li><b>Client:</b> reads, writes and subscribes: SCADA, Node-RED, Ignition, a dashboard.</li>
+<li>Endpoint: <span class="mono">opc.tcp://192.168.1.10:4840</span> (standard port 4840).</li>
+<li>Platform-independent: runs on PLCs, Windows, Linux and in the cloud, with built-in encryption and authentication.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Address space and NodeId</h2>
+<svg viewBox="0 0 640 220" role="img" aria-label="OPC UA address space" style="width:100%;max-width:640px;direction:ltr">
+<g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor">
+<rect x="20" y="20" width="250" height="180" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="30" y="40" font-weight="700">Address space (server)</text>
+<text x="40" y="65">Objects</text><text x="60" y="85">└ PLC_1</text><text x="80" y="105">└ DataBlocks</text><text x="100" y="125">└ Line3</text><text x="120" y="145" fill="#0d7584">├ OvenTemp  Double</text><text x="120" y="165" fill="#0d7584">├ PartsCount Int32</text><text x="120" y="185" fill="#0d7584">└ Running    Boolean</text>
+<rect x="380" y="60" width="240" height="100" rx="8" fill="none" stroke="#b85f00" stroke-width="2"/><text x="390" y="82" font-weight="700" fill="#b85f00">Client (SCADA / gateway)</text><text x="390" y="105">Read ns=3;s="Line3".OvenTemp</text><text x="390" y="125">→ 182.5 (Good, 12:40:05.120)</text><text x="390" y="148">Subscribe: 500 ms, deadband 0.5</text>
+<path d="M270 110H380" stroke="currentColor" stroke-width="2" marker-end="url(#a2)"/><defs><marker id="a2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs>
+<text x="390" y="182" font-size="11">opc.tcp://192.168.1.10:4840</text>
+</g></svg>
+<p>Everything in the server is a <b>node</b> in a tree: objects, variables, methods, types. Each node has a unique <b>NodeId</b> made of a <b>namespace</b> (ns) and an identifier, either numeric <span class="mono">ns=3;i=1005</span> or string <span class="mono">ns=3;s="Line3".OvenTemp</span>. The client <b>browses</b> the tree downward from Objects, then <b>reads</b>, <b>writes</b> or <b>subscribes</b>.</p>
+<p>Every value arrives as a <b>triple</b>: the value, its <b>quality</b> (Good / Bad / Uncertain) and the source <b>timestamp</b>. If the quality is Bad, the cause lies in the sensor or the PLC, not the network.</p>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>Subscriptions instead of polling</h2>
+<p>Rather than asking “what is the value?” every 100 ms (polling), the client creates a <b>Subscription</b> with a publishing interval (for example 500 ms) and adds <b>monitored items</b> to it. The server then sends a value only when it <b>changes</b>, with a <b>deadband</b> (send only if the change exceeds 0.5) and a <b>queue</b> for fast changes. This greatly reduces the load on the PLC.</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>Service</th><th>What it does</th><th>Example</th></tr></thead><tbody>
+<tr><td>Browse</td><td>List a node’s children</td><td>What is inside Line3?</td></tr>
+<tr><td>Read</td><td>Read an attribute (value, description, data type)</td><td>Current value of OvenTemp</td></tr>
+<tr><td>Write</td><td>Write a value</td><td>Setpoint = 185</td></tr>
+<tr><td>Subscribe</td><td>Send changes only</td><td>Every change in PartsCount</td></tr>
+<tr><td>Call</td><td>Invoke a method on the server</td><td>StartBatch(recipe=7)</td></tr>
+<tr><td>History read</td><td>Read past values (if the server supports it)</td><td>Temperature over the last hour</td></tr></tbody></table></div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>Security: certificates and policies</h2>
+<p>OPC UA was designed with security built in: every server and client has an <b>X.509 certificate</b> that identifies it, and they agree on a <b>security policy</b> (None, Basic256Sha256, Aes256_Sha256_RsaPss) and a <b>message security mode</b> (None, Sign, Sign &amp; Encrypt). On the first connection the server rejects the client’s certificate until you <b>trust it manually</b> in the server’s trust list, and vice versa.</p>
+<ul><li><b>BadCertificateUntrusted:</b> the certificate has not been accepted yet: open the server settings and move the certificate from Rejected to Trusted.</li>
+<li><b>BadUserAccessDenied:</b> wrong username or password, or the user lacks write permission.</li>
+<li>The <b>None</b> policy is acceptable only for lab testing; in production use Sign &amp; Encrypt, especially if data leaves the machine network.</li>
+<li>The number of sessions and subscriptions on a PLC is limited (for example 32 sessions on an S7-1500, depending on the model), and the licence may be separate.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>OPC UA on the S7-1500, step by step</h2>
+<ol><li>In TIA Portal: CPU properties → <b>OPC UA → Server → Activate OPC UA server</b>, then select port 4840 and the security policy.</li>
+<li>Under <b>Server interfaces</b>, create an interface and drag in the variables you want to expose (DBs or tags). Do not expose everything.</li>
+<li><b>Runtime licenses → OPC UA</b>: select the appropriate licence.</li>
+<li>Download, then on your PC open a client such as UaExpert at <span class="mono">opc.tcp://&lt;ip&gt;:4840</span>, accept the certificate on the CPU, and browse.</li></ol>
+<div class="box key"><b>On the simulator:</b> browse the server tree down to the production-line variables, read the value, quality and timestamp, create a subscription with a deadband, write a setpoint, and resolve a rejected certificate. <a class="btn pri" href="net.html#opcua" style="margin-inline-start:8px">Open the simulator →</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Answer at least 6 of 7 correctly to complete the lesson.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">Sources: the official protocol specifications (Modbus.org, PROFIBUS &amp; PROFINET International, CiA, ODVA, OPC Foundation, OASIS MQTT) and manufacturers' manuals. Before applying anything on a live network, consult the device manual and your plant's network-security policy. Your progress is saved on this device.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l9');
+IL.quiz(document.getElementById('quiz'), [{"q": "What does OPC UA add over Modbus?", "o": ["Meaning for the data: name, type, unit, quality and timestamp", "Higher speed only", "A different cable", "Nothing"], "a": 0, "why": "An information model instead of anonymous registers."}, {"q": "The standard OPC UA port is:", "o": ["4840", "502", "1883", "44818"], "a": 0, "why": "opc.tcp://host:4840."}, {"q": "ns=3;s=\"Line3\".OvenTemp is:", "o": ["A string NodeId in namespace 3", "An IP address", "A username", "A file path"], "a": 0, "why": "ns = namespace, s = string identifier."}, {"q": "A value arrives with quality Bad. The conclusion:", "o": ["The problem is at the source (sensor or PLC), not the network", "The cable is broken", "The certificate was rejected", "The port is closed"], "a": 0, "why": "The network delivered the response; the server itself is reporting that the value is invalid."}, {"q": "The benefit of a subscription with a deadband:", "o": ["The server sends the value only when it changes by more than the threshold", "It reads every 1 ms", "It deletes old values", "It encrypts the data"], "a": 0, "why": "Less load on the PLC and the network than polling."}, {"q": "BadCertificateUntrusted is resolved by:", "o": ["Moving the client certificate to the server’s trusted list", "Changing the port", "Restarting the switch", "Changing the NodeId"], "a": 0, "why": "Mutual certificate trust is established manually on the first connection."}, {"q": "The None security policy is appropriate for:", "o": ["Lab testing only", "The production network", "Connections over the internet", "All cases"], "a": 0, "why": "In production, use Sign & Encrypt."}], {lesson:'l9', pass:0.8});
+</script>
+<script src="/assets/i18n.js?v=20261028e1"></script>
+</body>
+</html>

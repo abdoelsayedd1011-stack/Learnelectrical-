@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Industrial Network &amp; IIoT Simulator</title>
+<meta name="description" content="Interactive industrial network simulator: IP addressing, Modbus RTU and TCP, PROFIBUS, PROFINET, CAN, OPC UA, MQTT, a Node-RED gateway, a dashboard with alarms and OEE, and fault diagnosis on a complete production line.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/iiot-lab/net.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/iiot-lab/net.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/iiot-lab/net.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/iiot-lab/net.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="iiot.css?v=20261028e1">
+<script src="iiot.js?v=20261028e1"></script>
+<style>
+.tabs{margin-bottom:14px}
+.tabs .btn{flex:1 1 92px;min-height:46px;font-size:.88rem}
+.tabs .btn[aria-selected=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none}.pane.on{display:block}
+.pane>.panel+.panel{margin-top:12px}
+.goal{border:1px solid var(--accent);background:var(--accent-soft);border-radius:10px;padding:10px 12px;margin-bottom:12px;line-height:1.8}
+.goal.ok{border-color:var(--good);background:var(--good-soft)}
+.goal b.k{display:inline-block;background:var(--accent);color:#fff;border-radius:6px;padding:0 8px;margin-inline-end:6px;font-family:var(--font-display)}
+.goal.ok b.k{background:var(--good)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;align-items:start}
+.dev{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.dev h3{margin:0 0 6px;font:700 1rem var(--font-display);display:flex;align-items:center;gap:8px}
+.dev label{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0;font-size:.9rem}
+.dev input,.dev select,.frm input,.frm select{font:600 .95rem var(--font-mono);direction:ltr;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--panel);color:var(--ink);max-width:11em;width:100%}
+.dev input[type=checkbox]{width:auto}
+.led{display:inline-block;width:12px;height:12px;border-radius:50%;background:#777;box-shadow:inset 0 0 2px #000;vertical-align:middle}
+.led.g{background:#2ecc40;box-shadow:0 0 6px #2ecc40}.led.r{background:#ff3b26;box-shadow:0 0 6px #ff3b26}.led.y{background:#ffc42d;box-shadow:0 0 6px #ffc42d}
+.led.bl{animation:bl .6s steps(1) infinite}@keyframes bl{50%{opacity:.15}}
+.frm{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;align-items:end}
+.frm label{display:grid;gap:3px;font-size:.85rem}
+.log{font:500 .86rem/1.6 var(--font-mono);direction:ltr;text-align:start;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-height:5em;max-height:16em;overflow:auto;white-space:pre-wrap;unicode-bidi:isolate}
+.log div{unicode-bidi:plaintext;text-align:start}
+.log .ok{color:var(--good)}.log .bad{color:var(--bad)}.log .dim{color:var(--muted)}
+.bytes{display:flex;flex-wrap:wrap;gap:4px;direction:ltr;margin:6px 0}
+.bytes span{font:600 .85rem var(--font-mono);border:1px solid var(--line);border-radius:5px;padding:2px 6px;background:var(--panel)}
+.bytes span.h{border-color:var(--accent);background:var(--accent-soft)}.bytes span.c{border-color:var(--cur)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.bus{position:relative;height:auto}
+.bus svg{width:100%;max-width:720px;display:block;margin:0 auto;direction:ltr}
+.bus text{font-size:11px;fill:currentColor}
+.tree{list-style:none;margin:0;padding:0;font:500 .9rem/1.9 var(--font-mono);direction:ltr;text-align:left}
+.tree li{padding-inline-start:16px;cursor:pointer;border-radius:6px}
+.tree li.sel{background:var(--accent-soft)}
+.tree li.leaf::before{content:"● ";color:var(--accent)}
+.tree li.fold::before{content:"▸ ";color:var(--muted)}
+.chart{width:100%;height:220px;display:block;direction:ltr}
+.chart .line{fill:none;stroke:var(--accent);stroke-width:2}
+.chart .lim{stroke:var(--bad);stroke-dasharray:5 4;stroke-width:1.5}
+.chart .base{stroke:var(--good);stroke-dasharray:3 3}
+.chart .alarm{fill:var(--bad);opacity:.25}
+.chart text{font-size:11px;fill:currentColor}
+.sl{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;margin:6px 0;font-size:.9rem}
+.sl b{font-family:var(--font-mono);min-width:5em;text-align:start;direction:ltr}
+.nodes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:stretch}
+.node{border:2px solid var(--line);border-radius:10px;padding:8px;text-align:center;background:var(--bg);min-height:92px;display:flex;flex-direction:column;gap:6px;justify-content:center}
+.node.sel{border-color:var(--accent)}.node.wired{border-color:var(--good)}
+.node small{color:var(--muted)}
+.wire{height:3px;background:var(--line);margin:0 -4px}.wire.on{background:var(--good)}
+.line-sim{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.ls{border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--bg);font-size:.88rem}
+.ls h4{margin:0 0 4px;font:700 .95rem var(--font-display);display:flex;justify-content:space-between;align-items:center}
+.ls.bad{border-color:var(--bad)}.ls.ok{border-color:var(--good)}
+.tools{display:flex;flex-wrap:wrap;gap:6px}
+.tools .btn{min-height:40px;font-size:.88rem}
+.oee{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.oee label{display:grid;gap:3px;font-size:.86rem}
+.big{font:700 1.6rem var(--font-mono);direction:ltr;color:var(--accent)}
+@media (max-width:560px){.nodes{grid-template-columns:1fr}.wire{width:3px;height:14px;margin:0 auto}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">LearnElectricals · Industrial IoT &amp; Networks</p>
+    <h1>Industrial Network Simulator</h1>
+    <p>Eleven interactive exercises: from an IP address to the dashboard, from the cable to the cloud. Each tab is linked to a lesson, and completing it is recorded in your progress.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn lang-btn" href="/iiot-lab/net.html" lang="ar" hreflang="ar" data-keep aria-label="اقرأ هذه الصفحة بالعربية" title="اقرأ هذه الصفحة بالعربية">ع</a></div>
+</header>
+
+<div class="tabs" role="tablist" id="tabs"></div>
+<div id="panes"></div>
+
+<p class="foot">A simplified educational simulation: frames and codes follow the official specifications as closely as possible, but it is no substitute for the manufacturer&#39;s tools on a real network. Your progress is saved on this device.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script src="net.js?v=20261028e1"></script>
+<script src="/assets/i18n.js?v=20261028e1"></script>
+</body>
+</html>

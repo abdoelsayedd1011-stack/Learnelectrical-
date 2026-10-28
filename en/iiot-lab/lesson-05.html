@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PROFIBUS DP</title>
+<meta name="description" content="Lesson 5: PROFIBUS DP networks: speeds and lengths, the connector, purple cable and active termination, addressing and the GSD file, BF and SF LEDs and diagnostics, and how to reason through faults.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/iiot-lab/lesson-05.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/iiot-lab/lesson-05.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/iiot-lab/lesson-05.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/iiot-lab/lesson-05.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="iiot.css?v=20261028e1">
+<script src="iiot.js?v=20261028e1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">Industrial IoT &amp; Networks · Lesson 5 of 14</p>
+    <h1>PROFIBUS DP</h1>
+    <p>The purple cable found in almost every Siemens panel. Nearly all of its faults are physical: termination, addressing, connectors. Learn to read BF and SF and know exactly where to look.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="net.html">Simulator</a><a class="btn lang-btn" href="/iiot-lab/lesson-05.html" lang="ar" hreflang="ar" data-keep aria-label="اقرأ هذه الصفحة بالعربية" title="اقرأ هذه الصفحة بالعربية">ع</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>What is PROFIBUS DP?</h2>
+<p><b>PROFIBUS DP</b> (Decentralized Periphery) is a fieldbus from Siemens and the PI partners, running over <b>RS-485</b> on the familiar purple cable. A single master (the PLC) polls its slaves (I/O modules, drives, valve islands) cyclically: in every cycle it sends their outputs and receives their inputs. Up to 126 addresses, at speeds from 9.6 kbit/s to <b>12 Mbit/s</b>.</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>Baud rate</th><th>Maximum segment length</th></tr></thead><tbody>
+<tr><td class="mono">9.6 – 93.75 kbit/s</td><td>1200 m</td></tr><tr><td class="mono">187.5 kbit/s</td><td>1000 m</td></tr><tr><td class="mono">500 kbit/s</td><td>400 m</td></tr><tr><td class="mono">1.5 Mbit/s</td><td>200 m</td></tr><tr><td class="mono">3 – 12 Mbit/s</td><td>100 m</td></tr></tbody></table></div>
+<p>The most common speed in plants is <b>1.5 Mbit/s</b>. Modern slaves detect the baud rate automatically; older ones may need it set manually.</p>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Connector, cable and termination</h2>
+<svg viewBox="0 0 640 210" role="img" aria-label="A PROFIBUS network with four stations" style="width:100%;max-width:640px;direction:ltr">
+<g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
+<rect x="20" y="30" width="110" height="60" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="75" y="54" font-weight="700">S7 CPU</text><text x="75" y="74">Master addr 2</text>
+<rect x="190" y="30" width="110" height="60" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="245" y="54" font-weight="700">ET200</text><text x="245" y="74">addr 3</text>
+<rect x="360" y="30" width="110" height="60" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="415" y="54" font-weight="700">VFD</text><text x="415" y="74">addr 4</text>
+<rect x="520" y="30" width="110" height="60" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="575" y="54" font-weight="700">Valve island</text><text x="575" y="74">addr 5</text>
+<path d="M75 90V130H575V90" fill="none" stroke="#7b2cbf" stroke-width="5"/><path d="M245 90V130M415 90V130" stroke="#7b2cbf" stroke-width="5"/>
+<rect x="60" y="140" width="30" height="18" rx="3" fill="#f6e6d3" stroke="#b85f00" stroke-width="2"/><text x="75" y="153" font-size="10" fill="#b85f00">ON</text>
+<rect x="560" y="140" width="30" height="18" rx="3" fill="#f6e6d3" stroke="#b85f00" stroke-width="2"/><text x="575" y="153" font-size="10" fill="#b85f00">ON</text>
+<rect x="230" y="140" width="30" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="245" y="153" font-size="10">OFF</text>
+<rect x="400" y="140" width="30" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="415" y="153" font-size="10">OFF</text>
+<text x="320" y="190">Purple cable: green = A, red = B · termination ON at both ends only</text>
+</g></svg>
+<ul><li>The <b>D-Sub 9 connector</b> has two cable entries, <b>IN</b> (A1/B1) and <b>OUT</b> (A2/B2), plus a termination switch. With the switch <b>ON</b>, the OUT side is disconnected automatically, so the terminated connector must genuinely be at the end of the line.</li>
+<li>PROFIBUS termination is not a simple 120 Ω resistor but a network (220 Ω between A and B, 390 Ω to +5 V and 390 Ω to GND), so it <b>needs 5 V supplied by the device</b>: power down the end device and the termination is lost, taking the whole network down.</li>
+<li>Cable: Type A, twisted pair, green = A, red = B. Do not strip more than necessary and avoid sharp bends.</li>
+<li>Limit: 32 stations per segment; more stations or a longer run requires a <b>repeater</b> or a fiber-optic <b>OLM</b>.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>Addressing and the GSD file</h2>
+<p>Each slave has an address from 0 to 125, set with DIP switches, a rotary switch or in software. The master needs a <b>GSD</b> file (plain text) for each slave type, describing its modules and data. Download it from the manufacturer's website and import it into TIA Portal or STEP 7, then drag the slave onto the network and give it the same address that is set on the device.</p>
+<div class="box safe"><b>Common mistake:</b> the switches say 5, the project says 4. Result: BF on the master, while the slave sits there with green LEDs and no data. The second classic: forgetting that some devices read their address switches only at power-up, so you changed the address without power-cycling the device.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>LEDs and diagnostics</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th>LED</th><th>State</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><b>BF</b> (Bus Fault)</td><td>Steady red</td><td>No communication at all: cable, termination, baud rate, or the master sees no slave</td></tr>
+<tr><td><b>BF</b></td><td>Flashing red</td><td>At least one slave is missing or faulty; the rest are running</td></tr>
+<tr><td><b>SF</b> (System Fault)</td><td>Red</td><td>Configuration error or a diagnostic from a slave (missing module, undervoltage)</td></tr>
+<tr><td><b>DIA</b> on the slave</td><td>Red</td><td>The slave is reporting a diagnostic: read it from the master</td></tr></tbody></table></div>
+<p>In TIA Portal, <b>Online → Accessible devices</b> or the diagnostics view shows every slave and its status. On the cable itself, a tool such as <b>ProfiTrace</b> shows the signal waveform, reflections and intermittent stations. Without a tool, check: termination at both ends only, shield grounded, no stubs, and a length appropriate to the baud rate.</p>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>Reasoning through a PROFIBUS fault</h2>
+<ol><li><b>Whole network fails suddenly:</b> look for an end device that has powered down (termination supply lost), a connector that has come off, or a cable crushed under wheels.</li>
+<li><b>One slave missing:</b> check its address, its power, its connector, and whether it sits beyond a break in the line (in which case everything after it is missing too).</li>
+<li><b>Intermittent faults:</b> noise from an adjacent power cable, too much or too little termination, excessive length for the baud rate, or a stub. Lower the baud rate temporarily as a diagnostic: if the faults disappear, the problem is physical.</li>
+<li><b>After replacing a slave:</b> set the same address, power-cycle it, and confirm that the GSD version matches the new device.</li></ol>
+<div class="box key"><b>On the simulator:</b> set the addresses of the four stations to match the project, enable termination at both ends only, then diagnose: steady and flashing BF, an end slave powered down, and a duplicate address. <a class="btn pri" href="net.html#profibus" style="margin-inline-start:8px">Open the simulator →</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Answer at least 6 of 7 correctly to complete the lesson.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">Sources: the official protocol specifications (Modbus.org, PROFIBUS &amp; PROFINET International, CiA, ODVA, OPC Foundation, OASIS MQTT) and manufacturers' manuals. Before applying anything on a live network, consult the device manual and your plant's network-security policy. Your progress is saved on this device.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l5');
+IL.quiz(document.getElementById('quiz'), [{"q": "At 1.5 Mbit/s, the maximum length of a PROFIBUS segment is:", "o": ["200 m", "1200 m", "100 m", "1000 m"], "a": 0, "why": "The higher the baud rate, the shorter the permitted length."}, {"q": "Why does the whole PROFIBUS network fail when the last device on the line is powered down?", "o": ["Its termination network needs 5 V supplied by the device", "The addresses are reassigned", "The master stops", "It does not fail"], "a": 0, "why": "The active termination network needs +5 V from the connector."}, {"q": "Setting the termination switch to ON in a D-Sub connector also:", "o": ["Disconnects the OUT side (A2/B2) automatically", "Doubles the baud rate", "Changes the address", "Lights the BF LED"], "a": 0, "why": "That is why the terminated connector must genuinely be at the end of the line."}, {"q": "A flashing red BF on the master means:", "o": ["At least one slave is missing while the rest are running", "No communication at all", "The baud rate is wrong on every device", "The cable is cut at the master"], "a": 0, "why": "Flashing = partial, steady = total."}, {"q": "A GSD file is:", "o": ["A text description of the slave that the master imports", "The PLC program", "The fault log", "The certificate file"], "a": 0, "why": "It describes the modules, data and supported baud rates."}, {"q": "You changed a slave's address on its DIP switches and nothing changed. The most likely reason:", "o": ["The device reads the switches only at power-up", "The switches are faulty", "The master rejects new addresses", "The cable is too long"], "a": 0, "why": "Power-cycle the slave after changing its address."}, {"q": "Intermittent faults disappeared when you lowered the baud rate to 500 kbit/s. The conclusion:", "o": ["The problem is physical: cable, termination, noise or length", "The program has a bug", "There is a duplicate address", "The GSD file is outdated"], "a": 0, "why": "A lower baud rate is more tolerant of poor cabling."}], {lesson:'l5', pass:0.8});
+</script>
+<script src="/assets/i18n.js?v=20261028e1"></script>
+</body>
+</html>

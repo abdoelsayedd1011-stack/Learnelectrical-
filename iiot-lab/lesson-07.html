@@ -6,6 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>CAN bus و CANopen و DeviceNet</title>
 <meta name="description" content="الدرس 7: ناقل CAN: البت السائد والمتنحي والتحكيم، الطول والسرعة والإنهاء وقياس 60 أوم، عدّادات الخطأ و Bus off، CANopen بالمعرّفات و PDO و SDO و NMT، و DeviceNet بالتغذية في الكابل.">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/iiot-lab/lesson-07.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/iiot-lab/lesson-07.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/iiot-lab/lesson-07.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
@@ -20,7 +23,7 @@
     <h1>CAN bus و CANopen و DeviceNet</h1>
     <p>ناقل من السيارات صار في الرافعات والسيرفو وجزر الصمامات. قياس واحد بالأفوميتر (60 أوم) يحل نصف أعطاله.</p>
   </div>
-  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="net.html">المحاكي</a></div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="net.html">المحاكي</a><a class="btn lang-btn" href="/en/iiot-lab/lesson-07.html" lang="en" hreflang="en" data-keep aria-label="Read this page in English" title="Read this page in English" onclick="try{localStorage.setItem('le-lang','en')}catch(e){}">EN</a></div>
 </header>
 
 <section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
@@ -28,14 +31,14 @@
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>كيف يعمل CAN؟</h2>
 <p><b>CAN</b> (Controller Area Network) ناقل تسلسلي من عالم السيارات صار أساسًا لشبكات صناعية كثيرة: <b>CANopen</b> (محوّلات التردد والسيرفو الأوروبية، الرافعات) و<b>DeviceNet</b> (Allen-Bradley / ODVA) و <b>J1939</b> (الآلات الثقيلة). سلكان <b>CAN_H</b> و <b>CAN_L</b> بإشارة تفاضلية، ومقاومة <b>120 أوم</b> في الطرفين، وحتى 1 Mbit/s.</p>
-<svg viewBox="0 0 640 200" role="img" aria-label="إشارة CAN_H و CAN_L" style="width:100%;max-width:640px;direction:ltr">
+<svg viewBox="0 0 660 200" role="img" aria-label="إشارة CAN_H و CAN_L" style="width:100%;max-width:640px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor">
 <path d="M40 150H600" stroke="currentColor" stroke-width="1"/><text x="20" y="40">V</text>
-<text x="610" y="155">t</text>
+<text x="606" y="166">t</text>
 <path d="M60 100 H140 V60 H220 V100 H300 V60 H420 V100 H560" fill="none" stroke="#c62828" stroke-width="3"/>
 <path d="M60 100 H140 V140 H220 V100 H300 V140 H420 V100 H560" fill="none" stroke="#1e5fd1" stroke-width="3"/>
 <text x="565" y="64" fill="#c62828">CAN_H 3.5 V</text><text x="565" y="144" fill="#1e5fd1">CAN_L 1.5 V</text><text x="565" y="104">2.5 V</text>
-<text x="100" y="175" text-anchor="middle">recessive (1)</text><text x="180" y="175" text-anchor="middle">dominant (0)</text><text x="360" y="175" text-anchor="middle">dominant (0)</text>
+<text x="260" y="175" text-anchor="middle" font-size="10">recessive (1)</text><text x="180" y="175" text-anchor="middle" font-size="10">dominant (0)</text><text x="360" y="175" text-anchor="middle" font-size="10">dominant (0)</text>
 </g></svg>
 <ul><li><b>البت المتنحي (1):</b> السلكان عند 2.5 V تقريبًا. <b>البت السائد (0):</b> CAN_H يرتفع إلى 3.5 V و CAN_L ينخفض إلى 1.5 V.</li>
 <li>لو أرسل جهازان معًا، يغلب <b>السائد</b>. هكذا يعمل <b>التحكيم (Arbitration)</b>: الرسالة ذات المعرّف الأصغر (أكثر أصفار في البداية) تفوز وتُكمل، والأخرى تنتظر. لا تصادم ولا ضياع.</li>
@@ -93,5 +96,6 @@
 IL.lesson('l7');
 IL.quiz(document.getElementById('quiz'), [{"q": "في CAN عندما ترسل عقدتان في اللحظة نفسها:", "o": ["تفوز الرسالة ذات المعرّف الأصغر وتنتظر الأخرى", "تتصادمان وتُعاد كلتاهما", "يفوز الجهاز الأقرب للإنهاء", "تتوقف الشبكة"], "a": 0, "why": "البت السائد يغلب المتنحي، فالمعرّف الأصغر له أولوية."}, {"q": "قست بين CAN_H و CAN_L والتغذية مفصولة فقرأت 120 أوم. المعنى:", "o": ["مقاومة إنهاء واحدة فقط موجودة", "الشبكة سليمة", "ثلاث مقاومات", "الكابل مقطوع"], "a": 0, "why": "الصحيح 60 أوم (120 ‖ 120)."}, {"q": "عقدة واحدة في حالة Bus off. السبب الأرجح:", "o": ["سرعتها مختلفة أو كابلها رديء أو معرّف مكرر", "الإنهاء ناقص في الطرف البعيد", "السيد في STOP", "الكابل أطول من 1000 m"], "a": 0, "why": "Bus off يأتي بعد تراكم أخطاء الإرسال من هذه العقدة تحديدًا."}, {"q": "COB-ID لأول PDO إرسال من العقدة 5 في CANopen:", "o": ["0x185", "0x205", "0x605", "0x085"], "a": 0, "why": "0x180 + Node ID."}, {"q": "العقدة في CANopen لا ترسل PDO إلا في حالة:", "o": ["Operational", "Pre-operational", "Stopped", "Initialising"], "a": 0, "why": "NMT ينقلها إلى Operational فتبدأ البيانات الدورية."}, {"q": "ما الذي يميز كابل DeviceNet؟", "o": ["يحمل تغذية 24 V DC مع زوج الإشارة", "لا يحتاج إنهاء", "يعمل حتى 10 Mbit/s", "ألياف ضوئية"], "a": 0, "why": "V+ و V− في الكابل نفسه يغذيان أجهزة الحقل."}, {"q": "الأجهزة البعيدة فقط في DeviceNet تتعطل. الاحتمال الأول:", "o": ["هبوط جهد التغذية على الكابل الطويل", "السرعة خطأ في السيد", "Node ID مكرر", "المقاومة 60 أوم"], "a": 0, "why": "قس الجهد في آخر الكابل؛ أقل من 11 V = مشكلة."}], {lesson:'l7', pass:0.8});
 </script>
+<script src="/assets/i18n.js?v=20261028e1"></script>
 </body>
 </html>

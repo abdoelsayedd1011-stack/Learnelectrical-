@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CAN bus, CANopen and DeviceNet</title>
+<meta name="description" content="Lesson 7: The CAN bus: dominant and recessive bits and arbitration, length, speed, termination and the 60 Ω check, error counters and Bus off, CANopen identifiers, PDO, SDO and NMT, and DeviceNet with power in the cable.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/iiot-lab/lesson-07.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/iiot-lab/lesson-07.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/iiot-lab/lesson-07.html">
+<link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/iiot-lab/lesson-07.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="iiot.css?v=20261028e1">
+<script src="iiot.js?v=20261028e1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">Industrial IoT &amp; Networks · Lesson 7 of 14</p>
+    <h1>CAN bus, CANopen and DeviceNet</h1>
+    <p>A bus born in cars that now runs cranes, servo drives and valve islands. A single multimeter reading (60 Ω) solves half of its faults.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ Lessons</a><a class="btn" href="net.html">Simulator</a><a class="btn lang-btn" href="/iiot-lab/lesson-07.html" lang="ar" hreflang="ar" data-keep aria-label="اقرأ هذه الصفحة بالعربية" title="اقرأ هذه الصفحة بالعربية">ع</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="Your progress"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>How does CAN work?</h2>
+<p><b>CAN</b> (Controller Area Network) is a serial bus from the automotive world that has become the foundation of many industrial networks: <b>CANopen</b> (European drives and servos, cranes), <b>DeviceNet</b> (Allen-Bradley / ODVA) and <b>J1939</b> (heavy machinery). Two wires, <b>CAN_H</b> and <b>CAN_L</b>, carry a differential signal, with a <b>120 Ω</b> resistor at each end and speeds up to 1 Mbit/s.</p>
+<svg viewBox="0 0 660 200" role="img" aria-label="CAN_H and CAN_L signals" style="width:100%;max-width:640px;direction:ltr">
+<g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor">
+<path d="M40 150H600" stroke="currentColor" stroke-width="1"/><text x="20" y="40">V</text>
+<text x="606" y="166">t</text>
+<path d="M60 100 H140 V60 H220 V100 H300 V60 H420 V100 H560" fill="none" stroke="#c62828" stroke-width="3"/>
+<path d="M60 100 H140 V140 H220 V100 H300 V140 H420 V100 H560" fill="none" stroke="#1e5fd1" stroke-width="3"/>
+<text x="565" y="64" fill="#c62828">CAN_H 3.5 V</text><text x="565" y="144" fill="#1e5fd1">CAN_L 1.5 V</text><text x="565" y="104">2.5 V</text>
+<text x="260" y="175" text-anchor="middle" font-size="10">recessive (1)</text><text x="180" y="175" text-anchor="middle" font-size="10">dominant (0)</text><text x="360" y="175" text-anchor="middle" font-size="10">dominant (0)</text>
+</g></svg>
+<ul><li><b>Recessive bit (1):</b> both wires sit at about 2.5 V. <b>Dominant bit (0):</b> CAN_H rises to 3.5 V and CAN_L falls to 1.5 V.</li>
+<li>If two devices transmit at once, the <b>dominant</b> bit wins. This is how <b>arbitration</b> works: the message with the lower identifier (more leading zeros) wins and completes, while the other waits. No collision, nothing lost.</li>
+<li>CAN has no master: any node transmits when the bus is idle, and priority is set by the identifier.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>Length, speed and termination</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th>Baud rate</th><th>Maximum length (CANopen)</th><th>DeviceNet (thick cable)</th></tr></thead><tbody>
+<tr><td class="mono">1 Mbit/s</td><td>25 m</td><td>—</td></tr>
+<tr><td class="mono">500 kbit/s</td><td>100 m</td><td>100 m</td></tr>
+<tr><td class="mono">250 kbit/s</td><td>250 m</td><td>250 m</td></tr>
+<tr><td class="mono">125 kbit/s</td><td>500 m</td><td>500 m</td></tr>
+<tr><td class="mono">50 kbit/s</td><td>1000 m</td><td>—</td></tr></tbody></table></div>
+<p>The easiest check on site: <b>disconnect the power</b> and measure the resistance between CAN_H and CAN_L with a multimeter. <b>60 Ω</b> = two correct resistors (120 ‖ 120); 120 Ω = only one; 40 Ω = three; ∞ = no termination or a broken cable.</p>
+<div class="box key"><b>Error counters:</b> every node counts its own errors. Above 127 it enters <b>Error passive</b> (it keeps communicating but no longer signals errors); above 255 it goes <b>Bus off</b> (it withdraws completely until reset). A single node in Bus off usually means its baud rate differs from the others or its cabling is poor.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>CANopen: identifiers and objects</h2>
+<ul><li>Each node has a <b>Node ID</b> from 1 to 127 (DIP switches or a parameter).</li>
+<li>The message identifier, the <b>COB-ID</b>, = function code + Node ID. For example, the first transmit <b>PDO</b> from node 5: <span class="mono">0x180 + 5 = 0x185</span>.</li>
+<li><b>PDO</b> (Process Data Object): fast cyclic data (status, speed) with no extra overhead, up to 8 bytes.</li>
+<li><b>SDO</b> (Service Data Object): reads and writes any parameter in the <b>object dictionary</b> at an address such as <span class="mono">0x6040:00</span> (the controlword in the CiA 402 drive profile).</li>
+<li><b>NMT</b>: the master (or the PLC) switches nodes between Pre-operational, Operational and Stopped. A node transmits PDOs only when <b>Operational</b>.</li>
+<li><b>Heartbeat / Node guarding</b>: every node announces that it is alive; if one goes silent, the master raises an alarm.</li>
+<li>An <b>EDS</b> file describes the object dictionary (the counterpart of GSD).</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>DeviceNet: the key difference</h2>
+<p>DeviceNet uses the same CAN layer but with the <b>CIP protocol</b> (the same one used by EtherNet/IP) and a dedicated five-wire cable: the signal pair (blue CAN_L / white CAN_H), a <b>24 V DC</b> power pair (red V+ / black V−) and a shield. Power runs in the same cable and supplies the field devices.</p>
+<ul><li><b>MAC ID</b> addresses from 0 to 63, and speeds of 125 / 250 / 500 kbit/s, usually set manually on each device.</li>
+<li><b>Network status (NS)</b> LED: steady green = online and allocated to a master; flashing green = online with no master; flashing red = connection timeout; steady red = duplicate MAC ID or Bus off.</li>
+<li>Measure the supply voltage at the far end of the cable: below <b>11 V</b> causes strange faults in remote devices (voltage drop along a long cable). The fix: an additional power supply in the middle.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>Reasoning through a CAN fault</h2>
+<ol><li><b>Check for 60 Ω</b> between H and L with the power disconnected. Any other value points you to the termination or the cable.</li>
+<li>With a multimeter and the bus idle: CAN_H ≈ CAN_L ≈ 2.5 V (measured to GND). If either reads 0 or 5 V, there is a short to ground or to the supply.</li>
+<li>A single node in Bus off: its baud rate, its cable, or a duplicate Node ID.</li>
+<li>Everything drops out when a particular machine starts: noise from a power cable. Ground the shield at one end only and route the cable away.</li>
+<li>Only the remote devices fail on DeviceNet: supply voltage drop.</li></ol>
+<div class="box key"><b>On the simulator:</b> watch arbitration between two messages, set the baud rate and termination and read 60 Ω, give the nodes correct Node IDs and switch them to Operational, then diagnose Bus off and a DeviceNet voltage drop. <a class="btn pri" href="net.html#can" style="margin-inline-start:8px">Open the simulator →</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
+  <p>Answer at least 6 of 7 correctly to complete the lesson.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
+<p class="foot">Sources: the official protocol specifications (Modbus.org, PROFIBUS &amp; PROFINET International, CiA, ODVA, OPC Foundation, OASIS MQTT) and manufacturers' manuals. Before applying anything on a live network, consult the device manual and your plant's network-security policy. Your progress is saved on this device.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l7');
+IL.quiz(document.getElementById('quiz'), [{"q": "In CAN, when two nodes transmit at the same instant:", "o": ["The message with the lower identifier wins and the other waits", "They collide and both are retransmitted", "The device nearest the termination wins", "The network stops"], "a": 0, "why": "The dominant bit overrides the recessive one, so the lower identifier has priority."}, {"q": "With the power disconnected, you measure 120 Ω between CAN_H and CAN_L. This means:", "o": ["Only one termination resistor is present", "The network is healthy", "There are three resistors", "The cable is broken"], "a": 0, "why": "The correct reading is 60 Ω (120 ‖ 120)."}, {"q": "A single node is in Bus off. The most likely cause:", "o": ["A different baud rate, poor cabling, or a duplicate identifier", "Missing termination at the far end", "The master is in STOP", "The cable is longer than 1000 m"], "a": 0, "why": "Bus off follows an accumulation of transmit errors from that specific node."}, {"q": "The COB-ID of the first transmit PDO from node 5 in CANopen:", "o": ["0x185", "0x205", "0x605", "0x085"], "a": 0, "why": "0x180 + Node ID."}, {"q": "A CANopen node transmits PDOs only in the state:", "o": ["Operational", "Pre-operational", "Stopped", "Initialising"], "a": 0, "why": "NMT switches it to Operational, and cyclic data begins."}, {"q": "What distinguishes a DeviceNet cable?", "o": ["It carries 24 V DC power alongside the signal pair", "It needs no termination", "It runs at up to 10 Mbit/s", "It is fiber-optic"], "a": 0, "why": "V+ and V− in the same cable supply the field devices."}, {"q": "Only the remote devices on a DeviceNet network are failing. The first suspect:", "o": ["Supply voltage drop along the long cable", "Wrong baud rate on the master", "Duplicate Node ID", "A 60 Ω resistance"], "a": 0, "why": "Measure the voltage at the far end of the cable; below 11 V is a problem."}], {lesson:'l7', pass:0.8});
+</script>
+<script src="/assets/i18n.js?v=20261028e1"></script>
+</body>
+</html>
