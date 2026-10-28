@@ -120,6 +120,13 @@ export async function onRequest(ctx){
     return Response.redirect(url.toString(), m === "GET" || m === "HEAD" ? 301 : 308);
   }
   const lang = splitLang(url.pathname), path = lang.path, pre = lang.en ? "/en" : "";
+  // Promo videos (/media/promo/*.mp4) download as files instead of playing inline (_headers rules are skipped here).
+  if (/^\/media\/promo\/[^/]+\.mp4$/.test(url.pathname)){
+    const r = await ctx.next();
+    const o = new Response(r.body, r);
+    o.headers.set("content-disposition", 'attachment; filename="' + url.pathname.split("/").pop() + '"');
+    return o;
+  }
   const sync = syncDir(path) && hasSessionCookie(ctx.request);
   const gated = membersOnly(path), wall = needsLogin(path);
   if (!gated && !wall) return sync ? withSync(ctx) : ctx.next();
