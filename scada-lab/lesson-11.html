@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>التشغيل والاختبار وتشخيص الأعطال</title>
+<meta name="description" content="الدرس 11: الاختبار مع PLCSIM ومحاكاة الـ HMI، FAT و SAT، التحميل إلى اللوحة، طريقة منهجية للتشخيص، والأعطال الشائعة: فقد الاتصال وعلامات #### والأنواع غير المتطابقة والإنذار الذي لا يظهر.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="scada.css?v=20261028s1">
+<script src="scada.js?v=20261028s1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس SCADA و HMI · الدرس 11 من 12</p>
+    <h1>التشغيل والاختبار وتشخيص الأعطال</h1>
+    <p>أغلب أعطال SCADA ليست غامضة: لها أعراض واضحة إذا عرفت أين تنظر. هذا الدرس يعلّمك الترتيب.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="scada.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>الاختبار قبل المصنع: PLCSIM والمحاكاة</h2>
+<p>لا تنتظر حتى تصل إلى الموقع لتكتشف أن زر التشغيل مربوط بالوسم الخطأ. في TIA Portal تستطيع تشغيل المشروع كاملًا على حاسوبك:</p>
+<ol class="steps-l"><li>شغّل <b>PLCSIM</b> (أو <b>PLCSIM Advanced</b> للـ S7-1500 عندما تحتاج شبكة افتراضية أو OPC UA أو عدة عملاء) وحمّل إليه برنامج الـ PLC.</li>
+<li>شغّل محاكاة الـ HMI من TIA Portal: تفتح WinCC Unified Runtime على الحاسوب وتتصل بالـ PLC المحاكى.</li>
+<li>اختبر كل شاشة بجدول المراقبة (Watch table) في الـ PLC: غيّر القيمة هناك وراقبها على الشاشة، والعكس.</li>
+<li>افرض الأعطال: ارفع بت عطل المضخة، وأنزل مستوى الخزان تحت الحد، وتأكد أن كل إنذار يظهر بنصه وأولويته.</li></ol>
+<div class="tblw"><table class="tbl"><thead><tr><th>الاختبار</th><th>أين؟</th><th>ماذا تثبت؟</th></tr></thead><tbody>
+<tr><td><b>FAT</b> (اختبار القبول في المصنع المورّد)</td><td>مكتب المورّد مع المحاكاة أو اللوحة الحقيقية</td><td>أن الشاشات والإنذارات والوصفات تعمل كما في المواصفة</td></tr>
+<tr><td><b>SAT</b> (اختبار القبول في الموقع)</td><td>المصنع مع الآلات الحقيقية</td><td>أن كل إشارة من الحقل تصل صحيحة: الحساس والمحرك والصمام</td></tr></tbody></table></div>
+<div class="box key"><b>نصيحة:</b> اكتب قائمة اختبار لكل وسم مهم: «القيمة في الـ PLC = القيمة على الشاشة؟ الإنذار يظهر؟ الكتابة محصورة بالصلاحية الصحيحة؟». القائمة تصير وثيقة التسليم.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>التحميل إلى اللوحة</h2>
+<ul><li><b>العنوان والواجهة:</b> اضبط IP اللوحة في إعداداتها وفي TIA Portal بالقيمة نفسها، وفي الشبكة نفسها مع حاسوبك (مثل 192.168.0.10/24 والـ PLC على 192.168.0.1).</li>
+<li><b>إصدار اللوحة:</b> يجب أن تتوافق صورة نظام اللوحة (Image) مع إصدار TIA Portal الذي تحمّل منه. إذا رفض التحميل لهذا السبب فحدّث صورة اللوحة أولًا من TIA Portal.</li>
+<li><b>البيانات المحفوظة في اللوحة:</b> عند التحميل يسألك البرنامج غالبًا عن الإبقاء على بيانات التشغيل (المستخدمين، سجلات الوصفات، الأرشيف) أو استبدالها. اختيار خاطئ هنا قد يمحو وصفات عدّلها المشغّلون منذ أشهر.</li>
+<li><b>قبل أي تحميل في مصنع يعمل:</b> خذ نسخة احتياطية من المشروع ومن بيانات اللوحة، ونسّق مع مسؤول الإنتاج، فقد تتوقف الشاشة لحظات أثناء إعادة التشغيل.</li></ul>
+<div class="box key"><b>فرق مهم:</b> في WinCC Classic و Comfort كانت الأدوات والخيارات مختلفة. القاعدة نفسها: تطابق الإصدار، وعنوان صحيح، وحماية بيانات التشغيل.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>طريقة منهجية للتشخيص</h2>
+<p>القيمة على الشاشة تمر بطبقات متتالية: الشبكة، ثم الاتصال، ثم عنوان الوسم ونوعه، ثم التحويل الخطي، ثم تنسيق العرض، ثم إعداد الإنذار. افحص طبقةً طبقة ولا تقفز.</p>
+<svg viewBox="0 0 640 230" role="img" aria-label="سُلّم التشخيص من الشبكة إلى الشاشة" style="width:100%;max-width:640px;direction:ltr">
+<g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
+<rect x="20" y="20" width="180" height="50" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="110" y="41" font-weight="700">1 Network</text><text x="110" y="59" font-size="11">ping, link LED, IP</text>
+<rect x="230" y="20" width="180" height="50" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="320" y="41" font-weight="700">2 Connection</text><text x="320" y="59" font-size="11">status, system alarm</text>
+<rect x="440" y="20" width="180" height="50" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="530" y="41" font-weight="700">3 Tag</text><text x="530" y="59" font-size="11">address, type, quality</text>
+<rect x="440" y="120" width="180" height="50" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="530" y="141" font-weight="700">4 Scaling</text><text x="530" y="159" font-size="11">0..27648 to 0..100 %</text>
+<rect x="230" y="120" width="180" height="50" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="320" y="141" font-weight="700">5 Display</text><text x="320" y="159" font-size="11">format, limits</text>
+<rect x="20" y="120" width="180" height="50" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="110" y="141" font-weight="700">6 Alarm / filter</text><text x="110" y="159" font-size="11">trigger bit, class</text>
+<path d="M200 45H224" stroke="#1e5fd1" stroke-width="2.5" marker-end="url(#a11)"/><path d="M410 45H434" stroke="#1e5fd1" stroke-width="2.5" marker-end="url(#a11)"/><path d="M530 70V114" stroke="#1e5fd1" stroke-width="2.5" marker-end="url(#a11)"/><path d="M440 145H416" stroke="#1e5fd1" stroke-width="2.5" marker-end="url(#a11)"/><path d="M230 145H206" stroke="#1e5fd1" stroke-width="2.5" marker-end="url(#a11)"/>
+<text x="320" y="206" font-size="12">Start at the field side and move one layer at a time</text>
+</g>
+<defs><marker id="a11" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1e5fd1"/></marker></defs></svg>
+<ul><li><b>قيمة واحدة خطأ وغيرها سليم:</b> المشكلة في الوسم نفسه (عنوان أو نوع أو تحويل)، لا في الشبكة.</li>
+<li><b>كل القيم متجمدة:</b> المشكلة في الاتصال أو الشبكة.</li>
+<li><b>القيمة صحيحة في جدول وسوم الـ HMI وخطأ على الشاشة:</b> المشكلة في الحقل (التنسيق أو الربط).</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>الأعطال الأربعة الأشهر</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th>العَرَض</th><th>السبب المرجّح</th><th>كيف تتأكد</th><th>العلاج</th></tr></thead><tbody>
+<tr><td><b>فقد الاتصال:</b> كل القيم متجمدة أو بجودة سيئة، وإنذار نظام عن الاتصال</td><td>كابل مفصول في المبدّل، أو عنوان IP مكرر، أو إعداد الاتصال خطأ</td><td>ping إلى 192.168.0.1، وضوء المنفذ، وحالة الاتصال في التشخيص</td><td>أصلح الكابل، أو غيّر العنوان المكرر، أو صحّح إعداد الاتصال</td></tr>
+<tr><td><b>علامات ####</b> في حقل الإخراج</td><td>القيمة أعرض من تنسيق الحقل، مثل 12500 في حقل من 3 خانات</td><td>القيمة سليمة في جدول الوسوم</td><td>وسّع التنسيق أو غيّر الوحدة (kW بدل W)</td></tr>
+<tr><td><b>قيمة غريبة:</b> مستوى الخزان 17047 بدل 75.5 %</td><td>وسم Real يُقرأ كـ Int</td><td>القيمة في الـ PLC صحيحة، والنوع في الـ HMI مختلف</td><td>طابق نوع البيانات مع الـ PLC</td></tr>
+<tr><td><b>إنذار لا يظهر أبدًا</b></td><td>بت التشغيل خطأ، أو فئة الإنذار مستبعدة في مرشّح Alarm Control</td><td>ارفع البت يدويًا وراقب: هل يظهر في عرض آخر؟</td><td>صحّح البت أو أضف الفئة إلى المرشّح</td></tr></tbody></table></div>
+<div class="box key"><b>فخ البايتات في Siemens:</b> إذا كان الإنذار مربوطًا بكلمة (Word) مثل <span class="mono">MW10</span>، فالبت 0 من الكلمة يقع في البايت الأعلى عنوانًا، أي <span class="mono">M11.0</span>، لا <span class="mono">M10.0</span>. هذا سبب شائع لإنذار يظهر باسم خطأ أو لا يظهر أبدًا. وقيمة 17047 في الجدول ليست عشوائية: هي النصف الأول (16#4297) من تمثيل الرقم 75.5 بصيغة Real.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>أخطاء تكلّف ساعات</h2>
+<ul><li><b>تعديل في الموقع دون نسخة احتياطية:</b> احفظ المشروع بتاريخ قبل كل تحميل، ودوّن ما غيّرت.</li>
+<li><b>تغيير في الـ PLC دون إبلاغ مبرمج الـ HMI:</b> تغيير عنوان واحد في DB غير محسَّن قد يزيح عشرات الوسوم.</li>
+<li><b>اختبار الإنذارات بالنظر فقط:</b> افرض كل إنذار مرة واحدة على الأقل في الـ FAT، ودوّن النتيجة.</li>
+<li><b>ترك وضع المحاكاة أو قيم القسر (Force):</b> قبل التسليم تأكد أنه لا قيمة مفروضة في الـ PLC، وأن الشاشة متصلة بالـ PLC الحقيقية.</li></ul>
+<div class="box key"><b>على المحاكي:</b> اضغط «ابدأ» ليُخفى في المحطة 4 أعطال: فقد اتصال الـ PLC، وحقل ####، وقيمة خاطئة من نوع بيانات غير مطابق، وإنذار لا يظهر؛ استخدم أدوات التشخيص لتجد كل عطل وتصلحه. <a class="btn pri" href="scada.html#faults" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">المعلومات هنا من أدلة الشركات المصنّعة (Siemens WinCC Unified و TIA Portal، Inductive Automation Ignition، Rockwell FactoryTalk) ومن المعايير ISA-101 و ISA-18.2 و IEC 62443. قبل أي تعديل على منظومة تعمل فعلًا ارجع إلى دليل البرنامج وإجراءات التغيير في مصنعك. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l11');
+IL.quiz(document.getElementById('quiz'), [{"q": "كل القيم على الشاشة متجمدة منذ دقائق وظهر إنذار نظام. أين تبدأ؟", "o": ["بفحص الشبكة والاتصال بالـ PLC", "بتعديل تنسيق كل حقول الإخراج في الشاشة", "بإعادة كتابة السكربتات المرتبطة بالأزرار", "بتغيير ألوان الشاشة إلى ألوان ISA-101"], "a": 0, "why": "تجمّد كل القيم يشير إلى الاتصال لا إلى وسم واحد."}, {"q": "حقل القدرة يعرض #### والقيمة في جدول الوسوم 12500 W. العلاج:", "o": ["وسّع تنسيق الحقل أو اعرض بالـ kW", "غيّر نوع الوسم إلى Bool ثم أعد التحميل", "أعد تشغيل الـ PLC لتحديث قيمة القدرة", "افحص كابل الشبكة بين اللوحة والمبدّل"], "a": 0, "why": "القيمة سليمة لكنها أعرض من خانات الحقل."}, {"q": "مستوى الخزان 75.5 % في الـ PLC ويظهر 17047 على الشاشة. السبب:", "o": ["وسم Real مقروء كـ Int", "التحويل الخطي 0–27648 غير مضبوط", "حساس المستوى معطل ويرسل قيمة عشوائية", "فئة الإنذار مستبعدة في مرشّح العرض"], "a": 0, "why": "17047 هو النصف الأول من تمثيل 75.5 بصيغة Real."}, {"q": "إنذار مربوط ببت 0 من MW10، والـ PLC ترفع M10.0. ماذا يحدث؟", "o": ["يظهر إنذار البت 8 بدل البت 0", "يظهر الإنذار الصحيح لأن العنوان واحد", "تظهر علامات #### في حقل الإنذار", "ينقطع الاتصال بالـ PLC لتعارض العناوين"], "a": 0, "why": "في Siemens البت 0 من MW10 هو M11.0."}, {"q": "الإنذار يظهر في سجل الإنذارات لكنه لا يظهر في شاشة المشغّل. الأرجح:", "o": ["فئته مستبعدة في مرشّح Alarm Control", "بت التشغيل في الـ PLC مربوط بعنوان خطأ", "الـ PLC في وضع STOP فلا تُرسل الإنذارات", "الوسم المرتبط بالإنذار من نوع Real لا Bool"], "a": 0, "why": "الإنذار يتولّد فعلًا، لكن العرض يرشّحه."}, {"q": "رفض TIA Portal التحميل إلى Unified Comfort Panel بسبب الإصدار. الحل:", "o": ["حدّث صورة نظام اللوحة لتوافق TIA Portal", "غيّر عنوان IP الـ PLC إلى شبكة أخرى مختلفة", "احذف الإنذارات والوصفات من المشروع ثم حمّل", "حمّل المشروع من حاسوب آخر عليه إصدار أقدم"], "a": 0, "why": "صورة اللوحة يجب أن تتوافق مع إصدار المشروع."}, {"q": "ستحمّل تعديلًا صغيرًا إلى لوحة في مصنع يعمل منذ سنة. ما الذي تحميه أولًا؟", "o": ["وصفات المشغّلين والمستخدمين المحفوظة", "ألوان الأزرار وأحجامها في كل الشاشات", "اسم المشروع واسم اللوحة في إعدادات الشبكة", "خلفية الشاشة وشعار المصنع في الشريط العلوي"], "a": 0, "why": "خيار استبدال بيانات التشغيل قد يمحو تعديلات أشهر."}], {lesson:'l11', pass:0.8});
+</script>
+</body>
+</html>

@@ -11,7 +11,8 @@ export const COURSES = {
   drw:     { title: "قراية الرسومات الكهربية",     key: "drw-lab-v1",      src: "/drawings-lab/drawings.js",      list: "DR.COURSE", hub: "/drawings-lab/index.html" },
   vfd:     { title: "الانفرتر VFD",                key: "vfdc-lab-v1",     src: "/vfd-course/vfd.js",             list: "VF.COURSE", hub: "/vfd-course/index.html" },
   srv:     { title: "السيرفو موتور والدرايف",      key: "srvc-lab-v1",     src: "/servo-course/servo.js",         list: "SV.COURSE", hub: "/servo-course/index.html" },
-  iiot:    { title: "IIoT والشبكات الصناعية",       key: "iiot-lab-v1",     src: "/iiot-lab/iiot.js",              list: "IL.COURSE", hub: "/iiot-lab/index.html" }
+  iiot:    { title: "IIoT والشبكات الصناعية",       key: "iiot-lab-v1",     src: "/iiot-lab/iiot.js",              list: "IL.COURSE", hub: "/iiot-lab/index.html" },
+  scada:   { title: "SCADA و HMI",                  key: "scada-lab-v1",    src: "/scada-lab/scada.js",            list: "IL.COURSE", hub: "/scada-lab/index.html" }
 };
 
 const CACHE_MS = 10 * 60 * 1000;

@@ -33,9 +33,10 @@ const FREE_LESSONS_BY_DIR = {
   "drawings-lab": [1],              // 7
   "vfd-course": [1],                // 12
   "servo-course": [1],              // 12
-  "iiot-lab": [1]                   // 14
+  "iiot-lab": [1],                  // 14
+  "scada-lab": [1]                  // 12
 };
-const COURSE_DIRS = new Set(["classic-control-lab", "safety-lab", "basics-lab", "instrumentation-lab", "plc-lab", "drawings-lab", "vfd-course", "servo-course", "iiot-lab"]);
+const COURSE_DIRS = new Set(["classic-control-lab", "safety-lab", "basics-lab", "instrumentation-lab", "plc-lab", "drawings-lab", "vfd-course", "servo-course", "iiot-lab", "scada-lab"]);
 const OPEN_DIRS = new Set(["courses"]);
 // Courses still being prepared: only admins can open their pages (remove the folder from here to publish)
 const HIDDEN_DIRS = new Set(["safety-lab"]); // folders whose pages stay open without an account
@@ -72,6 +73,7 @@ function membersOnly(pathname){
     if (dir === "plc-lab" && /^(?:siemens|delta|ab)(?:\.html)?$/.test(rest)) return true; // brand simulators
     if (dir === "safety-lab" && /^pluto(?:\.html)?$/.test(rest)) return true;              // the safety simulator
     if (dir === "iiot-lab" && /^net(?:\.html)?$/.test(rest)) return true;                   // the networks simulator
+    if (dir === "scada-lab" && /^(?:scada|designer)(?:\.html)?$/.test(rest)) return true;   // the SCADA station and the screen designer
     const l = /^lesson-(\d+)/.exec(rest);
     return !!l && !(FREE_LESSONS_BY_DIR[dir] || [1]).includes(Number(l[1]));
   }

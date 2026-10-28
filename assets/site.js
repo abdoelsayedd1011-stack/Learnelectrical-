@@ -158,6 +158,12 @@
       guided:14, exercises:11, params:0, faults:8,
       inside:["IP و Modbus RTU/TCP و PROFIBUS و PROFINET و CAN", "DeviceNet و EtherNet/IP و IO-Link و HART و OPC UA و MQTT", "البوابة ولوحة المتابعة والصيانة التنبؤية وتشخيص الأعطال"],
       tags:"iiot iot industrial internet of things انترنت الاشياء الصناعي شبكات صناعية industrial networks modbus rtu tcp rs485 profibus profinet can canopen devicenet ethernet/ip ethercat as-i io-link hart opc ua mqtt node-red gateway بوابة dashboard لوحة oee predictive maintenance صيانة تنبؤية troubleshooting تشخيص اعطال ترابل شوتينج wireshark proneta ip subnet تشخيص الشبكات" },
+    { id:"scada", path:"scada-lab/index.html", group:"scada", brand:"كورس", brandKey:"scada",
+      name:"كورس SCADA و HMI", kind:"ابدأ بالشرح", disp:"HMI", dispClass:"wht", rtlName:true,
+      line:"صمّم شاشات تشغيل حديثة واربطها بالـ PLC، وأدِر الإنذارات والترندات والصلاحيات والوصفات على محطة SCADA حيّة.",
+      guided:12, exercises:11, params:0, faults:4,
+      inside:["WinCC Unified و TIA Portal والوسوم والاتصال بالـ PLC", "شاشات ISA-101 والوجوه الجاهزة والإنذارات ISA-18.2", "الترندات والصلاحيات والوصفات والتكرار وتشخيص الأعطال"],
+      tags:"scada hmi سكادا اسكادا شاشات تشغيل شاشة لمس operator panel wincc unified wincc tia portal comfort panel mtp ignition factorytalk optix view aveva tags وسوم alarm إنذارات انذارات isa-18.2 isa-101 high performance hmi trend ترند historian أرشفة faceplate وجوه جاهزة recipe وصفات users صلاحيات iec 62443 redundancy تكرار خادم احتياطي opc ua javascript plcsim filling line خط تعبئة تشخيص اعطال troubleshooting designer مصمم شاشات" },
     { id:"srv", path:"servo-course/index.html", group:"servo", brand:"كورس", brandKey:"srvc",
       name:"كورس السيرفو موتور والدرايف", kind:"ابدأ بالشرح", disp:"S-ON", dispClass:"red", rtlName:true,
       line:"افهم السيرفو من جوه قبل ما تمسك أي درايف.",
@@ -210,6 +216,7 @@
     { key:"drives", title:"الانفرترات", sub:"Allen-Bradley · ABB · Siemens · Schneider · Mitsubishi · Yaskawa · Delta · LS · INVT · Danfoss · Fuji", land:"courses/inverters.html" },
     { key:"servo", title:"سيرفو", sub:"درايفات وموتورات سيرفو", land:"courses/servo.html" },
     { key:"iiot", title:"IIoT والشبكات الصناعية", sub:"Modbus · PROFIBUS · PROFINET · CAN · OPC UA · MQTT · تشخيص الأعطال", land:"courses/iiot.html" },
+    { key:"scada", title:"SCADA و HMI", sub:"WinCC Unified · ISA-101 · الإنذارات · الترندات · الوصفات · الصلاحيات", land:"courses/scada.html" },
     { key:"temp", title:"كنترول حرارة وقياس", sub:"Omron · Endress+Hauser" }
   ];
   /* محتوى كل كورس بالترتيب (عناوين الدروس) — بيظهر على كارت الكورس في الكتالوج وعلى الغلاف (assets/courses/covers/).
@@ -231,6 +238,8 @@
       l:["ليه الانفرتر؟", "جوه الانفرتر", "الـ PWM والـ V/f", "توصيل الباور", "أطراف الكنترول", "الباراميترات الأساسية", "أوضاع التحكم والـ Autotune", "الفرملة والوقوف", "الـ PID والتطبيقات", "الأعطال الشائعة وحلّها", "السلامة والتركيب", "التشغيل لأول مرة + الامتحان"] },
     iiot: { n:"14 درس", x:["محاكي شبكات من 11 تمرين", "امتحان نهائي"],
       l:["ما هو IIoT والشبكات الصناعية؟", "أساسيات الإيثرنت: IP و Subnet و Switch", "RS-485 و Modbus RTU", "Modbus TCP", "PROFIBUS DP", "PROFINET", "CAN bus و CANopen و DeviceNet", "EtherNet/IP و AS-i و IO-Link و HART", "OPC UA", "MQTT", "البوابة: من الـ PLC إلى السحابة", "لوحة المتابعة والاتجاهات والإنذارات", "الصيانة التنبؤية", "تشخيص أعطال الشبكات + مشروع خط إنتاج + الامتحان"] },
+    scada: { n:"12 درس", x:["محطة SCADA حيّة", "مصمّم شاشات HMI", "امتحان نهائي"],
+      l:["ما SCADA وما HMI؟", "المتغيرات والاتصال بالـ PLC", "تصميم الشاشات عالية الأداء (ISA-101)", "الأزرار وحقول الإدخال والمؤشرات", "الحركة والديناميكية والوجوه الجاهزة", "الإنذارات وإدارتها (ISA-18.2)", "الترندات والأرشفة", "المستخدمون والصلاحيات وأمن المنظومة", "الوصفات والسكربتات", "معمارية SCADA: الخوادم والعملاء والتكرار", "التشغيل والاختبار وتشخيص الأعطال", "مشروع خط التعبئة + الامتحان"] },
     srv: { n:"12 درس", x:["4 محاكيات سيرفو"],
       l:["يعني إيه سيرفو؟", "جوه السيرفو موتور", "الإنكودر: عين السيرفو", "الدرايف من جوه", "توصيل السيرفو", "أوضاع التشغيل", "الجير الإلكتروني", "التيونينج وضبط الجين", "الهومينج والحدود", "التحكم من الـ PLC", "الأعطال الشائعة", "التشغيل لأول مرة + الامتحان"] }
   };
@@ -291,7 +300,7 @@
   /* ---------- أسعار الكورسات (من «الأسعار» في لوحة الإدارة، /api/prices) ----------
      كارت كل كورس في الكتالوج وصفحة كل كورس في courses/ بتظهر السعر لو متحدد، وزرار «اشتري الكورس».
      اللي اشترى الكورس بيشوف «اشتريته ✓». */
-  var PRODUCT_OF = { basics:"basics", classic:"classic", safety:"safety", instr:"instr", plc:"plc", drw:"drw", vfdc:"vfd", srv:"srv", iiot:"iiot" };
+  var PRODUCT_OF = { basics:"basics", classic:"classic", safety:"safety", instr:"instr", plc:"plc", drw:"drw", vfdc:"vfd", srv:"srv", iiot:"iiot", scada:"scada" };
   var PR = null, ME, priceHooks = [];
   function curName(){ return EN ? EN.currency : ((window.SITE || {}).pay || {}).currency || "جنيه"; }
   function fmtN(n){ return String(Math.round(n * 100) / 100); }
@@ -446,7 +455,9 @@
     drw:{ ac:"#5aa2ff", ar:"قراية الرسومات الكهربية", en:"Reading Electrical Drawings" },
     vfdc:{ ac:"#ff8a4c", ar:"الانفرتر VFD", en:"VFD (Inverter)" },
     srv:{ ac:"#ff5c7a", ar:"السيرفو موتور والدرايف", en:"Servo Motor & Drive" },
-    iiot:{ ac:"#4cc0cf", ar:"IIoT والشبكات الصناعية", en:"IIoT & Industrial Networks" }
+    iiot:{ ac:"#4cc0cf", ar:"IIoT والشبكات الصناعية", en:"IIoT & Industrial Networks" },
+    // TODO(scada cover clip): لما assets/courses/covers/scada-loop.webm/.mp4 و scada-poster.webp يتعملوا، شيل still وزوّد CVV
+    scada:{ ac:"#e879d4", ar:"SCADA و HMI", en:"SCADA & HMI", still:"/assets/courses/scada.jpg?v=s1" }
   };
   var CVV = "p11";
   function coverHtml(l, toc){
@@ -463,8 +474,10 @@
         '<div class="vc-cols">' +
           '<ol class="vc-list">' + toc.l.map(function(x, i){ return '<li><b aria-hidden="true">' + pad(i) + "</b><span>" + esc(x) + "</span></li>"; }).join("") + "</ol>" +
           '<div class="vc-side"><div class="vc-frame">' +
+            // كورس لسه من غير فيديو للغلاف (still): صورة ثابتة مكان الفيديو، وvcWire بيتجاهلها لأنها مش <video>
+            (c.still ? '<img class="vc-vid" src="' + c.still + '" alt="" loading="lazy" decoding="async" aria-hidden="true" style="object-position:24% 0;transform:scale(1.2);transform-origin:24% 0">' :
             '<video class="vc-vid" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true" tabindex="-1" poster="' + src + "-poster.webp?v=" + CVV + '">' +
-              '<source src="' + src + "-loop.webm?v=" + CVV + '" type="video/webm"><source src="' + src + "-loop.mp4?v=" + CVV + '" type="video/mp4"></video>' +
+              '<source src="' + src + "-loop.webm?v=" + CVV + '" type="video/webm"><source src="' + src + "-loop.mp4?v=" + CVV + '" type="video/mp4"></video>') +
           '</div><p class="vc-live"><i aria-hidden="true"></i>' + (EN ? "Exercise from the course" : "تمرين من جوّه الكورس") + "</p></div>" +
         "</div>" +
       "</div>" +

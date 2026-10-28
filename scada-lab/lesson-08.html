@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>المستخدمون والصلاحيات وأمن المنظومة</title>
+<meta name="description" content="الدرس 8: المستخدمون والأدوار وحقوق الوظائف في WinCC Unified و UMC، الخروج التلقائي، سجل التدقيق والتوقيع الإلكتروني، وأساسيات IEC 62443: المناطق والقنوات والـ DMZ والوصول عن بعد.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="scada.css?v=20261028s1">
+<script src="scada.js?v=20261028s1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس SCADA و HMI · الدرس 8 من 12</p>
+    <h1>المستخدمون والصلاحيات وأمن المنظومة</h1>
+    <p>كل زر في الشاشة قد يشغّل محركًا أو يغيّر وصفة. تعلّم كيف تعطي كل شخص ما يحتاجه فقط، وكيف تعرف من فعل ماذا.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="scada.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>لماذا الأدوار والصلاحيات؟</h2>
+<p>شاشة الـ SCADA تستطيع تشغيل محرك 90 kW وتغيير وصفة منتج وإيقاف خط كامل. لذلك يجب أن نعرف <b>من</b> يفعل <b>ماذا</b>. المبدأ الأساسي: <b>أقل صلاحية لازمة (Least privilege)</b>، أي أن كل شخص يملك ما يحتاجه لعمله فقط.</p>
+<ul><li><b>المستخدم (User):</b> شخص واحد باسم دخول وكلمة سر خاصة به. لا حسابات مشتركة مثل «operator» يعرف كلمة سره الجميع.</li>
+<li><b>الدور (Role):</b> مجموعة صلاحيات (مشغّل، صيانة، مهندس، مدير). تعطي الدور للمستخدم، ولا تعطي الصلاحيات للأفراد واحدًا واحدًا.</li>
+<li><b>الصلاحية (Function right / Authorization):</b> حق تنفيذ فعل معيّن، يُربط بالزر أو الحقل في الشاشة.</li></ul>
+<div class="tblw"><table class="tbl"><thead><tr><th>الصلاحية</th><th>Operator</th><th>Maintenance</th><th>Engineer</th><th>Admin</th></tr></thead><tbody><tr><td>تشغيل وإيقاف (Operate)</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr><tr><td>تأكيد الإنذارات</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr><tr><td>تغيير نقاط الضبط ضمن الحدود</td><td>✔</td><td>—</td><td>✔</td><td>✔</td></tr><tr><td>تعديل الوصفات</td><td>—</td><td>—</td><td>✔</td><td>✔</td></tr><tr><td>تحميل الوصفة إلى الـ PLC</td><td>—</td><td>—</td><td>✔</td><td>✔</td></tr><tr><td>إدارة المستخدمين</td><td>—</td><td>—</td><td>—</td><td>✔</td></tr><tr><td>الخروج من الـ Runtime</td><td>—</td><td>—</td><td>✔</td><td>✔</td></tr></tbody></table></div>
+<p>هذا مثال لا قاعدة ثابتة؛ كل مصنع يكتب مصفوفته في وثيقة معتمدة. لكن قاعدتين لا تتغيران: <b>إدارة المستخدمين للمدير وحده</b>، والمشغّل <b>لا يعدّل الوصفات</b>.</p>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>المستخدمون في WinCC Unified</h2>
+<ul><li><b>إدارة المستخدمين في المشروع:</b> في TIA Portal تُعرَّف المستخدمون والأدوار وحقوق الوظائف (Function rights)، ثم يُعطى كل زر أو حقل إدخال خاصية <b>الصلاحية</b> المطلوبة. من لا يملكها يرى العنصر مقفلًا أو لا يستطيع استعماله.</li>
+<li><b>الإدارة المركزية UMC:</b> مكوّن <b>User Management Component</b> من Siemens يجمع المستخدمين في خادم واحد لعدة أنظمة، ويمكن ربطه بـ <b>Active Directory</b> في الشركة، فيدخل الموظف بحساب الشركة نفسه، وعند تركه العمل يُعطَّل حسابه مرة واحدة في كل مكان.</li>
+<li><b>الخروج التلقائي (Automatic logoff):</b> بعد مدة بلا نشاط (مثل 5 أو 10 دقائق) يخرج المستخدم ويعود المستوى إلى «مشاهدة فقط». يمنع أن يستعمل غيرك جلستك المفتوحة.</li>
+<li><b>عميل الويب:</b> لأن Unified يعمل في المتصفح، فاستعمل <b>HTTPS</b> بشهادة صالحة، ولا تنشر الـ Runtime على الإنترنت مباشرة.</li></ul>
+<div class="tblw"><table class="tbl"><thead><tr><th>المنصة</th><th>كيف تُدار الهوية</th></tr></thead><tbody>
+<tr><td>WinCC Unified</td><td>مستخدمو المشروع أو UMC (مع Active Directory)، وأدوار وحقوق وظائف</td></tr>
+<tr><td>WinCC Comfort / Classic</td><td>مجموعات مستخدمين وصلاحيات بأسلوب أقدم يختلف في التفاصيل</td></tr>
+<tr><td>Ignition 8.x</td><td>Identity Providers (داخلي، AD، أو SSO)، وأدوار، ومناطق أمان Security Zones</td></tr>
+<tr><td>FactoryTalk Optix</td><td>مستخدمون ومجموعات وصلاحيات على كل عنصر</td></tr></tbody></table></div>
+<div class="box key"><b>مدة الخروج التلقائي:</b> قصيرة جدًّا (دقيقة) تجعل المشغّلين يكرهون النظام ويكتبون كلمة السر على ورقة بجانب الشاشة. طويلة جدًّا (ساعة) تجعل الجلسة مفتوحة لأي عابر. ما بين 5 و 10 دقائق للأدوار العليا خيار شائع.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>سجل التدقيق (Audit trail)</h2>
+<p>سجل التدقيق يحفظ كل فعل مهم: <b>من</b> فعل، <b>ماذا</b>، <b>متى</b>، القيمة <b>القديمة والجديدة</b>، و<b>السبب</b> أحيانًا. هو الذي يجيب عن سؤال «من غيّر نقطة الضبط ليلة الحادثة؟».</p>
+<div class="tblw"><table class="tbl mono" style="direction:ltr"><thead><tr><th>Time</th><th>User</th><th>Action</th><th>Object</th><th>Old → New</th></tr></thead><tbody>
+<tr><td>02:14:07</td><td>op1</td><td>Login</td><td>HMI_1</td><td>—</td></tr>
+<tr><td>02:16:41</td><td>op1</td><td>Change value</td><td>Tank1_Level_SP</td><td>75.0 → 85.0</td></tr>
+<tr><td>02:17:03</td><td>op1</td><td>Denied</td><td>Recipe "Juice_1L"</td><td>no right</td></tr>
+<tr><td>02:26:41</td><td>system</td><td>Auto logoff</td><td>HMI_1</td><td>—</td></tr></tbody></table></div>
+<ul><li>في <b>WinCC Unified</b> تتوفر وظيفة <b>Audit</b> (بترخيص إضافي) للصناعات المنظَّمة، مثل الدواء والغذاء، حيث يُطلب الالتزام بمتطلبات مثل <b>FDA 21 CFR Part 11</b>: سجل لا يمكن تعديله، و<b>توقيع إلكتروني</b> (إعادة كتابة كلمة السر مع تعليق) قبل الأفعال الحرجة.</li>
+<li>محاولات الدخول الفاشلة والأفعال المرفوضة تُسجَّل أيضًا: خمس محاولات فاشلة متتالية في الثالثة فجرًا معلومة مهمة.</li>
+<li>السجل بلا قيمة إذا كان الكل يدخل بحساب «operator» واحد: سيقول السجل إن «operator» فعلها، ولن تعرف من هو.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>أساسيات IEC 62443 لأنظمة SCADA</h2>
+<svg viewBox="0 0 640 290" role="img" aria-label="المناطق والقنوات وفق IEC 62443" style="width:100%;max-width:640px;direction:ltr"><g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor"><rect x="20" y="14" width="500" height="46" rx="8" fill="none" stroke="#8a8a8a" stroke-width="2.5"/><text x="36" y="34" font-weight="700">Enterprise / IT (L4)</text><text x="36" y="52" font-size="11">ERP, e-mail, office PCs</text><path d="M270 60V80" stroke="currentColor" stroke-width="2"/><rect x="540" y="56" width="80" height="28" rx="4" fill="none" stroke="#d32f2f" stroke-width="2"/><text x="580" y="75" text-anchor="middle" fill="#d32f2f">firewall</text><path d="M520 70H540" stroke="#d32f2f" stroke-width="1.5" stroke-dasharray="3 3"/><rect x="20" y="80" width="500" height="46" rx="8" fill="none" stroke="#b85f00" stroke-width="2.5"/><text x="36" y="100" font-weight="700">Industrial DMZ (L3.5)</text><text x="36" y="118" font-size="11">historian mirror, jump host, patch server</text><path d="M270 126V146" stroke="currentColor" stroke-width="2"/><rect x="540" y="122" width="80" height="28" rx="4" fill="none" stroke="#d32f2f" stroke-width="2"/><text x="580" y="141" text-anchor="middle" fill="#d32f2f">firewall</text><path d="M520 136H540" stroke="#d32f2f" stroke-width="1.5" stroke-dasharray="3 3"/><rect x="20" y="146" width="500" height="46" rx="8" fill="none" stroke="#1e5fd1" stroke-width="2.5"/><text x="36" y="166" font-weight="700">SCADA zone (L2-L3)</text><text x="36" y="184" font-size="11">WinCC Unified servers, clients, engineering PC</text><path d="M270 192V212" stroke="currentColor" stroke-width="2"/><rect x="540" y="188" width="80" height="28" rx="4" fill="none" stroke="#d32f2f" stroke-width="2"/><text x="580" y="207" text-anchor="middle" fill="#d32f2f">firewall</text><path d="M520 202H540" stroke="#d32f2f" stroke-width="1.5" stroke-dasharray="3 3"/><rect x="20" y="212" width="500" height="46" rx="8" fill="none" stroke="#2e7d32" stroke-width="2.5"/><text x="36" y="232" font-weight="700">Control zone (L1-L0)</text><text x="36" y="250" font-size="11">S7-1500 PLCs, drives, remote I/O</text><text x="270" y="282" text-anchor="middle" font-size="11">zone = group with the same security needs · conduit = controlled path</text></g></svg>
+<p><b>IEC 62443</b> سلسلة المعايير الأساسية لأمن أنظمة الأتمتة الصناعية. أهم أفكارها للفني:</p>
+<ul><li><b>المناطق والقنوات (Zones &amp; Conduits):</b> قسّم الشبكة إلى مناطق لكل منها مستوى حماية، ولا يمر الاتصال بينها إلا عبر قناة مضبوطة (جدار حماية بقواعد محددة). شبكة المكاتب لا تصل إلى الـ PLC مباشرة أبدًا.</li>
+<li><b>المنطقة المنزوعة (DMZ):</b> ما يحتاجه قسم تقنية المعلومات (نسخة من الأرشيف، تقارير) يوضع في DMZ، فلا يحتاج أحد من الخارج إلى دخول شبكة التحكم.</li>
+<li><b>الدفاع المتعدد الطبقات (Defense in depth):</b> جدار حماية + حسابات شخصية + تحديثات + منع منافذ USB + نسخ احتياطية + مراقبة. لا طبقة واحدة تكفي.</li>
+<li><b>مستويات الأمان (SL 1–4):</b> من الحماية من الخطأ غير المقصود (SL 1) إلى الحماية من مهاجم محترف بموارد كبيرة (SL 4). يُحدَّد المستوى المطلوب لكل منطقة حسب المخاطر.</li>
+<li><b>الوصول عن بعد:</b> عبر VPN إلى خادم وسيط (Jump host) في الـ DMZ، بحساب شخصي وتحقق ثنائي، ولا برامج تحكم عن بعد مثبتة مباشرة على حاسوب الـ SCADA.</li></ul>
+<p>أجزاء المعيار موزعة حسب المسؤول: صاحب المصنع (مثل 62443-2-1)، ومُكامِل النظام (مثل 62443-3-3 لمتطلبات النظام)، والشركة المصنّعة للمكوّنات (مثل 62443-4-2).</p>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>أخطاء شائعة في المصانع</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th>الخطأ</th><th>لماذا هو خطير</th><th>البديل</th></tr></thead><tbody>
+<tr><td>حساب «operator» مشترك</td><td>لا تعرف من فعل ماذا، ولا تستطيع إلغاء صلاحية شخص واحد</td><td>حساب لكل شخص، أو بطاقة RFID للدخول السريع</td></tr>
+<tr><td>كلمة السر الافتراضية للوحة أو الـ PLC</td><td>منشورة في الأدلة على الإنترنت</td><td>غيّرها عند التشغيل، وفعّل حماية الوصول في الـ PLC</td></tr>
+<tr><td>المدير مسجَّل الدخول طوال الوردية</td><td>أي شخص يمر بالشاشة يملك كل شيء</td><td>دخول المدير عند الحاجة فقط، مع خروج تلقائي</td></tr>
+<tr><td>حاسوب الـ SCADA متصل بالإنترنت للتحديثات</td><td>طريق مباشر للبرمجيات الخبيثة إلى المصنع</td><td>خادم تحديثات في الـ DMZ، وتحديثات مختبرة</td></tr>
+<tr><td>تعطيل الحماية «مؤقتًا» أثناء التشغيل الأول</td><td>المؤقت يصبح دائمًا</td><td>قائمة فحص قبل التسليم تتضمن الأمان</td></tr></tbody></table></div>
+<div class="box key"><b>على المحاكي:</b> اضبط مصفوفة الأدوار الأربعة (Operator و Maintenance و Engineer و Admin) والخروج التلقائي حسب السياسة، ثم ادخل بكل مستخدم وجرّب فعلًا مرفوضًا، واقرأ سجل التدقيق. <a class="btn pri" href="scada.html#users" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">المعلومات هنا من أدلة الشركات المصنّعة (Siemens WinCC Unified و TIA Portal، Inductive Automation Ignition، Rockwell FactoryTalk) ومن المعايير ISA-101 و ISA-18.2 و IEC 62443. قبل أي تعديل على منظومة تعمل فعلًا ارجع إلى دليل البرنامج وإجراءات التغيير في مصنعك. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l8');
+IL.quiz(document.getElementById('quiz'), [{"q": "المشغّلون الثلاثة في الوردية يدخلون بحساب «operator» واحد. ما أكبر مشكلة؟", "o": ["سجل التدقيق لا يحدد من فعل", "الشاشة تصبح أبطأ مع الثلاثة", "الإنذارات لا تظهر لهم", "الوصفات تُحذف تلقائيًّا"], "a": 0, "why": "الحساب المشترك يُفقد السجل معناه ويمنع إلغاء صلاحية شخص بعينه."}, {"q": "أي صلاحية يجب ألا يملكها دور Operator في المثال؟", "o": ["تعديل الوصفات", "تأكيد الإنذارات", "تشغيل المضخة وإيقافها", "تغيير نقطة ضبط ضمن حدودها"], "a": 0, "why": "تعديل الوصفات للمهندس؛ المشغّل يشغّل ويؤكد ويضبط ضمن الحدود."}, {"q": "مدير النظام دخل الساعة 8 صباحًا وترك الشاشة مفتوحة. ما الإعداد الذي يحمي منها؟", "o": ["الخروج التلقائي بعد 5–10 دقائق", "رفع أولوية كل الإنذارات", "تغيير لون خلفية الشاشة", "إيقاف سجل التدقيق مؤقتًا حتى المساء"], "a": 0, "why": "الخروج التلقائي يعيد الشاشة إلى المشاهدة فقط بعد مدة بلا نشاط."}, {"q": "قسم تقنية المعلومات يريد تقارير الإنتاج من الأرشيف. أين تضع البيانات له وفق IEC 62443؟", "o": ["نسخة من الأرشيف في الـ DMZ", "فتح منفذ مباشر إلى الـ PLC", "حساب Admin لهم على الـ SCADA", "حاسوب الـ SCADA على شبكة المكاتب"], "a": 0, "why": "الـ DMZ تعطيهم ما يحتاجون دون دخول منطقة التحكم."}, {"q": "تحتاج شركة خارجية إلى صيانة البرنامج عن بعد. الطريقة الأسلم:", "o": ["VPN إلى Jump host بحساب شخصي", "برنامج تحكم عن بعد على حاسوب الـ SCADA", "فتح المنفذ 102 على جدار الحماية", "إرسال كلمة سر المدير بالبريد"], "a": 0, "why": "الوصول المضبوط عبر DMZ بهوية شخصية وتحقق ثنائي ويُسجَّل."}, {"q": "في سجل التدقيق: op1 حاول فتح الوصفة «Juice_1L» فظهر «Denied». ماذا يعني؟", "o": ["دوره لا يملك هذه الصلاحية", "الـ PLC فقد الاتصال", "ملف الوصفة تالف في قاعدة الأرشيف", "كلمة سره انتهت صلاحيتها"], "a": 0, "why": "المحاولة المرفوضة تُسجَّل عندما ينقص الدور حق الوظيفة المطلوب."}, {"q": "مصنع أدوية يحتاج سجلًا غير قابل للتعديل وتوقيعًا قبل تغيير الوصفة. ماذا يلزمه في Unified؟", "o": ["وظيفة Audit مع التوقيع الإلكتروني", "زيادة مدة الخروج التلقائي", "حساب Admin واحد للجميع", "ترند تاريخي لكل وسوم الوصفة في الخط"], "a": 0, "why": "Audit يحقق متطلبات مثل 21 CFR Part 11: سجل محمي وتوقيع للأفعال الحرجة."}], {lesson:'l8', pass:0.8});
+</script>
+</body>
+</html>

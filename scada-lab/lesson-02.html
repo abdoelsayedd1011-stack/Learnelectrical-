@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>المتغيرات والاتصال بالـ PLC</title>
+<meta name="description" content="الدرس 2: الوسوم الخارجية والداخلية، الاتصال بـ S7-1500 وفحصه، أنواع البيانات وأخطاؤها، التحويل الخطي من 0–27648 إلى وحدات هندسية، ودورة القراءة.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="scada.css?v=20261028s1">
+<script src="scada.js?v=20261028s1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس SCADA و HMI · الدرس 2 من 12</p>
+    <h1>المتغيرات والاتصال بالـ PLC</h1>
+    <p>كل رقم على الشاشة وسم مرتبط بالـ PLC. اتصال خاطئ أو نوع بيانات خاطئ أو تحويل ناقص يعطي قيمة مضلِّلة، فتعلّم كيف تكتشف كل خطأ منها.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="scada.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>ما الوسم؟ خارجي وداخلي</h2>
+<p><b>الوسم</b> (<span class="term">Tag</span>) متغير له اسم ونوع بيانات، تربطه الشاشة بعنصر رسومي. في WinCC Unified نوعان:</p>
+<div class="tblw"><table class="tbl"><thead><tr><th></th><th>وسم خارجي <span class="term">External tag</span></th><th>وسم داخلي <span class="term">Internal tag</span></th></tr></thead><tbody>
+<tr><td>مكان القيمة</td><td>في الـ PLC، تقرؤه الشاشة وتكتبه عبر الاتصال</td><td>في ذاكرة الشاشة أو الخادم فقط</td></tr>
+<tr><td>يحتاج اتصالًا؟</td><td>نعم</td><td>لا</td></tr>
+<tr><td>مثال</td><td><span class="mono">Tank1_Level</span> و <span class="mono">Pump1_Running</span></td><td>رقم الشاشة المفتوحة، اسم المستخدم الحالي، متغير مساعد لسكربت</td></tr>
+<tr><td>في Ignition</td><td>OPC tag من مزوّد الوسوم</td><td>Memory tag</td></tr>
+</tbody></table></div>
+<ul><li><b>الربط الرمزي:</b> عندما يكون الـ PLC والشاشة في مشروع TIA Portal واحد، تختار الوسم باسمه من جدول الـ PLC أو من DB، ولا تكتب عنوانًا مطلقًا مثل <span class="mono">%MW20</span>. لو غيّر المبرمج العنوان يبقى الربط صحيحًا.</li>
+<li><b>شرط الوصول:</b> متغير الـ DB يجب أن يكون مسموحًا بالوصول إليه من HMI/OPC UA في خصائصه، وإلا لن يظهر في قائمة الاختيار.</li>
+<li><b>التسمية:</b> اتبع قاعدة ثابتة: المعدّة ثم الرقم ثم الإشارة (<span class="mono">Pump1_Speed_SP</span>). الأسماء العشوائية مثل <span class="mono">Tag_17</span> تضاعف زمن التشخيص لاحقًا.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>الاتصال بالـ PLC وفحصه</h2>
+<p>في المثال: PLC من نوع <b>S7-1500</b> بعنوان <span class="term">192.168.0.1</span> والقناع <span class="term">255.255.255.0</span>، والشاشة بعنوان <span class="term">192.168.0.10</span>.</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>الإعداد</th><th>القيمة الصحيحة</th><th>الخطأ الشائع وعَرَضه</th></tr></thead><tbody>
+<tr><td>نوع الاتصال</td><td>اتصال متكامل (Integrated) مع PLC المشروع</td><td>برنامج تشغيل لعائلة أخرى من الـ PLC، فلا يتصل</td></tr>
+<tr><td>عنوان الـ PLC</td><td class="mono">192.168.0.1</td><td>رقم خاطئ: كل الحقول <span class="mono">####</span> أو رمادية</td></tr>
+<tr><td>الشبكة الفرعية</td><td>الجهازان في <span class="mono">192.168.0.x</span></td><td>الشاشة على <span class="mono">192.168.1.10</span>: لا يصل حتى الـ ping</td></tr>
+<tr><td>واجهة الشاشة</td><td>منفذ الإيثرنت الموصول فعلًا</td><td>اختيار واجهة أو نقطة وصول غير المستخدمة</td></tr>
+</tbody></table></div>
+<h3>ترتيب الفحص عند «لا اتصال»</h3>
+<ol><li>مصابيح المنفذ في الـ PLC والمحوّل (Switch): هل يوجد رابط؟</li>
+<li>هل العنوانان في الشبكة الفرعية نفسها؟ ثم <span class="mono">ping 192.168.0.1</span> من حاسوب على الشبكة.</li>
+<li>هل عنوان الـ PLC مكرر؟ جهاز آخر بالعنوان نفسه يسبب انقطاعًا متقطعًا.</li>
+<li>إعدادات الاتصال في مشروع الشاشة: العنوان ونوع المتحكم والواجهة.</li>
+<li>مع PLC من مورّد آخر أو مشروع منفصل: حماية الوصول في الـ PLC، أو السماح بـ PUT/GET، حسب نوع الاتصال ودليل المتحكم.</li></ol>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>أنواع البيانات: الخطأ الذي يعطي رقمًا صحيح الشكل وخاطئ القيمة</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th>النوع</th><th>الحجم</th><th>المدى</th><th>استخدامه</th></tr></thead><tbody>
+<tr><td class="mono">Bool</td><td>1 بت</td><td>0 / 1</td><td>تعمل/متوقفة، عطل، أمر تشغيل</td></tr>
+<tr><td class="mono">Int</td><td>16 بت</td><td>−32768 … 32767</td><td>القيمة الخام للدخل التناظري</td></tr>
+<tr><td class="mono">DInt</td><td>32 بت</td><td>±2.1 مليار</td><td>العدادات: عدد الزجاجات، ساعات التشغيل</td></tr>
+<tr><td class="mono">Real</td><td>32 بت (فاصلة عائمة)</td><td>أعداد بكسور</td><td>الضغط 4.5 bar، الحرارة 82.3 °C</td></tr>
+<tr><td class="mono">String</td><td>متغير</td><td>نص</td><td>اسم المنتج، رقم الدفعة</td></tr>
+</tbody></table></div>
+<div class="tblw"><table class="tbl"><thead><tr><th>العَرَض على الشاشة</th><th>السبب المرجّح</th></tr></thead><tbody>
+<tr><td>الضغط في الـ PLC <b>4.5</b> لكن الشاشة تعرض <b>16528</b> أو رقمًا غريبًا</td><td>متغير <span class="mono">Real</span> عُرّف في الشاشة <span class="mono">Int</span>، فقُرئ نصف بتات الفاصلة العائمة كعدد صحيح</td></tr>
+<tr><td>العداد يصل إلى <b>32767</b> ثم يقفز إلى <b>−32768</b></td><td>عداد <span class="mono">DInt</span> عُرّف <span class="mono">Int</span>، ففاض عند حد الـ 16 بت</td></tr>
+<tr><td>القيمة دائمًا 0 أو 1 فقط</td><td>وسم تناظري عُرّف <span class="mono">Bool</span></td></tr>
+</tbody></table></div>
+<div class="box key"><b>كيف تعرف؟</b> افتح جدول المراقبة (Watch table) في الـ PLC بجانب الشاشة. لو اختلفت القيمتان والاتصال سليم، فقارن نوع البيانات في الوسم مع نوعه في الـ PLC أولًا. الربط الرمزي يمنع هذا الخطأ غالبًا لأنه يأخذ النوع من الـ PLC تلقائيًا.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>التحويل الخطي: من 27648 إلى نسبة مئوية</h2>
+<p>بطاقة الدخل التناظري في S7-1200/1500 تحوّل إشارة 4–20 mA أو 0–10 V إلى عدد صحيح من <b>0 إلى 27648</b> في المدى الاسمي. المشغّل يريد وحدات هندسية: % أو bar أو °C.</p>
+<figure class="fig">
+<svg viewBox="0 0 640 260" role="img" aria-label="منحنى التحويل الخطي من 0 إلى 27648 إلى 0 إلى 100 بالمئة" style="width:100%;max-width:640px;direction:ltr">
+<defs><marker id="a2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs>
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor">
+<path d="M80 220H600" stroke="currentColor" marker-end="url(#a2)"/><path d="M80 220V20" stroke="currentColor" marker-end="url(#a2)"/>
+<path d="M80 40H520V220" fill="none" stroke="currentColor" stroke-dasharray="3 4" opacity=".5"/>
+<path d="M80 130H300V220" fill="none" stroke="currentColor" stroke-dasharray="3 4" opacity=".5"/>
+<path d="M80 220L520 40" style="stroke:var(--accent)" stroke-width="3"/>
+<path d="M520 40L560 30" style="stroke:var(--bad)" stroke-width="3" stroke-dasharray="5 4"/>
+<circle cx="300" cy="130" r="5" style="fill:var(--accent)"/>
+<text x="80" y="238" text-anchor="middle">0</text><text x="300" y="238" text-anchor="middle">13824</text><text x="520" y="238" text-anchor="middle">27648</text>
+<text x="560" y="252" text-anchor="middle" font-size="11">raw (Int)</text>
+<text x="72" y="224" text-anchor="end">0 %</text><text x="72" y="134" text-anchor="end">50 %</text><text x="72" y="44" text-anchor="end">100 %</text>
+<text x="312" y="150" font-size="11" style="fill:var(--accent)">13824 → 50 %</text>
+<text x="540" y="54" font-size="11" class="ar" style="fill:var(--bad)">تجاوز المدى</text>
+<text x="96" y="30" font-size="11" class="ar">مستوى الخزان</text>
+</g></svg>
+<figcaption>التحويل الخطي: القيمة الخام من بطاقة الدخل التناظري (0 إلى 27648) تصبح 0 إلى 100 %.</figcaption>
+</figure>
+<div class="formula">Value = (Raw − RawMin) × (EuMax − EuMin) / (RawMax − RawMin) + EuMin</div>
+<div class="tblw"><table class="tbl"><thead><tr><th>الإشارة</th><th>Raw</th><th>المستوى 0–100 %</th><th>الضغط 0–10 bar</th></tr></thead><tbody>
+<tr><td>4 mA</td><td class="mono">0</td><td>0 %</td><td>0.0 bar</td></tr>
+<tr><td>8 mA</td><td class="mono">6912</td><td>25 %</td><td>2.5 bar</td></tr>
+<tr><td>12 mA</td><td class="mono">13824</td><td>50 %</td><td>5.0 bar</td></tr>
+<tr><td>20 mA</td><td class="mono">27648</td><td>100 %</td><td>10.0 bar</td></tr>
+<tr><td>سلك مقطوع أو تجاوز</td><td class="mono">32767</td><td colspan="2">قيمة غير صالحة: لا تعرضها كـ 118 %</td></tr>
+</tbody></table></div>
+<ul><li><b>أين يتم التحويل؟</b> الأفضل في الـ PLC (مثلًا <span class="mono">NORM_X</span> ثم <span class="mono">SCALE_X</span>) حتى تتفق الشاشة والإنذارات والأرشيف على القيمة نفسها. خيار <b>التحويل الخطي</b> في خصائص الوسم بالشاشة مفيد عندما لا تستطيع تعديل برنامج الـ PLC.</li>
+<li><b>لا تحوّل مرتين:</b> لو حُوّلت القيمة في الـ PLC وفعّلت التحويل في الشاشة أيضًا، ستعرض أرقامًا صغيرة جدًا بلا معنى.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>دورة القراءة وحِمل الاتصال</h2>
+<p>لكل وسم <b>دورة قراءة</b> (<span class="term">Acquisition cycle</span>): كم مرة تطلب الشاشة قيمته من الـ PLC.</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>الإشارة</th><th>دورة مقترحة</th><th>السبب</th></tr></thead><tbody>
+<tr><td>حالة مضخة، أزرار، إنذارات</td><td>100–500 ms</td><td>المشغّل يتوقع استجابة فورية</td></tr>
+<tr><td>مستوى خزان، ضغط</td><td>500 ms – 1 s</td><td>تتغير ببطء نسبيًا</td></tr>
+<tr><td>حرارة فرن، ساعات تشغيل</td><td>2–10 s</td><td>تتغير ببطء شديد</td></tr>
+</tbody></table></div>
+<ul><li>لو جعلت كل الوسوم 100 ms فقد تثقل الاتصال وتبطئ الشاشة كلها، وتستهلك موارد الـ PLC.</li>
+<li>في معظم المنصات تُقرأ الوسوم الظاهرة في الشاشة المفتوحة فقط، إلا إذا كانت مرتبطة بإنذار أو أرشيف أو سكربت يعمل باستمرار.</li>
+<li><b>مؤشر الاتصال:</b> ضع على كل شاشة رمزًا لحالة الاتصال، وفي Unified يمكن قراءة حالة الاتصال من وسوم النظام أو من التشخيص. المشغّل يجب أن يعرف فورًا أن القيم مجمّدة.</li></ul>
+<div class="box key"><b>على المحاكي:</b> أصلح إعدادات الاتصال بالـ PLC S7-1500 على 192.168.0.1، وصحّح أنواع البيانات (Real المقروء Int والعداد DInt)، وأضف التحويل الخطي 0–27648 → 0–100 % حتى تطابق القيم الحية ما في الـ PLC. <a class="btn pri" href="scada.html#tags" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">المعلومات هنا من أدلة الشركات المصنّعة (Siemens WinCC Unified و TIA Portal، Inductive Automation Ignition، Rockwell FactoryTalk) ومن المعايير ISA-101 و ISA-18.2 و IEC 62443. قبل أي تعديل على منظومة تعمل فعلًا ارجع إلى دليل البرنامج وإجراءات التغيير في مصنعك. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l2');
+IL.quiz(document.getElementById('quiz'), [{"q": "كل حقول الشاشة تعرض #### بعد تغيير عنوان الشاشة إلى 192.168.1.10 والـ PLC على 192.168.0.1 بقناع 255.255.255.0. ما السبب؟", "o": ["الجهازان في شبكتين فرعيتين", "نوع البيانات خاطئ في كل الوسوم", "دورة القراءة بطيئة جدًا", "التحويل الخطي غير مفعّل بعد"], "a": 0, "why": "مع القناع /24 يجب أن تتطابق الأجزاء الثلاثة الأولى من العنوان."}, {"q": "ضغط الخط في جدول المراقبة 4.5 bar لكن الشاشة تعرض 16528. الاتصال سليم. ماذا تفحص أولًا؟", "o": ["نوع البيانات: Real أم Int", "عنوان IP للـ PLC في المشروع", "حدود حقل الإدخال في الشاشة", "صلاحيات المستخدم الحالي"], "a": 0, "why": "قراءة بتات Real كعدد صحيح تعطي رقمًا كبيرًا بلا معنى."}, {"q": "عداد الزجاجات يصل إلى 32767 ثم يظهر −32768. ما الإصلاح؟", "o": ["تعريف الوسم DInt", "زيادة دورة القراءة إلى 5 s", "تفعيل التحويل الخطي للوسم", "تغيير صيغة الحقل إلى 99.9"], "a": 0, "why": "Int حده 32767؛ العداد يحتاج 32 بت."}, {"q": "حساس مستوى 4–20 mA يعطي Raw = 20736 على بطاقة S7-1500 (0–27648 = 0–100 %). كم المستوى؟", "o": ["75 %", "60 %", "80 %", "50 %"], "a": 0, "why": "20736 / 27648 = 0.75."}, {"q": "الـ PLC يحوّل المستوى إلى % بـ SCALE_X، ثم فعّلت التحويل الخطي 0–27648 في وسم الشاشة أيضًا. ماذا ترى عند 50 %؟", "o": ["نحو 0.18 %", "50 % تمامًا كما في الـ PLC", "100 % دائمًا مهما تغير المستوى", "علامات #### في الحقل"], "a": 0, "why": "تحويل مرتين: 50 ÷ 27648 × 100 ≈ 0.18."}, {"q": "المستوى يقرأ Raw = 32767 فجأة والخزان نصف ممتلئ. ما التفسير الأرجح؟", "o": ["عطل في الإشارة", "الخزان فاض فعلًا وتجاوز حده", "نوع البيانات في الشاشة Real", "المستخدم الحالي بلا صلاحية"], "a": 0, "why": "32767 قيمة غير صالحة تشير إلى عطل في الإشارة."}, {"q": "شاشة فيها 400 وسم كلها بدورة قراءة 100 ms، والاستجابة بطيئة. ما الحل المناسب؟", "o": ["إبطاء دورة الوسوم البطيئة التغير", "تسريع دورة كل الوسوم إلى 10 ms", "تحويل كل الوسوم إلى وسوم داخلية", "إزالة مؤشر حالة الاتصال من الشاشات"], "a": 0, "why": "وزّع الدورات حسب سرعة تغير الإشارة لتخفيف حمل الاتصال."}], {lesson:'l2', pass:0.8});
+</script>
+</body>
+</html>

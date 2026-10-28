@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>العناصر الأساسية: الأزرار وحقول الإدخال والمؤشرات</title>
+<meta name="description" content="الدرس 4: أحداث الضغط والإفلات، الزر اللحظي والتبديل، حقول الإدخال وصيغتها وحدودها، المؤشرات والأشرطة، جدول ربط مضخة، والاختبار مع PLCSIM.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="scada.css?v=20261028s1">
+<script src="scada.js?v=20261028s1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس SCADA و HMI · الدرس 4 من 12</p>
+    <h1>العناصر الأساسية: الأزرار وحقول الإدخال والمؤشرات</h1>
+    <p>الزر والحقل والمؤشر أبسط العناصر، وأكثر أخطاء الشاشات تأتي منها. نبني شاشة تشغيل مضخة ونربط كل عنصر بوسمه الصحيح.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="designer.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>الأزرار: أي حدث وأي دالة؟</h2>
+<p>كل عنصر في WinCC Unified له <b>أحداث</b> (<span class="term">Events</span>)، ولكل حدث <b>دالة نظام</b> أو <b>سكربت JavaScript</b>. أهم أحداث الزر: <b>الضغط</b> (<span class="term">Press</span>) و<b>الإفلات</b> (<span class="term">Release</span>) و<b>النقر</b> (<span class="term">Click</span>).</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>السلوك</th><th>الإعداد</th><th>متى تستخدمه</th></tr></thead><tbody>
+<tr><td><b>لحظي</b> (Momentary)</td><td>Press → <span class="mono">SetBit</span>، و Release → <span class="mono">ResetBit</span> على الوسم نفسه</td><td>تشغيل وإيقاف المحركات، ودفع (Jog) السير خطوة</td></tr>
+<tr><td><b>تبديل</b> (Toggle)</td><td>Click → <span class="mono">InvertBit</span></td><td>اختيار وضع: يدوي/آلي، تفعيل خيار غير خطر</td></tr>
+<tr><td><b>ضبط</b> (Set)</td><td>Click → <span class="mono">SetBit</span>، ويعيد الـ PLC الوسم إلى 0</td><td>أوامر يستلمها الـ PLC ثم يمسحها بنفسه</td></tr>
+</tbody></table></div>
+<figure class="fig">
+<svg viewBox="0 0 640 220" role="img" aria-label="مخطط زمني لزر تشغيل لحظي ومنطق الإمساك في الـ PLC" style="width:100%;max-width:640px;direction:ltr">
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor">
+<text x="8" y="46">Pump1_Start</text><text x="8" y="106">Pump1_Stop</text><text x="8" y="166">Pump1_Running</text>
+<path d="M150 50H230V22H290V50H600" fill="none" style="stroke:var(--accent)" stroke-width="2.5"/>
+<path d="M150 110H440V82H490V110H600" fill="none" style="stroke:var(--accent)" stroke-width="2.5"/>
+<path d="M150 170H232V142H442V170H600" fill="none" style="stroke:var(--cur)" stroke-width="2.5"/>
+<path d="M230 14V200M290 14V200M440 14V200M490 14V200" stroke="currentColor" stroke-dasharray="2 4" opacity=".5"/>
+<text x="230" y="214" text-anchor="middle" font-size="11">Press</text><text x="290" y="214" text-anchor="middle" font-size="11">Release</text>
+<text x="440" y="214" text-anchor="middle" font-size="11">Press</text><text x="490" y="214" text-anchor="middle" font-size="11">Release</text>
+<text x="337" y="134" text-anchor="middle" font-size="11" class="ar">المتحكم يُمسك حالة التشغيل</text>
+</g></svg>
+<figcaption>الشاشة ترسل نبضة ما دام الإصبع على الزر، والـ PLC هو الذي يُمسك حالة التشغيل ويفكها.</figcaption>
+</figure>
+<ul><li><b>لماذا لحظي للتشغيل؟</b> بالتبديل، لو انقطع الاتصال والبت = 1، أو ضغط مشغّلان من شاشتين، قد تبقى المضخة في حالة غير متوقعة. بالزر اللحظي يقرّر <b>منطق الإمساك</b> (Seal-in) في الـ PLC، ويتحقق من التعشيقات قبل التشغيل.</li>
+<li><b>لا تكتب على مخرج %Q مباشرة</b> من الشاشة: اكتب على بت أمر في DB، ودع برنامج الـ PLC يقرر.</li>
+<li>زر الشاشة يعمل عادة باللمس وبالفأرة، لكن تأكد أن حدث <b>Release</b> يصل حتى لو سحب المشغّل إصبعه خارج الزر؛ جرّب ذلك عند الاختبار.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>حقل الإدخال والإخراج والحدود</h2>
+<p><b>حقل الإدخال/الإخراج</b> (<span class="term">I/O field</span>) يعرض قيمة وسم، ويمكن أن يقبل الكتابة. أهم خصائصه:</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>الخاصية</th><th>مثال لنقطة ضبط سرعة المضخة</th><th>ملاحظة</th></tr></thead><tbody>
+<tr><td>الوسم</td><td class="mono">Pump1_Speed_SP (Real)</td><td>نقطة الضبط، لا قيمة السرعة الفعلية</td></tr>
+<tr><td>النمط</td><td>إدخال وإخراج</td><td>للعرض فقط: إخراج</td></tr>
+<tr><td>صيغة العرض</td><td class="mono">99.9</td><td>رقمان صحيحان ومنزلة عشرية</td></tr>
+<tr><td>الحد الأدنى/الأعلى</td><td>0.0 / 50.0 Hz</td><td>قيمة 60 تُرفض قبل أن تُكتب في الـ PLC</td></tr>
+<tr><td>الوحدة</td><td>Hz</td><td>نص بجانب الحقل أو ضمن الصيغة</td></tr>
+</tbody></table></div>
+<ul><li><b>ضع الحدود في الوسم نفسه</b> (حدود القيمة في خصائص الوسم) لتُطبّق في كل حقل يستخدمه، لا في حقل واحد فقط.</li>
+<li><b>وتحقق منها في الـ PLC أيضًا:</b> قد يكتب على الوسم سكربت أو عميل OPC UA لا يمر بحدود الشاشة. استخدم <span class="mono">LIMIT</span> في البرنامج.</li>
+<li><b>علامات <span class="mono">####</span>:</b> تظهر عندما تكون القيمة أعرض من الصيغة. مثلًا صيغة <span class="mono">99.9</span> وقيمة 123.4. وسّع الصيغة أو صحّح التحويل.</li>
+<li>للقيم الحرجة (درجة حرارة البسترة مثلًا) أضف نافذة <b>تأكيد</b> قبل الكتابة، واربط التغيير بصلاحية مستخدم وسجل تدقيق (الدرس 8).</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>المؤشرات: الحالة والأشرطة والمقاييس</h2>
+<figure class="fig">
+<svg viewBox="0 0 640 200" role="img" aria-label="شاشة تشغيل مضخة بأزرارها وحقل السرعة ومؤشر الحالة وشريط التيار" style="width:100%;max-width:640px;direction:ltr">
+<rect x="2" y="2" width="636" height="196" rx="8" fill="#dcdfe2" stroke="#9aa3aa"/>
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="12" fill="#30363b" text-anchor="middle">
+<text x="80" y="28" font-weight="700">P-101</text>
+<circle cx="80" cy="80" r="34" fill="#5b636a"/><path d="M58 80h44M90 66l14 14-14 14" stroke="#fff" stroke-width="4" fill="none"/>
+<text x="80" y="136" font-weight="700">RUN</text>
+<rect x="170" y="40" width="110" height="40" rx="6" fill="#f2f3f4" stroke="#5b636a"/><text x="225" y="65" font-weight="700">START</text>
+<rect x="170" y="100" width="110" height="40" rx="6" fill="#f2f3f4" stroke="#5b636a"/><text x="225" y="125" font-weight="700">STOP</text>
+<text x="380" y="36" class="ar">نقطة ضبط السرعة</text>
+<rect x="330" y="46" width="100" height="34" fill="#fff" stroke="#30363b"/><text x="380" y="69" font-size="15" font-weight="700">42.5</text><text x="452" y="69">Hz</text>
+<text x="380" y="104" font-size="11">min 0.0 · max 50.0</text>
+<text x="560" y="28" class="ar">التيار</text>
+<rect x="545" y="40" width="30" height="130" fill="#f2f3f4" stroke="#5b636a"/>
+<rect x="546" y="83" width="28" height="86" fill="#9aa3aa"/>
+<path d="M538 57h44" stroke="#30363b" stroke-width="2" stroke-dasharray="4 2"/>
+<text x="610" y="61" font-size="10">25 A</text><text x="608" y="174" font-size="10">0</text><text x="608" y="44" font-size="10">30</text>
+<text x="560" y="190">19.8 A</text>
+<text x="225" y="170" font-size="11" class="ar">زرّان لحظيان</text>
+</g></svg>
+<figcaption>شاشة مضخة بسيطة: زرّان لحظيان، حقل إدخال بحدود، مؤشر حالة بالشكل والنص، وشريط تيار عليه حد الإنذار.</figcaption>
+</figure>
+<div class="tblw"><table class="tbl"><thead><tr><th>العنصر</th><th>يعرض</th><th>مثال</th></tr></thead><tbody>
+<tr><td>مؤشر حالة / رمز بقائمة رسوم أو نصوص</td><td>قيمة منفصلة (Bool أو رقم حالة)</td><td><span class="mono">Pump1_Running</span>: RUN / STOP، أو 0 متوقفة، 1 تعمل، 2 عطل</td></tr>
+<tr><td>شريط <span class="term">Bar</span></td><td>قيمة تناظرية في مدى</td><td><span class="mono">Pump1_Current</span>: 0–30 A مع خط حد عند 25 A</td></tr>
+<tr><td>مقياس دائري <span class="term">Gauge</span></td><td>قيمة تناظرية</td><td>نادرًا في ISA-101؛ الشريط أوضح وأصغر</td></tr>
+<tr><td>حقل نصي بقائمة نصوص <span class="term">Text list</span></td><td>رقم حالة كنص</td><td>2 → «عطل: حماية حرارية»</td></tr>
+</tbody></table></div>
+<div class="box key"><b>القيمة الفعلية لا الأمر:</b> مؤشر «تعمل» يجب أن يُربط بإشارة راجعة من الكونتاكتور أو المحوّل (<span class="mono">Pump1_Running</span>)، لا ببت الأمر <span class="mono">Pump1_Start</span>. وإلا ستعرض الشاشة «تعمل» والمضخة متوقفة بسبب حماية حرارية.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>جدول الربط لمضخة P-101</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th>العنصر</th><th>الوسم</th><th>النوع</th><th>الاتجاه</th><th>الإعداد</th></tr></thead><tbody>
+<tr><td>زر START</td><td class="mono">Pump1_Start</td><td>Bool</td><td>كتابة</td><td>Press → SetBit، Release → ResetBit</td></tr>
+<tr><td>زر STOP</td><td class="mono">Pump1_Stop</td><td>Bool</td><td>كتابة</td><td>لحظي أيضًا؛ في الـ PLC يتغلب الإيقاف على التشغيل</td></tr>
+<tr><td>حقل السرعة</td><td class="mono">Pump1_Speed_SP</td><td>Real</td><td>قراءة/كتابة</td><td>0–50 Hz، الصيغة 99.9</td></tr>
+<tr><td>مؤشر الحالة</td><td class="mono">Pump1_Running</td><td>Bool</td><td>قراءة</td><td>RUN ممتلئ / STOP مفرّغ</td></tr>
+<tr><td>شريط التيار</td><td class="mono">Pump1_Current</td><td>Real</td><td>قراءة</td><td>0–30 A، حد 25 A</td></tr>
+</tbody></table></div>
+<div class="tblw"><table class="tbl"><thead><tr><th>الخطأ الشائع</th><th>العَرَض</th></tr></thead><tbody>
+<tr><td>زر التشغيل بنوع تبديل</td><td>المضخة تعود للعمل بعد عودة الاتصال، أو يحتاج الإيقاف ضغطتين</td></tr>
+<tr><td>Press → SetBit بلا Release</td><td>البت يبقى 1، فتعود المضخة للعمل بعد الإيقاف مباشرة</td></tr>
+<tr><td>حقل السرعة مربوط بالسرعة الفعلية</td><td>المشغّل يكتب قيمة فتُمحى فورًا بقراءة الـ PLC</td></tr>
+<tr><td>الشريط بمدى 0–100 والتيار الاسمي 20 A</td><td>الشريط لا يتجاوز خُمس ارتفاعه، فلا يلاحظ أحد الحمل الزائد</td></tr>
+</tbody></table></div>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>الاختبار قبل الخط: PLCSIM و Runtime</h2>
+<ol>
+<li>شغّل برنامج الـ PLC على <b>PLCSIM</b> أو <b>PLCSIM Advanced</b> (محاكي الـ PLC في TIA Portal)، ثم شغّل محاكاة الشاشة (Runtime) على الحاسوب.</li>
+<li>اضغط START: هل يتحول <span class="mono">Pump1_Start</span> إلى 1 أثناء الضغط فقط؟ هل يظهر RUN بعد الإشارة الراجعة؟</li>
+<li>اكتب 42.5 ثم 60 في حقل السرعة: الأولى تُقبل والثانية تُرفض برسالة.</li>
+<li>غيّر <span class="mono">Pump1_Current</span> في جدول المراقبة إلى 27 A: هل يتجاوز الشريط خط 25 A بوضوح؟</li>
+<li>افصل الاتصال: هل يظهر للمشغّل أن القيم غير صالحة؟ وهل تبقى المضخة في حالة آمنة؟</li></ol>
+<div class="box"><b>للمقارنة:</b> في Ignition Perspective يُربط العنصر بالوسم عبر <b>Property binding</b> ويُكتب بحدث <span class="mono">onActionPerformed</span> أو <span class="mono">onMouseDown/Up</span>، والفكرة نفسها: الأمر لحظي والحدود في الوسم والـ PLC.</div>
+<div class="box key"><b>على المحاكي:</b> ابنِ شاشة تشغيل المضخة: زرّا تشغيل وإيقاف لحظيان، حقل سرعة بحدود 0–50 Hz، مؤشر حالة، وشريط تيار 0–30 A، ثم اربط الوسوم وجرّبها في وضع التشغيل. <a class="btn pri" href="designer.html#objects" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">المعلومات هنا من أدلة الشركات المصنّعة (Siemens WinCC Unified و TIA Portal، Inductive Automation Ignition، Rockwell FactoryTalk) ومن المعايير ISA-101 و ISA-18.2 و IEC 62443. قبل أي تعديل على منظومة تعمل فعلًا ارجع إلى دليل البرنامج وإجراءات التغيير في مصنعك. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l4');
+IL.quiz(document.getElementById('quiz'), [{"q": "تريد زر START لمضخة بحيث يكون البت 1 ما دام المشغّل يضغط فقط. ما الإعداد؟", "o": ["Press: SetBit، Release: ResetBit", "Click → InvertBit على وسم الأمر نفسه", "Press → SetBit دون أي حدث آخر", "Release → SetBit دون أي حدث آخر"], "a": 0, "why": "الضبط عند الضغط والمسح عند الإفلات = زر لحظي."}, {"q": "زر التشغيل مضبوط Toggle. انقطع الاتصال والبت = 1، ثم عاد. ما الخطر؟", "o": ["قد تعود المضخة للعمل دون طلب", "لا خطر لأن البت يُمسح تلقائيًا", "تتوقف الشاشة عن العمل نهائيًا", "يتغير نوع الوسم من Bool إلى Int"], "a": 0, "why": "التبديل يترك الأمر قائمًا؛ اللحظي مع إمساك في الـ PLC أسلم."}, {"q": "حقل السرعة بصيغة 99.9، والقيمة الفعلية 123.4 بعد خطأ في التحويل. ماذا يظهر؟", "o": ["علامات #### في الحقل", "القيمة 23.4 بعد قص الرقم", "القيمة 50.0 لأنها الحد الأعلى", "حقل فارغ مع إنذار أحمر"], "a": 0, "why": "القيمة أعرض من صيغة العرض."}, {"q": "حدود 0–50 Hz مضبوطة في حقل الشاشة فقط، وعميل OPC UA كتب 70 Hz. كيف تمنع ذلك؟", "o": ["حدود في الوسم و LIMIT في الـ PLC", "زيادة حجم حقل الإدخال في الشاشة", "جعل الحقل للعرض فقط في الشاشة", "تغيير صيغة الحقل إلى 999.9 بدل 99.9"], "a": 0, "why": "حدود الحقل لا تحمي من الكتابة من مصادر أخرى."}, {"q": "الشاشة تعرض RUN والمضخة متوقفة بحماية حرارية. ما الخطأ المرجّح في الربط؟", "o": ["المؤشر مربوط ببت الأمر", "المؤشر مرسوم بلون رمادي داكن", "دورة قراءة الوسم 500 ms", "حقل السرعة بصيغة العرض 99.9"], "a": 0, "why": "الحالة يجب أن تأتي من إشارة راجعة فعلية (Pump1_Running)."}, {"q": "تيار المضخة الاسمي 20 A، والشريط بمدى 0–100 A. ما المشكلة؟", "o": ["الحمل الزائد لا يكاد يظهر", "الشريط يعرض علامات #### دائمًا", "الشريط يكتب قيمة التيار في الـ PLC", "لا مشكلة؛ المدى الأكبر أدق دائمًا"], "a": 0, "why": "اختر مدى قريبًا من قيم التشغيل (0–30 A) مع خط الحد."}, {"q": "المشغّل يكتب 40 في حقل نقطة الضبط فتعود القيمة فورًا إلى 38.6. السبب الأرجح:", "o": ["الحقل مربوط بالسرعة الفعلية", "حدود الحقل مضبوطة 0–38.6 Hz", "صلاحية المستخدم تمنع الكتابة", "الاتصال بالـ PLC مقطوع حاليًا"], "a": 0, "why": "قراءة السرعة الفعلية تكتب فوق ما أدخله المشغّل."}], {lesson:'l4', pass:0.8});
+</script>
+</body>
+</html>

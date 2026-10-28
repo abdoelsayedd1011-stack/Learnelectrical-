@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>تصميم الشاشات عالية الأداء (ISA-101)</title>
+<meta name="description" content="الدرس 3: مبادئ ISA-101 للشاشات عالية الأداء: الرمادي أولًا واللون للإنذار، مستويات الشاشات الأربعة، التنقل، عرض القيم التناظرية، وقائمة فحص لإصلاح الشاشات السيئة.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="scada.css?v=20261028s1">
+<script src="scada.js?v=20261028s1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس SCADA و HMI · الدرس 3 من 12</p>
+    <h1>تصميم الشاشات عالية الأداء (ISA-101)</h1>
+    <p>الشاشة الجيدة هادئة في الوضع الطبيعي، ولا يلفت النظر فيها إلا ما يحتاج إلى تدخل المشغّل.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="designer.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>لماذا الشاشة «المملة» أفضل؟</h2>
+<p>تحقيقات حوادث صناعية كثيرة وجدت أن المشغّل <b>لم يلاحظ</b> الوضع غير الطبيعي في وقته، لأن الشاشة مليئة بالألوان والحركة فلا يبرز فيها شيء. المعيار <b>ISA-101</b> (<span class="term">ISA-101.01</span>، إدارة واجهات HMI في الصناعات العملياتية) يقدّم فكرة <b>الشاشة عالية الأداء</b> (<span class="term">High-Performance HMI</span>): شاشة تعرض المعلومة بدل البيانات الخام، وتجعل غير الطبيعي هو الشيء الوحيد اللافت.</p>
+<figure class="fig">
+<svg viewBox="0 0 640 250" role="img" aria-label="مقارنة بين شاشة تقليدية ملونة وشاشة عالية الأداء" style="width:100%;max-width:640px;direction:ltr">
+<defs><linearGradient id="g3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7fe08a"/><stop offset="1" stop-color="#127a22"/></linearGradient></defs>
+<g font-family="IBM Plex Sans Arabic,IBM Plex Mono,sans-serif" font-size="12" text-anchor="middle">
+<rect x="4" y="4" width="306" height="210" rx="6" fill="#1d3fa8"/>
+<text x="157" y="26" fill="#ffe14d" font-weight="700" class="ar">الشاشة التقليدية</text>
+<rect x="24" y="44" width="70" height="120" fill="#bfc7cf" stroke="#fff"/><rect x="24" y="96" width="70" height="68" fill="#00c3ff"/>
+<circle cx="160" cy="130" r="30" fill="url(#g3)" stroke="#063" stroke-width="3"/><text x="160" y="134" fill="#fff" font-size="11">P-101</text>
+<rect x="210" y="60" width="80" height="30" fill="#e01b1b"/><text x="250" y="80" fill="#fff" class="ar">متوقفة</text>
+<rect x="210" y="104" width="80" height="30" fill="#18b31f"/><text x="250" y="124" fill="#fff" class="ar">تعمل</text>
+<text x="59" y="186" fill="#ff7bf2" font-size="10">43.27891</text><text x="160" y="186" fill="#ffe14d" font-size="10">7.1</text>
+<rect x="320" y="4" width="316" height="210" rx="6" fill="#dcdfe2"/>
+<text x="478" y="26" fill="#30363b" font-weight="700" class="ar">عالية الأداء ISA-101</text>
+<rect x="344" y="44" width="70" height="120" fill="none" stroke="#5b636a" stroke-width="2"/><rect x="345" y="96" width="68" height="67" fill="#9aa3aa"/>
+<text x="379" y="186" fill="#30363b">43.3 %</text>
+<circle cx="480" cy="110" r="26" fill="#5b636a"/><path d="M466 110h28M484 100l10 10-10 10" stroke="#fff" stroke-width="3" fill="none"/>
+<text x="480" y="156" fill="#30363b">P-101 RUN</text><text x="480" y="174" fill="#30363b">7.1 bar</text>
+<rect x="540" y="60" width="16" height="104" fill="#f2f3f4" stroke="#5b636a"/><rect x="540" y="78" width="16" height="50" fill="#c9cdd1"/><path d="M536 104h24" stroke="#30363b" stroke-width="3"/>
+<polygon points="590,60 612,96 568,96" fill="#f2b705" stroke="#30363b"/><text x="590" y="91" fill="#30363b" font-weight="700">2</text>
+<text x="590" y="118" fill="#30363b" font-size="10" class="ar">إنذار</text>
+</g>
+<g font-family="IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor" text-anchor="middle">
+<text x="157" y="238" class="ar">ألوان كثيرة، 3D، أحمر/أخضر، أرقام بلا وحدات</text>
+<text x="478" y="238" class="ar">رمادي، رموز مسطّحة، اللون للإنذار فقط</text>
+</g></svg>
+<figcaption>المضخة والخزان نفسهما: على اليمين لا يلفت النظر إلا الإنذار ذو الأولوية 2.</figcaption>
+</figure>
+<ul><li><b>الرمادي أولًا:</b> الخلفية رمادية فاتحة، والمعدّات رمادية داكنة، والنص أسود أو رمادي داكن.</li>
+<li><b>اللون للحالة غير الطبيعية فقط:</b> الأحمر والأصفر والبرتقالي محجوزة للإنذارات حسب أولويتها.</li>
+<li><b>المعلومة لا الرقم:</b> الرقم 43.3 لا يكفي؛ هل هو طبيعي؟ أضف شريطًا يبيّن المدى الطبيعي وموقع القيمة منه.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>قواعد الألوان والرموز</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th>العنصر</th><th>التقليدي (خطأ)</th><th>عالي الأداء (صحيح)</th></tr></thead><tbody>
+<tr><td>الخلفية</td><td>أزرق أو أسود أو صورة</td><td>رمادي فاتح محايد</td></tr>
+<tr><td>مضخة تعمل</td><td>أخضر</td><td>رمز ممتلئ رمادي داكن + نص <span class="mono">RUN</span></td></tr>
+<tr><td>مضخة متوقفة</td><td>أحمر</td><td>رمز مفرّغ أو فاتح + نص <span class="mono">STOP</span></td></tr>
+<tr><td>صمام مفتوح/مغلق</td><td>أخضر/أحمر</td><td>ممتلئ/مفرّغ بالرمادي، والشكل نفسه</td></tr>
+<tr><td>إنذار</td><td>أحمر كغيره من الأحمر</td><td>لون الأولوية + شكل + رقم الأولوية، ويومض حتى التأكيد فقط</td></tr>
+<tr><td>الرموز</td><td>صور 3D وظلال وتدرجات</td><td>رموز مسطّحة ثنائية الأبعاد</td></tr>
+<tr><td>الأرقام</td><td>خمس منازل عشرية، بلا وحدة</td><td>دقة مناسبة (43.3) + الوحدة (%)</td></tr>
+</tbody></table></div>
+<div class="box key"><b>لماذا لا أحمر/أخضر للتشغيل؟</b> أولًا: الأحمر محجوز للإنذار، فإن كانت نصف المضخات حمراء لأنها متوقفة طبيعيًا ضاع الإنذار الحقيقي. ثانيًا: نحو 8 % من الرجال لديهم ضعف في تمييز الأحمر من الأخضر. لذلك لا تعتمد على اللون وحده أبدًا: أضف <b>شكلًا ونصًا</b> مع اللون.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>مستويات الشاشات الأربعة</h2>
+<figure class="fig">
+<svg viewBox="0 0 640 210" role="img" aria-label="مستويات الشاشات الأربعة في ISA-101" style="width:100%;max-width:640px;direction:ltr">
+<g font-family="IBM Plex Sans Arabic,IBM Plex Mono,sans-serif" font-size="12" fill="currentColor" text-anchor="middle">
+<rect x="250" y="8" width="140" height="40" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="320" y="26" font-weight="700">Level 1</text><text x="320" y="42" font-size="11" class="ar">نظرة عامة للمصنع</text>
+<rect x="90" y="64" width="140" height="40" rx="6" fill="none" stroke="currentColor"/><text x="160" y="82" font-weight="700">Level 2</text><text x="160" y="98" font-size="11" class="ar">خط التعبئة</text>
+<rect x="410" y="64" width="140" height="40" rx="6" fill="none" stroke="currentColor"/><text x="480" y="82" font-weight="700">Level 2</text><text x="480" y="98" font-size="11" class="ar">محطة الضاغط</text>
+<rect x="20" y="120" width="130" height="40" rx="6" fill="none" stroke="currentColor"/><text x="85" y="138" font-weight="700">Level 3</text><text x="85" y="154" font-size="11" class="ar">خزان الخلط</text>
+<rect x="170" y="120" width="130" height="40" rx="6" fill="none" stroke="currentColor"/><text x="235" y="138" font-weight="700">Level 3</text><text x="235" y="154" font-size="11" class="ar">ماكينة التعبئة</text>
+<rect x="170" y="168" width="130" height="36" rx="6" fill="none" stroke="currentColor" stroke-dasharray="4 3"/><text x="235" y="184" font-weight="700">Level 4</text><text x="235" y="199" font-size="11" class="ar">تشخيص المضخة P-101</text>
+<path d="M300 48L180 64M340 48L460 64M140 104L90 120M180 104L230 120" stroke="currentColor" fill="none"/>
+<text x="500" y="150" font-size="11" class="ar">من الأعلى إلى الأسفل: تفاصيل أكثر</text>
+<text x="500" y="168" font-size="11" class="ar">ومساحة أقل من المصنع</text>
+</g></svg>
+<figcaption>هرم الشاشات: المشغّل يقضي معظم وقته في المستويين 1 و 2.</figcaption>
+</figure>
+<div class="tblw"><table class="tbl"><thead><tr><th>المستوى</th><th>المحتوى</th><th>مثال</th></tr></thead><tbody>
+<tr><td><b>1</b> نظرة عامة</td><td>مؤشرات الأداء الرئيسية وأهم الإنذارات لمسؤولية المشغّل كلها، شاشة واحدة لا تتغير</td><td>إنتاج الساعة، حالة الخطوط، ضغط الهواء العام</td></tr>
+<tr><td><b>2</b> وحدة أو منطقة</td><td>شاشة التشغيل اليومية: كل ما يحتاجه لتشغيل الخط</td><td>خط التعبئة: الخزان، المضخة، الماكينة، السير</td></tr>
+<tr><td><b>3</b> تفاصيل</td><td>معدّة أو نظام فرعي بكل قيمه</td><td>خزان الخلط: الصمامات والخلاط والحرارة</td></tr>
+<tr><td><b>4</b> تشخيص</td><td>معلومات الصيانة: التعشيقات، حالة المحرك، العدادات</td><td>Faceplate المضخة: ساعات التشغيل، سبب آخر توقف</td></tr>
+</tbody></table></div>
+<ul><li><b>التنقل:</b> شريط ثابت أعلى كل شاشة فيه الإنذار الأحدث وأزرار المستويات. هدف شائع: أي شاشة على بُعد <b>ثلاث نقرات</b> على الأكثر.</li>
+<li>في WinCC Unified تُبنى هذه البنية عادة بشاشة رئيسية فيها <b>Screen Window</b> (نافذة شاشة) يتغير محتواها، بينما يبقى الرأس وشريط الإنذار ثابتين.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>عرض القيم التناظرية</h2>
+<ul>
+<li><b>الشريط مع المدى الطبيعي</b> (<span class="term">Moving analog indicator</span>): شريط عمودي أو أفقي، والمنطقة الطبيعية مظللة، وحدود الإنذار مرسومة عليه. من نظرة واحدة تعرف إن كانت القيمة في مكانها.</li>
+<li><b>الترند الصغير المدمج</b> (<span class="term">Sparkline</span>): خط صغير لآخر ساعة بجانب القيمة يجيب عن سؤال «هل تزيد أم تنقص؟».</li>
+<li><b>العدّادات الدائرية</b> (Gauges) تأخذ مساحة كبيرة وتصعب مقارنتها؛ استخدم الأشرطة بدلها في الغالب.</li>
+<li><b>لا رسوم متحركة للزينة:</b> مروحة تدور أو ماء يتدفق دائمًا يجذب العين بلا فائدة. الحركة والوميض للإنذار غير المؤكَّد فقط.</li>
+<li><b>الدقة:</b> اعرض المنازل العشرية التي يحتاجها القرار فقط: ضغط <span class="mono">7.1 bar</span> لا <span class="mono">7.08316</span>.</li></ul>
+<div class="box"><b>في المنصات:</b> في WinCC Unified اجعل الألوان والخطوط مركزية في المشروع (ألوان ونماذج مُعرَّفة مرة واحدة تستخدمها كل الشاشات)، فتغيّر لون «التشغيل» من مكان واحد. في Ignition Perspective يُستخدم لذلك <b>Style classes</b>. توفر بعض المنصات مكتبات رموز جاهزة بنمط عالي الأداء.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>قائمة فحص لشاشة سيئة</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th>ما تراه</th><th>الإصلاح</th></tr></thead><tbody>
+<tr><td>خلفية متدرجة أو ملونة</td><td>رمادي فاتح ثابت</td></tr>
+<tr><td>مضخات ومحركات بصور 3D</td><td>رموز مسطّحة بخط رمادي داكن</td></tr>
+<tr><td>أحمر = متوقف، أخضر = يعمل</td><td>ممتلئ/مفرّغ بالرمادي + نص الحالة</td></tr>
+<tr><td>عنصر يومض للزينة</td><td>احذف الوميض؛ الوميض للإنذار غير المؤكَّد فقط</td></tr>
+<tr><td>مخطط دائري أو عدّاد كبير لقيمة واحدة</td><td>شريط مع المدى الطبيعي أو ترند صغير</td></tr>
+<tr><td>أرقام صغيرة بلا وحدات</td><td>خط مقروء ووحدة بجانب كل رقم</td></tr>
+</tbody></table></div>
+<div class="box safe"><b>تنبيه:</b> لا تحوّل شاشة يعمل عليها مشغّلون منذ سنوات إلى النمط الرمادي فجأة. ناقش التغيير معهم، ودرّبهم، وغيّر على مراحل؛ المشغّل الذي اعتاد «الأخضر» قد يقرأ الشاشة الجديدة خطأ في الأيام الأولى.</div>
+<div class="box key"><b>على المحاكي:</b> أصلح شاشة سيئة التصميم حسب ISA-101: خلفية رمادية، رموز مسطّحة، حالة التشغيل بالشكل والنص بدل الأحمر والأخضر، الوحدات، وشريط مدى طبيعي للقيم. <a class="btn pri" href="designer.html#isa" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">المعلومات هنا من أدلة الشركات المصنّعة (Siemens WinCC Unified و TIA Portal، Inductive Automation Ignition، Rockwell FactoryTalk) ومن المعايير ISA-101 و ISA-18.2 و IEC 62443. قبل أي تعديل على منظومة تعمل فعلًا ارجع إلى دليل البرنامج وإجراءات التغيير في مصنعك. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l3');
+IL.quiz(document.getElementById('quiz'), [{"q": "على شاشة الخط عشر مضخات متوقفة طبيعيًا ولونها أحمر. ما المشكلة حسب ISA-101؟", "o": ["الأحمر محجوز للإنذار فيضيع", "الأحمر غامق قليلًا ويصعب قراءته", "يجب أن تكون المتوقفة صفراء اللون", "لا مشكلة إن كان الرمز كبيرًا"], "a": 0, "why": "إن كان الأحمر في كل مكان فلن يلفت الإنذار الحقيقي النظر."}, {"q": "كيف تُظهر أن المضخة P-101 تعمل على شاشة عالية الأداء؟", "o": ["رمز ممتلئ رمادي ونص RUN", "رمز أخضر لامع يدور باستمرار", "رمز ثلاثي الأبعاد بظل أخضر", "خلفية الشاشة كلها تصبح خضراء"], "a": 0, "why": "الحالة بالشكل والنص، والألوان الصارخة للإنذار."}, {"q": "المشغّل يرى «ضغط الهواء 6.2» ولا يعرف إن كان طبيعيًا. ما أفضل تحسين؟", "o": ["شريط بالمدى الطبيعي ووحدة bar", "عرض القيمة بأربع منازل عشرية", "تكبير الخط وتلوينه بالأزرق", "استبدال القيمة بعدّاد دائري كبير"], "a": 0, "why": "المعلومة = القيمة + سياقها (المدى الطبيعي) + الوحدة."}, {"q": "تريد شاشة يقضي فيها مشغّل خط التعبئة يومه ليشغّل الخط كله. أي مستوى في ISA-101؟", "o": ["المستوى 2: الوحدة", "المستوى 1: نظرة عامة للمصنع", "المستوى 3: تفاصيل معدّة واحدة", "المستوى 4: شاشة التشخيص"], "a": 0, "why": "المستوى 2 هو شاشة التشغيل اليومية للوحدة أو المنطقة."}, {"q": "لماذا لا يُعتمد على اللون وحده لإظهار حالة الصمام؟", "o": ["ضعف تمييز الألوان شائع", "لأن الألوان تستهلك ذاكرة الشاشة", "لأن الشاشات لا تعرض الأخضر بدقة", "لأن ISA-101 تمنع كل الألوان"], "a": 0, "why": "نحو 8 % من الرجال يصعب عليهم تمييز الأحمر من الأخضر؛ أضف شكلًا ونصًا."}, {"q": "في شاشة جديدة مروحة تبريد تدور باستمرار ما دامت تعمل. ما رأيك؟", "o": ["حركة للزينة تشتت العين", "ممتازة لأنها تُظهر الحالة بوضوح", "تُقبل فقط إن كانت بلون أخضر", "تُقبل إن كانت ثلاثية الأبعاد"], "a": 0, "why": "الحركة والوميض للإنذار غير المؤكَّد، لا للحالة الطبيعية."}, {"q": "مشغّل يحتاج سبع نقرات للوصول إلى شاشة خزان الخلط. ما الحل في WinCC Unified؟", "o": ["رأس تنقل ثابت مع Screen Window", "إضافة زر رجوع في كل شاشة فقط", "تكبير كل الشاشات لتعرض كل شيء معًا", "نسخ رسم الخزان إلى كل الشاشات"], "a": 0, "why": "رأس ثابت للتنقل مع نافذة شاشة متغيرة يجعل الوصول بنقرات قليلة."}], {lesson:'l3', pass:0.8});
+</script>
+</body>
+</html>

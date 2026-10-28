@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مصمّم شاشات HMI</title>
+<meta name="description" content="محرّر شاشات HMI تفاعلي على نمط WinCC Unified: صندوق أدوات، ربط بوسوم الـ PLC، أحداث وديناميكية، وجوه جاهزة، وتشغيل Runtime على مصنع محاكى لخط تعبئة.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="scada.css?v=20261028s1">
+<script src="scada.js?v=20261028s1"></script>
+<style>
+/* HMI palette (ISA-101: grey first, colour only for abnormal states) */
+:root{--hm-bg:#d5d9dc;--hm-grid:rgba(40,52,60,.09);--hm-ink:#20282e;--hm-mu:#58626a;--hm-eq:#bcc2c7;--hm-eqd:#545e66;--hm-run:#59636b;--hm-line:#69737b;--hm-field:#f3f4f5;--hm-btn:#c3c8cc;--hm-btnp:#959ca2;--hm-liq:#3f7fc4;--hm-band:#a1a9af;--hm-pop:#e6e8ea;--hm-sel:#0d7584}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--hm-bg:#2d3338;--hm-grid:rgba(255,255,255,.06);--hm-ink:#e3e8eb;--hm-mu:#a2acb3;--hm-eq:#4a535a;--hm-eqd:#a9b2b8;--hm-run:#b7bfc4;--hm-line:#8d979e;--hm-field:#3c444a;--hm-btn:#4b545b;--hm-btnp:#6b757c;--hm-liq:#4a90d9;--hm-band:#6c767d;--hm-pop:#363d43;--hm-sel:#4cc0cf} }
+:root[data-theme="dark"]{--hm-bg:#2d3338;--hm-grid:rgba(255,255,255,.06);--hm-ink:#e3e8eb;--hm-mu:#a2acb3;--hm-eq:#4a535a;--hm-eqd:#a9b2b8;--hm-run:#b7bfc4;--hm-line:#8d979e;--hm-field:#3c444a;--hm-btn:#4b545b;--hm-btnp:#6b757c;--hm-liq:#4a90d9;--hm-band:#6c767d;--hm-pop:#363d43;--hm-sel:#4cc0cf}
+.app{max-width:1280px}
+.tabs{margin-bottom:14px}
+.tabs .btn{flex:1 1 120px;min-height:46px;font-size:.88rem}
+.tabs .btn[aria-selected=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none}.pane.on{display:block}
+.goal{border:1px solid var(--accent);background:var(--accent-soft);border-radius:10px;padding:10px 12px;margin-bottom:12px;line-height:1.8}
+.goal.ok{border-color:var(--good);background:var(--good-soft)}
+.goal b.k{display:inline-block;background:var(--accent);color:#fff;border-radius:6px;padding:0 8px;margin-inline-end:6px;font-family:var(--font-display)}
+.goal.ok b.k{background:var(--good)}
+
+/* editor layout */
+.ed{display:grid;gap:12px;grid-template-columns:128px minmax(0,1fr) 300px;grid-template-areas:"tool tool tool" "pal cv side";align-items:start}
+.ed-tool{grid-area:tool;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.ed-tool .btn{min-height:42px;font-size:.88rem}
+.ed-tool .sp{flex:1 1 auto}
+.ed-tool .rtb{background:var(--accent);border-color:var(--accent);color:#fff}
+.ed.rt .ed-tool .rtb{background:var(--panel);color:var(--ink)}
+.ed-pal{grid-area:pal;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px}
+.ed-pal h3{font-size:.85rem;margin:0 0 6px;color:var(--muted)}
+.pal-g{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.pal-i{display:flex;flex-direction:column;align-items:center;gap:1px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:4px 2px;min-height:52px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;font-size:.7rem;line-height:1.25;color:var(--ink)}
+.pal-i svg{width:34px;height:22px;flex:none;color:var(--muted)}
+.pal-i:hover{border-color:var(--accent)}
+.pal-i[aria-pressed=true]{border-color:var(--accent);background:var(--accent-soft);outline:2px solid var(--accent)}
+.ed.rt .ed-pal,.ed.busy .ed-pal{opacity:.45;pointer-events:none}
+.ed-cv{grid-area:cv;min-width:0;display:grid;gap:8px}
+.ed-scr{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.85rem}
+.ed-scr .btn{min-height:36px;padding:2px 10px;font-size:.82rem}
+.ed-scr .btn[aria-pressed=true]{outline:none}
+.ed-wrap{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel);direction:ltr}
+.ed-wrap.z2{overflow:auto;max-height:70vh}
+.ed-wrap svg{display:block;width:100%;height:auto;direction:ltr;touch-action:none;user-select:none;-webkit-user-select:none;outline:none}
+.ed-wrap.z2 svg{width:200%}
+.ed.rt .ed-wrap svg{touch-action:manipulation}
+.ed.rt .ed-wrap{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.ed-msg{min-height:1.7em;font-size:.9rem;margin:0;color:var(--muted)}
+.ed-msg.ok{color:var(--good)}.ed-msg.bad{color:var(--bad)}
+.ed-test{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:10px;display:grid;gap:8px}
+.ed-test h3{font-size:.95rem}
+.ed-test .row{display:flex;flex-wrap:wrap;gap:6px}
+.ed-test .btn{min-height:40px;font-size:.84rem}
+.watch{width:100%;border-collapse:collapse;font:500 .82rem var(--font-mono);direction:ltr}
+.watch td{border-bottom:1px solid var(--line);padding:2px 6px}
+.watch td:last-child{text-align:right;font-weight:600}
+.watch-w{overflow-x:auto;max-width:100%}
+.ed-side{grid-area:side;display:grid;gap:12px;min-width:0}
+.ed-props{max-height:640px;overflow:auto;padding:12px}
+.ed-props h3{font-size:.98rem;display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:6px}
+.ed-props h3 small{font:500 .78rem var(--font-mono);color:var(--muted);direction:ltr;unicode-bidi:isolate}
+.ed-props fieldset{border:1px solid var(--line);border-radius:8px;margin:0 0 8px;padding:6px 8px 8px;min-width:0}
+.ed-props legend{font:600 .8rem var(--font-display);color:var(--accent);padding:0 4px}
+.ed-props label{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:6px;align-items:center;font-size:.82rem;margin:4px 0}
+.ed-props label.ck{display:flex;gap:8px}
+.ed-props input,.ed-props select{font:500 .85rem var(--font-mono);border:1px solid var(--line);border-radius:6px;padding:3px 5px;background:var(--bg);color:var(--ink);min-height:34px;width:100%;min-width:0}
+.ed-props input[type=checkbox]{width:20px;min-height:20px}
+.ed-props select:not([dir=ltr]),.ed-props input:not([dir=ltr]){font-family:var(--font-body)}
+.ed-props .g4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 8px}
+.ed-props .g4 label{grid-template-columns:auto minmax(0,1fr);gap:3px}
+.ed-props .evr{border-top:1px dashed var(--line);padding-top:4px;margin-top:4px}
+.ed-props .evr b{font:600 .78rem var(--font-mono);direction:ltr;unicode-bidi:isolate}
+.ed-props .tip{font-size:.82rem;color:var(--muted);line-height:1.7;margin:4px 0}
+.ed-props .hl{outline:2px solid var(--cur);outline-offset:1px;background:color-mix(in srgb,var(--cur) 14%,var(--bg))}
+.ed-props .acts{display:flex;gap:6px;margin-inline-start:auto}
+.ed-props .acts .btn{min-height:34px;padding:2px 8px;font-size:.8rem}
+.ed-chk{padding:12px}
+.ed-chk h3{font-size:.98rem;display:flex;justify-content:space-between;gap:8px}
+.ed-chk h3 span{font:600 .85rem var(--font-mono);color:var(--muted)}
+.ed-chk ul{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px}
+.ed-chk li{font-size:.84rem;line-height:1.6;padding:3px 8px 3px 6px;border-radius:6px;border:1px solid var(--line);background:var(--bg);display:flex;gap:6px}
+.ed-chk li::before{content:"○";color:var(--muted);flex:none;font-weight:700}
+.ed-chk li.ok{border-color:var(--good);background:var(--good-soft)}
+.ed-chk li.ok::before{content:"✓";color:var(--good)}
+.ed-chk li.rt:not(.ok){border-style:dashed}
+.ed-chk bdi,.chk-h bdi{white-space:nowrap}
+.chk-h{margin-top:8px;font-size:.84rem;line-height:1.7;border-inline-start:3px solid var(--cur);padding-inline-start:8px;color:var(--ink)}
+.ed.busy .ed-props,.ed.busy .ed-wrap{pointer-events:none}
+.ghost{position:fixed;z-index:50;pointer-events:none;transform:translate(-50%,-50%);background:var(--panel);border:2px solid var(--accent);border-radius:8px;padding:4px 8px;font-size:.78rem;box-shadow:0 6px 18px rgba(0,0,0,.25);display:flex;flex-direction:column;align-items:center}
+.ghost svg{width:40px;height:26px;color:var(--accent)}
+.kp{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.28);direction:rtl}
+.kp-b{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:8px;width:min(300px,92%);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.kp-b b{font:600 .9rem var(--font-display)}
+.kp-i{font:600 16px var(--font-mono);direction:ltr;border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:44px;background:var(--bg);color:var(--ink);width:100%}
+.kp-r{display:flex;gap:8px}.kp-r .btn{flex:1}
+.kp-m{font-size:.82rem;color:var(--bad);min-height:1.4em;margin:0}
+/* svg classes */
+.hm-t{fill:var(--hm-ink)}.hm-m{fill:var(--hm-mu)}
+.hm-nm{fill:var(--hm-mu);font-size:12px}
+svg .ar{font-family:var(--font-body)}
+@media (max-width:1100px){
+  .ed{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"tool tool" "cv cv" "pal side"}
+  .pal-g{grid-template-columns:repeat(auto-fill,minmax(66px,1fr))}
+  .ed-props{max-height:none}
+}
+@media (max-width:700px){
+  .ed{grid-template-columns:minmax(0,1fr);grid-template-areas:"tool" "cv" "pal" "side"}
+  .ed-tool .btn{flex:1 1 auto;padding:4px 8px}
+  .ed-tool .sp{display:none}
+  .ed.rt .ed-pal{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">LearnElectricals · كورس SCADA و HMI</p>
+    <h1>مصمّم شاشات HMI</h1>
+    <p>محرّر شاشات مبسّط على نمط WinCC Unified: اسحب العناصر إلى الشاشة، واربطها بوسوم الـ PLC، واضبط الأحداث والديناميكية، ثم شغّل Runtime على مصنع محاكى. كل تبويب مرتبط بدرس، وإتمامه يُسجَّل في تقدّمك.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="scada.html">محطة SCADA</a></div>
+</header>
+
+<div class="tabs" role="tablist" id="tabs"></div>
+<div id="panes"></div>
+
+<p class="foot">محاكاة تعليمية مبسطة تحاكي سلوك WinCC Unified وأنظمة SCADA الحديثة؛ ليست بديلًا عن برامج الشركة المصنّعة. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script src="designer.js?v=20261028s1"></script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ما SCADA وما HMI؟</title>
+<meta name="description" content="الدرس 1: الفرق بين HMI و SCADA و DCS، موقعها في هرم الأتمتة ISA-95، مكوّنات منظومة SCADA، وأحدث المنصات: WinCC Unified و Ignition و FactoryTalk Optix و AVEVA.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="scada.css?v=20261028s1">
+<script src="scada.js?v=20261028s1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس SCADA و HMI · الدرس 1 من 12</p>
+    <h1>ما SCADA وما HMI؟</h1>
+    <p>الشاشة لا تتحكم في الماكينة، بل تُريك ما يفعله الـ PLC وتنقل طلباتك إليه. نبدأ بالفرق بين HMI و SCADA، وبالمنصات المستخدمة اليوم.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="scada.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>HMI و SCADA: الفرق في جملتين</h2>
+<ul>
+<li><b>HMI</b> (Human-Machine Interface، أي واجهة الإنسان والآلة): شاشة يرى منها المشغّل حالة <b>ماكينة واحدة أو خط واحد</b> ويتحكم فيها: تشغيل، إيقاف، نقطة ضبط، تأكيد إنذار. غالبًا لوحة لمس مثبتة على باب لوحة الكهرباء.</li>
+<li><b>SCADA</b> (Supervisory Control And Data Acquisition، أي التحكم الإشرافي وجمع البيانات): منظومة برمجية على خادم تجمع البيانات من <b>عدة PLC أو عدة مواقع</b>، وتحفظها في أرشيف، وتدير الإنذارات والمستخدمين، وتعرض كل ذلك على عدة شاشات ومتصفحات في وقت واحد.</li>
+</ul>
+<figure class="fig">
+<svg viewBox="0 0 660 300" role="img" aria-label="هرم الأتمتة ومكان HMI و SCADA فيه" style="width:100%;max-width:660px;direction:ltr">
+<g font-family="IBM Plex Sans Arabic,IBM Plex Mono,sans-serif" font-size="13" fill="currentColor" text-anchor="middle">
+<polygon points="250,14 330,14 400,70 180,70" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<polygon points="180,74 400,74 460,128 120,128" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<polygon points="120,132 460,132 520,188 60,188" style="fill:var(--accent-soft);stroke:var(--accent)" stroke-width="2.5"/>
+<polygon points="60,192 520,192 580,246 0,246" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<rect x="0" y="250" width="580" height="44" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<text x="290" y="40" font-weight="700">ERP</text><text x="290" y="58" font-size="11" class="ar">التخطيط والمبيعات · المستوى 4</text>
+<text x="290" y="98" font-weight="700">MES</text><text x="290" y="116" font-size="11" class="ar">أوامر الإنتاج والجودة · المستوى 3</text>
+<text x="290" y="157" font-weight="700" style="fill:var(--accent)">SCADA / HMI</text><text x="290" y="176" font-size="11" class="ar">المراقبة والتشغيل · المستوى 2</text>
+<text x="290" y="216" font-weight="700">PLC / DCS controllers</text><text x="290" y="235" font-size="11" class="ar">التحكم الآلي · المستوى 1</text>
+<text x="290" y="270" font-weight="700" class="ar">الحساسات والمحركات والصمامات</text><text x="290" y="287" font-size="11">Level 0 · 4-20 mA · IO-Link</text>
+<text x="620" y="40" font-size="11" class="ar" style="fill:var(--cur)">أيام</text>
+<text x="620" y="157" font-size="11" class="ar" style="fill:var(--cur)">ثوانٍ</text>
+<text x="620" y="276" font-size="11" class="ar" style="fill:var(--cur)">ms</text>
+<path d="M620 50V255" style="stroke:var(--cur)" stroke-width="2" stroke-dasharray="4 4"/>
+</g></svg>
+<figcaption>هرم الأتمتة وفق نموذج ISA-95: الـ SCADA والـ HMI في المستوى 2، فوق المتحكمات وتحت MES.</figcaption>
+</figure>
+<div class="box key"><b>القاعدة الذهبية:</b> الـ PLC هو الذي <b>يتحكم</b>؛ الـ HMI والـ SCADA <b>يراقبان ويطلبان</b>. لو انقطعت الشاشة يجب أن يستمر الخط أو يتوقف بأمان، ولا يجوز أن يتوقف منطق الحماية على الشاشة.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>لوحة التشغيل، حاسوب SCADA، و DCS</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th></th><th>لوحة تشغيل HMI</th><th>حاسوب SCADA</th><th>DCS</th></tr></thead><tbody>
+<tr><td>النطاق</td><td>ماكينة أو خط</td><td>مصنع أو مواقع متباعدة</td><td>مصنع عملياتي كامل (بتروكيماويات، طاقة)</td></tr>
+<tr><td>العتاد</td><td>لوحة لمس 4–22 بوصة</td><td>خادم + حواسيب عملاء + متصفحات</td><td>متحكمات وخوادم من مورّد واحد</td></tr>
+<tr><td>المتحكم</td><td>PLC من أي مورّد</td><td>PLC و RTU من موردين مختلفين</td><td>متحكمات الـ DCS نفسها، قاعدة بيانات موحدة</td></tr>
+<tr><td>الأرشيف</td><td>محدود (بطاقة ذاكرة)</td><td>قاعدة بيانات و Historian لسنوات</td><td>مدمج</td></tr>
+<tr><td>مثال</td><td>Unified Comfort Panel على ماكينة تعبئة</td><td>WinCC Unified PC أو Ignition لمحطات المياه</td><td>Siemens PCS 7 / PCS neo، Emerson DeltaV، ABB 800xA</td></tr>
+</tbody></table></div>
+<ul><li><b>كيف تفرّق في الموقع؟</b> لو كانت الشاشة متصلة بـ PLC واحد ولا تحفظ إلا أيامًا قليلة فهي HMI. لو وجدت خادمًا في غرفة شبكات يخدم عدة غرف تحكم وأرشيفًا لسنة فهي SCADA.</li>
+<li>الحدود اليوم متداخلة: لوحة Unified Comfort الحديثة تعرض صفحاتها على متصفح، وخادم SCADA صغير قد يخدم خطًا واحدًا.</li>
+<li><b>RTU</b> (Remote Terminal Unit، أي وحدة طرفية بعيدة): متحكم صغير في موقع بعيد (بئر، محطة رفع) يرسل بياناته إلى SCADA عبر الراديو أو 4G، غالبًا ببروتوكول DNP3 أو IEC 60870-5-104.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>مما تتكوّن منظومة SCADA؟</h2>
+<figure class="fig">
+<svg viewBox="0 0 640 200" role="img" aria-label="مسار البيانات من الـ PLC إلى خادم SCADA ثم إلى العملاء" style="width:100%;max-width:640px;direction:ltr">
+<defs><marker id="a1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs>
+<g font-family="IBM Plex Sans Arabic,IBM Plex Mono,sans-serif" font-size="12" fill="currentColor" text-anchor="middle">
+<rect x="10" y="20" width="130" height="50" rx="6" fill="none" stroke="currentColor"/><text x="75" y="42" font-weight="700">PLC 1</text><text x="75" y="60" font-size="11" class="ar">خط التعبئة</text>
+<rect x="10" y="130" width="130" height="50" rx="6" fill="none" stroke="currentColor"/><text x="75" y="152" font-weight="700">PLC 2</text><text x="75" y="170" font-size="11" class="ar">محطة الضاغط</text>
+<rect x="240" y="60" width="160" height="80" rx="8" style="fill:var(--accent-soft);stroke:var(--accent)" stroke-width="2"/>
+<text x="320" y="84" font-weight="700">SCADA server</text><text x="320" y="103" font-size="11" class="ar">الوسوم · الإنذارات</text><text x="320" y="121" font-size="11" class="ar">الأرشيف · المستخدمون</text>
+<path d="M140 45L238 85" stroke="currentColor" marker-end="url(#a1)"/><path d="M140 155L238 115" stroke="currentColor" marker-end="url(#a1)"/>
+<text x="75" y="88" font-size="10">S7 / OPC UA</text><text x="75" y="122" font-size="10">Modbus TCP</text>
+<rect x="490" y="10" width="140" height="44" rx="6" fill="none" stroke="currentColor"/><text x="560" y="30" font-weight="700">Operator PC</text><text x="560" y="46" font-size="10" class="ar">غرفة التحكم</text>
+<rect x="490" y="78" width="140" height="44" rx="6" fill="none" stroke="currentColor"/><text x="560" y="98" font-weight="700">Web client</text><text x="560" y="114" font-size="10" class="ar">متصفح أو جهاز لوحي</text>
+<rect x="490" y="146" width="140" height="44" rx="6" fill="none" stroke="currentColor"/><text x="560" y="166" font-weight="700">MES / ERP</text><text x="560" y="182" font-size="10">OPC UA · SQL</text>
+<path d="M400 85L488 34" stroke="currentColor" marker-end="url(#a1)"/><path d="M400 100L488 100" stroke="currentColor" marker-end="url(#a1)"/><path d="M400 115L488 166" stroke="currentColor" marker-end="url(#a1)"/>
+</g></svg>
+<figcaption>منظومة SCADA: خادم يجمع البيانات من عدة PLC ويخدم عدة عملاء.</figcaption>
+</figure>
+<div class="tblw"><table class="tbl"><thead><tr><th>المكوّن</th><th>ماذا يفعل</th><th>مثال من خط التعبئة</th><th>الدرس</th></tr></thead><tbody>
+<tr><td>الاتصال والوسوم <span class="term">Tags</span></td><td>متغيرات تقرأ وتكتب عناوين الـ PLC</td><td>مستوى الخزان، عداد الزجاجات</td><td>2</td></tr>
+<tr><td>الشاشات <span class="term">Screens</span></td><td>رسوم وأزرار وحقول</td><td>شاشة عامة للخط وشاشة لكل مضخة</td><td>3–5</td></tr>
+<tr><td>الإنذارات <span class="term">Alarms</span></td><td>تنبيه المشغّل وتسجيل الأحداث</td><td>توقف الضاغط، ضغط هواء منخفض</td><td>6</td></tr>
+<tr><td>الأرشيف <span class="term">Historian</span></td><td>حفظ القيم لرسم الترند لاحقًا</td><td>منحنى المستوى ليلة أمس</td><td>7</td></tr>
+<tr><td>المستخدمون <span class="term">User Management</span></td><td>من يرى ومن يغيّر</td><td>المشغّل يشغّل، المهندس يغيّر الحدود</td><td>8</td></tr>
+<tr><td>الوصفات والسكربتات</td><td>مجموعات قيم لكل منتج، ومنطق إضافي</td><td>عصير 1 لتر أو 0.5 لتر</td><td>9</td></tr>
+</tbody></table></div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>أحدث المنصات في السوق</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th>المنصة</th><th>أبرز ما فيها</th><th>متى تراها</th></tr></thead><tbody>
+<tr><td><b>Siemens WinCC Unified</b><br><span class="muted">داخل TIA Portal</span></td><td>بيئة واحدة للوحات <b>Unified Comfort Panels (MTP)</b> ولحاسوب <b>Unified PC</b>. التشغيل (Runtime) مبني على تقنيات الويب <b>HTML5 و SVG</b> فيُفتح من أي متصفح، والسكربتات بلغة <b>JavaScript</b>، مع Faceplates ونوافذ الشاشات Screen Window.</td><td>المصانع التي تعتمد S7-1200 و S7-1500، وهي محور هذا الكورس</td></tr>
+<tr><td><b>Inductive Automation Ignition 8.x</b></td><td>خادم واحد بترخيص غير محدود للوسوم والعملاء، وحدة <b>Perspective</b> للويب والهاتف، مزوّدو الوسوم (Tag providers)، وأرشيف على قاعدة SQL</td><td>المشاريع متعددة المورّدين والمواقع</td></tr>
+<tr><td><b>Rockwell FactoryTalk Optix</b> / FactoryTalk View</td><td>Optix منصة حديثة قابلة للتوسعة؛ View هي المنصة التقليدية مع Allen-Bradley</td><td>المصانع ذات المتحكمات ControlLogix و CompactLogix</td></tr>
+<tr><td><b>AVEVA</b> (InTouch و System Platform)</td><td>منصات عريقة ومنتشرة في الصناعات العملياتية</td><td>المياه والنفط والغاز والأغذية</td></tr>
+</tbody></table></div>
+<div class="box"><b>ملاحظة:</b> لدى Siemens أيضًا <b>WinCC Classic</b> (SCADA تقليدية بسكربتات C و VBS) و <b>WinCC Comfort/Advanced</b> للوحات Comfort القديمة. المفاهيم واحدة، لكن المحرر والسكربتات والعناصر تختلف، فلا تنقل مشروعًا بينها دون مراجعة أداة الترحيل ودليلها.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>ماذا يحتاج الفني من هذا الكورس؟</h2>
+<ul>
+<li><b>يقرأ الشاشة قراءة صحيحة:</b> يعرف أن <span class="mono">####</span> تعني أن الحقل أضيق من القيمة، وأن الحقل الرمادي أو المشطوب يعني غالبًا انقطاع الاتصال.</li>
+<li><b>يشخّص قبل أن يلوم الشاشة:</b> قيمة خاطئة على الشاشة قد يكون سببها نوع بيانات خطأ أو تحويل خطي ناقص، لا عطلًا في الحساس.</li>
+<li><b>يعدّل بأمان:</b> يضيف وسمًا أو إنذارًا أو يغيّر حدًا في حقل إدخال، ثم يختبر على <b>PLCSIM</b> قبل التحميل إلى الخط.</li>
+<li><b>يحترم المعايير:</b> ISA-101 للشاشات، و ISA-18.2 / IEC 62682 للإنذارات، و IEC 62443 للأمن.</li></ul>
+<div class="box safe"><b>خطأ شائع:</b> اعتبار زر «إيقاف» على الشاشة إيقافَ طوارئ. إيقاف الطوارئ دائرة مستقلة موصّلة بالأسلاك أو بمتحكم أمان (Safety)، ولا يمر عبر الشاشة ولا الشبكة العادية.</div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">المعلومات هنا من أدلة الشركات المصنّعة (Siemens WinCC Unified و TIA Portal، Inductive Automation Ignition، Rockwell FactoryTalk) ومن المعايير ISA-101 و ISA-18.2 و IEC 62443. قبل أي تعديل على منظومة تعمل فعلًا ارجع إلى دليل البرنامج وإجراءات التغيير في مصنعك. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l1');
+IL.quiz(document.getElementById('quiz'), [{"q": "شاشة لمس على باب ماكينة تغليف، متصلة بـ PLC واحد، ولا تحفظ إلا أيامًا قليلة من البيانات. ما تصنيفها؟", "o": ["HMI محلية", "خادم SCADA للمصنع", "نظام DCS متكامل", "وحدة RTU بعيدة"], "a": 0, "why": "ماكينة واحدة وأرشيف محدود: هذه لوحة تشغيل HMI."}, {"q": "انقطع الاتصال بين حاسوب SCADA وPLC خط التعبئة. ماذا يجب أن يحدث في التصميم السليم؟", "o": ["يكمل الـ PLC منطقه أو يتوقف بأمان", "يتوقف الخط لأن الشاشة هي التي تتحكم", "تتولى الشاشة التحكم بدلًا من الـ PLC", "يعيد الـ PLC تشغيل نفسه فورًا"], "a": 0, "why": "الـ PLC هو المتحكم، والـ SCADA تراقب وترسل الطلبات فقط."}, {"q": "في أي مستوى من هرم ISA-95 تقع شاشات SCADA و HMI؟", "o": ["المستوى 2", "المستوى 0: الحساسات", "المستوى 3: MES", "المستوى 4: ERP"], "a": 0, "why": "المستوى 2 (المراقبة والتشغيل) فوق المتحكمات وتحت MES."}, {"q": "تريد أن يفتح مدير الإنتاج شاشة الخط من متصفح جهازه اللوحي دون تثبيت برنامج. أي منصة من Siemens تناسب ذلك مباشرة؟", "o": ["WinCC Unified", "WinCC Classic بسكربتات VBS", "لوحة Basic Panel قديمة", "برنامج PLCSIM Advanced"], "a": 0, "why": "تشغيل Unified مبني على HTML5 و SVG ويُفتح من المتصفح."}, {"q": "مصنع فيه PLC من ثلاثة مورّدين ويريد عددًا غير محدود من العملاء والوسوم بترخيص واحد. أي منصة تُذكر عادة لذلك؟", "o": ["Ignition 8.x", "FactoryTalk View ME على لوحة واحدة", "WinCC Basic على لوحة KTP", "لوحة HMI بلا خادم"], "a": 0, "why": "ترخيص Ignition غير محدود للوسوم والعملاء، ويدعم موردين متعددين."}, {"q": "طلب منك مشرف أن يكون زر «إيقاف» على الـ HMI هو إيقاف الطوارئ للخط. ما ردّك الصحيح؟", "o": ["الطوارئ دائرة مستقلة عن الشاشة", "يكفي الزر إن كان أحمر وكبيرًا جدًا", "يكفي الزر إن كانت الشبكة سريعة جدًا", "يكفي الزر مع كلمة سر خاصة بالمشغّل"], "a": 0, "why": "إيقاف الطوارئ بالأسلاك أو بمتحكم Safety، لا عبر شاشة أو شبكة عادية."}, {"q": "محطات رفع مياه متباعدة كيلومترات ترسل بياناتها لاسلكيًا إلى مركز تحكم. ما الجهاز المعتاد في كل محطة؟", "o": ["وحدة RTU", "لوحة HMI بلا متحكم", "خادم ERP محلي صغير", "حاسوب MES في المحطة"], "a": 0, "why": "الـ RTU متحكم بعيد يتواصل مع SCADA عبر الراديو أو 4G."}], {lesson:'l1', pass:0.8});
+</script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>معمارية SCADA: الخوادم والعملاء والتكرار</title>
+<meta name="description" content="الدرس 10: الخادم والعميل وعميل الويب، OPC UA بين الـ PLC و SCADA و MES، الخادم الاحتياطي والتحويل، الشبكة المقسّمة وفق IEC 62443، والحافة والسحابة.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="scada.css?v=20261028s1">
+<script src="scada.js?v=20261028s1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس SCADA و HMI · الدرس 10 من 12</p>
+    <h1>معمارية SCADA: الخوادم والعملاء والتكرار</h1>
+    <p>كلما كبر المصنع صار السؤال: أين تعيش البيانات، ومن يراها، وماذا يحدث إذا تعطّل الخادم؟</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="scada.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>من محطة واحدة إلى خادم وعملاء</h2>
+<p>أبسط منظومة <b>محطة واحدة (Single station)</b>: لوحة تشغيل أو حاسوب يتصل بالـ PLC ويعرض ويسجّل وحده. عندما يكبر المصنع نفصل الأدوار:</p>
+<ul><li><b>الخادم (Server):</b> يتصل بالـ PLCs، ويجمع الوسوم، ويولّد الإنذارات، ويؤرشف البيانات. هو قلب المنظومة.</li>
+<li><b>العميل (Client):</b> شاشة تشغيل لا تتصل بالـ PLC مباشرة، بل تأخذ كل شيء من الخادم.</li>
+<li><b>عميل الويب (Web client):</b> متصفح عادي على حاسوب أو جهاز لوحي يعرض الشاشات دون تثبيت برنامج.</li></ul>
+<div class="tblw"><table class="tbl"><thead><tr><th>المنصة</th><th>الخادم</th><th>العملاء</th></tr></thead><tbody>
+<tr><td>WinCC Unified PC</td><td>Runtime على حاسوب صناعي</td><td>متصفحات ويب (HTML5/SVG)؛ عدد العملاء مرتبط بالترخيص</td></tr>
+<tr><td>Unified Comfort Panel</td><td>اللوحة نفسها</td><td>اللوحة، ويمكن فتح شاشاتها من متصفح بحسب الإعداد والترخيص</td></tr>
+<tr><td>Ignition 8.x</td><td>Gateway</td><td>Perspective (ويب) و Vision؛ الترخيص لا يحدّ عدد العملاء والوسوم</td></tr>
+<tr><td>FactoryTalk View SE / Optix</td><td>خادم HMI وخادم بيانات</td><td>عملاء مثبّتون أو ويب بحسب المنتج</td></tr></tbody></table></div>
+<div class="box key"><b>لماذا الويب؟</b> لأن تحديث الشاشات يتم مرة واحدة في الخادم، فيرى كل العملاء النسخة الجديدة فورًا، دون تثبيت شيء على كل حاسوب. هذا من أهم أسباب انتقال Siemens من WinCC Classic إلى Unified.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>OPC UA: اللغة المشتركة</h2>
+<p><b>OPC UA</b> معيار اتصال صناعي مستقل عن الشركة المصنّعة (IEC 62541). يعمل بنموذج خادم وعميل على المنفذ <span class="mono">4840</span> افتراضيًا، ويحمل مع القيمة <b>جودتها (Quality)</b> و<b>طابعها الزمني</b>، ويدعم التشفير والشهادات.</p>
+<ul><li><b>من الـ PLC إلى SCADA:</b> الـ S7-1500 فيها خادم OPC UA مدمج، فيمكن لأي SCADA (حتى لو لم تكن من Siemens) أن تقرأ وسومها.</li>
+<li><b>من SCADA إلى MES/ERP:</b> تعمل WinCC Unified و Ignition خادمَي OPC UA ينقلان عدد الإنتاج وحالة الآلات إلى نظام إدارة التصنيع <b>MES</b>.</li>
+<li><b>الأمان:</b> اختر سياسة أمان بتوقيع وتشفير (Sign &amp; Encrypt) وتبادل الشهادات بين الطرفين، ولا تفعّل الاتصال المجهول دون تشفير إلا في مختبر.</li></ul>
+<div class="box key"><b>كيف تعرف المشكلة؟</b> إذا رفض العميل الاتصال برسالة عن الشهادة، فالشهادة لم تُعتمد كجهة موثوقة (Trusted) عند الطرف الآخر. وإذا اتصل وظهرت القيم بجودة Bad، فالخادم متصل بالعميل لكنه فاقد الاتصال بمصدر البيانات.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>الخادم الاحتياطي (Redundancy)</h2>
+<p>إذا تعطّل الخادم الوحيد أعمى المشغّلين عن المصنع كله، حتى لو استمرت الـ PLCs في العمل. الحل <b>خادمان مترادفان</b>: أحدهما فعّال (Primary) والآخر احتياطي (Standby)، يتزامنان باستمرار.</p>
+<svg viewBox="0 0 640 300" role="img" aria-label="خادمان مترادفان وعملاء وشبكة PLC و MES" style="width:100%;max-width:640px;direction:ltr">
+<g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
+<rect x="20" y="14" width="600" height="56" rx="8" fill="none" stroke="#7a7a7a" stroke-dasharray="6 4"/>
+<text x="320" y="34" font-weight="700">IT / MES</text><text x="320" y="54" font-size="11">OPC UA :4840 via DMZ + firewall</text>
+<rect x="40" y="96" width="120" height="44" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="100" y="116">Operator PC</text><text x="100" y="132" font-size="11">client</text>
+<rect x="260" y="96" width="120" height="44" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="320" y="116">Tablet</text><text x="320" y="132" font-size="11">web client</text>
+<rect x="480" y="96" width="120" height="44" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="540" y="116">Comfort Panel</text><text x="540" y="132" font-size="11">local HMI</text>
+<rect x="60" y="172" width="180" height="50" rx="8" fill="#e7f3ea" stroke="#2e7d32" stroke-width="2"/><text x="150" y="193" font-weight="700">Server A</text><text x="150" y="211" font-size="11">Primary (active)</text>
+<rect x="400" y="172" width="180" height="50" rx="8" fill="none" stroke="#7a7a7a" stroke-width="2"/><text x="490" y="193" font-weight="700">Server B</text><text x="490" y="211" font-size="11">Standby</text>
+<path d="M240 197H400" stroke="#1e5fd1" stroke-width="3" stroke-dasharray="7 4"/><text x="320" y="190" font-size="11" fill="#1e5fd1">sync link</text>
+<path d="M100 140V172M320 140V158H150V172M320 158H490V172" fill="none" stroke="currentColor" stroke-width="1.2"/>
+<path d="M320 70V96" stroke="currentColor" stroke-width="1.2"/>
+<rect x="20" y="246" width="600" height="40" rx="8" fill="none" stroke="#7b2cbf" stroke-width="2"/>
+<text x="320" y="271">PLC network: S7-1500 192.168.0.1 + drives + remote I/O</text>
+<path d="M150 222V246M490 222V246M595 140V246" stroke="#7b2cbf" stroke-width="2"/>
+</g></svg>
+<ul><li><b>رابط التزامن:</b> ينسخ الإنذارات وحالات التأكيد والأرشيف بين الخادمين، فلا تضيع البيانات عند التحويل.</li>
+<li><b>التحويل (Switchover):</b> عند تعطّل الفعّال يتولّى الاحتياطي خلال ثوانٍ، ويعيد العملاء الاتصال تلقائيًا إذا وُجّهوا إلى العنوان المشترك أو إلى الخادمين معًا.</li>
+<li><b>إعادة التزامن:</b> عند عودة الخادم المعطّل يكمل الفجوة في أرشيفه من الخادم الآخر.</li></ul>
+<div class="tblw"><table class="tbl"><thead><tr><th>النوع</th><th>حالة الاحتياطي</th><th>زمن التحويل</th></tr></thead><tbody>
+<tr><td>Hot standby</td><td>يعمل ومتزامن دائمًا</td><td>ثوانٍ</td></tr>
+<tr><td>Warm standby</td><td>يعمل لكن يحمّل الحالة عند التحويل</td><td>دقيقة تقريبًا</td></tr>
+<tr><td>Cold standby</td><td>حاسوب جاهز مطفأ</td><td>دقائق إلى ساعات، يدويًا</td></tr></tbody></table></div>
+<div class="box key"><b>ملاحظات عملية:</b> WinCC Classic يدعم الخادم الاحتياطي منذ زمن، وأضافت Siemens دعمه في إصدارات WinCC Unified الحديثة بترخيص خاص، فتحقق من الإصدار قبل التصميم. Ignition يدعم بوابة رئيسية واحتياطية (Master / Backup). وتكرار خادم SCADA <b>شيء</b> وتكرار الـ PLC (مثل S7-1500R/H) <b>شيء آخر</b>؛ لكلٍّ منهما هدفه.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>الشبكة المقسّمة وأمنها</h2>
+<p>المعيار <b>IEC 62443</b> يقسم المصنع إلى <b>مناطق (Zones)</b> تربطها <b>قنوات (Conduits)</b> محكومة. وبحسب نموذج Purdue الشائع:</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>المستوى</th><th>ما فيه</th><th>القاعدة</th></tr></thead><tbody>
+<tr><td>4 (IT)</td><td>ERP والبريد والإنترنت</td><td>لا اتصال مباشر بالـ PLC أبدًا</td></tr>
+<tr><td>3.5 (DMZ)</td><td>خادم وسيط، تحديثات، نسخة من الأرشيف</td><td>جدار حماية من الجهتين</td></tr>
+<tr><td>3 (MES / SCADA)</td><td>خوادم SCADA والمؤرشف</td><td>يُفتح فقط ما يلزم (مثل OPC UA)</td></tr>
+<tr><td>2 / 1 / 0</td><td>عملاء HMI، الـ PLCs، الحساسات والمحركات</td><td>شبكة تحكم معزولة</td></tr></tbody></table></div>
+<ul><li><b>الدخول عن بُعد:</b> عبر VPN إلى حاسوب وسيط (Jump host) مع مصادقة ثنائية، لا بفتح منفذ الـ SCADA على الإنترنت.</li>
+<li><b>الخطأ الأخطر:</b> حاسوب تشغيل فيه بطاقتا شبكة، واحدة على شبكة المكاتب وأخرى على شبكة الـ PLC؛ هذا جسر يتخطى جدار الحماية.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>الحافة والسحابة</h2>
+<ul><li><b>الحافة (Edge):</b> جهاز قريب من الآلة (مثل Siemens Industrial Edge أو Ignition Edge) يجمع البيانات ويحلّلها ويرسلها، غالبًا عبر <b>MQTT</b> أو OPC UA.</li>
+<li><b>السحابة:</b> مناسبة للتحليل وتقارير عدة مصانع والصيانة التنبّؤية، <b>وليست</b> مكانًا للتحكم: تأخير الإنترنت وانقطاعه لا يُقبلان في تشغيل مضخة.</li>
+<li><b>القاعدة:</b> التحكم في الـ PLC، والتشغيل في SCADA المحلية، والتحليل حيث تشاء.</li></ul>
+<div class="box key"><b>قبل اختيار المعمارية اسأل:</b> كم وسمًا؟ كم عميلًا متزامنًا؟ كم دقيقة توقّف يتحملها الخط إذا تعطل الخادم؟ من يحتاج البيانات خارج المصنع؟ الإجابات تحدّد الترخيص والتكرار والشبكة.</div>
+<div class="box key"><b>على المحاكي:</b> اضبط زوج الخادمين ورابط التزامن ووجّه عميل الويب إلى العنوان المشترك، ثم افصل الخادم الرئيسي وشاهد الاحتياطي يتولّى والعملاء يعودون والبيانات تصل إلى MES عبر OPC UA. <a class="btn pri" href="scada.html#arch" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">المعلومات هنا من أدلة الشركات المصنّعة (Siemens WinCC Unified و TIA Portal، Inductive Automation Ignition، Rockwell FactoryTalk) ومن المعايير ISA-101 و ISA-18.2 و IEC 62443. قبل أي تعديل على منظومة تعمل فعلًا ارجع إلى دليل البرنامج وإجراءات التغيير في مصنعك. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l10');
+IL.quiz(document.getElementById('quiz'), [{"q": "تعطّل خادم SCADA الوحيد والـ PLCs تعمل. ماذا يحدث للخط؟", "o": ["يستمر الإنتاج لكن بلا رؤية ولا تحكم", "يتوقف الخط فورًا لأن الـ PLCs تفقد برنامجها", "تنتقل الشاشات تلقائيًا إلى ذاكرة الـ PLC", "لا يتأثر شيء إطلاقًا لأن العملاء يعملون وحدهم"], "a": 0, "why": "التحكم في الـ PLC، لكن العرض والإنذارات والأرشفة في الخادم."}, {"q": "بعد التحويل للخادم الاحتياطي بقيت شاشة الجهاز اللوحي رمادية. الأرجح:", "o": ["العميل موجّه إلى عنوان الخادم الأول فقط", "الـ PLC انتقلت إلى وضع STOP بعد التحويل مباشرة", "رابط التزامن أسرع من قدرة الجهاز اللوحي", "المؤرشف ممتلئ فلم يعد يقبل عملاء جددًا"], "a": 0, "why": "يجب توجيه العملاء إلى العنوان المشترك أو إلى الخادمين."}, {"q": "ما وظيفة رابط التزامن بين الخادمين؟", "o": ["نسخ الإنذارات والأرشيف بينهما باستمرار", "توصيل الخادمين بالإنترنت لتحديث البرامج تلقائيًا", "تغذية الخادم الاحتياطي بالكهرباء من الخادم الرئيسي", "زيادة عدد العملاء المسموح به في الترخيص"], "a": 0, "why": "بدونه يفقد الاحتياطي التأكيدات والأرشيف عند التحويل."}, {"q": "MES يريد عدد الزجاجات من SCADA بطريقة قياسية آمنة. الأنسب:", "o": ["OPC UA بسياسة توقيع وتشفير", "مشاركة مجلد ملفات على شبكة المكاتب", "Modbus TCP مفتوح لكل أجهزة المكاتب", "لقطات شاشة تُرسل بالبريد كل ساعة"], "a": 0, "why": "OPC UA مستقل عن المصنّع ويدعم الشهادات والتشفير."}, {"q": "فنّي يريد دخول SCADA من بيته. الطريقة الصحيحة وفق IEC 62443:", "o": ["VPN إلى حاسوب وسيط مع مصادقة ثنائية", "فتح منفذ خادم SCADA مباشرة على الإنترنت", "برنامج تحكم عن بُعد مجاني على حاسوب التشغيل", "مشاركة كلمة سر المشغّل معه عبر الهاتف"], "a": 0, "why": "الوصول يمر عبر قناة محكومة ومنطقة وسيطة."}, {"q": "حاسوب في غرفة التحكم موصول بشبكتي المكاتب والـ PLC معًا. المشكلة:", "o": ["يصنع جسرًا يتخطى جدار الحماية", "يبطئ دورة برنامج الـ PLC إلى النصف تقريبًا", "يمنع عمل OPC UA بين الخادم ونظام MES", "لا مشكلة في ذلك إذا كان الحاسوب سريعًا"], "a": 0, "why": "أي برمجية خبيثة في المكاتب تصل عبره إلى شبكة التحكم."}, {"q": "مدير يقترح نقل التحكم بالمضخات إلى السحابة. ردّك:", "o": ["السحابة للتحليل والتحكم يبقى في الـ PLC", "فكرة جيدة لأنها توفّر ثمن الـ PLCs كلها", "ممكن بشرط أن يكون اتصال الإنترنت سريعًا جدًا", "ممكن إذا استُخدم عميل ويب على جهاز لوحي"], "a": 0, "why": "التأخير والانقطاع غير مقبولين في التحكم."}], {lesson:'l10', pass:0.8});
+</script>
+</body>
+</html>
