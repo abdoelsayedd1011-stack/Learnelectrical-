@@ -25,7 +25,8 @@ export const DEFAULT_PRICES = {
   plc:     { price: 749, was: 999, usd: 59, usd_was: 89, link: "https://learnelectricals.gumroad.com/l/PLC" },
   iiot:    { price: 599, was: 849, usd: 49, usd_was: 69, link: "https://learnelectricals.gumroad.com/l/jpjhhd" },
   scada:   { price: 599, was: 849, usd: 49, usd_was: 69, link: "https://learnelectricals.gumroad.com/l/kaebwcv" },
-  panel:   { price: 599, was: 849, usd: 49, usd_was: 69, link: "https://learnelectricals.gumroad.com/l/Electricalpanel" }
+  panel:   { price: 599, was: 849, usd: 49, usd_was: 69, link: "https://learnelectricals.gumroad.com/l/Electricalpanel" },
+  maint:   { price: 599, was: 849, usd: 49, usd_was: 69, link: "" }
 };
 
 // ids match _lib/courses.js (certificates) so one id means one course everywhere.
@@ -41,11 +42,12 @@ export const PRODUCTS = {
   srv:     { title: "السيرفو موتور والدرايف",     dirs: ["servo-course", "servo-simulator", "mrje-servo", "sigma7-servo", "kinetix300-servo"] },
   iiot:    { title: "IIoT والشبكات الصناعية",      dirs: ["iiot-lab"] },
   scada:   { title: "SCADA و HMI",                 dirs: ["scada-lab"] },
-  panel:   { title: "تصميم اللوحات الكهربية",      dirs: ["panel-lab"] }
+  panel:   { title: "تصميم اللوحات الكهربية",      dirs: ["panel-lab"] },
+  maint:   { title: "صيانة المحركات والمحولات",    dirs: ["maint-lab"] }
 };
 export const PRODUCT_IDS = Object.keys(PRODUCTS);
 // Friendlier names in links (subscribe.html?course=servo) → product id
-export const ALIASES = { "safety-plc": "safety", drawings: "drw", servo: "srv", instrumentation: "instr", inverters: "vfd", vfdc: "vfd", networks: "iiot", "industrial-networks": "iiot", hmi: "scada", "scada-hmi": "scada", panels: "panel", "panel-design": "panel", "electrical-panels": "panel" };
+export const ALIASES = { "safety-plc": "safety", drawings: "drw", servo: "srv", instrumentation: "instr", inverters: "vfd", vfdc: "vfd", networks: "iiot", "industrial-networks": "iiot", hmi: "scada", "scada-hmi": "scada", panels: "panel", "panel-design": "panel", "electrical-panels": "panel", motors: "maint", transformers: "maint", maintenance: "maint", "motor-maintenance": "maint" };
 export function productId(v){
   const s = String(v || "").trim().toLowerCase();
   const id = ALIASES[s] || s;

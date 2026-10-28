@@ -36,7 +36,7 @@
     "vfd-course/lesson-11.html", "vfd-course/lesson-12.html", "servo-course/index.html", "servo-course/lesson-01.html",
     "servo-course/lesson-02.html", "servo-course/lesson-03.html", "servo-course/lesson-04.html", "servo-course/lesson-05.html",
     "servo-course/lesson-06.html", "servo-course/lesson-07.html", "servo-course/lesson-08.html", "servo-course/lesson-09.html",
-    "servo-course/lesson-10.html", "servo-course/lesson-11.html", "servo-course/lesson-12.html", "courses/iiot.html", "courses/scada.html", "courses/panel.html", "iiot-lab/index.html", "iiot-lab/net.html",
+    "servo-course/lesson-10.html", "servo-course/lesson-11.html", "servo-course/lesson-12.html", "courses/iiot.html", "courses/scada.html", "courses/panel.html", "courses/maint.html", "iiot-lab/index.html", "iiot-lab/net.html",
     "iiot-lab/lesson-01.html", "iiot-lab/lesson-02.html", "iiot-lab/lesson-03.html", "iiot-lab/lesson-04.html", "iiot-lab/lesson-05.html", "iiot-lab/lesson-06.html", "iiot-lab/lesson-07.html", "iiot-lab/lesson-08.html", "iiot-lab/lesson-09.html", "iiot-lab/lesson-10.html", "iiot-lab/lesson-11.html", "iiot-lab/lesson-12.html", "iiot-lab/lesson-13.html", "iiot-lab/lesson-14.html"
   ];
   var SET = {}; EN_PAGES.forEach(function(p){ SET[p] = 1; });

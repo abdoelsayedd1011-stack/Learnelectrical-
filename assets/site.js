@@ -170,6 +170,12 @@
       guided:12, exercises:11, params:0, faults:0,
       inside:["حساب الأحمال واختيار القواطع والكابلات والبارات النحاسية", "هبوط الجهد وتيار القصر والانتقائية والتأريض", "تحسين معامل القدرة وترتيب اللوحة وحرارتها ولوحات MCC"],
       tags:"panel design تصميم اللوحات لوحة كهربية لوح كهرباء لوحات توزيع mdb smdb db main distribution board لوحة توزيع رئيسية فرعية switchboard switchgear mcc motor control center لوحة محركات load calculation حساب الأحمال demand factor معامل الطلب diversity breaker قاطع قواطع mcb mccb acb cable sizing مقطع الكابل كابلات iz voltage drop هبوط الجهد short circuit تيار القصر icu ics busbar بارات نحاس selectivity انتقائية discrimination cascading earthing تأريض أرضي tn-s tt it rcd elcb power factor معامل القدرة مكثفات capacitor bank kvar heat rise حرارة اللوحة forms of separation ip54 iec 61439 iec 60364 iec 60947 iec 60909 الكود المصري dol star delta ستار دلتا soft starter type 2 megger اختبار العزل calc designer حاسبة مصمم" },
+    { id:"maint", path:"maint-lab/index.html", group:"maint", brand:"كورس", brandKey:"maint",
+      name:"كورس صيانة المحركات والمحولات", kind:"ابدأ بالشرح", disp:"PI 2.4", dispClass:"lcd", rtlName:true,
+      line:"اختبر المحرك والمحول بالأجهزة الحقيقية: الميجر والملفات والمحامل والاهتزاز والمحاذاة، ثم نسبة التحويل وزيت المحول وتحليل غازاته، وابنِ خطة صيانة لمصنع كامل.",
+      guided:12, exercises:11, params:0, faults:0,
+      inside:["اختبار العزل بالميجر و PI ومقاومة الملفات وقراءة لوحة البيانات", "المحامل والتشحيم والاهتزاز والمحاذاة بالليزر والحرارة وتشخيص الأعطال", "تفتيش المحول واختبار TTR والجهد الانهياري للزيت وتحليل الغازات DGA وخطة الصيانة"],
+      tags:"maint maintenance motor maintenance transformer maintenance صيانة صيانة كهربية صيانة المحركات صيانة المحولات محرك محركات موتور مواتير ماتور induction motor محرك حثي nameplate لوحة البيانات يافطة الموتور star delta نجمة دلتا ستار دلتا أطراف الملفات ميجر ميجا megger insulation resistance عزل مقاومة العزل اختبار العزل pi dar polarization index ieee 43 winding resistance مقاومة الملفات micro-ohm ميكرو أوم قصر لفات شورت أرضي ارضي bearing bearings محامل محمل رولمان رولمانات بلي grease greasing lubrication تشحيم شحم جريس تزييت vibration اهتزاز اهتزازات iso 20816 unbalance عدم اتزان soft foot alignment محاذاة laser alignment ليزر ضبط استقامة كوبلنج coupling thermography ثرموجرافي ثيرموجرافي كاميرا حرارية thermal camera سخونة حرارة voltage unbalance عدم اتزان الجهد derating mcsa تحليل التيار troubleshooting تشخيص أعطال اعطال rewinding rewind إعادة لف اعادة لف لف الموتور transformer transformers محول محولات ترانس ترانسات distribution transformer iec 60076 vector group dyn11 مجموعة التوصيل tap changer مغير الجهد buchholz بوخهولز silica gel سيليكا جل مجفف breather transformer oil زيت المحول زيت bdv الجهد الانهياري iec 60156 رطوبة حموضة dga تحليل الغازات dissolved gas duval مثلث دوفال iec 60599 ttr نسبة التحويل turns ratio excitation current تيار المغنطة inspection تفتيش loto إقفال lockout tagout preventive صيانة وقائية predictive صيانة تنبؤية condition monitoring maintenance plan خطة صيانة clamp meter كلامب ورشة محطة" },
     { id:"srv", path:"servo-course/index.html", group:"servo", brand:"كورس", brandKey:"srvc",
       name:"كورس السيرفو موتور والدرايف", kind:"ابدأ بالشرح", disp:"S-ON", dispClass:"red", rtlName:true,
       line:"افهم السيرفو من جوه قبل ما تمسك أي درايف.",
@@ -224,6 +230,7 @@
     { key:"iiot", title:"IIoT والشبكات الصناعية", sub:"Modbus · PROFIBUS · PROFINET · CAN · OPC UA · MQTT · تشخيص الأعطال", land:"courses/iiot.html" },
     { key:"scada", title:"SCADA و HMI", sub:"WinCC Unified · ISA-101 · الإنذارات · الترندات · الوصفات · الصلاحيات", land:"courses/scada.html" },
     { key:"panel", title:"تصميم اللوحات الكهربية", sub:"الأحمال · القواطع · الكابلات · البارات · الانتقائية · MCC", land:"courses/panel.html" },
+    { key:"maint", title:"صيانة المحركات والمحولات", sub:"الميجر و PI · الملفات · المحامل · الاهتزاز والمحاذاة · TTR · زيت المحول و DGA", land:"courses/maint.html" },
     { key:"temp", title:"كنترول حرارة وقياس", sub:"Omron · Endress+Hauser" }
   ];
   /* محتوى كل كورس بالترتيب (عناوين الدروس) — بيظهر على كارت الكورس في الكتالوج وعلى الغلاف (assets/courses/covers/).
@@ -249,6 +256,8 @@
       l:["ما SCADA وما HMI؟", "المتغيرات والاتصال بالـ PLC", "تصميم الشاشات عالية الأداء (ISA-101)", "الأزرار وحقول الإدخال والمؤشرات", "الحركة والديناميكية والوجوه الجاهزة", "الإنذارات وإدارتها (ISA-18.2)", "الترندات والأرشفة", "المستخدمون والصلاحيات وأمن المنظومة", "الوصفات والسكربتات", "معمارية SCADA: الخوادم والعملاء والتكرار", "التشغيل والاختبار وتشخيص الأعطال", "مشروع خط التعبئة + الامتحان"] },
     panel: { n:"12 درس", x:["حاسبة مصمّم اللوحات", "مصمّم اللوحات الكهربية", "امتحان نهائي"],
       l:["ما اللوحة الكهربية؟ الأنواع والمعايير", "حساب الأحمال وتيار التصميم", "اختيار القواطع", "اختيار مقطع الكابل", "هبوط الجهد وتيار القصر", "البارات النحاسية", "التنسيق والانتقائية بين الحمايات", "التأريض والحماية من الصعق", "تحسين معامل القدرة", "ترتيب اللوحة والحرارة داخلها", "لوحات المحركات MCC", "مشروع لوحة توزيع رئيسية + الامتحان"] },
+    maint: { n:"12 درس", x:["ورشة صيانة المحركات", "محطة صيانة المحولات", "امتحان نهائي"],
+      l:["أنواع الصيانة والسلامة وأدوات القياس", "المحرك الحثي: البناء ولوحة البيانات والأطراف", "اختبار مقاومة العزل: الميجر و PI و DAR", "اختبار الملفات: المقاومة والاتزان والقصر", "المحامل والتزييت", "الاهتزاز والمحاذاة", "الحرارة والتيار وعدم اتزان الجهد", "تشخيص أعطال المحرك خطوة بخطوة", "المحول: البناء والملحقات والتفتيش", "اختبارات المحول الكهربية", "زيت المحول: الجهد الانهياري وتحليل الغازات", "خطة صيانة لمصنع + الامتحان"] },
     srv: { n:"12 درس", x:["4 محاكيات سيرفو"],
       l:["يعني إيه سيرفو؟", "جوه السيرفو موتور", "الإنكودر: عين السيرفو", "الدرايف من جوه", "توصيل السيرفو", "أوضاع التشغيل", "الجير الإلكتروني", "التيونينج وضبط الجين", "الهومينج والحدود", "التحكم من الـ PLC", "الأعطال الشائعة", "التشغيل لأول مرة + الامتحان"] }
   };
@@ -309,7 +318,7 @@
   /* ---------- أسعار الكورسات (من «الأسعار» في لوحة الإدارة، /api/prices) ----------
      كارت كل كورس في الكتالوج وصفحة كل كورس في courses/ بتظهر السعر لو متحدد، وزرار «اشتري الكورس».
      اللي اشترى الكورس بيشوف «اشتريته ✓». */
-  var PRODUCT_OF = { basics:"basics", classic:"classic", safety:"safety", instr:"instr", plc:"plc", drw:"drw", vfdc:"vfd", srv:"srv", iiot:"iiot", scada:"scada", panel:"panel" };
+  var PRODUCT_OF = { basics:"basics", classic:"classic", safety:"safety", instr:"instr", plc:"plc", drw:"drw", vfdc:"vfd", srv:"srv", iiot:"iiot", scada:"scada", panel:"panel", maint:"maint" };
   var PR = null, ME, priceHooks = [];
   function curName(){ return EN ? EN.currency : ((window.SITE || {}).pay || {}).currency || "جنيه"; }
   function fmtN(n){ return String(Math.round(n * 100) / 100); }
@@ -466,9 +475,10 @@
     srv:{ ac:"#ff5c7a", ar:"السيرفو موتور والدرايف", en:"Servo Motor & Drive" },
     iiot:{ ac:"#4cc0cf", ar:"IIoT والشبكات الصناعية", en:"IIoT & Industrial Networks" },
     scada:{ ac:"#e879d4", ar:"SCADA و HMI", en:"SCADA & HMI" },
-    panel:{ ac:"#e0955c", ar:"تصميم اللوحات الكهربية", en:"Electrical Panel Design" }
+    panel:{ ac:"#e0955c", ar:"تصميم اللوحات الكهربية", en:"Electrical Panel Design" },
+    maint:{ ac:"#b4d65a", ar:"صيانة المحركات والمحولات", en:"Motor & Transformer Maintenance" }
   };
-  var CVV = "p13";
+  var CVV = "p15";
   function coverHtml(l, toc){
     var c = CV[l.id], src = "/assets/courses/covers/" + l.id;
     if (!c || !toc) return '<div class="cover"><img src="' + src + (EN ? "-en" : "-ar") + '.webp?v=b3" width="960" height="1200" alt="" decoding="async"></div><h4 class="sr-only">' + esc(l.name) + "</h4>";

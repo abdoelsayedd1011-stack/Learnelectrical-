@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>محطة صيانة المحولات</title>
+<meta name="description" content="محاكاة صيانة محول توزيع 1000 kVA: جولة تفتيش، واختبارات TTR ومقاومة الملفات والعزل و PI ومجموعة التوصيل، واختبار الزيت BDV وتحليل الغازات على مثلث دوفال، ثم خطة صيانة المصنع كاملة.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="maint.css?v=20261028m1">
+<script src="maint.js?v=20261028m1"></script>
+<style>
+:root{--amber:#b7791f;--tank:#9aa5ab;--tank-d:#6f7b82;--tank-l:#c3ccd1;--porc:#7a4a2a;--porc-l:#a86a42;--cu:#b87333;--oil:#c99a2e;--case:#f2c230;--case-d:#c79a12;--gel:#f08a24;--gel-w:#d9e6c8}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--amber:#e3a43a;--tank:#7c878d;--tank-d:#566168;--tank-l:#98a3a9} }
+:root[data-theme="dark"]{--amber:#e3a43a;--tank:#7c878d;--tank-d:#566168;--tank-l:#98a3a9}
+body{background:var(--bg)}
+.tabs .btn{flex:1 1 92px;min-height:46px;font-size:.88rem}
+.tabs .btn[aria-selected=true]{background:var(--accent);border-color:var(--accent);color:#fff;outline:0}
+.pane{display:none}.pane.on{display:block}
+.pane .body{display:grid;gap:12px}
+.goal{border:1px solid var(--accent);background:var(--accent-soft);border-radius:10px;padding:10px 12px;margin-bottom:12px;line-height:1.8}
+.goal.ok{border-color:var(--good);background:var(--good-soft)}
+.goal b.k{display:inline-block;background:var(--accent);color:#fff;border-radius:6px;padding:0 8px;margin-inline-end:6px;font-family:var(--font-display)}
+.goal.ok b.k{background:var(--good)}
+.pane.demoing .body>*:not(.keep){pointer-events:none}
+.dhl{outline:3px solid var(--cur)!important;outline-offset:2px}
+svg .dhl{outline:none!important;filter:drop-shadow(0 0 5px var(--cur)) drop-shadow(0 0 2px var(--cur))}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row .btn{flex:0 1 auto}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:12px;align-items:start}
+.dev{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel);min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-content:start}
+.dev.ok{border-color:var(--good);box-shadow:inset -4px 0 0 var(--good)}
+.dev.bad{border-color:var(--bad);box-shadow:inset -4px 0 0 var(--bad)}
+.dev h3{margin:0;font:700 .98rem var(--font-display);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dev h3 .tag{font:700 .8rem var(--font-mono);direction:ltr;unicode-bidi:isolate;background:var(--accent);color:#fff;border-radius:6px;padding:0 7px}
+.dev label{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:.9rem;flex-wrap:wrap}
+.dev input[type=number],.dev select{font:600 .9rem var(--font-mono);border:1px solid var(--line);border-radius:6px;padding:4px 8px;background:var(--bg);color:var(--ink);min-height:42px;max-width:100%}
+.dev input[type=number]{width:8.5em;direction:ltr}
+.dev select{font-family:var(--font-body);font-weight:500;min-width:0;width:100%}
+.dev select.sm{width:auto;min-width:6em}
+.ltr{direction:ltr;unicode-bidi:isolate}
+.mono{font-family:var(--font-mono)}
+.tblw{direction:ltr;overflow-x:auto;max-width:100%;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.tbl.hm{font-size:.84rem;direction:ltr}
+.tbl.hm th,.tbl.hm td{padding:5px 8px;white-space:nowrap;border-color:var(--line)}
+.tbl.hm th{font:600 .8rem var(--font-body);background:var(--bg)}
+.tbl.hm td{font-family:var(--font-mono)}
+.tbl.hm td.ar,.tbl.hm th.ar{direction:rtl;font-family:var(--font-body);text-align:right}
+.tbl.hm .bad{color:var(--bad);font-weight:700}.tbl.hm .ok{color:var(--good);font-weight:700}
+.tbl.hm .hl{background:var(--accent-soft)}
+.pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:.84rem;background:var(--panel)}
+.pill.ok{border-color:var(--good);color:var(--good);background:var(--good-soft);font-weight:700}
+.pill.bad{border-color:var(--bad);color:var(--bad);background:var(--bad-soft);font-weight:700}
+.pill.warn{border-color:var(--amber);color:var(--amber);font-weight:700}
+.note{font-size:.86rem;color:var(--muted);line-height:1.7;margin:0}
+.fx{font:500 .84rem/1.8 var(--font-mono);direction:ltr;unicode-bidi:isolate;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;overflow-x:auto;white-space:nowrap}
+.fx b{color:var(--accent)}
+.fx .ok{color:var(--good);font-weight:700}.fx .bad{color:var(--bad);font-weight:700}
+.svgw{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px;min-width:0}
+.svgw svg{display:block;width:100%;height:auto;direction:ltr;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.svgw.scene svg{max-width:480px;margin:0 auto}
+#in-card .svgw svg{max-height:250px}
+svg .tx{font-family:var(--font-mono);fill:var(--ink)}
+svg .tm{font-family:var(--font-mono);fill:var(--muted)}
+svg .lc{font-family:var(--font-mono);fill:#1b2410;font-weight:600}
+svg .wt{font-family:var(--font-mono);fill:#e8edf0}
+svg .ink{fill:var(--ink)}
+svg .hs{cursor:pointer}
+svg .hs .ring{fill:var(--accent);fill-opacity:.18;stroke:var(--accent);stroke-width:2.2}
+svg .hs .num{fill:var(--accent);stroke:#fff;stroke-width:2}
+svg .hs text{fill:#fff;font:700 15px var(--font-mono);pointer-events:none}
+svg .hs.ok .num{fill:var(--good)}svg .hs.ok .ring{stroke:var(--good);fill:var(--good)}
+svg .hs.bad .num{fill:var(--bad)}svg .hs.bad .ring{stroke:var(--bad);fill:var(--bad)}
+svg .hs.cur .ring{stroke:var(--cur);stroke-width:3.5}
+svg .hs .pulse{fill:none;stroke:var(--accent);stroke-width:2;animation:pls 1.8s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes pls{from{opacity:.9;transform:scale(1)}to{opacity:0;transform:scale(1.8)}}
+@media (prefers-reduced-motion:reduce){svg .hs .pulse{animation:none}}
+svg .tgt{cursor:pointer}
+svg .tgt .hit{fill:transparent}
+svg.arming .tgt .hit{fill:var(--accent);fill-opacity:.22;stroke:var(--accent);stroke-dasharray:3 3}
+svg .plug{cursor:grab;touch-action:none}
+svg .plug.arm circle.pb{stroke:var(--cur);stroke-width:4}
+svg .cable{fill:none;stroke-width:4;stroke-linecap:round}
+svg .btnS{cursor:pointer}
+.ptlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.ptlist .btn{justify-content:flex-start;min-height:44px;font-size:.86rem;text-align:start}
+.ptlist .btn i{font:700 .8rem var(--font-mono);font-style:normal;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;flex:none}
+.ptlist .btn.ok i{background:var(--good)}.ptlist .btn.bad i{background:var(--bad)}
+.ptlist .btn.ok{border-color:var(--good)}.ptlist .btn.bad{border-color:var(--bad)}
+.sub{display:flex;flex-wrap:wrap;gap:6px}
+.sub .btn{flex:1 1 110px;min-height:44px;font-size:.86rem}
+.sub .btn[aria-selected=true]{border-color:var(--accent);background:var(--accent-soft);outline:2px solid var(--accent);outline-offset:-1px;font-weight:700}
+.sub .btn.done::after{content:" ✓";color:var(--good);font-weight:700}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.steps li{border:1px solid var(--line);border-radius:10px;padding:6px 12px;background:var(--panel);font-size:.9rem;line-height:1.7;display:flex;gap:8px;align-items:flex-start}
+.steps li b{font:700 .8rem var(--font-mono);display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:50%;background:var(--good);color:#fff;flex:none;margin-top:2px}
+.pick{display:grid;gap:6px}
+.pick .btn{justify-content:flex-start;text-align:start;min-height:46px;line-height:1.5;font-weight:500}
+.warnbox{border:2px solid var(--bad);background:var(--bad-soft);border-radius:10px;padding:8px 12px;line-height:1.7;font-size:.92rem}
+.warnbox b:first-child{color:var(--bad)}
+.warnbox[hidden]{display:none}
+.rd{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.rd div{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:5px 10px;display:grid}
+.rd span{font-size:.78rem;color:var(--muted)}
+.rd b{font:600 1.02rem var(--font-mono);direction:ltr;unicode-bidi:isolate;text-align:start}
+.rd .ok b{color:var(--good)}.rd .bad b{color:var(--bad)}
+.np{background:linear-gradient(160deg,#dfe3e5,#b9c0c4);color:#1d2428;border-radius:10px;padding:8px 12px;border:1px solid #8f989d;box-shadow:inset 0 0 0 3px rgba(255,255,255,.35);direction:ltr;font:600 .8rem/1.6 var(--font-mono);display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0 14px;position:relative}
+.np .h{grid-column:1/-1;display:flex;justify-content:space-between;border-bottom:1px solid #8f989d;margin-bottom:4px;font-weight:700;letter-spacing:.04em}
+.np span{color:#4b565c;font-weight:500}
+.trend{display:grid;gap:6px}
+.trend svg{max-height:120px}
+.plan-sheet{background:#fff;color:#111;border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:8px}
+.plan-sheet h3{margin:0;font:700 1.05rem var(--font-display)}
+.plan-sheet .tbl{font-size:.8rem;color:#111}
+.plan-sheet .tbl th,.plan-sheet .tbl td{border-color:#bbb;padding:4px 6px}
+.plan-sheet .tbl th{background:#eef2f3}
+.plan-sheet .tblw{border-color:#bbb;background:#fff}
+.plan-sheet .note{color:#444}
+.cnt{font:700 1rem var(--font-mono);direction:ltr;unicode-bidi:isolate}
+.foot{margin-top:4px}
+@media (max-width:560px){
+  .dev label{align-items:stretch;flex-direction:column;gap:2px}
+  .dev input[type=number]{width:100%}
+}
+@media print{
+  body *{visibility:hidden}
+  #plan-sheet,#plan-sheet *{visibility:visible}
+  #plan-sheet{position:absolute;inset:0;margin:8mm;border:0}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">LearnElectricals · كورس صيانة المحركات والمحولات</p>
+    <h1>محطة صيانة المحولات</h1>
+    <p>محول التوزيع T1 الذي يغذي المصنع: جولة تفتيش حوله، ثم اختبارات كهربية وهو معزول، ثم اختبار زيته وتحليل غازاته، وأخيرًا خطة صيانة المصنع كاملة بمحركاته ومحوله.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="motor.html">ورشة المحركات</a></div>
+</header>
+
+<div class="np" aria-label="لوحة بيانات المحول T1">
+  <div class="h"><b>T1 · DISTRIBUTION TRANSFORMER</b><b>IEC 60076</b></div>
+  <div><span>Sn</span> 1000 kVA</div><div><span>Ur</span> 11 / 0.4 kV · 50 Hz</div><div><span>Vector</span> Dyn11</div><div><span>Cooling</span> ONAN</div>
+  <div><span>uk</span> 6 %</div><div><span>Ir HV/LV</span> 52.5 / 1443 A</div><div><span>Taps</span> ±2×2.5 % (1…5, N = 3)</div><div><span>Oil</span> ≈ 650 L · IEC 60296</div>
+</div>
+
+<div class="tabs" role="tablist" id="tabs"></div>
+<div id="panes"></div>
+
+<p class="foot">محاكاة تعليمية؛ القيم نموذجية للتعلّم. ارجع إلى المعيار المعتمد وكتيّب المصنّع قبل أي عمل فعلي، والتزم بالعزل والإقفال قبل أي اختبار. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script src="trafo.js?v=20261028m1"></script>
+<script src="/assets/i18n.js?v=20261028e1"></script>
+</body>
+</html>

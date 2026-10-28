@@ -24,7 +24,8 @@
     srv:     { key: "srvc-lab-v1",    src: "servo-course/servo.js",         list: "SV.COURSE" },  // كارت الكتالوج والشهادة id "srv" (الـ "servo" لمحاكي Delta)
     iiot:    { key: "iiot-lab-v1",    src: "iiot-lab/iiot.js",              list: "IL.COURSE" },
     scada:   { key: "scada-lab-v1",   src: "scada-lab/scada.js",            list: "IL.COURSE" },
-    panel:   { key: "panel-lab-v1",   src: "panel-lab/panel.js",            list: "IL.COURSE" }
+    panel:   { key: "panel-lab-v1",   src: "panel-lab/panel.js",            list: "IL.COURSE" },
+    maint:   { key: "maint-lab-v1",   src: "maint-lab/maint.js",            list: "IL.COURSE" }
   };
   // basics / instr / plc / drw: `{id:'l1', … tasks:[['ohm','…'],…]}` → "l1/ohm" في state.done
   function parseTasks(src, list){

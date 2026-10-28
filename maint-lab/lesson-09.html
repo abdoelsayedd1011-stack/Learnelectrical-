@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>المحول: البناء والملحقات والتفتيش الدوري</title>
+<meta name="description" content="الدرس 9: لوحة بيانات محول التوزيع ومجموعة التوصيل Dyn11، مغيّر الخطوات، التبريد ONAN، مرحّل بوخهولز ومجفف السيليكا ومبيّنات الحرارة OTI و WTI، وجولة التفتيش الدوري وقراراتها.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="maint.css?v=20261028m1">
+<script src="maint.js?v=20261028m1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس صيانة المحركات والمحولات · الدرس 9 من 12</p>
+    <h1>المحول: البناء والملحقات والتفتيش الدوري</h1>
+    <p>T1 يغذّي المصنع كله. اعرف ملحقاته وما تقوله كل قراءة، وقم بجولة تفتيش تكشف المشكلة قبل أن تفصل الحماية.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="trafo.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>لوحة بيانات T1 ومعنى رموزها</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th>البيان</th><th>قيمة T1</th><th>المعنى العملي</th></tr></thead><tbody>
+<tr><td>القدرة</td><td class="mono">1000 kVA</td><td>القدرة الظاهرية المستمرة عند الظروف المرجعية (IEC 60076-1)</td></tr>
+<tr><td>الجهد</td><td class="mono">11 / 0.4 kV</td><td>جهد الخط في اللاحمل على الخطوة الأساسية</td></tr>
+<tr><td>مجموعة التوصيل</td><td class="mono">Dyn11</td><td>D: الابتدائي دلتا، y: الثانوي نجمة، n: نقطة التعادل مُخرجة، 11: جهد الثانوي متقدم على الابتدائي بزاوية 30° (موضع الساعة 11)</td></tr>
+<tr><td>التبريد</td><td class="mono">ONAN</td><td>Oil Natural Air Natural: زيت معدني يدور بالحمل الطبيعي، وهواء طبيعي على المشعّات دون مراوح</td></tr>
+<tr><td>معاوقة القصر</td><td class="mono">Uk = 6 %</td><td>تحدد تيار القصر وهبوط الجهد تحت الحمل</td></tr>
+<tr><td>مغيّر الخطوات</td><td class="mono">±2 × 2.5 %</td><td>خمس خطوات تُغيَّر <b>والمحول مفصول فقط</b> (Off-Circuit)؛ الخطوة 3 هي الأساسية</td></tr>
+<tr><td>الزيت</td><td class="mono">≈ 650 L</td><td>زيت معدني وفق IEC 60296، مع خزان تمدد يتنفّس عبر مجفف السيليكا</td></tr>
+</tbody></table></div>
+<div class="ex"><b>حسابات سريعة من اللوحة:</b>
+<ol><li>تيار HV المقنّن: <span class="eq">1000 / (√3 × 11) = 52.5 A</span>، وتيار LV: <span class="eq">1 000 000 / (√3 × 400) = 1443 A</span>.</li>
+<li>تيار القصر على أطراف LV (مصدر لانهائي): <span class="eq">1443 / 0.06 ≈ 24.1 kA</span>.</li>
+<li>متوسط تيار LV المقيس 1050 A و 1080 A و 1010 A ← <span class="eq">1046.7 / 1443 = 72.5 %</span> من الحمل المقنّن، أي نحو 725 kVA.</li></ol></div>
+<div class="tblw"><table class="tbl"><thead><tr><th>الخطوة</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead><tbody>
+<tr><td>جهد HV للخطوة</td><td class="mono">11550</td><td class="mono">11275</td><td class="mono">11000</td><td class="mono">10725</td><td class="mono">10450</td></tr>
+<tr><td>جهد LV إذا كانت الشبكة 10.7 kV</td><td class="mono">370.6</td><td class="mono">379.6</td><td class="mono">389.1</td><td class="mono">399.1</td><td class="mono">409.6</td></tr>
+</tbody></table></div>
+<ul><li><b>القاعدة:</b> الخطوة ذات الجهد الأقل تعني لفات أقل في الابتدائي، فيرتفع جهد الثانوي. إذا انخفض جهد الشبكة باستمرار إلى 10.7 kV انقل T1 إلى الخطوة 4 فيعود الجهد إلى نحو 399 V.</li>
+<li>تغيير الخطوة يكون بعد فصل المحول من الجهتين و LOTO، ثم قياس نسبة التحويل ومقاومة الملفات على الخطوة الجديدة (الدرس 10)، لأن تلامس المغيّر قد لا يستقر جيدًا.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>الملحقات: ماذا يفعل كل منها؟</h2>
+<figure class="fig">
+<svg viewBox="0 0 640 370" role="img" aria-label="محول توزيع زيتي بملحقاته: خزان التمدد ومرحّل بوخهولز ومجفف السيليكا والعوازل ومبيّنات الحرارة ومغيّر الخطوات والمشعّات وصمام التصريف والتأريض" style="width:100%;max-width:640px;direction:ltr">
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="11" fill="currentColor">
+<rect x="230" y="36" width="240" height="36" rx="18" fill="none" stroke="currentColor" stroke-width="2"/>
+<text x="350" y="58" text-anchor="middle">Conservator</text>
+<path d="M440 72V150" stroke="currentColor" stroke-width="3"/>
+<rect x="428" y="96" width="24" height="24" rx="3" style="fill:var(--accent)"/>
+<path d="M452 108H530" stroke="currentColor" opacity=".6"/><text x="534" y="112">Buchholz</text>
+<path d="M230 54H150V110" fill="none" stroke="currentColor" stroke-width="2"/>
+<rect x="138" y="110" width="24" height="46" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+<rect x="141" y="128" width="18" height="25" rx="2" style="fill:var(--cur)" opacity=".8"/>
+<path d="M138 132H110" stroke="currentColor" opacity=".6"/><text x="106" y="128" text-anchor="end">Breather</text><text x="106" y="142" text-anchor="end">silica gel</text>
+<rect x="170" y="150" width="300" height="170" rx="4" fill="none" stroke="currentColor" stroke-width="2.5"/>
+<path d="M120 178V300" stroke="currentColor" opacity=".7"/><path d="M127 178V300" stroke="currentColor" opacity=".7"/><path d="M134 178V300" stroke="currentColor" opacity=".7"/><path d="M141 178V300" stroke="currentColor" opacity=".7"/><path d="M148 178V300" stroke="currentColor" opacity=".7"/><path d="M155 178V300" stroke="currentColor" opacity=".7"/><path d="M162 178V300" stroke="currentColor" opacity=".7"/><path d="M478 178V300" stroke="currentColor" opacity=".7"/><path d="M485 178V300" stroke="currentColor" opacity=".7"/><path d="M492 178V300" stroke="currentColor" opacity=".7"/><path d="M499 178V300" stroke="currentColor" opacity=".7"/><path d="M506 178V300" stroke="currentColor" opacity=".7"/><path d="M513 178V300" stroke="currentColor" opacity=".7"/><path d="M520 178V300" stroke="currentColor" opacity=".7"/>
+<path d="M120 178H162M120 300H162M478 178H520M478 300H520" stroke="currentColor"/><path d="M162 186H170M162 292H170M470 186H478M470 292H478" stroke="currentColor" stroke-width="4"/>
+<path d="M120 240H110" stroke="currentColor" opacity=".6"/><text x="106" y="244" text-anchor="end">Radiators</text>
+<path d="M300 150V92" stroke="currentColor" stroke-width="3"/><path d="M294 98H306" stroke="currentColor" stroke-width="2"/><path d="M294 107H306" stroke="currentColor" stroke-width="2"/><path d="M294 116H306" stroke="currentColor" stroke-width="2"/><path d="M294 125H306" stroke="currentColor" stroke-width="2"/><path d="M294 134H306" stroke="currentColor" stroke-width="2"/><path d="M294 143H306" stroke="currentColor" stroke-width="2"/><circle cx="300" cy="92" r="3" style="fill:var(--cur)"/><path d="M335 150V92" stroke="currentColor" stroke-width="3"/><path d="M329 98H341" stroke="currentColor" stroke-width="2"/><path d="M329 107H341" stroke="currentColor" stroke-width="2"/><path d="M329 116H341" stroke="currentColor" stroke-width="2"/><path d="M329 125H341" stroke="currentColor" stroke-width="2"/><path d="M329 134H341" stroke="currentColor" stroke-width="2"/><path d="M329 143H341" stroke="currentColor" stroke-width="2"/><circle cx="335" cy="92" r="3" style="fill:var(--cur)"/><path d="M370 150V92" stroke="currentColor" stroke-width="3"/><path d="M364 98H376" stroke="currentColor" stroke-width="2"/><path d="M364 107H376" stroke="currentColor" stroke-width="2"/><path d="M364 116H376" stroke="currentColor" stroke-width="2"/><path d="M364 125H376" stroke="currentColor" stroke-width="2"/><path d="M364 134H376" stroke="currentColor" stroke-width="2"/><path d="M364 143H376" stroke="currentColor" stroke-width="2"/><circle cx="370" cy="92" r="3" style="fill:var(--cur)"/><path d="M198 150V122" stroke="currentColor" stroke-width="3"/><path d="M192 128H204" stroke="currentColor" stroke-width="2"/><path d="M192 137H204" stroke="currentColor" stroke-width="2"/><path d="M192 146H204" stroke="currentColor" stroke-width="2"/><circle cx="198" cy="122" r="3" style="fill:var(--cur)"/><path d="M218 150V122" stroke="currentColor" stroke-width="3"/><path d="M212 128H224" stroke="currentColor" stroke-width="2"/><path d="M212 137H224" stroke="currentColor" stroke-width="2"/><path d="M212 146H224" stroke="currentColor" stroke-width="2"/><circle cx="218" cy="122" r="3" style="fill:var(--cur)"/><path d="M238 150V122" stroke="currentColor" stroke-width="3"/><path d="M232 128H244" stroke="currentColor" stroke-width="2"/><path d="M232 137H244" stroke="currentColor" stroke-width="2"/><path d="M232 146H244" stroke="currentColor" stroke-width="2"/><circle cx="238" cy="122" r="3" style="fill:var(--cur)"/><path d="M258 150V122" stroke="currentColor" stroke-width="3"/><path d="M252 128H264" stroke="currentColor" stroke-width="2"/><path d="M252 137H264" stroke="currentColor" stroke-width="2"/><path d="M252 146H264" stroke="currentColor" stroke-width="2"/><circle cx="258" cy="122" r="3" style="fill:var(--cur)"/>
+<text x="335" y="84" text-anchor="middle">HV 1U 1V 1W</text>
+<text x="228" y="114" text-anchor="middle">LV 2U 2V 2W 2N</text>
+<path d="M410 150V138H420V150" fill="none" stroke="currentColor" stroke-width="2"/><text x="415" y="132" text-anchor="middle">PRV</text>
+<circle cx="215" cy="205" r="16" fill="none" stroke="currentColor" stroke-width="2"/><path d="M215 205L225 195" stroke="currentColor" stroke-width="3"/>
+<text x="215" y="240" text-anchor="middle">Tap 1–5</text>
+<rect x="360" y="190" width="90" height="56" rx="6" fill="none" stroke="currentColor"/>
+<circle cx="383" cy="214" r="13" fill="none" stroke="currentColor"/><circle cx="427" cy="214" r="13" fill="none" stroke="currentColor"/>
+<path d="M383 214L391 207M427 214L435 220" style="stroke:var(--bad)" stroke-width="2"/>
+<text x="383" y="240" text-anchor="middle" font-size="10">OTI</text><text x="427" y="240" text-anchor="middle" font-size="10">WTI</text>
+<rect x="270" y="262" width="70" height="38" rx="3" fill="none" stroke="currentColor" opacity=".7"/><text x="305" y="285" text-anchor="middle" font-size="10">Rating plate</text>
+<rect x="182" y="312" width="16" height="14" style="fill:var(--accent)"/><path d="M182 319H110" stroke="currentColor" opacity=".6"/><text x="106" y="323" text-anchor="end">Drain / sample</text>
+<path d="M455 320V342M443 342H467M447 348H463M451 354H459" stroke="currentColor" stroke-width="2"/><text x="474" y="346">Earth</text>
+<path d="M170 320H470" stroke="currentColor" stroke-width="2.5"/>
+</g></svg>
+<figcaption>المحول T1 وملحقاته الأساسية. الشكل توضيحي؛ ترتيب الملحقات يختلف من صانع إلى آخر.</figcaption>
+</figure>
+<div class="tblw"><table class="tbl"><thead><tr><th>الملحق</th><th>عمله</th><th>ما الذي تفحصه؟</th></tr></thead><tbody>
+<tr><td>خزان التمدد (Conservator) ومبيّن مستوى الزيت</td><td>يستوعب تمدد الزيت مع الحرارة، فيبقى الخزان الرئيسي ممتلئًا دائمًا</td><td>المستوى مطابق لعلامة الحرارة الحالية على المبيّن</td></tr>
+<tr><td>مرحّل بوخهولز (Buchholz)</td><td>على أنبوب خزان التمدد: <b>إنذار</b> عند تجمّع غاز ببطء، و<b>فصل</b> عند اندفاع زيت مفاجئ أو نقص كبير</td><td>نافذة المرحّل ممتلئة بالزيت بلا غاز، وأسلاك الإنذار والفصل سليمة</td></tr>
+<tr><td>مجفف السيليكا (Breather)</td><td>يجفف الهواء الداخل إلى خزان التمدد</td><td>لون الحبيبات، وزيت كأس التصفية في أسفله</td></tr>
+<tr><td>مبيّن حرارة الزيت OTI (Oil Temperature Indicator)</td><td>حرارة الزيت العلوي، مع مؤشر أقصى وتلامسات إنذار وفصل</td><td>القراءة الحالية والمؤشر الأقصى؛ T1: إنذار 85 °C وفصل 95 °C</td></tr>
+<tr><td>مبيّن حرارة الملف WTI (Winding Temperature Indicator)</td><td>حرارة الزيت مضافًا إليها فرق الملف عبر سخان يغذيه محوّل تيار</td><td>T1: إنذار 105 °C وفصل 115 °C</td></tr>
+<tr><td>صمام تنفيس الضغط PRV (Pressure Relief Valve)</td><td>ينفّس ضغطًا مفاجئًا من عطل داخلي ويعطي إشارة</td><td>العلم الميكانيكي غير مرفوع، ولا زيت حوله</td></tr>
+<tr><td>العوازل (Bushings)</td><td>تُخرج الأطراف من الخزان معزولة</td><td>نظافة، لا شروخ ولا تسرب، ولا سخونة في الوصلات (كاميرا حرارية)</td></tr>
+<tr><td>التأريض</td><td>تأريض الخزان ونقطة التعادل 2N في نظام TN-S</td><td>الوصلات محكمة وغير متآكلة</td></tr>
+</tbody></table></div>
+<p class="muted">الإعدادات المذكورة لـ T1 نموذجية للتعلّم؛ الإعدادات الفعلية من الصانع ومن دراسة الحماية في الموقع.</p>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>جولة التفتيش الدوري: ماذا ترى وماذا تقرر</h2>
+<p>التفتيش يكون من الأرض ومن خارج الحاجز، والمحول في الخدمة. لا تصعد على محول مكهرب ولا تقترب من عوازل HV.</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>البند</th><th>التكرار</th><th>سليم</th><th>راقب</th><th>أصلح / أوقف</th></tr></thead><tbody>
+<tr><td>مستوى الزيت</td><td>أسبوعي</td><td>عند علامة الحرارة</td><td>أقل قليلًا: ابحث عن تسرب</td><td>أقل من الحد الأدنى: أوقف وأكمل الزيت</td></tr>
+<tr><td>السيليكا جل</td><td>أسبوعي</td><td>برتقالي (أو أزرق في النوع القديم)</td><td>تغيّر لون أقل من الثلثين</td><td>تغيّر ثلثاها أو أكثر: بدّلها</td></tr>
+<tr><td>التسربات</td><td>أسبوعي</td><td>جاف</td><td>رشح بسيط على حشية: نظّف وعلّم وراقب</td><td>تنقيط مستمر: خطّط للإصلاح</td></tr>
+<tr><td>OTI / WTI والمؤشر الأقصى</td><td>يومي في الصيف</td><td>تحت الإنذار بهامش</td><td>المؤشر الأقصى قريب من الإنذار</td><td>تجاوز الإنذار: خفّض الحمل وافحص التبريد</td></tr>
+<tr><td>نافذة بوخهولز</td><td>أسبوعي</td><td>ممتلئة بالزيت</td><td>—</td><td>غاز ظاهر: حلّله، وراجع DGA</td></tr>
+<tr><td>العوازل</td><td>شهري</td><td>نظيفة وسليمة</td><td>غبار أو تلوث: نظّف في الإيقاف</td><td>شرخ أو أثر تفريغ: أوقف وبدّل</td></tr>
+<tr><td>التأريض والوصلات</td><td>شهري</td><td>محكمة</td><td>صدأ خفيف</td><td>مفكوكة أو مقطوعة: أصلح فورًا</td></tr>
+<tr><td>صوت المحول</td><td>كل جولة</td><td>طنين منتظم (100 Hz)</td><td>ارتفاع الصوت مع الحمل</td><td>طقطقة أو أزيز تفريغ: أوقف وافحص</td></tr>
+</tbody></table></div>
+<p class="muted">فترات وقيم نموذجية للتعلّم على نمط IEEE/NFPA 70B وكتيّبات الصانعين؛ ارجع إلى كتيّب T1 وتعليمات الجهة المالكة للشبكة.</p>
+<ul><li><b>السيليكا:</b> اللون البرتقالي يصير عديم اللون أو أخضر عند التشبّع. اللون يتغيّر من الأسفل إلى الأعلى؛ إذا بدأ من الأعلى فهناك تسرب هواء في وصلة الأنبوب يتجاوز المجفف. وتأكد أن كأس الزيت في أسفل المجفف ممتلئ إلى علامته.</li>
+<li><b>سجّل</b> كل قراءة مع التاريخ والحمل وحرارة الجو؛ الاتجاه أهم من القراءة المنفردة.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>الحرارة والحمل: قراءة OTI و WTI</h2>
+<p>عمر عزل المحول (الورق) يتحدد بحرارة <b>النقطة الأسخن</b> (Hot Spot) في الملف. يعطي الدليل IEC 60076-7 معدل الشيخوخة النسبي للورق العادي (غير المحسّن حراريًا): <span class="eq">V = 2^((θh − 98) / 6)</span>، أي أن كل 6 K فوق 98 °C تضاعف سرعة الشيخوخة.</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>حرارة النقطة الأسخن θh</th><th>معدل الشيخوخة V</th><th>المعنى</th></tr></thead><tbody>
+<tr><td>92 °C</td><td>0.5</td><td>يستهلك نصف ساعة من العمر في كل ساعة</td></tr>
+<tr><td>98 °C</td><td>1.0</td><td>الشيخوخة الطبيعية</td></tr>
+<tr><td>104 °C</td><td>2.0</td><td>ساعتان من العمر في كل ساعة</td></tr>
+<tr><td>110 °C</td><td>4.0</td><td>أربع ساعات في كل ساعة</td></tr>
+</tbody></table></div>
+<p class="muted">WTI قراءة تقديرية للنقطة الأسخن، وليست قياسًا مباشرًا. القيم نموذجية للتعلّم؛ ارجع إلى IEC 60076-7 وبيانات الصانع.</p>
+<div class="ex"><b>مثال — جولة ظهر يوم صيفي، والجو 38 °C، والحمل 72.5 %:</b>
+<ol><li>OTI يقرأ 68 °C، ومؤشره الأقصى عند 79 °C ← تحت الإنذار 85 °C بهامش 6 K فقط في أسوأ وقت.</li>
+<li>WTI يقرأ 84 °C، ومؤشره الأقصى عند 97 °C ← تحت الإنذار 105 °C.</li>
+<li>المشعّات: الصورة الحرارية تبيّن أن ثلاث زعانف في المشعّ الأيمن باردة من أعلاها إلى أسفلها ← الزيت لا يدور فيها: صمام المشعّ مغلق أو مسدود.</li>
+<li><b>القرار:</b> راقب (المؤشرات تحت الإنذار)، وافتح صمام المشعّ أو نظّفه في أقرب إيقاف، ونظّف المشعّات من الغبار، ثم أعد مؤشرات القيم القصوى إلى الصفر بعد تسجيلها.</li></ol></div>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>بوخهولز والأخطاء الشائعة والسلامة</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th>ما يحدث في بوخهولز</th><th>المعنى المرجّح</th><th>الإجراء</th></tr></thead><tbody>
+<tr><td>إنذار، وغاز عديم اللون والرائحة لا يشتعل</td><td>هواء محبوس (بعد تعبئة زيت أو صيانة)</td><td>نفّس الغاز وراقب؛ إذا تكرر فابحث عن تسرب هواء</td></tr>
+<tr><td>إنذار، وغاز قابل للاشتعال</td><td>عطل داخلي يحلّل الزيت أو الورق</td><td>خذ عينة غاز وعينة زيت لتحليل DGA فورًا، واستشر قبل الاستمرار</td></tr>
+<tr><td>فصل (اندفاع زيت)</td><td>عطل داخلي كبير أو قوس</td><td><b>لا تُعِد التشغيل</b> قبل الاختبارات الكهربية وتحليل الغاز والزيت</td></tr>
+</tbody></table></div>
+<p class="muted">قيم وأحكام نموذجية للتعلّم؛ ارجع إلى IEC 60599 وكتيّب الصانع. أخذ عينة الغاز من جهاز العينة على مستوى الأرض يكون وفق إجراءات الموقع.</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>الخطأ الشائع</th><th>كيف تتحقق؟</th></tr></thead><tbody>
+<tr><td>تغيير الخطوة والمحول في الخدمة</td><td>المغيّر Off-Circuit: افصل الجهتين و LOTO أولًا، وتحقق بعدها بالقياس</td></tr>
+<tr><td>تسجيل قراءة OTI الحالية فقط</td><td>سجّل المؤشر الأقصى أيضًا ثم أعده إلى الصفر</td></tr>
+<tr><td>تبديل السيليكا دون فحص كأس الزيت</td><td>الكأس الفارغ يُدخل هواءً رطبًا مباشرة</td></tr>
+<tr><td>إعادة ضبط فصل بوخهولز وإعادة التشغيل</td><td>الفصل يعني عطلًا داخليًا حتى يثبت العكس بالاختبار</td></tr>
+<tr><td>الاعتماد على WTI دون فحص سخانه</td><td>قارن WTI مع OTI: يجب أن يكون الفرق متناسبًا مع الحمل</td></tr>
+</tbody></table></div>
+<div class="box safe"><b>السلامة:</b> المحول المكهرب يُفتَّش من خلف الحاجز فقط. أي عمل على الأطراف أو المغيّر أو أخذ عينة من الخزان العلوي يحتاج فصل جهتي HV و LV، والإقفال LOTO، والتحقق من انعدام الجهد، وتأريض الأطراف بوصلات التأريض المؤقتة، وفق NFPA 70E وتعليمات الجهة المالكة لشبكة 11 kV (في مصر: شركة التوزيع التابعة للشركة القابضة لكهرباء مصر).</div>
+<div class="box key"><b>على المحاكي:</b> قم بجولة تفتيش حول T1: مستوى الزيت، ولون السيليكا، والتسربات، وقراءات OTI و WTI ومؤشراتها القصوى، ونافذة بوخهولز، والعوازل، ووصلات التأريض؛ ثم سجّل الملاحظات واختر الإجراء لكل منها. <a class="btn pri" href="trafo.html#inspect" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">المعلومات هنا من IEEE 43 و IEC 60034 و NEMA MG 1 و ISO 20816 و IEC 60076 و IEC 60156 و IEC 60599 و IEEE C57 ومن كتيّبات الشركات المصنّعة. القيم في الأمثلة نموذجية للتعلّم؛ ارجع إلى المعيار المعتمد وكتيّب المصنّع قبل أي عمل فعلي، والتزم دائمًا بإجراءات السلامة والعزل والإقفال. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l9');
+IL.quiz(document.getElementById('quiz'), [{"q": "محول 1000 kVA بجهد 11 / 0.4 kV. كم التيار المقنّن في جهة LV تقريبًا؟", "o": ["1443 A", "2500 A", "1000 A", "833 A"], "a": 0, "why": "I = 1 000 000 ÷ (√3 × 400) = 1443 A."}, {"q": "في Dyn11، ماذا يعني الرقم 11؟", "o": ["زاوية 30° بين الجهتين", "عدد لفات الثانوي", "جهد الابتدائي 11 kV", "رقم خطوة المغيّر الحالية للمحول"], "a": 0, "why": "11 موضع الساعة: الثانوي متقدم على الابتدائي بـ 30°."}, {"q": "جهد الشبكة 10.7 kV باستمرار، و T1 على الخطوة 3. أي خطوة تقرّب جهد LV من 400 V؟", "o": ["الخطوة 4 (10725 V)", "الخطوة 2 (11275 V)", "الخطوة 1 (11550 V)", "تبقى على الخطوة 3"], "a": 0, "why": "400 × 10.7 ÷ 10.725 = 399 V؛ الخطوة الأقل جهدًا ترفع جهد الثانوي."}, {"q": "حبيبات السيليكا تغيّر لونها من الأعلى بينما الأسفل ما زال برتقاليًا. ما المرجّح؟", "o": ["تسرب هواء فوق المجفف", "زيت الكأس زائد", "الحبيبات جديدة", "حرارة الزيت عالية في الخزان"], "a": 0, "why": "الهواء يدخل عادة من أسفل؛ تشبّع الأعلى أولًا يعني دخول هواء من وصلة فوق المجفف."}, {"q": "حرارة النقطة الأسخن في محول 104 °C. كم معدل الشيخوخة النسبي وفق IEC 60076-7 للورق العادي؟", "o": ["2.0", "1.5", "4.0", "1.0"], "a": 0, "why": "V = 2^((104 − 98)/6) = 2."}, {"q": "فصل مرحّل بوخهولز T1 مع اندفاع زيت. ما الإجراء الصحيح؟", "o": ["الاختبار قبل أي إعادة تشغيل", "إعادة ضبط المرحّل والتشغيل فورًا", "تنفيس الغاز ثم التشغيل", "تبديل السيليكا والتشغيل"], "a": 0, "why": "الفصل بالاندفاع يدل على عطل داخلي كبير حتى تثبت الاختبارات وتحليل الغاز العكس."}, {"q": "المؤشر الأقصى لـ OTI عند 88 °C، وضبط الإنذار 85 °C. ماذا تفعل؟", "o": ["افحص التبريد وخفّض الحمل", "لا شيء؛ القراءة الحالية أقل", "اضبط الإنذار على 95 °C", "أوقف المحول فورًا"], "a": 0, "why": "تجاوز الإنذار في وقت الذروة يحتاج فحص التبريد والحمل، لا رفع الإعداد."}], {lesson:'l9', pass:0.8});
+</script>
+</body>
+</html>

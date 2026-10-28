@@ -35,9 +35,10 @@ const FREE_LESSONS_BY_DIR = {
   "servo-course": [1],              // 12
   "iiot-lab": [1],                  // 14
   "scada-lab": [1],                 // 12
-  "panel-lab": [1]                  // 12
+  "panel-lab": [1],                 // 12
+  "maint-lab": [1]                  // 12
 };
-const COURSE_DIRS = new Set(["classic-control-lab", "safety-lab", "basics-lab", "instrumentation-lab", "plc-lab", "drawings-lab", "vfd-course", "servo-course", "iiot-lab", "scada-lab", "panel-lab"]);
+const COURSE_DIRS = new Set(["classic-control-lab", "safety-lab", "basics-lab", "instrumentation-lab", "plc-lab", "drawings-lab", "vfd-course", "servo-course", "iiot-lab", "scada-lab", "panel-lab", "maint-lab"]);
 const OPEN_DIRS = new Set(["courses"]);
 // Courses still being prepared: only admins can open their pages (remove the folder from here to publish)
 const HIDDEN_DIRS = new Set(["safety-lab"]); // folders whose pages stay open without an account
@@ -76,6 +77,7 @@ function membersOnly(pathname){
     if (dir === "iiot-lab" && /^net(?:\.html)?$/.test(rest)) return true;                   // the networks simulator
     if (dir === "scada-lab" && /^(?:scada|designer)(?:\.html)?$/.test(rest)) return true;   // the SCADA station and the screen designer
     if (dir === "panel-lab" && /^(?:calc|designer)(?:\.html)?$/.test(rest)) return true;    // the panel designer's calculator and the panel designer
+    if (dir === "maint-lab" && /^(?:motor|trafo)(?:\.html)?$/.test(rest)) return true;      // the motor maintenance workshop and the transformer maintenance station
     const l = /^lesson-(\d+)/.exec(rest);
     return !!l && !(FREE_LESSONS_BY_DIR[dir] || [1]).includes(Number(l[1]));
   }

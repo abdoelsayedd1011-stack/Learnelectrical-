@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الاهتزاز والمحاذاة</title>
+<meta name="description" content="الدرس 6: قياس الاهتزاز بالـ mm/s RMS ومناطق ISO 20816-3، تشخيص عدم الاتزان وعدم المحاذاة والارتخاء من الطيف، إصلاح Soft Foot، والمحاذاة بالليزر وحساب الرقائق.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="maint.css?v=20261028m1">
+<script src="maint.js?v=20261028m1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس صيانة المحركات والمحولات · الدرس 6 من 12</p>
+    <h1>الاهتزاز والمحاذاة</h1>
+    <p>الاهتزاز يخبرك أن هناك مشكلة، والطيف يخبرك ما هي. قِس وصنّف، وأصلح القاعدة، ثم حاذِ المحرك على الحمل.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="motor.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>قياس الاهتزاز وحدود ISO 20816-3</h2>
+<ul><li><b>الكمية:</b> سرعة الاهتزاز بالـ <b>mm/s RMS</b> (القيمة الفعالة) في المدى 10–1000 Hz للآلات الأسرع من 600 rpm.</li>
+<li><b>النقاط:</b> على غطاء كل محمل، <b>DE</b> و <b>NDE</b>، في ثلاثة اتجاهات: أفقي <b>H</b>، ورأسي <b>V</b>، ومحوري <b>A</b> (موازٍ للعمود). علّم النقاط بدائرة أو بقرص مغناطيسي لتقيس في المكان نفسه كل مرة.</li>
+<li><b>الشروط:</b> المحرك في حالة تشغيل مستقرة، بالحمل المعتاد، وحرارته مستقرة. سجّل الحمل مع القراءة.</li>
+<li><b>الحساس:</b> مغناطيس على سطح معدني نظيف مستوٍ؛ لا تقس على الغطاء الرقيق للمروحة ولا على صاج علبة التوصيل.</li></ul>
+<div class="tblw"><table class="tbl"><thead><tr><th>المجموعة (ISO 20816-3)</th><th>القاعدة</th><th>A/B</th><th>B/C</th><th>C/D</th></tr></thead><tbody>
+<tr><td rowspan="2"><b>المجموعة 2</b>: 15–300 kW، <b>كل محركات المصنع</b></td><td>صلبة</td><td class="mono">1.4</td><td class="mono">2.8</td><td class="mono">4.5</td></tr>
+<tr><td>مرنة</td><td class="mono">2.3</td><td class="mono">4.5</td><td class="mono">7.1</td></tr>
+<tr><td rowspan="2">المجموعة 1: من 300 kW إلى 50 MW</td><td>صلبة</td><td class="mono">2.3</td><td class="mono">4.5</td><td class="mono">7.1</td></tr>
+<tr><td>مرنة</td><td class="mono">3.5</td><td class="mono">7.1</td><td class="mono">11.0</td></tr>
+</tbody></table></div>
+<p class="muted">حدود المناطق بالـ mm/s RMS. قيم نموذجية للتعلّم على نمط ISO 20816-3 (التي حلّت محل ISO 10816-3)؛ ارجع إلى المعيار وإلى حدود المصنّع.</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>المنطقة</th><th>معناها</th><th>القرار</th></tr></thead><tbody>
+<tr><td><b>A</b></td><td>مستوى آلة جديدة مسلّمة حديثًا</td><td><b style="color:var(--good)">سليم</b></td></tr>
+<tr><td><b>B</b></td><td>مقبول للتشغيل الطويل دون قيود</td><td><b style="color:var(--good)">سليم</b>؛ تابع الاتجاه</td></tr>
+<tr><td><b>C</b></td><td>غير مرضٍ للتشغيل المستمر الطويل</td><td><b style="color:var(--warn)">خطط للإصلاح</b> في أقرب إيقاف</td></tr>
+<tr><td><b>D</b></td><td>شديد بما يكفي لإتلاف الآلة</td><td><b style="color:var(--bad)">أوقف</b> وأصلح</td></tr>
+</tbody></table></div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>قراءات C-201 وتشخيص السبب من الطيف</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th>C-201 (mm/s RMS)</th><th>H</th><th>V</th><th>A</th></tr></thead><tbody>
+<tr><td>DE</td><td class="mono"><b>3.4</b></td><td class="mono">1.9</td><td class="mono"><b>3.1</b></td></tr>
+<tr><td>NDE</td><td class="mono">2.2</td><td class="mono">1.4</td><td class="mono">1.6</td></tr>
+</tbody></table></div>
+<div class="ex"><b>الحكم:</b> أعلى قراءة 3.4 mm/s، وهي بين 2.8 و 4.5، فالمحرك في <b>المنطقة C</b> للمجموعة 2 على قاعدة صلبة. الاهتزاز المحوري عند DE (3.1) قريب من الأفقي (نسبة 0.91)، والطرف القريب من القارنة أعلى من البعيد: الشبهة الأولى <b>عدم المحاذاة</b>. القرار: افحص Soft Foot ثم حاذِ بالليزر في الإيقاف القادم.</div>
+<figure class="fig">
+<svg viewBox="0 0 640 300" role="img" aria-label="طيف اهتزاز محوري على محمل DE للضاغط C-201: قمة عند ضعف سرعة الدوران 49.2 Hz أعلى من قمة سرعة الدوران 24.6 Hz، وهي علامة عدم المحاذاة" style="width:100%;max-width:640px;direction:ltr">
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor">
+<path d="M60 250H600M60 250V40" stroke="currentColor" stroke-width="2"/>
+<path d="M60.0 250v6" stroke="currentColor"/><text x="60.0" y="270" text-anchor="middle">0</text><path d="M190.0 250v6" stroke="currentColor"/><text x="190.0" y="270" text-anchor="middle">50</text><path d="M320.0 250v6" stroke="currentColor"/><text x="320.0" y="270" text-anchor="middle">100</text><path d="M450.0 250v6" stroke="currentColor"/><text x="450.0" y="270" text-anchor="middle">150</text><path d="M580.0 250v6" stroke="currentColor"/><text x="580.0" y="270" text-anchor="middle">200</text><path d="M54 180.0H60" stroke="currentColor"/><text x="50" y="184.0" text-anchor="end">1</text><path d="M54 110.0H60" stroke="currentColor"/><text x="50" y="114.0" text-anchor="end">2</text><path d="M54 40.0H60" stroke="currentColor"/><text x="50" y="44.0" text-anchor="end">3</text><rect x="120.0" y="166.0" width="8" height="84.0" style="fill:var(--accent)"/><text x="132.0" y="160.0">1×</text><rect x="183.9" y="68.0" width="8" height="182.0" style="fill:var(--bad)"/><text x="195.9" y="62.0">2×</text><rect x="247.9" y="208.0" width="8" height="42.0" style="fill:var(--accent)"/><text x="259.9" y="202.0">3×</text><rect x="316.0" y="229.0" width="8" height="21.0" style="fill:var(--accent)"/><text x="328.0" y="223.0">100 Hz</text>
+<text x="330" y="292" text-anchor="middle">frequency (Hz)</text>
+<text x="66" y="32">mm/s RMS · C-201 DE axial</text>
+<text x="590" y="70" text-anchor="end" style="fill:var(--bad)">2× &gt; 1× + high axial</text>
+<text x="590" y="88" text-anchor="end" style="fill:var(--bad)">→ misalignment</text>
+<text x="590" y="120" text-anchor="end">1× = 24.6 Hz · 2× = 49.2 Hz</text>
+</g></svg>
+<figcaption>طيف الاهتزاز يفرّق بين الأسباب. سرعة الدوران 1475 rpm تعني تردد الدوران <span dir="ltr">1× = 1475 / 60 = 24.6 Hz</span>، وقمة كبيرة عند ضعفه مع اهتزاز محوري مرتفع علامة عدم المحاذاة.</figcaption>
+</figure>
+<div class="tblw"><table class="tbl"><thead><tr><th>السبب</th><th>علامته في الطيف والاتجاه</th></tr></thead><tbody>
+<tr><td><b>عدم الاتزان</b> (Unbalance)</td><td>قمة عند <b>1×</b> في الاتجاه القطري (H و V متقاربان)، والمحوري منخفض</td></tr>
+<tr><td><b>عدم المحاذاة</b> (Misalignment)</td><td>قمة عند <b>2×</b> وأحيانًا 1×، واهتزاز <b>محوري مرتفع</b> (أكثر من نصف القطري)، وأعلى قرب القارنة</td></tr>
+<tr><td><b>الارتخاء الميكانيكي</b> (Looseness)</td><td>توافقيات كثيرة 1× و 2× و 3×… وأحيانًا أنصافها، والرأسي مرتفع</td></tr>
+<tr><td><b>تلف المحمل</b></td><td>قمم غير متزامنة مع سرعة الدوران (ليست مضاعفات صحيحة)، وضوضاء عالية التردد</td></tr>
+<tr><td><b>سبب كهربي</b></td><td>قمة عند <b>100 Hz</b> (ضعف تردد الشبكة) تختفي <b>فورًا</b> عند فصل التغذية، بينما يبقى الاهتزاز الميكانيكي ما دام المحرك يدور</td></tr>
+</tbody></table></div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>القاعدة المرتخية Soft Foot</h2>
+<p><b>Soft Foot</b> (القاعدة المرتخية) يعني أن إحدى أقدام المحرك لا ترتكز تمامًا على القاعدة، فإذا شُدّ مسمارها انحنى جسم المحرك. النتيجة: تشوّه في غطاء المحمل وفي الخلوص الهوائي، واهتزاز، وقراءات محاذاة لا تثبت.</p>
+<ol><li>شُدّ كل المسامير بعزمها الصحيح.</li>
+<li>ثبّت مبيّن قياس (Dial gauge) على القاعدة ولمسته على القدم الأولى، واضبطه على الصفر.</li>
+<li>فك مسمار هذه القدم وحدها وراقب المبيّن، ثم أعد الشد. كرّر للأقدام الأربع.</li>
+<li>إذا ارتفعت القدم <b>أكثر من 0.05 mm</b> فهناك Soft Foot.</li>
+<li>أصلح بإضافة رقائق (Shims) تحت القدم المرتفعة بالمقدار المقيس، أو بقياس الفجوة بمقياس الفلر (Feeler gauge) في أركان القدم: فجوة في ركن واحد تعني قدمًا مائلة تحتاج رقيقة متدرجة أو تسوية للقاعدة.</li></ol>
+<p class="muted">الحد 0.05 mm قيمة نموذجية للتعلّم شائعة في أدلة المحاذاة؛ ارجع إلى كتيّب المصنّع.</p>
+<ul><li>استخدم رقائق من الفولاذ المقاوم للصدأ مقطوعة جاهزة، و<b>لا تزد على 3–4 رقائق تحت القدم</b>؛ الرزمة الكبيرة تعمل كالنابض. استبدلها برقيقة واحدة أسمك.</li>
+<li>نظّف القاعدة من الصدأ والطلاء والأوساخ قبل وضع الرقائق.</li></ul>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>المحاذاة بالليزر وحساب الرقائق</h2>
+<ul><li><b>الإزاحة</b> (Offset): المسافة بين محوري العمودين عند مستوى القارنة، بالـ mm.</li>
+<li><b>الزاوية</b> (Angularity): ميل محور المحرك عن محور الحمل، بالـ mm لكل 100 mm.</li>
+<li>تُقاس الحالتان في المستوى الرأسي (تُصحَّح بالرقائق) وفي المستوى الأفقي (تُصحَّح بتحريك المحرك جانبيًّا بمسامير الدفع).</li></ul>
+<div class="tblw"><table class="tbl"><thead><tr><th>السرعة</th><th>الإزاحة المسموحة</th><th>الزاوية المسموحة</th></tr></thead><tbody>
+<tr><td class="mono">1500 rpm (كل محركات المصنع)</td><td class="mono">≤ 0.05 mm</td><td class="mono">≤ 0.05 mm / 100 mm</td></tr>
+</tbody></table></div>
+<p class="muted">قيم نموذجية للتعلّم. السماحية تضيق كلما زادت السرعة؛ ارجع إلى جدول جهاز المحاذاة وإلى كتيّب المصنّع وحدود القارنة.</p>
+<ol><li>LOTO للمحرك <b>وللحمل</b> أيضًا، فالضاغط قد يدور بضغط الهواء المتبقي.</li>
+<li>أصلح Soft Foot أولًا، وتأكد أن الأنابيب لا تشد الحمل.</li>
+<li>ركّب وحدتي الليزر على العمودين، وأدخل المسافات: من القارنة إلى القدم الأمامية F1 وإلى القدم الخلفية F2.</li>
+<li>دوّر العمودين معًا وسجّل القراءات في ثلاثة مواضع على الأقل (مثلًا 9 و 12 و 3 على وجه الساعة).</li>
+<li>صحّح الرأسي بالرقائق أولًا، ثم الأفقي، ثم شُدّ المسامير وأعد القياس حتى تدخل القيم في السماحية.</li></ol>
+<figure class="fig">
+<svg viewBox="0 0 640 300" role="img" aria-label="منظر جانبي للمحاذاة: الضاغط يسار القارنة والمحرك يمينها؛ القدم الأمامية على بعد 200 mm والخلفية على بعد 600 mm من مستوى القارنة، والمحرك مرتفع ومائل فتُنزع رقائق من تحت قدميه" style="width:100%;max-width:640px;direction:ltr">
+<defs><marker id="a6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs>
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor">
+<rect x="10" y="80" width="90" height="110" rx="6" fill="none" stroke="currentColor" stroke-width="2"/>
+<text x="55" y="140" text-anchor="middle">compressor</text>
+<path d="M100 135H120" stroke="currentColor" stroke-width="6"/>
+<path d="M120 40V250" stroke="currentColor" stroke-dasharray="4 4"/>
+<text x="124" y="36">coupling plane</text>
+<rect x="114" y="118" width="14" height="34" style="fill:var(--cur)" opacity=".7"/>
+<path d="M100 135H620" style="stroke:var(--good)" stroke-dasharray="8 5" stroke-width="1.5"/>
+<text x="618" y="128" text-anchor="end" style="fill:var(--good)">target line</text>
+<g transform="rotate(-2.2 128 118)"><path d="M128 118H620" style="stroke:var(--bad)" stroke-width="2"/>
+<rect x="200" y="70" width="320" height="96" rx="8" fill="none" stroke="currentColor" stroke-width="2"/>
+<text x="360" y="112" text-anchor="middle">motor C-201</text>
+<rect x="225" y="166" width="30" height="22" fill="none" stroke="currentColor" stroke-width="2"/>
+<rect x="465" y="166" width="30" height="22" fill="none" stroke="currentColor" stroke-width="2"/></g>
+<rect x="224" y="185" width="34" height="29" style="fill:var(--warn)" opacity=".7"/>
+<rect x="466" y="176" width="34" height="38" style="fill:var(--warn)" opacity=".7"/>
+<path d="M40 214H600" stroke="currentColor" stroke-width="3"/>
+<path d="M120 236H240" stroke="currentColor" marker-end="url(#a6)"/><text x="180" y="230" text-anchor="middle">200 mm</text>
+<path d="M120 256H480" stroke="currentColor" marker-end="url(#a6)"/><text x="300" y="250" text-anchor="middle">600 mm</text>
+<text x="240" y="280" text-anchor="middle" style="fill:var(--bad)">F1: −0.40 mm</text>
+<text x="480" y="280" text-anchor="middle" style="fill:var(--bad)">F2: −0.60 mm</text>
+<text x="632" y="24" text-anchor="end">offset +0.30 mm · angularity +0.05 / 100</text>
+</g></svg>
+<figcaption>المحرك مرتفع عند القارنة بمقدار 0.30 mm ويميل إلى أعلى 0.05 mm لكل 100 mm. الميل مبالغ فيه في الرسم للتوضيح. تُحسب حركة كل قدم بالمثلثات المتشابهة.</figcaption>
+</figure>
+<div class="formula">move(foot) = −(offset + angularity × L / 100)</div>
+<div class="ex"><b>مثال — C-201 رأسيًّا:</b> الإزاحة <span class="eq">+0.30 mm</span> (المحرك أعلى)، والزاوية <span class="eq">+0.05 mm/100 mm</span>، و F1 على بعد 200 mm و F2 على بعد 600 mm من مستوى القارنة.
+<ol><li>F1: <span class="eq">0.30 + 0.05 × 200 / 100 = 0.40 mm</span> فوق الخط ← <b>انزع 0.40 mm</b> من الرقائق.</li>
+<li>F2: <span class="eq">0.30 + 0.05 × 600 / 100 = 0.60 mm</span> فوق الخط ← <b>انزع 0.60 mm</b>.</li>
+<li><b>أفقيًّا</b> بالطريقة نفسها: إزاحة <span class="eq">−0.12 mm</span> وزاوية <span class="eq">+0.04 / 100</span> تعطيان F1 = −0.04 و F2 = +0.12 mm، فحرّك القدم الأمامية 0.04 mm في الاتجاه الموجب والخلفية 0.12 mm في الاتجاه السالب.</li></ol></div>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>التمدد الحراري والأخطاء الشائعة</h2>
+<ul><li><b>التمدد الحراري:</b> المحرك والضاغط يسخنان بدرجات مختلفة أثناء التشغيل، فيرتفع أحدهما أكثر. يعطي المصنّع أحيانًا <b>أهدافًا على البارد</b> (Cold alignment targets) بإزاحة مقصودة تزول عند حرارة التشغيل. أدخلها في جهاز الليزر هدفًا بدل الصفر.</li>
+<li><b>بعد المحاذاة</b> شغّل وقِس الاهتزاز من جديد. في مثال C-201 هبطت قراءة DE H إلى 1.2 mm/s (المنطقة A) والمحوري إلى 0.8 mm/s.</li></ul>
+<div class="tblw"><table class="tbl"><thead><tr><th>الخطأ الشائع</th><th>كيف تتحقق؟</th></tr></thead><tbody>
+<tr><td>المحاذاة قبل إصلاح Soft Foot</td><td>القراءات تتغير بعد كل شدّ للمسامير؛ افحص الأقدام أولًا</td></tr>
+<tr><td>الاعتماد على المسطرة على حافة القارنة</td><td>دقتها نحو 0.1–0.2 mm، أي أضعاف السماحية؛ استخدم الليزر أو المبيّنات</td></tr>
+<tr><td>«القارنة المرنة تتحمل عدم المحاذاة»</td><td>القارنة تتحمله، لكن المحامل والحشوات تدفع الثمن</td></tr>
+<tr><td>إدخال المسافات خطأ في الجهاز</td><td>قِس من مستوى القارنة إلى منتصف مسمار كل قدم بشريط قياس</td></tr>
+<tr><td>تحريك المحرك أفقيًّا بالطرق</td><td>استخدم مسامير الدفع (Jack bolts) ومبيّنًا على القدم</td></tr>
+</tbody></table></div>
+<div class="box key"><b>على المحاكي:</b> قِس الاهتزاز عند DE و NDE في الاتجاهات H و V و A وصنّفه حسب مناطق ISO 20816، ثم أصلح Soft Foot، وحاذِ المحرك على الضاغط بالليزر بالرقائق والتحريك الأفقي حتى تدخل القيم في السماحية. <a class="btn pri" href="motor.html#align" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">المعلومات هنا من IEEE 43 و IEC 60034 و NEMA MG 1 و ISO 20816 و IEC 60076 و IEC 60156 و IEC 60599 و IEEE C57 ومن كتيّبات الشركات المصنّعة. القيم في الأمثلة نموذجية للتعلّم؛ ارجع إلى المعيار المعتمد وكتيّب المصنّع قبل أي عمل فعلي، والتزم دائمًا بإجراءات السلامة والعزل والإقفال. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l6');
+IL.quiz(document.getElementById('quiz'), [{"q": "أعلى قراءة على محرك 37 kW على قاعدة صلبة 3.4 mm/s RMS. في أي منطقة هو حسب ISO 20816-3؟", "o": ["المنطقة C", "المنطقة B", "المنطقة D", "المنطقة A"], "a": 0, "why": "للمجموعة 2 على قاعدة صلبة: B/C = 2.8 و C/D = 4.5، و 3.4 بينهما."}, {"q": "الطيف قمته عند 1× في H و V بقيم متقاربة، والمحوري منخفض. ما السبب المرجّح؟", "o": ["عدم اتزان الدوار", "عدم محاذاة القارنة", "تلف في مسار المحمل", "سبب كهربي في الملفات"], "a": 0, "why": "عدم الاتزان قوة طاردة تدور مع العمود فتظهر عند 1× في الاتجاه القطري."}, {"q": "ما تردد الدوران 1× للضاغط C-201 (1475 rpm)؟", "o": ["24.6 Hz", "25.0 Hz", "49.2 Hz", "50.0 Hz"], "a": 0, "why": "1475 ÷ 60 = 24.6 Hz؛ و 25 Hz هي السرعة التزامنية."}, {"q": "عند فك مسمار قدم واحدة ارتفع المبيّن 0.12 mm، وبقية الأقدام أقل من 0.02 mm. ما الإجراء؟", "o": ["أضف رقائق 0.12 mm تحتها", "شُدّ مسمارها بعزم أكبر كثيرًا", "حاذِ المحرك بالليزر مباشرة", "أضف رقائق تحت الأقدام الأربع"], "a": 0, "why": "هذه Soft Foot في قدم واحدة؛ تُملأ فجوتها قبل المحاذاة."}, {"q": "إزاحة رأسية +0.20 mm، وزاوية −0.03 mm/100 mm، و F1 = 150 mm، و F2 = 450 mm. كم تنزع من الرقائق؟", "o": ["F1: 0.155، F2: 0.065 mm", "F1: 0.245، F2: 0.335 mm", "F1: 0.200، F2: 0.200 mm", "F1: 0.065، F2: 0.155 mm"], "a": 0, "why": "F1 = 0.20 − 0.03 × 1.5 = 0.155، و F2 = 0.20 − 0.03 × 4.5 = 0.065 mm، وكلاهما فوق الخط."}, {"q": "اهتزاز قمته عند 100 Hz اختفى لحظة فصل التغذية والمحرك ما زال يدور. ما مصدره؟", "o": ["سبب كهربي", "عدم اتزان ميكانيكي", "عدم محاذاة القارنة", "ارتخاء في القاعدة"], "a": 0, "why": "القوى المغناطيسية تزول فور فصل الجهد، أما المصادر الميكانيكية فتبقى ما دام العمود يدور."}, {"q": "لماذا يُصلح Soft Foot قبل المحاذاة؟", "o": ["لأن شدّ القدم يغيّر المحاذاة", "لأنه يخفض حرارة المحمل وحدها", "لأن جهاز الليزر يشترط ذلك", "لأنه يقلل تيار المحرك كثيرًا"], "a": 0, "why": "شدّ القدم المرتخية يحني الجسم فتتغير القراءات، فلا تثبت المحاذاة."}], {lesson:'l6', pass:0.8});
+</script>
+</body>
+</html>
