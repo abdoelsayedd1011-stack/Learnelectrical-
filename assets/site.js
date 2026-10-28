@@ -176,6 +176,12 @@
       guided:12, exercises:11, params:0, faults:0,
       inside:["اختبار العزل بالميجر و PI ومقاومة الملفات وقراءة لوحة البيانات", "المحامل والتشحيم والاهتزاز والمحاذاة بالليزر والحرارة وتشخيص الأعطال", "تفتيش المحول واختبار TTR والجهد الانهياري للزيت وتحليل الغازات DGA وخطة الصيانة"],
       tags:"maint maintenance motor maintenance transformer maintenance صيانة صيانة كهربية صيانة المحركات صيانة المحولات محرك محركات موتور مواتير ماتور induction motor محرك حثي nameplate لوحة البيانات يافطة الموتور star delta نجمة دلتا ستار دلتا أطراف الملفات ميجر ميجا megger insulation resistance عزل مقاومة العزل اختبار العزل pi dar polarization index ieee 43 winding resistance مقاومة الملفات micro-ohm ميكرو أوم قصر لفات شورت أرضي ارضي bearing bearings محامل محمل رولمان رولمانات بلي grease greasing lubrication تشحيم شحم جريس تزييت vibration اهتزاز اهتزازات iso 20816 unbalance عدم اتزان soft foot alignment محاذاة laser alignment ليزر ضبط استقامة كوبلنج coupling thermography ثرموجرافي ثيرموجرافي كاميرا حرارية thermal camera سخونة حرارة voltage unbalance عدم اتزان الجهد derating mcsa تحليل التيار troubleshooting تشخيص أعطال اعطال rewinding rewind إعادة لف اعادة لف لف الموتور transformer transformers محول محولات ترانس ترانسات distribution transformer iec 60076 vector group dyn11 مجموعة التوصيل tap changer مغير الجهد buchholz بوخهولز silica gel سيليكا جل مجفف breather transformer oil زيت المحول زيت bdv الجهد الانهياري iec 60156 رطوبة حموضة dga تحليل الغازات dissolved gas duval مثلث دوفال iec 60599 ttr نسبة التحويل turns ratio excitation current تيار المغنطة inspection تفتيش loto إقفال lockout tagout preventive صيانة وقائية predictive صيانة تنبؤية condition monitoring maintenance plan خطة صيانة clamp meter كلامب ورشة محطة" },
+    { id:"srvm", path:"servo-maint-lab/index.html", group:"srvm", brand:"كورس", brandKey:"srvm",
+      name:"كورس صيانة محركات السيرفو", kind:"ابدأ بالشرح", disp:"AL.16", dispClass:"red", rtlName:true,
+      line:"افحص محرك السيرفو وإنكودره وفراملِه ودرايفه بالأجهزة الحقيقية، وشخّص الإنذار حتى تصل إلى سببه، ثم أصلح واضبط وأعد محور ماكينة CNC إلى الإنتاج.",
+      guided:13, exercises:12, params:0, faults:0,
+      inside:["اختبار الملفات والعزل و Back-EMF ولوحة البيانات والفرامل والمحامل", "كل أنواع الإنكودر وفحصها بالأوسيلوسكوب واستبدالها وضبط الإزاحة", "اختبار الدرايف و IGBT والمكثفات وتشخيص الإنذارات والضبط بمرشّح Notch"],
+      tags:"srvm servo maintenance servo repair سيرفو سرفو سيرفو موتور صيانة سيرفو صيانة السيرفو صيانة محركات السيرفو تصليح سيرفو اصلاح سيرفو إصلاح السيرفو pmsm محرك متزامن مغانط دائمة لوحة البيانات nameplate ملفات مقاومة الملفات winding resistance ميجر ميجا megger عزل ieee 43 back-emf باك emf ke ثابت الجهد انكودر إنكودر اينكودر encoder ريزولفر resolver sin cos sincos endat biss ssi hiperface dsl absolute مطلق incremental تزايدي ttl htl hall هول multi-turn متعدد اللفات بطارية الانكودر battery اوسيلوسكوب أوسيلوسكوب راسم الإشارة scope a/b/z استبدال الانكودر commutation offset زاوية الإزاحة ضبط الإزاحة فرامل فرامل السيرفو brake holding brake محامل بلي رولمان bearing سدادة seal فقدان المغنطة demagnetization كابلات كابل الإنكودر تأريض أرضي shield حجب 360 تشويش noise emc درايف دريفر درايف السيرفو drive servo drive amplifier igbt مقوم rectifier مكثفات capacitor dc bus الناقل المستمر تفريغ المكثفات regen مقاومة فرملة مقاومة الكبح braking resistor مروحة انذارات إنذارات الإنذارات alarms alarm overcurrent overvoltage encoder error following error خطأ التتبع overload tuning تيونينج ضبط الجين gain inertia القصور الذاتي notch filter مرشح notch رنين resonance cnc ماكينة cnc محور axis منضدة محطة" },
     { id:"srv", path:"servo-course/index.html", group:"servo", brand:"كورس", brandKey:"srvc",
       name:"كورس السيرفو موتور والدرايف", kind:"ابدأ بالشرح", disp:"S-ON", dispClass:"red", rtlName:true,
       line:"افهم السيرفو من جوه قبل ما تمسك أي درايف.",
@@ -231,6 +237,7 @@
     { key:"scada", title:"SCADA و HMI", sub:"WinCC Unified · ISA-101 · الإنذارات · الترندات · الوصفات · الصلاحيات", land:"courses/scada.html" },
     { key:"panel", title:"تصميم اللوحات الكهربية", sub:"الأحمال · القواطع · الكابلات · البارات · الانتقائية · MCC", land:"courses/panel.html" },
     { key:"maint", title:"صيانة المحركات والمحولات", sub:"الميجر و PI · الملفات · المحامل · الاهتزاز والمحاذاة · TTR · زيت المحول و DGA", land:"courses/maint.html" },
+    { key:"srvm", title:"صيانة محركات السيرفو", sub:"الملفات و Back-EMF · الإنكودر · الفرامل · الدرايف و IGBT · الإنذارات · Notch", land:"courses/srvm.html" },
     { key:"temp", title:"كنترول حرارة وقياس", sub:"Omron · Endress+Hauser" }
   ];
   /* محتوى كل كورس بالترتيب (عناوين الدروس) — بيظهر على كارت الكورس في الكتالوج وعلى الغلاف (assets/courses/covers/).
@@ -258,6 +265,8 @@
       l:["ما اللوحة الكهربية؟ الأنواع والمعايير", "حساب الأحمال وتيار التصميم", "اختيار القواطع", "اختيار مقطع الكابل", "هبوط الجهد وتيار القصر", "البارات النحاسية", "التنسيق والانتقائية بين الحمايات", "التأريض والحماية من الصعق", "تحسين معامل القدرة", "ترتيب اللوحة والحرارة داخلها", "لوحات المحركات MCC", "مشروع لوحة توزيع رئيسية + الامتحان"] },
     maint: { n:"12 درس", x:["ورشة صيانة المحركات", "محطة صيانة المحولات", "امتحان نهائي"],
       l:["أنواع الصيانة والسلامة وأدوات القياس", "المحرك الحثي: البناء ولوحة البيانات والأطراف", "اختبار مقاومة العزل: الميجر و PI و DAR", "اختبار الملفات: المقاومة والاتزان والقصر", "المحامل والتزييت", "الاهتزاز والمحاذاة", "الحرارة والتيار وعدم اتزان الجهد", "تشخيص أعطال المحرك خطوة بخطوة", "المحول: البناء والملحقات والتفتيش", "اختبارات المحول الكهربية", "زيت المحول: الجهد الانهياري وتحليل الغازات", "خطة صيانة لمصنع + الامتحان"] },
+    srvm: { n:"13 درس", x:["منضدة صيانة محرك السيرفو", "محطة صيانة درايف السيرفو", "امتحان نهائي"],
+      l:["السلامة في صيانة أنظمة السيرفو", "محرك السيرفو من الداخل ولوحة بياناته", "اختبار ملفات محرك السيرفو", "أنواع الإنكودر كلها", "فحص الإنكودر وأعطاله", "استبدال الإنكودر وضبط الإزاحة", "فرامل محرك السيرفو", "المحامل والسدادات والمغانط", "الكابلات والتأريض والتشويش", "صيانة الدرايف: الدائرة ومكوّناتها", "الإنذارات وتشخيصها", "الضبط بعد الإصلاح Tuning", "صيانة محور CNC + الامتحان"] },
     srv: { n:"12 درس", x:["4 محاكيات سيرفو"],
       l:["يعني إيه سيرفو؟", "جوه السيرفو موتور", "الإنكودر: عين السيرفو", "الدرايف من جوه", "توصيل السيرفو", "أوضاع التشغيل", "الجير الإلكتروني", "التيونينج وضبط الجين", "الهومينج والحدود", "التحكم من الـ PLC", "الأعطال الشائعة", "التشغيل لأول مرة + الامتحان"] }
   };
@@ -318,7 +327,7 @@
   /* ---------- أسعار الكورسات (من «الأسعار» في لوحة الإدارة، /api/prices) ----------
      كارت كل كورس في الكتالوج وصفحة كل كورس في courses/ بتظهر السعر لو متحدد، وزرار «اشتري الكورس».
      اللي اشترى الكورس بيشوف «اشتريته ✓». */
-  var PRODUCT_OF = { basics:"basics", classic:"classic", safety:"safety", instr:"instr", plc:"plc", drw:"drw", vfdc:"vfd", srv:"srv", iiot:"iiot", scada:"scada", panel:"panel", maint:"maint" };
+  var PRODUCT_OF = { basics:"basics", classic:"classic", safety:"safety", instr:"instr", plc:"plc", drw:"drw", vfdc:"vfd", srv:"srv", iiot:"iiot", scada:"scada", panel:"panel", maint:"maint", srvm:"srvm" };
   var PR = null, ME, priceHooks = [];
   function curName(){ return EN ? EN.currency : ((window.SITE || {}).pay || {}).currency || "جنيه"; }
   function fmtN(n){ return String(Math.round(n * 100) / 100); }
@@ -476,9 +485,10 @@
     iiot:{ ac:"#4cc0cf", ar:"IIoT والشبكات الصناعية", en:"IIoT & Industrial Networks" },
     scada:{ ac:"#e879d4", ar:"SCADA و HMI", en:"SCADA & HMI" },
     panel:{ ac:"#e0955c", ar:"تصميم اللوحات الكهربية", en:"Electrical Panel Design" },
-    maint:{ ac:"#b4d65a", ar:"صيانة المحركات والمحولات", en:"Motor & Transformer Maintenance" }
+    maint:{ ac:"#b4d65a", ar:"صيانة المحركات والمحولات", en:"Motor & Transformer Maintenance" },
+    srvm:{ ac:"#8b8fff", ar:"صيانة محركات السيرفو", en:"Servo Motor & Drive Maintenance" }
   };
-  var CVV = "p15";
+  var CVV = "p16";
   function coverHtml(l, toc){
     var c = CV[l.id], src = "/assets/courses/covers/" + l.id;
     if (!c || !toc) return '<div class="cover"><img src="' + src + (EN ? "-en" : "-ar") + '.webp?v=b3" width="960" height="1200" alt="" decoding="async"></div><h4 class="sr-only">' + esc(l.name) + "</h4>";

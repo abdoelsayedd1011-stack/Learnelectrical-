@@ -30,12 +30,13 @@
     { id: "iiot", title: "IIoT والشبكات الصناعية", hub: "iiot-lab/index.html", inc: "كل الدروس + محاكي الشبكات (11 تمرين) والامتحان والشهادة" },
     { id: "scada", title: "SCADA و HMI", hub: "scada-lab/index.html", inc: "كل الدروس + محطة SCADA ومصمّم الشاشات والامتحان والشهادة" },
     { id: "panel", title: "تصميم اللوحات الكهربية", hub: "panel-lab/index.html", inc: "كل الدروس + حاسبة مصمّم اللوحات ومصمّم اللوحات والامتحان والشهادة" },
-    { id: "maint", title: "صيانة المحركات والمحولات", hub: "maint-lab/index.html", inc: "كل الدروس + ورشة صيانة المحركات ومحطة صيانة المحولات والامتحان والشهادة" }
+    { id: "maint", title: "صيانة المحركات والمحولات", hub: "maint-lab/index.html", inc: "كل الدروس + ورشة صيانة المحركات ومحطة صيانة المحولات والامتحان والشهادة" },
+    { id: "srvm", title: "صيانة محركات السيرفو", hub: "servo-maint-lab/index.html", inc: "كل الدروس + منضدة صيانة محرك السيرفو ومحطة صيانة الدرايف والامتحان والشهادة" }
   ];
   if (EN) COURSES.forEach(function(c){ c.title = EN.courses[c.id] || c.title; c.inc = EN.payInc[c.id] || c.inc; });
   COURSES.forEach(function(c){ c.href = EN ? L(c.hub) : c.hub; c.ar = !!EN && !/^\/en\//.test(c.href); });
   var BY_ID = {}; COURSES.forEach(function(c){ BY_ID[c.id] = c; });
-  var ALIAS = { "safety-plc": "safety", drawings: "drw", servo: "srv", instrumentation: "instr", inverters: "vfd", vfdc: "vfd", networks: "iiot", hmi: "scada", panels: "panel", "panel-design": "panel", motors: "maint", transformers: "maint", maintenance: "maint", "motor-maintenance": "maint" };
+  var ALIAS = { "safety-plc": "safety", drawings: "drw", servo: "srv", instrumentation: "instr", inverters: "vfd", vfdc: "vfd", networks: "iiot", hmi: "scada", panels: "panel", "panel-design": "panel", motors: "maint", transformers: "maint", maintenance: "maint", "motor-maintenance": "maint", "servo-maintenance": "srvm", "servo-repair": "srvm", encoder: "srvm" };
   var AR_BADGE = EN ? '<span class="ar-badge" title="' + esc(EN.arBadgeTitle) + '">' + esc(EN.arBadge) + "</span>" : "";
 
   var CUR = EN ? EN.currency : str(P.currency) || "جنيه";

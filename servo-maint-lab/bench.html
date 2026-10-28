@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>منضدة صيانة محرك السيرفو</title>
+<meta name="description" content="منضدة صيانة محرك السيرفو: اقرأ لوحة بيانات محرك المحور X وأطراف موصّلاته، واختبر الملفات والعزل و Back-EMF، وميّز كل أنواع الإنكودر ووصّلها، وافحص إشاراتها بالأوسيلوسكوب، واضبط زاوية الإزاحة، واختبر الفرامل والمحامل والكابلات.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="srvm.css?v=20261028v1">
+<script src="srvm.js?v=20261028v1"></script>
+<style>
+body{background:var(--bg)}
+:root{--amber:#b7791f;--ral:#c9ccc7;--ral-d:#9ea39d;--case:#f2c230;--case-d:#c99a12;--grey:#3c4449;--grey-d:#272d31;--cu:#c8782f}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--amber:#e3a43a} }
+:root[data-theme="dark"]{--amber:#e3a43a}
+
+/* ---------- tabs (same pattern as the other simulators) ---------- */
+.tabs .btn{flex:1 1 92px;min-height:46px;font-size:.88rem}
+.tabs .btn[aria-selected=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.pane{display:none}.pane.on{display:block}
+.pane .body{display:grid;gap:12px}
+.goal{border:1px solid var(--accent);background:var(--accent-soft);border-radius:10px;padding:10px 12px;margin-bottom:12px;line-height:1.8}
+.goal.ok{border-color:var(--good);background:var(--good-soft)}
+.goal b.k{display:inline-block;background:var(--accent);color:#fff;border-radius:6px;padding:0 8px;margin-inline-end:6px;font-family:var(--font-display)}
+.goal.ok b.k{background:var(--good)}
+.pane.demoing .body>*:not(.keep){pointer-events:none}
+.dhl{outline:3px solid var(--cur)!important;outline-offset:2px}
+svg .dhl{outline:none!important;filter:drop-shadow(0 0 4px var(--cur)) drop-shadow(0 0 8px var(--cur))}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row .btn{flex:0 1 auto}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px;align-items:start}
+.dev{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel);min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-content:start}
+.dev.ok{border-color:var(--good);box-shadow:inset -4px 0 0 var(--good)}
+.dev.wait{opacity:.75}
+.dev h3{margin:0;font:700 .98rem var(--font-display);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dev h3 .n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font:700 .8rem var(--font-display)}
+.dev.ok h3 .n{background:var(--good)}
+.fld{display:flex;align-items:center;justify-content:flex-start;gap:6px 10px;font-size:.9rem;flex-wrap:wrap}
+.fld>span{flex:1 1 12em;max-width:22em}
+.fld input,.fld select,.inp{font:600 .92rem var(--font-mono);direction:ltr;border:1px solid var(--line);border-radius:8px;padding:4px 8px;background:var(--bg);color:var(--ink);min-height:42px;max-width:100%}
+.fld input{width:8.5em}
+.fld select{font-family:var(--font-body);direction:rtl;min-width:11em;flex:1 1 200px}
+.fld input.ok,.fld select.ok{border-color:var(--good);background:var(--good-soft)}
+.fld input.no,.fld select.no{border-color:var(--bad);background:var(--bad-soft)}
+.fld .u{font:600 .82rem var(--font-mono);color:var(--muted);direction:ltr;min-width:3.6em}
+.ltr{direction:ltr;unicode-bidi:isolate}
+.note{font-size:.86rem;color:var(--muted);line-height:1.7}
+.fx{font:500 .84rem/1.8 var(--font-mono);direction:ltr;unicode-bidi:isolate;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;overflow-x:auto;white-space:nowrap}
+.fx b{color:var(--accent)}
+.fx .ok{color:var(--good);font-weight:700}.fx .bad{color:var(--bad);font-weight:700}
+.sgm{display:inline-flex;flex-wrap:nowrap;border:1px solid var(--line);border-radius:8px;overflow:hidden;direction:ltr;max-width:100%}
+.sgm button{border:0;border-inline-start:1px solid var(--line);background:var(--bg);color:var(--ink);min-height:42px;min-width:0;padding:0 8px;font:600 .84rem var(--font-mono);cursor:pointer;flex:1 1 auto;white-space:nowrap}
+.sgm button:first-child{border-inline-start:0}
+.sgm button[aria-pressed=true]{background:var(--accent);color:#fff}
+.sgm.ar button{font-family:var(--font-body)}
+.tblw{direction:ltr;overflow-x:auto;max-width:100%;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.tbl.hm{font-size:.84rem}
+.tbl.hm th,.tbl.hm td{padding:5px 8px;white-space:nowrap;border-color:var(--line);font-family:var(--font-mono)}
+.tbl.hm th{font:600 .8rem var(--font-body);background:var(--bg)}
+.tbl.hm td.ar,.tbl.hm th.ar{direction:rtl;font-family:var(--font-body);white-space:normal;min-width:9em}
+.tbl.hm .ok{color:var(--good);font-weight:700}.tbl.hm .bad{color:var(--bad);font-weight:700}.tbl.hm .wr{color:var(--amber);font-weight:700}
+.tbl.hm tr.cur td{background:var(--accent-soft)}
+.tbl.hm select{font:500 .82rem var(--font-body);direction:rtl;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);min-height:36px}
+.tbl.hm select.ok{border-color:var(--good);background:var(--good-soft)}.tbl.hm select.no{border-color:var(--bad);background:var(--bad-soft)}
+.typ{font-size:.78rem;color:var(--muted)}
+.stage{background:var(--board);border:1px solid var(--board-line);border-radius:12px;padding:6px;min-width:0;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.stage svg{display:block;width:100%;height:auto;direction:ltr;margin:0 auto}
+.stage svg text{font-family:var(--font-mono)}
+.stage svg .ar{font-family:var(--font-body)}
+.stage.drag svg,.stage [data-plug]{touch-action:none}
+.tx{fill:var(--ink)}.txm{fill:var(--muted)}
+.hit{cursor:pointer;outline:none}
+.hit:focus-visible>.ring,.hit:hover>.ring{opacity:1}
+.ring{fill:none;stroke:var(--accent);stroke-width:3;opacity:0;pointer-events:none}
+.sel>.ring,.ring.on{opacity:1;stroke:#ffb300}
+.cab{fill:none;stroke-width:5;stroke-linecap:round;pointer-events:none}
+.cab-o{fill:none;stroke:rgba(0,0,0,.35);stroke-width:7.5;stroke-linecap:round;pointer-events:none}
+.lcdt{font-family:var(--font-mono);fill:#1b2410}
+.warnbox{border:2px solid var(--bad);background:var(--bad-soft);border-radius:10px;padding:8px 12px;line-height:1.75;font-size:.92rem}
+.warnbox b:first-child{color:var(--bad)}
+.okbox{border:1px solid var(--good);background:var(--good-soft);border-radius:10px;padding:8px 12px;line-height:1.75;font-size:.92rem}
+.okbox b:first-child{color:var(--good)}
+.loto{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:6px}
+.loto .btn{justify-content:flex-start;text-align:right;font-weight:500;font-size:.88rem;min-height:46px;line-height:1.4}
+.loto .btn.ok{border-color:var(--good);background:var(--good-soft);font-weight:700}
+.loto .btn.ok::before{content:"✓";color:var(--good);font-weight:700}
+.opts{display:grid;gap:6px;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr))}
+.opts .btn{justify-content:flex-start;text-align:right;font-weight:500;line-height:1.5;font-size:.9rem}
+.opts .btn.ok{border-color:var(--good);background:var(--good-soft);font-weight:700}
+.opts .btn.no{border-color:var(--bad);background:var(--bad-soft)}
+.case{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);display:grid;gap:8px}
+.case.ok{border-color:var(--good);background:var(--good-soft)}
+.case h4{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chipline{display:flex;flex-wrap:wrap;gap:6px}
+.chipline .btn{min-height:40px;font-size:.86rem;flex:1 1 auto}
+.chipline .btn.done{border-color:var(--good)}
+.pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:1px 10px;font-size:.82rem;background:var(--panel)}
+.pill.ok{border-color:var(--good);color:var(--good);background:var(--good-soft);font-weight:700}
+.pill.bad{border-color:var(--bad);color:var(--bad);background:var(--bad-soft);font-weight:700}
+.pill.warn{border-color:var(--amber);color:var(--amber);font-weight:700}
+.wave{background:#0b1410;border-radius:8px;padding:4px}
+.wave svg{display:block;width:100%;height:auto}
+.spin{animation:spin .45s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:3s}}
+.foot{margin-top:4px}
+@media (max-width:560px){
+  .fx{white-space:normal;overflow-wrap:anywhere}
+  .fld{align-items:stretch}
+  .fld input{flex:1 1 auto;width:auto;min-width:0}
+}
+/* ---------- servo bench additions ---------- */
+.scope-w{background:#2a2f33;border-radius:14px;padding:8px;display:grid;gap:8px;min-width:0;box-shadow:inset 0 0 0 2px #171b1e}
+.scope-w svg{display:block;width:100%;height:auto;direction:ltr}
+.scope-w svg text{font-family:var(--font-mono)}
+.sc-ctl{display:flex;flex-wrap:wrap;gap:6px;direction:ltr;justify-content:center}
+.sc-ctl .btn{min-height:40px;font:600 .8rem var(--font-mono);background:#3a4146;border-color:#4d565c;color:#e9eef1;padding:4px 10px;flex:0 1 auto}
+.sc-ctl .btn[aria-pressed=true]{background:#0d7584;border-color:#4cc0cf;outline:none}
+.sc-ctl .lbl{font:600 .78rem var(--font-mono);color:#c9d2d7;align-self:center;padding:0 4px}
+.enc-card{display:grid;gap:10px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:820px){.enc-card{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}}
+.chipline .btn.cur{border-color:var(--accent);background:var(--accent-soft)}
+.chipline .btn.done::after{content:" ✓";color:var(--good);font-weight:700}
+.tools{display:grid;gap:6px;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr))}
+.tools .btn{justify-content:flex-start;text-align:right;font-weight:500;font-size:.88rem;min-height:46px;line-height:1.4}
+.tools .btn.used{border-color:var(--accent)}
+.res{border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--bg);display:grid;gap:6px;min-width:0}
+.res:empty{display:none}
+.res svg{display:block;width:100%;max-width:520px;height:auto;margin:0 auto;direction:ltr}
+.res svg text{font-family:var(--font-mono)}
+.rline{font-size:.9rem;line-height:1.7}
+.rline b{font-family:var(--font-mono);direction:ltr;unicode-bidi:isolate}
+.sym{border-inline-start:4px solid var(--cur);background:var(--bg);border-radius:8px;padding:6px 12px;line-height:1.75;font-size:.92rem}
+.pinchips{display:flex;flex-wrap:wrap;gap:6px;direction:ltr}
+.pinchips .btn{min-height:40px;min-width:58px;font:700 .86rem var(--font-mono);flex:0 1 auto}
+.pinchips .btn.used{opacity:.45;text-decoration:line-through}
+.conn-grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
+.conn-grid .stage svg{max-width:300px}
+.pins-t{font-size:.8rem}
+.slider{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.slider input[type=range]{flex:1 1 180px;min-width:0;accent-color:var(--accent);min-height:36px}
+.slider output{font:700 .95rem var(--font-mono);direction:ltr;min-width:5.5em;text-align:center}
+.rotor-w svg{max-width:300px}
+.pane .body{grid-template-columns:minmax(0,1fr)}
+.case{grid-template-columns:minmax(0,1fr);min-width:0}
+.case>*,.dev>*,.enc-card>*{min-width:0}
+.fld select{max-width:100%}
+.pane svg{direction:ltr}
+.cabs,.cabs *{pointer-events:none}
+.dpad{direction:ltr;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.dpad .btn{padding:4px 2px;font:600 .86rem var(--font-mono)}
+.sgm.ar{direction:rtl;flex-wrap:wrap}
+.sgm.ar button{white-space:normal;line-height:1.4;padding:4px 8px}
+.scope-w{max-width:780px;margin:0 auto;width:100%}
+.big-read{font:700 1.3rem var(--font-mono);direction:ltr;unicode-bidi:isolate}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">LearnElectricals · كورس صيانة محركات السيرفو</p>
+    <h1>منضدة صيانة محرك السيرفو</h1>
+    <p>محركات محاور ماكينة <bdi class="ltr mono">CNC</bdi> (<bdi class="ltr mono">X · Y · Z · A</bdi>) على منضدة الاختبار. كل تبويب مهمة صيانة حقيقية: افصل وأقفل أولًا، ثم وصّل الجهاز، واقرأ القراءة، واحسب، وقرّر.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="drive.html">محطة الدرايف</a></div>
+</header>
+
+<div class="tabs" role="tablist" id="tabs"></div>
+<div id="panes"></div>
+
+<p class="foot">محاكاة تعليمية؛ القيم نموذجية للتعلّم. ارجع إلى المعيار المعتمد وكتيّب المصنّع قبل أي عمل فعلي، والتزم بالعزل والإقفال قبل أي اختبار. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script src="bench.js?v=20261028v1"></script>
+<script src="/assets/i18n.js?v=20261028e1"></script>
+</body>
+</html>

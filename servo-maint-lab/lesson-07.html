@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>فرامل محرك السيرفو</title>
+<meta name="description" content="الدرس 7: فرامل السيرفو الكهرومغناطيسية الآمنة عند الفصل: مقاومة الملف وجهد التحرير وهبوط الكابل، توقيت التحرير والتعشيق مع الدرايف، الإخماد بالديود والفاريستور، عزم التثبيت بمفتاح العزم، والفجوة والتآكل.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="srvm.css?v=20261028v1">
+<script src="srvm.js?v=20261028v1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس صيانة محركات السيرفو · الدرس 7 من 13</p>
+    <h1>فرامل محرك السيرفو</h1>
+    <p>الفرامل هي ما يمنع رأس المحور Z من السقوط. افحص ملفها وجهدها وتوقيتها وعزمها، والرأس مسنود دائمًا.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="bench.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>كيف تعمل فرامل محرك السيرفو؟</h2>
+<figure class="fig">
+<svg viewBox="0 0 640 285" role="img" aria-label="مقطع فرامل السيرفو: قرص احتكاك على محور العمود بين لوح ثابت ولوح متحرك تضغطه نوابض، وملف يجذب اللوح المتحرك عند التغذية بـ 24 فولت فيفتح الفجوة" style="width:100%;max-width:640px;direction:ltr">
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor">
+<path d="M20 140H446" stroke="currentColor" stroke-dasharray="3 3" opacity=".5"/><rect x="20" y="128" width="426" height="24" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".6"/><text x="40" y="170" font-size="11">motor shaft</text><rect x="250" y="40" width="22" height="200" rx="3" style="fill:var(--cur)" opacity=".85"/><text x="261" y="30" text-anchor="middle" style="fill:var(--cur)">friction disc (on hub)</text><rect x="215" y="50" width="30" height="180" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><text x="230" y="256" text-anchor="middle" font-size="11">end plate</text><rect x="284" y="50" width="22" height="180" rx="3" style="fill:var(--accent)" opacity=".8"/><text x="295" y="272" text-anchor="middle" font-size="11" style="fill:var(--accent)">armature plate</text><path d="M310 66h12M310 214h12" style="stroke:var(--bad)" stroke-width="2"/><text x="336" y="40" style="fill:var(--bad)" font-size="11">air gap ≈ 0.2–0.5 mm</text><rect x="322" y="50" width="120" height="180" rx="6" fill="none" stroke="currentColor" stroke-width="2"/><rect x="350" y="62" width="56" height="44" style="fill:var(--warn)" opacity=".5"/><rect x="350" y="174" width="56" height="44" style="fill:var(--warn)" opacity=".5"/><text x="378" y="89" text-anchor="middle" font-size="11">coil</text><text x="378" y="201" text-anchor="middle" font-size="11">coil</text><polyline points="306,106 310,118 314,106 318,118 322,106 326,118 330,106 334,118 338,106 342,118 346,106 350,118" fill="none" stroke="currentColor" stroke-width="1.8"/><polyline points="306,154 310,166 314,154 318,166 322,154 326,166 330,154 334,166 338,154 342,166 346,154 350,166" fill="none" stroke="currentColor" stroke-width="1.8"/><text x="460" y="120" font-size="11">springs push the armature</text><text x="460" y="136" font-size="11">onto the disc = HOLD</text><text x="460" y="176" font-size="11" style="fill:var(--good)">24 V on coil pulls it back</text><text x="460" y="192" font-size="11" style="fill:var(--good)">= RELEASE</text><text x="460" y="74" font-size="11">B+ / B− · 0.6 A · ≈ 40 Ω</text>
+</g></svg>
+<figcaption>فرامل آمنة عند الفصل (Spring-applied, power-off): بلا كهرباء تضغط النوابض اللوح على القرص، والتغذية تحرّره. التآكل يزيد الفجوة فيصعب التحرير.</figcaption>
+</figure>
+<p>محرك Z وحده في ماكينتنا فيه فرامل، لأنه يحمل رأس المغزل ضد الجاذبية. الفرامل <b>كهرومغناطيسية آمنة عند الفصل</b> (Fail-safe): النوابض تمسك المحور حين تنقطع الكهرباء لأي سبب، والملف يحرّرها حين يُغذّى بـ 24 V DC.</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>البند</th><th>فرامل محرك Z</th><th>ملاحظة</th></tr></thead><tbody>
+<tr><td>الجهد</td><td class="mono">24 V DC ±10 % (21.6–26.4 V عند المحرك)</td><td>يُقاس عند أطراف المحرك لا عند المصدر</td></tr>
+<tr><td>التيار والقدرة</td><td class="mono">0.6 A · ‏24 × 0.6 = 14.4 W</td><td>تسخن الفرامل قليلًا وهي محرّرة؛ هذا طبيعي</td></tr>
+<tr><td>مقاومة الملف</td><td class="mono">24 / 0.6 = 40 Ω عند 20 °C</td><td>ترتفع مع الحرارة</td></tr>
+<tr><td>عزم التثبيت</td><td class="mono">12 N·m (استاتيكي)</td><td>عزم الجاذبية ≈ 4.68 N·m، فالهامش ≈ 2.6</td></tr>
+<tr><td>زمن التحرير / التعشيق</td><td class="mono">≈ 80 ms / ≈ 30 ms</td><td>زمن التعشيق يطول كثيرًا بديود موازٍ وحده</td></tr>
+</tbody></table></div>
+<div class="box key"><b>فرامل تثبيت لا فرامل إيقاف:</b> صُمّمت لتمسك محورًا واقفًا. يُسمح لها بعدد محدود من التوقفات الطارئة والمحور يتحرك (يحدده الكتيّب بالطاقة لكل توقف وبالعدد الكلي). الإيقاف العادي يكون بالمحرك والدرايف، ثم تُغلق الفرامل على محور واقف.</div>
+<p><b>نوع آخر:</b> فرامل المغناطيس الدائم (Permanent-magnet brake): المغناطيس يمسك، والملف يلغي مجاله فيحرّر. هنا <b>القطبية مهمة</b>: عكس B+ و B− يقوّي المغناطيس فلا تتحرر. وتغذيته بجهد أعلى من المقنّن قد تعيد الإمساك. والمعيار IEC 61800-5-2 يعرّف وظيفة SBC (Safe Brake Control: التحكم الآمن في الفرامل) التي تقطع تغذية الفرامل بقناتين في الدرايفات المزوّدة بها.</p>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>القياسات الكهربية: المقاومة وجهد التحرير وهبوط الكابل</h2>
+<ol class="steps-l">
+<li>الرأس مسنود والمحرك مفصول (الدرس 1). افصل B+ و B− عن خرج الدرايف أو مرحّل الفرامل.</li>
+<li><b>مقاومة الملف</b> بالملتيميتر: نحو 40 Ω عند 20 °C. صحّحها: <span class="eq">R20 = R_T × 254.5 / (234.5 + T)</span>.</li>
+<li><b>العزل</b> بين B+ / B− والجسم: بالملتيميتر على أعلى مدى أوم، أو بالميجر عند جهد منخفض وفق الكتيّب، والفرامل <b>مفصولة عن الدرايف</b>.</li>
+<li><b>جهد التحرير</b> (Pull-in): مصدر DC متغير، ارفع الجهد ببطء من 0 V حتى تسمع «طقّة» اللوح وتدور الوصلة باليد بحرية. سجّل الجهد. الفرامل السليمة تتحرر عند جهد أقل كثيرًا من 21.6 V (نموذجيًّا ≤ 80 % من المقنّن، أي ≤ 19.2 V؛ راجع الكتيّب).</li>
+<li><b>جهد الإمساك</b> (Drop-out): اخفض الجهد ببطء حتى تُعشّق؛ يجب أن تُعشّق قبل الصفر بوضوح، وإلا فقد تبقى محرّرة بجهد متبقٍ من الدائرة.</li>
+<li><b>الجهد عند المحرك</b> والدرايف يعمل: قِسه على أطراف المحرك أثناء التحرير؛ يجب ألا يقل عن 21.6 V.</li></ol>
+<div class="ex"><b>مثال 1 — المقاومة:</b> قرأت 41.2 Ω عند 25 °C: <span class="eq">41.2 × 254.5 / 259.5 ≈ 40.4 Ω</span> عند 20 °C: <b>سليم</b>. وبعد تشغيل طويل وحرارة الملف 80 °C تكون نحو <span class="eq">40 × 314.5 / 254.5 ≈ 49.4 Ω</span>، فينخفض التيار إلى <span class="eq">24 / 49.4 ≈ 0.49 A</span>؛ لهذا يرتفع جهد التحرير مع الحرارة، ويجب أن تتحرر الفرامل الساخنة أيضًا.</div>
+<div class="ex"><b>مثال 2 — هبوط الجهد في الكابل:</b> تيار 0.6 A.
+<ol><li>كابل 25 m بمقطع 0.75 mm²: <span class="eq">0.0175 × 50 / 0.75 ≈ 1.17 Ω</span>، والهبوط <span class="eq">≈ 0.70 V</span>: من مصدر 24 V يصل 23.3 V. ‏<b>مقبول</b>.</li>
+<li>كابل 50 m بمقطع 0.5 mm² ومصدر ضعيف 23 V: <span class="eq">0.0175 × 100 / 0.5 = 3.5 Ω</span>، والهبوط <span class="eq">2.1 V</span>، فيصل <b>20.9 V</b> أقل من 21.6 V: الفرامل الساخنة المتآكلة قد لا تتحرر.</li></ol></div>
+<div class="tblw"><table class="tbl"><thead><tr><th>القراءة (عند 20 °C)</th><th>المعنى</th><th>القرار</th></tr></thead><tbody>
+<tr><td>36–44 Ω (±10 %)</td><td>ملف سليم</td><td style="color:var(--good)">سليم</td></tr>
+<tr><td>أقل بوضوح (مثلًا &lt; 30 Ω)</td><td>قصر بين لفات الملف؛ تيار زائد وسخونة</td><td style="color:var(--bad)">استبدال الفرامل أو المحرك</td></tr>
+<tr><td>≈ 0 Ω</td><td>قصر تام؛ يحرق خرج الدرايف أو المصهر (AL.brk)</td><td style="color:var(--bad)">استبدال، وافحص خرج الدرايف</td></tr>
+<tr><td>OL</td><td>ملف مفتوح؛ لا تتحرر أبدًا، فيحارب المحرك الفرامل</td><td style="color:var(--bad)">استبدال؛ افحص الموصّل أولًا</td></tr>
+<tr><td>تسرّب إلى الجسم</td><td>سائل تبريد أو عزل تالف</td><td style="color:var(--bad)">إصلاح أو استبدال</td></tr>
+</tbody></table></div>
+<p class="muted">الحدود نموذجية للتعلّم؛ ارجع إلى كتيّب المحرك.</p>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>التوقيت مع الدرايف، والحماية بالديود</h2>
+<figure class="fig">
+<svg viewBox="0 0 640 285" role="img" aria-label="تسلسل الفرامل مع الدرايف: تمكين العزم ثم أمر التحرير، وانتظار زمن التحرير 80 مللي ثانية قبل الحركة، وعند التوقف أمر الإمساك وإبقاء العزم 30 مللي ثانية وهامش قبل فصل العزم" style="width:100%;max-width:640px;direction:ltr">
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor">
+<text x="112" y="34" text-anchor="end" font-size="11">servo ON</text><text x="112" y="84" text-anchor="end" font-size="11">brake cmd</text><text x="112" y="134" text-anchor="end" font-size="11">brake state</text><text x="112" y="184" text-anchor="end" font-size="11">motion cmd</text><text x="112" y="234" text-anchor="end" font-size="11">torque</text><polyline points="120.0,40.0 145.0,40.0 145.0,18.0 570.0,18.0 570.0,40.0 620.0,40.0" fill="none" style="stroke:var(--accent)" stroke-width="2.2"/><polyline points="120.0,90.0 170.0,90.0 170.0,68.0 445.0,68.0 445.0,90.0 620.0,90.0" fill="none" style="stroke:var(--cur)" stroke-width="2.2"/><polyline points="120.0,140.0 270.0,140.0 270.0,118.0 482.5,118.0 482.5,140.0 620.0,140.0" fill="none" style="stroke:var(--good)" stroke-width="2.2"/><text x="332.5" y="112" font-size="10" style="fill:var(--good)">released</text><polyline points="120.0,190.0 307.5,190.0 307.5,168.0 420.0,168.0 420.0,190.0 620.0,190.0" fill="none" style="stroke:var(--muted)" stroke-width="2.2"/><polyline points="120.0,240.0 145.0,240.0 145.0,218.0 570.0,218.0 570.0,240.0 620.0,240.0" fill="none" style="stroke:var(--bad)" stroke-width="2.2"/><text x="245.0" y="252" font-size="10" style="fill:var(--bad)">holds Z against gravity (≈ 2.9 A)</text><path d="M170.0 100H270.0" stroke="currentColor"/><path d="M170.0 95v10M270.0 95v10" stroke="currentColor"/><text x="220.0" y="93" text-anchor="middle" font-size="10">release 80 ms</text><path d="M445.0 150H482.5" stroke="currentColor"/><path d="M445.0 145v10M482.5 145v10" stroke="currentColor"/><text x="463.8" y="143" text-anchor="middle" font-size="10">30 ms</text><path d="M482.5 100H570.0" stroke="currentColor"/><path d="M482.5 95v10M570.0 95v10" stroke="currentColor"/><text x="526.2" y="93" text-anchor="middle" font-size="10">margin</text><path d="M120.0 262H620.0" stroke="currentColor" opacity=".5"/><text x="120.0" y="278" text-anchor="middle" font-size="10">0 ms</text><text x="245.0" y="278" text-anchor="middle" font-size="10">100 ms</text><text x="370.0" y="278" text-anchor="middle" font-size="10">200 ms</text><text x="495.0" y="278" text-anchor="middle" font-size="10">300 ms</text><text x="620.0" y="278" text-anchor="middle" font-size="10">400 ms</text>
+</g></svg>
+<figcaption>العزم يُبنى أولًا ثم تُحرَّر الفرامل، ولا حركة قبل انقضاء زمن التحرير. وعند التوقف تُغلق الفرامل والعزم باقٍ حتى يكتمل التعشيق وبعده هامش.</figcaption>
+</figure>
+<ul><li><b>عند البدء:</b> الدرايف يبني العزم أولًا (يمسك الرأس بالمحرك)، ثم يأمر بتحرير الفرامل، ثم ينتظر <b>زمن تأخير الحركة</b> أكبر من زمن التحرير: 80 ms + هامش، أي نحو 100–150 ms في المعامِل. الحركة قبل التحرير الكامل تجرّ القرص فتتآكل الفرامل وتظهر AL.oL أو AL.PoS.</li>
+<li><b>عند التوقف:</b> السرعة صفر ← أمر الإمساك ← يبقى العزم مدة التعشيق 30 ms + هامش (نحو 50–100 ms) ← ثم يُفصل العزم. إن فُصل العزم قبل التعشيق يهبط الرأس؛ نظريًّا حتى <span class="eq">½·g·t² ≈ 4.4 mm</span> في 30 ms من السقوط الحر.</li></ul>
+<h3>إخماد الجهد العكسي للملف</h3>
+<p>عند قطع تيار الملف يولّد جهدًا عكسيًّا (Inductive kick) قد يبلغ مئات الفولتات، فيحرق ترانزستور الخرج أو يُتلف تلامس المرحّل. لذلك يُركّب عنصر إخماد، لكن نوعه يغيّر زمن التعشيق:</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>عنصر الإخماد</th><th>حماية الخرج</th><th>زمن التعشيق</th><th>ملاحظة</th></tr></thead><tbody>
+<tr><td>ديود موازٍ وحده (Freewheel)</td><td style="color:var(--good)">ممتازة</td><td style="color:var(--bad)">أطول بكثير (قد يتضاعف مرتين أو أكثر؛ نموذجي)</td><td>التيار يدور في الديود ببطء فيبقى اللوح منجذبًا</td></tr>
+<tr><td>ديود + زينر أو فاريستور</td><td style="color:var(--good)">جيدة</td><td style="color:var(--good)">قريب من زمن الكتالوج</td><td>الطاقة تتبدد بسرعة عند جهد محدد</td></tr>
+<tr><td>فاريستور وحده</td><td style="color:var(--warn)">جيدة</td><td style="color:var(--good)">قصير</td><td>اختر جهده فوق 26.4 V بهامش</td></tr>
+<tr><td>بلا إخماد</td><td style="color:var(--bad)">لا</td><td>قصير</td><td><b>ممنوع</b>: تلف الخرج والتشويش على الإنكودر</td></tr>
+</tbody></table></div>
+<div class="box safe"><b>قطبية الديود:</b> المهبط (Cathode) إلى B+ والمصعد إلى B−. الديود المعكوس يقصر مصدر 24 V فور التشغيل. وفي فرامل المغناطيس الدائم احترم قطبية الملف نفسه.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>عزم التثبيت والفجوة والتآكل</h2>
+<div class="box safe"><b>قبل اختبار العزم:</b> الرأس مسنود ميكانيكيًّا، أو المحرك مفكوك على منضدة ومثبت. لا تختبر عزم فرامل محور رأسي وهو يحمل الرأس.</div>
+<h3>الطريقة أ: مفتاح العزم على المنضدة</h3>
+<ol class="steps-l">
+<li>ثبّت المحرك من فلنجته في ملزمة أو حامل، والفرامل غير مغذّاة (مُعشّقة).</li>
+<li>ركّب جلبة على العمود (أو نصف وصلة بمسمار) وضع عليها مفتاح عزم.</li>
+<li>ارفع العزم ببطء وانتظام إلى قيمة الاختبار؛ يجب ألا ينزلق العمود دون 12 N·m (أو الحد الأدنى في الكتيّب). لا تتجاوز قيمة الاختبار المكتوبة.</li>
+<li>كرّر في الاتجاهين، ثم غذِّ الفرامل بـ 24 V وتأكد أن العمود يدور بحرية تامة (عزم سحب ضئيل).</li></ol>
+<h3>الطريقة ب: اختبار الفرامل بالدرايف في الماكينة</h3>
+<p>درايفات كثيرة فيها وظيفة اختبار الفرامل (Brake test): الفرامل مغلقة، والمحرك يطبّق عزمًا محددًا ضدها، والدرايف يراقب الإنكودر. مثلًا عزم الاختبار <span class="eq">1.5 × 4.68 ≈ 7.0 N·m</span> (أقل من 12 N·m المقنّنة وأكثر من حمل الجاذبية بهامش)، والقبول إن لم يتحرك المحور أكثر من حد صغير. القيم من كتيّب الماكينة والدرايف، والرأس في موضع آمن فوق الدعامة.</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>العَرَض</th><th>السبب المحتمل</th><th>الفحص</th><th>القرار</th></tr></thead><tbody>
+<tr><td>تنزلق دون العزم المطلوب</td><td>زيت أو سائل تبريد على القرص، تآكل، صقل السطح</td><td>مفتاح العزم، فحص بصري إن أمكن الفك</td><td style="color:var(--bad)">استبدال الفرامل أو المحرك؛ أوقف السبب (السدادة)</td></tr>
+<tr><td>لا تتحرر أو تتحرر بجهد مرتفع</td><td>فجوة كبيرة من التآكل، جهد منخفض، ملف ضعيف</td><td>جهد التحرير والجهد عند المحرك</td><td style="color:var(--warn)">أصلح الجهد؛ وإن بقي فاستبدل</td></tr>
+<tr><td>صوت احتكاك وسخونة، AL.oL في Z فقط</td><td>الفرامل تجرّ: لا تتحرر كاملًا أو توقيت خاطئ</td><td>التيار عند سرعة ثابتة مع الفرامل وبدونها</td><td style="color:var(--warn)">صحّح التوقيت والجهد</td></tr>
+<tr><td>هبوط الرأس عند الإيقاف</td><td>زمن تعشيق طويل (ديود وحده) أو فصل العزم مبكرًا</td><td>زمن التعشيق بالأوسيلوسكوب، معامِل التأخير</td><td style="color:var(--bad)">أصلح فورًا؛ خطر سقوط</td></tr>
+<tr><td>AL.brk</td><td>قصر في الملف أو الكابل، خرج الدرايف تالف</td><td>مقاومة الملف والعزل</td><td style="color:var(--bad)">إصلاح الكابل أو الاستبدال</td></tr>
+</tbody></table></div>
+<p><b>الفجوة الهوائية:</b> نموذجيًّا 0.2–0.5 mm في فرامل السيرفو، وتزداد مع التآكل حتى يعجز الملف عن جذب اللوح. أغلب فرامل السيرفو المدمجة <b>غير قابلة للضبط</b>، فالقرار الاستبدال. بعض الكتيّبات تطلب «تليين» الفرامل (Burnishing) بعد التخزين الطويل لاستعادة الاحتكاك؛ نفّذه فقط وفق الكتيّب.</p>
+<p><b>قياس زمن التحرير:</b> ضع مجس تيار على سلك الفرامل. عند التغذية يرتفع التيار، ثم ينخفض انخفاضًا قصيرًا لحظة تحرك اللوح (الحركة تولّد جهدًا عكسيًّا في الملف)، ثم يكمل إلى 0.6 A. لحظة هذا الانخفاض هي لحظة التحرير؛ قارنها بـ 80 ms.</p>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>جدول القرار والأخطاء الشائعة</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th>نتيجة الفحص</th><th>الحكم</th><th>الإجراء</th></tr></thead><tbody>
+<tr><td>R ≈ 40 Ω، تتحرر ≤ 19.2 V، تمسك ≥ 12 N·m، التوقيت سليم</td><td style="color:var(--good)">سليمة</td><td>سجّل القيم في سجل المحور</td></tr>
+<tr><td>تمسك 10–12 N·m، والجاذبية 4.68 N·m</td><td style="color:var(--warn)">راقِب</td><td>ابحث عن الزيت، أعد الاختبار قريبًا، خطّط للاستبدال</td></tr>
+<tr><td>الجهد عند المحرك &lt; 21.6 V</td><td style="color:var(--warn)">إصلاح دائرة</td><td>المصدر، المقطع، التوصيلات، تلامس المرحّل</td></tr>
+<tr><td>تنزلق دون 12 N·m بوضوح أو لا تتحرر</td><td style="color:var(--bad)">استبدال</td><td>الفرامل (إن كانت قطعة مستقلة) أو المحرك</td></tr>
+<tr><td>الرأس يهبط عند الإيقاف</td><td style="color:var(--bad)">أوقف المحور</td><td>أصلح الإخماد والتوقيت والعزم قبل أي تشغيل</td></tr>
+</tbody></table></div>
+<div class="tblw"><table class="tbl"><thead><tr><th>الخطأ الشائع</th><th>الصواب</th></tr></thead><tbody>
+<tr><td>تحرير الفرامل بمصدر خارجي والرأس غير مسنود</td><td>اسند الرأس أولًا، دائمًا</td></tr>
+<tr><td>قياس 24 V عند المصدر والحكم بأنها كافية</td><td>قِس عند أطراف المحرك والتيار مار</td></tr>
+<tr><td>استعمال الفرامل لإيقاف المحور في كل دورة</td><td>الإيقاف بالمحرك، والفرامل على محور واقف</td></tr>
+<tr><td>تركيب ديود وحده «للحماية» دون مراجعة زمن التعشيق</td><td>ديود + زينر أو فاريستور، ثم قِس زمن التعشيق</td></tr>
+<tr><td>اختبار عزل المحرك والفرامل متصلة بالدرايف</td><td>افصل أطراف الفرامل؛ اختبر ملفها وحده (الدرس 3)</td></tr>
+</tbody></table></div>
+<div class="box key"><b>على المحاكي:</b> اختبر فرامل محرك Z والرأس مسنود: قِس مقاومة الملف وجهد التحرير، وزمني التحرير والتعشيق، وعزم التثبيت بمفتاح العزم. <a class="btn pri" href="bench.html#brake" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">المعلومات هنا من IEC 60034 و IEC 61800-5-1 و IEC 61800-3 و IEEE 43 و NFPA 70E وكتيّبات الشركات المصنّعة للسيرفو. القيم في الأمثلة نموذجية للتعلّم؛ ارجع إلى كتيّب الصيانة الخاص بمحركك ودرايفك قبل أي عمل فعلي، والتزم دائمًا بالعزل والإقفال وانتظار تفريغ المكثفات. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l7');
+IL.quiz(document.getElementById('quiz'), [{"q": "فرامل 24 V تسحب 0.6 A. كم مقاومة ملفها تقريبًا؟", "o": ["≈ 40 Ω", "≈ 14.4 Ω", "≈ 4.0 Ω", "≈ 400 Ω"], "a": 0, "why": "R = 24 ÷ 0.6 = 40 Ω."}, {"q": "ما الذي يحدث لفرامل السيرفو عند انقطاع الكهرباء؟", "o": ["تُعشّق بالنوابض فتمسك", "تتحرر فيسقط المحور", "تبقى على حالتها السابقة", "تُعشّق بعد 10 دقائق"], "a": 0, "why": "الفرامل آمنة عند الفصل: النوابض تمسك، والكهرباء تحرّر."}, {"q": "كابل الفرامل مقاومته الكلية 3.5 Ω والتيار 0.6 A والمصدر 23 V. كم يصل إلى المحرك؟", "o": ["20.9 V", "22.4 V", "21.6 V", "19.00 V"], "a": 0, "why": "الهبوط 3.5 × 0.6 = 2.1 V، فيصل 23 − 2.1 = 20.9 V، أقل من 21.6 V."}, {"q": "زمن تحرير الفرامل 80 ms. كيف تضبط تأخير الحركة بعد أمر التحرير؟", "o": ["أكثر من 80 ms بهامش", "أقل من 30 ms", "صفر لتسريع الدورة", "مساوٍ لزمن التعشيق 30 ms"], "a": 0, "why": "الحركة قبل التحرير الكامل تجرّ القرص وتتلفه."}, {"q": "بعد تركيب ديود موازٍ وحده على ملف الفرامل، صار رأس Z يهبط قليلًا عند الإيقاف. لماذا؟", "o": ["زمن التعشيق طال", "الديود رفع عزم الفرامل", "الديود خفّض جهد التحرير", "الإنكودر فقد الإزاحة"], "a": 0, "why": "التيار يدور في الديود ببطء فيتأخر التعشيق، والدرايف يفصل العزم قبله."}, {"q": "قرأت مقاومة الملف OL. ما العَرَض المتوقع في التشغيل؟", "o": ["تبقى مغلقة فيحاربها المحرك", "تنزلق تحت الحمل", "تتحرر عند جهد أقل", "لا أثر لهذا العطل أثناء التشغيل"], "a": 0, "why": "الملف المفتوح لا يجذب اللوح، فتبقى الفرامل مغلقة ويظهر AL.oL أو AL.PoS."}, {"q": "تختبر عزم فرامل Z بمفتاح عزم. ما الشرط الأول؟", "o": ["الرأس مسنود بدعامة", "الفرامل مغذّاة بـ 24 V", "المحور يتحرك ببطء", "الدرايف في وضع STO فقط دون فصل"], "a": 0, "why": "لا يُختبر عزم فرامل محور رأسي وهو يحمل الرأس دون سند."}], {lesson:'l7', pass:0.8});
+</script>
+</body>
+</html>

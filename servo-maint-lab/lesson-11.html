@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الإنذارات وتشخيصها</title>
+<meta name="description" content="الدرس 11: طريقة ثابتة لتشخيص إنذارات درايف السيرفو: التيار الزائد، الجهد الزائد والمنخفض، أخطاء الإنكودر والبطارية، خطأ التتبّع، والحمل الزائد مع حالات عملية بالأرقام.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="srvm.css?v=20261028v1">
+<script src="srvm.js?v=20261028v1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس صيانة محركات السيرفو · الدرس 11 من 13</p>
+    <h1>الإنذارات وتشخيصها</h1>
+    <p>رمز الإنذار يصف العرَض لا القطعة التالفة. اسأل متى يظهر، ثم قِس، ثم اعزل.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="drive.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>طريقة ثابتة لكل إنذار</h2>
+<ul><li><b>لا تمسح الإنذار قبل أن تسجّله:</b> الرمز، والوقت، وما كان المحور يفعله (السجل في الدرايف وفي الـ CNC).</li>
+<li><b>متى يظهر؟</b> عند وصل التغذية، أو عند التمكين (Servo on)، أو أثناء التسارع، أو التباطؤ، أو والمحور واقف. هذا السؤال وحده يفرّق بين معظم الأسباب.</li>
+<li><b>استعمل شاشة المراقبة</b> في الدرايف: التيار، جهد الناقل، الحمل %، خطأ التتبّع، عدّاد أخطاء الإنكودر. هي راسم إشارة مجاني.</li>
+<li><b>اعزل:</b> المحاور X و Y بالمحرك نفسه (1.5 kW)؛ يمكن تبديل كابل أو درايف بينهما لمعرفة هل العطل يتبع القطعة أم يبقى في المحور. انتبه: X بإنكودر مطلق تسلسلي و Y بإنكودر تزايدي، فلا تبدل الدرايفات إلا إذا كانت تدعم النوعين وأعدت المعاملات (Parameters) الصحيحة.</li></ul>
+<figure class="fig">
+<svg viewBox="0 0 640 300" role="img" aria-label="خطوات تشخيص الإنذار: اقرأ الإنذار والسجل، حدد متى يظهر، قِس، اعزل بين المحرك والكابل والدرايف والميكانيكا، أصلح السبب، ثم تحقق وسجّل" style="width:100%;max-width:640px;direction:ltr">
+<defs><marker id="a11" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs>
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor">
+<rect x="20" y="20" width="180" height="56" rx="8" fill="none" style="stroke:var(--accent)" stroke-width="2"/><text x="110.0" y="44.0" text-anchor="middle" font-weight="700">1 · read alarm</text><text x="110.0" y="62.0" text-anchor="middle" font-size="11">code + history + time</text><rect x="230" y="20" width="180" height="56" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="320.0" y="44.0" text-anchor="middle" font-weight="700">2 · when?</text><text x="320.0" y="62.0" text-anchor="middle" font-size="11">power-up·servo-on·move</text><rect x="440" y="20" width="180" height="56" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="530.0" y="44.0" text-anchor="middle" font-weight="700">3 · monitor</text><text x="530.0" y="62.0" text-anchor="middle" font-size="11">I · Vbus · load % · err</text><rect x="440" y="122" width="180" height="56" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="530.0" y="146.0" text-anchor="middle" font-weight="700">4 · measure</text><text x="530.0" y="164.0" text-anchor="middle" font-size="11">meter · scope · megger</text><rect x="230" y="122" width="180" height="56" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="320.0" y="146.0" text-anchor="middle" font-weight="700">5 · isolate</text><text x="320.0" y="164.0" text-anchor="middle" font-size="11">motor·cable·drive·mech</text><rect x="20" y="122" width="180" height="56" rx="8" fill="none" style="stroke:var(--bad)" stroke-width="2"/><text x="110.0" y="146.0" text-anchor="middle" font-weight="700">6 · fix root cause</text><text x="110.0" y="164.0" text-anchor="middle" font-size="11">not only the symptom</text><rect x="20" y="224" width="180" height="56" rx="8" fill="none" style="stroke:var(--good)" stroke-width="2"/><text x="110.0" y="248.0" text-anchor="middle" font-weight="700">7 · verify</text><text x="110.0" y="266.0" text-anchor="middle" font-size="11">test run vs baseline</text><rect x="230" y="224" width="180" height="56" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="320.0" y="248.0" text-anchor="middle" font-weight="700">8 · log</text><text x="320.0" y="266.0" text-anchor="middle" font-size="11">alarm · cause · parts</text>
+<path d="M200 48H226" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#a11)"/><path d="M410 48H436" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#a11)"/><path d="M530 76V118" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#a11)"/><path d="M440 150H414" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#a11)"/><path d="M230 150H204" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#a11)"/><path d="M110 178V220" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#a11)"/><path d="M200 252H226" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#a11)"/>
+<text x="530" y="250" text-anchor="middle">swap test:</text>
+<text x="530" y="266" text-anchor="middle">same motor/drive type</text>
+</g></svg>
+<figcaption>رمز الإنذار يدل على <b>العرَض</b> وليس على القطعة التالفة. متى يظهر الإنذار يختصر نصف الطريق، والقياس يحسم الباقي.</figcaption>
+</figure>
+<div class="box safe"><b>السلامة أثناء التشخيص:</b> كل قياس داخل الدرايف بعد العزل والإقفال وقياس الناقل أقل من 50 V. المحور Z مسنود قبل أي عمل على محركه أو فرامله أو كابله. لا تتجاوز حدود العزم أو تعطّل حدود التتبّع «لتجربة» محور قد يسقط أو يصطدم.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>عائلات الإنذارات: السبب والقياس</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th>الإنذار</th><th>المعنى</th><th>أسباب شائعة</th><th>ماذا تقيس</th></tr></thead><tbody>
+<tr><td class="mono">AL.oc</td><td>تيار زائد لحظي في العاكس</td><td>قصر في المحرك أو الكابل أو إلى الأرضي، IGBT تالف، كسب مرتفع جدًّا، إزاحة إنكودر خاطئة</td><td>عزل المحرك والكابل 500 V (الإنكودر مفصول)، مقاومة الملفات، فحص الديود للعاكس</td></tr>
+<tr><td class="mono">AL.ov</td><td>جهد الناقل تجاوز ≈ 800 V</td><td>مقاومة كبح مقطوعة أو غير موصولة، ترانزستور الكبح تالف، تباطؤ أسرع من قدرة الكبح، شبكة مرتفعة</td><td>مقاومة الكبح بالأوم، جهد الناقل في المراقب أثناء التباطؤ، جهد الشبكة</td></tr>
+<tr><td class="mono">AL.Lv</td><td>الناقل أقل من ≈ 380 V</td><td>هبوط الشبكة، فقد طور، مرحّل الشحن المسبق، كونتاكتور رئيسي متآكل</td><td>الأطوار الثلاثة عند مدخل الدرايف تحت الحمل، جهد الناقل</td></tr>
+<tr><td class="mono">AL.Ph</td><td>فقد طور المدخل</td><td>منصهر محروق، قاطع، طرف مرتخٍ</td><td>L1–L2 و L2–L3 و L3–L1 عند الدرايف نفسه، لا عند القاطع فقط</td></tr>
+<tr><td class="mono">AL.EnC</td><td>انقطاع أو خطأ في اتصال الإنكودر</td><td>كابل مكسور في السلسلة، موصّل مبتل، تشويش، تغذية منخفضة، إنكودر تالف</td><td>تغذية الإنكودر عند المحرك، استمرارية الأزواج، اختبار الهز، الإطار على راسم الإشارة</td></tr>
+<tr><td class="mono">AL.EnB</td><td>بطارية الإنكودر المطلق منخفضة أو فُقدت</td><td>بطارية منتهية، كابل البطارية مفصول أثناء إطفاء التغذية</td><td>جهد البطارية تحت حمل خفيف (الاسمي 3.6 V)</td></tr>
+<tr><td class="mono">AL.PoS</td><td>خطأ التتبّع تجاوز الحد</td><td>تعطّل ميكانيكي، فرامل لا تتحرر، حد عزم منخفض، كسب ضعيف، تسارع مستحيل</td><td>عزم المحور في المراقب، جهد الفرامل، الحركة اليدوية للمحور</td></tr>
+<tr><td class="mono">AL.oL</td><td>حمل زائد (I²t)</td><td>احتكاك المجاري، تزييت مفقود، ثقل معادل ضعيف في Z، فرامل تحتك، فقد مغنطة</td><td>الحمل % المتوسط والذروة، تيار الإمساك في Z، Back-EMF</td></tr>
+<tr><td class="mono">AL.oH</td><td>حرارة المشتت الحراري</td><td>مروحة متوقفة، زعانف مسدودة، حرارة اللوحة &gt; 40–45 °C</td><td>دوران المروحة، حرارة اللوحة، مرشح الباب</td></tr>
+<tr><td class="mono">AL.brk</td><td>عطل في دائرة الكبح أو الفرامل</td><td>ترانزستور الكبح، مقاومة الكبح، أو خرج الفرامل حسب نوع الدرايف</td><td>مقاومة الكبح وعزلها، ملف الفرامل ≈ 40 Ω وجهده</td></tr>
+</tbody></table></div>
+<p class="muted">الأسماء والعتبات قيم نموذجية للتعلّم ومحايدة لا تخص شركة بعينها. ارجع إلى قائمة الإنذارات في كتيّب الدرايف الفعلي لمعرفة الرمز والعتبة والإجراء الموصى به.</p>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>التيار والجهد: AL.oc و AL.ov و AL.Lv</h2>
+<div class="ex"><b>حالة 1 — AL.oc على المحور Z فور التمكين:</b>
+<ol><li>المحور Z مسنود على دعامة، والدرايف معزول ومقفل، والناقل 6 V.</li>
+<li>فحص الديود للعاكس: كل القراءات طبيعية. الدرايف ليس سبب الإنذار على الأرجح.</li>
+<li>فُك كابل المحرك من الدرايف ومن المحرك، وافصل موصّلي الإنكودر والفرامل. عزل المحرك وحده: <span class="eq">850 MΩ</span>. عزل الكابل وحده (U-PE): <span class="eq">0.4 MΩ</span>.</li>
+<li>الكابل محتك عند طرف السلسلة ومبتل بسائل التبريد. استُبدل الكابل كاملًا، وعاد العزل إلى أكثر من 1 GΩ، واختفى الإنذار.</li></ol></div>
+<p>إذا ظهر AL.oc <b>عند التسارع فقط</b> والعزل سليم، فابحث في الإزاحة الخاطئة بعد تغيير إنكودر (الدرس 6)، وفي كسب حلقة السرعة المرتفع جدًّا، وفي حمل ميكانيكي يعلق.</p>
+<div class="ex"><b>حالة 2 — AL.ov عند تباطؤ المحور X من 3000 rpm:</b> القصور الذاتي الكلي على عمود المحرك <span class="eq">J = 1.2×10⁻³ kg·m²</span>.
+<ol><li>السرعة الزاوية: <span class="eq">ω = 3000 × 2π / 60 ≈ 314.2 rad/s</span>.</li>
+<li>الطاقة الحركية: <span class="eq">E = ½ J ω² = ½ × 1.2×10⁻³ × 314.2² ≈ 59.2 J</span>.</li>
+<li>ما يستطيع المكثف امتصاصه من 540 إلى 760 V: <span class="eq">½ × 235 µF × (760² − 540²) ≈ 33.6 J</span>.</li>
+<li>بإهمال الفقد، 59.2 J أكبر من 33.6 J، فلا بد أن تعمل مقاومة الكبح. قِسها بالأوم: <b>OL</b>. المقاومة مقطوعة، فيصل الجهد إلى 800 V ويظهر AL.ov.</li></ol>
+الإصلاح: مقاومة جديدة <span class="eq">100 Ω 400 W</span> وفحص عزلها وتثبيتها. لا تخفّف الإنذار بإطالة زمن التباطؤ إلا مؤقتًا، فهذا يخفض إنتاجية الماكينة ويخفي العطل.</div>
+<div class="ex"><b>حالة 3 — AL.Lv متقطع عند تسارع عدة محاور معًا:</b> الجهود الثلاثة عند مدخل الدرايفات بلا حمل 398 و 401 و 399 V، وتحت التسارع يهبط L2 وحده إلى 352 V. السبب طرف مرتخٍ ومحترق في الكونتاكتور الرئيسي على الطور L2. القياس بلا حمل لا يكشفه؛ قِس تحت الحمل وراقب حرارة الأطراف بكاميرا حرارية.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>الإنكودر والتتبّع والحمل: AL.EnC و AL.EnB و AL.PoS و AL.oL</h2>
+<h3>بطارية الإنكودر المطلق (المحور X)</h3>
+<ul><li>الإنكودر المطلق متعدد اللفات في المحور X يحفظ عدد اللفات ببطارية <span class="eq">3.6 V</span> حين تنقطع التغذية. ينذر الدرايف عادةً حين يهبط الجهد إلى نحو 3.1 V (قيمة نموذجية للتعلّم؛ ارجع إلى الكتيّب).</li>
+<li><b>غيّر البطارية والتغذية الرئيسية للتحكم موصولة</b> (أو وفق إجراء الكتيّب)، كي لا تُفقد ذاكرة اللفات. إن فُقدت يظهر إنذار فقد الموضع المطلق، ويجب إعادة تحديد نقطة الصفر للمحور (Reference) بدقة قبل الإنتاج، وإلا اصطدم المحور.</li>
+<li>المحور Z بإنكودر مطلق من نوع التروس بلا بطارية، فلا يحتاج إلى هذا الإجراء.</li></ul>
+<h3>خطأ التتبّع AL.PoS</h3>
+<div class="formula">e(following) = v / Kp</div>
+<p>عند سرعة ثابتة دون تغذية أمامية (Feedforward)، يتأخر الموضع الفعلي عن المطلوب بمقدار السرعة مقسومة على كسب حلقة الموضع.</p>
+<div class="ex"><b>مثال — المحور X في الحركة السريعة:</b> <span class="eq">24 m/min</span> ومسمار كروي بخطوة 10 mm، أي <span class="eq">2400 rpm</span>، و <span class="eq">Kp = 30 s⁻¹</span>.
+<ol><li><span class="eq">v = 24000 / 60 = 400 mm/s</span>.</li>
+<li><span class="eq">e = 400 / 30 ≈ 13.3 mm</span>: خطأ تتبّع طبيعي في هذه الحالة. لو كان حد الإنذار 10 mm لظهر AL.PoS دون أي عطل؛ والعلاج إعادة الضبط (الدرس 12) لا تغيير القطع.</li></ol></div>
+<div class="ex"><b>حالة 4 — AL.PoS ثم AL.oL على المحور Z عند الحركة إلى أعلى:</b>
+<ol><li>المراقب: العزم يصل إلى الحد عند بدء الحركة، والمحور يكاد لا يتحرك، وصوت احتكاك.</li>
+<li>جهد الفرامل عند موصّل المحرك عند أمر التحرير: <span class="eq">19 V</span>. الحد الأدنى <span class="eq">24 V − 10% = 21.6 V</span>، فلا تتحرر الفرامل تمامًا.</li>
+<li>مقاومة الملف <span class="eq">40 Ω</span> سليمة. مصدر 24 V يعطي 24.2 V عند خرجه، والهبوط في وصلة مؤكسدة في نقطة التوصيل الوسيطة.</li>
+<li>بعد الإصلاح: 23.8 V عند المحرك، والفرامل تتحرر خلال نحو 80 ms، والعزم عند الحركة طبيعي.</li></ol></div>
+<div class="tblw"><table class="tbl"><thead><tr><th>القرار</th><th>المؤشر</th></tr></thead><tbody>
+<tr><td><b style="color:var(--good)">لا عطل في القطع</b>؛ اضبط</td><td>خطأ تتبّع يساوي v / Kp تقريبًا، والعزم والتيار طبيعيان</td></tr>
+<tr><td><b style="color:var(--warn)">راقِب</b></td><td>الحمل المتوسط يرتفع شهرًا بعد شهر (تزييت، مجاري، ثقل معادل)</td></tr>
+<tr><td><b style="color:var(--bad)">أصلح الميكانيكا</b></td><td>العزم عند الحد والمحور بطيء، أو الحركة اليدوية صعبة بعد فك القارنة</td></tr>
+<tr><td><b style="color:var(--bad)">أصلح الكهرباء</b></td><td>جهد فرامل منخفض، فقد طور في المحرك، Back-EMF منخفض</td></tr>
+</tbody></table></div>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>أخطاء شائعة في التعامل مع الإنذارات</h2>
+<div class="tblw"><table class="tbl"><thead><tr><th>الخطأ</th><th>لماذا هو خطأ</th></tr></thead><tbody>
+<tr><td>مسح الإنذار وإعادة التشغيل مرات متتالية</td><td>AL.oc المتكرر يجهد IGBT حتى يحترق، و AL.ov المتكرر يجهد المكثفات</td></tr>
+<tr><td>تبديل الدرايف أولًا لأن «الإنذار في الدرايف»</td><td>معظم إنذارات التيار والإنكودر سببها في المحرك أو الكابل</td></tr>
+<tr><td>رفع حد خطأ التتبّع أو حد العزم لإسكات الإنذار</td><td>يخفي تعطّلًا ميكانيكيًّا، وقد يسمح باصطدام أو سقوط محور</td></tr>
+<tr><td>تغيير بطارية الإنكودر والتحكم مطفأ</td><td>فقد عدد اللفات وضياع نقطة الصفر</td></tr>
+<tr><td>قياس الجهد بلا حمل فقط</td><td>الأطراف المرتخية لا تظهر إلا تحت التيار</td></tr>
+<tr><td>إغفال السجل</td><td>الإنذار المتقطع يظهر نمطه في السجل: وقت معيّن، محور معيّن، حركة معيّنة</td></tr>
+</tbody></table></div>
+<div class="box key"><b>بعد كل إصلاح:</b> شغّل المحور ببطء ثم بسرعة، وراقب التيار والحمل وخطأ التتبّع، وقارنها بالخط الأساسي المسجّل للمحور. اكتب في سجل الماكينة: الإنذار، والسبب الجذري، والقياسات، والقطع المستبدلة.</div>
+<div class="box key"><b>على المحاكي:</b> اقرأ الإنذار على شاشة الدرايف ذات المقاطع السبعة، وخذ القياسات الحقيقية، ثم اختر السبب الجذري والإصلاح الصحيح. <a class="btn pri" href="drive.html#alarms" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">المعلومات هنا من IEC 60034 و IEC 61800-5-1 و IEC 61800-3 و IEEE 43 و NFPA 70E وكتيّبات الشركات المصنّعة للسيرفو. القيم في الأمثلة نموذجية للتعلّم؛ ارجع إلى كتيّب الصيانة الخاص بمحركك ودرايفك قبل أي عمل فعلي، والتزم دائمًا بالعزل والإقفال وانتظار تفريغ المكثفات. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l11');
+IL.quiz(document.getElementById('quiz'), [{"q": "يظهر AL.oc على المحور Z فور التمكين. فحص الديود للعاكس سليم، وعزل المحرك وحده 850 MΩ، وعزل الكابل وحده 0.4 MΩ. ما الإصلاح؟", "o": ["استبدال كابل قدرة المحور", "استبدال الدرايف بآخر جديد", "استبدال المحرك بمحرك جديد", "خفض كسب حلقة السرعة"], "a": 0, "why": "العزل المنخفض في الكابل وحده يحدد موضع القصر إلى الأرضي."}, {"q": "المحور X: J = 1.2×10⁻³ kg·m² ويتباطأ من 3000 rpm. ما الطاقة الحركية تقريبًا؟", "o": ["59.2 J", "33.6 J", "118.4 J", "5.4 J"], "a": 0, "why": "ω ≈ 314.2 rad/s و E = ½ × 1.2×10⁻³ × 314.2² ≈ 59.2 J."}, {"q": "يظهر AL.ov عند تباطؤ المحور X فقط، وقراءة مقاومة الكبح بالأوم OL. ما السبب الجذري؟", "o": ["مقاومة الكبح مقطوعة", "جهد الشبكة منخفض جدًّا", "بطارية الإنكودر ضعيفة", "مكثف الناقل مقصور"], "a": 0, "why": "دون مقاومة الكبح لا تُصرف طاقة التباطؤ فيرتفع الناقل إلى حد الفصل."}, {"q": "المحور X: v = 400 mm/s و Kp = 30 s⁻¹ دون تغذية أمامية. ما خطأ التتبّع المتوقع؟", "o": ["13.3 mm", "1.33 mm", "7.5 mm", "120 mm"], "a": 0, "why": "e = v / Kp = 400 / 30 ≈ 13.3 mm."}, {"q": "ظهر AL.EnB على المحور X. ما الطريقة الصحيحة لتغيير البطارية؟", "o": ["تغييرها وتغذية التحكم موصولة", "تغييرها بعد فصل كل التغذية", "تغييرها ثم مسح الذاكرة فورًا", "إطفاء الماكينة يومًا ثم تغييرها"], "a": 0, "why": "بقاء التغذية يحفظ عدد اللفات؛ وإلا ضاع الموضع المطلق ولزم تحديد الصفر من جديد."}, {"q": "المحور Z يعطي AL.PoS ثم AL.oL عند الحركة لأعلى، وجهد الفرامل عند المحرك 19 V (الاسمي 24 V ± 10%). ما الحكم؟", "o": ["الفرامل لا تتحرر تمامًا", "المحرك فقد جزءًا من مغنطته", "كسب حلقة الموضع مرتفع جدًّا", "الإنكودر يحتاج ضبط إزاحة"], "a": 0, "why": "الحد الأدنى 21.6 V؛ عند 19 V تبقى الفرامل تحتك فيرتفع العزم ويتأخر المحور."}, {"q": "يظهر AL.Lv عند تسارع عدة محاور معًا فقط، والجهود بلا حمل سليمة. ما القياس الذي يكشف السبب؟", "o": ["الأطوار الثلاثة تحت الحمل", "مقاومة ملفات المحركات كلها", "جهد بطارية الإنكودر المطلق", "عزل كابل الإنكودر بالميجر"], "a": 0, "why": "الطرف المرتخي يسبب هبوطًا في طور واحد تحت التيار فقط."}], {lesson:'l11', pass:0.8});
+</script>
+</body>
+</html>

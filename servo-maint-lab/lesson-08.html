@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>المحامل والسدادات والمغانط</title>
+<meta name="description" content="الدرس 8: تشخيص المحامل بالصوت والاهتزاز، أحمال العمود، السدادة ودرجة IP، واكتشاف فقدان المغنطة بقياس Back-EMF والتيار.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="srvm.css?v=20261028v1">
+<script src="srvm.js?v=20261028v1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">كورس صيانة محركات السيرفو · الدرس 8 من 13</p>
+    <h1>المحامل والسدادات والمغانط</h1>
+    <p>أغلب محركات السيرفو تخرج من الماكينة لأسباب ميكانيكية. تعلّم أن تفرّق بين المحمل والسدادة والمغنطة بالقياس لا بالتخمين.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="bench.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>ما الذي يُستهلك ميكانيكيًّا في محرك السيرفو؟</h2>
+<p>الملفات والإنكودر عرفناهما. لكن معظم المحركات التي تخرج من الماكينة للإصلاح تخرج لأسباب ميكانيكية: <b>المحامل</b> (Bearings)، و<b>سدادة العمود</b> (Oil seal)، ثم <b>المغانط الدائمة</b> حين تفقد جزءًا من مغنطتها.</p>
+<figure class="fig">
+<svg viewBox="0 0 640 300" role="img" aria-label="مقطع طولي في محرك سيرفو: العمود، سدادة الزيت في الشفة الأمامية، المحمل الأمامي الثابت، العضو الثابت وملفاته، العضو الدوار ومغانطه، المحمل الخلفي العائم مع النابض، الفرامل، والإنكودر في الخلف" style="width:100%;max-width:640px;direction:ltr">
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor">
+<path d="M20 150H600" stroke="currentColor" stroke-dasharray="6 4" opacity=".5"/>
+<rect x="20" y="138" width="520" height="24" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+<text x="50" y="132">shaft</text>
+<rect x="100" y="60" width="22" height="180" fill="none" stroke="currentColor" stroke-width="2"/>
+<text x="111" y="52" text-anchor="middle">flange</text>
+<rect x="84" y="118" width="16" height="64" rx="3" style="fill:var(--warn)" opacity=".75"/>
+<text x="92" y="262" text-anchor="middle" style="fill:var(--warn)">oil seal</text>
+<path d="M92 182V250" style="stroke:var(--warn)"/>
+<rect x="122" y="104" width="26" height="34" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="135" cy="121" r="9" style="fill:var(--accent)"/>
+<rect x="122" y="162" width="26" height="34" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="135" cy="179" r="9" style="fill:var(--accent)"/>
+<path d="M140 196L150 246" style="stroke:var(--accent)"/><text x="160" y="262" text-anchor="middle" style="fill:var(--accent)">fixed brg</text>
+<rect x="180" y="62" width="200" height="40" fill="none" stroke="currentColor" stroke-width="2"/>
+<rect x="180" y="198" width="200" height="40" fill="none" stroke="currentColor" stroke-width="2"/>
+<text x="280" y="87" text-anchor="middle">stator + winding</text>
+<rect x="190" y="110" width="180" height="24" style="fill:var(--cur)" opacity=".75"/>
+<rect x="190" y="166" width="180" height="24" style="fill:var(--cur)" opacity=".75"/>
+<text x="280" y="126" text-anchor="middle" font-weight="700">NdFeB magnets</text>
+<text x="280" y="182" text-anchor="middle" font-weight="700">rotor</text>
+<rect x="400" y="104" width="26" height="34" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="413" cy="121" r="9" style="fill:var(--accent)"/>
+<rect x="400" y="162" width="26" height="34" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="413" cy="179" r="9" style="fill:var(--accent)"/>
+<path d="M430 108l6 6-6 6 6 6-6 6" fill="none" stroke="currentColor"/>
+<text x="413" y="96" text-anchor="middle" style="fill:var(--accent)">floating brg</text>
+<text x="392" y="244">+ wave spring</text>
+<rect x="452" y="96" width="40" height="108" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+<text x="472" y="222" text-anchor="middle">brake (Z)</text>
+<rect x="518" y="112" width="8" height="76" style="fill:var(--good)"/>
+<rect x="540" y="96" width="70" height="108" rx="6" fill="none" style="stroke:var(--good)" stroke-width="2"/>
+<text x="575" y="146" text-anchor="middle" style="fill:var(--good)">encoder</text>
+<text x="575" y="162" text-anchor="middle" style="fill:var(--good)">disk</text>
+<text x="575" y="222" text-anchor="middle" style="fill:var(--good)">rear cover</text>
+<rect x="180" y="20" width="200" height="22" rx="4" fill="none" stroke="currentColor"/>
+<text x="280" y="36" text-anchor="middle">power + encoder connectors</text>
+<text x="24" y="290">← load side</text><text x="616" y="290" text-anchor="end">non-drive end →</text>
+</g></svg>
+<figcaption>المحمل الأمامي ثابت محوريًّا ويحمل قوى الحمل، والخلفي عائم مع نابض موجي ليسمح بتمدّد العمود حراريًّا. الإنكودر ملاصق للعمود في الخلف، فكل طرقة على العمود تصل إلى قرصه.</figcaption>
+</figure>
+<div class="tblw"><table class="tbl"><thead><tr><th>الجزء</th><th>ما يتلفه عادةً</th><th>كيف يظهر</th></tr></thead><tbody>
+<tr><td>المحمل الأمامي</td><td>حمل قطري زائد (سير مشدود، قارنة غير محاذية)، طرق على العمود، دخول سائل التبريد</td><td>صوت خشن، اهتزاز، حرارة الشفة، ارتفاع الحمل في الدرايف</td></tr>
+<tr><td>المحمل الخلفي</td><td>تيارات المحمل الناتجة عن نبضات PWM (تآكل كهربائي Fluting)، جفاف الشحم</td><td>صفير أو أزيز منتظم، علامات خطوط على مسار الكرات</td></tr>
+<tr><td>سدادة الزيت</td><td>تشغيل جاف، عمود مخدوش، زيت صندوق تروس بضغط</td><td>زيت داخل المحرك أو الإنكودر، هبوط العزل، أخطاء إنكودر</td></tr>
+<tr><td>المغانط (NdFeB)</td><td>حرارة زائدة، تيار قصر كبير، تيار يتجاوز الذروة المسموحة</td><td>هبوط Back-EMF و Ke، تيار أعلى لنفس الحمل، عزم أقل</td></tr>
+</tbody></table></div>
+<ul><li><b>العمر النظري للمحمل L10:</b> عدد الساعات التي يبلغها 90% من المحامل المتماثلة قبل ظهور التعب. يتناسب عكسيًّا مع <b>مكعّب</b> الحمل: <span class="eq">L10h = (10⁶ / 60n) × (C / P)³</span>.</li>
+<li>في المحركات الصغيرة يكون <b>عمر الشحم</b> (Grease life) غالبًا أقصر من L10، لأن المحامل مغلقة ومشحّمة مدى العمر (2RS أو ZZ) ولا تُعاد تزييتها.</li></ul>
+<div class="ex"><b>مثال — أثر شدّ السير الزائد:</b> محمل أمامي نموذجي C = 14.8 kN يدور عند 3000 rpm.
+<ol><li>بحمل مكافئ <span class="eq">P = 600 N</span>: <span class="eq">L10h = (10⁶ / 180000) × (14800 / 600)³ ≈ 83 400 h</span>.</li>
+<li>إذا ضاعف الفني شدّ السير فصار <span class="eq">P = 1200 N</span>: العمر يقسم على <span class="eq">2³ = 8</span>، أي <span class="eq">≈ 10 400 h</span> فقط.</li></ol>
+مضاعفة الحمل لا تقصّر العمر إلى النصف، بل إلى الثُّمن. <span class="muted">قيم نموذجية للتعلّم؛ خذ C من كتالوج المحمل الفعلي.</span></div>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>تشخيص المحامل: السمع واليد والاهتزاز</h2>
+<div class="box safe"><b>قبل أي فحص باليد:</b> افصل الدرايف بالعزل والإقفال (LOTO) وقِس الناقل المستمر DC bus حتى يقل عن 50 V. في المحور الرأسي Z لا تحرّر الفرامل ولا تفك المحرك قبل أن تسند الرأس على دعامة ميكانيكية أو تُنزله إلى نهايته السفلى.</div>
+<ol class="steps-l"><li><b>اسمع والمحور يتحرك</b> بسرعة ثابتة في الاتجاهين: الصوت الخشن المستمر الذي يزيد مع السرعة ميكانيكي غالبًا. الصفير الحاد الثابت التردد مع التسارع قد يكون رنينًا في حلقة السرعة (الدرس 12) وليس محملًا.</li>
+<li><b>افصل الحمل</b> (فك القارنة أو السير) وأدِر العمود باليد بعد فصل كابل القدرة عن الدرايف. أطراف U/V/W يجب أن تكون <b>مفتوحة</b>؛ لو كانت مقصورة معًا يتولد كبح ديناميكي يجعل العمود ثقيلًا فتحسبه خطأً محملًا عالقًا.</li>
+<li>تحسّس بأصابعك: الدوران السليم ناعم، مع «تكتكة» خفيفة منتظمة من التسنين المغناطيسي Cogging، وهي طبيعية في محرك المغانط الدائمة. الخشونة الرملية أو النقطة الصلبة علامة محمل تالف.</li>
+<li><b>اختبر الخلوص:</b> حرّك العمود قطريًّا ومحوريًّا بيدك. أي حركة محسوسة أو طقطقة تعني خلوصًا زائدًا.</li>
+<li><b>قِس الاهتزاز</b> بمقياس اهتزاز على الشفة الأمامية، قطريًّا ومحوريًّا، والمحرك يدور بلا حمل ثم بالحمل.</li>
+<li><b>قِس حرارة الشفة</b> بعد ساعة تشغيل: فرق واضح بين الشفة الأمامية والخلفية يشير إلى المحمل الأسخن.</li></ol>
+<div class="tblw"><table class="tbl"><thead><tr><th>القرار</th><th>سرعة الاهتزاز (mm/s rms) على الشفة</th><th>الصوت والملمس</th></tr></thead><tbody>
+<tr><td><b style="color:var(--good)">سليم</b></td><td class="mono">≤ 1.8</td><td>ناعم، لا خلوص</td></tr>
+<tr><td><b style="color:var(--warn)">راقِب</b> (سجّل كل شهر)</td><td class="mono">1.8–4.5</td><td>صوت خفيف يزيد ببطء</td></tr>
+<tr><td><b style="color:var(--bad)">أصلح</b> (غيّر المحملين)</td><td class="mono">&gt; 4.5</td><td>خشونة، طقطقة، حرارة</td></tr>
+<tr><td><b style="color:var(--bad)">استبدل المحرك</b> أو أرسله للورشة</td><td class="mono">—</td><td>العمود محتك بالعضو الثابت، أو قرص الإنكودر تأثر</td></tr>
+</tbody></table></div>
+<p class="muted">قيم نموذجية للتعلّم مأخوذة من حدود الآلات الصغيرة (الفئة I حتى 15 kW) في ISO 20816-1 (ISO 10816-1 سابقًا). ارجع إلى كتيّب المحرك وإلى الخط الأساسي المسجّل للمحور نفسه؛ الاتجاه مع الزمن أهم من رقم واحد.</p>
+<figure class="fig">
+<svg viewBox="0 0 640 300" role="img" aria-label="طيف اهتزاز للمحور X عند 3000 دورة في الدقيقة: قمة عند 50 Hz، وقمة عند تردد عيب الحلقة الخارجية 179 Hz وتوافقياتها 357 و 536 Hz" style="width:100%;max-width:640px;direction:ltr">
+<g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor">
+<path d="M60 250H610M60 250V30" stroke="currentColor" stroke-width="2"/>
+<path d="M60.0 250v6" stroke="currentColor"/><text x="60.0" y="272" text-anchor="middle">0</text><path d="M150.0 250v6" stroke="currentColor"/><text x="150.0" y="272" text-anchor="middle">100</text><path d="M240.0 250v6" stroke="currentColor"/><text x="240.0" y="272" text-anchor="middle">200</text><path d="M330.0 250v6" stroke="currentColor"/><text x="330.0" y="272" text-anchor="middle">300</text><path d="M420.0 250v6" stroke="currentColor"/><text x="420.0" y="272" text-anchor="middle">400</text><path d="M510.0 250v6" stroke="currentColor"/><text x="510.0" y="272" text-anchor="middle">500</text><path d="M600.0 250v6" stroke="currentColor"/><text x="600.0" y="272" text-anchor="middle">600</text><rect x="100.0" y="130" width="10" height="120" style="fill:var(--good)"/><text x="105.0" y="122" text-anchor="middle" style="fill:var(--good)">1×</text><rect x="145.0" y="220" width="10" height="30" style="fill:var(--good)"/><text x="150.0" y="212" text-anchor="middle" style="fill:var(--good)">2×</text><rect x="215.73999999999998" y="100" width="10" height="150" style="fill:var(--bad)"/><text x="220.73999999999998" y="92" text-anchor="middle" style="fill:var(--bad)">BPFO</text><rect x="376.47999999999996" y="170" width="10" height="80" style="fill:var(--bad)"/><text x="381.47999999999996" y="162" text-anchor="middle" style="fill:var(--bad)">2×</text><rect x="537.22" y="205" width="10" height="45" style="fill:var(--bad)"/><text x="542.22" y="197" text-anchor="middle" style="fill:var(--bad)">3×</text><path d="M240.0 250V200" style="stroke:var(--warn)" stroke-dasharray="4 3" stroke-width="2"/><text x="246.0" y="196" style="fill:var(--warn)">f_e = 200 Hz</text>
+<text x="335" y="292" text-anchor="middle">frequency (Hz)</text>
+<text x="66" y="24">velocity (mm/s rms)</text>
+<text x="604" y="48" text-anchor="end">X axis · 3000 rpm · 9 balls</text>
+</g></svg>
+<figcaption>قمة BPFO وتوافقياتها تدل على عيب في الحلقة الخارجية للمحمل. الخط المتقطع هو التردد الكهربائي 200 Hz؛ ما كان مرتبطًا به يختفي فور قطع التيار، أما صوت المحمل فيبقى ما دام العمود يدور.</figcaption>
+</figure>
+<div class="ex"><b>مثال — المحور X عند 3000 rpm:</b> تردد الدوران <span class="eq">fr = 3000 / 60 = 50 Hz</span>. محمل نموذجي فيه 9 كرات، قطر الكرة 7.94 mm وقطر دائرة المراكز 38.5 mm.
+<ol><li>عيب الحلقة الخارجية: <span class="eq">BPFO = 9/2 × 50 × (1 − 7.94/38.5) ≈ 178.6 Hz</span>.</li>
+<li>عيب الحلقة الداخلية: <span class="eq">BPFI = 9/2 × 50 × (1 + 7.94/38.5) ≈ 271.4 Hz</span>.</li>
+<li>التردد الكهربائي: <span class="eq">f = 4 × 3000 / 60 = 200 Hz</span>؛ لا تخلط بينه وبين ترددات المحمل.</li></ol>
+تقريب سريع في الميدان: BPFO ≈ 0.4 × عدد الكرات × fr، و BPFI ≈ 0.6 × عدد الكرات × fr.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>الأحمال على العمود وتغيير المحامل</h2>
+<p>كتالوج كل محرك سيرفو يحدّد <b>الحمل القطري المسموح</b> (Radial load) عند منتصف طول العمود أو عند نهايته، و<b>الحمل المحوري المسموح</b> (Axial/Thrust load)، وهو أصغر كثيرًا.</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>المحرك</th><th>الحمل القطري المسموح</th><th>الحمل المحوري المسموح</th></tr></thead><tbody>
+<tr><td>A · 0.75 kW</td><td class="mono">≈ 250 N</td><td class="mono">≈ 70 N</td></tr>
+<tr><td>X و Y · 1.5 kW</td><td class="mono">≈ 490 N</td><td class="mono">≈ 98 N</td></tr>
+<tr><td>Z · 2.0 kW</td><td class="mono">≈ 690 N</td><td class="mono">≈ 200 N</td></tr>
+</tbody></table></div>
+<p class="muted">قيم نموذجية للتعلّم؛ ارجع إلى كتالوج المحرك الفعلي، فالقيمة تتغير بموضع نقطة الحمل على العمود.</p>
+<div class="ex"><b>مثال — سير مسنّن على محرك 1.5 kW:</b> بكرة نصف قطرها <span class="eq">r = 30 mm</span> والعزم المقنّن <span class="eq">4.77 N·m</span>.
+<ol><li>القوة الفعالة في السير: <span class="eq">Fe = T / r = 4.77 / 0.03 = 159 N</span>.</li>
+<li>بشدّ تركيب يعطي حملًا قطريًّا نحو ضعف القوة الفعالة: <span class="eq">≈ 318 N</span>، أقل من 490 N: مقبول.</li>
+<li>عند عزم الذروة <span class="eq">14.3 N·m</span> تصبح القوة الفعالة وحدها <span class="eq">14.3 / 0.03 ≈ 477 N</span>؛ لذلك لا تضف شدًّا زائدًا «للاحتياط».</li></ol></div>
+<h3>تغيير المحامل: متى ومن يفعله؟</h3>
+<ul><li>في كثير من محركات السيرفو يُضبط الإنكودر على العمود في المصنع. فك الغطاء الخلفي أو سحب العضو الدوار قد يفقد ضبط الإنكودر، فيلزم بعده <b>ضبط إزاحة Commutation offset</b> من جديد (الدرس 6).</li>
+<li>العضو الدوار مغناطيسي بقوة: يُسحب ويُدخل بأداة توجيه تمنعه من الالتصاق بالعضو الثابت وخدش الملفات.</li>
+<li>استعمل محامل بالمواصفة نفسها: الخلوص (C3 مثلًا)، ونوع الشحم، والسدادة. بعض المحركات تستعمل محملًا معزولًا أو كرات سيراميك في الخلف لمنع تيارات المحمل.</li>
+<li>إذا لم تتوافر الأدوات أو الضمان ساري المفعول، فأرسل المحرك إلى ورشة معتمدة أو إلى المصنّع.</li></ul>
+<div class="box safe"><b>لا تطرق على العمود أبدًا.</b> البكرة أو القارنة تُركّب بالتسخين أو بمسمار سحب يرتكز على سنّ في طرف العمود، وتُفك بساحبة. الطرقة الواحدة تحدث انبعاجًا في مسار الكرات (Brinelling) وقد تكسر قرص الإنكودر الزجاجي.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">4</span>السدادة والتسرّب ودرجة الحماية IP</h2>
+<p>درجة الحماية حسب IEC 60034-5 تُكتب <b>IP</b> ورقمين: الأول للأجسام الصلبة والغبار، والثاني للماء. محرك السيرفو في ماكينة CNC يتعرّض لسائل التبريد ولرذاذ زيت المحاور.</p>
+<div class="tblw"><table class="tbl"><thead><tr><th>الرمز</th><th>المعنى</th><th>ملاحظة ميدانية</th></tr></thead><tbody>
+<tr><td class="mono">IP65</td><td>محكم ضد الغبار، ومحمي من نفث الماء</td><td>شائع لجسم المحرك؛ مدخل العمود قد يكون أقل بلا سدادة زيت</td></tr>
+<tr><td class="mono">IP67</td><td>محكم ضد الغبار، ويحتمل الغمر المؤقت (نحو 1 m لمدة 30 دقيقة)</td><td>يتحقق فقط والموصّلات مركّبة ومحكمة الشد</td></tr>
+</tbody></table></div>
+<ul><li><b>سدادة الزيت الشفوية</b> (Lip seal) تلزم إذا كان طرف العمود داخل صندوق تروس أو في حوض زيت. تتآكل الشفة إذا عملت جافة، فتحتاج إلى طبقة زيت أو شحم رقيقة.</li>
+<li>السدادة تضيف عزم احتكاك صغيرًا، فلا يُستغرب أن يكون المحرك الجديد بسدادته أثقل قليلًا في الدوران باليد.</li></ul>
+<h3>كيف تفحص؟</h3>
+<ol><li>انظر إلى منطقة العمود والشفة: أثر زيت متجمع أو غبار مبلل حول العمود.</li>
+<li>افك غطاء الإنكودر الخلفي (إن كان التصميم يسمح بذلك دون فقد الضبط) وابحث عن زيت أو سائل تبريد.</li>
+<li>افحص موصّل الإنكودر: أطراف مخضرّة أو صدأ أو حلقة مطاطية (O-ring) مفقودة.</li>
+<li>قِس العزل بين U/V/W مقصورة والأرضي عند 500 V DC، مع فصل موصّلي الإنكودر والفرامل. الهبوط بعد التنظيف يؤكد دخول السائل إلى الملفات.</li></ol>
+<div class="ex"><b>مثال — المحور A (الطاولة الدوارة):</b> محركه متصل بصندوق تروس حلزوني بالزيت. الإنذار المتكرر خطأ ريزولفر، والعزل 4 MΩ. عند فتح الغطاء الخلفي وُجد زيت تروس على ملفات الريزولفر. الإصلاح: سدادة جديدة للعمود، وتنظيف المحرك وتجفيفه في ورشة، وإعادة قياس العزل حتى يتجاوز 100 MΩ، ثم فحص إشارات الريزولفر (الدرس 5)، وتغيير سدادة صندوق التروس أيضًا وفحص فتحة التنفيس فيه؛ الضغط الداخلي هو ما دفع الزيت.</div>
+<div class="box"><b>أخطاء شائعة:</b> غسل الماكينة بنفث ماء بضغط عالٍ نحو المحرك؛ ترك موصّل مفتوح بلا غطاء؛ تركيب الموصّل متجهًا إلى أعلى دون حلقة تقطير (Drip loop) في الكابل؛ استعمال مذيب يذيب مطاط السدادة.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">5</span>فقدان المغنطة: كيف تكتشفه بالأرقام</h2>
+<p>مغانط النيوديميوم NdFeB تفقد جزءًا من مغنطتها بشكل دائم إذا اجتمع عليها <b>حرارة عالية</b> و<b>تيار مضاد كبير</b> (تيار قصر، أو تيار يتجاوز الذروة المسموحة). النتيجة: Ke أقل و Kt أقل، فيحتاج المحرك تيارًا أكبر لنفس العزم، فيسخن أكثر، فتتسارع المشكلة.</p>
+<div class="formula">V(line-line, rms) = Ke × rpm / 1000</div>
+<ul><li>انزع المحرك من الدرايف (أطراف U/V/W مفتوحة) وأدره بمثقاب وجهاز قياس السرعة، وقِس الجهود الثلاثة بين الأطراف بجهاز True RMS أو راسم الإشارة.</li>
+<li>قِس والمحرك بارد (20–25 °C): مغنطة NdFeB تنقص بشكل عكوس نحو 0.1% لكل درجة، فالمحرك الساخن يعطي قراءة أقل دون أن يكون تالفًا.</li>
+<li>الجهود الثلاثة متساوية ومنخفضة معًا = فقدان مغنطة. جهد واحد مختلف = عيب في ملف (الدرس 3).</li></ul>
+<div class="ex"><b>مثال 1 — المحور X:</b> Ke = 72 V/1000 rpm. أدرناه عند 1500 rpm.
+<ol><li>الجهد المتوقع: <span class="eq">72 × 1500 / 1000 = 108 V</span>، والتردد <span class="eq">4 × 1500 / 60 = 100 Hz</span>.</li>
+<li>المقيس: 97.1 و 96.8 و 97.0 V، متساوية فيما بينها.</li>
+<li>النسبة: <span class="eq">97 / 108 ≈ 0.898</span>، أي هبوط <b>≈ 10%</b>: المحرك فقد جزءًا من مغنطته.</li></ol></div>
+<div class="ex"><b>مثال 2 — المحور Z بلا فك:</b> المحور الرأسي يحتاج تيارًا ثابتًا ليمسك الرأس ضد الجاذبية، وهو حمل ثابت تقريبًا. عند الاستلام سُجّل تيار الإمساك <span class="eq">2.4 A</span> (عزم <span class="eq">2.4 × 1.59 ≈ 3.82 N·m</span>). اليوم يقرأ الدرايف <span class="eq">2.7 A</span> للوضع نفسه.
+<ol><li>النسبة <span class="eq">2.4 / 2.7 ≈ 0.889</span>: Kt الفعلي نحو 89% من الأصلي، إذا لم يتغيّر الحمل.</li>
+<li>قبل الحكم: تأكد من الثقل المعادل (Counterbalance) وضغطه، ومن عدم احتكاك الفرامل، ومن تزييت المجاري. ثم أكّد بقياس Back-EMF.</li></ol></div>
+<div class="tblw"><table class="tbl"><thead><tr><th>القرار</th><th>Back-EMF المقيس ÷ المتوقع (محرك بارد)</th><th>اتزان الجهود الثلاثة</th></tr></thead><tbody>
+<tr><td><b style="color:var(--good)">سليم</b></td><td class="mono">≥ 0.95</td><td class="mono">± 2%</td></tr>
+<tr><td><b style="color:var(--warn)">راقِب</b> وابحث عن سبب الحرارة</td><td class="mono">0.90–0.95</td><td class="mono">± 2%</td></tr>
+<tr><td><b style="color:var(--bad)">استبدل المحرك</b> أو أعد مغنطته في ورشة المصنّع</td><td class="mono">&lt; 0.90</td><td>—</td></tr>
+<tr><td><b style="color:var(--bad)">عيب ملف</b> (الدرس 3)</td><td>—</td><td class="mono">&gt; ± 2%</td></tr>
+</tbody></table></div>
+<p class="muted">قيم نموذجية للتعلّم؛ ارجع إلى كتيّب المحرك. بعد تغيير المحرك أو إعادة مغنطته يجب إعادة ضبط الإزاحة والضبط Tuning.</p>
+<div class="box"><b>ابحث عن السبب قبل الاستبدال:</b> مروحة درايف متوقفة سمحت بتيار طويل، حمل ميكانيكي زائد، حد تيار ذروة مضبوط أعلى من قيمة المحرك، أو قصر في الكابل سحب تيارًا كبيرًا. وإلا فسيفقد المحرك الجديد مغنطته أيضًا.</div>
+<div class="box key"><b>على المحاكي:</b> شخّص محملًا تالفًا من الصوت والاهتزاز، وتسرّب السدادة، وفقدان المغنطة من قراءة Back-EMF والتيار. <a class="btn pri" href="bench.html#bearing" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+</section>
+
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">المعلومات هنا من IEC 60034 و IEC 61800-5-1 و IEC 61800-3 و IEEE 43 و NFPA 70E وكتيّبات الشركات المصنّعة للسيرفو. القيم في الأمثلة نموذجية للتعلّم؛ ارجع إلى كتيّب الصيانة الخاص بمحركك ودرايفك قبل أي عمل فعلي، والتزم دائمًا بالعزل والإقفال وانتظار تفريغ المكثفات. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l8');
+IL.quiz(document.getElementById('quiz'), [{"q": "محمل أمامي يعمل بحمل مكافئ 600 N. شدّ فني السير فصار الحمل 1200 N والسرعة كما هي. كم يصبح العمر النظري L10؟", "o": ["ثُمن العمر السابق", "نصف العمر السابق", "ربع العمر السابق", "العمر نفسه تقريبًا"], "a": 0, "why": "العمر يتناسب مع (C/P)³، ومضاعفة الحمل تقسم العمر على 2³ = 8."}, {"q": "أردت تدوير عمود المحور X باليد لفحص المحمل، فوجدته ثقيلًا جدًّا ومقاومته تزيد مع السرعة. أطراف U/V/W مقصورة معًا عند لوحة الاختبار. ما أول خطوة؟", "o": ["افتح قصر الأطراف وأعد التجربة", "غيّر المحملين الأمامي والخلفي", "زِد الشحم من فتحة الشفة الأمامية", "أرسل المحرك لإعادة المغنطة"], "a": 0, "why": "قصر الأطراف يولد كبحًا ديناميكيًّا من Back-EMF يتناسب مع السرعة، وهذا ليس عيب محمل."}, {"q": "المحور X يدور عند 3000 rpm، والمحمل فيه 9 كرات، قطرها 7.94 mm وقطر دائرة مراكزها 38.5 mm. ما تردد عيب الحلقة الخارجية BPFO تقريبًا؟", "o": ["179 Hz", "200 Hz", "271 Hz", "50 Hz"], "a": 0, "why": "BPFO = 9/2 × 50 × (1 − 7.94/38.5) ≈ 178.6 Hz. أما 200 Hz فهو التردد الكهربائي، و 271 Hz هو BPFI."}, {"q": "أدرت محرك المحور X (Ke = 72 V/1000 rpm) وهو بارد عند 1500 rpm، فقرأت 97 V بين كل طرفين. ما الحكم؟", "o": ["فقد نحو 10% من مغنطته", "سليم ضمن الحدود", "عيب في ملف واحد", "القراءة تعني محملًا تالفًا"], "a": 0, "why": "المتوقع 72 × 1.5 = 108 V، والنسبة 97/108 ≈ 0.90، والجهود متساوية، فهو هبوط مغنطة وليس عيب ملف."}, {"q": "قرأت Back-EMF أقل بنسبة 4% مباشرة بعد إيقاف المحور وهو ساخن نحو 65 °C. ماذا تفعل؟", "o": ["أعد القياس بعد أن يبرد المحرك", "استبدل المحرك فورًا", "اضبط Ke في الدرايف على القيمة الجديدة", "غيّر الكابل ثم أعد القياس"], "a": 0, "why": "مغنطة NdFeB تنقص بشكل عكوس نحو 0.1% لكل درجة، فـ 40 درجة فوق الجو تفسّر 4% دون تلف."}, {"q": "تريد تركيب بكرة على عمود محرك سيرفو بإحكام. ما الطريقة الصحيحة؟", "o": ["بالتسخين أو بمسمار سحب في سنّ العمود", "بمطرقة نحاسية على البكرة بلطف", "بمطرقة بلاستيك على طرف العمود الخلفي", "بالضغط على غطاء الإنكودر الخلفي"], "a": 0, "why": "أي طرقة تنقل صدمة إلى المحامل (Brinelling) وإلى قرص الإنكودر، فيُركّب بالتسخين أو بالسحب المحوري."}, {"q": "المحور A تكرر فيه خطأ الريزولفر، ووجدت زيت تروس داخل الغطاء الخلفي للمحرك. ما الذي يجب فحصه مع تغيير سدادة العمود؟", "o": ["تنفيس صندوق التروس وسدادته", "جهد بطارية الإنكودر المطلق", "مقاومة الكبح الخارجية في الدرايف", "كسب حلقة الموضع في الدرايف"], "a": 0, "why": "الضغط الداخلي في صندوق التروس (تنفيس مسدود) يدفع الزيت عبر السدادة؛ دون إصلاحه تتلف السدادة الجديدة."}], {lesson:'l8', pass:0.8});
+</script>
+</body>
+</html>

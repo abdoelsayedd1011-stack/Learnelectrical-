@@ -25,7 +25,8 @@
     iiot:    { key: "iiot-lab-v1",    src: "iiot-lab/iiot.js",              list: "IL.COURSE" },
     scada:   { key: "scada-lab-v1",   src: "scada-lab/scada.js",            list: "IL.COURSE" },
     panel:   { key: "panel-lab-v1",   src: "panel-lab/panel.js",            list: "IL.COURSE" },
-    maint:   { key: "maint-lab-v1",   src: "maint-lab/maint.js",            list: "IL.COURSE" }
+    maint:   { key: "maint-lab-v1",   src: "maint-lab/maint.js",            list: "IL.COURSE" },
+    srvm:    { key: "srvm-lab-v1",    src: "servo-maint-lab/srvm.js",       list: "IL.COURSE" }
   };
   // basics / instr / plc / drw: `{id:'l1', … tasks:[['ohm','…'],…]}` → "l1/ohm" في state.done
   function parseTasks(src, list){
