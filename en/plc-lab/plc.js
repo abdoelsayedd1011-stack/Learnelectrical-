@@ -151,8 +151,62 @@ PL.lesson = function(id){
       (n ? `<a class="btn pri" href="${n.file}">Lesson ${n.n}: ${esc(n.title)} →</a>` : `<a class="btn pri" href="index.html#certSec">Certificate →</a>`);
   }
   G.addEventListener('pageshow', e => { if (e.persisted){ PL.store.reload(); renderProg(); } });
+  if (HAS_DOM) setTimeout(() => PL.gate(id), 0);
 };
 PL.hubTheme = headBtns;
+
+/* ================= reading gate: a lesson's simulators open only after the explanation above them is read =================
+   Every .wd (simulator / try-it box) on a lesson page starts locked: blurred, inert, with a card saying why.
+   It opens once the learner has scrolled through the explanation blocks between the previous .wd and this one
+   and kept them on screen for a reading time that grows with their length (3 … 20 s). Boxes open in order.
+   Opened boxes are remembered per lesson (plc-gate-v1); a finished lesson opens everything. */
+const GKEY = 'plc-gate-v1';
+function gateLoad(){ try { return JSON.parse(lsGet(GKEY)) || {}; } catch (e){ return {}; } }
+PL.gate = function(lid){
+  if (!HAS_DOM) return;
+  const wds = $$('.lsec .wd'); if (!wds.length) return;
+  const sv = gateLoad(), opened = sv[lid] || 0, s0 = PL.summary(lid), all = s0.done === s0.total;
+  const blocks = $$('.lsec > *').filter(b => !b.matches('.wd, h2') && !b.querySelector('.wd'));
+  let prev = null;
+  const G = wds.map((wd, n) => {
+    const own = blocks.filter(b => (!prev || (prev.compareDocumentPosition(b) & 4)) && (wd.compareDocumentPosition(b) & 2));
+    const chars = own.reduce((a, b) => a + (b.textContent || '').replace(/\s+/g, ' ').length, 0);
+    prev = wd;
+    return {wd, own, need:own.length ? Math.min(20, Math.max(3, chars / 40)) : 0, t:0, end:!own.length, open:all || n < opened};
+  });
+  const vis = new Set();
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) vis.add(e.target); else vis.delete(e.target);
+    G.forEach(g => { const last = g.own[g.own.length - 1]; if (last === e.target && e.isIntersecting && e.boundingClientRect.bottom <= (window.innerHeight || 800) + 40) g.end = true; }); }), {threshold:[0, 0.5, 1]}) : null;
+  function kids(g){ return Array.from(g.wd.children).filter(c => c.tagName !== 'H3' && !c.classList.contains('gate')); }
+  function lock(g){
+    g.wd.classList.add('gated');
+    kids(g).forEach(c => { c.inert = true; c.setAttribute('aria-hidden', 'true'); });
+    const c = document.createElement('div'); c.className = 'gate'; c.setAttribute('role', 'status');
+    c.innerHTML = `<b>🔒 This simulator opens after you finish reading the explanation above it.</b><span class="muted gate-why">Read it first so you know what you are about to try.</span><span class="gate-bar" role="progressbar" aria-label="Reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></span>${g.own.length ? '<button type="button" class="btn gate-up">↑ Go to the explanation</button>' : ''}`;
+    const h = g.wd.querySelector(':scope > h3'); if (h) h.after(c); else g.wd.prepend(c);
+    const up = c.querySelector('.gate-up'); if (up) up.addEventListener('click', () => { const t = g.own.find(b => !vis.has(b)) || g.own[0]; t.scrollIntoView({block:'start', behavior:reduced() ? 'auto' : 'smooth'}); });
+    g.card = c; if (io) g.own.forEach(b => io.observe(b));
+  }
+  function unlock(g, quiet){
+    g.open = true; g.wd.classList.remove('gated');
+    kids(g).forEach(c => { c.inert = false; c.removeAttribute('aria-hidden'); });
+    if (g.card){ if (quiet) g.card.remove(); else { g.card.className = 'gate gate-ok'; g.card.innerHTML = '<b>✓ Open: now try what you just read.</b>'; setTimeout(() => { if (g.card) g.card.remove(); }, 4000); } }
+    const n = G.indexOf(g) + 1, o = gateLoad(); if ((o[lid] || 0) < n){ o[lid] = n; lsSet(GKEY, JSON.stringify(o)); }
+    (PL._sims || []).concat(PL._bx || []).forEach(a => { if (a.host && g.wd.contains(a.host) && a.preview && a.preview.refresh) a.preview.refresh(); });
+  }
+  G.forEach(g => { if (!g.open) lock(g); });
+  if (G.every(g => g.open)) return;
+  const tick = setInterval(() => {
+    const g = G.find(x => !x.open); if (!g){ clearInterval(tick); return; }
+    if (document.hidden) return;
+    if (!g.own.length || g.own.some(b => vis.has(b))) g.t += 0.5;
+    if (!io) g.end = true;
+    const pct = g.need ? Math.min(100, Math.round(g.t / g.need * 100)) : 100;
+    const bar = g.card && g.card.querySelector('.gate-bar'); if (bar){ bar.firstChild.style.width = pct + '%'; bar.setAttribute('aria-valuenow', pct); }
+    const why = g.card && g.card.querySelector('.gate-why'); if (why && G.indexOf(g) > 0 && !G[G.indexOf(g) - 1].open) why.textContent = 'Finish the simulator above first.';
+    if (g.t >= g.need && g.end) unlock(g);
+  }, 500);
+};
 
 /* ---------------- select, then confirm ----------------
    tapping an option only selects it (.sel); right/wrong shows after the learner presses the check / confirm button */
@@ -1864,8 +1918,8 @@ PV.attach = function(ad){
   let vis = false, tmr = 0;
   const tryAuto = () => {
     clearTimeout(tmr);
-    if (!vis || PV.cur || !PV.autoOn() || !ad.has() || PV.seen(ad.key())) return;
-    tmr = setTimeout(() => { if (vis && !PV.cur && PV.autoOn() && ad.has() && !PV.seen(ad.key())) PV.play(ad, {auto:true}); }, 700);
+    if (!vis || PV.cur || !PV.autoOn() || !ad.has() || PV.seen(ad.key()) || ad.watchEl.closest('.gated')) return;
+    tmr = setTimeout(() => { if (vis && !PV.cur && PV.autoOn() && ad.has() && !PV.seen(ad.key()) && !ad.watchEl.closest('.gated')) PV.play(ad, {auto:true}); }, 700);
   };
   ad.refresh = () => { box.hidden = !ad.has(); tryAuto(); };
   if ('IntersectionObserver' in G) new IntersectionObserver(es => { vis = es[0].isIntersecting; tryAuto(); }, {threshold:0.6}).observe(ad.watchEl);
