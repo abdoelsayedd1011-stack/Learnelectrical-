@@ -7,7 +7,8 @@
    Video: hidden until /media/lessons/manifest.json lists the lesson:
          {"videos":["basics-lab/lesson-01", …]}  →  /media/lessons/basics-lab/lesson-01.mp4 (+ lesson-01.jpg poster).
          The manifest is fetched once per tab session (sessionStorage), and any failure just keeps the video hidden.
-   «يلا طبّق ↓» scrolls to L.go, else the first hands-on widget (.wd / #lesson in the classic course), else the next section.
+   «يلا طبّق ↓» is NOT in the summary (students skipped the explanation): it sits right before the first hands-on widget
+   (L.go, else .wd), after the explanation, and scrolls into it. No widget after the explanation (classic stepper) → no button.
    «اخفي الملخص» collapses the block to a one-line bar; remembered per lesson in localStorage "le-intro-v1". */
 (function(){
   "use strict";
@@ -59,7 +60,6 @@
           L.t.map(function(t){ return '<li><b dir="auto">' + iso(esc(t[0])) + "</b><span>" + iso(esc(t[1])) + "</span></li>"; }).join("") + "</ul>" : "") +
         '<figure class="li-v" hidden><div class="li-vbox"></div>' +
           (T.cc ? '<figcaption class="li-cc" lang="en">' + esc(T.cc) + "</figcaption>" : "") + "</figure>" +
-        '<div class="li-act"><button type="button" class="li-go" data-li="go">' + esc(T.go) + "</button></div>" +
       "</div>" +
       '<button type="button" class="li-bar" data-li="show" aria-expanded="false" hidden><span>' + esc(T.bar) + '</span><span class="li-open">' + esc(T.open) + " ▾</span></button>" +
     "</section>";
@@ -73,32 +73,39 @@
   collapse(!!readStore()[id], false);
 
   function target(){
-    var sel = [L.go, ".wd", "#lesson"], i, el;
+    var sel = [L.go, ".wd"], i, el;
     for (i = 0; i < sel.length; i++){
       if (!sel[i]) continue;
       try { el = document.querySelector(sel[i]); } catch (e) { el = null; }
       if (el && !host.contains(el)) return el;
     }
-    el = host.nextElementSibling;
-    while (el && (el.id === "lprog" || el.offsetParent === null)) el = el.nextElementSibling;
-    return el;
+    return null;
   }
-  host.addEventListener("click", function(e){
-    var b = e.target.closest ? e.target.closest("[data-li]") : null;
-    if (!b) return;
-    var k = b.getAttribute("data-li");
-    if (k === "hide"){ collapse(true, true); writeStore(true); }
-    else if (k === "show"){ collapse(false, true); writeStore(false); }
-    else if (k === "go"){
-      var t = target();
-      if (!t) return;
+  // «يلا طبّق ↓» بعد الشرح، قبل أول تمرين على طول
+  (function(){
+    var t = target();
+    if (!t || !t.parentNode) return;
+    // لازم يكون فيه شرح بين الملخص وأول تمرين (الكلاسيك: الدرس كله تمارين وخطوات في نفس الصندوق → مفيش زرار)
+    try { var r = document.createRange(); r.setStartAfter(host); r.setEndBefore(t); if (r.toString().replace(/\s+/g, "").length < 200) return; } catch (e) { return; }
+    var act = document.createElement("div");
+    act.className = "li-act li-after";
+    act.innerHTML = '<button type="button" class="li-go">' + esc(T.go) + "</button>";
+    t.parentNode.insertBefore(act, t);
+    act.addEventListener("click", function(){
       var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
       t.scrollIntoView({behavior: reduce ? "auto" : "smooth", block: "start"});
       t.classList.remove("li-flash"); void t.offsetWidth; t.classList.add("li-flash");
       setTimeout(function(){ t.classList.remove("li-flash"); }, 1800);
       if (!t.hasAttribute("tabindex")) t.setAttribute("tabindex", "-1");
       try { t.focus({preventScroll: true}); } catch (e2) {}
-    }
+    });
+  })();
+  host.addEventListener("click", function(e){
+    var b = e.target.closest ? e.target.closest("[data-li]") : null;
+    if (!b) return;
+    var k = b.getAttribute("data-li");
+    if (k === "hide"){ collapse(true, true); writeStore(true); }
+    else if (k === "show"){ collapse(false, true); writeStore(false); }
   });
 
   // video: show only when the manifest lists this lesson
