@@ -11,11 +11,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
-<link rel="stylesheet" href="plc.css?v=dd5dfa34">
+<link rel="stylesheet" href="plc.css?v=c45bd5d6">
 <script src="/assets/next-hint.js?v=20261021nh"></script>
-<script src="plc.js?v=3ab286a6"></script>
+<script src="plc.js?v=56849187"></script>
 <link rel="stylesheet" href="brand.css?v=3c0d0450">
-<script src="brands.js?v=dd391c34"></script>
+<script src="brands.js?v=9bbe2147"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261021r">
 </head>
 <body>
@@ -93,7 +93,7 @@ PL.ladFig(document.getElementById('fSeal'), [{rows:[['NO:I0.0', 'NO:I0.1', 'NO:I
 PL.ladFig(document.getElementById('fSR'), [{rows:[['NO:I0.0', '-', '-', '-', 'S:Q0.0']]}, {rows:[['NC:I0.1', '-', '-', '-', 'R:Q0.0']]}], {labels:{'I0.0':'Start', 'I0.1':'Stop NC', 'Q0.0':'موتور'}});
 const ioM = {inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'موتور', kind:'motor'}]};
 window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l4', exercises:[
-  {key:'seal', title:'DOL بأوفرلود', task:'<b>المطلوب:</b> <b>Start</b> (I0.0) يشغّل الموتور <b>Q0.0</b> ويفضل شغال بعد ما تسيبه. <b>Stop</b> (I0.1، متوصّل NC) أو فصل <b>الأوفرلود</b> (I0.2، متوصّل NC) يوقفوه. ولمبة <b>Trip</b> على <b>Q0.1</b> تنوّر طول ما الأوفرلود فاصل. وبعد ما الأوفرلود يرجع، الموتور مايشتغلش لوحده.',
+  {key:'seal', title:'DOL بأوفرلود', task:'<p class="tk-g"><b>الهدف:</b> تشغيل موتور DOL بزرار تشغيل وزرار إيقاف، زي أي لوحة.</p><p class="tk-d"><b>الأجهزة:</b> Start على <b>I0.0</b>، Stop على <b>I0.1</b> (NC)، أوفرلود على <b>I0.2</b> (NC)، الموتور <b>Q0.0</b>، لمبة Trip على <b>Q0.1</b>.</p><b>المطلوب يحصل:</b><ol class="tk-s"><li>تدوس Start وتسيبه ← الموتور يشتغل ويفضل شغال.</li><li>تدوس Stop ← الموتور يقف.</li><li>الأوفرلود يفصل ← الموتور يقف ولمبة Trip تنوّر.</li><li>الأوفرلود يرجع ← اللمبة تطفي، والموتور ما يشتغلش لوحده (لازم Start تاني).</li></ol>',
     io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}, {a:'I0.2', label:'أوفرلود', kind:'ncsw'}], outputs:[{a:'Q0.0', label:'موتور', kind:'motor'}, {a:'Q0.1', label:'Trip', kind:'lamp', color:'amber'}]},
     tests:[{run:0.2}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'في البداية من غير ما حد يدوس حاجة:'},
       {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'دوست Start وسبته: الموتور لازم يفضل شغال (التثبيت الذاتي).'},
@@ -107,7 +107,7 @@ window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l4', exercises:[
     ok:'ده أشهر برنامج في الدنيا. لاحظ إن الأوفرلود استخدمناه NO في رانج و NC في رانج تاني: نفس البت، سؤالين مختلفين.'}
 ]});
 window.SIM2 = PL.sim(document.getElementById('sim2'), {lesson:'l4', exercises:[
-  {key:'sr', title:'Set و Reset', task:'<b>المطلوب:</b> نفس التشغيل والإيقاف بس <b>من غير تثبيت</b>: استخدم كويل <b>Set</b> على Q0.0 مع Start، وكويل <b>Reset</b> على Q0.0 مع Stop (متوصّل NC). ولو الاتنين متداسين مع بعض، <b>الإيقاف يكسب</b>.',
+  {key:'sr', title:'Set و Reset', task:'<p class="tk-g"><b>الهدف:</b> نفس تشغيل وإيقاف الموتور، بس بكويل Set وكويل Reset بدل التثبيت.</p><p class="tk-d"><b>الأجهزة:</b> Start على <b>I0.0</b>، Stop على <b>I0.1</b> (NC)، الموتور <b>Q0.0</b>.</p><b>المطلوب يحصل:</b><ol class="tk-s"><li>Start ← كويل Set على <b>Q0.0</b> يشغّل الموتور.</li><li>Stop ← كويل Reset على <b>Q0.0</b> يوقفه.</li><li>Start و Stop متداسين مع بعض ← الموتور يفضل واقف (حط رانج الـ Reset بعد رانج الـ Set).</li></ol>',
     io:ioM,
     tests:[{run:0.2}, {press:'I0.0'}, {run:0.4}, {exp:{'Q0.0':1}, msg:'دوست Start وسبته:'}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'دوست Stop:'},
       {hold:'I0.0'}, {run:0.2}, {hold:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Start و Stop متداسين مع بعض: الإيقاف لازم يكسب. حط رانج الـ Reset بعد رانج الـ Set.'}, {release:'I0.1'}, {release:'I0.0'}, {run:0.2},
@@ -117,7 +117,7 @@ window.SIM2 = PL.sim(document.getElementById('sim2'), {lesson:'l4', exercises:[
     ok:'Set/Reset مريحين في البرامج الكبيرة، بس خلي بالك من ترتيب الرانجات: آخر واحد بيكسب.'}
 ]});
 window.SIM3 = PL.sim(document.getElementById('sim3'), {lesson:'l4', exercises:[
-  {key:'fr', title:'أمام وخلف', task:'<b>المطلوب:</b> <b>I0.0</b> يشغّل أمام <b>Q0.0</b>، و<b>I0.1</b> يشغّل خلف <b>Q0.1</b>، كل واحد بتثبيت. <b>Stop</b> (I0.2، NC) يوقف أي واحد. وممنوع الاتنين يشتغلوا مع بعض <b>ولو لسكان واحد</b>، ولو الموتور شغال أمام ودوست خلف مايحصلش حاجة لحد ما تدوس Stop.',
+  {key:'fr', title:'أمام وخلف', task:'<p class="tk-g"><b>الهدف:</b> موتور بيلف أمام وخلف بكونتاكتورين، من غير ما الاتنين يشتغلوا مع بعض أبدًا.</p><p class="tk-d"><b>الأجهزة:</b> أمام <b>I0.0</b>، خلف <b>I0.1</b>، Stop <b>I0.2</b> (NC)، كونتاكتور أمام <b>Q0.0</b>، كونتاكتور خلف <b>Q0.1</b>.</p><b>المطلوب يحصل:</b><ol class="tk-s"><li>دوسة أمام ← <b>Q0.0</b> يشتغل ويفضل.</li><li>دوسة خلف ← <b>Q0.1</b> يشتغل ويفضل.</li><li>Stop ← أي واحد شغال يقف.</li><li>شغال أمام ودوست خلف ← ما يحصلش حاجة لحد ما تدوس Stop (والعكس).</li><li><b>Q0.0</b> و <b>Q0.1</b> ما يشتغلوش مع بعض ولا لحظة.</li></ol>',
     io:{inputs:[{a:'I0.0', label:'أمام', kind:'pb'}, {a:'I0.1', label:'خلف', kind:'pb', color:'blue'}, {a:'I0.2', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'KM1 أمام'}, {a:'Q0.1', label:'KM2 خلف'}]}, plant:'fr',
     tests:[{watch:c => c.q('Q0.0') && c.q('Q0.1') ? 'Q0.0 و Q0.1 اشتغلوا مع بعض: قصر بين الفازات! محتاج كونتاكت NC من كل خرج في رانج التاني.' : null},
       {run:0.2}, {press:'I0.0'}, {run:0.4}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'دوست أمام وسبته:'},

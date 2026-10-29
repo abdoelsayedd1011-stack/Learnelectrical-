@@ -1018,7 +1018,7 @@ const plainSim = PL.plainSim = function(host, opt){
     Object.keys(forces).forEach(a => delete forces[a]);
     plantSt = P().create(ex.plantOpt);
     freshEngine();
-    task.innerHTML = ex.task; task.classList.toggle('ok', PL.has(opt.lesson, ex.key));
+    task.innerHTML = ex.task + '<p class="bx-how"><b>How to solve it:</b> build the program below → ▶ RUN → test with the buttons → “Test program”.</p>'; task.classList.toggle('ok', PL.has(opt.lesson, ex.key));
     hintBox.hidden = true; hintBox.innerHTML = ex.hint || '';
     $('[data-t=hint]', host).hidden = !ex.hint;
     $('[data-t=sol]', host).hidden = !(ex.sol && PL.has(opt.lesson, ex.key));
@@ -1637,7 +1637,7 @@ PL.timerDemo = function(host){
   const ex = [];
   /* PNP sensor + sinking input card (1M on 0V) */
   ex.push({key:'pnp', title:'PNP input', h:300,
-    task:'<b>Task:</b> CPU power, <b>PNP</b> → <b>I0.0</b>, Start → <b>I0.1</b>, <b>1M</b> → <b>0V</b>.',
+    task:'<p class="tk-g"><b>Goal:</b> wire a PNP sensor and a button to the input card.</p><b>Make these wires (tap one terminal, then the other):</b><ol class="tk-s"><li>CPU power: +24V to L+, and 0V to M.</li><li>Sensor power: brown BN to +24V, blue BU to 0V.</li><li>Sensor signal: black BK to <b>I0.0</b>.</li><li>Button: terminal 13 to +24V, terminal 14 to <b>I0.1</b>.</li><li>Card common: 1M to 0V.</li></ol><p class="tk-n">Then try it: bring metal near the sensor → <b>I0.0</b> lamp lights. Press Start → <b>I0.1</b> lamp lights.</p>',
     terms:base().concat(leadT, pbT, [right('IM', '1M', 130, 'sig'), right('I0', 'I0.0', 180, 'sig'), right('I1', 'I0.1', 230, 'sig')]),
     groups:[['P24', 'CL', 'BN', 'PB13'], ['P0', 'CM', 'BU', 'IM'], ['BK', 'I0'], ['PB14', 'I1']],
     why:{IM:'With PNP, 1M goes to 0V.', BK:'BK goes to the card input.', PB13:'One button terminal to +24V, the other to the input.', CL:'L+ to +24V.', CM:'M to 0V.'},
@@ -1647,7 +1647,7 @@ PL.timerDemo = function(host){
     ok:'BK gives +24V, and the current returns through 1M to 0V.'});
   /* NPN sensor + sourcing card (1M on +24V) */
   ex.push({key:'npn', title:'NPN input', h:300,
-    task:'<b>Task:</b> same as before with an <b>NPN</b> sensor: <b>1M</b> → <b>+24V</b>. What does the button connect I0.1 to?',
+    task:'<p class="tk-g"><b>Goal:</b> the same wiring with an NPN sensor. NPN pulls the signal to 0V, so the common flips.</p><b>Make these wires:</b><ol class="tk-s"><li>CPU power: +24V to L+, and 0V to M.</li><li>Sensor power: brown BN to +24V, blue BU to 0V.</li><li>Sensor signal: black BK to <b>I0.0</b>.</li><li>Card common: 1M to +24V (not 0V).</li><li>Button: terminal 13 to 0V, terminal 14 to <b>I0.1</b>.</li></ol><p class="tk-n">Then try it: bring metal near the sensor, press Start, and watch the input lamps.</p>',
     terms:base().concat(leadT, pbT, [right('IM', '1M', 130, 'sig'), right('I0', 'I0.0', 180, 'sig'), right('I1', 'I0.1', 230, 'sig')]),
     groups:[['P24', 'CL', 'BN', 'IM'], ['P0', 'CM', 'BU', 'PB13'], ['BK', 'I0'], ['PB14', 'I1']],
     why:{IM:'With NPN, 1M goes to +24V.', PB13:'The button pulls the input to 0V.', BK:'BK goes to the card input.', CL:'L+ to +24V.', CM:'M to 0V.'},
@@ -1657,7 +1657,7 @@ PL.timerDemo = function(host){
     ok:'Current flows +24V → 1M, out of I0.0 to BK.'});
   /* transistor (sourcing) output: 24 V DC loads */
   ex.push({key:'tr', title:'Transistor output', h:300,
-    task:'<b>Task:</b> <b>3L+</b> → +24V, <b>3M</b> → 0V, coil → <b>Q0.0</b>, lamp → <b>Q0.1</b>.',
+    task:'<p class="tk-g"><b>Goal:</b> wire a 24V contactor and a 24V lamp to a transistor output.</p><b>Make these wires:</b><ol class="tk-s"><li>CPU power: +24V to L+, and 0V to M.</li><li>Output card power: 3L+ to +24V, 3M to 0V.</li><li>Contactor: A1 to <b>Q0.0</b>, A2 to 0V.</li><li>Lamp: X1 to <b>Q0.1</b>, X2 to 0V.</li></ol><p class="tk-n">Then try it: let the program switch <b>Q0.0</b> → the contactor pulls in, and <b>Q0.1</b> → the lamp lights.</p>',
     terms:base().concat([below('KA1', 'A1', 30, 166, 'sig'), below('KA2', 'A2', 82, 166, 'p0'), below('HX1', 'X1', 30, 270, 'sig'), below('HX2', 'X2', 82, 270, 'p0'),
       right('OL', '3L+', 130, 'p24'), right('Q0', 'Q0.0', 175, 'sig'), right('Q1', 'Q0.1', 220, 'sig'), right('OM', '3M', 265, 'p0')]),
     groups:[['P24', 'CL', 'OL'], ['P0', 'CM', 'OM', 'KA2', 'HX2'], ['Q0', 'KA1'], ['Q1', 'HX1']],
@@ -1668,7 +1668,7 @@ PL.timerDemo = function(host){
     ok:'Transistor: fast, but <b>DC only</b> and about 0.5A.'});
   /* relay output: 230 V AC contactor */
   ex.push({key:'rly', title:'Relay output', h:300,
-    task:'<b>Task:</b> <b>1L</b> → L, <b>Q0.0</b> → A1, A2 → N, plus CPU power. Don’t mix AC with DC.',
+    task:'<p class="tk-g"><b>Goal:</b> wire a 230V AC contactor to a relay output.</p><b>Make these wires:</b><ol class="tk-s"><li>CPU power: +24V to L+, and 0V to M.</li><li>Relay common: 1L to phase L (230V).</li><li>Contactor: A1 to <b>Q0.0</b>, A2 to neutral N.</li></ol><p class="tk-n">Careful: never put 230V on a 24V terminal. Then try it: let the program switch <b>Q0.0</b> → the motor runs.</p>',
     terms:base().concat([{id:'ACL', l:'L', x:150, y:54, pol:'ac'}, {id:'ACN', l:'N', x:196, y:54, pol:'n'},
       below('KA1', 'A1', 30, 166, 'sig'), below('KA2', 'A2', 82, 166, 'coil'), right('RL', '1L', 130, 'sig'), right('Q0', 'Q0.0', 180, 'sig'), right('Q1', 'Q0.1', 230, 'sig')]),
     groups:[['P24', 'CL'], ['P0', 'CM'], ['ACL', 'RL'], ['Q0', 'KA1'], ['ACN', 'KA2']],

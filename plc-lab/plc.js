@@ -1018,7 +1018,7 @@ const plainSim = PL.plainSim = function(host, opt){
     Object.keys(forces).forEach(a => delete forces[a]);
     plantSt = P().create(ex.plantOpt);
     freshEngine();
-    task.innerHTML = ex.task; task.classList.toggle('ok', PL.has(opt.lesson, ex.key));
+    task.innerHTML = ex.task + `<p class="bx-how"><b>إزاي تحلّه:</b> ابني البرنامج تحت ← ${iso('▶ RUN')} ← جرّب بالزراير ← «اختبر البرنامج».</p>`; task.classList.toggle('ok', PL.has(opt.lesson, ex.key));
     hintBox.hidden = true; hintBox.innerHTML = ex.hint || '';
     $('[data-t=hint]', host).hidden = !ex.hint;
     $('[data-t=sol]', host).hidden = !(ex.sol && PL.has(opt.lesson, ex.key));
@@ -1637,7 +1637,7 @@ PL.timerDemo = function(host){
   const ex = [];
   /* PNP sensor + sinking input card (1M on 0V) */
   ex.push({key:'pnp', title:'دخل PNP', h:300,
-    task:'<b>المطلوب:</b> باور الـ CPU، <b>PNP</b> ‏← <b>I0.0</b>، Start ‏← <b>I0.1</b>، <b>1M</b> ‏← <b>0V</b>.',
+    task:'<p class="tk-g"><b>الهدف:</b> توصّل حساس PNP وزرار على كارت الدخل.</p><b>وصّل الأسلاك دي (دوس على طرف وبعدين على الطرف التاني):</b><ol class="tk-s"><li>باور الـ CPU: وصّل +24V بـ L+، و 0V بـ M.</li><li>باور الحساس: وصّل البني BN بـ +24V، والأزرق BU بـ 0V.</li><li>إشارة الحساس: وصّل الأسود BK بـ <b>I0.0</b>.</li><li>الزرار: وصّل طرف 13 بـ +24V، وطرف 14 بـ <b>I0.1</b>.</li><li>كومن الكارت: وصّل 1M بـ 0V.</li></ol><p class="tk-n">بعدها جرّب: قرّب حديدة من الحساس ← لمبة <b>I0.0</b> تنوّر. ودوس Start ← لمبة <b>I0.1</b> تنوّر.</p>',
     terms:base().concat(leadT, pbT, [right('IM', '1M', 130, 'sig'), right('I0', 'I0.0', 180, 'sig'), right('I1', 'I0.1', 230, 'sig')]),
     groups:[['P24', 'CL', 'BN', 'PB13'], ['P0', 'CM', 'BU', 'IM'], ['BK', 'I0'], ['PB14', 'I1']],
     why:{IM:'مع PNP الـ 1M على 0V.', BK:'BK مكانه دخل الكارت.', PB13:'طرف الزرار على +24V والتاني على الدخل.', CL:'L+ على +24V.', CM:'M على 0V.'},
@@ -1647,7 +1647,7 @@ PL.timerDemo = function(host){
     ok:'BK بيطلّع +24V، والتيار يرجع من 1M لـ 0V.'});
   /* NPN sensor + sourcing card (1M on +24V) */
   ex.push({key:'npn', title:'دخل NPN', h:300,
-    task:'<b>المطلوب:</b> زي اللي فات بحساس <b>NPN</b>: <b>1M</b> ‏← <b>+24V</b>. والزرار يوصّل I0.1 بإيه؟',
+    task:'<p class="tk-g"><b>الهدف:</b> نفس التوصيل بحساس NPN. الـ NPN بيوصّل الإشارة لـ 0V، فالكومن بيتعكس.</p><b>وصّل الأسلاك دي:</b><ol class="tk-s"><li>باور الـ CPU: وصّل +24V بـ L+، و 0V بـ M.</li><li>باور الحساس: البني BN بـ +24V، والأزرق BU بـ 0V.</li><li>إشارة الحساس: الأسود BK بـ <b>I0.0</b>.</li><li>كومن الكارت: وصّل 1M بـ +24V (مش 0V).</li><li>الزرار: طرف 13 بـ 0V، وطرف 14 بـ <b>I0.1</b>.</li></ol><p class="tk-n">بعدها جرّب: قرّب حديدة من الحساس، ودوس Start، وشوف لمبات الدخل.</p>',
     terms:base().concat(leadT, pbT, [right('IM', '1M', 130, 'sig'), right('I0', 'I0.0', 180, 'sig'), right('I1', 'I0.1', 230, 'sig')]),
     groups:[['P24', 'CL', 'BN', 'IM'], ['P0', 'CM', 'BU', 'PB13'], ['BK', 'I0'], ['PB14', 'I1']],
     why:{IM:'مع NPN الـ 1M على +24V.', PB13:'الزرار يسحب الدخل لـ 0V.', BK:'BK مكانه دخل الكارت.', CL:'L+ على +24V.', CM:'M على 0V.'},
@@ -1657,7 +1657,7 @@ PL.timerDemo = function(host){
     ok:'التيار من +24V لـ 1M، ويخرج من I0.0 لـ BK.'});
   /* transistor (sourcing) output: 24 V DC loads */
   ex.push({key:'tr', title:'خرج ترانزستور', h:300,
-    task:'<b>المطلوب:</b> <b>3L+</b> ‏← +24V، <b>3M</b> ‏← 0V، الكويل ‏← <b>Q0.0</b>، اللمبة ‏← <b>Q0.1</b>.',
+    task:'<p class="tk-g"><b>الهدف:</b> توصّل كونتاكتور 24V ولمبة 24V على خرج ترانزستور.</p><b>وصّل الأسلاك دي:</b><ol class="tk-s"><li>باور الـ CPU: وصّل +24V بـ L+، و 0V بـ M.</li><li>باور كارت الخرج: وصّل 3L+ بـ +24V، و 3M بـ 0V.</li><li>الكونتاكتور: وصّل A1 بـ <b>Q0.0</b>، و A2 بـ 0V.</li><li>اللمبة: وصّل X1 بـ <b>Q0.1</b>، و X2 بـ 0V.</li></ol><p class="tk-n">بعدها جرّب: خلّي البرنامج يشغّل <b>Q0.0</b> ← الكونتاكتور يشد، و <b>Q0.1</b> ← اللمبة تنوّر.</p>',
     terms:base().concat([below('KA1', 'A1', 30, 166, 'sig'), below('KA2', 'A2', 82, 166, 'p0'), below('HX1', 'X1', 30, 270, 'sig'), below('HX2', 'X2', 82, 270, 'p0'),
       right('OL', '3L+', 130, 'p24'), right('Q0', 'Q0.0', 175, 'sig'), right('Q1', 'Q0.1', 220, 'sig'), right('OM', '3M', 265, 'p0')]),
     groups:[['P24', 'CL', 'OL'], ['P0', 'CM', 'OM', 'KA2', 'HX2'], ['Q0', 'KA1'], ['Q1', 'HX1']],
@@ -1668,7 +1668,7 @@ PL.timerDemo = function(host){
     ok:'ترانزستور: سريع، بس <b>DC بس</b> وحوالي 0.5A.'});
   /* relay output: 230 V AC contactor */
   ex.push({key:'rly', title:'خرج ريلاي', h:300,
-    task:'<b>المطلوب:</b> <b>1L</b> ‏← L، <b>Q0.0</b> ‏← A1، A2 ‏← N، وباور الـ CPU. متخلطش AC بـ DC.',
+    task:'<p class="tk-g"><b>الهدف:</b> توصّل كونتاكتور 230V AC على خرج ريلاي.</p><b>وصّل الأسلاك دي:</b><ol class="tk-s"><li>باور الـ CPU: وصّل +24V بـ L+، و 0V بـ M.</li><li>كومن الريلاي: وصّل 1L بالفاز L (230V).</li><li>الكونتاكتور: وصّل A1 بـ <b>Q0.0</b>، و A2 بالنيوترال N.</li></ol><p class="tk-n">خلي بالك: ما توصّلش 230V على أي طرف 24V. بعدها جرّب: خلّي البرنامج يشغّل <b>Q0.0</b> ← الموتور يشتغل.</p>',
     terms:base().concat([{id:'ACL', l:'L', x:150, y:54, pol:'ac'}, {id:'ACN', l:'N', x:196, y:54, pol:'n'},
       below('KA1', 'A1', 30, 166, 'sig'), below('KA2', 'A2', 82, 166, 'coil'), right('RL', '1L', 130, 'sig'), right('Q0', 'Q0.0', 180, 'sig'), right('Q1', 'Q0.1', 230, 'sig')]),
     groups:[['P24', 'CL'], ['P0', 'CM'], ['ACL', 'RL'], ['Q0', 'KA1'], ['ACN', 'KA2']],

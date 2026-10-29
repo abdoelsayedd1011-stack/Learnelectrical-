@@ -12,11 +12,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
-<link rel="stylesheet" href="plc.css?v=dd5dfa34">
+<link rel="stylesheet" href="plc.css?v=c45bd5d6">
 <script src="/assets/next-hint.js?v=20261021nh"></script>
-<script src="plc.js?v=9ed5de73"></script>
+<script src="plc.js?v=02b563fa"></script>
 <link rel="stylesheet" href="brand.css?v=3c0d0450">
-<script src="brands.js?v=d6a397c5"></script>
+<script src="brands.js?v=fd43abdf"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261021r">
 </head>
 <body>
@@ -102,7 +102,7 @@ PL.scaleDemo(document.getElementById('chain'));
 window.DR = PL.drill(document.getElementById('drill'), PL.scaleGen, {lesson:'l8', task:'scale', need:4, goal:'Get <b>4</b> right to complete this exercise.'});
 PL.ladFig(document.getElementById('fScl'), [{rows:[['-', '-', '-', '-', 'SCL:IW64:MW10:0:100']]}, {rows:[['CMP:MW10:<=:20', '-', '-', '-', 'S:Q0.0']]}, {rows:[['CMP:MW10:>=:80', '-', '-', '-', 'R:Q0.0']]}], {labels:{'Q0.0':'Pump'}});
 window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l8', exercises:[
-  {key:'tank', title:'Tank with alarms', task:'<b>Task:</b> (1) scale from <b>IW64</b> to <b>MW10</b> as a 0–100 % value. (2) Pump <b>Q0.0</b> starts when the level is ≤ <b>20%</b> and stops when it\'s ≥ <b>80%</b>. (3) High alarm <b>Q0.1</b> when the level is ≥ <b>90%</b>. (4) Low alarm <b>Q0.2</b> when the level is ≤ <b>10%</b>.',
+  {key:'tank', title:'Tank with alarms', task:'<p class="tk-g"><b>Goal:</b> a tank filled by a pump; the PLC reads the level from a 4–20 mA sensor.</p><p class="tk-d"><b>Devices:</b> raw level <b>IW64</b>, level in percent <b>MW10</b>, pump <b>Q0.0</b>, High alarm <b>Q0.1</b>, Low alarm <b>Q0.2</b>.</p><b>What should happen:</b><ol class="tk-s"><li>Scale <b>IW64</b> to 0–100 % in <b>MW10</b>.</li><li>Level 20 % or less → the pump starts and keeps running until 80 %, then stops.</li><li>Level 90 % or more → High alarm.</li><li>Level 10 % or less → Low alarm.</li></ol>',
     io:{inputs:[], outputs:[{a:'Q0.0', label:'Pump'}, {a:'Q0.1', label:'High'}, {a:'Q0.2', label:'Low'}]}, syms:[{a:'IW64', label:'Raw level'}, {a:'MW10', label:'Level %'}], plant:'tank', plantOpt:{level:50}, cmpDef:'MW10',
     tests:[{run:1}, {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':0}, msg:'Level 50%:'}, {fn:c => Math.abs(c.e.num('MW10') - c.plant.level) < 1.5 ? null : `MW10 = ${PL.fmt(c.e.num('MW10'), 1)} and the real level is ${Math.round(c.plant.level)}%: check the Scale block (from IW64 to MW10, 0–100).`},
       {until:c => c.plant.level <= 19.8 || c.q('Q0.0'), max:25, msg:'The tank didn\'t drop to 20%: is the pump running for no reason?'}, {fn:c => c.q('Q0.0') && c.plant.level > 21.5 ? `The pump started with the level at ${Math.round(c.plant.level)}%: it should wait until 20%.` : null}, {run:0.02}, {exp:{'Q0.0':1}, msg:'The level dropped below 20%: the pump must start.'},

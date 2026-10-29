@@ -12,11 +12,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
-<link rel="stylesheet" href="plc.css?v=dd5dfa34">
+<link rel="stylesheet" href="plc.css?v=c45bd5d6">
 <script src="/assets/next-hint.js?v=20261021nh"></script>
-<script src="plc.js?v=9ed5de73"></script>
+<script src="plc.js?v=02b563fa"></script>
 <link rel="stylesheet" href="brand.css?v=3c0d0450">
-<script src="brands.js?v=d6a397c5"></script>
+<script src="brands.js?v=fd43abdf"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261021r">
 </head>
 <body>
@@ -92,7 +92,7 @@
 PL.lesson('l6');
 PL.ladFig(document.getElementById('fCtu'), [{rows:[['NO:I0.2', '-', '-', '-', 'CTU:C0:6']]}, {rows:[['NO:I0.3', '-', '-', '-', 'R:C0']]}, {rows:[['NO:C0', '-', '-', '-', 'OUT:Q0.1']]}], {labels:{'I0.2':'Eye', 'I0.3':'Reset', 'Q0.1':'Full'}});
 window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l6', exercises:[
-  {key:'ctu', title:'Packing counter', task:'<b>Task:</b> <b>Start</b> (I0.0) starts conveyor <b>Q0.0</b> with seal-in, and <b>Stop</b> (I0.1, NC) stops it. Eye <b>I0.2</b> counts the cans with counter <b>C0</b> (PV = 6). When the count reaches 6: the conveyor stops and lamp <b>Q0.1</b> lights. The <b>New carton</b> button (I0.3) resets the counter and turns the lamp off, then Start carries on.',
+  {key:'ctu', title:'Packing counter', task:'<p class="tk-g"><b>Goal:</b> a conveyor that fills 6 cans per box and stops by itself.</p><p class="tk-d"><b>Devices:</b> Start <b>I0.0</b>, Stop <b>I0.1</b> (NC), can counting eye <b>I0.2</b>, new box button <b>I0.3</b>, conveyor <b>Q0.0</b>, done lamp <b>Q0.1</b>.</p><b>What should happen:</b><ol class="tk-s"><li>Start → the conveyor runs and stays on; Stop stops it.</li><li>Each can passing the eye → counter <b>C0</b> adds 1.</li><li>Count reaches 6 → the conveyor stops and lamp <b>Q0.1</b> lights.</li><li>New box button → the counter resets and the lamp goes off; then Start runs again.</li></ol>',
     io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}, {a:'I0.3', label:'New carton', kind:'pb', color:'blue'}, {a:'I0.2', label:'Eye', kind:'auto'}], outputs:[{a:'Q0.0', label:'Conveyor'}, {a:'Q0.1', label:'Full'}]}, plant:'pack', cmpDef:'C0',
     tests:[{run:0.2}, {press:'I0.0'}, {run:1}, {exp:{'Q0.0':1}, msg:'You pressed Start: the conveyor must run and keep running.'}, {run:16},
       {fn:c => c.plant.carton > 6 ? `The carton got ${c.plant.carton} cans! The conveyor must stop as soon as the count reaches 6.` : c.plant.carton < 6 ? `The carton has only ${c.plant.carton} cans and the conveyor ${c.q('Q0.0') ? 'is still running' : 'stopped'}. It must go on to 6.` : null},
@@ -107,7 +107,7 @@ window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l6', exercises:[
     ok:'Notice that NC C0 breaks the seal-in as soon as the count is complete, so the conveyor only runs again with a new Start.'}
 ]});
 window.SIM2 = PL.sim(document.getElementById('sim2'), {lesson:'l6', exercises:[
-  {key:'cmp', title:'The car park', task:'<b>Task:</b> a car park with <b>6 spaces</b>. Entry sensor <b>I0.0</b> adds to counter <b>C0</b> (CTU), and exit sensor <b>I0.1</b> subtracts from it (CTD on the same C0). Green lamp <b>Q0.0</b> lights if there are <b>fewer than 6</b> cars, and red <b>Q0.1</b> if there are <b>6 or more</b>. Use <b>compare instructions</b>.',
+  {key:'cmp', title:'The car park', task:'<p class="tk-g"><b>Goal:</b> a car park sign that says free or full (6 spaces).</p><p class="tk-d"><b>Devices:</b> car in sensor <b>I0.0</b>, car out sensor <b>I0.1</b>, green “free” lamp <b>Q0.0</b>, red “full” lamp <b>Q0.1</b>.</p><b>What should happen:</b><ol class="tk-s"><li>Car in → counter <b>C0</b> counts up (CTU).</li><li>Car out → the same counter <b>C0</b> counts down (CTD).</li><li>Fewer than 6 cars → green lights.</li><li>6 or more → red lights instead.</li></ol><p class="tk-n">Use compare instructions on <b>C0</b>.</p>',
     io:{inputs:[{a:'I0.0', label:'Car in', kind:'pb'}, {a:'I0.1', label:'Car out', kind:'pb', color:'blue'}], outputs:[{a:'Q0.0', label:'Spaces free'}, {a:'Q0.1', label:'Full'}]}, plant:'parking', cmpDef:'C0',
     tests:[{run:0.2}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'The car park is empty:'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'3 cars inside:'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {run:0.1}, {exp:{'Q0.0':0, 'Q0.1':1}, msg:'6 cars inside: full.'},
       {press:'I0.1'}, {run:0.1}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'A car left (5 inside):'}, {press:'I0.1'}, {press:'I0.1'}, {press:'I0.1'}, {press:'I0.1'}, {press:'I0.1'}, {press:'I0.1'}, {run:0.1}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'The car park is empty again:'},

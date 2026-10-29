@@ -12,11 +12,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
-<link rel="stylesheet" href="plc.css?v=dd5dfa34">
+<link rel="stylesheet" href="plc.css?v=c45bd5d6">
 <script src="/assets/next-hint.js?v=20261021nh"></script>
-<script src="plc.js?v=9ed5de73"></script>
+<script src="plc.js?v=02b563fa"></script>
 <link rel="stylesheet" href="brand.css?v=3c0d0450">
-<script src="brands.js?v=d6a397c5"></script>
+<script src="brands.js?v=fd43abdf"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261021r">
 </head>
 <body>
@@ -92,13 +92,13 @@ PL.lesson('l5');
 PL.ladFig(document.getElementById('fTon'), [{rows:[['NO:I0.0', '-', '-', '-', 'TON:T0:3']]}, {rows:[['NO:T0', '-', '-', '-', 'OUT:Q0.0']]}], {labels:{'I0.0':'Switch', 'Q0.0':'Lamp'}});
 PL.timerDemo(document.getElementById('tdemo'));
 window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l5', exercises:[
-  {key:'ton', title:'TON: on-delay', task:'<b>Task:</b> when switch <b>I0.0</b> is turned on, lamp <b>Q0.0</b> lights <b>after 3 seconds</b>. When it\'s turned off, the lamp goes off at once. And if it\'s turned off before the 3 seconds, the timing starts again from zero.',
+  {key:'ton', title:'TON: on-delay', task:'<p class="tk-g"><b>Goal:</b> a lamp that lights 3 seconds late, with a TON timer.</p><p class="tk-d"><b>Devices:</b> switch <b>I0.0</b>, lamp <b>Q0.0</b>.</p><b>What should happen:</b><ol class="tk-s"><li>Switch ON → after 3 seconds the lamp lights.</li><li>Switch OFF → the lamp goes off at once.</li><li>Switch back OFF before 3 seconds → the count starts over.</li></ol>',
     io:{inputs:[{a:'I0.0', label:'Switch', kind:'sw'}], outputs:[{a:'Q0.0', label:'Lamp', kind:'lamp', color:'yellow'}]},
     tests:[{set:{'I0.0':1}}, {run:2.7}, {exp:{'Q0.0':0}, msg:'Only 2.7 s have passed:'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'3.2 s have passed:'}, {set:{'I0.0':0}}, {run:0.1}, {exp:{'Q0.0':0}, msg:'The switch was turned off:'},
       {set:{'I0.0':1}}, {run:1.5}, {set:{'I0.0':0}}, {run:0.2}, {set:{'I0.0':1}}, {run:2.2}, {exp:{'Q0.0':0}, msg:'The switch went off halfway and came back: the timing must start from zero (TON doesn\'t accumulate).'}, {run:1.0}, {exp:{'Q0.0':1}, msg:'3 s after the last time:'}],
     hint:'Rung 1: NO I0.0 → TON T0 (PT = 3). Rung 2: NO T0 → coil Q0.0.',
     sol:[{rows:[['NO:I0.0', '-', '-', '-', 'TON:T0:3']]}, {rows:[['NO:T0', '-', '-', '-', 'OUT:Q0.0']]}], ok:'TON = on-delay.'},
-  {key:'tof', title:'TOF: off-delay', task:'<b>Task:</b> the projector\'s cooling fan <b>Q0.0</b> runs together with the lamp (<b>I0.0</b>) at once, and when the lamp goes off the fan <b>keeps running 5 seconds</b> and then stops.',
+  {key:'tof', title:'TOF: off-delay', task:'<p class="tk-g"><b>Goal:</b> a cooling fan that keeps running for a while after the device turns off (TOF timer).</p><p class="tk-d"><b>Devices:</b> projector lamp <b>I0.0</b>, fan <b>Q0.0</b>.</p><b>What should happen:</b><ol class="tk-s"><li>Lamp ON → the fan runs at once.</li><li>Lamp OFF → the fan runs 5 more seconds, then stops.</li></ol>',
     io:{inputs:[{a:'I0.0', label:'Lamp', kind:'sw'}], outputs:[{a:'Q0.0', label:'Fan', kind:'fan'}]},
     tests:[{run:0.3}, {exp:{'Q0.0':0}, msg:'At the start with the switch off:'}, {set:{'I0.0':1}}, {run:0.2}, {exp:{'Q0.0':1}, msg:'The lamp came on:'}, {set:{'I0.0':0}}, {run:4.6}, {exp:{'Q0.0':1}, msg:'4.6 s after the lamp went off:'}, {run:0.6}, {exp:{'Q0.0':0}, msg:'After 5.2 s:'},
       {set:{'I0.0':1}}, {run:0.3}, {set:{'I0.0':0}}, {run:2}, {set:{'I0.0':1}}, {run:0.3}, {set:{'I0.0':0}}, {run:4.6}, {exp:{'Q0.0':1}, msg:'The lamp came on and went off again: the timing starts from the last time.'}],
@@ -106,7 +106,7 @@ window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l5', exercises:[
     sol:[{rows:[['NO:I0.0', '-', '-', '-', 'TOF:T0:5']]}, {rows:[['NO:T0', '-', '-', '-', 'OUT:Q0.0']]}], ok:'TOF = off-delay.'}
 ]});
 window.SIM2 = PL.sim(document.getElementById('sim2'), {lesson:'l5', exercises:[
-  {key:'sd', title:'Star/delta', task:'<b>Task:</b> <b>Start</b> (I0.0) turns on <b>KM1</b> (Q0.0) and <b>KM3 star</b> (Q0.2) together. After <b>5 seconds</b> star drops out and <b>KM2 delta</b> (Q0.1) comes in. <b>Stop</b> (I0.1, NC) stops everything. And Q0.1 and Q0.2 must never be on together, not even for one scan.',
+  {key:'sd', title:'Star/delta', task:'<p class="tk-g"><b>Goal:</b> a star-delta motor start with a timer.</p><p class="tk-d"><b>Devices:</b> Start <b>I0.0</b>, Stop <b>I0.1</b> (NC), KM1 main <b>Q0.0</b>, KM2 delta <b>Q0.1</b>, KM3 star <b>Q0.2</b>.</p><b>What should happen:</b><ol class="tk-s"><li>Start → KM1 and KM3 (star) come on together.</li><li>After 5 seconds → KM3 drops out and KM2 (delta) comes on.</li><li>Stop → everything stops.</li><li>KM2 and KM3 are never on together, not even for one scan.</li></ol>',
     io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'KM1'}, {a:'Q0.1', label:'KM2 Δ'}, {a:'Q0.2', label:'KM3 Y'}]}, plant:'sd',
     tests:[{watch:c => c.q('Q0.1') && c.q('Q0.2') ? 'Delta Q0.1 and star Q0.2 were on together: short! Put an NC of each one in the other one\'s rung.' : null},
       {run:0.2}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1, 'Q0.2':1, 'Q0.1':0}, msg:'Right after Start: KM1 and star.'}, {run:3.8}, {exp:{'Q0.0':1, 'Q0.2':1, 'Q0.1':0}, msg:'After about 4.6 s it\'s still in star:'},

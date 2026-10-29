@@ -12,11 +12,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
-<link rel="stylesheet" href="plc.css?v=dd5dfa34">
+<link rel="stylesheet" href="plc.css?v=c45bd5d6">
 <script src="/assets/next-hint.js?v=20261021nh"></script>
-<script src="plc.js?v=9ed5de73"></script>
+<script src="plc.js?v=02b563fa"></script>
 <link rel="stylesheet" href="brand.css?v=3c0d0450">
-<script src="brands.js?v=d6a397c5"></script>
+<script src="brands.js?v=fd43abdf"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261021r">
 </head>
 <body>
@@ -104,21 +104,21 @@ PL.brandCards(document.getElementById('brandCards'));
 const ioS = {inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'Motor', kind:'motor'}]};
 const noDouble = {fn:c => PL.eng.lint(c.e.prog).some(m => m.kind === 'double') ? 'It works, but there is still a double coil. Keep Q0.0 in one rung only.' : null};
 window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l10', force:true, exercises:[
-  {key:'dbl', title:'Double coil', task:'<b>Complaint:</b> "We added a Start button in the control room (<b>I0.2</b>) and since then the local Start button (<b>I0.0</b>) stopped working, and the new button runs the motor only while you hold it." <b>Task:</b> Both buttons must start motor <b>Q0.0</b> with seal-in, and <b>Stop</b> (I0.1, NC) stops it.',
+  {key:'dbl', title:'Double coil', task:'<p class="tk-g"><b>Goal:</b> fix a program that has a fault.</p><p class="tk-d"><b>Devices:</b> local Start <b>I0.0</b>, control-room Start <b>I0.2</b>, Stop <b>I0.1</b> (NC), motor <b>Q0.0</b>.</p><b>Do this:</b><ol class="tk-s"><li>The complaint: “We added a Start button in the control room, and since then the local Start does nothing and the new one only runs the motor while you hold it.”</li><li>Try the ready-made program and see the fault yourself.</li><li>Fix the program.</li></ol><b>After the fix:</b><ol class="tk-s"><li>Either Start button → the motor starts and stays on.</li><li>Stop → the motor stops.</li></ol>',
     io:{inputs:[{a:'I0.0', label:'Local Start', kind:'pb'}, {a:'I0.2', label:'Remote Start', kind:'pb', color:'blue'}, {a:'I0.1', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'Motor', kind:'motor'}]},
     start:[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.2', '-', '-', '-', 'OUT:Q0.0']]}],
     tests:[{run:0.2}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'Pressed and released local Start:'}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Stop:'}, {press:'I0.2'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'Pressed and released remote Start: it must keep running.'}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Stop:'}, noDouble],
     hint:'Delete rung 2. In rung 1 add a second parallel branch to Start with I0.2 (click I0.0 and choose "Parallel branch" again).',
     sol:[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0'], ['NO:Q0.0'], ['NO:I0.2']], links:[[1], [1]]}],
     ok:'Golden rule: each coil in one rung only. If you need many conditions, use branches, or use Set/Reset.'},
-  {key:'ncfix', title:'Wrong NC logic', task:'<b>Complaint:</b> "The motor will not start at all, and the <b>Trip</b> lamp is always on even though the overload is healthy." <b>Stop</b> is on I0.1 and the overload on I0.2, both wired <b>NC</b>. Check the input LEDs on the PLC bar first.',
+  {key:'ncfix', title:'Wrong NC logic', task:'<p class="tk-g"><b>Goal:</b> fix a program that has a fault.</p><p class="tk-d"><b>Devices:</b> Start <b>I0.0</b>, Stop <b>I0.1</b> (NC), overload <b>I0.2</b> (NC), motor <b>Q0.0</b>, Trip lamp <b>Q0.1</b>.</p><b>Do this:</b><ol class="tk-s"><li>The complaint: “The motor will not start at all, and the Trip lamp is always on although the overload is fine.”</li><li>Look at the input lamps on the PLC: <b>I0.1</b> and <b>I0.2</b> are lit though nobody pressed anything.</li><li>Fix the program.</li></ol><b>After the fix:</b><ol class="tk-s"><li>Start → the motor starts and stays on.</li><li>Stop or an overload trip → the motor stops.</li><li>The Trip lamp lights only when the overload trips.</li></ol>',
     io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}, {a:'I0.2', label:'Overload', kind:'ncsw'}], outputs:[{a:'Q0.0', label:'Motor', kind:'motor'}, {a:'Q0.1', label:'Trip', kind:'lamp', color:'amber'}]},
     start:[{rows:[['NO:I0.0', 'NC:I0.1', 'NC:I0.2', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.2', '-', '-', '-', 'OUT:Q0.1']]}],
     tests:[{run:0.2}, {exp:{'Q0.1':0}, msg:'Overload healthy: the Trip lamp must be off.'}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'Start:'}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Stop:'}, {press:'I0.0'}, {run:0.3}, {set:{'I0.2':0}}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':1}, msg:'Overload tripped:'}, {set:{'I0.2':1}}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'Overload reset:'}],
     hint:'The I0.1 and I0.2 LEDs are on and nobody touched anything: both bits = 1 in the normal state. In rung 1 make them NO, and in rung 2 the Trip lamp needs <b>NC</b> I0.2.',
     sol:[{rows:[['NO:I0.0', 'NO:I0.1', 'NO:I0.2', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NC:I0.2', '-', '-', '-', 'OUT:Q0.1']]}],
     ok:'The input LEDs told you the truth before you opened the program. Always start there.'},
-  {key:'sealfix', title:'Seal-in in the wrong place', task:'<b>Complaint:</b> "The pump stops as soon as we release Start. And someone said that when he pressed Stop while it was running, it did not stop!" (Try: hold Start, and press Stop at the same time.) Fix the program.',
+  {key:'sealfix', title:'Seal-in in the wrong place', task:'<p class="tk-g"><b>Goal:</b> fix a program that has a fault.</p><p class="tk-d"><b>Devices:</b> Start <b>I0.0</b>, Stop <b>I0.1</b> (NC), pump <b>Q0.0</b>.</p><b>Do this:</b><ol class="tk-s"><li>The complaint: “The pump stops as soon as we release Start, and when someone pressed Stop while it was running it did not stop.”</li><li>Try it: press and release Start, then press Start and Stop together.</li><li>Move the seal-in contact to the right place.</li></ol><b>After the fix:</b><ol class="tk-s"><li>Press and release Start → the pump keeps running.</li><li>Stop → the pump stops, even while someone holds Start.</li></ol>',
     io:ioS,
     start:[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0'], ['', 'NO:Q0.0']], links:[[1, 2]]}],
     tests:[{run:0.2}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'Pressed and released Start: the pump must keep running.'}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Stop:'}, {hold:'I0.0'}, {run:0.3}, {release:'I0.0'}, {run:0.3}, {hold:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Pump running and someone holds Stop: it must stop (Stop is never bypassed).'}, {release:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'After Stop is released:'}],

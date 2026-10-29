@@ -695,6 +695,7 @@ PL.brandSim = function(host, cfg){
       scn.className = 'bx-scn bx-les' + (d ? ' ok' : '');
       scn.innerHTML = `${exs.length > 1 || d ? `<div class="bx-scn-h">${exs.length > 1 ? `<span class="muted">Exercise ${exs.indexOf(ex) + 1} of ${exs.length}</span>` : ''}${d ? '<span class="bx-done">✓ Done</span>' : ''}</div>` : ''}
         <h3>${esc(ex.title)}</h3><div class="bx-task">${XL(ex.task)}</div>
+        <p class="bx-how"><b>How to solve it:</b> ${SI ? 'build the program in Main [OB1] below → Download to device → Monitoring, and test with the buttons → “Test program”.' : AR ? 'build the program in MainRoutine below → Go Online → Download → Run Mode, and test with the buttons → “Test program”.' : 'build the program in Ladder below → Write to PLC → RUN, and test with the buttons → “Test program”.'}</p>
         <details class="bx-iod"><summary>I/O table with ${esc(B.name)} addresses</summary>${ioRows()}</details>`;
       return;
     }

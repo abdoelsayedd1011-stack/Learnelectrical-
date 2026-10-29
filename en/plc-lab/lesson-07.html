@@ -12,11 +12,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
-<link rel="stylesheet" href="plc.css?v=dd5dfa34">
+<link rel="stylesheet" href="plc.css?v=c45bd5d6">
 <script src="/assets/next-hint.js?v=20261021nh"></script>
-<script src="plc.js?v=9ed5de73"></script>
+<script src="plc.js?v=02b563fa"></script>
 <link rel="stylesheet" href="brand.css?v=3c0d0450">
-<script src="brands.js?v=d6a397c5"></script>
+<script src="brands.js?v=fd43abdf"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261021r">
 </head>
 <body>
@@ -88,7 +88,7 @@ PL.lesson('l7');
 PL.ladFig(document.getElementById('fEdge'), [{rows:[['P:I0.0', '-', '-', '-', 'CTU:C0:5']]}, {rows:[['N:I0.2', '-', '-', '-', 'OUT:M0.1']]}], {labels:{'I0.0':'Button', 'I0.2':'Sensor', 'M0.1':'Can passed'}});
 const count = {watch:c => { const v = c.q('Q0.0'); if (c.mark.last != null && v !== c.mark.last) c.mark.n = (c.mark.n || 0) + 1; c.mark.last = v; return null; }};
 window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l7', exercises:[
-  {key:'toggle', title:'Toggle on one button', task:'<b>Task:</b> each press of button <b>I0.0</b> toggles lamp <b>Q0.0</b>: off ⇒ on, on ⇒ off. If someone keeps holding the button, the lamp toggles <b>once only</b>. (You can use M0.0 as a helper bit.)',
+  {key:'toggle', title:'Toggle on one button', task:'<p class="tk-g"><b>Goal:</b> one button that turns a light on and off, like a light switch.</p><p class="tk-d"><b>Devices:</b> button <b>I0.0</b>, lamp <b>Q0.0</b>; you may use helper bit <b>M0.0</b>.</p><b>What should happen:</b><ol class="tk-s"><li>Press → the lamp lights.</li><li>Press again → the lamp goes off.</li><li>Keep holding the button → the lamp flips only once.</li></ol>',
     io:{inputs:[{a:'I0.0', label:'Button', kind:'pb'}], outputs:[{a:'Q0.0', label:'Lamp', kind:'lamp', color:'yellow'}]},
     tests:[count, {run:0.2}, {exp:{'Q0.0':0}, msg:'At the start:'}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'First press: the lamp comes on and stays on after you release.'}, {run:1}, {exp:{'Q0.0':1}, msg:'One second later:'},
       {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':0}, msg:'Second press: it goes off.'}, {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':1}, msg:'Third press: it comes on.'},
@@ -99,7 +99,7 @@ window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l7', exercises:[
     ok:'Pulse M0.0 lives for one scan only, so the toggle happens once however long you hold the button.'}
 ]});
 window.SIM2 = PL.sim(document.getElementById('sim2'), {lesson:'l7', exercises:[
-  {key:'alarm', title:'Alarm and acknowledge', task:'<b>Task:</b> when pressure switch <b>I0.0</b> comes on (even for a moment): alarm lamp <b>Q0.0</b> and horn <b>Q0.1</b> come on and stay on. Acknowledge button <b>I0.1</b> silences the horn at once, but the lamp stays on until the pressure is back to normal. Any new alarm brings the horn back. Use M0.0 (alarm happened) and M0.1 (acknowledged).',
+  {key:'alarm', title:'Alarm and acknowledge', task:'<p class="tk-g"><b>Goal:</b> a high-pressure alarm with an acknowledge button that silences the horn.</p><p class="tk-d"><b>Devices:</b> high pressure sensor <b>I0.0</b>, acknowledge <b>I0.1</b>, alarm lamp <b>Q0.0</b>, horn <b>Q0.1</b>, helper bits <b>M0.0</b> (alarm happened) and <b>M0.1</b> (acknowledged).</p><b>What should happen:</b><ol class="tk-s"><li>Pressure goes high, even for a moment → lamp and horn come on and stay on.</li><li>Acknowledge → the horn goes quiet at once, the lamp stays on.</li><li>Pressure back to normal after acknowledge → the lamp goes off.</li><li>A new alarm → the horn sounds again.</li></ol>',
     io:{inputs:[{a:'I0.0', label:'High pressure', kind:'sensor'}, {a:'I0.1', label:'Acknowledge', kind:'pb', color:'blue'}], outputs:[{a:'Q0.0', label:'Alarm lamp', kind:'lamp', color:'red'}, {a:'Q0.1', label:'Horn', kind:'horn'}]},
     tests:[{run:0.2}, {press:'I0.1'}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'No alarm:'},
       {set:{'I0.0':1}}, {run:0.3}, {set:{'I0.0':0}}, {run:1.5}, {exp:{'Q0.0':1, 'Q0.1':1}, msg:'Pressure went high for a moment and came back: the lamp and the horn must stay on (latched).'},
