@@ -695,6 +695,7 @@ PL.brandSim = function(host, cfg){
       scn.className = 'bx-scn bx-les' + (d ? ' ok' : '');
       scn.innerHTML = `${exs.length > 1 || d ? `<div class="bx-scn-h">${exs.length > 1 ? `<span class="muted">تمرين ${exs.indexOf(ex) + 1} من ${exs.length}</span>` : ''}${d ? '<span class="bx-done">✓ خلّصته</span>' : ''}</div>` : ''}
         <h3>${esc(ex.title)}</h3><div class="bx-task">${XL(ex.task)}</div>
+        <p class="bx-how"><b>إزاي تحلّه:</b> ${SI ? `ابني البرنامج في ${iso('Main [OB1]')} تحت ← ${iso('Download to device')} ← ${iso('Monitoring')} وجرّب بالزراير ← «اختبر البرنامج».` : AR ? `ابني البرنامج في ${iso('MainRoutine')} تحت ← ${iso('Go Online')} ← ${iso('Download')} ← ${iso('Run Mode')} وجرّب بالزراير ← «اختبر البرنامج».` : `ابني البرنامج في ${iso('Ladder')} تحت ← ${iso('Write to PLC')} ← ${iso('RUN')} وجرّب بالزراير ← «اختبر البرنامج».`}</p>
         <details class="bx-iod"><summary>جدول الـ I/O بعناوين ${esc(B.name)}</summary>${ioRows()}</details>`;
       return;
     }

@@ -11,11 +11,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
-<link rel="stylesheet" href="plc.css?v=dd5dfa34">
+<link rel="stylesheet" href="plc.css?v=c45bd5d6">
 <script src="/assets/next-hint.js?v=20261021nh"></script>
-<script src="plc.js?v=3ab286a6"></script>
+<script src="plc.js?v=56849187"></script>
 <link rel="stylesheet" href="brand.css?v=3c0d0450">
-<script src="brands.js?v=dd391c34"></script>
+<script src="brands.js?v=9bbe2147"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261021r">
 </head>
 <body>
@@ -115,17 +115,17 @@ F('fBAD', [{rows:[['NO:I0.0', 'NC:I0.1', '-', '-', 'OUT:Q0.0']]}], {'I0.0':'تش
 F('fGOOD', [{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0']]}], {'I0.0':'تشغيل', 'I0.1':'Stop NC', 'Q0.0':'موتور'});
 const combos = (f, names) => [0, 1, 2, 3].map(k => { const a = k & 1, b = k >> 1 & 1; return [{set:{'I0.0':a, 'I0.1':b}}, {run:0.1}, {exp:{'Q0.0':f(a, b)}, msg:`لما ${names[0]} = ${a} و ${names[1]} = ${b}:`}]; }).flat();
 window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l3', exercises:[
-  {key:'and', title:'AND: المكبس', task:'<b>المطلوب:</b> المكبس <b>Q0.0</b> يشتغل بس لو العامل ضاغط على <b>I0.0</b> (إيد شمال) <b>و</b> <b>I0.1</b> (إيد يمين) مع بعض.',
+  {key:'and', title:'AND: المكبس', task:'<p class="tk-g"><b>الهدف:</b> مكبس أمان ما ينزلش إلا والعامل ماسك بإيديه الاتنين.</p><p class="tk-d"><b>الأجهزة:</b> إيد شمال <b>I0.0</b>، إيد يمين <b>I0.1</b>، المكبس <b>Q0.0</b>.</p><b>المطلوب يحصل:</b><ol class="tk-s"><li>العامل يدوس <b>I0.0</b> و <b>I0.1</b> مع بعض ← المكبس يشتغل.</li><li>لو ساب أي إيد ← المكبس يقف.</li></ol>',
     io:{inputs:[{a:'I0.0', label:'إيد شمال', kind:'sw'}, {a:'I0.1', label:'إيد يمين', kind:'sw'}], outputs:[{a:'Q0.0', label:'المكبس', kind:'motor'}]},
     tests:combos((a, b) => a & b, ['I0.0', 'I0.1']), hint:'كونتاكتين NO ورا بعض على نفس الخط: I0.0 وبعده I0.1، وفي الآخر كويل Q0.0.',
     sol:[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0']]}], ok:'الاتنين في التوالي: لو أي واحد فيهم 0 الكهربا بتقف.'},
-  {key:'or', title:'OR: لمبة السلم', task:'<b>المطلوب:</b> لمبة السلم <b>Q0.0</b> تنوّر لو مفتاح الدور الأرضي <b>I0.0</b> <b>أو</b> مفتاح الدور الأول <b>I0.1</b> شغال (أو الاتنين).',
+  {key:'or', title:'OR: لمبة السلم', task:'<p class="tk-g"><b>الهدف:</b> لمبة سلم ليها مفتاحين: واحد تحت وواحد فوق.</p><p class="tk-d"><b>الأجهزة:</b> مفتاح تحت <b>I0.0</b>، مفتاح فوق <b>I0.1</b>، اللمبة <b>Q0.0</b>.</p><b>المطلوب يحصل:</b><ol class="tk-s"><li>مفتاح تحت ON ← اللمبة تنوّر.</li><li>مفتاح فوق ON ← اللمبة تنوّر برضه.</li><li>الاتنين OFF ← اللمبة تطفي.</li></ol>',
     io:{inputs:[{a:'I0.0', label:'مفتاح تحت', kind:'sw'}, {a:'I0.1', label:'مفتاح فوق', kind:'sw'}], outputs:[{a:'Q0.0', label:'لمبة', kind:'lamp', color:'yellow'}]},
     tests:combos((a, b) => a | b, ['I0.0', 'I0.1']), hint:'حط I0.0 وبعده سلك لحد الكويل Q0.0. دوس على I0.0 واختار "فرع موازي للخانة دي"، والكونتاكت الجديد خليه I0.1.',
     sol:[{rows:[['NO:I0.0', '-', '-', '-', 'OUT:Q0.0'], ['NO:I0.1']], links:[[1]]}], ok:'الفرع الموازي = OR: أي طريق مفتوح الكهربا بتعدّي منه.'}
 ]});
 window.SIM2 = PL.sim(document.getElementById('sim2'), {lesson:'l3', exercises:[
-  {key:'nc', title:'زرار Stop NC', task:'<b>المطلوب:</b> الطلمبة <b>Q0.0</b> تشتغل طول ما سلكتور التشغيل <b>I0.0</b> على ON، وتقف لما حد يدوس <b>Stop</b> (متوصّل NC على <b>I0.1</b>). البرنامج مكتوب جاهز بس فيه الفخ. شغّل RUN وجرّب، وبعدين صلّحه.',
+  {key:'nc', title:'زرار Stop NC', task:'<p class="tk-g"><b>الهدف:</b> تلاقي الغلطة في برنامج جاهز وتصلّحها.</p><p class="tk-d"><b>الأجهزة:</b> سلكتور تشغيل <b>I0.0</b>، زرار Stop متوصّل NC على <b>I0.1</b> (إشارته 1 طول ما محدش داسه)، الطلمبة <b>Q0.0</b>.</p><b>اعمل كده:</b><ol class="tk-s"><li>شغّل البرنامج الجاهز وجرّب: هتلاقي الطلمبة مش بتشتغل.</li><li>صلّح البرنامج.</li></ol><b>بعد التصليح المفروض:</b><ol class="tk-s"><li>السلكتور ON ← الطلمبة تشتغل.</li><li>حد يدوس Stop ← الطلمبة تقف.</li><li>يسيب Stop والسلكتور لسه ON ← الطلمبة ترجع تشتغل.</li></ol>',
     io:{inputs:[{a:'I0.0', label:'سلكتور', kind:'sw'}, {a:'I0.1', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'طلمبة', kind:'motor'}]},
     start:[{rows:[['NO:I0.0', 'NC:I0.1', '-', '-', 'OUT:Q0.0']]}],
     tests:[{set:{'I0.0':1}}, {run:0.2}, {exp:{'Q0.0':1}, msg:'السلكتور ON ومحدش داس Stop، والطلمبة لازم تشتغل.'}, {hold:'I0.1'}, {run:0.2}, {exp:{'Q0.0':0}, msg:'حد ضاغط Stop:'}, {release:'I0.1'}, {run:0.2}, {exp:{'Q0.0':1}, msg:'سابوا الـ Stop والسلكتور لسه ON:'}, {set:{'I0.0':0}}, {run:0.2}, {exp:{'Q0.0':0}, msg:'السلكتور OFF:'}],

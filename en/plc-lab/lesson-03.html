@@ -12,11 +12,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
-<link rel="stylesheet" href="plc.css?v=dd5dfa34">
+<link rel="stylesheet" href="plc.css?v=c45bd5d6">
 <script src="/assets/next-hint.js?v=20261021nh"></script>
-<script src="plc.js?v=9ed5de73"></script>
+<script src="plc.js?v=02b563fa"></script>
 <link rel="stylesheet" href="brand.css?v=3c0d0450">
-<script src="brands.js?v=d6a397c5"></script>
+<script src="brands.js?v=fd43abdf"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261021r">
 </head>
 <body>
@@ -116,17 +116,17 @@ F('fBAD', [{rows:[['NO:I0.0', 'NC:I0.1', '-', '-', 'OUT:Q0.0']]}], {'I0.0':'Run'
 F('fGOOD', [{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0']]}], {'I0.0':'Run', 'I0.1':'Stop NC', 'Q0.0':'Motor'});
 const combos = (f, names) => [0, 1, 2, 3].map(k => { const a = k & 1, b = k >> 1 & 1; return [{set:{'I0.0':a, 'I0.1':b}}, {run:0.1}, {exp:{'Q0.0':f(a, b)}, msg:`When ${names[0]} = ${a} and ${names[1]} = ${b}:`}]; }).flat();
 window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l3', exercises:[
-  {key:'and', title:'AND: the press', task:'<b>Task:</b> press <b>Q0.0</b> runs only if the operator is pressing <b>I0.0</b> (left hand) <b>and</b> <b>I0.1</b> (right hand) together.',
+  {key:'and', title:'AND: the press', task:'<p class="tk-g"><b>Goal:</b> a safety press that only moves while the worker holds both hands on it.</p><p class="tk-d"><b>Devices:</b> left hand <b>I0.0</b>, right hand <b>I0.1</b>, press <b>Q0.0</b>.</p><b>What should happen:</b><ol class="tk-s"><li>Worker presses <b>I0.0</b> and <b>I0.1</b> together → the press runs.</li><li>Either hand lets go → the press stops.</li></ol>',
     io:{inputs:[{a:'I0.0', label:'Left hand', kind:'sw'}, {a:'I0.1', label:'Right hand', kind:'sw'}], outputs:[{a:'Q0.0', label:'Press', kind:'motor'}]},
     tests:combos((a, b) => a & b, ['I0.0', 'I0.1']), hint:'Two NO contacts one after the other on the same line: I0.0, then I0.1, and at the end coil Q0.0.',
     sol:[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0']]}], ok:'Both in series: if either one is 0 the power stops.'},
-  {key:'or', title:'OR: the stair light', task:'<b>Task:</b> stair lamp <b>Q0.0</b> lights if the ground-floor switch <b>I0.0</b> <b>or</b> the first-floor switch <b>I0.1</b> is on (or both).',
+  {key:'or', title:'OR: the stair light', task:'<p class="tk-g"><b>Goal:</b> a stair light with two switches, one downstairs and one upstairs.</p><p class="tk-d"><b>Devices:</b> downstairs switch <b>I0.0</b>, upstairs switch <b>I0.1</b>, lamp <b>Q0.0</b>.</p><b>What should happen:</b><ol class="tk-s"><li>Downstairs switch ON → the lamp lights.</li><li>Upstairs switch ON → the lamp lights too.</li><li>Both OFF → the lamp goes off.</li></ol>',
     io:{inputs:[{a:'I0.0', label:'Downstairs switch', kind:'sw'}, {a:'I0.1', label:'Upstairs switch', kind:'sw'}], outputs:[{a:'Q0.0', label:'Lamp', kind:'lamp', color:'yellow'}]},
     tests:combos((a, b) => a | b, ['I0.0', 'I0.1']), hint:'Put I0.0, then a wire up to coil Q0.0. Tap I0.0 and pick "Parallel branch for this cell", and make the new contact I0.1.',
     sol:[{rows:[['NO:I0.0', '-', '-', '-', 'OUT:Q0.0'], ['NO:I0.1']], links:[[1]]}], ok:'A parallel branch = OR: power passes through any open path.'}
 ]});
 window.SIM2 = PL.sim(document.getElementById('sim2'), {lesson:'l3', exercises:[
-  {key:'nc', title:'NC Stop button', task:'<b>Task:</b> pump <b>Q0.0</b> runs while the run selector <b>I0.0</b> is ON, and stops when someone presses <b>Stop</b> (wired NC on <b>I0.1</b>). The program is already written but it has the trap. Switch to RUN and try it, then fix it.',
+  {key:'nc', title:'NC Stop button', task:'<p class="tk-g"><b>Goal:</b> find the mistake in a ready-made program and fix it.</p><p class="tk-d"><b>Devices:</b> run selector <b>I0.0</b>, Stop button wired NC on <b>I0.1</b> (its signal is 1 while nobody presses it), pump <b>Q0.0</b>.</p><b>Do this:</b><ol class="tk-s"><li>Run the ready-made program and try it: the pump never starts.</li><li>Fix the program.</li></ol><b>After the fix:</b><ol class="tk-s"><li>Selector ON → the pump runs.</li><li>Someone presses Stop → the pump stops.</li><li>Stop released and selector still ON → the pump runs again.</li></ol>',
     io:{inputs:[{a:'I0.0', label:'Selector', kind:'sw'}, {a:'I0.1', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'Pump', kind:'motor'}]},
     start:[{rows:[['NO:I0.0', 'NC:I0.1', '-', '-', 'OUT:Q0.0']]}],
     tests:[{set:{'I0.0':1}}, {run:0.2}, {exp:{'Q0.0':1}, msg:'The selector is ON and nobody pressed Stop, so the pump must run.'}, {hold:'I0.1'}, {run:0.2}, {exp:{'Q0.0':0}, msg:'Someone is pressing Stop:'}, {release:'I0.1'}, {run:0.2}, {exp:{'Q0.0':1}, msg:'Stop released and the selector is still ON:'}, {set:{'I0.0':0}}, {run:0.2}, {exp:{'Q0.0':0}, msg:'Selector OFF:'}],

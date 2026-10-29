@@ -11,11 +11,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
-<link rel="stylesheet" href="plc.css?v=dd5dfa34">
+<link rel="stylesheet" href="plc.css?v=c45bd5d6">
 <script src="/assets/next-hint.js?v=20261021nh"></script>
-<script src="plc.js?v=3ab286a6"></script>
+<script src="plc.js?v=56849187"></script>
 <link rel="stylesheet" href="brand.css?v=3c0d0450">
-<script src="brands.js?v=dd391c34"></script>
+<script src="brands.js?v=9bbe2147"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261021r">
 </head>
 <body>
@@ -103,21 +103,21 @@ PL.brandCards(document.getElementById('brandCards'));
 const ioS = {inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'موتور', kind:'motor'}]};
 const noDouble = {fn:c => PL.eng.lint(c.e.prog).some(m => m.kind === 'double') ? 'شغال، بس لسه فيه كويل مكرر (Double coil). خلي Q0.0 في رانج واحد بس.' : null};
 window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l10', force:true, exercises:[
-  {key:'dbl', title:'الكويل المكرر', task:'<b>الشكوى:</b> "ركّبنا زرار تشغيل من غرفة التحكم (<b>I0.2</b>) وبعدها زرار التشغيل المحلي (<b>I0.0</b>) بطّل يشغّل، والزرار الجديد بيشغّل الموتور بس وانت ماسكه." <b>المطلوب:</b> الاتنين يشغّلوا الموتور <b>Q0.0</b> بتثبيت، والـ <b>Stop</b> (I0.1، NC) يوقفه.',
+  {key:'dbl', title:'الكويل المكرر', task:'<p class="tk-g"><b>الهدف:</b> تصلّح برنامج فيه عطل.</p><p class="tk-d"><b>الأجهزة:</b> Start محلي <b>I0.0</b>، Start من غرفة التحكم <b>I0.2</b>، Stop <b>I0.1</b> (NC)، الموتور <b>Q0.0</b>.</p><b>اعمل كده:</b><ol class="tk-s"><li>الشكوى: «ركّبنا زرار تشغيل من غرفة التحكم، وبعدها زرار التشغيل المحلي بطّل يشغّل، والزرار الجديد بيشغّل الموتور بس وانت ماسكه».</li><li>جرّب البرنامج الجاهز وشوف العطل بعينك.</li><li>صلّح البرنامج.</li></ol><b>بعد التصليح المفروض:</b><ol class="tk-s"><li>أي زرار Start من الاتنين ← الموتور يشتغل ويفضل.</li><li>Stop ← الموتور يقف.</li></ol>',
     io:{inputs:[{a:'I0.0', label:'Start محلي', kind:'pb'}, {a:'I0.2', label:'Start بعيد', kind:'pb', color:'blue'}, {a:'I0.1', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'موتور', kind:'motor'}]},
     start:[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.2', '-', '-', '-', 'OUT:Q0.0']]}],
     tests:[{run:0.2}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'Start المحلي وسبته:'}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Stop:'}, {press:'I0.2'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'Start البعيد وسبته: لازم يفضل شغال.'}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Stop:'}, noDouble],
     hint:'امسح رانج 2، وفي رانج 1 زوّد فرع موازي تاني للـ Start فيه I0.2 (دوس على I0.0 واختار "فرع موازي" مرة كمان).',
     sol:[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0'], ['NO:Q0.0'], ['NO:I0.2']], links:[[1], [1]]}],
     ok:'قاعدة ذهبية: كل كويل في رانج واحد بس. لو محتاج شروط كتير اعملها فروع، أو استخدم Set/Reset.'},
-  {key:'ncfix', title:'منطق الـ NC الغلط', task:'<b>الشكوى:</b> "الموتور مش راضي يشتغل خالص، ولمبة <b>Trip</b> منوّرة على طول رغم إن الأوفرلود سليم." الـ <b>Stop</b> على I0.1 والأوفرلود على I0.2، والاتنين متوصّلين <b>NC</b>. بص على لمبات الدخل في شريط الـ PLC الأول.',
+  {key:'ncfix', title:'منطق الـ NC الغلط', task:'<p class="tk-g"><b>الهدف:</b> تصلّح برنامج فيه عطل.</p><p class="tk-d"><b>الأجهزة:</b> Start <b>I0.0</b>، Stop <b>I0.1</b> (NC)، أوفرلود <b>I0.2</b> (NC)، الموتور <b>Q0.0</b>، لمبة Trip <b>Q0.1</b>.</p><b>اعمل كده:</b><ol class="tk-s"><li>الشكوى: «الموتور مش راضي يشتغل خالص، ولمبة Trip منوّرة على طول رغم إن الأوفرلود سليم».</li><li>بص على لمبات الدخل في الـ PLC: هتلاقي <b>I0.1</b> و <b>I0.2</b> منوّرين ومحدش داس.</li><li>صلّح البرنامج.</li></ol><b>بعد التصليح المفروض:</b><ol class="tk-s"><li>Start ← الموتور يشتغل ويفضل.</li><li>Stop أو فصل الأوفرلود ← الموتور يقف.</li><li>لمبة Trip تنوّر بس لما الأوفرلود يفصل.</li></ol>',
     io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}, {a:'I0.2', label:'أوفرلود', kind:'ncsw'}], outputs:[{a:'Q0.0', label:'موتور', kind:'motor'}, {a:'Q0.1', label:'Trip', kind:'lamp', color:'amber'}]},
     start:[{rows:[['NO:I0.0', 'NC:I0.1', 'NC:I0.2', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NO:I0.2', '-', '-', '-', 'OUT:Q0.1']]}],
     tests:[{run:0.2}, {exp:{'Q0.1':0}, msg:'الأوفرلود سليم: لمبة Trip لازم تكون مطفية.'}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'Start:'}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Stop:'}, {press:'I0.0'}, {run:0.3}, {set:{'I0.2':0}}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':1}, msg:'الأوفرلود فصل:'}, {set:{'I0.2':1}}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'الأوفرلود رجع:'}],
     hint:'لمبات I0.1 و I0.2 منوّرة ومحدش لمس حاجة: يعني البتين = 1 في الحالة الطبيعية. في رانج 1 خليهم NO، وفي رانج 2 لمبة الـ Trip محتاجة <b>NC</b> I0.2.',
     sol:[{rows:[['NO:I0.0', 'NO:I0.1', 'NO:I0.2', '-', 'OUT:Q0.0'], ['NO:Q0.0']], links:[[1]]}, {rows:[['NC:I0.2', '-', '-', '-', 'OUT:Q0.1']]}],
     ok:'لمبات الدخل قالتلك الحقيقة قبل ما تفتح البرنامج. دايمًا ابدأ منها.'},
-  {key:'sealfix', title:'التثبيت في المكان الغلط', task:'<b>الشكوى:</b> "الطلمبة بتقف أول ما نسيب Start. وحد قال إنه لما دس Stop وهي شغالة ماوقفتش!" (جرّب: دوس Start وانت ماسكه، ودوس Stop في نفس الوقت.) صلّح البرنامج.',
+  {key:'sealfix', title:'التثبيت في المكان الغلط', task:'<p class="tk-g"><b>الهدف:</b> تصلّح برنامج فيه عطل.</p><p class="tk-d"><b>الأجهزة:</b> Start <b>I0.0</b>، Stop <b>I0.1</b> (NC)، الطلمبة <b>Q0.0</b>.</p><b>اعمل كده:</b><ol class="tk-s"><li>الشكوى: «الطلمبة بتقف أول ما نسيب Start، ولما حد داس Stop وهي شغالة ما وقفتش».</li><li>جرّب: دوس Start وسيبه، وبعدين اضغط Start و Stop مع بعض.</li><li>صلّح مكان كونتاكت التثبيت.</li></ol><b>بعد التصليح المفروض:</b><ol class="tk-s"><li>تدوس Start وتسيبه ← الطلمبة تفضل شغالة.</li><li>Stop ← الطلمبة تقف، حتى لو حد ماسك Start.</li></ol>',
     io:ioS,
     start:[{rows:[['NO:I0.0', 'NO:I0.1', '-', '-', 'OUT:Q0.0'], ['', 'NO:Q0.0']], links:[[1, 2]]}],
     tests:[{run:0.2}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'دوست Start وسبته: الطلمبة لازم تفضل شغالة.'}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Stop:'}, {hold:'I0.0'}, {run:0.3}, {release:'I0.0'}, {run:0.3}, {hold:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'الطلمبة شغالة وحد ماسك Stop: لازم تقف (الـ Stop مايتعملوش بايباس أبدًا).'}, {release:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'بعد ما سابوا الـ Stop:'}],

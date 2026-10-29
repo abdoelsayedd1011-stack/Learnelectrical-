@@ -12,11 +12,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
-<link rel="stylesheet" href="plc.css?v=dd5dfa34">
+<link rel="stylesheet" href="plc.css?v=c45bd5d6">
 <script src="/assets/next-hint.js?v=20261021nh"></script>
-<script src="plc.js?v=9ed5de73"></script>
+<script src="plc.js?v=02b563fa"></script>
 <link rel="stylesheet" href="brand.css?v=3c0d0450">
-<script src="brands.js?v=d6a397c5"></script>
+<script src="brands.js?v=fd43abdf"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261021r">
 </head>
 <body>
@@ -94,7 +94,7 @@ PL.ladFig(document.getElementById('fSeal'), [{rows:[['NO:I0.0', 'NO:I0.1', 'NO:I
 PL.ladFig(document.getElementById('fSR'), [{rows:[['NO:I0.0', '-', '-', '-', 'S:Q0.0']]}, {rows:[['NC:I0.1', '-', '-', '-', 'R:Q0.0']]}], {labels:{'I0.0':'Start', 'I0.1':'Stop NC', 'Q0.0':'Motor'}});
 const ioM = {inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'Motor', kind:'motor'}]};
 window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l4', exercises:[
-  {key:'seal', title:'DOL with overload', task:'<b>Task:</b> <b>Start</b> (I0.0) starts motor <b>Q0.0</b> and it keeps running after you release it. <b>Stop</b> (I0.1, wired NC) or a tripped <b>overload</b> (I0.2, wired NC) stops it. A <b>Trip</b> lamp on <b>Q0.1</b> lights while the overload is tripped. And after the overload resets, the motor must not start by itself.',
+  {key:'seal', title:'DOL with overload', task:'<p class="tk-g"><b>Goal:</b> start a DOL motor with a Start and a Stop button, like any panel.</p><p class="tk-d"><b>Devices:</b> Start on <b>I0.0</b>, Stop on <b>I0.1</b> (NC), overload on <b>I0.2</b> (NC), motor <b>Q0.0</b>, Trip lamp on <b>Q0.1</b>.</p><b>What should happen:</b><ol class="tk-s"><li>Press and release Start → the motor runs and keeps running.</li><li>Press Stop → the motor stops.</li><li>Overload trips → the motor stops and the Trip lamp lights.</li><li>Overload resets → the lamp goes off and the motor does not restart by itself (Start is needed again).</li></ol>',
     io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}, {a:'I0.2', label:'Overload', kind:'ncsw'}], outputs:[{a:'Q0.0', label:'Motor', kind:'motor'}, {a:'Q0.1', label:'Trip', kind:'lamp', color:'amber'}]},
     tests:[{run:0.2}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'At the start, with nobody pressing anything:'},
       {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'You pressed Start and released it: the motor must keep running (seal-in).'},
@@ -108,7 +108,7 @@ window.SIM1 = PL.sim(document.getElementById('sim1'), {lesson:'l4', exercises:[
     ok:'The best-known program in the world. Notice we used the overload as NO in one rung and NC in another: the same bit, two different questions.'}
 ]});
 window.SIM2 = PL.sim(document.getElementById('sim2'), {lesson:'l4', exercises:[
-  {key:'sr', title:'Set and Reset', task:'<b>Task:</b> the same start and stop but <b>without seal-in</b>: use a <b>Set</b> coil on Q0.0 with Start, and a <b>Reset</b> coil on Q0.0 with Stop (wired NC). If both are pressed together, <b>stop wins</b>.',
+  {key:'sr', title:'Set and Reset', task:'<p class="tk-g"><b>Goal:</b> the same start/stop, but with a Set coil and a Reset coil instead of a seal-in.</p><p class="tk-d"><b>Devices:</b> Start on <b>I0.0</b>, Stop on <b>I0.1</b> (NC), motor <b>Q0.0</b>.</p><b>What should happen:</b><ol class="tk-s"><li>Start → a Set coil on <b>Q0.0</b> starts the motor.</li><li>Stop → a Reset coil on <b>Q0.0</b> stops it.</li><li>Start and Stop pressed together → the motor stays off (put the Reset rung after the Set rung).</li></ol>',
     io:ioM,
     tests:[{run:0.2}, {press:'I0.0'}, {run:0.4}, {exp:{'Q0.0':1}, msg:'You pressed Start and released it:'}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'You pressed Stop:'},
       {hold:'I0.0'}, {run:0.2}, {hold:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Start and Stop pressed together: stop must win. Put the Reset rung after the Set rung.'}, {release:'I0.1'}, {release:'I0.0'}, {run:0.2},
@@ -118,7 +118,7 @@ window.SIM2 = PL.sim(document.getElementById('sim2'), {lesson:'l4', exercises:[
     ok:'Set/Reset are handy in big programs, but watch the order of the rungs: the last one wins.'}
 ]});
 window.SIM3 = PL.sim(document.getElementById('sim3'), {lesson:'l4', exercises:[
-  {key:'fr', title:'Forward and reverse', task:'<b>Task:</b> <b>I0.0</b> starts forward <b>Q0.0</b>, and <b>I0.1</b> starts reverse <b>Q0.1</b>, each with seal-in. <b>Stop</b> (I0.2, NC) stops either one. Both must never run together, <b>not even for one scan</b>, and if the motor is running forward and you press reverse, nothing happens until you press Stop.',
+  {key:'fr', title:'Forward and reverse', task:'<p class="tk-g"><b>Goal:</b> a motor that turns forward and reverse with two contactors that never close together.</p><p class="tk-d"><b>Devices:</b> Fwd <b>I0.0</b>, Rev <b>I0.1</b>, Stop <b>I0.2</b> (NC), forward contactor <b>Q0.0</b>, reverse contactor <b>Q0.1</b>.</p><b>What should happen:</b><ol class="tk-s"><li>Press Fwd → <b>Q0.0</b> runs and stays on.</li><li>Press Rev → <b>Q0.1</b> runs and stays on.</li><li>Stop → whichever is running stops.</li><li>Running forward and you press Rev → nothing happens until Stop (and the other way round).</li><li><b>Q0.0</b> and <b>Q0.1</b> are never on together, not even for one scan.</li></ol>',
     io:{inputs:[{a:'I0.0', label:'Forward', kind:'pb'}, {a:'I0.1', label:'Reverse', kind:'pb', color:'blue'}, {a:'I0.2', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'KM1 Fwd'}, {a:'Q0.1', label:'KM2 Rev'}]}, plant:'fr',
     tests:[{watch:c => c.q('Q0.0') && c.q('Q0.1') ? 'Q0.0 and Q0.1 were on together: phase-to-phase short! You need an NC contact of each output in the other one\'s rung.' : null},
       {run:0.2}, {press:'I0.0'}, {run:0.4}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'You pressed Forward and released it:'},
