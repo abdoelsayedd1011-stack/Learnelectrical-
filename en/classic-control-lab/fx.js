@@ -1,6 +1,6 @@
 /* =====================================================================================
    Classic Control Lab — fx.js  (engagement layer, loads after engine.js, before the lesson data)
-       <script src="engine.js"></script><script src="fx.js"></script>
+       <script src="engine.js"></script><script src="fx.js?v=20261029s"></script>
    Everything here plugs into the engine's event bus (CL.on / CL.emit, added by patch_engine.py):
        exercise · wire · unwire · power · coil · motor · trip · short · burnt · tick · render ·
        precheck · pass · fail · hint · clear · destroy
@@ -13,7 +13,7 @@
 const CL = window.CL; if (!CL) return;
 const FX = CL.fx = {version:1};
 // features shipped later stay in the code but hidden until their flag is turned on
-FX.flags = Object.assign({machines:true, faults:false, challenge:false}, (window.CL_FX_FLAGS || {}));
+FX.flags = Object.assign({machines:true, faults:false, challenge:false, score:false}, (window.CL_FX_FLAGS || {}));
 const esc = CL.esc || (s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])));
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const TYPES = CL.TYPES || {};
@@ -327,7 +327,7 @@ const SC = FX.score = {
   tick(){ const c = SC.cur; if (!c || !c.t0) return; const t = (now() - c.t0) / 1000, el = c.bar && c.bar.querySelector('.fx-clock'); if (el){ el.textContent = mmss(t); el.classList.toggle('over', t > c.target); } },
   firstWire(){ const c = SC.cur; if (!c || c.t0 || c.passed) return; c.t0 = now(); c.timerId = setInterval(SC.tick, 1000); SC.tick(); },
   elapsed(){ const c = SC.cur; return c && c.t0 ? (now() - c.t0) / 1000 : 0; },
-  render(host){ const c = SC.cur; if (!c) return; let slot = host.querySelector('.bn-fx'); if (!slot){ slot = document.createElement('div'); slot.className = 'bn-fx'; const r = host.querySelector('.bn-res'); if (r && r.parentNode) r.parentNode.insertBefore(slot, r.nextSibling); else host.appendChild(slot); }
+  render(host){ const c = SC.cur; if (!c) return; if (!FX.flags.score){ let slot = host.querySelector('.bn-fx'); if (!slot){ slot = document.createElement('div'); slot.className = 'bn-fx'; host.appendChild(slot); } slot.innerHTML = '<div data-fx="pass"></div><div data-fx="fault-panel"></div>'; c.bar = null; c.slot = slot; return; } let slot = host.querySelector('.bn-fx'); if (!slot){ slot = document.createElement('div'); slot.className = 'bn-fx'; const r = host.querySelector('.bn-res'); if (r && r.parentNode) r.parentNode.insertBefore(slot, r.nextSibling); else host.appendChild(slot); }
     const best = SC.mine()[c.key];
     slot.innerHTML = `<div class="fx-bar" data-fx="bar"><span>⏱ <span class="fx-clock">0:00</span></span><span class="fx-tgt">target ${mmss(c.target)}</span><span class="fx-best">${best ? `⭐ best ${best.pts} pts (${mmss(best.t)})` : '⭐ no points yet'}</span><span class="fx-btns">${FX.flags.challenge ? '<button type="button" class="btn" data-fx="challenge">⚔️ Challenge a friend</button>' : ''}${FX.flags.faults ? '<button type="button" class="btn" data-fx="fault" hidden>🔍 Add a hidden fault</button>' : ''}</span></div><div data-fx="pass"></div><div data-fx="fault-panel"></div>`;
     c.bar = slot.querySelector('[data-fx=bar]'); c.slot = slot;
@@ -340,7 +340,7 @@ const SC = FX.score = {
     const t = c.t0 ? (now() - c.t0) / 1000 : 0, P = SC.points(c.ex, t, c.hints, c.wrong), fast = t <= c.target && c.t0, clean = !c.hints && !c.wrong;
     const better = SC.record(SC.me(), c.key, {pts:P.pts, t:Math.round(t), hints:c.hints, wrong:c.wrong, fast:!!fast, clean});
     const got = SC.award();
-    const el = c.slot && c.slot.querySelector('[data-fx=pass]'); if (el){
+    const el = c.slot && c.slot.querySelector('[data-fx=pass]'); if (el && FX.flags.score){
       el.innerHTML = `<div class="fx-pass" role="status"><div class="fx-pts">+${P.pts} pts${better ? '' : ' <small class="muted">(your earlier best is higher)</small>'}</div><div class="fx-detail">time ${mmss(t)} of ${mmss(P.tg)} · base ${P.base} + speed ${P.bonus}${c.hints ? ` − solution ${15 * c.hints}` : ''}${c.wrong ? ` − mistakes ${8 * c.wrong}` : ''}</div>${got.length ? `<div>${got.map(id => { const b = bOf(id); return `<span class="fx-badge-new">${b.ico} ${esc(b.t)}</span>`; }).join('')} new badge!</div>` : ''}${SC.me() ? '' : `<form class="fx-name" data-fx="nameform"><label>Your name for the leaderboard: <input name="n" maxlength="24" placeholder="Your name" required></label><button type="submit" class="btn">Save</button></form>`}</div>`;
       const f = el.querySelector('[data-fx=nameform]'); if (f) f.addEventListener('submit', ev => { ev.preventDefault(); SC.setName(f.n.value); f.outerHTML = `<div class="fx-detail">Saved as <b>${esc(SC.me())}</b> ✓</div>`; });
     }
@@ -574,7 +574,7 @@ on('hint', () => { if (SC.cur && !SC.cur.passed) SC.cur.hints++; });
 
 /* =========================== 8. hub: leaderboard, badges, points on cards =========================== */
 FX.summary = function(){ const mine = SC.mine(); return {name:SC.me() || 'Trainee', total:SC.total(mine), exercises:Object.keys(mine).filter(k => !/^fault\//.test(k)).length, faults:st.get('faultsFixed') || 0, badges:Object.keys(SC.badges()).map(id => bOf(id)).filter(Boolean)}; };
-FX.hub = function(){
+FX.hub = function(){ if (!FX.flags.score) return;
   const sec = document.getElementById('fxBoard');
   if (sec){ const sm = FX.summary(), have = SC.badges(), board = SC.board();
     sec.innerHTML = `<div class="fx-hub"><h2>🏆 Leaderboard</h2><div class="fx-top"><div class="fx-total">${sm.total} pts<small>${sm.exercises} exercises${FX.flags.faults ? ` · ${sm.faults} faults fixed` : ''}</small></div><form class="fx-name" data-fx="hubname"><label>Your name: <input name="n" maxlength="24" value="${esc(SC.me())}" placeholder="Type your name"></label><button type="submit" class="btn">Save</button></form></div><ul class="fx-badges" aria-label="Badges">${BADGES.map(b => `<li class="${have[b.id] ? 'on' : ''}" title="${esc(b.d)}">${b.ico} ${esc(b.t)}</li>`).join('')}</ul>${board.length ? `<table class="fx-lb"><thead><tr><th>#</th><th>Name</th><th>Points</th><th>Exercises</th>${FX.flags.faults ? '<th>Faults</th>' : ''}</tr></thead><tbody>${board.map((r, i) => `<tr class="${r.me ? 'me' : ''}"><td>${i + 1}</td><td>${esc(r.name)}</td><td class="mono">${r.pts}</td><td class="mono">${r.n}</td>${FX.flags.faults ? `<td class="mono">${r.faults}</td>` : ''}</tr>`).join('')}</tbody></table>` : '<p class="muted">No results yet. Finish your first exercise and you\'ll see your name here.</p>'}<p class="muted" style="margin:0;font-size:.84rem">Points: a base score by circuit size + a speed bonus − “Show solution” − mistakes. The leaderboard is saved on this device only.</p></div>`;
@@ -583,11 +583,11 @@ FX.hub = function(){
   const mine = SC.mine();
   document.querySelectorAll('a.les[href]').forEach(a => { const L = (CL.CURRICULUM.fundamentals || []).find(l => l.file === a.getAttribute('href')); if (!L) return; const p = SC.lesson(L.id, mine); if (!p || a.querySelector('.fx-pts')) return; const stEl = a.querySelector('.t') || a; const s = document.createElement('span'); s.className = 'fx-pts'; s.textContent = '⭐ ' + p; stEl.appendChild(s); });
 };
-function certPts(){ const c = document.getElementById('certCard'); if (!c || c.querySelector('.fx-cert')) return; const sm = FX.summary(); if (!sm.total) return; const d = document.createElement('div'); d.className = 'd fx-cert'; d.innerHTML = `With a total of <b>${sm.total}</b> points${sm.badges.length ? ' and badges: ' + sm.badges.map(b => b.ico + ' ' + esc(b.t)).join(', ') : ''}`; const sig = c.querySelector('.sig'); c.insertBefore(d, sig || null); }
+function certPts(){ if (!FX.flags.score) return; const c = document.getElementById('certCard'); if (!c || c.querySelector('.fx-cert')) return; const sm = FX.summary(); if (!sm.total) return; const d = document.createElement('div'); d.className = 'd fx-cert'; d.innerHTML = `With a total of <b>${sm.total}</b> points${sm.badges.length ? ' and badges: ' + sm.badges.map(b => b.ico + ' ' + esc(b.t)).join(', ') : ''}`; const sig = c.querySelector('.sig'); c.insertBefore(d, sig || null); }
 function hubInit(){ const cb = document.getElementById('certBody'); if (cb && typeof MutationObserver !== 'undefined'){ new MutationObserver(certPts).observe(cb, {childList:true}); certPts(); } if (document.getElementById('fxBoard') || document.querySelector('a.les')) FX.hub(); }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hubInit); else setTimeout(hubInit, 0);
 // lesson start screen: points per element card
-function cardPts(){ const Ld = CL.test && CL.test.lesson; if (!Ld) return; const mine = SC.mine(); document.querySelectorAll('.g-card').forEach(b => { const el = Ld.elements[+b.dataset.el]; if (!el || b.querySelector('.fx-pts')) return; const keys = []; el.steps.forEach(s => { if (s.kind === 'bench') s.ex.forEach(x => keys.push(Ld.id + '/' + x)); }); const p = keys.reduce((a, k) => a + ((mine[k] && mine[k].pts) || 0), 0); if (!p) return; const t = b.querySelector('.t'); if (t){ const s = document.createElement('span'); s.className = 'fx-pts'; s.textContent = '⭐ ' + p; t.appendChild(s); } }); }
+function cardPts(){ if (!FX.flags.score) return; const Ld = CL.test && CL.test.lesson; if (!Ld) return; const mine = SC.mine(); document.querySelectorAll('.g-card').forEach(b => { const el = Ld.elements[+b.dataset.el]; if (!el || b.querySelector('.fx-pts')) return; const keys = []; el.steps.forEach(s => { if (s.kind === 'bench') s.ex.forEach(x => keys.push(Ld.id + '/' + x)); }); const p = keys.reduce((a, k) => a + ((mine[k] && mine[k].pts) || 0), 0); if (!p) return; const t = b.querySelector('.t'); if (t){ const s = document.createElement('span'); s.className = 'fx-pts'; s.textContent = '⭐ ' + p; t.appendChild(s); } }); }
 if (typeof MutationObserver !== 'undefined') document.addEventListener('DOMContentLoaded', () => { const g = document.getElementById('gCards'); if (g) new MutationObserver(cardPts).observe(g, {childList:true}); cardPts(); });
 
 FX._S = S; FX._st = st; FX.KINDS = KINDS;
