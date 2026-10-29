@@ -2745,7 +2745,7 @@ CL.bench = function(host, ex, opt){
   const dc = devs.some(d => d.type === 'supplyDC'), has3P = devs.some(d => d.type === 'supply3P'), nm = supplyNames(devs);
   let wires = [], wid = 0, hist = [], pend = null, flash = null, errHl = null, lastRes = null, held = new Map(), anim = null, timer = null, lastAct = '', passed = false, destroyed = false, api = null; const prevSt = {}, prevTrip = {}; const EVB = o => Object.assign({ex, key:opt.key, host, api}, o);
   const addW = (a, b) => { wires.push({id:++wid, a, b}); return wires[wires.length - 1]; };
-  let saved = opt.key ? CL.store.bench(opt.key) : null, ghost = false;
+  let saved = opt.key ? CL.store.bench(opt.key) : null, ghost = 0; // عدد توصيلات الحل الظاهرة (0 = الحل مخفي)
   const keyOf = p => p[0] < p[1] ? p[0] + '>' + p[1] : p[1] + '>' + p[0], sameSet = (a, b) => a.length === b.length && new Set(a.map(keyOf)).size === new Set(a.concat(b).map(keyOf)).size;
   // a board that is exactly the solution but was never passed by the trainee's own check came from the old «وريني الحل»: drop it, start empty
   if (Array.isArray(saved) && ex.solution && !(opt.passKey && CL.store.has(opt.passKey)) && sameSet(saved, ex.solution)){ saved = null; if (opt.key) CL.store.bench(opt.key, null); }
@@ -2972,9 +2972,9 @@ CL.bench = function(host, ex, opt){
     if (errHl && errHl.until < Date.now()) errHl = null;
     let wSvg = '';
     if (ghost && ex.solution){ // the solution as a dashed ghost under the trainee's own wires (never added to the board)
-      const groute = L.grid ? router() : wpath, gW = ex.solution.map((p, i) => ({id:'g' + i, a:p[0], b:p[1]}));
+      const groute = L.grid ? router() : wpath, gW = nhSol.slice(0, ghost).map((p, i) => ({id:'g' + i, a:p[0], b:p[1]}));
       const gfr = (() => { const cl = devs.map(d => Object.assign({}, d, {st:Object.assign({}, d.st)})); return solveOnce(cl, gW, true); })();
-      gW.forEach(w => { const A = TT[w.a], B = TT[w.b]; if (!A || !B) return; const col = wireColor(w, gfr), pw = col !== '#3a9be0' && (powerTerm(w.a) || powerTerm(w.b)); wSvg += `<path class="bw-ghost${pw ? ' pw' : ''}" d="${groute(A, B)}" stroke="${col}"/>`; });
+      gW.forEach(w => { const A = TT[w.a], B = TT[w.b]; if (!A || !B) return; const col = wireColor(w, gfr), pw = col !== '#3a9be0' && (powerTerm(w.a) || powerTerm(w.b)); wSvg += `<path class="bw-ghost${pw ? ' pw' : ''}${w.id === 'g' + (ghost - 1) ? ' cur' : ''}" d="${groute(A, B)}" stroke="${col}"/>`; });
     }
     wires.forEach(w => {
       const A = TT[w.a], B = TT[w.b]; if (!A || !B) return;
@@ -3029,7 +3029,8 @@ CL.bench = function(host, ex, opt){
     resEl.innerHTML = h;
     return r;
   }
-  function setGhost(v){ ghost = !!v; const sb = host.querySelector('[data-b=sol]'); if (sb){ sb.textContent = ghost ? 'اخفي الحل' : 'وريني الحل'; sb.setAttribute('aria-pressed', ghost ? 'true' : 'false'); } }
+  // «وريني الحل» بيظهر توصيلة واحدة مع كل ضغطة بنفس ترتيب «الخطوة الجاية» (القوى الأول)، ولما الحل يكمل الضغطة اللي بعدها تخبّيه
+  function setGhost(v){ const N = nhSol.length; ghost = v === true ? N : !v ? 0 : Math.min(+v, N); const sb = host.querySelector('[data-b=sol]'); if (sb){ sb.textContent = ghost === 0 ? 'وريني الحل' : ghost < N ? `وريني التوصيلة ${ghost + 1} من ${N}` : 'اخفي الحل'; sb.setAttribute('aria-pressed', ghost ? 'true' : 'false'); } }
   function setPower(on){ setPower0(on); nhUpdate(); }
   function setPower0(on){
     lastAct = '';
@@ -3140,7 +3141,7 @@ CL.bench = function(host, ex, opt){
     if (b.dataset.b === 'pwr') setPower(!powered());
     else if (b.dataset.b === 'undo') undo();
     else if (b.dataset.b === 'clear'){ if (powered()) setPower(false); devs.forEach(d => { if (d.st.pin) d.st.pin = 0; }); setGhost(false); if (opt.key) CL.store.bench(opt.key, null); if (opt.onReset) opt.onReset(); passed = false; CL.emit('clear', EVB({})); if (!wires.length){ resEl.innerHTML = ''; msg('اللوحة فاضية وبدأت من الأول.'); render(); return; } setAll([], 'مسحت كل الأسلاك وبدأت من الأول. «↶ تراجع» ترجّعهم.'); }
-    else if (b.dataset.b === 'sol'){ if (powered()){ msg('⚡ افصل الكهربا الأول.', 'bad'); return; } setGhost(!ghost); if (ghost) CL.emit('hint', EVB({})); msg(ghost ? 'ده الحل بخطوط متقطعة. وصّل انت بإيدك زيه.' : 'خبّيت الحل.'); render(); }
+    else if (b.dataset.b === 'sol'){ if (powered()){ msg('⚡ افصل الكهربا الأول.', 'bad'); return; } const N = nhSol.length; setGhost(ghost >= N ? 0 : ghost + 1); if (ghost) CL.emit('hint', EVB({})); const p = nhSol[ghost - 1]; msg(!ghost ? 'خبّيت الحل.' : `التوصيلة ${ghost} من ${N}: من ${termLab(p[0])} لـ ${termLab(p[1])} (الخط المتقطع الغامق). وصّلها بإيدك، ودوس تاني عشان تظهر اللي بعدها.` + (ghost === N ? ' دي آخر توصيلة.' : '')); render(); }
     else if (b.dataset.b === 'spd'){ speed = speed === 1 ? 10 : speed === 10 ? 60 : 1; spdBtn.textContent = '⏩ ×' + speed; msg(speed === 1 ? 'الزمن بسرعته الطبيعية.' : `الزمن أسرع ${speed} مرة: التايمرات والأوفرلود والعربية بيمشوا أسرع عشان متستناش.`); }
   });
   let lastCols = 0;
