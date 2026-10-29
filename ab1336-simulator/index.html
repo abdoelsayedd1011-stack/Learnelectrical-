@@ -856,6 +856,7 @@ function clearFault(src){
 }
 function startCmd(from){
  if(!ctlOk())return;
+ if(from==='HIM'){if(S.fault){kpWhy('فيه عطل على الانفرتر: امسحه بزرار Stop الأول، وبعدين Start.');return;}if(!S.io.en){kpWhy('طرف الـ Enable (29) مفتوح: اقفله الأول عشان الانفرتر يشتغل.');return;}if(S.io.stopLatched){kpWhy('زرار الـ Stop في لوحة التحكم مفتوح: رجّعه الأول.');return;}if(fnOn(9)){kpWhy('فيه مدخل إيقاف شغّال في الأطراف: افصله الأول.');return;}}
  if(S.fault||!S.io.en||S.io.stopLatched||fnOn(9))return;
  if(P[173]===1){S.st='tune';S.tuneT=3.5;log('بدأ Autotune: الانفرتر بيحقن تيار ويقيس مقاومة الموتور');return;}
  if(!S.run)log('تشغيل من '+from);
@@ -1149,8 +1150,9 @@ function doEE(){
   log('EEprom: اتنزلت الباراميترات من الـ HIM للانفرتر');H.scr='ee';hmsg('Download Done');save();renderParams();updLabels();
  }
 }
+function kpWhy(t){try{if(window.SIMTOUR&&SIMTOUR.state&&SIMTOUR.state.on)return;let e=document.getElementById('kpWhy');if(!e){e=document.createElement('div');e.id='kpWhy';e.setAttribute('role','status');e.style.cssText='position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:9999;width:max-content;max-width:min(92vw,460px);background:#2b2f36;color:#fff;border-inline-start:4px solid #f0b429;border-radius:10px;padding:10px 14px;font:600 15px/1.7 system-ui,sans-serif;direction:rtl;text-align:start;box-shadow:0 6px 20px rgba(0,0,0,.35);transition:opacity .25s;pointer-events:none;opacity:0';document.body.appendChild(e);}e.textContent='⚠ '+t;e.style.opacity='1';clearTimeout(kpWhy.t);kpWhy.t=setTimeout(()=>{e.style.opacity='0';},5000);if(typeof log==='function'&&kpWhy.last!==t)log(t,1);kpWhy.last=t;clearTimeout(kpWhy.t2);kpWhy.t2=setTimeout(()=>{kpWhy.last=null;},5000);}catch(_){}}
 function himKey(k){
- if(!ctlOk())return;
+ if(!ctlOk()){kpWhy('الانفرتر مطفي: شغّل الكهربا الأول من القاطع، وبعدين استخدم الكيباد.');return;}
  if(k==='START')return startCmd('HIM');
  if(k==='STOP')return stopCmd('HIM');
  if(k==='DIR')return setDir(-S.dir,'HIM');

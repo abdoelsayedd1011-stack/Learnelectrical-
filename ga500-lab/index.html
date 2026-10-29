@@ -772,10 +772,10 @@ const KP=(function(){
  function save_(){const c=H.ed.c,r=setParam(c,H.ed.v,'الكيباد');H.v=H.ed.back;H.ed=null;
   if(r==='ok'||r==='same'){EV['kpw_'+c]=1;msg('End',.9);}else if(r==='run')msg('bUSY',1.4);else msg('Err',1.4);}
  function key(k,o){
-  if(!ctlOk())return;
+  if(!ctlOk()){if(!o||!o.rep)kpWhy('الانفرتر مطفي: شغّل الكهربا الأول من القاطع، وبعدين استخدم الكيباد.');return;}
   const rp=o.rep||1;
   if(o.rep&&!['UP','DN'].includes(k))return;
-  if(k==='RUN'){if(!S.loc&&K.runSrc!=='kp'){msg('rEn',1.2);return;}const r=startKey();if(r==='flt')msg(fdisp(S.fault));return;}
+  if(k==='RUN'){if(!S.loc&&K.runSrc!=='kp'){msg('rEn',1.2);kpWhy(RUNWHY);return;}const r=startKey();if(r==='flt')msg(fdisp(S.fault));return;}
   if(k==='STOP'){stopKey();return;}
   if(k==='LORE'){if(S.st!=='off'){msg('bUSY');return;}S.loc=!S.loc;calcK();EV.locrem=1;log('LO/RE: التحكم بقى '+(S.loc?'LOCAL (من الكيباد)':'REMOTE (حسب b1-01 و b1-02)'));save();return;}
   if(k==='RESET'&&H.v!=='ed'){if(S.fault){if(fnOn('fwd')||fnOn('rev')){msg('Err');log('RESET مش هيمسح العطل وأمر التشغيل لسه مقفول: افتح S1 و S2 الأول',1);return;}if(clearFault('RESET'))EV.kClr=1;}return;}
@@ -979,11 +979,14 @@ function startReq(from){
  return true;
 }
 /* keypad RUN: returns 'ok' or a reason */
+function kpWhy(t){try{if(window.SIMTOUR&&SIMTOUR.state&&SIMTOUR.state.on)return;let e=document.getElementById('kpWhy');if(!e){e=document.createElement('div');e.id='kpWhy';e.setAttribute('role','status');e.style.cssText='position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:9999;width:max-content;max-width:min(92vw,460px);background:#2b2f36;color:#fff;border-inline-start:4px solid #f0b429;border-radius:10px;padding:10px 14px;font:600 15px/1.7 system-ui,sans-serif;direction:rtl;text-align:start;box-shadow:0 6px 20px rgba(0,0,0,.35);transition:opacity .25s;pointer-events:none;opacity:0';document.body.appendChild(e);}e.textContent='⚠ '+t;e.style.opacity='1';clearTimeout(kpWhy.t);kpWhy.t=setTimeout(()=>{e.style.opacity='0';},5000);if(typeof log==='function'&&kpWhy.last!==t)log(t,1);kpWhy.last=t;clearTimeout(kpWhy.t2);kpWhy.t2=setTimeout(()=>{kpWhy.last=null;},5000);}catch(_){}}
+function enWhy(){if(DRIVE.inhibit&&DRIVE.inhibit())return 'التشغيل ممنوع: الانفرتر لسه في وضع الإعداد (Commissioning). رجّعه لوضع التشغيل الأول.';if(termsWith('stop3').some(t=>!tc(t)))return 'طرف الـ Stop في توصيل 3-wire مفتوح: لازم يكون مقفول عشان التشغيل يشتغل.';if(fnOn('coast'))return 'طرف الإيقاف الحر (Coast / Free run) شغّال: افصله الأول.';return 'التشغيل ممنوع دلوقتي: راجع أطراف التحكم.';}
+const RUNWHY='الانفرتر على REMOTE (التشغيل من الأطراف): دوس LO/RE، أو خلي b1-02 = 0.';
 function startKey(){
- if(!ctlOk())return 'off';
- if(K.runSrc!=='kp')return 'src';
- if(S.fault)return 'flt';
- if(!canStart())return 'en';
+ if(!ctlOk()){kpWhy('الانفرتر مطفي: شغّل الكهربا الأول من القاطع، وبعدين استخدم الكيباد.');return 'off';}
+ if(K.runSrc!=='kp'){kpWhy(RUNWHY);return 'src';}
+ if(S.fault){kpWhy('فيه عطل على الانفرتر: امسحه بزرار الـ Reset الأول، وبعدين شغّل.');return 'flt';}
+ if(!canStart()){kpWhy(enWhy());return 'en';}
  startReq('الكيباد');return 'ok';
 }
 function stopCmd(from,mode){

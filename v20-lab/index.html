@@ -958,11 +958,12 @@ function ackFault(src){
  const c=S.fault;S.fault=0;S.retryT=0;S.need=true;EV['clr'+c]=1;S.lossT=[0,0];S.comT=0;S.ripT=0;
  log('العطل F'+c+' اتأكد (Acknowledge)'+(src?' من '+src:''));return true;
 }
+function kpWhy(t){try{if(window.SIMTOUR&&SIMTOUR.state&&SIMTOUR.state.on)return;let e=document.getElementById('kpWhy');if(!e){e=document.createElement('div');e.id='kpWhy';e.setAttribute('role','status');e.style.cssText='position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:9999;width:max-content;max-width:min(92vw,460px);background:#2b2f36;color:#fff;border-inline-start:4px solid #f0b429;border-radius:10px;padding:10px 14px;font:600 15px/1.7 system-ui,sans-serif;direction:rtl;text-align:start;box-shadow:0 6px 20px rgba(0,0,0,.35);transition:opacity .25s;pointer-events:none;opacity:0';document.body.appendChild(e);}e.textContent='⚠ '+t;e.style.opacity='1';clearTimeout(kpWhy.t);kpWhy.t=setTimeout(()=>{e.style.opacity='0';},5000);if(typeof log==='function'&&kpWhy.last!==t)log(t,1);kpWhy.last=t;clearTimeout(kpWhy.t2);kpWhy.t2=setTimeout(()=>{kpWhy.last=null;},5000);}catch(_){}}
 function bopStart(){
  if(!ctlOk())return;
- if(S.fault){hmsg('fault');return;}
- if(P.P0010!==0){hmsg('p0010');return;}
- if(S.mode==='auto'&&P.P0700!==1){hmsg('notbop');return;}
+ if(S.fault){hmsg('fault');kpWhy('فيه عطل على الانفرتر: امسحه بزرار الـ Reset الأول، وبعدين شغّل.');return;}
+ if(P.P0010!==0){hmsg('p0010');kpWhy('التشغيل ممنوع: P0010 مش صفر (الانفرتر في وضع الإعداد). خليه 0 الأول.');return;}
+ if(S.mode==='auto'&&P.P0700!==1){hmsg('notbop');kpWhy('زرار RUN مش شغال: P0700 مش 1 (الأوامر من الأطراف). خليه 1، أو حوّل لوضع Hand.');return;}
  if(S.mode==='jog'){S.bopJog=true;EV.bopJog=1;return;}
  if(!S.bopRun)log('تشغيل من الـ BOP ('+(S.mode==='hand'?'Hand':'P0700=1')+')');
  S.bopRun=true;S.need=false;EV.bopStart=1;if(S.mode==='hand')EV.handRun=1;
@@ -1469,7 +1470,7 @@ function keyDown(k){
  if(KD[k])return;
  KD[k]={t0:performance.now(),used:false,tm:null};
  const btn=$('.vk[data-k="'+k+'"]');btn&&btn.classList.add('down');
- if(!ctlOk())return;
+ if(!ctlOk()){kpWhy('الانفرتر مطفي: شغّل الكهربا الأول من القاطع، وبعدين استخدم الكيباد.');return;}
  if(H.scr==='busy'||H.scr==='boot')return;
  if((k==='M'&&KD.OK)||(k==='OK'&&KD.M)){KD.M.used=KD.OK.used=true;clearTimeout(KD.M.tm);clearTimeout(KD.OK.tm);cycleMode();return;}
  if((k==='UP'&&KD.DN)||(k==='DN'&&KD.UP)){KD.UP.used=KD.DN.used=true;if(rep){clearTimeout(rep.tm);rep=null;}reverseCombo();return;}

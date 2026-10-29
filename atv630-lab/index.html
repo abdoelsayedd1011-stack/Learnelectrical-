@@ -954,9 +954,9 @@ function clearFault(src){
 function startHMI(){
  if(!ctlOk())return;
  const hmiCmd=S.loc||P.Cd1===1;
- if(!hmiCmd){hmsg('Cmd not from HMI');return;}
- if(S.fault){hmsg('Reset error first');return;}
- if(!stoOk()){hmsg('STO active');return;}
+ if(!hmiCmd){hmsg('Cmd not from HMI');kpWhy('زرار RUN مش شغال: الأوامر مش من الشاشة. دوس Local/Remote عشان تبقى LOCAL، أو خلي Cd1 = HMI.');return;}
+ if(S.fault){hmsg('Reset error first');kpWhy('فيه عطل على الانفرتر: امسحه بالـ Reset الأول، وبعدين RUN.');return;}
+ if(!stoOk()){hmsg('STO active');kpWhy('الـ STO مفتوح (زرار الطوارئ): اقفله الأول عشان الانفرتر يشتغل.');return;}
  if(!S.run)log('تشغيل من زرار RUN في الشاشة');
  S.run=true;S.dir=1;EV.himRun=1;
 }
@@ -1279,8 +1279,9 @@ function goFactory(){
 }
 function hmiFault(){H.stack=[];H.showF=true;H.scr='fault';H.info=null;}
 function editMax(p){return Math.max(1,Math.floor(Math.log10(Math.max(Math.abs(p.mx),1))));}
+function kpWhy(t){try{if(window.SIMTOUR&&SIMTOUR.state&&SIMTOUR.state.on)return;let e=document.getElementById('kpWhy');if(!e){e=document.createElement('div');e.id='kpWhy';e.setAttribute('role','status');e.style.cssText='position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:9999;width:max-content;max-width:min(92vw,460px);background:#2b2f36;color:#fff;border-inline-start:4px solid #f0b429;border-radius:10px;padding:10px 14px;font:600 15px/1.7 system-ui,sans-serif;direction:rtl;text-align:start;box-shadow:0 6px 20px rgba(0,0,0,.35);transition:opacity .25s;pointer-events:none;opacity:0';document.body.appendChild(e);}e.textContent='⚠ '+t;e.style.opacity='1';clearTimeout(kpWhy.t);kpWhy.t=setTimeout(()=>{e.style.opacity='0';},5000);if(typeof log==='function'&&kpWhy.last!==t)log(t,1);kpWhy.last=t;clearTimeout(kpWhy.t2);kpWhy.t2=setTimeout(()=>{kpWhy.last=null;},5000);}catch(_){}}
 function himKey(k,mult){
- if(!S.ctrl)return;
+ if(!S.ctrl){if(!mult||mult<2)kpWhy('الانفرتر مطفي: شغّل الكهربا الأول من القاطع، وبعدين استخدم الكيباد.');return;}
  if(k==='RUN')return startHMI();
  if(k==='STOP')return stopHMI();
  if(S.boot>0)return;
