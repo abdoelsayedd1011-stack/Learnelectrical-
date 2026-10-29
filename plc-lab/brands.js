@@ -595,7 +595,10 @@ const ico = k => `<svg viewBox="0 0 24 24" class="tb-ic" aria-hidden="true">${IC
 const ordK = a => { const k = ENG.kind(a) || ''; return k === 'HC' ? 99 : 'IQMTCIWMW'.indexOf(k[0]); };
 
 PL.brandSim = function(host, cfg){
-  const B = BR[cfg.brand], exs = cfg.exercises, PS = progStore(cfg.brand), PFX = cfg.brand;
+  const B = BR[cfg.brand], exs = cfg.exercises, PFX = cfg.brand, LES = cfg.lesson;
+  /* lesson mode (PL.lessonSim): progress goes to the course store, programs are kept per lesson */
+  const PS0 = progStore(cfg.brand), PS = LES ? {get:k => PS0.get('L/' + LES + '/' + k), set:(k, v) => PS0.set('L/' + LES + '/' + k, v)} : PS0;
+  const isDone = x => LES ? PL.has(LES, x.key) : PL.px.has(PFX + '/' + x.key);
   const AR = B.id === 'ab', DV = B.id === 'dvp', SI = B.id === 'sie';
   let k = 0, ex, cols, prog, T, plcStr = null, mode = 'STOP', key = 'REM', online = false, monOn = true, e, plantSt, sel = null, tab = 'lad', backup = null, rdT = 0, acc = 0, faceSig = '', newTagOpen = false, demo = null;
   const fails = {}, forces = {}, pressed = {};
@@ -634,6 +637,7 @@ PL.brandSim = function(host, cfg){
     <div class="bx-res" aria-live="polite" hidden></div>
     <div class="bx-hint box" hidden></div>`;
   const q = s => $(s, host);
+  const XL = s => LES ? ('>' + String(s) + '<').replace(/>([^<]+)</g, (m, t) => '>' + t.replace(ARX, a => `<bdi dir="ltr">${esc(B.short(a, T))}</bdi>`) + '<').slice(1, -1) : s;
   const listBox = q('.bx-list'), progBox = q('.bx-prog'), scn = q('.bx-scn'), plantBox = q('.bx-plant'), pctl = q('.bx-pctl'), ioBox = q('.bx-io'), face = q('.bx-face'), modeTag = q('.bx-mode');
   const titleBar = q('.bx-title'), toolBox = q('.bx-tools'), stat = q('.bx-stat'), lad = q('.bx-lad'), tagsBox = q('.bx-tags'), ilBox = q('.bx-il'), frcBox = q('.bx-frc'), lintBox = q('.bx-lint');
   const resBox = q('.bx-res'), hintBox = q('.bx-hint'), ide = q('.bx-ide');
@@ -672,8 +676,9 @@ PL.brandSim = function(host, cfg){
 
   /* ---------- exercise list + scenario ---------- */
   function renderList(){
-    listBox.innerHTML = exs.map((x, j) => { const d = PL.px.has(PFX + '/' + x.key); return `<button type="button" class="bx-it${d ? ' done' : ''}${x.lvl === 4 ? ' ch' : ''}" data-k="${j}" aria-pressed="${j === k}"><span class="n">${d ? '✓' : x.lvl === 4 ? '★' : j + 1}</span><span class="t">${esc(x.title)}</span></button>`; }).join('');
-    const n = exs.filter(x => PL.px.has(PFX + '/' + x.key)).length, pct = Math.round(n / exs.length * 100);
+    listBox.innerHTML = exs.map((x, j) => { const d = isDone(x); return `<button type="button" class="bx-it${d ? ' done' : ''}${x.lvl === 4 ? ' ch' : ''}" data-k="${j}" aria-pressed="${j === k}"><span class="n">${d ? '✓' : x.lvl === 4 ? '★' : j + 1}</span><span class="t">${esc(x.title)}</span></button>`; }).join('');
+    listBox.hidden = !!LES && exs.length < 2; progBox.hidden = !!LES;
+    const n = exs.filter(isDone).length, pct = Math.round(n / exs.length * 100);
     progBox.innerHTML = `<span>خلّصت <b>${n} من ${exs.length}</b> تمارين</span><span class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="التقدّم ${pct}%"><i style="width:${pct}%"></i></span>`;
   }
   function ioRows(){
@@ -685,7 +690,14 @@ PL.brandSim = function(host, cfg){
     return `<div class="tblw"><table class="tbl bx-iot"><thead><tr><th>${SI ? 'Address' : DV ? 'Device' : 'Address'}</th><th>${SI ? 'Tag' : DV ? 'Comment' : 'Tag'}</th><th>الجهاز</th><th>النوع</th></tr></thead><tbody>${h}</tbody></table></div>`;
   }
   function renderScn(){
-    const lv = LV[ex.lvl] || LV[1], d = PL.px.has(xk());
+    const lv = LV[ex.lvl] || LV[1], d = isDone(ex);
+    if (LES){
+      scn.className = 'bx-scn bx-les' + (d ? ' ok' : '');
+      scn.innerHTML = `${exs.length > 1 || d ? `<div class="bx-scn-h">${exs.length > 1 ? `<span class="muted">تمرين ${exs.indexOf(ex) + 1} من ${exs.length}</span>` : ''}${d ? '<span class="bx-done">✓ خلّصته</span>' : ''}</div>` : ''}
+        <h3>${esc(ex.title)}</h3><div class="bx-task">${XL(ex.task)}</div>
+        <details class="bx-iod"><summary>جدول الـ I/O بعناوين ${esc(B.name)}</summary>${ioRows()}</details>`;
+      return;
+    }
     scn.className = 'bx-scn ' + lv[1] + (d ? ' ok' : '');
     scn.innerHTML = `<div class="bx-scn-h"><span class="bx-lv">${lv[0]}</span><span class="muted">تمرين ${exs.indexOf(ex) + 1} من ${exs.length}</span>${d ? '<span class="bx-done">✓ خلّصته</span>' : ''}</div>
       <h3>${esc(ex.title)}</h3><p class="bx-story">${ex.story || ''}</p>
@@ -708,7 +720,7 @@ PL.brandSim = function(host, cfg){
     plcStr = null; mode = 'STOP'; online = false; monOn = SI ? false : true; if (AR) key = 'REM';
     plantSt = P().create(ex.plantOpt);
     fresh();
-    resBox.hidden = true; hintBox.hidden = true; hintBox.innerHTML = ex.hint || '';
+    resBox.hidden = true; hintBox.hidden = true; hintBox.innerHTML = XL(ex.hint || '');
     renderList(); renderScn(); renderIO(); pctlRender(); updChk(); setTab(tab === 'il' && !DV ? 'lad' : tab);
     msg(guide());
     renderAll(); nhUpdate();
@@ -1079,7 +1091,7 @@ PL.brandSim = function(host, cfg){
 
   /* ---------- check / hint / solution ---------- */
   function updChk(){
-    const d = PL.px.has(xk()), f = fails[ex.key] || 0;
+    const d = isDone(ex), f = fails[ex.key] || 0;
     q('[data-t=hint]').hidden = !ex.hint || !(f >= 1 || d);
     q('[data-t=sol]').hidden = !ex.sol || !(f >= 2 || d);
   }
@@ -1090,8 +1102,8 @@ PL.brandSim = function(host, cfg){
       const r = ENG.check(prog, {io:ex.io, plant:ex.plant, plantOpt:Object.assign({}, ex.plantOpt || {}, c.plantOpt || {}), tests:c.steps}, {cols});
       if (!r.ok){ fails[ex.key] = (fails[ex.key] || 0) + 1; const m = (c.name ? `<b>${esc(c.name)}:</b> ` : '') + xlate(B, T, r.msg); show(false, m + (fails[ex.key] === 1 && ex.hint ? ' <span class="muted">(فيه تلميح تحت لو محتاجه)</span>' : fails[ex.key] === 2 && ex.sol ? ' <span class="muted">(تقدر تشوف الحل دلوقتي)</span>' : '')); updChk(); return {ok:false, msg:r.msg}; }
     }
-    const first = PL.px.mark(xk());
-    show(true, ex.ok || 'البرنامج عدّى كل الاختبارات.');
+    const first = LES ? PL.mark(LES, ex.key) : PL.px.mark(xk());
+    show(true, XL(ex.ok || 'البرنامج عدّى كل الاختبارات.'));
     renderList(); renderScn(); updChk();
     return {ok:true, first};
   }
@@ -1111,7 +1123,8 @@ PL.brandSim = function(host, cfg){
   /* ---------- live loop ---------- */
   function renderAll(){ renderPlant(); renderFace(); renderTop(); renderLad(); renderLint(); updIO(); if (tab === 'tags') renderTags(); if (tab === 'frc') renderFrc(); }
   let tagT = 0;
-  PL.animate(host, dt => {
+  const anim = PL.animate(host, dt => {
+    if (!host.isConnected){ anim.stop(); return; }
     acc += dt; let n = 0;
     if (demo) acc = 0; /* the machine preview drives the clock itself */
     while (acc >= 0.02 && n < 6){ acc -= 0.02; n++; P().step(plantSt, e, 0.02); if (mode === 'RUN') e.scan(0.02); }
@@ -1123,12 +1136,12 @@ PL.brandSim = function(host, cfg){
   });
 
   let wasMon = false;
-  setInterval(() => { const m = monitoring(); if (m !== wasMon){ wasMon = m; renderTop(); refreshRungs(); } }, 300);
+  const wasT = setInterval(() => { if (!host.isConnected){ clearInterval(wasT); return; } const m = monitoring(); if (m !== wasMon){ wasMon = m; renderTop(); refreshRungs(); } }, 300);
 
   /* ---------- machine preview («▶ شوف المكنة شغّالة»): the hidden solution runs in the PLC, the editor is hidden ---------- */
   const L = s => `<bdi dir="ltr">${s}</bdi>`;
   const pvAd = {host, watchEl:plantBox, title:'المكنة شغالة صح',
-    mount(box){ q('.bx-stage').before(box); }, key:() => 'x/' + PFX + '/' + ex.key, ex:() => ex, has:() => !!(ex && ex.sol),
+    mount(box){ q('.bx-stage').before(box); }, key:() => LES ? 'l/' + LES + '/' + ex.key : 'x/' + PFX + '/' + ex.key, ex:() => ex, has:() => !!(ex && ex.sol),
     begin(po){
       demo = {e, plantSt, mode, sel, ins:(ex.io.inputs || []).map(i => ({i, state:i.state})), pressed:Object.assign({}, pressed)};
       sel = null;
@@ -1158,9 +1171,9 @@ PL.brandSim = function(host, cfg){
 
   /* deep link: siemens.html#enc opens that exercise */
   const fromHash = () => { const h = decodeURIComponent((location.hash || '').slice(1)), j = exs.findIndex(x => x.key === h); return j; };
-  select(Math.max(0, fromHash()));
-  if (fromHash() > 0) setTimeout(() => scn.scrollIntoView({block:'start'}), 60);
-  window.addEventListener('hashchange', () => { const j = fromHash(); if (j >= 0 && j !== k){ select(j); scn.scrollIntoView({block:'start', behavior:PL.reduced() ? 'auto' : 'smooth'}); } });
+  select(LES ? 0 : Math.max(0, fromHash()));
+  if (!LES && fromHash() > 0) setTimeout(() => scn.scrollIntoView({block:'start'}), 60);
+  if (!LES) window.addEventListener('hashchange', () => { const j = fromHash(); if (j >= 0 && j !== k){ select(j); scn.scrollIntoView({block:'start', behavior:PL.reduced() ? 'auto' : 'smooth'}); } });
   const api = {host, preview:pvAd, get demo(){ return !!demo; }, brand:B.id, get ex(){ return ex; }, get prog(){ return prog; }, get tags(){ return T; }, get engine(){ return e; }, get plant(){ return plantSt; }, get mode(){ return mode; }, get plcStr(){ return plcStr; }, exercises:exs,
     select, check, load(def){ prog = ENG.program(def, cols); changed(); }, press, pick(i, r, c){ sel = {i, r, c}; renderLad(); }, setEl(id){ setEl(id); }, lint, download, setMode, key:v => { key = v; },
     tool(a){ const b = toolBox.querySelector(`[data-a="${a}"]`); if (b) b.click(); }, monitoring, il: () => DV ? DVP.il(prog) : null, rungText: i => AR ? AB.rungText(prog[i], T) : null};
@@ -1464,6 +1477,69 @@ PL.BXS.cut = {
     {until:c => c.plant.pieces.length >= c.mark.k + 2, max:14, msg:'بعد Start التاني الماكينة مكمّلتش تقطّع.'},
     {fn:c => lenMsg(c, c.mark.k + 1)},
     {press:'I0.3'}, {run:0.5}, {exp:{'Q0.0':0, 'Q0.2':1}, msg:'Stop في الآخر:'}]}]
+};
+
+/* ================= lesson simulators in the real vendor look =================
+   PL.sim (plc.js) hands every lesson exercise set to PL.lessonSim: a brand bar (Siemens · Allen-Bradley · Delta · simple)
+   above the same brandSim the brand pages use, in lesson mode. The choice is one per learner (localStorage 'plc-brand')
+   and switches every simulator on the page together. An exercise whose solution needs an instruction the brand doesn't
+   have (Delta: TOF, CTD, SCL · Allen-Bradley: P/N edges) opens on Siemens with a one-line note. */
+const LBKEY = 'plc-brand';
+const LBOPTS = [['sie', 'Siemens', 'TIA Portal'], ['ab', 'Allen-Bradley', 'Studio 5000'], ['dvp', 'Delta', 'ISPSoft'], ['plain', 'مبسّط', 'شكل عام']];
+function lbGet(){ try { const v = localStorage.getItem(LBKEY); return LBOPTS.some(o => o[0] === v) ? v : 'sie'; } catch (e){ return 'sie'; } }
+function lbSet(v){ try { localStorage.setItem(LBKEY, v); } catch (e){} }
+/* instructions an exercise needs that brand B can't show */
+function lbMissing(b, x){
+  const B = BR[b], ids = new Set(B.pal.map(p => p.id)), miss = new Set();
+  [x.sol, x.start].forEach(def => { if (def) ENG.program(def, x.cols || 5).forEach(rg => rg.rows.forEach(row => row.forEach(el => { if (el && el.t !== 'W' && !ids.has(B.idOf(el))) miss.add(el.t); }))); });
+  return Array.from(miss);
+}
+const LBX = [];
+/* lesson I/O have Arabic labels: give Siemens / Allen-Bradley real-looking tag names, and Delta device comments */
+const LBN = {'Stop':'Stop_PB', 'Start':'Start_PB', 'موتور':'Motor', 'لمبة':'Lamp', 'عين':'Photo_Eye', 'طلمبة':'Pump', 'تشغيل':'Run_Sw', 'السير':'Conveyor', 'أوفرلود':'Overload', 'Trip':'Trip_Lamp',
+  'Low':'Level_Low', 'High':'Level_High', 'نزول':'Down', 'ملو':'Fill_Valve', 'مفتاح فوق':'Sw_Upstairs', 'مفتاح تحت':'Sw_Downstairs', 'مستوى raw':'Level_Raw', 'مستوى %':'Level_Pct', 'مروحة':'Fan',
+  'لمبة إنذار':'Alarm_Lamp', 'كملت':'Batch_Done', 'كرتونة جديدة':'New_Box', 'كامل':'Full_Lamp', 'قفل':'Close_PB', 'فيه أماكن':'Free_Lamp', 'فوق':'Top_LS', 'فتح':'Open_PB', 'عند الدفّاع':'At_Pusher',
+  'عربية داخلة':'Car_In', 'عربية خارجة':'Car_Out', 'طول':'Long_Sensor', 'طلوع':'Up', 'ضغط عالي':'High_Press', 'سويتش':'Switch', 'سلكتور':'Selector', 'سارينة':'Horn', 'زرار':'Push_PB', 'دفّاع':'Pusher',
+  'خلف':'Rev', 'خلص':'Done', 'خلاط':'Mixer', 'تفريغ':'Drain_Valve', 'تحت':'Bottom_LS', 'تأكيد':'Ack_PB', 'المكبس':'Press', 'اللمبة':'Lamp', 'إيد يمين':'Hand_Right', 'إيد شمال':'Hand_Left', 'أمام':'Fwd',
+  'أصفر':'Amber', 'أخضر':'Green', 'أحمر':'Red', 'Start محلي':'Start_Local', 'Start بعيد':'Start_Remote', 'KM3 Y':'KM3_Star', 'KM2 خلف':'KM2_Rev', 'KM2 Δ':'KM2_Delta', 'KM1 أمام':'KM1_Fwd', 'KM1':'KM1'};
+function lbTags(b, x){
+  if (x.tags) return x.tags;
+  const io = (x.io.inputs || []).concat(x.io.outputs || []).concat(x.syms || []), seen = {};
+  return io.filter(i => i.a && /^(I|Q|M)\d/.test(i.a)).map(i => {
+    if (b === 'dvp') return {n:DVP.abs(i.a), a:i.a, c:String(i.label || '').slice(0, 24)};
+    let n = LBN[String(i.label || '').trim()] || (/^[A-Za-z][A-Za-z0-9_ ]*$/.test(i.label || '') ? i.label.trim().replace(/\s+/g, '_') : (i.a[0] === 'I' ? 'DI_' : i.a[0] === 'Q' ? 'DO_' : 'Flag_') + i.a.replace('.', '_'));
+    if (seen[n]) n += '_' + i.a.replace('.', '_'); seen[n] = 1;
+    return {n, a:i.a};
+  });
+}
+PL.lessonSim = function(host, opt){
+  host.classList.add('lbx');
+  host.innerHTML = `<div class="lbx-bar" role="group" aria-label="ماركة الـ PLC"><span class="lbx-l">اشتغل على:</span>${LBOPTS.map(o => `<button type="button" class="lbx-b lbx-${o[0]}" data-b="${o[0]}" aria-pressed="false"><b dir="${o[0] === 'plain' ? 'auto' : 'ltr'}">${o[1]}</b><span dir="${o[0] === 'plain' ? 'auto' : 'ltr'}">${o[2]}</span></button>`).join('')}</div><p class="lbx-note" hidden></p><div class="lbx-in"></div>`;
+  const bar = $('.lbx-bar', host), note = $('.lbx-note', host);
+  let inner = $('.lbx-in', host), api = null, cur = null;
+  function mount(b){
+    if (b === cur) return;
+    cur = b;
+    if (PL.preview.cur) PL.preview.stop();
+    $$('.lbx-b', bar).forEach(x => x.setAttribute('aria-pressed', x.dataset.b === b ? 'true' : 'false'));
+    let use = b; note.hidden = true;
+    if (b !== 'plain'){
+      const miss = Array.from(new Set(opt.exercises.map(x => lbMissing(b, x)).flat()));
+      if (miss.length && b !== 'sie'){ use = 'sie'; const list = miss.map(m => iso(m)).join(' / '), B = BR[b].name; note.innerHTML = `التمرين ده فيه ${list}، ودي مش موجودة بنفس الشكل في ${B}، فهيفتح على Siemens.`; note.hidden = false; }
+    }
+    const fresh = document.createElement('div'); fresh.className = 'lbx-in';
+    inner.replaceWith(fresh); inner = fresh;
+    /* the lesson's column count, and a brand's own way of writing the solution (ex.solB.sie …) */
+    const exs = opt.exercises.map(x => { const o = Object.assign({}, x); if (opt.cols && !o.cols) o.cols = opt.cols; if (x.solB && x.solB[use]) o.sol = x.solB[use]; if (x.hintB && x.hintB[use]) o.hint = x.hintB[use]; if (use !== 'plain') o.tags = lbTags(use, x); return o; });
+    api = use === 'plain' ? PL.plainSim(inner, opt) : PL.brandSim(inner, {brand:use, exercises:exs, lesson:opt.lesson});
+  }
+  bar.addEventListener('click', ev => { const t = ev.target.closest('[data-b]'); if (!t) return; lbSet(t.dataset.b); LBX.forEach(f => f(t.dataset.b)); });
+  LBX.push(mount);
+  mount(lbGet());
+  const w = {host, get brand(){ return cur; }, get sim(){ return api; }, exercises:opt.exercises, lesson:opt.lesson, mount};
+  ['select', 'check', 'load', 'press', 'pick', 'setEl', 'lint'].forEach(k => { w[k] = (...a) => api[k](...a); });
+  ['ex', 'prog', 'engine', 'plant', 'preview', 'demo'].forEach(k => Object.defineProperty(w, k, {get:() => api[k]}));
+  return w;
 };
 
 })();

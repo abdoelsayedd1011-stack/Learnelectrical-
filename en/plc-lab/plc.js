@@ -908,7 +908,9 @@ PL.drawRung = drawRung;
 /* static ladder figure in the lesson text: PL.ladFig(el, def, {labels:{I0.0:'Start'}}) */
 PL.ladFig = function(el, def, o){ o = o || {}; const cols = o.cols || 5, prog = ENG.program(def, cols), lb = o.labels || {}; el.classList.add('ladfig'); el.innerHTML = prog.map((rg, i) => drawRung(rg, i, {cols, running:false, e:null, sel:null, lab:a => lb[a] || '', hit:false})).join(''); };
 
-PL.sim = function(host, opt){
+/* lesson simulators: the real vendor look when brands.js is loaded (PL.lessonSim), else the simple trainer below */
+PL.sim = (host, opt) => PL.lessonSim && !opt.plain ? PL.lessonSim(host, opt) : plainSim(host, opt);
+const plainSim = PL.plainSim = function(host, opt){
   const cols = opt.cols || 5, exs = opt.exercises;
   let ex, prog, e, plantSt, running = false, sel = null, acc = 0, rdT = 0, forceMode = false, lastRes = null, backup = null, demo = null;
   const forces = {};
