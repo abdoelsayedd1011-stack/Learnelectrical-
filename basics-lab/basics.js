@@ -1045,7 +1045,7 @@ function drawComp(c, st, g){
 }
 BL.bench = function(host, cfg){
   const g = U('bn'), L = cfg.lesson;
-  const S = {ex:0, wires:[], pend:null, color:'L', ghost:false, power:false, st:null};
+  const S = {ex:0, wires:[], pend:null, color:'L', ghost:0, power:false, st:null};
   const ex = () => cfg.exercises[S.ex];
   function terms(e){ const out = {}; e.comps.forEach(c => TDEF[c.type].forEach(([k, dx, dy, role]) => { out[c.id + '.' + k] = {id:c.id + '.' + k, x:c.x + dx, y:c.y + dy, role, lab:TLAB[c.type][k], comp:c}; })); return out; }
   function freshSt(){ const e = ex(), sw = {}; e.comps.forEach(c => { if (c.type === 'sw1' || c.type === 'sw2') sw[c.id] = false; }); return {mcb:true, tripped:false, sw, lamp:{}, plug:false}; }
@@ -1175,7 +1175,7 @@ BL.bench = function(host, cfg){
       <pattern id="${g}gyw" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="14" height="14" fill="#2e9b3c"/><rect width="6" height="14" fill="#f2d21b"/></pattern>
     </defs><rect x="0" y="0" width="360" height="${e.H}" fill="var(--wall)"/>`;
     e.comps.forEach(c => { s += drawComp(c, S.st, g); });
-    if (S.ghost) (e.solution || []).forEach(w => { const A = T[w[0]], B = T[w[1]]; if (A && B) s += `<path class="bw-ghost" d="${route(A, B)}" stroke="${w[2] === 'PE' ? '#2e9b3c' : COL[w[2]]}"/>`; });
+    if (S.ghost) (e.solution || []).slice(0, S.ghost).forEach((w, i) => { const A = T[w[0]], B = T[w[1]]; if (A && B) s += `<path class="bw-ghost${i === S.ghost - 1 ? ' cur' : ''}" d="${route(A, B)}" stroke="${w[2] === 'PE' ? '#2e9b3c' : COL[w[2]]}"/>`; });
     S.wires.forEach((w, i) => { const A = T[w[0]], B = T[w[1]]; if (!A || !B) return; const d = route(A, B), flow = ev && ev.wcur[i] > 0.05;
       s += `<g class="bw"><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${colStroke(w[2])}"/>${flow ? `<path d="${d}" class="flow" fill="none" stroke="#fff6b0" stroke-width="2" stroke-dasharray="6 18" style="--dur:.8s;opacity:.9"/>` : ''}<path class="bw-hit" d="${d}" data-w="${i}" tabindex="0" role="button" aria-label="سلك ${COL_AR[w[2]]} من ${A.lab} لـ ${B.lab}: دوس عشان تشيله"/></g>`; });
     Object.values(T).forEach(t => { const pend = S.pend === t.id;
@@ -1185,7 +1185,7 @@ BL.bench = function(host, cfg){
     $$('[data-ex]', host).forEach(b => { const i = +b.dataset.ex; b.setAttribute('aria-pressed', i === S.ex ? 'true' : 'false'); b.classList.toggle('done', BL.has(L, cfg.exercises[i].key)); });
     $$('[data-col]', host).forEach(b => b.setAttribute('aria-pressed', b.dataset.col === S.color ? 'true' : 'false'));
     const pw = q('[data-b=pwr]'); pw.textContent = S.power ? 'افصل الكهربا' : 'شغّل الكهربا'; pw.classList.toggle('pri', !S.power); pw.style.background = S.power ? 'var(--bad)' : ''; pw.style.color = S.power ? '#fff' : ''; pw.style.borderColor = S.power ? 'var(--bad)' : '';
-    const sb = q('[data-b=sol]'); sb.textContent = S.ghost ? 'اخفي الحل' : 'وريني الحل'; sb.setAttribute('aria-pressed', S.ghost ? 'true' : 'false');
+    const sb = q('[data-b=sol]'); sb.textContent = !S.ghost ? 'وريني الحل' : S.ghost < (e.solution || []).length ? `وريني التوصيلة ${S.ghost + 1} من ${(e.solution || []).length}` : 'اخفي الحل'; sb.setAttribute('aria-pressed', S.ghost ? 'true' : 'false');
     const pl = q('[data-b=plug]'); pl.hidden = e.kind !== 'socket'; pl.textContent = S.st.plug ? 'شيل اللمبة من البريزة' : 'اشبك لمبة في البريزة';
     if (S.power && ev){ const any = Object.values(ev.lamps).some(Boolean); msg(any ? 'الكهربا شغّالة. دوس على المفتاح عشان تقلبه وشوف اللمبة.' : 'الكهربا شغّالة، بس مفيش حاجة منوّرة. جرّب تقلب المفتاح، أو اختبر التوصيل.', any ? 'ok' : ''); }
     nhUpdate();
@@ -1217,7 +1217,7 @@ BL.bench = function(host, cfg){
     else if (t.dataset.b === 'chk') check();
     else if (t.dataset.b === 'undo'){ if (S.power){ msg('⚡ افصل الكهربا الأول.', 'bad'); return; } S.wires.pop(); saveWires(); render(); }
     else if (t.dataset.b === 'clr'){ if (S.power){ msg('⚡ افصل الكهربا الأول.', 'bad'); return; } S.wires = []; saveWires(); q('.bn-res').innerHTML = ''; render(); }
-    else if (t.dataset.b === 'sol'){ S.ghost = !S.ghost; msg(S.ghost ? 'ده الحل بخطوط متقطعة. وصّل انت بإيدك زيه، الحل مش بيتوصّل لوحده.' : 'خبّيت الحل.'); render(); }
+    else if (t.dataset.b === 'sol'){ const e = ex(), N = (e.solution || []).length, T = terms(e), lab = x => T[x] ? `${T[x].comp.label || T[x].comp.id}: ${T[x].lab}` : x; S.ghost = S.ghost >= N ? 0 : (S.ghost || 0) + 1; const w = S.ghost && e.solution[S.ghost - 1]; msg(!S.ghost ? 'خبّيت الحل.' : `التوصيلة ${S.ghost} من ${N}: سلك ${COL_AR[w[2]] || ''} من ${lab(w[0])} لـ ${lab(w[1])} (الخط المتقطع الغامق). وصّلها بإيدك، ودوس تاني عشان تظهر اللي بعدها.` + (S.ghost === N ? ' دي آخر توصيلة.' : '')); render(); }
     else if (t.dataset.b === 'plug'){ S.st.plug = !S.st.plug; render(); }
   });
   host.addEventListener('keydown', e => { if (e.key !== 'Enter' && e.key !== ' ') return; const t = e.target.closest('[data-t],[data-w],[data-sw]'); if (!t) return; e.preventDefault(); t.dispatchEvent(new MouseEvent('click', {bubbles:true})); });
