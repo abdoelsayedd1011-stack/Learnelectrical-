@@ -59,9 +59,9 @@ function needsLogin(pathname){
 const SYNC_DIRS = new Set([...MEMBER_LABS, ...COURSE_DIRS, "pf525-lab", "interview"]);
 const SYNC_TAG = '<script src="/assets/sync.js" defer></script>';
 
-// Lesson explainer videos (/media/lessons/<dir>/lesson-NN.mp4 + .jpg poster) are gated exactly like their lesson page.
+// Lesson explainer videos (/media/lessons/<dir>/lesson-NN.mp4 + .jpg poster, English: lesson-NN-en.*) are gated exactly like their lesson page.
 function mediaLessonPage(pathname){
-  const v = /^\/media\/lessons\/([^/]+)\/(lesson-\d+)\.(?:mp4|jpg)$/.exec(pathname);
+  const v = /^\/media\/lessons\/([^/]+)\/(lesson-\d+)(?:-en)?\.(?:mp4|jpg)$/.exec(pathname);
   return v && COURSE_DIRS.has(v[1]) ? "/" + v[1] + "/" + v[2] + ".html" : null;
 }
 
