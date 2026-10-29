@@ -1725,3 +1725,6 @@ BL.house = function(host, opt){
 };
 
 })();
+
+/* قفل الدروس بالترتيب: assets/lesson-gate.js */
+;(function(){ if (typeof document === "undefined" || window.LEGate) return; var s = document.createElement("script"); s.src = "/assets/lesson-gate.js?v=20261029g1"; document.head.appendChild(s); })();

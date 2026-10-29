@@ -2569,7 +2569,6 @@ CL.taskCard = (ex, devs) => {
     if (ex.goal) s += `<p class="bn-goal"><b>الهدف:</b> ${ex.goal}</p>`;
     if (ex.idea) s += `<p class="bn-idea"><b>الفكرة:</b> ${ex.idea}</p>`;
     const ol = a => `<ol>${a.map(x => `<li>${x}</li>`).join('')}</ol>`;
-    if (ex.steps){ s += `<div class="bn-steps"><b>الخطوات</b>`; if (Array.isArray(ex.steps)) s += ol(ex.steps); else { if (ex.steps.power) s += `<h4>دايرة القوى</h4>` + ol(ex.steps.power); if (ex.steps.control) s += `<h4>دايرة التحكم</h4>` + ol(ex.steps.control); } s += `</div>`; }
     if (ex.tip && (ex.tip.match(/←/g) || []).length <= 2) s += `<p class="tip">${ex.tip}</p>`;
   } else { s += `<p>${ex.task || ''}</p>${ex.tip ? `<p class="tip">${ex.tip}</p>` : ''}`; }
   s += CL.wireTable(ex, devs) + `</div>`; return s;
@@ -3733,3 +3732,6 @@ CL.lesson = function(Ld){
   return {go};
 };
 })();
+
+/* قفل الدروس بالترتيب: assets/lesson-gate.js */
+;(function(){ if (typeof document === "undefined" || window.LEGate) return; var s = document.createElement("script"); s.src = "/assets/lesson-gate.js?v=20261029g1"; document.head.appendChild(s); })();

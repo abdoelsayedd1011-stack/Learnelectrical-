@@ -11,6 +11,7 @@
     "plc-lab-v1": "progress", "plcx-lab-v1": "progress", "drw-lab-v1": "progress", "vfdc-lab-v1": "progress", "srvc-lab-v1": "progress", "iv-v1": "progress",
     "vfd-wbx": "progress", "vfd-tc": "progress", "vfd-ex": "progress", "servo-lab-v1-ui": "progress",
     "mrje-sim-v1-ui": "progress", "sigma7-sim-v1-ui": "progress", "kinetix300-sim-v1-ui": "progress" };
+  ["iiot", "scada", "panel", "maint", "srvm", "safety"].forEach(function(c){ KEYS[c + "-lab-v1"] = "progress"; });
   DEV.forEach(function(d){ KEYS[d + "-lab-v1"] = "state"; KEYS[d + "-lab-v1-ui"] = "progress"; });
   // last: آخر كورس/محاكي اتفتح {p: المسار، title، t: الوقت} — الأحدث يكسب. الصفحة الرئيسية بتقراه في كارت «كمّل من حيث وقفت»
   var LAST = "le-last-v1"; KEYS[LAST] = "last";
