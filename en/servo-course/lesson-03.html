@@ -16,6 +16,7 @@
 <script src="servo.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b6">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 <link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
 <script src="/assets/real-art.js?v=20261030h1"></script>
@@ -39,40 +40,36 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>Why is the encoder the most important part?</h2>
-  <p>The drive uses the encoder for <b>3 things</b> at the same time:</p>
-  <ol>
-    <li><b>Position:</b> where the motor is (for the position loop).</li>
-    <li><b>Speed:</b> calculated from the change in position over time (for the speed loop).</li>
-    <li><b>Magnet angle:</b> to send current into the right winding (commutation).</li>
-  </ol>
-  <p>That is why any problem with the encoder or its cable = the drive trips straight away with an alarm. You cannot fit an encoder without the drive "recognising" it, and on many models the encoder is aligned to the magnet angle at the factory, so <b>do not remove the encoder from the motor</b>.</p>
+  <div class="tiles">
+    <div class="tile"><span class="ic">📍</span><b>Position</b></div>
+    <div class="tile"><span class="ic">⏩</span><b>Speed</b></div>
+    <div class="tile"><span class="ic">🧲</span><b>Magnet angle</b><span>Commutation</span></div>
+  </div>
+  <p class="alert">Any encoder or cable problem = alarm. And <b>never remove the encoder from the motor</b>.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>Incremental or absolute?</h2>
-  <div class="two">
-    <div class="box"><b>Incremental:</b> outputs pulses <b>A and B</b> 90° apart (from which the drive knows the direction) and one <b>Z</b> pulse per revolution. The drive <b>counts</b>. If power is lost, the count is lost and a <b>homing</b> is needed. Resolution is given in <b>PPR</b> (pulses per revolution), and the drive counts all four edges: <span class="eq">2500 PPR × 4 = 10000</span> counts.</div>
-    <div class="box"><b>Absolute:</b> every position in the revolution has <b>its own code</b>, so it knows its position as soon as power returns. A <b>single-turn</b> encoder knows the position within the revolution, and a <b>multi-turn</b> one counts the revolutions too (with a battery, internal gears or other battery-less methods). Resolution is given in <b>bits</b>: <span class="eq">17-bit = 131072</span> counts.</div>
+  <div class="vs">
+    <div class="side"><b>Incremental</b><span>A · B · Z · the drive counts</span><span class="big">2500×4</span><span>Power lost ⇒ homing</span></div>
+    <i>vs</i>
+    <div class="side"><b>Absolute</b><span>A code for every position</span><span class="big">17-bit</span><span>Knows its position at once</span></div>
   </div>
+  <p class="tip"><b>Multi-turn</b> also counts revolutions (often with a battery).</p>
   <div class="wd"><h3>Try it: cut the power</h3><div id="enc"></div></div>
-  <div class="ex"><b>From the field:</b> a <b>Battery low / Absolute data lost</b> alarm on an absolute servo means the battery is weak. <b>Replace it with the drive powered (not switched off)</b> so the encoder does not lose the turn count, otherwise you will need to set the origin again. The exact method is in each brand's manual.</div>
+  <p class="alert">Battery low? Change it <b>with the drive powered</b>, or you must set the origin again.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Resolution: how many counts per revolution?</h2>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>Encoder</th><th>Counts per rev</th><th>One count</th><th>On a 10 mm screw</th></tr></thead>
-    <tbody>
-      <tr><td>2500 PPR × 4</td><td class="mono">10000</td><td class="mono">0.036°</td><td class="mono">1 µm</td></tr>
-      <tr><td>17-bit</td><td class="mono">131072</td><td class="mono">0.0027°</td><td class="mono">0.076 µm</td></tr>
-      <tr><td>20-bit</td><td class="mono">1048576</td><td class="mono">0.00034°</td><td class="mono">0.0095 µm</td></tr>
-      <tr><td>23-bit</td><td class="mono">8388608</td><td class="mono">0.000043°</td><td class="mono">0.0012 µm</td></tr>
-    </tbody></table></div>
-  <p>So why do we need that huge resolution if the machine accuracy is <bdi dir="ltr">0.01 mm</bdi>? Because the drive <b>calculates the speed</b> from the position difference every fraction of a millisecond. At low speed, a low-resolution encoder gives "steps" in the speed reading, and the motor will hum and not run smoothly. <b>High resolution = smoother motion and higher gain.</b></p>
-  <div class="box key"><b>Do not confuse them:</b> encoder resolution is not machine accuracy. Machine accuracy also depends on the ball screw (backlash and lead accuracy), the coupling and the installation.</div>
+  <ul class="scale">
+    <li>2500×4<div class="bar"><i style="width:20%"></i><em><bdi dir="ltr">10 000</bdi></em></div></li>
+    <li>17-bit<div class="bar"><i style="width:40%"></i><em><bdi dir="ltr">131 072</bdi></em></div></li>
+    <li>20-bit<div class="bar"><i style="width:70%"></i><em><bdi dir="ltr">1 048 576</bdi></em></div></li>
+    <li>23-bit<div class="bar"><i style="width:100%"></i><em><bdi dir="ltr">8 388 608</bdi></em></div></li>
+  </ul>
+  <p class="bf"><span class="ic">🧈</span><span>Higher resolution = <b>smoother computed speed</b> ⇒ smooth motion and higher gain.</span></p>
+  <div class="box key">Encoder resolution is <b>not</b> machine accuracy: the ball screw and coupling set that too.</div>
   <div class="wd"><h3>Drill: calculate the resolution</h3><div id="res"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
   <p>Answer at least 5 of 6 correctly so the lesson is marked complete.</p>

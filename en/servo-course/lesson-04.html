@@ -16,6 +16,7 @@
 <script src="servo.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b6">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 <link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
 <script src="/assets/real-art.js?v=20261030h1"></script>
@@ -39,36 +40,30 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>The power circuit: exactly like a VFD</h2>
-  <p>If you understand the VFD, you will find the power circuit of a servo drive is the same:</p>
-  <ol>
-    <li><b>Rectifier:</b> converts the <bdi dir="ltr">AC</bdi> coming in on L1 L2 L3 to DC.</li>
-    <li><b>DC bus:</b> large capacitors charged to about <bdi dir="ltr">310 V DC</bdi> in a 220 V drive (and about <bdi dir="ltr">540 V DC</bdi> in a 400 V drive).</li>
-    <li><b>Inverter (IGBT):</b> 6 transistors chop the DC with PWM and output 3 phases on U V W.</li>
-    <li><b>Braking resistor (regen):</b> when the motor brakes it returns energy, and this energy raises the DC bus voltage. The drive switches in the resistor to burn it off as heat.</li>
+  <ol class="steps">
+    <li>Rectifier: AC → DC</li>
+    <li>DC bus: ≈ 310 V (220V) · 540 V (400V)</li>
+    <li>IGBTs → U V W</li>
+    <li>Braking resistor burns returned energy</li>
   </ol>
-  <div class="box safe"><b>Safety:</b> the capacitors stay charged for <b>minutes</b> after the power is switched off. Wait for the <b>CHARGE</b> lamp to go out (and the time written on the drive), and measure with a multimeter between P+ and N before you touch any terminal.</div>
+  <div class="box safe">Wait for the <b>CHARGE</b> lamp to go out and measure <b>P+ ↔ N</b> before touching.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>The control: 3 nested loops</h2>
-  <p>The real difference between a servo drive and a VFD is in the control: the drive has <b>3 nested (cascade) loops</b>, and each loop gives the command to the one inside it:</p>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>Loop</th><th>Compares</th><th>Outputs</th><th>Typical rate</th></tr></thead>
-    <tbody>
-      <tr><td><b>Position</b> (outer)</td><td>Target × actual position</td><td>A speed command</td><td>Tens of Hz</td></tr>
-      <tr><td><b>Speed</b> (middle)</td><td>Target × actual speed</td><td>A torque (current) command</td><td>Hundreds of Hz</td></tr>
-      <tr><td><b>Current</b> (inner)</td><td>Target × actual current</td><td>PWM voltage to the motor</td><td>Several kHz</td></tr>
-    </tbody></table></div>
-  <div class="ex"><b>Analogy:</b> you are driving a car and want to stop at a sign. <b>Position loop:</b> "50 metres left, so I drive at 40 km/h". <b>Speed loop:</b> "I am doing 30 and want 40, more throttle". <b>Current loop:</b> your foot, turning "more" into the right pedal press. Each one must be <b>faster</b> than the one outside it, otherwise the car shakes.</div>
+  <p class="bf"><span class="ic">🪆</span><span>Each loop commands the one inside it, and the inner one is <b>faster</b>.</span></p>
+  <ul class="fx">
+    <li><b>📍 Position (outer)</b><span>Asks for speed · tens of Hz</span></li>
+    <li><b>⏩ Speed (middle)</b><span>Asks for torque · hundreds of Hz</span></li>
+    <li><b>⚡ Current (inner)</b><span>Outputs PWM · several kHz</span></li>
+  </ul>
+  <p class="tip">Like driving: 50 m left ⇒ go 40 ⇒ press the pedal.</p>
   <div class="wd"><h3>Inside the drive (tap the blocks)</h3><div id="diag"></div></div>
-  <div class="box key"><b>Following error (the error during motion):</b> while moving, the actual position always lags slightly behind the target, because the position loop needs an "error" to ask for speed. This difference is called the <b>following error or position deviation</b>, and if it grows beyond a set limit the drive raises an alarm. <b>Feed-forward</b> reduces it by sending the required speed straight away without waiting for the error.</div>
+  <div class="box key"><b>Following error:</b> while moving, the actual position lags a little. Too big ⇒ alarm. <b>Feed-forward</b> reduces it.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Put the signal path in order</h2>
   <div class="wd"><h3>From the command to the motor and back</h3><div id="order"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
   <p>Answer at least 5 of 6 correctly so the lesson is marked complete.</p>

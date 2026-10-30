@@ -16,6 +16,7 @@
 <script src="servo.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b6">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 <link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
 <script src="/assets/real-art.js?v=20261030h1"></script>
@@ -39,35 +40,39 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>The problem: the PLC thinks in mm, the encoder in counts</h2>
-  <p>A 17-bit encoder counts <b>131072</b> per revolution. If the PLC sent one pulse per count, then for the motor to turn at 3000 rpm it would need to output <span class="eq">131072 × 50 = 6.5 MHz</span>, and no ordinary PLC can do that. Also, you want to say "move 250 mm", not "move 3276800 counts".</p>
-  <p>The solution: <b>the electronic gear</b>. The drive multiplies every incoming pulse by a fraction <b>N / M</b> and converts it to encoder counts. So you choose <b>how many mm one pulse is</b>.</p>
+  <div class="vs">
+    <div class="side"><b>17-bit encoder</b><span class="big">131072</span><span>counts/rev · 3000 rpm = 6.5 MHz ❌</span></div>
+    <i>vs</i>
+    <div class="side"><b>You want</b><span class="big">250 mm</span><span>not 3276800 counts</span></div>
+  </div>
+  <p class="bf"><span class="ic">⚙️</span><span><b>Electronic gear N/M</b>: you choose how many mm one pulse is.</span></p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>The formula in two steps</h2>
-  <div class="formula ar">Pulses per rev = travel per motor rev ÷ pulse value</div>
-  <div class="formula ar">N / M = encoder counts per rev ÷ pulses per rev</div>
-  <div class="ex"><b>Example:</b> a ball screw with a <b class="eq">10 mm</b> lead directly on the motor, a <b class="eq">10000</b> count encoder, and you want <b>1 pulse = <span class="eq">0.01 mm</span></b>.<br>
-  Pulses per rev = <span class="eq">10 ÷ 0.01 = 1000</span>.<br>
-  Gear = <span class="eq">10000 ÷ 1000 = 10/1</span>. So each pulse = 10 counts = 0.01 mm. ✓</div>
-  <div class="box"><b>Travel per motor revolution</b> is calculated from the mechanics:<ul>
-    <li>Ball screw: the lead (pitch). If there is a gearbox or belt between the motor and the screw, divide by the ratio.</li>
-    <li>Pulley and belt: number of teeth × belt pitch (or π × diameter).</li>
-    <li>Rotary table with a 1:10 gearbox: one motor revolution = 360 ÷ 10 = 36°.</li></ul></div>
-  <div class="box key"><b>It differs from brand to brand:</b> some drives write the gear as N/M (the numerator and denominator may have other parameter names), and some ask for the "number of pulses per revolution" directly and calculate it themselves. The idea is the same, but check in the manual <b>which side is the numerator and which the denominator</b>, and the allowed range of the fraction.</div>
+  <div class="formula">Pulses/rev = travel per motor rev ÷ pulse value</div>
+  <div class="formula">N / M = encoder counts/rev ÷ pulses/rev</div>
+  <div class="ladder"><span class="u">10 mm</span><span class="op">÷ 0.01</span><span class="u">1000</span><span class="op">10000 ÷</span><span class="u on">10/1</span></div>
+  <ul class="fx">
+    <li><b>Ball screw</b><span>Pitch ÷ gearbox ratio</span></li>
+    <li><b>Pulley and belt</b><span>Teeth × belt pitch</span></li>
+    <li><b>1:10 table</b><span>360 ÷ 10 = 36°</span></li>
+  </ul>
+  <p class="tip">From the manual: <b>which is numerator, which is denominator</b>, and the ratio limits.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>The calculator and the challenge</h2>
   <div class="wd"><h3>Electronic gear calculator</h3><div id="gear"></div></div>
-  <div class="box"><b>The trade-off:</b> a smaller unit = higher resolution but a higher frequency. A larger unit = a lower frequency but each pulse is a bigger "jump". Choose the smallest unit whose frequency the PLC can output at maximum speed.</div>
+  <div class="vs">
+    <div class="side"><b>Smaller unit</b><span>More precise · higher frequency</span></div>
+    <i>vs</i>
+    <div class="side"><b>Bigger unit</b><span>Lower frequency · bigger jump</span></div>
+  </div>
+  <p class="tip">Pick the smallest unit whose frequency the PLC can output at top speed.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Quick calculation drills</h2>
   <div class="wd"><h3>Calculate</h3><div id="gdrill"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
   <p>Answer at least 5 of 6 correctly so the lesson is marked complete.</p>
