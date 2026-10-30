@@ -20,6 +20,7 @@
 <script src="brands.js?v=20261030w1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b8">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -41,55 +42,52 @@
 <section class="panel lvid" aria-label="Lesson video"><h2 style="margin:0 0 8px">▶ The lesson in 5 minutes</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">Illustrated explanation, the simulator task solved, and the quiz answered. Made for the phone.</p><video src="/media/lessons/plc-lab/lesson-08-en.mp4" poster="/media/lessons/plc-lab/lesson-08-en.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>From the tank to a number</h2>
-  <ol>
-    <li>The <b>transmitter</b> measures (for example a level of 0–4 metres) and outputs a current: 4mA = empty, 20mA = full.</li>
-    <li>The <b>AI card</b> has an ADC that converts the current to a number. In Siemens, for example: 4mA → <b>0</b>, and 20mA → <b>27648</b>.</li>
-    <li>The <b>program</b> converts the number to metres or % (scaling) and uses it in compares and alarms.</li>
+  <ol class="steps">
+    <li>Transmitter: 4–20 mA</li>
+    <li>AI card: 0 → 27648</li>
+    <li class="on">Scaling: metres or %</li>
   </ol>
-  <p>If you don't remember why we start at 4 and not zero, go back to the <a href="../instrumentation-lab/lesson-02.html">4–20mA signal lesson in the Instrumentation course</a>.</p>
   <div class="formula">Value = Lo + Raw ÷ 27648 × (Hi − Lo)</div>
   <div class="wd"><h3>The signal chain</h3><div id="chain"></div></div>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>Current</th><th>Raw (Siemens)</th><th>Level 0–4 m</th></tr></thead>
-    <tbody>
-      <tr><td>4 mA</td><td class="mono">0</td><td>0 m</td></tr>
-      <tr><td>8 mA</td><td class="mono">6912</td><td>1 m</td></tr>
-      <tr><td>12 mA</td><td class="mono">13824</td><td>2 m</td></tr>
-      <tr><td>16 mA</td><td class="mono">20736</td><td>3 m</td></tr>
-      <tr><td>20 mA</td><td class="mono">27648</td><td>4 m</td></tr>
-    </tbody></table></div>
+  <ul class="scale">
+    <li><bdi dir="ltr">4 mA · 0</bdi><div class="bar"><i style="width:2%"></i><em><bdi dir="ltr">0 m</bdi></em></div></li>
+    <li><bdi dir="ltr">8 mA · 6912</bdi><div class="bar"><i style="width:25%"></i><em><bdi dir="ltr">1 m</bdi></em></div></li>
+    <li><bdi dir="ltr">12 mA · 13824</bdi><div class="bar"><i style="width:50%"></i><em><bdi dir="ltr">2 m</bdi></em></div></li>
+    <li><bdi dir="ltr">16 mA · 20736</bdi><div class="bar"><i style="width:75%"></i><em><bdi dir="ltr">3 m</bdi></em></div></li>
+    <li><bdi dir="ltr">20 mA · 27648</bdi><div class="bar"><i style="width:100%"></i><em><bdi dir="ltr">4 m</bdi></em></div></li>
+  </ul>
+  <p class="tip">Why 4 and not zero? <a href="../instrumentation-lab/lesson-02.html">The 4–20mA lesson</a>.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>Conversion drill</h2>
-  <p>Type the answer as a number. A small rounding difference is allowed.</p>
+  <p class="tip">Type a number; small rounding is allowed.</p>
   <div class="wd"><h3>Raw ↔ value ↔ mA</h3><div id="drill"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>In the program: scale and compare</h2>
-  <p>Each brand has its own instruction: <b>NORM_X + SCALE_X</b> in TIA Portal, <b>SCP</b> in Allen-Bradley, or you write the formula yourself with math instructions. The simulator has a <b>Scale</b> block that takes <span class="mono">IW64</span> and puts the value in <span class="mono">MW10</span> in the range you set.</p>
+  <ul class="fx">
+    <li><b>TIA Portal</b><span>NORM_X + SCALE_X</span></li>
+    <li><b>Allen-Bradley</b><span>SCP</span></li>
+    <li><b>Simulator</b><span>Scale: IW64 ⇒ MW10</span></li>
+  </ul>
   <div class="ladfig" id="fScl"></div>
-  <div class="box key"><b>Hysteresis:</b> if the pump starts below 20% and stops above 20%, it will switch off and on every second and burn the contactor. The right way: <b>start at 20% and stop at 80%</b>, done with Set at the low limit and Reset at the high limit.</div>
+  <div class="box key"><b>Hysteresis:</b> start at <b>20%</b>, stop at <b>80%</b> (Set and Reset), not both at 20% or the contactor burns.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Project: a tank with alarms</h2>
-  <p>A level transmitter on <b>IW64</b>, a fill pump <b>Q0.0</b>, and the tank drains by itself (consumption). Write the program, press RUN and let the tank run by itself. Also try the "Cut the transmitter wire" button and think: what should the program do?</p>
+  <p class="tip">Level on <b>IW64</b> · pump <b>Q0.0</b> · try "cut the transmitter wire": what should the program do?</p>
   <div class="wd"><h3>Simulator: the tank</h3><div id="sim1"></div></div>
-  <div class="ex"><b>On site:</b> when the transmitter wire breaks, the card gives a wrong value, the scale says "0%", so the program starts the pump and fills the tank until it overflows! Real programs use the card's diagnostic bit or compare the raw value with sensible limits, and on a fault they stop the pump and raise an alarm. A hard-wired High-High float switch is the last line of protection.</div>
+  <p class="alert">Wire cut ⇒ "0%" ⇒ the pump fills until it <b>overflows</b>. Use the diagnostic bit and a hard-wired high-high float.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>Common faults on site</h2>
-  <div class="fault-box"><b>Common faults on site:</b><ul>
-    <li><b>The reading is stuck at a strange value (32767 or negative):</b> a broken wire, or the transmitter has no power.</li>
-    <li><b>The reading is wrong by a constant ratio:</b> the scale range in the program differs from the transmitter range (the program says 0–10 bar and the transmitter is 0–16).</li>
-    <li><b>The card is set to 0–10V and the transmitter is 4–20mA:</b> the channel type must be set in the hardware configuration (and sometimes with a jumper on the card).</li>
-    <li><b>The reading jitters:</b> an unshielded cable, or one next to motor cables. Separate them, and add a filter in the card or in the program.</li>
-  </ul></div>
+  <ul class="fx">
+    <li><b>Stuck at 32767 or negative</b><span>Broken wire or no power</span></li>
+    <li><b>Off by a fixed ratio</b><span>Scale range ≠ transmitter range</span></li>
+    <li><b>Channel 0–10V, transmitter mA</b><span>Set the channel type · jumper</span></li>
+    <li><b>Reading jitters</b><span>Shield · away from motor cables · filter</span></li>
+  </ul>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson questions</h2>
   <p>Answer at least 5 of 6 correctly to mark the lesson done.</p>

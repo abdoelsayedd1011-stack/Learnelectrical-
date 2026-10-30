@@ -17,6 +17,7 @@
 <script src="plc.js?v=20261030w1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b8">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 <script src="/assets/real-scenes.js?v=20261030r1" defer></script>
 </head>
@@ -39,61 +40,56 @@
 <section class="panel lvid" aria-label="فيديو الدرس"><h2 style="margin:0 0 8px">▶ الدرس في 5 دقايق</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">شرح بالرسم بصوت المدرّب، وبعدين المحاكي وأسئلة الدرس. معمول للموبايل.</p><video src="/media/lessons/plc-lab/lesson-02-ar.mp4" poster="/media/lessons/plc-lab/lesson-02-ar.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>الباور: 24V DC</h2>
-  <p>أغلب الـ PLCs الصناعية شغّالة على <b>24V DC</b>: باور سبلاي بياخد 220V AC ويطلّع 24V. الطرف الموجب اسمه <span class="term">+24V</span> أو <span class="term">L+</span>، والسالب <span class="term">0V</span> أو <span class="term">M</span>. وفيه موديلات الـ CPU بتاعتها بتاخد 220V AC مباشرة (مكتوب عليها <span class="term">AC/DC/RLY</span> مثلاً)، بس المداخل برضه 24V DC.</p>
-  <div class="box key"><b>قاعدة:</b> الـ 0V بتاع الباور يبقى هو هو 0V الكروت والحساسات (نفس المرجع). ولو فيه أكتر من باور سبلاي، اربط الـ 0V بتوعهم مع بعض إلا لو المانيوال قال غير كده.</div>
+  <div class="vs">
+    <div class="side"><b>الموجب</b><span class="big">+24V · L+</span></div>
+    <i>·</i>
+    <div class="side"><b>السالب</b><span class="big">0V · M</span></div>
+  </div>
+  <p class="tip">CPU مكتوب عليها <span class="term">AC/DC/RLY</span> بتاخد 220V، بس المداخل برضه 24V DC.</p>
+  <div class="box key"><b>0V واحد للكل:</b> الباور والكروت والحساسات. أكتر من باور؟ اربط الـ 0V.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>كارت الدخل: Sinking و Sourcing</h2>
-  <p>كل دخل جوه الكارت عبارة عن <b>مقاومة ولمبة LED (أوبتوكبلر)</b> بين طرف الدخل (I0.0) والكومن (<span class="term">1M</span>). عشان الدخل يبقى 1 لازم تيار يعدّي فيه، يعني لازم فرق جهد 24V بين الطرفين:</p>
-  <div class="two">
-    <div class="box good"><b>الكومن على 0V (الأشهر في أوروبا)</b><br>الدخل بيشتغل لما يجيله <b>+24V</b>. الزرار طرف منه على +24V والتاني على I0.0. والحساس المناسب <b>PNP</b> (بيطلّع +24V).</div>
-    <div class="box key"><b>الكومن على +24V</b><br>الدخل بيشتغل لما يتسحب لـ <b>0V</b>. الزرار بين I0.0 و 0V. والحساس المناسب <b>NPN</b> (بيسحب لـ 0V). شائع في ماكينات يابانية وصينية.</div>
+  <p class="bf"><span class="ic">💡</span><span>الدخل = LED بين I0.0 والكومن <span class="term">1M</span>: لازم <b>24V بين الطرفين</b>.</span></p>
+  <div class="vs">
+    <div class="side"><b>الكومن على 0V</b><span>الدخل بـ <b>+24V</b></span><span>حساس <b>PNP</b> · أوروبي</span></div>
+    <i>vs</i>
+    <div class="side"><b>الكومن على +24V</b><span>الدخل بـ <b>0V</b></span><span>حساس <b>NPN</b> · ياباني وصيني</span></div>
   </div>
-  <div class="box"><b>الأسامي بتلخبط:</b> شركات بتسمّي الحالة الأولى "Sinking input" (الكارت بيسحب التيار) وشركات بتقول عن الحساس PNP إنه "Sourcing". متحفظش الاسم: <b>بص الكومن رايح فين</b>. ودي الطريقة اللي هتشتغل بيها في كل الماركات.</div>
+  <p class="tip">متحفظش Sinking/Sourcing: <b>بص الكومن رايح فين</b>.</p>
   <div class="rscene" data-scene="pnp"></div>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>لون السلك</th><th>بيروح فين</th></tr></thead>
-    <tbody>
-      <tr><td><span class="term" style="background:#7a4a22;color:#fff">BN بني</span></td><td>+24V</td></tr>
-      <tr><td><span class="term" style="background:#1f6fd1;color:#fff">BU أزرق</span></td><td>0V</td></tr>
-      <tr><td><span class="term" style="background:#1d1d1d;color:#fff">BK أسود</span></td><td>الخرج ⇐ دخل الـ PLC (I0.0)</td></tr>
-    </tbody></table></div>
-  <p>لو عايز تفهم الحساسات نفسها أكتر (إندكتيف، فوتوسيل، 2 سلك)، شوف <a href="../instrumentation-lab/lesson-03.html">درس الحساسات الديجيتال في كورس الإنسترومنتيشن</a>.</p>
+  <ul class="fx">
+    <li><b>🟤 BN بني</b><span>+24V</span></li>
+    <li><b>🔵 BU أزرق</b><span>0V</span></li>
+    <li><b>⚫ BK أسود</b><span>الخرج ⇐ I0.0</span></li>
+  </ul>
+  <p class="tip">الحساسات بالتفصيل: <a href="../instrumentation-lab/lesson-03.html">درس الحساسات الديجيتال</a>.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>كارت الخرج: ريلاي ولا ترانزستور؟</h2>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th></th><th>ريلاي (Relay)</th><th>ترانزستور (Transistor)</th></tr></thead>
-    <tbody>
-      <tr><td>الجهد</td><td>AC أو DC (لحد 250V AC)</td><td>24V DC بس</td></tr>
-      <tr><td>التيار للخرج</td><td>حوالي 2A</td><td>حوالي 0.5A</td></tr>
-      <tr><td>السرعة</td><td>بطيء (ملّي ثواني) وليه صوت</td><td>سريع جدًا، ينفع نبضات (Stepper، PWM)</td></tr>
-      <tr><td>العمر</td><td>محدود بعدد مرات الفتح والقفل</td><td>طويل جدًا</td></tr>
-      <tr><td>الكومن</td><td><span class="term">1L</span> بياخد الجهد اللي هيطلع</td><td><span class="term">3L+</span> و <span class="term">3M</span> باور للترانزستورات</td></tr>
-    </tbody></table></div>
-  <div class="ex"><b>من الموقع:</b> كونتاكتور كويله 220V AC؟ ينفع على خرج ريلاي مباشرة. على خرج ترانزستور لازم <b>ريليه وسيط 24V DC</b> (Interface relay) يشغّل الكونتاكتور. وده كمان بيحمي الكارت لو الكويل اتحرق.</div>
+  <div class="vs">
+    <div class="side"><b>ريلاي</b><span>AC أو DC · ≈ 2A</span><span>بطيء وعمره محدود</span><span>كومن <span class="term">1L</span></span></div>
+    <i>vs</i>
+    <div class="side"><b>ترانزستور</b><span>24V DC بس · ≈ 0.5A</span><span>سريع: نبضات وستيبر</span><span><span class="term">3L+</span> و <span class="term">3M</span></span></div>
+  </div>
+  <p class="tip">كويل 220V AC على ترانزستور؟ لازم <b>ريليه وسيط 24V DC</b>.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>البنش: وصّل بإيدك</h2>
-  <p>4 تمارين. دوس طرف وبعدين التاني، ودوس السلك تشيله. وبعدين <b>"اختبر التوصيل"</b>.</p>
+  <p class="tip">دوس طرف ثم التاني · دوس السلك تشيله · ثم <b>«اختبر التوصيل»</b>.</p>
   <div class="wd"><h3>بنش التوصيل</h3><div id="bench"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>أعطال شائعة في الموقع</h2>
-  <div class="fault-box"><b>أعطال شائعة في الموقع:</b><ul>
-    <li><b>حساس جديد لمبته بتنوّر بس الـ PLC مش شايفه:</b> حساس NPN على كارت كومنه على 0V (أو العكس). شوف الإستيكر واعرف الكومن رايح فين.</li>
-    <li><b>كل المداخل طفت مرة واحدة:</b> باور الـ 24V وقع. غالبًا قصر في سلك حساس (البني لامس الأزرق أو جسم الماكينة).</li>
-    <li><b>خرج ترانزستور اتحرق:</b> حمل تياره أكبر من المسموح، أو قصر في سلك الكويل، أو كويل DC من غير دايود.</li>
-    <li><b>ريلاي الخرج لزق (Welded):</b> الكونتاكتور مش بيفصل حتى والـ PLC مطفّي الخرج. حصلت من حمل كبير أو تشغيل كتير. لازم يتغيّر الكارت أو الريليه.</li>
-    <li><b>220V على كارت 24V:</b> أخطر غلطة في التوصيل. اتأكد من الجهد بالأفوميتر قبل ما توصّل أي كومن.</li>
-  </ul></div>
-  <div class="box safe"><b>أمان:</b> افصل الكهربا قبل ما تفك أو توصّل أي طرف. كارت الخرج الريلاي ممكن يكون عليه 220V حتى والـ PLC نفسه مفصول، لأن الكومن بتاعه جاي من مصدر تاني.</div>
+  <ul class="fx">
+    <li><b>لمبة الحساس منوّرة والـ PLC مش شايف</b><span>NPN على كومن 0V (أو العكس)</span></li>
+    <li><b>كل المداخل طفت</b><span>الـ 24V وقع: البني لامس الأزرق</span></li>
+    <li><b>خرج ترانزستور اتحرق</b><span>تيار زيادة · قصر · كويل DC من غير دايود</span></li>
+    <li><b>ريلاي الخرج لزق</b><span>الكونتاكتور مش بيفصل · غيّر الكارت</span></li>
+    <li><b>220V على كارت 24V</b><span>أخطر غلطة · قيس الأول</span></li>
+  </ul>
+  <div class="box safe">افصل الكهربا قبل أي طرف. كارت الريلاي ممكن عليه <b>220V</b> والـ PLC مفصول.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>

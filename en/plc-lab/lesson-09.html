@@ -20,6 +20,7 @@
 <script src="brands.js?v=20261030w1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b8">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -41,42 +42,37 @@
 <section class="panel lvid" aria-label="Lesson video"><h2 style="margin:0 0 8px">▶ The lesson in 5 minutes</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">Illustrated explanation, the simulator task solved, and the quiz answered. Made for the phone.</p><video src="/media/lessons/plc-lab/lesson-09-en.mp4" poster="/media/lessons/plc-lab/lesson-09-en.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>Before you write: think in steps</h2>
-  <p>Every machine runs in <b>steps</b> (a sequence): fill → mix → drain. The easiest way to write it:</p>
-  <ol>
-    <li>Write down the steps and what moves you from one step to the next (a sensor, a timer, a button).</li>
-    <li>Make each step a <b>bit</b> (an M bit or the Q itself): Set it when its entry condition is true, and Reset the previous step in the same rung.</li>
-    <li>The outputs are driven from the step bits.</li>
-    <li>The Stop button resets all the steps.</li>
+  <ol class="steps">
+    <li>Write the steps and each transition</li>
+    <li>Each step a bit: Set it, Reset the previous</li>
+    <li>Outputs from step bits</li>
+    <li class="on">Stop resets them all</li>
   </ol>
-  <div class="box key"><b>The simulator here has 5 contacts per rung</b> instead of 4, because the projects are longer. Press "Hint" if you get stuck, or "Show solution" after your first try to compare.</div>
+  <p class="tip">Rungs here hold <b>5 contacts</b>. Use "Hint", or "Show solution" after a first try.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>The four projects</h2>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>Project</th><th>What it teaches</th></tr></thead>
-    <tbody>
-      <tr><td>Traffic light</td><td>Timers in a chain, and a cycle that restarts by itself</td></tr>
-      <tr><td>Mixing tank</td><td>A sequence with Set/Reset, level sensors and a mixing timer</td></tr>
-      <tr><td>Box sorting</td><td>Remembering something you saw earlier (a flag) and acting on it later at another place, plus a falling edge</td></tr>
-      <tr><td>Garage door</td><td>Limit switches, interlock, and a safety photo-eye that reverses the door</td></tr>
-    </tbody></table></div>
+  <div class="tiles">
+    <div class="tile"><span class="ic">🚦</span><b>Traffic light</b><span>Chained timers</span></div>
+    <div class="tile"><span class="ic">🛢️</span><b>Mixing tank</b><span>Set/Reset sequence</span></div>
+    <div class="tile"><span class="ic">📦</span><b>Carton sorter</b><span>Flag + falling edge</span></div>
+    <div class="tile"><span class="ic">🚪</span><b>Garage door</b><span>Limits · interlock · safety beam</span></div>
+  </div>
   <div class="wd"><h3>Project simulator</h3><div id="sim1"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Position control with an encoder</h2>
-  <p>A question people ask a lot: "How do I make a machine stop at an exact position?" The answer: an <b>encoder</b> on something that turns with the movement, and the PLC counts its pulses to know how far it has moved. Take a <b>cut-to-length sheet metal machine</b> as an example:</p>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>Step</th><th>Calculation</th></tr></thead>
-    <tbody>
-      <tr><td>A 1000 pulses per revolution (PPR) encoder on a measuring wheel with a 200 mm circumference</td><td>1000 pulses per 200 mm</td></tr>
-      <tr><td>The high-speed counter counts the rising and falling edges of both signals A and B (×4)</td><td><span class="mono" style="white-space:nowrap">1000 × 4 = 4000 counts</span> per revolution</td></tr>
-      <tr><td>How much per mm</td><td><span class="mono" style="white-space:nowrap">4000 ÷ 200 = 20 counts</span> per mm</td></tr>
-      <tr><td>A 500 mm sheet</td><td><span class="mono" style="white-space:nowrap">500 × 20 = 10000 counts</span></td></tr>
-    </tbody></table></div>
-  <div class="box key"><b>Why a high-speed counter (HSC)?</b> The sheet moves at 150 mm per second, which is 3000 pulses per second. A normal input is read once per scan (every few milliseconds), so it would miss many pulses. The <b>HSC</b> counts in hardware between scans, and the program only reads the number and compares it.</div>
-  <p><b>The cycle:</b> Start resets the counter → the motor runs <b>fast</b> → at 9000 (450 mm) it switches to <b>slow</b> → a little before 10000 it switches off and the brake holds → wait until the sheet stops completely → the knife comes down on a timer → when it is back up, reset the counter and count one piece → and the cycle repeats by itself until Stop.</p>
+  <p class="bf"><span class="ic">📏</span><span>The PLC counts <b>encoder</b> pulses to know how far the sheet moved.</span></p>
+  <div class="ladder"><span class="u">1000 PPR</span><span class="op">×4</span><span class="u">4000</span><span class="op">÷ 200 mm</span><span class="u">20 /mm</span><span class="op">× 500</span><span class="u on">10000</span></div>
+  <div class="box key"><b>HSC:</b> 150 mm/s = 3000 pulses/s. A normal input misses them; the HSC counts in hardware.</div>
+  <ol class="steps">
+    <li>Start: reset</li>
+    <li>Fast</li>
+    <li>9000: slow</li>
+    <li>9950: off + brake</li>
+    <li>Knife on a timer</li>
+    <li class="on">Reset and count a piece</li>
+  </ol>
   <svg viewBox="0 0 340 128" role="img" aria-label="Speed profile: fast up to 9000 counts, slow up to the stop point, and the sheet slides a little after the brake" style="display:block;width:100%;max-width:520px;height:auto;margin:6px auto 0;direction:ltr">
     <path d="M30 104H326M30 104V14" stroke="var(--muted)" stroke-width="1.2" fill="none"/>
     <path d="M30 104L52 30H226L242 86H290L296 104" stroke="var(--accent)" stroke-width="3" fill="none" stroke-linejoin="round"/>
@@ -85,23 +81,24 @@
     <text x="128" y="24" text-anchor="middle" class="pt">FAST</text><text x="266" y="80" text-anchor="middle" class="pt">SLOW</text>
     <text x="320" y="120" text-anchor="end" class="pt pm">count</text><text x="34" y="12" class="pt pm">v</text>
   </svg>
-  <div class="box"><b>Overshoot:</b> even after the motor switches off and the brake holds, the sheet keeps moving a little, for example <span class="mono" style="white-space:nowrap">50 counts = 2.5 mm</span>. If you stop at exactly 10000, the sheet comes out 502.5 mm. The fix: <b>stop early by the overshoot</b>, that is at <span class="mono" style="white-space:nowrap">10000 − 50 = 9950</span>. That is also why we slow down first: the overshoot from slow speed is small and constant, but from high speed it is large and variable.</div>
-  <div class="box"><b>Homing and the Z pulse:</b> a normal (incremental) encoder does not know where it is after a power loss; it only counts from the last reset. On machines that need a fixed position (such as an axis that moves back and forth) you do <b>homing</b>: move slowly to a Home sensor, then reset the counter on the <b>Z</b> pulse (one pulse per revolution) so zero is in the same place every time. Cut-to-length does not need it: each piece starts from the previous cut.</div>
-  <p>Try this exercise in each brand's style, with its own high-speed counter:</p>
+  <div class="vs">
+    <div class="side"><b>Overshoot</b><span>50 counts = 2.5 mm</span><span>Stop early: 10000 − 50</span></div>
+    <i>·</i>
+    <div class="side"><b>Homing + Z</b><span>For axes that go back and forth</span><span>Not needed for cutting</span></div>
+  </div>
+  <p class="tip">Try it in each brand's style:</p>
   <div class="chips"><a class="btn" href="siemens.html#enc">Siemens · HSC_1 and %ID1000</a><a class="btn" href="delta.html#enc">Delta · <span class="mono" style="white-space:nowrap">DCNT C251</span></a><a class="btn" href="ab.html#enc">Allen-Bradley · HSC card</a></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Common faults on site</h2>
-  <div class="fault-box"><b>Common faults in projects:</b><ul>
-    <li><b>The machine stopped in the middle of a step:</b> the sensor that moves it to the next step is not working (a limit switch knocked out of place, a stuck float). Open the monitor and see which step is active and which condition is missing.</li>
-    <li><b>The pusher pushes the wrong box:</b> the flag is cleared too early or too late, or the gap between boxes is shorter than the distance between the two sensors.</li>
-    <li><b>The door hits the end:</b> the limit switch has moved or is not wired NC, and the motor keeps running until the overload trips.</li>
-    <li><b>Sheets come out longer or shorter for no reason:</b> the encoder wheel slips on the sheet (oil, or weak spring pressure) or is worn so its circumference has changed. Clean it, measure a piece with a tape and adjust the counts per mm.</li>
-    <li><b>The safety photo-eye does not work:</b> a dirty or misaligned lens. Test the safety photo-eye regularly: it protects people.</li>
-  </ul></div>
+  <ul class="fx">
+    <li><b>Stuck mid-step</b><span>Transition sensor dead · go online</span></li>
+    <li><b>Pusher hits the wrong carton</b><span>Flag cleared too early or late</span></li>
+    <li><b>Door slams at the end</b><span>Limit moved or not NC</span></li>
+    <li><b>Pieces too long or short</b><span>Encoder wheel slipping or worn</span></li>
+    <li><b>Safety beam not working</b><span>Clean and test it regularly</span></li>
+  </ul>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson questions</h2>
   <p>Answer at least 4 of 5 correctly to mark the lesson done.</p>

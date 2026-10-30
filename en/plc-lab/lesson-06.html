@@ -20,6 +20,7 @@
 <script src="brands.js?v=20261030w1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b8">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -41,47 +42,45 @@
 <section class="panel lvid" aria-label="Lesson video"><h2 style="margin:0 0 8px">▶ The lesson in 5 minutes</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">Illustrated explanation, the simulator task solved, and the quiz answered. Made for the phone.</p><video src="/media/lessons/plc-lab/lesson-06-en.mp4" poster="/media/lessons/plc-lab/lesson-06-en.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>The CTU and CTD counters</h2>
-  <ul>
-    <li><b>CTU</b> (count up): each time its input power changes from 0 to 1, the current value <b>CV</b> goes up by 1. When CV reaches the preset value <b>PV</b>, its bit (C0) becomes 1.</li>
-    <li><b>CTD</b> (count down): it subtracts 1 with each pulse.</li>
-    <li><b>Reset</b>: an R coil on C0 sets CV back to zero and the bit to 0.</li>
-  </ul>
-  <div class="box key"><b>A counter counts edges, not time:</b> if a can stays in front of the sensor for a minute, it is counted only once. So the counter has an edge built in. But note: a sensor that flickers (bounce) will be counted several times.</div>
+  <div class="tiles">
+    <div class="tile"><span class="big">CTU</span><b>Counts up</b><span>CV = PV ⇒ C0 = 1</span></div>
+    <div class="tile"><span class="big">CTD</span><b>Counts down</b></div>
+    <div class="tile"><span class="big">R</span><b>Reset</b><span>CV = 0</span></div>
+  </div>
+  <div class="box key">It counts <b>edges</b>, not time: a box parked for a minute = one. A bouncing sensor counts many times.</div>
   <div class="ladfig" id="fCtu"></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>Project: the filling counter</h2>
-  <p>A conveyor carries cans into a box, and a photocell <b>I0.2</b> at its end sees each can as it drops. The box takes exactly <b>6 cans</b>. Then the conveyor stops and a lamp lights until the operator puts a new box and presses Reset.</p>
+  <ol class="steps">
+    <li>Conveyor carries boxes</li>
+    <li>Photocell I0.2 counts</li>
+    <li>6 boxes ⇒ conveyor stops, lamp on</li>
+    <li class="on">New carton + Reset</li>
+  </ol>
   <div class="wd"><h3>Simulator: filling conveyor</h3><div id="sim1"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Compare instructions</h2>
-  <p>A compare goes in place of a contact: if the condition is true, power flows. You can compare a counter value (C0), a timer time (T0) or an analog value (MW10).</p>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>Symbol</th><th>Meaning</th><th>Example</th></tr></thead>
-    <tbody>
-      <tr><td class="mono">==</td><td>Equal</td><td class="mono">C0 == 3</td></tr>
-      <tr><td class="mono">&lt;&gt;</td><td>Not equal</td><td class="mono">C0 &lt;&gt; 0</td></tr>
-      <tr><td class="mono">&gt; and &gt;=</td><td>Greater than, greater than or equal</td><td class="mono">MW10 &gt;= 80</td></tr>
-      <tr><td class="mono">&lt; and &lt;=</td><td>Less than, less than or equal</td><td class="mono">T0 &lt; 2.5</td></tr>
-    </tbody></table></div>
-  <div class="ex"><b>On site:</b> never use <span class="mono">==</span> with analog values (temperature, level): the value can jump from 79.9 to 80.1 without ever being exactly 80. Use <span class="mono">&gt;=</span> or <span class="mono">&lt;=</span>.</div>
-  <p>In the simulator: choose <b>Compare</b> in the cell, then the address (C0), the condition and the number.</p>
+  <p class="bf"><span class="ic">⚖️</span><span>In place of a contact: condition true ⇒ power flows. On C0, T0 or MW10.</span></p>
+  <ul class="fx">
+    <li><b class="mono">==</b><span>Equal · <span class="mono">C0 == 3</span></span></li>
+    <li><b class="mono">&lt;&gt;</b><span>Not equal</span></li>
+    <li><b class="mono">&gt;= / &lt;=</b><span><span class="mono">MW10 &gt;= 80</span></span></li>
+  </ul>
+  <p class="alert">Analog? <b>Never use ==</b>: the value jumps from 79.9 to 80.1.</p>
+  <p class="tip">Simulator: <b>Compare</b> ⇒ address ⇒ condition ⇒ number.</p>
   <div class="wd"><h3>Simulator: car park</h3><div id="sim2"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Common faults on site</h2>
-  <div class="fault-box"><b>Common program and site faults:</b><ul>
-    <li><b>The counter counts too many:</b> the sensor flickers (shiny can, vibration). The fix: a short TON timer as a debounce, or adjust the sensor.</li>
-    <li><b>The counter does not count at all:</b> the sensor is stuck at 1 (covered in dust), so there are no edges.</li>
-    <li><b>The box gets one can too many:</b> the conveyor stops too late, or the sensor is before the drop point and the next can gets through. Sensor position matters as much as the program.</li>
-    <li><b>The counter went back to zero by itself after a power loss:</b> the counter is not retentive. If the count matters (a production counter), make it retentive.</li>
-  </ul></div>
+  <ul class="fx">
+    <li><b>Counts too many</b><span>Bouncing sensor · small TON debounce</span></li>
+    <li><b>Doesn't count at all</b><span>Sensor stuck at 1 (dust)</span></li>
+    <li><b>One box too many</b><span>Conveyor stops late · sensor position</span></li>
+    <li><b>Back to zero after a power cut</b><span>Make it retentive</span></li>
+  </ul>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson questions</h2>
   <p>Answer at least 5 of 6 correctly to mark the lesson done.</p>

@@ -19,6 +19,7 @@
 <script src="brands.js?v=20261030w1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b8">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -39,42 +40,42 @@
 <section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>بتات الذاكرة M</h2>
-  <p><b>M0.0</b> و <b>M0.1</b>… بتات جوه الـ CPU مش متوصّلة بأي طرف. تكتب فيها بكويل وتسأل عليها بكونتاكتات، زي الريليه المساعد بالظبط بس من غير سلك ولا تمن. بنستخدمها كـ <b>Flags</b> (علامات): "الماكينة في وضع أوتوماتيك"، "حصل إنذار"، "الخطوة 2 شغالة".</p>
-  <div class="box key"><b>Retentive ولا لأ؟</b> البتات العادية بتتمسح لما الكهربا تقطع أو الـ PLC يروح STOP. فيه منطقة <b>Retentive</b> بتفتكر قيمتها. العدّادات المهمة (إنتاج اليوم) خليها Retentive، وأوامر التشغيل لأ.</div>
+  <p class="bf"><span class="ic">🚩</span><span><b>M0.0</b>: ريليه مساعد جوه الـ CPU، من غير سلك ولا تمن. بنستخدمه <b>Flag</b>.</span></p>
+  <div class="vs">
+    <div class="side"><b>عادي</b><span>يتمسح مع الكهربا أو STOP</span><span>أوامر التشغيل</span></div>
+    <i>vs</i>
+    <div class="side"><b>Retentive</b><span>يفتكر قيمته</span><span>إنتاج اليوم</span></div>
+  </div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>الحافة: Rising و Falling edge</h2>
-  <div class="two">
-    <div class="box"><b>P (Rising edge) ↑:</b> بيوصّل <b>سكان واحد بس</b> لحظة ما البت يتغيّر من 0 لـ 1، حتى لو فضل 1 ساعة.</div>
-    <div class="box"><b>N (Falling edge) ↓:</b> بيوصّل سكان واحد لحظة ما البت يتغيّر من 1 لـ 0. مثلاً "العلبة لسه معدّية من الحساس".</div>
+  <div class="vs">
+    <div class="side"><b>P ↑ Rising</b><span>سكان واحد لحظة 0 ← 1</span></div>
+    <i>vs</i>
+    <div class="side"><b>N ↓ Falling</b><span>سكان واحد لحظة 1 ← 0</span></div>
   </div>
   <div class="ladfig" id="fEdge"></div>
-  <p>ليه مهم؟ السكان بيتكرر مئات المرات في الثانية. لو عايز تعمل حاجة <b>مرة واحدة</b> مع كل دوسة (تعدّ، تقلب حالة، تنقل خطوة)، لازم Edge. وإلا هتحصل في كل سكان طول ما الزرار متداس.</p>
+  <p class="tip">عايز حاجة <b>مرة واحدة</b> مع كل دوسة؟ لازم Edge، وإلا تتكرر كل سكان.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>تمرين: زرار واحد يشغّل ويطفي</h2>
-  <p>لمبة بزرار واحد: دوسة تنوّر، الدوسة اللي بعدها تطفي. جرّب الأول من غير Edge (كونتاكت NO عادي) وشوف إيه اللي بيحصل لما تفضل ماسك الزرار.</p>
+  <p class="tip">دوسة تنوّر، والتانية تطفي. جرّب الأول <b>من غير Edge</b> واتفرّج.</p>
   <div class="wd"><h3>محاكي: Toggle</h3><div id="sim1"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>تمرين: إنذار بذاكرة</h2>
-  <p>حساس ضغط عالي ممكن يشتغل لحظة ويرجع. لو اللمبة هتنوّر طول ما الحساس شغال بس، محدش هيلحق يشوفها. الحل: <b>Flag</b> بيفتكر إن الإنذار حصل لحد ما المشغّل يأكّد (Acknowledge).</p>
+  <p class="tip">ضغط عالي لحظة ورجع؟ <b>Flag</b> يفتكره لحد ما المشغّل يأكّد.</p>
   <div class="wd"><h3>محاكي: الإنذار</h3><div id="sim2"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>أعطال شائعة في الموقع</h2>
-  <div class="fault-box"><b>أعطال شائعة في البرامج:</b><ul>
-    <li><b>اللمبة بترمش أو بتقف في حالة عشوائية:</b> Toggle من غير Edge. الحالة بتتقلب كل سكان طول ما الزرار متداس.</li>
-    <li><b>نفس بت M مستخدم لحاجتين:</b> حد كتب M0.0 في جزء جديد من البرنامج وهو مستخدم قبل كده. اعمل جدول بالـ M المستخدمة وسمّيها.</li>
-    <li><b>Edge مابيشتغلش في TIA:</b> نفس بت الذاكرة الخاص بالـ Edge مستخدم في أكتر من كونتاكت P. كل Edge ليه بت ذاكرة لوحده.</li>
-    <li><b>الماكينة كمّلت من مكانها بعد رجوع الكهربا:</b> بتات الخطوات كانت Retentive. فكّر في كل بت: لازم يتمسح ولا يتحفظ؟</li>
-  </ul></div>
+  <ul class="fx">
+    <li><b>اللمبة بترمش أو عشوائية</b><span>Toggle من غير Edge</span></li>
+    <li><b>بت M لحاجتين</b><span>اعمل جدول وسمّيها</span></li>
+    <li><b>Edge مش شغال في TIA</b><span>كل P ليه بت ذاكرة لوحده</span></li>
+    <li><b>كمّلت من مكانها بعد الكهربا</b><span>بتات الخطوات Retentive</span></li>
+  </ul>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>

@@ -18,6 +18,7 @@
 <script src="plc.js?v=20261030w1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b8">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 <script src="/assets/real-scenes.js?v=20261030r1" defer></script>
 </head>
@@ -40,61 +41,56 @@
 <section class="panel lvid" aria-label="Lesson video"><h2 style="margin:0 0 8px">▶ The lesson in 5 minutes</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">Illustrated explanation, the simulator task solved, and the quiz answered. Made for the phone.</p><video src="/media/lessons/plc-lab/lesson-02-en.mp4" poster="/media/lessons/plc-lab/lesson-02-en.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>Power: 24V DC</h2>
-  <p>Most industrial PLCs run on <b>24V DC</b>: a power supply takes 230V AC and gives 24V. The positive terminal is called <span class="term">+24V</span> or <span class="term">L+</span>, and the negative <span class="term">0V</span> or <span class="term">M</span>. Some CPU models take 230V AC directly (marked <span class="term">AC/DC/RLY</span>, for example), but their inputs are still 24V DC.</p>
-  <div class="box key"><b>Rule:</b> the 0V of the supply is the same 0V as the cards and the sensors (one common reference). If you have more than one power supply, connect their 0V together unless the manual says otherwise.</div>
+  <div class="vs">
+    <div class="side"><b>Positive</b><span class="big">+24V · L+</span></div>
+    <i>·</i>
+    <div class="side"><b>Negative</b><span class="big">0V · M</span></div>
+  </div>
+  <p class="tip">A CPU marked <span class="term">AC/DC/RLY</span> takes 220V, but its inputs are still 24V DC.</p>
+  <div class="box key"><b>One 0V for all:</b> supply, cards and sensors. More than one supply? Tie the 0Vs.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>Input card: sinking and sourcing</h2>
-  <p>Each input inside the card is a <b>resistor and an LED (optocoupler)</b> between the input terminal (I0.0) and the common (<span class="term">1M</span>). For the input to be 1, current must flow through it, so there must be 24V between the two terminals:</p>
-  <div class="two">
-    <div class="box good"><b>Common on 0V (most common in Europe)</b><br>The input turns on when it receives <b>+24V</b>. One side of the button goes to +24V and the other to I0.0. The matching sensor is <b>PNP</b> (it outputs +24V).</div>
-    <div class="box key"><b>Common on +24V</b><br>The input turns on when it is pulled to <b>0V</b>. The button goes between I0.0 and 0V. The matching sensor is <b>NPN</b> (it pulls to 0V). Common on Japanese and Chinese machines.</div>
+  <p class="bf"><span class="ic">💡</span><span>An input = an LED between I0.0 and common <span class="term">1M</span>: it needs <b>24V across it</b>.</span></p>
+  <div class="vs">
+    <div class="side"><b>Common on 0V</b><span>Input on <b>+24V</b></span><span><b>PNP</b> sensor · European</span></div>
+    <i>vs</i>
+    <div class="side"><b>Common on +24V</b><span>Input on <b>0V</b></span><span><b>NPN</b> sensor · Japanese, Chinese</span></div>
   </div>
-  <div class="box"><b>The names are confusing:</b> some brands call the first case a "sinking input" (the card sinks the current), and some describe a PNP sensor as "sourcing". Don't memorize the name: <b>check where the common goes</b>. That method works on every brand.</div>
+  <p class="tip">Don't memorise sinking/sourcing: <b>look where the common goes</b>.</p>
   <div class="rscene" data-scene="pnp"></div>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>Wire colour</th><th>Where it goes</th></tr></thead>
-    <tbody>
-      <tr><td><span class="term" style="background:#7a4a22;color:#fff">BN brown</span></td><td>+24V</td></tr>
-      <tr><td><span class="term" style="background:#1f6fd1;color:#fff">BU blue</span></td><td>0V</td></tr>
-      <tr><td><span class="term" style="background:#1d1d1d;color:#fff">BK black</span></td><td>Output → PLC input (I0.0)</td></tr>
-    </tbody></table></div>
-  <p>To learn more about the sensors themselves (inductive, photocell, 2-wire), see the <a href="../instrumentation-lab/lesson-03.html">digital sensors lesson in the Instrumentation course</a>.</p>
+  <ul class="fx">
+    <li><b>🟤 BN brown</b><span>+24V</span></li>
+    <li><b>🔵 BU blue</b><span>0V</span></li>
+    <li><b>⚫ BK black</b><span>Output ⇒ I0.0</span></li>
+  </ul>
+  <p class="tip">Sensors in detail: <a href="../instrumentation-lab/lesson-03.html">the digital sensors lesson</a>.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Output card: relay or transistor?</h2>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th></th><th>Relay</th><th>Transistor</th></tr></thead>
-    <tbody>
-      <tr><td>Voltage</td><td>AC or DC (up to 250V AC)</td><td>24V DC only</td></tr>
-      <tr><td>Current per output</td><td>About 2A</td><td>About 0.5A</td></tr>
-      <tr><td>Speed</td><td>Slow (milliseconds) and audible</td><td>Very fast; suitable for pulses (stepper, PWM)</td></tr>
-      <tr><td>Life</td><td>Limited by the number of switching operations</td><td>Very long</td></tr>
-      <tr><td>Common</td><td><span class="term">1L</span> takes the voltage that will be switched out</td><td><span class="term">3L+</span> and <span class="term">3M</span> power the transistors</td></tr>
-    </tbody></table></div>
-  <div class="ex"><b>On site:</b> a contactor with a 230V AC coil? It can go directly on a relay output. On a transistor output you need a <b>24V DC interface relay</b> to switch the contactor. That also protects the card if the coil burns out.</div>
+  <div class="vs">
+    <div class="side"><b>Relay</b><span>AC or DC · ≈ 2A</span><span>Slow, limited life</span><span>Common <span class="term">1L</span></span></div>
+    <i>vs</i>
+    <div class="side"><b>Transistor</b><span>24V DC only · ≈ 0.5A</span><span>Fast: pulses, steppers</span><span><span class="term">3L+</span> and <span class="term">3M</span></span></div>
+  </div>
+  <p class="tip">A 220V AC coil on a transistor output? Use a <b>24V DC interface relay</b>.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>The bench: wire it yourself</h2>
-  <p>4 exercises. Tap a terminal, then the other; tap a wire to remove it. Then press <b>"Test wiring"</b>.</p>
+  <p class="tip">Tap one terminal then the other · tap a wire to remove it · then <b>"Test wiring"</b>.</p>
   <div class="wd"><h3>Wiring bench</h3><div id="bench"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>Common faults on site</h2>
-  <div class="fault-box"><b>Common faults on site:</b><ul>
-    <li><b>A new sensor's LED lights but the PLC does not see it:</b> an NPN sensor on a card with its common on 0V (or the opposite). Read the label and find where the common goes.</li>
-    <li><b>All inputs went off at once:</b> the 24V supply dropped. Usually a short in a sensor wire (brown touching blue or the machine frame).</li>
-    <li><b>A transistor output burned out:</b> the load current is higher than allowed, the coil wire is shorted, or a DC coil has no diode.</li>
-    <li><b>An output relay is welded:</b> the contactor does not release even when the PLC turns the output off. Caused by a heavy load or frequent switching. The card or the relay must be replaced.</li>
-    <li><b>230V on a 24V card:</b> the most dangerous wiring mistake. Check the voltage with a multimeter before you connect any common.</li>
-  </ul></div>
-  <div class="box safe"><b>Safety:</b> isolate the power before you disconnect or connect any terminal. A relay output card can carry 230V even when the PLC itself is off, because its common comes from another source.</div>
+  <ul class="fx">
+    <li><b>Sensor LED on, PLC doesn't see it</b><span>NPN on a 0V common (or the reverse)</span></li>
+    <li><b>All inputs went off</b><span>24V dropped: brown touched blue</span></li>
+    <li><b>Transistor output burnt</b><span>Overcurrent · short · DC coil without a diode</span></li>
+    <li><b>Output relay welded</b><span>Contactor won't drop · replace the card</span></li>
+    <li><b>220V on a 24V card</b><span>The worst mistake · measure first</span></li>
+  </ul>
+  <div class="box safe">Isolate before touching any terminal. A relay card may carry <b>220V</b> with the PLC off.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson questions</h2>
   <p>Answer at least 5 of 6 correctly to mark the lesson done.</p>
