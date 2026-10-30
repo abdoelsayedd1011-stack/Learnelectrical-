@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="srvm.css?v=20261028v1">
 <script src="srvm.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 <link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
 <script src="/assets/real-art.js?v=20261030h1"></script>
@@ -30,90 +31,127 @@
 <section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
 
 <section class="panel lsec" aria-label="من الموقع">
-<div class="hook">إنذار <b>AL.EnC</b> يظهر على محور Z مرة أو مرتين في اليوم. استُبدل الإنكودر، ثم استُبدل مرة ثانية، والإنذار باقٍ. لاحظ فني آخر أن الإنذار لا يأتي إلا حين يدور محرك المغزل. كان مشبك حجب الكابل مفكوكًا. إصلاح بخمس دقائق، بعد إنكودرين ضاع ثمنهما.</div>
-<p><b>في هذا الدرس ستعرف:</b></p>
-<ul class="learn"><li>أين تقيس تغذية الإنكودر، ولماذا.</li><li>كيف تفحص الإشارة بالأوسيلوسكوب وباختبار العدّ.</li><li>كيف تفرّق بين عطل الإنكودر والكابل والتشويش والبطارية.</li></ul>
+<div class="hook">AL.EnC على محور Z مرة أو مرتين يوميًّا، واستُبدل الإنكودر مرتين بلا فائدة. الإنذار يأتي فقط حين يدور المغزل.<br>
+<b>مشبك حجب الكابل كان مفكوكًا: إصلاح بخمس دقائق.</b></div>
 </section>
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>ابدأ بالتغذية: قِسها عند الإنكودر</h2>
-<p>خرطوم الماء الطويل يضعف ضغطه في آخره. وسلك الإنكودر الطويل الرفيع يفعل ذلك بالجهد.</p><figure class="fig">
+  <figure class="fig">
 <svg viewBox="0 0 480 155" role="img" aria-label="الدرايف يخرج 5 فولت، لكن كابل 25 مترًا رفيعًا يفقد 0.75 فولت، فيصل إلى الإنكودر 4.25 فولت فقط وهو يحتاج 4.75 على الأقل" style="width:100%;max-width:560px;direction:ltr">
 <g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="15" fill="currentColor">
 <rect x="10" y="40" width="110" height="70" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="65" y="70" text-anchor="middle">drive</text><text x="65" y="94" text-anchor="middle" style="fill:var(--good)">5.00 V</text><path d="M120 75H350" stroke="currentColor" stroke-width="6" opacity=".45"/><text x="235" y="62" text-anchor="middle" font-size="14">25 m · thin wire</text><text x="235" y="100" text-anchor="middle" font-size="14" style="fill:var(--bad)">− 0.75 V lost</text><rect x="350" y="40" width="120" height="70" rx="8" fill="none" style="stroke:var(--bad)" stroke-width="2"/><text x="410" y="70" text-anchor="middle">encoder</text><text x="410" y="94" text-anchor="middle" style="fill:var(--bad)">4.25 V</text><text x="410" y="140" text-anchor="middle" font-size="14">needs ≥ 4.75 V</text><text x="65" y="140" text-anchor="middle" font-size="14" opacity=".7">looks fine here</text>
 </g></svg>
 <figcaption>القراءة عند الدرايف تخدعك. قِس عند طرف الإنكودر.</figcaption>
-</figure><p>هذا هو هبوط الجهد <span class="term">Voltage drop</span>: جزء من الجهد يضيع في السلك.</p><ul><li>الإنكودر يعمل غالبًا على <b>5 V</b>.</li><li>المطلوب عنده: <b>4.75 V على الأقل</b>.</li><li>الدرايف يُظهر 5.00 V، والإنكودر يأخذ 4.25 V.</li><li>قِس والنظام يعمل؛ الهبوط يظهر مع التيار.</li></ul><details class="more"><summary>للاستزادة: حساب الهبوط، وأسلاك Sense، وتغذية كل نوع</summary>
-<div class="ex"><b>مثال الهبوط: إنكودر 5 V يسحب 120 mA على كابل 25 m</b><ol><li>سلكان 0.14 mm²: <span class="eq">0.0175 × 50 / 0.14 = 6.25 Ω</span></li><li>الهبوط: <span class="eq">6.25 × 0.12 = 0.75 V</span>، فيصل 4.25 V.</li><li>سلكان 0.5 mm²: <span class="eq">1.75 Ω × 0.12 = 0.21 V</span>، فيصل 4.79 V.</li></ol></div><p>أسلاك <b>Sense</b> (في Sin/Cos و EnDat) تقيس الجهد عند الإنكودر، فيرفع الدرايف خرجه ليعوّض الهبوط. إن انقطع سلك Sense ضاع التعويض.</p><div class="tblw"><table class="tbl"><thead><tr><th>النوع</th><th>التغذية الاسمية</th><th>المقبول عند الإنكودر</th></tr></thead><tbody><tr><td>TTL/RS-422، Sin/Cos، تسلسلي الشركات</td><td><span class="mono">5 V</span></td><td><span class="mono">4.75–5.25 V</span></td></tr><tr><td>HIPERFACE، HIPERFACE DSL</td><td><span class="mono">7–12 V</span></td><td>المدى المكتوب في الكتيّب</td></tr><tr><td>EnDat 2.2</td><td><span class="mono">3.6–14 V</span></td><td>حسب الطراز</td></tr><tr><td>HTL، SSI/BiSS الصناعي، نوع Drive-CLiQ</td><td><span class="mono">24 V</span></td><td><span class="mono">نحو 10–30 V</span></td></tr><tr><td>بطارية المطلق متعدد اللفات</td><td><span class="mono">3.6 V</span></td><td>تحذير قرب 3.0–3.1 V</td></tr></tbody></table></div><p class="muted">قيم نموذجية للتعلّم؛ ارجع إلى كتيّب المحرك والدرايف.</p>
-</details>
-<div class="sum">قِس 5 V عند طرف الإنكودر وتحت الحمل، لا عند الدرايف.</div>
+</figure>
+  <div class="vs">
+    <div class="side"><b>عند الدرايف</b><span class="big">5.00 V</span><span>تخدعك</span></div>
+    <i>مقابل</i>
+    <div class="side"><b>عند الإنكودر</b><span class="big">4.25 V</span><span class="nc">أقل من 4.75 ✗</span></div>
+  </div>
+  <p class="tip">كابل <bdi dir="ltr">25 m</bdi> بسلك <bdi dir="ltr">0.14 mm²</bdi> يُضيع <bdi dir="ltr">0.75 V</bdi>؛ بسلك <bdi dir="ltr">0.5 mm²</bdi> فقط <bdi dir="ltr">0.21 V</bdi>. قِس والنظام يعمل.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>الإشارة التزايدية: كل خط له توأم معكوس</h2>
-<p>رسالة يحملها اثنان: أحدهما يقولها، والآخر يقول عكسها. الضجيج يصيبهما معًا، فيبقى الفرق واضحًا.</p><figure class="fig">
+  <p class="bf"><span class="ic">👯</span><span>A و <b>/A</b> صورتان معكوستان؛ الضجيج يصيبهما معًا فيبقى الفرق واضحًا.</span></p>
+  <figure class="fig">
 <svg viewBox="0 0 480 240" role="img" aria-label="في الأعلى زوج سليم: A و /A صورتان معكوستان. في الأسفل سلك /A مقطوع فيبقى خطًّا مستقيمًا عند صفر فولت" style="width:100%;max-width:560px;direction:ltr">
 <g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="15" fill="currentColor">
 <text x="80" y="45" text-anchor="end">A</text><polyline points="90.0,26.0 153.3,26.0 153.3,54.0 216.7,54.0 216.7,26.0 280.0,26.0 280.0,54.0 343.3,54.0 343.3,26.0 406.7,26.0 406.7,54.0 470.0,54.0" fill="none" style="stroke:var(--good)" stroke-width="2.4"/><text x="80" y="100" text-anchor="end">/A</text><polyline points="90.0,109.0 153.3,109.0 153.3,81.0 216.7,81.0 216.7,109.0 280.0,109.0 280.0,81.0 343.3,81.0 343.3,109.0 406.7,109.0 406.7,81.0 470.0,81.0" fill="none" style="stroke:var(--good)" stroke-width="2.4"/><path d="M10 130H470" stroke="currentColor" stroke-dasharray="4 4" opacity=".4"/><text x="80" y="160" text-anchor="end">A</text><polyline points="90.0,141.0 153.3,141.0 153.3,169.0 216.7,169.0 216.7,141.0 280.0,141.0 280.0,169.0 343.3,169.0 343.3,141.0 406.7,141.0 406.7,169.0 470.0,169.0" fill="none" style="stroke:var(--good)" stroke-width="2.4"/><text x="80" y="215" text-anchor="end" style="fill:var(--bad)">/A</text><path d="M90 224H470" style="stroke:var(--bad)" stroke-width="2.4"/><text x="470" y="205" text-anchor="end" font-size="14" style="fill:var(--bad)">broken: flat at 0 V</text><text x="470" y="18" text-anchor="end" font-size="14" style="fill:var(--good)">healthy pair: mirror images</text>
 </g></svg>
 <figcaption>في الأعلى زوج سليم. في الأسفل /A مقطوع: العدّ مستمر، لكن نصف الهامش ضاع.</figcaption>
-</figure><p>هذا هو الزوج التفاضلي <span class="term">Differential pair</span>: إشارة وعكسها على سلكين.</p><ul><li>A يقابلها /A، وكذلك B و Z.</li><li>الدرايف يقرأ الفرق بين السلكين.</li><li>انقطاع /A لا يوقف العدّ فورًا.</li><li>لكنه يُضعف الإشارة أمام التشويش.</li><li>قِس السلكين معًا، لا سلكًا واحدًا.</li></ul><h3>كيف تقيس؟</h3><ol class="steps-l"><li>ركّب محوّل T بين الكابل والدرايف؛ تقيس والنظام يعمل.</li><li>القناة 1 على A، والقناة 2 على /A.</li><li>مشبك الأرضي على 0 V الإنكودر فقط.</li><li>شغّل MATH = CH1 − CH2، وأدر المحرك ببطء.</li></ol><details class="more"><summary>للاستزادة: مستويات TTL، وإشارات Hall، و HTL</summary>
-<div class="tblw"><table class="tbl"><thead><tr><th>القياس</th><th>السليم (TTL/RS-422)</th></tr></thead><tbody><tr><td>مستوى كل خط</td><td>منخفض ≤ 0.5 V، مرتفع ≥ 2.5 V</td></tr><tr><td>الفرق A − /A</td><td>مربعة ±2 V أو أكثر</td></tr><tr><td>نسبة الدورة Duty</td><td>نحو 50 % ±10 %</td></tr><tr><td>الطور بين A و B</td><td>نحو 90° كهربية ±20°</td></tr><tr><td>Z</td><td>نبضة واحدة في اللفة</td></tr><tr><td>مقاومة الإنهاء</td><td>≈ 120 Ω بين A و /A عند الدرايف (مطفأ)</td></tr></tbody></table></div><p class="muted">قيم نموذجية للتعلّم؛ ارجع إلى كتيّب المحرك والدرايف.</p><ul><li>عرض نطاق الأوسيلوسكوب 100 MHz يكفي لهذه الإشارات.</li><li><b>Hall:</b> أدر العمود ببطء؛ الحالات تتتابع 101 ← 100 ← 110 ← 010 ← 011 ← 001.</li><li>الحالتان 000 و 111 غير مسموحتين: سلك Hall مقطوع أو حسّاس تالف.</li><li>في محرك ثماني الأقطاب تتكرر الحالات الست 4 مرات في اللفة.</li><li><b>HTL:</b> المستويات قرب 0 V و 24 V، وغالبًا خط واحد بلا توأم.</li></ul>
-</details>
-<div class="sum">السليم: A و /A صورتان معكوستان. خط مستقيم يعني سلكًا مقطوعًا.</div>
+</figure>
+  <ol class="steps">
+    <li>محوّل T بين الكابل والدرايف</li>
+    <li>CH1 على A · CH2 على /A</li>
+    <li>الأرضي على <bdi dir="ltr">0 V</bdi> الإنكودر</li>
+    <li class="on">MATH = CH1 − CH2</li>
+  </ol>
+  <ul class="fx">
+    <li class="ok"><b>الفرق A − /A</b><span>مربعة <bdi dir="ltr">±2 V</bdi> أو أكثر</span></li>
+    <li class="ok"><b>Duty · الطور</b><span><bdi dir="ltr">≈ 50 %</bdi> · <bdi dir="ltr">≈ 90°</bdi> بين A و B</span></li>
+    <li class="danger"><b>خط مستقيم</b><span>سلك مقطوع (العدّ يستمر، والهامش ضاع)</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>اختبار العدّ: لفة واحدة = 10,000 عدّة</h2>
-<p>من يمشي حول مضمار معروف الطول يعرف عدد خطواته. إن نقص العدّ، فقد ضاعت خطوة.</p><figure class="fig">
+  <figure class="fig">
 <svg viewBox="0 0 480 190" role="img" aria-label="علامة على العمود ولفة كاملة باليد: العدّاد السليم يتغير 10000 بالضبط، وقراءة 9996 تعني فقد 4 عدّات في كل لفة" style="width:100%;max-width:560px;direction:ltr">
 <g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="15" fill="currentColor">
 <circle cx="100" cy="95" r="62" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="100" cy="95" r="8" fill="currentColor"/><path d="M100 25V45" style="stroke:var(--cur)" stroke-width="4"/><text x="100" y="19" text-anchor="middle" font-size="14" style="fill:var(--cur)">mark</text><path d="M140.0 25.7A80 80 0 1 1 60.0 25.7" fill="none" style="stroke:var(--accent)" stroke-width="2.5"/><text x="100" y="100" text-anchor="middle" font-size="13" dy="40">1 turn</text><rect x="230" y="30" width="230" height="56" rx="8" fill="none" style="stroke:var(--good)" stroke-width="2"/><text x="345" y="56" text-anchor="middle" font-size="22" style="fill:var(--good)">10 000 ✓</text><text x="345" y="77" text-anchor="middle" font-size="13">2500 × 4</text><rect x="230" y="104" width="230" height="56" rx="8" fill="none" style="stroke:var(--bad)" stroke-width="2"/><text x="345" y="130" text-anchor="middle" font-size="22" style="fill:var(--bad)">9 996 ✗</text><text x="345" y="151" text-anchor="middle" font-size="13">4 counts lost / turn</text>
 </g></svg>
 <figcaption>لفة كاملة باليد = 10,000 عدّة بالضبط على محور Y. أي رقم آخر عطل.</figcaption>
-</figure><p>هذا هو اختبار العدّ <span class="term">Count test</span>: لفة باليد، ثم مقارنة العدّاد.</p><p>في محور Y يعطي كل خط 4 عدّات، فاللفة 10,000 عدّة.</p><ol class="steps-l"><li>الدرايف في Servo OFF، والمحور أفقي.</li><li>اعرض عدّاد موضع المحرك على شاشة الدرايف.</li><li>ضع علامة على العمود، وأدره باليد لفة كاملة إلى العلامة.</li><li>يجب أن يتغير العدّاد <b>10,000 بالضبط</b>.</li><li>كرّر 10 لفات. أي فرق ثابت يعني عدّات مفقودة.</li></ol><div class="ex"><b>مثال محسوب: محور Y</b><ol><li>الإنكودر: 2500 خط × 4 = 10,000 عدّة في اللفة.</li><li>عند 3000 rpm: <span class="eq">3000 / 60 = 50</span> لفة في الثانية.</li><li>تردد القناة A: <span class="eq">2500 × 50 = 125 kHz</span>.</li><li>في اختبار العدّ قرأت 9,996 بدل 10,000.</li><li>المفقود: 4 عدّات في كل لفة.</li><li>خطوة اللولب 10 mm، فالخطأ في اللفة: <span class="eq">4 / 10000 × 10 mm = 4 µm</span>.</li><li>بعد 100 لفة: <span class="eq">100 × 4 µm = 0.4 mm</span> دون أي إنذار.</li><li>السبب الأرجح: قرص ملوّث أو خط متقطع.</li></ol></div><details class="more"><summary>للاستزادة: عدّات زائدة لا ناقصة</summary>
-<p>إن زاد العدّ عند تشغيل المحرك فقط، فالسبب غالبًا تشويش من كابل القدرة على أحد الخطوط. تظهر نبضات حادة على الأوسيلوسكوب عند حواف تبديل الدرايف (PWM). الحل في التأريض والحجب وفصل مسار الكابلين (الدرس 9).</p>
-</details>
-<div class="sum">لفة باليد يجب أن تعطي 10,000 عدّة تمامًا. النقص الصغير يتراكم إلى خطأ كبير في القطعة.</div>
+</figure>
+  <ol class="steps"><li>Servo OFF · محور أفقي</li><li>اعرض عدّاد الموضع</li><li>لفة باليد إلى العلامة</li><li class="on">10,000 بالضبط × 10 لفات</li></ol>
+  <div class="tiles">
+    <div class="tile"><span class="ic">🔢</span><b>قرأت</b><span class="big">9,996</span></div>
+    <div class="tile"><span class="ic">📏</span><b>الخطأ في اللفة</b><span class="big">4 µm</span></div>
+    <div class="tile"><span class="ic">⚠️</span><b>بعد 100 لفة</b><span class="big">0.4 mm</span><span>بلا أي إنذار</span></div>
+  </div>
+  <div class="vs">
+    <div class="side"><b>عدّات ناقصة</b><span>قرص ملوّث أو خط متقطع</span></div>
+    <i>أو</i>
+    <div class="side"><b>زائدة عند التشغيل فقط</b><span>تشويش PWM ← الحجب</span></div>
+  </div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Sin/Cos والريزولفر: ارسم دائرة</h2>
-<p>ضع الإشارتين على محوري الشاشة، فترسمان دائرة. شكل الدائرة يخبرك بحال الإنكودر.</p><figure class="fig">
+  <p class="bf"><span class="ic">⭕</span><span>الإشارتان على محوري XY ترسمان <b>دائرة</b>؛ شكلها يخبرك بالحال.</span></p>
+  <figure class="fig">
 <svg viewBox="0 0 480 185" role="img" aria-label="ثلاثة أشكال على وضع XY: دائرة كاملة سليمة، ودائرة صغيرة من التلوث، وقطع ناقص من خطأ الطور" style="width:100%;max-width:560px;direction:ltr">
 <g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="15" fill="currentColor">
 <path d="M12 80H148M80 12V148" stroke="currentColor" opacity=".3"/><circle cx="80" cy="80" r="58" fill="none" stroke="currentColor" stroke-dasharray="3 3" opacity=".4"/><polyline points="138.0,80.0 137.9,76.0 137.4,71.9 136.7,67.9 135.8,64.0 134.5,60.2 133.0,56.4 131.2,52.8 129.2,49.3 126.9,45.9 124.4,42.7 121.7,39.7 118.8,36.9 115.7,34.3 112.4,31.9 109.0,29.8 105.4,27.9 101.7,26.2 97.9,24.8 94.0,23.7 90.1,22.9 86.1,22.3 82.0,22.0 78.0,22.0 73.9,22.3 69.9,22.9 66.0,23.7 62.1,24.8 58.3,26.2 54.6,27.9 51.0,29.8 47.6,31.9 44.3,34.3 41.2,36.9 38.3,39.7 35.6,42.7 33.1,45.9 30.8,49.3 28.8,52.8 27.0,56.4 25.5,60.2 24.2,64.0 23.3,67.9 22.6,71.9 22.1,76.0 22.0,80.0 22.1,84.0 22.6,88.1 23.3,92.1 24.2,96.0 25.5,99.8 27.0,103.6 28.8,107.2 30.8,110.7 33.1,114.1 35.6,117.3 38.3,120.3 41.2,123.1 44.3,125.7 47.6,128.1 51.0,130.2 54.6,132.1 58.3,133.8 62.1,135.2 66.0,136.3 69.9,137.1 73.9,137.7 78.0,138.0 82.0,138.0 86.1,137.7 90.1,137.1 94.0,136.3 97.9,135.2 101.7,133.8 105.4,132.1 109.0,130.2 112.4,128.1 115.7,125.7 118.8,123.1 121.7,120.3 124.4,117.3 126.9,114.1 129.2,110.7 131.2,107.2 133.0,103.6 134.5,99.8 135.8,96.0 136.7,92.1 137.4,88.1 137.9,84.0 138.0,80.0" fill="none" style="stroke:var(--good)" stroke-width="3"/><text x="80" y="172" text-anchor="middle" font-size="14" style="fill:var(--good)">healthy</text><path d="M172 80H308M240 12V148" stroke="currentColor" opacity=".3"/><circle cx="240" cy="80" r="58" fill="none" stroke="currentColor" stroke-dasharray="3 3" opacity=".4"/><polyline points="266.1,80.0 266.0,78.2 265.8,76.4 265.5,74.6 265.1,72.8 264.5,71.1 263.8,69.4 263.0,67.7 262.1,66.2 261.1,64.7 260.0,63.2 258.8,61.9 257.5,60.6 256.1,59.4 254.6,58.4 253.1,57.4 251.4,56.5 249.8,55.8 248.1,55.2 246.3,54.7 244.5,54.3 242.7,54.0 240.9,53.9 239.1,53.9 237.3,54.0 235.5,54.3 233.7,54.7 231.9,55.2 230.2,55.8 228.6,56.5 227.0,57.4 225.4,58.4 223.9,59.4 222.5,60.6 221.2,61.9 220.0,63.2 218.9,64.7 217.9,66.2 217.0,67.7 216.2,69.4 215.5,71.1 214.9,72.8 214.5,74.6 214.2,76.4 214.0,78.2 213.9,80.0 214.0,81.8 214.2,83.6 214.5,85.4 214.9,87.2 215.5,88.9 216.2,90.6 217.0,92.3 217.9,93.8 218.9,95.3 220.0,96.8 221.2,98.1 222.5,99.4 223.9,100.6 225.4,101.6 226.9,102.6 228.6,103.5 230.2,104.2 231.9,104.8 233.7,105.3 235.5,105.7 237.3,106.0 239.1,106.1 240.9,106.1 242.7,106.0 244.5,105.7 246.3,105.3 248.1,104.8 249.8,104.2 251.4,103.5 253.1,102.6 254.6,101.6 256.1,100.6 257.5,99.4 258.8,98.1 260.0,96.8 261.1,95.3 262.1,93.8 263.0,92.3 263.8,90.6 264.5,88.9 265.1,87.2 265.5,85.4 265.8,83.6 266.0,81.8 266.1,80.0" fill="none" style="stroke:var(--warn)" stroke-width="3"/><text x="240" y="172" text-anchor="middle" font-size="14" style="fill:var(--warn)">small: dirt</text><path d="M332 80H468M400 12V148" stroke="currentColor" opacity=".3"/><circle cx="400" cy="80" r="58" fill="none" stroke="currentColor" stroke-dasharray="3 3" opacity=".4"/><polyline points="458.0,51.0 457.9,47.6 457.4,44.3 456.7,41.2 455.8,38.3 454.5,35.6 453.0,33.1 451.2,30.8 449.2,28.8 446.9,27.0 444.4,25.5 441.7,24.2 438.8,23.3 435.7,22.6 432.4,22.1 429.0,22.0 425.4,22.1 421.7,22.6 417.9,23.3 414.0,24.2 410.1,25.5 406.1,27.0 402.0,28.8 398.0,30.8 393.9,33.1 389.9,35.6 386.0,38.3 382.1,41.2 378.3,44.3 374.6,47.6 371.0,51.0 367.6,54.6 364.3,58.3 361.2,62.1 358.3,66.0 355.6,69.9 353.1,73.9 350.8,78.0 348.8,82.0 347.0,86.1 345.5,90.1 344.2,94.0 343.3,97.9 342.6,101.7 342.1,105.4 342.0,109.0 342.1,112.4 342.6,115.7 343.3,118.8 344.2,121.7 345.5,124.4 347.0,126.9 348.8,129.2 350.8,131.2 353.1,133.0 355.6,134.5 358.3,135.8 361.2,136.7 364.3,137.4 367.6,137.9 371.0,138.0 374.6,137.9 378.3,137.4 382.1,136.7 386.0,135.8 389.9,134.5 393.9,133.0 398.0,131.2 402.0,129.2 406.1,126.9 410.1,124.4 414.0,121.7 417.9,118.8 421.7,115.7 425.4,112.4 429.0,109.0 432.4,105.4 435.7,101.7 438.8,97.9 441.7,94.0 444.4,90.1 446.9,86.1 449.2,82.0 451.2,78.0 453.0,73.9 454.5,69.9 455.8,66.0 456.7,62.1 457.4,58.3 457.9,54.6 458.0,51.0" fill="none" style="stroke:var(--bad)" stroke-width="3"/><text x="400" y="172" text-anchor="middle" font-size="14" style="fill:var(--bad)">ellipse: phase</text>
 </g></svg>
 <figcaption>الخط المتقطع هو حجم الدائرة السليمة (1 Vpp).</figcaption>
-</figure><p>هذا شكل ليساجو <span class="term">Lissajous</span>، على وضع XY في الأوسيلوسكوب.</p><ul><li><b>دائرة كاملة:</b> الإنكودر سليم.</li><li><b>دائرة صغيرة:</b> زيت على القرص أو LED ضعيف.</li><li><b>قطع ناقص مائل:</b> خطأ طور بين الإشارتين.</li></ul><h3>الريزولفر في الطاولة الدوارة A</h3><ul><li>الدرايف يغذّيه بـ 7 V عند 10 kHz.</li><li>يعيد إشارتين يتغير حجمهما مع الزاوية.</li><li><span class="eq">√(sin² + cos²)</span> ثابت قرب 3.5 V.</li><li>مجموع منخفض: عيب في ملف أو موصّل.</li></ul><details class="more"><summary>للاستزادة: مثال الريزولفر، وخطوات فحصه، و HIPERFACE</summary>
-<div class="ex"><b>محور A في موضع ثابت</b><ol><li>قرأت sin = 2.10 و cos = 2.80 V rms.</li><li><span class="eq">√(2.10² + 2.80²) = 3.50 V</span>: سليم.</li><li>بعد غسل الماكينة: sin = 1.50 و cos = 2.00.</li><li><span class="eq">√(1.50² + 2.00²) = 2.50 V</span>، أي 71 % فقط.</li><li>افحص الإثارة 7 V عند الريزولفر، والموصّل من الرطوبة.</li></ol></div><ol class="steps-l"><li>الإثارة بين R1 و R2: ‏7 V rms عند 10 kHz، ثابتة.</li><li>الخرجان بين S1–S3 و S2–S4: أقصى غلاف 3.5 V rms.</li><li>الدرايف مطفأ: قِس مقاومة الملفات بالملتيميتر، وقارن ملفَّي sin و cos.</li><li>افحص العزل بالملتيميتر فقط، <b>لا بالميجر</b>.</li></ol><ul><li>اتساع Sin/Cos السليم نحو 1 Vpp (المقبول نموذجيًّا 0.6–1.2 Vpp).</li><li>مركز الدائرة مزاح: جهد مستمر في قناة، غالبًا رطوبة في الموصّل.</li><li>دائرة تكبر وتصغر خلال اللفة: لا مركزية أو محمل الإنكودر تالف.</li><li><b>HIPERFACE:</b> القياس نفسه بين SIN و REFSIN، و COS و REFCOS (حول 2.5 V).</li></ul>
-</details>
-<div class="sum">Sin/Cos: الدائرة الكاملة سليمة. الريزولفر: المجموع ثابت عند 3.5 V.</div>
+</figure>
+  <ul class="fx">
+    <li class="ok"><b>دائرة كاملة</b><span>سليم</span></li>
+    <li><b>دائرة صغيرة</b><span>زيت على القرص أو LED ضعيف</span></li>
+    <li><b>قطع ناقص مائل</b><span>خطأ طور بين الإشارتين</span></li>
+  </ul>
+  <div class="vs">
+    <div class="side"><b>الريزولفر سليم</b><span class="big">3.50 V</span><span>√(sin² + cos²)</span></div>
+    <i>مقابل</i>
+    <div class="side"><b>بعد غسل الماكينة</b><span class="big">2.50 V</span><span class="nc"><bdi dir="ltr">71 %</bdi> ← الرطوبة</span></div>
+  </div>
+  <p class="tip">الإثارة <bdi dir="ltr">7 V · 10 kHz</bdi> بين R1 و R2. العزل بالملتيميتر فقط، لا بالميجر.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>الإنكودر التسلسلي والبطارية: اسأل الدرايف</h2>
-<p>الإنكودر التسلسلي يرسل الموضع رسالة رقمية، كرسالة نصية. لا تقرؤها بعينك؛ الدرايف يقرؤها ويعدّ أخطاءها.</p><p>عدّاد الأخطاء هذا اسمه <span class="term">CRC errors</span>: رسائل وصلت تالفة.</p><ul><li>الأوسيلوسكوب يؤكد وجود الإشارة فقط.</li><li>التشخيص في شاشة الدرايف: عدّاد CRC.</li><li>العدّاد يزيد مع حمل آخر؟ <b>تشويش</b>: افحص الحجب والمسار.</li></ul><h3>بطارية الإنكودر المطلق (محور X)</h3><p>البطارية ذاكرة صغيرة تحفظ عدد اللفات والماكينة مطفأة.</p><figure class="fig">
+  <p class="bf"><span class="ic">📟</span><span>الرسالة الرقمية لا تقرؤها بعينك: <b>عدّاد CRC</b> في الدرايف هو التشخيص.</span></p>
+  <p class="tip">CRC يزيد مع تشغيل حمل آخر؟ تشويش ← الحجب والمسار.</p>
+  <figure class="fig">
 <svg viewBox="0 0 480 190" role="img" aria-label="استبدال البطارية وتغذية التحكم موصولة يحفظ عدد اللفات، واستبدالها والتغذية مقطوعة يضيّعها فيلزم ضبط مرجع المحور" style="width:100%;max-width:560px;direction:ltr">
 <g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="15" fill="currentColor">
 <rect x="10" y="20" width="140" height="56" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="80" y="53" text-anchor="middle" font-size="14">control power ON</text><rect x="175" y="20" width="140" height="56" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="245" y="53" text-anchor="middle" font-size="14">swap battery</text><rect x="330" y="20" width="140" height="56" rx="8" fill="none" style="stroke:var(--good)" stroke-width="2"/><text x="400" y="53" text-anchor="middle" font-size="14" style="fill:var(--good)">turns kept ✓</text><path d="M150 48H172M315 48H327" stroke="currentColor" stroke-width="2"/><rect x="10" y="100" width="140" height="56" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="80" y="133" text-anchor="middle" font-size="14">power OFF</text><rect x="175" y="100" width="140" height="56" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="245" y="133" text-anchor="middle" font-size="14">swap battery</text><rect x="330" y="100" width="140" height="56" rx="8" fill="none" style="stroke:var(--bad)" stroke-width="2"/><text x="400" y="133" text-anchor="middle" font-size="14" style="fill:var(--bad)">turns lost ✗</text><path d="M150 128H172M315 128H327" stroke="currentColor" stroke-width="2"/><text x="400" y="178" text-anchor="middle" font-size="13" style="fill:var(--bad)">→ re-reference axis</text>
 </g></svg>
 <figcaption>غيّر البطارية والدرايف مُغذّى. هكذا لا يضيع موضع المحور.</figcaption>
-</figure><ul><li>جهدها الاسمي 3.6 V.</li><li>عند <b>AL.EnB</b>: غيّرها <b>والدرايف مُغذّى</b>.</li><li>تغييرها والتغذية مقطوعة يضيّع اللفات.</li><li>بعدها يلزم ضبط مرجع المحور.</li></ul><div class="box safe"><b>بعد فقد اللفات:</b> المحور لا يعرف موضعه. حرّكه يدويًّا ببطء، ولا تشغّل برنامجًا قبل التحقق.</div><details class="more"><summary>للاستزادة: ما يظهر لكل بروتوكول، ومثال محور Z، والإنكودر بالتروس</summary>
-<div class="tblw"><table class="tbl"><thead><tr><th>البروتوكول</th><th>على الأوسيلوسكوب</th><th>من الدرايف</th></tr></thead><tbody><tr><td>SSI</td><td>حزم ساعة على CLK، والبيانات بعدها</td><td>القيمة الخام وخطأ الإطار</td></tr><tr><td>EnDat 2.2</td><td>CLOCK و DATA؛ اتساع تفاضلي ≥ 2 V</td><td>أخطاء CRC، حرارة الإنكودر</td></tr><tr><td>BiSS-C</td><td>MA من الدرايف، و SLO تنخفض ثم البيانات</td><td>بتا nE و nW، أخطاء CRC</td></tr><tr><td>HIPERFACE DSL</td><td>بيانات مستمرة فوق التغذية، بلا ساعة</td><td>جودة الرابط وعدّاد الأخطاء</td></tr><tr><td>تسلسلي الشركات</td><td>طلب من الدرايف ثم رد على الزوج نفسه</td><td>إنذار الإنكودر، جهد البطارية</td></tr><tr><td>نوع Drive-CLiQ</td><td>إشارات إيثرنت</td><td>حالة المكوّن وأخطاؤه</td></tr></tbody></table></div><div class="ex"><b>محور Z (EnDat): AL.EnC متقطع</b><ol><li>التغذية عند الإنكودر 5.05 V: سليمة.</li><li>عدّاد CRC يزيد فقط حين يدور المغزل.</li><li>الحكم: تشويش. افحص ربط الحجب 360° ومسار الكابل (الدرس 9).</li><li>بعد إصلاح الحجب توقف العدّاد. الإنكودر بقي كما هو.</li></ol></div><ul><li>بطارية الليثيوم تبقى قرب 3.6 V حتى نهايتها، فاعتمد قراءة الدرايف أو قِس تحت حمل صغير.</li><li>الاستبدال الوقائي كل سنتين تقريبًا أرخص من توقف الماكينة.</li><li><b>المطلق بالتروس (محور Z):</b> بلا بطارية، لكن الصدمة القوية قد تتلف تروسه فيقفز عدد اللفات.</li></ul>
-</details>
-<div class="sum">التسلسلي يُشخَّص بعدّاد CRC في الدرايف. البطارية تُغيَّر والتغذية موصولة.</div>
+</figure>
+  <ol class="steps"><li>AL.EnB</li><li class="on">غيّر البطارية والدرايف مُغذّى</li><li>تحقق قبل أي برنامج</li></ol>
+  <div class="box safe">بعد فقد اللفات لا يعرف المحور موضعه: حرّكه يدويًّا ببطء واضبط المرجع قبل أي برنامج.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s6">
   <h2 id="s6"><span class="k">6</span>قبل أن تستبدل: رتّب الفحص</h2>
-<p>الطبيب يبدأ بالفحوص البسيطة قبل الجراحة. افحص الإنكودر بالترتيب نفسه، من الأرخص إلى الأغلى.</p><figure class="fig">
+  <figure class="fig">
 <svg viewBox="0 0 480 145" role="img" aria-label="ترتيب الفحص: التغذية، ثم الكابل والحجب، ثم الإشارة، وأخيرًا الإنكودر نفسه" style="width:100%;max-width:560px;direction:ltr">
 <g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="15" fill="currentColor">
 <rect x="6" y="30" width="104" height="70" rx="10" fill="none" style="stroke:var(--accent)" stroke-width="2"/><text x="58" y="58" text-anchor="middle" font-size="18" style="fill:var(--accent)">1</text><text x="58" y="84" text-anchor="middle" font-size="14">supply</text><path d="M112 65h10" stroke="currentColor" stroke-width="2"/><path d="M118 60l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="126" y="30" width="104" height="70" rx="10" fill="none" style="stroke:var(--accent)" stroke-width="2"/><text x="178" y="58" text-anchor="middle" font-size="18" style="fill:var(--accent)">2</text><text x="178" y="84" text-anchor="middle" font-size="14">cable</text><path d="M232 65h10" stroke="currentColor" stroke-width="2"/><path d="M238 60l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="246" y="30" width="104" height="70" rx="10" fill="none" style="stroke:var(--accent)" stroke-width="2"/><text x="298" y="58" text-anchor="middle" font-size="18" style="fill:var(--accent)">3</text><text x="298" y="84" text-anchor="middle" font-size="14">signal</text><path d="M352 65h10" stroke="currentColor" stroke-width="2"/><path d="M358 60l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="366" y="30" width="104" height="70" rx="10" fill="none" style="stroke:var(--bad)" stroke-width="2"/><text x="418" y="58" text-anchor="middle" font-size="18" style="fill:var(--bad)">4</text><text x="418" y="84" text-anchor="middle" font-size="14">encoder</text><text x="240" y="130" text-anchor="middle" font-size="14">most faults stop at step 1 or 2</text>
 </g></svg>
 <figcaption>لا تصل إلى الخطوة 4 قبل أن تنجح الخطوات الثلاث الأولى.</figcaption>
-</figure><ol class="steps-l"><li><b>التغذية:</b> 5 V عند الإنكودر؟</li><li><b>الكابل والحجب:</b> أسلاك سليمة، وموصّل محكم، وحجب مربوط.</li><li><b>الإشارة:</b> أزواج سليمة، وعدّ صحيح، و CRC ثابت.</li><li><b>الإنكودر:</b> لا تحكم عليه إلا بعد نجاح ما سبق.</li></ol><details class="more"><summary>للاستزادة: جدول الأعطال الكامل، والأخطاء الشائعة</summary>
-<div class="tblw"><table class="tbl"><thead><tr><th>العَرَض</th><th>السبب المحتمل</th><th>القرار</th></tr></thead><tbody><tr><td>AL.EnC دائم عند التشغيل</td><td>لا تغذية، سلك مقطوع، موصّل مفكوك</td><td><b style="color:var(--bad)">إصلاح الكابل</b></td></tr><tr><td>AL.EnC متقطع مع حمل آخر</td><td>تشويش، حجب مقطوع</td><td><b style="color:var(--warn)">إصلاح التأريض والمسار</b></td></tr><tr><td>AL.EnB</td><td>بطارية ضعيفة</td><td><b style="color:var(--warn)">استبدال والتغذية موصولة</b></td></tr><tr><td>فقد الموضع بعد إيقاف طويل</td><td>البطارية فرغت</td><td><b style="color:var(--warn)">بطارية + ضبط مرجعي</b></td></tr><tr><td>زحف تدريجي في الموضع</td><td>عدّات مفقودة: قرص ملوّث</td><td><b style="color:var(--bad)">تنظيف أو استبدال</b></td></tr><tr><td>عدّات زائدة عند التشغيل فقط</td><td>تشويش PWM</td><td><b style="color:var(--warn)">تأريض وحجب</b></td></tr><tr><td>عدّ في اتجاه واحد أو AL.PoS فورًا</td><td>قناة A أو B مفقودة</td><td><b style="color:var(--bad)">إصلاح الكابل أو الإنكودر</b></td></tr><tr><td>Hall 000 أو 111</td><td>سلك Hall مقطوع</td><td><b style="color:var(--bad)">إصلاح أو استبدال</b></td></tr><tr><td>دائرة ليساجو تصغر مع الزمن</td><td>زيت أو تكثف، ضعف LED</td><td><b style="color:var(--warn)">راقِب ثم استبدل</b></td></tr><tr><td>تيار أعلى بعد صدمة أو فك</td><td>الإنكودر انزلق فتغيّرت الإزاحة</td><td><b style="color:var(--bad)">أعد الضبط (الدرس 6)</b></td></tr><tr><td>صوت داخل الإنكودر</td><td>محمل الإنكودر أو قرص مكسور</td><td><b style="color:var(--bad)">استبدال</b></td></tr></tbody></table></div><p class="muted">قيم نموذجية للتعلّم؛ ارجع إلى كتيّب المحرك والدرايف.</p><div class="tblw"><table class="tbl"><thead><tr><th>الخطأ الشائع</th><th>الصواب</th></tr></thead><tbody><tr><td>استبدال الإنكودر عند أول إنذار</td><td>افحص التغذية والكابل والحجب أولًا</td></tr><tr><td>قياس 5 V عند الدرايف فقط</td><td>قِسها عند الإنكودر وتحت الحمل</td></tr><tr><td>قياس خط واحد من الزوج</td><td>قِس الخطين والفرق</td></tr><tr><td>فك البطارية والماكينة مطفأة</td><td>غيّرها وتغذية التحكم موصولة</td></tr><tr><td>فتح إنكودر ضوئي في ورشة متربة</td><td>مكان نظيف وسوار ESD، أو لا تفتحه</td></tr><tr><td>فحص الريزولفر بالميجر</td><td>ملتيميتر فقط</td></tr></tbody></table></div>
-</details><div class="box key"><b>على المحاكي:</b> افحص الإنكودر بالأوسيلوسكوب: أزواج A/B/Z، ودائرة Sin/Cos، وغلاف الريزولفر، والتغذية والبطارية؛ ثم اكتشف العطل. <a class="btn pri" href="bench.html#scope" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
-<div class="sum">أغلب إنذارات الإنكودر من التغذية أو الكابل أو التشويش. قِس قبل أن تستبدل.</div>
+</figure>
+  <ol class="steps">
+    <li>التغذية عند الإنكودر</li>
+    <li>الكابل والحجب</li>
+    <li>الإشارة: أزواج · عدّ · CRC</li>
+    <li class="on">ثم الإنكودر</li>
+  </ol>
+  <ul class="fx">
+    <li><b>AL.EnC دائم</b><span>تغذية أو سلك أو موصّل ← الكابل</span></li>
+    <li><b>AL.EnC متقطع مع حمل آخر</b><span>تشويش ← التأريض والمسار</span></li>
+    <li><b>AL.EnB</b><span>بطارية والتغذية موصولة</span></li>
+    <li><b>زحف تدريجي</b><span>قرص ملوّث ← تنظيف أو استبدال</span></li>
+  </ul>
+  <div class="box key"><b>على المحاكي:</b> افحص الإنكودر بالأوسيلوسكوب: أزواج A/B/Z، ودائرة Sin/Cos، وغلاف الريزولفر، والتغذية والبطارية؛ ثم اكتشف العطل. <a class="btn pri" href="bench.html#scope" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 5 من 6 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
