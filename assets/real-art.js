@@ -23,6 +23,10 @@ const DEFS = `<svg id="ra-defs" width="0" height="0" style="position:absolute;wi
 <linearGradient id="ra-steelD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c8389"/><stop offset=".3" stop-color="#5a6268"/><stop offset="1" stop-color="#3a4045"/></linearGradient>
 <linearGradient id="ra-orange" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2c04a"/><stop offset=".5" stop-color="#e0a21b"/><stop offset="1" stop-color="#a87400"/></linearGradient>
 <linearGradient id="ra-wood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2b880"/><stop offset="1" stop-color="#a7783f"/></linearGradient>
+<radialGradient id="ra-glass" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="#eef1ee"/><stop offset="1" stop-color="#c9cfcc"/></radialGradient>
+<radialGradient id="ra-bulbOn" cx=".45" cy=".45" r=".7"><stop offset="0" stop-color="#fffbe6"/><stop offset=".5" stop-color="#ffe680"/><stop offset="1" stop-color="#ffb52e"/></radialGradient>
+<linearGradient id="ra-cylD" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#15181a"/><stop offset=".3" stop-color="#5a6268"/><stop offset=".55" stop-color="#2f3539"/><stop offset="1" stop-color="#101214"/></linearGradient>
+<linearGradient id="ra-cylO" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9c6a00"/><stop offset=".3" stop-color="#ffd25e"/><stop offset=".55" stop-color="#e2a31a"/><stop offset="1" stop-color="#8a5c00"/></linearGradient>
 <pattern id="ra-thr" width="4.2" height="10" patternUnits="userSpaceOnUse"><rect width="1.5" height="10" x="2.4" fill="#000" opacity=".3"/><rect width=".8" height="10" x="1.2" fill="#fff" opacity=".35"/></pattern>
 <pattern id="ra-vent" width="6" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="1.6" fill="#000" opacity=".28"/></pattern>
 <filter id="ra-sh" x="-15%" y="-15%" width="140%" height="150%"><feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000" flood-opacity=".3"/></filter>
