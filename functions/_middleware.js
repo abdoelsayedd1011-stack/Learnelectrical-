@@ -35,7 +35,7 @@ const FREE_LESSONS_BY_DIR = {
   "servo-course": [1],              // 12
   "iiot-lab": [1],                  // 14
   "scada-lab": [1],                 // 12
-  "panel-lab": [1],                 // 12
+  "panel-lab": [1],                 // 18
   "maint-lab": [1],                 // 12
   "servo-maint-lab": [1]            // 13
 };
@@ -77,7 +77,7 @@ function membersOnly(pathname){
     if (dir === "safety-lab" && /^pluto(?:\.html)?$/.test(rest)) return true;              // the safety simulator
     if (dir === "iiot-lab" && /^net(?:\.html)?$/.test(rest)) return true;                   // the networks simulator
     if (dir === "scada-lab" && /^(?:scada|designer)(?:\.html)?$/.test(rest)) return true;   // the SCADA station and the screen designer
-    if (dir === "panel-lab" && /^(?:calc|designer|cable)(?:\.html)?$/.test(rest)) return true;    // the panel designer's calculator, the panel designer and the cable selector
+    if (dir === "panel-lab" && /^(?:calc|designer|cable|lighting)(?:\.html)?$/.test(rest)) return true;    // the panel designer's calculator, the panel designer, the cable selector and the lighting designer
     if (dir === "maint-lab" && /^(?:motor|trafo)(?:\.html)?$/.test(rest)) return true;      // the motor maintenance workshop and the transformer maintenance station
     if (dir === "servo-maint-lab" && /^(?:bench|drive)(?:\.html)?$/.test(rest)) return true; // the servo motor bench and the servo drive station
     const l = /^lesson-(\d+)/.exec(rest);
