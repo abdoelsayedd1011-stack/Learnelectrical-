@@ -34,47 +34,43 @@ function themeBtn(){
 /* ---------------- course map ---------------- */
 const EN = IL.EN = /^en/i.test(document.documentElement.lang || '');
 const T = IL.T = (ar, en) => EN ? en : ar;
-/* [id, title AR, title EN, sub AR, sub EN, sim AR, sim EN] — every lesson = one playground («sim») + questions («quiz») */
-const MAP = [
-  ['l1', 'الميكانيكا بتبدأ منين؟ الكميات والوحدات والمتجهات', 'Where mechanics starts: quantities, units and vectors',
-   'الطول والكتلة والزمن، وحدات SI، الكتلة والوزن، والكمية القياسية والمتجهة', 'Length, mass and time, SI units, mass vs weight, scalars vs vectors',
-   'اجمع قوتين واعمل المحصّلة المطلوبة', 'Add two forces to hit the target resultant'],
-  ['l2', 'السرعة والعجلة', 'Speed and acceleration',
-   'المسافة والإزاحة، السرعة المتوسطة، العجلة، معادلات الحركة، ومسافة الفرامل', 'Distance vs displacement, average speed, acceleration, the motion equations and braking distance',
-   'فرمل العربية تقف على الخط بالظبط', 'Brake the car to stop right on the line'],
-  ['l3', 'السقوط الحر والمقذوفات', 'Free fall and projectiles',
-   'الجاذبية g، السقوط من ارتفاع، الحركة الأفقية والرأسية، وأحسن زاوية رمي', 'Gravity g, falling from a height, horizontal and vertical motion, and the best launch angle',
-   'ارمي الكورة وصيب الهدف', 'Launch the ball and hit the target'],
-  ['l4', 'القوة وقوانين نيوتن', 'Force and Newton’s laws',
-   'القصور الذاتي، F = m·a، الفعل ورد الفعل، والقوة المحصّلة', 'Inertia, F = m·a, action and reaction, and net force',
-   'ازق الصندوق يوصل الخط في 4 ثواني', 'Push the crate to the line in 4 seconds'],
-  ['l5', 'الوزن والاحتكاك والسطح المائل', 'Weight, friction and the ramp',
-   'الوزن W = m·g، الاحتكاك السكوني والحركي، معامل الاحتكاك، والسطح المائل', 'Weight W = m·g, static and kinetic friction, the friction coefficient and the ramp',
-   'لاقي الزاوية اللي الصندوق يبدأ يتزحلق عندها', 'Find the angle where the crate starts to slide'],
-  ['l6', 'الشغل والطاقة والقدرة', 'Work, energy and power',
-   'الشغل، طاقة الحركة وطاقة الوضع، حفظ الطاقة، القدرة والكيلووات والحصان', 'Work, kinetic and potential energy, conservation of energy, power, kW and hp',
-   'اختار الارتفاع اللي العربية تلف اللوب من غير ما تقع', 'Pick the height so the cart makes the loop'],
-  ['l7', 'كمية الحركة والتصادم', 'Momentum and collisions',
-   'كمية الحركة p = m·v، حفظها في التصادم، التصادم المرن واللازق، والدفع', 'Momentum p = m·v, conservation in a collision, elastic and sticky collisions, impulse',
-   'خلّي العربيتين يقفوا بعد الخبطة', 'Make both carts stop after the crash'],
-  ['l8', 'العزم والروافع والاتزان', 'Torque, levers and balance',
-   'العزم = القوة × الذراع، المفتاح والرافعة، شرطين الاتزان، ومركز الثقل', 'Torque = force × arm, the wrench and the lever, the two balance conditions, centre of gravity',
-   'ظبّط المرجيحة تتزن', 'Balance the seesaw'],
-  ['l9', 'الحركة الدائرية والتروس', 'Rotation and gears',
-   'اللفة والـ rpm والسرعة الزاوية، القوة المركزية، التروس والسيور، والقدرة P = T·ω', 'Revolutions, rpm and angular speed, centripetal force, gears and belts, and power P = T·ω',
-   'اختار الترس اللي يطلّع السرعة المطلوبة', 'Choose the gear that gives the target speed'],
-  ['l10', 'الضغط والهيدروليك', 'Pressure and hydraulics',
-   'الضغط = القوة ÷ المساحة، البار والباسكال، ضغط السوائل، قاعدة باسكال والكريك الهيدروليك', 'Pressure = force ÷ area, bar and pascal, liquid pressure, Pascal’s principle and the hydraulic jack',
-   'ارفع العربية بإيد واحدة', 'Lift the car with one hand'],
-  ['l11', 'المشروع: اختار موتور لونش + الامتحان النهائي', 'Project: size a winch motor + final exam',
-   'كل اللي اتعلمته في مسألة واحدة: القوة والسرعة والقدرة والعزم والـ rpm، ثم الامتحان النهائي', 'Everything in one job: force, speed, power, torque and rpm, then the final exam',
-   'احسب موتور الونش خطوة بخطوة', 'Size the winch motor step by step']
+/* every lesson = one playground («sim», mech-sims.js) + questions («quiz»); lesson 11 adds the final exam.
+   Keep this a plain literal: functions/_lib/courses.js and assets/resume.js read the task ids from it. */
+IL.COURSE = [
+  {id:'l1', n:1, file:'lesson-01.html', title:T('الميكانيكا بتبدأ منين؟ الكميات والوحدات والمتجهات', 'Where mechanics starts: quantities, units and vectors'),
+    sub:T('الطول والكتلة والزمن، وحدات SI، الكتلة والوزن، والكمية القياسية والمتجهة', 'Length, mass and time, SI units, mass vs weight, scalars vs vectors'),
+    tasks:[['sim',T('اجمع قوتين واعمل المحصّلة المطلوبة', 'Add two forces to hit the target resultant')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+  {id:'l2', n:2, file:'lesson-02.html', title:T('السرعة والعجلة', 'Speed and acceleration'),
+    sub:T('المسافة والإزاحة، السرعة المتوسطة، العجلة، معادلات الحركة، ومسافة الفرامل', 'Distance vs displacement, average speed, acceleration, the motion equations and braking distance'),
+    tasks:[['sim',T('فرمل العربية تقف على الخط بالظبط', 'Brake the car to stop right on the line')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+  {id:'l3', n:3, file:'lesson-03.html', title:T('السقوط الحر والمقذوفات', 'Free fall and projectiles'),
+    sub:T('الجاذبية g، السقوط من ارتفاع، الحركة الأفقية والرأسية، وأحسن زاوية رمي', 'Gravity g, falling from a height, horizontal and vertical motion, and the best launch angle'),
+    tasks:[['sim',T('ارمي الكورة وصيب الهدف', 'Launch the ball and hit the target')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+  {id:'l4', n:4, file:'lesson-04.html', title:T('القوة وقوانين نيوتن', 'Force and Newton’s laws'),
+    sub:T('القصور الذاتي، F = m·a، الفعل ورد الفعل، والقوة المحصّلة', 'Inertia, F = m·a, action and reaction, and net force'),
+    tasks:[['sim',T('ازق الصندوق يوصل الخط في 4 ثواني', 'Push the crate to the line in 4 seconds')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+  {id:'l5', n:5, file:'lesson-05.html', title:T('الوزن والاحتكاك والسطح المائل', 'Weight, friction and the ramp'),
+    sub:T('الوزن W = m·g، الاحتكاك السكوني والحركي، معامل الاحتكاك، والسطح المائل', 'Weight W = m·g, static and kinetic friction, the friction coefficient and the ramp'),
+    tasks:[['sim',T('لاقي الزاوية اللي الصندوق يبدأ يتزحلق عندها', 'Find the angle where the crate starts to slide')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+  {id:'l6', n:6, file:'lesson-06.html', title:T('الشغل والطاقة والقدرة', 'Work, energy and power'),
+    sub:T('الشغل، طاقة الحركة وطاقة الوضع، حفظ الطاقة، القدرة والكيلووات والحصان', 'Work, kinetic and potential energy, conservation of energy, power, kW and hp'),
+    tasks:[['sim',T('اختار الارتفاع اللي العربية تلف اللوب من غير ما تقع', 'Pick the height so the cart makes the loop')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+  {id:'l7', n:7, file:'lesson-07.html', title:T('كمية الحركة والتصادم', 'Momentum and collisions'),
+    sub:T('كمية الحركة p = m·v، حفظها في التصادم، التصادم المرن واللازق، والدفع', 'Momentum p = m·v, conservation in a collision, elastic and sticky collisions, impulse'),
+    tasks:[['sim',T('خلّي العربيتين يقفوا بعد الخبطة', 'Make both carts stop after the crash')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+  {id:'l8', n:8, file:'lesson-08.html', title:T('العزم والروافع والاتزان', 'Torque, levers and balance'),
+    sub:T('العزم = القوة × الذراع، المفتاح والرافعة، شرطين الاتزان، ومركز الثقل', 'Torque = force × arm, the wrench and the lever, the two balance conditions, centre of gravity'),
+    tasks:[['sim',T('ظبّط المرجيحة تتزن', 'Balance the seesaw')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+  {id:'l9', n:9, file:'lesson-09.html', title:T('الحركة الدائرية والتروس', 'Rotation and gears'),
+    sub:T('اللفة والـ rpm والسرعة الزاوية، القوة المركزية، التروس والسيور، والقدرة P = T·ω', 'Revolutions, rpm and angular speed, centripetal force, gears and belts, and power P = T·ω'),
+    tasks:[['sim',T('اختار الترس اللي يطلّع السرعة المطلوبة', 'Choose the gear that gives the target speed')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+  {id:'l10', n:10, file:'lesson-10.html', title:T('الضغط والهيدروليك', 'Pressure and hydraulics'),
+    sub:T('الضغط = القوة ÷ المساحة، البار والباسكال، ضغط السوائل، قاعدة باسكال والكريك الهيدروليك', 'Pressure = force ÷ area, bar and pascal, liquid pressure, Pascal’s principle and the hydraulic jack'),
+    tasks:[['sim',T('ارفع العربية بإيد واحدة', 'Lift the car with one hand')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+  {id:'l11', n:11, file:'lesson-11.html', title:T('المشروع: اختار موتور لونش + الامتحان النهائي', 'Project: size a winch motor + final exam'),
+    sub:T('كل اللي اتعلمته في مسألة واحدة: القوة والسرعة والقدرة والعزم والـ rpm، ثم الامتحان النهائي', 'Everything in one job: force, speed, power, torque and rpm, then the final exam'),
+    tasks:[['sim',T('احسب موتور الونش خطوة بخطوة', 'Size the winch motor step by step')],['quiz',T('أسئلة الدرس', 'Lesson questions')],['final',T('الامتحان النهائي', 'Final exam')]]}
 ];
-IL.COURSE = MAP.map((m, i) => {
-  const tasks = [['sim', T(m[5], m[6])], ['quiz', T('أسئلة الدرس', 'Lesson questions')]];
-  if (i === MAP.length - 1) tasks.push(['final', T('الامتحان النهائي', 'Final exam')]);
-  return {id:m[0], n:i + 1, file:'lesson-' + String(i + 1).padStart(2, '0') + '.html', title:T(m[1], m[2]), sub:T(m[3], m[4]), tasks};
-});
 IL.lessonById = id => IL.COURSE.find(l => l.id === id);
 IL.summary = id => { const l = IL.lessonById(id); const done = l.tasks.filter(t => IL.store.has(id + '/' + t[0])).length; return {done, total:l.tasks.length}; };
 IL.mark = (lid, task) => IL.store.mark(lid + '/' + task);
@@ -141,7 +137,7 @@ IL.lesson = function(id){
   if (nav){
     const i = IL.COURSE.indexOf(L), p = IL.COURSE[i - 1], n = IL.COURSE[i + 1];
     nav.innerHTML = (p ? `<a class="btn" href="${p.file}">${T('→ الدرس', '← Lesson')} ${p.n}: ${esc(p.title)}</a>` : `<a class="btn" href="index.html">${T('→ صفحة الكورس', '← Course page')}</a>`) +
-      (n ? `<a class="btn pri" href="${n.file}">${T('الدرس', 'Lesson')} ${n.n}: ${esc(n.title)} ${T('←', '→')}</a>` : `<a class="btn pri" href="index.html#certSec">${T('الشهادة ←', 'Certificate →')}</a>`);
+      (n ? `<a class="btn pri" href="${n.file}">${T('الدرس', 'Lesson')} ${n.n}: ${esc(n.title)} ${T('←', '→')}</a>` : `<a class="btn pri" href="${T('/account.html', '/en/account.html')}#certs-sec">${T('الشهادة ←', 'Certificate →')}</a>`);
   }
   window.addEventListener('pageshow', e => { if (e.persisted){ IL.store.reload(); renderProg(); } });
 };

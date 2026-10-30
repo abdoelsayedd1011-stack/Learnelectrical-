@@ -27,7 +27,8 @@ export const DEFAULT_PRICES = {
   scada:   { price: 599, was: 849, usd: 49, usd_was: 69, link: "https://learnelectricals.gumroad.com/l/kaebwcv" },
   panel:   { price: 599, was: 849, usd: 49, usd_was: 69, link: "https://learnelectricals.gumroad.com/l/Electricalpanel" },
   maint:   { price: 599, was: 849, usd: 49, usd_was: 69, link: "" },
-  srvm:    { price: 599, was: 849, usd: 49, usd_was: 69, link: "" }
+  srvm:    { price: 599, was: 849, usd: 49, usd_was: 69, link: "" },
+  mech:    { price: 299, was: 449, usd: 25, usd_was: 39, link: "" }
 };
 
 // ids match _lib/courses.js (certificates) so one id means one course everywhere.
@@ -45,11 +46,12 @@ export const PRODUCTS = {
   scada:   { title: "SCADA و HMI",                 dirs: ["scada-lab"] },
   panel:   { title: "تصميم اللوحات الكهربية",      dirs: ["panel-lab"] },
   maint:   { title: "صيانة المحركات والمحولات",    dirs: ["maint-lab"] },
-  srvm:    { title: "صيانة محركات السيرفو",        dirs: ["servo-maint-lab"] }
+  srvm:    { title: "صيانة محركات السيرفو",        dirs: ["servo-maint-lab"] },
+  mech:    { title: "أساسيات الميكانيكا",          dirs: ["mech-lab"] }
 };
 export const PRODUCT_IDS = Object.keys(PRODUCTS);
 // Friendlier names in links (subscribe.html?course=servo) → product id
-export const ALIASES = { "safety-plc": "safety", drawings: "drw", servo: "srv", instrumentation: "instr", inverters: "vfd", vfdc: "vfd", networks: "iiot", "industrial-networks": "iiot", hmi: "scada", "scada-hmi": "scada", panels: "panel", "panel-design": "panel", "electrical-panels": "panel", motors: "maint", transformers: "maint", maintenance: "maint", "motor-maintenance": "maint", "servo-maintenance": "srvm", "servo-repair": "srvm", encoder: "srvm" };
+export const ALIASES = { "safety-plc": "safety", drawings: "drw", servo: "srv", instrumentation: "instr", inverters: "vfd", vfdc: "vfd", networks: "iiot", "industrial-networks": "iiot", hmi: "scada", "scada-hmi": "scada", panels: "panel", "panel-design": "panel", "electrical-panels": "panel", motors: "maint", transformers: "maint", maintenance: "maint", "motor-maintenance": "maint", "servo-maintenance": "srvm", "servo-repair": "srvm", encoder: "srvm", mechanics: "mech", physics: "mech" };
 export function productId(v){
   const s = String(v || "").trim().toLowerCase();
   const id = ALIASES[s] || s;

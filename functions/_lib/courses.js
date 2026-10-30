@@ -15,7 +15,8 @@ export const COURSES = {
   scada:   { title: "SCADA و HMI",                  key: "scada-lab-v1",    src: "/scada-lab/scada.js",            list: "IL.COURSE", hub: "/scada-lab/index.html" },
   panel:   { title: "تصميم اللوحات الكهربية",       key: "panel-lab-v1",    src: "/panel-lab/panel.js",            list: "IL.COURSE", hub: "/panel-lab/index.html" },
   maint:   { title: "صيانة المحركات والمحولات",     key: "maint-lab-v1",    src: "/maint-lab/maint.js",            list: "IL.COURSE", hub: "/maint-lab/index.html" },
-  srvm:    { title: "صيانة محركات السيرفو",         key: "srvm-lab-v1",     src: "/servo-maint-lab/srvm.js",       list: "IL.COURSE", hub: "/servo-maint-lab/index.html" }
+  srvm:    { title: "صيانة محركات السيرفو",         key: "srvm-lab-v1",     src: "/servo-maint-lab/srvm.js",       list: "IL.COURSE", hub: "/servo-maint-lab/index.html" },
+  mech:    { title: "أساسيات الميكانيكا",           key: "mech-lab-v1",     src: "/mech-lab/mech.js",              list: "IL.COURSE", hub: "/mech-lab/index.html" }
 };
 
 const CACHE_MS = 10 * 60 * 1000;

@@ -14,6 +14,12 @@
       guided:13, exercises:0, params:0, faults:0,
       inside:["جهد وتيار ومقاومة وقدرة", "التوالي والتوازي والمواد الموصلة", "الأفوميتر وقياس الأجهزة في البيت", "توصيل اللمبة والبريزة وأعطال البيت"],
       tags:"basics أساسيات مبتدئين beginner electricity كهربا voltage جهد current تيار resistance مقاومة ohm أوم ac dc multimeter أفوميتر افو avo tester مفك اختبار heater سخان motor موتور transformer محول ترانس power supply باور سبلاي lamp لمبة socket بريزة switch مفتاح wiring توصيل breaker قاطع wire سلك ابدأ من الصفر: يعني إيه جهد وتيار، المواد الموصلة والعازلة، التوصيل على التوالي والتوازي، القدرة وفاتورة الكهربا، أنواع الكهربا AC و DC وسنجل وتلاتة فاز، السلامة ومفك الاختبار، الأفوميتر التفاعلي، قياس السخان والموتور والفيوز والكلامب ميتر، المحوّل والباور سبلاي 24V، قانون أوم واختيار السلك والقاطع، توصيل اللمبة والبريزة ومفتاح السلم، وأعطال البيت.  أفوميتر تفاعلي: لف الأوكرة وحط المجسات وشوف القراية (وتحذير لو غلطت غلطة خطر)   قياس عملي: سخان، غلاية، لمبة، فيوز، موتور 3 فاز وسنجل فاز، ترانس وباور سبلاي، مع عطل مخفي تكتشفه   لوحة توصيل بيت: لمبة ومفتاح، بريزة بالأرضي، مفتاح سلم، لمبتين توازي   لعبة أعطال البيت وامتحان نهائي وشهادة إتمام " },
+    { id:"mech", path:"mech-lab/index.html", group:"mech", brand:"كورس", brandKey:"beginner",
+      name:"أساسيات الميكانيكا", kind:"للمبتدئين", disp:"F = m·a", dispClass:"lcd", rtlName:true,
+      line:"الفيزيا اللي ورا أي موتور وأي حمل: حركة وقوة وطاقة وعزم، وكل درس فيه لعبة تجرّب فيها بإيدك.",
+      guided:11, exercises:11, params:0, faults:0,
+      inside:["السرعة والعجلة والسقوط والمقذوفات", "قوانين نيوتن والاحتكاك والطاقة والقدرة", "العزم والتروس والضغط والهيدروليك", "مشروع: تحسب موتور ونش"],
+      tags:"mech mechanics physics ميكانيكا الميكانيكا فيزيا فيزياء أساسيات الميكانيكا مبتدئين beginner units وحدات vectors متجهات speed سرعة acceleration عجلة تسارع free fall سقوط حر projectile مقذوفات newton نيوتن force قوة mass كتلة weight وزن friction احتكاك ramp منحدر سطح مائل work شغل energy طاقة power قدرة kw hp حصان efficiency كفاءة momentum كمية الحركة collision تصادم torque عزم lever رافعة balance اتزان rpm rotation دوران gears تروس gearbox علبة تروس pressure ضغط hydraulic هيدروليك pascal باسكال jack كريك winch ونش motor sizing اختيار موتور" },
     { id:"classic", path:"classic-control-lab/index.html", group:"classic", brand:"كورس", brandKey:"basics",
       name:"كورس الكلاسيك كنترول", kind:"كلاسيك كنترول", disp:"START", dispClass:"grn", rtlName:true,
       line:"توصّل دواير الكونتاكتور والموتور بإيدك سلك سلك، والكورس يصحّحلك.",
@@ -221,6 +227,7 @@
   ];
   var GROUPS = [
     { key:"basics", title:"أساسيات الكهربا", sub:"للمبتدئين خالص · قبل الكلاسيك", land:"courses/basics.html" },
+    { key:"mech", title:"أساسيات الميكانيكا", sub:"للمبتدئين · الحركة والقوة والطاقة والعزم", land:"courses/mech.html" },
     { id:"clm223", path:"clm223-lab/index.html", group:"temp", brand:"Endress+Hauser", brandKey:"eh",
       name:"Liquisys M", kind:"قياس Conductivity", disp:"1.238 <span class=\"sv\">mS</span>", dispClass:"lcd", html:true,
       line:"محوّل قياس توصيلية المياه من Endress+Hauser، بدرس كامل ومحاكي على برج تبريد.",
@@ -243,6 +250,8 @@
   /* محتوى كل كورس بالترتيب (عناوين الدروس) — بيظهر على كارت الكورس في الكتالوج وعلى الغلاف (assets/courses/covers/).
      لو غيّرت عنوان درس أو زوّدت درس: عدّله هنا وفي toc في assets/i18n-en.js */
   var TOC = {
+    mech: { n:"11 درس", x:["11 لعبة تفاعلية", "امتحان وشهادة"],
+      l:["الكميات والوحدات والمتجهات", "السرعة والعجلة", "السقوط الحر والمقذوفات", "القوة وقوانين نيوتن", "الوزن والاحتكاك والسطح المائل", "الشغل والطاقة والقدرة", "كمية الحركة والتصادم", "العزم والروافع والاتزان", "الحركة الدائرية والتروس", "الضغط والهيدروليك", "مشروع موتور الونش + الامتحان"] },
     basics: { n:"13 درس", x:["أفوميتر تفاعلي", "امتحان وشهادة"],
       l:["يعني إيه كهربا؟", "الجهد والتيار", "الموصلات والعوازل", "التوالي والتوازي", "القدرة والطاقة", "أنواع الكهربا", "السلامة والعدّة", "الأفوميتر (AVO)", "قياس الأجهزة عمليًا", "المحوّل والباور سبلاي", "قانون أوم واختيار السلك والقاطع", "توصيل اللمبة والبريزة", "أعطال البيت الشائعة"] },
     safety: { n:"9 دروس", x:["محاكي بصور الأجهزة", "امتحان نهائي"],
@@ -327,7 +336,7 @@
   /* ---------- أسعار الكورسات (من «الأسعار» في لوحة الإدارة، /api/prices) ----------
      كارت كل كورس في الكتالوج وصفحة كل كورس في courses/ بتظهر السعر لو متحدد، وزرار «اشتري الكورس».
      اللي اشترى الكورس بيشوف «اشتريته ✓». */
-  var PRODUCT_OF = { basics:"basics", classic:"classic", safety:"safety", instr:"instr", plc:"plc", drw:"drw", vfdc:"vfd", srv:"srv", iiot:"iiot", scada:"scada", panel:"panel", maint:"maint", srvm:"srvm" };
+  var PRODUCT_OF = { basics:"basics", classic:"classic", safety:"safety", instr:"instr", plc:"plc", drw:"drw", vfdc:"vfd", srv:"srv", iiot:"iiot", scada:"scada", panel:"panel", maint:"maint", srvm:"srvm", mech:"mech" };
   var PR = null, ME, priceHooks = [];
   function curName(){ return EN ? EN.currency : ((window.SITE || {}).pay || {}).currency || "جنيه"; }
   function fmtN(n){ return String(Math.round(n * 100) / 100); }
@@ -486,7 +495,8 @@
     scada:{ ac:"#e879d4", ar:"SCADA و HMI", en:"SCADA & HMI" },
     panel:{ ac:"#e0955c", ar:"تصميم اللوحات الكهربية", en:"Electrical Panel Design" },
     maint:{ ac:"#b4d65a", ar:"صيانة المحركات والمحولات", en:"Motor & Transformer Maintenance" },
-    srvm:{ ac:"#8b8fff", ar:"صيانة محركات السيرفو", en:"Servo Motor & Drive Maintenance" }
+    srvm:{ ac:"#8b8fff", ar:"صيانة محركات السيرفو", en:"Servo Motor & Drive Maintenance" },
+    mech:{ ac:"#ffb03a", ar:"أساسيات الميكانيكا", en:"Mechanics Basics" }
   };
   var CVV = "p16";
   function coverHtml(l, toc){
