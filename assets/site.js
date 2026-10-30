@@ -20,6 +20,12 @@
       guided:11, exercises:11, params:0, faults:0,
       inside:["السرعة والعجلة والسقوط والمقذوفات", "قوانين نيوتن والاحتكاك والطاقة والقدرة", "العزم والتروس والضغط والهيدروليك", "مشروع: تحسب موتور ونش"],
       tags:"mech mechanics physics ميكانيكا الميكانيكا فيزيا فيزياء أساسيات الميكانيكا مبتدئين beginner units وحدات vectors متجهات speed سرعة acceleration عجلة تسارع free fall سقوط حر projectile مقذوفات newton نيوتن force قوة mass كتلة weight وزن friction احتكاك ramp منحدر سطح مائل work شغل energy طاقة power قدرة kw hp حصان efficiency كفاءة momentum كمية الحركة collision تصادم torque عزم lever رافعة balance اتزان rpm rotation دوران gears تروس gearbox علبة تروس pressure ضغط hydraulic هيدروليك pascal باسكال jack كريك winch ونش motor sizing اختيار موتور" },
+    { id:"mfit", path:"mfit-lab/index.html", group:"mfit", brand:"كورس", brandKey:"beginner",
+      name:"ميكانيكا المكن العملية", kind:"عملي للصيانة", disp:"85 N·m", dispClass:"lcd", rtlName:true,
+      line:"اللي الفني بيعمله بإيده: يربط بالعزم الصح، يركّب رولمان وسيل، يظبط محاذاة، يشد سير وجنزير، ويشحّم بالكمية الصح.",
+      guided:15, exercises:15, params:0, faults:4,
+      inside:["المسامير وعزم الربط والخوابير", "الكوبلنجات والمحاذاة بالشيمز", "الرولمان والأورنج والسيل", "التروس والجيربوكس والسيور والجنازير والتشحيم"],
+      tags:"mfit machine mechanics practical fitter maintenance ميكانيكا المكن عملي صيانة ميكانيكية فني ميكانيكا bolts مسامير صواميل torque عزم ربط مفتاح عزم flange فلانشة keys خابور خوابير taper lock جلبة circlip سيركلبس coupling كوبلنج alignment محاذاة شيمز soft foot bearing رولمان بلي 6205 o-ring اورنج oring seal سيل مانع تسريب gear تروس gearbox جيربوكس oil زيت belt سير بكرة chain جنزير سبروكت grease شحم تشحيم تزييت vibration اهتزاز" },
     { id:"classic", path:"classic-control-lab/index.html", group:"classic", brand:"كورس", brandKey:"basics",
       name:"كورس الكلاسيك كنترول", kind:"كلاسيك كنترول", disp:"START", dispClass:"grn", rtlName:true,
       line:"توصّل دواير الكونتاكتور والموتور بإيدك سلك سلك، والكورس يصحّحلك.",
@@ -228,6 +234,7 @@
   var GROUPS = [
     { key:"basics", title:"أساسيات الكهربا", sub:"للمبتدئين خالص · قبل الكلاسيك", land:"courses/basics.html" },
     { key:"mech", title:"أساسيات الميكانيكا", sub:"للمبتدئين · الحركة والقوة والطاقة والعزم", land:"courses/mech.html" },
+    { key:"mfit", title:"ميكانيكا المكن العملية", sub:"مسامير وعزم · كوبلنج ومحاذاة · رولمان وسيل · تروس وسيور · تشحيم", land:"courses/mfit.html" },
     { id:"clm223", path:"clm223-lab/index.html", group:"temp", brand:"Endress+Hauser", brandKey:"eh",
       name:"Liquisys M", kind:"قياس Conductivity", disp:"1.238 <span class=\"sv\">mS</span>", dispClass:"lcd", html:true,
       line:"محوّل قياس توصيلية المياه من Endress+Hauser، بدرس كامل ومحاكي على برج تبريد.",
@@ -250,6 +257,8 @@
   /* محتوى كل كورس بالترتيب (عناوين الدروس) — بيظهر على كارت الكورس في الكتالوج وعلى الغلاف (assets/courses/covers/).
      لو غيّرت عنوان درس أو زوّدت درس: عدّله هنا وفي toc في assets/i18n-en.js */
   var TOC = {
+    mfit: { n:"15 درس", x:["15 تمرين ورشة", "امتحان وشهادة"],
+      l:["خط نقل الحركة", "المسامير والصواميل", "عزم الربط وترتيب الربط", "الخوابير والجلب", "الكوبلنجات", "محاذاة الأعمدة", "أرقام الرولمان", "فك وتركيب الرولمان", "الأورنج والسيل", "التروس ونسبة التخفيض", "الجيربوكس وزيته", "السيور والبكر", "الجنازير والسبروكت", "التشحيم والتزييت", "تشخيص الأعطال + الامتحان"] },
     mech: { n:"11 درس", x:["11 لعبة تفاعلية", "امتحان وشهادة"],
       l:["الكميات والوحدات والمتجهات", "السرعة والعجلة", "السقوط الحر والمقذوفات", "القوة وقوانين نيوتن", "الوزن والاحتكاك والسطح المائل", "الشغل والطاقة والقدرة", "كمية الحركة والتصادم", "العزم والروافع والاتزان", "الحركة الدائرية والتروس", "الضغط والهيدروليك", "مشروع موتور الونش + الامتحان"] },
     basics: { n:"13 درس", x:["أفوميتر تفاعلي", "امتحان وشهادة"],
@@ -336,7 +345,7 @@
   /* ---------- أسعار الكورسات (من «الأسعار» في لوحة الإدارة، /api/prices) ----------
      كارت كل كورس في الكتالوج وصفحة كل كورس في courses/ بتظهر السعر لو متحدد، وزرار «اشتري الكورس».
      اللي اشترى الكورس بيشوف «اشتريته ✓». */
-  var PRODUCT_OF = { basics:"basics", classic:"classic", safety:"safety", instr:"instr", plc:"plc", drw:"drw", vfdc:"vfd", srv:"srv", iiot:"iiot", scada:"scada", panel:"panel", maint:"maint", srvm:"srvm", mech:"mech" };
+  var PRODUCT_OF = { basics:"basics", classic:"classic", safety:"safety", instr:"instr", plc:"plc", drw:"drw", vfdc:"vfd", srv:"srv", iiot:"iiot", scada:"scada", panel:"panel", maint:"maint", srvm:"srvm", mech:"mech", mfit:"mfit" };
   var PR = null, ME, priceHooks = [];
   function curName(){ return EN ? EN.currency : ((window.SITE || {}).pay || {}).currency || "جنيه"; }
   function fmtN(n){ return String(Math.round(n * 100) / 100); }
@@ -496,7 +505,8 @@
     panel:{ ac:"#e0955c", ar:"تصميم اللوحات الكهربية", en:"Electrical Panel Design" },
     maint:{ ac:"#b4d65a", ar:"صيانة المحركات والمحولات", en:"Motor & Transformer Maintenance" },
     srvm:{ ac:"#8b8fff", ar:"صيانة محركات السيرفو", en:"Servo Motor & Drive Maintenance" },
-    mech:{ ac:"#ffb03a", ar:"أساسيات الميكانيكا", en:"Mechanics Basics" }
+    mech:{ ac:"#ffb03a", ar:"أساسيات الميكانيكا", en:"Mechanics Basics" },
+    mfit:{ ac:"#2dd4bf", ar:"ميكانيكا المكن العملية", en:"Practical Machine Mechanics" }
   };
   var CVV = "p16";
   function coverHtml(l, toc){

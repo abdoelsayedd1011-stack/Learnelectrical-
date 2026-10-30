@@ -9,7 +9,7 @@
     "basics-lab": ["basics-lab-v1", "BL"], "classic-control-lab": ["classic-lab-v1", "CL"], "instrumentation-lab": ["instr-lab-v1", "IL"],
     "plc-lab": ["plc-lab-v1", "PL"], "drawings-lab": ["drw-lab-v1", "DR"], "vfd-course": ["vfdc-lab-v1", "VF"], "servo-course": ["srvc-lab-v1", "SV"],
     "iiot-lab": ["iiot-lab-v1", "IL"], "scada-lab": ["scada-lab-v1", "IL"], "panel-lab": ["panel-lab-v1", "IL"], "maint-lab": ["maint-lab-v1", "IL"],
-    "servo-maint-lab": ["srvm-lab-v1", "IL"], "safety-lab": ["safety-lab-v1", "IL"], "mech-lab": ["mech-lab-v1", "IL"]
+    "servo-maint-lab": ["srvm-lab-v1", "IL"], "safety-lab": ["safety-lab-v1", "IL"], "mech-lab": ["mech-lab-v1", "IL"], "mfit-lab": ["mfit-lab-v1", "IL"]
   };
   var m = /^\/(en\/)?([^/]+)\/(?:lesson-(\d+)\.html|index\.html)?$/.exec(location.pathname);
   if (!m || !DIRS[m[2]]) return;

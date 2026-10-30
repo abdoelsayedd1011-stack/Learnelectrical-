@@ -27,7 +27,8 @@
     panel:   { key: "panel-lab-v1",   src: "panel-lab/panel.js",            list: "IL.COURSE" },
     maint:   { key: "maint-lab-v1",   src: "maint-lab/maint.js",            list: "IL.COURSE" },
     srvm:    { key: "srvm-lab-v1",    src: "servo-maint-lab/srvm.js",       list: "IL.COURSE" },
-    mech:    { key: "mech-lab-v1",    src: "mech-lab/mech.js",              list: "IL.COURSE" }
+    mech:    { key: "mech-lab-v1",    src: "mech-lab/mech.js",              list: "IL.COURSE" },
+    mfit:    { key: "mfit-lab-v1",    src: "mfit-lab/mfit.js",              list: "IL.COURSE" }
   };
   // basics / instr / plc / drw: `{id:'l1', … tasks:[['ohm','…'],…]}` → "l1/ohm" في state.done
   function parseTasks(src, list){
