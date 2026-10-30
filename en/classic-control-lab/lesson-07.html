@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="/en/classic-control-lab/fx.css?v=20261030r1">
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -201,14 +202,12 @@ CL.lesson({
   {id:'press', icon:'press', title:'The pressure switch', goal:'A contact operated by pressure: <b>RANGE</b> is the cut-out pressure and <b>DIFF</b> the difference before it cuts back in. With it you control a compressor or a pressure pump without anyone watching the gauge.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p><b>A pressure switch</b> is a switch that closes and opens a contact according to the <b>pressure</b> coming into it from a pipe. Inside it is a <b>diaphragm</b> (a rubber membrane) or a <b>piston</b> pushing against a <b>spring</b>: when the pressure overcomes the spring, the mechanism snaps over and flips the contact.</p>
-     <div class="box key"><ul>
-      <li><b>RANGE (the main setting)</b>: the pressure at which the contact flips on the way up. On a compressor = the cut-out pressure (e.g. 8 bar). Set with a large screw or wheel.</li>
-      <li><b>DIFF (the differential / hysteresis)</b>: the difference between the cut-out pressure and the cut-in pressure. 8 bar cut-out with DIFF = 2 bar means it starts again at 6 bar. If DIFF is small the compressor switches on and off constantly (chattering) and wears out, along with the contactor.</li>
-      <li><b>The contact</b>: usually <b>changeover (CO)</b>: common + NC + NO. In the compressor circuit we use <b>NC (21-22)</b>: closed while the pressure is low so the compressor runs, and it opens when the pressure is reached.</li>
-      <li><b>Types</b>: mechanical (spring) for air, water and oil, and electronic with a display (pressure sensor/switch) that also gives a contact and a 4–20 mA signal. There's also a <b>differential pressure switch</b> that measures the difference between two points (a clogged filter).</li>
-      <li><b>Where you'll find it</b>: air compressors, booster pumps in buildings, hydraulics, and protecting a pump against loss of pressure.</li></ul></div>
-     <p><b>An important difference:</b> the pressure switch <b>controls</b> the pressure (a compressor stops at 8 bar), while the <b>safety valve</b> is mechanical and opens if the pressure exceeds the danger limit in case the switch fails. Both must be present.</p>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">🧭</span><span>A pressure switch flips its contact <b>based on pressure</b>.</span></p>
+     <div class="rule2"><div><span class="big">8 bar</span><b>RANGE</b><span class="mono">cut-out pressure</span></div><div><span class="big">2 bar</span><b>DIFF</b><span class="mono">cuts back in at 6 bar</span></div></div>
+     <ul class="fx"><li><b>Compressor</b><span><span class="nc">NC 21-22</span>: runs at low pressure, opens when reached</span></li><li><b>DIFF too small</b><span>short-cycles and wears out</span></li></ul>
+     <p class="alert">The pressure switch controls; the <b>safety valve</b> protects if it fails. You need both.</p>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'A mechanical pressure switch on an air tank', dev:PS(0.8, 0.2, {lvl0:0.5}), nema:['pressNO','pressNC'], cap:'The pipe comes in from below onto the diaphragm, with the spring above it, the RANGE wheel (blue) and the DIFF screw (red). The contact is on the side with its terminals. In IEC the symbol is a contact with a half circle on it (the diaphragm); in NEMA the same idea with a half circle under the contact.'},
       {title:'The same switch with the pressure at the set point', dev:PS(0.8, 0.2, {lvl0:0.85, a0:1}), nema:['pressNC'], cap:'The diaphragm pushed the spring and the contact flipped: NC opened and NO closed. It returns when the pressure drops below (RANGE − DIFF).'}]},
@@ -224,15 +223,12 @@ CL.lesson({
   {id:'float', icon:'float', title:'Float and level switches', goal:'A contact operated by the <b>liquid level</b>. One float = simple control, two floats (the lower starts, the upper stops) = a large hysteresis, and a dry-run float protects the pump.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p><b>An electric float switch</b> is a plastic ball or pear hanging on a cable, with a <b>metal ball</b> inside (or mercury in the old days) that rolls onto a contact. When the water lifts it and tips it over, the ball rolls and flips the contact. The length of cable you hang it by sets the level difference between “floating” and “hanging”.</p>
-     <div class="box key"><ul>
-      <li><b>The contact</b>: in most floats a changeover (common + NO + NC) or just two wires. On the board: <b>13-14</b> closes when it floats, and <b>21-22</b> opens when it floats.</li>
-      <li><b>Filling a tank</b>: the pump runs while the level is low and stops when it rises → the upper float's <b>NC</b> contact in the coil line.</li>
-      <li><b>Emptying (a sump)</b>: the pump runs when the level rises and stops when it drops → an <b>NO</b> contact.</li>
-      <li><b>Two floats + a seal-in</b>: the lower starts and the upper stops, and the gap between them is the hysteresis. The pump doesn't switch on and off with every little wave.</li>
-      <li><b>Dry-run protection</b>: a float in the suction tank (or a flow switch, or a current relay): if the water runs out the pump stops. A pump running dry burns within minutes.</li>
-      <li><b>Alternatives</b>: <b>level electrodes</b> (3 metal probes + a level relay: they use the conductivity of the water itself, no moving parts), <b>ultrasonic</b>, <b>capacitive</b> on the tank wall, and a <b>magnetic float rod</b> for clean liquids.</li></ul></div>
-     <p><b>Careful</b>: a float that runs a 3-phase pump never carries the motor current: it only drives the <b>contactor coil</b>. And water conducts electricity: the tank float needs its own proper cable, and a low voltage if the tank is open.</p>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">🛟</span><span>The float tips with the water → <b>the contact flips</b>.</span></p>
+     <div class="vs"><div class="side"><span class="ic">⬆️</span><b>Fill a tank</b><span>upper float <span class="nc">NC</span> in the coil line</span></div><i>×</i><div class="side"><span class="ic">⬇️</span><b>Empty a sump</b><span><span class="no">NO</span></span></div></div>
+     <ul class="fx"><li><b>Two floats + latch</b><span>low starts, high stops</span></li><li><b>Dry-run protection</b><span>water gone → pump stops</span></li><li><b>Alternatives</b><span>electrodes, ultrasonic, capacitive</span></li></ul>
+     <p class="alert">The float switches the <b>contactor coil</b> only, never the motor.</p>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'Electric float hanging down (level below)', dev:FL(0.8, 0.05, {lvl0:0.3}), nema:['floatNO','floatNC'], cap:'The pear hangs by its cable from above, and the ball inside is on the side away from the contact. In IEC the symbol is a contact with a small circle (the float); in NEMA the contact with a lever and ball beneath it.'},
       {title:'The same float floating (level reached)', dev:FL(0.8, 0.05, {lvl0:0.9, a0:1}), nema:['floatNC'], cap:'The water lifted it and tipped it over, the ball rolled and flipped the contact: 13-14 closed and 21-22 opened.'}]},
@@ -249,17 +245,14 @@ CL.lesson({
   {id:'sensor', icon:'sensor', title:'PNP / NPN proximity sensors', goal:'A 3-wire sensor that detects an object without touching it. <b>BN</b> +24V, <b>BU</b> 0V, <b>BK</b> the output. <b>PNP</b> gives +24V, <b>NPN</b> gives 0V. And the load is placed according to the type.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p><b>A proximity sensor</b> detects an object near it <b>without touching it</b> and outputs an electrical signal. It has no moving parts, so it doesn't wear out like a limit switch and works millions of times.</p>
-     <div class="box key"><ul>
-      <li><b>Inductive</b>: detects <b>metals only</b> (a coil produces a field, and metal changes it). Short range: 2–15 mm depending on size (M8, M12, M18, M30). The most common on machines.</li>
-      <li><b>Capacitive</b>: detects any material (metal, plastic, water, grain) because it senses a change in capacitance. Its range is a bit longer and it has a sensitivity adjustment screw. Used for grain and liquid levels through a plastic wall.</li>
-      <li><b>The wires (IEC 60947-5-2)</b>: <b>BN brown = +24V</b>, <b>BU blue = 0V</b>, <b>BK black = the output</b>. With 4 wires there's a <b>WH white</b>, a second inverted output.</li>
-      <li><b>PNP (sourcing)</b>: when it senses, the BK output is connected to <b>+24V</b>. The load (relay / PLC input) goes <b>between BK and 0V</b>. The most common in Egypt and Europe.</li>
-      <li><b>NPN (sinking)</b>: when it senses, the BK output is connected to <b>0V</b>. The load goes <b>between +24V and BK</b>. Common in Japan and Asia.</li>
-      <li><b>NO / NC</b>: NO turns its output on when it senses; NC has its output on while nothing is there and cuts it when it senses (a safety limit).</li>
-      <li><b>Sn (nominal range)</b> and <b>Sr</b>: the range on standard steel. On copper and aluminium the range is shorter (a correction factor of 0.3–0.5).</li>
-      <li><b>It can't carry a large load</b>: the output is only 100–200 mA. That's why we put a <b>24V relay</b> in between if we're driving a 230V contactor.</li></ul></div>
-     <p><b>The most common mistake:</b> wiring an NPN as if it were a PNP (or the other way round): the sensor's LED lights and it senses, but the relay never pulls in because both its ends are at the same voltage. You'll do it with your own hands in the exercise.</p>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">📡</span><span>A proximity sensor detects <b>without touching</b>.</span></p>
+     <div class="vs"><div class="side"><b>Inductive</b><span>metal only · 2–15 mm</span></div><i>×</i><div class="side"><b>Capacitive</b><span>any material · adjustable</span></div></div>
+     <div class="tiles"><div class="tile"><b>BN brown</b><span class="mono">+24V</span></div><div class="tile"><b>BU blue</b><span class="mono">0V</span></div><div class="tile"><b>BK black</b><span>output</span></div></div>
+     <div class="vs"><div class="side"><span class="big">PNP</span><b>BK → +24V</b><span>load between BK and 0V</span></div><i>×</i><div class="side"><span class="big">NPN</span><b>BK → 0V</b><span>load between +24V and BK</span></div></div>
+     <p class="tip">Output is only 100–200 mA → use a 24V interposing relay for a contactor.</p>
+     <p class="alert">NPN wired as PNP: its LED lights but the relay <b>never pulls in</b>.</p>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'Inductive sensor M18 PNP NO with a metal object', dev:PX('ind', true, false), nema:['proxNO'], cap:'A threaded cylindrical body with adjusting nuts, the sensing face at the front (yellow = inductive), an LED that lights when it senses, and a 3-wire cable BN/BK/BU. In IEC the sensor symbol is a tilted square (a rhombus) with the induction symbol and the contact beside it; in NEMA the contact with a rhombus under it.'},
       {title:'Capacitive sensor NPN NC', dev:PX('cap', false, true), nema:['proxNC'], cap:'A blue sensing face and the sensitivity screw at the back. NPN NC: the BK output is at 0V while nothing is there, and it cuts when it senses.'}]},
@@ -277,15 +270,13 @@ CL.lesson({
   {id:'photo', icon:'photo', title:'The photocell', goal:'A light sensor: an <b>emitter</b> and a <b>receiver</b>; when an object breaks the beam (or reflects it) the output changes. Long range and detects any material. The same 3-wire PNP/NPN wiring.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p><b>A photoelectric sensor (photocell)</b> has an <b>emitter</b> that sends a beam (red or infrared) and a <b>receiver</b> that sees it. The object breaks the beam or reflects it, and the output changes. Its range is from centimetres to tens of metres, and it detects any material whatsoever.</p>
-     <div class="box key"><ul>
-      <li><b>Through-beam</b>: the emitter on one side and the receiver on the other. The longest range and most accurate, but two devices and wiring on both sides. Lift and garage doors.</li>
-      <li><b>Retro-reflective</b>: the emitter and receiver in one body, with a <b>reflector</b> facing them. The object breaks the returning beam. Easy to install, range 5–10 m.</li>
-      <li><b>Diffuse</b>: one body, and the beam bounces off <b>the object itself</b>. Short range (up to a metre) and affected by the object's colour. The easiest to install.</li>
-      <li><b>Light-on / Dark-on</b>: light-on = the output is on when the beam arrives, dark-on = the output is on when the beam is broken. Selected with a switch on the cell. In the exercise our cell is dark-on NO: it gives an output when the carton breaks the beam.</li>
-      <li><b>Wiring</b>: the same as the sensors: BN +24V, BU 0V, BK the output, PNP or NPN.</li>
-      <li><b>Common problems</b>: dust on the lens, direct sunlight on the receiver, shiny or transparent objects (need a special cell), and a misaligned reflector.</li></ul></div>
-     <p><b>On a conveyor:</b> the photocell counts cartons, or stops the conveyor when the carton reaches the filling point, or protects hands on machines (a light curtain, which is a safety category with its own rules).</p>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">🔦</span><span>Photocell: emitter + receiver; the object <b>breaks the beam</b>.</span></p>
+     <div class="tiles"><div class="tile"><b>Through-beam</b><span>two units · longest range</span></div><div class="tile"><b>Retro-reflective</b><span>reflector · 5–10 m</span></div><div class="tile"><b>Diffuse</b><span>off the object · up to 1 m</span></div></div>
+     <div class="vs"><div class="side"><b>Light-on</b><span>output when beam arrives</span></div><i>×</i><div class="side"><b>Dark-on</b><span>output when beam is broken</span></div></div>
+     <p class="tip">Wired like a sensor: BN, BU, BK.</p>
+     <p class="alert">Not working? Dusty lens, sunlight, shiny object, or misaligned reflector.</p>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'Retro-reflective photocell PNP', dev:PX('photo', true, false), nema:['proxNO'], cap:'The black body has the two lenses (emitter and receiver), with the white reflector in front of it. The red dashed beam goes out and comes back. An LED lights with the output. In IEC the symbol is a rhombus with two light arrows; NEMA has no special symbol for the photocell, so the proximity sensor symbol is used.'},
       {title:'The carton broke the beam', dev:PX('photo', true, false, {a0:1}), nema:['proxNO'], cap:'The beam isn\'t returning to the receiver: the cell (dark-on NO) gives +24V on BK.'}]},

@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="/en/classic-control-lab/fx.css?v=20261030r1">
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -454,14 +455,12 @@ CL.lesson({
   {id:'cond', icon:'hold', title:'A motor conditional on another motor (practicals 5–8)', goal:'An auxiliary contact of the first motor\'s contactor in the second motor\'s line: <b>NO 23-24</b> means “only if the first is running”, and <b>NC 21-22</b> means “only if the first is stopped”. With them you build sequences of 2 and 3 motors.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p>Until now each motor ran on its own. In factories there's very often a <b>condition</b>: the pump must not run unless the cooling fan is running, or the crusher must not run unless the conveyor after it is running (so the material doesn't pile up). This condition is made with an <b>auxiliary contact</b> of the first motor's contactor, placed <b>in series</b> in the second motor's coil line.</p>
-     <div class="box key"><ul>
-      <li><b>Only if the first is running (practicals 5 and 6)</b>: KM1's <b>NO (23-24)</b> contact at the start of M2's line. While KM1 is stopped the contact is open, so M2's line is cut. KM1 pulled in? The contact closed and M2 can now start. And if KM1 drops out, the contact opens and M2 drops out with it, even if it was sealed in.</li>
-      <li><b>Only if the first is stopped (practicals 7 and 8)</b>: KM1's <b>NC (21-22)</b> contact in M2's line. M1 stopped = contact closed = M2 allowed. M1 started = contact opened = M2 drops out. Like two motors that must not run together on the same supply.</li>
-      <li><b>The chain (practical 6)</b>: 3 motors, each conditional on the one before: M2 on KM1's NO, and M3 on KM2's NO. If M1 stops, M2 drops out, and M3 drops out after it. This is called a <b>sequence</b>.</li>
-      <li><b>The numbers</b>: the contactor comes with 13-14 NO (we use it for the seal-in), and if you want more contacts you fit an <b>auxiliary block</b> on top: 23-24 NO, 21-22 NC, 33-34 NO… the first digit is a counter and the second the type (3-4 NO, 1-2 NC).</li>
-      <li><b>Each motor has its own STOP and START</b> + a “running” lamp on the contactor's A1: the lamp lights exactly with the coil.</li></ul></div>
-     <p><b>Be careful:</b> the condition must be in the <b>coil</b> line, not in the power circuit. If you put the contact in the seal-in line only, the button will run M2 for a moment while it's pressed even if the condition isn't met.</p>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">🔗</span><span>A condition = an <b>auxiliary contact</b> of KM1 in KM2's coil line.</span></p>
+     <div class="vs"><div class="side"><span class="no">NO 23-24</span><b>Only if the first runs</b><span>KM1 drops → M2 drops</span></div><i>×</i><div class="side"><span class="nc">NC 21-22</span><b>Only if the first is stopped</b><span>M1 starts → M2 drops</span></div></div>
+     <ol class="steps"><li>M1</li><li>M2 on KM1's NO</li><li>M3 on KM2's NO</li></ol>
+     <p class="alert">The condition goes in the <b>coil</b> line, not only the holding branch.</p>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'Contactor with an auxiliary block NO + NO (23-24 and 33-34)', dev:KM('KM1', ['NO','NO']), art:'contactorArt', nema:[{k:'coil', opt:{letter:'M'}}, 'mNO3', 'crNO'], cap:'On top of the contactor is an auxiliary block with two contacts: the first, 13-14, for the seal-in, and the second, 23-24, for the condition. They move with the coil: coil pulled in = both closed.'},
       {title:'Contactor with an NO + NC block (23-24 and 21-22)', dev:KM('KM1', ['NO','NC']), art:'contactorArt', nema:[{k:'coil', opt:{letter:'M'}}, 'crNO', 'crNC'], cap:'The NC 21-22 is closed while the contactor is off and opens when it pulls in. That\'s what makes “only if the first is stopped”, and it\'s the same as the interlock contact in reversing.'},
@@ -481,14 +480,12 @@ CL.lesson({
   {id:'jog', icon:'pb', title:'Jogging with a double button (practical 9)', goal:'Momentary running: the motor runs only while you hold the button. A <b>double NO + NC button</b>: the NO energises the coil and the NC <b>breaks the seal-in line</b> while you press, so there\'s no seal-in.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p><b>Jog (inching)</b> means running the motor in short bursts while you hold a button, and as soon as you release it, it stops. You need it to set up a machine: move a conveyor a little, turn a lathe spindle until the workpiece is in position, or check the direction of rotation after installation.</p>
-     <div class="box key"><ul>
-      <li><b>The problem</b>: the normal Start/Stop circuit has a <b>seal-in</b> (KM1 13-14 in parallel with START). If you just put a JOG button in parallel with START, as soon as you press it the contactor seals itself in exactly like START, and won't stop when you release it.</li>
-      <li><b>The solution</b>: a <b>double</b> JOG button: an NO block (13-14) and an NC block (21-22) on the same button. The NO, in parallel with START, energises the coil. And the NC goes <b>in series with the seal-in contact</b>: KM1 13 → 14 → JOG 21 → 22 → the coil.</li>
-      <li><b>While you press</b>: the NO is closed so the coil pulls in, but the NC is open so the seal-in is cut. <b>When you release</b>: the NO opens and the NC closes again, but the contactor has already dropped out (the button is <b>break-before-make</b>: the NC opens before the NO closes, and returns after it).</li>
-      <li><b>START</b> still works normally: START's NO energises the coil, and the seal-in through JOG's NC (closed because you're not pressing JOG) holds it.</li>
-      <li><b>The “running” lamp</b> from A1, and the <b>“stopped” lamp</b> on the contactor's NC (21-22): it lights when the contactor is off.</li></ul></div>
-     <p><b>In reality</b>: the double button is the same head with two blocks (NO and NC) side by side beneath it. Some panels do jogging with a <b>Run/Jog selector</b> instead of a double button: in the Jog position it cuts the seal-in line.</p>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">👆</span><span>Jog: <b>runs while held</b>, stops on release.</span></p>
+     <ul class="fx"><li><b><span class="no">JOG NO</span></b><span>parallel with START → energizes the coil</span></li><li><b><span class="nc">JOG NC</span></b><span>series with the holding contact → breaks it</span></li></ul>
+     <p class="alert">JOG with NO only = it latches like START <b>and won't stop</b>.</p>
+     <p class="tip">Alternative: a Run/Jog selector that breaks the holding line.</p>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'Double button: NO block (13-14) + NC block (21-22)', dev:PB('S2', 'black', 'JOG', true), nema:['pbNO', 'pbNC'], cap:'One head moves both blocks together. In the symbol, the dashed line between the two contacts means “they move together”.'},
       {title:'Practical 9: Start/Stop + Jog', dev:G, art:schem('e9'), noSym:true, cap:'JOG NO in parallel with START. Seal-in contact KM1 13-14 passes through JOG NC 21-22 before reaching the coil. The “stopped” lamp on KM1 21-22.'},
@@ -505,15 +502,12 @@ CL.lesson({
   {id:'rev', icon:'cycle', title:'Reversing, interlocks and limit switches (practicals 10–12)', goal:'Two contactors on the same motor, the second swapping two phases. You need an <b>electrical interlock</b> (each contactor\'s NC in the other\'s line) and a <b>mechanical interlock</b>; without them both can pull in together = <b>a short circuit between two phases</b>. And with an NC limit switch in each direction it becomes a hoist.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p>A 3-phase motor reverses when you swap <b>any two phases</b> (lesson 6). In a panel we do this with <b>two contactors</b>: KM1 connects L1 L2 L3 to U V W, and KM2 connects L3 L2 L1 (first and third swapped). Both have their outputs on the same motor (through the same overload).</p>
-     <div class="box"><p><b>The danger:</b> if KM1 and KM2 pull in at the same moment, KM1 puts L1 on U and KM2 puts L3 on the same U: <b>a direct short circuit between L1 and L3</b>. The breaker trips if it's fast enough, or the contactors weld. That's why a reversing circuit without an interlock is <b>a forbidden mistake</b>.</p></div>
-     <div class="box key"><ul>
-      <li><b>The electrical interlock</b>: KM2's <b>NC (21-22)</b> contact in KM1's coil line, and KM1's NC in KM2's coil line. KM1 pulled in? Its NC is open, so KM2's line is cut even if you press its button.</li>
-      <li><b>The mechanical interlock</b>: a part fitted between the two contactors (a lever): if one pulls in, it physically locks the other. It's used together with the electrical one, because the electrical one fails if a contact welds.</li>
-      <li><b>Practical 10</b>: a forward button, a reverse button and STOP. To reverse you must press STOP first.</li>
-      <li><b>Practical 11 (hoist)</b>: the same circuit + an <b>NC limit switch</b> in each line: the “top” limit in the “Up” line and the “bottom” limit in the “Down” line. When the hoist reaches the end of travel the limit opens and stops it, and it can still go the other way.</li>
-      <li><b>Practical 12 (direct reversing)</b>: both buttons are <b>double</b>: the “Reverse” button's NC in KM1's line and vice versa. You press “Reverse” while the motor turns forward: the NC cuts KM1 first, then the NO energises KM2 (break-before-make). On a large motor this is violent, so a pause timer is added.</li>
-      <li><b>Lamps</b>: a lamp for each direction on each contactor's A1.</li></ul></div>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">🔄</span><span>Reversing = <b>two contactors</b> with two phases swapped.</span></p>
+     <div class="vs"><div class="side"><b>KM1</b><span class="term">L1 L2 L3</span><span>forward</span></div><i>×</i><div class="side"><b>KM2</b><span class="term">L3 L2 L1</span><span>reverse</span></div></div>
+     <p class="alert">Both at once = <b>short between L1 and L3</b>.</p>
+     <ul class="fx"><li><b>Electrical interlock</b><span>each one's NC in the other's line</span></li><li><b>Mechanical interlock</b><span>in case a contact welds</span></li><li><b>Exercise 10</b><span>STOP before reversing</span></li><li><b>Exercise 11 hoist</b><span>NC limit in each direction</span></li><li><b>Exercise 12</b><span>double buttons: direct reversal</span></li></ul>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'The mechanical interlock between the two contactors', dev:KM('KM1', ['NO','NC'], 'contactor', {mech:'KM2'}), art:() => CL.art.mechInterlock({on:1}), noSym:true, cap:'KM1 pulled in: the lever tilted and locked KM2 mechanically. The part is fitted between the two contactors on the rail.'},
       {title:'Practical 10: forward/reverse with an electrical interlock', dev:G, art:schem('e10'), noSym:true, cap:'Each line: the button in parallel with the seal-in → the other contactor\'s NC → the coil. Overload 95-96 and STOP are in the common line.'},
@@ -532,15 +526,12 @@ CL.lesson({
   {id:'lathe', icon:'motor', title:'The lathe with 4 contactors (practical 13)', goal:'Two reversing circuits side by side: the turning motor forward/reverse (KM1/KM2) and the height motor up/down (KM3/KM4), each pair with its interlock, and <b>one STOP</b> for the whole machine. The biggest panel in the simulator: 63 wires.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p>A lathe has a <b>spindle</b> that turns the workpiece forward or reverse, and a <b>tool carrier</b> that moves up and down to set the depth of cut. Each movement is a motor, and each motor needs two directions: that's <b>4 contactors</b> and <b>two motors</b>.</p>
-     <div class="box key"><ul>
-      <li><b>The first pair</b>: KM1 (turn forward) and KM2 (turn reverse) on M1, with an electrical + mechanical interlock between them and a button for each direction.</li>
-      <li><b>The second pair</b>: KM3 (up) and KM4 (down) on M2, the same way.</li>
-      <li><b>The two pairs are independent</b>: you can turn and raise the tool at the same time. There's no condition between them.</li>
-      <li><b>One STOP</b> in the common line before the L bar: it stops all four contactors together. On a real machine this is a red mushroom-head <b>emergency</b> button.</li>
-      <li><b>Power</b>: one Q1 feeds both pairs (jumpers from KM1's top terminals to KM2, and from KM3 to KM4). Each pair's outputs go to its motor, the second with two phases swapped.</li>
-      <li><b>4 lamps</b>: a lamp for each movement on its contactor's A1.</li></ul></div>
-     <p><b>Wiring tip</b>: work <b>pair by pair</b>: M1's power and control, test it, then M2. And on a panel this big, the terminal block (L bar and N bar) is what keeps the work tidy: each line takes a point from the bar.</p>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">🛠️</span><span>The lathe = <b>two motors × two directions</b> = 4 contactors.</span></p>
+     <div class="vs"><div class="side"><b>M1 spindle</b><span>KM1 fwd · KM2 rev</span></div><i>+</i><div class="side"><b>M2 tool post</b><span>KM3 up · KM4 down</span></div></div>
+     <ul class="fx"><li><b>Each pair</b><span>electrical + mechanical interlock</span></li><li><b>The two pairs</b><span>independent, no condition</span></li><li><b>One STOP</b><span>before the L bar → stops all four</span></li></ul>
+     <p class="tip">Wire <b>one pair at a time</b>: M1 and test, then M2.</p>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'Practical 13: a lathe (4 contactors, two motors, one STOP)', dev:G, art:schem('e13'), noSym:true, cap:'Four control lines on the same L bar after STOP: each line is a button in parallel with the seal-in → the opposite contactor\'s NC → the coil → its lamp.'},
       {title:'Contactor with a mechanical interlock (KM3/KM4 pair)', dev:KM('KM3', ['NO','NC'], 'contactor', {mech:'KM4'}), art:() => CL.art.mechInterlock({on:2}), noSym:true, cap:'Each pair has its own interlock part. The two pairs are separate from each other.'}]},

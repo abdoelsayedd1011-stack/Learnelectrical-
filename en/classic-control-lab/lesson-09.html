@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="/en/classic-control-lab/fx.css?v=20261030r1">
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -461,15 +462,14 @@ CL.lesson({
   {id:'sd', icon:'tbox', title:'Automatic and manual star/delta', goal:'3 contactors: KM1 main, KM2 star, KM3 delta, and a Y-Δ timer with two contacts <b>17-18</b> and <b>17-28</b>. The motor starts in star (⅓ current) and after the time changes to delta. With the interlock and the correct cross-over in the power circuit.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p>When a motor starts direct-on-line (DOL) it draws <b>6 to 8 times</b> its rated current for a few seconds. A 7.5 kW motor rated at 15 A draws 100 A when starting: the supply dips and the breaker may trip. <b>Star/delta</b> starts the motor in star connection (each winding at 230V instead of 400V), so the starting current is <b>a third</b> (~2×In), and once it's up to speed it changes to delta at full voltage.</p>
-     <div class="box key"><ul>
-      <li><b>When it works</b>: the motor must have <b>6 terminals</b> and its nameplate must say <b>400Δ / 690Y</b> (the delta voltage = the supply voltage). A 230Δ/400Y motor on a 400V supply must always be connected in star, and can't use star/delta.</li>
-      <li><b>The price</b>: the starting torque is also a third. It suits loads that start light (a fan, a centrifugal pump, an unloaded compressor), and not a conveyor that's loaded from the start.</li>
-      <li><b>3 contactors</b>: <b>KM1</b>, the main, connects L1 L2 L3 to U1 V1 W1 through the overload. <b>KM2</b>, star, shorts W2 U2 V2 together (the star point) and no phase goes into it. <b>KM3</b>, delta, brings the phases to W2 U2 V2 with the cross-over: L1 to W2, L2 to U2, L3 to V2.</li>
-      <li><b>The Y-Δ timer</b>: contact <b>17-18</b> is closed from the moment it's powered until the time t (it drives the star), then opens, and <b>50 ms</b> later <b>17-28</b> closes (it drives the delta). The gap is so the arc in KM2 goes out before KM3 closes.</li>
-      <li><b>The KM2 ↔ KM3 interlock</b>: each one's NC in the other's line + a mechanical interlock. If they pull in together: the star point on L1 L2 L3 = a direct short circuit.</li>
-      <li><b>The overload in the winding line</b> (between KM1 and the motor) sees the winding current = the line current ÷ √3, so we set it to <b>In/√3</b> (15 ÷ 1.73 ≈ 8.7 A). If you put it before KM1 in the line, it's set to In.</li></ul></div>
-     <p><b>Manual</b>: the same power circuit, but the changeover is done with two buttons: “Star” starts, and “Delta” (a double button) cuts the star with its NC and starts the delta with its NO. Or a 0-Y-Δ selector. The technician waits for the motor to get up to speed and then changes over.</p>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">⭐</span><span>Start in <b>star</b> (⅓ current) → after t switch to <b>delta</b>.</span></p>
+     <ul class="lsec scale"><li><b>DOL</b><span class="bar"><i style="width:100%"></i><em>6–8×In</em></span></li><li><b>Star/delta</b><span class="bar"><i style="width:30%"></i><em>~2×In</em></span></li></ul>
+     <p class="alert">Needs a <b>6-terminal</b> motor rated 400Δ/690Y. Torque is also ⅓: light starting loads only.</p>
+     <ul class="fx"><li><b>KM1 main</b><span>L1 L2 L3 → U1 V1 W1</span></li><li><b>KM2 star</b><span>shorts W2 U2 V2 together</span></li><li><b>KM3 delta</b><span>L1→W2, L2→U2, L3→V2</span></li></ul>
+     <ol class="steps"><li>17-18: star</li><li class="on">t</li><li>50 ms gap</li><li>17-28: delta</li></ol>
+     <p class="tip">KM2 ↔ KM3 electrical + mechanical interlock. Overload in the winding line → set to <b>In ÷ √3</b>.</p>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'Star/delta timer: 17-18, then 17-28 after a 50 ms gap', dev:SDT, art:'timerArt', nema:['tr', 'notc', 'ncto'], cap:'A1-A2 the coil. 17 the common, 18 closes immediately and opens after t, 28 closes after t + 50 ms. The dial sets t (usually 1–30 seconds).'},
       {title:'Motor terminal box: star and delta', dev:{id:'M1', type:'motor', cfg:{term:6, kW:7.5, In:15, vD:400, vY:690}}, art:() => CL.art.tbox({mode:'D', vD:400, vY:690, sup:400}), noSym:true, cap:'In automatic star/delta there are no jumpers in the box: the six terminals go out to the panel on six wires, and the contactors make the star (KM2) or the delta (KM3).'},
@@ -488,12 +488,13 @@ CL.lesson({
   {id:'br', icon:'motor', title:'Motor braking methods', goal:'When you switch off, the motor keeps coasting for a few seconds. 3 ways to stop it: <b>DC injection</b> with a rectifier, a contactor and a timer, <b>phase reversal (plugging)</b> with a short pulse, and the <b>electromagnetic brake</b>, which closes on springs when the coil de-energises (the hoist).',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p>When a contactor drops out it only cuts the power, not the motion. A motor with a heavy load (a saw, a conveyor, a long shaft) keeps turning for 5–30 seconds. On many machines that's dangerous or a waste of time, so we add <b>braking</b>.</p>
-     <div class="box key"><ul>
-      <li><b>DC injection</b>: after we cut the AC we inject DC (from a rectifier) into two of the motor windings. The DC makes a stationary magnetic field, and the rotor turning inside it has a current induced in it that brakes it. The circuit: braking contactor <b>KM4</b> feeds from an <b>off-delay timer</b> whose coil is in parallel with KM1's coil: 15-18 stays closed for a time t after KM1 drops out, and in the line is <b>KM1's NC</b> so KM4 can't pull in while the motor is running. An NC interlock in both directions is essential: the phase and DC on the same terminal = a short circuit.</li>
-      <li><b>Phase reversal (plugging)</b>: we pull in reverse contactor KM2 for a moment (a 0.5–1 s pulse with an off-delay timer). The reverse torque stops the motor very quickly. The danger: if the pulse is too long the motor starts turning the other way, which is why in practice a <b>zero-speed switch</b> (zero-speed / plugging switch) is fitted on the motor shaft to cut the reversing as soon as it stops. The current during reversing is bigger than the starting current, so it isn't done frequently.</li>
-      <li><b>The electromagnetic brake</b>: a disc on the motor shaft and two jaws with springs. <b>With no voltage the springs keep it closed</b> (spring-applied, fail-safe). When coil A1-A2 gets voltage it releases the brake. We take the coil voltage from <b>a KM1 auxiliary contact</b> (or from the motor terminals with a rectifier inside the motor): the contactor pulls in = the brake releases; it drops out for any reason = the brake closes immediately and the load stays suspended. This is a requirement on hoists and lifts.</li></ul></div>
-     <p><b>Quick comparison</b>: coasting ~6 s · DC under a second (heats the windings) · plugging ~1 s (violent) · mechanical brake instant (the lining wears).</p>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">🛑</span><span>The contactor only cuts power; <b>braking</b> stops the motion.</span></p>
+     <ul class="lsec scale"><li><b>Coasting</b><span class="bar"><i style="width:100%"></i><em>~6 s</em></span></li><li><b>Plugging</b><span class="bar"><i style="width:17%"></i><em>~1 s</em></span></li><li><b>DC</b><span class="bar"><i style="width:12%"></i><em>&lt; 1 s</em></span></li><li><b>Mechanical</b><span class="bar"><i style="width:4%"></i><em>instant</em></span></li></ul>
+     <ul class="fx"><li><b>DC injection</b><span>KM4 from an off-delay timer + KM1's NC · heats the windings</span></li><li><b>Plugging</b><span>short KM2 pulse + zero-speed switch · harsh</span></li><li><b>Electromagnetic brake</b><span>closed with no power → the coil releases it</span></li></ul>
+     <p class="alert">Phase and DC on the same terminal = <b>short circuit</b>. Interlock is a must.</p>
+     <p class="tip">Hoists and lifts: a <b>fail-safe</b> brake is required.</p>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'The braking rectifier and its symbol', dev:{id:'V1', type:'rectifier', cfg:{}}, noSym:true, cap:'It takes 230V AC on AC1-AC2 and outputs direct current on DC+ / DC−. In practice it comes with a transformer and a resistor that set the braking current (1.5–2×In for a few seconds).'},
       {title:'Spring-applied electromagnetic brake on a hoist motor', dev:{id:'Y1', type:'brake', cfg:{motor:'M1'}}, noSym:true, cap:'The jaws (red = closed) on the disc. The coil is under the disc. No voltage = closed. Its symbol is the coil rectangle with the two brake lines.'},
@@ -512,15 +513,11 @@ CL.lesson({
   {id:'ac', icon:'press', title:'Central A/C compressor control circuit', goal:'A <b>24V</b> control circuit from a transformer: a thermostat calls for cooling → a safety chain <b>HP and LP (NC)</b> → a <b>3-minute timer</b> preventing short cycling → the compressor contactor and condenser fan. The crankcase heater on KM1\'s NC, and the HP alarm latches until RESET.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p>A central air-conditioning unit (a chiller, a package unit or an older VRF) has a large compressor that starts and stops hundreds of times a day. Its control circuit is on <b>24V</b> from a control transformer (safe for the technician and the thermostat in the room), and has protections specific to the compressor.</p>
-     <div class="box key"><ul>
-      <li><b>Transformer T1</b>: 230V on the primary H1-H2, and 24V from the secondary X1-X2 to the 24V bar and the 0V bar, with a 2A fuse on the secondary. All the coils and lamps after it are 24V.</li>
-      <li><b>Thermostat B1</b>: an NO contact that closes when the room temperature goes above the setpoint (“call for cooling”). It's the start of the chain.</li>
-      <li><b>High-pressure switch HP</b> on the discharge line: <b>NC</b>, opens if the pressure gets too high (dirty condenser, stopped fan). <b>Low-pressure switch LP</b> on the suction line: <b>NC</b>, opens if the pressure drops (low on gas, blocked filter) so the compressor doesn't run empty. Both are “closed in the healthy state”, even though each one moves in a different direction.</li>
-      <li><b>Anti-short-cycle timer</b>: an on-delay of <b>3 minutes</b> after the thermostat. When the compressor stops, the pressures are high, and if it tried to start immediately it would start against the pressure, draw a large current and trip. The timer gives the pressures a chance to equalise. (5 seconds in the simulator.)</li>
-      <li><b>KM1 compressor + KM2 condenser fan</b> pull in together from timer contact 15-18.</li>
-      <li><b>Crankcase heater E1</b>: a resistor around the compressor oil, on <b>as long as the compressor is stopped</b> so the refrigerant doesn't condense in the oil. It's wired on <b>KM1's NC (21-22)</b>.</li>
-      <li><b>HP alarm with manual reset</b>: HP uses its NO contact to drive relay K1, which seals itself in, plus a red lamp, and K1's NC cuts the chain. It only comes back with the RESET button: the technician has to find the cause.</li></ul></div>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">❄️</span><span>Compressor control runs on <b>24V</b> with special protections.</span></p>
+     <ol class="steps"><li>24V transformer + fuse</li><li>Thermostat NO</li><li>HP NC</li><li>LP NC</li><li>3-min timer</li><li class="on">KM1 + KM2</li></ol>
+     <ul class="fx"><li><b>HP</b><span>high pressure → opens · dirty condenser</span></li><li><b>LP</b><span>low pressure → opens · low gas</span></li><li><b>Anti-short-cycle timer</b><span>lets pressures equalize</span></li><li><b>Crankcase heater</b><span>on KM1's NC → on while the compressor is off</span></li><li><b>HP alarm</b><span>K1 latches · manual RESET</span></li></ul>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'230/24V control transformer and its symbol', dev:{id:'T1', type:'xfmr', cfg:{v:230, vs:24}}, noSym:true, cap:'H1-H2 the primary (230V), X1-X2 the secondary (24V). The secondary is treated as a new source: a 24V bar and a 0V bar, and a fuse on X1.'},
       {title:'Room thermostat', dev:{id:'B1', type:'level', cfg:{look:'thermo', at:0.6, max:40, blocks:['NO'], lvl0:0.7, a0:1}}, noSym:true, cap:'The setpoint dial (24°C). When the room temperature goes above the setpoint, the NO contact closes = call for cooling. In IEC the symbol is a contact marked θ.'},
@@ -539,13 +536,12 @@ CL.lesson({
   {id:'ss', icon:'k', title:'The soft starter', goal:'A thyristor device that raises the motor voltage gradually (a <b>ramp</b>) so the starting current drops to 2–4×In without star/delta contactors. Its terminals: L1-3/T1-3, A1/A2 control supply, START/STOP inputs, relay <b>13-14</b> for end of ramp (the bypass), <b>23-24</b> RUN, and <b>95-96 / 97-98</b> for faults.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p>A soft starter is an electronic device between the breaker and the motor: each phase has <b>a pair of thyristors</b> that chops part of the waveform and raises the voltage from an initial value up to 100% over a time you set. The starting current drops and the motor gets up to speed gently (the belt isn't jerked, the water in the pump doesn't hammer).</p>
-     <div class="box key"><ul>
-      <li><b>The terminals</b>: power <b>1/L1 3/L2 5/L3</b> in and <b>2/T1 4/T2 6/T3</b> to the motor. Control: <b>A1-A2</b> supply for the electronics (230V or 24V depending on the model). <b>IN1 (RUN/START)</b> and <b>IN2 (STOP)</b>: in <b>2-wire</b>, voltage on IN1 = run (a selector or a PLC). In <b>3-wire</b>, START is a pulse on IN1 and STOP (NC) holds IN2, and the unit latches internally.</li>
-      <li><b>The relays</b>: <b>13-14</b> end of ramp (top of ramp / bypass): closes when the voltage reaches 100%, and with it we pull in the <b>bypass contactor</b>, which connects the motor directly to the mains so the thyristors cool down. <b>23-24</b> RUN: closes with the run command. <b>95-96</b> NC opens on a fault (we put it in the control chain) and <b>97-98</b> NO for the alarm.</li>
-      <li><b>The settings</b>: <b>Uini</b> the initial voltage (30–50%): if it's too low the motor doesn't move in the first few seconds. <b>Ramp time</b> (2–30 s). <b>Ilim</b> the current limit (2–4×In). Some models have a ramp-down (soft stop) for pumps so the water doesn't hammer (water hammer).</li>
-      <li><b>The bypass</b>: the contactor has its top terminals from L1 L2 L3 and its outputs to T1 T2 T3 (in parallel with the thyristors). The overload is after the bypass point. Some models have an internal bypass.</li>
-      <li><b>When</b>: star/delta is cheaper, but its current is a fixed ⅓, its torque ⅓, and it needs 6 motor wires. A soft starter is adjustable, 3 wires, with a soft stop. An inverter (VFD) if you want to control the <b>speed</b>, not just the start.</li></ul></div>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">📈</span><span>A soft starter <b>ramps the voltage up</b> with thyristors.</span></p>
+     <ul class="fx"><li><b><span class="term">A1-A2</span></b><span>electronics supply</span></li><li><b>IN1 / IN2</b><span>START / STOP · 2-wire or 3-wire</span></li><li><b><span class="term">13-14</span></b><span>top of ramp → bypass contactor</span></li><li><b><span class="term">95-96</span></b><span>opens on fault → in the control chain</span></li></ul>
+     <div class="tiles"><div class="tile"><span class="big">Uini</span><span>30–50%</span></div><div class="tile"><span class="big">Ramp</span><span>2–30 s</span></div><div class="tile"><span class="big">Ilim</span><span>2–4×In</span></div></div>
+     <div class="tiles"><div class="tile"><b>Star/delta</b><span>cheaper · 6 wires</span></div><div class="tile"><b>Soft starter</b><span>adjustable · soft stop</span></div><div class="tile"><b>VFD</b><span>when you need <b>speed</b> control</span></div></div>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'Soft starter and its IEC symbol', dev:{id:'SS', type:'softstarter', cfg:{}}, noSym:true, cap:'The display shows the voltage percentage and the status. Below: the cooling fins. The knobs: Uini, ramp time, Ilim. The symbol: a box with a diagonal line (voltage change) and the thyristor symbol.'},
       {title:'Soft starter + bypass with relay 13-14 (ss1)', dev:{id:'G', type:'supply3P'}, art:schem('ss1'), noSym:true, cap:'3-wire: STOP on IN2 and START on IN1. 13-14 → bypass coil KM1. 23-24 → the “running” lamp.'},

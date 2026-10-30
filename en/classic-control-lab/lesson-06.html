@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="/en/classic-control-lab/fx.css?v=20261030r1">
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -246,18 +247,13 @@ CL.lesson({
   {id:'build', icon:'motor', title:'Construction and the rotating field', goal:'What\'s inside the motor, and how it turns with no brushes or contacts: the <b>rotating field</b>, the <b>synchronous speed</b> set by the number of poles, and <b>slip</b>.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p><b>The 3-phase induction motor (squirrel-cage motor)</b> is the most common motor in industry: it has no carbon brushes and no contacts touching the rotating part, so it lasts for years with minimal maintenance. It consists of:</p>
-     <div class="box key"><ul>
-      <li><b>Stator</b>: the fixed part. Inside it are <b>iron laminations</b> (not solid iron, to reduce losses) with slots holding <b>3 copper windings</b> (one per phase) spaced 120° apart.</li>
-      <li><b>Rotor</b>: the rotating part. Also iron laminations, with <b>aluminium bars</b> (or copper) cast inside and closed at both ends by <b>two rings</b>, so it looks like a “squirrel cage”. No wires or terminals come out of the rotor.</li>
-      <li><b>Bearings</b>: two, one in each end shield, carrying the shaft. Most mechanical motor faults are here (noise and heat).</li>
-      <li><b>Fan</b>: on the back end of the shaft, with a slotted cover. It draws air over the fins on the body. That's why a motor running slowly on an inverter overheats: the fan slows down with it.</li>
-      <li><b>Terminal box</b>: holds 6 brass studs (U1 V1 W1 / W2 U2 V2) + an earth stud. We'll open it in device 3.</li></ul></div>
-     <p><b>How does it turn?</b> When you apply the three phases to the three windings, each winding produces a magnetic field that grows and shrinks with its own wave. The three together (each lagging 120°) make a single field that <b>rotates</b> around the stator: that's the <b>rotating field</b>. This field cuts the rotor bars and induces a current in them (like a transformer: the stator is the primary and the rotor the secondary), and that current makes a field that is attracted to the rotating field, so the rotor follows it. That's why it's called “induction”: the electricity reaches the rotor by induction, not by a wire.</p>
-     <div class="box key"><p><b>Synchronous speed n<sub>s</sub></b> = the speed of the rotating field = <b>120 × frequency ÷ number of poles</b>. At 50 Hz:</p>
-      <div class="tblw"><table class="tbl"><thead><tr><th>Number of poles</th><th>2</th><th>4</th><th>6</th><th>8</th></tr></thead><tbody><tr><td class="r">n<sub>s</sub> (r/min)</td><td>3000</td><td>1500</td><td>1000</td><td>750</td></tr><tr><td class="r">Approx. nameplate speed</td><td>2900</td><td>1430–1460</td><td>950–970</td><td>720</td></tr></tbody></table></div>
-      <p>The rotor <b>never catches up with the field</b>: if it did, there would be no cutting, so no current and no torque. The difference is called <b>slip</b>: s = (n<sub>s</sub> − n) ÷ n<sub>s</sub>, and it's 2–5% at full load. A motor with a nameplate of 1430 r/min is a 4-pole motor (n<sub>s</sub> = 1500) with a slip of 4.7%. Increase the load: the rotor slows a little and draws more current.</p></div>
-     <p><b>Starting current</b>: at the moment of starting the rotor is still and the slip is 100%, so the motor draws <b>6 to 8 times</b> its rated current for a second or more until it gets up to speed. That's why a Class 10 overload withstands it and a B breaker trips, and it's the reason for star/delta starting on large motors.</p>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">⚙️</span><span>3 phases on 3 windings → a <b>rotating field</b> → the rotor chases it.</span></p>
+     <div class="tiles"><div class="tile"><span class="ic">🧱</span><b>Stator</b><span>fixed · 3 windings at 120°</span></div><div class="tile"><span class="ic">🐿️</span><b>Rotor</b><span>squirrel cage · no wires</span></div><div class="tile"><span class="ic">⭕</span><b>Bearings</b><span>most mechanical faults</span></div><div class="tile"><span class="ic">🌬️</span><b>Fan</b><span>slows with speed → heats up</span></div></div>
+     <div class="rule2"><div><span class="big">120 × f ÷ p</span><b>Synchronous speed</b></div><div><span class="big">2–5%</span><b>Slip</b><span class="mono">rotor never catches the field</span></div></div>
+     <ul class="lsec scale"><li><b>2 poles</b><span class="bar"><i style="width:100%"></i><em>3000 → ~2900</em></span></li><li><b>4 poles</b><span class="bar"><i style="width:50%"></i><em>1500 → ~1450</em></span></li><li><b>6 poles</b><span class="bar"><i style="width:33%"></i><em>1000 → ~960</em></span></li><li><b>8 poles</b><span class="bar"><i style="width:25%"></i><em>750 → ~720</em></span></li></ul>
+     <p class="alert">Starting current is <b>6–8×</b> until it reaches speed.</p>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'A cross-section of the motor while running', dev:{id:'M1', type:'motor', cfg:{term:3, kW:2.2, In:4.9}}, art:d => CL.art.motorCut(d, {run:1, rpm:1430}), noSym:true, cap:'On the left: a longitudinal section. The fixed stator with its laminations and windings (the copper on both sides), and inside it the rotor with its slightly skewed bars (to reduce noise and torque ripple) and its rings, carried by bearings in the two end shields, with the fan on the back of the shaft. On the right: seen from the shaft end, the green arrow is the rotating field and the rotor follows it a little slower (the slip).'},
       {title:'The 3-phase motor symbol', dev:{id:'M1', type:'motor', cfg:{term:3, kW:2.2, In:4.9}}, art:motorSym, noSym:true, cap:'In IEC: a circle with M and 3~ and three terminals U V W (for 6 terminals they\'re marked U1 V1 W1 and U2 V2 W2). In NEMA: a circle with MTR or MOT and terminals T1 T2 T3. In the power drawing you\'ll find the breaker, the contactor and the overload before it, in that order.'}]},
@@ -274,26 +270,17 @@ CL.lesson({
   {id:'plate', icon:'plate', title:'The motor nameplate', goal:'Read <b>kW · V Δ/Y · A · cos φ · r/min · IP · Class · S1</b> and work out from them: star or delta, the overload setting, the cable size, and the contactor size.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p><b>The nameplate</b> is the motor's contract with whoever installs it. Every number on it decides something in the panel. Without it you're guessing, and with motors guessing ends in a burnt motor.</p>
-     <div class="box key"><ul>
-      <li><b>kW</b>: the <b>mechanical power at the shaft</b>, not what it draws from the supply. The power drawn is a bit higher (÷ the efficiency η). 1 HP = 0.746 kW.</li>
-      <li><b>V Δ / Y</b> (e.g. <b>230 Δ / 400 Y</b> or <b>400 Δ / 690 Y</b>): two voltages, the lower written with delta and the higher with star. <b>The lower voltage is the voltage of one winding</b>. On a 400 V supply: a 230/400 motor → <b>star</b>, a 400/690 motor → <b>delta</b>. (A 400/690 motor is the one that works with star/delta starting.)</li>
-      <li><b>A Δ / Y</b>: the full-load current for each connection. Star current = delta current ÷ √3. <b>This is the value you set the overload to</b> (for the connection you're using).</li>
-      <li><b>cos φ</b>: the power factor at full load (0.75–0.9). An unloaded motor has a poor cos φ (0.2–0.3), which is why we don't leave motors running with no load.</li>
-      <li><b>r/min</b>: the full-load speed. From it you know the number of poles (1430 → 4 poles) and the slip.</li>
-      <li><b>Hz</b>: 50 in Egypt and Europe, 60 in America. A 50 Hz motor on 60 Hz turns 20% faster.</li>
-      <li><b>IP</b> (e.g. IP55): the first digit is protection against solid objects and dust (5 = dust protected), and the second against water (5 = jets from any direction). Outdoors, at least IP55.</li>
-      <li><b>Th. Cl. / Ins. Cl.</b> (B, F, H): the insulation class = the maximum temperature it withstands (130, 155, 180 °C). Most modern motors are F. Every 10 °C extra halves the life of the insulation.</li>
-      <li><b>Duty S1</b>: the duty type. S1 = continuous. S3 25% = intermittent (runs a quarter of the time), like cranes: it can be smaller for the same job.</li>
-      <li><b>IE1/IE2/IE3</b>: the efficiency class. IE3 is the most efficient (with a slightly higher starting current).</li>
-      <li><b>Frame, e.g. 100L</b>: the shaft height above the base in millimetres and the body length. It sets the dimensions if you replace the motor.</li></ul></div>
-     <p><b>The calculation you always do:</b> from the nameplate take In (for the connection you'll use) → <b>overload Ir = In</b> → the <b>contactor</b> rated for In in AC-3 → the <b>breaker</b> curve C or D with a current ≥ In → the <b>cable size</b> rated for at least In × 1.25.</p>
-     <h3>Power and current table (4-pole motors on 400 V, 50 Hz, approximate catalogue values)</h3>
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">🏷️</span><span>Every number on the <b>nameplate</b> = a decision in the panel.</span></p>
+     <ul class="fx"><li><b>kW</b><span>shaft power · 1 HP = 0.746 kW</span></li><li><b>230 Δ / 400 Y</b><span>the lower voltage = winding voltage</span></li><li><b>A</b><span>current for your connection → set the overload to it</span></li><li><b>r/min</b><span>1430 → 4 poles</span></li><li><b>IP55</b><span>dust + water jets</span></li><li><b>Ins. Cl. F</b><span>155 °C · every extra 10° halves life</span></li><li><b>S1 / S3</b><span>continuous / intermittent</span></li></ul>
+     <ol class="steps"><li>In from nameplate</li><li>Overload Ir = In</li><li>Contactor AC-3 ≥ In</li><li>Breaker C/D ≥ In</li><li>Cable ≥ 1.25×In</li></ol>
+     <p class="tip">At 400 V: <b>current ≈ 2 × kW</b>.</p>
+     <h3>Power and current (4-pole, 400 V)</h3>
      ${powerTable()}
-     <p class="muted">A quick rule for a 3-phase motor on 400 V: <b>current ≈ 2 × kW</b> roughly (2.2 kW ≈ 4.9 A, 11 kW ≈ 21.5 A). On 230 V 3-phase, multiply by 1.7.</p>
-     <h3>Choosing the cable size (rule of thumb)</h3>
+     <h3>Cable size</h3>
      ${cableTable()}
-     <p class="muted">The cable is sized on the full-load current × 1.25 (for heating and repeated starting current), then you check the voltage drop if the run is long (over 30–50 m: go up a size). This is a training rule; in real installations refer to your local code tables and the installation method.</p>`},
+     <p class="tip">Runs over 30–50 m → upsize the cable. Use your local code for real installs.</p>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'Nameplate of a 2.2 kW motor', dev:{id:'M1', type:'motor', cfg:{term:6, kW:2.2, In:4.9, vD:230, vY:400, cosf:0.81, rpm:1430, frame:'100L'}}, art:'nameplate', noSym:true, cap:'An aluminium plate riveted to the motor body. Read the big row: V (the two voltages), Hz, kW, A (the two currents), cos φ, r/min. Below it the poles, slip and bearings. The last line tells you: on 400 V wire it in star and set the overload to 4.9 A.'},
       {title:'Nameplate of an 11 kW motor (400 Δ / 690 Y)', dev:{id:'M1', type:'motor', cfg:{term:6, kW:11, In:21.5, vD:400, vY:690, cosf:0.86, rpm:1465, frame:'160M'}}, art:'nameplate', noSym:true, cap:'The same nameplate for a larger motor: the lower voltage is 400 V, so on a 400 V supply it\'s wired in delta and its current is 21.5 A. This is the type that works with star/delta starting (it starts in star on 690 Y at a third of the current, then switches to delta).'}]},
@@ -311,17 +298,14 @@ CL.lesson({
   {id:'tbox', icon:'tbox', title:'The terminal box: star and delta', goal:'<span class="term">U1 V1 W1</span> at the bottom and <span class="term">W2 U2 V2</span> on top, the <b>star link</b> horizontal and the <b>delta links</b> vertical, and when to use each.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p>Open the terminal box cover and you'll find <b>6 brass studs</b> in two rows and <b>3 small brass links</b>. Each of the three windings inside the motor has a start and an end: <b>U1-U2</b>, <b>V1-V2</b>, <b>W1-W2</b> (per IEC 60034-8). The bottom row is <b>U1 V1 W1</b> (the phases go here), and the top row is in exactly this order: <b>W2 U2 V2</b>.</p>
-     <div class="box key"><p><b>Why is the top row shuffled (W2 U2 V2, not U2 V2 W2)?</b> So the delta links are <b>vertical</b>: each bottom terminal with the one exactly above it (U1-W2, V1-U2, W1-V2), and the links join the end of one winding to the start of the next. And for star: the three links go <b>horizontally</b> across the whole top row (W2-U2-V2 together = the star point). So the same three links do both: horizontal = star, vertical = delta.</p></div>
-     <div class="tblw"><table class="tbl"><thead><tr><th class="r">Connection</th><th>Links</th><th>Voltage per winding (400 V supply)</th><th>When</th></tr></thead><tbody>
-      <tr><td class="r"><b>Star Y</b></td><td>A horizontal link on W2-U2-V2</td><td>400 ÷ √3 = <b>230 V</b></td><td>A motor rated <b>230 Δ / 400 Y</b> on 400 V</td></tr>
-      <tr><td class="r"><b>Delta Δ</b></td><td>3 vertical links U1-W2, V1-U2, W1-V2</td><td><b>400 V</b></td><td>A motor rated <b>400 Δ / 690 Y</b> on 400 V</td></tr></tbody></table></div>
-     <p><b>The rule:</b> the lower voltage on the nameplate = the voltage of one winding. Wire the motor so each winding gets exactly that voltage: if the supply = the lower voltage → delta, if the supply = the higher voltage → star.</p>
-     <div class="box key"><p><b>If you get it wrong:</b></p><ul>
-      <li><b>Delta on a 230/400 motor on 400 V</b>: each winding gets 400 V instead of 230 (174%). The iron saturates and the current rises several times over, the motor hums and heats up quickly, a correctly set overload trips within seconds, and without an overload the windings burn in minutes. <b>This is the most common mistake that burns a motor.</b></li>
-      <li><b>Star on a 400/690 motor on 400 V</b>: each winding gets 230 V instead of 400 (58%). The motor turns, but the torque drops to a <b>third</b> (torque is proportional to the square of the voltage) and so does the current. On a light load you may not notice; on a normal load it struggles and overheats. (That's exactly what happens in star/delta starting, but only for seconds.)</li>
-      <li><b>A missing link or a loose stud</b>: an open winding = a missing phase; the motor hums and the overload trips.</li></ul></div>
-     <p>Motors with <b>only 3 terminals</b> (U V W): the star or delta is made inside the motor at the factory, and you connect the phases directly. These are for a single voltage (e.g. 400 V) and can't be used with star/delta.</p>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">🔩</span><span>Same three links: <b>horizontal = star</b>, <b>vertical = delta</b>.</span></p>
+     <div class="vs"><div class="side"><b>Top row</b><span class="term">W2 U2 V2</span></div><i></i><div class="side"><b>Bottom row</b><span class="term">U1 V1 W1</span><span>phases go here</span></div></div>
+     <div class="vs"><div class="side"><span class="big">Y</span><b>Star</b><span>230 V per winding</span><span>plate 230/400</span></div><i>×</i><div class="side"><span class="big">Δ</span><b>Delta</b><span>400 V per winding</span><span>plate 400/690</span></div></div>
+     <p class="tip">Supply = lower voltage → delta. Supply = higher voltage → star.</p>
+     <ul class="fx"><li class="danger"><b>Delta on 230/400</b><span>174% voltage → <b>burns out</b></span></li><li><b>Star on 400/690</b><span>torque drops to a third → stalls, heats</span></li><li><b>Missing link</b><span>missing phase → hums</span></li></ul>
+     <p class="tip">3-terminal motor: connection is internal, no star/delta.</p>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'Star: a horizontal link', dev:{id:'M1', type:'motor', cfg:{term:6}}, art:() => CL.art.tbox({mode:'Y', vD:230, vY:400, sup:400}), noSym:true, cap:'The top row W2 U2 V2 is joined together = the star point. Each winding between a phase and this point gets 230 V. On the right, the shape of the windings: a star.'},
       {title:'Delta: vertical links', dev:{id:'M1', type:'motor', cfg:{term:6}}, art:() => CL.art.tbox({mode:'D', vD:400, vY:690, sup:400}), noSym:true, cap:'Each bottom terminal with the one above it: U1 with W2 (the end of the third winding), V1 with U2, W1 with V2. Each winding between two phases gets 400 V. On the right, the shape of the windings: a triangle.'},
@@ -339,12 +323,12 @@ CL.lesson({
   {id:'dir', icon:'dir', title:'Direction', goal:'The direction is set by the <b>phase order</b> on U V W. Swapping <b>just two phases</b> reverses it. (Swapping all three doesn\'t.)',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p>The rotating field turns in the direction of the <b>phase order</b>: if L1 is on U, L2 on V and L3 on W, the field turns from U to V to W. If you swap <b>any two phases</b> (e.g. L1 to W and L3 to U), the order is reversed and the field turns the other way, with the rotor following it. You don't need to open the motor or change anything inside it.</p>
-     <div class="box key"><ul>
-      <li>Swapping <b>two phases</b> (any two of the three) = reversing the direction.</li>
-      <li>Rotating <b>all three</b> (L1 to V, L2 to W, L3 to U) = the order is still the same = <b>the same direction</b>. A common mistake: “I swapped all the wires and it still turns the wrong way”.</li>
-      <li>The “forward” (clockwise) direction is defined looking at the motor from the <b>shaft</b> end. Check before you run a load like a pump or a compressor: the wrong direction damages a pump or loosens a nut.</li>
-      <li>In a panel, reversing is done with <b>two contactors</b>: one connects L1 L2 L3 to U V W, and the other connects them swapped (L1 to W and L3 to U). You need an <b>interlock</b> between them; otherwise, if they pull in together, you make a short circuit between two phases. That's lesson 8.</li></ul></div>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">↩️</span><span>Swap <b>any two phases</b> → the motor reverses.</span></p>
+     <div class="vs"><div class="side"><b>Two swapped</b><span class="big">↺</span><span>reverse</span></div><i>×</i><div class="side"><b>All three rotated</b><span class="big">↻</span><span>same direction!</span></div></div>
+     <p class="tip">Direction is viewed from the <b>shaft end</b>. Check before running a pump or compressor.</p>
+     <p class="alert">Reversing in a panel = two contactors + an <b>interlock</b>, or it's a phase-to-phase short.</p>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'Phase order and direction', dev:{id:'M1', type:'motor', cfg:{term:3}}, art:() => `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start">${dirDiagram({L1:'U', L2:'V', L3:'W'})}${dirDiagram({L1:'W', L2:'V', L3:'U'})}</div>`, noSym:true, cap:'Left: L1-U, L2-V, L3-W → forward. Right: L1 and L3 swapped → reverse. The two crossing wires are the whole story.'}]},
     {kind:'sim', title:'Try it', lead:'Swap two phases and watch the field and the rotor reverse. Swap again: it goes back. Try rotating all three (3 swaps) and see that the direction doesn\'t change.', sims:[
