@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261028e1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b7">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -34,8 +35,13 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>How does CAN work?</h2>
-<p><b>CAN</b> (Controller Area Network) is a serial bus from the automotive world that has become the foundation of many industrial networks: <b>CANopen</b> (European drives and servos, cranes), <b>DeviceNet</b> (Allen-Bradley / ODVA) and <b>J1939</b> (heavy machinery). Two wires, <b>CAN_H</b> and <b>CAN_L</b>, carry a differential signal, with a <b>120 Ω</b> resistor at each end and speeds up to 1 Mbit/s.</p>
-<svg viewBox="0 0 660 200" role="img" aria-label="CAN_H and CAN_L signals" style="width:100%;max-width:640px;direction:ltr">
+  <p class="bf"><span class="ic">🚗</span><span>From cars: differential <b>CAN_H and CAN_L</b>, 120 Ω at both ends, up to 1 Mbit/s.</span></p>
+  <div class="tiles">
+    <div class="tile"><b>CANopen</b><span>Servo · cranes</span></div>
+    <div class="tile"><b>DeviceNet</b><span>Allen-Bradley</span></div>
+    <div class="tile"><b>J1939</b><span>Heavy machinery</span></div>
+  </div>
+  <svg viewBox="0 0 660 200" role="img" aria-label="CAN_H and CAN_L signals" style="width:100%;max-width:640px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor">
 <path d="M40 150H600" stroke="currentColor" stroke-width="1"/><text x="20" y="40">V</text>
 <text x="606" y="166">t</text>
@@ -44,49 +50,70 @@
 <text x="565" y="64" fill="#c62828">CAN_H 3.5 V</text><text x="565" y="144" fill="#1e5fd1">CAN_L 1.5 V</text><text x="565" y="104">2.5 V</text>
 <text x="260" y="175" text-anchor="middle" font-size="10">recessive (1)</text><text x="180" y="175" text-anchor="middle" font-size="10">dominant (0)</text><text x="360" y="175" text-anchor="middle" font-size="10">dominant (0)</text>
 </g></svg>
-<ul><li><b>Recessive bit (1):</b> both wires sit at about 2.5 V. <b>Dominant bit (0):</b> CAN_H rises to 3.5 V and CAN_L falls to 1.5 V.</li>
-<li>If two devices transmit at once, the <b>dominant</b> bit wins. This is how <b>arbitration</b> works: the message with the lower identifier (more leading zeros) wins and completes, while the other waits. No collision, nothing lost.</li>
-<li>CAN has no master: any node transmits when the bus is idle, and priority is set by the identifier.</li></ul>
+  <div class="vs">
+    <div class="side"><b>Recessive (1)</b><span class="big">2.5 / 2.5 V</span></div>
+    <i>vs</i>
+    <div class="side"><b>Dominant (0)</b><span class="big">3.5 / 1.5 V</span></div>
+  </div>
+  <div class="box key"><b>Arbitration:</b> dominant wins, so the <b>lowest</b> identifier wins with no collision. No master: priority by identifier.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>Length, speed and termination</h2>
-<div class="tblw"><table class="tbl"><thead><tr><th>Baud rate</th><th>Maximum length (CANopen)</th><th>DeviceNet (thick cable)</th></tr></thead><tbody>
-<tr><td class="mono">1 Mbit/s</td><td>25 m</td><td>—</td></tr>
-<tr><td class="mono">500 kbit/s</td><td>100 m</td><td>100 m</td></tr>
-<tr><td class="mono">250 kbit/s</td><td>250 m</td><td>250 m</td></tr>
-<tr><td class="mono">125 kbit/s</td><td>500 m</td><td>500 m</td></tr>
-<tr><td class="mono">50 kbit/s</td><td>1000 m</td><td>—</td></tr></tbody></table></div>
-<p>The easiest check on site: <b>disconnect the power</b> and measure the resistance between CAN_H and CAN_L with a multimeter. <b>60 Ω</b> = two correct resistors (120 ‖ 120); 120 Ω = only one; 40 Ω = three; ∞ = no termination or a broken cable.</p>
-<div class="box key"><b>Error counters:</b> every node counts its own errors. Above 127 it enters <b>Error passive</b> (it keeps communicating but no longer signals errors); above 255 it goes <b>Bus off</b> (it withdraws completely until reset). A single node in Bus off usually means its baud rate differs from the others or its cabling is poor.</div>
+  <ul class="scale">
+    <li><bdi dir="ltr">1 M</bdi><div class="bar"><i style="width:3%"></i><em><bdi dir="ltr">25 m</bdi></em></div></li>
+    <li><bdi dir="ltr">500 k</bdi><div class="bar"><i style="width:10%"></i><em><bdi dir="ltr">100 m</bdi></em></div></li>
+    <li><bdi dir="ltr">250 k</bdi><div class="bar"><i style="width:25%"></i><em><bdi dir="ltr">250 m</bdi></em></div></li>
+    <li><bdi dir="ltr">125 k</bdi><div class="bar"><i style="width:50%"></i><em><bdi dir="ltr">500 m</bdi></em></div></li>
+    <li><bdi dir="ltr">50 k</bdi><div class="bar"><i style="width:100%"></i><em><bdi dir="ltr">1000 m</bdi></em></div></li>
+  </ul>
+  <p class="sub">Power off, measure between H and L:</p>
+  <ul class="fx">
+    <li class="ok"><b class="mono">60 Ω</b><span>Two resistors ✅</span></li>
+    <li><b class="mono">120 Ω</b><span>Only one</span></li>
+    <li><b class="mono">40 Ω</b><span>Three</span></li>
+    <li><b class="mono">∞</b><span>No termination or broken cable</span></li>
+  </ul>
+  <div class="box key"><b>Error counter:</b> above 127 error passive, above 255 <b>bus off</b>: usually a wrong baud or a bad cable.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>CANopen: identifiers and objects</h2>
-<ul><li>Each node has a <b>Node ID</b> from 1 to 127 (DIP switches or a parameter).</li>
-<li>The message identifier, the <b>COB-ID</b>, = function code + Node ID. For example, the first transmit <b>PDO</b> from node 5: <span class="mono">0x180 + 5 = 0x185</span>.</li>
-<li><b>PDO</b> (Process Data Object): fast cyclic data (status, speed) with no extra overhead, up to 8 bytes.</li>
-<li><b>SDO</b> (Service Data Object): reads and writes any parameter in the <b>object dictionary</b> at an address such as <span class="mono">0x6040:00</span> (the controlword in the CiA 402 drive profile).</li>
-<li><b>NMT</b>: the master (or the PLC) switches nodes between Pre-operational, Operational and Stopped. A node transmits PDOs only when <b>Operational</b>.</li>
-<li><b>Heartbeat / Node guarding</b>: every node announces that it is alive; if one goes silent, the master raises an alarm.</li>
-<li>An <b>EDS</b> file describes the object dictionary (the counterpart of GSD).</li></ul>
+  <div class="formula">COB-ID = 0x180 + Node 5 = 0x185</div>
+  <ul class="fx">
+    <li><b>Node ID</b><span>1–127</span></li>
+    <li><b>PDO</b><span>Fast cyclic data · 8 bytes</span></li>
+    <li><b>SDO</b><span>Read/write a parameter · 0x6040:00</span></li>
+    <li><b>NMT</b><span>PDOs only in <b>operational</b></span></li>
+    <li><b>Heartbeat</b><span>The node says it's alive</span></li>
+    <li><b>EDS</b><span>Description file</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>DeviceNet: the key difference</h2>
-<p>DeviceNet uses the same CAN layer but with the <b>CIP protocol</b> (the same one used by EtherNet/IP) and a dedicated five-wire cable: the signal pair (blue CAN_L / white CAN_H), a <b>24 V DC</b> power pair (red V+ / black V−) and a shield. Power runs in the same cable and supplies the field devices.</p>
-<ul><li><b>MAC ID</b> addresses from 0 to 63, and speeds of 125 / 250 / 500 kbit/s, usually set manually on each device.</li>
-<li><b>Network status (NS)</b> LED: steady green = online and allocated to a master; flashing green = online with no master; flashing red = connection timeout; steady red = duplicate MAC ID or Bus off.</li>
-<li>Measure the supply voltage at the far end of the cable: below <b>11 V</b> causes strange faults in remote devices (voltage drop along a long cable). The fix: an additional power supply in the middle.</li></ul>
+  <p class="bf"><span class="ic">🔋</span><span>CAN + <b>CIP</b>, and the cable carries <b>24 V</b> with the signal.</span></p>
+  <ul class="fx">
+    <li><b>⚪ White / 🔵 blue</b><span>CAN_H / CAN_L</span></li>
+    <li><b>🔴 Red / ⚫ black</b><span>V+ / V−</span></li>
+    <li><b>MAC ID</b><span>0–63 · 125/250/500 kbit/s</span></li>
+  </ul>
+  <ul class="fx">
+    <li class="ok"><b>NS steady green</b><span>Connected to a master</span></li>
+    <li><b>NS flashing green</b><span>Online, no master</span></li>
+    <li><b>NS flashing red</b><span>Timeout</span></li>
+    <li><b>NS steady red</b><span>Duplicate MAC ID or bus off</span></li>
+  </ul>
+  <p class="alert">Below <b>11 V</b> at the far end ⇒ strange faults · add a supply mid-line.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>Reasoning through a CAN fault</h2>
-<ol><li><b>Check for 60 Ω</b> between H and L with the power disconnected. Any other value points you to the termination or the cable.</li>
-<li>With a multimeter and the bus idle: CAN_H ≈ CAN_L ≈ 2.5 V (measured to GND). If either reads 0 or 5 V, there is a short to ground or to the supply.</li>
-<li>A single node in Bus off: its baud rate, its cable, or a duplicate Node ID.</li>
-<li>Everything drops out when a particular machine starts: noise from a power cable. Ground the shield at one end only and route the cable away.</li>
-<li>Only the remote devices fail on DeviceNet: supply voltage drop.</li></ol>
-<div class="box key"><b>On the simulator:</b> watch arbitration between two messages, set the baud rate and termination and read 60 Ω, give the nodes correct Node IDs and switch them to Operational, then diagnose Bus off and a DeviceNet voltage drop. <a class="btn pri" href="net.html#can" style="margin-inline-start:8px">Open the simulator →</a></div>
+  <ol class="steps">
+    <li>60 Ω between H and L</li>
+    <li>Idle: H ≈ L ≈ 2.5 V</li>
+    <li>Bus off: baud · cable · duplicate ID</li>
+    <li>Drops with a machine: noise</li>
+    <li>Far devices only: voltage drop</li>
+  </ol>
+  <div class="box key"><b>On the simulator:</b> watch arbitration, set baud and termination (60 Ω), move nodes to operational, and diagnose bus off and voltage drop. <a class="btn pri" href="net.html#can" style="margin-inline-start:8px">Open the simulator →</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
   <p>Answer at least 6 of 7 correctly to complete the lesson.</p>

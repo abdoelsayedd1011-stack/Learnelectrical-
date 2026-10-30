@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261028e1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b7">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -34,15 +35,21 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>Why OPC UA?</h2>
-<p>The networks covered so far carry <b>registers and bits</b>: register 40011 holds 4998, and it is up to you to know that this is the frequency and must be divided by 100. <b>OPC UA</b> (Open Platform Communications Unified Architecture) carries <b>meaningful information</b>: a variable named <span class="mono">OvenTemp</span>, of type Double, in °C, with the value 182.5 plus its timestamp and quality. That is why it has become the common language between PLCs, SCADA, MES and gateways, regardless of vendor.</p>
-<ul><li><b>Server:</b> exposes the data: the PLC itself (S7-1500, Beckhoff, B&amp;R, Omron NJ) or middleware (KEPServerEX) that converts Modbus/PROFINET to OPC UA.</li>
-<li><b>Client:</b> reads, writes and subscribes: SCADA, Node-RED, Ignition, a dashboard.</li>
-<li>Endpoint: <span class="mono">opc.tcp://192.168.1.10:4840</span> (standard port 4840).</li>
-<li>Platform-independent: runs on PLCs, Windows, Linux and in the cloud, with built-in encryption and authentication.</li></ul>
+  <div class="vs">
+    <div class="side"><b>Modbus</b><span class="big">40011 = 4998</span><span>You must know what it means</span></div>
+    <i>vs</i>
+    <div class="side"><b>OPC UA</b><span class="big">OvenTemp</span><span>182.5 °C + time + quality</span></div>
+  </div>
+  <ul class="fx">
+    <li><b>Server</b><span>The PLC itself or KEPServerEX</span></li>
+    <li><b>Client</b><span>SCADA · Node-RED · Ignition</span></li>
+    <li><b>Address</b><span class="mono">opc.tcp://192.168.1.10:4840</span></li>
+  </ul>
+  <p class="tip">A common language across vendors, with built-in encryption and authentication.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>Address space and NodeId</h2>
-<svg viewBox="0 0 640 220" role="img" aria-label="OPC UA address space" style="width:100%;max-width:640px;direction:ltr">
+  <svg viewBox="0 0 640 220" role="img" aria-label="OPC UA address space" style="width:100%;max-width:640px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor">
 <rect x="20" y="20" width="250" height="180" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="30" y="40" font-weight="700">Address space (server)</text>
 <text x="40" y="65">Objects</text><text x="60" y="85">└ PLC_1</text><text x="80" y="105">└ DataBlocks</text><text x="100" y="125">└ Line3</text><text x="120" y="145" fill="#0d7584">├ OvenTemp  Double</text><text x="120" y="165" fill="#0d7584">├ PartsCount Int32</text><text x="120" y="185" fill="#0d7584">└ Running    Boolean</text>
@@ -50,38 +57,45 @@
 <path d="M270 110H380" stroke="currentColor" stroke-width="2" marker-end="url(#a2)"/><defs><marker id="a2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs>
 <text x="390" y="182" font-size="11">opc.tcp://192.168.1.10:4840</text>
 </g></svg>
-<p>Everything in the server is a <b>node</b> in a tree: objects, variables, methods, types. Each node has a unique <b>NodeId</b> made of a <b>namespace</b> (ns) and an identifier, either numeric <span class="mono">ns=3;i=1005</span> or string <span class="mono">ns=3;s="Line3".OvenTemp</span>. The client <b>browses</b> the tree downward from Objects, then <b>reads</b>, <b>writes</b> or <b>subscribes</b>.</p>
-<p>Every value arrives as a <b>triple</b>: the value, its <b>quality</b> (Good / Bad / Uncertain) and the source <b>timestamp</b>. If the quality is Bad, the cause lies in the sensor or the PLC, not the network.</p>
+  <p class="bf"><span class="ic">🌳</span><span>Everything is a <b>node</b> in a tree, each with a NodeId: <span class="mono">ns=3;i=1005</span> or <span class="mono">ns=3;s="Line3".OvenTemp</span>.</span></p>
+  <div class="tiles">
+    <div class="tile"><b>Value</b><span>182.5</span></div>
+    <div class="tile"><b>Quality</b><span>Good · Bad · Uncertain</span></div>
+    <div class="tile"><b>Timestamp</b><span>From the source</span></div>
+  </div>
+  <p class="tip">Quality <b>Bad</b> ⇒ the cause is the sensor or PLC, not the network.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Subscriptions instead of polling</h2>
-<p>Rather than asking “what is the value?” every 100 ms (polling), the client creates a <b>Subscription</b> with a publishing interval (for example 500 ms) and adds <b>monitored items</b> to it. The server then sends a value only when it <b>changes</b>, with a <b>deadband</b> (send only if the change exceeds 0.5) and a <b>queue</b> for fast changes. This greatly reduces the load on the PLC.</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>Service</th><th>What it does</th><th>Example</th></tr></thead><tbody>
-<tr><td>Browse</td><td>List a node’s children</td><td>What is inside Line3?</td></tr>
-<tr><td>Read</td><td>Read an attribute (value, description, data type)</td><td>Current value of OvenTemp</td></tr>
-<tr><td>Write</td><td>Write a value</td><td>Setpoint = 185</td></tr>
-<tr><td>Subscribe</td><td>Send changes only</td><td>Every change in PartsCount</td></tr>
-<tr><td>Call</td><td>Invoke a method on the server</td><td>StartBatch(recipe=7)</td></tr>
-<tr><td>History read</td><td>Read past values (if the server supports it)</td><td>Temperature over the last hour</td></tr></tbody></table></div>
+  <p class="bf"><span class="ic">🔔</span><span><b>Subscription</b>: the server sends only on change, with a <b>deadband</b>. Less load on the PLC.</span></p>
+  <ul class="fx">
+    <li><b>Browse</b><span>What's inside Line3?</span></li>
+    <li><b>Read / Write</b><span>OvenTemp · Setpoint = 185</span></li>
+    <li><b>Subscribe</b><span>Every change in PartsCount</span></li>
+    <li><b>Call</b><span>StartBatch(recipe=7)</span></li>
+    <li><b>History read</b><span>Temperature over the last hour</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Security: certificates and policies</h2>
-<p>OPC UA was designed with security built in: every server and client has an <b>X.509 certificate</b> that identifies it, and they agree on a <b>security policy</b> (None, Basic256Sha256, Aes256_Sha256_RsaPss) and a <b>message security mode</b> (None, Sign, Sign &amp; Encrypt). On the first connection the server rejects the client’s certificate until you <b>trust it manually</b> in the server’s trust list, and vice versa.</p>
-<ul><li><b>BadCertificateUntrusted:</b> the certificate has not been accepted yet: open the server settings and move the certificate from Rejected to Trusted.</li>
-<li><b>BadUserAccessDenied:</b> wrong username or password, or the user lacks write permission.</li>
-<li>The <b>None</b> policy is acceptable only for lab testing; in production use Sign &amp; Encrypt, especially if data leaves the machine network.</li>
-<li>The number of sessions and subscriptions on a PLC is limited (for example 32 sessions on an S7-1500, depending on the model), and the licence may be separate.</li></ul>
+  <p class="bf"><span class="ic">🔐</span><span>Each side has an <b>X.509 certificate</b>; the first connection is rejected until you <b>trust it by hand</b>.</span></p>
+  <ul class="fx">
+    <li><b>BadCertificateUntrusted</b><span>Move the cert from Rejected to Trusted</span></li>
+    <li><b>BadUserAccessDenied</b><span>User or permission</span></li>
+    <li><b>Policy None</b><span>Lab only · production: Sign &amp; Encrypt</span></li>
+    <li><b>Sessions</b><span>Limited (e.g. 32) · separate licence</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>OPC UA on the S7-1500, step by step</h2>
-<ol><li>In TIA Portal: CPU properties → <b>OPC UA → Server → Activate OPC UA server</b>, then select port 4840 and the security policy.</li>
-<li>Under <b>Server interfaces</b>, create an interface and drag in the variables you want to expose (DBs or tags). Do not expose everything.</li>
-<li><b>Runtime licenses → OPC UA</b>: select the appropriate licence.</li>
-<li>Download, then on your PC open a client such as UaExpert at <span class="mono">opc.tcp://&lt;ip&gt;:4840</span>, accept the certificate on the CPU, and browse.</li></ol>
-<div class="box key"><b>On the simulator:</b> browse the server tree down to the production-line variables, read the value, quality and timestamp, create a subscription with a deadband, write a setpoint, and resolve a rejected certificate. <a class="btn pri" href="net.html#opcua" style="margin-inline-start:8px">Open the simulator →</a></div>
+  <ol class="steps">
+    <li>Activate OPC UA server</li>
+    <li>Server interface: only the needed tags</li>
+    <li>Runtime licence</li>
+    <li>Download, then UaExpert + accept the cert</li>
+  </ol>
+  <div class="box key"><b>On the simulator:</b> browse the tree, read value, quality and time, subscribe with a deadband, write a setpoint, and fix a rejected certificate. <a class="btn pri" href="net.html#opcua" style="margin-inline-start:8px">Open the simulator →</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
   <p>Answer at least 6 of 7 correctly to complete the lesson.</p>

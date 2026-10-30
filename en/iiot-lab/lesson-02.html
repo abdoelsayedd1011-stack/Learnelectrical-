@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261028e1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b7">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -34,16 +35,26 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>Cable, port and LEDs</h2>
-<p>The Ethernet network in a control panel starts with a <b>Cat5e or Cat6</b> cable and an <b>RJ45</b> connector (or a sealed <b>M12</b> in wet or high-vibration locations). The cable contains four twisted pairs; 100 Mbit/s uses two pairs and 1 Gbit/s uses all four. The maximum length of a single segment is <b>100 meters</b>.</p>
-<ul><li><b>Link (steady green):</b> the cable is sound and both ports have agreed on a speed. No link = a broken cable, a dead port or an unpowered device.</li>
-<li><b>Activity (flashing yellow/green):</b> data is flowing. Link without activity: the device is connected but not talking.</li>
-<li><b>Shielded cable (STP/SFTP):</b> essential next to drives and power cables. Bond the shield to ground at the panel end.</li></ul>
-<div class="box safe"><b>Warning:</b> never route an Ethernet cable in the same duct as a drive motor cable. The interference causes intermittent errors that look like software faults.</div>
+  <div class="tiles">
+    <div class="tile"><span class="ic">🔌</span><b>Cat5e / Cat6</b><span>RJ45 or M12</span></div>
+    <div class="tile"><span class="big">100 m</span><b>Max length</b></div>
+    <div class="tile"><span class="ic">🛡️</span><b>STP</b><span>Near VFDs</span></div>
+  </div>
+  <ul class="fx">
+    <li class="ok"><b>🟢 Steady link</b><span>Cable OK</span></li>
+    <li><b>⚫ No link</b><span>Broken cable, dead port or no power</span></li>
+    <li><b>🟢 Link, no activity</b><span>Connected but silent</span></li>
+  </ul>
+  <p class="alert">Don't run Ethernet with a VFD motor cable: <b>intermittent faults</b>.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>MAC address and IP address</h2>
-<p>Every network port has a fixed <b>MAC address</b> assigned at the factory (such as <span class="mono">00:1C:06:1A:2B:3C</span>); the first three bytes identify the manufacturer. The <b>IP address</b>, by contrast, is one you assign, and it is what the PLC and the HMI work with.</p>
-<svg viewBox="0 0 640 260" role="img" aria-label="Control panel network" style="width:100%;max-width:640px;direction:ltr">
+  <div class="vs">
+    <div class="side"><b>MAC</b><span class="big">00:1C:06:…</span><span>Fixed at the factory</span></div>
+    <i>vs</i>
+    <div class="side"><b>IP</b><span class="big">192.168.1.10</span><span>You set it</span></div>
+  </div>
+  <svg viewBox="0 0 640 260" role="img" aria-label="Control panel network" style="width:100%;max-width:640px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
 <rect x="250" y="20" width="140" height="44" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="320" y="38" font-weight="700">Switch</text><text x="320" y="55" font-size="11">8 ports</text>
 <g stroke="currentColor" stroke-width="2"><path d="M270 64 L230 140"/><path d="M320 64V205"/><path d="M370 64 L410 140"/><path d="M290 64 L80 140"/><path d="M350 64 L560 140"/></g>
@@ -53,39 +64,50 @@
 <rect x="350" y="140" width="120" height="60" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="410" y="162" font-weight="700">Gateway</text><text x="410" y="180">192.168.1.1</text>
 <rect x="500" y="140" width="120" height="60" rx="8" fill="none" stroke="#b85f00" stroke-width="2"/><text x="560" y="162" font-weight="700" fill="#b85f00">Laptop</text><text x="560" y="180">192.168.1.100</text>
 </g></svg>
-<p>An IPv4 address is four numbers from 0 to 255. The <b>subnet mask</b> defines which part of the address is the "street" and which part is the "house number". The mask <span class="mono">255.255.255.0</span> (written <span class="mono">/24</span>) means the first three numbers identify the network and the last one identifies the device. Devices from <span class="mono">192.168.1.1</span> to <span class="mono">192.168.1.254</span> are therefore on one network and talk to each other directly.</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>Field</th><th>Example</th><th>Meaning</th></tr></thead><tbody>
-<tr><td>IP address</td><td class="mono">192.168.1.10</td><td>This device's address</td></tr>
-<tr><td>Subnet mask</td><td class="mono">255.255.255.0</td><td>The devices I can reach directly: 192.168.1.x</td></tr>
-<tr><td>Default gateway</td><td class="mono">192.168.1.1</td><td>The router I send anything outside my network to</td></tr>
-<tr><td>DNS</td><td class="mono">8.8.8.8</td><td>Resolves names to addresses; only the gateway needs it, for the cloud</td></tr></tbody></table></div>
+  <p class="bf"><span class="ic">🏘️</span><span>Mask <b>/24</b> = <span class="mono">255.255.255.0</span>: first 3 numbers are the "street", the last is the "house".</span></p>
+  <ul class="fx">
+    <li><b class="mono">IP</b><span>192.168.1.10 · this device</span></li>
+    <li><b class="mono">Mask</b><span>255.255.255.0 · who I see directly</span></li>
+    <li><b class="mono">Gateway</b><span>192.168.1.1 · for anything outside</span></li>
+    <li><b class="mono">DNS</b><span>Cloud only</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Static or DHCP?</h2>
-<p><b>DHCP</b> hands out addresses automatically from a router. It suits computers and phones, but it <b>has no place on a machine network</b>: if the router restarts and gives the PLC a different address, the HMI loses its connection. The rule: <b>every device in the panel gets a static address</b>, written on a label on the device and on the network drawing.</p>
-<div class="box key"><b>Good practice:</b> reserve a range for each device type: 1–9 for routers and gateways, 10–49 for PLCs, 50–99 for HMIs, 100–199 for drives and I/O modules, 200–250 for temporary laptops.</div>
+  <div class="vs">
+    <div class="side"><b>DHCP</b><span>❌ Not on a machine</span><span>The address may change</span></div>
+    <i>vs</i>
+    <div class="side"><b>Static</b><span>✅ Every panel device</span><span>With a label on it</span></div>
+  </div>
+  <ul class="scale">
+    <li>Routers<div class="bar"><i style="width:8%"></i><em><bdi dir="ltr">1–9</bdi></em></div></li>
+    <li>PLCs<div class="bar"><i style="width:25%"></i><em><bdi dir="ltr">10–49</bdi></em></div></li>
+    <li>HMIs<div class="bar"><i style="width:40%"></i><em><bdi dir="ltr">50–99</bdi></em></div></li>
+    <li>VFDs and I/O<div class="bar"><i style="width:78%"></i><em><bdi dir="ltr">100–199</bdi></em></div></li>
+    <li>Laptops<div class="bar"><i style="width:100%"></i><em><bdi dir="ltr">200–250</bdi></em></div></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>The four common faults</h2>
-<div class="tblw"><table class="tbl"><thead><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead><tbody>
-<tr><td>The HMI sees the PLC intermittently, then loses it</td><td><b>Duplicate IP</b>: two devices with the same address taking turns to answer</td><td>Disconnect one and ping; if replies continue, the address is in use</td></tr>
-<tr><td>No ping at all, even though the LED is green</td><td><b>Different mask or network</b>: the laptop is on 192.168.<b>0</b>.x and the PLC on 192.168.<b>1</b>.x</td><td>Move the laptop's address onto the same network</td></tr>
-<tr><td>Ping works but the software will not connect</td><td><b>Firewall</b> on the laptop, or a closed TCP port</td><td>Open the port (502 for Modbus, 102 for S7, 4840 for OPC UA)</td></tr>
-<tr><td>Every device drops out at once</td><td><b>Broadcast storm</b> caused by a cable loop on the switch</td><td>Look for a cable connecting two ports on the same switch, or enable RSTP/MRP</td></tr></tbody></table></div>
+  <ul class="fx">
+    <li><b>Comes and goes</b><span>Duplicate IP · unplug one and ping</span></li>
+    <li><b>No ping, LED green</b><span>Different subnet (1.x vs 0.x) · match it</span></li>
+    <li><b>Ping works, software doesn't</b><span>Firewall · port 502 / 102 / 4840</span></li>
+    <li><b>Everything disappears</b><span>Cable loop · broadcast storm · RSTP/MRP</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>Your first tools: ping and arp</h2>
-<p>Open a command prompt on the laptop and type:</p>
-<div class="formula">ping 192.168.1.10</div>
-<ul><li><b>Reply from … time&lt;1ms:</b> the device is present and responding. The problem is not the network.</li>
-<li><b>Request timed out:</b> no reply. The cable, the address, or the device is switched off.</li>
-<li><b>Destination host unreachable:</b> your own laptop is not on the correct network (usually the mask).</li></ul>
-<div class="formula">arp -a</div>
-<p>Shows the table of addresses your laptop has seen, with their MAC addresses. If you see a single IP address with two different MAC addresses, you have a confirmed duplicate address.</p>
-<div class="box key"><b>On the simulator:</b> set your laptop's address manually on the same subnet as the PLC and the HMI, then run ping and Go online from TIA Portal. (Also try a duplicate address or a wrong mask to see what happens.) <a class="btn pri" href="net.html#ip" style="margin-inline-start:8px">Open the simulator →</a></div>
+  <div class="formula">ping 192.168.1.10</div>
+  <ul class="fx">
+    <li class="ok"><b>Reply</b><span>Present · not a network problem</span></li>
+    <li><b>Timed out</b><span>Cable, address or powered off</span></li>
+    <li><b>Unreachable</b><span>Your own PC is off-subnet (mask)</span></li>
+  </ul>
+  <div class="formula">arp -a</div>
+  <p class="tip">One IP with two MACs = <b>confirmed duplicate</b>.</p>
+  <div class="box key"><b>On the simulator:</b> set your laptop on the PLC/HMI subnet, then ping and go online. <a class="btn pri" href="net.html#ip" style="margin-inline-start:8px">Open the simulator →</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
   <p>Answer at least 5 of 6 correctly to complete the lesson.</p>

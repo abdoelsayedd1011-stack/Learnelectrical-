@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261028e1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b7">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -34,42 +35,52 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>From message to chart</h2>
-<p>The message has reached the server. What next? Three layers:</p>
-<ol><li><b>Time-series database:</b> InfluxDB, TimescaleDB or Prometheus. Every record = (time, tag, value). Built for millions of points and queries such as “average over the last hour”.</li>
-<li><b>Dashboard:</b> Grafana, Node-RED Dashboard or Ignition Perspective. Trend charts, gauges, status indicators, tables.</li>
-<li><b>Alerts:</b> rules applied to the data that send a notification (email, Telegram, WhatsApp via an API, a horn on the plant floor).</li></ol>
-<p><b>Retention:</b> one reading per second for a year = 31 million points per tag. The solution: keep raw data for a week, one-minute averages for a month, and hourly averages for years (downsampling).</p>
+  <ol class="steps">
+    <li>Time-series DB: InfluxDB · TimescaleDB</li>
+    <li>Dashboard: Grafana · Ignition</li>
+    <li>Alerts: email · Telegram · horn</li>
+  </ol>
+  <ul class="scale">
+    <li>Raw<div class="bar"><i style="width:15%"></i><em>1 week</em></div></li>
+    <li>1-min average<div class="bar"><i style="width:45%"></i><em>1 month</em></div></li>
+    <li>1-hour average<div class="bar"><i style="width:100%"></i><em>Years</em></div></li>
+  </ul>
+  <p class="tip">Every second for a year = <b>31 million</b> points per tag ⇒ downsampling.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>Good alarms and bad alarms</h2>
-<p>An alarm that fires too often gets ignored (alarm flooding). Simplified ISA-18.2 rules:</p>
-<ul><li><b>Threshold + delay:</b> “temperature &gt; 200 °C for 30 seconds”, not “temperature &gt; 200”. The delay kills momentary spikes.</li>
-<li><b>Hysteresis:</b> raise at 200 and clear at 195; otherwise the alarm chatters dozens of times around the threshold.</li>
-<li><b>Priorities:</b> critical / high / low / advisory, each with its own channel: a critical alarm wakes the on-call engineer; an advisory is read in the morning.</li>
-<li><b>Acknowledge:</b> an active, unacknowledged alarm stays visible until a person acknowledges it; log who acknowledged it and when.</li>
-<li><b>Suppression:</b> during maintenance or when the line is stopped, do not send “low pressure” from twenty sensors; a single “line stopped” alarm is enough.</li></ul>
+  <p class="bf"><span class="ic">🔕</span><span>Too many alarms <b>get ignored</b>.</span></p>
+  <ul class="fx">
+    <li><b>Limit + delay</b><span>&gt; 200 °C for 30 s</span></li>
+    <li><b>Hysteresis</b><span>Raise at 200, clear at 195</span></li>
+    <li><b>Priorities</b><span>Critical wakes the on-call</span></li>
+    <li><b>Acknowledge</b><span>Who and when</span></li>
+    <li><b>Suppression</b><span>"Line stopped" instead of 20 alarms</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>OEE: the number a manager understands</h2>
-<p><b>OEE</b> (Overall Equipment Effectiveness) = <b>Availability × Performance × Quality</b>, and it is calculated from just three signals that can be taken from the PLC:</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>Factor</th><th>Calculation</th><th>Example</th></tr></thead><tbody>
-<tr><td>Availability (A)</td><td>Run time ÷ planned time</td><td>7 h ÷ 8 h = 87.5%</td></tr>
-<tr><td>Performance (P)</td><td>(Parts produced × ideal cycle time) ÷ run time</td><td>3000 × 7 s ÷ 25200 s = 83.3%</td></tr>
-<tr><td>Quality (Q)</td><td>Good parts ÷ parts produced</td><td>2900 ÷ 3000 = 96.7%</td></tr>
-<tr><td><b>OEE</b></td><td>A × P × Q</td><td>0.875 × 0.833 × 0.967 = <b>70.5%</b></td></tr></tbody></table></div>
-<p>Signals required: <b>Running</b> (a bit), a <b>part counter</b> and a <b>reject counter</b>. From the Running bit alone you can derive downtime reasons if you add a reason code that the operator selects on the HMI screen.</p>
-<div class="box key"><b>85%</b> is considered world-class, and most plants start at 40–60%. The number itself is not what matters; what matters is <b>where the minutes are lost</b>: a Pareto chart of downtime reasons is the first thing any manager asks for.</div>
+  <div class="formula">OEE = A × P × Q</div>
+  <ul class="scale">
+    <li>Availability<div class="bar"><i style="width:87.5%"></i><em><bdi dir="ltr">87.5 %</bdi></em></div></li>
+    <li>Performance<div class="bar"><i style="width:83.3%"></i><em><bdi dir="ltr">83.3 %</bdi></em></div></li>
+    <li>Quality<div class="bar"><i style="width:96.7%"></i><em><bdi dir="ltr">96.7 %</bdi></em></div></li>
+    <li class="danger">OEE<div class="bar"><i style="width:70.5%"></i><em><bdi dir="ltr">70.5 %</bdi></em></div></li>
+  </ul>
+  <p class="tip">Signals: <b>Running</b> + part counter + reject counter.</p>
+  <div class="box key"><b>85%</b> is world class; most plants start at 40–60%. What matters is <b>where the minutes go</b>: a Pareto of stop reasons.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Designing a dashboard that does not confuse</h2>
-<ul><li>One screen per line: status (green/red), today’s OEE, parts vs. target, last alarm. Details go on a secondary page.</li>
-<li>Plot the temperature trend with the <b>upper and lower limit lines</b> drawn; otherwise the curve is meaningless.</li>
-<li>Put the unit next to every number, and show the timestamp of the last update; a dashboard showing a stale value is more dangerous than an empty one.</li>
-<li>One colour for danger (red), and never use it for decoration.</li>
-<li>A “gateway connected” indicator driven by a heartbeat message; if it stops, all values are greyed out.</li></ul>
+  <ul class="fx">
+    <li class="ok"><b>One screen per line</b><span>State · OEE · parts/target · last alarm</span></li>
+    <li class="ok"><b>Trend</b><span>With both limit lines</span></li>
+    <li class="ok"><b>Unit and timestamp</b><span>A stale value is worse than a blank</span></li>
+    <li class="ok"><b>Red</b><span>For danger only</span></li>
+    <li class="ok"><b>Heartbeat</b><span>Missing ⇒ values grey out</span></li>
+  </ul>
+  <div class="box key"><b>On the simulator:</b> tune the limit, delay and hysteresis until the false alarm stops, then work out OEE. <a class="btn pri" href="net.html#dash" style="margin-inline-start:8px">Open the simulator →</a></div>
 </section>
-<div class="box key"><b>On the simulator:</b> in the <b>Dashboard</b> tab, adjust the alarm threshold, delay and hysteresis until the false alarm disappears, then calculate OEE from the counters shown. <a class="btn pri" href="net.html#dash" style="margin-inline-start:8px">Open the simulator →</a></div>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
   <p>Answer at least 6 of 7 correctly to complete the lesson.</p>

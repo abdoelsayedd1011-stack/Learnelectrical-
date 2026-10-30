@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261028e1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b7">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -34,57 +35,68 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>EtherNet/IP and CIP</h2>
-<p><b>EtherNet/IP</b> (here IP stands for Industrial Protocol, not Internet Protocol) is the Ethernet network of Allen-Bradley/Rockwell and the <b>ODVA</b> partners. On top of TCP/UDP it runs the same <b>CIP</b> protocol used by DeviceNet, so the objects and description files are shared.</p>
-<ul><li><b>Implicit messaging (I/O):</b> cyclic data over <b>UDP</b> on port 2222, at an <b>RPI</b> (Requested Packet Interval) such as 10 ms. This is how a ControlLogix exchanges data with POINT I/O and a PowerFlex drive.</li>
-<li><b>Explicit messaging:</b> on-demand request/response over <b>TCP 44818</b>: reading a tag from another PLC, or a parameter from a device.</li>
-<li>In Studio 5000 you add the device from its <b>EDS</b> file, or as a Generic Ethernet Module using the Assembly instance numbers from its manual.</li>
-<li>I/O traffic is usually <b>multicast</b>, so switches must support <b>IGMP snooping</b>; otherwise the traffic floods every port.</li>
-<li>The ring topology here is <b>DLR</b> (Device Level Ring), the counterpart of MRP.</li></ul>
-<div class="box key"><b>Classic problem:</b> communication drops as devices are added: the module has run out of <b>connections</b> or its <b>CPU packet budget</b> (pps). Monitor connection usage on the network module, and raise the RPI for non-critical devices.</div>
+  <p class="bf"><span class="ic">🅰️</span><span>Allen-Bradley's Ethernet, where IP = <b>Industrial Protocol</b>. On top runs the same CIP as DeviceNet.</span></p>
+  <div class="vs">
+    <div class="side"><b>Implicit (I/O)</b><span class="big">UDP 2222</span><span>Cyclic at the RPI</span></div>
+    <i>vs</i>
+    <div class="side"><b>Explicit</b><span class="big">TCP 44818</span><span>Request/reply on demand</span></div>
+  </div>
+  <ul class="fx">
+    <li><b>EDS</b><span>Or a generic module with assembly numbers</span></li>
+    <li><b>Multicast</b><span>Switches need IGMP snooping</span></li>
+    <li><b>DLR</b><span>The ring (like MRP)</span></li>
+  </ul>
+  <p class="alert">Drops when devices are added? Out of <b>connections or pps</b> · raise the RPI on non-critical ones.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>AS-Interface: the yellow cable</h2>
-<p><b>AS-i</b> is a network for the simplest sensors and actuators (pushbuttons, proximity sensors, valves). A flat yellow two-wire cable carries <b>data and 30 V power</b> together; devices mount onto it with piercing contacts, with no cutting or soldering.</p>
-<ul><li>One master (a card in the PLC or a gateway to PROFIBUS/PROFINET) and up to <b>62 slaves</b> (31 in the older version), each with 4 binary inputs and 4 binary outputs.</li>
-<li>Cycle time is about <b>5 ms</b> for the whole network.</li>
-<li>The address, 1–31 (A/B in version 2.1), is written to the slave with a <b>handheld addressing unit</b>; a new slave has address 0.</li>
-<li>It needs a <b>dedicated AS-i power supply</b> (with data decoupling), not an ordinary 24 V supply. A parallel black cable carries additional 24 V for actuators.</li>
-<li>Length is 100 m without a repeater, and no termination is needed. Branch freely (tree topology).</li></ul>
+  <p class="bf"><span class="ic">🟨</span><span>Two wires carry <b>data and 30 V</b> together; devices clamp on with piercing pins.</span></p>
+  <div class="tiles">
+    <div class="tile"><span class="big">62</span><b>Slaves</b><span>4 in + 4 out</span></div>
+    <div class="tile"><span class="big">5 ms</span><b>Cycle</b></div>
+    <div class="tile"><span class="big">100 m</span><b>No termination</b><span>Free tree</span></div>
+  </div>
+  <ul class="fx">
+    <li><b>New slave</b><span>Address 0 · set it with a programmer</span></li>
+    <li><b>Supply</b><span>Special AS-i supply, not plain 24 V</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>IO-Link: the smart sensor</h2>
-<p><b>IO-Link</b> is not a bus network but a <b>point-to-point link</b> between an <b>IO-Link master</b> (a block with eight M12 ports) and a single sensor or actuator, over an ordinary three-wire sensor cable (L+, L− and C/Q) up to 20 m long. The master itself connects to the PLC over PROFINET, EtherNet/IP or EtherCAT.</p>
-<ul><li>The <b>C/Q</b> wire operates either as a standard switching output (SIO) or as a serial communication channel (COM1/2/3 at 4.8 / 38.4 / 230.4 kbit/s).</li>
-<li><b>Process data</b> is cyclic (the actual value with no analog conversion: a pressure of 4.37 bar as a number); <b>service data</b> covers parameters (setpoint, unit of measure, serial number); and <b>events</b> carry warnings (lens dirty, overtemperature).</li>
-<li>An <b>IODD</b> file describes the sensor (the counterpart of GSD). <b>Data storage</b> in the master keeps the sensor's parameters and reloads them automatically on replacement: the technician swaps the sensor and sets nothing.</li>
-<li>Diagnostics: the port LED on the master (green = communicating, red = short circuit or wrong sensor), and the master reports each port's status to the PLC.</li></ul>
+  <p class="bf"><span class="ic">🔗</span><span>A <b>point-to-point</b> link on a normal sensor cable (3 wires, 20 m) to a master with M12 ports.</span></p>
+  <div class="tiles">
+    <div class="tile"><b>Process data</b><span>4.37 bar as a number</span></div>
+    <div class="tile"><b>Service data</b><span>Setpoint · unit</span></div>
+    <div class="tile"><b>Events</b><span>Dirty lens</span></div>
+  </div>
+  <p class="tip"><b>Data storage:</b> swap the sensor and its parameters come back by themselves. Described by an <b>IODD</b>.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>HART: digital over 4-20 mA</h2>
-<p><b>HART</b> superimposes a small digital signal (FSK modulation at 1200/2200 Hz) <b>on top of</b> the 4-20 mA current itself without changing its average value. The current loop still carries the primary value (pressure), while HART carries alongside it: the tag, the unit, secondary values (temperature), diagnostics and remote reconfiguration.</p>
-<ul><li>It needs a loop resistance of at least <b>250 Ω</b> for the digital voltage to appear; most input cards include it.</li>
-<li>A <b>handheld communicator</b>, or a HART modem on a PC, connects across the transmitter terminals or anywhere in the loop.</li>
-<li><b>Multidrop:</b> several transmitters on one loop with addresses 1–15; the current is fixed at 4 mA and values are read digitally only (slow: 2–3 readings per second).</li>
-<li><b>WirelessHART</b>: a 2.4 GHz wireless mesh network for remote transmitters, with a gateway that aggregates them to Modbus TCP or OPC UA.</li></ul>
+  <p class="bf"><span class="ic">📶</span><span>A small FSK signal <b>on top of</b> the current: the value stays, plus tag, unit and diagnostics.</span></p>
+  <ul class="fx">
+    <li><b>250 Ω</b><span>Minimum in the loop</span></li>
+    <li><b>Communicator</b><span>Anywhere on the loop</span></li>
+    <li><b>Multidrop</b><span>15 transmitters · current fixed at 4 mA</span></li>
+    <li><b>WirelessHART</b><span>2.4 GHz mesh with a gateway</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>The master comparison table</h2>
-<div class="tblw"><table class="tbl"><thead><tr><th>Network</th><th>Medium</th><th>Speed</th><th>Nodes</th><th>Description file</th><th>Where you see it</th></tr></thead><tbody>
-<tr><td>Modbus RTU</td><td>RS-485</td><td>≤115 kbit/s</td><td>247</td><td>—</td><td>Drives, energy meters</td></tr>
-<tr><td>Modbus TCP</td><td>Ethernet</td><td>100 M</td><td>IP</td><td>—</td><td>PLC, SCADA, gateways</td></tr>
-<tr><td>PROFIBUS DP</td><td>RS-485</td><td>≤12 Mbit/s</td><td>126</td><td>GSD</td><td>Siemens, remote I/O</td></tr>
+  <div class="tblw"><table class="tbl"><thead><tr><th>Network</th><th>Medium</th><th>Speed</th><th>Nodes</th><th>File</th><th>Where</th></tr></thead><tbody>
+<tr><td>Modbus RTU</td><td>RS-485</td><td>≤115 kbit/s</td><td>247</td><td>—</td><td>VFDs, meters</td></tr>
+<tr><td>Modbus TCP</td><td>Ethernet</td><td>100 M</td><td>IP</td><td>—</td><td>PLC, SCADA</td></tr>
+<tr><td>PROFIBUS DP</td><td>RS-485</td><td>≤12 Mbit/s</td><td>126</td><td>GSD</td><td>Siemens</td></tr>
 <tr><td>PROFINET</td><td>Ethernet</td><td>100 M / 1 G</td><td>By name</td><td>GSDML</td><td>Modern Siemens</td></tr>
-<tr><td>CANopen</td><td>CAN</td><td>≤1 Mbit/s</td><td>127</td><td>EDS</td><td>Servos, cranes</td></tr>
-<tr><td>DeviceNet</td><td>CAN + power</td><td>≤500 kbit/s</td><td>64</td><td>EDS</td><td>Legacy Allen-Bradley</td></tr>
+<tr><td>CANopen</td><td>CAN</td><td>≤1 Mbit/s</td><td>127</td><td>EDS</td><td>Servo, cranes</td></tr>
+<tr><td>DeviceNet</td><td>CAN + power</td><td>≤500 kbit/s</td><td>64</td><td>EDS</td><td>Older AB</td></tr>
 <tr><td>EtherNet/IP</td><td>Ethernet</td><td>100 M / 1 G</td><td>IP</td><td>EDS</td><td>Allen-Bradley</td></tr>
-<tr><td>EtherCAT</td><td>Ethernet (ring)</td><td>100 M</td><td>65535</td><td>ESI</td><td>Beckhoff, precision motion</td></tr>
-<tr><td>AS-i</td><td>Yellow cable + power</td><td>167 kbit/s</td><td>62</td><td>—</td><td>Pushbuttons and simple sensors</td></tr>
-<tr><td>IO-Link</td><td>Point-to-point, 3 wires</td><td>≤230 kbit/s</td><td>1 per port</td><td>IODD</td><td>Smart sensors</td></tr>
-<tr><td>HART</td><td>Over 4-20 mA</td><td>1.2 kbit/s</td><td>15</td><td>DD</td><td>Pressure and flow transmitters</td></tr></tbody></table></div>
-<p>There is no need to memorize the table; keep it as a reference. What matters is recognizing from the cable, its color and the connector which network is in front of you, then turning to its lesson.</p>
+<tr><td>EtherCAT</td><td>Ethernet</td><td>100 M</td><td>65535</td><td>ESI</td><td>Precise motion</td></tr>
+<tr><td>AS-i</td><td>Yellow + power</td><td>167 kbit/s</td><td>62</td><td>—</td><td>Buttons, sensors</td></tr>
+<tr><td>IO-Link</td><td>3 wires</td><td>≤230 kbit/s</td><td>1/port</td><td>IODD</td><td>Smart sensors</td></tr>
+<tr><td>HART</td><td>Over 4-20 mA</td><td>1.2 kbit/s</td><td>15</td><td>DD</td><td>Transmitters</td></tr></tbody></table></div>
+  <p class="tip">Don't memorise it: recognise the network by <b>cable, colour and connector</b>, then go to its lesson.</p>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
   <p>Answer at least 6 of 7 correctly to complete the lesson.</p>

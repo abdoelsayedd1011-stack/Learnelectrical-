@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261027i1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b7">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -32,14 +33,19 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>ما هو PROFIBUS DP؟</h2>
-<p><b>PROFIBUS DP</b> (Decentralized Periphery) شبكة حقل من Siemens وشركاء PI، تعمل فوق <b>RS-485</b> بالكابل البنفسجي الشهير. سيد واحد (الـ PLC) يستطلع التوابع (وحدات I/O، محوّلات تردد، جزر صمامات) دوريًا: يرسل مخرجاته ويستلم مدخلاتها في كل دورة. حتى 126 عنوانًا، وسرعات من 9.6 kbit/s إلى <b>12 Mbit/s</b>.</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>السرعة</th><th>الطول الأقصى للقطعة</th></tr></thead><tbody>
-<tr><td class="mono">9.6 – 93.75 kbit/s</td><td>1200 m</td></tr><tr><td class="mono">187.5 kbit/s</td><td>1000 m</td></tr><tr><td class="mono">500 kbit/s</td><td>400 m</td></tr><tr><td class="mono">1.5 Mbit/s</td><td>200 m</td></tr><tr><td class="mono">3 – 12 Mbit/s</td><td>100 m</td></tr></tbody></table></div>
-<p>السرعة الشائعة في المصانع <b>1.5 Mbit/s</b>. التوابع الحديثة تكتشف السرعة تلقائيًا؛ القديمة قد تحتاج ضبطًا يدويًا.</p>
+  <p class="bf"><span class="ic">🟣</span><span>شبكة حقل فوق RS-485 بالكابل البنفسجي: <b>سيد واحد</b> يستطلع حتى 126 تابعًا كل دورة.</span></p>
+  <ul class="scale">
+    <li><bdi dir="ltr">≤ 93.75 k</bdi><div class="bar"><i style="width:100%"></i><em><bdi dir="ltr">1200 m</bdi></em></div></li>
+    <li><bdi dir="ltr">187.5 k</bdi><div class="bar"><i style="width:83%"></i><em><bdi dir="ltr">1000 m</bdi></em></div></li>
+    <li><bdi dir="ltr">500 k</bdi><div class="bar"><i style="width:33%"></i><em><bdi dir="ltr">400 m</bdi></em></div></li>
+    <li><bdi dir="ltr">1.5 M</bdi><div class="bar"><i style="width:17%"></i><em><bdi dir="ltr">200 m</bdi></em></div></li>
+    <li><bdi dir="ltr">3–12 M</bdi><div class="bar"><i style="width:8%"></i><em><bdi dir="ltr">100 m</bdi></em></div></li>
+  </ul>
+  <p class="tip">الأشهر في المصانع: <b>1.5 Mbit/s</b>.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>الموصّل والكابل والإنهاء</h2>
-<svg viewBox="0 0 640 210" role="img" aria-label="شبكة PROFIBUS بأربع محطات" style="width:100%;max-width:640px;direction:ltr">
+  <svg viewBox="0 0 640 210" role="img" aria-label="شبكة PROFIBUS بأربع محطات" style="width:100%;max-width:640px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
 <rect x="20" y="30" width="110" height="60" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="75" y="54" font-weight="700">S7 CPU</text><text x="75" y="74">Master addr 2</text>
 <rect x="190" y="30" width="110" height="60" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="245" y="54" font-weight="700">ET200</text><text x="245" y="74">addr 3</text>
@@ -52,35 +58,42 @@
 <rect x="400" y="140" width="30" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="415" y="153" font-size="10">OFF</text>
 <text x="320" y="190">كابل بنفسجي: أخضر = A، أحمر = B · مفتاح الإنهاء ON في الطرفين فقط</text>
 </g></svg>
-<ul><li><b>الموصّل D-Sub 9</b> فيه مدخلان للكابل: <b>IN</b> (A1/B1) و <b>OUT</b> (A2/B2)، ومفتاح إنهاء. عندما يكون المفتاح <b>ON</b> يُفصل مخرج OUT تلقائيًا، لذلك يجب أن يكون الموصّل ذو الإنهاء في آخر الخط فعلًا.</li>
-<li>مقاومة الإنهاء في PROFIBUS ليست 120 أوم فقط بل شبكة (220 Ω بين A و B + 390 Ω إلى +5 V و 390 Ω إلى GND)، لذلك <b>تحتاج تغذية 5 V من الجهاز</b>: لو أطفأت الجهاز الطرفي ضاع الإنهاء وتعطلت الشبكة كلها.</li>
-<li>الكابل: نوع A، زوج ملتوٍ، أخضر = A، أحمر = B. لا تقشر أكثر من اللازم ولا تثنِه بحدة.</li>
-<li>الحد: 32 محطة لكل قطعة؛ أكثر من ذلك أو مسافة أطول = <b>مكرر (Repeater)</b> أو <b>OLM</b> ألياف.</li></ul>
+  <ul class="fx">
+    <li><b>D-Sub 9: IN / OUT</b><span>الإنهاء ON يفصل OUT · في آخر الخط فعلًا</span></li>
+    <li><b>الإنهاء يحتاج 5 V</b><span>انطفأ الجهاز الطرفي ⇐ الشبكة كلها تتعطل</span></li>
+    <li><b>الكابل نوع A</b><span>أخضر = A · أحمر = B</span></li>
+    <li><b>32 محطة / قطعة</b><span>أكثر ⇐ Repeater أو OLM</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>العنوان وملف GSD</h2>
-<p>كل تابع له عنوان 0–125 يُضبط بمفاتيح DIP أو مفتاح دوّار أو من البرنامج. السيد يحتاج إلى ملف <b>GSD</b> (نصي) لكل نوع تابع يصف وحداته وبياناته؛ تحمّله من موقع الشركة وتستورده في TIA Portal أو STEP 7، ثم تسحب التابع إلى الشبكة وتعطيه العنوان نفسه المضبوط على الجهاز.</p>
-<div class="box safe"><b>خطأ شائع:</b> العنوان على المفاتيح 5 وفي المشروع 4. النتيجة: BF على السيد، والتابع يعمل أضواءه خضراء بلا بيانات. والخطأ الثاني: نسيان أن بعض الأجهزة تقرأ مفاتيح العنوان عند التشغيل فقط، فغيّرت العنوان ولم تعد تشغيل الجهاز.</div>
+  <ol class="steps">
+    <li>العنوان 0–125 على الجهاز</li>
+    <li>استورد GSD</li>
+    <li class="on">العنوان نفسه في المشروع</li>
+  </ol>
+  <div class="box safe">مفاتيح 5 والمشروع 4 ⇐ <b>BF</b> بلا بيانات. وبعض الأجهزة تقرأ المفاتيح <b>عند التشغيل فقط</b>.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>المصابيح والتشخيص</h2>
-<div class="tblw"><table class="tbl"><thead><tr><th>المصباح</th><th>الحالة</th><th>المعنى</th></tr></thead><tbody>
-<tr><td><b>BF</b> (Bus Fault)</td><td>أحمر ثابت</td><td>لا اتصال إطلاقًا: كابل، إنهاء، سرعة، أو السيد لا يرى أي تابع</td></tr>
-<tr><td><b>BF</b></td><td>أحمر يومض</td><td>تابع واحد على الأقل مفقود أو معطّل، الباقون يعملون</td></tr>
-<tr><td><b>SF</b> (System Fault)</td><td>أحمر</td><td>خطأ في التهيئة أو تشخيص من تابع (وحدة ناقصة، جهد ناقص)</td></tr>
-<tr><td><b>DIA</b> على التابع</td><td>أحمر</td><td>التابع يبلّغ تشخيصًا: اقرأه من السيد</td></tr></tbody></table></div>
-<p>من TIA Portal: <b>Online → Accessible devices</b> أو نافذة التشخيص تُظهر كل تابع بحالته. أما على الكابل نفسه فأداة <b>ProfiTrace</b> تُظهر شكل الإشارة والانعكاسات والمحطات المتقطعة. بدون أداة، افحص: الإنهاء في الطرفين فقط، الدرع مؤرَّض، لا فروع، والطول مناسب للسرعة.</p>
+  <ul class="fx">
+    <li><b>🔴 BF ثابت</b><span>لا اتصال: كابل · إنهاء · سرعة</span></li>
+    <li><b>🔴 BF يومض</b><span>تابع واحد على الأقل مفقود</span></li>
+    <li><b>🔴 SF</b><span>تهيئة أو تشخيص من تابع</span></li>
+    <li><b>🔴 DIA على التابع</b><span>اقرأ التشخيص من السيد</span></li>
+  </ul>
+  <p class="tip">TIA: Accessible devices · على الكابل: <b>ProfiTrace</b>.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>التفكير في عطل PROFIBUS</h2>
-<ol><li><b>عطل كل الشبكة فجأة:</b> ابحث عن جهاز طرفي انطفأ (ضاعت تغذية الإنهاء)، أو موصّل انفصل، أو كابل تحت عجلات.</li>
-<li><b>تابع واحد مفقود:</b> عنوانه، تغذيته، موصّله، وهل هو بعد قطع في الخط (كل ما بعده مفقود أيضًا)؟</li>
-<li><b>أعطال متقطعة:</b> ضوضاء من كابل قوى مجاور، إنهاء زائد أو ناقص، طول زائد للسرعة، أو فرع (stub). خفّض السرعة مؤقتًا للتشخيص: لو اختفت الأعطال فالمشكلة فيزيائية.</li>
-<li><b>بعد استبدال تابع:</b> اضبط العنوان نفسه، وأعد التشغيل، وتأكد أن إصدار الـ GSD يطابق الجهاز الجديد.</li></ol>
-<div class="box key"><b>على المحاكي:</b> اضبط عناوين المحطات الأربع لتطابق المشروع، فعّل الإنهاء في الطرفين فقط، ثم شخّص: مصباح BF ثابت ويومض، تابع مطفأ في الطرف، وعنوان مكرر. <a class="btn pri" href="net.html#profibus" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+  <ul class="fx">
+    <li><b>الشبكة كلها فجأة</b><span>جهاز طرفي انطفأ · موصّل انفصل</span></li>
+    <li><b>تابع واحد</b><span>عنوانه · تغذيته · قطع قبله؟</span></li>
+    <li><b>أعطال متقطعة</b><span>خفّض السرعة: اختفت ⇐ مشكلة فيزيائية</span></li>
+    <li><b>بعد الاستبدال</b><span>العنوان نفسه · إعادة تشغيل · GSD مطابق</span></li>
+  </ul>
+  <div class="box key"><b>على المحاكي:</b> طابق العناوين الأربعة، فعّل الإنهاء في الطرفين، ثم شخّص BF والطرف المطفأ والعنوان المكرر. <a class="btn pri" href="net.html#profibus" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
