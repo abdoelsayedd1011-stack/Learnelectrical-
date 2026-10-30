@@ -2063,7 +2063,7 @@ function gCards(){
 }
 function guideRender(){
  if(!GUI.guided)return;
- const run=GUI.ex>=0,show=run&&GUI.view!=='steps';$('#gStart').hidden=run;$('#gRun').hidden=!run||show;$('#gShow').hidden=!show;
+ const run=GUI.ex>=0,show=run;$('#gStart').hidden=run;$('#gRun').hidden=!run||show;$('#gShow').hidden=!show;
  if(SH.i>=0&&(!show||SH.i!==GUI.ex))shLeave();
  if(!run){document.body.setAttribute('data-g','start');gCards();return;}
  if(show){document.body.setAttribute('data-g','show');document.body.classList.remove('g-hand');if(SH.i!==GUI.ex)shRender(GUI.ex);$('#gShow').scrollIntoView({behavior:'smooth',block:'start'});return;}
@@ -2142,7 +2142,7 @@ function guideTick(force){
 }
 function guideRefresh(){if(GUI.guided&&GUI.ex>=0)guideTick(true);}
 window.guideTick=guideTick;window.guideRefresh=guideRefresh;
-$('#gCards').addEventListener('click',e=>{const b=e.target.closest('[data-ex]');if(!b)return;GUI.ex=+b.dataset.ex;GUI.step=0;if(!GUI.keepView){const tr=document.getElementById('stRoot');GUI.view=tr&&!tr.hidden?'steps':'show';}GUI.keepView=0;guiSave();guideRender();});
+$('#gCards').addEventListener('click',e=>{const b=e.target.closest('[data-ex]');if(!b)return;GUI.ex=+b.dataset.ex;GUI.step=0;guiSave();guideRender();});
 $('#gToShow').addEventListener('click',()=>{GUI.view='show';guideRender();});
 $('#gBack').addEventListener('click',()=>{GUI.ex=-1;GUI.step=0;guiSave();guideRender();});
 $('#gPrev').addEventListener('click',()=>{if(GUI.step>0){GUI.step--;guiSave();guideRender();}});
@@ -2283,7 +2283,7 @@ const MOTOR='<svg class="sh-mot" viewBox="0 0 190 120" aria-hidden="true"><defs>
  '<circle cx="150" cy="60" r="5" fill="#59656c"/></svg>';
 function shRender(i){
  const a=SOL[i],h=shS();SH.i=i;SH.mode='play';
- h.innerHTML='<div class="g-bar"><button class="btn" id="shBack" type="button">‹ رجوع للقايمة</button><button class="btn" id="shSteps" type="button">الخطوات بالتفصيل</button></div>'+
+ h.innerHTML='<div class="g-bar"><button class="btn" id="shBack" type="button">‹ رجوع للقايمة</button></div>'+
   '<h2 class="sh-title">'+(i+1)+'. '+a.t+'</h2>'+
   '<div class="sh-stage"><p class="sh-cap" id="shCap" aria-live="polite"></p>'+
    '<div class="sh-top"><div class="sh-face" id="shFace"></div><div class="sh-motor">'+MOTOR+'<div class="sh-read"><span><b id="shHz">0.0</b> Hz</span><span><b id="shRpm">0</b> rpm</span><span><b id="shAmp">0.0</b> A</span></div></div></div>'+
@@ -2303,7 +2303,7 @@ shS().addEventListener('click',e=>{const t=e.target.closest('button');if(!t)retu
  else if(t.id==='shAgain'){SH.mode='play';shRun();}
  else if(t.id==='shTry')shTry();
  else if(t.id==='shBack'){shLeave();GUI.ex=-1;GUI.view='show';guiSave();guideRender();}
- else if(t.id==='shSteps'){shLeave();GUI.view='steps';GUI.step=0;guiSave();guideRender();}});
+});
 /* the person touches a control themselves: stop the video and hand over */
 shS().addEventListener('pointerdown',e=>{if(SH.auto||SH.mode==='try')return;if(e.target.closest('.sh-bar,.g-bar'))return;if(e.target.closest('.pf,.sh-ctl,[data-k]'))shTry();},true);
 guiLoad();setMode(GUI.guided);
@@ -2828,7 +2828,7 @@ function pvSeen(){try{return JSON.parse(lsGet(KEY+':pv')||'[]');}catch(e){return
 function markPv(i){const a=pvSeen();if(a.indexOf(i)<0){a.push(i);lsSet(KEY+':pv',JSON.stringify(a));}}
 function mount(){
  const mb=D.querySelector('#modeBtn');
- if(mb&&!D.querySelector('#stTour')){const b=D.createElement('button');b.type='button';b.className='btn st-tbtn';b.id='stTour';b.innerHTML='▶ إزاي تستخدم المحاكي';b.addEventListener('click',()=>startTour(false));mb.insertAdjacentElement('afterend',b);}
+ if(mb&&!D.getElementById('gShow')&&!D.querySelector('#stTour')){const b=D.createElement('button');b.type='button';b.className='btn st-tbtn';b.id='stTour';b.innerHTML='▶ إزاي تستخدم المحاكي';b.addEventListener('click',()=>startTour(false));mb.insertAdjacentElement('afterend',b);}
  const tt=D.querySelector('#gTitle');
  if(tt&&C.ex!==false&&!D.querySelector('#stPvRow')){const r=D.createElement('div');r.className='st-pvrow';r.id='stPvRow';
   r.innerHTML='<button type="button" class="btn st-pv" id="stPv">▶ شوف المطلوب</button><small>يوريك النتيجة المطلوبة على '+(C.machine||'الموتور')+' قبل ما تبدأ</small>';
@@ -2848,7 +2848,7 @@ function watch(){
 function init(){
  mount();
  W.SIMTOUR={startTour,startPv,stop,state:PL,cfg:C,last:null,version:1};
- if(AUTO&&lsGet(KEY+':seen')!=='1'){st(()=>{if(!PL.on&&D.visibilityState!=='hidden')startTour(true);},1400);}
+ if(AUTO&&!D.getElementById('gShow')&&lsGet(KEY+':seen')!=='1'){st(()=>{if(!PL.on&&D.visibilityState!=='hidden')startTour(true);},1400);}
  st(watch,1500);
 }
 if(D.readyState==='loading')D.addEventListener('DOMContentLoaded',init);else init();
