@@ -1432,7 +1432,7 @@ PL.wire = function(host, opt){
   function draw(){
     const live = demoLive || (passed ? ex.live(act) : {});
     let s = `<svg viewBox="0 0 360 ${ex.h || 300}" role="img" aria-label="Wiring board">${ex.art(live)}`;
-    (demoLive ? [] : wires).forEach(([a, b], k) => { const A = T(a), B = T(b), mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2 + 18, col = TERM_COL[A.pol] || TERM_COL[B.pol] || '#333'; const d = `M${A.x} ${A.y}Q${mx} ${my} ${B.x} ${B.y}`; s += `<g class="bw" data-w="${k}"><path d="${d}" class="bw-o"/><path d="${d}" class="bw-c" stroke="${col}"/><path d="${d}" class="bw-hit" tabindex="0" role="button" aria-label="Wire from ${esc(A.l)} to ${esc(B.l)}, tap to remove it"/></g>`; });
+    (demoLive ? [] : wires).forEach(([a, b], k) => { const A = T(a), B = T(b), mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2 + 18, col = TERM_COL[A.pol] || TERM_COL[B.pol] || '#333'; const d = `M${A.x} ${A.y}Q${mx} ${my} ${B.x} ${B.y}`; s += `<g class="bw" data-w="${k}"><path d="${d}" class="bw-o"/><path d="${d}" class="bw-c" stroke="${col}"/><path d="${d}" class="bw-h"/><path d="${d}" class="bw-hit" tabindex="0" role="button" aria-label="Wire from ${esc(A.l)} to ${esc(B.l)}, tap to remove it"/></g>`; });
     ex.terms.forEach(t => { s += `<g class="bt${pend === t.id ? ' pend' : ''}" data-t="${t.id}"><circle cx="${t.x}" cy="${t.y}" r="16" class="bt-hit" tabindex="0" role="button" aria-label="Terminal ${esc(t.l)}"/><circle cx="${t.x}" cy="${t.y}" r="13" class="bt-ring${err && err.has(t.id) ? ' err' : ''}"/><circle cx="${t.x}" cy="${t.y}" r="7" class="bt-s"/><path d="M${t.x - 4} ${t.y}h8" class="bt-x"/><text x="${t.x + (t.lx || 0)}" y="${t.y + (t.ly != null ? t.ly : -12)}" class="bt-lab"${t.anc ? ` text-anchor="${t.anc}"` : ''}>${esc(t.l)}</text></g>`; });
     board.innerHTML = s + '</svg>';
     nhUpdate();
@@ -1623,7 +1623,7 @@ PL.timerDemo = function(host){
   ];
   const right = (id, l, y, pol) => ({id, l, x:246, y, pol, lx:14, ly:4, anc:'start'});
   const below = (id, l, x, y, pol) => ({id, l, x, y, pol, ly:24});
-  const top = live => A.psu(8, 6) + A.cpu(222, 6, {pwr:true});
+  const top = live => RA.rail(0, 27, 360) + A.psu(8, 6) + A.cpu(222, 6, {pwr:true});
   const DC = ['P24', 'P0', 'CL', 'CM'];
   const msgShort = '⚡ <b>Short:</b> +24V and 0V are connected together.';
   const msgMix = '⚡ <b>Danger:</b> 230V AC is connected to the 24V DC circuit.';
@@ -1638,7 +1638,7 @@ PL.timerDemo = function(host){
     }
     return null;
   }; }
-  const sensorArt = (kind, live) => A.sensor(14, 96, kind, live) + `<path d="M126 130V142" fill="none" stroke="#111" stroke-width="6" stroke-linecap="round"/><path d="M126 142C126 150 102 146 102 158" fill="none" stroke="#111" stroke-width="3.2"/><path d="M124 142C120 150 66 144 66 158" fill="none" stroke="#1f5fc0" stroke-width="3.2"/><path d="M122 142C116 150 30 142 30 158" fill="none" stroke="#6b3a1e" stroke-width="3.2"/>` + RA.terms(12, 150, 3, 36, ['#8e9398', '#4d7fc4', '#8e9398']);
+  const sensorArt = (kind, live) => A.sensor(14, 96, kind, live) + RA.wire('M126 142C126 150 102 146 102 158', '#1a1c1e', 3.2) + RA.wire('M124 142C120 150 66 144 66 158', '#1f5fc0', 3.2) + RA.wire('M122 142C116 150 30 142 30 158', '#7a4a1e', 3.2) + RA.wire('M126 130V143', '#4a4f53', 6.5) + RA.terms(12, 150, 3, 36, ['#8e9398', '#4d7fc4', '#8e9398']);
   const leadT = [below('BN', 'BN', 30, 168, 'p24'), below('BU', 'BU', 66, 168, 'p0'), below('BK', 'BK', 102, 168, 'sig')];
   const pbArt = live => A.pb(20, 206, live, 'Start button NO');
   const pbT = [below('PB13', '13', 34, 268, 'sig'), below('PB14', '14', 78, 268, 'sig')];
