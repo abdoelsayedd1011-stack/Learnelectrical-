@@ -16,6 +16,7 @@
 <script src="instr.js?v=20261030r1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b4">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -36,89 +37,78 @@
 <section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
 
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>RTD يعني إيه؟ و PT100 يعني إيه؟</h2>
-  <p><b>RTD</b> = Resistance Temperature Detector: حساس مقاومته بتتغيّر مع الحرارة. أشهر واحد معمول من <b>البلاتين (Pt)</b>:</p>
-  <ul>
-    <li><b>PT100</b> = بلاتين مقاومته <b>100 Ω على 0 °C</b>.</li>
-    <li><b>PT1000</b> = بلاتين مقاومته <b>1000 Ω على 0 °C</b> (التغيير أكبر 10 مرات، فأقل تأثرًا بالسلك).</li>
-    <li>المعامل <b>α = 0.00385</b> يعني المقاومة بتزيد حوالي <b>0.385 Ω لكل درجة</b> في الـ PT100.</li>
-  </ul>
-  <div class="formula">R(T) = R0 × (1 + A·T + B·T²)</div>
-  <p class="muted">دي معادلة Callendar–Van Dusen (فوق الصفر)، و <span class="mono">A = 3.9083×10⁻³</span> و <span class="mono">B = −5.775×10⁻⁷</span>. تحت الصفر فيه حد زيادة C. الجهاز بيعملها لوحده، وإنت كفاية تعرف الجدول:</p>
+  <h2 id="s1"><span class="k">1</span>PT100 يعني إيه؟</h2>
+  <div class="bf"><span class="ic">🌡️</span><span>RTD = مقاومة بتتغيّر مع الحرارة. <b>PT100 = بلاتين 100 Ω على 0 °C</b>.</span></div>
+  <div class="tiles">
+    <div class="tile"><span class="big mono">100 Ω</span><b>PT100</b><span>على 0 °C</span></div>
+    <div class="tile"><span class="big mono">1000 Ω</span><b>PT1000</b><span>السلك بيأثر أقل</span></div>
+    <div class="tile"><span class="big mono">0.385</span><b>Ω لكل درجة</b><span>α = 0.00385</span></div>
+  </div>
+  <div class="formula">T ≈ (R − 100) ÷ 0.385</div>
+  <p class="tip">119.4 Ω ⇐ <b>≈ 50 °C</b>. في الحرارة العالية ارجع للجدول:</p>
   <div class="tblw"><table class="tbl" id="ptTable"></table></div>
-  <div class="ex"><b>التقريب اللي في دماغك:</b> <span class="eq">T ≈ (R − 100) ÷ 0.385</span>. مثال: 119.4 Ω ⇐ <span class="eq">19.4 ÷ 0.385 ≈ 50 °C</span>. التقريب ده بيبعد شوية في الحرارة العالية (عند 200 °C بيدّي 197)، فللدقة ارجع للجدول.</div>
   <figure class="fig" id="ptFig"></figure>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>الدقة: Class A و Class B</h2>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>الكلاس (IEC 60751)</th><th>السماحية</th><th>عند 0 °C</th><th>عند 100 °C</th></tr></thead>
-    <tbody>
-      <tr><td><b>AA</b></td><td class="mono">±(0.10 + 0.0017·|T|)</td><td class="mono">±0.10</td><td class="mono">±0.27</td></tr>
-      <tr><td><b>A</b></td><td class="mono">±(0.15 + 0.002·|T|)</td><td class="mono">±0.15</td><td class="mono">±0.35</td></tr>
-      <tr><td><b>B</b></td><td class="mono">±(0.30 + 0.005·|T|)</td><td class="mono">±0.30</td><td class="mono">±0.80</td></tr>
-    </tbody></table></div>
-  <p>Class B هو الأشهر والأرخص. لاحظ إن السماحية دي للحساس بس، والكابل والجهاز ليهم غلط لوحدهم.</p>
+  <h2 id="s2"><span class="k">2</span>الدقة: Class A و B</h2>
+  <ul class="scale">
+    <li>AA<div class="bar"><i style="width:34%"></i><em><bdi dir="ltr">±0.27 °C @100</bdi></em></div></li>
+    <li>A<div class="bar"><i style="width:44%"></i><em><bdi dir="ltr">±0.35 °C @100</bdi></em></div></li>
+    <li>B (الأشهر)<div class="bar"><i style="width:100%"></i><em><bdi dir="ltr">±0.80 °C @100</bdi></em></div></li>
+  </ul>
+  <p class="tip">ده للحساس بس. الكابل والجهاز ليهم غلط لوحدهم.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>2 سلك و 3 سلك و 4 سلك</h2>
-  <p>الجهاز بيقيس المقاومة <b>من عند أطرافه</b>، يعني بيقيس الحساس + السلك. الكابل 50 متر نحاس 0.5 mm² مقاومة كل سلك فيه:</p>
-  <div class="formula">R = 0.0175 × 50 ÷ 0.5 = 1.75 Ω</div>
-  <div class="ex"><b>بالأرقام:</b> لو كل سلك <b>5 Ω</b> (كابل طويل ورفيع) في توصيلة <b>2 سلك</b>، الجهاز هيقرا <b>+10 Ω زيادة</b>. و 10 Ω في الـ PT100 = <span class="eq">10 ÷ 0.385 ≈ 26 °C</span> غلط! الحساس على 100 °C والشاشة بتقول 126.</div>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>التوصيل</th><th>الجهاز بيقيس</th><th>إمتى</th></tr></thead>
-    <tbody>
-      <tr><td><b>2 سلك</b></td><td class="mono">R(T) + 2 × R(سلك)</td><td>كابل قصير جدًا، أو PT1000، أو ترانسميتر في الراس</td></tr>
-      <tr><td><b>3 سلك</b></td><td>بيطرح مقاومة سلك واحد على افتراض إن السلكين زي بعض</td><td>الأشهر في المصانع</td></tr>
-      <tr><td><b>4 سلك</b></td><td>بيقيس الجهد على الحساس بسلكين مفيهمش تيار</td><td>المعايرة والقياس الدقيق</td></tr>
-    </tbody></table></div>
+  <h2 id="s3"><span class="k">3</span>2 و 3 و 4 سلك</h2>
+  <div class="bf"><span class="ic">📏</span><span>2 سلك، كل سلك 5 Ω ⇐ <b>+10 Ω = +26 °C غلط</b>. الحساس 100 والشاشة 126.</span></div>
+  <ul class="fx">
+    <li><b>2 سلك</b><span>R + سلكين · كابل قصير أو PT1000</span></li>
+    <li><b>3 سلك</b><span>بيطرح سلك · الأشهر في المصانع</span></li>
+    <li><b>4 سلك</b><span>مفيش تأثير للسلك · المعايرة</span></li>
+  </ul>
   <div class="wd"><h3>بنش الـ PT100</h3><div id="bench"></div></div>
-  <div class="box"><b>الألوان:</b> على حسب IEC 60751 طرف الحساس الأول سلكه <b>أحمر</b> والتاني <b>أبيض</b>. في الـ 3 سلك فيه سلكين بنفس اللون على نفس الطرف (أحمر-أحمر-أبيض أو أحمر-أبيض-أبيض على حسب الشركة)، وفي الـ 4 سلك اتنين أحمر واتنين أبيض. المهم: <b>السلكين اللي زي بعض = نفس الطرف</b>.</div>
+  <p class="tip">الألوان: <b>أحمر</b> طرف و<b>أبيض</b> طرف. السلكين اللي زي بعض = نفس الطرف.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>التسخين الذاتي وترانسميتر الراس</h2>
-  <p><b>Self-heating:</b> عشان الجهاز يقيس المقاومة لازم يعدّي فيها تيار (غالبًا حوالي 1 mA أو أقل). التيار ده بيسخّن الحساس شوية <span class="eq">(P = I² × R)</span>. في الهوا الساكن ممكن يعمل غلط يتحس، فالأجهزة بتستخدم تيار صغير جدًا. متقيسش PT100 شغّال بأفوميتر قديم تياره عالي وتستغرب القراية بتزيد.</p>
-  <p><b>Head-mount transmitter:</b> ترانسميتر صغير جوه راس الحساس بيحوّل المقاومة لـ ⁦4⁠–⁠20 mA⁩ على رينج إنت بتختاره، مثلًا <b>⁦0⁠–⁠150 °C⁩</b>: على 0 ⇐ 4 mA، على 75 ⇐ 12 mA، على 150 ⇐ 20 mA. الكابل للوحة بقى نحاس عادي ومقاومته مش فارقة (درس 2).</p>
+  <div class="vs">
+    <div class="side"><b>Self-heating</b><span>تيار القياس (~1 mA) بيسخّنه<br>عداد تياره عالي = قراية بتزيد</span></div>
+    <i>+</i>
+    <div class="side"><b>ترانسميتر في الراس</b><span>0–150 °C ⇐ 4–20 mA<br>75 °C = 12 mA</span></div>
+  </div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>فحص الـ PT100 بالأفوميتر</h2>
-  <ol class="steps-l">
-    <li>افصل الحساس من الجهاز أو الترانسميتر (ماتقيسش أوم على حاجة متوصّلة).</li>
-    <li>الأفوميتر على Ω. قيس بين <b>الأحمر والأبيض</b>: في حرارة الغرفة (⁦25⁠–⁠30 °C⁩) لازم تلاقي حوالي <b>⁦110⁠–⁠112 Ω⁩</b>.</li>
-    <li>قيس بين السلكين اللي <b>نفس اللون</b>: لازم تلاقي <b>مقاومة سلك بس</b> (أقل من ⁦1⁠–⁠2 Ω⁩).</li>
-    <li>قيس بين أي سلك وجسم الحساس (الجراب): لازم <b>OL</b> (عازل). لو لقيت قيمة يبقى فيه رطوبة أو تسريب.</li>
-    <li>حط الحساس في ميّة بتغلي أو تلج بيدوب: 138.5 Ω أو 100 Ω (مع تصحيح الضغط الجوي للغليان).</li>
-  </ol>
+  <ul class="fx">
+    <li><b>أحمر ↔ أبيض</b><span>≈ 110–112 Ω في حرارة الغرفة</span></li>
+    <li><b>نفس اللون</b><span>مقاومة سلك بس (&lt; 1–2 Ω)</span></li>
+    <li><b>سلك ↔ الجراب</b><span>لازم OL</span></li>
+    <li><b>تلج / ميّة بتغلي</b><span>100 Ω / 138.5 Ω</span></li>
+  </ul>
+  <p class="alert"><span>افصل الحساس الأول. <b>ماتقيسش أوم على حاجة متوصّلة.</b></span></p>
   <div class="wd"><h3>تمرين: من الأوم للدرجة</h3><div id="drill"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s6">
   <h2 id="s6"><span class="k">6</span>NTC و PTC</h2>
-  <p>دول <b>ثيرمستورات</b> مش بلاتين: رخاص وحساسين جدًا بس مش خطيين.</p>
-  <ul>
-    <li><b>NTC</b> (Negative): مقاومته <b>بتقل</b> مع الحرارة بشكل أسّي. أشهر واحد <b>10 kΩ على 25 °C</b> و <b>β = 3950</b>. موجود في التكييفات والتلاجات والإنفرترات (حرارة الهيت سينك) والباور سبلايات.</li>
-    <li><b>PTC</b> (Positive): مقاومته واطية لحد حرارة معينة وبعدين <b>بتعلى فجأة</b>. بيتحط جوه ملفات الموتورات (3 حساسات توالي) لحماية الحرارة، ومتوصّل بريليه حماية أو بطرف PTC في الإنفرتر. سليم بارد: حوالي ⁦100⁠–⁠750 Ω⁩ للتلاتة؛ سخن أو مقطوع: كيلو أوم كتير.</li>
-  </ul>
+  <div class="vs">
+    <div class="side"><span class="big">NTC ↓</span><b>بتقل مع الحرارة</b><span>10 kΩ @25 °C · β 3950<br>تكييف، تلاجة، هيت سينك</span></div>
+    <i>vs</i>
+    <div class="side"><span class="big">PTC ↑</span><b>تعلى فجأة</b><span>جوه ملفات الموتور<br>بارد 100–750 Ω · سخن kΩ</span></div>
+  </div>
   <div class="formula">R(T) = R25 × e^( β × (1/T − 1/298.15) )</div>
   <div class="wd"><h3>منحنى NTC و PT100</h3><div id="ntc"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s7">
-  <h2 id="s7"><span class="k">7</span>أعطال شائعة في الموقع</h2>
-  <div class="fault-box"><b>أعطال شائعة في الموقع:</b><ul>
-    <li><b>القراية أعلى من الحقيقة بثبات:</b> PT100 متوصّل 2 سلك على كابل طويل، أو الجهاز متظبط 2 سلك والحساس 3 سلك. قيس مقاومة السلك واحسب.</li>
-    <li><b>القراية بتزيد مع الوقت والجو رطب:</b> ترمنال بيصدّي (مقاومة تلامس) أو ميّة في الراس. في 3 سلك ده بيبان كغلط لأنه في سلك واحد.</li>
-    <li><b>الجهاز بيعرض أقل قيمة / Under range:</b> قصر في الكابل أو الحساس.</li>
-    <li><b>الجهاز بيعرض أعلى قيمة / Sensor break:</b> الحساس أو سلك مقطوع.</li>
-    <li><b>القراية بطيئة جدًا:</b> الحساس مش لامس قاع الثيرموويل، أو الثيرموويل تخين.</li>
-    <li><b>PT100 متوصّل على مدخل PT1000</b> في الجهاز: هيعرض حوالي −200 °C. راجع نوع الدخل.</li>
-  </ul></div>
+  <h2 id="s7"><span class="k">7</span>أعطال شائعة</h2>
+  <ul class="fx">
+    <li><b>أعلى من الحقيقة بثبات</b><span>2 سلك على كابل طويل أو الجهاز متظبط غلط</span></li>
+    <li><b>بتزيد مع الرطوبة</b><span>ترمنال بيصدّي أو ميّة في الراس</span></li>
+    <li><b>Under range</b><span>قصر</span></li>
+    <li><b>Sensor break</b><span>سلك مقطوع</span></li>
+    <li><b>بطيئة جدًا</b><span>الحساس مش لامس قاع الثيرموويل</span></li>
+    <li><b>≈ −200 °C</b><span>PT100 على دخل PT1000</span></li>
+  </ul>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>

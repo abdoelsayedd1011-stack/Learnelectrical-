@@ -17,6 +17,7 @@
 <script src="/en/instrumentation-lab/instr.js?v=20261030r1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b4">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -38,81 +39,69 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>Pressure: gauge, absolute and DP</h2>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>Type</th><th>Measured relative to</th><th>Example</th></tr></thead>
-    <tbody>
-      <tr><td><b>Gauge (g)</b></td><td>Atmospheric pressure: reads zero in open air</td><td>Pump, compressor, hydraulics</td></tr>
-      <tr><td><b>Absolute (a)</b></td><td>Perfect vacuum: reads about 1.013 bar in open air</td><td>Vacuum, distillation, saturated steam pressure</td></tr>
-      <tr><td><b>Differential (DP)</b></td><td>The difference between two ports, H and L</td><td>A clogging filter, orifice flow, closed tank level</td></tr>
-    </tbody></table></div>
-  <div class="box"><b>Units:</b> <span class="eq">1 bar = 100 kPa ≈ 14.5 psi ≈ 10.2 m water ≈ 1.02 kg/cm²</span> and <span class="eq">1 mbar = 100 Pa</span>. Check the range and unit on the transmitter nameplate before you program the PLC.</div>
-  <div class="two">
-    <figure class="fig" id="ptFig"></figure>
-    <div>
-      <p><b>Manifold:</b> a valve block between the pipe and the transmitter so you can isolate and calibrate it without stopping the line. On a DP it has <b>3 or 5 valves</b>: one valve for each side (H and L) and an <b>equalizing</b> valve between them.</p>
-      <ol class="steps-l">
-        <li>To take a DP out of service: open the equalizing valve first (so one side never sees the full line pressure on its own), then close H and L.</li>
-        <li>To put it back: open H, then close the equalizing valve, then open L.</li>
-      </ol>
-    </div>
+  <div class="tiles">
+    <div class="tile"><span class="big mono">bar g</span><b>Gauge</b><span>air = zero · pumps, hydraulics</span></div>
+    <div class="tile"><span class="big mono">bar a</span><b>Absolute</b><span>air = 1.013 · vacuum, steam</span></div>
+    <div class="tile"><span class="big mono">DP</span><b>Differential</b><span>H − L · filter, flow, closed tank</span></div>
   </div>
-  <div class="box safe"><b>Safety:</b> never undo a pressure transmitter while it is under pressure. Close the isolation valve, release the pressure through the vent valve, and check the gauge reads zero. 10 bar will blow the transmitter into your face, and steam and chemicals are worse. Any transmitter in an Ex area must follow that area's permit to work.</div>
+  <p class="tip"><b>1 bar</b> = 100 kPa ≈ 14.5 psi ≈ 10.2 m of water</p>
+  <figure class="fig" id="ptFig"></figure>
+  <div class="vs">
+    <div class="side"><b>Take out of service</b><span>1. open equalizing<br>2. close H and L</span></div>
+    <i>⇄</i>
+    <div class="side"><b>Return to service</b><span>1. open H<br>2. close equalizing<br>3. open L</span></div>
+  </div>
+  <p class="alert"><span>Never open a transmitter under pressure: <b>isolate, vent, confirm the gauge reads zero</b>.</span></p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>Level by pressure: h = P ÷ ρg</h2>
-  <p>A column of liquid creates pressure at the bottom according to its height and density. So if you put a pressure transmitter at the bottom of the tank, you can calculate the level:</p>
-  <div class="formula">P = ρ × g × h  ⇒  h = P ÷ (ρ × g)</div>
-  <div class="ex"><b>Example:</b> a water tank (ρ = 1000) and the transmitter measures 29.4 kPa ⇒ <span class="eq">h = 29400 ÷ (1000 × 9.81) ≈ 3 m</span>. The same pressure in a diesel tank (ρ = 840) means <span class="eq">≈ 3.57 m</span>! So the transmitter must know the density.</div>
+  <h2 id="s2"><span class="k">2</span>Level by pressure</h2>
+  <div class="formula">h = P ÷ (ρ × g)</div>
+  <div class="vs">
+    <div class="side"><span class="ic">💧</span><b>Water ρ 1000 · 29.4 kPa</b><span class="big">3 m</span></div>
+    <i>vs</i>
+    <div class="side"><span class="ic">🛢️</span><b>Diesel ρ 840 · same pressure</b><span class="big">3.57 m</span></div>
+  </div>
+  <p class="tip">The transmitter must know the <b>density</b>.</p>
   <div class="wd"><h3>Level tank</h3><div id="tank"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>Other ways to measure level</h2>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>Method</th><th>How</th><th>Pros / cons</th></tr></thead>
-    <tbody>
-      <tr><td><b>Radar</b> (80 GHz or guided wave)</td><td>A wave reflects off the surface and the time is measured</td><td>Not affected by density, temperature or vapour. The most common today</td></tr>
-      <tr><td><b>Ultrasonic</b></td><td>Sound reflects off the surface</td><td>Cheap, but confused by foam, vapour, dust and temperature</td></tr>
-      <tr><td><b>Float</b></td><td>A float that rises and falls</td><td>Simple, but has moving parts that stick</td></tr>
-      <tr><td><b>Capacitive</b></td><td>The liquid changes the capacitance between a rod and the tank</td><td>For liquids and powders, needs calibrating to the material</td></tr>
-      <tr><td><b>Level switch</b> (vibrating fork or float)</td><td>ON/OFF at one point</td><td>Overflow and dry-run protection</td></tr>
-      <tr><td><b>Load cells</b> (lesson 8)</td><td>Weighs the tank</td><td>The most accurate for mixing and batching, unaffected by foam or density</td></tr>
-    </tbody></table></div>
+  <h2 id="s3"><span class="k">3</span>Other level methods</h2>
+  <ul class="fx">
+    <li><b>Radar</b><span>unaffected by density or vapour · most common</span></li>
+    <li><b>Ultrasonic</b><span>cheap · foam and vapour confuse it</span></li>
+    <li><b>Float</b><span>simple · sticks</span></li>
+    <li><b>Capacitive</b><span>liquids and powders · calibrate per material</span></li>
+    <li><b>Switch (fork)</b><span>ON/OFF: overfill and dry-run</span></li>
+    <li><b>Load cell</b><span>most accurate for batching</span></li>
+  </ul>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Flow</h2>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>Type</th><th>The idea</th><th>Good for</th><th>Not for</th></tr></thead>
-    <tbody>
-      <tr><td><b>Magnetic</b></td><td>A conductive liquid cuts a magnetic field and a voltage appears (Faraday's law)</td><td>Water, sewage, juices, slurry</td><td>Non-conductive liquids: oil, diesel, DM water, gas</td></tr>
-      <tr><td><b>Vortex</b></td><td>A body in the pipe sheds vortices at a frequency set by the velocity</td><td>Steam, gas, clean liquids</td><td>Very low velocities</td></tr>
-      <tr><td><b>Turbine</b></td><td>A rotor spins and the pulses follow the flow</td><td>Clean liquids, fuel</td><td>Liquids with solids (they wear the blades)</td></tr>
-      <tr><td><b>Coriolis</b></td><td>Vibrating tubes, and the mass makes them twist</td><td>Mass directly with high accuracy + density</td><td>Large sizes (very expensive)</td></tr>
-      <tr><td><b>Orifice + DP</b></td><td>A restriction in the pipe creates a pressure difference</td><td>Steam, gas, large sizes, cheap</td><td>Causes pressure loss, and a narrow range</td></tr>
-    </tbody></table></div>
+  <ul class="fx">
+    <li><b>Magnetic</b><span>water, juice · <b>not</b> oil, diesel or gas</span></li>
+    <li><b>Vortex</b><span>steam and gas · not very low velocity</span></li>
+    <li><b>Turbine</b><span>clean liquids and fuel</span></li>
+    <li><b>Coriolis</b><span>mass and density, accurate · expensive</span></li>
+    <li><b>Orifice + DP</b><span>steam, large pipes · cheap</span></li>
+  </ul>
   <div class="formula">Q = k × √ΔP</div>
-  <div class="ex"><b>The square root:</b> with an orifice the flow is proportional to the <b>square root</b> of the pressure difference. At half the flow range, the DP is only a quarter of its range (<span class="eq">0.5² = 0.25</span>). That is why you must enable <b>square root extraction</b> in the transmitter <b>or</b> in the PLC, not both! If it is done twice or forgotten entirely, the reading is wrong at every point except zero and 100 %.</div>
-  <div class="box key"><b>A magmeter must run full:</b> the pipe must <b>always be full</b> at a magmeter (fit it on a rising line or at a low point), and the <b>liquid must be grounded</b> with grounding rings or a ground electrode, especially in plastic pipes.</div>
+  <p class="alert"><span>Square root in the <b>transmitter or the PLC, not both</b>. Half flow = a quarter of the DP.</span></p>
+  <p class="tip">Magmeters: pipe <b>always full</b> + earth the liquid.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>Drill: pick the right instrument</h2>
   <div class="wd"><h3>Pick the instrument</h3><div id="pick"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s6">
-  <h2 id="s6"><span class="k">6</span>Common field faults</h2>
-  <div class="fault-box"><b>Common field faults:</b><ul>
-    <li><b>A pressure transmitter reads a fixed value and doesn't move:</b> the isolation valve is closed, or the impulse line is blocked or frozen in winter.</li>
-    <li><b>A DP level transmitter reads wrong after start-up:</b> the low-side line has condensate in it (wet leg) or is empty, depending on the design, or someone left the equalizing valve open.</li>
-    <li><b>A magmeter shows flow with the pump stopped:</b> the pipe is not full or the grounding is poor.</li>
-    <li><b>Orifice flow is wrong mid-range:</b> square root done twice or not at all.</li>
-    <li><b>Pressure-based level reads high in a closed tank:</b> it is measuring the gas pressure on top. Use DP.</li>
-  </ul></div>
+  <h2 id="s6"><span class="k">6</span>Common faults</h2>
+  <ul class="fx">
+    <li><b>Pressure frozen</b><span>isolation valve shut or impulse line blocked/frozen</span></li>
+    <li><b>DP level wrong</b><span>wet leg or equalizing left open</span></li>
+    <li><b>Magmeter reads with pump off</b><span>pipe not full or poor earthing</span></li>
+    <li><b>Orifice wrong mid-range</b><span>square root twice or never</span></li>
+    <li><b>Closed tank level too high</b><span>measuring gas pressure: use DP</span></li>
+  </ul>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
   <p>Get at least 5 of 6 right to mark the lesson as done.</p>

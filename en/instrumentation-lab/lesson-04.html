@@ -17,6 +17,7 @@
 <script src="/en/instrumentation-lab/instr.js?v=20261030r1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b4">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -38,97 +39,89 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>Where are encoders used?</h2>
-  <div class="two">
-    <figure class="fig" id="encFig"></figure>
-    <ul>
-      <li><b>Cut-to-length machine:</b> a measuring wheel on the sheet metal or paper, and the encoder counts the distance until the shear comes down.</li>
-      <li><b>Conveyor:</b> measuring speed and tracking a box's position so the air blast rejects it at the right moment.</li>
-      <li><b>Motor with a VFD (closed-loop vector):</b> the drive reads the real speed and holds it steady even under load.</li>
-      <li><b>Cranes and tower cranes, presses, rotary tables:</b> knowing the position to the millimetre.</li>
-    </ul>
+  <figure class="fig" id="encFig"></figure>
+  <div class="tiles">
+    <div class="tile"><span class="ic">✂️</span><b>Cut to length</b><span>counts distance</span></div>
+    <div class="tile"><span class="ic">📦</span><b>Conveyor</b><span>speed and position</span></div>
+    <div class="tile"><span class="ic">⚙️</span><b>Motor + drive</b><span>steady speed under load</span></div>
+    <div class="tile"><span class="ic">🏗️</span><b>Hoist, press</b><span>position to the mm</span></div>
   </div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>Inside: a disc, a light and a sensor</h2>
-  <p>Inside an optical encoder there is a <b>disc</b> (glass or metal) with many equal slots, an <b>LED</b> on one side and <b>photo sensors</b> on the other. As the disc turns, the light passes through a slot and is blocked, so the sensor gives a <b>pulse</b> for every slot. The number of slots per turn is the <b>PPR</b> (pulses per revolution), such as 100, 1000, 1024 or 2500.</p>
-  <ul>
-    <li><b>Channel A:</b> one pulse per slot.</li>
-    <li><b>Channel B:</b> exactly the same pulses, but its sensor is offset by <b>a quarter of a slot</b>, so it comes 90 electrical degrees behind or ahead of A (quadrature).</li>
-    <li><b>Channel Z</b> (index / marker / reference): <b>just one pulse per turn</b> from a slot of its own. Used for the zero point (homing) and for counting turns.</li>
-  </ul>
-  <div class="box key"><b>Why do we need B at all?</b> For <b>direction</b>. If A rises first and then B ⇒ turning one way. If B rises first ⇒ the other way. With one channel the PLC just counts and can't tell whether the shaft is going back or forward. B also lets us count 4 edges per slot (x4).</div>
-  <p class="muted">There are also <b>magnetic</b> encoders: a magnet and Hall sensors instead of the disc and light. They tolerate dust, oil and vibration better, but usually have lower resolution.</p>
+  <h2 id="s2"><span class="k">2</span>Inside: disc, light, sensor</h2>
+  <div class="bf"><span class="ic">💿</span><span>Slotted disc + LED + sensor = <b>one pulse per slot</b>. Slots per turn = <b>PPR</b>.</span></div>
+  <div class="tiles">
+    <div class="tile"><span class="big mono">A</span><b>pulse per slot</b><span>counting</span></div>
+    <div class="tile"><span class="big mono">B</span><b>90° behind</b><span>direction</span></div>
+    <div class="tile"><span class="big mono">Z</span><b>one per turn</b><span>zero point</span></div>
+  </div>
+  <div class="vs">
+    <div class="side"><b>A before B</b><span class="big">CW ↻</span></div>
+    <i>vs</i>
+    <div class="side"><b>B before A</b><span class="big">CCW ↺</span></div>
+  </div>
+  <p class="tip"><b>Magnetic</b> encoders also exist: tougher with dust and oil, lower resolution.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>Try it yourself: turn the encoder</h2>
-  <p>This disc has only <b>16 slots</b> so you can see them (a real one may have 1024). The sensors are fixed at the top: <b>A</b> and <b>B</b> on the outer ring and <b>Z</b> on the inner ring. Change the speed and direction, use "quarter-pulse step" to see the order of A and B slowly, and switch between x1, x2 and x4.</p>
+  <h2 id="s3"><span class="k">3</span>Try it: turn the encoder</h2>
+  <p class="tip">This disc has only 16 slots. Use “quarter-pulse step” to see the A/B order slowly.</p>
   <div class="wd"><h3>Encoder + scope + counter</h3><div id="enc"></div></div>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>State (A,B) turning CW</th><th class="mono">1,0</th><th class="mono">1,1</th><th class="mono">0,1</th><th class="mono">0,0</th><th class="mono">1,0</th></tr></thead>
-    <tbody><tr><td>x4 count</td><td>+1</td><td>+1</td><td>+1</td><td>+1</td><td>…</td></tr></tbody></table></div>
-  <p>The PLC or high-speed counter follows this sequence: if it goes <span class="eq">10 → 11 → 01 → 00</span> it is CW and counts up, and if it goes the other way it is CCW and counts down. If it jumps two states at once (noise, or a speed beyond what the card can handle) that is an <b>error</b> and counts are lost.</p>
+  <ol class="steps"><li>10</li><li>11</li><li>01</li><li>00</li></ol>
+  <p class="tip">This order = CW, count up. Reversed = CCW, count down. A two-state jump = <b>lost counts</b>.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>x1, x2 and x4 counting, and resolution</h2>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>Mode</th><th>Counts</th><th>Counts per turn (1000 PPR)</th><th>Smallest angle</th></tr></thead>
-    <tbody>
-      <tr><td><b>x1</b></td><td>Rising edge of A only</td><td class="mono">1000</td><td class="mono">0.36°</td></tr>
-      <tr><td><b>x2</b></td><td>Rising and falling edges of A</td><td class="mono">2000</td><td class="mono">0.18°</td></tr>
-      <tr><td><b>x4</b></td><td>Every edge of A and B</td><td class="mono">4000</td><td class="mono">0.09°</td></tr>
-    </tbody></table></div>
-  <div class="formula">Speed rpm = f(A) ÷ PPR × 60</div>
-  <div class="formula">Turns = counts ÷ (PPR × x)</div>
-  <div class="ex"><b>Field example:</b> a sheet-metal cutting machine: a measuring wheel with a <b>200 mm</b> circumference on a <b>1000 PPR</b> encoder with x4 counting ⇒ each count = <span class="eq">200 ÷ 4000 = 0.05 mm</span>. Want to cut a 1.5 m sheet? The shear comes down after <span class="eq">1500 ÷ 0.05 = 30000</span> counts. And if the wheel wears and its circumference becomes 199 mm, every sheet comes out 0.5 % longer (7.5 mm in 1.5 m). That is why we calibrate the wheel length from time to time.</div>
-  <div class="box"><b>How to measure speed:</b> either count pulses over a fixed time (frequency method, good at high speeds), or measure the time between two pulses (period method, better at very low speeds). VFDs and servos do both.</div>
+  <h2 id="s4"><span class="k">4</span>x1, x2 and x4</h2>
+  <p class="sub">1000 PPR encoder · counts per turn</p>
+  <ul class="scale">
+    <li>x1 A edge<div class="bar"><i style="width:25%"></i><em><bdi dir="ltr">1000 · 0.36°</bdi></em></div></li>
+    <li>x2 both A edges<div class="bar"><i style="width:50%"></i><em><bdi dir="ltr">2000 · 0.18°</bdi></em></div></li>
+    <li>x4 all edges<div class="bar"><i style="width:100%"></i><em><bdi dir="ltr">4000 · 0.09°</bdi></em></div></li>
+  </ul>
+  <div class="formula">rpm = f(A) ÷ PPR × 60</div>
+  <div class="rule2">
+    <div><b>200 mm wheel · x4</b><span class="big">0.05 mm</span><span>per count</span></div>
+    <div><b>1.5 m sheet</b><span class="big">30000</span><span>counts</span></div>
+  </div>
+  <p class="tip">Wheel worn to 199 mm ⇒ every sheet 7.5 mm long. <b>Calibrate the wheel regularly.</b></p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>Output types</h2>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>Type</th><th>Voltage</th><th>Channels</th><th>When</th></tr></thead>
-    <tbody>
-      <tr><td><b>HTL push-pull</b></td><td class="mono">10–30 V</td><td>A, B, Z (sometimes A̅ B̅ Z̅)</td><td>The most common with 24V PLCs and VFDs. Good noise immunity thanks to the high voltage.</td></tr>
-      <tr><td><b>TTL line driver (RS-422)</b></td><td class="mono">5 V</td><td>A, A̅, B, B̅, Z, Z̅</td><td>A <b>differential</b> signal: the card reads the difference between A and A̅, so noise riding on both cancels out. High speeds and long cables. Servo and VFD encoder cards.</td></tr>
-      <tr><td><b>Open collector (NPN or PNP)</b></td><td class="mono">5–30 V</td><td>A, B, Z</td><td>A transistor that only pulls, so it needs a <b>pull-up resistor</b> (or pull-down for PNP). Cheap but slow and sensitive to noise on long cables.</td></tr>
-    </tbody></table></div>
-  <div class="box safe"><b>Very important:</b> a <b>5V TTL</b> encoder connected to <b>24V</b> will burn. Read the label: some encoders are <span class="mono">4.75–30V</span> with a TTL output, and some are 5V only.</div>
-  <h3>Wire colours: there is no single standard!</h3>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>Signal</th><th>Example maker 1</th><th>Example maker 2</th></tr></thead>
-    <tbody>
-      <tr><td>+V</td><td>Brown</td><td>Brown</td></tr><tr><td>0V</td><td>White</td><td>Blue</td></tr>
-      <tr><td>A</td><td>Green</td><td>Black</td></tr><tr><td>B</td><td>Yellow</td><td>White</td></tr>
-      <tr><td>Z</td><td>Grey</td><td>Orange</td></tr><tr><td>A̅ / B̅ / Z̅</td><td>Pink / blue / red</td><td>—</td></tr>
-    </tbody></table></div>
-  <p class="muted">See for yourself: white is 0V for one maker and B for the other! <b>Always use the datasheet or the label on the encoder</b>, and never go by an old encoder from another maker.</p>
+  <div class="tiles">
+    <div class="tile"><span class="big mono">HTL</span><b>Push-pull 10–30 V</b><span>most common with 24 V PLCs</span></div>
+    <div class="tile"><span class="big mono">TTL</span><b>Line driver 5 V</b><span>A and A̅ differential: speed, long cable</span></div>
+    <div class="tile"><span class="big mono">OC</span><b>Open collector</b><span>needs a pull-up · slow</span></div>
+  </div>
+  <p class="alert"><span>A <b>5 V TTL encoder on 24 V burns</b>. Read the label.</span></p>
+  <div class="vs">
+    <div class="side"><b>Maker 1</b><span>+V brown · 0V <b>white</b><br>A green · B yellow · Z grey</span></div>
+    <i>≠</i>
+    <div class="side"><b>Maker 2</b><span>+V brown · 0V blue<br>A black · B <b>white</b> · Z orange</span></div>
+  </div>
+  <p class="tip">Colours have no standard: <b>always the datasheet</b>.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s6">
-  <h2 id="s6"><span class="k">6</span>The frequency limit: can the card keep up?</h2>
+  <h2 id="s6"><span class="k">6</span>Can the card keep up?</h2>
   <div class="formula">f = PPR × rpm ÷ 60</div>
-  <div class="ex"><b>Example:</b> a <b>1000 PPR</b> encoder on a <b>3000 rpm</b> motor ⇒ <span class="eq">1000 × 3000 ÷ 60 = 50000 Hz = 50 kHz</span> on each channel. With x4 that is <b>200 thousand counts per second</b>.</div>
-  <ul>
-    <li><b>An ordinary digital input</b> on a PLC has a filter (3 ms, for example), so it manages a few hundred Hz at most. <b>Never connect an encoder to an ordinary input</b>.</li>
-    <li>You need a <b>high-speed counter (HSC)</b>, a counter card or an encoder card in the VFD, and you must check that its maximum frequency (100 kHz or 200 kHz, for example) is above what you calculated.</li>
-    <li>The encoder itself has a maximum frequency (300 kHz, for example) and a maximum mechanical speed (6000 rpm, for example). A long cable lowers the maximum frequency, especially with HTL.</li>
-  </ul>
+  <div class="rule2">
+    <div><b>1000 PPR · 3000 rpm</b><span class="big">50 kHz</span><span>per channel</span></div>
+    <div><b>In x4</b><span class="big">200,000</span><span>counts per second</span></div>
+  </div>
+  <div class="vs">
+    <div class="side"><span class="ic">❌</span><b>Normal input</b><span>3 ms filter = only hundreds of Hz</span></div>
+    <i>vs</i>
+    <div class="side"><span class="ic">✅</span><b>HSC / encoder card</b><span>100–200 kHz</span></div>
+  </div>
   <div class="wd"><h3>Drill: direction, frequency and counting</h3><div id="drill"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s7">
-  <h2 id="s7"><span class="k">7</span>From the field</h2>
-  <div class="fault-box"><b>Common field faults:</b><ul>
-    <li><b>It counts down while the machine runs forward:</b> A and B are swapped in the wiring. Swap them, or reverse the direction with a parameter in the card / VFD.</li>
-    <li><b>The count is right at low speed and lost at high speed:</b> the frequency is above what the card can handle, or the digital filter is set high. Calculate f and check the HSC settings.</li>
-    <li><b>The count jumps by itself while the machine is stopped:</b> noise (usually a cable next to the VFD motor cable), or the coupling vibrates with the encoder sitting on the edge of a slot. The next lesson has a game on these faults in detail.</li>
-    <li><b>It counts half:</b> channel B is not connected and the x4 card counts only the A edges, or the card is set to x2 and you think it's x4.</li>
-  </ul></div>
+  <h2 id="s7"><span class="k">7</span>From the site</h2>
+  <ul class="fx">
+    <li><b>Counts down while moving forward</b><span>A and B swapped: swap or use the parameter</span></li>
+    <li><b>Loses counts only at high speed</b><span>frequency above the card or filter</span></li>
+    <li><b>Counts while stopped</b><span>noise from the motor cable</span></li>
+    <li><b>Counts half</b><span>B not connected or card on x2</span></li>
+  </ul>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
   <p>Get at least 5 of 6 right to mark the lesson as done.</p>

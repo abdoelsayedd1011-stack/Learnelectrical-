@@ -16,6 +16,7 @@
 <script src="instr.js?v=20261030r1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b4">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -37,94 +38,79 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>إنكريمنتال ولا أبسليوت؟</h2>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th></th><th>إنكريمنتال</th><th>أبسليوت</th></tr></thead>
-    <tbody>
-      <tr><td>بيطلّع إيه</td><td>نبضات A و B و Z</td><td>رقم (كود) لكل مكان في اللفة</td></tr>
-      <tr><td>بعد قطع الكهربا</td><td>بينسى: محتاج Homing</td><td>عارف مكانه على طول</td></tr>
-      <tr><td>التوصيل</td><td>كارت عدّاد / HSC</td><td>SSI، BiSS، Profinet، EtherCAT، CANopen…</td></tr>
-      <tr><td>السعر</td><td>أرخص</td><td>أغلى</td></tr>
-      <tr><td>أمثلة</td><td>سرعة موتور، مكنة قص بالطول</td><td>ونش، بوابة سد، روبوت، مكبس، تلسكوب كرين</td></tr>
-    </tbody></table></div>
-  <ul>
-    <li><b>Single-turn:</b> بيعرف المكان جوه اللفة الواحدة بس (مثلًا 4096 مكان). لو لف لفة كاملة يرجع لنفس الرقم.</li>
-    <li><b>Multi-turn:</b> بيعدّ كمان <b>عدد اللفات</b> (مثلًا 4096 لفة) بتروس داخلية أو عدّاد بيشتغل بطاقة الحركة نفسها (Wiegand)، أو ببطارية في بعض الأنواع. ده اللي بيتركّب على الونش والكرين.</li>
-  </ul>
-  <div class="box key"><b>الريزولوشن بالبت:</b> إنكودر <b>12 bit</b> single-turn = <span class="eq">2¹² = 4096</span> مكان في اللفة ⇐ كل خطوة <span class="eq">360 ÷ 4096 ≈ 0.088°</span>. ومالتي تيرن <b>25 bit</b> غالبًا = 13 bit للمكان (8192) + 12 bit للفات (4096 لفة).</div>
+  <div class="vs">
+    <div class="side"><span class="big">INC</span><b>نبضات A B Z</b><span>بينسى بعد الفصل: <b>Homing</b><br>كارت HSC · أرخص<br>سرعة موتور، قص بالطول</span></div>
+    <i>vs</i>
+    <div class="side"><span class="big">ABS</span><b>رقم لكل مكان</b><span>عارف مكانه على طول<br>SSI، Profinet، EtherCAT · أغلى<br>ونش، روبوت، مكبس</span></div>
+  </div>
+  <div class="rule2">
+    <div><b>Single-turn</b><span class="big">12 bit</span><span>4096 مكان في اللفة · 0.088°</span></div>
+    <div><b>Multi-turn</b><span class="big">25 bit</span><span>8192 مكان × 4096 لفة</span></div>
+  </div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>الـ Gray code: ليه بت واحد بس؟</h2>
-  <p>القرص الأبسليوت عليه <b>كذا حلقة</b>، كل حلقة بت، وتحت كل حلقة حساس. القراية في أي مكان بتدّي رقم. المشكلة في <b>لحظة الانتقال</b>: الحساسات عمرها ما بتتقلب في نفس اللحظة بالظبط. في Binary العادي، من 7 (<span class="mono">0111</span>) لـ 8 (<span class="mono">1000</span>) بيتغيّر <b>4 بتات</b>، فلثانية صغيرة ممكن تقرا 15 أو 0 أو أي رقم! والمكنة تتجنن.</p>
-  <p>الحل: <b>Gray code</b> مترتّب بحيث إن بين أي مكانين جنب بعض <b>بت واحد بس بيتغيّر</b>. فأسوأ حاجة تحصل إنك تقرا المكان القديم أو الجديد، مفيش رقم غريب.</p>
+  <h2 id="s2"><span class="k">2</span>الـ Gray code</h2>
+  <div class="vs">
+    <div class="side"><b>Binary: 7 ⇐ 8</b><span class="big">0111 → 1000</span><span>4 بتات بتتقلب ⇐ أرقام غريبة لحظة</span></div>
+    <i>vs</i>
+    <div class="side"><b>Gray: 7 ⇐ 8</b><span class="big">0100 → 1100</span><span><b>بت واحد بس</b> ⇐ مفيش غلط</span></div>
+  </div>
   <div class="formula">Gray = Bin XOR (Bin >> 1)</div>
   <div class="wd"><h3>قرص أبسليوت 4 بت</h3><div id="gray"></div></div>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>المكان</th><th>Binary</th><th>Gray</th></tr></thead>
-    <tbody>
-      <tr><td>6</td><td class="mono">0110</td><td class="mono">0101</td></tr>
-      <tr><td>7</td><td class="mono">0111</td><td class="mono">0100</td></tr>
-      <tr><td>8</td><td class="mono">1000</td><td class="mono">1100</td></tr>
-      <tr><td>9</td><td class="mono">1001</td><td class="mono">1101</td></tr>
-    </tbody></table></div>
-  <p class="muted">الإنكودر نفسه أو الكارت بيحوّل الـ Gray لـ Binary قبل ما يبعته، وفي SSI ممكن تختار من الباراميترات تستقبله Gray أو Binary. لو اخترت غلط هتلاقي القراية بتنط بشكل غريب.</p>
+  <p class="tip">في SSI اختار Gray ولا Binary صح، غير كده القراية تنط.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>البروتوكولات والريزولفر</h2>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>الواجهة</th><th>الفكرة</th></tr></thead>
-    <tbody>
-      <tr><td><b>SSI</b></td><td>الكارت بيبعت نبضات Clock والإنكودر بيرد بالبتات واحدة ورا التانية (RS-422). بسيط وشائع. لازم تظبط عدد البتات و Gray/Binary.</td></tr>
-      <tr><td><b>BiSS-C</b></td><td>شبه SSI بس أسرع وفيه تشيك (CRC) وتشخيص. شائع في السيرفو.</td></tr>
-      <tr><td><b>Profinet / EtherCAT / EtherNet/IP</b></td><td>الإنكودر جهاز على الشبكة بعنوان، بتعمله Configuration بملف GSDML أو ESI. بيبعت المكان والسرعة والتشخيص.</td></tr>
-      <tr><td><b>CANopen / Profibus</b></td><td>شبكات فيلد باص أقدم وشائعة في الأوناش والموبايل.</td></tr>
-      <tr><td><b>Resolver</b></td><td>مش إنكودر ديجيتال: ترانس دوّار بيطلّع إشارتين sin و cos. مفيش إلكترونيات جواه فبيستحمل حرارة واهتزاز جامد. شائع في موتورات السيرفو القديمة والمناطق القاسية.</td></tr>
-    </tbody></table></div>
+  <ul class="fx">
+    <li><b>SSI</b><span>Clock والإنكودر يرد بالبتات · ظبط البتات و Gray</span></li>
+    <li><b>BiSS-C</b><span>زي SSI أسرع وبتشيك CRC · سيرفو</span></li>
+    <li><b>Profinet / EtherCAT</b><span>جهاز على الشبكة بملف GSDML / ESI</span></li>
+    <li><b>CANopen / Profibus</b><span>أقدم · أوناش</span></li>
+    <li><b>Resolver</b><span>sin و cos من غير إلكترونيات · بيستحمل الحرارة</span></li>
+  </ul>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>الهومينج (Homing) بالإنكريمنتال</h2>
-  <p>مع الإنكريمنتال، أول ما المكنة تشتغل بتعمل <b>Homing</b>: تتحرك ببطء لحد ما تلمس <b>ليميت سويتش مرجعي (Reference switch)</b>، وبعدين تكمّل لحد أول <b>نبضة Z</b> بعده، وتصفّر العدّاد هناك. ليه الاتنين؟ الليميت دقته ملّيمترات وبيتأثر بالسرعة، والـ Z دقيق جدًا بس بيتكرر كل لفة، فالليميت بيقول "إحنا في اللفة دي" والـ Z بيحدد النقطة بالظبط.</p>
+  <h2 id="s4"><span class="k">4</span>الهومينج</h2>
+  <ol class="steps"><li>تحرّك ببطء</li><li>لمس الليميت المرجعي</li><li>أول نبضة Z</li><li class="on">صفّر العدّاد</li></ol>
+  <p class="tip">الليميت يقول «إحنا في اللفة دي»، والـ Z يحدد النقطة بالظبط.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>التركيب الميكانيكي</h2>
-  <ul>
-    <li><b>Solid shaft (عمود مصمت):</b> بيتربط بعمود الماكينة بـ <b>كابلنج مرن</b> (Bellows أو Jaw أو Disc). الكابلنج المرن بيمتص عدم الاستقامة (Misalignment). <b>متربطش بكابلنج جامد أبدًا</b>: أي ميل بسيط هيكسر البلي.</li>
-    <li><b>Hollow shaft (عمود مفرّغ):</b> بيدخل على عمود الموتور مباشرة ويتربط بحلقة ربط، وجسمه بيتمسك بـ <b>ذراع عزم مرن (Torque arm / Stator coupling)</b> يمنعه يلف ويسمح بالطوحان البسيط.</li>
-    <li>متخبطش الإنكودر بالشاكوش وإنت بتركّبه: القرص الإزاز جوه بيتكسر.</li>
-    <li>اعمل علامة بالقلم على العمود والكابلنج بعد الربط: لو بعدين لقيتها اتحركت، يبقى فيه زحلقة.</li>
-  </ul>
+  <div class="vs">
+    <div class="side"><b>Solid shaft</b><span><b>كابلنج مرن</b><br>جامد = البلي يتكسر</span></div>
+    <i>vs</i>
+    <div class="side"><b>Hollow shaft</b><span>على عمود الموتور<br>+ <b>ذراع عزم مرن</b></span></div>
+  </div>
+  <p class="alert"><span>متخبطش الإنكودر بالشاكوش: القرص الإزاز جوه يتكسر.</span></p>
+  <p class="tip">علامة قلم على العمود والكابلنج: لو اتحرّكت ⇐ زحلقة.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s6">
-  <h2 id="s6"><span class="k">6</span>الكابل والشيلد والنويز</h2>
-  <ul>
-    <li>كابل مشيلد ومجدول أزواج (A مع A̅، B مع B̅). الشيلد في إشارات الإنكودر السريعة غالبًا <b>بيتأرّض من الطرفين</b> بكلامب 360° على جسم الكونيكتور واللوحة، مع خط أرضي متساوي الجهد قوي بين الموتور واللوحة (شوف توصية الشركة: دي غير قاعدة الـ ⁦4⁠–⁠20 mA⁩).</li>
-    <li>ابعده عن كابلات الموتورات والإنفرترات: صينية منفصلة أو فاصل معدني.</li>
-    <li><b>طول الكابل:</b> TTL أحادي (5V) يدوب أمتار قليلة، والـ Line Driver RS-422 ممكن لحد 100 م تقريبًا، والـ HTL برضه مسافات طويلة بس التردد بيقل مع الطول. الداتا شيت بيدّي جدول طول × تردد.</li>
-    <li>هبوط الجهد: إنكودر 5V على كابل طويل ممكن يوصله 4.5V بس. بعض الإنكودرات فيها خطوط Sense للباور.</li>
+  <h2 id="s6"><span class="k">6</span>الكابل والنويز</h2>
+  <div class="tiles">
+    <div class="tile"><span class="ic">🧶</span><b>أزواج مجدولة</b><span>A مع A̅، B مع B̅</span></div>
+    <div class="tile"><span class="ic">⏚</span><b>الشيلد</b><span>غالبًا من الطرفين بكلامب 360° (حسب الشركة)</span></div>
+    <div class="tile"><span class="ic">↔️</span><b>بعيد عن الإنفرتر</b><span>صينية منفصلة</span></div>
+  </div>
+  <ul class="scale">
+    <li>TTL 5V<div class="bar"><i style="width:5%"></i><em><bdi dir="ltr">few m</bdi></em></div></li>
+    <li>RS-422<div class="bar"><i style="width:100%"></i><em><bdi dir="ltr">≈ 100 m</bdi></em></div></li>
   </ul>
+  <p class="tip">5V على كابل طويل ممكن يوصل 4.5V بس.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s7">
   <h2 id="s7"><span class="k">7</span>جدول الأعطال</h2>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>العرض</th><th>السبب المحتمل</th><th>تعمل إيه</th></tr></thead>
-    <tbody>
-      <tr><td>عدّات زيادة لما الإنفرتر يشتغل</td><td>نويز، شيلد، كابلات مع بعض</td><td>أرّض الشيلد، افصل الكابلات، Line Driver</td></tr>
-      <tr><td>العدّ بالعكس</td><td>A و B متبدّلين</td><td>بدّلهم أو اعكس من الباراميتر</td></tr>
-      <tr><td>نص العدد / مفيش اتجاه</td><td>قناة مقطوعة</td><td>قيس كل قناة بالسكوب أو الأفوميتر</td></tr>
-      <tr><td>بيضيع في السرعة العالية بس</td><td>التردد أكبر من الكارت أو الإنكودر</td><td>احسب f، كارت أسرع، فلتر أقل</td></tr>
-      <tr><td>زحف بطيء في المكان</td><td>كابلنج أو عجلة قياس بتزحلق</td><td>علامة قلم، اربط، غيّر العجلة</td></tr>
-      <tr><td>صوت وبلي بايظ</td><td>تركيب جامد / ميل</td><td>كابلنج مرن، ذراع عزم</td></tr>
-      <tr><td>الأبسليوت بيقرا أرقام بتنط</td><td>Gray/Binary غلط، عدد بتات SSI غلط</td><td>راجع الباراميترات مع الداتا شيت</td></tr>
-    </tbody></table></div>
+  <ul class="fx">
+    <li><b>عدّات زيادة مع الإنفرتر</b><span>أرّض الشيلد، افصل الكابلات</span></li>
+    <li><b>العدّ بالعكس</b><span>بدّل A و B</span></li>
+    <li><b>نص العدد / مفيش اتجاه</b><span>قيس كل قناة</span></li>
+    <li><b>يضيع في السرعة العالية</b><span>كارت أسرع، فلتر أقل</span></li>
+    <li><b>زحف بطيء</b><span>كابلنج أو عجلة بتزحلق</span></li>
+    <li><b>صوت وبلي بايظ</b><span>كابلنج مرن، ذراع عزم</span></li>
+    <li><b>الأبسليوت ينط</b><span>Gray/Binary أو بتات SSI غلط</span></li>
+  </ul>
   <div class="wd"><h3>لعبة: طلّع عطل الإنكودر</h3><div id="game"></div></div>
-  <div class="box safe"><b>أمان:</b> الإنكودر غالبًا على موتور شغّال. قبل ما تفك الكابلنج أو تلمس العمود: اعمل <b>Lock-out</b> للموتور واتأكد إنه مش هيلف. وفي الونش، الحمل المعلّق ممكن يلف الموتور حتى وهو مفصول: ثبّت الحمل الأول.</div>
+  <p class="alert"><span><b>Lock-out</b> قبل ما تلمس العمود. وفي الونش الحمل المعلّق يلف الموتور: <b>ثبّت الحمل الأول</b>.</span></p>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>

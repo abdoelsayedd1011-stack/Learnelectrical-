@@ -16,6 +16,7 @@
 <script src="instr.js?v=20261030r1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b4">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -37,107 +38,95 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>ليه تيار مش جهد؟</h2>
-  <p>تخيّل ترانسميتر بعيد عن اللوحة 300 متر. لو بعت <b>جهد</b> (⁦0⁠–⁠10V⁩)، السلك الطويل ليه مقاومة، وأي تيار ماشي فيه هيعمل <b>هبوط جهد</b>، فالـ PLC هيقرا أقل من الحقيقة. وكمان الكابل الطويل بيلقط <b>نويز</b> من كابلات الموتورات والإنفرترات.</p>
-  <p>لكن في <b>دايرة توالي</b> التيار <b>واحد في كل حتة</b> (قانون كيرشوف). الترانسميتر بيظبط التيار بنفسه، فمقاومة السلك مش بتغيّره طول ما الباور مكفي. ده اللي بيخلّي ⁦4⁠–⁠20 mA⁩ ماشية مسافات طويلة ومقاومة للنويز.</p>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th></th><th>⁦4⁠–⁠20 mA⁩</th><th>⁦0⁠–⁠10 V⁩</th></tr></thead>
-    <tbody>
-      <tr><td>المسافة</td><td>مئات الأمتار عادي</td><td>قصيرة (جوه اللوحة أو قريب)</td></tr>
-      <tr><td>مقاومة السلك</td><td>مش بتأثر (لو الباور مكفي)</td><td>بتعمل غلط في القراية</td></tr>
-      <tr><td>اكتشاف قطع السلك</td><td>أيوه: 0 mA = عطل</td><td>لأ: 0 V = قيمة صفر</td></tr>
-      <tr><td>الاستخدام</td><td>الترانسميترات في الموقع</td><td>بوتنشيوميتر، إنفرتر، أجهزة قريبة</td></tr>
-    </tbody></table></div>
-</section>
-
-<section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>ليه 4 مش صفر؟ (Live zero)</h2>
-  <p>لو الإشارة ⁦0⁠–⁠20 mA⁩ وقريت <b>0 mA</b>، مش هتعرف: هل القيمة فعلًا صفر، ولا السلك اتقطع؟ لكن في ⁦4⁠–⁠20⁩، أقل قيمة حقيقية = <b>4 mA</b>. فلو قريت أقل من كده بكتير، أكيد فيه <b>عطل</b>. وكمان الـ 4 mA دي هي اللي بتشغّل الترانسميتر الـ 2 سلك (بياكل منها عشان يعيش).</p>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>التيار</th><th>معناه على حسب <span class="mono">NAMUR NE43</span></th></tr></thead>
-    <tbody>
-      <tr><td class="mono">أقل من 3.6 mA</td><td>عطل: سلك مقطوع أو ترانسميتر بيطلّع إنذار Fail low</td></tr>
-      <tr><td class="mono">⁦3.8 ⁠–⁠ 4 mA⁩</td><td>تحت الرينج شوية (القيمة أقل من LRV) بس الإشارة سليمة</td></tr>
-      <tr><td class="mono">⁦4 ⁠–⁠ 20 mA⁩</td><td>القياس العادي</td></tr>
-      <tr><td class="mono">⁦20 ⁠–⁠ 20.5 mA⁩</td><td>فوق الرينج شوية بس سليمة</td></tr>
-      <tr><td class="mono">أكتر من 21 mA</td><td>عطل: قصر أو ترانسميتر بيطلّع إنذار Fail high</td></tr>
-    </tbody></table></div>
-</section>
-
-<section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>ترانسميتر 2 سلك و 3 سلك و 4 سلك</h2>
-  <div class="two">
-    <div class="card"><svg viewBox="0 0 220 110" role="img" aria-label="ترانسميتر 2 سلك"><rect x="8" y="30" width="44" height="50" rx="5" class="w-pn w-in" stroke-width="1.5"/><text x="30" y="58" text-anchor="middle" class="w-tx" style="font-size:10px">24V</text><rect x="160" y="30" width="52" height="50" rx="5" fill="#2c6aac"/><text x="186" y="58" text-anchor="middle" style="font-size:10px;fill:#fff">TX</text><path d="M52 40H160" stroke="#d32f2f" stroke-width="3"/><path d="M160 70H120V96H80V70H52" fill="none" stroke="#1f6fd1" stroke-width="3"/><rect x="88" y="88" width="24" height="14" class="w-pn w-in"/><text x="100" y="99" text-anchor="middle" class="w-tx" style="font-size:8px">AI</text><text x="106" y="34" text-anchor="middle" class="w-tx" style="font-size:9px">+24V</text></svg>
-      <h3>2 سلك (Loop powered)</h3><p>نفس السلكين بيوصّلوا الباور وبيرجّعوا الإشارة. الترانسميتر بيعيش على الـ 4 mA. ده الأشهر: ضغط، حرارة، مستوى.</p></div>
-    <div class="card"><svg viewBox="0 0 220 110" role="img" aria-label="ترانسميتر 3 سلك"><rect x="8" y="22" width="44" height="66" rx="5" class="w-pn w-in" stroke-width="1.5"/><text x="30" y="58" text-anchor="middle" class="w-tx" style="font-size:10px">24V</text><rect x="160" y="22" width="52" height="66" rx="5" fill="#2c6aac"/><text x="186" y="58" text-anchor="middle" style="font-size:10px;fill:#fff">TX</text><path d="M52 32H160" stroke="#d32f2f" stroke-width="3"/><path d="M52 78H160" stroke="#1f6fd1" stroke-width="3"/><path d="M160 55H112V100" stroke="#30363b" stroke-width="3" fill="none"/><rect x="100" y="94" width="24" height="14" class="w-pn w-in"/><text x="112" y="105" text-anchor="middle" class="w-tx" style="font-size:8px">AI</text><text x="134" y="51" class="w-tx" style="font-size:8px">mA</text></svg>
-      <h3>3 سلك</h3><p>+24V و 0V مشتركين، والسلك التالت خرج الإشارة. ده شائع في الأجهزة اللي بتاكل تيار أكتر من 4 mA (فلومتر صغير، حساسات بشاشة).</p></div>
-    <div class="card"><svg viewBox="0 0 220 110" role="img" aria-label="ترانسميتر 4 سلك"><rect x="8" y="22" width="44" height="66" rx="5" class="w-pn w-in" stroke-width="1.5"/><text x="30" y="52" text-anchor="middle" class="w-tx" style="font-size:9px">220V</text><text x="30" y="64" text-anchor="middle" class="w-tx" style="font-size:9px">AC</text><rect x="160" y="22" width="52" height="66" rx="5" fill="#2c6aac"/><text x="186" y="58" text-anchor="middle" style="font-size:10px;fill:#fff">TX</text><path d="M52 32H160M52 44H160" stroke="#7a4a22" stroke-width="3"/><path d="M160 66H110V98M160 80H130V98" stroke="#30363b" stroke-width="3" fill="none"/><rect x="100" y="94" width="40" height="14" class="w-pn w-in"/><text x="120" y="105" text-anchor="middle" class="w-tx" style="font-size:8px">AI + −</text></svg>
-      <h3>4 سلك</h3><p>سلكين باور منفصلين (غالبًا 220V AC أو 24V) وسلكين إشارة. زي الفلومتر الماجنتيك والأنالايزرز والإنديكيتور. الخرج غالبًا <b>Active</b> بيطلّع التيار بنفسه.</p></div>
+  <div class="bf"><span class="ic">〰️</span><span>في دايرة توالي <b>التيار واحد في كل حتة</b>، فطول السلك مش بيغيّره.</span></div>
+  <div class="vs">
+    <div class="side"><span class="big">4–20 mA</span><b>الموقع</b><span>مئات الأمتار<br>السلك مش بيأثر<br>0 mA = عطل</span></div>
+    <i>vs</i>
+    <div class="side"><span class="big">0–10 V</span><b>قريب</b><span>مسافة قصيرة<br>السلك بيعمل غلط<br>0 V = صفر عادي</span></div>
   </div>
-  <div class="box key"><b>Active ولا Passive؟</b> اللي بيطلّع الباور للوب هو الـ <b>Active</b>. لازم طرف واحد بس يكون Active: يا الكارت بيدّي 24V (كارت 2-wire) والترانسميتر Passive، يا الترانسميتر Active (4 سلك) والكارت Passive. لو الاتنين Active أو الاتنين Passive اللوب مش هيشتغل (أو هيتحرق).</div>
 </section>
-
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>ليه 4 مش صفر؟</h2>
+  <div class="bf"><span class="ic">💡</span><span><b>Live zero:</b> أقل قيمة = 4 mA، فأقل من كده بكتير = <b>عطل</b>. والـ 4 mA بتشغّل الترانسميتر.</span></div>
+  <ul class="fx">
+    <li><b class="mono">&lt; 3.6 mA</b><span>عطل: سلك مقطوع أو Fail low</span></li>
+    <li><b class="mono">3.8 – 4 mA</b><span>تحت الرينج شوية، سليمة</span></li>
+    <li class="ok"><b class="mono">4 – 20 mA</b><span>القياس العادي</span></li>
+    <li><b class="mono">20 – 20.5 mA</b><span>فوق الرينج شوية، سليمة</span></li>
+    <li><b class="mono">&gt; 21 mA</b><span>عطل: قصر أو Fail high</span></li>
+  </ul>
+  <p class="tip">ده حسب <span class="mono">NAMUR NE43</span>.</p>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>2 و 3 و 4 سلك</h2>
+  <div class="tiles">
+    <div class="tile"><svg viewBox="0 0 220 110" role="img" aria-label="ترانسميتر 2 سلك"><rect x="8" y="30" width="44" height="50" rx="5" class="w-pn w-in" stroke-width="1.5"/><text x="30" y="58" text-anchor="middle" class="w-tx" style="font-size:10px">24V</text><rect x="160" y="30" width="52" height="50" rx="5" fill="#2c6aac"/><text x="186" y="58" text-anchor="middle" style="font-size:10px;fill:#fff">TX</text><path d="M52 40H160" stroke="#d32f2f" stroke-width="3"/><path d="M160 70H120V96H80V70H52" fill="none" stroke="#1f6fd1" stroke-width="3"/><rect x="88" y="88" width="24" height="14" class="w-pn w-in"/><text x="100" y="99" text-anchor="middle" class="w-tx" style="font-size:8px">AI</text><text x="106" y="34" text-anchor="middle" class="w-tx" style="font-size:9px">+24V</text></svg><b>2 سلك</b><span>الباور والإشارة على نفس السلكين. الأشهر.</span></div>
+    <div class="tile"><svg viewBox="0 0 220 110" role="img" aria-label="ترانسميتر 3 سلك"><rect x="8" y="22" width="44" height="66" rx="5" class="w-pn w-in" stroke-width="1.5"/><text x="30" y="58" text-anchor="middle" class="w-tx" style="font-size:10px">24V</text><rect x="160" y="22" width="52" height="66" rx="5" fill="#2c6aac"/><text x="186" y="58" text-anchor="middle" style="font-size:10px;fill:#fff">TX</text><path d="M52 32H160" stroke="#d32f2f" stroke-width="3"/><path d="M52 78H160" stroke="#1f6fd1" stroke-width="3"/><path d="M160 55H112V100" stroke="#30363b" stroke-width="3" fill="none"/><rect x="100" y="94" width="24" height="14" class="w-pn w-in"/><text x="112" y="105" text-anchor="middle" class="w-tx" style="font-size:8px">AI</text><text x="134" y="51" class="w-tx" style="font-size:8px">mA</text></svg><b>3 سلك</b><span>+24V و 0V والتالت إشارة</span></div>
+    <div class="tile"><svg viewBox="0 0 220 110" role="img" aria-label="ترانسميتر 4 سلك"><rect x="8" y="22" width="44" height="66" rx="5" class="w-pn w-in" stroke-width="1.5"/><text x="30" y="52" text-anchor="middle" class="w-tx" style="font-size:9px">220V</text><text x="30" y="64" text-anchor="middle" class="w-tx" style="font-size:9px">AC</text><rect x="160" y="22" width="52" height="66" rx="5" fill="#2c6aac"/><text x="186" y="58" text-anchor="middle" style="font-size:10px;fill:#fff">TX</text><path d="M52 32H160M52 44H160" stroke="#7a4a22" stroke-width="3"/><path d="M160 66H110V98M160 80H130V98" stroke="#30363b" stroke-width="3" fill="none"/><rect x="100" y="94" width="40" height="14" class="w-pn w-in"/><text x="120" y="105" text-anchor="middle" class="w-tx" style="font-size:8px">AI + −</text></svg><b>4 سلك</b><span>باور منفصل + إشارة Active (فلومتر ماجنتيك)</span></div>
+  </div>
+  <p class="alert"><span>طرف واحد بس <b>Active</b> (بيدّي الباور). الاتنين Active أو الاتنين Passive = اللوب مش شغّال.</span></p>
+</section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>الباور 24V والمقاومة 250Ω</h2>
-  <p>الكارت الأنالوج جوّاه غالبًا <b>مقاومة 250Ω</b> (أو قريب منها). التيار ماشي فيها فبيعمل جهد على حسب أوم: <span class="eq">V = I × R</span>. يعني 4 mA ⇐ <b>1 V</b>، و 20 mA ⇐ <b>5 V</b>. ده اللي الكارت بيقيسه فعلًا (عشان كده بتسمع "إشارة ⁦1⁠–⁠5V⁩").</p>
-  <div class="formula">V(250Ω) = mA × 0.25</div>
-  <p>والترانسميتر الـ 2 سلك محتاج جهد أدنى على أطرافه (غالبًا من <b>10.5 لـ 12 V</b>، اقرا الداتا شيت). فلازم الباور يكفي الترانسميتر + كل المقاومات اللي في اللوب عند أعلى تيار:</p>
+  <div class="rule2">
+    <div><b>4 mA × 250Ω</b><span class="big">1 V</span></div>
+    <div><b>20 mA × 250Ω</b><span class="big">5 V</span></div>
+  </div>
   <div class="formula">V supply ≥ V min(TX) + 0.020 × R loop</div>
-  <div class="ex"><b>مثال:</b> باور 24V، الترانسميتر محتاج 10.5V ⇐ أقصى مقاومة لوب = <span class="eq">(24 − 10.5) ÷ 0.020 = 675 Ω</span>. يعني 250Ω للكارت + 250Ω لمقاومة HART + السلك، وكله تمام. لكن على 12V ⇐ <span class="eq">(12 − 10.5) ÷ 0.020 = 75 Ω</span> بس! جرّبها في المحاكي تحت.</div>
+  <div class="vs">
+    <div class="side"><b>باور 24V</b><span class="big">675 Ω</span><span>أقصى لوب: مريح</span></div>
+    <i>vs</i>
+    <div class="side"><b>باور 12V</b><span class="big">75 Ω</span><span>بس! مش هيكفي</span></div>
+  </div>
+  <p class="tip">الترانسميتر محتاج حوالي 10.5–12V على أطرافه (الداتا شيت).</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s5">
-  <h2 id="s5"><span class="k">5</span>التحويل من mA لقيمة والعكس</h2>
-  <p>الـ 16 mA (من 4 لـ 20) بيمثّلوا السبان كله. فالمعادلة:</p>
-  <div class="formula">PV = LRV + (mA − 4) ÷ 16 × (URV − LRV)</div>
-  <div class="formula">mA = 4 + (PV − LRV) ÷ (URV − LRV) × 16</div>
-  <div class="ex"><b>مثال 1:</b> ترانسميتر ضغط ⁦0⁠–⁠10 bar⁩ بيطلّع 12 mA ⇐ <span class="eq">0 + (12 − 4)/16 × 10 = 5 bar</span>.<br><b>مثال 2:</b> ترانسميتر حرارة −50 … 150 °C بيطلّع 8 mA ⇐ <span class="eq">−50 + 4/16 × 200 = 0 °C</span>. لاحظ إن 8 mA هنا معناها صفر درجة!<br><b>مثال 3:</b> مستوى ⁦0⁠–⁠4 m⁩ والمستوى 3 m ⇐ <span class="eq">4 + 3/4 × 16 = 16 mA</span>.</div>
+  <h2 id="s5"><span class="k">5</span>من mA لقيمة والعكس</h2>
+  <div class="formula">PV = LRV + (mA − 4) ÷ 16 × Span</div>
+  <div class="formula">mA = 4 + (PV − LRV) ÷ Span × 16</div>
+  <ul class="fx">
+    <li><b>ضغط 0–10 bar · 12 mA</b><span>5 bar</span></li>
+    <li><b>حرارة −50…150 °C · 8 mA</b><span>0 °C (مش صفر mA!)</span></li>
+    <li><b>مستوى 0–4 m · 3 m</b><span>16 mA</span></li>
+  </ul>
   <div class="wd"><h3>حاسبة التحويل</h3><div id="calc"></div></div>
   <div class="wd"><h3>تمرين التحويل</h3><div id="drill"></div></div>
-  <div class="box"><b>جوه الـ PLC:</b> الكارت بيحوّل الـ mA لرقم خام (Raw). في Siemens مثلًا 4 mA = 0 و 20 mA = <span class="mono">27648</span>، وسلك مقطوع = <span class="mono">32767</span>. في Allen-Bradley أو غيره الأرقام مختلفة. وبعدين بلوك Scale (زي <span class="mono">NORM_X / SCALE_X</span>) بيحوّل الرقم للقيمة الهندسية.</div>
+  <p class="tip">جوه Siemens: 4 mA = 0 و 20 mA = <span class="mono">27648</span> و سلك مقطوع = <span class="mono">32767</span>. بلوك Scale يحوّلها لقيمة.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s6">
   <h2 id="s6"><span class="k">6</span>محاكي اللوب: اعمل العطل بإيدك</h2>
-  <p>ده لوب حقيقي: باور 24V، ترانسميتر ضغط 2 سلك رينجه ⁦0⁠–⁠10 bar⁩، أفوميتر على mA متوصّل توالي، وكارت PLC. غيّر الضغط وشوف التيار، وبعدين اعمل الأعطال واحد واحد وشوف الأفوميتر والـ PLC بيقولوا إيه.</p>
+  <p class="tip">غيّر الضغط وشوف التيار، وبعدين اعمل الأعطال واحد واحد.</p>
   <div class="wd"><h3>لوب ⁦4⁠–⁠20 mA⁩</h3><div id="sim"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s7">
-  <h2 id="s7"><span class="k">7</span>إزاي تقيس تيار اللوب صح</h2>
-  <ol class="steps-l">
-    <li>بلّغ الأوبريشن وحوّل اللوب لـ Manual (القراية هتتقطع لحظة لما تفتح اللوب).</li>
-    <li>الأفوميتر على <b>mA DC</b> والسلك الأحمر في فتحة <b>mA</b> (مش فتحة 10A).</li>
-    <li><b>افتح</b> اللوب: فك سلك من ترمنال، ودخّل الأفوميتر <b>توالي</b> مكانه.</li>
-    <li>اقرا التيار وقارنه بالقيمة المتوقعة من المعادلة.</li>
-    <li>رجّع السلك واربطه كويس، ورجّع اللوب لـ Auto.</li>
-  </ol>
-  <div class="box safe"><b>ماتعملش:</b> متحطش الأفوميتر على mA <b>بالتوازي</b> على أطراف الترانسميتر أو الكارت. مقاومته صغيرة جدًا فبيعمل قصر: القراية غلط، والـ PLC هيشوف Overrange، وممكن فيوز الأفوميتر يضرب. على التوازي بتقيس <b>فولت</b> بس.</div>
-  <div class="box"><b>من غير ما تفتح اللوب:</b> ترانسميترات كتير فيها ترمنال <b>TEST</b> عليه دايود: تحط الأفوميتر عليه وتقرا التيار من غير فك. وفيه <b>كلامب mA</b> (Process clamp meter) بيقيس ⁦4⁠–⁠20⁩ من حوالين السلك. أو قيس <b>الجهد على مقاومة الـ 250Ω</b> واقسمه على 0.25.</div>
-  <div class="box"><b>HART:</b> بروتوكول بيركب إشارة ديجيتال صغيرة (نغمة 1200/2200 Hz) فوق الـ ⁦4⁠–⁠20⁩ من غير ما يغيّر المتوسط. بالـ HART Communicator تقرا التاج والرينج والتشخيص وتغيّر الرينج من اللوحة. محتاج مقاومة لوب <b>250Ω على الأقل</b> عشان يشتغل.</div>
+  <h2 id="s7"><span class="k">7</span>قياس تيار اللوب صح</h2>
+  <ol class="steps"><li>اللوب Manual</li><li>العداد mA DC والأحمر في فتحة mA</li><li>افتح اللوب وحط العداد <b>توالي</b></li><li>اقرا وقارن</li><li>رجّع السلك و Auto</li></ol>
+  <p class="alert"><span>العداد على mA <b>بالتوازي</b> = قصر وقراية غلط. بالتوازي تقيس <b>فولت</b> بس.</span></p>
+  <div class="tiles">
+    <div class="tile"><span class="big mono">TEST</span><b>ترمنال الاختبار</b><span>تقرا من غير فك</span></div>
+    <div class="tile"><span class="ic">🧲</span><b>كلامب mA</b><span>حوالين السلك</span></div>
+    <div class="tile"><span class="big mono">V ÷ 0.25</span><b>على الـ 250Ω</b><span>فولت ⇐ mA</span></div>
+    <div class="tile"><span class="big mono">HART</span><b>ديجيتال فوق الإشارة</b><span>محتاج 250Ω على الأقل</span></div>
+  </div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s8">
-  <h2 id="s8"><span class="k">8</span>الكابل: مشيلد ومجدول ومتأرض من طرف واحد</h2>
-  <ul>
-    <li>استخدم كابل <b>Twisted pair مشيلد</b> (زوج مجدول عليه شيلد ألومنيوم أو شبكة): الجدل بيلغي النويز المغناطيسي، والشيلد بيمسك النويز الكهربي.</li>
-    <li><b>الشيلد يتأرّض من طرف واحد بس</b>، غالبًا ناحية اللوحة (بار الإنسترومنت إيرث)، والطرف التاني يتقصّ ويتعزل جوه الترانسميتر. لو اتأرّض من الطرفين ممكن يمشي فيه تيار بسبب فرق جهد الأرضي (Ground loop) ويعمل نويز.</li>
-    <li>ابعد كابلات الإشارة عن كابلات الباور والإنفرترات: صواني منفصلة، ولو هيتقاطعوا يبقى بزاوية 90°.</li>
+  <h2 id="s8"><span class="k">8</span>الكابل</h2>
+  <div class="tiles">
+    <div class="tile"><span class="ic">🧶</span><b>مجدول ومشيلد</b><span>الجدل والشيلد بيوقفوا النويز</span></div>
+    <div class="tile"><span class="ic">⏚</span><b>الشيلد من طرف واحد</b><span>ناحية اللوحة بس</span></div>
+    <div class="tile"><span class="ic">↔️</span><b>بعيد عن الباور</b><span>صواني منفصلة، تقاطع 90°</span></div>
+  </div>
+</section>
+<section class="panel lsec" aria-labelledby="s9">
+  <h2 id="s9"><span class="k">9</span>أعطال شائعة</h2>
+  <ul class="fx">
+    <li><b>0 mA · Wire break</b><span>سلك مقطوع، فيوز، قطبية معكوسة، مفيش باور</span></li>
+    <li><b>3.6 أو 21+ mA</b><span>الترانسميتر نفسه بيقول عطل</span></li>
+    <li><b>&gt; 22 mA ثابت</b><span>قصر أو ميّة في الجنكشن بوكس</span></li>
+    <li><b>واقف ومش بيعلى</b><span>باور ضعيف أو لوب مقاومته كبيرة</span></li>
+    <li><b>بيتهز</b><span>شيلد، كابل إنفرتر جنبه، ترمنال مرتخي</span></li>
   </ul>
 </section>
-
-<section class="panel lsec" aria-labelledby="s9">
-  <h2 id="s9"><span class="k">9</span>أعطال شائعة في الموقع</h2>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>الأفوميتر بيقرا</th><th>الـ PLC بيقول</th><th>غالبًا</th></tr></thead>
-    <tbody>
-      <tr><td class="mono">0 mA</td><td>Wire break / −25 %</td><td>سلك مقطوع، فيوز اللوب ضارب، قطبية معكوسة، أو مفيش باور</td></tr>
-      <tr><td class="mono">3.6 أو 21+ mA</td><td>Fault</td><td>الترانسميتر نفسه بيقول إن فيه عطل (شوف شاشته أو بالـ HART)</td></tr>
-      <tr><td class="mono">أكتر من 22 mA وثابت</td><td>Overrange</td><td>قصر في الكابل أو ميّة في علبة الجنكشن</td></tr>
-      <tr><td>واقف عند رقم ومش بيعلى</td><td>قيمة ثابتة</td><td>الباور ضعيف أو مقاومة اللوب كبيرة (جهد الترانسميتر قليل)</td></tr>
-      <tr><td>بيتهز</td><td>القراية بتتنطط</td><td>شيلد مش متأرض، كابل جنب كابل إنفرتر، أو ترمنال مرتخي</td></tr>
-    </tbody></table></div>
-</section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
