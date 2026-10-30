@@ -20,6 +20,7 @@
 <script src="brands.js?v=20261030w1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -41,42 +42,42 @@
 <section class="panel lvid" aria-label="Lesson video"><h2 style="margin:0 0 8px">▶ The lesson in 5 minutes</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">Illustrated explanation, the simulator task solved, and the quiz answered. Made for the phone.</p><video src="/media/lessons/plc-lab/lesson-07-en.mp4" poster="/media/lessons/plc-lab/lesson-07-en.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>M memory bits</h2>
-  <p><b>M0.0</b>, <b>M0.1</b>… are bits inside the CPU that are not connected to any terminal. You write them with a coil and ask about them with contacts, exactly like an auxiliary relay, but with no wire and no cost. We use them as <b>flags</b>: "the machine is in automatic mode", "an alarm happened", "step 2 is active".</p>
-  <div class="box key"><b>Retentive or not?</b> Normal bits are cleared when the power goes off or the PLC goes to STOP. There is a <b>retentive</b> area that remembers its value. Make important counters (today's production) retentive, but not run commands.</div>
+  <p class="bf"><span class="ic">🚩</span><span><b>M0.0</b>: an auxiliary relay inside the CPU, no wire, no cost. Used as a <b>flag</b>.</span></p>
+  <div class="vs">
+    <div class="side"><b>Normal</b><span>Cleared on power loss or STOP</span><span>Run commands</span></div>
+    <i>vs</i>
+    <div class="side"><b>Retentive</b><span>Keeps its value</span><span>Today's output</span></div>
+  </div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>Edges: rising and falling</h2>
-  <div class="two">
-    <div class="box"><b>P (rising edge) ↑:</b> it conducts for <b>one scan only</b> at the moment the bit changes from 0 to 1, even if it stays 1 for an hour.</div>
-    <div class="box"><b>N (falling edge) ↓:</b> it conducts for one scan at the moment the bit changes from 1 to 0. For example, "the can has just passed the sensor".</div>
+  <div class="vs">
+    <div class="side"><b>P ↑ Rising</b><span>One scan at 0 → 1</span></div>
+    <i>vs</i>
+    <div class="side"><b>N ↓ Falling</b><span>One scan at 1 → 0</span></div>
   </div>
   <div class="ladfig" id="fEdge"></div>
-  <p>Why does it matter? The scan repeats hundreds of times per second. If you want to do something <b>once</b> per press (count, toggle a state, move to the next step), you need an edge. Otherwise it happens in every scan while the button is held.</p>
+  <p class="tip">Want something to happen <b>once</b> per press? Use an edge, or it repeats every scan.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Exercise: one button for on and off</h2>
-  <p>A lamp with one button: one press turns it on, the next press turns it off. First try it without an edge (a normal NO contact) and see what happens when you keep holding the button.</p>
+  <p class="tip">One press on, the next off. Try it <b>without an edge</b> first and watch.</p>
   <div class="wd"><h3>Simulator: toggle</h3><div id="sim1"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Exercise: an alarm with memory</h2>
-  <p>A high-pressure switch may trip for a moment and reset. If the lamp is on only while the switch is active, nobody will see it. The fix: a <b>flag</b> that remembers the alarm happened until the operator acknowledges it.</p>
+  <p class="tip">High pressure for a moment, then gone? A <b>flag</b> remembers it until the operator acknowledges.</p>
   <div class="wd"><h3>Simulator: the alarm</h3><div id="sim2"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>Common faults on site</h2>
-  <div class="fault-box"><b>Common program faults:</b><ul>
-    <li><b>The lamp flickers or stops in a random state:</b> a toggle without an edge. The state flips every scan while the button is held.</li>
-    <li><b>The same M bit is used for two things:</b> someone wrote M0.0 in a new part of the program although it was already used. Keep a table of the M bits in use and name them.</li>
-    <li><b>An edge does not work in TIA:</b> the same edge memory bit is used in more than one P contact. Each edge needs its own memory bit.</li>
-    <li><b>The machine continued from where it was after the power came back:</b> the step bits were retentive. Think about each bit: should it be cleared or kept?</li>
-  </ul></div>
+  <ul class="fx">
+    <li><b>Lamp flickers or random</b><span>Toggle without an edge</span></li>
+    <li><b>One M bit for two jobs</b><span>Keep a named list</span></li>
+    <li><b>Edge not working in TIA</b><span>Each P needs its own memory bit</span></li>
+    <li><b>Resumed mid-cycle after power returned</b><span>Step bits were retentive</span></li>
+  </ul>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson questions</h2>
   <p>Answer at least 5 of 6 correctly to mark the lesson done.</p>

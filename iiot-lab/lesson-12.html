@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261027i1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -32,42 +33,52 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>من الرسالة إلى الرسم البياني</h2>
-<p>وصلت الرسالة إلى الخادم. ماذا بعد؟ ثلاث طبقات:</p>
-<ol><li><b>قاعدة بيانات زمنية (Time-series DB):</b> InfluxDB أو TimescaleDB أو Prometheus. كل سجل = (الوقت، الوسم، القيمة). مصممة لملايين النقاط والاستعلام «متوسط آخر ساعة».</li>
-<li><b>لوحة المتابعة (Dashboard):</b> Grafana أو Node-RED Dashboard أو Ignition Perspective. رسوم اتجاه (Trends)، مقاييس (Gauges)، مؤشرات حالة، جداول.</li>
-<li><b>الإنذارات (Alerts):</b> قواعد على البيانات ترسل إشعارًا (بريد، تيليغرام، واتساب عبر API، صفارة في المصنع).</li></ol>
-<p><b>الاحتفاظ بالبيانات (Retention):</b> قراءة كل ثانية لمدة سنة = 31 مليون نقطة لكل وسم. الحل: احتفظ بالخام لأسبوع، ومتوسط كل دقيقة لشهر، ومتوسط كل ساعة لسنوات (Downsampling).</p>
+  <ol class="steps">
+    <li>قاعدة زمنية: InfluxDB · TimescaleDB</li>
+    <li>لوحة: Grafana · Ignition</li>
+    <li>إنذارات: بريد · تيليغرام · صفارة</li>
+  </ol>
+  <ul class="scale">
+    <li>خام<div class="bar"><i style="width:15%"></i><em>أسبوع</em></div></li>
+    <li>متوسط دقيقة<div class="bar"><i style="width:45%"></i><em>شهر</em></div></li>
+    <li>متوسط ساعة<div class="bar"><i style="width:100%"></i><em>سنوات</em></div></li>
+  </ul>
+  <p class="tip">كل ثانية لسنة = <b>31 مليون</b> نقطة لكل وسم ⇐ Downsampling.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>إنذار جيد وإنذار سيئ</h2>
-<p>الإنذار الذي يُطلق كثيرًا يُهمَل (Alarm flooding). قواعد ISA-18.2 المبسطة:</p>
-<ul><li><b>حد + تأخير:</b> «الحرارة > 200 °C لمدة 30 ثانية»، لا «الحرارة > 200». التأخير يقتل الومضات.</li>
-<li><b>تباطؤ (Hysteresis):</b> يُطلق عند 200 ويُزال عند 195، وإلا رنّ عشرات المرات حول الحد.</li>
-<li><b>أولويات:</b> حرج / عالٍ / منخفض / تنبيه، ولكل منها قناة: الحرج يوقظ المناوب، والتنبيه يُقرأ صباحًا.</li>
-<li><b>إقرار (Acknowledge):</b> الإنذار النشط غير المقرّ يبقى ظاهرًا حتى يقرّه إنسان؛ سجل من أقرّ ومتى.</li>
-<li><b>قمع (Suppression):</b> أثناء الصيانة أو عند توقف الخط لا ترسل «ضغط منخفض» لعشرين حساسًا؛ إنذار واحد «الخط متوقف» يكفي.</li></ul>
+  <p class="bf"><span class="ic">🔕</span><span>الإنذار الكثير <b>يُهمَل</b>.</span></p>
+  <ul class="fx">
+    <li><b>حد + تأخير</b><span>&gt; 200 °C لمدة 30 s</span></li>
+    <li><b>تباطؤ</b><span>يُطلق 200 ويُزال 195</span></li>
+    <li><b>أولويات</b><span>الحرج يوقظ المناوب</span></li>
+    <li><b>إقرار</b><span>من أقرّ ومتى</span></li>
+    <li><b>قمع</b><span>«الخط متوقف» بدل 20 إنذارًا</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>OEE: الرقم الذي يفهمه المدير</h2>
-<p><b>OEE</b> (Overall Equipment Effectiveness) = <b>الإتاحة × الأداء × الجودة</b>، ويُحسب من ثلاث إشارات فقط يمكن أخذها من الـ PLC:</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>العامل</th><th>الحساب</th><th>مثال</th></tr></thead><tbody>
-<tr><td>الإتاحة (A)</td><td>وقت التشغيل ÷ الوقت المخطط</td><td>7 h ÷ 8 h = 87.5%</td></tr>
-<tr><td>الأداء (P)</td><td>(القطع المنتجة × الزمن القياسي) ÷ وقت التشغيل</td><td>3000 × 7 s ÷ 25200 s = 83.3%</td></tr>
-<tr><td>الجودة (Q)</td><td>القطع السليمة ÷ القطع المنتجة</td><td>2900 ÷ 3000 = 96.7%</td></tr>
-<tr><td><b>OEE</b></td><td>A × P × Q</td><td>0.875 × 0.833 × 0.967 = <b>70.5%</b></td></tr></tbody></table></div>
-<p>الإشارات المطلوبة: <b>Running</b> (بت)، <b>عدّاد القطع</b>، <b>عدّاد المرفوض</b>. من بت Running وحده تستخرج أسباب التوقف إذا أضفت كود السبب الذي يختاره المشغّل من شاشة HMI.</p>
-<div class="box key"><b>85%</b> يُعدّ عالميًا ممتازًا، ومعظم المصانع تبدأ من 40–60%. القيمة ليست المهم، المهم <b>أين تضيع الدقائق</b>: مخطط باريتو لأسباب التوقف هو أول ما يطلبه أي مدير.</div>
+  <div class="formula">OEE = A × P × Q</div>
+  <ul class="scale">
+    <li>الإتاحة<div class="bar"><i style="width:87.5%"></i><em><bdi dir="ltr">87.5 %</bdi></em></div></li>
+    <li>الأداء<div class="bar"><i style="width:83.3%"></i><em><bdi dir="ltr">83.3 %</bdi></em></div></li>
+    <li>الجودة<div class="bar"><i style="width:96.7%"></i><em><bdi dir="ltr">96.7 %</bdi></em></div></li>
+    <li class="danger">OEE<div class="bar"><i style="width:70.5%"></i><em><bdi dir="ltr">70.5 %</bdi></em></div></li>
+  </ul>
+  <p class="tip">الإشارات: <b>Running</b> + عدّاد القطع + عدّاد المرفوض.</p>
+  <div class="box key"><b>85%</b> ممتاز، ومعظم المصانع 40–60%. المهم <b>أين تضيع الدقائق</b>: باريتو لأسباب التوقف.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>تصميم لوحة لا تُربك</h2>
-<ul><li>شاشة واحدة لكل خط: حالة (أخضر/أحمر)، OEE اليوم، القطع/الهدف، آخر إنذار. التفاصيل في صفحة تالية.</li>
-<li>اتجاه الحرارة مع <b>خطي الحد الأعلى والأدنى</b> مرسومَين، وإلا فالمنحنى بلا معنى.</li>
-<li>الوحدة بجانب كل رقم، والطابع الزمني لآخر تحديث؛ لوحة بقيمة قديمة أخطر من لوحة فارغة.</li>
-<li>لون واحد للخطر (أحمر)، ولا تستخدمه للزينة.</li>
-<li>مؤشر «البوابة متصلة» من رسالة heartbeat؛ إذا توقفت تُظلَّل كل القيم رماديًا.</li></ul>
+  <ul class="fx">
+    <li class="ok"><b>شاشة لكل خط</b><span>حالة · OEE · قطع/هدف · آخر إنذار</span></li>
+    <li class="ok"><b>الاتجاه</b><span>مع خطي الحد</span></li>
+    <li class="ok"><b>الوحدة والزمن</b><span>قيمة قديمة أخطر من فراغ</span></li>
+    <li class="ok"><b>الأحمر</b><span>للخطر فقط</span></li>
+    <li class="ok"><b>Heartbeat</b><span>غاب ⇐ القيم رمادية</span></li>
+  </ul>
+  <div class="box key"><b>على المحاكي:</b> اضبط الحد والتأخير والتباطؤ حتى يختفي الإنذار الكاذب، ثم احسب OEE. <a class="btn pri" href="net.html#dash" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-<div class="box key"><b>على المحاكي:</b> في تبويب <b>لوحة المتابعة</b> اضبط حد الإنذار والتأخير والتباطؤ حتى يختفي الإنذار الكاذب، ثم احسب OEE من العدّادات المعروضة. <a class="btn pri" href="net.html#dash" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>

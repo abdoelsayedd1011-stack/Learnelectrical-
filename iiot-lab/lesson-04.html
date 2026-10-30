@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261027i1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -32,45 +33,51 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>الفكرة نفسها على الإيثرنت</h2>
-<p><b>Modbus TCP</b> هو Modbus RTU نفسه (الجداول الأربعة ورموز الوظائف نفسها) لكن بدل زوج الأسلاك و CRC، يُرسل الطلب داخل اتصال <b>TCP</b> على المنفذ <b>502</b>. لذلك لا توجد سرعة إرسال ولا تماثل ولا مقاومة إنهاء: يكفي أن يكون الجهازان في شبكة IP واحدة.</p>
-<div class="tblw"><table class="tbl"><thead><tr><th></th><th>Modbus RTU</th><th>Modbus TCP</th></tr></thead><tbody>
-<tr><td>الوسط</td><td>RS-485</td><td>إيثرنت / Wi-Fi</td></tr>
-<tr><td>تحديد الجهاز</td><td>عنوان التابع 1–247</td><td>عنوان IP + المنفذ 502 (+ Unit ID)</td></tr>
-<tr><td>كشف الخطأ</td><td>CRC-16</td><td>TCP يضمن الوصول؛ لا CRC</td></tr>
-<tr><td>عدد السادة</td><td>سيد واحد</td><td>عدة عملاء على الخادم نفسه (بحد الاتصالات)</td></tr>
-<tr><td>التسمية</td><td>Master / Slave</td><td>Client / Server</td></tr></tbody></table></div>
+  <p class="bf"><span class="ic">🔌</span><span>Modbus نفسه، لكن داخل <b>TCP على المنفذ 502</b>: لا سرعة ولا تماثل ولا إنهاء.</span></p>
+  <div class="vs">
+    <div class="side"><b>RTU</b><span>RS-485</span><span>عنوان 1–247</span><span>CRC-16</span><span>سيد واحد</span></div>
+    <i>vs</i>
+    <div class="side"><b>TCP</b><span>إيثرنت / Wi-Fi</span><span>IP + 502 + Unit ID</span><span>TCP يضمن الوصول</span><span>عدة عملاء</span></div>
+  </div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>رأس MBAP</h2>
-<p>يسبق كل طلب رأس من 7 بايتات اسمه <b>MBAP</b>:</p>
-<div class="tblw"><table class="tbl mono" style="direction:ltr"><thead><tr><th>00 01</th><th>00 00</th><th>00 06</th><th>01</th><th>03 00 6B 00 02</th></tr></thead><tbody>
-<tr><td>Transaction ID</td><td>Protocol ID (دائمًا 0)</td><td>الطول التالي</td><td>Unit ID</td><td>PDU: الوظيفة والسجلات</td></tr></tbody></table></div>
-<ul><li><b>Transaction ID:</b> رقم يزيد مع كل طلب، ليطابق العميل كل رد بطلبه عندما يرسل عدة طلبات معًا.</li>
-<li><b>Unit ID:</b> يُستخدم عندما يكون الخادم <b>بوابة</b> تحوّل TCP إلى RTU: فيه عنوان التابع التسلسلي خلف البوابة. مع جهاز إيثرنت مباشر ضع 1 أو 255 أو 0 حسب الدليل.</li></ul>
+  <div class="ladder"><span class="u">00 01</span><span class="u">00 00</span><span class="u">00 06</span><span class="u on">01</span><span class="u">03 00 6B 00 02</span></div>
+  <ul class="fx">
+    <li><b>Transaction ID</b><span>يطابق كل رد بطلبه</span></li>
+    <li><b>Protocol ID</b><span>دائمًا 0</span></li>
+    <li><b>Unit ID</b><span>عنوان التابع خلف البوابة · جهاز مباشر: 1 أو 255 أو 0</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>قراءة PLC من الحاسوب</h2>
-<p>معظم الـ PLC الحديثة تعمل خادم Modbus TCP: Siemens S7-1200 (ببلوك <span class="mono">MB_SERVER</span>)، Schneider M221/M241 (مدمج)، Delta و Omron وغيرها. خريطة السجلات تختلف: في Schneider تبدأ <span class="mono">%MW0</span> من السجل 0، وفي Siemens يُحدَّد <span class="mono">DB</span> كمنطقة Holding registers.</p>
-<ol><li>تأكد أن الحاسوب يرى الـ PLC (ping).</li>
-<li>افتح برنامج عميل (مثل Modbus Poll أو QModMaster) على IP الـ PLC والمنفذ 502.</li>
-<li>اختر الوظيفة 03، العنوان 0، العدد 10، ودورة قراءة كل 1000 ms.</li>
-<li>لو ظهر <b>Connection refused</b>: الخادم غير مفعّل في برنامج الـ PLC أو المنفذ محجوب بجدار حماية. لو ظهر <b>Timeout</b> فالمشكلة في الشبكة (الدرس 2).</li></ol>
-<div class="box key"><b>أعداد 32 بت:</b> كثير من القيم (عداد الإنتاج، القدرة) تشغل سجلين. ترتيب الكلمات يختلف: <b>Big-endian</b> (الكلمة العليا أولًا) أو <b>Little-endian</b>. لو قرأت رقمًا عملاقًا بلا معنى، بدّل ترتيب الكلمتين.</div>
+  <ol class="steps">
+    <li>ping</li>
+    <li>عميل على IP:502</li>
+    <li>FC 03 · عنوان 0 · 10 سجلات</li>
+  </ol>
+  <ul class="fx">
+    <li><b>Connection refused</b><span>الخادم غير مفعّل أو جدار حماية</span></li>
+    <li><b>Timeout</b><span>الشبكة (الدرس 2)</span></li>
+    <li><b>رقم عملاق بلا معنى</b><span>32 بت: بدّل ترتيب الكلمتين</span></li>
+  </ul>
+  <p class="tip">S7-1200: <span class="mono">MB_SERVER</span> · Schneider: <span class="mono">%MW0</span> = سجل 0.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>الأداء والحدود</h2>
-<ul><li>دورة قراءة 100 ms لعشرات السجلات أمر عادي على الإيثرنت، لكن Modbus TCP <b>ليس حتميًا</b>: لا تستخدمه لإيقاف طوارئ أو تزامن محاور.</li>
-<li>اقرأ السجلات <b>المتجاورة في طلب واحد</b> (حتى 125 سجلًا) بدل عشرة طلبات صغيرة.</li>
-<li>عدد الاتصالات المتزامنة محدود (مثلًا 8 في بعض الـ PLC). شاشة + SCADA + بوابة + حاسوبك قد تستنفدها فيرفض الاتصال الجديد.</li>
-<li>Modbus بلا تشفير ولا كلمة سر: أي جهاز في الشبكة يستطيع كتابة السجلات. اعزل شبكة الماكينة عن شبكة المكاتب (الدرس 11).</li></ul>
+  <ul class="fx">
+    <li><b>⏱️ ليس حتميًا</b><span>لا للطوارئ ولا لتزامن المحاور</span></li>
+    <li><b>📦 طلب واحد</b><span>حتى 125 سجلًا متجاورًا</span></li>
+    <li><b>🔢 اتصالات محدودة</b><span>مثلًا 8 · الجديد يُرفض</span></li>
+    <li><b>🔓 بلا تشفير</b><span>اعزل شبكة الماكينة</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>بوابة Modbus TCP ⇄ RTU</h2>
-<p>عندما يكون محوّل التردد تسلسليًا والـ SCADA على الإيثرنت، تضع <b>بوابة</b>: من جهة منفذ RS-485 بثلاثة محوّلات (عناوين 1 و 2 و 3)، ومن الجهة الأخرى IP واحد. يرسل العميل طلب TCP بـ <b>Unit ID = 2</b> فتحوّله البوابة إلى إطار RTU للتابع 2 وتعيد رده. الـ Timeout هنا يأتي من الجهة التسلسلية غالبًا (الدرس 3).</p>
-<div class="box key"><b>على المحاكي:</b> اتصل بالـ PLC على 502، اقرأ عداد الإنتاج 32 بت بترتيب الكلمات الصحيح، واكتب نقطة الضبط في Holding register، ثم جرّب Connection refused و Unit ID خطأ عبر البوابة. <a class="btn pri" href="net.html#mbtcp" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+  <div class="ladder"><span class="u">SCADA</span><span class="op">TCP · Unit 2</span><span class="u on">بوابة</span><span class="op">RTU</span><span class="u">تابع 2</span></div>
+  <p class="tip">الـ Timeout هنا غالبًا من الجهة <b>التسلسلية</b>.</p>
+  <div class="box key"><b>على المحاكي:</b> اتصل على 502، اقرأ العداد 32 بت بالترتيب الصحيح، اكتب نقطة الضبط، وجرّب Connection refused و Unit ID خطأ. <a class="btn pri" href="net.html#mbtcp" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 5 من 6 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>

@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261028e1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -34,49 +35,52 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>From PROFIBUS to PROFINET</h2>
-<p><b>PROFINET</b> is the successor to PROFIBUS on <b>Ethernet</b> (100 Mbit/s, usually green cable, RJ45 or M12). The principle is the same: an <b>IO-Controller</b> (the PLC) exchanges cyclic data with <b>IO-Devices</b> (I/O modules, drives, robots). But instead of an address from 0 to 125, each device now has a <b>device name</b> and an IP address. And because it is standard Ethernet, an HMI, OPC UA and Modbus TCP can all run side by side on the same network.</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>Class</th><th>Cycle time</th><th>Use</th></tr></thead><tbody>
-<tr><td><b>RT</b> (Real-Time)</td><td>1 – 10 ms</td><td>Most I/O and drives</td></tr>
-<tr><td><b>IRT</b> (Isochronous RT)</td><td>Down to 250 µs, jitter &lt; 1 µs</td><td>Motion control; requires IRT-capable switches</td></tr>
-<tr><td><b>TCP/IP</b></td><td>Non-deterministic</td><td>Configuration, diagnostics and parameters</td></tr></tbody></table></div>
+  <p class="bf"><span class="ic">🟢</span><span>PROFIBUS on <b>Ethernet</b>: a controller exchanges with devices, using a <b>name + IP</b> instead of a number.</span></p>
+  <div class="tiles">
+    <div class="tile"><span class="big">RT</span><b>1–10 ms</b><span>I/O and VFDs</span></div>
+    <div class="tile"><span class="big">IRT</span><b>250 µs</b><span>Motion · special switches</span></div>
+    <div class="tile"><span class="big">TCP/IP</span><b>Not deterministic</b><span>Setup and diagnostics</span></div>
+  </div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>Name first, then IP</h2>
-<p>The controller locates its devices <b>by name</b> using the <b>DCP</b> protocol, then assigns them the IP address configured in the project. Hence the commissioning sequence:</p>
-<ol><li>In TIA Portal: add the device (from its <b>GSDML</b> file, the XML successor to GSD) and give it a name such as <span class="mono">vfd-line3</span> and an IP address.</li>
-<li>On the physical device: <b>Assign device name</b> from TIA Portal (Online → Accessible devices) or with the PRONETA tool. Some devices have their name set by switches or a display.</li>
-<li>Download the project to the CPU. It assigns the device its address and data exchange begins.</li></ol>
-<div class="box key"><b>Naming rules:</b> lowercase letters, digits and hyphens only; no spaces, no capitals, and it must not start with a digit. The name is stored in the device; when replacing a failed unit, set the same name and it picks up everything else automatically. (Alternatively, enable <b>Device replacement without exchangeable medium</b> together with the topology, and the CPU identifies the device by its position in the network.)</div>
+  <ol class="steps">
+    <li>GSDML + name + IP in TIA</li>
+    <li>Assign device name</li>
+    <li class="on">Download to the CPU</li>
+  </ol>
+  <div class="box key"><b>Names:</b> lowercase, digits and hyphens only, like <span class="mono">vfd-line3</span>. Replaced a device? Give it <b>the same name</b>.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Topology and switches</h2>
-<ul><li>Most PROFINET devices have a <b>built-in two-port switch</b>, so you can daisy-chain a <b>line</b> from device to device. But if a cable breaks in the middle, everything beyond it is lost.</li>
-<li>A <b>star</b> from a managed switch is more robust, and a <b>ring</b> with <b>MRP</b> (Media Redundancy Protocol) tolerates a single cable break: one device acts as MRP Manager, keeping the ring logically open and closing it within 200 ms when a break occurs.</li>
-<li>Switches: use industrial switches with PROFINET support (LLDP, VLAN priority). Cheap office switches often work with RT but fail with IRT and diagnostics.</li>
-<li><b>LLDP</b> lets every device know its neighbor on each port, so TIA Portal can draw the actual topology and compare it with the design: a cable in the wrong port shows up immediately.</li></ul>
+  <div class="tiles">
+    <div class="tile"><span class="ic">➖</span><b>Line</b><span>One break ⇒ everything after is lost</span></div>
+    <div class="tile"><span class="ic">✳️</span><b>Star</b><span>Managed switch · safer</span></div>
+    <div class="tile"><span class="ic">⭕</span><b>MRP ring</b><span>Survives one break · 200 ms</span></div>
+  </div>
+  <p class="tip">Industrial switches that support PROFINET. <b>LLDP</b> reveals a cable in the wrong port.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>LEDs and diagnostics</h2>
-<div class="tblw"><table class="tbl"><thead><tr><th>LED</th><th>Meaning</th></tr></thead><tbody>
-<tr><td><b>BF</b> steady red</td><td>No link on any port, or the controller was not found</td></tr>
-<tr><td><b>BF</b> flashing</td><td>Device present but no data exchange: name mismatch, IP conflict, or a device in the project that does not physically exist</td></tr>
-<tr><td><b>SF</b></td><td>Diagnostic: missing module, wire break on a channel, sensor supply fault</td></tr>
-<tr><td><b>MT</b> (Maintenance)</td><td>Maintenance warning: a cable or port is dropping frames (approaching the error limit)</td></tr>
-<tr><td><b>Link / P1 P2</b></td><td>Per-port LED: green = link, flashing = activity</td></tr></tbody></table></div>
-<p>In TIA Portal, the <b>Diagnostics buffer</b> logs every device dropping out and returning, with timestamps, and <b>Online → Devices &amp; networks</b> colors each device green or red. The free <b>PRONETA</b> tool scans the network, shows names, IP and MAC addresses, and lets you assign names without a project.</p>
+  <ul class="fx">
+    <li><b>🔴 BF steady</b><span>No link or no controller</span></li>
+    <li><b>🔴 BF flashing</b><span>Present but no data: name · IP · not in plant</span></li>
+    <li><b>🔴 SF</b><span>Missing module · broken wire</span></li>
+    <li><b>🟡 MT</b><span>Cable dropping frames</span></li>
+  </ul>
+  <p class="tip">TIA: <b>diagnostics buffer</b> · free: <b>PRONETA</b>.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>Common PROFINET faults</h2>
-<div class="tblw"><table class="tbl"><thead><tr><th>Symptom</th><th>Cause</th></tr></thead><tbody>
-<tr><td>A new device does not appear</td><td>The name was not assigned on the device, or contains a capital letter or space</td></tr>
-<tr><td>BF flashing after replacing a device</td><td>The replacement carries an old name from another machine: reset it to factory settings and assign the name</td></tr>
-<tr><td>Communication drops every few minutes</td><td>Duplicate IP with an office PC on the same network, or unshielded cable next to a drive (watch MT)</td></tr>
-<tr><td>All devices beyond a certain point have vanished</td><td>Line topology with a cable broken in the middle</td></tr>
-<tr><td>IRT does not work</td><td>An ordinary switch in the path does not support IRT, or the project topology does not match the installation</td></tr></tbody></table></div>
-<div class="box key"><b>On the simulator:</b> set each device's name to match the project, fix a name containing a capital letter, resolve an IP conflict with a PC, and try breaking a cable in a line topology and then in an MRP ring. <a class="btn pri" href="net.html#profinet" style="margin-inline-start:8px">Open the simulator →</a></div>
+  <ul class="fx">
+    <li><b>New device not found</b><span>Name not set or has a capital</span></li>
+    <li><b>BF flashing after a swap</b><span>Old name · reset, then set the name</span></li>
+    <li><b>Drops every few minutes</b><span>Duplicate IP · cable near a VFD</span></li>
+    <li><b>All devices past a point gone</b><span>Line with a cut cable</span></li>
+    <li><b>IRT won't run</b><span>Plain switch · topology mismatch</span></li>
+  </ul>
+  <div class="box key"><b>On the simulator:</b> match the names, fix a capitalised name, resolve an IP clash, and cut a cable in a line then in an MRP ring. <a class="btn pri" href="net.html#profinet" style="margin-inline-start:8px">Open the simulator →</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
   <p>Answer at least 6 of 7 correctly to complete the lesson.</p>

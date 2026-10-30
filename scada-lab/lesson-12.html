@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="scada.css?v=20261028s1">
 <script src="scada.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -29,8 +30,8 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>مواصفات المشروع</h2>
-<p>ستبني محطة SCADA لخط تعبئة عصير كما يطلبها عميل حقيقي. الخط: <b>خزان ← مضخة ← صمام ← آلة تعبئة ← سير ناقل ← آلة أغطية</b>، تتحكم فيه S7-1500 على العنوان 192.168.0.1.</p>
-<svg viewBox="0 0 640 220" role="img" aria-label="مخطط خط التعبئة من الخزان إلى آلة الأغطية" style="width:100%;max-width:640px;direction:ltr">
+  <ol class="steps"><li>خزان</li><li>مضخة</li><li>صمام</li><li>تعبئة</li><li>سير</li><li>أغطية</li></ol>
+  <svg viewBox="0 0 640 220" role="img" aria-label="مخطط خط التعبئة من الخزان إلى آلة الأغطية" style="width:100%;max-width:640px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="11" fill="currentColor" text-anchor="middle">
 <rect x="20" y="40" width="70" height="110" rx="6" fill="none" stroke="#5f5f5f" stroke-width="2"/>
 <rect x="22" y="80" width="66" height="68" fill="#9aa0a6" opacity=".45"/>
@@ -49,67 +50,66 @@
 <text x="505" y="37" fill="#b71c1c" font-size="12">ALM P1 motor overload</text><text x="505" y="54" fill="#b71c1c">priority 1 · unacked</text>
 <text x="190" y="212" font-size="12">Bottles 12480 · Rejects 37 · OEE 84 %</text>
 </g></svg>
-<div class="tblw"><table class="tbl"><thead><tr><th>الوسم</th><th>النوع</th><th>الاستخدام</th></tr></thead><tbody>
-<tr><td class="mono">Tank1_Level</td><td class="mono">Real (%)</td><td>تعبئة الخزان + ترند + إنذار مستوى منخفض</td></tr>
-<tr><td class="mono">Pump1_Start / Pump1_Stop</td><td class="mono">Bool</td><td>أزرار تشغيل وإيقاف (لحظية)</td></tr>
-<tr><td class="mono">Pump1_Running / Pump1_Fault</td><td class="mono">Bool</td><td>حالة المضخة + إنذار العطل</td></tr>
-<tr><td class="mono">Pump1_Speed_SP</td><td class="mono">Real (Hz)</td><td>حقل إدخال بحدود 0–50</td></tr>
-<tr><td class="mono">Pump1_Current</td><td class="mono">Real (A)</td><td>شريط تيار + ترند</td></tr>
-<tr><td class="mono">Valve1_Open / Closed / Fault</td><td class="mono">Bool</td><td>لون الصمام حسب الحالة</td></tr>
-<tr><td class="mono">Bottle_Count</td><td class="mono">DInt</td><td>عداد الإنتاج (يُصفَّر في الـ PLC)</td></tr></tbody></table></div>
+  <ul class="fx">
+    <li><b><span class="mono">Tank1_Level</span></b><span>Real % · تعبئة + ترند + إنذار</span></li>
+    <li><b><span class="mono">Pump1_Start/Stop</span></b><span>Bool · لحظيان</span></li>
+    <li><b><span class="mono">Pump1_Running/Fault</span></b><span>Bool · حالة + إنذار</span></li>
+    <li><b><span class="mono">Pump1_Speed_SP</span></b><span>Real Hz · 0–50</span></li>
+    <li><b><span class="mono">Pump1_Current</span></b><span>Real A · شريط + ترند</span></li>
+    <li><b><span class="mono">Valve1_*</span></b><span>Bool · لون حسب الحالة</span></li>
+    <li><b><span class="mono">Bottle_Count</span></b><span>DInt · يُصفَّر في الـ PLC</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>هيكل الشاشات والتنقل</h2>
-<p>طبّق مستويات ISA-101 الأربعة (الدرس 3) ولا تضع كل شيء في شاشة واحدة:</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>المستوى</th><th>الشاشة في المشروع</th><th>ما فيها</th></tr></thead><tbody>
-<tr><td>1</td><td>نظرة عامة على المصنع</td><td>مؤشرات الأداء: الإنتاج والرفض والحالة العامة</td></tr>
-<tr><td>2</td><td>خط التعبئة</td><td>المخطط أعلاه بالرمادي، والألوان للإنذارات فقط</td></tr>
-<tr><td>3</td><td>Faceplate المضخة والصمام</td><td>تشغيل وإيقاف، سرعة، تيار، وضع يدوي وآلي</td></tr>
-<tr><td>4</td><td>التشخيص</td><td>حالة الاتصال، والإنذارات، والترند، والوصفة</td></tr></tbody></table></div>
-<ul><li><b>شريط تنقل ثابت</b> أعلى كل شاشة: نظرة عامة، الخط، الإنذارات، الترند، الوصفة.</li>
-<li><b>شريط الإنذار الأخير</b> ظاهر دائمًا، فلا يحتاج المشغّل إلى فتح شاشة الإنذارات ليعرف أن شيئًا حدث.</li>
-<li>في WinCC Unified استخدم <b>Screen Window</b> لتبديل المحتوى داخل إطار ثابت يحمل شريط التنقل والإنذار.</li></ul>
+  <ul class="fx">
+    <li><b>1 نظرة عامة</b><span>الإنتاج والرفض والحالة</span></li>
+    <li><b>2 خط التعبئة</b><span>رمادي، والألوان للإنذار</span></li>
+    <li><b>3 Faceplates</b><span>المضخة والصمام</span></li>
+    <li><b>4 التشخيص</b><span>اتصال، إنذارات، ترند، وصفة</span></li>
+  </ul>
+  <p class="tip">شريط تنقل ثابت + شريط الإنذار الأخير ظاهر دائمًا، داخل <b>Screen Window</b>.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>قائمة التنفيذ</h2>
-<ol class="steps-l"><li><b>الوسوم:</b> اتصال صحيح بالـ PLC، وأنواع مطابقة، وتحويل خطي لقيم 0–27648 (الدرس 2).</li>
-<li><b>الشاشات:</b> خلفية رمادية فاتحة، ومعدات رمادية مسطّحة، والألوان للحالات غير الطبيعية فقط (الدرس 3).</li>
-<li><b>العناصر:</b> أزرار لحظية للتشغيل والإيقاف، وحقل سرعة بحدود 0–50 Hz، وشريط للتيار (الدرس 4).</li>
-<li><b>الديناميكية:</b> تعبئة الخزان من Tank1_Level، ولون الصمام حسب حالته، وأيقونة العطل تظهر عند العطل فقط، و Faceplate للمضخة (الدرس 5).</li>
-<li><b>الإنذارات:</b> عطل المضخة أولوية عالية، والمستوى المنخفض بمنطقة ميتة وتأخير، وعرض للإنذارات (الدرس 6).</li>
-<li><b>الترند:</b> المستوى والتيار معًا لتحليل الأحداث (الدرس 7).</li>
-<li><b>الصلاحيات:</b> المشغّل يشغّل ويؤكد، والمهندس يعدّل الوصفة، والخروج التلقائي مفعّل (الدرس 8).</li>
-<li><b>الوصفة:</b> ثلاثة أحجام، وتحميل مشروط بتوقف الخط (الدرس 9).</li></ol>
+  <ul class="fx">
+    <li><b>الوسوم</b><span>اتصال + أنواع + تحويل · د2</span></li>
+    <li><b>الشاشات</b><span>رمادي مسطّح · د3</span></li>
+    <li><b>العناصر</b><span>أزرار لحظية + حدود 0–50 Hz · د4</span></li>
+    <li><b>الديناميكية</b><span>خزان، صمام، أيقونة، Faceplate · د5</span></li>
+    <li><b>الإنذارات</b><span>أولوية + نطاق ميت + تأخير · د6</span></li>
+    <li><b>الترند</b><span>المستوى والتيار معًا · د7</span></li>
+    <li><b>الصلاحيات</b><span>مشغّل/مهندس + خروج تلقائي · د8</span></li>
+    <li><b>الوصفة</b><span>3 أحجام، تحميل والخط متوقف · د9</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>خطة الاختبار والتسليم</h2>
-<div class="tblw"><table class="tbl"><thead><tr><th>الاختبار</th><th>الطريقة</th><th>النتيجة المقبولة</th></tr></thead><tbody>
-<tr><td>تشغيل المضخة</td><td>اضغط «تشغيل» كمشغّل</td><td>Pump1_Running = 1 والتيار يرتفع خلال ثوانٍ</td></tr>
-<tr><td>حدود السرعة</td><td>أدخل 65 Hz</td><td>رفض الإدخال والقيمة تبقى كما كانت</td></tr>
-<tr><td>عطل المضخة</td><td>افرض Pump1_Fault</td><td>إنذار أولوية عالية + أيقونة على المضخة + تأكيد يعمل</td></tr>
-<tr><td>الترند</td><td>شغّل الخط 10 دقائق</td><td>منحنى مستوى وتيار متصل بلا فجوات</td></tr>
-<tr><td>الوصفة</td><td>حمّل 0.5 L والخط يعمل ثم متوقف</td><td>رفض ثم قبول، والحجم الجديد يظهر في الآلة</td></tr>
-<tr><td>الصلاحيات</td><td>حاول تعديل الوصفة كمشغّل</td><td>مرفوض ومسجّل في سجل التدقيق</td></tr></tbody></table></div>
-<div class="box key"><b>عند التسليم:</b> نسخة من المشروع بتاريخ، وقائمة الوسوم، وقائمة الإنذارات بنصوصها وأولوياتها، ونتائج الاختبار موقّعة. هذا ما يميّز المهندس المحترف عن غيره.</div>
+  <ul class="fx">
+    <li><b>تشغيل المضخة</b><span>Running = 1 والتيار يرتفع</span></li>
+    <li><b>65 Hz</b><span>مرفوضة</span></li>
+    <li><b>Pump1_Fault</b><span>إنذار عالٍ + أيقونة + تأكيد</span></li>
+    <li><b>الترند 10 دقائق</b><span>منحنى بلا فجوات</span></li>
+    <li><b>وصفة 0.5 L</b><span>رفض والخط يعمل، قبول وهو متوقف</span></li>
+    <li><b>مشغّل يعدّل وصفة</b><span>مرفوض ومسجّل</span></li>
+  </ul>
+  <div class="box key">سلّم: المشروع بتاريخ + قائمة الوسوم + قائمة الإنذارات + نتائج اختبار موقّعة.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>ابنِ المشروع في المصمّم</h2>
-<p>الآن طبّق كل ما سبق: ابنِ الشاشة بنفسك، ثم شغّلها واختبرها. لا تنتقل إلى الامتحان قبل أن تكتمل قائمة المصمّم.</p>
-<div class="box key"><b>على المحاكي:</b> ابنِ شاشة خط التعبئة من الخزان إلى آلة الأغطية مع الأنابيب وزر الانتقال إلى شاشة الإنذارات وترند المستوى، ثم شغّلها وأكّد إنذار العطل وتابع عداد الزجاجات. <a class="btn pri" href="designer.html#project" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+  <div class="box key"><b>على المحاكي:</b> ابنِ شاشة الخط كاملة، شغّلها، أكّد إنذار العطل، وتابع عداد الزجاجات. أكمل القائمة قبل الامتحان. <a class="btn pri" href="designer.html#project" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 5 من 6 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
   <div id="quiz"></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="sf">
   <h2 id="sf"><span class="k">★</span>الامتحان النهائي</h2>
   <p>12 سؤالًا من الكورس كله. تحتاج إلى <b>80%</b> للحصول على الشهادة.</p>
   <div id="final"></div>
 </section>
+
 <nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
 <p class="foot">المعلومات هنا من أدلة الشركات المصنّعة (Siemens WinCC Unified و TIA Portal، Inductive Automation Ignition، Rockwell FactoryTalk) ومن المعايير ISA-101 و ISA-18.2 و IEC 62443. قبل أي تعديل على منظومة تعمل فعلًا ارجع إلى دليل البرنامج وإجراءات التغيير في مصنعك. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
 </div>

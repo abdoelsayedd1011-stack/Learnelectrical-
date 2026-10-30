@@ -20,6 +20,7 @@
 <script src="brands.js?v=20261030w1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -41,42 +42,50 @@
 <section class="panel lvid" aria-label="Lesson video"><h2 style="margin:0 0 8px">▶ The lesson in 5 minutes</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">Illustrated explanation, the simulator task solved, and the quiz answered. Made for the phone.</p><video src="/media/lessons/plc-lab/lesson-03-en.mp4" poster="/media/lessons/plc-lab/lesson-03-en.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>The contact and the coil</h2>
-  <div class="cards">
-    <div class="card"><div class="ladfig" id="fNO"></div><h3>NO contact <span class="mono">-| |-</span></h3><p>"Ask: is this bit 1?" If it is 1, it conducts. It does not have to be an NO button in real life; it is a question about the bit.</p></div>
-    <div class="card"><div class="ladfig" id="fNC"></div><h3>NC contact <span class="mono">-|/|-</span></h3><p>"Ask: is this bit 0?" If it is 0, it conducts; if it is 1, it opens.</p></div>
-    <div class="card"><div class="ladfig" id="fCO"></div><h3>Coil <span class="mono">-( )-</span></h3><p>It writes the bit: 1 if power reaches it, 0 if it does not. It is always at the end of the rung, on the right.</p></div>
+  <div class="tiles">
+    <div class="tile"><div class="ladfig" id="fNO"></div><b>NO <span class="mono">-| |-</span></b><span>Bit = 1? Passes</span></div>
+    <div class="tile"><div class="ladfig" id="fNC"></div><b>NC <span class="mono">-|/|-</span></b><span>Bit = 0? Passes</span></div>
+    <div class="tile"><div class="ladfig" id="fCO"></div><b>Coil <span class="mono">-( )-</span></b><span>Writes the bit · end of rung</span></div>
   </div>
-  <div class="box key"><b>The key idea:</b> a contact in the program is not a real wire. It looks at a <b>bit</b> in memory (is I0.0 1 or 0?). You can ask about the same bit with NO in one rung and NC in another, as many times as you like.</div>
+  <div class="box key">A contact isn't a wire: it asks about a <b>bit</b> in memory. You can ask about the same bit many times.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>AND and OR</h2>
-  <div class="two">
-    <div class="box"><b>AND = series:</b> two contacts one after the other. The coil turns on if both are 1.<div class="ladfig" id="fAND"></div></div>
-    <div class="box"><b>OR = parallel (branch):</b> two contacts side by side. The coil turns on if either one is 1.<div class="ladfig" id="fOR"></div></div>
+  <div class="vs">
+    <div class="side"><b>AND = series</b><span>Both 1</span><div class="ladfig" id="fAND"></div></div>
+    <i>vs</i>
+    <div class="side"><b>OR = parallel</b><span>Either 1</span><div class="ladfig" id="fOR"></div></div>
   </div>
-  <p><b>How to make a branch in the simulator:</b> tap the contact on the main line and choose <b>"⫴ Parallel branch for this cell"</b>. A second row appears below it with a new contact connected on both sides. Choose its address and you are done. You can also control the vertical links yourself with the "Link left-up" and "Link right-up" buttons.</p>
+  <p class="tip">A branch in the simulator: tap the contact ⇒ <b>"⫴ parallel branch"</b> ⇒ pick the address.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Simulator: AND and OR</h2>
-  <p>Exercise 1: the <b>press</b> runs only when the operator presses with both hands (safety). Exercise 2: a stair light that turns on from either switch. Write the program, press <b>RUN</b> and try it with the switches, then press <b>"Test program"</b>: the simulator tries every combination for you.</p>
+  <ul class="fx">
+    <li><b>🦾 The press</b><span>Both hands only</span></li>
+    <li><b>💡 Stair light</b><span>From either switch</span></li>
+  </ul>
+  <p class="tip">Write ⇒ <b>RUN</b> ⇒ try it ⇒ <b>"Test program"</b>.</p>
   <div class="wd"><h3>Ladder simulator</h3><div id="sim1"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>The trap: the NC-wired Stop button</h2>
-  <p>In real life the Stop button is wired <b>NC</b> (closed while nobody presses it). Why? So that if the wire breaks, the machine stops by itself (fail-safe). So while nobody presses it, the PLC sees <b>I0.1 = 1</b>. When you press it, it becomes <b>0</b>.</p>
-  <div class="two">
-    <div class="box safe"><b>Wrong:</b> "The button is NC, so I'll use an NC contact in the program." Result: the bit = 1 all the time, so the NC contact is open all the time, and the motor <b>will never start</b>.<div class="ladfig" id="fBAD"></div></div>
-    <div class="box good"><b>Right:</b> an <b>NO</b> contact on I0.1. Bit = 1 (nobody pressing) → it conducts. Stop pressed → bit 0 → it opens. If the wire breaks → 0 → it opens too.<div class="ladfig" id="fGOOD"></div></div>
+  <p class="bf"><span class="ic">🪤</span><span>Stop wired <b>NC</b> ⇒ not pressed = <b>I0.1 = 1</b>.</span></p>
+  <div class="vs">
+    <div class="side"><b>❌ NC in the program</b><span>The motor never runs</span><div class="ladfig" id="fBAD"></div></div>
+    <i>vs</i>
+    <div class="side"><b>✅ NO in the program</b><span>Passes · and stops if the wire breaks</span><div class="ladfig" id="fGOOD"></div></div>
   </div>
-  <div class="box key"><b>The rule:</b> in the program you ask about <b>the state in which you want to run</b>. An NC-wired Stop is 1 in the normal state → ask about it with <b>NO</b>. The same applies to the NC overload contact (95–96) and every protection device.</div>
+  <div class="box key">Ask for <b>the state you want to run in</b>. NC Stop and overload 95–96 ⇒ <b>NO</b> in the program.</div>
+  <p class="tip">Try the trap yourself:</p>
   <div class="wd"><h3>Try the trap yourself</h3><div id="sim2"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>Addresses in different brands</h2>
+  <ul class="fx">
+    <li><b>Siemens</b><span>I0.0 · Q0.0 · M0.0</span></li>
+    <li><b>Allen-Bradley</b><span>I:0/0 · O:0/0 · or tags</span></li>
+    <li><b>Delta / Mitsubishi</b><span>X0 · Y0 · M0 (octal)</span></li>
+  </ul>
   <div class="tblw"><table class="tbl addr-t">
     <thead><tr><th>Item</th><th>IEC / Siemens (simulator)</th><th>Allen-Bradley (SLC / MicroLogix)</th><th>Delta / Mitsubishi</th></tr></thead>
     <tbody>
@@ -87,19 +96,16 @@
       <tr><td class="ar">Counter</td><td>C0</td><td>C5:0 (.DN)</td><td>C0</td></tr>
       <tr><td class="ar">Analog input</td><td>IW64</td><td>I:1.0</td><td>D (register after FROM / AI)</td></tr>
     </tbody></table></div>
-  <div class="brand-note"><b>Important:</b> the table is approximate. Newer Allen-Bradley controllers (CompactLogix and Micro800) use tag names like <span class="mono">Start_PB</span> instead of addresses, and in Delta and Mitsubishi the X and Y numbers count in octal (X0…X7, then X10). <b>The simulator here is a generic trainer</b>, and the manual of your model is the reference.</div>
-  <p class="muted">To see this difference for yourself, there is a simulator for each brand with its own addresses and software look: <a href="siemens.html">Siemens</a>, <a href="delta.html">Delta</a> and <a href="ab.html">Allen-Bradley</a>. It is best to try them after you finish the course (from <a href="lesson-10.html#sb">the end of lesson 10</a>).</p>
+  <div class="brand-note">Try each brand with its own addresses: <a href="siemens.html">Siemens</a>, <a href="delta.html">Delta</a> and <a href="ab.html">Allen-Bradley</a>, after <a href="lesson-10.html#sb">the end of lesson 10</a>.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s6">
   <h2 id="s6"><span class="k">6</span>Common faults on site</h2>
-  <div class="fault-box"><b>Common program faults:</b><ul>
-    <li><b>The motor does not start and the program "looks right":</b> an NC contact in the program for an NC-wired Stop button or overload. Open the monitor and look: is the contact green or not?</li>
-    <li><b>A branch is not connected on one side:</b> a parallel branch is missing its vertical link on one side, so the lower contact does nothing. The simulator shows this with the green power flow.</li>
-    <li><b>Wrong address:</b> you wrote I0.1 instead of I0.2. Give every address a name (symbol / tag) so mistakes are easy to see.</li>
-  </ul></div>
+  <ul class="fx">
+    <li><b>Motor won't run, program "looks right"</b><span>NC on Stop or overload</span></li>
+    <li><b>Branch does nothing</b><span>Missing a vertical link</span></li>
+    <li><b>Wrong address</b><span>Name every address after its device</span></li>
+  </ul>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson questions</h2>
   <p>Answer at least 5 of 6 correctly to mark the lesson done.</p>

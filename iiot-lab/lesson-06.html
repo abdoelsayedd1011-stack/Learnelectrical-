@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261027i1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -32,49 +33,52 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>من PROFIBUS إلى PROFINET</h2>
-<p><b>PROFINET</b> هو خليفة PROFIBUS على <b>الإيثرنت</b> (100 Mbit/s، كابل أخضر عادة، RJ45 أو M12). الفكرة نفسها: <b>IO-Controller</b> (الـ PLC) يتبادل بيانات دورية مع <b>IO-Devices</b> (وحدات I/O، محوّلات تردد، روبوتات)، لكن بدل العنوان 0–125 صار لكل جهاز <b>اسم (Device name)</b> وعنوان IP. وبما أنه إيثرنت عادي، تعمل على الشبكة نفسها شاشة HMI و OPC UA و Modbus TCP جنبًا إلى جنب.</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>الصنف</th><th>زمن الدورة</th><th>الاستخدام</th></tr></thead><tbody>
-<tr><td><b>RT</b> (Real-Time)</td><td>1 – 10 ms</td><td>معظم I/O ومحوّلات التردد</td></tr>
-<tr><td><b>IRT</b> (Isochronous RT)</td><td>حتى 250 µs، jitter &lt; 1 µs</td><td>التحكم في الحركة، يحتاج مفاتيح تدعم IRT</td></tr>
-<tr><td><b>TCP/IP</b></td><td>غير حتمي</td><td>التهيئة والتشخيص والمعاملات</td></tr></tbody></table></div>
+  <p class="bf"><span class="ic">🟢</span><span>PROFIBUS على <b>الإيثرنت</b>: Controller يتبادل مع Devices، لكن بـ <b>اسم + IP</b> بدل الرقم.</span></p>
+  <div class="tiles">
+    <div class="tile"><span class="big">RT</span><b>1–10 ms</b><span>I/O ومحوّلات التردد</span></div>
+    <div class="tile"><span class="big">IRT</span><b>250 µs</b><span>الحركة · مفاتيح خاصة</span></div>
+    <div class="tile"><span class="big">TCP/IP</span><b>غير حتمي</b><span>تهيئة وتشخيص</span></div>
+  </div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>الاسم أولًا، ثم IP</h2>
-<p>الـ Controller يبحث عن أجهزته <b>بالاسم</b> عبر بروتوكول <b>DCP</b>، ثم يعطيها عنوان IP المضبوط في المشروع. لذلك ترتيب التشغيل:</p>
-<ol><li>في TIA Portal: أضف الجهاز (من ملف <b>GSDML</b>، وهو XML بديل GSD)، أعطه اسمًا مثل <span class="mono">vfd-line3</span> و IP.</li>
-<li>على الجهاز الحقيقي: <b>Assign device name</b> من TIA (Online → Accessible devices) أو بأداة PRONETA. بعض الأجهزة يُضبط اسمها بمفاتيح أو شاشة.</li>
-<li>حمّل المشروع إلى الـ CPU. سيعطي الجهاز عنوانه ويبدأ التبادل.</li></ol>
-<div class="box key"><b>قواعد الاسم:</b> أحرف صغيرة وأرقام وشرطة فقط، لا مسافات ولا أحرف كبيرة ولا يبدأ برقم. الاسم يُحفظ في الجهاز؛ عند استبدال جهاز معطّل تضبط الاسم نفسه فيأخذ الباقي تلقائيًا. (أو فعّل <b>Device replacement without exchangeable medium</b> مع الطوبولوجيا فيعرفه الـ CPU من موقعه في الشبكة.)</div>
+  <ol class="steps">
+    <li>GSDML + اسم + IP في TIA</li>
+    <li>Assign device name للجهاز</li>
+    <li class="on">حمّل للـ CPU</li>
+  </ol>
+  <div class="box key"><b>الاسم:</b> أحرف صغيرة وأرقام وشرطة فقط، مثل <span class="mono">vfd-line3</span>. استبدلت جهازًا؟ اضبط <b>الاسم نفسه</b>.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>الطوبولوجيا والمفاتيح</h2>
-<ul><li>معظم أجهزة PROFINET فيها <b>مفتاح مدمج بمنفذين</b>، فتستطيع عمل <b>خط</b> (Line) من جهاز إلى جهاز. لكن لو انقطع كابل في المنتصف فقد كل ما بعده.</li>
-<li><b>النجمة</b> من مفتاح مُدار أكثر أمانًا، و<b>الحلقة</b> مع <b>MRP</b> (Media Redundancy Protocol) تتحمل قطع كابل واحد: جهاز واحد هو MRP Manager يفتح الحلقة منطقيًا ويغلقها عند القطع خلال 200 ms.</li>
-<li>المفاتيح: استخدم مفاتيح صناعية تدعم PROFINET (LLDP، أولوية VLAN). المفاتيح المكتبية الرخيصة تعمل مع RT غالبًا لكن تفشل مع IRT والتشخيص.</li>
-<li><b>LLDP</b> يجعل كل جهاز يعرف جاره على كل منفذ، فتُرسم الطوبولوجيا الفعلية في TIA وتُقارن بالمخطط: كابل في المنفذ الخطأ يظهر فورًا.</li></ul>
+  <div class="tiles">
+    <div class="tile"><span class="ic">➖</span><b>خط</b><span>قطع ⇐ كل ما بعده يضيع</span></div>
+    <div class="tile"><span class="ic">✳️</span><b>نجمة</b><span>مفتاح مُدار · أأمن</span></div>
+    <div class="tile"><span class="ic">⭕</span><b>حلقة MRP</b><span>تتحمل قطعًا واحدًا · 200 ms</span></div>
+  </div>
+  <p class="tip">مفاتيح صناعية تدعم PROFINET. <b>LLDP</b> يكشف الكابل في المنفذ الخطأ.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>المصابيح والتشخيص</h2>
-<div class="tblw"><table class="tbl"><thead><tr><th>المصباح</th><th>المعنى</th></tr></thead><tbody>
-<tr><td><b>BF</b> أحمر ثابت</td><td>لا link على أي منفذ، أو لم يُعثر على الـ Controller</td></tr>
-<tr><td><b>BF</b> يومض</td><td>الجهاز موجود لكن بلا تبادل بيانات: اسم مختلف، IP متعارض، أو جهاز في المشروع غير موجود فعلًا</td></tr>
-<tr><td><b>SF</b></td><td>تشخيص: وحدة ناقصة، سلك مقطوع في قناة، جهد حساس</td></tr>
-<tr><td><b>MT</b> (Maintenance)</td><td>تحذير صيانة: كابل أو منفذ يسقط إطارات (حد الخطأ قريب)</td></tr>
-<tr><td><b>Link / P1 P2</b></td><td>مصباح كل منفذ: أخضر link، يومض نشاط</td></tr></tbody></table></div>
-<p>في TIA: <b>Diagnostics buffer</b> يسجل كل جهاز دخل وخرج بالوقت، و<b>Online → Devices &amp; networks</b> تلوّن كل جهاز أخضر/أحمر. أداة <b>PRONETA</b> المجانية تمسح الشبكة وتُظهر الأسماء وعناوين IP وMAC وتسمح بضبط الاسم بلا مشروع.</p>
+  <ul class="fx">
+    <li><b>🔴 BF ثابت</b><span>لا link أو لا Controller</span></li>
+    <li><b>🔴 BF يومض</b><span>موجود بلا بيانات: اسم · IP · غير موجود</span></li>
+    <li><b>🔴 SF</b><span>وحدة ناقصة · سلك مقطوع</span></li>
+    <li><b>🟡 MT</b><span>كابل يسقط إطارات</span></li>
+  </ul>
+  <p class="tip">TIA: <b>Diagnostics buffer</b> · مجانًا: <b>PRONETA</b>.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>أخطاء PROFINET الشائعة</h2>
-<div class="tblw"><table class="tbl"><thead><tr><th>العرض</th><th>السبب</th></tr></thead><tbody>
-<tr><td>جهاز جديد لا يظهر</td><td>الاسم لم يُضبط على الجهاز أو مكتوب بحرف كبير/مسافة</td></tr>
-<tr><td>BF يومض بعد استبدال جهاز</td><td>الجهاز البديل يحمل اسمًا قديمًا من ماكينة أخرى: امسحه (Reset to factory) واضبط الاسم</td></tr>
-<tr><td>الاتصال يتقطع كل بضع دقائق</td><td>IP مكرر مع حاسوب مكاتب على الشبكة نفسها، أو كابل غير محمي بجوار محوّل تردد (راقب MT)</td></tr>
-<tr><td>كل الأجهزة بعد نقطة معينة اختفت</td><td>طوبولوجيا خط وكابل مقطوع في المنتصف</td></tr>
-<tr><td>IRT لا يعمل</td><td>مفتاح عادي في المسار لا يدعم IRT، أو الطوبولوجيا في المشروع لا تطابق الواقع</td></tr></tbody></table></div>
-<div class="box key"><b>على المحاكي:</b> اضبط اسم كل جهاز ليطابق المشروع، صحح اسمًا بحرف كبير، حل تعارض IP مع حاسوب، وجرّب قطع كابل في طوبولوجيا خط ثم في حلقة MRP. <a class="btn pri" href="net.html#profinet" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+  <ul class="fx">
+    <li><b>جهاز جديد لا يظهر</b><span>الاسم غير مضبوط أو بحرف كبير</span></li>
+    <li><b>BF يومض بعد الاستبدال</b><span>اسم قديم · Reset ثم اضبط الاسم</span></li>
+    <li><b>يتقطع كل دقائق</b><span>IP مكرر · كابل بجوار محوّل تردد</span></li>
+    <li><b>كل ما بعد نقطة اختفى</b><span>خط وكابل مقطوع</span></li>
+    <li><b>IRT لا يعمل</b><span>مفتاح عادي · طوبولوجيا مختلفة</span></li>
+  </ul>
+  <div class="box key"><b>على المحاكي:</b> طابق الأسماء، صحح اسمًا بحرف كبير، حل تعارض IP، واقطع كابلًا في خط ثم في حلقة MRP. <a class="btn pri" href="net.html#profinet" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>

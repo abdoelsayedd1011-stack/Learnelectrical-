@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="scada.css?v=20261028s1">
 <script src="scada.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -29,65 +30,57 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>ما الديناميكية؟</h2>
-<p><b>الديناميكية (Dynamization)</b> هي أن تربط <b>خاصية</b> في عنصر الشاشة (اللون، الظهور، مستوى الامتلاء، الموضع، النص) بقيمة <b>وسم (Tag)</b> فتتغير الخاصية وحدها في وقت التشغيل. في <b>WinCC Unified</b> تفتح خصائص العنصر في TIA Portal، ثم تختار للخاصية نوع الديناميكية:</p>
-<ul><li><b>بوسم (Tag):</b> قيمة الوسم مباشرة، أو <b>جدول نطاقات</b> (0 → رمادي، 1 → داكن، 2 → أحمر)، أو بت واحد من كلمة حالة. هذا هو الخيار الأول دائمًا: سريع ولا يحتاج كودًا.</li>
-<li><b>بسكربت JavaScript:</b> عندما يعتمد الشكل على أكثر من وسم أو على منطق (مثلًا: «مفتوح وليس في وضع الصيانة»). السكربت أثقل على النظام وأصعب في الصيانة، فلا تلجأ إليه إلا عند الحاجة.</li>
-<li><b>الوميض (Flashing):</b> يُستعمل للإنذار غير المؤكَّد فقط، لا للزينة.</li></ul>
-<div class="tblw"><table class="tbl"><thead><tr><th>ما تريد إظهاره</th><th>الخاصية</th><th>الوسم المناسب</th></tr></thead><tbody>
-<tr><td>مستوى الخزان</td><td>مستوى الامتلاء (Fill level) 0–100 %</td><td class="mono">Tank1_Level (Real, %)</td></tr>
-<tr><td>حالة الصمام</td><td>لون التعبئة ولون الإطار</td><td class="mono">Valve1_Open / _Closed / _Fault</td></tr>
-<tr><td>أيقونة العطل</td><td>الظهور (Visibility)</td><td class="mono">Pump1_Fault (Bool)</td></tr>
-<tr><td>وضع التشغيل</td><td>النص (من قائمة نصوص)</td><td class="mono">Pump1_Mode (Int: 0 يدوي، 1 آلي)</td></tr>
-<tr><td>تيار المحرك</td><td>طول الشريط (Bar)</td><td class="mono">Pump1_Current (Real, A)</td></tr></tbody></table></div>
-<div class="box key"><b>القاعدة الذهبية:</b> الـ HMI <b>يعرض</b> الحالة ولا <b>يحسبها</b>. إذا احتجت منطقًا معقدًا لتعرف أن الصمام «في عطل»، فاحسبه في الـ PLC وأرسله بتًّا جاهزًا. الشاشة قد تُغلق، أما الـ PLC فيعمل دائمًا.</div>
+  <p class="bf"><span class="ic">🎚️</span><span>اربط <b>خاصية</b> العنصر بـ<b>وسم</b> فتتغير وحدها.</span></p>
+  <div class="vs"><div class="side"><b>بوسم ✓</b><span>قيمة أو جدول نطاقات</span><span>سريع وبلا كود</span></div><i>×</i><div class="side"><b>بسكربت</b><span>أكثر من وسم أو منطق</span><span>أثقل وأصعب صيانة</span></div></div>
+  <ul class="fx">
+    <li><b>مستوى الخزان</b><span>Fill level ← <span class="mono">Tank1_Level</span></span></li>
+    <li><b>حالة الصمام</b><span>اللون ← <span class="mono">Valve1_State</span></span></li>
+    <li><b>أيقونة العطل</b><span>الظهور ← <span class="mono">Pump1_Fault</span></span></li>
+    <li><b>الوضع</b><span>نص من قائمة ← <span class="mono">Pump1_Mode</span></span></li>
+  </ul>
+  <div class="box key">الشاشة <b>تعرض</b> ولا <b>تحسب</b>: المنطق في الـ PLC.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>اللون حسب الحالة: صمام بثلاث حالات</h2>
-<svg viewBox="0 0 640 210" role="img" aria-label="حالات الصمام الثلاث بأسلوب ISA-101" style="width:100%;max-width:640px;direction:ltr"><g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle"><path d="M70 60L110 80L70 100Z M150 60L110 80L150 100Z" fill="none" stroke="#8a8a8a" stroke-width="3" stroke-linejoin="round"/><path d="M110 80V48" stroke="#8a8a8a" stroke-width="3"/><rect x="94" y="36" width="32" height="12" rx="2" fill="none" stroke="#8a8a8a" stroke-width="3"/><path d="M280 60L320 80L280 100Z M360 60L320 80L360 100Z" fill="#5f5f5f" stroke="#5f5f5f" stroke-width="3" stroke-linejoin="round"/><path d="M320 80V48" stroke="#5f5f5f" stroke-width="3"/><rect x="304" y="36" width="32" height="12" rx="2" fill="#5f5f5f" stroke="#5f5f5f" stroke-width="3"/><path d="M490 60L530 80L490 100Z M570 60L530 80L570 100Z" fill="#d32f2f" stroke="#d32f2f" stroke-width="3" stroke-linejoin="round"/><path d="M530 80V48" stroke="#d32f2f" stroke-width="3"/><rect x="514" y="36" width="32" height="12" rx="2" fill="#d32f2f" stroke="#d32f2f" stroke-width="3"/><path d="M30 80H70M150 80H190M240 80H280M360 80H400M450 80H490M570 80H610" stroke="#8a8a8a" stroke-width="3"/><polygon points="575,28 593,58 557,58" fill="#ffd400" stroke="#1a1a1a" stroke-width="2"/><text x="575" y="54" font-weight="700" fill="#1a1a1a">!</text><text x="110" y="132" font-weight="700">Closed</text><text x="110" y="150">Valve1_Closed = 1</text><text x="320" y="132" font-weight="700">Open</text><text x="320" y="150">Valve1_Open = 1</text><text x="530" y="132" font-weight="700" fill="#d32f2f">Fault</text><text x="530" y="150">Valve1_Fault = 1</text><text x="110" y="180">إطار رمادي فارغ</text><text x="320" y="180">رمادي داكن ممتلئ</text><text x="530" y="180">أحمر يومض + أيقونة</text></g></svg>
-<p>وفق <b>ISA-101</b> (الدرس 3) لا نستعمل الأحمر والأخضر للتشغيل والتوقف؛ نستعمل درجات الرمادي والشكل، ونحجز الألوان الصارخة للحالة غير الطبيعية.</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>Open</th><th>Closed</th><th>Fault</th><th>الحالة المعروضة</th></tr></thead><tbody>
-<tr><td>0</td><td>1</td><td>0</td><td>مغلق: إطار رمادي فارغ</td></tr>
-<tr><td>1</td><td>0</td><td>0</td><td>مفتوح: رمادي داكن ممتلئ</td></tr>
-<tr><td>0</td><td>0</td><td>0</td><td>في الحركة: إطار متقطع (أو نص «يتحرك»)</td></tr>
-<tr><td>1</td><td>1</td><td>—</td><td>تعارض: حسّاسا النهاية معًا، وهذا عطل أسلاك أو حسّاس</td></tr>
-<tr><td>—</td><td>—</td><td>1</td><td>عطل: أحمر يومض حتى التأكيد، مع أيقونة الإنذار</td></tr></tbody></table></div>
-<ul><li><b>الأسهل:</b> اجمع الحالات في الـ PLC في وسم واحد <span class="mono">Valve1_State</span> من نوع Int (0 مغلق، 1 مفتوح، 2 يتحرك، 3 عطل)، ثم اربط اللون بجدول نطاقات واحد.</li>
-<li><b>لا تعتمد على اللون وحده:</b> نحو 8% من الرجال لديهم ضعف في تمييز الألوان. أضف الشكل (ممتلئ/فارغ) أو نصًّا أو أيقونة.</li>
-<li><b>كيف تختبر؟</b> افرض القيم من جدول المراقبة (Watch table) في الـ PLC أو في PLCSIM، ومرّ على كل سطر في الجدول أعلاه، ومنها حالة التعارض.</li></ul>
+  <svg viewBox="0 0 640 210" role="img" aria-label="حالات الصمام الثلاث بأسلوب ISA-101" style="width:100%;max-width:640px;direction:ltr"><g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle"><path d="M70 60L110 80L70 100Z M150 60L110 80L150 100Z" fill="none" stroke="#8a8a8a" stroke-width="3" stroke-linejoin="round"/><path d="M110 80V48" stroke="#8a8a8a" stroke-width="3"/><rect x="94" y="36" width="32" height="12" rx="2" fill="none" stroke="#8a8a8a" stroke-width="3"/><path d="M280 60L320 80L280 100Z M360 60L320 80L360 100Z" fill="#5f5f5f" stroke="#5f5f5f" stroke-width="3" stroke-linejoin="round"/><path d="M320 80V48" stroke="#5f5f5f" stroke-width="3"/><rect x="304" y="36" width="32" height="12" rx="2" fill="#5f5f5f" stroke="#5f5f5f" stroke-width="3"/><path d="M490 60L530 80L490 100Z M570 60L530 80L570 100Z" fill="#d32f2f" stroke="#d32f2f" stroke-width="3" stroke-linejoin="round"/><path d="M530 80V48" stroke="#d32f2f" stroke-width="3"/><rect x="514" y="36" width="32" height="12" rx="2" fill="#d32f2f" stroke="#d32f2f" stroke-width="3"/><path d="M30 80H70M150 80H190M240 80H280M360 80H400M450 80H490M570 80H610" stroke="#8a8a8a" stroke-width="3"/><polygon points="575,28 593,58 557,58" fill="#ffd400" stroke="#1a1a1a" stroke-width="2"/><text x="575" y="54" font-weight="700" fill="#1a1a1a">!</text><text x="110" y="132" font-weight="700">Closed</text><text x="110" y="150">Valve1_Closed = 1</text><text x="320" y="132" font-weight="700">Open</text><text x="320" y="150">Valve1_Open = 1</text><text x="530" y="132" font-weight="700" fill="#d32f2f">Fault</text><text x="530" y="150">Valve1_Fault = 1</text><text x="110" y="180">إطار رمادي فارغ</text><text x="320" y="180">رمادي داكن ممتلئ</text><text x="530" y="180">أحمر يومض + أيقونة</text></g></svg>
+  <ul class="fx">
+    <li><b>مغلق</b><span>إطار رمادي فارغ</span></li>
+    <li><b>مفتوح</b><span>رمادي داكن ممتلئ</span></li>
+    <li><b>يتحرك</b><span>إطار متقطع</span></li>
+    <li><b>Open = Closed = 1</b><span>تعارض: عطل أسلاك أو حسّاس</span></li>
+    <li><b>عطل</b><span>أحمر يومض حتى التأكيد</span></li>
+  </ul>
+  <p class="tip">اجمع الحالات في الـ PLC في <span class="mono">Valve1_State</span> (Int) واربط جدول نطاقات واحدًا.</p>
+  <p class="tip">اختبر كل سطر بفرض القيم من جدول المراقبة.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>الظهور والحركة</h2>
-<ul><li><b>أيقونة الإنذار:</b> اربط خاصية الظهور بـ <span class="mono">Pump1_Fault</span>: تظهر عند 1 وتختفي عند 0. ضعها فوق رمز المضخة مباشرة حتى يعرف المشغّل <b>أين</b> المشكلة دون بحث.</li>
-<li><b>مستوى الخزان:</b> القيمة 0–100 % تذهب إلى خاصية مستوى الامتلاء. إذا وصلت القيمة الخام 0–27648 بلا تحويل، فسيبدو الخزان ممتلئًا دائمًا: حوِّل القيمة أولًا (الدرس 2). أضف رقمًا بوحدته «62.4 %» بجانب الخزان؛ فالشكل وحده لا يكفي للقراءة الدقيقة.</li>
-<li><b>الحركة:</b> تحريك عنصر أفقيًا أو رأسيًا، أو تدويره، حسب قيمة وسم (موضع عربة، زاوية خلّاط). مفيدة عندما يعني الموضع شيئًا فعلًا.</li>
-<li><b>ما تتجنبه:</b> مراوح تدور وسيور تتحرك وسوائل «تجري» في الأنابيب طوال الوقت. هذه الحركة تسرق انتباه المشغّل وتخفي الإنذار الحقيقي، وتستهلك موارد العميل، خاصة على متصفح الويب أو اللوحة الصغيرة.</li></ul>
-<div class="box safe"><b>خطأ شائع:</b> ربط الظهور بأمر التشغيل <span class="mono">Pump1_Start</span> بدل التغذية الراجعة <span class="mono">Pump1_Running</span>. الشاشة تقول «تعمل» لأن الزر ضُغط، أما المضخة ففصلها الحمل الزائد. اعرض دائمًا ما <b>حدث فعلًا</b> لا ما <b>طُلب</b>.</div>
+  <ul class="fx">
+    <li><b>أيقونة الإنذار</b><span>فوق رمز المضخة نفسها</span></li>
+    <li><b>الخزان ممتلئ دائمًا</b><span>القيمة خام بلا تحويل</span></li>
+    <li><b>الحركة</b><span>فقط عندما يعني الموضع شيئًا</span></li>
+  </ul>
+  <p class="alert">لا مراوح تدور ولا سوائل «تجري» طوال الوقت.</p>
+  <div class="box safe">اعرض ما <b>حدث</b> (<span class="mono">Pump1_Running</span>) لا ما <b>طُلب</b> (<span class="mono">Pump1_Start</span>).</div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>الوجوه الجاهزة Faceplates والأنواع المعرّفة</h2>
-<svg viewBox="0 0 640 250" role="img" aria-label="نوع وجه جاهز واحد ونسخ منه مربوطة بكتل بيانات مختلفة" style="width:100%;max-width:640px;direction:ltr"><g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle"><rect x="200" y="12" width="240" height="64" rx="8" fill="none" stroke="#1e5fd1" stroke-width="2.5"/><text x="320" y="36" font-weight="700">Faceplate type: FP_Pump</text><text x="320" y="58">interface: typePump (UDT)</text><path d="M320 76V100M100 100H540M100 100V124M320 100V124M540 100V124" fill="none" stroke="#1e5fd1" stroke-width="2"/><rect x="20" y="124" width="160" height="50" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="100" y="146" font-weight="700">Pump1 instance</text><text x="100" y="164">"DB_Pump1"</text><rect x="240" y="124" width="160" height="50" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="320" y="146" font-weight="700">Pump2 instance</text><text x="320" y="164">"DB_Pump2"</text><rect x="460" y="124" width="160" height="50" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="540" y="146" font-weight="700">Pump3 instance</text><text x="540" y="164">"DB_Pump3"</text><text x="320" y="206">عدّل النوع مرة واحدة ← تتحدّث النسخ الثلاث</text><text x="320" y="230" font-size="11">PLC: FB_Pump + typePump  ⇄  HMI: FP_Pump</text></g></svg>
-<p><b>Faceplate</b> (الوجه الجاهز) هو مجموعة عناصر تُصمَّم مرة واحدة <b>كنوع (Type)</b> في المكتبة، ثم تُستعمل منها <b>نسخ (Instances)</b> كثيرة. لكل نسخة واجهة (Interface) تربطها بوسومها هي.</p>
-<ol><li>في الـ PLC: اكتب <span class="mono">FB_Pump</span> بنوع بيانات <span class="mono">typePump</span> (PLC data type) فيه Start و Stop و Running و Fault و Speed_SP و Current و Mode.</li>
-<li>في الـ HMI: أنشئ نوع وسم مقابلًا (HMI UDT) ونوع Faceplate واجهته من هذا النوع.</li>
-<li>لكل مضخة: نسخة من الـ Faceplate مربوطة بكتلة بياناتها، فتتصل كل الوسوم داخلها دفعة واحدة.</li></ol>
-<ul><li><b>رمز صغير + نافذة منبثقة:</b> النمط الشائع أن يظهر على الشاشة العامة رمز مضخة صغير، وعند النقر يفتح <b>Faceplate منبثق (Pop-up)</b> فيه أزرار التشغيل والإيقاف والسرعة والتيار والوضع.</li>
-<li><b>الإصدارات:</b> الأنواع في مكتبة المشروع لها إصدارات: «قيد العمل» ثم «مُصدَر». بعد إصدار النسخة الجديدة تُحدَّث كل النسخ. صحّحت خطأ في الزر؟ صحّحته في 40 مضخة معًا.</li>
-<li><b>المقارنة:</b> في Ignition يُبنى الشيء نفسه من <b>UDT</b> و <b>Embedded View</b> في Perspective بمعامل، وفي FactoryTalk Optix من <b>أنواع الكائنات (Object types)</b>. وفي WinCC Comfort و Classic توجد الـ Faceplates أيضًا لكن بطريقة إعداد مختلفة، فلا تنقل التفاصيل بينها حرفيًّا.</li></ul>
+  <svg viewBox="0 0 640 250" role="img" aria-label="نوع وجه جاهز واحد ونسخ منه مربوطة بكتل بيانات مختلفة" style="width:100%;max-width:640px;direction:ltr"><g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle"><rect x="200" y="12" width="240" height="64" rx="8" fill="none" stroke="#1e5fd1" stroke-width="2.5"/><text x="320" y="36" font-weight="700">Faceplate type: FP_Pump</text><text x="320" y="58">interface: typePump (UDT)</text><path d="M320 76V100M100 100H540M100 100V124M320 100V124M540 100V124" fill="none" stroke="#1e5fd1" stroke-width="2"/><rect x="20" y="124" width="160" height="50" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="100" y="146" font-weight="700">Pump1 instance</text><text x="100" y="164">"DB_Pump1"</text><rect x="240" y="124" width="160" height="50" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="320" y="146" font-weight="700">Pump2 instance</text><text x="320" y="164">"DB_Pump2"</text><rect x="460" y="124" width="160" height="50" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="540" y="146" font-weight="700">Pump3 instance</text><text x="540" y="164">"DB_Pump3"</text><text x="320" y="206">عدّل النوع مرة واحدة ← تتحدّث النسخ الثلاث</text><text x="320" y="230" font-size="11">PLC: FB_Pump + typePump  ⇄  HMI: FP_Pump</text></g></svg>
+  <p class="bf"><span class="ic">🧩</span><span>Faceplate = <b>نوع</b> يُصمَّم مرة، ومنه <b>نسخ</b> كثيرة.</span></p>
+  <ol class="steps"><li><span class="mono">FB_Pump</span> + <span class="mono">typePump</span></li><li>HMI UDT + نوع Faceplate</li><li>نسخة لكل مضخة</li></ol>
+  <p class="tip">رمز صغير على الشاشة ← نقرة ← Faceplate <b>منبثق</b>.</p>
+  <p class="tip">أصدِر النوع ← تتحدث كل النسخ: إصلاح واحد لـ 40 مضخة.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>القوالب ونوافذ الشاشات</h2>
-<ul><li><b>القالب (Template / Screen layout):</b> العناصر المشتركة في كل الشاشات: الشعار، الساعة، شريط الإنذار الأخير، اسم المستخدم، أزرار التنقل. تضعها مرة واحدة فتظهر في كل شاشة.</li>
-<li><b>نافذة الشاشة (Screen Window):</b> إطار داخل الشاشة يعرض شاشة أخرى. الطريقة الشائعة في Unified: شاشة رئيسية ثابتة (رأس + تنقل + منطقة عمل)، والمنطقة الوسطى Screen Window يتغير محتواها عند التنقل.</li>
-<li><b>شاشة واحدة لعدة آلات:</b> شاشة «خلّاط» واحدة تُفتح بمعامل (رقم الخلّاط 1 أو 2 أو 3) بدل نسخ الشاشة ثلاث مرات.</li></ul>
-<div class="tblw"><table class="tbl"><thead><tr><th>العَرَض</th><th>السبب الأرجح</th></tr></thead><tbody>
-<tr><td>الخزان ممتلئ دائمًا</td><td>القيمة خام بلا تحويل، أو الحد الأعلى للخاصية لا يساوي 100</td></tr>
-<tr><td>أيقونة العطل لا تظهر أبدًا</td><td>مربوطة ببت خطأ في كلمة الحالة، أو الشرط معكوس (=0 بدل =1)</td></tr>
-<tr><td>نسخة Faceplate تعرض قيم مضخة أخرى</td><td>واجهة النسخة مربوطة بكتلة بيانات خطأ</td></tr>
-<tr><td>التعديل على النوع لم يظهر</td><td>النوع ما زال «قيد العمل» ولم يُصدَر، أو لم تُحدَّث النسخ</td></tr></tbody></table></div>
-<div class="box key"><b>على المحاكي:</b> اربط مستوى الخزان بـ Tank1_Level، واجعل لون الصمام يتبع حالته (مغلق، مفتوح، عطل)، وأظهر أيقونة الإنذار عند عطل المضخة فقط، وافتح Faceplate المضخة بالنقر، ثم أدخل عطلًا في وقت التشغيل لتتحقق. <a class="btn pri" href="designer.html#dyn" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+  <div class="tiles"><div class="tile"><span class="ic">🧱</span><b>القالب</b><span>رأس، ساعة، إنذار، تنقل</span></div><div class="tile"><span class="ic">🪟</span><b>Screen Window</b><span>منطقة يتغير محتواها</span></div><div class="tile"><span class="ic">🔢</span><b>شاشة بمعامل</b><span>خلّاط 1 أو 2 أو 3</span></div></div>
+  <ul class="fx">
+    <li><b>أيقونة العطل لا تظهر</b><span>بت خطأ أو شرط معكوس</span></li>
+    <li><b>Faceplate بقيم مضخة أخرى</b><span>مربوط بكتلة بيانات خطأ</span></li>
+    <li><b>تعديل النوع لم يظهر</b><span>لم يُصدَر أو لم تُحدَّث النسخ</span></li>
+  </ul>
+  <div class="box key"><b>على المحاكي:</b> اربط الخزان والصمام وأيقونة العطل و Faceplate، ثم أدخل عطلًا. <a class="btn pri" href="designer.html#dyn" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>

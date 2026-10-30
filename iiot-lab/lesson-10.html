@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261027i1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -32,8 +33,9 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>النشر والاشتراك</h2>
-<p><b>MQTT</b> بروتوكول خفيف جدًا لإنترنت الأشياء: لا يتكلم الجهاز مع الجهاز مباشرة، بل كلاهما يتصل بـ <b>وسيط (Broker)</b>. الناشر يرسل رسالة إلى <b>موضوع (Topic)</b>، والوسيط يوزعها على كل من <b>اشترك</b> في ذلك الموضوع. لا يعرف الناشر من يقرأ، ولا يعرف المشترك من كتب؛ لذلك تضيف لوحة متابعة أو هاتفًا جديدًا دون أن تلمس الـ PLC.</p>
-<svg viewBox="0 0 640 230" role="img" aria-label="وسيط MQTT بين ناشرين ومشتركين" style="width:100%;max-width:640px;direction:ltr">
+  <div class="ladder"><span class="u">ناشر</span><span class="op">topic</span><span class="u on">Broker</span><span class="op">topic</span><span class="u">مشترك</span></div>
+  <p class="bf"><span class="ic">📬</span><span>لا أحد يعرف الآخر: أضف لوحة أو هاتفًا <b>دون أن تلمس الـ PLC</b>.</span></p>
+  <svg viewBox="0 0 640 230" role="img" aria-label="وسيط MQTT بين ناشرين ومشتركين" style="width:100%;max-width:640px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
 <rect x="250" y="80" width="140" height="70" rx="10" fill="none" stroke="#0d7584" stroke-width="3"/><text x="320" y="108" font-weight="700" fill="#0d7584">Broker</text><text x="320" y="128">:1883 / :8883</text>
 <rect x="20" y="30" width="150" height="46" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="95" y="49" font-weight="700">Gateway line3</text><text x="95" y="66" font-size="10">PUB line3/oven/temp 182.5</text>
@@ -42,46 +44,59 @@
 <rect x="470" y="160" width="150" height="46" rx="8" fill="none" stroke="#b85f00" stroke-width="2"/><text x="545" y="179" font-weight="700" fill="#b85f00">Phone app</text><text x="545" y="196" font-size="10">SUB +/oven/temp</text>
 <g stroke="currentColor" stroke-width="2" fill="none"><path d="M170 53 L250 95"/><path d="M170 183 L250 135"/><path d="M390 95 L470 53"/><path d="M390 135 L470 183"/></g>
 </g></svg>
-<ul><li>المنفذ <b>1883</b> بلا تشفير، و<b>8883</b> مع TLS. الوسطاء الشائعون: Mosquitto (مجاني)، EMQX، HiveMQ، وخدمات AWS/Azure.</li>
-<li>الرسالة = موضوع + حمولة (بايتات: رقم، نص، JSON). MQTT لا يفرض شكل الحمولة.</li>
-<li>الاتصال يبدأه <b>العميل</b> دائمًا إلى الخارج، لذلك يمر عبر جدران الحماية بسهولة ولا يحتاج فتح منافذ في المصنع.</li></ul>
+  <ul class="fx">
+    <li><b class="mono">1883 / 8883</b><span>بلا تشفير / TLS</span></li>
+    <li><b>الوسطاء</b><span>Mosquitto · EMQX · HiveMQ · AWS/Azure</span></li>
+    <li><b>الحمولة</b><span>أي بايتات: رقم · نص · JSON</span></li>
+    <li><b>الاتصال للخارج</b><span>لا منافذ مفتوحة في المصنع</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>المواضيع والأحرف البديلة</h2>
-<p>الموضوع نص بمستويات تفصلها <span class="mono">/</span>. صمّمه كهيكل المصنع:</p>
-<div class="formula">factory/line3/oven/temperature</div>
-<ul><li><b>+</b> يطابق مستوى واحدًا: <span class="mono">factory/+/oven/temperature</span> = حرارة الأفران في كل الخطوط.</li>
-<li><b>#</b> يطابق كل ما بعده (في النهاية فقط): <span class="mono">factory/line3/#</span> = كل شيء في الخط 3.</li>
-<li>الأحرف البديلة في <b>الاشتراك فقط</b>؛ النشر إلى موضوع محدد دائمًا.</li>
-<li>المواضيع التي تبدأ بـ <span class="mono">$SYS/</span> إحصاءات الوسيط نفسه.</li>
-<li>تجنب المسافات والأحرف الكبيرة، ولا تبدأ بـ <span class="mono">/</span>.</li></ul>
+  <div class="formula">factory/line3/oven/temperature</div>
+  <ul class="fx">
+    <li><b class="mono">+</b><span>مستوى واحد · <span class="mono">factory/+/oven/temperature</span></span></li>
+    <li><b class="mono">#</b><span>كل ما بعده · <span class="mono">factory/line3/#</span></span></li>
+    <li><b class="mono">$SYS/</b><span>إحصاءات الوسيط</span></li>
+  </ul>
+  <p class="tip">الأحرف البديلة في <b>الاشتراك فقط</b>. لا مسافات ولا أحرف كبيرة ولا <span class="mono">/</span> في البداية.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>QoS و Retain و Last Will</h2>
-<div class="tblw"><table class="tbl"><thead><tr><th>QoS</th><th>الضمان</th><th>الاستخدام</th></tr></thead><tbody>
-<tr><td><b>0</b></td><td>مرة على الأكثر (أرسل وانسَ)</td><td>قراءات متكررة لا يضر ضياع واحدة منها: حرارة كل ثانية</td></tr>
-<tr><td><b>1</b></td><td>مرة على الأقل (قد تتكرر)</td><td>الإنذارات والعدادات، الأشهر</td></tr>
-<tr><td><b>2</b></td><td>مرة واحدة بالضبط (مصافحة من 4 خطوات)</td><td>أوامر وفواتير؛ الأثقل</td></tr></tbody></table></div>
-<ul><li><b>Retain:</b> يحتفظ الوسيط بآخر رسالة في الموضوع ويرسلها فورًا لأي مشترك جديد. ضروري لقيم الحالة (هل الماكينة تعمل؟) حتى لا تنتظر لوحة المتابعة التغير التالي.</li>
-<li><b>Last Will and Testament (LWT):</b> عند الاتصال يحدد العميل رسالة «وصية» ينشرها الوسيط نيابة عنه إذا انقطع فجأة: <span class="mono">line3/gateway/status = offline</span>. هكذا تعرف أن البوابة ماتت لا أن الماكينة توقفت.</li>
-<li><b>Keep alive:</b> كل N ثانية يرسل العميل نبضة؛ لو غابت 1.5 × N يعتبره الوسيط منقطعًا وينشر الوصية.</li>
-<li><b>Clean session / Persistent:</b> الجلسة الدائمة تحفظ اشتراكات العميل ورسائل QoS 1/2 التي فاتته أثناء الانقطاع.</li></ul>
+  <div class="tiles">
+    <div class="tile"><span class="big">QoS 0</span><b>مرة على الأكثر</b><span>حرارة كل ثانية</span></div>
+    <div class="tile"><span class="big">QoS 1</span><b>مرة على الأقل</b><span>إنذارات وعدادات · الأشهر</span></div>
+    <div class="tile"><span class="big">QoS 2</span><b>مرة بالضبط</b><span>أوامر · الأثقل</span></div>
+  </div>
+  <ul class="fx">
+    <li><b>Retain</b><span>آخر قيمة لأي مشترك جديد فورًا</span></li>
+    <li><b>Last Will</b><span><span class="mono">gateway/status = offline</span> عند الانقطاع</span></li>
+    <li><b>Keep alive</b><span>غياب 1.5 × N ⇐ تُنشر الوصية</span></li>
+    <li><b>Persistent session</b><span>تحفظ ما فات من QoS 1/2</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Sparkplug B: MQTT بنظام</h2>
-<p>MQTT لا يحدد شكل الحمولة ولا أسماء المواضيع، فتصير كل بوابة بلغة. <b>Sparkplug B</b> مواصفة من Eclipse تفرض هيكلًا للمواضيع: <span class="mono">spBv1.0/&lt;group&gt;/&lt;type&gt;/&lt;edge node&gt;/&lt;device&gt;</span> وأنواع رسائل: <b>NBIRTH</b> (ولادة العقدة بكل مقاييسها وأنواعها)، <b>DDATA</b> (بيانات الجهاز عند التغير فقط)، <b>NDEATH</b> (وصية)، <b>NCMD</b> (أمر إلى العقدة). الحمولة <b>Protobuf</b> مضغوطة بطوابع زمنية. SCADA مثل Ignition يفهمها مباشرة ويبني الوسوم تلقائيًا.</p>
-<div class="box key"><b>القاعدة:</b> إن كنت تبني من الصفر مع نظام يدعمها، استخدم Sparkplug B. وإلا فاختر JSON بسيطًا بمفاتيح ثابتة: <span class="mono" dir="ltr">{"v":182.5,"u":"C","t":1730000000}</span> ووثّقه.</div>
+  <div class="formula">spBv1.0/group/type/node/device</div>
+  <div class="tiles">
+    <div class="tile"><b>NBIRTH</b><span>ولادة بكل المقاييس</span></div>
+    <div class="tile"><b>DDATA</b><span>عند التغير فقط</span></div>
+    <div class="tile"><b>NDEATH</b><span>الوصية</span></div>
+    <div class="tile"><b>NCMD</b><span>أمر للعقدة</span></div>
+  </div>
+  <div class="box key">نظام يدعمها (Ignition)؟ <b>Sparkplug B</b>. وإلا JSON ثابت موثّق: <span class="mono" dir="ltr">{"v":182.5,"u":"C","t":…}</span></div>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>أمثلة عملية</h2>
-<ul><li><b>جرّب على حاسوبك:</b> ثبّت Mosquitto، ثم في نافذة: <span class="mono" dir="ltr">mosquitto_sub -t "factory/#" -v</span> وفي أخرى: <span class="mono" dir="ltr">mosquitto_pub -t factory/line3/oven/temperature -m 182.5 -r</span>.</li>
-<li><b>من الـ PLC مباشرة:</b> مكتبات LMQTT (Siemens) أو بلوكات MQTT في Beckhoff و Wago و Schneider M262، أو من البوابة (الدرس 11) وهو الأشيع.</li>
-<li><b>الأمان:</b> اسم مستخدم وكلمة سر لكل بوابة، TLS على 8883، و<b>ACL</b> في الوسيط: البوابة تنشر في <span class="mono">factory/line3/#</span> فقط ولا تقرأ خطوطًا أخرى.</li>
-<li><b>حجم الرسائل:</b> أرسل عند التغير (Report by exception) لا كل 100 ms. آلاف الحساسات × 10 رسائل/ثانية تُغرق أي وسيط.</li></ul>
-<div class="box key"><b>على المحاكي:</b> انشر قراءات من الحساسات، اشترك بأحرف بديلة، شاهد أثر Retain على مشترك جديد، اقطع البوابة لترى الوصية، وقارن QoS 0 و 1 عند فقد الاتصال. <a class="btn pri" href="net.html#mqtt" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+  <div class="formula">mosquitto_sub -t "factory/#" -v</div>
+  <div class="formula">mosquitto_pub -t factory/line3/oven/temperature -m 182.5 -r</div>
+  <ul class="fx">
+    <li><b>من الـ PLC</b><span>LMQTT · بلوكات MQTT · أو البوابة (الأشيع)</span></li>
+    <li><b>الأمان</b><span>مستخدم لكل بوابة · TLS · ACL</span></li>
+    <li><b>الحجم</b><span>أرسل عند التغير، لا كل 100 ms</span></li>
+  </ul>
+  <div class="box key"><b>على المحاكي:</b> انشر، اشترك بأحرف بديلة، جرّب Retain، اقطع البوابة لترى الوصية، وقارن QoS 0 و 1. <a class="btn pri" href="net.html#mqtt" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>

@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261028e1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -34,37 +35,58 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>Three kinds of maintenance</h2>
-<div class="tblw"><table class="tbl"><thead><tr><th>Type</th><th>When</th><th>Cost</th></tr></thead><tbody>
-<tr><td>Reactive</td><td>After the failure</td><td>Unplanned downtime, rush-ordered parts, consequential damage</td></tr>
-<tr><td>Preventive</td><td>Every N hours or months</td><td>Replacing parts that are still serviceable</td></tr>
-<tr><td>Predictive</td><td>When the data shows the onset of degradation</td><td>Sensors + analysis, but the downtime is planned</td></tr></tbody></table></div>
-<p>Predictive maintenance does not replace preventive maintenance; it moves part of it from “by the calendar” to “by condition” (condition-based).</p>
+  <div class="tiles">
+    <div class="tile"><span class="ic">🚒</span><b>Reactive</b><span>After the failure</span><span>Sudden stops and damage</span></div>
+    <div class="tile"><span class="ic">📅</span><b>Preventive</b><span>Every N hours</span><span>Replaces good parts</span></div>
+    <div class="tile"><span class="ic">📈</span><b>Predictive</b><span>When data shows decline</span><span>Planned stops</span></div>
+  </div>
+  <p class="tip">Predictive turns preventive from "by calendar" into "<b>by condition</b>".</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>What do you measure?</h2>
-<ul><li><b>Vibration:</b> the most important indicator for motors, pumps and fans. An accelerometer on the bearing housing; the <b>RMS</b> value in mm/s is compared with the <b>ISO 10816/20816</b> limits (e.g. for a medium-sized motor: good &lt; 2.8, acceptable &lt; 7.1, unacceptable &gt; 11). Spectral analysis (FFT) identifies the cause: 1× running speed = imbalance, 2× = misalignment, bearing frequencies = bearing damage.</li>
-<li><b>Temperature:</b> for bearings, motors and panels; a gradual rise above ambient beyond the usual margin = alarm. Thermal cameras for panels.</li>
-<li><b>Motor current:</b> from the variable-frequency drive itself (Modbus), with no extra sensor. Higher current at the same load = friction or a blockage.</li>
-<li><b>Run-hour and cycle counters:</b> for contactors, valves and cylinders; their life is measured in operations, not days.</li>
-<li><b>Differential pressure</b> across filters, <b>oil quality</b>, and <b>ultrasound</b> for compressed-air leaks.</li></ul>
+  <p class="bf"><span class="ic">📳</span><span><b>Vibration</b> is the key indicator: RMS in mm/s against ISO 10816.</span></p>
+  <ul class="scale">
+    <li>Good<div class="bar"><i style="width:25%"></i><em><bdi dir="ltr">&lt; 2.8</bdi></em></div></li>
+    <li>Acceptable<div class="bar"><i style="width:65%"></i><em><bdi dir="ltr">&lt; 7.1</bdi></em></div></li>
+    <li class="danger">Unacceptable<div class="bar"><i style="width:100%"></i><em><bdi dir="ltr">&gt; 11</bdi></em></div></li>
+  </ul>
+  <ul class="fx">
+    <li><b class="mono">FFT 1×</b><span>Unbalance</span></li>
+    <li><b class="mono">FFT 2×</b><span>Misalignment</span></li>
+    <li><b>Bearing frequencies</b><span>Bearing damage</span></li>
+  </ul>
+  <div class="tiles">
+    <div class="tile"><span class="ic">🌡️</span><b>Temperature</b><span>Bearings and panels</span></div>
+    <div class="tile"><span class="ic">⚡</span><b>Current</b><span>Free from the VFD</span></div>
+    <div class="tile"><span class="ic">🔢</span><b>Counters</b><span>Life by operations</span></div>
+    <div class="tile"><span class="ic">🧪</span><b>Others</b><span>Filter ΔP · oil · ultrasound</span></div>
+  </div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>From measurement to decision</h2>
-<ol><li><b>Baseline:</b> record the machine in healthy condition for two weeks: mean and standard deviation of each indicator for each operating state.</li>
-<li><b>Limits:</b> warning at +2σ, alarm at +3σ or at the ISO limit. Always with delay and hysteresis (Lesson 12).</li>
-<li><b>Trend:</b> not the value but its <b>slope</b>: vibration rising 0.1 mm/s per week reaches the limit in N weeks. That is remaining useful life (RUL) in its simplest form.</li>
-<li><b>Context:</b> high vibration at maximum speed may well be normal; compare against the same operating state in the baseline.</li>
-<li><b>Work order:</b> the alarm creates a maintenance work order in the CMMS with the data attached, and the technician closes it with the actual root cause, so the rules improve.</li></ol>
-<div class="box key"><b>Machine learning</b> (anomaly detection, fault classification) comes <b>after</b> you have a year of clean data with an accurate failure log. Until then, limits and trends solve 80% of cases.</div>
+  <ol class="steps">
+    <li>Two-week baseline</li>
+    <li>Warn +2σ · alarm +3σ</li>
+    <li>Slope ⇒ RUL</li>
+    <li>Same operating state</li>
+    <li class="on">CMMS work order</li>
+  </ol>
+  <div class="box key"><b>Machine learning</b> comes after a year of clean data. Until then limits and trends solve <b>80%</b>.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Example: the cooling pump</h2>
-<p>A 15 kW pump on a variable-frequency drive. Sensors: vibration on the motor bearing (IO-Link), bearing temperature, current from the drive (Modbus RTU), discharge pressure (4-20 mA).</p>
-<ul><li>Weeks 1–2: RMS 1.9 mm/s, temperature 48 °C, current 24 A at 50 Hz.</li><li>Week 6: RMS 3.1 and rising 0.2 per week, temperature 56, current 24.5. Pressure steady.</li>
-<li>Analysis: vibration and temperature rising together with near-constant current → the bearing, not the hydraulics. FFT shows the BPFO frequency → the outer race.</li><li>Decision: order the bearing and replace it during the planned shutdown in 3 weeks, instead of a sudden failure on the night shift.</li></ul>
+  <div class="vs">
+    <div class="side"><b>Weeks 1–2</b><span class="big">1.9 mm/s</span><span>48 °C · 24 A</span></div>
+    <i>→</i>
+    <div class="side"><b>Week 6</b><span class="big">3.1 mm/s</span><span>56 °C · 24.5 A · +0.2/week</span></div>
+  </div>
+  <ul class="fx">
+    <li><b>Vibration and heat ↑, current flat</b><span>Bearing, not hydraulics</span></li>
+    <li><b>FFT: BPFO</b><span>Outer race</span></li>
+    <li class="ok"><b>Decision</b><span>Planned swap in 3 weeks</span></li>
+  </ul>
+  <div class="box key"><b>On the simulator:</b> draw the vibration baseline and find the week the trend will cross the ISO limit before it does. <a class="btn pri" href="net.html#dash" style="margin-inline-start:8px">Open the simulator →</a></div>
 </section>
-<div class="box key"><b>On the simulator:</b> in the <b>Dashboard</b> tab, select the vibration curve, draw the baseline, and identify the week in which the trend will cross the ISO limit before it actually gets there. <a class="btn pri" href="net.html#dash" style="margin-inline-start:8px">Open the simulator →</a></div>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
   <p>Answer at least 6 of 7 correctly to complete the lesson.</p>

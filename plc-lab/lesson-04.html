@@ -19,6 +19,7 @@
 <script src="brands.js?v=20261030w1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -39,47 +40,47 @@
 <section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>التثبيت الذاتي (Seal-in / Latch)</h2>
-  <p>نفس دايرة الـ DOL اللي في <a href="../classic-control-lab/lesson-02.html">درس الريلاي المساعد والتثبيت الذاتي</a>: كونتاكت من الخرج نفسه (Q0.0) <b>موازي</b> لزرار الـ Start. أول ما الموتور يشتغل، الكونتاكت ده بيمسك الدايرة حتى لو سبت الزرار.</p>
+  <p class="bf"><span class="ic">🔒</span><span>كونتاكت <b>Q0.0 موازي</b> لزرار Start: يمسك الدايرة بعد ما تسيب الزرار. زي <a href="../classic-control-lab/lesson-02.html">درس التثبيت الذاتي</a>.</span></p>
   <div class="ladfig" id="fSeal"></div>
-  <ol>
-    <li>دوست Start ⇐ I0.0 = 1 ⇐ الكهربا عدّت ⇐ Q0.0 = 1.</li>
-    <li>في السكان اللي بعده، كونتاكت <b>Q0.0</b> (اللي تحت) بقى مقفول.</li>
-    <li>سبت Start ⇐ الكهربا لسه بتعدّي من فرع Q0.0 ⇐ الموتور مكمّل.</li>
-    <li>دوست Stop (متوصّل NC) ⇐ I0.1 = 0 ⇐ الكونتاكت NO بتاعه فصل ⇐ Q0.0 = 0 والتثبيت اتفك.</li>
+  <ol class="steps">
+    <li>Start ⇐ Q0.0 = 1</li>
+    <li>كونتاكت Q0.0 يقفل</li>
+    <li>سبت Start: مكمّل</li>
+    <li class="on">Stop ⇐ I0.1 = 0 ⇐ يفصل</li>
   </ol>
-  <div class="box key"><b>ليه الـ Stop قبل التثبيت مش بعده؟</b> لازم الـ Stop والأوفرلود يكونوا على الخط الأساسي <b>بعد</b> نقطة اتحاد Start مع Q0.0، عشان يقطعوا الاتنين. لو حطيت الـ Stop جوه فرع الـ Start بس، التثبيت هيفضل ماسك والموتور مش هيقف.</div>
+  <div class="box key">الـ Stop والأوفرلود على الخط الأساسي <b>بعد</b> اتحاد Start مع Q0.0، وإلا التثبيت يفضل ماسك.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>التمرين: موتور DOL بأوفرلود</h2>
-  <p>كونتاكت الأوفرلود <span class="term">95–96</span> متوصّل NC على I0.2: يعني طبيعي = 1، ولما يفصل = 0. وعايزين لمبة Trip تنوّر لما يفصل. فكّر: اللمبة محتاجة كونتاكت إيه؟</p>
+  <p class="tip">أوفرلود <span class="term">95–96</span> NC على I0.2: طبيعي = 1. لمبة Trip محتاجة كونتاكت إيه؟</p>
   <div class="wd"><h3>محاكي: موتور DOL</h3><div id="sim1"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Set و Reset</h2>
-  <p>طريقة تانية: كويل <b>Set</b> <span class="mono">-(S)-</span> يخلّي البت 1 <b>ويفضل 1</b> حتى لو الشرط راح. وكويل <b>Reset</b> <span class="mono">-(R)-</span> يرجّعه 0. يعني الـ Set والـ Reset فيهم "ذاكرة" من نفسهم من غير تثبيت.</p>
+  <div class="vs">
+    <div class="side"><b>Set <span class="mono">-(S)-</span></b><span>يخلّي البت 1 ويفضل</span></div>
+    <i>vs</i>
+    <div class="side"><b>Reset <span class="mono">-(R)-</span></b><span>يرجّعه 0</span></div>
+  </div>
   <div class="ladfig" id="fSR"></div>
-  <div class="box key"><b>مين يكسب لو الاتنين مع بعض؟</b> الـ PLC بيمشي من فوق لتحت، و<b>آخر رانج بيكتب في البت هو اللي بيكسب</b>. فلو حطيت الـ Reset <b>بعد</b> الـ Set، الإيقاف ليه الأولوية (وده اللي عايزينه للأمان). ولاحظ: هنا الـ Stop المتوصّل NC بنسأل عليه بكونتاكت <b>NC</b>، لأننا عايزين نعمل Reset لما البت = 0 (حد داس).</div>
+  <div class="box key"><b>آخر رانج يكسب:</b> حط الـ Reset <b>بعد</b> الـ Set عشان الإيقاف ياخد الأولوية. والـ Stop NC هنا بـ <b>NC</b> (Reset لما البت = 0).</div>
   <div class="wd"><h3>محاكي: Set و Reset</h3><div id="sim2"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>الإنترلوك: أمام وخلف</h2>
-  <p>موتور بيلف في الاتجاهين بكونتاكتورين KM1 (أمام) و KM2 (خلف). لو الاتنين اشتغلوا مع بعض ⇐ <b>قصر بين فازتين</b>. الحل: كل خرج فيه كونتاكت <b>NC</b> من الخرج التاني (Interlock). وكمان في اللوحة بيتعمل نفس الإنترلوك بكونتاكت مساعد NC من الكونتاكتورات نفسها، عشان لو كونتاكتور لزق.</p>
+  <p class="bf"><span class="ic">⛔</span><span>KM1 و KM2 مع بعض = <b>قصر بين فازتين</b>. كل خرج فيه <b>NC</b> من التاني.</span></p>
+  <p class="tip">وفي اللوحة نفس الإنترلوك بكونتاكت مساعد NC، لو كونتاكتور لزق.</p>
   <div class="wd"><h3>محاكي: أمام وخلف</h3><div id="sim3"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>أعطال شائعة في الموقع</h2>
-  <div class="fault-box"><b>أعطال شائعة في البرامج:</b><ul>
-    <li><b>الموتور بيقف أول ما تسيب Start:</b> التثبيت ناقص، أو الفرع بتاعه مش متوصّل من الناحيتين.</li>
-    <li><b>الموتور مش بيقف بالـ Stop:</b> الـ Stop جوه فرع الـ Start بس، أو الـ Reset قبل الـ Set والـ Start لسه متداس.</li>
-    <li><b>الموتور رجع يشتغل لوحده بعد الكهربا ما رجعت:</b> البت كان Retentive (بيتحفظ مع قطع الكهربا) مع Set. الموتورات لازم تحتاج Start تاني بعد رجوع الكهربا.</li>
-    <li><b>الكونتاكتورين أمام وخلف اشتغلوا لحظة:</b> مفيش إنترلوك في البرنامج أو في السلك، أو تغيير الاتجاه من غير وقفة.</li>
-  </ul></div>
+  <ul class="fx">
+    <li><b>يقف أول ما تسيب Start</b><span>التثبيت ناقص أو الفرع مش متوصّل</span></li>
+    <li><b>مش بيقف بالـ Stop</b><span>الـ Stop جوه الفرع · أو Reset قبل Set</span></li>
+    <li><b>اشتغل لوحده بعد رجوع الكهربا</b><span>بت Retentive مع Set</span></li>
+    <li><b>أمام وخلف لحظة مع بعض</b><span>مفيش إنترلوك</span></li>
+  </ul>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>

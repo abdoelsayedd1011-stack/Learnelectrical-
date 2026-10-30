@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261027i1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -32,16 +33,26 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>الكابل والمنفذ والمصابيح</h2>
-<p>شبكة الإيثرنت في اللوحة تبدأ بكابل <b>Cat5e أو Cat6</b> بموصّل <b>RJ45</b> (أو <b>M12</b> المحكم في الأماكن المبللة والمهتزة). داخل الكابل أربعة أزواج ملتوية؛ 100 Mbit/s يستخدم زوجين، و 1 Gbit/s يستخدم الأربعة. الطول الأقصى لقطعة واحدة <b>100 متر</b>.</p>
-<ul><li><b>Link (أخضر ثابت):</b> الكابل سليم والمنفذان يتفاهمان على السرعة. لا link = كابل مقطوع أو منفذ معطّل أو الجهاز بلا تغذية.</li>
-<li><b>Activity (أصفر/أخضر يومض):</b> توجد بيانات تمر. link بلا activity: الجهاز متصل لكنه لا يتكلم.</li>
-<li><b>الكابل المحمي (STP/SFTP):</b> ضروري بجوار محوّلات التردد والكابلات القوى. وصّل الدرع بالأرضي من جهة اللوحة.</li></ul>
-<div class="box safe"><b>تحذير:</b> لا تمرر كابل الإيثرنت في مجرى واحد مع كابل محرك محوّل تردد. التداخل يسبب أخطاء متقطعة تبدو كأنها أعطال برمجية.</div>
+  <div class="tiles">
+    <div class="tile"><span class="ic">🔌</span><b>Cat5e / Cat6</b><span>RJ45 أو M12</span></div>
+    <div class="tile"><span class="big">100 m</span><b>أقصى طول</b></div>
+    <div class="tile"><span class="ic">🛡️</span><b>STP</b><span>بجوار محوّلات التردد</span></div>
+  </div>
+  <ul class="fx">
+    <li class="ok"><b>🟢 Link ثابت</b><span>الكابل سليم</span></li>
+    <li><b>⚫ لا Link</b><span>كابل مقطوع أو منفذ معطّل أو بلا تغذية</span></li>
+    <li><b>🟢 Link بلا Activity</b><span>متصل لكنه لا يتكلم</span></li>
+  </ul>
+  <p class="alert">لا تمرر الإيثرنت مع كابل محرك محوّل تردد: <b>أعطال متقطعة</b>.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>عنوان MAC وعنوان IP</h2>
-<p>لكل منفذ شبكة <b>عنوان MAC</b> ثابت من المصنع (مثل <span class="mono">00:1C:06:1A:2B:3C</span>)، أول ثلاثة بايتات تدل على الشركة. أما <b>عنوان IP</b> فأنت من يحدده، وهو ما يتعامل معه الـ PLC والشاشة.</p>
-<svg viewBox="0 0 640 260" role="img" aria-label="شبكة لوحة التحكم" style="width:100%;max-width:640px;direction:ltr">
+  <div class="vs">
+    <div class="side"><b>MAC</b><span class="big">00:1C:06:…</span><span>ثابت من المصنع</span></div>
+    <i>vs</i>
+    <div class="side"><b>IP</b><span class="big">192.168.1.10</span><span>أنت تحدده</span></div>
+  </div>
+  <svg viewBox="0 0 640 260" role="img" aria-label="شبكة لوحة التحكم" style="width:100%;max-width:640px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
 <rect x="250" y="20" width="140" height="44" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="320" y="38" font-weight="700">Switch</text><text x="320" y="55" font-size="11">8 منافذ</text>
 <g stroke="currentColor" stroke-width="2"><path d="M270 64 L230 140"/><path d="M320 64V205"/><path d="M370 64 L410 140"/><path d="M290 64 L80 140"/><path d="M350 64 L560 140"/></g>
@@ -51,39 +62,50 @@
 <rect x="350" y="140" width="120" height="60" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="410" y="162" font-weight="700">Gateway</text><text x="410" y="180">192.168.1.1</text>
 <rect x="500" y="140" width="120" height="60" rx="8" fill="none" stroke="#b85f00" stroke-width="2"/><text x="560" y="162" font-weight="700" fill="#b85f00">Laptop</text><text x="560" y="180">192.168.1.100</text>
 </g></svg>
-<p>عنوان IPv4 أربعة أرقام من 0 إلى 255. <b>قناع الشبكة (Subnet mask)</b> يحدد أي جزء من العنوان هو «الشارع» وأي جزء هو «رقم البيت». القناع <span class="mono">255.255.255.0</span> (ويُكتب <span class="mono">/24</span>) يعني أن أول ثلاثة أرقام هي الشبكة، والرقم الأخير هو الجهاز. فالأجهزة من <span class="mono">192.168.1.1</span> إلى <span class="mono">192.168.1.254</span> في شبكة واحدة وتتكلم مباشرة.</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>الحقل</th><th>مثال</th><th>معناه</th></tr></thead><tbody>
-<tr><td>IP address</td><td class="mono">192.168.1.10</td><td>عنوان هذا الجهاز</td></tr>
-<tr><td>Subnet mask</td><td class="mono">255.255.255.0</td><td>الأجهزة التي أراها مباشرة: 192.168.1.x</td></tr>
-<tr><td>Default gateway</td><td class="mono">192.168.1.1</td><td>الموجّه الذي أرسل إليه أي عنوان خارج شبكتي</td></tr>
-<tr><td>DNS</td><td class="mono">8.8.8.8</td><td>يحوّل الأسماء إلى عناوين، تحتاجه البوابة للسحابة فقط</td></tr></tbody></table></div>
+  <p class="bf"><span class="ic">🏘️</span><span>القناع <b>/24</b> = <span class="mono">255.255.255.0</span>: أول 3 أرقام «الشارع»، والأخير «البيت».</span></p>
+  <ul class="fx">
+    <li><b class="mono">IP</b><span>192.168.1.10 · هذا الجهاز</span></li>
+    <li><b class="mono">Mask</b><span>255.255.255.0 · من أراه مباشرة</span></li>
+    <li><b class="mono">Gateway</b><span>192.168.1.1 · لما خارج شبكتي</span></li>
+    <li><b class="mono">DNS</b><span>للسحابة فقط</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>ثابت أم DHCP؟</h2>
-<p><b>DHCP</b> يوزّع العناوين تلقائيًا من موجّه. مناسب للحواسيب والهواتف، لكن <b>ممنوع في شبكة الماكينة</b>: لو أعاد الموجّه التشغيل وأعطى الـ PLC عنوانًا مختلفًا، ستفقد الشاشة الاتصال. القاعدة: <b>كل جهاز في اللوحة بعنوان ثابت (Static)</b> مكتوب على ملصق فوقه وفي مخطط الشبكة.</p>
-<div class="box key"><b>عادة جيدة:</b> خصص نطاقًا لكل نوع: 1–9 للموجّهات والبوابات، 10–49 للـ PLC، 50–99 للشاشات، 100–199 لمحوّلات التردد ووحدات I/O، 200–250 للحواسيب المؤقتة.</div>
+  <div class="vs">
+    <div class="side"><b>DHCP</b><span>❌ ممنوع في الماكينة</span><span>العنوان قد يتغير</span></div>
+    <i>vs</i>
+    <div class="side"><b>Static</b><span>✅ كل جهاز في اللوحة</span><span>وملصق فوقه</span></div>
+  </div>
+  <ul class="scale">
+    <li>موجّهات<div class="bar"><i style="width:8%"></i><em><bdi dir="ltr">1–9</bdi></em></div></li>
+    <li>PLC<div class="bar"><i style="width:25%"></i><em><bdi dir="ltr">10–49</bdi></em></div></li>
+    <li>شاشات<div class="bar"><i style="width:40%"></i><em><bdi dir="ltr">50–99</bdi></em></div></li>
+    <li>محوّلات و I/O<div class="bar"><i style="width:78%"></i><em><bdi dir="ltr">100–199</bdi></em></div></li>
+    <li>حواسيب<div class="bar"><i style="width:100%"></i><em><bdi dir="ltr">200–250</bdi></em></div></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>الأخطاء الأربعة الشائعة</h2>
-<div class="tblw"><table class="tbl"><thead><tr><th>العرض</th><th>السبب</th><th>الحل</th></tr></thead><tbody>
-<tr><td>الشاشة ترى الـ PLC أحيانًا ثم تفقده</td><td><b>عنوانان متكرران</b> (Duplicate IP): جهازان بالعنوان نفسه يتبادلان الظهور</td><td>افصل أحدهما وجرّب ping؛ لو استمر الرد فالعنوان مستخدم</td></tr>
-<tr><td>لا ping أبدًا رغم أن المصباح أخضر</td><td><b>قناع أو شبكة مختلفة</b>: الحاسوب على 192.168.<b>0</b>.x والـ PLC على 192.168.<b>1</b>.x</td><td>غيّر عنوان الحاسوب إلى الشبكة نفسها</td></tr>
-<tr><td>ping يعمل لكن البرنامج لا يتصل</td><td><b>جدار حماية</b> على الحاسوب أو منفذ TCP مغلق</td><td>افتح المنفذ (502 لـ Modbus، 102 لـ S7، 4840 لـ OPC UA)</td></tr>
-<tr><td>كل الأجهزة تختفي معًا</td><td><b>عاصفة بث</b> (Broadcast storm) بسبب حلقة كابل في المفتاح</td><td>ابحث عن كابل يربط منفذين في المفتاح نفسه، أو فعّل RSTP/MRP</td></tr></tbody></table></div>
+  <ul class="fx">
+    <li><b>يظهر ويختفي</b><span>عنوان مكرر · افصل أحدهما وجرّب ping</span></li>
+    <li><b>لا ping والمصباح أخضر</b><span>شبكة مختلفة (1.x و 0.x) · وحّدها</span></li>
+    <li><b>ping يعمل والبرنامج لا</b><span>جدار حماية · المنفذ 502 / 102 / 4840</span></li>
+    <li><b>كل الأجهزة تختفي</b><span>حلقة كابل · عاصفة بث · RSTP/MRP</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>أداتك الأولى: ping و arp</h2>
-<p>افتح موجّه الأوامر في الحاسوب واكتب:</p>
-<div class="formula">ping 192.168.1.10</div>
-<ul><li><b>Reply from … time&lt;1ms:</b> الجهاز موجود ويرد. المشكلة ليست في الشبكة.</li>
-<li><b>Request timed out:</b> لا رد. الكابل، أو العنوان، أو الجهاز مطفأ.</li>
-<li><b>Destination host unreachable:</b> حاسوبك نفسه ليس في الشبكة الصحيحة (غالبًا القناع).</li></ul>
-<div class="formula">arp -a</div>
-<p>يُظهر جدول العناوين التي رآها حاسوبك مع عناوين MAC. لو رأيت عنوان IP واحدًا بعنواني MAC مختلفين فهذا تكرار عنوان مؤكد.</p>
-<div class="box key"><b>على المحاكي:</b> اضبط عنوان حاسوبك المحمول يدويًا في الشبكة الفرعية نفسها للـ PLC وشاشة HMI، ثم نفّذ ping و Go online من TIA Portal. (وجرّب عنوانًا مكررًا أو قناعًا خاطئًا لترى ماذا يحدث.) <a class="btn pri" href="net.html#ip" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+  <div class="formula">ping 192.168.1.10</div>
+  <ul class="fx">
+    <li class="ok"><b>Reply</b><span>موجود ويرد · المشكلة ليست الشبكة</span></li>
+    <li><b>Timed out</b><span>كابل أو عنوان أو مطفأ</span></li>
+    <li><b>Unreachable</b><span>حاسوبك نفسه خارج الشبكة (القناع)</span></li>
+  </ul>
+  <div class="formula">arp -a</div>
+  <p class="tip">IP واحد بعنواني MAC = <b>تكرار مؤكد</b>.</p>
+  <div class="box key"><b>على المحاكي:</b> اضبط عنوان حاسوبك في شبكة الـ PLC والشاشة، ثم ping و Go online. <a class="btn pri" href="net.html#ip" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 5 من 6 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>

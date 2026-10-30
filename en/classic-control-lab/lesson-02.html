@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="/en/classic-control-lab/fx.css?v=20261030r1">
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -77,14 +78,14 @@ CL.lesson({
   {id:'relay', icon:'relay', title:'The auxiliary relay', goal:'Coil <span class="term">A1-A2</span> pulls in contacts <span class="term">11-12-14</span>: a small voltage controls other circuits.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p>A <b>relay</b> is an electrical switch <b>operated by electricity, not by your hand</b>: inside is a <b>coil</b> (copper winding on an iron core) and an <b>armature</b> (a moving iron piece on a spring). When you energise the coil it becomes a magnet and pulls the armature, and the armature pushes the <b>contacts</b> so they change over. Remove the voltage: the spring returns everything.</p>
-     <p><b>Where will you find it?</b> In almost every control panel: it separates a low-voltage circuit (24V from a PLC or sensor) from another circuit at a higher voltage, it multiplies contacts (one contact becomes two, three or four), and it provides the “memory” in the seal-in circuits we'll see shortly. When it controls a large load (a motor) we use its big brother: the <b>contactor</b> (next lesson).</p>
-     <div class="box key"><p><b>Its terminals:</b></p><ul>
-      <li><b>Coil</b>: two terminals <span class="term">A1</span> and <span class="term">A2</span>. You connect the <b>coil voltage</b> printed on the relay to them: <span class="term">24V DC</span> (most common with PLCs) or <span class="term">230V AC</span> (in classic panels). A 24V relay on 230V burns out, and a 230V relay on 24V won't pull in.</li>
-      <li><b>Contacts</b>: usually <b>CO</b> (changeover), meaning each contact has 3 terminals: <span class="term">11</span> common, <span class="term">12</span> <span class="nc">NC</span>, <span class="term">14</span> <span class="no">NO</span>. With no voltage: 11 connects to 12. With voltage: 11 leaves 12 and closes onto 14. The second contact is <span class="term">21-22-24</span>, the third <span class="term">31-32-34</span>… same logic: the first digit is the contact number, and the second is 1 common / 2 NC / 4 NO.</li></ul></div>
-     <p><b>8-pin, 11-pin and 14-pin relays:</b> the most common type plugs into a <b>socket (base)</b> on a DIN rail, with pins underneath. <b>8 pin</b> = two CO contacts (2 for the coil + 3+3 for the contacts), <b>11 pin</b> = 3 CO contacts, <b>14 pin</b> = 4 CO contacts. You wire to the socket screws, and the relay itself unplugs and plugs in without undoing a single wire: if it fails you replace it in a minute.</p>
-     <p><b>LED and test lever:</b> modern relays have an <b>LED</b> that lights when the coil pulls in (so you can tell from in front of the panel whether the relay is on), and a small <b>test button</b> you press by hand to change over the contacts without powering the coil, so you can test the circuit after it. Some also have a diode or varistor inside that protects the contact driving the coil from arcing.</p>
-     <p><b>Important rule:</b> the contacts are <b>fully isolated</b> from the coil. So the coil can run on 24V DC while the contact switches 230V AC. That's the whole idea of a relay: a small circuit controls another circuit.</p>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">🧲</span><span>A relay = a <b>coil</b> that becomes a magnet and flips the <b>contacts</b>.</span></p>
+     <ol class="steps"><li>Voltage on A1-A2</li><li>Coil pulls in</li><li>Contacts flip</li><li>Remove voltage → reset</li></ol>
+     <ul class="fx"><li><b><span class="term">11</span></b><span>Common</span></li><li><b><span class="term">12</span></b><span><span class="nc">NC</span>: joined to 11 when off</span></li><li><b><span class="term">14</span></b><span><span class="no">NO</span>: joins 11 when the coil pulls in</span></li></ul>
+     <div class="tiles"><div class="tile"><span class="big">8 pin</span><span>2 CO contacts</span></div><div class="tile"><span class="big">11 pin</span><span>3 CO contacts</span></div><div class="tile"><span class="big">14 pin</span><span>4 CO contacts</span></div></div>
+     <p class="alert">Coil voltage must match: a 24V relay on 230V <b>burns out</b>.</p>
+     <p class="tip">Coil and contacts are isolated: a 24V DC coil can switch 230V AC.</p>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'8-pin relay in its socket', dev:K1CO, nema:[{k:'coil', opt:{letter:'CR'}}, 'crNO', 'crNC'], cap:'The relay with its clear cover plugged into the socket on a DIN rail, with the copper coil, armature and two CO contacts inside. The socket screws: 11-12-14 and 21-22-24 for the contacts, and A1-A2 for the coil. The round drawing: the pins from below. In the IEC symbol: the rectangle is the coil, and the dashed line links it to the contacts it moves. In NEMA: the coil is a circle with CR (control relay) inside, and a contact is two parallel lines, with a slash if it\'s NC.'}]},
     {kind:'sim', title:'Try it', lead:'Press and hold the big button (or the drawing itself): that applies voltage to A1-A2. Watch the armature pull in, the LED light, and each contact\'s 11 leave 12 and close onto 14. Let go and watch the spring return everything.', sims:[
@@ -99,15 +100,13 @@ CL.lesson({
   {id:'hold', icon:'hold', title:'Seal-in (latching)', goal:'The START button gives a pulse, and the relay <b>keeps running by itself</b> until you press STOP. The most important circuit in classic control.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p><b>The problem:</b> in lesson 1 the lamp lit only while you held the button. Lift your finger and it goes off. What about a motor you want running for hours? You won't stand there holding the button!</p>
-     <p><b>The solution: seal-in (self-holding / latching)</b>. We wire the START button to the coil of relay K1, and put <b>an NO contact of K1 itself in parallel with START</b>. Here's what happens:</p>
-     <ol><li>You press START → the coil gets power → K1 pulls in.</li>
-     <li>K1 pulled in, so its NO contact (11-14) closed. Now the coil gets power <b>by two paths</b>: through START and through K1's contact.</li>
-     <li>You lift your finger from START → the START path is broken, but <b>the K1 contact path is still there</b> → the coil stays on → the contact stays closed → and so on. The relay “holds itself”.</li>
-     <li>You press <b>STOP (NC, in series before everything)</b> → power is cut from both paths → the coil drops out → the contact opens → and even when you release STOP, nothing gives the first pulse again.</li></ol>
-     <div class="box key"><p><b>The rule:</b> <span class="nc">STOP (NC) in series</span>, and <span class="no">START (NO) in parallel with the seal-in contact</span>, then the coil. And if START and STOP are pressed together: STOP wins, because it cuts the whole line.</p></div>
-     <p><b>Why does this matter for safety?</b> If the power goes off and comes back, the relay has dropped out and the contact has opened, so the machine <b>won't start by itself</b> when the power returns; someone has to press START again. Most machines require this (restart protection).</p>
-     <p><b>The most common mistake:</b> wiring the seal-in contact <b>in series</b> with START instead of in parallel. Then the coil never starts, because it's waiting for its own contact to close, and the contact is waiting for the coil. You'll try it yourself in the last exercise and see how the simulator explains it.</p>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">🔒</span><span>K1's contact <b>in parallel</b> with START → the relay <b>holds itself</b>.</span></p>
+     <ol class="steps"><li>Press START</li><li>K1 pulls in</li><li>11-14 closes</li><li>Release START → stays on</li><li class="on">STOP → drops out</li></ol>
+     <ul class="fx"><li><b><span class="nc">STOP (NC)</span></b><span>in series, first in line</span></li><li><b><span class="no">START (NO)</span></b><span>parallel with the holding contact</span></li><li><b>Both pressed</b><span>STOP wins</span></li></ul>
+     <p class="tip">Power cut and back? The machine <b>won't restart by itself</b>.</p>
+     <p class="alert">Holding contact <b>in series</b> with START = the coil never energizes.</p>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'START / STOP circuit with seal-in', dev:K1CO, art:function(){ return CL.art.dolLayout({tag:'K1', power:false, h2:false, holdT:['11','14'], ctlTitle:'Seal-in circuit'}); }, noSym:true, cap:'The drawing in standard form: L at the top and N at the bottom, with the circuit running vertically. F1 is the control breaker, S0 the STOP button (NC) in series, S1 the START button (NO) with K1\'s own seal-in contact 11-14 in parallel beside it, then the K1 coil between A1 and A2 (A2 to N). Lamp H1 is wired in parallel with the coil, so it lights while K1 is on.'}]},
     {kind:'sim', title:'Try it', lead:'Keep the coil energised with “📌 hold” and watch contact 11-14: that\'s what keeps feeding the coil after you lift your finger from START in the real circuit.', sims:[
@@ -122,11 +121,12 @@ CL.lesson({
   {id:'lock', icon:'lock', title:'Relay interlock', goal:'Two relays, each blocking the other: an NC contact of each one in the path of the other\'s coil.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p><b>Interlock</b> means “not both together”. The best-known example: a motor running forward with one contactor and reverse with another. If both closed at the same moment = a short between two phases and an explosion. So we must make sure that running one <b>blocks</b> the other.</p>
-     <div class="box key"><p><b>Electrical interlock:</b> we take an <span class="nc">NC</span> contact of K1 and put it <b>in series in the path of K2's coil</b>, and an NC contact of K2 in the path of K1's coil. When K1 runs, its NC contact opens, so K2's path is broken: however much you press K2's button, it won't start. And the other way round.</p></div>
-     <p>Each branch has its own START button and its own seal-in, and one STOP button at the start switches off both. So the circuit = two seal-in circuits side by side, each with an NC contact from the other.</p>
-     <p><b>Mechanical interlock:</b> contactors also have a plastic part fitted between the two contactors that stops both from closing together. Good practice uses both: electrical and mechanical. We'll see it in the reversing lesson.</p>
-     <p><b>Why NC and not NO?</b> Because normally (both off) the path must be open to whichever starts first. An NO contact would have blocked both from the start.</p>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">⛔</span><span>Interlock: <b>never both at once</b>.</span></p>
+     <div class="vs"><div class="side"><b>K1 coil path</b><span>has <span class="nc">NC</span> from K2</span></div><i>⇄</i><div class="side"><b>K2 coil path</b><span>has <span class="nc">NC</span> from K1</span></div></div>
+     <p class="alert">Forward and reverse together = <b>phase-to-phase short</b>.</p>
+     <p class="tip">Contactors also get a <b>mechanical</b> interlock. Use both.</p>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'Electrical interlock between K1 and K2', dev:K1NN, art:'interlockLayout', noSym:true, cap:'Two branches in parallel after the common STOP button. In the left branch: S1 in parallel with K1\'s seal-in contact 13-14, then K2\'s NC contact 21-22, then the K1 coil. The right branch is the same the other way round. When K1 pulls in, its contact 21-22 (in K2\'s branch) opens, so K2 can\'t start.'}]},
     {kind:'sim', title:'Try it', lead:'This relay has an NO block (13-14) for the seal-in and an NC block (21-22) for the interlock. Keep the coil energised and watch: 13-14 closes and 21-22 opens at the same moment.', sims:[

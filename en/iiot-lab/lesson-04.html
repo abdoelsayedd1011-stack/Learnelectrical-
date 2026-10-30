@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261028e1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -34,45 +35,51 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>The same idea, over Ethernet</h2>
-<p><b>Modbus TCP</b> is Modbus RTU itself (the same four tables and the same function codes), but instead of a twisted pair and a CRC, the request is sent inside a <b>TCP</b> connection on port <b>502</b>. So there is no baud rate, no parity and no terminating resistor: the two devices simply need to be on the same IP network.</p>
-<div class="tblw"><table class="tbl"><thead><tr><th></th><th>Modbus RTU</th><th>Modbus TCP</th></tr></thead><tbody>
-<tr><td>Medium</td><td>RS-485</td><td>Ethernet / Wi-Fi</td></tr>
-<tr><td>Device addressing</td><td>Slave address 1–247</td><td>IP address + port 502 (+ Unit ID)</td></tr>
-<tr><td>Error detection</td><td>CRC-16</td><td>TCP guarantees delivery; no CRC</td></tr>
-<tr><td>Number of masters</td><td>One master</td><td>Several clients on the same server (up to the connection limit)</td></tr>
-<tr><td>Terminology</td><td>Master / Slave</td><td>Client / Server</td></tr></tbody></table></div>
+  <p class="bf"><span class="ic">🔌</span><span>The same Modbus, inside <b>TCP on port 502</b>: no baud, parity or termination.</span></p>
+  <div class="vs">
+    <div class="side"><b>RTU</b><span>RS-485</span><span>Address 1–247</span><span>CRC-16</span><span>One master</span></div>
+    <i>vs</i>
+    <div class="side"><b>TCP</b><span>Ethernet / Wi-Fi</span><span>IP + 502 + Unit ID</span><span>TCP guarantees delivery</span><span>Several clients</span></div>
+  </div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>The MBAP header</h2>
-<p>Every request is preceded by a 7-byte header called the <b>MBAP</b>:</p>
-<div class="tblw"><table class="tbl mono" style="direction:ltr"><thead><tr><th>00 01</th><th>00 00</th><th>00 06</th><th>01</th><th>03 00 6B 00 02</th></tr></thead><tbody>
-<tr><td>Transaction ID</td><td>Protocol ID (always 0)</td><td>Remaining length</td><td>Unit ID</td><td>PDU: function and registers</td></tr></tbody></table></div>
-<ul><li><b>Transaction ID:</b> a number that increments with each request, so the client can match every response to its request when it sends several at once.</li>
-<li><b>Unit ID:</b> used when the server is a <b>gateway</b> converting TCP to RTU: it carries the address of the serial slave behind the gateway. For a native Ethernet device, set 1, 255 or 0 as the manual specifies.</li></ul>
+  <div class="ladder"><span class="u">00 01</span><span class="u">00 00</span><span class="u">00 06</span><span class="u on">01</span><span class="u">03 00 6B 00 02</span></div>
+  <ul class="fx">
+    <li><b>Transaction ID</b><span>Matches each reply to its request</span></li>
+    <li><b>Protocol ID</b><span>Always 0</span></li>
+    <li><b>Unit ID</b><span>Serial slave behind a gateway · direct device: 1, 255 or 0</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Reading a PLC from a laptop</h2>
-<p>Most modern PLCs can act as a Modbus TCP server: Siemens S7-1200 (with the <span class="mono">MB_SERVER</span> block), Schneider M221/M241 (built in), Delta, Omron and others. The register map varies: on Schneider, <span class="mono">%MW0</span> starts at register 0; on Siemens, a <span class="mono">DB</span> is designated as the holding-register area.</p>
-<ol><li>Confirm the laptop can see the PLC (ping).</li>
-<li>Open a client program (such as Modbus Poll or QModMaster) pointed at the PLC's IP and port 502.</li>
-<li>Select function 03, address 0, quantity 10, with a poll cycle of 1000 ms.</li>
-<li>If you get <b>Connection refused</b>: the server is not enabled in the PLC program, or a firewall is blocking the port. If you get a <b>Timeout</b>, the problem is the network (Lesson 2).</li></ol>
-<div class="box key"><b>32-bit values:</b> many values (production counter, power) occupy two registers. Word order varies: <b>big-endian</b> (high word first) or <b>little-endian</b>. If you read a huge, meaningless number, swap the two words.</div>
+  <ol class="steps">
+    <li>ping</li>
+    <li>Client on IP:502</li>
+    <li>FC 03 · address 0 · 10 registers</li>
+  </ol>
+  <ul class="fx">
+    <li><b>Connection refused</b><span>Server not enabled or firewall</span></li>
+    <li><b>Timeout</b><span>Network (lesson 2)</span></li>
+    <li><b>Huge meaningless number</b><span>32-bit: swap the word order</span></li>
+  </ul>
+  <p class="tip">S7-1200: <span class="mono">MB_SERVER</span> · Schneider: <span class="mono">%MW0</span> = register 0.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Performance and limitations</h2>
-<ul><li>A 100 ms poll cycle for dozens of registers is routine on Ethernet, but Modbus TCP is <b>not deterministic</b>: never use it for emergency stops or axis synchronization.</li>
-<li>Read <b>contiguous registers in a single request</b> (up to 125 registers) rather than ten small requests.</li>
-<li>The number of simultaneous connections is limited (for example, 8 on some PLCs). An HMI + SCADA + gateway + your laptop can exhaust them, and the new connection is refused.</li>
-<li>Modbus has no encryption and no password: any device on the network can write registers. Isolate the machine network from the office network (Lesson 11).</li></ul>
+  <ul class="fx">
+    <li><b>⏱️ Not deterministic</b><span>No E-stops, no axis sync</span></li>
+    <li><b>📦 One request</b><span>Up to 125 adjacent registers</span></li>
+    <li><b>🔢 Limited connections</b><span>E.g. 8 · new ones refused</span></li>
+    <li><b>🔓 No encryption</b><span>Isolate the machine network</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>The Modbus TCP ⇄ RTU gateway</h2>
-<p>When the drive is serial and the SCADA is on Ethernet, you install a <b>gateway</b>: on one side an RS-485 port with three drives (addresses 1, 2 and 3), on the other a single IP address. The client sends a TCP request with <b>Unit ID = 2</b>; the gateway converts it into an RTU frame for slave 2 and returns its response. A timeout here usually originates on the serial side (Lesson 3).</p>
-<div class="box key"><b>On the simulator:</b> connect to the PLC on port 502, read the 32-bit production counter with the correct word order, and write the setpoint to a holding register; then try Connection refused and a wrong Unit ID through the gateway. <a class="btn pri" href="net.html#mbtcp" style="margin-inline-start:8px">Open the simulator →</a></div>
+  <div class="ladder"><span class="u">SCADA</span><span class="op">TCP · Unit 2</span><span class="u on">Gateway</span><span class="op">RTU</span><span class="u">Slave 2</span></div>
+  <p class="tip">Timeouts here usually come from the <b>serial</b> side.</p>
+  <div class="box key"><b>On the simulator:</b> connect on 502, read the 32-bit counter in the right word order, write the setpoint, and try connection refused and a wrong Unit ID. <a class="btn pri" href="net.html#mbtcp" style="margin-inline-start:8px">Open the simulator →</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
   <p>Answer at least 5 of 6 correctly to complete the lesson.</p>

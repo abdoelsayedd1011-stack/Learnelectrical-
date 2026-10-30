@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="/en/classic-control-lab/fx.css?v=20261030r1">
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -404,17 +405,13 @@ CL.lesson({
   {id:'ton', icon:'timer', title:'On-delay timer (TON)', goal:'<b>Delay on energising</b>: the coil gets voltage, the time counts, and after <span class="term">t</span> contact <span class="term">15-16-18</span> changes over. The most common timer in panels.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p><b>A timer (time relay)</b> is a relay that delays its contact relative to its coil by a time you set. The most common type is <b>On-delay</b> (delay on energising, marked <b>TON</b>, <b>A</b> or <b>ON</b>): when its coil <b>A1-A2</b> gets voltage, the red LED starts to light (it flashes on modern types) and the time counts. When time <b>t</b> runs out, contact <b>15-16-18</b> changes over and stays changed over as long as the coil has voltage. When the coil is switched off, everything returns immediately and the time resets to zero.</p>
-     <div class="box key"><p><b>The DIN-rail timer (what you'll find in the panel):</b></p><ul>
-      <li><b>Dial</b>: a graduated wheel from 0 to 10 (or 1 to 10) that sets the time <b>as a fraction of the range</b>.</li>
-      <li><b>Range switch</b>: 1 s, 10 s, 1 minute, 10 minutes, an hour… the actual time = dial × range. For example, the dial on 5 and the range on 10 s → 5 seconds. A common mistake: the range on 1 min when it should be 10 s, so the circuit “doesn't work” when it's just waiting.</li>
-      <li><b>LED</b>: green/yellow <b>U</b> means there's voltage on the coil, and red <b>R</b> flashes while counting and stays on when the contact changes over (it varies between types; check its datasheet).</li>
-      <li><b>A1-A2</b>: the coil (takes 24 V or 230 V depending on the model, and there are “multi-voltage” types for 24–240 V AC/DC).</li>
-      <li><b>15-16-18</b>: the timed contact (CO, changeover). <b>15</b> is the common, <b>16</b> is NC (closed while idle, <b>opens after the delay</b>), <b>18</b> is NO (open, <b>closes after the delay</b>). And if there's a second contact: 25-26-28.</li>
-      <li><b>21-22-24</b>: on some models an <b>instantaneous</b> contact: it changes over <b>immediately</b> with the coil with no delay, useful for a seal-in or a “timer running” lamp.</li></ul></div>
-     <div class="box key"><p><b>The numbering tells you the function:</b> the first digit is the contact number, and the second digit: <b>5-6-8</b> = a timed changeover contact (5 common, 6 NC, 8 NO), and <b>1-2-4</b> = an instantaneous changeover contact. Just like 95-96 and 97-98 on the overload.</p></div>
-     <p><b>Where is it used?</b> In <b>star/delta</b> starting (switches from star to delta after 5–10 seconds), in <b>sequencing</b> (the second motor a delay after the first so they don't draw starting current together), for the <b>pause</b> before reversing, and in any “wait a bit, then do it”.</p>
-     <p><b>The rule you'll follow in every exercise:</b> whatever should <b>start after the delay</b> goes on <b>18</b>. Whatever should <b>stop after the delay</b> goes on <b>16</b>. And the timer coil must stay energised during the whole count, so most of the time you wire it <b>in parallel with the coil of the contactor</b> that seals itself in.</p>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">⏱️</span><span>On-delay: coil energized → <b>wait t</b> → contact flips.</span></p>
+     <ul class="fx"><li><b><span class="term">A1-A2</span></b><span>coil</span></li><li><b><span class="term">15</span></b><span>common</span></li><li><b><span class="term">16</span></b><span>NC: <b>opens</b> after the time</span></li><li><b><span class="term">18</span></b><span>NO: <b>closes</b> after the time</span></li></ul>
+     <div class="rule2"><div><span class="big">5 × 10 s</span><b>Dial × range</b><span class="mono">= 5 seconds</span></div><div><span class="big">5-6-8</span><b>Timed</b><span class="mono">1-2-4 = instant</span></div></div>
+     <div class="vs"><div class="side"><b>Starts after the time</b><span class="big">18</span></div><i>×</i><div class="side"><b>Stops after the time</b><span class="big">16</span></div></div>
+     <p class="alert">Range on 1 min instead of 10 s → the circuit “doesn't work”, it's just waiting.</p>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'On-delay timer on a DIN rail and its timing chart', dev:KT('KT1', 'on', 5, 'On-delay timer'), art:'timerArt', nema:['tr', 'notc', 'ncto'], cap:'Front: the graduated dial, the RANGE switch, LEDs for voltage U and counting R, terminals A1 and 15 on top, and A2, 16 and 18 at the bottom. The timing chart: the coil goes high, the contact waits t and then changes over. IEC symbol: the coil rectangle with a line inside (the delay mark), and a half circle (parachute) on the contact in the direction of the delay. NEMA: a TR coil, and NOTC (normally open, timed closed) and NCTO (normally closed, timed open) contacts with the arrow.'},
       {title:'Timer with an instantaneous contact 21-22-24', dev:KT('KT2', 'on', 5, 'Timer with an instantaneous contact', {inst:true}), art:'timerArt', nema:['tr', 'notc'], cap:'The same timer but with an extra row of terminals: 21-22-24 is a contact that changes over immediately with the coil (no parachute in the symbol). You use it when you need a seal-in or a “timer started” signal without an extra relay.'}]},
@@ -432,16 +429,12 @@ CL.lesson({
   {id:'tof', icon:'timer', title:'Off-delay timer (TOF)', goal:'<b>Delay on de-energising</b>: the contact changes over <b>immediately</b> with the coil, and when the coil is switched off it stays changed over for <span class="term">t</span>, then returns. For a fan or pump that keeps going after stopping.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p><b>Off-delay</b> (delay on de-energising, <b>TOF</b>, <b>B</b> or <b>OFF</b>) is the opposite of On-delay in when the delay happens: when the coil gets voltage, contact <b>15-18</b> closes <b>at the same moment</b>. And when the coil is <b>switched off</b>, the contact <b>stays closed</b> for time t and then opens. So whatever is on it runs with the machine and keeps going a little after it.</p>
-     <div class="box key"><ul>
-      <li><b>A cooling fan that keeps running after the machine stops</b> (a welding fan, an oven fan, cooling for a large motor).</li>
-      <li><b>A pump that finishes draining</b> or a conveyor that keeps going until it's empty after the machine stops.</li>
-      <li><b>Stairwell lighting</b>: stays lit for a minute after you release the button.</li></ul></div>
-     <div class="box key"><p><b>Two types you must tell apart:</b></p><ul>
-      <li><b>Powered off-delay</b>: coil A1-A2 always has voltage, and the <b>control signal</b> comes on a separate terminal (<b>B1</b> or <b>Y1</b>). When the signal goes away, the delay starts. Most multi-function timers work like this in mode B.</li>
-      <li><b>True off-delay (power-off delay)</b>: no control terminal; when the voltage is removed from the coil itself, the timer completes the delay from energy stored inside it (a capacitor). That's what we simulate here: remove the voltage and the contact stays on for t.</li></ul>
-      <p>The difference matters in the panel: the first type needs a permanent wire for the coil and a signal wire, and the second just one wire from the machine contactor.</p></div>
-     <p><b>A common mistake</b>: using Off-delay when you need On-delay (or the other way round). The symptoms: the load starts immediately instead of waiting, or stays on after STOP. The “Mistake: wrong timer mode” exercise in the first device shows it to you.</p>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">🌀</span><span>Off-delay: closes <b>at once</b>; when the coil drops it <b>holds for t</b>.</span></p>
+     <div class="tiles"><div class="tile"><span class="ic">🌬️</span><b>Cooling fan</b></div><div class="tile"><span class="ic">🚰</span><b>Pump run-on</b></div><div class="tile"><span class="ic">💡</span><b>Stair light</b></div></div>
+     <div class="vs"><div class="side"><b>Powered</b><span>steady coil + signal on B1</span></div><i>×</i><div class="side"><b>True off-delay</b><span>runs on an internal capacitor</span></div></div>
+     <p class="alert">Starts immediately or keeps running after STOP? Probably the <b>wrong timer mode</b>.</p>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'Off-delay timer and its timing chart', dev:KT('KT1', 'off', 5, 'Off-delay timer'), art:'timerArt', nema:['tr', 'noto', 'nctc'], cap:'The same body and the same terminals; the difference is the function (the line in the coil symbol is at the bottom instead of the top, and the parachute on the contact is reversed). The timing chart: the contact goes high with the coil immediately and goes low t after the coil. NEMA: NOTO (normally open, timed open) and NCTC (normally closed, timed closed).'}]},
     {kind:'sim', title:'Try it', lead:'Apply voltage: 15-18 closes immediately. Remove the voltage: the counter starts and 15-18 stays closed until t runs out. Apply voltage again before the time runs out: the time resets and it stays closed.', sims:[
@@ -456,12 +449,12 @@ CL.lesson({
   {id:'cyc', icon:'cycle', title:'Cyclic and multi-function timers', goal:'<b>Flasher</b>: on for <span class="term">ton</span>, off for <span class="term">toff</span>, and again… as long as the coil has voltage. And <b>multi-function</b>: one timer with a switch to choose the function.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p><b>The cyclic timer (flasher / repeat cycle)</b>: as long as its coil has voltage, its contact <b>15-18</b> closes for <b>ton</b>, opens for <b>toff</b>, and repeats. There are models with one dial (ton = toff) and models with two dials (<b>asymmetric</b>: different on and off times), and some let you choose whether it starts ON or OFF. Uses: <b>a flashing warning lamp</b>, <b>periodic lubrication</b> (a pump that runs 5 seconds every minute), <b>alternating two motors</b> (the first, then the second, alternately), stirring a tank.</p>
-     <div class="box key"><p><b>The multifunction timer</b>: in modern panels, instead of buying a type for each function, one timer has a <b>function switch (FUNC)</b> with letters:</p><ul>
-      <li><b>A</b>: On-delay. <b>B</b>: Off-delay (with a signal on B1). <b>C</b>: Flasher starting OFF. <b>D</b>: Flasher starting ON.</li>
-      <li><b>E / F</b>: pulse (one-shot): gives a pulse of width t on energising or on switch-off. <b>Star-delta (Y/Δ)</b>: a ready-made changeover pulse between two contacts.</li></ul>
-      <p>It also has a <b>range switch</b> (0.1 s to 100 h) and sometimes a <b>voltage switch</b>. The only risk: someone fiddles with the switch and the circuit “goes crazy”. The proper practice is to close the transparent cover or seal it after setting.</p></div>
-     <p>On our board the multi-function timer has a <b>FUNC</b> button (while switched off): On-delay → Off-delay → Flasher. The circuit itself doesn't change, only the function.</p>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">🔁</span><span>Cyclic: closed for <b>ton</b>, open for <b>toff</b>, repeat.</span></p>
+     <div class="tiles"><div class="tile"><span class="ic">🚨</span><b>Flashing lamp</b></div><div class="tile"><span class="ic">🛢️</span><b>Periodic lube</b></div><div class="tile"><span class="ic">🔀</span><b>Duty/standby swap</b></div></div>
+     <ul class="fx"><li><b>A</b><span>On-delay</span></li><li><b>B</b><span>Off-delay</span></li><li><b>C / D</b><span>Flasher starting OFF / ON</span></li><li><b>E / F</b><span>Pulse</span></li></ul>
+     <p class="tip">Close the clear cover after setting. In the sim: the <b>FUNC</b> button with the timer de-energized.</p>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'Multi-function timer in Flasher mode', dev:KT('KT1', 'cyc', 5, 'Multi-function timer', {multi:true, ton:2, toff:2, range:'0.1 s – 100 h'}), art:'timerArt', nema:['tr'], cap:'The same body plus a FUNC switch to choose the function. In the timing chart: the contact closes for ton and opens for toff as long as the coil has voltage. In the IEC symbol: a pulse mark in the coil and a dashed line on the contact. NEMA has no special symbol for cyclic: a TR coil with “Repeat cycle” written next to it.'}]},
     {kind:'sim', title:'Try it', lead:'Apply voltage and leave it: the contact closes and opens alternately and you see the counter repeat. On the multi-function timer, choose the function from the list and see the same coil give 3 different behaviours.', sims:[
@@ -477,12 +470,13 @@ CL.lesson({
   {id:'cir', icon:'ring', title:'Timer circuits', goal:'The three patterns that every timer circuit is built from: <b>the timer in the seal-in circuit</b>, <b>the timer contact instead of START</b>, and <b>the loop</b>. Together with all the trainer exercises from 17 to 24.',
    steps:[
     {kind:'text', title:'Definition', html:`
-     <p>All timer circuits are built from three ideas. If you understand them you'll be able to draw any exercise from 14 to 24 on your own:</p>
-     <div class="box key"><p><b>1) The timer in the seal-in circuit (exercises 14, 16, 18, 19 and 20):</b> the first contactor KM1 starts with START and seals itself in, just like DOL. The timer coil is <b>in parallel with KM1's coil</b> (A1 to A1, A2 to N), so it starts counting with the first step. After the delay its <b>15-18</b> contact starts the second step (KM2), or <b>15-16</b> stops something. And when you press STOP, KM1 drops out, the timer drops out, and everything after it drops out: one STOP stops everything. If you want the second step to stay on after the first stops (as in 15), KM2 must seal itself in with its 13-14 contact in parallel with 15-18.</p></div>
-     <div class="box key"><p><b>2) The timer contact instead of START (exercises 15, 24 and 23):</b> anywhere there was a START button, you can put a <b>timer contact</b> instead: the circuit starts “by itself” after the delay. By the same logic, anywhere there was a STOP you can put <b>15-16</b> or an NC contact of another contactor: the new step stops the previous one (KM2 21-22 in KM1's line). That's how you build a <b>chain</b>: KT1 starts KM2, and KT2 (its coil with KM2) starts KM3, and so on. In exercise 24 there are four timers in a row, and the last one (15-16) cuts the seal-in so the whole circuit stops.</p></div>
-     <div class="box key"><p><b>3) The loop (exercises 17, 21 and 22):</b> a chain, but the last timer goes back to the first step: contact <b>KT3 15-18</b> in parallel with START. Each stage stops the previous one with an NC contact, seals itself in, and its timer starts the next one. The result: 1 → 2 → 3 → 1 → 2… until you press STOP. With just two motors (exercise 21) there's a simpler way: a <b>cyclic timer</b> + a memory relay. And for reversing with a pause (exercise 22): a <b>direction memory</b> relay, a timer for each direction, and a pause timer whose coil only gets voltage while both contactors are stopped (their NC contacts in series), and of course an electrical (21-22) and mechanical interlock between the forward and reverse contactors.</p></div>
-     <p><b>And a few practical rules:</b> the timer coil must stay energised during the whole count (if it's wired after its own contact, it will chatter). Contact 15-18 is normally open, so nothing on it will start by accident. For every step ask: what starts it? What seals it in? What stops it? And when the circuit loops, make sure STOP cuts <b>before</b> the L bar that everything is fed from, so it stops everything.</p>
-     <p><b>The limit switch in the cycle (exercise 23):</b> the same idea, but what switches the steps is a <b>limit switch</b>, not a timer: LS2 at B stops the going direction (21-22) and starts the pump and the timer (13-14), the timer after 3 seconds stops the pump (15-16) and starts the return (15-18), and LS1 at A stops the return. Every time ask: what stops this step, and what starts the next one.</p>`},
+     <div class="lsec lb">
+     <p class="bf"><span class="ic">🧩</span><span>Every timer circuit = <b>three ideas</b>.</span></p>
+     <ul class="fx"><li><b>1) Timer in a latch</b><span>coil parallel with KM1, 15-18 starts KM2</span></li><li><b>2) Timer contact instead of START</b><span>chain: KT1 → KM2 → KT2 → KM3</span></li><li><b>3) The loop</b><span>last timer's 15-18 parallel with START</span></li></ul>
+     <div class="tiles"><div class="tile"><span class="ic">▶️</span><b>Who starts it?</b></div><div class="tile"><span class="ic">🔒</span><b>Who holds it?</b></div><div class="tile"><span class="ic">⏹️</span><b>Who stops it?</b></div></div>
+     <p class="alert">The timer coil must stay energized <b>for the whole count</b>.</p>
+     <p class="tip">In exercise 23 a limit switch, not a timer, advances the steps.</p>
+     </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'Pattern 1: the timer in the seal-in circuit', dev:KT('KT1', 'on', 5), art:patHold, noSym:true, cap:'The control circuit only (the power is like DOL for each motor). KT1\'s coil in parallel with KM1\'s coil, and contact 15-18 in KM2\'s line. STOP stops everything because it\'s before both.'},
       {title:'Pattern 2: the timer contact instead of START', dev:KT('KT1', 'on', 5), art:patStart, noSym:true, cap:'The second step starts with the timer contact in place of START and seals itself in, and its NC contact stops the first step (exercise 15). The seal-in is essential because the timer will drop out with KM1.'},

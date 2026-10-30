@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261028e1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -34,8 +35,8 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>What is a gateway, and why do we need one?</h2>
-<p>The PLC speaks Modbus or PROFINET inside the plant; the cloud speaks MQTT and HTTPS. The <b>gateway</b> is the device that sits between them: it reads from the operational technology (OT) side using the industrial protocol, converts the values to JSON, and publishes them over MQTT to the server.</p>
-<div class="fig"><svg viewBox="0 0 680 150" role="img" aria-label="Data path from the PLC to the cloud" style="width:100%;max-width:680px;direction:ltr">
+  <div class="ladder"><span class="u">PLC</span><span class="op">Modbus</span><span class="u on">Gateway</span><span class="op">MQTT</span><span class="u">Cloud</span></div>
+  <div class="fig"><svg viewBox="0 0 680 150" role="img" aria-label="Data path from the PLC to the cloud" style="width:100%;max-width:680px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
 <rect x="10" y="40" width="110" height="60" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="65" y="65" font-weight="700">PLC</text><text x="65" y="85">Modbus TCP</text>
 <rect x="170" y="40" width="130" height="60" rx="8" fill="none" stroke="#0d7584" stroke-width="2"/><text x="235" y="65" font-weight="700" fill="#0d7584">Gateway</text><text x="235" y="85" fill="#0d7584">Node-RED</text>
@@ -46,16 +47,22 @@
 <text x="235" y="125" font-size="11">OT (plant network)</text><text x="520" y="125" font-size="11">IT / internet</text>
 <line x1="325" y1="15" x2="325" y2="110" stroke="currentColor" stroke-dasharray="4 4"/><text x="325" y="12" font-size="10">Firewall</text>
 <defs><marker id="g1" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs></g></svg></div>
-<ul><li><b>Off-the-shelf hardware:</b> Siemens IOT2050, Moxa, Advantech, Red Lion, Phoenix Contact, or an industrial Raspberry Pi. All are small Linux computers with two Ethernet ports: one for the plant network and one for the IT network.</li>
-<li><b>The most popular software:</b> <b>Node-RED</b>, a browser-based flow editor in which you drag nodes and wire them together. It is free and supported by almost every vendor.</li>
-<li><b>Alternatives:</b> Kepware (KEPServerEX), with drivers for hundreds of devices; Ignition Edge; Telegraf; or Python code using the pymodbus and paho-mqtt libraries.</li></ul>
-<div class="box key"><b>Golden rule:</b> in most applications the gateway <b>only reads</b> from the PLC. Writing from the cloud to the machine requires a dedicated security design and should be enabled only as a deliberate decision.</div>
+  <ul class="fx">
+    <li><b>Hardware</b><span>IOT2050 · Moxa · Advantech · Linux with OT and IT ports</span></li>
+    <li><b>Node-RED</b><span>Most common: nodes and wires in a browser</span></li>
+    <li><b>Alternatives</b><span>Kepware · Ignition Edge · Python</span></li>
+  </ul>
+  <div class="box key"><b>The gateway only reads.</b> Writing from the cloud to a machine is a deliberate security decision.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>A typical Node-RED flow</h2>
-<p>The flow you will build in the simulator is the same one that runs in real plants:</p>
-<ol><li><b>Modbus Read</b> (or S7, or OPC UA): address 192.168.1.10, port 502, unit 1, function FC3, start 0, 10 registers, every <b>1000 ms</b>.</li>
-<li><b>Function:</b> a short JavaScript snippet that turns the array of raw numbers into an object with meaningful names and correct units:<pre class="code">const r = msg.payload;
+  <ol class="steps">
+    <li>Modbus Read · FC3 · every 1000 ms</li>
+    <li>Function: names and units</li>
+    <li>RBE: on change only</li>
+    <li class="on">MQTT Out · TLS · QoS 1</li>
+  </ol>
+  <pre class="code">const r = msg.payload;
 msg.payload = {
   ts: Date.now(),
   oven_temp: r[0] / 10,      // 1825 → 182.5 °C
@@ -63,28 +70,29 @@ msg.payload = {
   running: (r[2] &amp; 1) === 1,
   current_a: r[3] / 100
 };
-return msg;</pre></li>
-<li><b>Filter / RBE</b> (Report By Exception): publish only when the value changes, saving 90% of messages.</li>
-<li><b>MQTT Out:</b> topic <code>plant/line3/oven</code> on the broker over TLS, QoS 1, without Retain for process data (and <b>with</b> Retain for the status message).</li></ol>
-<p>Always add a <b>Catch</b> node for errors, and a <b>Last Will</b> message in the MQTT settings that reads “offline” if the gateway goes down.</p>
+return msg;</pre>
+  <p class="tip">Always add a <b>Catch</b> node and a <b>Last Will</b> "offline".</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Buffering and offline operation</h2>
-<p>Plant internet connections drop. A good gateway <b>buffers</b> values locally (store and forward) during the outage, then sends them in order once the connection returns, carrying their original timestamps rather than the time of sending.</p>
-<ul><li>Synchronise the <b>device clock</b> with NTP; a wrong timestamp corrupts every chart.</li>
-<li>Monitor the buffer size: a one-week outage at one reading per second = 600,000 records.</li>
-<li>Send a <b>heartbeat</b> message every minute; its absence at the server = a “gateway not responding” alarm.</li></ul>
+  <p class="bf"><span class="ic">💾</span><span><b>Store &amp; forward</b>: buffer during an outage, then send in order with the original timestamps.</span></p>
+  <ul class="fx">
+    <li><b>NTP</b><span>A wrong clock ruins every chart</span></li>
+    <li><b>Buffer size</b><span>A week × every second = 600k records</span></li>
+    <li><b>Heartbeat</b><span>Every minute · missing = alarm</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Gateway security</h2>
-<ul><li>Two separate Ethernet ports, with no routing between the machine network and the internet. The gateway is the <b>only point</b> that crosses the boundary.</li>
-<li>Firewall: outbound only, to the broker on 8883; no inbound ports open from the internet.</li>
-<li>Change the default Node-RED password, enable HTTPS for its editor, and restrict access to the maintenance network.</li>
-<li>One certificate per gateway (not a single password for the whole plant), so that a single device can be revoked.</li>
-<li>Regular updates to the gateway OS, and a backup of the flow file <code>flows.json</code>.</li></ul>
+  <ul class="fx">
+    <li class="ok"><b>Two separate ports</b><span>No routing · the gateway is the only crossing</span></li>
+    <li class="ok"><b>Firewall</b><span>Outbound to 8883 only</span></li>
+    <li class="ok"><b>Node-RED</b><span>Change the password · HTTPS</span></li>
+    <li class="ok"><b>A certificate per gateway</b><span>Revoke one device</span></li>
+    <li class="ok"><b>Updates</b><span>And a backup of flows.json</span></li>
+  </ul>
+  <div class="box key"><b>On the simulator:</b> wire Modbus → transform → MQTT, enter the temperature divisor, and watch JSON go out. <a class="btn pri" href="net.html#gateway" style="margin-inline-start:8px">Open the simulator →</a></div>
 </section>
-<div class="box key"><b>On the simulator:</b> in the <b>Gateway</b> tab, wire the Modbus node to the transform node and then to the MQTT node, enter the correct scaling factor for the temperature, and watch the JSON message go out to the broker. <a class="btn pri" href="net.html#gateway" style="margin-inline-start:8px">Open the simulator →</a></div>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
   <p>Answer at least 6 of 7 correctly to complete the lesson.</p>

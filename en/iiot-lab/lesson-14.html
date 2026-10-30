@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261028e1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -34,58 +35,70 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>The troubleshooting method: bottom up</h2>
-<p>Do not guess. Work through the layers in order, with one question and one tool per layer:</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>Layer</th><th>Question</th><th>Tool</th><th>Common faults</th></tr></thead><tbody>
-<tr><td>1 Physical</td><td>Is there a signal on the wire?</td><td>Port LEDs, cable tester, ohmmeter</td><td>Broken cable, loose connector, missing termination, A/B swapped, poor grounding</td></tr>
-<tr><td>2 Data link</td><td>Does the switch see the device?</td><td>Switch MAC table, LLDP, <code>ip neigh</code></td><td>Duplex mismatch, loop without RSTP/MRP, wrong VLAN</td></tr>
-<tr><td>3 Network</td><td>Is the IP reachable?</td><td><code>ping</code>, <code>arp -a</code>, <code>tracert</code></td><td>Duplicate address, wrong mask, missing gateway, firewall</td></tr>
-<tr><td>4 Transport</td><td>Is the port open?</td><td><code>telnet ip 502</code>, nmap, Wireshark</td><td>Service stopped, port blocked, connections exhausted</td></tr>
-<tr><td>7 Application</td><td>Does the device give a correct response?</td><td>Modbus client, PRONETA, Wireshark with a protocol filter</td><td>Wrong unit ID, register address off by one, missing GSD, mismatched device name, expired certificate</td></tr></tbody></table></div>
-<div class="box key"><b>Half of all faults are at Layer 1.</b> Before any software: the LEDs, then the connectors, then the termination, then the voltage on the bus.</div>
+  <p class="bf"><span class="ic">🪜</span><span>Don't guess: layer by layer, one question and one tool each.</span></p>
+  <ul class="fx">
+    <li><b>1 Physical</b><span>Signal on the wire? · LEDs · ohmmeter</span></li>
+    <li><b>2 Link</b><span>Does the switch see it? · MAC table · LLDP</span></li>
+    <li><b>3 Network</b><span>Does IP reach? · ping · arp</span></li>
+    <li><b>4 Transport</b><span>Port open? · telnet ip 502</span></li>
+    <li><b>7 Application</b><span>Correct answer? · client · Wireshark</span></li>
+  </ul>
+  <div class="box key"><b>Half of all faults are layer 1:</b> LEDs → connectors → termination → voltage.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>The troubleshooting toolkit</h2>
-<ul><li><b>Wireshark</b> on a mirror (SPAN) port or a TAP: filters <code>modbus</code>, <code>pn_io</code>, <code>mqtt</code>, <code>opcua</code>, <code>tcp.analysis.retransmission</code>. Frequent retransmissions = a physical problem or congestion.</li>
-<li><b>PRONETA</b> (Siemens, free): maps a PROFINET network and shows names, IP addresses and devices with no name assigned.</li>
-<li><b>ProfiTrace / PROFIBUS tester:</b> measures signal quality for each station and reveals missing termination instantly.</li>
-<li><b>Oscilloscope:</b> on RS-485 and CAN, edges must be clean; reflections = termination, noise = grounding or a cable run next to power.</li>
-<li><b>MQTT Explorer</b> and <b>UaExpert</b>: to see for yourself what the broker is publishing and what the OPC UA server exposes.</li>
-<li><b>Device logs</b> (the Diagnostic buffer in TIA, the Module log in Logix) before anything else: they often state the cause in plain text.</li></ul>
+  <div class="tiles">
+    <div class="tile"><span class="ic">🦈</span><b>Wireshark</b><span>SPAN · retransmissions = physical</span></div>
+    <div class="tile"><span class="ic">🗺️</span><b>PRONETA</b><span>PROFINET map</span></div>
+    <div class="tile"><span class="ic">📉</span><b>ProfiTrace</b><span>PROFIBUS signal quality</span></div>
+    <div class="tile"><span class="ic">〰️</span><b>Oscilloscope</b><span>Reflections = termination</span></div>
+    <div class="tile"><span class="ic">🔎</span><b>MQTT Explorer · UaExpert</b></div>
+    <div class="tile"><span class="ic">📜</span><b>Device log</b><span>First: it states the cause</span></div>
+  </div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Ten cases you will encounter</h2>
-<ol>
-<li><b>Modbus RTU occasionally reads zeros:</b> noise on RS-485, missing termination or excessive length. Check for 120 Ω termination at both ends only, and grounding at one end only.</li>
-<li><b>Exception 02 (Illegal data address):</b> an off-by-one address (40001 = 0), or the register does not exist on this model.</li>
-<li><b>PROFIBUS: a station drops out when a large motor starts:</b> electromagnetic interference; the cable runs next to a power cable or the shield is not bonded.</li>
-<li><b>PROFINET: a new device has no connection after replacement:</b> it has not been assigned its <b>device name</b>, or the topology is configured and it is on a different port.</li>
-<li><b>EtherNet/IP: connections drop at random:</b> multicast without IGMP snooping, or the adapter’s CPU is saturated; review the RPI.</li>
-<li><b>CAN: bus-off:</b> one node with a mismatched bit rate, or missing termination; measure 60 Ω between H and L.</li>
-<li><b>ping succeeds but the protocol fails:</b> the port is blocked by a firewall or the service is not enabled on the device (e.g. enabling PUT/GET on the S7).</li>
-<li><b>OPC UA: BadCertificateUntrusted:</b> the client certificate is not trusted by the server; move it to the trusted folder.</li>
-<li><b>MQTT connects then immediately disconnects:</b> a duplicate client ID, or a keep-alive that is too short for a slow network.</li>
-<li><b>The dashboard shows a frozen value:</b> the gateway has stopped and the last message was retained; you missed the heartbeat.</li></ol>
+  <ul class="fx">
+    <li><b>RTU reads zeros at times</b><span>Noise · termination · length</span></li>
+    <li><b>Exception 02</b><span>Address off by one</span></li>
+    <li><b>PROFIBUS drops with a motor</b><span>Cable near power · shield</span></li>
+    <li><b>PROFINET after a swap</b><span>Device name</span></li>
+    <li><b>EtherNet/IP drops randomly</b><span>IGMP snooping · RPI</span></li>
+    <li><b>CAN bus-off</b><span>One node's baud · 60 Ω</span></li>
+    <li><b>Ping works, protocol fails</b><span>Firewall · PUT/GET</span></li>
+    <li><b>BadCertificateUntrusted</b><span>Move it to Trusted</span></li>
+    <li><b>MQTT connects then drops</b><span>Duplicate client ID · keep-alive</span></li>
+    <li><b>Frozen value on the dashboard</b><span>Gateway down + retained message</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>The complete line project</h2>
-<p>A filling line: a Siemens S7-1200 PLC controls PROFINET I/O, a conveyor on a Modbus RTU variable-frequency drive, an IO-Link pressure sensor and a CANopen servo motor. A Node-RED gateway reads from the PLC over OPC UA and publishes MQTT to the server, which draws the dashboard and calculates OEE.</p>
-<p>In the simulator you will find the line running with <b>three hidden faults</b> at different layers. Your task:</p>
-<ol><li>Locate each fault with the right tool at the right layer.</li><li>Fix it with the correct action from the list.</li><li>Confirm that the data is back on the dashboard.</li></ol>
-<p>And this is the day-to-day work of an industrial network engineer: you do not write all the code; you make the parts talk to each other, and you know where to look when they fall silent.</p>
+  <p class="bf"><span class="ic">🏭</span><span>A filling line with <b>3 hidden faults</b> in different layers.</span></p>
+  <div class="tiles">
+    <div class="tile"><b>S7-1200</b><span>PROFINET I/O</span></div>
+    <div class="tile"><b>Conveyor</b><span>Modbus RTU</span></div>
+    <div class="tile"><b>Pressure</b><span>IO-Link</span></div>
+    <div class="tile"><b>Servo</b><span>CANopen</span></div>
+    <div class="tile"><b>Gateway</b><span>OPC UA → MQTT</span></div>
+  </div>
+  <ol class="steps">
+    <li>Find the fault with the right tool</li>
+    <li>Fix it</li>
+    <li class="on">Check the dashboard</li>
+  </ol>
+  <div class="box key"><b>On the simulator:</b> in the <b>Faults</b> tab, fix all three faults until every indicator is green. <a class="btn pri" href="net.html#faults" style="margin-inline-start:8px">Open the simulator →</a></div>
 </section>
-<div class="box key"><b>On the simulator:</b> in the <b>Faults</b> tab, start the project, then find and fix the three faults until every indicator is green again. <a class="btn pri" href="net.html#faults" style="margin-inline-start:8px">Open the simulator →</a></div>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
   <p>Answer at least 6 of 7 correctly to complete the lesson.</p>
   <div id="quiz"></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="sf">
   <h2 id="sf"><span class="k">★</span>Final exam</h2>
   <p>12 questions covering the whole course. You need <b>80%</b> to earn the certificate.</p>
   <div id="final"></div>
 </section>
+
 <nav class="lnav" id="lnav" aria-label="Lesson navigation"></nav>
 <p class="foot">Sources: the official protocol specifications (Modbus.org, PROFIBUS &amp; PROFINET International, CiA, ODVA, OPC Foundation, OASIS MQTT) and manufacturers' manuals. Before applying anything on a live network, consult the device manual and your plant's network-security policy. Your progress is saved on this device.<br>© <bdi>LearnElectricals</bdi></p>
 </div>

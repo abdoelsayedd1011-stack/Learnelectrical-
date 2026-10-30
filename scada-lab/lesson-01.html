@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="scada.css?v=20261028s1">
 <script src="scada.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -29,11 +30,8 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>HMI و SCADA: الفرق في جملتين</h2>
-<ul>
-<li><b>HMI</b> (Human-Machine Interface، أي واجهة الإنسان والآلة): شاشة يرى منها المشغّل حالة <b>ماكينة واحدة أو خط واحد</b> ويتحكم فيها: تشغيل، إيقاف، نقطة ضبط، تأكيد إنذار. غالبًا لوحة لمس مثبتة على باب لوحة الكهرباء.</li>
-<li><b>SCADA</b> (Supervisory Control And Data Acquisition، أي التحكم الإشرافي وجمع البيانات): منظومة برمجية على خادم تجمع البيانات من <b>عدة PLC أو عدة مواقع</b>، وتحفظها في أرشيف، وتدير الإنذارات والمستخدمين، وتعرض كل ذلك على عدة شاشات ومتصفحات في وقت واحد.</li>
-</ul>
-<figure class="fig">
+  <div class="vs"><div class="side"><span class="ic">📟</span><b>HMI</b><span>ماكينة أو خط واحد</span><span>لوحة لمس على باب اللوحة</span></div><i>×</i><div class="side"><span class="ic">🖥️</span><b>SCADA</b><span>عدة PLC أو مواقع</span><span>خادم + أرشيف + إنذارات + مستخدمون</span></div></div>
+  <figure class="fig">
 <svg viewBox="0 0 660 300" role="img" aria-label="هرم الأتمتة ومكان HMI و SCADA فيه" style="width:100%;max-width:660px;direction:ltr">
 <g font-family="IBM Plex Sans Arabic,IBM Plex Mono,sans-serif" font-size="13" fill="currentColor" text-anchor="middle">
 <polygon points="250,14 330,14 400,70 180,70" fill="none" stroke="currentColor" stroke-width="1.5"/>
@@ -53,24 +51,16 @@
 </g></svg>
 <figcaption>هرم الأتمتة وفق نموذج ISA-95: الـ SCADA والـ HMI في المستوى 2، فوق المتحكمات وتحت MES.</figcaption>
 </figure>
-<div class="box key"><b>القاعدة الذهبية:</b> الـ PLC هو الذي <b>يتحكم</b>؛ الـ HMI والـ SCADA <b>يراقبان ويطلبان</b>. لو انقطعت الشاشة يجب أن يستمر الخط أو يتوقف بأمان، ولا يجوز أن يتوقف منطق الحماية على الشاشة.</div>
+  <div class="box key">الـ PLC هو الذي <b>يتحكم</b>؛ الشاشة <b>تراقب وتطلب</b> فقط. إن انقطعت الشاشة يستمر الخط أو يتوقف بأمان.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>لوحة التشغيل، حاسوب SCADA، و DCS</h2>
-<div class="tblw"><table class="tbl"><thead><tr><th></th><th>لوحة تشغيل HMI</th><th>حاسوب SCADA</th><th>DCS</th></tr></thead><tbody>
-<tr><td>النطاق</td><td>ماكينة أو خط</td><td>مصنع أو مواقع متباعدة</td><td>مصنع عملياتي كامل (بتروكيماويات، طاقة)</td></tr>
-<tr><td>العتاد</td><td>لوحة لمس 4–22 بوصة</td><td>خادم + حواسيب عملاء + متصفحات</td><td>متحكمات وخوادم من مورّد واحد</td></tr>
-<tr><td>المتحكم</td><td>PLC من أي مورّد</td><td>PLC و RTU من موردين مختلفين</td><td>متحكمات الـ DCS نفسها، قاعدة بيانات موحدة</td></tr>
-<tr><td>الأرشيف</td><td>محدود (بطاقة ذاكرة)</td><td>قاعدة بيانات و Historian لسنوات</td><td>مدمج</td></tr>
-<tr><td>مثال</td><td>Unified Comfort Panel على ماكينة تعبئة</td><td>WinCC Unified PC أو Ignition لمحطات المياه</td><td>Siemens PCS 7 / PCS neo، Emerson DeltaV، ABB 800xA</td></tr>
-</tbody></table></div>
-<ul><li><b>كيف تفرّق في الموقع؟</b> لو كانت الشاشة متصلة بـ PLC واحد ولا تحفظ إلا أيامًا قليلة فهي HMI. لو وجدت خادمًا في غرفة شبكات يخدم عدة غرف تحكم وأرشيفًا لسنة فهي SCADA.</li>
-<li>الحدود اليوم متداخلة: لوحة Unified Comfort الحديثة تعرض صفحاتها على متصفح، وخادم SCADA صغير قد يخدم خطًا واحدًا.</li>
-<li><b>RTU</b> (Remote Terminal Unit، أي وحدة طرفية بعيدة): متحكم صغير في موقع بعيد (بئر، محطة رفع) يرسل بياناته إلى SCADA عبر الراديو أو 4G، غالبًا ببروتوكول DNP3 أو IEC 60870-5-104.</li></ul>
+  <div class="tiles"><div class="tile"><span class="ic">📟</span><b>HMI</b><span>ماكينة · أرشيف أيام</span></div><div class="tile"><span class="ic">🖥️</span><b>SCADA</b><span>مصنع أو مواقع · أرشيف سنوات</span></div><div class="tile"><span class="ic">🏭</span><b>DCS</b><span>مصنع عملياتي · مورّد واحد</span></div></div>
+  <p class="tip"><b>RTU</b>: متحكم صغير في موقع بعيد (بئر، محطة رفع) يرسل إلى SCADA عبر الراديو أو 4G.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>مما تتكوّن منظومة SCADA؟</h2>
-<figure class="fig">
+  <figure class="fig">
 <svg viewBox="0 0 640 200" role="img" aria-label="مسار البيانات من الـ PLC إلى خادم SCADA ثم إلى العملاء" style="width:100%;max-width:640px;direction:ltr">
 <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs>
 <g font-family="IBM Plex Sans Arabic,IBM Plex Mono,sans-serif" font-size="12" fill="currentColor" text-anchor="middle">
@@ -87,36 +77,30 @@
 </g></svg>
 <figcaption>منظومة SCADA: خادم يجمع البيانات من عدة PLC ويخدم عدة عملاء.</figcaption>
 </figure>
-<div class="tblw"><table class="tbl"><thead><tr><th>المكوّن</th><th>ماذا يفعل</th><th>مثال من خط التعبئة</th><th>الدرس</th></tr></thead><tbody>
-<tr><td>الاتصال والوسوم <span class="term">Tags</span></td><td>متغيرات تقرأ وتكتب عناوين الـ PLC</td><td>مستوى الخزان، عداد الزجاجات</td><td>2</td></tr>
-<tr><td>الشاشات <span class="term">Screens</span></td><td>رسوم وأزرار وحقول</td><td>شاشة عامة للخط وشاشة لكل مضخة</td><td>3–5</td></tr>
-<tr><td>الإنذارات <span class="term">Alarms</span></td><td>تنبيه المشغّل وتسجيل الأحداث</td><td>توقف الضاغط، ضغط هواء منخفض</td><td>6</td></tr>
-<tr><td>الأرشيف <span class="term">Historian</span></td><td>حفظ القيم لرسم الترند لاحقًا</td><td>منحنى المستوى ليلة أمس</td><td>7</td></tr>
-<tr><td>المستخدمون <span class="term">User Management</span></td><td>من يرى ومن يغيّر</td><td>المشغّل يشغّل، المهندس يغيّر الحدود</td><td>8</td></tr>
-<tr><td>الوصفات والسكربتات</td><td>مجموعات قيم لكل منتج، ومنطق إضافي</td><td>عصير 1 لتر أو 0.5 لتر</td><td>9</td></tr>
-</tbody></table></div>
+  <ul class="fx">
+    <li><b>الوسوم Tags</b><span>تقرأ وتكتب عناوين الـ PLC · الدرس 2</span></li>
+    <li><b>الشاشات</b><span>رسوم وأزرار وحقول · 3–5</span></li>
+    <li><b>الإنذارات</b><span>تنبيه وتسجيل · 6</span></li>
+    <li><b>الأرشيف</b><span>حفظ القيم للترند · 7</span></li>
+    <li><b>المستخدمون</b><span>من يرى ومن يغيّر · 8</span></li>
+    <li><b>الوصفات والسكربتات</b><span>قيم لكل منتج · 9</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>أحدث المنصات في السوق</h2>
-<div class="tblw"><table class="tbl"><thead><tr><th>المنصة</th><th>أبرز ما فيها</th><th>متى تراها</th></tr></thead><tbody>
-<tr><td><b>Siemens WinCC Unified</b><br><span class="muted">داخل TIA Portal</span></td><td>بيئة واحدة للوحات <b>Unified Comfort Panels (MTP)</b> ولحاسوب <b>Unified PC</b>. التشغيل (Runtime) مبني على تقنيات الويب <b>HTML5 و SVG</b> فيُفتح من أي متصفح، والسكربتات بلغة <b>JavaScript</b>، مع Faceplates ونوافذ الشاشات Screen Window.</td><td>المصانع التي تعتمد S7-1200 و S7-1500، وهي محور هذا الكورس</td></tr>
-<tr><td><b>Inductive Automation Ignition 8.x</b></td><td>خادم واحد بترخيص غير محدود للوسوم والعملاء، وحدة <b>Perspective</b> للويب والهاتف، مزوّدو الوسوم (Tag providers)، وأرشيف على قاعدة SQL</td><td>المشاريع متعددة المورّدين والمواقع</td></tr>
-<tr><td><b>Rockwell FactoryTalk Optix</b> / FactoryTalk View</td><td>Optix منصة حديثة قابلة للتوسعة؛ View هي المنصة التقليدية مع Allen-Bradley</td><td>المصانع ذات المتحكمات ControlLogix و CompactLogix</td></tr>
-<tr><td><b>AVEVA</b> (InTouch و System Platform)</td><td>منصات عريقة ومنتشرة في الصناعات العملياتية</td><td>المياه والنفط والغاز والأغذية</td></tr>
-</tbody></table></div>
-<div class="box"><b>ملاحظة:</b> لدى Siemens أيضًا <b>WinCC Classic</b> (SCADA تقليدية بسكربتات C و VBS) و <b>WinCC Comfort/Advanced</b> للوحات Comfort القديمة. المفاهيم واحدة، لكن المحرر والسكربتات والعناصر تختلف، فلا تنقل مشروعًا بينها دون مراجعة أداة الترحيل ودليلها.</div>
+  <ul class="fx">
+    <li><b>Siemens WinCC Unified</b><span>داخل TIA Portal · ويب HTML5 · سكربتات JavaScript · محور الكورس</span></li>
+    <li><b>Ignition 8.x</b><span>وسوم غير محدودة · Perspective للهاتف</span></li>
+    <li><b>FactoryTalk Optix / View</b><span>مع Allen-Bradley</span></li>
+    <li><b>AVEVA InTouch</b><span>المياه والنفط والأغذية</span></li>
+  </ul>
+  <p class="tip">WinCC Classic و Comfort أقدم: المفاهيم واحدة، والمحرر والسكربتات مختلفة.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>ماذا يحتاج الفني من هذا الكورس؟</h2>
-<ul>
-<li><b>يقرأ الشاشة قراءة صحيحة:</b> يعرف أن <span class="mono">####</span> تعني أن الحقل أضيق من القيمة، وأن الحقل الرمادي أو المشطوب يعني غالبًا انقطاع الاتصال.</li>
-<li><b>يشخّص قبل أن يلوم الشاشة:</b> قيمة خاطئة على الشاشة قد يكون سببها نوع بيانات خطأ أو تحويل خطي ناقص، لا عطلًا في الحساس.</li>
-<li><b>يعدّل بأمان:</b> يضيف وسمًا أو إنذارًا أو يغيّر حدًا في حقل إدخال، ثم يختبر على <b>PLCSIM</b> قبل التحميل إلى الخط.</li>
-<li><b>يحترم المعايير:</b> ISA-101 للشاشات، و ISA-18.2 / IEC 62682 للإنذارات، و IEC 62443 للأمن.</li></ul>
-<div class="box safe"><b>خطأ شائع:</b> اعتبار زر «إيقاف» على الشاشة إيقافَ طوارئ. إيقاف الطوارئ دائرة مستقلة موصّلة بالأسلاك أو بمتحكم أمان (Safety)، ولا يمر عبر الشاشة ولا الشبكة العادية.</div>
+  <div class="tiles"><div class="tile"><span class="ic">👀</span><b>يقرأ الشاشة</b><span><span class="mono">####</span> = الحقل ضيق</span></div><div class="tile"><span class="ic">🔍</span><b>يشخّص أولًا</b><span>نوع بيانات أو تحويل خطأ</span></div><div class="tile"><span class="ic">🧪</span><b>يعدّل بأمان</b><span>يختبر على PLCSIM</span></div><div class="tile"><span class="ic">📏</span><b>يحترم المعايير</b><span>ISA-101 · ISA-18.2 · IEC 62443</span></div></div>
+  <div class="box safe">زر «إيقاف» على الشاشة <b>ليس</b> إيقاف طوارئ. الطوارئ دائرة مستقلة بالأسلاك أو بمتحكم أمان.</div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>

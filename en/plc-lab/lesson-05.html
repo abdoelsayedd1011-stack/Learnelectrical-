@@ -20,6 +20,7 @@
 <script src="brands.js?v=20261030w1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -41,46 +42,49 @@
 <section class="panel lvid" aria-label="Lesson video"><h2 style="margin:0 0 8px">▶ The lesson in 5 minutes</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">Illustrated explanation, the simulator task solved, and the quiz answered. Made for the phone.</p><video src="/media/lessons/plc-lab/lesson-05-en.mp4" poster="/media/lessons/plc-lab/lesson-05-en.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>The timer in Ladder</h2>
-  <p>In the simulator a timer is a block in the output column like a coil. It has an address (<b>T0</b>, <b>T1</b>…) and a time <b>PT</b> (preset time). Inside it there is a time counter <b>ET</b> (elapsed time). When it finishes, its bit <b>T0</b> becomes 1, and you can use it in any rung with an NO or NC contact.</p>
+  <div class="tiles">
+    <div class="tile"><span class="big">T0</span><b>Address</b></div>
+    <div class="tile"><span class="big">PT</span><b>Preset time</b></div>
+    <div class="tile"><span class="big">ET</span><b>Elapsed time</b></div>
+  </div>
+  <p class="tip">Done ⇒ bit <b>T0 = 1</b>, usable in any rung.</p>
   <div class="ladfig" id="fTon"></div>
-  <p class="muted">The first rung runs the timer; the second uses its bit (done).</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>TON, TOF and TP on a chart</h2>
-  <p>Choose the type, then press and release <b>IN</b> for different times (or use the switch), and watch the timing chart. PT here is two seconds.</p>
+  <p class="tip">Pick a type, press and release <b>IN</b>, and watch the chart (PT = 2 s).</p>
   <div class="wd"><h3>Live timing chart</h3><div id="tdemo"></div></div>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>Timer</th><th>What it does</th><th>Example</th></tr></thead>
-    <tbody>
-      <tr><td><b>TON</b></td><td>On-delay</td><td>A conveyor starts after a warning horn; confirming a sensor is steady (debounce)</td></tr>
-      <tr><td><b>TOF</b></td><td>Off-delay</td><td>A cooling fan keeps running after the oven turns off; a stair light</td></tr>
-      <tr><td><b>TP</b></td><td>Fixed-length pulse</td><td>A solenoid gives a half-second push; a one-minute bell</td></tr>
-    </tbody></table></div>
+  <ul class="fx">
+    <li><b>TON</b><span>On-delay · conveyor after a horn</span></li>
+    <li><b>TOF</b><span>Off-delay · fan runs on after the oven</span></li>
+    <li><b>TP</b><span>Fixed pulse · half-second solenoid</span></li>
+  </ul>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Exercises: TON and TOF</h2>
+  <p class="tip">Apply what you saw on the chart:</p>
   <div class="wd"><h3>Simulator: timers</h3><div id="sim1"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Star-delta with a timer</h2>
-  <p>The same circuit as <a href="../classic-control-lab/lesson-09.html">star-delta in the Classic Control course</a>: 3 contactors. <b>KM1</b> is the main contactor, <b>KM3</b> the star (the motor starts in star to reduce the starting current), and after a delay <b>KM2</b> the delta. The important part: <b>star and delta must never be on together</b>, or there is a short circuit.</p>
-  <div class="ex"><b>On site:</b> the star time is set according to the load (usually 5–10 seconds) until the motor is close to its speed. Many people add a short pause (50–100 milliseconds) between switching star off and switching delta on, so one contactor has really opened before the other closes.</div>
+  <ol class="steps">
+    <li>KM1 + KM3 star</li>
+    <li>5–10 s</li>
+    <li>50–100 ms gap</li>
+    <li class="on">KM1 + KM2 delta</li>
+  </ol>
+  <div class="box key"><b>Star and delta must never be on together.</b> Same as <a href="../classic-control-lab/lesson-09.html">star-delta in classic control</a>.</div>
   <div class="wd"><h3>Simulator: star-delta</h3><div id="sim2"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>Common faults on site</h2>
-  <div class="fault-box"><b>Common program faults:</b><ul>
-    <li><b>The timer never finishes:</b> its condition drops for a moment every now and then (a flickering sensor), so the TON resets to zero each time.</li>
-    <li><b>Wrong time base:</b> in some brands PT is in 100ms units, so K50 = 5 seconds, not 50. Read the manual.</li>
-    <li><b>The same timer number in two places:</b> T0 is used in two rungs for two different things → strange behaviour. One timer for one job.</li>
-    <li><b>Star and delta were on together for a moment:</b> there is no NC interlock between them in the program or in the wiring.</li>
-  </ul></div>
+  <ul class="fx">
+    <li><b>Timer never finishes</b><span>Its condition flickers and resets it</span></li>
+    <li><b>Time 10× too long</b><span>PT in 100ms units: K50 = 5 s</span></li>
+    <li><b>Strange behaviour</b><span>Same T0 used twice</span></li>
+    <li><b>Star and delta briefly together</b><span>No NC interlock</span></li>
+  </ul>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson questions</h2>
   <p>Answer at least 5 of 6 correctly to mark the lesson done.</p>
