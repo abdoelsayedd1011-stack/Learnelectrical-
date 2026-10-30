@@ -16,6 +16,7 @@
 <script src="/en/drawings-lab/drawings.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b3">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -36,41 +37,41 @@
 <section class="panel lprog" id="lprog" aria-label="Your progress"></section>
 
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>How to read any control circuit</h2>
-  <ol>
-    <li><b>Start at the supply:</b> L (or +24V) at the top in IEC, or the left rail in a ladder.</li>
-    <li><b>Follow each current path to the load:</b> every path ends with something that operates: a coil, a lamp or a PLC input.</li>
-    <li><b>Things in series = AND:</b> all of them must close.</li>
-    <li><b>Things in parallel = OR:</b> one of them is enough.</li>
-    <li><b>Remember:</b> the drawing is drawn with everything de-energised. Ask: "When this coil is energised, what will its contacts in the other paths do?"</li>
-  </ol>
-  <div class="box key"><b>The path sentence:</b> coil <span class="term">-K1</span> is energised if: the fuse is healthy <b>and</b> the overload has not tripped <b>and</b> Stop is not pressed <b>and</b> (Start is pressed <b>or</b> <span class="term">-K1</span> 13-14 is closed).</div>
+  <h2 id="s1"><span class="k">1</span>How to read a control circuit</h2>
+  <ol class="steps"><li>Start at L or +24 V</li><li>Follow the path to the coil or lamp</li><li>Ask: when the coil picks up, what do its contacts do?</li></ol>
+  <div class="vs">
+    <div class="side"><span class="big">AND</span><b>One after another (series)</b><span>all must close</span></div>
+    <i>vs</i>
+    <div class="side"><span class="big">OR</span><b>Side by side (parallel)</b><span>one is enough</span></div>
+  </div>
+  <p class="tip"><span class="term">-K1</span> picks up if: fuse <b>and</b> overload <b>and</b> Stop <b>and</b> (Start <b>or</b> 13-14).</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>DOL circuit: read it and run it</h2>
-  <p>This is a direct on line (DOL) starter circuit for a motor. Read it step by step, then press the buttons (press and release). The <b style="color:var(--live)">red</b> line = live, and the moving <b style="color:var(--flow)">yellow</b> dots = current flowing. You can switch to the American ladder and see the same behaviour.</p>
+  <h2 id="s2"><span class="k">2</span>DOL circuit: read and run</h2>
+  <p class="tip"><b style="color:var(--live)">Red</b> = live · <b style="color:var(--flow)">yellow dots</b> = current flowing.</p>
   <div class="wd"><h3>Read it path by path</h3><div id="read"></div></div>
   <div class="wd"><h3>Run the circuit</h3><div id="dol"></div></div>
-  <div class="ex"><b>Focus on the seal-in:</b> the Start button springs back by itself, so what keeps the coil energised? Contact <span class="term">-K1</span> 13-14, wired <b>in parallel</b> with the button. As soon as the coil picks up, this contact closes and holds the coil in by itself.</div>
+  <div class="bf"><span class="ic">🔒</span><span><b>Seal-in:</b> 13-14 in parallel with Start holds the coil after you release the button.</span></div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>Reversing circuit and interlocks</h2>
-  <p>To make a 3-phase motor run in reverse, <b>we swap two phases</b>. This is done with two contactors in the power circuit: <span class="term">-K1</span> forward and <span class="term">-K2</span> reverse. If both pick up together = <b>a phase-to-phase short circuit</b>! That is why there is an <b>interlock</b>:</p>
-  <ul>
-    <li><b>Electrical interlock:</b> contact <span class="term">-K2</span> 21-22 (NC) in the coil path of <span class="term">-K1</span>, and <span class="term">-K1</span> 21-22 in the path of <span class="term">-K2</span>. Whichever picks up first opens the other one's path.</li>
-    <li><b>Mechanical interlock:</b> a part fitted between the two contactors that stops both from closing together even if both get power. It is drawn as a dashed line between the two coils, or written next to them.</li>
-    <li>And sometimes a <b>push-button interlock</b>: an NC contact of the REV button in the FWD path, and vice versa.</li>
-  </ul>
+  <h2 id="s3"><span class="k">3</span>Reversing and interlocks</h2>
+  <div class="bf"><span class="ic">🔄</span><span>Reverse = <b>swap two phases</b>: <span class="term">-K1</span> forward, <span class="term">-K2</span> reverse.</span></div>
+  <p class="alert"><span>Both picking up together = <b>a phase-to-phase short</b>.</span></p>
+  <div class="tiles">
+    <div class="tile"><span class="ic">⚡</span><b>Electrical</b><span>each one’s 21-22 in the other’s path</span></div>
+    <div class="tile"><span class="ic">⚙️</span><b>Mechanical</b><span>a part between the contactors</span></div>
+    <div class="tile"><span class="ic">🔘</span><b>Push-button</b><span>REV’s NC in the FWD path</span></div>
+  </div>
   <div class="wd"><h3>Run the reversing circuit</h3><div id="rev"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>From the field</h2>
-  <div class="fault-box"><b>Things you will come across:</b><ul>
-    <li><b>The motor runs only while you hold the button:</b> the 13-14 seal-in contact or its wire. (You will try this in the lesson 7 game.)</li>
-    <li><b>The contactor chatters:</b> low coil voltage, or a loose contact in the path.</li>
-    <li><b>Someone removed the interlock</b> "so the motor reverses faster": the first time both pick up, the contacts will weld or the breaker will trip. Put it back.</li>
-  </ul></div>
-  <div class="box safe"><b>Safety:</b> a 230V control circuit can kill just like the power circuit. And sometimes it carries voltage fed from another panel (foreign voltage) that does not go off when you open the main switch. The drawing marks it with an orange colour or a note: look for it.</div>
+  <h2 id="s4"><span class="k">4</span>From the site</h2>
+  <ul class="fx">
+    <li><b>Runs only while pressed</b><span>seal-in contact 13-14 or its wire</span></li>
+    <li><b>Contactor chatters</b><span>weak coil voltage or a loose contact</span></li>
+    <li><b>Someone removed the interlock</b><span>put it back at once</span></li>
+  </ul>
+  <p class="alert"><span>A 230 V control circuit <b>can kill</b>. It may also carry voltage from another panel that the isolator doesn’t cut.</span></p>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
