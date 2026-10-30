@@ -34,7 +34,7 @@ function themeBtn(){
 /* ---------------- course map ---------------- */
 const EN = IL.EN = /^en/i.test(document.documentElement.lang || '');
 const T = IL.T = (ar, en) => EN ? en : ar;
-/* every lesson = one workshop game («sim», mfit-sims.js) + questions («quiz»); lesson 15 adds the final exam.
+/* every lesson = one workshop game («sim», mfit-sims.js) + questions («quiz»); lesson 16 adds the final exam.
    Keep this a plain literal: functions/_lib/courses.js and assets/resume.js read the task ids from it. */
 IL.COURSE = [
   {id:'l1', n:1, file:'lesson-01.html', title:T('المكنة من جوّه: خط نقل الحركة', 'Inside the machine: the drive train'),
@@ -55,31 +55,34 @@ IL.COURSE = [
   {id:'l6', n:6, file:'lesson-06.html', title:T('محاذاة الأعمدة (Alignment)', 'Shaft alignment'),
     sub:T('الانحراف الموازي والزاوي، المسطرة والساعة والليزر، الشيمز، والرجل الطايرة', 'Parallel and angular misalignment, straightedge, dial and laser, shims and soft foot'),
     tasks:[['sim',T('شيّم الموتور لحد ما يتظبط', 'Shim the motor into alignment')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
-  {id:'l7', n:7, file:'lesson-07.html', title:T('الرولمان بلي: الأنواع والأرقام', 'Bearings: types and numbers'),
+  {id:'l7', n:7, file:'lesson-07.html', title:T('قراية الميكرومتر', 'Reading a micrometer'),
+    sub:T('الجلبة (التدريج الطولي) والطنبورة (التدريج الدائري)، نص الملّي، القراية خطوة بخطوة، والتصفير', 'The sleeve (linear scale) and thimble (circular scale), the half millimetre, reading step by step, and zeroing'),
+    tasks:[['sim',T('اقرا الميكرومتر وظبّطه', 'Read and set the micrometer')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+  {id:'l8', n:8, file:'lesson-08.html', title:T('الرولمان بلي: الأنواع والأرقام', 'Bearings: types and numbers'),
     sub:T('البلي والرولر والمخروطي والكراسي، قراية رقم الرولمان 6205-2RS، والقطر الداخلي من الرقم', 'Ball, roller, taper and housed bearings, reading 6205-2RS, and the bore from the number'),
     tasks:[['sim',T('فك شفرة رقم الرولمان', 'Decode the bearing number')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
-  {id:'l8', n:8, file:'lesson-08.html', title:T('فك وتركيب الرولمان', 'Removing and fitting bearings'),
+  {id:'l9', n:9, file:'lesson-09.html', title:T('فك وتركيب الرولمان', 'Removing and fitting bearings'),
     sub:T('البولر، السخان لحد 110 °C، تضغط على الحلقة الصح بس، والأخطاء اللي بتموّت الرولمان بدري', 'Pullers, induction heating to 110 °C, pressing only on the right ring, and the mistakes that kill bearings early'),
     tasks:[['sim',T('ركّب الرولمان بالخطوات الصح', 'Fit the bearing in the right steps')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
-  {id:'l9', n:9, file:'lesson-09.html', title:T('الأورنج والسيل: منع التسريب', 'O-rings and seals: stopping leaks'),
+  {id:'l10', n:10, file:'lesson-10.html', title:T('الأورنج والسيل: منع التسريب', 'O-rings and seals: stopping leaks'),
     sub:T('مقاس الأورنج، الخامات NBR وفايتون وEPDM، السيل (مانع التسريب) واتجاه شفّته، والتركيب من غير ما يتجرح', 'O-ring size, NBR, Viton and EPDM materials, the oil seal and which way its lip faces, and fitting without damage'),
     tasks:[['sim',T('اختار الخامة وركّب السيل صح', 'Choose the material and fit the seal right')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
-  {id:'l10', n:10, file:'lesson-10.html', title:T('التروس وأنواعها ونسبة التخفيض', 'Gears, gear types and ratio'),
+  {id:'l11', n:11, file:'lesson-11.html', title:T('التروس وأنواعها ونسبة التخفيض', 'Gears, gear types and ratio'),
     sub:T('العدل والحلزوني والمخروطي والدودة والكوكبي، عدد الأسنان والنسبة، والموديول', 'Spur, helical, bevel, worm and planetary gears, tooth count and ratio, and the module'),
     tasks:[['sim',T('اختار التروس للسرعة المطلوبة', 'Choose the gears for the target speed')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
-  {id:'l11', n:11, file:'lesson-11.html', title:T('الجيربوكس: الاختيار والزيت', 'The gearbox: choosing it and its oil'),
+  {id:'l12', n:12, file:'lesson-12.html', title:T('الجيربوكس: الاختيار والزيت', 'The gearbox: choosing it and its oil'),
     sub:T('لوحة البيانات، معامل الخدمة، مستوى الزيت والبريذر، تغيير الزيت، وعلامات تآكل التروس', 'The nameplate, service factor, oil level and breather, oil changes, and signs of gear wear'),
     tasks:[['sim',T('اختار الجيربوكس وظبّط زيته', 'Pick the gearbox and set its oil')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
-  {id:'l12', n:12, file:'lesson-12.html', title:T('السيور والبكر', 'Belts and pulleys'),
+  {id:'l13', n:13, file:'lesson-13.html', title:T('السيور والبكر', 'Belts and pulleys'),
     sub:T('سيور V ومقاساتها، النسبة من أقطار البكر، شد السير بالترخيم، ومحاذاة البكر', 'V-belt sections, ratio from pulley diameters, tensioning by deflection, and pulley alignment'),
     tasks:[['sim',T('اشُد السير صح', 'Tension the belt correctly')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
-  {id:'l13', n:13, file:'lesson-13.html', title:T('الجنازير والسبروكت', 'Chains and sprockets'),
+  {id:'l14', n:14, file:'lesson-14.html', title:T('الجنازير والسبروكت', 'Chains and sprockets'),
     sub:T('خطوة الجنزير، الوصلة والنص وصلة، الرخاوة 2%، الاستطالة 3% = غيّر، والتزييت', 'Chain pitch, connecting and offset links, 2% slack, 3% stretch means replace, and lubrication'),
     tasks:[['sim',T('قيس الجنزير وقرّر', 'Measure the chain and decide')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
-  {id:'l14', n:14, file:'lesson-14.html', title:T('التشحيم والتزييت', 'Greasing and oiling'),
+  {id:'l15', n:15, file:'lesson-15.html', title:T('التشحيم والتزييت', 'Greasing and oiling'),
     sub:T('الشحم والزيت، درجة الشحم NLGI، لزوجة الزيت ISO VG، كمية الشحم ومواعيده، وخطر الشحم الزيادة', 'Grease vs oil, NLGI grade, ISO VG viscosity, how much grease and how often, and the danger of over-greasing'),
     tasks:[['sim',T('شحّم الرولمان بالكمية الصح', 'Grease the bearing with the right amount')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
-  {id:'l15', n:15, file:'lesson-15.html', title:T('تشخيص الأعطال + الامتحان النهائي', 'Fault finding + final exam'),
+  {id:'l16', n:16, file:'lesson-16.html', title:T('تشخيص الأعطال + الامتحان النهائي', 'Fault finding + final exam'),
     sub:T('الصوت والحرارة والاهتزاز والتسريب: تعرف العطل من علامته، ثم الامتحان النهائي', 'Noise, heat, vibration and leaks: tell the fault from its sign, then the final exam'),
     tasks:[['sim',T('شخّص 4 مكن عطلانة', 'Diagnose 4 faulty machines')],['quiz',T('أسئلة الدرس', 'Lesson questions')],['final',T('الامتحان النهائي', 'Final exam')]]}
 ];

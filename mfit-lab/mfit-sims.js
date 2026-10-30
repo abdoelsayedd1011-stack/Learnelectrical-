@@ -512,4 +512,72 @@ MF.grease = function(host, opt){
   ], L, setup);
 };
 
+/* ============ 7 · micrometer: read the sleeve (0.5 mm) + thimble (0.01 mm) ============
+   close-up view: the sleeve's datum line runs left to right; the thimble edge sits at x = EDGE.
+   rounds: {k:'read', v, o:[...], a} → pick the reading · {k:'set', want} → turn the thimble to the reading */
+MF.micro = function(host, opt){
+  const L = opt.lesson;
+  const g = frame(host, T('الميكرومتر من قريب', 'The micrometer, close up'), '0 0 440 230');
+  host.classList.add('mf-micro');
+  const s = g.svg, EDGE = 300, MM = 40, Y = 112, DIV = 9; // 1 mm = 40 px on the sleeve, 1 thimble division = 9 px
+  el(s, 'rect', {x:0, y:0, width:440, height:230, fill:'var(--panel)'});
+  el(s, 'rect', {x:0, y:Y - 34, width:EDGE, height:68, fill:'#c4cacf'});                     // sleeve
+  const sl = el(s, 'g', {});
+  el(s, 'line', {x1:0, y1:Y, x2:EDGE + 6, y2:Y, stroke:'#1d2228', 'stroke-width':1.6});        // datum line
+  const th = el(s, 'g', {});
+  const thBody = el(s, 'rect', {x:EDGE, y:14, width:120, height:202, rx:10, fill:'#a9b0b5', stroke:'#5c636a', 'stroke-width':2});
+  s.appendChild(th);
+  const thl = el(s, 'g', {}); // thimble lines
+  el(s, 'path', {d:`M${EDGE - 2},${Y} l-10,-6 v12 Z`, fill:'#d2552d'});
+  const lab1 = el(s, 'text', {x:150, y:20, 'text-anchor':'middle', 'font-size':12, fill:'var(--muted)'}); lab1.textContent = T('الجلبة (التدريج الطولي)', 'Sleeve (linear scale)');
+  const lab2 = el(s, 'text', {x:360, y:228, 'text-anchor':'middle', 'font-size':12, fill:'var(--muted)'}); lab2.textContent = T('الطنبورة (التدريج الدائري)', 'Thimble (circular scale)');
+  const rd = readouts(g, [['m', T('الجلبة', 'Sleeve')], ['t', T('الطنبورة', 'Thimble')], ['r', T('القراية', 'Reading')]]);
+  const box = document.createElement('div'); box.className = 'mf-opts'; g.ctl.appendChild(box);
+  const cf = document.createElement('button'); cf.type = 'button'; cf.className = 'btn pri'; cf.textContent = T('تأكيد', 'Confirm'); g.ctl.appendChild(cf);
+  const S1 = slider(g, {label:T('لفّات كاملة (كل لفّة = ⁦0.5 mm⁩)', 'Full turns (each = 0.5 mm)'), min:0, max:49, step:1, value:10}, () => { draw(val()); check(); });
+  const S2 = slider(g, {label:T('شَرط الطنبورة (كل شَرطة = ⁦0.01 mm⁩)', 'Thimble divisions (each = 0.01 mm)'), min:0, max:49, step:1, value:0}, () => { draw(val()); check(); });
+  const val = () => S1.get() * 0.5 + S2.get() * 0.01;
+  let cur = null, sel = null, tmr = 0;
+  const f2 = v => (Math.round(v * 100) / 100).toFixed(2);
+  function draw(v){
+    sl.innerHTML = ''; thl.innerHTML = '';
+    for (let h = 0; h <= 50; h++){ // half-millimetres
+      const x = EDGE - (v - h / 2) * MM; if (x > EDGE + 0.5 || x < -4) continue;
+      const whole = h % 2 === 0;
+      el(sl, 'line', {x1:x, y1:Y, x2:x, y2:whole ? Y - 18 : Y + 14, stroke:'#1d2228', 'stroke-width':whole ? 1.8 : 1.4});
+      if (whole && (h / 2) % 5 === 0){ const t = el(sl, 'text', {x, y:Y - 24, 'text-anchor':'middle', 'font-size':14, 'font-weight':700, fill:'#1d2228', 'font-family':'mono'}); t.textContent = h / 2; }
+    }
+    const d = (v * 100) % 50; // division on the datum line
+    for (let j = Math.floor(d) - 12; j <= Math.ceil(d) + 12; j++){
+      const y = Y + (d - j) * DIV; if (y < 18 || y > 212) continue;
+      const k = ((j % 50) + 50) % 50, five = k % 5 === 0;
+      el(thl, 'line', {x1:EDGE, y1:y, x2:EDGE + (five ? 26 : 16), y2:y, stroke:'#1d2228', 'stroke-width':five ? 1.8 : 1.2});
+      if (five){ const t = el(thl, 'text', {x:EDGE + 46, y:y + 5, 'text-anchor':'middle', 'font-size':13, 'font-weight':700, fill:'#1d2228', 'font-family':'mono'}); t.textContent = k; }
+    }
+    const mm = Math.floor(v * 2 + 1e-9) / 2;
+    if (cur && cur.k === 'set'){ rd('m', bd(f2(mm) + ' mm')); rd('t', bd(f2(v - mm) + ' mm')); rd('r', bd(f2(v) + ' mm')); }
+    else { rd('m', '?'); rd('t', '?'); rd('r', '?'); }
+  }
+  function check(){
+    if (!cur || cur.k !== 'set' || game.won) return;
+    clearTimeout(tmr); tmr = setTimeout(() => { const v = val(); if (Math.abs(v - cur.want) < 0.005) game.win(cur.ok); else game.miss(T(`لسه: <bdi dir="ltr">${f2(v)} mm</bdi>`, `Not yet: ${f2(v)} mm`)); }, 700);
+  }
+  function setup(r){
+    cur = r; sel = null;
+    const read = r.k === 'read';
+    S1.el.hidden = read; S2.el.hidden = read; box.hidden = !read; cf.hidden = !read; cf.disabled = true;
+    if (read){ draw(r.v); box.innerHTML = IL.shuffle(r.o.map((_, i) => i)).map(i => `<button type="button" class="btn qz-o" data-i="${i}">${bd(r.o[i])}</button>`).join(''); }
+    else { S1.set(10); S2.set(0); draw(val()); }
+  }
+  box.addEventListener('click', e => { const b = e.target.closest('.qz-o'); if (!b || game.won || b.disabled) return; sel = +b.dataset.i; box.querySelectorAll('.qz-o').forEach(x => x.classList.toggle('sel', x === b)); cf.disabled = false; });
+  cf.addEventListener('click', () => {
+    if (sel == null || game.won) return;
+    const b = box.querySelector(`.qz-o[data-i="${sel}"]`);
+    if (sel === cur.a){ b.classList.remove('sel'); b.classList.add('ok'); box.querySelectorAll('.qz-o').forEach(x => { x.disabled = true; }); cf.hidden = true; rd('r', bd(f2(cur.v) + ' mm')); game.win(cur.ok); return; }
+    b.classList.remove('sel'); b.classList.add('no'); b.disabled = true; sel = null; cf.disabled = true;
+    game.miss(cur.why);
+  });
+  const game = rounds(g, opt.rounds || [], L, setup);
+};
+
 })();
