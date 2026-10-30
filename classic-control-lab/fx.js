@@ -94,7 +94,7 @@ if (typeof CL.taskCard === 'function' && !/storyCard/.test(String(CL.taskCard)))
 const M = FX.machines = {};
 const MOTOR_AR = {line:'الماكينة', conveyor:'السير', hoist:'الونش', pump:'الطلمبة', fan:'المروحة', compressor:'الكباس', lathe:'المخرطة', door:'الباب', gauge:'الموتور', mixer:'الخلاط'};
 const lampDot = (x, y, id) => `<circle class="lamp" data-lamp="${id}" cx="${x}" cy="${y}" r="4"/>`;
-const motorIcon = (x, y, id, lab) => `<g data-motor="${id}"><rect x="${x}" y="${y}" width="34" height="20" rx="6" fill="#5d7f96"/><rect x="${x + 9}" y="${y - 5}" width="16" height="6" rx="1.5" fill="#8f979c"/><text x="${x + 17}" y="${y + 14}" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">${esc(id)}</text>${lampDot(x + 40, y + 10, id)}<text x="${x + 17}" y="${y + 33}" text-anchor="middle" font-size="9.5">${esc(lab || '')}</text></g>`;
+const motorIcon = (x, y, id, lab) => `<g data-motor="${id}">${window.RA ? RA.minimotor(x - 2, y - 7, 40, 30) : `<rect x="${x}" y="${y}" width="34" height="20" rx="6" fill="#5d7f96"/><rect x="${x + 9}" y="${y - 5}" width="16" height="6" rx="1.5" fill="#8f979c"/>`}<text x="${x + 17}" y="${y + 14}" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">${esc(id)}</text>${lampDot(x + 40, y + 10, id)}<text x="${x + 17}" y="${y + 33}" text-anchor="middle" font-size="9.5">${esc(lab || '')}</text></g>`;
 const spin = (x, y, r, id) => `<g class="spin" data-spin="${id}">${[0, 90, 180, 270].map(a => `<path d="M${x} ${y}L${x + r * Math.cos(a * Math.PI / 180)} ${y + r * Math.sin(a * Math.PI / 180)}" stroke="#2a2d30" stroke-width="2.4"/>`).join('')}<circle cx="${x}" cy="${y}" r="${r * .3}" fill="#2a2d30"/></g>`;
 // ---- conveyor(s): one belt per motor, boxes move in the direction of rotation
 M.conveyor = {

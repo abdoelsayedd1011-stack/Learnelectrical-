@@ -18,6 +18,11 @@ const DEFS = `<svg id="ra-defs" width="0" height="0" style="position:absolute;wi
 <linearGradient id="ra-rail" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8e9398"/><stop offset=".3" stop-color="#e2e5e7"/><stop offset=".55" stop-color="#9ea3a7"/><stop offset="1" stop-color="#70757a"/></linearGradient>
 <radialGradient id="ra-screw" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="#b7bcc0"/><stop offset="1" stop-color="#5d6166"/></radialGradient>
 <radialGradient id="ra-dome" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset=".35" stop-color="#fff" stop-opacity=".15"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></radialGradient>
+<linearGradient id="ra-card" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ddb276"/><stop offset=".6" stop-color="#c3904f"/><stop offset="1" stop-color="#9c6d35"/></linearGradient>
+<linearGradient id="ra-blue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6f9cc6"/><stop offset=".35" stop-color="#2f6fb3"/><stop offset="1" stop-color="#1b4675"/></linearGradient>
+<linearGradient id="ra-steelD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c8389"/><stop offset=".3" stop-color="#5a6268"/><stop offset="1" stop-color="#3a4045"/></linearGradient>
+<linearGradient id="ra-orange" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2c04a"/><stop offset=".5" stop-color="#e0a21b"/><stop offset="1" stop-color="#a87400"/></linearGradient>
+<linearGradient id="ra-wood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2b880"/><stop offset="1" stop-color="#a7783f"/></linearGradient>
 <pattern id="ra-thr" width="4.2" height="10" patternUnits="userSpaceOnUse"><rect width="1.5" height="10" x="2.4" fill="#000" opacity=".3"/><rect width=".8" height="10" x="1.2" fill="#fff" opacity=".35"/></pattern>
 <pattern id="ra-vent" width="6" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="1.6" fill="#000" opacity=".28"/></pattern>
 <filter id="ra-sh" x="-15%" y="-15%" width="140%" height="150%"><feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000" flood-opacity=".3"/></filter>
@@ -32,6 +37,8 @@ RA.defs();
 
 const T = (x, y, s, sz, col, anc, wt, fam) => `<text x="${x}" y="${y}" font-family="${fam || 'Arial,Helvetica,sans-serif'}" font-size="${sz}" fill="${col}"${anc ? ` text-anchor="${anc}"` : ''}${wt ? ` font-weight="${wt}"` : ''}>${s}</text>`;
 RA.T = T;
+/* small 3-phase motor seen from the side, box 46×30 at (x,y): fins, terminal box, feet, shaft */
+RA.minimotor = (x, y, w, h, col) => { w = w || 46; h = h || 30; return `<g transform="translate(${x} ${y})" filter="url(#ra-sh)"><rect x="${w * .1}" y="${h - 4}" width="${w * .7}" height="4" rx="1" fill="#3a3f43"/><rect x="0" y="${h * .16}" width="${w * .82}" height="${h * .72}" rx="${h * .22}" fill="${col || 'url(#ra-blue)'}"/>${[0, 1, 2, 3].map(k => `<path d="M${w * .1} ${h * (.3 + k * .14)}H${w * .74}" stroke="#000" stroke-opacity=".22" stroke-width="1.4"/>`).join('')}<rect x="${w * .26}" y="0" width="${w * .3}" height="${h * .22}" rx="1.5" fill="${col || 'url(#ra-blue)'}"/><rect x="${w * .82}" y="${h * .44}" width="${w * .18}" height="${h * .16}" fill="url(#ra-steelH)"/></g>`; };
 /* one screw terminal: black pocket + slotted screw */
 RA.screw = (x, y, r) => { r = r || 6; return `<g transform="translate(${x} ${y})"><circle r="${r + 1.6}" fill="#111"/><circle r="${r}" fill="url(#ra-screw)"/><path d="M${-r * .65} 0H${r * .65}M0 ${-r * .65}V${r * .65}" stroke="#4a4e52" stroke-width="${r * .24}" stroke-linecap="round"/></g>`; };
 RA.led = (x, y, on, col, w, h) => `<rect x="${x}" y="${y}" width="${w || 10}" height="${h || 6}" rx="1.5" fill="${on ? col : '#26302a'}"${on ? ' filter="url(#ra-glow)"' : ''}/>`;
