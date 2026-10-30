@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="scada.css?v=20261028s1">
 <script src="scada.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -29,66 +30,65 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>الترند الحي والترند التاريخي</h2>
-<ul><li><b>الترند الحي (Online trend):</b> يرسم القيمة الآن وفي الدقائق الأخيرة، من ذاكرة العميل أو من الوسم مباشرة. مفيد عند ضبط حلقة PID أو تشغيل مضخة لأول مرة.</li>
-<li><b>الترند التاريخي:</b> يقرأ من <b>الأرشيف</b> المحفوظ على القرص، فيمكنك أن تعود إلى ليلة أمس أو الشهر الماضي. هذا ما يجيب عن سؤال «ماذا حدث؟».</li></ul>
-<p>في <b>WinCC Unified</b> تحدد في إعدادات الوسم أنه <b>وسم مؤرشَف (Logging tag)</b> داخل <b>أرشيف بيانات (Data log)</b>، ثم تعرضه في <b>Trend Control</b>. يُخزَّن الأرشيف في قاعدة بيانات: SQLite في الأنظمة الصغيرة واللوحات، و Microsoft SQL Server في أنظمة الحاسوب الأكبر (راجع دليل إصدارك لما هو مدعوم).</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>المنصة</th><th>التاريخ (Historian)</th></tr></thead><tbody>
-<tr><td>WinCC Unified</td><td>Data logs داخل الـ Runtime، ومنتجات Siemens إضافية للأرشفة المركزية الطويلة</td></tr>
-<tr><td>Ignition 8.x</td><td>Tag Historian يكتب في قاعدة SQL تختارها (MySQL، SQL Server، PostgreSQL...)</td></tr>
-<tr><td>AVEVA PI / Historian</td><td>مؤرشِف مستقل لمصنع كامل أو شركة، بضغط عالٍ واسترجاع سريع</td></tr>
-<tr><td>FactoryTalk</td><td>Datalog محلي و FactoryTalk Historian للمستوى الأعلى</td></tr></tbody></table></div>
+  <div class="vs"><div class="side"><span class="ic">📈</span><b>حي</b><span>الآن وآخر دقائق</span><span>لضبط PID</span></div><i>×</i><div class="side"><span class="ic">🗄️</span><b>تاريخي</b><span>من الأرشيف</span><span>«ماذا حدث؟»</span></div></div>
+  <p class="tip">في Unified: وسم <b>Logging tag</b> في <b>Data log</b> ← يُعرض في <b>Trend Control</b>.</p>
+  <ul class="fx">
+    <li><b>WinCC Unified</b><span>Data logs (SQLite أو SQL Server)</span></li>
+    <li><b>Ignition</b><span>Tag Historian على قاعدة SQL</span></li>
+    <li><b>AVEVA PI</b><span>مؤرشِف لمصنع أو شركة</span></li>
+    <li><b>FactoryTalk</b><span>Datalog و Historian</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>معدل العيّنات والضغط وحجم الأرشيف</h2>
-<p>طرق التسجيل الثلاث:</p>
-<ul><li><b>دوري (Cyclic):</b> كل ثانية أو كل 10 ثوانٍ، سواء تغيّرت القيمة أم لا.</li>
-<li><b>عند التغيّر (On change):</b> يُسجَّل فقط إذا تغيّرت القيمة بأكثر من <b>نطاق ميت</b> (مثل 0.5 % من المدى). هذا هو الضغط الأبسط.</li>
-<li><b>عند الطلب (On demand):</b> يُسجَّل عند حدث معيّن، مثل نهاية الدفعة أو أمر من الـ PLC.</li></ul>
-<div class="box key"><b>احسبها قبل أن تبدأ:</b> 500 وسم × عيّنة كل ثانية × سنة = 500 × 31,536,000 ≈ <b>15.8 مليار عيّنة</b>. بنحو 16 بايتًا للعيّنة (القيمة + الوقت + الجودة) ≈ <b>250 GB</b> في السنة. مع التسجيل عند التغيّر ونطاق ميت معقول ينخفض الحجم كثيرًا، لأن معظم القيم ثابتة معظم الوقت.</div>
-<div class="tblw"><table class="tbl"><thead><tr><th>القيمة</th><th>إعداد بداية معقول</th></tr></thead><tbody>
-<tr><td>مستوى خزان كبير، حرارة</td><td>عند التغيّر، نطاق ميت 0.5 %، وحد أقصى للصمت 10 دقائق</td></tr>
-<tr><td>ضغط خط، تيار محرك</td><td>كل ثانية، أو عند التغيّر بنطاق صغير</td></tr>
-<tr><td>حالة مضخة أو صمام (Bool)</td><td>عند التغيّر فقط: كل تغيّر مهم</td></tr>
-<tr><td>عدّاد الإنتاج</td><td>كل دقيقة أو عند نهاية الوردية</td></tr></tbody></table></div>
-<div class="box safe"><b>فخ التعيين البطيء:</b> مضخة تعمل 10 ثوانٍ كل 30 ثانية وتسجّلها كل 60 ثانية: سيظهر الترند عشوائيًّا أو ثابتًا، وستفوتك الدورات. اجعل التسجيل أسرع بـ 5 إلى 10 أضعاف من أسرع تغيّر يهمك. ونطاق ميت كبير جدًّا يجعل الإشارة الحية تبدو خطًّا مسطحًا.</div>
+  <div class="tiles"><div class="tile"><span class="ic">⏲️</span><b>دوري</b><span>كل ثانية أو 10</span></div><div class="tile"><span class="ic">Δ</span><b>عند التغيّر</b><span>بنطاق ميت 0.5 %</span></div><div class="tile"><span class="ic">📌</span><b>عند الطلب</b><span>نهاية دفعة</span></div></div>
+  <div class="rule2"><div><span class="big">500 × 1 s</span><b>وسم × عيّنة</b><span class="mono">سنة كاملة</span></div><div><span class="big">~250 GB</span><b>في السنة</b><span class="mono">التغيّر يقلّلها كثيرًا</span></div></div>
+  <ul class="fx">
+    <li><b>حرارة، خزان كبير</b><span>عند التغيّر 0.5 %</span></li>
+    <li><b>ضغط، تيار</b><span>كل ثانية</span></li>
+    <li><b>Bool</b><span>عند التغيّر فقط</span></li>
+    <li><b>عدّاد الإنتاج</b><span>كل دقيقة</span></li>
+  </ul>
+  <p class="alert">سجّل أسرع بـ <b>5–10 أضعاف</b> من أسرع تغيّر يهمك.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>قراءة الترند كالمحقّق</h2>
-<ul><li><b>المؤشران (Cursors):</b> ضع مؤشرًا على بداية الحدث وآخر على نهايته، فتقرأ القيمة والوقت والفرق بينهما.</li>
-<li><b>التكبير والإزاحة (Zoom / Pan):</b> ابدأ بـ 12 ساعة لترى الصورة كلها، ثم كبّر على الدقائق المهمة.</li>
-<li><b>المقياس التلقائي (Autoscale):</b> مفيد، لكنه يكبّر الضوضاء: تذبذب 0.2 % يبدو موجًا هائلًا. انظر دائمًا إلى أرقام المحور.</li>
-<li><b>الأقلام:</b> اعرض القياس مع ما يؤثر فيه: المستوى مع المضخة والصمام ومفتاح الحد، على محور زمني واحد.</li>
-<li><b>الوقت:</b> تأكد أن ساعات الـ PLC والخادم متزامنة (NTP)، وانتبه للتوقيت الصيفي. فارق دقيقتين قد يقلب ترتيب الأحداث.</li></ul>
-<div class="tblw"><table class="tbl"><thead><tr><th>الشكل في الترند</th><th>معناه المحتمل</th></tr></thead><tbody>
-<tr><td>خط مسطح تمامًا بلا أي ضوضاء</td><td>حسّاس متجمّد، أو اتصال مفقود والقيمة الأخيرة محفوظة، أو نطاق ميت كبير</td></tr>
-<tr><td>فجوة (لا خط)</td><td>الأرشفة توقفت أو الجودة «سيئة»: الخادم أو الاتصال</td></tr>
-<tr><td>قفزة مفاجئة إلى 0 أو 100 % ثم عودة</td><td>انقطاع سلك 4–20 mA أو خطأ قراءة</td></tr>
-<tr><td>سن منشار منتظم</td><td>دورة تشغيل وإيقاف (Hysteresis) أو حلقة PID متذبذبة</td></tr></tbody></table></div>
-<div class="box key"><b>كيف تعرف الحسّاس المتجمّد؟</b> القياس الحقيقي لا يثبت أبدًا عند 62.0 بالضبط ساعة كاملة؛ فيه دائمًا تموّج صغير. والدليل القاطع: قيمة ثابتة بينما المضخة تضخ في الخزان. القياس يناقض الفيزياء.</div>
+  <ol class="steps"><li>12 ساعة أولًا</li><li>كبّر على الحدث</li><li>مؤشرا البداية والنهاية</li><li>القياس + ما يؤثر فيه</li></ol>
+  <p class="tip">Autoscale يكبّر الضوضاء: اقرأ أرقام المحور. وتأكد من تزامن الساعات (NTP).</p>
+  <ul class="fx">
+    <li><b>خط مسطح بلا ضوضاء</b><span>حسّاس متجمّد أو اتصال مفقود</span></li>
+    <li><b>فجوة</b><span>الأرشفة توقفت</span></li>
+    <li><b>قفزة إلى 0 أو 100 %</b><span>سلك 4–20 mA مقطوع</span></li>
+    <li><b>سن منشار</b><span>تشغيل/إيقاف أو PID متذبذب</span></li>
+  </ul>
+  <div class="box key">قيمة ثابتة <b>والمضخة تضخ</b> = القياس يناقض الفيزياء ← الحسّاس متجمّد.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>حادثة: فاض الخزان ليلًا</h2>
-<svg viewBox="0 0 640 270" role="img" aria-label="ترند الليلة: المستوى ثابت والمضخة تعمل ثم يعمل مفتاح الارتفاع الشديد" style="width:100%;max-width:640px;direction:ltr"><g font-family="IBM Plex Mono,monospace" font-size="11" fill="currentColor"><path d="M60 30V170H620" fill="none" stroke="currentColor"/><path d="M60.0 170v4" stroke="currentColor"/><text x="60.0" y="186" text-anchor="middle">18:00</text><path d="M200.0 170v4" stroke="currentColor"/><text x="200.0" y="186" text-anchor="middle">21:00</text><path d="M340.0 170v4" stroke="currentColor"/><text x="340.0" y="186" text-anchor="middle">00:00</text><path d="M480.0 170v4" stroke="currentColor"/><text x="480.0" y="186" text-anchor="middle">03:00</text><path d="M620.0 170v4" stroke="currentColor"/><text x="620.0" y="186" text-anchor="middle">06:00</text><text x="54" y="34.0" text-anchor="end">100</text><text x="54" y="104.0" text-anchor="end">50</text><text x="54" y="174.0" text-anchor="end">0</text><path d="M60 44.000000000000014H620" stroke="#d32f2f" stroke-dasharray="5 4"/><text x="64" y="39.000000000000014" fill="#d32f2f">HH 90 %</text><polyline points="60.0,93.0 200.0,114.0 246.7,114.0 293.3,72.0 410.0,100.0 417.9,83.2 620.0,83.2" fill="none" stroke="#1e5fd1" stroke-width="2.5"/><text x="442.7" y="75.2" fill="#1e5fd1">Tank1_Level flat 62.0 %</text><path d="M417.9 26V250" stroke="#b85f00" stroke-width="1.5" stroke-dasharray="4 3"/><text x="413.9" y="24" text-anchor="end" fill="#b85f00">01:40 frozen</text><path d="M483.7 26V250" stroke="#d32f2f" stroke-width="1.5" stroke-dasharray="4 3"/><text x="487.7" y="24" fill="#d32f2f">03:05 HH</text><path d="M60 212H246.7V200H293.3V212H410.0V200H620.0V212H620" fill="none" stroke="#5f5f5f" stroke-width="2"/><path d="M60 240H483.7V228H620.0V240H620" fill="none" stroke="#d32f2f" stroke-width="2"/><text x="54" y="210" text-anchor="end">Pump</text><text x="54" y="238" text-anchor="end">LSHH</text></g></svg>
-<p>في الصباح وُجد الخزان T1 قد فاض. نفتح الترند التاريخي لآخر 12 ساعة:</p>
-<ol><li><b>22:00–23:00:</b> المضخة تعمل والمستوى يرتفع من 40 إلى 70 % ثم تتوقف. سلوك طبيعي.</li>
-<li><b>01:30:</b> المستوى 50 %، فتبدأ المضخة كالمعتاد.</li>
-<li><b>01:40:</b> المستوى يتوقف عند <b>62.0 %</b> ويبقى خطًّا مسطحًا، والمضخة <b>مستمرة</b>. هنا تجمّد مرسل المستوى (أو انقطع الاتصال به مع الاحتفاظ بآخر قيمة).</li>
-<li><b>03:05:</b> مفتاح الارتفاع الشديد المستقل <b>LSHH</b> يعمل، أي أن المستوى الحقيقي تجاوز 90 %. لكنه أصدر إنذارًا فقط، ولم يوقف المضخة.</li></ol>
-<p><b>السبب:</b> مرسل مستوى متجمّد، والمضخة تعمل على قراءته، ومفتاح الحماية غير مربوط بإيقاف المضخة.</p>
-<ul><li>أضف في الـ PLC فحص <b>معقولية</b>: إذا عملت المضخة 3 دقائق ولم يتغير المستوى بأكثر من 0.5 %، فأوقفها وأطلق إنذار «المرسل لا يستجيب».</li>
-<li>اربط <b>LSHH</b> بإيقاف المضخة مباشرة (تعشيق في الـ PLC أو بالأسلاك)، ولا تكتفِ بالإنذار.</li>
-<li>اجعل الإنذار يعتمد على <b>جودة القيمة</b> (Quality) أيضًا: قيمة «غير مؤكدة» أو «سيئة» يجب أن تظهر للمشغّل.</li></ul>
+  <svg viewBox="0 0 640 270" role="img" aria-label="ترند الليلة: المستوى ثابت والمضخة تعمل ثم يعمل مفتاح الارتفاع الشديد" style="width:100%;max-width:640px;direction:ltr"><g font-family="IBM Plex Mono,monospace" font-size="11" fill="currentColor"><path d="M60 30V170H620" fill="none" stroke="currentColor"/><path d="M60.0 170v4" stroke="currentColor"/><text x="60.0" y="186" text-anchor="middle">18:00</text><path d="M200.0 170v4" stroke="currentColor"/><text x="200.0" y="186" text-anchor="middle">21:00</text><path d="M340.0 170v4" stroke="currentColor"/><text x="340.0" y="186" text-anchor="middle">00:00</text><path d="M480.0 170v4" stroke="currentColor"/><text x="480.0" y="186" text-anchor="middle">03:00</text><path d="M620.0 170v4" stroke="currentColor"/><text x="620.0" y="186" text-anchor="middle">06:00</text><text x="54" y="34.0" text-anchor="end">100</text><text x="54" y="104.0" text-anchor="end">50</text><text x="54" y="174.0" text-anchor="end">0</text><path d="M60 44.000000000000014H620" stroke="#d32f2f" stroke-dasharray="5 4"/><text x="64" y="39.000000000000014" fill="#d32f2f">HH 90 %</text><polyline points="60.0,93.0 200.0,114.0 246.7,114.0 293.3,72.0 410.0,100.0 417.9,83.2 620.0,83.2" fill="none" stroke="#1e5fd1" stroke-width="2.5"/><text x="442.7" y="75.2" fill="#1e5fd1">Tank1_Level flat 62.0 %</text><path d="M417.9 26V250" stroke="#b85f00" stroke-width="1.5" stroke-dasharray="4 3"/><text x="413.9" y="24" text-anchor="end" fill="#b85f00">01:40 frozen</text><path d="M483.7 26V250" stroke="#d32f2f" stroke-width="1.5" stroke-dasharray="4 3"/><text x="487.7" y="24" fill="#d32f2f">03:05 HH</text><path d="M60 212H246.7V200H293.3V212H410.0V200H620.0V212H620" fill="none" stroke="#5f5f5f" stroke-width="2"/><path d="M60 240H483.7V228H620.0V240H620" fill="none" stroke="#d32f2f" stroke-width="2"/><text x="54" y="210" text-anchor="end">Pump</text><text x="54" y="238" text-anchor="end">LSHH</text></g></svg>
+  <ul class="fx">
+    <li><b>22:00</b><span>تملأ من 40 إلى 70 % وتقف · طبيعي</span></li>
+    <li><b>01:30</b><span>50 % ← المضخة تبدأ</span></li>
+    <li><b>01:40</b><span>المستوى ثابت <b>62.0 %</b> والمضخة مستمرة</span></li>
+    <li><b>03:05</b><span>LSHH يعمل: إنذار فقط، المضخة لم تقف</span></li>
+  </ul>
+  <p class="sub">الإصلاح</p>
+  <ul class="fx">
+    <li class="ok"><b>فحص معقولية</b><span>3 دقائق بلا تغيّر ← أوقف المضخة</span></li>
+    <li class="ok"><b>LSHH</b><span>يوقف المضخة مباشرة</span></li>
+    <li class="ok"><b>جودة القيمة</b><span>«سيئة» تظهر للمشغّل</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>حفظ الأرشيف وتصديره</h2>
-<ul><li><b>مدة الاحتفاظ:</b> حدّدها مع الإدارة والجودة: أسابيع لقيم التشغيل، وسنوات لبيانات الجودة في الصناعات الدوائية والغذائية.</li>
-<li><b>التقسيم والنسخ الاحتياطي:</b> يُقسَّم الأرشيف إلى أجزاء زمنية (يومية أو أسبوعية) تُنقل إلى خادم آخر. لا تجعل القرص الممتلئ يوقف الأرشفة دون أن ينتبه أحد: أضف إنذارًا لمساحة القرص.</li>
-<li><b>التصدير:</b> صدّر المدة المطلوبة إلى CSV لتحليلها في جدول بيانات، أو اربط الأرشيف بنظام MES أو تقارير عبر OPC UA أو SQL (الدرس 10).</li>
-<li><b>الطابع الزمني:</b> القواعد عادة تخزّن بتوقيت UTC وتعرض بالتوقيت المحلي؛ تذكّر ذلك عند مقارنة ملف مصدَّر بسجل يدوي.</li></ul>
-<div class="box key"><b>على المحاكي:</b> فاض الخزان ليلة أمس: استعمل مؤشري الترند التاريخي لتجد لحظة تجمّد مرسل المستوى بينما المضخة تعمل، ثم اختر السبب الصحيح. <a class="btn pri" href="scada.html#trend" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+  <ul class="fx">
+    <li><b>الاحتفاظ</b><span>أسابيع للتشغيل، سنوات للجودة</span></li>
+    <li><b>النسخ الاحتياطي</b><span>أجزاء يومية + إنذار مساحة القرص</span></li>
+    <li><b>التصدير</b><span>CSV أو OPC UA أو SQL</span></li>
+    <li><b>الوقت</b><span>يُخزَّن UTC ويُعرض محليًّا</span></li>
+  </ul>
+  <div class="box key"><b>على المحاكي:</b> جد لحظة تجمّد المرسل بالمؤشرين واختر السبب. <a class="btn pri" href="scada.html#trend" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>

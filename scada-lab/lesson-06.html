@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="scada.css?v=20261028s1">
 <script src="scada.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -29,74 +30,60 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>ما الإنذار؟ وما ليس إنذارًا</h2>
-<p>تعريف <b>ISA-18.2</b> (والمعيار المطابق له <b>IEC 62682</b>): الإنذار إشارة مسموعة أو مرئية تخبر المشغّل بعطل في معدّة أو انحراف في العملية أو حالة غير طبيعية <b>تتطلب استجابة منه</b>. فإذا لم يكن على المشغّل أن يفعل شيئًا، فهذا <b>حدث أو رسالة</b> لا إنذار.</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>المثال</th><th>إنذار؟</th><th>لماذا</th></tr></thead><tbody>
-<tr><td>ضغط الهواء 4.5 bar والحد الأدنى 5 bar</td><td>نعم</td><td>على المشغّل أن يتحقق من الضاغط قبل توقف الصمامات</td></tr>
-<tr><td>«المضخة 1 بدأت التشغيل»</td><td>لا</td><td>معلومة للسجل (Event)، لا تتطلب فعلًا</td></tr>
-<tr><td>«الدفعة 245 انتهت»</td><td>لا</td><td>رسالة تشغيل تُسجَّل فقط</td></tr>
-<tr><td>حرارة محمل المحرك 95 °C</td><td>نعم</td><td>يجب تخفيف الحمل أو الإيقاف قبل التلف</td></tr></tbody></table></div>
-<p>أنواع الإنذارات في <b>WinCC Unified</b>:</p>
-<ul><li><b>Discrete alarm</b> (منفصل): يُطلقه بت في وسم إطلاق (Trigger tag)، مثل بت عطل المضخة.</li>
-<li><b>Analog alarm</b> (تناظري): يُطلقه تجاوز قيمة لحد، مثل المستوى فوق 80 %، ومعه إعداد <b>النطاق الميت (Deadband)</b> والتأخير.</li>
-<li><b>إنذارات الـ PLC</b> (Controller alarms): تُعرَّف في برنامج S7-1500 نفسه (مثل <span class="mono">Program_Alarm</span> أو ProDiag) وتصل إلى الشاشة بطابعها الزمني من الـ PLC، فتُعرَّف مرة واحدة لكل العملاء.</li>
-<li><b>إنذارات النظام</b> (System alarms): من الـ HMI نفسه، مثل انقطاع الاتصال بالـ PLC.</li></ul>
+  <p class="bf"><span class="ic">🚨</span><span>الإنذار = حالة <b>تتطلب فعلًا</b> من المشغّل. غير ذلك رسالة.</span></p>
+  <div class="vs"><div class="side"><b>إنذار ✓</b><span>ضغط الهواء 4.5 والحد 5 bar</span><span>محمل 95 °C</span></div><i>×</i><div class="side"><b>رسالة</b><span>«المضخة بدأت»</span><span>«الدفعة انتهت»</span></div></div>
+  <ul class="fx">
+    <li><b>Discrete</b><span>بت عطل</span></li>
+    <li><b>Analog</b><span>تجاوز حد + Deadband</span></li>
+    <li><b>إنذارات الـ PLC</b><span>طابع زمني من المصدر</span></li>
+    <li><b>إنذارات النظام</b><span>مثل انقطاع الاتصال</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>الفئات والأولويات والحالات</h2>
-<svg viewBox="0 0 640 270" role="img" aria-label="دورة حياة الإنذار" style="width:100%;max-width:640px;direction:ltr"><defs><marker id="ah6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="currentColor"/></marker></defs><g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle"><rect x="30" y="20" width="220" height="56" rx="8" fill="none" stroke="#8a8a8a" stroke-width="2.5"/><text x="140" y="44" font-weight="700">Normal</text><text x="140" y="64" font-size="11">no alarm</text><rect x="390" y="20" width="220" height="56" rx="8" fill="none" stroke="#d32f2f" stroke-width="2.5"/><text x="500" y="44" font-weight="700">Active · Unacked</text><text x="500" y="64" font-size="11">came · flashing</text><rect x="390" y="190" width="220" height="56" rx="8" fill="none" stroke="#b85f00" stroke-width="2.5"/><text x="500" y="214" font-weight="700">Active · Acked</text><text x="500" y="234" font-size="11">steady colour</text><rect x="30" y="190" width="220" height="56" rx="8" fill="none" stroke="#8a8a8a" stroke-width="2.5"/><text x="140" y="214" font-weight="700">Cleared · Unacked</text><text x="140" y="234" font-size="11">went · waits for ack</text><g stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#ah6)"><path d="M250 40H386"/><path d="M500 76V186"/><path d="M390 218H254"/><path d="M140 186V80"/><path d="M420 76L240 190"/></g><text x="318" y="32">came</text><text x="534" y="136">ack</text><text x="322" y="236">went</text><text x="174" y="136">ack</text><text x="250" y="116">went</text><text x="250" y="130" font-size="11">(before ack)</text></g></svg>
-<ul><li><b>الفئة (Alarm class):</b> تحدد السلوك: هل يحتاج تأكيدًا؟ ما لونه؟ هل يُسجَّل؟ مثل: Alarm (يحتاج تأكيدًا)، Warning، Information (بلا تأكيد).</li>
-<li><b>الأولوية (Priority):</b> تحدد <b>أي إنذار يُعالج أولًا</b>، وتُبنى على شدة العاقبة وزمن الاستجابة المتاح، لا على شعور المبرمج.</li>
-<li><b>الحالات:</b> ظهر (Came / Incoming)، زال (Went / Outgoing)، أُكّد (Acknowledged). الإنذار الذي زال قبل التأكيد يبقى في القائمة حتى يُؤكَّد، لأن المشغّل يجب أن يعلم أنه حدث.</li></ul>
-<div class="tblw"><table class="tbl"><thead><tr><th>الأولوية</th><th>النسبة الموصى بها تقريبًا من الإنذارات المُعرَّفة</th><th>مثال</th></tr></thead><tbody>
-<tr><td>عالية</td><td>نحو 5 %</td><td>ضغط الهواء منخفض جدًّا: الخط سيتوقف خلال دقيقة</td></tr>
-<tr><td>متوسطة</td><td>نحو 15 %</td><td>حرارة محمل مرتفعة</td></tr>
-<tr><td>منخفضة</td><td>نحو 80 %</td><td>فلتر يحتاج تغييرًا قريبًا</td></tr></tbody></table></div>
-<div class="box safe"><b>كيف تعرف أن الأولويات فاسدة؟</b> إذا كان نصف الإنذارات «عالية»، فلم يعد لكلمة «عالية» معنى. والتأكيد ليس حلًّا: <b>التأكيد يعني «رأيته»</b> فقط، ولا يعالج السبب.</div>
+  <svg viewBox="0 0 640 270" role="img" aria-label="دورة حياة الإنذار" style="width:100%;max-width:640px;direction:ltr"><defs><marker id="ah6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="currentColor"/></marker></defs><g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle"><rect x="30" y="20" width="220" height="56" rx="8" fill="none" stroke="#8a8a8a" stroke-width="2.5"/><text x="140" y="44" font-weight="700">Normal</text><text x="140" y="64" font-size="11">no alarm</text><rect x="390" y="20" width="220" height="56" rx="8" fill="none" stroke="#d32f2f" stroke-width="2.5"/><text x="500" y="44" font-weight="700">Active · Unacked</text><text x="500" y="64" font-size="11">came · flashing</text><rect x="390" y="190" width="220" height="56" rx="8" fill="none" stroke="#b85f00" stroke-width="2.5"/><text x="500" y="214" font-weight="700">Active · Acked</text><text x="500" y="234" font-size="11">steady colour</text><rect x="30" y="190" width="220" height="56" rx="8" fill="none" stroke="#8a8a8a" stroke-width="2.5"/><text x="140" y="214" font-weight="700">Cleared · Unacked</text><text x="140" y="234" font-size="11">went · waits for ack</text><g stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#ah6)"><path d="M250 40H386"/><path d="M500 76V186"/><path d="M390 218H254"/><path d="M140 186V80"/><path d="M420 76L240 190"/></g><text x="318" y="32">came</text><text x="534" y="136">ack</text><text x="322" y="236">went</text><text x="174" y="136">ack</text><text x="250" y="116">went</text><text x="250" y="130" font-size="11">(before ack)</text></g></svg>
+  <ol class="steps"><li>ظهر</li><li>زال</li><li>أُكّد</li></ol>
+  <ul class="lsec scale">
+    <li class="danger"><b>عالية</b><span class="bar"><i style="width:5%"></i><em><bdi dir="ltr">~5 %</bdi></em></span></li>
+    <li><b>متوسطة</b><span class="bar"><i style="width:15%"></i><em><bdi dir="ltr">~15 %</bdi></em></span></li>
+    <li><b>منخفضة</b><span class="bar"><i style="width:80%"></i><em><bdi dir="ltr">~80 %</bdi></em></span></li>
+  </ul>
+  <div class="box safe">نصف الإنذارات «عالية» = لا معنى للأولوية. و<b>التأكيد يعني «رأيته» فقط</b>.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>فيضان الإنذارات وأول إنذار</h2>
-<p>الضاغط يفصل فيهبط ضغط الهواء، فتتأخر الصمامات الهوائية عن الوصول إلى موضعها، فيتوقف جهاز التعبئة، فيمتلئ السير... خلال <b>10 ثوانٍ</b> تظهر <b>30</b> رسالة، وكلها نتيجة <b>سبب واحد</b>. هذا هو <b>فيضان الإنذارات (Alarm flood)</b>.</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>المقياس (لكل مشغّل)</th><th>الهدف وفق ISA-18.2 تقريبًا</th></tr></thead><tbody>
-<tr><td>متوسط الإنذارات</td><td>نحو 1 كل 10 دقائق (≈ 150 يوميًّا) مقبول؛ 2 كل 10 دقائق (≈ 300 يوميًّا) أقصى ما يمكن إدارته</td></tr>
-<tr><td>الفيضان</td><td>أكثر من 10 إنذارات خلال 10 دقائق</td></tr>
-<tr><td>نسبة الوقت في فيضان</td><td>أقل من نحو 1 %</td></tr>
-<tr><td>إنذارات قائمة طويلًا (Stale)</td><td>أقل من 5 تقريبًا</td></tr></tbody></table></div>
-<p><b>كيف تجد أول إنذار (First-out)؟</b></p>
-<ol><li>رتّب عرض الإنذارات (Alarm Control) حسب <b>الوقت تصاعديًّا</b> واعرض الأجزاء من الثانية.</li>
-<li>اعتمد على <b>الطابع الزمني من المصدر</b> (من الـ PLC)، لا وقت وصول الرسالة إلى الخادم.</li>
-<li>أول إنذار في السلسلة هو المرشح للسبب الجذري: هنا «فصل الضاغط»، وكل ما بعده نتائج.</li>
-<li>أكّد الصفحة بعد أن تفهم، لا قبل ذلك. التأكيد الأعمى لثلاثين رسالة يخفي السبب.</li></ol>
-<div class="box key"><b>الحل في التصميم:</b> <b>الكبت حسب الحالة (State-based suppression)</b>: إذا كان الضاغط مفصولًا، فاكبت إنذارات «انحراف موضع الصمام» التابعة له تلقائيًا، فيرى المشغّل إنذارًا واحدًا ذا معنى. ونفّذ منطق «أول إنذار» في الـ PLC للأنظمة الحرجة.</div>
+  <p class="bf"><span class="ic">🌊</span><span>سبب واحد ← <b>30 رسالة</b> في 10 ثوانٍ.</span></p>
+  <ul class="fx">
+    <li><b>مقبول</b><span>~1 إنذار كل 10 دقائق</span></li>
+    <li><b>فيضان</b><span>أكثر من 10 في 10 دقائق</span></li>
+  </ul>
+  <ol class="steps"><li>رتّب بالوقت تصاعديًّا</li><li>طابع زمني من الـ PLC</li><li>الأول = السبب</li><li>ثم أكّد</li></ol>
+  <div class="box key"><b>الكبت حسب الحالة</b>: الضاغط مفصول ← اكبت الإنذارات التابعة له، فيبقى إنذار واحد ذو معنى.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>الإنذار المتكرر: النطاق الميت والتأخير والتجميد المؤقت</h2>
-<svg viewBox="0 0 640 250" role="img" aria-label="إنذار متكرر حول حد 80 بالمئة وأثر النطاق الميت" style="width:100%;max-width:640px;direction:ltr"><g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor"><path d="M60 40V200H620" fill="none" stroke="currentColor" stroke-width="1"/><text x="52" y="44" text-anchor="end">90</text><text x="52" y="124" text-anchor="end">80</text><text x="52" y="204" text-anchor="end">70</text><text x="18" y="30">%</text><rect x="60" y="120" width="560" height="16" fill="#b85f00" opacity="0.15"/><path d="M60 120H620" stroke="#d32f2f" stroke-width="2" stroke-dasharray="6 4"/><path d="M60 136H620" stroke="#b85f00" stroke-width="1.5" stroke-dasharray="3 3"/><polyline points="60.0,123.2 64.0,117.5 68.0,118.1 72.0,119.0 76.0,116.8 80.0,118.8 84.0,125.9 88.0,128.8 92.0,127.2 96.0,128.5 100.0,130.0 104.0,125.0 108.0,118.8 112.0,118.6 116.0,119.2 120.0,116.4 124.0,117.3 128.0,124.1 132.0,127.9 136.0,126.8 140.0,128.3 144.0,130.8 148.0,126.8 152.0,120.3 156.0,119.3 160.0,119.7 164.0,116.4 168.0,116.1 172.0,122.4 176.0,126.7 180.0,126.1 184.0,127.9 188.0,131.3 192.0,128.4 196.0,121.9 200.0,120.3 204.0,120.4 208.0,116.7 212.0,115.2 216.0,120.7 220.0,125.4 224.0,125.3 228.0,127.1 232.0,131.4 236.0,129.7 240.0,123.4 244.0,121.3 248.0,121.3 252.0,117.3 256.0,114.6 260.0,119.1 264.0,124.1 268.0,124.2 272.0,126.1 276.0,131.1 280.0,130.7 284.0,124.9 288.0,122.5 292.0,122.5 296.0,118.2 300.0,114.4 304.0,117.9 308.0,122.7 312.0,123.1 316.0,124.8 320.0,130.4 324.0,131.4 328.0,126.3 332.0,123.7 336.0,123.7 340.0,119.5 344.0,114.6 348.0,116.9 352.0,121.5 356.0,122.0 360.0,123.4 364.0,129.4 368.0,131.7 372.0,127.4 376.0,124.7 380.0,125.0 384.0,121.0 388.0,115.2 392.0,116.2 396.0,120.5 400.0,120.9 404.0,121.9 408.0,128.0 412.0,131.6 416.0,128.2 420.0,125.7 424.0,126.2 428.0,122.6 432.0,116.2 436.0,115.9 440.0,119.6 444.0,119.9 448.0,120.4 452.0,126.5 456.0,131.1 460.0,128.8 464.0,126.1 468.0,125.3 472.0,120.6 476.0,112.0 480.0,108.7 484.0,110.2 488.0,108.5 492.0,106.7 496.0,110.7 500.0,114.5 504.0,111.5 508.0,107.8 512.0,107.4 516.0,103.4 520.0,94.7 524.0,90.3 528.0,91.0 532.0,89.2 536.0,86.5 540.0,90.0 544.0,94.5 548.0,92.5 552.0,89.1 556.0,89.2 560.0,86.2 564.0,77.5 568.0,72.2 572.0,72.2 576.0,70.1 580.0,66.6 584.0,69.3 588.0,74.2 592.0,73.2 596.0,70.2 600.0,70.8 604.0,68.8 608.0,60.5 612.0,54.3 616.0,53.7 620.0,51.3" fill="none" stroke="#1e5fd1" stroke-width="2"/><text x="66" y="114" fill="#d32f2f">HI 80 %</text><text x="66" y="150" fill="#b85f00">reset 78 % (deadband 2 %)</text><text x="340" y="228" text-anchor="middle">Tank1_Level · no deadband: 10 alarms · with deadband: 1 alarm</text></g></svg>
-<p>مستوى الخزان يتأرجح حول 80 % بسبب التموّج، فيظهر الإنذار ويزول مرات كثيرة: هذا <b>إنذار متكرر (Chattering)</b>. في الشكل: <b>10</b> إنذارات بلا نطاق ميت، و <b>1</b> فقط بنطاق 2 %.</p>
-<ul><li><b>النطاق الميت (Deadband / Hysteresis):</b> يظهر الإنذار عند 80 % ولا يزول إلا تحت 78 %.</li>
-<li><b>تأخير الظهور (On-delay):</b> لا يظهر الإنذار إلا إذا بقيت القيمة فوق الحد 5 ثوانٍ مثلًا. يُصفّي القفزات القصيرة.</li>
-<li><b>تأخير الزوال (Off-delay):</b> يبقى الإنذار بضع ثوانٍ بعد عودة القيمة، فلا يتكرر مع كل تموّج.</li></ul>
-<div class="tblw"><table class="tbl"><thead><tr><th>نوع القياس</th><th>نطاق ميت (قيمة بداية شائعة)</th><th>تأخير (قيمة بداية شائعة)</th></tr></thead><tbody>
-<tr><td>تدفق</td><td>5 % من المدى</td><td>15 s</td></tr><tr><td>مستوى</td><td>5 %</td><td>60 s</td></tr>
-<tr><td>ضغط</td><td>2 %</td><td>15 s</td></tr><tr><td>حرارة</td><td>1 %</td><td>60 s</td></tr></tbody></table></div>
-<div class="tblw"><table class="tbl"><thead><tr><th>الإجراء</th><th>من يفعله</th><th>ملاحظة</th></tr></thead><tbody>
-<tr><td><b>التجميد المؤقت (Shelving)</b></td><td>المشغّل</td><td>لمدة محددة (مثل 8 ساعات) مع سبب، ويُسجَّل ويعود تلقائيًا</td></tr>
-<tr><td><b>الكبت حسب الحالة (Suppression by design)</b></td><td>المنطق تلقائيًا</td><td>مثل كبت إنذارات الخط وهو متوقف للصيانة</td></tr>
-<tr><td><b>خارج الخدمة (Out of service)</b></td><td>الصيانة بتصريح</td><td>للحسّاس المعطّل، مع متابعة حتى الإصلاح</td></tr></tbody></table></div>
-<p>التجميد علاج مؤقت لراحة المشغّل؛ أما <b>العلاج الحقيقي</b> فهو النطاق الميت أو التأخير أو إصلاح الحسّاس.</p>
+  <svg viewBox="0 0 640 250" role="img" aria-label="إنذار متكرر حول حد 80 بالمئة وأثر النطاق الميت" style="width:100%;max-width:640px;direction:ltr"><g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor"><path d="M60 40V200H620" fill="none" stroke="currentColor" stroke-width="1"/><text x="52" y="44" text-anchor="end">90</text><text x="52" y="124" text-anchor="end">80</text><text x="52" y="204" text-anchor="end">70</text><text x="18" y="30">%</text><rect x="60" y="120" width="560" height="16" fill="#b85f00" opacity="0.15"/><path d="M60 120H620" stroke="#d32f2f" stroke-width="2" stroke-dasharray="6 4"/><path d="M60 136H620" stroke="#b85f00" stroke-width="1.5" stroke-dasharray="3 3"/><polyline points="60.0,123.2 64.0,117.5 68.0,118.1 72.0,119.0 76.0,116.8 80.0,118.8 84.0,125.9 88.0,128.8 92.0,127.2 96.0,128.5 100.0,130.0 104.0,125.0 108.0,118.8 112.0,118.6 116.0,119.2 120.0,116.4 124.0,117.3 128.0,124.1 132.0,127.9 136.0,126.8 140.0,128.3 144.0,130.8 148.0,126.8 152.0,120.3 156.0,119.3 160.0,119.7 164.0,116.4 168.0,116.1 172.0,122.4 176.0,126.7 180.0,126.1 184.0,127.9 188.0,131.3 192.0,128.4 196.0,121.9 200.0,120.3 204.0,120.4 208.0,116.7 212.0,115.2 216.0,120.7 220.0,125.4 224.0,125.3 228.0,127.1 232.0,131.4 236.0,129.7 240.0,123.4 244.0,121.3 248.0,121.3 252.0,117.3 256.0,114.6 260.0,119.1 264.0,124.1 268.0,124.2 272.0,126.1 276.0,131.1 280.0,130.7 284.0,124.9 288.0,122.5 292.0,122.5 296.0,118.2 300.0,114.4 304.0,117.9 308.0,122.7 312.0,123.1 316.0,124.8 320.0,130.4 324.0,131.4 328.0,126.3 332.0,123.7 336.0,123.7 340.0,119.5 344.0,114.6 348.0,116.9 352.0,121.5 356.0,122.0 360.0,123.4 364.0,129.4 368.0,131.7 372.0,127.4 376.0,124.7 380.0,125.0 384.0,121.0 388.0,115.2 392.0,116.2 396.0,120.5 400.0,120.9 404.0,121.9 408.0,128.0 412.0,131.6 416.0,128.2 420.0,125.7 424.0,126.2 428.0,122.6 432.0,116.2 436.0,115.9 440.0,119.6 444.0,119.9 448.0,120.4 452.0,126.5 456.0,131.1 460.0,128.8 464.0,126.1 468.0,125.3 472.0,120.6 476.0,112.0 480.0,108.7 484.0,110.2 488.0,108.5 492.0,106.7 496.0,110.7 500.0,114.5 504.0,111.5 508.0,107.8 512.0,107.4 516.0,103.4 520.0,94.7 524.0,90.3 528.0,91.0 532.0,89.2 536.0,86.5 540.0,90.0 544.0,94.5 548.0,92.5 552.0,89.1 556.0,89.2 560.0,86.2 564.0,77.5 568.0,72.2 572.0,72.2 576.0,70.1 580.0,66.6 584.0,69.3 588.0,74.2 592.0,73.2 596.0,70.2 600.0,70.8 604.0,68.8 608.0,60.5 612.0,54.3 616.0,53.7 620.0,51.3" fill="none" stroke="#1e5fd1" stroke-width="2"/><text x="66" y="114" fill="#d32f2f">HI 80 %</text><text x="66" y="150" fill="#b85f00">reset 78 % (deadband 2 %)</text><text x="340" y="228" text-anchor="middle">Tank1_Level · no deadband: 10 alarms · with deadband: 1 alarm</text></g></svg>
+  <div class="tiles"><div class="tile"><b>Deadband</b><span>يظهر 80 %، يزول تحت 78 %</span></div><div class="tile"><b>On-delay</b><span>يبقى فوق الحد 5 s أولًا</span></div><div class="tile"><b>Off-delay</b><span>يبقى قليلًا بعد العودة</span></div></div>
+  <ul class="fx">
+    <li><b>تدفق</b><span><bdi dir="ltr">5 %</bdi> · <bdi dir="ltr">15 s</bdi></span></li>
+    <li><b>مستوى</b><span><bdi dir="ltr">5 %</bdi> · <bdi dir="ltr">60 s</bdi></span></li>
+    <li><b>ضغط</b><span><bdi dir="ltr">2 %</bdi> · <bdi dir="ltr">15 s</bdi></span></li>
+    <li><b>حرارة</b><span><bdi dir="ltr">1 %</bdi> · <bdi dir="ltr">60 s</bdi></span></li>
+  </ul>
+  <ul class="fx">
+    <li><b>Shelving</b><span>المشغّل · مدة محددة + سبب</span></li>
+    <li><b>Suppression</b><span>المنطق تلقائيًا</span></li>
+    <li><b>Out of service</b><span>الصيانة بتصريح</span></li>
+  </ul>
+  <p class="tip">التجميد مؤقت؛ العلاج الحقيقي نطاق ميت أو تأخير أو إصلاح الحسّاس.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>الترشيد وفلسفة الإنذارات</h2>
-<p>ISA-18.2 يصف دورة حياة كاملة، أهم خطواتها للفني:</p>
-<ol><li><b>فلسفة الإنذارات (Alarm philosophy):</b> وثيقة واحدة للمصنع: ما الإنذار، كيف تُحسب الأولوية، الألوان، من يجمّد، ومتى.</li>
-<li><b>الترشيد (Rationalization):</b> مراجعة كل إنذار: ما السبب؟ ما العاقبة؟ ماذا يفعل المشغّل؟ كم من الوقت لديه؟ الإنذار الذي لا جواب له يُحذف أو يتحول إلى رسالة.</li>
-<li><b>المراقبة:</b> قائمة <b>أكثر 10 إنذارات تكرارًا</b> (Bad actors) أسبوعيًّا. في الغالب تصنع هذه العشرة أكثر من نصف الحمل كله، وإصلاحها أسرع مكسب.</li>
-<li><b>إدارة التغيير (MOC):</b> لا تُغيَّر الحدود والأولويات دون موافقة وتوثيق.</li></ol>
-<ul><li>في <b>Ignition</b> تُعرَّف الإنذارات على الوسم نفسه، وتُرسل التنبيهات عبر <b>Alarm pipelines</b> (بريد أو رسالة نصية) مع تصعيد. وفي <b>FactoryTalk</b> و <b>AVEVA</b> مفاهيم مماثلة: الأولوية والتأكيد والتجميد والسجل.</li>
-<li>أيًّا كانت المنصة، المعيار واحد: كل إنذار يجب أن يكون <b>صحيحًا، فريدًا، في وقته، ويقتضي فعلًا</b>.</li></ul>
-<div class="box key"><b>على المحاكي:</b> فصل الضاغط فأغرق الشاشة بالإنذارات: حدّد أول إنذار، وأكّد الكل، وجمّد إنذار المستوى المتكرر، ثم عالج سببه بنطاق ميت لا يقل عن 2 % أو تأخير لا يقل عن 5 ثوانٍ. <a class="btn pri" href="scada.html#alarms" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+  <ol class="steps"><li>فلسفة الإنذارات</li><li>الترشيد</li><li>أكثر 10 تكرارًا</li><li>إدارة التغيير</li></ol>
+  <p class="tip">أكثر 10 إنذارات تكرارًا تصنع غالبًا <b>أكثر من نصف</b> الحمل: أصلحها أولًا.</p>
+  <div class="box key">كل إنذار: <b>صحيح، فريد، في وقته، ويقتضي فعلًا</b>.</div>
+  <div class="box key"><b>على المحاكي:</b> حدّد أول إنذار، أكّد، جمّد المتكرر، ثم عالجه بنطاق ميت ≥ 2 % أو تأخير ≥ 5 s. <a class="btn pri" href="scada.html#alarms" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>

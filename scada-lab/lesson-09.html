@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="scada.css?v=20261028s1">
 <script src="scada.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -29,22 +30,19 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>ما الوصفة؟ ولماذا نحتاجها؟</h2>
-<p><b>الوصفة (Recipe)</b> مجموعة من القيم التي تحدّد طريقة إنتاج منتج معيّن على الخط نفسه. خط تعبئة العصير يعبّئ ثلاثة أحجام؛ وبدل أن يغيّر المشغّل عشرة حقول يدويًا عند كل تغيير منتج (ويخطئ في أحدها)، يختار <b>سجلًّا (Record)</b> جاهزًا ويرسله إلى الـ PLC دفعة واحدة.</p>
-<ul><li><b>بنية الوصفة:</b> قائمة العناصر (حجم التعبئة، سرعة التعبئة، عزم الغطاء، زمن الخلط)، ولكل عنصر نوع بيانات ووحدة وحدّ أدنى وحدّ أعلى.</li>
-<li><b>السجل:</b> نسخة من البنية بقيم محدّدة لمنتج واحد، مثل «عصير 1.0 L».</li>
-<li><b>الهدف في الـ PLC:</b> كتلة بيانات (DB) بنوع بيانات معرّف (UDT) يطابق بنية الوصفة عنصرًا بعنصر.</li></ul>
-<div class="tblw"><table class="tbl"><thead><tr><th>العنصر</th><th>الوحدة</th><th>الحدود</th><th>1.0 L</th><th>0.5 L</th><th>0.25 L</th></tr></thead><tbody>
-<tr><td>حجم التعبئة</td><td class="mono">ml</td><td class="mono">200–1050</td><td class="mono">1000</td><td class="mono">500</td><td class="mono">250</td></tr>
-<tr><td>سرعة التعبئة</td><td class="mono">%</td><td class="mono">20–100</td><td class="mono">80</td><td class="mono">70</td><td class="mono">60</td></tr>
-<tr><td>عزم الغطاء</td><td class="mono">N·cm</td><td class="mono">80–250</td><td class="mono">180</td><td class="mono">150</td><td class="mono">120</td></tr>
-<tr><td>زمن الخلط</td><td class="mono">s</td><td class="mono">30–600</td><td class="mono">240</td><td class="mono">240</td><td class="mono">180</td></tr></tbody></table></div>
-<p><b>في WinCC Unified</b> تسمّى الوصفات <b>Parameter Sets</b> (مجموعات المعاملات): تعرّف <b>Parameter Set Type</b> (البنية) وتربطه غالبًا بنوع UDT من الـ PLC، ثم يعرض المشغّل السجلات ويعدّلها ويحمّلها عبر عنصر الشاشة <b>Parameter Set Control</b>. أما WinCC Classic و WinCC Comfort فيستخدمان محرر Recipes وعنصر Recipe view، والفكرة واحدة لكن الإعداد يختلف.</p>
-<div class="box key"><b>مقارنة سريعة:</b> FactoryTalk Optix يوفّر وصفات مدمجة تُحفظ في قاعدة بيانات. في Ignition تُبنى الوصفات غالبًا بجداول SQL وسكربتات أو بوحدة إضافية. أينما عملت: البنية والحدود والتحميل الآمن هي الأساس.</div>
+  <p class="bf"><span class="ic">📋</span><span>الوصفة = قيم منتج كاملة تُرسل إلى الـ PLC <b>دفعة واحدة</b>.</span></p>
+  <div class="tiles"><div class="tile"><b>البنية</b><span>العناصر + الوحدة + الحدود</span></div><div class="tile"><b>السجل</b><span>قيم منتج واحد</span></div><div class="tile"><b>الهدف</b><span>DB بنوع UDT مطابق</span></div></div>
+  <ul class="fx">
+    <li><b>حجم التعبئة</b><span>1000 · 500 · 250 ml</span></li>
+    <li><b>سرعة التعبئة</b><span>80 · 70 · 60 %</span></li>
+    <li><b>عزم الغطاء</b><span>180 · 150 · 120 N·cm</span></li>
+    <li><b>زمن الخلط</b><span>240 · 240 · 180 s</span></li>
+  </ul>
+  <p class="tip">في Unified اسمها <b>Parameter Sets</b> وتُعرض في <b>Parameter Set Control</b>.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>تحميل الوصفة إلى الـ PLC بأمان</h2>
-<p>أخطر لحظة في الوصفة هي لحظة إرسالها. لو كُتبت القيم والآلة تعمل، فقد تعبّئ الآلة نصف دفعة بالحجم القديم ونصفها بالجديد، أو تقرأ الـ PLC بعض القيم الجديدة مع بعض القديمة.</p>
-<svg viewBox="0 0 640 250" role="img" aria-label="تسلسل تحميل الوصفة إلى الـ PLC بالمصافحة" style="width:100%;max-width:640px;direction:ltr">
+  <svg viewBox="0 0 640 250" role="img" aria-label="تسلسل تحميل الوصفة إلى الـ PLC بالمصافحة" style="width:100%;max-width:640px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
 <rect x="20" y="20" width="250" height="210" rx="10" fill="none" stroke="currentColor" stroke-width="2"/>
 <text x="145" y="42" font-weight="700">HMI / SCADA</text>
@@ -66,58 +64,49 @@
 </g>
 <defs><marker id="a9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1e5fd1"/></marker>
 <marker id="a9g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#2e7d32"/></marker></defs></svg>
-<ol class="steps-l"><li><b>تحقّق من الحدود</b> في الـ HMI قبل الحفظ: يرفض الحقل قيمة 1500 ml إذا كان الحد الأعلى 1050.</li>
-<li><b>اشترط توقّف الخط:</b> يُسمح بالتحميل فقط عندما يكون وسم <span class="mono">Line_Running</span> صفرًا، وإلا تظهر رسالة «أوقف الخط أولًا».</li>
-<li><b>اكتب في منطقة وسيطة (Buffer)</b> لا في المعاملات التي تستخدمها الآلة مباشرة.</li>
-<li><b>المصافحة (Handshake):</b> يرفع الـ HMI بت الطلب <span class="mono">Req</span>، فتتحقق الـ PLC من القيم مرة ثانية ثم تنسخها كتلةً واحدة إلى المنطقة الفعّالة وترفع <span class="mono">Done</span>.</li></ol>
-<div class="box safe"><b>قاعدة:</b> الـ PLC هي خط الدفاع الأخير. حدود الشاشة تمنع الخطأ غير المقصود، لكن الـ PLC يجب أن ترفض أي قيمة خارج المدى مهما كان مصدرها (شاشة أو SCADA أو OPC UA).</div>
-<div class="tblw"><table class="tbl"><thead><tr><th>الخطأ الشائع</th><th>العَرَض</th><th>العلاج</th></tr></thead><tbody>
-<tr><td>تحميل أثناء التشغيل</td><td>زجاجات بأحجام مختلطة في الدفعة نفسها</td><td>شرط توقّف الخط + المصافحة</td></tr>
-<tr><td>اختلاف الوحدات</td><td>الآلة تعبّئ 1 ml بدل 1 L</td><td>اكتب الوحدة بجانب كل عنصر، ووحّدها بين الـ HMI والـ PLC</td></tr>
-<tr><td>تعديل الـ UDT دون تحديث البنية</td><td>عناصر منزاحة أو قيم في غير مكانها</td><td>حدّث بنية الوصفة بعد أي تغيير في الـ UDT وأعد الترجمة</td></tr>
-<tr><td>لا أحد يعرف من غيّر الوصفة</td><td>منتج معيب بلا تفسير</td><td>صلاحية تعديل للمهندس فقط + سجل التدقيق (الدرس 8)</td></tr></tbody></table></div>
+  <ol class="steps"><li>تحقّق الحدود</li><li><span class="mono">Line_Running</span> = 0</li><li>اكتب في Buffer</li><li>Req ← الـ PLC تتحقق وتنسخ ← Done</li></ol>
+  <div class="box safe">الـ PLC <b>خط الدفاع الأخير</b>: ترفض أي قيمة خارج المدى مهما كان مصدرها.</div>
+  <ul class="fx">
+    <li><b>تحميل أثناء التشغيل</b><span>أحجام مختلطة ← شرط التوقف + المصافحة</span></li>
+    <li><b>وحدات مختلفة</b><span>1 ml بدل 1 L</span></li>
+    <li><b>UDT تغيّر</b><span>قيم منزاحة ← حدّث البنية</span></li>
+    <li><b>من غيّر الوصفة؟</b><span>صلاحية المهندس + سجل التدقيق</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>سكربتات JavaScript في WinCC Unified</h2>
-<p>تعتمد WinCC Unified لغة <b>JavaScript</b> للسكربتات بدل VBScript و C في WinCC Classic و VBScript في Comfort. يُكتب السكربت داخل <b>حدث (Event)</b> لعنصر أو لشاشة أو لوسم، ويمكن جمع الدوال المشتركة في <b>وحدات عامة (Global modules)</b> تستدعيها من أي مكان.</p>
-<ul><li><b>أحداث العناصر:</b> النقر (Click / Tapped)، الضغط والإفلات، فتح الشاشة.</li>
-<li><b>أحداث الوسوم:</b> تغيّر القيمة، مثل تسجيل رسالة عند تغيّر حالة المضخة.</li>
-<li><b>الوصول إلى الوسوم:</b> بالقراءة <span class="mono">Tags("Name").Read()</span> والكتابة <span class="mono">Tags("Name").Write(v)</span>، وللتتبع والتشخيص <span class="mono">HMIRuntime.Trace()</span>.</li></ul>
-<pre class="box mono" dir="ltr" style="overflow-x:auto;white-space:pre;text-align:left;font-size:.85rem;line-height:1.6;margin:8px 0">// Click event of the "Start filling" button (simplified)
-let vol = Tags("Filler_Volume_SP").Read();
-let running = Tags("Line_Running").Read();
-if (vol &lt; 200 || vol &gt; 1050) {
-  HMIRuntime.Trace("Start refused: volume out of range " + vol);
-} else if (!running) {
-  Tags("Line_Start_Cmd").Write(true);
-}</pre>
-<div class="box key"><b>متى تكتب سكربتًا؟</b> ابدأ دائمًا بالوظائف الجاهزة دون برمجة (Set tag، Change screen، Increase/Decrease value). اكتب سكربتًا فقط عندما تحتاج منطقًا لا توفره الوظائف الجاهزة: حساب، أو رسالة تأكيد، أو تجميع عدة كتابات.</div>
-<div class="tblw"><table class="tbl"><thead><tr><th>افعل</th><th>لا تفعل</th></tr></thead><tbody>
-<tr><td>اجعل السكربت قصيرًا وسريعًا</td><td>لا تكتب حلقات انتظار أو تأخيرًا داخل حدث نقر</td></tr>
-<tr><td>ضع المنطق المشترك في وحدة عامة</td><td>لا تنسخ الكود نفسه في عشرين زرًّا</td></tr>
-<tr><td>سجّل الأخطاء بـ Trace وراقبها</td><td>لا تضع تعشيقات الأمان (Interlocks) في السكربت</td></tr></tbody></table></div>
-<p><b>مقارنة:</b> Ignition يستخدم <b>Python</b> (بتنفيذ Jython)، و FactoryTalk Optix يستخدم <b>C#</b> في ما يسمى NetLogic. اللغة تختلف، والقاعدة واحدة: منطق التحكم والأمان في الـ PLC، والسكربت لخدمة الواجهة فقط.</p>
+  <p class="bf"><span class="ic">📜</span><span>السكربت داخل <b>حدث</b>، والمشترك في <b>وحدة عامة</b>.</span></p>
+<pre class="box mono" dir="ltr" style="overflow-x:auto;white-space:pre;text-align:left;font-size:.85rem;line-height:1.6;margin:8px 0">let vol = Tags("Filler_Volume_SP").Read();
+if (vol &lt; 200 || vol &gt; 1050)
+  HMIRuntime.Trace("refused " + vol);
+else Tags("Line_Start_Cmd").Write(true);</pre>
+  <ul class="fx">
+    <li class="ok"><b>افعل</b><span>قصير وسريع · وحدة عامة · سجّل بـ Trace</span></li>
+    <li><b>لا تفعل</b><span>حلقات انتظار · نسخ الكود · تعشيقات أمان</span></li>
+  </ul>
+  <p class="tip">ابدأ بالوظائف الجاهزة. Ignition: Python. Optix: C#.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>المهام المجدولة</h2>
-<p>تتيح WinCC Unified تعريف <b>مهام مجدولة (Scheduled tasks)</b> تنفّذ وظيفة أو سكربتًا تلقائيًا عند <b>مشغّل (Trigger)</b>: وقت محدد أو دوري، أو تغيّر قيمة وسم، أو حدث إنذار.</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>المشغّل</th><th>مثال من خط التعبئة</th></tr></thead><tbody>
-<tr><td>وقت ثابت يوميًا</td><td>في 06:00 بداية الوردية: تصدير عدد الزجاجات والرفض إلى ملف تقرير</td></tr>
-<tr><td>دوري</td><td>كل 10 دقائق: حساب متوسط زمن الدورة وكتابته في وسم داخلي</td></tr>
-<tr><td>تغيّر وسم</td><td>عند تغيّر رقم المنتج: تسجيل رسالة تشغيلية باسم الوصفة الجديدة</td></tr>
-<tr><td>إنذار</td><td>عند توقف الضاغط: فتح شاشة الضاغط تلقائيًا على حاسوب المشرف</td></tr></tbody></table></div>
-<div class="box safe"><b>تنبيه:</b> لا تجعل عدّاد الإنتاج أو تصفيره يعتمد على مهمة في الـ HMI. لو كان الحاسوب مطفأً لحظة التصفير ضاع الحدث. العدّادات وتصفيرها مكانها الـ PLC، والـ HMI يعرض ويسجّل.</div>
+  <ul class="fx">
+    <li><b>وقت ثابت</b><span>06:00 تصدير تقرير الوردية</span></li>
+    <li><b>دوري</b><span>كل 10 دقائق متوسط زمن الدورة</span></li>
+    <li><b>تغيّر وسم</b><span>تسجيل اسم الوصفة الجديدة</span></li>
+    <li><b>إنذار</b><span>فتح شاشة الضاغط تلقائيًا</span></li>
+  </ul>
+  <div class="box safe">العدّادات وتصفيرها في <b>الـ PLC</b>، لا في مهمة على الشاشة.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>كيف تعرف أين المشكلة؟</h2>
-<ul><li><b>الوصفة لا تُحمَّل ولا رسالة:</b> راقب وسوم المصافحة (<span class="mono">Req</span> و <span class="mono">Done</span>) في جدول المراقبة بالـ PLC. إن لم يرتفع <span class="mono">Req</span> فالمشكلة في الـ HMI، وإن ارتفع ولم يرتفع <span class="mono">Done</span> فالـ PLC رفضت القيم أو لم تنفذ النسخ.</li>
-<li><b>قيمة ظهرت في عنصر آخر:</b> بنية الوصفة لا تطابق الـ UDT بعد تعديله.</li>
-<li><b>السكربت لا يعمل:</b> افتح أداة التتبع (Trace viewer) وابحث عن رسالة الخطأ؛ أغلب الأخطاء اسم وسم مكتوب خطأً أو وسم غير موجود.</li>
-<li><b>المهمة المجدولة لم تُنفَّذ:</b> تحقق من توقيت الخادم والمنطقة الزمنية، ومن أن الـ Runtime كان يعمل في ذلك الوقت.</li></ul>
-<div class="box key"><b>على المحاكي:</b> عدّل سجل وصفة «تعبئة العصير»، وجرّب قيمة خارج المدى لترى الرفض، ثم حاول التحميل والخط يعمل، وأوقف الخط وحمّل الوصفة إلى الـ PLC وشاهد الزجاجات تُعبَّأ بالحجم الجديد. <a class="btn pri" href="scada.html#recipe" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+  <ul class="fx">
+    <li><b>Req لم يرتفع</b><span>المشكلة في الـ HMI</span></li>
+    <li><b>Req بلا Done</b><span>الـ PLC رفضت القيم</span></li>
+    <li><b>قيمة في عنصر آخر</b><span>البنية لا تطابق الـ UDT</span></li>
+    <li><b>السكربت لا يعمل</b><span>Trace viewer: اسم وسم خطأ</span></li>
+    <li><b>المهمة لم تُنفَّذ</b><span>توقيت الخادم والمنطقة الزمنية</span></li>
+  </ul>
+  <div class="box key"><b>على المحاكي:</b> جرّب قيمة خارج المدى، ثم التحميل والخط يعمل، ثم أوقفه وحمّل. <a class="btn pri" href="scada.html#recipe" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>

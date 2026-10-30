@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="scada.css?v=20261028s1">
 <script src="scada.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -29,53 +30,38 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>ما الوسم؟ خارجي وداخلي</h2>
-<p><b>الوسم</b> (<span class="term">Tag</span>) متغير له اسم ونوع بيانات، تربطه الشاشة بعنصر رسومي. في WinCC Unified نوعان:</p>
-<div class="tblw"><table class="tbl"><thead><tr><th></th><th>وسم خارجي <span class="term">External tag</span></th><th>وسم داخلي <span class="term">Internal tag</span></th></tr></thead><tbody>
-<tr><td>مكان القيمة</td><td>في الـ PLC، تقرؤه الشاشة وتكتبه عبر الاتصال</td><td>في ذاكرة الشاشة أو الخادم فقط</td></tr>
-<tr><td>يحتاج اتصالًا؟</td><td>نعم</td><td>لا</td></tr>
-<tr><td>مثال</td><td><span class="mono">Tank1_Level</span> و <span class="mono">Pump1_Running</span></td><td>رقم الشاشة المفتوحة، اسم المستخدم الحالي، متغير مساعد لسكربت</td></tr>
-<tr><td>في Ignition</td><td>OPC tag من مزوّد الوسوم</td><td>Memory tag</td></tr>
-</tbody></table></div>
-<ul><li><b>الربط الرمزي:</b> عندما يكون الـ PLC والشاشة في مشروع TIA Portal واحد، تختار الوسم باسمه من جدول الـ PLC أو من DB، ولا تكتب عنوانًا مطلقًا مثل <span class="mono">%MW20</span>. لو غيّر المبرمج العنوان يبقى الربط صحيحًا.</li>
-<li><b>شرط الوصول:</b> متغير الـ DB يجب أن يكون مسموحًا بالوصول إليه من HMI/OPC UA في خصائصه، وإلا لن يظهر في قائمة الاختيار.</li>
-<li><b>التسمية:</b> اتبع قاعدة ثابتة: المعدّة ثم الرقم ثم الإشارة (<span class="mono">Pump1_Speed_SP</span>). الأسماء العشوائية مثل <span class="mono">Tag_17</span> تضاعف زمن التشخيص لاحقًا.</li></ul>
+  <p class="bf"><span class="ic">🏷️</span><span>الوسم <span class="term">Tag</span> = متغير باسم ونوع، تربطه الشاشة بعنصر.</span></p>
+  <div class="vs"><div class="side"><b>خارجي</b><span>قيمته في الـ PLC · يحتاج اتصالًا</span><span class="mono">Tank1_Level</span></div><i>×</i><div class="side"><b>داخلي</b><span>في ذاكرة الشاشة فقط</span><span>رقم الشاشة، اسم المستخدم</span></div></div>
+  <ul class="fx">
+    <li><b>الربط الرمزي</b><span>اختر الوسم باسمه، لا بعنوان <span class="mono">%MW20</span></span></li>
+    <li><b>لا يظهر في القائمة؟</b><span>فعّل الوصول من HMI/OPC UA في الـ DB</span></li>
+    <li><b>التسمية</b><span>معدّة_رقم_إشارة: <span class="mono">Pump1_Speed_SP</span></span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>الاتصال بالـ PLC وفحصه</h2>
-<p>في المثال: PLC من نوع <b>S7-1500</b> بعنوان <span class="term">192.168.0.1</span> والقناع <span class="term">255.255.255.0</span>، والشاشة بعنوان <span class="term">192.168.0.10</span>.</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>الإعداد</th><th>القيمة الصحيحة</th><th>الخطأ الشائع وعَرَضه</th></tr></thead><tbody>
-<tr><td>نوع الاتصال</td><td>اتصال متكامل (Integrated) مع PLC المشروع</td><td>برنامج تشغيل لعائلة أخرى من الـ PLC، فلا يتصل</td></tr>
-<tr><td>عنوان الـ PLC</td><td class="mono">192.168.0.1</td><td>رقم خاطئ: كل الحقول <span class="mono">####</span> أو رمادية</td></tr>
-<tr><td>الشبكة الفرعية</td><td>الجهازان في <span class="mono">192.168.0.x</span></td><td>الشاشة على <span class="mono">192.168.1.10</span>: لا يصل حتى الـ ping</td></tr>
-<tr><td>واجهة الشاشة</td><td>منفذ الإيثرنت الموصول فعلًا</td><td>اختيار واجهة أو نقطة وصول غير المستخدمة</td></tr>
-</tbody></table></div>
-<h3>ترتيب الفحص عند «لا اتصال»</h3>
-<ol><li>مصابيح المنفذ في الـ PLC والمحوّل (Switch): هل يوجد رابط؟</li>
-<li>هل العنوانان في الشبكة الفرعية نفسها؟ ثم <span class="mono">ping 192.168.0.1</span> من حاسوب على الشبكة.</li>
-<li>هل عنوان الـ PLC مكرر؟ جهاز آخر بالعنوان نفسه يسبب انقطاعًا متقطعًا.</li>
-<li>إعدادات الاتصال في مشروع الشاشة: العنوان ونوع المتحكم والواجهة.</li>
-<li>مع PLC من مورّد آخر أو مشروع منفصل: حماية الوصول في الـ PLC، أو السماح بـ PUT/GET، حسب نوع الاتصال ودليل المتحكم.</li></ol>
+  <div class="vs"><div class="side"><b>PLC S7-1500</b><span class="mono">192.168.0.1</span></div><i>⇄</i><div class="side"><b>الشاشة</b><span class="mono">192.168.0.10</span></div></div>
+  <ul class="fx">
+    <li><b>عنوان خاطئ</b><span>كل الحقول <span class="mono">####</span> أو رمادية</span></li>
+    <li><b>شبكة فرعية مختلفة</b><span>لا يصل حتى الـ ping</span></li>
+    <li><b>عنوان مكرر</b><span>انقطاع متقطع</span></li>
+  </ul>
+  <ol class="steps"><li>مصابيح المنفذ</li><li>نفس الشبكة + ping</li><li>عنوان مكرر؟</li><li>إعدادات الاتصال</li><li>حماية الوصول / PUT/GET</li></ol>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>أنواع البيانات: الخطأ الذي يعطي رقمًا صحيح الشكل وخاطئ القيمة</h2>
-<div class="tblw"><table class="tbl"><thead><tr><th>النوع</th><th>الحجم</th><th>المدى</th><th>استخدامه</th></tr></thead><tbody>
-<tr><td class="mono">Bool</td><td>1 بت</td><td>0 / 1</td><td>تعمل/متوقفة، عطل، أمر تشغيل</td></tr>
-<tr><td class="mono">Int</td><td>16 بت</td><td>−32768 … 32767</td><td>القيمة الخام للدخل التناظري</td></tr>
-<tr><td class="mono">DInt</td><td>32 بت</td><td>±2.1 مليار</td><td>العدادات: عدد الزجاجات، ساعات التشغيل</td></tr>
-<tr><td class="mono">Real</td><td>32 بت (فاصلة عائمة)</td><td>أعداد بكسور</td><td>الضغط 4.5 bar، الحرارة 82.3 °C</td></tr>
-<tr><td class="mono">String</td><td>متغير</td><td>نص</td><td>اسم المنتج، رقم الدفعة</td></tr>
-</tbody></table></div>
-<div class="tblw"><table class="tbl"><thead><tr><th>العَرَض على الشاشة</th><th>السبب المرجّح</th></tr></thead><tbody>
-<tr><td>الضغط في الـ PLC <b>4.5</b> لكن الشاشة تعرض <b>16528</b> أو رقمًا غريبًا</td><td>متغير <span class="mono">Real</span> عُرّف في الشاشة <span class="mono">Int</span>، فقُرئ نصف بتات الفاصلة العائمة كعدد صحيح</td></tr>
-<tr><td>العداد يصل إلى <b>32767</b> ثم يقفز إلى <b>−32768</b></td><td>عداد <span class="mono">DInt</span> عُرّف <span class="mono">Int</span>، ففاض عند حد الـ 16 بت</td></tr>
-<tr><td>القيمة دائمًا 0 أو 1 فقط</td><td>وسم تناظري عُرّف <span class="mono">Bool</span></td></tr>
-</tbody></table></div>
-<div class="box key"><b>كيف تعرف؟</b> افتح جدول المراقبة (Watch table) في الـ PLC بجانب الشاشة. لو اختلفت القيمتان والاتصال سليم، فقارن نوع البيانات في الوسم مع نوعه في الـ PLC أولًا. الربط الرمزي يمنع هذا الخطأ غالبًا لأنه يأخذ النوع من الـ PLC تلقائيًا.</div>
+  <div class="tiles"><div class="tile"><span class="big">Bool</span><span>تعمل/متوقفة</span></div><div class="tile"><span class="big">Int</span><span>16 بت · القيمة الخام</span></div><div class="tile"><span class="big">DInt</span><span>32 بت · العدادات</span></div><div class="tile"><span class="big">Real</span><span>كسور · 4.5 bar</span></div></div>
+  <ul class="fx">
+    <li><b>4.5 تظهر 16528</b><span>Real عُرّف Int</span></li>
+    <li><b>32767 ثم −32768</b><span>DInt عُرّف Int</span></li>
+    <li><b>دائمًا 0 أو 1</b><span>تناظري عُرّف Bool</span></li>
+  </ul>
+  <p class="tip">قارن بجدول المراقبة في الـ PLC. الربط الرمزي يأخذ النوع تلقائيًا.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>التحويل الخطي: من 27648 إلى نسبة مئوية</h2>
-<p>بطاقة الدخل التناظري في S7-1200/1500 تحوّل إشارة 4–20 mA أو 0–10 V إلى عدد صحيح من <b>0 إلى 27648</b> في المدى الاسمي. المشغّل يريد وحدات هندسية: % أو bar أو °C.</p>
-<figure class="fig">
+  <p class="bf"><span class="ic">📐</span><span>بطاقة الدخل تعطي <b>0 إلى 27648</b>؛ المشغّل يريد % أو bar.</span></p>
+  <figure class="fig">
 <svg viewBox="0 0 640 260" role="img" aria-label="منحنى التحويل الخطي من 0 إلى 27648 إلى 0 إلى 100 بالمئة" style="width:100%;max-width:640px;direction:ltr">
 <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs>
 <g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor">
@@ -94,32 +80,27 @@
 </g></svg>
 <figcaption>التحويل الخطي: القيمة الخام من بطاقة الدخل التناظري (0 إلى 27648) تصبح 0 إلى 100 %.</figcaption>
 </figure>
-<div class="formula">Value = (Raw − RawMin) × (EuMax − EuMin) / (RawMax − RawMin) + EuMin</div>
-<div class="tblw"><table class="tbl"><thead><tr><th>الإشارة</th><th>Raw</th><th>المستوى 0–100 %</th><th>الضغط 0–10 bar</th></tr></thead><tbody>
-<tr><td>4 mA</td><td class="mono">0</td><td>0 %</td><td>0.0 bar</td></tr>
-<tr><td>8 mA</td><td class="mono">6912</td><td>25 %</td><td>2.5 bar</td></tr>
-<tr><td>12 mA</td><td class="mono">13824</td><td>50 %</td><td>5.0 bar</td></tr>
-<tr><td>20 mA</td><td class="mono">27648</td><td>100 %</td><td>10.0 bar</td></tr>
-<tr><td>سلك مقطوع أو تجاوز</td><td class="mono">32767</td><td colspan="2">قيمة غير صالحة: لا تعرضها كـ 118 %</td></tr>
-</tbody></table></div>
-<ul><li><b>أين يتم التحويل؟</b> الأفضل في الـ PLC (مثلًا <span class="mono">NORM_X</span> ثم <span class="mono">SCALE_X</span>) حتى تتفق الشاشة والإنذارات والأرشيف على القيمة نفسها. خيار <b>التحويل الخطي</b> في خصائص الوسم بالشاشة مفيد عندما لا تستطيع تعديل برنامج الـ PLC.</li>
-<li><b>لا تحوّل مرتين:</b> لو حُوّلت القيمة في الـ PLC وفعّلت التحويل في الشاشة أيضًا، ستعرض أرقامًا صغيرة جدًا بلا معنى.</li></ul>
+  <ul class="lsec scale">
+    <li><b>4 mA · 0</b><span class="bar"><i style="width:1%"></i><em><bdi dir="ltr">0 %</bdi></em></span></li>
+    <li><b>8 mA · 6912</b><span class="bar"><i style="width:25%"></i><em><bdi dir="ltr">25 %</bdi></em></span></li>
+    <li><b>12 mA · 13824</b><span class="bar"><i style="width:50%"></i><em><bdi dir="ltr">50 %</bdi></em></span></li>
+    <li><b>20 mA · 27648</b><span class="bar"><i style="width:100%"></i><em><bdi dir="ltr">100 %</bdi></em></span></li>
+    <li class="danger"><b>32767</b><span class="bar"><i style="width:100%"></i><em>سلك مقطوع</em></span></li>
+  </ul>
+  <p class="tip">حوّل في الـ PLC (<span class="mono">NORM_X</span> ثم <span class="mono">SCALE_X</span>) لتتفق الشاشة والإنذارات والأرشيف.</p>
+  <p class="alert"><b>لا تحوّل مرتين</b>: في الـ PLC وفي الشاشة معًا.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>دورة القراءة وحِمل الاتصال</h2>
-<p>لكل وسم <b>دورة قراءة</b> (<span class="term">Acquisition cycle</span>): كم مرة تطلب الشاشة قيمته من الـ PLC.</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>الإشارة</th><th>دورة مقترحة</th><th>السبب</th></tr></thead><tbody>
-<tr><td>حالة مضخة، أزرار، إنذارات</td><td>100–500 ms</td><td>المشغّل يتوقع استجابة فورية</td></tr>
-<tr><td>مستوى خزان، ضغط</td><td>500 ms – 1 s</td><td>تتغير ببطء نسبيًا</td></tr>
-<tr><td>حرارة فرن، ساعات تشغيل</td><td>2–10 s</td><td>تتغير ببطء شديد</td></tr>
-</tbody></table></div>
-<ul><li>لو جعلت كل الوسوم 100 ms فقد تثقل الاتصال وتبطئ الشاشة كلها، وتستهلك موارد الـ PLC.</li>
-<li>في معظم المنصات تُقرأ الوسوم الظاهرة في الشاشة المفتوحة فقط، إلا إذا كانت مرتبطة بإنذار أو أرشيف أو سكربت يعمل باستمرار.</li>
-<li><b>مؤشر الاتصال:</b> ضع على كل شاشة رمزًا لحالة الاتصال، وفي Unified يمكن قراءة حالة الاتصال من وسوم النظام أو من التشخيص. المشغّل يجب أن يعرف فورًا أن القيم مجمّدة.</li></ul>
-<div class="box key"><b>على المحاكي:</b> أصلح إعدادات الاتصال بالـ PLC S7-1500 على 192.168.0.1، وصحّح أنواع البيانات (Real المقروء Int والعداد DInt)، وأضف التحويل الخطي 0–27648 → 0–100 % حتى تطابق القيم الحية ما في الـ PLC. <a class="btn pri" href="scada.html#tags" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+  <ul class="fx">
+    <li><b>أزرار وحالات وإنذارات</b><span><bdi dir="ltr">100–500 ms</bdi></span></li>
+    <li><b>مستوى وضغط</b><span><bdi dir="ltr">500 ms – 1 s</bdi></span></li>
+    <li><b>حرارة فرن وساعات</b><span><bdi dir="ltr">2–10 s</bdi></span></li>
+  </ul>
+  <p class="alert">كل الوسوم 100 ms = اتصال ثقيل وشاشة بطيئة.</p>
+  <p class="tip">ضع رمز حالة الاتصال على كل شاشة: المشغّل يعرف فورًا أن القيم مجمّدة.</p>
+  <div class="box key"><b>على المحاكي:</b> أصلح الاتصال، وصحّح Real و DInt، وأضف التحويل 0–27648 → 0–100 %. <a class="btn pri" href="scada.html#tags" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
