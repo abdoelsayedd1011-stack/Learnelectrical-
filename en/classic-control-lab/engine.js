@@ -2982,7 +2982,7 @@ CL.bench = function(host, ex, opt){
       const A = TT[w.a], B = TT[w.b]; if (!A || !B) return;
       const d = route(A, B), col = wireColor(w, fr), act = res && res.active.has(res.find(w.a));
       const bad = (flash && flash.wires.has(w.id)) || (errHl && errHl.w.has(w.id)), pw = col !== '#3a9be0' && (powerTerm(w.a) || powerTerm(w.b));
-      wSvg += `<g class="bw${bad ? ' bad' : ''}${pw ? ' pw' : ''}"><path class="bw-sh" d="${d}" transform="translate(1.5 2.5)"/><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${col}"/><path class="bw-hl" d="${d}"/>${act ? `<path class="bw-flow" d="${d}"/>` : ''}${ferrule(A, col)}${ferrule(B, col)}<path class="bw-hit" d="${d}" data-w="${w.id}" tabindex="0" role="button" aria-label="Wire from ${esc(termLab(w.a))} to ${esc(termLab(w.b))}: tap to remove it"/></g>`;
+      wSvg += `<g class="bw${bad ? ' bad' : ''}${pw ? ' pw' : ''}"><path class="bw-sh" d="${d}" transform="translate(1.5 2.5)"/><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${col}"/><path class="bw-h" d="${d}"/><path class="bw-hl" d="${d}"/>${act ? `<path class="bw-flow" d="${d}"/>` : ''}${ferrule(A, col)}${ferrule(B, col)}<path class="bw-hit" d="${d}" data-w="${w.id}" tabindex="0" role="button" aria-label="Wire from ${esc(termLab(w.a))} to ${esc(termLab(w.b))}: tap to remove it"/></g>`;
     });
     let tSvg = '', tHit = '';
     Object.keys(TT).forEach(id => {
