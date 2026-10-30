@@ -39,7 +39,7 @@ const FREE_LESSONS_BY_DIR = {
   "maint-lab": [1],                 // 12
   "servo-maint-lab": [1],           // 13
   "mech-lab": [1],                  // 11
-  "mfit-lab": [1]                   // 15
+  "mfit-lab": [1]                   // 16
 };
 const COURSE_DIRS = new Set(["classic-control-lab", "safety-lab", "basics-lab", "instrumentation-lab", "plc-lab", "drawings-lab", "vfd-course", "servo-course", "iiot-lab", "scada-lab", "panel-lab", "maint-lab", "servo-maint-lab", "mech-lab", "mfit-lab"]);
 const OPEN_DIRS = new Set(["courses"]);
