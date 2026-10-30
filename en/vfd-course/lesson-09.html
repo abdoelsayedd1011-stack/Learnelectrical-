@@ -16,6 +16,7 @@
 <script src="vfd.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b5">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 <link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
 <script src="/assets/real-art.js?v=20261030h1"></script>
@@ -39,29 +40,45 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>The idea</h2>
-  <ul><li><b>SP</b> (setpoint): the pressure you want, for example 4 bar, from the keypad or from a signal.</li><li><b>PV / feedback</b>: the real pressure from a 4–20 mA transmitter on AI2 (range 0–10 bar, for example).</li><li><b>The output</b>: pump speed. If the pressure is below the setpoint ⇒ higher speed, and the other way round.</li></ul>
-  <div class="tblw"><table class="tbl"><thead><tr><th>Setting</th><th>What it does</th><th>If too large</th></tr></thead><tbody>
-   <tr><td><b>Kp</b> (proportional gain)</td><td>Reacts in proportion to the error</td><td>Oscillation</td></tr>
-   <tr><td><b>Ti</b> (integral time)</td><td>Removes the remaining error over time. <b>The shorter it is</b>, the stronger</td><td>If far too short: oscillation and overshoot</td></tr>
-   <tr><td><b>Td</b> (derivative)</td><td>Looks at how fast the error changes</td><td>Usually left at zero on pumps</td></tr></tbody></table></div>
+  <div class="tiles">
+    <div class="tile"><span class="big">SP</span><b>Wanted</b><span>4 bar</span></div>
+    <div class="tile"><span class="big">PV</span><b>Actual</b><span>4–20 mA transmitter on AI2</span></div>
+    <div class="tile"><span class="big">OUT</span><b>Pump speed</b><span>Low pressure ⇒ faster</span></div>
+  </div>
+  <ul class="fx">
+    <li><b>Kp</b><span>Reaction · too big = oscillation</span></li>
+    <li><b>Ti</b><span>Removes leftover error · shorter = stronger</span></li>
+    <li><b>Td</b><span>Usually zero on pumps</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>Try it: a constant-pressure pump</h2>
-  <p>The current settings are too «eager» and the pressure oscillates. Tune them, then change the demand and watch the drive bring the pressure back.</p>
+  <p class="tip">The pressure oscillates: tune the PID, then change the demand.</p>
   <div class="wd"><h3>Constant-pressure pump with PID</h3><div id="pid"></div></div>
-  <div class="box"><b>A quick tuning method:</b> start with a small Kp and a long Ti (slow but stable). Raise Kp until it starts to oscillate, then go back to about half. Then shorten Ti until the error goes away quickly without oscillation.</div>
+  <ol class="steps">
+    <li>Small Kp · long Ti</li>
+    <li>Raise Kp until it oscillates</li>
+    <li>Back to half</li>
+    <li>Shorten Ti without oscillation</li>
+  </ol>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Sleep and wake</h2>
-  <p>At night there is no demand and the pump turns at low speed just to hold the pressure. The drive can stop it (<b>sleep</b>) when the speed stays below a limit for a set time, and wake it up (<b>wake</b>) when the pressure drops below a limit. Try it in the simulator: close all the taps (0 %) and wait.</p>
+  <div class="vs">
+    <div class="side"><span class="ic">😴</span><b>Sleep</b><span>Low speed for a while ⇒ stop</span></div>
+    <i>⇄</i>
+    <div class="side"><span class="ic">⏰</span><b>Wake</b><span>Pressure drops ⇒ start</span></div>
+  </div>
+  <p class="tip">Try it: close every tap (0 %) and wait.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Settings by application</h2>
-  <div class="tblw"><table class="tbl"><thead><tr><th>Application</th><th>Key settings</th></tr></thead><tbody>
-   <tr><td>Pump / fan</td><td>Quadratic V/f, PID, sleep, min speed, flying start for fans</td></tr>
-   <tr><td>Conveyor</td><td>Sensorless vector, suitable accel/decel or S-curve, preset speeds</td></tr>
-   <tr><td>Hoist / crane</td><td>Vector (preferably with encoder), braking resistor, mechanical brake control from a relay</td></tr>
-   <tr><td>Compressor / mixer</td><td>High starting torque, a min speed for lubrication and cooling</td></tr></tbody></table></div>
+  <ul class="fx">
+    <li><b>🚰 Pump / fan</b><span>Quadratic V/f · PID · sleep · flying start</span></li>
+    <li><b>📦 Conveyor</b><span>Sensorless vector · S-curve · presets</span></li>
+    <li><b>🏗️ Hoist</b><span>Vector with encoder · resistor · brake from relay</span></li>
+    <li><b>🌀 Compressor / mixer</b><span>High starting torque · min speed</span></li>
+  </ul>
   <div class="wd"><h3>Drill: the key setting for the application</h3><div id="app"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">

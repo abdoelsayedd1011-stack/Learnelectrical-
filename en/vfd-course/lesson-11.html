@@ -16,6 +16,7 @@
 <script src="vfd.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b5">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 <link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
 <script src="/assets/real-art.js?v=20261030h1"></script>
@@ -39,8 +40,12 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>Before you touch</h2>
-  <div class="box safe"><b>The golden rule:</b> switch off and lock (LOTO), wait the time printed on the drive, and measure yourself. A dark CHARGE lamp or a dark display is no guarantee.</div>
-  <ul><li><b>STO</b> (Safe Torque Off) stops the motor from turning, but it <b>does not disconnect the power</b>. The terminals are still live.</li><li>A motor turned by its load (a fan in the wind, a pump with water flowing back through it) <b>generates voltage</b> at the drive terminals even with the power off. Lock the load mechanically.</li><li>Use a multimeter rated at least <b>CAT III</b>, on a <b>V DC</b> range that covers 1000 V.</li></ul>
+  <div class="box safe"><b>LOTO → wait the marked time → measure yourself.</b> A dark CHARGE lamp is no guarantee.</div>
+  <ul class="fx">
+    <li><b>STO</b><span>Stops rotation, but terminals are still live</span></li>
+    <li><b>Load turning the motor</b><span>Generates voltage · lock it mechanically</span></li>
+    <li><b>Meter</b><span>CAT III · V DC up to 1000 V</span></li>
+  </ul>
   <div class="wd"><h3>Put the safety steps in order</h3><div id="lock"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
@@ -49,22 +54,28 @@
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>EMC and the motor cable</h2>
-  <ul><li>PWM pulses are very fast, so they make noise that reaches sensors, encoders and analog signals. The fix: a <b>shielded motor cable</b>, with the shield earthed <b>360°</b> in the gland (not a twisted «pigtail»), and control cables kept apart from power cables.</li>
-   <li><b>A long motor cable</b> (longer than the manual allows, usually tens of metres): leakage currents through the cable capacitance cause false OC and ground fault trips, and wave reflection produces voltage spikes at the motor that can reach twice the DC bus and damage its insulation. The fix: an <b>output reactor</b>, a <b>dV/dt filter</b> or a <b>sine filter</b>, and a lower carrier.</li>
-   <li><b>The built-in EMC filter</b>: on isolated (IT) supplies, or with an earth leakage device, it usually has to be disconnected (with a screw or jumper). See the manual.</li></ul>
+  <ul class="fx">
+    <li><b>📡 Noise on sensors</b><span>Shielded cable · 360° earth, no pigtail · separate control</span></li>
+    <li><b>📏 Long cable</b><span>False OC and voltage spikes ⇒ output reactor · dV/dt · lower carrier</span></li>
+    <li><b>🔌 IT network or RCD</b><span>Disconnect the internal EMC filter</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Derating and mounting</h2>
-  <p>A drive carries its rated current under certain conditions (temperature, altitude, carrier). If conditions are harder, you must reduce the allowed current or choose a bigger size.</p>
-  <div class="tblw"><table class="tbl"><thead><tr><th>Factor</th><th>Example rule (from a typical catalogue)</th></tr></thead><tbody>
-   <tr><td>Altitude</td><td>1 % per 100 m above 1000 m</td></tr><tr><td>Panel temperature</td><td>About 2 % per degree above 40 °C (or above 50, depending on the model)</td></tr><tr><td>Carrier</td><td>The higher it goes above the default setting, the lower the allowed current</td></tr></tbody></table></div>
-  <ul><li>Mount it <b>vertically</b>, with space above and below for air (the manual says how many cm).</li><li>The panel needs a <b>fan and filter</b> that remove the heat: roughly 2–3 % of the drive power comes out as heat.</li></ul>
+  <p class="bf"><span class="ic">🌡️</span><span>Harder conditions ⇒ <b>less current</b> or a bigger size.</span></p>
+  <div class="tiles">
+    <div class="tile"><span class="ic">⛰️</span><b>Altitude</b><span>−1 % per 100 m above 1000 m</span></div>
+    <div class="tile"><span class="ic">🌡️</span><b>Temperature</b><span>≈ −2 % per degree above 40 °C</span></div>
+    <div class="tile"><span class="ic">〰️</span><b>Carrier</b><span>Higher ⇒ less current</span></div>
+  </div>
+  <p class="tip">Mount it <b>vertical</b> with air gaps. The panel needs a fan: 2–3 % of the power becomes heat.</p>
   <div class="wd"><h3>Drill: work out the derating</h3><div id="derate"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>Harmonics</h2>
-  <p>The rectifier draws current from the supply in pulses rather than a sine, so it produces <b>harmonics</b> that heat transformers and cables and affect other equipment. The fixes: a <b>line reactor</b> or a <b>DC choke</b> (they reduce harmonics and protect the drive from supply spikes), and on large loads, harmonic filters or low-harmonic / AFE drives.</p>
-  <div class="box">If there is an <b>earth leakage device (RCD)</b> before the drive, it must be a type suitable for drives (usually <b>Type B</b> for three phase) with a suitable sensitivity, or it will trip for no reason.</div>
+  <p class="bf"><span class="ic">〽️</span><span>The rectifier draws pulsed current ⇒ <b>harmonics</b> that heat transformers.</span></p>
+  <p class="tip">Fix: a <b>line reactor</b> or <b>DC choke</b>; big loads use filters or AFE.</p>
+  <p class="alert">RCD before the drive? It must be <b>Type B</b>, or it trips for no reason.</p>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>

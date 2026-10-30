@@ -16,6 +16,7 @@
 <script src="vfd.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b5">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 <link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
 <script src="/assets/real-art.js?v=20261030h1"></script>
@@ -39,17 +40,32 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>Before the reset</h2>
-  <ol class="steps-l"><li><b>Write down the code</b> and look at the <b>fault history</b>: when did the fault happen? What were the current, frequency and DC bus at that moment? (Most drives store them.)</li><li><b>Ask:</b> did it happen during accel? During decel? While running steady? As soon as power came on?</li><li><b>Check</b> what the code points to (cable, motor, supply, ventilation, a parameter).</li><li><b>Fix the cause</b>, then reset. If resetting has become a daily routine, the problem is still there.</li></ol>
-  <div class="box safe"><b>Do not keep resetting an OC or ground fault.</b> Every time you start into a short you damage the IGBTs more. Switch off and test the cable and motor with a megger (after disconnecting them from the drive).</div>
+  <ol class="steps">
+    <li>Note the code + fault history</li>
+    <li>When? Accel · decel · steady</li>
+    <li>Check what the code points to</li>
+    <li class="on">Fix the cause ⇒ reset</li>
+  </ol>
+  <div class="box safe"><b>OC or ground fault? Don't reset again.</b> Disconnect the motor and megger it and the cable.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>Fault table</h2>
-  <div class="tblw"><table class="tbl ct-tab"><thead><tr><th>Fault</th><th>Meaning</th><th>Most common causes</th><th>PF525</th><th>V20</th><th>ATV320</th></tr></thead><tbody><tr><td><b>Overcurrent</b></td><td>A very high instantaneous current</td><td>Short accel, a short in the cable or motor, a jammed load</td><td class="mono">F012</td><td class="mono">F0001</td><td class="mono">OCF / SCF</td></tr><tr><td><b>Overvoltage</b></td><td>DC bus too high</td><td>Short decel, a load driving the motor, high supply voltage</td><td class="mono">F005</td><td class="mono">F0002</td><td class="mono">ObF</td></tr><tr><td><b>Undervoltage</b></td><td>DC bus too low</td><td>A supply dip or outage, a lost phase</td><td class="mono">F004</td><td class="mono">F0003</td><td class="mono">USF</td></tr><tr><td><b>Motor overload</b></td><td>The motor is hot (calculated)</td><td>Too much load, wrong motor current in the parameters, low speed for long periods</td><td class="mono">F007</td><td class="mono">F0011*</td><td class="mono">OLF</td></tr><tr><td><b>Drive overtemp</b></td><td>The drive itself is hot</td><td>A failed fan, dust, a hot panel, a high carrier</td><td class="mono">F008</td><td class="mono">F0004</td><td class="mono">OHF</td></tr><tr><td><b>Ground fault</b></td><td>Current leaking to earth</td><td>Cable or motor insulation, moisture</td><td class="mono">F013</td><td class="mono">—</td><td class="mono">SCF3 / GrF</td></tr><tr><td><b>Input phase loss</b></td><td>A missing input phase</td><td>A blown fuse, a loose terminal</td><td class="mono">—</td><td class="mono">—</td><td class="mono">PHF</td></tr><tr><td><b>Output phase loss</b></td><td>An open phase to the motor</td><td>A loose terminal, an open output contactor</td><td class="mono">—</td><td class="mono">—</td><td class="mono">OPF</td></tr><tr><td><b>Analog loss</b></td><td>The 4–20 signal is gone</td><td>A broken wire</td><td class="mono">F029</td><td class="mono">—</td><td class="mono">LFF</td></tr></tbody></table></div>
-  <p class="muted" style="font-size:.88rem">The codes are for illustration and may differ between versions (* on the V20, motor overload has more than one code). The manual is the reference, and the device simulators on this site include each device's codes.</p>
+  <ul class="fx">
+    <li><b>Overcurrent</b><span>Short accel · short circuit · jammed load</span></li>
+    <li><b>Overvoltage</b><span>Short decel · overhauling load</span></li>
+    <li><b>Undervoltage</b><span>Mains dip · lost phase</span></li>
+    <li><b>Motor overload</b><span>Too much load · wrong motor current parameter</span></li>
+    <li><b>Drive overtemp</b><span>Fan · dust · high carrier</span></li>
+    <li><b>Ground fault</b><span>Cable or motor insulation · moisture</span></li>
+    <li><b>Phase loss</b><span>Blown fuse · loose terminal</span></li>
+    <li><b>Analog loss</b><span>Broken 4–20 wire</span></li>
+  </ul>
+  <div class="tblw"><table class="tbl ct-tab"><thead><tr><th>Fault</th><th>PF525</th><th>V20</th><th>ATV320</th></tr></thead><tbody><tr><td>Overcurrent</td><td class="mono">F012</td><td class="mono">F0001</td><td class="mono">OCF / SCF</td></tr><tr><td>Overvoltage</td><td class="mono">F005</td><td class="mono">F0002</td><td class="mono">ObF</td></tr><tr><td>Undervoltage</td><td class="mono">F004</td><td class="mono">F0003</td><td class="mono">USF</td></tr><tr><td>Motor overload</td><td class="mono">F007</td><td class="mono">F0011</td><td class="mono">OLF</td></tr><tr><td>Drive overtemp</td><td class="mono">F008</td><td class="mono">F0004</td><td class="mono">OHF</td></tr><tr><td>Ground fault</td><td class="mono">F013</td><td class="mono">—</td><td class="mono">SCF3 / GrF</td></tr><tr><td>Input phase loss</td><td class="mono">—</td><td class="mono">—</td><td class="mono">PHF</td></tr><tr><td>Output phase loss</td><td class="mono">—</td><td class="mono">—</td><td class="mono">OPF</td></tr><tr><td>Analog loss</td><td class="mono">F029</td><td class="mono">—</td><td class="mono">LFF</td></tr></tbody></table></div>
+  <p class="tip">Codes vary by firmware: the manual is the reference.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Game: diagnose the fault</h2>
-  <p>In each case, read the code and the story, check what you need, and choose the cause.</p>
+  <p class="tip">Read the code and the story, check, then pick the cause.</p>
   <div class="wd"><h3>Faults from the field</h3><div id="game"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">

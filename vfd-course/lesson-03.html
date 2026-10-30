@@ -15,6 +15,7 @@
 <script src="vfd.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b5">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 <link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
 <script src="/assets/real-art.js?v=20261030h1"></script>
@@ -38,8 +39,12 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>الـ PWM في كلمتين</h2>
-  <p>الانفرتر بيقارن موجة <b>مرجع</b> (sine بالتردد اللي إنت عايزه) بموجة <b>كارير</b> مثلثة سريعة جدًا (آلاف المرات في الثانية). لما المرجع أعلى من الكارير الـ IGBT بيفتح، ولما يقل بيقفل. النتيجة نبضات عرضها بيكبر ويصغر مع الـ sine.</p>
-  <p>ملفات الموتور (الإندكتانس) بتنعّم النبضات دي، فالتيار اللي بيعدّي فيها بيطلع <b>شبه sine</b>. لو عايز تردد أقل، المرجع يبقى أبطأ. ولو عايز جهد أقل، المرجع يبقى أصغر فالنبضات تضيق.</p>
+  <p class="bf"><span class="ic">〰️</span><span>نبضات <b>عرضها بيكبر ويصغر</b> مع الـ sine، والموتور بينعّمها لتيار شبه sine.</span></p>
+  <div class="vs">
+    <div class="side"><b>تردد أقل</b><span>المرجع أبطأ</span></div>
+    <i>·</i>
+    <div class="side"><b>جهد أقل</b><span>المرجع أصغر ⇐ نبضات أضيق</span></div>
+  </div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>جرّب بإيدك</h2>
@@ -47,22 +52,25 @@
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>ليه V/f ثابت؟</h2>
-  <p>الفيض المغناطيسي في الموتور بيتناسب مع <b>الجهد ÷ التردد</b>. عشان الموتور يفضل قوي (عزمه كامل) على أي سرعة، لازم النسبة دي تفضل ثابتة:</p>
+  <p class="bf"><span class="ic">🧲</span><span>الفيض = <b>V ÷ f</b>. نسبة ثابتة ⇐ عزم كامل على أي سرعة.</span></p>
   <div class="formula">V/f = 400 V ÷ 50 Hz = 8 V/Hz</div>
-  <div class="tblw"><table class="tbl"><thead><tr><th>الحالة</th><th>اللي بيحصل</th></tr></thead><tbody>
-   <tr><td>جهد عالي على تردد واطي</td><td>الموتور بيتشبّع، تيار عالي وسخونية</td></tr>
-   <tr><td>جهد واطي على تردد عالي</td><td>الفيض ضعيف والعزم بيقل</td></tr>
-   <tr><td>تحت <bdi dir="ltr">~10 Hz</bdi></td><td>مقاومة الملفات بتاكل جزء من الجهد ⇐ <b>Boost</b> بيعوّض</td></tr>
-   <tr><td>فوق التردد المقنن (<bdi dir="ltr">50 Hz</bdi>)</td><td>الجهد مش بيزيد عن جهد الموتور ⇐ <b>Field weakening</b>: سرعة أعلى بعزم أقل</td></tr></tbody></table></div>
-  <div class="box">فيه منحنى V/f <b>تربيعي</b> (Quadratic / Variable torque) للطلمبات والمراوح: بيدّي جهد أقل على السرعات الواطية لأن الحمل خفيف هناك، فبيوفّر أكتر.</div>
+  <ul class="fx">
+    <li><b>جهد عالي · تردد واطي</b><span>تشبّع وسخونية</span></li>
+    <li><b>جهد واطي · تردد عالي</b><span>عزم ضعيف</span></li>
+    <li><b>تحت <bdi dir="ltr">10 Hz</bdi></b><span>Boost يعوّض</span></li>
+    <li><b>فوق <bdi dir="ltr">50 Hz</bdi></b><span>Field weakening: سرعة أعلى بعزم أقل</span></li>
+  </ul>
+  <p class="tip">طلمبات ومراوح: منحنى V/f <b>تربيعي</b> بيوفّر أكتر.</p>
   <div class="wd"><h3>تمرين: احسب الجهد</h3><div id="vf"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>تردد الكارير</h2>
-  <div class="tblw"><table class="tbl"><thead><tr><th>الكارير</th><th>الموتور</th><th>الانفرتر</th></tr></thead><tbody>
-   <tr><td>واطي (<bdi dir="ltr">⁦2–4 kHz⁩</bdi>)</td><td>صوت صفير مسموع</td><td>بيسخن أقل، والكابل الطويل أحسن</td></tr>
-   <tr><td>عالي (<bdi dir="ltr">⁦8–16 kHz⁩</bdi>)</td><td>هادي وتياره أنعم</td><td>بيسخن أكتر ⇐ لازم Derating، ونويز EMC أكتر</td></tr></tbody></table></div>
-  <div class="ex"><b>من الموقع:</b> مكتب جنب غرفة الطلمبات بيشتكي من صفير. رفعنا الكارير من 4 لـ 8 kHz والصوت راح، بس اتأكدنا من جدول الـ Derating في المانيوال إن الانفرتر لسه شايل تيار الموتور.</div>
+  <div class="vs">
+    <div class="side"><b>واطي 2–4 kHz</b><span>🔊 صفير · الانفرتر أبرد · أحسن للكابل الطويل</span></div>
+    <i>vs</i>
+    <div class="side"><b>عالي 8–16 kHz</b><span>🔇 هادي · الانفرتر أسخن ⇐ Derating</span></div>
+  </div>
+  <p class="tip">رفعت الكارير؟ راجع <b>جدول الـ Derating</b> في المانيوال.</p>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
