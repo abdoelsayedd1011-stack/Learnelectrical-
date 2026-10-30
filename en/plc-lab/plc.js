@@ -1014,6 +1014,7 @@ const plainSim = PL.plainSim = function(host, opt){
   function select(k){
     if (demo) PL.preview.stop();
     stop();
+    if (opt.onSelect) opt.onSelect(k);
     ex = exs[k]; sel = null; lastRes = null; backup = null;
     const saved = PL.progs.get(saveKey());
     prog = ENG.program(saved || ex.start || [ENG.serialize([ENG.blankRung(cols)])[0]], cols);
@@ -1297,12 +1298,12 @@ const plainSim = PL.plainSim = function(host, opt){
     inBtn:a => ioBox.querySelector(`.ib[data-a="${a}"]`), outEl:a => leds.querySelector(`.led[data-a="${a}"]`), plantEl:() => plantBox,
     lab:a => lab(a), addr:a => a, xl:s => s,
     outro:() => '<b>That\'s the machine working as required.</b> Now it\'s your turn: write the program that makes it work like this, switch to <bdi dir="ltr">RUN</bdi> and try it with the buttons, then press "Test program".'};
-  PL.preview.attach(pvAd);
+  if (!opt.demoOnly && !opt.noPreview) PL.preview.attach(pvAd);
   select(0);
   const api = {host, preview:pvAd, get demo(){ return !!demo; }, get ex(){ return ex; }, get prog(){ return prog; }, get engine(){ return e; }, get plant(){ return plantSt; }, get running(){ return running; },
     select, start, stop, check, load(def){ prog = ENG.program(def, cols); changed(); }, press:setPress, exercises:exs, lesson:opt.lesson,
     pick(i, r, c){ sel = {i, r, c}; renderLadder(); }, setEl(t){ setEl(t); }, lint: () => ENG.lint(prog)};
-  (PL._sims = PL._sims || []).push(api);
+  if (!opt.demoOnly) (PL._sims = PL._sims || []).push(api);
   return api;
 };
 
@@ -1837,9 +1838,9 @@ const secs = n => { const v = Math.round(n * 10) / 10; return `<bdi dir="ltr">${
 /* ---------- the player: control bar (fixed at the bottom while playing) + tap marker inside the simulator ---------- */
 function Player(host, o){
   const bar = document.createElement('div');
-  bar.className = 'pv-bar'; bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'Machine running preview');
+  bar.className = 'pv-bar' + (o.loop ? ' pv-loop' : ''); bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'Machine running preview');
   bar.innerHTML = `<div class="pv-in"><div class="pv-top"><span class="pv-rec" aria-hidden="true"></span><b class="pv-t">${esc(o.title)}</b><span class="pv-ff" hidden>⏩<span class="pv-fft"> speeding up time</span></span><span class="sp"></span>
-    <button type="button" class="btn sm pv-pause" aria-label="Pause" aria-pressed="false">${pvIc('pause')}</button><button type="button" class="btn sm pv-spd" aria-label="Speed">1×</button><button type="button" class="btn sm pv-skip" aria-label="Skip to the end">${pvIc('skip')}</button><button type="button" class="btn sm pv-rep" aria-label="Watch from the start">${pvIc('rep')}</button><button type="button" class="btn sm pri pv-try">Your turn: try it</button></div>
+    <button type="button" class="btn sm pv-pause" aria-label="Pause" aria-pressed="false">${pvIc('pause')}</button><button type="button" class="btn sm pv-spd" aria-label="Speed">1×</button><button type="button" class="btn sm pv-skip" aria-label="Skip to the end">${pvIc('skip')}</button><button type="button" class="btn sm pv-rep" aria-label="Watch from the start">${pvIc('rep')}</button>${o.loop ? '' : `<button type="button" class="btn sm pri pv-try">Your turn: try it</button>`}</div>
     <div class="pv-cap" aria-live="polite"></div><div class="pv-pr" aria-hidden="true"><i></i></div>
     ${o.auto ? '<div class="pv-end"><button type="button" class="btn sm pv-noauto">Don\'t play it by itself again</button></div>' : ''}</div>`;
   host.insertBefore(bar, host.firstChild); document.body.classList.add('pv-playing');
@@ -1861,7 +1862,7 @@ function Player(host, o){
     if (!el || !el.getBoundingClientRect) return;
     const red = reduced();
     const r0 = el.getBoundingClientRect(), vh = window.innerHeight, bh = bar.getBoundingClientRect().height;
-    if (r0.top < bh + 8 || r0.bottom > vh - 8) { const y = window.scrollY + r0.top - Math.max(bh + 12, (vh - r0.height) / 2); window.scrollTo({top:Math.max(0, y), behavior:red ? 'auto' : 'smooth'}); await P.hold(gen, red ? 60 : 380); }
+    if (!o.loop && (r0.top < bh + 8 || r0.bottom > vh - 8)) { const y = window.scrollY + r0.top - Math.max(bh + 12, (vh - r0.height) / 2); window.scrollTo({top:Math.max(0, y), behavior:red ? 'auto' : 'smooth'}); await P.hold(gen, red ? 60 : 380); }
     const r = el.getBoundingClientRect(), hr = host.getBoundingClientRect();
     const x = r.left - hr.left + r.width / 2, y = r.top - hr.top + Math.min(r.height / 2, 40);
     fing.classList.toggle('mv', !red && fing.classList.contains('show'));
@@ -1878,7 +1879,7 @@ function Player(host, o){
   spdB.addEventListener('click', () => { P.sp = P.sp === 1 ? 2 : 1; spdB.textContent = P.sp + '×'; });
   bar.querySelector('.pv-skip').addEventListener('click', () => o.onSkip());
   bar.querySelector('.pv-rep').addEventListener('click', () => o.onReplay());
-  bar.querySelector('.pv-try').addEventListener('click', () => o.onTry());
+  if (!o.loop) bar.querySelector('.pv-try').addEventListener('click', () => o.onTry());
   const na = bar.querySelector('.pv-noauto'); if (na) na.addEventListener('click', () => { PV.setAuto(false); na.textContent = 'OK, it won\'t play by itself again'; na.disabled = true; });
   return P;
 }
@@ -1916,6 +1917,36 @@ PV.play = function(ad, opt){
   return ctl;
 };
 PV.stop = () => { if (PV.cur) PV.cur.close(); };
+
+/* «اتفرج فوق، وطبّق تحت»: a second, display-only copy of the lesson simulator sits above the real one and plays the
+   exercise's solution on a loop while it is on screen; the learner's own simulator below stays free to use.
+   Not PV.cur, so it never stops (or is stopped by) another preview. */
+PV.loop = function(ad, watch){
+  let pl = null, gen = 0, vis = false, wait = 0;
+  const stopRun = () => { clearTimeout(wait); if (!pl) return; pl.gen++; ad.end(); ad.host.classList.remove('pv-on'); };
+  function run(){
+    stopRun();
+    if (!vis || !ad.host.isConnected || !ad.has()) return;
+    if (!pl) pl = Player(ad.host, {title:ad.title || '', loop:true, onReplay:run, onSkip:() => {}});
+    const ctl = {ad, closed:false, done:false, expOk:0, expBad:0, err:null, steps:0};
+    pl.reset(); gen = ++pl.gen;
+    const ex = ad.ex(), c0 = ex.cases ? ex.cases[0] : null;
+    ad.begin(Object.assign({}, ex.plantOpt || {}, c0 && c0.plantOpt || {}));
+    ad.host.classList.add('pv-on');
+    const again = () => { if (gen !== pl.gen) return; pl.finish(); wait = setTimeout(() => { if (gen === pl.gen) run(); }, 3500); };
+    (ad.script ? ad.script(pl, gen, ctl) : simScript(ad, pl, gen, ctl)).then(again, err => { if (err === PV_CANCEL) return; console.warn('preview loop:', err); again(); });
+  }
+  const L = {halt(){ if (pl){ stopRun(); pl.destroy(); pl = null; } }, restart(){ L.halt(); run(); }};
+  if ('IntersectionObserver' in G){
+    const io = new IntersectionObserver(es => {
+      if (!ad.host.isConnected){ io.disconnect(); L.halt(); return; }
+      const v = es[es.length - 1].isIntersecting; if (v === vis) return; vis = v;
+      if (v) run(); else stopRun();
+    }, {threshold:0.25});
+    io.observe(watch || ad.host);
+  } else { vis = true; run(); }
+  return L;
+};
 if (HAS_DOM) document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && PV.cur) PV.cur.close(); });
 
 /* launch button + auto-play the first time each exercise's machine comes into view */
