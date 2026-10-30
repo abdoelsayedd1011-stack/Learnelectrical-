@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="safety.css?v=20261027s2">
 <script src="safety.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 <link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
 <script src="/assets/real-art.js?v=20261030h1"></script>
@@ -31,32 +32,36 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>العناوين</h2>
-  <p>كل عنوان شكله <code>[النوع][رقم المحطة].[رقم الطرف]</code>. رقم المحطة من 0 لـ 31 وهو اللي بيظهر على الشاشة.</p>
-  <div class="tblw"><table class="tbl"><thead><tr><th>العنوان</th><th>المعنى</th></tr></thead><tbody>
-  <tr><td class="mono">I0.0 … I0.7</td><td>دخول الأمان في محطة 0</td></tr>
-  <tr><td class="mono">I0.10 … I0.17</td><td>أطراف IQ لما تتقري كدخل</td></tr>
-  <tr><td class="mono">Q0.0 … Q0.3</td><td>خروج الأمان (ريلاي وترانزستور)</td></tr>
-  <tr><td class="mono">Q0.10 … Q0.17</td><td>أطراف IQ لما تتستخدم كخرج</td></tr>
-  <tr><td class="mono">M0.0 …</td><td>ذاكرة داخلية (local) في الجهاز ده بس</td></tr>
-  <tr><td class="mono">GM0.0 …</td><td>ذاكرة عامة (global): أي Pluto على الباص يقراها</td></tr></tbody></table></div>
-  <p>كل الدخول (I) <b>global</b>: أي Pluto على الباص يقدر يقرا دخول التاني. ده اللي بيخلّي طوارئ خط كامل يوقف كل المحطات.</p>
+  <p class="bf"><span class="ic">🏷️</span><span>العنوان = <b>النوع + رقم المحطة . رقم الطرف</b> (المحطة من 0 لـ 31).</span></p>
+  <ul class="fx">
+    <li><b class="mono">I0.0 … I0.7</b><span>دخول أمان</span></li>
+    <li><b class="mono">I0.10 … I0.17</b><span>أطراف IQ كدخل</span></li>
+    <li><b class="mono">Q0.0 … Q0.3</b><span>خروج أمان</span></li>
+    <li><b class="mono">Q0.10 … Q0.17</b><span>أطراف IQ كخرج</span></li>
+    <li><b class="mono">M0.0</b><span>ذاكرة للجهاز ده بس</span></li>
+    <li class="ok"><b class="mono">GM0.0</b><span>ذاكرة عامة لكل الباص</span></li>
+  </ul>
+  <p class="tip">كل الدخول <b>global</b>: طوارئ واحد يقدر يوقف الخط كله.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>الـ Ladder العادي</h2>
-  <p>كونتاكت NO وكونتاكت NC وكويل، و <code>S(...)</code> و <code>R(...)</code> للـ Set/Reset، و <code>P(...)</code> للـ edge، وتايمرات. وتقدر تكتبه نص: <code>Q0.1 = I0.0 + I0.2*I1.0</code> (<code>*</code> = AND، <code>+</code> = OR، <code>/</code> = NOT).</p>
-  <div class="box safe"><b>القاعدة:</b> الـ Ladder العادي للمنطق والإشارات. وظيفة الأمان نفسها (طوارئ، بوابة، ستارة) اعملها بالبلوكات المعتمدة.</div>
+  <p class="bf"><span class="ic">✍️</span><span>تقدر تكتبه نص: <bdi dir="ltr" class="mono" style="white-space:nowrap;font-weight:700">Q0.1 = I0.0 + I0.2*I1.0</bdi></span></p>
+  <div class="tiles">
+    <div class="tile"><span class="big">*</span><b>AND</b></div>
+    <div class="tile"><span class="big">+</span><b>OR</b></div>
+    <div class="tile"><span class="big">/</span><b>NOT</b></div>
+  </div>
+  <div class="box safe"><b>القاعدة:</b> الـ Ladder العادي للإشارات بس. الطوارئ والبوابة والستارة بالبلوكات المعتمدة.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>بلوكات الأمان الأشهر</h2>
-  <div class="tblw"><table class="tbl"><thead><tr><th>البلوك</th><th>الدخول</th><th>الخروج</th><th>بيعمل إيه</th></tr></thead><tbody>
-  <tr><td class="mono">TC2RTI</td><td>In1, In2, Test, Reset</td><td>Q, IndReset, TCfault</td><td>قناتين + اختبار كونتاكتورات + ريست مراقَب (على نزلة الزرار). TCfault لو قناة واحدة اتفتحت واتقفلت</td></tr>
-  <tr><td class="mono">Reset2T</td><td>In1, Test, Reset</td><td>Q, IndReset</td><td>قناة واحدة مع ريست مراقَب واختبار</td></tr>
-  <tr><td class="mono">Twohand1</td><td>Right_NO, Right_NC, Left_NO, Left_NC, Test</td><td>Q</td><td>الأربعة لازم يتغيّروا خلال 0.5 ثانية، ولازم يرجعوا كلهم قبل دورة جديدة</td></tr>
-  <tr><td class="mono">LightCurtain1</td><td>OSSD1, OSSD2, Reset, Test …</td><td>Q, IndReset</td><td>للستارة الضوئية</td></tr>
-  <tr><td class="mono">Mute2</td><td>In1, In2, Test, Restart, DeltaTime, MuteTime</td><td>Q</td><td>Muting للستارة لما المنتج بيعدّي</td></tr></tbody></table></div>
-  <p>مثال الطوارئ اللي هنشغّله في المحاكي:</p>
+  <ul class="fx">
+    <li><b class="mono">TC2RTI</b><span>قناتين + اختبار + ريست مراقَب</span></li>
+    <li><b class="mono">Reset2T</b><span>قناة واحدة + ريست مراقَب</span></li>
+    <li><b class="mono">Twohand1</b><span>الإيدين خلال 0.5 ثانية</span></li>
+    <li><b class="mono">LightCurtain1</b><span>الستارة الضوئية</span></li>
+    <li><b class="mono">Mute2</b><span>Muting لما المنتج يعدّي</span></li>
+  </ul>
   <svg viewBox="0 0 640 210" role="img" aria-label="بلوك TC2RTI" style="width:100%;max-width:640px;direction:ltr">
  <g font-family="IBM Plex Mono,monospace" font-size="14" fill="currentColor">
  <path d="M20 20V190" stroke="currentColor" stroke-width="3"/>
@@ -69,18 +74,16 @@
  <text x="300" y="120">IndReset</text><path d="M400 115H520" stroke="currentColor" stroke-width="2"/><text x="530" y="120">IQ0.16 lamp</text>
  <text x="305" y="165">TCfault</text><path d="M400 160H520" stroke="currentColor" stroke-width="2"/><text x="530" y="165">M0.0</text>
  </g></svg>
-  <p><b>IndReset</b> بيرمش لما الجهاز جاهز للريست، وبينوّر ثابت لما في حاجة مفتوحة. وصّله على لمبة جوه زرار الريست.</p>
+  <div class="vs">
+    <div class="side"><span class="ic">✨</span><b>IndReset بيرمش</b><span>جاهز للريست</span></div><i>×</i>
+    <div class="side"><span class="ic">💡</span><b>IndReset ثابت</b><span>في حاجة مفتوحة</span></div>
+  </div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>التنزيل للجهاز</h2>
-  <ol><li><b>Comp:</b> يعمل compile، ولازم يطلع <code>0 Error(s) … Result=OK</code>.</li>
-  <li><b>Down:</b> يبعت البرنامج للـ Pluto.</li>
-  <li>يطلب <b>باسورد</b> (4 لـ 6 حروف). من غيره محدش يغيّر برنامج الأمان.</li>
-  <li>تختار تبدأ التشغيل، أو تفتح Online وتدوس Start.</li></ol>
-  <div class="box safe"><b>مهم:</b> البرنامج مابيكتشفش الغلط المنطقي (زي إن الطوارئ موصّل على الخرج الغلط). بعد أي تعديل اختبر كل وظيفة أمان بإيدك، ويُفضّل حد تاني يراجع.</div>
+  <ol class="steps"><li>Comp ← 0 Error(s)</li><li>Down</li><li>باسورد 4–6 حروف</li><li class="on">Start</li></ol>
+  <div class="box safe"><b>مهم:</b> البرنامج مابيكشفش الغلط المنطقي. بعد أي تعديل اختبر كل وظيفة أمان بإيدك.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>

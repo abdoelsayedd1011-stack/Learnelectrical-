@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="safety.css?v=20261027s2">
 <script src="safety.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 <link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
 <script src="/assets/real-art.js?v=20261030h1"></script>
@@ -30,8 +31,8 @@
 <section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
 
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>الفكرة: نبضات بدل 24V ثابت</h2>
-  <p>الـ Vital بيطلّع من <span class="mono">T1</span> <b>نبضات</b> (إشارة ديناميكية) بتعدّي على كل الحساسات واحد ورا التاني وترجع على <span class="mono">R1</span>.</p>
+  <h2 id="s1"><span class="k">1</span>الفكرة: نبضات بدل <bdi dir="ltr">24V</bdi> ثابت</h2>
+  <p class="bf"><span class="ic">〰️</span><span>نبضات من <b>T1</b> تعدّي على كل الحساسات وترجع على <b>R1</b>.</span></p>
   <svg viewBox="0 0 640 200" role="img" aria-label="لوب ديناميكي من T1 لـ R1" style="width:100%;max-width:640px;direction:ltr">
  <g font-family="IBM Plex Mono,monospace" font-size="14" fill="currentColor">
  <rect x="10" y="60" width="110" height="80" rx="10" fill="none" stroke="currentColor" stroke-width="2"/><text x="65" y="95" text-anchor="middle" font-weight="700">Vital 1</text><text x="65" y="120" text-anchor="middle">T1    R1</text>
@@ -42,64 +43,68 @@
  <path d="M510 100H560V30H95V60" stroke="#2f6fb5" stroke-width="3" fill="none"/>
  <text x="300" y="22" text-anchor="middle">every sensor inverts the pulses → back to R1</text>
  </g></svg>
-  <ul><li>كل حساس سليم ومقفول (زي Eden أو طوارئ Smile) <b>بيقلب النبضات</b> ويبعتها للي بعده.</li>
-  <li>لو حساس اتفتح (باب اتفتح أو طوارئ اتداس)، النبضات بتقف والخرج يبقى 0V، فالـ Vital يفصل.</li>
-  <li>لو حصل قصر على حساس، عدد مرات القلب بيتغيّر، والـ Vital بيعرف إن فيه غلط ويفصل.</li></ul>
-  <div class="box key"><b>عشان كده</b> سلك واحد يكفي لـ PL e: القصر والقطع والسلك الملزوق في 24V كلهم بيتكشفوا من شكل النبضات.</div>
+  <ul class="fx">
+    <li class="ok"><b>حساس مقفول</b><span>يقلب النبضات ويبعتها للي بعده</span></li>
+    <li class="danger"><b>حساس اتفتح</b><span>النبضات تقف ← الـ Vital يفصل</span></li>
+    <li class="danger"><b>قصر على حساس</b><span>عدد القلبات يتغيّر ← يفصل</span></li>
+  </ul>
+  <div class="box key">عشان كده <b>سلك واحد يكفي لـ PL e</b>: القصر والقطع واللزق في <bdi dir="ltr">24V</bdi> كلهم بيبانوا من شكل النبضات.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>أمثلة بـ Adam و Eva (حساس Eden)</h2>
-  <p>أشهر حساس على لوب الـ Vital هو <b>Eden</b>، وهو قطعتين:</p>
-  <ul><li><b>Adam:</b> الحساس نفسه. بيتركّب على <b>الإطار الثابت</b>، وفيه الإلكترونيات واللمبة وفيشة M12. نوع <b>Adam DYN</b> هو اللي بيشتغل بالإشارة الديناميكية و<b>بيقلبها</b>.</li>
-  <li><b>Eva:</b> القطعة اللي على <b>الباب</b>، من غير سلك. Adam بيحسّها من 0 لـ 15 مللي من غير لمس. فيه Eva عامة، و Eva بكود خاص (unique) ماينفعش يتغشّ بقطعة تانية.</li></ul>
-  <div class="tblw"><table class="tbl"><thead><tr><th>لمبة Adam</th><th>المعنى</th></tr></thead><tbody>
-  <tr><td>أخضر</td><td>Eva قريبة (الباب مقفول) والإشارة جاية من اللي قبله: كله تمام</td></tr>
-  <tr><td>أحمر</td><td>Eva بعيدة: الباب ده مفتوح</td></tr>
-  <tr><td>بيرمش أحمر/أخضر</td><td>الباب ده مقفول، بس الإشارة مش جاية من قبله: في حاجة مفتوحة قبله في اللوب</td></tr></tbody></table></div>
-  <h3>مثال 1: 3 أبواب على Vital 1</h3>
-  <p><code>T1</code> ← Adam 1 ← Adam 2 ← Adam 3 ← <code>R1</code>. كل Adam بيقلب الإشارة، يعني 3 قلبات = <b>فردي</b>، فـ <code>S1</code> فاضي.</p>
-  <p>لو فتحت الباب 2: Adam 2 <b>أحمر</b>، و Adam 3 <b>بيرمش</b> (مقفول بس مستني إشارة)، و Adam 1 <b>أخضر</b>. على الـ Vital: T منوّرة و R مطفية. من غير ما تفتح ولا علبة عرفت إن الباب 2 هو اللي مفتوح.</p>
-  <h3>مثال 2: 4 أبواب + طوارئ</h3>
-  <p>4 Adam + زرار طوارئ Smile Tina (بيقلب هو كمان) = 5 قلبات = فردي، <code>S1</code> فاضي. لو شلت الطوارئ من اللوب يبقوا 4 = زوجي، فلازم توصّل <code>S1</code> مع <code>B1</code>، وإلا لمبة R هتفضل مطفية حتى والأبواب مقفولة.</p>
-  <div class="box key"><b>الحد:</b> لحد <b>30</b> Adam DYN على Vital 1 واحد، وبرضه PL e.</div>
+  <div class="vs">
+    <div class="side"><span class="ic">📟</span><b>Adam</b><span>على الإطار · إلكترونيات + لمبة + M12</span></div>
+    <i>+</i>
+    <div class="side"><span class="ic">🧲</span><b>Eva</b><span>على الباب · بدون سلك · 0–15 مللي</span></div>
+  </div>
+  <ul class="fx">
+    <li class="ok"><b>🟢 أخضر</b><span>الباب مقفول والإشارة جاية</span></li>
+    <li class="danger"><b>🔴 أحمر</b><span>الباب ده مفتوح</span></li>
+    <li><b>🔴🟢 بيرمش</b><span>مقفول، بس حاجة مفتوحة قبله</span></li>
+  </ul>
+  <p class="tip">3 أبواب: فتحت الباب 2 ← Adam 2 أحمر و Adam 3 بيرمش ← <b>عرفت الباب من غير ما تفتح علبة</b>.</p>
+  <div class="vs">
+    <div class="side"><b>القلبات فردي</b><span class="big">S1 فاضي</span><span>3 أبواب · أو 4 + طوارئ</span></div>
+    <i>أو</i>
+    <div class="side"><b>القلبات زوجي</b><span class="big">S1 مع B1</span><span>وإلا R تفضل مطفية</span></div>
+  </div>
+  <p class="tip">لحد 30 Adam DYN على Vital 1 واحد، وبرضه PL e.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>الأطراف</h2>
   <figure class="dev-ph"><img src="img/vital1.jpg" width="269" height="921" alt="ABB Vital 1 من قدّام" loading="lazy"><figcaption>فوق: <span class="mono">S1 X1 X4</span> و <span class="mono">+A1 B1 13 23</span>. تحت: <span class="mono">-A2 B2 14 24</span> و <span class="mono">T1 R1 Y14</span>.</figcaption></figure>
-  <div class="tblw"><table class="tbl"><thead><tr><th>الطرف</th><th>وظيفته</th></tr></thead><tbody>
-  <tr><td class="mono">A1 / A2</td><td>باور 24V DC، وفيوز 3A في A1</td></tr>
-  <tr><td class="mono">B1 / B2</td><td>24V للحساسات (+ و 0V)، محدود لـ 1.8A</td></tr>
-  <tr><td class="mono">T1</td><td>خرج النبضات: أول اللوب</td></tr>
-  <tr><td class="mono">R1</td><td>دخل النبضات: آخر اللوب</td></tr>
-  <tr><td class="mono">S1</td><td>عدد الحساسات: <b>زوجي</b> = وصّل S1 مع B1، <b>فردي</b> = سيبه فاضي</td></tr>
-  <tr><td class="mono">X1</td><td>الريست، وكونتاكتات مراقبة الكونتاكتورات</td></tr>
-  <tr><td class="mono">X4</td><td>الريست الأوتوماتيك</td></tr>
-  <tr><td class="mono">13-14 / 23-24</td><td>خرجين أمان NO (كل واحد ريلايين توالي): 6A على 250V، و 2A AC-15</td></tr>
-  <tr><td class="mono">Y14</td><td>خرج معلومات بس (200 mA). ممنوع يتستخدم في الأمان</td></tr></tbody></table></div>
+  <ul class="fx">
+    <li><b>A1 / A2</b><span><bdi dir="ltr">24V</bdi> DC · فيوز <bdi dir="ltr">3A</bdi></span></li>
+    <li><b>B1 / B2</b><span><bdi dir="ltr">24V</bdi> للحساسات · لحد <bdi dir="ltr">1.8A</bdi></span></li>
+    <li class="ok"><b>T1 ← R1</b><span>أول اللوب ← آخره</span></li>
+    <li><b>S1</b><span>زوجي: مع B1 · فردي: فاضي</span></li>
+    <li><b>X1 / X4</b><span>الريست · الأوتوماتيك</span></li>
+    <li class="ok"><b>13-14 / 23-24</b><span>خرجين أمان NO · <bdi dir="ltr">6A</bdi></span></li>
+    <li class="danger"><b>Y14</b><span>معلومة بس · ممنوع في الأمان</span></li>
+  </ul>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>اللمبات</h2>
-  <p>من فوق لتحت: <b>T</b> ثم <b>1</b> ثم <b>On</b> ثم <b>2</b> ثم <b>R</b>.</p>
-  <div class="tblw"><table class="tbl"><thead><tr><th>اللمبة</th><th>منوّرة</th><th>بترمش</th><th>مطفية</th></tr></thead><tbody>
-  <tr><td>On</td><td>الباور تمام</td><td>أقل من 18V أو قصر</td><td>مفيش باور</td></tr>
-  <tr><td>T</td><td>النبضات طالعة من T1</td><td>—</td><td>مفيش نبضات</td></tr>
-  <tr><td>R</td><td>النبضات راجعة صح على R1</td><td>النبضات راجعة غلط (حساس بايظ)</td><td>مفيش حاجة راجعة: حساس مفتوح</td></tr>
-  <tr><td>1 / 2</td><td>الخرج شغال</td><td>—</td><td>الخرج فاصل</td></tr></tbody></table></div>
-  <div class="box"><b>تربل شوتنج سريع:</b> T منوّرة و R مطفية = في حتة في اللوب مفتوحة. امشي حساس حساس لحد ما تلاقي اللي لمبته مش خضرا.</div>
+  <ol class="steps"><li>T</li><li>1</li><li class="on">On</li><li>2</li><li>R</li></ol>
+  <ul class="fx">
+    <li><b>On بترمش</b><span>أقل من <bdi dir="ltr">18V</bdi> أو قصر</span></li>
+    <li class="ok"><b>T منوّرة</b><span>النبضات طالعة</span></li>
+    <li class="ok"><b>R منوّرة</b><span>راجعة صح</span></li>
+    <li><b>R بترمش</b><span>راجعة غلط: حساس بايظ</span></li>
+    <li class="danger"><b>R مطفية</b><span>حساس مفتوح</span></li>
+  </ul>
+  <div class="box key"><b>تربل شوتنج:</b> T منوّرة و R مطفية ← امشي حساس حساس لحد اللي لمبته مش خضرا.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>الريست ومراقبة الكونتاكتورات</h2>
-  <ul><li><b>ريست يدوي مراقَب:</b> زرار بين B1 و X1. الخرج يشتغل لما الزرار يتقفل ويتفتح. الزرار يكون بره منطقة الخطر وتشوف منه المنطقة كلها.</li>
-  <li><b>ريست أوتوماتيك:</b> اربط B1 و X1 و X4 مع بعض.</li>
-  <li><b>مراقبة الكونتاكتورات:</b> كونتاكتات NC من الكونتاكتورات بين B1 و X1 (توالي مع زرار الريست).</li></ul>
-  <p>الاستجابة: الفصل أقل من 48 مللي ثانية. وأقصى عدد مستحسن: <b>30 حساس</b> Eden أو Tina على Vital واحد.</p>
-  <p>جرّب الـ Vital على <a href="pluto.html#vital">المحاكي</a>: افتح باب، اعمل قصر على حساس، وشوف لمبة R.</p>
+  <div class="vs">
+    <div class="side"><b>يدوي مراقَب</b><span>زرار B1–X1 · بره منطقة الخطر وشايفها</span></div>
+    <i>أو</i>
+    <div class="side"><b>أوتوماتيك</b><span>B1 + X1 + X4</span></div>
+  </div>
+  <p class="tip">NC الكونتاكتورات بين B1 و X1 توالي مع الريست. والفصل أقل من <bdi dir="ltr">48 ms</bdi>.</p>
+  <div class="box key"><b>على المحاكي:</b> افتح باب، اعمل قصر على حساس، وشوف لمبة R. <a class="btn pri" href="pluto.html#vital" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>جاوب على 7 من 8 صح على الأقل عشان الدرس يتعلّم عليه.</p>
