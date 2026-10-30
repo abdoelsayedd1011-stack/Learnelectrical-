@@ -16,6 +16,7 @@
 <script src="servo.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b6">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 <link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
 <script src="/assets/real-art.js?v=20261030h1"></script>
@@ -39,40 +40,35 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>What does tuning mean?</h2>
-  <p>A new drive from the factory does not know what the motor is carrying: a light belt or a 200 kg table. <b>Tuning</b> means telling the drive "this is the load" and setting how fast the loops react, so the motion is <b>fast and free of vibration</b>.</p>
-  <div class="box key"><b>The inertia ratio (JL/JM):</b> the inertia of the rotating load (referred to the motor shaft) ÷ the inertia of the motor itself. A ratio of 10 means the load is 10 times "heavier" than the rotor. The drive uses it to turn "I want this acceleration" into the right torque. If the number in the parameter is wrong, all the gains will be wrong. And the bigger the ratio (above 10 to 30 depending on the motor), the harder the control, and then a higher-inertia motor or a gearbox solves it.</div>
+  <p class="bf"><span class="ic">🎚️</span><span>Tell the drive "this is the load" so motion is <b>fast and vibration-free</b>.</span></p>
+  <div class="box key"><b>Inertia ratio JL/JM:</b> how many times heavier the load is than the rotor. Wrong value = every gain wrong. Above 10–30 ⇒ gearbox or higher-inertia motor.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>The gains and the symptoms</h2>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>Parameter</th><th>If too low</th><th>If too high</th></tr></thead>
-    <tbody>
-      <tr><td><b>Kv</b> speed gain (Hz)</td><td>Slow, affected by the load</td><td>Humming and whistling, fast vibration, the motor heats up</td></tr>
-      <tr><td><b>Ti</b> speed integral time</td><td>(small Ti = strong integral) slow oscillation</td><td>(large Ti) takes time to close the last error</td></tr>
-      <tr><td><b>Kp</b> position gain (rad/s)</td><td>Large following error and slow stopping</td><td>Overshoot and ringing when stopping</td></tr>
-      <tr><td><b>Inertia ratio</b></td><td>(lower than actual) overshoot and loose motion</td><td>(much higher) like a high Kv: humming</td></tr>
-    </tbody></table></div>
-  <ul>
-    <li><b>Overshoot:</b> the axis passes the target and comes back.</li>
-    <li><b>Settling time:</b> the time from the end of the command until the axis is inside the <b>in-position</b> window and settled.</li>
-    <li><b>Sluggish:</b> arrives late and without overshoot.</li>
+  <ul class="fx">
+    <li><b>🔊 Buzzing, whining</b><span>Kv high (or inertia set too high)</span></li>
+    <li><b>🐢 Slow, load-sensitive</b><span>Kv low</span></li>
+    <li><b>〰️ Slow oscillation</b><span>Ti too small</span></li>
+    <li><b>↩️ Overshoot, ringing</b><span>Kp high (or inertia set too low)</span></li>
+    <li><b>📏 Big following error</b><span>Kp low</span></li>
   </ul>
+  <div class="tiles">
+    <div class="tile"><b>Overshoot</b><span>Passes the target and returns</span></div>
+    <div class="tile"><b>Settling</b><span>Until in-position</span></div>
+    <div class="tile"><b>Sluggish</b><span>Late, no overshoot</span></div>
+  </div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Try it: auto-tune, then by hand</h2>
   <div class="wd"><h3>Gain setting on a real load</h3><div id="tune"></div></div>
-  <ol class="steps-l">
-    <li>Make sure the mechanics are sound (no binding and no play in the coupling).</li>
-    <li>Run <b>auto-tune</b> (or let the drive measure the inertia ratio) on a move close to the real one.</li>
-    <li>Raise <b>Kv</b> gradually until you hear humming, then lower it by 20 to 30%.</li>
-    <li>Raise <b>Kp</b> until the stop is fast without overshoot.</li>
-    <li>Adjust <b>Ti</b> if a small error remains. And if there is resonance at a certain frequency, use a <b>notch filter</b>.</li>
+  <ol class="steps">
+    <li>Mechanics sound</li>
+    <li>Auto-tune</li>
+    <li>Kv to buzz, then −20–30%</li>
+    <li>Kp for a quick stop</li>
+    <li>Ti · notch for resonance</li>
   </ol>
-  <div class="box">Auto-tune differs between modern drives: there is online (learns while running) and offline (a test move), and there is a "rigidity level" that you choose. The names and steps are in each brand's manual.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
   <p>Answer at least 5 of 6 correctly so the lesson is marked complete.</p>

@@ -15,6 +15,7 @@
 <script src="servo.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b6">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 <link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
 <script src="/assets/real-art.js?v=20261030h1"></script>
@@ -38,40 +39,35 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>التيونينج يعني إيه؟</h2>
-  <p>الدرايف جديد من المصنع مش عارف الموتور شايل إيه: سير خفيف ولا ترابيزة 200 kg. <b>التيونينج</b> إنك تقول للدرايف "الحمل كده" وتظبط سرعة رد فعل اللوبات عشان الحركة تبقى <b>سريعة ومن غير اهتزاز</b>.</p>
-  <div class="box key"><b>نسبة الـ Inertia (JL/JM):</b> قصور الحمل الدوّار (منسوب لعمود الموتور) ÷ قصور الموتور نفسه. نسبة 10 يعني الحمل "أتقل" من الروتور 10 مرات. الدرايف بيستخدمها عشان يحوّل "عايز تسارع كذا" لعزم مظبوط. لو الرقم في الباراميتر غلط، كل الجينات هتبقى غلط. وكل ما النسبة تكبر (فوق 10 لـ 30 حسب الموتور) التحكم بيصعب، وساعتها موتور Inertia أعلى أو جيربوكس بيحلّوا.</div>
+  <p class="bf"><span class="ic">🎚️</span><span>تقول للدرايف «الحمل كده» عشان الحركة تبقى <b>سريعة ومن غير اهتزاز</b>.</span></p>
+  <div class="box key"><b>نسبة الـ Inertia JL/JM:</b> الحمل أتقل من الروتور كام مرة. غلط فيها = كل الجينات غلط. فوق 10–30 ⇐ جيربوكس أو موتور Inertia أعلى.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>الجينات والأعراض</h2>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>الباراميتر</th><th>لو واطي</th><th>لو عالي</th></tr></thead>
-    <tbody>
-      <tr><td><b>Kv</b> جين السرعة (Hz)</td><td>بطيء، بيتأثر بالحمل</td><td>زنّة وصفير، اهتزاز سريع، الموتور يسخن</td></tr>
-      <tr><td><b>Ti</b> زمن تكامل السرعة</td><td>(Ti صغير = تكامل قوي) اهتزاز بطيء</td><td>(Ti كبير) بياخد وقت يقفل آخر غلط</td></tr>
-      <tr><td><b>Kp</b> جين المكان (rad/s)</td><td>Following error كبير وبطء في الوقوف</td><td>Overshoot ورنين عند الوقوف</td></tr>
-      <tr><td><b>نسبة الـ Inertia</b></td><td>(أقل من الحقيقة) Overshoot وحركة مايعة</td><td>(أكبر بكتير) زي Kv عالي: زنّة</td></tr>
-    </tbody></table></div>
-  <ul>
-    <li><b>Overshoot:</b> المحور بيعدّي الهدف ويرجع.</li>
-    <li><b>Settling time:</b> الوقت من آخر الأمر لحد ما المحور يدخل في نطاق الـ <b>In-position</b> ويثبت.</li>
-    <li><b>Sluggish (بطيء):</b> بيوصل متأخر ومن غير Overshoot.</li>
+  <ul class="fx">
+    <li><b>🔊 زنّة وصفير</b><span>Kv عالي (أو الـ Inertia أكبر من الحقيقة)</span></li>
+    <li><b>🐢 بطيء بيتأثر بالحمل</b><span>Kv واطي</span></li>
+    <li><b>〰️ اهتزاز بطيء</b><span>Ti صغير أوي</span></li>
+    <li><b>↩️ Overshoot ورنين</b><span>Kp عالي (أو الـ Inertia أقل)</span></li>
+    <li><b>📏 Following error كبير</b><span>Kp واطي</span></li>
   </ul>
+  <div class="tiles">
+    <div class="tile"><b>Overshoot</b><span>يعدّي الهدف ويرجع</span></div>
+    <div class="tile"><b>Settling</b><span>لحد In-position</span></div>
+    <div class="tile"><b>Sluggish</b><span>متأخر من غير Overshoot</span></div>
+  </div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>جرّب: Auto-tune وبعدين بإيدك</h2>
   <div class="wd"><h3>ضبط الجين على حمل حقيقي</h3><div id="tune"></div></div>
-  <ol class="steps-l">
-    <li>اتأكد الميكانيكا سليمة (مفيش زنق ولا لعب في الكوبلنج).</li>
-    <li>اعمل <b>Auto-tune</b> (أو خلّي الدرايف يقيس نسبة الـ Inertia) على حركة شبه الحقيقية.</li>
-    <li>زوّد <b>Kv</b> بالتدريج لحد ما تسمع زنّة، وبعدين نزّل 20 لـ 30%.</li>
-    <li>زوّد <b>Kp</b> لحد ما الوقوف يبقى سريع من غير Overshoot.</li>
-    <li>ظبط <b>Ti</b> لو فيه غلط صغير بيقعد. ولو فيه رنين عند تردد معيّن استخدم <b>Notch filter</b>.</li>
+  <ol class="steps">
+    <li>الميكانيكا سليمة</li>
+    <li>Auto-tune</li>
+    <li>Kv لحد الزنّة ثم −20–30%</li>
+    <li>Kp لحد وقوف سريع</li>
+    <li>Ti · Notch للرنين</li>
   </ol>
-  <div class="box">الأوتو تيون في الدرايفات الحديثة بيختلف: فيه Online (بيتعلّم وهو شغّال) و Offline (حركة اختبار)، وفيه "مستوى الصلابة (Rigidity)" بتختاره. الأسماء والخطوات في مانيوال كل ماركة.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>

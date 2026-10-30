@@ -15,6 +15,7 @@
 <script src="servo.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b6">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 <link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
 <script src="/assets/real-art.js?v=20261030h1"></script>
@@ -38,35 +39,39 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>المشكلة: الـ PLC بيفكّر بالمللي والإنكودر بالعدّات</h2>
-  <p>الإنكودر 17-bit بيعدّ <b>131072</b> في اللفة. لو الـ PLC هيبعت نبضة لكل عدّة، عشان الموتور يلف 3000 rpm هيحتاج يطلّع <span class="eq">131072 × 50 = 6.5 MHz</span>، ومفيش PLC عادي يعمل كده. وكمان إنت عايز تقول "اتحرك 250 mm" مش "اتحرك 3276800 عدّة".</p>
-  <p>الحل: <b>الجير الإلكتروني (Electronic gear)</b>. الدرايف بيضرب كل نبضة جاية في كسر <b>N / M</b> ويحوّلها لعدّات إنكودر. فإنت بتختار <b>النبضة الواحدة = كام mm</b>.</p>
+  <div class="vs">
+    <div class="side"><b>الإنكودر <bdi dir="ltr">17-bit</bdi></b><span class="big">131072</span><span>عدّة في اللفة · 3000 rpm = 6.5 MHz ❌</span></div>
+    <i>vs</i>
+    <div class="side"><b>إنت عايز</b><span class="big">250 mm</span><span>مش 3276800 عدّة</span></div>
+  </div>
+  <p class="bf"><span class="ic">⚙️</span><span><b>الجير الإلكتروني N/M</b>: إنت بتختار النبضة الواحدة = كام mm.</span></p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>القانون في خطوتين</h2>
   <div class="formula ar">نبضات اللفة = حركة لفة الموتور ÷ قيمة النبضة</div>
   <div class="formula ar">N / M = عدّات الإنكودر في اللفة ÷ نبضات اللفة</div>
-  <div class="ex"><b>مثال:</b> بول سكرو خطوته <b class="eq">10 mm</b> على الموتور مباشرة، إنكودر <b class="eq">10000</b> عدّة، وعايز <b>1 نبضة = <span class="eq">0.01 mm</span></b>.<br>
-  نبضات اللفة = <span class="eq">10 ÷ 0.01 = 1000</span>.<br>
-  الجير = <span class="eq">10000 ÷ 1000 = 10/1</span>. يعني كل نبضة = 10 عدّات = 0.01 mm. ✓</div>
-  <div class="box"><b>حركة لفة الموتور</b> بتتحسب من الميكانيكا:<ul>
-    <li>بول سكرو: الخطوة (Pitch). لو فيه جيربوكس أو سير بين الموتور والسكرو، اقسم على النسبة.</li>
-    <li>بكرة وسير: عدد السنون × خطوة السير (أو π × القطر).</li>
-    <li>ترابيزة بجيربوكس 1:10: لفة الموتور = 360 ÷ 10 = 36°.</li></ul></div>
-  <div class="box key"><b>بيختلف من ماركة للتانية:</b> بعض الدرايفات بتكتب الجير كـ N/M (ممكن البسط والمقام بأسماء باراميترات تانية)، وبعضها بتطلب "عدد النبضات في اللفة" على طول وهي تحسب. الفكرة واحدة، بس اتأكد من المانيوال <b>أنهي ناحية البسط وأنهي المقام</b> وحدود الكسر المسموح.</div>
+  <div class="ladder"><span class="u">10 mm</span><span class="op">÷ 0.01</span><span class="u">1000</span><span class="op">10000 ÷</span><span class="u on">10/1</span></div>
+  <ul class="fx">
+    <li><b>بول سكرو</b><span>الخطوة ÷ نسبة الجيربوكس</span></li>
+    <li><b>بكرة وسير</b><span>السنون × خطوة السير</span></li>
+    <li><b>ترابيزة 1:10</b><span>360 ÷ 10 = 36°</span></li>
+  </ul>
+  <p class="tip">من المانيوال: <b>أنهي البسط وأنهي المقام</b> وحدود الكسر.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>الحاسبة والتحدّي</h2>
   <div class="wd"><h3>حاسبة الجير الإلكتروني</h3><div id="gear"></div></div>
-  <div class="box"><b>التوازن:</b> وحدة أصغر = دقة أعلى بس تردد أعلى. وحدة أكبر = تردد أقل بس كل نبضة "قفزة" أكبر. اختار أصغر وحدة الـ PLC يقدر يطلّع ترددها على أقصى سرعة.</div>
+  <div class="vs">
+    <div class="side"><b>وحدة أصغر</b><span>دقة أعلى · تردد أعلى</span></div>
+    <i>vs</i>
+    <div class="side"><b>وحدة أكبر</b><span>تردد أقل · قفزة أكبر</span></div>
+  </div>
+  <p class="tip">اختار أصغر وحدة الـ PLC يقدر يطلّع ترددها على أقصى سرعة.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>تمارين حساب سريعة</h2>
   <div class="wd"><h3>احسب</h3><div id="gdrill"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
