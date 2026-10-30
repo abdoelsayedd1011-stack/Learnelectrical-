@@ -1382,9 +1382,10 @@ function devAct(dev,ev){
  updStation();
 }
 function bindDev(el,dev,moment){
- const mom=()=>moment&&!(dev==='run'&&is2w());
- el.addEventListener('pointerdown',e=>{if(!moment)return;e.preventDefault();el.setPointerCapture&&el.setPointerCapture(e.pointerId);devAct(dev,mom()?'down':'click');});
- ['pointerup','pointercancel','lostpointercapture'].forEach(t=>el.addEventListener(t,()=>{if(moment&&mom())devAct(dev,'up');}));
+ const mom=()=>moment&&!(dev==='run'&&is2w());let dn=0;
+ el.addEventListener('pointerdown',e=>{if(!moment)return;e.preventDefault();dn=performance.now();el.setPointerCapture&&el.setPointerCapture(e.pointerId);devAct(dev,mom()?'down':'click');});
+ /* a quick tap still counts: keep a momentary contact closed at least 150 ms */
+ ['pointerup','pointercancel','lostpointercapture'].forEach(t=>el.addEventListener(t,()=>{if(!(moment&&mom()))return;const w=150-(performance.now()-dn);if(w>0)setTimeout(()=>devAct(dev,'up'),w);else devAct(dev,'up');}));
  if(moment){el.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.repeat){e.preventDefault();devAct(dev,mom()?'down':'click');}});el.addEventListener('keyup',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();if(mom())devAct(dev,'up');}});}
  else el.addEventListener('click',()=>devAct(dev,'click'));
 }
@@ -1819,6 +1820,7 @@ function frame(now){
 }
 requestAnimationFrame(t=>{last=t;frame(t);});
 </script>
+<script src="../assets/sim-coach.js?v=20261030a"></script>
 <script>
 /* ---------------- solved applications: wiring + parameters ---------------- */
 (function(){
@@ -2108,6 +2110,54 @@ $('#gBody').addEventListener('click',e=>{
 $('#modeBtn').addEventListener('click',()=>setMode(!GUI.guided));
 $('#advBtn').addEventListener('click',e=>{GUI.adv=!GUI.adv;document.body.classList.toggle('adv',GUI.adv);e.currentTarget.setAttribute('aria-expanded',GUI.adv);e.currentTarget.textContent=GUI.adv?'إخفاء المتقدم ▴':'عرض المتقدم ▾';});
 guiLoad();setMode(GUI.guided);
+/* coach: one instruction at a time + ring on the control to touch */
+if(window.SimCoach){
+ const KS='.pf [data-k="START"]',KX='.pf [data-k="STOP"]';
+ const GO={0:{say:'دوس زرار <b>▶ Start</b> الأخضر في الكيباد',t:KS},1:{say:'دوس زرار <b>RUN FWD</b> في لوحة التشغيل',t:'#dRun'},2:{say:'دوس زرار <b>START</b> الأخضر في لوحة التشغيل دوسة واحدة',t:'#dRun'},
+  3:{say:'دوس زرار <b>RUN FWD</b> في لوحة التشغيل',t:'#dRun'},4:{say:'دوس <b>RUN FWD</b>: ده كونتاكت الـ PLC',t:'#dRun'},5:{say:'دوس زرار <b>▶ Start</b> الأخضر في الكيباد',t:KS}};
+ const C=(k,say,tgt,ok)=>({k:GUI.ex+'.'+GUI.step+'.'+k,step:GUI.ex+'.'+GUI.step,say,tgt,ok});
+ const ready=()=>{
+  if(!S.brk)return C('brk','ولّع <b>المفتاح الرئيسي</b> لفوق (ON)','#dBrk');
+  if(!ctlOk())return C('boot','استنى ثانية لحد ما شاشة الانفرتر تنوّر…','#lcd');
+  if(S.fault)return C('flt','فيه عطل على الشاشة: امسحه بزرار <b>■ Stop</b> الأحمر في الكيباد',KX);
+  if(!tc('01'))return C('stop','زرار <b>STOP</b> في اللوحة متعلّق: دوسه تاني عشان يرجع','#dStop');
+  if(!S.io.sto)return C('sto','رجّع <b>ريليه الأمان STO</b> على OK','#dSto');
+  return null;};
+ const runIt=(pre)=>{const i=GUI.ex;
+  if(S.st==='stop'||S.st==='dc')return C('dec','الموتور بيقف… بص على الشاشة','#lcd');
+  if(i===5&&S.st==='run'){if(!GUI.hi&&Math.abs(S.fOut)<48)return C('w50','استنى الشاشة توصل <b>50 Hz</b>…','#lcd');
+   return C('stp','دلوقتي دوس <b>■ Stop</b> الأحمر وشوف الموتور يقف في ثانية ونص',KX);}
+  if(S.st==='run')return C('slow','الموتور بيقوم… بص على الشاشة<span class="sc-sub">المطلوب: '+SOL[i].hint+'</span>','#lcd');
+  return C('go',(pre||'')+GO[i].say,GO[i].t);};
+ SimCoach.init({scope:'.bench',get(){
+  if(!GUI.guided)return null;
+  if(GUI.ex<0){const n=SOL.findIndex((_,i)=>!GUI.done[i]);return {k:'pick'+n,step:'pick',say:n<0?'خلصت كل التمارين 👏 اختار أي تمرين تعيده':'اختار تمرين. ابدأ بالتمرين <b>'+(n+1)+'</b>',tgt:n<0?null:'[data-ex="'+n+'"]'};}
+  const i=GUI.ex,st=GUI.step,g=GD[i];
+  if(st===0)return C('rd','بص على الرسمة والأطراف المعلّمة، وبعدين دوس <b>التالي</b>','#gNext');
+  if(st===1){
+   if(gParamsOk(i))return C('pok','كل الباراميترات مضبوطة. دوس <b>التالي</b>','#gNext',true);
+   if(GUI.hand==='hand'){const m=SOL[i].p.find(([c,v])=>!pEq(c,v));if(S.st!=='off'&&PM[m[0]].rl)return C('rl','وقّف الموتور الأول بزرار <b>■ Stop</b>',KX);
+    return C('h'+m[0],'دخّل <b>'+m[0]+'</b> = <b>'+fmtV(PM[m[0]],m[1])+'</b> من الكيباد','#gFace');}
+   if(GUI.hand==='auto')return C('ap','دوس <b>اضبط الباراميترات دي</b>','#gApply');
+   return C('ch','دوس <b>اضبطها أوتوماتيك</b> (أسرع) أو بإيدك من الكيباد','#gByAuto');}
+  if(st===2){
+   if(!gParamsOk(i)&&S.st==='off')return C('np','الباراميترات لسه مش مضبوطة. دوس <b>السابق</b> واضبطها','#gPrev');
+   let ok=false;try{ok=!!g.ok();}catch(_){}
+   if(ok)return C('rok','الموتور شغال زي المطلوب. دوس <b>التالي</b>','#gNext',true);
+   if(i===5&&GUI.hi&&S.st==='off'&&!S.fault)return C('rok','وقف من غير عطل. دوس <b>التالي</b>','#gNext',true);
+   return ready()||runIt();}
+  const act=g.flt.inj?!!S.inj[g.flt.inj]:g.flt.on();
+  if(GUI.fseen&&!S.fault&&!act)return C('fok','برافو، صلّحت العطل. دوس <b>خلصت التمرين</b>','#gNext',true);
+  if(GUI.fseen&&act)return C('fix','العطل ظهر. دوس <b>'+((g.flt.lbl||[])[1]||'صلّح العطل')+'</b>','#gFault');
+  if(GUI.fseen&&S.fault)return C('clr','امسح العطل بزرار <b>■ Stop</b> الأحمر في الكيباد',KX);
+  const needRun=/والموتور شغال/.test(g.flt.t);
+  if((needRun&&!act||i===5&&act)&&S.st!=='run'){const r=ready();if(r)return r;}
+  if(!act){if(needRun&&S.st!=='run')return runIt('شغّل الموتور الأول: ');
+   return C('inj','دوس <b>'+((g.flt.lbl||[])[0]||'جرّب العطل')+'</b> وبص على الشاشة','#gFault');}
+  if(i===5)return runIt(S.st==='run'?'':'شغّل تاني: ');
+  return C('wait','بص على شاشة الانفرتر…','#lcd');
+ }});
+}
 })();
 </script>
 <!--simtour:start-->
