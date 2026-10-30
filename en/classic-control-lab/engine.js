@@ -1662,6 +1662,8 @@ CL.art.dolProt = function(opt){
 
 /* =========================== bench drawings (170 × h cells) =========================== */
 const CW = 170;
+/* photo skin: a galvanised DIN rail behind every device, at the device's mounting height */
+function railSvg(w, h){ const y = Math.round(h * 0.55) - 9; return `<g class="bd-rail" aria-hidden="true"><rect x="-6" y="${y}" width="${w + 12}" height="18" fill="#8e9398"/><rect x="-6" y="${y + 2}" width="${w + 12}" height="5" fill="#e2e5e7"/><rect x="-6" y="${y + 11}" width="${w + 12}" height="4" fill="#70757a"/>${Array.from({length:Math.max(1, Math.floor((w + 12) / 34))}, (_, i) => `<rect x="${i * 34 + 4}" y="${y + 7}" width="18" height="5" rx="2.5" fill="#55595d"/>`).join('')}</g>`; }
 function cellHead(d, sub, w){ return `<text class="bd-id" x="${w/2}" y="15">${esc(d.tag)}${sub ? ' · ' : ''}<tspan class="bd-sub">${esc(sub || '')}</tspan></text>`; }
 // caption of a contact block: the type never changes, the state word and colour follow the live state
 CL.capState = function(k, closed, op, who){ return `${k} · ${closed ? 'closed' : 'open'}${op ? ' (' + (who || 'Pressed') + ')' : ''}`; };
@@ -2962,7 +2964,7 @@ CL.bench = function(host, ex, opt){
     devs.forEach(d => {
       const p = L.P[d.id], w = p.w;
       const g = benchDraw(d, {live, en: res ? !!res.energ[d.id] : false, res, w, grid:L.grid, ctlSide: L.ctlSide || '', allowPinStop: !!ex.allowPinStop, byId});
-      devSvg += `<g transform="translate(${p.x} ${p.y})" data-cell="${d.id}" data-on="${res && (res.energ[d.id] || (res.mot[d.id] && res.mot[d.id].run)) ? 1 : 0}" data-trip="${d.st.trip ? 1 : 0}"><rect class="bd-cell" x="2" y="0" width="${w - 4}" height="${TYPES[d.type].h(d)}" rx="10"/>${g.svg}</g>`;
+      devSvg += `<g transform="translate(${p.x} ${p.y})" data-cell="${d.id}" data-on="${res && (res.energ[d.id] || (res.mot[d.id] && res.mot[d.id].run)) ? 1 : 0}" data-trip="${d.st.trip ? 1 : 0}"><rect class="bd-cell" x="2" y="0" width="${w - 4}" height="${TYPES[d.type].h(d)}" rx="10"/>${railSvg(w, TYPES[d.type].h(d))}${g.svg}</g>`;
       hitSvg += `<g transform="translate(${p.x} ${p.y})">${g.hit || ''}</g>`;
       Object.keys(g.terms).forEach(n => { const t = g.terms[n]; TT[d.id + ':' + n] = {x:p.x + t.x, y:p.y + t.y, dir:t.dir, side:t.side || '', col:p.col, span:p.span, row:p.row}; });
     });

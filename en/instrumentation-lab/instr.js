@@ -781,7 +781,7 @@ IL.diBench = function(host, opt){
   host.innerHTML = `<div class="tabs" role="group" aria-label="Exercise">${opt.exercises.map((e, i) => `<button type="button" class="btn" data-ex="${i}" aria-pressed="false">${e.title}</button>`).join('')}</div>
   <div class="box key di-task"></div>
   <div class="bn-board"><svg viewBox="0 0 360 330" role="group" aria-label="Bench for wiring a sensor to a PLC input card">${ART.defs(g)}
-   <g transform="translate(10 8)"><rect x="0" y="0" width="130" height="74" rx="6" fill="#d7dde1" stroke="#5d6469" stroke-width="1.2"/><text x="65" y="20" text-anchor="middle" style="font:700 10px var(--font-mono);fill:#1c2125">24V DC PSU</text><circle cx="118" cy="14" r="3" fill="#35d06a"/></g>
+   ${window.RA ? RA.psu(10, 8, 130, 74) : `<g transform="translate(10 8)"><rect x="0" y="0" width="130" height="74" rx="6" fill="#d7dde1" stroke="#5d6469" stroke-width="1.2"/><text x="65" y="20" text-anchor="middle" style="font:700 10px var(--font-mono);fill:#1c2125">24V DC PSU</text><circle cx="118" cy="14" r="3" fill="#35d06a"/></g>`}
    <g transform="translate(244 8)"><rect x="0" y="0" width="108" height="186" rx="6" fill="url(#${g}d)" stroke="#111"/><rect x="6" y="6" width="96" height="20" rx="3" fill="#e9edf0"/><text x="54" y="20" text-anchor="middle" style="font:700 8.5px var(--font-mono);fill:#1c2125" class="di-cardt">DI 24V DC</text>
      <text x="40" y="52" style="font:600 8px var(--font-mono);fill:#c9d1d6">LED</text><circle class="di-led0" cx="80" cy="84" r="6" fill="#24402c"/><circle class="di-led1" cx="80" cy="120" r="6" fill="#24402c"/><text x="70" y="62" style="font:600 7px var(--font-mono);fill:#93a2ab" class="di-cardk"></text></g>
    <g class="di-sens"></g><g class="di-tgt"></g>
