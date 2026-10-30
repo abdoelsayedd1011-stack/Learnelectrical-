@@ -1842,7 +1842,7 @@ function Player(host, o){
     <button type="button" class="btn sm pv-pause" aria-label="Pause" aria-pressed="false">${pvIc('pause')}</button><button type="button" class="btn sm pv-spd" aria-label="Speed">1×</button><button type="button" class="btn sm pv-skip" aria-label="Skip to the end">${pvIc('skip')}</button><button type="button" class="btn sm pv-rep" aria-label="Watch from the start">${pvIc('rep')}</button><button type="button" class="btn sm pri pv-try">Your turn: try it</button></div>
     <div class="pv-cap" aria-live="polite"></div><div class="pv-pr" aria-hidden="true"><i></i></div>
     ${o.auto ? '<div class="pv-end"><button type="button" class="btn sm pv-noauto">Don\'t play it by itself again</button></div>' : ''}</div>`;
-  document.body.appendChild(bar); document.body.classList.add('pv-playing');
+  host.insertBefore(bar, host.firstChild); document.body.classList.add('pv-playing');
   const fing = document.createElement('div'); fing.className = 'pv-fing'; fing.setAttribute('aria-hidden', 'true'); fing.innerHTML = '<i></i>';
   host.classList.add('pv-host'); host.appendChild(fing);
   const cap = bar.querySelector('.pv-cap'), prI = bar.querySelector('.pv-pr i'), ffB = bar.querySelector('.pv-ff'), pauseB = bar.querySelector('.pv-pause'), spdB = bar.querySelector('.pv-spd');
@@ -1861,7 +1861,7 @@ function Player(host, o){
     if (!el || !el.getBoundingClientRect) return;
     const red = reduced();
     const r0 = el.getBoundingClientRect(), vh = window.innerHeight, bh = bar.getBoundingClientRect().height;
-    if (r0.top < 8 || r0.bottom > vh - bh - 8) { const y = window.scrollY + r0.top - Math.max(12, (vh - bh - r0.height) / 2); window.scrollTo({top:Math.max(0, y), behavior:red ? 'auto' : 'smooth'}); await P.hold(gen, red ? 60 : 380); }
+    if (r0.top < bh + 8 || r0.bottom > vh - 8) { const y = window.scrollY + r0.top - Math.max(bh + 12, (vh - r0.height) / 2); window.scrollTo({top:Math.max(0, y), behavior:red ? 'auto' : 'smooth'}); await P.hold(gen, red ? 60 : 380); }
     const r = el.getBoundingClientRect(), hr = host.getBoundingClientRect();
     const x = r.left - hr.left + r.width / 2, y = r.top - hr.top + Math.min(r.height / 2, 40);
     fing.classList.toggle('mv', !red && fing.classList.contains('show'));
