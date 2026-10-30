@@ -15,6 +15,7 @@
 <script src="vfd.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b5">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 <link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
 <script src="/assets/real-art.js?v=20261030h1"></script>
@@ -38,17 +39,32 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>قبل الـ Reset</h2>
-  <ol class="steps-l"><li><b>اكتب الكود</b> وبص على <b>سجل الأعطال</b> (Fault history): العطل حصل إمتى؟ وكان التيار والتردد والـ DC bus كام لحظتها؟ (معظم الانفرترات بتحفظهم.)</li><li><b>اسأل:</b> حصل في الـ Accel؟ في الـ Decel؟ وهو شغّال ثابت؟ أول ما الكهربا جت؟</li><li><b>افحص</b> اللي الكود بيشاور عليه (كابل، موتور، شبكة، تهوية، باراميتر).</li><li><b>صلّح السبب</b> وبعدين Reset. لو الـ Reset بقى روتين يومي يبقى المشكلة لسه موجودة.</li></ol>
-  <div class="box safe"><b>متكرّرش الـ Reset على OC أو Ground fault.</b> كل مرة بتشغّل على قصر بتضرب الـ IGBT أكتر. افصل وافحص الكابل والموتور بالميجر (بعد ما تفصلهم عن الانفرتر).</div>
+  <ol class="steps">
+    <li>اكتب الكود + Fault history</li>
+    <li>حصل إمتى؟ Accel · Decel · ثابت</li>
+    <li>افحص اللي الكود بيشاور عليه</li>
+    <li class="on">صلّح السبب ⇐ Reset</li>
+  </ol>
+  <div class="box safe"><b>OC أو Ground fault؟ متعملش Reset تاني.</b> افصل الموتور وافحصه هو والكابل بالميجر.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>جدول الأعطال</h2>
-  <div class="tblw"><table class="tbl ct-tab"><thead><tr><th>العطل</th><th>معناه</th><th>أشهر الأسباب</th><th><bdi dir="ltr">PF525</bdi></th><th><bdi dir="ltr">V20</bdi></th><th><bdi dir="ltr">ATV320</bdi></th></tr></thead><tbody><tr><td><b>Overcurrent</b></td><td>تيار عالي جدًا لحظيًا</td><td>Accel قصير، قصر في الكابل أو الموتور، حمل اتزنق</td><td class="mono">F012</td><td class="mono">F0001</td><td class="mono">OCF / SCF</td></tr><tr><td><b>Overvoltage</b></td><td>الـ DC bus عالي</td><td>Decel قصير، حمل بيسحب الموتور، جهد شبكة عالي</td><td class="mono">F005</td><td class="mono">F0002</td><td class="mono">ObF</td></tr><tr><td><b>Undervoltage</b></td><td>الـ DC bus واطي</td><td>هبوط أو انقطاع في الشبكة، فازة ضايعة</td><td class="mono">F004</td><td class="mono">F0003</td><td class="mono">USF</td></tr><tr><td><b>Motor overload</b></td><td>الموتور سخن (محسوب)</td><td>حمل زيادة، تيار الموتور غلط في الباراميترات، سرعة واطية لمدة طويلة</td><td class="mono">F007</td><td class="mono">F0011*</td><td class="mono">OLF</td></tr><tr><td><b>Drive overtemp</b></td><td>الانفرتر نفسه سخن</td><td>مروحة بايظة، تراب، لوحة سخنة، كارير عالي</td><td class="mono">F008</td><td class="mono">F0004</td><td class="mono">OHF</td></tr><tr><td><b>Ground fault</b></td><td>تيار بيهرب للأرضي</td><td>عزل كابل أو موتور، رطوبة</td><td class="mono">F013</td><td class="mono">—</td><td class="mono">SCF3 / GrF</td></tr><tr><td><b>Input phase loss</b></td><td>فازة ناقصة في الدخل</td><td>فيوز ضارب، طرف سايب</td><td class="mono">—</td><td class="mono">—</td><td class="mono">PHF</td></tr><tr><td><b>Output phase loss</b></td><td>فازة مفتوحة للموتور</td><td>طرف سايب، كونتاكتور خرج فاتح</td><td class="mono">—</td><td class="mono">—</td><td class="mono">OPF</td></tr><tr><td><b>Analog loss</b></td><td>إشارة ⁦4–20⁩ راحت</td><td>سلك مقطوع</td><td class="mono">F029</td><td class="mono">—</td><td class="mono">LFF</td></tr></tbody></table></div>
-  <p class="muted" style="font-size:.88rem">الأكواد للتوضيح وممكن تختلف من إصدار لإصدار (* في V20 أوفرلود الموتور ليه أكتر من كود). المانيوال هو المرجع، ومحاكيات الأجهزة على الموقع فيها أكواد كل جهاز.</p>
+  <ul class="fx">
+    <li><b>Overcurrent</b><span>Accel قصير · قصر · حمل زانق</span></li>
+    <li><b>Overvoltage</b><span>Decel قصير · حمل بيسحب الموتور</span></li>
+    <li><b>Undervoltage</b><span>الشبكة وقعت · فازة ضايعة</span></li>
+    <li><b>Motor overload</b><span>حمل زيادة · تيار الموتور غلط في الباراميترات</span></li>
+    <li><b>Drive overtemp</b><span>مروحة · تراب · كارير عالي</span></li>
+    <li><b>Ground fault</b><span>عزل الكابل أو الموتور · رطوبة</span></li>
+    <li><b>Phase loss</b><span>فيوز ضارب · طرف سايب</span></li>
+    <li><b>Analog loss</b><span>سلك الـ 4–20 مقطوع</span></li>
+  </ul>
+  <div class="tblw"><table class="tbl ct-tab"><thead><tr><th>العطل</th><th><bdi dir="ltr">PF525</bdi></th><th><bdi dir="ltr">V20</bdi></th><th><bdi dir="ltr">ATV320</bdi></th></tr></thead><tbody><tr><td>Overcurrent</td><td class="mono">F012</td><td class="mono">F0001</td><td class="mono">OCF / SCF</td></tr><tr><td>Overvoltage</td><td class="mono">F005</td><td class="mono">F0002</td><td class="mono">ObF</td></tr><tr><td>Undervoltage</td><td class="mono">F004</td><td class="mono">F0003</td><td class="mono">USF</td></tr><tr><td>Motor overload</td><td class="mono">F007</td><td class="mono">F0011</td><td class="mono">OLF</td></tr><tr><td>Drive overtemp</td><td class="mono">F008</td><td class="mono">F0004</td><td class="mono">OHF</td></tr><tr><td>Ground fault</td><td class="mono">F013</td><td class="mono">—</td><td class="mono">SCF3 / GrF</td></tr><tr><td>Input phase loss</td><td class="mono">—</td><td class="mono">—</td><td class="mono">PHF</td></tr><tr><td>Output phase loss</td><td class="mono">—</td><td class="mono">—</td><td class="mono">OPF</td></tr><tr><td>Analog loss</td><td class="mono">F029</td><td class="mono">—</td><td class="mono">LFF</td></tr></tbody></table></div>
+  <p class="tip">الأكواد بتختلف بالإصدار: المانيوال هو المرجع.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>لعبة: شخّص العطل</h2>
-  <p>في كل حالة اقرا الكود والقصة، افحص اللي محتاجه، واختار السبب.</p>
+  <p class="tip">اقرا الكود والقصة، افحص، واختار السبب.</p>
   <div class="wd"><h3>أعطال من الموقع</h3><div id="game"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">

@@ -15,6 +15,7 @@
 <script src="vfd.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b5">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 <link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
 <script src="/assets/real-art.js?v=20261030h1"></script>
@@ -38,29 +39,45 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>الفكرة</h2>
-  <ul><li><b>SP</b> (Setpoint): الضغط اللي إنت عايزه، مثلًا <bdi dir="ltr">4 bar</bdi>، من الكيباد أو من إشارة.</li><li><b>PV / Feedback</b>: الضغط الحقيقي من ترانسميتر <bdi dir="ltr">⁦4–20 mA⁩</bdi> على AI2 (رينج <bdi dir="ltr">⁦0–10 bar⁩</bdi> مثلًا).</li><li><b>الخرج</b>: سرعة الطلمبة. لو الضغط أقل من المطلوب ⇐ سرعة أعلى، والعكس.</li></ul>
-  <div class="tblw"><table class="tbl"><thead><tr><th>الإعداد</th><th>بيعمل إيه</th><th>لو كبير أوي</th></tr></thead><tbody>
-   <tr><td><b>Kp</b> (Proportional gain)</td><td>رد الفعل على قد الغلط</td><td>هزّ (Oscillation)</td></tr>
-   <tr><td><b>Ti</b> (Integral time)</td><td>بيشيل الغلط الباقي مع الوقت. <b>كل ما يقصر</b> يبقى أقوى</td><td>لو قصير أوي: هزّ وتجاوز</td></tr>
-   <tr><td><b>Td</b> (Derivative)</td><td>بيبص على سرعة التغيير</td><td>غالبًا بيتساب صفر في الطلمبات</td></tr></tbody></table></div>
+  <div class="tiles">
+    <div class="tile"><span class="big">SP</span><b>المطلوب</b><span>4 bar</span></div>
+    <div class="tile"><span class="big">PV</span><b>الحقيقي</b><span>ترانسميتر 4–20 mA على AI2</span></div>
+    <div class="tile"><span class="big">OUT</span><b>سرعة الطلمبة</b><span>ضغط أقل ⇐ أسرع</span></div>
+  </div>
+  <ul class="fx">
+    <li><b>Kp</b><span>رد الفعل · كبير أوي = هزّ</span></li>
+    <li><b>Ti</b><span>يشيل الغلط الباقي · أقصر = أقوى</span></li>
+    <li><b>Td</b><span>غالبًا صفر في الطلمبات</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>جرّب: طلمبة ضغط ثابت</h2>
-  <p>الإعدادات الحالية «حماسية» زيادة والضغط بيهز. ظبطها، وبعدين غيّر الاستهلاك وشوف الانفرتر بيرجّع الضغط إزاي.</p>
+  <p class="tip">الضغط بيهز: ظبط الـ PID، وبعدين غيّر الاستهلاك.</p>
   <div class="wd"><h3>طلمبة ضغط ثابت بالـ PID</h3><div id="pid"></div></div>
-  <div class="box"><b>طريقة ظبط سريعة:</b> ابدأ بـ Kp صغير و Ti طويل (بطيء بس مستقر). قرّب Kp لحد ما يبدأ يهز، وارجع لنصّه تقريبًا. بعدين قصّر Ti لحد ما الغلط يروح بسرعة من غير هزّ.</div>
+  <ol class="steps">
+    <li>Kp صغير · Ti طويل</li>
+    <li>زوّد Kp لحد الهزّ</li>
+    <li>ارجع لنصّه</li>
+    <li>قصّر Ti من غير هزّ</li>
+  </ol>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>الـ Sleep و الـ Wake</h2>
-  <p>بالليل مفيش استهلاك والطلمبة بتلف على سرعة واطية عشان تمسك الضغط بس. الانفرتر يقدر يوقّفها (<b>Sleep</b>) لما السرعة تفضل تحت حد معيّن لوقت معيّن، ويصحّيها (<b>Wake</b>) لما الضغط ينزل تحت حد. جرّب في المحاكي: اقفل كل الحنفيات (0 %) واستنى.</p>
+  <div class="vs">
+    <div class="side"><span class="ic">😴</span><b>Sleep</b><span>سرعة واطية لفترة ⇐ تقف</span></div>
+    <i>⇄</i>
+    <div class="side"><span class="ic">⏰</span><b>Wake</b><span>الضغط نزل ⇐ تقوم</span></div>
+  </div>
+  <p class="tip">جرّب: اقفل كل الحنفيات (0 %) واستنى.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>إعدادات حسب التطبيق</h2>
-  <div class="tblw"><table class="tbl"><thead><tr><th>التطبيق</th><th>أهم الإعدادات</th></tr></thead><tbody>
-   <tr><td>طلمبة / مروحة</td><td>V/f تربيعي، PID، Sleep، أقل سرعة، Flying start للمراوح</td></tr>
-   <tr><td>سير ناقل</td><td>Sensorless Vector، Accel/Decel مناسبين أو S-curve، سرعات ثابتة</td></tr>
-   <tr><td>ونش / رافعة</td><td>Vector (ويُفضّل بإنكودر)، مقاومة فرملة، تحكم الفرامل الميكانيكية من ريليه</td></tr>
-   <tr><td>كمبروسر / خلاط</td><td>عزم بدء عالي، أقل سرعة للتزييت والتبريد</td></tr></tbody></table></div>
+  <ul class="fx">
+    <li><b>🚰 طلمبة / مروحة</b><span>V/f تربيعي · PID · Sleep · Flying start</span></li>
+    <li><b>📦 سير</b><span>Sensorless Vector · S-curve · Presets</span></li>
+    <li><b>🏗️ ونش</b><span>Vector بإنكودر · مقاومة · فرامل من ريليه</span></li>
+    <li><b>🌀 كمبروسر / خلاط</b><span>عزم بدء عالي · أقل سرعة</span></li>
+  </ul>
   <div class="wd"><h3>تمرين: أهم إعداد للتطبيق</h3><div id="app"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">

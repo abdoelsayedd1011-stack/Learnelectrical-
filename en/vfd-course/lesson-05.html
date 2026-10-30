@@ -17,6 +17,7 @@
 <script src="vfd.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b5">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 <link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
 <script src="/assets/real-art.js?v=20261030h1"></script>
@@ -40,28 +41,50 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>Digital inputs (DI)</h2>
-  <p>Each digital input is programmed for a function (in the parameters): run forward, run reverse, stop, preset speed, reset, external fault… An input turns on when it receives <b>24 V</b> from the terminal supply (in PNP / source mode), or when it is connected to 0V (in NPN / sink mode). A jumper, switch or parameter sets which.</p>
-  <div class="tblw"><table class="tbl"><thead><tr><th>Method</th><th>How</th><th>Note</th></tr></thead><tbody>
-   <tr><td><b>2-wire</b></td><td>A selector (maintained contact): closed = run, open = stop</td><td>If power returns with the selector closed, the motor can start by itself. Careful!</td></tr>
-   <tr><td><b>3-wire</b></td><td>A momentary Start button (NO) + a Stop button (NC), and the drive latches itself</td><td>Like a seal-in circuit in classic control. Safer after a power cut</td></tr></tbody></table></div>
-  <div class="ex"><b>Preset speeds:</b> two digital inputs give you 4 speeds: 00 = speed from the analog input or the first preset, 01 = preset 1, 10 = preset 2, 11 = preset 3. For example, a conveyor that runs slowly while loading and fast while transferring.</div>
+  <p class="bf"><span class="ic">🔘</span><span>Each DI is programmed for a job: Run · Reverse · Stop · preset speed · Reset.</span></p>
+  <div class="vs">
+    <div class="side"><b>PNP / Source</b><span>Active at +24 V</span></div>
+    <i>vs</i>
+    <div class="side"><b>NPN / Sink</b><span>Active at 0 V</span></div>
+  </div>
+  <div class="vs">
+    <div class="side"><b>2-Wire</b><span>Maintained selector</span><span>⚠️ Restarts when power returns</span></div>
+    <i>vs</i>
+    <div class="side"><b>3-Wire</b><span>Momentary Start + Stop</span><span>✅ Safer</span></div>
+  </div>
+  <ul class="fx">
+    <li><b class="mono">00</b><span>Analog</span></li>
+    <li><b class="mono">01</b><span>Preset 1</span></li>
+    <li><b class="mono">10</b><span>Preset 2</span></li>
+    <li><b class="mono">11</b><span>Preset 3</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>The speed signal (AI)</h2>
-  <ul>
-   <li><b>Potentiometer</b> (usually 10 kΩ): one end to <b>+10V</b>, one end to <b>0V/ACM</b>, and the middle terminal (wiper) to <b>AI</b>. If speed goes up the wrong way, swap the two outer ends.</li>
-   <li><b>0–10 V</b> from a PLC: easy, but affected by noise and distance.</li>
-   <li><b>4–20 mA</b>: the best for long distances, and the drive can detect a broken wire (below 4 mA). Make sure the input is set to current, not voltage (switch or parameter).</li>
-  </ul>
+  <div class="tiles">
+    <div class="tile"><span class="ic">🎛️</span><b>10 kΩ pot</b><span>+10V · AI · 0V</span></div>
+    <div class="tile"><span class="big">0–10 V</span><b>From a PLC</b><span>Noise sensitive</span></div>
+    <div class="tile"><span class="big">4–20 mA</span><b>Best</b><span>Long runs · detects a broken wire</span></div>
+  </div>
+  <p class="tip">Pot works backwards? Swap the two outer wires.</p>
   <div class="formula">f = f<sub>min</sub> + (signal − min) ÷ span × (f<sub>max</sub> − f<sub>min</sub>)</div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Outputs: relay and analog</h2>
-  <ul><li><b>Relay</b> (dry NO/NC contact): programmed as fault, run, ready or «at speed». It can carry a small 230 V AC load for a lamp or a PLC input.</li><li><b>Analog output</b> (0–10 V or 4–20 mA): sends speed or current to a meter or to the PLC.</li><li><b>STO</b> (Safe Torque Off): two safety inputs that cut torque in hardware. They usually have a factory jumper, and if the jumper is removed the drive will not run.</li></ul>
+  <ul class="fx">
+    <li><b>Relay NO/NC</b><span>Fault · Run · Ready · at speed</span></li>
+    <li><b>Analog output</b><span>Speed or current to a meter or PLC</span></li>
+    <li><b>STO</b><span>Hardware torque cut · no jumper, no run</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Wire it and run it</h2>
-  <p>Run → DI1, direction → DI2, pot → AI1, lamp → relay. Then test it below.</p>
+  <ol class="steps">
+    <li>Run → DI1</li>
+    <li>Direction → DI2</li>
+    <li>Pot → AI1</li>
+    <li>Lamp → relay</li>
+  </ol>
   <div id="ctl"></div>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
