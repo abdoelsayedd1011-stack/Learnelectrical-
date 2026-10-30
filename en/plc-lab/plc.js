@@ -586,18 +586,23 @@ ENG.check = function(progDef, ex, opt){
 const PLANTS = PL.plants = {};
 const on = (e, a) => !!e.out[a];
 const svgT = (x, y, s, cls, anchor) => `<text x="${x}" y="${y}" class="${cls || 'pt'}"${anchor ? ` text-anchor="${anchor}"` : ''}>${s}</text>`;
-const lampSvg = (x, y, r, col, lit) => `<circle cx="${x}" cy="${y}" r="${r + 3}" fill="#2a3035"/><circle cx="${x}" cy="${y}" r="${r}" fill="${lit ? col : '#4a5257'}"${lit ? ` class="glowc" style="--gc:${col}"` : ''}/>${lit ? `<circle cx="${x - r * 0.35}" cy="${y - r * 0.35}" r="${r * 0.28}" fill="#fff" opacity=".55"/>` : ''}`;
+const lampSvg = (x, y, r, col, lit) => `<circle cx="${x}" cy="${y}" r="${r + 3.5}" fill="url(#ra-chrome)"/><circle cx="${x}" cy="${y}" r="${r + 1}" fill="#1c1f22"/><circle cx="${x}" cy="${y}" r="${r}" fill="${lit ? col : '#3a3f43'}"${lit ? ` class="glowc" style="--gc:${col}"` : ''}/>${lit ? '' : `<circle cx="${x}" cy="${y}" r="${r}" fill="${col}" opacity=".25"/>`}<circle cx="${x}" cy="${y}" r="${r}" fill="url(#ra-dome)"/>`;
 PL.lampSvg = lampSvg;
 const LCOL = {red:'#ff4a3d', green:'#2fd35a', yellow:'#ffc21a', white:'#f4f1e6', blue:'#3a9bff', amber:'#ff9a1a'};
 PL.LCOL = LCOL;
 /* a motor seen from the fan end; ang in degrees */
 function motorSvg(x, y, s, ang, run, col){
-  const blades = [0, 72, 144, 216, 288].map(a => `<path d="M0 0 L${(s * 0.42).toFixed(1)} -${(s * 0.1).toFixed(1)} L${(s * 0.42).toFixed(1)} ${(s * 0.1).toFixed(1)}Z" transform="rotate(${a})" fill="#cfd6db"/>`).join('');
-  return `<g transform="translate(${x} ${y})"><rect x="${-s * 0.62}" y="${s * 0.5}" width="${s * 1.24}" height="${s * 0.14}" rx="2" fill="#5d6469"/><circle r="${s * 0.56}" fill="${col || '#2f6fb3'}" stroke="#1d3f66" stroke-width="2"/><circle r="${s * 0.46}" fill="#22272b"/><g transform="rotate(${ang.toFixed(1)})">${blades}</g><circle r="${s * 0.09}" fill="#8a949b"/>${run ? `<circle r="${s * 0.62}" fill="none" stroke="#2fd35a" stroke-width="2.5" stroke-dasharray="4 5" opacity=".9"/>` : ''}</g>`;
+  const blades = [0, 60, 120, 180, 240, 300].map(a => `<path d="M0 0 L${(s * 0.4).toFixed(1)} -${(s * 0.09).toFixed(1)} Q${(s * 0.44).toFixed(1)} 0 ${(s * 0.4).toFixed(1)} ${(s * 0.09).toFixed(1)}Z" transform="rotate(${a})" fill="#b9c0c5"/>`).join('');
+  const rings = [0.2, 0.28, 0.36, 0.44].map(k => `<circle r="${(s * k).toFixed(1)}" fill="none" stroke="#2b3034" stroke-width="${(s * 0.03).toFixed(1)}"/>`).join('');
+  return `<g transform="translate(${x} ${y})"><g filter="url(#ra-sh)"><path d="M${-s * 0.5} ${s * 0.36}L${-s * 0.66} ${s * 0.62}H${s * 0.66}L${s * 0.5} ${s * 0.36}Z" fill="${col || '#2f6fb3'}"/><rect x="${-s * 0.7}" y="${s * 0.58}" width="${s * 1.4}" height="${s * 0.08}" rx="2" fill="#3b4146"/>
+    <circle r="${s * 0.6}" fill="${col || '#2f6fb3'}"/><circle r="${s * 0.6}" fill="url(#ra-dome)" opacity=".7"/><circle r="${s * 0.56}" fill="none" stroke="#000" stroke-opacity=".25" stroke-width="${(s * 0.05).toFixed(1)}" stroke-dasharray="2 3"/>
+    <circle r="${s * 0.5}" fill="url(#ra-grey)"/><circle r="${s * 0.47}" fill="#16191b"/></g>
+    <g transform="rotate(${ang.toFixed(1)})">${blades}</g>${rings}<path d="M${-s * 0.47} 0H${s * 0.47}M0 ${-s * 0.47}V${s * 0.47}" stroke="#2b3034" stroke-width="${(s * 0.035).toFixed(1)}"/><circle r="${s * 0.08}" fill="url(#ra-chrome)"/>
+    ${run ? `<circle r="${s * 0.66}" fill="none" stroke="#2fd35a" stroke-width="2.5" stroke-dasharray="4 5" opacity=".9"/>` : ''}</g>`;
 }
 PL.motorSvg = motorSvg;
 function contactorSvg(x, y, lbl, onv, sub){
-  return `<g transform="translate(${x} ${y})"><rect x="-17" y="-22" width="34" height="44" rx="4" fill="#d9dde0" stroke="#7b858c"/><rect x="-12" y="-6" width="24" height="12" rx="2" fill="${onv ? '#2b7a3d' : '#5d6469'}"/><rect x="-6" y="${onv ? -4 : -10}" width="12" height="4" fill="#ffd400"/>${[-10, 0, 10].map(dx => `<circle cx="${dx}" cy="-16" r="2.4" fill="#9aa3a8"/><circle cx="${dx}" cy="16" r="2.4" fill="#9aa3a8"/>`).join('')}${svgT(0, 36, lbl, 'pt pc ar', 'middle')}${sub ? svgT(0, 48, sub, 'pt pm', 'middle') : ''}</g>`;
+  return `<g transform="translate(${x} ${y})"><g filter="url(#ra-sh)"><rect x="-17" y="-22" width="34" height="44" rx="3" fill="url(#ra-plastic)" stroke="#a9aeb2"/><rect x="-15" y="-21" width="30" height="9" rx="1.5" fill="url(#ra-term)"/><rect x="-15" y="12" width="30" height="9" rx="1.5" fill="url(#ra-term)"/>${[-10, 0, 10].map(dx => RA.screw(dx, -16.5, 2.6) + RA.screw(dx, 16.5, 2.6)).join('')}<rect x="-9" y="-8" width="18" height="16" rx="1.5" fill="#1b1e20"/><rect x="-6" y="${onv ? -1 : -6}" width="12" height="6" rx="1" fill="#ffc21a"/></g>${svgT(0, 36, lbl, 'pt pc ar', 'middle')}${sub ? svgT(0, 48, sub, 'pt pm', 'middle') : ''}</g>`;
 }
 
 /* ---- generic loads: one tile per output ---- */
@@ -607,9 +612,9 @@ PL.loadsSvg = function(outs, e, st){
   outs.forEach((o, i) => {
     const cx = (W - n * w) / 2 + i * w + w / 2, v = on(e, o.a);
     if (o.kind === 'motor' || o.kind === 'fan') s += motorSvg(cx, 46, 52, st.ang[o.a] || 0, v, o.kind === 'fan' ? '#5a6b78' : null);
-    else if (o.kind === 'horn') s += `<g transform="translate(${cx} 46)"><path d="M-18 -10h10l16 -14v48l-16 -14h-10z" fill="#c9a43a" stroke="#6b5200"/>${v ? '<path d="M14 -12q8 12 0 24M20 -18q12 18 0 36" fill="none" stroke="#ff9a1a" stroke-width="3"/>' : ''}</g>`;
-    else if (o.kind === 'valve') s += `<g transform="translate(${cx} 46)"><rect x="-30" y="6" width="60" height="12" fill="#8a949b"/><path d="M-14 0L14 24V0L-14 24Z" fill="${v ? '#2b7a3d' : '#7b858c'}" stroke="#2a3035"/><rect x="-9" y="-26" width="18" height="22" rx="3" fill="#2a3035"/>${svgT(0, -12, v ? 'ON' : 'OFF', 'pt pw', 'middle')}</g>`;
-    else if (o.kind === 'heater') s += `<g transform="translate(${cx} 46)"><path d="M-24 10q6-20 12 0t12 0t12 0t12 0" fill="none" stroke="${v ? '#ff5b2a' : '#7b858c'}" stroke-width="5" stroke-linecap="round"/>${v ? '<path d="M-14 -6q-4-10 2-18M0 -6q-4-10 2-18M14 -6q-4-10 2-18" fill="none" stroke="#ff9a1a" stroke-width="2.5" opacity=".8"/>' : ''}</g>`;
+    else if (o.kind === 'horn') s += `<g transform="translate(${cx} 46)"><g filter="url(#ra-sh)"><rect x="-24" y="-12" width="10" height="24" rx="2" fill="url(#ra-dark)"/><path d="M-14 -8h6l18 -16v48l-18 -16h-6z" fill="#e0332a"/><path d="M-14 -8h6l18 -16v48l-18 -16h-6z" fill="url(#ra-dome)" opacity=".6"/><ellipse cx="10" cy="0" rx="3" ry="24" fill="#8f1d17"/></g>${v ? '<path d="M14 -12q8 12 0 24M20 -18q12 18 0 36" fill="none" stroke="#ff9a1a" stroke-width="3"/>' : ''}</g>`;
+    else if (o.kind === 'valve') s += `<g transform="translate(${cx} 46)">${RA.pipe('M-34 12H34', v ? '#3a8fd8' : null)}${RA.valve(0, 10, v)}${svgT(0, -12, v ? 'ON' : 'OFF', 'pt pw', 'middle')}</g>`;
+    else if (o.kind === 'heater') s += `<g transform="translate(${cx} 46)"><rect x="-30" y="14" width="60" height="8" rx="2" fill="url(#ra-grey)" filter="url(#ra-sh)"/><path d="M-24 10q6-20 12 0t12 0t12 0t12 0" fill="none" stroke="#5d6166" stroke-width="7" stroke-linecap="round"/><path d="M-24 10q6-20 12 0t12 0t12 0t12 0" fill="none" stroke="${v ? '#ff5b2a' : '#9ea3a7'}" stroke-width="4" stroke-linecap="round"${v ? ' filter="url(#ra-glow)"' : ''}/>${v ? '<path d="M-14 -6q-4-10 2-18M0 -6q-4-10 2-18M14 -6q-4-10 2-18" fill="none" stroke="#ff9a1a" stroke-width="2.5" opacity=".8"/>' : ''}</g>`;
     else s += lampSvg(cx, 44, 20, LCOL[o.color || 'red'], v);
     s += `<text x="${cx}" y="98" class="pt pc ar" text-anchor="middle">${esc(o.label || o.a)}</text><text x="${cx}" y="110" class="pt pm" text-anchor="middle">${o.a}</text>`;
   });
@@ -684,16 +689,15 @@ PLANTS.pack = {
     st.rst = rst;
   },
   svg(st, e){
-    let s = `<svg viewBox="0 0 360 150" role="img" aria-label="Packing conveyor"><rect x="0" y="86" width="296" height="14" rx="7" fill="#3b4247"/>`;
-    for (let x = -20 + st.belt; x < 296; x += 20) s += `<rect x="${x.toFixed(1)}" y="88" width="8" height="10" fill="#555d63"/>`;
-    s += `<circle cx="8" cy="93" r="7" fill="#8a949b"/><circle cx="288" cy="93" r="7" fill="#8a949b"/>`;
-    st.boxes.forEach(b => { if (b.x > -30) s += `<rect x="${(b.x - 11).toFixed(1)}" y="64" width="22" height="22" rx="2" fill="#c98a3c" stroke="#7a4f17"/><path d="M${(b.x - 11).toFixed(1)} 72h22" stroke="#e4c08a" stroke-width="3"/>`; });
+    let s = `<svg viewBox="0 0 360 150" role="img" aria-label="Packing conveyor">`;
+    s += RA.belt(0, 86, 296, st.belt);
+    st.boxes.forEach(b => { if (b.x > -30) s += RA.box(b.x - 11, 64, 22, 22); });
     const eye = !!e.phys['I0.2'];
-    s += `<rect x="244" y="36" width="12" height="18" rx="2" fill="#2a3035"/><path d="M250 54V86" stroke="${eye ? '#ff4a3d' : '#ff8a80'}" stroke-width="2" stroke-dasharray="4 3" opacity="${eye ? 1 : .55}"/>${svgT(250, 30, 'I0.2', 'pt pm', 'middle')}`;
+    s += RA.eye(243, 34, 14, 20, eye) + `<path d="M250 54V86" stroke="${eye ? '#ff4a3d' : '#ff8a80'}" stroke-width="2" stroke-dasharray="4 3" opacity="${eye ? 1 : .55}"/>${svgT(250, 30, 'I0.2', 'pt pm', 'middle')}`;
     /* carton */
     const full = st.carton;
-    s += `<path d="M300 106h52v38h-52z" fill="#b07b3c" stroke="#6b4a1e"/><path d="M300 106l-10 -10M352 106l10 -10" stroke="#6b4a1e" stroke-width="3"/>`;
-    for (let i = 0; i < Math.min(full, 8); i++) s += `<rect x="${304 + (i % 4) * 12}" y="${132 - Math.floor(i / 4) * 12}" width="10" height="10" fill="${i >= 6 ? '#c0352b' : '#c98a3c'}" stroke="#7a4f17"/>`;
+    s += `<g filter="url(#ra-sh)"><path d="M300 106h52v38h-52z" fill="#b07b3c" stroke="#6b4a1e"/><path d="M300 106h52v38h-52z" fill="url(#ra-dome)" opacity=".35"/></g><path d="M300 106l-10 -10M352 106l10 -10" stroke="#8a5a26" stroke-width="4"/>`;
+    for (let i = 0; i < Math.min(full, 8); i++) s += RA.box(304 + (i % 4) * 12, 132 - Math.floor(i / 4) * 12, 10, 10, i >= 6 ? '#c0352b' : null);
     s += svgT(326, 124 - (full > 4 ? 14 : 0), full + '/6', 'pt pc', 'middle');
     s += motorSvg(28, 122, 30, st.belt * 18, on(e, 'Q0.0')) + svgT(60, 126, 'M Q0.0', 'pt pm');
     s += lampSvg(24, 24, 11, LCOL.green, on(e, 'Q0.1')) + svgT(42, 22, 'Carton full', 'pt pc ar') + svgT(42, 34, 'Q0.1', 'pt pm');
@@ -712,10 +716,10 @@ PLANTS.parking = {
     st.pi = i; st.po = o;
   },
   svg(st, e){
-    let s = `<svg viewBox="0 0 360 150" role="img" aria-label="Car park"><rect x="10" y="20" width="230" height="120" rx="8" fill="#3b4247"/>`;
-    for (let k = 0; k < 6; k++){ const x = 22 + (k % 3) * 72, y = 30 + Math.floor(k / 3) * 56; s += `<rect x="${x}" y="${y}" width="62" height="46" rx="4" fill="none" stroke="#e8e2c8" stroke-dasharray="5 4"/>`; if (k < st.cars) s += `<g transform="translate(${x + 31} ${y + 23})"><rect x="-22" y="-13" width="44" height="26" rx="8" fill="${['#c0352b', '#2f6fb3', '#e3a43a', '#5cc06f', '#9b59b6', '#ddd'][k]}"/><rect x="-12" y="-10" width="24" height="20" rx="4" fill="#bcd3e6" opacity=".8"/></g>`; }
+    let s = `<svg viewBox="0 0 360 150" role="img" aria-label="Car park"><rect x="10" y="20" width="230" height="120" rx="8" fill="#4a4f53"/><rect x="10" y="20" width="230" height="120" rx="8" fill="url(#ra-vent)" opacity=".25"/>`;
+    for (let k = 0; k < 6; k++){ const x = 22 + (k % 3) * 72, y = 30 + Math.floor(k / 3) * 56; s += `<rect x="${x}" y="${y}" width="62" height="46" rx="4" fill="none" stroke="#e8e2c8" stroke-dasharray="5 4"/>`; if (k < st.cars) s += RA.car(x + 31, y + 26, ['#c0352b', '#2f6fb3', '#e3a43a', '#5cc06f', '#9b59b6', '#ddd'][k], .9); }
     s += svgT(125, 14, 'Cars inside: ' + st.cars + (st.cars > 5 ? ' (full!)' : ''), 'pt pc ar', 'middle');
-    s += `<rect x="262" y="20" width="84" height="120" rx="10" fill="#2a3035"/>${lampSvg(304, 54, 18, LCOL.green, on(e, 'Q0.0'))}${lampSvg(304, 104, 18, LCOL.red, on(e, 'Q0.1'))}`;
+    s += `<rect x="262" y="20" width="84" height="120" rx="10" fill="url(#ra-dark)" filter="url(#ra-sh)"/>${lampSvg(304, 54, 18, LCOL.green, on(e, 'Q0.0'))}${lampSvg(304, 104, 18, LCOL.red, on(e, 'Q0.1'))}`;
     s += svgT(304, 82, 'Space Q0.0', 'pt pw ar', 'middle') + svgT(304, 134, 'Full Q0.1', 'pt pw ar', 'middle');
     return s + '</svg>';
   }
@@ -740,15 +744,15 @@ PLANTS.tank = {
   svg(st, e){
     const h = 100, top = 22, y = top + h * (1 - st.level / 100), lv = st.level;
     let s = `<svg viewBox="0 0 360 172" role="img" aria-label="Tank with analog level">`;
-    s += `<rect x="120" y="${top}" width="110" height="${h}" rx="6" fill="#d9e3ea" stroke="#6b757c" stroke-width="2"/>`;
+    s += RA.tank(120, top, 110, h);
     s += `<path d="M122 ${y.toFixed(1)} q14 ${(3 * Math.sin(st.wave)).toFixed(1)} 27 0 t27 0 t27 0 t27 0 V${top + h - 2} H122Z" fill="#3a8fd8" opacity=".85"/>`;
     [[90, 'H'], [80, 'stop'], [20, 'start'], [10, 'L']].forEach(([p, t]) => { const yy = top + h * (1 - p / 100); s += `<path d="M232 ${yy}h10" stroke="#8a949b"/>${svgT(244, yy + 4, p + '%', 'pt pm')}`; });
-    s += `<rect x="96" y="${top + 6}" width="18" height="34" rx="3" fill="#2a3035"/>${svgT(105, top + 24, 'LT', 'pt pw', 'middle')}<path d="M114 ${top + 20}h6" stroke="#2a3035" stroke-width="3"/>`;
+    s += `<rect x="96" y="${top + 6}" width="18" height="34" rx="3" fill="url(#ra-dark)" filter="url(#ra-sh)"/>${svgT(105, top + 24, 'LT', 'pt pw', 'middle')}<path d="M114 ${top + 20}h6" stroke="#2a3035" stroke-width="3"/>`;
     /* pump & pipes */
-    s += `<path d="M40 140h50V${top + 8}h30" fill="none" stroke="#8a949b" stroke-width="6"/>${motorSvg(40, 132, 28, (st.wave * 120) % 360, on(e, 'Q0.0'))}${svgT(40, 158, 'Pump Q0.0', 'pt pc ar', 'middle')}`;
-    s += `<path d="M175 ${top + h}v18h120" fill="none" stroke="#8a949b" stroke-width="6"/>${st.use ? `<path d="M295 ${top + h + 18}v14" stroke="#3a8fd8" stroke-width="4" stroke-dasharray="3 3"/>` : ''}${svgT(296, top + h + 46, st.use ? 'Outlet open' : 'Outlet closed', 'pt pc ar', 'middle')}`;
+    s += `${RA.pipe(`M40 140h50V${top + 8}h30`, on(e, 'Q0.0') ? '#3a8fd8' : null)}${motorSvg(40, 132, 28, (st.wave * 120) % 360, on(e, 'Q0.0'))}${svgT(40, 158, 'Pump Q0.0', 'pt pc ar', 'middle')}`;
+    s += `${RA.pipe(`M175 ${top + h}v18h120`, st.use ? '#3a8fd8' : null)}${st.use ? `<path d="M295 ${top + h + 18}v14" stroke="#3a8fd8" stroke-width="4" stroke-dasharray="3 3"/>` : ''}${svgT(296, top + h + 46, st.use ? 'Outlet open' : 'Outlet closed', 'pt pc ar', 'middle')}`;
     s += `<g transform="translate(300 30)">${lampSvg(0, 0, 10, LCOL.red, on(e, 'Q0.1'))}${svgT(16, 0, 'High', 'pt pc')}${svgT(16, 11, 'Q0.1', 'pt pm')}</g><g transform="translate(300 66)">${lampSvg(0, 0, 10, LCOL.amber, on(e, 'Q0.2'))}${svgT(16, 0, 'Low', 'pt pc')}${svgT(16, 11, 'Q0.2', 'pt pm')}</g>`;
-    s += `<rect x="128" y="${top + h + 22}" width="94" height="16" rx="3" fill="#c7d3b4"/>${svgT(175, top + h + 34, st.broken ? '0.0 mA ⚠' : PL.fmt(st.mA || 4, 1) + ' mA · ' + Math.round(lv) + '%', 'pt pl', 'middle')}`;
+    s += `<rect x="126" y="${top + h + 20}" width="98" height="20" rx="3" fill="url(#ra-dark)"/><rect x="128" y="${top + h + 22}" width="94" height="16" rx="2" fill="#c7d3b4"/>${svgT(175, top + h + 34, st.broken ? '0.0 mA ⚠' : PL.fmt(st.mA || 4, 1) + ' mA · ' + Math.round(lv) + '%', 'pt pl', 'middle')}`;
     return s + '</svg>';
   }
 };
@@ -765,9 +769,9 @@ PLANTS.traffic = {
     if (st.carX > 380) st.carX = -40;
   },
   svg(st, e){
-    let s = `<svg viewBox="0 0 360 150" role="img" aria-label="Traffic light"><rect x="0" y="108" width="360" height="34" fill="#3b4247"/><path d="M0 125h360" stroke="#e8e2c8" stroke-width="2" stroke-dasharray="14 10"/><rect x="186" y="104" width="8" height="40" fill="#e8e2c8" opacity=".7"/>`;
-    s += `<rect x="226" y="40" width="6" height="70" fill="#5d6469"/><rect x="210" y="4" width="38" height="96" rx="8" fill="#22272b"/>${lampSvg(229, 22, 11, LCOL.red, on(e, 'Q0.0'))}${lampSvg(229, 52, 11, LCOL.yellow, on(e, 'Q0.1'))}${lampSvg(229, 82, 11, LCOL.green, on(e, 'Q0.2'))}`;
-    s += `<g transform="translate(${st.carX.toFixed(1)} 114)"><rect x="-26" y="-2" width="52" height="16" rx="5" fill="#2f6fb3"/><rect x="-16" y="-12" width="30" height="12" rx="4" fill="#5d8fc9"/><circle cx="-14" cy="14" r="5" fill="#111"/><circle cx="14" cy="14" r="5" fill="#111"/></g>`;
+    let s = `<svg viewBox="0 0 360 150" role="img" aria-label="Traffic light"><rect x="0" y="104" width="360" height="4" fill="#9aa0a5"/><rect x="0" y="108" width="360" height="34" fill="#3b4247"/><rect x="0" y="108" width="360" height="34" fill="url(#ra-vent)" opacity=".15"/><path d="M0 125h360" stroke="#e8e2c8" stroke-width="2" stroke-dasharray="14 10"/><rect x="186" y="104" width="8" height="40" fill="#e8e2c8" opacity=".7"/>`;
+    s += `<rect x="225" y="40" width="8" height="70" fill="url(#ra-steelV)"/><rect x="210" y="4" width="38" height="96" rx="8" fill="url(#ra-dark)" filter="url(#ra-sh)"/>${[22, 52, 82].map(yy => `<path d="M215 ${yy - 13}h28l-4 -4h-20z" fill="#111"/>`).join('')}${lampSvg(229, 22, 11, LCOL.red, on(e, 'Q0.0'))}${lampSvg(229, 52, 11, LCOL.yellow, on(e, 'Q0.1'))}${lampSvg(229, 82, 11, LCOL.green, on(e, 'Q0.2'))}`;
+    s += RA.car(st.carX, 118, '#2f6fb3');
     s += svgT(110, 28, 'R Q0.0 · Y Q0.1 · G Q0.2', 'pt pm', 'middle');
     if (st.cur === 'X') s += `<rect x="20" y="40" width="170" height="22" rx="5" fill="#c0352b"/>${svgT(105, 55, 'More than one lamp on!', 'pt pw ar', 'middle')}`;
     return s + '</svg>';
@@ -790,11 +794,11 @@ PLANTS.mixer = {
   },
   svg(st, e){
     const top = 24, h = 100, y = top + h * (1 - st.level / 100);
-    let s = `<svg viewBox="0 0 360 160" role="img" aria-label="Mixing tank"><rect x="120" y="${top}" width="110" height="${h}" rx="6" fill="#d9e3ea" stroke="#6b757c" stroke-width="2"/><rect x="122" y="${y.toFixed(1)}" width="106" height="${Math.max(0, top + h - y - 1).toFixed(1)}" fill="#8e5bd8" opacity=".75"/>`;
-    s += `<path d="M175 6V${top + 70}" stroke="#5d6469" stroke-width="4"/><g transform="translate(175 ${top + 74}) scale(${Math.cos(st.ang * Math.PI / 180).toFixed(2)} 1)"><path d="M-30 -4h60v8h-60z" fill="#8a949b"/></g><rect x="160" y="0" width="30" height="14" rx="3" fill="#2f6fb3"/>${svgT(175, 11, 'M', 'pt pw', 'middle')}`;
+    let s = `<svg viewBox="0 0 360 160" role="img" aria-label="Mixing tank">${RA.tank(120, top, 110, h)}<rect x="122" y="${y.toFixed(1)}" width="106" height="${Math.max(0, top + h - y - 1).toFixed(1)}" fill="#8e5bd8" opacity=".75"/>`;
+    s += `<path d="M175 6V${top + 70}" stroke="url(#ra-steelV)" stroke-width="5"/><g transform="translate(175 ${top + 74}) scale(${Math.cos(st.ang * Math.PI / 180).toFixed(2)} 1)"><path d="M-30 -4h60v8h-60z" fill="#8a949b"/></g><rect x="160" y="0" width="30" height="14" rx="3" fill="#2f6fb3" filter="url(#ra-sh)"/><rect x="160" y="0" width="30" height="14" rx="3" fill="url(#ra-dome)" opacity=".6"/>${svgT(175, 11, 'M', 'pt pw', 'middle')}`;
     [[90, 'I0.3 High'], [10, 'I0.2 Low']].forEach(([p, t], k) => { const yy = top + h * (1 - p / 100), lit = k ? st.level > 10 : st.level >= 90; s += `<rect x="228" y="${yy - 5}" width="16" height="10" rx="2" fill="${lit ? '#2fd35a' : '#4a5257'}"/>${svgT(250, yy + 4, t, 'pt pm')}`; });
-    s += `<path d="M20 ${top + 6}h100" stroke="${on(e, 'Q0.0') ? '#8e5bd8' : '#8a949b'}" stroke-width="6"/><g transform="translate(70 ${top + 6})"><path d="M-10 -9L10 9V-9L-10 9Z" fill="${on(e, 'Q0.0') ? '#2b7a3d' : '#7b858c'}" stroke="#2a3035"/></g>${svgT(70, top - 8, 'Fill Q0.0', 'pt pc ar', 'middle')}`;
-    s += `<path d="M175 ${top + h}v14h120" stroke="${on(e, 'Q0.2') ? '#8e5bd8' : '#8a949b'}" stroke-width="6" fill="none"/><g transform="translate(250 ${top + h + 14})"><path d="M-10 -9L10 9V-9L-10 9Z" fill="${on(e, 'Q0.2') ? '#2b7a3d' : '#7b858c'}" stroke="#2a3035"/></g>${svgT(250, top + h + 34, 'Drain Q0.2', 'pt pc ar', 'middle')}`;
+    s += `${RA.pipe(`M20 ${top + 6}h100`, on(e, 'Q0.0') ? '#8e5bd8' : null)}${RA.valve(70, top + 6, on(e, 'Q0.0'))}${svgT(40, top + 26, 'Fill Q0.0', 'pt pc ar', 'middle')}`;
+    s += `${RA.pipe(`M175 ${top + h}v14h120`, on(e, 'Q0.2') ? '#8e5bd8' : null)}${RA.valve(250, top + h + 14, on(e, 'Q0.2'))}${svgT(250, top + h + 34, 'Drain Q0.2', 'pt pc ar', 'middle')}`;
     s += `<g transform="translate(46 100)">${lampSvg(0, 0, 11, LCOL.green, on(e, 'Q0.3'))}${svgT(0, 26, 'Done Q0.3', 'pt pc ar', 'middle')}</g>`;
     s += svgT(175, top + h - 8, Math.round(st.level) + '%', 'pt pc', 'middle');
     if (st.over) s += `<rect x="100" y="134" width="160" height="20" rx="5" fill="#c0352b"/>${svgT(180, 148, 'Tank overflowed!', 'pt pw ar', 'middle')}`;
@@ -822,15 +826,15 @@ PLANTS.sort = {
     e.setIn('I0.2', st.boxes.some(b => !b.off && b.x > 238 && b.x < 262) ? 1 : 0);
   },
   svg(st, e){
-    let s = `<svg viewBox="0 0 360 160" role="img" aria-label="Sorting conveyor"><rect x="0" y="96" width="350" height="14" rx="7" fill="#3b4247"/>`;
-    for (let x = -20 + st.belt; x < 350; x += 20) s += `<rect x="${x.toFixed(1)}" y="98" width="8" height="10" fill="#555d63"/>`;
-    s += `<rect x="226" y="122" width="52" height="34" fill="#4a5257" stroke="#2a3035"/>${svgT(252, 140, 'Tall', 'pt pw ar', 'middle')}`;
-    st.boxes.forEach(b => { const h = b.tall ? 40 : 20, x = b.x, yb = 96 + (b.off ? Math.min(40, b.off) : 0); s += `<rect x="${(x - 11).toFixed(1)}" y="${(yb - h).toFixed(1)}" width="22" height="${h}" rx="2" fill="${b.tall ? '#2f6fb3' : '#c98a3c'}" stroke="#2a3035" opacity="${b.off ? Math.max(0, 1 - b.off / 40).toFixed(2) : 1}"/>`; });
+    let s = `<svg viewBox="0 0 360 160" role="img" aria-label="Sorting conveyor">`;
+    s += RA.belt(0, 96, 350, st.belt);
+    s += `<rect x="226" y="122" width="52" height="34" fill="url(#ra-grey)" stroke="#55595d" filter="url(#ra-sh)"/>${svgT(252, 140, 'Tall', 'pt pw ar', 'middle')}`;
+    st.boxes.forEach(b => { const h = b.tall ? 40 : 20, x = b.x, yb = 96 + (b.off ? Math.min(40, b.off) : 0); s += RA.box(x - 11, yb - h, 22, h, b.tall ? '#2f6fb3' : null, b.off ? Math.max(0, 1 - b.off / 40).toFixed(2) : null); });
     const h1 = !!e.phys['I0.1'], h2 = !!e.phys['I0.2'];
-    s += `<rect x="100" y="40" width="10" height="16" rx="2" fill="#2a3035"/><path d="M110 50H140" stroke="${h1 ? '#ff4a3d' : '#ff8a80'}" stroke-width="2" stroke-dasharray="4 3" opacity="${h1 ? 1 : .5}"/>${svgT(120, 34, 'I0.1 height', 'pt pm ar', 'middle')}`;
-    s += `<rect x="296" y="72" width="10" height="16" rx="2" fill="#2a3035"/><path d="M296 80H262" stroke="${h2 ? '#ff4a3d' : '#ff8a80'}" stroke-width="2" stroke-dasharray="4 3" opacity="${h2 ? 1 : .5}"/>${svgT(301, 66, 'I0.2', 'pt pm', 'middle')}`;
+    s += RA.eye(99, 39, 12, 18, h1) + `<path d="M110 50H140" stroke="${h1 ? '#ff4a3d' : '#ff8a80'}" stroke-width="2" stroke-dasharray="4 3" opacity="${h1 ? 1 : .5}"/>${svgT(120, 34, 'I0.1 height', 'pt pm ar', 'middle')}`;
+    s += RA.eye(295, 71, 12, 18, h2) + `<path d="M296 80H262" stroke="${h2 ? '#ff4a3d' : '#ff8a80'}" stroke-width="2" stroke-dasharray="4 3" opacity="${h2 ? 1 : .5}"/>${svgT(301, 66, 'I0.2', 'pt pm', 'middle')}`;
     const py = 60 + st.push * 26;
-    s += `<rect x="236" y="26" width="28" height="14" fill="#5d6469"/><rect x="246" y="40" width="8" height="${(py - 40).toFixed(1)}" fill="#cfd6db"/><rect x="236" y="${py.toFixed(1)}" width="28" height="6" fill="${on(e, 'Q0.1') ? '#e3a43a' : '#8a949b'}"/>${svgT(250, 20, 'Pusher Q0.1', 'pt pm ar', 'middle')}`;
+    s += `<rect x="234" y="24" width="32" height="18" rx="3" fill="url(#ra-alu)" stroke="#7d8388" filter="url(#ra-sh)"/><rect x="247" y="42" width="6" height="${(py - 40).toFixed(1)}" fill="url(#ra-steelV)"/><rect x="236" y="${py.toFixed(1)}" width="28" height="6" fill="${on(e, 'Q0.1') ? '#e3a43a' : '#8a949b'}"/>${svgT(250, 20, 'Pusher Q0.1', 'pt pm ar', 'middle')}`;
     const okc = st.res.filter(r => r.tall === r.pushed).length, bad = st.res.length - okc;
     s += svgT(10, 146, `OK ${okc} · wrong ${bad}`, 'pt pc ar') + motorSvg(330, 134, 26, st.belt * 18, on(e, 'Q0.0'));
     return s + '</svg>';
@@ -857,9 +861,9 @@ PLANTS.garage = {
   ctl:[{id:'obst', label:st => st.obst ? 'Move the car from under the door' : 'Park a car under the door', act:st => { st.obst = !st.obst; }}],
   svg(st, e){
     const open = st.pos / 100, dh = 96 * (1 - open);
-    let s = `<svg viewBox="0 0 360 160" role="img" aria-label="Garage door"><rect x="60" y="14" width="200" height="120" fill="#5d6469"/><rect x="72" y="26" width="176" height="108" fill="#22272b"/>`;
-    if (st.obst) s += `<g transform="translate(160 118)"><rect x="-48" y="-8" width="96" height="22" rx="7" fill="#c0352b"/><rect x="-28" y="-22" width="54" height="16" rx="5" fill="#d9534f"/><circle cx="-28" cy="14" r="7" fill="#111"/><circle cx="28" cy="14" r="7" fill="#111"/></g>`;
-    for (let k = 0; k * 12 < dh; k++){ const y = 26 + dh - (k + 1) * 12; if (y < 26 - 1) break; s += `<rect x="72" y="${Math.max(26, y).toFixed(1)}" width="176" height="${(Math.min(12, y + 12 - 26)).toFixed(1)}" fill="#b8c2c9" stroke="#6b757c"/>`; }
+    let s = `<svg viewBox="0 0 360 160" role="img" aria-label="Garage door"><rect x="60" y="14" width="200" height="120" fill="#b9a58a"/><rect x="60" y="14" width="200" height="120" fill="url(#ra-vent)" opacity=".18"/><rect x="68" y="22" width="184" height="112" fill="url(#ra-grey)"/><rect x="72" y="26" width="176" height="108" fill="#1b1e20"/>`;
+    if (st.obst) s += RA.car(160, 118, '#c0352b', 1.6);
+    for (let k = 0; k * 12 < dh; k++){ const y = 26 + dh - (k + 1) * 12; if (y < 26 - 1) break; s += `<rect x="72" y="${Math.max(26, y).toFixed(1)}" width="176" height="${(Math.min(12, y + 12 - 26)).toFixed(1)}" fill="url(#ra-steelH)" stroke="#6b757c" stroke-width=".6"/>`; }
     s += `<path d="M72 128h-8M248 128h8" stroke="${st.obst ? '#ff4a3d' : '#ff8a80'}" stroke-width="3"/><path d="M76 128H244" stroke="#ff4a3d" stroke-width="1.5" stroke-dasharray="4 4" opacity="${st.obst ? 1 : .35}"/>${svgT(160, 150, 'Eye I0.5', 'pt pm ar', 'middle')}`;
     s += `<rect x="264" y="20" width="8" height="10" fill="${st.pos >= 99.5 ? '#2fd35a' : '#4a5257'}"/>${svgT(276, 29, 'I0.3 top', 'pt pm ar')}<rect x="264" y="122" width="8" height="10" fill="${st.pos <= 0.5 ? '#2fd35a' : '#4a5257'}"/>${svgT(276, 131, 'I0.4 bottom', 'pt pm ar')}`;
     const mv = on(e, 'Q0.0') || on(e, 'Q0.1');
@@ -1314,9 +1318,14 @@ PL.selfTest = function(ex, cols){
 PL.art = {
   plc(o){ o = o || {};
     const ledI = o.i || [1, 0, 1, 0, 0, 1, 0, 0], ledQ = o.q || [1, 0, 0, 1, 0, 0];
-    return `<svg viewBox="0 0 160 110" role="img" aria-label="PLC"><rect x="6" y="8" width="148" height="94" rx="6" fill="#d9dde0" stroke="#7b858c"/><rect x="6" y="8" width="148" height="16" rx="6" fill="#3b4247"/>${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(k => `<rect x="${14 + k * 13.6}" y="11" width="9" height="10" rx="1" fill="#5d6469"/><circle cx="${18.5 + k * 13.6}" cy="16" r="2" fill="#9aa3a8"/>`).join('')}<rect x="14" y="32" width="60" height="44" rx="3" fill="#2a3035"/><text x="44" y="50" text-anchor="middle" style="font:700 10px var(--font-mono);fill:#cfd6db">CPU</text><circle cx="24" cy="64" r="3" fill="#2fd35a"/><text x="30" y="67" style="font:600 6.5px var(--font-mono);fill:#cfd6db">RUN</text><circle cx="52" cy="64" r="3" fill="#4a5257"/><text x="58" y="67" style="font:600 6.5px var(--font-mono);fill:#cfd6db">ERR</text>${ledI.map((v, k) => `<rect x="${84 + (k % 4) * 15}" y="${34 + Math.floor(k / 4) * 10}" width="8" height="6" rx="1" fill="${v ? '#2fd35a' : '#4a5257'}"/>`).join('')}${ledQ.map((v, k) => `<rect x="${84 + (k % 4) * 15}" y="${60 + Math.floor(k / 4) * 10}" width="8" height="6" rx="1" fill="${v ? '#ffb300' : '#4a5257'}"/>`).join('')}<rect x="6" y="86" width="148" height="16" rx="6" fill="#3b4247"/>${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(k => `<rect x="${14 + k * 13.6}" y="89" width="9" height="10" rx="1" fill="#5d6469"/>`).join('')}</svg>`; },
+    return `<svg viewBox="0 0 160 110" role="img" aria-label="PLC">${RA.rail(0, 50, 160)}<g filter="url(#ra-sh)"><rect x="8" y="8" width="144" height="94" rx="5" fill="url(#ra-plastic)" stroke="#a9aeb2"/><rect x="8" y="8" width="22" height="94" rx="5" fill="#e3e5e6"/>
+      <rect x="32" y="10" width="118" height="16" rx="2" fill="url(#ra-term)"/><rect x="32" y="84" width="118" height="16" rx="2" fill="url(#ra-term)"/></g>
+      ${Array.from({length:9}, (_, k) => RA.screw(39 + k * 13.2, 18, 3.6) + RA.screw(39 + k * 13.2, 92, 3.6)).join('')}
+      ${ledI.map((v, k) => RA.led(36 + k * 9, 32, v, '#36d36a', 6, 4)).join('')}${ledQ.map((v, k) => RA.led(36 + k * 9, 72, v, '#36d36a', 6, 4)).join('')}
+      <rect x="36" y="42" width="66" height="24" rx="2" fill="#cfd3d5" stroke="#b5b9bc"/>${RA.T(69, 52, 'CPU', 8, '#3b4146', 'middle', 700)}${RA.T(69, 61, 'DC/DC/DC', 5.5, '#6a6e72', 'middle')}
+      ${RA.led(110, 44, true, '#36d36a', 6, 4)}${RA.T(119, 48, 'RUN', 5, '#555')}${RA.led(110, 54, false, '#ff4a3d', 6, 4)}${RA.T(119, 58, 'ERR', 5, '#555')}</svg>`; },
   ladder(){ return `<svg viewBox="0 0 160 110" role="img" aria-label="Ladder program"><path d="M10 8V102M150 8V102" stroke="var(--ink)" stroke-width="3"/><path d="M10 34H40M52 34H80M92 34H112M138 34H150" stroke="#2fd35a" stroke-width="3"/><path d="M40 22V46M52 22V46M80 22V46M92 22V46" stroke="#2fd35a" stroke-width="3"/><path d="M84 46L96 22" stroke="#2fd35a" stroke-width="2"/><path d="M118 22q-8 12 0 24M132 22q8 12 0 24" fill="none" stroke="#2fd35a" stroke-width="3"/><path d="M10 74H40M52 74H66V34" fill="none" stroke="var(--muted)" stroke-width="3"/><path d="M40 62V86M52 62V86" stroke="var(--muted)" stroke-width="3"/><text x="46" y="18" text-anchor="middle" style="font:600 8px var(--font-mono);fill:var(--ink)">I0.0</text><text x="86" y="18" text-anchor="middle" style="font:600 8px var(--font-mono);fill:var(--ink)">I0.1</text><text x="125" y="18" text-anchor="middle" style="font:600 8px var(--font-mono);fill:var(--ink)">Q0.0</text><text x="46" y="58" text-anchor="middle" style="font:600 8px var(--font-mono);fill:var(--ink)">Q0.0</text></svg>`; },
-  sensor(){ return `<svg viewBox="0 0 160 110" role="img" aria-label="Sensor"><rect x="30" y="44" width="12" height="26" fill="#2f6fb3"/><rect x="42" y="44" width="84" height="26" fill="#c3cad0" stroke="#6b757c"/><path d="M18 36q-12 21 0 42M24 42q-8 15 0 30" fill="none" stroke="var(--accent)" stroke-width="2.5"/><rect x="126" y="49" width="22" height="16" rx="2" fill="#2a3035"/><circle cx="118" cy="57" r="3" fill="#ffb300"/></svg>`; },
+  sensor(){ return `<svg viewBox="0 0 160 110" role="img" aria-label="Sensor"><g transform="translate(34 46) scale(1.15)">${RA.prox(0, 0, 'PNP', {target:false})}</g><path d="M22 38q-12 21 0 42M28 44q-8 15 0 30" fill="none" stroke="var(--accent)" stroke-width="2.5"/></svg>`; },
   contactor(){ return `<svg viewBox="0 0 160 110" role="img" aria-label="Contactor">${contactorSvg(80, 50, '', true).replace('translate(80 50)', 'translate(80 50) scale(1.8)')}</svg>`; },
   motor(){ return `<svg viewBox="0 0 160 110" role="img" aria-label="Motor">${motorSvg(80, 52, 76, 18, true)}</svg>`; }
 };
@@ -1344,7 +1353,7 @@ PL.scanDemo = function(host, opt){
     const p = PH[S.ph], act = k => p === k;
     const box = (x, y, k, t1, t2) => `<g class="sd-box${act(k) ? ' on' : ''}"><rect x="${x}" y="${y}" width="112" height="46" rx="10"/><text x="${x + 56}" y="${y + 20}" text-anchor="middle" class="ar sd-t">${t1}</text><text x="${x + 56}" y="${y + 37}" text-anchor="middle" class="sd-s">${t2}</text></g>`;
     art.innerHTML = `<svg viewBox="0 0 360 240" role="img" aria-label="Scan cycle">
-      <g transform="translate(10 96)"><rect width="56" height="64" rx="8" fill="#d9dde0" stroke="#7b858c"/><rect x="18" y="${S.sw ? 10 : 30}" width="20" height="24" rx="4" fill="${S.sw ? '#2fd35a' : '#5d6469'}"/><text x="28" y="80" text-anchor="middle" class="sd-s">I0.0</text><text x="28" y="94" text-anchor="middle" class="ar sd-s">Switch</text></g>
+      <g transform="translate(10 96)"><rect width="56" height="64" rx="6" fill="url(#ra-plasticV)" stroke="#a9aeb2" filter="url(#ra-sh)"/><circle cx="28" cy="30" r="17" fill="url(#ra-chrome)"/><circle cx="28" cy="30" r="14" fill="#1c1f22"/><g transform="rotate(${S.sw ? 45 : -45} 28 30)"><rect x="15" y="26" width="26" height="8" rx="4" fill="#4a5056"/><rect x="34" y="28" width="5" height="4" rx="1" fill="#fff"/></g><text x="28" y="80" text-anchor="middle" class="sd-s">I0.0</text><text x="28" y="94" text-anchor="middle" class="ar sd-s">Switch</text></g>
       <path d="M66 128H92" class="sd-w${S.sw ? ' hot' : ''}"/>
       <rect x="92" y="6" width="190" height="228" rx="14" class="sd-plc"/><text x="187" y="24" text-anchor="middle" class="sd-t">PLC</text>
       ${box(131, 34, 'read', 'Read inputs', 'I0.0 → ' + S.II)}
@@ -1391,7 +1400,7 @@ PL.parts = function(host, opt){
   const art = $('.pa-art', host), info = $('.pa-info', host), fin = chal(host, '.pa-chal', L, 'parts');
   function draw(cur){
     const w = 46, x0 = 18;
-    art.innerHTML = `<svg viewBox="0 0 360 170" role="img" aria-label="PLC rack"><rect x="8" y="132" width="344" height="12" rx="3" fill="#9aa3a8"/>${M.map((m, i) => { const x = x0 + i * w, on = cur === m.k; return `<g class="pa-m${on ? ' on' : ''}${seen[m.k] ? ' seen' : ''}" data-k="${m.k}" tabindex="0" role="button" aria-label="${esc(m.name)}"><rect x="${x}" y="${m.k === 'cpu' ? 14 : 24}" width="${w - 4}" height="${m.k === 'cpu' ? 116 : 106}" rx="4" fill="${m.col}" stroke="${on ? 'var(--accent)' : '#1d2226'}" stroke-width="${on ? 3 : 1}"/><text x="${x + (w - 4) / 2}" y="46" text-anchor="middle" style="font:700 11px var(--font-mono);fill:#fff">${m.t}</text>${m.k === 'cpu' ? `<circle cx="${x + 12}" cy="64" r="3" fill="#2fd35a"/><circle cx="${x + 12}" cy="76" r="3" fill="#4a5257"/>` : m.k !== 'psu' ? [0, 1, 2, 3, 4, 5].map(j => `<rect x="${x + 8}" y="${58 + j * 10}" width="7" height="5" rx="1" fill="${(j + i) % 3 === 0 ? '#ffd400' : '#3a4045'}"/><rect x="${x + 22}" y="${57 + j * 10}" width="14" height="7" rx="1" fill="#c3cad0"/>`).join('') : `<rect x="${x + 8}" y="60" width="26" height="40" rx="3" fill="#3a4045"/><text x="${x + 21}" y="118" text-anchor="middle" style="font:600 7px var(--font-mono);fill:#fff">24V</text>`}${seen[m.k] ? `<circle cx="${x + w - 10}" cy="${m.k === 'cpu' ? 22 : 32}" r="6" fill="#2fd35a"/>` : ''}</g>`; }).join('')}<text x="180" y="162" text-anchor="middle" class="ar sd-s">The rack: every card mounts next to the other on the same DIN rail</text></svg>`;
+    art.innerHTML = `<svg viewBox="0 0 360 170" role="img" aria-label="PLC rack">${RA.rail(4, 128, 352)}${M.map((m, i) => { const x = x0 + i * w, on = cur === m.k; return `<g class="pa-m${on ? ' on' : ''}${seen[m.k] ? ' seen' : ''}" data-k="${m.k}" tabindex="0" role="button" aria-label="${esc(m.name)}"><g filter="url(#ra-sh)"><rect x="${x}" y="${m.k === 'cpu' ? 14 : 24}" width="${w - 4}" height="${m.k === 'cpu' ? 116 : 106}" rx="3" fill="url(#ra-dark)" stroke="${on ? 'var(--accent)' : '#111'}" stroke-width="${on ? 3 : 1}"/></g><rect x="${x + 2}" y="${m.k === 'cpu' ? 16 : 26}" width="${w - 8}" height="20" rx="2" fill="${m.col === '#2a3035' ? '#4a5157' : m.col}"/><rect x="${x + 2}" y="${m.k === 'cpu' ? 16 : 26}" width="${w - 8}" height="6" rx="2" fill="#fff" opacity=".18"/><text x="${x + (w - 4) / 2}" y="${m.k === 'cpu' ? 30 : 40}" text-anchor="middle" font-family="Arial,sans-serif" font-size="10.5" font-weight="700" fill="#fff">${m.t}</text>${m.k === 'cpu' ? `${RA.led(x + 6, 44, true, '#36d36a', 8, 5)}${RA.led(x + 6, 54, false, '#ff4a3d', 8, 5)}<rect x="${x + 6}" y="68" width="30" height="20" rx="2" fill="#15181a" stroke="#555"/><rect x="${x + 12}" y="74" width="18" height="8" rx="1" fill="#2a2e31"/><rect x="${x + 8}" y="96" width="26" height="12" rx="2" fill="#1b1e20" stroke="#4a5157"/>` : m.k !== 'psu' ? [0, 1, 2, 3, 4, 5].map(j => `${RA.led(x + 5, 52 + j * 11, (j + i) % 3 === 0, '#36d36a', 6, 4)}${RA.screw(x + 29, 54 + j * 11, 3.4)}`).join('') : `<rect x="${x + 6}" y="52" width="30" height="16" fill="url(#ra-vent)"/>${RA.led(x + 6, 76, true, '#36d36a', 8, 5)}<text x="${x + 21}" y="98" text-anchor="middle" font-family="Arial,sans-serif" font-size="7" font-weight="700" fill="#cfd6db">24V DC</text>${RA.screw(x + 12, 114, 3.6)}${RA.screw(x + 30, 114, 3.6)}`}${seen[m.k] ? `<circle cx="${x + w - 10}" cy="${m.k === 'cpu' ? 22 : 32}" r="6" fill="#2fd35a"/>` : ''}</g>`; }).join('')}<text x="180" y="162" text-anchor="middle" class="ar sd-s">The rack: every card mounts next to the other on the same DIN rail</text></svg>`;
   }
   onAct(host, '.pa-m', g => {
     const m = M.find(x => x.k === g.dataset.k); seen[m.k] = 1;
@@ -1512,16 +1521,16 @@ PL.wire = function(host, opt){
   (PL._wires = PL._wires || []).push(api);
   return api;
 };
-/* drawings used by the wiring exercises */
+/* drawings used by the wiring exercises (realistic devices from /assets/real-art.js) */
 PL.wireArt = {
-  psu: (x, y) => `<g transform="translate(${x} ${y})"><rect width="110" height="58" rx="6" fill="#5d6469" stroke="#2a3035"/><text x="55" y="20" text-anchor="middle" style="font:700 11px var(--font-mono);fill:#fff">PSU 24V DC</text></g>`,
-  cpu: (x, y, live) => `<g transform="translate(${x} ${y})"><rect width="130" height="58" rx="6" fill="#2a3035"/><text x="65" y="20" text-anchor="middle" style="font:700 11px var(--font-mono);fill:#cfd6db">CPU</text><circle cx="96" cy="16" r="4" fill="${live.pwr ? '#2fd35a' : '#4a5257'}"/><text x="104" y="19" style="font:600 7px var(--font-mono);fill:#cfd6db">RUN</text></g>`,
-  card: (x, y, w, h, title, leds, live) => `<g transform="translate(${x} ${y})"><rect width="${w}" height="${h}" rx="6" fill="#d9dde0" stroke="#7b858c"/><text x="${w / 2}" y="16" text-anchor="middle" style="font:700 10px var(--font-mono);fill:#2a3035">${title}</text>${leds.map((l, k) => `<rect x="${w - 30}" y="${l.y - y - 5}" width="12" height="9" rx="2" fill="${live[l.k] ? (l.c || '#2fd35a') : '#4a5257'}"/>`).join('')}</g>`,
-  sensor: (x, y, kind, live) => `<g transform="translate(${x} ${y})"><rect x="0" y="0" width="12" height="22" fill="#2f6fb3"/><rect x="12" y="0" width="70" height="22" fill="#c3cad0" stroke="#6b757c"/><rect x="82" y="3" width="18" height="16" rx="2" fill="#2a3035"/><circle cx="76" cy="11" r="3" fill="${live.target ? '#ffb300' : '#7b858c'}"/><text x="47" y="15" text-anchor="middle" style="font:700 8.5px var(--font-mono);fill:#2a3035">${kind}</text>${live.target ? '<rect x="-22" y="-2" width="14" height="26" fill="#8a949b" stroke="#2a3035"/>' : ''}<path d="M100 11h10v24" fill="none" stroke="#2a3035" stroke-width="4"/></g>`,
-  pb: (x, y, live, lbl) => `<g transform="translate(${x} ${y})"><rect width="70" height="34" rx="6" fill="#2a3035"/><circle cx="35" cy="17" r="11" fill="${live ? '#1d8a3a' : '#2fd35a'}" stroke="#123"/><text x="78" y="21" class="ar" style="font-size:10px;fill:var(--ink)">${lbl}</text></g>`,
-  coil: (x, y, lbl, on) => `<g transform="translate(${x} ${y})"><rect width="76" height="40" rx="6" fill="#d9dde0" stroke="#7b858c"/><rect x="24" y="12" width="28" height="16" rx="2" fill="${on ? '#2b7a3d' : '#5d6469'}"/><rect x="31" y="${on ? 14 : 8}" width="14" height="5" fill="#ffd400"/><text x="84" y="18" class="ar" style="font-size:10px;fill:var(--ink)">${lbl}</text><text x="84" y="32" style="font:600 9px var(--font-mono);fill:${on ? '#2b7a3d' : 'var(--muted)'}">${on ? 'ON' : 'OFF'}</text></g>`,
-  lamp: (x, y, on) => `<g transform="translate(${x} ${y})">${lampSvg(20, 18, 13, LCOL.green, on)}</g>`,
-  ac: (x, y) => `<g transform="translate(${x} ${y})"><rect width="92" height="58" rx="6" fill="#7a4a22" stroke="#3b2410"/><text x="46" y="20" text-anchor="middle" style="font:700 11px var(--font-mono);fill:#fff">230V AC</text><text x="46" y="33" text-anchor="middle" class="ar" style="font-size:9.5px;fill:#f3e6d6">After the MCB</text></g>`
+  psu: (x, y) => RA.psu(x, y, 110, 58),
+  cpu: (x, y, live) => RA.cpu(x, y, 130, 58, live),
+  card: (x, y, w, h, title, leds, live) => RA.card(x, y, w, h, title, leds, live),
+  sensor: (x, y, kind, live) => RA.prox(x, y, kind, live),
+  pb: (x, y, live, lbl) => RA.pb(x, y, live, lbl),
+  coil: (x, y, lbl, on) => RA.contactor(x, y, lbl, on),
+  lamp: (x, y, on) => RA.lamp(x + 20, y + 18, 13, LCOL.green, on),
+  ac: (x, y) => RA.mcb(x, y, 92, 58, 'After the MCB')
 };
 
 /* ---------- lesson 8: analog chain + scaling ---------- */
@@ -1629,7 +1638,7 @@ PL.timerDemo = function(host){
     }
     return null;
   }; }
-  const sensorArt = (kind, live) => A.sensor(14, 96, kind, live) + `<path d="M124 107h6v30" fill="none" stroke="#2a3035" stroke-width="4"/><rect x="16" y="140" width="110" height="16" rx="3" fill="#3b4247"/><path d="M130 137V148H30V156M130 148H66V156M130 148H102V156" fill="none" stroke="#2a3035" stroke-width="1.5"/>`;
+  const sensorArt = (kind, live) => A.sensor(14, 96, kind, live) + `<path d="M126 130V142" fill="none" stroke="#111" stroke-width="6" stroke-linecap="round"/><path d="M126 142C126 150 102 146 102 158" fill="none" stroke="#111" stroke-width="3.2"/><path d="M124 142C120 150 66 144 66 158" fill="none" stroke="#1f5fc0" stroke-width="3.2"/><path d="M122 142C116 150 30 142 30 158" fill="none" stroke="#6b3a1e" stroke-width="3.2"/>` + RA.terms(12, 150, 3, 36, ['#8e9398', '#4d7fc4', '#8e9398']);
   const leadT = [below('BN', 'BN', 30, 168, 'p24'), below('BU', 'BU', 66, 168, 'p0'), below('BK', 'BK', 102, 168, 'sig')];
   const pbArt = live => A.pb(20, 206, live, 'Start button NO');
   const pbT = [below('PB13', '13', 34, 268, 'sig'), below('PB14', '14', 78, 268, 'sig')];
@@ -1673,7 +1682,7 @@ PL.timerDemo = function(host){
       below('KA1', 'A1', 30, 166, 'sig'), below('KA2', 'A2', 82, 166, 'coil'), right('RL', '1L', 130, 'sig'), right('Q0', 'Q0.0', 180, 'sig'), right('Q1', 'Q0.1', 230, 'sig')]),
     groups:[['P24', 'CL'], ['P0', 'CM'], ['ACL', 'RL'], ['Q0', 'KA1'], ['ACN', 'KA2']],
     why:{RL:'1L takes the phase L.', KA1:'Q0.0 goes to A1.', KA2:'A2 to N.', CL:'L+ to +24V.', CM:'M to 0V.'},
-    art:live => A.psu(8, 6) + `<g transform="translate(124 6)"><rect width="94" height="64" rx="6" fill="#7a4a22" stroke="#3b2410"/><text x="47" y="16" text-anchor="middle" style="font:700 10px var(--font-mono);fill:#fff">230V AC</text><text x="47" y="28" text-anchor="middle" class="ar" style="font-size:9px;fill:#f3e6d6">After the MCB</text></g>` + A.cpu(222, 6, {pwr:true}) + A.coil(14, 110, 'Contactor 230V AC', live.q0) + `<path d="M30 150v8M82 150v8" stroke="#2a3035" stroke-width="2"/>` + (live.q0 ? `<g transform="translate(20 200)">${PL.motorSvg(36, 40, 54, 30, true)}<text x="90" y="44" class="ar" style="font-size:10px;fill:var(--ink)">Motor running</text></g>` : '') + A.card(230, 96, 122, 196, 'DQ Relay', [{y:180, k:'q0', c:'#ffb300'}, {y:230, k:'q1', c:'#ffb300'}], live),
+    art:live => A.psu(8, 6) + RA.mcb(124, 6, 94, 64, 'After the MCB') + A.cpu(222, 6, {pwr:true}) + A.coil(14, 110, 'Contactor 230V AC', live.q0) + `<path d="M30 150v8M82 150v8" stroke="#2a3035" stroke-width="2"/>` + (live.q0 ? `<g transform="translate(20 200)">${PL.motorSvg(36, 40, 54, 30, true)}<text x="90" y="44" class="ar" style="font-size:10px;fill:var(--ink)">Motor running</text></g>` : '') + A.card(230, 96, 122, 196, 'DQ Relay', [{y:180, k:'q0', c:'#ffb300'}, {y:230, k:'q1', c:'#ffb300'}], live),
     live:a => ({q0:a.q0}),
     acts:[{k:'q0', l:'The program turns on Q0.0'}],
     ok:'Relay: AC or DC up to 2A, but slower.'});
