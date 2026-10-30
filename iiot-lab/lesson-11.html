@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261027i1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b7">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -32,8 +33,8 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>ما البوابة ولماذا نحتاجها؟</h2>
-<p>الـ PLC يتكلم Modbus أو PROFINET داخل المصنع، والسحابة تتكلم MQTT و HTTPS. <b>البوابة (Gateway)</b> هي الجهاز الذي يقف بينهما: يقرأ من جهة التشغيل (OT) بالبروتوكول الصناعي، ويحوّل القيم إلى JSON، وينشرها بـ MQTT إلى الخادم.</p>
-<div class="fig"><svg viewBox="0 0 680 150" role="img" aria-label="مسار البيانات من الـ PLC إلى السحابة" style="width:100%;max-width:680px;direction:ltr">
+  <div class="ladder"><span class="u">PLC</span><span class="op">Modbus</span><span class="u on">بوابة</span><span class="op">MQTT</span><span class="u">السحابة</span></div>
+  <div class="fig"><svg viewBox="0 0 680 150" role="img" aria-label="مسار البيانات من الـ PLC إلى السحابة" style="width:100%;max-width:680px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
 <rect x="10" y="40" width="110" height="60" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="65" y="65" font-weight="700">PLC</text><text x="65" y="85">Modbus TCP</text>
 <rect x="170" y="40" width="130" height="60" rx="8" fill="none" stroke="#0d7584" stroke-width="2"/><text x="235" y="65" font-weight="700" fill="#0d7584">Gateway</text><text x="235" y="85" fill="#0d7584">Node-RED</text>
@@ -44,16 +45,22 @@
 <text x="235" y="125" font-size="11">OT (شبكة المصنع)</text><text x="520" y="125" font-size="11">IT / الإنترنت</text>
 <line x1="325" y1="15" x2="325" y2="110" stroke="currentColor" stroke-dasharray="4 4"/><text x="325" y="12" font-size="10">جدار ناري</text>
 <defs><marker id="g1" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs></g></svg></div>
-<ul><li><b>أجهزة جاهزة:</b> Siemens IOT2050، Moxa، Advantech، Red Lion، Phoenix Contact، أو Raspberry Pi صناعي. كلها حواسيب لينكس صغيرة بمنفذي إيثرنت: واحد لشبكة المصنع وواحد لشبكة الـ IT.</li>
-<li><b>البرنامج الأشهر:</b> <b>Node-RED</b>: محرر تدفقات (Flows) في المتصفح، تسحب عُقدًا (Nodes) وتصلها بأسلاك. مجاني ومدعوم من كل الشركات تقريبًا.</li>
-<li><b>البدائل:</b> Kepware (KEPServerEX) بتعريفات لمئات الأجهزة، Ignition Edge، Telegraf، أو كود Python بمكتبات pymodbus و paho-mqtt.</li></ul>
-<div class="box key"><b>قاعدة ذهبية:</b> البوابة <b>تقرأ فقط</b> من الـ PLC في معظم التطبيقات. الكتابة من السحابة إلى الماكينة تحتاج إلى تصميم أمان خاص ولا تُفعَّل إلا بقرار واعٍ.</div>
+  <ul class="fx">
+    <li><b>الأجهزة</b><span>IOT2050 · Moxa · Advantech · لينكس بمنفذين OT و IT</span></li>
+    <li><b>Node-RED</b><span>الأشهر: عُقد وأسلاك في المتصفح</span></li>
+    <li><b>بدائل</b><span>Kepware · Ignition Edge · Python</span></li>
+  </ul>
+  <div class="box key"><b>البوابة تقرأ فقط.</b> الكتابة من السحابة للماكينة قرار أمان واعٍ.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>تدفق Node-RED نموذجي</h2>
-<p>التدفق الذي ستبنيه في المحاكي هو نفسه الذي يعمل في مصانع حقيقية:</p>
-<ol><li><b>Modbus Read</b> (أو S7 أو OPC UA): العنوان 192.168.1.10، المنفذ 502، الوحدة 1، الدالة FC3، البداية 0، 10 سجلات، كل <b>1000 ms</b>.</li>
-<li><b>Function:</b> كود جافاسكريبت صغير يحوّل مصفوفة الأرقام الخام إلى كائن بأسماء مفهومة ووحدات صحيحة:<pre class="code">const r = msg.payload;
+  <ol class="steps">
+    <li>Modbus Read · FC3 · كل 1000 ms</li>
+    <li>Function: أسماء ووحدات</li>
+    <li>RBE: عند التغير فقط</li>
+    <li class="on">MQTT Out · TLS · QoS 1</li>
+  </ol>
+  <pre class="code">const r = msg.payload;
 msg.payload = {
   ts: Date.now(),
   oven_temp: r[0] / 10,      // 1825 → 182.5 °C
@@ -61,28 +68,29 @@ msg.payload = {
   running: (r[2] &amp; 1) === 1,
   current_a: r[3] / 100
 };
-return msg;</pre></li>
-<li><b>Filter / RBE</b> (Report By Exception): لا تنشر إلا إذا تغيرت القيمة، فتوفر 90% من الرسائل.</li>
-<li><b>MQTT Out:</b> الموضوع <code>plant/line3/oven</code> على الوسيط بـ TLS، QoS 1، وبدون Retain لبيانات العملية (و<b>مع</b> Retain لرسالة الحالة).</li></ol>
-<p>وتضيف دائمًا: عقدة <b>Catch</b> للأخطاء، ورسالة <b>Last Will</b> في إعدادات MQTT تقول «offline» إذا سقطت البوابة.</p>
+return msg;</pre>
+  <p class="tip">أضف دائمًا عقدة <b>Catch</b> و <b>Last Will</b> «offline».</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>التخزين المؤقت وعدم الاتصال</h2>
-<p>الإنترنت في المصنع ينقطع. البوابة الجيدة <b>تخزن</b> القيم محليًا (Store &amp; Forward) أثناء الانقطاع ثم ترسلها بالترتيب حين يعود الاتصال، بطابعها الزمني الأصلي لا بوقت الإرسال.</p>
-<ul><li>اضبط <b>وقت الجهاز</b> بـ NTP؛ طابع زمني خاطئ يفسد كل الرسوم البيانية.</li>
-<li>راقب حجم المخزن المؤقت؛ انقطاع أسبوع بقراءة كل ثانية = 600 ألف سجل.</li>
-<li>أرسل رسالة <b>heartbeat</b> كل دقيقة؛ غيابها على الخادم = إنذار «البوابة لا تستجيب».</li></ul>
+  <p class="bf"><span class="ic">💾</span><span><b>Store &amp; Forward</b>: تخزن أثناء الانقطاع وترسل بالترتيب بالطابع الزمني الأصلي.</span></p>
+  <ul class="fx">
+    <li><b>NTP</b><span>وقت خاطئ يفسد كل الرسوم</span></li>
+    <li><b>حجم المخزن</b><span>أسبوع × كل ثانية = 600 ألف سجل</span></li>
+    <li><b>Heartbeat</b><span>كل دقيقة · غيابه = إنذار</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>أمن البوابة</h2>
-<ul><li>منفذا إيثرنت منفصلان؛ لا توجيه (Routing) بين شبكة الماكينات والإنترنت. البوابة هي <b>النقطة الوحيدة</b> التي تعبر الحد.</li>
-<li>جدار ناري: صادر فقط إلى الوسيط على 8883؛ لا منافذ واردة مفتوحة من الإنترنت.</li>
-<li>غيّر كلمة مرور Node-RED الافتراضية وفعّل HTTPS لمحرره، وقيّده على شبكة الصيانة.</li>
-<li>شهادة لكل بوابة (لا كلمة مرور واحدة لكل المصنع) حتى يمكن إلغاء جهاز واحد.</li>
-<li>تحديثات دورية لنظام البوابة، ونسخة احتياطية من ملف التدفقات <code>flows.json</code>.</li></ul>
+  <ul class="fx">
+    <li class="ok"><b>منفذان منفصلان</b><span>لا توجيه · البوابة النقطة الوحيدة</span></li>
+    <li class="ok"><b>جدار ناري</b><span>صادر فقط إلى 8883</span></li>
+    <li class="ok"><b>Node-RED</b><span>غيّر كلمة المرور · HTTPS</span></li>
+    <li class="ok"><b>شهادة لكل بوابة</b><span>تلغي جهازًا واحدًا</span></li>
+    <li class="ok"><b>تحديثات</b><span>ونسخة من flows.json</span></li>
+  </ul>
+  <div class="box key"><b>على المحاكي:</b> اربط Modbus ← التحويل ← MQTT، أدخل معامل قسمة الحرارة، وشاهد JSON يخرج. <a class="btn pri" href="net.html#gateway" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-<div class="box key"><b>على المحاكي:</b> في تبويب <b>البوابة</b> اربط عقدة Modbus بعقدة التحويل ثم بعقدة MQTT، وأدخل المعامل الصحيح لقسمة الحرارة، وشاهد رسالة JSON تخرج إلى الوسيط. <a class="btn pri" href="net.html#gateway" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>

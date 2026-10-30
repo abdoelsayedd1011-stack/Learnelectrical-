@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261027i1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b7">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -32,58 +33,70 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>منهج التشخيص: من الأسفل إلى الأعلى</h2>
-<p>لا تخمّن. اسلك الطبقات بالترتيب، وفي كل طبقة سؤال واحد وأداة واحدة:</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>الطبقة</th><th>السؤال</th><th>الأداة</th><th>الأعطال الشائعة</th></tr></thead><tbody>
-<tr><td>1 الفيزيائية</td><td>هل هناك إشارة على السلك؟</td><td>مصابيح المنفذ، فاحص كابل، الأوميتر</td><td>كابل مقطوع، موصّل مفكوك، إنهاء ناقص، عكس A/B، أرضي سيئ</td></tr>
-<tr><td>2 الوصلة</td><td>هل يرى المفتاح الجهاز؟</td><td>جدول MAC في المفتاح، LLDP، <code>ip neigh</code></td><td>Duplex غير متطابق، حلقة بلا RSTP/MRP، VLAN خاطئة</td></tr>
-<tr><td>3 الشبكة</td><td>هل يصل IP؟</td><td><code>ping</code>, <code>arp -a</code>, <code>tracert</code></td><td>عنوان مكرر، قناع خاطئ، بوابة ناقصة، جدار ناري</td></tr>
-<tr><td>4 النقل</td><td>هل المنفذ مفتوح؟</td><td><code>telnet ip 502</code>, nmap, Wireshark</td><td>الخدمة متوقفة، منفذ محجوب، نفاد الاتصالات</td></tr>
-<tr><td>7 التطبيق</td><td>هل الجهاز يجيب إجابة صحيحة؟</td><td>عميل Modbus، PRONETA، Wireshark بفلتر البروتوكول</td><td>معرّف وحدة خاطئ، عنوان سجل ±1، GSD ناقص، اسم جهاز مختلف، شهادة منتهية</td></tr></tbody></table></div>
-<div class="box key"><b>نصف الأعطال في الطبقة 1.</b> قبل أي برنامج: المصابيح، ثم الموصّلات، ثم الإنهاء، ثم الجهد على الناقل.</div>
+  <p class="bf"><span class="ic">🪜</span><span>لا تخمّن: طبقة طبقة، ولكل طبقة سؤال وأداة.</span></p>
+  <ul class="fx">
+    <li><b>1 الفيزيائية</b><span>إشارة على السلك؟ · مصابيح · أوميتر</span></li>
+    <li><b>2 الوصلة</b><span>المفتاح يراه؟ · جدول MAC · LLDP</span></li>
+    <li><b>3 الشبكة</b><span>IP يصل؟ · ping · arp</span></li>
+    <li><b>4 النقل</b><span>المنفذ مفتوح؟ · telnet ip 502</span></li>
+    <li><b>7 التطبيق</b><span>الإجابة صحيحة؟ · عميل · Wireshark</span></li>
+  </ul>
+  <div class="box key"><b>نصف الأعطال في الطبقة 1:</b> المصابيح ← الموصّلات ← الإنهاء ← الجهد.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>عُدّة التشخيص</h2>
-<ul><li><b>Wireshark</b> مع منفذ مرآة (SPAN) أو TAP: فلاتر <code>modbus</code>، <code>pn_io</code>، <code>mqtt</code>، <code>opcua</code>، <code>tcp.analysis.retransmission</code>. الإعادات المتكررة = مشكلة فيزيائية أو ازدحام.</li>
-<li><b>PRONETA</b> (Siemens، مجاني): يرسم شبكة PROFINET ويظهر الأسماء والـ IP والأجهزة بلا اسم.</li>
-<li><b>ProfiTrace / فاحص PROFIBUS:</b> يقيس جودة الإشارة لكل محطة؛ ويكشف الإنهاء الناقص فورًا.</li>
-<li><b>راسم الإشارة:</b> على RS-485 و CAN: الحواف يجب أن تكون نظيفة؛ انعكاسات = إنهاء، ضجيج = تأريض أو كابل بجوار قدرة.</li>
-<li><b>MQTT Explorer</b> و <b>UaExpert</b>: لترى بعينك ما ينشره الوسيط وما يقدمه خادم OPC UA.</li>
-<li><b>سجلات الجهاز</b> (Diagnostic buffer في TIA، Module log في Logix) قبل أي شيء آخر: غالبًا تقول السبب نصًّا.</li></ul>
+  <div class="tiles">
+    <div class="tile"><span class="ic">🦈</span><b>Wireshark</b><span>SPAN · retransmission = فيزيائي</span></div>
+    <div class="tile"><span class="ic">🗺️</span><b>PRONETA</b><span>خريطة PROFINET</span></div>
+    <div class="tile"><span class="ic">📉</span><b>ProfiTrace</b><span>جودة إشارة PROFIBUS</span></div>
+    <div class="tile"><span class="ic">〰️</span><b>راسم إشارة</b><span>انعكاس = إنهاء</span></div>
+    <div class="tile"><span class="ic">🔎</span><b>MQTT Explorer · UaExpert</b></div>
+    <div class="tile"><span class="ic">📜</span><b>سجل الجهاز</b><span>أولًا: يقول السبب نصًّا</span></div>
+  </div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>عشر حالات ستقابلها</h2>
-<ol>
-<li><b>Modbus RTU يقرأ أصفارًا أحيانًا:</b> ضجيج على RS-485 أو إنهاء ناقص أو طول زائد. تحقق من الإنهاء 120 Ω في الطرفين فقط والتأريض من جهة واحدة.</li>
-<li><b>Exception 02 (Illegal data address):</b> فرق العنوان بواحد (40001 = 0) أو السجل غير موجود في هذا الطراز.</li>
-<li><b>PROFIBUS: محطة تسقط عند تشغيل محرك كبير:</b> تداخل كهرومغناطيسي؛ الكابل بجوار كابل القدرة أو درع غير مربوط.</li>
-<li><b>PROFINET: جهاز جديد بلا اتصال بعد الاستبدال:</b> لم يُعطَ <b>اسم الجهاز</b>؛ أو الطوبولوجيا مضبوطة والمنفذ مختلف.</li>
-<li><b>EtherNet/IP: اتصالات تسقط عشوائيًا:</b> Multicast بلا IGMP snooping، أو نفاد CPU البطاقة؛ راجع RPI.</li>
-<li><b>CAN: Bus-off:</b> معدل بت غير متطابق لعقدة واحدة أو إنهاء ناقص؛ قِس 60 Ω بين H و L.</li>
-<li><b>ping ينجح والبروتوكول يفشل:</b> المنفذ محجوب في جدار ناري أو الخدمة غير مفعّلة في الجهاز (مثل تفعيل PUT/GET في S7).</li>
-<li><b>OPC UA: BadCertificateUntrusted:</b> شهادة العميل غير موثوقة في الخادم؛ انقلها إلى المجلد الموثوق.</li>
-<li><b>MQTT يتصل ثم ينقطع فورًا:</b> معرّف عميل مكرر (Client ID) أو Keep-alive قصير جدًا على شبكة بطيئة.</li>
-<li><b>اللوحة تظهر قيمة ثابتة:</b> البوابة متوقفة والرسالة الأخيرة Retained؛ افتقدت heartbeat.</li></ol>
+  <ul class="fx">
+    <li><b>RTU يقرأ أصفارًا أحيانًا</b><span>ضجيج · إنهاء · طول</span></li>
+    <li><b>Exception 02</b><span>فرق العنوان بواحد</span></li>
+    <li><b>PROFIBUS يسقط مع محرك</b><span>الكابل بجوار القدرة · الدرع</span></li>
+    <li><b>PROFINET بعد الاستبدال</b><span>اسم الجهاز</span></li>
+    <li><b>EtherNet/IP يسقط عشوائيًا</b><span>IGMP snooping · RPI</span></li>
+    <li><b>CAN Bus-off</b><span>سرعة عقدة · 60 Ω</span></li>
+    <li><b>ping ينجح والبروتوكول لا</b><span>جدار ناري · PUT/GET</span></li>
+    <li><b>BadCertificateUntrusted</b><span>انقلها إلى Trusted</span></li>
+    <li><b>MQTT يتصل وينقطع</b><span>Client ID مكرر · Keep-alive</span></li>
+    <li><b>قيمة ثابتة على اللوحة</b><span>بوابة متوقفة + Retained</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>مشروع الخط الكامل</h2>
-<p>خط تعبئة: PLC Siemens S7-1200 يتحكم في PROFINET I/O وناقل على محوّل تردد Modbus RTU، وحساس ضغط IO-Link، ومحرك سيرفو CANopen. بوابة Node-RED تقرأ من الـ PLC بـ OPC UA وتنشر MQTT إلى الخادم الذي يرسم اللوحة ويحسب OEE.</p>
-<p>في المحاكي ستجد الخط يعمل مع <b>ثلاثة أعطال مخفية</b> في طبقات مختلفة. المطلوب:</p>
-<ol><li>حدد كل عطل بالأداة الصحيحة من الطبقة الصحيحة.</li><li>أصلحه بالإجراء الصحيح من القائمة.</li><li>تحقق من عودة البيانات على اللوحة.</li></ol>
-<p>وهذا هو عمل مهندس الشبكات الصناعية يومًا بيوم: لا تكتب الكود كله، بل تجعل الأجزاء تتكلم وتعرف أين تقف حين تصمت.</p>
+  <p class="bf"><span class="ic">🏭</span><span>خط تعبئة فيه <b>3 أعطال مخفية</b> في طبقات مختلفة.</span></p>
+  <div class="tiles">
+    <div class="tile"><b>S7-1200</b><span>PROFINET I/O</span></div>
+    <div class="tile"><b>ناقل</b><span>Modbus RTU</span></div>
+    <div class="tile"><b>ضغط</b><span>IO-Link</span></div>
+    <div class="tile"><b>سيرفو</b><span>CANopen</span></div>
+    <div class="tile"><b>بوابة</b><span>OPC UA ← MQTT</span></div>
+  </div>
+  <ol class="steps">
+    <li>حدّد العطل بالأداة الصحيحة</li>
+    <li>أصلحه</li>
+    <li class="on">تحقق من اللوحة</li>
+  </ol>
+  <div class="box key"><b>على المحاكي:</b> في تبويب <b>الأعطال</b> أصلح الأعطال الثلاثة حتى تعود المؤشرات خضراء. <a class="btn pri" href="net.html#faults" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-<div class="box key"><b>على المحاكي:</b> في تبويب <b>الأعطال</b> شغّل المشروع، واعثر على الأعطال الثلاثة وأصلحها حتى تعود كل المؤشرات خضراء. <a class="btn pri" href="net.html#faults" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
   <div id="quiz"></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="sf">
   <h2 id="sf"><span class="k">★</span>الامتحان النهائي</h2>
   <p>12 سؤالًا من الكورس كله. تحتاج إلى <b>80%</b> للحصول على الشهادة.</p>
   <div id="final"></div>
 </section>
+
 <nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
 <p class="foot">المعلومات هنا من المواصفات الرسمية للبروتوكولات (Modbus.org و PROFIBUS &amp; PROFINET International و CiA و ODVA و OPC Foundation و OASIS MQTT) ومن أدلة الشركات المصنّعة. قبل أي تطبيق على شبكة حقيقية ارجع إلى دليل الجهاز وسياسة أمن الشبكة في مصنعك. تقدّمك يُسجَّل على هذا الجهاز.<br>© <bdi>LearnElectricals</bdi></p>
 </div>

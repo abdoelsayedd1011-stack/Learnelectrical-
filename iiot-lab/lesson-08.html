@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261027i1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b7">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -32,57 +33,68 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>EtherNet/IP و CIP</h2>
-<p><b>EtherNet/IP</b> (الـ IP هنا تعني Industrial Protocol لا Internet Protocol) هو إيثرنت Allen-Bradley/Rockwell وشركاء <b>ODVA</b>. فوق TCP/UDP يعمل بروتوكول <b>CIP</b> نفسه الذي يعمل في DeviceNet، لذلك الكائنات والملفات واحدة.</p>
-<ul><li><b>Implicit messaging (I/O):</b> بيانات دورية بـ <b>UDP</b> على المنفذ 2222، بزمن <b>RPI</b> (Requested Packet Interval) مثل 10 ms. هكذا يتبادل الـ ControlLogix بياناته مع POINT I/O ومحوّل PowerFlex.</li>
-<li><b>Explicit messaging:</b> طلب/رد عند الحاجة على <b>TCP 44818</b>: قراءة Tag من PLC آخر، أو معامل من جهاز.</li>
-<li>في Studio 5000 تضيف الجهاز من ملف <b>EDS</b> أو كـ Generic Ethernet Module بأرقام الـ Assembly instances من دليله.</li>
-<li>الـ I/O تستخدم <b>Multicast</b> غالبًا؛ لذلك المفاتيح يجب أن تدعم <b>IGMP snooping</b> وإلا أغرق البث كل المنافذ.</li>
-<li>الطوبولوجيا الحلقية هنا <b>DLR</b> (Device Level Ring) نظير MRP.</li></ul>
-<div class="box key"><b>مشكلة كلاسيكية:</b> الاتصال يسقط عند إضافة أجهزة: نفد <b>عدد الاتصالات</b> أو <b>حزمة CPU</b> (pps). راقب مستخدم الاتصالات في بطاقة الشبكة، وارفع RPI للأجهزة غير الحرجة.</div>
+  <p class="bf"><span class="ic">🅰️</span><span>إيثرنت Allen-Bradley، و IP = <b>Industrial Protocol</b>. فوقه CIP نفسه الذي في DeviceNet.</span></p>
+  <div class="vs">
+    <div class="side"><b>Implicit (I/O)</b><span class="big">UDP 2222</span><span>دوري بزمن RPI</span></div>
+    <i>vs</i>
+    <div class="side"><b>Explicit</b><span class="big">TCP 44818</span><span>طلب/رد عند الحاجة</span></div>
+  </div>
+  <ul class="fx">
+    <li><b>EDS</b><span>أو Generic module بأرقام Assembly</span></li>
+    <li><b>Multicast</b><span>المفتاح يحتاج IGMP snooping</span></li>
+    <li><b>DLR</b><span>الحلقة (نظير MRP)</span></li>
+  </ul>
+  <p class="alert">يسقط عند إضافة أجهزة؟ نفدت <b>الاتصالات أو pps</b> · ارفع RPI لغير الحرج.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>AS-Interface: الكابل الأصفر</h2>
-<p><b>AS-i</b> شبكة لأبسط الحساسات والمشغّلات (أزرار، حساسات تقارب، صمامات). كابل أصفر مسطح بسلكين يحمل <b>البيانات والتغذية 30 V</b> معًا؛ الأجهزة تُركَّب عليه بالإبر الثاقبة (Piercing) بلا قطع ولا لحام.</p>
-<ul><li>سيد واحد (بطاقة في الـ PLC أو بوابة إلى PROFIBUS/PROFINET) وحتى <b>62 تابعًا</b> (31 في الإصدار القديم)، كل تابع 4 مدخلات و 4 مخرجات ثنائية.</li>
-<li>زمن الدورة حوالي <b>5 ms</b> للشبكة كلها.</li>
-<li>العنوان 1–31 (A/B في الإصدار 2.1) يُكتب في التابع بجهاز <b>برمجة محمول</b>، والتابع الجديد عنوانه 0.</li>
-<li>يحتاج <b>مغذي AS-i خاص</b> (بفاصل بيانات) لا مغذي 24 V عاديًا. الكابل الأسود الموازي يحمل 24 V إضافية للمشغّلات.</li>
-<li>الطول 100 m بلا مكرر، ولا حاجة إلى إنهاء. فرّع كما تشاء (شجرة).</li></ul>
+  <p class="bf"><span class="ic">🟨</span><span>سلكان يحملان <b>البيانات و 30 V</b> معًا، والأجهزة تُركَّب بالإبر.</span></p>
+  <div class="tiles">
+    <div class="tile"><span class="big">62</span><b>تابعًا</b><span>4 دخل + 4 خرج</span></div>
+    <div class="tile"><span class="big">5 ms</span><b>الدورة</b></div>
+    <div class="tile"><span class="big">100 m</span><b>بلا إنهاء</b><span>شجرة حرة</span></div>
+  </div>
+  <ul class="fx">
+    <li><b>التابع الجديد</b><span>عنوانه 0 · اكتبه بجهاز برمجة</span></li>
+    <li><b>المغذي</b><span>AS-i خاص، لا 24 V عادي</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>IO-Link: الحساس الذكي</h2>
-<p><b>IO-Link</b> ليس شبكة ناقل بل <b>وصلة نقطة إلى نقطة</b> بين <b>سيد IO-Link</b> (كتلة بثمانية منافذ M12) وحساس أو مشغّل واحد على كابل حساس عادي بثلاثة أسلاك (L+ و L− و C/Q) حتى 20 m. السيد نفسه يتصل بالـ PLC عبر PROFINET أو EtherNet/IP أو EtherCAT.</p>
-<ul><li>السلك <b>C/Q</b> يعمل إما كمخرج تبديل عادي (SIO) أو كقناة اتصال تسلسلية (COM1/2/3 بسرعات 4.8 / 38.4 / 230.4 kbit/s).</li>
-<li><b>بيانات العملية</b> دورية (القيمة الفعلية بلا تحويل تناظري: الضغط 4.37 bar كرقم)، و<b>بيانات الخدمة</b> (المعاملات: نقطة الضبط، وحدة القياس، الرقم التسلسلي) و<b>الأحداث</b> (تحذير: العدسة متسخة، حرارة زائدة).</li>
-<li>ملف <b>IODD</b> يصف الحساس (نظير GSD). و<b>Data storage</b> في السيد يحفظ معاملات الحساس فيُعاد تحميلها تلقائيًا عند استبداله: الفني يبدّل الحساس ولا يضبط شيئًا.</li>
-<li>التشخيص: مصباح المنفذ على السيد (أخضر = اتصال، أحمر = قصر أو حساس خطأ)، والسيد يبلّغ الـ PLC بحالة كل منفذ.</li></ul>
+  <p class="bf"><span class="ic">🔗</span><span>وصلة <b>نقطة لنقطة</b> بكابل حساس عادي (3 أسلاك، 20 m) إلى سيد بمنافذ M12.</span></p>
+  <div class="tiles">
+    <div class="tile"><b>بيانات العملية</b><span>4.37 bar كرقم</span></div>
+    <div class="tile"><b>بيانات الخدمة</b><span>نقطة الضبط · الوحدة</span></div>
+    <div class="tile"><b>الأحداث</b><span>العدسة متسخة</span></div>
+  </div>
+  <p class="tip"><b>Data storage:</b> بدّل الحساس فتعود معاملاته وحدها. الوصف في <b>IODD</b>.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>HART: رقمي فوق 4-20 mA</h2>
-<p><b>HART</b> يضيف إشارة رقمية صغيرة (تحوير FSK بترددات 1200/2200 Hz) <b>فوق</b> تيار 4-20 mA نفسه دون أن يغيّر متوسطه. فتظل حلقة التيار تحمل القيمة الأساسية (الضغط)، ويحمل HART معها: الوسم (Tag)، الوحدة، القيم الثانوية (الحرارة)، التشخيص، وإعادة الضبط عن بُعد.</p>
-<ul><li>يحتاج مقاومة في الحلقة <b>250 أوم</b> على الأقل ليظهر الجهد الرقمي؛ معظم بطاقات الدخل تحتويها.</li>
-<li><b>المُحاوِر اليدوي (Hand-held communicator)</b> أو مودم HART على الحاسوب يُوصَّل على طرفي المرسل أو أي مكان في الحلقة.</li>
-<li><b>Multidrop:</b> عدة مرسلات على حلقة واحدة بعناوين 1–15، يثبت التيار عند 4 mA وتُقرأ القيم رقميًا فقط (بطيء: 2–3 قراءات/ثانية).</li>
-<li><b>WirelessHART</b>: شبكة لاسلكية متشابكة 2.4 GHz للمرسلات البعيدة، ببوابة تجمعها إلى Modbus TCP أو OPC UA.</li></ul>
+  <p class="bf"><span class="ic">📶</span><span>إشارة FSK صغيرة <b>فوق</b> التيار: القيمة تبقى، ومعها Tag ووحدة وتشخيص.</span></p>
+  <ul class="fx">
+    <li><b>250 Ω</b><span>على الأقل في الحلقة</span></li>
+    <li><b>المُحاوِر</b><span>على أي مكان في الحلقة</span></li>
+    <li><b>Multidrop</b><span>15 مرسلًا · التيار 4 mA ثابت</span></li>
+    <li><b>WirelessHART</b><span>لاسلكي 2.4 GHz ببوابة</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>جدول المقارنة الكبير</h2>
-<div class="tblw"><table class="tbl"><thead><tr><th>الشبكة</th><th>الوسط</th><th>السرعة</th><th>العقد</th><th>الملف الوصفي</th><th>أين تراها</th></tr></thead><tbody>
-<tr><td>Modbus RTU</td><td>RS-485</td><td>≤115 kbit/s</td><td>247</td><td>—</td><td>محوّلات تردد، عدادات طاقة</td></tr>
-<tr><td>Modbus TCP</td><td>إيثرنت</td><td>100 M</td><td>IP</td><td>—</td><td>PLC، SCADA، بوابات</td></tr>
-<tr><td>PROFIBUS DP</td><td>RS-485</td><td>≤12 Mbit/s</td><td>126</td><td>GSD</td><td>Siemens، I/O بعيدة</td></tr>
+  <div class="tblw"><table class="tbl"><thead><tr><th>الشبكة</th><th>الوسط</th><th>السرعة</th><th>العقد</th><th>الملف</th><th>أين</th></tr></thead><tbody>
+<tr><td>Modbus RTU</td><td>RS-485</td><td>≤115 kbit/s</td><td>247</td><td>—</td><td>محوّلات، عدادات</td></tr>
+<tr><td>Modbus TCP</td><td>إيثرنت</td><td>100 M</td><td>IP</td><td>—</td><td>PLC، SCADA</td></tr>
+<tr><td>PROFIBUS DP</td><td>RS-485</td><td>≤12 Mbit/s</td><td>126</td><td>GSD</td><td>Siemens</td></tr>
 <tr><td>PROFINET</td><td>إيثرنت</td><td>100 M / 1 G</td><td>بالاسم</td><td>GSDML</td><td>Siemens الحديثة</td></tr>
 <tr><td>CANopen</td><td>CAN</td><td>≤1 Mbit/s</td><td>127</td><td>EDS</td><td>سيرفو، رافعات</td></tr>
-<tr><td>DeviceNet</td><td>CAN + تغذية</td><td>≤500 kbit/s</td><td>64</td><td>EDS</td><td>Allen-Bradley القديمة</td></tr>
+<tr><td>DeviceNet</td><td>CAN + تغذية</td><td>≤500 kbit/s</td><td>64</td><td>EDS</td><td>AB القديمة</td></tr>
 <tr><td>EtherNet/IP</td><td>إيثرنت</td><td>100 M / 1 G</td><td>IP</td><td>EDS</td><td>Allen-Bradley</td></tr>
-<tr><td>EtherCAT</td><td>إيثرنت (حلقة)</td><td>100 M</td><td>65535</td><td>ESI</td><td>Beckhoff، حركة دقيقة</td></tr>
-<tr><td>AS-i</td><td>كابل أصفر + تغذية</td><td>167 kbit/s</td><td>62</td><td>—</td><td>أزرار وحساسات بسيطة</td></tr>
-<tr><td>IO-Link</td><td>نقطة لنقطة 3 أسلاك</td><td>≤230 kbit/s</td><td>1 لكل منفذ</td><td>IODD</td><td>حساسات ذكية</td></tr>
-<tr><td>HART</td><td>فوق 4-20 mA</td><td>1.2 kbit/s</td><td>15</td><td>DD</td><td>مرسلات الضغط والتدفق</td></tr></tbody></table></div>
-<p>لا تحتاج إلى حفظ الجدول؛ احتفظ به مرجعًا. المهم أن تعرف من الكابل واللون والموصّل أي شبكة أمامك، ثم تذهب إلى درسها.</p>
+<tr><td>EtherCAT</td><td>إيثرنت</td><td>100 M</td><td>65535</td><td>ESI</td><td>حركة دقيقة</td></tr>
+<tr><td>AS-i</td><td>أصفر + تغذية</td><td>167 kbit/s</td><td>62</td><td>—</td><td>أزرار وحساسات</td></tr>
+<tr><td>IO-Link</td><td>3 أسلاك</td><td>≤230 kbit/s</td><td>1/منفذ</td><td>IODD</td><td>حساسات ذكية</td></tr>
+<tr><td>HART</td><td>فوق 4-20 mA</td><td>1.2 kbit/s</td><td>15</td><td>DD</td><td>مرسلات</td></tr></tbody></table></div>
+  <p class="tip">لا تحفظه: اعرف الشبكة من <b>الكابل واللون والموصّل</b>، ثم ارجع لدرسها.</p>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>

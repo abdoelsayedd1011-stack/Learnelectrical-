@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261027i1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b7">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -32,8 +33,13 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>كيف يعمل CAN؟</h2>
-<p><b>CAN</b> (Controller Area Network) ناقل تسلسلي من عالم السيارات صار أساسًا لشبكات صناعية كثيرة: <b>CANopen</b> (محوّلات التردد والسيرفو الأوروبية، الرافعات) و<b>DeviceNet</b> (Allen-Bradley / ODVA) و <b>J1939</b> (الآلات الثقيلة). سلكان <b>CAN_H</b> و <b>CAN_L</b> بإشارة تفاضلية، ومقاومة <b>120 أوم</b> في الطرفين، وحتى 1 Mbit/s.</p>
-<svg viewBox="0 0 660 200" role="img" aria-label="إشارة CAN_H و CAN_L" style="width:100%;max-width:640px;direction:ltr">
+  <p class="bf"><span class="ic">🚗</span><span>من السيارات: <b>CAN_H و CAN_L</b> تفاضلي، 120 Ω في الطرفين، حتى 1 Mbit/s.</span></p>
+  <div class="tiles">
+    <div class="tile"><b>CANopen</b><span>سيرفو · رافعات</span></div>
+    <div class="tile"><b>DeviceNet</b><span>Allen-Bradley</span></div>
+    <div class="tile"><b>J1939</b><span>آلات ثقيلة</span></div>
+  </div>
+  <svg viewBox="0 0 660 200" role="img" aria-label="إشارة CAN_H و CAN_L" style="width:100%;max-width:640px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor">
 <path d="M40 150H600" stroke="currentColor" stroke-width="1"/><text x="20" y="40">V</text>
 <text x="606" y="166">t</text>
@@ -42,49 +48,70 @@
 <text x="565" y="64" fill="#c62828">CAN_H 3.5 V</text><text x="565" y="144" fill="#1e5fd1">CAN_L 1.5 V</text><text x="565" y="104">2.5 V</text>
 <text x="260" y="175" text-anchor="middle" font-size="10">recessive (1)</text><text x="180" y="175" text-anchor="middle" font-size="10">dominant (0)</text><text x="360" y="175" text-anchor="middle" font-size="10">dominant (0)</text>
 </g></svg>
-<ul><li><b>البت المتنحي (1):</b> السلكان عند 2.5 V تقريبًا. <b>البت السائد (0):</b> CAN_H يرتفع إلى 3.5 V و CAN_L ينخفض إلى 1.5 V.</li>
-<li>لو أرسل جهازان معًا، يغلب <b>السائد</b>. هكذا يعمل <b>التحكيم (Arbitration)</b>: الرسالة ذات المعرّف الأصغر (أكثر أصفار في البداية) تفوز وتُكمل، والأخرى تنتظر. لا تصادم ولا ضياع.</li>
-<li>لا سيد في CAN: أي عقدة ترسل عندما يفرغ الناقل، والأولوية بالمعرّف.</li></ul>
+  <div class="vs">
+    <div class="side"><b>متنحي (1)</b><span class="big">2.5 / 2.5 V</span></div>
+    <i>vs</i>
+    <div class="side"><b>سائد (0)</b><span class="big">3.5 / 1.5 V</span></div>
+  </div>
+  <div class="box key"><b>التحكيم:</b> السائد يغلب، فالمعرّف <b>الأصغر</b> يفوز بلا تصادم. ولا سيد: الأولوية بالمعرّف.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>الطول والسرعة والإنهاء</h2>
-<div class="tblw"><table class="tbl"><thead><tr><th>السرعة</th><th>الطول الأقصى (CANopen)</th><th>DeviceNet (كابل سميك)</th></tr></thead><tbody>
-<tr><td class="mono">1 Mbit/s</td><td>25 m</td><td>—</td></tr>
-<tr><td class="mono">500 kbit/s</td><td>100 m</td><td>100 m</td></tr>
-<tr><td class="mono">250 kbit/s</td><td>250 m</td><td>250 m</td></tr>
-<tr><td class="mono">125 kbit/s</td><td>500 m</td><td>500 m</td></tr>
-<tr><td class="mono">50 kbit/s</td><td>1000 m</td><td>—</td></tr></tbody></table></div>
-<p>القياس الأسهل في الموقع: <b>افصل التغذية</b> وقس المقاومة بين CAN_H و CAN_L بالأفوميتر: <b>60 أوم</b> = مقاومتان صحيحتان (120 ‖ 120)، 120 أوم = واحدة فقط، 40 أوم = ثلاث، ∞ = لا إنهاء أو كابل مقطوع.</p>
-<div class="box key"><b>عدّادات الخطأ:</b> كل عقدة تعد أخطاءها. فوق 127 تدخل <b>Error passive</b> (تواصل لكن بلا إشارة خطأ)، وفوق 255 <b>Bus off</b> (تنسحب كليًا حتى تعاد). عقدة واحدة في Bus off = غالبًا سرعتها مختلفة عن الباقين أو كابلها رديء.</div>
+  <ul class="scale">
+    <li><bdi dir="ltr">1 M</bdi><div class="bar"><i style="width:3%"></i><em><bdi dir="ltr">25 m</bdi></em></div></li>
+    <li><bdi dir="ltr">500 k</bdi><div class="bar"><i style="width:10%"></i><em><bdi dir="ltr">100 m</bdi></em></div></li>
+    <li><bdi dir="ltr">250 k</bdi><div class="bar"><i style="width:25%"></i><em><bdi dir="ltr">250 m</bdi></em></div></li>
+    <li><bdi dir="ltr">125 k</bdi><div class="bar"><i style="width:50%"></i><em><bdi dir="ltr">500 m</bdi></em></div></li>
+    <li><bdi dir="ltr">50 k</bdi><div class="bar"><i style="width:100%"></i><em><bdi dir="ltr">1000 m</bdi></em></div></li>
+  </ul>
+  <p class="sub">التغذية مفصولة، قس بين H و L:</p>
+  <ul class="fx">
+    <li class="ok"><b class="mono">60 Ω</b><span>مقاومتان ✅</span></li>
+    <li><b class="mono">120 Ω</b><span>واحدة فقط</span></li>
+    <li><b class="mono">40 Ω</b><span>ثلاث</span></li>
+    <li><b class="mono">∞</b><span>لا إنهاء أو كابل مقطوع</span></li>
+  </ul>
+  <div class="box key"><b>عدّاد الخطأ:</b> فوق 127 Error passive، فوق 255 <b>Bus off</b>: غالبًا سرعة مختلفة أو كابل رديء.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>CANopen: المعرّفات والكائنات</h2>
-<ul><li>كل عقدة لها <b>Node ID</b> من 1 إلى 127 (مفاتيح DIP أو معامل).</li>
-<li>معرّف الرسالة <b>COB-ID</b> = رمز الوظيفة + Node ID. مثلًا <b>PDO</b> الأول للإرسال من العقدة 5: <span class="mono">0x180 + 5 = 0x185</span>.</li>
-<li><b>PDO</b> (Process Data Object): البيانات الدورية السريعة (الحالة، السرعة) بلا رأس إضافي، حتى 8 بايتات.</li>
-<li><b>SDO</b> (Service Data Object): قراءة وكتابة أي معامل في <b>قاموس الكائنات</b> (Object dictionary) بعنوان مثل <span class="mono">0x6040:00</span> (كلمة التحكم في ملف CiA 402 للمحركات).</li>
-<li><b>NMT</b>: السيد (أو الـ PLC) يبدّل العقد بين Pre-operational و Operational و Stopped. العقدة لا ترسل PDO إلا في <b>Operational</b>.</li>
-<li><b>Heartbeat / Node guarding</b>: كل عقدة تعلن أنها حية؛ اختفاؤها يُنذر السيد.</li>
-<li>ملف <b>EDS</b> يصف قاموس الكائنات (نظير GSD).</li></ul>
+  <div class="formula">COB-ID = 0x180 + Node 5 = 0x185</div>
+  <ul class="fx">
+    <li><b>Node ID</b><span>1–127</span></li>
+    <li><b>PDO</b><span>بيانات دورية سريعة · 8 بايتات</span></li>
+    <li><b>SDO</b><span>قراءة/كتابة معامل · <bdi dir="ltr">0x6040:00</bdi></span></li>
+    <li><b>NMT</b><span>PDO فقط في <b>Operational</b></span></li>
+    <li><b>Heartbeat</b><span>العقدة تعلن أنها حية</span></li>
+    <li><b>EDS</b><span>ملف الوصف</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>DeviceNet: الفرق المهم</h2>
-<p>DeviceNet يستخدم CAN نفسه لكن مع <b>بروتوكول CIP</b> (نفسه في EtherNet/IP) وكابل خاص بخمسة أسلاك: زوج الإشارة (أزرق CAN_L / أبيض CAN_H)، زوج التغذية <b>24 V DC</b> (أحمر V+ / أسود V−) ودرع. التغذية تمر في الكابل نفسه وتغذي أجهزة الحقل.</p>
-<ul><li>عناوين <b>MAC ID</b> من 0 إلى 63، وسرعات 125 / 250 / 500 kbit/s تُضبط على كل جهاز يدويًا في الغالب.</li>
-<li>مصباح <b>Network status (NS)</b>: أخضر ثابت = متصل ومخصص لسيد، أخضر يومض = متصل بلا سيد، أحمر يومض = Timeout اتصال، أحمر ثابت = MAC ID مكرر أو Bus off.</li>
-<li>قس جهد التغذية في آخر الكابل: أقل من <b>11 V</b> يسبب أعطالًا غريبة في الأجهزة البعيدة (هبوط جهد على الكابل الطويل). الحل: مغذٍ إضافي في المنتصف.</li></ul>
+  <p class="bf"><span class="ic">🔋</span><span>CAN + <b>CIP</b>، والكابل يحمل <b>24 V</b> مع الإشارة.</span></p>
+  <ul class="fx">
+    <li><b>⚪ أبيض / 🔵 أزرق</b><span>CAN_H / CAN_L</span></li>
+    <li><b>🔴 أحمر / ⚫ أسود</b><span>V+ / V−</span></li>
+    <li><b>MAC ID</b><span>0–63 · 125/250/500 kbit/s</span></li>
+  </ul>
+  <ul class="fx">
+    <li class="ok"><b>NS أخضر ثابت</b><span>متصل بسيد</span></li>
+    <li><b>NS أخضر يومض</b><span>متصل بلا سيد</span></li>
+    <li><b>NS أحمر يومض</b><span>Timeout</span></li>
+    <li><b>NS أحمر ثابت</b><span>MAC ID مكرر أو Bus off</span></li>
+  </ul>
+  <p class="alert">آخر الكابل أقل من <b>11 V</b> ⇐ أعطال غريبة · أضف مغذيًا في المنتصف.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>التفكير في عطل CAN</h2>
-<ol><li><b>قياس 60 أوم</b> بين H و L والتغذية مفصولة. أي قيمة أخرى تقودك إلى الإنهاء أو الكابل.</li>
-<li>بالأفوميتر والناقل خامل: CAN_H ≈ CAN_L ≈ 2.5 V (قياسًا إلى GND). لو أحدهما 0 أو 5 V فهناك قصر إلى الأرضي أو التغذية.</li>
-<li>عقدة واحدة في Bus off: سرعتها، كابلها، أو Node ID مكرر.</li>
-<li>الكل يسقط عند تشغيل ماكينة معينة: ضوضاء من كابل قوى؛ افصل الدرع من طرف واحد فقط وابعد الكابل.</li>
-<li>الأجهزة البعيدة فقط تتعطل في DeviceNet: هبوط جهد التغذية.</li></ol>
-<div class="box key"><b>على المحاكي:</b> شاهد التحكيم بين رسالتين، اضبط السرعة والإنهاء واقرأ 60 أوم، أعطِ العقد Node ID صحيحًا وانقلها إلى Operational، ثم شخّص Bus off وهبوط جهد DeviceNet. <a class="btn pri" href="net.html#can" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+  <ol class="steps">
+    <li>60 Ω بين H و L</li>
+    <li>خامل: H ≈ L ≈ 2.5 V</li>
+    <li>Bus off: سرعة · كابل · ID مكرر</li>
+    <li>يسقط مع ماكينة: ضوضاء</li>
+    <li>البعيد فقط: هبوط جهد</li>
+  </ol>
+  <div class="box key"><b>على المحاكي:</b> شاهد التحكيم، اضبط السرعة والإنهاء (60 Ω)، انقل العقد إلى Operational، وشخّص Bus off وهبوط الجهد. <a class="btn pri" href="net.html#can" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>

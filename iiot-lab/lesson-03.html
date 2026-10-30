@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="iiot.css?v=20261027i1">
 <script src="iiot.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b7">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -32,12 +33,16 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>لماذا RS-485؟</h2>
-<p><b>RS-485</b> ليس بروتوكولًا بل <b>مواصفة كهربائية</b>: تُرسل البتات كفرق جهد بين سلكين <b>A</b> و <b>B</b>. لأن الضوضاء تصيب السلكين معًا، يبقى الفرق بينهما سليمًا؛ لذلك يصل RS-485 إلى <b>1200 متر</b> ويربط حتى <b>32 جهازًا</b> (أو أكثر مع مكررات) على زوج أسلاك واحد. فوق هذه المواصفة يعمل Modbus RTU و PROFIBUS DP وغيرهما.</p>
-<div class="box key"><b>انتبه للأسماء:</b> بعض الشركات تسمي A هو D− والبعض يسميه D+. لو لم يستجب الجهاز، بدّل A و B أولًا؛ لا يتلف شيء بالعكس.</div>
+  <p class="bf"><span class="ic">〰️</span><span>مواصفة كهربائية: البت = <b>فرق جهد بين A و B</b>، فالضوضاء تُلغى.</span></p>
+  <div class="tiles">
+    <div class="tile"><span class="big">1200 m</span><b>المسافة</b></div>
+    <div class="tile"><span class="big">32</span><b>جهازًا</b><span>على زوج واحد</span></div>
+  </div>
+  <p class="tip">الجهاز لا يرد؟ <b>بدّل A و B أولًا</b>: لا يتلف شيء.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>التوصيل الصحيح</h2>
-<svg viewBox="0 0 640 230" role="img" aria-label="خط RS-485 بثلاثة أجهزة ومقاومتي إنهاء" style="width:100%;max-width:640px;direction:ltr">
+  <svg viewBox="0 0 640 230" role="img" aria-label="خط RS-485 بثلاثة أجهزة ومقاومتي إنهاء" style="width:100%;max-width:640px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
 <rect x="20" y="30" width="120" height="70" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="80" y="55" font-weight="700">PLC (Master)</text><text x="60" y="88">A</text><text x="100" y="88">B</text>
 <rect x="260" y="30" width="120" height="70" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="320" y="55" font-weight="700">VFD #1</text><text x="300" y="88">A</text><text x="340" y="88">B</text>
@@ -49,57 +54,56 @@
 <path d="M60 150H37M37 150V152M100 170H44M44 170V174" stroke="#b85f00" stroke-width="2" fill="none"/><path d="M540 150H603M603 150V152M580 170H610M610 170V174" stroke="#b85f00" stroke-width="2" fill="none"/>
 <text x="200" y="145" fill="#c62828">A (D−)</text><text x="200" y="185" fill="#1e5fd1">B (D+)</text><text x="320" y="215">زوج ملتوٍ محمي، الدرع مؤرَّض من طرف واحد، GND مشترك</text>
 </g></svg>
-<ol><li><b>خط واحد (Daisy chain):</b> من جهاز إلى الذي يليه. لا تفرّع نجميًا؛ الفروع تسبب انعكاسات.</li>
-<li><b>مقاومة 120 أوم في الطرفين فقط:</b> كثير من الأجهزة فيها مفتاح DIP أو جمبر للإنهاء. اثنان فقط في الشبكة كلها: أول جهاز وآخر جهاز.</li>
-<li><b>الأرضي المشترك (GND/SC):</b> سلك ثالث يربط مراجع الأجهزة، وإلا قد يتجاوز فرق الجهد المسموح (−7 إلى +12 V) ويحترق الـ transceiver.</li>
-<li><b>الدرع:</b> يُؤرَّض من طرف واحد (اللوحة) لتجنب حلقات الأرضي.</li>
-<li><b>مقاومتا الانحياز (Bias):</b> في السيد غالبًا، تثبت الخط في حالة معروفة عندما لا يرسل أحد.</li></ol>
+  <ul class="fx">
+    <li class="ok"><b>خط واحد</b><span>Daisy chain · لا تفرّع نجمي</span></li>
+    <li class="ok"><b>120 Ω</b><span>في الطرفين فقط</span></li>
+    <li class="ok"><b>GND مشترك</b><span>وإلا يحترق الـ transceiver</span></li>
+    <li class="ok"><b>الدرع</b><span>أرضي من طرف اللوحة فقط</span></li>
+    <li class="ok"><b>Bias</b><span>في السيد غالبًا</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>إعدادات المنفذ التسلسلي</h2>
-<p>يجب أن تتطابق هذه الإعدادات في <b>كل</b> الأجهزة على الخط، وإلا لن يفهم أحد أحدًا:</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>الإعداد</th><th>القيم الشائعة</th><th>ملاحظة</th></tr></thead><tbody>
-<tr><td>Baud rate</td><td class="mono">9600 · 19200 · 38400 · 115200</td><td>أعلى سرعة = مسافة أقصر. 19200 خيار متوازن</td></tr>
-<tr><td>Data bits</td><td class="mono">8</td><td>ثابت في RTU</td></tr>
-<tr><td>Parity</td><td class="mono">Even · Odd · None</td><td>المواصفة تفضّل Even. مع None غالبًا 2 stop bits</td></tr>
-<tr><td>Stop bits</td><td class="mono">1 · 2</td><td></td></tr>
-<tr><td>Slave address</td><td class="mono">1 – 247</td><td>فريد لكل تابع. 0 للبث العام (بلا رد)</td></tr></tbody></table></div>
-<div class="box safe"><b>أشهر عطل:</b> الـ PLC على 19200 والمحوّل على 9600. النتيجة: Timeout دائم أو أخطاء CRC متقطعة.</div>
+  <p class="bf"><span class="ic">🟰</span><span>يجب أن تتطابق في <b>كل</b> الأجهزة على الخط.</span></p>
+  <ul class="fx">
+    <li><b>Baud</b><span><bdi dir="ltr">9600 · 19200 · 38400 · 115200</bdi></span></li>
+    <li><b>Data / Parity / Stop</b><span><bdi dir="ltr">8 · Even · 1</bdi> (None ⇐ 2 stop)</span></li>
+    <li><b>Slave address</b><span><bdi dir="ltr">1–247</bdi> فريد · 0 للبث</span></li>
+  </ul>
+  <div class="box safe">الـ PLC على 19200 والمحوّل على 9600 ⇐ <b>Timeout دائم أو CRC</b>.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>السجلات ورموز الوظائف</h2>
-<p>يرى Modbus أي جهاز كأربعة جداول:</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>الجدول</th><th>الحجم</th><th>الاتجاه</th><th>العنوان التقليدي</th><th>رمز الوظيفة (FC)</th></tr></thead><tbody>
-<tr><td>Coils</td><td>بت</td><td>قراءة/كتابة</td><td class="mono">00001 – 09999</td><td class="mono">01 قراءة · 05 كتابة واحد · 15 كتابة عدة</td></tr>
-<tr><td>Discrete inputs</td><td>بت</td><td>قراءة فقط</td><td class="mono">10001 – 19999</td><td class="mono">02</td></tr>
-<tr><td>Input registers</td><td>16 بت</td><td>قراءة فقط</td><td class="mono">30001 – 39999</td><td class="mono">04</td></tr>
-<tr><td>Holding registers</td><td>16 بت</td><td>قراءة/كتابة</td><td class="mono">40001 – 49999</td><td class="mono">03 قراءة · 06 كتابة واحد · 16 كتابة عدة</td></tr></tbody></table></div>
-<div class="box key"><b>فخ الإزاحة (Offset):</b> العنوان 40001 في الدليل يُرسل على الخط كـ <span class="mono">0</span>، و 40108 يُرسل كـ <span class="mono">107</span>. بعض البرامج تطلب العنوان التقليدي وبعضها يطلب الإزاحة. لو حصلت على قيمة «مزاحة بسجل واحد» فهذا هو السبب.</div>
+  <div class="tiles">
+    <div class="tile"><span class="big">0xxxx</span><b>Coils</b><span>بت · قراءة/كتابة</span><span>FC 01 · 05 · 15</span></div>
+    <div class="tile"><span class="big">1xxxx</span><b>Discrete inputs</b><span>بت · قراءة</span><span>FC 02</span></div>
+    <div class="tile"><span class="big">3xxxx</span><b>Input registers</b><span>16 بت · قراءة</span><span>FC 04</span></div>
+    <div class="tile"><span class="big">4xxxx</span><b>Holding registers</b><span>16 بت · قراءة/كتابة</span><span>FC 03 · 06 · 16</span></div>
+  </div>
+  <div class="box key"><b>فخ الإزاحة:</b> 40001 تُرسل <span class="mono">0</span>، و 40108 تُرسل <span class="mono">107</span>. قيمة مزاحة بسجل = هذا السبب.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>شكل الإطار على الخط</h2>
-<p>طلب قراءة سجلين من العنوان 40108 في التابع رقم 1:</p>
-<div class="tblw"><table class="tbl mono" style="direction:ltr"><thead><tr><th>01</th><th>03</th><th>00 6B</th><th>00 02</th><th>B6 D4</th></tr></thead><tbody>
-<tr><td>العنوان</td><td>الوظيفة</td><td>أول سجل</td><td>العدد</td><td>CRC</td></tr></tbody></table></div>
-<ul><li><b>CRC-16</b> بايتان يحسبهما المرسل؛ لو تلف بت واحد في الطريق رفض المستقبل الإطار صامتًا. أخطاء CRC المتكررة = ضوضاء أو إنهاء ناقص أو سرعة غير مناسبة.</li>
-<li>الرد: <span class="mono" dir="ltr">01 03 04 00 2B 00 00 xx xx</span>: العنوان، الوظيفة، عدد البايتات (4)، ثم القيمتان، ثم CRC.</li>
-<li><b>رد استثناء</b>: الوظيفة + 0x80 ثم رمز الخطأ: <span class="mono">01</span> وظيفة غير مدعومة، <span class="mono">02</span> عنوان سجل غير موجود، <span class="mono">03</span> قيمة غير مقبولة، <span class="mono">04</span> عطل في الجهاز.</li>
-<li><b>Timeout</b> (لا رد إطلاقًا): العنوان خطأ، أو السرعة/التماثل، أو A و B معكوسان، أو الكابل.</li></ul>
+  <div class="ladder"><span class="u">01</span><span class="u">03</span><span class="u">00 6B</span><span class="u">00 02</span><span class="u on">CRC</span></div>
+  <p class="tip">العنوان · الوظيفة · أول سجل · العدد · CRC</p>
+  <ul class="fx">
+    <li><b>CRC خطأ</b><span>ضوضاء · إنهاء ناقص · سرعة عالية</span></li>
+    <li><b>استثناء (FC + 0x80)</b><span>01 وظيفة · 02 عنوان · 03 قيمة · 04 عطل</span></li>
+    <li><b>Timeout</b><span>العنوان · السرعة/التماثل · A/B · الكابل</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s6">
   <h2 id="s6"><span class="k">6</span>مثال: قراءة محوّل تردد والتحكم فيه</h2>
-<p>معظم محوّلات التردد توفر «سجل أوامر» و«سجل مرجع تردد» و«سجلات حالة». مثال نمطي (الأرقام تختلف من شركة لأخرى، ارجع إلى الدليل):</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>السجل</th><th>المعنى</th><th>مثال</th></tr></thead><tbody>
-<tr><td class="mono">40001</td><td>كلمة الأوامر: بت 0 تشغيل، بت 1 عكس، بت 2 مسح العطل</td><td class="mono">0x0001 = تشغيل أمامي</td></tr>
-<tr><td class="mono">40002</td><td>التردد المرجعي × 100</td><td class="mono">5000 = 50.00 Hz</td></tr>
-<tr><td class="mono">40011</td><td>التردد الفعلي × 100 (قراءة)</td><td class="mono">4998</td></tr>
-<tr><td class="mono">40012</td><td>التيار × 10</td><td class="mono">123 = 12.3 A</td></tr>
-<tr><td class="mono">40020</td><td>رمز العطل الحالي</td><td class="mono">0 = لا عطل</td></tr></tbody></table></div>
-<p>لاحظ <b>التحجيم</b>: القيمة على الخط عدد صحيح 16 بت، والدليل يقول «اقسم على 100». هذا ما سنُعيد استخدامه في البوابة (الدرس 11).</p>
-<div class="box key"><b>على المحاكي:</b> اضبط منفذ السيد ليطابق محوّل التردد، اقرأ التردد والتيار بالوظيفة 03، ثم اكتب التردد المرجعي بالوظيفة 06، وفسّر أخطاء Timeout و CRC والاستثناء 02. <a class="btn pri" href="net.html#modbus" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+  <ul class="fx">
+    <li><b class="mono">40001</b><span>الأوامر · <bdi dir="ltr">0x0001</bdi> = تشغيل</span></li>
+    <li><b class="mono">40002</b><span>التردد × 100 · 5000 = 50.00 Hz</span></li>
+    <li><b class="mono">40011</b><span>التردد الفعلي</span></li>
+    <li><b class="mono">40012</b><span>التيار × 10 · 123 = 12.3 A</span></li>
+    <li><b class="mono">40020</b><span>رمز العطل</span></li>
+  </ul>
+  <p class="tip">الأرقام من الدليل، وانتبه <b>للتحجيم</b> (÷100).</p>
+  <div class="box key"><b>على المحاكي:</b> طابق المنفذ، اقرأ بـ 03، اكتب التردد بـ 06، وفسّر Timeout و CRC والاستثناء 02. <a class="btn pri" href="net.html#modbus" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
