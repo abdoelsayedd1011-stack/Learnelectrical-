@@ -337,6 +337,48 @@ body.guided[data-g="c"] #pnlLoad{display:none}
 body.guided:not(.adv) .advonly{display:none}
 body.guided #advBar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
 body.guided .keyguide,body.guided #faceHint{display:none}
+/* show view: the exercise wired and running on one page */
+#gShow .g-bar{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.sh-title{margin:10px 0 8px}
+.sh-stage{position:relative;display:grid;gap:10px;padding:12px;border-radius:14px;background:var(--bg);border:1px solid var(--line)}
+.sh-cap{margin:0;min-height:3.1em;display:flex;align-items:center;padding:8px 12px;border-radius:10px;background:#1c2430;color:#fff;font-weight:600;font-size:1.02rem;line-height:1.45;transition:background .3s}
+.sh-cap b{color:#ffd28a}
+.sh-cap.ok{background:#17703f}.sh-cap.ok b{color:#c8ffd9}
+.flt .sh-cap:not(.ok){background:#a3261d}
+.sh-cap.in{animation:shIn .35s ease}
+@keyframes shIn{from{opacity:.2;transform:translateY(4px)}}
+.sh-top{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:10px;align-items:center}
+.sh-face .device{display:block}
+.sh-face .pf{max-width:none;width:360px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.28))}
+.sh-face .pf-grey,.sh-face .pf-tab{display:none}
+.sh-motor{display:grid;gap:6px;justify-items:center}
+.sh-mot{width:100%;max-width:220px;height:auto}
+.sh-read{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 10px;font:600 12px var(--font-mono);direction:ltr;color:var(--muted)}
+.sh-read b{font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}
+.sh-ctl{padding:10px;grid-template-columns:repeat(auto-fit,minmax(84px,1fr))}
+.sh-ctl[hidden]{display:none}
+.sh-fig{margin:0}
+.sh-fig .solsvg .sw{opacity:.35;transition:opacity .3s}
+.sh-fig .solsvg .sw.flow{opacity:1;stroke-dasharray:8 5;animation:shFlow .6s linear infinite}
+.sh-fig .solsvg .sw.flow.rev{animation-direction:reverse}
+.sh-fig .solsvg .sw-pe.flow{animation:none;stroke-dasharray:6 3}
+@keyframes shFlow{to{stroke-dashoffset:-13}}
+.sh-fig .solsvg circle.sv-term.on{fill:#2fbf5b;stroke:#17703f;filter:drop-shadow(0 0 3px #2fbf5b)}
+.sh-fig .solsvg .lmp{opacity:.35}.sh-fig .solsvg .lmp.lit{opacity:1;filter:drop-shadow(0 0 5px currentColor)}
+.sh-fig .solsvg .lmp-w.lit{color:#9cc8ff}.sh-fig .solsvg .lmp-r.lit{color:#ff6b5e}.sh-fig .solsvg .lmp-g.lit{color:#5cc06f}
+.sh-db{position:absolute;inset-inline-start:24px;bottom:84px;font-size:.8rem;color:var(--muted)}
+.sh-fing{position:absolute;left:-60px;top:-60px;width:34px;height:40px;margin:-4px 0 0 -12px;z-index:5;pointer-events:none;opacity:0;transition:left .55s cubic-bezier(.3,.7,.2,1),top .55s cubic-bezier(.3,.7,.2,1),opacity .2s;filter:drop-shadow(0 3px 4px rgba(0,0,0,.4))}
+.sh-fing svg{width:100%;height:100%;display:block;transition:transform .12s}
+.sh-fing.press svg{transform:scale(.82)}
+.sh-fing::before{content:"";position:absolute;left:4px;top:-4px;width:22px;height:22px;border-radius:50%;border:3px solid var(--accent);opacity:0}
+.sh-fing.press::before{animation:shRip .5s ease-out}
+@keyframes shRip{from{opacity:.9;transform:scale(.4)}to{opacity:0;transform:scale(1.8)}}
+.sh-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.sh-bar .btn{min-height:44px}
+.sh-prog{flex:1 1 80px;height:6px;border-radius:3px;background:var(--line);overflow:hidden;min-width:60px}
+.sh-prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .5s}
+@media (min-width:900px){.sh-stage{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.sh-cap,.sh-bar,.sh-ctl{grid-column:1/-1}.sh-top{grid-column:1}.sh-fig{grid-column:2;grid-row:2/4}}
+@media (prefers-reduced-motion:reduce){.sh-fig .solsvg .sw.flow{animation:none}.sh-cap.in{animation:none}}
 .guide{padding:20px;border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
 .g-head h2{font-size:1.5rem;margin-bottom:6px}
 .g-sub{margin:0 0 16px;color:var(--muted);max-width:70ch;line-height:1.8}
@@ -427,12 +469,14 @@ body.guided .keyguide,body.guided #faceHint{display:none}
 
 <section class="panel guide" id="guide" hidden aria-label="الوضع المبسّط">
   <div id="gStart">
-    <div class="g-head"><h2>ابدأ من هنا</h2><p class="g-sub">اختار تمرين وامشي معاه خطوة بخطوة: <b>التوصيل</b> ← <b>الباراميترات</b> ← <b>التشغيل</b> ← <b>عطل</b>. الصفحة هتوريك اللي محتاجه في كل خطوة بس. عايز المحاكي كله؟ دوس «الوضع الكامل» فوق.</p></div>
+    <div class="g-head"><h2>ابدأ من هنا</h2><p class="g-sub">اختار تمرين: هتلاقيه <b>متوصّل وشغّال قدامك</b> زي الفيديو، وبعدين دوس «جرّب بنفسك».</p></div>
     <div class="g-cards" id="gCards"></div>
   </div>
+  <div id="gShow" hidden></div>
   <div id="gRun" hidden>
     <div class="g-bar">
       <button class="btn" id="gBack" type="button">‹ رجوع للقايمة</button>
+      <button class="btn" id="gToShow" type="button">▶ شوفه شغّال</button>
       <div class="g-prog" id="gProg" aria-live="polite"></div>
     </div>
     <h2 id="gTitle"></h2>
@@ -1820,7 +1864,6 @@ function frame(now){
 }
 requestAnimationFrame(t=>{last=t;frame(t);});
 </script>
-<script src="../assets/sim-coach.js?v=20261030a"></script>
 <script>
 /* ---------------- solved applications: wiring + parameters ---------------- */
 (function(){
@@ -1990,7 +2033,7 @@ renderSol();
 
 /* ---------------- guided simple mode ---------------- */
 const GKEY=SKEY+'-ui';
-const GUI={guided:true,ex:-1,step:0,done:{},adv:false,hand:''};window.GUI=GUI;
+const GUI={guided:true,ex:-1,step:0,done:{},adv:false,hand:'',view:'show'};window.GUI=GUI;
 function guiSave(){try{localStorage.setItem(GKEY,JSON.stringify({mode:GUI.guided?'guided':'full',ex:GUI.ex,step:GUI.step,done:GUI.done,hand:GUI.hand}));}catch(_){}}
 function guiLoad(){try{const o=JSON.parse(localStorage.getItem(GKEY)||'null');if(!o)return;GUI.guided=o.mode!=='full';GUI.ex=Number.isInteger(o.ex)&&SOL[o.ex]?o.ex:-1;GUI.step=[0,1,2,3].includes(o.step)?o.step:0;GUI.done=o.done&&typeof o.done==='object'?o.done:{};GUI.hand=o.hand==='auto'?'auto':o.hand==='hand'?'hand':'';}catch(_){}}
 const GICO={
@@ -2014,14 +2057,16 @@ const gParamsOk=i=>SOL[i].p.every(([c,v])=>pEq(c,v));
 function gSplitSteps(a){const k=a.steps.findIndex(x=>/ادخل الجدول|ادخل الباراميترات|دخّل بيانات/.test(x));return {wire:a.steps.slice(0,k<0?a.steps.length:k),run:a.steps.slice(k<0?a.steps.length:k+1)};}
 function setMode(g){GUI.guided=!!g;document.body.classList.toggle('guided',GUI.guided);$('#guide').hidden=!GUI.guided;$('#advBar').hidden=!GUI.guided;
  const b=$('#modeBtn');b.textContent=GUI.guided?'الوضع الكامل':'الوضع المبسّط';b.setAttribute('aria-pressed',!GUI.guided);
- if(GUI.guided)guideRender();else{document.body.removeAttribute('data-g');document.body.classList.remove('g-hand');gFaceHome();}guiSave();}
+ if(GUI.guided)guideRender();else{if(SH.i>=0)shLeave();$('#gShow').hidden=true;document.body.removeAttribute('data-g');document.body.classList.remove('g-hand');gFaceHome();}guiSave();}
 function gCards(){
- $('#gCards').innerHTML=SOL.map((a,i)=>'<button type="button" class="g-card'+(GUI.done[i]?' done':'')+'" data-ex="'+i+'"><span class="n">'+(GUI.done[i]?'✓':i+1)+'</span><span class="t">'+a.t+'</span><span class="g">'+GD[i].goal+'</span><span class="ico">'+GICO[GD[i].ico]+'<span>'+a.p.length+' باراميتر · 4 خطوات</span></span></button>').join('');
+ $('#gCards').innerHTML=SOL.map((a,i)=>'<button type="button" class="g-card'+(GUI.done[i]?' done':'')+'" data-ex="'+i+'"><span class="n">'+(GUI.done[i]?'✓':i+1)+'</span><span class="t">'+a.t+'</span><span class="g">'+GD[i].goal+'</span><span class="ico">'+GICO[GD[i].ico]+'<span>▶ شوفه شغّال · '+a.p.length+' باراميتر</span></span></button>').join('');
 }
 function guideRender(){
  if(!GUI.guided)return;
- const run=GUI.ex>=0;$('#gStart').hidden=run;$('#gRun').hidden=!run;
+ const run=GUI.ex>=0,show=run&&GUI.view!=='steps';$('#gStart').hidden=run;$('#gRun').hidden=!run||show;$('#gShow').hidden=!show;
+ if(SH.i>=0&&(!show||SH.i!==GUI.ex))shLeave();
  if(!run){document.body.setAttribute('data-g','start');gCards();return;}
+ if(show){document.body.setAttribute('data-g','show');document.body.classList.remove('g-hand');if(SH.i!==GUI.ex)shRender(GUI.ex);$('#gShow').scrollIntoView({behavior:'smooth',block:'start'});return;}
  const i=GUI.ex,a=SOL[i],g=GD[i],st=GUI.step;document.body.setAttribute('data-g','abcd'[st]);
  $('#gProg').innerHTML=GSTEPS.map((_,k)=>'<span class="'+(k<st?'ok':k===st?'on':'')+'"></span>').join('')+'<b>'+(st+1)+'/4</b>';
  $('#gTitle').textContent=(i+1)+'. '+a.t;
@@ -2097,7 +2142,8 @@ function guideTick(force){
 }
 function guideRefresh(){if(GUI.guided&&GUI.ex>=0)guideTick(true);}
 window.guideTick=guideTick;window.guideRefresh=guideRefresh;
-$('#gCards').addEventListener('click',e=>{const b=e.target.closest('[data-ex]');if(!b)return;GUI.ex=+b.dataset.ex;GUI.step=0;guiSave();guideRender();});
+$('#gCards').addEventListener('click',e=>{const b=e.target.closest('[data-ex]');if(!b)return;GUI.ex=+b.dataset.ex;GUI.step=0;if(!GUI.keepView){const tr=document.getElementById('stRoot');GUI.view=tr&&!tr.hidden?'steps':'show';}GUI.keepView=0;guiSave();guideRender();});
+$('#gToShow').addEventListener('click',()=>{GUI.view='show';guideRender();});
 $('#gBack').addEventListener('click',()=>{GUI.ex=-1;GUI.step=0;guiSave();guideRender();});
 $('#gPrev').addEventListener('click',()=>{if(GUI.step>0){GUI.step--;guiSave();guideRender();}});
 $('#gNext').addEventListener('click',()=>{if(GUI.step<3){GUI.step++;}else{GUI.done[GUI.ex]=true;log('خلصت التمرين المحلول '+(GUI.ex+1)+': '+SOL[GUI.ex].t);GUI.ex=-1;GUI.step=0;}guiSave();guideRender();});
@@ -2109,55 +2155,158 @@ $('#gBody').addEventListener('click',e=>{
 });
 $('#modeBtn').addEventListener('click',()=>setMode(!GUI.guided));
 $('#advBtn').addEventListener('click',e=>{GUI.adv=!GUI.adv;document.body.classList.toggle('adv',GUI.adv);e.currentTarget.setAttribute('aria-expanded',GUI.adv);e.currentTarget.textContent=GUI.adv?'إخفاء المتقدم ▴':'عرض المتقدم ▾';});
-guiLoad();setMode(GUI.guided);
-/* coach: one instruction at a time + ring on the control to touch */
-if(window.SimCoach){
- const KS='.pf [data-k="START"]',KX='.pf [data-k="STOP"]';
- const GO={0:{say:'دوس زرار <b>▶ Start</b> الأخضر في الكيباد',t:KS},1:{say:'دوس زرار <b>RUN FWD</b> في لوحة التشغيل',t:'#dRun'},2:{say:'دوس زرار <b>START</b> الأخضر في لوحة التشغيل دوسة واحدة',t:'#dRun'},
-  3:{say:'دوس زرار <b>RUN FWD</b> في لوحة التشغيل',t:'#dRun'},4:{say:'دوس <b>RUN FWD</b>: ده كونتاكت الـ PLC',t:'#dRun'},5:{say:'دوس زرار <b>▶ Start</b> الأخضر في الكيباد',t:KS}};
- const C=(k,say,tgt,ok)=>({k:GUI.ex+'.'+GUI.step+'.'+k,step:GUI.ex+'.'+GUI.step,say,tgt,ok});
- const ready=()=>{
-  if(!S.brk)return C('brk','ولّع <b>المفتاح الرئيسي</b> لفوق (ON)','#dBrk');
-  if(!ctlOk())return C('boot','استنى ثانية لحد ما شاشة الانفرتر تنوّر…','#lcd');
-  if(S.fault)return C('flt','فيه عطل على الشاشة: امسحه بزرار <b>■ Stop</b> الأحمر في الكيباد',KX);
-  if(!tc('01'))return C('stop','زرار <b>STOP</b> في اللوحة متعلّق: دوسه تاني عشان يرجع','#dStop');
-  if(!S.io.sto)return C('sto','رجّع <b>ريليه الأمان STO</b> على OK','#dSto');
-  return null;};
- const runIt=(pre)=>{const i=GUI.ex;
-  if(S.st==='stop'||S.st==='dc')return C('dec','الموتور بيقف… بص على الشاشة','#lcd');
-  if(i===5&&S.st==='run'){if(!GUI.hi&&Math.abs(S.fOut)<48)return C('w50','استنى الشاشة توصل <b>50 Hz</b>…','#lcd');
-   return C('stp','دلوقتي دوس <b>■ Stop</b> الأحمر وشوف الموتور يقف في ثانية ونص',KX);}
-  if(S.st==='run')return C('slow','الموتور بيقوم… بص على الشاشة<span class="sc-sub">المطلوب: '+SOL[i].hint+'</span>','#lcd');
-  return C('go',(pre||'')+GO[i].say,GO[i].t);};
- SimCoach.init({scope:'.bench',get(){
-  if(!GUI.guided)return null;
-  if(GUI.ex<0){const n=SOL.findIndex((_,i)=>!GUI.done[i]);return {k:'pick'+n,step:'pick',say:n<0?'خلصت كل التمارين 👏 اختار أي تمرين تعيده':'اختار تمرين. ابدأ بالتمرين <b>'+(n+1)+'</b>',tgt:n<0?null:'[data-ex="'+n+'"]'};}
-  const i=GUI.ex,st=GUI.step,g=GD[i];
-  if(st===0)return C('rd','بص على الرسمة والأطراف المعلّمة، وبعدين دوس <b>التالي</b>','#gNext');
-  if(st===1){
-   if(gParamsOk(i))return C('pok','كل الباراميترات مضبوطة. دوس <b>التالي</b>','#gNext',true);
-   if(GUI.hand==='hand'){const m=SOL[i].p.find(([c,v])=>!pEq(c,v));if(S.st!=='off'&&PM[m[0]].rl)return C('rl','وقّف الموتور الأول بزرار <b>■ Stop</b>',KX);
-    return C('h'+m[0],'دخّل <b>'+m[0]+'</b> = <b>'+fmtV(PM[m[0]],m[1])+'</b> من الكيباد','#gFace');}
-   if(GUI.hand==='auto')return C('ap','دوس <b>اضبط الباراميترات دي</b>','#gApply');
-   return C('ch','دوس <b>اضبطها أوتوماتيك</b> (أسرع) أو بإيدك من الكيباد','#gByAuto');}
-  if(st===2){
-   if(!gParamsOk(i)&&S.st==='off')return C('np','الباراميترات لسه مش مضبوطة. دوس <b>السابق</b> واضبطها','#gPrev');
-   let ok=false;try{ok=!!g.ok();}catch(_){}
-   if(ok)return C('rok','الموتور شغال زي المطلوب. دوس <b>التالي</b>','#gNext',true);
-   if(i===5&&GUI.hi&&S.st==='off'&&!S.fault)return C('rok','وقف من غير عطل. دوس <b>التالي</b>','#gNext',true);
-   return ready()||runIt();}
-  const act=g.flt.inj?!!S.inj[g.flt.inj]:g.flt.on();
-  if(GUI.fseen&&!S.fault&&!act)return C('fok','برافو، صلّحت العطل. دوس <b>خلصت التمرين</b>','#gNext',true);
-  if(GUI.fseen&&act)return C('fix','العطل ظهر. دوس <b>'+((g.flt.lbl||[])[1]||'صلّح العطل')+'</b>','#gFault');
-  if(GUI.fseen&&S.fault)return C('clr','امسح العطل بزرار <b>■ Stop</b> الأحمر في الكيباد',KX);
-  const needRun=/والموتور شغال/.test(g.flt.t);
-  if((needRun&&!act||i===5&&act)&&S.st!=='run'){const r=ready();if(r)return r;}
-  if(!act){if(needRun&&S.st!=='run')return runIt('شغّل الموتور الأول: ');
-   return C('inj','دوس <b>'+((g.flt.lbl||[])[0]||'جرّب العطل')+'</b> وبص على الشاشة','#gFault');}
-  if(i===5)return runIt(S.st==='run'?'':'شغّل تاني: ');
-  return C('wait','بص على شاشة الانفرتر…','#lcd');
- }});
+/* show view: each exercise on ONE page, already wired and running like a video.
+   It drives the real simulator, so the keypad, LCD, wiring and controls are all live. */
+const SH={gen:0,paused:false,auto:false,mode:'play',i:-1,moved:[],ang:0,scn:0,nscn:1};
+const shS=()=>$('#gShow');
+const KEY=k=>$('.pf [data-k="'+k+'"]');
+const DEVS=[[],['dRun','dRev','kPot'],['dRun','dStop','dRev'],['dRun','dSpd'],['dRun','kMa','lH1','lH2','lH3'],[]];
+class Abort{}
+const live=g=>{if(g!==SH.gen)throw new Abort();};
+async function shWait(ms,g){let t=0;while(t<ms){live(g);await new Promise(r=>setTimeout(r,100));if(!SH.paused)t+=100;}live(g);}
+async function shUntil(fn,ms,g){let t=0;while(t<ms){live(g);let ok=false;try{ok=!!fn();}catch(_){}if(ok)return true;await new Promise(r=>setTimeout(r,120));if(!SH.paused)t+=120;}live(g);return false;}
+async function shSteady(g){let a=S.fOut,t=0;while(t<12000){await shWait(300,g);t+=300;if(Math.abs(S.fOut-a)<.15)return;a=S.fOut;}}
+function shCap(h,ok){const c=$('#shCap');c.innerHTML='<span>'+h+'</span>';c.classList.toggle('ok',!!ok);c.classList.remove('in');void c.offsetWidth;c.classList.add('in');}
+function shFire(el,type){const r=el.getBoundingClientRect(),o={bubbles:true,cancelable:true,clientX:r.left+r.width/2,clientY:r.top+r.height/2,button:0,buttons:/down/.test(type)?1:0,pointerId:77,pointerType:'touch',isPrimary:true};
+ let ev;try{ev=/^pointer/.test(type)?new PointerEvent(type,o):new MouseEvent(type,o);}catch(_){ev=new MouseEvent(type,o);}
+ const E=Element.prototype,sc=E.setPointerCapture;E.setPointerCapture=function(){};try{el.dispatchEvent(ev);}finally{E.setPointerCapture=sc;}}
+async function shFinger(el,g){const f=$('#shFing'),st=shS().querySelector('.sh-stage');if(!el||!f)return;
+ const a=st.getBoundingClientRect(),r=el.getBoundingClientRect();if(!r.width&&!r.height)return;f.style.opacity=1;
+ f.style.left=(r.left-a.left+r.width/2)+'px';f.style.top=(r.top-a.top+r.height/2)+'px';await shWait(650,g);}
+async function shTap(el,g,hold){if(!el)return;await shFinger(el,g);const f=$('#shFing');f.classList.add('press');
+ SH.auto=true;try{shFire(el,'pointerdown');}finally{SH.auto=false;}
+ await shWait(hold||220,g);SH.auto=true;try{shFire(el,'pointerup');if(el.tagName==='BUTTON'&&!el.closest('.pf'))shFire(el,'click');}finally{SH.auto=false;}
+ f.classList.remove('press');await shWait(250,g);}
+async function shTurn(el,get,set,upd,to,g){await shFinger(el,g);const f=$('#shFing');f.classList.add('press');const v0=get();
+ for(let k=1;k<=12;k++){set(v0+(to-v0)*k/12);upd();await shWait(90,g);}f.classList.remove('press');}
+const hz=()=>'<bdi dir="ltr">'+Math.abs(S.fOut).toFixed(0)+' Hz</bdi>';
+const B=t=>'<b>'+t+'</b>';
+async function shInj(i,g){const fl=GD[i].flt;if(fl.inj){await shTap($('[data-inj="'+fl.inj+'"]'),g,60);}else{await shFinger($('#shDb'),g);fl.fn();}}
+async function shClear(g){shCap('نمسح العطل بزرار '+B('■ Stop')+' الأحمر');await shTap(KEY('STOP'),g,250);await shUntil(()=>!S.fault,4000,g);}
+const fcode=()=>S.fault?'F'+String(S.fault).padStart(3,'0')+' '+FL[S.fault][0]:'';
+/* the six exercise scripts */
+const SCN=[
+ async g=>{SH.nscn=6;
+  sc(1);shCap('دوسنا '+B('▶ Start')+' الأخضر في الكيباد');await shTap(KEY('START'),g,300);
+  await shUntil(()=>Math.abs(S.fOut)>28,9000,g);await shSteady(g);sc(2);shCap('الموتور شغال على '+B(hz())+' من البوت اللي على الانفرتر',1);await shWait(2200,g);
+  sc(3);shCap('نلف البوت لفوق ← السرعة تزيد');await shTurn($('#dPot'),()=>io.dpot,v=>io.dpot=v,window.updDPot,.95,g);
+  await shUntil(()=>Math.abs(S.fOut)>44,9000,g);await shSteady(g);shCap('دلوقتي على '+B(hz()),1);await shWait(1800,g);
+  sc(4);shCap('نعمل عطل: انقطاع كهربا لحظي');await shInj(0,g);await shUntil(()=>S.fault,5000,g);
+  shCap('الانفرتر فصل: '+B(fcode())+' ولمبة FAULT نوّرت');await shWait(2600,g);await shClear(g);
+  sc(5);shCap('رجّعنا البوت والموتور واقف. ده كل التمرين ✓',1);await shTurn($('#dPot'),()=>io.dpot,v=>io.dpot=v,window.updDPot,.6,g);},
+ async g=>{SH.nscn=6;
+  sc(1);shCap('قفلنا السلكتور على '+B('FWD')+' (طرف 02)');await shTap($('#dRun'),g);
+  await shUntil(()=>S.fOut>30,12000,g);await shSteady(g);sc(2);shCap('الموتور شغال أمامي على '+B(hz())+' من البوت الخارجي (8V)',1);await shWait(2000,g);
+  sc(3);shCap('نلف البوت الخارجي لتحت ← السرعة تقل');await shTurn($('#kPot'),()=>io.pot,v=>io.pot=v,updPot,.45,g);await shUntil(()=>S.fOut<26,12000,g);await shSteady(g);shCap('دلوقتي '+B(hz()),1);await shWait(1500,g);
+  sc(4);shCap('نقلب السلكتور على '+B('REV')+' (طرف 03): الموتور يعكس');await shTap($('#dRun'),g);await shTap($('#dRev'),g);
+  await shUntil(()=>S.fOut<-18,16000,g);await shSteady(g);shCap('شغال عكسي '+B(hz()),1);await shWait(1800,g);
+  sc(5);shCap('نعمل عطل: جهد المصدر وقع');await shInj(1,g);await shUntil(()=>S.fault,8000,g);shCap('الانفرتر فصل: '+B(fcode()));await shWait(2400,g);
+  await shTap($('[data-inj="loline"]'),g,60);await shTap($('#dRev'),g);await shClear(g);
+  shCap('رجّعنا الجهد والسلكتور على 0 ✓',1);await shTurn($('#kPot'),()=>io.pot,v=>io.pot=v,updPot,.8,g);},
+ async g=>{SH.nscn=6;
+  sc(1);shCap('دوسة واحدة على '+B('START')+' وسيبناه');await shTap($('#dRun'),g,250);
+  await shUntil(()=>S.fOut>30,9000,g);await shSteady(g);sc(2);shCap('فضل شغال لوحده على '+B(hz())+'. ده معنى <bdi>3-Wire</bdi>',1);await shWait(2400,g);
+  sc(3);shCap('نقلب سلكتور الاتجاه (طرف 03): الموتور يعكس');await shTap($('#dRev'),g);await shUntil(()=>S.fOut<-30,14000,g);await shSteady(g);shCap('شغال عكسي '+B(hz()),1);await shWait(1600,g);
+  sc(4);shCap('نعمل عطل: تسريب أرضي على فاز U');await shInj(2,g);await shUntil(()=>S.fault,5000,g);shCap('فصل فوراً: '+B(fcode()));await shWait(2400,g);
+  await shTap($('[data-inj="gnd"]'),g,60);await shTap($('#dRev'),g);await shClear(g);
+  sc(5);shCap('رجّعنا كل حاجة. زرار STOP بيوقف في أي وقت ✓',1);await shWait(800,g);},
+ async g=>{SH.nscn=6;
+  sc(1);shCap('سلكتور السرعات على '+B('2')+'، وقفلنا '+B('RUN'));await shTap($('#dRun'),g);
+  await shUntil(()=>S.fOut>33,9000,g);await shSteady(g);sc(2);shCap('ثابت على '+B(hz())+' (A412)',1);await shWait(2000,g);
+  sc(3);shCap('نغيّر السلكتور لـ '+B('3'));await shTap($('#dSpd'),g);await shUntil(()=>S.fOut>48,9000,g);await shSteady(g);shCap('الوضع 3 = '+B(hz())+' (A413)',1);await shWait(1800,g);
+  shCap('نرجّعه لـ '+B('0'));await shTap($('#dSpd'),g);await shUntil(()=>S.fOut<12,12000,g);await shSteady(g);shCap('الوضع 0 = '+B(hz())+' (A410)',1);await shWait(1800,g);
+  sc(4);shCap('نعمل عطل: قصر بين U و V');await shInj(3,g);await shUntil(()=>S.fault,5000,g);shCap('فصل فوراً: '+B(fcode()));await shWait(2400,g);
+  await shTap($('[data-inj="short"]'),g,60);await shTap($('#dRun'),g);await shClear(g);
+  sc(5);shCap('صلّحنا القصر ورجّعنا السلكتور على 2 ✓',1);await shTap($('#dSpd'),g);await shTap($('#dSpd'),g);},
+ async g=>{SH.nscn=6;
+  sc(1);shCap('الـ PLC قفل كونتاكت '+B('RUN')+' وبيبعت '+B('12mA'));await shTap($('#dRun'),g);
+  await shUntil(()=>S.fOut>30,14000,g);await shSteady(g);sc(2);shCap('الطلمبة على '+B(hz())+'، و H1 Ready و H3 Run منورين',1);await shWait(2200,g);
+  sc(3);shCap('الـ PLC زوّد الإشارة لـ '+B('20mA'));await shTurn($('#kMa'),()=>io.ma,v=>io.ma=v,updMa,20,g);await shUntil(()=>S.fOut>47,14000,g);await shSteady(g);shCap('20mA = '+B(hz()),1);await shWait(1600,g);
+  sc(4);shCap('نقطع سلك الـ 4-20mA');await shInj(4,g);await shUntil(()=>S.fault,6000,g);shCap(B(fcode())+': H1 طفت و H2 Fault نوّرت');await shWait(2600,g);
+  await shTap($('[data-inj="mabrk"]'),g,60);await shTap($('#dRun'),g);await shClear(g);
+  sc(5);shCap('رجّعنا السلك والإشارة 12mA ✓',1);await shTurn($('#kMa'),()=>io.ma,v=>io.ma=v,updMa,12,g);},
+ async g=>{SH.nscn=6;
+  sc(1);shCap('دوسنا '+B('▶ Start')+': يطلع لـ 50 Hz');await shTap(KEY('START'),g,300);
+  await shUntil(()=>S.fOut>48,12000,g);sc(2);shCap('دلوقتي '+B('■ Stop')+': المقاومة بتاخد الطاقة');await shTap(KEY('STOP'),g,250);
+  const t0=performance.now();await shUntil(()=>S.st==='off',9000,g);shCap('وقف بسرعة '+B('من غير عطل')+' ✓ المقاومة حرقت الطاقة',1);await shWait(2400,g);
+  sc(3);shCap('نشيل المقاومة ونجرّب تاني');await shInj(5,g);await shWait(900,g);await shTap(KEY('START'),g,300);await shUntil(()=>S.fOut>48,12000,g);
+  sc(4);shCap(B('■ Stop')+' من غير مقاومة…');await shTap(KEY('STOP'),g,250);await shUntil(()=>S.fault||S.st==='off',9000,g);
+  shCap(S.fault?'الـ DC bus علي: '+B(fcode()):'وقف بس أبطأ');await shWait(2600,g);
+  sc(5);shCap('نركّب المقاومة تاني');GD[5].flt.fn();await shWait(900,g);if(S.fault)await shClear(g);shCap('المقاومة رجعت ✓',1);}
+];
+function sc(n){SH.scn=n;const p=$('#shProg');if(p)p.style.width=Math.round(n/SH.nscn*100)+'%';}
+async function shRun(){
+ const g=++SH.gen,i=SH.i;SH.paused=false;shBtns();
+ try{
+  for(;;){
+   sc(0);applySol(i,null);await shWait(150,g);
+   shCap('التوصيل جاهز و'+B(SOL[i].p.length+' باراميتر')+' اتظبطوا ✓');await shWait(2300,g);
+   await SCN[i](g);
+   sc(SH.nscn);await shWait(1600,g);shCap('هنعيد من الأول…');await shWait(1800,g);
+  }
+ }catch(e){if(!(e instanceof Abort))console.error(e);}
 }
+function shTry(){SH.gen++;SH.mode='try';$('#shFing').style.opacity=0;shCap('دورك ✋ الأزرار كلها شغالة: جرّب بنفسك');shBtns();}
+function shBtns(){const p=$('#shPlay');if(!p)return;const play=SH.mode==='try'||SH.paused;p.textContent=play?'▶ تشغيل':'❚❚ إيقاف';p.setAttribute('aria-label',play?'تشغيل':'إيقاف مؤقت');$('#shTry').hidden=SH.mode==='try';}
+/* live wiring: light the terminals and wires that carry signal right now */
+function shTermOn(n){const on=ctlOk();switch(n){
+ case 'R/L1':case 'S/L2':case 'T/L3':case 'PE':return S.brk;
+ case 'U':case 'V':case 'W':return Math.abs(S.fOut)>.3;
+ case 'BR+':case 'BR−':return S.dbInst&&on;
+ case '11':case '12':case 'S1':case 'S2':case 'S+':return on&&(n[0]!=='S'||io.sto);
+ case '01':case '02':case '03':case '05':case '06':case '07':case '08':return on&&tc(n);
+ case '13':return on&&io.pot>.01;case '14':return on;case '15':return on&&maIn()>.5;case '16':return on&&Math.abs(S.fOut)>.3;
+ case 'R2':case 'R6':return on;case 'R1':return S.out.r1;case 'R3':return !S.out.r1;case 'R5':return S.out.r2;}return false;}
+function shWire(){const sv=shS().querySelector('.solsvg');if(!sv)return;
+ if(!sv.dataset.map){const T={};sv.querySelectorAll('circle.sv-term').forEach(c=>{const t=c.nextElementSibling;if(t&&t.classList.contains('sv-tn'))T[c.getAttribute('cx')+','+c.getAttribute('cy')]=t.textContent;else{const n=[...sv.querySelectorAll('text.sv-tn')].find(x=>Math.abs(+x.getAttribute('x')-+c.getAttribute('cx'))<1);if(n)T[c.getAttribute('cx')+','+c.getAttribute('cy')]=n.textContent;}c.dataset.t=T[c.getAttribute('cx')+','+c.getAttribute('cy')]||'';});
+  sv.querySelectorAll('path.sw').forEach(p=>{const m=/^M\s*([\d.]+)\s+([\d.]+)/.exec(p.getAttribute('d'));if(!m)return;const x=+m[1],y=+m[2];
+   const c=[...sv.querySelectorAll('circle.sv-term')].find(c=>Math.abs(+c.getAttribute('cx')-x)<1&&Math.abs(+c.getAttribute('cy')-y)<9);
+   p.dataset.t=c?c.dataset.t:(p.classList.contains('sw-pwr')||p.classList.contains('sw-pe')?'R/L1':p.classList.contains('sw-mot')?'U':p.classList.contains('sw-db')?'BR+':p.classList.contains('sw-rly')?'R2':'11');});
+  sv.dataset.map=1;}
+ sv.querySelectorAll('circle.sv-term').forEach(c=>c.classList.toggle('on',shTermOn(c.dataset.t)));
+ sv.querySelectorAll('path.sw').forEach(p=>{const on=shTermOn(p.dataset.t);p.classList.toggle('flow',on);p.classList.toggle('rev',on&&p.dataset.t==='U'&&S.fOut<0);});
+ const lm={w:S.out.r1,r:ctlOk()&&!S.out.r1,g:S.out.r2};sv.querySelectorAll('.lmp').forEach(l=>{const k=(/lmp-(\w)/.exec(l.getAttribute('class'))||[])[1];l.classList.toggle('lit',!!lm[k]);});
+ sv.querySelectorAll('text').forEach(t=>{if(t.textContent==='Hz'||t.dataset.hz){t.dataset.hz=1;t.textContent=Math.abs(S.fOut).toFixed(0);}});}
+let shLast=0,shZw=0;
+function shZoom(){const f=$('#shFace'),pf=f&&f.querySelector('.pf');if(!pf)return;const w=f.clientWidth;if(w&&w!==shZw){shZw=w;pf.style.zoom=Math.min(1,w/360).toFixed(3);}}
+function shFrame(now){if(SH.i<0||!GUI.guided)return;const dt=Math.min(.1,(now-(shLast||now))/1000);shLast=now;
+ SH.ang=(SH.ang+S.fOut*14*dt)%360;const r=$('#shRot');if(r)r.setAttribute('transform','rotate('+SH.ang.toFixed(1)+' 150 60)');
+ const hv=$('#shHz');if(hv){hv.textContent=S.fOut.toFixed(1);$('#shRpm').textContent=Math.round(Math.abs(S.fOut)*28.8);$('#shAmp').textContent=S.I.toFixed(1);}
+ shS().classList.toggle('flt',!!S.fault);shZoom();
+ if(now-(SH.wt||0)>150){SH.wt=now;shWire();}
+ requestAnimationFrame(shFrame);}
+const MOTOR='<svg class="sh-mot" viewBox="0 0 190 120" aria-hidden="true"><defs><linearGradient id="shMg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6f8796"/><stop offset=".5" stop-color="#3f5563"/><stop offset="1" stop-color="#26343d"/></linearGradient></defs>'+
+ '<rect x="40" y="96" width="80" height="10" rx="2" fill="#2a3238"/><rect x="58" y="14" width="40" height="18" rx="3" fill="#3f5563"/>'+
+ '<rect x="20" y="28" width="112" height="66" rx="12" fill="url(#shMg)"/>'+[36,48,60,72,84,96,108,120].map(x=>'<rect x="'+x+'" y="30" width="3" height="62" fill="#23313a" opacity=".55"/>').join('')+
+ '<rect x="10" y="38" width="14" height="46" rx="4" fill="#2f3f49"/><rect x="132" y="55" width="18" height="10" fill="#9aa5ab"/>'+
+ '<g id="shRot"><circle cx="150" cy="60" r="26" fill="#d7dde0" stroke="#59656c" stroke-width="2"/><path d="M150 36v48M126 60h48" stroke="#59656c" stroke-width="5" stroke-linecap="round"/><circle cx="150" cy="40" r="4" fill="#e0611f"/></g>'+
+ '<circle cx="150" cy="60" r="5" fill="#59656c"/></svg>';
+function shRender(i){
+ const a=SOL[i],h=shS();SH.i=i;SH.mode='play';
+ h.innerHTML='<div class="g-bar"><button class="btn" id="shBack" type="button">‹ رجوع للقايمة</button><button class="btn" id="shSteps" type="button">الخطوات بالتفصيل</button></div>'+
+  '<h2 class="sh-title">'+(i+1)+'. '+a.t+'</h2>'+
+  '<div class="sh-stage"><p class="sh-cap" id="shCap" aria-live="polite"></p>'+
+   '<div class="sh-top"><div class="sh-face" id="shFace"></div><div class="sh-motor">'+MOTOR+'<div class="sh-read"><span><b id="shHz">0.0</b> Hz</span><span><b id="shRpm">0</b> rpm</span><span><b id="shAmp">0.0</b> A</span></div></div></div>'+
+   '<div class="sh-ctl station" id="shCtl"></div>'+
+   '<figure class="sh-fig">'+a.svg()+'</figure>'+(i===5?'<span id="shDb" class="sh-db">مقاومة الفرملة</span>':'')+
+   '<div class="sh-fing" id="shFing" aria-hidden="true"><svg viewBox="0 0 40 46"><path d="M15 3c2.5 0 4 2 4 4.5V20l2-.6c2-.6 4 .6 4.5 2.4l9 4.7c2 1 3 3.3 2.4 5.5l-2.6 9A6 6 0 0 1 28.5 45H18a6 6 0 0 1-4.7-2.3L3.6 30c-1.4-1.8-1-4.4.8-5.7 1.7-1.2 4-.9 5.4.6l1.2 1.3V7.5C11 5 12.5 3 15 3z" fill="#fff" stroke="#1c2430" stroke-width="2.2" stroke-linejoin="round"/></svg></div>'+
+   '<div class="sh-bar"><button class="btn" id="shPlay" type="button"></button><button class="btn" id="shAgain" type="button">⟲ من الأول</button><div class="sh-prog"><i id="shProg"></i></div><button class="btn pri" id="shTry" type="button">جرّب بنفسك ✋</button></div>'+
+  '</div>';
+ $('#shFace').appendChild(gFaceEl);
+ SH.moved=[];DEVS[i].forEach(id=>{const d=$('#'+id);const dev=d&&d.closest('.dev');if(!dev)return;const mk=document.createComment('sh');dev.parentNode.insertBefore(mk,dev);SH.moved.push([dev,mk]);$('#shCtl').appendChild(dev);});
+ $('#shCtl').hidden=!SH.moved.length;
+ shLast=0;requestAnimationFrame(shFrame);shRun();
+}
+function shLeave(){SH.gen++;SH.i=-1;shZw=0;{const pf=$('.pf');if(pf)pf.style.zoom='';}SH.moved.forEach(([d,m])=>{m.parentNode.insertBefore(d,m);m.remove();});SH.moved=[];gFaceHome();shS().innerHTML='';}
+shS().addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
+ if(t.id==='shPlay'){if(SH.mode==='try'){SH.mode='play';shRun();}else{SH.paused=!SH.paused;shBtns();}}
+ else if(t.id==='shAgain'){SH.mode='play';shRun();}
+ else if(t.id==='shTry')shTry();
+ else if(t.id==='shBack'){shLeave();GUI.ex=-1;GUI.view='show';guiSave();guideRender();}
+ else if(t.id==='shSteps'){shLeave();GUI.view='steps';GUI.step=0;guiSave();guideRender();}});
+/* the person touches a control themselves: stop the video and hand over */
+shS().addEventListener('pointerdown',e=>{if(SH.auto||SH.mode==='try')return;if(e.target.closest('.sh-bar,.g-bar'))return;if(e.target.closest('.pf,.sh-ctl,[data-k]'))shTry();},true);
+guiLoad();setMode(GUI.guided);
 })();
 </script>
 <!--simtour:start-->
@@ -2531,7 +2680,7 @@ async function openEx(i){
  if(g&&g.guided===false){const mb=D.querySelector('#modeBtn');if(mb)mb.click();await sleep(80);}
  if(g&&g.ex===i)return;
  if(g&&g.ex>=0){const b=D.querySelector('#gBack');if(b)b.click();await sleep(80);}
- const c=D.querySelector('#gCards [data-ex="'+i+'"]');if(c)c.click();await sleep(120);
+ const c=D.querySelector('#gCards [data-ex="'+i+'"]');{const gg=gui();if(gg){gg.view='steps';gg.keepView=1;}}if(c)c.click();await sleep(120);
 }
 async function runOps(ops,mode){
  for(const op of ops||[]){
