@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="scada.css?v=20261028s1">
 <script src="scada.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -29,29 +30,31 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>من محطة واحدة إلى خادم وعملاء</h2>
-<p>أبسط منظومة <b>محطة واحدة (Single station)</b>: لوحة تشغيل أو حاسوب يتصل بالـ PLC ويعرض ويسجّل وحده. عندما يكبر المصنع نفصل الأدوار:</p>
-<ul><li><b>الخادم (Server):</b> يتصل بالـ PLCs، ويجمع الوسوم، ويولّد الإنذارات، ويؤرشف البيانات. هو قلب المنظومة.</li>
-<li><b>العميل (Client):</b> شاشة تشغيل لا تتصل بالـ PLC مباشرة، بل تأخذ كل شيء من الخادم.</li>
-<li><b>عميل الويب (Web client):</b> متصفح عادي على حاسوب أو جهاز لوحي يعرض الشاشات دون تثبيت برنامج.</li></ul>
-<div class="tblw"><table class="tbl"><thead><tr><th>المنصة</th><th>الخادم</th><th>العملاء</th></tr></thead><tbody>
-<tr><td>WinCC Unified PC</td><td>Runtime على حاسوب صناعي</td><td>متصفحات ويب (HTML5/SVG)؛ عدد العملاء مرتبط بالترخيص</td></tr>
-<tr><td>Unified Comfort Panel</td><td>اللوحة نفسها</td><td>اللوحة، ويمكن فتح شاشاتها من متصفح بحسب الإعداد والترخيص</td></tr>
-<tr><td>Ignition 8.x</td><td>Gateway</td><td>Perspective (ويب) و Vision؛ الترخيص لا يحدّ عدد العملاء والوسوم</td></tr>
-<tr><td>FactoryTalk View SE / Optix</td><td>خادم HMI وخادم بيانات</td><td>عملاء مثبّتون أو ويب بحسب المنتج</td></tr></tbody></table></div>
-<div class="box key"><b>لماذا الويب؟</b> لأن تحديث الشاشات يتم مرة واحدة في الخادم، فيرى كل العملاء النسخة الجديدة فورًا، دون تثبيت شيء على كل حاسوب. هذا من أهم أسباب انتقال Siemens من WinCC Classic إلى Unified.</div>
+  <div class="tiles"><div class="tile"><span class="ic">🗄️</span><b>الخادم</b><span>يتصل بالـ PLCs ويؤرشف وينذر</span></div><div class="tile"><span class="ic">🖥️</span><b>العميل</b><span>يأخذ كل شيء من الخادم</span></div><div class="tile"><span class="ic">🌐</span><b>عميل الويب</b><span>متصفح بلا تثبيت</span></div></div>
+  <ul class="fx">
+    <li><b>Unified PC</b><span>عملاء ويب حسب الترخيص</span></li>
+    <li><b>Ignition</b><span>Gateway · عملاء ووسوم بلا حد</span></li>
+    <li><b>FactoryTalk SE / Optix</b><span>خادم HMI + خادم بيانات</span></li>
+  </ul>
+  <div class="box key">الويب: تحدّث الشاشات <b>مرة واحدة</b> في الخادم فيراها الجميع.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>OPC UA: اللغة المشتركة</h2>
-<p><b>OPC UA</b> معيار اتصال صناعي مستقل عن الشركة المصنّعة (IEC 62541). يعمل بنموذج خادم وعميل على المنفذ <span class="mono">4840</span> افتراضيًا، ويحمل مع القيمة <b>جودتها (Quality)</b> و<b>طابعها الزمني</b>، ويدعم التشفير والشهادات.</p>
-<ul><li><b>من الـ PLC إلى SCADA:</b> الـ S7-1500 فيها خادم OPC UA مدمج، فيمكن لأي SCADA (حتى لو لم تكن من Siemens) أن تقرأ وسومها.</li>
-<li><b>من SCADA إلى MES/ERP:</b> تعمل WinCC Unified و Ignition خادمَي OPC UA ينقلان عدد الإنتاج وحالة الآلات إلى نظام إدارة التصنيع <b>MES</b>.</li>
-<li><b>الأمان:</b> اختر سياسة أمان بتوقيع وتشفير (Sign &amp; Encrypt) وتبادل الشهادات بين الطرفين، ولا تفعّل الاتصال المجهول دون تشفير إلا في مختبر.</li></ul>
-<div class="box key"><b>كيف تعرف المشكلة؟</b> إذا رفض العميل الاتصال برسالة عن الشهادة، فالشهادة لم تُعتمد كجهة موثوقة (Trusted) عند الطرف الآخر. وإذا اتصل وظهرت القيم بجودة Bad، فالخادم متصل بالعميل لكنه فاقد الاتصال بمصدر البيانات.</div>
+  <p class="bf"><span class="ic">🔗</span><span>OPC UA: معيار مستقل عن المورّد، المنفذ <span class="mono">4840</span>، والقيمة مع <b>جودتها ووقتها</b>.</span></p>
+  <ul class="fx">
+    <li><b>PLC ← SCADA</b><span>S7-1500 فيها خادم مدمج</span></li>
+    <li><b>SCADA ← MES</b><span>عدد الإنتاج وحالة الآلات</span></li>
+    <li><b>الأمان</b><span>Sign &amp; Encrypt + شهادات</span></li>
+  </ul>
+  <ul class="fx">
+    <li><b>رفض بسبب الشهادة</b><span>لم تُعتمد Trusted عند الطرف الآخر</span></li>
+    <li><b>قيم بجودة Bad</b><span>الخادم فقد مصدر البيانات</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>الخادم الاحتياطي (Redundancy)</h2>
-<p>إذا تعطّل الخادم الوحيد أعمى المشغّلين عن المصنع كله، حتى لو استمرت الـ PLCs في العمل. الحل <b>خادمان مترادفان</b>: أحدهما فعّال (Primary) والآخر احتياطي (Standby)، يتزامنان باستمرار.</p>
-<svg viewBox="0 0 640 300" role="img" aria-label="خادمان مترادفان وعملاء وشبكة PLC و MES" style="width:100%;max-width:640px;direction:ltr">
+  <p class="bf"><span class="ic">🔁</span><span>خادمان: <b>فعّال</b> و<b>احتياطي</b> يتزامنان دائمًا.</span></p>
+  <svg viewBox="0 0 640 300" role="img" aria-label="خادمان مترادفان وعملاء وشبكة PLC و MES" style="width:100%;max-width:640px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
 <rect x="20" y="14" width="600" height="56" rx="8" fill="none" stroke="#7a7a7a" stroke-dasharray="6 4"/>
 <text x="320" y="34" font-weight="700">IT / MES</text><text x="320" y="54" font-size="11">OPC UA :4840 via DMZ + firewall</text>
@@ -67,36 +70,32 @@
 <text x="320" y="271">PLC network: S7-1500 192.168.0.1 + drives + remote I/O</text>
 <path d="M150 222V246M490 222V246M595 140V246" stroke="#7b2cbf" stroke-width="2"/>
 </g></svg>
-<ul><li><b>رابط التزامن:</b> ينسخ الإنذارات وحالات التأكيد والأرشيف بين الخادمين، فلا تضيع البيانات عند التحويل.</li>
-<li><b>التحويل (Switchover):</b> عند تعطّل الفعّال يتولّى الاحتياطي خلال ثوانٍ، ويعيد العملاء الاتصال تلقائيًا إذا وُجّهوا إلى العنوان المشترك أو إلى الخادمين معًا.</li>
-<li><b>إعادة التزامن:</b> عند عودة الخادم المعطّل يكمل الفجوة في أرشيفه من الخادم الآخر.</li></ul>
-<div class="tblw"><table class="tbl"><thead><tr><th>النوع</th><th>حالة الاحتياطي</th><th>زمن التحويل</th></tr></thead><tbody>
-<tr><td>Hot standby</td><td>يعمل ومتزامن دائمًا</td><td>ثوانٍ</td></tr>
-<tr><td>Warm standby</td><td>يعمل لكن يحمّل الحالة عند التحويل</td><td>دقيقة تقريبًا</td></tr>
-<tr><td>Cold standby</td><td>حاسوب جاهز مطفأ</td><td>دقائق إلى ساعات، يدويًا</td></tr></tbody></table></div>
-<div class="box key"><b>ملاحظات عملية:</b> WinCC Classic يدعم الخادم الاحتياطي منذ زمن، وأضافت Siemens دعمه في إصدارات WinCC Unified الحديثة بترخيص خاص، فتحقق من الإصدار قبل التصميم. Ignition يدعم بوابة رئيسية واحتياطية (Master / Backup). وتكرار خادم SCADA <b>شيء</b> وتكرار الـ PLC (مثل S7-1500R/H) <b>شيء آخر</b>؛ لكلٍّ منهما هدفه.</div>
+  <ul class="lsec scale">
+    <li><b>Hot</b><span class="bar"><i style="width:5%"></i><em>ثوانٍ</em></span></li>
+    <li><b>Warm</b><span class="bar"><i style="width:25%"></i><em>~دقيقة</em></span></li>
+    <li class="danger"><b>Cold</b><span class="bar"><i style="width:100%"></i><em>دقائق إلى ساعات</em></span></li>
+  </ul>
+  <p class="tip">رابط التزامن ينسخ الإنذارات والأرشيف، والعائد يكمل الفجوة.</p>
+  <p class="alert">تكرار خادم SCADA <b>غير</b> تكرار الـ PLC (S7-1500R/H). وتحقق من دعم إصدار Unified.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>الشبكة المقسّمة وأمنها</h2>
-<p>المعيار <b>IEC 62443</b> يقسم المصنع إلى <b>مناطق (Zones)</b> تربطها <b>قنوات (Conduits)</b> محكومة. وبحسب نموذج Purdue الشائع:</p>
-<div class="tblw"><table class="tbl"><thead><tr><th>المستوى</th><th>ما فيه</th><th>القاعدة</th></tr></thead><tbody>
-<tr><td>4 (IT)</td><td>ERP والبريد والإنترنت</td><td>لا اتصال مباشر بالـ PLC أبدًا</td></tr>
-<tr><td>3.5 (DMZ)</td><td>خادم وسيط، تحديثات، نسخة من الأرشيف</td><td>جدار حماية من الجهتين</td></tr>
-<tr><td>3 (MES / SCADA)</td><td>خوادم SCADA والمؤرشف</td><td>يُفتح فقط ما يلزم (مثل OPC UA)</td></tr>
-<tr><td>2 / 1 / 0</td><td>عملاء HMI، الـ PLCs، الحساسات والمحركات</td><td>شبكة تحكم معزولة</td></tr></tbody></table></div>
-<ul><li><b>الدخول عن بُعد:</b> عبر VPN إلى حاسوب وسيط (Jump host) مع مصادقة ثنائية، لا بفتح منفذ الـ SCADA على الإنترنت.</li>
-<li><b>الخطأ الأخطر:</b> حاسوب تشغيل فيه بطاقتا شبكة، واحدة على شبكة المكاتب وأخرى على شبكة الـ PLC؛ هذا جسر يتخطى جدار الحماية.</li></ul>
+  <ul class="fx">
+    <li><b>4 · IT</b><span>لا اتصال بالـ PLC أبدًا</span></li>
+    <li><b>3.5 · DMZ</b><span>جدار حماية من الجهتين</span></li>
+    <li><b>3 · SCADA</b><span>افتح ما يلزم فقط</span></li>
+    <li><b>2 / 1 / 0</b><span>شبكة تحكم معزولة</span></li>
+  </ul>
+  <p class="tip">عن بُعد: VPN ← Jump host + مصادقة ثنائية.</p>
+  <p class="alert">حاسوب ببطاقتين على المكاتب والـ PLC = <b>جسر يتخطى الجدار</b>.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>الحافة والسحابة</h2>
-<ul><li><b>الحافة (Edge):</b> جهاز قريب من الآلة (مثل Siemens Industrial Edge أو Ignition Edge) يجمع البيانات ويحلّلها ويرسلها، غالبًا عبر <b>MQTT</b> أو OPC UA.</li>
-<li><b>السحابة:</b> مناسبة للتحليل وتقارير عدة مصانع والصيانة التنبّؤية، <b>وليست</b> مكانًا للتحكم: تأخير الإنترنت وانقطاعه لا يُقبلان في تشغيل مضخة.</li>
-<li><b>القاعدة:</b> التحكم في الـ PLC، والتشغيل في SCADA المحلية، والتحليل حيث تشاء.</li></ul>
-<div class="box key"><b>قبل اختيار المعمارية اسأل:</b> كم وسمًا؟ كم عميلًا متزامنًا؟ كم دقيقة توقّف يتحملها الخط إذا تعطل الخادم؟ من يحتاج البيانات خارج المصنع؟ الإجابات تحدّد الترخيص والتكرار والشبكة.</div>
-<div class="box key"><b>على المحاكي:</b> اضبط زوج الخادمين ورابط التزامن ووجّه عميل الويب إلى العنوان المشترك، ثم افصل الخادم الرئيسي وشاهد الاحتياطي يتولّى والعملاء يعودون والبيانات تصل إلى MES عبر OPC UA. <a class="btn pri" href="scada.html#arch" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+  <div class="vs"><div class="side"><span class="ic">📦</span><b>الحافة</b><span>قرب الآلة · MQTT أو OPC UA</span></div><i>×</i><div class="side"><span class="ic">☁️</span><b>السحابة</b><span>تحليل وتقارير · <b>لا تحكم</b></span></div></div>
+  <ol class="steps"><li>التحكم: PLC</li><li>التشغيل: SCADA محلية</li><li>التحليل: حيث تشاء</li></ol>
+  <p class="tip">اسأل: كم وسمًا؟ كم عميلًا؟ كم دقيقة توقّف تُحتمل؟ من يحتاج البيانات خارجًا؟</p>
+  <div class="box key"><b>على المحاكي:</b> افصل الخادم الرئيسي وشاهد الاحتياطي يتولّى. <a class="btn pri" href="scada.html#arch" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 6 من 7 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
