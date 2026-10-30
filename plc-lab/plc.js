@@ -1862,11 +1862,7 @@ function Player(host, o){
     if (!el || !el.getBoundingClientRect) return;
     const red = reduced();
     const r0 = el.getBoundingClientRect(), vh = window.innerHeight, bh = bar.getBoundingClientRect().height;
-<<<<<<< HEAD
     if (!o.loop && (r0.top < bh + 8 || r0.bottom > vh - 8)) { const y = window.scrollY + r0.top - Math.max(bh + 12, (vh - r0.height) / 2); window.scrollTo({top:Math.max(0, y), behavior:red ? 'auto' : 'smooth'}); await P.hold(gen, red ? 60 : 380); }
-=======
-    if (r0.top < bh + 8 || r0.bottom > vh - 8) { const y = window.scrollY + r0.top - Math.max(bh + 12, (vh - r0.height) / 2); window.scrollTo({top:Math.max(0, y), behavior:red ? 'auto' : 'smooth'}); await P.hold(gen, red ? 60 : 380); }
->>>>>>> origin/main
     const r = el.getBoundingClientRect(), hr = host.getBoundingClientRect();
     const x = r.left - hr.left + r.width / 2, y = r.top - hr.top + Math.min(r.height / 2, 40);
     fing.classList.toggle('mv', !red && fing.classList.contains('show'));
