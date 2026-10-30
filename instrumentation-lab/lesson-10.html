@@ -16,6 +16,7 @@
 <script src="instr.js?v=20261030r1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b4">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -37,59 +38,61 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>اللوب تشيك (Loop check)</h2>
-  <p>قبل تشغيل أي مصنع جديد (أو بعد تعديل)، كل لوب بيتشيّك من الحساس لحد شاشة الـ HMI: إن السلك رايح للمكان الصح، والرينج مظبوط، والإنذارات شغّالة.</p>
-  <ol class="steps-l">
-    <li><b>فحص بصري:</b> الجهاز المركّب هو نفس التاج والموديل والرينج اللي في الـ Datasheet، الجلاندات مقفولة، الشيلد متأرّض صح.</li>
-    <li><b>فحص الأسلاك:</b> Continuity لكل سلك، وعزل بين الأسلاك والأرضي (بالميجر <b>والأجهزة مفصولة</b>).</li>
-    <li><b>حقن إشارة:</b> بالكاليبريتور طبّق 0 و 50 و 100 % (ضغط حقيقي أو Simulate) واتأكد إن الـ PLC والـ HMI بيعرضوا نفس القيمة.</li>
-    <li><b>الإنذارات والإنترلوك:</b> اوصل لنقط الـ High و Low واتأكد إن الإنذار طلع والإنترلوك اشتغل.</li>
-    <li><b>للصمامات:</b> ابعت 0 و 25 و 50 و 75 و 100 % وشوف الصمام بيفتح صح وإشارة الـ Feedback راجعة.</li>
-    <li><b>سجّل وامضي:</b> Loop check sheet بتوقيع الإنسترومنتيشن والأوبريشن.</li>
+  <p class="bf"><span class="ic">🔁</span><span>قبل التشغيل: كل لوب يتشيّك <b>من الحساس لحد الـ HMI</b>.</span></p>
+  <ol class="steps">
+    <li>فحص بصري: التاج والرينج</li>
+    <li>Continuity + ميجر (الأجهزة مفصولة)</li>
+    <li>حقن 0 · 50 · 100 %</li>
+    <li>الإنذارات والإنترلوك</li>
+    <li>الصمام 0 → 100 % + Feedback</li>
+    <li>سجّل وامضي</li>
   </ol>
+  <p class="alert">الميجر <b>والأجهزة متوصلة</b> يحرقها.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>الكاليبريتور: Source و Measure و Simulate</h2>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>الوضع</th><th>بيعمل إيه</th><th>بتستخدمه إمتى</th></tr></thead>
-    <tbody>
-      <tr><td><b>Measure</b></td><td>بيقيس الـ mA (وغالبًا بيدّي 24V للوب)</td><td>تقرا خرج الترانسميتر وإنت بتعايره</td></tr>
-      <tr><td><b>Source</b></td><td>بيطلّع mA بنفسه (Active)</td><td>تختبر كارت PLC أو صمام: "ابعت 12 mA وشوف الـ PLC بيقول 50 %"</td></tr>
-      <tr><td><b>Simulate</b></td><td>بيتصرف كأنه ترانسميتر 2 سلك (Passive) واللوب هو اللي بيغذّيه</td><td>تفك الترانسميتر وتحط الكاليبريتور مكانه وتتحكم في التيار</td></tr>
-    </tbody></table></div>
-  <p>وفيه كاليبريتورات ضغط (بطلمبة يدوي)، وحرارة (Dry block أو بتحاكي mV ثيرموكبل و Ω الـ PT100)، وأوزان معايرة للموازين. <b>والكاليبريتور نفسه لازم يكون له شهادة معايرة سارية</b>، ودقته أحسن من الجهاز اللي بتعايره بـ 4 مرات على الأقل (TUR 4:1).</p>
+  <div class="tiles">
+    <div class="tile"><span class="ic">📏</span><b>Measure</b><span>يقرا الـ mA من الترانسميتر</span></div>
+    <div class="tile"><span class="ic">⚡</span><b>Source</b><span>يطلّع mA: تختبر كارت أو صمام</span></div>
+    <div class="tile"><span class="ic">🎭</span><b>Simulate</b><span>يقوم مكان ترانسميتر 2 سلك</span></div>
+  </div>
+  <p class="tip">الكاليبريتور نفسه: <b>شهادة سارية</b> ودقة أحسن <b>4 مرات</b> (TUR 4:1).</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>المعايرة على 5 نقط</h2>
-  <p>بنطبّق 0 و 25 و 50 و 75 و 100 % من الرينج (وأحيانًا طالع ونازل عشان الـ Hysteresis)، ونحسب الغلط كنسبة من السبان:</p>
+  <div class="ladder"><span class="u">0%</span><span class="u">25%</span><span class="u on">50%</span><span class="u">75%</span><span class="u">100%</span></div>
   <div class="formula">Error % = (mA المقاس − mA المفروض) ÷ 16 × 100</div>
-  <ul>
-    <li><b>As-found:</b> القراية زي ما لقيتها <b>قبل</b> أي ظبط. مهمة جدًا: بتقول للجودة هل المنتج اللي اتعمل الفترة اللي فاتت كان مظبوط.</li>
-    <li><b>As-left:</b> القراية <b>بعد</b> الظبط. لازم تبقى جوه السماحية.</li>
-    <li><b>الظبط:</b> Zero الأول (عند LRV) وبعدين Span (عند URV)، وارجع اتأكد من الزيرو لأن بعض الأجهزة الاتنين بيأثروا في بعض.</li>
-  </ul>
+  <div class="vs">
+    <div class="side"><b>As-found</b><span>قبل أي ظبط</span></div>
+    <i>←</i>
+    <div class="side"><b>As-left</b><span>بعد الظبط: جوه السماحية</span></div>
+  </div>
+  <p class="tip">Zero الأول ← Span ← ارجع اتأكد من الـ Zero.</p>
   <div class="wd"><h3>عاير PT-101</h3><div id="cal"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>طريقة التفكير في أي عطل</h2>
-  <ol class="steps-l">
-    <li><b>صدّق الأوبريتور بس اتأكد:</b> قارن القراية بحاجة مستقلة (جيج، ترمومتر، زجاجة مستوى).</li>
-    <li><b>قسّم اللوب نصّين:</b> قيس الـ mA. لو التيار صح والـ PLC غلط ⇐ المشكلة في الكارت أو السكيلنج. لو التيار غلط ⇐ في الترانسميتر أو الحساس أو العملية.</li>
-    <li><b>اقرا الرقم:</b> 0 mA = لوب مفتوح. أكتر من 21 = قصر أو Fail. ثابت والعملية بتتغيّر = صمام عزل / خط مسدود / باور ضعيف. بيتهز = نويز.</li>
-    <li><b>شوف إيه اللي اتغيّر:</b> صيانة امبارح؟ مطرة؟ إنفرتر جديد؟ لحام؟</li>
-    <li><b>صلّح وسجّل</b> السبب، مش العَرَض بس.</li>
+  <ol class="steps">
+    <li>قارن بقراية مستقلة</li>
+    <li>قيس الـ mA: قسّم اللوب</li>
+    <li>اقرا الرقم</li>
+    <li>إيه اللي اتغيّر؟</li>
+    <li>صلّح وسجّل السبب</li>
   </ol>
+  <ul class="fx">
+    <li><b class="mono">0 mA</b><span>لوب مفتوح</span></li>
+    <li><b class="mono">&gt; 21 mA</b><span>قصر أو Fail</span></li>
+    <li><b>ثابت مش بيتحرك</b><span>صمام عزل · خط مسدود · باور ضعيف</span></li>
+    <li><b>بيتهز</b><span>نويز</span></li>
+    <li class="ok"><b>الـ mA صح والـ PLC غلط</b><span>الكارت أو السكيلنج</span></li>
+  </ul>
   <div class="wd"><h3>لعبة: أعطال الموقع</h3><div id="game"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>جاوب على 5 من 6 صح على الأقل.</p>
   <div id="quiz"></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="sf">
   <h2 id="sf"><span class="k">★</span>الامتحان النهائي</h2>
   <p>15 سؤال من كل الكورس. محتاج <b>12 صح</b> على الأقل. لو عدّيت، وكمان خلّصت كل التجارب في الدروس، الشهادة هتظهر في صفحة الكورس.</p>

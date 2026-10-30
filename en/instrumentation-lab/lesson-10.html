@@ -17,6 +17,7 @@
 <script src="/en/instrumentation-lab/instr.js?v=20261030r1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b4">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -38,59 +39,61 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>The loop check</h2>
-  <p>Before any new plant starts up (or after a modification), every loop is checked from the sensor to the HMI screen: that the wiring goes to the right place, the range is right, and the alarms work.</p>
-  <ol class="steps-l">
-    <li><b>Visual inspection:</b> the installed device matches the tag, model and range in the datasheet, the glands are tight, the shield is grounded correctly.</li>
-    <li><b>Wiring check:</b> continuity of every wire, and insulation between wires and earth (with an insulation tester, <b>with the devices disconnected</b>).</li>
-    <li><b>Signal injection:</b> with the calibrator apply 0, 50 and 100 % (real pressure or simulate) and check that the PLC and HMI show the same value.</li>
-    <li><b>Alarms and interlocks:</b> reach the high and low points and check that the alarm appears and the interlock operates.</li>
-    <li><b>For valves:</b> send 0, 25, 50, 75 and 100 % and check the valve opens correctly and the feedback signal comes back.</li>
-    <li><b>Record and sign:</b> a loop check sheet signed by instrumentation and operations.</li>
+  <p class="bf"><span class="ic">🔁</span><span>Before start-up, every loop is checked <b>from sensor to HMI</b>.</span></p>
+  <ol class="steps">
+    <li>Visual: tag and range</li>
+    <li>Continuity + megger (devices disconnected)</li>
+    <li>Inject 0 · 50 · 100 %</li>
+    <li>Alarms and interlocks</li>
+    <li>Valve 0 → 100 % + feedback</li>
+    <li>Record and sign</li>
   </ol>
+  <p class="alert">A megger with <b>devices connected</b> burns them.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>The calibrator: source, measure and simulate</h2>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>Mode</th><th>What it does</th><th>When you use it</th></tr></thead>
-    <tbody>
-      <tr><td><b>Measure</b></td><td>Measures mA (and often supplies 24V to the loop)</td><td>Reading the transmitter output while you calibrate it</td></tr>
-      <tr><td><b>Source</b></td><td>Drives the mA itself (active)</td><td>Testing a PLC card or a valve: "send 12 mA and check the PLC says 50 %"</td></tr>
-      <tr><td><b>Simulate</b></td><td>Acts like a 2-wire transmitter (passive), powered by the loop</td><td>Disconnect the transmitter, put the calibrator in its place and control the current</td></tr>
-    </tbody></table></div>
-  <p>There are also pressure calibrators (with a hand pump), temperature calibrators (a dry block, or simulating thermocouple mV and PT100 Ω), and test weights for scales. <b>The calibrator itself must have a valid calibration certificate</b>, and be at least 4 times more accurate than the device you are calibrating (TUR 4:1).</p>
+  <div class="tiles">
+    <div class="tile"><span class="ic">📏</span><b>Measure</b><span>Reads the transmitter's mA</span></div>
+    <div class="tile"><span class="ic">⚡</span><b>Source</b><span>Outputs mA: test a card or valve</span></div>
+    <div class="tile"><span class="ic">🎭</span><b>Simulate</b><span>Stands in for a 2-wire transmitter</span></div>
+  </div>
+  <p class="tip">The calibrator itself: <b>valid certificate</b> and <b>4× better</b> accuracy (TUR 4:1).</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>5-point calibration</h2>
-  <p>We apply 0, 25, 50, 75 and 100 % of range (sometimes going up and down to check hysteresis), and calculate the error as a percentage of span:</p>
+  <div class="ladder"><span class="u">0%</span><span class="u">25%</span><span class="u on">50%</span><span class="u">75%</span><span class="u">100%</span></div>
   <div class="formula">Error % = (measured mA − expected mA) ÷ 16 × 100</div>
-  <ul>
-    <li><b>As-found:</b> the reading as you found it, <b>before</b> any adjustment. Very important: it tells quality whether the product made in the previous period was within spec.</li>
-    <li><b>As-left:</b> the reading <b>after</b> adjustment. It must be within tolerance.</li>
-    <li><b>Adjustment:</b> zero first (at LRV), then span (at URV), then go back and check the zero, because on some devices the two interact.</li>
-  </ul>
+  <div class="vs">
+    <div class="side"><b>As-found</b><span>Before any adjustment</span></div>
+    <i>→</i>
+    <div class="side"><b>As-left</b><span>After adjustment: within tolerance</span></div>
+  </div>
+  <p class="tip">Zero first → Span → recheck Zero.</p>
   <div class="wd"><h3>Calibrate PT-101</h3><div id="cal"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>How to think about any fault</h2>
-  <ol class="steps-l">
-    <li><b>Believe the operator, but verify:</b> compare the reading with something independent (a gauge, a thermometer, a sight glass).</li>
-    <li><b>Split the loop in two:</b> measure the mA. If the current is right and the PLC is wrong ⇒ the problem is in the card or the scaling. If the current is wrong ⇒ it is in the transmitter, the sensor or the process.</li>
-    <li><b>Read the number:</b> 0 mA = open loop. Above 21 = a short or a fail. Steady while the process changes = isolation valve / blocked line / weak supply. Unstable = noise.</li>
-    <li><b>Ask what has changed:</b> maintenance yesterday? Rain? A new VFD? Welding?</li>
-    <li><b>Fix and record</b> the cause, not just the symptom.</li>
+  <ol class="steps">
+    <li>Compare with an independent reading</li>
+    <li>Measure mA: split the loop</li>
+    <li>Read the number</li>
+    <li>What changed?</li>
+    <li>Fix and record the cause</li>
   </ol>
+  <ul class="fx">
+    <li><b class="mono">0 mA</b><span>Open loop</span></li>
+    <li><b class="mono">&gt; 21 mA</b><span>Short or fail</span></li>
+    <li><b>Stuck, not moving</b><span>Isolation valve · blocked line · weak supply</span></li>
+    <li><b>Jumping</b><span>Noise</span></li>
+    <li class="ok"><b>mA right, PLC wrong</b><span>Card or scaling</span></li>
+  </ul>
   <div class="wd"><h3>Game: field faults</h3><div id="game"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
   <p>Get at least 5 of 6 right.</p>
   <div id="quiz"></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="sf">
   <h2 id="sf"><span class="k">★</span>Final exam</h2>
   <p>15 questions from the whole course. You need at least <b>12 correct</b>. If you pass, and you have also finished every experiment in the lessons, the certificate appears on the course page.</p>
