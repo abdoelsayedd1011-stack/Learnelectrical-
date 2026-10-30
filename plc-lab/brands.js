@@ -710,6 +710,7 @@ PL.brandSim = function(host, cfg){
   /* ---------- select exercise ---------- */
   function select(j){
     if (demo) PL.preview.stop();
+    if (cfg.onSelect) cfg.onSelect(j);
     k = j; ex = exs[j]; cols = ex.cols || 5; sel = null; backup = null; newTagOpen = false;
     const saved = PS.get(ex.key);
     T = (ex.tags || []).map(t => Object.assign({}, t));
@@ -1168,7 +1169,7 @@ PL.brandSim = function(host, cfg){
     lab:a => { const x = (ex.io.inputs || []).concat(ex.io.outputs || []).find(y => y.a === a); return x ? x.label : ''; },
     addr:a => B.short(a, T), xl:s => xlate(B, T, s),
     outro:() => '<b>كده المكنة اشتغلت زي المطلوب.</b> دلوقتي دورك: اكتب البرنامج تحت، ' + (SI ? `اعمل ${L('Download to device')} وبعدين ${L('Monitoring')}` : DV ? `اعمل ${L('Write to PLC')} وحوّل الـ PLC لـ ${L('RUN')}` : `اعمل ${L('Go Online')} ← ${L('Download')} ← ${L('Run Mode')}`) + '، وجرّب بالزراير، وبعدين دوس «اختبر البرنامج».'};
-  PL.preview.attach(pvAd);
+  if (!cfg.demoOnly && !cfg.noPreview) PL.preview.attach(pvAd);
 
   /* deep link: siemens.html#enc opens that exercise */
   const fromHash = () => { const h = decodeURIComponent((location.hash || '').slice(1)), j = exs.findIndex(x => x.key === h); return j; };
@@ -1178,7 +1179,7 @@ PL.brandSim = function(host, cfg){
   const api = {host, preview:pvAd, get demo(){ return !!demo; }, brand:B.id, get ex(){ return ex; }, get prog(){ return prog; }, get tags(){ return T; }, get engine(){ return e; }, get plant(){ return plantSt; }, get mode(){ return mode; }, get plcStr(){ return plcStr; }, exercises:exs,
     select, check, load(def){ prog = ENG.program(def, cols); changed(); }, press, pick(i, r, c){ sel = {i, r, c}; renderLad(); }, setEl(id){ setEl(id); }, lint, download, setMode, key:v => { key = v; },
     tool(a){ const b = toolBox.querySelector(`[data-a="${a}"]`); if (b) b.click(); }, monitoring, il: () => DV ? DVP.il(prog) : null, rungText: i => AR ? AB.rungText(prog[i], T) : null};
-  (PL._bx = PL._bx || []).push(api);
+  if (!cfg.demoOnly) (PL._bx = PL._bx || []).push(api);
   return api;
 };
 
@@ -1515,9 +1516,11 @@ function lbTags(b, x){
 }
 PL.lessonSim = function(host, opt){
   host.classList.add('lbx');
-  host.innerHTML = `<div class="lbx-bar" role="group" aria-label="ماركة الـ PLC"><span class="lbx-l">اشتغل على:</span>${LBOPTS.map(o => `<button type="button" class="lbx-b lbx-${o[0]}" data-b="${o[0]}" aria-pressed="false"><b dir="${o[0] === 'plain' ? 'auto' : 'ltr'}">${o[1]}</b><span dir="${o[0] === 'plain' ? 'auto' : 'ltr'}">${o[2]}</span></button>`).join('')}</div><p class="lbx-note" hidden></p><div class="lbx-in"></div>`;
+  host.innerHTML = `<div class="lbx-bar" role="group" aria-label="ماركة الـ PLC"><span class="lbx-l">اشتغل على:</span>${LBOPTS.map(o => `<button type="button" class="lbx-b lbx-${o[0]}" data-b="${o[0]}" aria-pressed="false"><b dir="${o[0] === 'plain' ? 'auto' : 'ltr'}">${o[1]}</b><span dir="${o[0] === 'plain' ? 'auto' : 'ltr'}">${o[2]}</span></button>`).join('')}</div><p class="lbx-note" hidden></p><section class="lbx-demo"><div class="lbx-h lbx-hw">👀 اتفرج: التمرين شغال قدامك</div><div class="lbx-dm"></div></section><div class="lbx-h lbx-hy">✍️ دورك: اعمل نفس اللي شفته هنا</div><div class="lbx-in"></div>`;
   const bar = $('.lbx-bar', host), note = $('.lbx-note', host);
-  let inner = $('.lbx-in', host), api = null, cur = null;
+  let inner = $('.lbx-in', host), api = null, cur = null, dApi = null, loop = null;
+  const dSec = $('.lbx-demo', host), dHy = $('.lbx-hy', host);
+  let dm = $('.lbx-dm', host);
   function mount(b){
     if (b === cur) return;
     cur = b;
@@ -1532,7 +1535,17 @@ PL.lessonSim = function(host, opt){
     inner.replaceWith(fresh); inner = fresh;
     /* the lesson's column count, and a brand's own way of writing the solution (ex.solB.sie …) */
     const exs = opt.exercises.map(x => { const o = Object.assign({}, x); if (opt.cols && !o.cols) o.cols = opt.cols; if (x.solB && x.solB[use]) o.sol = x.solB[use]; if (x.hintB && x.hintB[use]) o.hint = x.hintB[use]; if (use !== 'plain') o.tags = lbTags(use, x); return o; });
-    api = use === 'plain' ? PL.plainSim(inner, opt) : PL.brandSim(inner, {brand:use, exercises:exs, lesson:opt.lesson});
+    /* «اتفرج فوق، وطبّق تحت»: a display-only copy above plays the exercise's solution on a loop (PL.preview.loop) */
+    if (loop) loop.halt();
+    const dFresh = document.createElement('div'); dFresh.className = 'lbx-dm';
+    dm.replaceWith(dFresh); dm = dFresh;
+    const sync = j => { if (!dApi) return; if (loop) loop.halt(); dApi.select(j); const has = !!opt.exercises[j].sol; dSec.hidden = dHy.hidden = !has; if (loop && has) loop.restart(); };
+    dApi = null; loop = null;
+    const own = x => Object.assign({}, x, {io:Object.assign({}, x.io, {inputs:(x.io.inputs || []).map(i => Object.assign({}, i))})}); /* the copy's switches are its own */
+    dApi = use === 'plain' ? PL.plainSim(dm, Object.assign({}, opt, {exercises:opt.exercises.map(own), demoOnly:true})) : PL.brandSim(dm, {brand:use, exercises:exs.map(own), lesson:opt.lesson, demoOnly:true});
+    api = use === 'plain' ? PL.plainSim(inner, Object.assign({}, opt, {noPreview:true, onSelect:sync})) : PL.brandSim(inner, {brand:use, exercises:exs, lesson:opt.lesson, noPreview:true, onSelect:sync});
+    loop = PL.preview.loop(dApi.preview, dSec);
+    sync(Math.max(0, opt.exercises.findIndex(x => x.key === api.ex.key)));
   }
   bar.addEventListener('click', ev => { const t = ev.target.closest('[data-b]'); if (!t) return; lbSet(t.dataset.b); LBX.forEach(f => f(t.dataset.b)); });
   LBX.push(mount);
