@@ -19,6 +19,7 @@
 <script src="brands.js?v=20261030w1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b8">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -39,55 +40,52 @@
 <section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>من التانك للرقم</h2>
-  <ol>
-    <li><b>الترانسميتر</b> بيقيس (مثلاً مستوى ⁦0⁠–⁠4⁩ متر) ويطلّع تيار: 4mA = فاضي، 20mA = مليان.</li>
-    <li><b>كارت AI</b> فيه ADC بيحوّل التيار لرقم. في Siemens مثلاً: 4mA ⇐ <b>0</b>، و 20mA ⇐ <b>27648</b>.</li>
-    <li><b>البرنامج</b> بيحوّل الرقم لمتر أو % (Scaling) ويستخدمه في المقارنات والإنذارات.</li>
+  <ol class="steps">
+    <li>ترانسميتر: 4–20 mA</li>
+    <li>كارت AI: 0 → 27648</li>
+    <li class="on">Scaling: متر أو %</li>
   </ol>
-  <p>لو مش فاكر ليه بنبدأ من 4 مش صفر، ارجع لـ <a href="../instrumentation-lab/lesson-02.html">درس إشارة ⁦4⁠–⁠20mA⁩ في كورس الإنسترومنتيشن</a>.</p>
   <div class="formula">Value = Lo + Raw ÷ 27648 × (Hi − Lo)</div>
   <div class="wd"><h3>سلسلة الإشارة</h3><div id="chain"></div></div>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>التيار</th><th>Raw (Siemens)</th><th>المستوى ⁦0⁠–⁠4 m⁩</th></tr></thead>
-    <tbody>
-      <tr><td>4 mA</td><td class="mono">0</td><td>0 m</td></tr>
-      <tr><td>8 mA</td><td class="mono">6912</td><td>1 m</td></tr>
-      <tr><td>12 mA</td><td class="mono">13824</td><td>2 m</td></tr>
-      <tr><td>16 mA</td><td class="mono">20736</td><td>3 m</td></tr>
-      <tr><td>20 mA</td><td class="mono">27648</td><td>4 m</td></tr>
-    </tbody></table></div>
+  <ul class="scale">
+    <li><bdi dir="ltr">4 mA · 0</bdi><div class="bar"><i style="width:2%"></i><em><bdi dir="ltr">0 m</bdi></em></div></li>
+    <li><bdi dir="ltr">8 mA · 6912</bdi><div class="bar"><i style="width:25%"></i><em><bdi dir="ltr">1 m</bdi></em></div></li>
+    <li><bdi dir="ltr">12 mA · 13824</bdi><div class="bar"><i style="width:50%"></i><em><bdi dir="ltr">2 m</bdi></em></div></li>
+    <li><bdi dir="ltr">16 mA · 20736</bdi><div class="bar"><i style="width:75%"></i><em><bdi dir="ltr">3 m</bdi></em></div></li>
+    <li><bdi dir="ltr">20 mA · 27648</bdi><div class="bar"><i style="width:100%"></i><em><bdi dir="ltr">4 m</bdi></em></div></li>
+  </ul>
+  <p class="tip">ليه 4 مش صفر؟ <a href="../instrumentation-lab/lesson-02.html">درس إشارة 4–20mA</a>.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>تمرين التحويل</h2>
-  <p>اكتب الإجابة بالرقم. مسموح بفرق صغير في التقريب.</p>
+  <p class="tip">اكتب الإجابة بالرقم، والتقريب مسموح.</p>
   <div class="wd"><h3>Raw ↔ قيمة ↔ mA</h3><div id="drill"></div></div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>في البرنامج: SCL والمقارنة</h2>
-  <p>كل شركة ليها تعليمة: <b>NORM_X + SCALE_X</b> في TIA Portal، <b>SCP</b> في Allen-Bradley، أو تكتب القانون بنفسك بعمليات حسابية. في المحاكي فيه بلوك <b>Scale</b> بياخد <span class="mono">IW64</span> ويطلّع القيمة في <span class="mono">MW10</span> بالرينج اللي تحدده.</p>
+  <ul class="fx">
+    <li><b>TIA Portal</b><span>NORM_X + SCALE_X</span></li>
+    <li><b>Allen-Bradley</b><span>SCP</span></li>
+    <li><b>المحاكي</b><span>Scale: IW64 ⇐ MW10</span></li>
+  </ul>
   <div class="ladfig" id="fScl"></div>
-  <div class="box key"><b>الهيستيريسيس (Hysteresis):</b> لو الطلمبة بتشتغل تحت 20% وبتفصل فوق 20%، هتفضل تفصل وتوصل كل ثانية وتحرق الكونتاكتور. الصح: <b>تشتغل عند 20% وتفصل عند 80%</b>، وده بيتعمل بـ Set عند الحد الواطي و Reset عند الحد العالي.</div>
+  <div class="box key"><b>Hysteresis:</b> تشتغل عند <b>20%</b> وتفصل عند <b>80%</b> (Set و Reset)، مش الاتنين عند 20% وإلا الكونتاكتور يتحرق.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>مشروع: تانك بإنذارات</h2>
-  <p>ترانسميتر مستوى على <b>IW64</b>، وطلمبة ملو <b>Q0.0</b>، والتانك بيصرف لوحده (الاستهلاك). اكتب البرنامج، شغّل RUN، وسيب التانك يشتغل لوحده. جرّب كمان زرار "اقطع سلك الترانسميتر" وفكّر: البرنامج المفروض يعمل إيه؟</p>
+  <p class="tip">مستوى على <b>IW64</b> · طلمبة <b>Q0.0</b> · جرّب «اقطع سلك الترانسميتر»: البرنامج المفروض يعمل إيه؟</p>
   <div class="wd"><h3>محاكي: التانك</h3><div id="sim1"></div></div>
-  <div class="ex"><b>من الموقع:</b> لما سلك الترانسميتر يتقطع، الكارت بيطلّع قيمة غلط، والـ Scale هيقول "0%"، فالبرنامج هيشغّل الطلمبة ويملا التانك لحد ما يفيض! البرامج الحقيقية بتستخدم بت الـ Diagnostic بتاع الكارت أو بتقارن الـ Raw بحدود معقولة، ولو فيه عطل توقف الطلمبة وتطلّع إنذار. ومعاه عوامة High-High بالسلك كحماية أخيرة.</div>
+  <p class="alert">السلك اتقطع ⇐ «0%» ⇐ الطلمبة تملا لحد <b>الفيضان</b>. استخدم بت الـ Diagnostic وعوامة High-High بالسلك.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>أعطال شائعة في الموقع</h2>
-  <div class="fault-box"><b>أعطال شائعة في الموقع:</b><ul>
-    <li><b>القراءة ثابتة على قيمة غريبة (32767 أو سالب):</b> سلك مقطوع أو الترانسميتر مش واخد باور.</li>
-    <li><b>القراءة غلط بنسبة ثابتة:</b> رينج الـ Scale في البرنامج مختلف عن رينج الترانسميتر (البرنامج ⁦0⁠–⁠10⁩ bar والترانسميتر ⁦0⁠–⁠16⁩).</li>
-    <li><b>الكارت متظبط على ⁦0⁠–⁠10V⁩ والترانسميتر ⁦4⁠–⁠20mA⁩:</b> لازم نوع القناة يتظبط في الهاردوير كونفيج (وأحيانًا جمبر على الكارت).</li>
-    <li><b>القراءة بتترعش:</b> كابل من غير شيلد أو جنب كابلات موتور. افصلهم، واعمل فلتر في الكارت أو في البرنامج.</li>
-  </ul></div>
+  <ul class="fx">
+    <li><b>ثابتة على 32767 أو سالب</b><span>سلك مقطوع أو مفيش باور</span></li>
+    <li><b>غلط بنسبة ثابتة</b><span>رينج الـ Scale غير رينج الترانسميتر</span></li>
+    <li><b>القناة 0–10V والترانسميتر mA</b><span>ظبط نوع القناة · جمبر</span></li>
+    <li><b>القراية بتترعش</b><span>شيلد · بعيد عن كابل الموتور · فلتر</span></li>
+  </ul>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>

@@ -17,6 +17,7 @@
 <script src="plc.js?v=20261030w1"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b8">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 </head>
 <body>
@@ -38,68 +39,64 @@
 <section class="panel lvid" aria-label="فيديو الدرس"><h2 style="margin:0 0 8px">▶ الدرس في 5 دقايق</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">شرح بالرسم بصوت المدرّب، وبعدين المحاكي وأسئلة الدرس. معمول للموبايل.</p><video src="/media/lessons/plc-lab/lesson-01-ar.mp4" poster="/media/lessons/plc-lab/lesson-01-ar.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>من الريلايهات للـ PLC</h2>
-  <p>زمان أي ماكينة كانت بتتحكم بـ <b>دواير ريلاي وكونتاكتورات وتايمرات</b> متوصّلة بالسلك. الدايرة دي هي "البرنامج". لو عايز تغيّر حاجة صغيرة (تأخير 5 ثواني، أو شرط زيادة) لازم تفك وتوصّل وتزوّد ريليهات.</p>
-  <div class="two">
-    <div class="box"><b>لوحة ريلاي (Relay logic)</b><ul><li>البرنامج = السلك نفسه</li><li>أي تعديل = شغل يدوي ومواد</li><li>كل تايمر وريليه مساعد = قطعة بتتحط في اللوحة وبتبوظ</li><li>التربل شوتنج بالأفوميتر سلك سلك</li></ul></div>
-    <div class="box good"><b>PLC</b><ul><li>الزراير والحساسات بتتوصّل على <b>الدخل</b>، والكونتاكتورات على <b>الخرج</b>، وخلاص</li><li>المنطق كله <b>برنامج</b>: تعدّله من اللابتوب في دقايق</li><li>مئات التايمرات والعدادات والريليهات المساعدة جوه البرنامج، من غير ما تشتري ولا قطعة</li><li>تشوف البرنامج وهو شغال (Online) وتعرف العطل فين</li></ul></div>
+  <div class="vs">
+    <div class="side"><span class="ic">🧶</span><b>لوحة ريلاي</b><span>البرنامج = السلك</span><span>أي تعديل = فك وتوصيل</span></div>
+    <i>vs</i>
+    <div class="side"><span class="ic">💻</span><b>PLC</b><span>البرنامج على اللابتوب</span><span>تعدّل في دقايق</span></div>
   </div>
-  <div class="ex"><b>مثال:</b> ماكينة تعبئة كان فيها 30 ريليه و 8 تايمرات. بعد الـ PLC: نفس الزراير والحساسات والكونتاكتورات، بس كل الريليهات المساعدة والتايمرات بقوا سطور في البرنامج. واللوحة بقت أصغر وأسهل في الصيانة.</div>
-  <div class="box key"><b>خلي بالك:</b> الـ PLC مش بيلغي الكونتاكتورات ولا الأوفرلود ولا القواطع. الكونتاكتور لسه هو اللي بيشيل تيار الموتور، والـ PLC بس بيشغّل الكويل بتاعه. ودواير <b>الطوارئ (E-Stop)</b> لازم تفضل بتفصل بالسلك أو بـ Safety relay، مش بالبرنامج العادي بس.</div>
+  <p class="tip">ماكينة بـ 30 ريليه و 8 تايمرات ⇐ بقوا <b>سطور في البرنامج</b>.</p>
+  <div class="box key">الـ PLC <b>مش بيلغي</b> الكونتاكتور ولا الأوفرلود. والطوارئ تفصل <b>بالسلك أو Safety relay</b>.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>دورة السكان (Scan cycle)</h2>
-  <p>الـ PLC مش بيبص على الزراير "طول الوقت" زي السلك. هو بيعمل 3 خطوات ورا بعض ويعيدهم للأبد، وكل لفة اسمها <b>سكان</b>:</p>
-  <ol>
-    <li><b>اقرا المداخل (Read inputs):</b> يصوّر حالة كل الأطراف مرة واحدة ويحفظها في <b>Input image</b>.</li>
-    <li><b>نفّذ البرنامج (Execute):</b> يمشي على البرنامج من أوله لآخره ويحسب النتايج.</li>
-    <li><b>اكتب المخارج (Write outputs):</b> يطلّع النتايج على كروت الخرج مرة واحدة.</li>
+  <ol class="steps">
+    <li>اقرا المداخل</li>
+    <li>نفّذ البرنامج</li>
+    <li>اكتب المخارج</li>
+    <li class="on">وعيد · 1–20 ms</li>
   </ol>
-  <p>السكان بياخد عادة من <b>⁦1⁠–⁠20⁩ ملّي ثانية</b> على حسب طول البرنامج. جرّب بنفسك بالبطيء:</p>
+  <p class="tip">جرّب بنفسك بالبطيء:</p>
   <div class="wd"><h3>دورة السكان بالبطيء</h3><div id="scan"></div></div>
-  <div class="box"><b>اللي لازم تفتكره:</b> البرنامج بيشتغل على <b>الصورة</b> اللي اتاخدت في أول السكان، والمخارج مش بتتغيّر غير في آخره. ولو إشارة جت وراحت في وقت أقل من سكان واحد، ممكن الـ PLC ما يشوفهاش خالص.</div>
+  <p class="alert">إشارة أقصر من <b>سكان واحد</b>؟ الـ PLC ممكن ما يشوفهاش.</p>
 </section>
-
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>أجزاء الـ PLC</h2>
-  <p>الـ PLC إما <b>Compact</b> (كله في علبة واحدة: CPU ومداخل ومخارج، زي الموديلات الصغيرة) أو <b>Modular</b> (راك بتركّب عليه الكروت اللي محتاجها). دوس على كل كارت:</p>
+  <div class="vs">
+    <div class="side"><b>Compact</b><span>كله في علبة</span></div>
+    <i>vs</i>
+    <div class="side"><b>Modular</b><span>راك وكروت</span></div>
+  </div>
+  <p class="tip">دوس على كل كارت:</p>
   <div class="wd"><h3>راك PLC</h3><div id="parts"></div></div>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>الكارت</th><th>بيتوصّل عليه</th><th>الإشارة</th></tr></thead>
-    <tbody>
-      <tr><td><b>DI</b> دخل ديجيتال</td><td>زراير، ليميت سويتش، بروكسيميتي، فوتوسيل، كونتاكت أوفرلود</td><td>⁦0 / 24V DC⁩</td></tr>
-      <tr><td><b>DO</b> خرج ديجيتال</td><td>كويل كونتاكتور، ريليه، لمبة بيان، سولينويد بلف</td><td>ريلاي أو ترانزستور</td></tr>
-      <tr><td><b>AI</b> دخل أنالوج</td><td>ترانسميتر ضغط / مستوى / حرارة / فلو</td><td>⁦4⁠–⁠20mA⁩ أو ⁦0⁠–⁠10V⁩</td></tr>
-      <tr><td><b>AO</b> خرج أنالوج</td><td>سرعة إنفرتر، بلف كنترول</td><td>⁦4⁠–⁠20mA⁩ أو ⁦0⁠–⁠10V⁩</td></tr>
-    </tbody></table></div>
+  <div class="tiles">
+    <div class="tile"><span class="big">DI</span><b>زراير وحساسات</b><span>0 / 24V DC</span></div>
+    <div class="tile"><span class="big">DO</span><b>كونتاكتور ولمبة</b><span>ريلاي أو ترانزستور</span></div>
+    <div class="tile"><span class="big">AI</span><b>ترانسميتر</b><span>4–20mA · 0–10V</span></div>
+    <div class="tile"><span class="big">AO</span><b>سرعة انفرتر · بلف</b><span>4–20mA · 0–10V</span></div>
+  </div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>الشركات المشهورة</h2>
-  <div class="tblw"><table class="tbl">
-    <thead><tr><th>الشركة</th><th>أمثلة</th><th>برنامج البرمجة</th></tr></thead>
-    <tbody>
-      <tr><td>Siemens</td><td>S7-1200، S7-1500، ⁦LOGO!⁩</td><td>TIA Portal</td></tr>
-      <tr><td>Allen-Bradley (Rockwell)</td><td>Micro800، CompactLogix، ControlLogix</td><td>CCW، Studio 5000</td></tr>
-      <tr><td>Schneider</td><td>Modicon M221، M241، M340</td><td>EcoStruxure Machine Expert</td></tr>
-      <tr><td>Mitsubishi</td><td>FX5U، iQ-R</td><td>GX Works</td></tr>
-      <tr><td>Delta</td><td>DVP، AS series</td><td>ISPSoft</td></tr>
-      <tr><td>Omron</td><td>CP1E، NX1P</td><td>CX-Programmer، Sysmac Studio</td></tr>
-    </tbody></table></div>
-  <p>كلهم بيدعموا لغة <b>Ladder</b> (LD)، ومعاها لغات تانية من معيار <b>IEC 61131-3</b>: FBD (بلوكات)، ST (كود نصي)، SFC (خطوات). إحنا هنركّز على الـ Ladder لأنه شبه دواير الكونتاكتورات اللي الكهربائي فاهمها.</p>
-  <div class="brand-note"><b>عن المحاكي:</b> المحاكي اللي هتستخدمه من الدرس التالت <b>مدرّب عام</b>. المنطق هو هو في كل الشركات، بس الشكل والعناوين بتختلف شوية.</div>
+  <ul class="fx">
+    <li><b>Siemens</b><span>S7-1200 · S7-1500 · TIA Portal</span></li>
+    <li><b>Allen-Bradley</b><span>Micro800 · CompactLogix · Studio 5000</span></li>
+    <li><b>Schneider</b><span>M221 · M241 · Machine Expert</span></li>
+    <li><b>Mitsubishi</b><span>FX5U · GX Works</span></li>
+    <li><b>Delta</b><span>DVP · AS · ISPSoft</span></li>
+    <li><b>Omron</b><span>CP1E · NX1P · Sysmac</span></li>
+  </ul>
+  <p class="tip">كلهم بيدعموا <b>Ladder</b> (ومعاه FBD و ST و SFC). هنركّز على الـ Ladder.</p>
+  <div class="brand-note"><b>عن المحاكي:</b> <b>مدرّب عام</b>: المنطق واحد، والشكل بيختلف شوية.</div>
 </section>
-
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>أعطال شائعة في الموقع</h2>
-  <div class="fault-box"><b>أعطال شائعة في الموقع:</b><ul>
-    <li><b>الـ PLC على STOP</b> بعد ما حد نزّل برنامج أو بعد عطل: كل المخارج واقفة. بص على لمبة RUN/STOP قبل أي حاجة.</li>
-    <li><b>لمبة ERROR / SF منوّرة</b>: كارت مش متركّب صح، كارت ناقص عن الإعداد اللي في البرنامج، أو عطل في الباور.</li>
-    <li><b>باور الـ 24V واقع</b>: قصر في سلك حساس بيوقّع الباور كله، فكل المداخل تطفي مرة واحدة.</li>
-    <li><b>بطارية الذاكرة خلصت</b> في الموديلات القديمة: البرنامج أو القيم بتضيع لما الكهربا تقطع. خلي معاك نسخة من البرنامج دايمًا.</li>
-  </ul></div>
+  <ul class="fx">
+    <li><b>كل المخارج واقفة</b><span>الـ PLC على STOP · بص على RUN/STOP</span></li>
+    <li><b>ERROR / SF منوّرة</b><span>كارت ناقص أو مش متركّب · باور</span></li>
+    <li><b>كل المداخل طفت</b><span>الـ 24V وقع من قصر في حساس</span></li>
+    <li><b>البرنامج ضاع</b><span>بطارية الذاكرة · خلي معاك نسخة</span></li>
+  </ul>
 </section>
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
