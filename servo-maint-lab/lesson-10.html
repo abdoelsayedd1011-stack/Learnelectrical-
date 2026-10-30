@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="srvm.css?v=20261028v1">
 <script src="srvm.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 <link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
 <script src="/assets/real-art.js?v=20261030h1"></script>
@@ -30,21 +31,12 @@
 <section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
 
 <section class="panel lsec" aria-label="من الموقع">
-<div class="hook"><b>قصة من الورشة:</b> فني فصل درايف المحور X، ورأى مصباح الشحن مطفأً.<br>
-بدأ يفك الأطراف، فلمس المفك طرفَي الناقل P و N.<br>
-شرارة عالية، وذاب طرف المفك. الناقل كان ما زال فوق <span class="eq">300 V</span>.<br>
-مقاومة التفريغ كانت مقطوعة، والمصباح نفسه تالف.</div>
-<p><b>في هذا الدرس ستعرف:</b></p>
-<ul class="learn"><li>كيف تتأكد أن الدرايف آمن قبل اللمس.</li><li>كيف تختبر المقوّم و IGBT بجهاز القياس.</li><li>كيف تحكم على المكثفات ومقاومة الكبح والمراوح.</li></ul>
+<div class="hook">فنّي رأى مصباح الشحن مطفأً، فلمس المفك P و N: شرارة وذاب طرفه. الناقل كان فوق 300 V.<br>
+<b>مقاومة التفريغ مقطوعة، والمصباح نفسه تالف.</b></div>
 </section>
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>داخل الدرايف ثلاث محطات</h2>
-<p>تخيّل مضخة تملأ خزانًا، ثم صنبورًا يأخذ من الخزان:</p>
-<ul><li><b>المقوّم</b> <span class="term">Rectifier</span>: يحوّل <span class="eq">400 V</span> المتردد إلى جهد مستمر.</li>
-<li><b>الناقل المستمر</b> <span class="term">DC bus</span>: مكثفات تخزن نحو <span class="eq">540 V</span></li>
-<li><b>العاكس</b> <span class="term">Inverter</span>: ستة ترانزستورات IGBT تصنع U/V/W للمحرك.</li>
-<li><b>مقاومة الكبح</b> <span class="term">Regen</span>: تصرف الطاقة الزائدة عند التباطؤ.</li></ul>
-<figure class="fig">
+  <figure class="fig">
 <svg viewBox="0 0 480 200" role="img" aria-label="مسار القدرة في الدرايف: المقوّم يحوّل 400 فولت المتردد إلى ناقل مستمر 540 فولت في المكثفات، ثم العاكس يصنع U و V و W للمحرك، ومقاومة الكبح معلّقة على الناقل" style="width:100%;max-width:480px;direction:ltr">
 <g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="15" fill="currentColor">
 <defs><marker id="a10" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs>
@@ -68,9 +60,13 @@
 </g></svg>
 <figcaption>المقوّم يملأ الخزان، والمكثفات هي الخزان، والعاكس هو الصنبور الذي يغذي المحرك.</figcaption>
 </figure>
-<details class="more"><summary>للاستزادة: الدائرة الكاملة، وما الذي يشيخ في كل قطعة</summary>
-<p>الناقل نحو <span class="eq">1.35 × 400 = 540 V</span> بلا حمل، ويصل إلى <span class="eq">√2 × 400 ≈ 565 V</span>.</p>
-<figure class="fig">
+  <ol class="steps">
+    <li>المقوّم: <bdi dir="ltr">400 V</bdi> ← مستمر</li>
+    <li>الناقل: مكثفات <bdi dir="ltr">≈ 540 V</bdi></li>
+    <li>العاكس: 6 IGBT ← U/V/W</li>
+    <li class="on">الكبح: يصرف الزائد</li>
+  </ol>
+  <figure class="fig">
 <svg viewBox="0 0 640 300" role="img" aria-label="دائرة القدرة في درايف السيرفو: مقوّم بستة ديودات، مقاومة الشحن المسبق ومرحّلها، مكثفان على التوالي بمقاومتي اتزان، ترانزستور الكبح مع المقاومة الخارجية، والعاكس بستة IGBT مع ديوداتها العكسية إلى U و V و W" style="width:100%;max-width:640px;direction:ltr">
 <g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="12" fill="currentColor">
 <path d="M60 50H600M60 250H600" stroke="currentColor" stroke-width="2.5"/>
@@ -99,43 +95,28 @@
 </g></svg>
 <figcaption>ثلاث وحدات تُختبر بوضع الديود: المقوّم (6 ديودات)، والعاكس (6 IGBT بديوداتها العكسية)، وترانزستور الكبح. المكثفات تبقى مشحونة بعد الفصل؛ لذلك لا يبدأ أي قياس قبل التأكد من تفريغها.</figcaption>
 </figure>
-<div class="tblw"><table class="tbl"><thead><tr><th>المكوّن</th><th>القيمة في درايفات المشروع</th><th>كيف يشيخ أو يتلف</th></tr></thead><tbody>
-<tr><td>مكثفات الناقل <span class="term">Electrolytic</span></td><td class="mono">2 × 470 µF / 450 V توالٍ = 235 µF</td><td>تجف بالحرارة: تنقص السعة ويرتفع ESR (المقاومة التسلسلية المكافئة)</td></tr>
-<tr><td>مقاومة الكبح</td><td class="mono">100 Ω 400 W خارجية</td><td>تنقطع بالحرارة أو الاهتزاز، أو تقصر إلى الجسم</td></tr>
-<tr><td>المقوّم</td><td class="mono">6 ديودات</td><td>يقصر ديود بعد صاعقة أو اختلال في الشبكة</td></tr>
-<tr><td>العاكس IGBT</td><td class="mono">6 + 6 ديودات عكسية</td><td>يقصر بعد قصر في المحرك أو الكابل أو الأرضي، أو بحرارة زائدة</td></tr>
-<tr><td>المراوح</td><td>مروحة المشتت الحراري</td><td>تتآكل محاملها وتبطؤ؛ الغبار يسد الزعانف</td></tr>
-<tr><td>مرحّل الشحن المسبق</td><td>مع مقاومة الشحن</td><td>تتآكل نقاطه فتسخن مقاومة الشحن أو يظهر إنذار جهد منخفض</td></tr>
-</tbody></table></div></details>
-<div class="sum">مقوّم ← ناقل مستمر ← عاكس. كل محطة تُختبر وحدها.</div>
+  <p class="tip">كل محطة تُختبر وحدها. المكثفات تجف بالحرارة، والمقاومة تنقطع، والديود يقصر بعد صاعقة.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>الدرايف المطفأ ما زال خطرًا</h2>
-<p>المكثفات تبقى مشحونة بعد الفصل، مثل خزان ممتلئ أُغلقت مضخته.</p>
-<ul><li>الطاقة المخزنة نحو <span class="eq">37.5 J</span>: تكفي لصدمة قاتلة.</li>
-<li>ملصق «انتظر 10 دقائق» ليس دليلًا.</li>
-<li>مصباح الشحن <span class="term">Charge LED</span> ليس دليلًا.</li>
-<li><b>الدليل الوحيد: قياسك أنت.</b></li></ul>
-<ol class="steps-l"><li>أوقف المحور. في Z أنزل الرأس إلى دعامة.</li>
-<li>افصل القاطع الرئيسي وأقفله، وعلّق بطاقتك <span class="term">LOTO</span></li>
-<li>انتظر الزمن المكتوب على الدرايف.</li>
-<li>اختبر جهازك <span class="term">CAT III</span> على مصدر معروف.</li>
-<li>قِس بين <b>P</b> و <b>N</b>، ثم كلًّا منهما إلى الأرضي.</li>
-<li>المسموح: أقل من <b><span class="eq">50 V DC</span></b>.</li>
-<li>أعد اختبار جهازك على المصدر المعروف.</li></ol>
-<details class="more"><summary>للاستزادة: حساب الطاقة وزمن التفريغ</summary>
-<ul><li><span class="eq">E = ½ C V² = ½ × 235 µF × 565² ≈ 37.5 J</span>. عند <span class="eq">540 V</span> تكون نحو <span class="eq">34.3 J</span></li>
-<li>لو فرّغت المكثفاتِ مقاومتا الاتزان <span class="eq">2 × 47 kΩ</span> وحدهما: <span class="eq">τ = 94 kΩ × 235 µF ≈ 22.1 s</span></li>
-<li>من <span class="eq">565 V</span> إلى <span class="eq">50 V</span>: <span class="eq">τ × ln(565/50) ≈ 54 s</span></li>
-<li>إن انقطعت إحداهما بقي الجهد عاليًا مدة أطول كثيرًا من المكتوب.</li>
-<li>إن لم يهبط الجهد: قد يغذي درايف آخر الناقل نفسه عبر وصلة ناقل مشتركة. لا تلمس شيئًا.</li>
-<li>هذا من متطلبات NFPA 70E، ومن IEC 61800-5-1 التي تُلزم المصنّع بكتابة زمن التفريغ على الدرايف.</li></ul></details>
-<div class="sum">لا تلمس الدرايف حتى تقيس P–N بنفسك وتجده أقل من <span class="eq">50 V</span>.</div>
+  <div class="vs">
+    <div class="side"><span class="ic">💡</span><b>الملصق ومصباح الشحن</b><span class="nc">ليسا دليلًا</span></div>
+    <i>مقابل</i>
+    <div class="side"><span class="ic">📏</span><b>قياسك أنت</b><span class="no">الدليل الوحيد</span></div>
+  </div>
+  <ol class="steps">
+    <li>أوقف · رأس Z على دعامة</li>
+    <li>LOTO</li>
+    <li>انتظر الزمن المكتوب</li>
+    <li>جرّب الجهاز</li>
+    <li class="on">P–N ثم كلٌّ إلى الأرضي <bdi dir="ltr">&lt; 50 V</bdi></li>
+    <li>جرّب الجهاز ثانية</li>
+  </ol>
+  <p class="alert">الجهد لا يهبط؟ قد يغذي درايف آخر الناقل نفسه. <b>لا تلمس شيئًا.</b></p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>اختبار المقوّم و IGBT بوضع الديود</h2>
-<p>كل وصلة في المقوّم والعاكس تعمل مثل <b>صمام عدم رجوع</b>: تمرر في اتجاه وتسد في الآخر. جهاز القياس على وضع الديود يكشف ذلك.</p>
-<figure class="fig">
+  <figure class="fig">
 <svg viewBox="0 0 480 190" role="img" aria-label="الديود يمرر في اتجاه واحد: الطرف الأحمر على L1 والأسود على P يقرأ نحو 0.4 فولت، والعكس يقرأ OL. القراءة قرب الصفر في الاتجاهين تعني قصرًا، و OL في الاتجاهين تعني انقطاعًا" style="width:100%;max-width:480px;direction:ltr">
 <g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="15" fill="currentColor">
 <defs><marker id="a10" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs>
@@ -153,51 +134,19 @@
 </g></svg>
 <figcaption>الديود صمام عدم رجوع: يمرر في اتجاه ويسد في الآخر. هكذا تختبر كل وصلة في المقوّم والعاكس.</figcaption>
 </figure>
-<ol class="steps-l"><li>الدرايف مفرّغ (أقل من <span class="eq">50 V</span>).</li>
-<li>فك L1/L2/L3 و U/V/W.</li>
-<li>الجهاز على وضع الديود، لا الأوم.</li>
-<li>المقوّم: من L1 و L2 و L3 إلى P، ثم إلى N.</li>
-<li>العاكس: من U و V و W إلى P، ثم إلى N.</li>
-<li>كل قياس في الاتجاهين.</li></ol>
-<ul><li><b style="color:var(--good)">سليم:</b> <span class="eq">0.3–0.5 V</span> في اتجاه، و OL في العكس.</li>
-<li><b style="color:var(--bad)">قصر:</b> قرب الصفر في الاتجاهين.</li>
-<li><b style="color:var(--bad)">انقطاع:</b> OL في الاتجاهين.</li>
-<li>الأطوار الثلاثة يجب أن تتشابه قراءاتها.</li></ul>
-<div class="ex"><b>مثال — درايف المحور X بعد إنذار AL.oc:</b>
-<ol><li>كل القراءات <span class="eq">0.41–0.44 V</span> أماميًّا، و OL عكسيًّا.</li>
-<li>إلا بين V و P: <span class="eq">0.002 V</span></li>
-<li>وبين P و V أيضًا: <span class="eq">0.002 V</span></li>
-<li>الحكم: IGBT العلوي في الطور V مقصور.</li>
-<li>قبل تركيب درايف جديد: اختبر عزل المحرك والكابل.</li>
-<li>السبب: القصر غالبًا جاء من المحرك أو الكابل، فيحرق الجديد.</li></ol></div>
-<details class="more"><summary>للاستزادة: جدول القياسات الكامل وحدود الاختبار</summary>
-<div class="tblw"><table class="tbl"><thead><tr><th>القياس</th><th>الأحمر (+)</th><th>الأسود (−)</th><th>السليم</th></tr></thead><tbody>
-<tr><td>المقوّم: العلوي</td><td class="mono">L1 / L2 / L3</td><td class="mono">P</td><td class="mono">0.3–0.5 V</td></tr>
-<tr><td>المقوّم: العلوي عكسيًّا</td><td class="mono">P</td><td class="mono">L1 / L2 / L3</td><td class="mono">OL</td></tr>
-<tr><td>المقوّم: السفلي</td><td class="mono">N</td><td class="mono">L1 / L2 / L3</td><td class="mono">0.3–0.5 V</td></tr>
-<tr><td>المقوّم: السفلي عكسيًّا</td><td class="mono">L1 / L2 / L3</td><td class="mono">N</td><td class="mono">OL</td></tr>
-<tr><td>العاكس: العلوي</td><td class="mono">U / V / W</td><td class="mono">P</td><td class="mono">0.3–0.5 V</td></tr>
-<tr><td>العاكس: العلوي عكسيًّا</td><td class="mono">P</td><td class="mono">U / V / W</td><td class="mono">OL</td></tr>
-<tr><td>العاكس: السفلي</td><td class="mono">N</td><td class="mono">U / V / W</td><td class="mono">0.3–0.5 V</td></tr>
-<tr><td>العاكس: السفلي عكسيًّا</td><td class="mono">U / V / W</td><td class="mono">N</td><td class="mono">OL</td></tr>
-</tbody></table></div>
-<ul><li>المجموع 12 قياسًا أماميًّا و 12 عكسيًّا. اتجاه الطرفين قد ينعكس في بعض الأجهزة؛ المهم تماثل الأطوار (<span class="eq">± 0.05 V</span>).</li>
-<li>قراءة عكسية تبدأ بقيمة ثم ترتفع ببطء إلى OL طبيعية: الجهاز يشحن المكثفات.</li>
-<li>فحص الديود لا يكشف IGBT لا يُفتح؛ ذلك يظهر في التشغيل بتيار غير متزن أو إنذار.</li>
-<li>لا تطبّق جهد بوابة من مصدر خارجي إلا وفق دليل خدمة المصنّع، وافحص دائرة تشغيل البوابة <span class="term">Gate driver</span> قبل تركيب وحدة جديدة.</li></ul>
-<p class="muted">قيم نموذجية للتعلّم؛ ارجع إلى دليل الخدمة للدرايف.</p></details>
-<div class="sum"><span class="eq">0.3–0.5 V</span> في اتجاه و OL في الآخر = سليم. قرب الصفر في الاتجاهين = قصر.</div>
+  <ol class="steps"><li>مفرّغ <bdi dir="ltr">&lt; 50 V</bdi></li><li>فك L1-3 و U/V/W</li><li>وضع الديود</li><li class="on">كل طرف إلى P ثم N · الاتجاهان</li></ol>
+  <ul class="fx">
+    <li class="ok"><b><bdi dir="ltr">0.3–0.5 V</bdi> ثم OL</b><span>سليم</span></li>
+    <li class="danger"><b>قرب الصفر في الاتجاهين</b><span>قصر</span></li>
+    <li class="danger"><b>OL في الاتجاهين</b><span>انقطاع</span></li>
+  </ul>
+  <p class="bf"><span class="ic">🔍</span><span>X بعد AL.oc: كله <bdi dir="ltr">0.41–0.44 V</bdi> إلا <b>V–P = <bdi dir="ltr">0.002 V</bdi></b> في الاتجاهين ← IGBT العلوي في V مقصور.</span></p>
+  <p class="alert">قبل الدرايف الجديد: <b>اختبر عزل المحرك والكابل</b>، فالقصر غالبًا جاء منهما.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>المكثفات تشيخ بالحرارة</h2>
-<p>المكثف الكيميائي يجف ببطء، وأسرع كلما سخن.</p>
-<ul><li>كل <b><span class="eq">10 °C</span></b> أقل ← عمر المكثف يتضاعف تقريبًا.</li>
-<li>لذلك المروحة النظيفة تطيل عمر الدرايف.</li>
-<li>انظر: انتفاخ أعلى المكثف أو تسرّب = استبدال.</li>
-<li>قِس السعة بجهاز LCR بعد التفريغ.</li>
-<li>أقل من <b>80%</b> من الاسمية ← استبدل.</li>
-<li>المكثفان على التوالي يُستبدلان <b>معًا</b>.</li></ul>
-<figure class="fig">
+  <p class="bf"><span class="ic">🌡️</span><span>كل <b><bdi dir="ltr">10 °C</bdi> أقل</b> ← عمر المكثف <b>يتضاعف</b>. المروحة النظيفة تطيل العمر.</span></p>
+  <figure class="fig">
 <svg viewBox="0 0 480 160" role="img" aria-label="سعة مكثفي الناقل في درايف Z منسوبة إلى 470 ميكروفاراد: الأول 96 بالمئة والثاني 77 بالمئة، والحد 80 بالمئة" style="width:100%;max-width:480px;direction:ltr">
 <g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="15" fill="currentColor">
 
@@ -211,28 +160,23 @@
 <text x="120" y="148" text-anchor="middle" font-size="14">0</text>
 <text x="460" y="148" text-anchor="end" font-size="14">100%</text>
 </g></svg>
-<figcaption>درايف Z: المكثف الثاني تحت 80% من سعته الاسمية، فيُستبدل المكثفان معًا.</figcaption>
+<figcaption>درايف Z: المكثف الثاني تحت <bdi dir="ltr">80%</bdi> من سعته الاسمية، فيُستبدل المكثفان معًا.</figcaption>
 </figure>
-<div class="ex"><b>درايف Z:</b> الاسمي <span class="eq">470 µF</span>. المكثف الأول <span class="eq">452 µF</span>، والثاني <span class="eq">360 µF</span>.<br>
-<span class="eq">360 / 470 ≈ 77%</span> ← أقل من 80% ← يُستبدل المكثفان معًا.</div>
-<details class="more"><summary>للاستزادة: حساب العمر، ESR، وإعادة التشكيل</summary>
-<ul><li>مكثف مقنّن <span class="eq">5000 h عند 105 °C</span> يعمل عند <span class="eq">65 °C</span>: <span class="eq">5000 × 2⁴ = 80 000 h</span>، أي نحو 9 سنوات تشغيل مستمر.</li>
-<li>الدرايف المخزّن أكثر من سنة تقريبًا يحتاج غالبًا إلى «إعادة تشكيل» المكثفات <span class="term">Reforming</span> بجهد متدرّج أو بتغذية محدودة التيار؛ اتبع إجراء الشركة المصنّعة.</li></ul>
-<div class="tblw"><table class="tbl"><thead><tr><th>القرار</th><th>السعة المقيسة</th><th>ESR مقارنة بمكثف جديد</th></tr></thead><tbody>
-<tr><td><b style="color:var(--good)">سليم</b></td><td class="mono">≥ 90%</td><td class="mono">≤ 1.5 ×</td></tr>
-<tr><td><b style="color:var(--warn)">راقِب</b> وخطط للتجديد</td><td class="mono">80–90%</td><td class="mono">1.5–2 ×</td></tr>
-<tr><td><b style="color:var(--bad)">استبدل المكثفين معًا</b></td><td class="mono">&lt; 80%، أو انتفاخ أو تسرّب</td><td class="mono">&gt; 2 ×</td></tr>
-</tbody></table></div>
-<p class="muted">قيم نموذجية للتعلّم؛ ارجع إلى دليل خدمة الدرايف. يُستبدل المكثفان بالقيمة والجهد ودرجة الحرارة نفسها، مع فحص مقاومات الاتزان.</p></details>
-<div class="sum">الحرارة تقصّر عمر المكثف. تحت 80% من السعة يُستبدل المكثفان معًا.</div>
+  <ul class="lsec scale">
+    <li><b>الاسمي</b><span class="bar"><i style="width:100%"></i><em><bdi dir="ltr">470 µF</bdi></em></span></li>
+    <li class="ok"><b>المكثف 1</b><span class="bar"><i style="width:96%"></i><em><bdi dir="ltr">452 µF</bdi></em></span></li>
+    <li class="danger"><b>المكثف 2</b><span class="bar"><i style="width:77%"></i><em><bdi dir="ltr">360 µF · 77 %</bdi></em></span></li>
+  </ul>
+  <ul class="fx">
+    <li class="ok"><b><bdi dir="ltr">≥ 90 %</bdi></b><span>سليم</span></li>
+    <li><b><bdi dir="ltr">80 – 90 %</bdi></b><span>راقِب وخطط</span></li>
+    <li class="danger"><b><bdi dir="ltr">&lt; 80 %</bdi> أو انتفاخ</b><span>استبدل <b>المكثفين معًا</b></span></li>
+  </ul>
+  <p class="tip">الدرايف المخزّن أكثر من سنة يحتاج «إعادة تشكيل» المكثفات قبل الجهد الكامل.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>مقاومة الكبح: صمام أمان الجهد</h2>
-<p>عند التباطؤ يصبح المحرك مولّدًا، فيعيد الطاقة إلى الناقل ويرتفع جهده.</p>
-<ul><li>عند <b><span class="eq">760 V</span></b> يفتح ترانزستور الكبح <span class="term">Chopper</span> على المقاومة.</li>
-<li>المقاومة تحوّل الطاقة إلى حرارة.</li>
-<li>إن كانت مقطوعة يصل الجهد إلى <b><span class="eq">800 V</span></b> ← إنذار AL.ov.</li></ul>
-<figure class="fig">
+  <figure class="fig">
 <svg viewBox="0 0 480 220" role="img" aria-label="جهد الناقل أثناء التباطؤ: يرتفع من 540 فولت، وعند 760 يفتح ترانزستور الكبح فيثبت الجهد. إن كانت المقاومة مقطوعة يصل إلى 800 فولت ويفصل الدرايف بإنذار AL.ov" style="width:100%;max-width:480px;direction:ltr">
 <g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="15" fill="currentColor">
 
@@ -247,45 +191,30 @@
 <text x="212" y="55" font-size="15" style="fill:var(--bad)">R open ✗</text>
 <text x="110" y="214" text-anchor="middle" font-size="14">decel starts</text>
 </g></svg>
-<figcaption>الخط الأخضر: المقاومة سليمة، فيثبت الجهد عند <span class="eq">760 V</span>. الخط الأحمر: المقاومة مقطوعة، فيصل الجهد إلى <span class="eq">800 V</span> ويفصل الدرايف.</figcaption>
+<figcaption>الخط الأخضر: المقاومة سليمة، فيثبت الجهد عند <span class="eq"><bdi dir="ltr">760 V</bdi></span>. الخط الأحمر: المقاومة مقطوعة، فيصل الجهد إلى <span class="eq"><bdi dir="ltr">800 V</bdi></span> ويفصل الدرايف.</figcaption>
 </figure>
-<ol class="steps-l"><li>الدرايف مفرّغ، والمقاومة مفصولة.</li>
-<li>بالأوم بين طرفيها: <span class="eq">100 Ω ± 10%</span></li>
-<li>القراءة OL = مقاومة مقطوعة.</li>
-<li>بالميجر <span class="eq">500 V</span> بين طرفيها والجسم: عشرات MΩ على الأقل.</li></ol>
-<details class="more"><summary>للاستزادة: قدرة المقاومة ونسبة التشغيل</summary>
-<ul><li>القدرة اللحظية عند <span class="eq">760 V</span>: <span class="eq">760² / 100 = 5776 W</span>، والتيار <span class="eq">7.6 A</span></li>
-<li>المسموح متوسطًا <span class="eq">400 W</span>، فنسبة التشغيل <span class="eq">400 / 5776 ≈ 6.9%</span></li>
-<li>تباطؤات أكثر تكرارًا تحتاج مقاومة أكبر قدرة، لا أكبر قيمة: القيمة الأكبر تمرر تيارًا أقل، فيظهر AL.ov.</li>
-<li>قراءة قرب الصفر بين طرف المقاومة والجسم = قصر قد يتلف ترانزستور الكبح.</li></ul></details>
-<div class="sum">AL.ov عند التباطؤ ← قِس مقاومة الكبح أولًا.</div>
+  <div class="vs">
+    <div class="side"><b>سليمة</b><span class="big">760 V</span><span class="no">يثبت الجهد</span></div>
+    <i>مقابل</i>
+    <div class="side"><b>مقطوعة</b><span class="big">800 V</span><span class="nc">AL.ov</span></div>
+  </div>
+  <ul class="fx">
+    <li class="ok"><b>بين الطرفين</b><span><bdi dir="ltr">100 Ω</bdi> <bdi dir="ltr">± 10 %</bdi></span></li>
+    <li class="danger"><b>OL</b><span>مقطوعة</span></li>
+    <li><b>إلى الجسم بالميجر</b><span>عشرات MΩ على الأقل</span></li>
+  </ul>
+  <p class="tip">تباطؤ أكثر؟ مقاومة <b>أكبر قدرة</b> لا أكبر قيمة.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s6">
   <h2 id="s6"><span class="k">6</span>المراوح وخطة الصيانة</h2>
-<ul><li>أدِر المروحة باليد والدرايف مطفأ: تدور بحرية وتستمر قليلًا.</li>
-<li>صوت أو توقف سريع = محامل تالفة.</li>
-<li>نظّف الزعانف بهواء جاف، وأمسك ريشة المروحة.</li>
-<li>قارن حرارة المشتت بالدرايف المجاور.</li></ul>
-<div class="tblw"><table class="tbl"><thead><tr><th>متى</th><th>ماذا</th></tr></thead><tbody>
-<tr><td>كل 6 أشهر</td><td>المرشحات والزعانف والمراوح، وشد الأطراف</td></tr>
-<tr><td>كل سنة</td><td>مقاومة الكبح، والمكثفات بالنظر، وسجل الإنذارات</td></tr>
-<tr><td>كل 5–7 سنوات</td><td>تجديد المكثفات والمراوح</td></tr>
-</tbody></table></div>
-<details class="more"><summary>للاستزادة: أخطاء شائعة</summary>
-<div class="tblw"><table class="tbl"><thead><tr><th>الخطأ</th><th>العاقبة</th><th>الصواب</th></tr></thead><tbody>
-<tr><td>الاعتماد على مصباح الشحن</td><td>صدمة من <span class="eq">540 V</span></td><td>قياس P–N والجهاز مُختبر قبل وبعد</td></tr>
-<tr><td>استبدال IGBT دون فحص المحرك والكابل</td><td>احتراق الوحدة الجديدة فورًا</td><td>عزل المحرك والكابل أولًا، ثم دائرة البوابة</td></tr>
-<tr><td>اختبار عزل المحرك والكابل متصل بالدرايف</td><td>إتلاف العاكس</td><td>فك U/V/W من الدرايف أولًا</td></tr>
-<tr><td>تغيير مكثف واحد من اثنين متواليين</td><td>توزيع جهد غير متساوٍ وعمر قصير</td><td>تغيير الاثنين بالمواصفة نفسها</td></tr>
-<tr><td>تشغيل درايف مخزّن سنوات بالجهد الكامل مباشرة</td><td>انفجار أو تلف المكثفات</td><td>إعادة تشكيل المكثفات وفق تعليمات المصنّع</td></tr>
-<tr><td>تكبير قيمة مقاومة الكبح لتسخن أقل</td><td>تيار أقل لا يكفي، فيظهر AL.ov</td><td>المقاومة الأدنى المسموحة وقدرة أكبر</td></tr>
-</tbody></table></div>
-<p>دورية التجديد تعتمد على ساعات التشغيل والحرارة؛ ارجع إلى كتيّب الدرايف. سجّل حرارة المشتت وحمل المحاور في كل زيارة.</p></details>
-<div class="box key"><b>على المحاكي:</b> فرّغ الناقل وقِسه حتى يقل عن <span class="eq">50 V</span>، ثم اختبر المقوّم و IGBT بوضع الديود (6 + 6 قياسات)، وافحص المكثفات ومقاومة الكبح والمراوح لتجد القطعة التالفة. <a class="btn pri" href="drive.html#parts" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
-<div class="sum">مروحة سليمة ودرايف نظيف = مكثفات تعيش أطول.</div>
+  <p class="tip">أدر المروحة باليد: تدور بحرية وتستمر قليلًا. صوت أو توقف سريع = محامل تالفة. وأمسك الريشة وأنت تنظّف بالهواء.</p>
+  <ul class="fx">
+    <li><b>كل 6 أشهر</b><span>المرشحات والزعانف والمراوح وشد الأطراف</span></li>
+    <li><b>كل سنة</b><span>مقاومة الكبح والمكثفات وسجل الإنذارات</span></li>
+    <li><b>كل 5–7 سنوات</b><span>تجديد المكثفات والمراوح</span></li>
+  </ul>
+  <div class="box key"><b>على المحاكي:</b> فرّغ الناقل وقِسه حتى يقل عن <bdi dir="ltr">50 V</bdi>، ثم اختبر المقوّم و IGBT بوضع الديود (6 + 6 قياسات)، وافحص المكثفات ومقاومة الكبح والمراوح لتجد القطعة التالفة. <a class="btn pri" href="drive.html#parts" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 5 من 6 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>

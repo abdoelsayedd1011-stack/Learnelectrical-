@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="srvm.css?v=20261028v1">
 <script src="srvm.js?v=20261029g1"></script>
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
 <script src="/assets/lesson-light.js?v=20261029L2" defer></script>
 <link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
 <script src="/assets/real-art.js?v=20261030h1"></script>
@@ -30,17 +31,13 @@
 <section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
 
 <section class="panel lsec" aria-label="من الموقع">
-<div class="hook"><b>قصة من الورشة:</b> بعد تغيير قارنة المحور X بدأ المحور يصفّر.<br>
-سطح القطعة صار فيه تموجات، ونُسخت المعاملات القديمة كما هي.<br>
-القارنة الجديدة غيّرت تردد الرنين إلى <span class="eq">820 Hz</span>.<br>
-مرشّح Notch واحد عند <span class="eq">820 Hz</span> أعاد السطح نظيفًا.</div>
-<p><b>في هذا الدرس ستعرف:</b></p>
-<ul class="learn"><li>لماذا يحتاج المحور المُصلَح إلى ضبط.</li><li>كيف تعرف نسبة القصور الذاتي للمحور.</li><li>كيف ترفع الكسب وتعالج الرنين بمرشّح Notch.</li></ul>
+<div class="hook">بعد تغيير قارنة X بدأ المحور يصفّر وظهرت تموجات على القطعة، والمعاملات القديمة نُسخت كما هي.<br>
+<b>القارنة الجديدة نقلت الرنين إلى 820 Hz، فأصلحه مرشّح Notch واحد.</b></div>
 </section>
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>ثلاث حلقات داخل الدرايف</h2>
-<p>تخيّل سائقًا: عينه تراقب الموضع، وقدمه تضبط السرعة، والمحرك يعطي القوة. كذلك في الدرايف ثلاث حلقات متداخلة.</p>
-<figure class="fig">
+  <p class="bf"><span class="ic">🚗</span><span>كالسائق: <b>العين</b> للموضع، و<b>القدم</b> للسرعة، و<b>المحرك</b> للقوة.</span></p>
+  <figure class="fig">
 <svg viewBox="0 0 480 200" role="img" aria-label="ثلاث حلقات متداخلة: حلقة الموضع بكسب Kp في الخارج، وحلقة السرعة بكسب Kv وزمن تكامل Ti في الوسط، وحلقة التيار في الداخل يضبطها الدرايف" style="width:100%;max-width:480px;direction:ltr">
 <g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="15" fill="currentColor">
 
@@ -56,28 +53,17 @@
 </g></svg>
 <figcaption>الحلقة الخارجية أبطأ من التي بداخلها. عملك الميداني في حلقتي الموضع والسرعة. القيم نموذجية للتعلّم.</figcaption>
 </figure>
-<ul><li><b>حلقة التيار:</b> يضبطها الدرايف من بيانات المحرك.</li>
-<li><b>حلقة السرعة:</b> كسبها Kv يحدد صلابة المحور.</li>
-<li><b>حلقة الموضع:</b> كسبها Kp يحدد خطأ التتبّع.</li></ul>
-<p>الضبط <span class="term">Tuning</span> اختيار هذه الكسوب ليتبع المحور الأمر بسرعة وبلا تذبذب. أعِد فحصه بعد:</p>
-<ul><li>تغيير المحرك أو الإنكودر أو الدرايف.</li>
-<li>تغيير القارنة أو المسمار أو المحامل.</li>
-<li>تغيير كبير في الحمل.</li></ul>
-<details class="more"><summary>للاستزادة: ماذا يفعل كل معامل</summary>
-<div class="tblw"><table class="tbl"><thead><tr><th>المعامل</th><th>ما يفعله</th><th>إذا كان مرتفعًا جدًّا</th><th>إذا كان منخفضًا جدًّا</th></tr></thead><tbody>
-<tr><td>كسب حلقة السرعة Kv</td><td>صلابة المحور ضد الاضطراب</td><td>أزيز، رنين، AL.oc</td><td>المحور «طري»، تجاوز وبطء</td></tr>
-<tr><td>زمن التكامل Ti</td><td>إزالة الخطأ الثابت في السرعة</td><td>(Ti صغير جدًّا) تذبذب بطيء وتجاوز</td><td>(Ti كبير جدًّا) خطأ يبقى تحت الحمل</td></tr>
-<tr><td>كسب حلقة الموضع Kp</td><td>دقة التتبّع وخطأ التتبّع</td><td>تجاوز في الموضع، اهتزاز عند التوقف</td><td>خطأ تتبّع كبير، دوائر بيضاوية</td></tr>
-<tr><td>التغذية الأمامية Feedforward</td><td>تقليل خطأ التتبّع دون رفع الكسب</td><td>تجاوز في الزوايا</td><td>خطأ تتبّع = v / Kp</td></tr>
-<tr><td>مرشّح Notch</td><td>إخماد رنين ميكانيكي محدد</td><td>(عرض كبير) تأخير طوري وعدم استقرار</td><td>—</td></tr>
-</tbody></table></div>
-<p>نموذجيًّا: Kp نحو <span class="eq">30–100 s⁻¹</span>، وكل حلقة خارجية أبطأ من التي بداخلها 4–10 مرات.</p></details>
-<div class="sum">الموضع خارجًا، ثم السرعة، ثم التيار. المحور المُصلَح لا يكتمل حتى يُضبط.</div>
+  <ul class="fx">
+    <li><b>حلقة الموضع · Kp</b><span>خطأ التتبّع</span></li>
+    <li><b>حلقة السرعة · Kv و Ti</b><span>صلابة المحور</span></li>
+    <li><b>حلقة التيار</b><span>من بيانات المحرك</span></li>
+  </ul>
+  <p class="alert">أعد الضبط بعد تغيير <b>المحرك أو الإنكودر أو الدرايف أو القارنة أو المسمار</b> أو الحمل.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>نسبة القصور الذاتي</h2>
-<p>دفع عربة فارغة يختلف عن دفعها محمّلة. الدرايف يحتاج أن يعرف: كم مرة الحمل أثقل من المحرك نفسه؟</p>
-<figure class="fig">
+  <p class="bf"><span class="ic">🛒</span><span>عربة فارغة أم محمّلة؟ <b>JL / JM</b>: كم مرة الحمل أثقل من المحرك.</span></p>
+  <figure class="fig">
 <svg viewBox="0 0 480 140" role="img" aria-label="قصور المحرك 0.3 وقصور الحمل 0.9 بوحدة عشرة أس سالب ثلاثة كغ م مربع، والنسبة 3" style="width:100%;max-width:480px;direction:ltr">
 <g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="15" fill="currentColor">
 
@@ -91,31 +77,18 @@
 </g></svg>
 <figcaption>المحور X: الحمل أثقل من المحرك ثلاث مرات. القيم بوحدة ×10⁻³ kg·m².</figcaption>
 </figure>
-<p>هذه هي <b>نسبة القصور الذاتي</b> <span class="term">Inertia ratio</span>: <span class="eq">JL / JM</span>. القيمة الخاطئة تفسد كل الضبط بعدها.</p>
-<div class="ex"><b>مثال — المحور X بالتسارع (ما يفعله الضبط الآلي):</b>
-<ol><li>من 0 إلى <span class="eq">3000 rpm</span> في <span class="eq">0.1 s</span></li>
-<li><span class="eq">α = 314.2 / 0.1 ≈ 3142 rad/s²</span></li>
-<li>متوسط العزم <span class="eq">4.27 N·m</span>، والاحتكاك <span class="eq">0.5 N·m</span></li>
-<li><span class="eq">J = (4.27 − 0.5) / 3142 ≈ 1.2×10⁻³ kg·m²</span></li>
-<li>قصور المحرك <span class="eq">JM = 0.3×10⁻³</span>، فالحمل <span class="eq">JL = 0.9×10⁻³</span></li>
-<li><span class="eq">JL / JM = 0.9 / 0.3 = 3.0</span></li></ol></div>
-<ul><li>التقدير أكبر كثيرًا من الحساب ← ابحث عن احتكاك أولًا.</li>
-<li>نسبة حتى نحو 5–10 سهلة الضبط.</li></ul>
-<details class="more"><summary>للاستزادة: حساب القصور من الكتلة والمسمار، والمحور Z</summary>
-<p class="mono" style="text-align:center">J<span class="term">linear</span> = m × (p / 2π)²   ·   J<span class="term">screw</span> = π ρ L d⁴ / 32</p>
-<ol><li>طاولة وقطعة 160 kg ومسمار بخطوة <span class="eq">10 mm</span>: <span class="eq">160 × (0.01 / 2π)² ≈ 4.05×10⁻⁴</span></li>
-<li>مسمار فولاذي Ø28 mm بطول <span class="eq">1000 mm</span>: <span class="eq">π × 7850 × 1 × 0.028⁴ / 32 ≈ 4.74×10⁻⁴</span></li>
-<li>قارنة: <span class="eq">0.2×10⁻⁴</span></li>
-<li>المجموع <span class="eq">≈ 8.99×10⁻⁴ ≈ 0.9×10⁻³ kg·m²</span>: يطابق القياس، فالميكانيكا سليمة.</li></ol>
-<ul><li>JM = 3.0×10⁻⁴ kg·m² قيمة نموذجية للتعلّم.</li>
-<li>النسب الأكبر كثيرًا من 10 تحتاج صلابة ميكانيكية عالية ومرشحات؛ ارجع إلى كتيّب الدرايف.</li>
-<li>في المحور Z يدخل وزن الرأس، ويضاف عزم ثابت ضد الجاذبية <span class="term">Torque offset</span></li></ul></details>
-<div class="sum">ابدأ بنسبة القصور. المحور X: الحمل 3 أضعاف المحرك.</div>
+  <div class="tiles">
+    <div class="tile"><span class="ic">⚙️</span><b>المحرك JM</b><span class="big">0.3</span></div>
+    <div class="tile"><span class="ic">📦</span><b>الحمل JL</b><span class="big">0.9</span></div>
+    <div class="tile"><span class="ic">⚖️</span><b>النسبة</b><span class="big">3.0</span></div>
+  </div>
+  <p class="sub">بوحدة ×10⁻³ kg·m². من تسارع 0 ← <bdi dir="ltr">3000 rpm</bdi> في <bdi dir="ltr">0.1 s</bdi>، ويطابق الحساب من الكتلة والمسمار.</p>
+  <p class="tip">حتى 5–10 سهلة الضبط. التقدير أكبر كثيرًا من الحساب؟ ابحث عن <b>احتكاك</b> أولًا.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>الكسب: صلب بلا رنين</h2>
-<p>الكسب مثل شدّ نابض: قليله يجعل المحور «طريًّا» بطيئًا، وكثيره يجعله يرتجف.</p>
-<figure class="fig">
+  <p class="bf"><span class="ic">🌀</span><span>الكسب كشدّ النابض: قليله <b>طريّ بطيء</b>، وكثيره <b>يرتجف</b>.</span></p>
+  <figure class="fig">
 <svg viewBox="0 0 480 240" role="img" aria-label="ثلاث استجابات لأمر خطوة في السرعة: بطيئة بلا تجاوز، جيدة بتجاوز نحو 5 بالمئة، ومتذبذبة بتجاوز كبير" style="width:100%;max-width:480px;direction:ltr">
 <g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="15" fill="currentColor">
 
@@ -127,36 +100,32 @@
 </g></svg>
 <figcaption>الهدف المنحنى الأخضر: صعود سريع وتجاوز صغير بلا رنين. المنحنى الأحمر يُسمع غالبًا أزيزًا.</figcaption>
 </figure>
-<ul><li>ارفع Kv تدريجيًّا والمحور يتحرك حركات قصيرة.</li>
-<li>توقّف عند أول أزيز أو رنين.</li>
-<li>اخفضه <b>20–30%</b> هامشًا للأمان.</li>
-<li>الهدف: تجاوز نحو 5–10%، بلا رنين.</li></ul>
-<div class="sum">ارفع الكسب حتى الأزيز، ثم ارجع 20–30%.</div>
+  <ol class="steps"><li>ارفع Kv تدريجيًّا</li><li>أول أزيز؟ توقّف</li><li class="on">اخفض <bdi dir="ltr">20–30 %</bdi></li></ol>
+  <p class="tip">الهدف: تجاوز <bdi dir="ltr">≈ 5–10 %</bdi> بلا رنين.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>الضبط خطوة بخطوة</h2>
-<div class="box safe"><b>قبل الضبط:</b> حدود الشوط فعّالة، والباب مغلق، ويدك قرب زر الطوارئ. في Z: الفرامل تعمل، وحد العزم يحمل الرأس.</div>
-<ol class="steps-l"><li>تحقق من بيانات المحرك والإنكودر والاتجاه.</li>
-<li>قدّر نسبة القصور، وقارنها بالحساب.</li>
-<li>شغّل الضبط الآلي بصلابة متوسطة.</li>
-<li>ارفع Kv يدويًّا حتى الأزيز، ثم اخفض 20–30%.</li>
-<li>اخفض Ti حتى يزول الخطأ الثابت بلا تذبذب.</li>
-<li>رنين بتردد ثابت؟ ضع مرشّح Notch، وعد إلى 4.</li>
-<li>ارفع Kp، ثم أضف التغذية الأمامية تدريجيًّا.</li>
-<li>احفظ المعاملات، وسجّل نسخة مؤرخة.</li></ol>
-<details class="more"><summary>للاستزادة: معايير القبول</summary>
-<div class="tblw"><table class="tbl"><thead><tr><th>القرار</th><th>استجابة الخطوة للسرعة</th><th>عند التوقف</th></tr></thead><tbody>
-<tr><td><b style="color:var(--good)">مقبول</b></td><td>تجاوز ≤ 5–10%، استقرار خلال بضع عشرات من ms</td><td>لا اهتزاز، خطأ الموضع يعود إلى ± بضع عدّات</td></tr>
-<tr><td><b style="color:var(--warn)">حسّن</b></td><td>بطء واضح أو تجاوز 10–20%</td><td>اهتزاز خفيف يختفي سريعًا</td></tr>
-<tr><td><b style="color:var(--bad)">غير مقبول</b></td><td>رنين مستمر، أزيز، أو AL.oc</td><td>المحور «يرتجف» وهو واقف <span class="term">Hunting</span></td></tr>
-</tbody></table></div>
-<p class="muted">قيم نموذجية للتعلّم؛ معايير القبول تحددها دقة الماكينة وكتيّب الدرايف والـ CNC.</p></details>
-<div class="sum">القصور أولًا، ثم السرعة، ثم الموضع. واحفظ النتيجة.</div>
+  <div class="box safe">حدود الشوط فعّالة، والباب مغلق، ويدك قرب الطوارئ. في Z: الفرامل تعمل وحد العزم يحمل الرأس.</div>
+  <ol class="steps">
+    <li>بيانات المحرك والاتجاه</li>
+    <li>نسبة القصور</li>
+    <li>ضبط آلي متوسط</li>
+    <li class="on">Kv حتى الأزيز <bdi dir="ltr">− 30 %</bdi></li>
+    <li>Ti حتى يزول الخطأ</li>
+    <li>رنين؟ Notch</li>
+    <li>Kp + تغذية أمامية</li>
+    <li>احفظ نسخة مؤرخة</li>
+  </ol>
+  <ul class="fx">
+    <li class="ok"><b>مقبول</b><span>تجاوز <bdi dir="ltr">≤ 5–10 %</bdi> · لا اهتزاز عند التوقف</span></li>
+    <li><b>حسّن</b><span>بطء أو تجاوز <bdi dir="ltr">10–20 %</bdi></span></li>
+    <li class="danger"><b>غير مقبول</b><span>رنين، أزيز، AL.oc، ارتجاف وهو واقف</span></li>
+  </ul>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>الرنين ومرشّح Notch</h2>
-<p>كوب زجاجي يرنّ بنغمة واحدة إذا طرقته. كذلك القارنة والمسمار: لهما تردد يتأرجحان عنده.</p>
-<figure class="fig">
+  <p class="bf"><span class="ic">🥂</span><span>كالكوب يرنّ بنغمة واحدة: <b>صفير بتردد ثابت</b> لا يتغير مع السرعة.</span></p>
+  <figure class="fig">
 <svg viewBox="0 0 480 250" role="img" aria-label="منحنى الاستجابة الترددية لحلقة السرعة فيه قمة رنين عند 820 هرتز، وبعد مرشح Notch تختفي القمة" style="width:100%;max-width:480px;direction:ltr">
 <g font-family="IBM Plex Mono,IBM Plex Sans Arabic,sans-serif" font-size="15" fill="currentColor">
 
@@ -165,49 +134,28 @@
 <text x="466" y="170" text-anchor="end" font-size="14" style="fill:var(--bad)">before: peak</text>
 <text x="466" y="190" text-anchor="end" font-size="14" style="fill:var(--good)">after notch</text>
 </g></svg>
-<figcaption>القمة تعني جزءًا ميكانيكيًّا يتأرجح عند <span class="eq">820 Hz</span>. المرشّح يحذف الكسب حول هذا التردد فقط.</figcaption>
+<figcaption>القمة تعني جزءًا ميكانيكيًّا يتأرجح عند <span class="eq"><bdi dir="ltr">820 Hz</bdi></span>. المرشّح يحذف الكسب حول هذا التردد فقط.</figcaption>
 </figure>
-<ul><li>العلامة: صفير بتردد ثابت لا يتغير مع السرعة.</li>
-<li>يظهر برفع Kv، ويختفي بخفضه.</li>
-<li>قِس التردد بأداة FFT في الدرايف.</li>
-<li>ضع مرشّح Notch ضيقًا عند التردد المقيس.</li>
-<li>بعد تغيير قطعة ميكانيكية: <b>أعد القياس</b>.</li></ul>
-<div class="ex"><b>المحور X بعد تغيير القارنة:</b> FFT أظهرت قمة عند <span class="eq">820 Hz</span>. بعد Notch عند <span class="eq">820 Hz</span> ارتفع Kv بنحو 40% بلا صفير، وتحسّن سطح القطعة.</div>
-<details class="more"><summary>للاستزادة: عرض المرشّح ومرشّح التمرير المنخفض</summary>
-<ul><li>المرشّح العريض جدًّا يضيف تأخيرًا طوريًّا، فيقل الاستقرار عند ترددات أقل.</li>
-<li>مرشّح التمرير المنخفض لأمر العزم <span class="term">Torque LPF</span> يخفف الضوضاء العامة، لكنه يبطئ الحلقة إن أُفرط فيه.</li>
-<li>محامل مسمار شُدّت بعزم مختلف تغيّر الرنين أيضًا.</li></ul></details>
-<div class="sum">صفير بتردد ثابت = رنين. قِسه، وضع Notch عنده، ثم ارفع الكسب.</div>
+  <ol class="steps"><li>FFT في الدرايف</li><li class="on">Notch ضيّق عند القمة</li><li>ارفع Kv</li></ol>
+  <div class="vs">
+    <div class="side"><b>قبل</b><span class="big">820 Hz</span><span class="nc">صفير وتموجات</span></div>
+    <i>←</i>
+    <div class="side"><b>بعد Notch</b><span class="big">Kv +40 %</span><span class="no">سطح نظيف</span></div>
+  </div>
+  <p class="tip">Notch العريض يضيف تأخيرًا ويقلل الاستقرار. وبعد تغيير قطعة ميكانيكية: أعد القياس.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s6">
   <h2 id="s6"><span class="k">6</span>المحور Z، وتوافق X مع Y</h2>
-<h3>تتابع الفرامل في Z</h3>
-<ol class="steps-l"><li><b>التشغيل:</b> مكّن المحرك، ثم حرّر الفرامل، وانتظر نحو <span class="eq">80 ms</span></li>
-<li><b>الإيقاف:</b> أغلق الفرامل أولًا، وانتظر نحو <span class="eq">100 ms</span>، ثم افصل التمكين.</li></ol>
-<ul><li>العكس يُسقط الرأس قليلًا في كل إيقاف.</li></ul>
-<h3>المحاور المتزامنة</h3>
-<ul><li>عند قطع دائرة بـ X و Y: <b>Kp متساوٍ</b> في المحورين.</li>
-<li>Kp مختلف ← دائرة بيضاوية مائلة.</li>
-<li>بعد إصلاح محور، قارن معاملاته بالمقابل.</li></ul>
-<div class="ex"><b>بتغذية <span class="eq">10 m/min</span>، أي <span class="eq">166.7 mm/s</span>:</b><br>
-X بـ <span class="eq">Kp = 50</span>: <span class="eq">166.7 / 50 ≈ 3.33 mm</span>.<br>
-Y بـ <span class="eq">Kp = 40</span>: <span class="eq">166.7 / 40 ≈ 4.17 mm</span>.<br>
-الفرق <span class="eq">0.83 mm</span> يشوّه الدائرة.</div>
-<details class="more"><summary>للاستزادة: أزمنة الفرامل، عزم الجاذبية، وأخطاء شائعة</summary>
-<ul><li>زمن تحرير الفرامل نحو <span class="eq">80 ms</span>، وزمن إغلاقها نحو <span class="eq">30 ms</span>؛ تأخير <span class="eq">100 ms</span> يعطي هامشًا.</li>
-<li>تيار إمساك الرأس (نحو <span class="eq">2.4 A</span> في الدرس 8) يُعوَّض بإزاحة عزم <span class="term">Torque offset</span>، فتتماثل الاستجابة صعودًا ونزولًا.</li>
-<li>اختبر توافق المحورين بدائرة اختبار أو بجهاز Ballbar.</li></ul>
-<div class="tblw"><table class="tbl"><thead><tr><th>الخطأ الشائع</th><th>الأثر</th></tr></thead><tbody>
-<tr><td>نسخ معاملات محور إلى محور بحمل مختلف</td><td>رنين أو بطء، لأن القصور مختلف</td></tr>
-<tr><td>رفع الكسب لإخفاء احتكاك ميكانيكي</td><td>رنين وحرارة، والعطل باقٍ</td></tr>
-<tr><td>Notch عريض جدًّا أو عند تردد خاطئ</td><td>عدم استقرار جديد عند تردد أقل</td></tr>
-<tr><td>إهمال حفظ المعاملات</td><td>ضياع الضبط عند تغيير الدرايف أو البطارية</td></tr>
-</tbody></table></div></details>
-<div class="box key"><b>على المحاكي:</b> قدّر نسبة القصور الذاتي للمحور المُصلَح، وارفع الكسب وأنت تراقب استجابة الخطوة وخطأ التتبّع، ثم أضف مرشّح Notch عند تردد الرنين. <a class="btn pri" href="drive.html#tuning" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
-<div class="sum">في Z: الفرامل تُغلق قبل فصل التمكين. في X و Y: Kp متساوٍ.</div>
+  <div class="rule2"><div><b>تشغيل Z</b><span class="mono">مكّن ← حرّر ← انتظر 80 ms</span></div><div><b>إيقاف Z</b><span class="mono">أغلق الفرامل ← 100 ms ← افصل</span></div></div>
+  <p class="alert">العكس <b>يُسقط الرأس قليلًا</b> في كل إيقاف.</p>
+  <div class="vs">
+    <div class="side"><b>X · Kp 50</b><span class="big">3.33 mm</span></div>
+    <i>مقابل</i>
+    <div class="side"><b>Y · Kp 40</b><span class="big">4.17 mm</span></div>
+  </div>
+  <p class="tip">فرق <bdi dir="ltr">0.83 mm</bdi> يجعل الدائرة <b>بيضاوية</b>: Kp متساوٍ في المحورين المتزامنين. ولا تنسخ معاملات محور إلى محور بحمل مختلف.</p>
+  <div class="box key"><b>على المحاكي:</b> قدّر نسبة القصور الذاتي للمحور المُصلَح، وارفع الكسب وأنت تراقب استجابة الخطوة وخطأ التتبّع، ثم أضف مرشّح Notch عند تردد الرنين. <a class="btn pri" href="drive.html#tuning" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
-
-
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
   <p>أجب عن 5 من 6 إجابات صحيحة على الأقل ليُحتسب الدرس.</p>
