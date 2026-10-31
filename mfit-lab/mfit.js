@@ -37,7 +37,7 @@ const T = IL.T = (ar, en) => EN ? en : ar;
 /* every lesson = one workshop game («sim», mfit-sims.js) + questions («quiz»); lesson 16 adds the final exam.
    Keep this a plain literal: functions/_lib/courses.js and assets/resume.js read the task ids from it. */
 IL.COURSE = [
-  {id:'l1', n:1, file:'lesson-01.html', title:T('المكنة من جوّه: خط نقل الحركة', 'Inside the machine: the drive train'),
+  {id:'l1', n:1, file:'lesson-01.html', title:T('الماكينة من جوّه: خط نقل الحركة', 'Inside the machine: the drive train'),
     sub:T('الموتور والكوبلنج والجيربوكس والسير والجنزير والرولمان: كل جزء وشغلته، وإزاي السرعة بتقل والعزم بيزيد', 'Motor, coupling, gearbox, belt, chain and bearings: what each part does, and how speed drops while torque rises'),
     tasks:[['sim',T('اعرف أجزاء السير الناقل', 'Identify the parts of the conveyor drive')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l2', n:2, file:'lesson-02.html', title:T('المسامير والصواميل', 'Bolts and nuts'),
@@ -50,7 +50,7 @@ IL.COURSE = [
     sub:T('الخابور ومجراه، مقاس الخابور من قطر العمود، جلبة التيبر لوك، مسمار التثبيت والسيركلبس', 'Keys and keyways, key size from shaft diameter, taper-lock bushes, set screws and circlips'),
     tasks:[['sim',T('ركّب البكرة على العمود', 'Mount the pulley on the shaft')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l5', n:5, file:'lesson-05.html', title:T('الكوبلنجات', 'Couplings'),
-    sub:T('الجامد والمرن: الجو (العنكبوت)، الكاوتش، التروس، الديسك، والهيدروليك. تختار إيه لكل مكنة', 'Rigid and flexible: jaw (spider), tyre, gear, disc and fluid couplings, and which one fits each machine'),
+    sub:T('الجامد والمرن: الجو (العنكبوت)، الكاوتش، التروس، الديسك، والهيدروليك. تختار إيه لكل ماكينة', 'Rigid and flexible: jaw (spider), tyre, gear, disc and fluid couplings, and which one fits each machine'),
     tasks:[['sim',T('اختار الكوبلنج المناسب', 'Choose the right coupling')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l6', n:6, file:'lesson-06.html', title:T('محاذاة الأعمدة (Alignment)', 'Shaft alignment'),
     sub:T('الانحراف الموازي والزاوي، المسطرة والساعة والليزر، الشيمز، والرجل الطايرة', 'Parallel and angular misalignment, straightedge, dial and laser, shims and soft foot'),
@@ -84,7 +84,7 @@ IL.COURSE = [
     tasks:[['sim',T('شحّم الرولمان بالكمية الصح', 'Grease the bearing with the right amount')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l16', n:16, file:'lesson-16.html', title:T('تشخيص الأعطال + الامتحان النهائي', 'Fault finding + final exam'),
     sub:T('الصوت والحرارة والاهتزاز والتسريب: تعرف العطل من علامته، ثم الامتحان النهائي', 'Noise, heat, vibration and leaks: tell the fault from its sign, then the final exam'),
-    tasks:[['sim',T('شخّص 4 مكن عطلانة', 'Diagnose 4 faulty machines')],['quiz',T('أسئلة الدرس', 'Lesson questions')],['final',T('الامتحان النهائي', 'Final exam')]]}
+    tasks:[['sim',T('شخّص 4 ماكينات عطلانة', 'Diagnose 4 faulty machines')],['quiz',T('أسئلة الدرس', 'Lesson questions')],['final',T('الامتحان النهائي', 'Final exam')]]}
 ];
 IL.lessonById = id => IL.COURSE.find(l => l.id === id);
 IL.summary = id => { const l = IL.lessonById(id); const done = l.tasks.filter(t => IL.store.has(id + '/' + t[0])).length; return {done, total:l.tasks.length}; };
