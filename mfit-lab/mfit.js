@@ -1,4 +1,4 @@
-/* كورس ميكانيكا المكن العملية: shared engine for the hub and the lessons (store/progress · theme · lesson shell · quiz).
+/* كورس ميكانيكا الماكينات: shared engine for the hub and the lessons (store/progress · theme · lesson shell · quiz).
    Same engine as mech-lab/mech.js (copied), only the course map differs. The workshop games live in mfit-sims.js. */
 (function(){
 'use strict';

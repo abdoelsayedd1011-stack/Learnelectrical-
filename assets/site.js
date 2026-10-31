@@ -21,7 +21,7 @@
       inside:["السرعة والعجلة والسقوط والمقذوفات", "قوانين نيوتن والاحتكاك والطاقة والقدرة", "العزم والتروس والضغط والهيدروليك", "مشروع: تحسب موتور ونش"],
       tags:"mech mechanics physics ميكانيكا الميكانيكا فيزيا فيزياء أساسيات الميكانيكا مبتدئين beginner units وحدات vectors متجهات speed سرعة acceleration عجلة تسارع free fall سقوط حر projectile مقذوفات newton نيوتن force قوة mass كتلة weight وزن friction احتكاك ramp منحدر سطح مائل work شغل energy طاقة power قدرة kw hp حصان efficiency كفاءة momentum كمية الحركة collision تصادم torque عزم lever رافعة balance اتزان rpm rotation دوران gears تروس gearbox علبة تروس pressure ضغط hydraulic هيدروليك pascal باسكال jack كريك winch ونش motor sizing اختيار موتور" },
     { id:"mfit", path:"mfit-lab/index.html", group:"mfit", brand:"كورس", brandKey:"beginner",
-      name:"ميكانيكا المكن العملية", kind:"عملي للصيانة", disp:"85 N·m", dispClass:"lcd", rtlName:true,
+      name:"ميكانيكا الماكينات", kind:"عملي للصيانة", disp:"85 N·m", dispClass:"lcd", rtlName:true,
       line:"اللي الفني بيعمله بإيده: يربط بالعزم الصح، يركّب رولمان وسيل، يظبط محاذاة، يشد سير وجنزير، ويشحّم بالكمية الصح.",
       guided:16, exercises:16, params:0, faults:4,
       inside:["المسامير وعزم الربط والخوابير", "الكوبلنجات والمحاذاة والميكرومتر", "الرولمان والأورنج والسيل", "التروس والجيربوكس والسيور والجنازير والتشحيم"],
@@ -234,7 +234,7 @@
   var GROUPS = [
     { key:"basics", title:"أساسيات الكهربا", sub:"للمبتدئين خالص · قبل الكلاسيك", land:"courses/basics.html" },
     { key:"mech", title:"أساسيات الميكانيكا", sub:"للمبتدئين · الحركة والقوة والطاقة والعزم", land:"courses/mech.html" },
-    { key:"mfit", title:"ميكانيكا المكن العملية", sub:"مسامير وعزم · كوبلنج ومحاذاة · رولمان وسيل · تروس وسيور · تشحيم", land:"courses/mfit.html" },
+    { key:"mfit", title:"ميكانيكا الماكينات", sub:"مسامير وعزم · كوبلنج ومحاذاة · رولمان وسيل · تروس وسيور · تشحيم", land:"courses/mfit.html" },
     { id:"clm223", path:"clm223-lab/index.html", group:"temp", brand:"Endress+Hauser", brandKey:"eh",
       name:"Liquisys M", kind:"قياس Conductivity", disp:"1.238 <span class=\"sv\">mS</span>", dispClass:"lcd", html:true,
       line:"محوّل قياس توصيلية المياه من Endress+Hauser، بدرس كامل ومحاكي على برج تبريد.",
@@ -506,7 +506,7 @@
     maint:{ ac:"#b4d65a", ar:"صيانة المحركات والمحولات", en:"Motor & Transformer Maintenance" },
     srvm:{ ac:"#8b8fff", ar:"صيانة محركات السيرفو", en:"Servo Motor & Drive Maintenance" },
     mech:{ ac:"#ffb03a", ar:"أساسيات الميكانيكا", en:"Mechanics Basics" },
-    mfit:{ ac:"#2dd4bf", ar:"ميكانيكا المكن العملية", en:"Practical Machine Mechanics" }
+    mfit:{ ac:"#2dd4bf", ar:"ميكانيكا الماكينات", en:"Machine Mechanics" }
   };
   var CVV = "p16";
   function coverHtml(l, toc){

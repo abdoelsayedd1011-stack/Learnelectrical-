@@ -1,4 +1,4 @@
-/* كورس ميكانيكا المكن العملية: the workshop games. Each one is a small game in rounds on a real machine drawing;
+/* كورس ميكانيكا الماكينات: the workshop games. Each one is a small game in rounds on a real machine drawing;
    the lesson's «sim» task is marked when the last round is won.
    Needs mfit.js (IL) loaded first. The shell helpers are the same as mech-lab/mech-sims.js (copied). */
 (function(){

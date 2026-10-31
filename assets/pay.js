@@ -33,7 +33,7 @@
     { id: "maint", title: "صيانة المحركات والمحولات", hub: "maint-lab/index.html", inc: "كل الدروس + ورشة صيانة المحركات ومحطة صيانة المحولات والامتحان والشهادة" },
     { id: "srvm", title: "صيانة محركات السيرفو", hub: "servo-maint-lab/index.html", inc: "كل الدروس + منضدة صيانة محرك السيرفو ومحطة صيانة الدرايف والامتحان والشهادة" },
     { id: "mech", title: "أساسيات الميكانيكا", hub: "mech-lab/index.html", inc: "كل الدروس + 11 لعبة تفاعلية والامتحان والشهادة" },
-    { id: "mfit", title: "ميكانيكا المكن العملية", hub: "mfit-lab/index.html", inc: "كل الدروس + 16 تمرين ورشة والامتحان والشهادة" }
+    { id: "mfit", title: "ميكانيكا الماكينات", hub: "mfit-lab/index.html", inc: "كل الدروس + 16 تمرين ورشة والامتحان والشهادة" }
   ];
   if (EN) COURSES.forEach(function(c){ c.title = EN.courses[c.id] || c.title; c.inc = EN.payInc[c.id] || c.inc; });
   COURSES.forEach(function(c){ c.href = EN ? L(c.hub) : c.hub; c.ar = !!EN && !/^\/en\//.test(c.href); });
