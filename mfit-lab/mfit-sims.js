@@ -580,4 +580,150 @@ MF.micro = function(host, opt){
   const game = rounds(g, opt.rounds || [], L, setup);
 };
 
+
+/* ---------------- film: a short animated explainer, scene by scene, caption under each scene ----------------
+   <div class="mf-film" data-film="bolts" data-caps='["…","…"]'></div> — not a task, just to watch. */
+const FILMS = MF.FILMS = MF.FILMS || {};
+const ST = '#94a3b8', DK = '#475569', P1 = '#cbd5e1', P2 = '#a8b4c4', AC = '#14b8a6', BL = '#3b82f6', RD = '#ef4444', GD = '#22c55e';
+const cl = (v, a, b) => Math.max(a, Math.min(b, v));
+const seg = (t, a, b) => cl((t - a) / (b - a), 0, 1);           // 0..1 inside [a,b] of the scene time
+const ease = x => x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+/* hex nut / bolt head seen from the side: edges move with the angle so it looks like it turns */
+function hexSide(cx, y, w, h, ang, fill){
+  let o = `<rect x="${cx - w / 2}" y="${y}" width="${w}" height="${h}" rx="3" fill="${fill || ST}" stroke="${DK}" stroke-width="1.5"/>`;
+  for (let k = 0; k < 6; k++){
+    const a = ang + k * Math.PI / 3;
+    if (Math.cos(a) > 0.05) o += `<line x1="${cx + Math.sin(a) * w / 2}" y1="${y + 1}" x2="${cx + Math.sin(a) * w / 2}" y2="${y + h - 1}" stroke="${DK}" stroke-width="1.2"/>`;
+  }
+  return o;
+}
+function shaft(y0, y1, coat){
+  let o = `<rect x="168" y="${y0}" width="24" height="${y1 - y0}" fill="${ST}" stroke="${DK}" stroke-width="1.5"/>`;
+  for (let y = y0 + 4; y < y1 - 3; y += 6) o += `<line x1="168" y1="${y}" x2="192" y2="${y + 4}" stroke="${DK}" stroke-width="1"/>`;
+  if (coat) o += `<rect x="165" y="${coat[0]}" width="30" height="${coat[1] - coat[0]}" rx="4" fill="${coat[2]}" opacity="${coat[3]}"/>`;
+  return o;
+}
+function plates(){
+  return `<rect x="50" y="86" width="112" height="24" fill="${P1}" stroke="${DK}" stroke-width="1.5"/><rect x="198" y="86" width="112" height="24" fill="${P1}" stroke="${DK}" stroke-width="1.5"/>
+    <rect x="50" y="110" width="112" height="24" fill="${P2}" stroke="${DK}" stroke-width="1.5"/><rect x="198" y="110" width="112" height="24" fill="${P2}" stroke="${DK}" stroke-width="1.5"/>`;
+}
+const shake = (t, on) => on ? (Math.sin(t * 90) * 2.6).toFixed(2) : 0;
+function waves(t, on){
+  if (!on) return '';
+  const a = (0.5 + 0.5 * Math.sin(t * 40)).toFixed(2);
+  return `<g stroke="${RD}" stroke-width="2.5" fill="none" opacity="${a}"><path d="M22 96 q6 -8 12 0 t12 0"/><path d="M22 116 q6 -8 12 0 t12 0"/><path d="M314 96 q6 -8 12 0 t12 0"/><path d="M314 116 q6 -8 12 0 t12 0"/></g>`;
+}
+const mark = (ok, x, y) => ok ? `<g transform="translate(${x} ${y})"><circle r="15" fill="${GD}"/><path d="M-7 0 l5 5 l9 -10" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`
+  : `<g transform="translate(${x} ${y})"><circle r="15" fill="${RD}"/><path d="M0 -8 v9 M0 6 v1" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/></g>`;
+const arrowV = (x, y0, y1, c) => { const d = y1 > y0 ? 1 : -1; return `<path d="M${x} ${y0} V${y1 - d * 6}" stroke="${c}" stroke-width="3.4"/><path d="M${x - 7} ${y1 - d * 8} L${x} ${y1} L${x + 7} ${y1 - d * 8} Z" fill="${c}"/>`; };
+const label = (x, y, txt, c, anchor) => `<text x="${x}" y="${y}" font-size="17" font-weight="700" fill="${c || DK}" text-anchor="${anchor || 'middle'}">${txt}</text>`;
+
+FILMS.bolts = [
+  /* 1 · the problem: vibration turns the nut loose */
+  {d: 6, draw(t){
+    const back = ease(seg(t, .15, .85)), vib = t > .1;
+    const g = `<g transform="translate(${shake(t, vib)} 0)">` + shaft(60, 200) + plates() + hexSide(180, 62, 72, 24, 0) + hexSide(180, 134 + back * 18, 66, 22, back * 9) + '</g>';
+    return g + waves(t, vib) + (back > .9 ? mark(false, 268, 162) + label(268, 196, T('فكّت!', 'Loose!'), RD) : '');
+  }},
+  /* 2 · flat washer: the load spreads */
+  {d: 7, draw(t){
+    const inW = ease(seg(t, .42, .62)), wx = 180 + (1 - inW) * 230, y = inW > .99 ? 56 : 62;
+    let o = shaft(y, 200) + plates() + hexSide(180, y, 72, 24, 0) + hexSide(180, 134, 66, 22, 0);
+    o += `<rect x="${wx - 58}" y="80" width="116" height="6" rx="2" fill="${AC}" stroke="${DK}" stroke-width="1.2"/>`;
+    if (t < .42){ const a = seg(t, .05, .2); o += `<g opacity="${a}">` + arrowV(158, 64, 86, RD) + arrowV(202, 64, 86, RD) + `<path d="M146 88 h68" stroke="${RD}" stroke-width="4"/></g>` + (t > .22 ? label(318, 104, T('الضغط متركّز', 'Load in one spot'), RD, 'start') : ''); }
+    if (t > .62){ const a = seg(t, .62, .75); o += `<g opacity="${a}">` + [130, 155, 205, 230].map(x => arrowV(x, 66, 86, GD)).join('') + `</g>` + label(318, 104, T('الضغط اتوزّع', 'Load spread out'), GD, 'start'); }
+    return o;
+  }},
+  /* 3 · nyloc nut: the nylon ring grips the thread */
+  {d: 7, draw(t){
+    const up = ease(seg(t, 0, .4)), vib = t > .55;
+    const ny = 134 + (1 - up) * 50, ang = (1 - up) * 14;
+    let o = `<g transform="translate(${shake(t, vib)} 0)">` + shaft(60, 200) + plates() + hexSide(180, 62, 72, 24, 0) + hexSide(180, ny, 66, 26, ang) +
+      `<rect x="150" y="${ny + 18}" width="60" height="8" rx="2" fill="${BL}" stroke="${DK}" stroke-width="1"/></g>`;
+    if (t > .4){ const a = seg(t, .4, .5);
+      o += `<g opacity="${a}"><circle cx="292" cy="160" r="40" fill="#fff" stroke="${BL}" stroke-width="3"/>
+        <rect x="282" y="122" width="20" height="76" fill="${ST}"/>` + [130, 142, 154, 166, 178, 190].map(y => `<path d="M282 ${y} l-6 5 l6 5 M302 ${y} l6 5 l-6 5" fill="${ST}" stroke="${DK}"/>`).join('') +
+        `<rect x="262" y="150" width="14" height="22" fill="${BL}"/><rect x="308" y="150" width="14" height="22" fill="${BL}"/>
+        <path d="M228 168 L254 162" stroke="${BL}" stroke-width="2" stroke-dasharray="4 3"/></g>`; }
+    o += waves(t, vib);
+    if (t > .8) o += mark(true, 70, 170);
+    return o;
+  }},
+  /* 4 · two nuts lock against each other */
+  {d: 7, draw(t){
+    const up = ease(seg(t, .05, .45)), vib = t > .7;
+    const n2 = 156 + (1 - up) * 40;
+    let o = `<g transform="translate(${shake(t, vib)} 0)">` + shaft(60, 210) + plates() + hexSide(180, 62, 72, 24, 0) + hexSide(180, 134, 66, 22, 0) + hexSide(180, n2, 66, 22, (1 - up) * 12, '#7c8a9c') + '</g>';
+    if (t > .48){ const a = seg(t, .48, .6); o += `<g opacity="${a}">` + arrowV(232, 152, 132, AC) + arrowV(232, 160, 182, AC) + `</g>` + label(250, 162, T('بيزنقوا في بعض', 'They lock each other'), AC, 'start'); }
+    o += waves(t, vib);
+    if (t > .85) o += mark(true, 70, 170);
+    return o;
+  }},
+  /* 5 · thread locker: a drop on the thread, fills the gaps and sets */
+  {d: 8, draw(t){
+    const drop = seg(t, .02, .22), wet = seg(t, .2, .3), up = ease(seg(t, .32, .62)), set = seg(t, .62, .75);
+    const ny = 134 + (1 - up) * 46;
+    let o = shaft(60, 200, wet > 0 ? [150, 196, BL, (.35 + .4 * wet).toFixed(2)] : null) + plates() + hexSide(180, 62, 72, 24, 0) + hexSide(180, ny, 66, 22, (1 - up) * 14);
+    if (drop < 1) o += `<path transform="translate(${232 - drop * 34} ${140 + drop * 18})" d="M0 -14 c-6 9 -9 13 -9 17 a9 9 0 0 0 18 0 c0 -4 -3 -8 -9 -17z" fill="${BL}" stroke="${DK}"/>`;
+    if (set > 0) o += `<g opacity="${set}">` + label(240, 160, T('أزرق: يتفك بالمفتاح', 'Blue: undo with a spanner'), BL, 'start') + label(240, 186, T('أحمر: دايم، يتفك بالتسخين', 'Red: permanent, needs heat'), RD, 'start') + `</g>`;
+    return o;
+  }},
+  /* 6 · thread engagement: steel ≥ 1×d, aluminium / cast iron 1.5–2×d */
+  {d: 8, draw(t){
+    const a = ease(seg(t, .05, .4)), b = ease(seg(t, .45, .8));
+    const block = (x, c, nm) => `<rect x="${x}" y="100" width="130" height="110" fill="${c}" stroke="${DK}" stroke-width="1.5"/>` + label(x + 65, 226, nm, DK);
+    const bolt = (cx, depth, k) => { const y0 = 100 - 110 + depth * k + 4; return `<g transform="translate(${cx - 180} 0)">` + shaft(y0, y0 + 110) + hexSide(180, y0 - 22, 60, 22, k * 16) + '</g>'; };
+    let o = block(30, P2, T('حديد', 'Steel')) + block(200, '#dbe3ec', T('ألومنيوم / زهر', 'Aluminium / cast iron'));
+    o += `<rect x="83" y="100" width="24" height="${50 * a}" fill="#eef2f6"/><rect x="253" y="100" width="24" height="${100 * b}" fill="#f4f7fa"/>`;
+    return o + bolt(95, 50, a) + bolt(265, 100, b)
+      + (a > .99 ? arrowV(130, 100, 150, AC) + arrowV(130, 150, 100, AC) + label(146, 130, '1×d', AC, 'start') : '')
+      + (b > .99 ? arrowV(300, 100, 200, AC) + arrowV(300, 200, 100, AC) + label(316, 154, '2×d', AC, 'start') : '');
+  }}
+];
+
+MF.K = {hexSide, shaft, plates, shake, waves, mark, arrowV, label, seg, ease, cl, C:{ST, DK, P1, P2, AC, BL, RD, GD}};
+MF.film = function(host){
+  const scenes = FILMS[host.dataset.film]; if (!scenes) return;
+  let caps = []; try { caps = JSON.parse(host.dataset.caps || '[]'); } catch (e) {}
+  host.innerHTML = `<div class="mf-stage"><svg viewBox="10 10 420 222" role="img" aria-label="${esc(caps.join(' '))}"></svg>
+    <button type="button" class="mf-big" aria-label="${T('شغّل', 'Play')}">▶</button></div>
+    <div class="mf-cap"><b class="mf-no"></b><span class="mf-tx" aria-live="polite"></span></div>
+    <div class="mf-bar"><button type="button" class="btn mf-prev" aria-label="${T('اللي قبله', 'Previous')}">${EN ? '⏮' : '⏭'}</button>
+      <button type="button" class="btn pri mf-play"></button>
+      <button type="button" class="btn mf-next" aria-label="${T('اللي بعده', 'Next')}">${EN ? '⏭' : '⏮'}</button>
+      <span class="mf-dots">${scenes.map((_, i) => `<i data-i="${i}"></i>`).join('')}</span></div>`;
+  const q = s => host.querySelector(s), svg = q('svg'), big = q('.mf-big'), playB = q('.mf-play');
+  let i = 0, t = 0, playing = false, last = 0, raf = 0;
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function paint(){
+    svg.innerHTML = scenes[i].draw(cl(t, 0, 1));
+    q('.mf-no').textContent = (i + 1) + ' / ' + scenes.length;
+    q('.mf-tx').innerHTML = caps[i] || '';
+    host.querySelectorAll('.mf-dots i').forEach((d, k) => d.className = k < i ? 'done' : k === i ? 'on' : '');
+    const end = i === scenes.length - 1 && t >= 1;
+    playB.textContent = playing ? T('⏸ وقّف', '⏸ Pause') : end ? T('↻ من الأول', '↻ Replay') : T('▶ شغّل', '▶ Play');
+    big.hidden = playing || i > 0 || t > 0;
+  }
+  function tick(now){
+    if (!playing) return;
+    const dt = Math.min(.1, (now - last) / 1000); last = now;
+    t += dt / (scenes[i].d + 2.2);                       // +2.2 s to read the caption
+    if (t >= 1){ if (i < scenes.length - 1){ t = 0; i++; } else { t = 1; playing = false; } }
+    paint(); if (playing) raf = requestAnimationFrame(tick);
+  }
+  function play(){ if (i === scenes.length - 1 && t >= 1){ i = 0; t = 0; } playing = true; last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(tick); paint(); }
+  function stop(){ playing = false; cancelAnimationFrame(raf); paint(); }
+  function go(k){ i = cl(k, 0, scenes.length - 1); t = reduce || !playing ? .999 : 0; if (!playing) t = .999; paint(); }
+  big.addEventListener('click', play);
+  playB.addEventListener('click', () => playing ? stop() : play());
+  q('.mf-prev').addEventListener('click', () => { const p = playing; go(i - 1); if (p){ t = 0; } });
+  q('.mf-next').addEventListener('click', () => { const p = playing; go(i + 1); if (p){ t = 0; } });
+  host.querySelector('.mf-dots').addEventListener('click', e => { const d = e.target.closest('i'); if (d){ const p = playing; go(+d.dataset.i); if (p) t = 0; } });
+  if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting && playing) stop(); })).observe(host);
+  t = 0; paint();
+};
+MF.initFilms = initFilms;
+function initFilms(){ document.querySelectorAll('.mf-film[data-film]').forEach(h => { if (!h.dataset.ready){ h.dataset.ready = 1; MF.film(h); } }); }
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initFilms); else initFilms();
+
 })();
