@@ -209,7 +209,7 @@ MF.drive = function(host, opt){
   });
   const q = (ar, en) => T(ar, en);
   const game = rounds(g, [
-    {goal:q('دوس على كل جزء نطلبه منك في المكنة.', 'Tap each part we ask for.'), ok:q('عرفت الأجزاء الأساسية في أي خط نقل حركة.', 'You know the main parts of any drive train.'), asks:[
+    {goal:q('دوس على كل جزء نطلبه منك في الماكينة.', 'Tap each part we ask for.'), ok:q('عرفت الأجزاء الأساسية في أي خط نقل حركة.', 'You know the main parts of any drive train.'), asks:[
       {q:q('الكوبلنج', 'the coupling'), want:['coupling'], hint:q('هو الوصلة الصغيرة اللي بين الموتور والجيربوكس.', 'It is the small joint between the motor and the gearbox.')},
       {q:q('الجيربوكس', 'the gearbox'), want:['gearbox'], hint:q('الصندوق الأخضر اللي فيه عين الزيت.', 'The green box with the oil sight glass.')},
       {q:q('الجنزير', 'the chain'), want:['chain'], hint:q('اللي طالع لفوق ورابط العمودين.', 'The strand going up between the two shafts.')},
@@ -217,7 +217,7 @@ MF.drive = function(host, opt){
     {goal:q('السرعة والعزم: دوس على الإجابة.', 'Speed and torque: tap the answer.'), ok:q('السرعة بتقل من الموتور للحمل، والعزم بيزيد بنفس النسبة تقريبًا.', 'Speed falls from motor to load, and torque rises by about the same ratio.'), asks:[
       {q:q('أسرع جزء بيلف', 'the fastest turning part'), want:['motor', 'coupling'], ok:q('الموتور والكوبلنج بيلفّوا <bdi dir="ltr">1450 rpm</bdi>.', 'Motor and coupling turn at 1450 rpm.'), hint:q('بص على أرقام الـ rpm.', 'Look at the rpm numbers.')},
       {q:q('اللي بيقلل السرعة 20 مرة', 'the part that cuts speed 20 times'), want:['gearbox'], ok:q('<bdi dir="ltr">1450 ÷ 20 ≈ 72 rpm</bdi>.', '1450 ÷ 20 ≈ 72 rpm.'), hint:q('<bdi dir="ltr">1450</bdi> بقت <bdi dir="ltr">72</bdi> بعد أنهي جزء؟', 'After which part does 1450 become 72?')},
-      {q:q('أعلى عزم في المكنة', 'the highest torque in the machine'), want:['drum'], ok:q('أبطأ عمود = أعلى عزم. الدرام حوالي <bdi dir="ltr">275 N·m</bdi>.', 'The slowest shaft has the highest torque: about 275 N·m on the drum.'), hint:q('أبطأ حاجة بتلف هي اللي عزمها أعلى.', 'The slowest part has the highest torque.')},
+      {q:q('أعلى عزم في الماكينة', 'the highest torque in the machine'), want:['drum'], ok:q('أبطأ عمود = أعلى عزم. الدرام حوالي <bdi dir="ltr">275 N·m</bdi>.', 'The slowest shaft has the highest torque: about 275 N·m on the drum.'), hint:q('أبطأ حاجة بتلف هي اللي عزمها أعلى.', 'The slowest part has the highest torque.')},
       {q:q('اللي بيمنع السبروكت يلف على العمود', 'what stops the sprocket slipping on its shaft'), want:['key'], hint:q('قطعة صغيرة صفرا على عمود خرج الجيربوكس.', 'A small yellow piece on the gearbox output shaft.')}]},
     {goal:q('الصيانة: فين بتعمل كل حاجة؟', 'Maintenance: where do you do each job?'), ok:q('دي أهم 4 شغلانات صيانة، وكل واحدة ليها درس في الكورس.', 'These are the 4 key maintenance jobs, and each has its own lesson in this course.'), asks:[
       {q:q('فين بتحط الشحم؟', 'where does the grease go?'), want:['bearing'], ok:q('بز الشحم فوق كرسي الرولمان.', 'Through the grease nipple on the bearing housing.'), hint:q('دوّر على البز الأصفر الصغير.', 'Look for the small yellow nipple.')},
@@ -489,7 +489,7 @@ MF.grease = function(host, opt){
   const nm = el(s, 'text', {x:380, y:200, 'text-anchor':'middle', 'font-size':16, 'font-weight':700, fill:'var(--ink)', 'font-family':'var(--font-mono)'});
   const rd = readouts(g, [['b', T('الرولمان', 'Bearing')], ['G', T('الكمية المطلوبة', 'Amount needed')], ['now', T('اللي حطّيته', 'You put in')]]);
   const S = slider(g, {label:T('عدد ضربات المسدس (الضربة ≈ 1.5 جم)', 'Grease-gun strokes (≈ 1.5 g each)'), min:0, max:40, step:1, value:0}, () => upd(false));
-  button(g, T('شغّل المكنة وشوف', 'Run the machine and check'), () => upd(true), true);
+  button(g, T('شغّل الماكينة وشوف', 'Run the machine and check'), () => upd(true), true);
   let cur = null;
   function upd(chk){
     if (!cur) return;
