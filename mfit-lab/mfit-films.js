@@ -120,7 +120,7 @@ F.drive_flow = [
     return s;
   }},
   {d: 6, draw(t){
-    return train(t, {bearings: fade(t, .05, .2), bolts: fade(t, .45, .6)}) + tag(110, 40, T('رولمان تحت كل عمود', 'A bearing under every shaft'), AC, fade(t, .1, .25)) + tag(150, 222, T('وكله مربوط بمسامير', 'all bolted to the frame'), OR, fade(t, .5, .65));
+    return train(t, {bearings: fade(t, .05, .2), bolts: fade(t, .45, .6)}) + tag(220, 40, T('رولمان تحت كل عمود', 'A bearing under every shaft'), AC, fade(t, .1, .25)) + tag(150, 222, T('وكله مربوط بمسامير', 'all bolted to the frame'), OR, fade(t, .5, .65));
   }}
 ];
 
@@ -628,5 +628,126 @@ F.gbx_daily = [
   {d: 5, draw(t){ const v = Math.round(55 + seg(t, .1, .6) * 17); return `<rect x="100" y="60" width="200" height="130" rx="10" fill="${GB}" stroke="${DK}" stroke-width="2"/><rect x="320" y="60" width="90" height="44" rx="8" fill="#0f172a"/><text x="365" y="90" font-size="20" font-weight="700" text-anchor="middle" fill="${v < 80 ? GD : RD}" font-family="monospace" direction="ltr">${v}°C</text><path d="M300 90 L322 84" stroke="${RD}" stroke-width="2" stroke-dasharray="3 3"/>` + tag(220, 222, T('الحرارة على الجسم أقل من 80', 'Case temperature under 80 °C'), AC); }},
   {d: 6, draw(t){ const up = ease(seg(t, .1, .5)); let s = `<rect x="80" y="120" width="280" height="70" rx="10" fill="${GB}" stroke="${DK}" stroke-width="2"/><g transform="translate(0 ${r1(-up * 60)})"><rect x="200" y="176" width="40" height="22" rx="3" fill="#64748b" stroke="${DK}"/><rect x="210" y="198" width="20" height="18" fill="#94a3b8" stroke="${DK}"/>`; for (let k = 0; k < 12; k++) s += `<line x1="${r1(212 + (k * 7) % 16)}" y1="${r1(200 + (k * 5) % 14)}" x2="${r1(214 + (k * 7) % 16)}" y2="${r1(203 + (k * 5) % 14)}" stroke="#111" stroke-width="2"/>`; return s + '</g>' + tag(220, 40, T('سدّادة المغناطيس: برادة كتير = تآكل', 'Magnetic plug: lots of filings = wear'), RD, fade(t, .5, .65)); }},
   {d: 7, draw(t){ const c = [['#fef3c7', T('لبني: دخلته مية', 'Milky: water got in')], ['#fde68a', T('برغاوي: زيادة أو نوع غلط', 'Foamy: overfilled or wrong oil')], ['#1c1917', T('أسود محروق: سخونية', 'Black, burnt: overheating')]]; let s = ''; c.forEach((x, i) => { const a = fade(t, .05 + i * .3, .15 + i * .3); s += `<g opacity="${a}"><rect x="${70 + i * 110}" y="50" width="80" height="110" rx="8" fill="${x[0]}" stroke="${DK}" stroke-width="2"/>${i === 1 ? [0, 1, 2, 3, 4].map(k => `<circle cx="${r1(90 + i * 110 + (k * 11) % 40)}" cy="${r1(70 + (k * 17) % 30)}" r="5" fill="#fff" stroke="${DK}" stroke-width=".6"/>`).join('') : ''}${label(110 + i * 110, 186, x[1].split(':')[0], RD)}</g>`; }); return s + tag(220, 222, T('لون الزيت بيقولك العطل', 'The oil colour tells the fault'), AC); }}
+];
+
+/* ---------------- lesson 13: V-belts ---------------- */
+F.belt_sizes = [
+  {d: 8, draw(t){
+    const b = [['A', 13, 8], ['B', 17, 11], ['C', 22, 14], ['SPZ', 10, 8]];
+    let o = '';
+    b.forEach((x, i) => { const a = fade(t, .05 + i * .2, .15 + i * .2), w = x[1] * 4, h = x[2] * 4, cx = 70 + i * 100, y = 70; o += `<g opacity="${a}"><path d="M${cx - w / 2} ${y} H${cx + w / 2} L${r1(cx + w / 2 - h * .3)} ${y + h} H${r1(cx - w / 2 + h * .3)} Z" fill="#374151" stroke="${DK}"/>` + label(cx, y - 14, x[0], i === 3 ? OR : AC) + `<text x="${cx}" y="${y + h + 28}" font-size="15" font-weight="700" text-anchor="middle" fill="${DK}" direction="ltr">${x[1]} mm</text></g>`; });
+    return o + tag(220, 222, T('SP = ضيّق: بيشيل أكتر في نفس العرض', 'SP = narrow: carries more in the same width'), OR, fade(t, .8, .9));
+  }}
+];
+F.belt_ratio = [
+  {d: 8, draw(t){
+    const A = ease(seg(t, .05, .9)) * TAU * 3, turns = Math.floor(A / TAU + .001);
+    return loop(110, 104, 26, 300, 104, 78, A * 26, '#374151', null, 7) + wheel(110, 104, 26, A, '#fde68a') + wheel(300, 104, 78, A / 3) + label(110, 66, '100', OR) + label(405, 60, '300', DK) +
+      `<text x="110" y="166" font-size="20" font-weight="700" text-anchor="middle" fill="${OR}" direction="ltr">${turns} ×</text><text x="405" y="110" font-size="20" font-weight="700" text-anchor="middle" fill="${DK}" direction="ltr">${Math.floor(turns / 3)} ×</text>` + tag(200, 222, T('الحمل بيلف تلت سرعة الموتور', 'The load turns at a third of the motor speed'), AC, fade(t, .85, .95));
+  }}
+];
+F.belt_tension = [
+  {d: 9, draw(t){
+    const p = ease(seg(t, .1, .5)), dfl = p * 16;
+    let o = `<path d="M70 ${112 - 30} L${220} ${r1(112 - 30 + dfl)} L370 ${112 - 30}" fill="none" stroke="#374151" stroke-width="7"/><path d="M70 142 L370 142" stroke="#374151" stroke-width="7"/>` + wheel(70, 112, 30, 0) + wheel(370, 112, 30, 0);
+    o += `<g transform="translate(220 ${r1(20 + dfl)})"><rect x="-10" y="0" width="20" height="56" rx="6" fill="${OR}" stroke="${DK}"/></g>`;
+    o += `<g opacity="${fade(t, .5, .6)}">` + `<line x1="250" y1="82" x2="300" y2="82" stroke="${DK}" stroke-dasharray="4 3"/>` + arrowV(280, 82, r1(82 + dfl + 2), RD) + label(300, 60, '16 mm', RD) + '</g>';
+    return o + tag(220, 200, T('في نص البحر: 16 mm لكل متر', 'Mid-span: 16 mm per metre'), AC, fade(t, .55, .7)) + tag(220, 228, T('سير جديد؟ شيّك تاني بعد 24 ساعة', 'New belt? Re-check after 24 hours'), OR, fade(t, .8, .9));
+  }}
+];
+F.belt_fit = [
+  {d: 6, draw(t){ const ok = t > .5; return loop(100, 112, 34, 320, 112, 50, 0, '#374151', null, 7) + wheel(100, 112, 34, 0) + wheel(320, 112, 50, 0) + (ok ? arrowH(60, r1(80 + ease(seg(t, .55, .8)) * 20), 50, GD) + mark(true, 400, 40) : `<path d="M300 40 L350 90" stroke="#64748b" stroke-width="7"/><path d="M350 90 l20 20" stroke="${RD}" stroke-width="5"/>` + mark(false, 400, 40)) + tag(220, 222, ok ? T('قرّب الموتور وركّبه بإيدك', 'Move the motor in, fit it by hand') : T('ما تزقّوش بمفك', 'Never lever it on'), ok ? GD : RD); }},
+  {d: 6, draw(t){ const c = [0, 1, 2, 3].map(k => `<rect x="${130 + k * 46}" y="60" width="30" height="${k === 2 && t > .4 ? 92 : 104}" rx="6" fill="${k === 2 && t > .4 ? OR : '#374151'}"/>`).join(''); return c + (t > .4 ? tag(205, 180, T('الجديد أقصر: يشيل الحمل لوحده', 'The new one is shorter: takes all the load'), RD) : '') + tag(220, 222, T('سير اتقطع؟ غيّر الطقم كله', 'One snapped? Change the whole set'), AC); }},
+  {d: 6, draw(t){ const ok = t > .5, dy = ok ? 0 : 10; return `<rect x="70" y="60" width="40" height="110" rx="6" fill="#d4dbe4" stroke="${DK}" stroke-width="2"/><rect x="330" y="${60 + dy}" width="40" height="110" rx="6" fill="#d4dbe4" stroke="${DK}" stroke-width="2"/>` + `<line x1="50" y1="56" x2="390" y2="${ok ? 56 : 66}" stroke="${OR}" stroke-width="6"/>` + (ok ? [74, 106, 334, 366].map(x => `<circle cx="${x}" cy="58" r="6" fill="${GD}"/>`).join('') + mark(true, 220, 120) : mark(false, 220, 120)) + tag(220, 222, T('المسطرة تلمس البكرتين في 4 نقط', 'The straight edge touches both pulleys at 4 points'), AC); }}
+];
+
+/* ---------------- lesson 14: roller chains ---------------- */
+function chainRow(x0, n, p, y, off){
+  let o = '';
+  for (let k = 0; k < n; k++){ const x = x0 + k * p - (off || 0); o += `<rect x="${r1(x - p * .1)}" y="${y - 12}" width="${r1(p * 1.2)}" height="24" rx="12" fill="${k % 2 ? '#64748b' : '#94a3b8'}" stroke="${DK}"/>`; }
+  for (let k = 0; k <= n; k++){ const x = x0 + k * p - (off || 0); o += `<circle cx="${r1(x)}" cy="${y}" r="7" fill="#e2e8f0" stroke="${DK}" stroke-width="1.5"/>`; }
+  return o;
+}
+F.chain_pitch = [
+  {d: 6, draw(t){ const a = fade(t, .2, .4); return chainRow(60, 6, 54, 100, 0) + `<g opacity="${a}"><path d="M168 70 V86 M222 70 V86" stroke="${AC}" stroke-width="3"/>` + arrowH(195, 168, 78, AC, 2.4) + arrowH(195, 222, 78, AC, 2.4) + label(195, 56, 'P = 12.7 mm', AC) + '</g>' + tag(220, 170, T('الخطوة: من مسمار للي بعده', 'Pitch: pin to pin'), AC) + tag(220, 222, T('الأوروبي والأمريكي مختلفين: ما تخلطهمش', 'European and US chains differ: never mix'), RD, fade(t, .6, .75)); }}
+];
+F.chain_links = [
+  {d: 7, draw(t){ const off = (t * 3 * 54) % 108; return chainRow(20, 9, 54, 100, off) + `<g transform="translate(${r1(-off)} 0)"><path d="M${200} 84 q12 16 0 32" fill="none" stroke="${OR}" stroke-width="4"/></g>` + arrowH(330, 270, 160, GD) + tag(300, 186, T('اتجاه الحركة', 'Direction of travel'), GD) + tag(220, 222, T('بوز الكلبس ناحية اتجاه الحركة', 'The clip’s closed end leads'), AC); }},
+  {d: 5, draw(t){ return chainRow(60, 5, 54, 100, 0) + `<path d="M276 88 L330 88 L330 112 L276 112" fill="${RD}" opacity=".8"/>` + mark(false, 380, 50) + tag(220, 222, T('نص الوصلة بتضعّفه حوالي التلت: آخر حل', 'A half link weakens it by about a third: last resort'), RD); }}
+];
+F.chain_wear = [
+  {d: 7, draw(t){ const sag = 20 * (1 - Math.cos(t * TAU * 2)) / 2 + 8; return `<path d="M80 70 L360 70" stroke="#475569" stroke-width="10"/><path d="M80 154 Q220 ${r1(154 + sag)} 360 154" fill="none" stroke="#475569" stroke-width="10"/>` + gear(80, 112, 42, 16, 0, '#9aa5b1') + gear(360, 112, 42, 16, 0, '#9aa5b1') + tag(220, 50, T('رخاوة حوالي 2 في المية من البحر', 'Slack about 2 percent of the span'), AC) + tag(220, 222, T('في بحر متر: حوالي 2 سم لعب', 'On a 1 m span: about 2 cm of play'), AC); }},
+  {d: 8, draw(t){ const g = ease(seg(t, .2, .7)) * 3, len = 300 * (1 + g / 100) ; return chainRow(60, 10, len / 10, 100, 0) + `<path d="M60 70 V86 M${r1(60 + len)} 70 V86" stroke="${g > 2.9 ? RD : AC}" stroke-width="3"/>` + arrowH(200, 60, 78, AC, 2.4) + arrowH(200, r1(60 + len), 78, AC, 2.4) + `<text x="220" y="160" font-size="22" font-weight="700" text-anchor="middle" fill="${g > 2.9 ? RD : DK}" direction="ltr">+${g.toFixed(1)}%</text>` + tag(220, 222, g > 2.9 ? T('زاد 3 في المية: غيّره', 'Grew 3 percent: replace it') : T('قيس على 10 خطوات', 'Measure over 10 pitches'), g > 2.9 ? RD : AC); }},
+  {d: 6, draw(t){ const h = fade(t, .3, .6); let o = ''; for (let k = 0; k < 6; k++){ const x = 100 + k * 46; o += `<path d="M${x} 150 L${x + 10} 90 Q${r1(x + 16 + h * 10)} ${r1(80 - h * 6)} ${x + 26} 90 L${x + 36} 150Z" fill="${h > .5 ? '#fca5a5' : '#cbd5e1'}" stroke="${DK}" stroke-width="1.5"/>`; } return `<rect x="80" y="150" width="300" height="30" fill="#cbd5e1" stroke="${DK}"/>` + o + tag(220, 222, T('سنّة زي الخطاف؟ غيّر السبروكت كمان', 'Hooked teeth? Replace the sprocket too'), RD, h); }}
+];
+F.chain_oil = [
+  {d: 7, draw(t){ let o = chainRow(60, 6, 54, 130, 0); for (let k = 0; k < 3; k++){ const p = (t * 1.3 + k / 3) % 1; o += `<path transform="translate(${168 + k * 54} ${r1(40 + p * 70)})" d="M0 -8 c-4 6 -6 8 -6 11 a6 6 0 0 0 12 0 c0 -3 -2 -5 -6 -11z" fill="#ca8a04" opacity="${r1(1 - p * .4)}"/>`; } return o + `<rect x="150" y="20" width="160" height="20" rx="8" fill="#a16207"/>` + tag(220, 222, T('زيت بين الألواح، على الناحية المرخية', 'Oil between the plates, on the slack side'), AC); }},
+  {d: 6, draw(t){ const off = (t * 4 * 54) % 108; return chainRow(20, 9, 54, 140, off) + `<path d="M250 40 q-10 30 0 60 q10 10 30 6 l10 -20 q-20 -4 -20 -40z" fill="#fcd34d" stroke="${DK}"/>` + arrowV(270, 100, 126, RD) + mark(false, 380, 50) + tag(220, 222, T('ممنوع والجنزير شغال: بيشد إيدك', 'Never while running: it pulls your hand in'), RD); }}
+];
+
+/* ---------------- lesson 15: grease ---------------- */
+F.grs_vs = [
+  {d: 6, draw(t){ return bearing(150, 112, 70, t * TAU * 2) + `<path d="M108 80 q12 -20 30 -6 q20 -16 34 6 q14 6 0 16 q-30 10 -64 0z" fill="#fbbf24" opacity=".9"/>` + tag(150, 214, T('الشحم بيقعد مكانه: للرولمان', 'Grease stays put: for bearings'), OR) + `<rect x="270" y="50" width="130" height="120" rx="10" fill="${GB}"/>` + [0, 1, 2, 3].map(k => { const p = (t * 2 + k / 4) % 1; return `<circle cx="${r1(300 + k * 20)}" cy="${r1(150 - Math.sin(p * Math.PI) * 60)}" r="5" fill="#ca8a04"/>`; }).join('') + tag(335, 214, T('الزيت بيلف ويبرّد', 'Oil flows and cools'), '#a16207'); }}
+];
+F.grs_nlgi = [
+  {d: 8, draw(t){ const g = [['000', .1], ['0', .3], ['2', .6], ['3', .85]]; let o = ''; g.forEach((x, i) => { const a = fade(t, .05 + i * .18, .15 + i * .18), cx = 80 + i * 95, h = 60 * x[1]; o += `<g opacity="${a}"><rect x="${cx - 32}" y="70" width="64" height="80" rx="6" fill="#e2e8f0" stroke="${DK}" stroke-width="1.5"/><path d="M${cx - 30} ${r1(150 - h - 10)} q15 ${r1(-12 * x[1])} 30 0 q15 ${r1(12 * x[1])} 30 0 V148 H${cx - 30}Z" fill="#fbbf24"/>${label(cx, 58, 'NLGI ' + x[0], i === 2 ? GD : DK)}</g>`; }); return o + arrowH(60, 380, 176, DK, 2.4) + tag(100, 200, T('سايح', 'soft'), DK) + tag(350, 200, T('ناشف', 'stiff'), DK) + tag(220, 228, T('NLGI 2 هو الأشهر للرولمان', 'NLGI 2 is the usual for bearings'), GD, fade(t, .8, .9)); }},
+  {d: 6, draw(t){ const m = ease(seg(t, .2, .7)); return `<rect x="70" y="60" width="90" height="90" rx="10" fill="#fbbf24"/><rect x="280" y="60" width="90" height="90" rx="10" fill="#60a5fa"/>` + label(115, 50, T('ليثيوم', 'lithium'), DK) + label(325, 50, T('بولي يوريا', 'polyurea'), DK) + `<ellipse cx="220" cy="${r1(130 + m * 20)}" rx="${r1(20 + m * 30)}" ry="${r1(10 + m * 6)}" fill="#a3a38a" opacity="${r1(m)}"/>` + mark(false, 220, 50) + tag(220, 222, T('ما تخلطش شحمين مختلفين', 'Never mix two greases'), RD); }}
+];
+F.grs_amount = [
+  {d: 9, draw(t){
+    const a = fade(t, .05, .2), b = fade(t, .35, .5), c = fade(t, .65, .8);
+    return `<g opacity="${a}"><text x="220" y="60" font-size="26" font-weight="700" text-anchor="middle" fill="${AC}" font-family="monospace" direction="ltr">G = 0.005 × D × B</text></g>` +
+      `<g opacity="${b}"><circle cx="110" cy="140" r="44" fill="${P1}" stroke="${DK}" stroke-width="2"/><circle cx="110" cy="140" r="22" fill="#fff" stroke="${DK}"/>` + label(110, 202, 'D = 110', DK) + `<rect x="180" y="118" width="27" height="44" fill="${P1}" stroke="${DK}" stroke-width="2"/>` + label(194, 202, 'B = 27', DK) + '</g>' +
+      `<g opacity="${c}"><text x="330" y="150" font-size="34" font-weight="700" text-anchor="middle" fill="${GD}" font-family="monospace" direction="ltr">≈ 15 g</text></g>` + tag(330, 100, '6310', OR, b);
+  }},
+  {d: 7, draw(t){ const n = Math.min(10, Math.floor(seg(t, .05, .75) * 10.99)), pump = Math.sin(t * 80) > 0 && n < 10; return `<rect x="60" y="${pump ? 80 : 70}" width="140" height="34" rx="8" fill="#475569"/><rect x="190" y="84" width="50" height="10" fill="#475569"/><path d="M90 114 l-20 40" stroke="#475569" stroke-width="8"/><rect x="240" y="160" width="140" height="20" rx="4" fill="#94a3b8"/><path d="M${r1(296 - n * 1.5)} 160 q${r1(14 + n * 1.5)} ${-n * 2.6} ${r1(28 + n * 3)} 0z" fill="#fbbf24"/>` + `<rect x="270" y="186" width="80" height="26" rx="4" fill="#0f172a"/><text x="310" y="205" font-size="16" font-weight="700" text-anchor="middle" fill="#e2e8f0" font-family="monospace" direction="ltr">${(n * 1.2).toFixed(1)} g</text>` + label(120, 50, n + ' ×', OR) + tag(220, 222, T('اعرف ضربة مسدسك بالميزان', 'Weigh your gun’s stroke'), AC); }}
+];
+F.grs_how = [
+  {d: 12, draw(t){
+    const steps = [T('امسح البز', 'Wipe the nipple'), T('افتح سدّادة التصريف', 'Open the drain plug'), T('الكمية المحسوبة', 'The calculated amount'), T('شغّل 30 دقيقة', 'Run 30 minutes'), T('اقفل التصريف', 'Close the drain')];
+    const k = Math.min(4, Math.floor(seg(t, .02, .98) * 5));
+    let o = `<rect x="120" y="70" width="200" height="110" rx="12" fill="#cbd5e1" stroke="${DK}" stroke-width="2"/><rect x="210" y="52" width="20" height="20" fill="${OR}" stroke="${DK}"/><rect x="${k >= 1 && k < 4 ? 214 : 210}" y="178" width="20" height="${k >= 1 && k < 4 ? 8 : 14}" fill="#64748b" stroke="${DK}"/>` + bearing(220, 125, 40, k === 3 ? t * 60 : 0);
+    if (k === 0) o += `<path d="M236 46 q20 -6 30 6" stroke="#94a3b8" stroke-width="6" fill="none"/>`;
+    if (k === 2) o += `<rect x="215" y="20" width="10" height="34" fill="#475569"/>`;
+    if (k >= 1 && k < 4) o += [0, 1].map(j => { const p = (t * 3 + j / 2) % 1; return `<circle cx="222" cy="${r1(194 + p * 24)}" r="4" fill="#fbbf24" opacity="${r1(1 - p)}"/>`; }).join('');
+    steps.forEach((st, i) => { o += `<g opacity="${i <= k ? 1 : .3}"><circle cx="${400 - i * 0}" cy="${40 + i * 36}" r="12" fill="${i < k ? GD : i === k ? OR : '#e2e8f0'}"/><text x="400" y="${45 + i * 36}" font-size="13" font-weight="700" text-anchor="middle" fill="#fff">${i + 1}</text></g>`; });
+    return o + tag(220, 222, steps[k], AC);
+  }},
+  {d: 7, draw(t){ const pts = []; for (let i = 0; i <= 40; i++){ const x = i / 40, y = 60 + (x < .2 ? 0 : x < .45 ? (x - .2) / .25 * 18 : 18 * Math.max(0, 1 - (x - .45) / .3)); pts.push(r1(60 + x * 320) + ' ' + r1(170 - y)); } const n = Math.max(2, Math.floor(seg(t, .05, .9) * 41)); return `<line x1="60" y1="180" x2="390" y2="180" stroke="${DK}"/><line x1="60" y1="40" x2="60" y2="180" stroke="${DK}"/><path d="M${pts.slice(0, n).join(' L')}" fill="none" stroke="${OR}" stroke-width="4"/>` + label(80, 34, '°C', DK) + tag(220, 222, T('بتعلى شوية وترجع في ساعة', 'Rises a little, settles within an hour'), AC, fade(t, .6, .75)); }}
+];
+
+/* ---------------- lesson 16: fault finding ---------------- */
+F.flt_tools = [
+  {d: 5, draw(t){ let o = brgHouse(140, 120); for (let k = 0; k < 3; k++){ const p = (t * 2 + k / 3) % 1; o += `<path d="M${r1(200 + p * 60)} ${r1(100 - p * 20)} q10 20 0 40" fill="none" stroke="${AC}" stroke-width="3" opacity="${r1(1 - p)}"/>`; } return o + `<path d="M172 100 L300 60 q30 -10 40 20" fill="none" stroke="#475569" stroke-width="6"/>` + tag(220, 222, T('سمّاعة أو مفك على جسم الرولمان', 'Stethoscope or screwdriver on the housing'), AC); }},
+  {d: 5, draw(t){ const v = Math.round(48 + seg(t, .2, .5) * 14); return brgHouse(140, 120) + `<rect x="300" y="80" width="70" height="40" rx="8" fill="#475569"/><path d="M300 100 L150 ${r1(110)}" stroke="${RD}" stroke-width="2" stroke-dasharray="5 4" opacity="${fade(t, .1, .2)}"/><circle cx="150" cy="110" r="5" fill="${RD}"/><rect x="300" y="40" width="90" height="34" rx="6" fill="#0f172a"/><text x="345" y="64" font-size="18" font-weight="700" text-anchor="middle" fill="#e2e8f0" font-family="monospace" direction="ltr">${v}°C</text>` + tag(220, 222, T('ترمومتر ليزر', 'Infrared thermometer'), AC); }},
+  {d: 5, draw(t){ const a = Math.floor(t * 3) % 3; return brgHouse(180, 120) + arrowV(180, 30, 70, a === 0 ? RD : '#cbd5e1') + arrowH(320, 260, 120, a === 1 ? RD : '#cbd5e1') + `<path d="M180 120 L120 170" stroke="${a === 2 ? RD : '#cbd5e1'}" stroke-width="3.4"/>` + tag(330, 60, [T('رأسي', 'vertical'), T('أفقي', 'horizontal'), T('محوري', 'axial')][a], RD) + tag(220, 222, T('قلم الاهتزاز: في 3 اتجاهات', 'Vibration pen: three directions'), AC); }},
+  {d: 6, draw(t){ const d = [3, 3.1, 3, 3.2, 3.1, 3.3, 4.1, 5.6], n = Math.max(2, Math.floor(seg(t, .05, .8) * 8.99)); const pts = d.slice(0, n).map((v, i) => r1(70 + i * 44) + ' ' + r1(180 - v * 22)); return `<rect x="50" y="30" width="350" height="160" rx="8" fill="#fff" stroke="${DK}"/><path d="M${pts.join(' L')}" fill="none" stroke="${n > 6 ? RD : AC}" stroke-width="4"/>` + tag(220, 222, T('الكشكول: الاتجاه أهم من الرقم', 'The log: the trend matters more than one reading'), AC); }}
+];
+function brgHouse(cx, cy){ return `<rect x="${cx - 50}" y="${cy - 10}" width="100" height="60" rx="6" fill="#94a3b8" stroke="${DK}" stroke-width="2"/><path d="M${cx - 40} ${cy - 10} a40 40 0 0 1 80 0" fill="#94a3b8" stroke="${DK}" stroke-width="2"/><circle cx="${cx}" cy="${cy - 6}" r="18" fill="${ST}" stroke="${DK}"/><rect x="${cx - 70}" y="${cy + 50}" width="140" height="10" fill="#64748b"/>`; }
+const sym = (draw, txt) => ({d: 5, draw(t){ return draw(t) + tag(220, 222, txt, RD); }});
+F.flt_signs = [
+  sym(t => { const A = t * TAU * 4; return `<g transform="translate(0 ${r1(Math.sin(A) * 6)})"><circle cx="220" cy="110" r="66" fill="${P1}" stroke="${DK}" stroke-width="2"/><circle cx="${r1(220 + Math.cos(A) * 46)}" cy="${r1(110 + Math.sin(A) * 46)}" r="12" fill="${RD}"/></g>` + arrowV(330, 80, 140, RD) + arrowV(330, 140, 80, RD); }, T('اهتزاز قطري بسرعة اللف = عدم اتزان', 'Radial vibration at run speed = unbalance')),
+  sym(t => { const A = t * TAU * 3, x = Math.sin(t * 40) * 5; return `<g transform="translate(${r1(x)} 0)">` + hshaft(40, 190, 108, 20, A) + `<g transform="rotate(4 240 112)">${hshaft(240, 400, 112, 20, A)}</g>` + coupling(216, 110, A, 4) + '</g>' + arrowH(150, 100, 60, RD) + arrowH(290, 340, 60, RD); }, T('اهتزاز محوري عالي = عدم محاذاة', 'High axial vibration = misalignment')),
+  sym(t => { const hit = (t * 4) % 1 < .25; return `<rect x="80" y="160" width="280" height="16" fill="#64748b"/><g transform="translate(0 ${hit ? -4 : 0})">` + motor(160, 92, 0, 1.1) + `</g><rect x="250" y="${hit ? 150 : 156}" width="30" height="10" fill="${DK}"/>` + (hit ? `<path d="M300 140 l10 -10 M306 150 l14 0 M300 160 l10 10" stroke="${OR}" stroke-width="3"/>` : ''); }, T('خبط وطقطقة = رخاوة مسامير أو قاعدة', 'Knocking = loose bolts or base')),
+  sym(t => bearing(220, 110, 70, t * TAU * 3, false) + `<path d="M200 60 l8 10 l-6 6 l10 8" stroke="${RD}" stroke-width="3" fill="none"/>` + [0, 1, 2].map(k => { const p = (t * 2 + k / 3) % 1; return `<path d="M${r1(300 + p * 50)} ${r1(80)} q8 15 0 30 M${r1(300 + p * 50)} 120 q8 15 0 30" fill="none" stroke="${RD}" stroke-width="2.5" opacity="${r1(1 - p)}"/>`; }).join(''), T('زنّة أو خشخشة = رولمان تعبان', 'Growl or rumble = a worn bearing')),
+  sym(t => loop(110, 112, 34, 320, 112, 54, t < .5 ? t * 20 : t * 400, '#374151', null, 7) + wheel(110, 112, 34, t * 60) + wheel(320, 112, 54, t < .5 ? t * 2 : t * 20) + (t < .5 ? `<text x="215" y="56" font-size="22" font-weight="700" text-anchor="middle" fill="${RD}">〰〰</text>` : ''), T('صفير عند البداية = سير بيزحلق', 'Squeal at start = slipping belt')),
+  sym(t => { let o = `<rect x="80" y="60" width="240" height="110" rx="10" fill="${GB}" stroke="${DK}" stroke-width="2"/><rect x="310" y="104" width="14" height="26" fill="#1f2937"/>`; for (let k = 0; k < 3; k++){ const p = (t * 1.6 + k / 3) % 1; o += `<circle cx="${r1(330 + p * 10)}" cy="${r1(130 + p * 70)}" r="5" fill="#ca8a04" opacity="${r1(1 - p * .5)}"/>`; } return o; }, T('تسريب = سيل أو بريذر مسدود', 'A leak = seal or blocked breather'))
+];
+F.flt_temp = [
+  {d: 8, draw(t){
+    const v = Math.round(40 + ease(seg(t, .05, .85)) * 55), col = v < 70 ? GD : v <= 85 ? OR : RD;
+    return `<rect x="70" y="90" width="300" height="34" rx="17" fill="#e2e8f0" stroke="${DK}"/><rect x="70" y="90" width="${r1(70 / 100 * 300 - 70 + 70)}" height="34" rx="17" fill="${GD}" opacity=".35"/>` +
+      `<rect x="${r1(70 + 70 / 110 * 300)}" y="90" width="${r1(15 / 110 * 300)}" height="34" fill="${OR}" opacity=".35"/><rect x="${r1(70 + 85 / 110 * 300)}" y="90" width="${r1(25 / 110 * 300)}" height="34" rx="0" fill="${RD}" opacity=".35"/>` +
+      `<circle cx="${r1(70 + v / 110 * 300)}" cy="107" r="14" fill="${col}" stroke="#fff" stroke-width="3"/><text x="220" y="70" font-size="30" font-weight="700" text-anchor="middle" fill="${col}" font-family="monospace" direction="ltr">${v}°C</text>` +
+      tag(220, 160, v < 70 ? T('عادي', 'Normal') : v <= 85 ? T('راقب', 'Watch') : T('وقّف وافحص', 'Stop and inspect'), col) + tag(220, 222, T('الأهم: لو زادت فجأة 10 لـ 15 درجة عن عادتها', 'Most important: a sudden rise of 10–15 °C'), AC, fade(t, .85, .95));
+  }}
+];
+F.flt_plan = [
+  {d: 12, draw(t){
+    const st = [T('اسمع', 'Listen'), T('حس الحرارة', 'Feel the heat'), T('قيس', 'Measure'), T('قارن بالكشكول', 'Compare with the log'), T('قرّر', 'Decide')], k = Math.min(4, Math.floor(seg(t, .02, .9) * 5));
+    let o = '';
+    st.forEach((x, i) => { const cx = IL.EN ? 50 + i * 85 : 390 - i * 85, on = i <= k; o += `<circle cx="${cx}" cy="100" r="30" fill="${i < k ? GD : i === k ? OR : '#e2e8f0'}" stroke="${DK}" stroke-width="1.5"/><text x="${cx}" y="109" font-size="24" font-weight="700" text-anchor="middle" fill="#fff">${i + 1}</text>` + `<g opacity="${on ? 1 : .35}">${label(cx, i % 2 ? 56 : 158, x, DK)}</g>` + (i < 4 ? `<path d="M${IL.EN ? cx + 34 : cx - 34} 100 h${IL.EN ? 16 : -16}" stroke="${DK}" stroke-width="3"/>` : ''); });
+    return o + tag(220, 222, T('وهي شغالة من غير ما تشيل أي غطا', 'While running, without removing any guard'), RD, fade(t, .9, .98));
+  }}
 ];
 })();
