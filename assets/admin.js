@@ -97,7 +97,7 @@
   var METHOD_AR = { instapay: "InstaPay", vodafone: "فودافون كاش", intl: "من خارج مصر" };
   var prList = $("pr-list"), prDone = $("pr-done"), prCount = $("pr-count");
   function prodName(r){ return r.plan === "course" ? "كورس " + ((PRODUCT_NAMES[r.product]) || r.product) : "كل الكورسات " + (PLAN_AR[r.plan] || r.plan); }
-  var PRODUCT_NAMES = { basics: "أساسيات الكهربا", classic: "الكلاسيك كنترول", safety: "السيفتي PLC", drw: "قراية الرسومات الكهربية", instr: "الإنسترومنتيشن", plc: "الـ PLC", vfd: "الانفرتر VFD", srv: "السيرفو موتور والدرايف", iiot: "IIoT والشبكات الصناعية", scada: "SCADA و HMI", panel: "تصميم اللوحات الكهربية", maint: "صيانة المحركات والمحولات", srvm: "صيانة محركات السيرفو", mech: "أساسيات الميكانيكا", mfit: "ميكانيكا المكن العملية" };
+  var PRODUCT_NAMES = { basics: "أساسيات الكهربا", classic: "الكلاسيك كنترول", safety: "السيفتي PLC", drw: "قراية الرسومات الكهربية", instr: "الإنسترومنتيشن", plc: "الـ PLC", vfd: "الانفرتر VFD", srv: "السيرفو موتور والدرايف", iiot: "IIoT والشبكات الصناعية", scada: "SCADA و HMI", panel: "تصميم اللوحات الكهربية", maint: "صيانة المحركات والمحولات", srvm: "صيانة محركات السيرفو", mech: "أساسيات الميكانيكا", mfit: "ميكانيكا الماكينات" };
   function money(r){ return "⁦" + r.amount + "⁩ " + (r.currency === "USD" ? "دولار" : ((window.SITE || {}).pay || {}).currency || "جنيه"); }
   function reqRow(r){
     var done = r.status !== "pending";

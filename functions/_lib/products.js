@@ -49,7 +49,7 @@ export const PRODUCTS = {
   maint:   { title: "صيانة المحركات والمحولات",    dirs: ["maint-lab"] },
   srvm:    { title: "صيانة محركات السيرفو",        dirs: ["servo-maint-lab"] },
   mech:    { title: "أساسيات الميكانيكا",          dirs: ["mech-lab"] },
-  mfit:    { title: "ميكانيكا المكن العملية",      dirs: ["mfit-lab"] }
+  mfit:    { title: "ميكانيكا الماكينات",      dirs: ["mfit-lab"] }
 };
 export const PRODUCT_IDS = Object.keys(PRODUCTS);
 // Friendlier names in links (subscribe.html?course=servo) → product id
