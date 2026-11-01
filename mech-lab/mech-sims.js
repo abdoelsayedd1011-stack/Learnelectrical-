@@ -263,7 +263,7 @@ MS.launch = function(host, opt){
 /* ============ 4 · Newton: push the crate to the line in 4 s ============ */
 MS.push = function(host, opt){
   const L = opt.lesson;
-  const g = frame(host, T('ازق الصندوق', 'Push the crate'), '0 0 600 190');
+  const g = frame(host, T('ادفع الصندوق', 'Push the crate'), '0 0 600 190');
   const s = g.svg, X0 = 130, K = 24, D = 16, GY = 140;
   el(s, 'rect', {x:0, y:0, width:600, height:190, fill:'var(--panel)'});
   const floor = el(s, 'rect', {x:0, y:GY, width:600, height:50, fill:'#cfe7f5'});
@@ -276,8 +276,8 @@ MS.push = function(host, opt){
   const fT = el(s, 'text', {'font-size':12, 'font-weight':700, fill:'#2f8f4e', 'text-anchor':'middle'});
   const frT = el(s, 'text', {'font-size':12, 'font-weight':700, fill:'#d2552d', 'text-anchor':'middle'});
   const rd = readouts(g, [['a', T('العجلة', 'Acceleration')], ['v', T('السرعة', 'Speed')], ['t', T('الزمن', 'Time')]]);
-  const F = slider(g, {label:T('قوة الزق', 'Push force'), min:0, max:400, step:10, value:50, unit:'N'}, () => draw(0));
-  const go = button(g, T('ازق 💪', 'Push 💪'), start, true);
+  const F = slider(g, {label:T('قوة الدفع', 'Push force'), min:0, max:400, step:10, value:50, unit:'N'}, () => draw(0));
+  const go = button(g, T('ادفع 💪', 'Push 💪'), start, true);
   let cur, stop = null;
   function draw(x){
     const W = 46, cx = X0 + x * K;
@@ -301,7 +301,7 @@ MS.push = function(host, opt){
         const tc = Math.sqrt(2 * D / a); rd('t', bd(n(tc, 2) + ' s'));
         stop = null; go.disabled = false; F.lock(false); done = true;
         if (Math.abs(tc - 4) <= 0.15) game.win(cur.ok);
-        else game.miss(tc < 4 ? T(`وصل في ${bd(n(tc, 2) + ' s')}، أسرع من اللازم. زق أخف.`, `It arrived in ${n(tc, 2)} s, too fast. Push softer.`) : T(`وصل في ${bd(n(tc, 2) + ' s')}، أبطأ من اللازم. زق أجمد.`, `It arrived in ${n(tc, 2)} s, too slow. Push harder.`));
+        else game.miss(tc < 4 ? T(`وصل في ${bd(n(tc, 2) + ' s')}، أسرع من اللازم. دفع أخف.`, `It arrived in ${n(tc, 2)} s, too fast. Push softer.`) : T(`وصل في ${bd(n(tc, 2) + ' s')}، أبطأ من اللازم. دفع أجمد.`, `It arrived in ${n(tc, 2)} s, too slow. Push harder.`));
         return false;
       }
     });

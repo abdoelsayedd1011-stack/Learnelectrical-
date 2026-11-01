@@ -48,7 +48,7 @@ IL.COURSE = [
     tasks:[['sim',T('ارمي الكورة وصيب الهدف', 'Launch the ball and hit the target')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l4', n:4, file:'lesson-04.html', title:T('القوة وقوانين نيوتن', 'Force and Newton’s laws'),
     sub:T('القصور الذاتي، F = m·a، الفعل ورد الفعل، والقوة المحصّلة', 'Inertia, F = m·a, action and reaction, and net force'),
-    tasks:[['sim',T('ازق الصندوق يوصل الخط في 4 ثواني', 'Push the crate to the line in 4 seconds')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+    tasks:[['sim',T('ادفع الصندوق يوصل الخط في 4 ثواني', 'Push the crate to the line in 4 seconds')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l5', n:5, file:'lesson-05.html', title:T('الوزن والاحتكاك والسطح المائل', 'Weight, friction and the ramp'),
     sub:T('الوزن W = m·g، الاحتكاك السكوني والحركي، معامل الاحتكاك، والسطح المائل', 'Weight W = m·g, static and kinetic friction, the friction coefficient and the ramp'),
     tasks:[['sim',T('لاقي الزاوية اللي الصندوق يبدأ يتزحلق عندها', 'Find the angle where the crate starts to slide')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},

@@ -1578,7 +1578,7 @@ CL.art.olArt = function(d, o){
   s += `<path d="M${cx + 20} 60V84" stroke="#7a4f1c" stroke-width="2"/><path d="M${cx + 12} 112H${cx + 28}" stroke="${trip ? GOOD : '#7a4f1c'}" stroke-width="3"/><text x="${cx + 30}" y="66" font-size="7" fill="currentColor">97</text><text x="${cx + 30}" y="124" font-size="7" fill="currentColor">98</text>`;
   s += `<path d="M${cx + 20} 84L${cx + 20} ${trip ? 112 : 100}" stroke="${trip ? GOOD : '#c7893b'}" stroke-width="3"/>`;
   s += `<path class="sy-d" d="M${X + 130 + bend} 156V130H${cx + 4}"/>`;
-  s += `<text class="ar" x="${X + 100}" y="196" font-size="9" fill="currentColor" text-anchor="middle">التيار بيعدّي في سخّان حوالين شريحة من معدنين</text><text class="ar" x="${X + 100}" y="210" font-size="9" fill="currentColor" text-anchor="middle">(بيميتال). بتسخن وتنحني → تزق شريحة الفصل →</text><text class="ar" x="${X + 100}" y="224" font-size="9" fill="currentColor" text-anchor="middle">95-96 يفتح (يفصل الكونتاكتور) و 97-98 يقفل (لمبة عطل)</text>`;
+  s += `<text class="ar" x="${X + 100}" y="196" font-size="9" fill="currentColor" text-anchor="middle">التيار بيعدّي في سخّان حوالين شريحة من معدنين</text><text class="ar" x="${X + 100}" y="210" font-size="9" fill="currentColor" text-anchor="middle">(بيميتال). بتسخن وتنحني → تدفع شريحة الفصل →</text><text class="ar" x="${X + 100}" y="224" font-size="9" fill="currentColor" text-anchor="middle">95-96 يفتح (يفصل الكونتاكتور) و 97-98 يقفل (لمبة عطل)</text>`;
   s += `<text class="ar" x="${X + 100}" y="242" font-size="9" fill="${trip ? 'var(--bad)' : 'var(--muted)'}" text-anchor="middle" font-weight="${trip ? 700 : 400}">${trip ? 'فصل! لازم يبرد وتدوس RESET' : heat > 0.5 ? 'بيسخن…' : 'بارد وفي وضعه الطبيعي'}</text>`;
   return s + '</g></svg>';
 };
@@ -2205,7 +2205,7 @@ CL.art.pressArt = function(d){
   s += `<path d="M${X + 59} ${dia - 40}L${X + 150} ${on ? dia - 60 : dia - 30}" stroke="#7a4f1c" stroke-width="3"/><path d="M${X + 150} 100V118" stroke="#7a4f1c" stroke-width="2"/><path d="M${X + 140} 118H${X + 160}" stroke="${on ? '#7a4f1c' : GOOD}" stroke-width="3"/><text x="${X + 165}" y="112" font-size="8" fill="currentColor">NC</text><path d="M${X + 140} 142H${X + 160}" stroke="${on ? GOOD : '#7a4f1c'}" stroke-width="3"/><text x="${X + 165}" y="152" font-size="8" fill="currentColor">NO</text>`;
   s += `<text class="ar" x="${X + 100}" y="${dia - 10 < 100 ? 96 : 96}" font-size="0"> </text>`;
   s += `<text class="ar" x="${X + 100}" y="212" font-size="10" text-anchor="middle" fill="${on ? GOOD : 'currentColor'}" font-weight="700">${on ? 'الضغط وصل نقطة الخروج: الكونتاكت قلب' : 'الضغط تحت الضبط: الكونتاكت طبيعي'}</text>`;
-  s += `<text class="ar" x="220" y="256" font-size="9" text-anchor="middle" fill="var(--muted)">الضغط بيزق الديافرام ضد السوستة؛ لما يغلبها الكونتاكت يقلب، وميرجعش غير لما ينزل بمقدار الفرق</text>`;
+  s += `<text class="ar" x="220" y="256" font-size="9" text-anchor="middle" fill="var(--muted)">الضغط بيدفع الديافرام ضد السوستة؛ لما يغلبها الكونتاكت يقلب، وميرجعش غير لما ينزل بمقدار الفرق</text>`;
   return s + '</g></svg>';
 };
 /* ---------- proximity sensor / photocell with the object and the PNP/NPN wiring inset ---------- */

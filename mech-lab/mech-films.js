@@ -438,11 +438,11 @@ F.ph_normal = [
 F.ph_fric = [
   {d: 8, draw(t){ const P = Math.min(1, t / .55) * 120, slip = t > .55, m = slip ? Math.pow(seg(t, .55, 1), 2) * 120 : 0, f = slip ? 70 : P * .75;
     return ground(196) + box(170 + m, 196, 70, 56) + stick(144 + m, 196, {lean: 14, arm: [172 + m, 160]}) + `<g opacity=".7">${[0, 1, 2, 3, 4].map(k => `<path d="M${176 + m + k * 13} 199 l6 6" stroke="${DK}"/>`).join('')}</g>` +
-      vec(180 + m, 120, 180 + m + P * .6, 120, RD) + L(180 + m, 108, T('زقّك', 'Push'), RD, 'start', 14) + vec(240 + m, 186, 240 + m - f * .8, 186, OR) + L(250 + m, 182, 'f', OR, 'start') +
+      vec(180 + m, 120, 180 + m + P * .6, 120, RD) + L(180 + m, 108, T('دفعك', 'Push'), RD, 'start', 14) + vec(240 + m, 186, 240 + m - f * .8, 186, OR) + L(250 + m, 182, 'f', OR, 'start') +
       op(seg(t, .55, .65), L(330, 60, slip ? T('اتحرك!', 'It moves!') : '', GD, 'middle', 18)); }},
   {d: 7, draw(t){ const p = seg(t, .05, .9), pts = [];
     for (let k = 0; k <= 60 * p; k++){ const u = k / 60; pts.push([60 + u * 300, 196 - (u < .5 ? u / .5 * 120 : u < .55 ? 120 - (u - .5) / .05 * 36 : 84)]); }
-    return axes(60, 40, 330, 160, T('الزق', 'Push'), 'f') + poly(pts, OR, 4) +
+    return axes(60, 40, 330, 160, T('الدفع', 'Push'), 'f') + poly(pts, OR, 4) +
       op(seg(t, .5, .6), `<line x1="60" y1="76" x2="210" y2="76" stroke="${RD}" stroke-dasharray="4 4"/>` + L(214, 70, 'μs', RD, 'start', 18)) +
       op(seg(t, .7, .8), L(380, 104, 'μk', BL, 'end', 18)); }}
 ];

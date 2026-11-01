@@ -1279,7 +1279,7 @@ SC.twohand = {io:{inputs:[{a:'I0.0', label:'إيد شمال', kind:'pb'}, {a:'I0
 SC.sort = {io:{inputs:[{a:'I0.0', label:'تشغيل', kind:'sw'}, {a:'I0.1', label:'حساس الطول', kind:'auto'}, {a:'I0.2', label:'عند الدفّاع', kind:'auto'}], outputs:[{a:'Q0.0', label:'السير'}, {a:'Q0.1', label:'دفّاع'}]}, plant:'sort', plantOpt:{seq:[1, 0, 1, 1, 0, 0, 1, 0]},
   tests:[{run:0.3}, {exp:{'Q0.0':0}, msg:'قبل التشغيل:'}, {set:{'I0.0':1}}, {run:0.3}, {exp:{'Q0.0':1}, msg:'التشغيل ON: السير يدور.'},
     {until:c => c.plant.res.length >= 8 || c.plant.res.some(r => r.tall !== r.pushed), max:60, msg:'الكراتين مخلصتش: السير وقف؟'},
-    {fn:c => { const b = c.plant.res.find(r => r.tall !== r.pushed); return b ? (b.tall ? 'كرتونة طويلة عدّت من غير ما تتزق.' : 'الدفّاع زق كرتونة قصيرة!') : null; }},
+    {fn:c => { const b = c.plant.res.find(r => r.tall !== r.pushed); return b ? (b.tall ? 'كرتونة طويلة عدّت من غير ما تتدفع.' : 'الدفّاع دفع كرتونة قصيرة!') : null; }},
     {set:{'I0.0':0}}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'التشغيل OFF:'}]};
 
 SC.parking = {io:{inputs:[{a:'I0.0', label:'عربية داخلة', kind:'pb'}, {a:'I0.1', label:'عربية خارجة', kind:'pb', color:'blue'}], outputs:[{a:'Q0.0', label:'فيه أماكن'}, {a:'Q0.1', label:'كامل'}]}, plant:'parking', cmpDef:'C0',
@@ -1344,7 +1344,7 @@ PL.plants.cut = {
     if (run && brake){ st.fight += dt; if (st.fight > 0.06 && !st.fault) st.fault = 'الموتور Q0.0 شغال والفرامل Q0.2 ماسكة في نفس الوقت: الموتور هيسخن والفرامل هتتاكل. الفرامل تمسك بس والموتور واقف.'; } else st.fight = 0;
     if (run && !brake){ const tg = fast ? ENC.FAST : ENC.SLOW; st.v = st.v < tg ? Math.min(tg, st.v + ENC.ACC * dt) : Math.max(tg, st.v - ENC.DEC * dt); }
     else st.v = Math.max(0, st.v - (brake ? ENC.BRAKE : ENC.COAST) * dt);
-    if (run && st.s > 0.04 && !st.fault) st.fault = 'الموتور Q0.0 اشتغل والسكينة لسه مش فوق (I0.4 = 0): الصاج هيتزق في السكينة. الصاج يمشي بس لما السكينة تبقى فوق.';
+    if (run && st.s > 0.04 && !st.fault) st.fault = 'الموتور Q0.0 اشتغل والسكينة لسه مش فوق (I0.4 = 0): الصاج هيتدفع في السكينة. الصاج يمشي بس لما السكينة تبقى فوق.';
     /* run falling edge: remember where and how fast it stopped, then measure the coasting */
     if (st.runP && !run){ st.stopAt = e.num('HC0'); st.vStop = st.v; st.coastFrom = st.pos; st.coast = null; }
     if (st.fastP && !fast && run) st.slowAt = e.num('HC0');
