@@ -1,10 +1,10 @@
 /* Electrical Basics: "Before you start" summary per lesson (see /assets/lesson-intro.js). b = bullets (3, max 4, ≤ 10 words), t = key words (≤ 4). */
 window.LE_INTRO = window.LE_INTRO || {};
 LE_INTRO["basics-lab.en"] = {
-"01": {b: ["Voltage pushes, resistance resists, current is the result",
-           "Ohm’s law: **I = V ÷ R**",
-           "Power **P = V × I**; the meter counts **kWh**"],
-       t: [["Voltage (V)", "The push behind the current"], ["Current (A)", "Charge flowing in the wire"], ["Resistance (Ω)", "What limits the current"], ["kWh", "The unit you pay for"]]},
+"01": {b: ["Electricity is energy that lights, heats and moves",
+           "Inside the wire are atoms with **free electrons**",
+           "**Current** = electrons moving in one direction"],
+       t: [["Atom", "The smallest piece of any material"], ["Electron", "A tiny particle with a negative charge (−)"], ["Free electron", "Moves from one atom to the next"], ["Current", "Electrons moving in one direction"]]},
 "02": {b: ["Voltage is always between two points",
            "Current needs a closed circuit to flow",
            "**1 A = 1000 mA**; just **30 mA** can kill",

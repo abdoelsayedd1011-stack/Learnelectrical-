@@ -10,6 +10,8 @@ const KEY = 'basics-lab-v1';
 function load(){ try { const s = JSON.parse(localStorage.getItem(KEY)); return s && typeof s === 'object' ? s : {}; } catch (e){ return {}; } }
 let S = load(); if (!S.done) S.done = {};
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e){} }
+/* 2026-11-01: lesson 1 rewritten; carry old lesson-1 progress over to the new task */
+if (S.done['l1/ohm'] && !S.done['l1/elec']){ S.done['l1/elec'] = S.done['l1/ohm']; save(); }
 const subs = [];
 BL.on = fn => subs.push(fn);
 BL.store = {
@@ -48,8 +50,8 @@ function langBtn(){
 
 /* ---------------- course map ---------------- */
 BL.COURSE = [
-  {id:'l1', n:1, file:'lesson-01.html', title:'What is electricity?', sub:'Voltage, current, resistance and power with the water analogy, and how the electricity bill is worked out',
-    tasks:[['ohm','Water and electricity experiment'],['bill','Working out kWh'],['quiz','Lesson questions']]},
+  {id:'l1', n:1, file:'lesson-01.html', title:'What is electricity?', sub:'What electricity does, inside the atom, what current means, and where electricity comes from',
+    tasks:[['elec','Electrons in the wire experiment'],['quiz','Lesson questions']]},
   {id:'vi', n:2, file:'lesson-02.html', title:'Voltage and current', sub:'Volts push, amps flow: the closed circuit, current direction, units and conversions, and how to measure them',
     tasks:[['flow','Circuit experiment'],['units','Unit conversion drill'],['meter','Where to put the meter'],['quiz','Lesson questions']]},
   {id:'cond', n:3, file:'lesson-03.html', title:'Conductivity: conductors and insulators', sub:'Copper, aluminium, plastic and water: what conducts and what insulates, and how wire length and thickness matter',
@@ -397,6 +399,57 @@ BL.bill = function(host, opt){
     if (Math.abs(v - 180) < 0.01){ m.className = 'msg b-msg ok'; m.textContent = 'Correct: 2000 W = 2 kW × 3 hours = 6 kWh per day × 30 = 180 kWh.'; chal.classList.add('ok'); BL.mark(opt.lesson, 'bill'); }
     else { m.className = 'msg b-msg bad'; m.textContent = 'No. Follow the steps in the example above: 2000 ÷ 1000 = 2 kW, × 3 hours, × 30 days.'; }
   });
+};
+
+/* ---------------- L1: free electrons → current (switch open = random jiggle, closed = flow) ---------------- */
+BL.elec = function(host, opt){
+  const g = U('el'), N = 26, W = 240, H = 140, P = 2 * (W + H), X0 = 60, Y0 = 50;
+  host.innerHTML = `<div class="wd-art"><svg viewBox="0 0 360 240" role="img" aria-label="A circuit with a battery, a switch and a lamp, and the electrons inside the wire">
+  <defs><radialGradient id="${g}g"><stop offset="0" stop-color="#fff7c2"/><stop offset=".45" stop-color="#ffd84a" stop-opacity=".85"/><stop offset="1" stop-color="#ffb300" stop-opacity="0"/></radialGradient></defs>
+  <rect x="${X0}" y="${Y0}" width="${W}" height="${H}" rx="4" fill="none" stroke="#c8753a" stroke-width="12" stroke-linejoin="round" opacity=".35"/>
+  <rect x="${X0}" y="${Y0}" width="${W}" height="${H}" rx="4" fill="none" stroke="#a65f2c" stroke-width="2" stroke-linejoin="round"/>
+  <g class="e-dots"></g>
+  <g transform="translate(${X0} ${Y0 + H / 2})"><rect x="-20" y="-34" width="40" height="68" rx="6" fill="#2a2f33"/><rect x="-20" y="-10" width="40" height="22" fill="#e2a31a"/><rect x="-7" y="-41" width="14" height="8" rx="2" fill="#b9c1c6"/><text x="0" y="-18" text-anchor="middle" style="font-size:14px;font-weight:700;fill:#fff">+</text><text x="0" y="28" text-anchor="middle" style="font-size:16px;font-weight:700;fill:#fff">−</text><text x="0" y="5" text-anchor="middle" style="font-size:10px;font-weight:700;fill:#1c2023">1.5V</text></g>
+  <text x="${X0}" y="${Y0 + H + 44}" text-anchor="middle" class="dev-ars">Battery</text>
+  <g transform="translate(${X0 + W} ${Y0 + H / 2})"><circle class="e-glow" r="46" fill="url(#${g}g)" opacity="0"/><circle r="18" fill="#f4f1e6" stroke="#9aa3a8" stroke-width="2" class="e-bulb"/><path d="M-6 8 V0 C-6 -9 6 -9 6 0 V8" fill="none" stroke="#6b5a3a" stroke-width="1.6"/></g>
+  <text x="${X0 + W}" y="${Y0 + H + 44}" text-anchor="middle" class="dev-ars">Lamp</text>
+  <g transform="translate(${X0 + W / 2} ${Y0})"><rect x="-34" y="-10" width="68" height="20" fill="var(--panel)"/><circle cx="-28" cy="0" r="5" fill="#7d878d"/><circle cx="28" cy="0" r="5" fill="#7d878d"/><line class="e-arm" x1="-28" y1="0" x2="26" y2="-24" stroke="#4b545b" stroke-width="5" stroke-linecap="round"/></g>
+  <text x="${X0 + W / 2}" y="${Y0 - 30}" text-anchor="middle" class="dev-ars">Switch</text>
+  <text x="${X0 + W / 2}" y="${Y0 + H / 2 + 6}" text-anchor="middle" class="dev-ar e-state"></text>
+  </svg></div>
+  <div class="wd-ctl"><button type="button" class="btn e-btn" style="flex:1 1 auto;min-height:48px"></button></div>
+  <p class="chal e-chal">Try it: close the switch and watch the blue dots (the electrons). Then open it again.</p>`;
+  const dots = $('.e-dots', host), btn = $('.e-btn', host), chal = $('.e-chal', host);
+  const ns = 'http://www.w3.org/2000/svg', el = [];
+  for (let i = 0; i < N; i++){ const c = document.createElementNS(ns, 'circle'); c.setAttribute('r', '4.5'); c.setAttribute('fill', '#2f8de4'); c.setAttribute('stroke', '#fff'); c.setAttribute('stroke-width', '1'); dots.appendChild(c); el.push({c, s: i * P / N, jx: 0, jy: 0}); }
+  function at(s){ s = ((s % P) + P) % P;
+    if (s < H) return [X0, Y0 + H - s]; s -= H;
+    if (s < W) return [X0 + s, Y0]; s -= W;
+    if (s < H) return [X0 + W, Y0 + s]; s -= H;
+    return [X0 + W - s, Y0 + H]; }
+  let on = false, raf = 0, last = 0;
+  if (BL.has(opt.lesson, 'elec')) chal.classList.add('ok');
+  function paint(){
+    $('.e-arm', host).setAttribute('x2', on ? 28 : 26); $('.e-arm', host).setAttribute('y2', on ? 0 : -24);
+    $('.e-glow', host).setAttribute('opacity', on ? 1 : 0); $('.e-bulb', host).setAttribute('fill', on ? '#ffe680' : '#f4f1e6');
+    $('.e-state', host).textContent = on ? 'All moving one way = current' : 'Jiggling in place = no current';
+    btn.textContent = on ? 'Open the switch' : 'Close the switch';
+  }
+  function frame(ts){
+    raf = 0; const dt = Math.min(60, ts - (last || ts)); last = ts;
+    el.forEach(e => {
+      if (on){ e.s += dt * 0.06; e.jx *= .8; e.jy *= .8; }
+      else { e.jx = Math.max(-5, Math.min(5, e.jx + (Math.random() - .5) * 3)); e.jy = Math.max(-5, Math.min(5, e.jy + (Math.random() - .5) * 3)); }
+      const p = at(e.s); e.c.setAttribute('cx', (p[0] + e.jx).toFixed(1)); e.c.setAttribute('cy', (p[1] + e.jy).toFixed(1));
+    });
+    if (!reduced() && document.body.contains(host)) raf = requestAnimationFrame(frame);
+  }
+  btn.addEventListener('click', () => {
+    on = !on; paint();
+    if (on && BL.mark(opt.lesson, 'elec')) chal.classList.add('ok');
+    if (reduced()){ el.forEach(e => { if (on) e.s += P / N / 2; }); frame(performance.now()); }
+  });
+  paint(); frame(performance.now());
 };
 
 /* ---------------- L2: DC / AC / 3-phase scope ---------------- */
