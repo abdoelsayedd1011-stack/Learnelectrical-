@@ -296,6 +296,22 @@
   /* ---------- English (/en/ pages): strings from assets/i18n-en.js, links via assets/i18n.js ---------- */
   var I18N = window.LE_I18N || {}, EN = I18N.isEn && I18N.en ? I18N.en : null;
   var L = function(p){ return I18N.href ? I18N.href(p) : p; }; // a link for this page's language
+  /* كورسات مخفية مؤقتًا (طلب صاحب الموقع 2026-11-01: «نظبط الموقع واحدة واحدة وبعدين نرجعلهم»).
+     بتختفي من الكتالوج والصفحة الرئيسية وصفحة الأسعار، وصفحاتها نفسها لسه شغالة باللينك. عشان ترجّع كورس: شيله من هنا. */
+  var HIDDEN = { mech:1, mfit:1, maint:1, srvm:1 };
+  var HIDE_DIRS = { mech:"mech-lab", mfit:"mfit-lab", maint:"maint-lab", srvm:"servo-maint-lab" };
+  LABS = LABS.filter(function(l){ return !HIDDEN[l.group] && !HIDDEN[l.id]; });
+  GROUPS = GROUPS.filter(function(g){ return !HIDDEN[g.key]; });
+  window.LE_HIDDEN = HIDDEN;
+  (function hideStatic(){
+    if (!document.body){ document.addEventListener("DOMContentLoaded", hideStatic); return; }
+    Object.keys(HIDDEN).forEach(function(k){
+      document.querySelectorAll('.pc[data-id="' + k + '"], article[data-id="' + k + '"]').forEach(function(el){ el.hidden = true; el.style.display = "none"; });
+      document.querySelectorAll('a[href*="' + HIDE_DIRS[k] + '/index.html"], a[href*="courses/' + k + '.html"]').forEach(function(a){
+        var li = a.closest("li"); if (li && !a.closest(".site-nav")) { li.hidden = true; li.style.display = "none"; }
+      });
+    });
+  })();
   LABS.forEach(function(l){ l.course = l.brand === "كورس"; l.ar = !!EN && !(I18N.hasEn && I18N.hasEn(l.path)); });
   if (EN){
     LABS.forEach(function(l){
