@@ -1335,7 +1335,7 @@ BL.flow = function(host, opt){
   <text x="180" y="252" text-anchor="middle" class="dev-ar f-dir"></text>
   </svg></div>
   <div class="read"><div><span>جهد البطارية</span><b class="f-V"></b></div><div><span>الأميتر (التيار)</span><b class="f-I"></b></div><div><span>الفولتميتر على اللمبة</span><b class="f-VL"></b></div><div><span>الجهد على طرفين المفتاح</span><b class="f-VS"></b></div></div>
-  <div class="wd-ctl"><label>عدد الخلايا (كل خلية 1.5V): <b class="f-nl"></b><input type="range" min="0" max="8" step="1" value="4" class="f-n" aria-label="عدد خلايا البطارية"></label>
+  <div class="wd-ctl"><label>الجهد = عدد الخلايا (كل خلية 1.5V): <b class="f-nl"></b><input type="range" min="0" max="8" step="1" value="4" class="f-n" aria-label="عدد خلايا البطارية"></label>
   <button type="button" class="btn f-sw" aria-pressed="true">المفتاح: مقفول (الدايرة كاملة)</button>
   <button type="button" class="btn f-md" aria-pressed="false">اعرض الاتجاه الاصطلاحي</button></div>
   <p class="msg f-msg" aria-live="polite"></p>
@@ -1364,7 +1364,7 @@ BL.flow = function(host, opt){
     const m = q('.f-msg');
     if (!st.closed && V > 0) m.innerHTML = `الدايرة مفتوحة ⇐ <b>التيار صفر</b> واللمبة طافية، بس <b>الجهد لسه موجود</b>: ${nf(V, 1)}V على طرفين المفتاح. عشان كده المفتاح المفتوح لسه فيه كهربا!`;
     else if (st.closed && V === 0) m.textContent = 'مفيش بطارية ⇐ مفيش جهد يدفع ⇐ مفيش تيار، حتى والدايرة مقفولة.';
-    else if (st.closed) m.innerHTML = `التيار = ${nf(V, 1)}V ÷ ${PH.LAMP_R}Ω = <b>${nf(r.I, 3)}A</b>. كل ما تزوّد الخلايا الدفع بيزيد والتيار بيزيد.`;
+    else if (st.closed) m.innerHTML = `التيار = ${nf(V, 1)}V ÷ ${PH.LAMP_R}Ω = <b>${nf(r.I, 3)}A</b>. كل ما تزوّد الجهد الدفع بيزيد والتيار بيزيد.`;
     else m.textContent = 'مفيش جهد ومفيش دايرة.';
     if (st.closed && near(r.I, 0.5)) st.seen.add('half');
     if (!st.closed && V > 0) st.seen.add('open');
