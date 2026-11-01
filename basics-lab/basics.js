@@ -399,13 +399,13 @@ BL.elec = function(host, opt){
   <text x="${X0}" y="${Y0 + H + 44}" text-anchor="middle" class="dev-ars">البطارية</text>
   <g transform="translate(${X0 + W} ${Y0 + H / 2})"><circle class="e-glow" r="46" fill="url(#${g}g)" opacity="0"/><circle r="18" fill="#f4f1e6" stroke="#9aa3a8" stroke-width="2" class="e-bulb"/><path d="M-6 8 V0 C-6 -9 6 -9 6 0 V8" fill="none" stroke="#6b5a3a" stroke-width="1.6"/></g>
   <text x="${X0 + W}" y="${Y0 + H + 44}" text-anchor="middle" class="dev-ars">اللمبة</text>
-  <g transform="translate(${X0 + W / 2} ${Y0})"><rect x="-34" y="-10" width="68" height="20" fill="var(--panel)"/><circle cx="-28" cy="0" r="5" fill="#7d878d"/><circle cx="28" cy="0" r="5" fill="#7d878d"/><line class="e-arm" x1="-28" y1="0" x2="26" y2="-24" stroke="#4b545b" stroke-width="5" stroke-linecap="round"/></g>
+  <g class="e-sw" role="button" tabindex="0" aria-label="اضغط على المفتاح" style="cursor:pointer" transform="translate(${X0 + W / 2} ${Y0})"><rect x="-50" y="-44" width="100" height="74" fill="transparent"/><rect x="-34" y="-10" width="68" height="20" fill="var(--panel)"/><circle cx="-28" cy="0" r="5" fill="#7d878d"/><circle cx="28" cy="0" r="5" fill="#7d878d"/><line class="e-arm" x1="-28" y1="0" x2="26" y2="-24" stroke="#4b545b" stroke-width="5" stroke-linecap="round"/></g>
+  <g class="e-hand" style="pointer-events:none" transform="translate(${X0 + W / 2} ${Y0 + 40})"><text x="0" y="0" text-anchor="middle" style="font-size:30px">👆<animateTransform attributeName="transform" type="translate" values="0 6;0 -2;0 6" dur="1s" repeatCount="indefinite"/></text></g>
   <text x="${X0 + W / 2}" y="${Y0 - 30}" text-anchor="middle" class="dev-ars">المفتاح</text>
   <text x="${X0 + W / 2}" y="${Y0 + H / 2 + 6}" text-anchor="middle" class="dev-ar e-state"></text>
   </svg></div>
-  <div class="wd-ctl"><button type="button" class="btn e-btn" style="flex:1 1 auto;min-height:48px"></button></div>
-  <p class="chal e-chal">جرّب: اقفل المفتاح وبُص على النقط الزرقا (الإلكترونات). وبعدين افتحه تاني.</p>`;
-  const dots = $('.e-dots', host), btn = $('.e-btn', host), chal = $('.e-chal', host);
+  <p class="chal e-chal">جرّب: اضغط على المفتاح في الرسمة وبُص على النقط الزرقا (الإلكترونات). اضغط تاني عشان تفتحه.</p>`;
+  const dots = $('.e-dots', host), sw = $('.e-sw', host), chal = $('.e-chal', host);
   const ns = 'http://www.w3.org/2000/svg', el = [];
   for (let i = 0; i < N; i++){ const c = document.createElementNS(ns, 'circle'); c.setAttribute('r', '4.5'); c.setAttribute('fill', '#2f8de4'); c.setAttribute('stroke', '#fff'); c.setAttribute('stroke-width', '1'); dots.appendChild(c); el.push({c, s: i * P / N, jx: 0, jy: 0}); }
   function at(s){ s = ((s % P) + P) % P;
@@ -419,7 +419,7 @@ BL.elec = function(host, opt){
     $('.e-arm', host).setAttribute('x2', on ? 28 : 26); $('.e-arm', host).setAttribute('y2', on ? 0 : -24);
     $('.e-glow', host).setAttribute('opacity', on ? 1 : 0); $('.e-bulb', host).setAttribute('fill', on ? '#ffe680' : '#f4f1e6');
     $('.e-state', host).textContent = on ? 'ماشية في اتجاه واحد = تيار' : 'بتتهز في مكانها = مفيش تيار';
-    btn.textContent = on ? 'افتح المفتاح' : 'اقفل المفتاح';
+    sw.setAttribute('aria-pressed', on ? 'true' : 'false');
   }
   function frame(ts){
     raf = 0; const dt = Math.min(60, ts - (last || ts)); last = ts;
@@ -430,11 +430,13 @@ BL.elec = function(host, opt){
     });
     if (!reduced() && document.body.contains(host)) raf = requestAnimationFrame(frame);
   }
-  btn.addEventListener('click', () => {
-    on = !on; paint();
+  function toggle(){
+    on = !on; paint(); const hd = $('.e-hand', host); if (hd) hd.remove();
     if (on && BL.mark(opt.lesson, 'elec')) chal.classList.add('ok');
     if (reduced()){ el.forEach(e => { if (on) e.s += P / N / 2; }); frame(performance.now()); }
-  });
+  }
+  sw.addEventListener('click', toggle);
+  sw.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); } });
   paint(); frame(performance.now());
 };
 
