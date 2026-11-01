@@ -52,8 +52,8 @@ function langBtn(){
 BL.COURSE = [
   {id:'l1', n:1, file:'lesson-01.html', title:'What is electricity?', sub:'What electricity does, inside the atom, what current means, and where electricity comes from',
     tasks:[['elec','Electrons in the wire experiment'],['quiz','Lesson questions']]},
-  {id:'vi', n:2, file:'lesson-02.html', title:'Voltage and current', sub:'Volts push, amps flow: the closed circuit, current direction, units and conversions, and how to measure them',
-    tasks:[['flow','Circuit experiment'],['units','Unit conversion drill'],['meter','Where to put the meter'],['quiz','Lesson questions']]},
+  {id:'vi', n:2, file:'lesson-02.html', title:'Voltage and current', sub:'Volts push, amps flow: the closed circuit, current direction, and how to measure them',
+    tasks:[['flow','Circuit experiment'],['meter','Where to put the meter'],['quiz','Lesson questions']]},
   {id:'cond', n:3, file:'lesson-03.html', title:'Conductivity: conductors and insulators', sub:'Copper, aluminium, plastic and water: what conducts and what insulates, and how wire length and thickness matter',
     tasks:[['mat','Material tester'],['wire','Wire resistance calculator'],['quiz','Lesson questions']]},
   {id:'sp', n:4, file:'lesson-04.html', title:'Series and parallel connections', sub:'Lamps in a row and side by side: current and voltage in each lamp, why a house is all parallel, and batteries',
