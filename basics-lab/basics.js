@@ -1701,7 +1701,7 @@ BL.house = function(host, opt){
     $$('tr[data-i]', host).forEach(tr => { const i = +tr.dataset.i; $('.hs-k', tr).innerHTML = items[i].on ? `<span class="eq">${nf(r.rows[i].month, 1)} kWh</span> في الشهر` : 'مطفي'; tr.style.opacity = items[i].on ? 1 : .55; });
     q('.hs-W').textContent = nf(r.W, 0) + ' W'; q('.hs-I').textContent = nf(r.I, 1) + ' A'; q('.hs-d').textContent = nf(r.day, 2) + ' kWh'; q('.hs-m').textContent = nf(r.month, 1) + ' kWh'; q('.hs-c').textContent = nf(r.cost, 0) + ' جنيه';
     let top = -1, tv = 0; r.rows.forEach((x, i) => { if (x.month > tv){ tv = x.month; top = i; } });
-    q('.hs-msg').innerHTML = (top >= 0 ? `أكتر جهاز بياكل: <b>${items[top].name}</b> (${nf(tv / r.month * 100, 0)}% من الاستهلاك). ` : '') + (r.I > 40 ? '<b style="color:var(--bad)">لو كله اشتغل مع بعض التيار أكبر من قاطع الشقة الرئيسي المعتاد (40A): لازم توزّع التشغيل.</b>' : `لو كله اشتغل مع بعض التيار ${nf(r.I, 1)}A، أقل من قاطع الشقة الرئيسي المعتاد 40A.`);
+    q('.hs-msg').innerHTML = (top >= 0 ? `أكتر جهاز بيستهلك: <b>${items[top].name}</b> (${nf(tv / r.month * 100, 0)}% من الاستهلاك). ` : '') + (r.I > 40 ? '<b style="color:var(--bad)">لو كله اشتغل مع بعض التيار أكبر من قاطع الشقة الرئيسي المعتاد (40A): لازم توزّع التشغيل.</b>' : `لو كله اشتغل مع بعض التيار ${nf(r.I, 1)}A، أقل من قاطع الشقة الرئيسي المعتاد 40A.`);
     return r;
   }
   host.addEventListener('input', upd); host.addEventListener('change', upd); upd();
