@@ -3649,6 +3649,7 @@ CL.lesson = function(Ld){
   const allKeys = () => Ld.elements.reduce((a, el) => a.concat(elKeys(el)), []);
   const summary = () => { const k = allKeys(); CL.store.summary(LID, cnt(k), k.length); };
   let cur = {el:-1, si:0, ex:{}}, live = [], startEx = null;
+  let benchNext = null, benchKey = '';
   CL.test.lesson = Ld;
   root.innerHTML = `<section class="panel guide" aria-label="${esc(Ld.title)}">
     <div id="gStart"><div class="g-head"><h2>${esc(Ld.pick || 'اختار عنصر وابدأ')}</h2><div class="g-sub">${Ld.intro || ''}</div></div>
@@ -3690,7 +3691,7 @@ CL.lesson = function(Ld){
     if (!run){ cards(); if (scroll) root.scrollIntoView({block:'start'}); return; }
     const el = Ld.elements[cur.el], s = el.steps[cur.si], body = $('#gBody');
     $('#gTitle').textContent = `${cur.el + 1}. ${el.title}: ${s.title}`;
-    body.innerHTML = '';
+    body.innerHTML = ''; benchNext = null;
     if (s.kind === 'text'){ body.innerHTML = `<div class="g-lead">${s.html}</div>`; mark(stepKeys(el, cur.si)[0]); }
     else if (s.kind === 'art'){
       body.innerHTML = (s.lead ? `<p class="g-lead">${s.lead}</p>` : '') + `<div class="figs">${s.items.map(it => { const d = CL.makeDevice(it.dev); const T = TYPES[d.type]; const artSvg = it.art ? (typeof it.art === 'function' ? it.art(d) : (CL.art[it.art] || CL.art[it.art + 'Art'])(d)) : T.art ? T.art(d) : '';
@@ -3706,11 +3707,20 @@ CL.lesson = function(Ld){
       const exs = s.ex, sel = (startEx && exs.indexOf(startEx) > -1 ? startEx : null) || cur.ex[s.ex.join()] || exs.find(x => !CL.store.has(`${LID}/ex/${x}`)) || exs[0];
       startEx = null;
       cur.ex[s.ex.join()] = sel;
-      body.innerHTML = (exs.length > 1 ? `<div class="ex-tabs" role="group" aria-label="التمارين">${exs.map((x, i) => `<button type="button" class="btn${CL.store.has(`${LID}/ex/${x}`) ? ' done' : ''}" data-ex="${x}" aria-pressed="${x === sel}"><span class="k">${CL.store.has(`${LID}/ex/${x}`) ? '✓' : i + 1}</span>${esc(Ld.exercises[x].short || Ld.exercises[x].title)}</button>`).join('')}</div>` : '') + '<div class="bn-host"></div>';
+      const doneN = () => exs.filter(x => CL.store.has(`${LID}/ex/${x}`)).length;
+      benchKey = s.ex.join(); benchNext = exs.length > 1 && exs.indexOf(sel) < exs.length - 1 ? exs[exs.indexOf(sel) + 1] : null;
+      body.innerHTML = (exs.length > 1 ? `<p class="ex-head">📋 هنا <b>${exs.length} تمارين</b>. اعملهم واحد ورا التاني. خلصت <b class="ex-cnt">${doneN()}</b> من ${exs.length}</p>` : '') + (exs.length > 1 ? `<div class="ex-tabs" role="group" aria-label="التمارين">${exs.map((x, i) => `<button type="button" class="btn${CL.store.has(`${LID}/ex/${x}`) ? ' done' : ''}" data-ex="${x}" aria-pressed="${x === sel}"><span class="k">${CL.store.has(`${LID}/ex/${x}`) ? '✓' : i + 1}</span>${esc(Ld.exercises[x].short || Ld.exercises[x].title)}</button>`).join('')}</div>` : '') + '<div class="bn-host"></div><div class="ex-next" hidden></div>';
+      const nxBox = body.querySelector('.ex-next');
+      const showNext = () => { if (exs.length < 2) return; const cnt = body.querySelector('.ex-cnt'); if (cnt) cnt.textContent = doneN(); if (!CL.store.has(`${LID}/ex/${sel}`)){ nxBox.hidden = true; return; }
+        const i0 = exs.indexOf(sel), nx = exs.slice(i0 + 1).concat(exs.slice(0, i0)).find(x => !CL.store.has(`${LID}/ex/${x}`)), rem = exs.length - doneN();
+        nxBox.innerHTML = nx ? `<p>✓ برافو، خلصت التمرين ده. فاضل ${rem}.</p><button type="button" class="btn pri" data-go="${nx}">التمرين الجاي: ${esc(Ld.exercises[nx].short || Ld.exercises[nx].title)} ←</button>` : `<p>🎉 خلصت كل التمارين.</p><button type="button" class="btn pri" data-go="">كمّل للخطوة الجاية ›</button>`;
+        nxBox.hidden = false; };
+      nxBox.addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (!b) return; if (b.dataset.go){ cur.ex[s.ex.join()] = b.dataset.go; cleanup(); render(true); } else { benchNext = null; $('#gNext').click(); } });
       const tabs = body.querySelector('.ex-tabs');
       if (tabs) tabs.addEventListener('click', e => { const b = e.target.closest('[data-ex]'); if (!b) return; cur.ex[s.ex.join()] = b.dataset.ex; cleanup(); render(); });
-      live.push(CL.bench(body.querySelector('.bn-host'), Ld.exercises[sel], {key:`${LID}/${sel}`, passKey:`${LID}/ex/${sel}`, onPass: () => { mark(`${LID}/ex/${sel}`); const b = tabs && tabs.querySelector(`[data-ex="${sel}"]`); if (b){ b.classList.add('done'); b.querySelector('.k').textContent = '✓'; } },
-        onReset: () => { CL.store.set(`${LID}/ex/${sel}`, null); summary(); progress(); const b = tabs && tabs.querySelector(`[data-ex="${sel}"]`); if (b){ b.classList.remove('done'); b.querySelector('.k').textContent = String(exs.indexOf(sel) + 1); } }}));
+      live.push(CL.bench(body.querySelector('.bn-host'), Ld.exercises[sel], {key:`${LID}/${sel}`, passKey:`${LID}/ex/${sel}`, onPass: () => { mark(`${LID}/ex/${sel}`); const b = tabs && tabs.querySelector(`[data-ex="${sel}"]`); if (b){ b.classList.add('done'); b.querySelector('.k').textContent = '✓'; } showNext(); },
+        onReset: () => { CL.store.set(`${LID}/ex/${sel}`, null); summary(); progress(); const b = tabs && tabs.querySelector(`[data-ex="${sel}"]`); if (b){ b.classList.remove('done'); b.querySelector('.k').textContent = String(exs.indexOf(sel) + 1); } showNext(); }}));
+      showNext();
     }
     else if (s.kind === 'quiz'){
       body.innerHTML = '<div class="qz-host"></div>';
@@ -3720,13 +3730,14 @@ CL.lesson = function(Ld){
     const last = cur.si === el.steps.length - 1;
     $('#gPrev').textContent = cur.si === 0 ? '‹ العناصر' : 'السابق';
     $('#gNext').textContent = last ? (cur.el < Ld.elements.length - 1 ? 'العنصر اللي بعده ›' : 'خلصت ✓ رجوع للعناصر') : 'التالي';
+    if (benchNext) $('#gNext').textContent = 'التمرين الجاي ›';
     if (scroll) $('#gRun').scrollIntoView({block:'start'});
   }
   $('#gCards').addEventListener('click', e => { const b = e.target.closest('[data-el]'); if (b) go(+b.dataset.el, 0, true); });
   $('#gBack').addEventListener('click', () => go(-1, 0, true));
   $('#gProg').addEventListener('click', e => { const b = e.target.closest('[data-si]'); if (b) go(cur.el, +b.dataset.si, false); });
   $('#gPrev').addEventListener('click', () => { if (cur.si === 0) go(-1, 0, true); else go(cur.el, cur.si - 1, true); });
-  $('#gNext').addEventListener('click', () => { const el = Ld.elements[cur.el]; if (cur.si < el.steps.length - 1) go(cur.el, cur.si + 1, true); else if (cur.el < Ld.elements.length - 1) go(cur.el + 1, 0, true); else go(-1, 0, true); });
+  $('#gNext').addEventListener('click', () => { if (benchNext){ cur.ex[benchKey] = benchNext; cleanup(); render(true); return; } const el = Ld.elements[cur.el]; if (cur.si < el.steps.length - 1) go(cur.el, cur.si + 1, true); else if (cur.el < Ld.elements.length - 1) go(cur.el + 1, 0, true); else go(-1, 0, true); });
   // start: deep link (#sw/2) or the start screen
   const m = /^#([\w-]+)\/(\d+)(?:\/([\w-]+))?$/.exec(location.hash || '');
   if (m){ const ei = Ld.elements.findIndex(e => e.id === m[1]); if (ei > -1){ cur.el = ei; cur.si = clamp(+m[2] - 1, 0, Ld.elements[ei].steps.length - 1); startEx = m[3] || null; } }
