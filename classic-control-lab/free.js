@@ -17,11 +17,11 @@ CL.on('precheck', e => { e.skip = true; });
 
 const PAL = [
   {g:'المصدر والحماية', items:[
-    {lab:'مصدر 230V (L / N)', ic:'🔌', pre:'Q', spec:{type:'supplyAC', name:'القاطع'}},
+    {lab:'مصدر 230V (L / N)', ic:'🏠', pre:'Q', spec:{type:'supplyAC', name:'القاطع'}},
     {lab:'مصدر 3 فاز 400V', ic:'⚡', pre:'G', spec:{type:'supply3P', name:'المصدر'}},
     {lab:'باور سبلاي 24V DC', ic:'🔋', pre:'G', spec:{type:'supplyDC', name:'باور سبلاي 24V'}},
     {lab:'قاطع 3 فاز', ic:'🟫', pre:'Q', spec:{type:'mcb', cfg:{poles:3, label:'C10'}, name:'قاطع القوى'}},
-    {lab:'قاطع تحكم 1 فاز', ic:'▫️', pre:'F', spec:{type:'mcb', cfg:{poles:1, label:'C2'}, name:'قاطع التحكم'}},
+    {lab:'قاطع تحكم 1 فاز', ic:'🔌', pre:'F', spec:{type:'mcb', cfg:{poles:1, label:'C2'}, name:'قاطع التحكم'}},
     {lab:'فيوز', ic:'🧯', pre:'F', spec:{type:'fuse', cfg:{poles:1, label:'2A', kind:'gG'}, name:'فيوز'}},
     {lab:'أوفرلود', ic:'🌡️', pre:'F', spec:{type:'ol', cfg:{Ir:5, model:'LRD10', range:'4–6.5 A', lo:4, hi:6.5}, name:'أوفرلود حراري'}},
     {lab:'MPCB', ic:'🛡️', pre:'Q', spec:{type:'mpcb', cfg:{Ir:5, label:'GV2ME10', lo:4, hi:6.3, aux:true}, name:'MPCB'}},
@@ -119,18 +119,20 @@ function openEx(id){
   S = {title:e.title, devs:clone(e.devices)};
   CL.store.bench(BK, clone(e.solution));
   save(); build();
-  $('#fwLib').open = false;
+  $('#fwLib').open = false; $('#fwAdd').open = false;
   say(`✓ فتحت «${esc(e.title)}» موصّلة. دوس <b>⚡ شغّل الكهربا</b> وجرّب الزراير، أو عدّل فيها براحتك.`, 'ok');
-  $('#fwBench').scrollIntoView({block:'start', behavior:'smooth'});
+  $('#fwSchH').scrollIntoView({block:'start', behavior:'smooth'});
 }
 
 function init(){
-  $('#fwLibList').innerHTML = EX.map(g => `<div class="fw-g"><h3>${esc(g.g)}</h3><div class="fw-ex">${g.items.map(x => `<button type="button" class="btn" data-ex="${esc(x.id)}">${esc(x.title)}</button>`).join('')}</div></div>`).join('');
-  $('#fwPal').innerHTML = PAL.map((g, gi) => `<div class="fw-g"><h3>${esc(g.g)}</h3><div class="fw-pal">${g.items.map(x => `<button type="button" class="btn" data-add="${ALL.indexOf(x)}"><span class="ic">${x.ic}</span>${esc(x.lab)}</button>`).join('')}</div></div>`).join('');
+  const GI = ['🔘', '🔁', '🧲', '🛡️', '⏱️', '⚙️', '💧', '↔️', '⭐'];
+  $('#fwLibList').innerHTML = EX.map((g, gi) => `<div class="fw-g"><h3>${GI[gi] || '•'} ${esc(g.g)}</h3><div class="fw-ex">${g.items.map(x => `<button type="button" data-ex="${esc(x.id)}"><span class="ic">${GI[gi] || '•'}</span><span>${esc(x.title)}</span></button>`).join('')}</div></div>`).join('');
+  $('#fwPal').innerHTML = PAL.map((g, gi) => `<div class="fw-g"><h3>${esc(g.g)}</h3><div class="fw-pal">${g.items.map(x => `<button type="button" data-add="${ALL.indexOf(x)}"><span class="ic">${x.ic}</span><span>${esc(x.lab)}</span></button>`).join('')}</div></div>`).join('');
   document.addEventListener('click', e => {
     const a = e.target.closest('[data-add]'); if (a) return add(ALL[+a.dataset.add]);
     const r = e.target.closest('[data-rm]'); if (r) return remove(r.dataset.rm);
     const x = e.target.closest('[data-ex]'); if (x) return openEx(x.dataset.ex);
+    const j = e.target.closest('[data-jump]'); if (j){ const d = document.getElementById(j.dataset.jump); d.open = true; d.scrollIntoView({block:'start', behavior:'smooth'}); return; }
     const z = e.target.closest('#fwZoom'); if (z){ const on = document.body.classList.toggle('fw-zoomed'); z.setAttribute('aria-pressed', on); z.textContent = on ? '🔍 صغّر اللوحة' : '🔍 كبّر اللوحة'; try { localStorage.setItem(SK + '-zoom', on ? '1' : ''); } catch (er){} if (on) $('#fwBench .bn-board').scrollIntoView({block:'start'}); return; }
     if (e.target.closest('#fwNew')){ S = BLANK(); CL.store.bench(BK, null); save(); build(); say('✓ لوحة جديدة فيها مصدر بس. ضيف الأجهزة اللي محتاجها.', 'ok'); }
   });
