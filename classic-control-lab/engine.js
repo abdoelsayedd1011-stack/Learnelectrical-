@@ -2770,6 +2770,7 @@ CL.bench = function(host, ex, opt){
     <div class="bn-machine" hidden></div>
     <div class="bn-legend">${has3P ? '<span><i class="pw" style="background:#7b4a21"></i>L1 بني</span><span><i class="pw" style="background:#1f1f1f"></i>L2 أسود</span><span><i class="pw" style="background:#8a8f94"></i>L3 رمادي</span><span class="lg-note">(أسلاك القوى تخينة)</span>' : ''}<span><i style="background:${dc ? '#1f3f9a' : '#c62828'}"></i>${dc ? 'سلك +24V (أزرق غامق)' : 'سلك تحكم L (أحمر' + (has3P ? '، رفيع' : '') + ')'}</span><span><i style="background:#3a9be0"></i>${dc ? 'سلك 0V' : 'سلك N (أزرق فاتح)'}</span><span><i style="background:repeating-linear-gradient(90deg,#fff6b0 0 4px,#c62828 4px 13px)"></i>تيار ماشي</span></div>
   </div>`;
+  if (opt.open) host.querySelector('.bn').classList.add('bn-open');
   const board = host.querySelector('.bn-board'), msgEl = host.querySelector('.bn-msg'), resEl = host.querySelector('.bn-res'), pwrBtn = host.querySelector('[data-b=pwr]');
   const msg = (t, cls) => { msgEl.innerHTML = t || ''; msgEl.className = 'bn-msg' + (cls ? ' ' + cls : ''); };
   let speed = 1; const spdBtn = host.querySelector('[data-b=spd]');
@@ -2784,6 +2785,7 @@ CL.bench = function(host, ex, opt){
   const GW = 40, GH = 48, HH = 26; // grid gutters (wire channels) and zone heading height
   function layout(){
     const Wd = board.clientWidth || host.clientWidth || 340;
+    if (opt.open) return openLayout(Wd);
     if (!zoned){
       const cols = Wd < 520 ? 2 : Wd < 820 ? 3 : 4;
       let col = 0, y = 6, rowH = 0; const P = {};
@@ -2817,6 +2819,36 @@ CL.bench = function(host, ex, opt){
       zr[z] = mode === 'stack' ? {x:6, y:top[z === 'P' ? 0 : r0 - 1] - 4, w:VW - 12, h:top[r1] + rows[r1].h - top[z === 'P' ? 0 : r0 - 1] + GH / 2 + 2, hx:VW / 2, hy:top[z === 'P' ? 0 : r0 - 1] + 17}
         : {x:x0, y:top[0] - 4, w:x1 - x0, h:VH - top[0] - GH / 2 + 2, hx:(x0 + x1) / 2, hy:top[0] + 17}; });
     return {cols, VW, VH, P, grid:true, rows, top, colX, gxc, gw, mode, zr, ctlSide: mode === 'stack' ? '' : 'l'};
+  }
+  // ---- open board (free workshop): devices spaced out on a white grid, each one draggable; positions come from opt.pos
+  function openLayout(Wd){
+    const GX = 70, GY = 90, cols = Wd < 520 ? 2 : Wd < 900 ? 3 : 4, P = {}, pos = opt.pos || {};
+    const pw = d => TYPES[d.type].zone === 'P' || isSupply(d) || powerTerm(d.id + ':1') || d.type === 'motor';
+    const order = devs.filter(pw).concat(devs.filter(d => !pw(d)));
+    let col = 0, y = 40, rowH = 0;
+    order.forEach(d => { const T = TYPES[d.type], span = Math.min(cols, T.span(d)), h = T.h(d);
+      if (col + span > cols){ col = 0; y += rowH + GY; rowH = 0; }
+      P[d.id] = {x:GX + col * (CW + GX), y, w:span * CW, h, col, span, row:0}; rowH = Math.max(rowH, h); col += span; });
+    Object.keys(P).forEach(id => { const q = pos[id]; if (q && isFinite(q.x) && isFinite(q.y)){ P[id].x = Math.max(0, q.x); P[id].y = Math.max(0, q.y); } });
+    let VW = cols * (CW + GX) + GX, VH = y + rowH + 60;
+    Object.keys(P).forEach(id => { const p = P[id]; VW = Math.max(VW, p.x + p.w + GX); VH = Math.max(VH, p.y + p.h + 60); });
+    return {cols, VW, VH, P, grid:false, open:true};
+  }
+  // orthogonal wires straight between two terminals: out of each terminal, across, and in; every wire gets its own lane
+  function orthoRouter(){
+    let n = 0;
+    return (A, B) => {
+      const o = ((n++ % 7) - 3) * 8, k = 26 + Math.abs(o) * 0.6;
+      const out = T => T.side ? [T.x + (T.side === 'l' ? -k : k), T.y] : [T.x, T.y + (T.dir || 1) * k];
+      const a = out(A), b = out(B), xm = (a[0] + b[0]) / 2 + o;
+      const pts = [[A.x, A.y], a, [xm, a[1]], [xm, b[1]], b, [B.x, B.y]];
+      const q = pts.filter((p, i) => !i || Math.abs(p[0] - pts[i-1][0]) > .5 || Math.abs(p[1] - pts[i-1][1]) > .5);
+      let d = `M${q[0][0]} ${q[0][1]}`;
+      for (let i = 1; i < q.length - 1; i++){ const p0 = q[i-1], p1 = q[i], p2 = q[i+1], r = Math.min(9, Math.hypot(p1[0]-p0[0], p1[1]-p0[1]) / 2, Math.hypot(p2[0]-p1[0], p2[1]-p1[1]) / 2);
+        const u = [Math.sign(p1[0]-p0[0]), Math.sign(p1[1]-p0[1])], v = [Math.sign(p2[0]-p1[0]), Math.sign(p2[1]-p1[1])];
+        d += `L${p1[0]-u[0]*r} ${p1[1]-u[1]*r}Q${p1[0]} ${p1[1]} ${p1[0]+v[0]*r} ${p1[1]+v[1]*r}`; }
+      return d + `L${q[q.length-1][0]} ${q[q.length-1][1]}`;
+    };
   }
   // ---- orthogonal wire routing on the grid gutters (horizontal gutters between rows, vertical gutters between columns)
   function router(){
@@ -2984,13 +3016,13 @@ CL.bench = function(host, ex, opt){
       hitSvg += `<g transform="translate(${p.x} ${p.y})">${g.hit || ''}</g>`;
       Object.keys(g.terms).forEach(n => { const t = g.terms[n]; TT[d.id + ':' + n] = {x:p.x + t.x, y:p.y + t.y, dir:t.dir, side:t.side || '', col:p.col, span:p.span, row:p.row}; });
     });
-    const route = L.grid ? router() : wpath;
+    const route = L.open ? orthoRouter() : L.grid ? router() : wpath;
     const fr = (() => { const cl = devs.map(d => Object.assign({}, d, {st:Object.assign({}, d.st)})); return solveOnce(cl, wires, true); })();
     if (flash && flash.until < Date.now()) flash = null;
     if (errHl && errHl.until < Date.now()) errHl = null;
     let wSvg = '';
     if (ghost && ex.solution){ // the solution as a dashed ghost under the trainee's own wires (never added to the board)
-      const groute = L.grid ? router() : wpath, gW = nhSol.slice(0, ghost).map((p, i) => ({id:'g' + i, a:p[0], b:p[1]}));
+      const groute = L.open ? orthoRouter() : L.grid ? router() : wpath, gW = nhSol.slice(0, ghost).map((p, i) => ({id:'g' + i, a:p[0], b:p[1]}));
       const gfr = (() => { const cl = devs.map(d => Object.assign({}, d, {st:Object.assign({}, d.st)})); return solveOnce(cl, gW, true); })();
       gW.forEach(w => { const A = TT[w.a], B = TT[w.b]; if (!A || !B) return; const col = wireColor(w, gfr), pw = col !== '#3a9be0' && (powerTerm(w.a) || powerTerm(w.b)); wSvg += `<path class="bw-ghost${pw ? ' pw' : ''}${w.id === 'g' + (ghost - 1) ? ' cur' : ''}" d="${groute(A, B)}" stroke="${col}"/>`; });
     }
@@ -3141,6 +3173,27 @@ CL.bench = function(host, ex, opt){
   };
   const onUp = e => { if (held.has(e.pointerId)){ const id = held.get(e.pointerId); held.delete(e.pointerId); act(id, 'press', false); } };
   board.addEventListener('pointerdown', onDown);
+  if (opt.open){ // drag a device around the open board
+    let dg = null, raf2 = 0;
+    board.addEventListener('pointerdown', e => {
+      if (e.target.closest('[data-t],[data-act],[data-w]')) return;
+      const c = e.target.closest('[data-cell]'); if (!c || !L || !L.P[c.dataset.cell]) return;
+      const sv = board.querySelector('svg'); if (!sv) return;
+      const k = L.VW / sv.getBoundingClientRect().width, p = L.P[c.dataset.cell];
+      dg = {id:c.dataset.cell, x0:e.clientX, y0:e.clientY, px:p.x, py:p.y, k, on:false, pid:e.pointerId};
+    });
+    board.addEventListener('pointermove', e => {
+      if (!dg || e.pointerId !== dg.pid) return;
+      const dx = (e.clientX - dg.x0) * dg.k, dy = (e.clientY - dg.y0) * dg.k;
+      if (!dg.on && Math.hypot(dx, dy) < 8 * dg.k) return;
+      if (!dg.on){ dg.on = true; try { board.setPointerCapture(e.pointerId); } catch(_) {} }
+      e.preventDefault();
+      opt.pos = opt.pos || {}; opt.pos[dg.id] = {x:Math.round((dg.px + dx) / 10) * 10, y:Math.round((dg.py + dy) / 10) * 10};
+      if (!raf2) raf2 = requestAnimationFrame(() => { raf2 = 0; render(); });
+    });
+    const end = () => { if (dg && dg.on && opt.onMove) opt.onMove(opt.pos); dg = null; };
+    board.addEventListener('pointerup', end); board.addEventListener('pointercancel', end);
+  }
   window.addEventListener('pointerup', onUp); window.addEventListener('pointercancel', onUp);
   board.addEventListener('click', e => {
     const t = e.target.closest('[data-t]'); if (t){ termClick(t.dataset.t); return; }

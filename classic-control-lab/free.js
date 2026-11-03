@@ -69,7 +69,7 @@ function build(){
   $('#fwTitle').textContent = S.title;
   $('#fwDevs').innerHTML = S.devs.map(d => `<span class="fw-dev"><b>${esc(d.tag || d.id)}</b>${d.name ? ' ' + esc(d.name) : ''}<button type="button" data-rm="${esc(d.id)}" aria-label="شيل ${esc(d.id)}">✕</button></span>`).join('') || '<span class="fw-empty">اللوحة فاضية. ضيف أجهزة من تحت.</span>';
   try {
-    api = CL.bench(host, {id:'free', title:S.title, devices:S.devs, cases:[{label:'', set:{}, expect:{}}]}, {key:BK, netColors:true, onChange:schem});
+    api = CL.bench(host, {id:'free', title:S.title, devices:S.devs, cases:[{label:'', set:{}, expect:{}}]}, {key:BK, netColors:true, onChange:schem, open:true, pos:S.pos || (S.pos = {}), onMove:p => { S.pos = p; save(); }});
     schem();
   } catch (e){
     console.error(e); host.innerHTML = '<p class="fw-msg bad">في جهاز مش راضي يتحط. امسحه وجرّب تاني.</p>';
@@ -116,7 +116,7 @@ function remove(id){
 function openEx(id){
   let e = null; EX.forEach(g => g.items.forEach(x => { if (x.id === id) e = x; }));
   if (!e) return;
-  S = {title:e.title, devs:clone(e.devices)};
+  S = {title:e.title, devs:clone(e.devices), pos:{}};
   CL.store.bench(BK, clone(e.solution));
   save(); build();
   $('#fwLib').open = false; $('#fwAdd').open = false;
