@@ -76,6 +76,7 @@ function membersOnly(pathname){
   if (rest && !/\.html$/.test(rest) && /\./.test(rest)) return false; // scripts, images, data
   if (COURSE_DIRS.has(dir)){
     if (dir === "plc-lab" && /^(?:siemens|delta|ab)(?:\.html)?$/.test(rest)) return true; // brand simulators
+    if (dir === "classic-control-lab" && /^free(?:\.html)?$/.test(rest)) return true;     // the free wiring workshop
     if (dir === "safety-lab" && /^pluto(?:\.html)?$/.test(rest)) return true;              // the safety simulator
     if (dir === "iiot-lab" && /^net(?:\.html)?$/.test(rest)) return true;                   // the networks simulator
     if (dir === "scada-lab" && /^(?:scada|designer)(?:\.html)?$/.test(rest)) return true;   // the SCADA station and the screen designer
