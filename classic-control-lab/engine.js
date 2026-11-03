@@ -3707,6 +3707,7 @@ const ICONS = {
   lathe:'<svg viewBox="0 0 84 40" aria-hidden="true"><rect x="6" y="26" width="72" height="10" fill="#56656f"/><rect x="10" y="10" width="20" height="18" fill="#3b3f43"/><rect x="30" y="16" width="30" height="6" fill="#aab1b6"/><rect x="62" y="12" width="12" height="16" fill="#3b3f43"/><circle cx="45" cy="19" r="6" fill="#d9924f"/></svg>'
 };
 CL.ICONS = ICONS;
+CL.SHOW = CL.SHOW != null ? CL.SHOW : (typeof location !== 'undefined' && /[?&]show=1\b/.test(location.search));
 CL.lesson = function(Ld){
   SKIN.toggle(document.querySelector('header.top .chips'));
   const root = document.getElementById('lesson');
@@ -3776,9 +3777,11 @@ CL.lesson = function(Ld){
       const exs = s.ex, sel = (startEx && exs.indexOf(startEx) > -1 ? startEx : null) || cur.ex[s.ex.join()] || exs.find(x => !CL.store.has(`${LID}/ex/${x}`)) || exs[0];
       startEx = null;
       cur.ex[s.ex.join()] = sel;
+      const show = CL.SHOW && (cur.mode || 'show') === 'show' && Ld.exercises[sel].solution && Ld.exercises[sel].solution.length;
       const doneN = () => exs.filter(x => CL.store.has(`${LID}/ex/${x}`)).length;
       benchKey = s.ex.join(); benchNext = exs.length > 1 && exs.indexOf(sel) < exs.length - 1 ? exs[exs.indexOf(sel) + 1] : null;
-      body.innerHTML = (exs.length > 1 ? `<p class="ex-head">📋 هنا <b>${exs.length} تمارين</b>. اعملهم واحد ورا التاني. خلصت <b class="ex-cnt">${doneN()}</b> من ${exs.length}</p>` : '') + (exs.length > 1 ? `<div class="ex-tabs" role="group" aria-label="التمارين">${exs.map((x, i) => `<button type="button" class="btn${CL.store.has(`${LID}/ex/${x}`) ? ' done' : ''}" data-ex="${x}" aria-pressed="${x === sel}"><span class="k">${CL.store.has(`${LID}/ex/${x}`) ? '✓' : i + 1}</span>${esc(Ld.exercises[x].short || Ld.exercises[x].title)}</button>`).join('')}</div>` : '') + '<div class="bn-host"></div><div class="ex-next" hidden></div>';
+      body.innerHTML = (exs.length > 1 ? `<p class="ex-head">📋 هنا <b>${exs.length} تمارين</b>. اعملهم واحد ورا التاني. خلصت <b class="ex-cnt">${doneN()}</b> من ${exs.length}</p>` : '') + (exs.length > 1 ? `<div class="ex-tabs" role="group" aria-label="التمارين">${exs.map((x, i) => `<button type="button" class="btn${CL.store.has(`${LID}/ex/${x}`) ? ' done' : ''}" data-ex="${x}" aria-pressed="${x === sel}"><span class="k">${CL.store.has(`${LID}/ex/${x}`) ? '✓' : i + 1}</span>${esc(Ld.exercises[x].short || Ld.exercises[x].title)}</button>`).join('')}</div>` : '') + (CL.SHOW ? `<div class="ex-mode" role="group"><button type="button" class="btn" data-mode="show" aria-pressed="${!!show}">▶ شوف الحل شغال</button><button type="button" class="btn" data-mode="do" aria-pressed="${!show}">✍ وصّلها بنفسك</button></div>` : '') + `<div class="bn-host${show ? ' ex-show' : ''}"></div><div class="ex-next" hidden></div>`;
+      const md = body.querySelector('.ex-mode'); if (md) md.addEventListener('click', e => { const b = e.target.closest('[data-mode]'); if (!b) return; cur.mode = b.dataset.mode; cleanup(); render(); });
       const nxBox = body.querySelector('.ex-next');
       const showNext = () => { if (exs.length < 2) return; const cnt = body.querySelector('.ex-cnt'); if (cnt) cnt.textContent = doneN(); if (!CL.store.has(`${LID}/ex/${sel}`)){ nxBox.hidden = true; return; }
         const i0 = exs.indexOf(sel), nx = exs.slice(i0 + 1).concat(exs.slice(0, i0)).find(x => !CL.store.has(`${LID}/ex/${x}`)), rem = exs.length - doneN();
@@ -3787,8 +3790,11 @@ CL.lesson = function(Ld){
       nxBox.addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (!b) return; if (b.dataset.go){ cur.ex[s.ex.join()] = b.dataset.go; cleanup(); render(true); } else { benchNext = null; $('#gNext').click(); } });
       const tabs = body.querySelector('.ex-tabs');
       if (tabs) tabs.addEventListener('click', e => { const b = e.target.closest('[data-ex]'); if (!b) return; cur.ex[s.ex.join()] = b.dataset.ex; cleanup(); render(); });
-      live.push(CL.bench(body.querySelector('.bn-host'), Ld.exercises[sel], {key:`${LID}/${sel}`, passKey:`${LID}/ex/${sel}`, onPass: () => { mark(`${LID}/ex/${sel}`); const b = tabs && tabs.querySelector(`[data-ex="${sel}"]`); if (b){ b.classList.add('done'); b.querySelector('.k').textContent = '✓'; } showNext(); },
-        onReset: () => { CL.store.set(`${LID}/ex/${sel}`, null); summary(); progress(); const b = tabs && tabs.querySelector(`[data-ex="${sel}"]`); if (b){ b.classList.remove('done'); b.querySelector('.k').textContent = String(exs.indexOf(sel) + 1); } showNext(); }}));
+      const bx = show ? Object.assign({}, Ld.exercises[sel], {preset:Ld.exercises[sel].solution.slice()}) : Ld.exercises[sel];
+      const bOpt = show ? {open:true, netColors:true} : {key:`${LID}/${sel}`};
+      live.push(CL.bench(body.querySelector('.bn-host'), bx, Object.assign(bOpt, {passKey:`${LID}/ex/${sel}`, onPass: () => { mark(`${LID}/ex/${sel}`); const b = tabs && tabs.querySelector(`[data-ex="${sel}"]`); if (b){ b.classList.add('done'); b.querySelector('.k').textContent = '✓'; } showNext(); },
+        onReset: () => { CL.store.set(`${LID}/ex/${sel}`, null); summary(); progress(); const b = tabs && tabs.querySelector(`[data-ex="${sel}"]`); if (b){ b.classList.remove('done'); b.querySelector('.k').textContent = String(exs.indexOf(sel) + 1); } showNext(); }})));
+      if (show){ const bApi = live[live.length - 1]; bApi.power(true); const m = body.querySelector('.bn-msg'); if (m){ m.className = 'bn-msg ok'; m.textContent = 'الدايرة متوصّلة وشغالة. دوس على الزراير وشوف كل حاجة بتعمل إيه.'; } }
       showNext();
     }
     else if (s.kind === 'quiz'){
