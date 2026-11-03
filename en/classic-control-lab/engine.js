@@ -2911,7 +2911,23 @@ CL.bench = function(host, ex, opt){
     if (s.kind === 'fix') s.wid = wires[s.w].id;
     nhCtl.set(s);
   }
+  // free workshop (opt.netColors): every control net that is not the supply L / N gets its own colour, so a wire is easy to follow
+  const NETPAL = ['#c62828', '#ef6c00', '#7e57c2', '#2e7d32', '#c2185b', '#00897b', '#b8860b', '#5d4037', '#6a1b9a', '#558b2f', '#0277bd', '#ad1457'];
+  let netMap = null;
   function wireColor(w, fr){
+    const c0 = wireColor0(w, fr);
+    if (!opt.netColors || (c0 !== '#c62828' && c0 !== '#1f3f9a')) return c0;
+    if (!netMap || netMap.fr !== fr){ // groups of terminals joined by wires only (switch contacts do not join them)
+      const par = new Map(), find = x => { while (par.has(x) && par.get(x) !== x) x = par.get(x); return x; };
+      wires.forEach(x => { const a = find(x.a), b = find(x.b); if (a !== b) par.set(a, b); });
+      const sup = x => { const d = byId[x.split(':')[0]]; return d && isSupply(d) ? 0 : 1; };
+      const order = wires.slice().sort((p, q) => Math.min(sup(p.a), sup(p.b)) - Math.min(sup(q.a), sup(q.b)));
+      netMap = {fr, find, m:new Map()};
+      order.forEach(x => { const r = find(x.a); if (!netMap.m.has(r) && /^#(c62828|1f3f9a)$/.test(wireColor0(x, fr))) netMap.m.set(r, NETPAL[netMap.m.size % NETPAL.length]); });
+    }
+    return netMap.m.get(netMap.find(w.a)) || c0;
+  }
+  function wireColor0(w, fr){
     const pa = fr.poles(fr.find(w.a)) || fr.poles(fr.find(w.b));
     if (pa && [...pa].some(p => p === 'N' || p === 'M' || p === 'T') && ![...pa].some(p => p in PHASES || p === 'P' || p === 'S')) return '#3a9be0';
     if (pa && pa.has('P') && !dc && !powerTerm(w.a) && !powerTerm(w.b)) return '#1f3f9a';

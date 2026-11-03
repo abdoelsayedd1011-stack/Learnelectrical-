@@ -69,10 +69,20 @@ function build(){
   $('#fwTitle').textContent = S.title;
   $('#fwDevs').innerHTML = S.devs.map(d => `<span class="fw-dev"><b>${esc(d.tag || d.id)}</b>${d.name ? ' ' + esc(d.name) : ''}<button type="button" data-rm="${esc(d.id)}" aria-label="شيل ${esc(d.id)}">✕</button></span>`).join('') || '<span class="fw-empty">اللوحة فاضية. ضيف أجهزة من تحت.</span>';
   try {
-    api = CL.bench(host, {id:'free', title:S.title, devices:S.devs, cases:[{label:'', set:{}, expect:{}}]}, {key:BK});
+    api = CL.bench(host, {id:'free', title:S.title, devices:S.devs, cases:[{label:'', set:{}, expect:{}}]}, {key:BK, netColors:true, onChange:schem});
+    schem();
   } catch (e){
     console.error(e); host.innerHTML = '<p class="fw-msg bad">في جهاز مش راضي يتحط. امسحه وجرّب تاني.</p>';
   }
+}
+
+// رسمة الدايرة (سلّم القوى والتحكم) مرسومة من التوصيل اللي على اللوحة دلوقتي
+function schem(){
+  const box = $('#fwSchem'); if (!box) return;
+  const W = CL.store.bench(BK) || [];
+  if (!W.length){ box.innerHTML = '<p class="fw-empty">لسه مفيش أسلاك. أول ما توصّل، الرسمة هتظهر هنا.</p>'; return; }
+  try { box.innerHTML = CL.art.schematic({title:S.title, devices:S.devs, solution:W}).html; }
+  catch (e){ box.innerHTML = '<p class="fw-empty">الرسمة مش جاهزة للتوصيل ده.</p>'; }
 }
 
 function add(it){
@@ -121,8 +131,10 @@ function init(){
     const a = e.target.closest('[data-add]'); if (a) return add(ALL[+a.dataset.add]);
     const r = e.target.closest('[data-rm]'); if (r) return remove(r.dataset.rm);
     const x = e.target.closest('[data-ex]'); if (x) return openEx(x.dataset.ex);
+    const z = e.target.closest('#fwZoom'); if (z){ const on = document.body.classList.toggle('fw-zoomed'); z.setAttribute('aria-pressed', on); z.textContent = on ? '🔍 صغّر اللوحة' : '🔍 كبّر اللوحة'; try { localStorage.setItem(SK + '-zoom', on ? '1' : ''); } catch (er){} if (on) $('#fwBench .bn-board').scrollIntoView({block:'start'}); return; }
     if (e.target.closest('#fwNew')){ S = BLANK(); CL.store.bench(BK, null); save(); build(); say('✓ لوحة جديدة فيها مصدر بس. ضيف الأجهزة اللي محتاجها.', 'ok'); }
   });
+  try { if (localStorage.getItem(SK + '-zoom')){ document.body.classList.add('fw-zoomed'); const z = $('#fwZoom'); z.setAttribute('aria-pressed', 'true'); z.textContent = '🔍 صغّر اللوحة'; } } catch (er){}
   build();
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
