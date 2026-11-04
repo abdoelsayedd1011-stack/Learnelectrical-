@@ -2821,16 +2821,22 @@ CL.bench = function(host, ex, opt){
     return {cols, VW, VH, P, grid:true, rows, top, colX, gxc, gw, mode, zr, ctlSide: mode === 'stack' ? '' : 'l'};
   }
   // ---- open board (free workshop): devices spaced out on a white grid, each one draggable; positions come from opt.pos
+  // open board: every device drawn at one real-world scale (DIN widths in mm), so a breaker, a contactor and a lamp look right next to each other
+  const OSC = d => { const T = d.type, c = d.cfg || {}, p = c.poles || 1;
+    const m = {supply3P:1.2, contactor:.8, ol:.66, mpcb:.62, timer:.6, relay:.6, pb:.82, lamp:.82, sel:.82, estop:.9, motor:1.3, tb:.62, xfmr:.8, rectifier:.7, softstarter:.9, brake:.8, prox:.7, ls:.8, level:.8, supplyAC:.9, supplyDC:.8};
+    if (T === 'mcb' || T === 'fuse') return p >= 3 ? 1.28 : p === 2 ? 1.15 : 1.1;
+    return m[T] || 1; };
   function openLayout(Wd){
-    const GX = 70, GY = 90, cols = Wd < 520 ? 2 : Wd < 900 ? 3 : 4, P = {}, pos = opt.pos || {};
+    const GX = 44, GY = 60, cols = Wd < 520 ? 2 : Wd < 900 ? 3 : 4, P = {}, pos = opt.pos || {}, MAXW = Wd < 520 ? 560 : cols * (CW + GX);
     const pw = d => TYPES[d.type].zone === 'P' || isSupply(d) || powerTerm(d.id + ':1') || d.type === 'motor';
     const order = devs.filter(pw).concat(devs.filter(d => !pw(d)));
-    let col = 0, y = 40, rowH = 0;
-    order.forEach(d => { const T = TYPES[d.type], span = Math.min(cols, T.span(d)), h = T.h(d);
-      if (col + span > cols){ col = 0; y += rowH + GY; rowH = 0; }
-      P[d.id] = {x:GX + col * (CW + GX), y, w:span * CW, h, col, span, row:0}; rowH = Math.max(rowH, h); col += span; });
+    let x = GX, y = 40, rowH = 0, zone = null;
+    order.forEach(d => { const T = TYPES[d.type], span = Math.min(cols, T.span(d)), s = OSC(d), w = span * CW * s, h = T.h(d) * s, z = pw(d);
+      if (x > GX && (x + w > MAXW + GX || (zone !== null && z !== zone))){ x = GX; y += rowH + GY; rowH = 0; }
+      zone = z;
+      P[d.id] = {x, y, w, h, iw:span * CW, s, col:0, span, row:0}; rowH = Math.max(rowH, h); x += w + GX; });
     Object.keys(P).forEach(id => { const q = pos[id]; if (q && isFinite(q.x) && isFinite(q.y)){ P[id].x = Math.max(0, q.x); P[id].y = Math.max(0, q.y); } });
-    let VW = cols * (CW + GX) + GX, VH = y + rowH + 60;
+    let VW = MAXW + GX, VH = y + rowH + 60;
     Object.keys(P).forEach(id => { const p = P[id]; VW = Math.max(VW, p.x + p.w + GX); VH = Math.max(VH, p.y + p.h + 60); });
     return {cols, VW, VH, P, grid:false, open:true};
   }
@@ -3010,11 +3016,11 @@ CL.bench = function(host, ex, opt){
       ['P','C'].forEach(z => { const r = L.zr[z]; if (!r) return; devSvg += `<rect class="bd-zone bd-zone-${z}" x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="12"/><text class="bd-zh ar" x="${r.hx}" y="${r.hy}">${ZN[z]}</text>`; });
     }
     devs.forEach(d => {
-      const p = L.P[d.id], w = p.w;
+      const p = L.P[d.id], w = p.iw || p.w, sc = p.s || 1, tf = `translate(${p.x} ${p.y})${sc !== 1 ? ` scale(${sc})` : ''}`;
       const g = benchDraw(d, {live, en: res ? !!res.energ[d.id] : false, res, w, grid:L.grid, ctlSide: L.ctlSide || '', allowPinStop: !!ex.allowPinStop, byId});
-      devSvg += `<g transform="translate(${p.x} ${p.y})" data-cell="${d.id}" data-on="${res && (res.energ[d.id] || (res.mot[d.id] && res.mot[d.id].run)) ? 1 : 0}" data-trip="${d.st.trip ? 1 : 0}"><rect class="bd-cell" x="2" y="0" width="${w - 4}" height="${TYPES[d.type].h(d)}" rx="10"/>${railSvg(w, TYPES[d.type].h(d))}${g.svg}</g>`;
-      hitSvg += `<g transform="translate(${p.x} ${p.y})">${g.hit || ''}</g>`;
-      Object.keys(g.terms).forEach(n => { const t = g.terms[n]; TT[d.id + ':' + n] = {x:p.x + t.x, y:p.y + t.y, dir:t.dir, side:t.side || '', col:p.col, span:p.span, row:p.row}; });
+      devSvg += `<g transform="${tf}" data-cell="${d.id}" data-on="${res && (res.energ[d.id] || (res.mot[d.id] && res.mot[d.id].run)) ? 1 : 0}" data-trip="${d.st.trip ? 1 : 0}"><rect class="bd-cell" x="2" y="0" width="${w - 4}" height="${TYPES[d.type].h(d)}" rx="10"/>${railSvg(w, TYPES[d.type].h(d))}${g.svg}</g>`;
+      hitSvg += `<g transform="${tf}">${g.hit || ''}</g>`;
+      Object.keys(g.terms).forEach(n => { const t = g.terms[n]; TT[d.id + ':' + n] = {x:p.x + t.x * sc, y:p.y + t.y * sc, dir:t.dir, side:t.side || '', col:p.col, span:p.span, row:p.row}; });
     });
     const route = L.open ? orthoRouter() : L.grid ? router() : wpath;
     const fr = (() => { const cl = devs.map(d => Object.assign({}, d, {st:Object.assign({}, d.st)})); return solveOnce(cl, wires, true); })();
@@ -3707,7 +3713,7 @@ const ICONS = {
   lathe:'<svg viewBox="0 0 84 40" aria-hidden="true"><rect x="6" y="26" width="72" height="10" fill="#56656f"/><rect x="10" y="10" width="20" height="18" fill="#3b3f43"/><rect x="30" y="16" width="30" height="6" fill="#aab1b6"/><rect x="62" y="12" width="12" height="16" fill="#3b3f43"/><circle cx="45" cy="19" r="6" fill="#d9924f"/></svg>'
 };
 CL.ICONS = ICONS;
-CL.SHOW = CL.SHOW != null ? CL.SHOW : (typeof location !== 'undefined' && /[?&]show=1\b/.test(location.search));
+CL.SHOW = CL.SHOW != null ? CL.SHOW : !(typeof location !== 'undefined' && /[?&]show=0\b/.test(location.search));
 CL.lesson = function(Ld){
   SKIN.toggle(document.querySelector('header.top .chips'));
   const root = document.getElementById('lesson');
