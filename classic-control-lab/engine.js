@@ -2545,7 +2545,7 @@ function benchLevel(d, ctx){
     const ttl = esc((ex.id ? ex.id + ' · ' : '') + (ex.title || '')), tag = `<title>${ttl}</title>`;
     const stamp = svg => svg.replace(/<svg([^>]*)>/g, (m, a) => { const vb = /viewBox="0 0 (\S+) (\S+)"/.exec(a); const k = vb && vb[1] > 560 ? 1.2 : 1.45, wide = vb && vb[1] * k > 600; return `<svg${a.replace('class="schem"', 'class="schem' + (wide ? ' sc-wide' : '') + '"')}${vb ? ` width="${Math.round(vb[1] * k)}" height="${Math.round(vb[2] * k)}"` : ''} data-schem="${esc(ex.id || '')}">${tag}`; });
     const ctl = controlSvgs(devs, wires).map(c => ({...c, svg:stamp(c.svg)})), pw = stamp(powerSvg(devs, wires));
-    return {control:ctl.map(c => c.svg).join(''), power:pw, nonSP:ctl.some(c => c.nonSP), html:`<div class="schem-wrap"><div class="schem-title">${ttl}</div>${pw ? `<div class="schem-pw"><b>دايرة القوى</b>${pw}</div>` : ''}<div class="schem-ctl"><b>دايرة التحكم</b>${ctl.map(c => c.svg).join('') || '<p class="muted">مفيش دايرة تحكم في التمرين ده.</p>'}</div></div>`};
+    return {control:ctl.map(c => c.svg).join(''), power:pw, nonSP:ctl.some(c => c.nonSP), html:`<div class="schem-wrap"><div class="schem-title">${ttl}</div><div class="schem-sheet">${pw ? `<div class="schem-pw"><b>دايرة القوى</b>${pw}</div>` : ''}<div class="schem-ctl"><b>دايرة التحكم</b>${ctl.map(c => c.svg).join('') || '<p class="muted">مفيش دايرة تحكم في التمرين ده.</p>'}</div></div></div>`};
   };
 })();
 
@@ -2566,7 +2566,7 @@ CL.wireTable = (ex, devs) => {
 };
 CL.taskCard = (ex, devs) => {
   let s = `<div class="bn-task"><h3>${esc(ex.title)}</h3>${ex.preset ? '<span class="bn-badge">اللوحة موصّلة قبل، دوّر على الغلطة</span>' : ''}${CL.storyCard ? CL.storyCard(ex) : ''}`;
-  if (ex.solution && ex.solution.length){ let sc = ''; try { sc = CL.art.schematic(ex, devs).html; } catch (e) { sc = ''; } if (sc) s += `<details class="bn-schem"${typeof matchMedia === 'function' && matchMedia('(min-width: 760px)').matches ? ' open' : ''}><summary>رسمة الدايرة ▾ <span class="muted">(مرسومة من حل التمرين ده)</span></summary>${sc}</details>`; }
+  if (ex.solution && ex.solution.length){ let sc = ''; try { sc = CL.art.schematic(ex, devs).html; } catch (e) { sc = ''; } if (sc) s += `<details class="bn-schem" open><summary>رسمة الدايرة ▾ <span class="muted">(مرسومة من حل التمرين ده)</span></summary>${sc}</details>`; }
   if (ex.goal || ex.steps){
     if (ex.goal) s += `<p class="bn-goal"><b>الهدف:</b> ${ex.goal}</p>`;
     if (ex.idea) s += `<p class="bn-idea"><b>الفكرة:</b> ${ex.idea}</p>`;
@@ -2826,19 +2826,33 @@ CL.bench = function(host, ex, opt){
     const m = {supply3P:1.2, contactor:.8, ol:.66, mpcb:.62, timer:.6, relay:.6, pb:.82, lamp:.82, sel:.82, estop:.9, motor:1.3, tb:.62, xfmr:.8, rectifier:.7, softstarter:.9, brake:.8, prox:.7, ls:.8, level:.8, supplyAC:.9, supplyDC:.8};
     if (T === 'mcb' || T === 'fuse') return p >= 3 ? 1.28 : p === 2 ? 1.15 : 1.1;
     return m[T] || 1; };
+  // landscape board: the power circuit on the left drawn top-down like a real diagram (supply, contactors, overloads, motors),
+  // the control devices beside it on the right, packed so the whole board comes out wide (about 16:9)
   function openLayout(Wd){
-    const GX = 44, GY = 60, cols = Wd < 520 ? 2 : Wd < 900 ? 3 : 4, P = {}, pos = opt.pos || {}, MAXW = Wd < 520 ? 560 : cols * (CW + GX);
+    const GX = 44, GY = 60, P = {}, pos = opt.pos || {}, X0 = 40, Y0 = 40;
     const pw = d => TYPES[d.type].zone === 'P' || isSupply(d) || powerTerm(d.id + ':1') || d.type === 'motor';
-    const order = devs.filter(pw).concat(devs.filter(d => !pw(d)));
-    let x = GX, y = 40, rowH = 0, zone = null;
-    order.forEach(d => { const T = TYPES[d.type], span = Math.min(cols, T.span(d)), s = OSC(d), w = span * CW * s, h = T.h(d) * s, z = pw(d);
-      if (x > GX && (x + w > MAXW + GX || (zone !== null && z !== zone))){ x = GX; y += rowH + GY; rowH = 0; }
-      zone = z;
-      P[d.id] = {x, y, w, h, iw:span * CW, s, col:0, span, row:0}; rowH = Math.max(rowH, h); x += w + GX; });
+    const LV = {supply3P:0, supplyAC:0, supplyDC:0, mcb:0, fuse:0, mpcb:0, xfmr:0, rectifier:0, contactor:1, softstarter:1, ol:2, motor:3, brake:3};
+    const box = d => { const T = TYPES[d.type], span = T.span(d), s = OSC(d); return {span, s, w:span * CW * s, h:T.h(d) * s}; };
+    const pDevs = devs.filter(pw), cDevs = devs.filter(d => !pw(d));
+    const rows = [[], [], [], []]; pDevs.forEach(d => rows[LV[d.type] != null ? LV[d.type] : 1].push(d));
+    let y = Y0, PW = 0;
+    rows.filter(r => r.length).forEach(r => { let x = X0, rh = 0;
+      r.forEach(d => { const b = box(d); P[d.id] = {x, y, w:b.w, h:b.h, iw:b.span * CW, s:b.s, col:0, span:b.span, row:0}; x += b.w + GX; rh = Math.max(rh, b.h); });
+      PW = Math.max(PW, x - GX - X0); y += rh + GY; });
+    const PH = pDevs.length ? y - GY - Y0 : 0;
+    const flow = (Wc, put) => { let x = 0, yy = 0, rh = 0, mw = 0;
+      cDevs.forEach(d => { const b = box(d); if (x > 0 && x + b.w > Wc){ x = 0; yy += rh + GY; rh = 0; }
+        if (put) put(d, b, x, yy); x += b.w + GX; rh = Math.max(rh, b.h); mw = Math.max(mw, x - GX); });
+      return {w:mw, h:cDevs.length ? yy + rh : 0}; };
+    const cx0 = pDevs.length ? X0 + PW + GX * 2.5 : X0;
+    let best = null;
+    for (let Wc = 160; Wc <= 2400; Wc += 40){ const f = flow(Wc), VW = cx0 + f.w + X0, VH = Math.max(PH, f.h) + Y0 + 60, sc = Math.abs(Math.log((VW / VH) / 1.7));
+      if (!best || sc < best.sc - 1e-6) best = {Wc, sc}; }
+    flow(best.Wc, (d, b, x, yy) => { P[d.id] = {x:cx0 + x, y:Y0 + yy, w:b.w, h:b.h, iw:b.span * CW, s:b.s, col:0, span:b.span, row:0}; });
     Object.keys(P).forEach(id => { const q = pos[id]; if (q && isFinite(q.x) && isFinite(q.y)){ P[id].x = Math.max(0, q.x); P[id].y = Math.max(0, q.y); } });
-    let VW = MAXW + GX, VH = y + rowH + 60;
-    Object.keys(P).forEach(id => { const p = P[id]; VW = Math.max(VW, p.x + p.w + GX); VH = Math.max(VH, p.y + p.h + 60); });
-    return {cols, VW, VH, P, grid:false, open:true};
+    let VW = 0, VH = 0;
+    Object.keys(P).forEach(id => { const p = P[id]; VW = Math.max(VW, p.x + p.w + X0); VH = Math.max(VH, p.y + p.h + 60); });
+    return {cols:4, VW:Math.max(VW, 400), VH:Math.max(VH, 240), P, grid:false, open:true};
   }
   // orthogonal wires straight between two terminals: out of each terminal, across, and in; every wire gets its own lane
   function orthoRouter(){
@@ -3045,7 +3059,7 @@ CL.bench = function(host, ex, opt){
       tHit += `<circle class="bt-hit" cx="${t.x}" cy="${t.y}" r="22" data-t="${id}" tabindex="0" role="button" aria-label="طرف ${esc(termLab(id))}"/><circle class="bt-ring${errHl && errHl.t.has(id) ? ' err' : ''}" cx="${t.x}" cy="${t.y}" r="13"/>`;
     });
     const fsel = document.activeElement && host.contains(document.activeElement) ? ['data-t','data-w','data-act'].map(a => document.activeElement.getAttribute(a) ? `[${a}="${document.activeElement.getAttribute(a)}"]` + (a === 'data-act' ? `[data-dev="${document.activeElement.getAttribute('data-dev')}"]` : '') : '').join('') : '';
-    board.innerHTML = `<svg viewBox="0 0 ${L.VW} ${L.VH}" role="group" aria-label="لوحة التوصيل">${devSvg}${tSvg}${wSvg}${hitSvg}${tHit}</svg>`; SKIN.attach(board);
+    board.innerHTML = `<svg viewBox="0 0 ${L.VW} ${L.VH}"${L.open ? ` style="--mw:${Math.round(L.VW * .6)}px"` : ''} role="group" aria-label="لوحة التوصيل">${devSvg}${tSvg}${wSvg}${hitSvg}${tHit}</svg>`; SKIN.attach(board);
     if (fsel){ const el = board.querySelector(fsel); if (el) el.focus({preventScroll:true}); }
     // keep the clock running while something is timing or moving
     const needClock = live && devs.some(d => (d.type === 'timer' && (d.st.coil || d.st.out)) || (d.type === 'cart' || d.type === 'tank') || (['ol','mpcb','mcb','fuse'].indexOf(d.type) > -1 && (d.st.heat > 0 || d.st.I > 0)) || (TYPES[d.type].motor && (d.st.run || d.st.fault || d.st.spd)) || (d.type === 'softstarter' && d.st.v > 0 && (d.st.v < 1 || !d.st.cmd)));
@@ -3179,7 +3193,7 @@ CL.bench = function(host, ex, opt){
   };
   const onUp = e => { if (held.has(e.pointerId)){ const id = held.get(e.pointerId); held.delete(e.pointerId); act(id, 'press', false); } };
   board.addEventListener('pointerdown', onDown);
-  if (opt.open){ // drag a device around the open board
+  if (opt.open && opt.onMove){ // drag a device around the open board
     let dg = null, raf2 = 0;
     board.addEventListener('pointerdown', e => {
       if (e.target.closest('[data-t],[data-act],[data-w]')) return;
@@ -3713,7 +3727,7 @@ const ICONS = {
   lathe:'<svg viewBox="0 0 84 40" aria-hidden="true"><rect x="6" y="26" width="72" height="10" fill="#56656f"/><rect x="10" y="10" width="20" height="18" fill="#3b3f43"/><rect x="30" y="16" width="30" height="6" fill="#aab1b6"/><rect x="62" y="12" width="12" height="16" fill="#3b3f43"/><circle cx="45" cy="19" r="6" fill="#d9924f"/></svg>'
 };
 CL.ICONS = ICONS;
-CL.SHOW = CL.SHOW != null ? CL.SHOW : !(typeof location !== 'undefined' && /[?&]show=0\b/.test(location.search));
+CL.SHOW = CL.SHOW != null ? CL.SHOW : (typeof location !== 'undefined' && /[?&]show=1\b/.test(location.search));
 CL.lesson = function(Ld){
   SKIN.toggle(document.querySelector('header.top .chips'));
   const root = document.getElementById('lesson');
