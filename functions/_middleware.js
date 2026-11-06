@@ -1,6 +1,6 @@
 // Members-only pages: visitors without an account are sent to sign up first.
 // Open to everyone: the main pages, the PowerFlex 525 lab, the interview question bank, and the free lessons of every
-// course (FREE_LESSONS_BY_DIR: lesson 1 only). The PLC brand simulators (Siemens/Delta/AB) are members-only.
+// course (FREE_LESSONS_BY_DIR: the whole basics course, lessons 1 and 2 of every other course). The PLC brand simulators (Siemens/Delta/AB) are members-only.
 // Members' lab/course pages also get /assets/sync.js injected so their progress syncs with the account.
 // Paywall (off by default, see _lib/plan.js): when on, a member-only page also needs the member to own the course it
 // belongs to (_lib/products.js: bought once, or given by an admin), or an active Pro plan («كل الكورسات»), or to be an admin.
@@ -22,24 +22,24 @@ const MEMBER_LABS = new Set([
   "mrje-servo", "sigma7-servo", "kinetix300-servo",
   "acs580-lab", "g120-lab", "fre800-lab", "ga500-lab", "ig5a-lab", "gd20-lab", "c2000-lab", "frenic-lab"
 ]);
-// Lessons open to everyone (no account, no purchase): lesson 1 of every course.
+// Lessons open to everyone (no purchase; an account is still needed): the whole basics course, lessons 1 and 2 of the rest.
 // To open more, add their numbers here and the «مفتوح للكل» tags on the course page in /courses/.
 const FREE_LESSONS_BY_DIR = {
-  "basics-lab": [1],                // 13 lessons
-  "classic-control-lab": [1],       // 9
-  "safety-lab": [1],                // 8
-  "instrumentation-lab": [1],       // 10
-  "plc-lab": [1],                   // 10
-  "drawings-lab": [1],              // 7
-  "vfd-course": [1],                // 12
-  "servo-course": [1],              // 12
-  "iiot-lab": [1],                  // 14
-  "scada-lab": [1],                 // 12
-  "panel-lab": [1],                 // 18
-  "maint-lab": [1],                 // 12
-  "servo-maint-lab": [1],           // 13
-  "mech-lab": [1],                  // 11
-  "mfit-lab": [1]                   // 16
+  "basics-lab": "all",              // 13 lessons: the whole course is open
+  "classic-control-lab": [1, 2],    // 9
+  "safety-lab": [1, 2],             // 8
+  "instrumentation-lab": [1, 2],    // 10
+  "plc-lab": [1, 2],                // 10
+  "drawings-lab": [1, 2],           // 7
+  "vfd-course": [1, 2],             // 12
+  "servo-course": [1, 2],           // 12
+  "iiot-lab": [1, 2],               // 14
+  "scada-lab": [1, 2],              // 12
+  "panel-lab": [1, 2],              // 18
+  "maint-lab": [1, 2],              // 12
+  "servo-maint-lab": [1, 2],        // 13
+  "mech-lab": [1, 2],               // 11
+  "mfit-lab": [1, 2],                // 16
 };
 const COURSE_DIRS = new Set(["classic-control-lab", "safety-lab", "basics-lab", "instrumentation-lab", "plc-lab", "drawings-lab", "vfd-course", "servo-course", "iiot-lab", "scada-lab", "panel-lab", "maint-lab", "servo-maint-lab", "mech-lab", "mfit-lab"]);
 const OPEN_DIRS = new Set(["courses"]);
@@ -84,7 +84,8 @@ function membersOnly(pathname){
     if (dir === "maint-lab" && /^(?:motor|trafo)(?:\.html)?$/.test(rest)) return true;      // the motor maintenance workshop and the transformer maintenance station
     if (dir === "servo-maint-lab" && /^(?:bench|drive)(?:\.html)?$/.test(rest)) return true; // the servo motor bench and the servo drive station
     const l = /^lesson-(\d+)/.exec(rest);
-    return !!l && !(FREE_LESSONS_BY_DIR[dir] || [1]).includes(Number(l[1]));
+    const fr = FREE_LESSONS_BY_DIR[dir] || [1, 2];
+    return !!l && fr !== "all" && !fr.includes(Number(l[1]));
   }
   return MEMBER_LABS.has(dir);
 }

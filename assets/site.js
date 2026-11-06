@@ -546,7 +546,7 @@
           '</div><p class="vc-live"><i aria-hidden="true"></i>' + (EN ? "Exercise from the course" : "تمرين من جوّه الكورس") + "</p></div>" +
         "</div>" +
       "</div>" +
-      '<p class="vc-foot"><span>' + (EN ? "First lesson open to try" : "أول درس مفتوح للتجربة") + '</span><span class="vc-wm" dir="ltr" aria-hidden="true">Learn<b>Electricals</b></span></p>' +
+      '<p class="vc-foot"><span>' + (l.id === "basics" ? (EN ? "The whole course is open" : "الكورس كله مفتوح") : (EN ? "First two lessons open to try" : "أول درسين مفتوحين للتجربة")) + '</span><span class="vc-wm" dir="ltr" aria-hidden="true">Learn<b>Electricals</b></span></p>' +
       "</div>";
   }
   // الفيديو بيشتغل بس وهو قدّام العين، ويقف لما يخرج من الشاشة. ومع تقليل الحركة أو توفير البيانات بيفضل صورة ثابتة
@@ -567,8 +567,8 @@
   function card(l){
     var toc = tocOf(l);
     var cover = coverHtml(l, toc);
-    var st = priceState(PRODUCT_OF[l.id]);
-    var pl = !st ? "" : '<p class="price-line' + (st.kind === "price" ? "" : " own") + '">' + (st.kind === "own" ? esc(ownText(PRODUCT_OF[l.id])) : st.kind === "pro" ? (EN ? EN.pro : "معاك في الاشتراك ✓") : priceHtml(st.c)) + "</p>";
+    var st = PRODUCT_OF[l.id] === "basics" ? { kind:"free" } : priceState(PRODUCT_OF[l.id]);
+    var pl = st && st.kind === "free" ? '<p class="price-line own">' + (EN ? "The whole course is open ✓" : "الكورس كله مفتوح ✓") + "</p>" : !st ? "" : '<p class="price-line' + (st.kind === "price" ? "" : " own") + '">' + (st.kind === "own" ? esc(ownText(PRODUCT_OF[l.id])) : st.kind === "pro" ? (EN ? EN.pro : "معاك في الاشتراك ✓") : priceHtml(st.c)) + "</p>";
     var buy = st && st.kind === "price" ? '<a class="buy" href="subscribe.html?course=' + PRODUCT_OF[l.id] + '">' + (EN ? EN.buy : "اشتري الكورس") + '<span class="sr-only"> ' + esc(l.name) + "</span></a>" : "";
     // تحت الغلاف: السعر والزراير بس — الاسم والدروس مكتوبين على الغلاف نفسه كنص حقيقي
     if (!detail){
