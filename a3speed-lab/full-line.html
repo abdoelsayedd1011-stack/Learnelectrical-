@@ -50,8 +50,19 @@ canvas{display:block;width:100%}
 .pkinfo{padding:6px 12px;font-size:12.5px;color:#cfdcd8;display:flex;flex-wrap:wrap;gap:4px 14px}
 .pkinfo b{color:var(--accent);font-weight:700}
 .pkinfo span{white-space:nowrap}
+/* step strip (about 2 cm) beside the control panel */
+.stepstrip{position:sticky;top:max(8px,env(safe-area-inset-top,0px));display:grid;gap:3px;align-content:start;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:5px 4px;max-height:calc(100vh - 16px);overflow:auto}
+.stepstrip .sh{font-size:10px;color:var(--muted);text-align:center;line-height:1.2}
+.ss{display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px;align-items:center;border-radius:6px;padding:2px 3px;border-inline-start:3px solid var(--c,#3a4a52);background:var(--panel2);font-size:10px;line-height:1.15;color:#a9bcb7}
+.ss b{font-family:var(--f-mono);font-size:11px;color:#cfdcd8}
+.ss.cur{background:var(--accent);color:#1b1206;border-inline-start-color:#1b1206;font-weight:700;box-shadow:0 0 0 2px rgba(233,166,64,.35)}
+.ss.cur b{color:#1b1206}
+.ss .tm{grid-column:1/-1;font-family:var(--f-mono);font-size:9.5px;text-align:center}
+.ss.done{opacity:.55}
+@media (max-width:1060px) and (min-width:641px){.stepstrip{position:fixed;left:max(6px,env(safe-area-inset-left,0px));top:50%;transform:translateY(-50%);z-index:20;width:76px;max-height:calc(100vh - 20px);box-shadow:0 4px 18px rgba(0,0,0,.5)}.wrap{padding-left:max(92px,env(safe-area-inset-left,0px))}}
+@media (max-width:640px){.stepstrip{order:0;position:sticky;top:0;z-index:5;grid-auto-flow:column;grid-auto-columns:minmax(44px,1fr);overflow-x:auto;max-height:none;border-radius:8px}.stepstrip .sh{display:none}.ss{grid-template-columns:1fr;text-align:center;padding:2px}.ss span{display:none}.ss.cur span{display:block}}
 /* main: diagram | side */
-.main{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:10px;align-items:start;min-width:0}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 360px 78px;gap:10px;align-items:start;min-width:0}
 .main>*,.col>*{min-width:0;max-width:100%}
 @media (max-width:1060px){.main{display:flex;flex-direction:column}.main>.col{display:contents}.o1{order:1}.o2{order:2}.o3{order:3}.o4{order:4}.o5{order:5}.o6{order:6}.o7{order:7}}
 .col{display:grid;gap:10px;min-width:0;align-content:start}
@@ -254,6 +265,42 @@ tr.cur td{background:#2b2110}
     <circle cx="518" cy="54" r="7" fill="#46555c" stroke="#9aa"/><circle cx="518" cy="70" r="7" fill="#46555c" stroke="#9aa"/>
     <rect id="aKnife" x="544" y="68" width="30" height="12" rx="3" fill="#3a1714" stroke="#ff6a4d"/>
     <circle cx="455" cy="300" r="9" fill="#46555c" stroke="#9aa"/>
+    <!-- sterile air compressor (G017 frequency converter) -> superheater -->
+    <path d="M392,90 L392,46" stroke="#4687c7" stroke-width="4" fill="none"/>
+    <path id="compFlow" d="M392,90 L392,46" stroke="#cfe6ff" stroke-width="1.6" stroke-dasharray="4 5" fill="none"/>
+    <circle id="compC" cx="392" cy="102" r="12" fill="#14202c" stroke="#4687c7" stroke-width="2"/>
+    <path id="compFan" d="M392,94 L392,110 M384,102 L400,102 M386.5,96.5 L397.5,107.5 M397.5,96.5 L386.5,107.5" stroke="#9fc4e8" stroke-width="1.4"/>
+    <text x="392" y="126" text-anchor="middle" font-size="8" fill="#9fc4e8" data-en="air compressor">كومبرسور الهوا</text>
+    <text x="392" y="136" text-anchor="middle" font-size="7.5" fill="#7fa6c8" font-family="JetBrains Mono">U70T0300</text>
+    <text id="compTx" x="392" y="146" text-anchor="middle" font-size="8" fill="#9fc4e8" font-family="JetBrains Mono">OFF</text>
+    <!-- peroxide circulation: tank -> pump -> inlet heaters -> bath -> overflow -> tank -->
+    <g id="perLoop">
+      <path d="M486,178 L551,178 L551,206" fill="none" stroke="#5a4020" stroke-width="5"/>
+      <path id="perRet" d="M486,178 L551,178 L551,206" fill="none" stroke="#f7a64a" stroke-width="2.2" stroke-dasharray="5 7"/>
+      <path d="M551,292 L551,314 L486,314" fill="none" stroke="#5a4020" stroke-width="5"/>
+      <path id="perSup" d="M551,292 L551,314 L486,314" fill="none" stroke="#f7a64a" stroke-width="2.2" stroke-dasharray="5 7"/>
+      <text x="520" y="173" text-anchor="middle" font-size="7.5" fill="#c99a60" data-en="overflow back">راجع للتنك</text>
+      <rect x="524" y="206" width="54" height="86" rx="5" fill="#141c20" stroke="#5a4020" stroke-width="2"/>
+      <rect id="tankLiq" x="526" y="226" width="50" height="64" rx="3" fill="url(#gBath)"/>
+      <path id="tankHtr" d="M530,284 L536,276 L542,284 L548,276 L554,284 L560,276 L566,284 L572,276" fill="none" stroke="#5a3a2a" stroke-width="2.2"/>
+      <text x="551" y="202" text-anchor="middle" font-size="8.5" fill="#ffc890" data-en="H2O2 tank">تنك البيروكسيد</text>
+      <text id="tankTx" x="551" y="246" text-anchor="middle" font-size="11" fill="#fff" font-weight="700" font-family="JetBrains Mono">86.0°</text>
+      <text id="tankHtx" x="551" y="262" text-anchor="middle" font-size="7.5" fill="#c99a60" font-family="JetBrains Mono">U30T0220</text>
+      <circle id="tankTT" cx="578" cy="240" r="4" fill="#ffc629" stroke="#222"/>
+      <circle id="pumpC" cx="530" cy="314" r="8" fill="#22303a" stroke="#9aa" stroke-width="1.5"/>
+      <path id="pumpImp" d="M530,309 L530,319 M525,314 L535,314" stroke="#cfd8dc" stroke-width="1.6"/>
+      <text x="530" y="332" text-anchor="middle" font-size="7.5" fill="#9fb0b6" font-family="JetBrains Mono">U30K1260</text>
+      <rect id="inHtr" x="494" y="307" width="20" height="14" rx="3" fill="#3a1714" stroke="#ff6a4d"/>
+      <path d="M497,314 L500,310 L503,318 L506,310 L509,318 L512,314" fill="none" stroke="#ffb090" stroke-width="1"/>
+      <text x="503" y="302" text-anchor="middle" font-size="7.5" fill="#ffb3a0" font-family="JetBrains Mono">U70Q0350</text>
+      <!-- control loop: sensor -> TIC -> heater contactor -->
+      <path id="ticSig" d="M582,240 L590,240 L590,150 L578,150 M554,150 L516,150 L516,280 L528,280" fill="none" stroke="#ffc629" stroke-width="1" stroke-dasharray="3 3" opacity=".8"/>
+      <circle id="ticC" cx="566" cy="150" r="12" fill="#1e1d10" stroke="#ffc629"/>
+      <text x="566" y="153" text-anchor="middle" font-size="8" fill="#ffc629" font-weight="700" font-family="JetBrains Mono">TIC</text>
+      <text id="ticTx" x="566" y="131" text-anchor="middle" font-size="7.5" fill="#ffe08a" font-family="JetBrains Mono">SP 86°</text>
+      <circle cx="484" cy="262" r="3.5" fill="#ffc629" stroke="#222"/>
+      <path d="M484,262 L504,262 L504,307" fill="none" stroke="#ffc629" stroke-width="1" stroke-dasharray="3 3" opacity=".8"/>
+    </g>
     <!-- HI / UV small -->
   </g>
 
@@ -390,6 +437,7 @@ tr.cur td{background:#2b2110}
       <div class="chain" id="chain"></div>
     </div>
   </div>
+  <nav class="stepstrip" id="stepStrip" aria-label="steps"></nav>
 </div>
 
 <!-- section detail -->
@@ -492,7 +540,7 @@ const STEPS=[
  {ar:'تشغيل المحرك',en:'MotorStart',up:{ar:'تلقائيًا ← 11 عند جاهزية الملء والتصميم',en:'auto → 11 when FillingOK and DesignOK'},dn:{ar:'Stop أو توقف ← 8',en:'Stop or machine stop → 8'},tm:{ar:'ثوانٍ',en:'seconds'}},
  {ar:'الإنتاج',en:'Production',up:{ar:'صعود 3 ث ← 12',en:'Up 3 s → 12'},dn:{ar:'Stop أو توقف بإنذار ← 8',en:'Stop or alarm stop → 8'},tm:{ar:'—',en:'—'}},
  {ar:'انتهاء الإنتاج',en:'EndProduction',up:{ar:'تلقائيًا بعد 5 دقائق (30 ث إذا كانت غير معقّمة) أو صعود 3 ث ← 13',en:'auto after 5 min (30 s if not sterile) or Up 3 s → 13'},dn:{ar:'نزول ← 8 إذا كانت ما زالت معقّمة',en:'Down → 8 if still sterile'},tm:{ar:'المحرك يستمر 60 ث كحد أقصى',en:'motor runs max 60 s'}},
- {ar:'التهوية',en:'Venting',up:{ar:'تلقائيًا ← 14',en:'auto → 14'},dn:{ar:'—',en:'—'},tm:{ar:'10 دقائق',en:'10 min'}},
+ {ar:'التهوية',en:'Venting',up:{ar:'لوحدها ← 14',en:'auto → 14'},dn:{ar:'—',en:'—'},tm:{ar:'10 دقايق، والكومبرسور شغال ينفخ هوا 100% يطلّع بخار البيروكسيد',en:'10 min; compressor keeps blowing 100 % air to purge peroxide vapour'}},
  {ar:'تجهيز للإنتاج التالي',en:'PrepareToNextProduction',up:{ar:'—',en:'—'},dn:{ar:'نزول ← 1',en:'Down → 1'},tm:{ar:'—',en:'—'}}
 ];
 
@@ -518,6 +566,9 @@ const AL={
  StripMaterialBreak:{c:'Y',n:'ALR_ASSU_YE_StripMaterialBreak',sec:'assu',stop:'stop',ar:'انقطع الشريط: إنكودر الشريط لا يتحرك مع الورق',en:'Strip break: strip encoder not following the web',d:{ar:'2 + 1.5 ث',en:'2 + 1.5 s'}},
  SaTPIHFault:{c:'Y',n:'ALR_ASSU_YE_TPIHFault',sec:'assu',stop:'stop',ar:'مولّد لحام الشريط TPIH فصل',en:'Strip applicator TPIH generator fault',d:{ar:'فورًا',en:'immediate'}},
  BathLowTemperature:{c:'Y',n:'ALR_PER_YE_BathLowTemperature',sec:'ster',stop:'stop',ar:'حرارة حمّام البيروكسيد أقل من 82°',en:'Peroxide bath below 82 °C',d:{ar:'فورًا (بعد أول دقيقتين)',en:'immediate (after first 2 min)'}},
+ TankHighTemperature:{c:'Y',n:'ALR_PER_YE_TankHighTemperature',sec:'ster',stop:'stop',ar:'حرارة تنك البيروكسيد أعلى من 91°',en:'Peroxide tank above 91 °C',d:{ar:'5 ث',en:'5 s'}},
+ TankLowTemperature:{c:'B',n:'ALR_PER_BE_TankLowTemperature',sec:'ster',stop:'none',ar:'حرارة تنك البيروكسيد أقل من المطلوب بـ 5°',en:'Peroxide tank 5 °C below set point',d:{ar:'3 ث',en:'3 s'}},
+ BathInletHeatersHighTemp:{c:'Y',n:'ALR_PER_YE_BathInletHeatersHighTemp',sec:'ster',stop:'stop',ar:'سطح سخانات دخول الحمّام أعلى من 170°',en:'Bath inlet heater surface above 170 °C',d:{ar:'1 ث',en:'1 s'}},
  ConcentrationCloseToLimit:{c:'B',n:'ALR_PER_BO_ConcentrationCloseToLimit',sec:'ster',stop:'none',ar:'تركيز البيروكسيد اقترب من الحد (32%)',en:'Peroxide concentration close to limit (32 %)',d:{ar:'فورًا',en:'immediate'}},
  ConcOutOfRange:{c:'Y',n:'ALR_PER_YO_ConcOutOfRange',sec:'ster',stop:'stop',ar:'تركيز البيروكسيد خارج الحدود (أقل من 31%)',en:'Peroxide concentration out of range (< 31 %)',d:{ar:'فورًا',en:'immediate'}},
  SterileAirLowTemp:{c:'Y',n:'ALR_SAS_YE_SterileAirLowTemp',sec:'ster',stop:'ster',ar:'حرارة الهواء المعقّم أقل من 331°: فقدت الماكينة التعقيم',en:'Sterile air below 331 °C: sterility lost',d:{ar:'2 ث',en:'2 s'}},
@@ -552,7 +603,9 @@ const FAULTS=[
  {id:'servo',sec:'asu',hot:[146,468],ar:'سيرفو رأس اللحام ينحشر',en:'Sealing head servo sticking',see:{ar:'لن يظهر إلا وقت الوصلة (جرّب "اطلب وصلة الآن")',en:'shows only during a splice (try "Splice now")'},al:'SealingHeadServoFault'},
  {id:'stripbrk',sec:'assu',hot:[300,384],ar:'انقطع الشريط',en:'Strip broken',see:{ar:'أصبحت سرعة إنكودر الشريط صفرًا والورق يتحرك',en:'strip encoder speed drops to zero while web runs'},al:'StripMaterialBreak'},
  {id:'saTpih',sec:'assu',hot:[300,296],ar:'مولّد لحام الشريط SA فصل',en:'Strip applicator TPIH tripped',see:{ar:'أصبحت قدرة SA صفرًا',en:'SA power goes to zero'},al:'SaTPIHFault'},
- {id:'bathHtr',sec:'ster',hot:[500,240],ar:'فصل سخان حمّام البيروكسيد',en:'Peroxide bath heater off',see:{ar:'حرارة الحمّام تنخفض ببطء من 85',en:'bath temperature slowly falls from 85'},al:'BathLowTemperature'},
+ {id:'bathHtr',sec:'ster',hot:[506,282],ar:'سخانات دخول الحمّام فصلت',en:'Bath inlet heaters off',see:{ar:'البيروكسيد بيلف بس مش بيسخن: الحمّام بينزل ببطء من 85',en:'peroxide still circulates but is not heated: bath slowly falls from 85'},al:'BathLowTemperature'},
+ {id:'tank',sec:'ster',hot:[592,208],ar:'كونتاكتور سخان التنك لازق',en:'Tank heater contactor stuck on',see:{ar:'السخان مولّع على طول وحرارة التنك بتطلع فوق 86',en:'heater always on, tank temperature climbs above 86'},al:'TankHighTemperature'},
+ {id:'circ',sec:'ster',hot:[542,298],ar:'الطلمبة ضعيفة (سريان قليل على السخان)',en:'Weak pump (low flow over the heater)',see:{ar:'السريان بطيء وسطح السخان بيسخن بسرعة',en:'flow is slow and the heater surface heats up fast'},al:'BathInletHeatersHighTemp'},
  {id:'dil',sec:'ster',hot:[412,170],ar:'مياه داخلة على البيروكسيد',en:'Water leaking into the peroxide',see:{ar:'التركيز ينخفض: تحذير أزرق عند 32% وتوقف عند 31%',en:'concentration falls: blue at 32 %, stop at 31 %'},al:'ConcOutOfRange'},
  {id:'sh',sec:'ster',hot:[460,16],ar:'السخان الفائق للهواء المعقّم محترق',en:'Sterile air superheater burnt',see:{ar:'حرارة الهواء المعقّم تنخفض من 360',en:'sterile air temperature falls from 360'},al:'SterileAirLowTemp'},
  {id:'comp',sec:'ster',hot:[560,40],ar:'الضاغط لا يعطي هواءً كافيًا',en:'Compressor not giving enough air',see:{ar:'التدفق 78% ولا يوجد إنذار بعد لمدة 30 ث',en:'flow 78 % and no alarm for 30 s'},al:'SterileAirLowFlowrate'},
@@ -581,8 +634,8 @@ const SECTXT={
    links:{ar:['الوصلة تتحرك مع الورق وتصل إلى اللحام الطولي LS بعد حوالي 8 أمتار (43 عبوة في 250 Slim)، فيزيد الـ LS قدرته 60% لعبوة واحدة.','عندما تصل إلى الفكوك، تذهب العبوات التي فيها الوصلة إلى الهالك (3 في 250 Slim، والعدد يتغير مع العبوة).','إذا فرغ اللوب (انقطع الورق) تتوقف الماكينة كلها توقفًا سريعًا بعد 0.7 ث.'],en:['The splice travels with the web and reaches the LS about 8 m later (43 packages on 250 Slim), so the LS boosts its power by 60 % for one package.','When it reaches the jaws, the packages containing the splice go to waste (3 on 250 Slim, depends on the package).','If the loop empties (web break) the whole machine fast-stops after 0.7 s.']}},
  assu:{role:{ar:['يُلصق الشريط (Strip) على حافة الورق بالحث قبل التعقيم، ويغلق الحافة من الداخل.','بكرتا شريط ومخزن، ووصلة الشريط 2.3 ث عندما تقترب البكرة من النهاية (أقل من 95 مم).'],en:['The strip is induction-sealed onto the web edge before sterilisation; it protects the edge inside.','Two strip bobbins plus a magazine; strip splice takes 2.3 s when the bobbin gets below 95 mm.']},
    links:{ar:['قدرة SA: 825 وات إنتاج، 350 وات في لحام الأنبوبة.','إذا انقطع الشريط، يتوقف إنكودره والورق يتحرك، وبعد 2 + 1.5 ث تتوقف الماكينة.'],en:['SA power: 825 W in production, 350 W during tube sealing.','If the strip breaks its encoder stops while the web runs; after 2 + 1.5 s the machine stops.']}},
- ster:{role:{ar:['ينزل الورق في حمّام بيروكسيد ساخن 85° وتركيزه حوالي 35%.','رولات العصر وسكين الهواء الساخن (160°) تجفف الورق قبل غرفة التعقيم.','السخان الفائق يسخّن الهواء المعقّم (360° إنتاج، 400° تعقيم) الذي يملأ غرفة التعقيم.'],en:['The web dips into a hot peroxide bath at 85 °C, about 35 % concentration.','Squeeze rollers and the hot air knife (160 °C) dry the web before the aseptic chamber.','The superheater heats the sterile air (360 °C production, 400 °C sterilisation) that fills the chamber.']},
-   links:{ar:['يجب أن تكون حرارة هواء الحقن AI_U70B4360 ≥ 357° لتصعد الخطوة 9 إلى 10.','الهواء المعقّم منخفض الحرارة (أقل من 331° لمدة 2 ث) أو تدفقه أقل من 83% لمدة 30 ث = تفقد الماكينة التعقيم: إنهاء الإنتاج ثم تهوية 10 دقائق وتعقيم من البداية.','الحمّام البارد أو التركيز المنخفض أو السكين البارد = توقف فقط والماكينة تبقى معقّمة.'],en:['HI air temperature AI_U70B4360 must be ≥ 357 °C before step 9 can go to 10.','Sterile air too cold (< 331 °C for 2 s) or flow < 83 % for 30 s = sterility lost: end production, venting 10 min, sterilise again.','Cold bath, low concentration or cold air knife = stop only; the machine stays sterile.']}},
+ ster:{role:{ar:['الورق بينزل في حمّام بيروكسيد سخن 85° وتركيزه حوالي 35%.','دايرة البيروكسيد: التنك (حرارته U30B1710 ومطلوب 86° والماكينة معقّمة، 87° غير كده) ← الطلمبة U30K1260 ← سخانات الدخول U70Q0350 ← الحمّام، والزيادة بترجع للتنك من فوق (فايض).','التسخين: منظّم الحرارة (TIC) بيقرا حساس التنك ويشغّل السخان U30T0220: المرحلة الأولى لو الحرارة نزلت 0.3° عن المطلوب، والتانية U70Q0100 لو نزلت 3°. وسخانات الدخول بتشتغل بس والطلمبة دايرة.','رولات العصر وسكينة الهوا السخنة (160°) بتنشّف الورق قبل غرفة التعقيم.','السخان الفائق بيسخّن الهوا المعقّم (360° إنتاج، 400° تعقيم) اللي بيملا غرفة التعقيم.'],en:['The web dips into a hot peroxide bath at 85 °C, about 35 % concentration.','Peroxide loop: tank (temp U30B1710, set point 86 °C when sterile, 87 °C otherwise) → pump U30K1260 → bath inlet heaters U70Q0350 → bath; the excess overflows back to the tank.','Heating: the TIC reads the tank sensor and switches heater U30T0220: stage 1 when 0.3 °C below set point, stage 2 U70Q0100 when 3 °C below. The inlet heaters only run while the pump runs.','Squeeze rollers and the hot air knife (160 °C) dry the web before the aseptic chamber.','The superheater heats the sterile air (360 °C production, 400 °C sterilisation) that fills the chamber.']},
+   links:{ar:['حرارة هوا الحقن AI_U70B4360 لازم ≥ 357° عشان الخطوة 9 تطلع 10.','الهوا المعقّم واطي (أقل من 331° لمدة 2 ث) أو تدفقه أقل من 83% لمدة 30 ث = الماكينة تفقد التعقيم: انتهاء إنتاج ثم تهوية 10 دقايق وتعقيم من الأول.','الحمّام البارد أو التركيز الواطي أو السكينة الباردة = وقفة بس والماكينة تفضل معقّمة.','التنك أسخن من 91° لمدة 5 ث، أو سطح سخان الدخول أسخن من 170° لمدة ثانية = وقفة.'],en:['HI air temperature AI_U70B4360 must be ≥ 357 °C before step 9 can go to 10.','Sterile air too cold (< 331 °C for 2 s) or flow < 83 % for 30 s = sterility lost: end production, venting 10 min, sterilise again.','Cold bath, low concentration or cold air knife = stop only; the machine stays sterile.','Tank above 91 °C for 5 s, or inlet heater surface above 170 °C for 1 s = stop.']}},
  tube:{role:{ar:['البندول (Pendulum) والرول الساحب يضبطان شد الورق، ونقطة الضبط 41.6% من المشوار.','حلقات التشكيل تلف الورق إلى أنبوبة، والـ LS يلحم الطول بالحث (800 وات في الإنتاج).','حساس الحافة TPAC يُبقي حافة الورق عند 10 مم.'],en:['Pendulum roller and drive roller control web tension; set point 41.6 % of the stroke.','Forming rings roll the web into a tube; the LS induction-seals it lengthwise (800 W production).','The TPAC edge sensor holds the web edge at 10 mm.']},
    links:{ar:['يعرف الـ LS أن الوصلة قادمة بعد حوالي 8 أمتار من السيو (43 عبوة في 250 Slim) ويزيد القدرة 60% لعبوة واحدة.','عطل مولّد LS = توقف سريع للخط كله.'],en:['The LS knows the splice arrives about 8 m after the ASU (43 packages on 250 Slim) and adds 60 % power for one package.','LS generator fault = fast stop of the whole line.']}},
  fill:{role:{ar:['المنتج يأتي من الخزان المعقّم: صمام C وحاجز البخار، وحساس التدفق، وصمام التنظيم RV بسيرفو، وصمام A، وماسورة الملء داخل الأنبوبة.','كارت TMCC يضبط التدفق حسب السرعة، ثم يحافظ على المستوى في الأنبوبة (العوامة).'],en:['Product comes from the aseptic tank: C valve and steam barrier, flowmeter, servo regulating valve RV, A valve, fill pipe inside the tube.','The TMCC card sets flow from the speed, then holds the level in the tube (float).']},
@@ -615,6 +668,8 @@ const TAGS=[
  ['hi','ster',352,470,118,{ar:'هواء الحقن HI',en:'HI air'},'AI_U70B4360'],
  ['hs','ster',474,470,118,{ar:'حرارة التعقيم',en:'Steril. temp'},''],
  ['sterT','ster',352,506,240,{ar:'مؤقت الخطوة',en:'Step timer'},''],
+ ['Ttank','ster',352,542,118,{ar:'حرارة التنك',en:'Tank temp'},'U30B1710'],
+ ['h1','ster',474,542,118,{ar:'سطح سخان الدخول',en:'Inlet htr surface'},'U70B2590'],
  ['pend','tube',728,104,64,{ar:'البندول',en:'Pendulum'},''],
  ['ls','tube',728,140,64,{ar:'قدرة LS',en:'LS power'},''],
  ['edge','tube',728,250,64,{ar:'حافة الورق',en:'Web edge'},''],
@@ -648,7 +703,7 @@ function freshState(prod){
      // ASSU
      bob:prod?180:235,bobAct:'A',ssp:null,smag:P.smagSP,stripV:0,
      // sterile
-     Tbath:prod?85:25,conc:35,Tsh:prod?360:30,flow:prod?100:0,Tknife:prod?160:30,Tac:prod?78:25,hi:prod?360:30,hs:prod?90:25,hsHold:0,spPh:0,
+     Tbath:prod?85:25,Ttank:prod?86:22,h1:prod?113:25,th1:false,th2:false,pump:!!prod,htrIn:!!prod,conc:35,Tsh:prod?360:30,flow:prod?100:0,Tknife:prod?160:30,Tac:prod?78:25,hi:prod?360:30,hs:prod?90:25,hsHold:0,spPh:0,
      // tube
      pend:41.6,ls:prod?800:0,lsBoost:0,edge:10,
      // fill
@@ -919,7 +974,18 @@ function sectionSter(dt){
   const st=S.step,on=st>=1;
   const steril=st>=4&&st<=6, sterileSteps=st>=7&&st<=11;
   // bath
-  const bT=(on&&st!==13&&!F('bathHtr'))?P.bathSP:(F('bathHtr')?55:25);
+  // peroxide loop: tank -> pump -> inlet heaters -> bath -> overflow -> tank
+  const tankSP=(st>=7&&st<=12)?86:87;S.tankSP=tankSP;
+  S.th1=on&&(S.Ttank<tankSP-0.3||F('tank'));S.th2=on&&S.Ttank<tankSP-3;
+  S.Ttank+=(22+(S.th1?72:0)+(S.th2?30:0)-S.Ttank)*Math.min(1,dt/(F('tank')?200:300));
+  S.pump=on&&st!==13;
+  S.htrIn=S.pump&&!F('bathHtr')&&!S.al.BathInletHeatersHighTemp;
+  const hT=S.htrIn?(F('circ')?200:P.bathSP+28):Math.max(S.Tbath,S.Ttank)-2;
+  S.h1+=(hT-S.h1)*Math.min(1,dt/(F('circ')?40:50));
+  if(dl('BathInletHeatersHighTemp',S.h1>170,1,dt))raise('BathInletHeatersHighTemp',S.h1.toFixed(0)+'°');
+  if(dl('TankHighTemperature',S.Ttank>91,5,dt))raise('TankHighTemperature',S.Ttank.toFixed(1)+'°');
+  if(dl('TankLowTemperature',st>=7&&st<=12&&S.Ttank<tankSP-5,3,dt))raise('TankLowTemperature',S.Ttank.toFixed(1)+'°');else if(!S.cond.TankLowTemperature)clearB('TankLowTemperature');
+  const bT=S.htrIn?P.bathSP:(S.pump?(F('bathHtr')?55:Math.max(S.Ttank-6,25)):25);
   S.Tbath+=(bT-S.Tbath)*Math.min(1,dt/(F('bathHtr')?380:90));
   if((st===10||st===11)&&moving()&&S.Tbath<P.bathLo)raise('BathLowTemperature',S.Tbath.toFixed(1)+'°');
   S.cond.BathLowTemperature=S.Tbath<P.bathLo;
@@ -937,7 +1003,7 @@ function sectionSter(dt){
   if(dl('SterileAirLowTemp',sterileSteps&&S.Tsh<P.shLo&&S.stepT>2,2,dt))raise('SterileAirLowTemp',S.Tsh.toFixed(0)+'°');
   S.cond.SterileAirLowTemp=S.Tsh<P.shLo;
   // flow
-  const fT=(st>=1&&st!==13&&st!==0)?(F('comp')?78:100):0;
+  const fT=(st>=1)?(F('comp')?78:100):0; // venting (13): compressor keeps blowing at the sterilisation flow SP (PAR_AirFlowrateSterilization 100)
   S.flow+=(fT-S.flow)*Math.min(1,dt/4);
   if(dl('SterileAirLowFlowrate',sterileSteps&&S.flow<100*P.flowLoProd&&S.flow>1,30,dt))raise('SterileAirLowFlowrate',S.flow.toFixed(0)+'%');
   if(steril&&dl('flowSter',S.flow<93&&S.flow>1,30,dt))raise('SterileAirLowFlowrate');
@@ -1239,6 +1305,8 @@ function tagVal(id){
    case 'smag':return [S.smag.toFixed(0),S.smag<200?'wn':''];
    case 'stEnc':return [(S.stripV*60).toFixed(1)+' m/min',A('StripMaterialBreak')?'bad':(moving()&&S.stripV<v()*0.5?'wn':'')];
    case 'Tbath':return [S.Tbath.toFixed(1)+' °C',A('BathLowTemperature')?'bad':(S.Tbath<P.bathLo+1&&st>=1?'wn':'')];
+   case 'Ttank':return [S.Ttank.toFixed(1)+' °C'+(S.th1?(S.th2?' ●●':' ●'):''),A('TankHighTemperature')?'bad':(A('TankLowTemperature')||S.Ttank>89?'wn':'')];
+   case 'h1':return [S.h1.toFixed(0)+' °C'+(S.htrIn?' ●':''),A('BathInletHeatersHighTemp')?'bad':(S.h1>150?'wn':'')];
    case 'conc':return [S.conc.toFixed(1)+' %',A('ConcOutOfRange')?'bad':(S.conc<P.concWlo?'wn':'')];
    case 'Tsh':return [S.Tsh.toFixed(0)+' °C',A('SterileAirLowTemp')?'bad':(st>=7&&st<=11&&S.Tsh<345?'wn':'')];
    case 'flow':return [S.flow.toFixed(0)+' %',A('SterileAirLowFlowrate')?'bad':(S.flow<83&&S.flow>1?'wn':'')];
@@ -1303,8 +1371,24 @@ function draw(rdt){
   $('airDuct').style.strokeDashoffset=(-(S.t*30*(S.flow/100))%14).toFixed(1);
   $('airDuct').style.opacity=S.flow>1?0.8:0.15;
   $('airDuct').style.stroke=S.Tsh>300?'#ff9a80':'#98d8e4';
+  { const cOn=S.flow>1; $('compFan').setAttribute('transform','rotate('+((S.t*300*S.flow/100)%360).toFixed(0)+' 392 102)');
+    setA('compC',{stroke:cOn?(F('comp')?'#ffb340':'#5fd08b'):'#4687c7'});
+    $('compFlow').style.strokeDashoffset=(-(S.t*25*S.flow/100)%9).toFixed(1);$('compFlow').style.opacity=cOn?1:0.1;
+    $('compTx').textContent=cOn?('ON '+S.flow.toFixed(0)+'%'):'OFF'; }
   setA('aKnife',{fill:lerpC('1d2226','ff6a4d',(S.Tknife-25)/140)});
   setA('bathLiq',{fill:S.conc<P.concAlo?'#a0703a':'url(#gBath)'});
+  { const q=S.pump?(F('circ')?0.25:1):0, off=(-(S.t*22*q)%12).toFixed(1);
+    for(const id of ['perSup','perRet']){const e=$(id);e.style.strokeDashoffset=off;e.style.opacity=S.pump?(F('circ')?0.45:1):0.12;}
+    $('perSup').style.stroke=lerpC('f7a64a','ff4a2a',(S.h1-100)/90);
+    $('pumpImp').setAttribute('transform','rotate('+((S.t*240*q)%360).toFixed(0)+' 530 314)');
+    setA('pumpC',{stroke:S.pump?(F('circ')?'#ffb340':'#5fd08b'):'#9aa'});
+    setA('inHtr',{fill:S.al.BathInletHeatersHighTemp?'#ff3b2a':lerpC('3a1714','ff6a4d',(S.h1-60)/110),stroke:S.htrIn?'#ffb090':'#6a3a30'});
+    setA('tankHtr',{stroke:S.th1?(S.th2?'#ffe080':'#ff7a3a'):'#5a3a2a','stroke-width':S.th1?3:2.2});
+    setA('tankLiq',{fill:S.Ttank>91?'#c0502a':'url(#gBath)'});
+    $('tankTx').textContent=S.Ttank.toFixed(1)+'°';
+    $('tankHtx').textContent=S.th1?(S.th2?'U30T0220+U70Q0100':'U30T0220 ON'):'U30T0220 OFF';
+    $('ticTx').textContent='SP '+S.tankSP+'°';
+    setA('ticC',{stroke:S.th1?'#ff9a40':'#ffc629'}); }
   // tube
   const pa=(-55+(S.pend-41.6)*1.4)*Math.PI/180;
   const px=600+Math.cos(pa)*34,py=132+Math.sin(pa)*34;setA('pend',{cx:px.toFixed(1),cy:py.toFixed(1)});setA('pendArm',{x2:px.toFixed(1),y2:py.toFixed(1)});
@@ -1401,6 +1485,7 @@ function stepMsg(){
 }
 function setMsg(){if(S.t>=msgHold)$('msg').textContent=stepMsg();}
 function renderSide(){
+  renderStrip();
   $('stN').textContent=S.step;$('stName').textContent=T(STEPS[S.step]);$('stEn').textContent=STEPS[S.step].en;
   setMsg();
   const b=[];
@@ -1510,5 +1595,15 @@ function renderPk(){const p=S.pk_,c=p.sp[S.pphSP];
  const it=[[L('العبوة','Package'),p.name],[L('الحجم','Volume'),p.vol+' ml'],[L('طول العبوة','Repeat length'),p.len+' mm'],[L('العرض','Width'),p.w+' mm'],[L('قضيب اللحام','CH bar'),p.ch+' °C'],[L('إزاحة موضع الوصلة','Splice position offset'),p.off+' mm'],[L('هالك وصلة الورق','Paper splice waste'),p.waste+L(' عبوة',' packs')],[L('سخانات الفولدر العلوية/السفلية','Folder heaters top/bottom'),c.top+' / '+c.bot+' °C'],[L('هواء السخانات العلوية/السفلية','Heater air top/bottom'),p.pT+' / '+p.pB+' bar'],[L('السير','Conveyor'),c.conv+' m/min'],[L('العبوة الأخيرة غير مرئية في الخروج','Outfeed jam limit'),p.outMax+L(' عبوة',' packs')]];
  if(c.sync!==null)it.push(['MainSynchOffset',c.sync+'°']);
  $('pkInfo').innerHTML=it.map(x=>'<span>'+x[0]+': <b class="mono">'+x[1]+'</b></span>').join('')+'<span class="note">'+L('هذه القيم من البرنامج وتتغير مع العبوة والسرعة','values from the program; they change with package and speed')+'</span>';}
+
+const SHORT=[['واقفة','Idle'],['تحضير','Prep.'],['تجهيز لحام','Prep. TS'],['لحام أنبوبة','Tube seal'],['تعقيم حرارة','Heat ster.'],['رش','Spray'],['تجفيف','Drying'],['تعقيم خلص','Ster. done'],['إشارة للمعقّم','Signal'],['تجهيز إنتاج','Prep. prod.'],['تشغيل موتور','Motor start'],['إنتاج','Production'],['انتهاء إنتاج','End prod.'],['تهوية','Venting'],['التالي','Next prod.']];
+const PHC=i=>i<=3?'#5f7280':i<=6?'#e0701a':i<=9?'#1f78c1':i<=11?'#1d9452':'#7a4cc0';
+let ssBuilt='';
+function renderStrip(){
+  const el=$('stepStrip');if(!el)return;
+  if(ssBuilt!==LANG){ssBuilt=LANG;el.innerHTML='<div class="sh">'+L('مراحل الماكينة','Machine steps')+'</div>'+SHORT.map((s,i)=>'<div class="ss" id="ss'+i+'" style="--c:'+PHC(i)+'" title="'+i+' · '+T(STEPS[i])+' · '+STEPS[i].en+'"><b>'+i+'</b><span>'+(LANG==='en'?s[1]:s[0])+'</span><div class="tm" id="sst'+i+'" hidden></div></div>').join('');}
+  for(let i=0;i<15;i++){const d=$('ss'+i),c=i===S.step;d.classList.toggle('cur',c);const t=$('sst'+i);t.hidden=!c;if(c)t.textContent=fmtT(S.stepT);}
+  if(window.innerWidth<=640){const c=$('ss'+S.step);if(c&&el.dataset.last!=String(S.step)){el.dataset.last=S.step;el.scrollLeft=c.offsetLeft-el.clientWidth/2;}}
+}
 </script>
 </body></html>

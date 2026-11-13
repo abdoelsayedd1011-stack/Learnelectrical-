@@ -76,9 +76,11 @@ function membersOnly(pathname){
   if (!m) return false;
   const dir = m[1], rest = m[2];
   if (rest && !/\.html$/.test(rest) && /\./.test(rest)) return false; // scripts, images, data
-  // A3/Speed simulators are paid (product a3s): every simulator page; the hub page and the written design guide stay open.
+  // Tetrapan simulators (A3/Speed and A3/Flex) are paid (product a3s): every simulator page; the hub page and the written design guide stay open.
   if (dir === "a3speed-lab") return !/^(?:index(?:\.html)?)?$/.test(rest);
   if (dir === "a3speed-design-lab") return /^simulator(?:\.html)?$/.test(rest);
+  // A3/Flex filling simulator (Tetrapan section): paid too, same product; the written explanation page stays open.
+  if (dir === "a3flex-filling-lab") return /^simulator(?:\.html)?$/.test(rest);
   if (COURSE_DIRS.has(dir)){
     if (dir === "plc-lab" && /^(?:siemens|delta|ab)(?:\.html)?$/.test(rest)) return true; // brand simulators
     if (dir === "classic-control-lab" && /^free(?:\.html)?$/.test(rest)) return true;     // the free wiring workshop
