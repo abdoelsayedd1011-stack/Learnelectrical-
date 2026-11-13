@@ -79,7 +79,7 @@ button,select,input{font-family:inherit;font-size:13px}
 .tab.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .lad-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
 .lad-tools input{flex:1 1 200px;min-width:0;padding:6px 10px;border-radius:7px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);font-family:var(--f-mono)}
-.ladder{height:calc(100vh - 400px);min-height:420px;overflow:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+.ladder{position:relative;height:calc(100vh - 400px);min-height:420px;overflow:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
 .rung{border-bottom:1px solid var(--line);direction:ltr;position:relative}
 .rung.hl{background:color-mix(in srgb,var(--accent) 8%,transparent)}
 .rung svg{display:block}
@@ -814,7 +814,8 @@ window.__DESC={"M03156":["","\" roy Peers down"],"G00032":["","G21-SF Infeed con
     svg.innerHTML = S + '<g id="mvDyn"></g>';
     const dyn = svg.querySelector('#mvDyn');
     for (const [id, w] of [['bInfeed', 0], ['bGroup', 0], ['bPbelt', 0], ['bOut', 0]]) belts[id] = svg.querySelector('#' + id);
-    svg.addEventListener('click', e => { const t = e.target.closest('[data-a]'); if (t && opts.onPick) opts.onPick(t.dataset.a); });
+    // pointerdown, not click: the dynamic layer is redrawn every frame, so the element under the mouse changes between press and release and a click never fires
+    svg.addEventListener('pointerdown', e => { if (e.button > 0) return; const t = e.target.closest('[data-a]'); if (t && opts.onPick) { e.preventDefault(); opts.onPick(t.dataset.a); } });
 
     // ---------- helpers for the dynamic layer ----------
     const P = (x, y, ghost) => '<use href="#' + (ghost ? 'pkG' : 'pk') + '" x="' + f1(x) + '" y="' + f1(y) + '" width="16" height="14"/>';
@@ -1295,7 +1296,7 @@ function gotoHit(){
   if (!hits.length) return; const [b,n]=hits[hitIdx];
   if (b!==curBlock) openBlock(b);
   ladder.querySelectorAll('.rung.cur').forEach(el=>el.classList.remove('cur'));
-  const el=document.getElementById('r_'+b+'_'+n); if (el){ el.classList.add('cur'); el.scrollIntoView({block:'center'}); }
+  const el=document.getElementById('r_'+b+'_'+n); if (el){ el.classList.add('cur'); const ctr=()=>{ ladder.scrollTop = Math.max(0, el.offsetTop - ladder.clientHeight/2 + Math.min(el.offsetHeight, ladder.clientHeight)/2); }; ctr(); setTimeout(ctr,120); setTimeout(ctr,400); }
   qinfo.textContent=(hitIdx+1)+' / '+hits.length+' · '+b+' رانج '+n;
 }
 function stepHit(d){ if(!hits.length){ const a=normAddr(q.value); if(a) startSearch(a); return; } hitIdx=(hitIdx+d+hits.length)%hits.length; gotoHit(); }
@@ -1393,7 +1394,7 @@ document.getElementById('resetplc').onclick=()=>{ model.reset(); mview.reset(); 
 document.getElementById('modelbtn').onclick=e=>{ modelOn=!modelOn; override={}; e.target.textContent='موديل المكنة: '+(modelOn?'شغال':'مطفي'); e.target.classList.toggle('primary',modelOn); refreshInputsUI(); renderForces(); };
 // ---- machine drawing (machine.js)
 const mstat=document.getElementById('mstat');
-const mview = MachineView(document.getElementById('msvg'), { model, getBit: a=>plc.getBit(a), timeMs: ()=>plc.timeMs, onPick: a=>{ q.value=a; startSearch(a); const wr=(XREF[a]&&XREF[a].w[0]); if (wr){ const i=hits.findIndex(h=>h[0]===wr[0]&&h[1]===wr[1]); if(i>=0){ hitIdx=i; gotoHit(); } } document.getElementById('ladder').scrollIntoView({block:'nearest',behavior:'smooth'}); } });
+const mview = MachineView(document.getElementById('msvg'), { model, getBit: a=>plc.getBit(a), timeMs: ()=>plc.timeMs, onPick: a=>{ q.value=a; startSearch(a); const wr=(XREF[a]&&XREF[a].w[0]); if (wr){ const i=hits.findIndex(h=>h[0]===wr[0]&&h[1]===wr[1]); if(i>=0){ hitIdx=i; gotoHit(); } } const lc=document.getElementById('ladder'); window.scrollTo({top: window.scrollY + lc.getBoundingClientRect().top - 90, behavior:'smooth'}); } });
 function paintMachine(){
   mview.paint();
   mstat.textContent = modelOn ? 'الحساسات من الموديل' : 'الموديل مطفي · الإنبوتات يدوي';
