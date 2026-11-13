@@ -230,7 +230,7 @@
       guided:6, exercises:10, params:76, faults:12,
       inside:["توصيل الثيرموكبل و PT100", "ضبط درجة الحرارة المطلوبة", "PID والـ Auto-tuning", "الإنذارات والخرج"],
       tags:"omron e5cc temperature pid حرارة كنترولر حرارة على فرن، ON/OFF و PID و Autotuning وإنذارات.  كنترولر حرارة متوصل على فرن   ON/OFF و PID و Autotuning   إنذارات الحرارة وأخطاء الحساس " },
-    { id:"a3fill", path:"a3-filling-lab/index.html", group:"temp", brand:"Tetra Pak A3/Flex 150/160", brandKey:"tp",
+    { id:"a3flexfill", path:"a3flex-filling-lab/index.html", group:"temp", brand:"Tetra Pak A3/Flex 150/160", brandKey:"tp",
       name:"نظام التعبئة TMCC2", kind:"تعبئة وكنترول مستوى", disp:"1750 l/h", dispClass:"lcd", rtlName:true,
       line:"كارت TMCC2 A401 في ماكينة A3/Flex 150 و 160: لوب التدفق والمستوى، الأعطال، قايمة الكارت والهايبر ترمينال، بشرح مكتوب ومحاكي وفيديو.",
       guided:16, exercises:0, params:14, faults:10,
