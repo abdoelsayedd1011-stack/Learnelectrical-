@@ -74,7 +74,7 @@ IV.topic = function(){
     const k = arts.filter(a => IV.state(a.id) === 'y').length, u = arts.filter(a => IV.state(a.id) === 'n').length;
     const pct = N ? Math.round(k / N * 100) : 0;
     setBar(bar, pct);
-    known.textContent = 'عارف ' + iso(String(k)) + ' من ' + iso(String(N)) + (u ? ' · محتاج تراجع ' + iso(String(u)) : '');
+    known.textContent = 'تعرف ' + iso(String(k)) + ' من ' + iso(String(N)) + (u ? ' · تحتاج مراجعة ' + iso(String(u)) : '');
   }
   function apply(){
     const ts = terms(F.q); let shown = 0;
@@ -89,7 +89,7 @@ IV.topic = function(){
       else if (d.dataset.auto){ d.open = false; delete d.dataset.auto; }
     });
     empty.hidden = shown > 0;
-    cnt.textContent = shown === N ? 'كل الأسئلة ظاهرة: ' + iso(String(N)) + ' سؤال' : 'ظاهر ' + iso(String(shown)) + ' من ' + iso(String(N)) + ' سؤال';
+    cnt.textContent = shown === N ? 'جميع الأسئلة ظاهرة: ' + iso(String(N)) + ' سؤال' : 'ظاهر ' + iso(String(shown)) + ' من ' + iso(String(N)) + ' سؤال';
     $('#testBtn').disabled = shown === 0;
   }
   let tmr;
@@ -106,7 +106,7 @@ IV.topic = function(){
   openAll.addEventListener('click', () => {
     const on = openAll.getAttribute('aria-pressed') !== 'true';
     $$('details.more', list).forEach(d => { d.open = on; delete d.dataset.auto; });
-    openAll.setAttribute('aria-pressed', on ? 'true' : 'false'); openAll.textContent = on ? 'اقفل كل الشرح' : 'افتح كل الشرح';
+    openAll.setAttribute('aria-pressed', on ? 'true' : 'false'); openAll.textContent = on ? 'أغلق كل الشرح' : 'افتح كل الشرح';
   });
   // print: every explanation opens for the printout, then goes back the way it was
   let prevOpen = null;
@@ -123,30 +123,30 @@ IV.topic = function(){
   }
   function startScreen(){
     const sc = scope(), notKnown = sc.filter(a => IV.state(a.id) !== 'y').length;
-    const filt = sc.length !== N ? ' (على حسب البحث والفلتر اللي اخترته)' : '';
-    test.innerHTML = `<div class="th"><h2>اختبر نفسك</h2><button type="button" class="btn sm" data-t="exit">‹ ارجع للأسئلة</button></div>
-      <p>هيظهرلك السؤال لوحده. فكّر في الإجابة أو قولها بصوت عالي، وبعدين اكشفها وقول بصراحة: عارفها ولا لأ. اختياراتك بتتحفظ على الجهاز ده.</p>
+    const filt = sc.length !== N ? ' (حسب البحث والفلتر الذي اخترته)' : '';
+    test.innerHTML = `<div class="th"><h2>اختبر نفسك</h2><button type="button" class="btn sm" data-t="exit">‹ ارجع إلى الأسئلة</button></div>
+      <p>سيظهر لك السؤال وحده. فكّر في الإجابة أو قلها بصوت عالٍ، ثم اكشفها وقل بصراحة: أعرفها أم لا. تُحفظ اختياراتك على هذا الجهاز.</p>
       <p class="pos">الأسئلة المتاحة: ${iso(String(sc.length))}${esc(filt)}</p>
-      <div class="opts"><label><input type="checkbox" id="tShuf" checked> رتّبهم عشوائي</label><label><input type="checkbox" id="tSkipK"${notKnown && notKnown < sc.length ? ' checked' : ''}> سيب اللي معلّم عليه «عارفها» (يفضل ${iso(String(notKnown))})</label></div>
+      <div class="opts"><label><input type="checkbox" id="tShuf" checked> رتّبها عشوائيًا</label><label><input type="checkbox" id="tSkipK"${notKnown && notKnown < sc.length ? ' checked' : ''}> تخطَّ ما عليه علامة «أعرفها» (يبقى ${iso(String(notKnown))})</label></div>
       <div class="tbtns"><button type="button" class="btn pri big" data-t="go">ابدأ</button></div>`;
     showTest(true);
     const go = $('[data-t="go"]', test); go.focus({preventScroll:true});
   }
   function begin(ids){
     T.ids = ids; T.i = 0; T.res = {}; T.revealed = false;
-    if (!ids.length){ test.innerHTML = `<div class="th"><h2>اختبر نفسك</h2><button type="button" class="btn sm" data-t="exit">‹ ارجع للأسئلة</button></div><p>مفيش أسئلة باقية بالاختيار ده. شيل علامة «سيب اللي عارفها» أو غيّر الفلتر.</p><div class="tbtns"><button type="button" class="btn" data-t="start">ارجع للإعدادات</button></div>`; return; }
+    if (!ids.length){ test.innerHTML = `<div class="th"><h2>اختبر نفسك</h2><button type="button" class="btn sm" data-t="exit">‹ ارجع إلى الأسئلة</button></div><p>لا توجد أسئلة متبقية بهذا الاختيار. أزل علامة «تخطَّ ما أعرفه» أو غيّر الفلتر.</p><div class="tbtns"><button type="button" class="btn" data-t="start">ارجع إلى الإعدادات</button></div>`; return; }
     card();
   }
   function card(){
     const a = document.getElementById(T.ids[T.i]); if (!a) return end();
     const n = T.ids.length, pct = Math.round(T.i / n * 100), lv = a.dataset.lv;
-    test.innerHTML = `<div class="th"><h2>اختبر نفسك</h2><span class="pos">سؤال ${iso(String(T.i + 1)) + ' من ' + iso(String(n))}</span><button type="button" class="btn sm" data-t="end">خلّص الاختبار</button></div>
+    test.innerHTML = `<div class="th"><h2>اختبر نفسك</h2><span class="pos">سؤال ${iso(String(T.i + 1)) + ' من ' + iso(String(n))}</span><button type="button" class="btn sm" data-t="end">أنهِ الاختبار</button></div>
       <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}" aria-label="التقدّم في الاختبار"><i style="width:${pct}%"></i></div>
       <div class="qh"><span class="qn">${esc(a.querySelector('.qn').textContent)}</span><span class="lv lv${lv}">${LV[lv]}</span></div>
       <p class="tq" tabindex="-1">${a.querySelector('.qt').innerHTML}</p>
-      <div class="tbtns" id="tPre"><button type="button" class="btn pri big" data-t="reveal">اكشف الإجابة</button><button type="button" class="btn" data-t="skip">فوّت السؤال</button></div>
+      <div class="tbtns" id="tPre"><button type="button" class="btn pri big" data-t="reveal">اكشف الإجابة</button><button type="button" class="btn" data-t="skip">تخطَّ السؤال</button></div>
       <div class="tans" id="tAns" hidden></div>
-      <div class="tbtns" id="tPost" hidden><button type="button" class="btn big ok" data-t="y">عارفها ✓</button><button type="button" class="btn big no" data-t="n">مش عارفها ✗</button></div>`;
+      <div class="tbtns" id="tPost" hidden><button type="button" class="btn big ok" data-t="y">أعرفها ✓</button><button type="button" class="btn big no" data-t="n">لا أعرفها ✗</button></div>`;
     T.revealed = false;
     $('[data-t="reveal"]', test).focus({preventScroll:true});
   }
@@ -166,10 +166,10 @@ IV.topic = function(){
   function end(){
     const ids = T.ids, y = ids.filter(id => T.res[id] === 'y'), no = ids.filter(id => T.res[id] === 'n'), sk = ids.length - y.length - no.length;
     const items = no.map(id => { const a = document.getElementById(id); return `<li><a href="#${id}" data-t="goto">${a.querySelector('.qt').innerHTML}</a></li>`; }).join('');
-    test.innerHTML = `<div class="th"><h2>نتيجة الاختبار</h2><button type="button" class="btn sm" data-t="exit">‹ ارجع للأسئلة</button></div>
-      <div class="sum"><b>عارف ${iso(String(y.length)) + ' من ' + iso(String(ids.length))}</b><span>مش عارف: ${iso(String(no.length))}${sk ? ' · فوّت: ' + iso(String(sk)) : ''}</span>
-      ${no.length ? `<p>راجع دول:</p><ul>${items}</ul>` : (y.length === ids.length ? '<p>ممتاز! جاوبت كل الأسئلة. جرّب قسم تاني أو مستوى أعلى.</p>' : '')}</div>
-      <div class="tbtns">${no.length ? '<button type="button" class="btn pri" data-t="redo">عيد اللي مش عارفها</button>' : ''}<button type="button" class="btn" data-t="start">اختبار جديد</button></div>`;
+    test.innerHTML = `<div class="th"><h2>نتيجة الاختبار</h2><button type="button" class="btn sm" data-t="exit">‹ ارجع إلى الأسئلة</button></div>
+      <div class="sum"><b>تعرف ${iso(String(y.length)) + ' من ' + iso(String(ids.length))}</b><span>لا تعرف: ${iso(String(no.length))}${sk ? ' · تخطيت: ' + iso(String(sk)) : ''}</span>
+      ${no.length ? `<p>راجع هذه:</p><ul>${items}</ul>` : (y.length === ids.length ? '<p>ممتاز! أجبت عن جميع الأسئلة. جرّب قسمًا آخر أو مستوى أعلى.</p>' : '')}</div>
+      <div class="tbtns">${no.length ? '<button type="button" class="btn pri" data-t="redo">أعِد ما لا تعرفه</button>' : ''}<button type="button" class="btn" data-t="start">اختبار جديد</button></div>`;
     T.last = no;
     const f = $('.btn', test); if (f) f.focus({preventScroll:true});
   }
@@ -223,11 +223,11 @@ IV.index = function(topics){
       const pct = n ? Math.round(k / n * 100) : 0;
       setBar($('.bar', li), pct);
       li.classList.toggle('full', k === n);
-      $('.st', li).textContent = k === n ? 'خلّصته ✓ عارف كل الأسئلة' : (k || u ? 'عارف ' + iso(String(k)) + ' من ' + iso(String(n)) + (u ? ' · تراجع ' + iso(String(u)) : '') : 'لسه مبدأتش');
+      $('.st', li).textContent = k === n ? 'أنهيته ✓ تعرف جميع الأسئلة' : (k || u ? 'تعرف ' + iso(String(k)) + ' من ' + iso(String(n)) + (u ? ' · مراجعة ' + iso(String(u)) : '') : 'لم تبدأ بعد');
     });
     const pct = total ? Math.round(allK / total * 100) : 0;
     setBar($('.allp .bar'), pct);
-    $('#allKnown').innerHTML = `<b>تقدّمك:</b> عارف ${iso(String(allK)) + ' من ' + iso(String(total))} سؤال (${iso(pct + '%')})`;
+    $('#allKnown').innerHTML = `<b>تقدّمك:</b> تعرف ${iso(String(allK)) + ' من ' + iso(String(total))} سؤالًا (${iso(pct + '%')})`;
   }
   paint();
   window.addEventListener('storage', e => { if (e.key === KEY){ reload(); paint(); } });
@@ -239,12 +239,12 @@ IV.index = function(topics){
   function loadAll(){
     if (DB) return Promise.resolve(DB);
     if (loading) return loading;
-    gcnt.textContent = 'بيحمّل الأسئلة…';
+    gcnt.textContent = 'جارٍ تحميل الأسئلة…';
     const dp = new DOMParser();
     loading = Promise.all(topics.map(t => fetch(t.slug + '.html').then(r => { if (!r.ok) throw new Error(r.status); return r.text(); }).then(h => {
       const doc = dp.parseFromString(h, 'text/html');
       return $$('article.q', doc).map(a => ({id:a.id, slug:t.slug, topic:t.title, lv:a.dataset.lv, q:$('.qt', a).textContent.trim(), a:$('.qa p', a).textContent.trim(), head:norm($('.qt', a).textContent + ' ' + $('.qa', a).textContent), hay:norm(a.textContent)}));
-    }))).then(rs => { DB = [].concat.apply([], rs); return DB; }).catch(() => { loading = null; gcnt.textContent = 'مقدرناش نحمّل الأسئلة دلوقتي. افتح القسم من تحت ودوّر جواه.'; return null; });
+    }))).then(rs => { DB = [].concat.apply([], rs); return DB; }).catch(() => { loading = null; gcnt.textContent = 'تعذّر تحميل الأسئلة الآن. افتح القسم من الأسفل وابحث داخله.'; return null; });
     return loading;
   }
   function run(){
@@ -255,7 +255,7 @@ IV.index = function(topics){
       let hits = db.filter(x => (!lv || x.lv === lv) && matchAll(x.hay, ts));
       hits.sort((a, b) => (matchAll(b.head, ts) ? 1 : 0) - (matchAll(a.head, ts) ? 1 : 0));
       const MAX = 40;
-      gcnt.textContent = hits.length ? (hits.length > MAX ? 'لقينا ' + iso(String(hits.length)) + ' سؤال، أول ' + iso(String(MAX)) + ' تحت. زوّد كلمة عشان تضيّق البحث.' : 'لقينا ' + iso(String(hits.length)) + ' سؤال') : 'مفيش أسئلة فيها الكلام ده. جرّب كلمة تانية أو بالإنجليزي.';
+      gcnt.textContent = hits.length ? (hits.length > MAX ? 'وجدنا ' + iso(String(hits.length)) + ' سؤالًا، أولها ' + iso(String(MAX)) + ' في الأسفل. أضف كلمة لتضييق البحث.' : 'وجدنا ' + iso(String(hits.length)) + ' سؤال') : 'لا توجد أسئلة فيها هذه الكلمات. جرّب كلمة أخرى أو بالإنجليزية.';
       gres.innerHTML = hits.slice(0, MAX).map(x => `<li><a href="${x.slug}.html#${x.id}"><span class="rt"><span class="lv lv${x.lv}">${LV[x.lv]}</span>${esc(x.topic)}</span><span class="rq">${hl(x.q, q)}</span><span class="ra">${hl(x.a, q)}</span></a></li>`).join('');
     });
   }
