@@ -37,39 +37,39 @@ const T = IL.T = (ar, en) => EN ? en : ar;
 /* every lesson = one playground («sim», mech-sims.js) + questions («quiz»); lesson 11 adds the final exam.
    Keep this a plain literal: functions/_lib/courses.js and assets/resume.js read the task ids from it. */
 IL.COURSE = [
-  {id:'l1', n:1, file:'lesson-01.html', title:T('الميكانيكا بتبدأ منين؟ الكميات والوحدات والمتجهات', 'Where mechanics starts: quantities, units and vectors'),
+  {id:'l1', n:1, file:'lesson-01.html', title:T('من أين تبدأ الميكانيكا؟ الكميات والوحدات والمتجهات', 'Where mechanics starts: quantities, units and vectors'),
     sub:T('الطول والكتلة والزمن، وحدات SI، الكتلة والوزن، والكمية القياسية والمتجهة', 'Length, mass and time, SI units, mass vs weight, scalars vs vectors'),
     tasks:[['sim',T('اجمع قوتين واعمل المحصّلة المطلوبة', 'Add two forces to hit the target resultant')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l2', n:2, file:'lesson-02.html', title:T('السرعة والعجلة', 'Speed and acceleration'),
     sub:T('المسافة والإزاحة، السرعة المتوسطة، العجلة، معادلات الحركة، ومسافة الفرامل', 'Distance vs displacement, average speed, acceleration, the motion equations and braking distance'),
-    tasks:[['sim',T('فرمل العربية تقف على الخط بالظبط', 'Brake the car to stop right on the line')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+    tasks:[['sim',T('فرمل السيارة لتقف على الخط بالضبط', 'Brake the car to stop right on the line')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l3', n:3, file:'lesson-03.html', title:T('السقوط الحر والمقذوفات', 'Free fall and projectiles'),
-    sub:T('الجاذبية g، السقوط من ارتفاع، الحركة الأفقية والرأسية، وأحسن زاوية رمي', 'Gravity g, falling from a height, horizontal and vertical motion, and the best launch angle'),
-    tasks:[['sim',T('ارمي الكورة وصيب الهدف', 'Launch the ball and hit the target')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+    sub:T('الجاذبية g، السقوط من ارتفاع، الحركة الأفقية والرأسية، وأفضل زاوية رمي', 'Gravity g, falling from a height, horizontal and vertical motion, and the best launch angle'),
+    tasks:[['sim',T('ارمِ الكرة وأصب الهدف', 'Launch the ball and hit the target')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l4', n:4, file:'lesson-04.html', title:T('القوة وقوانين نيوتن', 'Force and Newton’s laws'),
     sub:T('القصور الذاتي، F = m·a، الفعل ورد الفعل، والقوة المحصّلة', 'Inertia, F = m·a, action and reaction, and net force'),
-    tasks:[['sim',T('ادفع الصندوق يوصل الخط في 4 ثواني', 'Push the crate to the line in 4 seconds')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+    tasks:[['sim',T('ادفع الصندوق ليصل إلى الخط في 4 ثوانٍ', 'Push the crate to the line in 4 seconds')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l5', n:5, file:'lesson-05.html', title:T('الوزن والاحتكاك والسطح المائل', 'Weight, friction and the ramp'),
     sub:T('الوزن W = m·g، الاحتكاك السكوني والحركي، معامل الاحتكاك، والسطح المائل', 'Weight W = m·g, static and kinetic friction, the friction coefficient and the ramp'),
-    tasks:[['sim',T('لاقي الزاوية اللي الصندوق يبدأ يتزحلق عندها', 'Find the angle where the crate starts to slide')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+    tasks:[['sim',T('جد الزاوية التي يبدأ عندها الصندوق في الانزلاق', 'Find the angle where the crate starts to slide')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l6', n:6, file:'lesson-06.html', title:T('الشغل والطاقة والقدرة', 'Work, energy and power'),
     sub:T('الشغل، طاقة الحركة وطاقة الوضع، حفظ الطاقة، القدرة والكيلووات والحصان', 'Work, kinetic and potential energy, conservation of energy, power, kW and hp'),
-    tasks:[['sim',T('اختار الارتفاع اللي العربية تلف اللوب من غير ما تقع', 'Pick the height so the cart makes the loop')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+    tasks:[['sim',T('اختر الارتفاع الذي تكمل فيه العربة الحلقة دون أن تسقط', 'Pick the height so the cart makes the loop')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l7', n:7, file:'lesson-07.html', title:T('كمية الحركة والتصادم', 'Momentum and collisions'),
-    sub:T('كمية الحركة p = m·v، حفظها في التصادم، التصادم المرن واللازق، والدفع', 'Momentum p = m·v, conservation in a collision, elastic and sticky collisions, impulse'),
-    tasks:[['sim',T('خلّي العربيتين يقفوا بعد الخبطة', 'Make both carts stop after the crash')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+    sub:T('كمية الحركة p = m·v، حفظها في التصادم، التصادم المرن والملتصق، والدفع', 'Momentum p = m·v, conservation in a collision, elastic and sticky collisions, impulse'),
+    tasks:[['sim',T('اجعل العربتين تتوقفان بعد التصادم', 'Make both carts stop after the crash')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l8', n:8, file:'lesson-08.html', title:T('العزم والروافع والاتزان', 'Torque, levers and balance'),
-    sub:T('العزم = القوة × الذراع، المفتاح والرافعة، شرطين الاتزان، ومركز الثقل', 'Torque = force × arm, the wrench and the lever, the two balance conditions, centre of gravity'),
-    tasks:[['sim',T('ظبّط المرجيحة تتزن', 'Balance the seesaw')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+    sub:T('العزم = القوة × الذراع، المفتاح والرافعة، شرطا الاتزان، ومركز الثقل', 'Torque = force × arm, the wrench and the lever, the two balance conditions, centre of gravity'),
+    tasks:[['sim',T('اضبط الأرجوحة لتتزن', 'Balance the seesaw')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l9', n:9, file:'lesson-09.html', title:T('الحركة الدائرية والتروس', 'Rotation and gears'),
-    sub:T('اللفة والـ rpm والسرعة الزاوية، القوة المركزية، التروس والسيور، والقدرة P = T·ω', 'Revolutions, rpm and angular speed, centripetal force, gears and belts, and power P = T·ω'),
-    tasks:[['sim',T('اختار الترس اللي يطلّع السرعة المطلوبة', 'Choose the gear that gives the target speed')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+    sub:T('الدوران والـ rpm والسرعة الزاوية، القوة المركزية، التروس والسيور، والقدرة P = T·ω', 'Revolutions, rpm and angular speed, centripetal force, gears and belts, and power P = T·ω'),
+    tasks:[['sim',T('اختر الترس الذي يعطي السرعة المطلوبة', 'Choose the gear that gives the target speed')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l10', n:10, file:'lesson-10.html', title:T('الضغط والهيدروليك', 'Pressure and hydraulics'),
     sub:T('الضغط = القوة ÷ المساحة، البار والباسكال، ضغط السوائل، قاعدة باسكال والكريك الهيدروليك', 'Pressure = force ÷ area, bar and pascal, liquid pressure, Pascal’s principle and the hydraulic jack'),
-    tasks:[['sim',T('ارفع العربية بإيد واحدة', 'Lift the car with one hand')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
-  {id:'l11', n:11, file:'lesson-11.html', title:T('المشروع: اختار موتور لونش + الامتحان النهائي', 'Project: size a winch motor + final exam'),
-    sub:T('كل اللي اتعلمته في مسألة واحدة: القوة والسرعة والقدرة والعزم والـ rpm، ثم الامتحان النهائي', 'Everything in one job: force, speed, power, torque and rpm, then the final exam'),
-    tasks:[['sim',T('احسب موتور الونش خطوة بخطوة', 'Size the winch motor step by step')],['quiz',T('أسئلة الدرس', 'Lesson questions')],['final',T('الامتحان النهائي', 'Final exam')]]}
+    tasks:[['sim',T('ارفع السيارة بيد واحدة', 'Lift the car with one hand')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+  {id:'l11', n:11, file:'lesson-11.html', title:T('المشروع: اختر محركًا لونش + الامتحان النهائي', 'Project: size a winch motor + final exam'),
+    sub:T('كل ما تعلّمته في مسألة واحدة: القوة والسرعة والقدرة والعزم والـ rpm، ثم الامتحان النهائي', 'Everything in one job: force, speed, power, torque and rpm, then the final exam'),
+    tasks:[['sim',T('احسب محرك الونش خطوة بخطوة', 'Size the winch motor step by step')],['quiz',T('أسئلة الدرس', 'Lesson questions')],['final',T('الامتحان النهائي', 'Final exam')]]}
 ];
 IL.lessonById = id => IL.COURSE.find(l => l.id === id);
 IL.summary = id => { const l = IL.lessonById(id); const done = l.tasks.filter(t => IL.store.has(id + '/' + t[0])).length; return {done, total:l.tasks.length}; };
@@ -87,7 +87,7 @@ const fmt = (v, d) => { const p = Math.pow(10, d); const r = Math.round(v * p) /
 IL.fmt = fmt;
 function shuffle(a){ a = a.slice(); for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 /* answer options: shuffled, but catch-all choices («الاتنين», «ولا واحد», "Both", "None"…) always stay last */
-const QZ_PIN = /^(الاتنين|الاثنين|كلهم|ولا واحد|ولا حاجة|مفيش فرق|مش فارقة|زي بعض|كلهم زي بعض|both|neither|none|all of them|all the same|no difference|it makes no difference)$/i;
+const QZ_PIN = /^(لا فرق|الاثنان|كلاهما|كلاهما صفر|متساويتان|لا شيء|ولا أحد منهما|جميعها|الاتنين|الاثنين|كلهم|ولا واحد|ولا حاجة|مفيش فرق|مش فارقة|زي بعض|كلهم زي بعض|both|neither|none|all of them|all the same|no difference|it makes no difference)$/i;
 function qzOrder(o, keep){ const idx = o.map((_, i) => i); if (keep) return idx; const pin = idx.filter(i => QZ_PIN.test(String(o[i]).replace(/<[^>]*>/g, '').replace(/[⁦-⁩⁠.!]/g, '').trim())); return shuffle(idx.filter(i => !pin.includes(i))).concat(pin); }
 /* Latin / number runs inside an RTL option ("+24V", "0.05 A", "DC−", "حوالي +26 °C") would flip: isolate them as LTR */
 const QZ_LTR = /[+\-−±]?[0-9A-Za-zΩµ°][0-9A-Za-zΩµ°%.,:/·×_\-–−+ ]*[0-9A-Za-zΩµ°%+\-−]|[+\-−±]?[0-9A-Za-zΩµ°]/g;
@@ -145,7 +145,7 @@ IL.hubTheme = () => { const ch = $('header.top .chips'); if (ch) ch.appendChild(
 
 /* ---------------- select, then confirm ----------------
    tapping an option only selects it (.sel); right/wrong shows after the learner presses the check / confirm button */
-const QZ_T = {check:T('صحّح إجاباتي', 'Check my answers'), need:T('جاوب على كل الأسئلة الأول', 'Answer every question first'), cnt:(n, t) => T(`جاوبت ${n} من ${t}`, `Answered ${n} of ${t}`), ok:T('تأكيد', 'Confirm')};
+const QZ_T = {check:T('صحّح إجاباتي', 'Check my answers'), need:T('أجب عن جميع الأسئلة أولًا', 'Answer every question first'), cnt:(n, t) => T(`أجبت عن ${n} من ${t}`, `Answered ${n} of ${t}`), ok:T('تأكيد', 'Confirm')};
 const QZ_CF = () => `<div class="dr-cf"><button type="button" class="btn pri dr-ok" disabled>${QZ_T.ok}</button></div>`;
 function qzSel(box, o){ $$('.qz-o', box).forEach(x => { const on = x === o; x.classList.toggle('sel', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); }); }
 function qzUnsel(box){ $$('.qz-o', box).forEach(x => { x.classList.remove('sel'); x.removeAttribute('aria-pressed'); }); }
@@ -200,7 +200,7 @@ IL.quiz = function(host, qs, opt){
       qzUnsel(box);
       $$('.qz-o', box).forEach(x => { x.disabled = true; const j = +x.dataset.i; if (j === it.q.a) x.classList.add('ok'); else if (j === i) x.classList.add('no'); });
       if (ok) box.classList.add('ok');
-      const f = $('.qz-f', box); f.className = 'qz-f ' + (ok ? 'ok' : 'no'); f.innerHTML = (ok ? T('صح. ', 'Correct. ') : T('مش دي. ', 'Not this one. ')) + (it.q.why || '');
+      const f = $('.qz-f', box); f.className = 'qz-f ' + (ok ? 'ok' : 'no'); f.innerHTML = (ok ? T('صحيح. ', 'Correct. ') : T('ليست هذه. ', 'Not this one. ')) + (it.q.why || '');
     });
     $('.qz-chk', host).hidden = true;
     finish();
@@ -208,7 +208,7 @@ IL.quiz = function(host, qs, opt){
   function finish(){
     const n = ans.filter(Boolean).length, tot = ans.length, ok = n / tot >= pass - 1e-9;
     const sum = $('.qz-sum', host); sum.hidden = false; sum.className = 'qz-sum ' + (ok ? 'ok' : 'no');
-    sum.innerHTML = `<b>${T('نتيجتك', 'Your score')}: ${n} ${T('من', 'of')} ${tot}</b><span>${ok ? T('ممتاز، عدّيت ✓', 'Great, you passed ✓') : T(`محتاج ${Math.ceil(pass * tot - 1e-9)} صح على الأقل. راجع وجرّب تاني.`, `You need at least ${Math.ceil(pass * tot - 1e-9)} right. Review and try again.`)}</span><button type="button" class="btn" data-qz="again">${ok ? T('حل تاني', 'Solve again') : T('جرّب تاني', 'Try again')}</button>`;
+    sum.innerHTML = `<b>${T('نتيجتك', 'Your score')}: ${n} ${T('من', 'of')} ${tot}</b><span>${ok ? T('ممتاز، نجحت ✓', 'Great, you passed ✓') : T(`تحتاج ${Math.ceil(pass * tot - 1e-9)} إجابات صحيحة على الأقل. راجع وجرّب مرة أخرى.`, `You need at least ${Math.ceil(pass * tot - 1e-9)} right. Review and try again.`)}</span><button type="button" class="btn" data-qz="again">${ok ? T('حل آخر', 'Solve again') : T('جرّب مرة أخرى', 'Try again')}</button>`;
     if (ok && opt.lesson) IL.mark(opt.lesson, opt.task || 'quiz');
     if (opt.onDone) opt.onDone(n, tot, ok);
   }
