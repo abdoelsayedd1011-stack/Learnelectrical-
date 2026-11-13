@@ -1,0 +1,1207 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="محاكي وحدة اللحام التلقائي للورق ASU في A3/Speed: تبديل البكر واللصق والإنذارات.">
+<link rel="canonical" href="https://www.learnelectricals.com/a3speed-lab/asu.html">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>A3/Speed ASU Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=Readex+Pro:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* Look: peach reels #fcc5a0 with brown edge #a66828, green rollers #b9d983,
+   steel #99a8a8, yellow photocells #fde900, blue pressure rail #4687c7, orange heating bar #fdb932. Single light look by design. */
+:root{
+  color-scheme: light;
+  --bg:#eef0f1; --sheet:#ffffff; --ink:#040505; --muted:#5d6670; --line:#c9cfd4; --line2:#e2e5e8;
+  --air:#98d8e4; --hot:#ee2643; --steam:#a177b4; --prod:#feea05; --water:#b9d532; --cair:#4687c7; --grey:#dfe0e0;
+  --flow:#2b47b5; --level:#e0242f; --valve:#3b5959; --dnet:#e3232c; --eth:#7bc043; --rs485:#9aa0a6; --sercos:#2b4fa8;
+  --ok:#1d8448; --okbg:#e3f4ea; --alarm:#c41e33; --alarmbg:#fde6e8; --warn:#8a5d00; --warnbg:#fff4c4; --info:#2a5f9e; --infobg:#e3eefa;
+  --gProd:#fffbd6; --gProdH:#e6d200; --gCtl:#e8f0fa; --gCtlH:#2b5fa8; --gLev:#fdedf0; --gLevH:#d61f3a; --gFault:#f2eef8; --gFaultH:#7a5aa8;
+  --f-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Arabic",system-ui,"Segoe UI",Tahoma,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink);margin:0}
+body{font-family:var(--f-body);font-size:15px;line-height:1.6}
+.wrap{direction:rtl;max-width:1400px;margin:0 auto;padding-block:16px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:16px}
+h1{font-family:var(--f-display);font-size:clamp(21px,3vw,30px);margin:0;text-wrap:balance}
+h2{font-family:var(--f-display);font-size:15.5px;margin:0 0 8px;font-weight:700;text-wrap:balance}
+.sub{color:var(--muted);margin:0;font-size:14px;max-width:80ch}
+header{display:grid;gap:4px}
+.en{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-size:.82em;color:#38424b}
+.mono{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-variant-numeric:tabular-nums}
+button,select,input{font-family:var(--f-body);font-size:14px;color:var(--ink)}
+button,select{background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer;touch-action:manipulation}
+button:hover{border-color:#8a96a0}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cair);outline-offset:2px}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.go{background:#1d8448;border-color:#1d8448;color:#fff;font-weight:700}
+button.stop{background:#c41e33;border-color:#c41e33;color:#fff;font-weight:700}
+button.amber{background:#fdf3c2;border-color:#d8b44a;color:#5e4200;font-weight:600}
+button.on{border-color:var(--alarm);color:var(--alarm);background:var(--alarmbg);font-weight:600}
+button.sel{background:var(--ink);color:#fff;border-color:var(--ink)}
+.note{font-size:12.5px;color:var(--muted)}
+.simp{font-size:12px;color:var(--warn);background:var(--warnbg);border:1px dashed #d8b44a;border-radius:6px;padding:0 7px;display:inline-block}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+.group{border-radius:16px;padding:0 0 14px;border:1px solid var(--line);overflow:hidden}
+.group>.gh{display:flex;align-items:center;gap:10px;padding:9px 16px;color:#fff;font-family:var(--f-display);font-weight:700;font-size:16px}
+.group>.gh .gn{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.28);font-family:var(--f-mono);font-size:14px}
+.group>.gb{padding:14px 14px 0;display:grid;gap:12px}
+.g-prod{background:var(--gProd)} .g-prod>.gh{background:var(--gProdH);color:var(--ink)} .g-prod>.gh .gn{background:rgba(0,0,0,.12)}
+.g-ctl{background:var(--gCtl)} .g-ctl>.gh{background:var(--gCtlH)}
+.g-lev{background:var(--gLev)} .g-lev>.gh{background:var(--gLevH)}
+.g-fault{background:var(--gFault)} .g-fault>.gh{background:var(--gFaultH)}
+.card{background:var(--sheet);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0;box-shadow:0 1px 2px rgba(20,30,40,.05)}
+.cols{display:grid;gap:12px;align-items:start}
+.c2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.c21{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}
+@media (max-width:1050px){.c3{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.c21{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:720px){.c2,.c3{grid-template-columns:minmax(0,1fr)}}
+
+.strip{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center;background:var(--sheet);border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:0 1px 3px rgba(20,30,40,.06)}
+@media (max-width:900px){.strip{grid-template-columns:minmax(0,1fr)}}
+.value{width:112px;height:94px;border-radius:14px;background:#10161b;border:3px solid var(--level);display:grid;place-items:center;align-content:center;font-family:var(--f-mono);font-size:36px;font-weight:700;color:var(--prod);direction:ltr;line-height:1}
+.value small{display:block;font-size:10.5px;color:#b9c3cb;margin-top:6px;font-weight:500;text-align:center;font-family:var(--f-body)}
+.value.bad{border-color:var(--alarm);animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{border-color:#10161b}}
+@media (prefers-reduced-motion:reduce){.value.bad{animation:none}}
+.state{font-family:var(--f-display);font-size:clamp(18px,2.4vw,24px);font-weight:700;line-height:1.3}
+.state .en{font-size:.6em;color:var(--muted);margin-inline-start:6px}
+.msg{font-size:14.5px;min-height:2.4em;text-wrap:pretty}
+.ctrls{display:grid;gap:8px;min-width:0}
+.ctrls .row button{padding:9px 14px}
+.kv{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:8px}
+@media (max-width:900px){.kv{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.kv div{background:#f6f8f9;border:1px solid var(--line2);border-inline-start:5px solid var(--c,#9aa5ae);border-radius:8px;padding:4px 8px;min-width:0}
+.kv b{display:block;font-family:var(--f-mono);font-size:17px;direction:ltr;text-align:right;font-variant-numeric:tabular-nums}
+.kv span{font-size:11.5px;color:var(--muted)}
+.kv div.badv{background:var(--alarmbg);border-color:#f2b8bd}.kv div.badv b{color:var(--alarm)}
+
+canvas{display:block;width:100%;max-width:100%;border-radius:10px;background:#fff}
+.scrollx{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px;border:1px solid var(--line2)}
+.scrollx canvas{min-width:640px}
+#cvDia{aspect-ratio:1000/620}
+#cvTrend{height:240px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:16px;height:9px;border-radius:2px;margin-inline-end:5px;vertical-align:0;border:1px solid #333}
+.legend i.ln{height:3px;border:0;vertical-align:3px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font-size:12.5px;padding:3px 9px}
+.chips button .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-inline-end:5px;vertical-align:-1px;border:1px solid rgba(0,0,0,.3)}
+.chips button.off{opacity:.4}
+
+.ladder{display:grid;gap:4px;font-size:13px}
+.ladder div{display:grid;grid-template-columns:24px minmax(0,1fr);gap:8px;align-items:start;padding:5px 8px;border-radius:8px;border:1px solid transparent;background:#f6f8f9}
+.ladder div b{font-family:var(--f-mono);font-size:12px;color:var(--muted);text-align:center;padding-top:1px}
+.ladder div span small{display:block;color:var(--muted);font-size:11.5px;line-height:1.4}
+.ladder div.cur{background:#fff8bf;border-color:#d9c300;box-shadow:0 0 0 2px var(--prod) inset}
+
+.lamps{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px}
+.lamp{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 7px;align-items:center;background:#f6f8f9;border:1px solid var(--line2);border-radius:8px;padding:4px 8px;font-size:12.5px;min-width:0}
+.lamp i{grid-row:span 2;flex:none;width:12px;height:12px;border-radius:50%;background:#d5dbe0;border:1px solid #9aa5ae}
+.lamp.on i{background:#2fbf63;border-color:#1d8448;box-shadow:0 0 6px #2fbf63}
+.lamp.bad i{background:var(--hot);border-color:#a3101d;box-shadow:0 0 6px var(--hot)}
+.lamp b{font-family:var(--f-mono);font-size:10.5px;direction:ltr;text-align:right;color:#38424b;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lamp span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+
+
+.set{display:grid;gap:8px}
+.set label{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;font-size:13px;align-items:center}
+.set label input[type=range]{direction:ltr;grid-column:1/-1;width:100%;accent-color:var(--cair)}
+.set label output{font-family:var(--f-mono);font-weight:600;direction:ltr}
+
+.alist{display:grid;gap:5px}
+.alarm{border-radius:8px;padding:5px 9px;font-size:13px;border:1px solid;display:grid;gap:1px}
+.alarm .en{font-size:10px;color:inherit;opacity:.85;word-break:break-all}
+.alarm.Y{background:var(--warnbg);border-color:#e7c85a;color:#5e4200}
+.alarm.B{background:var(--infobg);border-color:#9cc0ea;color:#123e72}
+.alarm.ack{opacity:.65}
+.empty{color:var(--muted);font-size:13px}
+.atable{width:100%;border-collapse:collapse;font-size:12.5px}
+.atable th,.atable td{border-bottom:1px solid var(--line2);padding:4px 6px;text-align:right;vertical-align:top}
+.atable th{color:var(--muted);font-weight:600;font-size:12px}
+.atable td.m{font-family:var(--f-mono);direction:ltr;text-align:left;white-space:nowrap}
+.tblwrap{overflow-x:auto}
+.faults{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
+.faults button{text-align:right;font-size:13px;line-height:1.35;padding:7px 10px}
+.faults button small{display:block;color:var(--muted);font-size:11.5px}
+.log{max-height:240px;overflow:auto;font-size:12.5px;display:grid;gap:3px;align-content:start}
+.log div{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:baseline;border-bottom:1px solid var(--line2);padding-bottom:2px}
+.log .t{font-family:var(--f-mono);color:var(--muted);font-size:11px;direction:ltr}
+.sev-Y{color:#7a5600}.sev-B{color:var(--info)}.sev-i{color:var(--muted)}.sev-ok{color:var(--ok)}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;margin-top:8px}
+.opts button{text-align:right}
+.opts button.right{border-color:var(--ok);color:var(--ok);background:var(--okbg);font-weight:700}
+.opts button.wrong{border-color:var(--alarm);color:var(--alarm);background:var(--alarmbg)}
+.banner{border-radius:10px;padding:8px 12px;font-size:14px;font-weight:600;background:var(--alarmbg);color:var(--alarm);border:1px solid #f2b8bd}
+.hidden{display:none!important}
+.phone-only{display:none}
+@media (max-width:700px){.phone-only{display:block}}
+.tagtbl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 10px;font-size:12.5px;margin-top:6px}
+.tagtbl code{font-family:var(--f-mono);direction:ltr;text-align:left;background:#fffbd6;border:1px solid #e6d200;border-radius:4px;padding:0 5px;font-size:11.5px}
+
+:root{
+  --reel:#fcc5a0; --reelE:#a66828; --roll:#b9d983; --rollD:#76c044; --steel:#99a8a8; --pc:#fde900; --rail:#4687c7; --heat:#fdb932; --refl:#bee7fb; --olive:#75923b; --pink:#e9a2c8;
+  --gDia:#f1f8e6; --gDiaH:#6f9a2c; --gSeal:#fff1e7; --gSealH:#b5651d; --gMag:#e8f0fa; --gMagH:#2b5fa8;
+}
+.g-dia{background:var(--gDia)} .g-dia>.gh{background:var(--gDiaH)}
+.g-seal{background:var(--gSeal)} .g-seal>.gh{background:var(--gSealH)}
+.g-mag{background:var(--gMag)} .g-mag>.gh{background:var(--gMagH)}
+.value{border-color:var(--reelE);color:var(--reel)}
+#cvDia{aspect-ratio:1000/600}
+#cvTime{height:410px}
+#cvTrend{height:240px}
+.ladder div.cur{background:#eef7dc;border-color:var(--rollD);box-shadow:0 0 0 2px var(--roll) inset}
+.ladder div.done{opacity:.6}
+.ladder .sub{margin-inline-start:18px;background:#fbfcf8}
+.ladder div.bad{background:var(--alarmbg);border-color:#f2b8bd}
+.bar{position:relative;height:20px;border-radius:10px;border:1px solid #888;background:#f3f5f6;overflow:hidden;direction:ltr}
+.bar>i{position:absolute;top:0;bottom:0;left:0;background:var(--heat);transition:width .2s}
+.bar>b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink)}
+.big{font-family:var(--f-mono);font-size:28px;font-weight:700;direction:ltr;unicode-bidi:isolate;line-height:1.1}
+.marks{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;align-items:center;font-size:12.5px}
+.mrow{display:flex;gap:3px;direction:ltr;overflow:hidden;height:16px}
+.mrow i{flex:none;width:7px;height:16px;border:1px solid #333;background:#040505;border-radius:1px}
+.mrow i.miss{background:#fff;border-style:dashed}
+.mrow i.extra{background:var(--rail)}
+.acc{position:relative;height:26px;border-radius:6px;border:1px solid #888;background:#fff;direction:ltr;overflow:hidden;margin-top:4px}
+.acc .zb{position:absolute;top:0;bottom:0;background:#dbe8f8}
+.acc .zy{position:absolute;top:0;bottom:0;background:#fff3b0}
+.acc .k{position:absolute;top:2px;bottom:2px;width:6px;border-radius:2px;background:var(--ink);transition:left .2s}
+.acc .c0{position:absolute;top:0;bottom:0;width:1px;background:#555}
+.accl{position:relative;height:16px;direction:ltr;font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+.accl span{position:absolute;transform:translateX(-50%);top:1px}
+.accl span:first-child{transform:none}.accl span:last-child{transform:translateX(-100%)}
+.result{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:6px}
+.result div{background:#f6f8f9;border:1px solid var(--line2);border-radius:8px;padding:4px 8px;font-size:12px;color:var(--muted)}
+.result b{display:block;font-family:var(--f-mono);font-size:16px;color:var(--ink);direction:ltr;text-align:right}
+.result div.badv{background:var(--alarmbg);border-color:#f2b8bd}.result div.badv b{color:var(--alarm)}
+.result div.okv{background:var(--okbg);border-color:#a8dcbb}
+@media (max-width:600px){.result{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.srv{position:relative;height:46px;border:1px solid #888;border-radius:8px;background:#fff;direction:ltr;margin-top:4px}
+.srv .w{position:absolute;top:0;bottom:0;background:#e6f3d6;border-inline:1px dashed var(--rollD)}
+.srv .h{position:absolute;top:6px;bottom:6px;width:38px;margin-left:-19px;border-radius:6px;background:var(--roll);border:2px solid #040505;transition:left .05s linear}
+.srv span{position:absolute;bottom:-18px;font-family:var(--f-mono);font-size:10.5px;color:var(--muted);transform:translateX(-50%)}
+.tagtbl code{background:#fffbd6}
+.banner.info{background:var(--infobg);color:var(--info);border-color:#9cc0ea}
+
+/* compact console layout: diagram + its readings, controls, alarms in one view */
+.wrap{gap:10px;padding-block:12px 32px}
+.card{padding:10px 12px}
+h2{margin:0 0 6px}
+.console{display:grid;grid-template-columns:minmax(0,2.5fr) minmax(290px,1fr);gap:10px;align-items:start}
+@media (max-width:1000px){.console{grid-template-columns:minmax(0,1fr)}}
+.side{display:grid;gap:10px;align-content:start;min-width:0}
+.dia{display:grid;gap:8px;min-width:0}
+.dia .kv{grid-template-columns:repeat(7,minmax(0,1fr));margin:0}
+@media (max-width:900px){.dia .kv{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:480px){.dia .kv{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kv div.badv{background:var(--alarmbg)}
+.stat{display:grid;gap:7px}
+.stat .state{font-size:19px}
+.stat .msg{font-size:13.5px;min-height:0}
+.stat .row button{padding:7px 10px}
+.steps{display:flex;flex-wrap:wrap;gap:4px}
+.steps div{padding:1px 9px;border-radius:12px;border:1px solid var(--line);background:#f6f8f9;font-size:12px;color:var(--muted)}
+.steps div b,.steps div small{display:none}
+.steps div:not(.sub){font-family:var(--f-mono);font-weight:600;color:var(--ink)}
+.steps div.cur{background:#eef7dc;border-color:#6f9a2c;color:var(--ink);font-weight:700;box-shadow:0 0 0 1px #6f9a2c inset}
+.steps div.bad.cur{background:var(--alarmbg);border-color:#c41e33}
+.side .result{grid-template-columns:repeat(2,minmax(0,1fr))}
+.side .log{max-height:150px}
+.c4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:1200px){.c4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.c4{grid-template-columns:minmax(0,1fr)}}
+.lamps{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px}
+.lamp{padding:3px 7px;font-size:12px}
+.faults{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:5px}
+.faults button{padding:5px 9px}
+#cvTrend{height:200px}
+details summary{cursor:pointer;list-style-position:inside}
+details[open] summary{margin-bottom:6px}
+
+/* Old look: dark control-room HMI (single dark look by design), English, LTR */
+:root{color-scheme:dark;
+  --bg:#0c1215; --sheet:#131b1f; --ink:#e3ece9; --muted:#8fa4a0; --line:#26353d; --line2:#22303a;
+  --ok:#5fd08b; --okbg:#173023; --alarm:#ff5d50; --alarmbg:#2a1715; --warn:#ffc629; --warnbg:#2d2610; --info:#55b6ea; --infobg:#12263a;
+  --gSealH:#e9a640; --gMagH:#55b6ea; --gFaultH:#c792ea;
+  --f-display:"Readex Pro","IBM Plex Sans",system-ui,sans-serif; --f-body:"IBM Plex Sans","IBM Plex Sans Arabic",system-ui,"Segoe UI",sans-serif;}
+html,body{background:var(--bg);color:var(--ink)}
+.wrap{direction:ltr}
+.card{background:var(--sheet);border-color:var(--line);box-shadow:none}
+.en{color:#bcd0cb}
+button,select{background:#19232a;border-color:var(--line);color:var(--ink)}
+button:hover{border-color:var(--muted)}
+button.go{background:#1d8448;border-color:#2aa35e;color:#fff}
+button.stop{background:#8f1f1f;border-color:#c43a3a;color:#fff}
+button.amber{background:#3a2c0c;border-color:#e9a640;color:#ffd58a}
+button.sel{background:#e9a640;color:#1b1206;border-color:#e9a640}
+button.on{background:var(--alarmbg);border-color:var(--alarm);color:#ffb3ab}
+.kv div,.lamp,.result div{background:#19232a;border-color:var(--line2)}
+.kv b,.result b,.lamp b{text-align:left;color:var(--ink)}
+.lamp b{color:#8fa4a0}
+.kv div.badv,.result div.badv{background:var(--alarmbg);border-color:#6b3430}
+.result div.okv{background:var(--okbg);border-color:#2f5d40}
+.lamp i{background:#2a363d;border-color:#3d4c55}
+.steps div{background:#19232a;border-color:var(--line);color:var(--muted)}
+.steps div:not(.sub){color:var(--ink)}
+.steps div.cur{background:#1f2e22;border-color:#8fd14f;box-shadow:0 0 0 1px #8fd14f inset;color:#fff}
+.steps div.bad.cur{background:var(--alarmbg);border-color:var(--alarm)}
+.alarm.Y{background:#2d2610;border-color:#7a6418;color:#ffd96b}
+.alarm.B{background:#12263a;border-color:#2c5578;color:#9fd3f5}
+.banner{background:var(--alarmbg);color:#ffb3ab;border-color:#6b3430}
+.banner.info{background:var(--infobg);color:#9fd3f5;border-color:#2c5578}
+.simp{background:#2d2610;color:#ffd96b;border-color:#7a6418}
+.sev-Y{color:#ffd96b}.sev-B{color:#9fd3f5}.sev-ok{color:#5fd08b}
+.faults button,.opts button,.atable th,.atable td{text-align:left}
+.opts button.right{background:var(--okbg);border-color:var(--ok);color:var(--ok)}
+.opts button.wrong{background:var(--alarmbg);border-color:var(--alarm);color:var(--alarm)}
+.bar{background:#19232a;border-color:var(--line)}
+.bar>b{background:#fff}
+.srv,.acc{background:#19232a;border-color:var(--line)}
+.srv .w{background:#1f2e22}
+.acc .zb{background:#12263a}.acc .zy{background:#3a3110}.acc .k{background:#fff}.acc .c0{background:#8fa4a0}
+.mrow i{background:#d9cfb4;border-color:#8fa4a0}
+.mrow i.miss{background:transparent;border-color:#ff5d50}
+.mrow i.extra{background:#55b6ea}
+canvas{background:#131b1f}
+.scrollx{border-color:var(--line)}
+.atable th,.atable td{border-bottom-color:var(--line2)}
+.log div{border-bottom-color:var(--line2)}
+.chips button.off{opacity:.35}
+.hcwrap{margin-top:8px}
+.hchead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px}
+.hchead h2{margin:0}
+.hchead .row{gap:4px}.hchead button{padding:5px 9px;font-size:13px}
+#bPause.on{background:#c0392b;border-color:#c0392b;color:#fff}
+</style>
+</head>
+<body>
+<nav aria-label="تنقل" style="direction:rtl;display:flex;flex-wrap:wrap;gap:8px;max-width:1400px;margin:0 auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 0;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:14px"><a href="/a3speed-lab/" style="color:#1f5a96;text-decoration:none;font-weight:600;padding:4px 10px;border:1px solid #c5c5c5;border-radius:8px;background:#fff">← كل محاكيات A3/Speed</a></nav>
+<div class="wrap" dir="ltr" lang="en">
+<header>
+  <h1>ASU Automatic Splicing Unit Simulator <span class="en">Tetra Pak A3/Speed</span></h1>
+  <p class="sub">When the reel runs out, the ASU splices the end of the old web to the start of the prepared reel while the machine keeps running from the web magazine. Press "Start production", then "Near reel end".</p>
+</header>
+
+<section class="console">
+  <div class="card dia">
+    <div class="steps" id="ladder"></div>
+    <div class="scrollx"><canvas id="cvDia" width="1000" height="600" role="img" aria-label="Animated view of the two reels, splice head, driven bending roller, loop and web magazine"></canvas></div>
+    <div class="hcwrap">
+      <div class="hchead">
+        <h2>Splice head close-up</h2>
+        <div class="row" role="group" aria-label="Slow motion during splice">
+          <span class="note">Slow motion while splicing:</span>
+          <button data-slow="0" class="sel">Off</button><button data-slow="0.25">×0.25</button><button data-slow="0.1">×0.1</button><button data-slow="0.04">×0.04</button>
+          <button id="bPause">Pause</button>
+        </div>
+      </div>
+      <div class="scrollx"><canvas id="cvHead" width="1000" height="380" role="img" aria-label="Enlarged splice head with every part named and its state"></canvas></div>
+    </div>
+    <div class="kv">
+      <div style="--c:#a66828"><span>Magazine web (m)</span><b id="vMag">0</b></div>
+      <div style="--c:var(--reelE)"><span>Reel left (m)</span><b id="kR">0</b></div>
+      <div style="--c:#8fa4a0"><span>Web speed (m/s)</span><b id="kV">0</b></div>
+      <div style="--c:var(--rollD)"><span>Loop motor (mm/s)</span><b id="kL">0</b></div>
+      <div style="--c:var(--rail)"><span>Magazine motor (mm/s)</span><b id="kM">0</b></div>
+      <div style="--c:var(--heat)"><span>CH bar °C</span><b id="kT">0</b></div>
+      <div style="--c:var(--ok)"><span>Good splices</span><b id="kS">0</b></div>
+    </div>
+    <div class="banner hidden" id="banner"></div>
+    <p class="note" style="margin:0"><span class="simp">Training simplification: the sideways head travel is drawn left-right, and reel length is shortened.</span> <span class="phone-only">Swipe the drawing sideways.</span></p>
+  </div>
+  <div class="side">
+    <div class="card stat">
+      <div class="state" id="stTitle">Machine stopped</div>
+      <div class="msg" id="stMsg"></div>
+      <div class="row">
+        <button class="go" id="bStart">Start production</button>
+        <button class="stop" id="bStop">Stop</button>
+        <button id="bReset">Reset</button>
+      </div>
+      <div class="row">
+        <button class="amber" id="bNear">Near reel end</button>
+        <button id="bSplice">Manual splice</button>
+        <button id="bPrep">Prepare new reel</button>
+      </div>
+      <div class="row hidden" id="forceRow"><button class="amber" id="bForce">Forced manual splice (out of design)</button></div>
+      <div class="row" role="group" aria-label="Simulation speed">
+        <span class="note">Speed:</span>
+        <button data-sp="1" class="sel">×1</button><button data-sp="2">×2</button><button data-sp="5">×5</button><button data-sp="10">×10</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Alarms</h2>
+      <div class="alist" id="alist"><div class="empty">No alarms.</div></div>
+    </div>
+    <div class="card">
+      <h2>Last splice</h2>
+      <div class="result" id="res"></div>
+    </div>
+    <div class="card">
+      <h2>Event log</h2>
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+</section>
+
+<section class="cols c2">
+  <div class="card" style="border-top:4px solid var(--gSealH)">
+    <h2>Splice timing diagram <span class="note">(ms from splice request)</span></h2>
+    <div class="scrollx"><canvas id="cvTime" width="900" height="410" role="img" aria-label="Splice signal timing diagram"></canvas></div>
+  </div>
+  <div class="card" style="border-top:4px solid var(--gMagH)">
+    <h2>Speeds and magazine (last 90 s)</h2>
+    <div class="chips" id="chips"></div>
+    <canvas id="cvTrend" width="900" height="200" role="img" aria-label="Trend of speeds and magazine content"></canvas>
+    <p class="note" style="margin:4px 0 0">Green band = splice: both ASU motors stop and the machine empties the magazine. Afterwards the magazine motor runs at ×1.1, +0.06 every 0.5 s, until the magazine is full.</p>
+    <h2 style="margin-top:8px">Virtual register marks</h2>
+    <div class="marks">
+      <span>Encoder</span><div class="mrow" id="mrV"></div>
+      <span>Photocell</span><div class="mrow" id="mrA"></div>
+    </div>
+    <div class="row" style="justify-content:space-between;margin-top:4px"><span class="note">Accumulated faults (blue at +2 or −2, yellow at +12)</span><b class="mono" id="accN">0</b></div>
+    <div class="acc" id="acc">
+      <div class="zb" style="left:0;width:43.3%"></div>
+      <div class="zb" style="left:56.7%;width:33.3%"></div>
+      <div class="zy" style="left:90%;right:0"></div>
+      <div class="c0" style="left:50%"></div>
+      <div class="k" id="accK" style="left:50%"></div>
+    </div>
+    <div class="accl"><span style="left:0">−15</span><span style="left:43.3%">−2</span><span style="left:50%">0</span><span style="left:56.7%">+2</span><span style="left:90%">+12</span><span style="left:100%">+15</span></div>
+  </div>
+</section>
+
+<section class="cols c4">
+  <div class="card" style="border-top:4px solid var(--heat)">
+    <h2>Constant heat (CH) bar</h2>
+    <div class="row" style="justify-content:space-between;align-items:end">
+      <div><span class="note">Actual</span><div class="big" id="chT" style="color:var(--heat)">170.0 °C</div></div>
+      <div><span class="note">Setpoint</span><div class="big" id="chSP" style="font-size:18px">170 °C</div></div>
+    </div>
+    <span class="note">Heater power (max steady 65 W)</span><div class="bar"><i id="chU" style="width:50%"></i></div>
+    <span class="note">Window ±3 °C</span>
+    <div class="bar" id="chWin"><b id="chK" style="left:50%"></b></div>
+    <div class="row" style="justify-content:space-between;font-family:var(--f-mono);font-size:10.5px;color:var(--muted)"><span id="chLo">162</span><span id="chMid">170</span><span id="chHi">178</span></div>
+    <p class="note" style="margin:2px 0 0">Outside ±3 = blue warning; at splice = yellow alarm and the splice is cancelled. <span class="en">PID KP 50, KI 1 s, KD 0.5 s</span></p>
+  </div>
+  <div class="card" style="border-top:4px solid var(--rollD)">
+    <h2>Splice head servo</h2>
+    <div class="row" style="justify-content:space-between;align-items:end">
+      <div><span class="note">Position</span><div class="big" id="svPos">0 mm</div></div>
+      <div><span class="note">Station</span><div class="big" id="svSt" style="font-size:18px">1</div></div>
+    </div>
+    <div class="srv" id="srv">
+      <div class="w" style="left:0%;width:2%"></div><div class="w" style="left:97.2%;width:2%"></div>
+      <div class="h" id="svH" style="left:1%"></div>
+      <span style="left:1%">0</span><span style="left:50%">246</span><span style="left:98%">492</span>
+    </div>
+    <p class="note" style="margin:22px 0 0">Station 1 = <b class="mono">0</b> mm, station 2 = <b class="mono">492</b> mm (±4). <b class="mono">1200</b> mm/s, about <b class="mono">0.65</b> s. Position error above <b class="mono">7</b> mm = servo fault.</p>
+  </div>
+  <div class="card" style="border-top:4px solid var(--reelE)">
+    <h2>Settings</h2>
+    <div class="set">
+      <div class="row">
+        <select id="selPk" aria-label="Package">
+          <option value="125S">TBA 125 Slim</option><option value="200B">TBA 200 Base</option>
+          <option value="200S">TBA 200 Slim</option><option value="250B" selected>TBA 250 Base</option>
+        </select>
+        <select id="selCap" aria-label="Capacity"><option value="16000">16000 p/h</option><option value="20000">20000 p/h</option><option value="24000" selected>24000 p/h</option></select>
+      </div>
+      <label>CH bar temperature °C <output id="oT">170</output><input type="range" id="rT" min="110" max="220" step="1" value="170"></label>
+      <label>Sealing time (ms) <output id="oST">2500</output><input type="range" id="rST" min="1000" max="4000" step="100" value="2500"></label>
+      <label>Stop position offset, TPOP (mm) <output id="oOff">0</output><input type="range" id="rOff" min="-20" max="20" step="0.5" value="0"></label>
+      <div class="row"><button id="bDef">Program defaults</button></div>
+      <p class="note" id="pkTxt" style="margin:0"></p>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Program signals</h2>
+    <div class="lamps" id="lamps"></div>
+  </div>
+</section>
+
+<section class="cols c21">
+  <div class="card" style="border-top:4px solid var(--gFaultH)">
+    <h2>Inject a fault <span class="note">(tap to switch on, tap again to clear; most show up at the splice)</span></h2>
+    <div class="faults" id="faults"></div>
+    <div class="row" style="margin-top:6px"><button id="bClr">Clear all faults</button></div>
+  </div>
+  <div class="card" style="border-top:4px solid var(--gFaultH)">
+    <h2>Challenge: find the fault</h2>
+    <p class="note" style="margin:0 0 6px">The simulator starts production, brings the reel near its end and hides one fault. Watch the drawing and alarms, then pick the cause.</p>
+    <div class="row"><button class="go" id="bCh">New challenge</button><span class="note" id="chScore">Score: 0 of 0</span></div>
+    <div id="chBox" class="hidden">
+      <p id="chQ" style="margin:8px 0 0;font-weight:600"></p>
+      <div class="opts" id="chOpts"></div>
+      <p id="chAns" class="note" style="margin:6px 0 0"></p>
+    </div>
+  </div>
+</section>
+
+<details class="card">
+  <summary><b>All alarms and their timing</b> <span class="note">(blue = warning, yellow = normal stop, loop or magazine empty = fast stop)</span></summary>
+  <div class="tblwrap"><table class="atable" id="atable"></table></div>
+</details>
+</div>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+/* ---------- program values (A3/Speed ASU program) ---------- */
+const L=185;                       // repeat length mm (training simplification)
+const PK={
+ '125S':{n:'TBA 125 Slim',off:-39,T:160,acc:5.0},
+ '200B':{n:'TBA 200 Base',off:-20.5,T:165,acc:3.0},
+ '200S':{n:'TBA 200 Slim',off:-24,T:170,acc:2.0},
+ '250B':{n:'TBA 250 Base',off:-22.2,T:170,acc:1.5}};
+const P1_PR=50,P1_CUT=200,P1_END=600,P1_TOT=1000;     // TMR_SplicePart1
+const PRESS_DLY=100,UNSTICK=250,SLW=1800;             // TMR_SplicePart2 pieces
+const SLOW=200;                                        // PAR_ASUMotorsSlwSpeedSplice mm/s
+const HZ=17.95;                                        // loop motor mm/s per Hz
+const POS2=492,SRV_V=1200,SRV_A=5000;                  // sealing head servo
+const MAGCAP=16,MAGFULL=13,MAGEMPTY=1.0,LOOPCAP=1.25,LOOPADJ=0.6,LOOPEMPTY=0.12,REELFULL=300,FIXED=3;
+const RMAX=92,RCORE=30,BEAM=33;
+
+/* ---------- state ---------- */
+let set={pk:'250B',cap:24000,T:170,st:2500,off:0};
+let F={};const FDEF=[
+ {k:'reelPC',t:'Reel-end photocell blind',s:'T10B1240 / T10B1250 dirty or faulty'},
+ {k:'notPrep',t:'New reel not prepared',s:'operator did not set the web start in the head'},
+ {k:'air',t:'Low ASU air pressure',s:'DI_AsuAirPressure'},
+ {k:'heater',t:'Sealing bar heater dead',s:'DO_PaperSpliceHeaterPower on but no heat'},
+ {k:'regPC',t:'Register-mark photocell dirty',s:'A01K5200: marks get lost'},
+ {k:'enc',t:'Loop encoder broken',s:'AXI_ASULoopEncoder not counting'},
+ {k:'servo',t:'Splice head servo fault',s:'T50M9020 / Kinetix 6000'},
+ {k:'knife',t:'Knife did not cut',s:'cutting cylinder T10K1631 weak'},
+ {k:'fqL',t:'Loop motor inverter fault',s:'FQ_AsuLoop Fault'},
+ {k:'fqM',t:'Magazine motor inverter fault',s:'FQ_AsuMagazine Fault'},
+ {k:'magS',t:'Magazine adjust sensor stuck at "full"',s:'DI_AsuMagazineAdjustment'},
+ {k:'loopS',t:'Loop adjust sensor stuck at "low"',s:'DI_AsuLoopAdjustment'},
+ {k:'door',t:'ASU door open',s:'DI_L1081'},
+ {k:'hold',t:'Material holder not in place',s:'DI_SpliceTable1/2Position'}];
+const ADEF=[
+ {k:'notPrepY',n:'ALR_ASU_YO_PackMtrlEndSpliceNotPrepared',c:'Y',a:'Material end, new reel not prepared',w:'at the splice stop',e:'Normal stop + splice cancelled'},
+ {k:'notPrepB',n:'ALR_ASU_BO_PackMtrlNotPrepared',c:'B',a:'New reel not prepared yet',w:'while the other station is not ready',e:'Warning, prepare it before the reel ends'},
+ {k:'airY',n:'ALR_ASU_YE_PackMtrlEndAirPressureNotOK',c:'Y',a:'Air pressure not OK at splice',w:'at the splice stop',e:'Normal stop + splice cancelled'},
+ {k:'airB',n:'ALR_ASU_BO_MainAirSupply',c:'B',a:'ASU main air supply low',w:'while the web is pulled',e:'Warning'},
+ {k:'chY',n:'ALR_ASU_YE_PackMtrlEndCHBarTempNotOK',c:'Y',a:'Sealing bar temperature not OK at splice',w:'outside ±3 °C at the splice stop',e:'Normal stop + splice cancelled'},
+ {k:'chB',n:'ALR_ASU_BE_CHBarTempNotOk',c:'B',a:'Sealing bar temperature outside window',w:'outside ±3 °C',e:'Warning'},
+ {k:'doorY',n:'ALR_ASU_YO_PackMtrlEndDoorOpen',c:'Y',a:'Door open at splice',w:'at the splice stop',e:'Normal stop + splice cancelled'},
+ {k:'doorB',n:'ALR_ASU_BO_RunDoorsOpen',c:'B',a:'ASU door open while running',w:'after 90 s',e:'Warning + hooter'},
+ {k:'holdY',n:'ALR_ASU_YO_PackMtrlEndMatHoldNotInPlace',c:'Y',a:'Material holder not in place at splice',w:'at the splice stop',e:'Normal stop + splice cancelled'},
+ {k:'holdB',n:'ALR_ASU_BO_MaterialHoldersNotInPlace',c:'B',a:'Material holder not in place',w:'immediately',e:'Warning'},
+ {k:'intr',n:'ALR_ASU_YE_SpliceSequenceInterrupted',c:'Y',a:'Splice sequence interrupted',w:'any condition above, or splice longer than 30 s',e:'Normal stop'},
+ {k:'regB',n:'ALR_ASU_BE_BarCodePhotocells',c:'B',a:'Register-mark photocell losing marks',w:'accumulated faults = 2',e:'Warning'},
+ {k:'regY',n:'ALR_ASU_YE_BarCodePhotocells',c:'Y',a:'Register-mark photocell not reading',w:'accumulated faults = 12',e:'Normal stop'},
+ {k:'encB',n:'ALR_ASU_BE_LoopEncoderFault',c:'B',a:'Loop encoder fault',w:'accumulated faults = −2',e:'Warning + automatic splice blocked'},
+ {k:'servo',n:'ALR_ASU_YE_SealingHeadServoFault',c:'Y',a:'Splice head servo fault',w:'immediate (position error > 7 mm or drive fault)',e:'Normal stop'},
+ {k:'fqL',n:'ALR_ASU_YE_FqLoopError',c:'Y',a:'Loop motor inverter fault',w:'immediate',e:'Normal stop'},
+ {k:'fqM',n:'ALR_ASU_YE_FqMagazineError',c:'Y',a:'Magazine motor inverter fault',w:'immediate',e:'Normal stop'},
+ {k:'lReg',n:'ALR_ASU_YE_LoopRegTout',c:'Y',a:'Loop regulation timeout',w:'loop adjust sensor unchanged 10 s',e:'Normal stop'},
+ {k:'mReg',n:'ALR_ASU_YE_MagazineRegTout',c:'Y',a:'Magazine regulation timeout',w:'magazine adjust sensor unchanged 8 s',e:'Normal stop'},
+ {k:'lEmpty',n:'ALR_ASU_YE_LoopEmpty',c:'Y',a:'Loop empty',w:'loop-empty sensor 0.7 s',e:'Fast stop'},
+ {k:'mEmpty',n:'ALR_ASU_YE_MagazineEmpty',c:'Y',a:'Magazine empty',w:'immediate',e:'Fast stop'},
+ {k:'magNF',n:'ALR_ASU_BO_MagazineNotFullWhenSpliceReq',c:'B',a:'Manual splice requested, magazine not full',w:'at the request',e:'request refused'}];
+const FAST=new Set(['lEmpty','mEmpty']);
+let S,AL,rec=null,lastRec=null,hist=[],simSp=1,slowSp=0,paused=false,ch={on:false,n:0,ok:0,f:null,ans:false};
+function fresh(){
+  S={t:0,run:false,v:0,vT:0,stopMode:null,vL:0,vM:0,M:13.0,Lp:0.6,R:[150,REELFULL],prep:[true,true],act:0,
+     hx:0,hv:0,P:0,enc:0,acc:0,okRun:0,marks:[],markFlash:0,missFlash:0,
+     seq:'idle',ph:null,pt:0,spT:0,spl:null,refill:false,coef:1.1,coefT:0,
+     magS:true,loopS:true,lastMagEdge:0,lastLoopEdge:0,loopEmptyT:0,doorT:0,chOutT:0,
+     T:set.T,u:35,integ:0,Wm:0,packs:0,waste:0,splices:0,pts:[],brakeT:0,lock:false,
+     encBroken:false,needForce:false,ang:[0,0],angR:0,lastRes:null,btnT:0,magFullT:99,reqCause:'',waitMark:false,magNFT:0,minM:99};
+  AL={};ADEF.forEach(a=>AL[a.k]={on:false,latch:false});
+}
+fresh();
+function vNom(){return set.cap*L/3600}
+function other(){return 1-S.act}
+function prepared(i){return S.prep[i]&&!F.notPrep&&S.R[i]>20}
+function rad(R){return Math.sqrt(RCORE*RCORE+(RMAX*RMAX-RCORE*RCORE)*Math.max(0,R)/REELFULL)}
+function fmtT(t){const m=Math.floor(t/60),s=Math.floor(t%60);return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
+const logEl=$('log');
+function log(txt,sev='i'){const d=document.createElement('div');d.innerHTML=`<span class="t">${fmtT(S.t)}</span><span class="sev-${sev}">${txt}</span>`;logEl.prepend(d);while(logEl.children.length>70)logEl.lastChild.remove()}
+function act(k){return AL[k].on||AL[k].latch}
+function anyY(){return ADEF.some(a=>a.c==='Y'&&act(a.k))}
+function cond(k,b){const r=AL[k];if(b&&!r.on){r.on=true;r.latch=true;onAlarm(k)}else if(!b)r.on=false}
+function raise(k){const r=AL[k];const was=act(k);r.latch=true;if(!was)onAlarm(k)}
+function onAlarm(k){const a=ADEF.find(x=>x.k===k);log(`${a.c==='Y'?'Yellow alarm':'Blue warning'}: ${a.a}`,a.c);
+  if(a.c==='Y'){ if(S.seq==='splice')abortSplice(k); stopMachine(FAST.has(k)?'fast':'normal'); }
+  if(k==='encB'){S.encBroken=true}
+}
+/* ---------- machine ---------- */
+function start(){
+  if(S.run)return;
+  if(anyY()){log('Cannot start: yellow alarm active. Remove the cause, then reset','Y');return}
+  if(S.seq==='splice'){log('Wait for the splice to finish','i');return}
+  if(S.R[S.act]<=0){log('No material on the running reel. Do a manual splice first','Y');return}
+  if(S.M<MAGEMPTY+0.3){log('Magazine empty, wait for it to fill','i');return}
+  S.run=true;S.stopMode=null;S.vT=vNom();S.seq='run';S.lastMagEdge=S.t;S.lastLoopEdge=S.t;log('Production start','ok');
+}
+function stopMachine(mode){ if(!S.run&&S.v<=0)return; if(S.stopMode==='fast')return; S.stopMode=mode;S.vT=0; log(mode==='fast'?'Fast stop':'Normal stop','i')}
+function resetAlarms(){
+  ADEF.forEach(a=>{AL[a.k].latch=false});
+  S.acc=0;S.okRun=0;AL.regB.on=AL.regY.on=AL.encB.on=false;
+  if(S.seq==='alarm'&&!S.run)S.seq='idle';
+  log('Alarm reset','i');
+}
+/* ---------- splice ---------- */
+function requestSplice(cause){
+  if(S.seq==='splice')return;
+  if(S.encBroken){S.needForce=true;if(S.reqCause!=='enc'){log('Splice request refused: encoder broken. Forced manual splice needed','B');S.reqCause='enc'}return}
+  S.seq='splice';S.ph='req';S.pt=0;S.spT=0;S.waitMark=true;S.reqCause=cause;
+  S.spl={t0:S.t,cause,stopAt:null,err:null,Ts:0,Tn:0,minM:S.M,forced:false,intr:null,cutOk:true};
+  rec={t0:S.t,s:[],ph:[[0,'Splice request']],ev:{}};
+  log(cause==='end'?'Reel-end photocell saw the material end: splice starts':'Manual splice request','ok');
+}
+function forceSplice(){
+  if(S.seq==='splice')return;
+  S.seq='splice';S.ph='part1';S.pt=0;S.spT=0;S.reqCause='force';
+  const e=(Math.random()<.5?-1:1)*(18+Math.random()*30);
+  S.spl={t0:S.t,cause:'force',stopAt:0,err:e,Ts:0,Tn:0,minM:S.M,forced:true,intr:null,cutOk:true};
+  rec={t0:S.t,s:[],ph:[[0,'Forced splice']],ev:{stop:0}};
+  S.needForce=false;S.encBroken=false;S.acc=0;log('Forced manual splice: web stopped anywhere, splice will be out of design','B');
+  if(!checkAtStop())return;
+}
+function checkAtStop(){
+  const o=other();let bad=[];
+  if(F.air)bad.push('airY'); if(F.door)bad.push('doorY'); if(Math.abs(S.T-set.T)>3)bad.push('chY'); if(F.hold)bad.push('holdY'); if(!prepared(o))bad.push('notPrepY');
+  if(bad.length){bad.forEach(raise);raise('intr');return false}
+  return true;
+}
+function abortSplice(why){
+  if(S.seq!=='splice')return;
+  S.spl.intr=S.ph;S.lastRes={...S.spl,ok:false,why};
+  if(rec){rec.ph.push([(S.t-rec.t0)*1000,'interrupted']);lastRec=rec;rec.end=(S.t-rec.t0)*1000;}
+  S.resume=(S.ph==='side'||S.ph==='part2')?'side':null;
+  S.seq='alarm';S.ph=null;S.lock=true;
+  log('Splice cancelled','Y');
+}
+function phase(name,label){S.ph=name;S.pt=0;if(rec)rec.ph.push([(S.t-rec.t0)*1000,label])}
+function stepSplice(dt){
+  const ms=dt*1000;S.pt+=ms;S.spT+=ms;S.spl.minM=Math.min(S.spl.minM,S.M);
+  if(S.spT>30000&&S.ph){raise('intr');return}
+  const vSl=SLOW;
+  if(S.ph==='req'){ // web tension on, head to default position
+    if(S.pt>=150)phase('find','Finding stop position');
+  }else if(S.ph==='find'){
+    S.vL=Math.max(vSl,S.vL-12000*dt);S.vM=Math.max(vSl,S.vM-12000*dt);
+    if(!S.run&&S.v<=0){S.vL=Math.max(S.vL,vSl)} // idle splice
+    const stopPos=L+PK[set.pk].off+set.off;
+    if(S.R[S.act]<=0){S.vL=0;S.vM=0;S.spl.stopAt=S.spT;S.spl.err=(Math.random()<.5?-1:1)*(15+Math.random()*40);S.spl.forced=true;if(rec)rec.ev.stop=(S.t-rec.t0)*1000;phase('part1','Stop & cut');checkAtStop();return}
+    if(S.vL<=vSl+1&&!S.waitMark&&S.enc>=stopPos){
+      S.vL=0;S.vM=0;S.spl.stopAt=S.spT;S.spl.err=(S.P-(L+PK[set.pk].off))+((Math.random()-.5)*0.8);
+      if(S.spl.err>L/2)S.spl.err-=L; if(S.spl.err<-L/2)S.spl.err+=L;
+      if(rec)rec.ev.stop=(S.t-rec.t0)*1000;
+      phase('part1','Stop & cut');
+      if(!checkAtStop())return;
+    }
+  }else if(S.ph==='part1'){
+    S.vL=0;S.vM=0;
+    if(S.pt>=P1_END&&F.knife)S.spl.cutOk=false;
+    if(S.pt>=P1_TOT){phase('side','Sideways movement');if(F.servo){raise('servo');return}}
+  }else if(S.ph==='side'){
+    S.vL=0;S.vM=0;
+    const tgt=S.act===0?POS2:0;const d=tgt-S.hx,dir=Math.sign(d),ad=Math.abs(d);
+    if(!S.spl.cutOk&&Math.abs(S.hx-(S.act===0?0:POS2))>POS2*0.35){log('Old web not cut: head dragged by the web, position error over 7 mm','Y');raise('servo');return}
+    const vmax=Math.min(SRV_V,Math.sqrt(2*SRV_A*ad));
+    S.hv=Math.min(vmax,Math.abs(S.hv)+SRV_A*dt)*dir;
+    if(ad<=Math.abs(S.hv*dt)||ad<0.3){S.hx=tgt;S.hv=0;S.spl.sideMs=S.pt;phase('part2','Sealing');}else S.hx+=S.hv*dt;
+  }else if(S.ph==='part2'){
+    const st=set.st;
+    if(S.pt<st){S.vL=0;S.vM=0;S.spl.Ts+=S.T;S.spl.Tn++}
+    else if(S.pt<st+PRESS_DLY){S.vL=0;S.vM=0}
+    else if(S.pt<st+PRESS_DLY+UNSTICK){
+      if(!S.spl.joined)joinWeb();
+      S.vL=8*HZ;S.vM=0;
+    }else if(S.pt<st+PRESS_DLY+UNSTICK+SLW){
+      const k=Math.floor((S.pt-st-PRESS_DLY-UNSTICK)/300);S.vL=(5+4*k)*HZ;S.vM=S.vL;
+    }else endSplice();
+  }
+}
+function joinWeb(){
+  S.spl.joined=true;const o=other();
+  const Tav=S.spl.Tn?S.spl.Ts/S.spl.Tn:S.T;
+  const def=PK[set.pk].T;let q='good';
+  if(Tav<def-25||set.st<1400)q='very weak';else if(Tav<def-12||set.st<1900)q='weak';else if(Tav>def+30)q='burnt';
+  S.spl.Tav=Tav;S.spl.q=q;
+  S.prep[S.act]=false;S.act=o;S.angR=0;
+  S.pts.push({at:S.Wm+(FIXED+S.Lp+S.M)*1000,q,err:S.spl.err});
+}
+function endSplice(){
+  S.splices++;S.spl.total=S.spT;S.lastRes={...S.spl,ok:true};
+  if(rec){rec.ph.push([(S.t-rec.t0)*1000,'Splice done']);rec.end=(S.t-rec.t0)*1000;rec.tail=1000;}
+  S.seq=S.run?'run':'idle';S.ph=null;S.refill=true;S.coef=1.1;S.coefT=0;S.lastMagEdge=S.t;S.lastLoopEdge=S.t;S.reqCause='';S.resume=null;
+  log(`Splice done in ${(S.spT/1000).toFixed(1)} s. Reel ${S.act+1} now running`,'ok');
+  if(S.spl.q!=='good')log(`Splice quality: ${S.spl.q}`,'B');
+  if(Math.abs(S.spl.err)>10)log(`Splice landed off design position by ${S.spl.err.toFixed(1)}  mm`,'B');
+}
+function manualSplice(){
+  S.btnT=0.4;
+  if(S.seq==='splice')return;
+  if(S.resume==='side'&&!S.run){ // finish an interrupted splice after cut
+    if(anyY()){log('Reset first','Y');return}
+    S.seq='splice';S.spT=0;S.spl.intr=null;S.spl.cutOk=!F.knife||true;rec={t0:S.t,s:[],ph:[[0,'Completing splice']],ev:{}};phase('side','Sideways movement');S.resume=null;return}
+  if(S.run){
+    if(S.magFullT>5){raise('magNF');S.magNFT=5;return}
+    requestSplice('man');
+  }else{ if(anyY()){log('Reset first','Y');return} requestSplice('man') }
+}
+/* ---------- main step ---------- */
+function step(dt){
+  S.t+=dt;const ms=dt*1000;
+  // machine speed ramp
+  const vn=vNom();
+  if(S.run){
+    if(S.stopMode){const dec=S.stopMode==='fast'?vn/0.4:vn/2;S.v=Math.max(0,S.v-dec*dt);if(S.v<=0){S.run=false;S.brakeT=2.5;S.lock=true;if(S.seq==='run')S.seq=anyY()?'alarm':'idle';if(S.seq==='splice'&&anyY())abortSplice('stop');}}
+    else{S.vT=vn;S.v=Math.min(S.vT,S.v+vn/3*dt);if(S.v>S.vT)S.v=S.vT}
+  }else S.v=0;
+  if(S.seq==='alarm'&&!S.run&&!anyY()&&!S.resume)S.seq='idle';
+  // sensors
+  const mS=F.magS?true:(S.M>MAGFULL+0.02?true:(S.M<MAGFULL-0.02?false:S.magS));
+  if(mS!==S.magS){S.magS=mS;S.lastMagEdge=S.t}
+  const lS=F.loopS?false:(S.Lp>LOOPADJ+0.02?true:(S.Lp<LOOPADJ-0.02?false:S.loopS));
+  if(lS!==S.loopS){S.loopS=lS;S.lastLoopEdge=S.t}
+  if(S.magS)S.magFullT=0;else S.magFullT+=dt;
+  // motors
+  const reg=S.seq==='run'&&S.run&&!S.stopMode;
+  if(S.seq==='splice'){stepSplice(dt);}
+  else if(reg){
+    if(S.refill){S.lastMagEdge=S.t;S.coefT+=ms;if(S.coefT>=500){S.coefT=0;S.coef=Math.min(1.5,S.coef+0.06)}if(S.M>=MAGFULL){S.refill=false}}
+    const tM=S.refill?S.v*S.coef:S.v*(S.magS?0.94:1.06);
+    S.vM+=Math.max(-1500*dt,Math.min(1500*dt,tM-S.vM));
+    const tL=S.vM*(S.loopS?0.94:1.06);
+    S.vL+=Math.max(-1500*dt,Math.min(1500*dt,tL-S.vL));
+    if(S.v<0.95*vn){S.lastMagEdge=S.t;S.lastLoopEdge=S.t}
+    if(!S.refill&&S.t-S.lastMagEdge>8)cond('mReg',true);
+    if(S.t-S.lastLoopEdge>10)cond('lReg',true);
+  }else{
+    // idle: slow refill of magazine/loop at 200 mm/s, otherwise stop
+    let tM=0,tL=0;
+    if(!S.run&&S.seq==='idle'&&!anyY()&&S.R[S.act]>0){ if(S.M<MAGFULL)tM=200; tL=S.Lp<LOOPADJ?Math.max(200,tM):(tM?tM*0.95:0)}
+    if(S.run&&S.stopMode){tM=S.v;tL=S.v}
+    S.vM+=Math.max(-6000*dt,Math.min(6000*dt,tM-S.vM));S.vL+=Math.max(-6000*dt,Math.min(6000*dt,tL-S.vL));
+  }
+  if(F.fqL){S.vL=0;if(S.run||S.seq==='splice')cond('fqL',true)} else AL.fqL.on=false;
+  if(F.fqM){S.vM=0;if(S.run||S.seq==='splice')cond('fqM',true)} else AL.fqM.on=false;
+  S.vL=Math.max(0,S.vL);S.vM=Math.max(0,S.vM);
+  // material flow
+  const R=S.R[S.act];const feed=R>0?S.vL:0;
+  if(R>0){S.R[S.act]=Math.max(0,R-S.vL*dt/1000)}
+  let Lp=S.Lp+(feed-S.vM)*dt/1000;let effM=S.vM;
+  if(Lp<0){effM=Math.max(0,S.vM+Lp*1000/dt);Lp=0}
+  S.Lp=Math.min(LOOPCAP,Lp);
+  let M=S.M+(effM-S.v)*dt/1000;
+  if(M<=0){M=0;if(S.run)stopMachine('fast')}
+  S.M=Math.min(MAGCAP,M);
+  S.Wm+=S.v*dt;
+  const np=Math.floor(S.Wm/L);if(np>S.packs){S.packs=np}
+  S.ang[S.act]+=feed*dt/(rad(S.R[S.act])*3.2);S.angR+=feed*dt/(38*3.2);
+  // register marks + encoder
+  const encOk=!F.enc;S.P+=feed*dt;S.enc+=encOk?feed*dt:0;
+  if(S.P>=L){S.P-=L; // actual mark passes the photocell
+    const seen=!(F.regPC&&Math.random()<0.13);
+    if(seen){
+      if(S.enc<L*0.5&&feed>0){S.acc=Math.max(-15,S.acc-1);S.okRun=0;pushMark(false,'extra')}
+      else{pushMark(true,'ok');S.okRun++;if(S.okRun>=50){S.okRun=0;if(S.acc>0)S.acc--;else if(S.acc<0)S.acc++}}
+      S.enc=0;S.markFlash=0.09;if(rec){rec.mk=(S.t-rec.t0)*1000;(rec.mks=rec.mks||[]).push(rec.mk)}
+      if(S.seq==='splice'&&S.ph==='find'&&S.vL<=SLOW+1)S.waitMark=false;
+    }else{S.missFlash=0.2}
+  }
+  if(S.enc>=L){S.enc-=L; // virtual mark without real mark = photocell missed
+    S.acc=Math.min(15,S.acc+1);S.okRun=0;pushMark(true,'miss');if(rec)rec.mk=(S.t-rec.t0)*1000;
+    if(S.seq==='splice'&&S.ph==='find'&&S.vL<=SLOW+1)S.waitMark=false;
+  }
+  S.markFlash=Math.max(0,S.markFlash-dt);S.missFlash=Math.max(0,S.missFlash-dt);
+  cond('regB',S.acc>=2);cond('regY',S.acc>=12);cond('encB',S.acc<=-2);
+  if(S.acc>-2&&!act('encB')&&!F.enc)S.encBroken=false;
+  // reel end photocell -> automatic splice
+  const rr=rad(S.R[S.act]);const endSeen=rr<BEAM;
+  if(endSeen&&!F.reelPC&&S.run&&S.seq==='run'&&!S.stopMode)requestSplice('end');
+  // loop / magazine empty
+  if(S.Lp<LOOPEMPTY&&(S.run||S.seq==='splice')){S.loopEmptyT+=dt;if(S.loopEmptyT>0.7)cond('lEmpty',true)}else{S.loopEmptyT=0;AL.lEmpty.on=false}
+  cond('mEmpty',S.M<MAGEMPTY&&(S.run||S.seq==='splice'));
+  if(!(S.run))AL.mReg.on=false,AL.lReg.on=false;
+  // warnings
+  cond('notPrepB',!prepared(other())&&S.run);
+  cond('airB',!!F.air&&S.run);
+  cond('holdB',!!F.hold);
+  if(F.door&&S.run){S.doorT+=dt;cond('doorB',S.doorT>90)}else{S.doorT=0;AL.doorB.on=false}
+  if(S.magNFT>0){S.magNFT-=dt;if(S.magNFT<=0)AL.magNF.latch=false}
+  // CH bar temperature PID (simplified)
+  const e=set.T-S.T;S.integ=Math.max(-20,Math.min(20,S.integ+e*dt*0.6));
+  const base=35*(set.T-25)/145;let u=Math.max(0,Math.min(65,base+8*e+S.integ));S.u=F.heater?0:u;
+  const sealing=S.seq==='splice'&&S.ph==='part2'&&S.pt<set.st;
+  S.T+=(0.0138*S.u-(S.T-25)/300-(sealing?0.9:0))*dt;
+  if(Math.abs(S.T-set.T)>3&&S.seq!=='splice'){S.chOutT+=dt}else S.chOutT=0;
+  cond('chB',S.chOutT>2);
+  // brake / lock after web stop
+  if(S.brakeT>0)S.brakeT-=dt;
+  if(S.run&&S.v>0&&S.seq!=='splice')S.lock=false;
+  if(S.btnT>0)S.btnT-=dt;
+  // splice points reaching the tube
+  while(S.pts.length&&S.Wm>=S.pts[0].at){const p=S.pts.shift();S.waste+=6;log('Splice reached the tube: 6 packs rejected','i');
+    if(p.q==='very weak'&&S.run){log('Weak splice opened in the tube, web broke','Y');stopMachine('fast')}}
+  // recorder
+  if(rec){const tt=(S.t-rec.t0)*1000;
+    const ph=S.ph;const t2=S.pt;const st=set.st;
+    rec.s.push({t:tt,mend:(S.reqCause==='end'||S.btnT>0)&&tt<1000?1:0,web:(S.seq==='splice'&&!(ph==='part2'&&t2>=st+PRESS_DLY))?1:0,
+      mark:rec.mk!=null&&tt-rec.mk<40?1:0,vl:S.vL,stop:rec.ev.stop!=null&&tt-rec.ev.stop<120&&tt>=rec.ev.stop?1:0,
+      pr:(ph==='part1'&&S.pt>=P1_PR&&S.pt<P1_END)||(ph==='part2'&&t2<st)?1:0,cut:ph==='part1'&&S.pt>=P1_CUT&&S.pt<P1_END?1:0,
+      h1:Math.abs(S.hx)<4?1:0,h2:Math.abs(S.hx-POS2)<4?1:0,srv:ph==='side'?1:0,p1:ph==='part1'?Math.min(1,S.pt/P1_TOT):0,
+      p2:ph==='part2'?Math.min(1,S.pt/(st+PRESS_DLY+UNSTICK+SLW)):0});
+    if(rec.end!=null&&tt>rec.end+(rec.tail||0)){lastRec=rec;rec=null}else if(rec.s.length>4000)rec.s.shift();
+    if(rec)lastRec=rec;
+  }
+}
+function pushMark(v,a){S.marks.push({v,a});if(S.marks.length>34)S.marks.shift()}
+/* ---------- faults ---------- */
+function toggleFault(k,force){
+  F[k]=force!==undefined?force:!F[k];
+  const b=document.querySelector(`[data-f="${k}"]`);if(b)b.classList.toggle('on',!!F[k]);
+  if(!ch.on)log((F[k]?'Fault: ':'Fault removed: ')+FDEF.find(x=>x.k===k).t,F[k]?'B':'ok');
+  if(k==='notPrep'&&!F[k])S.prep[other()]=true;
+}
+function prepReel(){const o=other();if(S.seq==='splice'&&S.ph!=='find'&&S.ph!=='req'){log('Cannot prepare during splicing','i');return}
+  S.R[o]=REELFULL;S.prep[o]=true;if(F.notPrep)toggleFault('notPrep',false);log(`Reel ${o+1}: new reel loaded and web start placed in the head`,'ok')}
+/* ---------- UI build ---------- */
+const fwrap=$('faults');
+FDEF.forEach(f=>{const b=document.createElement('button');b.dataset.f=f.k;b.innerHTML=`${f.t}<small class="en">${f.s}</small>`;b.onclick=()=>{if(ch.on&&!ch.ans){return}toggleFault(f.k)};fwrap.appendChild(b)});
+const at=$('atable');at.innerHTML='<tr><th>Class</th><th>Alarm</th><th>When</th><th>Result</th></tr>'+ADEF.map(a=>`<tr><td>${a.c==='Y'?'<span style="color:#ffc629;font-weight:700">Yellow</span>':'<span style="color:#55b6ea;font-weight:700">Blue</span>'}</td><td>${a.a}<div class="en" style="font-size:10px">${a.n}</div></td><td>${a.w}</td><td>${a.e}</td></tr>`).join('');
+const LADDER=[
+ {k:'idle',t:'Idle',a:'stopped: magazine refills at 200 mm/s'},
+ {k:'run',t:'Running',a:'production: loop and magazine regulated by sensors'},
+ {k:'splice',t:'Splice',a:'splice sequence (max 30 s)'},
+ {k:'req',sub:1,t:'Splice request',a:'web tension cylinder on, head to default position'},
+ {k:'find',sub:1,t:'Finding stop position',a:'motors slow to 200 mm/s and count encoder pulses after the mark'},
+ {k:'stop',sub:1,t:'Stop in design position',a:'pressure rail at 50 ms and lock cylinders'},
+ {k:'cut',sub:1,t:'Cutting',a:'cutting cylinder 200 to 600 ms'},
+ {k:'retract',sub:1,t:'Cylinder retraction',a:'400 ms wait, web tension holds the end on the bar'},
+ {k:'side',sub:1,t:'Sideways movement',a:'servo moves the head to the other station'},
+ {k:'seal',sub:1,t:'Sealing',a:'pressure rail presses old web onto new'},
+ {k:'unstick',sub:1,t:'Unstick & slow restart',a:'8 Hz loop motor pulse, then 5 Hz +4 Hz every 300 ms'},
+ {k:'refill',sub:1,t:'Magazine refill',a:'magazine motor faster than the machine until full'},
+ {k:'alarm',t:'Alarms',a:'alarm: motors stopped until reset'}];
+const ladEl=$('ladder');ladEl.innerHTML=LADDER.map((s,i)=>`<div data-k="${s.k}" class="${s.sub?'sub':''}"><b>${s.sub?'•':i<3?i:3}</b><span>${s.t}<small>${s.a}</small></span></div>`).join('');
+const LAMPS=[
+ ['DI_AsuReel1Empty','Reel 1 end',()=>S.act===0&&rad(S.R[0])<BEAM&&!F.reelPC,'bad'],
+ ['DI_AsuReel2Empty','Reel 2 end',()=>S.act===1&&rad(S.R[1])<BEAM&&!F.reelPC,'bad'],
+ ['DI_StartPaperSplice','Manual splice button',()=>S.btnT>0],
+ ['DO_WebTension','Web tension cylinder',()=>S.seq==='splice'&&!(S.ph==='part2'&&S.pt>=set.st+PRESS_DLY)],
+ ['DO_PressureRail','Pressure rail',()=>S.seq==='splice'&&((S.ph==='part1'&&S.pt>=P1_PR&&S.pt<P1_END)||(S.ph==='part2'&&S.pt<set.st))],
+ ['DO_PaperCutting','Cutting cylinder',()=>S.seq==='splice'&&S.ph==='part1'&&S.pt>=P1_CUT&&S.pt<P1_END],
+ ['VAR_LoopMotorLockCylinder','Material lock cylinders',()=>S.lock||(S.seq==='splice'&&(S.ph==='part1'||S.ph==='side'||(S.ph==='part2'&&S.pt<set.st+PRESS_DLY)))],
+ ['DO_ReelBrakesPressure','Reel brake',()=>S.brakeT>0],
+ ['DO_PaperSpliceHeaterPower','Sealing bar heater',()=>S.u>1],
+ ['DO_FcAsuLoopEnable','Loop motor enable',()=>S.vL>1],
+ ['DI_AsuLoopAdjustment','Loop adjust',()=>S.loopS],
+ ['DI_AsuLoopEmpty','Web in loop',()=>S.Lp>=LOOPEMPTY],
+ ['DI_AsuMagazineAdjustment','Magazine full',()=>S.magS],
+ ['DI_AsuMagazinEmpty','Magazine empty',()=>S.M<MAGEMPTY,'bad'],
+ ['DI_AsuAirPressure','Air pressure OK',()=>!F.air],
+ ['DI_L1081','Doors closed',()=>!F.door],
+ ['DI_SpliceTable1/2Position','Material holder in place',()=>!F.hold]];
+$('lamps').innerHTML=LAMPS.map((l,i)=>`<div class="lamp" id="lp${i}"><i></i><span>${l[1]}</span><b>${l[0]}</b></div>`).join('');
+/* trend chips */
+const SER=[{k:'v',n:'Machine speed',c:'#c9d3d6',mx:2000},{k:'vL',n:'Loop motor',c:'#8fd14f',mx:2000},{k:'vM',n:'Magazine motor',c:'#55b6ea',mx:2000},{k:'M',n:'Magazine web (m)',c:'#e9a640',mx:16},{k:'T',n:'CH bar temp',c:'#ff8a3d',mn:100,mx:220}];
+const vis={v:1,vL:1,vM:1,M:1,T:0};
+$('chips').innerHTML=SER.map(s=>`<button data-s="${s.k}" class="${vis[s.k]?'':'off'}"><span class="dot" style="background:${s.c}"></span>${s.n}</button>`).join('');
+document.querySelectorAll('#chips button').forEach(b=>b.onclick=()=>{vis[b.dataset.s]^=1;b.classList.toggle('off',!vis[b.dataset.s])});
+/* settings */
+function syncSet(){
+  $('oT').textContent=set.T;$('oST').textContent=set.st;$('oOff').textContent=(set.off>0?'+':'')+set.off;
+  $('rT').value=set.T;$('rST').value=set.st;$('rOff').value=set.off;$('selPk').value=set.pk;$('selCap').value=set.cap;
+  const p=PK[set.pk];$('pkTxt').innerHTML=`Program values for <span class="en">${p.n}</span>: CH bar temp <b class="mono">${p.T}</b> °C, sealing time <b class="mono">2500</b> ms, stop offset <b class="mono">${p.off}</b> mm, so the web stops <b class="mono">${(L+p.off+set.off).toFixed(1)}</b> mm after the last mark.`;
+}
+$('rT').oninput=e=>{set.T=+e.target.value;syncSet()};
+$('rST').oninput=e=>{set.st=+e.target.value;syncSet()};
+$('rOff').oninput=e=>{set.off=+e.target.value;syncSet()};
+$('selPk').onchange=e=>{set.pk=e.target.value;set.T=PK[set.pk].T;set.st=2500;set.off=0;syncSet();log('Package changed: '+PK[set.pk].n,'i')};
+$('selCap').onchange=e=>{set.cap=+e.target.value;syncSet()};
+$('bDef').onclick=()=>{set.T=PK[set.pk].T;set.st=2500;set.off=0;syncSet()};
+syncSet();
+$('bStart').onclick=start;$('bStop').onclick=()=>stopMachine('normal');$('bReset').onclick=resetAlarms;
+$('bNear').onclick=()=>{S.R[S.act]=Math.min(S.R[S.act],22);log('Running reel near its end (22 m)','i')};
+$('bSplice').onclick=manualSplice;$('bPrep').onclick=prepReel;$('bForce').onclick=forceSplice;
+$('bClr').onclick=()=>{FDEF.forEach(f=>{if(F[f.k])toggleFault(f.k,false)})};
+document.querySelectorAll('[data-sp]').forEach(b=>b.onclick=()=>{simSp=+b.dataset.sp;document.querySelectorAll('[data-sp]').forEach(x=>x.classList.toggle('sel',x===b))});
+document.querySelectorAll('[data-slow]').forEach(b=>b.onclick=()=>{slowSp=+b.dataset.slow;document.querySelectorAll('[data-slow]').forEach(x=>x.classList.toggle('sel',x===b))});
+$('bPause').onclick=()=>{paused=!paused;$('bPause').textContent=paused?'Resume':'Pause';$('bPause').classList.toggle('on',paused)};
+function effSp(){if(paused)return 0;return (slowSp&&S.seq==='splice')?slowSp:simSp}
+/* ---------- challenge ---------- */
+const CHF=['reelPC','notPrep','air','heater','regPC','enc','servo','knife','fqL','magS','loopS','door','hold'];
+function updScore(){$('chScore').textContent=`Score: ${ch.ok}  of ${ch.n}`}
+$('bCh').onclick=()=>{
+  FDEF.forEach(f=>{F[f.k]=false;const b=document.querySelector(`[data-f="${f.k}"]`);b.classList.remove('on')});
+  fresh();logEl.innerHTML='';lastRec=null;rec=null;set.T=PK[set.pk].T;set.st=2500;set.off=0;syncSet();S.T=set.T;
+  const f=CHF[Math.floor(Math.random()*CHF.length)];ch={...ch,on:true,f,ans:false};
+  F[f]=true;S.R[0]=18;
+  if(f==='door'){S.doorT=80}
+  start();
+  const opts=[f];while(opts.length<4){const x=CHF[Math.floor(Math.random()*CHF.length)];if(!opts.includes(x))opts.push(x)}
+  opts.sort(()=>Math.random()-.5);
+  $('chBox').classList.remove('hidden');$('chQ').textContent='The machine is running and the reel is near its end. One hidden fault: which one?';$('chAns').textContent='';
+  $('chOpts').innerHTML=opts.map(k=>`<button data-o="${k}">${FDEF.find(x=>x.k===k).t}</button>`).join('');
+  document.querySelectorAll('#chOpts button').forEach(b=>b.onclick=()=>{
+    if(ch.ans)return;ch.ans=true;ch.n++;const right=b.dataset.o===ch.f;if(right)ch.ok++;updScore();
+    document.querySelectorAll('#chOpts button').forEach(x=>x.classList.add(x.dataset.o===ch.f?'right':(x===b?'wrong':'x')));
+    $('chAns').innerHTML=(right?'Correct! ':'Not that one. ')+'The fault was: <b>'+FDEF.find(x=>x.k===ch.f).t+'</b>. '+HINT[ch.f];
+    const fb=document.querySelector(`[data-f="${ch.f}"]`);fb.classList.add('on');ch.on=false;
+  });
+  log('New challenge started','i');
+};
+const HINT={
+ reelPC:'The photocell missed the material end, no splice was requested, the reel ran out, the loop emptied and the machine fast-stopped.',
+ notPrep:'The splice started and stopped in position; the check found the new reel not prepared, so a yellow alarm cancelled the splice.',
+ air:'The blue air warning comes first; at the splice stop the program refuses to continue.',
+ heater:'Bar temperature fell outside ±3 giving a blue warning, then the program cancelled the splice.',
+ regPC:'Marks get lost (empty boxes in the photocell row) and the counter climbs to 2, then 12.',
+ enc:'The photocell sees marks but the encoder does not count, so the counter goes negative and automatic splice is blocked.',
+ servo:'The sequence reached the sideways movement and stopped there with a servo fault.',
+ knife:'The cut was commanded on time, but the head got dragged by the web mid-way through the sideways move.',
+ fqL:'The loop motor stopped completely and the alarm came immediately.',
+ magS:'The magazine sensor did not change for 8 s while the magazine slowly emptied.',
+ loopS:'The loop sensor did not change for 10 s and the loop filled up completely.',
+ door:'Door warning after 90 s, and the splice was cancelled.',
+ hold:'Blue material-holder warning from the start, and the splice was cancelled.'};
+/* ---------- drawing ---------- */
+const cv=$('cvDia');let ctx=cv.getContext('2d');cv.width=2000;cv.height=1200;
+function box(x,y,w,h,fill,stroke='#040505',r=6,lw=1.6){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();ctx.lineWidth=lw;ctx.strokeStyle=stroke;ctx.stroke()}
+function txt(s,x,y,o={}){ctx.font=`${o.w||600} ${o.s||13}px ${o.mono?'"JetBrains Mono",monospace':'"IBM Plex Sans Arabic",system-ui,sans-serif'}`;ctx.fillStyle=o.c||'#e3ece9';ctx.textAlign=o.a||'center';ctx.textBaseline=o.b||'middle';ctx.direction='ltr';ctx.fillText(s,x,y)}
+function tag(s,x,y){ctx.font='600 10.5px "JetBrains Mono",monospace';const w=ctx.measureText(s).width+10;box(x-w/2,y-8,w,16,'#fde900','#040505',3,1.2);txt(s,x,y+.5,{mono:1,s:10.5,c:'#040505'})}
+function circ(x,y,r,fill,lw=1.6,stroke='#040505'){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=fill;ctx.fill();ctx.lineWidth=lw;ctx.strokeStyle=stroke;ctx.stroke()}
+function web(pts,col='#a66828',w=3.5){ctx.save();ctx.lineJoin='round';ctx.lineCap='round';ctx.strokeStyle='#040505';ctx.lineWidth=w+2;ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();ctx.strokeStyle=col;ctx.lineWidth=w;ctx.stroke();ctx.restore()}
+function pc(x,y,on,lbl,dir=1){box(x-9,y-7,18,14,on?'#fde900':'#fff7a8','#040505',3);if(on){ctx.save();ctx.shadowColor='#ffd400';ctx.shadowBlur=12;box(x-9,y-7,18,14,'#fde900','#040505',3);ctx.restore()}
+  if(lbl)txt(lbl,x+dir*14,y,{s:10.5,a:dir>0?'left':'right',w:600,c:'#bcd0cb'})}
+function polyLen(p){let s=0;for(let i=1;i<p.length;i++)s+=Math.hypot(p[i][0]-p[i-1][0],p[i][1]-p[i-1][1]);return s}
+function pointAt(p,d){for(let i=1;i<p.length;i++){const l=Math.hypot(p[i][0]-p[i-1][0],p[i][1]-p[i-1][1]);if(d<=l){const f=d/l;return [p[i-1][0]+(p[i][0]-p[i-1][0])*f,p[i-1][1]+(p[i][1]-p[i-1][1])*f]}d-=l}return p[p.length-1]}
+const RX=[140,350],RY=470;
+function headX(){return RX[0]+S.hx/POS2*(RX[1]-RX[0])}
+function draw(){
+  ctx.setTransform(2,0,0,2,0,0);ctx.clearRect(0,0,1000,600);ctx.fillStyle='#131b1f';ctx.fillRect(0,0,1000,600);
+  const ph=S.ph,sp=S.seq==='splice';const hx=headX();
+  // rail
+  box(80,226,340,8,'#dfe0e0','#040505',3);
+  // reels
+  for(let i=0;i<2;i++){const cx=RX[i],r=rad(S.R[i]);const isAct=i===S.act;
+    // braked roller & webs
+    const bx=cx+62,by=338;
+    // photocell beam (below hub)
+    const yb=RY+BEAM,px=cx-100,qx=cx+100;
+    ctx.save();ctx.strokeStyle=r<BEAM?'#1d8448':'#e0242f';ctx.setLineDash([5,4]);ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(px+9,yb);ctx.lineTo(r>BEAM?cx-Math.sqrt(r*r-BEAM*BEAM):qx-3,yb);ctx.stroke();ctx.restore();
+    circ(cx,RY,r,'#fcc5a0',3,'#a66828');
+    for(let k=1;k<4;k++){const rr=RCORE+(r-RCORE)*k/4;if(rr>RCORE+3){ctx.beginPath();ctx.arc(cx,RY,rr,0,Math.PI*2);ctx.strokeStyle='rgba(166,104,40,.25)';ctx.lineWidth=1;ctx.stroke()}}
+    circ(cx,RY,RCORE,'#dfe0e0');circ(cx,RY,9,'#3b5959');
+    ctx.save();ctx.translate(cx,RY);ctx.rotate(-S.ang[i]);ctx.strokeStyle='#040505';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(10,0);ctx.lineTo(RCORE-3,0);ctx.stroke();ctx.restore();
+    if(r>BEAM){ctx.save();ctx.strokeStyle='rgba(224,36,47,.8)';ctx.setLineDash([5,4]);ctx.lineWidth=1.5;ctx.restore()}
+    pc(px,yb,r<BEAM&&isAct&&!F.reelPC,'',1);box(qx-3,yb-12,6,24,'#bee7fb','#040505',2);
+    tag(i?'T10B1250':'T10B1240',px,yb+22);
+    // web from reel to braked roller
+    const loaded=S.R[i]>0;
+    if(loaded&&(isAct||prepared(i)||S.prep[i])){
+      const tx=cx+r*Math.cos(-0.9),ty=RY+r*Math.sin(-0.9);
+      if(isAct){
+        web([[tx,ty],[bx-6,by+10]]);circ(bx,by,13,'#99a8a8');
+        const hy=sp&&(ph==='side'||ph==='part2')&&!S.spl.joined?null:1;
+        if(hy)web([[bx,by-13],[hx,258],[hx,206]]);
+      }else{
+        web([[tx,ty],[bx-6,by+10]],'#c98b4a');circ(bx,by,13,'#99a8a8');
+        web([[bx,by-13],[cx,262]],'#c98b4a');
+        // prepared end with acute cut
+        ctx.beginPath();ctx.moveTo(cx-6,262);ctx.lineTo(cx+6,252);ctx.lineTo(cx+8,262);ctx.closePath();ctx.fillStyle='#a66828';ctx.fill();
+        box(cx-16,264,32,8,F.hold?'#e0242f':'#75923b','#040505',2);
+      }
+    }else{circ(bx,by,13,'#99a8a8');}
+    const st=isAct?'running':(prepared(i)?'ready to splice':'needs preparing');
+    txt(`Reel ${i+1}: ${st}`,cx,RY+RMAX+14,{s:12.5,w:700,c:isAct?'#e3ece9':(prepared(i)?'#5fd08b':'#ff5d50')});
+    txt(`${S.R[i].toFixed(0)}  m`,cx,RY+RMAX+29,{s:11,mono:1,c:'#8fa4a0'});
+  }
+  // old web tail hanging during splice (after cut, before join)
+  if(sp&&S.spl&&(ph==='side'||(ph==='part1'&&S.pt>=P1_END))&&S.spl.cutOk){const cx=RX[S.act];web([[cx+62,325],[cx+20,300]],'#c98b4a',3)}
+  // head
+  const hy=206;const pr=sp&&((ph==='part1'&&S.pt>=P1_PR&&S.pt<P1_END)||(ph==='part2'&&S.pt<set.st));
+  const cut=sp&&ph==='part1'&&S.pt>=P1_CUT&&S.pt<P1_END;
+  const lock=S.lock||(sp&&(ph==='part1'||ph==='side'||(ph==='part2'&&S.pt<set.st+PRESS_DLY)));
+  const tens=sp&&!(ph==='part2'&&S.pt>=set.st+PRESS_DLY);
+  box(hx-58,hy,116,52,'#b9d983','#040505',8,2);
+  const hot=Math.max(0,Math.min(1,(S.T-60)/120));
+  box(hx-50,hy+8,14,36,`rgb(253,${Math.round(185-90*hot*(pr?1:.4))},${Math.round(50-30*hot)})`,'#040505',3);
+  if(pr&&ph==='part2'){ctx.save();ctx.shadowColor='#ff7a00';ctx.shadowBlur=14;box(hx-50,hy+8,14,36,'#ff8a1a','#040505',3);ctx.restore()}
+  box(hx-30+(pr?6:0),hy+10,10,32,'#4687c7','#040505',2);
+  // knife
+  ctx.beginPath();const ky=hy+(cut?40:30);ctx.moveTo(hx+6,ky-12);ctx.lineTo(hx+16,ky-12);ctx.lineTo(hx+11,ky);ctx.closePath();ctx.fillStyle=cut?'#c41e33':'#5d6670';ctx.fill();ctx.strokeStyle='#040505';ctx.lineWidth=1.2;ctx.stroke();
+  box(hx+24,hy+8,10,10,lock?'#3b5959':'#dfe0e0','#040505',2);box(hx+24,hy+34,10,10,lock?'#3b5959':'#dfe0e0','#040505',2);
+  box(hx+40,hy+(tens?14:8),12,20,tens?'#75923b':'#dfe0e0','#040505',2);
+  txt('Splice head',hx-20,hy-10,{s:11.5,w:700});
+  tag('T10K1621',hx-36,hy+64);tag('T10K1631',hx+30,hy+64);
+  tag('T50M9020',110,250);
+  txt(`Head servo ${S.hx.toFixed(0)} mm`,110,268,{s:10.5,c:'#8fa4a0'});
+  // web head -> bending roller
+  const A=[hx,206],B=[484,118];
+  const running=S.R[S.act]>0;
+  if(!(sp&&(ph==='side'||(ph==='part2'&&!S.spl.joined))))web([A,B]);
+  else web([[hx,206],[B[0]-40,B[1]+50],B]);
+  // register marks along A-B
+  {const len=Math.hypot(B[0]-A[0],B[1]-A[1]);const pitch=58;const off=(S.P/L)*pitch;
+   for(let s=(off%pitch);s<len;s+=pitch){const f=1-s/len;const x=A[0]+(B[0]-A[0])*f,y=A[1]+(B[1]-A[1])*f;ctx.fillStyle='#040505';ctx.fillRect(x-3,y-3,6,6)}}
+  // register photocell
+  const pcx=A[0]+(B[0]-A[0])*0.5+14,pcy=A[1]+(B[1]-A[1])*0.5+12;
+  pc(pcx,pcy,S.markFlash>0,'',1);if(S.missFlash>0){txt('✕',pcx+18,pcy,{c:'#ff5d50',s:16,w:700})}
+  tag('A01K5200',pcx+34,pcy+16);txt('Register-mark photocell',pcx+16,pcy-2,{s:10.5,c:'#bcd0cb',a:'left'});
+  // bending roller
+  circ(520,110,38,'#b9d983',2);ctx.save();ctx.translate(520,110);ctx.rotate(S.angR);ctx.strokeStyle='#76c044';ctx.lineWidth=3;for(let k=0;k<3;k++){ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(30,0);ctx.stroke();ctx.rotate(Math.PI*2/3)}ctx.restore();
+  circ(520,110,11,F.enc?'#f7b5bb':'#99a8a8');
+  ctx.strokeStyle='#bcd0cb';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(528,102);ctx.bezierCurveTo(560,70,600,60,600,30);ctx.stroke();
+  txt('Encoder',612,26,{s:10.5,a:'left',c:'#bcd0cb'});
+  txt('Driven bending roller (loop motor)',520,58,{s:11.5,w:700});tag('T10T0160',520,40);
+  ctx.beginPath();ctx.arc(520,110,40,Math.PI*1.22,Math.PI*2);ctx.strokeStyle='#a66828';ctx.lineWidth=3.5;ctx.stroke();
+  // loop
+  const yb=150+S.Lp/LOOPCAP*200;const lx1=560,lx2=622;
+  web([[lx1,110],[lx1,yb-18],[lx1+10,yb-2],[(lx1+lx2)/2,yb+2],[lx2-10,yb-2],[lx2,yb-18],[lx2,110]]);
+  const yAdj=150+LOOPADJ/LOOPCAP*200,yEm=150+LOOPEMPTY/LOOPCAP*200;
+  pc(592,yAdj,S.loopS,'',1);pc(592,yEm,S.Lp>=LOOPEMPTY,'',1);
+  txt('Loop adjust',632,yAdj,{s:10.5,a:'left',c:'#bcd0cb'});txt('Loop empty',632,yEm,{s:10.5,a:'left',c:'#bcd0cb'});
+  txt('Loop',591,yb+16,{s:11.5,w:700});
+  // magazine motor roller
+  circ(640,110,18,'#99a8a8',2);ctx.save();ctx.translate(640,110);ctx.rotate(S.angR*1.4);ctx.strokeStyle='#3b5959';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(-14,0);ctx.lineTo(14,0);ctx.stroke();ctx.restore();
+  txt('Magazine motor',640,74,{s:11.5,w:700});
+  // festoon magazine
+  const yd=150+S.M/MAGCAP*380;const tops=[690,750,810,870],bots=[720,780,840];
+  box(676,64,208,8,'#dfe0e0','#040505',3);
+  const path=[[658,104],[690,78]];for(let k=0;k<3;k++){path.push([bots[k],yd+12]);path.push([tops[k+1],78])}path.push([960,78]);path.push([960,30]);
+  web(path);
+  tops.forEach(x=>circ(x,90,12,'#99a8a8'));
+  box(708,yd+14,144,8,'#3b5959','#040505',3);bots.forEach(x=>circ(x,yd,12,'#99a8a8'));
+  const yFull=150+MAGFULL/MAGCAP*380,yEmp=150+MAGEMPTY/MAGCAP*380;
+  pc(905,yFull,S.magS,'',1);pc(905,yEmp,S.M<MAGEMPTY,'',1);
+  txt('Magazine full',922,yFull,{s:10.5,a:'left',c:'#bcd0cb'});txt('Magazine empty',922,yEmp,{s:10.5,a:'left',c:'#bcd0cb'});
+  ctx.save();ctx.setLineDash([3,4]);ctx.strokeStyle='#9aa5ae';ctx.beginPath();ctx.moveTo(860,yFull);ctx.lineTo(896,yFull);ctx.moveTo(860,yEmp);ctx.lineTo(896,yEmp);ctx.stroke();ctx.restore();
+  txt('Web magazine',780,yd+40,{s:12,w:700});txt(`${S.M.toFixed(2)}  m`,780,yd+56,{s:11,mono:1,c:'#8fa4a0'});
+  // machine
+  box(912,8,82,22,'#19232a','#8fa4a0',5);txt('To tube ↑',953,19,{s:11,w:700});
+  txt(`Packs: ${S.packs}`,948,46,{s:11,a:'right',c:'#bcd0cb'});
+  // splice point travelling
+  if(S.pts.length){const p=S.pts[0];const rem=(p.at-S.Wm)/1000;
+    const full=[[hx,206],B,[lx1,110],[lx1,yb],[lx2,yb],[lx2,110],...path];const tl=FIXED+S.Lp+S.M;const PL=polyLen(full);
+    const d=Math.max(0,Math.min(PL,PL*(1-rem/tl)));const q=pointAt(full,d);
+    ctx.save();ctx.shadowColor='#c41e33';ctx.shadowBlur=10;circ(q[0],q[1],6,'#c41e33',1.5);ctx.restore();
+    txt(`Splice travelling: ${rem.toFixed(1)} m to the tube`,700,580,{s:12,w:700,c:'#ff5d50'});
+  }
+  // phase banner on canvas
+  let ptxt='';if(sp){const L2=LADDER.find(x=>x.k===curSub());ptxt='Splice: '+(L2?L2.t:'');}
+  else if(S.seq==='alarm')ptxt='Alarm: motors stopped';else if(S.run)ptxt=S.refill?'Production: refilling magazine after splice':'Production: loop & magazine regulation';else ptxt='stopped';
+  box(470,486,280,40,sp?'#1f2e22':'#19232a',sp?'#6f9a2c':'#26353d',10);txt(ptxt,610,500,{s:13,w:700});
+  if(sp)txt(`${(S.spT/1000).toFixed(2)} s since splice request`,610,516,{s:10.5,c:'#8fa4a0'});
+  if(S.brakeT>0)txt('Reel brake on 2.5 s',260,560,{s:11,w:700,c:'#55b6ea'});
+}
+function curSub(){if(S.seq!=='splice')return S.refill&&S.run?'refill':null;const p=S.ph;
+  if(p==='part1')return S.pt<P1_CUT?'stop':S.pt<P1_END?'cut':'retract';
+  if(p==='part2')return S.pt<set.st?'seal':'unstick';return p}
+/* timing chart */
+function fitCanvas(c,h){const r=c.getBoundingClientRect();const d=window.devicePixelRatio||1;const w=Math.max(300,Math.round(r.width));if(c.width!==Math.round(w*d)||c.height!==Math.round(h*d)){c.width=Math.round(w*d);c.height=Math.round(h*d)}return {w,h,d}}
+const ROWS=[['mend','Material end / splice button','T10B1240 · T10S1100'],['web','Web tension','T10K1641'],['mark','Register mark','A01K5200'],['vl','Loop motor speed','T10T0160'],['stop','Stop position (encoder)','T10B9023'],['pr','Pressure rail','T10K1621'],['cut','Material cutting','T10K1631'],['h1','Head at station 1','SealingHeadPos1'],['h2','Head at station 2','SealingHeadPos2'],['srv','Head servo move','T50M9020'],['p1','Timer part 1','TMR_SplicePart1'],['p2','Timer part 2','TMR_SplicePart2']];
+function drawTime(){
+  const c=$('cvTime');const {w,h,d}=fitCanvas(c,410);const g=c.getContext('2d');g.setTransform(d,0,0,d,0,0);g.clearRect(0,0,w,h);g.fillStyle='#131b1f';g.fillRect(0,0,w,h);
+  const lx=170,rx=w-12,top=10,rh=26;const R=rec||lastRec;
+  g.font='600 11.5px "IBM Plex Sans Arabic",sans-serif';
+  ROWS.forEach((r,i)=>{const y=top+i*rh;g.fillStyle=i%2?'#162027':'#19232a';g.fillRect(0,y,w,rh);g.direction='ltr';g.textAlign='right';g.fillStyle='#e3ece9';g.font='600 11.5px "IBM Plex Sans Arabic",sans-serif';g.fillText(r[1],lx-8,y+11);g.font='500 9px "JetBrains Mono",monospace';g.direction='ltr';g.fillStyle='#8fa4a0';g.fillText(r[2],lx-8,y+22)});
+  const yAx=top+ROWS.length*rh;
+  if(!R){g.direction='ltr';g.textAlign='center';g.fillStyle='#8fa4a0';g.font='600 14px "IBM Plex Sans Arabic",sans-serif';g.fillText('Waiting for the first splice… start production and press "Near reel end"',(lx+rx)/2,top+5*rh);return}
+  const tEnd=Math.max(9000,(R.s.length?R.s[R.s.length-1].t:0)+200);const X=t=>lx+(rx-lx)*t/tEnd;
+  g.strokeStyle='#26353d';g.lineWidth=1;g.font='500 10px "JetBrains Mono",monospace';g.fillStyle='#8fa4a0';g.textAlign='center';g.direction='ltr';
+  for(let t=0;t<=tEnd;t+=1000){g.beginPath();g.moveTo(X(t),top);g.lineTo(X(t),yAx);g.stroke();g.fillText(t,X(t),yAx+11)}
+  g.fillText('ms',rx-8,yAx+22);
+  const vmax=Math.max(...R.s.map(s=>s.vl),300);
+  ROWS.forEach((r,i)=>{const y0=top+i*rh+rh-4,y1=top+i*rh+5;g.beginPath();g.strokeStyle=r[0]==='vl'?'#8fd14f':(r[0]==='pr'?'#55b6ea':(r[0]==='cut'?'#ff5d50':'#e3ece9'));g.lineWidth=1.8;
+    let edges=[];let prev=null;
+    if(r[0]!=='mark')R.s.forEach((s,k)=>{let v=s[r[0]];let y;if(r[0]==='vl')y=y0-(y0-y1)*v/vmax;else if(r[0]==='p1'||r[0]==='p2')y=y0-(y0-y1)*v;else y=v?y1:y0;
+      const x=X(s.t);if(k===0)g.moveTo(x,y);else g.lineTo(x,y);
+      if(r[0]!=='vl'&&r[0]!=='p1'&&r[0]!=='p2'&&prev!==null&&!!v!==!!prev)edges.push(s.t);prev=v});
+    if(r[0]==='mark'){g.stroke();g.beginPath();g.moveTo(X(0),y0);g.lineTo(X(tEnd),y0);(R.mks||[]).forEach(t=>{if(t<=tEnd){g.moveTo(X(t),y0);g.lineTo(X(t),y1)}})}
+    g.stroke();
+    if(['pr','cut','srv','stop'].includes(r[0])){g.font='600 9.5px "JetBrains Mono",monospace';g.fillStyle='#bcd0cb';(r[0]==='stop'?edges.slice(0,1):edges.slice(0,4)).forEach(t=>g.fillText(Math.round(t),X(t),y1-1))}
+  });
+  // phases
+  g.font='600 10.5px "IBM Plex Sans Arabic",sans-serif';g.direction='ltr';
+  const P=R.ph;for(let i=0;i<P.length;i++){const t0=P[i][0],t1=i+1<P.length?P[i+1][0]:tEnd;const x0=X(t0),x1=X(t1);g.fillStyle=i%2?'#1f2e22':'#2e2418';g.fillRect(x0,yAx+26,Math.max(1,x1-x0),18);g.strokeStyle='#26353d';g.strokeRect(x0,yAx+26,Math.max(1,x1-x0),18);
+    if(x1-x0>34){g.fillStyle='#e3ece9';g.textAlign='center';g.fillText(P[i][1],(x0+x1)/2,yAx+39)}}
+}
+/* trend */
+function drawTrend(){
+  const c=$('cvTrend');const {w,h,d}=fitCanvas(c,200);const g=c.getContext('2d');g.setTransform(d,0,0,d,0,0);g.clearRect(0,0,w,h);g.fillStyle='#131b1f';g.fillRect(0,0,w,h);
+  const l=40,r=w-36,t=10,b=h-22;g.strokeStyle='#26353d';g.lineWidth=1;g.font='500 10px "JetBrains Mono",monospace';g.fillStyle='#8fa4a0';g.direction='ltr';
+  for(let k=0;k<=4;k++){const y=b-(b-t)*k/4;g.beginPath();g.moveTo(l,y);g.lineTo(r,y);g.stroke();g.textAlign='right';g.fillText(500*k,l-4,y+3);g.textAlign='left';g.fillText(4*k,r+4,y+3)}
+  g.textAlign='right';g.fillText('mm/s',l-2,h-6);g.textAlign='left';g.fillText('m',r+4,h-6);
+  if(!hist.length)return;const tN=hist[hist.length-1].t,span=90;
+  for(let k=0;k<=9;k++){const x=l+(r-l)*k/9;g.beginPath();g.moveTo(x,t);g.lineTo(x,b);g.stroke()}
+  // splice shading
+  g.fillStyle='rgba(111,154,44,.28)';let s0=null;hist.forEach(p=>{if(p.sp&&s0===null)s0=p.t;if(!p.sp&&s0!==null){g.fillRect(l+(r-l)*(s0-tN+span)/span,t,(r-l)*(p.t-s0)/span,b-t);s0=null}});if(s0!==null)g.fillRect(l+(r-l)*(s0-tN+span)/span,t,(r-l)*(tN-s0)/span,b-t);
+  SER.forEach(s=>{if(!vis[s.k])return;g.beginPath();g.strokeStyle=s.c;g.lineWidth=2;let first=true;
+    hist.forEach(p=>{const x=l+(r-l)*(p.t-tN+span)/span;if(x<l)return;const mn=s.mn||0;const y=b-(b-t)*Math.max(0,Math.min(1,(p[s.k]-mn)/(s.mx-mn)));if(first){g.moveTo(x,y);first=false}else g.lineTo(x,y)});g.stroke()});
+}
+/* ---------- UI refresh ---------- */
+let uiT=0;
+function ui(){
+  $('vMag').textContent=S.M.toFixed(2);$('vMag').parentNode.classList.toggle('badv',S.M<3);
+  $('kR').textContent=S.R[S.act].toFixed(1);$('kV').textContent=(S.v/1000).toFixed(2);$('kL').textContent=Math.round(S.vL);$('kM').textContent=Math.round(S.vM);$('kT').textContent=S.T.toFixed(1);$('kS').textContent=S.splices;
+  let tt,mm;
+  if(S.seq==='splice'){const L2=LADDER.find(x=>x.k===curSub());tt='Splicing: '+(L2?L2.t:'');mm=L2?L2.a+'. The machine is pulling from the magazine.':'';}
+  else if(S.seq==='alarm'||anyY()){tt='Stopped by alarm';mm=S.resume==='side'?'The web was cut but the splice did not finish. Remove the cause, reset, then press "Manual splice" to complete it.':'Remove the alarm cause, reset, then start. If the reel ran out, prepare the new one and do a manual splice.'}
+  else if(S.run){tt=S.refill?'Production: refilling magazine':'Production';mm=`Reel ${S.act+1} running, ${S.R[S.act].toFixed(0)} m left. The reel-end photocell will request the splice by itself.`}
+  else{tt='Machine stopped';mm=S.R[S.act]<=0?'The running reel is empty. Prepare the new one and press "Manual splice".':`Reel ${S.act+1} running, reel ${other()+1} ${prepared(other())?'prepared':'needs preparing'}. Press "Start production".`}
+  $('stTitle').textContent=tt;$('stMsg').textContent=mm;
+  $('forceRow').classList.toggle('hidden',!(S.needForce||S.encBroken));
+  const bn=$('banner');
+  if(S.encBroken){bn.className='banner';bn.textContent='Encoder broken: automatic splice blocked. Do a "Forced manual splice" before the reel ends (the splice will be out of design).'}
+  else if(!prepared(other())&&S.seq!=='splice'){bn.className='banner info';bn.textContent=`Reel ${other()+1} needs preparing: press "Prepare new reel" before the running reel ends.`}
+  else bn.className='banner hidden';
+  // ladder
+  const sub=curSub();
+  ladEl.querySelectorAll('div').forEach(d=>{const k=d.dataset.k;d.classList.toggle('cur',k===S.seq||(k===sub)||(k==='run'&&S.seq==='run')||(k==='alarm'&&(S.seq==='alarm'||anyY())&&!S.run));d.classList.toggle('bad',k==='alarm'&&anyY())});
+  // lamps
+  LAMPS.forEach((l,i)=>{const on=!!l[2]();const el=$('lp'+i);el.classList.toggle('on',on&&l[3]!=='bad');el.classList.toggle('bad',on&&l[3]==='bad')});
+  // alarms
+  const al=ADEF.filter(a=>act(a.k));$('alist').innerHTML=al.length?al.map(a=>`<div class="alarm ${a.c} ${AL[a.k].on?'':'ack'}">${a.a}<span class="en">${a.n}</span></div>`).join(''):'<div class="empty">No alarms.</div>';
+  // CH bar
+  $('chT').textContent=S.T.toFixed(1)+' °C';$('chSP').textContent=set.T+' °C';$('chU').style.width=(S.u/65*100)+'%';
+  $('chK').style.left=Math.max(0,Math.min(100,50+(S.T-set.T)/(8)*50/1))+'%';
+  $('chLo').textContent=set.T-8;$('chMid').textContent=set.T;$('chHi').textContent=set.T+8;
+  $('chWin').style.background=`linear-gradient(90deg,#f7b5bb 0%,#f7b5bb ${50-3/8*50}%,#d6efdc ${50-3/8*50}%,#d6efdc ${50+3/8*50}%,#f7b5bb ${50+3/8*50}%)`;
+  // servo
+  $('svPos').textContent=S.hx.toFixed(0)+' mm';$('svSt').textContent=Math.abs(S.hx)<4?'1':Math.abs(S.hx-POS2)<4?'2':'moving';$('svH').style.left=(1+S.hx/POS2*97)+'%';
+  // marks
+  $('mrV').innerHTML=S.marks.map(m=>m.a==='extra'?'<i class="miss"></i>':'<i></i>').join('');
+  $('mrA').innerHTML=S.marks.map(m=>m.a==='miss'?'<i class="miss"></i>':(m.a==='extra'?'<i class="extra"></i>':'<i></i>')).join('');
+  $('accN').textContent=(S.acc>0?'+':'')+S.acc;$('accK').style.left=`calc(${50+S.acc/15*50}% - 3px)`;
+  // result
+  const r=S.lastRes;const rs=$('res');
+  if(!r)rs.innerHTML='<div style="grid-column:1/-1">No splice yet.</div>';
+  else{const e=r.err;const cells=[
+    ['Splice vs design',e==null?'--':(e>0?'+':'')+e.toFixed(1)+' mm',e!=null&&Math.abs(e)>10?'badv':(e!=null?'okv':'')],
+    ['Stop after request',r.stopAt==null?'--':Math.round(r.stopAt)+' ms',''],
+    ['Sideways movement',r.sideMs==null?'--':Math.round(r.sideMs)+' ms',r.sideMs>1500?'badv':''],
+    ['Lowest magazine',r.minM.toFixed(2)+' m',r.minM<2?'badv':''],
+    ['Bar temp at sealing',r.Tav==null?'--':r.Tav.toFixed(1)+' °C',''],
+    ['Result',r.ok?(r.q||'good'):'cancelled',r.ok&&r.q==='good'?'okv':'badv']];
+    rs.innerHTML=cells.map(c=>`<div class="${c[2]}">${c[0]}<b>${c[1]}</b></div>`).join('')}
+  $('bSplice').disabled=S.seq==='splice';
+}
+
+/* ---------- splice head close-up ---------- */
+const cvH=$('cvHead'),hctx=cvH.getContext('2d');cvH.width=2000;cvH.height=760;
+const HS=[300,700],HTOP=[500,0];
+function drawHead(){
+  const c0=ctx;ctx=hctx;try{drawHeadInner()}finally{ctx=c0}
+}
+function lab(name,sub,on,x,y,ax,ay,al){
+  // leader line from label to the part
+  ctx.save();ctx.strokeStyle='#8fa4a0';ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(al==='left'?x-6:x+6,y);ctx.lineTo(ax,ay);ctx.stroke();ctx.restore();
+  circ(ax,ay,2.6,'#e3ece9',1,'#040505');
+  txt(name,x,y-7,{s:12.5,w:700,a:al});
+  if(sub!==null){const st=on===null?'':(on?'  ON':'  OFF');
+    ctx.font='600 11px "JetBrains Mono",monospace';const w1=ctx.measureText(sub).width;
+    const x0=al==='left'?x:x-w1-ctx.measureText(st).width;
+    txt(sub,x0,y+9,{s:11,mono:1,a:'left',c:'#fde900'});
+    if(st)txt(st,x0+w1,y+9,{s:11,mono:1,a:'left',w:700,c:on?'#5fd08b':'#6d8580'});}
+}
+function drawHeadInner(){
+  ctx.setTransform(2,0,0,2,0,0);ctx.clearRect(0,0,1000,380);ctx.fillStyle='#131b1f';ctx.fillRect(0,0,1000,380);
+  const sp=S.seq==='splice',ph=S.ph,pt=S.pt;const H=HS[0]+S.hx/POS2*(HS[1]-HS[0]);
+  const pr=sp&&((ph==='part1'&&pt>=P1_PR&&pt<P1_END)||(ph==='part2'&&pt<set.st));
+  const cut=sp&&ph==='part1'&&pt>=P1_CUT&&pt<P1_END;
+  const lock=S.lock||(sp&&(ph==='part1'||ph==='side'||(ph==='part2'&&pt<set.st+PRESS_DLY)));
+  const tens=sp&&!(ph==='part2'&&pt>=set.st+PRESS_DLY);
+  const seal=sp&&ph==='part2'&&pt<set.st;
+  const joined=sp&&S.spl&&S.spl.joined;
+  const cutDone=sp&&S.spl&&S.spl.cutOk&&!joined&&((ph==='part1'&&pt>=P1_END)||ph==='side'||ph==='part2');
+  const a=S.act,o=1-a;
+  // servo rail + stations
+  box(150,58,700,8,'#dfe0e0','#040505',3);
+  for(let i=0;i<2;i++){ctx.save();ctx.strokeStyle='#3d5560';ctx.setLineDash([2,4]);ctx.beginPath();ctx.moveTo(HS[i],70);ctx.lineTo(HS[i],336);ctx.stroke();ctx.restore();
+    txt(`Station ${i+1} (reel ${i+1})`,HS[i],46,{s:11.5,w:700,c:'#bcd0cb'});txt(i?'492 mm':'0 mm',HS[i],32,{s:10.5,mono:1,c:'#8fa4a0'})}
+  txt('Head servo',866,12,{s:12,w:700,a:'left'});tag('T50M9020',898,29);
+  const mv=sp&&ph==='side'?((Math.sign(S.hv)||1)>0?'  → moving':'  ← moving'):'';
+  txt(`${S.hx.toFixed(0)} mm${mv}`,866,46,{s:11,mono:1,a:'left',c:mv?'#55b6ea':'#8fa4a0'});
+  // head body
+  ctx.save();ctx.globalAlpha=.9;box(H-110,72,220,170,'#2c3b22','#b9d983',10,2);ctx.restore();
+  txt('Splice head',H-100,86,{s:12,w:700,a:'left',c:'#b9d983'});
+  // webs
+  const top=[[H,72],[H,62],HTOP];
+  if(!sp||joined||!cutDone){
+    // running web passes straight through the head
+    web([[HS[a],336],[HS[a],72]]);web([[HS[a],72],[HS[a],62],HTOP]);
+  }else{
+    web([[H,226],...top]);                        // old web end held on the bar
+    web([[HS[a],336],[HS[a],250]],'#c98b4a',3);   // cut tail of the old web
+    const lx=a?HS[a]+14:HS[a]-14;
+    txt('Old web tail (cut)',lx,322,{s:11,w:600,a:a?'left':'right',c:'#c98b4a'});
+  }
+  // new reel start held at the other station
+  const okPrep=prepared(o)||(S.prep[o]&&S.R[o]>0);
+  if(!joined&&okPrep){const x=HS[o];const yt=120;
+    web([[x,336],[x,yt]],'#e9a640',3.5);
+    ctx.beginPath();ctx.moveTo(x-5,yt+4);ctx.lineTo(x+1,yt-8);ctx.lineTo(x+6,yt+4);ctx.closePath();ctx.fillStyle='#e9a640';ctx.fill();
+    box(x-14,304,28,12,F.hold?'#e0242f':'#75923b','#040505',3);
+    if(Math.abs(H-x)>150){const al=o?'left':'right',lx=o?x+20:x-20;
+      lab('New reel start',null,null,lx,140,x+(o?4:-4),140,al);
+      lab('Material holder','DI_SpliceTable'+(o+1),!F.hold,lx,310,x+(o?14:-14),310,al)}
+  }
+  // seal glow
+  if(seal){ctx.save();ctx.shadowColor='#ff7a00';ctx.shadowBlur=18;ctx.fillStyle='rgba(255,138,26,.55)';ctx.fillRect(H-8,112,8,94);ctx.restore()}
+  // lock cylinders (top)
+  box(H-22,90,14,20,'#99a8a8','#040505',2);box(H+(lock?6:22),90,16,20,lock?'#3b9c5a':'#5d6670','#040505',2);
+  box(H+(lock?22:38),96,40-(lock?0:16),8,'#99a8a8','#040505',2);
+  // CH bar (left of web)
+  const hot=Math.max(0,Math.min(1,(S.T-60)/120));
+  box(H-36,112,26,94,`rgb(253,${Math.round(185-95*hot)},${Math.round(50-30*hot)})`,'#040505',3);
+  // pressure rail (right of web)
+  const rx=pr?H+4:H+30;box(rx,116,16,86,'#4687c7','#040505',2);box(rx+16,154,H+92-rx-16,10,'#99a8a8','#040505',2);
+  // knife
+  const kx=cut?H-16:H+34;ctx.beginPath();ctx.moveTo(kx,222);ctx.lineTo(kx+22,214);ctx.lineTo(kx+22,230);ctx.closePath();ctx.fillStyle=cut?'#ff5d50':'#c5ced1';ctx.fill();ctx.strokeStyle='#040505';ctx.lineWidth=1.2;ctx.stroke();
+  box(kx+22,218,H+96-kx-22,8,'#99a8a8','#040505',2);
+  if(cut){txt('✂',H-28,236,{s:14,c:'#ff5d50'})}
+  // web tension cylinder (below head, left)
+  const ry=272,rr=9,rcx=tens?H-rr-2:H-34;
+  box(H-100,ry-9,40,18,'#99a8a8','#040505',3);box(H-60,ry-3,rcx-(H-60),6,'#c5ced1','#040505',1.5);circ(rcx,ry,rr,tens?'#3b9c5a':'#5d6670');
+  // labels around the head
+  const L=H-124,R=H+124;
+  lab('CH heating bar',`${S.T.toFixed(1)} °C`,null,L,150,H-36,150,'right');
+  lab('Web tension cylinder','T10K1641',tens,H-108,272,H-100,272,'right');
+  lab('Material lock cylinders','VAR_LoopMotorLock',lock,R,98,H+40,100,'left');
+  lab('Pressure rail','T10K1621',pr,R,160,rx+16,170,'left');
+  lab('Knife (cutting cylinder)','T10K1631',cut,R,222,H+70,222,'left');
+  if(seal){txt(`Sealing ${(pt/1000).toFixed(2)} / ${(set.st/1000).toFixed(1)} s`,H-48,252,{s:11,w:700,c:'#ff8a3d',a:'right'})}
+  // caption
+  let t1,t2;if(sp){const L2=LADDER.find(x=>x.k===curSub());t1=L2?L2.t:'';t2=L2?L2.a:''}
+  else if(S.seq==='alarm'){t1='Alarm';t2='motors stopped until reset'}else{t1=S.run?'Production':'Stopped';t2='head waits at the running reel\'s station'}
+  box(10,342,980,34,sp?'#1f2e22':'#19232a',sp?'#6f9a2c':'#26353d',8);
+  txt(t1+(sp?`  ·  ${(S.spT/1000).toFixed(2)} s since request`:''),24,359,{s:13,w:700,a:'left'});
+  txt(t2,400,359,{s:11.5,a:'left',c:'#bcd0cb'});
+  const es=effSp();
+  if(paused)txt('PAUSED',978,359,{s:13,w:700,a:'right',c:'#ff5d50'});
+  else if(sp&&slowSp)txt(`Slow motion ×${slowSp}`,978,359,{s:12,w:700,a:'right',c:'#e9a640'});
+}
+/* ---------- loop ---------- */
+let last=performance.now(),acc=0,histT=0;
+function frame(now){
+  let dt=Math.min(0.1,(now-last)/1000);last=now;
+  const es=effSp();if(es>0){const n=Math.max(1,Math.ceil(es*dt/0.004));const h=es*dt/n;for(let i=0;i<n;i++)step(h);}
+  histT+=es*dt;if(histT>=0.2){histT=0;hist.push({t:S.t,v:S.v,vL:S.vL,vM:S.vM,M:S.M,T:S.T,sp:S.seq==='splice'});while(hist.length&&hist[0].t<S.t-92)hist.shift()}
+  draw();drawHead();uiT+=dt;if(uiT>0.1){uiT=0;ui();drawTrend();drawTime()}
+  requestAnimationFrame(frame);
+}
+log('Simulator ready. Reel 1 running, reel 2 prepared.','i');
+requestAnimationFrame(frame);
+
+</script>
+
+</body>
+</html>

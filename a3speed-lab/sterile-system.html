@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="محاكي النظام المعقّم في A3/Speed: التعقيم بالحرارة والرش والتجفيف والإنذارات.">
+<link rel="canonical" href="https://www.learnelectricals.com/a3speed-lab/sterile-system.html">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>النظام المعقّم A3/Speed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Dark HMI look (same family as the other A3/Speed simulators); values and tags from the A3/Speed program. */
+:root{
+  color-scheme: dark;
+  --bg:#0b1013; --sheet:#11191d; --ink:#e4ece9; --muted:#8fa4a0; --line:#26363e; --line2:#1d2a30; --accent:#e9a640;
+  --air:#7fb8ff; --hot:#ff6b4a; --warm:#ffa64a; --steam:#dfe8e6; --prod:#ffd84a; --water:#4ec3e0; --pwater:#a8e6f0; --per:#5fd08b; --cair:#55b6ea; --grey:#2b3d45;
+  --num:#0a1114; --tag:#071014;
+  --ok:#5fd08b; --okbg:#173326; --alarm:#ff5d50; --alarmbg:#2a1715; --warn:#ffc629; --warnbg:#2a2410; --info:#55b6ea; --infobg:#10222e;
+  --gAir:#0e1619; --gAirH:#5a2420; --gPer:#0e1619; --gPerH:#1d4f36; --gSeq:#0e1619; --gSeqH:#1b4560; --gFault:#0e1619; --gFaultH:#3f3360;
+  --f-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Arabic",system-ui,"Segoe UI",Tahoma,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+html,body{background:var(--bg);color:var(--ink);margin:0}
+body{font-family:var(--f-body);font-size:15px;line-height:1.6}
+.wrap{direction:rtl;max-width:1400px;margin:0 auto;padding-block:16px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:16px}
+h1{font-family:var(--f-display);font-size:clamp(21px,3vw,30px);margin:0;text-wrap:balance}
+h2{font-family:var(--f-display);font-size:15.5px;margin:0 0 8px;font-weight:700;text-wrap:balance}
+h3{font-size:14px;margin:0 0 4px}
+.sub{color:var(--muted);margin:0;font-size:14px;max-width:80ch}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:end;justify-content:space-between}
+.en{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-size:.82em;color:#bcd0cb}
+.mono{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-variant-numeric:tabular-nums}
+button,select,input{font-family:var(--f-body);font-size:14px;color:var(--ink)}
+button,select{background:#17232a;border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer;touch-action:manipulation}
+button:hover{border-color:#8fa4a0}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cair);outline-offset:2px}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.go{background:#173326;border-color:#2f6a4a;color:#9ff0c0;font-weight:700}
+button.stop{background:#2c1614;border-color:#6b3430;color:#ffb3ab;font-weight:700}
+button.on{border-color:var(--alarm);color:var(--alarm);background:var(--alarmbg);font-weight:600}
+.note{font-size:12.5px;color:var(--muted)}
+.simp{font-size:12px;color:var(--warn);background:var(--warnbg);border:1px dashed #6b5a1c;border-radius:6px;padding:0 7px;display:inline-block}
+.pill{display:inline-block;border-radius:99px;padding:1px 10px;font-size:12.5px;font-weight:600;border:1px solid currentColor;white-space:nowrap}
+.pill.ok{color:var(--ok);background:var(--okbg)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+.group{border-radius:14px;padding:0 0 14px;border:1px solid var(--line);overflow:hidden}
+.group>.gh{display:flex;align-items:center;gap:10px;padding:9px 16px;color:#fff;font-family:var(--f-display);font-weight:700;font-size:16px}
+.group>.gh .gn{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.25);font-family:var(--f-mono);font-size:14px}
+.group>.gb{padding:14px 14px 0;display:grid;gap:12px}
+.g-seq{background:var(--gSeq)} .g-seq>.gh{background:var(--gSeqH)}
+.g-air{background:var(--gAir)} .g-air>.gh{background:var(--gAirH)}
+.g-per{background:var(--gPer)} .g-per>.gh{background:var(--gPerH)}
+.g-fault{background:var(--gFault)} .g-fault>.gh{background:var(--gFaultH)}
+.card{background:var(--sheet);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0;box-shadow:none}
+.cols{display:grid;gap:12px;align-items:start}
+.c2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.c21{grid-template-columns:minmax(0,1.75fr) minmax(0,1fr)}
+@media (max-width:1050px){.c3{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.c21{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:720px){.c2,.c3{grid-template-columns:minmax(0,1fr)}}
+
+.strip{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center;background:linear-gradient(180deg,#121c21,#0e1619);border:1px solid #2f4149;border-radius:16px;padding:14px 16px;box-shadow:none}
+@media (max-width:900px){.strip{grid-template-columns:minmax(0,1fr)}}
+.value{width:108px;height:94px;border-radius:14px;background:#081014;border:2px solid var(--accent);display:grid;place-items:center;align-content:center;font-family:var(--f-mono);font-size:36px;font-weight:700;color:var(--accent);direction:ltr;line-height:1}
+.value small{display:block;font-size:10.5px;color:var(--muted);margin-top:6px;font-weight:500;text-align:center;font-family:var(--f-body)}
+.value.bad{border-color:var(--alarm)}
+.state{font-family:var(--f-display);font-size:clamp(18px,2.4vw,24px);font-weight:700;line-height:1.3}
+.state .en{font-size:.6em;color:var(--muted);margin-inline-start:6px}
+.msg{font-size:14.5px;min-height:2.4em;text-wrap:pretty}
+.ctrls{display:grid;gap:8px;min-width:0}
+.ctrls .row button{padding:9px 14px}
+.kv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px}
+@media (max-width:560px){.kv{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kv div{background:#0d1518;border:1px solid var(--line2);border-inline-start:5px solid var(--c,#4a5e66);border-radius:8px;padding:4px 8px}
+.kv b{display:block;font-family:var(--f-mono);font-size:17px;direction:ltr;text-align:right;font-variant-numeric:tabular-nums}
+.kv span{font-size:11.5px;color:var(--muted)}
+.kv div.badv{background:var(--alarmbg);border-color:#6b3430}.kv div.badv b{color:var(--alarm)}
+
+canvas{display:block;width:100%;max-width:100%;border-radius:10px;background:#0a1114}
+.scrollx{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px;border:1px solid var(--line2)}
+.scrollx canvas{min-width:780px}
+#cvDia{aspect-ratio:1000/640}
+#cvTrend{height:220px}
+#cvConc{height:140px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:16px;height:9px;border-radius:2px;margin-inline-end:5px;vertical-align:0;border:1px solid #4a5e66}
+
+.ladder{display:grid;gap:4px;font-size:13px}
+.ladder div{display:grid;grid-template-columns:24px minmax(0,1fr);gap:8px;align-items:start;padding:5px 8px;border-radius:8px;border:1px solid transparent;background:#0d1518}
+.ladder div b{font-family:var(--f-mono);font-size:12px;color:var(--muted);text-align:center;padding-top:1px}
+.ladder div span small{display:block;color:var(--muted);font-size:11.5px;line-height:1.4}
+.ladder div.done{opacity:.6}
+.ladder div.cur{background:#2a2410;border-color:#6b5a1c;box-shadow:0 0 0 2px var(--prod) inset}
+.ladder div.fail{background:var(--alarmbg);border-color:#6b3430}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font-size:12.5px;padding:3px 9px}
+.chips button .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-inline-end:5px;vertical-align:-1px;border:1px solid rgba(255,255,255,.3)}
+.chips button.off{opacity:.4}
+.lamps{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px}
+.lamp{display:flex;gap:7px;align-items:center;background:#0d1518;border:1px solid var(--line2);border-radius:8px;padding:3px 8px;font-size:12.5px;min-width:0}
+.lamp i{flex:none;width:12px;height:12px;border-radius:50%;background:#2b3d45;border:1px solid #4a5e66}
+.lamp.on i{background:#2fbf63;border-color:#1d8448;box-shadow:0 0 6px #2fbf63}
+.lamp.hot i{background:var(--hot);border-color:#a3101d;box-shadow:0 0 6px var(--hot)}
+.lamp b{font-family:var(--f-mono);font-size:10.5px;direction:ltr;color:#bcd0cb;font-weight:500}
+.lamp span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.band{position:relative;height:30px;border-radius:7px;background:#0d1518;border:1px solid var(--line);margin-top:8px;overflow:hidden;direction:ltr}
+.band .z{position:absolute;top:0;bottom:0}
+.band .mk{position:absolute;top:-2px;bottom:-2px;width:4px;background:var(--ink);border-radius:2px;transition:left .25s}
+.band .lb{position:absolute;top:5px;font-size:11px;font-weight:700;font-family:var(--f-mono);transform:translateX(6px);color:var(--ink)}
+.scale{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:10.5px;color:var(--muted);direction:ltr}
+.meters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.meters div{background:#0d1518;border:1px solid var(--line2);border-radius:8px;padding:4px 8px}
+.meters b{display:block;font-family:var(--f-mono);font-size:16px;direction:ltr;text-align:right}
+.meters span{font-size:11.5px;color:var(--muted)}
+.meters div.badv{background:var(--alarmbg)} .meters div.badv b{color:var(--alarm)}
+.hev{position:relative;height:22px;border-radius:11px;background:linear-gradient(90deg,var(--air),var(--warm) 50%,var(--hot));border:1px solid #4a5e66;direction:ltr;margin-top:6px}
+.hev .k{position:absolute;top:-4px;width:8px;height:28px;border-radius:3px;background:#10161b;transform:translateX(-4px);transition:left .3s}
+.gauge{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:stretch}
+.tank{position:relative;width:70px;height:220px;border:2px solid #4a5e66;border-radius:8px 8px 18px 18px;background:#0d171b;overflow:hidden}
+.tank .liq{position:absolute;left:0;right:0;bottom:0;background:var(--per);transition:height .3s}
+.marks{position:relative;height:220px;font-size:11.5px}
+.marks div{position:absolute;right:0;left:0;border-top:1px dashed #4a5e66;color:var(--muted);line-height:1.15}
+.marks div b{font-family:var(--f-mono);font-weight:600;color:var(--ink);direction:ltr;unicode-bidi:isolate}
+.sbar{position:relative;height:26px;border-radius:6px;background:#0d1518;border:1px solid var(--line);overflow:hidden;direction:ltr}
+.sbar .win{position:absolute;top:0;bottom:0;background:rgba(29,132,72,.16);border-inline:1px dashed var(--ok)}
+.sbar .ev{position:absolute;top:3px;bottom:3px;width:4px;border-radius:2px}
+.sbar .cur{position:absolute;top:0;bottom:0;width:2px;background:var(--cair)}
+.sbar span{position:absolute;top:4px;font-size:10.5px;color:var(--muted);font-family:var(--f-mono);transform:translateX(3px)}
+.alist{display:grid;gap:5px}
+.alarm{border-radius:8px;padding:4px 9px;font-size:13px;border:1px solid;display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);gap:8px;align-items:baseline}
+.alarm .en{font-size:10px;color:inherit;opacity:.85;word-break:break-all}
+.alarm.Y{background:var(--warnbg);border-color:#6b5a1c;color:#ffd78a}
+.alarm.B{background:var(--infobg);border-color:#24506b;color:#9fd8ff}
+.faults{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
+.faults button{text-align:right;font-size:13px;line-height:1.35;padding:7px 10px}
+.faults button small{display:block;color:var(--muted);font-size:11.5px}
+.log{max-height:240px;overflow:auto;font-size:12.5px;display:grid;gap:3px}
+.log div{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:baseline;border-bottom:1px solid var(--line2);padding-bottom:2px}
+.log .t{font-family:var(--f-mono);color:var(--muted);font-size:11px;direction:ltr}
+.sev-Y{color:#ffc629}.sev-B{color:var(--info)}.sev-i{color:var(--muted)}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;margin-top:8px}
+.opts button{text-align:right}
+.opts button.right{border-color:var(--ok);color:var(--ok);background:var(--okbg);font-weight:700}
+.opts button.wrong{border-color:var(--alarm);color:var(--alarm);background:var(--alarmbg)}
+input[type=range]{width:100%;accent-color:var(--cair)}
+.learn{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.learn div{background:#0d1518;border:1px solid var(--line2);border-radius:10px;padding:9px 12px;font-size:13.5px}
+.learn h3{color:var(--gSeqH)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<nav aria-label="تنقل" style="direction:rtl;display:flex;flex-wrap:wrap;gap:8px;max-width:1400px;margin:0 auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 0;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:14px"><a href="/a3speed-lab/" style="color:#1f5a96;text-decoration:none;font-weight:600;padding:4px 10px;border:1px solid #c5c5c5;border-radius:8px;background:#fff">← كل محاكيات A3/Speed</a></nav>
+<div class="wrap">
+<header>
+  <div>
+    <h1>النظام المعقّم <span class="en">A3/Speed</span> — محاكي تفاعلي</h1>
+    <p class="sub">الخطوات والتايمرات والحدود والإنذارات هنا هي اللي في برنامج الماكينة نفسه،  شغّل التسلسل من التحضير لحد الإنتاج، راقب الحساسات، واعمل أعطال بإيدك وشوف الماكينة بتعمل إيه.</p>
+  </div>
+  <div class="row">
+    <span class="note">سرعة الزمن</span>
+    <select id="speed" aria-label="سرعة الزمن">
+      <option value="1">×1 (زمن حقيقي)</option>
+      <option value="5">×5</option>
+      <option value="20" selected>×20</option>
+      <option value="60">×60</option>
+    </select>
+  </div>
+</header>
+
+<section class="strip" aria-live="polite">
+  <div class="value" id="stepBox">1<small>الخطوة</small></div>
+  <div style="min-width:0">
+    <div class="state" id="stateTxt">—</div>
+    <div class="msg" id="msgTxt"></div>
+    <div class="kv" id="kv"></div>
+  </div>
+  <div class="ctrls">
+    <div class="row">
+      <button class="go" id="btnUp">خطوة لفوق ▲</button>
+      <button class="go" id="btnMotor" disabled>تشغيل الموتور</button>
+      <button class="stop" id="btnStop">إيقاف</button>
+    </div>
+    <div class="row">
+      <button id="btnEnd">إنهاء الإنتاج</button>
+      <button id="btnPause">إيقاف مؤقت</button>
+      <button id="btnReset">من الأول</button>
+    </div>
+    <div class="row">
+      <button id="jHS">اقفز للتعقيم بالحرارة</button>
+      <button id="jProd">اقفز للإنتاج</button>
+    </div>
+  </div>
+</section>
+
+<section class="group g-seq">
+  <div class="gh"><span class="gn">1</span>المخطط والخطوات</div>
+  <div class="gb">
+    <div class="cols c21">
+      <div class="card">
+        <h2>مخطط النظام المعقّم (لايف)</h2>
+        <div class="scrollx"><canvas id="cvDia" role="img" aria-label="مخطط متحرك للنظام المعقم"></canvas></div>
+        <div class="legend">
+          <span><i style="background:var(--air)"></i>هوا</span>
+          <span><i style="background:var(--hot)"></i>هوا سخن</span>
+          <span><i style="background:var(--warm)"></i>هوا متسخّن مسبقًا أو متبرّد</span>
+          <span><i style="background:var(--steam)"></i>بخار</span>
+          <span><i style="background:var(--prod)"></i>منتج</span>
+          <span><i style="background:var(--water)"></i>مياه</span>
+          <span><i style="background:var(--pwater)"></i>مياه منقّاة</span>
+          <span><i style="background:var(--per)"></i>بيروكسيد</span>
+          <span><i style="background:var(--cair)"></i>هوا مضغوط</span>
+        </div>
+        <p class="note" style="margin:6px 0 0">الدواير الوردي أرقام الأجزاء، والمربعات الصفرا قراءات الحساسات. على الموبايل اسحب المخطط يمين وشمال.</p>
+      </div>
+      <div class="card">
+        <h2>خطوات البرنامج</h2>
+        <div class="ladder" id="ladder"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="group g-air">
+  <div class="gh"><span class="gn">2</span>الهوا المعقّم وغرفة التعقيم</div>
+  <div class="gb">
+    <div class="cols c2">
+      <div class="card">
+        <h2>منحنيات الحرارة</h2>
+        <div class="chips" id="chips"></div>
+        <canvas id="cvTrend" style="margin-top:8px" aria-label="منحنى درجات الحرارة"></canvas>
+      </div>
+      <div class="card">
+        <h2>صمام المبادل الحراري وحرارة الغرفة</h2>
+        <p class="note" style="margin:0">صمام بموتور <span class="en">U70M2450</span> (لقدّام/لورا) وحساس مكان. <b>0%</b> = أقصى تبريد، <b>100%</b> = تحويلة (أقصى تسخين). الكنترول بيحرّكه عشان حرارة الغرفة <span class="en">U70B3540</span> تفضل على الضبط.</p>
+        <div class="hev"><div class="k" id="hevK"></div></div>
+        <div class="scale"><span>0% تبريد</span><span id="hevV">—</span><span>100% تحويلة</span></div>
+        <div class="band" id="acBand"></div>
+        <div class="scale"><span>30°</span><span>60°</span><span>90°</span><span>120°</span></div>
+        <p class="note" id="acRule" style="margin:6px 0 0"></p>
+      </div>
+    </div>
+    <div class="cols c3">
+      <div class="card">
+        <h2>الكومبرسور ومياه الإحكام</h2>
+        <div class="meters">
+          <div id="mFlow"><span>تدفق الهوا <span class="en">U70B2470</span></span><b>—</b></div>
+          <div id="mSeal"><span>مياه الإحكام <span class="en">U70B2010</span></span><b>—</b></div>
+          <div id="mSep"><span>مستوى فاصل المياه</span><b>—</b></div>
+          <div id="mBv"><span>حرارة صمام B <span class="en">U70B1740</span></span><b>—</b></div>
+        </div>
+        <p class="note" style="margin:6px 0 0">الضبط ١٠٠ م³/ساعة في التعقيم و١٢٠ في الإنتاج. إنذار لو التدفق أقل من ٩٣٪ من الضبط في التعقيم أو ٨٣٪ في الوقفة والإنتاج لمدة ٣٠ ثانية. مياه الإحكام ٧ لتر/د والإنذار تحت ٥٫٥.</p>
+      </div>
+      <div class="card">
+        <h2>السخان الفائق</h2>
+        <div class="meters">
+          <div id="mSh"><span>حرارة الهوا <span class="en">U70Q0450</span></span><b>—</b></div>
+          <div id="mShSp"><span>الضبط الحالي</span><b>—</b></div>
+          <div id="mPre"><span>التعقيم المسبق <span class="en">U70B3520</span></span><b>—</b></div>
+          <div id="mHold"><span>٢٨٠° لمدة ٣٠ ثانية</span><b>—</b></div>
+        </div>
+        <p class="note" style="margin:6px 0 0">الضبط ٤٠٠° في التعقيم و٣٦٠° بعده. أقل حد ٣٣١° (٣٠١° في التجفيف)، وأعلى حد ٤٥٠°. لو بعد ٥ دقايق لسه تحت ١٠٠° أو بعد ١٠ دقايق تحت ٨٠٪ من الضبط = عطل السخان.</p>
+      </div>
+      <div class="card">
+        <h2>تنك الرش</h2>
+        <p class="note" style="margin:0">ملء <span class="en">U70K3290</span> لمدة ١١ ث، وقفة ١ ث، ورش <span class="en">U70K3300</span> لمدة ٤٣ ث. حساس المستوى لازم يقفل بعد ٣ وقبل ١٠ ث من بداية الملء، ويفتح بعد ١٨ وقبل ٣٨ ث من بداية الرش.</p>
+        <div class="note" style="margin-top:6px">الملء (ث)</div><div class="sbar" id="sbFill"></div>
+        <div class="note">التفريغ (ث من بداية الرش)</div><div class="sbar" id="sbEmpty"></div>
+        <div id="sprayRes" class="note" style="margin-top:4px"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>الخرج والصمامات</h2>
+      <div class="lamps" id="lamps"></div>
+    </div>
+  </div>
+</section>
+
+<section class="group g-per">
+  <div class="gh"><span class="gn">3</span>نظام البيروكسيد ولمبة UV</div>
+  <div class="gb">
+    <div class="cols c3">
+      <div class="card">
+        <h2>تركيز البيروكسيد</h2>
+        <p class="note" style="margin:0">الريفراكتوميتر بيقيس التركيز والحرارة، والأرقام بتتحدّث كل دقيقة. الحدود في البرنامج بتختلف قبل الرش وبعده.</p>
+        <div class="band" id="cBand"></div>
+        <div class="scale"><span>25%</span><span>35%</span><span>45%</span><span>55%</span></div>
+        <canvas id="cvConc" style="margin-top:8px" aria-label="منحنى التركيز"></canvas>
+        <div class="meters" style="margin-top:8px">
+          <div><span>التركيز <span class="en">U30K1120</span></span><b id="cRead">—</b></div>
+          <div id="mDT"><span>فرق الحرارة تنك/جهاز (حد ١٠°)</span><b id="cDT">—</b></div>
+        </div>
+        <p class="note" id="cLim" style="margin:6px 0 0"></p>
+        <div class="row" style="margin-top:6px"><button id="btnClean">نضّف منشور الجهاز</button></div>
+      </div>
+      <div class="card">
+        <h2>مستوى تنك البيروكسيد <span class="en">U30K1140</span></h2>
+        <div class="gauge">
+          <div class="tank"><div class="liq" id="lvLiq"></div></div>
+          <div class="marks" id="lvMarks"></div>
+        </div>
+        <div class="meters" style="margin-top:8px">
+          <div><span>القيمة بعد الفلتر (mV)</span><b id="lvVal">—</b></div>
+          <div><span>التزويد</span><b id="lvRefill">—</b></div>
+        </div>
+        <p class="note" style="margin:6px 0 0">كل ٠٫١ ث: القيمة = ١٠٪ من القراءة الجديدة + ٩٠٪ من القديمة. التزويد: لو التركيز أقل من ٣٨٪ يتزوّد بيروكسيد <span class="en">U30K1460</span>، ولو ٣٨٪ أو أكتر يتزوّد مياه منقّاة من تبريد لمبة UV <span class="en">U30K1480</span> لحد ما يوصل ٣٦٪.</p>
+      </div>
+      <div class="card">
+        <h2>الحمّام والسخانات</h2>
+        <div class="meters">
+          <div id="mBath"><span>حرارة الحمّام <span class="en">U70B2630</span></span><b>—</b></div>
+          <div id="mTank"><span>حرارة التنك <span class="en">U30B1710</span></span><b>—</b></div>
+          <div id="mH1"><span>سطح سخان مدخل ١ <span class="en">U70B2590</span></span><b>—</b></div>
+          <div id="mH3"><span>سطح سخان مخرج ٣ <span class="en">U70B2570</span></span><b>—</b></div>
+          <div id="mBl"><span>مستوى الحمّام</span><b>—</b></div>
+          <div id="mPs"><span>سرعة الطلمبة <span class="en">U30K1260</span></span><b>—</b></div>
+        </div>
+        <p class="note" style="margin:6px 0 0">الحمّام في الإنتاج ٨٥° (إنذار فوق ٩٥° أو تحت ٨٢°). التنك ٨٦° (إنذار فوق ٩١°). سطح أي سخان فوق ١٧٠° = إنذار ووقوف. في الوقفة السخانات تنزل لـ ٧١°، وبعد ٣ دقايق ترجع ٨٢°.</p>
+      </div>
+    </div>
+    <div class="card">
+      <h2>لمبة <span class="en">UV</span> ومياه تبريدها</h2>
+      <div class="cols c2">
+        <div class="meters">
+          <div id="mIrr"><span>الإشعاع (المفروض ١٠٧–١٢٥٪)</span><b>—</b></div>
+          <div id="mPow"><span>القدرة (٥٠–١٠٠٪)</span><b>—</b></div>
+          <div id="mUvF"><span>مياه التبريد (٢–٢٫٥ لتر/د)</span><b>—</b></div>
+          <div id="mUvT"><span>حرارة المياه</span><b>—</b></div>
+        </div>
+        <div>
+          <label class="note" style="display:block">عمر أفلام الراديوميتر وطقم الإشعاع: <b class="mono" id="uvAgeV"></b>
+            <input type="range" id="uvAge" min="0" max="100" value="20"></label>
+          <p class="note" style="margin:4px 0 0">كل ما تقدم الإشعاع يقل والكنترول يزوّد القدرة. قدرة فوق ٩٥٪ لمدة ١٠ دقايق = إنذار تشبّع (من غير وقوف). إشعاع تحت ١٠٠٪ والماكينة شغالة = وقوف. مياه فوق ٤٠° = وقوف.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="group g-fault">
+  <div class="gh"><span class="gn">4</span>الأعطال والإنذارات والتحدي</div>
+  <div class="gb">
+    <div class="cols c2">
+      <div class="card">
+        <h2>اعمل عطل بإيدك</h2>
+        <p class="note" style="margin:0 0 8px">دوس على العطل يشتغل، ودوس تاني يتشال. كل عطل بيبان في الخطوة اللي تخصّه.</p>
+        <div class="faults" id="faults"></div>
+      </div>
+      <div class="card">
+        <h2>الإنذارات دلوقتي</h2>
+        <p class="note" style="margin:0 0 6px">الأصفر بيوقف، والأزرق تنبيه. الاسم الإنجليزي هو اسم الإنذار في البرنامج.</p>
+        <div class="alist" id="alarmsNow"></div>
+        <h3 style="margin-top:10px">السجل</h3>
+        <div class="log" id="log"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>تحدّي: إيه العطل؟</h2>
+      <p class="note" style="margin:0">المحاكي هيختار عطل مستخبي ويحطّك في الخطوة المناسبة. راقب الحساسات والإنذارات واختار السبب.</p>
+      <div class="row" style="margin-top:8px">
+        <button class="go" id="chStart">ابدأ تحدّي جديد</button>
+        <span class="note" id="chScore"></span>
+      </div>
+      <div id="chBody" style="margin-top:6px;font-size:14px"></div>
+      <div class="opts" id="chOpts"></div>
+    </div>
+    <div class="card">
+      <h2>الفكرة باختصار</h2>
+      <div class="learn">
+        <div><h3>ليه هوا معقّم؟</h3>غرفة التعقيم لازم تفضل مليانة هوا نضيف تحت ضغط أعلى من بره، عشان مفيش ميكروب يدخل. الكومبرسور بحلقة مياه بيضغط الهوا، وفاصل المياه بيشيل المية، والسخان الفائق بيوصّله لـ ٤٠٠° في التعقيم.</div>
+        <div><h3>التعقيم بالحرارة</h3>الهوا السخن بيعدّي من المبادل في وضع التحويلة لحد ما حرارة التعقيم المسبق توصل ٢٨٠° وتفضل ٣٠ ثانية. في نفس الوقت صمام التسخين المسبق بيفتح ويقفل على ٣٩٫٥–٤٠٫٥° عشان الغرفة تسخن، وبشبوري الرش بيتنضّف بالهوا.</div>
+        <div><h3>الرش والتجفيف</h3>تنك الرش بيتملي وبعدين البيروكسيد بيترش رذاذ في الهوا السخن فيتبخر ويتكثف على أسطح الغرفة. بعدها ١٥ دقيقة تجفيف، والمبادل بيظبط الغرفة على ٨٥°.</div>
+        <div><h3>الحمّام</h3>الورق بيعدّي في بيروكسيد ٨٥° بتركيز بين ٣٢ و٤٨٪، وبعدين بكرات العصر وسكينة الهوا (١٦٠°) بتنشّفه قبل ما يدخل الغرفة. الغرفة في الإنتاج على ٧٨°.</div>
+      </div>
+      <p class="note" style="margin:10px 0 0"><span class="simp">تبسيط للتدريب</span> سرعة تسخين وتبريد كل جزء، حرارة الغرفة لكل مكان من أماكن صمام المبادل، اتجاه تغيّر التركيز مع الوقت، سرعة نزول المستوى، توقيت خطوتي «إشارة للمعقّم» و«التحضير للإنتاج»، وإن فقد التعقيم بعد التعقيم بيودّي على التهوية ثم التحضير. الأرقام والحدود والتايمرات نفسها من البرنامج.</p>
+    </div>
+  </div>
+</section>
+</div>
+
+<script>
+(()=>{
+'use strict';
+const $=id=>document.getElementById(id);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const approach=(v,t,tau,dt)=>v+(t-v)*(1-Math.exp(-dt/tau));
+
+const STEPS=[
+ {k:'prelim',ar:'التحضير',en:'Preliminary',c:'شيك التركيز وجهاز القياس ومستوى التنك وأماكن صمامات التحويل والفراشة والمبادل وفاصل المياه.'},
+ {k:'prepTS',ar:'تجهيز لحام الأنبوبة',en:'PrepareTubeSealing',c:'الكومبرسور جاهز، التركيز والمستوى تمام.'},
+ {k:'ts',ar:'لحام الأنبوبة',en:'TubeSealing',c:'أبواب الغرفة مقفولة. اطلع خطوة بإيدك.'},
+ {k:'hs',ar:'التعقيم بالحرارة',en:'HeatSterilization',c:'٢٨٠° لمدة ٣٠ ثانية، وتنضيف البشبوري ٥ دقايق.'},
+ {k:'spray',ar:'الرش',en:'Spray',c:'ملء ٣–١٠ ث، رش ١٨–٣٨ ث، الرش يخلص في ٥٥ ث.'},
+ {k:'dry',ar:'التجفيف',en:'Drying',c:'١٥ دقيقة من غير إنذار تعقيم.'},
+ {k:'sdone',ar:'التعقيم خلص',en:'SterilizationDone',c:'كل الوحدات خلصت تعقيم.'},
+ {k:'sig',ar:'إشارة للمعقّم',en:'SignalToSterilizer',c:'المنتج جاهز.'},
+ {k:'prepP',ar:'التحضير للإنتاج',en:'PrepareProduction',c:'حرارة سخانات الفلابات وسكينة الهوا تمام. أكتر من ٥ دقايق انتظار = خطوة لتحت.'},
+ {k:'mstart',ar:'تشغيل الموتور',en:'Motorstart',c:'الحمّام بيتملي وطلمبة البيروكسيد على ٦٥ هرتز.'},
+ {k:'prod',ar:'الإنتاج',en:'Production',c:'التعبئة تمام والتصميم ±١٫٥ مم.'},
+ {k:'pend',ar:'نهاية الإنتاج',en:'ProductionEnd',c:'دقيقة انتظار.'},
+ {k:'vent',ar:'التهوية',en:'Venting',c:'١٠ دقايق.'},
+ {k:'pnext',ar:'تجهيز الإنتاج اللي بعده',en:'PrepareNextProduction',c:'التهوية خلصت ← التحضير.'},
+];
+const DAA={k:'daa',ar:'تجفيف بعد إنذار',en:'DryingAfterAlarm',c:'التعقيم فشل: ١٠ دقايق تجفيف وبعدين يرجع للتحضير.'};
+const IDX={}; STEPS.forEach((s,i)=>IDX[s.k]=i);
+const STERIL=['hs','spray','dry'], STERILE=['sdone','sig','prepP','mstart','prod','pend'];
+
+const FAULTS=[
+ {id:'comp',t:'الكومبرسور مش بيدّي تدفق كفاية',d:'مثلًا عطل في الإنفرتر أو فلتر الشفط',st:'hs'},
+ {id:'seal',t:'مياه الإحكام قليلة',d:'منظم ضغط مياه الإحكام',st:'hs'},
+ {id:'sep',t:'تصريف فاصل المياه مسدود',d:'المستوى بيعلى',st:'hs'},
+ {id:'sh',t:'سخان الهوا الفائق محروق',d:'السخان شغال والحرارة ما بتطلعش',st:'hs'},
+ {id:'hev',t:'موتور صمام المبادل واقف',d:'U70M2450',st:'prod'},
+ {id:'pre',t:'صمام التسخين المسبق لازق مقفول',d:'U70K2300',st:'hs'},
+ {id:'sfill',t:'فلتر تنك الرش مسدود',d:'الملء بطيء',st:'hs'},
+ {id:'noz',t:'بشبوري الرش مسدود',d:'التفريغ بطيء',st:'hs'},
+ {id:'dil',t:'مياه داخلة على البيروكسيد',d:'مثلًا صمام التخفيف بيهرّب',st:'prod'},
+ {id:'prism',t:'منشور الريفراكتوميتر وسخ',d:'خطأ داخلي في الجهاز',st:'prod'},
+ {id:'rtemp',t:'البيروكسيد مش بيعدّي على الجهاز',d:'فرق الحرارة مع التنك أكتر من ١٠°',st:'prod'},
+ {id:'htr',t:'سخان مدخل الحمّام بيسخن زيادة',d:'التدوير على السخان ضعيف',st:'prod'},
+ {id:'tank',t:'كونتاكتور سخان التنك لازق',d:'U30T0220',st:'prod'},
+ {id:'bfill',t:'صمام ملء الحمّام مش بيفتح',d:'U70Q0461',st:'mstart'},
+ {id:'knife',t:'سخان سكينة الهوا عطلان',d:'سكينة الهوا',st:'prod'},
+ {id:'uvw',t:'مياه تبريد لمبة UV قليلة',d:'فلتر المياه مسدود',st:'prod'},
+];
+
+const AL={
+ SterileAirLowFlowrate:['Y','ALR_SAS_YE_SterileAirLowFlowrate','تدفق الهوا المعقّم قليل'],
+ SealWaterLowFlow:['Y','ALR_SAS_YE_SealWaterLowFlow','مياه إحكام الكومبرسور أقل من ٥٫٥ لتر/د'],
+ WaterSeparatorHighLevel:['Y','ALR_SAS_YE_WaterSeparatorHighLevel','مستوى فاصل المياه عالي'],
+ SuperheaterMalfunction:['Y','ALR_SAS_YE_SuperheaterMalfunction','عطل السخان الفائق — الحرارة مش بتطلع'],
+ SterileAirLowTemp:['Y','ALR_SAS_YE_SterileAirLowTemp','حرارة الهوا المعقّم واطية'],
+ SterileAirHighTemp:['Y','ALR_SAS_YE_SterileAirHighTemp','حرارة الهوا المعقّم فوق ٤٥٠°'],
+ WrongSterilizationTempAC:['Y','ALR_SAS_YE_WrongSterilizationTempAC','حرارة الغرفة ما وصلتش ٤٠° في التعقيم بالحرارة'],
+ LowTempAC:['Y','ALR_SAS_YE_LowTempAC','حرارة غرفة التعقيم أقل من ٧٠°'],
+ HighTempAC:['Y','ALR_SAS_YE_HighTempAC','حرارة غرفة التعقيم أعلى من ١١٠°'],
+ AsepticChamberOverheating:['Y','ALR_SAS_YE_AsepticChamberOverheating','الغرفة فوق ٩٠° والمبادل على أقصى تبريد ٢٠ دقيقة'],
+ HeatExcValveMalfunction:['Y','ALR_SAS_YE_HeatExcValveMalfunction','عطل صمام المبادل — الموتور شغال والمكان مش بيتغيّر'],
+ AirKnifeLowTemp:['Y','ALR_SAS_YE_AirKnifeLowTemp','حرارة سكينة الهوا أقل من ١٥١°'],
+ FastFilling:['Y','ALR_PER_YE_FastFilling','تنك الرش اتملى بسرعة (أقل من ٣ ث)'],
+ SlowFilling:['Y','ALR_PER_YE_SlowFilling','تنك الرش ما اتملاش في ١٠ ث'],
+ FastEmptying:['Y','ALR_PER_YE_FastEmptying','تنك الرش فضي بسرعة (أقل من ١٨ ث)'],
+ SlowEmptying:['Y','ALR_PER_YE_SlowEmptying','تنك الرش ما فضيش في ٣٨ ث'],
+ ConcOutOfRange:['Y','ALR_PER_YO_ConcOutOfRange','تركيز البيروكسيد بره الحدود'],
+ ConcentrationCloseToLimit:['B','ALR_PER_BO_ConcentrationCloseToLimit','تركيز البيروكسيد قرّب من الحدود'],
+ MeterMalfunctionY:['Y','ALR_PER_YE_MeterMalfunction','عطل جهاز التركيز — قراءة سالبة أو فرق حرارة أكتر من ١٠°'],
+ MeterMalfunctionB:['B','ALR_PER_BE_MeterMalfunction','تحذير جهاز التركيز — خطأ داخلي (نضّف المنشور)'],
+ TankHighTemperature:['Y','ALR_PER_YE_TankHighTemperature','حرارة تنك البيروكسيد فوق ٩١°'],
+ TankLowTemperature:['B','ALR_PER_BE_TankLowTemperature','حرارة تنك البيروكسيد أقل من الضبط بـ ٥°'],
+ BathHighTemperature:['Y','ALR_PER_YE_BathHighTemperature','حرارة الحمّام فوق ٩٥°'],
+ BathLowTemperature:['Y','ALR_PER_YE_BathLowTemperature','حرارة الحمّام أقل من ٨٢°'],
+ BathInletHeatersHighTemp:['Y','ALR_PER_YE_BathInletHeatersHighTemp','سطح سخان مدخل الحمّام فوق ١٧٠°'],
+ BathLowLevel:['Y','ALR_PER_YE_BathLowLevel','مستوى الحمّام واطي بعد بداية التشغيل'],
+ TankHighLevelProduction:['Y','ALR_PER_YE_TankHighLevelProduction','مستوى التنك فوق ٢٥٠٠ في الإنتاج (الحمّام ما اتملاش)'],
+ TankLowLevelAtStop:['Y','ALR_PER_YE_TankLowLevelAtStop','مستوى التنك أقل من ٨٤٠٠ في الوقفة — مش ممكن التشغيل'],
+ UvSaturation:['B','ALR_UV_BE_Saturation','لمبة UV: القدرة فوق ٩٥٪ أكتر من ١٠ دقايق'],
+ UvRadiationTooLow:['Y','ALR_UV_YE_RadiationTooLow','لمبة UV: الإشعاع أقل من ١٠٠٪'],
+ UvCoolingWaterLowFlow:['Y','ALR_UV_YE_CoolingWaterLowFlow','مياه تبريد لمبة UV قليلة'],
+ UvWaterTemp:['Y','ALR_UV_YE_CoolingWaterTempOutOfRange','حرارة مياه تبريد لمبة UV عالية'],
+};
+
+let S;
+function fresh(){return{
+  t:0,k:'prelim',kt:0,paused:false,notSterile:false,failedAt:null,firstStart:true,
+  f:{},al:{},log:[],
+  comp:false,flow:0,flowSP:0,seal:0,sepLvl:0.2,Tsh:22,shSP:0,Tpre:22,Tac:24,Tbv:24,hold:0,ac40:false,hsT:0,
+  hev:100,hevCmd:100,hevStuckT:0,y2300:false,y1520:false,y2350:false,y2440:true,
+  spray:{ph:'idle',t:0,lvl:0,fillDone:null,emptyDone:null,res:''},
+  Ttank:22,Tbath:22,h1:22,h3:22,bath:0,pump:false,pumpHz:0,htrIn:false,htrOut:false,th1:false,th2:false,
+  conc:39,concShown:39,concT:0,prism:false,refill:'',refillMode:null,lvlProdBase:300,lvlRaw:9900,lvl:9900,startSeq:0,stopT:0,
+  Tknife:22,knifeSP:0,uvPow:60,uvIrr:0,uvFlow:2.3,uvT:22,uvSat:0,pk:0,overT:0,refDT:2.1,
+  hist:[],histT:0,prelimT:0
+};}
+S=fresh();
+const T={};
+function delay(id,cond,sec,dt){T[id]=cond?(T[id]||0)+dt:0;return T[id]>=sec;}
+
+function fmtT(s){s=Math.max(0,Math.floor(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return (h?h+':':'')+String(m).padStart(2,'0')+':'+String(x).padStart(2,'0');}
+let logDirty=true;
+function log(sev,txt){S.log.unshift({t:S.t,sev,txt});if(S.log.length>150)S.log.pop();logDirty=true;}
+function aOn(id,extra){if(!S.al[id]){S.al[id]=1;const a=AL[id];log(a[0],a[2]+(extra?' ('+extra+')':''));}}
+function aOff(id){delete S.al[id];}
+function msg(t){$('msgTxt').textContent=t;}
+const stepName=k=>k==='daa'?DAA:STEPS[IDX[k]];
+
+function go(k,why){
+  S.k=k;S.kt=0;
+  if(why) log('i','← '+stepName(k).ar+' — '+why);
+  if(k==='prelim'){S.prelimT=0;S.notSterile=false;}
+  if(k==='hs'){S.hold=0;S.ac40=false;S.hsT=0;}
+  if(k==='spray'){S.spray={ph:'fill',t:0,lvl:0,fillDone:null,emptyDone:null,res:''};}
+  if(k==='mstart'||k==='prod'){S.startSeq=0;}
+  updButtons();
+}
+function sterilFail(id){ if(S.k==='daa')return; aOn(id); S.failedAt=S.k; go('daa','التعقيم فشل'); msg('التعقيم فشل بسبب إنذار. الماكينة بتعمل تجفيف ١٠ دقايق وبعدين ترجع للتحضير. صلّح العطل وابدأ تاني.'); }
+function prodStop(id){ aOn(id); if(S.k==='prod'||S.k==='mstart'){ go('prepP','وقوف بإنذار'); S.stopT=0; msg('وقوف إنتاج بإنذار والماكينة لسه معقّمة. صلّح العطل وشغّل الموتور تاني.'); } }
+function loseSterile(id){ aOn(id); if(STERILE.includes(S.k)){ S.notSterile=true; go('vent','الماكينة فقدت التعقيم'); msg('الماكينة فقدت التعقيم: تهوية ١٠ دقايق وبعدين التحضير، ولازم تعقيم من الأول.'); } }
+function concL(){
+  const late=['spray','dry','daa'].includes(S.k)||STERILE.includes(S.k);
+  return late?{alo:31,wlo:32,whi:48,ahi:50,lbl:'من الرش ولفوق: إنذار تحت ٣١ أو فوق ٥٠، تنبيه تحت ٣٢ أو فوق ٤٨.'}:{alo:32,wlo:34,whi:40,ahi:42,lbl:'في التحضير والتعقيم بالحرارة: إنذار تحت ٣٢ أو فوق ٤٢، تنبيه تحت ٣٤ أو فوق ٤٠.'};
+}
+function canUp(){
+  const k=S.k;
+  if(k==='prelim'){
+    if(S.prelimT<180) return 'شيك التركيز الأولي لسه شغال (٣ دقايق): فاضل '+fmtT(180-S.prelimT)+'.';
+    const L=concL(); if(S.concShown<L.alo||S.concShown>L.ahi) return 'التركيز بره حدود التحضير ('+L.alo+'–'+L.ahi+'٪). مش ممكن تطلع خطوة.';
+    if(S.al.MeterMalfunctionY) return 'جهاز التركيز عطلان، مش ممكن تطلع خطوة.';
+    if(S.sepLvl>0.85) return 'مستوى فاصل المياه عالي، مش ممكن تطلع خطوة.';
+    if(S.lvl<8000) return 'مستوى تنك البيروكسيد أقل من ٨٠٠٠، مش ممكن تبدأ.';
+    return '';
+  }
+  if(k==='ts') return '';
+  return 'الخطوة دي بتطلع لوحدها لما الشروط تكمل.';
+}
+function stepUp(){
+  const why=canUp(); if(why){msg(why);return;}
+  if(S.k==='prelim'){go('prepTS','طلوع يدوي');msg('تجهيز لحام الأنبوبة: الكومبرسور بيشتغل.');}
+  else if(S.k==='ts'){go('hs','طلوع يدوي');msg('التعقيم بالحرارة: السخان الفائق على ٤٠٠°، والمبادل تحويلة. استنى التعقيم المسبق يوصل ٢٨٠° لمدة ٣٠ ثانية.');}
+}
+function updButtons(){
+  $('btnUp').disabled=!(S.k==='prelim'||S.k==='ts');
+  $('btnMotor').disabled=!(S.k==='prepP');
+  $('btnStop').disabled=!(S.k==='prod');
+  $('btnEnd').disabled=!(S.k==='prod'||S.k==='prepP');
+}
+
+function tick(dt){
+  S.t+=dt;S.kt+=dt;
+  const k=S.k,f=S.f,inSteril=STERIL.includes(k),inSterile=STERILE.includes(k);
+  // compressor & flow
+  S.comp = k!=='prelim';
+  S.flowSP = !S.comp?0 : (k==='vent'?60 : (inSterile?120:100));
+  S.flow = approach(S.flow, S.flowSP*(f.comp?0.76:1)+(S.comp?1.2*Math.sin(S.t/13):0), 8, dt);
+  S.seal = approach(S.seal, S.comp?(f.seal?4.6:7.0):0, 6, dt);
+  S.sepLvl = clamp(S.sepLvl+(S.comp?(f.sep?0.004:-0.01):0)*dt,0.1,1);
+  // superheater
+  S.shSP = (inSteril||k==='daa')?400:((inSterile||k==='vent'||k==='pnext'||k==='prepTS'||k==='ts')?(k==='prepTS'||k==='ts'?0:360):0);
+  const shOn=S.shSP>0&&S.flow>30;
+  S.Tsh = approach(S.Tsh, shOn?(f.sh?70:S.shSP+3*Math.sin(S.t/37)):24, 150, dt);
+  // HE valve
+  let acSP=null;
+  if(k==='dry'||k==='daa') acSP=85; else if(inSterile) acSP=78;
+  if(k==='hs'||k==='spray') S.hevCmd=100;
+  else if(acSP!=null){const e=S.Tac-acSP; if(Math.abs(e)>1) S.hevCmd=clamp(S.hevCmd-e*0.9*dt,0,100);}
+  else S.hevCmd=100;
+  const moving=Math.abs(S.hevCmd-S.hev)>1.5;
+  if(!f.hev){S.hev+=clamp(S.hevCmd-S.hev,-2*dt,2*dt);S.hevStuckT=0;}
+  else {if(moving)S.hevStuckT+=dt;else S.hevStuckT=0;}
+  // pre-sterilisation
+  S.Tpre = approach(S.Tpre, S.flow>30?S.Tsh*(0.30+0.48*S.hev/100):24, k==='hs'?240:60, dt);
+  // preheating & AC
+  if(k==='hs'){
+    S.hsT+=dt;
+    if(S.hsT<40) S.y2300=true; else if(S.hsT<100) S.y2300=false; else { if(S.Tac>=40.5) S.y2300=false; else if(S.Tac<=39.5) S.y2300=true; }
+    if(f.pre) S.y2300=false;
+    const into=S.y2300&&S.hsT>=40&&S.flow>30;
+    S.Tac=approach(S.Tac,into?62:30,45,dt); if(S.Tac>=40) S.ac40=true;
+  } else if(inSteril||k==='daa'||inSterile){
+    S.y2300=!f.pre&&S.flow>30;
+    const tgt=30+(S.Tpre-30)*0.4*(S.y2300?1:0.75);
+    S.Tac=approach(S.Tac,S.flow>30?tgt:26,60,dt);
+  } else {S.y2300=false;S.Tac=approach(S.Tac,k==='vent'&&S.flow>30?40:24,120,dt);}
+  S.y1520 = k==='hs'||k==='spray'||(k==='dry'&&S.kt>=60&&S.kt<840)||k==='daa';
+  S.y2350 = (k==='hs'&&S.Tpre>=279)||k==='spray'||k==='dry'||k==='daa'||inSterile;
+  S.y2440 = !(k==='dry'&&S.kt<60);
+  S.Tbv = approach(S.Tbv, S.y1520&&S.flow>30?S.Tpre*0.55:30, 90, dt);
+  if(k==='hs'){
+    if(S.Tpre>=280) S.hold+=dt; else S.hold=Math.max(0,S.hold-dt*2);
+    if(S.hold>=30&&S.hsT>=300){
+      if(!S.ac40){sterilFail('WrongSterilizationTempAC');return;}
+      go('spray','٢٨٠° لمدة ٣٠ ث'); msg('الرش: تنك الرش بيتملي ١١ ث، وقفة ثانية، وبعدين البيروكسيد بيترش ٤٣ ث.');
+    }
+  }
+  if(k==='spray'){
+    const sp=S.spray; sp.t+=dt;
+    if(sp.ph==='fill'){
+      const tFull=f.sfill?13:6.5; sp.lvl=clamp(sp.t/tFull,0,1);
+      if(sp.fillDone==null&&sp.lvl>=1){sp.fillDone=sp.t; if(sp.t<3){sp.res='الملء خد '+sp.t.toFixed(1)+' ث (أقل من ٣).';sterilFail('FastFilling');return;}}
+      if(sp.fillDone==null&&sp.t>10){sp.res='الحساس ما قفلش في ١٠ ث.';sterilFail('SlowFilling');return;}
+      if(sp.t>=12){sp.ph='spray';sp.st=sp.t;}
+    } else if(sp.ph==='spray'){
+      const et=sp.t-sp.st,tEmpty=f.noz?46:27; sp.lvl=clamp(1-et/tEmpty,0,1);
+      if(sp.emptyDone==null&&sp.lvl<=0){sp.emptyDone=et; if(et<18){sp.res='التفريغ خد '+et.toFixed(0)+' ث.';sterilFail('FastEmptying');return;} sp.res='الملء '+sp.fillDone.toFixed(1)+' ث والتفريغ '+et.toFixed(0)+' ث — تمام.';}
+      if(sp.emptyDone==null&&et>38){sp.res='الحساس ما فتحش في ٣٨ ث.';sterilFail('SlowEmptying');return;}
+      if(sp.t>=55){sp.ph='done';go('dry','الرش خلص في ٥٥ ث');msg('التجفيف ١٥ دقيقة: أول دقيقة وقفة لماسورة التعبئة، وصمام B بيقفل عند ١٤ دقيقة. المبادل بيظبط الغرفة على ٨٥°.');}
+    }
+  }
+  if(k==='prepTS'&&S.kt>=15&&S.flow>90){go('ts','الكومبرسور جاهز');msg('لحام الأنبوبة: اقفل أبواب الغرفة واضغط «خطوة لفوق».');}
+  if(k==='dry'&&S.kt>=900) go('sdone','التجفيف خلص ١٥ دقيقة');
+  if(k==='daa'&&S.kt>=600){go('prelim','التجفيف بعد الإنذار خلص');msg('رجعت للتحضير. صلّح العطل وابدأ التعقيم من الأول.');}
+  if(k==='sdone'&&S.kt>=5) go('sig','تلقائي');
+  if(k==='sig'&&S.kt>=20){go('prepP','المنتج جاهز');S.stopT=0;msg('التحضير للإنتاج: سكينة الهوا بتسخن. دوس «تشغيل الموتور» (أكتر من ٥ دقايق انتظار = خطوة لتحت).');}
+  if(k==='prepP'){S.stopT+=dt; if(S.kt>=300&&S.firstStart) go('sig','أكتر من ٥ دقايق انتظار');}
+  if(k==='mstart'){S.startSeq+=dt; if(S.startSeq>=12){go('prod','التشغيل تمام');msg('إنتاج: ١٢٠٠٠ عبوة في الساعة.');}}
+  if(k==='prod') S.startSeq+=dt;
+  if(k==='pend'&&S.kt>=60) go('vent','دقيقة انتظار');
+  if(k==='vent'&&S.kt>=600) go('pnext','التهوية خلصت');
+  if(k==='pnext'&&S.kt>=5){go('prelim','تلقائي');msg('التحضير: جاهز لدورة جديدة.');}
+  if(k==='prelim') S.prelimT+=dt;
+
+  // peroxide
+  S.pump = S.lvl>=30;
+  S.pumpHz = !S.pump?0:(k==='mstart'&&S.startSeq<10?65:(k==='vent'?35:50));
+  const tankSP = inSterile?86:87;
+  S.th1 = S.Ttank<tankSP-0.3 || !!f.tank;
+  S.th2 = S.Ttank<tankSP-3;
+  S.Ttank = approach(S.Ttank, 22+(S.th1?72:0)+(S.th2?30:0), 300, dt);
+  let hSP=0;
+  if(k==='dry'||k==='daa'||k==='sdone'||k==='sig') hSP=80;
+  if(k==='prepP'||k==='pend') hSP=S.stopT>180?82:71;
+  if(k==='mstart'||k==='prod') hSP=85;
+  S.htrIn=S.htrOut= hSP>0&&S.pump&&!S.al.BathInletHeatersHighTemp;
+  S.h1 = approach(S.h1, S.htrIn?(f.htr?200:hSP+28):Math.max(S.Tbath,S.Ttank)-2, f.htr?70:50, dt);
+  S.h3 = approach(S.h3, S.htrOut?hSP+24:Math.max(S.Tbath,S.Ttank)-3, 50, dt);
+  const running=k==='mstart'||k==='prod';
+  if(running&&!f.bfill) S.bath=Math.min(1,S.bath+dt/9.9); else if(!running) S.bath=Math.max(0,S.bath-dt/20);
+  S.Tbath = approach(S.Tbath, S.bath>0.05?(hSP?hSP:Math.max(S.Ttank-4,30)):Math.max(S.Ttank-6,24), 90, dt);
+  let lvlTgt = S.bath>0.05 ? 9000-(9000-300)*S.bath : (S.pump?9000:9900);
+  if(k==='prod'&&S.bath>=1){
+    S.lvlProdBase-=dt*0.25;
+    if(S.lvlProdBase<219&&!S.refillMode) S.refillMode=S.conc<38?'per':'water';
+    if(S.refillMode){
+      S.lvlProdBase+=dt*3;
+      if(S.refillMode==='per') S.conc+=(35-S.conc)*dt*0.0015; else S.conc-=dt*0.004;
+      if(S.refillMode==='water'&&S.conc<=36) S.refillMode='per';
+      if(S.lvlProdBase>=375) S.refillMode=null;
+    }
+    lvlTgt=S.lvlProdBase;
+  } else {S.refillMode=null;S.lvlProdBase=300;}
+  S.refill = S.refillMode==='per'?'بيروكسيد':(S.refillMode==='water'?'مياه منقّاة':'');
+  S.lvlRaw=approach(S.lvlRaw,lvlTgt,2.5,dt);
+  const a=Math.pow(0.9,dt/0.1); S.lvl=S.lvl*a+S.lvlRaw*(1-a);
+  if(k==='prod'){S.pk+=dt*12000/3600; S.conc+=dt*(2.2/3600);}
+  if(f.dil) S.conc-=dt*(26/3600);
+  S.conc=clamp(S.conc,20,60);
+  if(f.prism) S.prism=true;
+  S.concT+=dt; if(S.concT>=60){S.concT=0;S.concShown=S.conc+(S.prism?(Math.random()*7-3.5):0);}
+  S.refDT=f.rtemp?14.5:2.1;
+  // air knife
+  S.knifeSP = k==='prepP'?105:(running?160:0);
+  S.Tknife = approach(S.Tknife, S.knifeSP?(f.knife?60:S.knifeSP+1.5*Math.sin(S.t/21)):24, 35, dt);
+  // UV
+  const age=+$('uvAge').value;
+  S.uvFlow=approach(S.uvFlow,f.uvw?1.2:2.3,15,dt);
+  S.uvT=approach(S.uvT,running?(S.uvFlow<2?46:24):22,90,dt);
+  if(running){const kk=1.95-age*0.0085;S.uvPow=approach(S.uvPow,clamp(116/kk,50,100),25,dt);S.uvIrr=approach(S.uvIrr,S.uvPow*kk,8,dt);if(S.uvPow>95)S.uvSat+=dt;else S.uvSat=0;}
+  else {S.uvIrr=approach(S.uvIrr,0,10,dt);S.uvSat=0;}
+  if(inSterile&&S.hev<5&&S.Tac>90) S.overT+=dt; else S.overT=0;
+
+  checkAlarms(dt);
+  S.histT+=dt; if(S.histT>=5){S.histT=0;S.hist.push([S.t,S.Tsh,S.Tpre,S.Tac,S.Tbath,S.Ttank,S.Tknife,S.concShown,S.Tbv]);if(S.hist.length>900)S.hist.shift();}
+}
+
+function checkAlarms(dt){
+  const k=S.k,inSteril=STERIL.includes(k),inSterile=STERILE.includes(k);
+  const coeff=inSteril?0.93:0.83;
+  const flowActive=(k==='hs'&&S.kt>60)||k==='spray'||k==='dry'||(inSterile&&S.kt>60)||k==='prod';
+  if(delay('flow',flowActive&&S.flow<S.flowSP*coeff,30,dt)){ if(inSteril){sterilFail('SterileAirLowFlowrate');return;} if(inSterile){loseSterile('SterileAirLowFlowrate');return;} }
+  if(delay('seal',S.comp&&S.seal<5.5&&S.kt>20,30,dt)){ aOn('SealWaterLowFlow'); if(inSteril){sterilFail('SealWaterLowFlow');return;} if(k==='prod'){prodStop('SealWaterLowFlow');return;} } else if(S.seal>=5.5) aOff('SealWaterLowFlow');
+  if(delay('sep',S.comp&&S.sepLvl>0.85,5,dt)){ aOn('WaterSeparatorHighLevel'); if(inSteril){sterilFail('WaterSeparatorHighLevel');return;} if(k==='prod'){prodStop('WaterSeparatorHighLevel');return;} } else if(S.sepLvl<0.8) aOff('WaterSeparatorHighLevel');
+  if(k==='hs'&&((S.hsT>300&&S.Tsh<100)||(S.hsT>600&&S.Tsh<0.8*400))){sterilFail('SuperheaterMalfunction');return;}
+  const lowLim=k==='dry'?301:331;
+  if(delay('shlow',((k==='dry'&&S.kt>480)||(inSterile&&S.kt>120))&&S.Tsh<lowLim,2,dt)){ if(k==='dry'){sterilFail('SterileAirLowTemp');return;} if(inSterile){loseSterile('SterileAirLowTemp');return;} }
+  if(delay('shhigh',S.Tsh>450,10,dt)) aOn('SterileAirHighTemp');
+  if(inSterile&&S.kt>30){ if(S.Tac<70){loseSterile('LowTempAC');return;} if(S.Tac>110){loseSterile('HighTempAC');return;} }
+  if(S.overT>1200) aOn('AsepticChamberOverheating');
+  if(S.hevStuckT>120){ aOn('HeatExcValveMalfunction'); if(inSteril){sterilFail('HeatExcValveMalfunction');return;} if(k==='prod'){prodStop('HeatExcValveMalfunction');return;} }
+  const L=concL(),c=S.concShown,meterBad=S.refDT>10||c<0;
+  if(delay('meterY',meterBad&&(k!=='prelim'||S.prelimT>60),15,dt)) aOn('MeterMalfunctionY'); else if(!meterBad) aOff('MeterMalfunctionY');
+  if(S.prism) aOn('MeterMalfunctionB'); else aOff('MeterMalfunctionB');
+  if(!S.al.MeterMalfunctionY&&(k!=='prelim'||S.prelimT>=180)){
+    if(c<L.alo||c>L.ahi){aOn('ConcOutOfRange',c.toFixed(1)+'%');aOff('ConcentrationCloseToLimit'); if(k==='prod'){prodStop('ConcOutOfRange');return;}}
+    else {aOff('ConcOutOfRange'); if(c<L.wlo||c>L.whi) aOn('ConcentrationCloseToLimit',c.toFixed(1)+'%'); else aOff('ConcentrationCloseToLimit');}
+  }
+  if(S.al.MeterMalfunctionY&&k==='prod'){prodStop('MeterMalfunctionY');return;}
+  if(delay('tankHi',S.Ttank>91,5,dt)){aOn('TankHighTemperature'); if(k==='prod'){prodStop('TankHighTemperature');return;}} else if(S.Ttank<90) aOff('TankHighTemperature');
+  const tsp=inSterile?86:87;
+  if(delay('tankLo',((k==='dry'&&S.kt>780)||(inSterile&&k!=='prod'))&&S.Ttank<tsp-5,3,dt)) aOn('TankLowTemperature'); else if(S.Ttank>=tsp-5) aOff('TankLowTemperature');
+  if(delay('heater',S.h1>170,1,dt)){aOn('BathInletHeatersHighTemp'); if(k==='prod'){prodStop('BathInletHeatersHighTemp');return;}}
+  if(k==='prod'&&S.bath>0.9){
+    if(delay('bathHi',S.Tbath>95,10,dt)){prodStop('BathHighTemperature');return;}
+    if(S.kt>120&&S.Tbath<82){prodStop('BathLowTemperature');return;}
+  }
+  if((k==='prod'||k==='mstart')&&S.startSeq>10&&S.bath<0.5){prodStop('BathLowLevel');return;}
+  if(delay('tankHL',(k==='prod'||k==='mstart')&&S.startSeq>9.8&&S.lvl>2500,5,dt)){prodStop('TankHighLevelProduction');return;}
+  if(delay('tankLS',k==='prepP'&&S.lvl<=8400&&S.bath<0.05,30,dt)) aOn('TankLowLevelAtStop'); else if(S.lvl>8400) aOff('TankLowLevelAtStop');
+  if(k==='prod'&&S.kt>90&&S.Tknife<151){prodStop('AirKnifeLowTemp');return;}
+  if(k==='prod'){
+    if(S.uvFlow<2){prodStop('UvCoolingWaterLowFlow');return;}
+    if(S.uvT>40){prodStop('UvWaterTemp');return;}
+    if(S.uvSat>600) aOn('UvSaturation'); else aOff('UvSaturation');
+    if(S.kt>60&&S.uvIrr<100){prodStop('UvRadiationTooLow');return;}
+  }
+}
+
+function warmTo(st,keepF){
+  const fz=keepF?S.f:{};
+  S=fresh(); S.f=fz; for(const id in T) T[id]=0;
+  if(st==='hs'){Object.assign(S,{prelimT:200,Ttank:86,flow:100,seal:7});go('hs','قفزة');msg('التعقيم بالحرارة: السخان الفائق بيسخن لـ ٤٠٠°. استنى ٢٨٠° لمدة ٣٠ ثانية.');}
+  else {
+    Object.assign(S,{Tsh:360,Tpre:170,Tac:78,Tbv:80,Ttank:86,Tbath:85,h1:110,h3:106,Tknife:160,bath:1,lvl:300,lvlRaw:300,firstStart:false,flow:120,seal:7,hev:42,hevCmd:42,uvPow:62,uvIrr:116,concShown:39.5,conc:39.5,prelimT:200});
+    if(st==='prod'){go('prod','قفزة');S.kt=200;S.startSeq=20;msg('إنتاج شغال: ١٢٠٠٠ عبوة في الساعة.');}
+    else {Object.assign(S,{bath:0,lvl:9000,lvlRaw:9000,Tknife:105,Tbath:72,h1:95,h3:92});go('prepP','قفزة');S.stopT=200;msg('التحضير للإنتاج: دوس «تشغيل الموتور».');}
+  }
+  logDirty=true; render();
+}
+
+const KV=[['Tsh','السخان الفائق','U70Q0450','var(--hot)'],['Tpre','التعقيم المسبق','U70B3520','#ffa64a'],['Tac','غرفة التعقيم','U70B3540','var(--cair)'],['flow','تدفق الهوا','m³/h','var(--air)'],
+ ['Tbath','الحمّام','U70B2630','var(--per)'],['Ttank','تنك البيروكسيد','U30B1710','#4ec3e0'],['conc','التركيز','%','var(--water)'],['timer','زمن الخطوة','','#4a5e66']];
+function buildKV(){$('kv').innerHTML=KV.map(k=>`<div id="kv_${k[0]}" style="--c:${k[3]}"><span>${k[1]} <span class="en">${k[2]}</span></span><b>—</b></div>`).join('');}
+const SERIES=[{i:1,n:'السخان الفائق',c:'#ff6b4a',on:true},{i:2,n:'التعقيم المسبق',c:'#ffa64a',on:true},{i:3,n:'الغرفة',c:'#55b6ea',on:true},{i:8,n:'صمام B',c:'#c792ea',on:false},{i:4,n:'الحمّام',c:'#5fd08b',on:true},{i:5,n:'التنك',c:'#4ec3e0',on:false},{i:6,n:'سكينة الهوا',c:'#ffd84a',on:false}];
+function buildChips(){
+  $('chips').innerHTML=SERIES.map((s,i)=>`<button data-i="${i}" class="${s.on?'':'off'}" aria-pressed="${s.on}"><span class="dot" style="background:${s.c}"></span>${s.n}</button>`).join('');
+  $('chips').onclick=e=>{const b=e.target.closest('button');if(!b)return;const s=SERIES[+b.dataset.i];s.on=!s.on;b.classList.toggle('off',!s.on);b.setAttribute('aria-pressed',s.on);drawTrend();};
+}
+const LAMPS=[['comp','U70T0300','الكومبرسور'],['sealV','U70K2131','مياه الإحكام'],['shOn','U70Q0450','السخان الفائق'],['y1520','U70K1520','صمام B'],['y2300','U70K2300','التسخين المسبق'],['y2350','U70K2350','صمام الفراشة'],['y2440','U70K2440','صمام سكينة الهوا'],['hevF','U70M2450 FWD','المبادل لقدّام'],['hevB','U70M2450 BWD','المبادل لورا'],['y3290','U70K3290','ملء تنك الرش'],['y3300','U70K3300','الرش'],['pump','U30K1260','طلمبة البيروكسيد'],['fillV','U70Q0461','ملء الحمّام'],['drainV','U70Q0463','تصفية الحمّام'],['htrIn','U70Q0350','سخانات المدخل'],['htrOut','U70F0340','سخانات المخرج'],['th1','U30T0220','سخان التنك ١'],['th2','U70Q0100','سخان التنك ٢'],['refP','U30K1460','تزويد بيروكسيد'],['refW','U30K1480','تزويد مياه']];
+function buildLamps(){$('lamps').innerHTML=LAMPS.map(l=>`<div class="lamp" id="lp_${l[0]}"><i></i><b>${l[1]}</b><span>${l[2]}</span></div>`).join('');}
+let hideF=false;
+function buildFaults(){
+  $('faults').innerHTML=FAULTS.map(x=>`<button data-id="${x.id}" aria-pressed="false">${x.t}<small>${x.d}</small></button>`).join('');
+  $('faults').onclick=e=>{const b=e.target.closest('button');if(!b)return;const id=b.dataset.id;if(S.f[id])delete S.f[id];else S.f[id]=true;
+    log('i',(S.f[id]?'عطل اتعمل: ':'عطل اتشال: ')+FAULTS.find(q=>q.id===id).t);renderFaults();};
+}
+function renderFaults(){document.querySelectorAll('#faults button').forEach(b=>{const on=!hideF&&!!S.f[b.dataset.id];b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});}
+function lvY(v){const pts=[[0,218],[30,206],[219,190],[375,176],[2500,128],[8400,58],[9000,44],[9900,22],[10000,4]];
+  for(let i=1;i<pts.length;i++) if(v<=pts[i][0]){const a=pts[i-1],b=pts[i];return a[1]+(b[1]-a[1])*(v-a[0])/(b[0]-a[0]);} return 4;}
+function buildLevelMarks(){
+  const M=[[9900,'تحضير، الطلمبة واقفة'],[9000,'تحضير، الطلمبة شغالة'],[8400,'أقل حد في الوقفة'],[2500,'أعلى حد في الإنتاج'],[375,'عالي في الإنتاج'],[219,'واطي في الإنتاج'],[30,'الطلمبة تقف']];
+  $('lvMarks').innerHTML=M.map(m=>`<div style="top:${lvY(m[0])}px"><b>${m[0]}</b> ${m[1]}</div>`).join('');
+}
+function renderLadder(){
+  const cur=S.k,ci=IDX[cur];let h='';
+  STEPS.forEach((s,i)=>{
+    let cls=s.k===cur?'cur':(cur!=='daa'&&ci!=null&&i<ci&&!['pend','vent','pnext'].includes(cur)?'done':'');
+    if(cur==='daa'&&s.k===S.failedAt) cls='fail';
+    h+=`<div class="${cls}"><b>${i+1}</b><span>${s.ar} <span class="en">${s.en}</span><small>${s.c}</small></span></div>`;
+    if(s.k==='dry') h+=`<div class="${cur==='daa'?'cur':''}" style="margin-inline-start:18px"><b>↺</b><span>${DAA.ar} <span class="en">${DAA.en}</span><small>${DAA.c}</small></span></div>`;
+  });
+  $('ladder').innerHTML=h;
+}
+function setM(id,txt,bad){const el=$(id);if(!el)return;el.querySelector('b').textContent=txt;el.classList.toggle('badv',!!bad);}
+function render(){
+  const k=S.k,st=stepName(k),inSterile=STERILE.includes(k);
+  $('stepBox').firstChild.nodeValue=k==='daa'?'↺':String(IDX[k]+1);
+  $('stepBox').classList.toggle('bad',k==='daa'||S.notSterile);
+  $('stateTxt').innerHTML=st.ar+' <span class="en">'+st.en+'</span>'+(S.paused?' <span class="note">(متوقف مؤقتًا)</span>':'');
+  setM('kv_Tsh',S.Tsh.toFixed(0)+'°',S.al.SuperheaterMalfunction||S.al.SterileAirLowTemp);
+  setM('kv_Tpre',S.Tpre.toFixed(0)+'°');
+  setM('kv_Tac',S.Tac.toFixed(1)+'°',(inSterile&&(S.Tac<70||S.Tac>110))||S.al.WrongSterilizationTempAC);
+  setM('kv_flow',S.flow.toFixed(0),S.al.SterileAirLowFlowrate);
+  setM('kv_Tbath',S.bath>0.05?S.Tbath.toFixed(1)+'°':'فاضي',S.al.BathHighTemperature||S.al.BathLowTemperature);
+  setM('kv_Ttank',S.Ttank.toFixed(1)+'°',S.al.TankHighTemperature);
+  setM('kv_conc',S.concShown.toFixed(1)+'%',S.al.ConcOutOfRange);
+  let tm=fmtT(S.kt);
+  if(k==='prelim') tm=S.prelimT<180?'شيك '+fmtT(180-S.prelimT):'جاهز';
+  if(k==='hs') tm=S.hold>0?'٢٨٠°: '+S.hold.toFixed(0)+'/30 ث':fmtT(S.kt);
+  if(k==='spray') tm=S.spray.t.toFixed(0)+' / 55 ث';
+  if(k==='dry') tm=fmtT(S.kt)+' / 15:00';
+  if(k==='daa'||k==='vent') tm=fmtT(S.kt)+' / 10:00';
+  if(k==='prepP') tm=fmtT(S.kt)+(S.firstStart?' / 05:00':'');
+  if(k==='prod') tm=Math.floor(S.pk)+' عبوة';
+  setM('kv_timer',tm);
+  setM('mFlow',S.flow.toFixed(0)+' / '+S.flowSP+' m³/h',S.al.SterileAirLowFlowrate);
+  setM('mSeal',S.seal.toFixed(1)+' l/min',S.al.SealWaterLowFlow);
+  setM('mSep',S.sepLvl>0.85?'عالي':'تمام',S.sepLvl>0.85);
+  setM('mBv',S.Tbv.toFixed(0)+'°');
+  setM('mSh',S.Tsh.toFixed(0)+'°',S.al.SuperheaterMalfunction||S.al.SterileAirLowTemp||S.al.SterileAirHighTemp);
+  setM('mShSp',S.shSP?S.shSP+'°':'مطفي');
+  setM('mPre',S.Tpre.toFixed(0)+'°');
+  setM('mHold',k==='hs'?S.hold.toFixed(0)+' / 30 ث':((IDX[k]>3)?'تمام':'—'));
+  $('hevK').style.left=S.hev+'%'; $('hevV').textContent=S.hev.toFixed(0)+'%'+(S.f.hev&&S.hevStuckT>0?' (واقف!)':'');
+  renderAc();renderSpray();renderConc();renderLevel();
+  setM('mBath',S.bath>0.05?S.Tbath.toFixed(1)+'°':'فاضي',S.al.BathHighTemperature||S.al.BathLowTemperature);
+  setM('mTank',S.Ttank.toFixed(1)+'°',S.al.TankHighTemperature);
+  setM('mH1',S.h1.toFixed(0)+'°',S.h1>170);
+  setM('mH3',S.h3.toFixed(0)+'°',S.h3>170);
+  setM('mBl',Math.round(S.bath*100)+'%',S.al.BathLowLevel);
+  setM('mPs',S.pumpHz?S.pumpHz+' Hz':'واقفة');
+  const uvRun=k==='prod'||k==='mstart';
+  setM('mIrr',uvRun?S.uvIrr.toFixed(0)+'%':'مطفية',S.al.UvRadiationTooLow);
+  setM('mPow',uvRun?S.uvPow.toFixed(0)+'%':'—',S.uvPow>95&&uvRun);
+  setM('mUvF',S.uvFlow.toFixed(1)+' l/min',S.uvFlow<2);
+  setM('mUvT',S.uvT.toFixed(0)+'°',S.uvT>40);
+  $('uvAgeV').textContent=$('uvAge').value+'%';
+  const sp=S.spray;
+  const Lm={...S,shOn:S.shSP>0&&S.flow>30,sealV:S.comp,hevF:Math.abs(S.hevCmd-S.hev)>1.5&&S.hevCmd>S.hev,hevB:Math.abs(S.hevCmd-S.hev)>1.5&&S.hevCmd<S.hev,
+    y3290:k==='spray'&&sp.ph==='fill'&&sp.t<11,y3300:k==='spray'&&sp.ph==='spray'&&(sp.t-sp.st)<43,
+    fillV:(k==='mstart'||k==='prod')&&S.bath<1&&!S.f.bfill,drainV:!(k==='mstart'||k==='prod')&&S.bath>0,refP:S.refillMode==='per',refW:S.refillMode==='water'};
+  LAMPS.forEach(l=>{const el=$('lp_'+l[0]);const on=!!Lm[l[0]];const hot=/htr|th1|th2|shOn/.test(l[0]);el.classList.toggle('on',on&&!hot);el.classList.toggle('hot',on&&hot);});
+  renderAlarms();renderLadder();updButtons();renderFaults();
+  if(logDirty){renderLog();logDirty=false;}
+}
+function renderAc(){
+  const k=S.k;let lo=null,hi=null,txt;
+  if(k==='hs'){lo=39.5;hi=40.5;txt='التعقيم بالحرارة: أول ٤٠ ث الهوا للعادم، بعدها دقيقة تهوية مواسير، وبعدين صمام التسخين المسبق بيفتح تحت ٣٩٫٥° ويقفل فوق ٤٠٫٥°. لازم الغرفة توصل ٤٠° وإلا إنذار.';}
+  else if(k==='dry'||k==='daa'){lo=84;hi=86;txt='التجفيف: الضبط ٨٥° (±١°).';}
+  else if(STERILE.includes(k)){lo=77;hi=79;txt='الماكينة معقّمة: الضبط ٧٨° (±١°). تحت ٧٠° أو فوق ١١٠° = الماكينة تفقد التعقيم.';}
+  else txt='المبادل على التحويلة.';
+  const x=v=>clamp((v-30)/90*100,0,100);let h='';
+  if(STERILE.includes(k)) h+=`<div class="z" style="left:0;width:${x(70)}%;background:rgba(196,30,51,.18)"></div><div class="z" style="left:${x(110)}%;right:0;background:rgba(196,30,51,.18)"></div>`;
+  if(lo!=null) h+=`<div class="z" style="left:${x(lo)}%;width:${Math.max(1,x(hi)-x(lo))}%;background:rgba(29,132,72,.45)"></div>`;
+  h+=`<div class="mk" style="left:calc(${x(S.Tac)}% - 2px)"></div><div class="lb" style="left:${x(S.Tac)}%">${S.Tac.toFixed(1)}°</div>`;
+  $('acBand').innerHTML=h;$('acRule').textContent=txt;
+}
+function renderSpray(){
+  const sp=S.spray,X=v=>clamp(v/13*100,0,100),E=v=>clamp(v/45*100,0,100);
+  let f=`<div class="win" style="left:${X(3)}%;width:${X(10)-X(3)}%"></div><span style="left:${X(3)}%">3</span><span style="left:${X(10)}%">10</span>`;
+  if(sp.fillDone!=null) f+=`<div class="ev" style="left:${X(sp.fillDone)}%;background:${sp.fillDone>=3&&sp.fillDone<=10?'var(--ok)':'var(--alarm)'}"></div>`;
+  if(S.k==='spray'&&sp.ph==='fill') f+=`<div class="cur" style="left:${X(sp.t)}%"></div>`;
+  let e=`<div class="win" style="left:${E(18)}%;width:${E(38)-E(18)}%"></div><span style="left:${E(18)}%">18</span><span style="left:${E(38)}%">38</span>`;
+  if(sp.emptyDone!=null) e+=`<div class="ev" style="left:${E(sp.emptyDone)}%;background:${sp.emptyDone>=18&&sp.emptyDone<=38?'var(--ok)':'var(--alarm)'}"></div>`;
+  if(S.k==='spray'&&sp.ph==='spray') e+=`<div class="cur" style="left:${E(sp.t-sp.st)}%"></div>`;
+  $('sbFill').innerHTML=f;$('sbEmpty').innerHTML=e;
+  $('sprayRes').textContent=sp.res||(S.k==='spray'?'مستوى تنك الرش: '+Math.round(sp.lvl*100)+'%':'بيشتغل في خطوة الرش.');
+}
+function renderConc(){
+  const L=concL(),x=v=>clamp((v-25)/30*100,0,100);
+  $('cBand').innerHTML=`<div class="z" style="left:0;width:${x(L.alo)}%;background:rgba(196,30,51,.25)"></div>
+   <div class="z" style="left:${x(L.alo)}%;width:${x(L.wlo)-x(L.alo)}%;background:rgba(42,95,158,.22)"></div>
+   <div class="z" style="left:${x(L.wlo)}%;width:${x(L.whi)-x(L.wlo)}%;background:rgba(29,132,72,.22)"></div>
+   <div class="z" style="left:${x(L.whi)}%;width:${x(L.ahi)-x(L.whi)}%;background:rgba(42,95,158,.22)"></div>
+   <div class="z" style="left:${x(L.ahi)}%;right:0;background:rgba(196,30,51,.25)"></div>
+   <div class="mk" style="left:calc(${x(S.concShown)}% - 2px)"></div><div class="lb" style="left:${x(S.concShown)}%">${S.concShown.toFixed(1)}%</div>`;
+  $('cRead').textContent=S.concShown.toFixed(1)+' %';
+  $('cDT').textContent=S.refDT.toFixed(1)+' °';$('mDT').classList.toggle('badv',S.refDT>10);
+  $('cLim').textContent=L.lbl;
+}
+function renderLevel(){$('lvLiq').style.height=(220-lvY(S.lvl))+'px';$('lvVal').textContent=Math.round(S.lvl);$('lvRefill').textContent=S.refill||'—';}
+function renderAlarms(){
+  const ids=Object.keys(S.al);
+  $('alarmsNow').innerHTML=ids.length?ids.map(id=>{const a=AL[id];return `<div class="alarm ${a[0]}"><span class="en">${a[1]}</span><span>${a[2]}</span></div>`}).join(''):'<span class="pill ok">مفيش إنذارات</span>';
+}
+function renderLog(){$('log').innerHTML=S.log.map(l=>`<div class="sev-${l.sev}"><span class="t">${fmtT(l.t)}</span><span>${l.txt}</span></div>`).join('');}
+
+/* ---------- canvases ---------- */
+function fit(cv){const r=cv.getBoundingClientRect();const d=Math.min(2,window.devicePixelRatio||1);const w=Math.max(10,Math.round(r.width*d)),h=Math.max(10,Math.round(r.height*d));if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;}return {w,h,d};}
+const C={air:'#7fb8ff',hot:'#ff6b4a',warm:'#ffa64a',steam:'#dfe8e6',prod:'#ffd84a',water:'#4ec3e0',pwater:'#a8e6f0',per:'#5fd08b',cair:'#55b6ea',num:'#0a1114',tag:'#071014',ink:'#5b7079',txt:'#cfe8e2',grey:'#2b3d45'};
+let animT=0;const dia=$('cvDia');
+function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();}
+function pipe(g,pts,col,on,w){w=w||8;g.lineCap='round';g.lineJoin='round';
+  const path=()=>{g.beginPath();pts.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));};
+  path();g.strokeStyle='#22323a';g.lineWidth=w+3;g.stroke();
+  path();g.strokeStyle=on?col:'#2b3d45';g.lineWidth=w;g.stroke();
+  if(on){path();g.setLineDash([3,9]);g.lineDashOffset=-animT*36;g.strokeStyle='rgba(255,255,255,.55)';g.lineWidth=2;g.stroke();g.setLineDash([]);}}
+function num(g,x,y,n){g.fillStyle=C.num;g.strokeStyle='#8fa4a0';g.lineWidth=1;g.beginPath();g.arc(x,y,9,0,7);g.fill();g.stroke();g.fillStyle=C.txt;g.font='700 9.5px JetBrains Mono';g.textAlign='center';g.textBaseline='middle';g.fillText(n,x,y+.5);}
+function lbl(g,x,y,t,col,size,al){g.fillStyle=col||C.txt;g.font=(size||12)+'px IBM Plex Sans Arabic';g.textAlign=al||'center';g.textBaseline='middle';g.fillText(t,x,y);}
+function tag(g,x,y,code,val,bad){
+  g.font='700 11px JetBrains Mono';const w=Math.max(g.measureText(code).width,g.measureText(val).width)+12;
+  g.fillStyle=C.tag;g.strokeStyle=bad?'#ff5d50':'#3c5058';g.lineWidth=1.2;rr(g,x-w/2,y-15,w,30,3);g.fill();g.stroke();
+  g.textAlign='center';g.textBaseline='middle';g.fillStyle='#8fa4a0';g.font='600 9.5px JetBrains Mono';g.fillText(code,x,y-6);g.fillStyle=bad?'#ff5d50':'#ffd78a';g.font='700 11px JetBrains Mono';g.fillText(val,x,y+7);}
+function valve(g,x,y,open,vert){g.save();g.translate(x,y);if(vert)g.rotate(Math.PI/2);g.fillStyle=open?'#5fd08b':'#3a4a50';g.strokeStyle='#0a1114';g.lineWidth=1.5;g.beginPath();g.moveTo(-10,-7);g.lineTo(10,7);g.lineTo(10,-7);g.lineTo(-10,7);g.closePath();g.fill();g.stroke();g.restore();}
+function vessel(g,x,y,w,h,fill,col,r){g.fillStyle='#0d171b';g.strokeStyle=C.ink;g.lineWidth=2;rr(g,x,y,w,h,r||8);g.fill();g.stroke();if(fill>0){g.save();rr(g,x+2,y+2,w-4,h-4,(r||8)-2);g.clip();g.fillStyle=col;g.fillRect(x,y+h-h*fill,w,h*fill);g.restore();g.strokeStyle=C.ink;g.lineWidth=2;rr(g,x,y,w,h,r||8);g.stroke();}}
+function drawDia(){
+  const {w}=fit(dia);const g=dia.getContext('2d');g.setTransform(1,0,0,1,0,0);g.fillStyle='#0a1114';g.fillRect(0,0,dia.width,dia.height);
+  const sc=w/1000;g.setTransform(sc,0,0,sc,0,0);
+  const k=S.k,f=S.f,fl=S.flow>30;
+  const afterHE=S.hev>70?C.hot:C.warm;
+  const sp=S.spray, sprayOn=k==='spray'&&sp.ph==='spray'&&(sp.t-sp.st)<43, fillOn=k==='spray'&&sp.ph==='fill'&&sp.t<11;
+  g.fillStyle='#e4ece9';g.font='700 22px Readex Pro';g.textAlign='right';g.textBaseline='alphabetic';g.fillText('النظام المعقّم',990,34);
+  g.font='600 12px JetBrains Mono';g.fillText('Tetra Pak A3/Speed',990,52);
+  // seal water -> compressor
+  pipe(g,[[20,560],[120,560],[120,520]],C.water,S.comp,5);valve(g,70,560,S.comp);num(g,70,584,18);tag(g,150,545,'U70B2010',S.seal.toFixed(1)+' l/m',S.al.SealWaterLowFlow);
+  g.fillStyle='#0d171b';g.strokeStyle=C.ink;g.lineWidth=2;rr(g,90,470,70,46,8);g.fill();g.stroke();
+  g.save();g.translate(125,493);g.rotate(S.comp?animT*7:0);g.strokeStyle=S.comp?C.cair:'#4a5e66';g.lineWidth=2;for(let i=0;i<6;i++){g.rotate(Math.PI/3);g.beginPath();g.moveTo(0,0);g.lineTo(0,-17);g.stroke();}g.restore();
+  num(g,90,465,1);lbl(g,125,530,'كومبرسور',null,11);
+  pipe(g,[[160,493],[210,493],[210,450]],C.water,S.comp,7);
+  vessel(g,190,330,40,120,S.sepLvl*0.6,C.water,12);num(g,240,338,2);lbl(g,210,320,'فاصل المياه',null,11);
+  if(S.sepLvl>0.85){g.strokeStyle='#ff5d50';g.lineWidth=3;rr(g,186,326,48,128,12);g.stroke();}
+  pipe(g,[[210,330],[210,300],[60,300],[60,600],[150,600]],C.air,fl,8);
+  tag(g,112,282,'U70B2470',S.flow.toFixed(0)+' m³/h',S.al.SterileAirLowFlowrate);num(g,60,330,60);
+  const shOn=S.shSP>0&&fl;
+  g.fillStyle='#0d171b';g.strokeStyle=C.ink;g.lineWidth=2;rr(g,150,585,230,30,6);g.fill();g.stroke();
+  g.strokeStyle=shOn&&!f.sh?C.hot:'#4a5e66';g.lineWidth=2;g.beginPath();for(let i=0;i<=56;i++){const x=158+i*3.9,y=600+(i%2?-9:9);i?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();
+  num(g,392,600,3);lbl(g,265,630,'السخان الفائق',null,11);tag(g,265,562,'U70Q0450',S.Tsh.toFixed(0)+'°',S.al.SuperheaterMalfunction||S.al.SterileAirLowTemp||S.al.SterileAirHighTemp);
+  pipe(g,[[380,600],[430,600],[430,420]],shOn?C.hot:C.air,fl,8);
+  g.fillStyle='#0d171b';g.strokeStyle=C.ink;g.lineWidth=2;rr(g,410,300,40,120,6);g.fill();g.stroke();
+  g.strokeStyle=S.hev<95&&fl?C.water:'#2b3d45';g.lineWidth=2;for(let i=0;i<5;i++){g.beginPath();g.moveTo(414,312+i*22);g.lineTo(446,330+i*22);g.stroke();}
+  num(g,462,312,4);lbl(g,430,435,'المبادل',null,11);
+  g.fillStyle='#0d171b';g.strokeStyle=C.ink;rr(g,470,350,58,26,5);g.fill();g.stroke();
+  g.fillStyle=C.hot;g.fillRect(472,352,54*S.hev/100,22);g.strokeStyle=C.ink;rr(g,470,350,58,26,5);g.stroke();
+  g.fillStyle=C.ink;g.font='700 11px JetBrains Mono';g.textAlign='center';g.textBaseline='middle';g.fillText(S.hev.toFixed(0)+'%',499,363);num(g,540,350,5);
+  const stuck=f.hev&&S.hevStuckT>0; lbl(g,499,390,stuck?'الموتور واقف!':'صمام المبادل',stuck?'#ff5d50':'#8fa4a0',10);
+  pipe(g,[[430,300],[430,250],[300,250],[300,110]],afterHE,fl,8);
+  tag(g,365,233,'U70B3520',S.Tpre.toFixed(0)+'°');num(g,320,268,64);
+  vessel(g,330,140,46,60,sp.lvl,C.per,6);num(g,386,144,57);lbl(g,353,212,'تنك الرش',null,10);
+  pipe(g,[[353,140],[353,120],[310,120]],C.per,sprayOn,4);
+  pipe(g,[[420,170],[376,170]],C.per,fillOn,4);valve(g,405,170,fillOn);num(g,405,192,55);
+  num(g,280,100,6);
+  if(sprayOn){for(let i=0;i<16;i++){const a=(animT*2.5+i*0.29)%1;g.fillStyle='rgba(95,208,139,'+(1-a)*(f.noz?0.35:0.9)+')';g.beginPath();g.arc(300+Math.sin(i*1.7)*6*a,110-a*50,2.4,0,7);g.fill();}}
+  pipe(g,[[300,110],[300,70],[560,70]],afterHE,fl,8);
+  pipe(g,[[430,250],[520,250],[520,200],[640,200]],C.warm,S.y2300&&fl,5);valve(g,490,250,S.y2300);num(g,490,272,7);lbl(g,560,190,'U70K2300',S.y2300?'#5fd08b':'#8fa4a0',9.5);
+  pipe(g,[[380,70],[380,30],[470,30]],afterHE,fl&&S.y1520,5);valve(g,420,30,S.y1520);num(g,445,48,11);lbl(g,420,12,'صمام B',S.y1520?'#5fd08b':'#8fa4a0',10);tag(g,520,36,'U70B1740',S.Tbv.toFixed(0)+'°');
+  g.fillStyle=S.y2440?'#173326':'#2c1f14';g.strokeStyle=C.ink;g.lineWidth=1.5;g.beginPath();g.arc(572,70,12,0,7);g.fill();g.stroke();num(g,590,52,23);
+  pipe(g,[[584,70],[640,70]],afterHE,fl,8);
+  pipe(g,[[572,82],[572,345],[640,345]],afterHE,fl,S.y2440?4:6);
+  g.fillStyle='#0c1519';g.strokeStyle=C.ink;g.lineWidth=2.5;rr(g,640,40,180,320,10);g.fill();g.stroke();
+  if(k==='spray'||(k==='dry'&&S.kt<120)){g.fillStyle='rgba(95,208,139,.10)';rr(g,642,42,176,316,9);g.fill();}
+  if(fl){for(let i=0;i<14;i++){const a=(animT*0.45+i/14)%1;g.fillStyle=afterHE;g.globalAlpha=.55*(1-a);g.beginPath();g.arc(660+((i*37)%150),60+a*280,3,0,7);g.fill();}g.globalAlpha=1;}
+  num(g,808,52,24);lbl(g,730,58,'غرفة التعقيم',null,12);
+  tag(g,690,110,'U70B3540',S.Tac.toFixed(1)+'°',(STERILE.includes(k)&&(S.Tac<70||S.Tac>110))||S.al.WrongSterilizationTempAC);
+  g.fillStyle='rgba(232,220,192,.85)';g.strokeStyle='#8a7a55';g.lineWidth=1;g.fillRect(744,130,26,230);g.strokeRect(744,130,26,230);
+  pipe(g,[[757,90],[757,350]],C.prod,k==='prod',4);num(g,785,200,21);lbl(g,805,330,'الأنبوبة',null,10,'right');
+  valve(g,700,170,S.y2350);lbl(g,700,190,'U70K2350',S.y2350?'#5fd08b':'#8fa4a0',9);
+  num(g,808,340,69);
+  const webOn=k==='prod';
+  g.save();g.strokeStyle='#8a7a55';g.lineWidth=4;g.setLineDash([14,6]);g.lineDashOffset=webOn?-animT*50:0;g.beginPath();g.moveTo(460,450);g.lineTo(560,450);g.lineTo(610,560);g.lineTo(700,560);g.lineTo(735,420);g.lineTo(745,360);g.stroke();g.restore();
+  lbl(g,500,438,'ورق التعبئة',null,10);
+  g.fillStyle='#0d171b';g.strokeStyle=S.Tknife>140?C.hot:C.ink;g.lineWidth=2;rr(g,640,335,40,20,4);g.fill();g.stroke();num(g,628,320,26);tag(g,650,395,'سكينة الهوا',S.Tknife.toFixed(0)+'°',S.al.AirKnifeLowTemp);
+  g.fillStyle='#8fa4a0';g.beginPath();g.arc(728,430,7,0,7);g.arc(748,430,7,0,7);g.fill();num(g,770,430,27);
+  g.strokeStyle=C.ink;g.lineWidth=2.5;g.beginPath();g.moveTo(560,450);g.lineTo(600,575);g.lineTo(710,575);g.lineTo(745,450);g.stroke();
+  if(S.bath>0){g.save();g.beginPath();g.moveTo(560,450);g.lineTo(600,575);g.lineTo(710,575);g.lineTo(745,450);g.closePath();g.clip();g.globalAlpha=.85;g.fillStyle=C.per;g.fillRect(550,575-125*S.bath,200,130);g.restore();g.globalAlpha=1;}
+  num(g,580,590,30);tag(g,655,612,'U70B2630',S.bath>0.05?S.Tbath.toFixed(1)+'°':'فاضي',S.al.BathHighTemperature||S.al.BathLowTemperature);
+  const tf=clamp(S.lvl/10000,0.05,0.97);
+  vessel(g,830,440,140,110,tf,C.per,10);num(g,820,436,47);lbl(g,860,566,'تنك البيروكسيد',null,11);
+  tag(g,900,470,'U30B1710',S.Ttank.toFixed(1)+'°',S.al.TankHighTemperature);tag(g,900,510,'U30K1140',Math.round(S.lvl)+'',S.al.TankHighLevelProduction||S.al.TankLowLevelAtStop);
+  g.fillStyle=S.th1?C.hot:'#2b3d45';g.fillRect(845,543,40,5);g.fillStyle=S.th2?C.hot:'#2b3d45';g.fillRect(915,543,40,5);
+  pipe(g,[[900,550],[900,610],[814,610]],C.per,S.pump,5);
+  pipe(g,[[786,610],[760,610],[760,600],[600,600]],C.per,S.pump,4);
+  g.fillStyle='#0d171b';g.strokeStyle=S.pump?'#5fd08b':C.ink;g.lineWidth=2;g.beginPath();g.arc(800,610,14,0,7);g.fill();g.stroke();
+  g.save();g.translate(800,610);g.rotate(S.pump?animT*(S.pumpHz/8):0);g.strokeStyle=C.ink;g.beginPath();g.moveTo(-9,0);g.lineTo(9,0);g.moveTo(0,-9);g.lineTo(0,9);g.stroke();g.restore();num(g,822,630,46);
+  g.fillStyle=S.htrIn?C.hot:'#2b3d45';g.strokeStyle=C.ink;g.lineWidth=1;rr(g,690,594,26,12,2);g.fill();g.stroke();lbl(g,703,585,'سخانات',null,9);
+  pipe(g,[[745,450],[780,450],[780,410],[960,410],[960,440]],C.per,S.pump,4);
+  g.fillStyle=S.htrOut?C.hot:'#2b3d45';g.strokeStyle=C.ink;rr(g,800,404,26,12,2);g.fill();g.stroke();
+  g.fillStyle='#0d171b';g.strokeStyle=S.al.MeterMalfunctionY||S.al.MeterMalfunctionB?'#ff5d50':C.ink;g.lineWidth=2;rr(g,850,375,72,24,4);g.fill();g.stroke();lbl(g,886,387,S.concShown.toFixed(1)+'%',null,11);num(g,936,375,41);
+  pipe(g,[[886,399],[886,410]],C.per,S.pump,3);
+  const refP=S.refillMode==='per',refW=S.refillMode==='water';
+  vessel(g,945,250,40,60,0.7,C.per,4);num(g,935,244,50);pipe(g,[[965,310],[965,340],[940,340],[940,404]],C.per,refP,3);valve(g,965,326,refP,true);num(g,985,340,49);
+  pipe(g,[[880,250],[880,340],[915,340],[915,404]],C.pwater,refW,3);valve(g,880,300,refW,true);num(g,866,318,51);lbl(g,880,236,'مياه من تبريد UV',null,9.5);
+  const uvOn=k==='prod'||k==='mstart';
+  g.fillStyle=uvOn?'#c4b2ff':'#1d2a30';g.strokeStyle=C.ink;g.lineWidth=1.5;rr(g,850,150,110,16,8);g.fill();g.stroke();num(g,838,158,78);lbl(g,905,182,'لمبة UV',null,10);
+  pipe(g,[[870,166],[870,205],[940,205],[940,166]],C.pwater,uvOn&&S.uvFlow>=2,3);
+  pipe(g,[[640,300],[610,300],[610,270]],C.steam,true,4);num(g,596,270,12);lbl(g,610,252,'حاجز البخار',null,9);
+  g.fillStyle='#2a2410';g.strokeStyle='#6b5a1c';rr(g,20,15,300,28,6);g.fill();g.stroke();
+  const stn=stepName(k);lbl(g,170,29,(k==='daa'?'↺ ':(IDX[k]+1)+' — ')+stn.ar,'#ffd78a',13);
+}
+const tr=$('cvTrend');
+function drawTrend(){
+  const {w,h,d}=fit(tr);const g=tr.getContext('2d');g.setTransform(d,0,0,d,0,0);const W=w/d,H=h/d;g.fillStyle='#0a1114';g.fillRect(0,0,W,H);
+  const H0=S.hist,pad={l:36,r:10,t:10,b:20},on=SERIES.filter(s=>s.on);let mx=100;
+  H0.forEach(r=>on.forEach(s=>{mx=Math.max(mx,r[s.i]);}));mx=Math.ceil(mx/50)*50;
+  const tMax=H0.length?H0[H0.length-1][0]:0,tMin=Math.max(0,tMax-3600);
+  const X=t=>pad.l+(W-pad.l-pad.r)*((t-tMin)/Math.max(60,tMax-tMin)),Y=v=>pad.t+(H-pad.t-pad.b)*(1-v/mx);
+  g.strokeStyle='#1e2c33';g.lineWidth=1;g.font='10px JetBrains Mono';g.fillStyle='#8fa4a0';g.textAlign='right';g.textBaseline='middle';
+  for(let v=0;v<=mx;v+=mx>200?100:25){g.beginPath();g.moveTo(pad.l,Y(v));g.lineTo(W-pad.r,Y(v));g.stroke();g.fillText(v+'°',pad.l-4,Y(v));}
+  g.textAlign='center';g.textBaseline='top';g.font='11px IBM Plex Sans Arabic';g.fillText('آخر ساعة من زمن الماكينة',W/2,H-15);
+  on.forEach(s=>{g.strokeStyle=s.c;g.lineWidth=2;g.beginPath();let st=false;H0.forEach(r=>{if(r[0]<tMin)return;const x=X(r[0]),y=Y(r[s.i]);st?g.lineTo(x,y):g.moveTo(x,y);st=true;});g.stroke();
+    const l=H0[H0.length-1];if(l){g.fillStyle=s.c;g.beginPath();g.arc(X(l[0]),Y(l[s.i]),3.5,0,7);g.fill();}});
+}
+const cc=$('cvConc');
+function drawConc(){
+  const {w,h,d}=fit(cc);const g=cc.getContext('2d');g.setTransform(d,0,0,d,0,0);const W=w/d,H=h/d;g.fillStyle='#0a1114';g.fillRect(0,0,W,H);
+  const pad={l:34,r:8,t:6,b:6},lo=25,hi=55,Y=v=>pad.t+(H-pad.t-pad.b)*(1-(v-lo)/(hi-lo)),L=concL();
+  const band=(a,b,c)=>{g.fillStyle=c;g.fillRect(pad.l,Y(b),W-pad.l-pad.r,Y(a)-Y(b));};
+  band(lo,L.alo,'rgba(196,30,51,.14)');band(L.alo,L.wlo,'rgba(42,95,158,.12)');band(L.wlo,L.whi,'rgba(29,132,72,.10)');band(L.whi,L.ahi,'rgba(42,95,158,.12)');band(L.ahi,hi,'rgba(196,30,51,.14)');
+  g.font='10px JetBrains Mono';g.fillStyle='#8fa4a0';g.textAlign='right';g.textBaseline='middle';[30,35,40,45,50].forEach(v=>g.fillText(v+'%',pad.l-4,Y(v)));
+  const H0=S.hist,tMax=H0.length?H0[H0.length-1][0]:0,tMin=Math.max(0,tMax-3600),X=t=>pad.l+(W-pad.l-pad.r)*((t-tMin)/Math.max(60,tMax-tMin));
+  g.strokeStyle='#5fd08b';g.lineWidth=2;g.beginPath();let st=false;H0.forEach(r=>{if(r[0]<tMin)return;const x=X(r[0]),y=Y(clamp(r[7],lo,hi));st?g.lineTo(x,y):g.moveTo(x,y);st=true;});g.stroke();
+}
+
+/* ---------- challenge ---------- */
+const CH={score:0,n:0,cur:null,done:false};
+const EXPL={
+ comp:'التدفق فضل تحت ٩٣٪ من الضبط ٣٠ ثانية، فإنذار تدفق الهوا المعقّم والتعقيم فشل.',
+ seal:'مياه إحكام الكومبرسور تحت ٥٫٥ لتر/دقيقة لمدة ٣٠ ثانية.',
+ sep:'مستوى فاصل المياه فضل عالي ٥ ثواني، فالإنذار اشتغل والتعقيم وقف.',
+ sh:'السخان شغال لكن الحرارة بعد ٥ دقايق لسه تحت ١٠٠°، فإنذار عطل السخان الفائق.',
+ hev:'الكنترول بيطلب من الموتور يتحرك والمكان مش بيتغيّر دقيقتين، فإنذار عطل صمام المبادل.',
+ pre:'صمام التسخين المسبق ما فتحش، فالغرفة ما وصلتش ٤٠° قبل آخر التعقيم بالحرارة.',
+ sfill:'حساس تنك الرش ما قفلش في ١٠ ثواني = ملء بطيء.',
+ noz:'حساس تنك الرش ما فتحش في ٣٨ ثانية من بداية الرش = تفريغ بطيء.',
+ dil:'التركيز بينزل لوحده: الأول إنذار أزرق «قرّب من الحدود» وبعدين أصفر «بره الحدود» ووقفة.',
+ prism:'إنذار تحذير الجهاز (أزرق) والقراءة بتتنطط كل دقيقة. نضّف المنشور.',
+ rtemp:'فرق الحرارة بين التنك والجهاز أكتر من ١٠° لمدة ١٥ ثانية، يعني البيروكسيد مش بيعدّي على الجهاز.',
+ htr:'سطح سخان المدخل عدّى ١٧٠° ثانية واحدة فوقفت الماكينة.',
+ tank:'سخان التنك فضل شغال بعد الضبط، فالتنك عدّى ٩١° لمدة ٥ ثواني.',
+ bfill:'الحمّام ما اتملاش، فمستوى الحمّام واطي ومستوى التنك فضل عالي.',
+ knife:'سكينة الهوا تحت ١٥١° في الإنتاج.',
+ uvw:'مياه تبريد لمبة UV تحت ٢ لتر/دقيقة فوقفت الماكينة. افحص الفلتر.',
+};
+function chStart(){
+  const id=FAULTS[Math.floor(Math.random()*FAULTS.length)].id;CH.cur=id;CH.done=false;
+  const st=FAULTS.find(x=>x.id===id).st;
+  warmTo(st,false);S.f={};S.f[id]=true;hideF=true;renderFaults();
+  const pool=FAULTS.map(x=>x.id).filter(x=>x!==id).sort(()=>Math.random()-.5).slice(0,3);pool.push(id);pool.sort(()=>Math.random()-.5);
+  $('chBody').textContent='العطل مستخبي. الماكينة دلوقتي في «'+stepName(S.k).ar+'»'+(st==='mstart'?' — دوس «تشغيل الموتور»':'')+'. سيب الزمن يمشي وراقب، وبعدين اختار:';
+  $('chOpts').innerHTML=pool.map(x=>`<button data-k="${x}">${FAULTS.find(q=>q.id===x).t}</button>`).join('');
+}
+$('chOpts').onclick=e=>{const b=e.target.closest('button');if(!b||CH.done)return;CH.done=true;CH.n++;const ok=b.dataset.k===CH.cur;if(ok)CH.score++;
+  document.querySelectorAll('#chOpts button').forEach(x=>{if(x.dataset.k===CH.cur)x.classList.add('right');else if(x===b)x.classList.add('wrong');});
+  $('chBody').textContent=(ok?'صح! ':'لأ. ')+'العطل كان: '+FAULTS.find(x=>x.id===CH.cur).t+'. '+EXPL[CH.cur];
+  $('chScore').textContent='النتيجة: '+CH.score+' من '+CH.n;hideF=false;renderFaults();};
+
+/* ---------- events ---------- */
+$('btnUp').onclick=stepUp;
+$('btnMotor').onclick=()=>{
+  if(S.k!=='prepP')return;
+  if(S.lvl<=8400){msg('مستوى التنك أقل من ٨٤٠٠، مفيش بيروكسيد كفاية يملا الحمّام. مش ممكن التشغيل.');return;}
+  const blk=['TankHighTemperature','BathInletHeatersHighTemp','MeterMalfunctionY','ConcOutOfRange'].find(a=>S.al[a]);if(blk){msg('فيه إنذار لسه موجود: '+AL[blk][2]+'.');return;}
+  ['BathLowLevel','TankHighLevelProduction','BathLowTemperature','BathHighTemperature','AirKnifeLowTemp','UvCoolingWaterLowFlow','UvRadiationTooLow','UvWaterTemp','SealWaterLowFlow','HeatExcValveMalfunction','WaterSeparatorHighLevel'].forEach(aOff);
+  S.firstStart=false;go('mstart','تشغيل الموتور');msg('تشغيل الموتور: طلمبة البيروكسيد على ٦٥ هرتز والحمّام بيتملي.');
+};
+$('btnStop').onclick=()=>{if(S.k==='prod'){go('prepP','إيقاف');S.stopT=0;msg('وقفة إنتاج والماكينة معقّمة: الحمّام بيتصفّى للتنك والسخانات تنزل لـ ٧١°. بعد ٣ دقايق ترجع ٨٢° استعدادًا للتشغيل.');}};
+$('btnEnd').onclick=()=>{if(['prod','prepP'].includes(S.k)){go('pend','إنهاء الإنتاج');msg('نهاية الإنتاج: دقيقة وبعدين تهوية ١٠ دقايق.');}};
+$('btnPause').onclick=()=>{S.paused=!S.paused;$('btnPause').textContent=S.paused?'كمّل':'إيقاف مؤقت';render();};
+$('btnReset').onclick=()=>{const f=S.f;S=fresh();S.f=f;for(const id in T)T[id]=0;log('i','بداية من الأول');msg('التحضير: طلمبة البيروكسيد شغالة وشيك التركيز ٣ دقايق. بعدها اضغط «خطوة لفوق».');render();};
+$('jHS').onclick=()=>warmTo('hs',true);
+$('jProd').onclick=()=>warmTo('prod',true);
+$('btnClean').onclick=()=>{if(S.f.prism){msg('المنشور لسه بيتوسّخ — شيل العطل الأول.');return;}S.prism=false;S.concT=60;log('i','منشور الريفراكتوميتر اتنضّف');};
+$('chStart').onclick=chStart;
+
+let last=performance.now(),acc=0;
+function frame(now){
+  const dtR=Math.min(0.25,(now-last)/1000);last=now;animT+=dtR;
+  if(!S.paused){let sd=dtR*(+$('speed').value);while(sd>0){const st=Math.min(0.5,sd);tick(st);sd-=st;}}
+  acc+=dtR;if(acc>0.2){acc=0;render();drawTrend();drawConc();}
+  drawDia();requestAnimationFrame(frame);
+}
+buildKV();buildChips();buildLamps();buildFaults();buildLevelMarks();
+msg('التحضير: طلمبة البيروكسيد شغالة وشيك التركيز ٣ دقايق. بعدها اضغط «خطوة لفوق».');
+render();requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>
