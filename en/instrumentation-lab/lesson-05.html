@@ -39,78 +39,52 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>Incremental or absolute?</h2>
-  <div class="vs">
-    <div class="side"><span class="big">INC</span><b>A B Z pulses</b><span>forgets after power-off: <b>homing</b><br>HSC card · cheaper<br>motor speed, cut to length</span></div>
-    <i>vs</i>
-    <div class="side"><span class="big">ABS</span><b>a number per position</b><span>always knows where it is<br>SSI, Profinet, EtherCAT · dearer<br>hoist, robot, press</span></div>
-  </div>
-  <div class="rule2">
-    <div><b>Single-turn</b><span class="big">12 bit</span><span>4096 positions per turn · 0.088°</span></div>
-    <div><b>Multi-turn</b><span class="big">25 bit</span><span>8192 positions × 4096 turns</span></div>
-  </div>
+  <p>An <b>incremental</b> encoder outputs A B Z pulses and forgets its position when power is lost, so it needs <b>homing</b>. It connects to an HSC card and is the cheaper one. It suits motor speed and cut-to-length.</p>
+  <p>An <b>absolute</b> encoder gives a different number for every position, so it always knows where it is. It connects by SSI, Profinet or EtherCAT and costs more. It suits hoists, robots and presses.</p>
+  <p>Absolute comes in two kinds. <b>Single-turn</b> knows its position within one revolution: 12 bit means 4096 positions (0.088°). <b>Multi-turn</b> counts the revolutions too: 25 bit means 8192 positions × 4096 revolutions.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>Gray code</h2>
-  <div class="vs">
-    <div class="side"><b>Binary: 7 ⇒ 8</b><span class="big">0111 → 1000</span><span>4 bits flip ⇒ odd numbers for a moment</span></div>
-    <i>vs</i>
-    <div class="side"><b>Gray: 7 ⇒ 8</b><span class="big">0100 → 1100</span><span><b>only one bit</b> ⇒ no glitch</span></div>
-  </div>
+  <h2 id="s2"><span class="k">2</span>Why does an absolute encoder use Gray code?</h2>
+  <p>In plain binary, going from 7 to 8 (0111 → 1000) flips 4 bits at once. If they do not flip at exactly the same instant, strange numbers appear for a moment.</p>
+  <p>In <b>Gray code</b> the same step (0100 → 1100) flips <b>one bit only</b>, so there is no error.</p>
   <div class="formula">Gray = Bin XOR (Bin >> 1)</div>
   <div class="wd"><h3>4-bit absolute disc</h3><div id="gray"></div></div>
-  <p class="tip">In SSI pick Gray or Binary correctly, or the reading jumps.</p>
+  <p class="tip">On SSI, choose Gray or binary to match the encoder, or the reading jumps.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>Protocols and the resolver</h2>
-  <ul class="fx">
-    <li><b>SSI</b><span>clock in, bits out · set bit count and Gray</span></li>
-    <li><b>BiSS-C</b><span>like SSI, faster, CRC check · servo</span></li>
-    <li><b>Profinet / EtherCAT</b><span>a network device with a GSDML / ESI file</span></li>
-    <li><b>CANopen / Profibus</b><span>older · cranes</span></li>
-    <li><b>Resolver</b><span>sin and cos, no electronics · heat-proof</span></li>
-  </ul>
+  <h2 id="s3"><span class="k">3</span>How does an absolute encoder send its reading?</h2>
+  <p><b>SSI:</b> the card sends a clock and the encoder answers with the bits, and you must set the bit count and code type. <b>BiSS-C:</b> like SSI but faster and it checks the data with a CRC, used on servos.</p>
+  <p><b>Profinet / EtherCAT:</b> the encoder is a device on the network with a GSDML or ESI file. <b>CANopen / Profibus:</b> older, found on cranes.</p>
+  <p>There is also the <b>resolver</b>: it outputs sin and cos signals with no electronics inside, so it withstands heat.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>Homing</h2>
-  <ol class="steps"><li>Move slowly</li><li>Hit the reference switch</li><li>First Z pulse</li><li class="on">Zero the counter</li></ol>
-  <p class="tip">The switch says “we’re in this turn”; Z pins the exact point.</p>
+  <h2 id="s4"><span class="k">4</span>How is homing done?</h2>
+  <p>The axis moves slowly until it touches the reference limit switch, then carries on to the first Z pulse, and there the controller zeroes the counter.</p>
+  <p class="tip">The limit switch says "we are in this revolution", and Z fixes the exact point.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
-  <h2 id="s5"><span class="k">5</span>Mechanical mounting</h2>
-  <div class="vs">
-    <div class="side"><b>Solid shaft</b><span><b>flexible coupling</b><br>rigid = broken bearings</span></div>
-    <i>vs</i>
-    <div class="side"><b>Hollow shaft</b><span>onto the motor shaft<br>+ <b>flexible torque arm</b></span></div>
-  </div>
-  <p class="alert"><span>Never hammer an encoder: the glass disc inside breaks.</span></p>
-  <p class="tip">Pen mark across shaft and coupling: if it moves ⇒ slipping.</p>
+  <h2 id="s5"><span class="k">5</span>How is an encoder mounted mechanically?</h2>
+  <p>A <b>solid shaft</b> encoder is joined with a <b>flexible coupling</b>, because a rigid coupling wrecks the bearings. A <b>hollow shaft</b> encoder sits directly on the motor shaft with a <b>flexible torque arm</b> that stops it turning.</p>
+  <p class="alert"><span>Never hit an encoder with a hammer: the glass disc inside breaks.</span></p>
+  <p class="tip">Draw a pen mark across the shaft and the coupling. If the two halves move apart, there is slip.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s6">
   <h2 id="s6"><span class="k">6</span>Cable and noise</h2>
-  <div class="tiles">
-    <div class="tile"><span class="ic">🧶</span><b>Twisted pairs</b><span>A with A̅, B with B̅</span></div>
-    <div class="tile"><span class="ic">⏚</span><b>Shield</b><span>usually both ends, 360° clamp (per maker)</span></div>
-    <div class="tile"><span class="ic">↔️</span><b>Away from drives</b><span>separate tray</span></div>
-  </div>
+  <p>Encoder cable is <b>twisted pairs</b>: A with A̅ and B with B̅. The <b>shield</b> is usually earthed at both ends with a 360° clamp (per the maker's instructions). And the cable runs <b>away from the VFD cable</b> in a separate tray.</p>
+  <p>Cable length is set by the output type:</p>
   <ul class="scale">
     <li>TTL 5V<div class="bar"><i style="width:5%"></i><em><bdi dir="ltr">few m</bdi></em></div></li>
     <li>RS-422<div class="bar"><i style="width:100%"></i><em><bdi dir="ltr">≈ 100 m</bdi></em></div></li>
   </ul>
-  <p class="tip">5 V on a long cable may arrive as only 4.5 V.</p>
+  <p class="tip">And 5 V on a long cable may reach the encoder as only 4.5 V.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s7">
-  <h2 id="s7"><span class="k">7</span>Fault table</h2>
-  <ul class="fx">
-    <li><b>Extra counts with the drive on</b><span>earth the shield, separate cables</span></li>
-    <li><b>Counts backwards</b><span>swap A and B</span></li>
-    <li><b>Half count / no direction</b><span>check each channel</span></li>
-    <li><b>Loses counts at high speed</b><span>faster card, less filtering</span></li>
-    <li><b>Slow drift</b><span>slipping coupling or wheel</span></li>
-    <li><b>Noise, worn bearing</b><span>flexible coupling, torque arm</span></li>
-    <li><b>Absolute value jumps</b><span>Gray/Binary or SSI bits wrong</span></li>
-  </ul>
+  <h2 id="s7"><span class="k">7</span>Each fault and its fix</h2>
+  <p><b>Noise and electrical faults:</b> extra counts with the VFD running, earth the shield and separate the cables. Counting backwards, swap A and B. Half the count or no direction, measure each channel alone. Counts lost at high speed, you need a faster card or less filtering.</p>
+  <p><b>Mechanical faults:</b> a slow drift in the reading, the coupling or wheel is slipping. Noise and failed bearings, you need a flexible coupling or a torque arm.</p>
+  <p><b>The absolute reading jumps:</b> the Gray/binary choice or the SSI bit count is wrong.</p>
   <div class="wd"><h3>Game: find the encoder fault</h3><div id="game"></div></div>
-  <p class="alert"><span><b>Lock out</b> before touching the shaft. On a hoist a hanging load turns the motor: <b>secure the load first</b>.</span></p>
+  <p class="alert"><span><b>Lock out</b> before you touch the shaft. On a hoist the suspended load turns the motor: <b>secure the load first</b>.</span></p>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>

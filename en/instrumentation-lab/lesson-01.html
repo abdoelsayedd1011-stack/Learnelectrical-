@@ -38,72 +38,50 @@
 <section class="panel lprog" id="lprog" aria-label="Your progress"></section>
 
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>A plant is like a human body</h2>
-  <ol class="steps"><li>Sensor = your hand feels</li><li>Controller = the brain decides</li><li>Valve = the other hand acts</li></ol>
+  <h2 id="s1"><span class="k">1</span>What is instrumentation for in a plant?</h2>
+  <p>A plant is like the human body. The <b>sensor</b> is the hand that feels, the <b>controller</b> is the brain that decides, and the <b>valve</b> is the other hand that acts.</p>
   <div class="cards" id="devCards"></div>
-  <div class="bf"><span class="ic">📏</span><span>Instrumentation = <b>measurement</b> + <b>process control</b>. A wrong reading ⇒ the whole plant acts wrong.</span></div>
+  <p>So instrumentation has two jobs: <b>measurement</b> and <b>process control</b>. If the reading is wrong, the whole plant runs wrong.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>The control loop: 4 parts</h2>
-  <ol class="steps"><li>Sensor (PT100, thermocouple)</li><li>Transmitter ⇒ 4–20 mA</li><li>Controller (PLC, E5CC)</li><li>Actuator (valve, VFD, SSR)</li></ol>
-  <div class="tiles">
-    <div class="tile"><span class="big mono">PV</span><b>Reading now</b><span>63 °C</span></div>
-    <div class="tile"><span class="big mono">SP</span><b>What you want</b><span>70 °C</span></div>
-    <div class="tile"><span class="big mono">Error</span><b>SP − PV</b><span>7 °C</span></div>
-    <div class="tile"><span class="big mono">OUT</span><b>Controller command</b><span>valve 65 %</span></div>
-  </div>
-  <div class="vs">
-    <div class="side"><span class="big">Auto</span><b>Controller moves it</b><span>closed loop</span></div>
-    <i>vs</i>
-    <div class="side"><span class="big">Manual</span><b>You set the opening</b><span>during maintenance</span></div>
-  </div>
+  <h2 id="s2"><span class="k">2</span>What is a control loop made of?</h2>
+  <p>Every control loop is 4 parts in a row. The <b>sensor</b> (such as a PT100 or thermocouple) feels the value. The <b>transmitter</b> turns it into a 4–20 mA signal. The <b>controller</b> (PLC or E5CC) compares and decides. The <b>actuator</b> (valve, VFD or SSR) acts.</p>
+  <p>The controller works with 4 numbers. <b>PV</b> is the reading now (say 63 °C). <b>SP</b> is the value you want (70 °C). <b>Error</b> is the gap between them (7 °C). <b>OUT</b> is the controller's command to the actuator (valve at 65 %).</p>
+  <p>In <b>Auto</b> the controller moves the valve and the loop is closed. In <b>Manual</b> you set the opening yourself, which we use during maintenance.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>Try it: tank heating loop</h2>
-  <p class="tip"><span class="term">TT-101</span> ⇒ <span class="term">TIC-101</span> ⇒ steam valve <span class="term">TV-101</span>. Move the SP and try Manual. (Time runs 8× faster.)</p>
+  <h2 id="s3"><span class="k">3</span>Try it: a tank heating loop</h2>
+  <p>Sensor <span class="term">TT-101</span> feeds controller <span class="term">TIC-101</span>, which moves steam valve <span class="term">TV-101</span>. Move the SP and try Manual. (Time runs 8 times faster here.)</p>
   <div class="wd"><h3>Temperature control loop</h3><div id="loop"></div></div>
-  <p class="tip">PV stuck at 60 with the valve 100 %? Not the controller: weak steam, a valve not opening, or a bad sensor. <b>Check with a hand thermometer first.</b></p>
+  <p class="tip">If PV sits at 60 with the valve 100 % open, the problem is not the controller: weak steam, a valve that does not open, or a sensor reading wrong. <b>Compare with a hand thermometer first.</b></p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>Range: LRV and URV</h2>
-  <div class="rule2">
-    <div><b>LRV</b><span class="big">4 mA</span><span>lowest value</span></div>
-    <div><b>URV</b><span class="big">20 mA</span><span>highest value</span></div>
-  </div>
+  <h2 id="s4"><span class="k">4</span>What is a range?</h2>
+  <p>Every transmitter has two limits. <b>LRV</b> is the lowest value it measures and gives 4 mA, and <b>URV</b> is the highest and gives 20 mA. The distance between them is the <b>span</b>:</p>
   <div class="formula">Span = URV − LRV</div>
+  <p>For example, a transmitter ranged 0 to 150 °C:</p>
   <ul class="scale">
     <li>0 °C<div class="bar"><i style="width:0%"></i><em><bdi dir="ltr">4 mA</bdi></em></div></li>
     <li>75 °C<div class="bar"><i style="width:50%"></i><em><bdi dir="ltr">12 mA</bdi></em></div></li>
     <li>150 °C<div class="bar"><i style="width:100%"></i><em><bdi dir="ltr">20 mA</bdi></em></div></li>
   </ul>
-  <p class="tip">Range −50 to 150 °C? Then 4 mA = <b>−50 °C</b>, not zero.</p>
-  <div class="vs">
-    <div class="side"><b>Accuracy</b><span>how close to the truth<br>±0.1 % of span</span></div>
-    <i>≠</i>
-    <div class="side"><b>Resolution</b><span>smallest step shown<br>72.48 may really be 75</span></div>
-  </div>
-  <p class="alert"><span>Fit the range to the job: 0–100 bar while working at 3 bar = error up to <b>3 %</b>.</span></p>
+  <p class="tip">With a range of −50 to 150 °C, 4 mA means <b>−50 °C</b>, not zero.</p>
+  <p>Watch two words. <b>Accuracy</b> is how close the reading is to the truth, such as ±0.1 % of span. <b>Resolution</b> is the smallest step the display shows. So the screen can say 72.48 while the truth is 75.</p>
+  <p class="alert"><span>Pick the range to fit the job: a 0–100 bar range while you work at 3 bar = an error that can reach <b>3 %</b>.</span></p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
-  <h2 id="s5"><span class="k">5</span>Tags: what is TT-101?</h2>
-  <div class="bf"><span class="ic">🏷️</span><span>First letter = <b>what is measured</b> · next = <b>function</b> · number = loop</span></div>
+  <h2 id="s5"><span class="k">5</span>What does the tag <span class="term">TT-101</span> mean?</h2>
+  <p>Every device in the plant has a tag. The first letter says <b>what it measures</b>, the letters after it give its <b>function</b>, and the number is the loop number.</p>
   <div class="tags-row"><span class="tag-b">TT<br>101</span><span class="tag-b">TIC<br>101</span><span class="tag-b">PDT<br>205</span><span class="tag-b">LSH<br>310</span></div>
-  <div class="vs">
-    <div class="side"><b>First letter</b><span><b>T</b> temperature · <b>P</b> pressure · <b>F</b> flow<br><b>L</b> level · <b>W</b> weight · <b>S</b> speed · <b>Z</b> position</span></div>
-    <i>+</i>
-    <div class="side"><b>Then</b><span><b>T</b> transmitter · <b>E</b> element · <b>I</b> indicator<br><b>C</b> controller · <b>S</b> switch · <b>V</b> valve<br><b>A H L</b> alarm high low · <b>D</b> differential</span></div>
-  </div>
-  <p class="tip">Same loop, same number: <span class="term">TE-101</span> · <span class="term">TT-101</span> · <span class="term">TIC-101</span> · <span class="term">TV-101</span></p>
+  <p><b>First letter:</b> T temperature, P pressure, F flow, L level, W weight, S speed, Z position.</p>
+  <p><b>Following letters:</b> T transmitter, E element, I indicator, C controller, S switch, V valve, A alarm, H high, L low, D differential.</p>
+  <p class="tip">Devices in the same loop share the number: <span class="term">TE-101</span>, <span class="term">TT-101</span>, <span class="term">TIC-101</span> and <span class="term">TV-101</span>.</p>
   <div class="wd"><h3>Drill: decode the tag</h3><div id="tags"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s6">
-  <h2 id="s6"><span class="k">6</span>From the site</h2>
-  <ul class="fx">
-    <li><b>“The PID doesn’t work”</b><span>controller left in Manual</span></li>
-    <li><b>Reading off by a fixed ratio</b><span>transmitter range ≠ PLC range</span></li>
-    <li><b>Tag differs from drawing</b><span>update the drawings (As-built)</span></li>
-  </ul>
-  <p class="alert"><span>Before disconnecting a transmitter: <b>tell operations and put the loop in Manual</b> so the valve doesn’t slam open.</span></p>
+  <h2 id="s6"><span class="k">6</span>Problems from the field</h2>
+  <p>If someone says <b>"the PID is not working"</b>, the controller was most likely left in Manual. If <b>the reading is off by a constant ratio</b>, the transmitter range differs from the range entered in the PLC. If <b>the tag on the device differs from the drawing</b>, update the drawings (as-built).</p>
+  <p class="alert"><span>Before disconnecting a transmitter: <b>tell operations and put the loop in Manual</b> so the valve does not drive fully open.</span></p>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>
