@@ -51,7 +51,7 @@ export const PRODUCTS = {
   srvm:    { title: "صيانة محركات السيرفو",        dirs: ["servo-maint-lab"] },
   mech:    { title: "أساسيات الميكانيكا",          dirs: ["mech-lab"] },
   mfit:    { title: "ميكانيكا الماكينات",      dirs: ["mfit-lab"] },
-  a3s:     { title: "محاكيات A3/Speed",          dirs: ["a3speed-lab", "a3speed-design-lab"] } // which pages are locked: membersOnly() in _middleware.js
+  a3s:     { title: "محاكيات A3/Speed",          dirs: ["a3speed-lab", "a3speed-design-lab", "a3flex-filling-lab"] } // which pages are locked: membersOnly() in _middleware.js
 };
 export const PRODUCT_IDS = Object.keys(PRODUCTS);
 // Friendlier names in links (subscribe.html?course=servo) → product id
