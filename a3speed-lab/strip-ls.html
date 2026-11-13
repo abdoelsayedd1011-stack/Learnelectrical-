@@ -102,6 +102,22 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .res{font-size:13px;line-height:1.55}
 .res.ok{color:var(--ok)}.res.bad{color:#ffb3ab}
 
+/* TMCC2 panel */
+.tm-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:10px;align-items:start}
+@media (max-width:760px){.tm-grid{grid-template-columns:minmax(0,1fr)}}
+.tm-svg{background:#0b1013;border:1px solid var(--line);border-radius:10px;display:block;width:100%;height:auto;direction:ltr}
+.tm-read{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.tm-st{border-radius:8px;padding:6px 9px;font-size:13px;font-weight:600;border:1px solid var(--line);background:var(--panel2)}
+.tm-st.ok{border-color:#2f6b47;color:#bff5d2}.tm-st.b{border-color:var(--blue);color:#cfe4ff;background:#12223a}.tm-st.y{border-color:var(--warn);color:#ffe7a0;background:#2a2410}
+.tm-ctl{display:grid;gap:6px;margin-top:8px}
+.chain2{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:12px;margin-top:8px;direction:ltr;justify-content:flex-end}
+.chain2 span{border:1px solid var(--line);background:var(--panel2);border-radius:6px;padding:2px 7px;font-family:var(--f-mono)}
+.chain2 i{color:var(--muted);font-style:normal}
+.chain2 span.hot{border-color:var(--accent);color:var(--accent)}
+.gauge{position:relative;height:16px;border:1px solid var(--line);border-radius:4px;background:#0b1013;overflow:hidden;direction:ltr}
+.gauge b{position:absolute;top:0;bottom:0;background:rgba(90,169,255,.18)}
+.gauge u{position:absolute;top:0;bottom:0;width:1px;background:#4a5a62}
+.gauge i{position:absolute;top:-1px;bottom:-1px;width:4px;margin-left:-2px;background:var(--accent);border-radius:2px}
 /* tabs */
 .tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
 .tabs button{font-size:13px}
@@ -255,6 +271,38 @@ svg .m{font-family:var(--f-mono)}
       <div class="tr"><h3>قدرة اللحام <span class="lg"><span><i style="background:#55b6ea"></i>LS</span><span><i style="background:#ff7a8a"></i>SA</span></span></h3><canvas id="c2" height="150"></canvas></div>
       <div class="tr"><h3>مراقب اللحام (الزاوية) <span class="lg"><span><i style="background:#55b6ea"></i>LS φ</span><span><i style="background:#ff7a8a"></i>SA φ</span></span></h3><canvas id="c3" height="150"></canvas></div>
     </div>
+    <div class="panel o4" id="tmcc">
+      <h2>كارت TMCC2 · مراقب اللحام
+        <span class="row" style="margin-inline-start:auto"><button data-tm="LS" class="sel">اللحام الطولي LS</button><button data-tm="SA">الأبليكيتور SA</button></span></h2>
+      <div class="tm-grid">
+        <div>
+          <svg class="tm-svg" id="tmSvg" viewBox="0 0 380 220" role="img" aria-label="منظر مقرب للإندكتور والورق والمجال المغناطيسي"></svg>
+          <div class="tm-ctl">
+            <div class="slrow"><span>المسافة بين الورق والإندكتور</span><input type="range" id="gap" min="0.2" max="3" step="0.05" value="0.5"><span class="mono" id="gapV">0.50 mm</span></div>
+            <div class="slrow"><span>قدرة المولد (ضبط)</span><input type="range" id="pwrK" min="50" max="140" step="5" value="100"><span class="mono" id="pwrV">100%</span></div>
+            <div class="row">
+              <button id="bSweep">خلّي الورقة تبعد وترجع</button>
+              <button id="bVmn" class="sel">ضبط VMN أوتوماتيك: شغال</button>
+              <button id="bAvg">صفّر المتوسط</button>
+              <button id="bGap0">رجّع المسافة 0.5</button>
+            </div>
+            <div class="note">جرّب: بعّد الورقة شوية شوية وشوف الزاوية <b>φ</b> والمعاوقة <b>Z</b> والحرارة اللي بتوصل للألومنيوم. بعدين اقفل ضبط VMN وكرر. <span class="simp">تبسيط توضيحي</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="tm-st ok" id="tmSt">سليم</div>
+          <div class="tm-read" style="margin-top:6px" id="tmRead"></div>
+          <div style="margin-top:8px;font-size:12px" class="note">الزاوية φ مقارنة بالمتوسط (الأزرق = حد التحذير ±10°، الخطوط = حد الإنذار ±40°)</div>
+          <div class="gauge" id="gPh"><b></b><u style="left:0%"></u><u style="left:50%"></u><u style="left:100%"></u><i></i></div>
+          <div style="margin-top:6px;font-size:12px" class="note">المعاوقة Z (الأزرق = المتوسط ±10، الحدود 30 و 70)</div>
+          <div class="gauge" id="gZ"><b></b><u style="left:25%"></u><u style="left:75%"></u><i></i></div>
+          <canvas id="c4" height="130" style="margin-top:8px"></canvas>
+          <div class="lg"><span><i style="background:#e9a640"></i>φ (°)</span><span><i style="background:#5aa9ff"></i>Z</span><span><i style="background:#9ccc65"></i>المسافة ×10</span><span><i style="background:#ff8a3d"></i>حرارة الألومنيوم %</span></div>
+          <div class="chain2" id="chain2"><span>TPIH</span><i>→ VMN →</i><span>Inductor</span><i>· CAN →</i><span class="hot">TMCC2</span><i>→ EtherNet/IP →</i><span>PLC</span><i>→</i><span>TPOP</span></div>
+          <p class="note" style="margin:6px 0 0">المولد بيبعت للكارت كل 100 مللي ثانية: الفولت والتيار والقدرة والمعاوقة والزاوية والحالة. الكارت بيقارن بالمتوسط اللي بيتصفّر عند وصلة الورق أو تغيير القدرة.</p>
+        </div>
+      </div>
+    </div>
 <div class="panel o6">
   <div class="tabs">
     <button data-tab="t1" class="sel">توقيت لحام الشريط</button>
@@ -355,6 +403,8 @@ const ALR={
   SATPIH:{tag:"ALR_ASSU_YE_TPIHFault",c:"Y",t:"مولد TPIH بتاع الأبليكيتور فصل"},
   SASM:{tag:"ALR_ASSU_BE_SealMonSA",c:"B",t:"مراقب اللحام: قراءة الأبليكيتور بعيدة عن متوسطها"},
   LSTPIH:{tag:"ALR_TFU_YE_LSTPIHFault",c:"Y",t:"مولد TPIH بتاع اللحام الطولي فصل"},
+  LSSMY:{tag:"ALR_TFU_YE_SealMonLS",c:"Y",t:"مراقب اللحام: قراءة اللحام الطولي برّه الحدود"},
+  SASMY:{tag:"ALR_ASSU_YE_SealMonSA",c:"Y",t:"مراقب اللحام: قراءة الأبليكيتور برّه الحدود"},
   LSSM:{tag:"ALR_TFU_BE_SealMonLS",c:"B",t:"مراقب اللحام: قراءة اللحام الطولي بعيدة عن متوسطها"},
   Ring:{tag:"ALR_TFU_YE_LSFormRingPosFault",c:"Y",t:"حلقة التشكيل السفلية مش في مكانها"}
 };
@@ -382,7 +432,7 @@ const FAULTS=[
  {id:"satpih",area:"SA",n:"مولد TPIH للأبليكيتور فصل",s:"إنذار فوري",x:322,y:510,
   why:"قدرة الأبليكيتور بقت صفر. إشارة المولد (T10G9170) فصلت فطلع ALR_ASSU_YE_TPIHFault على طول ووقفت الماكينة."},
  {id:"sasm",area:"SA",n:"الإندكتور متوسخ أو المسافة اتغيرت",s:"أزرق بعد 3 ث",x:373,y:350,
-  why:"زاوية ومعاوقة الأبليكيتور بعدت عن المتوسط أكتر من الحد لمدة 3 ثواني (TMR_AssuSmHystOn)، فطلع تحذير أزرق ALR_ASSU_BE_SealMonSA. الماكينة شغالة بس لازم تنضف الإندكتور وتظبط المسافة."},
+  why:"المسافة بين الورق والإندكتور زادت، فزاوية ومعاوقة الأبليكيتور بعدت عن المتوسط أكتر من الحد لمدة 3 ثواني (TMR_AssuSmHystOn)، فطلع تحذير أزرق ALR_ASSU_BE_SealMonSA. الماكينة شغالة بس لازم تنضف الإندكتور وتظبط المسافة."},
  {id:"lstpih",area:"LS",n:"مولد TPIH للحام الطولي فصل",s:"توقف سريع لو الماكينة معقمة",x:705,y:78,
   why:"قدرة LS بقت صفر. لما الماكينة معقمة البرنامج بيعمل توقف سريع ويقفل الـ Tube flusher، ولو مش معقمة بيعمل توقف عادي. الإنذار ALR_TFU_YE_LSTPIHFault."},
  {id:"lssm",area:"LS",n:"مشكلة في VMN أو كابل الماتشينج",s:"أزرق بعد 3 ث",x:712,y:172,
@@ -398,7 +448,7 @@ const fOn={};FAULTS.forEach(f=>fOn[f.id]=false);
 const S={t:0, mode:"prod", run:"run", pph:24000, target:24000, seqT:99, seqStep:"RunSealing",
   M:570, Mmeas:570, f:0, feed:0, active:0, bob:[{D:118,st:"run"},{D:235,st:"prep"}],
   splice:null, refill:false, failNext:false, breakAt:-1,
-  lsP:800, saP:825, lsPh:0, lsZ:50, saPh:5, saZ:56, lsAvgPh:0, lsAvgZ:50, saAvgPh:5, saAvgZ:56,
+  lsP:800, saP:825, gap:{LS:0.5,SA:0.5}, pwrK:{LS:100,SA:100}, vmn:{LS:8,SA:8}, vmnAuto:{LS:true,SA:true}, vmnT:{LS:0,SA:0}, kEff:{LS:1,SA:1}, VI:{LS:{V:0,I:0},SA:{V:0,I:0}}, lsPh:0, lsZ:50, saPh:5, saZ:56, lsAvgPh:0, lsAvgZ:50, saAvgPh:5, saAvgZ:56,
   tmr:{}, alarms:[], packs:0, bad:0, splices:0, distStrip:0, distWeb:0, feedDist:0,
   pm:null, extraT:-1, extraOn:0, sterile:true, ringDown:false, msg:"", stopKind:""};
 let simSpeed=1, heatMs=1300;
@@ -453,23 +503,45 @@ function step(dt){
   else if(moving)lsCmd=needLS(S.pph)*(fOn.lowls?0.68:1);
   if(S.extraT>0){S.extraT-=dt;if(S.extraT<=0){S.extraOn=3600/Math.max(S.pph,1000);}}
   if(S.extraOn>0){S.extraOn-=dt;lsCmd*=1+P.extraPerc/100;}
+  lsCmd*=S.pwrK.LS/100;
   if(fOn.lstpih)lsCmd=0;
   S.lsP+= (lsCmd-S.lsP)*Math.min(1,dt*8);
-  let saCmd=moving?needSA(S.pph):0;
+  let saCmd=moving?needSA(S.pph)*S.pwrK.SA/100:0;
   if(fOn.satpih)saCmd=0;
   S.saP+=(saCmd-S.saP)*Math.min(1,dt*8);
   if(fOn.lstpih&&(lsCmd>0||moving||S.seqStep.startsWith("Preheat")))raise("LSTPIH");
   if(fOn.satpih&&moving)raise("SATPIH");
 
-  // ---- seal monitors ----
+  // ---- seal monitors (TMCC2 model, illustrative) ----
   const nz=()=>(Math.random()-.5);
-  const lsPhT=fOn.lssm?-24:0, lsZT=fOn.lssm?63:50, saPhT=fOn.sasm?23:5, saZT=fOn.sasm?41:56;
-  if(S.lsP>20){S.lsPh+=(lsPhT-S.lsPh)*dt*0.8+nz()*0.6;S.lsZ+=(lsZT-S.lsZ)*dt*0.8+nz()*0.5;}
-  if(S.saP>20){S.saPh+=(saPhT-S.saPh)*dt*0.8+nz()*0.6;S.saZ+=(saZT-S.saZ)*dt*0.8+nz()*0.5;}
+  ["LS","SA"].forEach(X=>{
+    const base=X==="LS"?{ph:0,Z:50}:{ph:5,Z:56};
+    let g=S.gap[X]; if(X==="SA"&&fOn.sasm)g+=1.1;
+    const k=Math.exp(-Math.max(0,g-0.5)/1.6)*Math.min(1,0.8+0.4*g);   // coupling to the foil
+    let phRaw=base.ph+48*(1-k), Z=base.Z+26*(1-k);
+    const stuck=X==="LS"&&fOn.lssm;
+    // VMN self adaptation: each switch step shifts the phase about -7 deg
+    if(S.vmnAuto[X]&&!stuck){S.vmnT[X]+=dt;if(S.vmnT[X]>=0.6){S.vmnT[X]=0;const cur=phRaw-(S.vmn[X]-8)*7;if(cur>5&&S.vmn[X]<15)S.vmn[X]++;else if(cur<-5&&S.vmn[X]>0)S.vmn[X]--;}}
+    let ph=phRaw-(S.vmn[X]-8)*7; Z+=(S.vmn[X]-8)*0.5;
+    if(stuck){ph-=24;Z+=12;}
+    S.kEff[X]=clamp(k,0,1);
+    const Pw=X==="LS"?S.lsP:S.saP;
+    if(Pw>20){
+      if(X==="LS"){S.lsPh+=(ph-S.lsPh)*Math.min(1,dt*3)+nz()*0.5;S.lsZ+=(Z-S.lsZ)*Math.min(1,dt*3)+nz()*0.4;}
+      else{S.saPh+=(ph-S.saPh)*Math.min(1,dt*3)+nz()*0.5;S.saZ+=(Z-S.saZ)*Math.min(1,dt*3)+nz()*0.4;}
+    } else if(X==="LS"){S.lsPh=ph;S.lsZ=Z;S.lsAvgPh=ph;S.lsAvgZ=Z;} else {S.saPh=ph;S.saZ=Z;S.saAvgPh=ph;S.saAvgZ=Z;}
+    const phN=X==="LS"?S.lsPh:S.saPh, ZN=X==="LS"?S.lsZ:S.saZ;
+    const cp=Math.max(0.2,Math.cos(phN*Math.PI/180));
+    const I=Pw>1?Math.sqrt(Pw/(ZN*cp)):0; S.VI[X]={V:I*ZN,I};
+  });
   const a=dt/60;S.lsAvgPh+=(S.lsPh-S.lsAvgPh)*a;S.lsAvgZ+=(S.lsZ-S.lsAvgZ)*a;S.saAvgPh+=(S.saPh-S.saAvgPh)*a;S.saAvgZ+=(S.saZ-S.saAvgZ)*a;
   const lsDev=moving&&(Math.abs(S.lsPh-S.lsAvgPh)>10||Math.abs(S.lsZ-S.lsAvgZ)>10);
   const saDev=moving&&(Math.abs(S.saPh-S.saAvgPh)>10||Math.abs(S.saZ-S.saAvgZ)>10);
   if(tmr("lssm",lsDev,dt)>=3)raise("LSSM");
+  const lsAbs=moving&&(Math.abs(S.lsPh)>40||S.lsZ<30||S.lsZ>70);
+  if(tmr("lsabs",lsAbs,dt)>=3)raise("LSSMY");
+  const saAbs=moving&&(Math.abs(S.saPh)>40||S.saZ<30||S.saZ>70);
+  if(tmr("saabs",saAbs,dt)>=3)raise("SASMY");
   if(tmr("sasm",saDev,dt)>=3)raise("SASM");
 
   // ---- SA checks ----
@@ -539,13 +611,13 @@ function step(dt){
     if(t>300&&t<900)ob.ang-=200*dt; if(t>h+200&&t<h+800)nb.ang-=200*dt;}
 
   // PM splice travel
-  if(S.pm){S.pm.d+=vv*dt;if(!S.pm.det&&S.pm.d>=0.4){S.pm.det=true;S.extraT=P.extraPacks*3600/Math.max(S.pph,1000);S.pm.T=S.extraT;S.pm.t0=S.t;}
+  if(S.pm){S.pm.d+=vv*dt;if(!S.pm.det&&S.pm.d>=0.4){S.pm.det=true;resetAvg();S.extraT=P.extraPacks*3600/Math.max(S.pph,1000);S.pm.T=S.extraT;S.pm.t0=S.t;}
     if(S.pm.det&&S.t-S.pm.t0>S.pm.T+1)S.pm=null;}
 
   // quality + counting
-  const qLS=moving?S.lsP/Math.max(needLS(S.pph),1):1;
-  let qSA=moving?S.saP/Math.max(needSA(S.pph),1):1;
-  if(fOn.roll)qSA*=0.3; if(fOn.sasm)qSA*=0.86; if(S.broken)qSA=0;
+  const qLS=moving?S.lsP*S.kEff.LS/Math.max(needLS(S.pph),1):1;
+  let qSA=moving?S.saP*S.kEff.SA/Math.max(needSA(S.pph),1):1;
+  if(fOn.roll)qSA*=0.3; if(S.broken)qSA=0;
   S.qLS=qLS;S.qSA=qSA;
   if(moving&&S.mode==="prod"){const pk=S.pph/3600*dt;S.packs+=pk;if(qLS<0.85||qSA<0.85||qLS>1.3)S.bad+=pk;}
 }
@@ -727,6 +799,7 @@ function reset(){
   // clear alarms whose cause is gone
   const cause={BobbinMotorFault:"fq",MagazineEmpty:"lvl",StripMaterialBreak:"brk",NotPrep:"prep",Opposite:"opp",Air:"air",Roller:"roll",Encoder:"enc",SATPIH:"satpih",SASM:"sasm",LSTPIH:"lstpih",LSSM:"lssm",Ring:"ring"};
   let left=0;
+  resetAvg();
   S.alarms.forEach(a=>{if(a.cleared)return;const c=cause[a.k];
     if(a.k==="StripMaterialBreak"){if(!fOn.brk&&!fOn.heat&&!fOn.air){a.cleared=true;S.broken=false;}else left++;return;}
     if(a.k==="MagazineEmpty"&&!fOn.lvl&&S.M>P.empty){a.cleared=true;return;}
@@ -784,6 +857,86 @@ $("bAns").onclick=()=>{
   $("chalTxt").textContent="العطل لسه شغال، تقدر تشوفه في قائمة الأعطال وتشيله.";
   renderFaults();
 };
+
+/* ---------- TMCC2 panel ---------- */
+let tmX="LS", sweep=null;
+function resetAvg(){S.lsAvgPh=S.lsPh;S.lsAvgZ=S.lsZ;S.saAvgPh=S.saPh;S.saAvgZ=S.saZ;S.tmr.lssm=0;S.tmr.sasm=0;}
+function syncTmCtl(){$("gap").value=S.gap[tmX];$("gapV").textContent=S.gap[tmX].toFixed(2)+" mm";$("pwrK").value=S.pwrK[tmX];$("pwrV").textContent=S.pwrK[tmX]+"%";
+  $("bVmn").textContent="ضبط VMN أوتوماتيك: "+(S.vmnAuto[tmX]?"شغال":"مقفول");$("bVmn").classList.toggle("sel",S.vmnAuto[tmX]);}
+document.querySelectorAll("[data-tm]").forEach(b=>b.onclick=()=>{tmX=b.dataset.tm;document.querySelectorAll("[data-tm]").forEach(x=>x.classList.toggle("sel",x===b));tmHist.length=0;syncTmCtl();});
+$("gap").oninput=e=>{sweep=null;S.gap[tmX]=+e.target.value;$("gapV").textContent=S.gap[tmX].toFixed(2)+" mm";};
+$("pwrK").oninput=e=>{S.pwrK[tmX]=+e.target.value;$("pwrV").textContent=S.pwrK[tmX]+"%";setTimeout(resetAvg,600);};
+$("bVmn").onclick=()=>{S.vmnAuto[tmX]=!S.vmnAuto[tmX];if(!S.vmnAuto[tmX])S.vmn[tmX]=8;syncTmCtl();};
+$("bAvg").onclick=()=>{resetAvg();};
+$("bGap0").onclick=()=>{sweep=null;S.gap[tmX]=0.5;syncTmCtl();};
+$("bSweep").onclick=()=>{sweep={X:tmX,t:0};if(S.pph<=0){S.msg="شغّل الماكينة الأول عشان المولد يشتغل وتشوف القراءات.";msgClear();}};
+function sweepStep(dt){if(!sweep)return;sweep.t+=dt;const T=16,u=sweep.t/T;
+  if(u>=1){S.gap[sweep.X]=0.5;sweep=null;syncTmCtl();return;}
+  S.gap[sweep.X]=0.5+1.5*Math.sin(Math.PI*u);if(sweep.X===tmX){$("gap").value=S.gap[tmX];$("gapV").textContent=S.gap[tmX].toFixed(2)+" mm";}}
+const tmHist=[];
+function tmSample(){const X=tmX;tmHist.push({t:S.t,ph:X==="LS"?S.lsPh:S.saPh,Z:X==="LS"?S.lsZ:S.saZ,g:S.gap[X]+(X==="SA"&&fOn.sasm?1.1:0),h:(X==="LS"?S.qLS:S.qSA)*100});while(tmHist.length&&tmHist[0].t<S.t-30)tmHist.shift();}
+function drawTmSvg(){
+  const g=$("tmSvg");g.innerHTML="";const X=tmX;
+  const gap=S.gap[X]+(X==="SA"&&fOn.sasm?1.1:0);const k=S.kEff[X];const P_=X==="LS"?S.lsP:S.saP;const on=P_>20;
+  // inductor (left)
+  el("rect",{x:30,y:40,width:70,height:140,rx:6,fill:"#173a4d",stroke:"#55b6ea"},g);
+  el("path",{d:"M60,60 L100,60 L100,80 L76,80 L76,140 L100,140 L100,160 L60,160 Z",fill:"#3b3f44",stroke:"#7f9198"},g);
+  el("circle",{cx:92,cy:110,r:9,fill:"#b87333",stroke:"#e0a060"},g);
+  el("circle",{cx:92,cy:110,r:4,fill:"#55b6ea"},g);
+  el("text",{x:65,y:30,"text-anchor":"middle","font-size":11,fill:"#7cc6f0"},g).textContent=X==="LS"?"إندكتور LS":"إندكتور SA";
+  el("text",{x:65,y:198,"text-anchor":"middle","font-size":10,fill:"#8fa4a0"},g).textContent="فيرايت + أنبوبة نحاس بمية تبريد";
+  // paper position
+  const px=104+gap*55; const t=(S.distWeb*90)%20;
+  // field lines
+  for(let r=1;r<=5;r++){const rr=r*22;const reach=104+rr*0.95;const hit=reach>=px;
+    el("path",{d:`M100,${110-rr*0.55} Q${100+rr*1.3},110 100,${110+rr*0.55}`,fill:"none",stroke:hit?"#ffc629":"#5a6b22","stroke-width":on?(hit?2:1.2):0.8,opacity:on?(hit?0.95:0.5):0.25,"stroke-dasharray":hit?"":"3 3"},g);}
+  // gap arrow
+  el("line",{x1:102,x2:px-2,y1:205,y2:205,stroke:"#e9a640","stroke-width":1.5},g);
+  el("text",{x:(102+px)/2,y:216,"text-anchor":"middle","font-size":10.5,fill:"#e9a640",class:"m"},g).textContent=gap.toFixed(2)+" mm";
+  // paper layers: PE | Al | board | PE
+  const L=[["#9fd3c7",4,"PE"],["#c9ced3",5,"Al"],["#8a6a3d",22,"كرتون"],["#9fd3c7",4,"PE"]];let x=px;
+  L.forEach(([c,w,n],i)=>{el("rect",{x,y:20,width:w,height:180,fill:c,opacity:.95},g);x+=w;});
+  // moving texture on board
+  for(let y=20+t;y<200;y+=20)el("line",{x1:px+9,x2:px+31,y1:y,y2:y,stroke:"#6e542f"},g);
+  // eddy heating in foil
+  if(on)el("rect",{x:px+4,y:60,width:5,height:100,fill:"#ff8a3d",opacity:(k*Math.min(1,P_/700)).toFixed(2),filter:"url(#glow2)"},g);
+  if(X==="SA")el("rect",{x:px-6,y:70,width:6,height:80,rx:2,fill:"#c792ea"},g);
+  el("text",{x:px+18,y:14,"text-anchor":"middle","font-size":10.5,fill:"#d9cfb4"},g).textContent="الورق (طبقات)";
+  el("text",{x:px+40,y:110,"font-size":10,fill:"#c9ced3"},g).textContent="Al ← تيار دوامي";
+  const defs=el("defs",{},g);const f=el("filter",{id:"glow2",x:"-200%",y:"-50%",width:"500%",height:"200%"},defs);el("feGaussianBlur",{stdDeviation:3},f);
+  el("text",{x:370,y:200,"text-anchor":"end","font-size":11,fill:on?"#ff8a3d":"#8fa4a0",class:"m","font-weight":700},g).textContent=on?("heat "+Math.round(k*100)+"%"):"TPIH OFF";
+}
+function renderTm(){
+  const X=tmX, ph=X==="LS"?S.lsPh:S.saPh, Z=X==="LS"?S.lsZ:S.saZ, aph=X==="LS"?S.lsAvgPh:S.saAvgPh, aZ=X==="LS"?S.lsAvgZ:S.saAvgZ;
+  const P_=X==="LS"?S.lsP:S.saP, on=P_>20&&S.pph>0, q=X==="LS"?S.qLS:S.qSA, vi=S.VI[X];
+  const dph=ph-aph,dZ=Z-aZ;
+  const yel=on&&(Math.abs(ph)>40||Z<30||Z>70), blu=on&&(Math.abs(dph)>10||Math.abs(dZ)>10);
+  const st=$("tmSt");
+  st.className="tm-st "+(!on?"":yel?"y":blu?"b":"ok");
+  st.textContent=!on?"المولد مش شغال (الماكينة واقفة)":yel?"برّه الحدود: لو فضلت 3 ثواني يطلع إنذار أصفر وتقف":blu?"بعيد عن المتوسط: لو فضل 3 ثواني يطلع تحذير أزرق":"سليم: القراءات قريبة من المتوسط";
+  const cells=[["Vrms",Math.round(vi.V)+" V"],["Irms",vi.I.toFixed(1)+" A"],["القدرة",Math.round(P_)+" W"],["Z",Z.toFixed(1),Math.abs(dZ)>10||Z<30||Z>70],["φ",ph.toFixed(1)+"°",Math.abs(dph)>10||Math.abs(ph)>40],["VmnConfig",S.vmn[X]+(S.vmnAuto[X]&&!(X==="LS"&&fOn.lssm)?"":" ✋")],
+    ["متوسط φ",aph.toFixed(1)+"°"],["متوسط Z",aZ.toFixed(1)],["حرارة الألومنيوم",Math.round(S.kEff[X]*100)+"%",S.kEff[X]<0.85],["جودة اللحام",on?Math.round(q*100)+"%":"—",on&&q<0.85],["Δφ",(dph>=0?"+":"")+dph.toFixed(1)+"°",Math.abs(dph)>10],["ΔZ",(dZ>=0?"+":"")+dZ.toFixed(1),Math.abs(dZ)>10]];
+  $("tmRead").innerHTML=cells.map(([k,val,bad])=>`<div class="kv ${bad?"bad":""}"><span>${k}</span><strong>${val}</strong></div>`).join("");
+  // gauges: phase -60..60, Z 10..90
+  const gp=$("gPh"),pp=v=>clamp((v+60)/120*100,0,100);
+  gp.querySelector("b").style.left=pp(aph-10)+"%";gp.querySelector("b").style.width=(pp(aph+10)-pp(aph-10))+"%";
+  const us=gp.querySelectorAll("u");us[0].style.left=pp(-40)+"%";us[1].style.left=pp(0)+"%";us[2].style.left=pp(40)+"%";
+  gp.querySelector("i").style.left=pp(ph)+"%";
+  const gz=$("gZ"),pz=v=>clamp((v-10)/80*100,0,100);
+  gz.querySelector("b").style.left=pz(aZ-10)+"%";gz.querySelector("b").style.width=(pz(aZ+10)-pz(aZ-10))+"%";
+  const uz=gz.querySelectorAll("u");uz[0].style.left=pz(30)+"%";uz[1].style.left=pz(70)+"%";
+  gz.querySelector("i").style.left=pz(Z)+"%";
+  // c4 chart
+  const c=$("c4"),dpr=window.devicePixelRatio||1,w=c.clientWidth,h=130;
+  if(c.width!==Math.round(w*dpr)||c.height!==h*dpr){c.width=Math.round(w*dpr);c.height=h*dpr;c.style.height=h+"px";}
+  const x=c.getContext("2d");x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,w,h);
+  const Lm=30,T=6,B=14,pw=w-Lm-6,ph2=h-T-B,mn=-40,mx=100;
+  x.font="10px JetBrains Mono";x.fillStyle="#8fa4a0";x.strokeStyle="#22313a";
+  [-40,0,40,100].forEach(val=>{const y=T+ph2*(1-(val-mn)/(mx-mn));x.beginPath();x.moveTo(Lm,y);x.lineTo(Lm+pw,y);x.stroke();x.textAlign="right";x.fillText(val,Lm-3,y+3);});
+  x.textAlign="left";x.fillText("-30s",Lm,h-2);
+  [["ph","#e9a640",1],["Z","#5aa9ff",1],["g","#9ccc65",10],["h","#ff8a3d",1]].forEach(([key,col,m])=>{x.strokeStyle=col;x.lineWidth=1.7;x.beginPath();let f=true;
+    tmHist.forEach(p=>{const X_=Lm+pw*(1-(S.t-p.t)/30);const Y=T+ph2*(1-(clamp(p[key]*m,mn,mx)-mn)/(mx-mn));if(f){x.moveTo(X_,Y);f=false;}else x.lineTo(X_,Y);});x.stroke();});
+}
 
 /* ---------- trends ---------- */
 const hist=[];const WIN=60;
@@ -863,9 +1016,9 @@ let last=performance.now(),acc=0,sAcc=0,uiAcc=0;
 function loop(now){
   let dt=Math.min(0.1,(now-last)/1000);last=now;
   let sim=dt*simSpeed;const h=0.02;
-  while(sim>0){const d=Math.min(h,sim);step(d);sim-=d;sAcc+=d;if(sAcc>=0.2){sAcc=0;sample();}}
-  drawBob(0);drawBob(1);drawMag();drawPaths();drawSeal();updTimCur();
-  uiAcc+=dt;if(uiAcc>0.15){uiAcc=0;renderSide();drawCharts();renderSteps();}
+  while(sim>0){const d=Math.min(h,sim);sweepStep(d);step(d);sim-=d;sAcc+=d;if(sAcc>=0.2){sAcc=0;sample();tmSample();}}
+  drawBob(0);drawBob(1);drawMag();drawPaths();drawSeal();updTimCur();drawTmSvg();
+  uiAcc+=dt;if(uiAcc>0.15){uiAcc=0;renderSide();drawCharts();renderSteps();renderTm();}
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
