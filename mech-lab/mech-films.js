@@ -287,7 +287,7 @@ F.ph_eq = [
   {d: 6, draw(t){ const p = ease(seg(t, .05, .8)), x = 20 + p * 220;
     return ground(196) + car(x, 196, p * 30, BL) + vec(40, 120, 70, 120, BL) + L(55, 108, 'u', BL) + op(seg(t, .8, .9), vec(x + 60, 120, x + 104, 120, GD) + L(x + 82, 108, 'v', GD)) +
       `<path d="M70 150 H${r1(x + 70)}" stroke="${OR}" stroke-width="2.5"/>` + L(150, 168, 'd', OR) + card(300, 24, 124, 70, GD) + L(362, 52, 'v² = u² + 2·a·d', GD, 'middle', 15) +
-      op(seg(t, .5, .65), L(362, 80, T('من غير زمن', 'No time'), RD, 'middle', 14)); }}
+      op(seg(t, .5, .65), L(362, 80, T('بلا زمن', 'No time'), RD, 'middle', 14)); }}
 ];
 F.ph_brake = [
   {d: 9, draw(t){ const rows = [[50, 14], [80, 36], [100, 56]];
@@ -318,7 +318,7 @@ F.ph_g = [
 F.ph_feather = [
   {d: 6, draw(t){ const p = seg(t, .05, .95), yh = 40 + Math.min(1, p * 1.6) ** 2 * 150, yf = 40 + p * 70;
     return `<rect x="10" y="10" width="420" height="222" fill="#e0f2fe"/>` + ground(206) + hammer(140, yh - 10, 0) + feather(290 + Math.sin(t * 12) * 18, yf, Math.sin(t * 12) * 25) +
-      `<g stroke="#7dd3fc" stroke-width="2.5" stroke-linecap="round">${[0, 1, 2].map(k => `<path d="M${330 + k * 20} ${r1(100 + ((t * 120 + k * 40) % 90))} v-16"/>`).join('')}</g>` + L(390, 40, T('هوا', 'Air'), BL, 'middle', 16); }},
+      `<g stroke="#7dd3fc" stroke-width="2.5" stroke-linecap="round">${[0, 1, 2].map(k => `<path d="M${330 + k * 20} ${r1(100 + ((t * 120 + k * 40) % 90))} v-16"/>`).join('')}</g>` + L(390, 40, T('هواء', 'Air'), BL, 'middle', 16); }},
   {d: 6, draw(t){ const p = seg(t, .05, .9), y = 40 + p * p * 150;
     return `<rect x="10" y="10" width="420" height="222" fill="#0f172a"/>` + stars() + `<rect x="10" y="206" width="420" height="26" fill="#9ca3af"/>` + hammer(150, y - 6, 0) + feather(290, y, 0) +
       `<line x1="120" y1="${r1(y + 26)}" x2="320" y2="${r1(y + 26)}" stroke="#fde68a" stroke-width="1.5" stroke-dasharray="5 4"/>` + L(390, 40, T('القمر', 'Moon'), '#fde68a', 'middle', 16) +
@@ -346,7 +346,7 @@ F.ph_proj = [
     const pts = []; for (let k = 0; k <= 30 * p; k++){ const s = k / 30; pts.push([60 + s * 300, 50 + s * s * 140]); }
     return ground(206) + poly(pts, OR, 2.5, '5 5') + ball(x, y, 10, OR) + vec(x, y, x + 50, y, BL, 3.4) + L(x + 58, y + 6, 'vx', BL, 'start', 15) +
       vec(x, y, x, y + 10 + p * 36, RD, 3.4) + L(x - 10, y + 24 + p * 18, 'vy', RD, 'end', 15) +
-      L(300, 40, T('أفقي: ثابت', 'Across: constant'), BL, 'start', 15) + L(300, 64, T('رأسي: بيزيد', 'Down: grows'), RD, 'start', 15); }}
+      L(300, 40, T('أفقي: ثابت', 'Across: constant'), BL, 'start', 15) + L(300, 64, T('رأسي: يزيد', 'Down: grows'), RD, 'start', 15); }}
 ];
 F.ph_angle = [
   {d: 10, draw(t){ const rows = [[30, 277, 40, BL], [60, 277, 120, RD], [45, 320, 80, GD]];
@@ -384,13 +384,13 @@ function bus(x, yG, ang){
 F.ph_newton1 = [
   {d: 6, draw(t){ const p = seg(t, 0, .55), q = 1 - (1 - p) * (1 - p), x = 10 + q * 110, lean = t < .5 ? 0 : 26 * Math.sin(seg(t, .5, .8) * Math.PI) ;
     return ground(206) + bus(x, 206, q * 30) + `<g transform="translate(${r1(x + 120)} 192) scale(.7) translate(${r1(-x - 120)} -192)">${stick(x + 120, 192, {lean: lean, arm: [x + 140, 150]})}</g>` +
-      op(seg(t, .45, .6), vec(x + 236, 120, x + 210, 120, RD) + L(x + 250, 110, T('فرامل', 'Brake'), RD, 'start', 14)) + op(seg(t, .55, .7), vec(x + 140, 50, x + 190, 50, OR) + L(x + 140, 36, T('جسمك يكمّل', 'You keep going'), OR, 'start', 14)); }},
+      op(seg(t, .45, .6), vec(x + 236, 120, x + 210, 120, RD) + L(x + 250, 110, T('فرامل', 'Brake'), RD, 'start', 14)) + op(seg(t, .55, .7), vec(x + 140, 50, x + 190, 50, OR) + L(x + 140, 36, T('جسمك يكمل', 'You keep going'), OR, 'start', 14)); }},
   {d: 6, draw(t){ const p = seg(t, .25, 1), x = 30 + p * p * 140, lean = -24 * Math.sin(seg(t, .25, .6) * Math.PI);
     return ground(206) + bus(x, 206, p * p * 30) + `<g transform="translate(${r1(x + 120)} 192) scale(.7) translate(${r1(-x - 120)} -192)">${stick(x + 120, 192, {lean: lean, arm: [x + 140, 150]})}</g>` +
       op(seg(t, .3, .45), vec(x + 140, 50, x + 90, 50, OR) + L(x + 140, 36, T('جسمك يرجع', 'You fall back'), OR, 'end', 14)); }}
 ];
 F.ph_newton2 = [
-  {d: 7, draw(t){ const p = seg(t, .15, .95), rows = [[30, 30, 1, T('خفيف', 'Light')], [52, 52, .35, T('تقيل', 'Heavy')]];
+  {d: 7, draw(t){ const p = seg(t, .15, .95), rows = [[30, 30, 1, T('خفيف', 'Light')], [52, 52, .35, T('ثقيل', 'Heavy')]];
     let o = '';
     rows.forEach(([w, h, k, nm], i) => { const yG = 100 + i * 100, x = 60 + p * p * 300 * k;
       o += `<line x1="10" y1="${yG}" x2="430" y2="${yG}" stroke="${DK}" stroke-width="2"/>` + box(x, yG, w, h, i ? '#94a3b8' : '#d6a86a') + vec(x - 44, yG - h / 2, x - 4, yG - h / 2, RD) + L(16, yG - 56 + (i ? -10 : 20), nm, DK, 'start', 14); });
@@ -408,7 +408,7 @@ F.ph_newton3 = [
   {d: 7, draw(t){ const p = seg(t, .2, 1), y = 150 - p * p * 70;
     const rk = `<path d="M210 ${r1(y - 40)} q10 -14 20 0 v60 h-20 Z" fill="#e2e8f0" stroke="${DK}" stroke-width="1.5"/><path d="M210 ${r1(y + 6)} l-10 14 h10 Z M230 ${r1(y + 6)} l10 14 h-10 Z" fill="${RD}"/>`;
     let fl = ''; for (let k = 0; k < 6; k++){ const q = (t * 3 + k / 6) % 1; fl += `<circle cx="${r1(220 + Math.sin(k * 3) * 10 * q)}" cy="${r1(y + 26 + q * 60)}" r="${r1(4 + q * 10)}" fill="${q < .4 ? OR : '#94a3b8'}" opacity="${r1(1 - q)}"/>`; }
-    return ground(206) + fl + rk + op(seg(t, .1, .25), vec(270, 160, 270, 200, OR) + L(282, 190, T('الغاز لتحت', 'Gas down'), OR, 'start', 15) + vec(170, 110, 170, 70, BL) + L(160, 94, T('الصاروخ لفوق', 'Rocket up'), BL, 'end', 15)); }},
+    return ground(206) + fl + rk + op(seg(t, .1, .25), vec(270, 160, 270, 200, OR) + L(282, 190, T('الغاز للأسفل', 'Gas down'), OR, 'start', 15) + vec(170, 110, 170, 70, BL) + L(160, 94, T('الصاروخ للأعلى', 'Rocket up'), BL, 'end', 15)); }},
   {d: 6, draw(t){ const p = ease(seg(t, .3, 1)), d = p * 80;
     return ground(206) + stick(200 - d, 206, {lean: -6, arm: [218 - d, 140]}) + stick(240 + d, 206, {lean: 6, arm: [222 + d, 140]}) +
       op(seg(t, .15, .3) - seg(t, .6, .75), vec(214, 160, 250, 160, RD) + vec(226, 176, 190, 176, BL)) + op(seg(t, .4, .55), vec(150 - d, 120, 110 - d, 120, BL) + vec(290 + d, 120, 330 + d, 120, RD)); }}
@@ -439,7 +439,7 @@ F.ph_fric = [
   {d: 8, draw(t){ const P = Math.min(1, t / .55) * 120, slip = t > .55, m = slip ? Math.pow(seg(t, .55, 1), 2) * 120 : 0, f = slip ? 70 : P * .75;
     return ground(196) + box(170 + m, 196, 70, 56) + stick(144 + m, 196, {lean: 14, arm: [172 + m, 160]}) + `<g opacity=".7">${[0, 1, 2, 3, 4].map(k => `<path d="M${176 + m + k * 13} 199 l6 6" stroke="${DK}"/>`).join('')}</g>` +
       vec(180 + m, 120, 180 + m + P * .6, 120, RD) + L(180 + m, 108, T('دفعك', 'Push'), RD, 'start', 14) + vec(240 + m, 186, 240 + m - f * .8, 186, OR) + L(250 + m, 182, 'f', OR, 'start') +
-      op(seg(t, .55, .65), L(330, 60, slip ? T('اتحرك!', 'It moves!') : '', GD, 'middle', 18)); }},
+      op(seg(t, .55, .65), L(330, 60, slip ? T('تحرّك!', 'It moves!') : '', GD, 'middle', 18)); }},
   {d: 7, draw(t){ const p = seg(t, .05, .9), pts = [];
     for (let k = 0; k <= 60 * p; k++){ const u = k / 60; pts.push([60 + u * 300, 196 - (u < .5 ? u / .5 * 120 : u < .55 ? 120 - (u - .5) / .05 * 36 : 84)]); }
     return axes(60, 40, 330, 160, T('الدفع', 'Push'), 'f') + poly(pts, OR, 4) +
@@ -578,13 +578,13 @@ F.ph_elastic = [
 F.ph_impulse = [
   {d: 7, draw(t){ const p = seg(t, .05, .9), pts = [];
     for (let k = 0; k <= 80 * p; k++){ const u = k / 80; pts.push([60 + u * 320, 200 - (Math.abs(u - .3) < .04 ? (1 - Math.abs(u - .3) / .04) * 160 : 0)]); }
-    return axes(60, 30, 340, 170, 't', 'F') + poly(pts, RD, 4) + op(seg(t, .4, .55), L(200, 60, T('خبطة في الحيطة', 'Hit a wall'), RD, 'start', 16) + L(200, 84, T('زمن قصير = قوة ضخمة', 'Short time = huge force'), RD, 'start', 14)); }},
+    return axes(60, 30, 340, 170, 't', 'F') + poly(pts, RD, 4) + op(seg(t, .4, .55), L(200, 60, T('اصطدام بالحائط', 'Hit a wall'), RD, 'start', 16) + L(200, 84, T('زمن قصير = قوة ضخمة', 'Short time = huge force'), RD, 'start', 14)); }},
   {d: 7, draw(t){ const p = seg(t, .05, .9), pts = [];
     for (let k = 0; k <= 80 * p; k++){ const u = k / 80; pts.push([60 + u * 320, 200 - (u > .15 && u < .7 ? Math.sin((u - .15) / .55 * Math.PI) * 40 : 0)]); }
     let ghost = []; for (let k = 0; k <= 80; k++){ const u = k / 80; ghost.push([60 + u * 320, 200 - (Math.abs(u - .3) < .04 ? (1 - Math.abs(u - .3) / .04) * 160 : 0)]); }
     return axes(60, 30, 340, 170, 't', 'F') + poly(ghost, RD, 2, '4 4') + poly(pts, GD, 4) + op(seg(t, .6, .75), L(300, 70, T('إيرباج: زمن أطول = قوة أقل', 'Airbag: longer time = less force'), GD, 'middle', 15)); }},
   {d: 5, draw(t){
-    return big(220, 100, 'F · t = Δp', BL, 34) + op(seg(t, .3, .5), L(220, 160, T('نفس Δp', 'Same Δp'), DK, 'middle', 18)) + op(seg(t, .5, .7), L(220, 196, 't ↑ → F ↓', GD, 'middle', 22)); }}
+    return big(220, 100, 'F · t = Δp', BL, 34) + op(seg(t, .3, .5), L(220, 160, T('Δp نفسه', 'Same Δp'), DK, 'middle', 18)) + op(seg(t, .5, .7), L(220, 196, 't ↑ → F ↓', GD, 'middle', 22)); }}
 ];
 
 /* ================= lesson 8 · torque, levers, balance ================= */
@@ -605,7 +605,7 @@ F.ph_hold = [
   {d: 8, draw(t){ const a = ease(seg(t, .5, .9)) * .7, aa = ease(seg(t, .1, .4)) * .15;
     const door = (hx, ang, px, c) => `<line x1="${hx}" y1="120" x2="${r1(hx + Math.cos(ang) * 150)}" y2="${r1(120 + Math.sin(ang) * 150)}" stroke="#a16207" stroke-width="10" stroke-linecap="round"/><circle cx="${hx}" cy="120" r="6" fill="${DK}"/>` +
       vec(hx + Math.cos(ang) * px - Math.sin(ang) * -40, 120 + Math.sin(ang) * px - 40 * Math.cos(ang), hx + Math.cos(ang) * px, 120 + Math.sin(ang) * px - 6, c);
-    return `<line x1="215" y1="20" x2="215" y2="220" stroke="${P1}" stroke-width="2"/>` + door(30, -aa, 30, RD) + L(110, 210, T('جنب المفصّلة', 'Near the hinge'), RD, 'middle', 14) +
+    return `<line x1="215" y1="20" x2="215" y2="220" stroke="${P1}" stroke-width="2"/>` + door(30, -aa, 30, RD) + L(110, 210, T('بجوار المفصّلة', 'Near the hinge'), RD, 'middle', 14) +
       door(250, -a, 140, GD) + L(330, 210, T('بعيد عنها', 'Far from it'), GD, 'middle', 14); }},
   {d: 7, draw(t){ const a = ease(seg(t, .4, .9)) * .6;
     return `<line x1="215" y1="20" x2="215" y2="220" stroke="${P1}" stroke-width="2"/>` + spanner(50, 130, 140, 0) + vec(210, 130, 186, 130, RD) + L(110, 200, 'τ = 0', RD, 'middle', 20) +
@@ -629,7 +629,7 @@ F.ph_balance = [
     const pivot = [250, 196];
     return ground(196) + `<g transform="rotate(${r1(ang)} ${pivot[0]} ${pivot[1]})"><rect x="170" y="56" width="80" height="140" rx="3" fill="#d6a86a" stroke="${DK}" stroke-width="1.5"/><circle cx="210" cy="126" r="6" fill="${RD}"/></g>` +
       `<line x1="${r1(pivot[0] + Math.cos((ang - 90) * Math.PI / 180) * 0 + (210 - 250) * Math.cos(ang * Math.PI / 180) - (126 - 196) * Math.sin(ang * Math.PI / 180))}" y1="${r1(196 + (210 - 250) * Math.sin(ang * Math.PI / 180) + (126 - 196) * Math.cos(ang * Math.PI / 180))}" x2="${r1(pivot[0] + (210 - 250) * Math.cos(ang * Math.PI / 180) - (126 - 196) * Math.sin(ang * Math.PI / 180))}" y2="214" stroke="${RD}" stroke-dasharray="4 3" stroke-width="2"/>` +
-      `<path d="M170 210 H250" stroke="${GD}" stroke-width="5"/>` + op(seg(t, .5, .6), L(110, 60, T('مركز الثقل برّه القاعدة', 'Centre of gravity outside the base'), RD, 'middle', 14)); }},
+      `<path d="M170 210 H250" stroke="${GD}" stroke-width="5"/>` + op(seg(t, .5, .6), L(110, 60, T('مركز الثقل خارج القاعدة', 'Centre of gravity outside the base'), RD, 'middle', 14)); }},
   {d: 8, draw(t){ const p = ease(seg(t, .1, .6)), cw = seg(t, .5, .7);
     const tip = (1 - cw) * p * 6;
     return ground(206) + `<g transform="rotate(${r1(tip)} 200 206)"><rect x="190" y="40" width="20" height="166" fill="${OR}" stroke="${DK}"/><rect x="${r1(120)}" y="34" width="260" height="12" fill="${OR}" stroke="${DK}"/>` +
@@ -642,7 +642,7 @@ F.ph_tmotor = [
       `<path d="M286 145 V${r1(y - 30)}" stroke="${DK}" stroke-width="2"/>` + kg(286, y, '', 1) + vec(300, 145, 300, 180, RD) + L(306, 170, 'F', RD, 'start') + `<path d="M250 145 H286" stroke="${BL}" stroke-width="2.5"/>` + L(268, 136, 'r', BL) +
       card(140, 20, 120, 70, DK) + L(200, 48, 'N·m', BL, 'middle', 18) + L(200, 76, 'rpm', GD, 'middle', 18); }},
   {d: 5, draw(t){
-    return big(220, 100, 'T = F · r', BL, 34) + op(seg(t, .3, .5), L(220, 160, T('الموتور بيدّي عزم', 'A motor gives torque'), DK, 'middle', 18)); }}
+    return big(220, 100, 'T = F · r', BL, 34) + op(seg(t, .3, .5), L(220, 160, T('المحرك يعطي عزمًا', 'A motor gives torque'), DK, 'middle', 18)); }}
 ];
 
 /* ================= lesson 9 · circular motion, gears ================= */
@@ -650,7 +650,7 @@ function disc(cx, cy, r, ang, c){ return `<circle cx="${cx}" cy="${cy}" r="${r}"
 F.ph_rpm = [
   {d: 7, draw(t){ const ang = t * TAU * 6, n = Math.floor(t * 6);
     return disc(150, 120, 80, ang) + `<circle cx="${r1(150 + Math.cos(ang) * 80)}" cy="${r1(120 + Math.sin(ang) * 80)}" r="8" fill="${OR}" stroke="${DK}"/>` + K2.rotArrow(150, 120, 96, false, AC) +
-      card(270, 50, 140, 50, BL) + L(340, 84, n + ' ' + T('لفّة', 'turns'), BL, 'middle', 20) + op(seg(t, .5, .7), card(270, 120, 140, 50, GD) + L(340, 154, '1450 rpm', GD, 'middle', 20)); }},
+      card(270, 50, 140, 50, BL) + L(340, 84, n + ' ' + T('دوران', 'turns'), BL, 'middle', 20) + op(seg(t, .5, .7), card(270, 120, 140, 50, GD) + L(340, 154, '1450 rpm', GD, 'middle', 20)); }},
   {d: 6, draw(t){
     return big(220, 80, 'ω = 2π · n ÷ 60', BL, 28) + op(seg(t, .3, .5), L(220, 136, '1450 × 2π ÷ 60', DK, 'middle', 20)) + op(seg(t, .55, .75), big(220, 186, '≈ 152 rad/s', GD, 26)); }}
 ];
@@ -667,7 +667,7 @@ F.ph_centri = [
     let o = `<circle cx="160" cy="120" r="90" fill="none" stroke="${P1}" stroke-dasharray="5 5" stroke-width="2"/><circle cx="160" cy="120" r="6" fill="${DK}"/>`;
     if (t < cut) return o + `<line x1="160" y1="120" x2="${r1(x0)}" y2="${r1(y0)}" stroke="${DK}" stroke-width="2"/>` + ball(x0, y0, 12) + vec(x0, y0, x0 + (160 - x0) * .45, y0 + (120 - y0) * .45, RD) + L(330, 60, T('شدّ للمركز', 'Pull to centre'), RD, 'middle', 16);
     const q = (t - cut) / (1 - cut) * 220, tx = -Math.sin(ang), ty = Math.cos(ang);
-    return o + ball(x0 + tx * q, y0 + ty * q, 12) + `<line x1="160" y1="120" x2="${r1(160 + Math.cos(ang) * 30)}" y2="${r1(120 + Math.sin(ang) * 30)}" stroke="${DK}" stroke-width="2"/>` + L(330, 60, T('الحبل اتقطع', 'String cut'), DK, 'middle', 16) +
+    return o + ball(x0 + tx * q, y0 + ty * q, 12) + `<line x1="160" y1="120" x2="${r1(160 + Math.cos(ang) * 30)}" y2="${r1(120 + Math.sin(ang) * 30)}" stroke="${DK}" stroke-width="2"/>` + L(330, 60, T('انقطع الحبل', 'String cut'), DK, 'middle', 16) +
       poly([[x0, y0], [x0 + tx * q, y0 + ty * q]], OR, 2, '4 4'); }},
   {d: 6, draw(t){ const ang = t * TAU * 5;
     let o = `<rect x="110" y="30" width="220" height="190" rx="14" fill="#e2e8f0" stroke="${DK}" stroke-width="2"/><circle cx="220" cy="125" r="70" fill="#fff" stroke="${DK}" stroke-width="3"/>`;
@@ -692,14 +692,14 @@ F.ph_prot = [
       op(seg(t, .4, .6), L(320, 140, 'P = T · ω', DK, 'middle', 18) + L(320, 172, '≈ 1.5 kW', GD, 'middle', 22)); }},
   {d: 7, draw(t){ const g = ease(seg(t, .2, .6));
     const col = (x, nm, T_, n, P) => card(x, 30, 170, 170, DK) + L(x + 85, 58, nm, DK, 'middle', 15) + L(x + 85, 98, T_, BL, 'middle', 17) + L(x + 85, 132, n, OR, 'middle', 17) + L(x + 85, 172, P, GD, 'middle', 20);
-    return col(30, T('الموتور', 'Motor'), '10 N·m', '1450 rpm', '1.5 kW') + vec(204, 115, 236, 115, DK) + op(g, col(240, T('بعد التروس', 'After gears'), '50 N·m', '290 rpm', '1.5 kW')); }}
+    return col(30, T('المحرك', 'Motor'), '10 N·m', '1450 rpm', '1.5 kW') + vec(204, 115, 236, 115, DK) + op(g, col(240, T('بعد التروس', 'After gears'), '50 N·m', '290 rpm', '1.5 kW')); }}
 ];
 
 /* ================= lesson 10 · pressure and hydraulics ================= */
 F.ph_press = [
   {d: 8, draw(t){ const s = ease(seg(t, .2, .8));
     return `<rect x="10" y="150" width="420" height="82" fill="#fde68a"/>` + `<line x1="220" y1="20" x2="220" y2="230" stroke="${P1}" stroke-width="2"/>` +
-      `<g transform="translate(0 ${r1(s * 40)})">${kg(110, 120, '60 kg', 1.2)}<rect x="106" y="120" width="8" height="30" fill="${DK}"/></g>` + L(110, 220, T('رفيع = بيغرز', 'Thin = sinks'), RD, 'middle', 15) +
+      `<g transform="translate(0 ${r1(s * 40)})">${kg(110, 120, '60 kg', 1.2)}<rect x="106" y="120" width="8" height="30" fill="${DK}"/></g>` + L(110, 220, T('رفيع = ينغرز', 'Thin = sinks'), RD, 'middle', 15) +
       `<g transform="translate(0 ${r1(s * 4)})">${kg(330, 120, '60 kg', 1.2)}<rect x="290" y="120" width="80" height="30" fill="${DK}"/></g>` + L(330, 220, T('عريض = واقف', 'Wide = stays up'), GD, 'middle', 15); }},
   {d: 5, draw(t){
     return big(220, 90, 'p = F ÷ A', BL, 34) + op(seg(t, .3, .5), L(130, 160, 'A ↓ → p ↑', RD, 'middle', 22)) + op(seg(t, .55, .75), L(310, 160, 'A ↑ → p ↓', GD, 'middle', 22)); }}
@@ -727,7 +727,7 @@ F.ph_fluid = [
     [[80, 30], [130, 70], [180, 110]].forEach(([y, L_], i) => { const len = L_ * a;
       const pts = []; for (let k = 0; k <= 12; k++){ const u = k / 12, x = 180 + u * len; pts.push([x, y + Math.pow(u * len / 60, 2) * 30]); }
       o += poly(pts, '#0ea5e9', 6 - i * 0 + 2); });
-    return o + op(seg(t, .5, .7), L(330, 60, T('تحت = ضغط أعلى', 'Deeper = more pressure'), '#0c4a6e', 'middle', 16)); }}
+    return o + op(seg(t, .5, .7), L(330, 60, T('في الأسفل = ضغط أعلى', 'Deeper = more pressure'), '#0c4a6e', 'middle', 16)); }}
 ];
 F.ph_pascal = [
   {d: 9, draw(t){ const p = ease(seg(t, .1, .8)), s = p * 90, b = p * 18;

@@ -59,9 +59,9 @@ function rounds(g, list, lesson, start){
     win(t){
       if (won) return; won = true;
       const last = i === list.length - 1;
-      say('✓ ' + t + (last ? ' ' + T('خلصت التمرين كله 🎉', 'You finished the whole exercise 🎉') : ''), 'ok');
+      say('✓ ' + t + (last ? ' ' + T('أنهيت التمرين كله 🎉', 'You finished the whole exercise 🎉') : ''), 'ok');
       g.host.classList.add('won');
-      nextB.textContent = last ? T('العب من الأول', 'Play again') : T('الجولة الجاية ←', 'Next round →');
+      nextB.textContent = last ? T('العب من البداية', 'Play again') : T('الجولة التالية ←', 'Next round →');
       nextB.hidden = false;
       if (last) IL.mark(lesson, 'sim');
     },
@@ -134,15 +134,15 @@ MS.vectors = function(host, opt){
   function check(){
     if (!cur) return;
     if (Math.abs(R - cur.want) <= (cur.tol || 0.25)) game.win(cur.ok);
-    else game.miss(T(`المحصّلة دلوقتي ${bd(n(R, 1) + ' N')}. ` , `The resultant is ${bd(n(R, 1) + ' N')} now. `) + cur.hint);
+    else game.miss(T(`المحصّلة الآن ${bd(n(R, 1) + ' N')}. ` , `The resultant is ${bd(n(R, 1) + ' N')} now. `) + cur.hint);
   }
   const game = rounds(g, opt.rounds || [
-    {goal:T(`${bd('F1 = 6 N')} و ${bd('F2 = 8 N')}. غيّر الزاوية لحد ما المحصّلة تبقى ${bd('10 N')}.`, `F1 = 6 N and F2 = 8 N. Turn the angle until the resultant is 10 N.`),
-      F1:6, F2:8, a:0, lock:[1, 1, 0], want:10, hint:T('قرّب الزاوية من القايمة.', 'Try nearer to a right angle.'), ok:T(`بالظبط! على زاوية 90° المحصّلة = ${bd('√(6² + 8²) = 10 N')}`, 'Exactly! At 90° the resultant = √(6² + 8²) = 10.')},
-    {goal:T(`قوتين ${bd('5 N')} و ${bd('5 N')}. خلّي المحصّلة صفر (الحاجة متتحركش).`, `Two forces of ${bd('5 N')}. Make the resultant zero (nothing moves).`),
-      F1:5, F2:5, a:30, lock:[1, 1, 0], want:0, tol:.05, hint:T('خلّيهم يشدّوا عكس بعض.', 'Make them pull against each other.'), ok:T('صح! قوتين متساويتين ومتعاكستين = اتزان، زي شد الحبل والفريقين قد بعض.', 'Right! Equal and opposite forces = balance, like an even tug-of-war.')},
-    {goal:T(`${bd('F1 = 4 N')}. اختار F2 والزاوية عشان تطلّع محصّلة ${bd('12 N')}.`, `F1 = 4 N. Choose F2 and the angle to get a 12 N resultant.`),
-      F1:4, F2:3, a:90, lock:[1, 0, 0], want:12, hint:T('أكبر محصّلة لما القوتين يبقوا في نفس الاتجاه.', 'The biggest resultant is when both point the same way.'), ok:T('برافو! لما القوتين في نفس الاتجاه بيتجمعوا جمع عادي.', 'Well done! Forces in the same direction simply add up.')}
+    {goal:T(`${bd('F1 = 6 N')} و ${bd('F2 = 8 N')}. غيّر الزاوية حتى تصبح المحصّلة ${bd('10 N')}.`, `F1 = 6 N and F2 = 8 N. Turn the angle until the resultant is 10 N.`),
+      F1:6, F2:8, a:0, lock:[1, 1, 0], want:10, hint:T('قرّب الزاوية من القائمة.', 'Try nearer to a right angle.'), ok:T(`بالضبط! عند زاوية 90° المحصّلة = ${bd('√(6² + 8²) = 10 N')}`, 'Exactly! At 90° the resultant = √(6² + 8²) = 10.')},
+    {goal:T(`قوتان ${bd('5 N')} و ${bd('5 N')}. اجعل المحصّلة صفرًا (فلا يتحرك الجسم).`, `Two forces of ${bd('5 N')}. Make the resultant zero (nothing moves).`),
+      F1:5, F2:5, a:30, lock:[1, 1, 0], want:0, tol:.05, hint:T('اجعلهما يشدّان في اتجاهين متعاكسين.', 'Make them pull against each other.'), ok:T('صحيح! قوتان متساويتان ومتعاكستان = اتزان، مثل شد الحبل حين يتساوى الفريقان.', 'Right! Equal and opposite forces = balance, like an even tug-of-war.')},
+    {goal:T(`${bd('F1 = 4 N')}. اختر F2 والزاوية لتحصل على محصّلة ${bd('12 N')}.`, `F1 = 4 N. Choose F2 and the angle to get a 12 N resultant.`),
+      F1:4, F2:3, a:90, lock:[1, 0, 0], want:12, hint:T('أكبر محصّلة عندما تكون القوتان في الاتجاه نفسه.', 'The biggest resultant is when both point the same way.'), ok:T('أحسنت! عندما تكون القوتان في الاتجاه نفسه تُجمعان جمعًا عاديًا.', 'Well done! Forces in the same direction simply add up.')}
   ], L, r => { cur = r; f1.set(r.F1); f2.set(r.F2); an.set(r.a); f1.lock(r.lock[0]); f2.lock(r.lock[1]); an.lock(r.lock[2]); R = draw(); });
   R = draw();
 };
@@ -155,7 +155,7 @@ const ARW = (c) => ({stroke:c, fill:c, 'stroke-width':4, 'stroke-linejoin':'roun
 /* ============ 2 · braking: stop the car on the line ============ */
 MS.brake = function(host, opt){
   const L = opt.lesson;
-  const g = frame(host, T('فرمل العربية', 'Brake the car'), '0 0 600 190');
+  const g = frame(host, T('فرمل السيارة', 'Brake the car'), '0 0 600 190');
   const s = g.svg, X0 = 70, X1 = 580;
   el(s, 'rect', {x:0, y:0, width:600, height:190, fill:'var(--panel)'});
   el(s, 'rect', {x:0, y:112, width:600, height:52, fill:'#596068'});
@@ -195,20 +195,20 @@ MS.brake = function(host, opt){
   }
   function judge(d){
     const e = d - cur.d;
-    if (Math.abs(e) <= 1) game.win(T(`وقفت بعد ${bd(n(d, 1) + ' m')}. مسافة الفرامل = ${bd('v² ÷ 2a')}`, `Stopped after ${n(d, 1)} m. Braking distance = v² ÷ 2a`));
-    else game.miss(e > 0 ? T(`خبطت! وقفت بعد ${bd(n(d, 1) + ' m')}. فرمل أجمد.`, `Crash! You stopped after ${n(d, 1)} m. Brake harder.`) : T(`وقفت بدري عند ${bd(n(d, 1) + ' m')}. خفّف الفرملة شوية.`, `Too early at ${n(d, 1)} m. Brake a little softer.`));
+    if (Math.abs(e) <= 1) game.win(T(`توقفت بعد ${bd(n(d, 1) + ' m')}. مسافة الفرامل = ${bd('v² ÷ 2a')}`, `Stopped after ${n(d, 1)} m. Braking distance = v² ÷ 2a`));
+    else game.miss(e > 0 ? T(`اصطدمت! توقفت بعد ${bd(n(d, 1) + ' m')}. فرمل بقوة أكبر.`, `Crash! You stopped after ${n(d, 1)} m. Brake harder.`) : T(`توقفت مبكرًا عند ${bd(n(d, 1) + ' m')}. خفّف الفرملة قليلًا.`, `Too early at ${n(d, 1)} m. Brake a little softer.`));
   }
   const game = rounds(g, [
-    {goal:T(`العربية ماشية ${bd('72 km/h = 20 m/s')}. خليها تقف عند الحاجز على ${bd('40 m')}.`, 'The car is at 72 km/h = 20 m/s. Stop it at the barrier, 40 m away.'), v:20, d:40},
+    {goal:T(`السيارة تسير بسرعة ${bd('72 km/h = 20 m/s')}. أوقفها عند الحاجز على ${bd('40 m')}.`, 'The car is at 72 km/h = 20 m/s. Stop it at the barrier, 40 m away.'), v:20, d:40},
     {goal:T(`${bd('54 km/h = 15 m/s')}. الحاجز على ${bd('45 m')}.`, '54 km/h = 15 m/s. The barrier is 45 m away.'), v:15, d:45},
-    {goal:T(`${bd('43 km/h = 12 m/s')} والحاجز قريب: ${bd('8 m')} بس!`, '43 km/h = 12 m/s and the barrier is close: only 8 m!'), v:12, d:8}
+    {goal:T(`${bd('43 km/h = 12 m/s')} والحاجز قريب: ${bd('8 m')} فقط!`, '43 km/h = 12 m/s and the barrier is close: only 8 m!'), v:12, d:8}
   ], L, setup);
 };
 
 /* ============ 3 · projectile: hit the target ============ */
 MS.launch = function(host, opt){
   const L = opt.lesson;
-  const g = frame(host, T('ارمي الكورة', 'Launch the ball'), '0 0 600 300');
+  const g = frame(host, T('ارمِ الكرة', 'Launch the ball'), '0 0 600 300');
   const s = g.svg, GY = 270, X0 = 40, K = 5; // 5 px per metre
   el(s, 'rect', {x:0, y:0, width:600, height:300, fill:'var(--panel)'});
   el(s, 'rect', {x:0, y:GY, width:600, height:30, fill:'#7aa95c'});
@@ -222,7 +222,7 @@ MS.launch = function(host, opt){
   const rd = readouts(g, [['r', T('المدى', 'Range')], ['h', T('أقصى ارتفاع', 'Max height')], ['t', T('زمن الطيران', 'Flight time')]]);
   const AN = slider(g, {label:T('الزاوية', 'Angle'), min:10, max:80, step:1, value:30, unit:'°'}, aim);
   const V = slider(g, {label:T('السرعة', 'Speed'), min:10, max:35, step:.5, value:15, unit:'m/s', dec:1}, aim);
-  const go = button(g, T('ارمي 🚀', 'Launch 🚀'), fire, true);
+  const go = button(g, T('ارمِ 🚀', 'Launch 🚀'), fire, true);
   let cur, stop = null;
   function aim(){ const a = AN.get(); set(barrel, {transform:`translate(${X0},${GY - 4}) rotate(${-a})`}); if (!stop) set(ball, {cx:X0, cy:GY - 4}); }
   function setup(r){
@@ -245,18 +245,18 @@ MS.launch = function(host, opt){
         stop = null; go.disabled = false; AN.lock(cur.lockA); V.lock(cur.lockV);
         rd('r', bd(n(R, 1) + ' m')); rd('h', bd(n(H, 1) + ' m')); rd('t', bd(n(tf, 1) + ' s'));
         if (Math.abs(R - cur.D) <= cur.tol) game.win(cur.ok);
-        else game.miss(T(`وقعت على ${bd(n(R, 1) + ' m')}. ${R < cur.D ? 'محتاجة تروح أبعد.' : 'راحت أبعد من الهدف.'}`, `It landed at ${n(R, 1)} m. ${R < cur.D ? 'It needs to go further.' : 'It went past the target.'}`));
+        else game.miss(T(`سقطت عند ${bd(n(R, 1) + ' m')}. ${R < cur.D ? 'تحتاج أن تذهب أبعد.' : 'ذهبت أبعد من الهدف.'}`, `It landed at ${n(R, 1)} m. ${R < cur.D ? 'It needs to go further.' : 'It went past the target.'}`));
         return false;
       }
     });
   }
   const game = rounds(g, [
-    {goal:T(`السرعة ثابتة ${bd('20 m/s')}. اختار الزاوية اللي توصّل الكورة للهدف على ${bd('40 m')}.`, 'Speed is fixed at 20 m/s. Pick the angle that lands the ball on the target 40 m away.'), D:40, tol:1.5, a:20, v:20, lockA:false, lockV:true,
-      ok:T('صابت! أبعد مدى بيكون عند زاوية 45°.', 'Hit! The longest range is at 45°.')},
-    {goal:T(`الزاوية ثابتة 45°. اختار السرعة اللي توصّلها ${bd('60 m')}.`, 'The angle is fixed at 45°. Pick the speed that reaches 60 m.'), D:60, tol:2, a:45, v:15, lockA:true, lockV:false,
-      ok:T(`صابت! على 45°: المدى = ${bd('v² ÷ g')}`, 'Hit! At 45°: range = v² ÷ g')},
-    {goal:T(`الهدف بعيد: ${bd('90 m')}. إنت حر في الزاوية والسرعة.`, 'A far target: 90 m. Angle and speed are up to you.'), D:90, tol:2, a:30, v:20, lockA:false, lockV:false,
-      ok:T('برافو يا قنّاص! 🎯', 'Sharpshooter! 🎯')}
+    {goal:T(`السرعة ثابتة ${bd('20 m/s')}. اختر الزاوية التي توصل الكرة إلى الهدف على ${bd('40 m')}.`, 'Speed is fixed at 20 m/s. Pick the angle that lands the ball on the target 40 m away.'), D:40, tol:1.5, a:20, v:20, lockA:false, lockV:true,
+      ok:T('أصبت! أبعد مدى يكون عند زاوية 45°.', 'Hit! The longest range is at 45°.')},
+    {goal:T(`الزاوية ثابتة 45°. اختر السرعة التي توصلها إلى ${bd('60 m')}.`, 'The angle is fixed at 45°. Pick the speed that reaches 60 m.'), D:60, tol:2, a:45, v:15, lockA:true, lockV:false,
+      ok:T(`أصبت! عند 45°: المدى = ${bd('v² ÷ g')}`, 'Hit! At 45°: range = v² ÷ g')},
+    {goal:T(`الهدف بعيد: ${bd('90 m')}. لك حرية الزاوية والسرعة.`, 'A far target: 90 m. Angle and speed are up to you.'), D:90, tol:2, a:30, v:20, lockA:false, lockV:false,
+      ok:T('أحسنت يا قنّاص! 🎯', 'Sharpshooter! 🎯')}
   ], L, setup);
 };
 
@@ -291,7 +291,7 @@ MS.push = function(host, opt){
   function setup(r){ cur = r; if (stop){ stop(); stop = null; } go.disabled = false; set(floor, {fill:r.fr ? '#d9c6a5' : '#cfe7f5'}); draw(0); rd('v', bd('0 m/s')); rd('t', bd('0 s')); }
   function start(){
     const a = (F.get() - cur.fr) / cur.m;
-    if (a <= 0){ game.miss(T('الصندوق مش راضي يتحرك: قوتك مش أكبر من الاحتكاك.', 'The crate will not move: your push is not bigger than friction.')); return; }
+    if (a <= 0){ game.miss(T('الصندوق لا يتحرك: قوتك ليست أكبر من الاحتكاك.', 'The crate will not move: your push is not bigger than friction.')); return; }
     go.disabled = true; F.lock(true); let t = 0, done = false;
     rd('a', bd(n(a, 2) + ' m/s²'));
     stop = run(dt => {
@@ -301,15 +301,15 @@ MS.push = function(host, opt){
         const tc = Math.sqrt(2 * D / a); rd('t', bd(n(tc, 2) + ' s'));
         stop = null; go.disabled = false; F.lock(false); done = true;
         if (Math.abs(tc - 4) <= 0.15) game.win(cur.ok);
-        else game.miss(tc < 4 ? T(`وصل في ${bd(n(tc, 2) + ' s')}، أسرع من اللازم. دفع أخف.`, `It arrived in ${n(tc, 2)} s, too fast. Push softer.`) : T(`وصل في ${bd(n(tc, 2) + ' s')}، أبطأ من اللازم. دفع أجمد.`, `It arrived in ${n(tc, 2)} s, too slow. Push harder.`));
+        else game.miss(tc < 4 ? T(`وصل في ${bd(n(tc, 2) + ' s')}، أسرع من اللازم. ادفع أخف.`, `It arrived in ${n(tc, 2)} s, too fast. Push softer.`) : T(`وصل في ${bd(n(tc, 2) + ' s')}، أبطأ من اللازم. ادفع بقوة أكبر.`, `It arrived in ${n(tc, 2)} s, too slow. Push harder.`));
         return false;
       }
     });
   }
   const game = rounds(g, [
-    {goal:T(`صندوق ${bd('50 kg')} على تلج (مفيش احتكاك). خليه يوصل الخط اللي على ${bd('16 m')} في ${bd('4 s')} بالظبط.`, 'A 50 kg crate on ice (no friction). Get it to the line 16 m away in exactly 4 s.'), m:50, fr:0, ok:T(`محتاج عجلة ${bd('2 m/s²')}، يعني ${bd('F = m·a = 50 × 2 = 100 N')}`, 'You need 2 m/s², so F = m·a = 50 × 2 = 100 N')},
-    {goal:T(`نفس المهمة بس الصندوق ${bd('120 kg')}.`, 'Same job, but the crate is 120 kg.'), m:120, fr:0, ok:T(`كتلة أكبر = قوة أكبر لنفس العجلة: ${bd('120 × 2 = 240 N')}`, 'More mass needs more force for the same acceleration: 120 × 2 = 240 N')},
-    {goal:T(`صندوق ${bd('75 kg')} على أرض فيها احتكاك ${bd('50 N')}. نفس الخط ونفس الـ 4 ثواني.`, 'A 75 kg crate on a floor with 50 N of friction. Same line, same 4 seconds.'), m:75, fr:50, ok:T(`القوة المحصّلة هي اللي بتعمل العجلة: ${bd('F − 50 = 75 × 2 → F = 200 N')}`, 'Net force makes the acceleration: F − 50 = 75 × 2 → F = 200 N')}
+    {goal:T(`صندوق ${bd('50 kg')} على جليد (بلا احتكاك). أوصله إلى الخط عند ${bd('16 m')} في ${bd('4 s')} بالضبط.`, 'A 50 kg crate on ice (no friction). Get it to the line 16 m away in exactly 4 s.'), m:50, fr:0, ok:T(`تحتاج عجلة ${bd('2 m/s²')}، أي ${bd('F = m·a = 50 × 2 = 100 N')}`, 'You need 2 m/s², so F = m·a = 50 × 2 = 100 N')},
+    {goal:T(`المهمة نفسها لكن الصندوق ${bd('120 kg')}.`, 'Same job, but the crate is 120 kg.'), m:120, fr:0, ok:T(`كتلة أكبر = قوة أكبر للعجلة نفسها: ${bd('120 × 2 = 240 N')}`, 'More mass needs more force for the same acceleration: 120 × 2 = 240 N')},
+    {goal:T(`صندوق ${bd('75 kg')} على أرض فيها احتكاك ${bd('50 N')}. الخط نفسه والثواني الأربع نفسها.`, 'A 75 kg crate on a floor with 50 N of friction. Same line, same 4 seconds.'), m:75, fr:50, ok:T(`القوة المحصّلة هي التي تُحدث العجلة: ${bd('F − 50 = 75 × 2 → F = 200 N')}`, 'Net force makes the acceleration: F − 50 = 75 × 2 → F = 200 N')}
   ], L, setup);
 };
 
@@ -327,7 +327,7 @@ MS.ramp = function(host, opt){
   const crate = el(s, 'g', {});
   const rd = readouts(g, [['th', T('الزاوية', 'Angle')], ['tan', 'tan θ'], ['mu', T('معامل الاحتكاك μs', 'Friction coefficient μs')]]);
   const AN = slider(g, {label:T('ارفع المنحدر', 'Raise the ramp'), min:0, max:60, step:1, value:0, unit:'°'}, upd);
-  button(g, T('رجّع الصندوق ↺', 'Reset the crate ↺'), () => setup(cur));
+  button(g, T('أرجع الصندوق ↺', 'Reset the crate ↺'), () => setup(cur));
   let cur, pos = 3.4, sliding = false, startA = 0, stop = null;
   function draw(){
     const a = AN.get() * Math.PI / 180, ex = PX + LEN * Math.cos(a), ey = PY - LEN * Math.sin(a);
@@ -348,8 +348,8 @@ MS.ramp = function(host, opt){
         if (pos <= 0.25){ stop = null; return false; }
       });
       const crit = Math.atan(cur.mu) * 180 / Math.PI;
-      if (startA <= Math.ceil(crit) + 1) game.win(T(`اتزحلق عند ${bd(startA + '°')}. الزاوية الحرجة: ${bd('tan θ = μs → θ = ' + n(crit, 1) + '°')}`, `It slid at ${startA}°. Critical angle: tan θ = μs → θ = ${n(crit, 1)}°`));
-      else game.miss(T(`اتزحلق، بس على ${bd(startA + '°')} زوّدت أوي. رجّع الصندوق وارفع درجة درجة.`, `It slid, but ${startA}° is too far. Reset and raise one degree at a time.`));
+      if (startA <= Math.ceil(crit) + 1) game.win(T(`انزلق عند ${bd(startA + '°')}. الزاوية الحرجة: ${bd('tan θ = μs → θ = ' + n(crit, 1) + '°')}`, `It slid at ${startA}°. Critical angle: tan θ = μs → θ = ${n(crit, 1)}°`));
+      else game.miss(T(`انزلق، لكن عند ${bd(startA + '°')} زدت كثيرًا. أرجع الصندوق وارفع درجة درجة.`, `It slid, but ${startA}° is too far. Reset and raise one degree at a time.`));
     }
   }
   function setup(r){
@@ -357,16 +357,16 @@ MS.ramp = function(host, opt){
     crate.innerHTML = CRATE(44, r.cc, ''); draw();
   }
   const game = rounds(g, [
-    {goal:T('صندوق خشب على لوح خشب. ارفع المنحدر بالراحة ولاقي أول زاوية يبدأ يتزحلق عندها.', 'A wooden crate on a wooden board. Raise the ramp slowly and find the first angle where it slides.'), mu:.5, mk:.3, c:'#a0672e', cc:'#c98a45'},
-    {goal:T('دلوقتي صندوق بنعل كاوتش على خرسانة. هيمسك أكتر؟', 'Now a rubber-soled crate on concrete. Will it grip more?'), mu:.8, mk:.6, c:'#8d9499', cc:'#3a4045'},
-    {goal:T('صندوق حديد على تلج. خلي بالك، ده بيتزحلق بسرعة!', 'A steel crate on ice. Careful, this one slips early!'), mu:.1, mk:.05, c:'#9fd3ef', cc:'#8d9499'}
+    {goal:T('صندوق خشب على لوح خشب. ارفع المنحدر ببطء وجد أول زاوية يبدأ عندها الانزلاق.', 'A wooden crate on a wooden board. Raise the ramp slowly and find the first angle where it slides.'), mu:.5, mk:.3, c:'#a0672e', cc:'#c98a45'},
+    {goal:T('الآن صندوق بنعل مطاطي على خرسانة. هل سيثبت أكثر؟', 'Now a rubber-soled crate on concrete. Will it grip more?'), mu:.8, mk:.6, c:'#8d9499', cc:'#3a4045'},
+    {goal:T('صندوق حديد على جليد. انتبه، فهو ينزلق بسرعة!', 'A steel crate on ice. Careful, this one slips early!'), mu:.1, mk:.05, c:'#9fd3ef', cc:'#8d9499'}
   ], L, setup);
 };
 
 /* ============ 6 · energy: make the loop ============ */
 MS.loop = function(host, opt){
   const L = opt.lesson;
-  const g = frame(host, T('لعبة الملاهي: اللوب', 'Fun-fair loop'), '0 0 600 320');
+  const g = frame(host, T('لعبة الملاهي: الحلقة', 'Fun-fair loop'), '0 0 600 320');
   const s = g.svg, GY = 296, K = 16;
   el(s, 'rect', {x:0, y:0, width:600, height:320, fill:'var(--panel)'});
   el(s, 'rect', {x:0, y:GY, width:600, height:24, fill:'#b9c2c8'});
@@ -376,7 +376,7 @@ MS.loop = function(host, opt){
   const bars = el(s, 'g', {transform:'translate(470,16)'});
   bars.innerHTML = `<rect width="120" height="64" rx="8" fill="var(--bg)"/><text x="10" y="20" font-size="11" fill="var(--ink)">PE</text><rect class="pe" x="36" y="10" height="12" rx="3" fill="var(--accent)"/><text x="10" y="40" font-size="11" fill="var(--ink)">KE</text><rect class="ke" x="36" y="30" height="12" rx="3" fill="#2f8f4e"/><text x="10" y="58" font-size="10" fill="var(--muted)">PE + KE = 100%</text>`;
   const peB = bars.querySelector('.pe'), keB = bars.querySelector('.ke');
-  const rd = readouts(g, [['h', T('ارتفاع البداية', 'Start height')], ['R', T('نص قطر اللوب', 'Loop radius')], ['v', T('السرعة', 'Speed')]]);
+  const rd = readouts(g, [['h', T('ارتفاع البداية', 'Start height')], ['R', T('نصف قطر الحلقة', 'Loop radius')], ['v', T('السرعة', 'Speed')]]);
   const H = slider(g, {label:T('ارتفاع البداية', 'Start height'), min:3, max:14, step:.5, value:6, unit:'m', dec:1}, () => build());
   const go = button(g, T('انطلق 🎢', 'Go 🎢'), start, true);
   let cur, P = [], stop = null;
@@ -409,7 +409,7 @@ MS.loop = function(host, opt){
       if (fly){
         fly.vy += G * dt; fly.x += fly.vx * dt * K; fly.y += fly.vy * dt * K;
         set(ball, {transform:`translate(${fly.x},${fly.y - 9})`});
-        if (fly.y >= GY){ fin(false, T('وقعت من فوق! السرعة فوق مكانتش كفاية. زوّد الارتفاع.', 'It fell off! Not enough speed at the top. Start higher.')); return false; }
+        if (fly.y >= GY){ fin(false, T('سقطت من الأعلى! السرعة في القمة لم تكن كافية. زد الارتفاع.', 'It fell off! Not enough speed at the top. Start higher.')); return false; }
         return;
       }
       const p = at(sm), v2 = 2 * G * (h - p.hm);
@@ -419,26 +419,26 @@ MS.loop = function(host, opt){
       }
       if (v2 <= 0.01 && dir > 0 && sm > 0.5) dir = -1;
       sm += dir * Math.sqrt(Math.max(v2, 0.04)) * dt; put(at(sm), h);
-      if (sm <= 0.02 && dir < 0){ fin(false, T('مطلعتش اللوب ورجعت لورا. ابدأ من ارتفاع أعلى.', 'It could not climb the loop and rolled back. Start higher.')); return false; }
+      if (sm <= 0.02 && dir < 0){ fin(false, T('لم تُكمل الحلقة ورجعت إلى الخلف. ابدأ من ارتفاع أعلى.', 'It could not climb the loop and rolled back. Start higher.')); return false; }
       if (sm >= end){ fin(true); return false; }
     });
   }
   function judge(h){
-    if (cur.max && h > cur.max) game.miss(T(`عدّت! بس على ${bd(n(h, 1) + ' m')}. فيه ارتفاع أقل يعدّي برضه، دوّر عليه.`, `It made it, at ${n(h, 1)} m. A lower start also works, find it.`));
+    if (cur.max && h > cur.max) game.miss(T(`عبرت! لكن عند ${bd(n(h, 1) + ' m')}. يوجد ارتفاع أقل يكفي أيضًا، ابحث عنه.`, `It made it, at ${n(h, 1)} m. A lower start also works, find it.`));
     else game.win(cur.ok);
   }
   function setup(r){ cur = r; if (stop){ stop(); stop = null; } go.disabled = false; H.lock(false); H.set(r.h0); build(); }
   const game = rounds(g, [
-    {goal:T(`اللوب نص قطره ${bd('R = 4 m')}. اختار ارتفاع يخلّي العربية تلف اللوب كله.`, 'The loop radius is R = 4 m. Pick a height that gets the cart all the way round.'), R:4, h0:6, ok:T('لفّت! طاقة الوضع اتحوّلت لطاقة حركة.', 'Round it goes! Potential energy turned into kinetic energy.')},
-    {goal:T('نفس اللوب. لاقي أقل ارتفاع يعدّي بالعافية.', 'Same loop. Find the lowest height that just makes it.'), R:4, h0:12, max:10.5, ok:T(`أقل ارتفاع = ${bd('2.5 × R = 10 m')}. أقل من كده تقع من فوق.`, 'Lowest height = 2.5 × R = 10 m. Any lower and it falls at the top.')},
-    {goal:T(`لوب أصغر ${bd('R = 3 m')}. أقل ارتفاع يعدّي؟`, 'A smaller loop, R = 3 m. Lowest height that works?'), R:3, h0:6, max:8, ok:T(`${bd('2.5 × 3 = 7.5 m')}. القاعدة شغالة! 🎢`, '2.5 × 3 = 7.5 m. The rule works! 🎢')}
+    {goal:T(`نصف قطر الحلقة ${bd('R = 4 m')}. اختر ارتفاعًا يجعل العربة تُكمل الحلقة كلها.`, 'The loop radius is R = 4 m. Pick a height that gets the cart all the way round.'), R:4, h0:6, ok:T('أكملت الحلقة! تحوّلت طاقة الوضع إلى طاقة حركة.', 'Round it goes! Potential energy turned into kinetic energy.')},
+    {goal:T('الحلقة نفسها. جد أقل ارتفاع يكفي بالكاد.', 'Same loop. Find the lowest height that just makes it.'), R:4, h0:12, max:10.5, ok:T(`أقل ارتفاع = ${bd('2.5 × R = 10 m')}. وأقل من ذلك تسقط من الأعلى.`, 'Lowest height = 2.5 × R = 10 m. Any lower and it falls at the top.')},
+    {goal:T(`حلقة أصغر ${bd('R = 3 m')}. ما أقل ارتفاع يكفي؟`, 'A smaller loop, R = 3 m. Lowest height that works?'), R:3, h0:6, max:8, ok:T(`${bd('2.5 × 3 = 7.5 m')}. القاعدة تعمل! 🎢`, '2.5 × 3 = 7.5 m. The rule works! 🎢')}
   ], L, setup);
 };
 
 /* ============ 7 · momentum: crash two carts ============ */
 MS.carts = function(host, opt){
   const L = opt.lesson;
-  const g = frame(host, T('تصادم العربيات', 'Cart crash'), '0 0 600 180');
+  const g = frame(host, T('تصادم العربات', 'Cart crash'), '0 0 600 180');
   const s = g.svg, GY = 140, K = 50, W = 70;
   el(s, 'rect', {x:0, y:0, width:600, height:180, fill:'var(--panel)'});
   el(s, 'rect', {x:0, y:GY, width:600, height:6, fill:'#8d9499'});
@@ -447,13 +447,13 @@ MS.carts = function(host, opt){
   const vA = el(s, 'path', ARW('#d2552d')), vB = el(s, 'path', ARW('#3a6fd8'));
   const tA = el(s, 'text', {'font-size':12, 'font-weight':700, fill:'#d2552d', 'text-anchor':'middle'}), tB = el(s, 'text', {'font-size':12, 'font-weight':700, fill:'#3a6fd8', 'text-anchor':'middle'});
   const rd = readouts(g, [['p0', T('كمية الحركة قبل', 'Momentum before')], ['p1', T('كمية الحركة بعد', 'Momentum after')], ['v', T('السرعات بعد', 'Speeds after')]]);
-  const mA = slider(g, {label:T('كتلة الحمرا', 'Red mass'), min:1, max:6, step:.5, value:2, unit:'kg', dec:1}, () => pose());
-  const uA = slider(g, {label:T('سرعة الحمرا ←', 'Red speed →'), min:0, max:4, step:.5, value:2, unit:'m/s', dec:1}, () => pose());
-  const mB = slider(g, {label:T('كتلة الزرقا', 'Blue mass'), min:1, max:6, step:.5, value:2, unit:'kg', dec:1}, () => pose());
-  const uB = slider(g, {label:T('سرعة الزرقا →', 'Blue speed ←'), min:0, max:4, step:.5, value:0, unit:'m/s', dec:1}, () => pose());
-  const go = button(g, T('يلا 💥', 'Go 💥'), start, true);
+  const mA = slider(g, {label:T('كتلة الحمراء', 'Red mass'), min:1, max:6, step:.5, value:2, unit:'kg', dec:1}, () => pose());
+  const uA = slider(g, {label:T('سرعة الحمراء ←', 'Red speed →'), min:0, max:4, step:.5, value:2, unit:'m/s', dec:1}, () => pose());
+  const mB = slider(g, {label:T('كتلة الزرقاء', 'Blue mass'), min:1, max:6, step:.5, value:2, unit:'kg', dec:1}, () => pose());
+  const uB = slider(g, {label:T('سرعة الزرقاء →', 'Blue speed ←'), min:0, max:4, step:.5, value:0, unit:'m/s', dec:1}, () => pose());
+  const go = button(g, T('انطلق 💥', 'Go 💥'), start, true);
   let cur, stop = null, xa = 60, xb = 470;
-  if (!EN){ uA.el.querySelector('span').textContent = 'سرعة الحمرا (يمين)'; uB.el.querySelector('span').textContent = 'سرعة الزرقا (شمال)'; }
+  if (!EN){ uA.el.querySelector('span').textContent = 'سرعة الحمراء (يمين)'; uB.el.querySelector('span').textContent = 'سرعة الزرقاء (يسار)'; }
   function show(va, vb){
     set(A, {transform:`translate(${xa},${GY})`}); set(B, {transform:`translate(${xb},${GY})`});
     A.querySelector('.m').textContent = mA.get() + ' kg'; B.querySelector('.m').textContent = mB.get() + ' kg';
@@ -464,7 +464,7 @@ MS.carts = function(host, opt){
   function start(){
     if (stop) return;
     const m1 = mA.get(), m2 = mB.get(); let v1 = uA.get(), v2 = -uB.get();
-    if (v1 - v2 <= 0){ game.miss(T('العربيتين مش هيقابلوا بعض. حرّك واحدة على الأقل.', 'The carts will never meet. Move at least one.')); return; }
+    if (v1 - v2 <= 0){ game.miss(T('العربتان لن تلتقيا. حرّك واحدة على الأقل.', 'The carts will never meet. Move at least one.')); return; }
     go.disabled = true; [mA, uA, mB, uB].forEach(x => x.lock(true));
     let hit = false, t = 0, a1, a2;
     stop = run(dt => {
@@ -484,31 +484,31 @@ MS.carts = function(host, opt){
   }
   function judge(a1, a2){
     const ok = cur.want === 'both' ? Math.abs(a1) < .05 && Math.abs(a2) < .05 : Math.abs(a1) < .05 && a2 > .05;
-    if (ok) game.win(cur.ok); else game.miss(T(`بعد الخبطة: الحمرا ${bd(n(a1, 1) + ' m/s')} والزرقا ${bd(n(a2, 1) + ' m/s')}. جرّب تاني.`, `After the crash: red ${n(a1, 1)} m/s, blue ${n(a2, 1)} m/s. Try again.`));
+    if (ok) game.win(cur.ok); else game.miss(T(`بعد التصادم: الحمراء ${bd(n(a1, 1) + ' m/s')} والزرقاء ${bd(n(a2, 1) + ' m/s')}. جرّب مرة أخرى.`, `After the crash: red ${n(a1, 1)} m/s, blue ${n(a2, 1)} m/s. Try again.`));
   }
   function lockR(){ [mA, uA, mB, uB].forEach((x, i) => x.lock(cur.lock[i])); }
   function setup(r){ cur = r; if (stop){ stop(); stop = null; } go.disabled = false; mA.set(r.v[0]); uA.set(r.v[1]); mB.set(r.v[2]); uB.set(r.v[3]); lockR(); pose(); }
   const game = rounds(g, [
-    {goal:T(`العربيتين هيلزقوا في بعض. الحمرا ${bd('2 kg')} بـ ${bd('3 m/s')} والزرقا ${bd('3 kg')}. اختار سرعة الزرقا عشان الاتنين يقفوا بعد الخبطة.`, 'The carts will stick together. Red is 2 kg at 3 m/s, blue is 3 kg. Pick blue’s speed so both stop after the crash.'),
+    {goal:T(`العربتان ستلتصقان. الحمراء ${bd('2 kg')} بـ ${bd('3 m/s')} والزرقاء ${bd('3 kg')}. اختر سرعة الزرقاء لتتوقف العربتان بعد التصادم.`, 'The carts will stick together. Red is 2 kg at 3 m/s, blue is 3 kg. Pick blue’s speed so both stop after the crash.'),
       v:[2, 3, 3, 1], lock:[1, 1, 1, 0], stick:true, want:'both', ok:T(`${bd('2 × 3 = 3 × 2')}: كمية الحركة قبل = صفر، فبعد = صفر.`, '2 × 3 = 3 × 2: momentum before = zero, so after = zero.')},
-    {goal:T(`لازقين برضه. الحمرا ${bd('4 kg')} بـ ${bd('1.5 m/s')}، الزرقا جاية بـ ${bd('2 m/s')}. اختار كتلة الزرقا.`, 'Sticky again. Red is 4 kg at 1.5 m/s, blue comes at 2 m/s. Pick blue’s mass.'),
-      v:[4, 1.5, 1, 2], lock:[1, 1, 0, 1], stick:true, want:'both', ok:T(`${bd('4 × 1.5 = 3 × 2 = 6 kg·m/s')} من كل ناحية.`, '4 × 1.5 = 3 × 2 = 6 kg·m/s from each side.')},
-    {goal:T(`تصادم مرن (زي البلي). الحمرا ${bd('2 kg')} بـ ${bd('2 m/s')} والزرقا واقفة. اختار كتلة الزرقا عشان الحمرا تقف مكانها والزرقا تكمّل.`, 'An elastic crash (like marbles). Red is 2 kg at 2 m/s, blue is still. Pick blue’s mass so red stops dead and blue carries on.'),
-      v:[2, 2, 4, 0], lock:[1, 1, 0, 1], stick:false, want:'one', ok:T('كتلتين زي بعض في تصادم مرن = بيبدّلوا السرعات. ده سر كرات نيوتن 🎱', 'Equal masses in an elastic crash swap speeds. That is the trick of Newton’s cradle 🎱')}
+    {goal:T(`ملتصقتان أيضًا. الحمراء ${bd('4 kg')} بـ ${bd('1.5 m/s')}، والزرقاء قادمة بـ ${bd('2 m/s')}. اختر كتلة الزرقاء.`, 'Sticky again. Red is 4 kg at 1.5 m/s, blue comes at 2 m/s. Pick blue’s mass.'),
+      v:[4, 1.5, 1, 2], lock:[1, 1, 0, 1], stick:true, want:'both', ok:T(`${bd('4 × 1.5 = 3 × 2 = 6 kg·m/s')} من كل جهة.`, '4 × 1.5 = 3 × 2 = 6 kg·m/s from each side.')},
+    {goal:T(`تصادم مرن (مثل البلي). الحمراء ${bd('2 kg')} بـ ${bd('2 m/s')} والزرقاء ساكنة. اختر كتلة الزرقاء لتتوقف الحمراء مكانها وتكمل الزرقاء.`, 'An elastic crash (like marbles). Red is 2 kg at 2 m/s, blue is still. Pick blue’s mass so red stops dead and blue carries on.'),
+      v:[2, 2, 4, 0], lock:[1, 1, 0, 1], stick:false, want:'one', ok:T('كتلتان متساويتان في تصادم مرن = تتبادلان السرعات. هذا سر كرات نيوتن 🎱', 'Equal masses in an elastic crash swap speeds. That is the trick of Newton’s cradle 🎱')}
   ], L, setup);
 };
 
 /* ============ 8 · torque: balance the seesaw ============ */
 MS.seesaw = function(host, opt){
   const L = opt.lesson;
-  const g = frame(host, T('المرجيحة', 'The seesaw'), '0 0 600 260');
+  const g = frame(host, T('الأرجوحة', 'The seesaw'), '0 0 600 260');
   const s = g.svg, CX = 300, CY = 196, K = 88;
   el(s, 'rect', {x:0, y:0, width:600, height:260, fill:'var(--panel)'});
   el(s, 'rect', {x:0, y:236, width:600, height:24, fill:'#7aa95c'});
   el(s, 'polygon', {points:`${CX},${CY} ${CX - 30},236 ${CX + 30},236`, fill:'#5c636a'});
   const plank = el(s, 'g', {});
-  const rd = readouts(g, [['l', T('عزم الشمال', 'Left torque')], ['r', T('عزم اليمين', 'Right torque')]]);
-  const D = slider(g, {label:T('مكان اللي على اليمين من المحور', 'Right rider’s distance from the pivot'), min:.25, max:3, step:.25, value:.5, unit:'m', dec:2}, () => upd());
+  const rd = readouts(g, [['l', T('عزم اليسار', 'Left torque')], ['r', T('عزم اليمين', 'Right torque')]]);
+  const D = slider(g, {label:T('موضع الجسم الأيمن من المحور', 'Right rider’s distance from the pivot'), min:.25, max:3, step:.25, value:.5, unit:'m', dec:2}, () => upd());
   let cur, ang = 0, want = 0, tmr = 0;
   const kid = (m, c) => { const h = 22 + m * .45; return `<rect x="-16" y="${-h - 8}" width="32" height="${h}" rx="10" fill="${c}"/><circle cy="${-h - 20}" r="12" fill="${c}"/><text y="${-h / 2 - 4}" font-size="12" font-weight="700" text-anchor="middle" fill="#fff">${m}</text>`; };
   function draw(){
@@ -524,15 +524,15 @@ MS.seesaw = function(host, opt){
     want = clamp((tr - tl) / tl * 25, -11, 11);
     clearTimeout(tmr); tmr = setTimeout(() => {
       if (Math.abs(tr - tl) < 1e-6) game.win(cur.ok);
-      else game.miss(tr > tl ? T('اليمين نزل: قرّبه من المحور.', 'The right side drops: move it closer to the pivot.') : T('الشمال نزل: بعّد اللي على اليمين.', 'The left side drops: move the right rider further out.'));
+      else game.miss(tr > tl ? T('الجهة اليمنى نزلت: قرّب الجسم من المحور.', 'The right side drops: move it closer to the pivot.') : T('الجهة اليسرى نزلت: أبعِد الجسم الأيمن.', 'The left side drops: move the right rider further out.'));
     }, 450);
   }
   IL.animate(host, dt => { ang += (want - ang) * Math.min(1, dt * 5); set(plank, {transform:`rotate(${ang.toFixed(2)},${CX},${CY})`}); });
   function setup(r){ cur = r; D.set(.5); upd(); }
   const game = rounds(g, [
-    {goal:T(`على الشمال ${bd('60 kg')} على بعد ${bd('1 m')}. اللي على اليمين ${bd('30 kg')}: يقعد فين؟`, 'On the left: 60 kg at 1 m. The rider on the right weighs 30 kg: where should they sit?'), m1:60, d1:1, m2:30, ok:T(`اتزنت! ${bd('60 × 1 = 30 × 2')}: الخفيف يبعد عشان يعوّض.`, 'Balanced! 60 × 1 = 30 × 2: the lighter one sits further out.')},
-    {goal:T(`${bd('50 kg')} على ${bd('1.2 m')} قصاد ${bd('40 kg')}.`, '50 kg at 1.2 m against 40 kg.'), m1:50, d1:1.2, m2:40, ok:T(`${bd('50 × 1.2 = 40 × 1.5 = 60')}`, '50 × 1.2 = 40 × 1.5 = 60')},
-    {goal:T(`عربية نقل صغيرة! ${bd('80 kg')} على ${bd('0.75 m')} قصاد طفل ${bd('20 kg')}.`, 'A heavy one! 80 kg at 0.75 m against a 20 kg child.'), m1:80, d1:.75, m2:20, ok:T('الطفل الصغير شال الكبير بالذراع الطويلة. ده سر الرافعة 💪', 'A small child holds up a big rider with a long arm. That is the secret of the lever 💪')}
+    {goal:T(`على اليسار ${bd('60 kg')} على بعد ${bd('1 m')}. الجسم الأيمن ${bd('30 kg')}: أين يجلس؟`, 'On the left: 60 kg at 1 m. The rider on the right weighs 30 kg: where should they sit?'), m1:60, d1:1, m2:30, ok:T(`اتزنت! ${bd('60 × 1 = 30 × 2')}: الخفيف يبتعد ليعوّض.`, 'Balanced! 60 × 1 = 30 × 2: the lighter one sits further out.')},
+    {goal:T(`${bd('50 kg')} على ${bd('1.2 m')} مقابل ${bd('40 kg')}.`, '50 kg at 1.2 m against 40 kg.'), m1:50, d1:1.2, m2:40, ok:T(`${bd('50 × 1.2 = 40 × 1.5 = 60')}`, '50 × 1.2 = 40 × 1.5 = 60')},
+    {goal:T(`شاحنة صغيرة! ${bd('80 kg')} على ${bd('0.75 m')} مقابل طفل ${bd('20 kg')}.`, 'A heavy one! 80 kg at 0.75 m against a 20 kg child.'), m1:80, d1:.75, m2:20, ok:T('رفع الطفل الصغير الحمل الكبير بالذراع الطويلة. هذا سر الرافعة 💪', 'A small child holds up a big rider with a long arm. That is the secret of the lever 💪')}
   ], L, setup);
 };
 
@@ -547,8 +547,8 @@ MS.gears = function(host, opt){
   const d1 = el(s, 'circle', {r:6, fill:'#22272b'}), d2 = el(s, 'circle', {r:6, fill:'#22272b'});
   const l1 = el(s, 'text', {'font-size':12, 'font-weight':700, fill:'var(--ink)', 'text-anchor':'middle'}), l2 = el(s, 'text', {'font-size':12, 'font-weight':700, fill:'var(--ink)', 'text-anchor':'middle'});
   const rd = readouts(g, [['n', T('سرعة الخرج', 'Output speed')], ['t', T('عزم الخرج', 'Output torque')], ['p', T('القدرة داخل / خارج', 'Power in / out')]]);
-  const Z1 = slider(g, {label:T('أسنان ترس الموتور', 'Motor gear teeth'), min:10, max:40, step:1, value:20}, () => upd());
-  const Z2 = slider(g, {label:T('أسنان الترس التاني', 'Driven gear teeth'), min:10, max:120, step:1, value:20}, () => upd());
+  const Z1 = slider(g, {label:T('أسنان ترس المحرك', 'Motor gear teeth'), min:10, max:40, step:1, value:20}, () => upd());
+  const Z2 = slider(g, {label:T('أسنان الترس الثاني', 'Driven gear teeth'), min:10, max:120, step:1, value:20}, () => upd());
   let cur, a1 = 0, c1, c2, r1, r2, tmr = 0;
   const gearD = (z, r) => { let d = ''; const ro = r + 5, ri = r - 4; for (let i = 0; i < z; i++){ const a = i / z * 2 * Math.PI, w = Math.PI / z; [[ri, a - w * .5], [ro, a - w * .25], [ro, a + w * .25], [ri, a + w * .5], [ri, a + w * 1.5]].forEach(([rr, aa], j) => { d += (i || j ? 'L' : 'M') + (rr * Math.cos(aa)).toFixed(1) + ',' + (rr * Math.sin(aa)).toFixed(1); }); } return d + 'Z'; };
   function upd(){
@@ -560,15 +560,15 @@ MS.gears = function(host, opt){
     set(l1, {x:c1, y:CY - r1 - 14}); l1.textContent = `M ${N1} rpm`; set(l2, {x:c2, y:Math.min(296, CY + r2 + 22)}); l2.textContent = n(n2, 0) + ' rpm';
     rd('n', bd(n(n2, 0) + ' rpm')); rd('t', bd(n(t2, 1) + ' N·m')); rd('p', bd(n(P, 2) + ' kW = ' + n(t2 * n2 * 2 * Math.PI / 60 / 1000, 2) + ' kW'));
     if (!cur) return;
-    clearTimeout(tmr); tmr = setTimeout(() => { const v = cur.k === 'n' ? n2 : t2; if (Math.abs(v - cur.want) <= cur.tol) game.win(cur.ok); else game.miss(T(`لسه: ${cur.k === 'n' ? bd(n(n2, 0) + ' rpm') : bd(n(t2, 1) + ' N·m')}`, `Not yet: ${cur.k === 'n' ? n(n2, 0) + ' rpm' : n(t2, 1) + ' N·m'}`)); }, 500);
+    clearTimeout(tmr); tmr = setTimeout(() => { const v = cur.k === 'n' ? n2 : t2; if (Math.abs(v - cur.want) <= cur.tol) game.win(cur.ok); else game.miss(T(`ليس بعد: ${cur.k === 'n' ? bd(n(n2, 0) + ' rpm') : bd(n(t2, 1) + ' N·m')}`, `Not yet: ${cur.k === 'n' ? n(n2, 0) + ' rpm' : n(t2, 1) + ' N·m'}`)); }, 500);
   }
   upd();
   IL.animate(host, dt => { a1 += dt * 1.6; const z1 = Z1.get(), z2 = Z2.get(), a2 = -a1 * z1 / z2 + Math.PI / z2; set(g1, {transform:`translate(${c1},${CY}) rotate(${(a1 * 180 / Math.PI).toFixed(1)})`}); set(g2, {transform:`translate(${c2},${CY}) rotate(${(a2 * 180 / Math.PI).toFixed(1)})`}); });
   function setup(r){ cur = r; Z1.set(20); Z2.set(20); upd(); }
   const game = rounds(g, [
-    {goal:T(`الموتور ${bd('1450 rpm')} والسير محتاج ${bd('290 rpm')}. اختار الترسين.`, 'The motor runs at 1450 rpm and the conveyor needs 290 rpm. Choose the two gears.'), k:'n', want:290, tol:3, ok:T(`نسبة ${bd('5 : 1')}. ${bd('n2 = n1 × z1 ÷ z2')}`, 'A 5 : 1 ratio. n2 = n1 × z1 ÷ z2')},
-    {goal:T(`عزم الموتور ${bd('10 N·m')}. الحمل محتاج ${bd('30 N·m')}.`, 'The motor gives 10 N·m. The load needs 30 N·m.'), k:'t', want:30, tol:.4, ok:T('التروس كبّرت العزم 3 مرات وقلّلت السرعة 3 مرات. القدرة زي ما هي!', 'The gears tripled the torque and cut the speed by three. Power stays the same!')},
-    {goal:T(`عايز تسرّع: خلّي الخرج ${bd('2900 rpm')}.`, 'Speed it up: make the output 2900 rpm.'), k:'n', want:2900, tol:30, ok:T('سرعة أعلى = عزم أقل. مفيش حاجة ببلاش في الميكانيكا 😉', 'More speed means less torque. Mechanics gives nothing for free 😉')}
+    {goal:T(`المحرك ${bd('1450 rpm')} والسير يحتاج ${bd('290 rpm')}. اختر الترسين.`, 'The motor runs at 1450 rpm and the conveyor needs 290 rpm. Choose the two gears.'), k:'n', want:290, tol:3, ok:T(`نسبة ${bd('5 : 1')}. ${bd('n2 = n1 × z1 ÷ z2')}`, 'A 5 : 1 ratio. n2 = n1 × z1 ÷ z2')},
+    {goal:T(`عزم المحرك ${bd('10 N·m')}. الحمل يحتاج ${bd('30 N·m')}.`, 'The motor gives 10 N·m. The load needs 30 N·m.'), k:'t', want:30, tol:.4, ok:T('كبّرت التروس العزم 3 مرات وقلّلت السرعة 3 مرات. القدرة كما هي!', 'The gears tripled the torque and cut the speed by three. Power stays the same!')},
+    {goal:T(`تريد سرعة أعلى: اجعل الخرج ${bd('2900 rpm')}.`, 'Speed it up: make the output 2900 rpm.'), k:'n', want:2900, tol:30, ok:T('سرعة أعلى = عزم أقل. لا شيء بلا مقابل في الميكانيكا 😉', 'More speed means less torque. Mechanics gives nothing for free 😉')}
   ], L, setup);
 };
 
@@ -586,7 +586,7 @@ MS.jack = function(host, opt){
   const rd = readouts(g, [['p', T('ضغط الزيت', 'Oil pressure')], ['f', T('قوة الرفع', 'Lifting force')], ['w', T('وزن الحمل', 'Load weight')]]);
   const d1 = slider(g, {label:T('قطر المكبس الصغير', 'Small piston diameter'), min:1, max:5, step:.5, value:3, unit:'cm', dec:1}, () => draw());
   const D2 = slider(g, {label:T('قطر المكبس الكبير', 'Big piston diameter'), min:5, max:30, step:1, value:8, unit:'cm'}, () => draw());
-  const F = slider(g, {label:T('قوة إيدك', 'Your hand force'), min:50, max:600, step:10, value:200, unit:'N'}, () => draw());
+  const F = slider(g, {label:T('قوة يدك', 'Your hand force'), min:50, max:600, step:10, value:200, unit:'N'}, () => draw());
   const go = button(g, T('اضغط ⬇', 'Press ⬇'), press, true);
   let cur, lift = 0, stop = null;
   const area = d => Math.PI * Math.pow(d / 100, 2) / 4;
@@ -610,23 +610,23 @@ MS.jack = function(host, opt){
     stop = run(dt => { lift = Math.min(40, lift + dt * 30); draw(); if (lift >= 40){ stop = null; go.disabled = false; judge(r); return false; } });
   }
   function judge(r){
-    if (cur.fMax && r.f > cur.fMax) game.miss(T(`اترفعت، بس بإيدك ${bd(r.f + ' N')}. المطلوب ${bd(cur.fMax + ' N')} أو أقل.`, `It lifted, but with ${r.f} N. The limit is ${cur.fMax} N.`));
-    else if (cur.pMax && r.p > cur.pMax) game.miss(T(`اترفعت، بس الضغط ${bd(n(r.p, 1) + ' bar')}. لازم ${bd(cur.pMax + ' bar')} أو أقل.`, `It lifted, but the pressure is ${n(r.p, 1)} bar. Keep it at ${cur.pMax} bar or less.`));
+    if (cur.fMax && r.f > cur.fMax) game.miss(T(`ارتفعت، لكن بقوة يدك ${bd(r.f + ' N')}. المطلوب ${bd(cur.fMax + ' N')} أو أقل.`, `It lifted, but with ${r.f} N. The limit is ${cur.fMax} N.`));
+    else if (cur.pMax && r.p > cur.pMax) game.miss(T(`ارتفعت، لكن الضغط ${bd(n(r.p, 1) + ' bar')}. يجب أن يكون ${bd(cur.pMax + ' bar')} أو أقل.`, `It lifted, but the pressure is ${n(r.p, 1)} bar. Keep it at ${cur.pMax} bar or less.`));
     else game.win(cur.ok);
   }
   function setup(r){ cur = r; if (stop){ stop(); stop = null; } go.disabled = false; lift = 0; d1.set(3); D2.set(8); F.set(200); draw(); }
   [d1, D2, F].forEach(x => x.el.querySelector('input').addEventListener('input', () => { if (lift && !stop){ lift = 0; draw(); } }));
   const game = rounds(g, [
-    {goal:T(`ارفع عربية ${bd('1500 kg')} بإيدك بقوة ${bd('300 N')} أو أقل.`, 'Lift a 1500 kg car pushing with 300 N or less.'), m:1500, fMax:300, ok:T(`الضغط واحد في كل الزيت، فالقوة بتكبر بنسبة المساحتين: ${bd('F2 = F1 × A2 ÷ A1')}`, 'Pressure is the same everywhere in the oil, so force grows with the area ratio: F2 = F1 × A2 ÷ A1')},
-    {goal:T(`نفس العربية، بس الخراطيم تستحمل ${bd('20 bar')} بس.`, 'Same car, but the hoses only take 20 bar.'), m:1500, pMax:20, ok:T(`ضغط الرفع = ${bd('الوزن ÷ مساحة المكبس الكبير')}. كبّر المكبس يقل الضغط.`, 'Lifting pressure = weight ÷ big piston area. A bigger piston means lower pressure.')},
-    {goal:T(`نقل ${bd('5000 kg')} بإيد واحدة: ${bd('250 N')} أو أقل!`, 'A 5000 kg truck with one hand: 250 N or less!'), m:5000, fMax:250, truck:true, ok:T('إنت رفعت 5 طن بإيد واحدة. ده سحر باسكال 🪄', 'You lifted 5 tonnes with one hand. That is Pascal’s magic 🪄')}
+    {goal:T(`ارفع سيارة ${bd('1500 kg')} بيدك بقوة ${bd('300 N')} أو أقل.`, 'Lift a 1500 kg car pushing with 300 N or less.'), m:1500, fMax:300, ok:T(`الضغط واحد في الزيت كله، فتكبر القوة بنسبة المساحتين: ${bd('F2 = F1 × A2 ÷ A1')}`, 'Pressure is the same everywhere in the oil, so force grows with the area ratio: F2 = F1 × A2 ÷ A1')},
+    {goal:T(`السيارة نفسها، لكن الخراطيم تتحمّل ${bd('20 bar')} فقط.`, 'Same car, but the hoses only take 20 bar.'), m:1500, pMax:20, ok:T(`ضغط الرفع = ${bd('الوزن ÷ مساحة المكبس الكبير')}. كبّر المكبس ليقل الضغط.`, 'Lifting pressure = weight ÷ big piston area. A bigger piston means lower pressure.')},
+    {goal:T(`نقل ${bd('5000 kg')} بيد واحدة: ${bd('250 N')} أو أقل!`, 'A 5000 kg truck with one hand: 250 N or less!'), m:5000, fMax:250, truck:true, ok:T('رفعت 5 أطنان بيد واحدة. هذا سحر باسكال 🪄', 'You lifted 5 tonnes with one hand. That is Pascal’s magic 🪄')}
   ], L, setup);
 };
 
 /* ============ 11 · project: size the winch motor ============ */
 MS.winch = function(host, opt){
   const L = opt.lesson;
-  const g = frame(host, T('مشروع: موتور الونش', 'Project: the winch motor'), '0 0 600 260');
+  const g = frame(host, T('مشروع: محرك الونش', 'Project: the winch motor'), '0 0 600 260');
   const s = g.svg;
   el(s, 'rect', {x:0, y:0, width:600, height:260, fill:'var(--panel)'});
   el(s, 'rect', {x:60, y:20, width:480, height:12, fill:'#5c636a'});
@@ -641,17 +641,17 @@ MS.winch = function(host, opt){
   const steps = [
     {q:T('قوة الشد في الحبل (الوزن)', 'Rope pull (the weight)'), u:'N', a:4900, f:'F = m × g = 500 × 9.8'},
     {q:T('سرعة الرفع', 'Lifting speed'), u:'m/s', a:0.6, f:'v = h ÷ t = 12 ÷ 20'},
-    {q:T('القدرة اللي الحمل محتاجها', 'Power the load needs'), u:'W', a:2940, f:'P = F × v'},
-    {q:T('قدرة الموتور (الكفاءة 80%)', 'Motor power (80 % efficiency)'), u:'W', a:3675, f:'P ÷ 0.8'},
-    {q:T('أنهي موتور قياسي تختار؟', 'Which standard motor do you pick?'), opts:['2.2 kW', '3 kW', '4 kW', '5.5 kW'], a:2, f:T('أقرب مقاس أكبر من 3.675 kW', 'The next size above 3.675 kW')},
+    {q:T('القدرة التي يحتاجها الحمل', 'Power the load needs'), u:'W', a:2940, f:'P = F × v'},
+    {q:T('قدرة المحرك (الكفاءة 80%)', 'Motor power (80 % efficiency)'), u:'W', a:3675, f:'P ÷ 0.8'},
+    {q:T('أيّ محرك قياسي تختار؟', 'Which standard motor do you pick?'), opts:['2.2 kW', '3 kW', '4 kW', '5.5 kW'], a:2, f:T('أقرب مقاس أكبر من 3.675 kW', 'The next size above 3.675 kW')},
     {q:T('سرعة الطنبورة (قطرها 0.3 m)', 'Drum speed (0.3 m diameter)'), u:'rpm', a:38.2, f:'n = v ÷ (π × D) × 60'},
-    {q:T('نسبة علبة التروس (الموتور 1450 rpm)', 'Gearbox ratio (motor at 1450 rpm)'), u:': 1', a:38, f:'1450 ÷ 38.2'},
+    {q:T('نسبة علبة التروس (المحرك 1450 rpm)', 'Gearbox ratio (motor at 1450 rpm)'), u:': 1', a:38, f:'1450 ÷ 38.2'},
     {q:T('العزم على الطنبورة', 'Torque on the drum'), u:'N·m', a:735, f:'T = F × D ÷ 2 = 4900 × 0.15'}
   ];
   const box2 = document.createElement('div'); box2.className = 'ms-steps'; box2.style.cssText = 'display:grid;gap:8px';
   g.host.insertBefore(box2, g.msg);
   g.rno.textContent = T('بيانات الونش', 'Winch data');
-  g.goal.innerHTML = T(`ارفع ${bd('500 kg')} لارتفاع ${bd('12 m')} في ${bd('20 s')}. قطر الطنبورة ${bd('0.3 m')}، الكفاءة ${bd('80%')}، الموتور ${bd('1450 rpm')}.`, 'Lift 500 kg by 12 m in 20 s. Drum diameter 0.3 m, efficiency 80 %, motor 1450 rpm.');
+  g.goal.innerHTML = T(`ارفع ${bd('500 kg')} إلى ارتفاع ${bd('12 m')} في ${bd('20 s')}. قطر الطنبورة ${bd('0.3 m')}، الكفاءة ${bd('80%')}، المحرك ${bd('1450 rpm')}.`, 'Lift 500 kg by 12 m in 20 s. Drum diameter 0.3 m, efficiency 80 %, motor 1450 rpm.');
   let k = IL.has(L, 'sim') ? steps.length : 0;
   function pose(){ const y = 230 - (k / steps.length) * 150; set(box, {transform:`translate(322,${y + 14})`}); set(rope, {y2:y + 14 - 56}); }
   function render(){
@@ -670,16 +670,16 @@ MS.winch = function(host, opt){
   function check(v){
     const st = steps[k], x = IL.num(v);
     if (isFinite(x) && Math.abs(x - st.a) <= Math.abs(st.a) * 0.02){ ok(); }
-    else { miss++; g.msg.className = 'ms-msg no'; g.msg.innerHTML = T('مش مظبوطة. ', 'Not quite. ') + (miss > 1 ? T('المعادلة: ', 'Formula: ') + bd(st.f) : T('جرّب تاني.', 'Try again.')); }
+    else { miss++; g.msg.className = 'ms-msg no'; g.msg.innerHTML = T('غير صحيحة. ', 'Not quite. ') + (miss > 1 ? T('المعادلة: ', 'Formula: ') + bd(st.f) : T('جرّب مرة أخرى.', 'Try again.')); }
   }
   function ok(){
     miss = 0; k++; g.msg.className = 'ms-msg ok'; g.msg.textContent = '✓';
-    if (k === steps.length){ g.msg.innerHTML = '✓ ' + T('حسبت الونش كله! موتور 4 kW وعلبة تروس 38 : 1 🎉', 'You sized the whole winch! A 4 kW motor and a 38 : 1 gearbox 🎉'); g.host.classList.add('won'); IL.mark(L, 'sim'); }
+    if (k === steps.length){ g.msg.innerHTML = '✓ ' + T('حسبت الونش كله! محرك 4 kW وعلبة تروس 38 : 1 🎉', 'You sized the whole winch! A 4 kW motor and a 38 : 1 gearbox 🎉'); g.host.classList.add('won'); IL.mark(L, 'sim'); }
     render();
   }
   box2.addEventListener('click', e => {
     if (e.target.closest('[data-c]')){ check(box2.querySelector('input').value); return; }
-    const o = e.target.closest('[data-o]'); if (o){ if (+o.dataset.o === steps[k].a) ok(); else { g.msg.className = 'ms-msg no'; g.msg.innerHTML = T('لأ. الموتور لازم يبقى أكبر من القدرة المطلوبة، وأقرب واحد ليها.', 'No. The motor must be above the power needed, and the closest size to it.'); } }
+    const o = e.target.closest('[data-o]'); if (o){ if (+o.dataset.o === steps[k].a) ok(); else { g.msg.className = 'ms-msg no'; g.msg.innerHTML = T('لا. يجب أن يكون المحرك أكبر من القدرة المطلوبة، وأقرب قيمة إليها.', 'No. The motor must be above the power needed, and the closest size to it.'); } }
   });
   render();
 };
