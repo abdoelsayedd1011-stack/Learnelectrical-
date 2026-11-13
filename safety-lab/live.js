@@ -52,6 +52,38 @@
       outs:['Q0', 'Q1'], k:['K1', 'K2'],
       leds:[['I0','c0'], ['I1','c1'], ['I2','c2'], ['Q0','out'], ['Q1','out']],
       note:'الطوارئ بقناتين: <span class="lx-ch">IQ10 (A) → NC 11-12 → I0</span> <span class="lx-ch">IQ11 (B) → NC 21-22 → I1</span> والبابان على حلقة واحدة: <span class="lx-ch">IQ10 (A) → Adam 1 → Adam 2 → I2</span> كل Adam يقلب الإشارة، فبعد اثنين ترجع A كما هي، ولذلك يُعرَّف I2 في البرنامج على أنه ينتظر A غير معكوسة.'
+    },
+    rt6: {
+      name:'RT6', sup:['+A1', '-A2'], dyn:false,
+      loops:[
+        { from:'S13', to:'S14', items:[['es','11-12'], ['d1','11-12'], ['d2','11-12']] },
+        { from:'S13', to:'S34', items:[['es','21-22'], ['d1','21-22'], ['d2','21-22']] }
+      ],
+      top:[ { from:'S53', to:'X1', items:['k1','k2','reset'] } ],
+      outs:['13-14', '23-24'], k:['K1', 'K2'],
+      leds:[['On','pow'], ['In1','c0'], ['In2','c1'], ['1','out'], ['2','out']],
+      note:'نفس توصيل RT9، والفرق أن الريست يأخذ 24V من S53: <span class="lx-ch">S53 → K1 NC → K2 NC → RESET → X1</span> القناة 1: <span class="lx-ch">S13 → E-Stop 11-12 → Door 1 → Door 2 → S14</span> والقناة 2: <span class="lx-ch">S13 → E-Stop 21-22 → Door 1 → Door 2 → S34</span> والـ RT6 فيه 3 مخارج أمان (13-14 و23-24 و33-34) وخرج NC للمعلومات 41-42.'
+    },
+    rt7: {
+      name:'RT7A', sup:['+A1', '-A2'], dyn:false, delay:1500, delayCol:1,
+      loops:[
+        { from:'S13', to:'S14', items:[['es','11-12'], ['d1','11-12'], ['d2','11-12']] },
+        { from:'S13', to:'S34', items:[['es','21-22'], ['d1','21-22'], ['d2','21-22']] }
+      ],
+      top:[ { from:'S53', to:'X1', items:['k2','reset'] } ],
+      outs:['13-14', '43-44 (t)'], k:['VFD', 'K1'], mtxt:'K1 + K2 (53-54)',
+      leds:[['On','pow'], ['In1','c0'], ['In2','c1'], ['1','out'], ['2','out'], ['t','outd']],
+      note:'الخرج المباشر 13-14 يعطي أمر إيقاف للانفرتر فيفرمل المحرك بهدوء، والخرجان المتأخران 43-44 و53-54 يفصلان K1 وK2 بعد زمن التأخير (هنا 1.5 ثانية، ويُختار بالجمبرات على T0 وT1 وT2). هذا اسمه Stop Category 1. القنوات مثل RT6: <span class="lx-ch">S13 → E-Stop → Door 1 → Door 2 → S14 / S34</span> والريست: <span class="lx-ch">S53 → K1 NC → K2 NC → RESET → X1</span>'
+    },
+    bt50: {
+      name:'BT50', sup:[null, '-A2'], dyn:false, supLoop:true, onPress:true, cutTxt:'التغذية عن A1', rstLabel:'START',
+      loops:[
+        { from:'+24V', src:true, to:'A1', items:[['es','11-12'], ['d1','11-12'], ['d2','11-12']] }
+      ],
+      top:[ { from:'A1', to:'X4', items:['k1','k2','reset'] } ],
+      outs:['13-14', '23-24'], k:['K1', 'K2'],
+      leds:[['On','c0'], ['Out','out'], ['X4','rst']],
+      note:'الـ BT50 ليس له قنوات دخل: الطوارئ والأبواب توضع على التوالي في تغذيته نفسها. <span class="lx-ch">+24V → E-Stop 11-12 → Door 1 → Door 2 → A1</span> ويعمل الخرج عندما يُغلق دخل الاختبار X4: <span class="lx-ch">A1 → K1 NC → K2 NC → START → X4</span> هذا توصيل بقناة واحدة، ولذلك يُستخدم الـ BT50 غالبًا ريلاي توسعة لزيادة المخارج بعد RT9 أو Pluto.'
     }
   };
 
@@ -77,17 +109,24 @@
 
   function Live(host){
     var dev = host.getAttribute('data-dev'), C = CFG[dev]; if (!C) return;
-    var S = { es:false, d1:false, d2:false, reset:false, out:false, msg:'', tone:'' };
+    var S = { es:false, d1:false, d2:false, reset:false, out:false, outD:false, tk:0, msg:'', tone:'' };
     var demo = null, speed = 1;
 
     /* ---------- logic ---------- */
     function closed(id){ return !S[id]; }                         // كل عنصر مغلق إلا لو اتضغط/اتفتح
     function loopOk(L){ for (var i = 0; i < L.items.length; i++) if (!closed(L.items[i][0])) return false; return true; }
     function inputsOk(){ for (var i = 0; i < C.loops.length; i++) if (!loopOk(C.loops[i])) return false; return true; }
-    function fbOk(){ return !S.out; }                              // NC الكونتاكتورات مغلقة لما الكونتاكتورات واقفة
+    function fbOk(){ return !S.out && !S.outD; }                              // NC الكونتاكتورات مغلقة لما الكونتاكتورات واقفة
     function open(){ var a = []; ['es','d1','d2'].forEach(function(k){ if (S[k]) a.push(k); }); return a; }
     function eval_(){
-      if (!inputsOk() && S.out){ S.out = false; var o = open(); S.msg = (o[0] === 'es' ? 'اتضغطت الطوارئ' : 'اتفتح ' + NAMES[o[0]]) + '، فانقطعت ' + (C.dyn ? 'الإشارة' : 'القناتان') + '، وفصل ' + C.name + ' الخرجين، فوقف ' + C.k[0] + ' و' + C.k[1] + ' ووقف المحرك.'; S.tone = 'bad'; }
+      if (!inputsOk() && S.out){
+        S.out = false; var o = open(), why = (o[0] === 'es' ? 'اتضغطت الطوارئ' : 'اتفتح ' + NAMES[o[0]]) + '، فانقطعت ' + (C.cutTxt || (C.dyn ? 'الإشارة' : 'القناتان'));
+        S.tone = 'bad';
+        if (C.delay){
+          S.msg = why + '. فصل ' + C.name + ' الخرج المباشر 13-14 فورًا، فأخذ الانفرتر أمر الإيقاف وبدأ المحرك يفرمل. وبعد ' + (C.delay / 1000) + ' ثانية يفصل الخرج المتأخر 43-44 فيقف ' + C.k[1] + '.';
+          var tk = ++S.tk; setTimeout(function(){ if (tk !== S.tk || S.out) return; S.outD = false; S.msg = 'انتهى التأخير: فصل الخرج المتأخر 43-44، فوقف ' + C.k[1] + ' وانفصلت الكهرباء عن المحرك بعد أن توقف بهدوء.'; draw(); }, C.delay / speed);
+        } else { S.outD = false; S.msg = why + '، وفصل ' + C.name + ' الخرجين، فوقف ' + C.k[0] + ' و' + C.k[1] + ' ووقف المحرك.'; }
+      }
     }
     function act(k){
       if (k === 'reset'){
@@ -95,8 +134,9 @@
         setTimeout(function(){
           S.reset = false;
           if (S.out){ S.msg = 'المحرك شغال بالفعل.'; S.tone = 'ok'; }
-          else if (!inputsOk()){ var o = open(); S.msg = 'الريست لا يعمل: ' + o.map(function(x){ return x === 'es' ? 'الطوارئ مضغوطة' : NAMES[x] + ' مفتوح'; }).join(' و') + '. ' + (o[0] === 'es' ? 'أدر زر الطوارئ أولًا' : 'أغلق الباب أولًا') + '، ثم اضغط RESET.'; S.tone = 'bad'; }
-          else { S.out = true; S.msg = 'كل ' + (C.dyn ? 'الحلقات' : 'القنوات') + ' مغلقة، و' + C.k[0] + ' و' + C.k[1] + ' واقفان (تلامسا NC مغلقان)، فلما تركت RESET أغلق ' + C.name + ' الخرجين واشتغل المحرك.'; S.tone = 'ok'; }
+          else if (S.outD){ S.msg = 'انتظر: التأخير لم ينتهِ بعد، و' + C.k[1] + ' ما زال مغلقًا (تلامسه NC مفتوح في دائرة الريست).'; S.tone = 'bad'; }
+          else if (!inputsOk()){ var o = open(); S.msg = 'الريست لا يعمل: ' + o.map(function(x){ return x === 'es' ? 'الطوارئ مضغوطة' : NAMES[x] + ' مفتوح'; }).join(' و') + '. ' + (o[0] === 'es' ? 'أدر زر الطوارئ أولًا' : 'أغلق الباب أولًا') + '، ثم اضغط ' + (C.rstLabel || 'RESET') + '.'; S.tone = 'bad'; }
+          else { S.out = true; S.outD = true; S.msg = (C.supLoop ? 'الطوارئ والأبواب مغلقة فوصلت التغذية إلى A1، وتلامسا NC في K1 وK2 مغلقان، فلما ضغطت START أُغلق X4 فأغلق ' + C.name + ' الخرجين واشتغل المحرك.' : 'كل ' + (C.dyn ? 'الحلقات' : 'القنوات') + ' مغلقة، والكونتاكتورات واقفة (تلامسات NC مغلقة)، فلما تركت RESET أغلق ' + C.name + ' الخرجين واشتغل المحرك.'); S.tone = 'ok'; }
           draw();
         }, 350 / speed);
         return;
@@ -158,23 +198,23 @@
       /* device box + supply */
       s += '<rect x="' + BX1 + '" y="' + BY1 + '" width="' + (BX2 - BX1) + '" height="' + (BY2 - BY1) + '" rx="10" fill="color-mix(in srgb,var(--panel,#fff) 78%,#f3c613)" stroke="#8a7400" stroke-width="2"/>';
       s += '<text x="' + ((BX1 + BX2) / 2) + '" y="' + (BY1 + 30) + '" text-anchor="middle" font-size="17" font-weight="700">' + C.name + '</text>';
-      var lx = BX1 + 18, st = { pow:true, out:S.out, c0:C.loops[0] && loopOk(C.loops[0]), c1:C.loops[1] && loopOk(C.loops[1]), c2:C.loops[2] && loopOk(C.loops[2]) };
+      var lx = BX1 + 18, st = { pow:true, out:S.out, outd:S.outD && !S.out && !!C.delay, rst:S.reset && inputsOk() && fbOk(), c0:C.loops[0] && loopOk(C.loops[0]), c1:C.loops[1] && loopOk(C.loops[1]), c2:C.loops[2] && loopOk(C.loops[2]) };
       var gap = (BX2 - BX1 - 36) / C.leds.length;
       C.leds.forEach(function(l, i){ var x = lx + gap * (i + .5), on = st[l[1]];
         s += '<circle cx="' + x + '" cy="' + (BY1 + 48) + '" r="5.5" fill="' + (on ? (l[1] === 'out' && dev === 'pluto' ? '#e8590c' : '#37d058') : '#56606a') + '" stroke="#222"/><text x="' + x + '" y="' + (BY1 + 66) + '" text-anchor="middle" font-size="9.5">' + l[0] + '</text>'; });
       /* supply: plus from rail to top-left, minus from left edge to 0V */
-      s += wire('M' + (BX1 + 14) + ' ' + RAIL + 'V' + BY1, true, false, RED) + term(BX1 + 14, BY1, C.sup[0]).replace('y="' + (BY1 - 9) + '"', 'y="' + (BY1 - 9) + '" dx="-2"');
+      if (C.sup[0]) s += wire('M' + (BX1 + 14) + ' ' + RAIL + 'V' + BY1, true, false, RED) + term(BX1 + 14, BY1, C.sup[0]).replace('y="' + (BY1 - 9) + '"', 'y="' + (BY1 - 9) + '" dx="-2"');
       s += wire('M' + BX1 + ' ' + (BY2 - 12) + 'H12V' + GND, true, false, BLUE) + '<text x="' + (BX1 + 5) + '" y="' + (BY2 - 8) + '" font-size="10.5" font-weight="700">' + C.sup[1] + '</text>';
 
       /* top chains (reset / feedback) */
       var topX = BX1 + 60, tw = (BX2 - topX - 6) / C.top.length;
       C.top.forEach(function(T, ti){
-        var x0 = topX + tw * ti, x1 = topX + tw * (ti + 1) - 14, y = 82, live = true, segs = '';
+        var x0 = topX + tw * ti, x1 = topX + tw * (ti + 1) - 14, y = 82, live = C.supLoop ? inputsOk() : true, segs = '';
         if (T.from === 'rail'){ segs += wire('M' + x0 + ' ' + RAIL + 'V' + y, true); }
-        else { segs += wire('M' + x0 + ' ' + BY1 + 'V' + y, true) + term(x0, BY1, T.from); }
+        else { segs += wire('M' + x0 + ' ' + BY1 + 'V' + y, live) + term(x0, BY1, T.from); }
         var n = T.items.length, seg = (x1 - x0) / n;
         T.items.forEach(function(it, i){ var a = x0 + seg * i, b = a + seg;
-          var c = it === 'reset' ? S.reset : !S.out, lab = it === 'reset' ? 'RESET' : (it === 'k1' ? C.k[0] : C.k[1]) + ' NC';
+          var c = it === 'reset' ? S.reset : !(C.delay && it === 'k2' ? S.outD : S.out), lab = it === 'reset' ? (C.rstLabel || 'RESET') : (it === 'k1' ? C.k[0] : C.k[1]) + ' NC';
           segs += contH(a, b, y, c, it !== 'reset', lab, live); live = live && c;
         });
         segs += wire('M' + x1 + ' ' + y + 'V' + BY1, live) + term(x1, BY1, T.to);
@@ -183,16 +223,17 @@
 
       /* output circuits on the right */
       var ox = BX2, ks = [362, 414];
-      [0, 1].forEach(function(i){ var y1 = BY1 + 16 + i * 32, kx = ks[i], tl = C.outs[i];
-        s += wire('M' + ox + ' ' + y1 + 'H' + kx + 'V' + (Y0 + 6), S.out) + '<text x="' + (ox + 6) + '" y="' + (y1 - 5) + '" font-size="10" font-weight="700">' + tl + '</text>';
-        s += coil(kx, Y0 + 6, C.k[i], S.out) + wire('M' + kx + ' ' + (Y0 + 32) + 'V' + GND, S.out, false, BLUE);
+      [0, 1].forEach(function(i){ var y1 = BY1 + 16 + i * 32, kx = ks[i], tl = C.outs[i], on = C.delayCol === i ? S.outD : S.out;
+        s += wire('M' + ox + ' ' + y1 + 'H' + kx + 'V' + (Y0 + 6), on) + '<text x="' + (ox + 6) + '" y="' + (y1 - 5) + '" font-size="10" font-weight="700">' + tl + '</text>';
+        s += coil(kx, Y0 + 6, C.k[i], on) + wire('M' + kx + ' ' + (Y0 + 32) + 'V' + GND, on, false, BLUE);
       });
       /* motor */
-      var my = Y0 + 110;
-      s += '<g transform="translate(388 ' + my + ')"><circle r="25" fill="' + (S.out ? 'rgba(47,158,68,.18)' : 'transparent') + '" stroke="' + (S.out ? G : 'currentColor') + '" stroke-width="2.4"/>'
-        + '<g class="' + (S.out ? 'spin' : '') + '"><path d="M0 -17V17M-17 0H17" stroke="currentColor" stroke-width="2.4"/><circle r="4" fill="currentColor"/></g>'
+      var my = Y0 + 110, run = C.delay ? S.outD : S.out, slow = C.delay && S.outD && !S.out;
+      s += '<g transform="translate(388 ' + my + ')"><circle r="25" fill="' + (run ? 'rgba(47,158,68,.18)' : 'transparent') + '" stroke="' + (run ? G : 'currentColor') + '" stroke-width="2.4"/>'
+        + '<g class="' + (run ? 'spin' : '') + '"' + (slow ? ' style="animation-duration:2.6s"' : '') + '><path d="M0 -17V17M-17 0H17" stroke="currentColor" stroke-width="2.4"/><circle r="4" fill="currentColor"/></g>'
         + '<text y="42" text-anchor="middle" font-size="11" font-weight="700">M</text></g>'
-        + '<text x="388" y="' + (my + 56) + '" text-anchor="middle" font-size="9.5">' + C.k[0] + ' + ' + C.k[1] + '</text>';
+        + '<text x="388" y="' + (my + 56) + '" text-anchor="middle" font-size="9.5">' + (C.mtxt || C.k[0] + ' + ' + C.k[1]) + '</text>'
+        + (slow ? '<text x="388" y="' + (my - 34) + '" text-anchor="middle" font-size="10" font-weight="700" fill="#e8590c" font-family="IBM Plex Sans Arabic,sans-serif">يفرمل…</text>' : '');
 
       /* channel loops under the device */
       var nL = C.loops.length, span = (BX2 - BX1 - 30) / nL;
@@ -200,9 +241,9 @@
       C.loops.forEach(function(L, li){
         var xo = BX1 + 26 + span * li + span * .22, xi = xo + Math.min(58, span * .5);
         var col = !dyn ? G : (L.sig === 'B' ? TEAL : G), inv = false, live = true, segs = '';
-        segs += term(xo, BY2, L.from, true).replace(/y="(\d+)" text-anchor/, 'y="' + (BY2 + 18) + '" text-anchor');
+        segs += L.src ? '<circle cx="' + xo + '" cy="' + (BY2 + 16) + '" r="5" fill="' + RED + '"/><text x="' + (xo + 9) + '" y="' + (BY2 + 20) + '" text-anchor="start" font-weight="700" font-size="11" fill="' + RED + '">' + L.from + '</text>' : term(xo, BY2, L.from, true).replace(/y="(\d+)" text-anchor/, 'y="' + (BY2 + 18) + '" text-anchor');
         segs += term(xi, BY2, L.to, true).replace(/y="(\d+)" text-anchor/, 'y="' + (BY2 + 18) + '" text-anchor');
-        segs += wire('M' + xo + ' ' + (BY2 + 22) + 'V' + (Y0 - 12), true, dyn, col);
+        segs += wire('M' + xo + ' ' + (L.src ? BY2 + 16 : BY2 + 22) + 'V' + (Y0 - 12), true, dyn, L.src ? RED : col);
         var y = Y0 - 12;
         L.items.forEach(function(it, i){
           var id = it[0], c = closed(id), yy = Y0 + STEP * i + 10, sub = it[1];
@@ -240,8 +281,8 @@
       B.es.innerHTML = S.es ? '🔴 الطوارئ مضغوطة (أدرها)' : '🔴 اضغط الطوارئ'; B.es.setAttribute('aria-pressed', S.es);
       B.d1.innerHTML = S.d1 ? '🚪 الباب 1 مفتوح (أغلقه)' : '🚪 افتح الباب 1'; B.d1.setAttribute('aria-pressed', S.d1);
       B.d2.innerHTML = S.d2 ? '🚪 الباب 2 مفتوح (أغلقه)' : '🚪 افتح الباب 2'; B.d2.setAttribute('aria-pressed', S.d2);
-      B.reset.innerHTML = '🔵 RESET'; B.reset.setAttribute('aria-pressed', S.reset);
-      stat.textContent = S.msg || 'المحرك واقف. كل شيء مغلق، فاضغط RESET ليشتغل.';
+      B.reset.innerHTML = '🔵 ' + (C.rstLabel || 'RESET'); B.reset.setAttribute('aria-pressed', S.reset);
+      stat.textContent = S.msg || 'المحرك واقف. كل شيء مغلق، فاضغط ' + (C.rstLabel || 'RESET') + ' ليشتغل.';
       stat.className = 'lx-st ' + (S.msg ? S.tone : '');
       dB.textContent = demo ? '■ أوقف العرض' : '▶ شاهد المثال وهو يعمل';
     }
@@ -255,7 +296,7 @@
     }
     dB.addEventListener('click', function(){
       if (demo){ stopDemo(); return; }
-      S.es = S.d1 = S.d2 = S.out = false; S.msg = ''; demo = setTimeout(function(){ runDemo(0); }, 600 / speed); draw();
+      S.es = S.d1 = S.d2 = S.out = S.outD = false; S.tk++; S.msg = ''; demo = setTimeout(function(){ runDemo(0); }, 600 / speed); draw();
     });
     draw();
   }

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ريلايات التوسعة BT50 وBT51</title>
+<meta name="description" content="الدرس 6: ريلاي الأمان ABB Jokab BT50 وBT51: الطوارئ في التغذية، ودخل الاختبار X4، واستخدامه لزيادة مخارج الأمان.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="safety.css?v=20261027s2">
+<script src="safety.js?v=20261113j"></script>
+<link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
+<script src="/assets/lesson-light.js?v=20261029L2" defer></script>
+<link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
+<script src="/assets/real-art.js?v=20261030h1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">السيفتي PLC · الدرس 6 من 11</p>
+    <h1>ريلايات التوسعة BT50 وBT51</h1>
+    <p>ريلايان صغيران بلا مداخل قنوات: الطوارئ في التغذية نفسها. يُستخدمان غالبًا لزيادة مخارج الأمان بعد RT9 أو Pluto.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="pluto.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>ما الـ BT50 والـ BT51؟</h2>
+  <figure class="dev-ph"><img src="img/bt50.jpg" width="461" height="1270" alt="ريلاي الأمان ABB Jokab BT50 من الأمام" loading="lazy"><figcaption>أعلى: <span class="mono">Y14 · +A1 X4 13 23 33 41</span>. أسفل: <span class="mono">-A2 T2 · T1 14 24 34 42</span>. ثلاثة مصابيح: <b>On</b> و<b>Out</b> و<b>X4</b>.</figcaption></figure>
+  <p>ريلايات صغيرة عرضها <bdi dir="ltr">22.5 mm</bdi>، لكنها <b>ليس لها مداخل قنوات</b>. الطوارئ نفسه يوضع في <b>تغذية الريلاي</b> (A1)، فإذا ضُغط انقطعت التغذية وفصل الريلاي.</p>
+  <ul class="fx">
+    <li><b>A1 / A2</b><span>التغذية <bdi dir="ltr">24V DC</bdi>، وهي نفسها «الدخل»</span></li>
+    <li><b>X4</b><span>دخل الاختبار أو التشغيل: من A1 ← NC الكونتاكتورات ← START ← X4</span></li>
+    <li class="ok"><b>BT50</b><span>3 NO (13-14 و23-24 و33-34) + 1 NC (41-42)</span></li>
+    <li class="ok"><b>BT51</b><span>4 NO (13-14 و23-24 و33-34 و43-44)</span></li>
+    <li><b>BT50T / BT51T</b><span>نسخ بخرج متأخر حتى <bdi dir="ltr">1.5 s</bdi> وخرج معلومات Y14</span></li>
+  </ul>
+  <figure class="dev-ph"><img src="img/bt51.jpg" width="461" height="1270" alt="ABB Jokab BT51T" loading="lazy"><figcaption>الـ BT51T: أربعة مخارج NO، وتأخير بجمبر على T1 وT2.</figcaption></figure>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>كيف يعمل؟</h2>
+  <p>داخله ريلايان K1 وK2 تلامساتهما على التوالي في كل خرج. عندما تصل التغذية إلى A1 ويُغلق <b>X4</b> يعمل K1 وK2 وتُغلق المخارج. بعد ذلك يمكن أن يُفتح X4 مرة أخرى ويبقى الريلاي شغالًا.</p>
+  <p>إذا انقطعت التغذية عن A1 (ضغط الطوارئ أو فُتح الباب) يفصل K1 وK2. ولا يعملان مرة أخرى إلا بعد أن يفصل الاثنان فعلًا، فإذا التصق أحدهما رفض الريلاي العمل.</p>
+  <p class="tip">دخل X4 يُستخدم لمراقبة الكونتاكتورات الخارجية: NC من K1 وK2 على التوالي مع زر START.</p>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>لماذا يُسمّى «ريلاي توسعة»؟</h2>
+  <p>الـ RT9 له خرجا أمان فقط، والـ Pluto له Q0 وQ1. لو عندك 6 محركات خطرة تحتاج مخارج أكثر. الحل: تغذّي A1 في الـ BT50 من <b>خرج أمان</b> في الـ RT9 أو الـ Pluto، فيصبح عندك 3 أو 4 مخارج جديدة تفصل مع الجهاز الأساسي.</p>
+  <p>وللمستوى الأعلى: يأتي A1 من خرج أمان، ويوصَّل A2 إلى <bdi dir="ltr">0V</bdi> عن طريق خرج أمان ثانٍ، فتصبح قناتين.</p>
+  <div class="box safe"><b>انتبه:</b> توصيل الطوارئ على A1 وحده قناة واحدة، والقصر على سلك A1 لا يُكتشف. والـ BT50 <b>لا يراقب الحافة</b> على X4: لو التصق زر START فسيعود الخرج وحده بمجرد رجوع الطوارئ. لذلك يُستخدم كريلاي أمان كامل فقط حيث يسمح تقييم المخاطر، وأغلب استخدامه للتوسعة.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">▶</span>مثال حيّ: BT50 مع طوارئ وبابين</h2>
+  <p>الطوارئ والبابان هنا على التوالي في تغذية A1. شغّل بـ START، ثم افتح بابًا ولاحظ انطفاء On.</p>
+  <div class="live-ex" data-dev="bt50"></div>
+  <div class="box key" style="margin-top:12px"><b>على المحاكي:</b> جرّب الـ BT50، واجعل زر START عالقًا ولاحظ الخطر بنفسك. <a class="btn pri" href="pluto.html#bt50" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب إجابة صحيحة عن 5 من 6 على الأقل ليُسجَّل الدرس مكتملًا.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأطراف والأرقام هنا من كتالوج ABB Jokab Safety (Safety Relays). قبل التطبيق على ماكينة حقيقية ارجع إلى الكتالوج وتقييم المخاطر الخاص بالماكينة. يُحفظ تقدّمك على هذا الجهاز فقط.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l11');
+IL.quiz(document.getElementById('quiz'), [{"q": "أين يوصَّل الطوارئ في الـ BT50؟", "o": ["على التوالي في تغذية A1", "على S13-S14", "على X4", "على 41-42"], "a": 0, "why": "الـ BT50 ليس له مداخل قنوات: الطوارئ يقطع تغذيته مباشرة."}, {"q": "ما وظيفة X4 في الـ BT50؟", "o": ["دخل الاختبار/التشغيل مع مراقبة الكونتاكتورات", "تغذية 0V", "خرج معلومات", "دخل قناة ثانية"], "a": 0, "why": "من A1 ← NC الكونتاكتورات ← START ← X4: يُغلق فيعمل الريلاي."}, {"q": "الفرق بين BT50 وBT51:", "o": ["BT50 = 3 NO + 1 NC، وBT51 = 4 NO", "BT51 أعرض", "BT50 له تأخير دائمًا", "BT51 له قناتا دخل"], "a": 0, "why": "الاثنان 22.5 مللي، والفرق في المخارج. والتأخير في نسخ T فقط."}, {"q": "تريد 3 مخارج أمان إضافية مع RT9. ماذا تفعل؟", "o": ["تغذّي A1 في BT50 من خرج أمان في الـ RT9", "توصّل Y14 بالكونتاكتور", "تضيف RT9 آخر على نفس S13", "توصّل الكونتاكتورات على 41-42"], "a": 0, "why": "هذا معنى ريلاي التوسعة: يفصل مع الجهاز الأساسي ويعطي مخارج أكثر."}, {"q": "التصق زر START في توصيل BT50، ثم ضُغط الطوارئ وأُعيد. ماذا يحدث؟", "o": ["يعود الخرج وحده وتعمل الماكينة بدون ضغط", "يرفض العمل", "يحترق الريلاي", "يومض On"], "a": 0, "why": "الـ BT50 لا يراقب الحافة على X4، لذلك الزر العالق خطر."}, {"q": "التحم K1 والـ NC الخاص به موصّل مع X4. ماذا يحدث عند START؟", "o": ["لا يعمل الريلاي", "يعمل عاديًا", "يعمل K2 فقط", "يُغلق 41-42"], "a": 0, "why": "الـ NC المفتوح يقطع دائرة X4، فلا يعمل."}], {lesson:'l11', pass:0.8});
+</script>
+<script src="live.js?v=20261113c"></script>
+</body>
+</html>
