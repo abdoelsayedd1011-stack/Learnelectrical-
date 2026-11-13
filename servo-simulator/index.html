@@ -1017,7 +1017,7 @@ const ALM={
  3:['Undervoltage','الكهرباء الرئيسية R S T مش موجودة أو واطية','رجّع الكهرباء الرئيسية، الإنذار بيتمسح وحده'],
  4:['Motor combination','المحرك مش مناسب للدرايف','ركّب محرك 400W مناسب واعمل Power cycle'],
  5:['Regeneration error','الريجين اشتغل ومفيش مقاومة أو حملها زاد','رجّع جمبر P-D أو ركّب مقاومة، أو طوّل P1-35'],
- 6:['Overload','المحرك شايل أكتر من طاقته لفترة','خفّف الحمل أو التسارع، استنى يبرد وبعدين ARST'],
+ 6:['Overload','المحرك يحمل أكثر من طاقته لفترة','خفّف الحمل أو التسارع، استنى يبرد وبعدين ARST'],
  7:['Overspeed','السرعة عدّت P2-34','افحص الأمر والجين وتوصيل U V W'],
  9:['Excessive deviation','خطأ الموضع عدّى P2-35','افحص الجين، الحمل، الفرامل، أو سرعة النبضات'],
  11:['Encoder error','مفيش إشارة من الإنكودر CN2','ركّب كابل الإنكودر واعمل Power cycle'],
@@ -1130,12 +1130,12 @@ function servoOff(){X.son=false;X.integ=0;X.offT=-1;X.pr=null;X.brkr=false;X.jog
 function setCtl(on){
  if(on===S.ctl)return;S.ctl=on;
  if(!on){servoOff();S.ui.mode='mon';log('فُصلت كهرباء التحكم — انطفأت الشاشة');return;}
- if(S.pend.factory){resetParams();S.pend.factory=false;log('كل الباراميترات رجعت لقيم المصنع');}
+ if(S.pend.factory){resetParams();S.pend.factory=false;log('عادت كل الباراميترات إلى قيم المصنع');}
  S.alarm=0;
  const v=S.P['P1-01'];S.mode=v&0xFF;S.dirS=((v>>8)&0xF)?-1:1;
  X.thZero=X.th;X.posFb=0;X.posCmd=0;X.peakL=0;X.bootT=0;
  S.ui.mode='mon';S.ui.mon=S.P['P0-02'];S.ui.win=0;S.ui.bootUntil=performance.now()+600;S.ui.nameUntil=performance.now()+1600;
- log(`التحكم اشتغلت — وضع التحكم ${MODES[S.mode]}${S.dirS<0?' (اتجاه معكوس)':''}`);
+ log(`بدأ التحكم بالعمل — وضع التحكم ${MODES[S.mode]}${S.dirS<0?' (اتجاه معكوس)':''}`);
  if(!MOT().ok)raise(4);
 }
 function setMain(on){if(on===S.main)return;S.main=on;log(on?'الكهرباء الرئيسية R S T رجعت':'الكهرباء الرئيسية R S T اتفصلت — CHARGE هتفضل منورة لحد ما الكباستور يفضى');}
@@ -2114,7 +2114,7 @@ function init(){
  $('#swCtl').onclick=()=>{if(S.wiring){log('في التوصيل التفاعلي الكهرباء بتيجي من البريكر Q1 والأسلاك');return;}setCtl(!S.ctl);$('#swCtl').setAttribute('aria-pressed',S.ctl);};
  $('#swMain').onclick=()=>{if(S.wiring){log('في التوصيل التفاعلي الكهرباء بتيجي من البريكر Q1 والأسلاك');return;}setMain(!S.main);$('#swMain').setAttribute('aria-pressed',S.main);};
  $('#btnCycle').onclick=()=>{if(S.wiring){W.breaker=false;saveW();setTimeout(()=>{W.breaker=true;saveW();},700);return;}setCtl(false);$('#swCtl').setAttribute('aria-pressed','false');setTimeout(()=>{setCtl(true);$('#swCtl').setAttribute('aria-pressed','true');},700);};
- $('#btnFactory').onclick=()=>{if(X.son){log('اطفي السيرفو الأول');return;}resetParams();S.mode=0;S.dirS=1;S.alarm=0;log('كل الباراميترات رجعت للمصنع');buildPTable();};
+ $('#btnFactory').onclick=()=>{if(X.son){log('اطفي السيرفو الأول');return;}resetParams();S.mode=0;S.dirS=1;S.alarm=0;log('عادت كل الباراميترات إلى قيم المصنع');buildPTable();};
  $('#motSel').onchange=e=>{S.mot=e.target.value;const m=MOT();$('#mPlate1').textContent=m.name;$('#mPlate2').textContent=m.sub;$('#motorTitle').textContent=`المحرك ${m.name} والحمل`;log(`ركّبت محرك ${m.name}${m.ok?'':' — مش مناسب للدرايف 400W، هيظهر AL004 بعد Power cycle'}`);};
  $('#loadSel').onchange=e=>{S.load=e.target.value;X.th=X.thZero=0;X.w=0;X.posFb=X.posCmd=0;X.h0=200;S.ratio={disk:1,conv:5,vert:3}[S.load];$('#ratio').value=S.ratio;$('#ratioV').textContent=S.ratio.toFixed(1);buildLoad();};
  $('#ratio').oninput=e=>{S.ratio=+e.target.value;$('#ratioV').textContent=S.ratio.toFixed(1);};
@@ -2136,7 +2136,7 @@ function init(){
  $('#brakeTag').style.display='none';
  $('#brakeChk').addEventListener('change',()=>$('#brakeTag').style.display=S.brake?'':'none');
  S.ui.bootUntil=performance.now()+600;S.ui.nameUntil=performance.now()+1600;
- log('الدرايف اشتغل: ASD-B2-0421-B مع ECMA-C20604RS — وضع PT');
+ log('بدأ الدرايف بالعمل: ASD-B2-0421-B مع ECMA-C20604RS — وضع PT');
  initBoard();
  requestAnimationFrame(t=>{last=t;frame(t);});
 }
@@ -2431,7 +2431,7 @@ function guideRender(){
  }else if(st===1){
   const hand=GUI.hand==='hand';
   h+='<p class="g-lead">هذه الباراميترات التي يحتاجها التمرين. هل تفضّل إدخالها بيدك من الكيباد لتتعوّد يدك، أم يكتبها الدرايف تلقائيًا؟</p>'+
-   '<div class="g-choice"><button type="button" class="btn big'+(hand?' pri':'')+'" id="gHand" aria-pressed="'+hand+'">ادخلها بإيدك من الكيباد<span class="tagc">تحكم</span><span class="rec">الأحسن للتدريب</span></button>'+
+   '<div class="g-choice"><button type="button" class="btn big'+(hand?' pri':'')+'" id="gHand" aria-pressed="'+hand+'">أدخلها يدويًا من الكيباد<span class="tagc">تحكم</span><span class="rec">الأفضل للتدريب</span></button>'+
    '<button type="button" class="btn big'+(GUI.hand==='auto'?' pri':'')+'" id="gAuto" aria-pressed="'+(GUI.hand==='auto')+'">اضبطها تلقائيًا<span class="tagc">تحكم</span><span class="rec">'+(hand?'اضبط الباقي بضغطة واحدة':'الدرايف يكتبها وحده')+'</span></button></div>';
   if(hand)h+='<details class="g-how" open><summary>طريقة الدخول على ASDA-B2</summary><div>'+
    '<b>MODE</b> من شاشة المراقبة يدخلك على الباراميترات (يظهر رقم زي <b>P0-00</b>) ← <b>SHIFT</b> يقلّب الجروب <b>P0</b> ← <b>P1</b> ← <b>P2</b> ← <b>P3</b> ← <b>P4</b> ← <b>▲▼</b> رقم الباراميتر جوه الجروب (امسك عشان يسرع) ← <b>SET</b> تظهر القيمة، والخانة اللي هتتغير بترمش (بتبدأ من الآحاد) ← <b>SHIFT</b> ينقّل الخانة اللي بترمش خانة لشمال (عشرات، مئات…، وفي القيم الـ hex زي P1-01 كل خانة من 0 لـ F) ← <b>▲▼</b> غيّر الخانة ← <b>SET</b> يحفظ والشاشة تكتب <b>SAVED</b> وترجع لرقم الباراميتر. <b>MODE</b> وانت بتعدّل يخرج من غير حفظ. لو كتبت <b>Sr-on</b> يبقى لازم السيرفو OFF الأول، و <b>Out-r</b> يعني القيمة برا المدى. في <b>P4-05</b> دوسة SET التانية بتحفظ وتدخل JOG على طول.'+
@@ -2787,7 +2787,7 @@ function tuneHTML(){const M=MK();
  const sl=(c,l,mn,mx,st,sub)=>'<label class="qslider"><span><code>'+c+'</code> '+l+(sub?'<br><small class="muted">'+sub+'</small>':'')+'</span><input type="range" min="'+mn+'" max="'+mx+'" step="'+st+'" data-tp="'+c+'" value="'+S.P[c]+'"><b data-tv="'+c+'">'+S.P[c]+'</b></label>';
  return '<p class="mnote">القصور الذاتي لهذه الماكينة نحو <b>'+M.ratio+'×</b> قصور الموتور، يعني <code>P1-37</code> الصح ≈ <b>'+M.ratio*10+'</b>. جرّب الأزرار، وبعدين ابدأ حركة وبص على الرسم والـ overshoot.</p>'+
   '<div class="qrow"><button type="button" class="qbtn" data-tune="slow">بطيء</button><button type="button" class="qbtn" data-tune="good">مضبوط</button><button type="button" class="qbtn" data-tune="over">Overshoot</button><button type="button" class="qbtn" data-tune="vib">يطن ويرتعش</button></div>'+
-  '<div class="tune">'+sl('P2-00','جين الموضع KPP',5,300,1,'أعلى = يلحق أسرع، والزيادة = overshoot')+sl('P2-04','جين السرعة KVP',50,3000,10,'التكامل P2-06 بيتظبط معاه وحده = خُمس KVP')+sl('P1-37','نسبة القصور ×0.1',0,400,5,'أقل من الحقيقي = بطيء ومرن، أكتر بكتير = زنة')+'</div>'+
+  '<div class="tune">'+sl('P2-00','جين الموضع KPP',5,300,1,'أعلى = يلحق أسرع، والزيادة = overshoot')+sl('P2-04','جين السرعة KVP',50,3000,10,'التكامل P2-06 بيتظبط معاه وحده = خُمس KVP')+sl('P1-37','نسبة القصور ×0.1',0,400,5,'أقل من الحقيقي = بطيء ومرن، وأكبر بكثير = طنين')+'</div>'+
   '<p class="mnote">في الماكينة الحقيقية ابدأ بالضبط الأوتوماتيك <code>P2-32</code> وبعدين ظبط بإيدك. هنا الضبط يدوي (<code>P2-32 = 0</code>) عشان تشوف أثر كل رقم.</p>';}
 /* presets checked by a scripted sweep on each machine: slow = late arrival, over = visible overshoot that still settles, vib = torque buzz */
 const TUNE={slow:M=>({'P2-00':10,'P2-04':150,'P1-37':M.ratio*10,'P2-02':50}),good:M=>({'P2-00':60,'P2-04':600,'P1-37':M.ratio*10,'P2-02':50}),
@@ -3003,7 +3003,7 @@ SIMTOUR_OLD({lab:'servo-simulator',name:'Delta ASDA-B2',short:'ASDA-B2',disp:'#d
  ],
  editP:'P1-34',editV:500,editGet:()=>S.P['P1-34'],
  edit:[].concat(goPar('P1-34','نغيّر زمن التسارع <b>P1-34</b> لـ <b>500</b> ms كمثال. <b>MODE</b> يدخل الباراميترات.'),[['tap',K('SET'),'<b>SET</b> يفتح القيمة (الخانة اللي على اليمين بترمش).']],setDigits(500,1),[['tap',K('SET'),'<b>SET</b> يحفظ.'],['tap',K('MODE'),'<b>MODE</b> يرجّعك لشاشة المراقبة.']]),
- tourRun:[['tap','#di1','نقفل <b>DI1</b> (SON): السيرفو يمسك والمحرك يلف على V-REF.']],
+ tourRun:[['tap','#di1','نغلق <b>DI1</b> (SON): السيرفو يمسك والمحرك يلف على V-REF.']],
  ex:[
   {run:jog.concat([['hold',K('UP'),()=>ok(),'السبب: ماسكين <b>▲</b> في JOG: المحرك بيلف 300 r/min طول ما انت ماسك.'],say('لف ✓ ووقف لما سيبنا الزر. المحرك والإنكودر سليمين.')]),
    flt:{after:jog.concat([['hold',K('UP'),()=>S.alarm===6,'نضغط ▲ باستمرار والمحرك يدفع ضد الفرامل بتيار عالٍ…']]),fix:[['js',()=>{X.heat=Math.min(X.heat,0.78);},'نستنى المحرك يبرد (سرّعنا الوقت هنا).']],ms:40000}},

@@ -682,7 +682,7 @@ def('P037','Stop Mode','P','طريقة الوقوف',{o:STM,d:0,x:'Ramp = يهد
 def('P038','Speed Reference','P','مصدر السرعة',{o:SPO,d:0,x:'0 Drive Pot = البكرة اللي على الكيباد. 1 InternalFreq = القيمة اللي في A069. 2 0-10V Input = الطرف 13. 3 4-20mA Input = الطرف 15. 4 Preset Freq = A070. 5 Comm Port = من الشبكة. المداخل اللي على Preset Freq أو 10V/20mA In Ctrl أو Local بتغلب على الاختيار ده.'});
 def('P039','Accel Time 1','P','زمن التسارع',{mn:0,mx:600,st:.1,dc:1,u:'s',d:10,x:'الزمن من 0 لـ P035. قليل جدًا مع حمل تقيل = الانفرتر يدخل في حد التيار، ولو فضل مش قادر يسرّع يطلع F6.'});
 def('P040','Decel Time 1','P','زمن التباطؤ',{mn:.1,mx:600,st:.1,dc:1,u:'s',d:10,x:'الزمن من P035 لـ 0. قليل جدًا مع قصور كبير والطاقة ترجع للـ DC bus: لو A117 مقفول ومفيش مقاومة فرملة يطلع F5.'});
-def('P041','Reset To Defalts','P','رجوع لإعدادات المصنع',{o:['Idle State','Reset Defaults'],d:0,rl:1,act:1,x:'اختار 1 ودوس Enter: كل الباراميترات ترجع للمصنع ويطلع F48 Params Defaulted. امسحه بزر Stop. (الاسم على الجهاز مكتوب Defalts كده فعلًا).'});
+def('P041','Reset To Defalts','P','رجوع لإعدادات المصنع',{o:['Idle State','Reset Defaults'],d:0,rl:1,act:1,x:'اختار 1 ودوس Enter: تعود كل الباراميترات إلى قيم المصنع ويطلع F48 Params Defaulted. امسحه بزر Stop. (الاسم على الجهاز مكتوب Defalts كده فعلًا).'});
 def('P043','Motor OL Ret','P','تذكّر حمل المحرك بعد الفصل',{o:ED,d:0,x:'لو Enabled، عدّاد حماية المحرك مش بيتصفّر لما الكهرباء تفصل، عشان محدش يفصل ويرجّع ويشغّل محرك لسه سخن.'});
 /* Advanced: I/O */
 def('A051','Digital In1 Sel','io','وظيفة الطرف 05',{o:DIO,d:4,rl:1,x:'الوظيفة اللي الطرف 05 بيعملها لما يتقفل. المصنع Preset Freq (خانة 1 من السرعات الثابتة).'});
@@ -876,7 +876,7 @@ function setDir(d,from){
 function powerUp(){
  S.ctrl=true;S.boot=1.4;S.fault=0;S.run=false;S.st='off';S.retries=0;S.need2w=true;
  H.scr='boot';H.ed=null;H.flt=false;H.bootT=1.4;
- log('التحكم اشتغل. DC bus = '+S.bus.toFixed(0)+'V');
+ log('بدأ التحكم بالعمل. DC bus = '+S.bus.toFixed(0)+'V');
  if(S.inj.eep){S.boot=0;H.scr='disp';trip(100);}
 }
 function powerDown(){
@@ -1616,7 +1616,7 @@ const EX=[
   ['P031 Motor NP Volts = 400',()=>P.P031===400],
   ['P032 Motor NP Hertz = 50 و P035 Maximum Freq = 50',()=>P.P032===50&&P.P035===50],
   ['P033 Motor OL Current = 4.7 و A114 Slip Hertz = 2.3',()=>P.P033===4.7&&P.A114===2.3],
-  ['شغّل على 50 Hz بحمل 60% أو أكتر والتيار أقل من 4.7A',()=>S.st==='run'&&Math.abs(S.fOut)>48&&S.lp>=60&&S.I<4.7&&S.mot==='iec']]},
+  ['شغّل على 50 Hz بحمل 60% أو أكثر والتيار أقل من 4.7A',()=>S.st==='run'&&Math.abs(S.fOut)>48&&S.lp>=60&&S.I<4.7&&S.mot==='iec']]},
  {t:'2-Wire من الأطراف ببوتنشيوميتر خارجي',ev:['tbStart','tbStop'],s:[
   ['P036 Start Source = 2 (2-Wire) و P038 Speed Reference = 2 (0-10V)',()=>P.P036===2&&P.P038===2],
   ['خلي مصدر الطرف 13 على البوت، واقفل زر START (الطرف 02)',()=>EV.tbStart&&startMode()===2&&S.io.vsel==='pot'],
@@ -1876,7 +1876,7 @@ function guideRender(){
  }else if(st===1){
   const hand=GUI.hand==='hand';
   h+='<p class="g-lead">هذه الباراميترات التي يحتاجها التمرين. هل تفضّل إدخالها بيدك من الكيباد لتتعوّد يدك، أم يكتبها الانفرتر تلقائيًا؟</p>'+
-   '<div class="g-choice"><button type="button" class="btn big'+(hand?' pri':'')+'" id="gHand" aria-pressed="'+hand+'">ادخلها بإيدك من الكيباد<span class="tagc">تحكم</span><span class="rec">الأحسن للتدريب</span></button>'+
+   '<div class="g-choice"><button type="button" class="btn big'+(hand?' pri':'')+'" id="gHand" aria-pressed="'+hand+'">أدخلها يدويًا من الكيباد<span class="tagc">تحكم</span><span class="rec">الأفضل للتدريب</span></button>'+
    '<button type="button" class="btn big'+(GUI.hand==='auto'?' pri':'')+'" id="gAuto" aria-pressed="'+(GUI.hand==='auto')+'">اضبطها تلقائيًا<span class="tagc">تحكم</span><span class="rec">'+(hand?'اضبط الباقي بضغطة واحدة':'الانفرتر يكتبها وحده')+'</span></button></div>';
   if(hand)h+='<details class="g-how" open><summary>طريقة الدخول على PowerFlex 40</summary><div>'+
    '<b>Esc</b> <b>Esc</b> من شاشة القراءة: الأولى تعرض رقم الباراميتر (زي d001)، والتانية تخلي حرف الجروب يرمش ← <b>▲▼</b> اختار الحرف <b>P</b> أو <b>A</b> ← <b>↵</b> ← <b>▲▼</b> رقم الباراميتر (امسك عشان يسرع) ← <b>↵</b> تظهر القيمة ← <b>↵</b> تاني لمبة PROGRAM تنور ← <b>▲▼</b> غيّر القيمة (<b>Sel</b> ينقّل الخانة) ← <b>↵</b> تحفظ. <b>Esc</b> يرجعك خطوة لورا من غير حفظ.'+
