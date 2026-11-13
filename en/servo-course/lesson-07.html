@@ -39,38 +39,31 @@
 <section class="panel lprog" id="lprog" aria-label="Your progress"></section>
 
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>The problem: the PLC thinks in mm, the encoder in counts</h2>
-  <div class="vs">
-    <div class="side"><b>17-bit encoder</b><span class="big">131072</span><span>counts/rev · 3000 rpm = 6.5 MHz ❌</span></div>
-    <i>vs</i>
-    <div class="side"><b>You want</b><span class="big">250 mm</span><span>not 3276800 counts</span></div>
-  </div>
-  <p class="bf"><span class="ic">⚙️</span><span><b>Electronic gear N/M</b>: you choose how many mm one pulse is.</span></p>
+  <h2 id="s1"><span class="k">1</span>Why do we need an electronic gear?</h2>
+  <p>A 17-bit encoder counts 131072 per revolution. If the PLC sent one pulse per count it would need 6.5 MHz at 3000 rpm, which is impossible.</p>
+  <p>And you want to say "go 250 mm", not "go 3276800 counts".</p>
+  <p>The <b>electronic gear N/M</b> solves both: you choose how many mm one PLC pulse is worth, and the drive multiplies it by the ratio to turn it into counts.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>The formula in two steps</h2>
+  <h2 id="s2"><span class="k">2</span>How do you calculate it?</h2>
+  <p>It takes two steps. First: how many pulses do you want per motor revolution?</p>
   <div class="formula">Pulses/rev = travel per motor rev ÷ pulse value</div>
+  <p>Second: the gear ratio itself.</p>
   <div class="formula">N / M = encoder counts/rev ÷ pulses/rev</div>
+  <p>Example: a ball screw with a 10 mm lead, and you want one pulse = 0.01 mm. That is 1000 pulses per revolution, and with the gear based on 10000 counts per revolution the ratio is 10/1:</p>
   <div class="ladder"><span class="u">10 mm</span><span class="op">÷ 0.01</span><span class="u">1000</span><span class="op">10000 ÷</span><span class="u on">10/1</span></div>
-  <ul class="fx">
-    <li><b>Ball screw</b><span>Pitch ÷ gearbox ratio</span></li>
-    <li><b>Pulley and belt</b><span>Teeth × belt pitch</span></li>
-    <li><b>1:10 table</b><span>360 ÷ 10 = 36°</span></li>
-  </ul>
-  <p class="tip">From the manual: <b>which is numerator, which is denominator</b>, and the ratio limits.</p>
+  <p>"Travel per motor rev" depends on the mechanics. For a <b>ball screw</b> it is the lead divided by the gearbox ratio. For a <b>pulley and belt</b> it is the number of teeth times the belt pitch. For a <b>1:10 rotary table</b> it is 360 ÷ 10 = 36°.</p>
+  <p class="tip">Check the manual for <b>which parameter is the numerator and which the denominator</b>, and the allowed range of the fraction.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>The calculator and the challenge</h2>
+  <h2 id="s3"><span class="k">3</span>Try the calculator</h2>
   <div class="wd"><h3>Electronic gear calculator</h3><div id="gear"></div></div>
-  <div class="vs">
-    <div class="side"><b>Smaller unit</b><span>More precise · higher frequency</span></div>
-    <i>vs</i>
-    <div class="side"><b>Bigger unit</b><span>Lower frequency · bigger jump</span></div>
-  </div>
-  <p class="tip">Pick the smallest unit whose frequency the PLC can output at top speed.</p>
+  <p>Choosing the pulse value is a trade-off. A <b>smaller unit</b> gives finer resolution but needs a higher frequency from the PLC. A <b>bigger unit</b> lowers the frequency but each pulse is a bigger jump.</p>
+  <p class="tip">Pick the smallest unit whose frequency the PLC can still produce at top speed.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Quick calculation drills</h2>
+  <p>Apply the two formulas to different examples.</p>
   <div class="wd"><h3>Calculate</h3><div id="gdrill"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
