@@ -276,6 +276,11 @@ canvas{background:#131b1f}
 .atable th,.atable td{border-bottom-color:var(--line2)}
 .log div{border-bottom-color:var(--line2)}
 .chips button.off{opacity:.35}
+.hcwrap{margin-top:8px}
+.hchead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px}
+.hchead h2{margin:0}
+.hchead .row{gap:4px}.hchead button{padding:5px 9px;font-size:13px}
+#bPause.on{background:#c0392b;border-color:#c0392b;color:#fff}
 </style>
 </head>
 <body>
@@ -290,6 +295,17 @@ canvas{background:#131b1f}
   <div class="card dia">
     <div class="steps" id="ladder"></div>
     <div class="scrollx"><canvas id="cvDia" width="1000" height="600" role="img" aria-label="Animated view of the two reels, splice head, driven bending roller, loop and web magazine"></canvas></div>
+    <div class="hcwrap">
+      <div class="hchead">
+        <h2>Splice head close-up</h2>
+        <div class="row" role="group" aria-label="Slow motion during splice">
+          <span class="note">Slow motion while splicing:</span>
+          <button data-slow="0" class="sel">Off</button><button data-slow="0.25">×0.25</button><button data-slow="0.1">×0.1</button><button data-slow="0.04">×0.04</button>
+          <button id="bPause">Pause</button>
+        </div>
+      </div>
+      <div class="scrollx"><canvas id="cvHead" width="1000" height="380" role="img" aria-label="Enlarged splice head with every part named and its state"></canvas></div>
+    </div>
     <div class="kv">
       <div style="--c:#a66828"><span>Magazine web (m)</span><b id="vMag">0</b></div>
       <div style="--c:var(--reelE)"><span>Reel left (m)</span><b id="kR">0</b></div>
@@ -495,7 +511,7 @@ const ADEF=[
  {k:'mEmpty',n:'ALR_ASU_YE_MagazineEmpty',c:'Y',a:'Magazine empty',w:'immediate',e:'Fast stop'},
  {k:'magNF',n:'ALR_ASU_BO_MagazineNotFullWhenSpliceReq',c:'B',a:'Manual splice requested, magazine not full',w:'at the request',e:'request refused'}];
 const FAST=new Set(['lEmpty','mEmpty']);
-let S,AL,rec=null,lastRec=null,hist=[],simSp=1,ch={on:false,n:0,ok:0,f:null,ans:false};
+let S,AL,rec=null,lastRec=null,hist=[],simSp=1,slowSp=0,paused=false,ch={on:false,n:0,ok:0,f:null,ans:false};
 function fresh(){
   S={t:0,run:false,v:0,vT:0,stopMode:null,vL:0,vM:0,M:13.0,Lp:0.6,R:[150,REELFULL],prep:[true,true],act:0,
      hx:0,hv:0,P:0,enc:0,acc:0,okRun:0,marks:[],markFlash:0,missFlash:0,
@@ -817,6 +833,9 @@ $('bNear').onclick=()=>{S.R[S.act]=Math.min(S.R[S.act],22);log('Running reel nea
 $('bSplice').onclick=manualSplice;$('bPrep').onclick=prepReel;$('bForce').onclick=forceSplice;
 $('bClr').onclick=()=>{FDEF.forEach(f=>{if(F[f.k])toggleFault(f.k,false)})};
 document.querySelectorAll('[data-sp]').forEach(b=>b.onclick=()=>{simSp=+b.dataset.sp;document.querySelectorAll('[data-sp]').forEach(x=>x.classList.toggle('sel',x===b))});
+document.querySelectorAll('[data-slow]').forEach(b=>b.onclick=()=>{slowSp=+b.dataset.slow;document.querySelectorAll('[data-slow]').forEach(x=>x.classList.toggle('sel',x===b))});
+$('bPause').onclick=()=>{paused=!paused;$('bPause').textContent=paused?'Resume':'Pause';$('bPause').classList.toggle('on',paused)};
+function effSp(){if(paused)return 0;return (slowSp&&S.seq==='splice')?slowSp:simSp}
 /* ---------- challenge ---------- */
 const CHF=['reelPC','notPrep','air','heater','regPC','enc','servo','knife','fqL','magS','loopS','door','hold'];
 function updScore(){$('chScore').textContent=`Score: ${ch.ok}  of ${ch.n}`}
@@ -854,7 +873,7 @@ const HINT={
  door:'Door warning after 90 s, and the splice was cancelled.',
  hold:'Blue material-holder warning from the start, and the splice was cancelled.'};
 /* ---------- drawing ---------- */
-const cv=$('cvDia'),ctx=cv.getContext('2d');cv.width=2000;cv.height=1200;
+const cv=$('cvDia');let ctx=cv.getContext('2d');cv.width=2000;cv.height=1200;
 function box(x,y,w,h,fill,stroke='#040505',r=6,lw=1.6){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();ctx.lineWidth=lw;ctx.strokeStyle=stroke;ctx.stroke()}
 function txt(s,x,y,o={}){ctx.font=`${o.w||600} ${o.s||13}px ${o.mono?'"JetBrains Mono",monospace':'"IBM Plex Sans Arabic",system-ui,sans-serif'}`;ctx.fillStyle=o.c||'#e3ece9';ctx.textAlign=o.a||'center';ctx.textBaseline=o.b||'middle';ctx.direction='ltr';ctx.fillText(s,x,y)}
 function tag(s,x,y){ctx.font='600 10.5px "JetBrains Mono",monospace';const w=ctx.measureText(s).width+10;box(x-w/2,y-8,w,16,'#fde900','#040505',3,1.2);txt(s,x,y+.5,{mono:1,s:10.5,c:'#040505'})}
@@ -1075,13 +1094,108 @@ function ui(){
     rs.innerHTML=cells.map(c=>`<div class="${c[2]}">${c[0]}<b>${c[1]}</b></div>`).join('')}
   $('bSplice').disabled=S.seq==='splice';
 }
+
+/* ---------- splice head close-up ---------- */
+const cvH=$('cvHead'),hctx=cvH.getContext('2d');cvH.width=2000;cvH.height=760;
+const HS=[300,700],HTOP=[500,0];
+function drawHead(){
+  const c0=ctx;ctx=hctx;try{drawHeadInner()}finally{ctx=c0}
+}
+function lab(name,sub,on,x,y,ax,ay,al){
+  // leader line from label to the part
+  ctx.save();ctx.strokeStyle='#8fa4a0';ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(al==='left'?x-6:x+6,y);ctx.lineTo(ax,ay);ctx.stroke();ctx.restore();
+  circ(ax,ay,2.6,'#e3ece9',1,'#040505');
+  txt(name,x,y-7,{s:12.5,w:700,a:al});
+  if(sub!==null){const st=on===null?'':(on?'  ON':'  OFF');
+    ctx.font='600 11px "JetBrains Mono",monospace';const w1=ctx.measureText(sub).width;
+    const x0=al==='left'?x:x-w1-ctx.measureText(st).width;
+    txt(sub,x0,y+9,{s:11,mono:1,a:'left',c:'#fde900'});
+    if(st)txt(st,x0+w1,y+9,{s:11,mono:1,a:'left',w:700,c:on?'#5fd08b':'#6d8580'});}
+}
+function drawHeadInner(){
+  ctx.setTransform(2,0,0,2,0,0);ctx.clearRect(0,0,1000,380);ctx.fillStyle='#131b1f';ctx.fillRect(0,0,1000,380);
+  const sp=S.seq==='splice',ph=S.ph,pt=S.pt;const H=HS[0]+S.hx/POS2*(HS[1]-HS[0]);
+  const pr=sp&&((ph==='part1'&&pt>=P1_PR&&pt<P1_END)||(ph==='part2'&&pt<set.st));
+  const cut=sp&&ph==='part1'&&pt>=P1_CUT&&pt<P1_END;
+  const lock=S.lock||(sp&&(ph==='part1'||ph==='side'||(ph==='part2'&&pt<set.st+PRESS_DLY)));
+  const tens=sp&&!(ph==='part2'&&pt>=set.st+PRESS_DLY);
+  const seal=sp&&ph==='part2'&&pt<set.st;
+  const joined=sp&&S.spl&&S.spl.joined;
+  const cutDone=sp&&S.spl&&S.spl.cutOk&&!joined&&((ph==='part1'&&pt>=P1_END)||ph==='side'||ph==='part2');
+  const a=S.act,o=1-a;
+  // servo rail + stations
+  box(150,58,700,8,'#dfe0e0','#040505',3);
+  for(let i=0;i<2;i++){ctx.save();ctx.strokeStyle='#3d5560';ctx.setLineDash([2,4]);ctx.beginPath();ctx.moveTo(HS[i],70);ctx.lineTo(HS[i],336);ctx.stroke();ctx.restore();
+    txt(`Station ${i+1} (reel ${i+1})`,HS[i],46,{s:11.5,w:700,c:'#bcd0cb'});txt(i?'492 mm':'0 mm',HS[i],32,{s:10.5,mono:1,c:'#8fa4a0'})}
+  txt('Head servo',866,12,{s:12,w:700,a:'left'});tag('T50M9020',898,29);
+  const mv=sp&&ph==='side'?((Math.sign(S.hv)||1)>0?'  → moving':'  ← moving'):'';
+  txt(`${S.hx.toFixed(0)} mm${mv}`,866,46,{s:11,mono:1,a:'left',c:mv?'#55b6ea':'#8fa4a0'});
+  // head body
+  ctx.save();ctx.globalAlpha=.9;box(H-110,72,220,170,'#2c3b22','#b9d983',10,2);ctx.restore();
+  txt('Splice head',H-100,86,{s:12,w:700,a:'left',c:'#b9d983'});
+  // webs
+  const top=[[H,72],[H,62],HTOP];
+  if(!sp||joined||!cutDone){
+    // running web passes straight through the head
+    web([[HS[a],336],[HS[a],72]]);web([[HS[a],72],[HS[a],62],HTOP]);
+  }else{
+    web([[H,226],...top]);                        // old web end held on the bar
+    web([[HS[a],336],[HS[a],250]],'#c98b4a',3);   // cut tail of the old web
+    const lx=a?HS[a]+14:HS[a]-14;
+    txt('Old web tail (cut)',lx,322,{s:11,w:600,a:a?'left':'right',c:'#c98b4a'});
+  }
+  // new reel start held at the other station
+  const okPrep=prepared(o)||(S.prep[o]&&S.R[o]>0);
+  if(!joined&&okPrep){const x=HS[o];const yt=120;
+    web([[x,336],[x,yt]],'#e9a640',3.5);
+    ctx.beginPath();ctx.moveTo(x-5,yt+4);ctx.lineTo(x+1,yt-8);ctx.lineTo(x+6,yt+4);ctx.closePath();ctx.fillStyle='#e9a640';ctx.fill();
+    box(x-14,304,28,12,F.hold?'#e0242f':'#75923b','#040505',3);
+    if(Math.abs(H-x)>150){const al=o?'left':'right',lx=o?x+20:x-20;
+      lab('New reel start',null,null,lx,140,x+(o?4:-4),140,al);
+      lab('Material holder','DI_SpliceTable'+(o+1),!F.hold,lx,310,x+(o?14:-14),310,al)}
+  }
+  // seal glow
+  if(seal){ctx.save();ctx.shadowColor='#ff7a00';ctx.shadowBlur=18;ctx.fillStyle='rgba(255,138,26,.55)';ctx.fillRect(H-8,112,8,94);ctx.restore()}
+  // lock cylinders (top)
+  box(H-22,90,14,20,'#99a8a8','#040505',2);box(H+(lock?6:22),90,16,20,lock?'#3b9c5a':'#5d6670','#040505',2);
+  box(H+(lock?22:38),96,40-(lock?0:16),8,'#99a8a8','#040505',2);
+  // CH bar (left of web)
+  const hot=Math.max(0,Math.min(1,(S.T-60)/120));
+  box(H-36,112,26,94,`rgb(253,${Math.round(185-95*hot)},${Math.round(50-30*hot)})`,'#040505',3);
+  // pressure rail (right of web)
+  const rx=pr?H+4:H+30;box(rx,116,16,86,'#4687c7','#040505',2);box(rx+16,154,H+92-rx-16,10,'#99a8a8','#040505',2);
+  // knife
+  const kx=cut?H-16:H+34;ctx.beginPath();ctx.moveTo(kx,222);ctx.lineTo(kx+22,214);ctx.lineTo(kx+22,230);ctx.closePath();ctx.fillStyle=cut?'#ff5d50':'#c5ced1';ctx.fill();ctx.strokeStyle='#040505';ctx.lineWidth=1.2;ctx.stroke();
+  box(kx+22,218,H+96-kx-22,8,'#99a8a8','#040505',2);
+  if(cut){txt('✂',H-28,236,{s:14,c:'#ff5d50'})}
+  // web tension cylinder (below head, left)
+  const ry=272,rr=9,rcx=tens?H-rr-2:H-34;
+  box(H-100,ry-9,40,18,'#99a8a8','#040505',3);box(H-60,ry-3,rcx-(H-60),6,'#c5ced1','#040505',1.5);circ(rcx,ry,rr,tens?'#3b9c5a':'#5d6670');
+  // labels around the head
+  const L=H-124,R=H+124;
+  lab('CH heating bar',`${S.T.toFixed(1)} °C`,null,L,150,H-36,150,'right');
+  lab('Web tension cylinder','T10K1641',tens,H-108,272,H-100,272,'right');
+  lab('Material lock cylinders','VAR_LoopMotorLock',lock,R,98,H+40,100,'left');
+  lab('Pressure rail','T10K1621',pr,R,160,rx+16,170,'left');
+  lab('Knife (cutting cylinder)','T10K1631',cut,R,222,H+70,222,'left');
+  if(seal){txt(`Sealing ${(pt/1000).toFixed(2)} / ${(set.st/1000).toFixed(1)} s`,H-48,252,{s:11,w:700,c:'#ff8a3d',a:'right'})}
+  // caption
+  let t1,t2;if(sp){const L2=LADDER.find(x=>x.k===curSub());t1=L2?L2.t:'';t2=L2?L2.a:''}
+  else if(S.seq==='alarm'){t1='Alarm';t2='motors stopped until reset'}else{t1=S.run?'Production':'Stopped';t2='head waits at the running reel\'s station'}
+  box(10,342,980,34,sp?'#1f2e22':'#19232a',sp?'#6f9a2c':'#26353d',8);
+  txt(t1+(sp?`  ·  ${(S.spT/1000).toFixed(2)} s since request`:''),24,359,{s:13,w:700,a:'left'});
+  txt(t2,400,359,{s:11.5,a:'left',c:'#bcd0cb'});
+  const es=effSp();
+  if(paused)txt('PAUSED',978,359,{s:13,w:700,a:'right',c:'#ff5d50'});
+  else if(sp&&slowSp)txt(`Slow motion ×${slowSp}`,978,359,{s:12,w:700,a:'right',c:'#e9a640'});
+}
 /* ---------- loop ---------- */
 let last=performance.now(),acc=0,histT=0;
 function frame(now){
   let dt=Math.min(0.1,(now-last)/1000);last=now;
-  const n=Math.max(1,Math.ceil(simSp*dt/0.004));const h=simSp*dt/n;for(let i=0;i<n;i++)step(h);
-  histT+=simSp*dt;if(histT>=0.2){histT=0;hist.push({t:S.t,v:S.v,vL:S.vL,vM:S.vM,M:S.M,T:S.T,sp:S.seq==='splice'});while(hist.length&&hist[0].t<S.t-92)hist.shift()}
-  draw();uiT+=dt;if(uiT>0.1){uiT=0;ui();drawTrend();drawTime()}
+  const es=effSp();if(es>0){const n=Math.max(1,Math.ceil(es*dt/0.004));const h=es*dt/n;for(let i=0;i<n;i++)step(h);}
+  histT+=es*dt;if(histT>=0.2){histT=0;hist.push({t:S.t,v:S.v,vL:S.vL,vM:S.vM,M:S.M,T:S.T,sp:S.seq==='splice'});while(hist.length&&hist[0].t<S.t-92)hist.shift()}
+  draw();drawHead();uiT+=dt;if(uiT>0.1){uiT=0;ui();drawTrend();drawTime()}
   requestAnimationFrame(frame);
 }
 log('Simulator ready. Reel 1 running, reel 2 prepared.','i');

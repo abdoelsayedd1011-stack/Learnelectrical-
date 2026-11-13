@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="محاكي لحام الشريط ASSU ومركّب الشريط واللحام الطولي LS في A3/Speed: التاجات والإنذارات من البرنامج.">
+<link rel="canonical" href="https://www.learnelectricals.com/a3speed-lab/strip-ls.html">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>محاكي الشريط واللحام الطولي A3/Speed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Old A3/Speed simulator look (dark control-room HMI). Compact: diagram + live tags together, controls/alarms beside, trends right under, faults next to trends. Single dark look by design. */
+:root{
+  color-scheme: dark;
+  --bg:#0c1215; --panel:#131b1f; --panel2:#19232a; --line:#26353d; --fg:#e3ece9; --muted:#8fa4a0;
+  --web:#d9cfb4; --strip:#c792ea; --ls:#55b6ea; --sa:#ff7a8a; --heat:#ff8a3d; --roll:#9ccc65; --sens:#ffc629; --steel:#7f9198;
+  --ok:#5fd08b; --alarm:#ff5d50; --warn:#ffc629; --blue:#5aa9ff; --accent:#e9a640;
+  --f-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Arabic",system-ui,"Segoe UI",Tahoma,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--fg);margin:0}
+body{font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{direction:rtl;max-width:1380px;margin:0 auto;padding-block:12px 36px;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));display:grid;gap:10px}
+header{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;justify-content:space-between}
+h1{font-family:var(--f-display);font-size:clamp(19px,2.6vw,26px);margin:0;text-wrap:balance}
+h2{font-family:var(--f-display);font-size:14.5px;margin:0 0 6px;font-weight:700;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sub{color:var(--muted);margin:0;font-size:13.5px}
+.en{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-size:.84em;color:#bcd0cb}
+.mono{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-variant-numeric:tabular-nums}
+button,select,input{font-family:var(--f-body);font-size:13.5px;color:var(--fg)}
+button{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 11px;cursor:pointer;touch-action:manipulation;line-height:1.35}
+button:hover{border-color:var(--muted)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.primary{background:var(--accent);color:#1b1206;border-color:var(--accent);font-weight:700}
+button.stop{border-color:#6b3430;color:#ffb3ab}
+button.sel{border-color:var(--accent);color:var(--accent);font-weight:700}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.note{font-size:12px;color:var(--muted)}
+.simp{display:inline-block;font-size:11px;color:#1b1206;background:var(--warn);border-radius:5px;padding:0 6px;font-weight:600;white-space:nowrap}
+canvas{display:block;width:100%}
+
+/* main grid: diagram | side ; trends | faults */
+.main{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:10px;align-items:start;min-width:0}.main>*,.col>*{min-width:0;max-width:100%}
+@media (max-width:1020px){.main{display:flex;flex-direction:column}.main>.col{display:contents}.o1{order:1}.o2{order:2}.o3{order:3}.o4{order:4}.o5{order:5}.o6{order:6}}
+.col{display:grid;gap:10px;min-width:0;align-content:start}
+.dia{padding:6px}
+.dia .scroll{direction:ltr;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.dia svg{display:block;width:100%;min-width:560px;height:auto;direction:ltr}
+.dia .hint{display:none;font-size:11.5px;color:var(--muted);text-align:center}
+@media (max-width:600px){.dia .hint{display:block}}
+
+/* status head */
+.state{font-family:var(--f-display);font-size:18px;font-weight:700;line-height:1.3}
+.state .en{font-size:.62em;color:var(--muted);margin-inline-start:6px}
+.msg{font-size:13.5px;min-height:2.6em;color:#cfdcd8;text-wrap:pretty}
+.ops{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.ops button{padding:7px 4px;font-weight:600}
+.ops button small{display:block;font-weight:400;font-size:10.5px;color:var(--muted)}
+.ops .go{border-color:#2f6b47;color:#bff5d2}
+.kvs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.kv{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:4px 8px;display:grid;line-height:1.3;min-width:0}
+.kv span{font-size:11.5px;color:var(--muted)}
+.kv strong{font-family:var(--f-mono);font-size:16px;direction:ltr;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.kv.bad{border-color:var(--alarm);background:#2a1715}.kv.bad strong{color:#ffb3ab}
+.kv.wn{border-color:#7a6216;background:#2a2410}.kv.wn strong{color:var(--warn)}
+.kv.good strong{color:var(--ok)}
+.slrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;font-size:12.5px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+
+/* alarms */
+.alarms{display:grid;gap:4px;max-height:210px;overflow:auto}
+.alarm{border:1px solid var(--line);border-inline-start:5px solid var(--warn);background:var(--panel2);border-radius:7px;padding:4px 8px;display:grid;gap:0;font-size:12.5px;line-height:1.4}
+.alarm.Y{border-inline-start-color:var(--warn)}
+.alarm.B{border-inline-start-color:var(--blue)}
+.alarm strong{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-size:11.5px;color:#ffd7a0;text-align:right}
+.alarm.B strong{color:#a9d0ff}
+.alarm .t{font-size:11px;color:var(--muted)}
+.alarm.cleared{opacity:.5}
+.empty{font-size:12.5px;color:var(--muted);padding:4px}
+
+/* trends + faults row */
+.under{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (max-width:760px){.under{grid-template-columns:minmax(0,1fr)}}
+.tr{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 8px}
+.tr h3{font-size:12.5px;margin:0 0 2px;font-weight:600;display:flex;justify-content:space-between;gap:6px;flex-wrap:wrap}
+.lg{font-size:11px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+.lg i{display:inline-block;width:12px;height:3px;vertical-align:middle;margin-left:3px}
+.fgrp{display:grid;gap:4px;margin-bottom:6px}
+.fgrp>b{font-size:12px;color:var(--muted);font-weight:600}
+.fbt{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+.fbt button{text-align:right;font-size:12.5px;padding:5px 8px;display:grid;line-height:1.3}
+.fbt button small{font-size:10.5px;color:var(--muted)}
+.fbt button.on{border-color:var(--alarm);background:#2a1715;color:#ffb3ab}
+.fbt button.on small{color:#ffb3ab}
+.chal{border:1px dashed #5a4a7a;border-radius:10px;padding:8px;display:grid;gap:6px;background:#17131f}
+.chal select{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px;width:100%}
+.res{font-size:13px;line-height:1.55}
+.res.ok{color:var(--ok)}.res.bad{color:#ffb3ab}
+
+/* tabs */
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.tabs button{font-size:13px}
+.tab{display:none}.tab.on{display:block}
+.steps{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
+@media (max-width:760px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.st{border:1px solid var(--line);border-radius:8px;padding:6px;background:var(--panel2);font-size:12.5px;line-height:1.35}
+.st b{display:block;font-size:13px}
+.st .en{font-size:10.5px}
+.st .tm{font-family:var(--f-mono);color:var(--accent);font-size:12px;direction:ltr;unicode-bidi:isolate}
+.st.cur{border-color:var(--accent);background:#2b2110}
+.st.done{border-color:#2f6b47}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px}
+.cards div{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px;line-height:1.6}
+.cards b{color:var(--accent)}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+td,th{border-bottom:1px solid var(--line);padding:4px 6px;text-align:right;vertical-align:top}
+th{color:var(--muted);font-weight:600}
+.tw{overflow-x:auto;direction:ltr}.tw table{direction:rtl}
+svg text{font-family:var(--f-body)}
+svg .m{font-family:var(--f-mono)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+
+</head>
+<body>
+<nav aria-label="تنقل" style="direction:rtl;display:flex;flex-wrap:wrap;gap:8px;max-width:1400px;margin:0 auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 0;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:14px"><a href="/a3speed-lab/" style="color:#1f5a96;text-decoration:none;font-weight:600;padding:4px 10px;border:1px solid #c5c5c5;border-radius:8px;background:#fff">← كل محاكيات A3/Speed</a></nav>
+<div class="wrap">
+<header>
+  <div>
+    <h1>الشريط واللحام الطولي — A3/Speed</h1>
+    <p class="sub">وحدة لحام الشريط <span class="en">ASSU</span> ← أبليكيتور الشريط <span class="en">SA</span> ← اللحام الطولي <span class="en">LS</span>. اضغط على أي علامة <b style="color:var(--alarm)">!</b> في الرسمة عشان تعمل عطل في المكان ده.</p>
+  </div>
+  <div class="row">
+    <span class="note">سرعة المحاكاة</span>
+    <button data-sp="1" class="sel">×1</button><button data-sp="5">×5</button><button data-sp="20">×20</button>
+  </div>
+</header>
+
+<div class="main">
+  <div class="col">
+    <div class="panel dia o1">
+      <div class="scroll">
+      <svg id="svg" viewBox="0 0 720 600" role="img" aria-label="رسمة متحركة لوحدة لحام الشريط والأبليكيتور واللحام الطولي">
+        <defs>
+          <linearGradient id="tubeG" x1="0" x2="1"><stop offset="0" stop-color="#8d8571"/><stop offset=".45" stop-color="#e6dcc2"/><stop offset="1" stop-color="#8d8571"/></linearGradient>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4"/></filter>
+        </defs>
+        <!-- zones -->
+        <rect x="6" y="6" width="300" height="588" rx="10" fill="#10181c" stroke="#2c3d45"/>
+        <text x="156" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#c792ea">وحدة لحام الشريط <tspan class="m" font-size="11">ASSU</tspan></text>
+        <rect x="314" y="6" width="190" height="588" rx="10" fill="#10181c" stroke="#2c3d45"/>
+        <text x="470" y="568" text-anchor="middle" font-size="12.5" font-weight="700" fill="#ff9aa6">أبليكيتور</text><text x="470" y="584" text-anchor="middle" font-size="12.5" font-weight="700" fill="#ff9aa6">الشريط <tspan class="m" font-size="11">SA</tspan></text>
+        <rect x="512" y="6" width="202" height="588" rx="10" fill="#10181c" stroke="#2c3d45"/>
+        <text x="552" y="568" text-anchor="middle" font-size="12.5" font-weight="700" fill="#7cc6f0">اللحام</text><text x="552" y="584" text-anchor="middle" font-size="12.5" font-weight="700" fill="#7cc6f0">الطولي <tspan class="m" font-size="11">LS</tspan></text>
+
+        <!-- ===== ASSU ===== -->
+        <g id="bob0"></g><g id="bob1"></g>
+        <circle cx="85" cy="42" r="7" fill="#33444c" stroke="#7f9198"/><circle cx="215" cy="42" r="7" fill="#33444c" stroke="#7f9198"/>
+        <circle cx="150" cy="42" r="7" fill="#33444c" stroke="#7f9198"/>
+        <path id="feedPath" fill="none" stroke="#c792ea" stroke-width="3"/>
+        <path id="prepPath" fill="none" stroke="#c792ea" stroke-width="2" stroke-dasharray="3 4" opacity=".7"/>
+        <!-- splice head -->
+        <g id="head">
+          <rect x="128" y="182" width="22" height="46" rx="3" fill="#56666d" stroke="#9fb0b6"/>
+          <rect id="heater" x="131" y="196" width="16" height="18" rx="2" fill="#3a2a2a"/>
+        </g>
+        <rect x="160" y="196" width="46" height="16" rx="3" fill="#24566a" stroke="#55b6ea"/>
+        <rect id="cylRod" x="150" y="201" width="12" height="6" fill="#9fb0b6"/>
+        <rect x="104" y="196" width="16" height="16" rx="3" id="prepSens" fill="#ffc629" stroke="#111"/>
+        <text x="96" y="232" font-size="10.5" fill="#8fa4a0" text-anchor="middle">حساس التجهيز</text>
+        <text x="182" y="232" font-size="10.5" fill="#8fa4a0" text-anchor="middle">رأس اللحام</text>
+        <!-- magazine -->
+        <rect x="22" y="246" width="258" height="300" rx="6" fill="none" stroke="#2c3d45" stroke-dasharray="4 4"/>
+        <text x="30" y="262" font-size="11" fill="#8fa4a0">مخزن الشريط (16 ذراع)</text>
+        <g id="magTop"></g>
+        <polyline id="fest" fill="none" stroke="#c792ea" stroke-width="2"/>
+        <g id="carriage"><rect id="carBar" x="44" y="0" width="226" height="8" rx="3" fill="#7f9198"/></g>
+        <g id="magBot"></g>
+        <!-- level transducer -->
+        <rect x="288" y="270" width="8" height="270" rx="3" fill="#1d2a30" stroke="#3a4a52"/>
+        <line id="lvlMk" x1="284" x2="300" stroke="#ffc629" stroke-width="3"/>
+        <g id="lvlRefs"></g>
+        <g id="tagMag"></g>
+        <g id="tagB0"></g><g id="tagB1"></g>
+        <path id="outPath" fill="none" stroke="#c792ea" stroke-width="3"/>
+        <g id="cut" visibility="hidden"><line x1="311" y1="330" x2="329" y2="348" stroke="#ff5d50" stroke-width="3"/><line x1="329" y1="330" x2="311" y2="348" stroke="#ff5d50" stroke-width="3"/></g>
+
+        <!-- ===== web path (SA up, over the top, down the tube) ===== -->
+        <path id="webPath" d="M415,600 L415,70 Q415,30 455,30 L575,30 Q615,30 615,70 L615,150" fill="none" stroke="#5d564a" stroke-width="40"/>
+        <path d="M415,600 L415,70 Q415,30 455,30 L575,30 Q615,30 615,70 L615,150" fill="none" stroke="#d9cfb4" stroke-width="36"/>
+        <path id="webMove" d="M415,600 L415,70 Q415,30 455,30 L575,30 Q615,30 615,70 L615,150" fill="none" stroke="#bfb497" stroke-width="36" stroke-dasharray="2 22"/>
+        <path id="stripOnWeb" d="M399,452 L399,70 Q399,14 455,14 L575,14 Q631,14 631,70 L631,150" fill="none" stroke="#c792ea" stroke-width="7"/>
+        <text x="515" y="84" text-anchor="middle" font-size="10.5" fill="#8fa4a0">الورق رايح لحمام التعقيم والتشكيل</text>
+        <rect id="pmSplice" x="395" y="0" width="40" height="6" fill="#111" visibility="hidden"/>
+
+        <!-- SA parts -->
+        <rect x="383" y="330" width="14" height="112" rx="3" fill="#5a2a32" stroke="#ff7a8a"/>
+        <rect id="saGlow" x="383" y="330" width="14" height="112" rx="3" fill="#ff8a3d" opacity="0" filter="url(#glow)"/>
+        <rect id="saHot" x="393" y="332" width="4" height="108" fill="#ff8a3d" opacity="0"/>
+        <text x="442" y="392" font-size="10.5" fill="#ff9aa6">إندكتور</text>
+        <rect x="360" y="318" width="40" height="9" rx="3" fill="#2a5866" stroke="#55b6ea"/>
+        <text x="442" y="326" font-size="10" fill="#7cc6f0">دليل الشريط</text>
+        <g id="pRoll"><circle cx="384" cy="292" r="14" fill="#2f4a1f" stroke="#9ccc65" stroke-width="2"/><line id="pRollSpoke" x1="384" y1="292" x2="384" y2="280" stroke="#9ccc65" stroke-width="2"/></g>
+        <text x="442" y="296" font-size="10.5" fill="#b9e08d">رول الضغط</text>
+        <rect x="336" y="285" width="22" height="16" rx="4" fill="#5a2a32" stroke="#ff7a8a"/>
+        <text x="347" y="314" font-size="10" fill="#ff9aa6" text-anchor="middle">إنكودر</text>
+        <rect x="330" y="456" width="44" height="26" rx="4" fill="#24566a" stroke="#55b6ea"/>
+        <text x="352" y="473" font-size="10" fill="#cfe9f7" text-anchor="middle">ماتشينج</text>
+        <rect x="440" y="520" width="26" height="20" rx="4" fill="#5a4416" stroke="#ffc629"/>
+        <text x="472" y="512" font-size="10" fill="#ffd77a" text-anchor="middle">كاشف الوصلة</text>
+        <rect x="322" y="520" width="62" height="34" rx="5" fill="#16232a" stroke="#ff7a8a"/>
+        <text x="353" y="533" font-size="9.5" fill="#ff9aa6" text-anchor="middle" class="m">TPIH SA</text>
+        <text id="saPw" x="353" y="549" font-size="12" fill="#fff" text-anchor="middle" class="m" font-weight="700">0 W</text>
+        <line x1="353" y1="520" x2="353" y2="482" stroke="#55b6ea" stroke-dasharray="3 3"/>
+        <g id="tagSA"></g>
+
+        <!-- LS / tube -->
+        <path d="M590,150 Q615,138 640,150" fill="none" stroke="#d9cfb4" stroke-width="3"/>
+        <rect x="590" y="150" width="50" height="440" fill="url(#tubeG)" opacity=".95"/>
+        <line x1="632" y1="150" x2="632" y2="590" id="seam" stroke="#6b6250" stroke-width="2"/>
+        <ellipse cx="615" cy="176" rx="34" ry="8" fill="none" stroke="#7f9198" stroke-width="5"/>
+        <text x="560" y="172" font-size="10" fill="#8fa4a0" text-anchor="end">حلقة عليا</text>
+        <rect x="643" y="205" width="20" height="185" rx="4" fill="#173a4d" stroke="#55b6ea"/>
+        <rect id="lsGlow" x="639" y="205" width="10" height="185" fill="#ff8a3d" opacity="0" filter="url(#glow)"/>
+        <rect id="lsHot" x="643" y="207" width="4" height="181" fill="#ff8a3d" opacity="0"/>
+        <text x="670" y="300" font-size="10.5" fill="#7cc6f0" transform="rotate(90 670 300)" text-anchor="middle">إندكتور LS</text>
+        <g id="ring"><ellipse cx="615" cy="430" rx="34" ry="8" fill="none" stroke="#7f9198" stroke-width="5"/>
+          <circle cx="641" cy="420" r="7" fill="#5a4416" stroke="#ffc629"/><circle cx="641" cy="438" r="7" fill="#5a4416" stroke="#ffc629"/></g>
+        <text x="560" y="445" font-size="10" fill="#8fa4a0" text-anchor="end">حلقة سفلية + رولات</text>
+        <rect x="652" y="80" width="56" height="34" rx="5" fill="#16232a" stroke="#55b6ea"/>
+        <text x="680" y="93" font-size="9.5" fill="#7cc6f0" text-anchor="middle" class="m">TPIH LS</text>
+        <text id="lsPw" x="680" y="109" font-size="12" fill="#fff" text-anchor="middle" class="m" font-weight="700">0 W</text>
+        <rect x="676" y="140" width="34" height="26" rx="4" fill="#24566a" stroke="#55b6ea"/>
+        <text x="693" y="157" font-size="9.5" fill="#cfe9f7" text-anchor="middle" class="m">VMN</text>
+        <line x1="693" y1="114" x2="693" y2="140" stroke="#55b6ea" stroke-dasharray="3 3"/>
+        <line x1="693" y1="166" x2="663" y2="215" stroke="#55b6ea" stroke-dasharray="3 3"/>
+        <g id="tagLS"></g>
+        <text id="pph" x="540" y="510" font-size="12" fill="#e3ece9" class="m" text-anchor="middle"></text>
+        <text x="540" y="526" font-size="10" fill="#8fa4a0" text-anchor="middle">عبوة/ساعة</text>
+
+        <!-- fault hotspots -->
+        <g id="hots"></g>
+      </svg>
+      </div>
+      <div class="hint">اسحب الرسمة يمين وشمال على الموبايل</div>
+    </div>
+
+    <div class="under o4">
+      <div class="tr"><h3>المخزن وموتور البكرة <span class="lg"><span><i style="background:#c792ea"></i>المستوى</span><span><i style="background:#9ccc65"></i>Hz</span></span></h3><canvas id="c1" height="150"></canvas></div>
+      <div class="tr"><h3>قدرة اللحام <span class="lg"><span><i style="background:#55b6ea"></i>LS</span><span><i style="background:#ff7a8a"></i>SA</span></span></h3><canvas id="c2" height="150"></canvas></div>
+      <div class="tr"><h3>مراقب اللحام (الزاوية) <span class="lg"><span><i style="background:#55b6ea"></i>LS φ</span><span><i style="background:#ff7a8a"></i>SA φ</span></span></h3><canvas id="c3" height="150"></canvas></div>
+    </div>
+<div class="panel o6">
+  <div class="tabs">
+    <button data-tab="t1" class="sel">توقيت لحام الشريط</button>
+    <button data-tab="t2">خطوات بداية اللحام الطولي</button>
+    <button data-tab="t3">الفكرة باختصار</button>
+    <button data-tab="t4">أهم القيم والتاجات</button>
+  </div>
+  <div class="tab on" id="t1">
+    <div class="slrow" style="max-width:520px"><span>زمن التسخين</span><input type="range" id="heatT" min="900" max="1600" step="50" value="1300"><span class="mono" id="heatV">1300 ms</span></div>
+    <p class="note" style="margin:2px 0 6px">التاج <span class="en">HMI_ASSU_StripSealingTime</span> (مسموح 900 لـ 1600 مللي ثانية). التايمر الكامل <span class="en">TMR_StripSplice</span> = 2300 مللي ثانية. الخط البرتقالي بيمشي وقت اللحام.</p>
+    <div class="tw"><svg id="tim" viewBox="0 0 760 210" style="width:100%;max-width:820px;min-width:520px;direction:ltr"></svg></div>
+  </div>
+  <div class="tab" id="t2">
+    <p class="note" style="margin:0 0 6px">التسلسل <span class="en">SEQ_LS</span> في الروتين <span class="en">_23020_LS_A3</span>. الأزمنة من بداية تايمر بدء التشغيل. في "لحام الأنبوب" البرنامج بيدخل على اللحام على طول أول ما الفكوك تتحرك.</p>
+    <div class="steps" id="steps"></div>
+    <p class="note" id="seqT" style="margin:6px 0 0"></p>
+  </div>
+  <div class="tab" id="t3">
+    <div class="cards">
+      <div><b>ليه الشريط؟</b> لما الورق يتلف أنبوب، حرف الورق الداخلي (الكرتون المقطوع) بيبقى ملامس للمنتج وممكن يشرب منه. الشريط البلاستيك بيتلحم على نص عرضه في حرف الورق في الأبليكيتور، والنص التاني بيتلحم من جوه على الحرف التاني وقت اللحام الطولي، فيقفل على الحرف ويحميه.</div>
+      <div><b>الأبليكيتور SA:</b> دليل الشريط بيحط الشريط على حرف الورق، الإندكتور بيسخن الألومنيوم اللي في الورق بالحث (مولد TPIH)، ورول الضغط بيكبس الشريط وهو سخن. الإنكودر على الرول بيقيس سرعة الشريط عشان يتأكد إنه ماشي مع الورق.</div>
+      <div><b>اللحام الطولي LS:</b> الحلقات بتقفل الورق أنبوب وطرفين الورق فوق بعض. إندكتور LS بيسخن منطقة التراكب، والرولات تحت بتضغط. القدرة بتتغير مع سرعة الفكوك، وبعد وصلة الورق بـ 43 عبوة بتزيد 60% لعبوة واحدة.</div>
+      <div><b>وحدة لحام الشريط ASSU:</b> بكرتين، واحدة شغالة وواحدة متجهزة. المخزن بيشيل شريط احتياطي والموتور ماسك المستوى عند 570 بـ PID. لما البكرة تخلص البكرتين يقفوا، رأس اللحام يلحم القديم في الجديد، والماكينة تكمل من المخزن.</div>
+      <div><b>مراقب اللحام:</b> بياخد من كل مولد الفولت والتيار والقدرة والزاوية والمعاوقة. لو الزاوية أو المعاوقة بعدت كتير عن متوسطها يطلع تحذير أزرق، ولو المولد نفسه فصل يطلع إنذار أصفر والماكينة تقف.</div>
+      <div><span class="simp">تبسيط توضيحي</span> سرعة خلصان البكرة، وحدات المخزن، قدرة التسخين الأولي، وأرقام الزاوية والمعاوقة مقرّبة عشان الفكرة تبان. الأزمنة والحدود وأسماء الإنذارات من برنامج الماكينة.</div>
+    </div>
+  </div>
+  <div class="tab" id="t4"><div class="tw"><table id="vals"></table></div></div>
+</div>
+
+  </div>
+
+  <div class="col">
+    <div class="panel o2">
+      <div class="state" id="state">إنتاج <span class="en">Production</span></div>
+      <div class="msg" id="msg"></div>
+      <div class="ops" style="margin-top:6px">
+        <button class="go" id="bProd">تشغيل إنتاج<small>Production</small></button>
+        <button class="go" id="bTube">لحام الأنبوب<small>Tube sealing</small></button>
+        <button class="stop" id="bStop">إيقاف<small>Stop</small></button>
+        <button id="bSplice">لحام شريط يدوي<small>Strip splice</small></button>
+        <button id="bPM">وصلة ورق<small>PM splice</small></button>
+        <button id="bReset">ريسيت<small>Reset</small></button>
+      </div>
+      <div class="slrow" style="margin-top:8px"><span>السرعة</span><input type="range" id="spd" min="12000" max="24000" step="1000" value="24000"><span class="mono" id="spdV">24000</span></div>
+      <div class="kvs" style="margin-top:8px" id="kvs"></div>
+      <div class="row" style="margin-top:6px">
+        <button id="bNear">قرّب نهاية البكرة</button>
+        <button id="bLoad">ركّب بكرة جديدة</button>
+      </div>
+    </div>
+    <div class="panel o3">
+      <h2>الإنذارات <span class="note">أصفر = وقوف · أزرق = تحذير والماكينة شغالة</span></h2>
+      <div class="alarms" id="alarms"></div>
+    </div>
+    <div class="panel o5">
+      <h2>الأعطال <span class="note">نفس علامات <b style="color:var(--alarm)">!</b> اللي على الرسمة</span></h2>
+      <div id="faults"></div>
+      <div class="chal">
+        <div class="row" style="justify-content:space-between"><b>تحدي: إيه العطل؟</b><span class="note" id="score">النتيجة 0 / 0</span></div>
+        <div class="note" id="chalTxt">هنعمل عطل مخفي. راقب القراءات والإنذارات والرسوم وبعدين اختار السبب.</div>
+        <button class="primary" id="bChal">ابدأ تحدي جديد</button>
+        <select id="chalSel" disabled><option>— اختار السبب —</option></select>
+        <button id="bAns" disabled>تأكيد الإجابة</button>
+        <div class="res" id="res"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+
+/* ---------- program values ---------- */
+const P={rep:0.185, SP:570, empty:40, full:620, Mmax:650, upm:62.5, gear:10, fmax:100, Dmax:235, Dmin:80, Dend:95, thick:0.1,
+  LS:{tube:625, prod:800, ph1:300, ph2:450}, SA:{inch:200, tube:350, prod:825},
+  seq:{ring:6.0, ph1:8.7, ph2:9.7, run:10.0}, extraPacks:43, extraPerc:60};
+
+/* ---------- alarms ---------- */
+const ALR={
+  BobbinMotorFault:{tag:"ALR_ASSU_YE_BobbinMotorFault",c:"Y",t:"عطل في إنفرتر موتور بكرة الشريط"},
+  MagazineEmpty:{tag:"ALR_ASSU_YE_MagazineEmpty",c:"Y",t:"مخزن الشريط فاضي (القراءة ≤ 40)"},
+  MagazineFull:{tag:"ALR_ASSU_YE_MagazineFull",c:"Y",t:"مخزن الشريط مليان (القراءة ≥ 620)"},
+  StripMaterialBreak:{tag:"ALR_ASSU_YE_StripMaterialBreak",c:"Y",t:"الشريط مقطوع"},
+  NotPrep:{tag:"ALR_ASSU_BO_StripSpliceMaterialNotPrep",c:"B",t:"الشريط الجديد مش متجهز في رأس اللحام"},
+  EndNotPrep:{tag:"ALR_ASSU_YO_MtrlEndSpliceNotPrep",c:"Y",t:"البكرة خلصت والشريط الجديد مش متجهز"},
+  Opposite:{tag:"ALR_ASSU_YO_BobbinInOppositePosition",c:"Y",t:"البكرة متركبة في الوضع المعكوس"},
+  Air:{tag:"ALR_ASSU_BE_AirPressureNotOK",c:"B",t:"ضغط الهوا في وحدة الشريط مش مظبوط"},
+  Roller:{tag:"ALR_ASSU_YO_PressureRollerNotInPlace",c:"Y",t:"رول الضغط في الأبليكيتور مش في مكانه"},
+  Encoder:{tag:"ALR_ASSU_YE_StripApplicatorEncoderFault",c:"Y",t:"إنكودر الأبليكيتور مش ماشي مع سرعة الورق"},
+  SATPIH:{tag:"ALR_ASSU_YE_TPIHFault",c:"Y",t:"مولد TPIH بتاع الأبليكيتور فصل"},
+  SASM:{tag:"ALR_ASSU_BE_SealMonSA",c:"B",t:"مراقب اللحام: قراءة الأبليكيتور بعيدة عن متوسطها"},
+  LSTPIH:{tag:"ALR_TFU_YE_LSTPIHFault",c:"Y",t:"مولد TPIH بتاع اللحام الطولي فصل"},
+  LSSM:{tag:"ALR_TFU_BE_SealMonLS",c:"B",t:"مراقب اللحام: قراءة اللحام الطولي بعيدة عن متوسطها"},
+  Ring:{tag:"ALR_TFU_YE_LSFormRingPosFault",c:"Y",t:"حلقة التشكيل السفلية مش في مكانها"}
+};
+
+/* ---------- faults ---------- */
+const FAULTS=[
+ {id:"fq",area:"ASSU",n:"إنفرتر موتور البكرة فصل",s:"إنذار بعد 0.5 ث",x:36,y:70,
+  why:"الموتور وقف (Hz = صفر) والمخزن بدأ يفضى. الإنفرتر بعت Fault والبرنامج استنى 0.5 ثانية (TMR_StripBobbinsFault_Delay) وطلّع ALR_ASSU_YE_BobbinMotorFault."},
+ {id:"lvl",area:"ASSU",n:"سلك حساس مستوى المخزن اتقطع",s:"إنذار فوري",x:292,y:405,
+  why:"الإنذار بيقول المخزن فاضي بس لو بصيت هتلاقي العربية تحت والمخزن مليان. الحساس بيقرا صفر لأن السلك مقطوع، فالبرنامج شايف القراءة ≤ 40. افحص الحساس والسلك قبل ما تدور على الشريط."},
+ {id:"prep",area:"ASSU",n:"الشريط الجديد مش متجهز",s:"أزرق، وأصفر لما البكرة تخلص",x:112,y:246,
+  why:"حساس التجهيز مش شايف الشريط الجديد في رأس اللحام، فطلع تحذير أزرق ALR_ASSU_BO_StripSpliceMaterialNotPrep. لو البكرة الشغالة خلصت كده الماكينة تقف بـ ALR_ASSU_YO_MtrlEndSpliceNotPrep."},
+ {id:"heat",area:"ASSU",n:"سخان رأس اللحام بايظ",s:"الشريط يتقطع بعد اللحام",x:150,y:246,
+  why:"اللحام تم من غير حرارة، فأول ما البكرة الجديدة شدت الشريط الوصلة فكت والشريط اتقطع (ALR_ASSU_YE_StripMaterialBreak). العطل بيبان بس وقت لحام الشريط."},
+ {id:"opp",area:"ASSU",n:"البكرة متركبة بالعكس",s:"إنذار بعد 2.5 ث",x:266,y:70,
+  why:"الموتور بيلف بس المخزن بيفضى بدل ما يتملي، لأن البكرة متركبة بالعكس فبتلف الشريط عليها. البرنامج بيستنى 2.5 ثانية (TMR_CheckBobbinInOppositPosition) وبعدين يوقف بـ ALR_ASSU_YO_BobbinInOppositePosition."},
+ {id:"air",area:"ASSU",n:"ضغط الهوا قليل",s:"أزرق بعد 3 ث، واللحام يفشل",x:183,y:182,
+  why:"تحذير أزرق ALR_ASSU_BE_AirPressureNotOK بعد 3 ثواني. الماكينة شغالة، بس سلندر رأس اللحام مش هيقفل كويس، فأول لحام شريط هيفشل والشريط هيتقطع."},
+ {id:"brk",area:"ASSU",n:"الشريط اتقطع قبل الأبليكيتور",s:"إنذار فوري",x:334,y:240,
+  why:"الشريط اتقطع بين المخزن والأبليكيتور، فالإنذار ALR_ASSU_YE_StripMaterialBreak طلع على طول والماكينة وقفت. العبوات اللي من غير شريط بتترمى."},
+ {id:"roll",area:"SA",n:"رول الضغط مفتوح",s:"إنذار بعد 1 ث",x:384,y:264,
+  why:"حساس رول الضغط فصل، والبرنامج استنى ثانية (TMR_PressureRollerDly) وطلع ALR_ASSU_YO_PressureRollerNotInPlace. لاحظ إن جودة لحام الشريط وقعت قبل ما الماكينة تقف."},
+ {id:"enc",area:"SA",n:"عجلة الإنكودر بتزحلق",s:"إنذار بعد 2 + 1.5 ث",x:347,y:272,
+  why:"سرعة الإنكودر بقت أقل من سرعة الورق بفرق أكبر من 500 + 15%. البرنامج بيستنى 2 ثانية بعد ما السرعة تثبت وبعدها 1.5 ثانية (TMR_EncoderStripRotationTOut) ويطلع ALR_ASSU_YE_StripApplicatorEncoderFault."},
+ {id:"satpih",area:"SA",n:"مولد TPIH للأبليكيتور فصل",s:"إنذار فوري",x:322,y:510,
+  why:"قدرة الأبليكيتور بقت صفر. إشارة المولد (T10G9170) فصلت فطلع ALR_ASSU_YE_TPIHFault على طول ووقفت الماكينة."},
+ {id:"sasm",area:"SA",n:"الإندكتور متوسخ أو المسافة اتغيرت",s:"أزرق بعد 3 ث",x:373,y:350,
+  why:"زاوية ومعاوقة الأبليكيتور بعدت عن المتوسط أكتر من الحد لمدة 3 ثواني (TMR_AssuSmHystOn)، فطلع تحذير أزرق ALR_ASSU_BE_SealMonSA. الماكينة شغالة بس لازم تنضف الإندكتور وتظبط المسافة."},
+ {id:"lstpih",area:"LS",n:"مولد TPIH للحام الطولي فصل",s:"توقف سريع لو الماكينة معقمة",x:705,y:78,
+  why:"قدرة LS بقت صفر. لما الماكينة معقمة البرنامج بيعمل توقف سريع ويقفل الـ Tube flusher، ولو مش معقمة بيعمل توقف عادي. الإنذار ALR_TFU_YE_LSTPIHFault."},
+ {id:"lssm",area:"LS",n:"مشكلة في VMN أو كابل الماتشينج",s:"أزرق بعد 3 ث",x:712,y:172,
+  why:"زاوية LS بعدت عن المتوسط (المفروض قريبة من صفر)، فطلع تحذير أزرق ALR_TFU_BE_SealMonLS. افحص الـ VMN والكابل والإندكتور."},
+ {id:"ring",area:"LS",n:"حلقة التشكيل السفلية علقت",s:"إنذار بعد 0.5 ث",x:560,y:420,
+  why:"الحلقة السفلية اتأمرت تتحرك بس حساس مكانها ما اتغيرش خلال 0.5 ثانية (PAR_LowerFormingRingTimeout)، فطلع ALR_TFU_YE_LSFormRingPosFault. بيظهر وقت بداية التشغيل لما الحلقة بتنزل."},
+ {id:"lowls",area:"LS",n:"قدرة LS متظبطة قليلة",s:"من غير إنذار!",x:705,y:250,
+  why:"مفيش ولا إنذار، بس جودة اللحام الطولي في الأحمر والعبوات ممكن تسرّب. قدرة الإنتاج HMI_TFU_LSProdPower متظبطة أقل من اللازم. ده مثال إن مش كل مشكلة بتطلع إنذار."}
+];
+const fOn={};FAULTS.forEach(f=>fOn[f.id]=false);
+
+/* ---------- state ---------- */
+const S={t:0, mode:"prod", run:"run", pph:24000, target:24000, seqT:99, seqStep:"RunSealing",
+  M:570, Mmeas:570, f:0, feed:0, active:0, bob:[{D:118,st:"run"},{D:235,st:"prep"}],
+  splice:null, refill:false, failNext:false, breakAt:-1,
+  lsP:800, saP:825, lsPh:0, lsZ:50, saPh:5, saZ:56, lsAvgPh:0, lsAvgZ:50, saAvgPh:5, saAvgZ:56,
+  tmr:{}, alarms:[], packs:0, bad:0, splices:0, distStrip:0, distWeb:0, feedDist:0,
+  pm:null, extraT:-1, extraOn:0, sterile:true, ringDown:false, msg:"", stopKind:""};
+let simSpeed=1, heatMs=1300;
+let chal=null, score={ok:0,n:0};
+
+/* ---------- helpers ---------- */
+const v=()=>S.pph*P.rep/3600; // m/s
+function needLS(pph){if(pph<=0)return 0;return pph<8000?P.LS.tube*pph/8000:P.LS.tube+(P.LS.prod-P.LS.tube)*(pph-8000)/16000;}
+function needSA(pph){if(pph<=0)return 0;return pph<8000?P.SA.tube*pph/8000:P.SA.tube+(P.SA.prod-P.SA.tube)*(pph-8000)/16000;}
+function tmr(name,cond,dt){S.tmr[name]=cond?(S.tmr[name]||0)+dt:0;return S.tmr[name];}
+function raise(key){
+  if(S.alarms.some(a=>a.k===key&&!a.cleared))return;
+  const a=ALR[key];S.alarms.unshift({k:key,tag:a.tag,c:a.c,t:a.t,at:S.t,cleared:false});
+  if(a.c==="Y"){stop(key==="LSTPIH"&&S.sterile&&S.mode==="prod"?"fast":"normal");}
+  renderAlarms();
+}
+function activeYellow(){return S.alarms.some(a=>!a.cleared&&a.c==="Y");}
+function stop(kind){if(S.run==="idle")return;S.run="stopping";S.stopKind=kind;S.seqStep="StopSealing";}
+function start(mode){
+  if(activeYellow()){S.msg="فيه إنذار أصفر. شيل سبب العطل واضغط ريسيت الأول.";return;}
+  S.mode=mode;S.target=mode==="tube"?8000:+$("spd").value;
+  if(mode==="tube"){S.run="ramp";S.seqT=0;S.seqStep="RunSealing";S.sterile=false;}
+  else{S.run="seq";S.seqT=0;S.seqStep="StartSeqCheck";S.sterile=true;}
+}
+function fmtT(t){const m=Math.floor(t/60),s=Math.floor(t%60);return (m<10?"0":"")+m+":"+(s<10?"0":"")+s;}
+
+/* ---------- simulation step ---------- */
+function step(dt){
+  S.t+=dt;
+  // ---- machine run state / LS sequence ----
+  if(S.run==="seq"){
+    S.seqT+=dt;
+    if(S.seqT<P.seq.ring)S.seqStep="StartSeqCheck";
+    else if(S.seqT<P.seq.ph1)S.seqStep="LowFormRing";
+    else if(S.seqT<P.seq.ph2)S.seqStep="PreheatPhase1";
+    else if(S.seqT<P.seq.run)S.seqStep="PreheatPhase2";
+    else {S.run="ramp";S.seqStep="RunSealing";}
+    S.ringDown=S.seqT>=P.seq.ring&&S.seqT<9.7;
+    if(fOn.ring&&S.seqT>=P.seq.ring){if(tmr("ring",true,dt)>=0.5)raise("Ring");}
+  } else S.ringDown=false;
+  if(S.run==="ramp"){S.pph=Math.min(S.target,S.pph+S.target/3*dt);if(S.pph>=S.target)S.run="run";}
+  if(S.run==="run"){S.target=S.mode==="tube"?8000:+$("spd").value;S.pph+=clamp(S.target-S.pph,-6000*dt,6000*dt);}
+  if(S.run==="stopping"){const r=S.stopKind==="fast"?60000:12000;S.pph=Math.max(0,S.pph-r*dt);if(S.pph<=0){S.run="idle";S.seqStep="StartSeqCheck";}}
+  if(S.run==="run"&&fOn.ring&&tmr("ring",true,dt)>=0.5)raise("Ring");
+  if(!fOn.ring)S.tmr.ring=0;
+
+  const moving=S.pph>0, vv=v();
+  // ---- powers ----
+  let lsCmd=0;
+  if(S.seqStep==="PreheatPhase1")lsCmd=P.LS.ph1;
+  else if(S.seqStep==="PreheatPhase2")lsCmd=P.LS.ph2;
+  else if(moving)lsCmd=needLS(S.pph)*(fOn.lowls?0.68:1);
+  if(S.extraT>0){S.extraT-=dt;if(S.extraT<=0){S.extraOn=3600/Math.max(S.pph,1000);}}
+  if(S.extraOn>0){S.extraOn-=dt;lsCmd*=1+P.extraPerc/100;}
+  if(fOn.lstpih)lsCmd=0;
+  S.lsP+= (lsCmd-S.lsP)*Math.min(1,dt*8);
+  let saCmd=moving?needSA(S.pph):0;
+  if(fOn.satpih)saCmd=0;
+  S.saP+=(saCmd-S.saP)*Math.min(1,dt*8);
+  if(fOn.lstpih&&(lsCmd>0||moving||S.seqStep.startsWith("Preheat")))raise("LSTPIH");
+  if(fOn.satpih&&moving)raise("SATPIH");
+
+  // ---- seal monitors ----
+  const nz=()=>(Math.random()-.5);
+  const lsPhT=fOn.lssm?-24:0, lsZT=fOn.lssm?63:50, saPhT=fOn.sasm?23:5, saZT=fOn.sasm?41:56;
+  if(S.lsP>20){S.lsPh+=(lsPhT-S.lsPh)*dt*0.8+nz()*0.6;S.lsZ+=(lsZT-S.lsZ)*dt*0.8+nz()*0.5;}
+  if(S.saP>20){S.saPh+=(saPhT-S.saPh)*dt*0.8+nz()*0.6;S.saZ+=(saZT-S.saZ)*dt*0.8+nz()*0.5;}
+  const a=dt/60;S.lsAvgPh+=(S.lsPh-S.lsAvgPh)*a;S.lsAvgZ+=(S.lsZ-S.lsAvgZ)*a;S.saAvgPh+=(S.saPh-S.saAvgPh)*a;S.saAvgZ+=(S.saZ-S.saAvgZ)*a;
+  const lsDev=moving&&(Math.abs(S.lsPh-S.lsAvgPh)>10||Math.abs(S.lsZ-S.lsAvgZ)>10);
+  const saDev=moving&&(Math.abs(S.saPh-S.saAvgPh)>10||Math.abs(S.saZ-S.saAvgZ)>10);
+  if(tmr("lssm",lsDev,dt)>=3)raise("LSSM");
+  if(tmr("sasm",saDev,dt)>=3)raise("SASM");
+
+  // ---- SA checks ----
+  if(fOn.roll&&tmr("roll",true,dt)>=1)raise("Roller");
+  if(!fOn.roll)S.tmr.roll=0;
+  const encPph=S.pph*(fOn.enc?0.55:1);
+  const encBad=S.run==="run"&&Math.abs(encPph-S.pph)>500+S.pph*0.15;
+  if(tmr("enc",encBad,dt)>=3.5)raise("Encoder");
+  S.encPph=encPph;
+
+  // ---- ASSU ----
+  const b=S.bob[S.active], o=S.bob[1-S.active];
+  const prepOK=o.st==="prep"&&!fOn.prep;
+  if(!prepOK&&o.st!=="empty"&&o.st!=="loading"){}
+  if(fOn.prep&&o.st==="prep")raise("NotPrep");
+  if(tmr("air",fOn.air,dt)>=3)raise("Air");
+  S.Mmeas=fOn.lvl?0:S.M;
+  if(S.Mmeas<=P.empty)raise("MagazineEmpty");
+  if(S.Mmeas>=P.full)raise("MagazineFull");
+
+  let feed=0; // strip m/s into magazine from active bobbin
+  const alarmStop=activeYellow();
+  if(S.splice){
+    S.splice.t+=dt*1000;const t=S.splice.t,h=S.splice.heat;
+    feed=0;
+    if(t>=S.splice.end){
+      S.bob[S.active].st="empty";S.active=1-S.active;S.bob[S.active].st="run";S.splices++;
+      if(S.splice.fail){S.breakAt=S.t+0.4;}
+      S.splice=null;S.refill=true;
+    }
+  } else if(!fOn.brk&&S.breakAt<0){
+    const pid=vv+1.6*(P.SP-S.Mmeas)/P.upm;
+    let cmd=clamp(pid,0,Math.max(vv*1.6,0.35));
+    if(moving&&alarmStop)cmd=0;
+    if(!moving)cmd=clamp(0.6*(P.SP-S.Mmeas)/P.upm,0,0.25); // idle magazine refilling
+    if(fOn.fq||S.broken||fOn.lvl||(alarmStop&&fOn.opp))cmd=0;
+    feed=fOn.opp?-Math.min(cmd,0.5):cmd;
+    if(b.D<=P.Dmin){feed=0;}
+  }
+  if(S.breakAt>0&&S.t>=S.breakAt){S.breakAt=-1;S.broken=true;raise("StripMaterialBreak");}
+  if(fOn.brk){S.broken=true;raise("StripMaterialBreak");}
+  S.f=Math.abs(feed)/(Math.PI*b.D/1000)*P.gear;
+  if(S.f>P.fmax){S.f=P.fmax;}
+  if(fOn.fq&&moving&&tmr("fq",true,dt)>=0.5)raise("BobbinMotorFault");
+  if(!fOn.fq)S.tmr.fq=0;
+  if(fOn.opp&&S.f>3&&tmr("opp",true,dt)>=2.5)raise("Opposite");
+  if(!fOn.opp)S.tmr.opp=0;
+
+  // bobbin diameter
+  if(feed>0){const L=feed*dt*1000;b.D=Math.sqrt(Math.max(P.Dmin*P.Dmin,b.D*b.D-4*P.thick*L/Math.PI));}
+  if(feed<0){const L=-feed*dt*1000;b.D=Math.min(P.Dmax,Math.sqrt(b.D*b.D+4*P.thick*L/Math.PI));}
+  // consumption
+  const cons=(S.broken||fOn.brk)?0:vv;
+  S.M=clamp(S.M+(feed-cons)*dt*P.upm,0,P.Mmax);
+  if(S.M<=0&&moving&&!S.broken){S.broken=true;raise("StripMaterialBreak");}
+  // splice start
+  if(!S.splice&&!alarmStop&&b.D<P.Dend&&b.st==="run"){
+    if(prepOK)startSplice();
+    else if(b.D<=P.Dmin+0.5)raise("EndNotPrep");
+  }
+  if(S.refill&&S.Mmeas>=P.SP-5)S.refill=false;
+  S.feed=feed;
+  S.feedDist+=feed*dt;S.distWeb+=vv*dt;
+  // rotation angles
+  S.bob.forEach((bb,i)=>{bb.ang=(bb.ang||0)+(i===S.active?feed:0)/(Math.PI*bb.D/1000)*360*dt;});
+  if(S.splice){const t=S.splice.t,h=S.splice.heat;const ob=S.bob[S.active],nb=S.bob[1-S.active];
+    if(t>300&&t<900)ob.ang-=200*dt; if(t>h+200&&t<h+800)nb.ang-=200*dt;}
+
+  // PM splice travel
+  if(S.pm){S.pm.d+=vv*dt;if(!S.pm.det&&S.pm.d>=0.4){S.pm.det=true;S.extraT=P.extraPacks*3600/Math.max(S.pph,1000);S.pm.T=S.extraT;S.pm.t0=S.t;}
+    if(S.pm.det&&S.t-S.pm.t0>S.pm.T+1)S.pm=null;}
+
+  // quality + counting
+  const qLS=moving?S.lsP/Math.max(needLS(S.pph),1):1;
+  let qSA=moving?S.saP/Math.max(needSA(S.pph),1):1;
+  if(fOn.roll)qSA*=0.3; if(fOn.sasm)qSA*=0.86; if(S.broken)qSA=0;
+  S.qLS=qLS;S.qSA=qSA;
+  if(moving&&S.mode==="prod"){const pk=S.pph/3600*dt;S.packs+=pk;if(qLS<0.85||qSA<0.85||qLS>1.3)S.bad+=pk;}
+}
+function startSplice(){
+  const fail=fOn.heat||fOn.air||heatMs<1000;
+  S.splice={t:0,heat:heatMs,end:Math.max(2300,heatMs+800),fail};
+}
+
+/* ---------- drawing: diagram ---------- */
+const svg=$("svg");
+const R=D=>D*0.17;
+function drawBob(i){
+  const g=$("bob"+i);g.innerHTML="";const b=S.bob[i];const cx=i?215:85,cy=110;
+  const r=R(b.D);
+  el("circle",{cx,cy,r:R(P.Dmax)+3,fill:"none",stroke:"#2c3d45","stroke-dasharray":"3 3"},g);
+  if(b.st!=="empty"&&b.st!=="loading")el("circle",{cx,cy,r,fill:i===S.active?"#5b4380":"#3d2f55",stroke:"#c792ea","stroke-width":1.5},g);
+  el("circle",{cx,cy,r:R(P.Dmin)-1,fill:"#33444c",stroke:"#7f9198"},g);
+  const ang=(b.ang||0)*Math.PI/180;
+  for(let k=0;k<3;k++){const a=ang+k*2.094;el("line",{x1:cx,y1:cy,x2:cx+Math.cos(a)*(R(P.Dmin)-2),y2:cy+Math.sin(a)*(R(P.Dmin)-2),stroke:"#9fb0b6","stroke-width":2},g);}
+  el("circle",{cx,cy,r:3,fill:"#e3ece9"},g);
+  const lbl=b.st==="run"?"شغالة":b.st==="prep"?(fOn.prep?"مش متجهزة":"متجهزة"):b.st==="loading"?"بتتركب…":"فاضية";
+  const col=b.st==="run"?"#5fd08b":b.st==="prep"?(fOn.prep?"#ff5d50":"#ffc629"):"#8fa4a0";
+  el("text",{x:cx,y:cy+54,"text-anchor":"middle","font-size":11,fill:col},g).textContent="بكرة "+(i+1)+" · "+lbl;
+  el("text",{x:cx,y:cy+68,"text-anchor":"middle","font-size":11,fill:"#e3ece9",class:"m","font-weight":700},g).textContent="Ø"+Math.round(b.D)+" mm";
+  if(i===S.active)el("text",{x:i?252:cx,y:cy+82,"text-anchor":"middle","font-size":11,fill:"#9ccc65",class:"m","font-weight":700},g).textContent=S.f.toFixed(1)+" Hz";
+}
+function tagBox(g,x,y,lines,col,anchor){
+  g.innerHTML="";const w=Math.max(...lines.map(l=>l.length))*6.6+10,h=lines.length*14+6;
+  const x0=anchor==="end"?x-w:x;
+  el("rect",{x:x0,y,width:w,height:h,rx:4,fill:"#0b1013",stroke:col||"#3a4a52"},g);
+  lines.forEach((l,k)=>{el("text",{x:x0+5,y:y+15+k*14,"font-size":11.5,fill:k===0?"#fff":"#cfdcd8",class:"m","font-weight":k===0?700:500},g).textContent=l;});
+}
+// magazine static rollers
+const magTopY=272, topX=k=>44+k*28, botX=k=>58+k*28;
+for(let k=0;k<9;k++)el("circle",{cx:topX(k),cy:magTopY,r:5,fill:"#33444c",stroke:"#7f9198"},$("magTop"));
+[["40",P.empty,"#ff5d50"],["570",P.SP,"#5fd08b"],["620",P.full,"#ff5d50"]].forEach(([t,val,c])=>{const y=270+val/P.Mmax*270;el("line",{x1:296,x2:302,y1:y,y2:y,stroke:c,"stroke-width":2},$("lvlRefs"));});
+function carY(M){return 290+M/P.Mmax*240;}
+function drawMag(){
+  const cy=carY(S.M);
+  $("carBar").setAttribute("y",cy+4);
+  const gb=$("magBot");gb.innerHTML="";
+  for(let k=0;k<8;k++)el("circle",{cx:botX(k),cy,r:5,fill:"#33444c",stroke:"#7f9198"},gb);
+  const pts=[];for(let k=0;k<8;k++){pts.push(topX(k)+","+(magTopY-5));pts.push(botX(k)+","+(cy+5));}
+  pts.push(topX(8)+","+(magTopY-5));
+  $("fest").setAttribute("points",pts.join(" "));
+  $("fest").setAttribute("stroke-dasharray","5 5");$("fest").setAttribute("stroke-dashoffset",-(S.distWeb*60)%10);
+  const ly=270+S.Mmeas/P.Mmax*270;$("lvlMk").setAttribute("y1",ly);$("lvlMk").setAttribute("y2",ly);
+  const bad=S.Mmeas<=P.empty||S.Mmeas>=P.full;
+  tagBox($("tagMag"),300,550,["level "+Math.round(S.Mmeas)+"  SP 570"],bad?"#ff5d50":"#3a4a52","end");
+}
+function drawPaths(){
+  const a=S.active, bx=a?215:85, ox=a?85:215;
+  const b=S.bob[a];
+  // feed: bobbin top -> top roller -> center roller -> down through head -> magazine entry
+  const d=`M${bx},${110-R(b.D)} L${bx},35 L150,35 L150,49 L150,182 L139,190 L139,240 L${topX(0)},${magTopY-5}`;
+  const fp=$("feedPath");fp.setAttribute("d",d);
+  const broken=S.broken&&!S.splice;
+  fp.setAttribute("stroke-dasharray",broken?"none":"7 5");fp.setAttribute("stroke-dashoffset",-(S.feedDist*80)%12);
+  fp.setAttribute("opacity",S.bob[a].st==="run"?1:.3);
+  const o=S.bob[1-a];
+  $("prepPath").setAttribute("d",o.st==="prep"&&!fOn.prep?`M${ox},${110-R(o.D)} L${ox},35 L${ox===85?120:180},35 L139,200`:"");
+  const op=$("outPath");op.setAttribute("d",`M${topX(8)},${magTopY-5} L320,262 L320,446 L399,452`);
+  op.setAttribute("stroke-dasharray","7 5");op.setAttribute("stroke-dashoffset",-(S.distWeb*80)%12);
+  $("cut").setAttribute("visibility",(S.broken)?"visible":"hidden");
+  $("stripOnWeb").setAttribute("opacity",S.broken?.25:1);
+  $("webMove").setAttribute("stroke-dashoffset",-(S.distWeb*80)%24);
+  // splice head motion & heater
+  const sp=S.splice, t=sp?sp.t:0, h=sp?sp.heat:0;
+  const headIn=sp&&t>=200&&t<h+100, heating=sp&&t<h, cooling=sp&&t>=h&&t<h+500;
+  $("head").setAttribute("transform",headIn?"translate(8,0)":"");
+  $("cylRod").setAttribute("width",headIn?4:12);$("cylRod").setAttribute("x",headIn?158:150);
+  $("heater").setAttribute("fill",heating?(sp.fail&&fOn.heat?"#5a3a3a":"#ff8a3d"):cooling?"#55b6ea":"#3a2a2a");
+  $("prepSens").setAttribute("fill",(o.st==="prep"&&!fOn.prep)?"#ffc629":"#4a4220");
+  // pressure roller spin
+  const ang=S.distWeb*600;$("pRollSpoke").setAttribute("transform",`rotate(${ang} 384 292)`);
+  $("pRoll").setAttribute("transform",fOn.roll?"translate(-14,0)":"");
+}
+function glow(idG,idH,P_,max){const k=clamp(P_/max,0,1);$(idG).setAttribute("opacity",(k*0.9).toFixed(2));$(idH).setAttribute("opacity",(0.15+k*0.85*(k>0.02?1:0)).toFixed(2));if(k<0.02)$(idH).setAttribute("opacity",0);}
+function qCol(q,moving){if(!moving)return "#8fa4a0";if(q<0.75)return "#ff5d50";if(q<0.9||q>1.3)return "#ffc629";return "#5fd08b";}
+function drawSeal(){
+  glow("saGlow","saHot",S.saP,900);glow("lsGlow","lsHot",S.lsP,1000);
+  $("saPw").textContent=Math.round(S.saP)+" W";$("lsPw").textContent=Math.round(S.lsP)+" W";
+  const mv=S.pph>0;
+  tagBox($("tagSA"),438,420,["φ "+S.saPh.toFixed(0)+"°","Z "+S.saZ.toFixed(0),"enc "+Math.round(S.encPph||0)],qCol(S.qSA,mv),"start");
+  tagBox($("tagLS"),652,452,["φ "+S.lsPh.toFixed(0)+"°","Z "+S.lsZ.toFixed(0)],qCol(S.qLS,mv),"start");
+  $("seam").setAttribute("stroke",mv?qCol(S.qLS,true):"#6b6250");
+  $("ring").setAttribute("transform",(S.ringDown&&!fOn.ring)?"translate(0,14)":"");
+  $("pph").textContent=Math.round(S.pph);
+  // PM splice marker on web
+  const pm=$("pmSplice");
+  if(S.pm){const path=$("webPath");const Ltot=path.getTotalLength();
+    let frac;if(!S.pm.det)frac=S.pm.d/0.4*0.07;else frac=0.07+0.93*clamp((S.t-S.pm.t0)/S.pm.T,0,1);
+    const pt=path.getPointAtLength(frac*Ltot*0.98);pm.setAttribute("visibility","visible");
+    const vert=pt.y>40;pm.setAttribute("x",vert?pt.x-20:pt.x-3);pm.setAttribute("y",vert?pt.y-3:pt.y-20);pm.setAttribute("width",vert?40:6);pm.setAttribute("height",vert?6:40);
+  } else pm.setAttribute("visibility","hidden");
+}
+function drawBobTags(){
+  [0,1].forEach(i=>{const b=S.bob[i];const g=$("tagB"+i);
+    const lines=["Ø "+Math.round(b.D)+" mm"];if(i===S.active)lines.push(S.f.toFixed(1)+" Hz");
+    tagBox(g,i?250:12,58,lines,i===S.active?"#c792ea":"#3a4a52",i?"end":"start");
+    if(i===1){g.innerHTML="";tagBox(g,296,58,lines,i===S.active?"#c792ea":"#3a4a52","end");}
+  });
+}
+// hotspots
+function drawHots(){
+  const g=$("hots");g.innerHTML="";
+  FAULTS.forEach(f=>{
+    const on=fOn[f.id];const hg=el("g",{style:"cursor:pointer",tabindex:0,role:"button","aria-label":f.n},g);
+    if(chal&&!chal.done)hg.setAttribute("opacity",.35);
+    el("circle",{cx:f.x,cy:f.y,r:9,fill:on?"#ff5d50":"#2a1715",stroke:"#ff5d50","stroke-width":1.5},hg);
+    el("text",{x:f.x,y:f.y+4.5,"text-anchor":"middle","font-size":13,"font-weight":700,fill:on?"#fff":"#ff5d50"},hg).textContent="!";
+    el("title",{},hg).textContent=f.n;
+    hg.addEventListener("click",()=>toggleFault(f.id));
+    hg.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggleFault(f.id);}});
+  });
+}
+
+/* ---------- side panel ---------- */
+const STEP_AR={StartSeqCheck:"فحص البداية",LowFormRing:"نزول الحلقة السفلية",PreheatPhase1:"تسخين أولي 1",PreheatPhase2:"تسخين أولي 2",RunSealing:"لحام",StopSealing:"إيقاف اللحام"};
+function renderSide(){
+  const st=$("state");
+  let txt,en;
+  if(S.run==="idle"){txt="واقفة";en="Stopped";}
+  else if(S.run==="seq"){txt="بداية التشغيل · "+STEP_AR[S.seqStep];en=S.seqStep;}
+  else if(S.run==="stopping"){txt=S.stopKind==="fast"?"توقف سريع":"بتقف";en=S.stopKind==="fast"?"Fast stop":"Normal stop";}
+  else {txt=S.mode==="tube"?"لحام الأنبوب":"إنتاج";en=S.mode==="tube"?"Tube sealing":"Production";}
+  if(S.splice){txt+=" · لحام شريط";}
+  st.innerHTML=txt+' <span class="en">'+en+'</span>';
+  // message
+  let m=S.msg;
+  if(!m){
+    if(S.splice)m="البكرتين واقفين ورأس اللحام بيلحم الشريط القديم في الجديد. الماكينة كملت من الشريط اللي في المخزن، لاحظ المستوى بينزل.";
+    else if(S.refill)m="الوصلة خلصت والبكرة الجديدة بتلف أسرع عشان ترجّع المخزن لـ 570.";
+    else if(S.run==="seq")m="تايمر بدء التشغيل "+S.seqT.toFixed(1)+" ث. الحلقة السفلية بتنزل من 6.0 لـ 9.7 ث، والتسخين الأولي من 8.7 ث، وبعد كده الفكوك بتتسارع.";
+    else if(activeYellow())m="الماكينة وقفت بإنذار أصفر. شيل سبب العطل (اضغط عليه تاني) واضغط ريسيت.";
+    else if(S.run==="idle")m="الماكينة واقفة. اختار تشغيل إنتاج أو لحام الأنبوب.";
+    else if(S.qLS<0.85&&S.pph>0)m="جودة اللحام الطولي ضعيفة والعبوات ممكن تسرّب.";
+    else m="كل حاجة مظبوطة. الشريط بيتلحم على حرف الورق في الأبليكيتور، وبعدين بيتقفل من جوه في اللحام الطولي.";
+  }
+  $("msg").textContent=m;
+  const mv=S.pph>0, b=S.bob[S.active];
+  const kv=[
+    ["قدرة LS",Math.round(S.lsP)+" W",mv&&S.qLS<0.85?"bad":""],
+    ["قدرة SA",Math.round(S.saP)+" W",mv&&S.qSA<0.85?"bad":""],
+    ["مستوى المخزن",Math.round(S.Mmeas),(S.Mmeas<=P.empty||S.Mmeas>=P.full)?"bad":(Math.abs(S.Mmeas-570)>120?"wn":"")],
+    ["جودة اللحام الطولي",mv?Math.round(S.qLS*100)+"%":"—",mv?(S.qLS<0.75?"bad":S.qLS<0.9||S.qLS>1.3?"wn":"good"):""],
+    ["جودة لحام الشريط",mv?Math.round(S.qSA*100)+"%":"—",mv?(S.qSA<0.75?"bad":S.qSA<0.9?"wn":"good"):""],
+    ["موتور البكرة",S.f.toFixed(1)+" Hz",""],
+    ["قطر البكرة",Math.round(b.D)+" mm",b.D<100?"wn":""],
+    ["عبوات",Math.floor(S.packs).toLocaleString("en"),""],
+    ["مشكوك فيها",Math.floor(S.bad).toLocaleString("en"),S.bad>=1?"bad":""]
+  ];
+  $("kvs").innerHTML=kv.map(([k,val,c])=>`<div class="kv ${c}"><span>${k}</span><strong>${val}</strong></div>`).join("");
+  $("bSplice").disabled=!!S.splice||S.bob[1-S.active].st!=="prep";
+  $("bLoad").disabled=!S.bob.some(x=>x.st==="empty");
+}
+function renderAlarms(){
+  const box=$("alarms");
+  if(!S.alarms.length){box.innerHTML='<div class="empty">مفيش إنذارات.</div>';return;}
+  box.innerHTML=S.alarms.slice(0,14).map(a=>`<div class="alarm ${a.c}${a.cleared?" cleared":""}"><strong>${a.tag}</strong><span>${a.t}</span><span class="t">${a.c==="Y"?"أصفر · وقوف":"أزرق · تحذير"} · ${fmtT(a.at)}${a.cleared?" · اتمسح":""}</span></div>`).join("");
+}
+function renderFaults(){
+  const groups={ASSU:"وحدة لحام الشريط ASSU",SA:"أبليكيتور الشريط SA",LS:"اللحام الطولي LS"};
+  const lock=chal&&!chal.done;
+  $("faults").innerHTML=Object.keys(groups).map(g=>`<div class="fgrp"><b>${groups[g]}</b><div class="fbt">${FAULTS.filter(f=>f.area===g).map(f=>`<button data-f="${f.id}" class="${fOn[f.id]&&!lock?"on":""}" ${lock?"disabled":""}>${f.n}<small>${f.s}</small></button>`).join("")}</div></div>`).join("");
+  $("faults").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>toggleFault(b.dataset.f)));
+  drawHots();
+}
+function toggleFault(id){
+  if(chal&&!chal.done)return;
+  fOn[id]=!fOn[id];
+  if(!fOn[id]){if(id==="brk")S.broken=false;}
+  S.msg=fOn[id]?"عطل اتعمل: "+FAULTS.find(f=>f.id===id).n+". راقب إيه اللي هيحصل.":"";
+  msgClear();
+  renderFaults();
+}
+let msgTO;function msgClear(){clearTimeout(msgTO);msgTO=setTimeout(()=>{S.msg="";},5000);}
+function reset(){
+  // clear alarms whose cause is gone
+  const cause={BobbinMotorFault:"fq",MagazineEmpty:"lvl",StripMaterialBreak:"brk",NotPrep:"prep",Opposite:"opp",Air:"air",Roller:"roll",Encoder:"enc",SATPIH:"satpih",SASM:"sasm",LSTPIH:"lstpih",LSSM:"lssm",Ring:"ring"};
+  let left=0;
+  S.alarms.forEach(a=>{if(a.cleared)return;const c=cause[a.k];
+    if(a.k==="StripMaterialBreak"){if(!fOn.brk&&!fOn.heat&&!fOn.air){a.cleared=true;S.broken=false;}else left++;return;}
+    if(a.k==="MagazineEmpty"&&!fOn.lvl&&S.M>P.empty){a.cleared=true;return;}
+    if(a.k==="EndNotPrep"){if(S.bob[1-S.active].st==="prep"&&!fOn.prep){a.cleared=true;}else left++;return;}
+    if(c&&fOn[c]){left++;return;}
+    a.cleared=true;});
+  if(S.broken&&!fOn.brk){S.broken=false;}
+  S.tmr={};
+  if(fOn.sasm===false){S.saAvgPh=S.saPh;S.saAvgZ=S.saZ;}
+  if(fOn.lssm===false){S.lsAvgPh=S.lsPh;S.lsAvgZ=S.lsZ;}
+  S.msg=left?"فيه "+left+" إنذار سببه لسه موجود. شيل العطل الأول.":"الإنذارات اتمسحت.";msgClear();
+  renderAlarms();
+}
+
+/* ---------- buttons ---------- */
+$("bProd").onclick=()=>{start("prod");};
+$("bTube").onclick=()=>{start("tube");};
+$("bStop").onclick=()=>{stop("normal");};
+$("bReset").onclick=reset;
+$("bSplice").onclick=()=>{if(!S.splice&&S.bob[1-S.active].st==="prep"){if(fOn.prep){raise("NotPrep");S.msg="رأس اللحام مش شايف الشريط الجديد، مينفعش يلحم.";msgClear();}else startSplice();}};
+$("bPM").onclick=()=>{if(S.pph<=0){S.msg="وصلة الورق بتمشي مع الورق، شغّل الماكينة الأول.";msgClear();return;}S.pm={d:0,det:false};S.msg="وصلة ورق جاية. كاشف الوصلة في الأبليكيتور هيشوفها، وبعد 43 عبوة قدرة LS هتزيد 60% لعبوة واحدة.";msgClear();};
+$("bNear").onclick=()=>{const b=S.bob[S.active];if(b.D>100)b.D=100;};
+$("bLoad").onclick=()=>{const i=S.bob.findIndex(x=>x.st==="empty");if(i<0)return;S.bob[i].st="loading";S.bob[i].D=235;setTimeout(()=>{S.bob[i].st="prep";S.bob[i].ang=0;},1500/simSpeed);};
+$("spd").oninput=e=>{$("spdV").textContent=e.target.value;};
+$("heatT").oninput=e=>{heatMs=+e.target.value;$("heatV").textContent=heatMs+" ms";drawTiming();};
+document.querySelectorAll("[data-sp]").forEach(b=>b.onclick=()=>{simSpeed=+b.dataset.sp;document.querySelectorAll("[data-sp]").forEach(x=>x.classList.toggle("sel",x===b));});
+document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-tab]").forEach(x=>x.classList.toggle("sel",x===b));document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.id===b.dataset.tab));});
+
+/* ---------- challenge ---------- */
+$("bChal").onclick=()=>{
+  FAULTS.forEach(f=>fOn[f.id]=false);
+  S.alarms=[];S.broken=false;S.breakAt=-1;S.tmr={};S.splice=null;
+  S.bob=[{D:150,st:"run"},{D:235,st:"prep"}];S.active=0;S.M=570;
+  S.mode="prod";S.run="run";S.pph=+$("spd").value;S.target=S.pph;S.seqStep="RunSealing";S.sterile=true;
+  S.lsPh=0;S.lsZ=50;S.saPh=5;S.saZ=56;S.lsAvgPh=0;S.lsAvgZ=50;S.saAvgPh=5;S.saAvgZ=56;
+  const pool=FAULTS.filter(f=>f.id!=="ring");
+  const pick=pool[Math.floor(Math.random()*pool.length)];
+  chal={id:pick.id,done:false};
+  // faults that need a splice to show: trigger a near-end bobbin
+  if(["heat","air","prep","opp"].includes(pick.id)){S.bob[0].D=100;}
+  setTimeout(()=>{fOn[pick.id]=true;},1200);
+  const opts=pool.slice().sort(()=>Math.random()-.5);
+  $("chalSel").innerHTML='<option value="">— اختار السبب —</option>'+opts.map(f=>`<option value="${f.id}">${f.n}</option>`).join("");
+  $("chalSel").disabled=false;$("bAns").disabled=false;$("res").textContent="";$("res").className="res";
+  $("chalTxt").textContent="العطل هيحصل بعد ثانية. راقب الرسمة والقراءات والرسوم والإنذارات. لو مفيش إنذار، بص على الجودة.";
+  renderFaults();renderAlarms();
+};
+$("bAns").onclick=()=>{
+  if(!chal||chal.done)return;const val=$("chalSel").value;if(!val){$("res").textContent="اختار سبب الأول.";return;}
+  chal.done=true;score.n++;const f=FAULTS.find(x=>x.id===chal.id);
+  if(val===chal.id){score.ok++;$("res").className="res ok";$("res").textContent="صح! "+f.why;}
+  else{$("res").className="res bad";$("res").textContent="لأ. العطل كان: "+f.n+". "+f.why;}
+  $("score").textContent="النتيجة "+score.ok+" / "+score.n;
+  $("chalSel").disabled=true;$("bAns").disabled=true;
+  $("chalTxt").textContent="العطل لسه شغال، تقدر تشوفه في قائمة الأعطال وتشيله.";
+  renderFaults();
+};
+
+/* ---------- trends ---------- */
+const hist=[];const WIN=60;
+function sample(){hist.push({t:S.t,M:S.Mmeas,f:S.f,ls:S.lsP,sa:S.saP,lph:S.lsPh,sph:S.saPh});while(hist.length&&hist[0].t<S.t-WIN)hist.shift();}
+function chart(id,series,ymin,ymax,refs,right){
+  const c=$(id),dpr=window.devicePixelRatio||1,w=c.clientWidth,h=w<420?115:150;
+  if(c.width!==Math.round(w*dpr)||c.height!==h*dpr){c.width=Math.round(w*dpr);c.height=h*dpr;c.style.height=h+"px";}
+  const x=c.getContext("2d");x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,w,h);
+  const L=34,Rm=right?30:6,T=6,B=16,pw=w-L-Rm,ph=h-T-B;
+  x.strokeStyle="#22313a";x.lineWidth=1;x.font="10px JetBrains Mono";x.fillStyle="#8fa4a0";
+  for(let k=0;k<=4;k++){const y=T+ph*k/4;x.beginPath();x.moveTo(L,y);x.lineTo(L+pw,y);x.stroke();x.textAlign="right";x.fillText(Math.round(ymax-(ymax-ymin)*k/4),L-4,y+3);}
+  x.textAlign="left";x.fillText("-60s",L,h-3);x.textAlign="right";x.fillText("now",L+pw,h-3);
+  (refs||[]).forEach(([val,col])=>{const y=T+ph*(1-(val-ymin)/(ymax-ymin));x.strokeStyle=col;x.setLineDash([4,4]);x.beginPath();x.moveTo(L,y);x.lineTo(L+pw,y);x.stroke();x.setLineDash([]);});
+  if(right){x.fillStyle="#9ccc65";x.textAlign="left";for(let k=0;k<=4;k++){const y=T+ph*k/4;x.fillText(Math.round(right.max-right.max*k/4),L+pw+3,y+3);}}
+  series.forEach(s=>{x.strokeStyle=s.col;x.lineWidth=1.8;x.beginPath();let first=true;
+    hist.forEach(p=>{const X=L+pw*(1-(S.t-p.t)/WIN);const val=s.k(p);const mn=s.min??ymin,mx=s.max??ymax;const Y=T+ph*(1-(clamp(val,mn,mx)-mn)/(mx-mn));if(first){x.moveTo(X,Y);first=false;}else x.lineTo(X,Y);});x.stroke();});
+}
+function drawCharts(){
+  chart("c1",[{k:p=>p.M,col:"#c792ea"},{k:p=>p.f,col:"#9ccc65",min:0,max:100}],0,650,[[40,"#ff5d50"],[570,"#5fd08b"],[620,"#ff5d50"]],{max:100});
+  chart("c2",[{k:p=>p.ls,col:"#55b6ea"},{k:p=>p.sa,col:"#ff7a8a"}],0,1400,[]);
+  chart("c3",[{k:p=>p.lph,col:"#55b6ea"},{k:p=>p.sph,col:"#ff7a8a"}],-40,40,[[10,"#4a5a62"],[-10,"#4a5a62"],[0,"#2c3d45"]]);
+}
+
+/* ---------- timing tab ---------- */
+function drawTiming(){
+  const g=$("tim");g.innerHTML="";const h=heatMs,end=Math.max(2300,h+800);
+  const X=ms=>200+ms/2400*540;
+  const rows=[["إشارة البدء (نهاية البكرة / زرار)","T10S1110",[[0,40]]],["رأس اللحام يدخل","T10K1770",[[200,h+100]]],["التسخين","T10K0020",[[0,h]]],["التبريد","T10K1780",[[h,h+500]]],["عكس البكرة القديمة","",[[300,900]]],["عكس البكرة الجديدة (فك اللزق)","",[[h+200,h+800]]]];
+  rows.forEach((r,i)=>{const y=14+i*28;
+    el("text",{x:192,y:y+14,"text-anchor":"end","font-size":11.5,fill:"#cfdcd8"},g).textContent=r[0];
+    el("line",{x1:X(0),x2:X(2400),y1:y+18,y2:y+18,stroke:"#2c3d45"},g);
+    r[2].forEach(([a,b])=>{el("rect",{x:X(a),y:y+4,width:Math.max(2,X(b)-X(a)),height:14,rx:2,fill:i===2?"#ff8a3d":i===3?"#55b6ea":"#c792ea",opacity:.85},g);
+      el("text",{x:X(b)+3,y:y+15,"font-size":9.5,fill:"#8fa4a0",class:"m"},g).textContent=b;});
+  });
+  for(let ms=0;ms<=2400;ms+=400){el("text",{x:X(ms),y:200,"text-anchor":"middle","font-size":10,fill:"#8fa4a0",class:"m"},g).textContent=ms;}
+  el("line",{x1:X(end),x2:X(end),y1:8,y2:188,stroke:"#5fd08b","stroke-dasharray":"3 3"},g);
+  el("line",{id:"timCur",x1:X(0),x2:X(0),y1:8,y2:188,stroke:"#e9a640","stroke-width":2,visibility:"hidden"},g);
+}
+function updTimCur(){const c=document.getElementById("timCur");if(!c)return;if(S.splice){const x=200+S.splice.t/2400*540;c.setAttribute("x1",x);c.setAttribute("x2",x);c.setAttribute("visibility","visible");}else c.setAttribute("visibility","hidden");}
+
+/* ---------- LS steps tab ---------- */
+const STEPS=[["StartSeqCheck","فحص البداية","0 ث"],["LowFormRing","نزول الحلقة السفلية","6.0 ث"],["PreheatPhase1","تسخين أولي 1","8.7 ث"],["PreheatPhase2","تسخين أولي 2","9.7 ث"],["RunSealing","لحام (الفكوك بتتسارع)","~10 ث"],["StopSealing","إيقاف اللحام","عند الوقوف"]];
+function renderSteps(){
+  const cur=STEPS.findIndex(s=>s[0]===S.seqStep);
+  $("steps").innerHTML=STEPS.map((s,i)=>`<div class="st ${i===cur?"cur":(S.run==="seq"||S.run==="ramp"||S.run==="run")&&i<cur?"done":""}"><b>${s[1]}</b><span class="en">${s[0]}</span><br><span class="tm">${s[2]}</span></div>`).join("");
+  $("seqT").textContent=S.run==="seq"?"تايمر بدء التشغيل الآن: "+S.seqT.toFixed(1)+" ث":"اضغط إيقاف وبعدين تشغيل إنتاج عشان تشوف الخطوات بتمشي.";
+}
+
+/* ---------- values table ---------- */
+$("vals").innerHTML="<tr><th>القيمة</th><th>التاج في البرنامج</th><th>معناها</th></tr>"+[
+ ["825 W","HMI_ASSU_StripProdPower","قدرة الأبليكيتور في الإنتاج"],
+ ["350 / 200 W","ASSU_PAR_SaParameters[1] / [0]","قدرة الأبليكيتور في لحام الأنبوب / بطيء ويدوي"],
+ ["800 W","HMI_TFU_LSProdPower","قدرة اللحام الطولي في الإنتاج"],
+ ["625 W","HMI_TFU_LSTubeSealPower","قدرة اللحام الطولي في لحام الأنبوب"],
+ ["+60% لعبوة بعد 43 عبوة","PAR_TPIHSpliceExtraPwrPerc / PacksOffset","زيادة قدرة LS عند وصلة الورق"],
+ ["6.0 – 9.7 ث","PAR_LowerFormingRingTimeLow / High","الحلقة السفلية تحت"],
+ ["8.7 / 9.7 ث","PAR_PreheatingTimeLowPHASE1 / 2","بداية التسخين الأولي 1 و 2"],
+ ["0.5 ث","PAR_LowerFormingRingTimeout","مهلة حساس الحلقة السفلية"],
+ ["570","PID_StripMaterialMagazine / PAR_StripMagazineWrkPos","مستوى المخزن المطلوب"],
+ ["≤ 40 / ≥ 620","PAR_StripMagazineAlrPosHigh / Low","حد المخزن فاضي / مليان"],
+ ["2300 ms","TMR_StripSplice","زمن تسلسل لحام الشريط"],
+ ["1300 ms (900–1600)","HMI_ASSU_StripSealingTime","زمن تسخين رأس اللحام"],
+ ["500 ms","PAR_StripSealingCoolingTime","زمن التبريد"],
+ ["600 ms","TMR_UnstickStripSplice","عكس البكرة الجديدة لفك اللزق"],
+ ["235 → 80 mm","PAR_BobbinMotorRollDiamMax / Min","قطر البكرة مليانة / فاضية"],
+ ["0.5 ث","TMR_StripBobbinsFault_Delay","تأخير إنذار عطل الإنفرتر"],
+ ["2.5 ث","TMR_CheckBobbinInOppositPosition","تأخير إنذار البكرة المعكوسة"],
+ ["1 ث","TMR_PressureRollerDly","تأخير إنذار رول الضغط"],
+ ["2 + 1.5 ث","TMR_EncoderRotationCheckDelay / TMR_EncoderStripRotationTOut","تأخير إنذار الإنكودر"],
+ ["3 ث","TMR_AssuSmHystOn / TMR_LSSMKeepSampling","تأخير تحذير مراقب اللحام"],
+ ["90 ث","TMR_ModuleRunningDoorsOpen","أقصى وقت والباب مفتوح والوحدة شغالة"]
+].map(r=>`<tr><td class="mono">${r[0]}</td><td><span class="en">${r[1]}</span></td><td>${r[2]}</td></tr>`).join("");
+
+/* ---------- loop ---------- */
+drawTiming();renderFaults();renderAlarms();
+let last=performance.now(),acc=0,sAcc=0,uiAcc=0;
+function loop(now){
+  let dt=Math.min(0.1,(now-last)/1000);last=now;
+  let sim=dt*simSpeed;const h=0.02;
+  while(sim>0){const d=Math.min(h,sim);step(d);sim-=d;sAcc+=d;if(sAcc>=0.2){sAcc=0;sample();}}
+  drawBob(0);drawBob(1);drawMag();drawPaths();drawSeal();updTimCur();
+  uiAcc+=dt;if(uiAcc>0.15){uiAcc=0;renderSide();drawCharts();renderSteps();}
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+})();
+</script>
+
+</body>
+</html>
