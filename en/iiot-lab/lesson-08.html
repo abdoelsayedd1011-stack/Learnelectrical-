@@ -34,55 +34,31 @@
 <section class="panel lvid" aria-label="Lesson video"><h2 style="margin:0 0 8px">▶ The lesson in 5 minutes</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">Illustrated explanation, the simulator task solved, and the quiz answered. Made for the phone.</p><video src="/media/lessons/iiot-lab/lesson-08-en.mp4" poster="/media/lessons/iiot-lab/lesson-08-en.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>EtherNet/IP and CIP</h2>
-  <p class="bf"><span class="ic">🅰️</span><span>Allen-Bradley's Ethernet, where IP = <b>Industrial Protocol</b>. On top runs the same CIP as DeviceNet.</span></p>
-  <div class="vs">
-    <div class="side"><b>Implicit (I/O)</b><span class="big">UDP 2222</span><span>Cyclic at the RPI</span></div>
-    <i>vs</i>
-    <div class="side"><b>Explicit</b><span class="big">TCP 44818</span><span>Request/reply on demand</span></div>
-  </div>
-  <ul class="fx">
-    <li><b>EDS</b><span>Or a generic module with assembly numbers</span></li>
-    <li><b>Multicast</b><span>Switches need IGMP snooping</span></li>
-    <li><b>DLR</b><span>The ring (like MRP)</span></li>
-  </ul>
-  <p class="alert">Drops when devices are added? Out of <b>connections or pps</b> · raise the RPI on non-critical ones.</p>
+  <h2 id="s1"><span class="k">1</span>What is EtherNet/IP?</h2>
+  <p>It is Allen-Bradley's Ethernet, and the IP in its name means <b>Industrial Protocol</b>. On top of it runs the same CIP protocol we saw in DeviceNet.</p>
+  <p>It has two kinds of messages. <b>Implicit (I/O)</b> on UDP 2222, cyclic with a time called RPI. And <b>explicit</b> on TCP 44818, request and reply when needed.</p>
+  <p>To define a device you use an <b>EDS</b> file, or a generic module with assembly numbers. Because the messages are <b>multicast</b>, the switch needs IGMP snooping. And the ring here is called <b>DLR</b>, the counterpart of MRP.</p>
+  <p class="alert">Connections drop when you add devices? You ran out of <b>connections or pps</b>, so raise the RPI for non-critical devices.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>AS-Interface: the yellow cable</h2>
-  <p class="bf"><span class="ic">🟨</span><span>Two wires carry <b>data and 30 V</b> together; devices clamp on with piercing pins.</span></p>
-  <div class="tiles">
-    <div class="tile"><span class="big">62</span><b>Slaves</b><span>4 in + 4 out</span></div>
-    <div class="tile"><span class="big">5 ms</span><b>Cycle</b></div>
-    <div class="tile"><span class="big">100 m</span><b>No termination</b><span>Free tree</span></div>
-  </div>
-  <ul class="fx">
-    <li><b>New slave</b><span>Address 0 · set it with a programmer</span></li>
-    <li><b>Supply</b><span>Special AS-i supply, not plain 24 V</span></li>
-  </ul>
+  <h2 id="s2"><span class="k">2</span>What is AS-Interface?</h2>
+  <p>It is the flat yellow cable: two wires carry <b>data and 30 V</b> together, and devices clamp on with pins that pierce the insulation.</p>
+  <p>It carries up to <b>62 slaves</b>, each with 4 inputs and 4 outputs, on a <b>5 ms</b> cycle. Its length is <b>100 m</b> with no termination, in any tree shape.</p>
+  <p>A new slave comes with address 0, so write its address with a programming device. And the supply must be a special AS-i supply, not an ordinary 24 V one.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>IO-Link: the smart sensor</h2>
-  <p class="bf"><span class="ic">🔗</span><span>A <b>point-to-point</b> link on a normal sensor cable (3 wires, 20 m) to a master with M12 ports.</span></p>
-  <div class="tiles">
-    <div class="tile"><b>Process data</b><span>4.37 bar as a number</span></div>
-    <div class="tile"><b>Service data</b><span>Setpoint · unit</span></div>
-    <div class="tile"><b>Events</b><span>Dirty lens</span></div>
-  </div>
-  <p class="tip"><b>Data storage:</b> swap the sensor and its parameters come back by themselves. Described by an <b>IODD</b>.</p>
+  <h2 id="s3"><span class="k">3</span>What is IO-Link?</h2>
+  <p>It is a <b>point-to-point</b> link over an ordinary sensor cable (3 wires, up to 20 m) between a smart sensor and a master with M12 ports.</p>
+  <p>The sensor sends three kinds of data. <b>Process data:</b> the value as a number, like 4.37 bar. <b>Service data:</b> the setpoint and the unit. And <b>events:</b> like "lens dirty".</p>
+  <p class="tip"><b>Data storage:</b> swap the sensor and its parameters come back by themselves. The sensor description is in the <b>IODD</b> file.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>HART: digital over 4-20 mA</h2>
-  <p class="bf"><span class="ic">📶</span><span>A small FSK signal <b>on top of</b> the current: the value stays, plus tag, unit and diagnostics.</span></p>
-  <ul class="fx">
-    <li><b>250 Ω</b><span>Minimum in the loop</span></li>
-    <li><b>Communicator</b><span>Anywhere on the loop</span></li>
-    <li><b>Multidrop</b><span>15 transmitters · current fixed at 4 mA</span></li>
-    <li><b>WirelessHART</b><span>2.4 GHz mesh with a gateway</span></li>
-  </ul>
+  <h2 id="s4"><span class="k">4</span>What is HART?</h2>
+  <p>It is a small digital FSK signal riding <b>on top of</b> the 4-20 mA current. So the analog value stays as it is, and with it come the tag, the unit and diagnostics.</p>
+  <p>It needs at least <b>250 Ω</b> in the loop. The <b>communicator</b> connects anywhere on it. In <b>multidrop</b> mode 15 transmitters share two wires with the current fixed at 4 mA. And <b>WirelessHART</b> is a wireless version on 2.4 GHz through a gateway.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
-  <h2 id="s5"><span class="k">5</span>The master comparison table</h2>
+  <h2 id="s5"><span class="k">5</span>How do I compare all these networks?</h2>
   <div class="tblw"><table class="tbl"><thead><tr><th>Network</th><th>Medium</th><th>Speed</th><th>Nodes</th><th>File</th><th>Where</th></tr></thead><tbody>
 <tr><td>Modbus RTU</td><td>RS-485</td><td>≤115 kbit/s</td><td>247</td><td>—</td><td>VFDs, meters</td></tr>
 <tr><td>Modbus TCP</td><td>Ethernet</td><td>100 M</td><td>IP</td><td>—</td><td>PLC, SCADA</td></tr>
@@ -95,7 +71,7 @@
 <tr><td>AS-i</td><td>Yellow + power</td><td>167 kbit/s</td><td>62</td><td>—</td><td>Buttons, sensors</td></tr>
 <tr><td>IO-Link</td><td>3 wires</td><td>≤230 kbit/s</td><td>1/port</td><td>IODD</td><td>Smart sensors</td></tr>
 <tr><td>HART</td><td>Over 4-20 mA</td><td>1.2 kbit/s</td><td>15</td><td>DD</td><td>Transmitters</td></tr></tbody></table></div>
-  <p class="tip">Don't memorise it: recognise the network by <b>cable, colour and connector</b>, then go to its lesson.</p>
+  <p class="tip">Don't memorise the table: recognise the network from its <b>cable, colour and connector</b>, then go back to its lesson.</p>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>

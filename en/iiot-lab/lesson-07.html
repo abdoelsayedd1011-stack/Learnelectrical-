@@ -35,12 +35,7 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>How does CAN work?</h2>
-  <p class="bf"><span class="ic">🚗</span><span>From cars: differential <b>CAN_H and CAN_L</b>, 120 Ω at both ends, up to 1 Mbit/s.</span></p>
-  <div class="tiles">
-    <div class="tile"><b>CANopen</b><span>Servo · cranes</span></div>
-    <div class="tile"><b>DeviceNet</b><span>Allen-Bradley</span></div>
-    <div class="tile"><b>J1939</b><span>Heavy machinery</span></div>
-  </div>
+  <p>CAN came from cars. It runs on two wires, <b>CAN_H and CAN_L</b>, with a differential signal, 120 Ω at both ends, at up to 1 Mbit/s. Protocols are built on top of it: <b>CANopen</b> for servos and cranes, <b>DeviceNet</b> at Allen-Bradley, and <b>J1939</b> for heavy machinery.</p>
   <svg viewBox="0 0 660 200" role="img" aria-label="CAN_H and CAN_L signals" style="width:100%;max-width:640px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor">
 <path d="M40 150H600" stroke="currentColor" stroke-width="1"/><text x="20" y="40">V</text>
@@ -50,15 +45,12 @@
 <text x="565" y="64" fill="#c62828">CAN_H 3.5 V</text><text x="565" y="144" fill="#1e5fd1">CAN_L 1.5 V</text><text x="565" y="104">2.5 V</text>
 <text x="260" y="175" text-anchor="middle" font-size="10">recessive (1)</text><text x="180" y="175" text-anchor="middle" font-size="10">dominant (0)</text><text x="360" y="175" text-anchor="middle" font-size="10">dominant (0)</text>
 </g></svg>
-  <div class="vs">
-    <div class="side"><b>Recessive (1)</b><span class="big">2.5 / 2.5 V</span></div>
-    <i>vs</i>
-    <div class="side"><b>Dominant (0)</b><span class="big">3.5 / 1.5 V</span></div>
-  </div>
-  <div class="box key"><b>Arbitration:</b> dominant wins, so the <b>lowest</b> identifier wins with no collision. No master: priority by identifier.</div>
+  <p>The line has two states. <b>Recessive (1):</b> both wires at 2.5 V. <b>Dominant (0):</b> H at 3.5 V and L at 1.5 V.</p>
+  <div class="box key"><b>Arbitration:</b> dominant beats recessive, so the message with the <b>lowest</b> identifier wins with no collision. There is no master: priority is by identifier.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>Length, speed and termination</h2>
+  <h2 id="s2"><span class="k">2</span>How are length, speed and termination related?</h2>
+  <p>The higher the speed, the shorter the allowed line:</p>
   <ul class="scale">
     <li><bdi dir="ltr">1 M</bdi><div class="bar"><i style="width:3%"></i><em><bdi dir="ltr">25 m</bdi></em></div></li>
     <li><bdi dir="ltr">500 k</bdi><div class="bar"><i style="width:10%"></i><em><bdi dir="ltr">100 m</bdi></em></div></li>
@@ -66,52 +58,26 @@
     <li><bdi dir="ltr">125 k</bdi><div class="bar"><i style="width:50%"></i><em><bdi dir="ltr">500 m</bdi></em></div></li>
     <li><bdi dir="ltr">50 k</bdi><div class="bar"><i style="width:100%"></i><em><bdi dir="ltr">1000 m</bdi></em></div></li>
   </ul>
-  <p class="sub">Power off, measure between H and L:</p>
-  <ul class="fx">
-    <li class="ok"><b class="mono">60 Ω</b><span>Two resistors ✅</span></li>
-    <li><b class="mono">120 Ω</b><span>Only one</span></li>
-    <li><b class="mono">40 Ω</b><span>Three</span></li>
-    <li><b class="mono">∞</b><span>No termination or broken cable</span></li>
-  </ul>
-  <div class="box key"><b>Error counter:</b> above 127 error passive, above 255 <b>bus off</b>: usually a wrong baud or a bad cable.</div>
+  <p>To check termination, switch the power off and measure the resistance between H and L. <b>60 Ω</b> means two resistors, which is right. <b>120 Ω</b> means only one. <b>40 Ω</b> means three. And <b>∞</b> means no termination or a broken cable.</p>
+  <div class="box key"><b>Error counter:</b> above 127 the node goes error passive, and above 255 <b>bus off</b>. The cause is usually a different baud or a poor cable.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>CANopen: identifiers and objects</h2>
+  <h2 id="s3"><span class="k">3</span>How does CANopen organise messages?</h2>
+  <p>Each node has a <b>Node ID</b> from 1 to 127, and each message identifier is calculated from it:</p>
   <div class="formula">COB-ID = 0x180 + Node 5 = 0x185</div>
-  <ul class="fx">
-    <li><b>Node ID</b><span>1–127</span></li>
-    <li><b>PDO</b><span>Fast cyclic data · 8 bytes</span></li>
-    <li><b>SDO</b><span>Read/write a parameter · 0x6040:00</span></li>
-    <li><b>NMT</b><span>PDOs only in <b>operational</b></span></li>
-    <li><b>Heartbeat</b><span>The node says it's alive</span></li>
-    <li><b>EDS</b><span>Description file</span></li>
-  </ul>
+  <p><b>PDO</b> is fast cyclic data, up to 8 bytes. <b>SDO</b> reads or writes one parameter, like 0x6040:00. <b>NMT</b> manages the node state, and PDOs only run in the <b>Operational</b> state.</p>
+  <p><b>Heartbeat</b> is a message by which the node says it is alive. And <b>EDS</b> is the device description file.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>DeviceNet: the key difference</h2>
-  <p class="bf"><span class="ic">🔋</span><span>CAN + <b>CIP</b>, and the cable carries <b>24 V</b> with the signal.</span></p>
-  <ul class="fx">
-    <li><b>⚪ White / 🔵 blue</b><span>CAN_H / CAN_L</span></li>
-    <li><b>🔴 Red / ⚫ black</b><span>V+ / V−</span></li>
-    <li><b>MAC ID</b><span>0–63 · 125/250/500 kbit/s</span></li>
-  </ul>
-  <ul class="fx">
-    <li class="ok"><b>NS steady green</b><span>Connected to a master</span></li>
-    <li><b>NS flashing green</b><span>Online, no master</span></li>
-    <li><b>NS flashing red</b><span>Timeout</span></li>
-    <li><b>NS steady red</b><span>Duplicate MAC ID or bus off</span></li>
-  </ul>
-  <p class="alert">Below <b>11 V</b> at the far end ⇒ strange faults · add a supply mid-line.</p>
+  <h2 id="s4"><span class="k">4</span>How is DeviceNet different?</h2>
+  <p>DeviceNet is CAN with the <b>CIP</b> protocol, and the cable carries a <b>24 V</b> supply with the signal. White and blue are CAN_H and CAN_L, and red and black are V+ and V−. The address is a <b>MAC ID</b> from 0 to 63, and the speed is 125, 250 or 500 kbit/s.</p>
+  <p>The NS LED sums up the state. <b>Steady green:</b> connected to a master. <b>Flashing green:</b> on the network with no master. <b>Flashing red:</b> timeout. And <b>steady red:</b> a duplicate MAC ID or bus off.</p>
+  <p class="alert">If the voltage at the far end of the cable falls below <b>11 V</b>, strange faults appear, so add a power tap in the middle.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
-  <h2 id="s5"><span class="k">5</span>Reasoning through a CAN fault</h2>
-  <ol class="steps">
-    <li>60 Ω between H and L</li>
-    <li>Idle: H ≈ L ≈ 2.5 V</li>
-    <li>Bus off: baud · cable · duplicate ID</li>
-    <li>Drops with a machine: noise</li>
-    <li>Far devices only: voltage drop</li>
-  </ol>
+  <h2 id="s5"><span class="k">5</span>How do you think through a CAN fault?</h2>
+  <p>Start by measuring <b>60 Ω</b> between H and L. Then measure the voltage with the bus idle: H and L near 2.5 V. If you see <b>bus off</b>, check the baud, the cable and a duplicate ID.</p>
+  <p>If the network drops when a certain machine runs, the cause is noise. If only the far nodes fail, the cause is voltage drop.</p>
   <div class="box key"><b>On the simulator:</b> watch arbitration, set baud and termination (60 Ω), move nodes to operational, and diagnose bus off and voltage drop. <a class="btn pri" href="net.html#can" style="margin-inline-start:8px">Open the simulator →</a></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">

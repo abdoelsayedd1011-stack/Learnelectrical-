@@ -34,51 +34,30 @@
 <section class="panel lvid" aria-label="Lesson video"><h2 style="margin:0 0 8px">▶ The lesson in 5 minutes</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">Illustrated explanation, the simulator task solved, and the quiz answered. Made for the phone.</p><video src="/media/lessons/iiot-lab/lesson-06-en.mp4" poster="/media/lessons/iiot-lab/lesson-06-en.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>From PROFIBUS to PROFINET</h2>
-  <p class="bf"><span class="ic">🟢</span><span>PROFIBUS on <b>Ethernet</b>: a controller exchanges with devices, using a <b>name + IP</b> instead of a number.</span></p>
-  <div class="tiles">
-    <div class="tile"><span class="big">RT</span><b>1–10 ms</b><span>I/O and VFDs</span></div>
-    <div class="tile"><span class="big">IRT</span><b>250 µs</b><span>Motion · special switches</span></div>
-    <div class="tile"><span class="big">TCP/IP</span><b>Not deterministic</b><span>Setup and diagnostics</span></div>
-  </div>
+  <h2 id="s1"><span class="k">1</span>What is the difference between PROFIBUS and PROFINET?</h2>
+  <p>PROFINET is the PROFIBUS idea on <b>Ethernet</b>: a Controller exchanges data with Devices. But each device is identified by a <b>name and an IP</b> instead of an address number.</p>
+  <p>It has three channels. <b>RT</b> with a 1–10 ms cycle for I/O and VFDs. <b>IRT</b> with a 250 µs cycle for motion control, which needs special switches. And <b>TCP/IP</b>, not deterministic, used for configuration and diagnostics.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>Name first, then IP</h2>
-  <ol class="steps">
-    <li>GSDML + name + IP in TIA</li>
-    <li>Assign device name</li>
-    <li class="on">Download to the CPU</li>
-  </ol>
-  <div class="box key"><b>Names:</b> lowercase, digits and hyphens only, like <span class="mono">vfd-line3</span>. Replaced a device? Give it <b>the same name</b>.</div>
+  <h2 id="s2"><span class="k">2</span>Why the name first, then the IP?</h2>
+  <p>Because the Controller looks for the device by its name, then gives it an IP address. The steps: add the GSDML file and enter the name and IP in TIA. Then run <b>Assign device name</b> on the device itself. Then download the project to the CPU.</p>
+  <div class="box key"><b>The name:</b> lowercase letters, digits and hyphens only, like vfd-line3. Replaced a device? Give it <b>the same name</b>.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>Topology and switches</h2>
-  <div class="tiles">
-    <div class="tile"><span class="ic">➖</span><b>Line</b><span>One break ⇒ everything after is lost</span></div>
-    <div class="tile"><span class="ic">✳️</span><b>Star</b><span>Managed switch · safer</span></div>
-    <div class="tile"><span class="ic">⭕</span><b>MRP ring</b><span>Survives one break · 200 ms</span></div>
-  </div>
-  <p class="tip">Industrial switches that support PROFINET. <b>LLDP</b> reveals a cable in the wrong port.</p>
+  <h2 id="s3"><span class="k">3</span>How are the devices connected?</h2>
+  <p>In a <b>line</b>, any break loses everything after it. In a <b>star</b> each device connects to a managed switch, which is safer. In an <b>MRP ring</b> the network survives one break and recovers within 200 ms.</p>
+  <p class="tip">Use industrial switches that support PROFINET. <b>LLDP</b> reveals a cable plugged into the wrong port.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>LEDs and diagnostics</h2>
-  <ul class="fx">
-    <li><b>🔴 BF steady</b><span>No link or no controller</span></li>
-    <li><b>🔴 BF flashing</b><span>Present but no data: name · IP · not in plant</span></li>
-    <li><b>🔴 SF</b><span>Missing module · broken wire</span></li>
-    <li><b>🟡 MT</b><span>Cable dropping frames</span></li>
-  </ul>
-  <p class="tip">TIA: <b>diagnostics buffer</b> · free: <b>PRONETA</b>.</p>
+  <h2 id="s4"><span class="k">4</span>What do the LEDs tell you?</h2>
+  <p><b>BF steady:</b> no link or no Controller. <b>BF flashing:</b> the device is there but has no data, so check the name and IP, and is it configured in the project?</p>
+  <p><b>SF:</b> a missing module or a broken wire. And the yellow <b>MT:</b> a cable is dropping frames and needs maintenance.</p>
+  <p class="tip">In TIA open the <b>Diagnostics buffer</b>. The free tool <b>PRONETA</b> scans the network.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
-  <h2 id="s5"><span class="k">5</span>Common PROFINET faults</h2>
-  <ul class="fx">
-    <li><b>New device not found</b><span>Name not set or has a capital</span></li>
-    <li><b>BF flashing after a swap</b><span>Old name · reset, then set the name</span></li>
-    <li><b>Drops every few minutes</b><span>Duplicate IP · cable near a VFD</span></li>
-    <li><b>All devices past a point gone</b><span>Line with a cut cable</span></li>
-    <li><b>IRT won't run</b><span>Plain switch · topology mismatch</span></li>
-  </ul>
+  <h2 id="s5"><span class="k">5</span>What are the common PROFINET mistakes?</h2>
+  <p><b>A new device doesn't appear:</b> its name is not set or has a capital letter. <b>BF flashes after a replacement:</b> the device carries an old name, so reset it and set the name. <b>Drops out every few minutes:</b> a duplicate IP, or a cable next to a VFD.</p>
+  <p><b>Everything after one point disappeared:</b> a line topology with a broken cable. And <b>IRT doesn't work:</b> an ordinary switch in the path, or a topology that differs from the project.</p>
   <div class="box key"><b>On the simulator:</b> match the names, fix a capitalised name, resolve an IP clash, and cut a cable in a line then in an MRP ring. <a class="btn pri" href="net.html#profinet" style="margin-inline-start:8px">Open the simulator →</a></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">

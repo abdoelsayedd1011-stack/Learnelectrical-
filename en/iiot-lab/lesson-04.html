@@ -34,48 +34,30 @@
 <section class="panel lvid" aria-label="Lesson video"><h2 style="margin:0 0 8px">▶ The lesson in 5 minutes</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">Illustrated explanation, the simulator task solved, and the quiz answered. Made for the phone.</p><video src="/media/lessons/iiot-lab/lesson-04-en.mp4" poster="/media/lessons/iiot-lab/lesson-04-en.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>The same idea, over Ethernet</h2>
-  <p class="bf"><span class="ic">🔌</span><span>The same Modbus, inside <b>TCP on port 502</b>: no baud, parity or termination.</span></p>
-  <div class="vs">
-    <div class="side"><b>RTU</b><span>RS-485</span><span>Address 1–247</span><span>CRC-16</span><span>One master</span></div>
-    <i>vs</i>
-    <div class="side"><b>TCP</b><span>Ethernet / Wi-Fi</span><span>IP + 502 + Unit ID</span><span>TCP guarantees delivery</span><span>Several clients</span></div>
-  </div>
+  <h2 id="s1"><span class="k">1</span>What changed from Modbus RTU?</h2>
+  <p>Modbus TCP is the same protocol, but it travels inside <b>TCP on port 502</b>. So there is no baud to set, no parity and no termination.</p>
+  <p>In <b>RTU</b> the line is RS-485, the address is 1 to 247, the check is CRC-16, and there is one master. In <b>TCP</b> the network is Ethernet or Wi-Fi, the address is the IP with port 502 and a Unit ID, TCP itself guarantees delivery, and several clients can connect at once.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>The MBAP header</h2>
+  <h2 id="s2"><span class="k">2</span>What is the MBAP header?</h2>
+  <p>A header called MBAP is added before the request, followed by the usual request:</p>
   <div class="ladder"><span class="u">00 01</span><span class="u">00 00</span><span class="u">00 06</span><span class="u on">01</span><span class="u">03 00 6B 00 02</span></div>
-  <ul class="fx">
-    <li><b>Transaction ID</b><span>Matches each reply to its request</span></li>
-    <li><b>Protocol ID</b><span>Always 0</span></li>
-    <li><b>Unit ID</b><span>Serial slave behind a gateway · direct device: 1, 255 or 0</span></li>
-  </ul>
+  <p><b>Transaction ID</b> is a number that matches each reply to its request. <b>Protocol ID</b> is always 0. And <b>Unit ID</b> is the address of the serial slave behind a gateway; for a directly connected device it is 1, 255 or 0.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>Reading a PLC from a laptop</h2>
-  <ol class="steps">
-    <li>ping</li>
-    <li>Client on IP:502</li>
-    <li>FC 03 · address 0 · 10 registers</li>
-  </ol>
-  <ul class="fx">
-    <li><b>Connection refused</b><span>Server not enabled or firewall</span></li>
-    <li><b>Timeout</b><span>Network (lesson 2)</span></li>
-    <li><b>Huge meaningless number</b><span>32-bit: swap the word order</span></li>
-  </ul>
-  <p class="tip">S7-1200: <span class="mono">MB_SERVER</span> · Schneider: <span class="mono">%MW0</span> = register 0.</p>
+  <h2 id="s3"><span class="k">3</span>How do we read a PLC from a laptop?</h2>
+  <p>Start with <b>ping</b> to confirm the network. Then open a client on <span class="mono">IP:502</span>. Then request, with function 03 from address 0, ten registers.</p>
+  <p><b>Connection refused</b> means the server is not enabled or there is a firewall. <b>Timeout</b> means a network problem (lesson 2). And <b>a huge meaningless number</b> means a 32-bit value, so swap the word order.</p>
+  <p class="tip">On the S7-1200 use MB_SERVER. On Schneider, register 0 is %MW0.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>Performance and limitations</h2>
-  <ul class="fx">
-    <li><b>⏱️ Not deterministic</b><span>No E-stops, no axis sync</span></li>
-    <li><b>📦 One request</b><span>Up to 125 adjacent registers</span></li>
-    <li><b>🔢 Limited connections</b><span>E.g. 8 · new ones refused</span></li>
-    <li><b>🔓 No encryption</b><span>Isolate the machine network</span></li>
-  </ul>
+  <h2 id="s4"><span class="k">4</span>What are the limits of Modbus TCP?</h2>
+  <p>It is <b>not deterministic</b>, so it is not for E-stops or axis synchronisation. <b>One request</b> carries up to 125 adjacent registers.</p>
+  <p>The <b>number of connections is limited</b>, for example 8, and a new one after that is refused. And it has <b>no encryption</b>, so isolate the machine network.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
-  <h2 id="s5"><span class="k">5</span>The Modbus TCP ⇄ RTU gateway</h2>
+  <h2 id="s5"><span class="k">5</span>How does a TCP to RTU gateway work?</h2>
+  <p>The gateway receives the request over TCP, reads the Unit ID to know which slave is meant, then sends it on the RTU line and returns the reply:</p>
   <div class="ladder"><span class="u">SCADA</span><span class="op">TCP · Unit 2</span><span class="u on">Gateway</span><span class="op">RTU</span><span class="u">Slave 2</span></div>
   <p class="tip">Timeouts here usually come from the <b>serial</b> side.</p>
   <div class="box key"><b>On the simulator:</b> connect on 502, read the 32-bit counter in the right word order, write the setpoint, and try connection refused and a wrong Unit ID. <a class="btn pri" href="net.html#mbtcp" style="margin-inline-start:8px">Open the simulator →</a></div>

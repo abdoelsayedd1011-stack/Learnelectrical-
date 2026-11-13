@@ -34,58 +34,27 @@
 <section class="panel lvid" aria-label="Lesson video"><h2 style="margin:0 0 8px">▶ The lesson in 5 minutes</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">Illustrated explanation, the simulator task solved, and the quiz answered. Made for the phone.</p><video src="/media/lessons/iiot-lab/lesson-14-en.mp4" poster="/media/lessons/iiot-lab/lesson-14-en.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>The troubleshooting method: bottom up</h2>
-  <p class="bf"><span class="ic">🪜</span><span>Don't guess: layer by layer, one question and one tool each.</span></p>
-  <ul class="fx">
-    <li><b>1 Physical</b><span>Signal on the wire? · LEDs · ohmmeter</span></li>
-    <li><b>2 Link</b><span>Does the switch see it? · MAC table · LLDP</span></li>
-    <li><b>3 Network</b><span>Does IP reach? · ping · arp</span></li>
-    <li><b>4 Transport</b><span>Port open? · telnet ip 502</span></li>
-    <li><b>7 Application</b><span>Correct answer? · client · Wireshark</span></li>
-  </ul>
-  <div class="box key"><b>Half of all faults are layer 1:</b> LEDs → connectors → termination → voltage.</div>
+  <h2 id="s1"><span class="k">1</span>Where do I start diagnosing?</h2>
+  <p>Don't guess. Go up <b>layer by layer from the bottom</b>, with a question and a tool for each layer.</p>
+  <p><b>1 Physical:</b> is there a signal on the wire? Tool: LEDs and an ohmmeter. <b>2 Data link:</b> does the switch see it? Tool: the MAC table and LLDP. <b>3 Network:</b> does the IP answer? Tool: ping and arp.</p>
+  <p><b>4 Transport:</b> is the port open? Tool: <span class="mono">telnet ip 502</span>. And <b>7 Application:</b> is the answer correct? Tool: a protocol client and Wireshark.</p>
+  <div class="box key"><b>Half the faults are in layer 1:</b> check the LEDs, then the connectors, then the termination, then the voltage.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>The troubleshooting toolkit</h2>
-  <div class="tiles">
-    <div class="tile"><span class="ic">🦈</span><b>Wireshark</b><span>SPAN · retransmissions = physical</span></div>
-    <div class="tile"><span class="ic">🗺️</span><b>PRONETA</b><span>PROFINET map</span></div>
-    <div class="tile"><span class="ic">📉</span><b>ProfiTrace</b><span>PROFIBUS signal quality</span></div>
-    <div class="tile"><span class="ic">〰️</span><b>Oscilloscope</b><span>Reflections = termination</span></div>
-    <div class="tile"><span class="ic">🔎</span><b>MQTT Explorer · UaExpert</b></div>
-    <div class="tile"><span class="ic">📜</span><b>Device log</b><span>First: it states the cause</span></div>
-  </div>
+  <h2 id="s2"><span class="k">2</span>What are the diagnostic tools?</h2>
+  <p><b>Wireshark</b> captures frames from a SPAN port, and many retransmissions there mean a physical problem. <b>PRONETA</b> draws the PROFINET network map. And <b>ProfiTrace</b> measures PROFIBUS signal quality.</p>
+  <p>An <b>oscilloscope</b> shows reflections, and a reflection means a termination problem. <b>MQTT Explorer</b> and <b>UaExpert</b> check MQTT and OPC UA. And before all of that read the <b>device log</b>, which states the cause in words.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>Ten cases you will encounter</h2>
-  <ul class="fx">
-    <li><b>RTU reads zeros at times</b><span>Noise · termination · length</span></li>
-    <li><b>Exception 02</b><span>Address off by one</span></li>
-    <li><b>PROFIBUS drops with a motor</b><span>Cable near power · shield</span></li>
-    <li><b>PROFINET after a swap</b><span>Device name</span></li>
-    <li><b>EtherNet/IP drops randomly</b><span>IGMP snooping · RPI</span></li>
-    <li><b>CAN bus-off</b><span>One node's baud · 60 Ω</span></li>
-    <li><b>Ping works, protocol fails</b><span>Firewall · PUT/GET</span></li>
-    <li><b>BadCertificateUntrusted</b><span>Move it to Trusted</span></li>
-    <li><b>MQTT connects then drops</b><span>Duplicate client ID · keep-alive</span></li>
-    <li><b>Frozen value on the dashboard</b><span>Gateway down + retained message</span></li>
-  </ul>
+  <h2 id="s3"><span class="k">3</span>Which ten cases will you meet?</h2>
+  <p><b>RTU sometimes reads zeros:</b> noise, termination or too much length. <b>Exception 02:</b> the address is off by one. <b>PROFIBUS drops when a motor starts:</b> the cable runs next to power cables, or a shield problem. <b>PROFINET fails after a replacement:</b> the device name.</p>
+  <p><b>EtherNet/IP drops at random:</b> IGMP snooping or RPI. <b>CAN bus-off:</b> one node at a different baud, or the resistance is not 60 Ω. <b>Ping works but the protocol doesn't:</b> a firewall or the PUT/GET setting.</p>
+  <p><b>BadCertificateUntrusted:</b> move the certificate to Trusted. <b>MQTT connects and drops:</b> a duplicate client ID or keep-alive. And <b>a frozen value on the dashboard:</b> a stopped gateway plus a retained message.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>The complete line project</h2>
-  <p class="bf"><span class="ic">🏭</span><span>A filling line with <b>3 hidden faults</b> in different layers.</span></p>
-  <div class="tiles">
-    <div class="tile"><b>S7-1200</b><span>PROFINET I/O</span></div>
-    <div class="tile"><b>Conveyor</b><span>Modbus RTU</span></div>
-    <div class="tile"><b>Pressure</b><span>IO-Link</span></div>
-    <div class="tile"><b>Servo</b><span>CANopen</span></div>
-    <div class="tile"><b>Gateway</b><span>OPC UA → MQTT</span></div>
-  </div>
-  <ol class="steps">
-    <li>Find the fault with the right tool</li>
-    <li>Fix it</li>
-    <li class="on">Check the dashboard</li>
-  </ol>
+  <h2 id="s4"><span class="k">4</span>The full line project</h2>
+  <p>In front of you is a filling line with <b>3 hidden faults</b> in different layers. The line is made of an S7-1200 with PROFINET I/O, a conveyor on Modbus RTU, a pressure sensor on IO-Link, a servo on CANopen, and a gateway that turns OPC UA into MQTT.</p>
+  <p>The task: find each fault with the right tool, fix it, then confirm on the dashboard.</p>
   <div class="box key"><b>On the simulator:</b> in the <b>Faults</b> tab, fix all three faults until every indicator is green. <a class="btn pri" href="net.html#faults" style="margin-inline-start:8px">Open the simulator →</a></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">

@@ -34,7 +34,8 @@
 <section class="panel lvid" aria-label="Lesson video"><h2 style="margin:0 0 8px">▶ The lesson in 5 minutes</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">Illustrated explanation, the simulator task solved, and the quiz answered. Made for the phone.</p><video src="/media/lessons/iiot-lab/lesson-11-en.mp4" poster="/media/lessons/iiot-lab/lesson-11-en.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>What is a gateway, and why do we need one?</h2>
+  <h2 id="s1"><span class="k">1</span>What is a gateway and why do we need one?</h2>
+  <p>The PLC speaks Modbus or OPC UA, and the cloud speaks MQTT. The <b>gateway</b> is a device that stands between them: it reads from the first, translates, and publishes to the second.</p>
   <div class="ladder"><span class="u">PLC</span><span class="op">Modbus</span><span class="u on">Gateway</span><span class="op">MQTT</span><span class="u">Cloud</span></div>
   <div class="fig"><svg viewBox="0 0 680 150" role="img" aria-label="Data path from the PLC to the cloud" style="width:100%;max-width:680px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
@@ -47,21 +48,13 @@
 <text x="235" y="125" font-size="11">OT (plant network)</text><text x="520" y="125" font-size="11">IT / internet</text>
 <line x1="325" y1="15" x2="325" y2="110" stroke="currentColor" stroke-dasharray="4 4"/><text x="325" y="12" font-size="10">Firewall</text>
 <defs><marker id="g1" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs></g></svg></div>
-  <ul class="fx">
-    <li><b>Hardware</b><span>IOT2050 · Moxa · Advantech · Linux with OT and IT ports</span></li>
-    <li><b>Node-RED</b><span>Most common: nodes and wires in a browser</span></li>
-    <li><b>Alternatives</b><span>Kepware · Ignition Edge · Python</span></li>
-  </ul>
-  <div class="box key"><b>The gateway only reads.</b> Writing from the cloud to a machine is a deliberate security decision.</div>
+  <p>Typical devices are the IOT2050, Moxa and Advantech, all Linux computers with two ports: one for the plant network (OT) and one for the IT network. The best-known software is <b>Node-RED</b>, where you draw the flow as nodes and wires in the browser. Alternatives are Kepware, Ignition Edge and Python.</p>
+  <div class="box key"><b>The gateway only reads.</b> Writing from the cloud to the machine is a deliberate security decision.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>A typical Node-RED flow</h2>
-  <ol class="steps">
-    <li>Modbus Read · FC3 · every 1000 ms</li>
-    <li>Function: names and units</li>
-    <li>RBE: on change only</li>
-    <li class="on">MQTT Out · TLS · QoS 1</li>
-  </ol>
+  <h2 id="s2"><span class="k">2</span>What does a Node-RED flow look like?</h2>
+  <p>A typical flow is four nodes in a row. <b>Modbus Read</b> reads with function 3 every 1000 ms. Then <b>Function</b> gives the values names and units. Then <b>RBE</b> passes a value only when it changes. Then <b>MQTT Out</b> publishes with TLS and QoS 1.</p>
+  <p>Here is an example Function node:</p>
   <pre class="code">const r = msg.payload;
 msg.payload = {
   ts: Date.now(),
@@ -71,26 +64,17 @@ msg.payload = {
   current_a: r[3] / 100
 };
 return msg;</pre>
-  <p class="tip">Always add a <b>Catch</b> node and a <b>Last Will</b> "offline".</p>
+  <p class="tip">Always add a <b>Catch</b> node for errors, and a <b>Last Will</b> of "offline".</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>Buffering and offline operation</h2>
-  <p class="bf"><span class="ic">💾</span><span><b>Store &amp; forward</b>: buffer during an outage, then send in order with the original timestamps.</span></p>
-  <ul class="fx">
-    <li><b>NTP</b><span>A wrong clock ruins every chart</span></li>
-    <li><b>Buffer size</b><span>A week × every second = 600k records</span></li>
-    <li><b>Heartbeat</b><span>Every minute · missing = alarm</span></li>
-  </ul>
+  <h2 id="s3"><span class="k">3</span>What happens when the internet goes down?</h2>
+  <p>A good gateway works by <b>store &amp; forward</b>: it stores the readings during the outage, then sends them in order with their original timestamps.</p>
+  <p>That is why <b>NTP</b> must be set, since a wrong clock ruins every chart. Work out the <b>buffer size</b>: a week at one reading per second is 600 thousand records. And send a <b>heartbeat</b> every minute; if it is missing, that is an alarm.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>Gateway security</h2>
-  <ul class="fx">
-    <li class="ok"><b>Two separate ports</b><span>No routing · the gateway is the only crossing</span></li>
-    <li class="ok"><b>Firewall</b><span>Outbound to 8883 only</span></li>
-    <li class="ok"><b>Node-RED</b><span>Change the password · HTTPS</span></li>
-    <li class="ok"><b>A certificate per gateway</b><span>Revoke one device</span></li>
-    <li class="ok"><b>Updates</b><span>And a backup of flows.json</span></li>
-  </ul>
+  <h2 id="s4"><span class="k">4</span>How do we secure the gateway?</h2>
+  <p>Keep the <b>two ports separate</b> with no routing between them, so the gateway is the only crossing point. Set the <b>firewall</b> to allow outbound only, to 8883.</p>
+  <p>In <b>Node-RED</b> change the password and turn on HTTPS. Give <b>each gateway its own certificate</b>, so you can revoke a single device. And keep up with <b>updates</b>, and keep a copy of flows.json.</p>
   <div class="box key"><b>On the simulator:</b> wire Modbus → transform → MQTT, enter the temperature divisor, and watch JSON go out. <a class="btn pri" href="net.html#gateway" style="margin-inline-start:8px">Open the simulator →</a></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
