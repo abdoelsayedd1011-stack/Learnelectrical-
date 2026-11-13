@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>الـ PID والتطبيقات</title>
-<meta name="description" content="الدرس 9 في كورس الانفرتر: الـ PID جوه الانفرتر لطلمبة ضغط ثابت (SP و PV وترانسميتر ⁦4–20mA⁩)، ظبط Kp و Ti، الـ Sleep و Wake، وإعدادات المراوح والسيور والونش والكمبروسر.">
+<meta name="description" content="الدرس 9 في كورس الانفرتر: الـ PID داخل الانفرتر لمضخة ضغط ثابت (SP وPV وترانسميتر ⁦4–20mA⁩)، وضبط Kp وTi، والـ Sleep والـ Wake، وإعدادات المراوح والسيور والونش والضاغط.">
 <link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/vfd-course/lesson-09.html">
 <link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/vfd-course/lesson-09.html">
 <link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/vfd-course/lesson-09.html">
@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <link rel="stylesheet" href="vfd.css?v=20261021w">
-<script src="vfd.js?v=20261101y"></script>
+<script src="vfd.js?v=20261113m"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
 <link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
@@ -26,60 +26,60 @@
   <div>
     <p class="kick">كورس الانفرتر · الدرس 9 من 12</p>
     <h1>الـ PID والتطبيقات</h1>
-    <p>معظم الانفرترات فيها <b>كنترولر PID</b> جوه. يعني تقدر تحط ترانسميتر ضغط على الانفرتر مباشرة، وهو يغيّر سرعة الطلمبة لوحده عشان الضغط يفضل ثابت مهما الناس فتحت وقفلت حنفيات. من غير PLC.</p>
+    <p>معظم الانفرترات بها <b>كنترولر PID</b> داخلي. أي يمكنك توصيل ترانسميتر ضغط بالانفرتر مباشرة، فيغيّر سرعة المضخة وحده ليبقى الضغط ثابتًا مهما فتح الناس الصنابير وأغلقوها، دون PLC.</p>
   </div>
   <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a><a class="btn lang-btn" href="/en/vfd-course/lesson-09.html" lang="en" hreflang="en" data-keep aria-label="Read this page in English" title="Read this page in English" onclick="try{localStorage.setItem('le-lang','en')}catch(e){}">EN</a></div>
 </header>
 
 <div id="lesson-intro" data-course="vfd-course" data-lesson="09"></div>
-<script src="/assets/lesson-intro-data/vfd-course.ar.js?v=20261021r" defer></script>
+<script src="/assets/lesson-intro-data/vfd-course.ar.js?v=20261113m" defer></script>
 <script src="/assets/lesson-intro.js?v=20261113n" defer></script>
 
 <section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
 
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>الـ PID بيعمل إيه؟</h2>
-  <p>الـ PID بيخلّي الانفرتر يثبّت قيمة لوحده، زي ضغط الميّه. بتدّيله القيمة المطلوبة <b>SP</b> (مثلًا 4 bar)، وهو بيقرا القيمة الحقيقية <b>PV</b> من ترانسميتر <bdi dir="ltr">4–20 mA</bdi> على AI2. ولو الضغط أقل من المطلوب بيزوّد سرعة الطلمبة، ولو أعلى بيقلّلها.</p>
-  <p>وبتظبط رد فعله بـ 3 أرقام. <b>Kp</b> هو قوة رد الفعل، ولو كبر أوي الضغط يهز. <b>Ti</b> بيشيل الغلط اللي بيفضل، وكل ما يقصر يبقى أقوى. و<b>Td</b> غالبًا بيتساب صفر في الطلمبات.</p>
+  <h2 id="s1"><span class="k">1</span>ماذا يفعل الـ PID؟</h2>
+  <p>الـ PID يجعل الانفرتر يثبّت قيمة وحده، مثل ضغط الماء. تعطيه القيمة المطلوبة <b>SP</b> (مثلًا 4 bar)، ويقرأ القيمة الفعلية <b>PV</b> من ترانسميتر <bdi dir="ltr">4–20 mA</bdi> على AI2. فإذا قل الضغط عن المطلوب زاد سرعة المضخة، وإذا زاد قلّلها.</p>
+  <p>وتضبط استجابته بـ 3 أرقام. <b>Kp</b> قوة الاستجابة، وإذا كبر كثيرًا تذبذب الضغط. و<b>Ti</b> يزيل الخطأ المتبقي، وكلما قصر صار أقوى. و<b>Td</b> يُترك غالبًا صفرًا في المضخات.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>جرّب: ظبط طلمبة ضغط ثابت</h2>
-  <p>الضغط هنا بيهز. اظبطه بالترتيب ده: ابدأ بـ Kp صغير و Ti طويل، زوّد الـ Kp لحد ما الضغط يبدأ يهز، ارجع لنصّه، وبعدين قصّر الـ Ti من غير ما يهز. وبعد ما يثبت غيّر الاستهلاك وشوف.</p>
-  <div class="wd"><h3>طلمبة ضغط ثابت بالـ PID</h3><div id="pid"></div></div>
+  <h2 id="s2"><span class="k">2</span>جرّب: ضبط مضخة ضغط ثابت</h2>
+  <p>الضغط هنا يتذبذب. اضبطه بهذا الترتيب: ابدأ بـ Kp صغير وTi طويل، وزد الـ Kp حتى يبدأ الضغط في التذبذب، ثم ارجع إلى نصفه، وبعدها قصّر الـ Ti دون تذبذب. وبعد أن يستقر غيّر الاستهلاك وراقب.</p>
+  <div class="wd"><h3>مضخة ضغط ثابت بالـ PID</h3><div id="pid"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>الـ Sleep والـ Wake: الطلمبة تريّح لوحدها</h2>
-  <p>لما الاستهلاك يقف، الطلمبة بتفضل تلف على سرعة واطية من غير فايدة. الـ <b>Sleep</b> بيوقّفها لو فضلت على السرعة الواطية دي فترة، والـ <b>Wake</b> بيقوّمها تاني أول ما الضغط ينزل.</p>
-  <p class="tip">جرّبها في المحاكي اللي فوق: اقفل كل الحنفيات (0 %) واستنى.</p>
+  <h2 id="s3"><span class="k">3</span>الـ Sleep والـ Wake: المضخة تستريح وحدها</h2>
+  <p>عندما يتوقف الاستهلاك تظل المضخة تدور على سرعة منخفضة بلا فائدة. الـ <b>Sleep</b> يوقفها إذا بقيت على هذه السرعة مدة معينة، والـ <b>Wake</b> يشغّلها مجددًا بمجرد انخفاض الضغط.</p>
+  <p class="tip">جرّبها في المحاكي أعلاه: أغلق كل الصنابير (0 %) وانتظر.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>كل تطبيق وإعداداته</h2>
-  <p><b>الطلمبة والمروحة:</b> V/f تربيعي، و PID، و Sleep، و Flying start.</p>
-  <p><b>السير:</b> Sensorless Vector، و S-curve عشان الحركة تبقى ناعمة، وسرعات Presets.</p>
-  <p><b>الونش:</b> Vector بإنكودر، ومقاومة فرملة، والفرامل الميكانيكية تتحكم فيها من ريليه الانفرتر.</p>
-  <p><b>الكمبروسر والخلاط:</b> عزم بدء عالي، وحد أدنى للسرعة.</p>
+  <p><b>المضخة والمروحة:</b> V/f تربيعي، وPID، وSleep، وFlying start.</p>
+  <p><b>السير:</b> Sensorless Vector، وS-curve لحركة ناعمة، وسرعات Presets.</p>
+  <p><b>الونش:</b> Vector بإنكودر، ومقاومة فرملة، والفرامل الميكانيكية يتحكم فيها ريلاي الانفرتر.</p>
+  <p><b>الضاغط والخلاط:</b> عزم بدء عالٍ، وحد أدنى للسرعة.</p>
   <div class="wd"><h3>تمرين: أهم إعداد للتطبيق</h3><div id="app"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
-  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <p>أجب إجابة صحيحة عن 5 من 6 على الأقل ليُسجَّل الدرس مكتملًا.</p>
   <div id="quiz"></div>
 </section>
 
 <nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
-<p class="foot">الأرقام والأمثلة هنا قيم تدريب شائعة، وأسماء الباراميترات والأطراف بتختلف من ماركة لماركة ومن موديل لموديل: <b>مانيوال الانفرتر بتاعك هو المرجع</b>. تقدّمك بيتسجّل على الجهاز ده.<br>© &#x2066;2026 LearnElectricals&#x2069;. كل الحقوق محفوظة. الموقع غير تابع لأي من الشركات المذكورة (مثل &#x2066;Siemens&#x2069; و &#x2066;Allen-Bradley&#x2069; و &#x2066;Delta&#x2069; و &#x2066;Schneider&#x2069; وغيرها)، والأسماء والعلامات التجارية ملك لأصحابها، ومستخدمة لشرح الأجهزة فقط.</p>
+<p class="foot">الأرقام والأمثلة هنا قيم تدريبية شائعة، وأسماء الباراميترات والأطراف تختلف من ماركة إلى أخرى ومن موديل إلى آخر: <b>دليل الانفرتر الذي تستخدمه هو المرجع</b>. يُحفظ تقدّمك على هذا الجهاز.<br>© &#x2066;2026 LearnElectricals&#x2069;. جميع الحقوق محفوظة. الموقع غير تابع لأي من الشركات المذكورة (مثل &#x2066;Siemens&#x2069; و &#x2066;Allen-Bradley&#x2069; و &#x2066;Delta&#x2069; و &#x2066;Schneider&#x2069; وغيرها)، والأسماء والعلامات التجارية ملك لأصحابها، وتُستخدم لشرح الأجهزة فقط.</p>
 </div>
 <script>
 VF.lesson('l9');
 window.PD = VF.pid(document.getElementById('pid'), {lesson:'l9'});
-VF.drill(document.getElementById('app'), VF.appGen, {lesson:'l9', task:'app', need:4, goal:'جاوب <b>4</b> صح عشان التمرين يتعلّم عليه.'});
+VF.drill(document.getElementById('app'), VF.appGen, {lesson:'l9', task:'app', need:4, goal:'أجب <b>4</b> إجابات صحيحة ليُسجَّل التمرين مكتملًا.'});
 VF.quiz(document.getElementById('quiz'), [
-  {q:'في طلمبة ضغط ثابت بالـ PID، الـ PV جاي من:', o:['ترانسميتر الضغط', 'الكيباد', 'يافطة الموتور', 'مقاومة الفرملة'], a:0, why:'Feedback.'},
-  {q:'الضغط بيهز طالع نازل. أول خطوة:', o:['قلّل Kp أو طوّل Ti', 'زوّد Kp', 'قصّر Ti', 'زوّد الـ Accel لصفر'], a:0, why:'الكنترولر بيصحّح بزيادة.'},
-  {q:'الـ Ti القصير معناه:', o:['تكامل أقوى وأسرع', 'تكامل أضعف وأبطأ', 'مفيش تكامل خالص', 'تفاضل أقوى'], a:0, why:'الغلط بيتجمع أسرع.'},
-  {q:'الـ Sleep mode بيفيد في:', o:['وقف الطلمبة لما مفيش سحب', 'رفع الضغط بالليل', 'فرملة الطلمبة', 'عمل Autotune لوحده كل يوم'], a:0, why:'وتصحى لما الضغط ينزل.'},
-  {q:'مروحة ممكن تكون بتلف من الهوا قبل التشغيل. الإعداد:', o:['Flying start', 'DC injection 30 ثانية', 'Coast', 'S-curve'], a:0, why:'بيمسك الموتور على سرعته بدل ما يعمل OC.'},
-  {q:'ترانسميتر ⁦0–10 bar⁩ بيطلّع 10.4 mA. الضغط:', o:['4 bar', '6.4 bar', '10.4 bar', '2.5 bar'], a:0, why:'(10.4−4)/16 × 10.'}
+  {q:'في مضخة ضغط ثابت بالـ PID، يأتي الـ PV من:', o:['ترانسميتر الضغط', 'الكيباد', 'لوحة بيانات المحرك', 'مقاومة الفرملة'], a:0, why:'Feedback.'},
+  {q:'الضغط يتذبذب صعودًا وهبوطًا. الخطوة الأولى:', o:['قلّل Kp أو أطل Ti', 'زد Kp', 'قصّر Ti', 'اجعل الـ Accel صفرًا'], a:0, why:'الكنترولر يصحّح أكثر من اللازم.'},
+  {q:'الـ Ti القصير معناه:', o:['تكامل أقوى وأسرع', 'تكامل أضعف وأبطأ', 'لا تكامل إطلاقًا', 'تفاضل أقوى'], a:0, why:'الخطأ يتراكم أسرع.'},
+  {q:'يفيد الـ Sleep mode في:', o:['إيقاف المضخة عند انعدام السحب', 'رفع الضغط ليلًا', 'فرملة المضخة', 'تنفيذ Autotune تلقائيًا كل يوم'], a:0, why:'وتعمل مجددًا عندما ينخفض الضغط.'},
+  {q:'مروحة قد تكون دائرة بفعل الهواء قبل التشغيل. الإعداد:', o:['Flying start', 'DC injection مدة 30 ثانية', 'Coast', 'S-curve'], a:0, why:'يلحق بالمحرك على سرعته بدل أن يحدث OC.'},
+  {q:'ترانسميتر ⁦0–10 bar⁩ يعطي 10.4 mA. الضغط:', o:['4 bar', '6.4 bar', '10.4 bar', '2.5 bar'], a:0, why:'(10.4−4)/16 × 10.'}
 ], {lesson:'l9', pass:0.8});
 </script>
 <script src="/assets/i18n.js?v=20261021w"></script>
