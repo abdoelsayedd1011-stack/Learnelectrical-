@@ -28,34 +28,34 @@ applyTheme();
 function isDark(){ const t = document.documentElement.getAttribute('data-theme'); if (t) return t === 'dark'; return !!(window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches); }
 function themeBtn(){
   const b = document.createElement('button'); b.type = 'button'; b.className = 'btn theme-b';
-  const upd = () => { const d = isDark(); b.textContent = d ? '☀' : '☾'; b.setAttribute('aria-label', d ? 'الوضع الفاتح' : 'الوضع الغامق'); b.title = b.getAttribute('aria-label'); };
+  const upd = () => { const d = isDark(); b.textContent = d ? '☀' : '☾'; b.setAttribute('aria-label', d ? 'الوضع الفاتح' : 'الوضع الداكن'); b.title = b.getAttribute('aria-label'); };
   b.addEventListener('click', () => { SV.store.set('theme', isDark() ? 'light' : 'dark'); applyTheme(); upd(); });
   upd(); return b;
 }
 
 /* ---------------- course map ---------------- */
 SV.COURSE = [
-  {id:'l1', n:1, file:'lesson-01.html', title:'يعني إيه سيرفو؟', sub:'اللوب المفتوح والمقفول، والفرق بين السيرفو والستيبر والانفرتر مع موتور إندكشن',
-    tasks:[['loop','تجربة اللوب المقفول'],['pick','اختار الموتور المناسب'],['quiz','أسئلة الدرس']]},
-  {id:'l2', n:2, file:'lesson-02.html', title:'جوه السيرفو موتور', sub:'الستاتور والمغناطيس الدائم، الإنكودر على ضهر الموتور، الفرامل، وقراية اليافطة',
-    tasks:[['parts','أجزاء الموتور'],['plate','قراية اليافطة'],['quiz','أسئلة الدرس']]},
-  {id:'l3', n:3, file:'lesson-03.html', title:'الإنكودر: عين السيرفو', sub:'إنكريمنتال وأبسليوت، الريزولوشن بالـ PPR والـ bits، وليه بيفرق في الدقة',
-    tasks:[['enc','تجربة قطع الكهربا'],['res','تمرين الريزولوشن'],['quiz','أسئلة الدرس']]},
-  {id:'l4', n:4, file:'lesson-04.html', title:'الدرايف من جوه', sub:'دايرة القوى (الموحّد و DC bus و IGBT) وتلات لوبات جوه بعض: التيار والسرعة والمكان',
-    tasks:[['blocks','الدايجرام التفاعلي'],['order','رتّب مسار الإشارة'],['quiz','أسئلة الدرس']]},
-  {id:'l5', n:5, file:'lesson-05.html', title:'توصيل السيرفو', sub:'الباور L1 L2 L3، خرج U V W (الترتيب مهم)، الإنكودر، الفرامل، مقاومة الفرملة، CN1 و STO',
-    tasks:[['wire','وصّل الدرايف'],['swap','جرّب غلطة U و W'],['quiz','أسئلة الدرس']]},
-  {id:'l6', n:6, file:'lesson-06.html', title:'أوضاع التشغيل', sub:'وضع المكان بالنبضات، وضع السرعة، وضع العزم، والمواضع الداخلية',
+  {id:'l1', n:1, file:'lesson-01.html', title:'ما هو السيرفو؟', sub:'الحلقة المفتوحة والمغلقة، والفرق بين السيرفو والستيبر والانفرتر مع محرك إندكشن',
+    tasks:[['loop','تجربة الحلقة المغلقة'],['pick','اختر المحرك المناسب'],['quiz','أسئلة الدرس']]},
+  {id:'l2', n:2, file:'lesson-02.html', title:'السيرفو موتور من الداخل', sub:'الستاتور والمغناطيس الدائم، والإنكودر على ظهر المحرك، والفرامل، وقراءة لوحة البيانات',
+    tasks:[['parts','أجزاء المحرك'],['plate','قراءة لوحة البيانات'],['quiz','أسئلة الدرس']]},
+  {id:'l3', n:3, file:'lesson-03.html', title:'الإنكودر: عين السيرفو', sub:'إنكريمنتال وأبسليوت، والريزولوشن بالـ PPR والـ bits، ولماذا يؤثر في الدقة',
+    tasks:[['enc','تجربة قطع الكهرباء'],['res','تمرين الريزولوشن'],['quiz','أسئلة الدرس']]},
+  {id:'l4', n:4, file:'lesson-04.html', title:'الدرايف من الداخل', sub:'دائرة القوى (الموحّد وDC bus وIGBT) وثلاث حلقات متداخلة: التيار والسرعة والمكان',
+    tasks:[['blocks','المخطط التفاعلي'],['order','رتّب مسار الإشارة'],['quiz','أسئلة الدرس']]},
+  {id:'l5', n:5, file:'lesson-05.html', title:'توصيل السيرفو', sub:'القوى L1 L2 L3، والخرج U V W (الترتيب مهم)، والإنكودر، والفرامل، ومقاومة الفرملة، وCN1 وSTO',
+    tasks:[['wire','وصّل الدرايف'],['swap','جرّب خطأ U وW'],['quiz','أسئلة الدرس']]},
+  {id:'l6', n:6, file:'lesson-06.html', title:'أوضاع التشغيل', sub:'وضع المكان بالنبضات، ووضع السرعة، ووضع العزم، والمواضع الداخلية',
     tasks:[['modes','جرّب الأوضاع الأربعة'],['fmt','تمرين أشكال النبضات'],['quiz','أسئلة الدرس']]},
-  {id:'l7', n:7, file:'lesson-07.html', title:'الجير الإلكتروني', sub:'تحسب نسبة الجير من خطوة السكرو أو البكرة أو الجيربوكس، وتربط النبضة بالمللي',
-    tasks:[['calc','حاسبة الجير على 3 مكن'],['gdrill','تمارين الحساب'],['quiz','أسئلة الدرس']]},
-  {id:'l8', n:8, file:'lesson-08.html', title:'التيونينج وضبط الجين', sub:'نسبة الـ Inertia، جين المكان والسرعة، الأوتو تيون، والفرق بين البطء والاهتزاز',
-    tasks:[['auto','جرّب الأوتو تيون'],['tune','ظبط الجين بإيدك'],['quiz','أسئلة الدرس']]},
-  {id:'l9', n:9, file:'lesson-09.html', title:'الهومينج والحدود', sub:'حساس الهوم ونبضة Z، الليميت سويتش NC، الـ Software limits، والإنكودر الأبسليوت',
-    tasks:[['home','اعمل هومينج'],['limits','جرّب الحدود'],['quiz','أسئلة الدرس']]},
-  {id:'l10', n:10, file:'lesson-10.html', title:'التحكم من الـ PLC', sub:'النبضات وحدودها، الأنالوج، والشبكات زي EtherCAT و Profinet و Modbus',
-    tasks:[['pulse','محاكي نبضات الـ PLC'],['pick','اختار طريقة التحكم'],['quiz','أسئلة الدرس']]},
-  {id:'l11', n:11, file:'lesson-11.html', title:'الأعطال الشائعة', sub:'Overload و Position deviation و Encoder error و Overvoltage و Overspeed، ولعبة أعطال',
+  {id:'l7', n:7, file:'lesson-07.html', title:'الجير الإلكتروني', sub:'تحسب نسبة الجير من خطوة السكرو أو البكرة أو الجيربوكس، وتربط النبضة بالمليمتر',
+    tasks:[['calc','حاسبة الجير على 3 ماكينات'],['gdrill','تمارين الحساب'],['quiz','أسئلة الدرس']]},
+  {id:'l8', n:8, file:'lesson-08.html', title:'التيونينج وضبط الجين', sub:'نسبة الـ Inertia، وجين المكان والسرعة، والأوتو تيون، والفرق بين البطء والاهتزاز',
+    tasks:[['auto','جرّب الأوتو تيون'],['tune','اضبط الجين بيدك'],['quiz','أسئلة الدرس']]},
+  {id:'l9', n:9, file:'lesson-09.html', title:'الهومينج والحدود', sub:'حساس الهوم ونبضة Z، والليمت سويتش NC، والـ Software limits، والإنكودر الأبسليوت',
+    tasks:[['home','نفّذ الهومينج'],['limits','جرّب الحدود'],['quiz','أسئلة الدرس']]},
+  {id:'l10', n:10, file:'lesson-10.html', title:'التحكم من الـ PLC', sub:'النبضات وحدودها، والأنالوج، والشبكات مثل EtherCAT وProfinet وModbus',
+    tasks:[['pulse','محاكي نبضات الـ PLC'],['pick','اختر طريقة التحكم'],['quiz','أسئلة الدرس']]},
+  {id:'l11', n:11, file:'lesson-11.html', title:'الأعطال الشائعة', sub:'Overload وPosition deviation وEncoder error وOvervoltage وOverspeed، ولعبة أعطال',
     tasks:[['regen','تجربة الـ Overvoltage'],['fgame','لعبة الأعطال'],['quiz','أسئلة الدرس']]},
   {id:'l12', n:12, file:'lesson-12.html', title:'التشغيل لأول مرة + الامتحان النهائي', sub:'خطوات تشغيل سيرفو جديد بالترتيب، وامتحان نهائي على الكورس كله',
     tasks:[['steps','ترتيب خطوات التشغيل'],['final','الامتحان النهائي']]}
@@ -76,7 +76,7 @@ const fmt = (v, d) => { const p = Math.pow(10, d); const r = Math.round(v * p) /
 SV.fmt = fmt;
 function shuffle(a){ a = a.slice(); for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 /* answer options: shuffled, but catch-all choices («الاتنين», «ولا واحد», "Both", "None"…) always stay last */
-const QZ_PIN = /^(الاتنين|الاثنين|كلهم|ولا واحد|ولا حاجة|مفيش فرق|مش فارقة|زي بعض|كلهم زي بعض|both|neither|none|all of them|all the same|no difference|it makes no difference)$/i;
+const QZ_PIN = /^(لا فرق|لا فرق إطلاقًا|الاثنان|كلاهما|لا شيء|ولا أحد منهما|جميعها|الاتنين|الاثنين|كلهم|ولا واحد|ولا حاجة|مفيش فرق|مش فارقة|زي بعض|كلهم زي بعض|both|neither|none|all of them|all the same|no difference|it makes no difference)$/i;
 function qzOrder(o, keep){ const idx = o.map((_, i) => i); if (keep) return idx; const pin = idx.filter(i => QZ_PIN.test(String(o[i]).replace(/<[^>]*>/g, '').replace(/[⁦-⁩⁠.!]/g, '').trim())); return shuffle(idx.filter(i => !pin.includes(i))).concat(pin); }
 /* Latin / number runs inside an RTL option ("+24V", "0.05 A", "DC−", "حوالي +26 °C") would flip: isolate them as LTR */
 const QZ_LTR = /[+\-−±]?[0-9A-Za-zΩµ°][0-9A-Za-zΩµ°%.,:/·×_\-–−+ ]*[0-9A-Za-zΩµ°%+\-−]|[+\-−±]?[0-9A-Za-zΩµ°]/g;
@@ -139,7 +139,7 @@ SV.hubTheme = () => { const ch = $('header.top .chips'); if (ch) ch.appendChild(
 
 /* ---------------- select, then confirm ----------------
    tapping an option only selects it (.sel); right/wrong shows after the learner presses the check / confirm button */
-const QZ_T = {check:'صحّح إجاباتي', need:'جاوب على كل الأسئلة الأول', cnt:(n, t) => `جاوبت ${n} من ${t}`, ok:'تأكيد'};
+const QZ_T = {check:'صحّح إجاباتي', need:'أجب عن كل الأسئلة أولًا', cnt:(n, t) => `أجبت عن ${n} من ${t}`, ok:'تأكيد'};
 const QZ_CF = () => `<div class="dr-cf"><button type="button" class="btn pri dr-ok" disabled>${QZ_T.ok}</button></div>`;
 function qzSel(box, o){ $$('.qz-o', box).forEach(x => { const on = x === o; x.classList.toggle('sel', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); }); }
 function qzUnsel(box){ $$('.qz-o', box).forEach(x => { x.classList.remove('sel'); x.removeAttribute('aria-pressed'); }); }
@@ -194,7 +194,7 @@ SV.quiz = function(host, qs, opt){
       qzUnsel(box);
       $$('.qz-o', box).forEach(x => { x.disabled = true; const j = +x.dataset.i; if (j === it.q.a) x.classList.add('ok'); else if (j === i) x.classList.add('no'); });
       if (ok) box.classList.add('ok');
-      const f = $('.qz-f', box); f.className = 'qz-f ' + (ok ? 'ok' : 'no'); f.innerHTML = (ok ? 'صح. ' : 'مش دي. ') + (it.q.why || '');
+      const f = $('.qz-f', box); f.className = 'qz-f ' + (ok ? 'ok' : 'no'); f.innerHTML = (ok ? 'صحيح. ' : 'ليست هذه. ') + (it.q.why || '');
     });
     $('.qz-chk', host).hidden = true;
     finish();
@@ -202,7 +202,7 @@ SV.quiz = function(host, qs, opt){
   function finish(){
     const n = ans.filter(Boolean).length, tot = ans.length, ok = n / tot >= pass - 1e-9;
     const sum = $('.qz-sum', host); sum.hidden = false; sum.className = 'qz-sum ' + (ok ? 'ok' : 'no');
-    sum.innerHTML = `<b>نتيجتك: ${n} من ${tot}</b><span>${ok ? 'ممتاز، كده عدّيت ✓' : `محتاج ${Math.ceil(pass * tot - 1e-9)} صح على الأقل. راجع الشرح وجرّب تاني.`}</span><button type="button" class="btn" data-qz="again">${ok ? 'حلّ تاني' : 'جرّب تاني'}</button>`;
+    sum.innerHTML = `<b>نتيجتك: ${n} من ${tot}</b><span>${ok ? 'ممتاز، لقد نجحت ✓' : `تحتاج إلى ${Math.ceil(pass * tot - 1e-9)} إجابات صحيحة على الأقل. راجع الشرح وحاول مجددًا.`}</span><button type="button" class="btn" data-qz="again">${ok ? 'حل مسألة أخرى' : 'حاول مجددًا'}</button>`;
     if (ok && opt.lesson) SV.mark(opt.lesson, opt.task || 'quiz');
     if (opt.onDone) opt.onDone(n, tot, ok);
   }
@@ -219,10 +219,10 @@ SV.drill = function(host, gen, opt){
   opt = opt || {};
   const need = opt.need || 5;
   let ok = 0, tries = 0, cur = null, answered = false;
-  host.innerHTML = `<div class="dr"><div class="dr-top"><span class="dr-sc" aria-live="polite"></span><span class="bar dr-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${need}" aria-label="الإجابات الصح"><i></i></span></div><div class="dr-card"></div><div class="dr-act"><button type="button" class="btn pri dr-next" hidden>السؤال اللي بعده ←</button></div><p class="chal dr-chal">${opt.goal || `جاوب <b>${need}</b> صح عشان التمرين يتعلّم عليه.`}</p></div>`;
+  host.innerHTML = `<div class="dr"><div class="dr-top"><span class="dr-sc" aria-live="polite"></span><span class="bar dr-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${need}" aria-label="الإجابات الصح"><i></i></span></div><div class="dr-card"></div><div class="dr-act"><button type="button" class="btn pri dr-next" hidden>السؤال التالي ←</button></div><p class="chal dr-chal">${opt.goal || `أجب عن <b>${need}</b> إجابات صحيحة ليُسجَّل التمرين.`}</p></div>`;
   const fin = chal(host, '.dr-chal', opt.lesson, opt.task);
   const card = $('.dr-card', host), nx = $('.dr-next', host);
-  function score(){ $('.dr-sc', host).innerHTML = `صح: <b>${ok}</b> من ${tries}`; const p = Math.min(1, ok / need) * 100; $('.dr-bar i', host).style.width = p + '%'; $('.dr-bar', host).setAttribute('aria-valuenow', Math.min(ok, need)); }
+  function score(){ $('.dr-sc', host).innerHTML = `صحيح: <b>${ok}</b> من ${tries}`; const p = Math.min(1, ok / need) * 100; $('.dr-bar i', host).style.width = p + '%'; $('.dr-bar', host).setAttribute('aria-valuenow', Math.min(ok, need)); }
   function next(){
     cur = gen(); answered = false; nx.hidden = true;
     if (cur.input){
@@ -236,7 +236,7 @@ SV.drill = function(host, gen, opt){
   function result(good, chosen){
     answered = true; tries++; if (good) ok++;
     const f = $('.qz-f', card); f.className = 'qz-f ' + (good ? 'ok' : 'no');
-    f.innerHTML = (good ? 'صح. ' : 'مش مظبوطة. ') + (cur.ans != null && !good ? `الإجابة: <b class="eq">${cur.ans}</b>. ` : '') + (cur.why || '');
+    f.innerHTML = (good ? 'صحيح. ' : 'غير صحيحة. ') + (cur.ans != null && !good ? `الإجابة: <b class="eq">${cur.ans}</b>. ` : '') + (cur.why || '');
     if (!cur.input) $$('.qz-o', card).forEach(x => { x.disabled = true; if (+x.dataset.i === cur.a) x.classList.add('ok'); else if (x === chosen) x.classList.add('no'); });
     else $$('input,button', card).forEach(x => x.disabled = true);
     score(); nx.hidden = false;
@@ -244,7 +244,7 @@ SV.drill = function(host, gen, opt){
     nx.focus({preventScroll:true});
   }
   card.addEventListener('click', e => { if (answered) return; const b = pickConfirm(e, card); if (b) result(+b.dataset.i === cur.a, b); });
-  card.addEventListener('submit', e => { e.preventDefault(); if (answered) return; const v = num($('input', card).value); if (!isFinite(v)){ const f = $('.qz-f', card); f.className = 'qz-f no'; f.textContent = 'اكتب رقم.'; return; } result(!!cur.check(v)); });
+  card.addEventListener('submit', e => { e.preventDefault(); if (answered) return; const v = num($('input', card).value); if (!isFinite(v)){ const f = $('.qz-f', card); f.className = 'qz-f no'; f.textContent = 'اكتب رقمًا.'; return; } result(!!cur.check(v)); });
   nx.addEventListener('click', next);
   next();
   return {get cur(){ return cur; }, answer(v){ if (cur.input){ $('input', card).value = v; $('.dr-in button', card).click(); } else { const b = card.querySelector(`.qz-o[data-i="${v}"]`); if (b){ b.click(); $('.dr-ok', card).click(); } } }, next, get ok(){ return ok; }};
@@ -255,12 +255,12 @@ SV.caseGame = function(host, cases, opt){
   opt = opt || {};
   const need = opt.need || Math.ceil(cases.length * 0.7);
   const order = shuffle(cases.map((_, i) => i)); let k = 0, ok = 0, ans = 0;
-  host.innerHTML = `<div class="dr-top"><span class="cg-sc" aria-live="polite"></span><span class="bar"><i class="cg-bar"></i></span></div><div class="cg-card dr-card"></div><div class="dr-act"><button type="button" class="btn pri cg-next" hidden>اللي بعده ←</button></div><p class="chal cg-chal">${opt.goal || `حلّ <b>${need}</b> حالات صح على الأقل.`}</p>`;
+  host.innerHTML = `<div class="dr-top"><span class="cg-sc" aria-live="polite"></span><span class="bar"><i class="cg-bar"></i></span></div><div class="cg-card dr-card"></div><div class="dr-act"><button type="button" class="btn pri cg-next" hidden>التالي ←</button></div><p class="chal cg-chal">${opt.goal || `حلّ <b>${need}</b> حالات صحيحة على الأقل.`}</p>`;
   const q = s => $(s, host), fin = chal(host, '.cg-chal', opt.lesson, opt.task), card = q('.cg-card');
-  function score(){ q('.cg-sc').innerHTML = `الحالة <b>${Math.min(k + 1, cases.length)}</b> من ${cases.length} · صح: <b>${ok}</b>`; q('.cg-bar').style.width = (ok / need * 100 > 100 ? 100 : ok / need * 100) + '%'; }
+  function score(){ q('.cg-sc').innerHTML = `الحالة <b>${Math.min(k + 1, cases.length)}</b> من ${cases.length} · صحيح: <b>${ok}</b>`; q('.cg-bar').style.width = (ok / need * 100 > 100 ? 100 : ok / need * 100) + '%'; }
   function show(){
     const c = cases[order[k]], oi = qzOrder(c.o, c.keep);
-    card.innerHTML = `<h4>${c.t}</h4><div class="dr-q" style="font-weight:500">${c.s}</div>${c.clues && c.clues.length ? `<div class="chips-t">${c.clues.map((cl, i) => `<button type="button" class="btn" data-cl="${i}" aria-expanded="false">افحص: ${cl[0]}</button>`).join('')}</div><div class="cg-clue"></div>` : ''}<p style="margin:4px 0 0;font-weight:600">السبب غالبًا إيه؟</p><div class="qz-a">${oi.map(i => `<button type="button" class="btn qz-o" data-i="${i}">${qzTxt(c.o[i])}</button>`).join('')}</div>${QZ_CF()}<p class="qz-f" aria-live="polite"></p>`;
+    card.innerHTML = `<h4>${c.t}</h4><div class="dr-q" style="font-weight:500">${c.s}</div>${c.clues && c.clues.length ? `<div class="chips-t">${c.clues.map((cl, i) => `<button type="button" class="btn" data-cl="${i}" aria-expanded="false">افحص: ${cl[0]}</button>`).join('')}</div><div class="cg-clue"></div>` : ''}<p style="margin:4px 0 0;font-weight:600">ما السبب غالبًا؟</p><div class="qz-a">${oi.map(i => `<button type="button" class="btn qz-o" data-i="${i}">${qzTxt(c.o[i])}</button>`).join('')}</div>${QZ_CF()}<p class="qz-f" aria-live="polite"></p>`;
     q('.cg-next').hidden = true; ans = 0; score();
   }
   card.addEventListener('click', e => {
@@ -269,10 +269,10 @@ SV.caseGame = function(host, cases, opt){
     if (ans) return; const b = pickConfirm(e, card); if (!b) return;
     const c = cases[order[k]], good = +b.dataset.i === c.a; ans = 1; if (good) ok++;
     $$('.qz-o', card).forEach(x => { x.disabled = true; if (+x.dataset.i === c.a) x.classList.add('ok'); else if (x === b) x.classList.add('no'); });
-    const f = $('.qz-f', card); f.className = 'qz-f ' + (good ? 'ok' : 'no'); f.innerHTML = (good ? 'صح. ' : 'مش ده. ') + c.why;
+    const f = $('.qz-f', card); f.className = 'qz-f ' + (good ? 'ok' : 'no'); f.innerHTML = (good ? 'صحيح. ' : 'ليس هذا. ') + c.why;
     score(); if (ok >= need) fin();
     const nx = q('.cg-next'); nx.hidden = false;
-    nx.textContent = k + 1 < cases.length ? 'الحالة اللي بعدها ←' : (ok >= need ? 'العب تاني' : 'جرّب تاني من الأول');
+    nx.textContent = k + 1 < cases.length ? 'الحالة التالية ←' : (ok >= need ? 'العب مجددًا' : 'ابدأ من جديد');
   });
   q('.cg-next').addEventListener('click', () => { if (k + 1 < cases.length) k++; else { k = 0; ok = 0; order.sort(() => Math.random() - 0.5); } show(); });
   show();
@@ -335,7 +335,7 @@ SV.art = {
 /* ================= generic: put steps in order ================= */
 SV.order = function(host, items, opt){
   opt = opt || {};
-  host.innerHTML = `<div class="ord"><ol class="steps-l ord-done"></ol><p class="muted ord-lead">${opt.lead || 'دوس على الخطوة اللي عليها الدور:'}</p><div class="ord-pool"></div><p class="msg ord-msg" aria-live="polite"></p><div class="wd-ctl"><button type="button" class="btn ord-reset">ابدأ من الأول</button></div><p class="chal ord-chal">${opt.goal || 'رتّب كل الخطوات صح.'}</p></div>`;
+  host.innerHTML = `<div class="ord"><ol class="steps-l ord-done"></ol><p class="muted ord-lead">${opt.lead || 'اضغط على الخطوة التي حان دورها:'}</p><div class="ord-pool"></div><p class="msg ord-msg" aria-live="polite"></p><div class="wd-ctl"><button type="button" class="btn ord-reset">ابدأ من جديد</button></div><p class="chal ord-chal">${opt.goal || 'رتّب كل الخطوات بشكل صحيح.'}</p></div>`;
   const fin = chal(host, '.ord-chal', opt.lesson, opt.task);
   let pos = 0, pool = [];
   const done = $('.ord-done', host), pl = $('.ord-pool', host), msg = $('.ord-msg', host);
@@ -347,8 +347,8 @@ SV.order = function(host, items, opt){
   function reset(){ pos = 0; pool = shuffle(items.map((_, i) => i)); render(); msg.className = 'msg'; msg.textContent = ''; }
   pl.addEventListener('click', e => {
     const b = e.target.closest('[data-o]'); if (!b) return; const i = +b.dataset.o;
-    if (i === pos){ pos++; render(); msg.className = 'msg ok'; msg.innerHTML = pos === items.length ? (opt.done || 'ترتيب مظبوط ✓') : ((opt.why && opt.why[i]) || 'صح، كمّل.'); if (pos === items.length) fin(); }
-    else { msg.className = 'msg bad'; msg.innerHTML = 'مش دي اللي عليها الدور. ' + ((opt.wrong && opt.wrong[i]) || 'فكّر إيه اللي لازم يحصل الأول.'); }
+    if (i === pos){ pos++; render(); msg.className = 'msg ok'; msg.innerHTML = pos === items.length ? (opt.done || 'ترتيب صحيح ✓') : ((opt.why && opt.why[i]) || 'صحيح، أكمل.'); if (pos === items.length) fin(); }
+    else { msg.className = 'msg bad'; msg.innerHTML = 'ليس دورها الآن. ' + ((opt.wrong && opt.wrong[i]) || 'فكّر: ما الذي يجب أن يحدث أولًا؟'); }
   });
   $('.ord-reset', host).addEventListener('click', reset);
   reset();
@@ -364,23 +364,23 @@ SV.caseDrill = function(cases, opts){
 /* ================= L1: open loop vs closed loop ================= */
 SV.loopSim = function(host, opt){
   opt = opt || {};
-  host.innerHTML = `<div class="tabs" role="group" aria-label="نوع التحكم"><button type="button" class="btn" data-m="open">لوب مفتوح (ستيبر)</button><button type="button" class="btn" data-m="closed">لوب مقفول (سيرفو)</button></div>
+  host.innerHTML = `<div class="tabs" role="group" aria-label="نوع التحكم"><button type="button" class="btn" data-m="open">حلقة مفتوحة (ستيبر)</button><button type="button" class="btn" data-m="closed">حلقة مغلقة (سيرفو)</button></div>
   <div class="wd-art ls-art"></div>
-  <div class="read"><div><span>الأمر</span><b class="r-cmd">0°</b></div><div><span>الكنترولر فاكر</span><b class="r-bel">0°</b></div><div><span>المكان الحقيقي</span><b class="r-act">0°</b></div><div><span>التيار</span><b class="r-cur">0%</b></div></div>
-  <div class="wd-ctl"><button type="button" class="btn pri" data-a="mv">اتحرك 90° ↻</button><button type="button" class="btn" data-a="load" aria-pressed="false">حمل تقيل على العمود</button><button type="button" class="btn" data-a="reset">رجّع للصفر</button></div>
+  <div class="read"><div><span>الأمر</span><b class="r-cmd">0°</b></div><div><span>ما يظنه الكنترولر</span><b class="r-bel">0°</b></div><div><span>المكان الفعلي</span><b class="r-act">0°</b></div><div><span>التيار</span><b class="r-cur">0%</b></div></div>
+  <div class="wd-ctl"><button type="button" class="btn pri" data-a="mv">تحرّك 90° ↻</button><button type="button" class="btn" data-a="load" aria-pressed="false">حمل ثقيل على العمود</button><button type="button" class="btn" data-a="reset">ارجع إلى الصفر</button></div>
   <p class="statline ls-msg" aria-live="polite"></p>
-  <p class="chal ls-chal">شغّل <b>«حمل تقيل»</b> وحرّك <b>في الوضعين</b>: شوف الستيبر بيضيّع خطوات من غير ما يعرف، والسيرفو بيزوّد التيار ويوصل.</p>`;
+  <p class="chal ls-chal">شغّل <b>«حمل ثقيل»</b> وحرّك <b>في الوضعين</b>: ترى الستيبر يفقد خطوات دون أن يعلم، والسيرفو يزيد التيار ويصل.</p>`;
   const q = s => $(s, host), fin = chal(host, '.ls-chal', opt.lesson, opt.task || 'loop');
   const S = {mode:'open', load:false, cmd:0, bel:0, act:0, tgt:0, seen:{}};
   function draw(){
     const fb = S.mode === 'closed';
-    q('.ls-art').innerHTML = `<svg viewBox="0 0 360 222" role="img" aria-label="رسمة اللوب">
-      <rect x="8" y="20" width="104" height="62" rx="8" class="w-pn" stroke="currentColor" style="stroke:var(--line)"/>${tx(60, 44, 'الكنترولر', {a:'middle', ar:1, w:700})}${tx(60, 66, 'فاكر: ' + Math.round(S.bel) + '°', {a:'middle', ar:1, s:12, c:'w-mu'})}
+    q('.ls-art').innerHTML = `<svg viewBox="0 0 360 222" role="img" aria-label="مخطط الحلقة">
+      <rect x="8" y="20" width="104" height="62" rx="8" class="w-pn" stroke="currentColor" style="stroke:var(--line)"/>${tx(60, 44, 'الكنترولر', {a:'middle', ar:1, w:700})}${tx(60, 66, 'يظن: ' + Math.round(S.bel) + '°', {a:'middle', ar:1, s:12, c:'w-mu'})}
       <path d="M112 50 H200 V62" fill="none" class="w-acs" stroke-width="3" marker-end="url(#ar1)"/>${tx(156, 42, 'أمر', {a:'middle', ar:1, s:11, c:'w-mu'})}
       <defs><marker id="ar1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker><marker id="ar2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#2b7a3d"/></marker></defs>
       ${dial(240, 128, 50, S.act, {ghost:S.cmd})}
       ${S.load ? `<rect x="288" y="104" width="62" height="48" rx="6" fill="#8b5a2b" stroke="#5c3a1a"/>${tx(319, 133, 'حمل', {a:'middle', ar:1, w:700, st:'fill:#fff'})}` : ''}
-      ${fb ? `<path d="M240 186 V212 H40 V82" fill="none" stroke="#2b7a3d" stroke-width="3" stroke-dasharray="7 5" class="flow" style="--dur:.7s" marker-end="url(#ar2)"/>${tx(140, 204, 'الإنكودر بيرجّع المكان الحقيقي', {a:'middle', ar:1, s:11, st:'fill:#2b7a3d;font-weight:600'})}` : tx(110, 196, 'مفيش رجوع: الكنترولر مش عارف الموتور وصل فين', {a:'middle', ar:1, s:11, c:'w-mu'})}
+      ${fb ? `<path d="M240 186 V212 H40 V82" fill="none" stroke="#2b7a3d" stroke-width="3" stroke-dasharray="7 5" class="flow" style="--dur:.7s" marker-end="url(#ar2)"/>${tx(140, 204, 'الإنكودر يُرجع المكان الفعلي', {a:'middle', ar:1, s:11, st:'fill:#2b7a3d;font-weight:600'})}` : tx(110, 196, 'لا رجوع: الكنترولر لا يعرف أين وصل المحرك', {a:'middle', ar:1, s:11, c:'w-mu'})}
       ${tx(240, 34, S.mode === 'open' ? 'ستيبر' : 'سيرفو', {a:'middle', ar:1, w:700})}
     </svg>`;
   }
@@ -388,10 +388,10 @@ SV.loopSim = function(host, opt){
   function readout(){
     q('.r-cmd').textContent = Math.round(S.cmd) + '°'; q('.r-bel').textContent = Math.round(S.bel) + '°'; q('.r-act').textContent = Math.round(S.act) + '°'; q('.r-cur').textContent = cur() + '%';
     const err = Math.round(S.cmd - S.act), moving = Math.abs(S.tgt - S.act) > 0.5, m = q('.ls-msg');
-    if (moving){ stc(m, ''); m.textContent = 'بيتحرك…'; return; }
-    if (Math.abs(err) >= 1){ stc(m, 'bad'); m.innerHTML = `الموتور ناقص <b class="eq">${err}°</b> عن الأمر، والكنترولر <b>مش واخد باله</b> لأنه مفيش إنكودر بيقوله. ده اسمه <b>ضياع خطوات (Missed steps)</b>.`; }
-    else if (S.cmd){ stc(m, 'ok'); m.innerHTML = S.mode === 'closed' ? (S.load ? 'وصل بالظبط رغم الحمل: الدرايف شاف الغلط من الإنكودر وزوّد التيار (العزم) لحد ما وصل.' : 'وصل بالظبط. لاحظ التيار قليل وهو واقف: السيرفو بياخد على قد الحمل بس.') : 'وصل بالظبط لأن الحمل خفيف. الستيبر بياخد تيار ثابت حتى وهو واقف.'; }
-    else { stc(m, ''); m.textContent = 'اختار نوع التحكم ودوس «اتحرك 90°».'; }
+    if (moving){ stc(m, ''); m.textContent = 'يتحرك…'; return; }
+    if (Math.abs(err) >= 1){ stc(m, 'bad'); m.innerHTML = `المحرك متأخر <b class="eq">${err}°</b> عن الأمر، والكنترولر <b>لا ينتبه</b> لأنه لا يوجد إنكودر يخبره. هذا اسمه <b>فقد الخطوات (Missed steps)</b>.`; }
+    else if (S.cmd){ stc(m, 'ok'); m.innerHTML = S.mode === 'closed' ? (S.load ? 'وصل بالضبط رغم الحمل: رأى الدرايف الخطأ من الإنكودر وزاد التيار (العزم) حتى وصل.' : 'وصل بالضبط. لاحظ أن التيار قليل وهو متوقف: السيرفو يأخذ بقدر الحمل فقط.') : 'وصل بالضبط لأن الحمل خفيف. الستيبر يأخذ تيارًا ثابتًا حتى وهو متوقف.'; }
+    else { stc(m, ''); m.textContent = 'اختر نوع التحكم واضغط «تحرّك 90°».'; }
   }
   function setMode(m){ S.mode = m; $$('[data-m]', host).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === m))); S.cmd = S.bel = S.act = S.tgt = 0; draw(); readout(); }
   onAct(host, '[data-m]', b => setMode(b.dataset.m));
@@ -414,35 +414,35 @@ SV.loopSim = function(host, opt){
   setMode('open');
   return {S, move(){ q('[data-a=mv]').click(); }, mode: setMode, load(on){ if (S.load !== on) q('[data-a=load]').click(); }};
 };
-SV.MOTOR_OPTS = ['سيرفو', 'ستيبر', 'انفرتر + موتور إندكشن'];
+SV.MOTOR_OPTS = ['سيرفو', 'ستيبر', 'انفرتر + محرك إندكشن'];
 SV.MOTOR_CASES = [
-  {s:'مروحة شفط كبيرة في مصنع، سرعتها بتتغيّر على حسب الحرارة، ومش مهم هي واقفة فين.', a:2, why:'المطلوب سرعة بس. الانفرتر أرخص وأبسط بكتير.'},
-  {s:'ذراع بيلقط علب من سير ويحطها في كرتونة بدقة 0.1 mm وبسرعة عالية.', a:0, why:'دقة مكان + سرعة + حمل بيتغيّر = سيرفو.'},
-  {s:'طابعة 3D صغيرة رخيصة، الحمل خفيف وثابت والسرعة قليلة.', a:1, why:'الحمل ثابت وخفيف والميزانية قليلة: الستيبر بيكفّي من غير إنكودر.'},
-  {s:'مكنة قص على الطول: الخامة لازم تتقص كل 1250 mm بالظبط، 60 قطعة في الدقيقة.', a:0, why:'تسارع عالي ومكان مظبوط كل مرة: سيرفو.'},
-  {s:'طلمبة مياه شغّالة 24 ساعة على ضغط ثابت.', a:2, why:'تحكم سرعة عادي بالـ PID على الضغط: انفرتر.'},
-  {s:'محور CNC بيتحرك 30 m/min ولازم يعرف مكانه حتى لو الحمل اتغيّر فجأة.', a:0, why:'لازم feedback حقيقي من الإنكودر: سيرفو.'},
-  {s:'محبس دوّار صغير بيلف ربع لفة كل شوية، الحمل خفيف جدًا والميزانية قليلة.', a:1, why:'حركة بسيطة بحمل خفيف: ستيبر رخيص يكفّي.'},
-  {s:'سير ناقل طويل في مخزن، المهم السرعة وبس.', a:2, why:'مفيش مكان مطلوب: انفرتر.'},
-  {s:'مكنة تغليف: سكينة القص لازم تقص بالظبط على علامة الطباعة اللي على الفيلم.', a:0, why:'تزامن ومكان مظبوط وتسارع عالي: سيرفو.'},
-  {s:'كاميرا مراقبة بتلف ببطء على كام مكان ثابت.', a:1, why:'سرعة قليلة وحمل خفيف وثابت: ستيبر.'}
+  {s:'مروحة شفط كبيرة في مصنع، تتغيّر سرعتها حسب الحرارة، ولا يهم أين تتوقف.', a:2, why:'المطلوب سرعة فقط. الانفرتر أرخص وأبسط بكثير.'},
+  {s:'ذراع يلتقط علبًا من سير ويضعها في كرتونة بدقة 0.1 mm وبسرعة عالية.', a:0, why:'دقة مكان + سرعة + حمل متغيّر = سيرفو.'},
+  {s:'طابعة 3D صغيرة رخيصة، الحمل خفيف وثابت والسرعة قليلة.', a:1, why:'الحمل ثابت وخفيف والميزانية قليلة: الستيبر يكفي دون إنكودر.'},
+  {s:'ماكينة قص على الطول: يجب قص الخامة كل 1250 mm بالضبط، 60 قطعة في الدقيقة.', a:0, why:'تسارع عالٍ ومكان دقيق في كل مرة: سيرفو.'},
+  {s:'مضخة مياه تعمل 24 ساعة على ضغط ثابت.', a:2, why:'تحكم عادي في السرعة بالـ PID على الضغط: انفرتر.'},
+  {s:'محور CNC يتحرك 30 m/min ويجب أن يعرف مكانه حتى لو تغيّر الحمل فجأة.', a:0, why:'يلزم feedback حقيقي من الإنكودر: سيرفو.'},
+  {s:'محبس دوّار صغير يدور ربع لفة بين حين وآخر، والحمل خفيف جدًا والميزانية قليلة.', a:1, why:'حركة بسيطة بحمل خفيف: ستيبر رخيص يكفي.'},
+  {s:'سير ناقل طويل في مخزن، المهم السرعة فقط.', a:2, why:'لا مكان مطلوب: انفرتر.'},
+  {s:'ماكينة تغليف: يجب أن تقص السكين بالضبط على علامة الطباعة الموجودة على الفيلم.', a:0, why:'تزامن ومكان دقيق وتسارع عالٍ: سيرفو.'},
+  {s:'كاميرا مراقبة تدور ببطء على عدة أماكن ثابتة.', a:1, why:'سرعة قليلة وحمل خفيف وثابت: ستيبر.'}
 ];
 
 /* ================= L2: motor parts ================= */
 SV.PARTS = [
-  {k:'stator', n:1, x:165, y:52, t:'الستاتور (الملفات)', d:'ملفات نحاس تلاتة فاز ثابتة في جسم الموتور. الدرايف بيبعتلها تيار بيعمل <b>مجال مغناطيسي بيلف</b>. الحرارة بتطلع من هنا، عشان كده جسم الموتور هو اللي بيسخن.'},
-  {k:'rotor', n:2, x:165, y:100, t:'الروتور بمغناطيس دائم', d:'مغناطيس قوي (نيوديميوم) لازق على الروتور. ده اللي بيخلّيه <b>موتور متزامن PMSM</b>: بيلف مع المجال بالظبط من غير Slip زي الإندكشن، وعزمه عالي وهو صغير. عشان كده لو لفّيت عمود سيرفو بإيدك وأطرافه U V W مقصورة هتلاقيه تقيل.'},
-  {k:'shaft', n:3, x:40, y:100, t:'العمود والرولمان', d:'العمود بيطلع العزم للحمل، وغالبًا فيه خابور (Key) أو ناعم للكوبلنج. <b>متخبطش العمود بشاكوش</b> عشان الإنكودر اللي ورا حساس جدًا للخبط.'},
-  {k:'brake', n:4, x:265, y:100, t:'الفرامل (اختيارية)', d:'فرامل <b>بتمسك لما الكهربا تتشال</b> (Fail-safe) وبتفتح لما تاخد <span class="eq">24 V DC</span>. وظيفتها تمسك الحمل وهو واقف (زي محور رأسي) مش إنها توقف الموتور وهو ماشي. الدرايف بيفتحها بعد Servo ON وبيقفلها قبل Servo OFF.'},
-  {k:'enc', n:5, x:310, y:100, t:'الإنكودر', d:'على ضهر الموتور، متركّب على نفس العمود. بيقول للدرايف <b>العمود فين بالظبط وبيلف بسرعة كام</b>، آلاف المرات في الثانية. من غيره مفيش سيرفو. هتفهمه بالتفصيل في الدرس 3.'},
-  {k:'conn', n:6, x:157, y:26, t:'الكونكتورات', d:'غالبًا اتنين: <b>كونكتور الباور</b> (U V W و PE وأحيانًا سلكين الفرامل) و<b>كونكتور الإنكودر</b>. كل كابل ليه مكانه ومينفعش تبدّلهم، وكابل الإنكودر لازم يكون مشيلد.'}
+  {k:'stator', n:1, x:165, y:52, t:'الستاتور (الملفات)', d:'ملفات نحاس ثلاثية الفاز ثابتة في جسم المحرك. يرسل إليها الدرايف تيارًا يكوّن <b>مجالًا مغناطيسيًا دوّارًا</b>. الحرارة تخرج من هنا، ولذلك يسخن جسم المحرك.'},
+  {k:'rotor', n:2, x:165, y:100, t:'الروتور بمغناطيس دائم', d:'مغناطيس قوي (نيوديميوم) ملصق على الروتور. هذا ما يجعله <b>محركًا متزامنًا PMSM</b>: يدور مع المجال تمامًا دون Slip مثل الإندكشن، وعزمه عالٍ رغم صغره. لذلك إذا أدرت عمود سيرفو بيدك وأطرافه U V W مقصورة فستجده ثقيلًا.'},
+  {k:'shaft', n:3, x:40, y:100, t:'العمود والرولمان', d:'العمود ينقل العزم إلى الحمل، وغالبًا فيه خابور (Key) أو يكون أملس للكوبلنج. <b>لا تطرق العمود بالشاكوش</b> لأن الإنكودر الذي خلفه حساس جدًا للصدمات.'},
+  {k:'brake', n:4, x:265, y:100, t:'الفرامل (اختيارية)', d:'فرامل <b>تمسك عند إزالة الكهرباء</b> (Fail-safe) وتفتح عندما تأخذ <span class="eq">24 V DC</span>. وظيفتها إمساك الحمل وهو متوقف (مثل المحور الرأسي) لا إيقاف المحرك أثناء دورانه. يفتحها الدرايف بعد Servo ON ويغلقها قبل Servo OFF.'},
+  {k:'enc', n:5, x:310, y:100, t:'الإنكودر', d:'على ظهر المحرك، مركّب على العمود نفسه. يخبر الدرايف <b>بمكان العمود بالضبط وسرعة دورانه</b>، آلاف المرات في الثانية. ودونه لا يوجد سيرفو. ستفهمه بالتفصيل في الدرس 3.'},
+  {k:'conn', n:6, x:157, y:26, t:'الكونكتورات', d:'غالبًا اثنان: <b>كونكتور القوى</b> (U V W وPE وأحيانًا سلكا الفرامل) و<b>كونكتور الإنكودر</b>. لكل كابل مكانه ولا يجوز تبديلهما، ويجب أن يكون كابل الإنكودر مغلّفًا بشيلد.'}
 ];
 SV.motorParts = function(host, opt){
   opt = opt || {};
-  host.innerHTML = `<div class="sim-grid two-col"><div class="wd-art mp-art"></div><div class="mp-info box" aria-live="polite">دوس على أي رقم في الرسمة.</div></div>
-  <div class="wd-ctl"><button type="button" class="btn" data-a="brake" aria-pressed="true">موتور بفرامل</button><button type="button" class="btn" data-a="spin" aria-pressed="false">شوف الروتور بيلف</button></div>
+  host.innerHTML = `<div class="sim-grid two-col"><div class="wd-art mp-art"></div><div class="mp-info box" aria-live="polite">اضغط على أي رقم في الرسم.</div></div>
+  <div class="wd-ctl"><button type="button" class="btn" data-a="brake" aria-pressed="true">محرك بفرامل</button><button type="button" class="btn" data-a="spin" aria-pressed="false">شاهد الروتور يدور</button></div>
   <div class="wd-art mp-x" hidden></div>
-  <p class="chal mp-chal">افتح <b>الـ 6 أجزاء</b> كلهم.</p>`;
+  <p class="chal mp-chal">افتح <b>الأجزاء الـ 6</b> كلها.</p>`;
   const q = s => $(s, host), fin = chal(host, '.mp-chal', opt.lesson, opt.task || 'parts');
   let brake = true, seen = {}, cur = null, rot = 0;
   function draw(){
@@ -463,12 +463,12 @@ SV.motorParts = function(host, opt){
     </svg>`;
   }
   function cross(){
-    const cx = 90, cy = 90; let s = `<svg viewBox="0 0 360 180" role="img" aria-label="قطاع عرضي: الروتور بيلف مع المجال">`;
+    const cx = 90, cy = 90; let s = `<svg viewBox="0 0 360 180" role="img" aria-label="قطاع عرضي: الروتور يدور مع المجال">`;
     for (let i = 0; i < 9; i++){ const a = i * 40, ph = ((rot * 4 - a) % 360 + 360) % 360, on = ph < 90 || ph > 330; const p = pol(cx, cy, 70, a); s += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="13" fill="${on ? '#ffb300' : '#c97a32'}" stroke="#8a4f17"/>`; }
     s += `<circle cx="${cx}" cy="${cy}" r="48" fill="#7d878e"/>`;
     for (let i = 0; i < 8; i++){ const a0 = rot + i * 45; let d = 'M' + P2(pol(cx, cy, 47, a0 - 18)); d += ' A47 47 0 0 1 ' + P2(pol(cx, cy, 47, a0 + 18)) + ' L' + P2(pol(cx, cy, 36, a0 + 18)) + ' A36 36 0 0 0 ' + P2(pol(cx, cy, 36, a0 - 18)) + 'Z'; s += `<path d="${d}" fill="${i % 2 ? '#2f7fd8' : '#e4572e'}"/>`; }
     s += `<circle cx="${cx}" cy="${cy}" r="9" fill="#c3cad0"/>`;
-    s += tx(250, 60, 'الملفات اللي منوّرة = المجال', {a:'middle', ar:1, s:12}) + tx(250, 82, 'المغناطيس بيلف معاه بالظبط', {a:'middle', ar:1, s:12}) + tx(250, 104, '(Synchronous: مفيش Slip)', {a:'middle', ar:1, s:12, c:'w-mu'}) + tx(250, 136, 'أحمر N · أزرق S', {a:'middle', ar:1, s:11, c:'w-mu'});
+    s += tx(250, 60, 'الملفات المضيئة = المجال', {a:'middle', ar:1, s:12}) + tx(250, 82, 'المغناطيس يدور معه تمامًا', {a:'middle', ar:1, s:12}) + tx(250, 104, '(Synchronous: لا Slip)', {a:'middle', ar:1, s:12, c:'w-mu'}) + tx(250, 136, 'أحمر N · أزرق S', {a:'middle', ar:1, s:11, c:'w-mu'});
     q('.mp-x').innerHTML = s + '</svg>';
   }
   function show(k){
@@ -479,7 +479,7 @@ SV.motorParts = function(host, opt){
   onAct(host, '[data-p]', t => show(t.dataset.p));
   let spin = false, anim = null;
   onAct(host, '[data-a]', b => {
-    if (b.dataset.a === 'brake'){ brake = !brake; b.setAttribute('aria-pressed', String(brake)); b.textContent = brake ? 'موتور بفرامل' : 'موتور من غير فرامل'; if (!brake && cur === 'brake') cur = null; draw(); }
+    if (b.dataset.a === 'brake'){ brake = !brake; b.setAttribute('aria-pressed', String(brake)); b.textContent = brake ? 'محرك بفرامل' : 'محرك بلا فرامل'; if (!brake && cur === 'brake') cur = null; draw(); }
     else { spin = !spin; b.setAttribute('aria-pressed', String(spin)); q('.mp-x').hidden = !spin; if (spin){ cross(); if (!anim) anim = animate(q('.mp-x'), dt => { if (!spin || reduced()) return; rot = (rot + dt * 30) % 360; cross(); }); } }
   });
   draw();
@@ -494,17 +494,17 @@ SV.MOTORS = [
 ];
 SV.plateSvg = function(m, brake){
   const row = (y, k, v) => `<text x="16" y="${y}" style="font:600 11px var(--font-mono);fill:#3b444b">${k}</text><text x="304" y="${y}" text-anchor="end" style="font:700 11px var(--font-mono);fill:#11171b">${v}</text>`;
-  return `<svg viewBox="0 0 320 210" role="img" aria-label="يافطة موتور سيرفو"><rect x="2" y="2" width="316" height="206" rx="8" fill="#e6e9eb" stroke="#8d99a1" stroke-width="2"/><rect x="2" y="2" width="316" height="26" rx="8" fill="#3b444b"/><text x="160" y="20" text-anchor="middle" style="font:700 12px var(--font-mono);fill:#e3e9ec">AC SERVO MOTOR · SM-${m.m}${brake ? 'B' : ''}</text>
+  return `<svg viewBox="0 0 320 210" role="img" aria-label="لوحة بيانات سيرفو موتور"><rect x="2" y="2" width="316" height="206" rx="8" fill="#e6e9eb" stroke="#8d99a1" stroke-width="2"/><rect x="2" y="2" width="316" height="26" rx="8" fill="#3b444b"/><text x="160" y="20" text-anchor="middle" style="font:700 12px var(--font-mono);fill:#e3e9ec">AC SERVO MOTOR · SM-${m.m}${brake ? 'B' : ''}</text>
   ${row(46, 'RATED OUTPUT', m.p + ' W')}${row(64, 'RATED TORQUE', m.t + ' N·m')}${row(82, 'MAX TORQUE', m.tm + ' N·m')}${row(100, 'RATED SPEED', m.n + ' r/min')}${row(118, 'MAX SPEED', m.nm + ' r/min')}${row(136, 'RATED CURRENT', m.i + ' A')}${row(154, 'ENCODER', m.enc + '-bit ABS')}${row(172, 'BRAKE', brake ? '24 V DC' : '—')}${row(194, 'IP65  ·  INS. F  ·  3PH 200V', '')}</svg>`;
 };
 SV.plateGen = function(){
   const m = pick(SV.MOTORS), brake = Math.random() < 0.6, k = pick(brake ? ['t', 'tm', 'p', 'enc', 'br', 't'] : ['t', 'tm', 'p', 'enc', 'tm']);
   const plate = SV.plateSvg(m, brake);
-  if (k === 't') return {q:'إيه <b>العزم المقنن</b> اللي الموتور ده يقدر يشيله على طول من غير ما يسخن؟' + plate, o:[m.t + ' N·m', m.tm + ' N·m', m.i + ' A', m.p + ' W'], a:0, why:'Rated torque = العزم المستمر. الـ Max torque لحظي بس (تسارع وفرملة).'};
-  if (k === 'tm') return {q:'الموتور ده يقدر يدّي <b>كام عزم لحظي</b> وقت التسارع؟' + plate, o:[m.tm + ' N·m', m.t + ' N·m', (m.t * 2).toFixed(2) + ' N·m', m.i + ' A'], a:0, why:'Max torque = حوالي 3 أضعاف المقنن، لثواني قليلة بس.'};
-  if (k === 'p') return {q:'اتأكد من القدرة: <b class="eq">P = T × 2π × n ÷ 60</b>. احسب القدرة بالوات من العزم المقنن والسرعة المقننة.' + plate, input:true, unit:'W', check:v => Math.abs(v - m.t * 2 * Math.PI * m.n / 60) <= Math.max(8, m.p * 0.04), ans:Math.round(m.t * 2 * Math.PI * m.n / 60) + ' W', why:`${m.t} × 2π × ${m.n} ÷ 60 ≈ ${Math.round(m.t * 2 * Math.PI * m.n / 60)} W، قريبة من الـ ${m.p} W المكتوبة.`};
-  if (k === 'enc') return {q:`الإنكودر مكتوب <b class="eq">${m.enc}-bit</b>. يعني كام عدّة (Count) في اللفة؟` + plate, o:[String(Math.pow(2, m.enc)), String(m.enc * 1000), String(Math.pow(2, m.enc - 1)), String(m.enc * 1024)], a:0, why:`2 أُس ${m.enc} = ${Math.pow(2, m.enc)} عدّة في اللفة.`};
-  return {q:'الفرامل بتاعة الموتور ده بتفتح على كام؟' + plate, o:['24 V DC', '220 V AC', '380 V AC', 'مش محتاجة كهربا'], a:0, why:'مكتوب على اليافطة 24 V DC، وبتفتح لما تاخد الكهربا وتمسك لما تتشال.'};
+  if (k === 't') return {q:'ما <b>العزم المقنن</b> الذي يتحمله هذا المحرك باستمرار دون أن يسخن؟' + plate, o:[m.t + ' N·m', m.tm + ' N·m', m.i + ' A', m.p + ' W'], a:0, why:'Rated torque = العزم المستمر. أما الـ Max torque فلحظي فقط (التسارع والفرملة).'};
+  if (k === 'tm') return {q:'كم <b>عزمًا لحظيًا</b> يعطي هذا المحرك أثناء التسارع؟' + plate, o:[m.tm + ' N·m', m.t + ' N·m', (m.t * 2).toFixed(2) + ' N·m', m.i + ' A'], a:0, why:'Max torque = نحو 3 أضعاف المقنن، لثوانٍ قليلة فقط.'};
+  if (k === 'p') return {q:'تحقّق من القدرة: <b class="eq">P = T × 2π × n ÷ 60</b>. احسب القدرة بالوات من العزم المقنن والسرعة المقننة.' + plate, input:true, unit:'W', check:v => Math.abs(v - m.t * 2 * Math.PI * m.n / 60) <= Math.max(8, m.p * 0.04), ans:Math.round(m.t * 2 * Math.PI * m.n / 60) + ' W', why:`${m.t} × 2π × ${m.n} ÷ 60 ≈ ${Math.round(m.t * 2 * Math.PI * m.n / 60)} W، قريبة من الـ ${m.p} W المكتوبة.`};
+  if (k === 'enc') return {q:`الإنكودر مكتوب عليه <b class="eq">${m.enc}-bit</b>. أي كم عدّة (Count) في اللفة؟` + plate, o:[String(Math.pow(2, m.enc)), String(m.enc * 1000), String(Math.pow(2, m.enc - 1)), String(m.enc * 1024)], a:0, why:`2 أُس ${m.enc} = ${Math.pow(2, m.enc)} عدّة في اللفة.`};
+  return {q:'على أي جهد تفتح فرامل هذا المحرك؟' + plate, o:['24 V DC', '220 V AC', '380 V AC', 'لا تحتاج إلى كهرباء'], a:0, why:'مكتوب على لوحة البيانات 24 V DC، وتفتح عندما تأخذ الكهرباء وتمسك عند إزالتها.'};
 };
 
 /* ================= L3: encoder, incremental vs absolute ================= */
@@ -512,10 +512,10 @@ SV.encoderSim = function(host, opt){
   opt = opt || {};
   host.innerHTML = `<div class="tabs" role="group" aria-label="نوع الإنكودر"><button type="button" class="btn" data-t="inc">إنكريمنتال</button><button type="button" class="btn" data-t="abs">أبسليوت (ببطارية)</button></div>
   <div class="wd-art en-art"></div>
-  <div class="read"><div><span>العدّاد في الدرايف</span><b class="r-cnt">0</b></div><div><span>المكان اللي الدرايف شايفه</span><b class="r-pos">0°</b></div><div><span>المكان الحقيقي</span><b class="r-true">0°</b></div></div>
-  <div class="wd-ctl"><button type="button" class="btn" data-a="l">↺ لف 45°</button><button type="button" class="btn" data-a="r">لف 45° ↻</button><button type="button" class="btn pri" data-a="pwr">⚡ اقطع الكهربا وارجعها</button></div>
+  <div class="read"><div><span>العدّاد في الدرايف</span><b class="r-cnt">0</b></div><div><span>المكان الذي يراه الدرايف</span><b class="r-pos">0°</b></div><div><span>المكان الفعلي</span><b class="r-true">0°</b></div></div>
+  <div class="wd-ctl"><button type="button" class="btn" data-a="l">↺ أدِر 45°</button><button type="button" class="btn" data-a="r">أدِر 45° ↻</button><button type="button" class="btn pri" data-a="pwr">⚡ اقطع الكهرباء وأعدها</button></div>
   <p class="statline en-msg" aria-live="polite"></p>
-  <p class="chal en-chal">لِف العمود شوية، وبعدين اعمل <b>«اقطع الكهربا»</b> مرة على <b>الإنكريمنتال</b> ومرة على <b>الأبسليوت</b> وقارن.</p>`;
+  <p class="chal en-chal">أدِر العمود قليلًا، ثم اضغط <b>«اقطع الكهرباء»</b> مرة على <b>الإنكريمنتال</b> ومرة على <b>الأبسليوت</b> وقارن.</p>`;
   const q = s => $(s, host), fin = chal(host, '.en-chal', opt.lesson, opt.task || 'enc');
   const S = {type:'inc', ang:0, vis:0, off:0, known:true, off2:false, busy:false, seen:{}};
   function draw(){
@@ -528,10 +528,10 @@ SV.encoderSim = function(host, opt){
       for (let r = 0; r < 4; r++){ const R1 = 80 - r * 11, R2 = R1 - 9, n = 2 << r; for (let i = 0; i < n; i++){ if ((i ^ (i >> 1)) & 1){ continue; } const a0 = a + i * 360 / n, a1 = a0 + 360 / n; s += `<path d="M${P2(pol(cx, cy, R1, a0))} A${R1} ${R1} 0 0 1 ${P2(pol(cx, cy, R1, a1))} L${P2(pol(cx, cy, R2, a1))} A${R2} ${R2} 0 0 0 ${P2(pol(cx, cy, R2, a0))}Z" fill="#1d2327"/>`; } }
     }
     s += `<circle cx="${cx}" cy="${cy}" r="20" fill="#59656e"/><circle cx="${cx}" cy="${cy}" r="6" fill="#cfd7dc"/><rect x="${cx - 9}" y="6" width="18" height="${S.type === 'inc' ? 52 : 52}" rx="3" fill="#2456c9" opacity=".85"/>`;
-    s += tx(cx, 196, S.type === 'inc' ? 'قنوات A و B ونبضة Z (الوردي)' : 'كل حتة في القرص ليها كود خاص بيها', {a:'middle', ar:1, s:11, c:'w-mu'});
+    s += tx(cx, 196, S.type === 'inc' ? 'قناتا A وB ونبضة Z (الوردية)' : 'لكل جزء في القرص كود خاص به', {a:'middle', ar:1, s:11, c:'w-mu'});
     const on = !S.off2;
     s += `<rect x="196" y="24" width="152" height="96" rx="8" fill="#2f363c"/><rect x="206" y="34" width="132" height="34" rx="4" fill="#120707"/><text x="330" y="58" text-anchor="end" style="font:700 18px var(--font-mono);fill:${on ? '#ff4d3a' : '#3a1a17'}">${on ? (S.known ? cnt() : '-----') : ''}</text>`;
-    s += tx(272, 92, on ? (S.known ? 'المكان معروف ✓' : 'المكان مجهول! محتاج هومينج') : 'الكهربا مقطوعة', {a:'middle', ar:1, s:12, st:'fill:' + (on ? (S.known ? '#5cc06f' : '#ffb300') : '#93a2ab') + ';font-weight:700'});
+    s += tx(272, 92, on ? (S.known ? 'المكان معروف ✓' : 'المكان مجهول! يلزم هومينج') : 'الكهرباء مقطوعة', {a:'middle', ar:1, s:12, st:'fill:' + (on ? (S.known ? '#5cc06f' : '#ffb300') : '#93a2ab') + ';font-weight:700'});
     s += tx(272, 110, S.type === 'inc' ? '10000 عدّة في اللفة' : '131072 عدّة في اللفة (17-bit)', {a:'middle', ar:1, s:10.5, st:'fill:#b9c1c7'});
     if (S.type === 'abs') s += `<rect x="220" y="140" width="104" height="34" rx="5" fill="#a86a00"/>` + tx(272, 162, 'بطارية للـ Multi-turn', {a:'middle', ar:1, s:11, st:'fill:#fff;font-weight:600'});
     q('.en-art').innerHTML = s + '</svg>';
@@ -543,7 +543,7 @@ SV.encoderSim = function(host, opt){
     q('.r-pos').textContent = S.off2 ? '—' : (S.type === 'inc' ? Math.round(S.ang - S.off) : Math.round(S.ang)) + '°';
     q('.r-true').textContent = Math.round(S.ang) + '°';
   }
-  function setType(t){ S.type = t; S.off = 0; S.known = true; S.ang = 0; S.vis = 0; $$('[data-t]', host).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.t === t))); msg('', 'لِف العمود وبعدين اقطع الكهربا.'); draw(); readout(); }
+  function setType(t){ S.type = t; S.off = 0; S.known = true; S.ang = 0; S.vis = 0; $$('[data-t]', host).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.t === t))); msg('', 'أدِر العمود ثم اقطع الكهرباء.'); draw(); readout(); }
   function msg(c, h){ const m = q('.en-msg'); stc(m, c); m.innerHTML = h; }
   function turn(d, then){ S.busy = true; const from = S.ang; S.ang += d; const t0 = performance.now(), dur = reduced() ? 1 : 500;
     (function st(){ const k = Math.min(1, (performance.now() - t0) / dur); S.vis = from + d * k; draw(); if (k < 1) requestAnimationFrame(st); else { S.busy = false; readout(); if (then) then(); } })(); }
@@ -551,11 +551,11 @@ SV.encoderSim = function(host, opt){
   onAct(host, '[data-a]', b => {
     if (S.busy) return; const a = b.dataset.a;
     if (a === 'l' || a === 'r'){ turn(a === 'l' ? -45 : 45); return; }
-    S.off2 = true; draw(); readout(); msg('warn', 'الكهربا مقطوعة… حد لف العمود بإيده (أو المحور نزل شوية بالتقل).');
+    S.off2 = true; draw(); readout(); msg('warn', 'الكهرباء مقطوعة… أدار أحدهم العمود بيده (أو نزل المحور قليلًا بفعل الثقل).');
     setTimeout(() => turn(75, () => setTimeout(() => {
       S.off2 = false;
-      if (S.type === 'inc'){ S.known = false; S.off = S.ang; msg('bad', 'رجعت الكهربا: الإنكريمنتال <b>بدأ يعد من الصفر</b> ومش عارف إن العمود اتحرك 75°. لازم تعمل <b>هومينج</b> قبل أي حركة، وإلا المكنة هتروح مكان غلط.'); }
-      else msg('ok', 'رجعت الكهربا: الأبسليوت <b>عارف مكانه على طول</b> حتى اللفة اللي اتحركت وهو مطفي (البطارية حافظة عدد اللفات). مفيش هومينج.');
+      if (S.type === 'inc'){ S.known = false; S.off = S.ang; msg('bad', 'عادت الكهرباء: <b>بدأ الإنكريمنتال العد من الصفر</b> ولا يعرف أن العمود تحرك 75°. يجب تنفيذ <b>هومينج</b> قبل أي حركة، وإلا ذهبت الماكينة إلى مكان خاطئ.'); }
+      else msg('ok', 'عادت الكهرباء: <b>الأبسليوت يعرف مكانه فورًا</b> حتى اللفة التي تحركها وهو مطفأ (البطارية تحفظ عدد اللفات). لا حاجة إلى هومينج.');
       S.seen[S.type] = 1; draw(); readout(); if (S.seen.inc && S.seen.abs) fin();
     }, reduced() ? 1 : 400)), reduced() ? 1 : 500);
   });
@@ -564,53 +564,53 @@ SV.encoderSim = function(host, opt){
 };
 SV.resGen = function(){
   const k = pick(['bits', 'um', 'ppr', 'deg']);
-  if (k === 'bits'){ const b = pick([17, 20, 23]); const v = Math.pow(2, b); return {q:`إنكودر <b class="eq">${b}-bit</b>: كام عدّة في اللفة؟`, o:[String(v), String(v / 2), String(b * 1000), String(v * 2)], a:0, why:`2^${b} = ${v}.`}; }
-  if (k === 'ppr'){ const p = pick([1000, 2500, 2048, 5000]); return {q:`إنكودر إنكريمنتال <b class="eq">${p} PPR</b> والدرايف بيعد على الحواف الأربعة (x4). كام عدّة في اللفة؟`, input:true, unit:'counts', check:v => v === p * 4, ans:String(p * 4), why:`${p} × 4 = ${p * 4}.`}; }
-  if (k === 'um'){ const pitch = pick([5, 10, 20]), c = pick([10000, 131072]); const v = pitch * 1000 / c; return {q:`سكرو خطوته <b class="eq">${pitch} mm</b> متركّب على الموتور مباشرة، والإنكودر <b class="eq">${c}</b> عدّة في اللفة. أصغر حركة الإنكودر يحسّها كام <b>ميكرون (µm)</b>؟`, input:true, unit:'µm', check:x => Math.abs(x - v) <= v * 0.03 + 0.0005, ans:fmt(v, v < 0.1 ? 4 : 3) + ' µm', why:`${pitch} mm = ${pitch * 1000} µm ÷ ${c} = ${fmt(v, v < 0.1 ? 4 : 3)} µm.`}; }
-  const c = pick([10000, 131072, 1048576]); const v = 360 / c; return {q:`إنكودر <b class="eq">${c}</b> عدّة في اللفة. العدّة الواحدة كام <b>درجة</b>؟`, o:[fmt(v, 6) + '°', fmt(v * 10, 5) + '°', fmt(360 / (c / 4), 5) + '°', fmt(c / 360, 1) + '°'], a:0, why:`360 ÷ ${c} = ${fmt(v, 6)}°.`};
+  if (k === 'bits'){ const b = pick([17, 20, 23]); const v = Math.pow(2, b); return {q:`إنكودر <b class="eq">${b}-bit</b>: كم عدّة في اللفة؟`, o:[String(v), String(v / 2), String(b * 1000), String(v * 2)], a:0, why:`2^${b} = ${v}.`}; }
+  if (k === 'ppr'){ const p = pick([1000, 2500, 2048, 5000]); return {q:`إنكودر إنكريمنتال <b class="eq">${p} PPR</b> والدرايف يعدّ على الحواف الأربع (x4). كم عدّة في اللفة؟`, input:true, unit:'counts', check:v => v === p * 4, ans:String(p * 4), why:`${p} × 4 = ${p * 4}.`}; }
+  if (k === 'um'){ const pitch = pick([5, 10, 20]), c = pick([10000, 131072]); const v = pitch * 1000 / c; return {q:`سكرو خطوته <b class="eq">${pitch} mm</b> مركّب على المحرك مباشرة، والإنكودر <b class="eq">${c}</b> عدّة في اللفة. كم <b>ميكرونًا (µm)</b> أصغر حركة يحسها الإنكودر؟`, input:true, unit:'µm', check:x => Math.abs(x - v) <= v * 0.03 + 0.0005, ans:fmt(v, v < 0.1 ? 4 : 3) + ' µm', why:`${pitch} mm = ${pitch * 1000} µm ÷ ${c} = ${fmt(v, v < 0.1 ? 4 : 3)} µm.`}; }
+  const c = pick([10000, 131072, 1048576]); const v = 360 / c; return {q:`إنكودر <b class="eq">${c}</b> عدّة في اللفة. كم <b>درجة</b> تساوي العدّة الواحدة؟`, o:[fmt(v, 6) + '°', fmt(v * 10, 5) + '°', fmt(360 / (c / 4), 5) + '°', fmt(c / 360, 1) + '°'], a:0, why:`360 ÷ ${c} = ${fmt(v, 6)}°.`};
 };
 
 /* ================= L4: inside the drive ================= */
 SV.BLOCKS = [
-  {k:'cmd', t:'أمر المكان', d:'جاي من الـ PLC (نبضات أو شبكة) أو من جدول جوه الدرايف. بيقول «روح للمكان ده».'},
-  {k:'pos', t:'لوب المكان', d:'بيقارن المكان المطلوب بالمكان الحقيقي من الإنكودر. الفرق اسمه <b>Following error</b>. بيضربه في <b>جين المكان (Kp)</b> ويطلّع <b>سرعة مطلوبة</b>. ده أبطأ لوب (عشرات الـ Hz).'},
-  {k:'spd', t:'لوب السرعة', d:'بيقارن السرعة المطلوبة بالسرعة الحقيقية (محسوبة من الإنكودر) وبيطلّع <b>عزم مطلوب</b> بـ PI: جين السرعة (Kv) وزمن التكامل (Ti). سرعته مئات الـ Hz.'},
-  {k:'cur', t:'لوب التيار (العزم)', d:'العزم في السيرفو = تيار. اللوب ده بيقيس تيار U و V و W وبيظبطه بالظبط. ده <b>أسرع لوب</b> (كذا kHz)، وغالبًا مش بنلعب في جيناته.'},
-  {k:'igbt', t:'الإنفرتر (IGBT)', d:'6 ترانزستورات IGBT بيقطّعوا جهد الـ DC bus بالـ PWM عشان يطلّعوا تلاتة فاز بالتردد والجهد المطلوبين على U V W. نفس فكرة الانفرتر العادي.'},
-  {k:'pwr', t:'الموحّد و DC bus', d:'الكهربا الداخلة (L1 L2 L3) بتتوحّد وبتشحن كباستورات = <b>DC bus</b> (حوالي <span class="eq">310 V</span> على درايف 220V). لما الموتور يفرمل الطاقة بترجع هنا، ولو زادت بتتحرق في <b>مقاومة الفرملة</b>.'},
-  {k:'motor', t:'الموتور', d:'PMSM بمغناطيس دائم. العزم بيطلع على قد التيار اللي داخله.'},
-  {k:'enc', t:'الإنكودر (Feedback)', d:'بيرجّع المكان للوب المكان، ومنه الدرايف بيحسب السرعة للوب السرعة، وكمان زاوية الروتور عشان يعرف يوجّه التيار صح (Commutation).'}
+  {k:'cmd', t:'أمر المكان', d:'يأتي من الـ PLC (نبضات أو شبكة) أو من جدول داخل الدرايف. يقول «اذهب إلى هذا المكان».'},
+  {k:'pos', t:'حلقة المكان', d:'تقارن المكان المطلوب بالمكان الفعلي من الإنكودر. الفرق اسمه <b>Following error</b>. تضربه في <b>جين المكان (Kp)</b> وتُخرج <b>سرعة مطلوبة</b>. وهي أبطأ حلقة (عشرات الـ Hz).'},
+  {k:'spd', t:'حلقة السرعة', d:'تقارن السرعة المطلوبة بالسرعة الفعلية (المحسوبة من الإنكودر) وتُخرج <b>عزمًا مطلوبًا</b> بـ PI: جين السرعة (Kv) وزمن التكامل (Ti). سرعتها مئات الـ Hz.'},
+  {k:'cur', t:'حلقة التيار (العزم)', d:'العزم في السيرفو = تيار. هذه الحلقة تقيس تيار U وV وW وتضبطه بدقة. وهي <b>أسرع حلقة</b> (عدة kHz)، وغالبًا لا نغيّر جيناتها.'},
+  {k:'igbt', t:'الإنفرتر (IGBT)', d:'6 ترانزستورات IGBT تقطّع جهد الـ DC bus بالـ PWM لتُخرج ثلاثة فاز بالتردد والجهد المطلوبين على U V W. الفكرة نفسها في الانفرتر العادي.'},
+  {k:'pwr', t:'الموحّد والـ DC bus', d:'الكهرباء الداخلة (L1 L2 L3) تُوحَّد وتشحن مكثفات = <b>DC bus</b> (نحو <span class="eq">310 V</span> في درايف 220V). عندما يفرمل المحرك تعود الطاقة إلى هنا، وإذا زادت تُحرق في <b>مقاومة الفرملة</b>.'},
+  {k:'motor', t:'المحرك', d:'PMSM بمغناطيس دائم. يخرج العزم بقدر التيار الداخل إليه.'},
+  {k:'enc', t:'الإنكودر (Feedback)', d:'يُرجع المكان لحلقة المكان، ومنه يحسب الدرايف السرعة لحلقة السرعة، وكذلك زاوية الروتور ليوجّه التيار بشكل صحيح (Commutation).'}
 ];
 SV.driveDiagram = function(host, opt){
   opt = opt || {};
-  host.innerHTML = `<div class="sim-grid two-col"><div class="wd-art dd-art"></div><div class="dd-info box" aria-live="polite">دوس على أي بلوك في الرسمة.</div></div><p class="chal dd-chal">افتح <b>كل البلوكات الـ 8</b>.</p>`;
+  host.innerHTML = `<div class="sim-grid two-col"><div class="wd-art dd-art"></div><div class="dd-info box" aria-live="polite">اضغط على أي بلوك في الرسم.</div></div><p class="chal dd-chal">افتح <b>البلوكات الـ 8 كلها</b>.</p>`;
   const q = s => $(s, host), fin = chal(host, '.dd-chal', opt.lesson, opt.task || 'blocks');
   let seen = {}, cur = null;
   const B = (k, x, y, w, h, l1, l2, col) => `<g class="dd-b${seen[k] ? ' seen' : ''}${cur === k ? ' cur' : ''}" data-b="${k}" role="button" tabindex="0" aria-label="${SV.BLOCKS.find(b => b.k === k).t}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" style="fill:${col || 'var(--panel)'}"/>${tx(x + w / 2, y + (l2 ? h / 2 - 3 : h / 2 + 5), l1, {a:'middle', ar:1, s:12.5, w:700})}${l2 ? tx(x + w / 2, y + h / 2 + 14, l2, {a:'middle', ar:1, s:10.5, c:'w-mu'}) : ''}</g>`;
   const L = (d, c, dash) => `<path d="${d}" fill="none" stroke="${c || 'var(--accent)'}" stroke-width="2.5" ${dash ? `stroke-dasharray="6 5" class="flow" style="--dur:${dash}s"` : ''} marker-end="url(#dda${c ? 'g' : ''})"/>`;
   function draw(){
-    q('.dd-art').innerHTML = `<svg viewBox="0 0 360 520" role="img" aria-label="الدرايف من جوه"><defs><marker id="dda" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker><marker id="ddag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#2b9a4a"/></marker></defs>
-      <rect x="4" y="6" width="112" height="300" rx="10" fill="none" stroke="var(--line)" stroke-dasharray="4 4"/>${tx(60, 24, 'دايرة القوى', {a:'middle', ar:1, s:11, c:'w-mu'})}
-      <rect x="128" y="6" width="228" height="300" rx="10" fill="none" stroke="var(--line)" stroke-dasharray="4 4"/>${tx(242, 24, 'الكنترول: 3 لوبات', {a:'middle', ar:1, s:11, c:'w-mu'})}
+    q('.dd-art').innerHTML = `<svg viewBox="0 0 360 520" role="img" aria-label="الدرايف من الداخل"><defs><marker id="dda" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker><marker id="ddag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#2b9a4a"/></marker></defs>
+      <rect x="4" y="6" width="112" height="300" rx="10" fill="none" stroke="var(--line)" stroke-dasharray="4 4"/>${tx(60, 24, 'دائرة القوى', {a:'middle', ar:1, s:11, c:'w-mu'})}
+      <rect x="128" y="6" width="228" height="300" rx="10" fill="none" stroke="var(--line)" stroke-dasharray="4 4"/>${tx(242, 24, 'التحكم: 3 حلقات', {a:'middle', ar:1, s:11, c:'w-mu'})}
       ${tx(60, 48, 'L1 L2 L3', {a:'middle', s:11, w:700})}${L('M60 54 V78', '#c0352b', .6)}
       ${B('pwr', 12, 80, 96, 64, 'موحّد + DC bus', '≈ 310 V DC', 'var(--warn-soft)')}
       ${L('M60 146 V268', '#c0352b', .6)}${tx(64, 205, 'R مقاومة', {a:'start', ar:1, s:10, c:'w-mu'})}<rect x="20" y="188" width="10" height="34" fill="#a86a00"/>
       ${B('cmd', 150, 34, 186, 40, 'أمر المكان', 'PLC / جدول')}
       ${L('M243 76 V92', null, .8)}
-      ${B('pos', 150, 94, 186, 46, 'لوب المكان', 'Kp → سرعة مطلوبة')}
+      ${B('pos', 150, 94, 186, 46, 'حلقة المكان', 'Kp → سرعة مطلوبة')}
       ${L('M243 142 V158', null, .7)}
-      ${B('spd', 150, 160, 186, 46, 'لوب السرعة', 'Kv, Ti → عزم مطلوب')}
+      ${B('spd', 150, 160, 186, 46, 'حلقة السرعة', 'Kv, Ti → عزم مطلوب')}
       ${L('M243 208 V224', null, .5)}
-      ${B('cur', 150, 226, 186, 46, 'لوب التيار', 'kHz → PWM')}
+      ${B('cur', 150, 226, 186, 46, 'حلقة التيار', 'kHz → PWM')}
       ${L('M243 274 V312', null, .4)}
       ${B('igbt', 12, 314, 340, 44, 'الإنفرتر IGBT', 'PWM → U V W', 'var(--accent-soft)')}
       ${L('M182 360 V386', '#c0352b', .5)}${tx(196, 378, 'U V W', {a:'start', s:10.5, w:700})}
-      ${B('motor', 112, 388, 140, 52, 'الموتور', 'PMSM', 'var(--bg)')}
+      ${B('motor', 112, 388, 140, 52, 'المحرك', 'PMSM', 'var(--bg)')}
       ${B('enc', 112, 452, 140, 44, 'الإنكودر', 'Feedback', 'var(--good-soft)')}
       <line x1="182" y1="440" x2="182" y2="452" stroke="#59656e" stroke-width="5"/>
       ${L('M252 474 H346 V117 H338', '#2b9a4a', .9)}${L('M346 183 H338', '#2b9a4a')}${tx(340, 300, 'مكان + سرعة', {a:'end', ar:1, s:10, st:'fill:#2b9a4a;font-weight:600'})}
       ${L('M110 378 H96 V249 H148', '#2b9a4a', .7)}${tx(92, 300, 'تيار', {a:'end', ar:1, s:10, st:'fill:#2b9a4a;font-weight:600'})}
-      ${tx(180, 514, 'الخطوط المتقطعة الخضرا = Feedback', {a:'middle', ar:1, s:11, c:'w-mu'})}
+      ${tx(180, 514, 'الخطوط الخضراء المتقطعة = Feedback', {a:'middle', ar:1, s:11, c:'w-mu'})}
     </svg>`;
   }
   function show(k){ const b = SV.BLOCKS.find(x => x.k === k); cur = k; seen[k] = 1; draw(); q('.dd-info').innerHTML = `<b>${b.t}</b><br>${b.d}`; if (SV.BLOCKS.every(x => seen[x.k])) fin(); }
@@ -624,17 +624,17 @@ SV.wiring = function(host, opt){
   opt = opt || {};
   const DT = [['dL1', 'L1'], ['dL2', 'L2'], ['dL3', 'L3'], ['dP', 'P+'], ['dC', 'C'], ['dU', 'U'], ['dV', 'V'], ['dW', 'W'], ['dPE', 'PE ⏚'], ['dCN2', 'CN2'], ['dBRK', 'BRK'], ['dCN1', 'CN1'], ['dSTO', 'STO']];
   const RT = [['mU', 'U'], ['mV', 'V'], ['mW', 'W'], ['mPE', 'PE ⏚'], ['mENC', 'ENC'], ['kBR', 'ريلاي'], ['r1', 'R'], ['r2', 'R'], ['plc', 'PLC'], ['sr', 'Safety'], ['sL1', 'L1'], ['sL2', 'L2'], ['sL3', 'L3']];
-  const GROUPS = [['الموتور', 0, 3], ['الإنكودر', 4, 4], ['الفرامل 24V', 5, 5], ['مقاومة الفرملة', 6, 7], ['الـ PLC', 8, 8], ['سيفتي ريلاي', 9, 9], ['الكهربا (البريكر)', 10, 12]];
+  const GROUPS = [['المحرك', 0, 3], ['الإنكودر', 4, 4], ['الفرامل 24V', 5, 5], ['مقاومة الفرملة', 6, 7], ['الـ PLC', 8, 8], ['سيفتي ريلاي', 9, 9], ['الكهرباء (البريكر)', 10, 12]];
   const RIGHT = {dL1:'sL1', dL2:'sL2', dL3:'sL3', dU:'mU', dV:'mV', dW:'mW', dPE:'mPE', dCN2:'mENC', dBRK:'kBR', dCN1:'plc', dSTO:'sr'};
   const Y0 = 44, DY = 35, XL = 122, XR = 238;
   const y = id => { let i = DT.findIndex(t => t[0] === id); if (i < 0) i = RT.findIndex(t => t[0] === id); return Y0 + i * DY; };
   const lab = id => (DT.find(t => t[0] === id) || RT.find(t => t[0] === id))[1];
   const col = id => /L\d|^dP$|^dC$|^r\d/.test(id) ? '#1d2327' : /U$|V$|W$/.test(id) ? '#c0352b' : /PE/.test(id) ? '#2b9a4a' : '#2456c9';
   host.innerHTML = `<div class="wd-art wr-art"></div>
-  <div class="wd-ctl"><button type="button" class="btn pri" data-a="run">شغّل الدرايف (Servo ON)</button><button type="button" class="btn" data-a="clear">امسح الأسلاك</button><button type="button" class="btn" data-a="swap" hidden>جرّب الغلطة: بدّل U و W</button></div>
+  <div class="wd-ctl"><button type="button" class="btn pri" data-a="run">شغّل الدرايف (Servo ON)</button><button type="button" class="btn" data-a="clear">امسح الأسلاك</button><button type="button" class="btn" data-a="swap" hidden>جرّب الخطأ: بدّل U وW</button></div>
   <div class="wr-res bn-res" aria-live="polite"></div>
-  <p class="muted" style="font-size:.88rem">دوس طرف في الدرايف (شمال) وبعدين طرفه (يمين). دوس السلك تشيله.</p>
-  <p class="chal wr-chal">وصّل <b>الـ 13 سلك</b> صح وشغّل الدرايف من غير ولا إنذار.</p>`;
+  <p class="muted" style="font-size:.88rem">اضغط طرفًا في الدرايف (يسارًا) ثم الطرف المقابل (يمينًا). اضغط السلك لإزالته.</p>
+  <p class="chal wr-chal">وصّل <b>الأسلاك الـ 13</b> بشكل صحيح وشغّل الدرايف دون أي إنذار.</p>`;
   const q = s => $(s, host), fin = chal(host, '.wr-chal', opt.lesson, opt.task || 'wire');
   const finSwap = chal(host, '.nothing', opt.lesson, 'swap');
   let W = [], pend = null, ang = 0, runMode = null, anim = null;
@@ -642,10 +642,10 @@ SV.wiring = function(host, opt){
     let s = `<svg viewBox="0 0 360 ${Y0 + DY * 13}" role="img" aria-label="لوحة توصيل الدرايف">`;
     s += `<rect x="6" y="8" width="${XL - 4}" height="${DY * 13 + 20}" rx="10" fill="#2f363c"/>` + tx(XL / 2 + 2, 28, 'الدرايف', {a:'middle', ar:1, s:13, w:700, st:'fill:#e3e9ec'});
     DT.forEach(t => { s += tx(XL - 14, y(t[0]) + 4, t[1], {a:'end', s:12, w:700, st:'fill:#e3e9ec'}); });
-    s += tx(XL / 2 - 6, y('dC') + 22, 'شيل جمبر P+ D', {a:'middle', ar:1, s:9, st:'fill:#ffb300'});
+    s += tx(XL / 2 - 6, y('dC') + 22, 'انزع جمبر P+ D', {a:'middle', ar:1, s:9, st:'fill:#ffb300'});
     GROUPS.forEach(g => { const y1 = y(RT[g[1]][0]) - 16, y2 = y(RT[g[2]][0]) + 14; s += `<rect x="${XR + 4}" y="${y1}" width="${360 - XR - 8}" height="${y2 - y1}" rx="8" class="w-pn" style="stroke:var(--line)"/>` + tx(354, y1 + 12, g[0], {a:'end', ar:1, s:9.5, c:'w-mu'}); });
     RT.forEach(t => { s += tx(XR + 14, y(t[0]) + 6, t[1], {a:'start', ar:/[؀-ۿ]/.test(t[1]), s:12, w:700}); });
-    W.forEach((w, i) => { const y1 = y(w[0]), y2 = y(w[1]), d = `M${XL} ${y1} C${XL + 60} ${y1} ${XR - 60} ${y2} ${XR} ${y2}`; s += `<g class="bw${err && err.w.includes(w.join('|')) ? ' bad' : ''}" data-w="${i}" role="button" tabindex="0" aria-label="شيل السلك ${lab(w[0])} - ${lab(w[1])}"><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${col(w[0])}"/><path class="bw-hit" d="${d}"/></g>`; });
+    W.forEach((w, i) => { const y1 = y(w[0]), y2 = y(w[1]), d = `M${XL} ${y1} C${XL + 60} ${y1} ${XR - 60} ${y2} ${XR} ${y2}`; s += `<g class="bw${err && err.w.includes(w.join('|')) ? ' bad' : ''}" data-w="${i}" role="button" tabindex="0" aria-label="أزل السلك ${lab(w[0])} - ${lab(w[1])}"><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${col(w[0])}"/><path class="bw-hit" d="${d}"/></g>`; });
     [...DT.map(t => [t[0], XL]), ...RT.map(t => [t[0], XR])].forEach(([id, x]) => { s += `<g class="bt${pend === id ? ' pend' : ''}${err && err.t.has(id) ? ' err' : ''}" data-t="${id}" role="button" tabindex="0" aria-label="طرف ${lab(id)}"><circle class="bt-hit" cx="${x}" cy="${y(id)}" r="15"/><circle class="bt-s" cx="${x}" cy="${y(id)}" r="7"/></g>`; });
     q('.wr-art').innerHTML = s + '</svg>';
     nhUpdate();
@@ -681,22 +681,22 @@ SV.wiring = function(host, opt){
   function check(){ // one concrete problem at a time (first wrong wire, then the first missing connection)
     const has = (a, b) => W.some(w => w[0] === a && w[1] === b), to = a => (W.find(w => w[0] === a) || [])[1];
     const wrongPower = W.filter(w => (/^d[UVW]$/.test(w[0]) && /^sL/.test(w[1])) || (/^dL/.test(w[0]) && /^m[UVW]$/.test(w[1])));
-    if (wrongPower.length) return {bad:true, html:box('bn-bad', '<b>توقف!</b> الكهربا على U V W: الـ IGBT هيضرب. الكهربا على L1 L2 L3 بس.'), hl:{w:[wrongPower[0]], t:wrongPower[0]}};
+    if (wrongPower.length) return {bad:true, html:box('bn-bad', '<b>توقف!</b> الكهرباء على U V W: ستتلف الـ IGBT. الكهرباء على L1 L2 L3 فقط.'), hl:{w:[wrongPower[0]], t:wrongPower[0]}};
     const uvw = ['dU', 'dV', 'dW'].map(to), uvwSet = uvw.every(x => /^m[UVW]$/.test(x || '')) && new Set(uvw).size === 3;
     const swapped = uvwSet && !(uvw[0] === 'mU' && uvw[1] === 'mV' && uvw[2] === 'mW');
     const regenOk = ((to('dP') === 'r1' && to('dC') === 'r2') || (to('dP') === 'r2' && to('dC') === 'r1'));
     const wrong = W.filter(w => !(RIGHT[w[0]] === w[1] || (/^d[PC]$/.test(w[0]) && /^r\d$/.test(w[1])) || (swapped && /^d[UVW]$/.test(w[0]) && /^m[UVW]$/.test(w[1]))));
-    if (wrong.length){ const w = wrong[0]; return {bad:true, html:box('bn-bad', '<b>✗</b> ' + `السلك من ${lab(w[0])} رايح لـ ${lab(w[1])} والمفروض ${RIGHT[w[0]] ? lab(RIGHT[w[0]]) : 'R'}.`), hl:{w:[w], t:[w[0], w[1]]}}; }
-    if (!['dL1', 'dL2', 'dL3'].every(a => has(a, RIGHT[a]))) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'الكهربا L1 L2 L3 مش متوصلة: الشاشة مطفية.'), hl:{t:[['dL1', 'dL2', 'dL3'].find(a => !has(a, RIGHT[a]))]}};
-    if (!uvwSet) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'U V W مش متوصلين كلهم: إنذار فقد فاز.'), hl:{t:[['dU', 'dV', 'dW'].find(a => !/^m[UVW]$/.test(to(a) || '')) || 'dU']}};
-    if (!has('dPE', 'mPE')) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'الأرضي PE مش متوصل: خطر صعق.'), hl:{t:['dPE']}};
-    if (!has('dCN2', 'mENC')) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'الإنكودر CN2 مش متوصل: Encoder error.'), hl:{t:['dCN2']}};
-    if (!has('dBRK', 'kBR')) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'الفرامل BRK مش متوصلة: هتطلع Overload.'), hl:{t:['dBRK']}};
-    if (!regenOk) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'مقاومة الفرملة على P+ و C ناقصة: Overvoltage.'), hl:{t:[to('dP') ? 'dC' : 'dP']}};
-    if (!has('dCN1', 'plc')) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'CN1 مش متوصل: الـ PLC مش هيبعت Servo ON.'), hl:{t:['dCN1']}};
-    if (!has('dSTO', 'sr')) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'STO مش متوصل: الدرايف هيفضل على STO.'), hl:{t:['dSTO']}};
-    if (swapped) return {swap:true, html:box('bn-bad', '<b>إنذار Overload / Runaway:</b> U V W متبدّلين. في السيرفو وصّل U على U و V على V و W على W.'), hl:{t:['dU', 'dV', 'dW']}};
-    return {ok:true, html:box('bn-ok', '<b>تمام! الدرايف شغّال من غير إنذار.</b> الفرامل فتحت والموتور ماسك مكانه.')};
+    if (wrong.length){ const w = wrong[0]; return {bad:true, html:box('bn-bad', '<b>✗</b> ' + `السلك من ${lab(w[0])} يذهب إلى ${lab(w[1])} والصحيح ${RIGHT[w[0]] ? lab(RIGHT[w[0]]) : 'R'}.`), hl:{w:[w], t:[w[0], w[1]]}}; }
+    if (!['dL1', 'dL2', 'dL3'].every(a => has(a, RIGHT[a]))) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'الكهرباء L1 L2 L3 غير موصّلة: الشاشة مطفأة.'), hl:{t:[['dL1', 'dL2', 'dL3'].find(a => !has(a, RIGHT[a]))]}};
+    if (!uvwSet) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'U V W ليست موصّلة كلها: إنذار فقد فاز.'), hl:{t:[['dU', 'dV', 'dW'].find(a => !/^m[UVW]$/.test(to(a) || '')) || 'dU']}};
+    if (!has('dPE', 'mPE')) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'الأرضي PE غير موصّل: خطر صعق.'), hl:{t:['dPE']}};
+    if (!has('dCN2', 'mENC')) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'الإنكودر CN2 غير موصّل: Encoder error.'), hl:{t:['dCN2']}};
+    if (!has('dBRK', 'kBR')) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'الفرامل BRK غير موصّلة: سيظهر Overload.'), hl:{t:['dBRK']}};
+    if (!regenOk) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'مقاومة الفرملة على P+ وC ناقصة: Overvoltage.'), hl:{t:[to('dP') ? 'dC' : 'dP']}};
+    if (!has('dCN1', 'plc')) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'CN1 غير موصّل: لن يرسل الـ PLC أمر Servo ON.'), hl:{t:['dCN1']}};
+    if (!has('dSTO', 'sr')) return {bad:true, html:box('bn-bad', '<b>✗</b> ' + 'STO غير موصّل: سيبقى الدرايف على STO.'), hl:{t:['dSTO']}};
+    if (swapped) return {swap:true, html:box('bn-bad', '<b>إنذار Overload / Runaway:</b> U V W مبدّلة. في السيرفو وصّل U على U وV على V وW على W.'), hl:{t:['dU', 'dV', 'dW']}};
+    return {ok:true, html:box('bn-ok', '<b>أحسنت! الدرايف يعمل دون إنذار.</b> فتحت الفرامل والمحرك ممسك بمكانه.')};
   }
   let err = null;
   function pulse(hl){ err = hl ? {t:new Set(hl.t || []), w:(hl.w || []).map(w => w.join('|')), until:Date.now() + 3000} : null; draw(); if (err) setTimeout(() => { if (err && err.until <= Date.now()){ err = null; draw(); } }, 3100); }
@@ -745,18 +745,18 @@ SV.modes = function(host, opt){
   host.innerHTML = `<div class="tabs" role="group" aria-label="وضع التشغيل"><button type="button" class="btn" data-m="pt">مكان (نبضات)</button><button type="button" class="btn" data-m="s">سرعة</button><button type="button" class="btn" data-m="t">عزم</button><button type="button" class="btn" data-m="pr">مواضع داخلية</button></div>
   <div class="sim-grid two-col"><div class="wd-art md-art"></div><div class="md-side"><div class="read sm"><div><span>السرعة</span><b class="r-spd">0 rpm</b></div><div><span>المكان</span><b class="r-pos">0</b></div><div><span>العزم</span><b class="r-trq">0%</b></div></div><div class="wd-ctl"><button type="button" class="btn" data-a="son" aria-pressed="false">Servo ON (SON)</button></div><div class="md-panel"></div></div></div>
   <p class="statline md-msg" aria-live="polite"></p>
-  <p class="chal md-chal">خلّص <b>تحدّي كل وضع</b> من الأربعة (التحدّي مكتوب تحت كل وضع).</p>`;
+  <p class="chal md-chal">أنهِ <b>تحدّي كل وضع</b> من الأربعة (التحدّي مكتوب أسفل كل وضع).</p>`;
   const q = s => $(s, host), fin = chal(host, '.md-chal', opt.lesson, opt.task || 'modes');
   const S = {m:'pt', son:false, spd:0, pos:0, trq:0, pulses:0, queue:0, fmt:'pd', lastDir:1, f:50, v:0, tv:0, lim:1000, web:true, pr:0, bits:[0, 0], prTgt:null, held:0};
   const PRT = [0, 90, 180, 270];
   const done = k => { const o = subMark(KEYM, k); renderChal(); if (['pt', 's', 't', 'pr'].every(x => o[x])) fin(); };
-  const CH = {pt:'ابعت نبضات تخلّي الموتور يلف <b>لفة كاملة بالظبط لقدّام</b> (المكان = 10000 نبضة، يعني لفة).', s:'خلّي الموتور يلف <b>1500 rpm في الاتجاه العكسي</b> (السالب).', t:'حط عزم <b>50%</b> وحد سرعة <b>500 rpm أو أقل</b>، وبعدين اقطع الخامة وشوف السرعة وقفت عند الحد.', pr:'روح للموضع <b>P3</b> باستخدام مداخل POS0 و POS1 وبعدين CTRG.'};
+  const CH = {pt:'أرسل نبضات تجعل المحرك يدور <b>لفة كاملة بالضبط للأمام</b> (المكان = 10000 نبضة، أي لفة).', s:'اجعل المحرك يدور <b>1500 rpm في الاتجاه العكسي</b> (السالب).', t:'اضبط العزم على <b>50%</b> وحد السرعة على <b>500 rpm أو أقل</b>، ثم اقطع الخامة ولاحظ أن السرعة توقفت عند الحد.', pr:'اذهب إلى الموضع <b>P3</b> باستخدام مدخلي POS0 وPOS1 ثم CTRG.'};
   function renderChal(){ const o = sub(null, KEYM); $$('[data-m]', host).forEach(b => b.classList.toggle('done', !!o[b.dataset.m])); const c = q('.md-ch'); if (c){ c.classList.toggle('ok', !!o[S.m]); } }
   function panel(){
     const p = q('.md-panel'), o = sub(null, KEYM);
-    if (S.m === 'pt') p.innerHTML = `<div class="wd-ctl"><label>شكل النبضات <select class="inp" data-c="fmt"><option value="pd">Pulse + Direction</option><option value="cw">CW / CCW (نبضتين)</option><option value="ab">A / B (فرق 90°)</option></select></label><label>عدد النبضات <input type="number" class="inp" data-c="n" value="2500" min="1" max="50000" step="1"></label><button type="button" class="btn" data-a="fw">ابعت لقدّام</button><button type="button" class="btn" data-a="rv">ابعت لورا</button></div><div class="wd-art md-wave"></div><p class="muted" style="font-size:.86rem">الجير هنا متظبط إن <b class="eq">10000</b> نبضة = لفة.</p>`;
-    else if (S.m === 's') p.innerHTML = `<div class="wd-ctl"><label>أمر السرعة على V-REF: <b class="v-v">0.0 V</b><input type="range" min="-10" max="10" step="0.5" value="${S.v}" data-c="v" aria-label="جهد أمر السرعة"></label></div><p class="muted" style="font-size:.86rem"><b class="eq">+10 V = +3000 rpm</b> و <b class="eq">−10 V = −3000 rpm</b>.</p>`;
-    else if (S.m === 't') p.innerHTML = `<div class="wd-ctl"><label>أمر العزم على T-REF: <b class="t-v">0.0 V</b><input type="range" min="0" max="10" step="0.5" value="${S.tv}" data-c="tv" aria-label="جهد أمر العزم"></label><label>حد السرعة: <b class="l-v">${S.lim} rpm</b><input type="range" min="100" max="3000" step="100" value="${S.lim}" data-c="lim" aria-label="حد السرعة"></label><button type="button" class="btn" data-a="web">${S.web ? 'اقطع الخامة ✂' : 'رجّع الخامة'}</button></div><p class="muted" style="font-size:.86rem"><b class="eq">10 V = 100%</b> من العزم المقنن. الخامة المشدودة بتقاوم الموتور.</p>`;
+    if (S.m === 'pt') p.innerHTML = `<div class="wd-ctl"><label>شكل النبضات <select class="inp" data-c="fmt"><option value="pd">Pulse + Direction</option><option value="cw">CW / CCW (نبضتان)</option><option value="ab">A / B (فرق 90°)</option></select></label><label>عدد النبضات <input type="number" class="inp" data-c="n" value="2500" min="1" max="50000" step="1"></label><button type="button" class="btn" data-a="fw">أرسل للأمام</button><button type="button" class="btn" data-a="rv">أرسل للخلف</button></div><div class="wd-art md-wave"></div><p class="muted" style="font-size:.86rem">الجير هنا مضبوط على أن <b class="eq">10000</b> نبضة = لفة.</p>`;
+    else if (S.m === 's') p.innerHTML = `<div class="wd-ctl"><label>أمر السرعة على V-REF: <b class="v-v">0.0 V</b><input type="range" min="-10" max="10" step="0.5" value="${S.v}" data-c="v" aria-label="جهد أمر السرعة"></label></div><p class="muted" style="font-size:.86rem"><b class="eq">+10 V = +3000 rpm</b> و<b class="eq">−10 V = −3000 rpm</b>.</p>`;
+    else if (S.m === 't') p.innerHTML = `<div class="wd-ctl"><label>أمر العزم على T-REF: <b class="t-v">0.0 V</b><input type="range" min="0" max="10" step="0.5" value="${S.tv}" data-c="tv" aria-label="جهد أمر العزم"></label><label>حد السرعة: <b class="l-v">${S.lim} rpm</b><input type="range" min="100" max="3000" step="100" value="${S.lim}" data-c="lim" aria-label="حد السرعة"></label><button type="button" class="btn" data-a="web">${S.web ? 'اقطع الخامة ✂' : 'أعد الخامة'}</button></div><p class="muted" style="font-size:.86rem"><b class="eq">10 V = 100%</b> من العزم المقنن. الخامة المشدودة تقاوم المحرك.</p>`;
     else p.innerHTML = `<div class="tblw"><table class="tbl"><thead><tr><th>الموضع</th><th>POS1</th><th>POS0</th><th>المكان</th></tr></thead><tbody>${PRT.map((v, i) => `<tr${S.pr === i ? ' style="font-weight:700"' : ''}><td>P${i + 1}</td><td>${i >> 1}</td><td>${i & 1}</td><td>${v}°</td></tr>`).join('')}</tbody></table></div><div class="wd-ctl"><button type="button" class="btn" data-a="b1" aria-pressed="${!!S.bits[1]}">POS1 = ${S.bits[1]}</button><button type="button" class="btn" data-a="b0" aria-pressed="${!!S.bits[0]}">POS0 = ${S.bits[0]}</button><button type="button" class="btn pri" data-a="ctrg">CTRG (نفّذ)</button></div>`;
     p.insertAdjacentHTML('beforeend', `<p class="chal md-ch${o[S.m] ? ' ok' : ''}"><b>التحدّي:</b> ${CH[S.m]}</p>`);
     if (S.m === 'pt'){ q('[data-c=fmt]').value = S.fmt; wave(); }
@@ -766,16 +766,16 @@ SV.modes = function(host, opt){
   function wave(){ const w = q('.md-wave'); if (w) w.innerHTML = SV.pulseSvg(S.fmt, S.lastDir); }
   function draw(){
     const a = ((S.pos % 360) + 360) % 360;
-    q('.md-art').innerHTML = `<svg viewBox="0 0 220 200" role="img" aria-label="الموتور">${dial(110, 92, 62, a, {ghost:S.m === 'pr' && S.prTgt != null ? PRT[S.prTgt] : null})}${S.m === 't' ? `<path d="M182 92 H216" stroke="${S.web ? '#a86a00' : 'transparent'}" stroke-width="6"/>` : ''}${tx(110, 188, S.son ? 'Servo ON' : 'Servo OFF', {a:'middle', s:13, w:700, st:'fill:' + (S.son ? '#2b9a4a' : '#c0352b')})}</svg>`;
+    q('.md-art').innerHTML = `<svg viewBox="0 0 220 200" role="img" aria-label="المحرك">${dial(110, 92, 62, a, {ghost:S.m === 'pr' && S.prTgt != null ? PRT[S.prTgt] : null})}${S.m === 't' ? `<path d="M182 92 H216" stroke="${S.web ? '#a86a00' : 'transparent'}" stroke-width="6"/>` : ''}${tx(110, 188, S.son ? 'Servo ON' : 'Servo OFF', {a:'middle', s:13, w:700, st:'fill:' + (S.son ? '#2b9a4a' : '#c0352b')})}</svg>`;
     q('.r-spd').textContent = Math.round(S.spd) + ' rpm';
     q('.r-pos').textContent = S.m === 'pt' ? S.pulses + ' نبضة' : S.m === 'pr' ? Math.round(((S.pos % 360) + 360) % 360) + '°' : fmt(S.pos / 360, 1) + ' لفة';
     q('.r-trq').textContent = Math.round(S.trq) + '%';
   }
   function msg(c, h){ const m = q('.md-msg'); stc(m, c); m.innerHTML = h; }
   function setMode(m){
-    if (S.son && m !== S.m){ msg('warn', 'غيّر المود والسيرفو OFF الأول. في أغلب الدرايفات تغيير المود بيحتاج Servo OFF (وأحيانًا إعادة تشغيل).'); return; }
+    if (S.son && m !== S.m){ msg('warn', 'غيّر الوضع والسيرفو OFF أولًا. في أغلب الدرايفات يحتاج تغيير الوضع إلى Servo OFF (وأحيانًا إعادة تشغيل).'); return; }
     S.m = m; S.spd = 0; S.trq = 0; S.prTgt = null; $$('[data-m]', host).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === m))); panel(); renderChal(); draw();
-    msg('', {pt:'الـ PLC بيبعت نبضات: كل نبضة = خطوة صغيرة. عدد النبضات = المسافة، وترددها = السرعة.', s:'جهد أنالوج من ⁦−10⁩ لـ ⁦+10 V⁩ بيحدد السرعة والاتجاه. الدرايف بيقفل لوب السرعة بس.', t:'الجهد بيحدد العزم (الشد)، مش السرعة. لازم حد سرعة عشان لو الحمل اتشال.', pr:'المواضع مكتوبة جوه الدرايف. الـ PLC بيختار رقم الموضع بمداخل ديجيتال ويدّي CTRG.'}[m]);
+    msg('', {pt:'يرسل الـ PLC نبضات: كل نبضة = خطوة صغيرة. عدد النبضات = المسافة، وترددها = السرعة.', s:'جهد أنالوج من ⁦−10⁩ إلى ⁦+10 V⁩ يحدد السرعة والاتجاه. الدرايف يغلق حلقة السرعة فقط.', t:'الجهد يحدد العزم (الشد)، لا السرعة. يلزم حد سرعة تحسبًا لإزالة الحمل.', pr:'المواضع مكتوبة داخل الدرايف. يختار الـ PLC رقم الموضع بمداخل ديجيتال ويعطي CTRG.'}[m]);
   }
   host.addEventListener('input', e => {
     const c = e.target.dataset.c; if (!c) return;
@@ -787,12 +787,12 @@ SV.modes = function(host, opt){
   onAct(host, '[data-m]', b => setMode(b.dataset.m));
   onAct(host, '[data-a]', b => {
     const a = b.dataset.a;
-    if (a === 'son'){ S.son = !S.son; b.setAttribute('aria-pressed', String(S.son)); if (!S.son){ S.queue = 0; } msg(S.son ? 'ok' : '', S.son ? 'السيرفو ماسك (الفرامل فتحت والموتور عليه عزم).' : 'Servo OFF: الموتور سايب ومفيش عزم.'); draw(); return; }
-    if (!S.son){ msg('bad', 'الدرايف مش هيسمع أي أمر غير لما يبقى <b>Servo ON</b>. دوس SON الأول.'); return; }
-    if (a === 'fw' || a === 'rv'){ const n = Math.max(1, Math.min(50000, Math.round(+q('[data-c=n]').value || 0))); S.lastDir = a === 'fw' ? 1 : -1; S.queue += S.lastDir * n; wave(); msg('', `بيبعت ${n} نبضة ${a === 'fw' ? 'لقدّام' : 'لورا'}…`); }
+    if (a === 'son'){ S.son = !S.son; b.setAttribute('aria-pressed', String(S.son)); if (!S.son){ S.queue = 0; } msg(S.son ? 'ok' : '', S.son ? 'السيرفو ممسك (فتحت الفرامل وعلى المحرك عزم).' : 'Servo OFF: المحرك حر ولا عزم عليه.'); draw(); return; }
+    if (!S.son){ msg('bad', 'لن يستجيب الدرايف لأي أمر إلا وهو <b>Servo ON</b>. اضغط SON أولًا.'); return; }
+    if (a === 'fw' || a === 'rv'){ const n = Math.max(1, Math.min(50000, Math.round(+q('[data-c=n]').value || 0))); S.lastDir = a === 'fw' ? 1 : -1; S.queue += S.lastDir * n; wave(); msg('', `يرسل ${n} نبضة ${a === 'fw' ? 'للأمام' : 'للخلف'}…`); }
     if (a === 'web'){ S.web = !S.web; panel(); }
     if (a === 'b0' || a === 'b1'){ const i = +a[1]; S.bits[i] = S.bits[i] ? 0 : 1; panel(); }
-    if (a === 'ctrg'){ S.prTgt = S.bits[1] * 2 + S.bits[0]; S.pr = S.prTgt; panel(); msg('', `CTRG: رايح للموضع P${S.prTgt + 1} (${PRT[S.prTgt]}°).`); }
+    if (a === 'ctrg'){ S.prTgt = S.bits[1] * 2 + S.bits[0]; S.pr = S.prTgt; panel(); msg('', `CTRG: يذهب إلى الموضع P${S.prTgt + 1} (${PRT[S.prTgt]}°).`); }
   });
   animate(host, dt => {
     if (!dt) return;
@@ -800,40 +800,40 @@ SV.modes = function(host, opt){
     if (!S.son){ S.spd *= Math.max(0, 1 - dt * 3); S.trq = 0; S.pos += S.spd * 6 * dt; draw(); return; }
     if (S.m === 'pt'){
       const rate = 1200 * PPR / 60 * dt; /* 1200 rpm worth of pulses per second */
-      if (S.queue){ const st = Math.sign(S.queue) * Math.min(Math.abs(S.queue), Math.round(rate)); S.queue -= st; S.pulses += st; S.pos += st * 360 / PPR; S.spd = st / dt * 60 / PPR; S.trq = 30; if (!S.queue){ S.spd = 0; S.trq = 5; if (S.pulses === PPR){ msg('ok', 'بالظبط لفة: 10000 نبضة. لاحظ إن الدرايف عدّ النبضات زي ما هي، وسرعتها حددت السرعة.'); done('pt'); } else msg('', `المكان دلوقتي ${S.pulses} نبضة = ${fmt(S.pulses / PPR, 2)} لفة.`); } }
+      if (S.queue){ const st = Math.sign(S.queue) * Math.min(Math.abs(S.queue), Math.round(rate)); S.queue -= st; S.pulses += st; S.pos += st * 360 / PPR; S.spd = st / dt * 60 / PPR; S.trq = 30; if (!S.queue){ S.spd = 0; S.trq = 5; if (S.pulses === PPR){ msg('ok', 'لفة بالضبط: 10000 نبضة. لاحظ أن الدرايف عدّ النبضات كما هي، وسرعتها حددت السرعة.'); done('pt'); } else msg('', `المكان الآن ${S.pulses} نبضة = ${fmt(S.pulses / PPR, 2)} لفة.`); } }
       draw(); return;
     }
     if (S.m === 's'){ tgtSpd = S.v * 300; const d = tgtSpd - S.spd, st = 6000 * dt; S.spd = Math.abs(d) < st ? tgtSpd : S.spd + Math.sign(d) * st; S.trq = Math.abs(d) > 1 ? 80 * Math.sign(d) : 10 * Math.sign(S.spd); S.pos += S.spd * 6 * dt;
-      if (Math.round(S.spd) === -1500){ S.held += dt; if (S.held > 0.6){ S.held = -99; msg('ok', '−5 V = −1500 rpm في الاتجاه العكسي. الجهد بيحدد السرعة والإشارة بتحدد الاتجاه.'); done('s'); } } else if (S.held > 0) S.held = 0;
+      if (Math.round(S.spd) === -1500){ S.held += dt; if (S.held > 0.6){ S.held = -99; msg('ok', '−5 V = −1500 rpm في الاتجاه العكسي. الجهد يحدد السرعة والإشارة تحدد الاتجاه.'); done('s'); } } else if (S.held > 0) S.held = 0;
       draw(); return; }
     if (S.m === 't'){ S.trq = S.tv * 10; const lim = S.lim;
       if (S.web){ const d = 0 - S.spd; S.spd += Math.sign(d) * Math.min(Math.abs(d), 4000 * dt); }
       else { const d = (S.tv > 0 ? lim : 0) - S.spd; S.spd += Math.sign(d) * Math.min(Math.abs(d), 3000 * dt); if (S.tv > 0 && Math.abs(S.spd - lim) < 1 && S.trq !== 0){ S.trq = Math.min(S.trq, 15); } }
       S.pos += S.spd * 6 * dt;
-      if (!S.web && S.tv === 5 && S.lim <= 500 && Math.abs(S.spd - S.lim) < 1 && !sub(null, KEYM).t){ msg('ok', `الخامة اتقطعت والموتور جري لحد <b>${S.lim} rpm</b> ووقف عند حد السرعة. من غير الحد كان هيجري لأقصى سرعة!`); done('t'); }
+      if (!S.web && S.tv === 5 && S.lim <= 500 && Math.abs(S.spd - S.lim) < 1 && !sub(null, KEYM).t){ msg('ok', `انقطعت الخامة واندفع المحرك حتى <b>${S.lim} rpm</b> وتوقف عند حد السرعة. ودون الحد لاندفع إلى أقصى سرعة!`); done('t'); }
       draw(); return; }
-    if (S.m === 'pr' && S.prTgt != null){ const a = ((S.pos % 360) + 360) % 360; let d = PRT[S.prTgt] - a; if (d > 180) d -= 360; if (d < -180) d += 360; const st = 270 * dt; if (Math.abs(d) <= st){ S.pos += d; S.spd = 0; S.trq = 5; if (S.prTgt === 2) done('pr'); msg(S.prTgt === 2 ? 'ok' : '', `وصل P${S.prTgt + 1}.` + (S.prTgt === 2 ? ' POS1=1 و POS0=0 ⇐ رقم 2 بالباينري ⇐ الموضع التالت.' : '')); S.prTgt = null; } else { S.pos += Math.sign(d) * st; S.spd = Math.sign(d) * 45; S.trq = 25; } draw(); }
+    if (S.m === 'pr' && S.prTgt != null){ const a = ((S.pos % 360) + 360) % 360; let d = PRT[S.prTgt] - a; if (d > 180) d -= 360; if (d < -180) d += 360; const st = 270 * dt; if (Math.abs(d) <= st){ S.pos += d; S.spd = 0; S.trq = 5; if (S.prTgt === 2) done('pr'); msg(S.prTgt === 2 ? 'ok' : '', `وصل إلى P${S.prTgt + 1}.` + (S.prTgt === 2 ? ' POS1=1 وPOS0=0 ⇐ الرقم 2 بالثنائي ⇐ الموضع الثالث.' : '')); S.prTgt = null; } else { S.pos += Math.sign(d) * st; S.spd = Math.sign(d) * 45; S.trq = 25; } draw(); }
   });
   setMode('pt'); draw();
   return {S, setMode, son(on){ if (S.son !== on) q('[data-a=son]').click(); }};
 };
 SV.fmtGen = function(){
   const f = pick(['pd', 'cw', 'ab']), d = pick([1, -1]), names = {pd:'Pulse + Direction', cw:'CW / CCW', ab:'A / B (فرق 90°)'};
-  if (Math.random() < 0.5) return {q:'النبضات اللي على السكوب دي شكلها إيه؟' + SV.pulseSvg(f, d), o:[names.pd, names.cw, names.ab], a:['pd', 'cw', 'ab'].indexOf(f), keep:true, why:{pd:'قناة نبضات وقناة تانية ثابتة بتحدد الاتجاه.', cw:'كل اتجاه ليه قناة نبضات لوحده، والتانية ساكتة.', ab:'القناتين بينبضوا بفرق ربع نبضة (90°).'}[f]};
-  return {q:`النبضات دي <b>${names[f]}</b>. الموتور هيلف في أنهي اتجاه؟ (على الإعداد القياسي)` + SV.pulseSvg(f, d), o:['لقدّام (موجب)', 'لورا (سالب)'], a:d > 0 ? 0 : 1, why:{pd:'SIGN عالية = لقدّام، واطية = لورا (وده بيتعكس بباراميتر).', cw:'النبضات على CW = لقدّام، على CCW = لورا.', ab:'A سابقة B = لقدّام، B سابقة A = لورا.'}[f]};
+  if (Math.random() < 0.5) return {q:'ما شكل هذه النبضات على السكوب؟' + SV.pulseSvg(f, d), o:[names.pd, names.cw, names.ab], a:['pd', 'cw', 'ab'].indexOf(f), keep:true, why:{pd:'قناة نبضات وقناة أخرى ثابتة تحدد الاتجاه.', cw:'لكل اتجاه قناة نبضات خاصة، والأخرى ساكنة.', ab:'القناتان تنبضان بفرق ربع نبضة (90°).'}[f]};
+  return {q:`هذه النبضات <b>${names[f]}</b>. في أي اتجاه سيدور المحرك؟ (على الإعداد القياسي)` + SV.pulseSvg(f, d), o:['للأمام (موجب)', 'للخلف (سالب)'], a:d > 0 ? 0 : 1, why:{pd:'SIGN عالية = للأمام، ومنخفضة = للخلف (ويُعكس هذا بباراميتر).', cw:'النبضات على CW = للأمام، وعلى CCW = للخلف.', ab:'A تسبق B = للأمام، وB تسبق A = للخلف.'}[f]};
 };
 
 /* ================= L7: electronic gear ================= */
 SV.MACH = {
   screw:{t:'بول سكرو', u:'mm', opts:[5, 10, 20], lab:'خطوة السكرو (mm)', per:v => v},
   belt:{t:'بكرة وسير', u:'mm', opts:[100, 120, 150], lab:'المسافة في لفة البكرة (mm)', per:v => v},
-  table:{t:'ترابيزة دوّارة بجيربوكس', u:'°', opts:[5, 10, 36], lab:'نسبة الجيربوكس (1:x)', per:v => 360 / v}
+  table:{t:'طاولة دوّارة بجيربوكس', u:'°', opts:[5, 10, 36], lab:'نسبة الجيربوكس (1:x)', per:v => 360 / v}
 };
 SV.ENCS = [[131072, '\u2066131072 (17-bit)\u2069'], [1048576, '\u20661048576 (20-bit)\u2069'], [8388608, '\u20668388608 (23-bit)\u2069'], [10000, '\u206610000 (2500 PPR × 4)\u2069']];
 SV.GEAR_CH = [
-  {m:'screw', v:10, enc:131072, unit:0.001, t:'مكنة تخريم: بول سكرو خطوته <b class="eq">10 mm</b> على الموتور مباشرة، إنكودر <b class="eq">17-bit</b>، وعايزين <b>1 نبضة = <span class="eq">0.001 mm</span></b>.'},
-  {m:'belt', v:120, enc:1048576, unit:0.01, t:'سير نقل: البكرة <b><span class="eq">24</span> سنة × <span class="eq">5 mm = 120 mm</span></b> في اللفة، إنكودر <b class="eq">20-bit</b>، وعايزين <b>1 نبضة = <span class="eq">0.01 mm</span></b>.'},
-  {m:'table', v:10, enc:8388608, unit:0.001, t:'ترابيزة دوّارة بجيربوكس <b class="eq">1:10</b> (لفة الموتور = 36°)، إنكودر <b class="eq">23-bit</b>، وعايزين <b>1 نبضة = <span class="eq">0.001°</span></b>.'}
+  {m:'screw', v:10, enc:131072, unit:0.001, t:'ماكينة تخريم: بول سكرو خطوته <b class="eq">10 mm</b> على المحرك مباشرة، وإنكودر <b class="eq">17-bit</b>، ونريد <b>1 نبضة = <span class="eq">0.001 mm</span></b>.'},
+  {m:'belt', v:120, enc:1048576, unit:0.01, t:'سير نقل: البكرة <b><span class="eq">24</span> سنًّا × <span class="eq">5 mm = 120 mm</span></b> في اللفة، وإنكودر <b class="eq">20-bit</b>، ونريد <b>1 نبضة = <span class="eq">0.01 mm</span></b>.'},
+  {m:'table', v:10, enc:8388608, unit:0.001, t:'طاولة دوّارة بجيربوكس <b class="eq">1:10</b> (لفة المحرك = 36°)، وإنكودر <b class="eq">23-bit</b>، ونريد <b>1 نبضة = <span class="eq">0.001°</span></b>.'}
 ];
 SV.gearCalc = function(host, opt){
   opt = opt || {};
@@ -841,11 +841,11 @@ SV.gearCalc = function(host, opt){
   host.innerHTML = `<div class="wd-ctl gc-in"><label>الماكينة <select class="inp" data-c="m">${Object.keys(SV.MACH).map(k => `<option value="${k}">${SV.MACH[k].t}</option>`).join('')}</select></label><label><span class="gc-vl"></span> <select class="inp" data-c="v"></select></label><label>الإنكودر <select class="inp" data-c="enc">${SV.ENCS.map(e => `<option value="${e[0]}">${e[1]}</option>`).join('')}</select></label><label>النبضة الواحدة = <select class="inp" data-c="unit"><option>0.1</option><option selected>0.01</option><option>0.001</option></select> <span class="gc-u"></span></label></div>
   <div class="wd-art gc-art"></div>
   <div class="read gc-read"></div>
-  <div class="wd-ctl"><button type="button" class="btn" data-a="send">ابعت 1000 نبضة</button><button type="button" class="btn" data-a="zero">رجّع</button></div>
+  <div class="wd-ctl"><button type="button" class="btn" data-a="send">أرسل 1000 نبضة</button><button type="button" class="btn" data-a="zero">ارجع</button></div>
   <p class="statline gc-msg" aria-live="polite"></p>
-  <h4 style="margin-top:6px">التحدّي: احسب الجير لـ 3 مكن حقيقية</h4>
+  <h4 style="margin-top:6px">التحدّي: احسب الجير لـ 3 ماكينات حقيقية</h4>
   <div class="gc-ch"></div>
-  <p class="chal gc-chal">حلّ <b>التلات مكن</b>. اكتب البسط N والمقام M (أي كسر مساوي مقبول).</p>`;
+  <p class="chal gc-chal">حلّ <b>الماكينات الثلاث</b>. اكتب البسط N والمقام M (أي كسر مساوٍ مقبول).</p>`;
   const q = s => $(s, host), fin = chal(host, '.gc-chal', opt.lesson, opt.task || 'calc');
   const S = {m:'screw', v:10, enc:131072, unit:0.01, pos:0, vis:0};
   function calc(o){ const per = SV.MACH[o.m].per(o.v), ppr = per / o.unit, g = gcd(o.enc, Math.round(ppr)); return {per, ppr, N:o.enc / g, M:Math.round(ppr) / g, f:ppr * 3000 / 60}; }
@@ -854,26 +854,26 @@ SV.gearCalc = function(host, opt){
     const r = calc(S), M = SV.MACH[S.m], u = M.u;
     let art;
     const px = 40 + (((S.vis % 300) + 300) % 300);
-    if (S.m === 'table'){ const a = S.vis; art = `<svg viewBox="0 0 360 150" role="img" aria-label="ترابيزة دوّارة"><rect x="30" y="50" width="70" height="50" rx="6" fill="#252c31"/>${tx(65, 120, 'الموتور', {a:'middle', ar:1, s:11, c:'w-mu'})}<rect x="100" y="62" width="60" height="26" rx="4" fill="#59656e"/>${tx(130, 120, 'جيربوكس 1:' + S.v, {a:'middle', s:11, c:'w-mu'})}${dial(250, 75, 56, a)}${tx(250, 146, 'الترابيزة', {a:'middle', ar:1, s:11, c:'w-mu'})}</svg>`; }
+    if (S.m === 'table'){ const a = S.vis; art = `<svg viewBox="0 0 360 150" role="img" aria-label="طاولة دوّارة"><rect x="30" y="50" width="70" height="50" rx="6" fill="#252c31"/>${tx(65, 120, 'المحرك', {a:'middle', ar:1, s:11, c:'w-mu'})}<rect x="100" y="62" width="60" height="26" rx="4" fill="#59656e"/>${tx(130, 120, 'جيربوكس 1:' + S.v, {a:'middle', s:11, c:'w-mu'})}${dial(250, 75, 56, a)}${tx(250, 146, 'الطاولة', {a:'middle', ar:1, s:11, c:'w-mu'})}</svg>`; }
     else { let th = ''; for (let x = 40; x < 340; x += 8) th += `<line x1="${x}" y1="${S.m === 'screw' ? 74 : 78}" x2="${x + 5}" y2="${S.m === 'screw' ? 86 : 78}" stroke="#7d878e" stroke-width="1.5"/>`;
-      art = `<svg viewBox="0 0 360 150" role="img" aria-label="${M.t}"><rect x="4" y="56" width="34" height="48" rx="5" fill="#252c31"/>${S.m === 'screw' ? `<rect x="38" y="74" width="300" height="12" fill="#c3cad0"/>` : `<circle cx="50" cy="80" r="14" fill="#59656e"/><circle cx="330" cy="80" r="14" fill="#59656e"/><rect x="50" y="64" width="280" height="6" fill="#1d2327"/><rect x="50" y="90" width="280" height="6" fill="#1d2327"/>`}${th}<rect x="${px - 20}" y="${S.m === 'screw' ? 58 : 44}" width="40" height="${S.m === 'screw' ? 44 : 22}" rx="4" fill="#2456c9"/>${tx(180, 130, 'المسافة: \u2066' + fmt(S.pos, 3) + ' mm\u2069', {a:'middle', ar:1, s:12, w:700})}</svg>`; }
+      art = `<svg viewBox="0 0 360 150" role="img" aria-label="${M.t}"><rect x="4" y="56" width="34" height="48" rx="5" fill="#252c31"/>${S.m === 'screw' ? `<rect x="38" y="74" width="300" height="12" fill="#c3cad0"/>` : `<circle cx="50" cy="80" r="14" fill="#59656e"/><circle cx="330" cy="80" r="14" fill="#59656e"/><rect x="50" y="64" width="280" height="6" fill="#1d2327"/><rect x="50" y="90" width="280" height="6" fill="#1d2327"/>`}${th}<rect x="${px - 20}" y="${S.m === 'screw' ? 58 : 44}" width="40" height="${S.m === 'screw' ? 44 : 22}" rx="4" fill="#2456c9"/>${tx(180, 130, 'المسافة: ⁦' + fmt(S.pos, 3) + ' mm\u2069', {a:'middle', ar:1, s:12, w:700})}</svg>`; }
     q('.gc-art').innerHTML = art;
-    q('.gc-read').innerHTML = `<div><span>حركة لفة الموتور</span><b>${fmt(r.per, 3)} ${u}</b></div><div><span>نبضات الـ PLC في اللفة</span><b>${fmt(r.ppr, 0)}</b></div><div><span>الجير N / M</span><b>${r.N} / ${r.M}</b></div><div><span>تردد النبضات على 3000 rpm</span><b class="${r.f > 200000 ? 'bad' : 'ok'}">${fmt(r.f / 1000, 1)} kHz</b></div>`;
+    q('.gc-read').innerHTML = `<div><span>حركة لفة المحرك</span><b>${fmt(r.per, 3)} ${u}</b></div><div><span>نبضات الـ PLC في اللفة</span><b>${fmt(r.ppr, 0)}</b></div><div><span>الجير N / M</span><b>${r.N} / ${r.M}</b></div><div><span>تردد النبضات على 3000 rpm</span><b class="${r.f > 200000 ? 'bad' : 'ok'}">${fmt(r.f / 1000, 1)} kHz</b></div>`;
     const m = q('.gc-msg');
-    if (!Number.isInteger(+fmt(r.ppr, 6))){ stc(m, 'warn'); m.innerHTML = 'نبضات اللفة طلعت كسر: ده معناه خطأ تراكمي صغير مع كل لفة. اختار وحدة تقسم حركة اللفة بالظبط.'; }
-    else if (r.f > 200000){ stc(m, 'bad'); m.innerHTML = `عشان الموتور يوصل 3000 rpm الـ PLC محتاج يطلّع <b class="eq">${fmt(r.f / 1000, 0)} kHz</b>. خرج ترانزستور عادي آخره حوالي 100 لـ 200 kHz. كبّر الوحدة (دقة أقل) أو استخدم Line driver.`; }
-    else { stc(m, 'ok'); m.innerHTML = `الدرايف هيضرب كل نبضة جاية في <b class="eq">${r.N}/${r.M}</b> ويحوّلها لعدّات إنكودر. يعني 1 نبضة = <span class="eq">${S.unit} ${u}</span> بالظبط.`; }
+    if (!Number.isInteger(+fmt(r.ppr, 6))){ stc(m, 'warn'); m.innerHTML = 'نبضات اللفة خرجت كسرًا: وهذا يعني خطأً تراكميًا صغيرًا مع كل لفة. اختر وحدة تقسم حركة اللفة بالضبط.'; }
+    else if (r.f > 200000){ stc(m, 'bad'); m.innerHTML = `ليصل المحرك إلى 3000 rpm يحتاج الـ PLC إلى إخراج <b class="eq">${fmt(r.f / 1000, 0)} kHz</b>. أقصى خرج ترانزستور عادي نحو 100 إلى 200 kHz. كبّر الوحدة (دقة أقل) أو استخدم Line driver.`; }
+    else { stc(m, 'ok'); m.innerHTML = `سيضرب الدرايف كل نبضة واردة في <b class="eq">${r.N}/${r.M}</b> ويحوّلها إلى عدّات إنكودر. أي 1 نبضة = <span class="eq">${S.unit} ${u}</span> بالضبط.`; }
   }
   function chs(){
     const o = sub(null, KEYG);
-    q('.gc-ch').innerHTML = SV.GEAR_CH.map((c, i) => `<form class="dr-card gc-c${o[i] ? ' ok' : ''}" data-i="${i}"><div>${i + 1}. ${c.t}</div><div class="dr-in"><input class="inp" inputmode="numeric" aria-label="البسط N" placeholder="N" value="${o[i] ? calc(c).N : ''}"><span class="mono">/</span><input class="inp" inputmode="numeric" aria-label="المقام M" placeholder="M" value="${o[i] ? calc(c).M : ''}"><button class="btn pri" type="submit">تأكيد</button></div><p class="qz-f${o[i] ? ' ok' : ''}" aria-live="polite">${o[i] ? 'صح ✓' : ''}</p></form>`).join('');
+    q('.gc-ch').innerHTML = SV.GEAR_CH.map((c, i) => `<form class="dr-card gc-c${o[i] ? ' ok' : ''}" data-i="${i}"><div>${i + 1}. ${c.t}</div><div class="dr-in"><input class="inp" inputmode="numeric" aria-label="البسط N" placeholder="N" value="${o[i] ? calc(c).N : ''}"><span class="mono">/</span><input class="inp" inputmode="numeric" aria-label="المقام M" placeholder="M" value="${o[i] ? calc(c).M : ''}"><button class="btn pri" type="submit">تأكيد</button></div><p class="qz-f${o[i] ? ' ok' : ''}" aria-live="polite">${o[i] ? 'صحيح ✓' : ''}</p></form>`).join('');
   }
   host.addEventListener('submit', e => {
     e.preventDefault(); const f = e.target.closest('.gc-c'); if (!f) return;
     const i = +f.dataset.i, c = SV.GEAR_CH[i], r = calc(c), ins = $$('input', f), N = num(ins[0].value), M = num(ins[1].value), fb = $('.qz-f', f);
-    if (!(N > 0 && M > 0)){ fb.className = 'qz-f no'; fb.textContent = 'اكتب رقمين أكبر من صفر.'; return; }
-    if (Math.abs(N * Math.round(r.ppr) - M * c.enc) < 1e-6 * M * c.enc){ fb.className = 'qz-f ok'; fb.innerHTML = `صح ✓ نبضات اللفة = ${fmt(r.per, 0)} ÷ ${c.unit} = ${fmt(r.ppr, 0)}، والجير = ${c.enc} / ${fmt(r.ppr, 0)} = <b class="eq">${r.N}/${r.M}</b>.`; f.classList.add('ok'); const o = subMark(KEYG, i); if (SV.GEAR_CH.every((_, k) => o[k])) fin(); }
-    else { fb.className = 'qz-f no'; fb.innerHTML = 'مش مظبوط. احسب الأول: نبضات اللفة = حركة لفة الموتور ÷ قيمة النبضة. وبعدين الجير = عدّات الإنكودر ÷ نبضات اللفة.'; }
+    if (!(N > 0 && M > 0)){ fb.className = 'qz-f no'; fb.textContent = 'اكتب رقمين أكبر من الصفر.'; return; }
+    if (Math.abs(N * Math.round(r.ppr) - M * c.enc) < 1e-6 * M * c.enc){ fb.className = 'qz-f ok'; fb.innerHTML = `صحيح ✓ نبضات اللفة = ${fmt(r.per, 0)} ÷ ${c.unit} = ${fmt(r.ppr, 0)}، والجير = ${c.enc} / ${fmt(r.ppr, 0)} = <b class="eq">${r.N}/${r.M}</b>.`; f.classList.add('ok'); const o = subMark(KEYG, i); if (SV.GEAR_CH.every((_, k) => o[k])) fin(); }
+    else { fb.className = 'qz-f no'; fb.innerHTML = 'غير صحيح. احسب أولًا: نبضات اللفة = حركة لفة المحرك ÷ قيمة النبضة. ثم الجير = عدّات الإنكودر ÷ نبضات اللفة.'; }
   });
   host.addEventListener('change', e => { const c = e.target.dataset.c; if (!c) return; S[c] = c === 'm' ? e.target.value : +e.target.value; if (c === 'm') fillV(); S.pos = 0; S.vis = 0; draw(); });
   onAct(host, '[data-a]', b => {
@@ -887,10 +887,10 @@ SV.gearCalc = function(host, opt){
 };
 SV.gearGen = function(){
   const k = pick(['dist', 'freq', 'ppr', 'rpm']);
-  if (k === 'dist'){ const u = pick([0.01, 0.001]), d = pick([12.5, 250, 75, 1200]); const v = Math.round(d / u); return {q:`الجير متظبط إن <b>1 نبضة = <span class="eq">${u} mm</span></b>. عشان المحور يتحرك <b class="eq">${d} mm</b> الـ PLC يبعت كام نبضة؟`, input:true, unit:'نبضة', check:x => x === v, ans:String(v), why:`${d} ÷ ${u} = ${v}.`}; }
-  if (k === 'freq'){ const p = pick([1000, 5000, 10000]), n = pick([600, 1500, 3000]); const v = p * n / 60 / 1000; return {q:`الـ PLC بيبعت <b class="eq">${p}</b> نبضة في لفة الموتور. عشان الموتور يلف <b class="eq">${n} rpm</b> التردد لازم يبقى كام <b>kHz</b>؟`, input:true, unit:'kHz', check:x => Math.abs(x - v) <= v * 0.02, ans:fmt(v, 1) + ' kHz', why:`${p} × ${n} ÷ 60 = ${fmt(v * 1000, 0)} Hz = ${fmt(v, 1)} kHz.`}; }
-  if (k === 'ppr'){ const pt = pick([5, 10, 20]), u = pick([0.01, 0.001]); const v = Math.round(pt / u); return {q:`سكرو خطوته <b class="eq">${pt} mm</b> على الموتور مباشرة، وعايزين <b>1 نبضة = <span class="eq">${u} mm</span></b>. كام نبضة في لفة الموتور؟`, input:true, unit:'نبضة/لفة', check:x => x === v, ans:String(v), why:`${pt} ÷ ${u} = ${v}.`}; }
-  const v = pick([6, 12, 30]), pt = pick([10, 20]); const n = v * 1000 / pt; return {q:`محور بول سكرو خطوته <b class="eq">${pt} mm</b>، وعايزينه يمشي <b class="eq">${v} m/min</b>. الموتور يلف كام <b>rpm</b>؟`, input:true, unit:'rpm', check:x => Math.abs(x - n) < 1, ans:String(n), why:`${v} m/min = ${v * 1000} mm/min ÷ ${pt} = ${n} rpm.`};
+  if (k === 'dist'){ const u = pick([0.01, 0.001]), d = pick([12.5, 250, 75, 1200]); const v = Math.round(d / u); return {q:`الجير مضبوط على أن <b>1 نبضة = <span class="eq">${u} mm</span></b>. ليتحرك المحور <b class="eq">${d} mm</b>، كم نبضة يرسل الـ PLC؟`, input:true, unit:'نبضة', check:x => x === v, ans:String(v), why:`${d} ÷ ${u} = ${v}.`}; }
+  if (k === 'freq'){ const p = pick([1000, 5000, 10000]), n = pick([600, 1500, 3000]); const v = p * n / 60 / 1000; return {q:`يرسل الـ PLC <b class="eq">${p}</b> نبضة في لفة المحرك. ليدور المحرك <b class="eq">${n} rpm</b>، كم <b>kHz</b> يجب أن يكون التردد؟`, input:true, unit:'kHz', check:x => Math.abs(x - v) <= v * 0.02, ans:fmt(v, 1) + ' kHz', why:`${p} × ${n} ÷ 60 = ${fmt(v * 1000, 0)} Hz = ${fmt(v, 1)} kHz.`}; }
+  if (k === 'ppr'){ const pt = pick([5, 10, 20]), u = pick([0.01, 0.001]); const v = Math.round(pt / u); return {q:`سكرو خطوته <b class="eq">${pt} mm</b> على المحرك مباشرة، ونريد <b>1 نبضة = <span class="eq">${u} mm</span></b>. كم نبضة في لفة المحرك؟`, input:true, unit:'نبضة/لفة', check:x => x === v, ans:String(v), why:`${pt} ÷ ${u} = ${v}.`}; }
+  const v = pick([6, 12, 30]), pt = pick([10, 20]); const n = v * 1000 / pt; return {q:`محور بول سكرو خطوته <b class="eq">${pt} mm</b>، ونريده أن يتحرك <b class="eq">${v} m/min</b>. كم <b>rpm</b> يدور المحرك؟`, input:true, unit:'rpm', check:x => Math.abs(x - n) < 1, ans:String(n), why:`${v} m/min = ${v * 1000} mm/min ÷ ${pt} = ${n} rpm.`};
 };
 
 /* ================= L8: tuning ================= */
@@ -916,15 +916,15 @@ SV.tuneSim = function(p){
 };
 SV.tuning = function(host, opt){
   opt = opt || {};
-  const LOADS = [[1, 'حمل خفيف (×1)'], [10, 'سير تقيل (×10)'], [25, 'ترابيزة تقيلة (×25)']];
+  const LOADS = [[1, 'حمل خفيف (×1)'], [10, 'سير ثقيل (×10)'], [25, 'طاولة ثقيلة (×25)']];
   const S = {ratio:10, est:0, kp:35, fv:40, ti:20, ran:false, busy:false};
   const sl = (k, l, min, max, step, u) => `<label>${l}: <b class="tu-${k}"></b> <span class="muted">${u}</span><input type="range" min="${min}" max="${max}" step="${step}" data-c="${k}" aria-label="${l}"></label>`;
-  host.innerHTML = `<div class="wd-ctl"><label>الحمل الحقيقي على الموتور (نسبة الـ Inertia) <select class="inp" data-c="ratio">${LOADS.map(l => `<option value="${l[0]}"${l[0] === S.ratio ? ' selected' : ''}>${l[1]}</option>`).join('')}</select></label></div>
+  host.innerHTML = `<div class="wd-ctl"><label>الحمل الفعلي على المحرك (نسبة الـ Inertia) <select class="inp" data-c="ratio">${LOADS.map(l => `<option value="${l[0]}"${l[0] === S.ratio ? ' selected' : ''}>${l[1]}</option>`).join('')}</select></label></div>
   <div class="sim-grid two-col"><div class="wd-art tu-art"></div><div class="wd-ctl tu-sl">${sl('est', 'نسبة الـ Inertia في الباراميتر (JL/JM)', 0, 50, 1, '×')}${sl('kp', 'جين المكان Kp', 10, 500, 5, 'rad/s')}${sl('fv', 'جين السرعة Kv', 10, 400, 5, 'Hz')}${sl('ti', 'زمن التكامل Ti', 1, 50, 1, 'ms')}</div></div>
   <div class="wd-ctl"><button type="button" class="btn pri" data-a="run">شغّل حركة: لفة في <bdi dir="ltr">100 ms</bdi></button><button type="button" class="btn" data-a="auto">Auto-tune</button></div>
   <div class="read sm tu-read"></div>
   <p class="statline tu-msg" aria-live="polite"></p>
-  <p class="chal tu-chal">على <b>السير التقيل (×10)</b>: خلّي الـ <b>Settling أقل من 20 ms</b> والـ <b>Overshoot أقل من 5 نبضات</b> و<b>من غير زنّة</b>. الأوتو تيون لوحده مش هيوصلك، كمّل بإيدك.</p>`;
+  <p class="chal tu-chal">على <b>السير الثقيل (×10)</b>: اجعل الـ <b>Settling أقل من 20 ms</b> والـ <b>Overshoot أقل من 5 نبضات</b> و<b>دون طنين</b>. الأوتو تيون وحده لن يوصلك، فأكمل بيدك.</p>`;
   const q = s => $(s, host), finA = chal(host, '.nothing', opt.lesson, 'auto'), fin = chal(host, '.tu-chal', opt.lesson, opt.task || 'tune');
   function sync(){ ['est', 'kp', 'fv', 'ti'].forEach(k => { q(`[data-c=${k}]`).value = S[k]; q('.tu-' + k).textContent = S[k]; }); }
   function plot(r){
@@ -933,7 +933,7 @@ SV.tuning = function(host, opt){
     const emax = 60, Ye = e => 190 + Math.max(-1, Math.min(1, e / emax)) * -45;
     let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="منحنى الاستجابة"><rect x="${x0}" y="12" width="${x1 - x0}" height="96" class="w-bg" stroke="var(--line)"/><rect x="${x0}" y="142" width="${x1 - x0}" height="96" class="w-bg" stroke="var(--line)"/>`;
     s += `<rect x="${x0}" y="${Ye(10)}" width="${x1 - x0}" height="${Ye(-10) - Ye(10)}" fill="#2b9a4a" opacity=".18"/><line x1="${x0}" x2="${x1}" y1="${Ye(0)}" y2="${Ye(0)}" stroke="var(--line)"/><line x1="${X(0.1)}" x2="${X(0.1)}" y1="12" y2="238" stroke="var(--muted)" stroke-dasharray="3 3"/>`;
-    s += tx(x0 + 4, 26, 'السرعة (rpm)', {ar:1, s:10.5, c:'w-mu'}) + tx(x0 + 4, 156, 'غلط المكان (نبضات) · الأخضر = ±10', {ar:1, s:10.5, c:'w-mu'}) + tx(X(0.1), 250, '100 ms', {a:'middle', s:9.5, c:'w-mu'}) + tx(x0 - 4, Ye(emax) + 4, '+60', {a:'end', s:9, c:'w-mu'}) + tx(x0 - 4, Ye(-emax) + 4, '−60', {a:'end', s:9, c:'w-mu'}) + tx(x0 - 4, Yv(1200) + 4, '1200', {a:'end', s:9, c:'w-mu'});
+    s += tx(x0 + 4, 26, 'السرعة (rpm)', {ar:1, s:10.5, c:'w-mu'}) + tx(x0 + 4, 156, 'خطأ المكان (نبضات) · الأخضر = ±10', {ar:1, s:10.5, c:'w-mu'}) + tx(X(0.1), 250, '100 ms', {a:'middle', s:9.5, c:'w-mu'}) + tx(x0 - 4, Ye(emax) + 4, '+60', {a:'end', s:9, c:'w-mu'}) + tx(x0 - 4, Ye(-emax) + 4, '−60', {a:'end', s:9, c:'w-mu'}) + tx(x0 - 4, Yv(1200) + 4, '1200', {a:'end', s:9, c:'w-mu'});
     if (r){
       const o = r.out, line = (arr, Y, c, w, da) => `<path d="${arr.map((v, i) => (i ? 'L' : 'M') + X(o.t[i]).toFixed(1) + ' ' + Y(v).toFixed(1)).join('')}" fill="none" stroke="${c}" stroke-width="${w}"${da ? ' stroke-dasharray="5 4"' : ''}/>`;
       s += line(o.vr, Yv, 'var(--muted)', 2, 1) + line(o.v, Yv, 'var(--accent)', 2.2) + `<g clip-path="url(#tuc)">${line(o.e, Ye, '#e4572e', 2)}</g><clipPath id="tuc"><rect x="${x0}" y="142" width="${x1 - x0}" height="96"/></clipPath>`;
@@ -941,33 +941,33 @@ SV.tuning = function(host, opt){
     q('.tu-art').innerHTML = s + '</svg>';
   }
   function verdict(r){
-    if (r.unstable || r.buzz) return ['bad', '<b>بيزن / بيهتز!</b> الجين عالي على الحمل ده (أو نسبة الـ Inertia في الباراميتر أكبر بكتير من الحقيقة). في الحقيقة هتسمع صوت صفير والموتور يسخن. نزّل Kv أو Kp.'];
-    if (r.ov > 5) return ['warn', `<b>Overshoot ${fmt(r.ov, 0)} نبضة:</b> المحور بيعدّي الهدف ويرجع (Ringing). غالبًا نسبة الـ Inertia في الباراميتر أقل من الحقيقة، أو Kp عالي على Kv، أو Ti صغير.`];
-    if (!r.done) return ['warn', '<b>مستقرّش في الوقت ده.</b> بطيء جدًا (Sluggish): الجين واطي. زوّد Kv وبعدين Kp.'];
-    if (r.settle > 20) return ['warn', `<b>بطيء شوية:</b> بياخد ${fmt(r.settle, 0)} ms عشان يدخل في الـ In-position. ممكن تزوّد Kp (وKv لو لزم).`];
-    return ['ok', `<b>ممتاز!</b> Settling ${fmt(r.settle, 1)} ms من غير Overshoot ولا زنّة.`];
+    if (r.unstable || r.buzz) return ['bad', '<b>يطنّ / يهتز!</b> الجين عالٍ على هذا الحمل (أو نسبة الـ Inertia في الباراميتر أكبر كثيرًا من الحقيقة). في الواقع ستسمع صفيرًا ويسخن المحرك. خفّض Kv أو Kp.'];
+    if (r.ov > 5) return ['warn', `<b>Overshoot ${fmt(r.ov, 0)} نبضة:</b> يتجاوز المحور الهدف ويرجع (Ringing). غالبًا نسبة الـ Inertia في الباراميتر أقل من الحقيقة، أو Kp عالٍ بالنسبة إلى Kv، أو Ti صغير.`];
+    if (!r.done) return ['warn', '<b>لم يستقر في هذا الزمن.</b> بطيء جدًا (Sluggish): الجين منخفض. زد Kv ثم Kp.'];
+    if (r.settle > 20) return ['warn', `<b>بطيء قليلًا:</b> يحتاج إلى ${fmt(r.settle, 0)} ms ليدخل الـ In-position. يمكنك زيادة Kp (وKv إن لزم).`];
+    return ['ok', `<b>ممتاز!</b> Settling ${fmt(r.settle, 1)} ms دون Overshoot ولا طنين.`];
   }
   function run(){
     const r = SV.tuneSim(S); S.ran = true; plot(r);
-    q('.tu-read').innerHTML = `<div><span>Overshoot</span><b class="${r.ov > 5 ? 'warn' : 'ok'}">${r.unstable ? '—' : fmt(r.ov, 0)} نبضة</b></div><div><span>Settling</span><b class="${!r.done || r.settle > 20 ? 'warn' : 'ok'}">${r.done ? fmt(r.settle, 1) + ' ms' : '> 150 ms'}</b></div><div><span>أقصى Following error</span><b>${r.unstable ? '—' : fmt(r.peak, 0)}</b></div><div><span>زنّة</span><b class="${r.buzz || r.unstable ? 'bad' : 'ok'}">${r.buzz || r.unstable ? 'أيوه' : 'لأ'}</b></div>`;
+    q('.tu-read').innerHTML = `<div><span>Overshoot</span><b class="${r.ov > 5 ? 'warn' : 'ok'}">${r.unstable ? '—' : fmt(r.ov, 0)} نبضة</b></div><div><span>Settling</span><b class="${!r.done || r.settle > 20 ? 'warn' : 'ok'}">${r.done ? fmt(r.settle, 1) + ' ms' : '> 150 ms'}</b></div><div><span>أقصى Following error</span><b>${r.unstable ? '—' : fmt(r.peak, 0)}</b></div><div><span>طنين</span><b class="${r.buzz || r.unstable ? 'bad' : 'ok'}">${r.buzz || r.unstable ? 'نعم' : 'لا'}</b></div>`;
     const v = verdict(r), m = q('.tu-msg'); stc(m, v[0]); m.innerHTML = v[1];
     if (S.ratio >= 10 && v[0] === 'ok' && r.settle < 20 && r.ov < 5) fin();
     return r;
   }
   host.addEventListener('input', e => { const c = e.target.dataset.c; if (!c || c === 'ratio') return; S[c] = +e.target.value; q('.tu-' + c).textContent = S[c]; });
-  host.addEventListener('change', e => { const c = e.target.dataset.c; if (c === 'ratio'){ S.ratio = +e.target.value; stc(q('.tu-msg'), ''); q('.tu-msg').textContent = 'الحمل اتغيّر. شغّل حركة وشوف الجين القديم بقى عامل إزاي.'; } if (c && S.ran) run(); });
+  host.addEventListener('change', e => { const c = e.target.dataset.c; if (c === 'ratio'){ S.ratio = +e.target.value; stc(q('.tu-msg'), ''); q('.tu-msg').textContent = 'تغيّر الحمل. شغّل حركة ولاحظ كيف أصبح أداء الجين القديم.'; } if (c && S.ran) run(); });
   onAct(host, '[data-a]', b => {
     if (S.busy) return;
     if (b.dataset.a === 'run'){ run(); return; }
-    S.busy = true; const m = q('.tu-msg'); stc(m, ''); m.innerHTML = 'Auto-tune: الموتور بيتحرك يمين وشمال حركات صغيرة عشان يقيس الـ Inertia…';
+    S.busy = true; const m = q('.tu-msg'); stc(m, ''); m.innerHTML = 'Auto-tune: يتحرك المحرك يمينًا ويسارًا حركات صغيرة ليقيس الـ Inertia…';
     let k = 0; const steps = reduced() ? 1 : 6;
     (function st(){ if (k++ < steps){ S.est = Math.round(Math.random() * 40); sync(); setTimeout(st, 180); return; }
       S.est = Math.max(0, Math.round(S.ratio * (0.95 + Math.random() * 0.1))); S.fv = 100; S.kp = 120; S.ti = 8; sync(); S.busy = false; const r = run(); finA();
-      stc(m, verdict(r)[0]); m.innerHTML = `Auto-tune خلّص: قاس نسبة الـ Inertia = <b>${S.est}</b> وحط جين متوسط (Kv 100 Hz و Kp 120). ` + verdict(r)[1];
+      stc(m, verdict(r)[0]); m.innerHTML = `انتهى الـ Auto-tune: قاس نسبة الـ Inertia = <b>${S.est}</b> ووضع جينًا متوسطًا (Kv 100 Hz وKp 120). ` + verdict(r)[1];
     })();
   });
   sync(); plot(null);
-  stc(q('.tu-msg'), ''); q('.tu-msg').innerHTML = 'الإعدادات دلوقتي إعدادات المصنع (نسبة Inertia = 0) والموتور عليه سير تقيل. دوس «شغّل حركة».';
+  stc(q('.tu-msg'), ''); q('.tu-msg').innerHTML = 'الإعدادات الآن إعدادات المصنع (نسبة Inertia = 0) والمحرك عليه سير ثقيل. اضغط «شغّل حركة».';
   return {S, run, sync, set(o){ Object.assign(S, o); sync(); }};
 };
 
@@ -976,12 +976,12 @@ SV.axis = function(host, opt){
   opt = opt || {};
   const KEYL = 'l9s', LSN = 15, LSP = 385, DOG = [60, 80], ZOFF = 3.7, X = mm => 20 + mm * 0.8;
   host.innerHTML = `<div class="wd-art ax-art"></div>
-  <div class="read sm"><div><span>المكان (إحداثيات المكنة)</span><b class="r-mc">؟</b></div><div><span>الهومينج</span><b class="r-h">مش متعمل</b></div><div><span>الحساسات</span><b class="r-s">—</b></div></div>
-  <div class="wd-ctl"><button type="button" class="btn" data-a="jn">◀ JOG سالب</button><button type="button" class="btn" data-a="jp">JOG موجب ▶</button><button type="button" class="btn" data-a="stop">وقّف</button></div>
-  <div class="wd-ctl"><label>طريقة الهومينج <select class="inp" data-c="meth"><option value="dog">لحد حساس الهوم وبعدين نبضة Z</option><option value="ls">لحد الليميت السالب وبعدين نبضة Z</option><option value="here">المكان الحالي = صفر</option></select></label><button type="button" class="btn pri" data-a="home">ابدأ الهومينج</button></div>
-  <div class="wd-ctl"><label>الإنكودر <select class="inp" data-c="enc"><option value="inc">إنكريمنتال</option><option value="abs">أبسليوت</option></select></label><label>الليميت سويتش <select class="inp" data-c="lst"><option value="nc">NC (مقفول طبيعي)</option><option value="no">NO (مفتوح طبيعي)</option></select></label><button type="button" class="btn" data-a="cut" aria-pressed="false">اقطع سلك الـ +LS ✂</button><button type="button" class="btn" data-a="pwr">⚡ اقطع الكهربا وارجعها</button><button type="button" class="btn" data-a="reset">Reset إنذار</button></div>
+  <div class="read sm"><div><span>المكان (إحداثيات الماكينة)</span><b class="r-mc">؟</b></div><div><span>الهومينج</span><b class="r-h">لم يُنفَّذ</b></div><div><span>الحساسات</span><b class="r-s">—</b></div></div>
+  <div class="wd-ctl"><button type="button" class="btn" data-a="jn">◀ JOG سالب</button><button type="button" class="btn" data-a="jp">JOG موجب ▶</button><button type="button" class="btn" data-a="stop">أوقف</button></div>
+  <div class="wd-ctl"><label>طريقة الهومينج <select class="inp" data-c="meth"><option value="dog">حتى حساس الهوم ثم نبضة Z</option><option value="ls">حتى الليمت السالب ثم نبضة Z</option><option value="here">المكان الحالي = صفر</option></select></label><button type="button" class="btn pri" data-a="home">ابدأ الهومينج</button></div>
+  <div class="wd-ctl"><label>الإنكودر <select class="inp" data-c="enc"><option value="inc">إنكريمنتال</option><option value="abs">أبسليوت</option></select></label><label>الليمت سويتش <select class="inp" data-c="lst"><option value="nc">NC (مغلق طبيعيًا)</option><option value="no">NO (مفتوح طبيعيًا)</option></select></label><button type="button" class="btn" data-a="cut" aria-pressed="false">اقطع سلك الـ +LS ✂</button><button type="button" class="btn" data-a="pwr">⚡ اقطع الكهرباء وأعدها</button><button type="button" class="btn" data-a="reset">Reset إنذار</button></div>
   <p class="statline ax-msg" aria-live="polite"></p>
-  <p class="chal ax-chal">اعمل <b>هومينج</b> بحساس الهوم أو بالليميت، وبعدين جرّب توصل لـ <b>Software limit</b> ولـ <b>الليميت سويتش</b>.</p>`;
+  <p class="chal ax-chal">نفّذ <b>هومينج</b> بحساس الهوم أو بالليمت، ثم جرّب الوصول إلى <b>Software limit</b> وإلى <b>الليمت سويتش</b>.</p>`;
   const q = s => $(s, host), finH = chal(host, '.ax-chal', opt.lesson, 'home'), finL = chal(host, '.nothing', opt.lesson, 'limits');
   const S = {pos:130 + Math.random() * 140, v:0, homed:false, org:0, meth:'dog', enc:'inc', lst:'nc', cut:false, alarm:null, ph:null, inDog:false, lastZ:null};
   const SWA = [34, 364]; /* software limits, absolute machine travel (mm) */
@@ -999,23 +999,23 @@ SV.axis = function(host, opt){
       ${sens(LSN, '−LS', lsN(), 1)}${sens(DOG[0] - 2, 'HOME', dog(), 0)}${sens(LSP, '+LS', lsP(), 1)}
       <rect x="${X(S.pos) - 14}" y="66" width="28" height="48" rx="4" fill="${S.alarm ? '#c0352b' : '#2456c9'}"/>
       ${S.cut ? tx(X(LSP), 16, '✂ سلك مقطوع', {a:'middle', ar:1, s:10, st:'fill:#c0352b;font-weight:700'}) : ''}</svg>`;
-    q('.r-mc').textContent = S.homed ? fmt(mc(), 1) + ' mm' : '؟ (مش معروف)';
-    q('.r-h').textContent = S.homed ? 'متعمل ✓' : S.ph ? 'شغّال…' : 'مش متعمل';
-    q('.r-s').textContent = [lsN() ? '−LS' : '', dog() ? 'HOME' : '', lsP() ? '+LS' : ''].filter(Boolean).join(' · ') || 'كله OFF';
+    q('.r-mc').textContent = S.homed ? fmt(mc(), 1) + ' mm' : '؟ (غير معروف)';
+    q('.r-h').textContent = S.homed ? 'تم ✓' : S.ph ? 'جارٍ…' : 'لم يُنفَّذ';
+    q('.r-s').textContent = [lsN() ? '−LS' : '', dog() ? 'HOME' : '', lsP() ? '+LS' : ''].filter(Boolean).join(' · ') || 'الكل OFF';
   }
   function stop(){ S.v = 0; S.ph = null; }
   function alarm(t){ S.alarm = t; stop(); msg('bad', t); }
   onAct(host, '[data-a]', b => {
     const a = b.dataset.a;
-    if (a === 'reset'){ if (S.pos >= 400 - 14 || S.pos <= 14){ S.pos = Math.min(Math.max(S.pos, 30), 370); } S.alarm = null; msg('', 'الإنذار اتمسح.'); draw(); return; }
-    if (a === 'cut'){ S.cut = !S.cut; b.setAttribute('aria-pressed', String(S.cut)); msg(S.cut ? 'warn' : '', S.cut ? (S.lst === 'nc' ? 'قطعت سلك +LS وهو <b>NC</b>: الدرايف شايفه «اتضرب» على طول. ده الأمان: أي قطع = وقف.' : 'قطعت سلك +LS وهو <b>NO</b>: الدرايف مش هيعرف إنه اتقطع… جرّب تتحرك موجب ومن غير Software limit (يعني قبل الهومينج).') : 'السلك اتصلّح.'); draw(); return; }
-    if (a === 'pwr'){ stop(); if (S.enc === 'inc'){ S.homed = false; msg('warn', 'رجعت الكهربا: الإنكريمنتال نسي مكانه. الـ Software limits مش شغّالة لحد ما تعمل هومينج تاني.'); } else msg('ok', 'رجعت الكهربا: الأبسليوت فاكر مكانه، والـ Software limits شغّالة على طول. مفيش هومينج.'); draw(); return; }
+    if (a === 'reset'){ if (S.pos >= 400 - 14 || S.pos <= 14){ S.pos = Math.min(Math.max(S.pos, 30), 370); } S.alarm = null; msg('', 'مُسح الإنذار.'); draw(); return; }
+    if (a === 'cut'){ S.cut = !S.cut; b.setAttribute('aria-pressed', String(S.cut)); msg(S.cut ? 'warn' : '', S.cut ? (S.lst === 'nc' ? 'قطعت سلك +LS وهو <b>NC</b>: يراه الدرايف «ملموسًا» فورًا. هذا هو الأمان: أي قطع = توقف.' : 'قطعت سلك +LS وهو <b>NO</b>: لن يعرف الدرايف بانقطاعه… جرّب التحرك موجبًا دون Software limit (أي قبل الهومينج).') : 'أُصلح السلك.'); draw(); return; }
+    if (a === 'pwr'){ stop(); if (S.enc === 'inc'){ S.homed = false; msg('warn', 'عادت الكهرباء: نسي الإنكريمنتال مكانه. الـ Software limits لا تعمل حتى تنفّذ هومينج مجددًا.'); } else msg('ok', 'عادت الكهرباء: الأبسليوت يتذكر مكانه، والـ Software limits تعمل فورًا. لا حاجة إلى هومينج.'); draw(); return; }
     if (a === 'stop'){ stop(); draw(); return; }
-    if (S.alarm){ msg('bad', S.alarm + ' دوس <b>Reset إنذار</b> الأول.'); return; }
-    if (a === 'jn' || a === 'jp'){ S.ph = null; S.v = a === 'jp' ? 50 : -50; msg('', 'JOG… دوس «وقّف» لما توصل.'); return; }
+    if (S.alarm){ msg('bad', S.alarm + ' اضغط <b>Reset إنذار</b> أولًا.'); return; }
+    if (a === 'jn' || a === 'jp'){ S.ph = null; S.v = a === 'jp' ? 50 : -50; msg('', 'JOG… اضغط «أوقف» عندما تصل.'); return; }
     if (a === 'home'){
-      if (S.meth === 'here'){ S.org = S.pos; S.homed = true; msg('warn', 'المكان الحالي بقى صفر. سهل، بس لو المحور مش في مكان مظبوط ومتعلّم، الصفر هيتغيّر كل مرة. استخدمها بس مع أبسليوت أو مكان معروف.'); draw(); return; }
-      S.homed = false; S.ph = S.meth === 'dog' ? 'seek' : 'toLs'; S.v = -60; msg('', S.meth === 'dog' ? 'بيدوّر على حساس الهوم في الاتجاه السالب…' : 'رايح للليميت السالب…');
+      if (S.meth === 'here'){ S.org = S.pos; S.homed = true; msg('warn', 'أصبح المكان الحالي صفرًا. هذا سهل، لكن إذا لم يكن المحور في مكان دقيق ومعلَّم فسيتغيّر الصفر كل مرة. استخدمها فقط مع الأبسليوت أو مكان معروف.'); draw(); return; }
+      S.homed = false; S.ph = S.meth === 'dog' ? 'seek' : 'toLs'; S.v = -60; msg('', S.meth === 'dog' ? 'يبحث عن حساس الهوم في الاتجاه السالب…' : 'يتجه إلى الليمت السالب…');
     }
   });
   host.addEventListener('change', e => { const c = e.target.dataset.c; if (!c) return; S[c] = e.target.value; draw(); });
@@ -1023,50 +1023,50 @@ SV.axis = function(host, opt){
     if (!dt || !S.v) return;
     const prev = S.pos; S.pos += S.v * dt;
     if (S.ph === 'seek'){
-      if (dog()){ S.ph = 'leave'; S.v = 10; msg('', 'لقى الهوم! بيرجع ببطء لحد ما يسيب الحساس…'); }
-      else if (lsN()){ S.ph = 'back'; S.v = 60; msg('', 'خبط الليميت السالب قبل الهوم (كان بادئ على الناحية التانية). بيعكس ويدوّر على الهوم من الناحية التانية…'); }
+      if (dog()){ S.ph = 'leave'; S.v = 10; msg('', 'وجد الهوم! يعود ببطء حتى يترك الحساس…'); }
+      else if (lsN()){ S.ph = 'back'; S.v = 60; msg('', 'لمس الليمت السالب قبل الهوم (كان قد بدأ من الجهة الأخرى). يعكس ويبحث عن الهوم من الجهة الأخرى…'); }
     } else if (S.ph === 'back'){ if (dog()){ S.ph = 'leave'; S.v = 10; } }
-    else if (S.ph === 'toLs'){ if (lsN()){ S.ph = 'leaveLs'; S.v = 10; msg('', 'وصل الليميت. بيرجع ببطء ويدوّر على نبضة Z…'); } }
-    else if (S.ph === 'leave' && !dog() && S.pos > DOG[1]){ S.ph = 'z'; msg('', 'ساب الحساس. بيدوّر على أول نبضة Z…'); }
+    else if (S.ph === 'toLs'){ if (lsN()){ S.ph = 'leaveLs'; S.v = 10; msg('', 'وصل إلى الليمت. يعود ببطء ويبحث عن نبضة Z…'); } }
+    else if (S.ph === 'leave' && !dog() && S.pos > DOG[1]){ S.ph = 'z'; msg('', 'ترك الحساس. يبحث عن أول نبضة Z…'); }
     else if (S.ph === 'leaveLs' && !lsN()){ S.ph = 'z'; }
-    else if (S.ph === 'z'){ const z1 = Math.floor((prev - ZOFF) / 10), z2 = Math.floor((S.pos - ZOFF) / 10); if (z2 > z1){ S.pos = ZOFF + z2 * 10; S.org = S.pos; S.homed = true; stop(); msg('ok', `الهومينج خلّص ✓ الصفر اتحط على نبضة Z (مكانها ثابت في كل مرة بدقة نبضة). دلوقتي الـ <b>Software limits</b> (الخطوط الزرقا) شغّالة.`); finH(); draw(); return; } }
+    else if (S.ph === 'z'){ const z1 = Math.floor((prev - ZOFF) / 10), z2 = Math.floor((S.pos - ZOFF) / 10); if (z2 > z1){ S.pos = ZOFF + z2 * 10; S.org = S.pos; S.homed = true; stop(); msg('ok', `انتهى الهومينج ✓ وُضع الصفر على نبضة Z (مكانها ثابت كل مرة بدقة نبضة). الآن تعمل الـ <b>Software limits</b> (الخطوط الزرقاء).`); finH(); draw(); return; } }
     if (!S.ph){
-      if (S.homed && ((S.v > 0 && S.pos >= SWA[1]) || (S.v < 0 && S.pos <= SWA[0]))){ S.pos = S.v > 0 ? SWA[1] : SWA[0]; stop(); msg('warn', `<b>Software limit ${S.v > 0 ? '+' : '−'}:</b> الدرايف وقف المحور قبل الليميت سويتش بمسافة أمان. ده بيشتغل بس بعد الهومينج.`); seen('soft'); }
-      else if (S.v > 0 && lsP()){ S.v = 0; msg('warn', S.cut ? '<b>+LS شغّال (السلك NC مقطوع):</b> الدرايف مانع الحركة الموجبة. اصلح السلك. ده بالظبط ليه الليميت بيتعمل NC.' : '<b>+LS اتضرب:</b> الدرايف وقف الحركة الموجبة (Forward inhibit)، وتقدر تتحرك سالب بس عشان تطلع.'); seen('hw'); }
-      else if (S.v < 0 && lsN()){ S.v = 0; msg('warn', '<b>−LS اتضرب:</b> الحركة السالبة ممنوعة، اتحرك موجب عشان تطلع.'); seen('hw'); }
+      if (S.homed && ((S.v > 0 && S.pos >= SWA[1]) || (S.v < 0 && S.pos <= SWA[0]))){ S.pos = S.v > 0 ? SWA[1] : SWA[0]; stop(); msg('warn', `<b>Software limit ${S.v > 0 ? '+' : '−'}:</b> أوقف الدرايف المحور قبل الليمت سويتش بمسافة أمان. وهذا يعمل بعد الهومينج فقط.`); seen('soft'); }
+      else if (S.v > 0 && lsP()){ S.v = 0; msg('warn', S.cut ? '<b>+LS فعّال (السلك NC مقطوع):</b> الدرايف يمنع الحركة الموجبة. أصلح السلك. وهذا بالضبط سبب جعل الليمت NC.' : '<b>لُمس +LS:</b> أوقف الدرايف الحركة الموجبة (Forward inhibit)، ويمكنك التحرك سالبًا فقط للخروج.'); seen('hw'); }
+      else if (S.v < 0 && lsN()){ S.v = 0; msg('warn', '<b>لُمس −LS:</b> الحركة السالبة ممنوعة، تحرّك موجبًا للخروج.'); seen('hw'); }
     }
-    if (S.pos >= 400 - 14 || S.pos <= 14){ S.pos = S.pos > 200 ? 400 - 14 : 14; alarm('<b>تصادم!</b> المحور خبط في الـ Hard stop والدرايف طلّع <b>Overload / Position deviation</b>. ' + (S.cut && S.lst === 'no' ? 'السلك المقطوع على ليميت NO = الحماية اختفت من غير ما حد يعرف. عشان كده الليميت بيتعمل NC.' : '')); }
+    if (S.pos >= 400 - 14 || S.pos <= 14){ S.pos = S.pos > 200 ? 400 - 14 : 14; alarm('<b>تصادم!</b> اصطدم المحور بالـ Hard stop وأظهر الدرايف <b>Overload / Position deviation</b>. ' + (S.cut && S.lst === 'no' ? 'السلك المقطوع على ليمت NO = اختفت الحماية دون أن يعلم أحد. لذلك يكون الليمت NC.' : '')); }
     draw();
   });
-  draw(); msg('', 'المحور واقف في مكان مش معروف. جرّب JOG، وبعدين اعمل هومينج.');
+  draw(); msg('', 'المحور متوقف في مكان غير معروف. جرّب JOG، ثم نفّذ الهومينج.');
   return {S, draw, set(o){ Object.assign(S, o); draw(); }};
 };
 
 /* ================= L10: pulses from a PLC ================= */
 SV.plcPulse = function(host, opt){
   opt = opt || {};
-  const OUT = {oc:[100, 'ترانزستور (Open collector) · \u2066100 kHz\u2069'], ld:[1000, 'تفاضلي (Line driver) · \u20661 MHz\u2069']};
+  const OUT = {oc:[100, 'ترانزستور (Open collector) · ⁦100 kHz⁩'], ld:[1000, 'تفاضلي (Line driver) · ⁦1 MHz⁩']};
   const S = {out:'oc', f:100, ppr:10000, rpm:0, ang:0};
   host.innerHTML = `<div class="wd-ctl"><label>خرج الـ PLC <select class="inp" data-c="out">${Object.keys(OUT).map(k => `<option value="${k}">${OUT[k][1]}</option>`).join('')}</select></label><label>نبضات الأمر في اللفة (الجير) <select class="inp" data-c="ppr">${[1000, 2000, 5000, 10000, 20000].map(v => `<option${v === S.ppr ? ' selected' : ''}>${v}</option>`).join('')}</select></label><label>تردد النبضات: <b class="pp-f"></b><input type="range" min="0" max="1000" step="5" value="${S.f}" data-c="f" aria-label="تردد النبضات kHz"></label></div>
   <div class="wd-art pp-art"></div>
   <div class="read sm pp-read"></div>
   <p class="statline pp-msg" aria-live="polite"></p>
-  <p class="chal pp-chal">بـ <b>خرج الترانزستور</b> (Open collector): خلّي الموتور يلف <b>3000 rpm</b> من غير ما نبضات تضيع.</p>`;
+  <p class="chal pp-chal">بـ <b>خرج الترانزستور</b> (Open collector): اجعل المحرك يدور <b>3000 rpm</b> دون فقد نبضات.</p>`;
   const q = s => $(s, host), fin = chal(host, '.pp-chal', opt.lesson, opt.task || 'pulse');
   function state(){ const lim = OUT[S.out][0], fOk = S.f <= lim, eff = fOk ? S.f : lim * 0.8, want = S.f * 1000 / S.ppr * 60, rpm = eff * 1000 / S.ppr * 60; return {lim, fOk, want, rpm:Math.min(rpm, 5200), over:want > 5000}; }
   function draw(){
     const r = state();
     q('.pp-f').textContent = S.f + ' kHz';
-    q('.pp-art').innerHTML = `<svg viewBox="0 0 360 150" role="img" aria-label="PLC بيبعت نبضات للدرايف"><rect x="6" y="30" width="78" height="80" rx="6" fill="#d9dee2" stroke="#59656e"/>${tx(45, 52, 'PLC', {a:'middle', s:13, w:700, st:'fill:#1d2327'})}${tx(45, 72, S.out === 'oc' ? 'OC' : 'LD', {a:'middle', s:11, st:'fill:#3b444b'})}
+    q('.pp-art').innerHTML = `<svg viewBox="0 0 360 150" role="img" aria-label="PLC يرسل نبضات إلى الدرايف"><rect x="6" y="30" width="78" height="80" rx="6" fill="#d9dee2" stroke="#59656e"/>${tx(45, 52, 'PLC', {a:'middle', s:13, w:700, st:'fill:#1d2327'})}${tx(45, 72, S.out === 'oc' ? 'OC' : 'LD', {a:'middle', s:11, st:'fill:#3b444b'})}
       <path d="M84 70 H170" stroke="${r.fOk ? '#ffd23f' : '#c0352b'}" stroke-width="4" stroke-dasharray="4 6" class="${S.f ? 'flow' : ''}" style="--dur:${S.f ? Math.max(0.15, 30 / S.f) : 1}s"/>${tx(127, 60, S.f + ' kHz', {a:'middle', s:11, w:700})}
-      ${!r.fOk ? tx(127, 92, 'نبضات بتضيع!', {a:'middle', ar:1, s:11, st:'fill:#c0352b;font-weight:700'}) : ''}
+      ${!r.fOk ? tx(127, 92, 'نبضات تضيع!', {a:'middle', ar:1, s:11, st:'fill:#c0352b;font-weight:700'}) : ''}
       <rect x="170" y="26" width="70" height="90" rx="6" fill="#2f363c"/><rect x="178" y="34" width="54" height="22" rx="3" fill="#120707"/><text x="228" y="50" text-anchor="end" style="font:700 12px var(--font-mono);fill:#ff4d3a">${r.over ? 'AL.OS' : Math.round(r.rpm)}</text>
       <path d="M240 70 H262" stroke="#c0352b" stroke-width="3"/><g class="pp-dial">${dial(304, 72, 38, S.ang)}</g></svg>`;
     q('.pp-read').innerHTML = `<div><span>السرعة المطلوبة</span><b>${Math.round(r.want)} rpm</b></div><div><span>السرعة الفعلية</span><b class="${r.fOk && !r.over ? 'ok' : 'bad'}">${r.over ? 'إنذار' : Math.round(r.rpm) + ' rpm'}</b></div><div><span>حد الخرج</span><b>${r.lim} kHz</b></div>`;
     const m = q('.pp-msg');
-    if (r.over){ stc(m, 'bad'); m.innerHTML = '<b>Overspeed:</b> الأمر أعلى من أقصى سرعة للموتور (5000 rpm هنا). الدرايف بيفصل.'; }
-    else if (!r.fOk){ stc(m, 'bad'); m.innerHTML = `التردد أعلى من اللي الخرج يقدر يطلّعه نضيف (${r.lim} kHz): النبضات بتتشوّه وبتضيع، والمكنة <b>هتوصل مكان غلط من غير إنذار</b>. قلّل نبضات اللفة (الجير) أو استخدم Line driver.`; }
-    else if (Math.abs(r.rpm - 3000) < 1 && S.out === 'oc'){ stc(m, 'ok'); m.innerHTML = `تمام: ${S.f} kHz ÷ ${S.ppr} × 60 = 3000 rpm، والتردد جوه حد الخرج. التمن: كل نبضة دلوقتي أكبر (دقة أقل).`; fin(); }
+    if (r.over){ stc(m, 'bad'); m.innerHTML = '<b>Overspeed:</b> الأمر أعلى من أقصى سرعة للمحرك (5000 rpm هنا). يفصل الدرايف.'; }
+    else if (!r.fOk){ stc(m, 'bad'); m.innerHTML = `التردد أعلى مما يستطيع الخرج إخراجه بنظافة (${r.lim} kHz): تتشوه النبضات وتضيع، و<b>ستصل الماكينة إلى مكان خاطئ دون إنذار</b>. قلّل نبضات اللفة (الجير) أو استخدم Line driver.`; }
+    else if (Math.abs(r.rpm - 3000) < 1 && S.out === 'oc'){ stc(m, 'ok'); m.innerHTML = `أحسنت: ${S.f} kHz ÷ ${S.ppr} × 60 = 3000 rpm، والتردد داخل حد الخرج. الثمن: كل نبضة الآن أكبر (دقة أقل).`; fin(); }
     else { stc(m, ''); m.innerHTML = `السرعة = التردد ÷ نبضات اللفة × 60 = <b class="eq">${S.f * 1000} ÷ ${S.ppr} × 60 = ${Math.round(r.want)} rpm</b>.`; }
   }
   host.addEventListener('input', e => { if (e.target.dataset.c === 'f'){ S.f = +e.target.value; draw(); } });
@@ -1077,24 +1077,24 @@ SV.plcPulse = function(host, opt){
 };
 SV.IF_OPTS = ['نبضات (Pulse train)', 'أنالوج ±10 V', 'شبكة سريعة (EtherCAT / Profinet)', 'Modbus RS-485'];
 SV.IF_CASES = [
-  {s:'PLC صغير رخيص وعندك محور واحد بيتحرك من مكان لمكان (مكنة تقطيع بسيطة).', a:0, why:'أبسط وأرخص حل: خرج ترانزستور سريع ونبضات.'},
-  {s:'خط فيه 12 محور لازم يتحركوا متزامنين مع بعض (Electronic cam) وعايز تقرا العزم والإنذارات من الـ PLC.', a:2, why:'محاور كتير + تزامن + بيانات: شبكة Motion سريعة زي EtherCAT.'},
-  {s:'كارت Motion قديم بيطلّع أمر سرعة، وهو اللي قافل لوب المكان من الإنكودر بتاعه.', a:1, why:'الكارت بيبعت أمر سرعة أنالوج والدرايف في وضع السرعة.'},
-  {s:'عايز تقرا الإنذار ودرجة حرارة الدرايف وتغيّر سرعة ثابتة كل فين وفين على سير بطيء.', a:3, why:'Modbus بطيء بس كويس للمراقبة والباراميترات، مش للحركة السريعة.'},
-  {s:'لفّافة خامة (Winder) محتاجة شد ثابت، والـ PLC عنده خرج أنالوج فاضي.', a:1, why:'وضع العزم بأمر أنالوج.'},
-  {s:'مكنة تعبئة جديدة بـ PLC من نفس شركة الدرايف، بـ 4 محاور وشاشة بتعرض الـ Following error.', a:2, why:'الشبكة بتدّيلك تحكم ومراقبة على كابل واحد.'},
-  {s:'المسافة بين الـ PLC والدرايف 30 متر، ومكنة فيها انفرترات كتير ونويز عالي، وعايز نبضات.', a:0, why:'نبضات بس لازم Line driver تفاضلي مع كابل مشيلد (Open collector مش هيستحمل المسافة دي).'}
+  {s:'PLC صغير رخيص ولديك محور واحد يتحرك من مكان إلى آخر (ماكينة تقطيع بسيطة).', a:0, why:'أبسط وأرخص حل: خرج ترانزستور سريع ونبضات.'},
+  {s:'خط فيه 12 محورًا يجب أن تتحرك متزامنة (Electronic cam)، وتريد قراءة العزم والإنذارات من الـ PLC.', a:2, why:'محاور كثيرة + تزامن + بيانات: شبكة Motion سريعة مثل EtherCAT.'},
+  {s:'كارت Motion قديم يُخرج أمر سرعة، وهو الذي يغلق حلقة المكان من إنكودره.', a:1, why:'يرسل الكارت أمر سرعة أنالوج والدرايف في وضع السرعة.'},
+  {s:'تريد قراءة الإنذار ودرجة حرارة الدرايف وتغيير سرعة ثابتة من حين لآخر على سير بطيء.', a:3, why:'Modbus بطيء لكنه جيد للمراقبة والباراميترات، لا للحركة السريعة.'},
+  {s:'لفّافة خامات (Winder) تحتاج إلى شد ثابت، وفي الـ PLC خرج أنالوج غير مستخدم.', a:1, why:'وضع العزم بأمر أنالوج.'},
+  {s:'ماكينة تعبئة جديدة بـ PLC من شركة الدرايف نفسها، بـ 4 محاور وشاشة تعرض الـ Following error.', a:2, why:'الشبكة تعطيك تحكمًا ومراقبة على كابل واحد.'},
+  {s:'المسافة بين الـ PLC والدرايف 30 مترًا، في ماكينة بها انفرترات كثيرة وتشويش عالٍ، وتريد نبضات.', a:0, why:'نبضات لكن بـ Line driver تفاضلي مع كابل بشيلد (الـ Open collector لا يتحمل هذه المسافة).'}
 ];
 
 /* ================= L11: regen / overvoltage ================= */
 SV.regen = function(host, opt){
   opt = opt || {};
   const S = {ratio:10, td:150, res:false, tripped:false, sawTrip:false};
-  host.innerHTML = `<div class="wd-ctl"><label>الحمل <select class="inp" data-c="ratio"><option value="1">موتور لوحده تقريبًا (×1)</option><option value="10" selected>ترابيزة تقيلة (×10)</option></select></label><label>زمن الفرملة من 3000 rpm: <b class="rg-td"></b><input type="range" min="50" max="800" step="10" value="${S.td}" data-c="td" aria-label="زمن الفرملة"></label><button type="button" class="btn" data-a="res" aria-pressed="false">مقاومة فرملة خارجية: مش متوصّلة</button></div>
-  <div class="wd-ctl"><button type="button" class="btn pri" data-a="run">وقّف الموتور</button></div>
+  host.innerHTML = `<div class="wd-ctl"><label>الحمل <select class="inp" data-c="ratio"><option value="1">محرك وحده تقريبًا (×1)</option><option value="10" selected>طاولة ثقيلة (×10)</option></select></label><label>زمن الفرملة من 3000 rpm: <b class="rg-td"></b><input type="range" min="50" max="800" step="10" value="${S.td}" data-c="td" aria-label="زمن الفرملة"></label><button type="button" class="btn" data-a="res" aria-pressed="false">مقاومة فرملة خارجية: غير موصّلة</button></div>
+  <div class="wd-ctl"><button type="button" class="btn pri" data-a="run">أوقف المحرك</button></div>
   <div class="wd-art rg-art"></div>
   <p class="statline rg-msg" aria-live="polite"></p>
-  <p class="chal rg-chal">اعمل وقفة تطلّع <b>Overvoltage</b>، وبعدين اصلحها بطريقة من الطريقتين ووقّف من غير إنذار.</p>`;
+  <p class="chal rg-chal">أوقف المحرك بطريقة تُحدث <b>Overvoltage</b>، ثم أصلحها بإحدى الطريقتين وأوقف دون إنذار.</p>`;
   const q = s => $(s, host), fin = chal(host, '.rg-chal', opt.lesson, opt.task || 'regen');
   function sim(){
     const Jm = 1.13e-4, J = Jm * (1 + S.ratio), w0 = 3000 * 2 * Math.PI / 60, td = S.td / 1000, C = 680e-6, Pl = 150, R = 60, dt = 1e-3;
@@ -1113,35 +1113,35 @@ SV.regen = function(host, opt){
   function plot(r){
     const x0 = 44, x1 = 350, X = t => x0 + (x1 - x0) * t, Yv = v => 120 - (Math.min(v, 560) - 280) / 280 * 100, Yw = w => 230 - w / 3000 * 80;
     let s = `<svg viewBox="0 0 360 250" role="img" aria-label="جهد الـ DC bus والسرعة"><rect x="${x0}" y="16" width="${x1 - x0}" height="106" class="w-bg" stroke="var(--line)"/><rect x="${x0}" y="146" width="${x1 - x0}" height="88" class="w-bg" stroke="var(--line)"/>`;
-    s += `<line x1="${x0}" x2="${x1}" y1="${Yv(400)}" y2="${Yv(400)}" stroke="#c0352b" stroke-dasharray="5 4"/>${tx(x1 - 2, Yv(400) - 4, 'OV trip ≈ 400 V', {a:'end', s:10, st:'fill:#c0352b;font-weight:700'})}<line x1="${x0}" x2="${x1}" y1="${Yv(370)}" y2="${Yv(370)}" stroke="#a86a00" stroke-dasharray="2 4"/>${tx(x0 + 4, Yv(370) + 12, 'هنا المقاومة بتشتغل', {ar:1, s:9.5, st:'fill:#a86a00'})}${tx(x1 - 2, Yv(370) + 12, '370 V', {a:'end', s:9.5, st:'fill:#a86a00'})}`;
-    s += tx(x0 + 4, 30, 'جهد الـ DC bus', {ar:1, s:10.5, c:'w-mu'}) + tx(x0 + 4, 160, 'سرعة الموتور', {ar:1, s:10.5, c:'w-mu'}) + tx(x0 - 4, Yv(310) + 4, '310', {a:'end', s:9, c:'w-mu'}) + tx(x0 - 4, Yv(500) + 4, '500', {a:'end', s:9, c:'w-mu'}) + tx(x0 - 4, Yw(3000) + 4, '3000', {a:'end', s:9, c:'w-mu'}) + tx(x1, 246, '1 s', {a:'end', s:9, c:'w-mu'});
+    s += `<line x1="${x0}" x2="${x1}" y1="${Yv(400)}" y2="${Yv(400)}" stroke="#c0352b" stroke-dasharray="5 4"/>${tx(x1 - 2, Yv(400) - 4, 'OV trip ≈ 400 V', {a:'end', s:10, st:'fill:#c0352b;font-weight:700'})}<line x1="${x0}" x2="${x1}" y1="${Yv(370)}" y2="${Yv(370)}" stroke="#a86a00" stroke-dasharray="2 4"/>${tx(x0 + 4, Yv(370) + 12, 'هنا تعمل المقاومة', {ar:1, s:9.5, st:'fill:#a86a00'})}${tx(x1 - 2, Yv(370) + 12, '370 V', {a:'end', s:9.5, st:'fill:#a86a00'})}`;
+    s += tx(x0 + 4, 30, 'جهد الـ DC bus', {ar:1, s:10.5, c:'w-mu'}) + tx(x0 + 4, 160, 'سرعة المحرك', {ar:1, s:10.5, c:'w-mu'}) + tx(x0 - 4, Yv(310) + 4, '310', {a:'end', s:9, c:'w-mu'}) + tx(x0 - 4, Yv(500) + 4, '500', {a:'end', s:9, c:'w-mu'}) + tx(x0 - 4, Yw(3000) + 4, '3000', {a:'end', s:9, c:'w-mu'}) + tx(x1, 246, '1 s', {a:'end', s:9, c:'w-mu'});
     if (r){ const line = (a, Y, c) => `<path d="${a.map((v, i) => (i ? 'L' : 'M') + X(r.t[i]).toFixed(1) + ' ' + Y(v).toFixed(1)).join('')}" fill="none" stroke="${c}" stroke-width="2.2"/>`; s += line(r.vs, Yv, '#e4572e') + line(r.ws, Yw, 'var(--accent)'); if (r.trip != null) s += `<circle cx="${X(r.trip)}" cy="${Yv(400)}" r="6" fill="none" stroke="#c0352b" stroke-width="2.5"/>`; }
     q('.rg-art').innerHTML = s + '</svg>';
   }
   function run(){
     const r = sim(); plot(r); const m = q('.rg-msg');
-    if (r.trip != null){ S.sawTrip = true; stc(m, 'bad'); m.innerHTML = `<b>إنذار Overvoltage</b> بعد ${Math.round(r.trip * 1000)} ms: الموتور وهو بيفرمل بقى <b>جنريتور</b> ورجّع طاقة الحمل للكباستورات، والجهد عدّى الحد. الدرايف فصل والموتور كمّل لوحده (Coast).`; }
-    else { stc(m, 'ok'); m.innerHTML = `وقف من غير إنذار. أعلى جهد وصله الـ DC bus = <b class="eq">${Math.round(r.peak)} V</b>. ` + (S.res ? 'المقاومة حرقت الطاقة الزيادة على شكل حرارة.' : S.td >= 300 ? 'الفرملة الأبطأ خلّت الطاقة تتوزّع على وقت أطول وتضيع في الموتور نفسه.' : 'الحمل خفيف فالطاقة قليلة.'); if (S.sawTrip && S.ratio >= 10) fin(); }
+    if (r.trip != null){ S.sawTrip = true; stc(m, 'bad'); m.innerHTML = `<b>إنذار Overvoltage</b> بعد ${Math.round(r.trip * 1000)} ms: أثناء الفرملة صار المحرك <b>مولّدًا</b> وأرجع طاقة الحمل إلى المكثفات، فتجاوز الجهد الحد. فصل الدرايف وأكمل المحرك وحده (Coast).`; }
+    else { stc(m, 'ok'); m.innerHTML = `توقف دون إنذار. أعلى جهد وصل إليه الـ DC bus = <b class="eq">${Math.round(r.peak)} V</b>. ` + (S.res ? 'أحرقت المقاومة الطاقة الزائدة على شكل حرارة.' : S.td >= 300 ? 'الفرملة الأبطأ وزّعت الطاقة على زمن أطول فضاعت في المحرك نفسه.' : 'الحمل خفيف فالطاقة قليلة.'); if (S.sawTrip && S.ratio >= 10) fin(); }
     return r;
   }
   host.addEventListener('input', e => { if (e.target.dataset.c === 'td'){ S.td = +e.target.value; q('.rg-td').textContent = S.td + ' ms'; } });
   host.addEventListener('change', e => { if (e.target.dataset.c === 'ratio') S.ratio = +e.target.value; });
-  onAct(host, '[data-a]', b => { if (b.dataset.a === 'res'){ S.res = !S.res; b.setAttribute('aria-pressed', String(S.res)); b.textContent = 'مقاومة فرملة خارجية: ' + (S.res ? 'متوصّلة' : 'مش متوصّلة'); return; } run(); });
+  onAct(host, '[data-a]', b => { if (b.dataset.a === 'res'){ S.res = !S.res; b.setAttribute('aria-pressed', String(S.res)); b.textContent = 'مقاومة فرملة خارجية: ' + (S.res ? 'موصّلة' : 'غير موصّلة'); return; } run(); });
   q('.rg-td').textContent = S.td + ' ms'; plot(null);
   return {S, run, set(o){ Object.assign(S, o); q('[data-c=td]').value = S.td; q('.rg-td').textContent = S.td + ' ms'; }};
 };
 SV.FAULT_CASES = [
-  {t:'محور رأسي: Overload وهو بيبدأ', s:'محور Z رأسي في مكنة. كل ما يدّي Servo ON ويبدأ يتحرك يطلع <b>Overload</b> بعد ثواني، والموتور سخن جدًا رغم إن الحمل مش كبير.', clues:[['اسمع', 'مفيش صوت «تكة» الفرامل لما يدّي Servo ON.'], ['قيس', 'على طرفين الفرامل <span class="eq">0 V</span>. فيوز الـ 24V بتاع الفرامل محروق.']], o:['الفرامل مش بتفتح', 'الجين عالي', 'الإنكودر بايظ', 'مقاومة الفرملة'], a:0, why:'الموتور بيلف ضد فرامل ماسكة: تيار عالي ⇐ Overload. اتأكد من 24V الفرامل والريلاي وتوقيت فتحها.'},
-  {t:'Position deviation excessive في التسارع', s:'بعد ما زوّدوا سرعة المكنة، بقى يطلع <b>Position deviation excessive</b> (Following error كبير) في أول كل حركة بس.', clues:[['المونيتور', 'العزم بيوصل للحد الأقصى (300%) في التسارع.'], ['التعديل', 'زمن التسارع اتغيّر من 200 ms لـ 30 ms.']], o:['التسارع أكبر من العزم', 'كابل الإنكودر', 'دايرة الـ STO', 'الكهربا الداخلة ضعيفة'], a:0, why:'الموتور مش قادر يلحق الأمر ⇐ الغلط بيكبر لحد الحد. زوّد زمن التسارع، أو موتور أكبر، أو قلّل الحمل. (وممكن كمان حاجة ميكانيكية زانقة).'},
-  {t:'Encoder error بيظهر ويختفي', s:'إنذار <b>Encoder error / Encoder communication</b> بيطلع مرة كل يوم أو يومين، دايمًا والمحور بيتحرك في آخر المشوار.', clues:[['الكابل', 'كابل الإنكودر ماشي في سلسلة كابلات (Cable chain) وهو كابل عادي مش مخصوص للحركة.'], ['الكونكتور', 'سليم ومربوط كويس.']], o:['كابل الإنكودر بيتقطع جوه', 'الجين عالي', 'الجير الإلكتروني غلط', 'مقاومة الفرملة'], a:0, why:'الكابل العادي بيتكسر من الثني المتكرر. لازم كابل High-flex للـ Cable chain، وتأريض الشيلد صح.'},
-  {t:'Overvoltage على الوقفة', s:'ترابيزة دوّارة تقيلة. بيطلع <b>Overvoltage</b> كل ما توقف، ومش بيطلع وهي ماشية.', clues:[['التوصيل', 'المقاومة الخارجية متوصّلة على P+ و C، بس فيه جمبر P+ و D لسه موجود والباراميتر على «مقاومة داخلية».'], ['الحمل', 'نسبة الـ Inertia حوالي 15.']], o:['مفيش مقاومة تحرق الطاقة', 'الكهربا الداخلة عالية', 'الإنكودر بايظ', 'الجين عالي'], a:0, why:'ظبط الباراميتر على المقاومة الخارجية وقيمتها وقدرتها حسب المانيوال، أو طوّل زمن الفرملة.'},
-  {t:'الموتور جري لوحده بعد التغيير', s:'غيّروا موتور السيرفو بواحد جديد نفس الموديل. أول Servo ON الموتور اتنفض وجري لحد ما طلع <b>Overspeed</b> أو Overload.', clues:[['الكابل', 'الكابل الجديد متوصّل بأطراف منفصلة مش بكونكتور، والكهربائي وصّل U V W زي ما بيوصّل الموتور الإندكشن.']], o:['U V W مش في ترتيبها', 'الجير الإلكتروني غلط', 'الجين واطي', 'البطارية فاضية'], a:0, why:'السيرفو لازم U على U و V على V و W على W. تبديل فازتين مش بيعكس الاتجاه هنا، ده بيبوّظ التحكم كله.'},
-  {t:'Undervoltage لما المكبس يشتغل', s:'في نفس اللوحة مكبس هيدروليك كبير. كل ما موتور المكبس يبدأ، السيرفو يطلع <b>Undervoltage</b> ويفصل.', clues:[['قيس', 'الجهد بيهبط لحظيًا من 380 لـ 300 V على الباسبار وقت بدء المكبس.']], o:['هبوط في الكهربا الداخلة', 'الإنكودر بايظ', 'الجين عالي', 'الليميت سويتش مفتوح'], a:0, why:'افصل تغذية السيرفو أو قوّيها، أو اعمل سوفت ستارتر للمكبس، واتأكد من مفيش فاز ضعيف أو كونتاكتور واكل.'},
-  {t:'الدرايف عارض STO ومش بيدّي عزم', s:'بعد تعديل في دايرة الأمان، الدرايف بقى يعرض <b>STO</b> ومفيش عزم حتى مع Servo ON.', clues:[['الدايرة', 'سويتش باب الحماية الجديد متوصّل وهو مفتوح، والسيفتي ريلاي مش بيدّي الإشارتين.']], o:['دايرة الـ STO مفتوحة', 'الموتور بايظ', 'الجير الإلكتروني غلط', 'الإنكودر بايظ'], a:0, why:'الـ STO بيقطع العزم بالهاردوير عشان أمان الناس. صلّح الدايرة، ومتعملش جمبر عليها في مكنة شغّالة.'},
-  {t:'الموتور بيزن وهو واقف', s:'ركّبوا ترابيزة أتقل على المحور. من ساعتها الموتور بيصفّر/يزن وهو واقف، والمحور بيترعش.', clues:[['الباراميترات', 'الجين عالي ومتظبط على الترابيزة القديمة الخفيفة، ونسبة الـ Inertia متغيّرتش.']], o:['محتاج تيونينج من جديد', 'الإنكودر بايظ', 'Overvoltage في الدرايف', 'دايرة الـ STO'], a:0, why:'أي تغيير في الحمل محتاج Auto-tune تاني (وممكن Notch filter للرنين).'},
-  {t:'المحور بيزحف شوية كل ساعة', s:'وضع النبضات من PLC. المحور بيبعد عن مكانه حوالي 0.2 mm كل ساعة، ومن غير أي إنذار.', clues:[['الكابل', 'كابل النبضات Open collector طوله 25 متر وماشي جنب كابلات انفرترات.'], ['التجربة', 'لما الانفرترات تقف، الزحف بيختفي.']], o:['نويز على كابل النبضات', 'الجين واطي', 'مقاومة الفرملة', 'الجير الإلكتروني غلط'], a:0, why:'النويز بيعمل نبضات زيادة. استخدم Line driver وكابل مشيلد مجدول وبعيد عن كابلات القوى.'},
-  {t:'المكنة خبطت بعد انقطاع الكهربا', s:'بعد انقطاع الكهربا، الأوبريتور شغّل المكنة على طول، والمحور خبط في آخر المشوار.', clues:[['الإنكودر', 'إنكريمنتال، والبرنامج مش بيجبر هومينج بعد رجوع الكهربا.']], o:['المكان ضاع ومفيش هومينج', 'Overvoltage', 'الجين واطي', 'الفرامل مش ماسكة كويس'], a:0, why:'الإنكريمنتال بيبدأ من صفر. لازم البرنامج يمنع الحركة لحد الهومينج، أو تستخدم أبسليوت.'},
-  {t:'مش راضي يتحرك موجب', s:'المحور بيتحرك سالب عادي، بس الموجب ممنوع والدرايف عارض <b>Forward limit</b>. المحور في النص خالص.', clues:[['الحساس', 'لمبة الـ +LS على الكارت مطفية. الليميت NC.'], ['الكابل', 'الكابل متقطّع عند السلسلة.']], o:['سلك الليميت NC مقطوع', 'الإنكودر بايظ', 'الجين عالي', 'الجير الإلكتروني غلط'], a:0, why:'NC مقطوع = الدرايف شايفه متضرب. ده تصميم آمن، صلّح السلك.'}
+  {t:'محور رأسي: Overload عند البدء', s:'محور Z رأسي في ماكينة. كلما أعطى Servo ON وبدأ الحركة ظهر <b>Overload</b> بعد ثوانٍ، والمحرك ساخن جدًا رغم أن الحمل ليس كبيرًا.', clues:[['استمع', 'لا يُسمع صوت «تكة» الفرامل عند Servo ON.'], ['قِس', 'على طرفي الفرامل <span class="eq">0 V</span>. فيوز الـ 24V الخاص بالفرامل محترق.']], o:['الفرامل لا تفتح', 'الجين عالٍ', 'الإنكودر تالف', 'مقاومة الفرملة'], a:0, why:'المحرك يدور ضد فرامل ممسكة: تيار عالٍ ⇐ Overload. تأكد من 24V الفرامل والريلاي وتوقيت فتحها.'},
+  {t:'Position deviation excessive أثناء التسارع', s:'بعد زيادة سرعة الماكينة، صار يظهر <b>Position deviation excessive</b> (Following error كبير) في بداية كل حركة فقط.', clues:[['المونيتور', 'يصل العزم إلى الحد الأقصى (300%) أثناء التسارع.'], ['التعديل', 'تغيّر زمن التسارع من 200 ms إلى 30 ms.']], o:['التسارع أكبر من العزم المتاح', 'كابل الإنكودر', 'دائرة الـ STO', 'الكهرباء الداخلة ضعيفة'], a:0, why:'المحرك لا يستطيع اللحاق بالأمر ⇐ يكبر الخطأ حتى الحد. زد زمن التسارع، أو استخدم محركًا أكبر، أو قلّل الحمل. (وقد يكون هناك أيضًا تضييق ميكانيكي).'},
+  {t:'Encoder error يظهر ويختفي', s:'إنذار <b>Encoder error / Encoder communication</b> يظهر مرة كل يوم أو يومين، دائمًا والمحور يتحرك في نهاية المشوار.', clues:[['الكابل', 'كابل الإنكودر يمر في سلسلة كابلات (Cable chain) وهو كابل عادي غير مخصص للحركة.'], ['الكونكتور', 'سليم ومربوط جيدًا.']], o:['كابل الإنكودر ينقطع من الداخل', 'الجين عالٍ', 'الجير الإلكتروني خاطئ', 'مقاومة الفرملة'], a:0, why:'الكابل العادي ينكسر من الثني المتكرر. يلزم كابل High-flex للـ Cable chain، وتأريض الشيلد بشكل صحيح.'},
+  {t:'Overvoltage عند الإيقاف', s:'طاولة دوّارة ثقيلة. يظهر <b>Overvoltage</b> كلما توقفت، ولا يظهر أثناء دورانها.', clues:[['التوصيل', 'المقاومة الخارجية موصّلة على P+ وC، لكن جمبر P+ وD ما زال موجودًا والباراميتر على «مقاومة داخلية».'], ['الحمل', 'نسبة الـ Inertia نحو 15.']], o:['لا توجد مقاومة تحرق الطاقة', 'الكهرباء الداخلة عالية', 'الإنكودر تالف', 'الجين عالٍ'], a:0, why:'اضبط الباراميتر على المقاومة الخارجية وقيمتها وقدرتها حسب المانيوال، أو أطل زمن الفرملة.'},
+  {t:'اندفع المحرك وحده بعد الاستبدال', s:'استُبدل السيرفو موتور بآخر جديد من الموديل نفسه. عند أول Servo ON انتفض المحرك واندفع حتى ظهر <b>Overspeed</b> أو Overload.', clues:[['الكابل', 'الكابل الجديد موصّل بأطراف منفصلة لا بكونكتور، ووصّل الكهربائي U V W كما يوصّل المحرك الإندكشن.']], o:['U V W ليست في ترتيبها', 'الجير الإلكتروني خاطئ', 'الجين منخفض', 'البطارية فارغة'], a:0, why:'السيرفو يلزمه U على U وV على V وW على W. تبديل فازين لا يعكس الاتجاه هنا، بل يفسد التحكم كله.'},
+  {t:'Undervoltage عند تشغيل المكبس', s:'في اللوحة نفسها مكبس هيدروليك كبير. كلما بدأ محرك المكبس أظهر السيرفو <b>Undervoltage</b> وفصل.', clues:[['قِس', 'ينخفض الجهد لحظيًا من 380 إلى 300 V على الباسبار عند بدء المكبس.']], o:['هبوط في الكهرباء الداخلة', 'الإنكودر تالف', 'الجين عالٍ', 'الليمت سويتش مفتوح'], a:0, why:'افصل تغذية السيرفو أو قوِّها، أو استخدم سوفت ستارتر للمكبس، وتأكد من عدم وجود فاز ضعيف أو كونتاكتور متآكل.'},
+  {t:'الدرايف يعرض STO ولا يعطي عزمًا', s:'بعد تعديل في دائرة الأمان، صار الدرايف يعرض <b>STO</b> ولا يوجد عزم حتى مع Servo ON.', clues:[['الدائرة', 'سويتش باب الحماية الجديد موصّل وهو مفتوح، والسيفتي ريلاي لا يعطي الإشارتين.']], o:['دائرة الـ STO مفتوحة', 'المحرك تالف', 'الجير الإلكتروني خاطئ', 'الإنكودر تالف'], a:0, why:'الـ STO يقطع العزم بالهاردوير لأمان الأشخاص. أصلح الدائرة، ولا تضع عليها جمبر في ماكينة عاملة.'},
+  {t:'المحرك يطنّ وهو متوقف', s:'رُكّبت طاولة أثقل على المحور. ومنذ ذلك الحين يصفّر المحرك ويطنّ وهو متوقف، ويرتعش المحور.', clues:[['الباراميترات', 'الجين عالٍ ومضبوط على الطاولة القديمة الخفيفة، ونسبة الـ Inertia لم تتغيّر.']], o:['يحتاج إلى تيونينج من جديد', 'الإنكودر تالف', 'Overvoltage في الدرايف', 'دائرة الـ STO'], a:0, why:'أي تغيير في الحمل يحتاج إلى Auto-tune جديد (وربما Notch filter للرنين).'},
+  {t:'المحور يزحف قليلًا كل ساعة', s:'وضع النبضات من PLC. يبتعد المحور عن مكانه نحو 0.2 mm كل ساعة، دون أي إنذار.', clues:[['الكابل', 'كابل النبضات Open collector طوله 25 مترًا ويمر بجوار كابلات انفرترات.'], ['التجربة', 'عندما تتوقف الانفرترات يختفي الزحف.']], o:['تشويش على كابل النبضات', 'الجين منخفض', 'مقاومة الفرملة', 'الجير الإلكتروني خاطئ'], a:0, why:'التشويش يولّد نبضات زائدة. استخدم Line driver وكابلًا مجدولًا بشيلد بعيدًا عن كابلات القوى.'},
+  {t:'اصطدمت الماكينة بعد انقطاع الكهرباء', s:'بعد انقطاع الكهرباء شغّل المشغّل الماكينة فورًا، فاصطدم المحور بنهاية المشوار.', clues:[['الإنكودر', 'إنكريمنتال، والبرنامج لا يفرض هومينج بعد عودة الكهرباء.']], o:['ضاع المكان ولا يوجد هومينج', 'Overvoltage', 'الجين منخفض', 'الفرامل لا تمسك جيدًا'], a:0, why:'الإنكريمنتال يبدأ من الصفر. يجب أن يمنع البرنامج الحركة حتى الهومينج، أو تستخدم أبسليوت.'},
+  {t:'يرفض التحرك موجبًا', s:'يتحرك المحور سالبًا بشكل عادي، لكن الموجب ممنوع والدرايف يعرض <b>Forward limit</b>. والمحور في المنتصف تمامًا.', clues:[['الحساس', 'مصباح الـ +LS على الكارت مطفأ. الليمت NC.'], ['الكابل', 'الكابل مقطوع عند السلسلة.']], o:['سلك الليمت NC مقطوع', 'الإنكودر تالف', 'الجين عالٍ', 'الجير الإلكتروني خاطئ'], a:0, why:'NC مقطوع = يراه الدرايف ملموسًا. هذا تصميم آمن، أصلح السلك.'}
 ];
 
 })();

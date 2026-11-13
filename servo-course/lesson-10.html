@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>التحكم من الـ PLC</title>
-<meta name="description" content="الدرس 10 في كورس السيرفو: التحكم في السيرفو من الـ PLC بالنبضات (Open collector و Line driver وحساب التردد)، بالأنالوج ±10V، وبالشبكات EtherCAT و PROFINET و EtherNet/IP و Modbus.">
+<meta name="description" content="الدرس 10 في كورس السيرفو: التحكم في السيرفو من الـ PLC بالنبضات (Open collector وLine driver وحساب التردد)، وبالأنالوج ±10V، وبالشبكات EtherCAT وPROFINET وEtherNet/IP وModbus.">
 <link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/servo-course/lesson-10.html">
 <link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/servo-course/lesson-10.html">
 <link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/servo-course/lesson-10.html">
@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <link rel="stylesheet" href="servo.css?v=20261021w">
-<script src="servo.js?v=20261029g1"></script>
+<script src="servo.js?v=20261113m"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
 <link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
@@ -26,62 +26,62 @@
   <div>
     <p class="kick">السيرفو موتور والدرايف · الدرس 10 من 12</p>
     <h1>التحكم من الـ PLC</h1>
-    <p>الدرايف جاهز، دلوقتي الـ PLC لازم يكلّمه. هتعرف <b>3 طرق</b>: نبضات وأنالوج وشبكة، وتجرّب حدود خرج النبضات بنفسك، وتتعلم تختار الطريقة المناسبة لكل مكنة.</p>
+    <p>الدرايف جاهز، والآن يجب أن يتواصل معه الـ PLC. ستعرف <b>3 طرق</b>: النبضات والأنالوج والشبكة، وتجرّب حدود خرج النبضات بنفسك، وتتعلم اختيار الطريقة المناسبة لكل ماكينة.</p>
   </div>
   <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a><a class="btn lang-btn" href="/en/servo-course/lesson-10.html" lang="en" hreflang="en" data-keep aria-label="Read this page in English" title="Read this page in English" onclick="try{localStorage.setItem('le-lang','en')}catch(e){}">EN</a></div>
 </header>
 
 <div id="lesson-intro" data-course="servo-course" data-lesson="10"></div>
-<script src="/assets/lesson-intro-data/servo-course.ar.js?v=20261021r" defer></script>
+<script src="/assets/lesson-intro-data/servo-course.ar.js?v=20261113m" defer></script>
 <script src="/assets/lesson-intro.js?v=20261113n" defer></script>
 
 <section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
 
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>الـ PLC بيكلّم الدرايف بأنهي طريقة؟</h2>
-  <p>فيه 3 طرق. <b>النبضات</b> بسيطة ورخيصة، لكن ترددها محدود وبتتأثر بالنويز.</p>
-  <p><b>الأنالوج <bdi dir="ltr">±10 V</bdi></b> مناسب للسرعة والشد، لكن فيه أوفست، ولو عايز تحكم في المكان محتاج كارت Motion.</p>
-  <p><b>الشبكة</b> كابل واحد بيشغّل محاور كتير، لكن محتاجة PLC وكونفيجريشن مناسبين.</p>
+  <h2 id="s1"><span class="k">1</span>بأي طريقة يتواصل الـ PLC مع الدرايف؟</h2>
+  <p>هناك 3 طرق. <b>النبضات</b> بسيطة ورخيصة، لكن ترددها محدود وتتأثر بالتشويش.</p>
+  <p><b>الأنالوج <bdi dir="ltr">±10 V</bdi></b> مناسب للسرعة والشد، لكن فيه أوفست، وللتحكم في المكان تحتاج إلى كارت Motion.</p>
+  <p><b>الشبكة</b> كابل واحد يشغّل محاور كثيرة، لكنها تحتاج إلى PLC وكونفيجريشن مناسبين.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>النبضات: السرعة والتردد</h2>
-  <p>في النبضات، عدد النبضات بيحدد المسافة وترددها بيحدد السرعة:</p>
+  <p>في النبضات يحدد عدد النبضات المسافة ويحدد ترددها السرعة:</p>
   <div class="formula ar">السرعة (rpm) = التردد (Hz) ÷ نبضات اللفة × 60</div>
-  <p>وأقصى تردد بيتوقف على نوع الخرج. الـ <b>Open collector</b> بيوصل لمئات kHz وكابله قصير. والـ <b>Line driver</b> بيوصل لـ MHz، وبيمشي مسافة أطول وبيقاوم النويز.</p>
-  <p>والدرايف بيرد على الـ PLC بـ 3 إشارات: <b>In-position</b> و <b>Alarm</b> و <b>Ready</b>.</p>
-  <div class="wd"><h3>محاكي: PLC بيبعت نبضات</h3><div id="pulse"></div></div>
+  <p>وأقصى تردد يعتمد على نوع الخرج. الـ <b>Open collector</b> يصل إلى مئات kHz وكابله قصير. والـ <b>Line driver</b> يصل إلى MHz، ويقطع مسافة أطول ويقاوم التشويش.</p>
+  <p>ويرد الدرايف على الـ PLC بـ 3 إشارات: <b>In-position</b> و<b>Alarm</b> و<b>Ready</b>.</p>
+  <div class="wd"><h3>محاكي: PLC يرسل نبضات</h3><div id="pulse"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>الشبكات الصناعية</h2>
-  <p>في الشبكة مفيش نبضات. كل 1 ms الـ PLC بيبعت المكان المطلوب، والدرايف بيرد بالمكان الحقيقي والعزم والإنذار.</p>
+  <p>في الشبكة لا توجد نبضات. كل 1 ms يرسل الـ PLC المكان المطلوب، ويرد الدرايف بالمكان الفعلي والعزم والإنذار.</p>
   <div class="wd-art" id="net" aria-hidden="true"></div>
-  <p><b>EtherCAT</b> هي الأسرع والأشهر في الـ Motion. <b>PROFINET</b> بتاعة Siemens، و <b>EtherNet/IP</b> بتاعة Allen-Bradley، و <b>CC-Link IE</b> و <b>MECHATROLINK</b> شبكات شركات تانية. أما <b>Modbus</b> فللمراقبة بس، مش للحركة.</p>
-  <div class="wd"><h3>تمرين: اختار طريقة التحكم</h3><div id="pick"></div></div>
+  <p><b>EtherCAT</b> الأسرع والأشهر في الـ Motion. و<b>PROFINET</b> من Siemens، و<b>EtherNet/IP</b> من Allen-Bradley، و<b>CC-Link IE</b> و<b>MECHATROLINK</b> شبكات لشركات أخرى. أما <b>Modbus</b> فللمراقبة فقط، لا للحركة.</p>
+  <div class="wd"><h3>تمرين: اختر طريقة التحكم</h3><div id="pick"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
-  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <p>أجب إجابة صحيحة عن 5 من 6 على الأقل ليُسجَّل الدرس مكتملًا.</p>
   <div id="quiz"></div>
 </section>
 
 <nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
-<p class="foot">الأرقام والقيم في الدرس ده (جهود، ترددات، جينات، حدود) أرقام تقريبية للتدريب ومكتوبة من الخبرة العامة، وبتختلف من ماركة وموديل للتاني: <b>مانيوال الدرايف هو المرجع</b> قبل أي إعداد على ماكينة حقيقية. أسماء الإنذارات والباراميترات كمان بتختلف من شركة للتانية. تقدّمك بيتسجّل على الجهاز ده.<br>© &#x2066;2026 LearnElectricals&#x2069;. كل الحقوق محفوظة. الموقع غير تابع لأي من الشركات المذكورة (مثل &#x2066;Siemens&#x2069; و &#x2066;Allen-Bradley&#x2069; و &#x2066;Delta&#x2069; و &#x2066;Mitsubishi&#x2069; و &#x2066;Yaskawa&#x2069; وغيرها)، والأسماء والعلامات التجارية ملك لأصحابها، ومستخدمة لشرح الأجهزة فقط.</p>
+<p class="foot">الأرقام والقيم في هذا الدرس (الجهود والترددات والجينات والحدود) تقريبية للتدريب، وتختلف من ماركة وموديل لآخر: <b>مانيوال الدرايف هو المرجع</b> قبل أي إعداد على ماكينة حقيقية. وأسماء الإنذارات والباراميترات تختلف أيضًا من شركة لأخرى. يُحفظ تقدّمك على هذا الجهاز فقط.<br>© &#x2066;2026 LearnElectricals&#x2069;. جميع الحقوق محفوظة. الموقع غير تابع لأي من الشركات المذكورة (مثل &#x2066;Siemens&#x2069; و &#x2066;Allen-Bradley&#x2069; و &#x2066;Delta&#x2069; و &#x2066;Mitsubishi&#x2069; و &#x2066;Yaskawa&#x2069; وغيرها)، والأسماء والعلامات التجارية ملك لأصحابها، وتُستخدم لشرح الأجهزة فقط.</p>
 </div>
 <script>
 SV.lesson('l10');
 window.PULSE = SV.plcPulse(document.getElementById('pulse'), {lesson:'l10'});
 document.getElementById('net').innerHTML = (function(){
   const box = (x, l) => `<rect x="${x}" y="40" width="58" height="50" rx="6" fill="#2f363c"/><text x="${x + 29}" y="70" text-anchor="middle" style="font:700 11px var(--font-mono);fill:#e3e9ec">${l}</text>`;
-  return `<svg viewBox="0 0 360 120"><rect x="6" y="40" width="58" height="50" rx="6" fill="#d9dee2" stroke="#59656e"/><text x="35" y="70" text-anchor="middle" style="font:700 11px var(--font-mono);fill:#1d2327">PLC</text>${box(104, 'Axis 1')}${box(196, 'Axis 2')}${box(288, 'Axis 3')}<path id="netp" d="M64 58 H346 V100 H35 V90" fill="none" stroke="var(--line)" stroke-width="3"/><path d="M64 58 H346" stroke="#2b9a4a" stroke-width="3"/><rect width="16" height="10" rx="2" fill="#ffd23f" x="-8" y="-5">${SV.reduced() ? '' : '<animateMotion dur="2.4s" repeatCount="indefinite" rotate="auto"><mpath href="#netp"/></animateMotion>'}</rect><text x="180" y="22" text-anchor="middle" class="svg-ar w-mu" style="font-size:11px">فريم واحد بيعدّي على كل الدرايفات ويرجع</text></svg>`;
+  return `<svg viewBox="0 0 360 120"><rect x="6" y="40" width="58" height="50" rx="6" fill="#d9dee2" stroke="#59656e"/><text x="35" y="70" text-anchor="middle" style="font:700 11px var(--font-mono);fill:#1d2327">PLC</text>${box(104, 'Axis 1')}${box(196, 'Axis 2')}${box(288, 'Axis 3')}<path id="netp" d="M64 58 H346 V100 H35 V90" fill="none" stroke="var(--line)" stroke-width="3"/><path d="M64 58 H346" stroke="#2b9a4a" stroke-width="3"/><rect width="16" height="10" rx="2" fill="#ffd23f" x="-8" y="-5">${SV.reduced() ? '' : '<animateMotion dur="2.4s" repeatCount="indefinite" rotate="auto"><mpath href="#netp"/></animateMotion>'}</rect><text x="180" y="22" text-anchor="middle" class="svg-ar w-mu" style="font-size:11px">إطار واحد يمر على كل الدرايفات ويعود</text></svg>`;
 })();
-window.PICK = SV.drill(document.getElementById('pick'), SV.caseDrill(SV.IF_CASES, SV.IF_OPTS), {lesson:'l10', task:'pick', need:5, goal:'اختار صح في <b>5</b> مواقف عشان التمرين يتعلّم عليه.'});
+window.PICK = SV.drill(document.getElementById('pick'), SV.caseDrill(SV.IF_CASES, SV.IF_OPTS), {lesson:'l10', task:'pick', need:5, goal:'اختر بشكل صحيح في <b>5</b> مواقف ليُسجَّل التمرين.'});
 SV.quiz(document.getElementById('quiz'), [
   {q:'نبضات اللفة 2000 والتردد 50 kHz. السرعة:', o:['1500 rpm', '25 rpm', '3000 rpm', '100 rpm'], a:0, why:'50000 ÷ 2000 × 60.'},
-  {q:'كابل نبضات طويل في مكان فيه نويز. الأنسب:', o:['Line driver ومشيلد', 'Open collector بكابل أطول', 'سلك عادي مجدول', 'أنالوج ⁦0⁠–⁠10V⁩'], a:0, why:'التفاضلي بيلغي النويز.'},
-  {q:'خرج In-position من الدرايف معناه:', o:['المحور وصل للهدف', 'الدرايف فيه إنذار', 'الكهربا وصلت', 'الهومينج اتعمل'], a:0, why:'الـ PLC بيستناه قبل الخطوة اللي بعدها.'},
-  {q:'12 محور متزامنين ومحتاج تقرا العزم والإنذارات:', o:['شبكة زي EtherCAT', 'نبضات من الـ PLC', 'أنالوج ⁦±10V⁩', 'Modbus RS-485'], a:0, why:'محاور كتير + تزامن + بيانات.'},
-  {q:'Modbus RS-485 مناسب لـ:', o:['المراقبة والباراميترات', 'تزامن 10 محاور مع بعض', 'نبضات سريعة', 'دايرة الـ STO'], a:0, why:'بطيء للحركة السريعة.'},
-  {q:'لو التردد أعلى من اللي خرج الـ PLC يقدر عليه:', o:['نبضات بتضيع والمكان يغلط', 'الموتور يسرّع أكتر', 'الدرايف يقلّل الجير لوحده', 'الدرايف يطلّع إنذار على طول'], a:0, why:'خطر لأنه ممكن ميطلعش إنذار.'}
+  {q:'كابل نبضات طويل في مكان فيه تشويش. الأنسب:', o:['Line driver بشيلد', 'Open collector بكابل أطول', 'سلك عادي مجدول', 'أنالوج ⁦0⁠–⁠10V⁩'], a:0, why:'الإشارة التفاضلية تلغي التشويش.'},
+  {q:'خرج In-position من الدرايف معناه:', o:['المحور وصل إلى الهدف', 'في الدرايف إنذار', 'الكهرباء وصلت', 'تم الهومينج'], a:0, why:'ينتظره الـ PLC قبل الخطوة التالية.'},
+  {q:'12 محورًا متزامنة وتحتاج إلى قراءة العزم والإنذارات:', o:['شبكة مثل EtherCAT', 'نبضات من الـ PLC', 'أنالوج ⁦±10V⁩', 'Modbus RS-485'], a:0, why:'محاور كثيرة + تزامن + بيانات.'},
+  {q:'Modbus RS-485 مناسب لـ:', o:['المراقبة والباراميترات', 'تزامن 10 محاور معًا', 'النبضات السريعة', 'دائرة الـ STO'], a:0, why:'بطيء للحركة السريعة.'},
+  {q:'إذا كان التردد أعلى مما يستطيعه خرج الـ PLC:', o:['تضيع نبضات ويخطئ المكان', 'يتسارع المحرك أكثر', 'يقلل الدرايف الجير وحده', 'يُظهر الدرايف إنذارًا فورًا'], a:0, why:'خطير لأنه قد لا يظهر إنذار.'}
 ], {lesson:'l10', pass:0.8});
 </script>
 <script src="/assets/i18n.js?v=20261021w"></script>
