@@ -422,7 +422,7 @@ canvas{display:block;width:100%;max-width:100%;border-radius:10px;background:#0a
         <h2>الإعدادات</h2>
         <div class="set">
           <div class="row">
-            <select id="selVol" aria-label="حجم العبوة"><option value="100">100 ml</option><option value="125" selected>125 ml</option><option value="160">160 ml</option></select>
+            <select id="selVol" aria-label="حجم العبوة"><option value="100">TBA 100 Base · 100 ml</option><option value="125">TBA 125 Slim · 125 ml</option><option value="160">TBA 160 Slim · 160 ml</option><option value="180">TBA 180 Slim · 180 ml</option><option value="200">TBA 200 Slim · 200 ml</option><option value="200">TBA 200 Base · 200 ml</option><option value="250" selected>TBA 250 Slim · 250 ml</option><option value="250">TBA 250 Base · 250 ml</option><option value="300">TBA 300 Slim · 300 ml</option></select>
             <select id="selCap" aria-label="القدرة"><option value="16000">16000 باكو/ساعة</option><option value="24000" selected>24000 باكو/ساعة</option></select>
           </div>
           <label>تدفق البداية % <output id="oSF">120</output><input type="range" id="rSF" min="60" max="160" step="5" value="120"></label>
@@ -474,6 +474,7 @@ const P={
   emptyTimeout:10,       // TMR_ProdEndTimeout 10 s
   prefillLevel:50,       // prefill reached at 50 %
   prefillFlow:10,        // STR_VAR_FillParPrefillStartFlow
+  igLevel:2,             // STR_VAR_FillParIgainLevel (level loop I gain)
   regSwitch:20,          // TMCC switches start flow -> regulation at 20 %
   okLo:30, okHi:98,      // filling OK window
   malfMin:3, malfMax:98, // PAR_LevelSensorMalfMin / Max
@@ -484,7 +485,7 @@ const P={
 };
 
 /* ---------------- settings ---------------- */
-const set={vol:125,cap:24000,sf:120,sp:60,pl:25,pf:400,if:400};
+const set={vol:250,cap:24000,sf:120,sp:60,pl:25,pf:400,if:400};
 function defGains(){ if(set.cap>16000){set.pf=400;set.if=400}else{set.pf=300;set.if=150} set.pl=25; set.sf=120; set.sp=60; }
 
 /* ---------------- state ---------------- */
@@ -625,11 +626,12 @@ function step(dt){
   const nominal=100*S.speed;
   let target=0;
   if(S.mode==='start'){target=set.sf}
-  else if(S.mode==='reg'){target=nominal+(set.pl/10)*(set.sp-S.Lf)}
+  else if(S.mode==='reg'){S.lI=clamp((S.lI||0)+(P.igLevel/100)*(set.sp-S.Lf)*dt,-20,20);target=nominal+(set.pl/10)*(set.sp-S.Lf)+S.lI}
   else if(S.mode==='prefill'){target=P.prefillFlow}
   else if(S.mode==='close'){target=0}
   target=clamp(target,0,200);
   if(S.mode==='start') S.fsp+=clamp(target-S.fsp,-80*dt,80*dt); else S.fsp=target;
+  if(S.mode!=='reg')S.lI=0;
   if(S.mode==='off'){S.fsp=0}
 
   /* flow PI -> servo command */
