@@ -56,7 +56,7 @@
     b.type = 'button'; b.id = 'langSwitch';
     b.textContent = EN ? 'عربي' : 'English';
     b.setAttribute('aria-label', EN ? 'التحويل للعربي' : 'Switch to English');
-    b.style.cssText = 'position:fixed;z-index:9999;bottom:14px;left:14px;padding:8px 14px;border-radius:99px;border:1px solid #888;background:#1f5a96;color:#fff;font:600 14px system-ui,sans-serif;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)';
+    b.style.cssText = 'position:fixed;z-index:9999;bottom:14px;right:14px;padding:8px 14px;border-radius:99px;border:1px solid #888;background:#1f5a96;color:#fff;font:600 14px system-ui,sans-serif;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)';
     b.onclick = function(){ try { localStorage.setItem(KEY, EN ? 'ar' : 'en'); } catch(e){} var u = new URL(location.href); u.searchParams.delete('lang'); if (ALT) u.pathname = EN ? (ALT.ar || u.pathname) : (ALT.en || u.pathname); location.href = u.toString(); };
     document.body.appendChild(b);
   }
@@ -385,7 +385,23 @@ canvas{background:#131b1f}
 .hchead h2{margin:0}
 .hchead .row{gap:4px}.hchead button{padding:5px 9px;font-size:13px}
 #bPause.on{background:#c0392b;border-color:#c0392b;color:#fff}
+/* controls always in the side column (person's standing rule) */
+.console{grid-template-columns:minmax(0,2.3fr) minmax(320px,1fr)}
+.mainc{display:grid;gap:10px;min-width:0;align-content:start}
+.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:1250px){.mainc .c3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.mainc .c3,.mainc .c2{grid-template-columns:minmax(0,1fr)}}
+@media (min-width:1001px){.console>.side{position:sticky;top:8px;max-height:calc(100vh - 16px);overflow-y:auto;overscroll-behavior:contain;padding-inline-end:3px}}
+.side .faults{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.side .faults button{font-size:12px;padding:5px 7px}.side .faults button small{font-size:10.5px}
+.side .opts{grid-template-columns:minmax(0,1fr)}
+.mainc .log{max-height:200px}
+@media (max-width:1500px){.mainc .graphs{grid-template-columns:minmax(0,1fr)}}
+.hand{display:grid;gap:6px}.hand h2{margin:0}
+.hsw{display:flex;gap:8px;align-items:center;font-weight:600;cursor:pointer}.hsw input{width:18px;height:18px;accent-color:#55b6ea}
+#hT{width:100%;accent-color:#55b6ea;height:28px}#hT:disabled{opacity:.4}
 </style>
+<style>/* phones: wide charts scroll inside their box instead of widening the page */.scrollx{max-width:calc(100vw - 32px)}</style>
 </head>
 <body>
 <nav aria-label="تنقل" style="direction:rtl;display:flex;flex-wrap:wrap;gap:8px;max-width:1400px;margin:0 auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 0;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:14px"><a href="/a3speed-lab/" data-en-href="/en/a3speed-lab/" style="color:#1f5a96;text-decoration:none;font-weight:600;padding:4px 10px;border:1px solid #c5c5c5;border-radius:8px;background:#fff">← كل محاكيات A3/Speed</a></nav>
@@ -396,17 +412,13 @@ canvas{background:#131b1f}
 </header>
 
 <section class="console">
+<div class="mainc">
   <div class="card dia">
     <div class="steps" id="ladder"></div>
     <div class="scrollx"><canvas id="cvDia" width="1000" height="600" role="img" aria-label="Animated view of the two reels, splice head, driven bending roller, loop and web magazine"></canvas></div>
     <div class="hcwrap">
       <div class="hchead">
         <h2>Splice head close-up</h2>
-        <div class="row" role="group" aria-label="Slow motion during splice">
-          <span class="note">Slow motion while splicing:</span>
-          <button data-slow="0" class="sel">Off</button><button data-slow="0.25">×0.25</button><button data-slow="0.1">×0.1</button><button data-slow="0.04">×0.04</button>
-          <button id="bPause">Pause</button>
-        </div>
       </div>
       <div class="scrollx"><canvas id="cvHead" width="1000" height="380" role="img" aria-label="Enlarged splice head with every part named and its state"></canvas></div>
     </div>
@@ -422,30 +434,7 @@ canvas{background:#131b1f}
     <div class="banner hidden" id="banner"></div>
     <p class="note" style="margin:0"><span class="simp">Training simplification: the sideways head travel is drawn left-right, and reel length is shortened.</span> <span class="phone-only">Swipe the drawing sideways.</span></p>
   </div>
-  <div class="side">
-    <div class="card stat">
-      <div class="state" id="stTitle">Machine stopped</div>
-      <div class="msg" id="stMsg"></div>
-      <div class="row">
-        <button class="go" id="bStart">Start production</button>
-        <button class="stop" id="bStop">Stop</button>
-        <button id="bReset">Reset</button>
-      </div>
-      <div class="row">
-        <button class="amber" id="bNear">Near reel end</button>
-        <button id="bSplice">Manual splice</button>
-        <button id="bPrep">Prepare new reel</button>
-      </div>
-      <div class="row hidden" id="forceRow"><button class="amber" id="bForce">Forced manual splice (out of design)</button></div>
-      <div class="row" role="group" aria-label="Simulation speed">
-        <span class="note">Speed:</span>
-        <button data-sp="1" class="sel">×1</button><button data-sp="2">×2</button><button data-sp="5">×5</button><button data-sp="10">×10</button>
-      </div>
-    </div>
-    <div class="card">
-      <h2>Alarms</h2>
-      <div class="alist" id="alist"><div class="empty">No alarms.</div></div>
-    </div>
+<section class="cols c2">
     <div class="card">
       <h2>Last splice</h2>
       <div class="result" id="res"></div>
@@ -454,10 +443,8 @@ canvas{background:#131b1f}
       <h2>Event log</h2>
       <div class="log" id="log"></div>
     </div>
-  </div>
 </section>
-
-<section class="cols c2">
+<section class="cols c2 graphs">
   <div class="card" style="border-top:4px solid var(--gSealH)">
     <h2>Splice timing diagram <span class="note">(ms from splice request)</span></h2>
     <div class="scrollx"><canvas id="cvTime" width="900" height="410" role="img" aria-label="Splice signal timing diagram"></canvas></div>
@@ -483,8 +470,7 @@ canvas{background:#131b1f}
     <div class="accl"><span style="left:0">−15</span><span style="left:43.3%">−2</span><span style="left:50%">0</span><span style="left:56.7%">+2</span><span style="left:90%">+12</span><span style="left:100%">+15</span></div>
   </div>
 </section>
-
-<section class="cols c4">
+<section class="cols c3">
   <div class="card" style="border-top:4px solid var(--heat)">
     <h2>Constant heat (CH) bar</h2>
     <div class="row" style="justify-content:space-between;align-items:end">
@@ -510,6 +496,57 @@ canvas{background:#131b1f}
     </div>
     <p class="note" style="margin:22px 0 0">Station 1 = <b class="mono">0</b> mm, station 2 = <b class="mono">492</b> mm (±4). <b class="mono">1200</b> mm/s, about <b class="mono">0.65</b> s. Position error above <b class="mono">7</b> mm = servo fault.</p>
   </div>
+  <div class="card">
+    <h2>Program signals</h2>
+    <div class="lamps" id="lamps"></div>
+  </div>
+</section>
+<details class="card">
+  <summary><b>All alarms and their timing</b> <span class="note">(blue = warning, yellow = normal stop, loop or magazine empty = fast stop)</span></summary>
+  <div class="tblwrap"><table class="atable" id="atable"></table></div>
+</details>
+</div>
+<div class="side">
+    <div class="card stat">
+      <div class="state" id="stTitle">Machine stopped</div>
+      <div class="msg" id="stMsg"></div>
+      <div class="row">
+        <button class="go" id="bStart">Start production</button>
+        <button class="stop" id="bStop">Stop</button>
+        <button id="bReset">Reset</button>
+      </div>
+      <div class="row">
+        <button class="amber" id="bNear">Near reel end</button>
+        <button id="bSplice">Manual splice</button>
+        <button id="bPrep">Prepare new reel</button>
+      </div>
+      <div class="row hidden" id="forceRow"><button class="amber" id="bForce">Forced manual splice (out of design)</button></div>
+      <div class="row" role="group" aria-label="Simulation speed">
+        <span class="note">Speed:</span>
+        <button data-sp="1" class="sel">×1</button><button data-sp="2">×2</button><button data-sp="5">×5</button><button data-sp="10">×10</button>
+      </div>
+      <div class="row" role="group" aria-label="Slow motion during splice">
+        <span class="note">Slow motion while splicing:</span>
+        <button data-slow="0" class="sel">Off</button><button data-slow="0.25">×0.25</button><button data-slow="0.1">×0.1</button><button data-slow="0.04">×0.04</button>
+        <button id="bPause">Pause</button>
+      </div>
+    </div>
+    <div class="card hand" style="border-top:4px solid var(--rollD)">
+      <h2>Splice by hand</h2>
+      <label class="hsw"><input type="checkbox" id="hOn"> Drive the splice with the slider (the machine pauses)</label>
+      <input type="range" id="hT" min="0" max="7750" step="10" value="0" aria-label="Splice time by hand">
+      <div class="row"><button id="hPrev">◀ Previous step</button><button id="hNext">Next step ▶</button></div>
+      <p class="note" id="hTxt" style="margin:0"></p>
+    </div>
+    <div class="card">
+      <h2>Alarms</h2>
+      <div class="alist" id="alist"><div class="empty">No alarms.</div></div>
+    </div>
+  <div class="card" style="border-top:4px solid var(--gFaultH)">
+    <h2>Inject a fault <span class="note">(tap to switch on, tap again to clear; most show up at the splice)</span></h2>
+    <div class="faults" id="faults"></div>
+    <div class="row" style="margin-top:6px"><button id="bClr">Clear all faults</button></div>
+  </div>
   <div class="card" style="border-top:4px solid var(--reelE)">
     <h2>Settings</h2>
     <div class="set">
@@ -527,18 +564,6 @@ canvas{background:#131b1f}
       <p class="note" id="pkTxt" style="margin:0"></p>
     </div>
   </div>
-  <div class="card">
-    <h2>Program signals</h2>
-    <div class="lamps" id="lamps"></div>
-  </div>
-</section>
-
-<section class="cols c21">
-  <div class="card" style="border-top:4px solid var(--gFaultH)">
-    <h2>Inject a fault <span class="note">(tap to switch on, tap again to clear; most show up at the splice)</span></h2>
-    <div class="faults" id="faults"></div>
-    <div class="row" style="margin-top:6px"><button id="bClr">Clear all faults</button></div>
-  </div>
   <div class="card" style="border-top:4px solid var(--gFaultH)">
     <h2>Challenge: find the fault</h2>
     <p class="note" style="margin:0 0 6px">The simulator starts production, brings the reel near its end and hides one fault. Watch the drawing and alarms, then pick the cause.</p>
@@ -549,12 +574,8 @@ canvas{background:#131b1f}
       <p id="chAns" class="note" style="margin:6px 0 0"></p>
     </div>
   </div>
+</div>
 </section>
-
-<details class="card">
-  <summary><b>All alarms and their timing</b> <span class="note">(blue = warning, yellow = normal stop, loop or magazine empty = fast stop)</span></summary>
-  <div class="tblwrap"><table class="atable" id="atable"></table></div>
-</details>
 </div>
 <script>
 'use strict';
@@ -927,11 +948,11 @@ function syncSet(){
   const p=PK[set.pk];$('pkTxt').innerHTML=`Program values for <span class="en">${p.n}</span>: CH bar temp <b class="mono">${p.T}</b> °C, sealing time <b class="mono">2500</b> ms, stop offset <b class="mono">${p.off}</b> mm, so the web stops <b class="mono">${(L+p.off+set.off).toFixed(1)}</b> mm after the last mark.`;
 }
 $('rT').oninput=e=>{set.T=+e.target.value;syncSet()};
-$('rST').oninput=e=>{set.st=+e.target.value;syncSet()};
+$('rST').oninput=e=>{set.st=+e.target.value;syncSet();handUI()};
 $('rOff').oninput=e=>{set.off=+e.target.value;syncSet()};
-$('selPk').onchange=e=>{set.pk=e.target.value;set.T=PK[set.pk].T;set.st=2500;set.off=0;syncSet();log('Package changed: '+PK[set.pk].n,'i')};
+$('selPk').onchange=e=>{set.pk=e.target.value;set.T=PK[set.pk].T;set.st=2500;set.off=0;syncSet();log('Package changed: '+PK[set.pk].n,"i");handUI()};
 $('selCap').onchange=e=>{set.cap=+e.target.value;syncSet()};
-$('bDef').onclick=()=>{set.T=PK[set.pk].T;set.st=2500;set.off=0;syncSet()};
+$('bDef').onclick=()=>{set.T=PK[set.pk].T;set.st=2500;set.off=0;syncSet();handUI()};
 syncSet();
 $('bStart').onclick=start;$('bStop').onclick=()=>stopMachine('normal');$('bReset').onclick=resetAlarms;
 $('bNear').onclick=()=>{S.R[S.act]=Math.min(S.R[S.act],22);log('Running reel near its end (22 m)','i')};
@@ -1203,9 +1224,40 @@ function ui(){
 /* ---------- splice head close-up ---------- */
 const cvH=$('cvHead'),hctx=cvH.getContext('2d');cvH.width=2000;cvH.height=760;
 const HS=[300,700],HTOP=[500,0];
+/* splice by hand: a slider scrubs a representative splice timeline (ms from splice request) */
+let hand={on:false,t:0,a0:0,wasPaused:false};
+const H_REQ=150,H_FIND=1300,H_SIDE=650;
+function handSegs(){const p1=H_REQ+H_FIND,sd=p1+P1_TOT,p2=sd+H_SIDE,end=p2+set.st+PRESS_DLY+UNSTICK+SLW;return {p1,sd,p2,end}}
+function handSteps(){const g=handSegs();return [0,H_REQ,g.p1,g.p1+P1_PR,g.p1+P1_CUT,g.p1+P1_END,g.sd,g.p2,g.p2+set.st,g.p2+set.st+PRESS_DLY,g.p2+set.st+PRESS_DLY+UNSTICK,g.end]}
+function servoPos(tau){ // trapezoid 1200 mm/s, 5000 mm/s2 over 492 mm
+  const ta=SRV_V/SRV_A,da=0.5*SRV_A*ta*ta,tc=(POS2-2*da)/SRV_V,T=2*ta+tc;
+  if(tau<=0)return 0;if(tau>=T)return POS2;
+  if(tau<ta)return 0.5*SRV_A*tau*tau;if(tau<ta+tc)return da+SRV_V*(tau-ta);const r=T-tau;return POS2-0.5*SRV_A*r*r}
+function handView(t){const g=handSegs();const a0=hand.a0,o0=1-a0;const x0=a0?POS2:0,x1=o0?POS2:0;
+  let ph,pt,hx=x0,hv=0;
+  if(t<H_REQ){ph='req';pt=t}else if(t<g.p1){ph='find';pt=t-H_REQ}else if(t<g.sd){ph='part1';pt=t-g.p1}
+  else if(t<g.p2){ph='side';pt=t-g.sd;const d=servoPos(pt/1000);hx=x0+(x1-x0)*d/POS2;hv=(x1-x0)>0?1:-1}
+  else{ph='part2';pt=Math.min(t-g.p2,set.st+PRESS_DLY+UNSTICK+SLW-1);hx=x1}
+  const joined=ph==='part2'&&pt>=set.st+PRESS_DLY;
+  return {seq:'splice',ph,pt,hx,hv,lock:false,spT:t,act:joined?o0:a0,spl:{cutOk:true,joined}}}
 function drawHead(){
-  const c0=ctx;ctx=hctx;try{drawHeadInner()}finally{ctx=c0}
+  const c0=ctx;ctx=hctx;let sv=null;
+  if(hand.on){const v=handView(hand.t);sv={};for(const k in v){sv[k]=S[k];S[k]=v[k]}}
+  try{drawHeadInner()}finally{ctx=c0;if(sv)for(const k in sv)S[k]=sv[k]}
 }
+function handUI(){const r=$('hT');const g=handSegs();r.max=g.end;if(hand.t>g.end){hand.t=g.end;r.value=g.end}r.disabled=!hand.on;$('hPrev').disabled=$('hNext').disabled=!hand.on;
+  if(!hand.on){$('hTxt').textContent='Switch on, then drag the slider to move the splice forward or back.';return}
+  const v=handView(hand.t);const sv={seq:S.seq,ph:S.ph,pt:S.pt};Object.assign(S,{seq:'splice',ph:v.ph,pt:v.pt});const L2=LADDER.find(x=>x.k===curSub());Object.assign(S,sv);
+  $('hTxt').innerHTML=`<b class="mono">${(hand.t/1000).toFixed(2)} s</b> · <b>${L2?L2.t:''}</b>: ${L2?L2.a:''}`}
+$('hOn').onchange=e=>{hand.on=e.target.checked;
+  if(hand.on){hand.a0=S.seq==='splice'&&S.spl&&S.spl.joined?1-S.act:S.act;hand.wasPaused=paused;paused=true}else{paused=hand.wasPaused}
+  $('bPause').textContent=paused?'Resume':'Pause';$('bPause').classList.toggle('on',paused);handUI()};
+$('hT').oninput=e=>{hand.t=+e.target.value;handUI()};
+function handJump(dir){const st=handSteps();let n;
+  if(dir>0)n=st.find(x=>x>hand.t+1);else n=[...st].reverse().find(x=>x<hand.t-1);
+  if(n===undefined)n=dir>0?handSegs().end:0;hand.t=n;$('hT').value=n;handUI()}
+$('hPrev').onclick=()=>handJump(-1);$('hNext').onclick=()=>handJump(1);
+handUI();
 function lab(name,sub,on,x,y,ax,ay,al){
   // leader line from label to the part
   ctx.save();ctx.strokeStyle='#8fa4a0';ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(al==='left'?x-6:x+6,y);ctx.lineTo(ax,ay);ctx.stroke();ctx.restore();
@@ -1291,7 +1343,8 @@ function drawHeadInner(){
   txt(t1+(sp?`  ·  ${(S.spT/1000).toFixed(2)} s since request`:''),24,359,{s:13,w:700,a:'left'});
   txt(t2,400,359,{s:11.5,a:'left',c:'#bcd0cb'});
   const es=effSp();
-  if(paused)txt('PAUSED',978,359,{s:13,w:700,a:'right',c:'#ff5d50'});
+  if(hand.on)txt('BY HAND (slider)',978,359,{s:12.5,w:700,a:'right',c:'#55b6ea'});
+  else if(paused)txt('PAUSED',978,359,{s:13,w:700,a:'right',c:'#ff5d50'});
   else if(sp&&slowSp)txt(`Slow motion ×${slowSp}`,978,359,{s:12,w:700,a:'right',c:'#e9a640'});
 }
 /* ---------- loop ---------- */

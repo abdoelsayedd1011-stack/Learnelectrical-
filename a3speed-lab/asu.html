@@ -56,7 +56,7 @@
     b.type = 'button'; b.id = 'langSwitch';
     b.textContent = EN ? 'عربي' : 'English';
     b.setAttribute('aria-label', EN ? 'التحويل للعربي' : 'Switch to English');
-    b.style.cssText = 'position:fixed;z-index:9999;bottom:14px;left:14px;padding:8px 14px;border-radius:99px;border:1px solid #888;background:#1f5a96;color:#fff;font:600 14px system-ui,sans-serif;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)';
+    b.style.cssText = 'position:fixed;z-index:9999;bottom:14px;right:14px;padding:8px 14px;border-radius:99px;border:1px solid #888;background:#1f5a96;color:#fff;font:600 14px system-ui,sans-serif;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)';
     b.onclick = function(){ try { localStorage.setItem(KEY, EN ? 'ar' : 'en'); } catch(e){} var u = new URL(location.href); u.searchParams.delete('lang'); if (ALT) u.pathname = EN ? (ALT.ar || u.pathname) : (ALT.en || u.pathname); location.href = u.toString(); };
     document.body.appendChild(b);
   }
@@ -330,17 +330,30 @@ h2{margin:0 0 6px}
 #cvTrend{height:200px}
 details summary{cursor:pointer;list-style-position:inside}
 details[open] summary{margin-bottom:6px}
+/* controls always in the side column (person's standing rule) */
+.console{grid-template-columns:minmax(0,2.3fr) minmax(320px,1fr)}
+.mainc{display:grid;gap:10px;min-width:0;align-content:start}
+.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:1250px){.mainc .c3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.mainc .c3,.mainc .c2{grid-template-columns:minmax(0,1fr)}}
+@media (min-width:1001px){.console>.side{position:sticky;top:8px;max-height:calc(100vh - 16px);overflow-y:auto;overscroll-behavior:contain;padding-inline-end:3px}}
+.side .faults{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.side .faults button{font-size:12px;padding:5px 7px}.side .faults button small{font-size:10.5px}
+.side .opts{grid-template-columns:minmax(0,1fr)}
+.mainc .log{max-height:200px}
+@media (max-width:1500px){.mainc .graphs{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
 <nav aria-label="تنقل" style="direction:rtl;display:flex;flex-wrap:wrap;gap:8px;max-width:1400px;margin:0 auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 0;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:14px"><a href="/a3speed-lab/" data-en-href="/en/a3speed-lab/" style="color:#1f5a96;text-decoration:none;font-weight:600;padding:4px 10px;border:1px solid #c5c5c5;border-radius:8px;background:#fff">← كل محاكيات A3/Speed</a></nav>
-<div class="wrap" dir="rtl" lang="ar">
+<div class="wrap">
 <header>
   <h1>محاكي وحدة اللحام التلقائي ASU <span class="en">Tetra Pak A3/Speed</span></h1>
   <p class="sub">عندما تنتهي البكرة، تلحم الوحدة نهاية الورق القديم في بداية البكرة الجديدة والماكينة تعمل وتسحب من مخزن الورق. اضغط «تشغيل إنتاج» ثم «قرّب نهاية البكرة».</p>
 </header>
 
 <section class="console">
+<div class="mainc">
   <div class="card dia">
     <div class="steps" id="ladder"></div>
     <div class="scrollx"><canvas id="cvDia" width="1000" height="600" role="img" aria-label="رسم متحرك للبكرتين ورأس اللحام وبكرة السحب واللوب ومخزن الورق"></canvas></div>
@@ -356,30 +369,7 @@ details[open] summary{margin-bottom:6px}
     <div class="banner hidden" id="banner"></div>
     <p class="note" style="margin:0"><span class="simp">تبسيط توضيحي: حركة الرأس الجانبية مرسومة يمينًا ويسارًا، وطول البكرة مختصر.</span> <span class="phone-only">اسحب الرسم يمينًا ويسارًا.</span></p>
   </div>
-  <div class="side">
-    <div class="card stat">
-      <div class="state" id="stTitle">الماكينة متوقفة</div>
-      <div class="msg" id="stMsg"></div>
-      <div class="row">
-        <button class="go" id="bStart">تشغيل إنتاج</button>
-        <button class="stop" id="bStop">إيقاف</button>
-        <button id="bReset">ريست</button>
-      </div>
-      <div class="row">
-        <button class="amber" id="bNear">قرّب نهاية البكرة</button>
-        <button id="bSplice">لحام يدوي</button>
-        <button id="bPrep">حضّر البكرة الجديدة</button>
-      </div>
-      <div class="row hidden" id="forceRow"><button class="amber" id="bForce">لحام يدوي إجباري (خارج التصميم)</button></div>
-      <div class="row" role="group" aria-label="سرعة المحاكاة">
-        <span class="note">السرعة:</span>
-        <button data-sp="1" class="sel">×1</button><button data-sp="2">×2</button><button data-sp="5">×5</button><button data-sp="10">×10</button>
-      </div>
-    </div>
-    <div class="card">
-      <h2>الإنذارات</h2>
-      <div class="alist" id="alist"><div class="empty">لا توجد إنذارات.</div></div>
-    </div>
+<section class="cols c2">
     <div class="card">
       <h2>نتيجة آخر لحام</h2>
       <div class="result" id="res"></div>
@@ -388,10 +378,8 @@ details[open] summary{margin-bottom:6px}
       <h2>سجل الأحداث</h2>
       <div class="log" id="log"></div>
     </div>
-  </div>
 </section>
-
-<section class="cols c2">
+<section class="cols c2 graphs">
   <div class="card" style="border-top:4px solid var(--gSealH)">
     <h2>مخطط التوقيت لآخر لحام <span class="note">(بالملّي ثانية من طلب اللحام، كما في رسم الـ Workbook)</span></h2>
     <div class="scrollx"><canvas id="cvTime" width="900" height="410" role="img" aria-label="مخطط توقيت إشارات اللحام"></canvas></div>
@@ -417,8 +405,7 @@ details[open] summary{margin-bottom:6px}
     <div class="accl"><span style="left:0">−15</span><span style="left:43.3%">−2</span><span style="left:50%">0</span><span style="left:56.7%">+2</span><span style="left:90%">+12</span><span style="left:100%">+15</span></div>
   </div>
 </section>
-
-<section class="cols c4">
+<section class="cols c3">
   <div class="card" style="border-top:4px solid var(--heat)">
     <h2>بار الحرارة الثابتة</h2>
     <div class="row" style="justify-content:space-between;align-items:end">
@@ -444,6 +431,45 @@ details[open] summary{margin-bottom:6px}
     </div>
     <p class="note" style="margin:22px 0 0">المحطة 1 = <b class="mono">0</b> مم، المحطة 2 = <b class="mono">492</b> مم (±4). <b class="mono">1200</b> مم/ث، نحو <b class="mono">0.65</b> ث. خطأ موضع فوق <b class="mono">7</b> مم = عطل سيرفو.</p>
   </div>
+  <div class="card">
+    <h2>إشارات البرنامج</h2>
+    <div class="lamps" id="lamps"></div>
+  </div>
+</section>
+<details class="card">
+  <summary><b>جدول كل الإنذارات وتوقيتها</b> <span class="note">(الأزرق تحذير، والأصفر توقف عادي، واللوب أو المخزن فارغ = توقف سريع)</span></summary>
+  <div class="tblwrap"><table class="atable" id="atable"></table></div>
+</details>
+</div>
+<div class="side">
+    <div class="card stat">
+      <div class="state" id="stTitle">الماكينة متوقفة</div>
+      <div class="msg" id="stMsg"></div>
+      <div class="row">
+        <button class="go" id="bStart">تشغيل إنتاج</button>
+        <button class="stop" id="bStop">إيقاف</button>
+        <button id="bReset">ريست</button>
+      </div>
+      <div class="row">
+        <button class="amber" id="bNear">قرّب نهاية البكرة</button>
+        <button id="bSplice">لحام يدوي</button>
+        <button id="bPrep">حضّر البكرة الجديدة</button>
+      </div>
+      <div class="row hidden" id="forceRow"><button class="amber" id="bForce">لحام يدوي إجباري (خارج التصميم)</button></div>
+      <div class="row" role="group" aria-label="سرعة المحاكاة">
+        <span class="note">السرعة:</span>
+        <button data-sp="1" class="sel">×1</button><button data-sp="2">×2</button><button data-sp="5">×5</button><button data-sp="10">×10</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>الإنذارات</h2>
+      <div class="alist" id="alist"><div class="empty">لا توجد إنذارات.</div></div>
+    </div>
+  <div class="card" style="border-top:4px solid var(--gFaultH)">
+    <h2>اصنع عطلًا <span class="note">(اضغط ليعمل، واضغط مرة أخرى ليُزال. يظهر أغلبها وقت اللحام)</span></h2>
+    <div class="faults" id="faults"></div>
+    <div class="row" style="margin-top:6px"><button id="bClr">أزل كل الأعطال</button></div>
+  </div>
   <div class="card" style="border-top:4px solid var(--reelE)">
     <h2>الإعدادات</h2>
     <div class="set">
@@ -461,18 +487,6 @@ details[open] summary{margin-bottom:6px}
       <p class="note" id="pkTxt" style="margin:0"></p>
     </div>
   </div>
-  <div class="card">
-    <h2>إشارات البرنامج</h2>
-    <div class="lamps" id="lamps"></div>
-  </div>
-</section>
-
-<section class="cols c21">
-  <div class="card" style="border-top:4px solid var(--gFaultH)">
-    <h2>اصنع عطلًا <span class="note">(اضغط ليعمل، واضغط مرة أخرى ليُزال. يظهر أغلبها وقت اللحام)</span></h2>
-    <div class="faults" id="faults"></div>
-    <div class="row" style="margin-top:6px"><button id="bClr">أزل كل الأعطال</button></div>
-  </div>
   <div class="card" style="border-top:4px solid var(--gFaultH)">
     <h2>تحدٍّ: ما العطل؟</h2>
     <p class="note" style="margin:0 0 6px">سيشغّل المحاكي الماكينة ويقرّب نهاية البكرة ويُحدث عطلًا مخفيًا. تابع الرسم والإنذارات واختر السبب.</p>
@@ -483,12 +497,8 @@ details[open] summary{margin-bottom:6px}
       <p id="chAns" class="note" style="margin:6px 0 0"></p>
     </div>
   </div>
+</div>
 </section>
-
-<details class="card">
-  <summary><b>جدول كل الإنذارات وتوقيتها</b> <span class="note">(الأزرق تحذير، والأصفر توقف عادي، واللوب أو المخزن فارغ = توقف سريع)</span></summary>
-  <div class="tblwrap"><table class="atable" id="atable"></table></div>
-</details>
 </div>
 <script>
 'use strict';
