@@ -342,7 +342,7 @@ const PLANNED=[];
 /* ================= state ================= */
 const S={btn:{},k:{},tim:{},ol:{},fault:{},pfault:{},mains:true,q1:true,q1trip:false,load:70,ir:11,mot:{},ctrl:true,lamps:{},time:0,sel:'0',ls:{},fl:{}};
 let C=null,TPL=null,PW=null,ROOT=null,PTS=[],LPT=null,NPT=null,ELS=[];
-const UPD={control:[],power:[],panel:[]};
+const UPD={control:[],power:[],panel:[],app:[]};
 let MODE='free',TRACE=null,SCORE={ok:0,n:0},PROBE={b:null,r:null};
 const FLAGS=new Set(); let lastBtn={id:null,t:-9}; let wasRunningBeforeLoss=false,lossT=-1,trippedOnce=false; let HM={};
 const LOG=[];
@@ -1573,6 +1573,196 @@ function drawPumpPlant(g,P){
     tilt(f1,'B1',TX+TW-40,TY+20); tilt(f2,'B2',WX+WW-40,WY+30); });
 }
 function drawBelts(g,P){}
+/* ================= application scene: the real machine moving with the circuit ================= */
+const AP={a:{},p:{},lt:0};
+function apDt(){ const d=Math.max(0,Math.min(0.1,S.time-AP.lt)); AP.lt=S.time; return d; }
+const spd=m=>S.mot[m]?S.mot[m].speed/1500:0;
+const AT=(g,x,y,s,cls,anchor)=>{const e=sv('text',{x,y,class:cls||'apt','text-anchor':anchor||'middle'},g); e.textContent=s; return e;};
+function apMotor(g,x,y,id,flip){ /* small geared motor drawn at a roller */
+  const k=flip?-1:1;
+  sv('rect',{x:x-(flip?0:44),y:y-14,width:44,height:28,rx:5,fill:'#3d5a6c',stroke:'#7d97a5'},g);
+  for(let i=0;i<4;i++) sv('line',{x1:x-(flip?-6-i*9:38-i*9),y1:y-12,x2:x-(flip?-6-i*9:38-i*9),y2:y+12,stroke:'#2a404d','stroke-width':2},g);
+  const lab=AT(g,x-k*22,y+30,id,'apm'); const led=sv('circle',{cx:x-k*22,cy:y-20,r:4,fill:'#2a3439'},g);
+  UPD.app.push(()=>{const m=S.mot[id]; if(!m) return; const on=Math.abs(m.speed)>20; led.setAttribute('fill',['trip','hum','jam'].includes(m.state)?'#ff4b3e':on?'#3dff8a':'#2a3439');});
+  return lab;
+}
+function apRoller(g,cx,cy,r,key){ const gr=sv('g',{},g); sv('circle',{cx,cy,r,fill:'#56636a',stroke:'#9fb0ad','stroke-width':1.5},gr);
+  const sp=sv('path',{d:`M${cx-r+3} ${cy} H${cx+r-3} M${cx} ${cy-r+3} V${cy+r-3}`,stroke:'#22292c','stroke-width':2},gr);
+  UPD.app.push(()=>sp.setAttribute('transform',`rotate(${(AP.a[key]||0)} ${cx} ${cy})`)); }
+/* belt: boxes ride on top, offset integrates with motor speed */
+function apBelt(g,x,y,w,id,o={}){
+  const key='b'+id+x, r=13, dir=o.rev?-1:1;
+  sv('rect',{x:x-r,y:y-r,width:w+2*r,height:2*r,rx:r,fill:'#1f272b',stroke:'#3f4c52','stroke-width':2},g);
+  const tread=sv('path',{d:`M${x} ${y-r} H${x+w}`,stroke:'#59666b','stroke-width':3,'stroke-dasharray':'10 8'},g);
+  apRoller(g,x,y,r-3,key); apRoller(g,x+w,y,r-3,key);
+  sv('path',{d:`M${x+w*0.25} ${y+r} l-10 34 M${x+w*0.25} ${y+r} l10 34 M${x+w*0.75} ${y+r} l-10 34 M${x+w*0.75} ${y+r} l10 34`,stroke:'#3f4c52','stroke-width':3},g);
+  apMotor(g,o.motorRight?x+w+r+2:x-r-2,y,id,!!o.motorRight);
+  if(o.target!=null){ const tx0=x+w*o.target; sv('rect',{x:tx0-26,y:y-r-62,width:52,height:20,fill:'#2b3439',stroke:'#7d97a5'},g); sv('path',{d:`M${tx0} ${y-r-42} v10`,stroke:'#ffd84d','stroke-width':3},g); sv('rect',{x:tx0-22,y:y-r-36,width:44,height:36,fill:'none',stroke:'#ffd84d','stroke-dasharray':'4 3'},g); AT(g,tx0,y-r-68,tx(o.tlabel),'aps'); }
+  const n=o.boxes||3, gap=w/n, bx=[];
+  for(let i=0;i<n;i++){ const b=sv('g',{},g); sv('rect',{x:-16,y:-28,width:32,height:28,rx:2,fill:'#b98a4e',stroke:'#7a5527'},b); sv('path',{d:'M-16 -20 H16 M0 -28 V-20',stroke:'#7a5527'},b); bx.push(b); }
+  AP.p[key]=o.start||0;
+  UPD.app.push(()=>{ const v=spd(id)*dir; const d=AP._dt;
+    AP.p[key]=(AP.p[key]+v*d*(o.px||90)); AP.a[key]=((AP.a[key]||0)+v*d*400)%360;
+    tread.setAttribute('stroke-dashoffset',-AP.p[key]);
+    bx.forEach((b,i)=>{ let p=((i*gap+AP.p[key])%w+w)%w; if(o.one&&i>0){b.style.display='none';return;} if(o.one) p=Math.max(0,Math.min(w,AP.p[key])); b.setAttribute('transform',`translate(${x+p},${y-r})`); }); });
+  return key;
+}
+function apFan(g,cx,cy,r,id,o={}){
+  const key='f'+id+cx;
+  sv('circle',{cx,cy,r:r+8,fill:'#141c20',stroke:'#4a5a62','stroke-width':3},g);
+  const bl=sv('g',{},g);
+  for(let i=0;i<(o.n||5);i++){ const a=i*360/(o.n||5); sv('path',{d:`M${cx} ${cy} q${r*0.25} ${-r*0.55} ${r*0.05} ${-r*0.95} q${-r*0.35} ${r*0.15} ${-r*0.4} ${r*0.55} z`,fill:'#9fb0ad',transform:`rotate(${a} ${cx} ${cy})`},bl); }
+  sv('circle',{cx,cy,r:r*0.14,fill:'#56636a',stroke:'#cfd8d6'},g);
+  for(let i=0;i<8;i++) sv('line',{x1:cx-r-8,y1:cy-r+i*r/3.5,x2:cx+r+8,y2:cy-r+i*r/3.5,stroke:'#2a3439','stroke-width':1},g);
+  const air=sv('g',{},g); for(let i=0;i<3;i++) sv('path',{d:`M${cx+r+18} ${cy-24+i*24} q20 -8 40 0 t40 0`,class:'apair'},air);
+  if(o.label) AT(g,cx,cy+r+26,tx(o.label),'aps');
+  UPD.app.push(()=>{ const v=spd(id); AP.a[key]=((AP.a[key]||0)+v*AP._dt*900)%360; bl.setAttribute('transform',`rotate(${AP.a[key]} ${cx} ${cy})`);
+    air.style.opacity=Math.min(1,Math.abs(v)); air.style.strokeDashoffset=-(S.time*60*Math.abs(v))%40; });
+}
+function apBadge(g,x,y,fn){ const b=sv('g',{},g); const r=sv('rect',{x:x-60,y:y-14,width:120,height:26,rx:13,fill:'#17232a',stroke:'#26363e'},b); const tt=AT(b,x,y+4,'','apb');
+  UPD.app.push(()=>{ const s=fn(); tt.textContent=s?tx(s.t):''; b.style.display=s?'':'none'; if(s) r.setAttribute('stroke',s.c||'#26363e'); tt.setAttribute('fill',s&&s.c||'#e4ece9'); }); }
+function apStations(g,x,y){ /* button stations of the circuit, glow when pressed */
+  (C.buttons||[]).forEach((b,i)=>{ const cx=x+i*48; const ring=sv('circle',{cx,cy:y,r:15,fill:'none',stroke:'#59666b','stroke-width':4},g);
+    const col={green:'#2fa35d',red:'#c9473b',black:'#3a454b',blue:'#2f6fc4',yellow:'#c9a227'}[b.color]||'#3a454b';
+    const k=sv('circle',{cx,cy:y,r:10,fill:col},g); AT(g,cx,y+30,b.btn,'apm');
+    UPD.app.push(()=>{const on=S.btn[b.btn]===1; ring.setAttribute('stroke',on?'#ffd84d':'#59666b'); k.setAttribute('r',on?8:10);}); });
+}
+function apDoor(g,id){
+  const X=360,Y=20,W=280,H=170; const key='door';
+  sv('rect',{x:X-14,y:Y-6,width:W+28,height:H+12,fill:'none',stroke:'#59666b','stroke-width':10},g);
+  sv('rect',{x:X-24,y:Y-26,width:W+48,height:26,rx:6,fill:'#2b3439',stroke:'#59666b'},g);
+  const pan=sv('g',{},g); for(let i=0;i<10;i++) sv('rect',{x:X,y:Y+i*17,width:W,height:16,fill:i%2?'#8d9ba0':'#7a888d',stroke:'#5d6a6f'},pan);
+  sv('rect',{x:X,y:Y+H,width:W,height:4,fill:'#ffd84d'},g);
+  apMotor(g,X+W+80,Y-12,id,true); AT(g,X+W/2,Y+H+28,'','aps');
+  if(AP.p[key]==null) AP.p[key]=0;
+  const cl=sv('rect',{x:X,y:Y,width:W,height:H},g); cl.setAttribute('fill','none');
+  const clip=sv('clipPath',{id:'dclip'},g); sv('rect',{x:X,y:Y,width:W,height:H},clip); pan.setAttribute('clip-path','url(#dclip)');
+  const st=AT(g,X+W/2,Y+H+28,'','aps');
+  UPD.app.push(()=>{ const v=spd(id); AP.p[key]=Math.max(0,Math.min(1,AP.p[key]+v*AP._dt*0.12)); pan.setAttribute('transform',`translate(0,${-AP.p[key]*H})`);
+    st.textContent=tx(v>0.05?{ar:'الباب بيفتح ▲',en:'Door opening ▲'}:v<-0.05?{ar:'الباب بيقفل ▼',en:'Door closing ▼'}:AP.p[key]>0.98?{ar:'مفتوح',en:'Open'}:AP.p[key]<0.02?{ar:'مقفول',en:'Closed'}:{ar:'واقف في النص',en:'Stopped half way'}); });
+}
+function apCrane(g,id){
+  const X0=170,X1=830,Y=40,key='crane';
+  sv('rect',{x:X0-30,y:Y-12,width:X1-X0+60,height:16,fill:'#c9a227',stroke:'#7a6418'},g);
+  for(let x=X0-20;x<X1+30;x+=40) sv('path',{d:`M${x} ${Y-12} l20 16 l20 -16`,stroke:'#7a6418',fill:'none'},g);
+  sv('rect',{x:X0-44,y:Y-12,width:14,height:200,fill:'#56636a'},g); sv('rect',{x:X1+30,y:Y-12,width:14,height:200,fill:'#56636a'},g);
+  const tr=sv('g',{},g); sv('rect',{x:-34,y:4,width:68,height:26,rx:4,fill:'#e07a1f',stroke:'#8a4a12'},tr); sv('circle',{cx:-20,cy:4,r:6,fill:'#222'},tr); sv('circle',{cx:20,cy:4,r:6,fill:'#222'},tr);
+  sv('line',{x1:0,y1:30,x2:0,y2:120,stroke:'#cfd8d6','stroke-width':2},tr); sv('path',{d:'M0 120 v10 a10 10 0 1 1 -10 10',stroke:'#cfd8d6','stroke-width':4,fill:'none'},tr);
+  sv('rect',{x:-26,y:142,width:52,height:34,fill:'#5b6e78',stroke:'#2a404d'},tr);
+  const lab=AT(tr,0,22,id,'apmw');
+  if(AP.p[key]==null) AP.p[key]=0.5;
+  UPD.app.push(()=>{ const v=spd(id); AP.p[key]=Math.max(0,Math.min(1,AP.p[key]+v*AP._dt*0.1)); tr.setAttribute('transform',`translate(${X0+AP.p[key]*(X1-X0)},${Y})`); });
+}
+function apMixer(g,cx,id,o={}){
+  const key='mx'+id, top=40, w=170, h=150;
+  sv('path',{d:`M${cx-w/2} ${top} V${top+h-20} q0 20 20 20 H${cx+w/2-20} q20 0 20 -20 V${top}`,fill:'#0f1a20',stroke:'#7d97a5','stroke-width':3},g);
+  const liq=sv('path',{d:'',fill:'#2d6f9a',opacity:.75},g);
+  sv('rect',{x:cx-30,y:top-34,width:60,height:30,rx:4,fill:'#3d5a6c',stroke:'#7d97a5'},g); AT(g,cx,top-14,id,'apmw');
+  sv('line',{x1:cx,y1:top-4,x2:cx,y2:top+h-24,stroke:'#cfd8d6','stroke-width':4},g);
+  const pad=sv('g',{},g); const p1=sv('rect',{x:cx-50,y:top+h-44,width:100,height:12,rx:3,fill:'#cfd8d6'},pad); const p2=sv('rect',{x:cx-40,y:top+h-90,width:80,height:10,rx:3,fill:'#cfd8d6'},pad);
+  UPD.app.push(()=>{ const v=spd(id); AP.a[key]=((AP.a[key]||0)+v*AP._dt*700)%360; const c=Math.cos(AP.a[key]*Math.PI/180);
+    p1.setAttribute('transform',`translate(${cx} 0) scale(${c.toFixed(3)} 1) translate(${-cx} 0)`); p2.setAttribute('transform',`translate(${cx} 0) scale(${Math.cos((AP.a[key]+90)*Math.PI/180).toFixed(3)} 1) translate(${-cx} 0)`);
+    const sw=Math.min(14,Math.abs(v)*14); const y0=top+40; liq.setAttribute('d',`M${cx-w/2+2} ${y0+sw} Q${cx} ${y0-sw} ${cx+w/2-2} ${y0+sw} V${top+h-20} q0 18 -18 18 H${cx-w/2+20} q-18 0 -18 -18 Z`); });
+}
+function apDrum(g,cx,cy,id){
+  const key='dr', R=78;
+  sv('path',{d:`M${cx-R-60} ${cy+R+20} H${cx+R+60}`,stroke:'#3f4c52','stroke-width':6},g);
+  sv('path',{d:`M${cx-R+10} ${cy+R+20} l14 -40 M${cx+R-10} ${cy+R+20} l-14 -40`,stroke:'#56636a','stroke-width':8},g);
+  const d=sv('g',{},g); sv('circle',{cx,cy,r:R,fill:'#3d4a50',stroke:'#9fb0ad','stroke-width':4},d); sv('circle',{cx,cy,r:R-14,fill:'#1f272b'},d);
+  for(let i=0;i<8;i++) sv('rect',{x:cx-6,y:cy-R+12,width:12,height:18,fill:'#9fb0ad',transform:`rotate(${i*45} ${cx} ${cy})`},d);
+  const balls=sv('g',{},g);
+  for(let i=0;i<9;i++) sv('circle',{cx:cx-30+(i%5)*15,cy:cy+R-34-Math.floor(i/5)*14,r:7,fill:'#b9c7c4'},balls);
+  sv('rect',{x:cx+R+40,y:cy-18,width:60,height:36,rx:5,fill:'#3d5a6c',stroke:'#7d97a5'},g); AT(g,cx+R+70,cy+5,id,'apmw'); sv('line',{x1:cx+R,y1:cy,x2:cx+R+40,y2:cy,stroke:'#cfd8d6','stroke-width':6},g);
+  UPD.app.push(()=>{ const v=spd(id); AP.a[key]=((AP.a[key]||0)+v*AP._dt*240)%360; d.setAttribute('transform',`rotate(${AP.a[key]} ${cx} ${cy})`);
+    balls.setAttribute('transform',`rotate(${Math.max(-40,Math.min(40,v*40))} ${cx} ${cy})`); });
+}
+function apSaw(g,cx,cy,id){
+  const key='saw', R=74;
+  sv('rect',{x:cx-260,y:cy+30,width:520,height:16,fill:'#56636a'},g); sv('rect',{x:cx-240,y:cy+46,width:20,height:100,fill:'#3f4c52'},g); sv('rect',{x:cx+220,y:cy+46,width:20,height:100,fill:'#3f4c52'},g);
+  const b=sv('g',{},g); let d=''; for(let i=0;i<36;i++){ const a=i*10*Math.PI/180, a2=(i*10+6)*Math.PI/180; d+=(i?'L':'M')+(cx+R*Math.cos(a)).toFixed(1)+' '+(cy+R*Math.sin(a)).toFixed(1)+' L'+(cx+(R+9)*Math.cos(a2)).toFixed(1)+' '+(cy+(R+9)*Math.sin(a2)).toFixed(1)+' '; }
+  sv('path',{d:d+'Z',fill:'#cfd8d6',stroke:'#7d8a8f'},b); sv('circle',{cx,cy,r:16,fill:'#56636a'},b); sv('path',{d:`M${cx-R+16} ${cy} H${cx+R-16}`,stroke:'#9aa7ab','stroke-width':3},b);
+  sv('path',{d:`M${cx-R-20} ${cy-10} A${R+20} ${R+20} 0 0 1 ${cx+R+20} ${cy-10} Z`,fill:'#e07a1f',opacity:.85},g);
+  sv('rect',{x:cx-230,y:cy+4,width:150,height:26,fill:'#b98a4e',stroke:'#7a5527'},g);
+  const spk=sv('g',{},g); for(let i=0;i<7;i++) sv('line',{x1:cx-14,y1:cy+8,x2:cx-60+i*14,y2:cy+56+(i%2)*10,stroke:'#ffb22e','stroke-width':2},spk);
+  AT(g,cx+R+40,cy-R+10,id,'apm');
+  UPD.app.push(()=>{ const v=spd(id); AP.a[key]=((AP.a[key]||0)+v*AP._dt*1400)%360; b.setAttribute('transform',`rotate(${AP.a[key]} ${cx} ${cy})`); spk.style.display=S.lamps.H4&&Math.abs(v)>0.03?'':'none'; spk.style.opacity=0.5+0.5*Math.random(); });
+}
+function apBeacon(g,x,y){
+  sv('rect',{x:x-6,y:y+60,width:12,height:110,fill:'#56636a'},g);
+  const cols=[['H3','#ffb22e'],['H1','#3dff8a']]; const L=[];
+  cols.forEach(([id,c],i)=>{ const r=sv('rect',{x:x-24,y:y+i*34,width:48,height:32,rx:6,fill:'#22292c',stroke:'#59666b'},g); L.push([id,c,r]); });
+  const glow=sv('circle',{cx:x,cy:y+16,r:60,fill:'#ffb22e',opacity:0},g);
+  UPD.app.push(()=>{ L.forEach(([id,c,r])=>{ r.setAttribute('fill',S.lamps[id]?c:'#22292c'); }); glow.setAttribute('opacity',S.lamps.H3?0.18:0); });
+}
+function apCarriage(g){
+  const X0=180,X1=820,Y=140;
+  sv('rect',{x:X0-50,y:Y+26,width:X1-X0+100,height:10,fill:'#56636a'},g);
+  for(let x=X0-40;x<X1+50;x+=30) sv('rect',{x,y:Y+36,width:16,height:8,fill:'#3f4c52'},g);
+  sv('rect',{x:X0-70,y:Y-40,width:16,height:76,fill:'#7a3b2e'},g); sv('rect',{x:X1+54,y:Y-40,width:16,height:76,fill:'#7a3b2e'},g);
+  const ls=(x,id)=>{ const b=sv('rect',{x:x-12,y:Y-56,width:24,height:24,rx:3,fill:'#2b3439',stroke:'#c9a227'},g); AT(g,x,Y-64,id,'apm'); const arm=sv('line',{x1:x,y1:Y-32,x2:x,y2:Y-12,stroke:'#cfd8d6','stroke-width':3},g);
+    UPD.app.push(()=>{ const on=!!S.ls[id]; b.setAttribute('fill',on?'#c9a227':'#2b3439'); arm.setAttribute('x2',on?(id==='S6'?x+8:x-8):x); }); };
+  ls(X0,'S6'); ls(X1,'S7');
+  const c=sv('g',{},g); sv('rect',{x:-50,y:-20,width:100,height:44,rx:6,fill:'#2f6fc4',stroke:'#1c4f94'},c); sv('circle',{cx:-30,cy:24,r:8,fill:'#222'},c); sv('circle',{cx:30,cy:24,r:8,fill:'#222'},c);
+  sv('rect',{x:-30,y:-44,width:60,height:24,fill:'#b98a4e',stroke:'#7a5527'},c); AT(c,0,6,'M1','apmw');
+  UPD.app.push(()=>{ c.setAttribute('transform',`translate(${X0+Math.max(-0.05,Math.min(1.05,PR.x))*(X1-X0)},${Y})`); });
+}
+function apPump(g){
+  const wellX=120, tankX=700;
+  sv('rect',{x:wellX-50,y:60,width:100,height:150,fill:'#0f1a20',stroke:'#7d97a5','stroke-width':2},g); AT(g,wellX,50,tx({ar:'البير',en:'Well'}),'aps');
+  const ww=sv('rect',{x:wellX-48,y:0,width:96,height:0,fill:'#2d6f9a'},g);
+  sv('rect',{x:tankX-80,y:30,width:160,height:180,fill:'#0f1a20',stroke:'#7d97a5','stroke-width':2},g); AT(g,tankX,22,tx({ar:'الخزان',en:'Tank'}),'aps');
+  const tw=sv('rect',{x:tankX-78,y:0,width:156,height:0,fill:'#2d6f9a'},g);
+  const pipe=sv('path',{d:`M${wellX} 190 V20 H${tankX-40} V34`,stroke:'#59666b','stroke-width':10,fill:'none'},g);
+  const flow=sv('path',{d:`M${wellX} 190 V20 H${tankX-40} V34`,stroke:'#55b6ea','stroke-width':4,fill:'none','stroke-dasharray':'8 10'},g);
+  const px=380; sv('circle',{cx:px,cy:20,r:26,fill:'#3d5a6c',stroke:'#7d97a5','stroke-width':2},g);
+  const imp=sv('g',{},g); for(let i=0;i<6;i++) sv('path',{d:`M${px} 20 l0 -18`,stroke:'#cfd8d6','stroke-width':3,transform:`rotate(${i*60} ${px} 20)`},imp);
+  sv('rect',{x:px-30,y:52,width:60,height:30,rx:4,fill:'#3d5a6c',stroke:'#7d97a5'},g); AT(g,px,72,'M1','apmw'); sv('line',{x1:px,y1:46,x2:px,y2:52,stroke:'#cfd8d6','stroke-width':5},g);
+  const fl=(x,yHi,id,lab)=>{ const f=sv('g',{},g); sv('line',{x1:0,y1:-14,x2:0,y2:0,stroke:'#cfd8d6','stroke-width':2},f); sv('ellipse',{cx:0,cy:6,rx:14,ry:8,fill:'#c9a227'},f); AT(g,x+34,yHi,id+' '+tx(lab),'aps','start'); return f; };
+  const f1=fl(tankX+50,48,'B1',{ar:'عوامة الخزان',en:'tank float'}), f2=fl(wellX+30,90,'B2',{ar:'عوامة البير',en:'well float'});
+  const out=sv('path',{d:`M${tankX+80} 196 H${tankX+150}`,stroke:'#59666b','stroke-width':8},g);
+  UPD.app.push(()=>{ const lw=PR.lw, lt=PR.lt; const wh=lw*146, th=lt*176;
+    ww.setAttribute('y',208-wh); ww.setAttribute('height',wh); tw.setAttribute('y',208-th); tw.setAttribute('height',th);
+    f1.setAttribute('transform',`translate(${tankX+40},${Math.max(40,208-th-6)})`); f2.setAttribute('transform',`translate(${wellX+20},${Math.max(66,208-wh-6)})`);
+    const run=S.mot.M1&&S.mot.M1.speed>300&&lw>0.02; flow.style.display=run?'':'none'; flow.setAttribute('stroke-dashoffset',-(S.time*60)%36);
+    AP.a.imp=((AP.a.imp||0)+spd('M1')*AP._dt*900)%360; imp.setAttribute('transform',`rotate(${AP.a.imp} ${px} 20)`); });
+}
+const APPS={
+  dol:{cap:{ar:'السير اللي الموتور بيشغله',en:'The conveyor the motor drives'},b:g=>{ apBelt(g,220,150,600,'M1',{boxes:4}); }},
+  two:{cap:{ar:'خلاط بيتشغل من مكانين: جنب الماكينة وأوضة التحكم',en:'A mixer started from two places: at the machine and in the control room'},b:g=>{ apMixer(g,500,'M1'); AT(g,170,40,tx({ar:'الأزرار',en:'Buttons'}),'aps'); apStations(g,120,80); }},
+  jog:{cap:{ar:'ظبط مكان الكرتونة تحت المكبس بالـ Jog',en:'Jogging the box under the press'},b:g=>{ apBelt(g,220,160,600,'M1',{one:true,px:60,start:40,target:0.62,tlabel:{ar:'المكبس',en:'Press'}}); }},
+  rev:{cap:{ar:'باب صاج (شتر) بيفتح ويقفل',en:'A roller shutter door opening and closing'},b:g=>{ apDoor(g,'M1'); }},
+  drev:{cap:{ar:'ونش علوي رايح جاي',en:'An overhead crane travelling back and forth'},b:g=>{ apCrane(g,'M1'); }},
+  seq:{cap:{ar:'سيرين: M2 بيرمي على M1، فلازم M1 يدور الأول',en:'Two conveyors: M2 feeds M1, so M1 must run first'},b:g=>{ apBelt(g,560,175,350,'M1',{boxes:3,motorRight:true}); apBelt(g,90,95,400,'M2',{boxes:3}); }},
+  tseq:{cap:{ar:'سيرين: التايمر يشغّل M2 بعد M1',en:'Two conveyors: the timer starts M2 after M1'},b:g=>{ apBelt(g,560,175,350,'M1',{boxes:3,motorRight:true}); apBelt(g,90,95,400,'M2',{boxes:3});
+    apBadge(g,500,30,()=>S.tim.KT&&S.tim.KT.on&&!S.tim.KT.done?{t:{ar:'KT: '+S.tim.KT.t.toFixed(1)+' ث',en:'KT: '+S.tim.KT.t.toFixed(1)+' s'},c:'#ffc629'}:null); }},
+  sd:{cap:{ar:'مروحة شفط كبيرة بتقوم ستار وبعدين دلتا',en:'A large exhaust fan starting in star, then delta'},b:g=>{ apFan(g,500,115,90,'M1',{n:6});
+    apBadge(g,800,40,()=>S.lamps.H4?{t:{ar:'ستار ★',en:'Star ★'},c:'#ffb22e'}:S.lamps.H1?{t:{ar:'دلتا Δ',en:'Delta Δ'},c:'#5fd08b'}:null); }},
+  conv:{cap:{ar:'خط سيور: الخامة ماشية من M1 لـ M3، فآخر سير (M3) يدور الأول',en:'A conveyor line: material flows M1 to M3, so the last belt (M3) starts first'},b:g=>{ apBelt(g,90,80,250,'M1',{boxes:2}); apBelt(g,400,130,250,'M2',{boxes:2}); apBelt(g,710,180,210,'M3',{boxes:2,motorRight:true});
+    apBadge(g,840,40,()=>S.btn.S0===1?{t:{ar:'طوارئ مضغوط',en:'E-stop pressed'},c:'#ff5d50'}:null); }},
+  auto:{cap:{ar:'عربة رايحة جاية بين ليمتين',en:'A carriage going back and forth between two limit switches'},b:g=>apCarriage(g)},
+  pump:{cap:{ar:'طلمبة بتملا الخزان من البير',en:'A pump filling the tank from the well'},b:g=>apPump(g)},
+  trun:{cap:{ar:'خلاط بيقف لوحده بعد الوقت',en:'A mixer that stops by itself after the set time'},b:g=>{ apMixer(g,500,'M1');
+    apBadge(g,800,40,()=>S.tim.KT&&S.tim.KT.on&&!S.tim.KT.done?{t:{ar:'باقي '+Math.max(0,S.tim.KT.pre-S.tim.KT.t).toFixed(1)+' ث',en:Math.max(0,S.tim.KT.pre-S.tim.KT.t).toFixed(1)+' s left'},c:'#ffc629'}:null); }},
+  fan:{cap:{ar:'الماكينة ومروحة التبريد بتكمّل بعد الوقوف',en:'The machine, and its cooling fan running on after the stop'},b:g=>{ apDrum(g,330,110,'M1'); apFan(g,760,110,70,'M2',{label:{ar:'مروحة التبريد M2',en:'Cooling fan M2'}});
+    apBadge(g,760,22,()=>S.tim.KT&&S.tim.KT.done&&!S.k.K1?{t:{ar:'المروحة بتكمّل',en:'Fan running on'},c:'#55b6ea'}:null); }},
+  flash:{cap:{ar:'عمود إشارة فوق الماكينة: الكهرمان بيفلش لما الأوفرلود يفصل',en:'A signal tower on the machine: amber flashes when the overload trips'},b:g=>{ apBelt(g,120,170,520,'M1',{boxes:3}); apBeacon(g,820,24); }},
+  sdr:{cap:{ar:'طاحونة (درم) بتلف في الاتجاهين بستار/دلتا',en:'A drum mill turning both ways with star-delta'},b:g=>{ apDrum(g,440,105,'M1');
+    apBadge(g,800,40,()=>S.lamps.H5?{t:{ar:'ستار ★',en:'Star ★'},c:'#ffb22e'}:(S.lamps.H1||S.lamps.H4)?{t:{ar:'دلتا Δ',en:'Delta Δ'},c:'#5fd08b'}:null); }},
+  dahl:{cap:{ar:'مروحة بسرعتين',en:'A two-speed fan'},b:g=>{ apFan(g,500,115,90,'M1',{n:5});
+    apBadge(g,800,40,()=>S.lamps.H4?{t:{ar:'سريع',en:'High'},c:'#55b6ea'}:S.lamps.H1?{t:{ar:'بطيء',en:'Low'},c:'#5fd08b'}:null); }},
+  plug:{cap:{ar:'منشار لازم يقف بسرعة',en:'A saw that must stop quickly'},b:g=>{ apSaw(g,500,110,'M1');
+    apBadge(g,820,40,()=>S.lamps.H4?{t:{ar:'فرملة عكسية',en:'Plug braking'},c:'#ffb22e'}:null); }},
+};
+function buildApp(){
+  const svg=$('#ap'), fig=$('#apFig'); svg.innerHTML=''; UPD.app=[];
+  const A=APPS[C.key]; fig.hidden=!A; if(!A) return;
+  svg.setAttribute('viewBox','0 0 1000 230');
+  $('#apCap').textContent=tx(A.cap);
+  const g=sv('g',{},svg); AP.lt=S.time; AP._dt=0;
+  if(!['auto','pump','rev','drev'].includes(C.key)) Object.keys(AP.p).forEach(k=>{ if(k!=='door'&&k!=='crane') delete AP.p[k]; });
+  A.b(g);
+}
+function refreshApp(){ AP._dt=apDt(); UPD.app.forEach(f=>f()); }
 
 /* ================= Unit 1: device lessons ================= */
 const DU=[]; // device updaters
@@ -2439,6 +2629,7 @@ function refreshAll(){
   refreshChal(C);
   if(++refreshTick%6===0) renderDevices();
   if(C.procRefresh) C.procRefresh();
+  refreshApp();
 }
 function refreshChal(L){ (L.challenges||[]).forEach((c,i)=>{const e=$('#ch'+i); if(e){const d=chalDone(c.f); e.classList.toggle('done',d); e.querySelector('i').textContent=d?'✓':'';}}); }
 let refreshTick=0;
@@ -2481,7 +2672,7 @@ function loadLesson(key){
     DEV=null; C=CUR; TPL=TPLS[C.tpl]; S.ir=C.ir||11; $('#rIr').value=S.ir; $('#vIr').textContent=S.ir.toFixed(1)+' A';
     S.tim={}; resetRun(); S.fault={}; S.pfault={}; S.sel=C.sel0||'0'; PROBE={b:null,r:null}; trippedOnce=false; lossT=-1; S.mains=true; S.ctrl=true;
     buildControl(); PW=TPL.state(); const pg=$('#pw'); pg.innerHTML=''; pg.setAttribute('viewBox',`0 0 ${TPL.w} ${TPL.h}`); UPD.power=[]; TPL.draw(sv('g',{},pg));
-    buildPanel(); buildStation(); buildFaults(); buildSideExtras(); renderSteps();
+    buildPanel(); buildApp(); buildStation(); buildFaults(); buildSideExtras(); renderSteps();
     if(MODE==='trace'){ buildSuspects(); newTrace(); }
     solve(); refreshProbes(); applyView(); refreshAll(); renderDevices(); updScore();
   }else{
