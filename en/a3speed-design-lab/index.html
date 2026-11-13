@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A3/Speed Design Correction · Design Control | LearnElectricals</title>
+<meta name="description" content="Complete guide to the A3/Speed design control: register code and photocells, TMCC card, servomotor and folding flaps, deviation and production angle, stroke and offset, start-up and alarms, with an interactive simulator and video.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/a3speed-design-lab/">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/a3speed-design-lab/">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/a3speed-design-lab/">
+<meta property="og:title" content="A3/Speed Design Correction · Design Control">
+<meta property="og:description" content="Detailed guide and interactive simulator for the design control: from reading the register code to setting the crease position on the package.">
+<meta property="og:url" content="https://www.learnelectricals.com/en/a3speed-design-lab/">
+<meta property="og:image" content="https://www.learnelectricals.com/a3speed-design-lab/poster.jpg">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Long-form guide page: one reading column, sticky table of contents on wide screens, same tokens as the other labs. */
+:root{
+  --bg:#e9edef; --panel:#ffffff; --ink:#152027; --muted:#56656f; --line:#cfd7dc;
+  --accent:#b85f00; --accent-soft:#f6e6d3; --cur:#0d7584; --product:#c99400;
+  --good:#2b7a3d; --warn:#a86a00; --bad:#c0352b; --code-bg:#f2f5f6;
+  --font-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --font-body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1417; --panel:#182025; --ink:#e3e9ec; --muted:#93a2ab; --line:#2a353c;
+  --accent:#f0a03c; --accent-soft:#3a2a17; --cur:#4cc0cf; --product:#ffc629;
+  --good:#5cc06f; --warn:#e3a43a; --bad:#ff6b5e; --code-bg:#11181c; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f1417; --panel:#182025; --ink:#e3e9ec; --muted:#93a2ab; --line:#2a353c;
+  --accent:#f0a03c; --accent-soft:#3a2a17; --cur:#4cc0cf; --product:#ffc629;
+  --good:#5cc06f; --warn:#e3a43a; --bad:#ff6b5e; --code-bg:#11181c; color-scheme:dark }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.75}
+a{color:var(--cur)}
+.app{max-width:1180px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-left,0px)) 64px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:900px){.app{grid-template-columns:minmax(0,1fr)}.toc{position:static!important}}
+h1,h2,h3{font-family:var(--font-display);line-height:1.3;text-wrap:balance;margin:0}
+h1{font-size:1.9rem}
+h2{font-size:1.35rem;margin:0 0 12px}
+h3{font-size:1.05rem;margin:18px 0 6px}
+p{margin:.5rem 0}
+.mono,code,pre{font-family:var(--font-mono);direction:ltr;unicode-bidi:isolate}
+code{font-size:.88em;background:var(--code-bg);border:1px solid var(--line);padding:0 .35em;border-radius:4px}
+pre{background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto;font-size:.88rem;line-height:1.55;text-align:left;margin:.6rem 0}
+.top{grid-column:1/-1;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
+.top p{color:var(--muted);max-width:70ch;margin:.4rem 0 0}
+.crumbs{font-size:.85rem;color:var(--muted);margin-bottom:6px}
+.crumbs a{color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:8px 14px;font-weight:600;color:var(--ink);text-decoration:none}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.toc{position:sticky;top:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:.92rem}
+.toc b{display:block;font-family:var(--font-display);margin-bottom:6px}
+.toc ol{margin:0;padding-inline-start:20px}
+.toc a{color:var(--ink);text-decoration:none}
+.toc a:hover{color:var(--accent)}
+main{display:flex;flex-direction:column;gap:18px;min-width:0}
+section.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0;scroll-margin-top:12px}
+.lead{font-size:1.05rem}
+.tbl{width:100%;border-collapse:collapse;font-size:.93rem;margin:.6rem 0}
+.tbl th,.tbl td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:start;vertical-align:top}
+.tbl th{font-family:var(--font-display);font-weight:500;color:var(--muted);font-size:.85rem}
+.tbl td.mono{white-space:nowrap}
+.scroll{overflow-x:auto}
+.note{border-inline-start:4px solid var(--cur);background:var(--code-bg);border-radius:8px;padding:10px 12px;margin:.8rem 0;font-size:.95rem}
+.warn{border-inline-start-color:var(--bad)}
+.ok{border-inline-start-color:var(--good)}
+.tag{display:inline-block;font-size:.75rem;font-weight:600;border-radius:999px;padding:0 8px;border:1px solid var(--line)}
+.tag.real{color:var(--good);border-color:var(--good)}
+.tag.sim{color:var(--warn);border-color:var(--warn)}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:.6rem 0}
+.flow span{background:var(--accent-soft);border-radius:8px;padding:4px 10px;font-weight:600;font-size:.9rem}
+.flow i{font-style:normal;color:var(--muted)}
+.tree{direction:ltr;text-align:left}
+video{width:100%;border-radius:10px;border:1px solid var(--line);background:#000;display:block}
+ol.steps li{margin:.3rem 0}
+footer{grid-column:1/-1;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:12px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div>
+      <div class="crumbs"><a href="/en/">Home</a> › <a href="/en/tetrapan/">Tetrapan</a> › A3/Speed Design Correction</div>
+      <h1>Design Correction on the A3/Speed</h1>
+      <p>How the machine keeps the print and the crease in place on every package: the register code, the photocells, the TMCC card, the servomotor and folding flaps, stroke and offset, start-up, alarms and a fault-finding tree. It comes with a simulator where you can try everything yourself.</p>
+    </div>
+    <div class="row">
+      <a class="btn pri" href="simulator.html">▶ Open the simulator</a>
+      <a class="btn" href="#video">Video</a>
+      <a class="btn" href="/a3speed-design-lab/" hreflang="ar" lang="ar">عربي</a>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="Page contents">
+    <b>Contents</b>
+    <ol>
+      <li><a href="#idea">The idea</a></li>
+      <li><a href="#parts">Parts and signal path</a></li>
+      <li><a href="#dev">Deviation and production angle</a></li>
+      <li><a href="#stroke">Correction and stroke</a></li>
+      <li><a href="#offset">The offset and the 150-unit example</a></li>
+      <li><a href="#start">Start-up and precorrection</a></li>
+      <li><a href="#servo">Servomotor positions</a></li>
+      <li><a href="#code">The register code</a></li>
+      <li><a href="#alarms">Alarms and when they appear</a></li>
+      <li><a href="#tree">Fault-finding tree</a></li>
+      <li><a href="#mistakes">Common mistakes</a></li>
+      <li><a href="#sim">How to use the simulator</a></li>
+      <li><a href="#video">Video</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <section class="panel" id="idea">
+      <h2>1. The idea</h2>
+      <p class="lead">The packaging material arrives with the design and the crease lines already printed. The machine pulls the material one package at a time while the jaws seal and cut. If each pull is slightly too long or too short, the print and the crease drift away from the seal and the package comes out looking wrong.</p>
+      <p>The job of the <b>design control</b> is to make every package exactly the right length, so the crease lands in the right place relative to the jaws.</p>
+      <div class="flow"><span>Register code</span><i>→</i><span>Photocells</span><i>→</i><span>TMCC</span><i>→</i><span>DMC</span><i>→</i><span>Servomotor</span><i>→</i><span>Cam</span><i>→</i><span>Folding flaps</span></div>
+      <p>The system does two different things, and you need to keep them apart:</p>
+      <ul>
+        <li><b>Automatic regulation:</b> the card measures the mark position on every package and adjusts the pull by itself to keep the deviation close to zero.</li>
+        <li><b>Design correction (the offset):</b> a manual setting. It tells the system "treat the correct position as this much higher or lower". You use it when the finished package has the crease in the wrong place although the deviation is zero.</li>
+      </ul>
+    </section>
+
+    <section class="panel" id="parts">
+      <h2>2. Parts and signal path</h2>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th>Part</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td>Register code</td><td>Black and white bars printed once per package on the material. It is the reference the system measures against.</td></tr>
+          <tr><td>Photocells</td><td>Read the code as the material passes and send the reading to the card.</td></tr>
+          <tr><td>TMCC card</td><td>The brain. It decodes the code, generates the design signal when the code matches, compares its arrival with the machine angle and calculates the required stroke.</td></tr>
+          <tr><td>Angle encoder</td><td>Tells the card the machine angle at every moment.</td></tr>
+          <tr><td>DMC</td><td>The servo drive. Converts the stroke value into a motor position.</td></tr>
+          <tr><td>Servomotor and eccentric shafts</td><td>The motor turns the cam, and the cam sets the stroke of the folding flaps.</td></tr>
+          <tr><td>Folding flaps</td><td>Mounted on the jaws. They add a small extra pull on top of the main pull of the jaws. That extra pull is what the system controls.</td></tr>
+          <tr><td>PLC</td><td>Gives the card the production angle, volume and speed, and receives the alarms.</td></tr>
+        </tbody>
+      </table></div>
+      <div class="note">The main pull comes from the closed jaw travelling down with the tube. The folding flaps only add a little to it, which is why the system corrects millimetres, not centimetres.</div>
+    </section>
+
+    <section class="panel" id="dev">
+      <h2>3. Deviation and production angle</h2>
+      <p>The PLC gives the card a value called the <b>production angle</b>: the machine angle at which the mark should pass the photocell.</p>
+      <p>On every package the photocell fires at the instant the black mark is in front of it, and the card captures the encoder angle at that same instant. The difference between that angle and the production angle, converted to millimetres, is the <b>design deviation</b>.</p>
+      <pre>Deviation = 0        the mark arrived on time
+Deviation = +        the mark arrived late (pull too short)
+Deviation = -        the mark arrived early (pull too long)
+OK window  = ±1.5 mm accepted range in production</pre>
+      <p>While the deviation stays inside <b>±1.5 mm</b> the <span class="mono">Design OK</span> LED is on and packages are accepted. Outside it, packages are rejected and the alarm count starts.</p>
+    </section>
+
+    <section class="panel" id="stroke">
+      <h2>4. Correction and stroke</h2>
+      <p>The card corrects by changing the stroke of the folding flaps. The stroke is a number from <b>Step 0</b> to <b>Step 999</b>:</p>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th>Situation</th><th>What the card does</th></tr></thead>
+        <tbody>
+          <tr><td>Mark late (positive deviation)</td><td>Increases the stroke, so the flaps pull more and the next package is longer.</td></tr>
+          <tr><td>Mark early (negative deviation)</td><td>Decreases the stroke, so the pull gets shorter.</td></tr>
+        </tbody>
+      </table></div>
+      <p>The correction runs through a PID loop in the card, so it does not happen in one package. It takes a few packages for the deviation to come back close to zero.</p>
+      <div class="note"><b>There is no single ideal stroke value.</b> It depends on the machine, the material and the speed. What matters is that it is steady and away from both limits. On the card, <span class="mono">LED 7</span> lights when the stroke is above 75% and <span class="mono">LED 8</span> when it is below 25%.</div>
+      <p>If the stroke sticks at <span class="mono">Step 999</span> or <span class="mono">Step 0</span>, the system has used all its range and cannot correct any further. That is not a card fault. It is a sign that something outside needs checking: mechanical setting, material pull, eccentric shafts, the material itself, the jaws or the servo.</p>
+    </section>
+
+    <section class="panel" id="offset">
+      <h2>5. The offset and the 150-unit example</h2>
+      <p>The card only sees the mark. It does not see the crease itself or the finished package. So the deviation can be zero and the stroke steady while the crease is still high or low on the package, because the distance between the mark and the crease in the material is slightly different.</p>
+      <p>This is where the <b>design control offset</b> comes in: a value you enter by hand that shifts the target position of the mark.</p>
+      <pre>Offset range   -500 .. +500 units
+100 units      ≈ 1 mm
+10 units       ≈ 0.1 mm</pre>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th>What you see on the finished package</th><th>What to do</th></tr></thead>
+        <tbody>
+          <tr><td>Crease too high</td><td>Decrease the offset</td></tr>
+          <tr><td>Crease too low</td><td>Increase the offset</td></tr>
+        </tbody>
+      </table></div>
+      <h3>The classic example</h3>
+      <p>The deviation is close to zero, the stroke is around 160 and the offset is 0, but the crease on the package is <b>1.5 mm</b> too high. The fix: decrease the offset by about <b>150 units</b>.</p>
+      <p>What happens next: the deviation goes slightly negative, the stroke drops for a while, and after a few packages both return close to their old values and the crease is in place.</p>
+      <div class="note warn"><b>Do not judge from the first package.</b> Make a small change, wait a few packages for the system to settle, then measure the finished package again.</div>
+      <div class="note">Why is "high" fixed by decreasing the offset? Because the package is made upside-down in the jaw system: the top of the finished package is at the bottom while it is still in the tube.</div>
+    </section>
+
+    <section class="panel" id="start">
+      <h2>6. Start-up and precorrection</h2>
+      <p>On a normal start after a stop, the system continues from the last stroke it was using.</p>
+      <p>The first start after <span class="mono">Tight Tube</span> or <span class="mono">Sterile Inching</span> is different: the position of the material relative to the jaws is unknown and the mark can be far away. So the system starts with a phase called <b>precorrection</b>:</p>
+      <ol class="steps">
+        <li>The folding flaps stay in the precorrection position, where they have very little effect on the pull.</li>
+        <li>The machine runs and the mark creeps towards its position package by package.</li>
+        <li>As soon as the signal comes inside <b>±10 mm</b> of the target, the system leaves precorrection.</li>
+        <li>The stroke jumps to <span class="mono">Step 0</span> or <span class="mono">Step 999</span> depending on the direction, corrects quickly towards zero, and then normal regulation takes over.</li>
+      </ol>
+      <p>Packages made during this phase are rejected, which is normal.</p>
+    </section>
+
+    <section class="panel" id="servo">
+      <h2>7. Servomotor positions</h2>
+      <p>The DMC converts the stroke into a motor position, counted in steps from the <span class="mono">mechanical stop</span>:</p>
+      <pre>Home position              400
+Precorrection position  18,875
+Step 0                  29,000
+Step 999                41,750</pre>
+      <p>Production only runs between <span class="mono">Step 0</span> and <span class="mono">Step 999</span>. Each stroke unit is about 12.75 motor steps.</p>
+      <div class="note">If these positions are not reached on the machine (for example homing does not complete correctly), everything after that is wrong even with a healthy card and photocells.</div>
+    </section>
+
+    <section class="panel" id="code">
+      <h2>8. The register code</h2>
+      <p>The mark is not a single bar. It is a <b>26-bit</b> code. The photocells read it as the material moves, and the card compares it with its stored pattern:</p>
+      <pre>11010001111011010001111000</pre>
+      <p>Black = 1 and white = 0. A white-to-black transition = 1, and black-to-white = 0.</p>
+      <div class="note">A photocell seeing a colour does not mean the code was read. All 26 bits must be read in the right number and order to produce a design signal. That is why other print on the material does not confuse the system, and also why a dirty or misaligned photocell loses the reading.</div>
+      <p>On the card, <span class="mono">LED 1</span> lights while the code is being read and <span class="mono">LED 2</span> means <span class="mono">Design OK</span>.</p>
+    </section>
+
+    <section class="panel" id="alarms">
+      <h2>9. Alarms and when they appear</h2>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th>Alarm</th><th>Cause</th><th>When it appears</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">Printed design out of limit</td><td>Deviation outside ±1.5 mm</td><td>After 3 consecutive packages out of limits. Those packages are rejected. If it continues for 30 packages the machine stops.</td></tr>
+          <tr><td class="mono">Malfunction photocells</td><td>The code is not being read</td><td>The machine keeps running on the last stroke: about 1.1 s (3 packages) at high speed, or 10 s (11 packages) at low speed. If the reading does not return, it stops.</td></tr>
+          <tr><td class="mono">Servo system fault</td><td>The card sends commands but the motor does not move</td><td>The machine stops. Check the DMC, the motor, the resolver and the mechanics.</td></tr>
+        </tbody>
+      </table></div>
+      <p class="muted">These numbers come from the A3/Speed training workbook. The simulator counts the same way but not with the exact real timing.</p>
+    </section>
+
+    <section class="panel" id="tree">
+      <h2>10. Fault-finding tree</h2>
+      <p>Go through this order before you touch the offset:</p>
+      <ol class="steps">
+        <li><b>Are the photocells reading the code?</b> If not: check the photocells and their cleanliness, the mark itself, the alignment and the wiring.</li>
+        <li><b>Is there a design signal?</b> If not: check the decoding, the TMCC card and the stored code pattern.</li>
+        <li><b>Is the deviation inside ±1.5 mm?</b> If not: check the timing, the encoder, the material pull, the servo and the PLC data (production angle and volume).</li>
+        <li><b>Is the finished package good?</b> If yes: no design correction is needed at all.</li>
+        <li>If the crease is high: decrease the offset. If it is low: increase it.</li>
+      </ol>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th>What you see</th><th>Likely cause</th></tr></thead>
+        <tbody>
+          <tr><td>Some packages have the code read wrong</td><td>Dirty photocell</td></tr>
+          <tr><td>No reading at all</td><td>Photocell not aligned to the material</td></tr>
+          <tr><td>Photocell sees colours but there is no design signal</td><td>Code pattern does not match the TMCC setting</td></tr>
+          <tr><td>Deviation jumps in large steps</td><td>Angle encoder problem</td></tr>
+          <tr><td>Deviation oscillates</td><td>Material slipping or unstable tension</td></tr>
+          <tr><td>Stroke high or stuck at 999</td><td>Longer repeat length in the material, or not enough pull</td></tr>
+          <tr><td>Stroke stuck at Step 0</td><td>Mechanical setting is off</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="panel" id="mistakes">
+      <h2>11. Common mistakes</h2>
+      <ul>
+        <li><b>Fixing a fault with the offset.</b> A dirty photocell, slipping material, a stuck stroke or a servo fault are never fixed with the offset. The offset only sets the crease position on a healthy package.</li>
+        <li><b>Offset from another volume.</b> Every volume has its own offset. If the volume changes and the wrong offset is loaded, the crease is far off although everything works.</li>
+        <li><b>Judging from the first package.</b> Any change needs a few packages to show.</li>
+        <li><b>One big change.</b> Change in small steps, 10 or 20 units, and measure.</li>
+        <li><b>Ignoring the stroke.</b> If the stroke is near either limit, fix the cause first before any adjustment.</li>
+      </ul>
+    </section>
+
+    <section class="panel" id="sim">
+      <h2>12. How to use the simulator</h2>
+      <ol class="steps">
+        <li>Open the <a href="simulator.html">simulator</a> and press "Start". You see the machine from the side: the closed jaw travels down with the tube, and the photocell lights at the instant the black mark passes it.</li>
+        <li>Try the ready scenarios: normal production, crease 1.5 mm high, start after Tight Tube, dirty photocell, stuck stroke and servo fault.</li>
+        <li>Change the offset with the buttons under the drawing (0.1, 0.2 and 0.3 mm) and watch the zoomed angle window: the green band moves and the dots follow it.</li>
+        <li>Watch the chart of the last 150 packages: deviation, crease position and stroke.</li>
+        <li>Switch on any fault from the list and see the alarms and where the fault-finding tree lights up.</li>
+        <li>Change the speed, the volume and the mark-to-crease distance, and see where the stroke goes.</li>
+      </ol>
+      <p><a class="btn pri" href="simulator.html">▶ Open the simulator</a></p>
+      <p class="muted">The deviation is exaggerated in the drawing so you can see it, and the written numbers are the real ones. All values are for learning only.</p>
+    </section>
+
+    <section class="panel" id="video">
+      <h2>13. Video</h2>
+      <p>A full tour of the system (about 4 minutes) with zoom on every part and charts. The on-screen text in this video is in Arabic for now.</p>
+      <video controls preload="none" poster="/a3speed-design-lab/poster.jpg" playsinline>
+        <source src="/a3speed-design-lab/design-video.mp4" type="video/mp4">
+      </video>
+    </section>
+
+  </main>
+
+  <footer>© LearnElectricals · Educational content. Any change on a real machine must be approved by the person in charge and follow the manufacturer manual.</footer>
+</div>
+</body>
+</html>

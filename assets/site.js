@@ -236,6 +236,12 @@
       guided:16, exercises:0, params:14, faults:10,
       inside:["الفلوميتر وحساس المستوى وصمام I/P", "حلقة التدفق PID وحلقة المستوى UVW", "البداية و Prefill ونقطة التحويل G", "الأعطال وقائمة الكارت وأوامر HyperTerminal"],
       tags:"تترابان tetrapan tetra pak a3 flex a3/flex 150 160 0150 0160 flex150 flex160 تترا باك تعبئة filling tmcc tmcc2 a401 fcsfa3f flowmeter فلوميتر فلو ميتر level مستوى floater عوامة pid uvw i/p صمام valve prefill بريفيل short stop شورت ستوب hyperterminal هايبر ترمينال rs485 rs232 empty pipe ماسورة فاضية flowmeter communication error عطل اتصال الفلوميتر aseptic" },
+    { id:"a3speeddesign", path:"a3speed-design-lab/index.html", group:"tetrapan", brand:"تترابان", brandKey:"tp",
+      name:"تصحيح التصميم Design Correction", kind:"ضبط الطباعة والكريز", disp:"±1.5 mm", dispClass:"lcd", rtlName:true,
+      line:"نظام Design Control في ماكينة A3/Speed: العلامة المطبوعة والحساسات، كارت TMCC والسيرفو والـ folding flaps، الـ stroke والـ offset، بشرح مكتوب ومحاكي وفيديو.",
+      guided:6, exercises:0, params:8, faults:7,
+      inside:["العلامة المطبوعة والحساسات وكارت TMCC", "السيرفو والـ folding flaps والـ stroke", "الـ offset وضبط مكان الكريز", "بداية التشغيل والإنذارات وشجرة التشخيص"],
+      tags:"تترابان tetrapan tetra pak a3 speed a3/speed تترا باك design correction design control تصحيح التصميم ديزاين كوريكشن ديزاين register code register mark photocell فوتوسيل حساس tmcc dmc servo سيرفو folding flaps فولدنج فلاب eccentric stroke offset اوفست كريز crease precorrection tight tube sterile inching printed design out of limit malfunction photocells" },
   ];
   var GROUPS = [
     { key:"basics", title:"أساسيات الكهرباء", sub:"للمبتدئين · قبل الكلاسيك كنترول", land:"courses/basics.html" },

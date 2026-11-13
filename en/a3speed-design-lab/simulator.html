@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A3/Speed Design Correction Simulator | LearnElectricals</title>
+<meta name="description" content="Interactive simulator of the A3/Speed design control: register code, photocells, TMCC, servomotor, folding flaps, design control offset, start-up and faults.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/a3speed-design-lab/simulator.html">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/a3speed-design-lab/simulator.html">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/a3speed-design-lab/simulator.html">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: control-room HMI like the TMCC2 filling simulator. Machine view + encoder + trends in the main column, TMCC card, signal path and servo bar on the side, faults/alarms/decision tree below. Single dark look by design. */
+:root{
+  color-scheme: dark;
+  --bg:#0c1215; --panel:#131b1f; --panel2:#19232a; --line:#26353d; --fg:#e3ece9; --muted:#8fa4a0;
+  --web:#d9cfb4; --ink:#1d2326; --mark:#111; --crease:#ff8a3d; --dev:#55b6ea; --stroke:#e9a640; --pkg:#c792ea;
+  --ok:#5fd08b; --alarm:#ff5d50; --warn:#ffc629; --led:#ff9a2e; --steel:#7f9198;
+  --f-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Arabic",system-ui,"Segoe UI",Tahoma,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.6}
+.wrap{direction:ltr;max-width:1340px;margin:0 auto;padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:14px}
+h1{font-family:var(--f-display);font-size:clamp(20px,3vw,28px);margin:0;text-wrap:balance}
+h2{font-family:var(--f-display);font-size:15px;margin:0 0 8px;font-weight:700}
+.sub{color:var(--muted);margin:0;font-size:14px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:end;justify-content:space-between}
+.en{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-size:.86em;color:#bcd0cb}
+.mono{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-variant-numeric:tabular-nums}
+button,select,input{font-family:var(--f-body);font-size:14px;color:var(--fg)}
+button{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 13px;cursor:pointer}
+button:hover{border-color:var(--muted)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--stroke);outline-offset:2px}
+button.primary{background:var(--stroke);color:#1b1206;border-color:var(--stroke);font-weight:700}
+button.stop{border-color:#6b3430;color:#ffb3ab}
+button.on{border-color:var(--alarm);color:var(--alarm);background:#2a1715}
+button.sel{border-color:var(--stroke);color:var(--stroke)}
+select{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px}
+@media (max-width:1000px){.main{grid-template-columns:minmax(0,1fr)}}
+.col{display:grid;gap:14px;align-content:start;min-width:0}
+canvas{display:block;width:100%;max-width:100%}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.grow{flex:1 1 200px}
+.note{font-size:12.5px;color:var(--muted)}
+
+/* scenario bar */
+.scen{display:grid;gap:10px}
+.caption{font-size:clamp(15px,2vw,18px);font-weight:600;line-height:1.7;min-height:3.4em;text-wrap:pretty}
+.caption b{color:var(--stroke)}
+
+/* status strip */
+.status{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.kv{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:grid;gap:2px}
+.kv span{font-size:12px;color:var(--muted)}
+.kv strong{font-family:var(--f-mono);font-size:19px;direction:ltr;text-align:left;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;border-radius:99px;padding:1px 10px;font-size:12.5px;font-weight:600;border:1px solid currentColor}
+.pill.ok{color:var(--ok)}.pill.bad{color:var(--alarm)}.pill.warn{color:var(--warn)}.pill.idle{color:var(--muted)}
+
+/* TMCC card */
+.card{background:#0e1518;border:1px solid #2f4149;border-radius:10px;padding:12px;display:grid;gap:10px}
+.leds{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.led{display:grid;justify-items:center;gap:3px;font-size:11.5px;color:var(--muted);text-align:center;line-height:1.3}
+.led i{width:16px;height:16px;border-radius:50%;background:#2a2f31;border:1px solid #3a4245;display:block}
+.led.on i{background:var(--led);box-shadow:0 0 10px var(--led)}
+.led.green.on i{background:var(--ok);box-shadow:0 0 10px var(--ok)}
+.term{background:#071009;border:1px solid #1f3a26;border-radius:8px;padding:10px;font-family:var(--f-mono);font-size:12.5px;color:#9cf2b0;direction:ltr;text-align:left;white-space:pre;overflow-x:auto;line-height:1.55}
+.offbtns{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;direction:ltr}
+.offbtns button{padding:9px 2px;font-family:var(--f-mono);font-size:13px;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.offbar{display:grid;gap:6px;margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}
+.offset{display:grid;gap:6px}
+.offset .big{font-family:var(--f-mono);font-size:26px;direction:ltr;text-align:center;color:var(--stroke)}
+.offset .btns{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.offset .btns button{padding:6px 4px;font-family:var(--f-mono);direction:ltr}
+
+/* chain */
+.chain{display:grid;gap:4px}
+.chain div{display:flex;align-items:center;gap:8px;padding:5px 9px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);font-size:13.5px;transition:border-color .2s,background .2s}
+.chain div.hot{border-color:var(--dev);background:#132a36}
+.chain div.dead{border-color:#6b3430;background:#2a1715}
+.chain small{color:var(--muted);margin-inline-start:auto;font-size:11.5px}
+.chain .arrow{border:0;background:none;padding:0 12px;color:var(--muted);font-size:12px;line-height:1}
+
+/* faults & alarms */
+.faults{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px}
+.faults button{text-align:left;display:grid;gap:2px;padding:9px 11px}
+.faults button small{color:var(--muted);font-size:12px}
+.faults button.on small{color:#ffb3ab}
+.alarms{display:grid;gap:6px;max-height:260px;overflow:auto}
+.alarm{border:1px solid #6b3430;background:#24130f;border-radius:8px;padding:7px 10px;display:grid;gap:2px}
+.alarm.cleared{opacity:.55;border-color:var(--line);background:var(--panel2)}
+.alarm .t{font-size:12px;color:var(--muted)}
+.alarm strong{color:#ffb3ab;font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-size:13px}
+.below{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+
+/* decision tree */
+.tree{display:grid;gap:5px;font-size:13.5px}
+.tree .q{padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel2)}
+.tree .q.yes{border-color:#2f6b47}
+.tree .q.no{border-color:var(--alarm);background:#2a1715}
+.tree .q.act{border-color:var(--stroke);background:#2b2110}
+.tree .q.dim{opacity:.4}
+.tree .ind1{margin-inline-start:14px}.tree .ind2{margin-inline-start:28px}.tree .ind3{margin-inline-start:42px}.tree .ind4{margin-inline-start:56px}
+
+/* register code */
+.code{display:grid;gap:6px}
+.bits{display:grid;grid-template-columns:repeat(26,1fr);gap:2px;direction:ltr}
+.bits i{display:block;height:16px;border-radius:2px;background:#262f33}
+.bits i.b1{background:#e9eef0}.bits i.b0{background:#454f53}
+.bits i.err{outline:2px solid var(--alarm);outline-offset:-2px}
+.ctl{display:grid;gap:4px}
+.ctl label{font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+input[type=range]{width:100%;accent-color:var(--stroke)}
+.pid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.pid input{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:var(--f-mono);direction:ltr}
+@media (prefers-reduced-motion:reduce){.chain div{transition:none}}
+.navl{color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:7px 13px;text-decoration:none;font-size:14px}
+.navl:hover{border-color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="row" style="justify-content:flex-start"><a class="navl" href="index.html">← Written guide</a><a class="navl" href="/a3speed-design-lab/simulator.html" hreflang="ar" lang="ar">عربي</a></div>
+<header>
+  <div>
+    <h1><span class="en">Design Correction</span> simulator for the <span class="en">A3/Speed</span></h1>
+    <p class="sub">From reading the printed register mark to correcting the crease position on the package. All values here are for learning only.</p>
+  </div>
+  <div class="row">
+    <button class="primary" id="btnStart">Start</button>
+    <button class="stop" id="btnStop">Stop</button>
+    <select id="startMode" aria-label="Start type">
+      <option value="normal">Normal start after a stop</option>
+      <option value="tight">First start after Tight Tube or Sterile Inching</option>
+    </select>
+  </div>
+</header>
+
+<section class="panel scen" aria-label="Scenarios">
+  <div class="row">
+    <strong style="font-family:var(--f-display)">Try a scenario:</strong>
+    <button data-scn="normal">Normal production</button>
+    <button data-scn="example">Example: crease 1.5 mm too high</button>
+    <button data-scn="tight">Start after Tight Tube</button>
+    <button data-scn="dirty">Dirty photocell</button>
+    <button data-scn="limit">Stroke stuck at the limit</button>
+    <button data-scn="servo">Servo fault</button>
+  </div>
+  <div class="caption" id="caption">Press <b>Start</b>. The machine feeds the web one package at a time, the photocells read the printed mark, and the <span class="en">TMCC</span> adjusts the <span class="en">folding flaps</span> so the mark arrives at the right moment relative to the jaws.</div>
+</section>
+
+<div class="status" id="status"></div>
+
+<div class="main">
+  <div class="col">
+    <section class="panel">
+      <h2>Machine, side view</h2>
+      <canvas id="cv" height="540" aria-label="Animated drawing of the web, photocells, jaws and package"></canvas>
+      <div class="offbar">
+        <div class="row" style="justify-content:space-between"><strong><span class="en">Offset</span> control</strong><span class="mono" id="offS_V" style="color:var(--stroke);font-size:18px">0</span></div>
+        <div class="offbtns">
+          <button data-off="-30">−0.3</button><button data-off="-20">−0.2</button><button data-off="-10">−0.1</button>
+          <button id="off0">Zero</button>
+          <button data-off="10">+0.1</button><button data-off="20">+0.2</button><button data-off="30">+0.3</button>
+        </div>
+        <div class="note">Buttons are in mm: 0.1 mm = 10 offset units. Tap for one step, or hold and the value keeps changing.</div>
+      </div>
+      <h2 style="margin-top:12px">Zoomed angle window</h2>
+      <canvas id="ang" height="176" aria-label="Production angle and signal arrival angle, zoomed"></canvas>
+      <p class="note">Angles here are at true scale, without the drawing's exaggeration: the green band is the accepted ±1.5 mm range around the production angle, and the blue dots are the signal arrival angle of the last few packages. When you change the offset the green band moves, then the dots follow it.</p>
+      <p class="note">The closed jaw travels down with the tube: that is the main feed. The folding flaps ride on it and add a small extra pull that depends on the stroke. The photocell lights up blue at the moment the black mark passes it, and at that same moment the encoder dial records the angle. The deviation is exaggerated in the drawing and on the dial so you can see it; the written numbers are the real ones. The dashed orange line on the web is the printed crease, and the black square is the mark the photocell reads.</p>
+    </section>
+    <section class="panel">
+      <h2>Last 150 packages</h2>
+      <canvas id="tr" height="300" aria-label="Trend of deviation, stroke and crease position"></canvas>
+      <div class="row note" style="gap:16px">
+        <span><b style="color:var(--dev)">━</b> <span class="en">design deviation</span> (mm)</span>
+        <span><b style="color:var(--pkg)">━</b> crease position on the package (mm, positive = high)</span>
+        <span><b style="color:var(--stroke)">━</b> <span class="en">folding flap stroke</span> (0 to 999)</span>
+        <span><b style="color:#2f6b47">▮</b> accepted range ±1.5 mm</span>
+      </div>
+    </section>
+  </div>
+
+  <div class="col">
+    <section class="card" aria-label="TMCC card">
+      <h2 style="margin:0"><span class="en">TMCC</span> card</h2>
+      <div class="leds">
+        <div class="led" id="led1"><i></i>LED 1<br>decoding</div>
+        <div class="led green" id="led2"><i></i>LED 2<br>Design OK</div>
+        <div class="led" id="led7"><i></i>LED 7<br>above 75%</div>
+        <div class="led" id="led8"><i></i>LED 8<br>below 25%</div>
+      </div>
+      <div class="term" id="term"></div>
+      <div class="offset">
+        <div class="row" style="justify-content:space-between"><strong><span class="en">Design Control Offset</span></strong><span class="note">100 units ≈ 1 mm</span></div>
+        <div class="big" id="offVal">0</div>
+        <div class="btns">
+          <button data-off="-50">−50</button><button data-off="-10">−10</button><button data-off="10">+10</button><button data-off="50">+50</button>
+        </div>
+        <p class="note" style="margin:0">Crease high on the package: decrease the offset. Low: increase it. Change a little, then wait a few packages.</p>
+      </div>
+      <div>
+        <div class="note"><span class="en">PID</span> parameters in the card</div>
+        <div class="pid">
+          <label class="note">P<input id="pidP" type="number" step="5" value="110"></label>
+          <label class="note">I<input id="pidI" type="number" step="1" value="11"></label>
+          <label class="note">D<input id="pidD" type="number" step="5" value="0"></label>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Signal path</h2>
+      <div class="chain" id="chain"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Servomotor position</h2>
+      <canvas id="sv" height="120" aria-label="Servomotor position relative to the stop"></canvas>
+      <p class="note" style="margin:6px 0 0">Numbers are motor positions counted from the <span class="en">mechanical stop</span>. Production only runs between <span class="en">Step 0</span> and <span class="en">Step 999</span>.</p>
+    </section>
+  </div>
+</div>
+
+<div class="below">
+  <section class="panel">
+    <h2>Machine and material</h2>
+    <div class="ctl">
+      <label for="spd"><span>Machine speed</span><span class="mono" id="spdV"></span></label>
+      <input type="range" id="spd" min="3000" max="9000" step="250" value="7500">
+    </div>
+    <div class="ctl">
+      <label for="slow"><span>Display speed</span><span id="slowV"></span></label>
+      <input type="range" id="slow" min="0" max="3" step="1" value="1">
+    </div>
+    <div class="ctl">
+      <label for="vol"><span>Volume</span></label>
+      <select id="vol"></select>
+    </div>
+    <div class="ctl">
+      <label for="prodA"><span><span class="en">Production angle</span> (from the PLC)</span><span class="mono" id="prodAV"></span></label>
+      <input type="range" id="prodA" min="150" max="270" step="1" value="210">
+    </div>
+    <div class="ctl">
+      <label for="matE"><span>Register-to-crease distance error in the material</span><span class="mono" id="matEV"></span></label>
+      <input type="range" id="matE" min="-3" max="3" step="0.1" value="0">
+    </div>
+    <p class="note">The last one is what the <span class="en">TMCC</span> cannot see. Move it and the deviation stays near zero, but the package shape goes wrong.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Faults you can try</h2>
+    <div class="faults" id="faults"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Alarms</h2>
+    <div class="alarms" id="alarms"><p class="note" id="noAlarm">No alarms.</p></div>
+  </section>
+
+  <section class="panel">
+    <h2>Fault-finding tree</h2>
+    <div class="tree" id="tree"></div>
+  </section>
+
+  <section class="panel code">
+    <h2>Reading the <span class="en">register code</span> (26 bit)</h2>
+    <div class="note">What the photocell just read:</div>
+    <div class="bits" id="bitsRead"></div>
+    <div class="note">Pattern stored in the <span class="en">TMCC</span>:</div>
+    <div class="bits" id="bitsRef"></div>
+    <div id="matchTxt" class="note"></div>
+    <p class="note" style="margin:0">Black = 1, white = 0, white to black = 1, black to white = 0. Seeing a colour does not mean the code was read: all 26 bits must be read in the right order before the <span class="en">design signal</span> is generated.</p>
+  </section>
+</div>
+</div>
+
+<script>
+(()=>{
+const $=s=>document.querySelector(s);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+let seed=12345;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647};
+const gauss=()=>{let u=0,v=0;while(!u)u=rnd();while(!v)v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+
+/* ---------- constants from the guide ---------- */
+const POS={stop:0,home:400,pre:18875,s0:29000,s999:41750};
+const FLAP_MAX=4.0;                       // mm of extra feed at Step 999 (illustrative)
+const flapFeed=pos=>FLAP_MAX*(pos-POS.pre)/(POS.s999-POS.pre);
+const stepToPos=s=>POS.s0+s*(POS.s999-POS.s0)/999;
+const VOLS=[{name:'1000 ml (example)',L:258,off:0},{name:'500 ml (example)',L:178,off:-120}];
+const SECTOR=1.5, PRE_SECTOR=10;
+const CODE='11010001111011010001111000'.split('').map(Number);   // pattern shown in the training workbook
+
+/* ---------- state ---------- */
+const S={
+  running:false, angle:0, pkg:0, good:0, rej:0,
+  vol:0, L:258, offset:0, prodA:210, E:0, pph:7500,
+  x:0,                 // true mark position error vs jaws (mm), + = late
+  mode:'reg',          // 'pre' precorrection | 'reg' regulation
+  step:160, stepCmd:160, I:160, prevDev:0,
+  dev:0, devValid:true, lastDev:0, crease:0,
+  mech:0, matLong:0, slip:false, dirty:false, align:false, encoder:false, servo:false, pattern:false,
+  missRun:0, outRun:0, regCount:99, servoRun:0,
+  hist:[], devHist:[], strokeHist:[], creaseHist:[],
+  readBits:CODE.slice(), readErr:[], match:true, sigAngle:null,
+  alarms:[], active:{}, flash:0, startT:0
+};
+const P={get Kp(){return +$('#pidP').value||0},get Ki(){return +$('#pidI').value||0},get Kd(){return +$('#pidD').value||0}};
+const mainFeed=()=>S.L-(flapFeed(stepToPos(160)))+S.mech;   // set so normal Step ≈ 160 on this example machine
+
+/* ---------- one package cycle ---------- */
+function cycle(){
+  S.pkg++;
+  // material actually pulled for this package
+  const speedSlip=(S.pph-6000)*0.00006;
+  let Lmat=S.L+S.matLong+speedSlip+gauss()*0.04;
+  if(S.slip) Lmat+=gauss()*0.45+(rnd()<0.06?(rnd()<.5?-2.5:2.5):0);
+  const pos=S.mode==='pre'?POS.pre:stepToPos(S.step);
+  const feed=mainFeed()+flapFeed(pos);
+  S.x+=Lmat-feed;
+  // design repeats every package, so the error wraps
+  if(S.x>S.L/2)S.x-=S.L; if(S.x<-S.L/2)S.x+=S.L;
+
+  // photocells read the 26-bit code
+  let miss=false; S.readErr=[];
+  S.readBits=CODE.slice();
+  if(S.align){miss=true;S.readBits=CODE.map(()=>-1)}
+  else if(S.dirty && rnd()<0.3){miss=true;const n=1+Math.floor(rnd()*3);for(let i=0;i<n;i++){const k=Math.floor(rnd()*26);S.readBits[k]^=1;S.readErr.push(k)}}
+  if(S.pattern && !S.align){miss=true}
+  S.match=!miss;
+  // TMCC: design signal vs production angle -> deviation
+  if(!miss){
+    let d=S.x+S.offset/100+gauss()*0.03;
+    if(S.encoder) d+=gauss()*1.4+(rnd()<0.15?(rnd()<.5?-4:4):0);
+    S.dev=d; S.devValid=true; S.lastDev=d; S.missRun=0;
+    S.sigAngle=S.prodA+d*360/S.L;
+  }else{ S.devValid=false; S.missRun++; S.sigAngle=null }
+
+  // regulation
+  if(S.mode==='pre'){
+    if(S.devValid && Math.abs(S.dev)<=PRE_SECTOR){
+      S.mode='reg'; S.regCount=0;
+      S.I=S.dev>0?999:0; S.stepCmd=S.I; S.step=S.I; S.prevDev=S.dev;
+      log('INFO','Left Precorrection and entered the regulation range at Step '+S.I,true);
+    }
+  }else{
+    S.regCount++;
+    if(S.devValid){
+      const dd=S.dev-S.prevDev; S.prevDev=S.dev;
+      S.I=clamp(S.I+P.Ki*S.dev,0,999);
+      S.stepCmd=clamp(S.I+P.Kp*S.dev+P.Kd*dd,0,999);
+    } // no reading: keep last stroke
+    if(S.servo){S.servoRun++}else{S.step+= (S.stepCmd-S.step)*0.65}
+  }
+
+  // crease on finished package (TMCC can't see this)
+  S.crease=S.E-S.x+gauss()*0.08;
+
+  // alarms
+  let reject=S.mode==='pre'||S.regCount<6;
+  if(S.mode==='reg'&&S.regCount>8&&S.devValid&&Math.abs(S.dev)>SECTOR){S.outRun++}else if(S.devValid){S.outRun=0}
+  if(S.outRun>=3){raise('OOL','Printed Design Out of Limit','Deviation outside ±1.5 mm for several packages. These packages are discarded.');reject=true}else clear('OOL');
+  if(S.outRun>=30) trip('Deviation stayed out of limit, machine stopped.');
+  if(S.missRun>=2){raise('PHC','Malfunction Photocells','Register code not read. Machine runs on with the last stroke.');}else if(S.missRun===0)clear('PHC');
+  if(S.missRun>=4) trip('Photocells did not resume reading, machine stopped.');
+  if(S.servo&&S.servoRun>=3){raise('SRV','Servo System Fault','Servo is not moving. Check the DMC, motor, resolver and mechanical movement.');trip('Servo fault, machine stopped.')}
+  if(!S.devValid)reject=true;
+  if(reject)S.rej++;else S.good++;
+
+  push(S.devHist,S.devValid?S.dev:null);push(S.strokeHist,S.mode==='pre'?null:S.step);push(S.creaseHist,S.crease);
+  S.hist.unshift({crease:S.crease,rej:reject});S.hist.length=Math.min(S.hist.length,7);
+  S.sigVis=clamp(S.prodA+visPx()*3,8,352);S.sigPend=true;
+}
+// display helpers: where the mark is drawn (exaggerated), and the moment it passes the photocell beam
+function visPx(){if(S.mode==='pre'){let q=(S.x*6)%120;if(q>60)q-=120;if(q<-60)q+=120;return q}return clamp(S.x,-7,7)*6}
+function fireSig(){if(!S.sigPend)return;S.sigPend=false;if(S.match){S.flash=1;S.cap={vis:S.sigVis,sig:S.prodA+S.x*360/S.L,ref:S.prodA-S.offset/100*360/S.L,dev:S.dev};(S.capHist=S.capHist||[]).push(S.cap);if(S.capHist.length>8)S.capHist.shift()}else{S.bad=1}}
+const push=(a,v)=>{a.push(v);if(a.length>150)a.shift()};
+const avg=(a,n=10)=>{const v=a.slice(-n).filter(x=>x!=null);return v.length?v.reduce((p,c)=>p+c,0)/v.length:null};
+
+/* ---------- alarms ---------- */
+function stamp(){return 'package '+S.pkg}
+function log(code,txt,info){S.alarms.unshift({code,name:info?'INFO':code,txt,t:stamp(),info:true,cleared:true});renderAlarms()}
+function raise(code,name,txt){if(S.active[code])return;const a={code,name,txt,t:stamp(),cleared:false};S.active[code]=a;S.alarms.unshift(a);renderAlarms()}
+function clear(code){const a=S.active[code];if(a){a.cleared=true;delete S.active[code];renderAlarms()}}
+function trip(txt){if(!S.running)return;S.running=false;S.alarms.unshift({name:'MACHINE STOP',txt,t:stamp(),cleared:false});renderAlarms()}
+function renderAlarms(){
+  const el=$('#alarms');S.alarms.length=Math.min(S.alarms.length,30);
+  el.innerHTML=S.alarms.length?S.alarms.map(a=>`<div class="alarm ${a.cleared?'cleared':''}"><strong>${a.name}</strong><div>${a.txt}</div><div class="t">${a.t}${a.cleared&&!a.info?' · cleared':''}</div></div>`).join(''):'<p class="note">No alarms.</p>';
+}
+
+/* ---------- faults ---------- */
+const FAULTS=[
+  {k:'dirty',t:'Dirty photocell',d:'The code is misread on some packages. Case 1.'},
+  {k:'align',t:'Photocell not aligned with the web',d:'No reading at all. Machine runs on with the last stroke, then stops.'},
+  {k:'pattern',t:'Code pattern does not match the TMCC setting',d:'The photocell sees colours but there is no design signal.'},
+  {k:'encoder',t:'Angle encoder problem',d:'Deviation jumps around. Case 2: large deviation.'},
+  {k:'slip',t:'Web slipping / unstable tension',d:'Deviation fluctuates. Do not change the offset for this.'},
+  {k:'matLong',t:'Longer repeat length in the material',d:'Stroke moves to a high value; any more and it sticks at 999.'},
+  {k:'mech',t:'Mechanical setting is off',d:'Stroke sticks at Step 0. Case 4.'},
+  {k:'servo',t:'Servo fault',d:'Never treat it with the offset.'},
+  {k:'wrongVol',t:'Offset of another volume',d:'Common mistake: the offset was loaded from another volume.'},
+];
+function applyFault(k,on){
+  S[k]=on;
+  if(k==='matLong')S.matLong=on?1.6:0;
+  if(k==='mech')S.mech=on?0.5:0;
+  if(k==='servo'&&!on)S.servoRun=0;
+  if(k==='wrongVol'){S.offset=on?VOLS[1-S.vol].off:VOLS[S.vol].off}
+  renderFaults();
+}
+function renderFaults(){
+  $('#faults').innerHTML=FAULTS.map(f=>{const on=f.k==='matLong'?S.matLong>0:f.k==='mech'?S.mech>0:!!S[f.k];return `<button data-f="${f.k}" class="${on?'on':''}" aria-pressed="${on}"><span>${f.t}</span><small>${f.d}</small></button>`}).join('');
+}
+$('#faults').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const k=b.dataset.f;const on=b.getAttribute('aria-pressed')!=='true';applyFault(k,on)});
+function clearFaults(){S.dirty=S.align=S.encoder=S.slip=S.servo=S.pattern=S.wrongVol=false;S.matLong=0;S.mech=0;S.servoRun=0;renderFaults()}
+
+/* ---------- controls ---------- */
+const SLOW=[{f:0.06,t:'Very slow (to watch)'},{f:0.25,t:'Slow'},{f:0.6,t:'Medium'},{f:1,t:'Real speed'}];
+function syncCtl(){
+  S.pph=+$('#spd').value;$('#spdV').textContent=S.pph+' pkg/h';
+  $('#slowV').textContent=SLOW[+$('#slow').value].t;
+  S.prodA=+$('#prodA').value;$('#prodAV').textContent=S.prodA+'°';
+  S.E=+$('#matE').value;$('#matEV').textContent=(S.E>0?'+':'')+S.E.toFixed(1)+' mm';
+}
+['#spd','#slow','#prodA','#matE'].forEach(id=>$(id).addEventListener('input',syncCtl));
+$('#vol').innerHTML=VOLS.map((v,i)=>`<option value="${i}">${v.name}</option>`).join('');
+$('#vol').addEventListener('change',e=>{S.vol=+e.target.value;S.L=VOLS[S.vol].L;S.offset=S.wrongVol?VOLS[1-S.vol].off:VOLS[S.vol].off;log('INFO','Volume changed and its offset was loaded',true)});
+$('#off0').addEventListener('click',()=>{S.offset=0});
+document.querySelectorAll('[data-off]').forEach(b=>{let tm=null,iv=null,held=false;const bump=()=>{S.offset=clamp(S.offset+ +b.dataset.off,-500,500)};const stop=()=>{clearTimeout(tm);clearInterval(iv);tm=iv=null};
+  b.addEventListener('pointerdown',e=>{held=false;stop();tm=setTimeout(()=>{held=true;iv=setInterval(bump,90)},400)});
+  ['pointerup','pointerleave','pointercancel'].forEach(ev=>b.addEventListener(ev,stop));
+  b.addEventListener('click',()=>{if(held){held=false;return}bump()});b.addEventListener('contextmenu',e=>e.preventDefault())});
+
+function start(){
+  if(S.running)return;
+  Object.keys(S.active).forEach(clear);
+  S.outRun=0;S.missRun=0;S.servoRun=0;
+  if($('#startMode').value==='tight'){
+    S.mode='pre'; S.x=-(24+rnd()*18); S.regCount=0;
+    log('INFO','First start: folding flaps in Precorrection',true);
+  }else{ if(S.mode==='pre'){S.mode='reg'} S.regCount=99 }
+  S.running=true;
+}
+$('#btnStart').addEventListener('click',start);
+$('#btnStop').addEventListener('click',()=>{S.running=false});
+
+/* ---------- scenarios ---------- */
+const cap=$('#caption');
+function settle(n){const r=S.running;S.running=true;for(let i=0;i<n;i++)cycle();S.running=r;S.hist=[];}
+const SCN={
+  normal(){clearFaults();$('#matE').value=0;$('#startMode').value='normal';syncCtl();S.offset=VOLS[S.vol].off;S.mode='reg';S.x=-S.offset/100;S.I=S.step=S.stepCmd=160;S.running=false;start();
+    cap.innerHTML='Normal production. The deviation wobbles around zero and the stroke settles around <b>Step 160</b> on this machine. There is no ideal fixed stroke value: it depends on the machine, material and speed. Change the speed and watch where the stroke goes.'},
+  example(){clearFaults();$('#startMode').value='normal';$('#matE').value=1.5;syncCtl();S.offset=0;S.mode='reg';S.x=0;S.I=S.step=S.stepCmd=160;S.running=false;start();
+    cap.innerHTML='The classic example: deviation near zero, stroke around 160, offset = 0, but the crease is <b>1.5 mm too high</b> on the package. Fix: decrease the offset by about <b>150 units</b>. <button id="ap150" class="primary" style="padding:3px 10px">Apply −150</button> Then watch: the deviation goes slightly negative, the stroke drops, then both return and the crease lands in place.';
+    setTimeout(()=>{const b=$('#ap150');b&&b.addEventListener('click',()=>{S.offset-=150;cap.innerHTML='Done. The offset is now <b>−150</b>. Look at the trend: the deviation dipped negative for a moment, the stroke dropped for a moment, and after a few packages both came back near their old values while the purple crease line went to zero. <b>Never judge from the first package.</b>'})},0)},
+  tight(){clearFaults();$('#matE').value=0;syncCtl();S.offset=VOLS[S.vol].off;S.running=false;$('#startMode').value='tight';$('#slow').value=1;syncCtl();start();
+    cap.innerHTML='First start after <b>Tight Tube</b> or <b>Sterile Inching</b>: the flaps stay in <b>Precorrection</b> (18,875 positions) and affect the feed very little. The signal drifts until it enters <b>±10 mm</b>, then the system jumps to Step 0 or 999 and quickly corrects towards zero.'},
+  dirty(){clearFaults();applyFault('dirty',true);if(!S.running){$('#startMode').value='normal';start()}
+    cap.innerHTML='Dirty photocell: the code is misread on some packages (red cells below). A package with no reading is made with the last stroke. Lose the reading for long enough and you get <b>Malfunction Photocells</b>. <b>Do not touch the offset here</b>; clean the photocell.'},
+  limit(){clearFaults();applyFault('matLong',true);if(!S.running){$('#startMode').value='normal';start()}
+    cap.innerHTML='The material has a longer repeat length, so the system needs more feed: the stroke climbs and <b>LED 7</b> lights up. If it stays stuck at <b>999</b>, that needs investigating: mechanical setting, web feed, eccentric shafts, material, jaws, servo.'},
+  servo(){clearFaults();if(!S.running){$('#startMode').value='normal';start()}applyFault('servo',true);
+    cap.innerHTML='Servo fault: the card sends commands but the motor does not move, and the machine stops with <b>Servo System Fault</b>. The offset is not the fix; check the <b>DMC</b>, motor, resolver and mechanical movement.'},
+};
+document.querySelectorAll('[data-scn]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-scn]').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');SCN[b.dataset.scn]()}));
+
+/* ---------- canvas helpers ---------- */
+function fit(cv){const r=cv.getBoundingClientRect();const dpr=Math.min(2,window.devicePixelRatio||1);if(!cv.dataset.h)cv.dataset.h=cv.getAttribute('height');const h=+cv.dataset.h;const w=Math.max(300,r.width);if(cv.width!==Math.round(w*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);cv.style.height=h+'px'}const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);return{c,w,h}}
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const FONT='"IBM Plex Sans Arabic",system-ui,sans-serif', MONO='"JetBrains Mono",monospace';
+function txt(c,s,x,y,o={}){c.save();c.font=`${o.w||500} ${o.s||13}px ${o.m?MONO:FONT}`;c.fillStyle=o.col||css('--fg');c.textAlign=o.a||'center';c.textBaseline=o.b||'middle';c.direction='ltr';c.fillText(s,x,y);c.restore()}
+
+/* ---------- machine view ---------- */
+const cv=$('#cv');
+function drawMachine(){
+  const {c,w,h}=fit(cv);c.clearRect(0,0,w,h);
+  const narrow=w<620;
+  const wx=narrow?w*0.52:w*0.45, ww=54;           // web/tube x & width
+  const f=S.angle/360, prodF=S.prodA/360;
+  const Lpx=120, k=6;                               // px per package (display), exaggeration px/mm
+  const phY=96;
+  // background zones
+  c.fillStyle='#10181c';c.fillRect(0,0,w,h);
+  // reel
+  c.save();c.translate(wx+ww/2+(narrow?60:110),26);c.rotate(-S.angle*Math.PI/180*2);c.strokeStyle=css('--steel');c.lineWidth=3;c.beginPath();c.arc(0,0,20,0,Math.PI*2);c.stroke();c.beginPath();c.moveTo(-20,0);c.lineTo(20,0);c.moveTo(0,-20);c.lineTo(0,20);c.stroke();c.restore();
+  // flat web, forming ring, tube, sealed packages (jaw frame moves down with the tube)
+  const tubeTop=150, yTop=270, ya=yTop+f*Lpx, yb=ya+Lpx, cxm=wx+ww/2, half=ww/2, pin=4, tp=24;
+  c.fillStyle=css('--web');c.fillRect(wx,0,ww,tubeTop);
+  const tube=new Path2D();
+  tube.moveTo(cxm-half,tubeTop);tube.lineTo(cxm-half,ya-tp);tube.quadraticCurveTo(cxm-half,ya,cxm-pin,ya);
+  tube.quadraticCurveTo(cxm-half,ya,cxm-half,ya+tp);tube.lineTo(cxm-half,yb-tp);tube.quadraticCurveTo(cxm-half,yb,cxm-pin,yb);
+  tube.lineTo(cxm+pin,yb);tube.quadraticCurveTo(cxm+half,yb,cxm+half,yb-tp);tube.lineTo(cxm+half,ya+tp);
+  tube.quadraticCurveTo(cxm+half,ya,cxm+pin,ya);tube.quadraticCurveTo(cxm+half,ya,cxm+half,ya-tp);tube.lineTo(cxm+half,tubeTop);tube.closePath();
+  const grd=c.createLinearGradient(wx,0,wx+ww,0);grd.addColorStop(0,'#a2987f');grd.addColorStop(.45,'#e6dcc0');grd.addColorStop(1,'#a2987f');
+  c.fillStyle=grd;c.fill(tube);
+  // package cut off at the start of this cycle, dropping to the final folder
+  if(S.running||S.pkg>0){const fy=yb+8+f*f*150, fa=Math.max(0,1-f*1.6);if(fa>0){c.save();c.globalAlpha=fa;c.translate(cxm+f*30,fy);c.rotate(f*0.5);c.fillStyle=grd;c.beginPath();c.moveTo(-pin,0);c.quadraticCurveTo(-half,0,-half,tp);c.lineTo(-half,Lpx-tp);c.quadraticCurveTo(-half,Lpx,-pin,Lpx);c.lineTo(pin,Lpx);c.quadraticCurveTo(half,Lpx,half,Lpx-tp);c.lineTo(half,tp);c.quadraticCurveTo(half,0,pin,0);c.closePath();c.fill();c.restore()}}
+  // printed marks and creases travel with the web, at the same speed as the closed jaws
+  const vpx=visPx();
+  const marks=()=>{for(let n=-3;n<6;n++){
+    const y=phY-vpx+(f-prodF)*Lpx+n*Lpx;
+    c.fillStyle=css('--mark');c.fillRect(wx+6,y-5,16,10);
+    for(let b=0;b<6;b++){c.fillStyle=CODE[b]?'#222':'#cfc6ac';c.fillRect(wx+26+b*4,y-3,3,6)}
+    [28,92].forEach(d=>{const cy=y+d+S.E*k;c.strokeStyle=css('--crease');c.setLineDash([5,4]);c.lineWidth=2;c.beginPath();c.moveTo(wx,cy);c.lineTo(wx+ww,cy);c.stroke();c.setLineDash([])});
+  }};
+  c.save();c.beginPath();c.rect(wx,0,ww,tubeTop);c.clip();marks();c.restore();
+  c.save();c.clip(tube);marks();c.restore();
+  // transversal seals
+  c.strokeStyle='#6f6753';c.lineWidth=3;[ya,yb].forEach(y=>{c.beginPath();c.moveTo(cxm-pin-5,y);c.lineTo(cxm+pin+5,y);c.stroke()});
+  // photocell
+  const hit=S.flash>0.4&&S.match;
+  c.fillStyle=S.flash>0.25&&S.match?'#1f6f9c':S.bad>0.25?'#6b2a24':'#2a3a40';c.fillRect(wx-50,phY-14,34,28);c.strokeStyle=S.flash>0.25?css('--dev'):S.bad>0.25?css('--alarm'):css('--steel');c.lineWidth=S.flash>0.25||S.bad>0.25?3:1;c.strokeRect(wx-50,phY-14,34,28);c.lineWidth=1;
+  if(S.flash>0.25&&S.match){c.strokeStyle=css('--dev');c.globalAlpha=S.flash;c.lineWidth=2;c.strokeRect(wx+3,phY-9,22,18);c.globalAlpha=1}
+  c.strokeStyle=S.align?'#553':S.dirty?'#c9a23a':'#ff4b3e';c.lineWidth=2;c.globalAlpha=.8;c.beginPath();c.moveTo(wx-16,phY);c.lineTo(wx+14,phY);c.stroke();c.globalAlpha=1;
+  if(S.dirty){c.fillStyle='rgba(120,90,40,.75)';c.beginPath();c.arc(wx-22,phY-4,5,0,7);c.arc(wx-27,phY+6,4,0,7);c.fill()}
+  txt(c,'Photocells',wx-33,phY-26,{m:1,s:11,col:css('--muted')});
+  // production reference line on photocell
+  c.strokeStyle='rgba(95,208,139,.5)';c.setLineDash([2,3]);c.beginPath();c.moveTo(wx-4,phY+S.offset/100*k);c.lineTo(wx+ww+60,phY+S.offset/100*k);c.stroke();c.setLineDash([]);
+  txt(c,narrow?'target':'target mark position at the production angle',wx+ww+8,phY-10+S.offset/100*k,{a:'left',s:11,col:'#7fcf9b'});
+  // signal travel to TMCC
+  if(hit){c.strokeStyle=css('--dev');c.globalAlpha=S.flash;c.lineWidth=2;c.beginPath();c.moveTo(wx-50,phY);c.lineTo(wx-90,phY);c.lineTo(wx-90,150);c.stroke();c.globalAlpha=1}
+  // TMCC box
+  const tx=Math.max(8,wx-170),ty=136;
+  c.fillStyle='#0e1518';c.fillRect(tx,ty,92,40);c.strokeStyle=S.match?css('--dev'):css('--alarm');c.strokeRect(tx,ty,92,40);
+  txt(c,'TMCC',tx+46,ty+14,{m:1,s:12,w:700});txt(c,S.devValid?(S.dev>=0?'+':'')+S.dev.toFixed(2)+' mm':'---',tx+46,ty+29,{m:1,s:11,col:S.devValid&&Math.abs(S.dev)<=SECTOR?css('--ok'):css('--alarm')});
+  // DMC + servo + cam
+  const sy=262;
+  c.fillStyle='#0e1518';c.fillRect(tx,sy-20,44,40);c.strokeStyle=S.servo?css('--alarm'):css('--steel');c.strokeRect(tx,sy-20,44,40);txt(c,'DMC',tx+22,sy,{m:1,s:11});
+  c.strokeStyle=css('--steel');c.beginPath();c.moveTo(tx+46,ty+40);c.lineTo(tx+46,sy-22);c.stroke();
+  const mx=tx+70;
+  c.fillStyle='#24323a';c.beginPath();c.arc(mx,sy,15,0,7);c.fill();c.strokeStyle=S.servo?css('--alarm'):css('--stroke');c.lineWidth=2;c.stroke();
+  const pos=S.mode==='pre'?POS.pre:stepToPos(S.step);const camA=(pos/POS.s999)*Math.PI*1.6;
+  c.beginPath();c.moveTo(mx,sy);c.lineTo(mx+Math.cos(camA)*13,sy+Math.sin(camA)*13);c.stroke();
+  txt(c,'Servo',mx,sy+26,{m:1,s:10,col:css('--muted')});
+  // eccentric cam near tube
+  const ex=wx-34;c.strokeStyle=css('--muted');c.lineWidth=1;c.setLineDash([3,3]);c.beginPath();c.moveTo(mx+15,sy);c.lineTo(ex-10,sy);c.stroke();c.setLineDash([]);
+  const ecc=4+flapFeed(pos)*2.2;
+  c.fillStyle='#3a4b52';c.beginPath();c.arc(ex,sy+Math.sin(S.angle*Math.PI/180)*ecc*0.4,10,0,7);c.fill();
+  txt(c,'Eccentric / cam',ex-6,sy+44,{m:1,s:10,col:css('--muted')});
+  // jaws: one pair is closed and travels down with the tube (main feed); the other opens, returns up and closes again
+  const jaw=(y,gap,col)=>{c.fillStyle=col;c.fillRect(cxm-pin-gap-36,y-9,36,18);c.fillRect(cxm+pin+gap,y-9,36,18);c.fillStyle='#55666d';c.fillRect(cxm-pin-gap-44,y-5,8,10);c.fillRect(cxm+pin+gap+36,y-5,8,10)};
+  const open=half+8;let yr,gr;
+  if(f<0.15){yr=yTop+Lpx+f*Lpx;gr=open*(f/0.15)}
+  else if(f<0.85){const u=(f-0.15)/0.7,e=u<.5?2*u*u:1-2*(1-u)*(1-u);yr=(yTop+Lpx*1.15)+(yTop-(yTop+Lpx*1.15))*e;gr=open}
+  else{yr=yTop;gr=open*(1-(f-0.85)/0.15)}
+  jaw(yr,gr,'#5f7279');
+  jaw(ya,0,'#9bb0b8');
+  // folding flaps ride on the closed jaw and tilt in against the tube; the stroke sets how far they pull
+  const strokePx=S.mode==='pre'?1:3+flapFeed(pos)*3.2;
+  const tilt=Math.min(1,f/0.4), ang=0.75-0.75*tilt, tug=tilt*strokePx;
+  [-1,1].forEach(sd=>{c.save();c.translate(cxm+sd*(half+5-tug*0.35),ya-11+tug*0.25);c.rotate(sd*ang);c.fillStyle=S.mode==='pre'?'#7a6a45':css('--stroke');c.fillRect(-4,-34,8,34);c.restore()});
+  const fl=narrow?wx+ww+40:wx+ww+52;
+  txt(c,narrow?'Flaps':'Folding flaps',fl,300,{m:1,s:11,a:'left',col:css('--stroke')});
+  txt(c,(S.mode==='pre'?'Precorrection':'Step '+Math.round(S.step)),fl,316,{m:1,s:11,a:'left',col:css('--fg')});
+  if(!narrow){txt(c,'Jaws',fl,400,{m:1,s:11,a:'left',col:css('--muted')});txt(c,'the closed jaw pulls the tube down',fl,418,{s:11,a:'left',col:css('--muted')})}
+  // encoder dial
+  const dx=narrow?50:66,dy=narrow?52:68,R=narrow?36:48;
+  c.strokeStyle=css('--line');c.lineWidth=8;c.beginPath();c.arc(dx,dy,R,0,7);c.stroke();
+  const a2r=a=>(a-90)*Math.PI/180;
+  const sec=SECTOR*18, refV=clamp(S.prodA-S.offset/100*18,8,352);   // dial uses the same exaggeration as the drawing
+  c.strokeStyle='#2f6b47';c.lineWidth=8;c.beginPath();c.arc(dx,dy,R,a2r(refV-sec),a2r(refV+sec));c.stroke();
+  c.strokeStyle=css('--ok');c.lineWidth=2;c.beginPath();c.moveTo(dx+Math.cos(a2r(refV))*(R-10),dy+Math.sin(a2r(refV))*(R-10));c.lineTo(dx+Math.cos(a2r(refV))*(R+8),dy+Math.sin(a2r(refV))*(R+8));c.stroke();
+  if(S.cap){const sa=a2r(S.cap.vis);c.strokeStyle=css('--dev');c.lineWidth=2+S.flash*3;c.globalAlpha=.55+S.flash*.45;c.beginPath();c.moveTo(dx,dy);c.lineTo(dx+Math.cos(sa)*R,dy+Math.sin(sa)*R);c.stroke();c.globalAlpha=1;c.fillStyle=css('--dev');c.beginPath();c.arc(dx+Math.cos(sa)*R,dy+Math.sin(sa)*R,5+S.flash*4,0,7);c.fill();
+    const fm=v=>v.toFixed(1)+'°';
+    if(narrow){txt(c,'signal at '+fm(S.cap.sig),dx,dy+R+30,{s:10,col:css('--dev')})}
+    else{const rx=dx+R+18;txt(c,'production angle',rx,dy-30,{a:'left',s:11,col:'#7fcf9b'});txt(c,fm(S.cap.ref),rx,dy-14,{m:1,a:'left',s:13,col:'#7fcf9b',w:700});
+      txt(c,'signal arrived at',rx,dy+6,{a:'left',s:11,col:css('--dev')});txt(c,fm(S.cap.sig),rx,dy+22,{m:1,a:'left',s:13+S.flash*3,col:css('--dev'),w:700});
+      txt(c,(S.cap.dev>=0?'+':'')+S.cap.dev.toFixed(2)+' mm',rx,dy+42,{m:1,a:'left',s:12,col:Math.abs(S.cap.dev)<=SECTOR?css('--ok'):css('--alarm')});txt(c,'difference',rx+70,dy+42,{a:'left',s:11,col:css('--muted')})}}
+  c.strokeStyle=css('--fg');c.lineWidth=2;c.beginPath();c.moveTo(dx,dy);c.lineTo(dx+Math.cos(a2r(S.angle))*(R-6),dy+Math.sin(a2r(S.angle))*(R-6));c.stroke();
+  txt(c,'Angle encoder',dx,dy+R+16,{m:1,s:10,col:css('--muted')});
+  txt(c,Math.round(S.angle)+'°',dx,dy,{m:1,s:11});
+  // finished packages
+  const px0=narrow?w-40:w-120, py0=narrow?130:150;
+  txt(c,narrow?'package':'after the final folder',px0,py0-24,{s:12,col:css('--muted')});
+  const pw=narrow?46:70, ph=narrow?80:120;
+  c.fillStyle=css('--web');c.fillRect(px0-pw/2,py0,pw,ph);c.strokeStyle='#8c8470';c.strokeRect(px0-pw/2,py0,pw,ph);
+  const targetY=py0+ph*0.22;
+  c.strokeStyle=css('--ok');c.setLineDash([4,3]);c.beginPath();c.moveTo(px0-pw/2-14,targetY);c.lineTo(px0+pw/2+14,targetY);c.stroke();c.setLineDash([]);
+  const last=S.hist[0];
+  if(last){const cy=targetY-last.crease*8;c.strokeStyle=Math.abs(last.crease)>0.5?css('--alarm'):css('--crease');c.lineWidth=3;c.beginPath();c.moveTo(px0-pw/2,cy);c.lineTo(px0+pw/2,cy);c.stroke();c.lineWidth=1;
+    txt(c,(last.crease>=0?'+':'')+last.crease.toFixed(2)+' mm',px0,py0+ph+16,{m:1,s:12,col:Math.abs(last.crease)>0.5?css('--alarm'):css('--ok')});
+    txt(c,Math.abs(last.crease)<=0.5?'crease in place':last.crease>0?'crease high':'crease low',px0,py0+ph+34,{s:12,col:css('--muted')});
+    if(last.rej)txt(c,'rejected',px0,py0+ph/2+20,{s:13,w:700,col:css('--alarm')});
+  }
+  txt(c,'target',px0+pw/2+16,targetY-9,{s:10,a:'left',col:'#7fcf9b'});
+  // small conveyor of previous packages
+  for(let i=1;i<S.hist.length;i++){const hx=px0-pw/2-i*(narrow?0:22)-6;if(narrow)break;const hh=S.hist[i];c.fillStyle=hh.rej?'#5a2a24':Math.abs(hh.crease)>0.5?'#6b5a2a':'#7e7663';c.fillRect(hx-14,py0+ph-34,16,34)}
+  // state text
+  txt(c,S.running?(S.mode==='pre'?'Precorrection: signal still outside ±10 mm':'automatic regulation'):'machine stopped',w-12,h-14,{a:'right',s:13,col:S.running?css('--ok'):css('--muted'),b:'alphabetic'});
+}
+
+/* ---------- trend ---------- */
+const tr=$('#tr');
+function drawTrend(){
+  const {c,w,h}=fit(tr);c.clearRect(0,0,w,h);
+  const L=46,R=w-46,T=10,B=h-24,mid=(T+B)/2;
+  const ymm=v=>mid-v/5*(B-T)/2, yst=v=>B-v/999*(B-T);
+  c.fillStyle='rgba(47,107,71,.25)';c.fillRect(L,ymm(SECTOR),R-L,ymm(-SECTOR)-ymm(SECTOR));
+  c.strokeStyle=css('--line');c.lineWidth=1;
+  [-5,-2.5,0,2.5,5].forEach(v=>{c.beginPath();c.moveTo(L,ymm(v));c.lineTo(R,ymm(v));c.stroke();txt(c,(v>0?'+':'')+v,L-6,ymm(v),{m:1,s:10,a:'right',col:css('--muted')})});
+  [0,500,999].forEach(v=>txt(c,String(v),R+6,yst(v),{m:1,s:10,a:'left',col:css('--stroke')}));
+  txt(c,'mm',L-6,T+4,{m:1,s:10,a:'right',col:css('--muted')});txt(c,'step',R+6,T+4,{m:1,s:10,a:'left',col:css('--stroke')});
+  const N=150,xs=i=>L+(R-L)*i/(N-1);
+  const line=(arr,fy,col,lw)=>{c.strokeStyle=col;c.lineWidth=lw;c.beginPath();let pen=false;const off=N-arr.length;arr.forEach((v,i)=>{if(v==null){pen=false;return}const X=xs(i+off),Y=clamp(fy(v),T,B);pen?c.lineTo(X,Y):c.moveTo(X,Y);pen=true});c.stroke()};
+  line(S.strokeHist,yst,css('--stroke'),1.6);
+  line(S.creaseHist,ymm,css('--pkg'),1.6);
+  line(S.devHist,ymm,css('--dev'),2.2);
+  const lv=S.devHist[S.devHist.length-1];if(lv!=null){c.fillStyle=css('--dev');c.beginPath();c.arc(R,clamp(ymm(lv),T,B),4,0,7);c.fill()}
+  txt(c,'← older',L+4,h-8,{s:11,a:'left',col:css('--muted')});txt(c,'latest package',R-4,h-8,{s:11,a:'right',col:css('--muted')});
+}
+
+/* ---------- servo bar ---------- */
+const sv=$('#sv');
+function drawServo(){
+  const {c,w,h}=fit(sv);c.clearRect(0,0,w,h);
+  const L=14,R=w-14,y=52,max=44000,X=p=>L+(R-L)*p/max;
+  c.fillStyle=css('--panel2');c.fillRect(L,y-8,R-L,16);
+  c.fillStyle='rgba(233,166,64,.35)';c.fillRect(X(POS.s0),y-8,X(POS.s999)-X(POS.s0),16);
+  const marks=[['stop',0,'Stop'],['home',400,'Home 400'],['pre',POS.pre,'Precorr. 18875'],['s0',POS.s0,'Step 0 = 29000'],['s999',POS.s999,'Step 999 = 41750']];
+  marks.forEach(([k,p,l],i)=>{c.strokeStyle=css('--muted');c.beginPath();c.moveTo(X(p),y-12);c.lineTo(X(p),y+12);c.stroke();txt(c,l,clamp(X(p),L+26,R-52),i%2?y+26:y-24,{m:1,s:10,col:css('--muted')})});
+  const pos=S.mode==='pre'?POS.pre:stepToPos(S.step);
+  c.fillStyle=S.servo?css('--alarm'):css('--stroke');c.beginPath();c.moveTo(X(pos),y-2);c.lineTo(X(pos)-7,y-16);c.lineTo(X(pos)+7,y-16);c.closePath();c.fill();
+  c.fillRect(X(pos)-1.5,y-8,3,16);
+  txt(c,Math.round(pos).toLocaleString('en-US')+' pos',X(pos),h-12,{m:1,s:11,col:css('--fg'),a:'center'});
+}
+
+/* ---------- zoomed angle window (true scale) ---------- */
+const an=$('#ang');
+function drawAngle(){
+  const {c,w,h}=fit(an);c.clearRect(0,0,w,h);
+  const L=14,R=w-14,mid=(L+R)/2,dpm=360/S.L,span=7*dpm,ay=96;
+  const X=a=>mid+(a-S.prodA)/span*(R-L)/2, ref=S.prodA-S.offset/100*dpm;
+  c.fillStyle='#10181c';c.fillRect(0,0,w,h);
+  c.save();c.beginPath();c.rect(L,0,R-L,h);c.clip();
+  c.fillStyle='rgba(47,107,71,.45)';c.fillRect(X(ref-SECTOR*dpm),44,X(ref+SECTOR*dpm)-X(ref-SECTOR*dpm),ay-44);
+  c.strokeStyle=css('--ok');c.lineWidth=3;c.beginPath();c.moveTo(X(ref),32);c.lineTo(X(ref),ay+8);c.stroke();
+  c.strokeStyle=css('--fg');c.globalAlpha=.35;c.lineWidth=1;c.beginPath();c.moveTo(X(S.angle),40);c.lineTo(X(S.angle),ay);c.stroke();c.globalAlpha=1;
+  const hs=S.capHist||[];
+  hs.forEach((cp,i)=>{const nw=i===hs.length-1;c.fillStyle=css('--dev');c.globalAlpha=nw?1:0.25+0.5*i/hs.length;c.beginPath();c.arc(X(cp.sig),70,nw?8+S.flash*4:4,0,7);c.fill()});c.globalAlpha=1;
+  const lastC=hs[hs.length-1];
+  if(lastC){c.strokeStyle=css('--dev');c.lineWidth=2;c.beginPath();c.moveTo(X(ref),70);c.lineTo(X(lastC.sig),70);c.stroke()}
+  c.restore();
+  c.strokeStyle=css('--muted');c.lineWidth=1;c.beginPath();c.moveTo(L,ay);c.lineTo(R,ay);c.stroke();
+  const step=w<520?2:1;
+  for(let a=Math.ceil(S.prodA-span);a<=S.prodA+span;a++){const x=X(a);c.beginPath();c.moveTo(x,ay);c.lineTo(x,ay+(a%step?4:8));c.stroke();if(a%step===0)txt(c,a+'°',x,ay+20,{m:1,s:11,col:css('--muted')})}
+  txt(c,'production angle  '+ref.toFixed(1)+'°',clamp(X(ref),L+70,R-70),18,{s:13,w:700,col:'#7fcf9b'});
+  if(lastC){const d=lastC.dev,okc=Math.abs(d)<=SECTOR?css('--ok'):css('--alarm');
+    txt(c,'signal arrived at  '+lastC.sig.toFixed(1)+'°',w-L,h-34,{a:'right',s:14,w:700,col:css('--dev'),b:'alphabetic'});
+    txt(c,'difference  '+(d>=0?'+':'−')+Math.abs(d).toFixed(2)+' mm  ('+(d>=0?'late':'early')+')',w-L,h-12,{a:'right',s:14,w:700,col:okc,b:'alphabetic'})}
+  txt(c,'← early',L,h-12,{a:'left',s:11,col:css('--muted'),b:'alphabetic'});
+}
+
+/* ---------- panels ---------- */
+const CHAIN=[['Register mark','printed on the web'],['Photocells','read the code'],['TMCC','computes the deviation'],['DMC','stroke to motor position'],['Servomotor','moves the cam precisely'],['Eccentric shafts / cam','set the flap stroke'],['Folding flaps','small extra feed'],['Feed rate','web is adjusted']];
+function renderChain(){
+  const bad={0:S.dirty||S.align,1:S.dirty||S.align,2:S.pattern,3:S.servo,4:S.servo};
+  $('#chain').innerHTML=CHAIN.map(([e,a],i)=>`${i?'<div class="arrow">▼</div>':''}<div class="${bad[i]?'dead':S.running&&S.flash>0.15?'hot':''}"><span class="en">${e}</span><small>${a}</small></div>`).join('');
+}
+function renderStatus(){
+  const a10=avg(S.devHist),s10=avg(S.strokeHist),c10=avg(S.creaseHist);
+  const st=!S.running?'<span class="pill idle">stopped</span>':S.mode==='pre'?'<span class="pill warn">Precorrection</span>':'<span class="pill ok">production</span>';
+  const cr=c10==null?'---':(c10>=0?'+':'')+c10.toFixed(2);
+  $('#status').innerHTML=[
+    ['State',st,1],['Packages',S.pkg.toLocaleString('en-US')],['Rejected',S.rej.toLocaleString('en-US')],
+    ['Current deviation (mm)',S.devValid?(S.dev>=0?'+':'')+S.dev.toFixed(2):'no read'],
+    ['Mean of last 10 (mm)',a10==null?'---':(a10>=0?'+':'')+a10.toFixed(2)],
+    ['Mean stroke',s10==null?'---':Math.round(s10)],
+    ['Crease on package (mm)',cr]
+  ].map(([k,v,raw])=>`<div class="kv"><span>${k}</span>${raw?`<div>${v}</div>`:`<strong>${v}</strong>`}</div>`).join('');
+  // LEDs
+  $('#led1').classList.toggle('on',S.running&&S.flash>0.3&&S.match);
+  $('#led2').classList.toggle('on',S.running&&S.mode==='reg'&&S.devValid&&Math.abs(S.dev)<=SECTOR);
+  $('#led7').classList.toggle('on',S.running&&S.mode==='reg'&&S.step>=750);
+  $('#led8').classList.toggle('on',S.running&&S.mode==='reg'&&S.step<=250);
+  $('#offS_V').textContent=(S.offset>0?'+':'')+S.offset+'  ≈ '+(S.offset/100).toFixed(2)+' mm';
+  $('#offVal').textContent=(S.offset>0?'+':'')+S.offset+'  ≈ '+(S.offset/100).toFixed(2)+' mm';
+  const f=v=>v==null?'   ---':(v>=0?' +':' ')+v.toFixed(2);
+  $('#term').textContent=
+`> S   (diagnostic terminal)
+DEVIATION ACT  :${S.devValid?f(S.dev):'   ---'} mm
+DEVIATION AVG10:${f(a10)} mm
+STROKE AVG10   : ${s10==null?'---':Math.round(s10)}
+MACHINE SPEED  : ${S.pph} pkg/h
+REPEAT LENGTH  : ${S.L} mm
+PROD. ANGLE    : ${S.prodA} deg
+OFFSET         : ${S.offset}
+PID            : P ${P.Kp}  I ${P.Ki}  D ${P.Kd}`;
+  // register code
+  $('#bitsRead').innerHTML=S.readBits.map((b,i)=>`<i class="${b<0?'':'b'+b} ${S.readErr.includes(i)||(S.pattern&&false)?'err':''}"></i>`).join('');
+  const ref=S.pattern?CODE.map((b,i)=>i%5===2?1-b:b):CODE;
+  $('#bitsRef').innerHTML=ref.map((b,i)=>`<i class="b${b} ${S.pattern&&i%5===2?'err':''}"></i>`).join('');
+  $('#matchTxt').innerHTML=S.align?'<span class="pill bad">no read</span> The photocell cannot see the mark.':S.match?'<span class="pill ok">match</span> Design signal generated.':'<span class="pill bad">no match</span> No design signal for this package.';
+  renderTree(a10,c10);renderChain();
+}
+function renderTree(a10,c10){
+  const recent=S.devHist.slice(-10);const readOK=!S.align&&!S.dirty&&!S.pattern?true:recent.filter(v=>v!=null).length>=6;
+  const photoOK=!S.align&&!(S.dirty&&!readOK);
+  const sigOK=photoOK&&!S.pattern;
+  const devOK=sigOK&&a10!=null&&Math.abs(a10)<=SECTOR&&!S.encoder&&!S.slip;
+  const pkgOK=devOK&&c10!=null&&Math.abs(c10)<=0.5;
+  const high=c10!=null&&c10>0;
+  const on=S.pkg>0;
+  const q=(cls,ind,t)=>`<div class="q ind${ind} ${on?cls:''}">${t}</div>`;
+  let H='';
+  H+=q(photoOK?'yes':'no',0,'Do the photocells read the <span class="en">Register Code</span>?');
+  if(!photoOK){H+=q('act',1,'No → check photocells, mark, alignment and wiring');}
+  else{H+=q(sigOK?'yes':'no',1,'Yes → is there a <span class="en">Design Signal</span>?');
+    if(!sigOK)H+=q('act',2,'No → check decoding, the TMCC and the register pattern');
+    else{H+=q(devOK?'yes':'no',2,'Yes → is the deviation within ±1.5 mm?');
+      if(!devOK)H+=q('act',3,'No → check timing, encoder, web feed, servo and PLC data');
+      else{H+=q(pkgOK?'yes':'no',3,'Yes → is the finished package correct?');
+        if(pkgOK)H+=q('act',4,'Yes → no Design Correction needed');
+        else H+=q('act',4,high?'No, crease high → decrease the Design Offset':'No, crease low → increase the Design Offset');}}}
+  $('#tree').innerHTML=H;
+}
+
+/* ---------- loop ---------- */
+let last=performance.now(),acc=0,uiT=0;
+function frame(t){
+  const dt=Math.min(0.1,(t-last)/1000);last=t;
+  if(S.running){
+    const period=3600/S.pph/SLOW[+$('#slow').value].f;
+    S.angle+=360*dt/period;
+    if(S.sigPend&&S.angle>=S.sigVis)fireSig();
+    while(S.angle>=360){fireSig();S.angle-=360;cycle()}
+  }
+  S.flash=Math.max(0,S.flash-dt*3);S.bad=Math.max(0,(S.bad||0)-dt*3);
+  drawMachine();drawServo();drawAngle();
+  uiT+=dt;if(uiT>0.12){uiT=0;renderStatus();drawTrend()}
+  requestAnimationFrame(frame);
+}
+syncCtl();renderFaults();renderAlarms();
+// open in a working state: a short history of normal production
+S.running=true;for(let i=0;i<90;i++)cycle();S.running=false;S.hist=S.hist.slice(0,1);S.pkg=0;S.good=0;S.rej=0;
+renderStatus();drawTrend();
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
