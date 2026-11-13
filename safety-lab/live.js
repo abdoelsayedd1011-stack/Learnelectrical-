@@ -260,9 +260,8 @@
     draw();
   }
 
-  function boot(){
-    if (!document.getElementById('lx-css')){ var st = document.createElement('style'); st.id = 'lx-css'; st.textContent = CSS; document.head.appendChild(st); }
-    document.querySelectorAll('.live-ex[data-dev]').forEach(Live);
-  }
+  function css(){ if (!document.getElementById('lx-css')){ var st = document.createElement('style'); st.id = 'lx-css'; st.textContent = CSS; document.head.appendChild(st); } }
+  function boot(){ css(); document.querySelectorAll('.live-ex[data-dev]').forEach(Live); }
+  window.LiveEx = function(host){ css(); Live(host); };   // المحاكي بيعيد الرسم لما تغيّر الجهاز
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
