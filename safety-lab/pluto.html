@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>محاكي السيفتي: Pluto B20 وRT9 وPNOZ وVital 1 وRT6 وRT7 وBT50</title>
-<meta name="description" content="محاكي أمان تفاعلي بصور الأجهزة الحقيقية: ABB Pluto B20 وRT9 وPilz PNOZ X3P وVital 1 وABB Jokab RT6 وRT7 وBT50. اضغط الطوارئ، وافتح البوابة، ونفّذ الريست، والحم كونتاكتورًا، وأحدِث قصرًا، وراقب المصابيح وأكواد Er.">
+<title>محاكي السيفتي: Pluto B20 وRT9 وPNOZ وVital 1 وRT6 وRT7 وBT50 وJSBT5</title>
+<meta name="description" content="محاكي أمان تفاعلي بصور الأجهزة الحقيقية: ABB Pluto B20 وRT9 وPilz PNOZ X3P وVital 1 وABB Jokab RT6 وRT7 وBT50 وJSBT5. اضغط الطوارئ، وافتح البوابة، ونفّذ الريست، والحم كونتاكتورًا، وأحدِث قصرًا، وراقب المصابيح وأكواد Er.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <link rel="stylesheet" href="safety.css?v=20261027s2">
-<script src="safety.js?v=20261113j"></script>
-<script src="live.js?v=20261113c"></script>
+<script src="safety.js?v=20261113k"></script>
+<script src="live.js?v=20261113d"></script>
 <style>
 .tabs{display:flex;gap:8px;flex-wrap:wrap}
 .tabs button{flex:1 1 120px;min-height:48px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:600 1rem var(--font-display);cursor:pointer;color:var(--ink)}
@@ -19,7 +19,7 @@
 @media (max-width:760px){.bench{grid-template-columns:minmax(0,1fr)}}
 .devwrap{position:relative;margin:0 auto;width:100%;user-select:none;-webkit-user-select:none}
 .devwrap img{display:block;width:100%;height:auto;border-radius:10px}
-.devwrap.r6{max-width:250px}.devwrap.bt{max-width:150px}.devwrap.pl{max-width:300px}.devwrap.rt{max-width:150px}.devwrap.vi{max-width:130px}.devwrap.pz{max-width:240px}
+.devwrap.r6{max-width:250px}.devwrap.bt{max-width:150px}.devwrap.j5{max-width:130px}.termsbox{margin-top:12px;padding:10px 6px;border:1.5px dashed var(--line);border-radius:14px}.termsbox h3{margin:0 0 6px;font-size:1rem}.termsbox p{margin:6px 4px 0;font-size:.9em}.devwrap.pl{max-width:300px}.devwrap.rt{max-width:150px}.devwrap.vi{max-width:130px}.devwrap.pz{max-width:240px}
 .led.sq{border-radius:3px}
 .led{position:absolute;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;opacity:0;transition:opacity .08s}
 .led.on{opacity:1}
@@ -105,6 +105,7 @@
   <button type="button" role="tab" data-tab="rt6" aria-selected="false">RT6</button>
   <button type="button" role="tab" data-tab="rt7" aria-selected="false">RT7A</button>
   <button type="button" role="tab" data-tab="bt50" aria-selected="false">BT50</button>
+  <button type="button" role="tab" data-tab="jsbt5" aria-selected="false">JSBT5</button>
 </nav>
 
 <section class="panel" id="sim">
@@ -145,6 +146,8 @@
   <h2><span class="k">⌁</span>التوصيل على الجهاز</h2>
   <p class="muted">تضيء الأسلاك بالأخضر عند مرور تيار فيها. اضغط الطوارئ أو افتح الباب أو اضغط RESET مطولًا ولاحظ مسار الكهرباء. مواضع الأطراف في الرسم مبسّطة لتظهر الأسلاك، والترتيب الحقيقي في صورة الجهاز.</p>
   <div class="scene" id="wd"></div>
+  <div class="termsbox"><h3>أطراف الجهاز كاملة كما في الجهاز الحقيقي</h3><div id="wdT"></div>
+  <p class="muted">الصف الذي على الحافة هو الخلفي، والصف الداخلي هو الأمامي. الطرف الأبيض مستخدم في التوصيل، والرمادي غير مستخدم، والخط البرتقالي <b style="color:#e8590c">بريدج</b> بين طرفين.</p></div>
   <div class="wire" id="wire"></div>
 </section>
 
@@ -201,13 +204,14 @@ function rt7Delay(q){
    A1 ← E-stop NC ← +24V. X4 ← START ← K2 NC ← K1 NC ← A1. Outputs close when A1 is fed and X4 closes; open when A1 is cut. */
 const B = {out:false};
 function bt50Step(){
+  const px = dev === 'jsbt5' ? 'j5' : 'bt';
   const pow = W.supply >= 19.2;
   const a1 = pow && !W.estop && !W.f.cut1;
   const fb = !K.k1 && !K.k2;
   const x4 = a1 && fb && (W.reset || !!W.f.stuck);
-  if (!a1){ if (B.out) see('bt-stop'); B.out = false; }
-  else if (x4 && !B.out){ B.out = true; see(W.f.stuck ? 'bt-stuck' : 'bt-start'); }
-  if (a1 && W.reset && !fb && !B.out) see('bt-weld');
+  if (!a1){ if (B.out) see(px + '-stop'); B.out = false; }
+  else if (x4 && !B.out){ B.out = true; see(W.f.stuck ? px + '-stuck' : px + '-start'); }
+  if (a1 && W.reset && !fb && !B.out) see(px + '-weld');
   return {pow, a1, fb, x4, q1:B.out, q2:B.out};
 }
 /* ---------------- Pilz PNOZ X3P ----------------
@@ -392,7 +396,8 @@ const WD = (function(){
   }
   const rt6 = (S, K, W) => rt9(S, K, W).replace('>RT9<', '>RT6<');
   const rt7 = (S, K, W) => rt9(S, K, W).replace('>RT9<', '>RT7A<').replace('>K1</text>', '>VFD</text>').replace('>K2</text>', '>K1 (t)</text>');
-  return {rt9, pnoz, vital, pluto, rt6, rt7, bt50};
+  const jsbt5 = (S, K, W) => bt50(S, K, W).replace('>BT50<', '>JSBT5<').replace('>X4<', '>X2<').replace('>-A2<', '>A2<').replace('START → X4', 'START → X2').replace('A1 → K1 NC', 'X1 → K1 NC');
+  return {rt9, pnoz, vital, pluto, rt6, rt7, bt50, jsbt5};
 })();
 
 const pct = (x, y, w, h) => ({x:x / w * 100, y:y / h * 100});
@@ -410,6 +415,8 @@ const FACE = {
     leds:{In1:[196,532],L1:[195,592],On:[195,652],L2:[195,712],In2:[195,772],t:[713,649]}},
   bt50:{img:'img/bt50-off.jpg', w:461, h:1270, cls:'bt', cap:'ABB Jokab BT50 24VDC',
     leds:{On:[188,649],Out:[189,709],X4:[188,767]}},
+  jsbt5:{img:'img/jsbt5-off.jpg', w:368, h:955, cls:'j5', cap:'ABB Jokab JSBT5 24VAC/DC',
+    leds:{On:[178,520]}},
   vital:{img:'img/vital1-off.jpg', w:269, h:921, cls:'vi', cap:'ABB Vital 1 24VDC',
     leds:{T:[69,385],L1:[69,430],On:[69,473],L2:[70,518],R:[70,561]}}
 };
@@ -417,7 +424,7 @@ function buildFace(){
   const F = FACE[dev], host = $('#dev');
   host.className = 'devwrap ' + F.cls;
   let h = `<img src="${F.img}" width="${F.w}" height="${F.h}" alt="${esc(F.cap)}">`;
-  const big = dev === 'pluto' ? [4.6, 1.6] : dev === 'rt9' ? [7.6, 2.4] : dev === 'pnoz' ? [5.8, 2.2] : dev === 'rt6' || dev === 'rt7' ? [4.8, 3.0] : dev === 'bt50' ? [8.2, 3.0] : [6.4, 1.9];
+  const big = dev === 'pluto' ? [4.6, 1.6] : dev === 'rt9' ? [7.6, 2.4] : dev === 'pnoz' ? [5.8, 2.2] : dev === 'rt6' || dev === 'rt7' ? [4.8, 3.0] : dev === 'bt50' ? [8.2, 3.0] : dev === 'jsbt5' ? [9.4, 3.6] : [6.4, 1.9];
   Object.keys(F.leds).forEach(k => { const [x, y] = F.leds[k], p = pct(x, y, F.w, F.h);
     const col = dev === 'pluto' ? (k === 'Q0' || k === 'Q1' || k === 'Q2' || k === 'Q3' ? 'r' : 'y') : 'g';
     h += `<i class="led ${col}${dev === 'pnoz' ? ' sq' : ''}" data-led="${k}" style="left:${p.x}%;top:${p.y}%;width:${big[0]}%;height:${big[1]}%"></i>`; });
@@ -435,10 +442,10 @@ function led(k, on, blink){ const e = document.querySelector(`[data-led="${k}"]`
 /* ---------------- machine controls ---------------- */
 function ctlHtml(){
   const gate = dev === 'vital' || dev === 'pluto';
-  return `<button type="button" class="btn estop" data-c="estop" aria-pressed="${W.estop}"><i></i>${W.estop ? 'الطوارئ مضغوط' : 'اضغط الطوارئ'}<small>${W.estop ? 'اضغط مرة أخرى لتديره' : dev === 'bt50' ? '1 × NC في تغذية A1' : '2 × NC'}</small></button>`
+  return `<button type="button" class="btn estop" data-c="estop" aria-pressed="${W.estop}"><i></i>${W.estop ? 'الطوارئ مضغوط' : 'اضغط الطوارئ'}<small>${W.estop ? 'اضغط مرة أخرى لتديره' : dev === 'bt50' || dev === 'jsbt5' ? '1 × NC في تغذية A1' : '2 × NC'}</small></button>`
     + (gate ? `<button type="button" class="btn" data-c="gate" aria-pressed="${W.gate}">${W.gate ? 'البوابة مفتوحة' : 'افتح البوابة'}<small>${dev === 'vital' ? 'Adam 1 + Eva' : 'Adam + Eva على I2'}</small></button>` : '')
     + (dev === 'vital' ? `<button type="button" class="btn" data-c="gate2" aria-pressed="${W.gate2}">${W.gate2 ? 'الباب الثاني مفتوح' : 'افتح الباب الثاني'}<small>Adam 2 + Eva</small></button>` : '')
-    + `<button type="button" class="btn rst" data-c="reset" aria-pressed="false"><i id="rlamp"></i>${dev === 'bt50' ? 'START' : 'RESET'}<small>${dev === 'bt50' ? 'يعمل عند الضغط (X4)' : 'اضغط واترك'}</small></button>`
+    + `<button type="button" class="btn rst" data-c="reset" aria-pressed="false"><i id="rlamp"></i>${dev === 'bt50' || dev === 'jsbt5' ? 'START' : 'RESET'}<small>${dev === 'bt50' ? 'يعمل عند الضغط (X4)' : dev === 'jsbt5' ? 'يعمل عند الضغط (X1-X2)' : 'اضغط واترك'}</small></button>`
     + `<button type="button" class="btn go" data-c="power" aria-pressed="${W.supply >= 19.2}">${W.supply >= 19.2 ? 'التغذية 24V' : 'التغذية ' + W.supply + 'V'}<small>اضغط لتغيير الجهد</small></button>`;
 }
 const FAULTS = {
@@ -447,6 +454,7 @@ const FAULTS = {
   rt6:[['weld','الحم K1','يبقى الكونتاكتور K1 ملتصقًا'],['short24','القناة 1 لمست 24V','S14 ملتصق بـ S13'],['cut2','قطع سلك القناة 2','S34 مقطوع']],
   rt7:[['dly','زمن التأخير','اضغط لتغيّره (T0 · T1 · T2)'],['weld','الحم K1','يبقى الكونتاكتور K1 ملتصقًا'],['cut2','قطع سلك القناة 2','S34 مقطوع']],
   bt50:[['weld','الحم K1','يبقى الكونتاكتور K1 ملتصقًا'],['stuck','زر START عالق','X4 مغلق دائمًا'],['cut1','قطع سلك A1','بين الطوارئ وA1']],
+  jsbt5:[['weld','الحم K1','يبقى الكونتاكتور K1 ملتصقًا'],['stuck','زر START عالق','X1-X2 مغلق دائمًا'],['cut1','قطع سلك A1','بين الطوارئ وA1']],
   rt9:[['weld','الحم K1','يبقى الكونتاكتور K1 ملتصقًا'],['short24','القناة 1 لمست 24V','S14 ملتصق بـ S13'],['cut2','قطع سلك القناة 2','S34 مقطوع']],
   vital:[['weld','الحم K1','يبقى الكونتاكتور K1 ملتصقًا'],['bypass','قصر على حساس','وضع أحدهم جمبر على Adam 2'],['s1Wrong','وصّل S1 مع B1','والحساسات 3 (فردي)'],['cutLoop','قطع سلك الحلقة','بين Adam 1 وAdam 2']]
 };
@@ -472,6 +480,10 @@ function wireHtml(){
     <li>الريست المراقَب: <code>S53</code> ← NC من K1 ← NC من K2 ← زر RESET ← <code>X1</code>. و<code>X4</code> فارغ.</li>
     ${dev === 'rt6' ? '<li>الخرج: <code>13-14</code> ← K1، و<code>23-24</code> ← K2، و<code>33-34</code> احتياطي، و<code>41-42</code> NC للمعلومات.</li>'
       : '<li>الخرج المباشر <code>13-14</code> ← أمر إيقاف للانفرتر، و<code>23-24</code> احتياطي. الخرجان المتأخران <code>43-44</code> ← K1 و<code>53-54</code> ← K2. والتأخير بجمبر على <code>T0</code> و<code>T1</code> و<code>T2</code>.</li>'}</ul>`;
+  if (dev === 'jsbt5') return `<ul><li>الطوارئ في التغذية نفسها: <code>+24V</code> ← NC 11-12 ← <code>A1</code>، و<code>A2</code> = 0V. والطرفان A1 وA2 كلاهما في الأسفل.</li>
+    <li>دخل الاختبار: <code>X1</code> ← NC من K1 ← NC من K2 ← START ← <code>X2</code>. يجب أن يُغلق X1-X2 مرة لتعمل المخارج، ثم يمكن أن يبقى مفتوحًا.</li>
+    <li>الخرج: <code>13-14</code> ← K1، و<code>23-24</code> ← K2، و<code>33-34</code> احتياطي، و<code>41-42</code> NC للمعلومات.</li>
+    <li>وفي الكتالوج طريقة أعلى أمانًا: تلامس ثانٍ في الطوارئ على <code>A2</code> (توصيل مزدوج في التغذية).</li></ul>`;
   if (dev === 'bt50') return `<ul><li>لا توجد قنوات دخل: الطوارئ في التغذية نفسها: <code>+24V</code> ← NC 11-12 ← <code>A1</code>، و<code>-A2</code> = 0V.</li>
     <li>دخل الاختبار: <code>A1</code> ← NC من K1 ← NC من K2 ← START ← <code>X4</code>. الخرج يعمل عند إغلاق X4، ثم يمكن أن يُفتح X4.</li>
     <li>الخرج: <code>13-14</code> ← K1، و<code>23-24</code> ← K2، و<code>33-34</code> احتياطي، و<code>41-42</code> NC لمصباح «الطوارئ مضغوط».</li>
@@ -533,6 +545,7 @@ function sceneSvg(st){
 function progHtml(s){
   if (dev === 'pnoz') return '<p>الـ PNOZ بلا برنامج: نوع التوصيل والريست يتحددان بالأسلاك والجمبرات. في الريست المراقَب يجب أن يبقى الدخل مغلقًا 300 مللي ثانية، ثم يعمل الريلاي عند إغلاق زر RESET.</p>';
   if (dev === 'rt6' || dev === 'rt7') return '<p>الـ ' + (dev === 'rt6' ? 'RT6' : 'RT7') + ' بلا برنامج: كل شيء بالتوصيل والجمبرات. القناتان يجب أن تُغلقا، ثم يعمل الريست عند ترك الزر بشرط أن تكون تلامسات NC في K1 وK2 مغلقة.' + (dev === 'rt7' ? ' وزمن التأخير يُختار بربط T0 وT1 وT2.' : '') + '</p>';
+  if (dev === 'jsbt5') return '<p>الـ JSBT5 بلا برنامج ولا جمبرات: يعمل الخرج عندما تصل التغذية إلى A1 ويُغلق X1-X2، ويفصل عندما تنقطع تغذية A1. عرضه 22.5 مم فقط، وفيه 3 مخارج أمان.</p>';
   if (dev === 'bt50') return '<p>الـ BT50 بلا برنامج ولا جمبرات: يعمل الخرج عندما تصل التغذية إلى A1 ويُغلق X4. لا يراقب الحافة، فلو التصق زر START يعود الخرج وحده بمجرد رجوع الطوارئ، ولذلك يُراقَب زر START بتوصيل خاص أو يُستخدم ريلاي توسعة.</p>';
   if (dev !== 'pluto') return dev === 'rt9'
     ? '<p>الـ RT9 بلا برنامج: كل شيء بالتوصيل. يجب أن تكون القناتان مغلقتين، ثم يعمل الريست عند ترك الزر، بشرط أن تكون تلامسات NC في K1 وK2 مغلقة.</p>'
@@ -559,6 +572,7 @@ const TASKS = {
   pluto:[['pl-reset','نفّذ الريست وشغّل الماكينة (يومض مصباح الريست عندما يكون الجهاز جاهزًا)'],['pl-k','اضغط زر K على الجهاز'],['pl-weld','الحم K1، واضغط الطوارئ، ثم أعده وحاول تنفيذ الريست (لن يقبل)'],['pl-er12','أحدِث قصرًا بين القناتين ولاحظ Er12'],['pl-er10','اجعل القناة 1 تلمس 24V ولاحظ Er10'],['pl-er20','امسح البرنامج ولاحظ Er20، ثم حمّله'],['pl-er15','اخفض التغذية تحت 18V ولاحظ Er15، ثم أعدها وامسحه بزر K'],['pl-tcf','اقطع سلك القناة 2، ثم أعده، وحاول تنفيذ الريست (TCfault)']],
   rt6:[['rt6-reset','نفّذ الريست وشغّل الماكينة'],['rt6-stop','اضغط الطوارئ ولاحظ انطفاء In1 وIn2 والخرجين'],['rt6-weld','الحم K1 وحاول تنفيذ الريست بعد الطوارئ'],['rt6-one','ألصق القناة 1 بـ 24V، واضغط الطوارئ وأعده، ثم جرّب الريست']],
   rt7:[['rt7-reset','نفّذ الريست وشغّل الماكينة'],['rt7-soft','اضغط الطوارئ ولاحظ أن K1 وK2 يفصلان بعد التأخير'],['rt7-zero','غيّر التأخير إلى 0 ثانية واضغط الطوارئ ولاحظ الفصل الفوري'],['rt7-weld','الحم K1 وحاول تنفيذ الريست بعد الطوارئ']],
+  jsbt5:[['j5-start','اضغط START وشغّل الماكينة'],['j5-stop','اضغط الطوارئ ولاحظ انطفاء المصباح (انقطعت تغذية A1)'],['j5-weld','الحم K1 وحاول التشغيل بعد الطوارئ'],['j5-stuck','اجعل زر START عالقًا، واضغط الطوارئ وأعده، ولاحظ الخطر']],
   bt50:[['bt-start','اضغط START وشغّل الماكينة'],['bt-stop','اضغط الطوارئ ولاحظ انطفاء On (انقطعت تغذية A1)'],['bt-weld','الحم K1 وحاول التشغيل بعد الطوارئ'],['bt-stuck','اجعل زر START عالقًا، واضغط الطوارئ وأعده، ولاحظ الخطر']],
   rt9:[['rt9-reset','نفّذ الريست وشغّل الماكينة'],['rt9-stop','اضغط الطوارئ ولاحظ انطفاء In1 وIn2 والخرجين'],['rt9-weld','الحم K1 وحاول تنفيذ الريست بعد الطوارئ'],['rt9-one','اجعل القناة 1 تلمس 24V، واضغط الطوارئ ثم أعده، وحاول تنفيذ الريست']],
   vital:[['vi-reset','نفّذ الريست وشغّل الماكينة'],['vi-open','افتح البوابة ولاحظ انطفاء مصباح R'],['vi-s1','وصّل S1 مع B1 خطأً ولاحظ R'],['vi-bypass','أحدِث قصرًا على حساس ولاحظ وميض R'],['vi-weld','الحم K1 وحاول تنفيذ الريست']]
@@ -569,6 +583,7 @@ function renderTasks(){
   if (n('rt9') >= 3) IL.mark('l3', 'sim');
   if (n('rt6') >= 2 && n('rt7') >= 2) IL.mark('l10', 'sim');
   if (n('bt50') >= 3) IL.mark('l11', 'sim');
+  if (n('jsbt5') >= 3) IL.mark('l12', 'sim');
   if (n('pnoz') >= 3) IL.mark('l9', 'sim');
   if (n('vital') >= 3) IL.mark('l4', 'sim');
   if (seen.has('pl-reset') && seen.has('pl-weld')) IL.mark('l7', 'sim');
@@ -594,15 +609,15 @@ function tick(){
     else if (R.lock) { txt = 'القناة 1 لم تُفتح مع الطوارئ (ملتصقة بـ 24V). يرفض الـ ' + NM + ' الريست حتى تُفتح القناتان وتُغلقا مجددًا.'; cls = 'bad'; }
     else if (!s.fb) { txt = 'K1 ملتصق: الـ NC الخاص به مفتوح فدائرة الريست (A1 ← X1) مقطوعة. لن يعمل الريست.'; cls = 'bad'; }
     else txt = 'القناتان سليمتان. اضغط RESET واتركه.';
-  } else if (dev === 'bt50'){
-    s = bt50Step(); q1 = s.q1; q2 = s.q2;
+  } else if (dev === 'bt50' || dev === 'jsbt5'){
+    s = bt50Step(); q1 = s.q1; q2 = s.q2; const NB = dev === 'jsbt5' ? 'JSBT5' : 'BT50', XN = dev === 'jsbt5' ? 'X1-X2' : 'X4';
     led('On', s.a1, false); led('Out', q1); led('X4', s.x4);
-    if (!s.pow) { txt = 'الجهد منخفض: الـ BT50 لا يعمل.'; cls = 'bad'; }
-    else if (q1 && W.f.stuck) { txt = 'خطر: زر START عالق، فبمجرد أن رجعت الطوارئ عاد الخرج وحده واشتغلت الماكينة بدون أن يضغط أحد START. لهذا يُراقَب زر START أو يُستخدم الـ BT50 ريلاي توسعة فقط.'; cls = 'bad'; }
-    else if (q1) { txt = 'يعمل: On وOut مضيئان، و13-14 و23-24 و33-34 مغلقة، وK1 وK2 مغلقان.'; cls = 'ok'; }
-    else if (!s.a1) { txt = W.estop ? 'الطوارئ مضغوط: انقطعت التغذية عن A1 فانطفأ On وفصل كل شيء. أعد الطوارئ.' : 'سلك A1 مقطوع: الـ BT50 بلا تغذية.'; cls = W.f.cut1 ? 'bad' : ''; }
-    else if (!s.fb) { txt = 'K1 ملتصق: الـ NC الخاص به مفتوح في دائرة X4، فلن يعمل START.'; cls = 'bad'; }
-    else txt = 'التغذية على A1 سليمة (On مضيء). اضغط START ليُغلق X4.';
+    if (!s.pow) { txt = 'الجهد منخفض: الـ ' + NB + ' لا يعمل.'; cls = 'bad'; }
+    else if (q1 && W.f.stuck) { txt = 'خطر: زر START عالق، فبمجرد أن رجعت الطوارئ عاد الخرج وحده واشتغلت الماكينة بدون أن يضغط أحد START. لهذا يُراقَب زر START أو يُستخدم الـ ' + NB + ' ريلاي توسعة فقط.'; cls = 'bad'; }
+    else if (q1) { txt = 'يعمل: ' + (dev === 'jsbt5' ? 'المصباح مضيء' : 'On وOut مضيئان') + '، و13-14 و23-24 و33-34 مغلقة، وK1 وK2 مغلقان.'; cls = 'ok'; }
+    else if (!s.a1) { txt = W.estop ? 'الطوارئ مضغوط: انقطعت التغذية عن A1 فانطفأ ' + (dev === 'jsbt5' ? 'المصباح' : 'On') + ' وفصل كل شيء. أعد الطوارئ.' : 'سلك A1 مقطوع: الـ ' + NB + ' بلا تغذية.'; cls = W.f.cut1 ? 'bad' : ''; }
+    else if (!s.fb) { txt = 'K1 ملتصق: الـ NC الخاص به مفتوح في دائرة ' + XN + '، فلن يعمل START.'; cls = 'bad'; }
+    else txt = 'التغذية على A1 سليمة (' + (dev === 'jsbt5' ? 'المصباح مضيء' : 'On مضيء') + '). اضغط START ليُغلق ' + XN + '.';
   } else if (dev === 'pnoz'){
     s = pnozStep(); q1 = s.q1; q2 = s.q2;
     led('POWER', s.pow); led('CH1', q1); led('CH2', q2);
@@ -655,7 +670,13 @@ function renderAll(){
   const dz = $('#doors'); dz.innerHTML = doorsHtml(); dz.hidden = !dz.innerHTML;
   $('#ctl').innerHTML = ctlHtml(); $('#faults').innerHTML = faultsHtml(); $('#wire').innerHTML = wireHtml();
   $('#prog').innerHTML = progHtml({});
-  renderTasks(); tick();
+  renderTasks(); tick(); renderTerms();
+}
+function renderTerms(){
+  const el = document.getElementById('wdT'); if (!el || !window.LiveTerms) return;
+  const br = dev === 'rt7' ? [['S23','S24']].concat([[], [['T0','T1']], [['T0','T2']], [['T0','T1'],['T1','T2']]][W.f.dly == null ? 3 : W.f.dly])
+    : dev === 'pnoz' && W.f.auto ? [['S13','S14']] : null;
+  el.innerHTML = window.LiveTerms(dev, br ? {br:br} : null);
 }
 /* ---------------- events ---------------- */
 $('#ctl').addEventListener('click', e => {
@@ -682,7 +703,7 @@ $('#faults').addEventListener('click', e => {
   else if (f === 'download'){ P.prog = true; see('pl-er20'); }
   else if (f === 'dly'){ W.f.dly = ((W.f.dly == null ? 3 : W.f.dly) + 1) % 4; }
   else { W.f[f] = !W.f[f]; if (f === 'weld' && !W.f.weld) K.k1 = false; }
-  $('#faults').innerHTML = faultsHtml(); $('#wire').innerHTML = wireHtml(); tick();
+  $('#faults').innerHTML = faultsHtml(); $('#wire').innerHTML = wireHtml(); tick(); renderTerms();
 });
 document.querySelectorAll('.tabs [data-tab]').forEach(b => b.addEventListener('click', () => go(b.dataset.tab)));
 function go(t){
@@ -695,7 +716,7 @@ function go(t){
 }
 setInterval(tick, 200);
 const h = (location.hash || '').slice(1);
-go(['rt9','vital','pnoz','rt6','rt7','bt50'].includes(h) ? h : 'pluto');
+go(['rt9','vital','pnoz','rt6','rt7','bt50','jsbt5'].includes(h) ? h : 'pluto');
 window.SIM = {W, K, P, R, V, Z, tick, go, seen};
 })();
 </script>

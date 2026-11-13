@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ريلاي الطوارئ JSBT5</title>
+<meta name="description" content="الدرس 7: ريلاي الأمان ABB Jokab JSBT5 بعرض 22.5 مم: الطوارئ في التغذية A1، ودخل الاختبار X1-X2، و3 مخارج أمان، مع رسم بكل الأطراف ومثال حيّ.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="safety.css?v=20261027s2">
+<script src="safety.js?v=20261113k"></script>
+<link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
+<script src="/assets/lesson-light.js?v=20261029L2" defer></script>
+<link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
+<script src="/assets/real-art.js?v=20261030h1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">السيفتي PLC · الدرس 7 من 13</p>
+    <h1>ريلاي الطوارئ JSBT5</h1>
+    <p>أصغر ريلاي طوارئ في العائلة: الطوارئ في التغذية نفسها، ودخل اختبار X1-X2 يراقب الكونتاكتورات، و3 مخارج أمان.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="pluto.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>ما الـ JSBT5؟</h2>
+  <figure class="dev-ph"><img src="img/jsbt5.jpg" width="368" height="955" alt="ريلاي الأمان ABB Jokab JSBT5 من الأمام" loading="lazy"><figcaption>أعلى: <span class="mono">X1 13 23</span> (الخلفي) و<span class="mono">X2 33 41</span> (الأمامي). أسفل: <span class="mono">A2 34 42</span> (الأمامي) و<span class="mono">A1 14 24</span> (الخلفي). ومصباح واحد للتغذية.</figcaption></figure>
+  <p>الـ JSBT5 من أشهر ريلايات الطوارئ وأصغرها: عرضه <bdi dir="ltr">22.5 mm</bdi> فقط، وليس له مداخل قنوات. الطوارئ أو مفتاح الباب يوضع <b>في تغذية الريلاي نفسها</b>، فإذا ضُغط انقطعت التغذية وفصل.</p>
+  <ul class="fx">
+    <li><b>A1 / A2</b><span>التغذية <bdi dir="ltr">24V AC/DC</bdi>، وهي نفسها «الدخل». لاحظ أن الطرفين كليهما في الأسفل</span></li>
+    <li><b>X1 / X2</b><span>دخل الاختبار: يجب أن يُغلق مرة لتعمل المخارج، ثم يمكن أن يبقى مفتوحًا أو مغلقًا</span></li>
+    <li class="ok"><b>13-14 / 23-24 / 33-34</b><span>3 مخارج أمان NO · <bdi dir="ltr">6A</bdi></span></li>
+    <li><b>41-42</b><span>NC للمعلومات فقط، مثل مصباح «الطوارئ مضغوط»</span></li>
+    <li><b>JSBT5T</b><span>نسخة بمخارج متأخرة <bdi dir="ltr">0.5 s</bdi></span></li>
+  </ul>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>كيف يوصَّل؟ وأين البريدج؟</h2>
+  <p>الطوارئ والأبواب على التوالي من <bdi dir="ltr">+24V</bdi> إلى <b>A1</b>، والطرف <b>A2</b> إلى <bdi dir="ltr">0V</bdi>. وفي دخل الاختبار <b>X1-X2</b> نضع تلامسات NC للكونتاكتورات على التوالي مع زر START، فلا يعمل الريلاي إذا كان كونتاكتور ملتصقًا.</p>
+  <ul class="fx">
+    <li><b>ريست عند رجوع الطوارئ</b><span>X1-X2 من خلال NC الكونتاكتورات فقط، بدون زر</span></li>
+    <li><b>ريست يدوي</b><span>X1 ← NC من K1 ← NC من K2 ← START ← X2</span></li>
+    <li><b>أمان أعلى</b><span>تلامس ثانٍ في الطوارئ على A2 (توصيل مزدوج في التغذية)</span></li>
+  </ul>
+  <div class="box safe"><b>انتبه:</b> الـ JSBT5 لا يراقب الحافة على X1-X2: لو التصق زر START يعود الخرج وحده بمجرد رجوع الطوارئ. والقصر على سلك A1 لا يُكتشف، ولذلك يُفضَّل كابل محمي أو التوصيل المزدوج على A1 وA2.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">▶</span>مثال حيّ: JSBT5 مع طوارئ وبابين</h2>
+  <p>الجهاز مرسوم بكل أطرافه كما هو: الأبيض مستخدم والرمادي غير مستخدم. اضغط الطوارئ أو افتح بابًا وشاهد انقطاع التغذية عن A1، ثم اضغط START.</p>
+  <div class="live-ex" data-dev="jsbt5"></div>
+  <div class="box key" style="margin-top:12px"><b>على المحاكي:</b> جرّب الـ JSBT5 بصورته الحقيقية، واجعل زر START عالقًا ولاحظ الخطر. <a class="btn pri" href="pluto.html#jsbt5" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب إجابة صحيحة عن 5 من 6 على الأقل ليُسجَّل الدرس مكتملًا.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأطراف والأرقام هنا من كتالوج ABB Jokab Safety (Safety Relays). قبل التطبيق على ماكينة حقيقية ارجع إلى الكتالوج وتقييم المخاطر الخاص بالماكينة. يُحفظ تقدّمك على هذا الجهاز فقط.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l12');
+IL.quiz(document.getElementById('quiz'), [{"q": "أين توصَّل الطوارئ في الـ JSBT5؟", "o": ["على التوالي في تغذية A1", "على S13-S14", "على X1-X2", "على 41-42"], "a": 0, "why": "الـ JSBT5 ليس له مداخل قنوات: الطوارئ يقطع تغذيته مباشرة."}, {"q": "ما وظيفة X1-X2؟", "o": ["دخل الاختبار: يُغلق مرة لتعمل المخارج", "تغذية 0V", "خرج أمان", "دخل قناة ثانية"], "a": 0, "why": "يُغلق X1-X2 (عبر START وNC الكونتاكتورات) فتعمل المخارج."}, {"q": "كم مخرج أمان NO في الـ JSBT5؟", "o": ["3", "2", "4", "1"], "a": 0, "why": "3 NO (13-14 و23-24 و33-34) + 1 NC (41-42)."}, {"q": "أين الطرفان A1 وA2 في الـ JSBT5؟", "o": ["كلاهما في الأسفل", "A1 أعلى وA2 أسفل", "كلاهما في الأعلى", "على الجانب"], "a": 0, "why": "في الصف السفلي: A2 في الأمامي وA1 في الخلفي."}, {"q": "التحم K1 والـ NC الخاص به في دائرة X1-X2. ماذا يحدث عند START؟", "o": ["لا تعمل المخارج", "تعمل عاديًا", "يعمل K2 فقط", "يُغلق 41-42"], "a": 0, "why": "الـ NC المفتوح يقطع دائرة الاختبار، فلا يعمل الريلاي."}, {"q": "كيف ترفع أمان توصيل الطوارئ على الـ JSBT5؟", "o": ["تلامس ثانٍ في الطوارئ على A2", "بريدج بين X1 وX2", "توصيل 41-42 بالكونتاكتور", "إلغاء الاختبار"], "a": 0, "why": "التوصيل المزدوج في التغذية (A1 وA2) يجعل قصرًا واحدًا لا يمنع الفصل."}], {lesson:'l12', pass:0.8});
+</script>
+<script src="live.js?v=20261113d"></script>
+</body>
+</html>
