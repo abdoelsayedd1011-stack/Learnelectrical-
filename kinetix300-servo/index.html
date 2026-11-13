@@ -526,7 +526,7 @@ body.guided .topnote{display:none}
   <button type="button" class="qbtn" data-qact="mvres">Reset Fault<small>Faults</small></button></div></div></div>
 </div>
 </div>
-      <p class="hint" id="faceHint" style="text-align:center"><span class="tagc">تحكم</span> أزرار الكيباد <span class="tagv">بيان</span> الشاشة ولمبة CHARGE</p>
+      <p class="hint" id="faceHint" style="text-align:center"><span class="tagc">تحكم</span> أزرار الكيباد <span class="tagv">بيان</span> الشاشة ومصباح CHARGE</p>
       <ul class="keyguide"><li><b>M</b> يتنقل بين الشاشات: الحالة ‏←‏ IP ‏←‏ المراقبة ‏←‏ FLt ‏←‏ P.01.</li><li><b>▲ / ▼</b> تختار أو تغيّر القيمة.</li><li><b>⏎</b> تدخل أو تحفظ (تظهر donE).</li><li>الـ JOG والـ Autotune والجدول من <b>MotionView OnBoard</b> (الصندوق تحت الدرايف).</li></ul>
     </div>
     <div class="panel">
@@ -614,7 +614,7 @@ body.guided .topnote{display:none}
       <div class="knobbox"><div class="label">التردد</div><div class="knob" id="kFreq" tabindex="0" role="slider" aria-label="تردد النبضات"><i></i></div><div class="kv" id="kFreqV">50 kpps</div></div>
       <div class="knobbox" style="align-items:stretch;text-align:right">
         <div class="field"><span class="label">نوع النبضات من PLC</span><select id="genType"><option value="pd">Pulse + Direction</option><option value="cw">CW / CCW</option><option value="ab">A/B phase</option></select></div>
-        <div class="field"><span class="label">الاتجاه</span><select id="genDir"><option value="1">لقدام (+)</option><option value="-1">للخلف (−)</option></select></div>
+        <div class="field"><span class="label">الاتجاه</span><select id="genDir"><option value="1">للأمام (+)</option><option value="-1">للخلف (−)</option></select></div>
       </div>
       <div class="knobbox" style="align-items:stretch;text-align:right">
         <div class="field"><span class="label">عدد النبضات</span><input type="number" id="genN" value="10000" min="1" step="1"></div>
@@ -747,13 +747,13 @@ return {
  homeRpm:p=>p.HomeVel,
  index:(p,i)=>({abs:p['I'+i+'Type']===1,dist:p['I'+i+'Dist']/100*ENC,rpm:p['I'+i+'Vel']}),
  gains:p=>({kpp:p.PosP,kvp:TAU*p.VelP,kvi:TAU*p.VelI,ratio:p.Inertia/100,ff:p.VelFF/100}),
- REGEN:{int:{R:100,W:40,log:'مقاومة الريجين متوصلة على BR+ و BR−'},ext:{R:40,W:300,log:'مقاومة ريجين خارجية أكبر على BR+ و BR−'},noneLog:'أزلت مقاومة الريجين: لا يوجد شيء على BR+ و BR−'},
+ REGEN:{int:{R:100,W:40,log:'مقاومة الريجين موصولة على BR+ و BR−'},ext:{R:40,W:300,log:'مقاومة ريجين خارجية أكبر على BR+ و BR−'},noneLog:'أزلت مقاومة الريجين: لا يوجد شيء على BR+ و BR−'},
  resName:'Fault Reset',resF:'RES',sonName:'Enable',CRname:'Clear',LSPname:'Positive Limit',LSNname:'Negative Limit',swName:'MotionView OnBoard',
  DIDEF:{LSP:true,LSN:true},
  DI(m){const c=[{f:'SON',pin:29,lbl:'Enable',ar:'تشغيل السيرفو (IN_A3)'},{f:'RES',pin:27,lbl:'Fault Reset',ar:'مسح الفولت (IN_A1)'}];
   if(m==='I')c.push({f:'STOP',pin:30,lbl:'Stop',ar:'إيقاف الحركة (IN_A4)'},{f:'IDX0',pin:31,lbl:'Index Sel 0',ar:'اختيار رقم الحركة bit 0 (IN_B1)'},{f:'IDX1',pin:32,lbl:'Index Sel 1',ar:'اختيار رقم الحركة bit 1 (IN_B2)'},{f:'START',pin:33,lbl:'Start Index',ar:'ابدأ الحركة (IN_B3)'},{f:'HSTART',pin:34,lbl:'Start Homing',ar:'ابدأ الهوم (IN_B4)'},{f:'HOME',pin:37,lbl:'Home Sensor',ar:'حساس الهوم (IN_C3)'});
-  c.push({f:'LSP',pin:35,lbl:'Pos Limit',ar:'حد نهاية لقدام (IN_C1)',nc:1},{f:'LSN',pin:36,lbl:'Neg Limit',ar:'حد نهاية لورا (IN_C2)',nc:1});return c;},
- DO:[{pin:43,lbl:'Ready',ar:'جاهز ومفيش فولت (OUT1)',st:'noalm'},{pin:44,lbl:'Brake',ar:'فك الفرامل (OUT2)',st:'brk'},{pin:45,lbl:'In Position',ar:'وصل للموضع (OUT3)',st:'inpos'},{pin:46,lbl:'Home Done',ar:'الهوم خلص (OUT4)',st:'home'}],
+  c.push({f:'LSP',pin:35,lbl:'Pos Limit',ar:'حد نهاية للأمام (IN_C1)',nc:1},{f:'LSN',pin:36,lbl:'Neg Limit',ar:'حد نهاية للخلف (IN_C2)',nc:1});return c;},
+ DO:[{pin:43,lbl:'Ready',ar:'جاهز ولا يوجد جهد (OUT1)',st:'noalm'},{pin:44,lbl:'Brake',ar:'فك الفرامل (OUT2)',st:'brk'},{pin:45,lbl:'In Position',ar:'وصل للموضع (OUT3)',st:'inpos'},{pin:46,lbl:'Home Done',ar:'الهوم خلص (OUT4)',st:'home'}],
  pinFmt:p=>'IOD-'+p,
  AN:{v:'AIN1 · IOD-22/23',t:'AIN1 (عزم)',m1:'AO1',m2:'AO2'},PULPINS:'Step+ 1 · Step− 2 · Dir+ 3 · Dir− 4',
  CNNAME:'IOD · 50 pin',CNSUB:'أرقام البنون هنا تمثيلية للتدريب. المداخل sourcing: +24V من المفتاح على الطرف، و 0V على IN_COM.',
@@ -872,7 +872,7 @@ return {
    p:[['JogVel',200,'سرعة الـ JOG 200 rpm'],['Accel',10000,'تسارع 10000 rpm/s'],['Decel',10000,'تباطؤ بنفس القيمة']],
    su:{load:'disk',ratio:1,fric:5,brake:false},io:{},
    terms:[['24V','+24V'],[35,'IN_C1'],[36,'IN_C2'],[26,'IN_COM']],di:[[35,'nc','ls','LS+'],[36,'nc','ls','LS-']],kp:' diS',w:420,
-   st:['وصّل الكهرباء L1 و L2 (230V فاز واحد) والأرضي، وكهربا الـ 24V للوجيك على BP.','المحرك على U V W وأرضيه، وكابل الفيدباك في MF.','حساسات الحدود NC على IN_C1 و IN_C2 (من +24V) و IN_COM على 0V.','وصّل كابل Ethernet وافتح MotionView OnBoard من المتصفح على عنوان الـ IP (من الكيباد: M حتى IP).','اكتب الباراميترات التي في الجدول.','في MotionView: اضغط Enable ثم Jog +: يدور المحرك 200 rpm ويعرض الكيباد run.'],
+   st:['وصّل الكهرباء L1 و L2 (230V أحادي الفاز) والأرضي، وتغذية الـ 24V للوجيك على BP.','المحرك على U V W وأرضيه، وكابل الفيدباك في MF.','حساسات الحدود NC على IN_C1 و IN_C2 (من +24V) و IN_COM على 0V.','وصّل كابل Ethernet وافتح MotionView OnBoard من المتصفح على عنوان الـ IP (من الكيباد: M حتى IP).','اكتب الباراميترات التي في الجدول.','في MotionView: اضغط Enable ثم Jog +: يدور المحرك 200 rpm ويعرض الكيباد run.'],
    go:'في MotionView (أسفل الدرايف): Enable ‏←‏ Jog +: يدور المحرك 200 rpm.'},
   {t:'Analog Velocity: سرعة من AIN1',md:'S',
    g:'سير أو مضخة بسرعة من PLC أو بوتنشيوميتر: ±10V على AIN1. السرعة = الجهد × AinVelScale. عند 300 rpm/V يكون 5V = 1500 rpm. Enable وحده يشغّل.',
@@ -934,11 +934,11 @@ return {
    flt:{t:'اختر Index 3 (Sel 0 و Sel 1 مغلقان) واضغط Start Index: الحركة 400 مم أبعد من الحد، فيتوقف المحور عند Positive Limit ويعرض الكيباد PLt.',
     fn:()=>{const on=!(S.di.IDX0&&S.di.IDX1);S.di.IDX0=on;S.di.IDX1=on;pulseDI('START');},on:()=>!!(S.di.IDX0&&S.di.IDX1),lbl:['ابدأ Index 3 (400 مم)','ارجع Index 0 (100 مم)'],
     seen:()=>X.warnP,ok2:()=>!X.warnP,clr:'رجّعت Index Select لـ 0 ودوست Start Index: المحور رجع 100 مم وساب الحد'}},
-  {goal:'Autotune يقيس قصور طارة تقيلة ويظبط الجين.',ico:'tune',sonT:'ينفّذ Autotune الـ Enable وحده (Enable الخارجي مفصول)',sonOpt:1,
+  {goal:'Autotune يقيس قصور حدّافة ثقيلة ويضبط الجين.',ico:'tune',sonT:'ينفّذ Autotune الـ Enable وحده (Enable الخارجي مفصول)',sonOpt:1,
    do:'اضغط <b>Autotune</b> في MotionView (أسفل الدرايف). يتحرك المحرك ذهابًا وإيابًا، ثم تقترب <b>Inertia</b> من <b>15.00</b> ويُكتب الجين.',
    ok:()=>!!FL.mvtune&&Math.abs(S.P.Inertia/100-S.ratio)<=0.1*S.ratio,
    flt:{t:'أغلق Enable واضغط «حركة ذهاب وإياب»، ثم ارفع VelP إلى 700 Hz: يطنّ المحرك ويهتز العزم في الاسكوب.',
-    fn:()=>{writeP('VelP',S.P.VelP>=500?45:1400);log('VelP = '+S.P.VelP+' Hz');},on:()=>S.P.VelP>=500,lbl:['خلّي VelP عالي جدًا','أعد VelP = 45 Hz'],seenT:'المحرك يطن والعزم يرتعش في الاسكوب',seenSub:'هذا الطنين يعني أن الجين أعلى مما تتحمله الميكانيكا',
+    fn:()=>{writeP('VelP',S.P.VelP>=500?45:1400);log('VelP = '+S.P.VelP+' Hz');},on:()=>S.P.VelP>=500,lbl:['اجعل VelP عاليًا جدًا','أعد VelP = 45 Hz'],seenT:'المحرك يطن والعزم يرتعش في الاسكوب',seenSub:'هذا الطنين يعني أن الجين أعلى مما تتحمله الميكانيكا',
     seen:()=>vibrating(),ok2:()=>S.P.VelP<=200&&!vibrating(),clr:'رجّعت VelP: الزنة راحت والحركة ثابتة'}},
   {goal:'تُحدث E07، وتقرأ السبب من البطاقة، ثم تصلح وتمسح.',ico:'alarm',sonT:'Enable (IN_A3) مقفول',
    do:'أغلق <b>Enable</b>: تصل الحدّافة إلى 3000 rpm. أزل <b>مقاومة الريجين</b> واخفض <b>AIN1</b> إلى صفر: يظهر <b>E07</b>. أعد المقاومة واضغط <b>Fault Reset</b>.',
@@ -1382,7 +1382,7 @@ function buildLoad(){
  else if(S.load==='conv')s.innerHTML=`<rect x="8" y="58" width="144" height="44" rx="22" fill="#2a2f33"/><rect x="8" y="58" width="144" height="44" rx="22" fill="none" stroke="#6d777d" stroke-width="5" stroke-dasharray="10 8" id="belt"/><g id="rot"><circle cx="30" cy="80" r="16" fill="#8a949a"/><rect x="28" y="66" width="4" height="10" fill="#ffb44d"/></g><circle cx="130" cy="80" r="16" fill="#8a949a"/><rect id="box" x="60" y="34" width="30" height="24" rx="3" fill="#c98a3a"/>`;
  else if(S.load==='lin')s.innerHTML=`<rect x="6" y="74" width="148" height="12" fill="url(#sh)"/><rect x="2" y="88" width="156" height="6" fill="#5b646a"/><rect x="10" y="96" width="8" height="10" fill="#4cc0cf" id="limLo"/><rect x="142" y="96" width="8" height="10" fill="#4cc0cf" id="limHi"/><rect x="22" y="96" width="10" height="10" fill="#e0a43a" id="dogS"/><text x="27" y="118" text-anchor="middle" font-size="7" fill="currentColor" font-family="Arial">DOG</text><text x="14" y="118" text-anchor="middle" font-size="7" fill="currentColor" font-family="Arial">LSN</text><text x="146" y="118" text-anchor="middle" font-size="7" fill="currentColor" font-family="Arial">LSP</text><g id="car"><rect x="-14" y="54" width="28" height="20" rx="3" fill="#c98a3a"/><rect x="-3" y="74" width="6" height="22" fill="#8a5a10"/></g><text x="80" y="40" text-anchor="middle" font-size="10" fill="currentColor" id="hTxt" font-family="Arial"></text>`;
  else s.innerHTML=`<rect x="74" y="8" width="12" height="144" fill="url(#sh)"/><rect x="40" y="6" width="80" height="6" fill="#5b646a"/><rect x="40" y="148" width="80" height="6" fill="#5b646a"/><rect x="34" y="16" width="10" height="6" fill="#4cc0cf" id="limHi"/><rect x="34" y="138" width="10" height="6" fill="#4cc0cf" id="limLo"/><g id="car"><rect x="50" y="0" width="60" height="22" rx="3" fill="#c98a3a"/><text x="80" y="15" text-anchor="middle" font-size="9" fill="#1b2226" font-family="Arial">LOAD</text></g><text x="150" y="80" text-anchor="end" font-size="9" fill="currentColor" id="hTxt" font-family="Arial"></text>`;
- const hints={disk:'حدّافة على العمود. القصور الذاتي يؤثر على الجين والريجين.',conv:'سير ناقل فيه احتكاك ثابت، مناسب لوضع العزم.',lin:'محور أفقي على بول سكرو خطوته 10 مم والمشوار 400 مم. حساس الحد العكسي '+B.LSNname+' عند 8 مم والأمامي '+B.LSPname+' عند 392 مم (متوصلين NC)، وحساس الهوم DOG من 0 لـ 30 مم.',vert:'محور رأسي بسكرو خطوته 10 مم، والحمل يشد لأسفل بنصف العزم المقنّن. حساسات النهاية موصّلة NC. إذا كان السيرفو OFF ولا توجد فرامل، سيسقط الحمل لأسفل.'};
+ const hints={disk:'حدّافة على العمود. القصور الذاتي يؤثر على الجين والريجين.',conv:'سير ناقل فيه احتكاك ثابت، مناسب لوضع العزم.',lin:'محور أفقي على بول سكرو خطوته 10 مم والمشوار 400 مم. حساس الحد العكسي '+B.LSNname+' عند 8 مم والأمامي '+B.LSPname+' عند 392 مم (موصولة NC)، وحساس الهوم DOG من 0 إلى 30 مم.',vert:'محور رأسي بسكرو خطوته 10 مم، والحمل يشد لأسفل بنصف العزم المقنّن. حساسات النهاية موصّلة NC. إذا كان السيرفو OFF ولا توجد فرامل، سيسقط الحمل لأسفل.'};
  $('#loadHint').textContent=hints[S.load];
 }
 function updateMotorView(){
@@ -1455,7 +1455,7 @@ function showPDetail(c){
  $('#ptable').querySelectorAll('tr[data-row]').forEach(tr=>tr.classList.toggle('sel',tr.dataset.row===c));
  const rng=`${fmtParam(d,d.mn)} … ${fmtParam(d,d.mx)}`;
  const when=d.ro?'للقراءة فقط':d.pw?'بعد إطفاء التحكم وتشغيلها':d.son?'فورًا، لكن والسيرفو OFF':'فورًا';
- const eff=d.ns?'<span class="badge n">للمعرفة — ملوش تأثير في المحاكاة</span>':'<span class="badge y">يؤثر في المحاكاة</span>';
+ const eff=d.ns?'<span class="badge n">للمعرفة — لا تأثير له في المحاكاة</span>':'<span class="badge y">يؤثر في المحاكاة</span>';
  const optTxt=d.opts?`<div class="muted" style="font-size:.82rem">${Object.values(d.opts).join(' · ')}</div>`:'';
  $('#pdetail').innerHTML=`<div class="h"><b>${c}</b><span class="mono muted">${d.n}</span><span>${d.ar}</span>${eff}</div>
   <p>${d.x||'باراميتر عادي، والوصف الذي في الجدول يكفي.'}</p>${d.note?`<div class="muted" style="font-size:.82rem">${d.note}</div>`:''}${optTxt}
@@ -1741,7 +1741,7 @@ function gQuickClick(e){
  const a=e.target.closest('[data-qact]');if(!a)return false;
  const k=a.dataset.qact;
  if(k==='send')sendPulses(10000,50);
- else if(k==='dir'){S.gen.dir=-S.gen.dir;$('#genDir').value=String(S.gen.dir);log('اتجاه النبضات: '+(S.gen.dir>0?'لقدام (+)':'للخلف (−)'));}
+ else if(k==='dir'){S.gen.dir=-S.gen.dir;$('#genDir').value=String(S.gen.dir);log('اتجاه النبضات: '+(S.gen.dir>0?'للأمام (+)':'للخلف (−)'));}
  else if(k==='run'){S.gen.run=!S.gen.run;if(S.gen.run)S.gen.kpps=Math.min(S.gen.kpps,60);$('#genRun').setAttribute('aria-pressed',S.gen.run);$('#genRun').classList.toggle('pri',S.gen.run);log(S.gen.run?'يرسل الـ PLC نبضات باستمرار':'الـ PLC وقف النبضات');}
  else if(k==='plchome')plcHomeStart();
  else if(k==='regen'){setSel('#regenSel',S.regen==='none'?'int':'none');}
@@ -1778,7 +1778,7 @@ function guideRender(){
    '<div class="g-check" id="gChkM"><i>✓</i><span>وضع التحكم '+(a.md===null?'أي وضع':B.modeName(a.md))+'<span class="sub" id="gModeNow"></span></span></div>'+
    '<div class="g-check" id="gChkR"><i>✓</i><span>'+(g.okT||'نفّذ المحرك ما يطلبه التمرين')+'<span class="sub">'+a.go+'</span></span></div>'+
    '<div class="g-live"><span>الحالة <b id="gSt">—</b></span><span>السرعة <b id="gRpm">0 r/min</b></span><span>العزم <b id="gTq">0 %</b></span><span>الموضع <b id="gPos">0.000 rev</b></span></div>'+
-   '<p class="g-note"><span class="tagc">تحكم</span> الكيباد والمداخل والمقابض والنبضات <span class="tagv">بيان</span> الشاشة واللمبات والمحرك</p>'+
+   '<p class="g-note"><span class="tagc">تحكم</span> الكيباد والمداخل والمقابض والنبضات <span class="tagv">بيان</span> الشاشة والمصابيح والمحرك</p>'+
    (i===2?'<p class="g-note">هل تريد أن ترى هذه النبضات تحرّك ماكينة حقيقية؟ <button type="button" class="btn" data-gomach="0" style="min-height:44px">جرّب مثال ترابيزة البول سكرو</button></p>':'')+
    (sp.run.length?'<details><summary style="cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center">باقي خطوات التمرين</summary><ol class="g-list" style="margin-top:8px">'+sp.run.map(x=>'<li>'+x+'</li>').join('')+'</ol></details>':'');
  }else{
@@ -2136,7 +2136,7 @@ function machSelect(k){if(k!==MS.k){machDetach();MS.k=k;MS.tgt=null;MS.res=null;
 $('#mTabs').addEventListener('click',e=>{const b=e.target.closest('[data-mk]');if(b)machSelect(+b.dataset.mk);});
 $('#mBody').addEventListener('input',e=>{const r=e.target.closest('[data-tp]');if(r){TU.manual();writeP(r.dataset.tp,+r.value);if(TU.onSlide)TU.onSlide(r.dataset.tp);updatePTable(true);machUpdate(true);}if(e.target.id==='mN'||e.target.id==='mM')machUpdate(true);});
 $('#mBody').addEventListener('click',e=>{
- const tb=e.target.closest('[data-tune]');if(tb){setTune(TUNE[tb.dataset.tune](MK()));machMsg({slow:'جين منخفض: تتأخر الماكينة عن الأمر وتصل متأخرة',good:'نسبة القصور = الحقيقية وجين متوسط',over:'نسبة القصور = 0 وجين السرعة واطي: الدرايف فاكر الحمل خفيف، فالحلقة ضعيفة على الكتلة الحقيقية، تعدّي الهدف وترجع. بص على الخط الأحمر في الرسم',vib:'جين السرعة عالٍ ونسبة القصور الذاتي أكبر بكثير من الحقيقية: أصبحت الحلقة حادة جدًا والعزم يرتعش (الطنين الذي تسمعه في الماكينة)، والمحرك يسخن'}[tb.dataset.tune]);return;}
+ const tb=e.target.closest('[data-tune]');if(tb){setTune(TUNE[tb.dataset.tune](MK()));machMsg({slow:'جين منخفض: تتأخر الماكينة عن الأمر وتصل متأخرة',good:'نسبة القصور = الحقيقية وجين متوسط',over:'نسبة القصور الذاتي = 0 وجين السرعة منخفض: يظن الدرايف أن الحمل خفيف، فتكون الحلقة ضعيفة على الكتلة الحقيقية، فتتجاوز الهدف ثم ترجع. انظر إلى الخط الأحمر في الرسم',vib:'جين السرعة عالٍ ونسبة القصور الذاتي أكبر بكثير من الحقيقية: أصبحت الحلقة حادة جدًا والعزم يرتعش (الطنين الذي تسمعه في الماكينة)، والمحرك يسخن'}[tb.dataset.tune]);return;}
  const b=e.target.closest('[data-ma]');if(!b)return;const a=b.dataset.ma,M=MK();
  if(a==='setup')machSetup();
  else if(a==='gear')writeGear(+$('#mN').value,+$('#mM').value);
@@ -2275,9 +2275,9 @@ window.SIMTOUR_OLD=function(o){
   edit:o.edit?[['js',()=>{if(o.home)o.home();}],['until',()=>o.ready?o.ready():true,12000,'لحظة حتى تعمل الشاشة…']].concat(o.edit,o.editV!=null?[['until',()=>Math.abs((o.editGet?o.editGet():P[o.editP])-o.editV)<1e-6,4000,null,'edit-value']]:[]):null,
   editOk:o.editP?(()=>{const q=o.editP.replace(/"/g,'');const r=document.querySelector(['data-pc','data-prow','data-p','data-row'].map(x=>'#gBody tr['+x+'="'+q+'"], #gBody ['+x+'="'+q+'"]').join(','));return r&&(r.closest('tr')||r);}):null,
   run:(o.run||[
-   {cap:'نخلّي المحاكي يكمّل باقي الباراميترات أوتوماتيك، وننتقل لخطوة التشغيل…',k:'التشغيل',ops:[['js',async A=>{await A.applyAuto();}]]},
+   {cap:'نترك المحاكي يكمل باقي الباراميترات تلقائيًا، وننتقل إلى خطوة التشغيل…',k:'التشغيل',ops:[['js',async A=>{await A.applyAuto();}]]},
    {t:'#gBody .g-live, #gBody #gHz',cap:o.liveCap||'الخطوة 3 التشغيل: هنا ترى الحالة والتردد والتيار أثناء التشغيل.',opt:1},
-   {t:o.station||'#station',cap:o.stationCap||'لوحة التشغيل: سلكتورات وزراير ومقابض متوصلة على أطراف الانفرتر. دوسة على السلكتور تقفله أو تفتحه، والمقبض تلفه بالسحب أو بعجلة الماوس.'},
+   {t:o.station||'#station',cap:o.stationCap||'لوحة التشغيل: سلكتورات وأزرار ومقابض موصولة على أطراف الانفرتر. الضغط على السلكتور يغلقه أو يفتحه، والمقبض تديره بالسحب أو بعجلة الماوس.'},
    {ops:o.tourRun},
    {t:MV,cap:o.motorCap||'المحرك يدور، والأرقام تحته تتغير معه: التردد Hz، والسرعة rpm، والتيار A، والجهد V.',act:async A=>{window.SIMTOUR.state.live=live;await A.until(o.running||(()=>Math.abs(S.fOut)>15),o.runMs||20000);}},
    {t:'#gChkR',cap:'عندما تنفّذ المطلوب صحيحًا، تصبح هذه العلامة ✓ خضراء ويمكنك المتابعة.',ops:[['until',chk('#gChkR'),20000,null,'tour-gChkR']]}
@@ -2314,7 +2314,7 @@ window.SIMTOUR_SERVO2=function(o){
   {run:[son()].concat(o.st1?[['tap',Q('ST1'),'السبب: أُغلق <b>ST1</b> (للأمام).']]:[],[wOk('النتيجة: يصل المحرك إلى '+o.v1[1]+' r/min…'),say('ثابت ✓ على حوالي '+o.v1[1]+' r/min.'),vset(o.v2[0],'السبب: '+o.vName+' زاد لـ <b>'+o.v2[0]+'V</b>.'),['until',()=>rpm()>o.v2[1]*0.9,15000,'النتيجة: تزيد السرعة معه إلى '+o.v2[1]+' r/min…'],vset(o.v1[0],'نرجّعه '+o.v1[0]+'V.'),wOk()]),
    flt:{reset:[]}},
   {run:[son(),['wait',1200],['tap',A('send'),'السبب: الـ PLC بعت <b>10000</b> نبضة.'],wOk('النتيجة: يدور المحرك لفة واحدة بالضبط ويتوقف…'),say('لفة واحدة ✓ وأضاءت إشارة الوصول.')],
-   flt:{after:o.swapSend?[['tap',A('send'),'ونبعت نبضات…']]:[],reset:res}},
+   flt:{after:o.swapSend?[['tap',A('send'),'ونرسل نبضات…']]:[],reset:res}},
   {run:[son(),['wait',1200]].concat(o.home,[wOk('النتيجة: يعود المحور حتى حساس الهوم ويتوقف، وتُسجَّل نقطة الصفر…',60000),say('انتهى الهوم ✓ وسُجّلت نقطة الصفر.')]),
    flt:{fix:o.limFix||[],reset:[],ms:60000}},
   {run:o.tune.concat([wOk('النتيجة: يتحرك المحرك ذهابًا وإيابًا، ويقيس الدرايف القصور الذاتي ويكتب الجين وحده…',120000),say('الضبط الأوتوماتيك خلص ✓.')]),
