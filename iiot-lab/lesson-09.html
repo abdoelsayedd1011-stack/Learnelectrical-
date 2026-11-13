@@ -33,20 +33,12 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>لماذا OPC UA؟</h2>
-  <div class="vs">
-    <div class="side"><b>Modbus</b><span class="big">40011 = 4998</span><span>وعليك أن تعرف المعنى</span></div>
-    <i>vs</i>
-    <div class="side"><b>OPC UA</b><span class="big">OvenTemp</span><span>182.5 °C + زمن + جودة</span></div>
-  </div>
-  <ul class="fx">
-    <li><b>Server</b><span>الـ PLC نفسه أو KEPServerEX</span></li>
-    <li><b>Client</b><span>SCADA · Node-RED · Ignition</span></li>
-    <li><b>العنوان</b><span class="mono">opc.tcp://192.168.1.10:4840</span></li>
-  </ul>
-  <p class="tip">لغة مشتركة لكل الشركات، بتشفير وتوثيق مدمجين.</p>
+  <p>في <b>Modbus</b> تقرأ 40011 = 4998، وعليك أنت أن تعرف المعنى. أما في <b>OPC UA</b> فتقرأ OvenTemp = 182.5 °C، ومعها الزمن والجودة.</p>
+  <p><b>الخادم (Server)</b> هو الـ PLC نفسه أو برنامج مثل KEPServerEX. و<b>العميل (Client)</b> هو SCADA أو Node-RED أو Ignition. والعنوان يُكتب هكذا: <span class="mono">opc.tcp://192.168.1.10:4840</span>.</p>
+  <p class="tip">هو لغة مشتركة لكل الشركات، والتشفير والتوثيق مدمجان فيه.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>فضاء العناوين و NodeId</h2>
+  <h2 id="s2"><span class="k">2</span>كيف تُرتَّب البيانات في OPC UA؟</h2>
   <svg viewBox="0 0 640 220" role="img" aria-label="فضاء عناوين OPC UA" style="width:100%;max-width:640px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor">
 <rect x="20" y="20" width="250" height="180" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="30" y="40" font-weight="700">Address space (server)</text>
@@ -55,43 +47,25 @@
 <path d="M270 110H380" stroke="currentColor" stroke-width="2" marker-end="url(#a2)"/><defs><marker id="a2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs>
 <text x="390" y="182" font-size="11">opc.tcp://192.168.1.10:4840</text>
 </g></svg>
-  <p class="bf"><span class="ic">🌳</span><span>كل شيء <b>عقدة</b> في شجرة، ولكل عقدة NodeId: <span class="mono">ns=3;i=1005</span> أو <span class="mono">ns=3;s="Line3".OvenTemp</span>.</span></p>
-  <div class="tiles">
-    <div class="tile"><b>القيمة</b><span>182.5</span></div>
-    <div class="tile"><b>الجودة</b><span>Good · Bad · Uncertain</span></div>
-    <div class="tile"><b>الزمن</b><span>من المصدر</span></div>
-  </div>
-  <p class="tip">جودة <b>Bad</b> ⇐ السبب في الحساس أو الـ PLC، لا الشبكة.</p>
+  <p>كل شيء <b>عقدة</b> في شجرة، ولكل عقدة معرّف اسمه NodeId، مثل <span class="mono">ns=3;i=1005</span> أو <span class="mono">ns=3;s="Line3".OvenTemp</span>.</p>
+  <p>وكل قراءة تحمل ثلاثة أشياء: <b>القيمة</b> مثل 182.5، و<b>الجودة</b> وهي Good أو Bad أو Uncertain، و<b>الزمن</b> مأخوذًا من المصدر.</p>
+  <p class="tip">جودة <b>Bad</b> تعني أن السبب في الحساس أو الـ PLC، لا في الشبكة.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>الاشتراك بدل الاستطلاع</h2>
-  <p class="bf"><span class="ic">🔔</span><span><b>Subscription</b>: الخادم يرسل عند التغير فقط، مع <b>Deadband</b>. حمل أقل على الـ PLC.</span></p>
-  <ul class="fx">
-    <li><b>Browse</b><span>ما داخل Line3؟</span></li>
-    <li><b>Read / Write</b><span>OvenTemp · Setpoint = 185</span></li>
-    <li><b>Subscribe</b><span>كل تغير في PartsCount</span></li>
-    <li><b>Call</b><span>StartBatch(recipe=7)</span></li>
-    <li><b>History read</b><span>الحرارة آخر ساعة</span></li>
-  </ul>
+  <h2 id="s3"><span class="k">3</span>ما فائدة الاشتراك؟</h2>
+  <p>بدل أن يسأل العميل كل ثانية، يطلب <b>Subscription</b>: الخادم يرسل القيمة عند تغيرها فقط، وبمقدار يتجاوز <b>Deadband</b>. وهذا حمل أقل على الـ PLC.</p>
+  <p>والخدمات الأخرى: <b>Browse</b> لتصفح ما داخل Line3. <b>Read / Write</b> لقراءة OvenTemp أو كتابة Setpoint = 185. <b>Call</b> لتنفيذ دالة مثل StartBatch(recipe=7). و<b>History read</b> لقراءة الحرارة في آخر ساعة.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>الأمان: الشهادات والسياسات</h2>
-  <p class="bf"><span class="ic">🔐</span><span>لكل طرف <b>شهادة X.509</b>، وأول اتصال يُرفض حتى <b>تثق بها يدويًا</b>.</span></p>
-  <ul class="fx">
-    <li><b>BadCertificateUntrusted</b><span>انقل الشهادة من Rejected إلى Trusted</span></li>
-    <li><b>BadUserAccessDenied</b><span>المستخدم أو الصلاحية</span></li>
-    <li><b>سياسة None</b><span>للمعمل فقط · الإنتاج: Sign &amp; Encrypt</span></li>
-    <li><b>الجلسات</b><span>محدودة (مثلًا 32) · رخصة منفصلة</span></li>
-  </ul>
+  <h2 id="s4"><span class="k">4</span>كيف يؤمَّن الاتصال؟</h2>
+  <p>لكل طرف <b>شهادة X.509</b>. وأول اتصال يُرفض دائمًا حتى <b>تثق بالشهادة يدويًا</b>.</p>
+  <p><b>BadCertificateUntrusted:</b> انقل الشهادة من مجلد Rejected إلى Trusted. <b>BadUserAccessDenied:</b> راجع المستخدم أو صلاحيته.</p>
+  <p><b>سياسة None</b> للمعمل فقط، وفي الإنتاج استخدم Sign &amp; Encrypt. و<b>الجلسات</b> محدودة (مثلًا 32)، وقد تحتاج رخصة منفصلة.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
-  <h2 id="s5"><span class="k">5</span>OPC UA على S7-1500 خطوة بخطوة</h2>
-  <ol class="steps">
-    <li>Activate OPC UA server</li>
-    <li>Server interface: المتغيرات المطلوبة فقط</li>
-    <li>Runtime license</li>
-    <li>حمّل ثم UaExpert + اقبل الشهادة</li>
-  </ol>
+  <h2 id="s5"><span class="k">5</span>كيف نفعّله على S7-1500؟</h2>
+  <p>أولًا فعّل <b>Activate OPC UA server</b> في خصائص الـ CPU. ثم أنشئ Server interface وضع فيها المتغيرات المطلوبة فقط. ثم اختر <b>Runtime license</b>.</p>
+  <p>وأخيرًا حمّل المشروع، وافتح UaExpert واقبل الشهادة.</p>
   <div class="box key"><b>على المحاكي:</b> تصفح الشجرة، اقرأ القيمة والجودة والزمن، اشترك بـ Deadband، اكتب نقطة ضبط، وعالج شهادة مرفوضة. <a class="btn pri" href="net.html#opcua" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">

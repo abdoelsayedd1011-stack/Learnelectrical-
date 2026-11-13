@@ -34,32 +34,24 @@
 <section class="panel lvid" aria-label="Lesson video"><h2 style="margin:0 0 8px">▶ The lesson in 5 minutes</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">Illustrated explanation, the simulator task solved, and the quiz answered. Made for the phone.</p><video src="/media/lessons/iiot-lab/lesson-12-en.mp4" poster="/media/lessons/iiot-lab/lesson-12-en.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>From message to chart</h2>
-  <ol class="steps">
-    <li>Time-series DB: InfluxDB · TimescaleDB</li>
-    <li>Dashboard: Grafana · Ignition</li>
-    <li>Alerts: email · Telegram · horn</li>
-  </ol>
+  <h2 id="s1"><span class="k">1</span>How does a message become a chart?</h2>
+  <p>Messages are first stored in a <b>time-series database</b> like InfluxDB or TimescaleDB. Then a <b>dashboard</b> like Grafana or Ignition displays them. Then <b>alarms</b> go out by email, Telegram or a siren.</p>
+  <p>Not all data is kept at the same resolution forever:</p>
   <ul class="scale">
     <li>Raw<div class="bar"><i style="width:15%"></i><em>1 week</em></div></li>
     <li>1-min average<div class="bar"><i style="width:45%"></i><em>1 month</em></div></li>
     <li>1-hour average<div class="bar"><i style="width:100%"></i><em>Years</em></div></li>
   </ul>
-  <p class="tip">Every second for a year = <b>31 million</b> points per tag ⇒ downsampling.</p>
+  <p class="tip">One reading per second for a year = <b>31 million</b> points per tag, which is why we downsample.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>Good alarms and bad alarms</h2>
-  <p class="bf"><span class="ic">🔕</span><span>Too many alarms <b>get ignored</b>.</span></p>
-  <ul class="fx">
-    <li><b>Limit + delay</b><span>&gt; 200 °C for 30 s</span></li>
-    <li><b>Hysteresis</b><span>Raise at 200, clear at 195</span></li>
-    <li><b>Priorities</b><span>Critical wakes the on-call</span></li>
-    <li><b>Acknowledge</b><span>Who and when</span></li>
-    <li><b>Suppression</b><span>"Line stopped" instead of 20 alarms</span></li>
-  </ul>
+  <h2 id="s2"><span class="k">2</span>What makes an alarm good or bad?</h2>
+  <p>An alarm that fires too often gets <b>ignored</b>. A good alarm has a <b>limit and a delay</b>, like: above 200 °C for 30 s. It has <b>hysteresis</b>: it fires at 200 and only clears at 195.</p>
+  <p>It has a <b>priority</b>: only the critical ones wake the person on call. It has an <b>acknowledgement</b> that records who and when. And it has <b>suppression</b>: one "line stopped" message instead of 20 alarms.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>OEE: the number a manager understands</h2>
+  <h2 id="s3"><span class="k">3</span>What is OEE?</h2>
+  <p>It is the number a manager understands: the product of three ratios, <b>availability</b>, <b>performance</b> and <b>quality</b>.</p>
   <div class="formula">OEE = A × P × Q</div>
   <ul class="scale">
     <li>Availability<div class="bar"><i style="width:87.5%"></i><em><bdi dir="ltr">87.5 %</bdi></em></div></li>
@@ -67,18 +59,13 @@
     <li>Quality<div class="bar"><i style="width:96.7%"></i><em><bdi dir="ltr">96.7 %</bdi></em></div></li>
     <li class="danger">OEE<div class="bar"><i style="width:70.5%"></i><em><bdi dir="ltr">70.5 %</bdi></em></div></li>
   </ul>
-  <p class="tip">Signals: <b>Running</b> + part counter + reject counter.</p>
-  <div class="box key"><b>85%</b> is world class; most plants start at 40–60%. What matters is <b>where the minutes go</b>: a Pareto of stop reasons.</div>
+  <p class="tip">The signals needed to calculate it: <b>Running</b>, a parts counter and a reject counter.</p>
+  <div class="box key"><b>85%</b> is excellent, and most plants are between 40 and 60%. What matters is knowing <b>where the minutes are lost</b>: draw a Pareto of the stop reasons.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>Designing a dashboard that does not confuse</h2>
-  <ul class="fx">
-    <li class="ok"><b>One screen per line</b><span>State · OEE · parts/target · last alarm</span></li>
-    <li class="ok"><b>Trend</b><span>With both limit lines</span></li>
-    <li class="ok"><b>Unit and timestamp</b><span>A stale value is worse than a blank</span></li>
-    <li class="ok"><b>Red</b><span>For danger only</span></li>
-    <li class="ok"><b>Heartbeat</b><span>Missing ⇒ values grey out</span></li>
-  </ul>
+  <h2 id="s4"><span class="k">4</span>How do you design a dashboard that doesn't confuse?</h2>
+  <p>Make <b>one screen per line</b>, with the state, OEE, parts against target and the last alarm. Draw the <b>trend</b> with both limit lines on it.</p>
+  <p>Always show the <b>unit and the time</b>, because a stale value is more dangerous than a blank. Keep <b>red</b> for danger only. And if the <b>heartbeat</b> is missing, show the values in grey.</p>
   <div class="box key"><b>On the simulator:</b> tune the limit, delay and hysteresis until the false alarm stops, then work out OEE. <a class="btn pri" href="net.html#dash" style="margin-inline-start:8px">Open the simulator →</a></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">

@@ -35,15 +35,12 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>Why RS-485?</h2>
-  <p class="bf"><span class="ic">〰️</span><span>An electrical spec: a bit = <b>voltage difference between A and B</b>, so noise cancels.</span></p>
-  <div class="tiles">
-    <div class="tile"><span class="big">1200 m</span><b>Distance</b></div>
-    <div class="tile"><span class="big">32</span><b>Devices</b><span>On one pair</span></div>
-  </div>
-  <p class="tip">No response? <b>Swap A and B first</b>: nothing gets damaged.</p>
+  <p>RS-485 is an electrical spec where a bit is the <b>voltage difference between wires A and B</b>. Because noise hits both wires together, it cancels out in the subtraction.</p>
+  <p>That is why the line reaches <b>1200 m</b> and carries <b>32 devices</b> on one pair.</p>
+  <p class="tip">No response from a device? <b>Swap A and B first</b>: nothing gets damaged.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>Wiring it correctly</h2>
+  <h2 id="s2"><span class="k">2</span>How is it wired correctly?</h2>
   <svg viewBox="0 0 640 230" role="img" aria-label="An RS-485 line with three devices and two terminating resistors" style="width:100%;max-width:640px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
 <rect x="20" y="30" width="120" height="70" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="80" y="55" font-weight="700">PLC (Master)</text><text x="60" y="88">A</text><text x="100" y="88">B</text>
@@ -56,46 +53,33 @@
 <path d="M60 150H37M37 150V152M100 170H44M44 170V174" stroke="#b85f00" stroke-width="2" fill="none"/><path d="M540 150H603M603 150V152M580 170H610M610 170V174" stroke="#b85f00" stroke-width="2" fill="none"/>
 <text x="200" y="145" fill="#c62828">A (D−)</text><text x="200" y="185" fill="#1e5fd1">B (D+)</text><text x="320" y="215">Shielded twisted pair, shield grounded at one end, common GND</text>
 </g></svg>
-  <ul class="fx">
-    <li class="ok"><b>One line</b><span>Daisy chain · no star branches</span></li>
-    <li class="ok"><b>120 Ω</b><span>At both ends only</span></li>
-    <li class="ok"><b>Common GND</b><span>Or the transceiver burns</span></li>
-    <li class="ok"><b>Shield</b><span>Earthed at the panel end only</span></li>
-    <li class="ok"><b>Bias</b><span>Usually at the master</span></li>
-  </ul>
+  <p>Devices are wired in <b>one line</b> from each device to the next (daisy chain), with no star branches. A <b>120 Ω</b> resistor goes at both ends of the line only.</p>
+  <p>There must be a <b>common GND</b> between devices, or the transceiver burns. The <b>shield</b> is earthed at the panel end only. And the <b>bias</b> resistors are usually at the master.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>Serial port settings</h2>
-  <p class="bf"><span class="ic">🟰</span><span>They must match on <b>every</b> device on the line.</span></p>
-  <ul class="fx">
-    <li><b>Baud</b><span>9600 · 19200 · 38400 · 115200</span></li>
-    <li><b>Data / Parity / Stop</b><span>8 · Even · 1 (None ⇒ 2 stop)</span></li>
-    <li><b>Slave address</b><span>1–247 unique · 0 = broadcast</span></li>
-  </ul>
-  <div class="box safe">PLC at 19200, drive at 9600 ⇒ <b>constant timeout or CRC errors</b>.</div>
+  <h2 id="s3"><span class="k">3</span>What are the serial port settings?</h2>
+  <p>These settings must match on <b>every</b> device on the line. <b>Baud</b> is the speed: 9600 · 19200 · 38400 · 115200. <b>Data / Parity / Stop</b> is the character format, most often 8 · Even · 1, and with None we use 2 stop bits.</p>
+  <p>The <b>slave address</b> is the only one that differs: a unique number for each device from 1 to 247, with 0 for broadcast.</p>
+  <div class="box safe">PLC at 19200 and drive at 9600 ⇒ <b>constant timeout or CRC errors</b>.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>Registers and function codes</h2>
+  <h2 id="s4"><span class="k">4</span>How is data organised in Modbus?</h2>
+  <p>Data lives in four tables, and each table has function codes (FC) for reading and writing:</p>
   <div class="tiles">
-    <div class="tile"><span class="big">0xxxx</span><b>Coils</b><span>Bit · read/write</span><span>FC 01 · 05 · 15</span></div>
-    <div class="tile"><span class="big">1xxxx</span><b>Discrete inputs</b><span>Bit · read</span><span>FC 02</span></div>
-    <div class="tile"><span class="big">3xxxx</span><b>Input registers</b><span>16-bit · read</span><span>FC 04</span></div>
-    <div class="tile"><span class="big">4xxxx</span><b>Holding registers</b><span>16-bit · read/write</span><span>FC 03 · 06 · 16</span></div>
+    <div class="tile"><span class="big">1200 m</span><b>Distance</b></div>
+    <div class="tile"><span class="big">32</span><b>Devices</b><span>On one pair</span></div>
   </div>
-  <div class="box key"><b>Offset trap:</b> 40001 is sent as <span class="mono">0</span>, 40108 as <span class="mono">107</span>. A value "off by one register" = this.</div>
+  <div class="box key"><b>Offset trap:</b> register 40001 is sent on the wire as address 0, and 40108 as 107. If a value reads "off by one register", this is why.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
-  <h2 id="s5"><span class="k">5</span>The frame on the wire</h2>
+  <h2 id="s5"><span class="k">5</span>What does the frame look like on the wire?</h2>
+  <p>Each request is a short frame made, in order, of: the slave address, the function code, the first register, the register count, and a CRC check.</p>
   <div class="ladder"><span class="u">01</span><span class="u">03</span><span class="u">00 6B</span><span class="u">00 02</span><span class="u on">CRC</span></div>
-  <p class="tip">Address · function · first register · count · CRC</p>
-  <ul class="fx">
-    <li><b>CRC error</b><span>Noise · missing termination · baud too high</span></li>
-    <li><b>Exception (FC + 0x80)</b><span>01 function · 02 address · 03 value · 04 device fault</span></li>
-    <li><b>Timeout</b><span>Address · baud/parity · A/B · cable</span></li>
-  </ul>
+  <p>Errors come in three forms. <b>CRC error:</b> noise, missing termination or baud too high. <b>Exception</b> (the function code comes back + 0x80): 01 unsupported function, 02 wrong address, 03 wrong value, 04 device fault. And <b>timeout:</b> check the address, then baud and parity, then A/B, then the cable.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s6">
-  <h2 id="s6"><span class="k">6</span>Example: reading and controlling a drive</h2>
+  <h2 id="s6"><span class="k">6</span>How do we read and control a drive?</h2>
+  <p>Each piece of drive information has a register. In this example:</p>
   <ul class="fx">
     <li><b class="mono">40001</b><span>Command · 0x0001 = run</span></li>
     <li><b class="mono">40002</b><span>Frequency × 100 · 5000 = 50.00 Hz</span></li>
@@ -103,7 +87,7 @@
     <li><b class="mono">40012</b><span>Current × 10 · 123 = 12.3 A</span></li>
     <li><b class="mono">40020</b><span>Fault code</span></li>
   </ul>
-  <p class="tip">Numbers come from the manual; watch the <b>scaling</b> (÷100).</p>
+  <p class="tip">Register numbers come from the device manual, and watch the <b>scaling</b> (÷100).</p>
   <div class="box key"><b>On the simulator:</b> match the port, read with 03, write the frequency with 06, and explain timeout, CRC and exception 02. <a class="btn pri" href="net.html#modbus" style="margin-inline-start:8px">Open the simulator →</a></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">

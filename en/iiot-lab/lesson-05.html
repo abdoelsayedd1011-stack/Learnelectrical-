@@ -35,7 +35,8 @@
 
 <section class="panel lsec" aria-labelledby="s1">
   <h2 id="s1"><span class="k">1</span>What is PROFIBUS DP?</h2>
-  <p class="bf"><span class="ic">🟣</span><span>A fieldbus over RS-485 on the purple cable: <b>one master</b> polls up to 126 slaves every cycle.</span></p>
+  <p>A fieldbus that runs over RS-485 with the well-known purple cable. It has <b>one master</b> that polls up to 126 slaves every cycle.</p>
+  <p>The higher the speed, the shorter the allowed length:</p>
   <ul class="scale">
     <li><bdi dir="ltr">≤ 93.75 k</bdi><div class="bar"><i style="width:100%"></i><em><bdi dir="ltr">1200 m</bdi></em></div></li>
     <li><bdi dir="ltr">187.5 k</bdi><div class="bar"><i style="width:83%"></i><em><bdi dir="ltr">1000 m</bdi></em></div></li>
@@ -43,10 +44,10 @@
     <li><bdi dir="ltr">1.5 M</bdi><div class="bar"><i style="width:17%"></i><em><bdi dir="ltr">200 m</bdi></em></div></li>
     <li><bdi dir="ltr">3–12 M</bdi><div class="bar"><i style="width:8%"></i><em><bdi dir="ltr">100 m</bdi></em></div></li>
   </ul>
-  <p class="tip">Most common in plants: <b>1.5 Mbit/s</b>.</p>
+  <p class="tip">The most common in plants: <b>1.5 Mbit/s</b>.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>Connector, cable and termination</h2>
+  <h2 id="s2"><span class="k">2</span>How are the cable and termination wired?</h2>
   <svg viewBox="0 0 640 210" role="img" aria-label="A PROFIBUS network with four stations" style="width:100%;max-width:640px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
 <rect x="20" y="30" width="110" height="60" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><text x="75" y="54" font-weight="700">S7 CPU</text><text x="75" y="74">Master addr 2</text>
@@ -60,40 +61,24 @@
 <rect x="400" y="140" width="30" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="415" y="153" font-size="10">OFF</text>
 <text x="320" y="190">Purple cable: green = A, red = B · termination ON at both ends only</text>
 </g></svg>
-  <ul class="fx">
-    <li><b>D-Sub 9: IN / OUT</b><span>Termination ON cuts OUT · must be the real end</span></li>
-    <li><b>Termination needs 5 V</b><span>End device off ⇒ whole network fails</span></li>
-    <li><b>Type A cable</b><span>Green = A · red = B</span></li>
-    <li><b>32 stations / segment</b><span>More ⇒ repeater or OLM</span></li>
-  </ul>
+  <p>The <b>D-Sub 9</b> connector has an IN and an OUT. The termination switch in ON disconnects the OUT side, so it is switched on only at the real end of the line.</p>
+  <p><b>Termination needs 5 V</b> from the device itself: if the end device is powered off, the whole network fails. The cable is <b>type A</b>: green is A and red is B. And each segment carries <b>32 stations</b>; more needs a repeater or an OLM.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>Addressing and the GSD file</h2>
-  <ol class="steps">
-    <li>Address 0–125 on the device</li>
-    <li>Import the GSD</li>
-    <li class="on">Same address in the project</li>
-  </ol>
-  <div class="box safe">Switches say 5, project says 4 ⇒ <b>BF</b>, no data. Some devices read the switches <b>only at power-up</b>.</div>
+  <h2 id="s3"><span class="k">3</span>How is a device defined in the project?</h2>
+  <p>First set the <b>address</b> (0 to 125) with the switches on the device. Then import its <b>GSD</b> file into the project. Then enter the same address in the project.</p>
+  <div class="box safe">Switches on 5 and the project on 4 ⇒ the <b>BF</b> LED with no data. And some devices read the switches <b>at power-up only</b>.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>LEDs and diagnostics</h2>
-  <ul class="fx">
-    <li><b>🔴 BF steady</b><span>No communication: cable · termination · baud</span></li>
-    <li><b>🔴 BF flashing</b><span>At least one slave missing</span></li>
-    <li><b>🔴 SF</b><span>Configuration or slave diagnostic</span></li>
-    <li><b>🔴 DIA on a slave</b><span>Read the diagnostic from the master</span></li>
-  </ul>
-  <p class="tip">TIA: accessible devices · on the cable: <b>ProfiTrace</b>.</p>
+  <h2 id="s4"><span class="k">4</span>What do the LEDs tell you?</h2>
+  <p><b>BF steady:</b> no communication at all, so check the cable, termination and baud. <b>BF flashing:</b> at least one slave is missing.</p>
+  <p><b>SF:</b> a configuration error or a diagnostic from a slave. And <b>DIA on the slave:</b> read the diagnostics from the master.</p>
+  <p class="tip">In TIA use Accessible devices. On the cable itself use <b>ProfiTrace</b>.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
-  <h2 id="s5"><span class="k">5</span>Reasoning through a PROFIBUS fault</h2>
-  <ul class="fx">
-    <li><b>Whole network at once</b><span>End device off · connector unplugged</span></li>
-    <li><b>One slave</b><span>Its address · power · a break before it?</span></li>
-    <li><b>Intermittent faults</b><span>Lower the baud: gone ⇒ physical problem</span></li>
-    <li><b>After a replacement</b><span>Same address · power-cycle · matching GSD</span></li>
-  </ul>
+  <h2 id="s5"><span class="k">5</span>How do you think through a PROFIBUS fault?</h2>
+  <p><b>The whole network stopped suddenly:</b> an end device was powered off or a connector came loose. <b>One slave only:</b> check its address and supply, and is there a break before it?</p>
+  <p><b>Intermittent faults:</b> lower the baud, and if they vanish the problem is physical. And <b>after replacing a device:</b> set the same address, power-cycle it, and make sure the GSD matches.</p>
   <div class="box key"><b>On the simulator:</b> match the four addresses, terminate both ends, then diagnose BF, a powered-off end device and a duplicate address. <a class="btn pri" href="net.html#profibus" style="margin-inline-start:8px">Open the simulator →</a></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">

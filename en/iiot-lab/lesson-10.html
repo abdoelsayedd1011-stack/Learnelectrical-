@@ -34,9 +34,10 @@
 <section class="panel lvid" aria-label="Lesson video"><h2 style="margin:0 0 8px">▶ The lesson in 5 minutes</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">Illustrated explanation, the simulator task solved, and the quiz answered. Made for the phone.</p><video src="/media/lessons/iiot-lab/lesson-10-en.mp4" poster="/media/lessons/iiot-lab/lesson-10-en.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>Publish and subscribe</h2>
+  <h2 id="s1"><span class="k">1</span>How does publish and subscribe work?</h2>
+  <p>In MQTT two devices never connect directly. The <b>publisher</b> sends a message under an address called a topic to the <b>broker</b>, and the broker hands it to every <b>subscriber</b> of that topic.</p>
   <div class="ladder"><span class="u">Publisher</span><span class="op">topic</span><span class="u on">Broker</span><span class="op">topic</span><span class="u">Subscriber</span></div>
-  <p class="bf"><span class="ic">📬</span><span>Nobody knows the other: add a dashboard or phone <b>without touching the PLC</b>.</span></p>
+  <p>Because nobody knows anybody else, you can add a dashboard or a phone <b>without touching the PLC</b>.</p>
   <svg viewBox="0 0 640 230" role="img" aria-label="MQTT broker between publishers and subscribers" style="width:100%;max-width:640px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
 <rect x="250" y="80" width="140" height="70" rx="10" fill="none" stroke="#0d7584" stroke-width="3"/><text x="320" y="108" font-weight="700" fill="#0d7584">Broker</text><text x="320" y="128">:1883 / :8883</text>
@@ -46,57 +47,35 @@
 <rect x="470" y="160" width="150" height="46" rx="8" fill="none" stroke="#b85f00" stroke-width="2"/><text x="545" y="179" font-weight="700" fill="#b85f00">Phone app</text><text x="545" y="196" font-size="10">SUB +/oven/temp</text>
 <g stroke="currentColor" stroke-width="2" fill="none"><path d="M170 53 L250 95"/><path d="M170 183 L250 135"/><path d="M390 95 L470 53"/><path d="M390 135 L470 183"/></g>
 </g></svg>
-  <ul class="fx">
-    <li><b class="mono">1883 / 8883</b><span>Plain / TLS</span></li>
-    <li><b>Brokers</b><span>Mosquitto · EMQX · HiveMQ · AWS/Azure</span></li>
-    <li><b>Payload</b><span>Any bytes: number · text · JSON</span></li>
-    <li><b>Outbound connection</b><span>No open ports in the plant</span></li>
-  </ul>
+  <p>Port <b>1883</b> is unencrypted and <b>8883</b> uses TLS. Well-known brokers are Mosquitto, EMQX, HiveMQ and the AWS and Azure services. The payload is any bytes: a number, text or JSON. And the connection goes out from the plant to the broker, so no ports are opened in the plant.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>Topics and wildcards</h2>
+  <h2 id="s2"><span class="k">2</span>How are topics written?</h2>
+  <p>A topic is a path of levels separated by slashes:</p>
   <div class="formula">factory/line3/oven/temperature</div>
-  <ul class="fx">
-    <li><b class="mono">+</b><span>One level · <span class="mono">factory/+/oven/temperature</span></span></li>
-    <li><b class="mono">#</b><span>Everything below · <span class="mono">factory/line3/#</span></span></li>
-    <li><b class="mono">$SYS/</b><span>Broker statistics</span></li>
-  </ul>
-  <p class="tip">Wildcards in <b>subscriptions only</b>. No spaces, no capitals, no leading <span class="mono">/</span>.</p>
+  <p>When subscribing you can use wildcards. <b>+</b> matches one level, like <span class="mono">factory/+/oven/temperature</span>. <b>#</b> matches everything after it, like <span class="mono">factory/line3/#</span>. And topics starting with <b>$SYS/</b> are the broker's own statistics.</p>
+  <p class="tip">Wildcards are for <b>subscribing only</b>. And no spaces, no capitals and no leading /.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>QoS, Retain and Last Will</h2>
-  <div class="tiles">
-    <div class="tile"><span class="big">QoS 0</span><b>At most once</b><span>Temperature every second</span></div>
-    <div class="tile"><span class="big">QoS 1</span><b>At least once</b><span>Alarms, counters · most common</span></div>
-    <div class="tile"><span class="big">QoS 2</span><b>Exactly once</b><span>Commands · heaviest</span></div>
-  </div>
-  <ul class="fx">
-    <li><b>Retain</b><span>Last value to any new subscriber at once</span></li>
-    <li><b>Last Will</b><span><span class="mono">gateway/status = offline</span> on a drop</span></li>
-    <li><b>Keep alive</b><span>Missing 1.5 × N ⇒ the will is published</span></li>
-    <li><b>Persistent session</b><span>Keeps missed QoS 1/2 messages</span></li>
-  </ul>
+  <h2 id="s3"><span class="k">3</span>What are QoS, Retain and Last Will?</h2>
+  <p><b>QoS</b> sets the delivery guarantee. <b>QoS 0</b> is at most once, good for a temperature sent every second. <b>QoS 1</b> is at least once, good for alarms and counters, and the most common. <b>QoS 2</b> is exactly once, good for commands, and the heaviest.</p>
+  <p><b>Retain</b> makes the broker keep the last value and give it to any new subscriber at once. <b>Last Will</b> is a message the broker publishes when the client drops, like <span class="mono">gateway/status = offline</span>.</p>
+  <p><b>Keep alive</b> is the silence limit: if the client is absent for 1.5 × N, the will is published. And a <b>persistent session</b> keeps the QoS 1 and 2 messages the client missed.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>Sparkplug B: MQTT with structure</h2>
+  <h2 id="s4"><span class="k">4</span>What is Sparkplug B for?</h2>
+  <p>MQTT imposes no shape on the topic or the payload. <b>Sparkplug B</b> sets one standard for both:</p>
   <div class="formula">spBv1.0/group/type/node/device</div>
-  <div class="tiles">
-    <div class="tile"><b>NBIRTH</b><span>Birth with all metrics</span></div>
-    <div class="tile"><b>DDATA</b><span>On change only</span></div>
-    <div class="tile"><b>NDEATH</b><span>The will</span></div>
-    <div class="tile"><b>NCMD</b><span>Command to the node</span></div>
-  </div>
+  <p><b>NBIRTH</b> is a birth message carrying all the metrics. <b>DDATA</b> is sent on change only. <b>NDEATH</b> is the will. And <b>NCMD</b> is a command addressed to the node.</p>
   <div class="box key">System supports it (Ignition)? <b>Sparkplug B</b>. Otherwise fixed, documented JSON: <span class="mono">{"v":182.5,"u":"C","t":…}</span></div>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
-  <h2 id="s5"><span class="k">5</span>Practical examples</h2>
+  <h2 id="s5"><span class="k">5</span>How do I try it in practice?</h2>
+  <p>To subscribe to all plant topics and print them:</p>
   <div class="formula">mosquitto_sub -t "factory/#" -v</div>
+  <p>To publish a value with Retain:</p>
   <div class="formula">mosquitto_pub -t factory/line3/oven/temperature -m 182.5 -r</div>
-  <ul class="fx">
-    <li><b>From the PLC</b><span>LMQTT · MQTT blocks · or the gateway (most common)</span></li>
-    <li><b>Security</b><span>One user per gateway · TLS · ACL</span></li>
-    <li><b>Volume</b><span>Report by exception, not every 100 ms</span></li>
-  </ul>
+  <p><b>From the PLC:</b> with the LMQTT library or MQTT blocks, or through the gateway, which is the most common. <b>Security:</b> a user per gateway with TLS and ACLs. And <b>volume:</b> send on change, not every 100 ms.</p>
   <div class="box key"><b>On the simulator:</b> publish, subscribe with wildcards, try Retain, cut the gateway to see the will, and compare QoS 0 and 1. <a class="btn pri" href="net.html#mqtt" style="margin-inline-start:8px">Open the simulator →</a></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
