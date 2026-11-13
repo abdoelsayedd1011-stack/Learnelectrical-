@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ريلاي التشغيل باليدين JSBR4</title>
+<meta name="description" content="الدرس 8: ريلاي الأمان ABB Jokab JSBR4 للتشغيل باليدين: الزران خلال 0.5 ثانية، والقناتان A وB، والبريدجات، مع مثال حيّ لمكبس.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="safety.css?v=20261027s2">
+<script src="safety.js?v=20261113k"></script>
+<link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
+<script src="/assets/lesson-light.js?v=20261029L2" defer></script>
+<link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
+<script src="/assets/real-art.js?v=20261030h1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">السيفتي PLC · الدرس 8 من 13</p>
+    <h1>ريلاي التشغيل باليدين JSBR4</h1>
+    <p>ريلاي يمنع تشغيل المكبس إلا إذا ضغط العامل زرين بيديه معًا خلال نصف ثانية، فتبقى يداه بعيدتين عن الخطر.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="pluto.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>ما الـ JSBR4؟</h2>
+  <figure class="dev-ph"><img src="img/jsbr4.jpg" width="619" height="873" alt="ريلاي الأمان ABB Jokab JSBR4 من الأمام" loading="lazy"><figcaption>أعلى: <span class="mono">A1 S13 S24 X2 41 13 23 33</span>. أسفل: <span class="mono">A2 S14 S23 X3 42 14 24 34</span>. والمصابيح: <b>On</b> و<b>In</b> و<b>Out</b>.</figcaption></figure>
+  <p>الـ JSBR4 ريلاي أمان عرضه <bdi dir="ltr">45 mm</bdi>، وأشهر استخدام له هو <b>التشغيل باليدين</b> (Two-hand) في المكابس والمقصات: لا تعمل الماكينة إلا إذا ضغط العامل زرين بيديه الاثنتين معًا، فتكون يداه بعيدتين عن منطقة الخطر. ويصلح أيضًا للطوارئ والبوابات والسجاد.</p>
+  <ul class="fx">
+    <li><b>A1 / A2</b><span>التغذية <bdi dir="ltr">24V DC</bdi> أو نسخ AC</span></li>
+    <li><b>S13-S14</b><span>القناة A (+24V)</span></li>
+    <li><b>S23-S24</b><span>القناة B (على <bdi dir="ltr">0V</bdi>، والرمز ⏚ عند S23)</span></li>
+    <li><b>X2 / X3</b><span>الريست أو الاختبار (Reset / Test)</span></li>
+    <li class="ok"><b>13-14 / 23-24 / 33-34</b><span>3 مخارج أمان NO</span></li>
+    <li><b>41-42</b><span>NC للمعلومات فقط</span></li>
+  </ul>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>قاعدة اليدين: نصف ثانية</h2>
+  <div class="rule2"><div><b>التزامن</b><span class="big">≤ 0.5 s</span></div><div><b>زمن الفصل</b><span class="big">&lt; 20 ms</span></div></div>
+  <ul class="fx">
+    <li><b>الضغط</b><span>يجب أن يُغلق الزران خلال <bdi dir="ltr">0.5 s</bdi> من بعضهما، وإلا رفض الريلاي</span></li>
+    <li><b>الرفع</b><span>إذا رفع العامل يدًا واحدة فصل الخرج فورًا</span></li>
+    <li><b>التكرار</b><span>لا يعمل مرة أخرى إلا بعد رفع اليدين كلتيهما، فلا يمكن ربط زر بشريط لاصق والعمل بيد واحدة</span></li>
+  </ul>
+  <p class="tip">يحقق الـ JSBR4 النوع IIIC حسب EN 574، وفيه يحتوي كل زر على تلامس NO وتلامس NC.</p>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>التوصيل والبريدجات</h2>
+  <p>في توصيل اليدين: زر اليد اليسرى على القناة A (<span class="mono">S13 → S14</span>)، وزر اليد اليمنى على القناة B (<span class="mono">S24 → S23</span>). وفي الكتالوج يوصَّل <span class="mono">X3</span> بالقناة A، ودائرة الاختبار <span class="mono">X3 → NC الكونتاكتورات → X2</span> بدون زر ريست، لأن الضغط بالزرين هو نفسه أمر التشغيل.</p>
+  <p>أما في توصيل الطوارئ أو البوابة فيوجد <b>بريدج بين S23 وX3</b>، والريست اليدوي: <span class="mono">X3 → RESET → NC الكونتاكتورات → X2</span>.</p>
+  <div class="box safe"><b>تحذير:</b> مسافة زر اليدين من منطقة الخطر تُحسب من زمن توقف الماكينة. والرسم في المثال مبسّط على تلامس NO لكل زر، أما التوصيل الكامل بتلامسي NO وNC ففي كتالوج ABB.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">▶</span>مثال حيّ: مكبس بزرين</h2>
+  <p>اضغط الزرين معًا ليعمل المكبس، ثم ارفع يدًا واحدة. وجرّب أن تضغط زرًا ثم تتأخر في الثاني أكثر من نصف ثانية.</p>
+  <div class="live-ex" data-dev="jsbr4"></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب إجابة صحيحة عن 5 من 6 على الأقل ليُسجَّل الدرس مكتملًا.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأطراف والأرقام هنا من كتالوج ABB Jokab Safety (Safety Relays). قبل التطبيق على ماكينة حقيقية ارجع إلى الكتالوج وتقييم المخاطر الخاص بالماكينة. يُحفظ تقدّمك على هذا الجهاز فقط.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l13');
+IL.quiz(document.getElementById('quiz'), [{"q": "ما أشهر استخدام للـ JSBR4؟", "o": ["التشغيل باليدين في المكابس", "تأخير الفصل", "قراءة الحساسات الديناميكية", "برمجة الماكينة"], "a": 0, "why": "الـ JSBR4 ريلاي يدين من النوع IIIC، ويصلح أيضًا للطوارئ والبوابات."}, {"q": "ما أقصى فرق مسموح بين ضغط الزرين؟", "o": ["0.5 ثانية", "2 ثانية", "0.05 ثانية", "لا يوجد حد"], "a": 0, "why": "يجب أن يُغلق الزران خلال 0.5 ثانية من بعضهما."}, {"q": "رفع العامل يدًا واحدة أثناء الحركة. ماذا يحدث؟", "o": ["يفصل الخرج فورًا", "تكمل الماكينة الدورة", "يفصل بعد 0.5 ثانية", "لا يحدث شيء"], "a": 0, "why": "فتح أي قناة يفصل المخارج فورًا."}, {"q": "ربط أحدهم الزر الأيسر بشريط لاصق ويضغط الأيمن فقط. هل تعمل الماكينة؟", "o": ["لا، لأن الزرين لم يُرفعا معًا قبل الضغط", "نعم", "تعمل نصف سرعة", "تعمل بعد 0.5 ثانية"], "a": 0, "why": "لا يعمل الريلاي مرة أخرى إلا بعد رفع اليدين كلتيهما، ثم ضغط الزرين خلال 0.5 ثانية."}, {"q": "في توصيل الطوارئ على الـ JSBR4، أين البريدج؟", "o": ["بين S23 وX3", "بين A1 وA2", "بين 13 و14", "بين X2 و41"], "a": 0, "why": "الكتالوج يربط S23 مع X3، ثم X3 ← RESET ← NC الكونتاكتورات ← X2."}, {"q": "أي الأطراف للقناة A؟", "o": ["S13-S14", "S23-S24", "X2-X3", "41-42"], "a": 0, "why": "S13-S14 القناة A، وS23-S24 القناة B."}], {lesson:'l13', pass:0.8});
+</script>
+<script src="live.js?v=20261113d"></script>
+</body>
+</html>
