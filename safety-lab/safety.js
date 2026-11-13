@@ -26,30 +26,30 @@ applyTheme();
 function isDark(){ const t = document.documentElement.getAttribute('data-theme'); if (t) return t === 'dark'; return !!(window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches); }
 function themeBtn(){
   const b = document.createElement('button'); b.type = 'button'; b.className = 'btn theme-b';
-  const upd = () => { const d = isDark(); b.textContent = d ? '☀' : '☾'; b.setAttribute('aria-label', d ? 'الوضع الفاتح' : 'الوضع الغامق'); b.title = b.getAttribute('aria-label'); };
+  const upd = () => { const d = isDark(); b.textContent = d ? '☀' : '☾'; b.setAttribute('aria-label', d ? 'الوضع الفاتح' : 'الوضع الداكن'); b.title = b.getAttribute('aria-label'); };
   b.addEventListener('click', () => { IL.store.set('theme', isDark() ? 'light' : 'dark'); applyTheme(); upd(); });
   upd(); return b;
 }
 
 /* ---------------- course map ---------------- */
 IL.COURSE = [
-  {id:'l1', n:1, file:'lesson-01.html', title:'يعني إيه سيفتي PLC؟', sub:'ليه الـ PLC العادي ماينفعش للطوارئ، المعالجين، الحالة الآمنة، و PL و SIL و Category',
+  {id:'l1', n:1, file:'lesson-01.html', title:'ما هو السيفتي PLC؟', sub:'لماذا لا يصلح الـ PLC العادي للطوارئ، والمعالجان، والحالة الآمنة، وPL وSIL وCategory',
     tasks:[['quiz','أسئلة الدرس']]},
-  {id:'l2', n:2, file:'lesson-02.html', title:'عناصر الأمان والتوصيل بقناتين', sub:'الطوارئ والبوابة والستارة الضوئية والـ Two-hand، الفتح القسري، والقناتين',
+  {id:'l2', n:2, file:'lesson-02.html', title:'عناصر الأمان والتوصيل بقناتين', sub:'الطوارئ والبوابة والستارة الضوئية والـ Two-hand، والفتح القسري، والقناتان',
     tasks:[['quiz','أسئلة الدرس']]},
-  {id:'l3', n:3, file:'lesson-03.html', title:'ريلاي الأمان RT9', sub:'أطرافه ولمباته، خمس طرق توصيل، الريست المراقَب والأوتوماتيك، واختبار الكونتاكتورات',
+  {id:'l3', n:3, file:'lesson-03.html', title:'ريلاي الأمان RT9', sub:'أطرافه ومصابيحه، وخمس طرق توصيل، والريست المراقَب والأوتوماتيك، واختبار الكونتاكتورات',
     tasks:[['sim','تجربة الـ RT9 على المحاكي'],['quiz','أسئلة الدرس']]},
-  {id:'l9', n:4, file:'lesson-09.html', title:'ريلاي الأمان Pilz PNOZ X3P', sub:'S11 لـ S34، قناة واحدة وقناتين بكشف القصر، الريست الأوتوماتيك والمراقَب، والفيدباك و Y32',
+  {id:'l9', n:4, file:'lesson-09.html', title:'ريلاي الأمان Pilz PNOZ X3P', sub:'S11 إلى S34، وقناة واحدة وقناتان بكشف القصر، والريست الأوتوماتيك والمراقَب، والفيدباك وY32',
     tasks:[['sim','تجربة الـ PNOZ على المحاكي'],['quiz','أسئلة الدرس']]},
-  {id:'l4', n:5, file:'lesson-04.html', title:'Vital 1 والإشارة الديناميكية', sub:'لوب من T1 لـ R1 لحد 30 حساس على سلك واحد، S1 الزوجي والفردي، واللمبات T و R',
+  {id:'l4', n:5, file:'lesson-04.html', title:'Vital 1 والإشارة الديناميكية', sub:'حلقة من T1 إلى R1 حتى 30 حساسًا على سلك واحد، وS1 الزوجي والفردي، والمصباحان T وR',
     tasks:[['sim','تجربة الـ Vital على المحاكي'],['quiz','أسئلة الدرس']]},
-  {id:'l5', n:6, file:'lesson-05.html', title:'Pluto B20: الأطراف والشاشة', sub:'I0 لـ I7، و IQ10 لـ IQ17، والريلاي Q0 و Q1، والترانزستور Q2 و Q3، الشاشة وزرار K والباص',
+  {id:'l5', n:6, file:'lesson-05.html', title:'Pluto B20: الأطراف والشاشة', sub:'I0 إلى I7، وIQ10 إلى IQ17، والريلاي Q0 وQ1، والترانزستور Q2 وQ3، والشاشة وزر K والباص',
     tasks:[['quiz','أسئلة الدرس']]},
-  {id:'l6', n:7, file:'lesson-06.html', title:'الإشارات الديناميكية A و B و C في Pluto', sub:'خروج IQ بتطلّع نبضات مختلفة لكل قناة، وإزاي القصر بين الأسلاك يتكشف',
+  {id:'l6', n:7, file:'lesson-06.html', title:'الإشارات الديناميكية A وB وC في Pluto', sub:'مخارج IQ تُخرج نبضات مختلفة لكل قناة، وكيف يُكتشف القصر بين الأسلاك',
     tasks:[['quiz','أسئلة الدرس']]},
-  {id:'l7', n:8, file:'lesson-07.html', title:'البرمجة في Pluto Manager', sub:'العناوين I0.0 و Q0.0 و GM، الـ Ladder، بلوكات TC2RTI و Reset2T و Twohand1، والتنزيل بالباسورد',
+  {id:'l7', n:8, file:'lesson-07.html', title:'البرمجة في Pluto Manager', sub:'العناوين I0.0 وQ0.0 وGM، والـ Ladder، وبلوكات TC2RTI وReset2T وTwohand1، والتنزيل بكلمة المرور',
     tasks:[['sim','برنامج الطوارئ على المحاكي'],['quiz','أسئلة الدرس']]},
-  {id:'l8', n:9, file:'lesson-08.html', title:'الأعطال وأكواد Er + الامتحان النهائي', sub:'Er10 و Er12 و Er15 و Er18 و Er20 و Er40 و Er50، وطريقة التفكير في العطل',
+  {id:'l8', n:9, file:'lesson-08.html', title:'الأعطال وأكواد Er + الامتحان النهائي', sub:'Er10 وEr12 وEr15 وEr18 وEr20 وEr40 وEr50، وطريقة التفكير في العطل',
     tasks:[['sim','لعبة الأعطال على المحاكي'],['quiz','أسئلة الدرس'],['final','الامتحان النهائي']]}
 ];
 IL.lessonById = id => IL.COURSE.find(l => l.id === id);
@@ -68,7 +68,7 @@ const fmt = (v, d) => { const p = Math.pow(10, d); const r = Math.round(v * p) /
 IL.fmt = fmt;
 function shuffle(a){ a = a.slice(); for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 /* answer options: shuffled, but catch-all choices («الاتنين», «ولا واحد», "Both", "None"…) always stay last */
-const QZ_PIN = /^(الاتنين|الاثنين|كلهم|ولا واحد|ولا حاجة|مفيش فرق|مش فارقة|زي بعض|كلهم زي بعض|both|neither|none|all of them|all the same|no difference|it makes no difference)$/i;
+const QZ_PIN = /^(لا فرق|لا فرق إطلاقًا|الاثنان|كلاهما|لا شيء|ولا أحد منهما|جميعها|الاتنين|الاثنين|كلهم|ولا واحد|ولا حاجة|مفيش فرق|مش فارقة|زي بعض|كلهم زي بعض|both|neither|none|all of them|all the same|no difference|it makes no difference)$/i;
 function qzOrder(o, keep){ const idx = o.map((_, i) => i); if (keep) return idx; const pin = idx.filter(i => QZ_PIN.test(String(o[i]).replace(/<[^>]*>/g, '').replace(/[⁦-⁩⁠.!]/g, '').trim())); return shuffle(idx.filter(i => !pin.includes(i))).concat(pin); }
 /* Latin / number runs inside an RTL option ("+24V", "0.05 A", "DC−", "حوالي +26 °C") would flip: isolate them as LTR */
 const QZ_LTR = /[+\-−±]?[0-9A-Za-zΩµ°][0-9A-Za-zΩµ°%.,:/·×_\-–−+ ]*[0-9A-Za-zΩµ°%+\-−]|[+\-−±]?[0-9A-Za-zΩµ°]/g;
@@ -126,7 +126,7 @@ IL.hubTheme = () => { const ch = $('header.top .chips'); if (ch) ch.appendChild(
 
 /* ---------------- select, then confirm ----------------
    tapping an option only selects it (.sel); right/wrong shows after the learner presses the check / confirm button */
-const QZ_T = {check:'صحّح إجاباتي', need:'جاوب على كل الأسئلة الأول', cnt:(n, t) => `جاوبت ${n} من ${t}`, ok:'تأكيد'};
+const QZ_T = {check:'صحّح إجاباتي', need:'أجب عن كل الأسئلة أولًا', cnt:(n, t) => `أجبت عن ${n} من ${t}`, ok:'تأكيد'};
 const QZ_CF = () => `<div class="dr-cf"><button type="button" class="btn pri dr-ok" disabled>${QZ_T.ok}</button></div>`;
 function qzSel(box, o){ $$('.qz-o', box).forEach(x => { const on = x === o; x.classList.toggle('sel', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); }); }
 function qzUnsel(box){ $$('.qz-o', box).forEach(x => { x.classList.remove('sel'); x.removeAttribute('aria-pressed'); }); }
@@ -181,7 +181,7 @@ IL.quiz = function(host, qs, opt){
       qzUnsel(box);
       $$('.qz-o', box).forEach(x => { x.disabled = true; const j = +x.dataset.i; if (j === it.q.a) x.classList.add('ok'); else if (j === i) x.classList.add('no'); });
       if (ok) box.classList.add('ok');
-      const f = $('.qz-f', box); f.className = 'qz-f ' + (ok ? 'ok' : 'no'); f.innerHTML = (ok ? 'صح. ' : 'مش دي. ') + (it.q.why || '');
+      const f = $('.qz-f', box); f.className = 'qz-f ' + (ok ? 'ok' : 'no'); f.innerHTML = (ok ? 'صحيح. ' : 'ليست هذه. ') + (it.q.why || '');
     });
     $('.qz-chk', host).hidden = true;
     finish();
@@ -189,7 +189,7 @@ IL.quiz = function(host, qs, opt){
   function finish(){
     const n = ans.filter(Boolean).length, tot = ans.length, ok = n / tot >= pass - 1e-9;
     const sum = $('.qz-sum', host); sum.hidden = false; sum.className = 'qz-sum ' + (ok ? 'ok' : 'no');
-    sum.innerHTML = `<b>نتيجتك: ${n} من ${tot}</b><span>${ok ? 'ممتاز، كده عدّيت ✓' : `محتاج ${Math.ceil(pass * tot - 1e-9)} صح على الأقل. راجع الشرح وجرّب تاني.`}</span><button type="button" class="btn" data-qz="again">${ok ? 'حلّ تاني' : 'جرّب تاني'}</button>`;
+    sum.innerHTML = `<b>نتيجتك: ${n} من ${tot}</b><span>${ok ? 'ممتاز، لقد نجحت ✓' : `تحتاج إلى ${Math.ceil(pass * tot - 1e-9)} إجابات صحيحة على الأقل. راجع الشرح وحاول مجددًا.`}</span><button type="button" class="btn" data-qz="again">${ok ? 'حل مسألة أخرى' : 'حاول مجددًا'}</button>`;
     if (ok && opt.lesson) IL.mark(opt.lesson, opt.task || 'quiz');
     if (opt.onDone) opt.onDone(n, tot, ok);
   }
