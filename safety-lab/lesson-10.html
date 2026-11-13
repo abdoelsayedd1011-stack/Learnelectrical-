@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ريلايات الأمان RT6 وRT7</title>
+<meta name="description" content="الدرس 5: ريلاي الأمان ABB Jokab RT6 بثلاثة مخارج، والـ RT7 بمخارج متأخرة للإيقاف الهادئ، مع مثال حيّ بالطوارئ والأبواب.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="safety.css?v=20261027s2">
+<script src="safety.js?v=20261113j"></script>
+<link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
+<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
+<script src="/assets/lesson-light.js?v=20261029L2" defer></script>
+<link rel="stylesheet" href="/assets/real-skin.css?v=20261030a1">
+<script src="/assets/real-art.js?v=20261030h1"></script>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div>
+    <p class="kick">السيفتي PLC · الدرس 5 من 11</p>
+    <h1>ريلايات الأمان RT6 وRT7</h1>
+    <p>ريلايان من عائلة الـ RT9 نفسها بعرض 45 مللي: الـ RT6 بثلاثة مخارج أمان، والـ RT7 بمخرجين يتأخران ليفرمل المحرك بهدوء قبل قطع الكهرباء.</p>
+  </div>
+  <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="pluto.html">المحاكي</a></div>
+</header>
+
+<section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
+
+<section class="panel lsec" aria-labelledby="s1">
+  <h2 id="s1"><span class="k">1</span>ما الـ RT6؟</h2>
+  <figure class="dev-ph"><img src="img/rt6.jpg" width="805" height="1277" alt="ريلاي الأمان ABB Jokab RT6 من الأمام" loading="lazy"><figcaption>أعلى: <span class="mono">S53 X1 X4</span> و<span class="mono">+A1 S13 S14 S34</span> و<span class="mono">13 23 33 41</span>. أسفل: <span class="mono">-A2 S23 S24 S44</span> و<span class="mono">Y13 Y14 Y24</span> و<span class="mono">14 24 34 42</span>.</figcaption></figure>
+  <p>الـ RT6 ريلاي أمان «شامل» عرضه 45 مللي. يراقب الطوارئ والبوابات والستائر الضوئية والسجاد، وله <b>خمس طرق توصيل للدخل</b> مثل الـ RT9 تمامًا، لذلك يحل محل ريلايات كثيرة.</p>
+  <ul class="fx">
+    <li><b>A1 / A2</b><span><bdi dir="ltr">24V DC</bdi>، وهناك نسخ <bdi dir="ltr">24/48/115/230V AC</bdi></span></li>
+    <li><b>S13</b><span>خرج <bdi dir="ltr">24V</bdi> محمي (<bdi dir="ltr">≈ 70 mA</bdi>) يغذّي مداخل القنوات</span></li>
+    <li><b>S14 / S34 / S44</b><span>مداخل القنوات (+)، و<b>S24</b> دخل على <bdi dir="ltr">0V</bdi> من S23</span></li>
+    <li><b>S53</b><span>خرج <bdi dir="ltr">24V</bdi> للريست، بفيوز داخلي <bdi dir="ltr">270 mA</bdi></span></li>
+    <li><b>X1</b><span>الريست المراقَب + اختبار الكونتاكتورات</span></li>
+    <li><b>X4</b><span>مع S53 وX1 = ريست أوتوماتيك</span></li>
+    <li class="ok"><b>13-14 / 23-24 / 33-34</b><span>3 مخارج أمان NO · <bdi dir="ltr">6A</bdi></span></li>
+    <li><b>41-42</b><span>NC للمعلومات فقط</span></li>
+    <li><b>Y14 / Y24</b><span>ترانزستور للـ PLC: Y14 = الدخل سليم، Y24 = الخرجان مغلقان</span></li>
+  </ul>
+</section>
+<section class="panel lsec" aria-labelledby="s2">
+  <h2 id="s2"><span class="k">2</span>ما الفرق بين RT6 وRT9؟</h2>
+  <p>المنطق واحد: القناتان يجب أن تُغلقا، والريست يعمل عند <b>ترك</b> الزر، والكونتاكتورات تُراقَب بتلامسات NC. الفرق في الحجم والمخارج:</p>
+  <ul class="fx">
+    <li><b>العرض</b><span>RT6 = <bdi dir="ltr">45 mm</bdi> · RT9 = <bdi dir="ltr">22.5 mm</bdi></span></li>
+    <li><b>مخارج الأمان</b><span>RT6 = 3 NO + 1 NC · RT9 = 2 NO</span></li>
+    <li><b>مصدر الريست</b><span>RT6 من <b>S53</b> · RT9 من A1</span></li>
+    <li><b>المعلومات</b><span>RT6 = ترانزستوران Y14 وY24 · RT9 = ريلاي Y14</span></li>
+    <li><b>التغذية</b><span>RT6 له نسخ AC · RT9 = <bdi dir="ltr">24V DC</bdi> فقط</span></li>
+  </ul>
+  <p class="tip">زمن الفصل في الاثنين أقل من <bdi dir="ltr">20 ms</bdi> من الدخل إلى الخرج.</p>
+</section>
+<section class="panel lsec" aria-labelledby="s3">
+  <h2 id="s3"><span class="k">3</span>ما الـ RT7؟ ولماذا يتأخر خرجه؟</h2>
+  <figure class="dev-ph"><img src="img/rt7.jpg" width="805" height="1277" alt="ريلاي الأمان ABB Jokab RT7A من الأمام" loading="lazy"><figcaption>أعلى: <span class="mono">S53 X1 X4 · T0 T1 T2</span> و<span class="mono">13 23 43 53</span>. أسفل: <span class="mono">Y13 Y14 Y24 · Y34 31 32</span> و<span class="mono">14 24 44 54</span>. والمصباح <b>t</b> للخرجين المتأخرين.</figcaption></figure>
+  <p>الـ RT7 هو RT6 نفسه في الدخل والريست، لكن له <b>4 مخارج أمان</b>: اثنان يفصلان فورًا (<span class="mono">13-14</span> و<span class="mono">23-24</span>)، واثنان <b>يتأخران</b> (<span class="mono">43-44</span> و<span class="mono">53-54</span>)، وخرج NC للمعلومات <span class="mono">31-32</span>.</p>
+  <p>لماذا التأخير؟ لو قطعت الكهرباء عن محرك يدور بسرعة عالية فسيستمر في الدوران حرًّا، وقد يتلف المنتج أو الماكينة. الأفضل أن يعطي الخرج المباشر <b>أمر إيقاف</b> للانفرتر أو السيرفو فيفرمل المحرك بهدوء، ثم بعد ثانية أو اثنتين يفصل الخرج المتأخر الكونتاكتورات. هذا اسمه <b>Stop Category 1</b>.</p>
+  <div class="rule2"><div><b>RT7A</b><span class="big">0 · 0.5 · 1 · 1.5 s</span></div><div><b>RT7B</b><span class="big">0 · 1 · 2 · 3 s</span></div></div>
+  <p>يُختار الزمن بربط الأطراف <span class="mono">T0</span> و<span class="mono">T1</span> و<span class="mono">T2</span>. والخرج <span class="mono">Y34</span> يخبر الـ PLC بأن الخرجين المتأخرين مغلقان.</p>
+  <div class="box safe"><b>تحذير:</b> زمن التأخير يجب أن يكون أطول من زمن فرملة الماكينة، ويدخل في حساب مسافة الأمان. ولا تجعل الإيقاف الهادئ إلا حيث يسمح تقييم المخاطر.</div>
+</section>
+<section class="panel lsec" aria-labelledby="s4">
+  <h2 id="s4"><span class="k">▶</span>مثال حيّ: RT6 مع طوارئ وبابين</h2>
+  <p>اضغط الطوارئ أو افتح بابًا وشاهد أين ينقطع التيار، ثم أعد كل شيء واضغط RESET.</p>
+  <div class="live-ex" data-dev="rt6"></div>
+</section>
+<section class="panel lsec" aria-labelledby="s5">
+  <h2 id="s5"><span class="k">▶</span>مثال حيّ: RT7 والإيقاف الهادئ</h2>
+  <p>شغّل المحرك، ثم افتح بابًا: لاحظ أن الانفرتر يأخذ أمر الإيقاف أولًا والمحرك يفرمل، ثم يفصل K1 بعد التأخير.</p>
+  <div class="live-ex" data-dev="rt7"></div>
+  <div class="box key" style="margin-top:12px"><b>على المحاكي:</b> جرّب RT6 وRT7 بصورهما الحقيقية، وغيّر زمن التأخير. <a class="btn pri" href="pluto.html#rt7" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
+</section>
+
+<section class="panel lsec" aria-labelledby="sq">
+  <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
+  <p>أجب إجابة صحيحة عن 5 من 6 على الأقل ليُسجَّل الدرس مكتملًا.</p>
+  <div id="quiz"></div>
+</section>
+
+<nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
+<p class="foot">الأطراف والأرقام هنا من كتالوج ABB Jokab Safety (Safety Relays). قبل التطبيق على ماكينة حقيقية ارجع إلى الكتالوج وتقييم المخاطر الخاص بالماكينة. يُحفظ تقدّمك على هذا الجهاز فقط.<br>© <bdi>LearnElectricals</bdi></p>
+</div>
+<script>
+IL.lesson('l10');
+IL.quiz(document.getElementById('quiz'), [{"q": "في الـ RT6، من أين يأخذ زر الريست الـ 24V؟", "o": ["من S53", "من S13", "من Y13", "من S23"], "a": 0, "why": "S53 خرج 24V للريست بفيوز داخلي، وS13 للقنوات."}, {"q": "كم مخرج أمان NO في الـ RT6؟", "o": ["3 (13-14 و23-24 و33-34)", "2", "4", "1"], "a": 0, "why": "الـ RT6 = 3 NO + 1 NC للمعلومات (41-42)."}, {"q": "هل يصلح Y24 في الـ RT6 لقطع الكونتاكتور كوظيفة أمان؟", "o": ["لا، خرج معلومات للـ PLC فقط", "نعم مثل 13-14", "نعم إذا أضفت ريلاي", "فقط مع الريست الأوتوماتيك"], "a": 0, "why": "Y14 وY24 ترانزستورات للمعلومات، وليست مخارج أمان."}, {"q": "في الـ RT7 فُتح الباب. ماذا يحدث أولًا؟", "o": ["يفصل 13-14 فورًا، ثم 43-44 و53-54 بعد التأخير", "تفصل المخارج الأربعة معًا", "يفصل 43-44 أولًا", "لا يفصل شيء حتى الريست"], "a": 0, "why": "المخرجان المباشران يفصلان فورًا (أمر إيقاف)، والمتأخران بعد الزمن المختار."}, {"q": "ما فائدة الخرج المتأخر في الـ RT7؟", "o": ["يفرمل المحرك بهدوء قبل قطع الكهرباء (Stop Category 1)", "يجعل الماكينة تعمل أسرع", "يغني عن الطوارئ", "يلغي الريست"], "a": 0, "why": "أمر الإيقاف أولًا ثم قطع القدرة = إيقاف هادئ يحمي الماكينة والمنتج."}, {"q": "تريد تأخير 3 ثوانٍ. أي نسخة تختار؟", "o": ["RT7B", "RT7A", "RT6", "RT9"], "a": 0, "why": "RT7A حتى 1.5 ثانية، وRT7B حتى 3 ثوانٍ."}], {lesson:'l10', pass:0.8});
+</script>
+<script src="live.js?v=20261113c"></script>
+</body>
+</html>
