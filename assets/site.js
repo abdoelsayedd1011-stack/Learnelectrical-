@@ -382,7 +382,8 @@
   function priceHtml(c){
     if (EN && c.usd) return "<b>$" + fmtN(c.usd) + "</b>" + (c.usd_was ? " <s>$" + fmtN(c.usd_was) + "</s>" : "") + ' <small class="p-alt">· ' + esc(curName()) + " " + fmtN(c.price) + " " + esc(EN.egpNote) + "</small>";
     if (EN) return "<b>" + esc(curName()) + " " + fmtN(c.price) + "</b>" + (c.was ? " <s>" + esc(curName()) + " " + fmtN(c.was) + "</s>" : "");
-    return "<b><bdi>" + fmtN(c.price) + "</bdi> " + esc(curName()) + "</b>" + (c.was ? ' <s><bdi>' + fmtN(c.was) + "</bdi> " + esc(curName()) + "</s>" : "");
+    return "<b><bdi>" + fmtN(c.price) + "</bdi> " + esc(curName()) + "</b>" + (c.was ? ' <s><bdi>' + fmtN(c.was) + "</bdi> " + esc(curName()) + "</s>" : "") +
+      (c.usd ? '<small class="p-alt" style="display:block;margin-top:2px">من خارج مصر: <bdi>$' + fmtN(c.usd) + "</bdi></small>" : "");
   }
   function owns(id){ return !!(ME && ME.courses && ME.courses.indexOf(id) > -1); }
   // «اشتريته ✓» → «معاك لحد <date> ✓» when /api/auth/me says until when (a course opens for one year)
