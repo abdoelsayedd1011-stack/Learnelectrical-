@@ -127,6 +127,14 @@ input[type=range]{width:100%;accent-color:var(--sp)}
 .speeds{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted)}
 .speeds button{padding:5px 10px}
 footer{color:var(--muted);font-size:12.5px}
+
+/* layout: controls beside the scene, card / PLC / terminal below it */
+.main{grid-template-columns:minmax(0,1fr) 400px}
+@media (max-width:980px){.main{grid-template-columns:minmax(0,1fr)}}
+.side-ctl #deskCard{margin-top:0}
+.side-ctl .desk{grid-template-columns:1fr}
+.side-ctl .grp{grid-template-columns:repeat(2,minmax(0,1fr))}
+.bottom{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px;margin-top:14px;align-items:start}
 </style>
 
 </head>
@@ -179,101 +187,103 @@ footer{color:var(--muted);font-size:12.5px}
       </div>
     </div>
 
-    <div class="side">
-      <div class="tmcc" id="tmcc">
-        <div class="lbl"><span>كارت TMCC2 &nbsp;A401</span><span class="mono">FCSFA3F</span></div>
-        <div class="disp" id="disp"></div>
-        <div class="mpath" id="mpath"></div>
-        <div class="btnrow"><button data-k="up" aria-label="سهم للأعلى">▲</button><button data-k="down" aria-label="سهم للأسفل">▼</button><button data-k="enter" aria-label="إنتر">ENTER</button></div>
-        <div class="note" id="tmccNote">الحرف P = إنتاج، V ثابت، والأعمدة = المستوى (كل خط 5%).</div>
+    <div class="side side-ctl">
+    <section class="card" id="deskCard">
+      <div class="actions" style="margin-bottom:12px">
+        <button class="primary" id="runBtn">تشغيل الإنتاج</button>
+        <button id="shortBtn">شورت ستوب</button>
+        <button id="resetBtn">ريست</button>
+        <span class="speeds">سرعة المحاكاة:
+          <button data-rate="1" class="on">1×</button><button data-rate="2">2×</button><button data-rate="4">4×</button></span>
       </div>
-
-      <div class="plc" id="plc">
-        <h2 style="font-family:var(--f-display);font-size:14px;margin:0 0 6px;color:var(--muted);font-weight:500">إشارات الـ PLC</h2>
-        <div class="sig"><span class="led" id="lEn"></span><span>الكارت جاهز (Enabled)</span><span class="addr">%I269</span></div>
-        <div class="sig"><span class="led" id="lOk"></span><span>التعبئة سليمة (Filling OK)</span><span class="addr">%I268</span></div>
-        <div class="sig"><span class="led" id="lHi"></span><span>مستوى مرتفع</span><span class="addr">%I266</span></div>
-        <div class="sig"><span class="led" id="lPr"></span><span>أمر إنتاج للكارت</span><span class="addr">%Q146</span></div>
-        <div class="sig"><span class="led" id="lSs"></span><span>شورت ستوب للكارت</span><span class="addr">%Q148</span></div>
-        <div class="sig"><span class="led" id="lFm"></span><span>اتصال الفلوميتر RS485</span><span class="addr">B1316</span></div>
-        <div class="timer">عدّاد الإنذار <span class="mono">DEL0249</span>: <span class="mono" id="tVal">0.0 / 25.0 s</span>
-          <div class="tbar"><div id="tBar"></div></div></div>
-        <div class="alarmbox" id="alarm">لا يوجد إنذار</div>
-        <div class="alist" id="alist" aria-live="polite"></div>
+      <div class="desk">
+        <div class="grp">
+          <h2>حلقة التدفق (Flow PID)</h2>
+          <div class="ctl"><label for="kP">P <span class="mono" id="vP"></span></label><input type="range" id="kP" min="0" max="2.5" step="0.05"><small>يفتح الصمام بقدر الخطأ الحالي</small></div>
+          <div class="ctl"><label for="kI">I <span class="mono" id="vI"></span></label><input type="range" id="kI" min="0" max="5" step="0.1"><small>يزيل الخطأ المتبقي مع الوقت</small></div>
+          <div class="ctl"><label for="kD">D <span class="mono" id="vD"></span></label><input type="range" id="kD" min="0" max="0.3" step="0.01"><small>يكبح إذا كان الخطأ يتغير بسرعة</small></div>
+        </div>
+        <div class="grp">
+          <h2>حلقة المستوى (Level PID)</h2>
+          <div class="ctl"><label for="kU">U <span class="mono" id="vU"></span></label><input type="range" id="kU" min="0" max="8" step="0.1"><small>يزيد التدفق أو يقلله بقدر بُعد المستوى</small></div>
+          <div class="ctl"><label for="kV">V <span class="mono" id="vV"></span></label><input type="range" id="kV" min="0" max="1.5" step="0.05"><small>يعيد المستوى إلى المطلوب بدقة</small></div>
+          <div class="ctl"><label for="kW">W <span class="mono" id="vW"></span></label><input type="range" id="kW" min="0" max="2" step="0.1"><small>يستبق إذا كان المستوى ينخفض بسرعة</small></div>
+          <div class="ctl"><label for="kL">المستوى المطلوب (L) <span class="mono" id="vL"></span></label><input type="range" id="kL" min="35" max="80" step="1"><small>غيّره ولاحظ كيف يوصله U</small></div>
+          <div class="ctl" style="grid-column:span 2;align-self:center"><button id="fDist" style="width:100%">هزّ المستوى (اخفضه 20%)</button></div>
+        </div>
+        <div class="grp">
+          <h2>بداية التشغيل</h2>
+          <div class="ctl"><label for="kB">Start (B) <span class="mono" id="vB"></span></label><input type="range" id="kB" min="80" max="160" step="5"></div>
+          <div class="ctl"><label for="kT">Ramp (T) <span class="mono" id="vT"></span></label><input type="range" id="kT" min="0.5" max="10" step="0.5"></div>
+          <div class="ctl"><label for="kPF">Prefill <span class="mono" id="vPF"></span></label><input type="range" id="kPF" min="30" max="120" step="5"></div>
+          <div class="ctl"><label for="kG">التحويل (G) <span class="mono" id="vG"></span></label><input type="range" id="kG" min="20" max="60" step="1"></div>
+        </div>
+        <div class="grp">
+          <h2>الماكينة والمنتج</h2>
+          <div class="ctl"><label for="kVol">حجم العبوة <span class="mono" id="vVol"></span></label><input type="range" id="kVol" min="125" max="1000" step="25"></div>
+          <div class="ctl"><label for="kSpd">سرعة الماكينة <span class="mono" id="vSpd"></span></label><input type="range" id="kSpd" min="3000" max="9000" step="250"></div>
+          <div class="ctl"><label for="kPr">ضغط المنتج <span class="mono" id="vPr"></span></label><input type="range" id="kPr" min="0.4" max="2.5" step="0.05"></div>
+          <div class="formula" id="formula"></div>
+        </div>
+        <div class="grp">
+          <h2>أعطال يمكنك تجربتها</h2>
+          <div class="actions">
+            <button class="danger" id="fComm">قطع اتصال الفلوميتر</button>
+            <button class="danger" id="fNoise">هواء في المنتج</button>
+            <button class="danger" id="fStuck">صمام يعلق</button>
+            <button class="danger" id="fHighP">P عالٍ</button>
+            <button class="danger" id="fAir">انقطع هواء الـ I/P</button>
+            <button class="danger" id="fIP">معايرة الـ I/P خطأ</button>
+            <button class="danger" id="fEmpty">الخزان فارغ</button>
+            <button class="danger" id="fFloat">العوّامة عالقة</button>
+            <button id="fClear">أعد كل شيء إلى الطبيعي</button>
+          </div>
+          <small class="note">بعد قطع الاتصال، يغلق الكارت الصمام ويُسقط إشارة Enabled، ويعدّ الـ PLC خمسًا وعشرين ثانية قبل إيقاف الماكينة. استخدم 4× حتى لا تنتظر.</small>
+        </div>
       </div>
-
-      <div class="term" id="termCard">
-        <h2>هايبر ترمينال: حاسوب محمول موصول بكابل RS232 في منفذ الخدمة لكارت A401</h2>
-        <div class="tset mono">COM1 &nbsp;|&nbsp; 9600 baud &nbsp;|&nbsp; Parity None &nbsp;|&nbsp; 8 bits &nbsp;|&nbsp; 1 stop &nbsp;|&nbsp; Flow control None</div>
-        <pre class="tout" id="tout" aria-live="polite"></pre>
-        <form class="tform" id="tform"><input class="tin mono" id="tin" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="type command, e.g. S" aria-label="اكتب أمر"><button type="submit">Enter</button></form>
-        <div class="tq" id="tq"></div>
-        <div class="note">على الماكينة لا تظهر الحروف التي تكتبها على الشاشة (كما يذكر الكتالوج)، وهنا نُظهرها بلون باهت لتتابع. أسماء الأوامر من الكتالوج صفحة 9-500، أما شكل الرد والأرقام فتقريبي للتعليم.</div>
-      </div>
+    </section>
     </div>
   </div>
 
-  <section class="card" id="deskCard">
-    <div class="actions" style="margin-bottom:12px">
-      <button class="primary" id="runBtn">تشغيل الإنتاج</button>
-      <button id="shortBtn">شورت ستوب</button>
-      <button id="resetBtn">ريست</button>
-      <span class="speeds">سرعة المحاكاة:
-        <button data-rate="1" class="on">1×</button><button data-rate="2">2×</button><button data-rate="4">4×</button></span>
+  <div class="bottom">
+    <div class="tmcc" id="tmcc">
+      <div class="lbl"><span>كارت TMCC2 &nbsp;A401</span><span class="mono">FCSFA3F</span></div>
+      <div class="disp" id="disp"></div>
+      <div class="mpath" id="mpath"></div>
+      <div class="btnrow"><button data-k="up" aria-label="سهم للأعلى">▲</button><button data-k="down" aria-label="سهم للأسفل">▼</button><button data-k="enter" aria-label="إنتر">ENTER</button></div>
+      <div class="note" id="tmccNote">الحرف P = إنتاج، V ثابت، والأعمدة = المستوى (كل خط 5%).</div>
     </div>
-    <div class="desk">
-      <div class="grp">
-        <h2>حلقة التدفق (Flow PID)</h2>
-        <div class="ctl"><label for="kP">P <span class="mono" id="vP"></span></label><input type="range" id="kP" min="0" max="2.5" step="0.05"><small>يفتح الصمام بقدر الخطأ الحالي</small></div>
-        <div class="ctl"><label for="kI">I <span class="mono" id="vI"></span></label><input type="range" id="kI" min="0" max="5" step="0.1"><small>يزيل الخطأ المتبقي مع الوقت</small></div>
-        <div class="ctl"><label for="kD">D <span class="mono" id="vD"></span></label><input type="range" id="kD" min="0" max="0.3" step="0.01"><small>يكبح إذا كان الخطأ يتغير بسرعة</small></div>
-      </div>
-      <div class="grp">
-        <h2>حلقة المستوى (Level PID)</h2>
-        <div class="ctl"><label for="kU">U <span class="mono" id="vU"></span></label><input type="range" id="kU" min="0" max="8" step="0.1"><small>يزيد التدفق أو يقلله بقدر بُعد المستوى</small></div>
-        <div class="ctl"><label for="kV">V <span class="mono" id="vV"></span></label><input type="range" id="kV" min="0" max="1.5" step="0.05"><small>يعيد المستوى إلى المطلوب بدقة</small></div>
-        <div class="ctl"><label for="kW">W <span class="mono" id="vW"></span></label><input type="range" id="kW" min="0" max="2" step="0.1"><small>يستبق إذا كان المستوى ينخفض بسرعة</small></div>
-        <div class="ctl"><label for="kL">المستوى المطلوب (L) <span class="mono" id="vL"></span></label><input type="range" id="kL" min="35" max="80" step="1"><small>غيّره ولاحظ كيف يوصله U</small></div>
-        <div class="ctl" style="grid-column:span 2;align-self:center"><button id="fDist" style="width:100%">هزّ المستوى (اخفضه 20%)</button></div>
-      </div>
-      <div class="grp">
-        <h2>بداية التشغيل</h2>
-        <div class="ctl"><label for="kB">Start (B) <span class="mono" id="vB"></span></label><input type="range" id="kB" min="80" max="160" step="5"></div>
-        <div class="ctl"><label for="kT">Ramp (T) <span class="mono" id="vT"></span></label><input type="range" id="kT" min="0.5" max="10" step="0.5"></div>
-        <div class="ctl"><label for="kPF">Prefill <span class="mono" id="vPF"></span></label><input type="range" id="kPF" min="30" max="120" step="5"></div>
-        <div class="ctl"><label for="kG">التحويل (G) <span class="mono" id="vG"></span></label><input type="range" id="kG" min="20" max="60" step="1"></div>
-      </div>
-      <div class="grp">
-        <h2>الماكينة والمنتج</h2>
-        <div class="ctl"><label for="kVol">حجم العبوة <span class="mono" id="vVol"></span></label><input type="range" id="kVol" min="125" max="1000" step="25"></div>
-        <div class="ctl"><label for="kSpd">سرعة الماكينة <span class="mono" id="vSpd"></span></label><input type="range" id="kSpd" min="3000" max="9000" step="250"></div>
-        <div class="ctl"><label for="kPr">ضغط المنتج <span class="mono" id="vPr"></span></label><input type="range" id="kPr" min="0.4" max="2.5" step="0.05"></div>
-        <div class="formula" id="formula"></div>
-      </div>
-      <div class="grp">
-        <h2>أعطال يمكنك تجربتها</h2>
-        <div class="actions">
-          <button class="danger" id="fComm">قطع اتصال الفلوميتر</button>
-          <button class="danger" id="fNoise">هواء في المنتج</button>
-          <button class="danger" id="fStuck">صمام يعلق</button>
-          <button class="danger" id="fHighP">P عالٍ</button>
-          <button class="danger" id="fAir">انقطع هواء الـ I/P</button>
-          <button class="danger" id="fIP">معايرة الـ I/P خطأ</button>
-          <button class="danger" id="fEmpty">الخزان فارغ</button>
-          <button class="danger" id="fFloat">العوّامة عالقة</button>
-          <button id="fClear">أعد كل شيء إلى الطبيعي</button>
-        </div>
-        <small class="note">بعد قطع الاتصال، يغلق الكارت الصمام ويُسقط إشارة Enabled، ويعدّ الـ PLC خمسًا وعشرين ثانية قبل إيقاف الماكينة. استخدم 4× حتى لا تنتظر.</small>
-      </div>
+
+    <div class="plc" id="plc">
+      <h2 style="font-family:var(--f-display);font-size:14px;margin:0 0 6px;color:var(--muted);font-weight:500">إشارات الـ PLC</h2>
+      <div class="sig"><span class="led" id="lEn"></span><span>الكارت جاهز (Enabled)</span><span class="addr">%I269</span></div>
+      <div class="sig"><span class="led" id="lOk"></span><span>التعبئة سليمة (Filling OK)</span><span class="addr">%I268</span></div>
+      <div class="sig"><span class="led" id="lHi"></span><span>مستوى مرتفع</span><span class="addr">%I266</span></div>
+      <div class="sig"><span class="led" id="lPr"></span><span>أمر إنتاج للكارت</span><span class="addr">%Q146</span></div>
+      <div class="sig"><span class="led" id="lSs"></span><span>شورت ستوب للكارت</span><span class="addr">%Q148</span></div>
+      <div class="sig"><span class="led" id="lFm"></span><span>اتصال الفلوميتر RS485</span><span class="addr">B1316</span></div>
+      <div class="timer">عدّاد الإنذار <span class="mono">DEL0249</span>: <span class="mono" id="tVal">0.0 / 25.0 s</span>
+        <div class="tbar"><div id="tBar"></div></div></div>
+      <div class="alarmbox" id="alarm">لا يوجد إنذار</div>
+      <div class="alist" id="alist" aria-live="polite"></div>
     </div>
-  </section>
+
+    <div class="term" id="termCard">
+      <h2>هايبر ترمينال: حاسوب محمول موصول بكابل RS232 في منفذ الخدمة لكارت A401</h2>
+      <div class="tset mono">COM1 &nbsp;|&nbsp; 9600 baud &nbsp;|&nbsp; Parity None &nbsp;|&nbsp; 8 bits &nbsp;|&nbsp; 1 stop &nbsp;|&nbsp; Flow control None</div>
+      <pre class="tout" id="tout" aria-live="polite"></pre>
+      <form class="tform" id="tform"><input class="tin mono" id="tin" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="type command, e.g. S" aria-label="اكتب أمر"><button type="submit">Enter</button></form>
+      <div class="tq" id="tq"></div>
+      <div class="note">على الماكينة لا تظهر الحروف التي تكتبها على الشاشة (كما يذكر الكتالوج)، وهنا نُظهرها بلون باهت لتتابع. أسماء الأوامر من الكتالوج صفحة 9-500، أما شكل الرد والأرقام فتقريبي للتعليم.</div>
+    </div>
+  </div>
   <footer>المحاكاة تعليمية: الأرقام تقريبية ومبنية على دليل الضبط وبرنامج الـ PLC لماكينة A3/Flex 150/160، وليست قيم الماكينة الحقيقية. لا تنقل قيم PID من هنا إلى الماكينة.</footer>
 </div>
 
 <script>
 (()=>{
 const $=id=>document.getElementById(id);
-document.querySelector('.readouts').after($('deskCard'));
+// controls stay in the side column (person's rule: controls on the side)
 const DEF={P:0.6,I:1.6,D:0,U:1.5,V:0.1,W:0,L:60,B:120,T:4,G:45,PF:70,vol:250,spd:7000,press:1.5,WIN:30,EPD:1,EPTH:3000,M:1,N:0.5,O:0};
 const K={...DEF};
 const QMAX=3600, QREF=1750, DEADT=0.15, VLAG=0.25, LEVK=12; let TARGET=60;
