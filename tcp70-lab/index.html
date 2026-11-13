@@ -1297,10 +1297,12 @@ function gotoHit(){
   if (b!==curBlock) openBlock(b);
   ladder.querySelectorAll('.rung.cur').forEach(el=>el.classList.remove('cur'));
   const el=document.getElementById('r_'+b+'_'+n); if (el){ el.classList.add('cur'); const ctr=()=>{ ladder.scrollTop = Math.max(0, el.offsetTop - ladder.clientHeight/2 + Math.min(el.offsetHeight, ladder.clientHeight)/2); }; ctr(); setTimeout(ctr,120); setTimeout(ctr,400); }
-  qinfo.textContent=(hitIdx+1)+' / '+hits.length+' · '+b+' رانج '+n;
+  const nk=desc(hitAddr)[0]; qinfo.textContent=hitAddr+(nk?' ('+nk+')':'')+' · '+(hitIdx+1)+' / '+hits.length+' · '+b+' رانج '+n;
 }
-function stepHit(d){ if(!hits.length){ const a=normAddr(q.value); if(a) startSearch(a); return; } hitIdx=(hitIdx+d+hits.length)%hits.length; gotoHit(); }
-q.addEventListener('keydown',e=>{ if(e.key==='Enter'){ const a=normAddr(q.value); if(!a) return; q.value=a; if (a===hitAddr && hits.length) stepHit(e.shiftKey?-1:1); else startSearch(a); } });
+let qTimer=null;
+q.addEventListener('input',()=>{ clearTimeout(qTimer); qTimer=setTimeout(()=>{ const v=q.value.trim(); const a=resolveQ(v); if(a && a!==hitAddr && (normAddr(v) || TAGMAP[v.toUpperCase()])) startSearch(a); },350); });
+function stepHit(d){ if(!hits.length){ const a=resolveQ(q.value); if(a) startSearch(a); return; } hitIdx=(hitIdx+d+hits.length)%hits.length; gotoHit(); }
+q.addEventListener('keydown',e=>{ if(e.key==='Enter'){ clearTimeout(qTimer); const a=resolveQ(q.value); if(!a){ qinfo.textContent='مش لاقي «'+q.value.trim()+'»'; return; } if (a===hitAddr && hits.length) stepHit(e.shiftKey?-1:1); else startSearch(a); } });
 document.getElementById('qnext').onclick=()=>stepHit(1);
 document.getElementById('qprev').onclick=()=>stepHit(-1);
 document.getElementById('qtags').onchange=e=>ladder.classList.toggle('notags',!e.target.checked);
@@ -1313,6 +1315,12 @@ const XREF = (function(){ const x={}; for (const b in PROG) for (const r of PROG
   if (e.t==='C') add(e.a,0); else if (e.t==='O') add(e.a,1);
   else { for (const v of Object.values(e.ins)) if('v' in v) add(v.v,0); for (const v of Object.values(e.outs)) if('v' in v) add(v.v,1); if(e.ref) add(e.ref,1); }
 } return x; })();
+const TAGMAP={}; for (const a of Object.keys(DESC).sort((x,y)=>((XREF[y]?1:0)-(XREF[x]?1:0)))){ const nk=(DESC[a][0]||'').trim().toUpperCase(); if(nk && !TAGMAP[nk]) TAGMAP[nk]=a; }
+function resolveQ(v){ v=(v||'').trim(); if(!v) return null; const a=normAddr(v); if(a && (XREF[a]||DESC[a])) return a; const t=TAGMAP[v.toUpperCase()]; if(t) return t;
+  const m=/^([^·]+)·/.exec(v); if(m) return resolveQ(m[1]); if(a) return a;
+  const lw=v.toLowerCase(); if(lw.length<3) return null; const hit=Object.keys(DESC).find(x=>XREF[x] && (DESC[x][1]||'').toLowerCase().includes(lw)); return hit||null; }
+(function(){ const dl=document.createElement('datalist'); dl.id='tagsdl'; dl.innerHTML=Object.keys(TAGMAP).sort().map(k=>'<option value="'+k+'">'+TAGMAP[k]+' '+(DESC[TAGMAP[k]][1]||'')+'</option>').join(''); document.body.appendChild(dl); q.setAttribute('list','tagsdl'); q.placeholder='دوّر بالعنوان أو التاج: Q00004 أو B142 أو Y103 أو G22'; })();
+
 function isForced(a){ return !!a && ((a in plc.force) || (a[0]==='I' && modelOn && MSENS.has(a) && override[a]) || (a[0]==='I' && !MSENS.has(a) && inState[a]!==(DEFAULT_ON.includes(a)?1:0))); }
 function forceCtl(a){
   const p=PLC.parseAddr(a); if(!p) return '';
