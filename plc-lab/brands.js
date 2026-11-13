@@ -128,39 +128,39 @@ SIE.word = (a, T) => { const k = ENG.kind(a); if (k === 'T') return `"${SIE.inst
 SIE.dtype = a => ({I:'Bool', Q:'Bool', M:'Bool', IW:'Int', MW:'Real', T:'IEC_TIMER', C:'IEC_COUNTER', HC:'DInt'}[ENG.kind(a)] || '');
 SIE.hsc = a => 'HSC_' + (1 + +String(a).slice(2));
 SIE.pal = [
-  {id:'NO', t:'NO', mn:'-| |-', ar:'كونتاكت NO'}, {id:'NC', t:'NC', mn:'-|/|-', ar:'كونتاكت NC'}, {id:'P', t:'P', mn:'-|P|-', ar:'Edge طالع'}, {id:'N', t:'N', mn:'-|N|-', ar:'Edge نازل'}, {id:'CMP', t:'CMP', mn:'CMP', ar:'مقارنة'},
-  {id:'OUT', t:'OUT', mn:'-( )-', ar:'كويل'}, {id:'S', t:'S', mn:'-(S)-', ar:'Set'}, {id:'R', t:'R', mn:'-(R)-', ar:'Reset', acc:['Q', 'M']}, {id:'RT', t:'R', mn:'-(RT)-', ar:'صفّر تايمر', acc:['T']},
-  {id:'TON', t:'TON', mn:'TON', ar:'تأخير تشغيل'}, {id:'TOF', t:'TOF', mn:'TOF', ar:'تأخير فصل'}, {id:'TP', t:'TP', mn:'TP', ar:'نبضة'}, {id:'CTU', t:'CTU', mn:'CTU', ar:'عدّاد طالع'}, {id:'CTD', t:'CTD', mn:'CTD', ar:'عدّاد نازل'}, {id:'SCL', t:'SCL', mn:'NORM_X+SCALE_X', ar:'تحويل أنالوج'},
+  {id:'NO', t:'NO', mn:'-| |-', ar:'تلامس NO'}, {id:'NC', t:'NC', mn:'-|/|-', ar:'تلامس NC'}, {id:'P', t:'P', mn:'-|P|-', ar:'Edge صاعد'}, {id:'N', t:'N', mn:'-|N|-', ar:'Edge هابط'}, {id:'CMP', t:'CMP', mn:'CMP', ar:'مقارنة'},
+  {id:'OUT', t:'OUT', mn:'-( )-', ar:'ملف'}, {id:'S', t:'S', mn:'-(S)-', ar:'Set'}, {id:'R', t:'R', mn:'-(R)-', ar:'Reset', acc:['Q', 'M']}, {id:'RT', t:'R', mn:'-(RT)-', ar:'تصفير تايمر', acc:['T']},
+  {id:'TON', t:'TON', mn:'TON', ar:'تأخير تشغيل'}, {id:'TOF', t:'TOF', mn:'TOF', ar:'تأخير فصل'}, {id:'TP', t:'TP', mn:'TP', ar:'نبضة'}, {id:'CTU', t:'CTU', mn:'CTU', ar:'عدّاد تصاعدي'}, {id:'CTD', t:'CTD', mn:'CTD', ar:'عدّاد تنازلي'}, {id:'SCL', t:'SCL', mn:'NORM_X+SCALE_X', ar:'تحويل أنالوج'},
   {id:'HSCR', t:'R', mn:'CTRL_HSC', ar:'تصفير العدّاد السريع', acc:['HC'], hsc:true}];
 SIE.idOf = el => el.t === 'R' && ENG.kind(el.a) === 'T' ? 'RT' : el.t === 'R' && ENG.kind(el.a) === 'HC' ? 'HSCR' : el.t;
-SIE.help = {NO:'بيوصّل لما البت = 1', NC:'بيوصّل لما البت = 0', P:'بيوصّل سكان واحد لما البت يطلع من 0 لـ 1 (P_TRIG)', N:'بيوصّل سكان واحد لما البت ينزل من 1 لـ 0', CMP:'بيوصّل لو المقارنة صح (Int / DInt / Real / Time). عدّ الـ HSC نوعه DInt (32 بت)',
-  OUT:'البت = الكهربا الداخلة', S:'لو جاله كهربا البت يبقى 1 ويفضل', R:'لو جاله كهربا البت يبقى 0', RT:'RESET_TIMER: بيصفّر التايمر', TON:'IEC timer: Q بيبقى 1 بعد PT من IN', TOF:'IEC timer: Q بيفضل 1 لمدة PT بعد ما IN يقع', TP:'IEC timer: نبضة بطول PT',
-  CTU:'IEC counter: CV بيزيد مع كل نبضة على CU، و QU = 1 لما CV ≥ PV، والـ R يصفّره', CTD:'IEC counter: CV بينقص مع CD، و LD بيحمّل PV', SCL:'NORM_X يحوّل الـ raw (⁦0⁠–⁠27648⁩) لـ ⁦0.0⁠–⁠1.0⁩، و SCALE_X يحوّله للوحدة الحقيقية',
-  HSCR:'CTRL_HSC: لما الـ EN يبقى 1 و CV = TRUE بيكتب NEW_CV في العدّاد السريع. هنا NEW_CV = 0 يعني تصفير'};
-SIE.pt = {lab:'PT (ثواني)', get:pt => pt, set:v => Math.round(v * 10) / 10, show:tiaTime, step:0.1};
+SIE.help = {NO:'يوصّل عندما يكون البت = 1', NC:'يوصّل عندما يكون البت = 0', P:'يوصّل سكانًا واحدًا عندما يصعد البت من 0 إلى 1 (P_TRIG)', N:'يوصّل سكانًا واحدًا عندما يهبط البت من 1 إلى 0', CMP:'يوصّل إذا تحققت المقارنة (Int / DInt / Real / Time). عدّ الـ HSC من نوع DInt (32 بت)',
+  OUT:'البت = الكهرباء الداخلة', S:'إذا وصلته الكهرباء يصبح البت 1 ويبقى', R:'إذا وصلته الكهرباء يصبح البت 0', RT:'RESET_TIMER: يصفّر التايمر', TON:'IEC timer: يصبح Q = 1 بعد PT من IN', TOF:'IEC timer: يبقى Q = 1 مدة PT بعد انقطاع IN', TP:'IEC timer: نبضة بطول PT',
+  CTU:'IEC counter: يزيد CV مع كل نبضة على CU، وQU = 1 عندما CV ≥ PV، والـ R يصفّره', CTD:'IEC counter: ينقص CV مع CD، وLD يحمّل PV', SCL:'NORM_X يحوّل الـ raw (⁦0⁠–⁠27648⁩) إلى ⁦0.0⁠–⁠1.0⁩، وSCALE_X يحوّله إلى الوحدة الحقيقية',
+  HSCR:'CTRL_HSC: عندما يصبح EN = 1 وCV = TRUE يكتب NEW_CV في العدّاد السريع. هنا NEW_CV = 0 أي تصفير'};
+SIE.pt = {lab:'PT (ثوانٍ)', get:pt => pt, set:v => Math.round(v * 10) / 10, show:tiaTime, step:0.1};
 SIE.pv = {lab:'PV'};
 SIE.cmpShow = (a, b) => ENG.kind(a) === 'T' ? tiaTime(b) : ENG.kind(a) === 'MW' ? nfmt(b, 1) : String(b);
 SIE.cmpType = a => ({T:'Time', MW:'Real', C:'Int', IW:'Int', HC:'DInt'}[ENG.kind(a)] || 'Int');
-SIE.cmpLab = a => ENG.kind(a) === 'T' ? 'القيمة (ثواني)' : 'القيمة';
+SIE.cmpLab = a => ENG.kind(a) === 'T' ? 'القيمة (ثوانٍ)' : 'القيمة';
 SIE.opName = op => op;
 SIE.parse = function(str, acc, T){
   let s = String(str || '').trim().replace(/[“”]/g, '"');
-  if (!s) return {err:'اكتب عنوان أو اسم Tag.'};
+  if (!s) return {err:'اكتب عنوانًا أو اسم Tag.'};
   const nm = s.replace(/"/g, '').replace(/\.(Q|QU|QD|ET|CV|IN)$/i, '');
   const tg = tagByN(T, nm);
-  if (tg){ const k = ENG.kind(tg.a); if (acc.indexOf(k) >= 0) return {a:tg.a}; return {err:`الـ Tag ${iso('"' + tg.n + '"')} نوعه ${iso(SIE.dtype(tg.a))} ومينفعش هنا.`}; }
+  if (tg){ const k = ENG.kind(tg.a); if (acc.indexOf(k) >= 0) return {a:tg.a}; return {err:`الـ Tag ${iso('"' + tg.n + '"')} من نوع ${iso(SIE.dtype(tg.a))} ولا يصلح هنا.`}; }
   const u = s.replace(/"/g, '').toUpperCase().replace(/\s+/g, '').replace(/,/g, '.');
   let m, a = null;
   if ((m = /^%?(I|Q|M)(\d{1,2})\.([0-7])$/.exec(u))) a = m[1] + (+m[2]) + '.' + m[3];
-  else if ((m = /^%?(I|Q|M)(\d{1,2})\.([89])$/.exec(u))) return {err:'رقم البت من ⁦0⁩ لـ ⁦7⁩ بس (البايت فيه 8 بت): بعد ' + iso('%' + m[1] + m[2] + '.7') + ' بييجي ' + iso('%' + m[1] + (+m[2] + 1) + '.0') + '.'};
+  else if ((m = /^%?(I|Q|M)(\d{1,2})\.([89])$/.exec(u))) return {err:'رقم البت من ⁦0⁩ إلى ⁦7⁩ فقط (البايت فيه 8 بتات): بعد ' + iso('%' + m[1] + m[2] + '.7') + ' يأتي ' + iso('%' + m[1] + (+m[2] + 1) + '.0') + '.'};
   else if ((m = /^%?IW(\d{1,3})$/.exec(u))) a = 'IW' + (+m[1]);
   else if ((m = /^%?MD(\d{1,3})$/.exec(u))) a = 'MW' + (+m[1]);
   else if ((m = /^%?ID(\d{4})$/.exec(u)) && +m[1] >= 1000 && +m[1] <= 1020 && (+m[1] - 1000) % 4 === 0) a = 'HC' + ((+m[1] - 1000) / 4);
   else if (/^(I|Q|M)\d/.test(u) && u[0] !== '%') a = null;
-  if (!a) return {err:`مش فاهم ${iso(s)}. اكتب عنوان زي ${iso('%I0.3')} أو ${iso('%Q0.2')} أو ${iso('%M1.0')}، أو اسم Tag موجود في الجدول.`};
+  if (!a) return {err:`لم أفهم ${iso(s)}. اكتب عنوانًا مثل ${iso('%I0.3')} أو ${iso('%Q0.2')} أو ${iso('%M1.0')}، أو اسم Tag موجود في الجدول.`};
   const k = ENG.kind(a);
-  if (acc.indexOf(k) < 0) return {err:`العنوان ${iso(SIE.abs(a))} مينفعش مع العنصر ده.`};
-  if (!tagByA(T, a) && (k === 'I' || k === 'Q' || k === 'M')){ let n = 1; while (tagByN(T, 'Tag_' + n)) n++; return {a, tag:{n:'Tag_' + n, a, c:'', u:1}, msg:`TIA بيعمل Tag جديد لوحده للعنوان ده اسمه ${iso('"Tag_' + n + '"')}. تقدر تغيّر اسمه من تبويب PLC tags.`}; }
+  if (acc.indexOf(k) < 0) return {err:`العنوان ${iso(SIE.abs(a))} لا يصلح مع هذا العنصر.`};
+  if (!tagByA(T, a) && (k === 'I' || k === 'Q' || k === 'M')){ let n = 1; while (tagByN(T, 'Tag_' + n)) n++; return {a, tag:{n:'Tag_' + n, a, c:'', u:1}, msg:`ينشئ TIA تلقائيًا Tag جديدًا لهذا العنوان اسمه ${iso('"Tag_' + n + '"')}. يمكنك تغيير اسمه من تبويب PLC tags.`}; }
   return {a};
 };
 /* new timer / counter instance: TIA asks for a name and offers IEC_Timer_0_DB, IEC_Timer_0_DB_1 … */
@@ -284,13 +284,13 @@ DVP.short = a => DVP.abs(a);
 DVP.word = a => DVP.abs(a);
 DVP.dtype = a => ({I:'X', Q:'Y', M:'M', T:'T', C:'C', MW:'D', HC:'C'}[ENG.kind(a)] || '');
 DVP.pal = [
-  {id:'NO', t:'NO', mn:'LD', ar:'كونتاكت NO', acc:['I', 'Q', 'M', 'T', 'C', 'HC']}, {id:'NC', t:'NC', mn:'LDI', ar:'كونتاكت NC', acc:['I', 'Q', 'M', 'T', 'C', 'HC']}, {id:'P', t:'P', mn:'LDP', ar:'Edge طالع'}, {id:'N', t:'N', mn:'LDF', ar:'Edge نازل'}, {id:'CMP', t:'CMP', mn:'LD※', ar:'مقارنة'},
-  {id:'OUT', t:'OUT', mn:'OUT', ar:'كويل'}, {id:'S', t:'S', mn:'SET', ar:'Set'}, {id:'R', t:'R', mn:'RST', ar:'Reset (Y · M · T · C)', acc:['Q', 'M', 'T', 'C', 'HC']}, {id:'TON', t:'TON', mn:'TMR', ar:'تايمر'}, {id:'CTU', t:'CTU', mn:'CNT', ar:'عدّاد'},
+  {id:'NO', t:'NO', mn:'LD', ar:'تلامس NO', acc:['I', 'Q', 'M', 'T', 'C', 'HC']}, {id:'NC', t:'NC', mn:'LDI', ar:'تلامس NC', acc:['I', 'Q', 'M', 'T', 'C', 'HC']}, {id:'P', t:'P', mn:'LDP', ar:'Edge صاعد'}, {id:'N', t:'N', mn:'LDF', ar:'Edge هابط'}, {id:'CMP', t:'CMP', mn:'LD※', ar:'مقارنة'},
+  {id:'OUT', t:'OUT', mn:'OUT', ar:'ملف'}, {id:'S', t:'S', mn:'SET', ar:'Set'}, {id:'R', t:'R', mn:'RST', ar:'Reset (Y · M · T · C)', acc:['Q', 'M', 'T', 'C', 'HC']}, {id:'TON', t:'TON', mn:'TMR', ar:'تايمر'}, {id:'CTU', t:'CTU', mn:'CNT', ar:'عدّاد'},
   {id:'HSC', t:'HSC', mn:'DCNT', ar:'عدّاد سريع 32 بت', hsc:true}];
 DVP.idOf = el => el.t;
-DVP.help = {NO:'LD / AND / OR: بيوصّل لما البت = 1', NC:'LDI / ANI / ORI: بيوصّل لما البت = 0', P:'LDP / ANDP / ORP: سكان واحد لما البت يطلع 0 ← 1', N:'LDF / ANDF / ORF: سكان واحد لما البت ينزل 1 ← 0', CMP:'LD= LD> LD< LD>= LD<= LD<>: بيوصّل لو المقارنة صح (القيمة الثابتة بتتكتب K). مع عدّاد 32 بت زي C251 بتبقى DLD>= و DAND< …',
-  OUT:'OUT: البت = الكهربا الداخلة', S:'SET: يخلّي البت 1 ويفضل', R:'RST: يرجّع البت 0، ولو T أو C بيصفّر القيمة', TON:'TMR T0 K50: تايمر تأخير تشغيل. T0–T199 وحدته 100ms، يعني K50 = 5 ثواني', CTU:'CNT C0 K10: عدّاد طالع (16 بت). الكونتاكت C0 بيبقى 1 لما العدّ يوصل K. بيتصفّر بـ RST C0',
-  HSC:'DCNT C251 K10000: بيشغّل العدّاد السريع C251 (فاز A على X0 و B على X1، 32 بت). لازم يفضل متنفّذ طول الوقت عشان يعدّ، والكونتاكت C251 بيبقى 1 لما العدّ يوصل K. بيتصفّر بـ RST C251'};
+DVP.help = {NO:'LD / AND / OR: يوصّل عندما يكون البت = 1', NC:'LDI / ANI / ORI: يوصّل عندما يكون البت = 0', P:'LDP / ANDP / ORP: سكان واحد عندما يصعد البت 0 ← 1', N:'LDF / ANDF / ORF: سكان واحد عندما يهبط البت 1 ← 0', CMP:'LD= LD> LD< LD>= LD<= LD<>: يوصّل إذا تحققت المقارنة (القيمة الثابتة تُكتب K). ومع عدّاد 32 بت مثل C251 تصبح DLD>= وDAND< …',
+  OUT:'OUT: البت = الكهرباء الداخلة', S:'SET: يجعل البت 1 ويبقى', R:'RST: يعيد البت إلى 0، وإذا كان T أو C يصفّر القيمة', TON:'TMR T0 K50: تايمر تأخير تشغيل. وحدة T0–T199 هي 100ms، أي إن K50 = 5 ثوانٍ', CTU:'CNT C0 K10: عدّاد تصاعدي (16 بت). يصبح التلامس C0 = 1 عندما يصل العدّ إلى K، ويُصفَّر بـ RST C0',
+  HSC:'DCNT C251 K10000: يشغّل العدّاد السريع C251 (الفاز A على X0 وB على X1، 32 بت). يجب أن يبقى منفَّذًا طوال الوقت ليعدّ، ويصبح التلامس C251 = 1 عندما يصل العدّ إلى K، ويُصفَّر بـ RST C251'};
 DVP.pt = {lab:'K (×100ms)', get:pt => Math.round(pt * 10), set:v => Math.max(1, Math.round(v)) / 10, show:pt => 'K' + Math.round(pt * 10), step:1};
 DVP.pv = {lab:'K'};
 DVP.cmpShow = (a, b) => 'K' + (ENG.kind(a) === 'T' ? Math.round(b * 10) : Math.round(b));
@@ -300,21 +300,21 @@ DVP.cmpLab = a => ENG.kind(a) === 'T' ? 'K (×100ms)' : 'K';
 DVP.opName = (op, a) => (a && ENG.kind(a) === 'HC' ? 'DLD' : 'LD') + (op === '==' ? '=' : op);
 DVP.parse = function(str, acc){
   const u = String(str || '').trim().toUpperCase().replace(/\s+/g, '');
-  if (!u) return {err:'اكتب عنوان زي X3 أو Y2 أو M10.'};
+  if (!u) return {err:'اكتب عنوانًا مثل X3 أو Y2 أو M10.'};
   let m, a = null;
   if ((m = /^([XY])(\d{1,3})$/.exec(u))){
-    if (/[89]/.test(m[2])) return {err:`${iso(u)} مش موجود: أرقام X و Y في دلتا بالـ Octal (من 0 لـ 7)، يعني بعد ${iso(m[1] + '7')} بييجي ${iso(m[1] + '10')}.`};
+    if (/[89]/.test(m[2])) return {err:`${iso(u)} غير موجود: أرقام X وY في دلتا بنظام Octal (من 0 إلى 7)، أي إنه بعد ${iso(m[1] + '7')} يأتي ${iso(m[1] + '10')}.`};
     const n = parseInt(m[2], 8); a = bitOf(m[1] === 'X' ? 'I' : 'Q', n);
-    if ((m[1] === 'X' && n > 7) || (m[1] === 'Y' && n > 5)) return {err:`الـ ${iso('DVP-14SS2')} فيه ${iso('X0–X7')} و ${iso('Y0–Y5')} بس.`};
+    if ((m[1] === 'X' && n > 7) || (m[1] === 'Y' && n > 5)) return {err:`الـ ${iso('DVP-14SS2')} فيه ${iso('X0–X7')} و${iso('Y0–Y5')} فقط.`};
   }
-  else if ((m = /^M(\d{1,3})$/.exec(u))){ if (+m[1] > 799) return {err:'استخدم من M0 لـ M799.'}; a = bitOf('M', +m[1]); }
+  else if ((m = /^M(\d{1,3})$/.exec(u))){ if (+m[1] > 799) return {err:'استخدم من M0 إلى M799.'}; a = bitOf('M', +m[1]); }
   else if ((m = /^T(\d{1,2})$/.exec(u))) a = 'T' + (+m[1]);
   else if (u === 'C251') a = 'HC0';
-  else if (/^C2[0-5]\d$/.test(u)) return {err:`${iso(u)} مش مستخدم هنا. الإنكودر داخل A على ${iso('X0')} و B على ${iso('X1')}، وده العدّاد السريع ${iso('C251')} (فازتين A/B). ${iso('C235')} مثلًا بيعدّ من ${iso('X0')} بس (فاز واحد) فمش هيعرف الاتجاه.`};
+  else if (/^C2[0-5]\d$/.test(u)) return {err:`${iso(u)} غير مستخدم هنا. الإنكودر يدخل A على ${iso('X0')} وB على ${iso('X1')}، وهذا هو العدّاد السريع ${iso('C251')} (فازان A/B). أما ${iso('C235')} مثلًا فيعدّ من ${iso('X0')} فقط (فاز واحد) فلن يعرف الاتجاه.`};
   else if ((m = /^C(\d{1,2})$/.exec(u))) a = 'C' + (+m[1]);
   else if ((m = /^D(\d{1,3})$/.exec(u))) a = 'MW' + (+m[1]);
-  if (!a) return {err:`مش فاهم ${iso(u)}. أمثلة: ${iso('X3')} · ${iso('Y1')} · ${iso('M10')} · ${iso('T2')} · ${iso('C1')}.`};
-  if (acc.indexOf(ENG.kind(a)) < 0) return {err:`${iso(u)} مينفعش مع التعليمة دي.`};
+  if (!a) return {err:`لم أفهم ${iso(u)}. أمثلة: ${iso('X3')} · ${iso('Y1')} · ${iso('M10')} · ${iso('T2')} · ${iso('C1')}.`};
+  if (acc.indexOf(ENG.kind(a)) < 0) return {err:`${iso(u)} لا يصلح مع هذه التعليمة.`};
   return {a};
 };
 DVP.newInst = function(t, T, prog){ const a = freeAddr(t === 'CTU' ? 'C' : 'T', prog, T); return a ? {a} : null; };
@@ -394,8 +394,8 @@ DVP.il = function(prog){
   prog.forEach((rg, i) => {
     const gs = rungGroups(rg);
     out.push({rung:i});
-    if (!gs.length){ out.push({c:'(الرانج فاضي: مفيش خرج)'}); return; }
-    gs.forEach(g => { if (!g.x){ out.push({c:'(الرانج ده فيه فروع متشابكة. بسّطه عشان يتحوّل لـ IL)'}); return; } gen(g.x).forEach(l => out.push({i:l[0], o:l[1]})); g.outs.forEach(el => { const l = outI(el); out.push({i:l[0], o:l[1]}); }); });
+    if (!gs.length){ out.push({c:'(الرانج فارغ: لا يوجد خرج)'}); return; }
+    gs.forEach(g => { if (!g.x){ out.push({c:'(في هذا الرانج فروع متشابكة. بسّطه ليتحوّل إلى IL)'}); return; } gen(g.x).forEach(l => out.push({i:l[0], o:l[1]})); g.outs.forEach(el => { const l = outI(el); out.push({i:l[0], o:l[1]}); }); });
   });
   out.push({i:'END', o:''});
   return out;
@@ -434,11 +434,11 @@ AB.pal = [
   {id:'TON', t:'TON', mn:'TON', ar:'Timer On Delay'}, {id:'TOF', t:'TOF', mn:'TOF', ar:'Timer Off Delay'}, {id:'RTO', t:'RTO', mn:'RTO', ar:'Retentive Timer On'}, {id:'CTU', t:'CTU', mn:'CTU', ar:'Count Up'}, {id:'CTD', t:'CTD', mn:'CTD', ar:'Count Down'}, {id:'SCL', t:'SCL', mn:'SCP', ar:'Scale w/ Parameters'},
   {id:'HRS', t:'R', mn:'OTE Enc_Reset', ar:'تصفير كارت العدّاد السريع', acc:['HC'], hsc:true}];
 AB.idOf = el => el.t === 'R' && (ENG.kind(el.a) === 'T' || ENG.kind(el.a) === 'C') ? 'RES' : el.t === 'R' && ENG.kind(el.a) === 'HC' ? 'HRS' : el.t;
-AB.help = {NO:'XIC: بيوصّل لما البت = 1', NC:'XIO: بيوصّل لما البت = 0', ONS:'ONS: بيعدّي سكان واحد بس لما الشرط اللي قبله يبقى true. محتاج Tag بت تخزين (Storage bit)', CMP:'EQU = · NEQ ≠ · GRT > · GEQ ≥ · LES < · LEQ ≤ (Source A مع Source B). بتشتغل على DINT زي عدّ الإنكودر',
-  HRS:'OTE على بت الـ Reset بتاع كارت العدّاد السريع (Local:4:O.Ch0Reset): طول ما الرانج true العدّ بيتصفّر',
-  OUT:'OTE: البت = حالة الرانج', S:'OTL: يمسك البت 1 (Latch)', R:'OTU: يفك البت 0 (Unlatch)', RES:'RES: يصفّر الـ ACC وبتات التايمر أو العدّاد',
-  TON:'TON: الـ DN بيبقى 1 بعد ما الـ ACC يوصل الـ Preset (بالملّي ثانية). EN = الرانج true، TT = بيعدّ', TOF:'TOF: الـ DN بيفضل 1 لمدة الـ Preset بعد ما الرانج يبقى false', RTO:'RTO: زي TON بس الـ ACC مش بيتصفّر لما الرانج يقع، لازم RES',
-  CTU:'CTU: الـ ACC بيزيد مع كل false ← true، و DN = 1 لما ACC ≥ Preset. بيتصفّر بـ RES', CTD:'CTD: بينقّص الـ ACC من نفس الـ COUNTER (مع CTU عشان عدّ طالع ونازل)', SCL:'SCP: يحوّل القيمة من مدى الدخل (Input Min/Max) للمدى الحقيقي (Scaled Min/Max)'};
+AB.help = {NO:'XIC: يوصّل عندما يكون البت = 1', NC:'XIO: يوصّل عندما يكون البت = 0', ONS:'ONS: يمرّر سكانًا واحدًا فقط عندما يصبح الشرط الذي قبله true. يحتاج إلى Tag بت تخزين (Storage bit)', CMP:'EQU = · NEQ ≠ · GRT > · GEQ ≥ · LES < · LEQ ≤ (Source A مع Source B). تعمل على DINT مثل عدّ الإنكودر',
+  HRS:'OTE على بت الـ Reset الخاص بكارت العدّاد السريع (Local:4:O.Ch0Reset): ما دام الرانج true يُصفَّر العدّ',
+  OUT:'OTE: البت = حالة الرانج', S:'OTL: يمسك البت على 1 (Latch)', R:'OTU: يفكّ البت إلى 0 (Unlatch)', RES:'RES: يصفّر الـ ACC وبتات التايمر أو العدّاد',
+  TON:'TON: يصبح الـ DN = 1 بعد أن يصل الـ ACC إلى الـ Preset (بالملّي ثانية). EN = الرانج true، وTT = يعدّ', TOF:'TOF: يبقى الـ DN = 1 مدة الـ Preset بعد أن يصبح الرانج false', RTO:'RTO: مثل TON لكن الـ ACC لا يُصفَّر عندما ينقطع الرانج، بل يحتاج إلى RES',
+  CTU:'CTU: يزيد الـ ACC مع كل false ← true، وDN = 1 عندما ACC ≥ Preset. ويُصفَّر بـ RES', CTD:'CTD: ينقص الـ ACC من الـ COUNTER نفسه (مع CTU للعدّ التصاعدي والتنازلي)', SCL:'SCP: يحوّل القيمة من مدى الدخل (Input Min/Max) إلى المدى الحقيقي (Scaled Min/Max)'};
 AB.pt = {lab:'Preset (ms)', get:pt => Math.round(pt * 1000), set:v => Math.max(1, Math.round(v)) / 1000, show:pt => String(Math.round(pt * 1000)), step:100};
 AB.pv = {lab:'Preset'};
 AB.cmpShow = (a, b) => ENG.kind(a) === 'T' ? String(Math.round(b * 1000)) : ENG.kind(a) === 'MW' ? nfmt(b, 1) : String(b);
@@ -458,22 +458,22 @@ AB.parse = function(str, acc, T){
   else if (acc.indexOf('HC') >= 0 && ((m = /^Local:4:O\.Ch(\d)Reset$/i.exec(s)) || /^Enc_Reset$/i.test(s))) a = 'HC' + (m ? m[1] : 0);
   else {
     const mm = /^(.*?)(?:\.(DN|TT|EN|ACC|PRE))?$/i.exec(s), tg = tagByN(T, mm[1]), suf = (mm[2] || '').toUpperCase();
-    if (!tg) return {err:`مفيش Tag اسمه ${iso(s)} في Controller Tags. في Logix لازم تعمل الـ Tag الأول (New Tag) أو تختار واحد موجود.`};
+    if (!tg) return {err:`لا يوجد Tag اسمه ${iso(s)} في Controller Tags. في Logix يجب أن تنشئ الـ Tag أولًا (New Tag) أو تختار Tag موجودًا.`};
     const k = ENG.kind(tg.a);
-    if ((k === 'T' || k === 'C') && (suf === 'TT' || suf === 'EN')){ if (k === 'C') return {err:'العدّاد فيه DN بس هنا.'}; a = tg.a + '.' + suf; }
+    if ((k === 'T' || k === 'C') && (suf === 'TT' || suf === 'EN')){ if (k === 'C') return {err:'العدّاد هنا فيه DN فقط.'}; a = tg.a + '.' + suf; }
     else a = tg.a;
   }
   const k = ENG.kind(a);
-  if (acc.indexOf(k) < 0) return {err:`${iso(s)} نوعه ${iso(AB.dtype(a.split('.')[0]))} ومينفعش مع التعليمة دي.`};
+  if (acc.indexOf(k) < 0) return {err:`${iso(s)} من نوع ${iso(AB.dtype(a.split('.')[0]))} ولا يصلح مع هذه التعليمة.`};
   return {a};
 };
 /* Logix tag names: letters, digits and _ ; start with a letter or _ ; up to 40 characters; no double __ */
 AB.newTag = function(name, ty, T, prog){
   name = String(name || '').trim();
-  if (!/^[A-Za-z_][A-Za-z0-9_]{0,39}$/.test(name) || /__/.test(name) || /_$/.test(name)) return {err:'اسم الـ Tag: حروف إنجليزي وأرقام و _ بس، يبدأ بحرف، ومن غير مسافات (زي ' + iso('Star_TMR') + ').'};
-  if (tagByN(T, name)) return {err:'فيه Tag بنفس الاسم.'};
+  if (!/^[A-Za-z_][A-Za-z0-9_]{0,39}$/.test(name) || /__/.test(name) || /_$/.test(name)) return {err:'اسم الـ Tag: حروف إنجليزية وأرقام و_ فقط، يبدأ بحرف، ودون مسافات (مثل ' + iso('Star_TMR') + ').'};
+  if (tagByN(T, name)) return {err:'يوجد Tag بالاسم نفسه.'};
   const a = freeAddr(ty === 'TIMER' ? 'T' : ty === 'COUNTER' ? 'C' : 'M', prog, T);
-  if (!a) return {err:'مفيش مكان.'};
+  if (!a) return {err:'لا يوجد مكان.'};
   return {tag:{n:name, a, c:'', u:1}};
 };
 AB.newInst = () => null;
@@ -585,7 +585,7 @@ AB.rungText = function(rg, T){
 AB.lineEnd = () => '';
 
 /* ================= the brand simulator UI: scenario · machine · CPU faceplate · vendor-style editor · auto-check ================= */
-const LV = {1:['سهل', 'lv1'], 2:['متوسط', 'lv2'], 3:['صعب', 'lv3'], 4:['تحدّي المصنع', 'lv4'], 5:['تربل شوتنج', 'lv5']};
+const LV = {1:['سهل', 'lv1'], 2:['متوسط', 'lv2'], 3:['صعب', 'lv3'], 4:['تحدّي المصنع', 'lv4'], 5:['تتبّع الأعطال', 'lv5']};
 const ICO = {
   compile:'<path d="M4 12l5 5L20 6"/>', dl:'<path d="M12 3v11M7 10l5 5 5-5M4 19h16"/>', ul:'<path d="M4 12h12M12 7l5 5-5 5M20 4v16"/>', online:'<path d="M7 7l10 10M5 12a7 7 0 0 1 7-7M19 12a7 7 0 0 1-7 7"/><circle cx="12" cy="12" r="2"/>',
   mon:'<circle cx="7" cy="14" r="4"/><circle cx="17" cy="14" r="4"/><path d="M11 14h2M3 14l2-7h3M21 14l-2-7h-3"/>', run:'<path d="M7 5l12 7-12 7z"/>', stop:'<rect x="6" y="6" width="12" height="12" rx="1"/>'
@@ -610,15 +610,15 @@ PL.brandSim = function(host, cfg){
   const tools = SI ? `<button type="button" class="btn tb" data-a="compile">${ico('compile')}Compile</button><button type="button" class="btn tb pri" data-a="dl">${ico('dl')}Download to device</button><button type="button" class="btn tb" data-a="online" aria-pressed="false">${ico('online')}<span>Go online</span></button><button type="button" class="btn tb" data-a="mon" aria-pressed="false">${ico('mon')}Monitoring</button><button type="button" class="btn tb" data-a="run">${ico('run')}RUN</button><button type="button" class="btn tb" data-a="stop">${ico('stop')}STOP</button>`
     : DV ? `<button type="button" class="btn tb" data-a="compile">${ico('compile')}Compile</button><button type="button" class="btn tb pri" data-a="dl">${ico('ul')}Write to PLC</button><button type="button" class="btn tb" data-a="mon" aria-pressed="false">${ico('mon')}Ladder Monitor</button><button type="button" class="btn tb" data-a="run">${ico('run')}RUN</button><button type="button" class="btn tb" data-a="stop">${ico('stop')}STOP</button>`
     : `<button type="button" class="btn tb" data-a="compile">${ico('compile')}Verify</button><button type="button" class="btn tb" data-a="online" aria-pressed="false">${ico('online')}<span>Go Online</span></button><button type="button" class="btn tb pri" data-a="dl">${ico('dl')}Download</button><button type="button" class="btn tb" data-a="run">${ico('run')}Run Mode</button><button type="button" class="btn tb" data-a="stop">${ico('stop')}Program Mode</button>`;
-  const hwCtl = DV ? `<div class="bx-sw" role="group" aria-label="سويتش RUN/STOP على الـ PLC"><span>سويتش الـ PLC:</span><button type="button" class="btn sm" data-sw="RUN" aria-pressed="false">RUN</button><button type="button" class="btn sm" data-sw="STOP" aria-pressed="true">STOP</button></div>`
+  const hwCtl = DV ? `<div class="bx-sw" role="group" aria-label="مفتاح RUN/STOP على الـ PLC"><span>مفتاح الـ PLC:</span><button type="button" class="btn sm" data-sw="RUN" aria-pressed="false">RUN</button><button type="button" class="btn sm" data-sw="STOP" aria-pressed="true">STOP</button></div>`
     : AR ? `<div class="bx-sw" role="group" aria-label="مفتاح الكنترولر"><span>المفتاح:</span><button type="button" class="btn sm" data-key="RUN" aria-pressed="false">RUN</button><button type="button" class="btn sm" data-key="REM" aria-pressed="true">REM</button><button type="button" class="btn sm" data-key="PROG" aria-pressed="false">PROG</button></div>`
-    : `<p class="bx-hwn muted">الـ ${iso('S7-1200')} مالوش سويتش RUN/STOP: بيتشغّل ويتوقف من TIA وانت Online، أو لوحده بعد الـ Download.</p>`;
+    : `<p class="bx-hwn muted">الـ ${iso('S7-1200')} ليس له مفتاح RUN/STOP: يعمل ويتوقف من TIA وأنت Online، أو تلقائيًا بعد الـ Download.</p>`;
   host.innerHTML = `
     <nav class="bx-list" aria-label="التمارين"></nav>
     <div class="bx-prog"></div>
     <article class="bx-scn" aria-live="polite"></article>
     <div class="bx-stage">
-      <section class="bx-mach" aria-label="الماكينة"><div class="bx-h"><b>الماكينة</b><span class="bx-tag">Field</span></div><div class="bx-plant"></div><div class="bx-pctl"></div><div class="bx-io" role="group" aria-label="الزراير والحساسات"></div></section>
+      <section class="bx-mach" aria-label="الماكينة"><div class="bx-h"><b>الماكينة</b><span class="bx-tag">Field</span></div><div class="bx-plant"></div><div class="bx-pctl"></div><div class="bx-io" role="group" aria-label="الأزرار والحساسات"></div></section>
       <section class="bx-hw" aria-label="الـ PLC"><div class="bx-h"><b dir="ltr">${esc(B.cpu)}</b><span class="bx-mode"></span></div><div class="bx-face"></div>${hwCtl}</section>
     </div>
     <section class="bx-ide" aria-label="برنامج الـ PLC">
@@ -633,7 +633,7 @@ PL.brandSim = function(host, cfg){
       <div class="bx-ladt"><button type="button" class="btn sm" data-t="add">+ ${SI ? 'Network' : AR ? 'Rung' : 'رانج'} جديد</button></div>
       <div class="bx-lint" aria-live="polite"></div>
     </section>
-    <div class="bx-chk"><button type="button" class="btn pri big" data-t="chk">✓ اختبر البرنامج</button><button type="button" class="btn" data-t="hint" hidden>تلميح</button><button type="button" class="btn" data-t="sol" hidden>شوف الحل</button><button type="button" class="btn" data-t="reset">ابدأ من الأول</button><button type="button" class="btn" data-t="undo" hidden>رجّع برنامجي</button></div>
+    <div class="bx-chk"><button type="button" class="btn pri big" data-t="chk">✓ اختبر البرنامج</button><button type="button" class="btn" data-t="hint" hidden>تلميح</button><button type="button" class="btn" data-t="sol" hidden>اعرض الحل</button><button type="button" class="btn" data-t="reset">ابدأ من جديد</button><button type="button" class="btn" data-t="undo" hidden>استرجع برنامجي</button></div>
     <div class="bx-res" aria-live="polite" hidden></div>
     <div class="bx-hint box" hidden></div>`;
   const q = s => $(s, host);
@@ -679,11 +679,11 @@ PL.brandSim = function(host, cfg){
     listBox.innerHTML = exs.map((x, j) => { const d = isDone(x); return `<button type="button" class="bx-it${d ? ' done' : ''}${x.lvl === 4 ? ' ch' : ''}" data-k="${j}" aria-pressed="${j === k}"><span class="n">${d ? '✓' : x.lvl === 4 ? '★' : j + 1}</span><span class="t">${esc(x.title)}</span></button>`; }).join('');
     listBox.hidden = !!LES && exs.length < 2; progBox.hidden = !!LES;
     const n = exs.filter(isDone).length, pct = Math.round(n / exs.length * 100);
-    progBox.innerHTML = `<span>خلّصت <b>${n} من ${exs.length}</b> تمارين</span><span class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="التقدّم ${pct}%"><i style="width:${pct}%"></i></span>`;
+    progBox.innerHTML = `<span>أنجزت <b>${n} من ${exs.length}</b> تمارين</span><span class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="التقدّم ${pct}%"><i style="width:${pct}%"></i></span>`;
   }
   function ioRows(){
-    const kindAr = i => ({pb:'زرار NO', pbnc:'زرار متوصّل NC', sw:'سويتش', sensor:'حساس', ncsw:'متوصّل NC', auto:'حساس على الماكينة', enc:'إنكودر (للعدّاد السريع)'}[i.kind] || '');
-    const outAr = o => ({motor:'موتور', fan:'مروحة', horn:'سارينة', valve:'بلف', heater:'سخان', lamp:'لمبة', vfd:'دخل إنفرتر', brake:'فرامل الموتور'}[o.kind] || 'كونتاكتور / حمل');
+    const kindAr = i => ({pb:'زر NO', pbnc:'زر موصّل NC', sw:'مفتاح', sensor:'حساس', ncsw:'موصّل NC', auto:'حساس على الماكينة', enc:'إنكودر (للعدّاد السريع)'}[i.kind] || '');
+    const outAr = o => ({motor:'محرك', fan:'مروحة', horn:'سارينة', valve:'بلف', heater:'سخان', lamp:'مصباح', vfd:'دخل انفرتر', brake:'فرامل المحرك'}[o.kind] || 'كونتاكتور / حمل');
     const row = (a, lab, kd) => { const t = tagByA(T, a); return `<tr><td class="mono">${esc(SI ? SIE.abs(a) : DV ? DVP.abs(a) : AB.base(a) || a)}</td><td class="mono">${esc(t ? (DV ? t.c : t.n) : '—')}</td><td>${esc(lab)}</td><td class="muted">${esc(kd)}</td></tr>`; };
     let h = (ex.io.inputs || []).map(i => row(i.a, i.label, kindAr(i))).join('') + (ex.io.outputs || []).map(o => row(o.a, o.label, outAr(o))).join('');
     (ex.syms || []).forEach(s => { h += row(s.a, s.label, s.kind || ''); });
@@ -693,14 +693,14 @@ PL.brandSim = function(host, cfg){
     const lv = LV[ex.lvl] || LV[1], d = isDone(ex);
     if (LES){
       scn.className = 'bx-scn bx-les' + (d ? ' ok' : '');
-      scn.innerHTML = `${exs.length > 1 || d ? `<div class="bx-scn-h">${exs.length > 1 ? `<span class="muted">تمرين ${exs.indexOf(ex) + 1} من ${exs.length}</span>` : ''}${d ? '<span class="bx-done">✓ خلّصته</span>' : ''}</div>` : ''}
+      scn.innerHTML = `${exs.length > 1 || d ? `<div class="bx-scn-h">${exs.length > 1 ? `<span class="muted">تمرين ${exs.indexOf(ex) + 1} من ${exs.length}</span>` : ''}${d ? '<span class="bx-done">✓ اكتمل</span>' : ''}</div>` : ''}
         <h3>${esc(ex.title)}</h3><div class="bx-task">${XL(ex.task)}</div>
-        <p class="bx-how"><b>إزاي تحلّه:</b> ${SI ? `ابني البرنامج في ${iso('Main [OB1]')} تحت ← ${iso('Download to device')} ← ${iso('Monitoring')} وجرّب بالزراير ← «اختبر البرنامج».` : AR ? `ابني البرنامج في ${iso('MainRoutine')} تحت ← ${iso('Go Online')} ← ${iso('Download')} ← ${iso('Run Mode')} وجرّب بالزراير ← «اختبر البرنامج».` : `ابني البرنامج في ${iso('Ladder')} تحت ← ${iso('Write to PLC')} ← ${iso('RUN')} وجرّب بالزراير ← «اختبر البرنامج».`}</p>
+        <p class="bx-how"><b>طريقة الحل:</b> ${SI ? `ابنِ البرنامج في ${iso('Main [OB1]')} بالأسفل ← ${iso('Download to device')} ← ${iso('Monitoring')} وجرّب بالأزرار ← «اختبر البرنامج».` : AR ? `ابنِ البرنامج في ${iso('MainRoutine')} بالأسفل ← ${iso('Go Online')} ← ${iso('Download')} ← ${iso('Run Mode')} وجرّب بالأزرار ← «اختبر البرنامج».` : `ابنِ البرنامج في ${iso('Ladder')} بالأسفل ← ${iso('Write to PLC')} ← ${iso('RUN')} وجرّب بالأزرار ← «اختبر البرنامج».`}</p>
         <details class="bx-iod"><summary>جدول الـ I/O بعناوين ${esc(B.name)}</summary>${ioRows()}</details>`;
       return;
     }
     scn.className = 'bx-scn ' + lv[1] + (d ? ' ok' : '');
-    scn.innerHTML = `<div class="bx-scn-h"><span class="bx-lv">${lv[0]}</span><span class="muted">تمرين ${exs.indexOf(ex) + 1} من ${exs.length}</span>${d ? '<span class="bx-done">✓ خلّصته</span>' : ''}</div>
+    scn.innerHTML = `<div class="bx-scn-h"><span class="bx-lv">${lv[0]}</span><span class="muted">تمرين ${exs.indexOf(ex) + 1} من ${exs.length}</span>${d ? '<span class="bx-done">✓ اكتمل</span>' : ''}</div>
       <h3>${esc(ex.title)}</h3><p class="bx-story">${ex.story || ''}</p>
       ${ex.skills ? `<div class="bx-skills">${ex.skills.map(s => `<span>${s}</span>`).join('')}</div>` : ''}
       <div class="bx-task">${Array.isArray(ex.task) ? `<b>المطلوب:</b><ol class="bx-req">${ex.task.map(t => `<li>${t}</li>`).join('')}</ol>` : ex.task}</div>
@@ -729,9 +729,9 @@ PL.brandSim = function(host, cfg){
     if (pvAd.refresh) pvAd.refresh();
   }
   function guide(){
-    return SI ? `ابدأ: اكتب البرنامج تحت، وبعدين <b>Download to device</b> (الـ CPU بيبقى RUN لوحده)، ودوس <b>Monitoring</b> عشان تشوف الكهربا ماشية. وجرّب بالزراير اللي تحت الماكينة.`
-      : DV ? `ابدأ: اكتب البرنامج، وبعدين <b>Write to PLC</b>، وحوّل سويتش الـ PLC لـ <b>RUN</b>، والـ <b>Ladder Monitor</b> بيوريك الكونتاكتات الشغالة.`
-      : `ابدأ: اكتب البرنامج، وبعدين <b>Go Online</b> ← <b>Download</b> ← <b>Run Mode</b> (والمفتاح على REM) أو لف المفتاح على <b>RUN</b>.`;
+    return SI ? `ابدأ: اكتب البرنامج في الأسفل، ثم <b>Download to device</b> (ينتقل الـ CPU إلى RUN تلقائيًا)، واضغط <b>Monitoring</b> لترى مسار الكهرباء. وجرّب بالأزرار التي أسفل الماكينة.`
+      : DV ? `ابدأ: اكتب البرنامج، ثم <b>Write to PLC</b>، وحوّل مفتاح الـ PLC إلى <b>RUN</b>، ويريك الـ <b>Ladder Monitor</b> التلامسات الموصّلة.`
+      : `ابدأ: اكتب البرنامج، ثم <b>Go Online</b> ← <b>Download</b> ← <b>Run Mode</b> (والمفتاح على REM) أو أدِر المفتاح إلى <b>RUN</b>.`;
   }
   function msg(h, cls){ stat.className = 'bx-stat' + (cls ? ' ' + cls : ''); stat.innerHTML = h; }
   function persist(){ PS.set(ex.key, {p:ENG.serialize(prog), t:T.filter(t => t.u).map(t => ({n:t.n, a:t.a, c:t.c || ''}))}); }
@@ -741,7 +741,7 @@ PL.brandSim = function(host, cfg){
   function renderIO(){
     const ins = (ex.io.inputs || []).filter(i => i.kind !== 'auto' && i.kind !== 'enc');
     ioBox.innerHTML = ins.map(i => { const kd = i.kind, isPb = kd === 'pb' || kd === 'pbnc', col = i.color || (kd === 'pbnc' ? 'red' : kd === 'pb' ? 'green' : 'gray');
-      return `<button type="button" class="ib ib-${kd}" data-a="${i.a}" style="--cap:${PL.LCOL[col] || '#8a949b'}" aria-pressed="false" aria-label="${esc(i.label + ' ' + B.short(i.a, T))}${isPb ? ' (اضغط وسيب)' : ''}"><span class="cap" aria-hidden="true"></span><span class="l">${esc(i.label)}</span><span class="a">${esc(B.short(i.a, T))}${kd === 'pbnc' || kd === 'ncsw' ? ' · NC' : ''}</span></button>`; }).join('');
+      return `<button type="button" class="ib ib-${kd}" data-a="${i.a}" style="--cap:${PL.LCOL[col] || '#8a949b'}" aria-pressed="false" aria-label="${esc(i.label + ' ' + B.short(i.a, T))}${isPb ? ' (اضغط واترك)' : ''}"><span class="cap" aria-hidden="true"></span><span class="l">${esc(i.label)}</span><span class="a">${esc(B.short(i.a, T))}${kd === 'pbnc' || kd === 'ncsw' ? ' · NC' : ''}</span></button>`; }).join('');
     ioBox.hidden = !ins.length; updIO();
   }
   function updIO(){ $$('.ib', ioBox).forEach(b => { const i = ex.io.inputs.find(x => x.a === b.dataset.a), kd = i.kind; const on = kd === 'pb' || kd === 'pbnc' ? !!pressed[i.a] : kd === 'ncsw' ? i.state === 0 : i.state === 1; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); }); }
@@ -787,8 +787,8 @@ PL.brandSim = function(host, cfg){
     if (DV){ bt('run').disabled = mode === 'RUN'; bt('stop').disabled = mode !== 'RUN'; $$('[data-sw]', host).forEach(b => b.setAttribute('aria-pressed', b.dataset.sw === mode)); }
     if (AR){ bt('dl').disabled = !online; bt('run').disabled = !online || key !== 'REM' || mode === 'RUN'; bt('stop').disabled = !online || key !== 'REM' || mode !== 'RUN'; $$('[data-key]', host).forEach(b => b.setAttribute('aria-pressed', b.dataset.key === key)); }
     let note = '';
-    if (diff) note = SI ? `البرنامج اللي على الشاشة مختلف عن اللي في الـ CPU: اعمل <b>Download to device</b> عشان التعديل يتنفّذ.` : DV ? `البرنامج اتعدّل بعد آخر كتابة: اعمل <b>Write to PLC</b> تاني.` : `فيه تعديل مش في الكنترولر: اعمل <b>Download</b> (والمفتاح REM أو PROG).`;
-    else if (mode === 'RUN' && !mon && (SI ? !(online && monOn) : AR ? !online : !monOn)) note = SI ? `الـ CPU شغال RUN. دوس <b>Monitoring</b> عشان تشوف الكهربا جوه البرنامج.` : AR ? `الكنترولر شغال. اعمل <b>Go Online</b> عشان تشوف الرانجات شغالة.` : `الـ PLC شغال. شغّل <b>Ladder Monitor</b> عشان تشوف الكونتاكتات.`;
+    if (diff) note = SI ? `البرنامج الذي على الشاشة يختلف عما في الـ CPU: اعمل <b>Download to device</b> لتنفيذ التعديل.` : DV ? `عُدّل البرنامج بعد آخر كتابة: اعمل <b>Write to PLC</b> مرة أخرى.` : `يوجد تعديل غير موجود في الكنترولر: اعمل <b>Download</b> (والمفتاح على REM أو PROG).`;
+    else if (mode === 'RUN' && !mon && (SI ? !(online && monOn) : AR ? !online : !monOn)) note = SI ? `الـ CPU يعمل RUN. اضغط <b>Monitoring</b> لترى الكهرباء داخل البرنامج.` : AR ? `الكنترولر يعمل. اعمل <b>Go Online</b> لترى الرانجات وهي تعمل.` : `الـ PLC يعمل. شغّل <b>Ladder Monitor</b> لترى التلامسات.`;
     const nb = q('.bx-note'); if (note){ if (nb) nb.innerHTML = note; else lad.insertAdjacentHTML('beforebegin', `<div class="bx-note">${note}</div>`); } else if (nb) nb.remove();
   }
   function renderPlant(){ plantBox.innerHTML = xlateSvg(B, T, P().svg(plantSt, e, ex)); }
@@ -799,27 +799,27 @@ PL.brandSim = function(host, cfg){
     prog.forEach((rg, i) => rg.rows.forEach(row => row.forEach(el => {
       if (!el || el.t === 'W') return;
       const ent = B.pal.find(p => p.id === B.idOf(el)) || {}, mn = ent.mn || el.t, accp = ent.acc || ENG.accepts[el.t] || [];
-      if (!el.a){ out.push({err:1, text:`${B.rnAr(i)}: ${iso(mn)} محتاج ${AR ? 'Tag' : 'عنوان'}.`}); return; }
+      if (!el.a){ out.push({err:1, text:`${B.rnAr(i)}: ${iso(mn)} يحتاج إلى ${AR ? 'Tag' : 'عنوان'}.`}); return; }
       const kd = ENG.kind(el.a);
-      if (accp.indexOf(kd) < 0){ out.push({err:1, text:`${B.rnAr(i)}: ${iso(B.short(el.a, T))} مينفعش مع ${iso(mn)}.`}); return; }
+      if (accp.indexOf(kd) < 0){ out.push({err:1, text:`${B.rnAr(i)}: ${iso(B.short(el.a, T))} لا يصلح مع ${iso(mn)}.`}); return; }
       if (el.t === 'OUT') (coils[el.a] = coils[el.a] || []).push(i);
       if (['TON', 'TOF', 'TP', 'RTO', 'CTU', 'CTD'].indexOf(el.t) >= 0) (inst[el.a] = inst[el.a] || []).push(i);
-      if (el.t === 'SCL' && el.rhi != null && !(el.rhi > el.rlo)) out.push({err:1, text:`${B.rnAr(i)}: في الـ SCP لازم ${iso('Input Max')} يبقى أكبر من ${iso('Input Min')}.`});
+      if (el.t === 'SCL' && el.rhi != null && !(el.rhi > el.rlo)) out.push({err:1, text:`${B.rnAr(i)}: في الـ SCP يجب أن يكون ${iso('Input Max')} أكبر من ${iso('Input Min')}.`});
     })));
-    Object.keys(coils).forEach(a => { if (coils[a].length > 1) out.push({text:`${iso(B.short(a, T))} مكتوب كويل في أكتر من مكان (${coils[a].map(B.rnAr).join(' و ')}): آخر واحد بس هو اللي بيكسب (Double coil).`}); });
-    Object.keys(inst).forEach(a => { const ts = []; prog.forEach(rg => rg.rows.forEach(row => row.forEach(el => { if (el && el.a === a && ['TON', 'TOF', 'TP', 'RTO'].indexOf(el.t) >= 0) ts.push(el.t); }))); if (ts.length > 1) out.push({text:`نفس التايمر ${iso(B.short(a, T))} مستخدم في أكتر من بلوك: كل تايمر لحاجة واحدة.`}); });
+    Object.keys(coils).forEach(a => { if (coils[a].length > 1) out.push({text:`${iso(B.short(a, T))} مكتوب ملفًا في أكثر من مكان (${coils[a].map(B.rnAr).join(' و ')}): الأخير فقط هو الذي يفوز (Double coil).`}); });
+    Object.keys(inst).forEach(a => { const ts = []; prog.forEach(rg => rg.rows.forEach(row => row.forEach(el => { if (el && el.a === a && ['TON', 'TOF', 'TP', 'RTO'].indexOf(el.t) >= 0) ts.push(el.t); }))); if (ts.length > 1) out.push({text:`التايمر نفسه ${iso(B.short(a, T))} مستخدم في أكثر من بلوك: كل تايمر لغرض واحد.`}); });
     return out;
   }
   function renderLint(){ const m = lint(); lintBox.innerHTML = m.length ? `<div class="box">${m.map(x => `<div class="${x.err ? 'er' : ''}">⚠ ${x.text}</div>`).join('')}</div>` : ''; }
   function download(){
     const errs = lint().filter(x => x.err);
     if (errs.length){ msg(`${SI ? 'Download canceled: compile errors.' : DV ? 'Write failed: syntax error.' : 'Download failed: verify errors.'} <br>${errs[0].text}`, 'bad'); return; }
-    if (AR && !online){ msg('اعمل <b>Go Online</b> الأول: في Logix الـ Download بيتعمل وانت Online.', 'bad'); return; }
-    if (AR && key === 'RUN'){ msg(`<span dir="ltr">Failed to download: controller keyswitch in RUN.</span><br>المفتاح على RUN: لفّه على <b>REM</b> أو <b>PROG</b> الأول.`, 'bad'); return; }
+    if (AR && !online){ msg('اعمل <b>Go Online</b> أولًا: في Logix يُنفَّذ الـ Download وأنت Online.', 'bad'); return; }
+    if (AR && key === 'RUN'){ msg(`<span dir="ltr">Failed to download: controller keyswitch in RUN.</span><br>المفتاح على RUN: أدِره إلى <b>REM</b> أو <b>PROG</b> أولًا.`, 'bad'); return; }
     plcStr = JSON.stringify(ENG.serialize(prog));
-    if (SI){ mode = 'STOP'; setMode('RUN'); msg(`<span dir="ltr" class="con">Compiling… 0 errors · Loading to PLC_1… · Start modules after downloading ✓</span><br>البرنامج نزل والـ CPU رجع <b>RUN</b>. دوس <b>Monitoring</b> عشان تتابعه.`, 'ok'); }
-    else if (DV){ const was = mode === 'RUN'; mode = 'RUN'; setMode('STOP'); msg(`<span dir="ltr" class="con">PC ⇒ PLC · Program written (${prog.length} rungs) ✓</span><br>${was ? 'الـ PLC وقف STOP عشان الكتابة. ' : ''}حوّل السويتش أو دوس <b>RUN</b>.`, 'ok'); }
-    else { mode = 'RUN'; setMode('STOP'); msg(`<span dir="ltr" class="con">Download complete · Controller in Remote Program mode</span><br>${key === 'PROG' ? 'لف المفتاح على <b>RUN</b>.' : 'دوس <b>Run Mode</b> أو لف المفتاح على RUN.'}`, 'ok'); }
+    if (SI){ mode = 'STOP'; setMode('RUN'); msg(`<span dir="ltr" class="con">Compiling… 0 errors · Loading to PLC_1… · Start modules after downloading ✓</span><br>نزل البرنامج وعاد الـ CPU إلى <b>RUN</b>. اضغط <b>Monitoring</b> لتتابعه.`, 'ok'); }
+    else if (DV){ const was = mode === 'RUN'; mode = 'RUN'; setMode('STOP'); msg(`<span dir="ltr" class="con">PC ⇒ PLC · Program written (${prog.length} rungs) ✓</span><br>${was ? 'توقف الـ PLC على STOP من أجل الكتابة. ' : ''}حوّل المفتاح أو اضغط <b>RUN</b>.`, 'ok'); }
+    else { mode = 'RUN'; setMode('STOP'); msg(`<span dir="ltr" class="con">Download complete · Controller in Remote Program mode</span><br>${key === 'PROG' ? 'أدِر المفتاح إلى <b>RUN</b>.' : 'اضغط <b>Run Mode</b> أو أدِر المفتاح إلى RUN.'}`, 'ok'); }
     renderAll();
   }
   toolBox.addEventListener('click', ev => {
@@ -827,13 +827,13 @@ PL.brandSim = function(host, cfg){
     const a = b.dataset.a;
     if (a === 'compile'){ const m = lint(), er = m.filter(x => x.err).length; msg(`<span dir="ltr" class="con">${SI ? 'Compiling finished' : DV ? 'Compile finished' : 'Verify routine'} (errors: ${er}; warnings: ${m.length - er})</span>${m.length ? '<br>' + m[0].text : ''}`, er ? 'bad' : 'ok'); renderLint(); }
     else if (a === 'dl') download();
-    else if (a === 'online'){ online = !online; if (SI && online) monOn = monOn || false; msg(online ? (SI ? 'اتوصلت بالـ CPU (Online). الشريط بقى برتقاني زي TIA.' : 'Online مع الكنترولر.') : 'Offline.'); renderAll(); }
+    else if (a === 'online'){ online = !online; if (SI && online) monOn = monOn || false; msg(online ? (SI ? 'تم الاتصال بالـ CPU (Online). أصبح الشريط برتقاليًا كما في TIA.' : 'Online مع الكنترولر.') : 'Offline.'); renderAll(); }
     else if (a === 'mon'){ if (SI){ if (!online){ online = true; monOn = true; } else monOn = !monOn; } else monOn = !monOn; renderAll(); }
-    else if (a === 'run'){ if (DV && plcStr == null) msg('مفيش برنامج في الـ PLC لسه: اعمل <b>Write to PLC</b> الأول.', 'bad'); else msg(`<span dir="ltr" class="con">${SI ? 'CPU changed to RUN' : DV ? 'PLC RUN' : 'Controller in Remote Run mode'}</span><br>اضغط الزراير اللي تحت الماكينة وشوف البرنامج بيعمل إيه.`, 'ok'); setMode('RUN'); }
-    else if (a === 'stop'){ setMode('STOP'); msg(`<span dir="ltr" class="con">${SI ? 'CPU changed to STOP' : DV ? 'PLC STOP' : 'Controller in Remote Program mode'}</span><br>الخرج كله فصل.`); }
+    else if (a === 'run'){ if (DV && plcStr == null) msg('لا يوجد برنامج في الـ PLC بعد: اعمل <b>Write to PLC</b> أولًا.', 'bad'); else msg(`<span dir="ltr" class="con">${SI ? 'CPU changed to RUN' : DV ? 'PLC RUN' : 'Controller in Remote Run mode'}</span><br>اضغط الأزرار التي أسفل الماكينة ولاحظ ما يفعله البرنامج.`, 'ok'); setMode('RUN'); }
+    else if (a === 'stop'){ setMode('STOP'); msg(`<span dir="ltr" class="con">${SI ? 'CPU changed to STOP' : DV ? 'PLC STOP' : 'Controller in Remote Program mode'}</span><br>فصلت كل المخارج.`); }
   });
   host.addEventListener('click', ev => {
-    const s = ev.target.closest('[data-sw]'); if (s){ setMode(s.dataset.sw); if (s.dataset.sw === 'RUN' && plcStr == null) msg('الـ PLC على RUN بس مفيش برنامج: اعمل <b>Write to PLC</b>.', 'bad'); return; }
+    const s = ev.target.closest('[data-sw]'); if (s){ setMode(s.dataset.sw); if (s.dataset.sw === 'RUN' && plcStr == null) msg('الـ PLC على RUN لكن لا يوجد برنامج: اعمل <b>Write to PLC</b>.', 'bad'); return; }
     const kk = ev.target.closest('[data-key]'); if (kk){ key = kk.dataset.key; if (key === 'RUN') setMode('RUN'); else if (key === 'PROG') setMode('STOP'); else renderAll(); return; }
   });
 
@@ -862,7 +862,7 @@ PL.brandSim = function(host, cfg){
         const x = G.xs[c], w = G.cw(c), el = rg.rows[r][c], isSel = edit && sel && sel.i === i && sel.r === r && sel.c === c;
         if (el) s += B.cell({x, y, w, wy, el, mon:!!pw, pin:pw ? pw.pw[r][c] : false, pout:pw ? pw.pw[r][c + 1] : false, cond:pw ? pw.cp[r][c] : false, e, T, prog});
         else if (edit && !mon) s += `<rect x="${x + 7}" y="${wy - 13}" width="${w - 14}" height="26" rx="4" class="ph"/>`;
-        if (edit) s += `<rect x="${x + 1}" y="${y + 1}" width="${w - 2}" height="${G.hs[r] - 2}" rx="5" class="hit${isSel ? ' sel' : ''}" data-i="${i}" data-r="${r}" data-c="${c}" tabindex="0" role="button" aria-label="${esc(B.rn(i))}، صف ${r + 1}، خانة ${c + 1}: ${el ? esc((B.pal.find(p => p.id === B.idOf(el)) || {mn:el.t}).mn + ' ' + (el.a ? B.short(el.a, T) : '')) : 'فاضية'}"/>`;
+        if (edit) s += `<rect x="${x + 1}" y="${y + 1}" width="${w - 2}" height="${G.hs[r] - 2}" rx="5" class="hit${isSel ? ' sel' : ''}" data-i="${i}" data-r="${r}" data-c="${c}" tabindex="0" role="button" aria-label="${esc(B.rn(i))}، صف ${r + 1}، خانة ${c + 1}: ${el ? esc((B.pal.find(p => p.id === B.idOf(el)) || {mn:el.t}).mn + ' ' + (el.a ? B.short(el.a, T) : '')) : 'فارغة'}"/>`;
       }
       if (B.rrail && rg.rows[r][C - 1] && ['TON', 'TOF', 'RTO', 'CTU', 'CTD', 'SCL', 'CMP'].indexOf(rg.rows[r][C - 1].t) >= 0) s += `<path d="M${G.xs[C - 1] + B.CWO - 2} ${wy}H${G.W - B.PADR}" class="w"/>`;
     }
@@ -871,7 +871,7 @@ PL.brandSim = function(host, cfg){
   }
   function rungHead(i, rg){
     const lbl = SI ? `<b>Network ${i + 1}:</b>` : DV ? `<b>رانج ${i + 1}</b>` : `<b>Rung ${i}</b>`;
-    return `<div class="bx-rh">${SI ? '<span class="tri" aria-hidden="true">▼</span>' : ''}<span dir="ltr">${lbl}</span><span class="sp"></span><button type="button" class="btn sm" data-rt="row+" ${rg.rows.length >= 3 ? 'disabled' : ''} aria-label="زوّد فرع">+ فرع</button><button type="button" class="btn sm" data-rt="row-" ${rg.rows.length <= 1 ? 'disabled' : ''} aria-label="شيل آخر صف">− صف</button><button type="button" class="btn sm" data-rt="up" ${i === 0 ? 'disabled' : ''} aria-label="طلّع الرانج لفوق">↑</button><button type="button" class="btn sm" data-rt="del" ${prog.length <= 1 ? 'disabled' : ''} aria-label="امسح">✕</button></div>`;
+    return `<div class="bx-rh">${SI ? '<span class="tri" aria-hidden="true">▼</span>' : ''}<span dir="ltr">${lbl}</span><span class="sp"></span><button type="button" class="btn sm" data-rt="row+" ${rg.rows.length >= 3 ? 'disabled' : ''} aria-label="أضف فرعًا">+ فرع</button><button type="button" class="btn sm" data-rt="row-" ${rg.rows.length <= 1 ? 'disabled' : ''} aria-label="أزل آخر صف">− صف</button><button type="button" class="btn sm" data-rt="up" ${i === 0 ? 'disabled' : ''} aria-label="انقل الرانج إلى الأعلى">↑</button><button type="button" class="btn sm" data-rt="del" ${prog.length <= 1 ? 'disabled' : ''} aria-label="احذف">✕</button></div>`;
   }
   function renderLad(){
     const ae = document.activeElement, fd = ae && lad.contains(ae) && ae.dataset ? Object.assign({}, ae.dataset) : null;
@@ -900,8 +900,8 @@ PL.brandSim = function(host, cfg){
   function picker(){
     const rg = prog[sel.i], el = rg.rows[sel.r][sel.c], outCol = sel.c === cols - 1, cur = el ? B.idOf(el) : 'NONE';
     const ents = B.pal.filter(p => (!p.hsc || ex.hsc) && (outCol ? ENG.isOut(p.t) : ENG.CONTACTS.indexOf(p.t) >= 0));
-    let h = `<div class="bx-pk" role="group" aria-label="تعديل الخانة"><div class="pk-h"><b>${esc(B.rn(sel.i))} · صف ${sel.r + 1} · خانة ${sel.c + 1}</b>${outCol ? '<span class="muted"> (عمود الخرج)</span>' : ''}<button type="button" class="btn sm" data-pk="close" aria-label="اقفل">✕</button></div>`;
-    h += `<div class="pk-els">${outCol ? '' : `<button type="button" class="btn pk-el" data-pk="el" data-v="W" aria-pressed="${cur === 'W'}"><svg viewBox="0 0 40 24" class="bx-ic" aria-hidden="true"><path d="M2 12h36"/></svg><span>سلك</span></button>`}${ents.map(p => `<button type="button" class="btn pk-el" data-pk="el" data-v="${p.id}" aria-pressed="${cur === p.id}">${B.icon(p.id)}<span class="mono">${esc(p.mn)}</span></button>`).join('')}<button type="button" class="btn pk-el" data-pk="el" data-v="NONE" aria-pressed="${cur === 'NONE'}"><svg viewBox="0 0 40 24" class="bx-ic" aria-hidden="true"><rect x="6" y="5" width="28" height="14" rx="2" stroke-dasharray="3 3"/></svg><span>فاضي</span></button></div>`;
+    let h = `<div class="bx-pk" role="group" aria-label="تعديل الخانة"><div class="pk-h"><b>${esc(B.rn(sel.i))} · صف ${sel.r + 1} · خانة ${sel.c + 1}</b>${outCol ? '<span class="muted"> (عمود الخرج)</span>' : ''}<button type="button" class="btn sm" data-pk="close" aria-label="أغلق">✕</button></div>`;
+    h += `<div class="pk-els">${outCol ? '' : `<button type="button" class="btn pk-el" data-pk="el" data-v="W" aria-pressed="${cur === 'W'}"><svg viewBox="0 0 40 24" class="bx-ic" aria-hidden="true"><path d="M2 12h36"/></svg><span>سلك</span></button>`}${ents.map(p => `<button type="button" class="btn pk-el" data-pk="el" data-v="${p.id}" aria-pressed="${cur === p.id}">${B.icon(p.id)}<span class="mono">${esc(p.mn)}</span></button>`).join('')}<button type="button" class="btn pk-el" data-pk="el" data-v="NONE" aria-pressed="${cur === 'NONE'}"><svg viewBox="0 0 40 24" class="bx-ic" aria-hidden="true"><rect x="6" y="5" width="28" height="14" rx="2" stroke-dasharray="3 3"/></svg><span>فارغ</span></button></div>`;
     if (el && el.t !== 'W'){
       const ent = B.pal.find(p => p.id === cur) || {t:el.t};
       h += `<p class="pk-help"><b class="mono">${esc(ent.mn || el.t)}</b> ${B.help[cur] || B.help[el.t] || ''}</p>`;
@@ -915,19 +915,19 @@ PL.brandSim = function(host, cfg){
         const ch = choices(ent);
         h += `<div class="pk-addr"><span class="pk-k">${AR ? 'Tag:' : SI && (el.t === 'TON' || el.t === 'TOF' || el.t === 'TP' || el.t === 'CTU' || el.t === 'CTD') ? 'Instance DB:' : el.t === 'CMP' ? (AR ? 'Source A:' : 'IN1:') : 'العنوان:'}</span>${ch.map(a => `<button type="button" class="btn chip" data-pk="addr" data-v="${a}" aria-pressed="${el.a === a}"><span class="mono">${esc(chipTxt(a, el))}</span>${chipSub(a) ? `<small>${esc(chipSub(a))}</small>` : ''}</button>`).join('')}`;
         if (SI && ['TON', 'TOF', 'TP', 'CTU', 'CTD'].indexOf(el.t) >= 0) h += `<button type="button" class="btn chip" data-pk="newinst">+ ${el.t[0] === 'C' ? 'IEC_Counter' : 'IEC_Timer'} جديد</button>`;
-        if (!AR) h += `<form class="pk-free" data-pk="free"><input class="inp mono" name="a" maxlength="24" placeholder="${SI ? (outCol ? '%Q0.5' : '%I0.5') : outCol ? 'Y5' : 'X5'}" aria-label="عنوان تاني" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="btn sm" type="submit">حط</button></form>`;
-        else h += `<form class="pk-free" data-pk="free"><input class="inp mono" name="a" maxlength="40" placeholder="Tag_Name" aria-label="اسم Tag" autocomplete="off" spellcheck="false"><button class="btn sm" type="submit">حط</button></form>`;
+        if (!AR) h += `<form class="pk-free" data-pk="free"><input class="inp mono" name="a" maxlength="24" placeholder="${SI ? (outCol ? '%Q0.5' : '%I0.5') : outCol ? 'Y5' : 'X5'}" aria-label="عنوان آخر" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="btn sm" type="submit">ضع</button></form>`;
+        else h += `<form class="pk-free" data-pk="free"><input class="inp mono" name="a" maxlength="40" placeholder="Tag_Name" aria-label="اسم Tag" autocomplete="off" spellcheck="false"><button class="btn sm" type="submit">ضع</button></form>`;
         h += `</div>`;
         if (AR){
           const wantTy = ['TON', 'TOF', 'RTO'].indexOf(el.t) >= 0 || (el.t === 'R' && ENG.kind(el.a) === 'T') ? 'TIMER' : ['CTU', 'CTD'].indexOf(el.t) >= 0 ? 'COUNTER' : 'BOOL';
           const need = !el.a;
-          h += `<details class="pk-new"${need || newTagOpen ? ' open' : ''}><summary>+ New Tag ${need ? '<span class="muted">(التعليمة دي محتاجة Tag)</span>' : ''}</summary><form class="pk-nt" data-pk="newtag"><input class="inp mono" name="n" maxlength="40" placeholder="${wantTy === 'TIMER' ? 'Star_TMR' : wantTy === 'COUNTER' ? 'Box_CTR' : 'My_Bit'}" aria-label="اسم الـ Tag" autocomplete="off" spellcheck="false"><select class="inp mono" name="ty" aria-label="Data Type">${['BOOL', 'TIMER', 'COUNTER'].map(t => `<option${t === wantTy ? ' selected' : ''}>${t}</option>`).join('')}</select><button class="btn sm pri" type="submit">Create</button></form></details>`;
+          h += `<details class="pk-new"${need || newTagOpen ? ' open' : ''}><summary>+ New Tag ${need ? '<span class="muted">(هذه التعليمة تحتاج إلى Tag)</span>' : ''}</summary><form class="pk-nt" data-pk="newtag"><input class="inp mono" name="n" maxlength="40" placeholder="${wantTy === 'TIMER' ? 'Star_TMR' : wantTy === 'COUNTER' ? 'Box_CTR' : 'My_Bit'}" aria-label="اسم الـ Tag" autocomplete="off" spellcheck="false"><select class="inp mono" name="ty" aria-label="Data Type">${['BOOL', 'TIMER', 'COUNTER'].map(t => `<option${t === wantTy ? ' selected' : ''}>${t}</option>`).join('')}</select><button class="btn sm pri" type="submit">Create</button></form></details>`;
         }
         if (el.pt != null) h += `<div class="pk-par"><label>${esc(B.pt.lab)} <input class="inp mono" type="number" step="${B.pt.step}" min="${B.pt.step}" data-pk="pt" value="${B.pt.get(el.pt)}" inputmode="decimal"></label><span class="mono pk-prev">${esc(B.pt.show(el.pt))} = ${nfmt(el.pt, 1)} ث</span></div>`;
         if (el.pv != null){
           h += `<div class="pk-par"><label>${esc(B.pv.lab)} <input class="inp mono" type="number" step="1" min="1" max="${el.t === 'HSC' ? 2147483647 : 32767}" data-pk="pv" value="${el.pv}" inputmode="numeric"></label></div>`;
           if (SI){ const bits = []; (ex.io.inputs || []).forEach(i => bits.push(i.a)); T.forEach(t => { if (ENG.kind(t.a) === 'M' && bits.indexOf(t.a) < 0) bits.push(t.a); });
-            h += `<div class="pk-par"><label>${el.t === 'CTU' ? 'R' : 'LD'} <select class="inp mono" data-pk="r"><option value="">false</option>${bits.map(a => `<option value="${a}"${a === el.r ? ' selected' : ''}>${esc(SIE.abs(a) + ' ' + SIE.sym(a, T, prog))}</option>`).join('')}</select></label><span class="muted">${el.t === 'CTU' ? 'دخل الـ R بيصفّر العدّاد' : 'دخل الـ LD بيحمّل PV'}</span></div>`; }
+            h += `<div class="pk-par"><label>${el.t === 'CTU' ? 'R' : 'LD'} <select class="inp mono" data-pk="r"><option value="">false</option>${bits.map(a => `<option value="${a}"${a === el.r ? ' selected' : ''}>${esc(SIE.abs(a) + ' ' + SIE.sym(a, T, prog))}</option>`).join('')}</select></label><span class="muted">${el.t === 'CTU' ? 'دخل الـ R يصفّر العدّاد' : 'دخل الـ LD يحمّل PV'}</span></div>`; }
         }
         if (el.t === 'CMP'){
           const get = B.cmpGet || ((a, b) => b);
@@ -936,10 +936,10 @@ PL.brandSim = function(host, cfg){
       }
     }
     const brs = [];
-    if (sel.r === 0) brs.push(`<button type="button" class="btn" data-pk="par">${outCol ? '⫴ خرج موازي' : '⫴ فرع موازي (OR)'}</button>`);
+    if (sel.r === 0) brs.push(`<button type="button" class="btn" data-pk="par">${outCol ? '⫴ خرج موازٍ' : '⫴ فرع موازٍ (OR)'}</button>`);
     if (sel.r > 0){ const L = rg.links[sel.r - 1];
-      if (sel.c > 0) brs.push(`<button type="button" class="btn" data-pk="lk" data-v="${sel.c}" aria-pressed="${L.indexOf(sel.c) >= 0}">┘ وصلة شمال لفوق</button>`);
-      if (sel.c + 1 <= cols - 1) brs.push(`<button type="button" class="btn" data-pk="lk" data-v="${sel.c + 1}" aria-pressed="${L.indexOf(sel.c + 1) >= 0}">└ وصلة يمين لفوق</button>`); }
+      if (sel.c > 0) brs.push(`<button type="button" class="btn" data-pk="lk" data-v="${sel.c}" aria-pressed="${L.indexOf(sel.c) >= 0}">┘ وصلة يسرى للأعلى</button>`);
+      if (sel.c + 1 <= cols - 1) brs.push(`<button type="button" class="btn" data-pk="lk" data-v="${sel.c + 1}" aria-pressed="${L.indexOf(sel.c + 1) >= 0}">└ وصلة يمنى للأعلى</button>`); }
     return h + `<div class="pk-br">${brs.join('')}</div></div>`;
   }
   function setEl(id){
@@ -966,7 +966,7 @@ PL.brandSim = function(host, cfg){
     const rg = prog[sel.i], outCol = sel.c === cols - 1;
     let r = -1;
     for (let j = 1; j < rg.rows.length; j++) if (!rg.rows[j][sel.c]){ r = j; break; }
-    if (r < 0){ if (rg.rows.length >= 3){ msg('الرانج فيه 3 صفوف خلاص. ده أقصى حاجة في المحاكي.'); return; } rg.rows.push(new Array(cols).fill(null)); rg.links.push([]); r = rg.rows.length - 1; }
+    if (r < 0){ if (rg.rows.length >= 3){ msg('في الرانج 3 صفوف بالفعل، وهذا الحد الأقصى في المحاكي.'); return; } rg.rows.push(new Array(cols).fill(null)); rg.links.push([]); r = rg.rows.length - 1; }
     const L = rg.links[r - 1];
     if (outCol){ rg.rows[r][sel.c] = ENG.parse('OUT:'); if (L.indexOf(sel.c) < 0) L.push(sel.c); }
     else { rg.rows[r][sel.c] = ENG.parse('NO:'); if (sel.c > 0 && L.indexOf(sel.c) < 0) L.push(sel.c); if (L.indexOf(sel.c + 1) < 0) L.push(sel.c + 1); }
@@ -990,7 +990,7 @@ PL.brandSim = function(host, cfg){
     if (kk === 'close'){ sel = null; renderLad(); }
     else if (kk === 'el') setEl(pk.dataset.v);
     else if (kk === 'addr' && el){ el.a = pk.dataset.v; changed(); }
-    else if (kk === 'newinst' && el){ const n = B.newInst(el.t, T, prog); if (n){ if (n.tag) T.push(n.tag); el.a = n.a; changed(); msg(`اتعمل instance جديد ${iso('"' + (n.tag ? n.tag.n : n.a) + '"')} (في TIA بيطلعلك Call options وبيقترح الاسم ده).`); } }
+    else if (kk === 'newinst' && el){ const n = B.newInst(el.t, T, prog); if (n){ if (n.tag) T.push(n.tag); el.a = n.a; changed(); msg(`أُنشئ instance جديد ${iso('"' + (n.tag ? n.tag.n : n.a) + '"')} (في TIA تظهر لك Call options وتقترح هذا الاسم).`); } }
     else if (kk === 'par') parallel();
     else if (kk === 'lk'){ const L = rg.links[sel.r - 1], n = +pk.dataset.v, j = L.indexOf(n); if (j >= 0) L.splice(j, 1); else L.push(n); changed(); }
   });
@@ -1005,7 +1005,7 @@ PL.brandSim = function(host, cfg){
       T.push(r.tag);
       const ent = B.pal.find(p => p.id === B.idOf(el)) || {t:el.t};
       if (accOf(ent).indexOf(ENG.kind(r.tag.a)) >= 0) el.a = r.tag.a;
-      newTagOpen = false; changed(); msg(`اتعمل Tag جديد ${iso(r.tag.n)} نوعه ${iso(f.ty.value)} في Controller Tags.`, 'ok'); return;
+      newTagOpen = false; changed(); msg(`أُنشئ Tag جديد ${iso(r.tag.n)} من نوع ${iso(f.ty.value)} في Controller Tags.`, 'ok'); return;
     }
     const ent = B.pal.find(p => p.id === B.idOf(el)) || {t:el.t};
     const r = B.parse(f.a.value, accOf(ent), T);
@@ -1046,7 +1046,7 @@ PL.brandSim = function(host, cfg){
       const used = usedAddrs(prog).has(t.a);
       const name = t.u && !DV ? `<input class="inp mono tn" data-tn="${t.a}" value="${esc(t.n)}" maxlength="40" aria-label="اسم الـ Tag">` : `<span class="mono">${esc(t.n)}</span>`;
       const cm = DV ? (t.u ? `<input class="inp tc" data-tc="${t.a}" value="${esc(t.c || '')}" maxlength="24" aria-label="التعليق">` : esc(t.c || '')) : '';
-      const del = t.u ? `<button type="button" class="btn sm" data-tdel="${t.a}" aria-label="امسح" ${used ? 'disabled title="مستخدم في البرنامج"' : ''}>✕</button>` : '';
+      const del = t.u ? `<button type="button" class="btn sm" data-tdel="${t.a}" aria-label="احذف" ${used ? 'disabled title="مستخدم في البرنامج"' : ''}>✕</button>` : '';
       if (SI) rows += `<tr><td>${name}</td><td class="mono">${esc(SIE.dtype(t.a))}</td><td class="mono">${esc(SIE.abs(t.a) || (ENG.kind(t.a) === 'T' ? 'DB (IEC_TIMER)' : 'DB (IEC_COUNTER)'))}</td>${live ? `<td class="mono lv">${esc(liveVal(t.a))}</td>` : ''}<td>${del}</td></tr>`;
       else if (DV) rows += `<tr><td class="mono">${esc(DVP.abs(t.a))}</td><td>${cm}</td>${live ? `<td class="mono lv">${esc(liveVal(t.a))}</td>` : ''}<td>${del}</td></tr>`;
       else rows += `<tr><td>${name}</td><td class="mono">${esc(AB.base(t.a))}</td><td class="mono">${esc(AB.dtype(t.a))}</td>${live ? `<td class="mono lv">${esc(liveVal(t.a))}</td>` : ''}<td>${del}</td></tr>`;
@@ -1057,30 +1057,30 @@ PL.brandSim = function(host, cfg){
     const add = SI ? `<form class="tg-add" data-tadd="1"><input class="inp mono" name="n" placeholder="Name" maxlength="40" aria-label="الاسم" autocomplete="off" spellcheck="false"><input class="inp mono" name="a" placeholder="%M2.0" maxlength="10" aria-label="العنوان" autocomplete="off" spellcheck="false"><button class="btn sm" type="submit">Add new</button></form>`
       : DV ? `<form class="tg-add" data-tadd="1"><input class="inp mono" name="a" placeholder="M10" maxlength="6" aria-label="الجهاز" autocomplete="off" spellcheck="false"><input class="inp" name="n" placeholder="تعليق" maxlength="24" aria-label="التعليق" autocomplete="off"><button class="btn sm" type="submit">Add</button></form>`
       : `<form class="tg-add" data-tadd="1"><input class="inp mono" name="n" placeholder="New_Tag" maxlength="40" aria-label="الاسم" autocomplete="off" spellcheck="false"><select class="inp mono" name="ty" aria-label="Data Type"><option>BOOL</option><option>TIMER</option><option>COUNTER</option></select><button class="btn sm" type="submit">New Tag</button></form>`;
-    tagsBox.innerHTML = `<div class="tblw"><table class="tbl bx-tt" dir="ltr"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>${add}<p class="muted pk-help">${SI ? 'في TIA كل عنوان ليه اسم (Tag) والبرنامج بيعرضه بين علامتين "…". التايمرات والعدّادات IEC ليها Instance DB.' : DV ? 'في دلتا العنوان نفسه هو الاسم (X0، Y0، M0)، والتعليق بيظهر تحت الكونتاكت.' : 'في Logix مفيش عناوين في البرنامج: كل حاجة Tag. الـ I/O بيتعمله Alias على عنوان الكارت زي ' + iso('Local:1:I.Data.0') + '.'}</p>`;
+    tagsBox.innerHTML = `<div class="tblw"><table class="tbl bx-tt" dir="ltr"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>${add}<p class="muted pk-help">${SI ? 'في TIA لكل عنوان اسم (Tag) يعرضه البرنامج بين علامتي "…". وللتايمرات والعدّادات IEC بلوك Instance DB.' : DV ? 'في دلتا العنوان نفسه هو الاسم (X0، Y0، M0)، ويظهر التعليق أسفل التلامس.' : 'في Logix لا توجد عناوين في البرنامج: كل شيء Tag. ويُعمل للـ I/O Alias على عنوان الكارت مثل ' + iso('Local:1:I.Data.0') + '.'}</p>`;
   }
   tagsBox.addEventListener('change', ev => {
     const t = ev.target;
-    if (t.dataset.tn){ const tg = tagByA(T, t.dataset.tn), v = t.value.trim(); if (tg && /^[A-Za-z_][A-Za-z0-9_]{0,39}$/.test(v) && !T.some(x => x !== tg && x.n.toLowerCase() === v.toLowerCase())){ tg.n = v; changed(); } else { t.value = tg ? tg.n : ''; msg('اسم مش مظبوط أو متكرر: حروف إنجليزي وأرقام و _ بس.', 'bad'); } }
+    if (t.dataset.tn){ const tg = tagByA(T, t.dataset.tn), v = t.value.trim(); if (tg && /^[A-Za-z_][A-Za-z0-9_]{0,39}$/.test(v) && !T.some(x => x !== tg && x.n.toLowerCase() === v.toLowerCase())){ tg.n = v; changed(); } else { t.value = tg ? tg.n : ''; msg('اسم غير صحيح أو مكرر: حروف إنجليزية وأرقام و_ فقط.', 'bad'); } }
     if (t.dataset.tc){ const tg = tagByA(T, t.dataset.tc); if (tg){ tg.c = t.value.trim().slice(0, 24); persist(); renderLad(); } }
   });
   tagsBox.addEventListener('click', ev => { const b = ev.target.closest('[data-tdel]'); if (!b || b.disabled) return; const i = T.findIndex(t => t.a === b.dataset.tdel); if (i >= 0){ T.splice(i, 1); changed(); } });
   tagsBox.addEventListener('submit', ev => {
     ev.preventDefault(); const f = ev.target;
-    if (SI){ const n = f.n.value.trim(); if (!/^[A-Za-z_][A-Za-z0-9_]{0,39}$/.test(n) || tagByN(T, n)){ msg('اكتب اسم جديد: حروف إنجليزي وأرقام و _ .', 'bad'); return; } const r = SIE.parse(f.a.value, ['I', 'Q', 'M'], []); if (r.err){ msg(r.err, 'bad'); return; } if (tagByA(T, r.a)){ msg('العنوان ده ليه Tag خلاص.', 'bad'); return; } T.push({n, a:r.a, c:'', u:1}); }
-    else if (DV){ const r = DVP.parse(f.a.value, ['I', 'Q', 'M', 'T', 'C']); if (r.err){ msg(r.err, 'bad'); return; } const ex0 = tagByA(T, r.a); if (ex0){ if (!ex0.u){ msg('الجهاز ده ليه تعليق خلاص.', 'bad'); return; } ex0.c = f.n.value.trim(); } else T.push({n:DVP.abs(r.a), a:r.a, c:f.n.value.trim().slice(0, 24), u:1}); }
+    if (SI){ const n = f.n.value.trim(); if (!/^[A-Za-z_][A-Za-z0-9_]{0,39}$/.test(n) || tagByN(T, n)){ msg('اكتب اسمًا جديدًا: حروف إنجليزية وأرقام و_ .', 'bad'); return; } const r = SIE.parse(f.a.value, ['I', 'Q', 'M'], []); if (r.err){ msg(r.err, 'bad'); return; } if (tagByA(T, r.a)){ msg('هذا العنوان له Tag بالفعل.', 'bad'); return; } T.push({n, a:r.a, c:'', u:1}); }
+    else if (DV){ const r = DVP.parse(f.a.value, ['I', 'Q', 'M', 'T', 'C']); if (r.err){ msg(r.err, 'bad'); return; } const ex0 = tagByA(T, r.a); if (ex0){ if (!ex0.u){ msg('هذا الجهاز له تعليق بالفعل.', 'bad'); return; } ex0.c = f.n.value.trim(); } else T.push({n:DVP.abs(r.a), a:r.a, c:f.n.value.trim().slice(0, 24), u:1}); }
     else { const r = AB.newTag(f.n.value, f.ty.value, T, prog); if (r.err){ msg(r.err, 'bad'); return; } T.push(r.tag); }
     changed();
   });
   function renderIL(){
     if (!ilBox) return;
     const L = DVP.il(prog); let n = 0;
-    ilBox.innerHTML = `<div class="il" dir="ltr">${L.map(x => x.rung != null ? `<div class="il-r">${esc('رانج ' + (x.rung + 1))}</div>` : x.c ? `<div class="il-c">${esc(x.c)}</div>` : `<div class="il-l"><span class="ln">${n++}</span><b>${esc(x.i)}</b><span>${esc(x.o)}</span></div>`).join('')}</div><p class="muted pk-help">ده نفس البرنامج مكتوب Instruction List، زي ما بتشوفه في WPLSoft أو لما تقرا برنامج دلتا مطبوع. LD يبدأ فرع، AND توالي، OR توازي، و ANB / ORB بيجمّعوا بلوكات. الرقم على الشمال ترتيب السطر بس (مش رقم الـ Step).</p>`;
+    ilBox.innerHTML = `<div class="il" dir="ltr">${L.map(x => x.rung != null ? `<div class="il-r">${esc('رانج ' + (x.rung + 1))}</div>` : x.c ? `<div class="il-c">${esc(x.c)}</div>` : `<div class="il-l"><span class="ln">${n++}</span><b>${esc(x.i)}</b><span>${esc(x.o)}</span></div>`).join('')}</div><p class="muted pk-help">هذا البرنامج نفسه مكتوبًا Instruction List، كما تراه في WPLSoft أو عند قراءة برنامج دلتا مطبوع. LD يبدأ فرعًا، وAND توالٍ، وOR توازٍ، وANB / ORB يجمعان البلوكات. الرقم على اليسار ترتيب السطر فقط (وليس رقم الـ Step).</p>`;
   }
   function renderFrc(){
     const all = (ex.io.inputs || []).map(i => ({a:i.a, l:i.label})).concat((ex.io.outputs || []).map(o => ({a:o.a, l:o.label})));
     const head = SI ? 'Force value' : 'Force';
-    frcBox.innerHTML = `<div class="tblw"><table class="tbl bx-tt" dir="ltr"><thead><tr><th>${SI ? 'Address' : DV ? 'Device' : 'Tag'}</th><th>${SI ? 'Name' : 'الجهاز'}</th><th>Value</th><th>${head}</th></tr></thead><tbody>${all.map(x => { const f = forces[x.a]; return `<tr><td class="mono">${esc(SI ? SIE.abs(x.a) : DV ? DVP.abs(x.a) : AB.tag(T, x.a))}</td><td>${esc(SI ? (tagByA(T, x.a) || {n:x.l}).n : x.l)}</td><td class="mono lv" data-fv="${x.a}">${esc(liveVal(x.a))}</td><td><div class="seg"><button type="button" class="btn sm" data-f="${x.a}" data-v="" aria-pressed="${f == null}">—</button><button type="button" class="btn sm" data-f="${x.a}" data-v="1" aria-pressed="${f === 1}">${SI ? 'TRUE' : '1'}</button><button type="button" class="btn sm" data-f="${x.a}" data-v="0" aria-pressed="${f === 0}">${SI ? 'FALSE' : '0'}</button></div></td></tr>`; }).join('')}</tbody></table></div><div class="box safe pk-help"><b>خلي بالك:</b> الـ Force بيكسب على البرنامج والحساسات. ${SI ? 'لمبة MAINT على الـ CPU بتنوّر صفرا طول ما فيه Force.' : AR ? 'لمبة FORCE على الكنترولر بتنوّر طول ما فيه Force.' : 'شيل أي Force أول ما تخلّص.'}</div>`;
+    frcBox.innerHTML = `<div class="tblw"><table class="tbl bx-tt" dir="ltr"><thead><tr><th>${SI ? 'Address' : DV ? 'Device' : 'Tag'}</th><th>${SI ? 'Name' : 'الجهاز'}</th><th>Value</th><th>${head}</th></tr></thead><tbody>${all.map(x => { const f = forces[x.a]; return `<tr><td class="mono">${esc(SI ? SIE.abs(x.a) : DV ? DVP.abs(x.a) : AB.tag(T, x.a))}</td><td>${esc(SI ? (tagByA(T, x.a) || {n:x.l}).n : x.l)}</td><td class="mono lv" data-fv="${x.a}">${esc(liveVal(x.a))}</td><td><div class="seg"><button type="button" class="btn sm" data-f="${x.a}" data-v="" aria-pressed="${f == null}">—</button><button type="button" class="btn sm" data-f="${x.a}" data-v="1" aria-pressed="${f === 1}">${SI ? 'TRUE' : '1'}</button><button type="button" class="btn sm" data-f="${x.a}" data-v="0" aria-pressed="${f === 0}">${SI ? 'FALSE' : '0'}</button></div></td></tr>`; }).join('')}</tbody></table></div><div class="box safe pk-help"><b>انتبه:</b> الـ Force يتغلّب على البرنامج والحساسات. ${SI ? 'يضيء مصباح MAINT على الـ CPU باللون الأصفر ما دام هناك Force.' : AR ? 'يضيء مصباح FORCE على الكنترولر ما دام هناك Force.' : 'أزل أي Force بمجرد أن تنتهي.'}</div>`;
   }
   frcBox.addEventListener('click', ev => {
     const b = ev.target.closest('[data-f]'); if (!b) return;
@@ -1088,7 +1088,7 @@ PL.brandSim = function(host, cfg){
     e.force = Object.assign({}, forces);
     if (mode !== 'RUN'){ e.out = {}; Object.keys(forces).forEach(x => { if (ENG.kind(x) === 'Q') e.out[x] = forces[x]; }); }
     renderFrc(); renderTop();
-    msg(`Force: ${iso(B.short(a, T))} ${a in forces ? '= ' + forces[a] : 'اتشال'}.`, a in forces ? 'warn' : '');
+    msg(`Force: ${iso(B.short(a, T))} ${a in forces ? '= ' + forces[a] : 'أُزيل'}.`, a in forces ? 'warn' : '');
   });
 
   /* ---------- check / hint / solution ---------- */
@@ -1099,27 +1099,27 @@ PL.brandSim = function(host, cfg){
   }
   function check(){
     const errs = lint().filter(x => x.err);
-    if (errs.length){ fails[ex.key] = (fails[ex.key] || 0) + 1; show(false, 'فيه تعليمة ناقصها عنوان أو عنوانها غلط: ' + errs[0].text); updChk(); return {ok:false, msg:errs[0].text}; }
+    if (errs.length){ fails[ex.key] = (fails[ex.key] || 0) + 1; show(false, 'توجد تعليمة بلا عنوان أو عنوانها خطأ: ' + errs[0].text); updChk(); return {ok:false, msg:errs[0].text}; }
     for (const c of ex.cases || [{steps:ex.tests || []}]){
       const r = ENG.check(prog, {io:ex.io, plant:ex.plant, plantOpt:Object.assign({}, ex.plantOpt || {}, c.plantOpt || {}), tests:c.steps}, {cols});
-      if (!r.ok){ fails[ex.key] = (fails[ex.key] || 0) + 1; const m = (c.name ? `<b>${esc(c.name)}:</b> ` : '') + xlate(B, T, r.msg); show(false, m + (fails[ex.key] === 1 && ex.hint ? ' <span class="muted">(فيه تلميح تحت لو محتاجه)</span>' : fails[ex.key] === 2 && ex.sol ? ' <span class="muted">(تقدر تشوف الحل دلوقتي)</span>' : '')); updChk(); return {ok:false, msg:r.msg}; }
+      if (!r.ok){ fails[ex.key] = (fails[ex.key] || 0) + 1; const m = (c.name ? `<b>${esc(c.name)}:</b> ` : '') + xlate(B, T, r.msg); show(false, m + (fails[ex.key] === 1 && ex.hint ? ' <span class="muted">(يوجد تلميح في الأسفل إن احتجت إليه)</span>' : fails[ex.key] === 2 && ex.sol ? ' <span class="muted">(يمكنك رؤية الحل الآن)</span>' : '')); updChk(); return {ok:false, msg:r.msg}; }
     }
     const first = LES ? PL.mark(LES, ex.key) : PL.px.mark(xk());
-    show(true, XL(ex.ok || 'البرنامج عدّى كل الاختبارات.'));
+    show(true, XL(ex.ok || 'اجتاز البرنامج كل الاختبارات.'));
     renderList(); renderScn(); updChk();
     return {ok:true, first};
   }
-  function show(ok, html){ resBox.hidden = false; resBox.className = 'bx-res ' + (ok ? 'ok' : 'no'); resBox.innerHTML = `<b>${ok ? '✓ تمام!' : '✗ لسه:'}</b> ${html}`; }
+  function show(ok, html){ resBox.hidden = false; resBox.className = 'bx-res ' + (ok ? 'ok' : 'no'); resBox.innerHTML = `<b>${ok ? '✓ أحسنت!' : '✗ ما زال:'}</b> ${html}`; }
   function loadDef(def, tags){ backup = {p:ENG.serialize(prog), t:T.map(t => Object.assign({}, t))}; prog = ENG.program(def, cols); if (tags) tags.forEach(t => { if (!tagByA(T, t.a)) T.push(Object.assign({u:1}, t)); }); sel = null; changed(); q('[data-t=undo]').hidden = false; }
   q('.bx-chk').addEventListener('click', ev => {
     const b = ev.target.closest('[data-t]'); if (!b) return; const t = b.dataset.t;
     if (t === 'chk'){ check(); resBox.scrollIntoView({block:'nearest', behavior:PL.reduced() ? 'auto' : 'smooth'}); }
     else if (t === 'hint') hintBox.hidden = !hintBox.hidden;
-    else if (t === 'sol'){ loadDef(ex.sol, ex.solTags); show(true, 'ده حل ممكن (مش الوحيد). نزّله على الـ PLC وشغّله، واقرا كل رانج بيعمل إيه.'); resBox.className = 'bx-res'; }
-    else if (t === 'reset'){ T = (ex.tags || []).map(x => Object.assign({}, x)).concat(T.filter(x => x.u && !(ex.tags || []).some(y => y.a === x.a))); loadDef(ex.start || [ENG.serialize([ENG.blankRung(cols)])[0]]); msg('رجعنا البرنامج لأوّله. لو عايز اللي كنت عامله دوس "رجّع برنامجي".'); }
-    else if (t === 'undo' && backup){ prog = ENG.program(backup.p, cols); T = backup.t; backup = null; sel = null; changed(); b.hidden = true; msg('رجّعنا برنامجك.'); }
+    else if (t === 'sol'){ loadDef(ex.sol, ex.solTags); show(true, 'هذا حل ممكن (وليس الوحيد). نزّله على الـ PLC وشغّله، واقرأ ما يفعله كل رانج.'); resBox.className = 'bx-res'; }
+    else if (t === 'reset'){ T = (ex.tags || []).map(x => Object.assign({}, x)).concat(T.filter(x => x.u && !(ex.tags || []).some(y => y.a === x.a))); loadDef(ex.start || [ENG.serialize([ENG.blankRung(cols)])[0]]); msg('أعدنا البرنامج إلى بدايته. إن أردت ما كنت قد عملته فاضغط «استرجع برنامجي».'); }
+    else if (t === 'undo' && backup){ prog = ENG.program(backup.p, cols); T = backup.t; backup = null; sel = null; changed(); b.hidden = true; msg('استرجعنا برنامجك.'); }
   });
-  q('.bx-ladt').addEventListener('click', ev => { if (!ev.target.closest('[data-t=add]')) return; if (prog.length >= 12){ msg('أقصى عدد 12 رانج في التمرين.'); return; } prog.push(ENG.blankRung(cols)); sel = {i:prog.length - 1, r:0, c:0}; changed(); scrollSel(); });
+  q('.bx-ladt').addEventListener('click', ev => { if (!ev.target.closest('[data-t=add]')) return; if (prog.length >= 12){ msg('الحد الأقصى 12 رانجًا في التمرين.'); return; } prog.push(ENG.blankRung(cols)); sel = {i:prog.length - 1, r:0, c:0}; changed(); scrollSel(); });
   listBox.addEventListener('click', ev => { const b = ev.target.closest('[data-k]'); if (!b) return; select(+b.dataset.k); scn.scrollIntoView({block:'start', behavior:PL.reduced() ? 'auto' : 'smooth'}); });
 
   /* ---------- live loop ---------- */
@@ -1142,7 +1142,7 @@ PL.brandSim = function(host, cfg){
 
   /* ---------- machine preview («▶ شوف المكنة شغّالة»): the hidden solution runs in the PLC, the editor is hidden ---------- */
   const L = s => `<bdi dir="ltr">${s}</bdi>`;
-  const pvAd = {host, watchEl:plantBox, title:'المكنة شغالة صح',
+  const pvAd = {host, watchEl:plantBox, title:'الماكينة تعمل بشكل صحيح',
     mount(box){ q('.bx-stage').before(box); }, key:() => LES ? 'l/' + LES + '/' + ex.key : 'x/' + PFX + '/' + ex.key, ex:() => ex, has:() => !!(ex && ex.sol),
     begin(po){
       demo = {e, plantSt, mode, sel, ins:(ex.io.inputs || []).map(i => ({i, state:i.state})), pressed:Object.assign({}, pressed)};
@@ -1168,7 +1168,7 @@ PL.brandSim = function(host, cfg){
     inBtn:a => ioBox.querySelector(`.ib[data-a="${a}"]`), outEl:() => face, plantEl:() => plantBox,
     lab:a => { const x = (ex.io.inputs || []).concat(ex.io.outputs || []).find(y => y.a === a); return x ? x.label : ''; },
     addr:a => B.short(a, T), xl:s => xlate(B, T, s),
-    outro:() => '<b>كده المكنة اشتغلت زي المطلوب.</b> دلوقتي دورك: اكتب البرنامج تحت، ' + (SI ? `اعمل ${L('Download to device')} وبعدين ${L('Monitoring')}` : DV ? `اعمل ${L('Write to PLC')} وحوّل الـ PLC لـ ${L('RUN')}` : `اعمل ${L('Go Online')} ← ${L('Download')} ← ${L('Run Mode')}`) + '، وجرّب بالزراير، وبعدين دوس «اختبر البرنامج».'};
+    outro:() => '<b>هكذا عملت الماكينة كما هو مطلوب.</b> الآن دورك: اكتب البرنامج في الأسفل، ' + (SI ? `اعمل ${L('Download to device')} ثم ${L('Monitoring')}` : DV ? `اعمل ${L('Write to PLC')} وحوّل الـ PLC إلى ${L('RUN')}` : `اعمل ${L('Go Online')} ← ${L('Download')} ← ${L('Run Mode')}`) + '، وجرّب بالأزرار، ثم اضغط «اختبر البرنامج».'};
   if (!cfg.demoOnly && !cfg.noPreview) PL.preview.attach(pvAd);
 
   /* deep link: siemens.html#enc opens that exercise */
@@ -1200,123 +1200,123 @@ const SC = PL.BXS = {};
 const segs = c => { const L = c.plant.log.filter(x => x.t >= c.mark.t0 - 1e-9), out = []; for (let i = 0; i < L.length - 1; i++) out.push({s:L[i].s, d:L[i + 1].t - L[i].t}); return out; };
 const flips = {watch:c => { const v = c.q('Q0.0'); if (c.mark.last != null && v !== c.mark.last) c.mark.n = (c.mark.n || 0) + 1; c.mark.last = v; return null; }};
 
-SC.seal_ol = {io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}, {a:'I0.2', label:'أوفرلود', kind:'ncsw'}], outputs:[{a:'Q0.0', label:'الموتور', kind:'motor'}, {a:'Q0.1', label:'Trip', kind:'lamp', color:'amber'}]},
-  tests:[{run:0.2}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'في البداية من غير ما حد يدوس حاجة:'},
-    {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'دوست Start وسبته: الموتور لازم يفضل شغال (التثبيت الذاتي).'},
-    {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'دوست Stop:'},
-    {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':1}, msg:'Start تاني:'},
-    {set:{'I0.2':0}}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':1}, msg:'الأوفرلود فصل (I0.2 بقى 0):'},
-    {set:{'I0.2':1}}, {run:0.5}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'الأوفرلود رجع: الموتور مايشتغلش لوحده ولمبة Trip تطفي.'},
-    {hold:'I0.1'}, {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Stop متداس وحد داس Start: الـ Stop لازم يكسب.'}, {release:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'سابوا الـ Stop:'}]};
+SC.seal_ol = {io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}, {a:'I0.2', label:'أوفرلود', kind:'ncsw'}], outputs:[{a:'Q0.0', label:'المحرك', kind:'motor'}, {a:'Q0.1', label:'Trip', kind:'lamp', color:'amber'}]},
+  tests:[{run:0.2}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'في البداية دون أن يضغط أحد شيئًا:'},
+    {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'ضغطت Start وتركته: يجب أن يستمر المحرك في العمل (التثبيت الذاتي).'},
+    {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'ضغطت Stop:'},
+    {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':1}, msg:'Start مرة أخرى:'},
+    {set:{'I0.2':0}}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':1}, msg:'فصل الأوفرلود (أصبح I0.2 = 0):'},
+    {set:{'I0.2':1}}, {run:0.5}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'عاد الأوفرلود: لا يعمل المحرك وحده وينطفئ مصباح Trip.'},
+    {hold:'I0.1'}, {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'الـ Stop مضغوط وضغط أحدهم Start: يجب أن يفوز الـ Stop.'}, {release:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'تُرك الـ Stop:'}]};
 
-SC.seal_lamp = {io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'موتور السير', kind:'motor'}, {a:'Q0.1', label:'لمبة تشغيل', kind:'lamp', color:'green'}]},
-  tests:[{run:0.2}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'في البداية:'}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1, 'Q0.1':1}, msg:'دوست Start وسبته: الموتور يفضل شغال ولمبة التشغيل تنوّر.'},
-    {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'دوست Stop:'}, {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':1, 'Q0.1':1}, msg:'Start تاني:'},
-    {hold:'I0.1'}, {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'Stop متداس وحد داس Start: الـ Stop لازم يكسب.'}, {release:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'سابوا الـ Stop: الموتور مايشتغلش لوحده.'}]};
+SC.seal_lamp = {io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'محرك السير', kind:'motor'}, {a:'Q0.1', label:'مصباح تشغيل', kind:'lamp', color:'green'}]},
+  tests:[{run:0.2}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'في البداية:'}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1, 'Q0.1':1}, msg:'ضغطت Start وتركته: يستمر المحرك في العمل ويضيء مصباح التشغيل.'},
+    {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'ضغطت Stop:'}, {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':1, 'Q0.1':1}, msg:'Start مرة أخرى:'},
+    {hold:'I0.1'}, {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'الـ Stop مضغوط وضغط أحدهم Start: يجب أن يفوز الـ Stop.'}, {release:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'تُرك الـ Stop: لا يعمل المحرك وحده.'}]};
 
-SC.pump_dry = {io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}, {a:'I0.2', label:'عوامة مية', kind:'ncsw'}], outputs:[{a:'Q0.0', label:'الطلمبة', kind:'motor'}, {a:'Q0.1', label:'مفيش مية', kind:'lamp', color:'red'}]},
-  tests:SC.seal_ol.tests.map(s => s.msg ? Object.assign({}, s, {msg:s.msg.replace('الأوفرلود فصل (I0.2 بقى 0):', 'المية خلصت (I0.2 بقى 0):').replace('الأوفرلود رجع: الموتور مايشتغلش لوحده ولمبة Trip تطفي.', 'المية رجعت: الطلمبة ماتشتغلش لوحدها واللمبة تطفي.').replace('الموتور لازم يفضل شغال', 'الطلمبة لازم تفضل شغالة').replace('الموتور', 'الطلمبة')}) : s)};
+SC.pump_dry = {io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}, {a:'I0.2', label:'عوامة مياه', kind:'ncsw'}], outputs:[{a:'Q0.0', label:'المضخة', kind:'motor'}, {a:'Q0.1', label:'لا توجد مياه', kind:'lamp', color:'red'}]},
+  tests:SC.seal_ol.tests.map(s => s.msg ? Object.assign({}, s, {msg:s.msg.replace('فصل الأوفرلود (أصبح I0.2 = 0):', 'نفدت المياه (أصبح I0.2 = 0):').replace('عاد الأوفرلود: لا يعمل المحرك وحده وينطفئ مصباح Trip.', 'عادت المياه: لا تعمل المضخة وحدها وينطفئ المصباح.').replace('يجب أن يستمر المحرك في العمل', 'يجب أن تستمر المضخة في العمل').replace('المحرك', 'المضخة')}) : s)};
 
 SC.fr = {io:{inputs:[{a:'I0.0', label:'أمام', kind:'pb'}, {a:'I0.1', label:'خلف', kind:'pb', color:'blue'}, {a:'I0.2', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'KM1 أمام'}, {a:'Q0.1', label:'KM2 خلف'}]}, plant:'fr',
-  tests:[{watch:c => c.q('Q0.0') && c.q('Q0.1') ? 'Q0.0 و Q0.1 اشتغلوا مع بعض: قصر بين الفازات! محتاج كونتاكت NC من كل خرج في رانج التاني.' : null},
-    {run:0.2}, {press:'I0.0'}, {run:0.4}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'دوست أمام وسبته:'},
-    {press:'I0.1'}, {run:0.4}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'الموتور شغال أمام ودوست خلف: لازم مايحصلش حاجة.'},
-    {press:'I0.2'}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'دوست Stop:'},
-    {press:'I0.1'}, {run:0.4}, {exp:{'Q0.0':0, 'Q0.1':1}, msg:'دوست خلف:'}, {press:'I0.0'}, {run:0.3}, {exp:{'Q0.1':1, 'Q0.0':0}, msg:'شغال خلف ودوست أمام:'},
+  tests:[{watch:c => c.q('Q0.0') && c.q('Q0.1') ? 'عمل Q0.0 وQ0.1 معًا: قصر بين الفازات! يلزم تلامس NC من كل خرج في رانج الآخر.' : null},
+    {run:0.2}, {press:'I0.0'}, {run:0.4}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'ضغطت أمام وتركته:'},
+    {press:'I0.1'}, {run:0.4}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'المحرك يعمل أمامًا وضغطت خلف: يجب ألا يحدث شيء.'},
+    {press:'I0.2'}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'ضغطت Stop:'},
+    {press:'I0.1'}, {run:0.4}, {exp:{'Q0.0':0, 'Q0.1':1}, msg:'ضغطت خلف:'}, {press:'I0.0'}, {run:0.3}, {exp:{'Q0.1':1, 'Q0.0':0}, msg:'يعمل خلفًا وضغطت أمام:'},
     {press:'I0.2'}, {run:0.3}, {hold:'I0.0'}, {hold:'I0.1'}, {run:0.4}, {release:'I0.0'}, {release:'I0.1'}, {run:0.3}, {press:'I0.2'}, {run:0.2}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'بعد Stop:'}]};
 
 SC.sd = {io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}], outputs:[{a:'Q0.0', label:'KM1 رئيسي'}, {a:'Q0.1', label:'KM2 دلتا'}, {a:'Q0.2', label:'KM3 ستار'}]}, plant:'sd',
-  tests:[{watch:c => c.q('Q0.1') && c.q('Q0.2') ? 'الدلتا Q0.1 والستار Q0.2 اشتغلوا مع بعض: قصر! حط NC من كل واحد في رانج التاني.' : null},
-    {run:0.2}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1, 'Q0.2':1, 'Q0.1':0}, msg:'بعد Start على طول: KM1 والستار.'}, {run:3.8}, {exp:{'Q0.0':1, 'Q0.2':1, 'Q0.1':0}, msg:'بعد حوالي 4.6 ثانية لسه ستار:'},
-    {run:0.8}, {exp:{'Q0.0':1, 'Q0.2':0, 'Q0.1':1}, msg:'بعد 5 ثواني الستار يفصل والدلتا تشتغل:'}, {run:3}, {exp:{'Q0.0':1, 'Q0.1':1, 'Q0.2':0}, msg:'الموتور لازم يفضل دلتا:'},
-    {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':0}, msg:'دوست Stop:'}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1, 'Q0.2':1, 'Q0.1':0}, msg:'Start تاني: لازم يبدأ ستار من الأول.'}, {press:'I0.1'}, {run:0.2}]};
+  tests:[{watch:c => c.q('Q0.1') && c.q('Q0.2') ? 'عمل الدلتا Q0.1 والستار Q0.2 معًا: قصر! ضع NC من كل منهما في رانج الآخر.' : null},
+    {run:0.2}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1, 'Q0.2':1, 'Q0.1':0}, msg:'بعد Start مباشرة: KM1 والستار.'}, {run:3.8}, {exp:{'Q0.0':1, 'Q0.2':1, 'Q0.1':0}, msg:'بعد نحو 4.6 ثانية ما زال ستار:'},
+    {run:0.8}, {exp:{'Q0.0':1, 'Q0.2':0, 'Q0.1':1}, msg:'بعد 5 ثوانٍ يفصل الستار ويعمل الدلتا:'}, {run:3}, {exp:{'Q0.0':1, 'Q0.1':1, 'Q0.2':0}, msg:'يجب أن يبقى المحرك دلتا:'},
+    {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':0}, msg:'ضغطت Stop:'}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1, 'Q0.2':1, 'Q0.1':0}, msg:'Start مرة أخرى: يجب أن يبدأ ستار من جديد.'}, {press:'I0.1'}, {run:0.2}]};
 
-SC.alarm = {io:{inputs:[{a:'I0.0', label:'ضغط عالي', kind:'sensor'}, {a:'I0.1', label:'تأكيد', kind:'pb', color:'blue'}], outputs:[{a:'Q0.0', label:'لمبة إنذار', kind:'lamp', color:'red'}, {a:'Q0.1', label:'سارينة', kind:'horn'}]},
-  tests:[{run:0.2}, {press:'I0.1'}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'من غير إنذار:'},
-    {set:{'I0.0':1}}, {run:0.3}, {set:{'I0.0':0}}, {run:1.5}, {exp:{'Q0.0':1, 'Q0.1':1}, msg:'الضغط علي لحظة ورجع: اللمبة والسارينة لازم يفضلوا شغالين (ذاكرة).'},
-    {press:'I0.1'}, {run:0.3}, {exp:{'Q0.1':0, 'Q0.0':0}, msg:'أكّدت والضغط طبيعي: كله يطفي.'},
-    {set:{'I0.0':1}}, {run:0.5}, {exp:{'Q0.0':1, 'Q0.1':1}, msg:'إنذار جديد (حتى بعد تأكيد قديم): السارينة لازم ترجع.'}, {press:'I0.1'}, {run:1}, {exp:{'Q0.1':0, 'Q0.0':1}, msg:'أكّدت والضغط لسه عالي: السارينة تسكت واللمبة تفضل.'},
-    {set:{'I0.0':0}}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'الضغط رجع طبيعي بعد التأكيد:'}]};
+SC.alarm = {io:{inputs:[{a:'I0.0', label:'ضغط عالٍ', kind:'sensor'}, {a:'I0.1', label:'تأكيد', kind:'pb', color:'blue'}], outputs:[{a:'Q0.0', label:'مصباح إنذار', kind:'lamp', color:'red'}, {a:'Q0.1', label:'سارينة', kind:'horn'}]},
+  tests:[{run:0.2}, {press:'I0.1'}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'دون إنذار:'},
+    {set:{'I0.0':1}}, {run:0.3}, {set:{'I0.0':0}}, {run:1.5}, {exp:{'Q0.0':1, 'Q0.1':1}, msg:'ارتفع الضغط لحظة ثم عاد: يجب أن يبقى المصباح والسارينة يعملان (ذاكرة).'},
+    {press:'I0.1'}, {run:0.3}, {exp:{'Q0.1':0, 'Q0.0':0}, msg:'أكّدت والضغط طبيعي: ينطفئ كل شيء.'},
+    {set:{'I0.0':1}}, {run:0.5}, {exp:{'Q0.0':1, 'Q0.1':1}, msg:'إنذار جديد (حتى بعد تأكيد سابق): يجب أن تعود السارينة.'}, {press:'I0.1'}, {run:1}, {exp:{'Q0.1':0, 'Q0.0':1}, msg:'أكّدت والضغط ما زال عاليًا: تسكت السارينة ويبقى المصباح.'},
+    {set:{'I0.0':0}}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'عاد الضغط طبيعيًا بعد التأكيد:'}]};
 
-const ctuTests = [{run:0.2}, {press:'I0.0'}, {run:1}, {exp:{'Q0.0':1}, msg:'دوست Start: السير لازم يدور ويفضل داير.'}, {run:16},
-  {fn:c => c.plant.carton > 6 ? `الكرتونة خدت ${c.plant.carton} علب! السير لازم يقف أول ما العدّ يوصل 6.` : c.plant.carton < 6 ? `الكرتونة فيها ${c.plant.carton} علب بس والسير ${c.q('Q0.0') ? 'لسه دايرة' : 'وقف'}. لازم يكمّل لحد 6.` : null},
-  {exp:{'Q0.0':0, 'Q0.1':1}, msg:'بعد 6 علب: السير يقف واللمبة تنوّر.'}, {press:'I0.0'}, {run:1}, {exp:{'Q0.0':0}, msg:'الكرتونة مليانة ودوست Start من غير ما تغيّرها: السير مايدورش.'},
-  {press:'I0.3'}, {run:0.3}, {exp:{'Q0.1':0, 'Q0.0':0}, msg:'دوست كرتونة جديدة: اللمبة تطفي والسير لسه واقف لحد Start.'},
-  {press:'I0.0'}, {run:3}, {exp:{'Q0.0':1}, msg:'Start بعد الكرتونة الجديدة:'}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'دوست Stop في النص:'},
-  {fn:c => c.e.num('C0') > 0 && c.e.num('C0') < 6 ? null : `العدّ لازم يفضل محفوظ لما تدوس Stop (العدّاد = ${c.e.num('C0')}).`}];
-SC.ctu = {io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}, {a:'I0.3', label:'كرتونة جديدة', kind:'pb', color:'blue'}, {a:'I0.2', label:'عين العلب', kind:'auto'}], outputs:[{a:'Q0.0', label:'السير', kind:'motor'}, {a:'Q0.1', label:'الكرتونة كملت', kind:'lamp', color:'green'}]}, plant:'pack', cmpDef:'C0', tests:ctuTests};
+const ctuTests = [{run:0.2}, {press:'I0.0'}, {run:1}, {exp:{'Q0.0':1}, msg:'ضغطت Start: يجب أن يدور السير ويستمر.'}, {run:16},
+  {fn:c => c.plant.carton > 6 ? `أخذت الكرتونة ${c.plant.carton} علب! يجب أن يتوقف السير بمجرد وصول العدّ إلى 6.` : c.plant.carton < 6 ? `في الكرتونة ${c.plant.carton} علب فقط والسير ${c.q('Q0.0') ? 'ما زال يدور' : 'توقف'}. يجب أن يستمر حتى 6.` : null},
+  {exp:{'Q0.0':0, 'Q0.1':1}, msg:'بعد 6 علب: يتوقف السير ويضيء المصباح.'}, {press:'I0.0'}, {run:1}, {exp:{'Q0.0':0}, msg:'الكرتونة ممتلئة وضغطت Start دون تغييرها: لا يدور السير.'},
+  {press:'I0.3'}, {run:0.3}, {exp:{'Q0.1':0, 'Q0.0':0}, msg:'ضغطت كرتونة جديدة: ينطفئ المصباح ويبقى السير متوقفًا حتى Start.'},
+  {press:'I0.0'}, {run:3}, {exp:{'Q0.0':1}, msg:'Start بعد الكرتونة الجديدة:'}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'ضغطت Stop في المنتصف:'},
+  {fn:c => c.e.num('C0') > 0 && c.e.num('C0') < 6 ? null : `يجب أن يبقى العدّ محفوظًا عند ضغط Stop (العدّاد = ${c.e.num('C0')}).`}];
+SC.ctu = {io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}, {a:'I0.3', label:'كرتونة جديدة', kind:'pb', color:'blue'}, {a:'I0.2', label:'حساس العلب', kind:'auto'}], outputs:[{a:'Q0.0', label:'السير', kind:'motor'}, {a:'Q0.1', label:'اكتملت الكرتونة', kind:'lamp', color:'green'}]}, plant:'pack', cmpDef:'C0', tests:ctuTests};
 
-SC.tank = {io:{inputs:[], outputs:[{a:'Q0.0', label:'طلمبة'}, {a:'Q0.1', label:'High'}, {a:'Q0.2', label:'Low'}]}, plant:'tank', plantOpt:{level:50}, cmpDef:'MW10',
+SC.tank = {io:{inputs:[], outputs:[{a:'Q0.0', label:'مضخة'}, {a:'Q0.1', label:'High'}, {a:'Q0.2', label:'Low'}]}, plant:'tank', plantOpt:{level:50}, cmpDef:'MW10',
   tests:[{run:1}, {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':0}, msg:'المستوى 50%:'}, {fn:c => Math.abs(c.e.num('MW10') - c.plant.level) < 1.5 ? null : `المستوى المحسوب في البرنامج = ${PL.fmt(c.e.num('MW10'), 1)} والمستوى الحقيقي ${Math.round(c.plant.level)}%: راجع بلوك التحويل (المدى ومكان الخرج).`},
-    {until:c => c.plant.level <= 19.8 || c.q('Q0.0'), max:25, msg:'التانك مانزلش لحد 20%: الطلمبة شغالة من غير سبب؟'}, {fn:c => c.q('Q0.0') && c.plant.level > 21.5 ? `الطلمبة اشتغلت والمستوى ${Math.round(c.plant.level)}%: المفروض تستنى لحد 20%.` : null}, {run:0.02}, {exp:{'Q0.0':1}, msg:'المستوى نزل تحت 20%: الطلمبة لازم تشتغل.'},
-    {until:c => c.plant.level >= 50, max:30, msg:'المستوى مش بيطلع: الطلمبة بتفصل وتوصل حوالين 20%. محتاج هيستيريسيس: Set عند 20% و Reset عند 80%.'}, {exp:{'Q0.0':1}, msg:'المستوى 50% والطلمبة شغالة من تحت: لازم تفضل شغالة لحد 80% (هيستيريسيس).'},
-    {until:c => !c.q('Q0.0') || c.plant.level >= 85, max:30, msg:'المستوى ماوصلش 80%.'}, {fn:c => c.q('Q0.0') ? 'المستوى عدّى 80% والطلمبة لسه شغالة: لازم تفصل عند 80%.' : c.plant.level < 78.5 ? `الطلمبة فصلت بدري عند ${Math.round(c.plant.level)}%: المفروض تكمّل لحد 80%.` : null}, {run:3}, {exp:{'Q0.0':0}, msg:'المستوى نازل تحت 80% شوية: الطلمبة تفضل واقفة لحد 20%.'},
+    {until:c => c.plant.level <= 19.8 || c.q('Q0.0'), max:25, msg:'لم ينزل الخزان إلى 20%: هل تعمل المضخة دون سبب؟'}, {fn:c => c.q('Q0.0') && c.plant.level > 21.5 ? `عملت المضخة والمستوى ${Math.round(c.plant.level)}%: يجب أن تنتظر حتى 20%.` : null}, {run:0.02}, {exp:{'Q0.0':1}, msg:'نزل المستوى تحت 20%: يجب أن تعمل المضخة.'},
+    {until:c => c.plant.level >= 50, max:30, msg:'المستوى لا يرتفع: المضخة تفصل وتوصّل حول 20%. يلزم هيستيريسيس: Set عند 20% وReset عند 80%.'}, {exp:{'Q0.0':1}, msg:'المستوى 50% والمضخة تعمل من الأسفل: يجب أن تستمر حتى 80% (هيستيريسيس).'},
+    {until:c => !c.q('Q0.0') || c.plant.level >= 85, max:30, msg:'لم يصل المستوى إلى 80%.'}, {fn:c => c.q('Q0.0') ? 'تجاوز المستوى 80% والمضخة ما زالت تعمل: يجب أن تفصل عند 80%.' : c.plant.level < 78.5 ? `فصلت المضخة مبكرًا عند ${Math.round(c.plant.level)}%: يجب أن تستمر حتى 80%.` : null}, {run:3}, {exp:{'Q0.0':0}, msg:'المستوى ينزل قليلًا تحت 80%: تبقى المضخة متوقفة حتى 20%.'},
     {plant:{level:93}}, {run:0.4}, {exp:{'Q0.1':1, 'Q0.2':0}, msg:'المستوى 93%:'}, {plant:{level:60}}, {run:0.4}, {exp:{'Q0.1':0, 'Q0.2':0}, msg:'المستوى 60%:'}, {plant:{level:7, use:false}}, {run:0.4}, {exp:{'Q0.2':1, 'Q0.0':1, 'Q0.1':0}, msg:'المستوى 7%:'}]};
 
 SC.traffic = {io:{inputs:[{a:'I0.0', label:'تشغيل', kind:'sw'}], outputs:[{a:'Q0.0', label:'أحمر'}, {a:'Q0.1', label:'أصفر'}, {a:'Q0.2', label:'أخضر'}]}, plant:'traffic',
-  tests:[{run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':0}, msg:'السويتش OFF:'}, {fn:c => { c.mark.t0 = c.t; return null; }}, {set:{'I0.0':1}}, {run:0.3}, {exp:{'Q0.2':1, 'Q0.1':0, 'Q0.0':0}, msg:'أول ما السويتش يبقى ON: أخضر.'}, {run:30},
-    {fn:c => { const s = segs(c); if (s.some(x => x.s === 'X')) return 'في لحظة كان فيه أكتر من لمبة منوّرة مع بعض. لمبة واحدة بس في أي وقت.';
+  tests:[{run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':0}, msg:'المفتاح OFF:'}, {fn:c => { c.mark.t0 = c.t; return null; }}, {set:{'I0.0':1}}, {run:0.3}, {exp:{'Q0.2':1, 'Q0.1':0, 'Q0.0':0}, msg:'بمجرد أن يصبح المفتاح ON: أخضر.'}, {run:30},
+    {fn:c => { const s = segs(c); if (s.some(x => x.s === 'X')) return 'في لحظة ما كان أكثر من مصباح مضيئًا معًا. يجب أن يضيء مصباح واحد فقط في أي وقت.';
       const m = s.filter(x => !(x.s === '-' && x.d < 0.15)); const want = [['G', 5, 'الأخضر'], ['Y', 2, 'الأصفر'], ['R', 5, 'الأحمر']];
-      if (m.length < 5) return 'الإشارة مش بتلف: بعد 30 ثانية لسه ماكملتش دورتين.';
-      for (let i = 0; i < Math.min(m.length, 7); i++){ const w = want[i % 3]; if (m[i].s !== w[0]) return `الترتيب غلط: بعد ${want[(i + 2) % 3][2]} المفروض ${w[2]} بس اللي نوّر ${m[i].s === '-' ? 'ولا حاجة' : {G:'الأخضر', Y:'الأصفر', R:'الأحمر'}[m[i].s]}.`; if (Math.abs(m[i].d - w[1]) > 0.3) return `${w[2]} نوّر ${PL.fmt(m[i].d, 1)} ثانية والمطلوب ${w[1]}.`; }
+      if (m.length < 5) return 'الإشارة لا تدور: بعد 30 ثانية لم تكمل دورتين بعد.';
+      for (let i = 0; i < Math.min(m.length, 7); i++){ const w = want[i % 3]; if (m[i].s !== w[0]) return `الترتيب خطأ: بعد ${want[(i + 2) % 3][2]} يجب أن يأتي ${w[2]}، لكن الذي أضاء ${m[i].s === '-' ? 'لا شيء' : {G:'الأخضر', Y:'الأصفر', R:'الأحمر'}[m[i].s]}.`; if (Math.abs(m[i].d - w[1]) > 0.3) return `${w[2]} أضاء ${PL.fmt(m[i].d, 1)} ثانية والمطلوب ${w[1]}.`; }
       return null; }},
-    {set:{'I0.0':0}}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':0}, msg:'السويتش OFF:'}, {set:{'I0.0':1}}, {run:0.3}, {exp:{'Q0.2':1}, msg:'رجع ON: يبدأ من الأخضر.'}]};
+    {set:{'I0.0':0}}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':0}, msg:'المفتاح OFF:'}, {set:{'I0.0':1}}, {run:0.3}, {exp:{'Q0.2':1}, msg:'عاد إلى ON: يبدأ من الأخضر.'}]};
 
-SC.toggle = {io:{inputs:[{a:'I0.0', label:'زرار النور', kind:'pb'}], outputs:[{a:'Q0.0', label:'كشاف', kind:'lamp', color:'yellow'}]},
-  tests:[flips, {run:0.2}, {exp:{'Q0.0':0}, msg:'في البداية:'}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'أول دوسة: الكشاف ينوّر ويفضل منوّر بعد ما تسيب.'}, {run:1}, {exp:{'Q0.0':1}, msg:'بعد ثانية:'},
-    {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':0}, msg:'تاني دوسة: يطفي.'}, {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':1}, msg:'تالت دوسة: ينوّر.'},
+SC.toggle = {io:{inputs:[{a:'I0.0', label:'زر الإضاءة', kind:'pb'}], outputs:[{a:'Q0.0', label:'كشاف', kind:'lamp', color:'yellow'}]},
+  tests:[flips, {run:0.2}, {exp:{'Q0.0':0}, msg:'في البداية:'}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1}, msg:'الضغطة الأولى: يضيء الكشاف ويبقى مضيئًا بعد ترك الزر.'}, {run:1}, {exp:{'Q0.0':1}, msg:'بعد ثانية:'},
+    {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':0}, msg:'الضغطة الثانية: ينطفئ.'}, {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':1}, msg:'الضغطة الثالثة: يضيء.'},
     {fn:c => { c.mark.n = 0; return null; }}, {hold:'I0.0'}, {run:2}, {release:'I0.0'}, {run:0.3},
-    {fn:c => c.mark.n === 1 ? null : `وانت ماسك الزرار ثانيتين الكشاف اتقلب ${c.mark.n} مرة. لازم مرة واحدة بس: محتاج نبضة Edge (سكان واحد).`}, {exp:{'Q0.0':0}, msg:'بعد الدوسة الطويلة:'}]};
+    {fn:c => c.mark.n === 1 ? null : `وأنت ممسك بالزر ثانيتين انقلب الكشاف ${c.mark.n} مرة. يجب أن ينقلب مرة واحدة فقط: تحتاج إلى نبضة Edge (سكان واحد).`}, {exp:{'Q0.0':0}, msg:'بعد الضغطة الطويلة:'}]};
 
-SC.twohand = {io:{inputs:[{a:'I0.0', label:'إيد شمال', kind:'pb'}, {a:'I0.1', label:'إيد يمين', kind:'pb'}], outputs:[{a:'Q0.0', label:'المكبس', kind:'valve'}]},
-  tests:[{run:0.2}, {exp:{'Q0.0':0}, msg:'في البداية:'}, {hold:'I0.0'}, {hold:'I0.1'}, {run:0.3}, {exp:{'Q0.0':1}, msg:'الإيدين مع بعض: المكبس ينزل.'},
-    {release:'I0.1'}, {run:0.2}, {exp:{'Q0.0':0}, msg:'العامل شال إيد: المكبس لازم يقف فورًا.'},
-    {hold:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'رجّع الإيد التانية وإيد شمال لسه ماسكة من بدري: ممنوع يشتغل لحد ما يسيب الاتنين ويدوس من جديد (عشان محدش يربط زرار بشريط).'},
-    {release:'I0.0'}, {release:'I0.1'}, {run:0.3}, {hold:'I0.0'}, {run:1}, {hold:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'إيد سبقت التانية بثانية: الفرق أكتر من نص ثانية فالمكبس مايشتغلش.'},
-    {release:'I0.0'}, {release:'I0.1'}, {run:0.3}, {hold:'I0.1'}, {run:0.3}, {hold:'I0.0'}, {run:0.3}, {exp:{'Q0.0':1}, msg:'التانية جت بعد 0.3 ثانية بس: ده مسموح والمكبس يشتغل.'}, {run:2}, {exp:{'Q0.0':1}, msg:'ماسك الاتنين: المكبس يفضل شغال.'},
-    {release:'I0.0'}, {release:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'ساب الاتنين:'}]};
+SC.twohand = {io:{inputs:[{a:'I0.0', label:'اليد اليسرى', kind:'pb'}, {a:'I0.1', label:'اليد اليمنى', kind:'pb'}], outputs:[{a:'Q0.0', label:'المكبس', kind:'valve'}]},
+  tests:[{run:0.2}, {exp:{'Q0.0':0}, msg:'في البداية:'}, {hold:'I0.0'}, {hold:'I0.1'}, {run:0.3}, {exp:{'Q0.0':1}, msg:'اليدان معًا: ينزل المكبس.'},
+    {release:'I0.1'}, {run:0.2}, {exp:{'Q0.0':0}, msg:'رفع العامل يدًا: يجب أن يتوقف المكبس فورًا.'},
+    {hold:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'أعاد اليد الأخرى واليد اليسرى ما زالت ممسكة منذ مدة: يُمنع التشغيل حتى يترك الاثنتين ويضغط من جديد (حتى لا يربط أحد زرًا بشريط لاصق).'},
+    {release:'I0.0'}, {release:'I0.1'}, {run:0.3}, {hold:'I0.0'}, {run:1}, {hold:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'سبقت يدٌ الأخرى بثانية: الفرق أكثر من نصف ثانية فلا يعمل المكبس.'},
+    {release:'I0.0'}, {release:'I0.1'}, {run:0.3}, {hold:'I0.1'}, {run:0.3}, {hold:'I0.0'}, {run:0.3}, {exp:{'Q0.0':1}, msg:'جاءت الثانية بعد 0.3 ثانية فقط: هذا مسموح ويعمل المكبس.'}, {run:2}, {exp:{'Q0.0':1}, msg:'ممسك بالاثنتين: يستمر المكبس في العمل.'},
+    {release:'I0.0'}, {release:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'ترك الاثنتين:'}]};
 
-SC.sort = {io:{inputs:[{a:'I0.0', label:'تشغيل', kind:'sw'}, {a:'I0.1', label:'حساس الطول', kind:'auto'}, {a:'I0.2', label:'عند الدفّاع', kind:'auto'}], outputs:[{a:'Q0.0', label:'السير'}, {a:'Q0.1', label:'دفّاع'}]}, plant:'sort', plantOpt:{seq:[1, 0, 1, 1, 0, 0, 1, 0]},
-  tests:[{run:0.3}, {exp:{'Q0.0':0}, msg:'قبل التشغيل:'}, {set:{'I0.0':1}}, {run:0.3}, {exp:{'Q0.0':1}, msg:'التشغيل ON: السير يدور.'},
-    {until:c => c.plant.res.length >= 8 || c.plant.res.some(r => r.tall !== r.pushed), max:60, msg:'الكراتين مخلصتش: السير وقف؟'},
-    {fn:c => { const b = c.plant.res.find(r => r.tall !== r.pushed); return b ? (b.tall ? 'كرتونة طويلة عدّت من غير ما تتدفع.' : 'الدفّاع دفع كرتونة قصيرة!') : null; }},
+SC.sort = {io:{inputs:[{a:'I0.0', label:'تشغيل', kind:'sw'}, {a:'I0.1', label:'حساس الطول', kind:'auto'}, {a:'I0.2', label:'عند الدافع', kind:'auto'}], outputs:[{a:'Q0.0', label:'السير'}, {a:'Q0.1', label:'دافع'}]}, plant:'sort', plantOpt:{seq:[1, 0, 1, 1, 0, 0, 1, 0]},
+  tests:[{run:0.3}, {exp:{'Q0.0':0}, msg:'قبل التشغيل:'}, {set:{'I0.0':1}}, {run:0.3}, {exp:{'Q0.0':1}, msg:'التشغيل ON: يدور السير.'},
+    {until:c => c.plant.res.length >= 8 || c.plant.res.some(r => r.tall !== r.pushed), max:60, msg:'لم تنتهِ الكراتين: هل توقف السير؟'},
+    {fn:c => { const b = c.plant.res.find(r => r.tall !== r.pushed); return b ? (b.tall ? 'مرّت كرتونة طويلة دون أن تُدفع.' : 'دفع الدافع كرتونة قصيرة!') : null; }},
     {set:{'I0.0':0}}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'التشغيل OFF:'}]};
 
-SC.parking = {io:{inputs:[{a:'I0.0', label:'عربية داخلة', kind:'pb'}, {a:'I0.1', label:'عربية خارجة', kind:'pb', color:'blue'}], outputs:[{a:'Q0.0', label:'فيه أماكن'}, {a:'Q0.1', label:'كامل'}]}, plant:'parking', cmpDef:'C0',
-  tests:[{run:0.2}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'الجراج فاضي:'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'3 عربيات جوه:'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {run:0.1}, {exp:{'Q0.0':0, 'Q0.1':1}, msg:'6 عربيات جوه: كامل.'},
-    {press:'I0.1'}, {run:0.1}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'عربية خرجت (5 جوه):'}, {press:'I0.1'}, {press:'I0.1'}, {press:'I0.1'}, {press:'I0.1'}, {press:'I0.1'}, {press:'I0.1'}, {run:0.1}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'الجراج فضي:'},
-    {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {run:0.1}, {exp:{'Q0.1':1, 'Q0.0':0}, msg:'6 تاني:'},
-    {fn:c => c.e.prog.some(rg => rg.rows.some(row => row.some(el => el && el.t === 'CMP'))) ? null : 'شغال، بس التمرين عايزك تستخدم تعليمة مقارنة واحدة على الأقل (العدد أقل من 6، أو 6 وأكتر).'}]};
+SC.parking = {io:{inputs:[{a:'I0.0', label:'سيارة داخلة', kind:'pb'}, {a:'I0.1', label:'سيارة خارجة', kind:'pb', color:'blue'}], outputs:[{a:'Q0.0', label:'توجد أماكن'}, {a:'Q0.1', label:'ممتلئ'}]}, plant:'parking', cmpDef:'C0',
+  tests:[{run:0.2}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'الجراج فارغ:'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'3 سيارات بالداخل:'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {run:0.1}, {exp:{'Q0.0':0, 'Q0.1':1}, msg:'6 سيارات بالداخل: ممتلئ.'},
+    {press:'I0.1'}, {run:0.1}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'خرجت سيارة (5 بالداخل):'}, {press:'I0.1'}, {press:'I0.1'}, {press:'I0.1'}, {press:'I0.1'}, {press:'I0.1'}, {press:'I0.1'}, {run:0.1}, {exp:{'Q0.0':1, 'Q0.1':0}, msg:'أصبح الجراج فارغًا:'},
+    {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {press:'I0.0'}, {run:0.1}, {exp:{'Q0.1':1, 'Q0.0':0}, msg:'6 مرة أخرى:'},
+    {fn:c => c.e.prog.some(rg => rg.rows.some(row => row.some(el => el && el.t === 'CMP'))) ? null : 'البرنامج يعمل، لكن التمرين يطلب استخدام تعليمة مقارنة واحدة على الأقل (العدد أقل من 6، أو 6 فأكثر).'}]};
 
-SC.garage = {io:{inputs:[{a:'I0.0', label:'فتح', kind:'pb'}, {a:'I0.1', label:'قفل', kind:'pb', color:'blue'}, {a:'I0.2', label:'Stop', kind:'pbnc'}, {a:'I0.3', label:'ليميت فوق', kind:'auto'}, {a:'I0.4', label:'ليميت تحت', kind:'auto'}, {a:'I0.5', label:'عين أمان', kind:'auto'}], outputs:[{a:'Q0.0', label:'طلوع'}, {a:'Q0.1', label:'نزول'}, {a:'Q0.2', label:'لمبة تحذير'}]}, plant:'garage', plantOpt:{pos:0}, cols:6,
-  tests:[{watch:c => c.q('Q0.0') && c.q('Q0.1') ? 'طلوع ونزول مع بعض: الموتور هيتحرق! محتاج إنترلوك.' : c.plant.crush ? 'الباب نزل على العربية! عين الأمان لازم توقف النزول.' : null},
-    {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':0}, msg:'الباب مقفول وواقف:'}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1, 'Q0.2':1}, msg:'دوست فتح: الباب يطلع ولمبة التحذير تنوّر.'},
-    {until:c => c.plant.pos >= 99.5, max:8, msg:'الباب مكمّلش لفوق.'}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.2':0}, msg:'وصل ليميت فوق: الموتور يقف.'}, {fn:c => c.plant.stall > 0.6 ? 'الموتور فضل شغال بعد ما الباب وصل فوق: استخدم ليميت فوق I0.3.' : null},
-    {press:'I0.1'}, {run:0.5}, {exp:{'Q0.1':1, 'Q0.2':1}, msg:'دوست قفل:'}, {run:1.2}, {press:'I0.2'}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'دوست Stop وهو نازل:'},
-    {press:'I0.1'}, {run:0.8}, {plant:{obst:true}}, {run:0.5}, {exp:{'Q0.1':0, 'Q0.0':1}, msg:'عربية تحت الباب وهو نازل: يقف ويطلع لوحده.'},
-    {until:c => c.plant.pos >= 99.5, max:8, msg:'الباب ماطلعش لفوق بعد ما العين شافت العربية.'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'رجع فوق:'},
-    {press:'I0.1'}, {run:0.5}, {exp:{'Q0.1':0}, msg:'لسه فيه عربية تحت ودوست قفل: مينزلش.'}, {plant:{obst:false}}, {run:0.2}, {press:'I0.1'},
-    {until:c => c.plant.pos <= 0.5, max:8, msg:'الباب ماقفلش للآخر.'}, {run:0.3}, {exp:{'Q0.1':0, 'Q0.2':0}, msg:'وصل ليميت تحت:'}]};
+SC.garage = {io:{inputs:[{a:'I0.0', label:'فتح', kind:'pb'}, {a:'I0.1', label:'قفل', kind:'pb', color:'blue'}, {a:'I0.2', label:'Stop', kind:'pbnc'}, {a:'I0.3', label:'ليمت علوي', kind:'auto'}, {a:'I0.4', label:'ليمت سفلي', kind:'auto'}, {a:'I0.5', label:'حساس أمان', kind:'auto'}], outputs:[{a:'Q0.0', label:'صعود'}, {a:'Q0.1', label:'نزول'}, {a:'Q0.2', label:'مصباح تحذير'}]}, plant:'garage', plantOpt:{pos:0}, cols:6,
+  tests:[{watch:c => c.q('Q0.0') && c.q('Q0.1') ? 'صعود ونزول معًا: سيحترق المحرك! يلزم إنترلوك.' : c.plant.crush ? 'نزل الباب على السيارة! يجب أن يوقف حساس الأمان النزول.' : null},
+    {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':0}, msg:'الباب مغلق ومتوقف:'}, {press:'I0.0'}, {run:0.5}, {exp:{'Q0.0':1, 'Q0.2':1}, msg:'ضغطت فتح: يصعد الباب ويضيء مصباح التحذير.'},
+    {until:c => c.plant.pos >= 99.5, max:8, msg:'لم يكمل الباب الصعود.'}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.2':0}, msg:'وصل إلى الليمت العلوي: يتوقف المحرك.'}, {fn:c => c.plant.stall > 0.6 ? 'استمر المحرك بعد وصول الباب إلى الأعلى: استخدم الليمت العلوي I0.3.' : null},
+    {press:'I0.1'}, {run:0.5}, {exp:{'Q0.1':1, 'Q0.2':1}, msg:'ضغطت قفل:'}, {run:1.2}, {press:'I0.2'}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0}, msg:'ضغطت Stop أثناء النزول:'},
+    {press:'I0.1'}, {run:0.8}, {plant:{obst:true}}, {run:0.5}, {exp:{'Q0.1':0, 'Q0.0':1}, msg:'سيارة تحت الباب أثناء النزول: يتوقف ويصعد وحده.'},
+    {until:c => c.plant.pos >= 99.5, max:8, msg:'لم يصعد الباب بعد أن رأى الحساس السيارة.'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'عاد إلى الأعلى:'},
+    {press:'I0.1'}, {run:0.5}, {exp:{'Q0.1':0}, msg:'ما زالت السيارة تحته وضغطت قفل: لا ينزل.'}, {plant:{obst:false}}, {run:0.2}, {press:'I0.1'},
+    {until:c => c.plant.pos <= 0.5, max:8, msg:'لم يُغلق الباب حتى النهاية.'}, {run:0.3}, {exp:{'Q0.1':0, 'Q0.2':0}, msg:'وصل إلى الليمت السفلي:'}]};
 
 /* factory challenge: packing line with a 2 s warning before the belt moves (start and after every carton change) */
 SC.line = {io:SC.ctu.io, plant:'pack', cmpDef:'C0',
-  tests:[{run:0.2}, {press:'I0.0'}, {run:1.0}, {exp:{'Q0.0':0}, msg:'بعد Start بثانية: السير لسه مايدورش (وقت التحذير 2 ثانية).'}, {run:1.3}, {exp:{'Q0.0':1}, msg:'بعد 2 ثانية من Start: السير يدور.'},
-    {run:17}, {fn:c => c.plant.carton > 6 ? `الكرتونة خدت ${c.plant.carton} علب! السير لازم يقف عند 6.` : c.plant.carton < 6 ? `الكرتونة فيها ${c.plant.carton} علب بس. لازم تكمّل 6.` : null},
-    {exp:{'Q0.0':0, 'Q0.1':1}, msg:'الكرتونة كملت: السير يقف واللمبة تنوّر.'},
-    {press:'I0.3'}, {run:0.4}, {exp:{'Q0.1':0, 'Q0.0':0}, msg:'غيّرت الكرتونة: اللمبة تطفي والسير يستنى 2 ثانية الأول.'}, {run:2.1}, {exp:{'Q0.0':1}, msg:'بعد 2 ثانية من تغيير الكرتونة: السير يرجع يدور لوحده من غير Start.'},
-    {run:2}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'دوست Stop:'}, {run:3}, {exp:{'Q0.0':0}, msg:'بعد Stop مفيش حاجة تدور لوحدها:'},
-    {press:'I0.0'}, {run:0.8}, {exp:{'Q0.0':0}, msg:'Start تاني: التحذير 2 ثانية الأول.'}, {run:1.6}, {exp:{'Q0.0':1}, msg:'وبعدها السير يدور ويكمّل نفس الكرتونة.'}]};
+  tests:[{run:0.2}, {press:'I0.0'}, {run:1.0}, {exp:{'Q0.0':0}, msg:'بعد Start بثانية: لا يدور السير بعد (زمن التحذير ثانيتان).'}, {run:1.3}, {exp:{'Q0.0':1}, msg:'بعد ثانيتين من Start: يدور السير.'},
+    {run:17}, {fn:c => c.plant.carton > 6 ? `أخذت الكرتونة ${c.plant.carton} علب! يجب أن يتوقف السير عند 6.` : c.plant.carton < 6 ? `في الكرتونة ${c.plant.carton} علب فقط. يجب أن تكتمل 6.` : null},
+    {exp:{'Q0.0':0, 'Q0.1':1}, msg:'اكتملت الكرتونة: يتوقف السير ويضيء المصباح.'},
+    {press:'I0.3'}, {run:0.4}, {exp:{'Q0.1':0, 'Q0.0':0}, msg:'غيّرت الكرتونة: ينطفئ المصباح وينتظر السير ثانيتين أولًا.'}, {run:2.1}, {exp:{'Q0.0':1}, msg:'بعد ثانيتين من تغيير الكرتونة: يعود السير للدوران وحده دون Start.'},
+    {run:2}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0}, msg:'ضغطت Stop:'}, {run:3}, {exp:{'Q0.0':0}, msg:'بعد Stop لا يدور شيء وحده:'},
+    {press:'I0.0'}, {run:0.8}, {exp:{'Q0.0':0}, msg:'Start مرة أخرى: التحذير ثانيتان أولًا.'}, {run:1.6}, {exp:{'Q0.0':1}, msg:'ثم يدور السير ويكمل الكرتونة نفسها.'}]};
 
 /* factory challenge: three automatic mixing batches */
-SC.batch3 = {io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}, {a:'I0.2', label:'عوامة Low', kind:'auto'}, {a:'I0.3', label:'عوامة High', kind:'auto'}], outputs:[{a:'Q0.0', label:'بلف ملو'}, {a:'Q0.1', label:'خلاط'}, {a:'Q0.2', label:'بلف تفريغ'}, {a:'Q0.3', label:'خلص'}]}, plant:'mixer',
-  tests:[{watch:c => c.q('Q0.0') && c.q('Q0.2') ? 'بلف الملو والتفريغ مفتوحين مع بعض!' : c.plant.over ? 'التانك فاض: الملو ماقفلش عند الـ High.' : c.plant.dry > 0.6 ? 'الخلاط اشتغل والتانك فاضي!' : null},
+SC.batch3 = {io:{inputs:[{a:'I0.0', label:'Start', kind:'pb'}, {a:'I0.1', label:'Stop', kind:'pbnc'}, {a:'I0.2', label:'عوامة Low', kind:'auto'}, {a:'I0.3', label:'عوامة High', kind:'auto'}], outputs:[{a:'Q0.0', label:'بلف ملء'}, {a:'Q0.1', label:'خلاط'}, {a:'Q0.2', label:'بلف تفريغ'}, {a:'Q0.3', label:'انتهت'}]}, plant:'mixer',
+  tests:[{watch:c => c.q('Q0.0') && c.q('Q0.2') ? 'بلف الملء والتفريغ مفتوحان معًا!' : c.plant.over ? 'فاض الخزان: لم يُغلق الملء عند الـ High.' : c.plant.dry > 0.6 ? 'عمل الخلاط والخزان فارغ!' : null},
     {watch:c => { const v = c.q('Q0.2'); if (c.mark.d && !v) c.mark.b = (c.mark.b || 0) + 1; c.mark.d = v; const f = c.q('Q0.0'); if (f && !c.mark.f) c.mark.fills = (c.mark.fills || 0) + 1; c.mark.f = f; return null; }},
-    {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':0, 'Q0.3':0}, msg:'قبل Start:'}, {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':1}, msg:'بعد Start: الملو يفتح.'},
-    {until:c => c.plant.level >= 90, max:12, msg:'التانك مااتملاش لحد الـ High.'}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':1, 'Q0.2':0}, msg:'وصل High: الملو يقفل والخلاط يشتغل.'}, {run:3.2}, {exp:{'Q0.1':1, 'Q0.2':0}, msg:'الخلاط لسه مكمّلش 4 ثواني:'}, {run:1.0}, {exp:{'Q0.1':0, 'Q0.2':1}, msg:'بعد 4 ثواني خلط: الخلاط يقف والتفريغ يفتح.'},
-    {until:c => c.plant.level <= 10, max:12, msg:'التانك مافضاش.'}, {run:0.6}, {exp:{'Q0.2':0, 'Q0.0':1, 'Q0.3':0}, msg:'الدفعة الأولى خلصت: التانية لازم تبدأ لوحدها (الملو يفتح).'},
-    {until:c => (c.mark.b || 0) >= 3, max:60, msg:'التلات دفعات ماخلصوش: الدورة وقفت في النص؟'}, {run:0.6},
-    {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':0, 'Q0.3':1}, msg:'بعد 3 دفعات: كله يقف ولمبة خلص تنوّر.'}, {run:3}, {fn:c => c.mark.fills === 3 ? null : `الملو اتفتح ${c.mark.fills} مرات. المطلوب 3 دفعات بالظبط.`},
-    {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':1, 'Q0.3':0}, msg:'Start جديد: يبدأ عدّ جديد من الأول ولمبة خلص تطفي.'}, {run:2}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':0}, msg:'Stop في النص: كل البلوف والخلاط يقفلوا.'}, {run:2}, {exp:{'Q0.0':0}, msg:'بعد Stop مفيش حاجة تبدأ لوحدها:'}]};
+    {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':0, 'Q0.3':0}, msg:'قبل Start:'}, {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':1}, msg:'بعد Start: يفتح الملء.'},
+    {until:c => c.plant.level >= 90, max:12, msg:'لم يمتلئ الخزان حتى الـ High.'}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':1, 'Q0.2':0}, msg:'وصل إلى High: يُغلق الملء ويعمل الخلاط.'}, {run:3.2}, {exp:{'Q0.1':1, 'Q0.2':0}, msg:'لم يُكمل الخلاط 4 ثوانٍ بعد:'}, {run:1.0}, {exp:{'Q0.1':0, 'Q0.2':1}, msg:'بعد 4 ثوانٍ من الخلط: يتوقف الخلاط ويفتح التفريغ.'},
+    {until:c => c.plant.level <= 10, max:12, msg:'لم يفرغ الخزان.'}, {run:0.6}, {exp:{'Q0.2':0, 'Q0.0':1, 'Q0.3':0}, msg:'انتهت الدفعة الأولى: يجب أن تبدأ الثانية وحدها (يفتح الملء).'},
+    {until:c => (c.mark.b || 0) >= 3, max:60, msg:'لم تنتهِ الدفعات الثلاث: هل توقفت الدورة في المنتصف؟'}, {run:0.6},
+    {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':0, 'Q0.3':1}, msg:'بعد 3 دفعات: يتوقف كل شيء ويضيء مصباح «انتهت».'}, {run:3}, {fn:c => c.mark.fills === 3 ? null : `فُتح الملء ${c.mark.fills} مرات. المطلوب 3 دفعات تمامًا.`},
+    {press:'I0.0'}, {run:0.3}, {exp:{'Q0.0':1, 'Q0.3':0}, msg:'Start جديد: يبدأ عدّ جديد من البداية وينطفئ مصباح «انتهت».'}, {run:2}, {press:'I0.1'}, {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':0}, msg:'Stop في المنتصف: تُغلق كل البلوف ويتوقف الخلاط.'}, {run:2}, {exp:{'Q0.0':0}, msg:'بعد Stop لا يبدأ شيء وحده:'}]};
 
 /* ================= encoder positioning: sheet-metal cut-to-length line =================
    1000 PPR encoder on a measuring roller of 200 mm circumference, counted x4 by the PLC's high-speed counter:
@@ -1341,10 +1341,10 @@ PL.plants.cut = {
     const run = eon(e, 'Q0.0'), fast = eon(e, 'Q0.1'), brake = eon(e, 'Q0.2'), down = eon(e, 'Q0.3');
     st.t += dt; st.flash = Math.max(0, st.flash - dt); st.fall = Math.min(1, st.fall + dt * 1.6);
     /* inverter ramps · brake · coasting */
-    if (run && brake){ st.fight += dt; if (st.fight > 0.06 && !st.fault) st.fault = 'الموتور Q0.0 شغال والفرامل Q0.2 ماسكة في نفس الوقت: الموتور هيسخن والفرامل هتتاكل. الفرامل تمسك بس والموتور واقف.'; } else st.fight = 0;
+    if (run && brake){ st.fight += dt; if (st.fight > 0.06 && !st.fault) st.fault = 'المحرك Q0.0 يعمل والفرامل Q0.2 ممسكة في الوقت نفسه: سيسخن المحرك وتتآكل الفرامل. يجب أن تمسك الفرامل فقط والمحرك متوقف.'; } else st.fight = 0;
     if (run && !brake){ const tg = fast ? ENC.FAST : ENC.SLOW; st.v = st.v < tg ? Math.min(tg, st.v + ENC.ACC * dt) : Math.max(tg, st.v - ENC.DEC * dt); }
     else st.v = Math.max(0, st.v - (brake ? ENC.BRAKE : ENC.COAST) * dt);
-    if (run && st.s > 0.04 && !st.fault) st.fault = 'الموتور Q0.0 اشتغل والسكينة لسه مش فوق (I0.4 = 0): الصاج هيتدفع في السكينة. الصاج يمشي بس لما السكينة تبقى فوق.';
+    if (run && st.s > 0.04 && !st.fault) st.fault = 'عمل المحرك Q0.0 والسكين ليست في الأعلى بعد (I0.4 = 0): سيندفع الصاج في السكين. يجب أن يتحرك الصاج فقط عندما تكون السكين في الأعلى.';
     /* run falling edge: remember where and how fast it stopped, then measure the coasting */
     if (st.runP && !run){ st.stopAt = e.num('HC0'); st.vStop = st.v; st.coastFrom = st.pos; st.coast = null; }
     if (st.fastP && !fast && run) st.slowAt = e.num('HC0');
@@ -1360,7 +1360,7 @@ PL.plants.cut = {
     /* shear: 0 = up … 1 = down. It touches the sheet at 0.6 and cuts at the bottom */
     const s0 = st.s;
     st.s = down ? Math.min(1, st.s + dt / ENC.DOWN) : Math.max(0, st.s - dt / ENC.UP);
-    if (s0 < 0.6 && st.s >= 0.6 && st.v > 0.5 && !st.fault) st.fault = `السكينة نزلت والصاج لسه ماشي (${mm1(st.v)} mm/s): البلاطة هتتقطع مايلة والسكينة ممكن تتكسر. استنى الصاج يقف خالص (تايمر صغير بعد الوقوف) وبعدين نزّل السكينة.`;
+    if (s0 < 0.6 && st.s >= 0.6 && st.v > 0.5 && !st.fault) st.fault = `نزلت السكين والصاج ما زال يتحرك (${mm1(st.v)} mm/s): ستُقطع البلاطة مائلة وقد تنكسر السكين. انتظر حتى يتوقف الصاج تمامًا (تايمر صغير بعد التوقف) ثم أنزل السكين.`;
     if (st.s >= 1 && !st.hit){ st.hit = true; const len = st.pos - st.last; st.last = st.pos; st.pieces.push({len, err:len - ENC.LEN, t:st.t}); st.flash = 0.25; st.fall = 0; }
     if (!down && s0 > 0 && !st.hit && st.s < s0 && s0 < 1 && st.short === 0) st.short = 1;
     if (st.s <= 0){ if (st.short === 1) st.cutsLost++; st.short = 0; st.hit = false; }
@@ -1371,7 +1371,7 @@ PL.plants.cut = {
     const run = eon(e, 'Q0.0'), fast = eon(e, 'Q0.1'), brake = eon(e, 'Q0.2'), down = eon(e, 'Q0.3');
     const cv = e.num('HC0'), head = st.pos - st.last;
     const W = 360, H = 228, Y = 128; /* sheet line */
-    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="خط تقطيع صاج بالطول: العدّاد ${cv} count، ${mm1(cv / ENC.CPM)} mm">`;
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="خط قطع صاج بالطول: العدّاد ${cv} count، ${mm1(cv / ENC.CPM)} mm">`;
     s += `<defs><linearGradient id="encSt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9d3da"/><stop offset=".5" stop-color="#9fadb7"/><stop offset="1" stop-color="#7d8b95"/></linearGradient></defs>`;
     /* ---- HUD: counter · speed · brake ---- */
     s += `<rect x="4" y="4" width="148" height="44" rx="7" fill="#11181c" stroke="#2f3b42"/>`;
@@ -1381,7 +1381,7 @@ PL.plants.cut = {
     s += `<rect x="158" y="28" width="62" height="20" rx="10" fill="${brake ? '#c0352b' : '#3b4247'}"/>` + etx(189, 42, brake ? 'BRAKE' : 'brake off', 'pt enc-chip', 'middle');
     s += `<rect x="226" y="4" width="130" height="44" rx="7" fill="none" stroke="var(--board-line)"/>`;
     s += etx(232, 18, `${mm1(st.v)} mm/s`, 'pt') + `<rect x="232" y="24" width="118" height="6" rx="3" fill="#3b4247"/><rect x="232" y="24" width="${(118 * Math.min(1, st.v / ENC.FAST)).toFixed(1)}" height="6" rx="3" fill="${spd[1]}"/>`;
-    s += etx(350, 43, 'زحلقة', 'pt ar', 'end') + etx(232, 43, st.coast != null ? `${Math.round(st.coast * ENC.CPM)} count · ${mm1(st.coast)} mm` : '—', 'pt enc-sm');
+    s += etx(350, 43, 'انزلاق', 'pt ar', 'end') + etx(232, 43, st.coast != null ? `${Math.round(st.coast * ENC.CPM)} count · ${mm1(st.coast)} mm` : '—', 'pt enc-sm');
     /* ---- coil + feed rolls + motor ---- */
     const cr = Math.max(17, 26 - st.pos / 3000), ca = (st.pos / (2 * Math.PI * cr) * 360) % 360;
     s += `<g transform="translate(36 ${Y - cr - 1})"><circle r="${cr + 1}" fill="#5d6a73"/><g transform="rotate(${(-ca).toFixed(1)})">${[0, 1, 2, 3].map(i => `<circle r="${(cr - 3 - i * 3.6).toFixed(1)}" fill="none" stroke="#94a3ad" stroke-width="1.2"/>`).join('')}<path d="M0 -6V6M-6 0H6" stroke="#2a3035" stroke-width="2"/></g><circle r="4" fill="#2a3035"/></g>`;
@@ -1390,7 +1390,7 @@ PL.plants.cut = {
     const fr = (st.pos * 4) % 360;
     [Y - 8, Y + 8].forEach(cy => { s += `<g transform="translate(86 ${cy})"><circle r="6.5" fill="#8a949b" stroke="#2a3035"/><path d="M-5 0H5" stroke="#2a3035" stroke-width="1.5" transform="rotate(${(cy < Y ? -fr : fr).toFixed(1)})"/></g>`; });
     s += PL.motorSvg(86, Y + 38, 22, (st.pos * 6) % 360, run) + etx(104, Y + 36, 'Q0.0', 'pt pm');
-    s += etx(86, Y + 66, run ? (fast ? 'سريع' : 'بطيء') : 'واقف', 'pt ar', 'middle');
+    s += etx(86, Y + 66, run ? (fast ? 'سريع' : 'بطيء') : 'متوقف', 'pt ar', 'middle');
     /* ---- encoder measuring roller ---- */
     const ex = 136, er = 11, ey = Y - 1.5 - er, ea = (st.pos / 200 * 360) % 360, led = st.v > 0.2 && Math.floor(st.enc / 25) % 2 === 1;
     s += `<path d="M${ex} ${ey}L${ex + 22} ${ey - 26}" stroke="#5d6469" stroke-width="3"/><circle cx="${ex + 22}" cy="${ey - 26}" r="3" fill="#5d6469"/>`;
@@ -1427,8 +1427,8 @@ PL.plants.cut = {
     s += etx(176, H - 34, `القطع: ${n}`, 'pt ar enc-w', 'middle');
     if (last){ const bad = Math.abs(last.err) > ENC.TOL; s += etx(176, H - 14, `${mm1(last.len)} mm (${sgn(last.err)})`, 'pt ' + (bad ? 'enc-bad' : 'enc-ok'), 'middle'); }
     else s += etx(176, H - 14, `الهدف 500 ± ${ENC.TOL} mm`, 'pt ar enc-w', 'middle');
-    if (st.fault) s += `<rect x="6" y="${H - 50}" width="116" height="44" rx="7" fill="#c0352b"/>` + etx(64, H - 32, '⚠ خطأ في التشغيل', 'pt pw ar', 'middle') + etx(64, H - 16, 'شوف نتيجة الاختبار', 'pt pw ar', 'middle');
-    else if (st.gate && st.gateMiss && st.v > 0) s += `<rect x="6" y="${H - 50}" width="116" height="44" rx="7" fill="#b86e00"/>` + etx(64, H - 32, 'العدّاد مش بيعدّ!', 'pt pw ar', 'middle') + etx(64, H - 16, 'محتاج DCNT C251', 'pt pw', 'middle');
+    if (st.fault) s += `<rect x="6" y="${H - 50}" width="116" height="44" rx="7" fill="#c0352b"/>` + etx(64, H - 32, '⚠ خطأ في التشغيل', 'pt pw ar', 'middle') + etx(64, H - 16, 'اعرض نتيجة الاختبار', 'pt pw ar', 'middle');
+    else if (st.gate && st.gateMiss && st.v > 0) s += `<rect x="6" y="${H - 50}" width="116" height="44" rx="7" fill="#b86e00"/>` + etx(64, H - 32, 'العدّاد لا يعدّ!', 'pt pw ar', 'middle') + etx(64, H - 16, 'يلزم DCNT C251', 'pt pw', 'middle');
     return s + '</svg>';
   }
 };
@@ -1438,47 +1438,47 @@ const lenMsg = (c, i) => {
   const p = c.plant.pieces[i]; if (!p) return null;
   const e = p.err, a = Math.abs(e);
   if (a <= ENC.TOL) return null;
-  const head = `القطعة رقم ${i + 1} طلعت ${mm1(p.len)} mm (${e > 0 ? 'زيادة' : 'ناقصة'} ${mm1(a)} mm)، والمسموح 500 ± ${ENC.TOL} mm.`;
-  if (c.plant.cutsLost) return head + ' السكينة رجعت قبل ما توصل لتحت فمقطعتش: وقت التقطيع لازم يكون أطول من وقت نزول السكينة (0.3 ثانية).';
-  if (e > 200) return head + ' الصاج ماتقطعش في وقته: العدّاد HC0 لازم يتصفّر بعد كل قطعة عشان القطعة اللي بعدها تتقاس من الأول.';
-  if (e > ENC.TOL && e < 12) return head + ' الماكينة بتزحلق شوية بعد ما الموتور يفصل والفرامل تمسك (Overshoot). بص على «زحلقة» في الشاشة واطرحها من الهدف: يعني أوقف الموتور عند 10000 ناقص الزحلقة.';
-  if (e >= 12) return head + ' الموتور وقف متأخر قوي: لازم يبطّأ عند 9000 ويقف قبل 10000.';
-  return head + ' الموتور وقف بدري: راجع رقم المقارنة اللي بتوقف عنده.';
+  const head = `القطعة رقم ${i + 1} خرجت ${mm1(p.len)} mm (${e > 0 ? 'زائدة' : 'ناقصة'} ${mm1(a)} mm)، والمسموح 500 ± ${ENC.TOL} mm.`;
+  if (c.plant.cutsLost) return head + ' عادت السكين قبل أن تصل إلى الأسفل فلم تقطع: يجب أن يكون زمن القطع أطول من زمن نزول السكين (0.3 ثانية).';
+  if (e > 200) return head + ' لم يُقطع الصاج في موعده: يجب تصفير العدّاد HC0 بعد كل قطعة لتُقاس القطعة التالية من البداية.';
+  if (e > ENC.TOL && e < 12) return head + ' تنزلق الماكينة قليلًا بعد فصل المحرك وإمساك الفرامل (Overshoot). انظر إلى «انزلاق» على الشاشة واطرحه من الهدف: أي أوقف المحرك عند 10000 ناقص الانزلاق.';
+  if (e >= 12) return head + ' توقف المحرك متأخرًا جدًا: يجب أن يبطئ عند 9000 ويتوقف قبل 10000.';
+  return head + ' توقف المحرك مبكرًا: راجع رقم المقارنة الذي يتوقف عنده.';
 };
 const settled = c => { c.mark.k = c.plant.pieces.length; return null; };
 PL.BXS.cut = {
-  io:{inputs:[{a:'I0.2', label:'Start', kind:'pb'}, {a:'I0.3', label:'Stop', kind:'pbnc'}, {a:'I0.4', label:'السكينة فوق', kind:'auto'}],
-    outputs:[{a:'Q0.0', label:'تشغيل الموتور (FWD)', kind:'vfd'}, {a:'Q0.1', label:'سرعة عالية', kind:'vfd'}, {a:'Q0.2', label:'فرامل', kind:'brake'}, {a:'Q0.3', label:'السكينة تنزل', kind:'valve'}]},
+  io:{inputs:[{a:'I0.2', label:'Start', kind:'pb'}, {a:'I0.3', label:'Stop', kind:'pbnc'}, {a:'I0.4', label:'السكين في الأعلى', kind:'auto'}],
+    outputs:[{a:'Q0.0', label:'تشغيل المحرك (FWD)', kind:'vfd'}, {a:'Q0.1', label:'سرعة عالية', kind:'vfd'}, {a:'Q0.2', label:'فرامل', kind:'brake'}, {a:'Q0.3', label:'نزول السكين', kind:'valve'}]},
   plant:'cut', cmpDef:'HC0', hsc:true, cols:5,
   cases:[{plantOpt:{hc:6000}, steps:[
     {watch:c => c.plant.fault || null},
-    {watch:c => c.plant.pos - c.plant.last > 1150 ? (c.plant.gate && c.plant.gateMiss ? 'العدّاد السريع HC0 مش بيعدّ والصاج ماشي لحد ما خرج برّه الترابيزة: في دلتا العدّاد السريع مابيعدّش غير لما تعليمة DCNT بتاعته تتنفّذ، فاعمل رانج DCNT من غير شروط.' : 'الصاج عدّى أكتر من متر بعد السكينة ومحدش وقفه: لازم الموتور Q0.0 يفصل لما العدّاد HC0 يوصل لطول القطعة.') : null},
-    {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.3':0}, msg:'قبل Start: الماكينة لازم تكون واقفة.'},
-    {exp:{'Q0.2':1}, msg:'والماكينة واقفة الفرامل Q0.2 لازم تكون ماسكة عشان الصاج مايتحركش.'},
-    {press:'I0.2'}, {run:0.05}, {exp:{'Q0.0':1, 'Q0.1':1, 'Q0.2':0}, msg:'دوست Start: الموتور يدور سريع (Q0.0 و Q0.1) والفرامل تفك.'},
-    {fn:c => c.e.num('HC0') < 1500 ? null : `العدّاد HC0 كان فيه 6000 من الشغل اللي فات، ودوست Start والعدّاد لسه ${c.e.num('HC0')}: Start لازم يصفّر HC0 (بـ Edge، مرة واحدة) قبل ما القطعة تتقاس.`},
-    {until:c => !c.q('Q0.1') || !c.q('Q0.0'), max:6, msg:'الموتور فضل سريع 6 ثواني ومش بيبطّأ: لازم Q0.1 يفصل لما HC0 يوصل 9000.'},
+    {watch:c => c.plant.pos - c.plant.last > 1150 ? (c.plant.gate && c.plant.gateMiss ? 'العدّاد السريع HC0 لا يعدّ والصاج يتحرك حتى خرج من الطاولة: في دلتا لا يعدّ العدّاد السريع إلا عند تنفيذ تعليمة DCNT الخاصة به، فاعمل رانج DCNT دون شروط.' : 'تجاوز الصاج السكين بأكثر من متر ولم يوقفه أحد: يجب أن يفصل المحرك Q0.0 عندما يصل العدّاد HC0 إلى طول القطعة.') : null},
+    {run:0.3}, {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.3':0}, msg:'قبل Start: يجب أن تكون الماكينة متوقفة.'},
+    {exp:{'Q0.2':1}, msg:'والماكينة متوقفة يجب أن تكون الفرامل Q0.2 ممسكة حتى لا يتحرك الصاج.'},
+    {press:'I0.2'}, {run:0.05}, {exp:{'Q0.0':1, 'Q0.1':1, 'Q0.2':0}, msg:'ضغطت Start: يدور المحرك سريعًا (Q0.0 وQ0.1) وتفكّ الفرامل.'},
+    {fn:c => c.e.num('HC0') < 1500 ? null : `كان في العدّاد HC0 الرقم 6000 من العمل السابق، وضغطت Start والعدّاد ما زال ${c.e.num('HC0')}: يجب أن يصفّر Start العدّاد HC0 (بـ Edge، مرة واحدة) قبل قياس القطعة.`},
+    {until:c => !c.q('Q0.1') || !c.q('Q0.0'), max:6, msg:'بقي المحرك سريعًا 6 ثوانٍ ولا يبطئ: يجب أن يفصل Q0.1 عندما يصل HC0 إلى 9000.'},
     {fn:c => { const n = c.e.num('HC0');
-      if (!c.q('Q0.0')) return `الموتور وقف من السرعة العالية عند ${n} count من غير ما يبطّأ، فالصاج زحلق كتير. لازم يتحوّل بطيء (Q0.1 يفصل) عند 9000 (450 mm) ويكمّل بطيء لحد الآخر.`;
-      if (n < 8900) return `الموتور بطّأ بدري عند ${n} count (${mm1(n / ENC.CPM)} mm): المطلوب يفضل سريع لحد 9000 عشان الإنتاج.`;
-      if (n > 9100) return `الموتور بطّأ متأخر عند ${n} count: المطلوب عند 9000.`;
+      if (!c.q('Q0.0')) return `توقف المحرك من السرعة العالية عند ${n} count دون أن يبطئ، فانزلق الصاج كثيرًا. يجب أن يتحوّل إلى البطيء (يفصل Q0.1) عند 9000 (450 mm) ويكمل ببطء حتى النهاية.`;
+      if (n < 8900) return `أبطأ المحرك مبكرًا عند ${n} count (${mm1(n / ENC.CPM)} mm): المطلوب أن يبقى سريعًا حتى 9000 من أجل الإنتاج.`;
+      if (n > 9100) return `أبطأ المحرك متأخرًا عند ${n} count: المطلوب عند 9000.`;
       return null; }},
-    {until:c => !c.q('Q0.0'), max:4, msg:'الصاج ماشي بطيء ومش بيقف: لازم Q0.0 يفصل قبل ما HC0 يوصل 10000.'},
-    {run:0.02}, {exp:{'Q0.2':1, 'Q0.3':0}, msg:'الموتور فصل: الفرامل Q0.2 تمسك على طول، والسكينة لسه ماتنزلش.'},
-    {until:c => c.plant.pieces.length >= 1, max:4, msg:'الصاج وقف بس السكينة ماقطعتش: بعد ما الصاج يقف خالص نزّل السكينة Q0.3 بتايمر (نص ثانية مثلًا).'},
+    {until:c => !c.q('Q0.0'), max:4, msg:'الصاج يتحرك ببطء ولا يتوقف: يجب أن يفصل Q0.0 قبل أن يصل HC0 إلى 10000.'},
+    {run:0.02}, {exp:{'Q0.2':1, 'Q0.3':0}, msg:'فصل المحرك: تمسك الفرامل Q0.2 فورًا، ولم تنزل السكين بعد.'},
+    {until:c => c.plant.pieces.length >= 1, max:4, msg:'توقف الصاج لكن السكين لم تقطع: بعد توقف الصاج تمامًا أنزل السكين Q0.3 بتايمر (نصف ثانية مثلًا).'},
     {fn:c => lenMsg(c, 0)},
-    {until:c => c.plant.pieces.length >= 3, max:15, msg:'بعد القطعة الأولى الماكينة ماكمّلتش لوحدها: بعد ما السكينة ترجع فوق (I0.4) صفّر HC0 والصاج يمشي تاني لوحده.'},
+    {until:c => c.plant.pieces.length >= 3, max:15, msg:'بعد القطعة الأولى لم تكمل الماكينة وحدها: بعد عودة السكين إلى الأعلى (I0.4) صفّر HC0 ويتحرك الصاج من جديد وحده.'},
     {fn:c => lenMsg(c, 1) || lenMsg(c, 2)},
-    {fn:c => c.e.num('C0') === c.plant.pieces.length ? null : `عدّاد القطع فيه ${c.e.num('C0')} لكن اللي اتقطع فعلًا ${c.plant.pieces.length} قطع: اعمل CTU يعدّ كل نزلة للسكينة (من Q0.3).`},
-    {until:c => c.q('Q0.0') && c.e.num('HC0') > 4000, max:8, msg:'الماكينة مارجعتش تمشي بعد القطعة التالتة.'},
+    {fn:c => c.e.num('C0') === c.plant.pieces.length ? null : `في عدّاد القطع ${c.e.num('C0')} لكن ما قُطع فعلًا ${c.plant.pieces.length} قطع: اعمل CTU يعدّ كل نزلة للسكين (من Q0.3).`},
+    {until:c => c.q('Q0.0') && c.e.num('HC0') > 4000, max:8, msg:'لم تعد الماكينة للحركة بعد القطعة الثالثة.'},
     {fn:settled}, {press:'I0.3'},
-    {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':1, 'Q0.3':0}, msg:'دوست Stop والصاج ماشي: الموتور يقف والفرامل تمسك على طول.'},
-    {run:2.5}, {exp:{'Q0.0':0, 'Q0.3':0}, msg:'بعد Stop مفيش حاجة تتحرك لوحدها، ولا السكينة تنزل.'},
-    {fn:c => c.plant.pieces.length === c.mark.k ? null : 'بعد Stop السكينة نزلت وقطعت: Stop لازم يوقف الدورة كلها.'},
-    {press:'I0.2'}, {run:0.1}, {exp:{'Q0.0':1}, msg:'Start تاني بعد Stop: الماكينة ترجع تشتغل.'},
-    {until:c => c.plant.pieces.length >= c.mark.k + 2, max:14, msg:'بعد Start التاني الماكينة مكمّلتش تقطّع.'},
+    {exp:{'Q0.0':0, 'Q0.1':0, 'Q0.2':1, 'Q0.3':0}, msg:'ضغطت Stop والصاج يتحرك: يتوقف المحرك وتمسك الفرامل فورًا.'},
+    {run:2.5}, {exp:{'Q0.0':0, 'Q0.3':0}, msg:'بعد Stop لا يتحرك شيء وحده، ولا تنزل السكين.'},
+    {fn:c => c.plant.pieces.length === c.mark.k ? null : 'بعد Stop نزلت السكين وقطعت: يجب أن يوقف Stop الدورة كلها.'},
+    {press:'I0.2'}, {run:0.1}, {exp:{'Q0.0':1}, msg:'Start مرة أخرى بعد Stop: تعود الماكينة للعمل.'},
+    {until:c => c.plant.pieces.length >= c.mark.k + 2, max:14, msg:'بعد Start الثاني لم تكمل الماكينة القطع.'},
     {fn:c => lenMsg(c, c.mark.k + 1)},
-    {press:'I0.3'}, {run:0.5}, {exp:{'Q0.0':0, 'Q0.2':1}, msg:'Stop في الآخر:'}]}]
+    {press:'I0.3'}, {run:0.5}, {exp:{'Q0.0':0, 'Q0.2':1}, msg:'Stop في النهاية:'}]}]
 };
 
 /* ================= lesson simulators in the real vendor look =================
@@ -1498,12 +1498,12 @@ function lbMissing(b, x){
 }
 const LBX = [];
 /* lesson I/O have Arabic labels: give Siemens / Allen-Bradley real-looking tag names, and Delta device comments */
-const LBN = {'Stop':'Stop_PB', 'Start':'Start_PB', 'موتور':'Motor', 'لمبة':'Lamp', 'عين':'Photo_Eye', 'طلمبة':'Pump', 'تشغيل':'Run_Sw', 'السير':'Conveyor', 'أوفرلود':'Overload', 'Trip':'Trip_Lamp',
-  'Low':'Level_Low', 'High':'Level_High', 'نزول':'Down', 'ملو':'Fill_Valve', 'مفتاح فوق':'Sw_Upstairs', 'مفتاح تحت':'Sw_Downstairs', 'مستوى raw':'Level_Raw', 'مستوى %':'Level_Pct', 'مروحة':'Fan',
-  'لمبة إنذار':'Alarm_Lamp', 'كملت':'Batch_Done', 'كرتونة جديدة':'New_Box', 'كامل':'Full_Lamp', 'قفل':'Close_PB', 'فيه أماكن':'Free_Lamp', 'فوق':'Top_LS', 'فتح':'Open_PB', 'عند الدفّاع':'At_Pusher',
-  'عربية داخلة':'Car_In', 'عربية خارجة':'Car_Out', 'طول':'Long_Sensor', 'طلوع':'Up', 'ضغط عالي':'High_Press', 'سويتش':'Switch', 'سلكتور':'Selector', 'سارينة':'Horn', 'زرار':'Push_PB', 'دفّاع':'Pusher',
-  'خلف':'Rev', 'خلص':'Done', 'خلاط':'Mixer', 'تفريغ':'Drain_Valve', 'تحت':'Bottom_LS', 'تأكيد':'Ack_PB', 'المكبس':'Press', 'اللمبة':'Lamp', 'إيد يمين':'Hand_Right', 'إيد شمال':'Hand_Left', 'أمام':'Fwd',
-  'أصفر':'Amber', 'أخضر':'Green', 'أحمر':'Red', 'Start محلي':'Start_Local', 'Start بعيد':'Start_Remote', 'KM3 Y':'KM3_Star', 'KM2 خلف':'KM2_Rev', 'KM2 Δ':'KM2_Delta', 'KM1 أمام':'KM1_Fwd', 'KM1':'KM1'};
+const LBN = {'Stop':'Stop_PB', 'Start':'Start_PB', 'محرك':'Motor', 'مصباح':'Lamp', 'حساس':'Photo_Eye', 'مضخة':'Pump', 'تشغيل':'Run_Sw', 'السير':'Conveyor', 'أوفرلود':'Overload', 'Trip':'Trip_Lamp',
+  'Low':'Level_Low', 'High':'Level_High', 'نزول':'Down', 'ملء':'Fill_Valve', 'المفتاح العلوي':'Sw_Upstairs', 'المفتاح السفلي':'Sw_Downstairs', 'مستوى raw':'Level_Raw', 'مستوى %':'Level_Pct', 'مروحة':'Fan',
+  'مصباح إنذار':'Alarm_Lamp', 'اكتملت':'Batch_Done', 'كرتونة جديدة':'New_Box', 'ممتلئ':'Full_Lamp', 'قفل':'Close_PB', 'توجد أماكن':'Free_Lamp', 'علوي':'Top_LS', 'فتح':'Open_PB', 'عند الدافع':'At_Pusher',
+  'سيارة داخلة':'Car_In', 'سيارة خارجة':'Car_Out', 'طول':'Long_Sensor', 'صعود':'Up', 'ضغط عالٍ':'High_Press', 'مفتاح':'Switch', 'سلكتور':'Selector', 'سارينة':'Horn', 'زر':'Push_PB', 'دافع':'Pusher',
+  'خلف':'Rev', 'انتهت':'Done', 'خلاط':'Mixer', 'تفريغ':'Drain_Valve', 'سفلي':'Bottom_LS', 'تأكيد':'Ack_PB', 'المكبس':'Press', 'المصباح':'Lamp', 'اليد اليمنى':'Hand_Right', 'اليد اليسرى':'Hand_Left', 'أمام':'Fwd',
+  'أصفر':'Amber', 'أخضر':'Green', 'أحمر':'Red', 'Start محلي':'Start_Local', 'Start عن بُعد':'Start_Remote', 'KM3 Y':'KM3_Star', 'KM2 خلف':'KM2_Rev', 'KM2 Δ':'KM2_Delta', 'KM1 أمام':'KM1_Fwd', 'KM1':'KM1'};
 function lbTags(b, x){
   if (x.tags) return x.tags;
   const io = (x.io.inputs || []).concat(x.io.outputs || []).concat(x.syms || []), seen = {};
@@ -1516,7 +1516,7 @@ function lbTags(b, x){
 }
 PL.lessonSim = function(host, opt){
   host.classList.add('lbx');
-  host.innerHTML = `<div class="lbx-bar" role="group" aria-label="ماركة الـ PLC"><span class="lbx-l">اشتغل على:</span>${LBOPTS.map(o => `<button type="button" class="lbx-b lbx-${o[0]}" data-b="${o[0]}" aria-pressed="false"><b dir="${o[0] === 'plain' ? 'auto' : 'ltr'}">${o[1]}</b><span dir="${o[0] === 'plain' ? 'auto' : 'ltr'}">${o[2]}</span></button>`).join('')}</div><p class="lbx-note" hidden></p><section class="lbx-demo"><div class="lbx-h lbx-hw">👀 اتفرج: التمرين شغال قدامك</div><div class="lbx-dm"></div></section><div class="lbx-h lbx-hy">✍️ دورك: اعمل نفس اللي شفته هنا</div><div class="lbx-in"></div>`;
+  host.innerHTML = `<div class="lbx-bar" role="group" aria-label="ماركة الـ PLC"><span class="lbx-l">اعمل على:</span>${LBOPTS.map(o => `<button type="button" class="lbx-b lbx-${o[0]}" data-b="${o[0]}" aria-pressed="false"><b dir="${o[0] === 'plain' ? 'auto' : 'ltr'}">${o[1]}</b><span dir="${o[0] === 'plain' ? 'auto' : 'ltr'}">${o[2]}</span></button>`).join('')}</div><p class="lbx-note" hidden></p><section class="lbx-demo"><div class="lbx-h lbx-hw">👀 شاهد: التمرين يعمل أمامك</div><div class="lbx-dm"></div></section><div class="lbx-h lbx-hy">✍️ دورك: نفّذ ما رأيته هنا</div><div class="lbx-in"></div>`;
   const bar = $('.lbx-bar', host), note = $('.lbx-note', host);
   let inner = $('.lbx-in', host), api = null, cur = null, dApi = null, loop = null;
   const dSec = $('.lbx-demo', host), dHy = $('.lbx-hy', host);
@@ -1529,7 +1529,7 @@ PL.lessonSim = function(host, opt){
     let use = b; note.hidden = true;
     if (b !== 'plain'){
       const miss = Array.from(new Set(opt.exercises.map(x => lbMissing(b, x)).flat()));
-      if (miss.length && b !== 'sie'){ use = 'sie'; const list = miss.map(m => iso(m)).join(' / '), B = BR[b].name; note.innerHTML = `التمرين ده فيه ${list}، ودي مش موجودة بنفس الشكل في ${B}، فهيفتح على Siemens.`; note.hidden = false; }
+      if (miss.length && b !== 'sie'){ use = 'sie'; const list = miss.map(m => iso(m)).join(' / '), B = BR[b].name; note.innerHTML = `في هذا التمرين ${list}، وهي غير موجودة بالشكل نفسه في ${B}، لذلك سيُفتح على Siemens.`; note.hidden = false; }
     }
     const fresh = document.createElement('div'); fresh.className = 'lbx-in';
     inner.replaceWith(fresh); inner = fresh;

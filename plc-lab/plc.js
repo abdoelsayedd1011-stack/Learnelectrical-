@@ -46,26 +46,26 @@ function themeBtn(){
 
 /* ---------------- course map ---------------- */
 PL.COURSE = [
-  {id:'l1', n:1, file:'lesson-01.html', title:'يعني إيه PLC؟', sub:'الفرق بينه وبين دواير الريلاي، دورة السكان، وأجزاءه: CPU والباور وكروت الدخل والخرج، والشركات المشهورة',
+  {id:'l1', n:1, file:'lesson-01.html', title:'ما هو الـ PLC؟', sub:'الفرق بينه وبين دوائر الريلاي، ودورة السكان، وأجزاؤه: CPU ومصدر التغذية وكروت الدخل والخرج، والشركات المشهورة',
     tasks:[['scan','دورة السكان'],['parts','أجزاء الـ PLC'],['quiz','أسئلة الدرس']]},
-  {id:'l2', n:2, file:'lesson-02.html', title:'توصيل الـ PLC', sub:'باور 24V DC، الدخل Sinking و Sourcing مع حساسات PNP و NPN، والخرج ريلاي وترانزستور',
+  {id:'l2', n:2, file:'lesson-02.html', title:'توصيل الـ PLC', sub:'تغذية 24V DC، والدخل Sinking وSourcing مع حساسات PNP وNPN، والخرج ريلاي وترانزستور',
     tasks:[['pnp','دخل PNP'],['npn','دخل NPN'],['tr','خرج ترانزستور'],['rly','خرج ريلاي'],['quiz','أسئلة الدرس']]},
-  {id:'l3', n:3, file:'lesson-03.html', title:'أول برنامج Ladder', sub:'الكونتاكت NO و NC والكويل، AND و OR، وفخ زرار الـ Stop المتوصّل NC',
-    tasks:[['and','دايرة AND'],['or','دايرة OR'],['nc','زرار الـ Stop الـ NC'],['quiz','أسئلة الدرس']]},
-  {id:'l4', n:4, file:'lesson-04.html', title:'التثبيت الذاتي والـ Set/Reset', sub:'تشغيل وإيقاف موتور DOL بالتثبيت، الـ Set و Reset، والإنترلوك في عكس الحركة',
+  {id:'l3', n:3, file:'lesson-03.html', title:'أول برنامج Ladder', sub:'التلامس NO وNC والملف، وAND وOR، وفخ زر الـ Stop الموصّل NC',
+    tasks:[['and','دائرة AND'],['or','دائرة OR'],['nc','زر الـ Stop الـ NC'],['quiz','أسئلة الدرس']]},
+  {id:'l4', n:4, file:'lesson-04.html', title:'التثبيت الذاتي والـ Set/Reset', sub:'تشغيل محرك DOL وإيقافه بالتثبيت، والـ Set وReset، والإنترلوك في عكس الحركة',
     tasks:[['seal','التثبيت الذاتي'],['sr','Set و Reset'],['fr','أمام وخلف بإنترلوك'],['quiz','أسئلة الدرس']]},
-  {id:'l5', n:5, file:'lesson-05.html', title:'التايمرات', sub:'TON و TOF و TP، وبرنامج ستار دلتا بالتايمر',
+  {id:'l5', n:5, file:'lesson-05.html', title:'التايمرات', sub:'TON وTOF وTP، وبرنامج ستار دلتا بالتايمر',
     tasks:[['ton','تايمر TON'],['tof','تايمر TOF'],['sd','ستار دلتا'],['quiz','أسئلة الدرس']]},
-  {id:'l6', n:6, file:'lesson-06.html', title:'العدادات والمقارنة', sub:'CTU و CTD، عدّاد التعبئة على السير، وتعليمات المقارنة في جراج العربيات',
+  {id:'l6', n:6, file:'lesson-06.html', title:'العدادات والمقارنة', sub:'CTU وCTD، وعدّاد التعبئة على السير، وتعليمات المقارنة في جراج السيارات',
     tasks:[['ctu','عداد التعبئة'],['cmp','الجراج والمقارنة'],['quiz','أسئلة الدرس']]},
-  {id:'l7', n:7, file:'lesson-07.html', title:'الذاكرة والـ Flags والـ Edge', sub:'بتات الـ M، الـ Rising و Falling edge، وزرار واحد للتشغيل والإيقاف',
-    tasks:[['toggle','زرار واحد تشغيل وإيقاف'],['alarm','إنذار بذاكرة'],['quiz','أسئلة الدرس']]},
-  {id:'l8', n:8, file:'lesson-08.html', title:'الإشارات الأنالوج في الـ PLC', sub:'من ⁦4⁠–⁠20mA⁩ لـ Raw counts للقيمة الحقيقية، وتانك بإنذارات High و Low وتحكم في الطلمبة',
-    tasks:[['scale','تمرين التحويل'],['tank','تحكم التانك'],['quiz','أسئلة الدرس']]},
-  {id:'l9', n:9, file:'lesson-09.html', title:'مشاريع عملية', sub:'إشارة مرور، تانك خلط، فرز كراتين على سير، وباب جراج: كل مشروع بماكينة متحركة واختبار أوتوماتيك',
-    tasks:[['traffic','إشارة المرور'],['fill','تانك الخلط'],['sort','فرز الكراتين'],['garage','باب الجراج'],['quiz','أسئلة الدرس']]},
-  {id:'l10', n:10, file:'lesson-10.html', title:'التربل شوتنج والامتحان النهائي', sub:'المونيتور أونلاين والفورس، أشهر الأخطاء في البرامج، والامتحان النهائي',
-    tasks:[['dbl','الكويل المكرر'],['ncfix','منطق الـ NC الغلط'],['sealfix','التثبيت الناقص'],['quiz','أسئلة الدرس'],['final','الامتحان النهائي']]}
+  {id:'l7', n:7, file:'lesson-07.html', title:'الذاكرة والـ Flags والـ Edge', sub:'بتات الـ M، والـ Rising وFalling edge، وزر واحد للتشغيل والإيقاف',
+    tasks:[['toggle','زر واحد للتشغيل والإيقاف'],['alarm','إنذار بذاكرة'],['quiz','أسئلة الدرس']]},
+  {id:'l8', n:8, file:'lesson-08.html', title:'الإشارات الأنالوج في الـ PLC', sub:'من ⁦4⁠–⁠20mA⁩ إلى Raw counts إلى القيمة الحقيقية، وخزان بإنذارات High وLow وتحكم في المضخة',
+    tasks:[['scale','تمرين التحويل'],['tank','التحكم في الخزان'],['quiz','أسئلة الدرس']]},
+  {id:'l9', n:9, file:'lesson-09.html', title:'مشاريع عملية', sub:'إشارة مرور، وخزان خلط، وفرز كراتين على سير، وباب جراج: كل مشروع بماكينة متحركة واختبار تلقائي',
+    tasks:[['traffic','إشارة المرور'],['fill','خزان الخلط'],['sort','فرز الكراتين'],['garage','باب الجراج'],['quiz','أسئلة الدرس']]},
+  {id:'l10', n:10, file:'lesson-10.html', title:'تتبّع الأعطال والامتحان النهائي', sub:'المونيتور أونلاين والفورس، وأشهر الأخطاء في البرامج، والامتحان النهائي',
+    tasks:[['dbl','الملف المكرر'],['ncfix','منطق الـ NC الخطأ'],['sealfix','التثبيت الناقص'],['quiz','أسئلة الدرس'],['final','الامتحان النهائي']]}
 ];
 PL.lessonById = id => PL.COURSE.find(l => l.id === id);
 PL.summary = id => { const l = PL.lessonById(id); const done = l.tasks.filter(t => PL.store.has(id + '/' + t[0])).length; return {done, total:l.tasks.length}; };
@@ -83,7 +83,7 @@ const fmt = (v, d) => { const p = Math.pow(10, d); const r = Math.round(v * p) /
 PL.fmt = fmt;
 function shuffle(a){ a = a.slice(); for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 /* answer options: shuffled, but catch-all choices («الاتنين», «ولا واحد», "Both", "None"…) always stay last */
-const QZ_PIN = /^(الاتنين|الاثنين|كلهم|ولا واحد|ولا حاجة|مفيش فرق|مش فارقة|زي بعض|كلهم زي بعض|both|neither|none|all of them|all the same|no difference|it makes no difference)$/i;
+const QZ_PIN = /^(لا فرق|لا فرق إطلاقًا|الاثنان|كلاهما|لا شيء|ولا أحد منهما|جميعها|الاتنين|الاثنين|كلهم|ولا واحد|ولا حاجة|مفيش فرق|مش فارقة|زي بعض|كلهم زي بعض|both|neither|none|all of them|all the same|no difference|it makes no difference)$/i;
 function qzOrder(o, keep){ const idx = o.map((_, i) => i); if (keep) return idx; const pin = idx.filter(i => QZ_PIN.test(String(o[i]).replace(/<[^>]*>/g, '').replace(/[⁦-⁩⁠.!]/g, '').trim())); return shuffle(idx.filter(i => !pin.includes(i))).concat(pin); }
 /* Latin / number runs inside an RTL option ("+24V", "0.05 A", "DC−", "حوالي +26 °C") would flip: isolate them as LTR */
 const QZ_LTR = /[+\-−±]?[0-9A-Za-zΩµ°][0-9A-Za-zΩµ°%.,:/·×_\-–−+ ]*[0-9A-Za-zΩµ°%+\-−]|[+\-−±]?[0-9A-Za-zΩµ°]/g;
@@ -127,7 +127,7 @@ function langBtn(){
   const a = document.createElement('a'); a.className = 'btn lang-b';
   const p = location.pathname, en = /^\/en(?=\/)/.test(p);
   a.href = (en ? p.replace(/^\/en(?=\/)/, '') : '/en' + p) + location.hash;
-  if (en){ a.textContent = 'ع'; a.lang = 'ar'; a.hreflang = 'ar'; a.setAttribute('aria-label', 'اقرا الصفحة دي بالعربي'); }
+  if (en){ a.textContent = 'ع'; a.lang = 'ar'; a.hreflang = 'ar'; a.setAttribute('aria-label', 'اقرأ هذه الصفحة بالعربية'); }
   else { a.textContent = 'EN'; a.lang = 'en'; a.hreflang = 'en'; a.setAttribute('aria-label', 'Read this page in English'); }
   a.title = a.getAttribute('aria-label');
   a.addEventListener('click', () => lsSet('le-lang', en ? 'ar' : 'en'));
@@ -182,7 +182,7 @@ PL.gate = function(lid){
     g.wd.classList.add('gated');
     kids(g).forEach(c => { c.inert = true; c.setAttribute('aria-hidden', 'true'); });
     const c = document.createElement('div'); c.className = 'gate'; c.setAttribute('role', 'status');
-    c.innerHTML = `<b>🔒 المحاكي ده هيتفتح بعد ما تخلّص قراية الشرح اللي فوقه.</b><span class="muted gate-why">اقرا الأول عشان تفهم انت هتجرّب إيه.</span><span class="gate-bar" role="progressbar" aria-label="تقدّم القراية" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></span>${g.own.length ? '<button type="button" class="btn gate-up">↑ اطلع للشرح</button>' : ''}`;
+    c.innerHTML = `<b>🔒 يُفتح هذا المحاكي بعد أن تُنهي قراءة الشرح الذي فوقه.</b><span class="muted gate-why">اقرأ أولًا لتفهم ما ستجرّبه.</span><span class="gate-bar" role="progressbar" aria-label="تقدّم القراية" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></span>${g.own.length ? '<button type="button" class="btn gate-up">↑ اصعد إلى الشرح</button>' : ''}`;
     const h = g.wd.querySelector(':scope > h3'); if (h) h.after(c); else g.wd.prepend(c);
     const up = c.querySelector('.gate-up'); if (up) up.addEventListener('click', () => { const t = g.own.find(b => !vis.has(b)) || g.own[0]; t.scrollIntoView({block:'start', behavior:reduced() ? 'auto' : 'smooth'}); });
     g.card = c; if (io) g.own.forEach(b => io.observe(b));
@@ -190,7 +190,7 @@ PL.gate = function(lid){
   function unlock(g, quiet){
     g.open = true; g.wd.classList.remove('gated');
     kids(g).forEach(c => { c.inert = false; c.removeAttribute('aria-hidden'); });
-    if (g.card){ if (quiet) g.card.remove(); else { g.card.className = 'gate gate-ok'; g.card.innerHTML = '<b>✓ اتفتح: جرّب دلوقتي اللي قريته.</b>'; setTimeout(() => { if (g.card) g.card.remove(); }, 4000); } }
+    if (g.card){ if (quiet) g.card.remove(); else { g.card.className = 'gate gate-ok'; g.card.innerHTML = '<b>✓ فُتح: جرّب الآن ما قرأته.</b>'; setTimeout(() => { if (g.card) g.card.remove(); }, 4000); } }
     const n = G.indexOf(g) + 1, o = gateLoad(); if ((o[lid] || 0) < n){ o[lid] = n; lsSet(GKEY, JSON.stringify(o)); }
     (PL._sims || []).concat(PL._bx || []).forEach(a => { if (a.host && g.wd.contains(a.host) && a.preview && a.preview.refresh) a.preview.refresh(); });
   }
@@ -203,14 +203,14 @@ PL.gate = function(lid){
     if (!io) g.end = true;
     const pct = g.need ? Math.min(100, Math.round(g.t / g.need * 100)) : 100;
     const bar = g.card && g.card.querySelector('.gate-bar'); if (bar){ bar.firstChild.style.width = pct + '%'; bar.setAttribute('aria-valuenow', pct); }
-    const why = g.card && g.card.querySelector('.gate-why'); if (why && G.indexOf(g) > 0 && !G[G.indexOf(g) - 1].open) why.textContent = 'خلّص الشرح والمحاكي اللي فوق الأول.';
+    const why = g.card && g.card.querySelector('.gate-why'); if (why && G.indexOf(g) > 0 && !G[G.indexOf(g) - 1].open) why.textContent = 'أنهِ الشرح والمحاكي اللذين في الأعلى أولًا.';
     if (g.t >= g.need && g.end) unlock(g);
   }, 500);
 };
 
 /* ---------------- select, then confirm ----------------
    tapping an option only selects it (.sel); right/wrong shows after the learner presses the check / confirm button */
-const QZ_T = {check:'صحّح إجاباتي', need:'جاوب على كل الأسئلة الأول', cnt:(n, t) => `جاوبت ${n} من ${t}`, ok:`تأكيد`}; // backtick: its own English entry (the quote-key 'تأكيد' is the alarm «Acknowledge»)
+const QZ_T = {check:'صحّح إجاباتي', need:'أجب عن كل الأسئلة أولًا', cnt:(n, t) => `أجبت عن ${n} من ${t}`, ok:`تأكيد`}; // backtick: its own English entry (the quote-key 'تأكيد' is the alarm «Acknowledge»)
 const QZ_CF = () => `<div class="dr-cf"><button type="button" class="btn pri dr-ok" disabled>${QZ_T.ok}</button></div>`;
 function qzSel(box, o){ $$('.qz-o', box).forEach(x => { const on = x === o; x.classList.toggle('sel', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); }); }
 function qzUnsel(box){ $$('.qz-o', box).forEach(x => { x.classList.remove('sel'); x.removeAttribute('aria-pressed'); }); }
@@ -265,7 +265,7 @@ PL.quiz = function(host, qs, opt){
       qzUnsel(box);
       $$('.qz-o', box).forEach(x => { x.disabled = true; const j = +x.dataset.i; if (j === it.q.a) x.classList.add('ok'); else if (j === i) x.classList.add('no'); });
       if (ok) box.classList.add('ok');
-      const f = $('.qz-f', box); f.className = 'qz-f ' + (ok ? 'ok' : 'no'); f.innerHTML = (ok ? 'صح. ' : 'مش دي. ') + (it.q.why || '');
+      const f = $('.qz-f', box); f.className = 'qz-f ' + (ok ? 'ok' : 'no'); f.innerHTML = (ok ? 'صحيح. ' : 'ليست هذه. ') + (it.q.why || '');
     });
     $('.qz-chk', host).hidden = true;
     finish();
@@ -273,7 +273,7 @@ PL.quiz = function(host, qs, opt){
   function finish(){
     const n = ans.filter(Boolean).length, tot = ans.length, ok = n / tot >= pass - 1e-9;
     const sum = $('.qz-sum', host); sum.hidden = false; sum.className = 'qz-sum ' + (ok ? 'ok' : 'no');
-    sum.innerHTML = `<b>نتيجتك: ${n} من ${tot}</b><span>${ok ? 'ممتاز، كده عدّيت ✓' : `محتاج ${Math.ceil(pass * tot - 1e-9)} صح على الأقل. راجع الشرح وجرّب تاني.`}</span><button type="button" class="btn" data-qz="again">${ok ? 'حلّ تاني' : 'جرّب تاني'}</button>`;
+    sum.innerHTML = `<b>نتيجتك: ${n} من ${tot}</b><span>${ok ? 'ممتاز، لقد نجحت ✓' : `تحتاج إلى ${Math.ceil(pass * tot - 1e-9)} إجابات صحيحة على الأقل. راجع الشرح وحاول مرة أخرى.`}</span><button type="button" class="btn" data-qz="again">${ok ? 'حلّ مرة أخرى' : 'حاول مرة أخرى'}</button>`;
     if (ok && opt.lesson) PL.mark(opt.lesson, opt.task || 'quiz');
     if (opt.onDone) opt.onDone(n, tot, ok);
   }
@@ -288,10 +288,10 @@ PL.drill = function(host, gen, opt){
   opt = opt || {};
   const need = opt.need || 5;
   let ok = 0, tries = 0, cur = null, answered = false;
-  host.innerHTML = `<div class="dr"><div class="dr-top"><span class="dr-sc" aria-live="polite"></span><span class="bar dr-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${need}" aria-label="الإجابات الصح"><i></i></span></div><div class="dr-card"></div><div class="dr-act"><button type="button" class="btn pri dr-next" hidden>السؤال اللي بعده ←</button></div><p class="chal dr-chal">${opt.goal || `جاوب <b>${need}</b> صح عشان التمرين يتعلّم عليه.`}</p></div>`;
+  host.innerHTML = `<div class="dr"><div class="dr-top"><span class="dr-sc" aria-live="polite"></span><span class="bar dr-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${need}" aria-label="الإجابات الصح"><i></i></span></div><div class="dr-card"></div><div class="dr-act"><button type="button" class="btn pri dr-next" hidden>السؤال التالي ←</button></div><p class="chal dr-chal">${opt.goal || `أجب <b>${need}</b> إجابات صحيحة ليُسجَّل التمرين مكتملًا.`}</p></div>`;
   const fin = chal(host, '.dr-chal', opt.lesson, opt.task);
   const card = $('.dr-card', host), nx = $('.dr-next', host);
-  function score(){ $('.dr-sc', host).innerHTML = `صح: <b>${ok}</b> من ${tries}`; const p = Math.min(1, ok / need) * 100; $('.dr-bar i', host).style.width = p + '%'; $('.dr-bar', host).setAttribute('aria-valuenow', Math.min(ok, need)); }
+  function score(){ $('.dr-sc', host).innerHTML = `الصحيح: <b>${ok}</b> من ${tries}`; const p = Math.min(1, ok / need) * 100; $('.dr-bar i', host).style.width = p + '%'; $('.dr-bar', host).setAttribute('aria-valuenow', Math.min(ok, need)); }
   function next(){
     cur = gen(); answered = false; nx.hidden = true;
     if (cur.input){
@@ -305,7 +305,7 @@ PL.drill = function(host, gen, opt){
   function result(good, chosen){
     answered = true; tries++; if (good) ok++;
     const f = $('.qz-f', card); f.className = 'qz-f ' + (good ? 'ok' : 'no');
-    f.innerHTML = (good ? 'صح. ' : 'مش مظبوطة. ') + (cur.ans != null && !good ? `الإجابة: <b class="mono">${cur.ans}</b>. ` : '') + (cur.why || '');
+    f.innerHTML = (good ? 'صحيح. ' : 'غير صحيحة. ') + (cur.ans != null && !good ? `الإجابة: <b class="mono">${cur.ans}</b>. ` : '') + (cur.why || '');
     if (!cur.input) $$('.qz-o', card).forEach(x => { x.disabled = true; if (+x.dataset.i === cur.a) x.classList.add('ok'); else if (x === chosen) x.classList.add('no'); });
     else $$('input,button', card).forEach(x => x.disabled = true);
     score(); nx.hidden = false;
@@ -313,7 +313,7 @@ PL.drill = function(host, gen, opt){
     nx.focus({preventScroll:true});
   }
   card.addEventListener('click', e => { if (answered) return; const b = pickConfirm(e, card); if (b) result(+b.dataset.i === cur.a, b); });
-  card.addEventListener('submit', e => { e.preventDefault(); if (answered) return; const v = num($('input', card).value); if (!isFinite(v)){ const f = $('.qz-f', card); f.className = 'qz-f no'; f.textContent = 'اكتب رقم.'; return; } result(!!cur.check(v)); });
+  card.addEventListener('submit', e => { e.preventDefault(); if (answered) return; const v = num($('input', card).value); if (!isFinite(v)){ const f = $('.qz-f', card); f.className = 'qz-f no'; f.textContent = 'اكتب رقمًا.'; return; } result(!!cur.check(v)); });
   nx.addEventListener('click', next);
   next();
   return {get cur(){ return cur; }, answer(v){ if (cur.input){ $('input', card).value = v; $('.dr-in button', card).click(); } else { const b = card.querySelector(`.qz-o[data-i="${v}"]`); if (b){ b.click(); $('.dr-ok', card).click(); } } }, next, get ok(){ return ok; }};
@@ -385,13 +385,13 @@ ENG.lint = function(prog){
   prog.forEach((rg, i) => rg.rows.forEach((row, r) => row.forEach((el, c) => {
     if (!el || el.t === 'W') return;
     const k = ENG.kind(el.a);
-    if (!el.a || !k){ msgs.push({rung:i, r, c, kind:'addr', text:`رانج ${i + 1}: العنصر ${el.t} محتاج عنوان صح (زي I0.0 أو Q0.0).`}); return; }
-    if (ENG.accepts[el.t].indexOf(k) < 0) msgs.push({rung:i, r, c, kind:'operand', text:`رانج ${i + 1}: العنوان ${el.a} مينفعش مع ${el.t}.`});
+    if (!el.a || !k){ msgs.push({rung:i, r, c, kind:'addr', text:`رانج ${i + 1}: العنصر ${el.t} يحتاج إلى عنوان صحيح (مثل I0.0 أو Q0.0).`}); return; }
+    if (ENG.accepts[el.t].indexOf(k) < 0) msgs.push({rung:i, r, c, kind:'operand', text:`رانج ${i + 1}: العنوان ${el.a} لا يصلح مع ${el.t}.`});
     if (el.t === 'OUT'){ (coils[el.a] = coils[el.a] || []).push(i + 1); }
-    if (el.r && ['I', 'Q', 'M'].indexOf(ENG.kind(el.r)) < 0) msgs.push({rung:i, r, c, kind:'operand', text:`رانج ${i + 1}: دخل الـ R بتاع ${el.t} لازم يبقى بت (زي I0.3).`});
-    if (el.t === 'SCL' && ENG.kind(el.o) !== 'MW') msgs.push({rung:i, r, c, kind:'operand', text:`رانج ${i + 1}: خرج الـ SCL لازم يبقى MW (زي MW10).`});
+    if (el.r && ['I', 'Q', 'M'].indexOf(ENG.kind(el.r)) < 0) msgs.push({rung:i, r, c, kind:'operand', text:`رانج ${i + 1}: دخل الـ R الخاص بـ ${el.t} يجب أن يكون بتًا (مثل I0.3).`});
+    if (el.t === 'SCL' && ENG.kind(el.o) !== 'MW') msgs.push({rung:i, r, c, kind:'operand', text:`رانج ${i + 1}: خرج الـ SCL يجب أن يكون MW (مثل MW10).`});
   })));
-  Object.keys(coils).forEach(a => { const rs = coils[a].filter((v, j, arr) => arr.indexOf(v) === j); if (coils[a].length > 1) msgs.push({kind:'double', addr:a, text:`الكويل ${a} مكتوب ${coils[a].length} مرات (رانج ${rs.join(' و ')}). آخر رانج بس هو اللي بيكسب: ده "Double coil".`}); });
+  Object.keys(coils).forEach(a => { const rs = coils[a].filter((v, j, arr) => arr.indexOf(v) === j); if (coils[a].length > 1) msgs.push({kind:'double', addr:a, text:`الملف ${a} مكتوب ${coils[a].length} مرات (رانج ${rs.join(' و ')}). الرانج الأخير فقط هو الذي يفوز: هذا «Double coil».`}); });
   return msgs;
 };
 
@@ -568,10 +568,10 @@ ENG.check = function(progDef, ex, opt){
     if (st.release) e.setIn(st.release, def[st.release] ? 1 : 0);
     if (st.watch) watches.push(st.watch);
     if (st.run != null && !run(st.run)) break;
-    if (st.until){ const n = Math.round((st.max || 30) / dt); let ok = false; for (let i = 0; i < n; i++){ if (st.until(ctx)){ ok = true; break; } if (!step1()) break; } if (fail) break; if (!ok){ fail = st.msg || 'الماكينة موصلتش للحالة المطلوبة في الوقت المتوقع.'; break; } }
+    if (st.until){ const n = Math.round((st.max || 30) / dt); let ok = false; for (let i = 0; i < n; i++){ if (st.until(ctx)){ ok = true; break; } if (!step1()) break; } if (fail) break; if (!ok){ fail = st.msg || 'لم تصل الماكينة إلى الحالة المطلوبة في الوقت المتوقع.'; break; } }
     if (st.exp){
       const bad = Object.keys(st.exp).filter(a => (e.get(a) ? 1 : 0) !== (st.exp[a] ? 1 : 0));
-      if (bad.length){ fail = (st.msg || 'النتيجة مش زي المطلوب.') + ' ' + bad.map(a => `المتوقع ${a} = ${st.exp[a] ? 1 : 0} لكن طلع ${e.get(a) ? 1 : 0}.`).join(' '); break; }
+      if (bad.length){ fail = (st.msg || 'النتيجة لا تطابق المطلوب.') + ' ' + bad.map(a => `المتوقع ${a} = ${st.exp[a] ? 1 : 0} لكن النتيجة ${e.get(a) ? 1 : 0}.`).join(' '); break; }
     }
     if (st.fn){ const m = st.fn(ctx); if (m){ fail = m; break; } }
   }
@@ -638,11 +638,11 @@ PLANTS.fr = {
   },
   svg(st, e){
     const f = on(e, 'Q0.0'), r = on(e, 'Q0.1'), bad = f && r;
-    return `<svg viewBox="0 0 360 150" role="img" aria-label="موتور أمام وخلف">${contactorSvg(60, 40, 'KM1 أمام', f, 'Q0.0')}${contactorSvg(130, 40, 'KM2 خلف', r, 'Q0.1')}${motorSvg(260, 62, 70, st.ang, f || r)}
+    return `<svg viewBox="0 0 360 150" role="img" aria-label="محرك أمام وخلف">${contactorSvg(60, 40, 'KM1 أمام', f, 'Q0.0')}${contactorSvg(130, 40, 'KM2 خلف', r, 'Q0.1')}${motorSvg(260, 62, 70, st.ang, f || r)}
       ${Math.abs(st.dir) > 0.05 ? `<path d="${st.dir > 0 ? 'M228 12a40 40 0 0 1 64 0' : 'M292 12a40 40 0 0 0 -64 0'}" fill="none" stroke="#2fd35a" stroke-width="3" marker-end="url(#pa)"/>` : ''}
       <defs><marker id="pa" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#2fd35a"/></marker></defs>
-      ${svgT(260, 142, st.dir > 0.05 ? 'أمام ⟳' : st.dir < -0.05 ? 'خلف ⟲' : 'واقف', 'pt pc ar', 'middle')}
-      ${bad || st.everShort ? `<g transform="translate(95 120)"><rect x="-90" y="-14" width="180" height="26" rx="6" fill="#c0352b"/>${svgT(0, 4, bad ? '⚡ قصر بين الفازات! الاتنين شغالين' : '⚡ حصل قصر قبل كده', 'pt pw ar', 'middle')}</g>` : ''}</svg>`;
+      ${svgT(260, 142, st.dir > 0.05 ? 'أمام ⟳' : st.dir < -0.05 ? 'خلف ⟲' : 'متوقف', 'pt pc ar', 'middle')}
+      ${bad || st.everShort ? `<g transform="translate(95 120)"><rect x="-90" y="-14" width="180" height="26" rx="6" fill="#c0352b"/>${svgT(0, 4, bad ? '⚡ قصر بين الفازات! الاثنان يعملان' : '⚡ حدث قصر سابقًا', 'pt pw ar', 'middle')}</g>` : ''}</svg>`;
   }
 };
 
@@ -658,10 +658,10 @@ PLANTS.sd = {
     st.ang = (st.ang + st.spd * dt * 720) % 360;
   },
   svg(st, e){
-    const lab = {off:'واقف', star:'ستار Y: تيار البدء قليل', delta:'دلتا Δ: سرعة كاملة', open:'KM1 بس: الموتور مش متوصّل', short:'⚡ قصر! ستار ودلتا مع بعض'}[st.mode];
+    const lab = {off:'متوقف', star:'ستار Y: تيار البدء منخفض', delta:'دلتا Δ: سرعة كاملة', open:'KM1 فقط: المحرك غير موصّل', short:'⚡ قصر! ستار ودلتا معًا'}[st.mode];
     return `<svg viewBox="0 0 360 150" role="img" aria-label="ستار دلتا">${contactorSvg(40, 36, 'KM1', on(e, 'Q0.0'), 'Q0.0')}${contactorSvg(100, 36, 'KM2 Δ', on(e, 'Q0.1'), 'Q0.1')}${contactorSvg(160, 36, 'KM3 Y', on(e, 'Q0.2'), 'Q0.2')}${motorSvg(275, 58, 70, st.ang, st.spd > 0.05)}
       <rect x="20" y="96" width="180" height="10" rx="5" fill="#4a5257"/><rect x="20" y="96" width="${(180 * st.spd).toFixed(1)}" height="10" rx="5" fill="#2fd35a"/>${svgT(110, 124, 'السرعة ' + Math.round(st.spd * 100) + '%', 'pt pc ar', 'middle')}
-      <g transform="translate(180 142)">${st.short || st.mode === 'short' ? `<rect x="-170" y="-13" width="340" height="20" rx="5" fill="#c0352b"/>${svgT(0, 2, '⚡ حصل قصر: KM2 و KM3 اشتغلوا مع بعض', 'pt pw ar', 'middle')}` : svgT(0, 2, lab, 'pt pc ar', 'middle')}</g></svg>`;
+      <g transform="translate(180 142)">${st.short || st.mode === 'short' ? `<rect x="-170" y="-13" width="340" height="20" rx="5" fill="#c0352b"/>${svgT(0, 2, '⚡ حدث قصر: عمل KM2 وKM3 معًا', 'pt pw ar', 'middle')}` : svgT(0, 2, lab, 'pt pc ar', 'middle')}</g></svg>`;
   }
 };
 
@@ -700,8 +700,8 @@ PLANTS.pack = {
     for (let i = 0; i < Math.min(full, 8); i++) s += RA.box(304 + (i % 4) * 12, 132 - Math.floor(i / 4) * 12, 10, 10, i >= 6 ? '#c0352b' : null);
     s += svgT(326, 124 - (full > 4 ? 14 : 0), full + '/6', 'pt pc', 'middle');
     s += motorSvg(28, 122, 30, st.belt * 18, on(e, 'Q0.0')) + svgT(60, 126, 'M Q0.0', 'pt pm');
-    s += lampSvg(24, 24, 11, LCOL.green, on(e, 'Q0.1')) + svgT(42, 22, 'الكرتونة كملت', 'pt pc ar') + svgT(42, 34, 'Q0.1', 'pt pm');
-    if (st.over) s += `<rect x="96" y="116" width="200" height="22" rx="5" fill="#c0352b"/>${svgT(196, 131, 'الكرتونة اتملت زيادة عن 6!', 'pt pw ar', 'middle')}`;
+    s += lampSvg(24, 24, 11, LCOL.green, on(e, 'Q0.1')) + svgT(42, 22, 'اكتملت الكرتونة', 'pt pc ar') + svgT(42, 34, 'Q0.1', 'pt pm');
+    if (st.over) s += `<rect x="96" y="116" width="200" height="22" rx="5" fill="#c0352b"/>${svgT(196, 131, 'امتلأت الكرتونة بأكثر من 6!', 'pt pw ar', 'middle')}`;
     return s + '</svg>';
   }
 };
@@ -718,9 +718,9 @@ PLANTS.parking = {
   svg(st, e){
     let s = `<svg viewBox="0 0 360 150" role="img" aria-label="جراج"><rect x="10" y="20" width="230" height="120" rx="8" fill="#4a4f53"/><rect x="10" y="20" width="230" height="120" rx="8" fill="url(#ra-vent)" opacity=".25"/>`;
     for (let k = 0; k < 6; k++){ const x = 22 + (k % 3) * 72, y = 30 + Math.floor(k / 3) * 56; s += `<rect x="${x}" y="${y}" width="62" height="46" rx="4" fill="none" stroke="#e8e2c8" stroke-dasharray="5 4"/>`; if (k < st.cars) s += RA.car(x + 31, y + 26, ['#c0352b', '#2f6fb3', '#e3a43a', '#5cc06f', '#9b59b6', '#ddd'][k], .9); }
-    s += svgT(125, 14, 'عربيات جوه: ' + st.cars + (st.cars > 5 ? ' (زحمة!)' : ''), 'pt pc ar', 'middle');
+    s += svgT(125, 14, 'سيارات بالداخل: ' + st.cars + (st.cars > 5 ? ' (ازدحام!)' : ''), 'pt pc ar', 'middle');
     s += `<rect x="262" y="20" width="84" height="120" rx="10" fill="url(#ra-dark)" filter="url(#ra-sh)"/>${lampSvg(304, 54, 18, LCOL.green, on(e, 'Q0.0'))}${lampSvg(304, 104, 18, LCOL.red, on(e, 'Q0.1'))}`;
-    s += svgT(304, 82, 'فاضي Q0.0', 'pt pw ar', 'middle') + svgT(304, 134, 'كامل Q0.1', 'pt pw ar', 'middle');
+    s += svgT(304, 82, 'توجد أماكن Q0.0', 'pt pw ar', 'middle') + svgT(304, 134, 'ممتلئ Q0.1', 'pt pw ar', 'middle');
     return s + '</svg>';
   }
 };
@@ -739,18 +739,18 @@ PLANTS.tank = {
     st.mA = mA;
     e.setWord('IW64', st.broken ? -4864 : ENG.mA2raw(mA));
   },
-  ctl:[{id:'use', label:st => st.use ? 'اقفل الاستهلاك' : 'افتح الاستهلاك', act:st => { st.use = !st.use; }},
-       {id:'brk', label:st => st.broken ? 'رجّع سلك الترانسميتر' : 'اقطع سلك الترانسميتر', act:st => { st.broken = !st.broken; }}],
+  ctl:[{id:'use', label:st => st.use ? 'أوقف الاستهلاك' : 'شغّل الاستهلاك', act:st => { st.use = !st.use; }},
+       {id:'brk', label:st => st.broken ? 'أعِد سلك الترانسميتر' : 'اقطع سلك الترانسميتر', act:st => { st.broken = !st.broken; }}],
   svg(st, e){
     const h = 100, top = 22, y = top + h * (1 - st.level / 100), lv = st.level;
-    let s = `<svg viewBox="0 0 360 172" role="img" aria-label="تانك بمستوى أنالوج">`;
+    let s = `<svg viewBox="0 0 360 172" role="img" aria-label="خزان بمستوى أنالوج">`;
     s += RA.tank(120, top, 110, h);
     s += `<path d="M122 ${y.toFixed(1)} q14 ${(3 * Math.sin(st.wave)).toFixed(1)} 27 0 t27 0 t27 0 t27 0 V${top + h - 2} H122Z" fill="#3a8fd8" opacity=".85"/>`;
     [[90, 'H'], [80, 'stop'], [20, 'start'], [10, 'L']].forEach(([p, t]) => { const yy = top + h * (1 - p / 100); s += `<path d="M232 ${yy}h10" stroke="#8a949b"/>${svgT(244, yy + 4, p + '%', 'pt pm')}`; });
     s += `<rect x="96" y="${top + 6}" width="18" height="34" rx="3" fill="url(#ra-dark)" filter="url(#ra-sh)"/>${svgT(105, top + 24, 'LT', 'pt pw', 'middle')}<path d="M114 ${top + 20}h6" stroke="#2a3035" stroke-width="3"/>`;
     /* pump & pipes */
-    s += `${RA.pipe(`M40 140h50V${top + 8}h30`, on(e, 'Q0.0') ? '#3a8fd8' : null)}${motorSvg(40, 132, 28, (st.wave * 120) % 360, on(e, 'Q0.0'))}${svgT(40, 158, 'طلمبة Q0.0', 'pt pc ar', 'middle')}`;
-    s += `${RA.pipe(`M175 ${top + h}v18h120`, st.use ? '#3a8fd8' : null)}${st.use ? `<path d="M295 ${top + h + 18}v14" stroke="#3a8fd8" stroke-width="4" stroke-dasharray="3 3"/>` : ''}${svgT(296, top + h + 46, st.use ? 'استهلاك شغال' : 'الاستهلاك مقفول', 'pt pc ar', 'middle')}`;
+    s += `${RA.pipe(`M40 140h50V${top + 8}h30`, on(e, 'Q0.0') ? '#3a8fd8' : null)}${motorSvg(40, 132, 28, (st.wave * 120) % 360, on(e, 'Q0.0'))}${svgT(40, 158, 'مضخة Q0.0', 'pt pc ar', 'middle')}`;
+    s += `${RA.pipe(`M175 ${top + h}v18h120`, st.use ? '#3a8fd8' : null)}${st.use ? `<path d="M295 ${top + h + 18}v14" stroke="#3a8fd8" stroke-width="4" stroke-dasharray="3 3"/>` : ''}${svgT(296, top + h + 46, st.use ? 'الاستهلاك يعمل' : 'الاستهلاك متوقف', 'pt pc ar', 'middle')}`;
     s += `<g transform="translate(300 30)">${lampSvg(0, 0, 10, LCOL.red, on(e, 'Q0.1'))}${svgT(16, 0, 'High', 'pt pc')}${svgT(16, 11, 'Q0.1', 'pt pm')}</g><g transform="translate(300 66)">${lampSvg(0, 0, 10, LCOL.amber, on(e, 'Q0.2'))}${svgT(16, 0, 'Low', 'pt pc')}${svgT(16, 11, 'Q0.2', 'pt pm')}</g>`;
     s += `<rect x="126" y="${top + h + 20}" width="98" height="20" rx="3" fill="url(#ra-dark)"/><rect x="128" y="${top + h + 22}" width="94" height="16" rx="2" fill="#c7d3b4"/>${svgT(175, top + h + 34, st.broken ? '0.0 mA ⚠' : PL.fmt(st.mA || 4, 1) + ' mA · ' + Math.round(lv) + '%', 'pt pl', 'middle')}`;
     return s + '</svg>';
@@ -773,7 +773,7 @@ PLANTS.traffic = {
     s += `<rect x="225" y="40" width="8" height="70" fill="url(#ra-steelV)"/><rect x="210" y="4" width="38" height="96" rx="8" fill="url(#ra-dark)" filter="url(#ra-sh)"/>${[22, 52, 82].map(yy => `<path d="M215 ${yy - 13}h28l-4 -4h-20z" fill="#111"/>`).join('')}${lampSvg(229, 22, 11, LCOL.red, on(e, 'Q0.0'))}${lampSvg(229, 52, 11, LCOL.yellow, on(e, 'Q0.1'))}${lampSvg(229, 82, 11, LCOL.green, on(e, 'Q0.2'))}`;
     s += RA.car(st.carX, 118, '#2f6fb3');
     s += svgT(110, 28, 'R Q0.0 · Y Q0.1 · G Q0.2', 'pt pm', 'middle');
-    if (st.cur === 'X') s += `<rect x="20" y="40" width="170" height="22" rx="5" fill="#c0352b"/>${svgT(105, 55, 'أكتر من لمبة منوّرة!', 'pt pw ar', 'middle')}`;
+    if (st.cur === 'X') s += `<rect x="20" y="40" width="170" height="22" rx="5" fill="#c0352b"/>${svgT(105, 55, 'أكثر من مصباح مضيء!', 'pt pw ar', 'middle')}`;
     return s + '</svg>';
   }
 };
@@ -794,14 +794,14 @@ PLANTS.mixer = {
   },
   svg(st, e){
     const top = 24, h = 100, y = top + h * (1 - st.level / 100);
-    let s = `<svg viewBox="0 0 360 160" role="img" aria-label="تانك خلط">${RA.tank(120, top, 110, h)}<rect x="122" y="${y.toFixed(1)}" width="106" height="${Math.max(0, top + h - y - 1).toFixed(1)}" fill="#8e5bd8" opacity=".75"/>`;
+    let s = `<svg viewBox="0 0 360 160" role="img" aria-label="خزان خلط">${RA.tank(120, top, 110, h)}<rect x="122" y="${y.toFixed(1)}" width="106" height="${Math.max(0, top + h - y - 1).toFixed(1)}" fill="#8e5bd8" opacity=".75"/>`;
     s += `<path d="M175 6V${top + 70}" stroke="url(#ra-steelV)" stroke-width="5"/><g transform="translate(175 ${top + 74}) scale(${Math.cos(st.ang * Math.PI / 180).toFixed(2)} 1)"><path d="M-30 -4h60v8h-60z" fill="#8a949b"/></g><rect x="160" y="0" width="30" height="14" rx="3" fill="#2f6fb3" filter="url(#ra-sh)"/><rect x="160" y="0" width="30" height="14" rx="3" fill="url(#ra-dome)" opacity=".6"/>${svgT(175, 11, 'M', 'pt pw', 'middle')}`;
     [[90, 'I0.3 High'], [10, 'I0.2 Low']].forEach(([p, t], k) => { const yy = top + h * (1 - p / 100), lit = k ? st.level > 10 : st.level >= 90; s += `<rect x="228" y="${yy - 5}" width="16" height="10" rx="2" fill="${lit ? '#2fd35a' : '#4a5257'}"/>${svgT(250, yy + 4, t, 'pt pm')}`; });
-    s += `${RA.pipe(`M20 ${top + 6}h100`, on(e, 'Q0.0') ? '#8e5bd8' : null)}${RA.valve(70, top + 6, on(e, 'Q0.0'))}${svgT(40, top + 26, 'ملو Q0.0', 'pt pc ar', 'middle')}`;
+    s += `${RA.pipe(`M20 ${top + 6}h100`, on(e, 'Q0.0') ? '#8e5bd8' : null)}${RA.valve(70, top + 6, on(e, 'Q0.0'))}${svgT(40, top + 26, 'ملء Q0.0', 'pt pc ar', 'middle')}`;
     s += `${RA.pipe(`M175 ${top + h}v14h120`, on(e, 'Q0.2') ? '#8e5bd8' : null)}${RA.valve(250, top + h + 14, on(e, 'Q0.2'))}${svgT(250, top + h + 34, 'تفريغ Q0.2', 'pt pc ar', 'middle')}`;
-    s += `<g transform="translate(46 100)">${lampSvg(0, 0, 11, LCOL.green, on(e, 'Q0.3'))}${svgT(0, 26, 'خلص Q0.3', 'pt pc ar', 'middle')}</g>`;
+    s += `<g transform="translate(46 100)">${lampSvg(0, 0, 11, LCOL.green, on(e, 'Q0.3'))}${svgT(0, 26, 'انتهت Q0.3', 'pt pc ar', 'middle')}</g>`;
     s += svgT(175, top + h - 8, Math.round(st.level) + '%', 'pt pc', 'middle');
-    if (st.over) s += `<rect x="100" y="134" width="160" height="20" rx="5" fill="#c0352b"/>${svgT(180, 148, 'التانك فاض!', 'pt pw ar', 'middle')}`;
+    if (st.over) s += `<rect x="100" y="134" width="160" height="20" rx="5" fill="#c0352b"/>${svgT(180, 148, 'فاض الخزان!', 'pt pw ar', 'middle')}`;
     return s + '</svg>';
   }
 };
@@ -828,15 +828,15 @@ PLANTS.sort = {
   svg(st, e){
     let s = `<svg viewBox="0 0 360 160" role="img" aria-label="سير فرز">`;
     s += RA.belt(0, 96, 350, st.belt);
-    s += `<rect x="226" y="122" width="52" height="34" fill="url(#ra-grey)" stroke="#55595d" filter="url(#ra-sh)"/>${svgT(252, 140, 'الطوال', 'pt pw ar', 'middle')}`;
+    s += `<rect x="226" y="122" width="52" height="34" fill="url(#ra-grey)" stroke="#55595d" filter="url(#ra-sh)"/>${svgT(252, 140, 'الطويلة', 'pt pw ar', 'middle')}`;
     st.boxes.forEach(b => { const h = b.tall ? 40 : 20, x = b.x, yb = 96 + (b.off ? Math.min(40, b.off) : 0); s += RA.box(x - 11, yb - h, 22, h, b.tall ? '#2f6fb3' : null, b.off ? Math.max(0, 1 - b.off / 40).toFixed(2) : null); });
     const h1 = !!e.phys['I0.1'], h2 = !!e.phys['I0.2'];
     s += RA.eye(99, 39, 12, 18, h1) + `<path d="M110 50H140" stroke="${h1 ? '#ff4a3d' : '#ff8a80'}" stroke-width="2" stroke-dasharray="4 3" opacity="${h1 ? 1 : .5}"/>${svgT(120, 34, 'I0.1 طول', 'pt pm ar', 'middle')}`;
     s += RA.eye(295, 71, 12, 18, h2) + `<path d="M296 80H262" stroke="${h2 ? '#ff4a3d' : '#ff8a80'}" stroke-width="2" stroke-dasharray="4 3" opacity="${h2 ? 1 : .5}"/>${svgT(301, 66, 'I0.2', 'pt pm', 'middle')}`;
     const py = 60 + st.push * 26;
-    s += `<rect x="234" y="24" width="32" height="18" rx="3" fill="url(#ra-alu)" stroke="#7d8388" filter="url(#ra-sh)"/><rect x="247" y="42" width="6" height="${(py - 40).toFixed(1)}" fill="url(#ra-steelV)"/><rect x="236" y="${py.toFixed(1)}" width="28" height="6" fill="${on(e, 'Q0.1') ? '#e3a43a' : '#8a949b'}"/>${svgT(250, 20, 'دفّاع Q0.1', 'pt pm ar', 'middle')}`;
+    s += `<rect x="234" y="24" width="32" height="18" rx="3" fill="url(#ra-alu)" stroke="#7d8388" filter="url(#ra-sh)"/><rect x="247" y="42" width="6" height="${(py - 40).toFixed(1)}" fill="url(#ra-steelV)"/><rect x="236" y="${py.toFixed(1)}" width="28" height="6" fill="${on(e, 'Q0.1') ? '#e3a43a' : '#8a949b'}"/>${svgT(250, 20, 'دافع Q0.1', 'pt pm ar', 'middle')}`;
     const okc = st.res.filter(r => r.tall === r.pushed).length, bad = st.res.length - okc;
-    s += svgT(10, 146, `صح ${okc} · غلط ${bad}`, 'pt pc ar') + motorSvg(330, 134, 26, st.belt * 18, on(e, 'Q0.0'));
+    s += svgT(10, 146, `صحيح ${okc} · خطأ ${bad}`, 'pt pc ar') + motorSvg(330, 134, 26, st.belt * 18, on(e, 'Q0.0'));
     return s + '</svg>';
   }
 };
@@ -858,18 +858,18 @@ PLANTS.garage = {
     e.setIn('I0.4', st.pos <= 0.5 ? 1 : 0);
     e.setIn('I0.5', st.obst ? 1 : 0);
   },
-  ctl:[{id:'obst', label:st => st.obst ? 'شيل العربية من تحت الباب' : 'حط عربية تحت الباب', act:st => { st.obst = !st.obst; }}],
+  ctl:[{id:'obst', label:st => st.obst ? 'أبعد السيارة من تحت الباب' : 'ضع سيارة تحت الباب', act:st => { st.obst = !st.obst; }}],
   svg(st, e){
     const open = st.pos / 100, dh = 96 * (1 - open);
     let s = `<svg viewBox="0 0 360 160" role="img" aria-label="باب جراج"><rect x="60" y="14" width="200" height="120" fill="#b9a58a"/><rect x="60" y="14" width="200" height="120" fill="url(#ra-vent)" opacity=".18"/><rect x="68" y="22" width="184" height="112" fill="url(#ra-grey)"/><rect x="72" y="26" width="176" height="108" fill="#1b1e20"/>`;
     if (st.obst) s += RA.car(160, 118, '#c0352b', 1.6);
     for (let k = 0; k * 12 < dh; k++){ const y = 26 + dh - (k + 1) * 12; if (y < 26 - 1) break; s += `<rect x="72" y="${Math.max(26, y).toFixed(1)}" width="176" height="${(Math.min(12, y + 12 - 26)).toFixed(1)}" fill="url(#ra-steelH)" stroke="#6b757c" stroke-width=".6"/>`; }
-    s += `<path d="M72 128h-8M248 128h8" stroke="${st.obst ? '#ff4a3d' : '#ff8a80'}" stroke-width="3"/><path d="M76 128H244" stroke="#ff4a3d" stroke-width="1.5" stroke-dasharray="4 4" opacity="${st.obst ? 1 : .35}"/>${svgT(160, 150, 'عين I0.5', 'pt pm ar', 'middle')}`;
-    s += `<rect x="264" y="20" width="8" height="10" fill="${st.pos >= 99.5 ? '#2fd35a' : '#4a5257'}"/>${svgT(276, 29, 'I0.3 فوق', 'pt pm ar')}<rect x="264" y="122" width="8" height="10" fill="${st.pos <= 0.5 ? '#2fd35a' : '#4a5257'}"/>${svgT(276, 131, 'I0.4 تحت', 'pt pm ar')}`;
+    s += `<path d="M72 128h-8M248 128h8" stroke="${st.obst ? '#ff4a3d' : '#ff8a80'}" stroke-width="3"/><path d="M76 128H244" stroke="#ff4a3d" stroke-width="1.5" stroke-dasharray="4 4" opacity="${st.obst ? 1 : .35}"/>${svgT(160, 150, 'حساس I0.5', 'pt pm ar', 'middle')}`;
+    s += `<rect x="264" y="20" width="8" height="10" fill="${st.pos >= 99.5 ? '#2fd35a' : '#4a5257'}"/>${svgT(276, 29, 'I0.3 علوي', 'pt pm ar')}<rect x="264" y="122" width="8" height="10" fill="${st.pos <= 0.5 ? '#2fd35a' : '#4a5257'}"/>${svgT(276, 131, 'I0.4 سفلي', 'pt pm ar')}`;
     const mv = on(e, 'Q0.0') || on(e, 'Q0.1');
     s += lampSvg(30, 30, 10, LCOL.amber, on(e, 'Q0.2') && (st.flash < 0.6 || !mv)) + svgT(30, 54, 'Q0.2', 'pt pm', 'middle');
     s += svgT(30, 84, on(e, 'Q0.0') ? '▲ Q0.0' : on(e, 'Q0.1') ? '▼ Q0.1' : '■', 'pt pc', 'middle') + svgT(310, 84, Math.round(st.pos) + '%', 'pt pc', 'middle');
-    if (st.crush || st.short) s += `<rect x="70" y="56" width="180" height="24" rx="5" fill="#c0352b"/>${svgT(160, 72, st.short ? '⚡ فوق وتحت مع بعض!' : 'الباب نزل على العربية!', 'pt pw ar', 'middle')}`;
+    if (st.crush || st.short) s += `<rect x="70" y="56" width="180" height="24" rx="5" fill="#c0352b"/>${svgT(160, 72, st.short ? '⚡ صعود ونزول معًا!' : 'نزل الباب على السيارة!', 'pt pw ar', 'middle')}`;
     return s + '</svg>';
   }
 };
@@ -878,11 +878,11 @@ PLANTS.garage = {
    opt: {lesson, exercises:[{key, title, task, io:{inputs:[{a,label,kind}], outputs:[{a,label,kind,color}]},
          plant, plantOpt, start, sol, hint, tests | cases:[{name, steps}]}], force:bool, cols} */
 const CW = 60, RH = 64, PADL = 12, PADR = 12;
-const EL_LABEL = {W:'سلك', NO:'كونتاكت NO', NC:'كونتاكت NC', P:'Edge ↑ (P)', N:'Edge ↓ (N)', CMP:'مقارنة', OUT:'كويل', S:'Set', R:'Reset', TON:'TON', TOF:'TOF', TP:'TP', CTU:'CTU', CTD:'CTD', SCL:'Scale'};
+const EL_LABEL = {W:'سلك', NO:'تلامس NO', NC:'تلامس NC', P:'Edge ↑ (P)', N:'Edge ↓ (N)', CMP:'مقارنة', OUT:'ملف', S:'Set', R:'Reset', TON:'TON', TOF:'TOF', TP:'TP', CTU:'CTU', CTD:'CTD', SCL:'Scale'};
 const EL_HELP = {
-  NO:'بيوصّل لما البت = 1', NC:'بيوصّل لما البت = 0', P:'بيوصّل سكان واحد بس لما البت يتغيّر من 0 لـ 1', N:'بيوصّل سكان واحد لما البت يتغيّر من 1 لـ 0',
-  CMP:'بيوصّل لو المقارنة صح', OUT:'البت = الكهربا الداخلة عليه', S:'لو جاله كهربا البت يبقى 1 ويفضل 1', R:'لو جاله كهربا البت يبقى 0 (وعلى T أو C بيصفّرهم)',
-  TON:'تأخير في التشغيل', TOF:'تأخير في الفصل', TP:'نبضة بطول ثابت', CTU:'عدّاد طالع', CTD:'عدّاد نازل', SCL:'يحوّل الـ raw لقيمة حقيقية', W:'خط بيوصّل على طول'};
+  NO:'يوصّل عندما يكون البت = 1', NC:'يوصّل عندما يكون البت = 0', P:'يوصّل سكانًا واحدًا فقط عندما يتغيّر البت من 0 إلى 1', N:'يوصّل سكانًا واحدًا عندما يتغيّر البت من 1 إلى 0',
+  CMP:'يوصّل إذا تحققت المقارنة', OUT:'البت = الكهرباء الداخلة إليه', S:'إذا وصلته الكهرباء يصبح البت 1 ويبقى 1', R:'إذا وصلته الكهرباء يصبح البت 0 (وعلى T أو C يصفّرهما)',
+  TON:'تأخير في التشغيل', TOF:'تأخير في الفصل', TP:'نبضة بطول ثابت', CTU:'عدّاد تصاعدي', CTD:'عدّاد تنازلي', SCL:'يحوّل الـ raw إلى قيمة حقيقية', W:'خط يوصّل دائمًا'};
 
 /* small icons for the element palette */
 function elIcon(t){
@@ -955,7 +955,7 @@ function drawRung(rg, i, K){
       const x = PADL + c * CW, el = rg.rows[r][c], isSel = K.sel && K.sel.i === i && K.sel.r === r && K.sel.c === c;
       s += cellSvg(K, el, x, y, r, c, rg, i, pw);
       if (!el && !isSel && K.hit) s += `<rect x="${x + 6}" y="${y + 20}" width="${CW - 12}" height="28" rx="4" class="lph"/>`;
-      if (K.hit) s += `<rect x="${x + 1}" y="${y + 1}" width="${CW - 2}" height="${RH - 2}" rx="6" class="lhit${isSel ? ' sel' : ''}" data-i="${i}" data-r="${r}" data-c="${c}" tabindex="0" role="button" aria-label="رانج ${i + 1}، صف ${r + 1}، خانة ${c + 1}: ${el ? esc(EL_LABEL[el.t] + ' ' + (el.a || '')) : 'فاضية'}"/>`;
+      if (K.hit) s += `<rect x="${x + 1}" y="${y + 1}" width="${CW - 2}" height="${RH - 2}" rx="6" class="lhit${isSel ? ' sel' : ''}" data-i="${i}" data-r="${r}" data-c="${c}" tabindex="0" role="button" aria-label="رانج ${i + 1}، صف ${r + 1}، خانة ${c + 1}: ${el ? esc(EL_LABEL[el.t] + ' ' + (el.a || '')) : 'فارغة'}"/>`;
     }
     if (rg.rows[r][K.cols - 1] || r === 0) { const y2 = y + 34; s += `<path d="M${PADL + K.cols * CW - 1} ${y2}H${W - PADR + 1}" class="lw"/>`; }
   }
@@ -978,11 +978,11 @@ const plainSim = PL.plainSim = function(host, opt){
   host.classList.add('ls');
   host.innerHTML = `${exs.length > 1 ? '<div class="tabs ls-tabs" role="group" aria-label="التمارين"></div>' : ''}
     <div class="chal ls-task"></div>
-    <div class="ls-view"><div class="wd-art ls-plant"></div><div class="ls-pctl"></div><div class="ls-io" role="group" aria-label="المداخل: زراير وسويتشات"></div><div class="ls-leds" aria-label="لمبات الـ PLC"></div></div>
+    <div class="ls-view"><div class="wd-art ls-plant"></div><div class="ls-pctl"></div><div class="ls-io" role="group" aria-label="المداخل: أزرار ومفاتيح"></div><div class="ls-leds" aria-label="مصابيح الـ PLC"></div></div>
     <div class="ls-bar"><button type="button" class="btn ls-run" aria-pressed="false">▶ RUN</button><button type="button" class="btn pri ls-chk">✓ اختبر البرنامج</button>${opt.force ? '<button type="button" class="btn ls-frc" aria-pressed="false">Force</button>' : ''}</div>
     <div class="ls-res" aria-live="polite" hidden></div>
     <div class="ls-lad" dir="ltr"></div>
-    <div class="ls-tools"><button type="button" class="btn" data-t="add">+ رانج جديد</button><button type="button" class="btn" data-t="hint">تلميح</button><button type="button" class="btn" data-t="reset">ابدأ من الأول</button><button type="button" class="btn" data-t="sol" hidden>اعرض الحل</button><button type="button" class="btn" data-t="undo" hidden>رجّع برنامجي</button></div>
+    <div class="ls-tools"><button type="button" class="btn" data-t="add">+ رانج جديد</button><button type="button" class="btn" data-t="hint">تلميح</button><button type="button" class="btn" data-t="reset">ابدأ من جديد</button><button type="button" class="btn" data-t="sol" hidden>اعرض الحل</button><button type="button" class="btn" data-t="undo" hidden>استرجع برنامجي</button></div>
     <div class="ls-hint box" hidden></div>
     <div class="ls-lint" aria-live="polite"></div>`;
   const tabs = $('.ls-tabs', host), task = $('.ls-task', host), plantBox = $('.ls-plant', host), pctl = $('.ls-pctl', host), ioBox = $('.ls-io', host), leds = $('.ls-leds', host);
@@ -1023,7 +1023,7 @@ const plainSim = PL.plainSim = function(host, opt){
     Object.keys(forces).forEach(a => delete forces[a]);
     plantSt = P().create(ex.plantOpt);
     freshEngine();
-    task.innerHTML = ex.task + `<p class="bx-how"><b>إزاي تحلّه:</b> ابني البرنامج تحت ← ${iso('▶ RUN')} ← جرّب بالزراير ← «اختبر البرنامج».</p>`; task.classList.toggle('ok', PL.has(opt.lesson, ex.key));
+    task.innerHTML = ex.task + `<p class="bx-how"><b>طريقة الحل:</b> ابنِ البرنامج في الأسفل ← ${iso('▶ RUN')} ← جرّب بالأزرار ← «اختبر البرنامج».</p>`; task.classList.toggle('ok', PL.has(opt.lesson, ex.key));
     hintBox.hidden = true; hintBox.innerHTML = ex.hint || '';
     $('[data-t=hint]', host).hidden = !ex.hint;
     $('[data-t=sol]', host).hidden = !(ex.sol && PL.has(opt.lesson, ex.key));
@@ -1045,7 +1045,7 @@ const plainSim = PL.plainSim = function(host, opt){
     ioBox.innerHTML = ins.map(i => {
       const k = i.kind, isPb = k === 'pb' || k === 'pbnc';
       const col = i.color || (k === 'pbnc' ? 'red' : k === 'pb' ? 'green' : 'gray');
-      return `<button type="button" class="ib ib-${k}" data-a="${i.a}" style="--cap:${PL.LCOL[col] || '#8a949b'}" aria-pressed="false" aria-label="${esc((i.label || '') + ' ' + i.a)}${isPb ? ' (اضغط وسيب)' : ''}"><span class="cap" aria-hidden="true"></span><span class="l">${esc(i.label || i.a)}</span><span class="a">${i.a}${k === 'pbnc' ? ' · NC' : k === 'ncsw' ? ' · NC' : ''}</span></button>`;
+      return `<button type="button" class="ib ib-${k}" data-a="${i.a}" style="--cap:${PL.LCOL[col] || '#8a949b'}" aria-pressed="false" aria-label="${esc((i.label || '') + ' ' + i.a)}${isPb ? ' (اضغط واترك)' : ''}"><span class="cap" aria-hidden="true"></span><span class="l">${esc(i.label || i.a)}</span><span class="a">${i.a}${k === 'pbnc' ? ' · NC' : k === 'ncsw' ? ' · NC' : ''}</span></button>`;
     }).join('');
     ioBox.hidden = !ins.length;
     updIO();
@@ -1055,7 +1055,7 @@ const plainSim = PL.plainSim = function(host, opt){
       const i = ex.io.inputs.find(x => x.a === b.dataset.a), k = i.kind;
       const act = k === 'pb' || k === 'pbnc' ? !!pressed[i.a] : k === 'ncsw' ? i.state === 0 : i.state === 1;
       b.classList.toggle('on', act); b.setAttribute('aria-pressed', act);
-      const st = $('.a', b); if (k === 'ncsw') st.textContent = i.a + (act ? ' · اتفصل' : ' · NC');
+      const st = $('.a', b); if (k === 'ncsw') st.textContent = i.a + (act ? ' · مفصول' : ' · NC');
     });
   }
   function setPress(a, v){
@@ -1103,9 +1103,9 @@ const plainSim = PL.plainSim = function(host, opt){
     if (cur == null) forces[a] = 1; else if (cur === 1) forces[a] = 0; else delete forces[a];
     e.force = Object.assign({}, forces);
     if (!running && ENG.kind(a) === 'Q'){ /* in STOP the outputs stay off: a real PLC only forces in RUN */ }
-    renderLeds(); status(`Force: ${a} ${a in forces ? '= ' + forces[a] : 'اتشال'}. ${running ? '' : 'شغّل RUN عشان الفورس يبان على الخرج.'}`);
+    renderLeds(); status(`Force: ${a} ${a in forces ? '= ' + forces[a] : 'أُزيل'}. ${running ? '' : 'شغّل RUN ليظهر الفورس على الخرج.'}`);
   });
-  if (frcB) frcB.addEventListener('click', () => { forceMode = !forceMode; frcB.setAttribute('aria-pressed', forceMode); renderLeds(); status(forceMode ? 'وضع الفورس: دوس على لمبة أي I أو Q تحت عشان تعمله Force 1، دوسة كمان Force 0، والتالتة تشيله.' : 'خرجت من وضع الفورس. الفورس اللي عملته لسه شغال لحد ما تشيله.'); });
+  if (frcB) frcB.addEventListener('click', () => { forceMode = !forceMode; frcB.setAttribute('aria-pressed', forceMode); renderLeds(); status(forceMode ? 'وضع الفورس: اضغط على مصباح أي I أو Q في الأسفل لعمل Force 1، وضغطة أخرى Force 0، والثالثة تزيله.' : 'خرجت من وضع الفورس. الفورس الذي عملته ما زال فعّالًا حتى تزيله.'); });
 
   /* ---------- run / stop ---------- */
   function start(){ if (running) return; freshEngine(); running = true; runB.textContent = '■ STOP'; runB.setAttribute('aria-pressed', 'true'); runB.classList.add('on'); loop.start(); renderAll(); }
@@ -1125,20 +1125,20 @@ const plainSim = PL.plainSim = function(host, opt){
   function cases(){ return ex.cases || [{steps:ex.tests || []}]; }
   function check(){
     const lint = ENG.lint(prog).filter(m => m.kind === 'addr' || m.kind === 'operand');
-    if (lint.length){ show(false, 'فيه عنصر ناقصه عنوان أو عنوانه غلط: ' + esc(lint[0].text)); return {ok:false, msg:lint[0].text}; }
+    if (lint.length){ show(false, 'يوجد عنصر بلا عنوان أو عنوانه خطأ: ' + esc(lint[0].text)); return {ok:false, msg:lint[0].text}; }
     for (const c of cases()){
       const r = ENG.check(prog, {io:ex.io, plant:ex.plant, plantOpt:Object.assign({}, ex.plantOpt || {}, c.plantOpt || {}), tests:c.steps}, {cols});
       if (!r.ok){ lastRes = r; show(false, (c.name ? `<b>${esc(c.name)}:</b> ` : '') + r.msg); $('[data-t=sol]', host).hidden = !ex.sol; return r; }
     }
     lastRes = {ok:true};
     const first = PL.mark(opt.lesson, ex.key);
-    show(true, ex.ok || 'البرنامج عدّى كل الاختبارات.');
+    show(true, ex.ok || 'اجتاز البرنامج كل الاختبارات.');
     task.classList.add('ok');
     if (tabs) { const b = tabs.querySelector(`[data-k="${exs.indexOf(ex)}"]`); if (b) b.classList.add('done'); }
     if (ex.sol) $('[data-t=sol]', host).hidden = false;
     return {ok:true, first};
   }
-  function show(ok, html){ resBox.hidden = false; resBox.className = 'ls-res ' + (ok ? 'ok' : 'no'); resBox.innerHTML = `<b>${ok ? '✓ تمام!' : '✗ لسه:'}</b> ${html}`; }
+  function show(ok, html){ resBox.hidden = false; resBox.className = 'ls-res ' + (ok ? 'ok' : 'no'); resBox.innerHTML = `<b>${ok ? '✓ أحسنت!' : '✗ ما زال:'}</b> ${html}`; }
   function status(html){ resBox.hidden = false; resBox.className = 'ls-res'; resBox.innerHTML = html; }
   chkB.addEventListener('click', () => { check(); resBox.scrollIntoView({block:'nearest', behavior:reduced() ? 'auto' : 'smooth'}); });
 
@@ -1146,11 +1146,11 @@ const plainSim = PL.plainSim = function(host, opt){
   $('.ls-tools', host).addEventListener('click', ev => {
     const b = ev.target.closest('[data-t]'); if (!b) return;
     const t = b.dataset.t;
-    if (t === 'add'){ if (prog.length >= 10){ status('أقصى عدد 10 رانج في التمرين.'); return; } prog.push(ENG.blankRung(cols)); sel = {i:prog.length - 1, r:0, c:0}; changed(); scrollSel(); }
+    if (t === 'add'){ if (prog.length >= 10){ status('الحد الأقصى 10 رانجات في التمرين.'); return; } prog.push(ENG.blankRung(cols)); sel = {i:prog.length - 1, r:0, c:0}; changed(); scrollSel(); }
     else if (t === 'hint') hintBox.hidden = !hintBox.hidden;
-    else if (t === 'reset'){ backup = ENG.serialize(prog); prog = ENG.program(ex.start || [ENG.serialize([ENG.blankRung(cols)])[0]], cols); sel = null; changed(); $('[data-t=undo]', host).hidden = false; status('رجعنا البرنامج لأوّله. لو عايز اللي كنت عامله دوس "رجّع برنامجي".'); }
-    else if (t === 'sol'){ backup = ENG.serialize(prog); prog = ENG.program(ex.sol, cols); sel = null; changed(); $('[data-t=undo]', host).hidden = false; status('ده حل ممكن (مش الحل الوحيد). شغّله RUN وجرّبه، واقرا كل رانج بيعمل إيه.'); }
-    else if (t === 'undo' && backup){ prog = ENG.program(backup, cols); backup = null; sel = null; changed(); b.hidden = true; status('رجّعنا برنامجك.'); }
+    else if (t === 'reset'){ backup = ENG.serialize(prog); prog = ENG.program(ex.start || [ENG.serialize([ENG.blankRung(cols)])[0]], cols); sel = null; changed(); $('[data-t=undo]', host).hidden = false; status('أعدنا البرنامج إلى بدايته. إن أردت ما كنت قد عملته فاضغط «استرجع برنامجي».'); }
+    else if (t === 'sol'){ backup = ENG.serialize(prog); prog = ENG.program(ex.sol, cols); sel = null; changed(); $('[data-t=undo]', host).hidden = false; status('هذا حل ممكن (وليس الحل الوحيد). شغّله RUN وجرّبه، واقرأ ما يفعله كل رانج.'); }
+    else if (t === 'undo' && backup){ prog = ENG.program(backup, cols); backup = null; sel = null; changed(); b.hidden = true; status('استرجعنا برنامجك.'); }
   });
   if (tabs) tabs.addEventListener('click', ev => { const b = ev.target.closest('[data-k]'); if (b) select(+b.dataset.k); });
 
@@ -1159,7 +1159,7 @@ const plainSim = PL.plainSim = function(host, opt){
   const rungSvg = (rg, i) => drawRung(rg, i, {cols, running:running && !demo, e, sel, lab, hit:true});
   function renderLadder(){
     const focus = document.activeElement && lad.contains(document.activeElement) && document.activeElement.dataset ? Object.assign({}, document.activeElement.dataset) : null;
-    lad.innerHTML = prog.map((rg, i) => `<div class="ls-rung${sel && sel.i === i ? ' cur' : ''}" data-i="${i}"><div class="ls-rh" dir="rtl"><b>رانج ${i + 1}</b><span class="sp"></span><button type="button" class="btn sm" data-rt="row+" ${rg.rows.length >= 3 ? 'disabled' : ''} aria-label="زوّد صف (فرع) في رانج ${i + 1}">+ فرع</button><button type="button" class="btn sm" data-rt="row-" ${rg.rows.length <= 1 ? 'disabled' : ''} aria-label="شيل آخر صف من رانج ${i + 1}">− صف</button><button type="button" class="btn sm" data-rt="del" ${prog.length <= 1 ? 'disabled' : ''} aria-label="امسح رانج ${i + 1}">✕</button></div>${rungSvg(rg, i)}</div>${sel && sel.i === i ? pickerHtml() : ''}`).join('');
+    lad.innerHTML = prog.map((rg, i) => `<div class="ls-rung${sel && sel.i === i ? ' cur' : ''}" data-i="${i}"><div class="ls-rh" dir="rtl"><b>رانج ${i + 1}</b><span class="sp"></span><button type="button" class="btn sm" data-rt="row+" ${rg.rows.length >= 3 ? 'disabled' : ''} aria-label="أضف صفًا (فرعًا) في رانج ${i + 1}">+ فرع</button><button type="button" class="btn sm" data-rt="row-" ${rg.rows.length <= 1 ? 'disabled' : ''} aria-label="أزل آخر صف من رانج ${i + 1}">− صف</button><button type="button" class="btn sm" data-rt="del" ${prog.length <= 1 ? 'disabled' : ''} aria-label="احذف رانج ${i + 1}">✕</button></div>${rungSvg(rg, i)}</div>${sel && sel.i === i ? pickerHtml() : ''}`).join('');
     if (focus && focus.i != null){ const f = lad.querySelector(`.lhit[data-i="${focus.i}"][data-r="${focus.r}"][data-c="${focus.c}"]`) || (focus.pk ? lad.querySelector(`[data-pk="${focus.pk}"]${focus.v ? `[data-v="${focus.v}"]` : ''}`) : null); if (f) f.focus({preventScroll:true}); }
   }
   /* live monitoring: redraw only the rung drawings, so the open picker (and any field being typed in) stays put */
@@ -1189,26 +1189,26 @@ const plainSim = PL.plainSim = function(host, opt){
     const rg = prog[sel.i], el = rg.rows[sel.r][sel.c], outCol = sel.c === cols - 1;
     const types = outCol ? ['NONE', 'OUT', 'S', 'R', 'TON', 'TOF', 'TP', 'CTU', 'CTD', 'SCL'] : ['NONE', 'W', 'NO', 'NC', 'P', 'N', 'CMP'];
     const cur = el ? el.t : 'NONE';
-    let h = `<div class="lp" dir="rtl" role="group" aria-label="تعديل الخانة"><div class="lp-h"><b>رانج ${sel.i + 1} · صف ${sel.r + 1} · خانة ${sel.c + 1}</b>${outCol ? '<span class="muted"> (عمود الخرج)</span>' : ''}<button type="button" class="btn sm" data-pk="close" aria-label="اقفل">✕</button></div>`;
-    h += `<div class="lp-els">${types.map(t => `<button type="button" class="btn lp-el" data-pk="el" data-v="${t}" aria-pressed="${t === cur}">${elIcon(t)}<span>${t === 'NONE' ? 'فاضي' : EL_LABEL[t]}</span></button>`).join('')}</div>`;
+    let h = `<div class="lp" dir="rtl" role="group" aria-label="تعديل الخانة"><div class="lp-h"><b>رانج ${sel.i + 1} · صف ${sel.r + 1} · خانة ${sel.c + 1}</b>${outCol ? '<span class="muted"> (عمود الخرج)</span>' : ''}<button type="button" class="btn sm" data-pk="close" aria-label="أغلق">✕</button></div>`;
+    h += `<div class="lp-els">${types.map(t => `<button type="button" class="btn lp-el" data-pk="el" data-v="${t}" aria-pressed="${t === cur}">${elIcon(t)}<span>${t === 'NONE' ? 'فارغ' : EL_LABEL[t]}</span></button>`).join('')}</div>`;
     if (el && el.t !== 'W'){
       h += `<p class="lp-help muted">${EL_HELP[el.t] || ''}</p>`;
       const ch = addrChoices(el.t);
-      h += `<div class="lp-addr"><span class="lp-k">${el.t === 'SCL' ? 'الدخل الأنالوج:' : 'العنوان:'}</span>${ch.map(([a, l]) => `<button type="button" class="btn chip" data-pk="addr" data-v="${a}" aria-pressed="${el.a === a}">${a}${l ? `<small>${esc(l)}</small>` : ''}</button>`).join('')}<form class="lp-free" data-pk="free"><input class="inp mono" name="a" maxlength="8" placeholder="${outCol ? 'Q0.5' : 'I0.5'}" aria-label="عنوان تاني" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="btn sm" type="submit">حط</button></form></div>`;
+      h += `<div class="lp-addr"><span class="lp-k">${el.t === 'SCL' ? 'الدخل الأنالوج:' : 'العنوان:'}</span>${ch.map(([a, l]) => `<button type="button" class="btn chip" data-pk="addr" data-v="${a}" aria-pressed="${el.a === a}">${a}${l ? `<small>${esc(l)}</small>` : ''}</button>`).join('')}<form class="lp-free" data-pk="free"><input class="inp mono" name="a" maxlength="8" placeholder="${outCol ? 'Q0.5' : 'I0.5'}" aria-label="عنوان آخر" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="btn sm" type="submit">ضع</button></form></div>`;
       if (el.pt != null) h += `<label class="lp-par">الوقت PT (ثانية) <input class="inp mono" type="number" step="0.1" min="0.1" max="600" data-pk="pt" value="${el.pt}" inputmode="decimal"></label>`;
       if (el.pv != null) h += `<label class="lp-par">القيمة PV <input class="inp mono" type="number" step="1" min="1" max="9999" data-pk="pv" value="${el.pv}" inputmode="numeric"></label>`;
       if (el.t === 'CMP') h += `<div class="lp-par">الشرط: <span class="mono">${esc(el.a || '?')}</span><select class="inp mono" data-pk="op" aria-label="نوع المقارنة">${ENG.CMPOPS.map(o => `<option${o === el.op ? ' selected' : ''}>${o}</option>`).join('')}</select><input class="inp mono" type="number" step="any" data-pk="b" value="${el.b}" aria-label="القيمة" inputmode="decimal"></div>`;
-      if (el.t === 'SCL') h += `<div class="lp-par">الخرج <select class="inp mono" data-pk="o" aria-label="خرج الـ Scale">${['MW10', 'MW12', 'MW14'].map(o => `<option${o === el.o ? ' selected' : ''}>${o}</option>`).join('')}</select> من <input class="inp mono" type="number" step="any" data-pk="lo" value="${el.lo}" aria-label="أقل قيمة"> لـ <input class="inp mono" type="number" step="any" data-pk="hi" value="${el.hi}" aria-label="أعلى قيمة"></div>`;
+      if (el.t === 'SCL') h += `<div class="lp-par">الخرج <select class="inp mono" data-pk="o" aria-label="خرج الـ Scale">${['MW10', 'MW12', 'MW14'].map(o => `<option${o === el.o ? ' selected' : ''}>${o}</option>`).join('')}</select> من <input class="inp mono" type="number" step="any" data-pk="lo" value="${el.lo}" aria-label="أقل قيمة"> إلى <input class="inp mono" type="number" step="any" data-pk="hi" value="${el.hi}" aria-label="أعلى قيمة"></div>`;
     }
     const brs = [];
-    if (sel.r === 0 && !outCol) brs.push(`<button type="button" class="btn" data-pk="par">⫴ فرع موازي للخانة دي (OR)</button>`);
-    if (sel.r === 0 && outCol) brs.push(`<button type="button" class="btn" data-pk="par">⫴ خرج موازي (كويل تاني)</button>`);
+    if (sel.r === 0 && !outCol) brs.push(`<button type="button" class="btn" data-pk="par">⫴ فرع موازٍ لهذه الخانة (OR)</button>`);
+    if (sel.r === 0 && outCol) brs.push(`<button type="button" class="btn" data-pk="par">⫴ خرج موازٍ (ملف آخر)</button>`);
     if (sel.r > 0){
       const L = rg.links[sel.r - 1];
-      if (sel.c > 0) brs.push(`<button type="button" class="btn" data-pk="lk" data-v="${sel.c}" aria-pressed="${L.indexOf(sel.c) >= 0}">┘ وصلة شمال لفوق</button>`);
-      if (sel.c + 1 <= cols - 1) brs.push(`<button type="button" class="btn" data-pk="lk" data-v="${sel.c + 1}" aria-pressed="${L.indexOf(sel.c + 1) >= 0}">└ وصلة يمين لفوق</button>`);
+      if (sel.c > 0) brs.push(`<button type="button" class="btn" data-pk="lk" data-v="${sel.c}" aria-pressed="${L.indexOf(sel.c) >= 0}">┘ وصلة يسرى للأعلى</button>`);
+      if (sel.c + 1 <= cols - 1) brs.push(`<button type="button" class="btn" data-pk="lk" data-v="${sel.c + 1}" aria-pressed="${L.indexOf(sel.c + 1) >= 0}">└ وصلة يمنى للأعلى</button>`);
     }
-    h += `<div class="lp-br">${brs.join('')}</div><p class="lp-help muted">الرسم ماشي من الشمال لليمين زي أي برنامج PLC: الخط اللي على الشمال هو مصدر الكهربا، والكويلات في آخر عمود على اليمين.</p></div>`;
+    h += `<div class="lp-br">${brs.join('')}</div><p class="lp-help muted">يسير الرسم من اليسار إلى اليمين كأي برنامج PLC: الخط الذي على اليسار هو مصدر الكهرباء، والملفات في آخر عمود على اليمين.</p></div>`;
     return h;
   }
   function setEl(t){
@@ -1226,7 +1226,7 @@ const plainSim = PL.plainSim = function(host, opt){
     const rg = prog[sel.i], outCol = sel.c === cols - 1;
     let r = -1;
     for (let k = 1; k < rg.rows.length; k++) if (!rg.rows[k][sel.c]){ r = k; break; }
-    if (r < 0){ if (rg.rows.length >= 3){ status('الرانج فيه 3 صفوف خلاص. ده أقصى حاجة في المحاكي.'); return; } rg.rows.push(new Array(cols).fill(null)); rg.links.push([]); r = rg.rows.length - 1; }
+    if (r < 0){ if (rg.rows.length >= 3){ status('في الرانج 3 صفوف بالفعل، وهذا الحد الأقصى في المحاكي.'); return; } rg.rows.push(new Array(cols).fill(null)); rg.links.push([]); r = rg.rows.length - 1; }
     const L = rg.links[r - 1];
     if (outCol){ rg.rows[r][sel.c] = ENG.parse('OUT:'); if (L.indexOf(sel.c) < 0) L.push(sel.c); }
     else { rg.rows[r][sel.c] = ENG.parse('NO:'); if (sel.c > 0 && L.indexOf(sel.c) < 0) L.push(sel.c); if (L.indexOf(sel.c + 1) < 0) L.push(sel.c + 1); }
@@ -1257,7 +1257,7 @@ const plainSim = PL.plainSim = function(host, opt){
   lad.addEventListener('submit', ev => {
     ev.preventDefault(); const f = ev.target.closest('form'); if (!f || !sel) return;
     const el = prog[sel.i].rows[sel.r][sel.c], a = ENG.norm(f.a.value), k = ENG.kind(a);
-    if (!k || (ENG.accepts[el.t] || []).indexOf(k) < 0){ status(`العنوان "${esc(f.a.value)}" مينفعش مع ${el.t}. أمثلة صح: ${ENG.accepts[el.t].map(x => ({I:'I0.3', Q:'Q0.2', M:'M1.0', T:'T3', C:'C2', IW:'IW64', MW:'MW12'}[x])).join(' · ')}`); return; }
+    if (!k || (ENG.accepts[el.t] || []).indexOf(k) < 0){ status(`العنوان «${esc(f.a.value)}» لا يصلح مع ${el.t}. أمثلة صحيحة: ${ENG.accepts[el.t].map(x => ({I:'I0.3', Q:'Q0.2', M:'M1.0', T:'T3', C:'C2', IW:'IW64', MW:'MW12'}[x])).join(' · ')}`); return; }
     el.a = a; changed();
   });
   lad.addEventListener('change', ev => {
@@ -1273,7 +1273,7 @@ const plainSim = PL.plainSim = function(host, opt){
   });
 
   /* ---------- machine preview («▶ شوف المكنة شغّالة»): the hidden solution runs on a fresh engine + machine ---------- */
-  const pvAd = {host, watchEl:plantBox, title:'المكنة شغالة صح',
+  const pvAd = {host, watchEl:plantBox, title:'الماكينة تعمل بشكل صحيح',
     mount(box){ task.after(box); }, key:() => 'l/' + opt.lesson + '/' + ex.key, ex:() => ex, has:() => !!(ex && ex.sol),
     begin(po){
       demo = {running, e, plantSt, sel, ins:(ex.io.inputs || []).map(i => ({i, state:i.state})), pressed:Object.assign({}, pressed)};
@@ -1297,7 +1297,7 @@ const plainSim = PL.plainSim = function(host, opt){
       const pv = physFor(i); e.setIn(a, pv == null ? v : pv); updIO(); renderLeds(); },
     inBtn:a => ioBox.querySelector(`.ib[data-a="${a}"]`), outEl:a => leds.querySelector(`.led[data-a="${a}"]`), plantEl:() => plantBox,
     lab:a => lab(a), addr:a => a, xl:s => s,
-    outro:() => '<b>كده المكنة اشتغلت زي المطلوب.</b> دلوقتي دورك: اكتب البرنامج اللي يخليها تشتغل كده، شغّل <bdi dir="ltr">RUN</bdi> وجرّب بالزراير، وبعدين دوس «اختبر البرنامج».'};
+    outro:() => '<b>هكذا عملت الماكينة كما هو مطلوب.</b> الآن دورك: اكتب البرنامج الذي يجعلها تعمل هكذا، وشغّل <bdi dir="ltr">RUN</bdi> وجرّب بالأزرار، ثم اضغط «اختبر البرنامج».'};
   if (!opt.demoOnly && !opt.noPreview) PL.preview.attach(pvAd);
   select(0);
   const api = {host, preview:pvAd, get demo(){ return !!demo; }, get ex(){ return ex; }, get prog(){ return prog; }, get engine(){ return e; }, get plant(){ return plantSt; }, get running(){ return running; },
@@ -1328,21 +1328,21 @@ PL.art = {
   ladder(){ return `<svg viewBox="0 0 160 110" role="img" aria-label="برنامج Ladder"><path d="M10 8V102M150 8V102" stroke="var(--ink)" stroke-width="3"/><path d="M10 34H40M52 34H80M92 34H112M138 34H150" stroke="#2fd35a" stroke-width="3"/><path d="M40 22V46M52 22V46M80 22V46M92 22V46" stroke="#2fd35a" stroke-width="3"/><path d="M84 46L96 22" stroke="#2fd35a" stroke-width="2"/><path d="M118 22q-8 12 0 24M132 22q8 12 0 24" fill="none" stroke="#2fd35a" stroke-width="3"/><path d="M10 74H40M52 74H66V34" fill="none" stroke="var(--muted)" stroke-width="3"/><path d="M40 62V86M52 62V86" stroke="var(--muted)" stroke-width="3"/><text x="46" y="18" text-anchor="middle" style="font:600 8px var(--font-mono);fill:var(--ink)">I0.0</text><text x="86" y="18" text-anchor="middle" style="font:600 8px var(--font-mono);fill:var(--ink)">I0.1</text><text x="125" y="18" text-anchor="middle" style="font:600 8px var(--font-mono);fill:var(--ink)">Q0.0</text><text x="46" y="58" text-anchor="middle" style="font:600 8px var(--font-mono);fill:var(--ink)">Q0.0</text></svg>`; },
   sensor(){ return `<svg viewBox="0 0 160 110" role="img" aria-label="حساس"><g transform="translate(34 46) scale(1.15)">${RA.prox(0, 0, 'PNP', {target:false})}</g><path d="M22 38q-12 21 0 42M28 44q-8 15 0 30" fill="none" stroke="var(--accent)" stroke-width="2.5"/></svg>`; },
   contactor(){ return `<svg viewBox="0 0 160 110" role="img" aria-label="كونتاكتور">${contactorSvg(80, 50, '', true).replace('translate(80 50)', 'translate(80 50) scale(1.8)')}</svg>`; },
-  motor(){ return `<svg viewBox="0 0 160 110" role="img" aria-label="موتور">${motorSvg(80, 52, 76, 18, true)}</svg>`; }
+  motor(){ return `<svg viewBox="0 0 160 110" role="img" aria-label="محرك">${motorSvg(80, 52, 76, 18, true)}</svg>`; }
 };
 
 /* ---------- lesson 1: the scan cycle ---------- */
 PL.scanDemo = function(host, opt){
   const L = opt.lesson, PH = ['read', 'exec', 'write'];
   const S = {sw:0, II:0, Q:0, out:0, ph:0, t:0, spd:'slow', seenOn:false, seenOff:false, pulse:0, scans:0, hold:false};
-  host.innerHTML = `<div class="sd-art wd-art"></div><div class="wd-ctl"><button type="button" class="btn sd-sw" aria-pressed="false">سويتش I0.0: OFF</button><button type="button" class="btn sd-pulse">نبضة قصيرة 0.3 ثانية</button></div>
+  host.innerHTML = `<div class="sd-art wd-art"></div><div class="wd-ctl"><button type="button" class="btn sd-sw" aria-pressed="false">المفتاح I0.0: OFF</button><button type="button" class="btn sd-pulse">نبضة قصيرة 0.3 ثانية</button></div>
     <div class="tabs" role="group" aria-label="سرعة السكان"><button type="button" class="btn" data-s="slow" aria-pressed="true">بطيء (ثانية لكل مرحلة)</button><button type="button" class="btn" data-s="step" aria-pressed="false">خطوة بخطوة</button><button type="button" class="btn" data-s="fast" aria-pressed="false">سرعة حقيقية</button></div>
-    <div class="wd-ctl"><button type="button" class="btn pri sd-next" hidden>المرحلة اللي بعدها ←</button></div>
-    <p class="msg sd-msg" aria-live="polite"></p><p class="chal sd-chal">شغّل السويتش واستنى اللمبة تنوّر، وبعدين اقفله واستنى اللمبة تطفي. لاحظ إن اللمبة مش بتتغيّر غير في مرحلة <b>اكتب المخارج</b>.</p>`;
+    <div class="wd-ctl"><button type="button" class="btn pri sd-next" hidden>المرحلة التالية ←</button></div>
+    <p class="msg sd-msg" aria-live="polite"></p><p class="chal sd-chal">شغّل المفتاح وانتظر حتى يضيء المصباح، ثم أطفئه وانتظر حتى ينطفئ المصباح. لاحظ أن المصباح لا يتغيّر إلا في مرحلة <b>اكتب المخارج</b>.</p>`;
   const art = $('.sd-art', host), msg = $('.sd-msg', host), fin = chal(host, '.sd-chal', L, 'scan');
-  const txt = {read:'<b>1. اقرا المداخل:</b> الـ PLC بيبص على كل أطراف الدخل مرة واحدة وبيحفظها في جدول اسمه <b>Input image</b>. لو السويتش اتغيّر بعد كده، البرنامج مش هيعرف غير في السكان الجاي.',
-    exec:'<b>2. نفّذ البرنامج:</b> بيمشي على الرانجات من فوق لتحت، ويحسب كل كويل من الجدول (مش من السلك نفسه). النتيجة بتتحط في <b>Output image</b>.',
-    write:'<b>3. اكتب المخارج:</b> دلوقتي بس، النتيجة بتطلع على أطراف الخرج واللمبة بتتغيّر. وبعدين يرجع يقرا المداخل تاني… وهكذا للأبد.'};
+  const txt = {read:'<b>1. اقرأ المداخل:</b> ينظر الـ PLC إلى كل أطراف الدخل مرة واحدة ويحفظها في جدول اسمه <b>Input image</b>. وإذا تغيّر المفتاح بعد ذلك، فلن يعرف البرنامج إلا في السكان التالي.',
+    exec:'<b>2. نفّذ البرنامج:</b> يمرّ على الرانجات من الأعلى إلى الأسفل، ويحسب كل ملف من الجدول (لا من السلك نفسه). وتوضع النتيجة في <b>Output image</b>.',
+    write:'<b>3. اكتب المخارج:</b> الآن فقط تخرج النتيجة على أطراف الخرج ويتغيّر المصباح. ثم يعود ليقرأ المداخل من جديد… وهكذا باستمرار.'};
   function phase(){
     const p = PH[S.ph];
     if (p === 'read') S.II = S.sw;
@@ -1354,23 +1354,23 @@ PL.scanDemo = function(host, opt){
     const p = PH[S.ph], act = k => p === k;
     const box = (x, y, k, t1, t2) => `<g class="sd-box${act(k) ? ' on' : ''}"><rect x="${x}" y="${y}" width="112" height="46" rx="10"/><text x="${x + 56}" y="${y + 20}" text-anchor="middle" class="ar sd-t">${t1}</text><text x="${x + 56}" y="${y + 37}" text-anchor="middle" class="sd-s">${t2}</text></g>`;
     art.innerHTML = `<svg viewBox="0 0 360 240" role="img" aria-label="دورة السكان">
-      <g transform="translate(10 96)"><rect width="56" height="64" rx="6" fill="url(#ra-plasticV)" stroke="#a9aeb2" filter="url(#ra-sh)"/><circle cx="28" cy="30" r="17" fill="url(#ra-chrome)"/><circle cx="28" cy="30" r="14" fill="#1c1f22"/><g transform="rotate(${S.sw ? 45 : -45} 28 30)"><rect x="15" y="26" width="26" height="8" rx="4" fill="#4a5056"/><rect x="34" y="28" width="5" height="4" rx="1" fill="#fff"/></g><text x="28" y="80" text-anchor="middle" class="sd-s">I0.0</text><text x="28" y="94" text-anchor="middle" class="ar sd-s">سويتش</text></g>
+      <g transform="translate(10 96)"><rect width="56" height="64" rx="6" fill="url(#ra-plasticV)" stroke="#a9aeb2" filter="url(#ra-sh)"/><circle cx="28" cy="30" r="17" fill="url(#ra-chrome)"/><circle cx="28" cy="30" r="14" fill="#1c1f22"/><g transform="rotate(${S.sw ? 45 : -45} 28 30)"><rect x="15" y="26" width="26" height="8" rx="4" fill="#4a5056"/><rect x="34" y="28" width="5" height="4" rx="1" fill="#fff"/></g><text x="28" y="80" text-anchor="middle" class="sd-s">I0.0</text><text x="28" y="94" text-anchor="middle" class="ar sd-s">مفتاح</text></g>
       <path d="M66 128H92" class="sd-w${S.sw ? ' hot' : ''}"/>
       <rect x="92" y="6" width="190" height="228" rx="14" class="sd-plc"/><text x="187" y="24" text-anchor="middle" class="sd-t">PLC</text>
-      ${box(131, 34, 'read', 'اقرا المداخل', 'I0.0 → ' + S.II)}
+      ${box(131, 34, 'read', 'اقرأ المداخل', 'I0.0 → ' + S.II)}
       ${box(131, 102, 'exec', 'نفّذ البرنامج', 'Q0.0 := I0.0')}
       ${box(131, 170, 'write', 'اكتب المخارج', 'Q0.0 → ' + S.Q)}
       <path d="M187 80V100M187 148V168" class="sd-arr" marker-end="url(#sdA)"/><path d="M131 193H112V57H129" class="sd-arr" fill="none" marker-end="url(#sdA)"/>
       <defs><marker id="sdA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" class="sd-ah"/></marker></defs>
       <g transform="translate(104 34)"><rect width="22" height="16" rx="3" class="sd-img${S.II ? ' on' : ''}"/><text x="11" y="12" text-anchor="middle" class="sd-s">${S.II}</text></g>
       <path d="M282 128H300" class="sd-w${S.out ? ' hot' : ''}"/>
-      <g transform="translate(300 98)">${lampSvg(28, 28, 20, LCOL.yellow, S.out)}<text x="28" y="72" text-anchor="middle" class="sd-s">Q0.0</text><text x="28" y="86" text-anchor="middle" class="ar sd-s">لمبة</text></g>
+      <g transform="translate(300 98)">${lampSvg(28, 28, 20, LCOL.yellow, S.out)}<text x="28" y="72" text-anchor="middle" class="sd-s">Q0.0</text><text x="28" y="86" text-anchor="middle" class="ar sd-s">مصباح</text></g>
       <text x="187" y="230" text-anchor="middle" class="sd-s">scan #${S.scans}</text></svg>`;
-    msg.innerHTML = S.spd === 'fast' ? 'في الحقيقة السكان بياخد حوالي <b>⁦1⁠–⁠20⁩ ملّي ثانية</b>، فبتحس إن اللمبة بتنوّر في نفس اللحظة. بس الترتيب نفسه ما بيتغيّرش.' : txt[p];
-    $('.sd-sw', host).textContent = 'سويتش I0.0: ' + (S.sw ? 'ON' : 'OFF'); $('.sd-sw', host).setAttribute('aria-pressed', !!S.sw);
+    msg.innerHTML = S.spd === 'fast' ? 'في الواقع يستغرق السكان نحو <b>⁦1⁠–⁠20⁩ ملّي ثانية</b>، فتشعر أن المصباح يضيء في اللحظة نفسها. لكن الترتيب نفسه لا يتغيّر.' : txt[p];
+    $('.sd-sw', host).textContent = 'المفتاح I0.0: ' + (S.sw ? 'ON' : 'OFF'); $('.sd-sw', host).setAttribute('aria-pressed', !!S.sw);
   }
   $('.sd-sw', host).addEventListener('click', () => { S.sw = S.sw ? 0 : 1; S.pulse = 0; draw(); });
-  $('.sd-pulse', host).addEventListener('click', () => { S.sw = 1; S.pulse = 0.3; draw(); if (S.spd !== 'fast') msg.innerHTML += '<br><b>جرّب تلاحظ:</b> لو النبضة خلصت قبل مرحلة "اقرا المداخل" الـ PLC مش هيشوفها خالص. عشان كده الإشارات السريعة جدًا (إنكودر مثلاً) ليها كروت High-speed counter.'; });
+  $('.sd-pulse', host).addEventListener('click', () => { S.sw = 1; S.pulse = 0.3; draw(); if (S.spd !== 'fast') msg.innerHTML += '<br><b>جرّب ولاحظ:</b> إذا انتهت النبضة قبل مرحلة «اقرأ المداخل» فلن يراها الـ PLC إطلاقًا. لذلك تخصَّص للإشارات السريعة جدًا (كالإنكودر) كروت High-speed counter.'; });
   $$('[data-s]', host).forEach(b => b.addEventListener('click', () => { S.spd = b.dataset.s; $$('[data-s]', host).forEach(x => x.setAttribute('aria-pressed', x === b)); $('.sd-next', host).hidden = S.spd !== 'step'; S.t = 0; draw(); }));
   $('.sd-next', host).addEventListener('click', advance);
   animate(host, dt => {
@@ -1388,20 +1388,20 @@ PL.scanDemo = function(host, opt){
 PL.parts = function(host, opt){
   const L = opt.lesson;
   const M = [
-    {k:'psu', t:'PS', name:'باور سبلاي (PSU)', en:'Power Supply', col:'#5d6469', d:'بياخد 220V AC ويطلّع <b>24V DC</b> للـ CPU والكروت والحساسات. أغلب مشاكل "الـ PLC مطفي" بتبدأ من هنا أو من الفيوز اللي قبله.'},
-    {k:'cpu', t:'CPU', name:'وحدة المعالجة (CPU)', en:'Central Processing Unit', col:'#2a3035', d:'المخ: فيها البرنامج والذاكرة (M، تايمرات، عدادات) وبتعمل دورة السكان. عليها لمبات <b>RUN / STOP / ERROR</b> وبورت للبرمجة (USB أو Ethernet).'},
-    {k:'di', t:'DI', name:'كارت دخل ديجيتال', en:'Digital Input (DI)', col:'#2b7a3d', d:'بيستقبل إشارات "فيه أو مفيش" على 24V DC: زراير، ليميت سويتشات، حساسات PNP/NPN، كونتاكت أوفرلود. كل دخل له لمبة صغيرة بتنوّر لما يجيله 24V.'},
-    {k:'do', t:'DO', name:'كارت خرج ديجيتال', en:'Digital Output (DO)', col:'#b85f00', d:'بيشغّل الأحمال: كويلات كونتاكتورات، ريليهات، لمبات بيان، بلوف سولينويد. نوعين: <b>ريلاي</b> (AC أو DC، أبطأ) و<b>ترانزستور</b> (24V DC بس، سريع).'},
-    {k:'ai', t:'AI', name:'كارت دخل أنالوج', en:'Analog Input (AI)', col:'#2f6fb3', d:'بيقرا قيمة متغيّرة: <b>⁦4⁠–⁠20mA⁩</b> أو <b>⁦0⁠–⁠10V⁩</b> من ترانسميتر ضغط أو مستوى أو حرارة، ويحوّلها لرقم (Raw counts). فيه كروت مخصوصة للثيرموكبل والـ PT100.'},
-    {k:'ao', t:'AO', name:'كارت خرج أنالوج', en:'Analog Output (AO)', col:'#7b4fb3', d:'بيطلّع ⁦4⁠–⁠20mA⁩ أو ⁦0⁠–⁠10V⁩ عشان يتحكم في حاجة بالتدريج: سرعة إنفرتر، فتحة بلف كنترول.'},
-    {k:'com', t:'COM', name:'كارت اتصال', en:'Communication', col:'#0d7584', d:'Profinet، Ethernet/IP، Modbus، RS485… بيربط الـ PLC بالـ HMI والإنفرترات والـ SCADA. (مش لازم تزوره عشان التمرين.)', opt:true}
+    {k:'psu', t:'PS', name:'مصدر التغذية (PSU)', en:'Power Supply', col:'#5d6469', d:'يأخذ 220V AC ويُخرج <b>24V DC</b> للـ CPU والكروت والحساسات. ومعظم مشكلات «الـ PLC مطفأ» تبدأ من هنا أو من الفيوز الذي قبله.'},
+    {k:'cpu', t:'CPU', name:'وحدة المعالجة (CPU)', en:'Central Processing Unit', col:'#2a3035', d:'العقل: فيها البرنامج والذاكرة (M، والتايمرات، والعدادات)، وتنفّذ دورة السكان. وعليها مصابيح <b>RUN / STOP / ERROR</b> ومنفذ للبرمجة (USB أو Ethernet).'},
+    {k:'di', t:'DI', name:'كارت دخل رقمي', en:'Digital Input (DI)', col:'#2b7a3d', d:'يستقبل إشارات «يوجد أو لا يوجد» على 24V DC: أزرار، وليمت سويتشات، وحساسات PNP/NPN، وتلامس أوفرلود. ولكل دخل مصباح صغير يضيء عندما يصله 24V.'},
+    {k:'do', t:'DO', name:'كارت خرج رقمي', en:'Digital Output (DO)', col:'#b85f00', d:'يشغّل الأحمال: ملفات كونتاكتورات، وريلايهات، ومصابيح بيان، وبلوف سولينويد. وله نوعان: <b>ريلاي</b> (AC أو DC، أبطأ) و<b>ترانزستور</b> (24V DC فقط، سريع).'},
+    {k:'ai', t:'AI', name:'كارت دخل أنالوج', en:'Analog Input (AI)', col:'#2f6fb3', d:'يقرأ قيمة متغيّرة: <b>⁦4⁠–⁠20mA⁩</b> أو <b>⁦0⁠–⁠10V⁩</b> من ترانسميتر ضغط أو مستوى أو حرارة، ويحوّلها إلى رقم (Raw counts). وتوجد كروت مخصّصة للثيرموكبل والـ PT100.'},
+    {k:'ao', t:'AO', name:'كارت خرج أنالوج', en:'Analog Output (AO)', col:'#7b4fb3', d:'يُخرج ⁦4⁠–⁠20mA⁩ أو ⁦0⁠–⁠10V⁩ للتحكم في شيء تدريجيًا: سرعة انفرتر، أو فتحة بلف كنترول.'},
+    {k:'com', t:'COM', name:'كارت اتصال', en:'Communication', col:'#0d7584', d:'Profinet، Ethernet/IP، Modbus، RS485… يربط الـ PLC بالـ HMI والانفرترات والـ SCADA. (لا يلزم فتحه في التمرين.)', opt:true}
   ];
   const seen = {};
-  host.innerHTML = `<div class="wd-art pa-art"></div><div class="box pa-info" aria-live="polite">دوس على أي كارت في الراك عشان تعرف بيعمل إيه.</div><p class="chal pa-chal">زور الـ 6 أجزاء الأساسية: ⁦PS، CPU، DI، DO، AI، AO⁩.</p>`;
+  host.innerHTML = `<div class="wd-art pa-art"></div><div class="box pa-info" aria-live="polite">اضغط على أي كارت في الراك لتعرف وظيفته.</div><p class="chal pa-chal">افتح الأجزاء الستة الأساسية: ⁦PS، CPU، DI، DO، AI، AO⁩.</p>`;
   const art = $('.pa-art', host), info = $('.pa-info', host), fin = chal(host, '.pa-chal', L, 'parts');
   function draw(cur){
     const w = 46, x0 = 18;
-    art.innerHTML = `<svg viewBox="0 0 360 170" role="img" aria-label="راك PLC">${RA.rail(4, 128, 352)}${M.map((m, i) => { const x = x0 + i * w, on = cur === m.k; return `<g class="pa-m${on ? ' on' : ''}${seen[m.k] ? ' seen' : ''}" data-k="${m.k}" tabindex="0" role="button" aria-label="${esc(m.name)}"><g filter="url(#ra-sh)"><rect x="${x}" y="${m.k === 'cpu' ? 14 : 24}" width="${w - 4}" height="${m.k === 'cpu' ? 116 : 106}" rx="3" fill="url(#ra-dark)" stroke="${on ? 'var(--accent)' : '#111'}" stroke-width="${on ? 3 : 1}"/></g><rect x="${x + 2}" y="${m.k === 'cpu' ? 16 : 26}" width="${w - 8}" height="20" rx="2" fill="${m.col === '#2a3035' ? '#4a5157' : m.col}"/><rect x="${x + 2}" y="${m.k === 'cpu' ? 16 : 26}" width="${w - 8}" height="6" rx="2" fill="#fff" opacity=".18"/><text x="${x + (w - 4) / 2}" y="${m.k === 'cpu' ? 30 : 40}" text-anchor="middle" font-family="Arial,sans-serif" font-size="10.5" font-weight="700" fill="#fff">${m.t}</text>${m.k === 'cpu' ? `${RA.led(x + 6, 44, true, '#36d36a', 8, 5)}${RA.led(x + 6, 54, false, '#ff4a3d', 8, 5)}<rect x="${x + 6}" y="68" width="30" height="20" rx="2" fill="#15181a" stroke="#555"/><rect x="${x + 12}" y="74" width="18" height="8" rx="1" fill="#2a2e31"/><rect x="${x + 8}" y="96" width="26" height="12" rx="2" fill="#1b1e20" stroke="#4a5157"/>` : m.k !== 'psu' ? [0, 1, 2, 3, 4, 5].map(j => `${RA.led(x + 5, 52 + j * 11, (j + i) % 3 === 0, '#36d36a', 6, 4)}${RA.screw(x + 29, 54 + j * 11, 3.4)}`).join('') : `<rect x="${x + 6}" y="52" width="30" height="16" fill="url(#ra-vent)"/>${RA.led(x + 6, 76, true, '#36d36a', 8, 5)}<text x="${x + 21}" y="98" text-anchor="middle" font-family="Arial,sans-serif" font-size="7" font-weight="700" fill="#cfd6db">24V DC</text>${RA.screw(x + 12, 114, 3.6)}${RA.screw(x + 30, 114, 3.6)}`}${seen[m.k] ? `<circle cx="${x + w - 10}" cy="${m.k === 'cpu' ? 22 : 32}" r="6" fill="#2fd35a"/>` : ''}</g>`; }).join('')}<text x="180" y="162" text-anchor="middle" class="ar sd-s">الراك: كل كارت بيتركّب جنب التاني على نفس القضيب (DIN rail)</text></svg>`;
+    art.innerHTML = `<svg viewBox="0 0 360 170" role="img" aria-label="راك PLC">${RA.rail(4, 128, 352)}${M.map((m, i) => { const x = x0 + i * w, on = cur === m.k; return `<g class="pa-m${on ? ' on' : ''}${seen[m.k] ? ' seen' : ''}" data-k="${m.k}" tabindex="0" role="button" aria-label="${esc(m.name)}"><g filter="url(#ra-sh)"><rect x="${x}" y="${m.k === 'cpu' ? 14 : 24}" width="${w - 4}" height="${m.k === 'cpu' ? 116 : 106}" rx="3" fill="url(#ra-dark)" stroke="${on ? 'var(--accent)' : '#111'}" stroke-width="${on ? 3 : 1}"/></g><rect x="${x + 2}" y="${m.k === 'cpu' ? 16 : 26}" width="${w - 8}" height="20" rx="2" fill="${m.col === '#2a3035' ? '#4a5157' : m.col}"/><rect x="${x + 2}" y="${m.k === 'cpu' ? 16 : 26}" width="${w - 8}" height="6" rx="2" fill="#fff" opacity=".18"/><text x="${x + (w - 4) / 2}" y="${m.k === 'cpu' ? 30 : 40}" text-anchor="middle" font-family="Arial,sans-serif" font-size="10.5" font-weight="700" fill="#fff">${m.t}</text>${m.k === 'cpu' ? `${RA.led(x + 6, 44, true, '#36d36a', 8, 5)}${RA.led(x + 6, 54, false, '#ff4a3d', 8, 5)}<rect x="${x + 6}" y="68" width="30" height="20" rx="2" fill="#15181a" stroke="#555"/><rect x="${x + 12}" y="74" width="18" height="8" rx="1" fill="#2a2e31"/><rect x="${x + 8}" y="96" width="26" height="12" rx="2" fill="#1b1e20" stroke="#4a5157"/>` : m.k !== 'psu' ? [0, 1, 2, 3, 4, 5].map(j => `${RA.led(x + 5, 52 + j * 11, (j + i) % 3 === 0, '#36d36a', 6, 4)}${RA.screw(x + 29, 54 + j * 11, 3.4)}`).join('') : `<rect x="${x + 6}" y="52" width="30" height="16" fill="url(#ra-vent)"/>${RA.led(x + 6, 76, true, '#36d36a', 8, 5)}<text x="${x + 21}" y="98" text-anchor="middle" font-family="Arial,sans-serif" font-size="7" font-weight="700" fill="#cfd6db">24V DC</text>${RA.screw(x + 12, 114, 3.6)}${RA.screw(x + 30, 114, 3.6)}`}${seen[m.k] ? `<circle cx="${x + w - 10}" cy="${m.k === 'cpu' ? 22 : 32}" r="6" fill="#2fd35a"/>` : ''}</g>`; }).join('')}<text x="180" y="162" text-anchor="middle" class="ar sd-s">الراك: يُركّب كل كارت بجانب الآخر على القضيب نفسه (DIN rail)</text></svg>`;
   }
   onAct(host, '.pa-m', g => {
     const m = M.find(x => x.k === g.dataset.k); seen[m.k] = 1;
@@ -1420,7 +1420,7 @@ PL.wire = function(host, opt){
   let ex, wires = [], pend = null, passed = false, act = {}, demoLive = null, demoSt = null, err = null;
   host.innerHTML = `<div class="tabs" role="group" aria-label="تمارين التوصيل">${exs.map((x, j) => `<button type="button" class="btn${PL.has(L, x.key) ? ' done' : ''}" data-k="${j}" aria-pressed="${j === 0}">${esc(x.title)}</button>`).join('')}</div>
     <div class="chal wb-task"></div><div class="bn-board wb-board"></div>
-    <div class="bn-tools"><button type="button" class="btn pri wb-chk">اختبر التوصيل</button><button type="button" class="btn wb-undo">شيل آخر سلك</button><button type="button" class="btn wb-clr">امسح كله</button></div>
+    <div class="bn-tools"><button type="button" class="btn pri wb-chk">اختبر التوصيل</button><button type="button" class="btn wb-undo">أزل آخر سلك</button><button type="button" class="btn wb-clr">احذف الكل</button></div>
     <div class="wb-res" aria-live="polite"></div><div class="wd-ctl wb-act" hidden></div>`;
   const board = $('.wb-board', host), res = $('.wb-res', host), actBox = $('.wb-act', host), taskBox = $('.wb-task', host);
   const T = id => ex.terms.find(t => t.id === id);
@@ -1433,7 +1433,7 @@ PL.wire = function(host, opt){
   function draw(){
     const live = demoLive || (passed ? ex.live(act) : {});
     let s = `<svg viewBox="0 0 360 ${ex.h || 300}" role="img" aria-label="لوحة التوصيل">${ex.art(live)}`;
-    (demoLive ? [] : wires).forEach(([a, b], k) => { const A = T(a), B = T(b), mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2 + 18, col = TERM_COL[A.pol] || TERM_COL[B.pol] || '#333'; const d = `M${A.x} ${A.y}Q${mx} ${my} ${B.x} ${B.y}`; s += `<g class="bw" data-w="${k}"><path d="${d}" class="bw-o"/><path d="${d}" class="bw-c" stroke="${col}"/><path d="${d}" class="bw-h"/><path d="${d}" class="bw-hit" tabindex="0" role="button" aria-label="سلك من ${esc(A.l)} لـ ${esc(B.l)}، دوس عشان تشيله"/></g>`; });
+    (demoLive ? [] : wires).forEach(([a, b], k) => { const A = T(a), B = T(b), mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2 + 18, col = TERM_COL[A.pol] || TERM_COL[B.pol] || '#333'; const d = `M${A.x} ${A.y}Q${mx} ${my} ${B.x} ${B.y}`; s += `<g class="bw" data-w="${k}"><path d="${d}" class="bw-o"/><path d="${d}" class="bw-c" stroke="${col}"/><path d="${d}" class="bw-h"/><path d="${d}" class="bw-hit" tabindex="0" role="button" aria-label="سلك من ${esc(A.l)} إلى ${esc(B.l)}، اضغط لإزالته"/></g>`; });
     ex.terms.forEach(t => { s += `<g class="bt${pend === t.id ? ' pend' : ''}" data-t="${t.id}"><circle cx="${t.x}" cy="${t.y}" r="16" class="bt-hit" tabindex="0" role="button" aria-label="طرف ${esc(t.l)}"/><circle cx="${t.x}" cy="${t.y}" r="13" class="bt-ring${err && err.has(t.id) ? ' err' : ''}"/><circle cx="${t.x}" cy="${t.y}" r="7" class="bt-s"/><path d="M${t.x - 4} ${t.y}h8" class="bt-x"/><text x="${t.x + (t.lx || 0)}" y="${t.y + (t.ly != null ? t.ly : -12)}" class="bt-lab"${t.anc ? ` text-anchor="${t.anc}"` : ''}>${esc(t.l)}</text></g>`; });
     board.innerHTML = s + '</svg>';
     nhUpdate();
@@ -1476,12 +1476,12 @@ PL.wire = function(host, opt){
     if (wrong.length){
       const dz = ex.danger && ex.danger(wrong[0][0], wrong[0][1], f);
       const w = wrong.find(([a, b]) => ex.why && (ex.why[a] || ex.why[b])) || wrong[0], hint = ex.why ? ex.why[w[0]] || ex.why[w[1]] || '' : '';
-      bad = dz || `<b>${esc(T(w[0]).l)}</b> متوصّل بـ <b>${esc(T(w[1]).l)}</b>: غلط. ${hint}`; hl = dz ? wrong[0] : w;
+      bad = dz || `<b>${esc(T(w[0]).l)}</b> موصّل بـ <b>${esc(T(w[1]).l)}</b>: خطأ. ${hint}`; hl = dz ? wrong[0] : w;
     }
-    if (!bad) for (const g of ex.groups){ for (let i = 1; i < g.length; i++) if (f(g[0]) !== f(g[i])){ bad = `<b>${esc(T(g[i]).l)}</b> لسه مش متوصّل بـ <b>${esc(T(g[0]).l)}</b>.${ex.why && ex.why[g[i]] ? ' ' + ex.why[g[i]] : ''}`; hl = [g[i], g[0]]; break; } if (bad) break; }
+    if (!bad) for (const g of ex.groups){ for (let i = 1; i < g.length; i++) if (f(g[0]) !== f(g[i])){ bad = `<b>${esc(T(g[i]).l)}</b> غير موصّل بـ <b>${esc(T(g[0]).l)}</b> بعد.${ex.why && ex.why[g[i]] ? ' ' + ex.why[g[i]] : ''}`; hl = [g[i], g[0]]; break; } if (bad) break; }
     if (bad){ res.innerHTML = `<div class="bn-bad"><b>✗</b> ${bad}</div>`; passed = false; actBox.hidden = true; const my = err = new Set(hl || []); draw(); setTimeout(() => { if (err === my){ err = null; if (board.isConnected) draw(); } }, 3000); return {ok:false, msg:bad}; }
     passed = true; PL.mark(L, ex.key); taskBox.classList.add('ok'); const tb = host.querySelector(`.tabs [data-k="${exs.indexOf(ex)}"]`); if (tb) tb.classList.add('done');
-    res.innerHTML = `<div class="bn-ok"><b>التوصيل صح ✓</b> ${ex.ok}</div>`;
+    res.innerHTML = `<div class="bn-ok"><b>التوصيل صحيح ✓</b> ${ex.ok}</div>`;
     actBox.hidden = false; actBox.innerHTML = ex.acts.map(a => `<button type="button" class="btn" data-a="${a.k}" aria-pressed="false">${a.l}</button>`).join('');
     draw(); return {ok:true};
   }
@@ -1493,25 +1493,25 @@ PL.wire = function(host, opt){
   $('.wb-clr', host).addEventListener('click', () => { wires = []; pend = null; passed = false; actBox.hidden = true; res.innerHTML = ''; draw(); });
   $$('.tabs [data-k]', host).forEach(b => b.addEventListener('click', () => select(+b.dataset.k)));
   /* machine preview: what the correct wiring does (the wires themselves stay hidden: wiring is the learner's job) */
-  const EFF = {target:['الحساس حسّ بالحديدة', 'الحساس فصل'], i0:['لمبة I0.0 على كارت الدخل نوّرت', 'لمبة I0.0 على كارت الدخل طفت'], i1:['لمبة I0.1 على كارت الدخل نوّرت', 'لمبة I0.1 على كارت الدخل طفت'], q0:['خرج Q0.0 نوّر والحمل اللي عليه اشتغل', 'خرج Q0.0 نوّر والحمل اللي عليه وقف'], q1:['خرج Q0.1 نوّر واللمبة نوّرت', 'خرج Q0.1 نوّر واللمبة طفت'], pb:['الزرار اتداس', 'الزرار اتساب']};
-  const pvAd = {host, watchEl:board, title:'التوصيل الصح بيعمل إيه', goLabel:'شوف هتشتغل إزاي', goSub:'اتفرج على اللوحة وهي متوصّلة صح وشغالة قبل ما توصّل إنت.',
+  const EFF = {target:['استشعر الحساس القطعة المعدنية', 'الحساس فصل'], i0:['أضاء مصباح I0.0 على كارت الدخل', 'انطفأ مصباح I0.0 على كارت الدخل'], i1:['أضاء مصباح I0.1 على كارت الدخل', 'انطفأ مصباح I0.1 على كارت الدخل'], q0:['أضاء الخرج Q0.0 وعمل الحمل الموصّل عليه', 'أضاء الخرج Q0.0 وتوقف الحمل الموصّل عليه'], q1:['أضاء الخرج Q0.1 وأضاء المصباح', 'أضاء الخرج Q0.1 وانطفأ المصباح'], pb:['ضُغط الزر', 'تُرك الزر']};
+  const pvAd = {host, watchEl:board, title:'ماذا يفعل التوصيل الصحيح', goLabel:'شاهد كيف يعمل', goSub:'شاهد اللوحة وهي موصّلة توصيلًا صحيحًا وتعمل قبل أن توصّل أنت.',
     mount(box){ taskBox.after(box); }, key:() => 'w/' + L + '/' + ex.key, ex:() => ex, has:() => !!ex,
     begin(){ demoSt = {passed, act:Object.assign({}, act), hidden:actBox.hidden, html:actBox.innerHTML, pend}; pend = null; demoLive = ex.live({}); draw(); },
     end(){ if (!demoSt) return; const d = demoSt; demoSt = null; demoLive = null; actBox.hidden = d.hidden; actBox.innerHTML = d.html; act = d.act; passed = d.passed; pend = d.pend; draw(); },
-    outro:() => '<b>ده اللي المفروض يحصل.</b> دلوقتي دورك: وصّل الأسلاك بنفسك (دوس على طرف وبعدين على طرف تاني)، ودوس «اختبر التوصيل».',
+    outro:() => '<b>هذا ما يجب أن يحدث.</b> الآن دورك: وصّل الأسلاك بنفسك (اضغط على طرف ثم على طرف آخر)، ثم اضغط «اختبر التوصيل».',
     async script(pl, gen){
       const tx = PL.preview.tx, hold = ms => pl.hold(gen, ms), da = {};
-      pl.say('<b>اتفرج:</b> ده اللي هيحصل لما التوصيل يبقى صح. الأسلاك مستخبّية عشان التوصيل عليك إنت.', 'intro'); pl.hl(board, 2400); await hold(2800);
+      pl.say('<b>شاهد:</b> هذا ما سيحدث عندما يكون التوصيل صحيحًا. الأسلاك مخفية لأن التوصيل مهمتك.', 'intro'); pl.hl(board, 2400); await hold(2800);
       actBox.hidden = false; actBox.innerHTML = ex.acts.map(a => `<button type="button" class="btn" data-a="${a.k}" aria-pressed="false" tabindex="-1">${a.l}</button>`).join('');
       const effOf = (was, now) => Object.keys(EFF).filter(k => !!now[k] !== !!was[k]).map(k => tx(EFF[k][now[k] ? 0 : 1]));
       for (let j = 0; j < ex.acts.length; j++){
         pl.progress(j / ex.acts.length);
         const a = ex.acts[j], b = actBox.querySelector(`[data-a="${a.k}"]`);
         for (const on of [true, false]){
-          pl.say(on ? tx(a.l) : 'ونرجّعها زي ما كانت', 'act'); await pl.point(gen, b);
+          pl.say(on ? tx(a.l) : 'ونعيدها كما كانت', 'act'); await pl.point(gen, b);
           const was = ex.live(da); da[a.k] = on; b.setAttribute('aria-pressed', on); demoLive = ex.live(da); draw(); pl.hl(board, 900);
           const eff = effOf(was, demoLive);
-          pl.say((on ? tx(a.l) : 'رجّعناها') + (eff.length ? ' <span class="pv-arr">←</span> ' + eff.join(' و') : ''), 'fx'); await hold(on ? 2300 : 1400);
+          pl.say((on ? tx(a.l) : 'أعدناها') + (eff.length ? ' <span class="pv-arr">←</span> ' + eff.join(' و') : ''), 'fx'); await hold(on ? 2300 : 1400);
         }
       }
       pl.progress(1); pl.say(pvAd.outro(), 'end');
@@ -1538,7 +1538,7 @@ PL.wireArt = {
 PL.scaleDemo = function(host, opt){
   const S = {mA:12, lo:0, hi:4, unit:'m'};
   host.innerHTML = `<div class="wd-art sc-art"></div><div class="wd-ctl"><label>تيار الترانسميتر <b class="sc-mA"></b><input type="range" min="0" max="22" step="0.1" value="12" class="sc-r" aria-label="التيار mA"></label>
-    <label class="sc-rng">الرينج من <input type="number" class="inp mono sc-lo" value="0" step="any" aria-label="أقل قيمة"> لـ <input type="number" class="inp mono sc-hi" value="4" step="any" aria-label="أعلى قيمة"> <select class="inp sc-u" aria-label="الوحدة"><option>m</option><option>bar</option><option>°C</option><option>%</option></select></label></div>
+    <label class="sc-rng">المدى من <input type="number" class="inp mono sc-lo" value="0" step="any" aria-label="أقل قيمة"> إلى <input type="number" class="inp mono sc-hi" value="4" step="any" aria-label="أعلى قيمة"> <select class="inp sc-u" aria-label="الوحدة"><option>m</option><option>bar</option><option>°C</option><option>%</option></select></label></div>
     <div class="read"><div><span>Raw (IW64)</span><b class="sc-raw"></b></div><div><span>القيمة الحقيقية</span><b class="sc-val"></b></div><div><span>النسبة</span><b class="sc-pct"></b></div></div><p class="msg sc-msg" aria-live="polite"></p>`;
   const art = $('.sc-art', host);
   function raw(mA){ if (mA < 1.185) return 32767; return Math.max(-4864, Math.min(32511, ENG.mA2raw(mA))); }
@@ -1550,9 +1550,9 @@ PL.scaleDemo = function(host, opt){
     $('.sc-pct', host).textContent = brk ? '---' : fmt(pct, 1) + ' %';
     const m = $('.sc-msg', host);
     m.className = 'msg' + (brk || S.mA < 3.8 || S.mA > 20.5 ? ' bad' : '');
-    m.innerHTML = brk ? 'التيار تقريبًا صفر: ده <b>سلك مقطوع</b> مش تانك فاضي. كروت كتير بتطلّع رقم خطأ مخصوص (في Siemens مثلاً 32767) أو بتشغّل لمبة Diagnostic. البرنامج لازم يعتبرها عطل.' : S.mA < 3.8 ? 'تحت 4mA: الكارت بيقرا قيمة سالبة (Underrange). غالبًا الترانسميتر بيبلّغ عن عطل أو المعايرة مزحزحة.' : S.mA > 20.5 ? 'فوق 20mA: Overrange. القيمة أكبر من URV أو الترانسميتر في وضع Fail-high.' : `القانون: القيمة = ${S.lo} + (${r} ÷ 27648) × (${S.hi} − ${S.lo}) = <b>${fmt(v, 2)} ${S.unit}</b>`;
+    m.innerHTML = brk ? 'التيار صفر تقريبًا: هذا <b>سلك مقطوع</b> وليس خزانًا فارغًا. كثير من الكروت تُخرج رقم خطأ مخصصًا (مثلًا 32767 في Siemens) أو تشغّل مصباح Diagnostic. ويجب أن يعتبرها البرنامج عطلًا.' : S.mA < 3.8 ? 'أقل من 4mA: يقرأ الكارت قيمة سالبة (Underrange). غالبًا يبلّغ الترانسميتر عن عطل أو المعايرة منحرفة.' : S.mA > 20.5 ? 'أعلى من 20mA: Overrange. القيمة أكبر من URV أو الترانسميتر في وضع Fail-high.' : `المعادلة: القيمة = ${S.lo} + (${r} ÷ 27648) × (${S.hi} − ${S.lo}) = <b>${fmt(v, 2)} ${S.unit}</b>`;
     const lvl = clamp((S.mA - 4) / 16, 0, 1);
-    art.innerHTML = `<svg viewBox="0 0 360 120" role="img" aria-label="سلسلة الإشارة الأنالوج"><g transform="translate(6 18)"><rect width="64" height="80" rx="5" fill="#d9e3ea" stroke="#6b757c"/><rect x="2" y="${(78 - 76 * lvl).toFixed(1)}" width="60" height="${(76 * lvl).toFixed(1)}" fill="#3a8fd8" opacity=".85"/><text x="32" y="98" text-anchor="middle" class="ar sd-s">التانك</text></g>
+    art.innerHTML = `<svg viewBox="0 0 360 120" role="img" aria-label="سلسلة الإشارة الأنالوج"><g transform="translate(6 18)"><rect width="64" height="80" rx="5" fill="#d9e3ea" stroke="#6b757c"/><rect x="2" y="${(78 - 76 * lvl).toFixed(1)}" width="60" height="${(76 * lvl).toFixed(1)}" fill="#3a8fd8" opacity=".85"/><text x="32" y="98" text-anchor="middle" class="ar sd-s">الخزان</text></g>
       <path d="M72 58H96" class="sd-w hot"/><g transform="translate(96 34)"><rect width="56" height="48" rx="6" fill="#2a3035"/><rect x="6" y="8" width="44" height="16" rx="2" fill="#c7d3b4"/><text x="28" y="20" text-anchor="middle" style="font:600 9px var(--font-mono);fill:#1b2410">${fmt(S.mA, 1)}mA</text><text x="28" y="40" text-anchor="middle" style="font:700 8px var(--font-mono);fill:#cfd6db">LT</text></g>
       <path d="M152 58H178" class="sd-w${S.mA > 1 ? ' hot' : ''}"/><g transform="translate(178 30)"><rect width="74" height="56" rx="6" fill="#2f6fb3"/><text x="37" y="18" text-anchor="middle" style="font:700 9px var(--font-mono);fill:#fff">AI · ADC</text><text x="37" y="38" text-anchor="middle" style="font:700 12px var(--font-mono);fill:#fff">${r}</text></g>
       <path d="M252 58H272" class="sd-w hot"/><g transform="translate(272 30)"><rect width="82" height="56" rx="6" fill="#2a3035"/><text x="41" y="18" text-anchor="middle" style="font:700 9px var(--font-mono);fill:#cfd6db">SCALE</text><text x="41" y="38" text-anchor="middle" style="font:700 11px var(--font-mono);fill:#2fd35a">${brk ? '---' : fmt(v, 2)}</text><text x="41" y="50" text-anchor="middle" style="font:600 8px var(--font-mono);fill:#cfd6db">${esc(S.unit)}</text></g>
@@ -1572,9 +1572,9 @@ PL.scaleGen = function(){
   const pct = pick([10, 20, 25, 30, 40, 50, 60, 75, 80, 90]);
   const raw = Math.round(pct / 100 * ENG.RAWMAX), v = lo + pct / 100 * (hi - lo), mA = 4 + pct / 100 * 16;
   const rng = iso(`${lo}–${hi} ${u}`);
-  if (kind === 'raw2v') return {q:`ترانسميتر رينجه ${rng}، والكارت قرا <b class="mono">IW64 = ${raw}</b>. القيمة الحقيقية كام <span class="mono">${esc(u)}</span>؟`, input:true, unit:u, check:x => Math.abs(x - v) <= Math.abs(hi - lo) * 0.01, ans:fmt(v, 2), why:`${raw} ÷ 27648 = ${pct}% من الرينج.`};
-  if (kind === 'mA2raw') return {q:`الترانسميتر بيطلّع <b class="mono">${fmt(mA, 1)} mA</b>. الكارت (Siemens-style ⁦0⁠–⁠27648⁩) هيقرا كام تقريبًا؟`, input:true, unit:'raw', check:x => Math.abs(x - raw) <= 300, ans:raw, why:`(${fmt(mA, 1)} − 4) ÷ 16 = ${pct}% ⇐ ${pct}% × 27648.`};
-  return {q:`رينج ${rng}. عايز الـ PLC يعمل إنذار عند <b class="mono">${fmt(v, 1)} ${esc(u)}</b>. الـ Raw المقابل كام؟`, input:true, unit:'raw', check:x => Math.abs(x - raw) <= 300, ans:raw, why:`${fmt(v, 1)} = ${pct}% من الرينج ⇐ ${pct}% × 27648.`};
+  if (kind === 'raw2v') return {q:`ترانسميتر مداه ${rng}، وقرأ الكارت <b class="mono">IW64 = ${raw}</b>. كم القيمة الحقيقية <span class="mono">${esc(u)}</span>؟`, input:true, unit:u, check:x => Math.abs(x - v) <= Math.abs(hi - lo) * 0.01, ans:fmt(v, 2), why:`${raw} ÷ 27648 = ${pct}% من المدى.`};
+  if (kind === 'mA2raw') return {q:`الترانسميتر يُخرج <b class="mono">${fmt(mA, 1)} mA</b>. كم سيقرأ الكارت (Siemens-style ⁦0⁠–⁠27648⁩) تقريبًا؟`, input:true, unit:'raw', check:x => Math.abs(x - raw) <= 300, ans:raw, why:`(${fmt(mA, 1)} − 4) ÷ 16 = ${pct}% ⇐ ${pct}% × 27648.`};
+  return {q:`المدى ${rng}. تريد أن يعطي الـ PLC إنذارًا عند <b class="mono">${fmt(v, 1)} ${esc(u)}</b>. كم الـ Raw المقابل؟`, input:true, unit:'raw', check:x => Math.abs(x - raw) <= 300, ans:raw, why:`${fmt(v, 1)} = ${pct}% من المدى ⇐ ${pct}% × 27648.`};
 };
 
 /* ---------- lesson 5: live timing diagram for TON / TOF / TP ---------- */
@@ -1582,10 +1582,10 @@ PL.timerDemo = function(host){
   const PT = 2, WIN = 10;
   let type = 'TON', e, hist = [], t = 0, inV = 0;
   host.innerHTML = `<div class="tabs" role="group" aria-label="نوع التايمر">${['TON', 'TOF', 'TP'].map(k => `<button type="button" class="btn" data-k="${k}" aria-pressed="${k === 'TON'}">${k}</button>`).join('')}</div>
-    <div class="wd-art td-art"></div><div class="ls-io"><button type="button" class="ib ib-pb td-in" style="--cap:${LCOL.green}" aria-pressed="false" aria-label="دخل التايمر IN (اضغط وسيب)"><span class="cap" aria-hidden="true"></span><span class="l">IN</span><span class="a">I0.0</span></button><button type="button" class="ib ib-sw td-sw" aria-pressed="false" aria-label="سويتش IN"><span class="cap" aria-hidden="true"></span><span class="l">سويتش</span><span class="a">I0.0</span></button></div><p class="msg td-msg" aria-live="polite"></p>`;
+    <div class="wd-art td-art"></div><div class="ls-io"><button type="button" class="ib ib-pb td-in" style="--cap:${LCOL.green}" aria-pressed="false" aria-label="دخل التايمر IN (اضغط واترك)"><span class="cap" aria-hidden="true"></span><span class="l">IN</span><span class="a">I0.0</span></button><button type="button" class="ib ib-sw td-sw" aria-pressed="false" aria-label="مفتاح IN"><span class="cap" aria-hidden="true"></span><span class="l">مفتاح</span><span class="a">I0.0</span></button></div><p class="msg td-msg" aria-live="polite"></p>`;
   const art = $('.td-art', host), msg = $('.td-msg', host), btn = $('.td-in', host), sw = $('.td-sw', host);
   let held = false, swOn = false;
-  const desc = {TON:'<b>TON (On-delay):</b> الخرج Q بيشتغل بعد ما IN يفضل 1 لمدة PT متواصلة. لو IN وقع قبل كده العدّاد بيرجع صفر.', TOF:'<b>TOF (Off-delay):</b> Q بيشتغل مع IN على طول، ولما IN يقع Q بيفضل شغال لمدة PT وبعدين يفصل.', TP:'<b>TP (Pulse):</b> أول ما IN يبقى 1، Q بيطلّع نبضة طولها PT بالظبط، مهما IN طال أو قصر.'};
+  const desc = {TON:'<b>TON (On-delay):</b> يعمل الخرج Q بعد أن يبقى IN = 1 مدة PT متواصلة. وإذا انقطع IN قبل ذلك يعود العدّ إلى الصفر.', TOF:'<b>TOF (Off-delay):</b> يعمل Q مع IN فورًا، وعندما ينقطع IN يبقى Q يعمل مدة PT ثم يفصل.', TP:'<b>TP (Pulse):</b> بمجرد أن يصبح IN = 1، يُخرج Q نبضة طولها PT تمامًا، مهما طال IN أو قصر.'};
   function reset(){ e = new ENG.Engine([{rows:[['NO:I0.0', '-', '-', '-', type + ':T0:' + PT]]}, {rows:[['NO:T0', '-', '-', '-', 'OUT:Q0.0']]}], {cols:5}); hist = []; t = 0; msg.innerHTML = desc[type] + ` (هنا PT = ${PT} ثانية)`; }
   function draw(){
     const W = 340, X0 = 40, sx = (W - X0 - 6) / WIN, rows = [['IN', 'in', '#2f6fb3'], ['Q', 'q', '#2b7a3d']];
@@ -1626,9 +1626,9 @@ PL.timerDemo = function(host){
   const below = (id, l, x, y, pol) => ({id, l, x, y, pol, ly:24});
   const top = live => RA.rail(0, 27, 360) + A.psu(8, 6) + A.cpu(222, 6, {pwr:true});
   const DC = ['P24', 'P0', 'CL', 'CM'];
-  const msgShort = '⚡ <b>قصر:</b> +24V و 0V متوصلين ببعض.';
-  const msgMix = '⚡ <b>خطر:</b> 230V AC متوصلة بدايرة الـ 24V DC.';
-  const msgLN = '⚡ <b>قصر:</b> L و N متوصلين ببعض.';
+  const msgShort = '⚡ <b>قصر:</b> +24V و0V موصّلان معًا.';
+  const msgMix = '⚡ <b>خطر:</b> 230V AC موصّلة بدائرة الـ 24V DC.';
+  const msgLN = '⚡ <b>قصر:</b> L وN موصّلان معًا.';
   function mkDanger(ex){ return (a, b, f) => {
     const nets = {}; ex.terms.forEach(t => { const r = f(t.id); (nets[r] = nets[r] || []).push(t.id); });
     const DCT = ['P24', 'P0', 'CL', 'CM', 'IM', 'OL', 'OM', 'BN', 'BU'];
@@ -1641,52 +1641,52 @@ PL.timerDemo = function(host){
   }; }
   const sensorArt = (kind, live) => A.sensor(14, 96, kind, live) + RA.wire('M126 142C126 150 102 146 102 158', '#1a1c1e', 3.2) + RA.wire('M124 142C120 150 66 144 66 158', '#1f5fc0', 3.2) + RA.wire('M122 142C116 150 30 142 30 158', '#7a4a1e', 3.2) + RA.wire('M126 130V143', '#4a4f53', 6.5) + RA.terms(12, 150, 3, 36, ['#8e9398', '#4d7fc4', '#8e9398']);
   const leadT = [below('BN', 'BN', 30, 168, 'p24'), below('BU', 'BU', 66, 168, 'p0'), below('BK', 'BK', 102, 168, 'sig')];
-  const pbArt = live => A.pb(20, 206, live, 'زرار Start NO');
+  const pbArt = live => A.pb(20, 206, live, 'زر Start NO');
   const pbT = [below('PB13', '13', 34, 268, 'sig'), below('PB14', '14', 78, 268, 'sig')];
   const inCard = (title, live) => A.card(230, 96, 122, 196, title, [{y:180, k:'i0'}, {y:230, k:'i1'}], live) + `<text x="324" y="170" text-anchor="middle" style="font:600 7px var(--font-mono);fill:#2a3035">I0.0</text><text x="324" y="220" text-anchor="middle" style="font:600 7px var(--font-mono);fill:#2a3035">I0.1</text>`;
   const ex = [];
   /* PNP sensor + sinking input card (1M on 0V) */
   ex.push({key:'pnp', title:'دخل PNP', h:300,
-    task:'<p class="tk-g"><b>الهدف:</b> توصّل حساس PNP وزرار على كارت الدخل.</p><b>وصّل الأسلاك دي (دوس على طرف وبعدين على الطرف التاني):</b><ol class="tk-s"><li>باور الـ CPU: وصّل +24V بـ L+، و 0V بـ M.</li><li>باور الحساس: وصّل البني BN بـ +24V، والأزرق BU بـ 0V.</li><li>إشارة الحساس: وصّل الأسود BK بـ <b>I0.0</b>.</li><li>الزرار: وصّل طرف 13 بـ +24V، وطرف 14 بـ <b>I0.1</b>.</li><li>كومن الكارت: وصّل 1M بـ 0V.</li></ol><p class="tk-n">بعدها جرّب: قرّب حديدة من الحساس ← لمبة <b>I0.0</b> تنوّر. ودوس Start ← لمبة <b>I0.1</b> تنوّر.</p>',
+    task:'<p class="tk-g"><b>الهدف:</b> أن توصّل حساس PNP وزرًا على كارت الدخل.</p><b>وصّل هذه الأسلاك (اضغط على طرف ثم على الطرف الآخر):</b><ol class="tk-s"><li>تغذية الـ CPU: وصّل +24V بـ L+، و0V بـ M.</li><li>تغذية الحساس: وصّل البني BN بـ +24V، والأزرق BU بـ 0V.</li><li>إشارة الحساس: وصّل الأسود BK بـ <b>I0.0</b>.</li><li>الزر: وصّل الطرف 13 بـ +24V، والطرف 14 بـ <b>I0.1</b>.</li><li>كومن الكارت: وصّل 1M بـ 0V.</li></ol><p class="tk-n">ثم جرّب: قرّب قطعة معدنية من الحساس ← يضيء مصباح <b>I0.0</b>. واضغط Start ← يضيء مصباح <b>I0.1</b>.</p>',
     terms:base().concat(leadT, pbT, [right('IM', '1M', 130, 'sig'), right('I0', 'I0.0', 180, 'sig'), right('I1', 'I0.1', 230, 'sig')]),
     groups:[['P24', 'CL', 'BN', 'PB13'], ['P0', 'CM', 'BU', 'IM'], ['BK', 'I0'], ['PB14', 'I1']],
-    why:{IM:'مع PNP الـ 1M على 0V.', BK:'BK مكانه دخل الكارت.', PB13:'طرف الزرار على +24V والتاني على الدخل.', CL:'L+ على +24V.', CM:'M على 0V.'},
+    why:{IM:'مع PNP يكون الـ 1M على 0V.', BK:'مكان BK هو دخل الكارت.', PB13:'طرف الزر على +24V والآخر على الدخل.', CL:'L+ على +24V.', CM:'M على 0V.'},
     art:live => top(live) + sensorArt('PNP', live) + pbArt(live.i1) + inCard('DI 24V DC', live),
     live:a => ({target:a.target, i0:a.target, i1:a.pb}),
-    acts:[{k:'target', l:'قرّب حديدة من الحساس'}, {k:'pb', l:'دوس زرار Start'}],
-    ok:'BK بيطلّع +24V، والتيار يرجع من 1M لـ 0V.'});
+    acts:[{k:'target', l:'قرّب قطعة معدنية من الحساس'}, {k:'pb', l:'اضغط زر Start'}],
+    ok:'BK يُخرج +24V، ويعود التيار من 1M إلى 0V.'});
   /* NPN sensor + sourcing card (1M on +24V) */
   ex.push({key:'npn', title:'دخل NPN', h:300,
-    task:'<p class="tk-g"><b>الهدف:</b> نفس التوصيل بحساس NPN. الـ NPN بيوصّل الإشارة لـ 0V، فالكومن بيتعكس.</p><b>وصّل الأسلاك دي:</b><ol class="tk-s"><li>باور الـ CPU: وصّل +24V بـ L+، و 0V بـ M.</li><li>باور الحساس: البني BN بـ +24V، والأزرق BU بـ 0V.</li><li>إشارة الحساس: الأسود BK بـ <b>I0.0</b>.</li><li>كومن الكارت: وصّل 1M بـ +24V (مش 0V).</li><li>الزرار: طرف 13 بـ 0V، وطرف 14 بـ <b>I0.1</b>.</li></ol><p class="tk-n">بعدها جرّب: قرّب حديدة من الحساس، ودوس Start، وشوف لمبات الدخل.</p>',
+    task:'<p class="tk-g"><b>الهدف:</b> التوصيل نفسه بحساس NPN. الـ NPN يوصّل الإشارة إلى 0V، فينعكس الكومن.</p><b>وصّل هذه الأسلاك:</b><ol class="tk-s"><li>تغذية الـ CPU: وصّل +24V بـ L+، و0V بـ M.</li><li>تغذية الحساس: البني BN بـ +24V، والأزرق BU بـ 0V.</li><li>إشارة الحساس: الأسود BK بـ <b>I0.0</b>.</li><li>كومن الكارت: وصّل 1M بـ +24V (لا 0V).</li><li>الزر: الطرف 13 بـ 0V، والطرف 14 بـ <b>I0.1</b>.</li></ol><p class="tk-n">ثم جرّب: قرّب قطعة معدنية من الحساس، واضغط Start، ولاحظ مصابيح الدخل.</p>',
     terms:base().concat(leadT, pbT, [right('IM', '1M', 130, 'sig'), right('I0', 'I0.0', 180, 'sig'), right('I1', 'I0.1', 230, 'sig')]),
     groups:[['P24', 'CL', 'BN', 'IM'], ['P0', 'CM', 'BU', 'PB13'], ['BK', 'I0'], ['PB14', 'I1']],
-    why:{IM:'مع NPN الـ 1M على +24V.', PB13:'الزرار يسحب الدخل لـ 0V.', BK:'BK مكانه دخل الكارت.', CL:'L+ على +24V.', CM:'M على 0V.'},
+    why:{IM:'مع NPN يكون الـ 1M على +24V.', PB13:'الزر يسحب الدخل إلى 0V.', BK:'مكان BK هو دخل الكارت.', CL:'L+ على +24V.', CM:'M على 0V.'},
     art:live => top(live) + sensorArt('NPN', live) + pbArt(live.i1) + inCard('DI 24V DC', live),
     live:a => ({target:a.target, i0:a.target, i1:a.pb}),
-    acts:[{k:'target', l:'قرّب حديدة من الحساس'}, {k:'pb', l:'دوس زرار Start'}],
-    ok:'التيار من +24V لـ 1M، ويخرج من I0.0 لـ BK.'});
+    acts:[{k:'target', l:'قرّب قطعة معدنية من الحساس'}, {k:'pb', l:'اضغط زر Start'}],
+    ok:'التيار من +24V إلى 1M، ويخرج من I0.0 إلى BK.'});
   /* transistor (sourcing) output: 24 V DC loads */
   ex.push({key:'tr', title:'خرج ترانزستور', h:300,
-    task:'<p class="tk-g"><b>الهدف:</b> توصّل كونتاكتور 24V ولمبة 24V على خرج ترانزستور.</p><b>وصّل الأسلاك دي:</b><ol class="tk-s"><li>باور الـ CPU: وصّل +24V بـ L+، و 0V بـ M.</li><li>باور كارت الخرج: وصّل 3L+ بـ +24V، و 3M بـ 0V.</li><li>الكونتاكتور: وصّل A1 بـ <b>Q0.0</b>، و A2 بـ 0V.</li><li>اللمبة: وصّل X1 بـ <b>Q0.1</b>، و X2 بـ 0V.</li></ol><p class="tk-n">بعدها جرّب: خلّي البرنامج يشغّل <b>Q0.0</b> ← الكونتاكتور يشد، و <b>Q0.1</b> ← اللمبة تنوّر.</p>',
+    task:'<p class="tk-g"><b>الهدف:</b> أن توصّل كونتاكتور 24V ومصباح 24V على خرج ترانزستور.</p><b>وصّل هذه الأسلاك:</b><ol class="tk-s"><li>تغذية الـ CPU: وصّل +24V بـ L+، و0V بـ M.</li><li>تغذية كارت الخرج: وصّل 3L+ بـ +24V، و3M بـ 0V.</li><li>الكونتاكتور: وصّل A1 بـ <b>Q0.0</b>، وA2 بـ 0V.</li><li>المصباح: وصّل X1 بـ <b>Q0.1</b>، وX2 بـ 0V.</li></ol><p class="tk-n">ثم جرّب: اجعل البرنامج يشغّل <b>Q0.0</b> ← يجذب الكونتاكتور، و<b>Q0.1</b> ← يضيء المصباح.</p>',
     terms:base().concat([below('KA1', 'A1', 30, 166, 'sig'), below('KA2', 'A2', 82, 166, 'p0'), below('HX1', 'X1', 30, 270, 'sig'), below('HX2', 'X2', 82, 270, 'p0'),
       right('OL', '3L+', 130, 'p24'), right('Q0', 'Q0.0', 175, 'sig'), right('Q1', 'Q0.1', 220, 'sig'), right('OM', '3M', 265, 'p0')]),
     groups:[['P24', 'CL', 'OL'], ['P0', 'CM', 'OM', 'KA2', 'HX2'], ['Q0', 'KA1'], ['Q1', 'HX1']],
-    why:{OL:'3L+ على +24V.', OM:'3M على 0V.', KA2:'A2 يرجع لـ 0V.', HX2:'X2 يرجع لـ 0V.', CL:'L+ على +24V.', CM:'M على 0V.'},
-    art:live => top(live) + A.coil(14, 110, 'كونتاكتور 24V DC', live.q0) + `<path d="M30 150v8M82 150v8" stroke="#2a3035" stroke-width="2"/>` + A.lamp(36, 216, live.q1) + `<text x="98" y="238" class="ar" style="font-size:10px;fill:var(--ink)">لمبة 24V</text>` + A.card(230, 96, 122, 196, 'DQ 24V DC (Tr)', [{y:175, k:'q0', c:'#ffb300'}, {y:220, k:'q1', c:'#ffb300'}], live),
+    why:{OL:'3L+ على +24V.', OM:'3M على 0V.', KA2:'A2 يعود إلى 0V.', HX2:'X2 يعود إلى 0V.', CL:'L+ على +24V.', CM:'M على 0V.'},
+    art:live => top(live) + A.coil(14, 110, 'كونتاكتور 24V DC', live.q0) + `<path d="M30 150v8M82 150v8" stroke="#2a3035" stroke-width="2"/>` + A.lamp(36, 216, live.q1) + `<text x="98" y="238" class="ar" style="font-size:10px;fill:var(--ink)">مصباح 24V</text>` + A.card(230, 96, 122, 196, 'DQ 24V DC (Tr)', [{y:175, k:'q0', c:'#ffb300'}, {y:220, k:'q1', c:'#ffb300'}], live),
     live:a => ({q0:a.q0, q1:a.q1}),
     acts:[{k:'q0', l:'البرنامج يشغّل Q0.0'}, {k:'q1', l:'البرنامج يشغّل Q0.1'}],
-    ok:'ترانزستور: سريع، بس <b>DC بس</b> وحوالي 0.5A.'});
+    ok:'ترانزستور: سريع، لكنه <b>DC فقط</b> ونحو 0.5A.'});
   /* relay output: 230 V AC contactor */
   ex.push({key:'rly', title:'خرج ريلاي', h:300,
-    task:'<p class="tk-g"><b>الهدف:</b> توصّل كونتاكتور 230V AC على خرج ريلاي.</p><b>وصّل الأسلاك دي:</b><ol class="tk-s"><li>باور الـ CPU: وصّل +24V بـ L+، و 0V بـ M.</li><li>كومن الريلاي: وصّل 1L بالفاز L (230V).</li><li>الكونتاكتور: وصّل A1 بـ <b>Q0.0</b>، و A2 بالنيوترال N.</li></ol><p class="tk-n">خلي بالك: ما توصّلش 230V على أي طرف 24V. بعدها جرّب: خلّي البرنامج يشغّل <b>Q0.0</b> ← الموتور يشتغل.</p>',
+    task:'<p class="tk-g"><b>الهدف:</b> أن توصّل كونتاكتور 230V AC على خرج ريلاي.</p><b>وصّل هذه الأسلاك:</b><ol class="tk-s"><li>تغذية الـ CPU: وصّل +24V بـ L+، و0V بـ M.</li><li>كومن الريلاي: وصّل 1L بالفاز L (230V).</li><li>الكونتاكتور: وصّل A1 بـ <b>Q0.0</b>، و A2 بالنيوترال N.</li></ol><p class="tk-n">انتبه: لا توصّل 230V على أي طرف 24V. ثم جرّب: اجعل البرنامج يشغّل <b>Q0.0</b> ← يعمل المحرك.</p>',
     terms:base().concat([{id:'ACL', l:'L', x:150, y:54, pol:'ac'}, {id:'ACN', l:'N', x:196, y:54, pol:'n'},
       below('KA1', 'A1', 30, 166, 'sig'), below('KA2', 'A2', 82, 166, 'coil'), right('RL', '1L', 130, 'sig'), right('Q0', 'Q0.0', 180, 'sig'), right('Q1', 'Q0.1', 230, 'sig')]),
     groups:[['P24', 'CL'], ['P0', 'CM'], ['ACL', 'RL'], ['Q0', 'KA1'], ['ACN', 'KA2']],
-    why:{RL:'1L ياخد الفاز L.', KA1:'Q0.0 رايح على A1.', KA2:'A2 على N.', CL:'L+ على +24V.', CM:'M على 0V.'},
-    art:live => A.psu(8, 6) + RA.mcb(124, 6, 94, 64, 'بعد القاطع') + A.cpu(222, 6, {pwr:true}) + A.coil(14, 110, 'كونتاكتور 230V AC', live.q0) + `<path d="M30 150v8M82 150v8" stroke="#2a3035" stroke-width="2"/>` + (live.q0 ? `<g transform="translate(20 200)">${PL.motorSvg(36, 40, 54, 30, true)}<text x="90" y="44" class="ar" style="font-size:10px;fill:var(--ink)">الموتور اشتغل</text></g>` : '') + A.card(230, 96, 122, 196, 'DQ Relay', [{y:180, k:'q0', c:'#ffb300'}, {y:230, k:'q1', c:'#ffb300'}], live),
+    why:{RL:'1L يأخذ الفاز L.', KA1:'Q0.0 يذهب إلى A1.', KA2:'A2 على N.', CL:'L+ على +24V.', CM:'M على 0V.'},
+    art:live => A.psu(8, 6) + RA.mcb(124, 6, 94, 64, 'بعد القاطع') + A.cpu(222, 6, {pwr:true}) + A.coil(14, 110, 'كونتاكتور 230V AC', live.q0) + `<path d="M30 150v8M82 150v8" stroke="#2a3035" stroke-width="2"/>` + (live.q0 ? `<g transform="translate(20 200)">${PL.motorSvg(36, 40, 54, 30, true)}<text x="90" y="44" class="ar" style="font-size:10px;fill:var(--ink)">عمل المحرك</text></g>` : '') + A.card(230, 96, 122, 196, 'DQ Relay', [{y:180, k:'q0', c:'#ffb300'}, {y:230, k:'q1', c:'#ffb300'}], live),
     live:a => ({q0:a.q0}),
     acts:[{k:'q0', l:'البرنامج يشغّل Q0.0'}],
-    ok:'ريليه: AC أو DC لحد 2A، بس أبطأ.'});
+    ok:'ريلاي: AC أو DC حتى 2A، لكنه أبطأ.'});
   ex.forEach(x => { x.danger = mkDanger(x); x.terms.forEach(t => { if (!t.pol) t.pol = 'sig'; }); });
   PL.wireEx = ex;
 })();
@@ -1800,7 +1800,7 @@ PL.brandCards = function(host){
   let done = {}; try { const s = JSON.parse(localStorage.getItem('plcx-lab-v1')); if (s && s.done) done = s.done; } catch (e){}
   const n = id => Object.keys(done).filter(k => k.indexOf(id + '/') === 0).length;
   host.classList.add('bcards');
-  host.innerHTML = PL.BRANDS.map(b => { const c = n(b.id); return `<a class="bcard" href="${b.file}"><span class="bf" aria-hidden="true">${FACE[b.id](b.st)}</span><span class="bt"><b dir="ltr">${b.name}</b><span class="bs">${b.sub}</span><span class="btg">${b.tags.map(t => `<i>${t}</i>`).join('')}</span><span class="bp">${c ? `خلّصت ${Math.min(c, PL.BRAND_N)} من ${PL.BRAND_N} ${c >= PL.BRAND_N ? '✓' : '←'}` : PL.BRAND_N + ' تمارين ←'}</span></span></a>`; }).join('');
+  host.innerHTML = PL.BRANDS.map(b => { const c = n(b.id); return `<a class="bcard" href="${b.file}"><span class="bf" aria-hidden="true">${FACE[b.id](b.st)}</span><span class="bt"><b dir="ltr">${b.name}</b><span class="bs">${b.sub}</span><span class="btg">${b.tags.map(t => `<i>${t}</i>`).join('')}</span><span class="bp">${c ? `أنجزت ${Math.min(c, PL.BRAND_N)} من ${PL.BRAND_N} ${c >= PL.BRAND_N ? '✓' : '←'}` : PL.BRAND_N + ' تمارين ←'}</span></span></a>`; }).join('');
 };
 
 /* ================= machine preview: «▶ شوف المكنة شغّالة» =================
@@ -1833,16 +1833,16 @@ function ptx(s){
   return out + esc(s.slice(last));
 }
 PV.tx = ptx;
-const secs = n => { const v = Math.round(n * 10) / 10; return `<bdi dir="ltr">${fmt(v, v % 1 ? 1 : 0)}</bdi> ${v >= 3 && v <= 10 ? 'ثواني' : 'ثانية'}`; };
+const secs = n => { const v = Math.round(n * 10) / 10; return `<bdi dir="ltr">${fmt(v, v % 1 ? 1 : 0)}</bdi> ${v >= 3 && v <= 10 ? 'ثوانٍ' : 'ثانية'}`; };
 
 /* ---------- the player: control bar (fixed at the bottom while playing) + tap marker inside the simulator ---------- */
 function Player(host, o){
   const bar = document.createElement('div');
-  bar.className = 'pv-bar' + (o.loop ? ' pv-loop' : ''); bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'عرض المكنة وهي شغالة');
-  bar.innerHTML = `<div class="pv-in"><div class="pv-top"><span class="pv-rec" aria-hidden="true"></span><b class="pv-t">${esc(o.title)}</b><span class="pv-ff" hidden>⏩<span class="pv-fft"> بنسرّع الوقت</span></span><span class="sp"></span>
-    <button type="button" class="btn sm pv-pause" aria-label="وقّف مؤقتًا" aria-pressed="false">${pvIc('pause')}</button><button type="button" class="btn sm pv-spd" aria-label="السرعة">1×</button><button type="button" class="btn sm pv-skip" aria-label="روح للآخر">${pvIc('skip')}</button><button type="button" class="btn sm pv-rep" aria-label="شوفها من الأول">${pvIc('rep')}</button>${o.loop ? '' : `<button type="button" class="btn sm pri pv-try">يلا جرّب إنت</button>`}</div>
+  bar.className = 'pv-bar' + (o.loop ? ' pv-loop' : ''); bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'عرض الماكينة وهي تعمل');
+  bar.innerHTML = `<div class="pv-in"><div class="pv-top"><span class="pv-rec" aria-hidden="true"></span><b class="pv-t">${esc(o.title)}</b><span class="pv-ff" hidden>⏩<span class="pv-fft"> نسرّع الزمن</span></span><span class="sp"></span>
+    <button type="button" class="btn sm pv-pause" aria-label="إيقاف مؤقت" aria-pressed="false">${pvIc('pause')}</button><button type="button" class="btn sm pv-spd" aria-label="السرعة">1×</button><button type="button" class="btn sm pv-skip" aria-label="انتقل إلى النهاية">${pvIc('skip')}</button><button type="button" class="btn sm pv-rep" aria-label="شاهدها من البداية">${pvIc('rep')}</button>${o.loop ? '' : `<button type="button" class="btn sm pri pv-try">جرّب أنت الآن</button>`}</div>
     <div class="pv-cap" aria-live="polite"></div><div class="pv-pr" aria-hidden="true"><i></i></div>
-    ${o.auto ? '<div class="pv-end"><button type="button" class="btn sm pv-noauto">متشغّلهاش لوحدها تاني</button></div>' : ''}</div>`;
+    ${o.auto ? '<div class="pv-end"><button type="button" class="btn sm pv-noauto">لا تشغّلها تلقائيًا مرة أخرى</button></div>' : ''}</div>`;
   host.insertBefore(bar, host.firstChild); document.body.classList.add('pv-playing');
   const fing = document.createElement('div'); fing.className = 'pv-fing'; fing.setAttribute('aria-hidden', 'true'); fing.innerHTML = '<i></i>';
   host.classList.add('pv-host'); host.appendChild(fing);
@@ -1872,15 +1872,15 @@ function Player(host, o){
     if (!opt || !opt.noTap){ fing.classList.remove('tap'); void fing.offsetWidth; fing.classList.add('tap'); P.hl(el, 1300); await P.hold(gen, 160); }
   };
   P.hideFinger = () => fing.classList.remove('show', 'mv', 'tap');
-  P.reset = () => { P.paused = false; pauseB.innerHTML = pvIc('pause'); pauseB.setAttribute('aria-pressed', 'false'); pauseB.setAttribute('aria-label', 'وقّف مؤقتًا'); bar.classList.remove('done'); P.ff(false); P.progress(0); P.say(''); P.hideFinger(); P.last = 0; };
+  P.reset = () => { P.paused = false; pauseB.innerHTML = pvIc('pause'); pauseB.setAttribute('aria-pressed', 'false'); pauseB.setAttribute('aria-label', 'إيقاف مؤقت'); bar.classList.remove('done'); P.ff(false); P.progress(0); P.say(''); P.hideFinger(); P.last = 0; };
   P.finish = () => { bar.classList.add('done'); P.ff(false); P.progress(1); P.hideFinger(); };
   P.destroy = () => { P.gen++; bar.remove(); document.body.classList.remove('pv-playing'); fing.remove(); host.classList.remove('pv-host'); P.hls.forEach(el => el.classList.remove('pv-hl')); };
-  pauseB.addEventListener('click', () => { P.paused = !P.paused; pauseB.innerHTML = pvIc(P.paused ? 'play' : 'pause'); pauseB.setAttribute('aria-pressed', P.paused); pauseB.setAttribute('aria-label', P.paused ? 'كمّل' : 'وقّف مؤقتًا'); bar.classList.toggle('paused', P.paused); });
+  pauseB.addEventListener('click', () => { P.paused = !P.paused; pauseB.innerHTML = pvIc(P.paused ? 'play' : 'pause'); pauseB.setAttribute('aria-pressed', P.paused); pauseB.setAttribute('aria-label', P.paused ? 'تابع' : 'إيقاف مؤقت'); bar.classList.toggle('paused', P.paused); });
   spdB.addEventListener('click', () => { P.sp = P.sp === 1 ? 2 : 1; spdB.textContent = P.sp + '×'; });
   bar.querySelector('.pv-skip').addEventListener('click', () => o.onSkip());
   bar.querySelector('.pv-rep').addEventListener('click', () => o.onReplay());
   if (!o.loop) bar.querySelector('.pv-try').addEventListener('click', () => o.onTry());
-  const na = bar.querySelector('.pv-noauto'); if (na) na.addEventListener('click', () => { PV.setAuto(false); na.textContent = 'تمام، مش هتشتغل لوحدها تاني'; na.disabled = true; });
+  const na = bar.querySelector('.pv-noauto'); if (na) na.addEventListener('click', () => { PV.setAuto(false); na.textContent = 'حسنًا، لن تعمل تلقائيًا مرة أخرى'; na.disabled = true; });
   return P;
 }
 
@@ -1910,7 +1910,7 @@ PV.play = function(ad, opt){
   ctl.replay = () => { stopRun(); run(); };
   ctl.skip = () => { if (ctl.done) return; pl.gen++; ctl.done = true; ctl.skipped = true; pl.say(ad.outro(), 'end'); pl.finish(); };
   ctl.pause = v => { if (!!v !== pl.paused) pl.bar.querySelector('.pv-pause').click(); };
-  pl = Player(ad.host, {title:ad.title || 'المكنة شغالة', auto:opt.auto, onTry:ctl.close, onReplay:ctl.replay, onSkip:ctl.skip});
+  pl = Player(ad.host, {title:ad.title || 'الماكينة تعمل', auto:opt.auto, onTry:ctl.close, onReplay:ctl.replay, onSkip:ctl.skip});
   ctl.player = pl;
   PV.cur = ctl;
   run();
@@ -1952,7 +1952,7 @@ if (HAS_DOM) document.addEventListener('keydown', ev => { if (ev.key === 'Escape
 /* launch button + auto-play the first time each exercise's machine comes into view */
 PV.attach = function(ad){
   const box = document.createElement('div'); box.className = 'pv-launch';
-  box.innerHTML = `<button type="button" class="btn pv-go">▶ ${esc(ad.goLabel || 'شوف المكنة شغّالة')}</button><span class="muted">${esc(ad.goSub || 'اتفرج على المكنة وهي شغالة صح قبل ما تكتب البرنامج.')}</span>`;
+  box.innerHTML = `<button type="button" class="btn pv-go">▶ ${esc(ad.goLabel || 'شاهد الماكينة وهي تعمل')}</button><span class="muted">${esc(ad.goSub || 'شاهد الماكينة وهي تعمل بشكل صحيح قبل أن تكتب البرنامج.')}</span>`;
   ad.mount(box);
   box.querySelector('.pv-go').addEventListener('click', () => PV.play(ad));
   let vis = false, tmr = 0;
@@ -1980,7 +1980,7 @@ async function simScript(ad, pl, gen, ctl){
   const nm = a => { const l = ad.lab(a), ad2 = ad.addr(a); return `<b>${ptx(l || ad2)}</b>${l ? ` <bdi dir="ltr" class="pv-a">${esc(ad2)}</bdi>` : ''}`; };
   const isLamp = a => { const o = outs.find(x => x.a === a) || {}; return o.kind === 'lamp' || /لمب|lamp|light/i.test(o.label || ''); };
   const chip = (a, on) => `<span class="pv-st${on ? ' on' : ''}">${ptx(ad.lab(a) || ad.addr(a))} <bdi dir="ltr">${on ? 'ON' : 'OFF'}</bdi></span>`;
-  const verb = (a, on) => isLamp(a) ? (on ? 'نوّرت' : 'طفت') : (on ? 'اشتغل' : 'وقف');
+  const verb = (a, on) => isLamp(a) ? (on ? 'أضاء' : 'انطفأ') : (on ? 'عمل' : 'توقف');
   let prev = {}, prevAuto = {}, cause = {txt:'', t:0, key:'start', el:null};
   const snapOuts = () => outs.forEach(o => { prev[o.a] = E().get(o.a) ? 1 : 0; });
   const autos = ins.filter(i => i.kind === 'auto');
@@ -1991,7 +1991,7 @@ async function simScript(ad, pl, gen, ctl){
   let curUntil = null, untilHit = false;
   const step = () => { ad.advance(DT); watches.forEach(w => { try { w(ctx); } catch (er){} }); if (curUntil && !untilHit){ try { if (curUntil(ctx)) untilHit = true; } catch (er){ untilHit = true; } } };
   function changes(){ const ch = []; outs.forEach(o => { const v = E().get(o.a) ? 1 : 0; if (v !== prev[o.a]){ ch.push({a:o.a, on:v}); prev[o.a] = v; } }); return ch; }
-  function watchAutos(){ autos.forEach(i => { const v = E().get(i.a) ? 1 : 0; if (v !== prevAuto[i.a]){ prevAuto[i.a] = v; cause = {txt:`${nm(i.a)} ${v ? 'حسّ' : 'فصل'}`, t:E().t, key:'auto:' + i.a + v, el:null}; } }); }
+  function watchAutos(){ autos.forEach(i => { const v = E().get(i.a) ? 1 : 0; if (v !== prevAuto[i.a]){ prevAuto[i.a] = v; cause = {txt:`${nm(i.a)} ${v ? 'استشعر' : 'فصل'}`, t:E().t, key:'auto:' + i.a + v, el:null}; } }); }
   async function narrate(ch, done){
     /* outputs that switch a scan or two later belong to the same moment */
     for (let k = 0; k < 4 && !done(); k++){ step(); watchAutos(); changes().forEach(c => { const j = ch.findIndex(x => x.a === c.a); if (j >= 0) ch.splice(j, 1); else ch.push(c); }); }
@@ -2032,13 +2032,13 @@ async function simScript(ad, pl, gen, ctl){
     if (how !== 'force' && cur === v && how !== 'press') return;
     const act = v !== def(a), k = i.kind;
     let txt, done; /* txt: what we do now · done: the same thing said as the cause of what follows */
-    if (k === 'pb' || k === 'pbnc'){ txt = how === 'press' ? `دوس ${nm(a)} وسيبه` : act ? `دوس ${nm(a)} وخليك دايس` : `سيب ${nm(a)}`; done = how === 'press' || act ? `دوست ${nm(a)}` : `سيبت ${nm(a)}`; }
-    else if (k === 'sw'){ txt = v ? `شغّل السويتش ${nm(a)}` : `اقفل السويتش ${nm(a)}`; done = v ? `شغّلت السويتش ${nm(a)}` : `قفلت السويتش ${nm(a)}`; }
-    else if (k === 'sensor') txt = v ? `الحساس ${nm(a)} حسّ` : `الحساس ${nm(a)} فصل`;
-    else if (k === 'ncsw') txt = v ? `${nm(a)} رجع طبيعي` : `${nm(a)} فصل`;
+    if (k === 'pb' || k === 'pbnc'){ txt = how === 'press' ? `اضغط ${nm(a)} واتركه` : act ? `اضغط ${nm(a)} واستمر في الضغط` : `اترك ${nm(a)}`; done = how === 'press' || act ? `ضغطت ${nm(a)}` : `تركت ${nm(a)}`; }
+    else if (k === 'sw'){ txt = v ? `شغّل المفتاح ${nm(a)}` : `أطفئ المفتاح ${nm(a)}`; done = v ? `شغّلت المفتاح ${nm(a)}` : `أطفأت المفتاح ${nm(a)}`; }
+    else if (k === 'sensor') txt = v ? `الحساس ${nm(a)} استشعر` : `الحساس ${nm(a)} فصل`;
+    else if (k === 'ncsw') txt = v ? `${nm(a)} عاد طبيعيًا` : `${nm(a)} فصل`;
     else txt = `${nm(a)} = <bdi dir="ltr">${v}</bdi>`;
     let note = '';
-    if ((k === 'pbnc' || k === 'ncsw') && act && !said['nc:' + a]){ said['nc:' + a] = 1; note = ` <span class="pv-note">(متوصّل <bdi dir="ltr">NC</bdi>: وهو ساكت الإشارة <bdi dir="ltr">1</bdi>، ولما ${k === 'pbnc' ? 'تدوسه' : 'يفصل'} تبقى <bdi dir="ltr">0</bdi>)</span>`; }
+    if ((k === 'pbnc' || k === 'ncsw') && act && !said['nc:' + a]){ said['nc:' + a] = 1; note = ` <span class="pv-note">(موصّل <bdi dir="ltr">NC</bdi>: في الحالة العادية تكون الإشارة <bdi dir="ltr">1</bdi>، وعندما ${k === 'pbnc' ? 'تضغطه' : 'يفصل'} تصبح <bdi dir="ltr">0</bdi>)</span>`; }
     pl.say(txt + note, 'act');
     await pl.point(gen, ad.inBtn(a));
     ad.setIn(a, v);
@@ -2046,15 +2046,15 @@ async function simScript(ad, pl, gen, ctl){
     if (note) await hold(1500);
   }
   function plantTxt(p){
-    if ('obst' in p) return p.obst ? 'عربية وقفت تحت الباب (عين الأمان شايفاها)' : 'العربية مشيت من تحت الباب';
-    if ('level' in p) return `مستوى التانك بقى <bdi dir="ltr">${esc(p.level)}%</bdi>`;
-    return 'حصل تغيير في المكنة';
+    if ('obst' in p) return p.obst ? 'وقفت سيارة تحت الباب (حساس الأمان يراها)' : 'ابتعدت السيارة من تحت الباب';
+    if ('level' in p) return `أصبح مستوى الخزان <bdi dir="ltr">${esc(p.level)}%</bdi>`;
+    return 'حدث تغيير في الماكينة';
   }
 
   /* ---- go ---- */
   for (let k = 0; k < 5; k++) ad.advance(DT); /* same 0.05 s settle as the auto-check */
   snapOuts(); snapAuto();
-  pl.say(`<b>اتفرج:</b> البرنامج الصح شغال جوه الـ <bdi dir="ltr">PLC</bdi> ومستخبّي عنك. هندوس على الزراير زي ما انت هتعمل، وشوف المكنة بتعمل إيه.`, 'intro');
+  pl.say(`<b>شاهد:</b> البرنامج الصحيح يعمل داخل الـ <bdi dir="ltr">PLC</bdi> ومخفي عنك. سنضغط على الأزرار كما ستفعل أنت، ولاحظ ما تفعله الماكينة.`, 'intro');
   pl.hl(ad.plantEl(), 2000);
   await hold(2400);
   ctl.steps = steps.length;
