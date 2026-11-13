@@ -45,6 +45,8 @@ const COURSE_DIRS = new Set(["classic-control-lab", "safety-lab", "basics-lab", 
 const OPEN_DIRS = new Set(["courses", "pdf-tools"]); // pdf-tools: the free PDF editor is open to visitors without an account
 // Courses still being prepared: only admins can open their pages (remove the folder from here to publish)
 const HIDDEN_DIRS = new Set([]); // folders whose pages stay open without an account
+// Private folders: only these accounts can open their pages (not other members, not other admins).
+const OWNER_ONLY = { "tcp70-lab": ["abdoelsayedd1011@gmail.com"] }; // TCP 70 simulator, private to the site owner
 
 // "/plc-lab/", "/plc-lab/lesson-01.html", "/interview/" are pages; "/assets/site.js", "/og.png" are not.
 function isPage(pathname){
@@ -150,6 +152,7 @@ export async function onRequest(ctx){
     db = await getDb(ctx.env);
     s = await sessionUser(db, ctx.request);
   } catch (e) {
+    if (OWNER_ONLY[path.split("/")[1]]) return new Response(null, { status: 302, headers: { location: pre + "/labs.html", "cache-control": "no-store" } }); // private pages never open without a check
     return ctx.next(); // accounts backend unavailable: don't lock everyone out
   }
   const go = page => {
@@ -158,6 +161,8 @@ export async function onRequest(ctx){
     return new Response(null, { status: 302, headers: { location: to.pathname + to.search, "cache-control": "no-store" } });
   };
   if (!s) return go(pre + (hasSessionCookie(ctx.request) ? "/login.html?out=1" : "/login.html")); // out=1: this device was signed out (see login.html)
+  const owners = OWNER_ONLY[path.split("/")[1]];
+  if (owners && !owners.includes(String(s.user && s.user.email || "").trim().toLowerCase())) return new Response(null, { status: 302, headers: { location: pre + "/labs.html", "cache-control": "no-store" } });
   if (HIDDEN_DIRS.has(path.split("/")[1]) && !isAdmin(s.user)) return new Response(null, { status: 302, headers: { location: pre + "/labs.html", "cache-control": "no-store" } });
   const free = !paywallOn(ctx.env) || isPro(s.user) || isAdmin(s.user);
   if (gated && !free){
