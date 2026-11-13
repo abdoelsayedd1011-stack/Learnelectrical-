@@ -6,500 +6,751 @@
 <meta name="description" content="محاكي تصحيح التصميم في A3/Speed: الفرق بالملّي والـ PID وسيرفو ريش الطي.">
 <link rel="canonical" href="https://www.learnelectricals.com/a3speed-design-lab/simulator.html">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<title>تصحيح التصميم A3/Speed</title>
+<title>محاكي تصحيح التصميم A3/Speed</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
-/* v2: rebuilt on the A3/Speed 0300 workbook + the real PLC program (TPFU _15010_DesignControl_A3). Colors = workbook palette on white. */
+/* Layout: control-room HMI like the TMCC2 filling simulator. Machine view + encoder + trends in the main column, TMCC card, signal path and servo bar on the side, faults/alarms/decision tree below. Single dark look by design. */
 :root{
-  color-scheme: light;
-  --bg:#f4f4f4; --panel:#ffffff; --panel2:#f7f7f7; --line:#c5c5c5; --ink:#040505; --fg:#1c1d1d; --muted:#5c5c5c;
-  --air:#98d8e4; --hot:#ee2643; --pre:#f1bcd7; --steam:#a177b4; --prod:#feea05; --water:#b9d532; --h2o2:#f79027; --cair:#4687c7; --grey:#dfe0e0;
-  --m-green:#b9d983; --m-slate:#3b5959; --m-cyan:#40c7f4; --m-orange:#fdb935; --m-pink:#f48691; --m-steel:#99a8a8;
-  --ok:#7fa31a;
-  --bad-bg:#fde4e7; --ok-bg:#eef6d6; --warn-bg:#fffbd1; --info-bg:#e8f0f8;
+  color-scheme: dark;
+  --bg:#0c1215; --panel:#131b1f; --panel2:#19232a; --line:#26353d; --fg:#e3ece9; --muted:#8fa4a0;
+  --web:#d9cfb4; --ink:#1d2326; --mark:#111; --crease:#ff8a3d; --dev:#55b6ea; --stroke:#e9a640; --pkg:#c792ea;
+  --ok:#5fd08b; --alarm:#ff5d50; --warn:#ffc629; --led:#ff9a2e; --steel:#7f9198;
   --f-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
   --f-body:"IBM Plex Sans Arabic",system-ui,"Segoe UI",Tahoma,sans-serif;
   --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
 }
-*{box-sizing:border-box}
-html,body{background:var(--bg);color:var(--fg);margin:0}
+html,body{background:var(--bg);color:var(--fg)}
 body{font-family:var(--f-body);font-size:15px;line-height:1.6}
-.wrap{direction:rtl;max-width:1400px;margin:0 auto;padding-block:16px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:12px}
-h1{font-family:var(--f-display);font-size:clamp(21px,3vw,30px);margin:0;color:var(--ink);text-wrap:balance}
-h2{font-family:var(--f-display);font-size:16px;margin:0 0 10px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px;flex-wrap:wrap;text-wrap:balance}
-h2::before{content:"";width:6px;height:18px;border-radius:2px;background:var(--hc,var(--cair));border:1px solid var(--ink)}
-.sub{color:var(--muted);margin:0;font-size:14px;max-width:80ch}
+.wrap{direction:rtl;max-width:1340px;margin:0 auto;padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:14px}
+h1{font-family:var(--f-display);font-size:clamp(20px,3vw,28px);margin:0;text-wrap:balance}
+h2{font-family:var(--f-display);font-size:15px;margin:0 0 8px;font-weight:700}
+.sub{color:var(--muted);margin:0;font-size:14px}
 header{display:flex;flex-wrap:wrap;gap:12px;align-items:end;justify-content:space-between}
-.en{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-size:.8em;color:var(--muted)}
+.en{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-size:.86em;color:#bcd0cb}
 .mono{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-variant-numeric:tabular-nums}
-.code{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-size:11.5px;background:#f0f0f0;border:1px solid var(--line);border-radius:4px;padding:0 4px;color:#313232;word-break:break-all}
 button,select,input{font-family:var(--f-body);font-size:14px;color:var(--fg)}
-button{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer;touch-action:manipulation}
-button:hover{border-color:var(--ink)}
-button:focus-visible,input:focus-visible{outline:2px solid var(--cair);outline-offset:2px}
-button:disabled{opacity:.4;cursor:not-allowed}
-button.sel{border-color:var(--cair);color:#1f5a96;background:var(--info-bg);font-weight:700}
+button{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 13px;cursor:pointer}
+button:hover{border-color:var(--muted)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--stroke);outline-offset:2px}
+button.primary{background:var(--stroke);color:#1b1206;border-color:var(--stroke);font-weight:700}
+button.stop{border-color:#6b3430;color:#ffb3ab}
+button.on{border-color:var(--alarm);color:var(--alarm);background:#2a1715}
+button.sel{border-color:var(--stroke);color:var(--stroke)}
+select{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0}
-.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.note{font-size:12.5px;color:var(--muted)}
-.simp{display:inline-block;background:var(--warn-bg);border:1px solid #e2c800;color:#5c5200;border-radius:6px;padding:0 6px;font-size:11.5px;font-weight:600;white-space:nowrap}
-.subh{font-size:13.5px;font-weight:700;margin:0 0 6px;color:var(--ink)}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px}
+@media (max-width:1000px){.main{grid-template-columns:minmax(0,1fr)}}
+.col{display:grid;gap:14px;align-content:start;min-width:0}
 canvas{display:block;width:100%;max-width:100%}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.grow{flex:1 1 200px}
+.note{font-size:12.5px;color:var(--muted)}
 
-/* top strip */
-.strip{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;background:var(--panel);border:1px solid var(--line);border-top:6px solid var(--sc,var(--grey));border-radius:12px;padding:12px 14px}
-@media (max-width:900px){.strip{grid-template-columns:minmax(0,1fr)}}
-.state{font-family:var(--f-display);font-size:clamp(18px,2.4vw,24px);font-weight:700;color:var(--ink);line-height:1.3}
-.msg{font-size:14.5px;line-height:1.6;min-height:2.4em;text-wrap:pretty}
-.ops{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;min-width:330px}
-@media (max-width:520px){.ops{min-width:0;grid-template-columns:repeat(2,minmax(0,1fr))}}
-.ops button{padding:8px 6px;font-weight:600;line-height:1.3}
-.ops button small{display:block;font-weight:400;font-size:11px;color:var(--muted)}
-.ops .go{background:var(--ok-bg);border-color:var(--ok)}
-.ops .stop{background:var(--bad-bg);border-color:var(--hot);color:#9b1023}
-.ops .rs{background:var(--info-bg);border-color:var(--cair)}
-.kvs{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:6px;margin-top:8px}
-.kv{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:5px 9px;display:grid}
-.kv span{font-size:12px;color:var(--muted);line-height:1.35}
-.kv strong{font-family:var(--f-mono);font-size:16px;direction:ltr;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
-.kv.bad{background:var(--bad-bg);border-color:var(--hot)}.kv.bad strong{color:#b0122a}
-.kv.good{background:var(--ok-bg);border-color:var(--ok)}
+/* scenario bar */
+.scen{display:grid;gap:10px}
+.caption{font-size:clamp(15px,2vw,18px);font-weight:600;line-height:1.7;min-height:3.4em;text-wrap:pretty}
+.caption b{color:var(--stroke)}
 
-/* grids */
-.g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}
-.g2w{display:grid;grid-template-columns:minmax(0,520px) minmax(0,1fr);gap:12px;align-items:start}
-@media (max-width:1060px){.g2,.g2w{grid-template-columns:minmax(0,1fr)}}
-.machine{--hc:var(--m-green)}
-.cv{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
-.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted);margin-top:8px}
-.legend i{display:inline-block;width:16px;height:10px;border:1px solid var(--ink);vertical-align:middle;margin-left:5px;border-radius:2px}
+/* status strip */
+.status{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.kv{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:grid;gap:2px}
+.kv span{font-size:12px;color:var(--muted)}
+.kv strong{font-family:var(--f-mono);font-size:19px;direction:ltr;text-align:right;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;border-radius:99px;padding:1px 10px;font-size:12.5px;font-weight:600;border:1px solid currentColor}
+.pill.ok{color:var(--ok)}.pill.bad{color:var(--alarm)}.pill.warn{color:var(--warn)}.pill.idle{color:var(--muted)}
 
-/* io lamps */
-.io{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:6px;margin-top:10px}
-.lampx{display:grid;grid-template-columns:16px minmax(0,1fr);gap:8px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:5px 8px;font-size:12.5px;line-height:1.35}
-.lampx i{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--ink);background:#fff}
-.lampx.on i{background:var(--water)}
-.lampx.on.redl i{background:var(--hot)}
-.lampx b{font-family:var(--f-mono);font-size:11px;direction:ltr;unicode-bidi:isolate;font-weight:600;color:#313232}
+/* TMCC card */
+.card{background:#0e1518;border:1px solid #2f4149;border-radius:10px;padding:12px;display:grid;gap:10px}
+.leds{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.led{display:grid;justify-items:center;gap:3px;font-size:11.5px;color:var(--muted);text-align:center;line-height:1.3}
+.led i{width:16px;height:16px;border-radius:50%;background:#2a2f31;border:1px solid #3a4245;display:block}
+.led.on i{background:var(--led);box-shadow:0 0 10px var(--led)}
+.led.green.on i{background:var(--ok);box-shadow:0 0 10px var(--ok)}
+.term{background:#071009;border:1px solid #1f3a26;border-radius:8px;padding:10px;font-family:var(--f-mono);font-size:12.5px;color:#9cf2b0;direction:ltr;text-align:left;white-space:pre;overflow-x:auto;line-height:1.55}
+.offbtns{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;direction:ltr}
+.offbtns button{padding:9px 2px;font-family:var(--f-mono);font-size:13px;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.offbar{display:grid;gap:6px;margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}
+.offset{display:grid;gap:6px}
+.offset .big{font-family:var(--f-mono);font-size:26px;direction:ltr;text-align:center;color:var(--stroke)}
+.offset .btns{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.offset .btns button{padding:6px 4px;font-family:var(--f-mono);direction:ltr}
 
-/* counters */
-.cnts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px;margin-top:10px}
-.cnt{border:1px solid var(--line);border-radius:8px;padding:6px 9px;background:var(--panel)}
-.cnt span{display:block;font-size:12px;color:var(--muted);line-height:1.35}
-.cnt .dots{display:flex;gap:4px;margin-top:4px;direction:ltr;justify-content:flex-end}
-.cnt .dots i{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--ink);background:#fff}
-.cnt .dots i.f{background:var(--hot)}
-.cnt b{font-family:var(--f-mono);font-size:10.5px;direction:ltr;unicode-bidi:isolate;font-weight:600;color:#313232;display:block}
+/* chain */
+.chain{display:grid;gap:4px}
+.chain div{display:flex;align-items:center;gap:8px;padding:5px 9px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);font-size:13.5px;transition:border-color .2s,background .2s}
+.chain div.hot{border-color:var(--dev);background:#132a36}
+.chain div.dead{border-color:#6b3430;background:#2a1715}
+.chain small{color:var(--muted);margin-inline-start:auto;font-size:11.5px}
+.chain .arrow{border:0;background:none;padding:0 12px;color:var(--muted);font-size:12px;line-height:1}
 
-/* links table */
-.links{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;direction:ltr}
-.lk{border:1px solid var(--line);border-radius:6px;padding:4px 2px;text-align:center;font-family:var(--f-mono);font-size:12px;background:#fff}
-.lk .n{display:block;font-weight:700;font-size:13px;border-radius:4px;margin-bottom:2px}
-.lk .n.L{background:#e8f0f8}.lk .n.R{background:#fdf0f4}
-.lk .c{display:block;font-size:15px;font-weight:700}
-.lk.hot{border-color:var(--hot);background:var(--bad-bg)}
-.lk.cur{box-shadow:0 0 0 2px var(--m-cyan)}
-.qbar{display:flex;height:9px;border:1px solid var(--ink);border-radius:2px;overflow:hidden;margin-top:3px}
-.qbar i{display:block;height:100%}
+/* faults & alarms */
+.faults{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px}
+.faults button{text-align:right;display:grid;gap:2px;padding:9px 11px}
+.faults button small{color:var(--muted);font-size:12px}
+.faults button.on small{color:#ffb3ab}
+.alarms{display:grid;gap:6px;max-height:260px;overflow:auto}
+.alarm{border:1px solid #6b3430;background:#24130f;border-radius:8px;padding:7px 10px;display:grid;gap:2px}
+.alarm.cleared{opacity:.55;border-color:var(--line);background:var(--panel2)}
+.alarm .t{font-size:12px;color:var(--muted)}
+.alarm strong{color:#ffb3ab;font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-size:13px}
+.below{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
 
-/* settings */
-.set{display:grid;gap:10px}
-.sl{display:grid;gap:2px;font-size:13px}
-.sl .row{justify-content:space-between}
-input[type=range]{width:100%;accent-color:var(--m-slate)}
-.tag2{font-family:var(--f-mono);font-size:12px;direction:ltr;unicode-bidi:isolate;padding:0 6px;border-radius:4px;border:1px solid var(--ink)}
-.tag2.ok{background:var(--water)}.tag2.w{background:var(--prod)}.tag2.b{background:var(--hot);color:#fff}
+/* decision tree */
+.tree{display:grid;gap:5px;font-size:13.5px}
+.tree .q{padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel2)}
+.tree .q.yes{border-color:#2f6b47}
+.tree .q.no{border-color:var(--alarm);background:#2a1715}
+.tree .q.act{border-color:var(--stroke);background:#2b2110}
+.tree .q.dim{opacity:.4}
+.tree .ind1{margin-inline-start:14px}.tree .ind2{margin-inline-start:28px}.tree .ind3{margin-inline-start:42px}.tree .ind4{margin-inline-start:56px}
 
-/* faults + log */
-.faults{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:6px}
-.faults button{text-align:right;line-height:1.4;padding:7px 10px;font-size:13px;display:grid;gap:2px}
-.faults button small{color:var(--muted);font-size:11.5px}
-.faults button.on{background:var(--bad-bg);border-color:var(--hot);color:#9b1023;font-weight:700}
-.faults button.on small{color:#9b1023;font-weight:400}
-.logbox{--hc:var(--prod)}
-.log{display:grid;gap:4px;max-height:430px;overflow:auto;font-size:13px}
-.log div{display:grid;grid-template-columns:58px 10px minmax(0,1fr);gap:8px;align-items:start;padding:5px 8px;border-radius:6px;background:var(--panel2);line-height:1.45}
-.log time{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);direction:ltr;text-align:right}
-.log i{width:10px;height:10px;border:1px solid var(--ink);margin-top:5px}
-.log .blue i{background:var(--cair)}.log .yellow i{background:var(--prod)}.log .step i{background:var(--water)}.log .info i{background:var(--grey)}.log .waste i{background:var(--m-pink)}
-.log .yellow{background:var(--warn-bg)}.log .blue{background:var(--info-bg)}
-.log .an{font-family:var(--f-mono);font-size:11px;direction:ltr;unicode-bidi:isolate;color:#313232;display:block}
-
-/* referencing */
-.ref{--hc:var(--m-orange)}
-.refsteps{display:grid;gap:4px;margin:0;padding:0;list-style:none;font-size:13.5px}
-.refsteps li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:6px;align-items:start;padding:4px 8px;border-radius:6px;background:var(--panel2);border:1px solid transparent}
-.refsteps li b{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center;font-family:var(--f-mono);font-size:11px;background:#fff}
-.refsteps li.cur{border-color:var(--m-orange);background:#fff6e0}
-.refsteps li.done b{background:var(--water)}
-
-/* quiz */
-.quiz{--hc:var(--prod);background:#fffef0;border-color:#e2c800}
-.qopts{display:grid;gap:6px;margin-top:8px}
-.qopts button{text-align:right;padding:9px 12px}
-.qopts button.right{border-color:var(--ok);background:var(--ok-bg);font-weight:700}
-.qopts button.wrong{border-color:var(--hot);background:var(--bad-bg)}
-.score{font-family:var(--f-mono);font-size:20px;direction:ltr;font-weight:700;color:var(--ink)}
-
-/* rules table */
-.tbl{overflow-x:auto}
-table{border-collapse:collapse;width:100%;min-width:720px;font-size:13px}
-th,td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:right;vertical-align:top}
-th{color:var(--muted);font-weight:600;font-size:12px}
-.cb{display:inline-block;min-width:26px;text-align:center;border:1px solid var(--ink);border-radius:4px;font-family:var(--f-mono);font-size:12px;font-weight:700}
-.cb.B{background:var(--cair);color:#fff}.cb.Y{background:var(--prod)}
+/* register code */
+.code{display:grid;gap:6px}
+.bits{display:grid;grid-template-columns:repeat(26,1fr);gap:2px;direction:ltr}
+.bits i{display:block;height:16px;border-radius:2px;background:#262f33}
+.bits i.b1{background:#e9eef0}.bits i.b0{background:#454f53}
+.bits i.err{outline:2px solid var(--alarm);outline-offset:-2px}
+.ctl{display:grid;gap:4px}
+.ctl label{font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+input[type=range]{width:100%;accent-color:var(--stroke)}
+.pid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.pid input{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:var(--f-mono);direction:ltr}
+@media (prefers-reduced-motion:reduce){.chain div{transition:none}}
 </style>
-<style>
-.pkgv{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
-.mode{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:8px}
-@media (max-width:620px){.mode{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.mode div{border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12.5px;line-height:1.4;background:var(--panel2)}
-.mode div b{display:block;font-family:var(--f-mono);font-size:15px;direction:ltr;text-align:right}
-.mode div.cur{border-color:var(--ink);background:var(--warn-bg);box-shadow:0 0 0 2px var(--m-orange)}
-</style>
+
 </head>
 <body>
 <nav aria-label="تنقل" style="direction:rtl;display:flex;flex-wrap:wrap;gap:8px;max-width:1400px;margin:0 auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 0;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:14px"><a href="index.html" style="color:#1f5a96;text-decoration:none;font-weight:600;padding:4px 10px;border:1px solid #c5c5c5;border-radius:8px;background:#fff">← الشرح المكتوب</a><a href="/a3speed-lab/" style="color:#1f5a96;text-decoration:none;font-weight:600;padding:4px 10px;border:1px solid #c5c5c5;border-radius:8px;background:#fff">← كل محاكيات A3/Speed</a></nav>
 <div class="wrap">
 <header>
-  <div style="display:grid;gap:4px">
-    <h1>تصحيح التصميم <span class="en" style="font-size:.7em">A3/Speed · Design Control</span></h1>
-    <p class="sub">الفوتوسيل بيقرا علامة التسجيل على الورق، والبرنامج بيحسب الفرق بالملّي بين مكان الطباعة ومكان الفكوك. الفرق ده بيدخل منظّم PID، واللي بيطلع منه هو زاوية سيرفو ريش الطي <span class="en">Folding flaps</span> اللي بتشد الورق أكتر أو أقل.</p>
+  <div>
+    <h1>محاكي تصحيح التصميم <span class="en">Design Correction</span> في <span class="en">A3/Speed</span></h1>
+    <p class="sub">من قراءة العلامة المطبوعة على الورق لحد تصحيح مكان الكريز على العبوة. الحسابات والحدود وأسماء الإنذارات زي برنامج الـ PLC بتاع A3/Speed (DesignControl). شكل الماكينة والخامة تبسيط توضيحي.</p>
   </div>
   <div class="row">
-    <span class="note">سرعة العرض</span>
-    <div class="row" id="tscale" role="group" aria-label="سرعة العرض"></div>
-    <button id="pauseBtn">إيقاف مؤقت</button>
-    <button id="resetAllBtn">من الأول</button>
+    <button class="primary" id="btnStart">تشغيل</button>
+    <button class="stop" id="btnStop">إيقاف</button>
+    <select id="startMode" aria-label="نوع التشغيل">
+      <option value="normal">تشغيل عادي بعد إيقاف</option>
+      <option value="tight">أول تشغيل بعد Tight Tube أو Sterile Inching</option>
+    </select>
   </div>
 </header>
 
-<section class="strip" id="strip" aria-live="polite">
-  <div style="min-width:0">
-    <div class="row" style="gap:10px"><span class="state" id="stateTxt">واقفة</span><span class="note" id="stateEn"></span></div>
-    <div class="msg" id="msg"></div>
-    <div class="kvs" id="kvs"></div>
+<section class="panel scen" aria-label="سيناريوهات">
+  <div class="row">
+    <strong style="font-family:var(--f-display)">جرّب سيناريو:</strong>
+    <button data-scn="normal">إنتاج طبيعي</button>
+    <button data-scn="example">مثال: الكريز عالي 1.5 مم</button>
+    <button data-scn="tight">بداية بعد Tight Tube</button>
+    <button data-scn="dirty">حساس متسخ</button>
+    <button data-scn="limit">الريش لازقة في الحد</button>
+    <button data-scn="servo">عطل سيرفو</button>
   </div>
-  <div style="display:grid;gap:6px">
-    <div class="ops" role="group" aria-label="التشغيل">
-      <button class="go" id="runBtn">تشغيل الإنتاج<small>من أنبوبة فاضية</small></button>
-      <button class="stop" id="stopBtn">إيقاف<small>Stop</small></button>
-      <button class="rs" id="resetBtn">مسح الإنذارات<small>Reset</small></button>
-      <button id="spliceBtn">وصلة ورق جديدة<small>Splice</small></button>
-    </div>
-  </div>
+  <div class="caption" id="caption">اضغط <b>تشغيل</b>. الماكينة هتشد الورق عبوة ورا عبوة، والحساسات هتقرا العلامة المطبوعة، والـ <span class="en">PLC</span> هيعدّل زاوية ريش الطي عشان العلامة توصل في المعاد الصح بالنسبة للفكوك.</div>
 </section>
 
-<div class="g2w">
-  <section class="panel" style="--hc:var(--m-orange)">
-    <h2>سيرفو ريش الطي</h2>
-    <div class="cv"><canvas id="cvFlap" height="300" dir="ltr" aria-label="زاوية سيرفو ريش الطي من 0 لـ 183 درجة"></canvas></div>
-    <div class="mode" id="modes"></div>
-    <p class="note" style="margin:8px 0 0">لما الأنبوبة تتملي والفرق برا نافذة <b class="mono">±10</b> مم أو المستوى لسه مش جاهز: الزاوية ثابتة على <b class="mono">170°</b>. أول ما الفرق يدخل النافذة الحلقة بتتقفل والزاوية بتتحرك من <b class="mono">40°</b> لـ <b class="mono">183°</b>. الحلقة بتفتح تاني لو الفرق عدّى <b class="mono">15</b> مم.</p>
-  </section>
-  <section class="panel" style="--hc:var(--prod)">
-    <h2>العلبة والطباعة</h2>
-    <div class="pkgv">
-      <div><div class="cv"><canvas id="cvPkg" height="230" aria-label="العلبة والطباعة متزحزحة بمقدار الفرق"></canvas></div><p class="note" style="margin:4px 0 0">الخطوط السودا = أماكن الطي. الطباعة بتتزحزح بمقدار الفرق.</p></div>
-      <div><div class="cv"><canvas id="cvPhoto" height="230" dir="ltr" aria-label="إشارة الفوتوسيل مع الحد المتغير"></canvas></div><p class="note" style="margin:4px 0 0">إشارة الفوتوسيل من 0 لـ 255 والحد المتغير <span class="en">D.T.</span> في النص بين الأبيض والأسود.</p></div>
-    </div>
-  </section>
+<div class="status" id="status"></div>
+
+<div class="main">
+  <div class="col">
+    <section class="panel">
+      <h2>الماكينة من الجنب</h2>
+      <canvas id="cv" height="540" aria-label="رسم متحرك للورق والحساسات والفكوك والعبوة"></canvas>
+      <div class="offbar">
+        <div class="row" style="justify-content:space-between"><strong>تحكم في الـ <span class="en">Offset</span></strong><span class="mono" id="offS_V" style="color:var(--stroke);font-size:18px">0</span></div>
+        <div class="offbtns">
+          <button data-off="-30">−0.3</button><button data-off="-20">−0.2</button><button data-off="-10">−0.1</button>
+          <button id="off0">صفر</button>
+          <button data-off="10">+0.1</button><button data-off="20">+0.2</button><button data-off="30">+0.3</button>
+        </div>
+        <div class="note">الزراير بالمم: 0.1 مم = 10 وحدات offset. دوس مرة للتغيير خطوة، أو فضّل دايس والقيمة تفضل تزيد أو تقل.</div>
+      </div>
+      <h2 style="margin-top:12px">نافذة الزوايا مكبّرة</h2>
+      <canvas id="ang" height="176" aria-label="زاوية الإنتاج وزاوية وصول الإشارة مكبرة"></canvas>
+      <p class="note">هنا الزوايا بمقياسها الحقيقي من غير تكبير الرسمة: الشريط الأخضر هو المنطقة المقبولة ±1.5 مم حوالين زاوية الإنتاج، والنقط الزرقا هي زاوية وصول الإشارة في آخر كام عبوة. لما تغيّر الـ offset الشريط الأخضر بيتحرك، وبعدها النقط بتجري وراه.</p>
+      <p class="note">الفك المقفول بينزل مع التيوب وده السحب الأساسي، والـ folding flaps راكبة عليه وبتشد شدة صغيرة زيادة حسب زاوية الريش. الحساس بينوّر أزرق لحظة ما العلامة السودا تعدي قدامه، وفي نفس اللحظة مؤشر الـ encoder بيسجل الزاوية. الانحراف مكبّر في الرسم وعلى المؤشر عشان يبان بالعين، والأرقام المكتوبة هي الحقيقية. الخط البرتقالي المتقطع على الورق هو مكان الكريز المطبوع، والمربع الأسود هو العلامة اللي الحساس بيقراها.</p>
+    </section>
+    <section class="panel">
+      <h2>آخر 150 عبوة</h2>
+      <canvas id="tr" height="300" aria-label="رسم بياني للانحراف وزاوية الريش والكريز"></canvas>
+      <div class="row note" style="gap:16px">
+        <span><b style="color:var(--dev)">━</b> انحراف التصميم <span class="en">design deviation</span> (مم)</span>
+        <span><b style="color:var(--pkg)">━</b> مكان الكريز على العبوة (مم، موجب = عالي)</span>
+        <span><b style="color:var(--stroke)">━</b> زاوية ريش الطي <span class="en">FoldFlapContrValue</span> (0 لـ 183)</span>
+        <span><b style="color:#2f6b47">▮</b> المنطقة المقبولة ±1.5 مم</span>
+      </div>
+    </section>
+  </div>
+
+  <div class="col">
+    <section class="card" aria-label="منظّم التصميم">
+      <h2 style="margin:0">منظّم التصميم في الـ PLC <span class="en">DesignControl</span></h2>
+      <div class="leds">
+        <div class="led" id="led1"><i></i>قراءة<br>الكود</div>
+        <div class="led green" id="led2"><i></i>Package<br>DesignOk</div>
+        <div class="led" id="led7"><i></i>الريش<br>فوق 75%</div>
+        <div class="led" id="led8"><i></i>الريش<br>تحت 25%</div>
+      </div>
+      <div class="term" id="term"></div>
+      <div class="offset">
+        <div class="row" style="justify-content:space-between"><strong>الـ <span class="en">Design Control Offset</span></strong><span class="note">100 وحدة ≈ 1 مم</span></div>
+        <div class="big" id="offVal">0</div>
+        <div class="btns">
+          <button data-off="-50">−50</button><button data-off="-10">−10</button><button data-off="10">+10</button><button data-off="50">+50</button>
+        </div>
+        <p class="note" style="margin:0">الكريز عالي على العبوة: قلّل الـ offset. واطي: زوّده. غيّر شوية وبعدين استنى كام عبوة.</p>
+      </div>
+      <div>
+        <div class="note">معاملات الـ <span class="en">PID</span> في البرنامج (u محصورة ±100)</div>
+        <div class="pid">
+          <label class="note">KP<input id="pidP" type="number" step="0.5" value="7"></label>
+          <label class="note">KI<input id="pidI" type="number" step="0.05" value="0.2"></label>
+          <label class="note">KD<input id="pidD" type="number" step="0.05" value="0.1"></label>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>مسار الإشارة</h2>
+      <div class="chain" id="chain"></div>
+    </section>
+
+    <section class="panel">
+      <h2>زاوية سيرفو ريش الطي</h2>
+      <canvas id="sv" height="120" aria-label="مكان موتور السيرفو بالنسبة للـ stop"></canvas>
+      <p class="note" style="margin:6px 0 0">القيمة اللي البرنامج بيبعتها للسيرفو من 0 لـ 183. والحلقة مقفولة بتتحرك بين 40 و183: <span class="en">Flap = 40 + 143 × 0.5 × (u/100 + 1)</span>. والحلقة مفتوحة بتقف على 170 والأنبوبة مليانة، أو 40 وهي فاضية.</p>
+    </section>
+  </div>
 </div>
 
-<section class="panel" style="--hc:var(--steam)">
-  <h2>تفاعل تصحيح التصميم مع نظام الملء <span class="en">DCS / FCS</span> <span class="note">(آخر 160 علبة)</span></h2>
-  <div class="cv"><canvas id="cvTrend" height="320" dir="ltr" aria-label="منحنيات الفرق والفرق المفلتر وزاوية الريش ومستوى المنتج"></canvas></div>
-  <div class="legend" id="trendKey"></div>
-</section>
-
-<div class="g2">
-  <section class="panel" style="--hc:var(--m-slate)">
-    <h2>الحساب جوّه البرنامج <span class="note">(لآخر علبة)</span></h2>
-    <div class="kvs" id="calc"></div>
-    <div class="set" style="margin-top:10px">
-      <div class="sl"><div class="row"><span>تكبير المنظّم <span class="code">PAR_DesKPset1</span></span><span class="mono" id="kpV"></span></div><input type="range" id="kp" min="1" max="25" step="0.5" value="7"><span class="note">قيمة البرنامج 7. زوّدها كتير وشوف الريش بتتهز.</span></div>
-      <div class="sl"><div class="row"><span>إزاحة التصميم من الشاشة <span class="code">HMI_PFU_DesignOffset_Set</span></span><span class="mono" id="offV"></span></div><input type="range" id="off" min="-5" max="5" step="0.5" value="0"></div>
-      <div class="sl"><div class="row"><span>نوع الورق (قد إيه بيتمط)</span><span class="mono" id="eqV"></span></div><input type="range" id="eq" min="70" max="200" step="5" value="110"><span class="note"><span class="simp">تبسيط توضيحي</span> الرقم = زاوية الريش اللي بتخلّي الفرق ثابت مع الورق ده.</span></div>
-      <div class="sl"><div class="row"><span>الفرق لما المنتج يدخل الأنبوبة <span class="simp">تبسيط توضيحي</span></span><span class="mono" id="e0V"></span></div><input type="range" id="e0" min="5" max="70" step="1" value="50"></div>
+<div class="below">
+  <section class="panel">
+    <h2>الماكينة والخامة</h2>
+    <div class="ctl">
+      <label for="spd"><span>سرعة الماكينة</span><span class="mono" id="spdV"></span></label>
+      <input type="range" id="spd" min="8000" max="24000" step="1000" value="24000">
     </div>
+    <div class="ctl">
+      <label for="slow"><span>سرعة العرض</span><span id="slowV"></span></label>
+      <input type="range" id="slow" min="0" max="3" step="1" value="1">
+    </div>
+    <div class="ctl">
+      <label for="vol"><span>الحجم <span class="en">volume</span></span></label>
+      <select id="vol"></select>
+    </div>
+    <div class="ctl">
+      <label for="prodA"><span>زاوية الإنتاج <span class="en">production angle</span> (جاية من الـ PLC)</span><span class="mono" id="prodAV"></span></label>
+      <input type="range" id="prodA" min="150" max="270" step="1" value="210">
+    </div>
+    <div class="ctl">
+      <label for="matE"><span>فرق المسافة بين العلامة والكريز في الخامة</span><span class="mono" id="matEV"></span></label>
+      <input type="range" id="matE" min="-3" max="3" step="0.1" value="0">
+    </div>
+    <p class="note">آخر واحدة دي الحاجة اللي البرنامج مش شايفها. لو حركتها، الانحراف هيفضل قريب من صفر بس شكل العبوة هيبوظ.</p>
   </section>
-  <section class="panel" style="--hc:var(--cair)">
-    <h2>المعادلات من البرنامج</h2>
-    <table style="min-width:0"><tbody>
-      <tr><td>الفرق بالملّي</td><td><span class="code">(زاوية المطلوب − زاوية الفعلي) ÷ 360 × 185 − الإزاحة</span></td></tr>
-      <tr><td>المتوسط</td><td>متوسط آخر قراءتين للعلامة</td></tr>
-      <tr><td>الفلتر</td><td><span class="code">Filtered = 0.7 × Filtered + 0.3 × Error</span></td></tr>
-      <tr><td>المنظّم</td><td><span class="code">u = −(KP·e + I + KD·Δe)</span> وحدوده ±100، <span class="mono">KP 7 · KI 0.2 · KD 0.1</span></td></tr>
-      <tr><td>منظّم تربيعي</td><td>لما الانحراف المعياري يبقى 1 أو أقل: <span class="code">KPsq·e·|e|</span></td></tr>
-      <tr><td>زاوية الريش</td><td><span class="code">40 + 143 × 0.5 × (u/100 + 1)</span> بين 0 و183°</td></tr>
-      <tr><td>التصميم تمام</td><td>الفرق جوّه <b class="mono">±1.5</b> مم لـ 3 علب ورا بعض، وعلبة واحدة برا تلغيه</td></tr>
-      <tr><td>برا التصميم</td><td>80 علبة مسموحة أول ما الأنبوبة تتملي، و20 بعد أول "تمام": إنذار <span class="code">ALR_PFU_YE_JawAuxFunDCSOutOfDesign</span> <span class="cb Y">Y</span></td></tr>
-    </tbody></table>
-  </section>
-</div>
 
-<div class="g2">
-  <section class="panel" style="--hc:var(--hot)">
-    <h2>اعمل عطل بإيدك <span class="note">(اضغط تاني علشان تصلّحه)</span></h2>
+  <section class="panel">
+    <h2>أعطال تقدر تجربها</h2>
     <div class="faults" id="faults"></div>
   </section>
-  <section class="panel logbox">
-    <div class="row" style="justify-content:space-between;margin-bottom:6px"><h2 style="margin:0">السجل والإنذارات</h2><button id="clearLog" style="padding:3px 10px;font-size:12.5px">مسح</button></div>
-    <div class="row note" style="margin-bottom:8px"><span class="cb B">B</span>تنبيه، مفيش وقوف <span class="cb Y">Y</span>إنذار أصفر، الماكينة بتقف</div>
-    <div class="log" id="log"></div>
+
+  <section class="panel">
+    <h2>الإنذارات</h2>
+    <div class="alarms" id="alarms"><p class="note" id="noAlarm">مفيش إنذارات.</p></div>
+  </section>
+
+  <section class="panel">
+    <h2>شجرة التشخيص</h2>
+    <div class="tree" id="tree"></div>
+  </section>
+
+  <section class="panel code">
+    <h2>قراءة الكود المطبوع <span class="en">register code</span> (26 bit)</h2>
+    <div class="note">اللي الحساس قراه دلوقتي:</div>
+    <div class="bits" id="bitsRead"></div>
+    <div class="note">النمط المتخزن في البرنامج:</div>
+    <div class="bits" id="bitsRef"></div>
+    <div id="matchTxt" class="note"></div>
+    <p class="note" style="margin:0">أسود = 1، أبيض = 0، من أبيض لأسود = 1، من أسود لأبيض = 0. الحساس لما يشوف لون مش معناه إنه قرا الكود؛ لازم الـ 26 bit يتقروا بالعدد والترتيب الصح عشان تطلع إشارة التصميم <span class="en">design signal</span>.</p>
   </section>
 </div>
-
-<section class="panel quiz" id="quizPanel">
-  <div class="row" style="justify-content:space-between">
-    <h2 style="margin:0">تحدّي: ليه التصميم ما ظبطش؟</h2>
-    <div class="row"><span class="note">النتيجة</span><span class="score" id="score">0 / 0</span><button id="quizBtn" class="sel">ابدأ تحدّي جديد</button></div>
-  </div>
-  <p class="note" style="margin:6px 0 0">المحاكي هيشغّل الماكينة بعطل مستخبي. اتفرج على زاوية الريش والمنحنيات وإشارة الفوتوسيل، وجاوب.</p>
-  <div id="quizBody"></div>
-</section>
 </div>
 
 <script>
-'use strict';
-const $=id=>document.getElementById(id);
+(()=>{
+const $=s=>document.querySelector(s);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-const REP=185, PRECORR=40, MAXSTROKE=183, FIX=170, WIN=10, OK=1.5;
-const KI=0.2, KD=0.1, KPSQ=7, KISQ=0.2, UMAX=100, INIT_I=20, DELAY=3;
-let S;
-function fresh(){
-  S={t:0,rate:6,paused:false,acc:0,mode:'stop',n:0,nMode:0,
-     eTrue:0,meas:[],eRaw:0,e:0,eF:0,ePrev:0,s2:25,I:0,u:0,flap:0,flapT:0,
-     loop:false,sq:false,level:0,vl:false,filled:false,
-     okCnt:0,designOK:false,wasOK:false,outCnt:0,
-     kp:7,off:0,eq:110,e0:50,
-     faults:new Set(),alarms:new Map(),hist:[],contrast:1,quizHold:false};
-}
-const logEl=$('log');
-function clk(){const t=Math.floor(S.t);return [Math.floor(t/3600),Math.floor(t/60)%60,t%60].map(x=>String(x).padStart(2,'0')).join(':')}
-function log(kind,text,tag){const d=document.createElement('div');d.className=kind;d.innerHTML='<time>'+clk()+'</time><i></i><span>'+text+(tag?'<span class="an">'+tag+'</span>':'')+'</span>';logEl.prepend(d);while(logEl.children.length>90)logEl.lastChild.remove()}
-const ALR={
- Out:{tag:'ALR_PFU_YE_JawAuxFunDCSOutOfDesign',c:'Y',ar:'علب كتير برا التصميم'},
- Bar:{tag:'ALR_PFU_YE_JawAuxFunDCSBarcodeMissing',c:'Y',ar:'الفوتوسيل مش لاقي علامة التسجيل'},
- Servo:{tag:'ALR_PFU_YE_ServoFoldFlapFault',c:'Y',ar:'عطل في سيرفو ريش الطي'},
- Home:{tag:'ALR_PFU_YE_FoldFlapHomePosFault',c:'Y',ar:'ريش الطي ما رجعتش لمكان الصفر'}
+let seed=12345;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647};
+const gauss=()=>{let u=0,v=0;while(!u)u=rnd();while(!v)v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+
+/* ---------- constants from the guide ---------- */
+// Program values (DesignControl): flap command 0..183, regulation 40..183, fixed 170 with the loop open (tube filled)
+const FMIN=40, FMAX=183, FFIX=170, UMAX=100, INIT_I=20, WIN=10, KD_DEF=0.1;
+const FLAP_MAX=4.0;                       // mm of extra feed over 40..183 (illustrative)
+const flapFeed=f=>FLAP_MAX*(f-FMIN)/(FMAX-FMIN);
+const uToFlap=u=>clamp(FMIN+(FMAX-0-FMIN)*0.5*(u/UMAX+1),0,FMAX);
+const VOLS=[{name:'طول التصميم 185 مم',L:185,off:0},{name:'حجم تاني (مثال) 150 مم',L:150,off:-120}];
+const SECTOR=1.5, PRE_SECTOR=10;
+const CODE='11010001111011010001111000'.split('').map(Number);   // pattern shown in the training workbook
+
+/* ---------- state ---------- */
+const S={
+  running:false, angle:0, pkg:0, good:0, rej:0,
+  vol:0, L:185, offset:0, prodA:210, E:0, pph:24000,
+  x:0,                 // true mark position error vs jaws (mm), + = late
+  mode:'reg',          // 'pre' precorrection | 'reg' regulation
+  step:126, stepCmd:126, I:-INIT_I, u:20, prevE:0, eF:0, meas:[], designOK:false, wasOK:false, okCnt:0, outCnt:0,
+  dev:0, devValid:true, lastDev:0, crease:0,
+  mech:0, matLong:0, slip:false, dirty:false, align:false, encoder:false, servo:false, pattern:false,
+  missRun:0, outRun:0, regCount:99, servoRun:0,
+  hist:[], devHist:[], strokeHist:[], creaseHist:[],
+  readBits:CODE.slice(), readErr:[], match:true, sigAngle:null,
+  alarms:[], active:{}, flash:0, startT:0
 };
-function raise(id,extra){if(S.alarms.has(id))return;const a=ALR[id];S.alarms.set(id,1);log(a.c==='Y'?'yellow':'blue',a.ar+(extra?' — '+extra:''),a.tag);if(a.c==='Y')stopMachine(true);Q.onAlarm(id)}
-function hasY(){return S.alarms.size>0}
-function resetAlarms(){for(const k of [...S.alarms.keys()]){if(k==='Servo'&&S.faults.has('servo'))continue;if(k==='Home'&&S.faults.has('home'))continue;S.alarms.delete(k)}log('info','Reset: الإنذارات اللي سببها راح اتمسحت')}
+const P={get Kp(){return +$('#pidP').value||0},get Ki(){return +$('#pidI').value||0},get Kd(){return +$('#pidD').value||0}};
+const mainFeed=()=>S.L-flapFeed(126)+S.mech;   // balance point: u = +20 (InitIntegral) gives flap 126
 
-function startRun(){
-  if(S.mode!=='stop')return;
-  if(hasY()){log('info','مش هتشتغل: فيه إنذار أصفر. صلّح السبب ودوس Reset');return}
-  if(S.faults.has('home')){raise('Home');return}
-  S.mode='empty';S.nMode=0;S.filled=false;S.level=0;S.vl=false;S.loop=false;S.I=0;S.designOK=false;S.wasOK=false;S.okCnt=0;S.outCnt=0;
-  S.eTrue=(Math.random()-.5)*6;S.meas=[];S.eF=S.eTrue;
-  log('step','إنتاج بدأ: الأنبوبة لسه فاضية، ريش الطي على زاوية التصحيح المسبق 40°');
-}
-function stopMachine(alarm){if(S.mode==='stop')return;S.mode='stop';S.loop=false;S.designOK=false;if(!alarm)log('info','المشغّل داس إيقاف');log('info','الماكينة وقفت: ريش الطي راجعة لمكان الصفر 0°')}
+/* ---------- one package cycle ---------- */
+function cycle(){
+  S.pkg++;
+  // material actually pulled for this package
+  const speedSlip=(S.pph-24000)*0.00003;
+  let Lmat=S.L+S.matLong+speedSlip+gauss()*0.04;
+  if(S.slip) Lmat+=gauss()*0.45+(rnd()<0.06?(rnd()<.5?-2.5:2.5):0);
+  const pos=S.mode==='pre'?FFIX:S.step;
+  const feed=mainFeed()+flapFeed(pos);
+  S.x+=Lmat-feed;
+  // design repeats every package, so the error wraps
+  if(S.x>S.L/2)S.x-=S.L; if(S.x<-S.L/2)S.x+=S.L;
 
-/* ---------- one package = one program scan of the design routine ---------- */
-function pack(){
-  S.n++;S.nMode++;const F=S.faults;
-  // tube / level
-  if(S.mode==='empty'&&S.nMode>=14){S.mode='fill';S.nMode=0;S.filled=true;S.eTrue-=S.e0;S.outCnt=0;log('step','المنتج دخل الأنبوبة (Tube filled): الفرق قفز لـ '+S.eTrue.toFixed(0)+' مم والريش راحت على 170° لحد ما الفرق يدخل النافذة')}
-  if(S.filled){const tgt=F.has('level')?55:100;S.level+= (tgt-S.level)*0.2}
-  S.vl=S.filled&&S.level>=90;
-  // process: printed design moves relative to the jaws according to fold-flap pull
-  if(S.mode!=='stop'){
-    let drift=S.filled?0.04*(S.flap-S.eq):0;
-    S.eTrue+=drift+(Math.random()-.5)*0.5;
-    if(S.eTrue>REP/2)S.eTrue-=REP;if(S.eTrue<-REP/2)S.eTrue+=REP;
+  // photocells read the 26-bit code
+  let miss=false; S.readErr=[];
+  S.readBits=CODE.slice();
+  if(S.align){miss=true;S.readBits=CODE.map(()=>-1)}
+  else if(S.dirty && rnd()<0.3){miss=true;const n=1+Math.floor(rnd()*3);for(let i=0;i<n;i++){const k=Math.floor(rnd()*26);S.readBits[k]^=1;S.readErr.push(k)}}
+  if(S.pattern && !S.align){miss=true}
+  S.match=!miss;
+  // TMCC: design signal vs production angle -> deviation
+  if(!miss){
+    let d=S.x+S.offset/100+gauss()*0.03;
+    if(S.encoder) d+=gauss()*1.4+(rnd()<0.15?(rnd()<.5?-4:4):0);
+    S.dev=d; S.devValid=true; S.lastDev=d; S.missRun=0;
+    S.sigAngle=S.prodA+d*360/S.L;
+  }else{ S.devValid=false; S.missRun++; S.sigAngle=null }
+
+  // regulation (DesignControl): e = −deviation, mean of 2, filter 0.7/0.3, loop window 10 / 15 mm
+  let e=null;
+  if(S.devValid){S.meas.push(-S.dev);if(S.meas.length>2)S.meas.shift();e=S.meas.reduce((p,c)=>p+c,0)/S.meas.length;S.eF=0.7*S.eF+0.3*e}
+  if(S.mode==='pre'){
+    if(e!=null && Math.abs(e)<=WIN){
+      S.mode='reg'; S.regCount=0; S.I=-INIT_I; S.prevE=e;
+      log('INFO','الفرق دخل ±10 مم ('+e.toFixed(1)+' مم): الحلقة اتقفلت والتكامل بدأ بـ InitIntegral = 20',true);
+    }
+    S.u=0; S.step=FFIX;
+  }else{
+    S.regCount++;
+    if(e!=null && Math.abs(e)>1.5*WIN){S.mode='pre';S.step=FFIX;S.u=0;log('INFO','الفرق عدّى 15 مم: الحلقة فتحت والريش رجعت 170',true)}
+    else if(e!=null){
+      const de=e-S.prevE; S.prevE=e;
+      const satP=S.u>=UMAX, satN=S.u<=-UMAX;
+      if(!(satP&&e<=0)&&!(satN&&e>0)) S.I=clamp(S.I+P.Ki*e,-UMAX,UMAX);   // anti-windup
+      S.u=clamp(-(P.Kp*e+S.I+P.Kd*de),-UMAX,UMAX);
+      S.stepCmd=uToFlap(S.u);
+    } // no reading: keep last flap value
+    if(S.servo){S.servoRun++}else{S.step+=(S.stepCmd-S.step)*0.65}
   }
-  // photocell
-  S.contrast=F.has('dirty')?Math.max(0.12,S.contrast-0.012):Math.min(1,S.contrast+0.05);
-  const seen=S.contrast>0.22;
-  if(!seen&&S.mode!=='stop'){raise('Bar');return}
-  const noise=(Math.random()-.5)*(0.5+ (1-S.contrast)*6);
-  S.meas.push(S.eTrue+noise);while(S.meas.length>DELAY+2)S.meas.shift();
-  const m=S.meas.length>=DELAY+1?S.meas.slice(0,2):S.meas.slice(-2);   // reading made a few packs upstream
-  S.eRaw=m[m.length-1];
-  const e=(m.reduce((a,b)=>a+b,0)/m.length)-S.off;
-  S.ePrev=S.e;S.e=e;S.eF=0.7*S.eF+0.3*e;
-  const ea=Math.abs(e);
-  S.s2=ea<5?S.s2*0.9+ea*ea*0.1:25;
-  if(S.mode==='stop'){S.flap=0;record();return}
-  // loop close / open (hysteresis 10 / 15 mm)
-  const was=S.loop;
-  S.loop=S.filled&&S.vl&&!F.has('servo')&&(ea<=WIN||(S.loop&&ea<=1.5*WIN));
-  if(S.loop&&!was){S.I=-INIT_I;log('step','الفرق دخل النافذة ('+e.toFixed(1)+' مم): الحلقة اتقفلت والـ PID بيشتغل');if(S.mode==='fill')S.mode='reg'}
-  if(!S.loop&&was){log('blue','الفرق عدّى 15 مم: الحلقة فتحت والريش رجعت 170°')}
-  // PID
-  S.sq=S.s2<=1&&S.filled;
-  let P=S.sq?KPSQ*e*Math.abs(e):S.kp*e;
-  if(S.loop){
-    const satP=S.u>=UMAX,satN=S.u<=-UMAX;
-    if(!(satP&&e<=0)&&!(satN&&e>0))S.I+=(S.sq?KISQ:KI)*e;
-    S.I=clamp(S.I,-UMAX,UMAX);
-    S.u=clamp(-(P+S.I+KD*(S.e-S.ePrev)),-UMAX,UMAX);
-    S.flapT=PRECORR+(MAXSTROKE-PRECORR)*0.5*(S.u/UMAX+1);
-  } else {S.u=0;S.flapT=S.filled?FIX:PRECORR}
-  S.flapT=clamp(S.flapT,0,MAXSTROKE);
-  if(F.has('servo')&&S.filled){raise('Servo');}
-  S.flap=S.flapT;
-  // design OK (3 in a row, 1 out cancels)
-  if(ea<=OK&&S.loop&&S.filled){S.okCnt++;if(S.okCnt>=3&&!S.designOK){S.designOK=true;S.outCnt=0;if(!S.wasOK){S.wasOK=true;log('step','التصميم تمام: 3 علب جوّه ±1.5 مم','SO_T.PackageDesignOk')}}}
-  else{S.okCnt=0;if(S.designOK){S.designOK=false}}
-  // out of design counter
-  if(S.filled){if(ea>OK){S.outCnt++;const lim=S.wasOK?20:80;if(S.outCnt>=lim)raise('Out',S.outCnt+' علبة برا ±1.5 مم (المسموح '+lim+')')}else if(S.wasOK)S.outCnt=0}
-  record();
+
+  // crease on finished package (TMCC can't see this)
+  S.crease=S.E-S.x+gauss()*0.08;
+
+  // design OK + alarms (program limits)
+  const inOK=S.mode==='reg'&&S.devValid&&Math.abs(S.dev)<=SECTOR;
+  if(inOK){S.okCnt++;if(S.okCnt>=3&&!S.designOK){S.designOK=true;if(!S.wasOK){S.wasOK=true;S.outCnt=0;log('INFO','التصميم تمام: 3 علب ورا بعض جوّه ±1.5 مم <span class="en">PackageDesignOk</span>',true)}}}
+  else{S.okCnt=0;S.designOK=false}
+  let reject=!S.designOK;
+  if(S.devValid&&Math.abs(S.dev)>SECTOR){S.outCnt++}else if(S.devValid&&S.wasOK){S.outCnt=0}
+  const lim=S.wasOK?20:80;
+  if(S.outCnt>=lim){raise('OOD','ALR_PFU_YE_JawAuxFunDCSOutOfDesign',S.outCnt+' علبة برا ±1.5 مم (المسموح '+lim+(S.wasOK?' ورا بعض بعد أول تصميم تمام':' من أول ما الأنبوبة اتملت')+').');trip('برا التصميم كتير، الماكينة وقفت.')}
+  if(S.missRun>=2){raise('PHC','ALR_PFU_YE_JawAuxFunDCSBarcodeMissing','الكود مش بيتقري. الماكينة كملت بآخر زاوية للريش.');}else if(S.missRun===0)clear('PHC');
+  if(S.missRun>=4) trip('الحساس مرجعش يقرا، الماكينة وقفت.');
+  if(S.servo&&S.servoRun>=3){raise('SRV','ALR_PFU_YE_ServoFoldFlapFault','سيرفو ريش الطي مش بيتحرك. افحص الدرايف والموتور والحركة الميكانيكية.');trip('عطل في سيرفو ريش الطي، الماكينة وقفت.')}
+  if(!S.devValid)reject=true;
+  if(reject)S.rej++;else S.good++;
+
+  push(S.devHist,S.devValid?S.dev:null);push(S.strokeHist,S.step);push(S.creaseHist,S.crease);
+  S.hist.unshift({crease:S.crease,rej:reject});S.hist.length=Math.min(S.hist.length,7);
+  S.sigVis=clamp(S.prodA+visPx()*3,8,352);S.sigPend=true;
 }
-function record(){S.hist.push({e:S.e,f:S.eF,flap:S.flap,lv:S.level,ok:S.designOK,loop:S.loop,m:S.mode});if(S.hist.length>160)S.hist.shift()}
+// display helpers: where the mark is drawn (exaggerated), and the moment it passes the photocell beam
+function visPx(){if(S.mode==='pre'){let q=(S.x*6)%120;if(q>60)q-=120;if(q<-60)q+=120;return q}return clamp(S.x,-7,7)*6}
+function fireSig(){if(!S.sigPend)return;S.sigPend=false;if(S.match){S.flash=1;S.cap={vis:S.sigVis,sig:S.prodA+S.x*360/S.L,ref:S.prodA-S.offset/100*360/S.L,dev:S.dev};(S.capHist=S.capHist||[]).push(S.cap);if(S.capHist.length>8)S.capHist.shift()}else{S.bad=1}}
+const push=(a,v)=>{a.push(v);if(a.length>150)a.shift()};
+const avg=(a,n=10)=>{const v=a.slice(-n).filter(x=>x!=null);return v.length?v.reduce((p,c)=>p+c,0)/v.length:null};
 
-function tick(dt){S.t+=dt;if(S.mode==='stop')return;S.acc+=dt*S.rate;while(S.acc>=1){S.acc-=1;pack();if(S.mode==='stop'||S.paused)break}Q.tick()}
+/* ---------- alarms ---------- */
+function stamp(){return 'عبوة '+S.pkg}
+function log(code,txt,info){S.alarms.unshift({code,name:info?'INFO':code,txt,t:stamp(),info:true,cleared:true});renderAlarms()}
+function raise(code,name,txt){if(S.active[code])return;const a={code,name,txt,t:stamp(),cleared:false};S.active[code]=a;S.alarms.unshift(a);renderAlarms()}
+function clear(code){const a=S.active[code];if(a){a.cleared=true;delete S.active[code];renderAlarms()}}
+function trip(txt){if(!S.running)return;S.running=false;S.alarms.unshift({name:'MACHINE STOP',txt,t:stamp(),cleared:false});renderAlarms()}
+function renderAlarms(){
+  const el=$('#alarms');S.alarms.length=Math.min(S.alarms.length,30);
+  el.innerHTML=S.alarms.length?S.alarms.map(a=>`<div class="alarm ${a.cleared?'cleared':''}"><strong>${a.name}</strong><div>${a.txt}</div><div class="t">${a.t}${a.cleared&&!a.info?' · اتمسح':''}</div></div>`).join(''):'<p class="note">مفيش إنذارات.</p>';
+}
 
-/* ---------- UI ---------- */
-const TS=[[2,'بطيء'],[6,'متوسط'],[20,'سريع']];
-TS.forEach(([v,l])=>{const b=document.createElement('button');b.textContent=l;b.dataset.v=v;b.onclick=()=>{S.rate=v;syncTs()};$('tscale').appendChild(b)});
-function syncTs(){[...$('tscale').children].forEach(b=>b.classList.toggle('sel',+b.dataset.v===S.rate))}
+/* ---------- faults ---------- */
 const FAULTS=[
- {id:'level',ar:'مستوى المنتج مش بيوصل',sm:'مفيش Virtual level'},
- {id:'dirty',ar:'عدسة الفوتوسيل متوسخة',sm:'الإشارة بتضعف بالتدريج'},
- {id:'servo',ar:'سيرفو ريش الطي عطلان',sm:'أول ما الأنبوبة تتملي'},
- {id:'home',ar:'ريش الطي مش بترجع للصفر',sm:'عند التشغيل'}
+  {k:'dirty',t:'حساس متسخ',d:'بعض العبوات الكود بيتقري غلط. حالة 1.'},
+  {k:'align',t:'الحساس مش متظبط على الورق',d:'مفيش قراءة خالص. الماكينة تكمل بآخر زاوية وبعدين تقف.'},
+  {k:'pattern',t:'نمط الكود مش مطابق للإعداد',d:'الحساس شايف ألوان بس مفيش design signal.'},
+  {k:'encoder',t:'مشكلة في الـ angle encoder',d:'الانحراف بيقفز. حالة 2: الانحراف كبير.'},
+  {k:'slip',t:'الورق بيزحلق / الشد مش ثابت',d:'تذبذب في الانحراف. متغيرش الـ offset بسببه.'},
+  {k:'matLong',t:'طول التكرار في الخامة أطول',d:'زاوية الريش بتروح لقيمة عالية ولو زاد بتلزق في 183.'},
+  {k:'mech',t:'الضبط الميكانيكي مش مظبوط',d:'زاوية الريش بتلزق تحت عند 40. حالة 4.'},
+  {k:'servo',t:'عطل في السيرفو',d:'متعالجوش بالـ offset أبدا.'},
+  {k:'wrongVol',t:'offset بتاع حجم تاني',d:'غلطة شائعة: الـ offset اتحمل من volume تاني.'},
 ];
-function renderFaults(hide){const el=$('faults');el.innerHTML='';FAULTS.forEach(f=>{const b=document.createElement('button');b.classList.toggle('on',!hide&&S.faults.has(f.id));b.innerHTML='<span>'+f.ar+'</span><small>'+f.sm+'</small>';
-  b.onclick=()=>{if(S.faults.has(f.id)){S.faults.delete(f.id);log('info','اتصلّح: '+f.ar)}else{S.faults.add(f.id);log('info','عطل: '+f.ar)}renderFaults()};el.appendChild(b)})}
-function bind(id,key,f){const el=$(id);const u=()=>{S[key]=+el.value;f()};el.oninput=u;u()}
-function setRanges(){['kp','off','eq','e0'].forEach(k=>$(k).value=S[k]);
-  bind('kp','kp',()=>$('kpV').textContent=S.kp);bind('off','off',()=>$('offV').textContent=S.off+' mm');bind('eq','eq',()=>$('eqV').textContent=S.eq+'°');bind('e0','e0',()=>$('e0V').textContent='−'+S.e0+' mm')}
+function applyFault(k,on){
+  S[k]=on;
+  if(k==='matLong')S.matLong=on?1.6:0;
+  if(k==='mech')S.mech=on?0.5:0;
+  if(k==='servo'&&!on)S.servoRun=0;
+  if(k==='wrongVol'){S.offset=on?VOLS[1-S.vol].off:VOLS[S.vol].off}
+  renderFaults();
+}
+function renderFaults(){
+  $('#faults').innerHTML=FAULTS.map(f=>{const on=f.k==='matLong'?S.matLong>0:f.k==='mech'?S.mech>0:!!S[f.k];return `<button data-f="${f.k}" class="${on?'on':''}" aria-pressed="${on}"><span>${f.t}</span><small>${f.d}</small></button>`}).join('');
+}
+$('#faults').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const k=b.dataset.f;const on=b.getAttribute('aria-pressed')!=='true';applyFault(k,on)});
+function clearFaults(){S.dirty=S.align=S.encoder=S.slip=S.servo=S.pattern=S.wrongVol=false;S.matLong=0;S.mech=0;S.servoRun=0;renderFaults()}
 
-function fit(cv){const d=Math.min(2,window.devicePixelRatio||1),w=cv.clientWidth,h=+cv.getAttribute('height');if(cv.width!==Math.round(w*d)){cv.width=Math.round(w*d);cv.height=Math.round(h*d)}const c=cv.getContext('2d');c.setTransform(d,0,0,d,0,0);return [c,w,h]}
-function drawFlap(){
-  const [c,w,h]=fit($('cvFlap'));c.clearRect(0,0,w,h);
-  const gw=w-130,cx=gw/2,cy=h-50,R=Math.max(40,Math.min(gw/2-50,h-100,170));
-  const A=d=>Math.PI-(d/200)*Math.PI; // 0 deg left, 200 right (scale to 200 so 183 is visible)
-  // arc bands
-  const arc=(d0,d1,col,wd)=>{c.strokeStyle=col;c.lineWidth=wd;c.beginPath();c.arc(cx,cy,R,-A(d0),-A(d1),false);c.stroke()};
-  arc(0,183,'#dfe0e0',18);arc(40,183,'#b9d983',18);
-  c.strokeStyle='#040505';c.lineWidth=1;c.beginPath();c.arc(cx,cy,R+9,-A(0),-A(183),false);c.stroke();c.beginPath();c.arc(cx,cy,R-9,-A(0),-A(183),false);c.stroke();
-  // ticks
-  c.font='600 12px "JetBrains Mono",monospace';c.fillStyle='#040505';c.textAlign='center';
-  [0,40,170,183].forEach(d=>{const a=A(d);c.strokeStyle='#040505';c.lineWidth=2;c.beginPath();c.moveTo(cx+(R-12)*Math.cos(a),cy-(R-12)*Math.sin(a));c.lineTo(cx+(R+14)*Math.cos(a),cy-(R+14)*Math.sin(a));c.stroke();
-    const tx=cx+(R+30)*Math.cos(a),ty=cy-(R+30)*Math.sin(a);c.fillText(d+'°',tx+(d===183?10:d===170?-4:d===0?8:0),ty+(d===183?10:4))});
-  // needle
-  const a=A(S.flap);c.strokeStyle='#fdb935';c.lineWidth=7;c.lineCap='round';c.beginPath();c.moveTo(cx,cy);c.lineTo(cx+(R-4)*Math.cos(a),cy-(R-4)*Math.sin(a));c.stroke();
-  c.strokeStyle='#040505';c.lineWidth=1.2;c.stroke();c.lineCap='butt';
-  c.fillStyle='#3b5959';c.beginPath();c.arc(cx,cy,14,0,7);c.fill();
-  c.fillStyle='#040505';c.font='700 22px "JetBrains Mono",monospace';c.fillText(S.flap.toFixed(0)+'°',cx,cy+38);
-  c.font='600 11px "JetBrains Mono",monospace';c.fillStyle='#5c5c5c';c.fillText('VAR_FoldFlapContrValue',cx,cy-R-34<10?14:cy-R-34);
-  // side box: u
-  const bx=w-118,by=24,bh=h-80;c.strokeStyle='#040505';c.lineWidth=1;c.strokeRect(bx,by,30,bh);
-  const uy=v=>by+bh/2-v/UMAX*bh/2;c.fillStyle=S.loop?'#a177b4':'#dfe0e0';const y0=uy(0),y1=uy(S.u);c.fillRect(bx+1,Math.min(y0,y1),28,Math.abs(y1-y0)||1);
-  c.strokeStyle='#040505';c.beginPath();c.moveTo(bx-4,y0);c.lineTo(bx+34,y0);c.stroke();
-  c.textAlign='left';c.fillStyle='#040505';c.font='600 11px "JetBrains Mono",monospace';c.fillText('+100',bx+36,by+8);c.fillText('0',bx+36,y0+4);c.fillText('-100',bx+36,by+bh);
-  c.textAlign='center';c.font='600 11px "IBM Plex Sans Arabic",sans-serif';c.fillText('خرج المنظّم u',bx+15,by+bh+20);c.font='700 13px "JetBrains Mono",monospace';c.fillText(S.u.toFixed(0),bx+15,by+bh+38);
+/* ---------- controls ---------- */
+const SLOW=[{f:0.06,t:'بطيء جدا (عشان تتفرج)'},{f:0.25,t:'بطيء'},{f:0.6,t:'متوسط'},{f:1,t:'السرعة الحقيقية'}];
+function syncCtl(){
+  S.pph=+$('#spd').value;$('#spdV').textContent=S.pph+' pkg/h';
+  $('#slowV').textContent=SLOW[+$('#slow').value].t;
+  S.prodA=+$('#prodA').value;$('#prodAV').textContent=S.prodA+'°';
+  S.E=+$('#matE').value;$('#matEV').textContent=(S.E>0?'+':'')+S.E.toFixed(1)+' mm';
 }
-function drawPkg(){
-  const [c,w,h]=fit($('cvPkg'));c.clearRect(0,0,w,h);
-  const pw=Math.min(120,w*0.55),ph=h-30,x0=(w-pw)/2,y0=14;
-  c.fillStyle='#ffffff';c.fillRect(x0,y0,pw,ph);
-  const sh=clamp(S.e*2.2,-ph,ph);
-  c.save();c.beginPath();c.rect(x0,y0,pw,ph);c.clip();
-  for(const k of [-1,0,1]){const yy=y0+sh+k*ph;
-    c.fillStyle='#4687c7';c.fillRect(x0,yy+ph*0.18,pw,ph*0.22);
-    c.fillStyle='#feea05';c.beginPath();c.arc(x0+pw/2,yy+ph*0.62,pw*0.2,0,7);c.fill();c.strokeStyle='#040505';c.stroke();
-    c.fillStyle='#040505';c.fillRect(x0+pw-14,yy+ph*0.9,10,6); // register mark
-    c.fillStyle='#fff';c.font='700 13px "IBM Plex Sans Arabic",sans-serif';c.textAlign='center';c.fillText('لبن',x0+pw/2,yy+ph*0.33)}
-  c.restore();
-  c.strokeStyle='#040505';c.lineWidth=1.5;c.strokeRect(x0,y0,pw,ph);
-  c.setLineDash([5,4]);[0.12,0.88].forEach(f=>{c.beginPath();c.moveTo(x0-8,y0+ph*f);c.lineTo(x0+pw+8,y0+ph*f);c.stroke()});c.setLineDash([]);
-  c.fillStyle=Math.abs(S.e)<=OK?'#7fa31a':'#b0122a';c.font='700 13px "JetBrains Mono",monospace';c.textAlign='center';c.fillText((S.e>=0?'+':'')+S.e.toFixed(1)+' mm',w/2,h-4);
-}
-function drawPhoto(){
-  const [c,w,h]=fit($('cvPhoto'));c.clearRect(0,0,w,h);
-  const pad=30,pw=w-pad-8,ph=h-60;const y=v=>12+ph-(v/255)*ph;
-  const white=40+200*S.contrast,black=40,dt=(white+black)/2;
-  c.strokeStyle='#ededed';[0,128,255].forEach(v=>{c.beginPath();c.moveTo(pad,y(v));c.lineTo(w-8,y(v));c.stroke();c.fillStyle='#5c5c5c';c.font='10px "JetBrains Mono",monospace';c.fillText(v,2,y(v)+3)});
-  c.strokeStyle='#4687c7';c.lineWidth=2;c.beginPath();
-  for(let i=0;i<=pw;i++){const p=i/pw;const mark=p>0.42&&p<0.58;const v=(mark?black:white)+(Math.sin(i*1.7)*3*(1.2-S.contrast));i?c.lineTo(pad+i,y(v)):c.moveTo(pad+i,y(v))}c.stroke();
-  c.strokeStyle='#ee2643';c.setLineDash([4,3]);c.lineWidth=1.2;c.beginPath();c.moveTo(pad,y(dt));c.lineTo(w-8,y(dt));c.stroke();c.setLineDash([]);
-  c.fillStyle='#ee2643';c.font='600 11px "JetBrains Mono",monospace';c.fillText('D.T.',w-36,y(dt)-4);
-  const seen=S.contrast>0.22;const dy=h-30;c.strokeStyle=seen?'#7fa31a':'#c5c5c5';c.lineWidth=2;c.beginPath();c.moveTo(pad,dy+10);c.lineTo(pad+pw*0.42,dy+10);c.lineTo(pad+pw*0.42,seen?dy:dy+10);c.lineTo(pad+pw*0.58,seen?dy:dy+10);c.lineTo(pad+pw*0.58,dy+10);c.lineTo(w-8,dy+10);c.stroke();
-  c.fillStyle='#5c5c5c';c.font='10px "JetBrains Mono",monospace';c.fillText('→ TMCC',2,dy+12);
-  c.fillStyle='#040505';c.font='600 11px "IBM Plex Sans Arabic",sans-serif';c.textAlign='right';c.fillText('التباين '+(S.contrast*100).toFixed(0)+'%',w-8,12);c.textAlign='left';
-}
-const TR=[['e','الفرق VAR_DesignError','#ee2643'],['f','المفلتر VAR_DesignErrorFiltered','#040505'],['flap','زاوية الريش VAR_FoldFlapContrValue','#fdb935'],['lv','مستوى المنتج FilteredLevel','#a177b4']];
-$('trendKey').innerHTML=TR.map(([,a,c])=>'<span><i style="background:'+c+'"></i>'+a+'</span>').join('')+'<span><i style="background:#eef6d6"></i>±1.5 مم</span><span><i style="background:#fffbd1"></i>نافذة ±10 مم</span>';
-function drawTrend(){
-  const [c,w,h]=fit($('cvTrend'));c.clearRect(0,0,w,h);
-  const H=S.hist,N=160,padL=40,padR=40,pw=w-padL-padR;const top=10,eh=(h-40)*0.55,fh=(h-40)*0.45-10,ft=top+eh+16;
-  const ey=v=>top+eh/2-clamp(v,-25,25)/25*eh/2;
-  c.fillStyle='#fffbd1';c.fillRect(padL,ey(10),pw,ey(-10)-ey(10));c.fillStyle='#eef6d6';c.fillRect(padL,ey(1.5),pw,ey(-1.5)-ey(1.5));
-  c.strokeStyle='#c5c5c5';c.strokeRect(padL,top,pw,eh);
-  c.fillStyle='#5c5c5c';c.font='10px "JetBrains Mono",monospace';c.textAlign='right';[-25,-10,0,10,25].forEach(v=>c.fillText(v,padL-4,ey(v)+3));c.textAlign='left';c.fillText('mm',2,top+10);
-  const fy=v=>ft+fh-clamp(v,0,200)/200*fh;
-  c.strokeRect(padL,ft,pw,fh);c.textAlign='right';[0,100,200].forEach(v=>c.fillText(v+'°',padL-4,fy(v)+3));c.textAlign='left';[0,50,100].forEach(v=>c.fillText(v+'%',w-padR+4,ft+fh-v/100*fh+3));
-  [40,170,183].forEach(v=>{c.strokeStyle='#ededed';c.beginPath();c.moveTo(padL,fy(v));c.lineTo(w-padR,fy(v));c.stroke()});
-  const X=i=>padL+(i+(N-H.length))/(N-1)*pw;
-  // loop closed band
-  H.forEach((p,i)=>{if(p.loop){c.fillStyle='rgba(161,119,180,.12)';c.fillRect(X(i),ft,pw/N+1,fh)}if(p.ok){c.fillStyle='#7fa31a';c.fillRect(X(i),top+eh+4,pw/N+1,6)}});
-  const line=(key,yf,col,wd)=>{c.strokeStyle=col;c.lineWidth=wd;c.beginPath();H.forEach((p,i)=>{i?c.lineTo(X(i),yf(p[key])):c.moveTo(X(i),yf(p[key]))});c.stroke()};
-  if(H.length>1){line('e',ey,'#ee2643',1.3);line('f',ey,'#040505',2);line('flap',fy,'#fdb935',2.5);line('lv',v=>ft+fh-clamp(v,0,100)/100*fh,'#a177b4',2)}
-  c.fillStyle='#5c5c5c';c.font='10.5px "IBM Plex Sans Arabic",sans-serif';c.textAlign='right';c.fillText('الشريط الأخضر = التصميم تمام · الخلفية البنفسجي = الحلقة مقفولة',w-padR,h-4);c.textAlign='left';
-}
-const MODES=[['stop','واقفة','0°'],['empty','أنبوبة فاضية: تصحيح مسبق','40°'],['fill','مليانة وبرا النافذة أو المستوى مش جاهز','170°'],['reg','الحلقة مقفولة: تنظيم','40–183°']];
-function render(){
-  const st={stop:['واقفة','Stopped','var(--grey)'],empty:['أنبوبة فاضية','Empty tube','var(--air)'],fill:['بتدوّر على التصميم','Searching','var(--m-orange)'],reg:[S.designOK?'التصميم تمام':'بتنظّم','Regulation',S.designOK?'var(--water)':'var(--prod)']}[S.mode];
-  const cur=S.mode==='reg'&&!S.loop?'fill':S.mode;
-  $('strip').style.setProperty('--sc',hasY()?'var(--hot)':st[2]);$('stateTxt').textContent=hasY()&&S.mode==='stop'?'واقفة بإنذار':st[0];$('stateEn').textContent=st[1];
-  let m='';
-  if(S.mode==='stop')m=hasY()?'فيه إنذار أصفر. صلّح السبب ودوس <b>مسح الإنذارات</b>.':'دوس <b>تشغيل الإنتاج</b>. الماكينة هتبدأ بأنبوبة فاضية وبعدين المنتج يدخل.';
-  else if(S.mode==='empty')m='الأنبوبة فاضية: الريش ثابتة على 40° والحلقة مفتوحة.';
-  else if(!S.loop)m=(S.vl?'الفرق <b>'+S.e.toFixed(1)+' مم</b> برا نافذة ±10: ':'المستوى لسه <b>'+S.level.toFixed(0)+'%</b> (Virtual level مش جاهز): ')+'الريش ثابتة على 170° بتشد الورق لحد ما الفرق يقرّب.';
-  else m=S.designOK?'التصميم جوّه ±1.5 مم والمنظّم ماسكه. زاوية الريش = اللي الورق ده محتاجه.':'الحلقة مقفولة والـ PID بيقرّب الفرق من صفر. محتاج 3 علب ورا بعض جوّه ±1.5.';
-  if(S.outCnt>0&&S.filled)m+=' <span class="note">علب برا التصميم ورا بعض: '+S.outCnt+' من '+(S.wasOK?20:80)+'</span>';
-  $('msg').innerHTML=m;
-  const kv=[['الفرق (مم)',(S.e>=0?'+':'')+S.e.toFixed(1)],['المفلتر (مم)',S.eF.toFixed(1)],['زاوية الريش',S.flap.toFixed(0)+'°'],['مستوى المنتج',S.level.toFixed(0)+'%'],['الحلقة',S.loop?'مقفولة':'مفتوحة'],['التصميم',S.designOK?'تمام':'لأ'],['علب',S.n.toLocaleString('en-US')],['طول العلبة','185 mm']];
-  $('kvs').innerHTML=kv.map(([a,b],i)=>'<div class="kv'+(i===5?(S.designOK?' good':(S.filled?' bad':'')):'')+'"><span>'+a+'</span><strong>'+b+'</strong></div>').join('');
-  $('modes').innerHTML=MODES.map(([k,a,d])=>'<div class="'+(k===cur?'cur':'')+'"><b>'+d+'</b>'+a+'</div>').join('');
-  const calc=[['قراءة الفوتوسيل (مم)',S.eRaw.toFixed(2)],['الإزاحة',S.off.toFixed(1)],['التكبير P',(S.sq?KPSQ*S.e*Math.abs(S.e):S.kp*S.e).toFixed(1)],['التكامل I',S.I.toFixed(1)],['خرج u',S.u.toFixed(1)],['منظّم تربيعي',S.sq?'شغّال':'لأ'],['الانحراف²',S.s2.toFixed(2)],['برا التصميم',S.outCnt+' / '+(S.wasOK?20:80)]];
-  $('calc').innerHTML=calc.map(([a,b])=>'<div class="kv"><span>'+a+'</span><strong>'+b+'</strong></div>').join('');
-  $('runBtn').disabled=S.mode!=='stop';$('stopBtn').disabled=S.mode==='stop';$('spliceBtn').disabled=S.mode==='stop';
-  drawFlap();drawPkg();drawPhoto();drawTrend();
-}
-$('runBtn').onclick=startRun;$('stopBtn').onclick=()=>stopMachine(false);$('resetBtn').onclick=resetAlarms;
-$('spliceBtn').onclick=()=>{S.eTrue+=18+Math.random()*10;log('info','وصلة ورق جديدة عدّت: التصميم اتزحزح فجأة')};
-$('clearLog').onclick=()=>{logEl.innerHTML=''};
-function syncPause(){$('pauseBtn').textContent=S.paused?'كمّل':'إيقاف مؤقت';$('pauseBtn').classList.toggle('sel',S.paused)}
-$('pauseBtn').onclick=()=>{S.paused=!S.paused;syncPause()};
-function resetAll(){const r=S?S.rate:6;fresh();S.rate=r;logEl.innerHTML='';setRanges();renderFaults();syncTs();syncPause();log('info','الماكينة واقفة وريش الطي في مكان الصفر.')}
-$('resetAllBtn').onclick=()=>{Q.end();resetAll()};
+['#spd','#slow','#prodA','#matE'].forEach(id=>$(id).addEventListener('input',syncCtl));
+$('#vol').innerHTML=VOLS.map((v,i)=>`<option value="${i}">${v.name}</option>`).join('');
+$('#vol').addEventListener('change',e=>{S.vol=+e.target.value;S.L=VOLS[S.vol].L;S.offset=S.wrongVol?VOLS[1-S.vol].off:VOLS[S.vol].off;log('INFO','اتغير الحجم واتحمل الـ offset بتاعه',true)});
+$('#off0').addEventListener('click',()=>{S.offset=0});
+document.querySelectorAll('[data-off]').forEach(b=>{let tm=null,iv=null,held=false;const bump=()=>{S.offset=clamp(S.offset+ +b.dataset.off,-500,500)};const stop=()=>{clearTimeout(tm);clearInterval(iv);tm=iv=null};
+  b.addEventListener('pointerdown',e=>{held=false;stop();tm=setTimeout(()=>{held=true;iv=setInterval(bump,90)},400)});
+  ['pointerup','pointerleave','pointercancel'].forEach(ev=>b.addEventListener(ev,stop));
+  b.addEventListener('click',()=>{if(held){held=false;return}bump()});b.addEventListener('contextmenu',e=>e.preventDefault())});
 
-/* ---------- challenge ---------- */
-const SCEN=[
- {id:'level',setup:()=>S.faults.add('level'),q:'الريش فضلت على 170° والفرق عدّى الصفر وراح للناحية التانية، وفي الآخر إنذار برا التصميم. ليه؟',opts:['الـ KP صغير','مستوى المنتج ما وصلش فمفيش Virtual level','الفوتوسيل متوسخ','الإزاحة غلط'],a:1,ex:'البرنامج ما بيقفلش الحلقة غير لما الأنبوبة تكون مليانة والمستوى جاهز. المستوى فضل حوالي 55%، فالريش فضلت ثابتة على 170° وشدّت الورق زيادة، لحد ما 80 علبة عدّوا برا التصميم.'},
- {id:'dirty',setup:()=>S.faults.add('dirty'),q:'التصميم كان تمام وبعدين الماكينة وقفت بإنذار. بص على إشارة الفوتوسيل: السبب؟',opts:['السيرفو','عدسة الفوتوسيل متوسخة والتباين قل لحد ما العلامة ضاعت','الورق اتغير','الـ KP كبير'],a:1,ex:'الحد المتغير بيفضل في النص بين الأبيض والأسود، فبيستحمل وساخة لحد حد معيّن. لما التباين قل جدا الفوتوسيل ما بقاش شايف العلامة وطلع BarcodeMissing. نضّف العدسة.'},
- {id:'kp',setup:()=>{S.kp=20;setRanges()},q:'الريش بتتهز رايح جاي والفرق بيتأرجح وما بيهداش. السبب الأقرب؟',opts:['تكبير المنظّم KP أكبر من اللازم','المستوى','الوصلة','الإزاحة'],a:0,ex:'القراءة بتيجي متأخرة كام علبة، فلو التكبير كبير المنظّم بيصلّح زيادة ويعدّي الصفر ويرجع. قيمة البرنامج 7.'},
- {id:'eq',setup:()=>{},q:'الماكينة وقفت بإنذار برا التصميم. بص على المنحنى: الريش وصلت 183° وبرضه الفرق ما وقفش. ليه؟',opts:['السيرفو بايظ','الورق ده محتاج شد أكتر من آخر مشوار الريش','الفوتوسيل','المستوى'],a:1,ex:'خرج المنظّم واصل للحد (u = +100) والريش على آخرها 183°. الورق ده (أو ضبط تاني في الماكينة) محتاج أكتر من اللي الريش تقدر تديه، فلازم تدوّر على السبب الميكانيكي أو نوع الورق.'},
- {id:'servo',setup:()=>S.faults.add('servo'),q:'أول ما المنتج دخل الأنبوبة الماكينة وقفت. الإنذار بيقول إيه؟',opts:['عطل في سيرفو ريش الطي','برا التصميم','العلامة ضاعت','المستوى'],a:0,ex:'ServoFoldFlapFault: السيرفو أو الدرايف بتاعه فيه عطل. افحص الدرايف والكابل والموتور.'}
-];
-const Q={on:false,cur:null,asked:false,right:0,total:0,
-  start(){const pool=SCEN.filter(x=>!this.cur||x.id!==this.cur.id);const s=pool[Math.floor(Math.random()*pool.length)];this.end();resetAll();this.on=true;this.cur=s;this.asked=false;s.setup();renderFaults(true);S.rate=20;syncTs();startRun();
-    $('quizBody').innerHTML='<p class="note" style="margin:10px 0 0">التحدّي شغّال… اتفرج على الريش والمنحنيات.</p>';log('info','بدأ تحدّي جديد')},
-  end(){this.on=false},
-  onAlarm(){if(this.on&&!this.asked)setTimeout(()=>this.ask(),700)},
-  tick(){if(!this.on||this.asked)return;if(this.cur.id==='kp'&&S.n>110)this.ask();if(this.cur.id==='eq'&&S.designOK&&S.eq<200&&S.n>70){S.eq=200;setRanges();log('info','بكرة ورق جديدة اتوصلت')}},
-  ask(){if(this.asked)return;this.asked=true;S.paused=true;syncPause();const s=this.cur;
-    let h='<p style="font-weight:600;margin:10px 0 0">'+s.q+'</p><div class="qopts">';s.opts.forEach((o,i)=>h+='<button data-i="'+i+'">'+o+'</button>');h+='</div><div id="qex"></div>';$('quizBody').innerHTML=h;
-    $('quizBody').querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{const box=b.parentElement;if(box.dataset.done)return;box.dataset.done=1;const i=+b.dataset.i;this.total++;if(i===s.a)this.right++;
-      box.querySelectorAll('[data-i]').forEach(x=>{if(+x.dataset.i===s.a)x.classList.add('right');else if(x===b)x.classList.add('wrong')});
-      $('qex').innerHTML='<p style="margin:10px 0 0"><b>'+(i===s.a?'صح.':'لأ.')+'</b> '+s.ex+'</p><div class="row" style="margin-top:8px"><button class="sel" id="qNext">تحدّي تاني</button><button id="qFree">كمّل تجرب بنفسك</button></div>';
-      $('score').textContent=this.right+' / '+this.total;$('qNext').onclick=()=>this.start();$('qFree').onclick=()=>{this.end();renderFaults();S.paused=false;syncPause()}})}
+function start(){
+  if(S.running)return;
+  Object.keys(S.active).forEach(clear);
+  S.outCnt=0;S.okCnt=0;S.designOK=false;S.wasOK=false;S.missRun=0;S.servoRun=0;S.meas=[];S.prevE=0;
+  if($('#startMode').value==='tight'){
+    S.mode='pre'; S.x=(24+rnd()*18); S.regCount=0; S.step=FFIX;
+    log('INFO','أول تشغيل: الحلقة مفتوحة والريش ثابتة على 170 لحد ما الفرق يدخل ±10 مم',true);
+  }else{ if(S.mode==='pre'){S.mode='reg'} S.regCount=99; S.I=-INIT_I }
+  S.running=true;
+}
+$('#btnStart').addEventListener('click',start);
+$('#btnStop').addEventListener('click',()=>{S.running=false});
+
+/* ---------- scenarios ---------- */
+const cap=$('#caption');
+function settle(n){const r=S.running;S.running=true;for(let i=0;i<n;i++)cycle();S.running=r;S.hist=[];}
+const SCN={
+  normal(){clearFaults();$('#matE').value=0;$('#startMode').value='normal';syncCtl();S.offset=VOLS[S.vol].off;S.mode='reg';S.x=-S.offset/100;S.step=S.stepCmd=126;S.running=false;start();
+    cap.innerHTML='إنتاج طبيعي. الانحراف بيتهز حوالين الصفر، وزاوية الريش ثابتة حوالين <b>126</b> على الماكينة دي. مفيش رقم مثالي ثابت للزاوية؛ بيختلف حسب الماكينة والخامة والسرعة. جرّب تغيّر السرعة وشوف الريش بتروح فين.'},
+  example(){clearFaults();$('#startMode').value='normal';$('#matE').value=1.5;syncCtl();S.offset=0;S.mode='reg';S.x=0;S.step=S.stepCmd=126;S.running=false;start();
+    cap.innerHTML='مثال: الانحراف قريب من صفر، وزاوية الريش حوالين 126، والـ offset = 0، بس الكريز <b>أعلى من المطلوب 1.5 مم</b> على العبوة. الحل: قلّل الـ offset حوالي <b>150 وحدة</b>. <button id="ap150" class="primary" style="padding:3px 10px">طبّق −150</button> وبعدين اتفرج: الانحراف يروح سالب شوية، والريش تقل، وبعدين الاتنين يرجعوا، والكريز يتظبط.';
+    setTimeout(()=>{const b=$('#ap150');b&&b.addEventListener('click',()=>{S.offset-=150;cap.innerHTML='تمام. الـ offset بقى <b>−150</b>. لاحظ في الرسم البياني: الانحراف نزل سالب مؤقتا، والريش قلّت مؤقتا، وبعد كام عبوة رجعوا قريب من قيمتهم القديمة، والكريز البنفسجي نزل لصفر. <b>متحكمش من أول عبوة.</b>'})},0)},
+  tight(){clearFaults();$('#matE').value=0;syncCtl();S.offset=VOLS[S.vol].off;S.running=false;$('#startMode').value='tight';$('#slow').value=1;syncCtl();start();
+    cap.innerHTML='أول تشغيل بعد <b>Tight Tube</b> أو <b>Sterile Inching</b>: الحلقة مفتوحة والريش ثابتة على <b>170</b> (الأنبوبة مليانة). الفرق بيلف لحد ما يدخل جوه <b>±10 مم</b>، وبعدها الحلقة تتقفل، والتكامل يبدأ بـ <b>InitIntegral = 20</b>، والـ PID يصحح ناحية الصفر. لو الفرق عدّى 15 مم الحلقة تفتح تاني.'},
+  dirty(){clearFaults();applyFault('dirty',true);if(!S.running){$('#startMode').value='normal';start()}
+    cap.innerHTML='الحساس متسخ: بعض العبوات الكود بيتقري غلط (المربعات الحمرا تحت). العبوة اللي مفيهاش قراءة بتتعمل بآخر زاوية للريش. لو القراءة ضاعت كتير يطلع <b>ALR_PFU_YE_JawAuxFunDCSBarcodeMissing</b>. <b>متغيرش الـ offset هنا</b>؛ نضّف الحساس.'},
+  limit(){clearFaults();applyFault('matLong',true);if(!S.running){$('#startMode').value='normal';start()}
+    cap.innerHTML='الخامة طول التكرار بتاعها أطول، فالنظام محتاج سحب زيادة والريش بتطلع لفوق ولمبة <b>فوق 75%</b> بتنور. لو فضلت لازقة في <b>183</b> يبقى ده مؤشر محتاج تحقيق: الضبط الميكانيكي، سحب الورق، الـ eccentric shafts، الخامة، الفكوك، السيرفو.'},
+  servo(){clearFaults();if(!S.running){$('#startMode').value='normal';start()}applyFault('servo',true);
+    cap.innerHTML='عطل سيرفو: الكارت بيبعت أوامر بس الموتور مش بيتحرك، والماكينة بتقف بـ <b>ALR_PFU_YE_ServoFoldFlapFault</b>. الحل مش في الـ offset؛ افحص درايف السيرفو والموتور والحركة الميكانيكية.'},
 };
-$('quizBtn').onclick=()=>Q.start();
+document.querySelectorAll('[data-scn]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-scn]').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');SCN[b.dataset.scn]()}));
 
-let last=performance.now();
-function frame(now){const real=Math.min(.1,(now-last)/1000);last=now;if(!S.paused)tick(real);render();requestAnimationFrame(frame)}
-window.tick=tick;window.render=render;window.startRun=startRun;
-resetAll();
+/* ---------- canvas helpers ---------- */
+function fit(cv){const r=cv.getBoundingClientRect();const dpr=Math.min(2,window.devicePixelRatio||1);if(!cv.dataset.h)cv.dataset.h=cv.getAttribute('height');const h=+cv.dataset.h;const w=Math.max(300,r.width);if(cv.width!==Math.round(w*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);cv.style.height=h+'px'}const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);return{c,w,h}}
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const FONT='"IBM Plex Sans Arabic",system-ui,sans-serif', MONO='"JetBrains Mono",monospace';
+function txt(c,s,x,y,o={}){c.save();c.font=`${o.w||500} ${o.s||13}px ${o.m?MONO:FONT}`;c.fillStyle=o.col||css('--fg');c.textAlign=o.a||'center';c.textBaseline=o.b||'middle';c.direction=o.m?'ltr':'rtl';c.fillText(s,x,y);c.restore()}
+
+/* ---------- machine view ---------- */
+const cv=$('#cv');
+function drawMachine(){
+  const {c,w,h}=fit(cv);c.clearRect(0,0,w,h);
+  const narrow=w<620;
+  const wx=narrow?w*0.52:w*0.45, ww=54;           // web/tube x & width
+  const f=S.angle/360, prodF=S.prodA/360;
+  const Lpx=120, k=6;                               // px per package (display), exaggeration px/mm
+  const phY=96;
+  // background zones
+  c.fillStyle='#10181c';c.fillRect(0,0,w,h);
+  // reel
+  c.save();c.translate(wx+ww/2+(narrow?60:110),26);c.rotate(-S.angle*Math.PI/180*2);c.strokeStyle=css('--steel');c.lineWidth=3;c.beginPath();c.arc(0,0,20,0,Math.PI*2);c.stroke();c.beginPath();c.moveTo(-20,0);c.lineTo(20,0);c.moveTo(0,-20);c.lineTo(0,20);c.stroke();c.restore();
+  // flat web, forming ring, tube, sealed packages (jaw frame moves down with the tube)
+  const tubeTop=150, yTop=270, ya=yTop+f*Lpx, yb=ya+Lpx, cxm=wx+ww/2, half=ww/2, pin=4, tp=24;
+  c.fillStyle=css('--web');c.fillRect(wx,0,ww,tubeTop);
+  const tube=new Path2D();
+  tube.moveTo(cxm-half,tubeTop);tube.lineTo(cxm-half,ya-tp);tube.quadraticCurveTo(cxm-half,ya,cxm-pin,ya);
+  tube.quadraticCurveTo(cxm-half,ya,cxm-half,ya+tp);tube.lineTo(cxm-half,yb-tp);tube.quadraticCurveTo(cxm-half,yb,cxm-pin,yb);
+  tube.lineTo(cxm+pin,yb);tube.quadraticCurveTo(cxm+half,yb,cxm+half,yb-tp);tube.lineTo(cxm+half,ya+tp);
+  tube.quadraticCurveTo(cxm+half,ya,cxm+pin,ya);tube.quadraticCurveTo(cxm+half,ya,cxm+half,ya-tp);tube.lineTo(cxm+half,tubeTop);tube.closePath();
+  const grd=c.createLinearGradient(wx,0,wx+ww,0);grd.addColorStop(0,'#a2987f');grd.addColorStop(.45,'#e6dcc0');grd.addColorStop(1,'#a2987f');
+  c.fillStyle=grd;c.fill(tube);
+  // package cut off at the start of this cycle, dropping to the final folder
+  if(S.running||S.pkg>0){const fy=yb+8+f*f*150, fa=Math.max(0,1-f*1.6);if(fa>0){c.save();c.globalAlpha=fa;c.translate(cxm+f*30,fy);c.rotate(f*0.5);c.fillStyle=grd;c.beginPath();c.moveTo(-pin,0);c.quadraticCurveTo(-half,0,-half,tp);c.lineTo(-half,Lpx-tp);c.quadraticCurveTo(-half,Lpx,-pin,Lpx);c.lineTo(pin,Lpx);c.quadraticCurveTo(half,Lpx,half,Lpx-tp);c.lineTo(half,tp);c.quadraticCurveTo(half,0,pin,0);c.closePath();c.fill();c.restore()}}
+  // printed marks and creases travel with the web, at the same speed as the closed jaws
+  const vpx=visPx();
+  const marks=()=>{for(let n=-3;n<6;n++){
+    const y=phY-vpx+(f-prodF)*Lpx+n*Lpx;
+    c.fillStyle=css('--mark');c.fillRect(wx+6,y-5,16,10);
+    for(let b=0;b<6;b++){c.fillStyle=CODE[b]?'#222':'#cfc6ac';c.fillRect(wx+26+b*4,y-3,3,6)}
+    [28,92].forEach(d=>{const cy=y+d+S.E*k;c.strokeStyle=css('--crease');c.setLineDash([5,4]);c.lineWidth=2;c.beginPath();c.moveTo(wx,cy);c.lineTo(wx+ww,cy);c.stroke();c.setLineDash([])});
+  }};
+  c.save();c.beginPath();c.rect(wx,0,ww,tubeTop);c.clip();marks();c.restore();
+  c.save();c.clip(tube);marks();c.restore();
+  // transversal seals
+  c.strokeStyle='#6f6753';c.lineWidth=3;[ya,yb].forEach(y=>{c.beginPath();c.moveTo(cxm-pin-5,y);c.lineTo(cxm+pin+5,y);c.stroke()});
+  // photocell
+  const hit=S.flash>0.4&&S.match;
+  c.fillStyle=S.flash>0.25&&S.match?'#1f6f9c':S.bad>0.25?'#6b2a24':'#2a3a40';c.fillRect(wx-50,phY-14,34,28);c.strokeStyle=S.flash>0.25?css('--dev'):S.bad>0.25?css('--alarm'):css('--steel');c.lineWidth=S.flash>0.25||S.bad>0.25?3:1;c.strokeRect(wx-50,phY-14,34,28);c.lineWidth=1;
+  if(S.flash>0.25&&S.match){c.strokeStyle=css('--dev');c.globalAlpha=S.flash;c.lineWidth=2;c.strokeRect(wx+3,phY-9,22,18);c.globalAlpha=1}
+  c.strokeStyle=S.align?'#553':S.dirty?'#c9a23a':'#ff4b3e';c.lineWidth=2;c.globalAlpha=.8;c.beginPath();c.moveTo(wx-16,phY);c.lineTo(wx+14,phY);c.stroke();c.globalAlpha=1;
+  if(S.dirty){c.fillStyle='rgba(120,90,40,.75)';c.beginPath();c.arc(wx-22,phY-4,5,0,7);c.arc(wx-27,phY+6,4,0,7);c.fill()}
+  txt(c,'Photocells',wx-33,phY-26,{m:1,s:11,col:css('--muted')});
+  // production reference line on photocell
+  c.strokeStyle='rgba(95,208,139,.5)';c.setLineDash([2,3]);c.beginPath();c.moveTo(wx-4,phY+S.offset/100*k);c.lineTo(wx+ww+60,phY+S.offset/100*k);c.stroke();c.setLineDash([]);
+  txt(c,narrow?'المرجع':'مكان العلامة المطلوب عند زاوية الإنتاج',wx+ww+8,phY-10+S.offset/100*k,{a:'left',s:11,col:'#7fcf9b'});
+  // signal travel to TMCC
+  if(hit){c.strokeStyle=css('--dev');c.globalAlpha=S.flash;c.lineWidth=2;c.beginPath();c.moveTo(wx-50,phY);c.lineTo(wx-90,phY);c.lineTo(wx-90,150);c.stroke();c.globalAlpha=1}
+  // TMCC box
+  const tx=Math.max(8,wx-170),ty=136;
+  c.fillStyle='#0e1518';c.fillRect(tx,ty,92,40);c.strokeStyle=S.match?css('--dev'):css('--alarm');c.strokeRect(tx,ty,92,40);
+  txt(c,'PLC',tx+46,ty+14,{m:1,s:12,w:700});txt(c,S.devValid?(S.dev>=0?'+':'')+S.dev.toFixed(2)+' mm':'---',tx+46,ty+29,{m:1,s:11,col:S.devValid&&Math.abs(S.dev)<=SECTOR?css('--ok'):css('--alarm')});
+  // DMC + servo + cam
+  const sy=262;
+  c.fillStyle='#0e1518';c.fillRect(tx,sy-20,44,40);c.strokeStyle=S.servo?css('--alarm'):css('--steel');c.strokeRect(tx,sy-20,44,40);txt(c,'Drive',tx+22,sy,{m:1,s:10});
+  c.strokeStyle=css('--steel');c.beginPath();c.moveTo(tx+46,ty+40);c.lineTo(tx+46,sy-22);c.stroke();
+  const mx=tx+70;
+  c.fillStyle='#24323a';c.beginPath();c.arc(mx,sy,15,0,7);c.fill();c.strokeStyle=S.servo?css('--alarm'):css('--stroke');c.lineWidth=2;c.stroke();
+  const pos=S.step;const camA=(pos/FMAX)*Math.PI*1.6;
+  c.beginPath();c.moveTo(mx,sy);c.lineTo(mx+Math.cos(camA)*13,sy+Math.sin(camA)*13);c.stroke();
+  txt(c,'Servo',mx,sy+26,{m:1,s:10,col:css('--muted')});
+  // eccentric cam near tube
+  const ex=wx-34;c.strokeStyle=css('--muted');c.lineWidth=1;c.setLineDash([3,3]);c.beginPath();c.moveTo(mx+15,sy);c.lineTo(ex-10,sy);c.stroke();c.setLineDash([]);
+  const ecc=4+flapFeed(pos)*2.2;
+  c.fillStyle='#3a4b52';c.beginPath();c.arc(ex,sy+Math.sin(S.angle*Math.PI/180)*ecc*0.4,10,0,7);c.fill();
+  txt(c,'Eccentric / cam',ex-6,sy+44,{m:1,s:10,col:css('--muted')});
+  // jaws: one pair is closed and travels down with the tube (main feed); the other opens, returns up and closes again
+  const jaw=(y,gap,col)=>{c.fillStyle=col;c.fillRect(cxm-pin-gap-36,y-9,36,18);c.fillRect(cxm+pin+gap,y-9,36,18);c.fillStyle='#55666d';c.fillRect(cxm-pin-gap-44,y-5,8,10);c.fillRect(cxm+pin+gap+36,y-5,8,10)};
+  const open=half+8;let yr,gr;
+  if(f<0.15){yr=yTop+Lpx+f*Lpx;gr=open*(f/0.15)}
+  else if(f<0.85){const u=(f-0.15)/0.7,e=u<.5?2*u*u:1-2*(1-u)*(1-u);yr=(yTop+Lpx*1.15)+(yTop-(yTop+Lpx*1.15))*e;gr=open}
+  else{yr=yTop;gr=open*(1-(f-0.85)/0.15)}
+  jaw(yr,gr,'#5f7279');
+  jaw(ya,0,'#9bb0b8');
+  // folding flaps ride on the closed jaw and tilt in against the tube; the stroke sets how far they pull
+  const strokePx=3+flapFeed(pos)*3.2;
+  const tilt=Math.min(1,f/0.4), ang=0.75-0.75*tilt, tug=tilt*strokePx;
+  [-1,1].forEach(sd=>{c.save();c.translate(cxm+sd*(half+5-tug*0.35),ya-11+tug*0.25);c.rotate(sd*ang);c.fillStyle=S.mode==='pre'?'#7a6a45':css('--stroke');c.fillRect(-4,-34,8,34);c.restore()});
+  const fl=narrow?wx+ww+40:wx+ww+52;
+  txt(c,narrow?'Flaps':'Folding flaps',fl,300,{m:1,s:11,a:'left',col:css('--stroke')});
+  txt(c,(S.mode==='pre'?'Open · 170':'Flap '+Math.round(S.step)),fl,316,{m:1,s:11,a:'left',col:css('--fg')});
+  if(!narrow){txt(c,'Jaws',fl,400,{m:1,s:11,a:'left',col:css('--muted')});txt(c,'الفك المقفول بيسحب التيوب لتحت',fl,418,{s:11,a:'left',col:css('--muted')})}
+  // encoder dial
+  const dx=narrow?50:66,dy=narrow?52:68,R=narrow?36:48;
+  c.strokeStyle=css('--line');c.lineWidth=8;c.beginPath();c.arc(dx,dy,R,0,7);c.stroke();
+  const a2r=a=>(a-90)*Math.PI/180;
+  const sec=SECTOR*18, refV=clamp(S.prodA-S.offset/100*18,8,352);   // dial uses the same exaggeration as the drawing
+  c.strokeStyle='#2f6b47';c.lineWidth=8;c.beginPath();c.arc(dx,dy,R,a2r(refV-sec),a2r(refV+sec));c.stroke();
+  c.strokeStyle=css('--ok');c.lineWidth=2;c.beginPath();c.moveTo(dx+Math.cos(a2r(refV))*(R-10),dy+Math.sin(a2r(refV))*(R-10));c.lineTo(dx+Math.cos(a2r(refV))*(R+8),dy+Math.sin(a2r(refV))*(R+8));c.stroke();
+  if(S.cap){const sa=a2r(S.cap.vis);c.strokeStyle=css('--dev');c.lineWidth=2+S.flash*3;c.globalAlpha=.55+S.flash*.45;c.beginPath();c.moveTo(dx,dy);c.lineTo(dx+Math.cos(sa)*R,dy+Math.sin(sa)*R);c.stroke();c.globalAlpha=1;c.fillStyle=css('--dev');c.beginPath();c.arc(dx+Math.cos(sa)*R,dy+Math.sin(sa)*R,5+S.flash*4,0,7);c.fill();
+    const fm=v=>v.toFixed(1)+'°';
+    if(narrow){txt(c,'الإشارة عند '+fm(S.cap.sig),dx,dy+R+30,{s:10,col:css('--dev')})}
+    else{const rx=dx+R+18;txt(c,'زاوية الإنتاج',rx,dy-30,{a:'left',s:11,col:'#7fcf9b'});txt(c,fm(S.cap.ref),rx,dy-14,{m:1,a:'left',s:13,col:'#7fcf9b',w:700});
+      txt(c,'الإشارة وصلت عند',rx,dy+6,{a:'left',s:11,col:css('--dev')});txt(c,fm(S.cap.sig),rx,dy+22,{m:1,a:'left',s:13+S.flash*3,col:css('--dev'),w:700});
+      txt(c,(S.cap.dev>=0?'+':'')+S.cap.dev.toFixed(2)+' mm',rx,dy+42,{m:1,a:'left',s:12,col:Math.abs(S.cap.dev)<=SECTOR?css('--ok'):css('--alarm')});txt(c,'الفرق',rx+70,dy+42,{a:'left',s:11,col:css('--muted')})}}
+  c.strokeStyle=css('--fg');c.lineWidth=2;c.beginPath();c.moveTo(dx,dy);c.lineTo(dx+Math.cos(a2r(S.angle))*(R-6),dy+Math.sin(a2r(S.angle))*(R-6));c.stroke();
+  txt(c,'Angle encoder',dx,dy+R+16,{m:1,s:10,col:css('--muted')});
+  txt(c,Math.round(S.angle)+'°',dx,dy,{m:1,s:11});
+  // finished packages
+  const px0=narrow?w-40:w-120, py0=narrow?130:150;
+  txt(c,narrow?'العبوة':'بعد الـ final folder',px0,py0-24,{s:12,col:css('--muted')});
+  const pw=narrow?46:70, ph=narrow?80:120;
+  c.fillStyle=css('--web');c.fillRect(px0-pw/2,py0,pw,ph);c.strokeStyle='#8c8470';c.strokeRect(px0-pw/2,py0,pw,ph);
+  const targetY=py0+ph*0.22;
+  c.strokeStyle=css('--ok');c.setLineDash([4,3]);c.beginPath();c.moveTo(px0-pw/2-14,targetY);c.lineTo(px0+pw/2+14,targetY);c.stroke();c.setLineDash([]);
+  const last=S.hist[0];
+  if(last){const cy=targetY-last.crease*8;c.strokeStyle=Math.abs(last.crease)>0.5?css('--alarm'):css('--crease');c.lineWidth=3;c.beginPath();c.moveTo(px0-pw/2,cy);c.lineTo(px0+pw/2,cy);c.stroke();c.lineWidth=1;
+    txt(c,(last.crease>=0?'+':'')+last.crease.toFixed(2)+' mm',px0,py0+ph+16,{m:1,s:12,col:Math.abs(last.crease)>0.5?css('--alarm'):css('--ok')});
+    txt(c,Math.abs(last.crease)<=0.5?'الكريز في مكانه':last.crease>0?'الكريز عالي':'الكريز واطي',px0,py0+ph+34,{s:12,col:css('--muted')});
+    if(last.rej)txt(c,'مرفوضة',px0,py0+ph/2+20,{s:13,w:700,col:css('--alarm')});
+  }
+  txt(c,'المطلوب',px0+pw/2+16,targetY-9,{s:10,a:'left',col:'#7fcf9b'});
+  // small conveyor of previous packages
+  for(let i=1;i<S.hist.length;i++){const hx=px0-pw/2-i*(narrow?0:22)-6;if(narrow)break;const hh=S.hist[i];c.fillStyle=hh.rej?'#5a2a24':Math.abs(hh.crease)>0.5?'#6b5a2a':'#7e7663';c.fillRect(hx-14,py0+ph-34,16,34)}
+  // state text
+  txt(c,S.running?(S.mode==='pre'?'الحلقة مفتوحة: الفرق لسه برا ±10 مم':'الحلقة مقفولة: تنظيم PID'):'الماكينة واقفة',w-12,h-14,{a:'right',s:13,col:S.running?css('--ok'):css('--muted'),b:'alphabetic'});
+}
+
+/* ---------- trend ---------- */
+const tr=$('#tr');
+function drawTrend(){
+  const {c,w,h}=fit(tr);c.clearRect(0,0,w,h);
+  const L=46,R=w-46,T=10,B=h-24,mid=(T+B)/2;
+  const ymm=v=>mid-v/5*(B-T)/2, yst=v=>B-v/FMAX*(B-T);
+  c.fillStyle='rgba(47,107,71,.25)';c.fillRect(L,ymm(SECTOR),R-L,ymm(-SECTOR)-ymm(SECTOR));
+  c.strokeStyle=css('--line');c.lineWidth=1;
+  [-5,-2.5,0,2.5,5].forEach(v=>{c.beginPath();c.moveTo(L,ymm(v));c.lineTo(R,ymm(v));c.stroke();txt(c,(v>0?'+':'')+v,L-6,ymm(v),{m:1,s:10,a:'right',col:css('--muted')})});
+  [0,40,170,183].forEach(v=>txt(c,String(v),R+6,yst(v),{m:1,s:10,a:'left',col:css('--stroke')}));
+  txt(c,'mm',L-6,T+4,{m:1,s:10,a:'right',col:css('--muted')});txt(c,'flap',R+6,T+4,{m:1,s:10,a:'left',col:css('--stroke')});
+  const N=150,xs=i=>L+(R-L)*i/(N-1);
+  const line=(arr,fy,col,lw)=>{c.strokeStyle=col;c.lineWidth=lw;c.beginPath();let pen=false;const off=N-arr.length;arr.forEach((v,i)=>{if(v==null){pen=false;return}const X=xs(i+off),Y=clamp(fy(v),T,B);pen?c.lineTo(X,Y):c.moveTo(X,Y);pen=true});c.stroke()};
+  line(S.strokeHist,yst,css('--stroke'),1.6);
+  line(S.creaseHist,ymm,css('--pkg'),1.6);
+  line(S.devHist,ymm,css('--dev'),2.2);
+  const lv=S.devHist[S.devHist.length-1];if(lv!=null){c.fillStyle=css('--dev');c.beginPath();c.arc(R,clamp(ymm(lv),T,B),4,0,7);c.fill()}
+  txt(c,'← أقدم',L+4,h-8,{s:11,a:'left',col:css('--muted')});txt(c,'أحدث عبوة',R-4,h-8,{s:11,a:'right',col:css('--muted')});
+}
+
+/* ---------- servo bar ---------- */
+const sv=$('#sv');
+function drawServo(){
+  const {c,w,h}=fit(sv);c.clearRect(0,0,w,h);
+  const L=14,R=w-14,y=52,X=p=>L+(R-L)*p/FMAX;
+  c.fillStyle=css('--panel2');c.fillRect(L,y-8,R-L,16);
+  c.fillStyle='rgba(233,166,64,.35)';c.fillRect(X(FMIN),y-8,X(FMAX)-X(FMIN),16);
+  const marks=[[0,'0'],[FMIN,'40 أقل حاجة'],[111.5,'111.5 = u صفر'],[FFIX,'170 الحلقة مفتوحة'],[FMAX,'183']];
+  marks.forEach(([p,l],i)=>{c.strokeStyle=css('--muted');c.beginPath();c.moveTo(X(p),y-12);c.lineTo(X(p),y+12);c.stroke();txt(c,l,clamp(X(p),L+30,R-40),i%2?y+26:y-24,{m:1,s:10,col:css('--muted')})});
+  const pos=S.step;
+  c.fillStyle=S.servo?css('--alarm'):css('--stroke');c.beginPath();c.moveTo(X(pos),y-2);c.lineTo(X(pos)-7,y-16);c.lineTo(X(pos)+7,y-16);c.closePath();c.fill();
+  c.fillRect(X(pos)-1.5,y-8,3,16);
+  txt(c,'Flap '+pos.toFixed(1)+'  ·  u '+(S.u>=0?'+':'')+S.u.toFixed(1),X(pos),h-12,{m:1,s:11,col:css('--fg'),a:'center'});
+}
+
+/* ---------- zoomed angle window (true scale) ---------- */
+const an=$('#ang');
+function drawAngle(){
+  const {c,w,h}=fit(an);c.clearRect(0,0,w,h);
+  const L=14,R=w-14,mid=(L+R)/2,dpm=360/S.L,span=7*dpm,ay=96;
+  const X=a=>mid+(a-S.prodA)/span*(R-L)/2, ref=S.prodA-S.offset/100*dpm;
+  c.fillStyle='#10181c';c.fillRect(0,0,w,h);
+  c.save();c.beginPath();c.rect(L,0,R-L,h);c.clip();
+  c.fillStyle='rgba(47,107,71,.45)';c.fillRect(X(ref-SECTOR*dpm),44,X(ref+SECTOR*dpm)-X(ref-SECTOR*dpm),ay-44);
+  c.strokeStyle=css('--ok');c.lineWidth=3;c.beginPath();c.moveTo(X(ref),32);c.lineTo(X(ref),ay+8);c.stroke();
+  c.strokeStyle=css('--fg');c.globalAlpha=.35;c.lineWidth=1;c.beginPath();c.moveTo(X(S.angle),40);c.lineTo(X(S.angle),ay);c.stroke();c.globalAlpha=1;
+  const hs=S.capHist||[];
+  hs.forEach((cp,i)=>{const nw=i===hs.length-1;c.fillStyle=css('--dev');c.globalAlpha=nw?1:0.25+0.5*i/hs.length;c.beginPath();c.arc(X(cp.sig),70,nw?8+S.flash*4:4,0,7);c.fill()});c.globalAlpha=1;
+  const lastC=hs[hs.length-1];
+  if(lastC){c.strokeStyle=css('--dev');c.lineWidth=2;c.beginPath();c.moveTo(X(ref),70);c.lineTo(X(lastC.sig),70);c.stroke()}
+  c.restore();
+  c.strokeStyle=css('--muted');c.lineWidth=1;c.beginPath();c.moveTo(L,ay);c.lineTo(R,ay);c.stroke();
+  const step=w<520?2:1;
+  for(let a=Math.ceil(S.prodA-span);a<=S.prodA+span;a++){const x=X(a);c.beginPath();c.moveTo(x,ay);c.lineTo(x,ay+(a%step?4:8));c.stroke();if(a%step===0)txt(c,a+'°',x,ay+20,{m:1,s:11,col:css('--muted')})}
+  txt(c,'زاوية الإنتاج  '+ref.toFixed(1)+'°',clamp(X(ref),L+70,R-70),18,{s:13,w:700,col:'#7fcf9b'});
+  if(lastC){const d=lastC.dev,okc=Math.abs(d)<=SECTOR?css('--ok'):css('--alarm');
+    txt(c,'الإشارة وصلت عند  '+lastC.sig.toFixed(1)+'°',w-L,h-34,{a:'right',s:14,w:700,col:css('--dev'),b:'alphabetic'});
+    txt(c,'الفرق  '+(d>=0?'+':'−')+Math.abs(d).toFixed(2)+' مم  ('+(d>=0?'متأخرة':'مبكرة')+')',w-L,h-12,{a:'right',s:14,w:700,col:okc,b:'alphabetic'})}
+  txt(c,'← مبكرة',L,h-12,{a:'left',s:11,col:css('--muted'),b:'alphabetic'});
+}
+
+/* ---------- panels ---------- */
+const CHAIN=[['Register mark','العلامة المطبوعة'],['Photocells','الحساسات بتقرا الكود'],['PLC · DesignControl','يحسب الفرق بالمم والـ PID'],['Servo drive','يحول الزاوية لمكان موتور'],['Servomotor','يحرك الكامة بدقة'],['Eccentric shafts / cam','بتحدد شوط الـ flaps'],['Folding flaps','سحب إضافي صغير'],['Feed rate','الورق يتعدل']];
+function renderChain(){
+  const bad={0:S.dirty||S.align,1:S.dirty||S.align,2:S.pattern,3:S.servo,4:S.servo};
+  $('#chain').innerHTML=CHAIN.map(([e,a],i)=>`${i?'<div class="arrow">▼</div>':''}<div class="${bad[i]?'dead':S.running&&S.flash>0.15?'hot':''}"><span class="en">${e}</span><small>${a}</small></div>`).join('');
+}
+function renderStatus(){
+  const a10=avg(S.devHist),s10=avg(S.strokeHist),c10=avg(S.creaseHist);
+  const st=!S.running?'<span class="pill idle">واقفة</span>':S.mode==='pre'?'<span class="pill warn">الحلقة مفتوحة</span>':S.designOK?'<span class="pill ok">التصميم تمام</span>':'<span class="pill warn">بيظبط</span>';
+  const cr=c10==null?'---':(c10>=0?'+':'')+c10.toFixed(2);
+  $('#status').innerHTML=[
+    ['الحالة',st,1],['العبوات',S.pkg.toLocaleString('en-US')],['مرفوض',S.rej.toLocaleString('en-US')],
+    ['الانحراف الحالي (مم)',S.devValid?(S.dev>=0?'+':'')+S.dev.toFixed(2):'لا قراءة'],
+    ['متوسط آخر 10 (مم)',a10==null?'---':(a10>=0?'+':'')+a10.toFixed(2)],
+    ['متوسط زاوية الريش',s10==null?'---':Math.round(s10)],
+    ['برا التصميم',S.outCnt+' / '+(S.wasOK?20:80)],
+    ['الكريز على العبوة (مم)',cr]
+  ].map(([k,v,raw])=>`<div class="kv"><span>${k}</span>${raw?`<div>${v}</div>`:`<strong>${v}</strong>`}</div>`).join('');
+  // LEDs
+  $('#led1').classList.toggle('on',S.running&&S.flash>0.3&&S.match);
+  $('#led2').classList.toggle('on',S.running&&S.designOK);
+  $('#led7').classList.toggle('on',S.running&&S.mode==='reg'&&S.u>=50);
+  $('#led8').classList.toggle('on',S.running&&S.mode==='reg'&&S.u<=-50);
+  $('#offS_V').textContent=(S.offset>0?'+':'')+S.offset+'  ≈ '+(S.offset/100).toFixed(2)+' mm';
+  $('#offVal').textContent=(S.offset>0?'+':'')+S.offset+'  ≈ '+(S.offset/100).toFixed(2)+' mm';
+  const f=v=>v==null?'   ---':(v>=0?' +':' ')+v.toFixed(2);
+  $('#term').textContent=
+`> S   (diagnostic terminal)
+DEVIATION ACT  :${S.devValid?f(S.dev):'   ---'} mm
+DEVIATION AVG10:${f(a10)} mm
+FLAP AVG10     : ${s10==null?'---':Math.round(s10)}
+u / I          : ${S.u.toFixed(1)} / ${S.I.toFixed(1)}
+E FILTERED     :${f(S.eF)} mm
+DESIGN OK      : ${S.designOK?1:0}
+MACHINE SPEED  : ${S.pph} pkg/h
+REPEAT LENGTH  : ${S.L} mm
+PROD. ANGLE    : ${S.prodA} deg
+OFFSET         : ${S.offset}
+PID            : KP ${P.Kp}  KI ${P.Ki}  KD ${P.Kd}`;
+  // register code
+  $('#bitsRead').innerHTML=S.readBits.map((b,i)=>`<i class="${b<0?'':'b'+b} ${S.readErr.includes(i)||(S.pattern&&false)?'err':''}"></i>`).join('');
+  const ref=S.pattern?CODE.map((b,i)=>i%5===2?1-b:b):CODE;
+  $('#bitsRef').innerHTML=ref.map((b,i)=>`<i class="b${b} ${S.pattern&&i%5===2?'err':''}"></i>`).join('');
+  $('#matchTxt').innerHTML=S.align?'<span class="pill bad">مفيش قراءة</span> الحساس مش شايف العلامة.':S.match?'<span class="pill ok">مطابق</span> اتولدت design signal.':'<span class="pill bad">مش مطابق</span> مفيش design signal للعبوة دي.';
+  renderTree(a10,c10);renderChain();
+}
+function renderTree(a10,c10){
+  const recent=S.devHist.slice(-10);const readOK=!S.align&&!S.dirty&&!S.pattern?true:recent.filter(v=>v!=null).length>=6;
+  const photoOK=!S.align&&!(S.dirty&&!readOK);
+  const sigOK=photoOK&&!S.pattern;
+  const devOK=sigOK&&a10!=null&&Math.abs(a10)<=SECTOR&&!S.encoder&&!S.slip;
+  const pkgOK=devOK&&c10!=null&&Math.abs(c10)<=0.5;
+  const high=c10!=null&&c10>0;
+  const on=S.pkg>0;
+  const q=(cls,ind,t)=>`<div class="q ind${ind} ${on?cls:''}">${t}</div>`;
+  let H='';
+  H+=q(photoOK?'yes':'no',0,'الحساسات بتقرا الـ <span class="en">Register Code</span>؟');
+  if(!photoOK){H+=q('act',1,'لأ ← افحص الحساسات والعلامة والمحاذاة والأسلاك');}
+  else{H+=q(sigOK?'yes':'no',1,'نعم ← فيه <span class="en">Design Signal</span>؟');
+    if(!sigOK)H+=q('act',2,'لأ ← افحص فك الشفرة ونمط الكود');
+    else{H+=q(devOK?'yes':'no',2,'نعم ← الانحراف جوه ±1.5 مم؟');
+      if(!devOK)H+=q('act',3,'لأ ← افحص التوقيت والـ encoder وسحب الورق وسيرفو ريش الطي');
+      else{H+=q(pkgOK?'yes':'no',3,'نعم ← العبوة النهائية سليمة؟');
+        if(pkgOK)H+=q('act',4,'نعم ← مش محتاج Design Correction');
+        else H+=q('act',4,high?'لأ، الكريز عالي ← قلّل الـ Design Offset':'لأ، الكريز واطي ← زوّد الـ Design Offset');}}}
+  $('#tree').innerHTML=H;
+}
+
+/* ---------- loop ---------- */
+let last=performance.now(),acc=0,uiT=0;
+function frame(t){
+  const dt=Math.min(0.1,(t-last)/1000);last=t;
+  if(S.running){
+    const period=3600/S.pph/SLOW[+$('#slow').value].f;
+    S.angle+=360*dt/period;
+    if(S.sigPend&&S.angle>=S.sigVis)fireSig();
+    while(S.angle>=360){fireSig();S.angle-=360;cycle()}
+  }
+  S.flash=Math.max(0,S.flash-dt*3);S.bad=Math.max(0,(S.bad||0)-dt*3);
+  drawMachine();drawServo();drawAngle();
+  uiT+=dt;if(uiT>0.12){uiT=0;renderStatus();drawTrend()}
+  requestAnimationFrame(frame);
+}
+syncCtl();renderFaults();renderAlarms();
+// open in a working state: a short history of normal production
+S.running=true;for(let i=0;i<90;i++)cycle();S.running=false;S.hist=S.hist.slice(0,1);S.pkg=0;S.good=0;S.rej=0;
+renderStatus();drawTrend();
 requestAnimationFrame(frame);
+})();
 </script>
 
 </body>

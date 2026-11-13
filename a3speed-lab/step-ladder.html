@@ -10,14 +10,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
-/* v3: rebuilt on the A3/Speed 0300 workbook + the real PLC sequencer (MC _02010_Sequencer). Colors = workbook media colors on white. */
+/* v4: content from the real A3/Speed PLC sequencer (MC _02010_Sequencer), look restored to the earlier v2 style (by request). */
 :root{
   color-scheme: light;
-  --bg:#f4f4f4; --panel:#ffffff; --panel2:#f7f7f7; --line:#c5c5c5; --ink:#040505; --fg:#1c1d1d; --muted:#5c5c5c;
-  --air:#98d8e4; --hot:#ee2643; --pre:#f1bcd7; --steam:#a177b4; --prod:#feea05; --water:#b9d532; --h2o2:#f79027; --cair:#4687c7; --grey:#dfe0e0;
-  --g-prep:#4687c7; --g-ster:#ee2643; --g-wait:#7fa31a; --g-prod:#e2c800; --g-after:#a177b4;
-  --ok:#7fa31a;
-  --bad-bg:#fde4e7; --ok-bg:#eef6d6; --warn-bg:#fffbd1; --info-bg:#e8f0f8;
+  --bg:#e9eef1; --panel:#ffffff; --panel2:#f3f6f8; --line:#d3dce1; --ink:#13222a; --fg:#13222a; --muted:#596b73;
+  --air:#9cc9d8; --hot:#e0701a; --pre:#f3c49b; --steam:#5b9bb3; --prod:#0f8fa3; --water:#1d9452; --h2o2:#8e44c9; --cair:#1f78c1; --grey:#dfe5e8;
+  --g-prep:#5f7280; --g-ster:#e0701a; --g-wait:#1f78c1; --g-prod:#1d9452; --g-after:#7a4cc0;
+  --ok:#1d9452; --alarm:#d1362b; --warn:#b98500;
+  --bad-bg:#fdecea; --ok-bg:#e4f5ec; --warn-bg:#fff6dc; --info-bg:#e8f2fb;
   --f-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
   --f-body:"IBM Plex Sans Arabic",system-ui,"Segoe UI",Tahoma,sans-serif;
   --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
@@ -177,6 +177,31 @@ td.k span{display:inline-grid;place-items:center;width:28px;height:28px;border-r
 .alr div{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:start}
 .alr b{display:inline-grid;place-items:center;min-width:34px;height:22px;border:1px solid var(--ink);border-radius:4px;font-family:var(--f-mono);font-size:12px}
 @media (prefers-reduced-motion:reduce){.dash.on,.ops .lamp,.rung.fall{animation:none}}
+
+/* ---- v2 look restore ---- */
+.pipeO{stroke:#cfd8dd;stroke-width:9}
+.comp{stroke:#9fb0b8;stroke-width:2}
+rect.comp{rx:10px}
+.valve{stroke:#7d8e96}
+.g-prod{--gt:#fff}
+h2::before{width:5px;border-radius:3px;border:0}
+button{border-radius:9px;box-shadow:0 1px 0 rgba(19,34,42,.05)}
+button:hover{border-color:var(--muted)}
+.panel,.tpop{border-radius:14px;box-shadow:0 1px 2px rgba(19,34,42,.05)}
+.tpop{border-top-width:5px}
+.bignum{border:0;border-radius:16px}
+.stepname{color:var(--gc)}
+.pill{border:0;color:#fff;background:var(--muted)}
+.pill.ok{background:var(--ok)}.pill.idle{background:var(--g-prep)}.pill.run{background:var(--g-wait)}
+.prog{border-color:var(--line);border-radius:9px}
+.phases span::before{border:0}
+.ladder::before,.ladder::after{width:7px;border:0;border-radius:4px;background:linear-gradient(180deg,#c3cdd2,#a3b1b8)}
+.rung{border-radius:10px}
+.rung .n{border-radius:50%;border-width:1.5px;color:var(--gc)}
+.rung.done .n,.rung.cur .n{border-color:var(--gc);color:var(--gt)}
+.rung.cur{border-color:var(--gc)}
+.rung.view{outline-color:var(--muted)}
+.simp{background:#fff6dc;border-color:#e6c76a;color:#7a5b00}
 </style>
 </head>
 <body>
@@ -766,18 +791,18 @@ function drawSchem(o){
 
 /* ---------- charts ---------- */
 function sizeCanvas(c){const dpr=window.devicePixelRatio||1;const w=c.clientWidth||300;const h=+c.getAttribute('height');if(c.width!==Math.round(w*dpr)){c.width=Math.round(w*dpr);c.height=Math.round(h*dpr)}const x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);return [x,w,h]}
-const GC={prep:'#4687c7',ster:'#ee2643',wait:'#7fa31a',prod:'#e2c800',after:'#a177b4'};
+const GC={prep:'#5f7280',ster:'#e0701a',wait:'#1f78c1',prod:'#1d9452',after:'#7a4cc0'};
 function chart(id,series,max,ticks){
   const [x,w,h]=sizeCanvas($(id));x.clearRect(0,0,w,h);
   const L=34,R=6,T=6,B=22,pw=w-L-R,ph=h-T-B;const H=S.hist;const span=1800;const t0=S.t-span;
-  x.font='11px "JetBrains Mono",monospace';x.fillStyle='#5c5c5c';x.strokeStyle='#e3e3e3';x.lineWidth=1;
+  x.font='11px "JetBrains Mono",monospace';x.fillStyle='#596b73';x.strokeStyle='#e1e7ea';x.lineWidth=1;
   ticks.forEach(v=>{const y=T+ph-(v/max)*ph;x.beginPath();x.moveTo(L,y);x.lineTo(w-R,y);x.stroke();x.fillText(v,2,y+4)});
   for(let i=1;i<H.length;i++){const a=H[i-1],b=H[i];if(b.t<t0)continue;const xa=L+Math.max(0,(a.t-t0)/span)*pw,xb=L+((b.t-t0)/span)*pw;x.fillStyle=GC[grp(a.s)];x.fillRect(xa,h-B+6,Math.max(1,xb-xa),8)}
-  x.strokeStyle='#040505';x.strokeRect(L,h-B+6,pw,8);
+  x.strokeStyle='#d3dce1';x.strokeRect(L,h-B+6,pw,8);
   series.forEach(([k,col])=>{x.strokeStyle=col;x.lineWidth=2;x.beginPath();let st=false;
     for(const p of H){if(p.t<t0)continue;const X=L+((p.t-t0)/span)*pw,Y=T+ph-Math.min(1,p[k]/max)*ph;if(!st){x.moveTo(X,Y);st=true}else x.lineTo(X,Y)}x.stroke()});
 }
-function drawCharts(){chart('c1',[['sh','#ee2643'],['hs','#f79027'],['bv','#a177b4']],450,[0,100,200,280,400]);chart('c2',[['ac','#4687c7'],['st','#a177b4'],['flow','#7fa31a']],150,[0,40,85,126,150])}
+function drawCharts(){chart('c1',[['sh','#e0701a'],['hs','#d1362b'],['bv','#7a4cc0']],450,[0,100,200,280,400]);chart('c2',[['ac','#1f78c1'],['st','#5b9bb3'],['flow','#1d9452']],150,[0,40,85,126,150])}
 
 /* ---------- table ---------- */
 function buildTable(){$('tbody').innerHTML=STEPS.map((s,n)=>'<tr class="g-'+grp(n)+'"><td class="k"><span>'+n+'</span></td><td>'+s.ar+'</td><td class="en">'+s.en+'</td><td>'+s.up+'</td><td>'+s.down+'</td><td>'+s.time+'</td></tr>').join('')}
