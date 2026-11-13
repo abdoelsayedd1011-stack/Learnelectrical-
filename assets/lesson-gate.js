@@ -19,9 +19,9 @@
     left: function(a, b){ return "You have done " + a + " of its " + b + " exercises."; }, back: function(n){ return "← Back to lesson " + n; }, hub: "Course page",
     badge: "Locked", tip: function(n){ return "Finish lesson " + n + " first"; }
   } : {
-    lock: "الدرس ده لسه مقفول", need: function(n, t){ return "خلّص الدرس " + n + (t ? " «" + t + "»" : "") + " الأول، وبعدها الدرس ده هيتفتح لوحده."; },
-    left: function(a, b){ return "خلّصت " + a + " من " + b + " تمرين فيه."; }, back: function(n){ return "ارجع للدرس " + n + " ←"; }, hub: "صفحة الكورس",
-    badge: "مقفول", tip: function(n){ return "خلّص الدرس " + n + " الأول"; }
+    lock: "هذا الدرس مقفل", need: function(n, t){ return "أكمل الدرس " + n + (t ? " «" + t + "»" : "") + " أولًا، وبعدها يُفتح هذا الدرس تلقائيًّا."; },
+    left: function(a, b){ return "أنهيت " + a + " من " + b + " من تمارينه."; }, back: function(n){ return "العودة إلى الدرس " + n + " ←"; }, hub: "صفحة الكورس",
+    badge: "مقفل", tip: function(n){ return "أكمل الدرس " + n + " أولًا"; }
   };
 
   function state(){ try { return JSON.parse(localStorage.getItem(KEY) || "null") || {}; } catch (e){ return {}; } }
@@ -87,7 +87,7 @@
     if (a){ e.preventDefault(); var h = /lesson-(\d+)\.html/.exec(a.getAttribute("href")); if (h) alertLock(+h[1]); }
   }, true);
   function alertLock(n){ var prev = lockedBy(n); if (!prev) return; var keep = CUR; CUR = n; showLock(prev); CUR = keep;
-    var el = document.getElementById("leGate"); if (el && !CUR){ var x = document.createElement("a"); x.className = "h"; x.href = "#"; x.textContent = EN ? "Close" : "اقفل";
+    var el = document.getElementById("leGate"); if (el && !CUR){ var x = document.createElement("a"); x.className = "h"; x.href = "#"; x.textContent = EN ? "Close" : "إغلاق";
       x.addEventListener("click", function(ev){ ev.preventDefault(); showLock(null); }); el.querySelector(".b").appendChild(x); el.querySelector("a.h[href='index.html']").remove(); } }
 
   function run(){ if (CUR) showLock(lockedBy(CUR)); else markHub(); }

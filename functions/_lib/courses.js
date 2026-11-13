@@ -3,14 +3,14 @@
 // so adding a lesson or a task there is picked up here without editing this file.
 
 export const COURSES = {
-  basics:  { title: "أساسيات الكهربا للمبتدئين", key: "basics-lab-v1",   src: "/basics-lab/basics.js",          list: "BL.COURSE", hub: "/basics-lab/index.html" },
+  basics:  { title: "أساسيات الكهرباء للمبتدئين", key: "basics-lab-v1",   src: "/basics-lab/basics.js",          list: "BL.COURSE", hub: "/basics-lab/index.html" },
   classic: { title: "الكلاسيك كنترول",            key: "classic-lab-v1",  src: "/classic-control-lab/engine.js", list: null,        hub: "/classic-control-lab/index.html" },
-  safety:  { title: "السيفتي PLC",                key: "safety-lab-v1",   src: "/safety-lab/safety.js",          list: "IL.COURSE", hub: "/safety-lab/index.html" },
-  instr:   { title: "الإنسترومنتيشن",             key: "instr-lab-v1",    src: "/instrumentation-lab/instr.js",  list: "IL.COURSE", hub: "/instrumentation-lab/index.html" },
+  safety:  { title: "أنظمة الأمان Safety PLC",                key: "safety-lab-v1",   src: "/safety-lab/safety.js",          list: "IL.COURSE", hub: "/safety-lab/index.html" },
+  instr:   { title: "أجهزة القياس",             key: "instr-lab-v1",    src: "/instrumentation-lab/instr.js",  list: "IL.COURSE", hub: "/instrumentation-lab/index.html" },
   plc:     { title: "الـ PLC",                     key: "plc-lab-v1",      src: "/plc-lab/plc.js",                list: "PL.COURSE", hub: "/plc-lab/index.html" },
-  drw:     { title: "قراية الرسومات الكهربية",     key: "drw-lab-v1",      src: "/drawings-lab/drawings.js",      list: "DR.COURSE", hub: "/drawings-lab/index.html" },
+  drw:     { title: "قراءة الرسومات الكهربية",     key: "drw-lab-v1",      src: "/drawings-lab/drawings.js",      list: "DR.COURSE", hub: "/drawings-lab/index.html" },
   vfd:     { title: "الانفرتر VFD",                key: "vfdc-lab-v1",     src: "/vfd-course/vfd.js",             list: "VF.COURSE", hub: "/vfd-course/index.html" },
-  srv:     { title: "السيرفو موتور والدرايف",      key: "srvc-lab-v1",     src: "/servo-course/servo.js",         list: "SV.COURSE", hub: "/servo-course/index.html" },
+  srv:     { title: "محرك السيرفو والدرايف",      key: "srvc-lab-v1",     src: "/servo-course/servo.js",         list: "SV.COURSE", hub: "/servo-course/index.html" },
   iiot:    { title: "IIoT والشبكات الصناعية",       key: "iiot-lab-v1",     src: "/iiot-lab/iiot.js",              list: "IL.COURSE", hub: "/iiot-lab/index.html" },
   scada:   { title: "SCADA و HMI",                  key: "scada-lab-v1",    src: "/scada-lab/scada.js",            list: "IL.COURSE", hub: "/scada-lab/index.html" },
   panel:   { title: "تصميم اللوحات الكهربية",       key: "panel-lab-v1",    src: "/panel-lab/panel.js",            list: "IL.COURSE", hub: "/panel-lab/index.html" },

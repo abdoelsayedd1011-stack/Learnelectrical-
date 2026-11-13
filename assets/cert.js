@@ -32,16 +32,16 @@
       $("c-date").textContent = fmtDate(c.issued_at);
       $("c-code").textContent = c.code;
       $("c-url").textContent = domain + PAGE;
-      try { $("c-qr").innerHTML = QR.svg(link, { label: EN ? EN.certQr(c.code) : "QR للتأكد من الشهادة " + c.code }); } catch (e){}
+      try { $("c-qr").innerHTML = QR.svg(link, { label: EN ? EN.certQr(c.code) : "QR للتحقق من الشهادة " + c.code }); } catch (e){}
       document.title = (EN ? EN.certTitle(c.name, title) : "شهادة " + c.name + " · " + title) + " | " + (S.name || "LearnElectricals");
       state.hidden = true; bad.hidden = true; ok.hidden = false;
     })
-    .catch(function(){ state.textContent = EN ? EN.certOffline : "مقدرناش نوصل للسيرفر دلوقتي. جرّب تاني بعد شوية."; });
+    .catch(function(){ state.textContent = EN ? EN.certOffline : "تعذّر الاتصال بالخادم الآن. حاول مرة أخرى بعد قليل."; });
 
   $("cert-print").addEventListener("click", function(){ window.print(); });
   $("cert-copy").addEventListener("click", function(){
-    var done = function(){ $("copy-ok").textContent = EN ? EN.copied : "اتنسخ ✓"; setTimeout(function(){ $("copy-ok").textContent = ""; }, 2500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(link).then(done, function(){ prompt(EN ? EN.copyLink : "انسخ اللينك:", link); });
-    else prompt(EN ? EN.copyLink : "انسخ اللينك:", link);
+    var done = function(){ $("copy-ok").textContent = EN ? EN.copied : "تم النسخ ✓"; setTimeout(function(){ $("copy-ok").textContent = ""; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(link).then(done, function(){ prompt(EN ? EN.copyLink : "انسخ الرابط:", link); });
+    else prompt(EN ? EN.copyLink : "انسخ الرابط:", link);
   });
 })();
