@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>تصحيح التصميم Design Correction في ماكينة A3/Speed | LearnElectricals</title>
+<meta name="description" content="شرح كامل بالعربي لنظام Design Control في ماكينة A3/Speed: العلامة المطبوعة والحساسات، كارت TMCC والسيرفو والـ folding flaps، الانحراف وزاوية الإنتاج، الـ stroke والـ offset، بداية التشغيل والإنذارات، مع محاكي تفاعلي وفيديو.">
+<link rel="canonical" href="https://www.learnelectricals.com/a3speed-design-lab/">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/a3speed-design-lab/">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/a3speed-design-lab/">
+<meta property="og:title" content="تصحيح التصميم Design Correction في ماكينة A3/Speed">
+<meta property="og:description" content="شرح مفصّل ومحاكي تفاعلي لنظام Design Control: من قراءة العلامة المطبوعة لحد ضبط مكان الكريز على العبوة.">
+<meta property="og:url" content="https://www.learnelectricals.com/a3speed-design-lab/">
+<meta property="og:image" content="https://www.learnelectricals.com/a3speed-design-lab/poster.jpg">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Long-form guide page: one reading column, sticky table of contents on wide screens, same tokens as the other labs. */
+:root{
+  --bg:#e9edef; --panel:#ffffff; --ink:#152027; --muted:#56656f; --line:#cfd7dc;
+  --accent:#b85f00; --accent-soft:#f6e6d3; --cur:#0d7584; --product:#c99400;
+  --good:#2b7a3d; --warn:#a86a00; --bad:#c0352b; --code-bg:#f2f5f6;
+  --font-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --font-body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1417; --panel:#182025; --ink:#e3e9ec; --muted:#93a2ab; --line:#2a353c;
+  --accent:#f0a03c; --accent-soft:#3a2a17; --cur:#4cc0cf; --product:#ffc629;
+  --good:#5cc06f; --warn:#e3a43a; --bad:#ff6b5e; --code-bg:#11181c; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f1417; --panel:#182025; --ink:#e3e9ec; --muted:#93a2ab; --line:#2a353c;
+  --accent:#f0a03c; --accent-soft:#3a2a17; --cur:#4cc0cf; --product:#ffc629;
+  --good:#5cc06f; --warn:#e3a43a; --bad:#ff6b5e; --code-bg:#11181c; color-scheme:dark }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.75}
+a{color:var(--cur)}
+.app{max-width:1180px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-left,0px)) 64px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:900px){.app{grid-template-columns:minmax(0,1fr)}.toc{position:static!important}}
+h1,h2,h3{font-family:var(--font-display);line-height:1.3;text-wrap:balance;margin:0}
+h1{font-size:1.9rem}
+h2{font-size:1.35rem;margin:0 0 12px}
+h3{font-size:1.05rem;margin:18px 0 6px}
+p{margin:.5rem 0}
+.mono,code,pre{font-family:var(--font-mono);direction:ltr;unicode-bidi:isolate}
+code{font-size:.88em;background:var(--code-bg);border:1px solid var(--line);padding:0 .35em;border-radius:4px}
+pre{background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto;font-size:.88rem;line-height:1.55;text-align:left;margin:.6rem 0}
+.top{grid-column:1/-1;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
+.top p{color:var(--muted);max-width:70ch;margin:.4rem 0 0}
+.crumbs{font-size:.85rem;color:var(--muted);margin-bottom:6px}
+.crumbs a{color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:8px 14px;font-weight:600;color:var(--ink);text-decoration:none}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.toc{position:sticky;top:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:.92rem}
+.toc b{display:block;font-family:var(--font-display);margin-bottom:6px}
+.toc ol{margin:0;padding-inline-start:20px}
+.toc a{color:var(--ink);text-decoration:none}
+.toc a:hover{color:var(--accent)}
+main{display:flex;flex-direction:column;gap:18px;min-width:0}
+section.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0;scroll-margin-top:12px}
+.lead{font-size:1.05rem}
+.tbl{width:100%;border-collapse:collapse;font-size:.93rem;margin:.6rem 0}
+.tbl th,.tbl td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:start;vertical-align:top}
+.tbl th{font-family:var(--font-display);font-weight:500;color:var(--muted);font-size:.85rem}
+.tbl td.mono{white-space:nowrap}
+.scroll{overflow-x:auto}
+.note{border-inline-start:4px solid var(--cur);background:var(--code-bg);border-radius:8px;padding:10px 12px;margin:.8rem 0;font-size:.95rem}
+.warn{border-inline-start-color:var(--bad)}
+.ok{border-inline-start-color:var(--good)}
+.tag{display:inline-block;font-size:.75rem;font-weight:600;border-radius:999px;padding:0 8px;border:1px solid var(--line)}
+.tag.real{color:var(--good);border-color:var(--good)}
+.tag.sim{color:var(--warn);border-color:var(--warn)}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:.6rem 0}
+.flow span{background:var(--accent-soft);border-radius:8px;padding:4px 10px;font-weight:600;font-size:.9rem}
+.flow i{font-style:normal;color:var(--muted)}
+.tree{direction:ltr;text-align:left}
+video{width:100%;border-radius:10px;border:1px solid var(--line);background:#000;display:block}
+ol.steps li{margin:.3rem 0}
+footer{grid-column:1/-1;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:12px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div>
+      <div class="crumbs"><a href="../index.html">الرئيسية</a> › <a href="../tetrapan/index.html">تترابان</a> › تصحيح التصميم A3/Speed</div>
+      <h1>تصحيح التصميم Design Correction في ماكينة A3/Speed</h1>
+      <p>إزاي الماكينة بتخلي الطباعة والكريز ييجوا في مكانهم على كل عبوة: العلامة المطبوعة، الحساسات، كارت TMCC، السيرفو والـ folding flaps، الـ stroke والـ offset، بداية التشغيل، الإنذارات، وشجرة التشخيص. ومعاه محاكي تجرّب فيه كل حاجة بإيدك.</p>
+    </div>
+    <div class="row">
+      <a class="btn pri" href="simulator.html">▶ افتح المحاكي</a>
+      <a class="btn" href="#video">الفيديو</a>
+      <a class="btn" href="/en/a3speed-design-lab/" hreflang="en" lang="en">English</a>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="محتويات الصفحة">
+    <b>المحتويات</b>
+    <ol>
+      <li><a href="#idea">فكرة النظام</a></li>
+      <li><a href="#parts">الأجزاء ومسار الإشارة</a></li>
+      <li><a href="#dev">الانحراف وزاوية الإنتاج</a></li>
+      <li><a href="#stroke">التصحيح والـ stroke</a></li>
+      <li><a href="#offset">الـ offset ومثال الـ 150 وحدة</a></li>
+      <li><a href="#start">بداية التشغيل والـ Precorrection</a></li>
+      <li><a href="#servo">أماكن موتور السيرفو</a></li>
+      <li><a href="#code">الكود المطبوع Register code</a></li>
+      <li><a href="#alarms">الإنذارات وإمتى بتظهر</a></li>
+      <li><a href="#tree">شجرة التشخيص</a></li>
+      <li><a href="#mistakes">غلطات شائعة</a></li>
+      <li><a href="#sim">إزاي تستخدم المحاكي</a></li>
+      <li><a href="#video">الفيديو</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <section class="panel" id="idea">
+      <h2>1. فكرة النظام</h2>
+      <p class="lead">الورق بييجي مطبوع عليه التصميم وخطوط الكريز (خطوط الطي) جاهزة. الماكينة بتسحب الورق عبوة ورا عبوة والفكوك بتقفل وتقطع. لو السحب زاد أو قل حاجة بسيطة في كل عبوة، الطباعة والكريز هيزحفوا عن مكان القفل، والعبوة تطلع شكلها بايظ.</p>
+      <p>نظام <b>Design Control</b> شغلته إنه يخلي كل عبوة تتسحب بالطول المظبوط بالظبط، عشان الكريز ييجي في مكانه بالنسبة للفكوك.</p>
+      <div class="flow"><span>العلامة المطبوعة</span><i>←</i><span>الحساسات</span><i>←</i><span>TMCC</span><i>←</i><span>DMC</span><i>←</i><span>السيرفو</span><i>←</i><span>الكامة</span><i>←</i><span>folding flaps</span></div>
+      <p>النظام بيعمل حاجتين مختلفتين، ولازم تفرّق بينهم:</p>
+      <ul>
+        <li><b>التنظيم الأوتوماتيك:</b> الكارت بيقيس مكان العلامة في كل عبوة ويعدّل السحب لوحده عشان الانحراف يفضل قريب من صفر.</li>
+        <li><b>الـ Design Correction (الـ offset):</b> ده ضبط بإيد الفني. بيقول للنظام «اعتبر المكان الصح أعلى أو أوطى بكذا»، وبيتستخدم لما العبوة النهائية تطلع والكريز مش في مكانه مع إن الانحراف صفر.</li>
+      </ul>
+    </section>
+
+    <section class="panel" id="parts">
+      <h2>2. الأجزاء ومسار الإشارة</h2>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th>الجزء</th><th>بيعمل إيه</th></tr></thead>
+        <tbody>
+          <tr><td>العلامة المطبوعة <span class="mono">Register code</span></td><td>مربعات سودا وبيضا مطبوعة على كل عبوة في الخامة. هي المرجع اللي النظام بيقيس عليه.</td></tr>
+          <tr><td>الحساسات <span class="mono">Photocells</span></td><td>بتقرا العلامة والورق ماشي قدامها وتبعت القراية للكارت.</td></tr>
+          <tr><td>كارت <span class="mono">TMCC</span></td><td>عقل النظام. بيفك الكود، ولو مطابق يطلّع إشارة التصميم <span class="mono">design signal</span>، ويقارن لحظة وصولها بزاوية الماكينة، ويحسب الـ stroke المطلوب.</td></tr>
+          <tr><td><span class="mono">Angle encoder</span></td><td>بيقول للكارت الماكينة عند أنهي زاوية في اللحظة دي.</td></tr>
+          <tr><td><span class="mono">DMC</span></td><td>درايف السيرفو. بيحوّل رقم الـ stroke لمكان للموتور.</td></tr>
+          <tr><td>السيرفو والكامة <span class="mono">eccentric shafts</span></td><td>الموتور بيلف الكامة، والكامة بتحدد شوط الـ folding flaps.</td></tr>
+          <tr><td><span class="mono">Folding flaps</span></td><td>راكبة على الفكوك. بتشد الورق شدة صغيرة زيادة على السحب الأساسي بتاع الفكوك. الشدة دي هي اللي النظام بيتحكم فيها.</td></tr>
+          <tr><td>الـ PLC</td><td>بيدّي للكارت زاوية الإنتاج والحجم والسرعة، وبيستقبل الإنذارات.</td></tr>
+        </tbody>
+      </table></div>
+      <div class="note">السحب الأساسي بييجي من الفك المقفول وهو نازل مع التيوب. الـ folding flaps بتضيف عليه حاجة بسيطة بس، وعشان كده النظام بيصحح مليمترات مش سنتيمترات.</div>
+    </section>
+
+    <section class="panel" id="dev">
+      <h2>3. الانحراف وزاوية الإنتاج</h2>
+      <p>الـ PLC بيدّي الكارت رقم اسمه <b>زاوية الإنتاج</b> <span class="mono">production angle</span>: دي زاوية الماكينة اللي المفروض العلامة تعدّي قدام الحساس عندها.</p>
+      <p>في كل عبوة، الحساس بيبعت إشارته في اللحظة اللي العلامة السودا قدامه، والكارت بيسجّل زاوية الـ encoder في نفس اللحظة. الفرق بين الزاوية دي وزاوية الإنتاج، محوّل لمليمترات، هو <b>الانحراف</b> <span class="mono">design deviation</span>.</p>
+      <pre>Deviation = 0        العلامة وصلت في معادها
+Deviation = +        العلامة وصلت متأخرة (السحب ناقص)
+Deviation = -        العلامة وصلت بدري (السحب زيادة)
+OK window  = ±1.5 mm المنطقة المقبولة في الإنتاج</pre>
+      <p>طول ما الانحراف جوه <b>±1.5 مم</b> لمبة <span class="mono">Design OK</span> منورة والعبوات مقبولة. لو خرج، العبوات بتترفض ويبدأ عدّ الإنذار.</p>
+    </section>
+
+    <section class="panel" id="stroke">
+      <h2>4. التصحيح والـ stroke</h2>
+      <p>الكارت بيصحح بتغيير شوط الـ folding flaps. الشوط ده بيتكتب كرقم من <b>Step 0</b> لحد <b>Step 999</b>:</p>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th>الحالة</th><th>الكارت بيعمل إيه</th></tr></thead>
+        <tbody>
+          <tr><td>العلامة متأخرة (انحراف موجب)</td><td>يزوّد الـ stroke، فالـ flaps تشد أكتر والعبوة الجاية تتسحب أطول.</td></tr>
+          <tr><td>العلامة بدري (انحراف سالب)</td><td>يقلّل الـ stroke، فالسحب يقل.</td></tr>
+        </tbody>
+      </table></div>
+      <p>التصحيح بيتم بلوب PID جوه الكارت، فمش بيحصل في عبوة واحدة. بياخد كام عبوة لحد ما الانحراف يرجع قريب من صفر.</p>
+      <div class="note"><b>مفيش رقم مثالي ثابت للـ stroke.</b> بيختلف حسب الماكينة والخامة والسرعة. المهم إنه يكون ثابت وبعيد عن الحدين. على الكارت: <span class="mono">LED 7</span> بتنور لو الـ stroke فوق 75٪، و <span class="mono">LED 8</span> لو تحت 25٪.</div>
+      <p>لو الـ stroke لزق في <span class="mono">Step 999</span> أو <span class="mono">Step 0</span>، يبقى النظام خلّص كل اللي عنده ومش قادر يصحح أكتر. ده مش عطل في الكارت، ده مؤشر إن فيه حاجة برا محتاجة تتراجع: الضبط الميكانيكي، سحب الورق، الـ eccentric shafts، الخامة، الفكوك، أو السيرفو.</p>
+    </section>
+
+    <section class="panel" id="offset">
+      <h2>5. الـ offset ومثال الـ 150 وحدة</h2>
+      <p>الكارت شايف العلامة بس. مش شايف الكريز نفسه ولا العبوة النهائية. فممكن الانحراف يبقى صفر، والـ stroke ثابت، ومع كده الكريز يطلع عالي أو واطي على العبوة، لأن المسافة بين العلامة والكريز في الخامة نفسها مختلفة شوية.</p>
+      <p>هنا بييجي دور <b>Design Control Offset</b>: رقم بتدخّله بإيدك بيزحزح المكان المطلوب للعلامة.</p>
+      <pre>Offset range   -500 .. +500 units
+100 units      ≈ 1 mm
+10 units       ≈ 0.1 mm</pre>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th>اللي شايفه على العبوة النهائية</th><th>تعمل إيه</th></tr></thead>
+        <tbody>
+          <tr><td>الكريز عالي</td><td>قلّل الـ offset</td></tr>
+          <tr><td>الكريز واطي</td><td>زوّد الـ offset</td></tr>
+        </tbody>
+      </table></div>
+      <h3>المثال المشهور</h3>
+      <p>الانحراف قريب من صفر، والـ stroke حوالين 160، والـ offset صفر، بس الكريز على العبوة أعلى من المطلوب <b>1.5 مم</b>. الحل: قلّل الـ offset حوالي <b>150 وحدة</b>.</p>
+      <p>اللي هيحصل بعدها: الانحراف يروح سالب شوية، والـ stroke يقل مؤقتا، وبعد كام عبوة الاتنين يرجعوا قريب من قيمتهم القديمة، والكريز يتظبط.</p>
+      <div class="note warn"><b>متحكمش من أول عبوة.</b> غيّر تغيير صغير، واستنى كام عبوة لحد ما النظام يستقر، وبعدين قيس العبوة النهائية تاني.</div>
+      <div class="note">ليه «عالي» بتتصلح بتقليل الـ offset؟ لأن العبوة بتتعمل مقلوبة في نظام الفكوك: اللي فوق في العبوة النهائية بيبقى تحت وهي لسه في التيوب.</div>
+    </section>
+
+    <section class="panel" id="start">
+      <h2>6. بداية التشغيل والـ Precorrection</h2>
+      <p>في التشغيل العادي بعد إيقاف، النظام بيكمل من آخر stroke كان شغال بيه.</p>
+      <p>لكن أول تشغيل بعد <span class="mono">Tight Tube</span> أو <span class="mono">Sterile Inching</span> مختلف: الورق مش معروف مكانه بالنسبة للفكوك، والعلامة ممكن تكون بعيدة جدا. فالنظام بيبدأ بمرحلة اسمها <b>Precorrection</b>:</p>
+      <ol class="steps">
+        <li>الـ folding flaps بتقف في وضع الـ Precorrection وتأثيرها على السحب قليل جدا.</li>
+        <li>الماكينة بتشتغل والعلامة بتزحف عبوة ورا عبوة ناحية مكانها.</li>
+        <li>أول ما الإشارة تدخل جوه <b>±10 مم</b> من المكان المطلوب، النظام يخرج من الـ Precorrection.</li>
+        <li>الـ stroke ينط على <span class="mono">Step 0</span> أو <span class="mono">Step 999</span> حسب الاتجاه، ويصحح بسرعة ناحية الصفر، وبعدين التنظيم العادي يمسك.</li>
+      </ol>
+      <p>العبوات اللي بتتعمل في المرحلة دي بتترفض، وده طبيعي.</p>
+    </section>
+
+    <section class="panel" id="servo">
+      <h2>7. أماكن موتور السيرفو</h2>
+      <p>الـ DMC بيحوّل الـ stroke لمكان للموتور، محسوب بعدد الخطوات من الـ <span class="mono">mechanical stop</span>:</p>
+      <pre>Home position              400
+Precorrection position  18,875
+Step 0                  29,000
+Step 999                41,750</pre>
+      <p>الإنتاج بيشتغل بين <span class="mono">Step 0</span> و <span class="mono">Step 999</span> بس. يعني كل وحدة stroke بتساوي حوالي 12.75 خطوة موتور.</p>
+      <div class="note">لو الأرقام دي مش بتتحقق على الماكينة (مثلا الـ home مش بيتعمل صح)، كل اللي بعده هيبقى غلط حتى لو الكارت والحساسات سليمة.</div>
+    </section>
+
+    <section class="panel" id="code">
+      <h2>8. الكود المطبوع Register code</h2>
+      <p>العلامة مش مربع واحد، دي كود من <b>26 bit</b>. الحساسات بتقراه والورق ماشي، والكارت بيقارنه بالنمط المتخزن عنده:</p>
+      <pre>11010001111011010001111000</pre>
+      <p>أسود = 1، وأبيض = 0. الانتقال من أبيض لأسود = 1، ومن أسود لأبيض = 0.</p>
+      <div class="note">الحساس لما يشوف لون مش معناه إنه قرا الكود. لازم الـ 26 bit يتقروا بالعدد والترتيب الصح عشان تطلع <span class="mono">design signal</span>. عشان كده طباعة تانية على الورق مش بتلخبط النظام، وعشان كده برضه حساس متسخ أو مش محاذي بيضيّع القراية.</div>
+      <p>على الكارت: <span class="mono">LED 1</span> بتنور والكود بيتقري، و <span class="mono">LED 2</span> معناها <span class="mono">Design OK</span>.</p>
+    </section>
+
+    <section class="panel" id="alarms">
+      <h2>9. الإنذارات وإمتى بتظهر</h2>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th>الإنذار</th><th>السبب</th><th>بيظهر إمتى</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">Printed design out of limit</td><td>الانحراف برا ±1.5 مم</td><td>بعد 3 عبوات ورا بعض برا الحدود. العبوات دي بتترفض. ولو فضل كده 30 عبوة الماكينة تقف.</td></tr>
+          <tr><td class="mono">Malfunction photocells</td><td>الكود مش بيتقري</td><td>الماكينة بتكمل بآخر stroke: حوالي 1.1 ثانية (3 عبوات) على السرعة العالية، أو 10 ثواني (11 عبوة) على السرعة البطيئة. لو القراية مرجعتش، تقف.</td></tr>
+          <tr><td class="mono">Servo system fault</td><td>الكارت بيبعت أوامر والموتور مش بيتحرك</td><td>الماكينة بتقف. افحص الـ DMC والموتور والـ resolver والحركة الميكانيكية.</td></tr>
+        </tbody>
+      </table></div>
+      <p class="muted">الأرقام دي من كتاب التدريب بتاع A3/Speed. المحاكي بيعدّ بنفس الطريقة بس من غير الزمن الحقيقي بالظبط.</p>
+    </section>
+
+    <section class="panel" id="tree">
+      <h2>10. شجرة التشخيص</h2>
+      <p>امشي بالترتيب ده قبل ما تلمس الـ offset:</p>
+      <ol class="steps">
+        <li><b>الحساسات بتقرا الكود؟</b> لو لأ: افحص الحساسات ونضافتها، العلامة نفسها، المحاذاة، والأسلاك.</li>
+        <li><b>فيه design signal؟</b> لو لأ: افحص فك الشفرة، كارت الـ TMCC، ونمط الكود المتخزن.</li>
+        <li><b>الانحراف جوه ±1.5 مم؟</b> لو لأ: افحص التوقيت، الـ encoder، سحب الورق، السيرفو، وبيانات الـ PLC (زاوية الإنتاج والحجم).</li>
+        <li><b>العبوة النهائية سليمة؟</b> لو أيوه: مش محتاج Design Correction خالص.</li>
+        <li>لو الكريز عالي: قلّل الـ offset. لو واطي: زوّده.</li>
+      </ol>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th>اللي شايفه</th><th>السبب المحتمل</th></tr></thead>
+        <tbody>
+          <tr><td>بعض العبوات الكود بيتقري غلط</td><td>حساس متسخ</td></tr>
+          <tr><td>مفيش قراية خالص</td><td>الحساس مش متظبط على الورق</td></tr>
+          <tr><td>الحساس شايف ألوان بس مفيش design signal</td><td>نمط الكود مش مطابق لإعداد الـ TMCC</td></tr>
+          <tr><td>الانحراف بيقفز قفزات كبيرة</td><td>مشكلة في الـ angle encoder</td></tr>
+          <tr><td>الانحراف بيتذبذب</td><td>الورق بيزحلق أو الشد مش ثابت</td></tr>
+          <tr><td>الـ stroke عالي أو لازق في 999</td><td>طول التكرار في الخامة أطول، أو السحب ناقص</td></tr>
+          <tr><td>الـ stroke لازق عند Step 0</td><td>الضبط الميكانيكي مش مظبوط</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="panel" id="mistakes">
+      <h2>11. غلطات شائعة</h2>
+      <ul>
+        <li><b>تصليح عطل بالـ offset.</b> حساس متسخ، ورق بيزحلق، stroke لازق، أو عطل سيرفو: كل دول متعالجوش بالـ offset أبدا. الـ offset لضبط مكان الكريز على عبوة سليمة بس.</li>
+        <li><b>offset بتاع حجم تاني.</b> كل حجم <span class="mono">volume</span> ليه الـ offset بتاعه. لو اتغير الحجم واتحمّل offset غلط، الكريز هيطلع بعيد مع إن كل حاجة شغالة.</li>
+        <li><b>الحكم من أول عبوة.</b> أي تغيير بياخد كام عبوة لحد ما يبان.</li>
+        <li><b>تغيير كبير مرة واحدة.</b> غيّر على خطوات صغيرة، 10 أو 20 وحدة، وقيس.</li>
+        <li><b>تجاهل الـ stroke.</b> لو الـ stroke قريب من أحد الحدين، صلّح السبب الأول قبل أي ضبط.</li>
+      </ul>
+    </section>
+
+    <section class="panel" id="sim">
+      <h2>12. إزاي تستخدم المحاكي</h2>
+      <ol class="steps">
+        <li>افتح <a href="simulator.html">المحاكي</a> ودوس «تشغيل». هتشوف الماكينة من الجنب: الفك المقفول نازل مع التيوب، والحساس بينوّر لحظة ما العلامة السودا تعدّي قدامه.</li>
+        <li>جرّب السيناريوهات الجاهزة: إنتاج طبيعي، الكريز عالي 1.5 مم، بداية بعد Tight Tube، حساس متسخ، stroke لازق، وعطل سيرفو.</li>
+        <li>غيّر الـ offset بالزراير اللي تحت الرسمة (0.1 و 0.2 و 0.3 مم) وتابع نافذة الزوايا المكبّرة: الشريط الأخضر بيتحرك، والنقط بتجري وراه.</li>
+        <li>تابع الرسم البياني لآخر 150 عبوة: الانحراف، مكان الكريز، والـ stroke.</li>
+        <li>شغّل أي عطل من القايمة وشوف الإنذارات وشجرة التشخيص بتنوّر فين.</li>
+        <li>غيّر السرعة والحجم وفرق المسافة في الخامة، وشوف الـ stroke بيروح فين.</li>
+      </ol>
+      <p><a class="btn pri" href="simulator.html">▶ افتح المحاكي</a></p>
+      <p class="muted">الانحراف مكبّر في الرسمة عشان يبان بالعين، والأرقام المكتوبة هي الحقيقية. كل القيم للتعلم بس.</p>
+    </section>
+
+    <section class="panel" id="video">
+      <h2>13. الفيديو</h2>
+      <p>جولة كاملة في النظام (حوالي 4 دقايق) بالكتابة العربي، مع زوم على كل جزء والرسوم البيانية.</p>
+      <video controls preload="none" poster="poster.jpg" playsinline>
+        <source src="design-video.mp4" type="video/mp4">
+      </video>
+    </section>
+
+  </main>
+
+  <footer>© LearnElectricals · المحتوى تعليمي، وأي تعديل على ماكينة حقيقية لازم يكون بموافقة المسؤول وحسب كتالوج الشركة المصنّعة.</footer>
+</div>
+</body>
+</html>
