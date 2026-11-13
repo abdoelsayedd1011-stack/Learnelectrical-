@@ -41,47 +41,34 @@
 <section class="panel lprog" id="lprog" aria-label="Your progress"></section>
 <section class="panel lvid" aria-label="Lesson video"><h2 style="margin:0 0 8px">▶ The lesson in 5 minutes</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">Illustrated explanation, the simulator task solved, and the quiz answered. Made for the phone.</p><video src="/media/lessons/plc-lab/lesson-04-en.mp4" poster="/media/lessons/plc-lab/lesson-04-en.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>Seal-in (latch)</h2>
-  <p class="bf"><span class="ic">🔒</span><span>A <b>Q0.0 contact in parallel</b> with Start holds the circuit after you release the button. Same as <a href="../classic-control-lab/lesson-02.html">the seal-in lesson</a>.</span></p>
+  <h2 id="s1"><span class="k">1</span>What is a seal-in?</h2>
+  <p>The Start button is momentary: the input goes back to 0 as soon as you release it. To keep the motor running we put a contact of the output <b>Q0.0 in parallel</b> with Start, so it holds the circuit after you release the button. Same idea as <a href="../classic-control-lab/lesson-02.html">the seal-in lesson</a> in classic control.</p>
   <div class="ladfig" id="fSeal"></div>
-  <ol class="steps">
-    <li>Start ⇒ Q0.0 = 1</li>
-    <li>Q0.0 contact closes</li>
-    <li>Release Start: keeps running</li>
-    <li class="on">Stop ⇒ I0.1 = 0 ⇒ drops out</li>
-  </ol>
-  <div class="box key">Stop and overload go on the main line <b>after</b> Start joins Q0.0, or the latch keeps holding.</div>
+  <p>What happens: you press Start, so Q0.0 becomes 1. The Q0.0 contact closes. You release Start and the motor keeps running. When you press Stop, I0.1 becomes 0 and the rung drops out.</p>
+  <div class="box key">Stop and the overload must be on the main line <b>after</b> Start joins Q0.0. Inside the branch, the latch keeps holding and the motor won't stop.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>Exercise: a DOL motor with overload</h2>
-  <p class="tip">Overload <span class="term">95–96</span> NC on I0.2: normal = 1. Which contact does the Trip lamp need?</p>
+  <p>The overload contact <span class="term">95–96</span> is NC and wired to I0.2, so normally it = 1. Think: which contact type does the Trip lamp need?</p>
   <div class="wd"><h3>Simulator: DOL motor</h3><div id="sim1"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Set and Reset</h2>
-  <div class="vs">
-    <div class="side"><b>Set <span class="mono">-(S)-</span></b><span>Makes the bit 1 and keeps it</span></div>
-    <i>vs</i>
-    <div class="side"><b>Reset <span class="mono">-(R)-</span></b><span>Returns it to 0</span></div>
-  </div>
+  <p>There is a second way to latch. A <b>Set</b> coil <span class="term">-(S)-</span> makes the bit 1 and keeps it there even after the condition is gone. A <b>Reset</b> coil <span class="term">-(R)-</span> returns it to 0.</p>
   <div class="ladfig" id="fSR"></div>
-  <div class="box key"><b>The last rung wins:</b> put Reset <b>after</b> Set so stop has priority. The NC Stop is checked with <b>NC</b> here (reset when the bit = 0).</div>
+  <div class="box key"><b>The last rung wins:</b> put Reset <b>after</b> Set so that stopping has priority. Here the NC-wired Stop is written <b>NC</b>, because you want the Reset to act when the bit becomes 0.</div>
   <div class="wd"><h3>Simulator: Set and Reset</h3><div id="sim2"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Interlock: forward and reverse</h2>
-  <p class="bf"><span class="ic">⛔</span><span>KM1 and KM2 together = <b>a phase-to-phase short</b>. Each output gets an <b>NC</b> of the other.</span></p>
-  <p class="tip">In the panel, repeat the interlock with NC auxiliary contacts in case a contactor welds.</p>
+  <p>If the forward contactor KM1 and the reverse contactor KM2 close together you get <b>a phase-to-phase short</b>. So in each output's rung we put an <b>NC</b> contact of the other output.</p>
+  <p class="tip">In the panel we repeat the same interlock with NC auxiliary contacts, in case a contactor welds.</p>
   <div class="wd"><h3>Simulator: forward and reverse</h3><div id="sim3"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
-  <h2 id="s5"><span class="k">5</span>Common faults on site</h2>
-  <ul class="fx">
-    <li><b>Stops when Start is released</b><span>Missing latch or unconnected branch</span></li>
-    <li><b>Won't stop with Stop</b><span>Stop inside the branch · or Reset before Set</span></li>
-    <li><b>Restarts after a power cut</b><span>Retentive bit with Set</span></li>
-    <li><b>Forward and reverse briefly together</b><span>No interlock</span></li>
-  </ul>
+  <h2 id="s5"><span class="k">5</span>Faults you meet on site</h2>
+  <p><b>Motor stops when Start is released:</b> the latch is missing or the branch isn't connected. <b>Won't stop with Stop:</b> Stop is inside the branch, or Reset is written before Set.</p>
+  <p><b>Restarts by itself after a power cut:</b> a retentive bit with Set. And <b>forward and reverse briefly on together:</b> no interlock.</p>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson questions</h2>

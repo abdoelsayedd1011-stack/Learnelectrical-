@@ -41,45 +41,30 @@
 <section class="panel lprog" id="lprog" aria-label="Your progress"></section>
 <section class="panel lvid" aria-label="Lesson video"><h2 style="margin:0 0 8px">▶ The lesson in 5 minutes</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">Illustrated explanation, the simulator task solved, and the quiz answered. Made for the phone.</p><video src="/media/lessons/plc-lab/lesson-06-en.mp4" poster="/media/lessons/plc-lab/lesson-06-en.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>The CTU and CTD counters</h2>
-  <div class="tiles">
-    <div class="tile"><span class="big">CTU</span><b>Counts up</b><span>CV = PV ⇒ C0 = 1</span></div>
-    <div class="tile"><span class="big">CTD</span><b>Counts down</b></div>
-    <div class="tile"><span class="big">R</span><b>Reset</b><span>CV = 0</span></div>
-  </div>
-  <div class="box key">It counts <b>edges</b>, not time: a box parked for a minute = one. A bouncing sensor counts many times.</div>
+  <h2 id="s1"><span class="k">1</span>How does a counter count?</h2>
+  <p>The <b>CTU</b> counter counts up: every time its input changes from 0 to 1 it adds one to the current value <b>CV</b>. When CV reaches the preset <b>PV</b>, the counter bit C0 becomes 1.</p>
+  <p>The <b>CTD</b> counter is the opposite, it counts down. And the <b>R</b> (Reset) input returns CV to zero.</p>
+  <div class="box key">A counter counts <b>edges</b>, not time: a box parked in front of the sensor for a minute = just one. But a bouncing sensor is counted many times.</div>
   <div class="ladfig" id="fCtu"></div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>Project: the filling counter</h2>
-  <ol class="steps">
-    <li>Conveyor carries boxes</li>
-    <li>Photocell I0.2 counts</li>
-    <li>6 boxes ⇒ conveyor stops, lamp on</li>
-    <li class="on">New carton + Reset</li>
-  </ol>
+  <p>The conveyor carries the boxes, and photocell <b>I0.2</b> counts each box that passes. As soon as the count reaches <b>6 boxes</b>, the conveyor stops and the lamp turns on.</p>
+  <p>Then the worker places a new carton and presses <b>Reset</b>, so the counter returns to zero and the conveyor runs again.</p>
   <div class="wd"><h3>Simulator: filling conveyor</h3><div id="sim1"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>Compare instructions</h2>
-  <p class="bf"><span class="ic">⚖️</span><span>In place of a contact: condition true ⇒ power flows. On C0, T0 or MW10.</span></p>
-  <ul class="fx">
-    <li><b class="mono">==</b><span>Equal · <span class="mono">C0 == 3</span></span></li>
-    <li><b class="mono">&lt;&gt;</b><span>Not equal</span></li>
-    <li><b class="mono">&gt;= / &lt;=</b><span><span class="mono">MW10 &gt;= 80</span></span></li>
-  </ul>
-  <p class="alert">Analog? <b>Never use ==</b>: the value jumps from 79.9 to 80.1.</p>
-  <p class="tip">Simulator: <b>Compare</b> ⇒ address ⇒ condition ⇒ number.</p>
+  <h2 id="s3"><span class="k">3</span>How do I compare two numbers?</h2>
+  <p>A <b>compare</b> instruction sits in place of a contact: if the condition is true, power flows. It works on a counter value C0, a timer T0 or a number in memory like MW10.</p>
+  <p>The conditions are: <b>==</b> equal (for example <bdi dir="ltr">C0 == 3</bdi>), <b>&lt;&gt;</b> not equal, and <b>&gt;=</b> and <b>&lt;=</b> greater or less (for example <bdi dir="ltr">MW10 &gt;= 80</bdi>).</p>
+  <p class="alert">With analog values <b>never use ==</b>: the value can jump from 79.9 to 80.1 without ever landing on 80.</p>
+  <p class="tip">In the simulator: press <b>Compare</b>, then pick the address, the condition and the number.</p>
   <div class="wd"><h3>Simulator: car park</h3><div id="sim2"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>Common faults on site</h2>
-  <ul class="fx">
-    <li><b>Counts too many</b><span>Bouncing sensor · small TON debounce</span></li>
-    <li><b>Doesn't count at all</b><span>Sensor stuck at 1 (dust)</span></li>
-    <li><b>One box too many</b><span>Conveyor stops late · sensor position</span></li>
-    <li><b>Back to zero after a power cut</b><span>Make it retentive</span></li>
-  </ul>
+  <h2 id="s4"><span class="k">4</span>Faults you meet on site</h2>
+  <p><b>Counts too many:</b> the sensor bounces, so add a small TON as a debounce. <b>Doesn't count at all:</b> the sensor is stuck at 1 because of dust.</p>
+  <p><b>An extra box in the carton:</b> the conveyor stops late, so check the sensor position. And <b>the counter went back to zero after a power cut:</b> make it retentive.</p>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson questions</h2>

@@ -39,12 +39,9 @@
 
 <section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>من التانك للرقم</h2>
-  <ol class="steps">
-    <li>ترانسميتر: 4–20 mA</li>
-    <li>كارت AI: 0 → 27648</li>
-    <li class="on">Scaling: متر أو %</li>
-  </ol>
+  <h2 id="s1"><span class="k">1</span>مستوى التانك بيوصل للـ PLC إزاي؟</h2>
+  <p>الأول <b>الترانسميتر</b> بيحوّل المستوى لتيار من 4 لـ 20 mA. بعدها <b>كارت الـ AI</b> بيحوّل التيار لرقم خام (Raw) من 0 لـ 27648.</p>
+  <p>وفي الآخر تعليمة <b>Scaling</b> في البرنامج بتحوّل الرقم الخام لقيمة مفهومة: متر أو نسبة مئوية.</p>
   <div class="formula">Value = Lo + Raw ÷ 27648 × (Hi − Lo)</div>
   <div class="wd"><h3>سلسلة الإشارة</h3><div id="chain"></div></div>
   <ul class="scale">
@@ -54,37 +51,30 @@
     <li><bdi dir="ltr">16 mA · 20736</bdi><div class="bar"><i style="width:75%"></i><em><bdi dir="ltr">3 m</bdi></em></div></li>
     <li><bdi dir="ltr">20 mA · 27648</bdi><div class="bar"><i style="width:100%"></i><em><bdi dir="ltr">4 m</bdi></em></div></li>
   </ul>
-  <p class="tip">ليه 4 مش صفر؟ <a href="../instrumentation-lab/lesson-02.html">درس إشارة 4–20mA</a>.</p>
+  <p class="tip">ليه التيار بيبدأ من 4 مش صفر؟ الإجابة في <a href="../instrumentation-lab/lesson-02.html">درس إشارة 4–20mA</a>.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>تمرين التحويل</h2>
-  <p class="tip">اكتب الإجابة بالرقم، والتقريب مسموح.</p>
+  <p>حوّل بين الرقم الخام والقيمة والتيار. اكتب الإجابة بالرقم، والتقريب مسموح.</p>
   <div class="wd"><h3>Raw ↔ قيمة ↔ mA</h3><div id="drill"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>في البرنامج: SCL والمقارنة</h2>
-  <ul class="fx">
-    <li><b>TIA Portal</b><span>NORM_X + SCALE_X</span></li>
-    <li><b>Allen-Bradley</b><span>SCP</span></li>
-    <li><b>المحاكي</b><span>Scale: IW64 ⇐ MW10</span></li>
-  </ul>
+  <h2 id="s3"><span class="k">3</span>بنكتبها إزاي في البرنامج؟</h2>
+  <p>كل شركة ليها تعليمة Scaling باسم مختلف. في <b>TIA Portal</b> اسمها NORM_X و SCALE_X، وفي <b>Allen-Bradley</b> اسمها SCP. وفي <b>المحاكي</b> هنا تعليمة Scale بتاخد من IW64 وتحط الناتج في MW10.</p>
   <div class="ladfig" id="fScl"></div>
-  <div class="box key"><b>Hysteresis:</b> تشتغل عند <b>20%</b> وتفصل عند <b>80%</b> (Set و Reset)، مش الاتنين عند 20% وإلا الكونتاكتور يتحرق.</div>
+  <p>بعد ما القيمة تبقى في MW10، بنقارنها بأرقام عشان نشغّل ونفصل.</p>
+  <div class="box key"><b>Hysteresis:</b> الطلمبة تشتغل عند <b>20%</b> وتفصل عند <b>80%</b> (Set و Reset). لو الاتنين عند 20%، الكونتاكتور هيفصل ويوصّل ورا بعض لحد ما يتحرق.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>مشروع: تانك بإنذارات</h2>
-  <p class="tip">مستوى على <b>IW64</b> · طلمبة <b>Q0.0</b> · جرّب «اقطع سلك الترانسميتر»: البرنامج المفروض يعمل إيه؟</p>
+  <p>المستوى داخل على <b>IW64</b>، والطلمبة على <b>Q0.0</b>. بعد ما تشغّله جرّب زرار «اقطع سلك الترانسميتر» وفكّر: البرنامج المفروض يعمل إيه؟</p>
   <div class="wd"><h3>محاكي: التانك</h3><div id="sim1"></div></div>
-  <p class="alert">السلك اتقطع ⇐ «0%» ⇐ الطلمبة تملا لحد <b>الفيضان</b>. استخدم بت الـ Diagnostic وعوامة High-High بالسلك.</p>
+  <p class="alert">لو السلك اتقطع، البرنامج هيقرا «0%»، فالطلمبة تفضل تملا لحد <b>الفيضان</b>. عشان كده استخدم بت الـ Diagnostic، وركّب عوامة High-High موصّلة بالسلك.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
-  <h2 id="s5"><span class="k">5</span>أعطال شائعة في الموقع</h2>
-  <ul class="fx">
-    <li><b>ثابتة على 32767 أو سالب</b><span>سلك مقطوع أو مفيش باور</span></li>
-    <li><b>غلط بنسبة ثابتة</b><span>رينج الـ Scale غير رينج الترانسميتر</span></li>
-    <li><b>القناة 0–10V والترانسميتر mA</b><span>ظبط نوع القناة · جمبر</span></li>
-    <li><b>القراية بتترعش</b><span>شيلد · بعيد عن كابل الموتور · فلتر</span></li>
-  </ul>
+  <h2 id="s5"><span class="k">5</span>أعطال بتقابلها في الموقع</h2>
+  <p><b>القراية ثابتة على 32767 أو سالب:</b> سلك مقطوع أو الترانسميتر مفيهوش باور. <b>القراية غلط بنسبة ثابتة:</b> رينج الـ Scale غير رينج الترانسميتر.</p>
+  <p><b>القناة متظبطة 0–10V والترانسميتر mA:</b> ظبّط نوع القناة أو الجمبر. و<b>القراية بتترعش:</b> استخدم كابل شيلد، وابعده عن كابل الموتور، وشغّل الفلتر.</p>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>

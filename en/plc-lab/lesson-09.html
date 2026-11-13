@@ -41,38 +41,23 @@
 <section class="panel lprog" id="lprog" aria-label="Your progress"></section>
 <section class="panel lvid" aria-label="Lesson video"><h2 style="margin:0 0 8px">▶ The lesson in 5 minutes</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">Illustrated explanation, the simulator task solved, and the quiz answered. Made for the phone.</p><video src="/media/lessons/plc-lab/lesson-09-en.mp4" poster="/media/lessons/plc-lab/lesson-09-en.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>Before you write: think in steps</h2>
-  <ol class="steps">
-    <li>Write the steps and each transition</li>
-    <li>Each step a bit: Set it, Reset the previous</li>
-    <li>Outputs from step bits</li>
-    <li class="on">Stop resets them all</li>
-  </ol>
+  <h2 id="s1"><span class="k">1</span>How do I start a project?</h2>
+  <p>Before you write any rung, <b>write the steps on paper</b>, and next to each step the condition that moves you to the next one.</p>
+  <p>Then give each step a <b>bit</b>: when its condition is met, Set it and Reset the step before. The outputs run from the step bits. Finally the Stop button resets all the bits.</p>
   <p class="tip">Rungs here hold <b>5 contacts</b>. Use "Hint", or "Show solution" after a first try.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>The four projects</h2>
-  <div class="tiles">
-    <div class="tile"><span class="ic">🚦</span><b>Traffic light</b><span>Chained timers</span></div>
-    <div class="tile"><span class="ic">🛢️</span><b>Mixing tank</b><span>Set/Reset sequence</span></div>
-    <div class="tile"><span class="ic">📦</span><b>Carton sorter</b><span>Flag + falling edge</span></div>
-    <div class="tile"><span class="ic">🚪</span><b>Garage door</b><span>Limits · interlock · safety beam</span></div>
-  </div>
+  <p><b>The traffic light</b> trains you on chained timers. <b>The mixing tank</b> on a Set/Reset sequence.</p>
+  <p><b>The carton sorter</b> on a flag with a falling edge. And <b>the garage door</b> on limits, interlock and the safety beam.</p>
   <div class="wd"><h3>Project simulator</h3><div id="sim1"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>Position control with an encoder</h2>
-  <p class="bf"><span class="ic">📏</span><span>The PLC counts <b>encoder</b> pulses to know how far the sheet moved.</span></p>
+  <h2 id="s3"><span class="k">3</span>How does the PLC know how far the sheet moved?</h2>
+  <p>The PLC counts <b>encoder</b> pulses, and from their number it knows the distance. For example we want to cut a 500 mm piece:</p>
   <div class="ladder"><span class="u">1000 PPR</span><span class="op">×4</span><span class="u">4000</span><span class="op">÷ 200 mm</span><span class="u">20 /mm</span><span class="op">× 500</span><span class="u on">10000</span></div>
-  <div class="box key"><b>HSC:</b> 150 mm/s = 3000 pulses/s. A normal input misses them; the HSC counts in hardware.</div>
-  <ol class="steps">
-    <li>Start: reset</li>
-    <li>Fast</li>
-    <li>9000: slow</li>
-    <li>9950: off + brake</li>
-    <li>Knife on a timer</li>
-    <li class="on">Reset and count a piece</li>
-  </ol>
+  <div class="box key"><b>HSC:</b> a speed of 150 mm/s means 3000 pulses per second. A normal input would miss pulses, but the HSC (high-speed counter) counts in the hardware itself.</div>
+  <p>The cut goes like this: on Start the counter is zeroed and the sheet runs <b>fast</b>. At 9000 it switches to <b>slow</b>. At 9950 the motor cuts out and the brake holds. Then the knife comes down on a timer, and finally the counter is zeroed and the piece count goes up by one.</p>
   <svg viewBox="0 0 340 128" role="img" aria-label="Speed profile: fast up to 9000 counts, slow up to the stop point, and the sheet slides a little after the brake" style="display:block;width:100%;max-width:520px;height:auto;margin:6px auto 0;direction:ltr">
     <path d="M30 104H326M30 104V14" stroke="var(--muted)" stroke-width="1.2" fill="none"/>
     <path d="M30 104L52 30H226L242 86H290L296 104" stroke="var(--accent)" stroke-width="3" fill="none" stroke-linejoin="round"/>
@@ -81,23 +66,15 @@
     <text x="128" y="24" text-anchor="middle" class="pt">FAST</text><text x="266" y="80" text-anchor="middle" class="pt">SLOW</text>
     <text x="320" y="120" text-anchor="end" class="pt pm">count</text><text x="34" y="12" class="pt pm">v</text>
   </svg>
-  <div class="vs">
-    <div class="side"><b>Overshoot</b><span>50 counts = 2.5 mm</span><span>Stop early: 10000 − 50</span></div>
-    <i>·</i>
-    <div class="side"><b>Homing + Z</b><span>For axes that go back and forth</span><span>Not needed for cutting</span></div>
-  </div>
+  <p>The sheet slides a little after the brake, which is called <b>overshoot</b>: 50 counts means 2.5 mm. So we stop early at 10000 − 50.</p>
+  <p><b>Homing</b> and the Z pulse are needed for axes that go back and forth. Cutting doesn't need them because the counter is zeroed with every piece.</p>
   <p class="tip">Try it in each brand's style:</p>
   <div class="chips"><a class="btn" href="siemens.html#enc">Siemens · HSC_1 and %ID1000</a><a class="btn" href="delta.html#enc">Delta · <span class="mono" style="white-space:nowrap">DCNT C251</span></a><a class="btn" href="ab.html#enc">Allen-Bradley · HSC card</a></div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>Common faults on site</h2>
-  <ul class="fx">
-    <li><b>Stuck mid-step</b><span>Transition sensor dead · go online</span></li>
-    <li><b>Pusher hits the wrong carton</b><span>Flag cleared too early or late</span></li>
-    <li><b>Door slams at the end</b><span>Limit moved or not NC</span></li>
-    <li><b>Pieces too long or short</b><span>Encoder wheel slipping or worn</span></li>
-    <li><b>Safety beam not working</b><span>Clean and test it regularly</span></li>
-  </ul>
+  <h2 id="s4"><span class="k">4</span>Faults you meet on site</h2>
+  <p><b>Machine stopped in the middle of a step:</b> the transition sensor isn't working, open the monitor and look. <b>The pusher pushes the wrong carton:</b> the flag is cleared too early or too late.</p>
+  <p><b>The door bangs at the end:</b> the limit switch moved or isn't NC. <b>Pieces come out longer or shorter:</b> the encoder wheel slips or is worn. And <b>the safety beam doesn't work:</b> clean it and test it regularly.</p>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson questions</h2>

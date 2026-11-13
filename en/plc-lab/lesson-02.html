@@ -40,56 +40,36 @@
 <section class="panel lprog" id="lprog" aria-label="Your progress"></section>
 <section class="panel lvid" aria-label="Lesson video"><h2 style="margin:0 0 8px">▶ The lesson in 5 minutes</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">Illustrated explanation, the simulator task solved, and the quiz answered. Made for the phone.</p><video src="/media/lessons/plc-lab/lesson-02-en.mp4" poster="/media/lessons/plc-lab/lesson-02-en.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>Power: 24V DC</h2>
-  <div class="vs">
-    <div class="side"><b>Positive</b><span class="big">+24V · L+</span></div>
-    <i>·</i>
-    <div class="side"><b>Negative</b><span class="big">0V · M</span></div>
-  </div>
+  <h2 id="s1"><span class="k">1</span>How is the PLC powered?</h2>
+  <p>Most PLCs run on <b>24V DC</b>: positive on terminal <span class="term">L+</span> and negative (0V) on terminal <span class="term">M</span>.</p>
   <p class="tip">A CPU marked <span class="term">AC/DC/RLY</span> takes 220V, but its inputs are still 24V DC.</p>
-  <div class="box key"><b>One 0V for all:</b> supply, cards and sensors. More than one supply? Tie the 0Vs.</div>
+  <div class="box key"><b>One 0V for all:</b> supply, cards and sensors. If there is more than one supply, tie their 0Vs together.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>Input card: sinking and sourcing</h2>
-  <p class="bf"><span class="ic">💡</span><span>An input = an LED between I0.0 and common <span class="term">1M</span>: it needs <b>24V across it</b>.</span></p>
-  <div class="vs">
-    <div class="side"><b>Common on 0V</b><span>Input on <b>+24V</b></span><span><b>PNP</b> sensor · European</span></div>
-    <i>vs</i>
-    <div class="side"><b>Common on +24V</b><span>Input on <b>0V</b></span><span><b>NPN</b> sensor · Japanese, Chinese</span></div>
-  </div>
-  <p class="tip">Don't memorise sinking/sourcing: <b>look where the common goes</b>.</p>
+  <h2 id="s2"><span class="k">2</span>How does the input card sense a signal?</h2>
+  <p>Each input has an LED inside, between the input terminal (like I0.0) and the common <span class="term">1M</span>. So for the input to light there must be <b>24V across the two</b>.</p>
+  <p>If the <b>common is on 0V</b>, the input turns on when it gets +24V, which suits a <b>PNP</b> sensor (European). If the <b>common is on +24V</b>, the input turns on when it gets 0V, which suits an <b>NPN</b> sensor (Japanese and Chinese).</p>
+  <p class="tip">Don't memorise sinking and sourcing: <b>look where the common goes</b>.</p>
   <div class="rscene" data-scene="pnp"></div>
-  <ul class="fx">
-    <li><b>🟤 BN brown</b><span>+24V</span></li>
-    <li><b>🔵 BU blue</b><span>0V</span></li>
-    <li><b>⚫ BK black</b><span>Output ⇒ I0.0</span></li>
-  </ul>
+  <p>The sensor wires: <b>brown BN</b> to +24V, <b>blue BU</b> to 0V, and <b>black BK</b> is the output that goes to I0.0.</p>
   <p class="tip">Sensors in detail: <a href="../instrumentation-lab/lesson-03.html">the digital sensors lesson</a>.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Output card: relay or transistor?</h2>
-  <div class="vs">
-    <div class="side"><b>Relay</b><span>AC or DC · ≈ 2A</span><span>Slow, limited life</span><span>Common <span class="term">1L</span></span></div>
-    <i>vs</i>
-    <div class="side"><b>Transistor</b><span>24V DC only · ≈ 0.5A</span><span>Fast: pulses, steppers</span><span><span class="term">3L+</span> and <span class="term">3M</span></span></div>
-  </div>
-  <p class="tip">A 220V AC coil on a transistor output? Use a <b>24V DC interface relay</b>.</p>
+  <p>A <b>relay</b> output switches AC or DC up to about 2A, but it is slow and has a limited life. Its common is <span class="term">1L</span>.</p>
+  <p>A <b>transistor</b> output switches 24V DC only, up to about 0.5A, but it is fast, so it is used for pulses and steppers. Its terminals are <span class="term">3L+</span> and <span class="term">3M</span>.</p>
+  <p class="tip">Want to drive a 220V AC coil from a transistor output? Use a <b>24V DC interface relay</b>.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>The bench: wire it yourself</h2>
-  <p class="tip">Tap one terminal then the other · tap a wire to remove it · then <b>"Test wiring"</b>.</p>
+  <p>Tap one terminal then the other to add a wire, and tap a wire to remove it. When you finish, press <b>"Test wiring"</b>.</p>
   <div class="wd"><h3>Wiring bench</h3><div id="bench"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
-  <h2 id="s5"><span class="k">5</span>Common faults on site</h2>
-  <ul class="fx">
-    <li><b>Sensor LED on, PLC doesn't see it</b><span>NPN on a 0V common (or the reverse)</span></li>
-    <li><b>All inputs went off</b><span>24V dropped: brown touched blue</span></li>
-    <li><b>Transistor output burnt</b><span>Overcurrent · short · DC coil without a diode</span></li>
-    <li><b>Output relay welded</b><span>Contactor won't drop · replace the card</span></li>
-    <li><b>220V on a 24V card</b><span>The worst mistake · measure first</span></li>
-  </ul>
-  <div class="box safe">Isolate before touching any terminal. A relay card may carry <b>220V</b> with the PLC off.</div>
+  <h2 id="s5"><span class="k">5</span>Faults you meet on site</h2>
+  <p><b>Sensor LED is on but the PLC doesn't see it:</b> an NPN sensor on a card with a 0V common, or the reverse. <b>All inputs went off:</b> the 24V dropped, usually brown touched blue in a sensor.</p>
+  <p><b>Transistor output burnt:</b> overcurrent, a short, or a DC coil without a diode. <b>Output relay welded:</b> the contactor won't drop, replace the card. And <b>220V on a 24V card:</b> the worst mistake, so measure before you connect.</p>
+  <div class="box safe">Isolate before touching any terminal. A relay card may carry <b>220V</b> with the PLC itself off.</div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson questions</h2>
