@@ -35,26 +35,26 @@ function themeBtn(){
 
 /* ---------------- course map ---------------- */
 IL.COURSE = [
-  {id:'l1', n:1, file:'lesson-01.html', title:'يعني إيه إنسترومنتيشن؟', sub:'اللوب: حساس، ترانسميتر، كنترولر، وصمّام. PV و SP والرينج، وقراءة التاجات TT-101',
-    tasks:[['loop','لوب التسخين'],['tags','فك التاجات'],['quiz','أسئلة الدرس']]},
-  {id:'l2', n:2, file:'lesson-02.html', title:'الإشارات الأنالوج ⁦4⁠–⁠20mA⁩ و ⁦0⁠–⁠10V⁩', sub:'ليه 4 مش صفر، ترانسميتر 2 و 3 و 4 سلك، التحويل للقيمة، وقياس التيار في اللوب',
+  {id:'l1', n:1, file:'lesson-01.html', title:'ما المقصود بأجهزة القياس (الإنسترومنتيشن)؟', sub:'اللوب: حساس، وترانسميتر، وكنترولر، وصمّام. وPV وSP والمدى، وقراءة التاجات TT-101',
+    tasks:[['loop','لوب التسخين'],['tags','حلّ التاجات'],['quiz','أسئلة الدرس']]},
+  {id:'l2', n:2, file:'lesson-02.html', title:'الإشارات الأنالوج ⁦4⁠–⁠20mA⁩ و ⁦0⁠–⁠10V⁩', sub:'لماذا 4 لا صفر، وترانسميتر 2 و3 و4 أسلاك، والتحويل إلى القيمة، وقياس التيار في اللوب',
     tasks:[['sim','محاكي اللوب والأعطال'],['scale','تمرين التحويل'],['quiz','أسئلة الدرس']]},
-  {id:'l3', n:3, file:'lesson-03.html', title:'الحساسات الديجيتال', sub:'بروكسيميتي وفوتوسيل وليميت سويتش، NO/NC، و PNP و NPN مع كارت الـ PLC',
+  {id:'l3', n:3, file:'lesson-03.html', title:'الحساسات الرقمية', sub:'بروكسيميتي وفوتوسيل وليمت سويتش، وNO/NC، وPNP وNPN مع كارت الـ PLC',
     tasks:[['pnp','توصيل PNP'],['npn','توصيل NPN'],['quiz','أسئلة الدرس']]},
-  {id:'l4', n:4, file:'lesson-04.html', title:'الإنكودر ١: الإنكريمنتال', sub:'القرص والقنوات A و B و Z، الاتجاه، PPR، العدّ x1/x2/x4، السرعة، وأنواع الخرج',
+  {id:'l4', n:4, file:'lesson-04.html', title:'الإنكودر ١: الإنكريمنتال', sub:'القرص والقنوات A وB وZ، والاتجاه، وPPR، والعدّ x1/x2/x4، والسرعة، وأنواع الخرج',
     tasks:[['enc','تجربة الإنكودر'],['edrill','تمرين الاتجاه والتردد'],['quiz','أسئلة الدرس']]},
-  {id:'l5', n:5, file:'lesson-05.html', title:'الإنكودر ٢: الأبسليوت والتركيب والأعطال', sub:'Gray code، سنجل ومالتي تيرن، SSI و Profinet، التركيب والشيلد، ولعبة الأعطال',
+  {id:'l5', n:5, file:'lesson-05.html', title:'الإنكودر ٢: الأبسليوت والتركيب والأعطال', sub:'Gray code، وSingle-turn وMulti-turn، وSSI وProfinet، والتركيب والشيلد، ولعبة الأعطال',
     tasks:[['gray','قرص الـ Gray code'],['efault','لعبة أعطال الإنكودر'],['quiz','أسئلة الدرس']]},
-  {id:'l6', n:6, file:'lesson-06.html', title:'حساسات الحرارة ١: الثيرموكبل', sub:'أنواع K و J و T و S، تعويض الطرف البارد CJC، كابل التعويض، الألوان، والأعطال',
+  {id:'l6', n:6, file:'lesson-06.html', title:'حساسات الحرارة ١: الثيرموكبل', sub:'الأنواع K وJ وT وS، وتعويض الطرف البارد CJC، وكابل التعويض، والألوان، والأعطال',
     tasks:[['tc','بنش الثيرموكبل'],['tcdrill','تمرين mV ← درجة'],['quiz','أسئلة الدرس']]},
-  {id:'l7', n:7, file:'lesson-07.html', title:'حساسات الحرارة ٢: PT100 و RTD و NTC', sub:'100 أوم على صفر، 2 و 3 و 4 سلك وغلطة السلك، الترانسميتر، و NTC و PTC',
+  {id:'l7', n:7, file:'lesson-07.html', title:'حساسات الحرارة ٢: PT100 و RTD و NTC', sub:'100 أوم عند الصفر، و2 و3 و4 أسلاك وخطأ السلك، والترانسميتر، وNTC وPTC',
     tasks:[['rtd','بنش الـ PT100'],['ptdrill','تمرين أوم ← درجة'],['quiz','أسئلة الدرس']]},
-  {id:'l8', n:8, file:'lesson-08.html', title:'اللود سيل (Load Cell) والميزان', sub:'الإسترين جيدج والقنطرة، mV/V، 4 و 6 سلك، معايرة الميزان، وتشخيص اللود سيل بالأفوميتر',
+  {id:'l8', n:8, file:'lesson-08.html', title:'اللود سيل (Load Cell) والميزان', sub:'الإسترين جيدج والقنطرة، وmV/V، و4 و6 أسلاك، ومعايرة الميزان، وتشخيص اللود سيل بالأفوميتر',
     tasks:[['lc','بنش اللود سيل'],['cal','معايرة الإنديكيتور'],['lcdiag','تشخيص الأعطال'],['quiz','أسئلة الدرس']]},
-  {id:'l9', n:9, file:'lesson-09.html', title:'الضغط والمستوى والفلو', sub:'ترانسميتر الضغط و DP، المستوى بالضغط والرادار، والفلو ماجنتيك وفورتكس وكوريوليس',
-    tasks:[['lvl','تانك المستوى'],['pick','اختار الجهاز الصح'],['quiz','أسئلة الدرس']]},
-  {id:'l10', n:10, file:'lesson-10.html', title:'المعايرة والتربل شوتنج + الامتحان النهائي', sub:'لوب تشيك، جدول As-found / As-left، الكاليبريتور، لعبة أعطال الموقع، والامتحان النهائي',
-    tasks:[['caltab','معايرة 5 نقط'],['fgame','لعبة أعطال الموقع'],['quiz','أسئلة الدرس'],['final','الامتحان النهائي']]}
+  {id:'l9', n:9, file:'lesson-09.html', title:'الضغط والمستوى والتدفق', sub:'ترانسميتر الضغط وDP، والمستوى بالضغط والرادار، والتدفق ماجنتيك وفورتكس وكوريوليس',
+    tasks:[['lvl','خزان المستوى'],['pick','اختر الجهاز الصحيح'],['quiz','أسئلة الدرس']]},
+  {id:'l10', n:10, file:'lesson-10.html', title:'المعايرة وتتبّع الأعطال + الامتحان النهائي', sub:'لوب تشيك، وجدول As-found / As-left، والكاليبريتور، ولعبة أعطال الموقع، والامتحان النهائي',
+    tasks:[['caltab','معايرة 5 نقاط'],['fgame','لعبة أعطال الموقع'],['quiz','أسئلة الدرس'],['final','الامتحان النهائي']]}
 ];
 IL.lessonById = id => IL.COURSE.find(l => l.id === id);
 IL.summary = id => { const l = IL.lessonById(id); const done = l.tasks.filter(t => IL.store.has(id + '/' + t[0])).length; return {done, total:l.tasks.length}; };
@@ -72,7 +72,7 @@ const fmt = (v, d) => { const p = Math.pow(10, d); const r = Math.round(v * p) /
 IL.fmt = fmt;
 function shuffle(a){ a = a.slice(); for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 /* answer options: shuffled, but catch-all choices («الاتنين», «ولا واحد», "Both", "None"…) always stay last */
-const QZ_PIN = /^(الاتنين|الاثنين|كلهم|ولا واحد|ولا حاجة|مفيش فرق|مش فارقة|زي بعض|كلهم زي بعض|both|neither|none|all of them|all the same|no difference|it makes no difference)$/i;
+const QZ_PIN = /^(لا فرق|لا فرق إطلاقًا|الاثنان|كلاهما|لا شيء|ولا أحد منهما|جميعها|جميعها متساوية|الاتنين|الاثنين|كلهم|ولا واحد|ولا حاجة|مفيش فرق|مش فارقة|زي بعض|كلهم زي بعض|both|neither|none|all of them|all the same|no difference|it makes no difference)$/i;
 function qzOrder(o, keep){ const idx = o.map((_, i) => i); if (keep) return idx; const pin = idx.filter(i => QZ_PIN.test(String(o[i]).replace(/<[^>]*>/g, '').replace(/[⁦-⁩⁠.!]/g, '').trim())); return shuffle(idx.filter(i => !pin.includes(i))).concat(pin); }
 /* Latin / number runs inside an RTL option ("+24V", "0.05 A", "DC−", "حوالي +26 °C") would flip: isolate them as LTR */
 const QZ_LTR = /[+\-−±]?[0-9A-Za-zΩµ°][0-9A-Za-zΩµ°%.,:/·×_\-–−+ ]*[0-9A-Za-zΩµ°%+\-−]|[+\-−±]?[0-9A-Za-zΩµ°]/g;
@@ -130,7 +130,7 @@ IL.hubTheme = () => { const ch = $('header.top .chips'); if (ch) ch.appendChild(
 
 /* ---------------- select, then confirm ----------------
    tapping an option only selects it (.sel); right/wrong shows after the learner presses the check / confirm button */
-const QZ_T = {check:'صحّح إجاباتي', need:'جاوب على كل الأسئلة الأول', cnt:(n, t) => `جاوبت ${n} من ${t}`, ok:'تأكيد'};
+const QZ_T = {check:'صحّح إجاباتي', need:'أجب عن كل الأسئلة أولًا', cnt:(n, t) => `أجبت عن ${n} من ${t}`, ok:'تأكيد'};
 const QZ_CF = () => `<div class="dr-cf"><button type="button" class="btn pri dr-ok" disabled>${QZ_T.ok}</button></div>`;
 function qzSel(box, o){ $$('.qz-o', box).forEach(x => { const on = x === o; x.classList.toggle('sel', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); }); }
 function qzUnsel(box){ $$('.qz-o', box).forEach(x => { x.classList.remove('sel'); x.removeAttribute('aria-pressed'); }); }
@@ -185,7 +185,7 @@ IL.quiz = function(host, qs, opt){
       qzUnsel(box);
       $$('.qz-o', box).forEach(x => { x.disabled = true; const j = +x.dataset.i; if (j === it.q.a) x.classList.add('ok'); else if (j === i) x.classList.add('no'); });
       if (ok) box.classList.add('ok');
-      const f = $('.qz-f', box); f.className = 'qz-f ' + (ok ? 'ok' : 'no'); f.innerHTML = (ok ? 'صح. ' : 'مش دي. ') + (it.q.why || '');
+      const f = $('.qz-f', box); f.className = 'qz-f ' + (ok ? 'ok' : 'no'); f.innerHTML = (ok ? 'صحيح. ' : 'ليست هذه. ') + (it.q.why || '');
     });
     $('.qz-chk', host).hidden = true;
     finish();
@@ -193,7 +193,7 @@ IL.quiz = function(host, qs, opt){
   function finish(){
     const n = ans.filter(Boolean).length, tot = ans.length, ok = n / tot >= pass - 1e-9;
     const sum = $('.qz-sum', host); sum.hidden = false; sum.className = 'qz-sum ' + (ok ? 'ok' : 'no');
-    sum.innerHTML = `<b>نتيجتك: ${n} من ${tot}</b><span>${ok ? 'ممتاز، كده عدّيت ✓' : `محتاج ${Math.ceil(pass * tot - 1e-9)} صح على الأقل. راجع الشرح وجرّب تاني.`}</span><button type="button" class="btn" data-qz="again">${ok ? 'حلّ تاني' : 'جرّب تاني'}</button>`;
+    sum.innerHTML = `<b>نتيجتك: ${n} من ${tot}</b><span>${ok ? 'ممتاز، لقد نجحت ✓' : `تحتاج ${Math.ceil(pass * tot - 1e-9)} إجابات صحيحة على الأقل. راجع الشرح وحاول مرة أخرى.`}</span><button type="button" class="btn" data-qz="again">${ok ? 'حلّ مرة أخرى' : 'حاول مرة أخرى'}</button>`;
     if (ok && opt.lesson) IL.mark(opt.lesson, opt.task || 'quiz');
     if (opt.onDone) opt.onDone(n, tot, ok);
   }
@@ -210,10 +210,10 @@ IL.drill = function(host, gen, opt){
   opt = opt || {};
   const need = opt.need || 5;
   let ok = 0, tries = 0, cur = null, answered = false;
-  host.innerHTML = `<div class="dr"><div class="dr-top"><span class="dr-sc" aria-live="polite"></span><span class="bar dr-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${need}" aria-label="الإجابات الصح"><i></i></span></div><div class="dr-card"></div><div class="dr-act"><button type="button" class="btn pri dr-next" hidden>السؤال اللي بعده ←</button></div><p class="chal dr-chal">${opt.goal || `جاوب <b>${need}</b> صح عشان التمرين يتعلّم عليه.`}</p></div>`;
+  host.innerHTML = `<div class="dr"><div class="dr-top"><span class="dr-sc" aria-live="polite"></span><span class="bar dr-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${need}" aria-label="الإجابات الصح"><i></i></span></div><div class="dr-card"></div><div class="dr-act"><button type="button" class="btn pri dr-next" hidden>السؤال التالي ←</button></div><p class="chal dr-chal">${opt.goal || `أجب <b>${need}</b> إجابات صحيحة ليُسجَّل التمرين مكتملًا.`}</p></div>`;
   const fin = chal(host, '.dr-chal', opt.lesson, opt.task);
   const card = $('.dr-card', host), nx = $('.dr-next', host);
-  function score(){ $('.dr-sc', host).innerHTML = `صح: <b>${ok}</b> من ${tries}`; const p = Math.min(1, ok / need) * 100; $('.dr-bar i', host).style.width = p + '%'; $('.dr-bar', host).setAttribute('aria-valuenow', Math.min(ok, need)); }
+  function score(){ $('.dr-sc', host).innerHTML = `الصحيح: <b>${ok}</b> من ${tries}`; const p = Math.min(1, ok / need) * 100; $('.dr-bar i', host).style.width = p + '%'; $('.dr-bar', host).setAttribute('aria-valuenow', Math.min(ok, need)); }
   function next(){
     cur = gen(); answered = false; nx.hidden = true;
     if (cur.input){
@@ -227,7 +227,7 @@ IL.drill = function(host, gen, opt){
   function result(good, chosen){
     answered = true; tries++; if (good) ok++;
     const f = $('.qz-f', card); f.className = 'qz-f ' + (good ? 'ok' : 'no');
-    f.innerHTML = (good ? 'صح. ' : 'مش مظبوطة. ') + (cur.ans != null && !good ? `الإجابة: <b class="eq">${cur.ans}</b>. ` : '') + (cur.why || '');
+    f.innerHTML = (good ? 'صحيح. ' : 'غير دقيقة. ') + (cur.ans != null && !good ? `الإجابة: <b class="eq">${cur.ans}</b>. ` : '') + (cur.why || '');
     if (!cur.input) $$('.qz-o', card).forEach(x => { x.disabled = true; if (+x.dataset.i === cur.a) x.classList.add('ok'); else if (x === chosen) x.classList.add('no'); });
     else $$('input,button', card).forEach(x => x.disabled = true);
     score(); nx.hidden = false;
@@ -235,7 +235,7 @@ IL.drill = function(host, gen, opt){
     nx.focus({preventScroll:true});
   }
   card.addEventListener('click', e => { if (answered) return; const b = pickConfirm(e, card); if (b) result(+b.dataset.i === cur.a, b); });
-  card.addEventListener('submit', e => { e.preventDefault(); if (answered) return; const v = num($('input', card).value); if (!isFinite(v)){ const f = $('.qz-f', card); f.className = 'qz-f no'; f.textContent = 'اكتب رقم.'; return; } result(!!cur.check(v)); });
+  card.addEventListener('submit', e => { e.preventDefault(); if (answered) return; const v = num($('input', card).value); if (!isFinite(v)){ const f = $('.qz-f', card); f.className = 'qz-f no'; f.textContent = 'اكتب رقمًا.'; return; } result(!!cur.check(v)); });
   nx.addEventListener('click', next);
   next();
   return {get cur(){ return cur; }, answer(v){ if (cur.input){ $('input', card).value = v; $('.dr-in button', card).click(); } else { const b = card.querySelector(`.qz-o[data-i="${v}"]`); if (b){ b.click(); $('.dr-ok', card).click(); } } }, next, get ok(){ return ok; }};
@@ -498,7 +498,7 @@ IL.heatLoop = function(host, opt){
   opt = opt || {};
   const L = opt.lesson, T0 = 25, LRV = 0, URV = 150, g = U('hl');
   const S = {pv:30, sp:50, out:0, valve:0, auto:true, man:30, dist:0, t:0, st:{i:0}, hist:[], ok:0, sp0:50};
-  host.innerHTML = `<div class="sim-grid two-col"><div class="wd-art"><svg viewBox="0 0 360 270" role="img" aria-label="تانك ميّة بيتسخّن ببخار: حساس حرارة، كنترولر، وصمّام بخار">${ART.defs(g)}
+  host.innerHTML = `<div class="sim-grid two-col"><div class="wd-art"><svg viewBox="0 0 360 270" role="img" aria-label="خزان ماء يُسخَّن بالبخار: حساس حرارة، وكنترولر، وصمّام بخار">${ART.defs(g)}
    <defs><linearGradient id="${g}w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5fb0f0"/><stop offset="1" stop-color="#2a74c0"/></linearGradient></defs>
    <rect x="30" y="70" width="150" height="170" rx="14" fill="url(#${g}mh)" stroke="#5d6469" stroke-width="1.5"/>
    <rect x="38" y="96" width="134" height="136" rx="8" class="hl-water" fill="url(#${g}w)"/>
@@ -518,18 +518,18 @@ IL.heatLoop = function(host, opt){
    <path class="flow" d="M228 120H240V100H250" fill="none" stroke="var(--cur)" stroke-width="2" stroke-dasharray="6 6"/>
    <path class="flow" d="M300 132V160H240V202" fill="none" stroke="var(--cur)" stroke-width="2" stroke-dasharray="6 6"/>
    <text x="236" y="94" class="w-mu" style="font-size:9px" text-anchor="end">⁦4⁠–⁠20 mA⁩</text><text x="304" y="152" class="w-mu" style="font-size:9px">⁦4⁠–⁠20 mA⁩</text>
-   <text x="105" y="60" text-anchor="middle" class="svg-ar w-tx" style="font-size:12px;font-weight:700">تانك ميّة</text>
-   <g class="hl-cold" opacity="0"><path d="M10 40H60V80" fill="none" stroke="var(--cold)" stroke-width="6"/><text x="12" y="32" class="svg-ar" style="font-size:10px;fill:var(--cold);font-weight:700">ميّة باردة</text></g>
+   <text x="105" y="60" text-anchor="middle" class="svg-ar w-tx" style="font-size:12px;font-weight:700">خزان ماء</text>
+   <g class="hl-cold" opacity="0"><path d="M10 40H60V80" fill="none" stroke="var(--cold)" stroke-width="6"/><text x="12" y="32" class="svg-ar" style="font-size:10px;fill:var(--cold);font-weight:700">ماء بارد</text></g>
   </svg></div>
   <div class="mm-side">
    <div class="read"><div><span>PV (الحرارة الفعلية)</span><b class="hl-pv">0</b></div><div><span>SP (المطلوب)</span><b class="hl-sp">0</b></div><div><span>OUT (فتحة الصمّام)</span><b class="hl-out">0</b></div><div><span>إشارة TT-101</span><b class="hl-ma">0</b></div></div>
-   <div class="wd-ctl"><label>SP المطلوب: <b class="hl-spv"></b><input type="range" class="hl-sps" min="30" max="95" step="1" value="50" aria-label="نقطة الضبط SP"></label>
-   <button type="button" class="btn hl-am" aria-pressed="false">حوّل لـ Manual</button><button type="button" class="btn hl-dis">افتح ميّة باردة (اضطراب)</button>
-   <label class="hl-manl" hidden>فتحة الصمّام يدوي: <b class="hl-manv"></b><input type="range" class="hl-man" min="0" max="100" step="1" value="30" aria-label="فتحة الصمّام يدوي"></label></div>
+   <div class="wd-ctl"><label>الـ SP المطلوب: <b class="hl-spv"></b><input type="range" class="hl-sps" min="30" max="95" step="1" value="50" aria-label="نقطة الضبط SP"></label>
+   <button type="button" class="btn hl-am" aria-pressed="false">حوّل إلى Manual</button><button type="button" class="btn hl-dis">افتح ماءً باردًا (اضطراب)</button>
+   <label class="hl-manl" hidden>فتحة الصمّام يدويًا: <b class="hl-manv"></b><input type="range" class="hl-man" min="0" max="100" step="1" value="30" aria-label="فتحة الصمّام يدويًا"></label></div>
   </div></div>
-  <div class="wd-art"><svg class="hl-tr" viewBox="0 0 360 130" role="img" aria-label="رسم بياني: PV و SP و OUT مع الوقت"></svg></div>
+  <div class="wd-art"><svg class="hl-tr" viewBox="0 0 360 130" role="img" aria-label="رسم بياني: PV وSP وOUT مع الزمن"></svg></div>
   <p class="msg hl-msg" aria-live="polite"></p>
-  <p class="chal hl-chal">التحدّي: غيّر الـ SP بـ 10 درجات على الأقل (مثلًا لـ 70) وسيب الكنترولر على <b>AUTO</b> لحد ما الـ PV يستقر عند الـ SP (±1 °C).</p>`;
+  <p class="chal hl-chal">التحدّي: غيّر الـ SP بـ 10 درجات على الأقل (مثلًا إلى 70) واترك الكنترولر على <b>AUTO</b> حتى يستقر الـ PV عند الـ SP (±1 °C).</p>`;
   const q = s => $(s, host), fin = chal(host, '.hl-chal', L, 'loop');
   const sps = q('.hl-sps'), man = q('.hl-man');
   sps.addEventListener('input', () => { S.sp = +sps.value; S.ok = 0; ui(); });
@@ -547,7 +547,7 @@ IL.heatLoop = function(host, opt){
   function frame(dt){
     let sim = dt * 8; /* 8× faster than real time */
     while (sim > 0){ const d = Math.min(0.25, sim); step(d); sim -= d; acc += d; if (acc >= 0.5){ acc -= 0.5; S.hist.push([S.pv, S.sp, S.out]); if (S.hist.length > 240) S.hist.shift(); } }
-    if (S.auto && Math.abs(S.sp - S.sp0) >= 10 && Math.abs(S.pv - S.sp) <= 1 && S.dist <= 0){ S.ok += dt * 8; if (S.ok > 16 && !IL.has(L, 'loop')){ fin(); msg('ممتاز! الكنترولر غيّر فتحة الصمّام لوحده لحد ما الحرارة وصلت للـ SP واستقرت. ده لوب مقفول (Closed loop).', 'ok'); } } else S.ok = 0;
+    if (S.auto && Math.abs(S.sp - S.sp0) >= 10 && Math.abs(S.pv - S.sp) <= 1 && S.dist <= 0){ S.ok += dt * 8; if (S.ok > 16 && !IL.has(L, 'loop')){ fin(); msg('ممتاز! غيّر الكنترولر فتحة الصمّام وحده حتى وصلت الحرارة إلى الـ SP واستقرت. هذا لوب مغلق (Closed loop).', 'ok'); } } else S.ok = 0;
     ui();
   }
   const msg = (t, c) => { const m = q('.hl-msg'); m.className = 'msg hl-msg ' + (c || ''); m.innerHTML = t; };
@@ -568,15 +568,15 @@ IL.heatLoop = function(host, opt){
     q('.hl-pv').textContent = fmt(S.pv, 1) + ' °C'; q('.hl-sp').textContent = S.sp + ' °C'; q('.hl-out').textContent = fmt(S.out, 0) + ' %'; q('.hl-ma').textContent = fmt(mA, 2) + ' mA';
     q('.hl-dpv').textContent = fmt(S.pv, 1); q('.hl-dsp').textContent = fmt(S.sp, 1); q('.hl-dout').textContent = fmt(S.out, 0) + '%';
     q('.hl-mode').textContent = S.auto ? 'AUTO' : 'MAN'; q('.hl-spv').textContent = S.sp + ' °C'; q('.hl-manv').textContent = S.man + ' %';
-    const am = q('.hl-am'); am.textContent = S.auto ? 'حوّل لـ Manual' : 'رجّع لـ Auto'; am.setAttribute('aria-pressed', String(!S.auto)); q('.hl-manl').hidden = S.auto;
+    const am = q('.hl-am'); am.textContent = S.auto ? 'حوّل إلى Manual' : 'أعد إلى Auto'; am.setAttribute('aria-pressed', String(!S.auto)); q('.hl-manl').hidden = S.auto;
     q('.hl-vpos').setAttribute('width', (S.valve / 100 * 22).toFixed(1));
     const hot = clamp((S.pv - 25) / 70, 0, 1); q('.hl-water').style.fill = `rgb(${Math.round(60 + 170 * hot)},${Math.round(140 - 60 * hot)},${Math.round(220 - 150 * hot)})`;
     q('.hl-coil').style.opacity = 0.3 + S.valve / 140; q('.hl-cold').setAttribute('opacity', S.dist > 0 ? 1 : 0);
     q('.hl-bub').innerHTML = S.pv > 70 && !reduced() ? [60, 95, 130, 155].map((x, i) => `<circle cx="${x}" cy="${110 + ((S.t * 12 + i * 23) % 90)}" r="${2 + (i % 2)}" fill="#fff" opacity=".55"/>`).join('') : '';
     if (++tick % 3 === 0 || !S.hist.length) trend();
-    if (!S.auto && !q('.hl-msg').classList.contains('ok')) msg('إنت دلوقتي على <b>Manual</b>: الكنترولر مش بيبص على الـ PV، والصمّام ثابت على اللي إنت حاطّه. اللوب كده <b>مفتوح</b> (Open loop).');
-    else if (S.dist > 0) msg('ميّة باردة داخلة التانك: الحرارة بتنزل، والكنترولر بيفتح الصمّام أكتر عشان يعوّض.');
-    else if (!q('.hl-msg').classList.contains('ok')) msg(Math.abs(S.pv - S.sp) > 1 ? `الفرق (Error) = SP − PV = <b class="eq">${fmt(S.sp - S.pv, 1)} °C</b>. الكنترولر بيحرّك الصمّام على حسبه.` : 'الـ PV على الـ SP والصمّام ثابت على الفتحة اللي بتعوّض الفقد في الحرارة.');
+    if (!S.auto && !q('.hl-msg').classList.contains('ok')) msg('أنت الآن على <b>Manual</b>: الكنترولر لا ينظر إلى الـ PV، والصمّام ثابت على ما وضعته. فاللوب <b>مفتوح</b> (Open loop).');
+    else if (S.dist > 0) msg('ماء بارد يدخل الخزان: تنخفض الحرارة، فيفتح الكنترولر الصمّام أكثر ليعوّض.');
+    else if (!q('.hl-msg').classList.contains('ok')) msg(Math.abs(S.pv - S.sp) > 1 ? `الفرق (Error) = SP − PV = <b class="eq">${fmt(S.sp - S.pv, 1)} °C</b>. ويحرّك الكنترولر الصمّام بحسبه.` : 'الـ PV عند الـ SP والصمّام ثابت على الفتحة التي تعوّض الفقد الحراري.');
   }
   for (let k = 0; k < 60; k++){ step(0.25); if (k % 2) S.hist.push([S.pv, S.sp, S.out]); }
   ui(); trend();
@@ -586,19 +586,19 @@ IL.heatLoop = function(host, opt){
 
 /* ================= L1: P&ID tag decoder ================= */
 IL.TAGS = [
-  ['TT', 'ترانسميتر حرارة (Temperature Transmitter)'], ['TE', 'عنصر حرارة: الحساس نفسه زي الثيرموكبل أو PT100 (Temperature Element)'], ['TI', 'بيان حرارة محلي (Temperature Indicator)'],
-  ['TIC', 'كنترولر حرارة ليه شاشة (Temperature Indicating Controller)'], ['TSH', 'سويتش حرارة عالية (Temperature Switch High)'],
-  ['PT', 'ترانسميتر ضغط (Pressure Transmitter)'], ['PI', 'مانومتر/بيان ضغط محلي (Pressure Indicator)'], ['PIC', 'كنترولر ضغط (Pressure Indicating Controller)'], ['PSL', 'سويتش ضغط واطي (Pressure Switch Low)'], ['PDT', 'ترانسميتر فرق ضغط (Differential Pressure Transmitter)'],
-  ['FT', 'ترانسميتر فلو/تدفّق (Flow Transmitter)'], ['FE', 'عنصر الفلو: الأوريفيس أو الحساس (Flow Element)'], ['FIC', 'كنترولر فلو (Flow Indicating Controller)'], ['FV', 'صمّام تحكم في الفلو (Flow Valve)'],
-  ['LT', 'ترانسميتر مستوى (Level Transmitter)'], ['LSH', 'سويتش مستوى عالي (Level Switch High)'], ['LSL', 'سويتش مستوى واطي (Level Switch Low)'], ['LIC', 'كنترولر مستوى (Level Indicating Controller)'], ['LAH', 'إنذار مستوى عالي (Level Alarm High)'],
-  ['WT', 'ترانسميتر وزن: لود سيل وإنديكيتور (Weight Transmitter)'], ['ST', 'ترانسميتر سرعة (Speed Transmitter)'], ['ZT', 'ترانسميتر مكان/وضع (Position Transmitter)'], ['TV', 'صمّام تحكم في الحرارة (Temperature Valve)']
+  ['TT', 'ترانسميتر حرارة (Temperature Transmitter)'], ['TE', 'عنصر حرارة: الحساس نفسه مثل الثيرموكبل أو PT100 (Temperature Element)'], ['TI', 'بيان حرارة محلي (Temperature Indicator)'],
+  ['TIC', 'كنترولر حرارة له شاشة (Temperature Indicating Controller)'], ['TSH', 'سويتش حرارة عالية (Temperature Switch High)'],
+  ['PT', 'ترانسميتر ضغط (Pressure Transmitter)'], ['PI', 'مانومتر/بيان ضغط محلي (Pressure Indicator)'], ['PIC', 'كنترولر ضغط (Pressure Indicating Controller)'], ['PSL', 'سويتش ضغط منخفض (Pressure Switch Low)'], ['PDT', 'ترانسميتر فرق ضغط (Differential Pressure Transmitter)'],
+  ['FT', 'ترانسميتر تدفّق (Flow Transmitter)'], ['FE', 'عنصر التدفق: الأوريفيس أو الحساس (Flow Element)'], ['FIC', 'كنترولر تدفق (Flow Indicating Controller)'], ['FV', 'صمّام تحكم في التدفق (Flow Valve)'],
+  ['LT', 'ترانسميتر مستوى (Level Transmitter)'], ['LSH', 'سويتش مستوى عالٍ (Level Switch High)'], ['LSL', 'سويتش مستوى منخفض (Level Switch Low)'], ['LIC', 'كنترولر مستوى (Level Indicating Controller)'], ['LAH', 'إنذار مستوى عالٍ (Level Alarm High)'],
+  ['WT', 'ترانسميتر وزن: لود سيل وإنديكيتور (Weight Transmitter)'], ['ST', 'ترانسميتر سرعة (Speed Transmitter)'], ['ZT', 'ترانسميتر موضع (Position Transmitter)'], ['TV', 'صمّام تحكم في الحرارة (Temperature Valve)']
 ];
 IL.tagGen = function(){
   const [tag, mean] = pick(IL.TAGS), n = 100 + Math.floor(Math.random() * 400);
   const others = shuffle(IL.TAGS.filter(t => t[0] !== tag && (t[0][0] === tag[0] || t[0].slice(1) === tag.slice(1)))).slice(0, 3);
   while (others.length < 3){ const t = pick(IL.TAGS); if (t[0] !== tag && !others.includes(t)) others.push(t); }
-  return {q:`الجهاز ده مكتوب عليه في الرسم: <div class="tags-row" style="margin-top:6px"><span class="tag-b">${tag}<br>${n}</span></div>يعني إيه؟`, o:[mean].concat(others.map(t => t[1])), a:0,
-    why:`الحرف الأول <b>${tag[0]}</b> = ${({T:'الحرارة', P:'الضغط', F:'الفلو', L:'المستوى', W:'الوزن', S:'السرعة', Z:'المكان'})[tag[0]]}، والباقي = الوظيفة. والرقم ${n} رقم اللوب.`};
+  return {q:`مكتوب على هذا الجهاز في الرسمة: <div class="tags-row" style="margin-top:6px"><span class="tag-b">${tag}<br>${n}</span></div>ما معناه؟`, o:[mean].concat(others.map(t => t[1])), a:0,
+    why:`الحرف الأول <b>${tag[0]}</b> = ${({T:'الحرارة', P:'الضغط', F:'التدفق', L:'المستوى', W:'الوزن', S:'السرعة', Z:'الموضع'})[tag[0]]}، والباقي = الوظيفة. والرقم ${n} رقم اللوب.`};
 };
 
 /* ================= L2: ⁦4⁠–⁠20 mA⁩ loop simulator ================= */
@@ -620,15 +620,15 @@ C.loopSim = function(o){
 IL.loopSim = function(host, opt){
   opt = opt || {}; const L = opt.lesson, g = U('ls');
   const S = {p:5, vs:24, fault:'', meter:'series', seen:new Set()};
-  const FAULTS = [['cut', 'اقطع سلك'], ['short', 'قصر في الكابل'], ['rev', 'اعكس القطبية'], ['fail', 'ترانسميتر بايظ']];
-  host.innerHTML = `<div class="wd-art"><svg viewBox="0 0 360 300" role="img" aria-label="لوب ⁦4⁠–⁠20⁩ مللي: باور سبلاي 24 فولت، ترانسميتر ضغط، أفوميتر، وكارت PLC أنالوج">${ART.defs(g)}
+  const FAULTS = [['cut', 'اقطع سلكًا'], ['short', 'قصر في الكابل'], ['rev', 'اعكس القطبية'], ['fail', 'ترانسميتر تالف']];
+  host.innerHTML = `<div class="wd-art"><svg viewBox="0 0 360 300" role="img" aria-label="لوب ⁦4⁠–⁠20⁩ مللي: مصدر تغذية 24 فولت، وترانسميتر ضغط، وأفوميتر، وكارت PLC أنالوج">${ART.defs(g)}
     <g class="ls-w"></g>
     <g transform="translate(6 96)"><rect x="0" y="0" width="68" height="104" rx="5" fill="#d7dde1" stroke="#5d6469" stroke-width="1.2"/><rect x="6" y="6" width="56" height="12" rx="2" fill="#3a4248"/>${screw(20, 12, 3.5)}${screw(48, 12, 3.5)}<rect x="6" y="86" width="56" height="12" rx="2" fill="#3a4248"/>${screw(20, 92, 3.5)}${screw(48, 92, 3.5)}
       <text x="34" y="44" text-anchor="middle" style="font:700 10px var(--font-mono);fill:#1c2125" class="ls-vs">24V DC</text><text x="34" y="56" text-anchor="middle" style="font:600 7px var(--font-mono);fill:#3d464c">PSU</text><circle cx="16" cy="70" r="3" fill="#35d06a"/><text x="23" y="73" style="font:600 6.5px var(--font-mono);fill:#3d464c">DC OK</text>
       <text x="56" y="30" style="font:700 9px var(--font-mono);fill:#c0352b">+</text><text x="56" y="82" style="font:700 9px var(--font-mono);fill:#1f6fd1">−</text></g>
     <g transform="translate(232 0) scale(.62)">${ART.transmitter({g, lcd:'', unit:''})}</g>
     <text class="ls-lcd" x="269" y="27" text-anchor="middle" style="font:700 8px var(--font-mono);fill:#16210c">5.00</text><text x="269" y="34" text-anchor="middle" style="font:600 5px var(--font-mono);fill:#16210c">bar</text>
-    <text x="226" y="46" text-anchor="end" style="font:700 10px var(--font-mono)" class="w-tx">PT-101</text><text x="226" y="58" text-anchor="end" style="font-size:9px" class="svg-ar w-mu">⁦0⁠–⁠10 bar⁩ · 2 سلك</text>
+    <text x="226" y="46" text-anchor="end" style="font:700 10px var(--font-mono)" class="w-tx">PT-101</text><text x="226" y="58" text-anchor="end" style="font-size:9px" class="svg-ar w-mu">⁦0⁠–⁠10 bar⁩ · سلكان</text>
     <g transform="translate(130 222)"><rect x="0" y="0" width="100" height="70" rx="6" fill="url(#${g}d)" stroke="#111"/><text x="50" y="13" text-anchor="middle" style="font:700 8px var(--font-mono);fill:#e9edf0">PLC AI · CH0</text>
       <path d="M20 40h12l3-6 5 12 5-12 5 12 5-12 5 12 3-6h12" fill="none" stroke="#e9edf0" stroke-width="1.4"/><text x="50" y="62" text-anchor="middle" style="font:600 7px var(--font-mono);fill:#93a2ab">250 Ω</text>
       <circle class="ls-led" cx="88" cy="12" r="3.2" fill="#35d06a"/></g>
@@ -638,10 +638,10 @@ IL.loopSim = function(host, opt){
   <div class="read ls-read"></div>
   <div class="statline ls-st" aria-live="polite"></div>
   <div class="wd-ctl"><label>الضغط الحقيقي في الماسورة: <b class="ls-pv"></b><input type="range" class="ls-p" min="-1" max="11.5" step="0.05" value="5" aria-label="الضغط"></label></div>
-  <div class="chips-t"><button type="button" class="btn" data-vs="24" aria-pressed="true">باور 24V</button><button type="button" class="btn" data-vs="12" aria-pressed="false">باور 12V</button><button type="button" class="btn" data-mt="series" aria-pressed="true">الأفوميتر توالي ✓</button><button type="button" class="btn" data-mt="par" aria-pressed="false">الأفوميتر توازي ✗</button></div>
+  <div class="chips-t"><button type="button" class="btn" data-vs="24" aria-pressed="true">تغذية 24V</button><button type="button" class="btn" data-vs="12" aria-pressed="false">تغذية 12V</button><button type="button" class="btn" data-mt="series" aria-pressed="true">الأفوميتر على التوالي ✓</button><button type="button" class="btn" data-mt="par" aria-pressed="false">الأفوميتر على التوازي ✗</button></div>
   <div class="flt" role="group" aria-label="أعطال">${FAULTS.map(f => `<button type="button" class="btn" data-f="${f[0]}" aria-pressed="false">${f[1]}</button>`).join('')}</div>
   <p class="msg ls-msg" aria-live="polite"></p>
-  <p class="chal ls-chal">التحدّي: جرّب الأعطال التلاتة <b>اقطع سلك</b> و<b>قصر في الكابل</b> و<b>اعكس القطبية</b> وشوف التيار والـ PLC بيقولوا إيه في كل واحد.</p>`;
+  <p class="chal ls-chal">التحدّي: جرّب الأعطال الثلاثة <b>اقطع سلكًا</b> و<b>قصر في الكابل</b> و<b>اعكس القطبية</b> ولاحظ ماذا يقول التيار والـ PLC في كلٍّ منها.</p>`;
   const q = s => $(s, host), fin = chal(host, '.ls-chal', L, 'sim');
   function wires(r){
     const sp = r.I > 0.05 ? Math.max(0.25, 3.2 - r.I / 10) : 0, fl = sp ? ` class="flow" style="--dur:${sp.toFixed(2)}s"` : '';
@@ -655,7 +655,7 @@ IL.loopSim = function(host, opt){
     if (!par) s += w('M348 226H300Q276 226 276 206', blk) + w('M308 206V258H230', blk);
     s += w('M130 258H110V178H74', blu);
     if (S.fault === 'short') s += `<path d="M200 21V70L208 76L200 82L208 88L200 94L208 100L200 106V118H348" fill="none" stroke="#ffb000" stroke-width="3"/><text x="194" y="100" text-anchor="end" class="svg-ar" style="font-size:10px;font-weight:700;fill:var(--warn)">قصر في الكابل</text>`;
-    if (rev) s += `<text x="190" y="14" text-anchor="middle" class="svg-ar" style="font-size:10px;font-weight:700;fill:var(--bad)">+ و − معكوسين</text>`;
+    if (rev) s += `<text x="190" y="14" text-anchor="middle" class="svg-ar" style="font-size:10px;font-weight:700;fill:var(--bad)">+ و− معكوسان</text>`;
     q('.ls-w').innerHTML = s;
   }
   function meter(r){
@@ -671,18 +671,18 @@ IL.loopSim = function(host, opt){
     q('.ls-lcd').textContent = S.fault === 'fail' ? 'FAIL' : (S.fault === 'cut' || S.fault === 'rev' || S.fault === 'short' || S.meter === 'par') ? '' : fmt(clamp(S.p, -0.5, 10.4), 2);
     q('.ls-pv').textContent = fmt(S.p, 2) + ' bar';
     const plc = r.st === 'fail-low' ? '<b class="bad">Wire break</b>' : r.st === 'fail-high' ? '<b class="bad">Overrange</b>' : `<b>${fmt(r.pv, 2)} bar</b>`;
-    q('.ls-read').innerHTML = `<div><span>الأفوميتر (mA)</span><b>${fmt(r.I, 2)} mA</b></div><div><span>قراية الـ PLC</span>${plc}</div><div><span>Raw في الـ PLC</span><b>${r.raw}</b></div><div><span>جهد على 250Ω</span><b>${fmt(r.vR, 2)} V</b></div><div><span>نسبة من الرينج</span><b>${fmt(C.mA2pct(r.I), 1)} %</b></div><div><span>جهد على الترانسميتر</span><b class="${r.vTx < 10.5 && r.how === 'lowv' ? 'bad' : ''}">${fmt(r.vTx, 1)} V</b></div>`;
+    q('.ls-read').innerHTML = `<div><span>الأفوميتر (mA)</span><b>${fmt(r.I, 2)} mA</b></div><div><span>قراءة الـ PLC</span>${plc}</div><div><span>Raw في الـ PLC</span><b>${r.raw}</b></div><div><span>جهد على 250Ω</span><b>${fmt(r.vR, 2)} V</b></div><div><span>نسبة من المدى</span><b>${fmt(C.mA2pct(r.I), 1)} %</b></div><div><span>جهد على الترانسميتر</span><b class="${r.vTx < 10.5 && r.how === 'lowv' ? 'bad' : ''}">${fmt(r.vTx, 1)} V</b></div>`;
     const led = q('.ls-led'); led.setAttribute('fill', r.st === 'ok' ? '#35d06a' : '#ff3b30');
-    const st = q('.ls-st'), stat = {ok:['ok', 'الإشارة سليمة (⁦3.8⁠–⁠20.5 mA⁩)'], under:['warn', 'تحت الرينج (⁦3.6⁠–⁠3.8 mA⁩)'], over:['warn', 'فوق الرينج (⁦20.5⁠–⁠21 mA⁩)'], 'fail-low':['bad', 'أقل من 3.6 mA: عطل / سلك مقطوع'], 'fail-high':['bad', 'أكتر من 21 mA: عطل / قصر']}[r.st];
+    const st = q('.ls-st'), stat = {ok:['ok', 'الإشارة سليمة (⁦3.8⁠–⁠20.5 mA⁩)'], under:['warn', 'تحت المدى (⁦3.6⁠–⁠3.8 mA⁩)'], over:['warn', 'فوق المدى (⁦20.5⁠–⁠21 mA⁩)'], 'fail-low':['bad', 'أقل من 3.6 mA: عطل / سلك مقطوع'], 'fail-high':['bad', 'أكثر من 21 mA: عطل / قصر']}[r.st];
     st.className = 'statline ls-st ' + stat[0]; st.innerHTML = `<b>NAMUR NE43:</b> ${stat[1]}`;
     const M = {
-      ok:`الضغط ${fmt(S.p, 2)} bar ⇐ <span class="eq">4 + ${fmt(S.p, 2)}/10 × 16 = ${fmt(r.I, 2)} mA</span>. نفس التيار ده ماشي في كل حتة في اللوب، فالأفوميتر في أي مكان على التوالي هيقرا نفس الرقم.`,
-      cut:'<b>السلك مقطوع ⇐ 0 mA.</b> مفيش دايرة، فمفيش تيار. الـ PLC شايف أقل من 3.6 mA فبيقول <b>Wire break</b>. ولو كانت الإشارة ⁦0⁠–⁠20 mA⁩ كان هيفتكرها "ضغط صفر" ومش هيعرف إن فيه عطل. ده سر الـ 4 mA!',
-      rev:'<b>القطبية معكوسة ⇐ 0 mA.</b> أغلب الترانسميترات جواها دايود حماية بيمنع التيار لو اتعكست، فالجهاز مش بيتحرق بس اللوب ميّت والـ PLC بيقول Wire break. افحص الجهد على أطراف الترانسميتر: هتلاقيه <b>−24V</b>.',
-      short:'<b>قصر بين السلكين ⇐ التيار بيعلى جدًا</b> لأن الترانسميتر اتشال من الدايرة والباور واقف على الـ 250Ω بس (24 ÷ 250 = 96 mA!). الحماية في الكارت أو الفيوز بتحدّه، والـ PLC بيقول <b>Overrange</b>. القراية مش بتتحرك مع الضغط.',
-      fail:'<b>الترانسميتر عمل تشخيص داخلي واكتشف عطل</b> (حساس بايظ مثلًا)، فبيطلّع تيار إنذار <b>21.75 mA</b> (Fail high) على حسب NAMUR. بعض الأجهزة بتتظبط على Fail low (3.6 mA). الـ PLC يعرف إنه عطل مش قراية.',
-      par:'<b>غلط! الأفوميتر على mA مقاومته صغيرة جدًا</b>، فلما تحطه على التوازي مع الترانسميتر بيعمل قصر عليه. التيار يعلى، والـ PLC يشوف Overrange، والقراية مش بتتحرك مع الضغط، وممكن فيوز الأفوميتر يضرب. <b>قياس الـ mA لازم توالي</b>: افتح اللوب ودخّل الأفوميتر في السكة.',
-      lowv:`<b>الجهد مش مكفي!</b> الترانسميتر محتاج حوالي <b>10.5V</b> على أطرافه عشان يشتغل. على 12V ومع 250Ω + الأفوميتر، أقصى تيار = <span class="eq">(12 − 10.5) ÷ 260 ≈ 5.8 mA</span>. عشان كده القراية "واقفة" مش بتعلى. ده عطل حقيقي بيحصل لما حد يحط باور ضعيف أو يزوّد مقاومة في اللوب (HART أو بيان تاني).`
+      ok:`الضغط ${fmt(S.p, 2)} bar ⇐ <span class="eq">4 + ${fmt(S.p, 2)}/10 × 16 = ${fmt(r.I, 2)} mA</span>. والتيار نفسه يسري في كل نقطة من اللوب، فالأفوميتر في أي مكان على التوالي يقرأ الرقم نفسه.`,
+      cut:'<b>السلك مقطوع ⇐ 0 mA.</b> لا دائرة، فلا تيار. يرى الـ PLC أقل من 3.6 mA فيعرض <b>Wire break</b>. ولو كانت الإشارة ⁦0⁠–⁠20 mA⁩ لظنّها "ضغطًا صفرًا" ولم يعرف بوجود عطل. هذا سرّ الـ 4 mA!',
+      rev:'<b>القطبية معكوسة ⇐ 0 mA.</b> معظم الترانسميترات بداخلها دايود حماية يمنع التيار عند العكس، فلا يحترق الجهاز لكن اللوب متوقف والـ PLC يعرض Wire break. افحص الجهد على أطراف الترانسميتر: ستجده <b>−24V</b>.',
+      short:'<b>قصر بين السلكين ⇐ يرتفع التيار كثيرًا</b> لأن الترانسميتر خرج من الدائرة وبقيت التغذية على الـ 250Ω فقط (24 ÷ 250 = 96 mA!). تحدّه الحماية في الكارت أو الفيوز، ويعرض الـ PLC <b>Overrange</b>. ولا تتحرك القراءة مع الضغط.',
+      fail:'<b>أجرى الترانسميتر تشخيصًا داخليًا واكتشف عطلًا</b> (حساس تالف مثلًا)، فيُخرج تيار إنذار <b>21.75 mA</b> (Fail high) وفق NAMUR. وبعض الأجهزة تُضبط على Fail low (3.6 mA). فيعرف الـ PLC أنه عطل لا قراءة.',
+      par:'<b>خطأ! الأفوميتر على mA مقاومته صغيرة جدًا</b>، فإذا وضعته على التوازي مع الترانسميتر أحدث قصرًا عليه. يرتفع التيار، ويرى الـ PLC Overrange، ولا تتحرك القراءة مع الضغط، وقد ينصهر فيوز الأفوميتر. <b>قياس الـ mA يجب أن يكون على التوالي</b>: افتح اللوب وأدخل الأفوميتر في المسار.',
+      lowv:`<b>الجهد غير كافٍ!</b> يحتاج الترانسميتر نحو <b>10.5V</b> على أطرافه ليعمل. على 12V ومع 250Ω + الأفوميتر، أقصى تيار = <span class="eq">(12 − 10.5) ÷ 260 ≈ 5.8 mA</span>. لذلك تبدو القراءة "ثابتة" لا ترتفع. وهو عطل حقيقي يحدث عند استخدام تغذية ضعيفة أو زيادة مقاومة اللوب (HART أو شاشة إضافية).`
     };
     const m = q('.ls-msg'); m.innerHTML = M[r.how]; m.className = 'msg ls-msg ' + (r.how === 'ok' ? '' : 'bad');
     $$('[data-f]', host).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.f === S.fault)));
@@ -701,15 +701,15 @@ IL.loopSim = function(host, opt){
 };
 
 /* ================= L2: scaling drill + calculator ================= */
-IL.RANGES = [[0, 10, 'bar', 'ضغط'], [0, 16, 'bar', 'ضغط'], [-1, 9, 'bar', 'ضغط'], [0, 150, '°C', 'حرارة'], [-50, 150, '°C', 'حرارة'], [0, 400, '°C', 'حرارة'], [0, 4, 'm', 'مستوى'], [0, 600, 'kg', 'وزن'], [0, 250, 'm³/h', 'فلو'], [0, 1500, 'rpm', 'سرعة']];
+IL.RANGES = [[0, 10, 'bar', 'ضغط'], [0, 16, 'bar', 'ضغط'], [-1, 9, 'bar', 'ضغط'], [0, 150, '°C', 'حرارة'], [-50, 150, '°C', 'حرارة'], [0, 400, '°C', 'حرارة'], [0, 4, 'm', 'مستوى'], [0, 600, 'kg', 'وزن'], [0, 250, 'm³/h', 'تدفق'], [0, 1500, 'rpm', 'سرعة']];
 IL.scaleGen = function(){
   const [lrv, urv, u, what] = pick(IL.RANGES), span = urv - lrv;
   if (Math.random() < 0.5){
     const mA = Math.round((4 + Math.random() * 16) * 4) / 4, pv = C.mA2pv(mA, lrv, urv);
-    return {input:true, unit:u, q:`ترانسميتر ${what} رينجه <span class="eq">${lrv} … ${urv} ${u}</span>. الأفوميتر بيقرا <b class="eq">${fmt(mA, 2)} mA</b>. القيمة كام؟`, check:v => Math.abs(v - pv) <= span * 0.006, ans:fmt(pv, 2) + ' ' + u, why:`<span class="eq">PV = ${lrv} + (${fmt(mA, 2)} − 4) ÷ 16 × ${span} = ${fmt(pv, 2)}</span>`};
+    return {input:true, unit:u, q:`ترانسميتر ${what} مداه <span class="eq">${lrv} … ${urv} ${u}</span>. الأفوميتر يقرأ <b class="eq">${fmt(mA, 2)} mA</b>. كم القيمة؟`, check:v => Math.abs(v - pv) <= span * 0.006, ans:fmt(pv, 2) + ' ' + u, why:`<span class="eq">PV = ${lrv} + (${fmt(mA, 2)} − 4) ÷ 16 × ${span} = ${fmt(pv, 2)}</span>`};
   }
   const pv = lrv + Math.round(Math.random() * 20) / 20 * span, mA = C.pv2mA(pv, lrv, urv);
-  return {input:true, unit:'mA', q:`ترانسميتر ${what} رينجه <span class="eq">${lrv} … ${urv} ${u}</span>. القيمة الحقيقية <b class="eq">${fmt(pv, 2)} ${u}</b>. الخرج المفروض كام mA؟`, check:v => Math.abs(v - mA) <= 0.06, ans:fmt(mA, 2) + ' mA', why:`<span class="eq">mA = 4 + (${fmt(pv, 2)} − ${lrv}) ÷ ${span} × 16 = ${fmt(mA, 2)}</span>`};
+  return {input:true, unit:'mA', q:`ترانسميتر ${what} مداه <span class="eq">${lrv} … ${urv} ${u}</span>. القيمة الحقيقية <b class="eq">${fmt(pv, 2)} ${u}</b>. كم mA يُفترض أن يكون الخرج؟`, check:v => Math.abs(v - mA) <= 0.06, ans:fmt(mA, 2) + ' mA', why:`<span class="eq">mA = 4 + (${fmt(pv, 2)} − ${lrv}) ÷ ${span} × 16 = ${fmt(mA, 2)}</span>`};
 };
 IL.scaleCalc = function(host){
   host.innerHTML = `<div class="wd-ctl"><label style="flex:1 1 30%">LRV <input type="number" class="sc-l" value="0" step="any"></label><label style="flex:1 1 30%">URV <input type="number" class="sc-u" value="10" step="any"></label></div>
@@ -717,10 +717,10 @@ IL.scaleCalc = function(host){
   const q = s => $(s, host);
   function from(which){
     const l = num(q('.sc-l').value), u = num(q('.sc-u').value);
-    if (!isFinite(l) || !isFinite(u) || u === l){ q('.sc-msg').textContent = 'اكتب LRV و URV صح.'; return; }
+    if (!isFinite(l) || !isFinite(u) || u === l){ q('.sc-msg').textContent = 'اكتب LRV وURV صحيحتين.'; return; }
     if (which === 'm'){ const m = num(q('.sc-m').value); if (isFinite(m)) q('.sc-p').value = +fmt(C.mA2pv(m, l, u), 3); }
     else { const p = num(q('.sc-p').value); if (isFinite(p)) q('.sc-m').value = +fmt(C.pv2mA(p, l, u), 3); }
-    const m = num(q('.sc-m').value); q('.sc-msg').innerHTML = `نسبة من الرينج: <b class="eq">${fmt(C.mA2pct(m), 1)} %</b> · جهد على 250Ω: <b class="eq">${fmt(m * 0.25, 2)} V</b> · NAMUR: <b class="eq">${C.namur(m)}</b>`;
+    const m = num(q('.sc-m').value); q('.sc-msg').innerHTML = `نسبة من المدى: <b class="eq">${fmt(C.mA2pct(m), 1)} %</b> · الجهد على 250Ω: <b class="eq">${fmt(m * 0.25, 2)} V</b> · NAMUR: <b class="eq">${C.namur(m)}</b>`;
   }
   host.addEventListener('input', e => from(e.target.classList.contains('sc-p') ? 'p' : 'm'));
   from('m');
@@ -748,16 +748,16 @@ C.diEval = function(wires, sensor, card, detected){
 };
 C.diCheck = function(wires, sensor, card){ // one short, specific message per problem; hl = terminals to pulse
   const a = C.diEval(wires, sensor, card, true), b = C.diEval(wires, sensor, card, false), bad = [], hls = [], B = (t, h) => { bad.push(t); hls.push(h || []); };
-  if (a.short) return {pass:false, bad:['<b>قصر:</b> +24V و 0V متوصلين ببعض.'], hl:['P', 'N']};
-  if (a.reversed) B('<b>الحساس بالعكس:</b> البني على +24V والأزرق على 0V.', ['BN', 'BU']);
-  else if (!a.powered) B('الحساس مش واخد باور: <b>BN</b> على +24V و <b>BU</b> على 0V.', ['BN', 'BU']);
-  if (a.outShort) B(`<b>قصر على الخرج:</b> BK ${sensor === 'PNP' ? 'متوصل على 0V' : 'متوصل على +24V'}.`, ['BK']);
+  if (a.short) return {pass:false, bad:['<b>قصر:</b> +24V و0V موصولان معًا.'], hl:['P', 'N']};
+  if (a.reversed) B('<b>الحساس معكوس:</b> البني على +24V والأزرق على 0V.', ['BN', 'BU']);
+  else if (!a.powered) B('الحساس بلا تغذية: <b>BN</b> على +24V و<b>BU</b> على 0V.', ['BN', 'BU']);
+  if (a.outShort) B(`<b>قصر على الخرج:</b> BK ${sensor === 'PNP' ? 'موصول على 0V' : 'موصول على +24V'}.`, ['BK']);
   const wantCom = card === 'sink' ? 'N' : 'P';
-  if (!a.net.comP && !a.net.comN) B(`طرف <b>COM</b> في الكارت مش متوصل: يروح على <b>${wantCom === 'N' ? '0V' : '+24V'}</b>.`, ['COM']);
-  else if ((wantCom === 'N' && a.net.comP) || (wantCom === 'P' && a.net.comN)) B(`الـ COM على ${a.net.comP ? '+24V' : '0V'} والمفروض <b>${wantCom === 'N' ? '0V' : '+24V'}</b>.`, ['COM']);
-  if (a.net.i0P || a.net.i0N) B('<b>I0.0</b> على الباور مباشرة: لازم ياخد من <b>BK</b>.', ['I0']);
-  else if (!a.net.bkOnI0) B('السلك <b>BK</b> مش رايح على <b>I0.0</b>.', ['BK', 'I0']);
-  if (!bad.length && !(a.led && !b.led)) B(sensor === 'PNP' && card === 'source' ? '<b>PNP</b> مع كارت Sourcing مش هينوّر: PNP مع Sinking بس.' : 'لمبة I0.0 مش بتتبع الحساس.', ['I0']);
+  if (!a.net.comP && !a.net.comN) B(`طرف <b>COM</b> في الكارت غير موصول: يذهب إلى <b>${wantCom === 'N' ? '0V' : '+24V'}</b>.`, ['COM']);
+  else if ((wantCom === 'N' && a.net.comP) || (wantCom === 'P' && a.net.comN)) B(`الـ COM على ${a.net.comP ? '+24V' : '0V'} والمفترض <b>${wantCom === 'N' ? '0V' : '+24V'}</b>.`, ['COM']);
+  if (a.net.i0P || a.net.i0N) B('<b>I0.0</b> على التغذية مباشرةً: يجب أن يأخذ من <b>BK</b>.', ['I0']);
+  else if (!a.net.bkOnI0) B('السلك <b>BK</b> لا يذهب إلى <b>I0.0</b>.', ['BK', 'I0']);
+  if (!bad.length && !(a.led && !b.led)) B(sensor === 'PNP' && card === 'source' ? '<b>PNP</b> مع كارت Sourcing لن يضيء: PNP مع Sinking فقط.' : 'مصباح I0.0 لا يتبع الحساس.', ['I0']);
   return {pass:!bad.length, bad, hl:hls[0] || [], on:a, off:b};
 };
 IL.diBench = function(host, opt){
@@ -778,10 +778,10 @@ IL.diBench = function(host, opt){
    <g class="di-w"></g><g class="di-t"></g>
   </svg></div>
   <div class="bn-tools"><button type="button" class="btn" data-b="undo">تراجع</button><button type="button" class="btn" data-b="clr">امسح الكل</button><button type="button" class="btn pri" data-b="chk">اختبر التوصيل</button></div>
-  <p class="msg di-msg" aria-live="polite">دوس على طرف، وبعدين على الطرف التاني عشان تحط سلك. دوس على السلك عشان تشيله.</p>
-  <div class="wd-ctl"><label>المسافة بين الحديدة ووش الحساس: <b class="di-dv"></b><input type="range" class="di-d" min="0" max="20" step="0.5" value="14" aria-label="المسافة بالمللي"></label>
+  <p class="msg di-msg" aria-live="polite">اضغط على طرف، ثم على الطرف الآخر لتضع سلكًا. اضغط على السلك لتزيله.</p>
+  <div class="wd-ctl"><label>المسافة بين القطعة المعدنية ووجه الحساس: <b class="di-dv"></b><input type="range" class="di-d" min="0" max="20" step="0.5" value="14" aria-label="المسافة بالمليمتر"></label>
    <label style="flex:1 1 100%">الخامة: <select class="inp di-mat">${Object.keys(C.MAT).map(k => `<option value="${k}">${C.MAT[k][1]}</option>`).join('')}</select></label></div>
-  <div class="read sm"><div><span>مسافة الإحساس Sn الفعلية</span><b class="di-sn"></b></div><div><span>الحساس شايف؟</span><b class="di-det"></b></div><div><span>جهد السلك الأسود BK</span><b class="di-vbk"></b></div><div><span>لمبة الدخل I0.0</span><b class="di-l"></b></div></div>
+  <div class="read sm"><div><span>مسافة الإحساس Sn الفعلية</span><b class="di-sn"></b></div><div><span>هل يرى الحساس؟</span><b class="di-det"></b></div><div><span>جهد السلك الأسود BK</span><b class="di-vbk"></b></div><div><span>مصباح الدخل I0.0</span><b class="di-l"></b></div></div>
   <div class="bn-res di-res" aria-live="polite"></div>`;
   const q = s => $(s, host);
   const msg = (t, c) => { const m = q('.di-msg'); m.className = 'msg di-msg ' + (c || ''); m.innerHTML = t; };
@@ -798,16 +798,16 @@ IL.diBench = function(host, opt){
     q('.di-tgt').innerHTML = `<rect x="${tx - 16}" y="258" width="16" height="46" rx="2" fill="${col}" stroke="#5d6469"/><path d="M${tx - 22} 281H${tx - 16}" stroke="#5d6469" stroke-width="3"/>
       ${snEff() > 0 ? `<path d="M${96 - 3 - snEff() * 4} 252V312" stroke="var(--accent)" stroke-dasharray="4 3" stroke-width="1.4"/><text x="${96 - 3 - snEff() * 4}" y="324" text-anchor="middle" style="font:600 9px var(--font-mono)" class="w-ac">Sn</text>` : ''}`;
     /* wires */
-    q('.di-w').innerHTML = S.wires.map((w, i) => { const a = T[w[0]], b = T[w[1]], c = COL[w[0]] || COL[w[1]] || (w.includes('COM') ? '#7a3fb0' : '#444'); const my = Math.max(a[1], b[1]) + 30; const d = `M${a[0]} ${a[1]}C${a[0]} ${my} ${b[0]} ${my} ${b[0]} ${b[1]}`; return `<g class="bw" data-w="${i}"><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${c}"/><path class="bw-hit" d="${d}" tabindex="0" role="button" aria-label="شيل السلك من ${a[2]} لـ ${b[2]}"/></g>`; }).join('');
+    q('.di-w').innerHTML = S.wires.map((w, i) => { const a = T[w[0]], b = T[w[1]], c = COL[w[0]] || COL[w[1]] || (w.includes('COM') ? '#7a3fb0' : '#444'); const my = Math.max(a[1], b[1]) + 30; const d = `M${a[0]} ${a[1]}C${a[0]} ${my} ${b[0]} ${my} ${b[0]} ${b[1]}`; return `<g class="bw" data-w="${i}"><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${c}"/><path class="bw-hit" d="${d}" tabindex="0" role="button" aria-label="أزل السلك من ${a[2]} إلى ${b[2]}"/></g>`; }).join('');
     q('.di-t').innerHTML = Object.keys(T).map(k => { const [x, y, lab] = T[k]; const pend = S.pend === k; return `<g class="bt${pend ? ' pend' : ''}"><circle class="bt-s" cx="${x}" cy="${y}" r="8"/><path class="bt-x" d="M${x - 4} ${y}h8"/><circle class="bt-hit" data-t="${k}" cx="${x}" cy="${y}" r="16" tabindex="0" role="button" aria-label="طرف ${lab}"/><circle class="bt-ring${err && err.t.has(k) ? ' err' : ''}" cx="${x}" cy="${y}" r="12"/><text class="bt-lab" x="${x}" y="${['BN', 'BK', 'BU'].includes(k) ? y + 24 : (k === 'P' || k === 'N') ? y - 14 : y + 4}" ${['COM', 'I0', 'I1'].includes(k) ? `text-anchor="end" dx="-14"` : ''}>${lab}</text></g>`; }).join('');
     q('.di-led0').setAttribute('fill', r.led ? '#3dff6e' : '#24402c'); q('.di-led0').style.filter = r.led ? 'drop-shadow(0 0 5px #3dff6e)' : '';
     q('.di-led1').setAttribute('fill', r.I1 ? '#3dff6e' : '#24402c');
     q('.di-cardt').textContent = e.card === 'sink' ? 'DI · SINK (PNP)' : 'DI · SOURCE (NPN)';
     q('.di-cardk').textContent = e.card === 'sink' ? 'COM → 0V' : 'COM → +24V';
-    q('.di-dv').textContent = fmt(S.d, 1) + ' mm'; q('.di-sn').textContent = snEff() ? fmt(snEff(), 1) + ' mm' : 'مش بيحس بيه';
-    q('.di-det').textContent = S.det ? 'أيوه' : 'لأ'; q('.di-det').classList.toggle('ok', S.det);
+    q('.di-dv').textContent = fmt(S.d, 1) + ' mm'; q('.di-sn').textContent = snEff() ? fmt(snEff(), 1) + ' mm' : 'لا يستشعرها';
+    q('.di-det').textContent = S.det ? 'نعم' : 'لا'; q('.di-det').classList.toggle('ok', S.det);
     const bk = r.out && !r.outShort ? (e.sensor === 'PNP' ? '24 V' : '0 V') : (r.powered ? 'مفتوح (OFF)' : '—');
-    q('.di-vbk').textContent = bk; q('.di-l').textContent = r.led ? 'منوّرة' : 'طافية'; q('.di-l').classList.toggle('ok', r.led);
+    q('.di-vbk').textContent = bk; q('.di-l').textContent = r.led ? 'مضيء' : 'مطفأ'; q('.di-l').classList.toggle('ok', r.led);
     $$('[data-ex]', host).forEach((b, i) => { b.setAttribute('aria-pressed', String(i === S.ex)); b.classList.toggle('done', IL.has(L, opt.exercises[i].key)); });
     q('.di-task').innerHTML = e.task;
     nhUpdate();
@@ -822,24 +822,24 @@ IL.diBench = function(host, opt){
     nhCtl.set(NH.net({sol, wires:S.wires, lab:k => T[k] ? T[k][2] : k, idea:p => NH.S.idea[p[2]], btn:q('[data-b=chk]').textContent.trim()}));
   }
   function tapT(k){
-    if (!S.pend){ S.pend = k; msg(`اخترت <b>${T[k][2]}</b>. دوس على الطرف التاني.`); draw(); return; }
-    if (S.pend === k){ S.pend = null; msg('اتلغى.'); draw(); return; }
+    if (!S.pend){ S.pend = k; msg(`اخترت <b>${T[k][2]}</b>. اضغط على الطرف الآخر.`); draw(); return; }
+    if (S.pend === k){ S.pend = null; msg('أُلغي.'); draw(); return; }
     const w = [S.pend, k]; S.pend = null;
-    if (S.wires.some(x => (x[0] === w[0] && x[1] === w[1]) || (x[0] === w[1] && x[1] === w[0]))){ msg('السلك ده موجود.'); draw(); return; }
-    S.wires.push(w); save(); q('.di-res').innerHTML = ''; msg(`سلك من <b>${T[w[0]][2]}</b> لـ <b>${T[w[1]][2]}</b>. كمّل أو دوس "اختبر التوصيل".`); draw();
+    if (S.wires.some(x => (x[0] === w[0] && x[1] === w[1]) || (x[0] === w[1] && x[1] === w[0]))){ msg('هذا السلك موجود.'); draw(); return; }
+    S.wires.push(w); save(); q('.di-res').innerHTML = ''; msg(`سلك من <b>${T[w[0]][2]}</b> إلى <b>${T[w[1]][2]}</b>. تابع أو اضغط "اختبر التوصيل".`); draw();
   }
   let err = null;
   function pulse(hl){ err = hl && hl.length ? {t:new Set(hl), until:Date.now() + 3000} : null; draw(); if (err) setTimeout(() => { if (err && err.until <= Date.now()){ err = null; draw(); } }, 3100); }
   function check(){
     const e = ex(), res = C.diCheck(S.wires, e.sensor, e.card);
     if (res.pass){
-      q('.di-res').innerHTML = `<div class="bn-ok"><b>تمام! التوصيل صح.</b> ${e.ok} قرّب الحديدة وشوف I0.0.</div>`;
+      q('.di-res').innerHTML = `<div class="bn-ok"><b>أحسنت! التوصيل صحيح.</b> ${e.ok} قرّب القطعة المعدنية وراقب I0.0.</div>`;
       IL.mark(L, e.key); draw();
     } else { q('.di-res').innerHTML = `<div class="bn-bad"><b>✗</b> ${res.bad[0]}</div>`; pulse(res.hl); }
     return res;
   }
   onAct(host, '[data-t]', t => tapT(t.dataset.t));
-  onAct(host, '[data-w]', t => { const i = +t.closest('[data-w]').dataset.w; S.wires.splice(i, 1); save(); msg('اتشال السلك.'); draw(); });
+  onAct(host, '[data-w]', t => { const i = +t.closest('[data-w]').dataset.w; S.wires.splice(i, 1); save(); msg('أُزيل السلك.'); draw(); });
   onAct(host, '[data-b]', b => { const k = b.dataset.b; if (k === 'undo'){ S.wires.pop(); save(); draw(); } else if (k === 'clr'){ S.wires = []; S.pend = null; save(); q('.di-res').innerHTML = ''; draw(); } else check(); });
   onAct(host, '[data-ex]', b => { S.ex = +b.dataset.ex; S.pend = null; load(); q('.di-res').innerHTML = ''; draw(); });
   q('.di-d').addEventListener('input', e => { S.d = +e.target.value; detect(); draw(); });
@@ -860,7 +860,7 @@ IL.scopeSVG = function(lead, cycles, withZ){
   const W = 340, H = withZ ? 130 : 96, X0 = 30, X1 = 332, n = 400; cycles = cycles || 3;
   const tr = (fn, y0) => { let d = '', prev = null; for (let i = 0; i <= n; i++){ const x = X0 + (X1 - X0) * i / n, v = fn(i / n * cycles); const y = y0 - v * 22; if (prev !== null && prev !== y) d += `L${x.toFixed(1)} ${prev}`; d += (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y; prev = y; } return d; };
   const A = t => C.encAB(lead === 'A' ? t + 0.1 : -t + 0.1).A, B = t => C.encAB(lead === 'A' ? t + 0.1 : -t + 0.1).B;
-  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="شاشة سكوب عليها القناة A و B"><rect x="${X0 - 4}" y="2" width="${X1 - X0 + 8}" height="${H - 4}" rx="6" fill="#08130e"/>`;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="شاشة سكوب عليها القناتان A وB"><rect x="${X0 - 4}" y="2" width="${X1 - X0 + 8}" height="${H - 4}" rx="6" fill="#08130e"/>`;
   s += `<path d="${tr(A, 40)}" fill="none" stroke="#ffd23f" stroke-width="2.4"/><path d="${tr(B, 84)}" fill="none" stroke="#3fd0ff" stroke-width="2.4"/>`;
   s += `<text x="${X0 - 8}" y="34" text-anchor="end" style="font:700 11px var(--font-mono);fill:#ffd23f">A</text><text x="${X0 - 8}" y="78" text-anchor="end" style="font:700 11px var(--font-mono);fill:#3fd0ff">B</text>`;
   s += `<text x="${X1}" y="${H - 6}" text-anchor="end" style="font:600 9px var(--font-mono);fill:#7aa08e">time →</text></svg>`;
@@ -872,7 +872,7 @@ IL.encoder = function(host, opt){
   const P = 360 / N;
   let slots = '', zs = sector(110, 110, 52, 64, 360 - P / 4, 360);
   for (let k = 0; k < N; k++) slots += sector(110, 110, 76, 96, k * P - P / 2, k * P);
-  host.innerHTML = `<div class="sim-grid two-col"><div class="wd-art"><svg viewBox="0 -16 360 246" role="img" aria-label="قرص الإنكودر بيلف، ومعاه حساسات A و B و Z">
+  host.innerHTML = `<div class="sim-grid two-col"><div class="wd-art"><svg viewBox="0 -16 360 246" role="img" aria-label="قرص الإنكودر يدور، ومعه حساسات A وB وZ">
    <defs><radialGradient id="${g}l" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff6c0"/><stop offset="1" stop-color="#ffd23f" stop-opacity=".2"/></radialGradient><linearGradient id="${g}d" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5b656c"/><stop offset=".5" stop-color="#9aa4ac"/><stop offset="1" stop-color="#4a535a"/></linearGradient></defs>
    <circle cx="110" cy="110" r="100" fill="url(#${g}l)"/>
    <g class="en-disc"><path fill-rule="evenodd" d="M110 10a100 100 0 1 0 .01 0Z ${slots} ${zs}" fill="url(#${g}d)" stroke="#2a3035" stroke-width="1"/><circle cx="110" cy="110" r="22" fill="#2a3035"/><circle cx="110" cy="110" r="8" fill="#c3cad0"/><path d="M110 102V96" stroke="#c3cad0" stroke-width="3"/></g>
@@ -888,14 +888,14 @@ IL.encoder = function(host, opt){
    <text x="242" y="198" style="font:600 7.5px var(--font-mono);fill:#5f6d75">PPR = ${N} (demo disc)</text>
   </svg></div>
   <div class="mm-side">
-   <div class="wd-art"><svg class="en-scope" viewBox="0 0 360 150" role="img" aria-label="سكوب: القنوات A و B و Z مع الوقت"></svg></div>
+   <div class="wd-art"><svg class="en-scope" viewBox="0 0 360 150" role="img" aria-label="سكوب: القنوات A وB وZ مع الزمن"></svg></div>
    <div class="tabs" role="group" aria-label="طريقة العدّ">${[1, 2, 4].map(m => `<button type="button" class="btn" data-m="${m}" aria-pressed="${m === 4}">x${m}</button>`).join('')}</div>
   </div></div>
   <div class="wd-ctl"><label>السرعة: <b class="en-sv"></b><input type="range" class="en-s" min="0" max="30" step="1" value="12" aria-label="السرعة rpm"></label>
    <button type="button" class="btn" data-d="1" aria-pressed="true">↻ مع عقارب الساعة CW</button><button type="button" class="btn" data-d="-1" aria-pressed="false">↺ عكس عقارب الساعة CCW</button></div>
   <div class="wd-ctl"><button type="button" class="btn en-run">إيقاف ⏸</button><button type="button" class="btn" data-st="-1">خطوة ربع نبضة ◀</button><button type="button" class="btn" data-st="1">▶ خطوة ربع نبضة</button><button type="button" class="btn en-rst">صفّر العدّاد</button></div>
   <p class="msg en-msg" aria-live="polite"></p>
-  <p class="chal en-chal">التحدّي: لِف الإنكودر <b>في الاتجاهين</b>، وجرّب العدّ <b>x1</b> و<b>x4</b> وشوف العدّاد بيعدّ أسرع قد إيه في نفس اللفة.</p>`;
+  <p class="chal en-chal">التحدّي: أدِر الإنكودر <b>في الاتجاهين</b>، وجرّب العدّ <b>x1</b> و<b>x4</b> ولاحظ كم يعدّ العدّاد أسرع في اللفة نفسها.</p>`;
   const q = s => $(s, host), fin = chal(host, '.en-chal', L, 'enc');
   const heads = () => { /* fixed read heads: A at 0°, B at 2.25 pitch, Z on the inner track at 0° */
     const s = C.encAB(S.p), z = C.encZ(S.p, N), pos = (r, a) => { const t = (a - 90) * Math.PI / 180; return [110 + r * Math.cos(t), 110 + r * Math.sin(t)]; };
@@ -926,7 +926,7 @@ IL.encoder = function(host, opt){
     $$('[data-m]', host).forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.m === S.m)));
     $$('[data-d]', host).forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.d === S.dir)));
     const ab = C.encAB(S.p), f = C.encFreq(N, S.run ? S.rpm : 0);
-    q('.en-msg').innerHTML = `A = <b>${ab.A}</b> · B = <b>${ab.B}</b> · ${S.dir > 0 ? '<b>A سابقة B</b> بربع نبضة (90°) ⇐ <b>CW</b>' : '<b>B سابقة A</b> ⇐ <b>CCW</b> والعدّاد بينقص'} · تردد A = <span class="eq">${N} × ${S.run ? S.rpm : 0} ÷ 60 = ${fmt(f, 1)} Hz</span> · كل نبضة = <b>${S.m}</b> عدّة في x${S.m}.`;
+    q('.en-msg').innerHTML = `A = <b>${ab.A}</b> · B = <b>${ab.B}</b> · ${S.dir > 0 ? '<b>A تسبق B</b> بربع نبضة (90°) ⇐ <b>CW</b>' : '<b>B تسبق A</b> ⇐ <b>CCW</b> والعدّاد ينقص'} · تردد A = <span class="eq">${N} × ${S.run ? S.rpm : 0} ÷ 60 = ${fmt(f, 1)} Hz</span> · كل نبضة = <b>${S.m}</b> عدّة في x${S.m}.`;
     if (S.seen.cw && S.seen.ccw && S.seen.x4 && S.seen.x1) fin();
   }
   function move(dp){ const p0 = S.p; S.p += dp; if (dp) S.lastDir = Math.sign(dp); if (dp > 0) S.seen.cw = true; if (dp < 0) S.seen.ccw = true; S.seen['x' + S.m] = true; return p0; }
@@ -957,26 +957,26 @@ IL.encGen = function(){
   const t = Math.floor(Math.random() * 5);
   if (t === 0){
     const lead = Math.random() < 0.5 ? 'A' : 'B';
-    return {q:`الإنكودر ده متظبط إن <b>A سابقة B = CW</b>. السكوب بيبيّن:${IL.scopeSVG(lead, 3)}العمود بيلف في أنهي اتجاه؟`, o:['CW (مع عقارب الساعة)', 'CCW (عكس عقارب الساعة)', 'واقف', 'مش هينفع نعرف'], a:lead === 'A' ? 0 : 1,
-      why:lead === 'A' ? 'A بتطلع الأول وبعدها B بربع نبضة ⇐ A سابقة ⇐ CW.' : 'B بتطلع الأول وبعدها A ⇐ B سابقة ⇐ CCW.'};
+    return {q:`هذا الإنكودر مضبوط على أن <b>A تسبق B = CW</b>. السكوب يبيّن:${IL.scopeSVG(lead, 3)}في أي اتجاه يدور العمود؟`, o:['CW (مع عقارب الساعة)', 'CCW (عكس عقارب الساعة)', 'متوقف', 'لا يمكن المعرفة'], a:lead === 'A' ? 0 : 1,
+      why:lead === 'A' ? 'تظهر A أولًا ثم B بعد ربع نبضة ⇐ A تسبق ⇐ CW.' : 'تظهر B أولًا ثم A ⇐ B تسبق ⇐ CCW.'};
   }
   if (t === 1){
     const ppr = pick([100, 360, 500, 1000, 1024, 2048, 2500]), rpm = pick([300, 600, 1000, 1450, 1500, 3000]), f = C.encFreq(ppr, rpm) / 1000;
-    return {input:true, unit:'kHz', q:`إنكودر <b class="eq">${ppr} PPR</b> على موتور بيلف <b class="eq">${rpm} rpm</b>. تردد القناة A كام kHz؟`, check:v => Math.abs(v - f) <= Math.max(0.01, f * 0.02), ans:fmt(f, 2) + ' kHz', why:`<span class="eq">f = PPR × rpm ÷ 60 = ${ppr} × ${rpm} ÷ 60 = ${fmt(f * 1000, 0)} Hz</span>`};
+    return {input:true, unit:'kHz', q:`إنكودر <b class="eq">${ppr} PPR</b> على محرك يدور <b class="eq">${rpm} rpm</b>. كم kHz تردد القناة A؟`, check:v => Math.abs(v - f) <= Math.max(0.01, f * 0.02), ans:fmt(f, 2) + ' kHz', why:`<span class="eq">f = PPR × rpm ÷ 60 = ${ppr} × ${rpm} ÷ 60 = ${fmt(f * 1000, 0)} Hz</span>`};
   }
   if (t === 2){
     const ppr = pick([500, 1000, 1024, 2048]), m = pick([1, 2, 4]), rev = pick([2, 3, 5, 10, 2.5, 0.5]), cnt = Math.round(ppr * m * rev);
-    return {input:true, unit:'لفة', q:`إنكودر <b class="eq">${ppr} PPR</b> والعدّاد في الـ PLC على <b>x${m}</b>. العدّاد زاد <b class="eq">${cnt}</b> عدّة. العمود لف كام لفة؟`, check:v => Math.abs(v - rev) <= 0.02, ans:String(rev), why:`<span class="eq">لفات = ${cnt} ÷ (${ppr} × ${m}) = ${rev}</span>`};
+    return {input:true, unit:'لفة', q:`إنكودر <b class="eq">${ppr} PPR</b> والعدّاد في الـ PLC على <b>x${m}</b>. زاد العدّاد <b class="eq">${cnt}</b> عدّة. كم لفة دار العمود؟`, check:v => Math.abs(v - rev) <= 0.02, ans:String(rev), why:`<span class="eq">لفات = ${cnt} ÷ (${ppr} × ${m}) = ${rev}</span>`};
   }
   if (t === 3){
     const ppr = pick([500, 1000, 1024, 2000]), rpm = pick([150, 300, 600, 900, 1200, 1500]), f = C.encFreq(ppr, rpm);
-    return {input:true, unit:'rpm', q:`إنكودر <b class="eq">${ppr} PPR</b>، والـ High Speed Counter قاس تردد <b class="eq">${fmt(f, 0)} Hz</b> على القناة A. السرعة كام rpm؟`, check:v => Math.abs(v - rpm) <= rpm * 0.01, ans:rpm + ' rpm', why:`<span class="eq">rpm = f ÷ PPR × 60 = ${fmt(f, 0)} ÷ ${ppr} × 60 = ${rpm}</span>`};
+    return {input:true, unit:'rpm', q:`إنكودر <b class="eq">${ppr} PPR</b>، وقاس الـ High Speed Counter ترددًا <b class="eq">${fmt(f, 0)} Hz</b> على القناة A. كم rpm السرعة؟`, check:v => Math.abs(v - rpm) <= rpm * 0.01, ans:rpm + ' rpm', why:`<span class="eq">rpm = f ÷ PPR × 60 = ${fmt(f, 0)} ÷ ${ppr} × 60 = ${rpm}</span>`};
   }
   const qs = [
-    {q:'كابل الإنكودر طويل (50 م) وجنب كابلات إنفرتر. أنهي نوع خرج أحسن؟', o:['Line Driver RS-422', 'Open collector NPN', 'TTL عادي 5V', 'HTL أحادي من غير شيلد'], a:0, why:'الإشارة التفاضلية (Differential) بتلغي النويز المشترك على السلكين.'},
-    {q:'إنكودر خرجه <b>Open collector NPN</b> متوصّل على كارت ومش بيطلّع نبضات. ناقص غالبًا:', o:['مقاومة Pull-up للـ +V', 'مقاومة 250Ω توالي في الخط', 'دايود على الخرج', 'مكثف على الباور'], a:0, why:'الأوبن كولكتور بيسحب لـ 0V بس، ومحتاج حاجة ترفع الإشارة لما يفصل.'},
-    {q:'إنكودر <b>HTL Push-Pull</b> بيشتغل على جهد كام عادة؟', o:['⁦10⁠–⁠30V⁩ (زي 24V)', '5V بس (زي الـ TTL)', '230V AC', '⁦1⁠–⁠5V⁩ أنالوج'], a:0, why:'HTL = High Threshold Logic: الخرج بيطلع تقريبًا بجهد الباور.'},
-    {q:'إنكودر 1000 PPR والعدّ x4. أصغر زاوية يقدر يحسّها؟', o:['0.09°', '0.36°', '1°', '0.18°'], a:0, why:'360 ÷ (1000 × 4) = 0.09°.'}
+    {q:'كابل الإنكودر طويل (50 م) وبجانب كابلات انفرتر. أي نوع خرج أفضل؟', o:['Line Driver RS-422', 'Open collector NPN', 'TTL عادي 5V', 'HTL أحادي بدون شيلد'], a:0, why:'الإشارة التفاضلية (Differential) تلغي التشويش المشترك على السلكين.'},
+    {q:'إنكودر خرجه <b>Open collector NPN</b> موصّل على كارت ولا يُخرج نبضات. الناقص غالبًا:', o:['مقاومة Pull-up إلى +V', 'مقاومة 250Ω على التوالي في الخط', 'دايود على الخرج', 'مكثّف على التغذية'], a:0, why:'الأوبن كولكتور يسحب إلى 0V فقط، ويحتاج شيئًا يرفع الإشارة عندما يفصل.'},
+    {q:'على أي جهد يعمل إنكودر <b>HTL Push-Pull</b> عادةً؟', o:['⁦10⁠–⁠30V⁩ (مثل 24V)', '5V فقط (مثل الـ TTL)', '230V AC', '⁦1⁠–⁠5V⁩ أنالوج'], a:0, why:'HTL = High Threshold Logic: يخرج الخرج تقريبًا بجهد التغذية.'},
+    {q:'إنكودر 1000 PPR والعدّ x4. ما أصغر زاوية يستطيع استشعارها؟', o:['0.09°', '0.36°', '1°', '0.18°'], a:0, why:'360 ÷ (1000 × 4) = 0.09°.'}
   ];
   return pick(qs);
 };
@@ -988,9 +988,9 @@ IL.grayDisc = function(host, opt){
   host.innerHTML = `<div class="tabs" role="group" aria-label="نوع الكود"><button type="button" class="btn" data-c="bin" aria-pressed="false">Binary عادي</button><button type="button" class="btn" data-c="gray" aria-pressed="true">Gray code</button></div>
   <div class="sim-grid two-col"><div class="wd-art"><svg class="gd-svg" viewBox="0 0 300 250" role="img" aria-label="قرص إنكودر أبسليوت 4 بت"></svg></div>
   <div class="mm-side"><div class="read gd-read"></div><div class="gd-tr"></div></div></div>
-  <div class="wd-ctl"><button type="button" class="btn" data-s="-1">◀ خطوة لورا</button><button type="button" class="btn" data-s="1">خطوة لقدّام ▶</button><button type="button" class="btn gd-trb" aria-pressed="false">شوف لحظة الانتقال</button></div>
+  <div class="wd-ctl"><button type="button" class="btn" data-s="-1">◀ خطوة للخلف</button><button type="button" class="btn" data-s="1">خطوة للأمام ▶</button><button type="button" class="btn gd-trb" aria-pressed="false">اعرض لحظة الانتقال</button></div>
   <p class="msg gd-msg" aria-live="polite"></p>
-  <p class="chal gd-chal">التحدّي: لِف القرص <b>لفة كاملة</b> (16 خطوة)، وافتح "لحظة الانتقال" على <b>Binary</b> عند خطوة بيتغيّر فيها أكتر من بت (زي 7 ⇐ 8)، وقارنها بالـ Gray.</p>`;
+  <p class="chal gd-chal">التحدّي: أدِر القرص <b>لفة كاملة</b> (16 خطوة)، وافتح "لحظة الانتقال" على <b>Binary</b> عند خطوة يتغيّر فيها أكثر من بت (مثل 7 ⇐ 8)، وقارنها بالـ Gray.</p>`;
   const q = s => $(s, host), fin = chal(host, '.gd-chal', L, 'gray');
   const val = k => S.code === 'gray' ? C.bin2gray(k) : k;
   function disc(){
@@ -1007,7 +1007,7 @@ IL.grayDisc = function(host, opt){
   function ui(){
     disc();
     const b = S.pos, gcode = C.bin2gray(b), cur = val(b);
-    q('.gd-read').innerHTML = `<div><span>المكان (خطوة)</span><b>${b} / ${NP}</b></div><div><span>الزاوية</span><b>${fmt(b * 360 / NP, 1)}°</b></div><div><span>الكود اللي الحساسات قريته</span><b>${C.bits(cur, NB)}</b></div><div><span>${S.code === 'gray' ? 'بعد التحويل لـ Binary' : 'Gray للمقارنة'}</span><b>${S.code === 'gray' ? C.bits(C.gray2bin(cur), NB) + ' = ' + C.gray2bin(cur) : C.bits(gcode, NB)}</b></div>`;
+    q('.gd-read').innerHTML = `<div><span>الموضع (خطوة)</span><b>${b} / ${NP}</b></div><div><span>الزاوية</span><b>${fmt(b * 360 / NP, 1)}°</b></div><div><span>الكود الذي قرأته الحساسات</span><b>${C.bits(cur, NB)}</b></div><div><span>${S.code === 'gray' ? 'بعد التحويل إلى Binary' : 'Gray للمقارنة'}</span><b>${S.code === 'gray' ? C.bits(C.gray2bin(cur), NB) + ' = ' + C.gray2bin(cur) : C.bits(gcode, NB)}</b></div>`;
     $$('[data-c]', host).forEach(x => x.setAttribute('aria-pressed', String(x.dataset.c === S.code)));
     q('.gd-trb').setAttribute('aria-pressed', String(S.tr));
     if (S.tr){
@@ -1015,10 +1015,10 @@ IL.grayDisc = function(host, opt){
       for (let k = 0; k < NB; k++) if ((diff >> k) & 1) bitsCh.push(k);
       const poss = new Set(); for (let m = 0; m < (1 << bitsCh.length); m++){ let v = a; bitsCh.forEach((k, i) => { if ((m >> i) & 1) v ^= 1 << k; }); poss.add(v); }
       const list = Array.from(poss).map(v => { const pos = S.code === 'gray' ? C.gray2bin(v) : v; const ok = pos === b || pos === nx; return `<span class="term" style="${ok ? '' : 'border-color:var(--bad);color:var(--bad)'}">${C.bits(v, NB)} ⇐ ${pos}</span>`; }).join(' ');
-      q('.gd-tr').innerHTML = `<div class="statline ${bitsCh.length > 1 ? 'bad' : 'ok'}"><span>من <b>${b}</b> لـ <b>${nx}</b> بيتغيّر <b>${bitsCh.length}</b> بت. لو الحساسات مش متزامنة بالظبط، القراية اللحظية ممكن تبقى: ${list}</span></div>`;
+      q('.gd-tr').innerHTML = `<div class="statline ${bitsCh.length > 1 ? 'bad' : 'ok'}"><span>من <b>${b}</b> إلى <b>${nx}</b> يتغيّر <b>${bitsCh.length}</b> بت. إذا لم تكن الحساسات متزامنة تمامًا، فقد تكون القراءة اللحظية: ${list}</span></div>`;
       if (S.code === 'bin' && bitsCh.length > 1) S.sawTr = true;
     } else q('.gd-tr').innerHTML = '';
-    q('.gd-msg').innerHTML = S.code === 'gray' ? 'في <b>Gray code</b> بين أي خطوتين جنب بعض <b>بت واحد بس</b> بيتغيّر، فمستحيل تقرا رقم بعيد في لحظة الانتقال.' : 'في <b>Binary العادي</b> ساعات بتتغيّر بتات كتير مرة واحدة (7 = 0111 ⇐ 8 = 1000). افتح "لحظة الانتقال" هناك وشوف.';
+    q('.gd-msg').innerHTML = S.code === 'gray' ? 'في <b>Gray code</b> يتغيّر <b>بت واحد فقط</b> بين أي خطوتين متجاورتين، فيستحيل أن تقرأ رقمًا بعيدًا لحظة الانتقال.' : 'في <b>Binary العادي</b> تتغيّر أحيانًا بتات كثيرة مرة واحدة (7 = 0111 ⇐ 8 = 1000). افتح "لحظة الانتقال" هناك ولاحظ.';
     if (S.steps >= NP && S.sawTr) fin();
   }
   let raf = 0;
@@ -1037,12 +1037,12 @@ IL.caseGame = function(host, cases, opt){
   opt = opt || {};
   const need = opt.need || Math.ceil(cases.length * 0.7);
   const order = shuffle(cases.map((_, i) => i)); let k = 0, ok = 0, ans = 0;
-  host.innerHTML = `<div class="dr-top"><span class="cg-sc" aria-live="polite"></span><span class="bar"><i class="cg-bar"></i></span></div><div class="cg-card dr-card"></div><div class="dr-act"><button type="button" class="btn pri cg-next" hidden>اللي بعده ←</button></div><p class="chal cg-chal">${opt.goal || `حلّ <b>${need}</b> حالات صح على الأقل.`}</p>`;
+  host.innerHTML = `<div class="dr-top"><span class="cg-sc" aria-live="polite"></span><span class="bar"><i class="cg-bar"></i></span></div><div class="cg-card dr-card"></div><div class="dr-act"><button type="button" class="btn pri cg-next" hidden>التالي ←</button></div><p class="chal cg-chal">${opt.goal || `حلّ <b>${need}</b> حالات صحيحة على الأقل.`}</p>`;
   const q = s => $(s, host), fin = chal(host, '.cg-chal', opt.lesson, opt.task), card = q('.cg-card');
-  function score(){ q('.cg-sc').innerHTML = `الحالة <b>${Math.min(k + 1, cases.length)}</b> من ${cases.length} · صح: <b>${ok}</b>`; q('.cg-bar').style.width = (ok / need * 100 > 100 ? 100 : ok / need * 100) + '%'; }
+  function score(){ q('.cg-sc').innerHTML = `الحالة <b>${Math.min(k + 1, cases.length)}</b> من ${cases.length} · الصحيح: <b>${ok}</b>`; q('.cg-bar').style.width = (ok / need * 100 > 100 ? 100 : ok / need * 100) + '%'; }
   function show(){
     const c = cases[order[k]], oi = qzOrder(c.o, c.keep);
-    card.innerHTML = `<h4>${c.t}</h4><div class="dr-q" style="font-weight:500">${c.s}</div>${c.clues && c.clues.length ? `<div class="chips-t">${c.clues.map((cl, i) => `<button type="button" class="btn" data-cl="${i}" aria-expanded="false">افحص: ${cl[0]}</button>`).join('')}</div><div class="cg-clue"></div>` : ''}<p style="margin:4px 0 0;font-weight:600">السبب غالبًا إيه؟</p><div class="qz-a">${oi.map(i => `<button type="button" class="btn qz-o" data-i="${i}">${qzTxt(c.o[i])}</button>`).join('')}</div>${QZ_CF()}<p class="qz-f" aria-live="polite"></p>`;
+    card.innerHTML = `<h4>${c.t}</h4><div class="dr-q" style="font-weight:500">${c.s}</div>${c.clues && c.clues.length ? `<div class="chips-t">${c.clues.map((cl, i) => `<button type="button" class="btn" data-cl="${i}" aria-expanded="false">افحص: ${cl[0]}</button>`).join('')}</div><div class="cg-clue"></div>` : ''}<p style="margin:4px 0 0;font-weight:600">ما السبب غالبًا؟</p><div class="qz-a">${oi.map(i => `<button type="button" class="btn qz-o" data-i="${i}">${qzTxt(c.o[i])}</button>`).join('')}</div>${QZ_CF()}<p class="qz-f" aria-live="polite"></p>`;
     q('.cg-next').hidden = true; ans = 0; score();
   }
   card.addEventListener('click', e => {
@@ -1051,10 +1051,10 @@ IL.caseGame = function(host, cases, opt){
     if (ans) return; const b = pickConfirm(e, card); if (!b) return;
     const c = cases[order[k]], good = +b.dataset.i === c.a; ans = 1; if (good) ok++;
     $$('.qz-o', card).forEach(x => { x.disabled = true; if (+x.dataset.i === c.a) x.classList.add('ok'); else if (x === b) x.classList.add('no'); });
-    const f = $('.qz-f', card); f.className = 'qz-f ' + (good ? 'ok' : 'no'); f.innerHTML = (good ? 'صح. ' : 'مش ده. ') + c.why;
+    const f = $('.qz-f', card); f.className = 'qz-f ' + (good ? 'ok' : 'no'); f.innerHTML = (good ? 'صحيح. ' : 'ليس هذا. ') + c.why;
     score(); if (ok >= need) fin();
     const nx = q('.cg-next'); nx.hidden = false;
-    nx.textContent = k + 1 < cases.length ? 'الحالة اللي بعدها ←' : (ok >= need ? 'العب تاني' : 'جرّب تاني من الأول');
+    nx.textContent = k + 1 < cases.length ? 'الحالة التالية ←' : (ok >= need ? 'العب مرة أخرى' : 'ابدأ من جديد');
   });
   q('.cg-next').addEventListener('click', () => { if (k + 1 < cases.length) k++; else { k = 0; ok = 0; order.sort(() => Math.random() - 0.5); } show(); });
   show();
@@ -1070,31 +1070,31 @@ IL.scopeTr = function(traces, note){
 };
 const sq = (t, ph) => C.encAB(t * 4 + ph).A;
 IL.ENC_CASES = [
-  {t:'العدّاد بيزيد والمكنة واقفة', s:'مكنة تغليف: لما الإنفرتر بتاع السير يشتغل، عدّاد الإنكودر بتاع مكنة القص بيزيد عدّات لوحده حتى والمكنة دي واقفة. ولما الإنفرتر يقف، العدّاد يثبت.', clues:[['السكوب على A', IL.scopeTr([{lab:'A', col:'#ffd23f', fn:t => ((t * 37) % 1 < 0.02 ? 0.8 : 0) }], 'VFD ON')], ['مسار الكابل', 'كابل الإنكودر ماشي في نفس الصينية مع كابل الموتور من الإنفرتر، والشيلد مقصوص من الناحيتين ومش متأرّض.']],
-    o:['نويز والشيلد مش متأرّض', 'الإنكودر بايظ', 'A و B معكوسين', 'الـ PPR غلط في الـ PLC'], a:0, why:'إشارات الـ PWM من الإنفرتر بتركب على كابل الإنكودر كنبضات زيادة. افصل الكابلات، أرّض الشيلد صح (360° في الكلامب)، واستخدم Line Driver تفاضلي.'},
-  {t:'العدّ بينقص والسير ماشي لقدّام', s:'بعد تغيير إنكودر بإنكودر جديد، العدّاد بقى بينقص والسير ماشي في اتجاهه العادي، والمكان في الـ HMI بقى بالسالب.', clues:[['السكوب', IL.scopeTr([{lab:'A', col:'#ffd23f', fn:t => sq(t, 0.85)}, {lab:'B', col:'#3fd0ff', fn:t => sq(t, 0.1)}], 'FWD')]],
-    o:['A و B متبدّلين', 'نويز من الإنفرتر', 'القناة Z مش واصلة', 'الـ PPR أكبر من القديم'], a:0, why:'B سابقة A ⇐ الكارت فاهم إنه CCW. بدّل سلكين A و B، أو اعكس الاتجاه من باراميتر الكارت.'},
-  {t:'العدّاد بيعدّ نص العدد وبيرجع لما المكنة تهتز', s:'المكان بيطلع نص المسافة الحقيقية تقريبًا، ولما العمود بيهتز وهو واقف العدّاد بيزيد بس عمره ما ينقص.', clues:[['السكوب', IL.scopeTr([{lab:'A', col:'#ffd23f', fn:t => sq(t, 0.1)}, {lab:'B', col:'#3fd0ff', fn:t => 0}])], ['قياس بالأفوميتر', 'جهد القناة B على ترمنال الكارت = 0V ثابت، وعلى أطراف الإنكودر نفسه بيتغيّر.']],
-    o:['القناة B مقطوعة', 'إنكودر PPR أكبر', 'نويز من الإنفرتر', 'الباور ضعيف'], a:0, why:'من غير B الكارت مش عارف الاتجاه وبيعدّ حافّات A بس. اربط الترمنال أو غيّر السلك المقطوع.'},
-  {t:'المقاسات مظبوطة في البطيء وبتبوظ في السريع', s:'مكنة قص: لما السرعة 20 م/دقيقة الألواح مظبوطة، ولما ترفع لـ 80 م/دقيقة الألواح تطلع أطول وكل مرة بفرق مختلف.', clues:[['الحسبة', 'الإنكودر 2048 PPR والعمود بيوصل 2900 rpm ⇐ <span class="eq">2048 × 2900 ÷ 60 ≈ 99 kHz</span>. والـ High Speed Counter في الـ PLC أقصاه <b>30 kHz</b>.']],
-    o:['الكارت بيضيّع نبضات', 'نويز من الإنفرتر', 'A و B معكوسين', 'العجلة بتزحلق دايمًا'], a:0, why:'الكارت مش لاحق فبيضيّع نبضات وبالتالي اللوح بيطلع أطول. استخدم كارت أسرع أو إنكودر PPR أقل.'},
-  {t:'المكان بيزحف شوية بشوية', s:'طاولة دوّارة: بعد كام يوم الوقفة بتبعد عن مكانها بالتدريج، ومفيش نويز وكل حاجة في السكوب نضيفة.', clues:[['الفحص الميكانيكي', 'عملت علامة بالقلم على العمود وعلى الكابلنج، وبعد شوية شغل العلامتين بعدوا عن بعض.']],
-    o:['الكابلنج مرتخي', 'الإنكودر TTL مش HTL', 'الباور 24V ضعيف', 'الـ PLC بطيء'], a:0, why:'العمود بيلف والإنكودر بيلف أقل منه شوية. اربط مسمار الكابلنج على السطح المسطّح للعمود (أو غيّر الكابلنج).'},
-  {t:'رولمان بلي الإنكودر بيبوظ كل شهرين', s:'إنكودر بعمود مفرّغ (Hollow shaft) على موتور. كل شهرين البلي يصفّر ويبوظ.', clues:[['التركيب', 'جسم الإنكودر مربوط بـ 4 مسامير على شاسيه الموتور ربط جامد، وعمود الموتور فيه "طوحان" (Runout) بسيط.']],
-    o:['تركيب جامد من غير Torque arm', 'نويز من الموتور على البلي', 'الـ PPR صغير', 'الكابل طويل'], a:0, why:'الـ Hollow shaft لازم يتربط من ناحية العمود بس، وجسمه يتمسك بذراع عزم مرن يسمح بالطوحان. أي ربط جامد بيحمّل البلي ويكسره.'},
-  {t:'بعد قطع الكهربا الونش مش عارف هو فين', s:'كل مرة الكهربا تقطع وترجع، لازم الونش يروح للبداية (Homing) عشان يعرف مكانه، والمصنع زهق.', clues:[['الإنكودر', 'إنكودر إنكريمنتال 1000 PPR.']],
-    o:['محتاجين أبسليوت Multi-turn', 'الإنكودر بايظ ولازم يتغيّر', 'الباور ضعيف', 'محتاجين PPR أعلى'], a:0, why:'الإنكريمنتال مالوش ذاكرة: بعد الباور العدّاد بيبدأ من صفر. الأبسليوت المالتي تيرن بيعرف مكانه وعدد لفاته حتى بعد قطع الكهربا.'},
-  {t:'كابل 80 متر والعدّ مش مظبوط', s:'إنكودر TTL 5V خرج عادي (من غير A̅ B̅) والكابل 80 متر لحد اللوحة. العدّ بيضيع أحيانًا والإشارة ضعيفة.', clues:[['السكوب عند الكارت', IL.scopeTr([{lab:'A', col:'#ffd23f', fn:t => { const v = sq(t, 0.1); return v * 0.55 + Math.sin(t * 300) * 0.06; }}], '2V/div')]],
-    o:['استخدم Line Driver أو HTL', 'الإنكودر بيلف بالعكس', 'الكابلنج مرتخي على العمود', 'القناة Z مش واصلة'], a:0, why:'جهد 5V بيقع على الكابل الطويل ويلقط نويز. الـ RS-422 التفاضلي بيمشي مسافات أطول بكتير، أو HTL 24V مع كارت مناسب.'}
+  {t:'العدّاد يزيد والماكينة متوقفة', s:'ماكينة تغليف: عندما يعمل انفرتر السير، يزيد عدّاد إنكودر ماكينة القصّ عدّات وحده رغم أنها متوقفة. وعندما يتوقف الانفرتر، يثبت العدّاد.', clues:[['السكوب على A', IL.scopeTr([{lab:'A', col:'#ffd23f', fn:t => ((t * 37) % 1 < 0.02 ? 0.8 : 0) }], 'VFD ON')], ['مسار الكابل', 'كابل الإنكودر يمرّ في الصينية نفسها مع كابل المحرك الخارج من الانفرتر، والشيلد مقصوص من الطرفين وغير مؤرَّض.']],
+    o:['تشويش والشيلد غير مؤرَّض', 'الإنكودر تالف', 'A وB معكوستان', 'الـ PPR خطأ في الـ PLC'], a:0, why:'إشارات الـ PWM من الانفرتر تركب على كابل الإنكودر كنبضات زائدة. افصل الكابلات، وأرّض الشيلد تأريضًا صحيحًا (360° في الكلامب)، واستخدم Line Driver تفاضليًا.'},
+  {t:'العدّ ينقص والسير يتحرك للأمام', s:'بعد استبدال الإنكودر بآخر جديد، أصبح العدّاد ينقص والسير يتحرك في اتجاهه العادي، وأصبح الموضع في الـ HMI سالبًا.', clues:[['السكوب', IL.scopeTr([{lab:'A', col:'#ffd23f', fn:t => sq(t, 0.85)}, {lab:'B', col:'#3fd0ff', fn:t => sq(t, 0.1)}], 'FWD')]],
+    o:['A وB متبادلتان', 'تشويش من الانفرتر', 'القناة Z غير موصولة', 'الـ PPR أكبر من القديم'], a:0, why:'B تسبق A ⇐ يفهم الكارت أنه CCW. بدّل سلكي A وB، أو اعكس الاتجاه من باراميتر الكارت.'},
+  {t:'العدّاد يعدّ نصف العدد ويعود عندما تهتز الماكينة', s:'يخرج الموضع نحو نصف المسافة الحقيقية، وعندما يهتز العمود وهو متوقف يزيد العدّاد ولا ينقص أبدًا.', clues:[['السكوب', IL.scopeTr([{lab:'A', col:'#ffd23f', fn:t => sq(t, 0.1)}, {lab:'B', col:'#3fd0ff', fn:t => 0}])], ['قياس بالأفوميتر', 'جهد القناة B على ترمنال الكارت = 0V ثابت، وعلى أطراف الإنكودر نفسه يتغيّر.']],
+    o:['القناة B مقطوعة', 'إنكودر PPR أكبر', 'تشويش من الانفرتر', 'التغذية ضعيفة'], a:0, why:'بدون B لا يعرف الكارت الاتجاه ويعدّ حواف A فقط. اربط الترمنال أو استبدل السلك المقطوع.'},
+  {t:'المقاسات دقيقة في البطء وتختلّ في السرعة', s:'ماكينة قصّ: عند سرعة 20 م/دقيقة تخرج الألواح دقيقة، وعند رفعها إلى 80 م/دقيقة تخرج الألواح أطول وبفرق مختلف كل مرة.', clues:[['الحساب', 'الإنكودر 2048 PPR والعمود يصل إلى 2900 rpm ⇐ <span class="eq">2048 × 2900 ÷ 60 ≈ 99 kHz</span>. وأقصى ما يتحمّله الـ High Speed Counter في الـ PLC <b>30 kHz</b>.']],
+    o:['الكارت يُضيع نبضات', 'تشويش من الانفرتر', 'A وB معكوستان', 'العجلة تنزلق دائمًا'], a:0, why:'الكارت لا يلحق فيُضيع نبضات، فيخرج اللوح أطول. استخدم كارتًا أسرع أو إنكودر PPR أقل.'},
+  {t:'الموضع يزحف تدريجيًا', s:'طاولة دوّارة: بعد أيام تبتعد نقطة التوقف عن مكانها تدريجيًا، ولا يوجد تشويش وكل شيء على السكوب نظيف.', clues:[['الفحص الميكانيكي', 'رسمت علامة بالقلم على العمود والكابلنج، وبعد فترة عمل ابتعدت العلامتان عن بعضهما.']],
+    o:['الكابلنج مرتخٍ', 'الإنكودر TTL لا HTL', 'تغذية الـ 24V ضعيفة', 'الـ PLC بطيء'], a:0, why:'العمود يدور والإنكودر يدور أقل منه قليلًا. اربط مسمار الكابلنج على السطح المستوي للعمود (أو استبدل الكابلنج).'},
+  {t:'رولمان بلي الإنكودر يتلف كل شهرين', s:'إنكودر بعمود مفرّغ (Hollow shaft) على محرك. كل شهرين يصفّر رولمان البلي ويتلف.', clues:[['التركيب', 'جسم الإنكودر مربوط بـ 4 مسامير على شاسيه المحرك ربطًا صلبًا، وفي عمود المحرك "ترنّح" (Runout) بسيط.']],
+    o:['تركيب صلب بدون Torque arm', 'تشويش من المحرك على رولمان البلي', 'الـ PPR صغير', 'الكابل طويل'], a:0, why:'الـ Hollow shaft يجب أن يُربط من جهة العمود فقط، ويُمسك جسمه بذراع عزم مرن يسمح بالترنّح. وأي ربط صلب يحمّل رولمان البلي ويكسره.'},
+  {t:'بعد انقطاع الكهرباء لا يعرف الونش موضعه', s:'في كل مرة تنقطع الكهرباء وتعود، يجب أن يذهب الونش إلى البداية (Homing) ليعرف موضعه، وقد ضاق المصنع بذلك.', clues:[['الإنكودر', 'إنكودر إنكريمنتال 1000 PPR.']],
+    o:['نحتاج أبسليوت Multi-turn', 'الإنكودر تالف ويجب استبداله', 'التغذية ضعيفة', 'نحتاج PPR أعلى'], a:0, why:'الإنكريمنتال بلا ذاكرة: بعد عودة التغذية يبدأ العدّاد من صفر. أما الأبسليوت Multi-turn فيعرف موضعه وعدد لفاته حتى بعد انقطاع الكهرباء.'},
+  {t:'كابل 80 مترًا والعدّ غير دقيق', s:'إنكودر TTL 5V بخرج عادي (بدون A̅ B̅) والكابل 80 مترًا حتى اللوحة. يضيع العدّ أحيانًا والإشارة ضعيفة.', clues:[['السكوب عند الكارت', IL.scopeTr([{lab:'A', col:'#ffd23f', fn:t => { const v = sq(t, 0.1); return v * 0.55 + Math.sin(t * 300) * 0.06; }}], '2V/div')]],
+    o:['استخدم Line Driver أو HTL', 'الإنكودر يدور بالعكس', 'الكابلنج مرتخٍ على العمود', 'القناة Z غير موصولة'], a:0, why:'جهد 5V يهبط على الكابل الطويل ويلتقط التشويش. الـ RS-422 التفاضلي يقطع مسافات أطول بكثير، أو HTL 24V مع كارت مناسب.'}
 ];
 
 /* ================= L6: thermocouple bench ================= */
-C.TC_COL = {K:['#2e9b3c', 'أخضر'], J:['#1d1d1d', 'أسود'], T:['#7a4a22', 'بني'], N:['#e07aa8', 'بمبي'], S:['#f08a24', 'برتقاني'], R:['#f08a24', 'برتقاني'], B:['#9aa4ac', 'رمادي']};
+C.TC_COL = {K:['#2e9b3c', 'أخضر'], J:['#1d1d1d', 'أسود'], T:['#7a4a22', 'بني'], N:['#e07aa8', 'وردي'], S:['#f08a24', 'برتقالي'], R:['#f08a24', 'برتقالي'], B:['#9aa4ac', 'رمادي']};
 IL.tcBench = function(host, opt){
   opt = opt || {}; const L = opt.lesson, g = U('tc');
   const S = {type:'K', th:400, thead:70, tamb:30, cjc:true, cable:'ext', rev:false, open:false, seen:new Set()};
   const typ = Object.keys(C.TC);
-  host.innerHTML = `<div class="wd-art"><svg viewBox="0 0 360 250" role="img" aria-label="ثيرموكبل في فرن، كابل، وجهاز قياس في اللوحة">${ART.defs(g)}
+  host.innerHTML = `<div class="wd-art"><svg viewBox="0 0 360 250" role="img" aria-label="ثيرموكبل في فرن، وكابل، وجهاز قياس في اللوحة">${ART.defs(g)}
     <defs><linearGradient id="${g}f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb347"/><stop offset="1" stop-color="#d9381e"/></linearGradient></defs>
     <rect class="tc-furn" x="0" y="156" width="130" height="90" rx="6" fill="url(#${g}f)"/><rect x="0" y="150" width="130" height="10" fill="#7f8a92"/>
     <text x="8" y="240" class="svg-ar" style="font-size:10px;font-weight:700;fill:#fff">الفرن</text>
@@ -1114,12 +1114,12 @@ IL.tcBench = function(host, opt){
   <div class="read tc-read"></div>
   <div class="statline tc-st" aria-live="polite"></div>
   <div class="wd-ctl"><label style="flex:1 1 100%">نوع الثيرموكبل: <select class="inp tc-type" dir="ltr">${typ.map(t => `<option value="${t}">Type ${t} · ${C.TC[t].pair}</option>`).join('')}</select></label>
-   <label>حرارة الفرن (الطرف السخن): <b class="tc-thv"></b><input type="range" class="tc-th" min="0" max="1250" step="5" value="400" aria-label="حرارة الطرف السخن"></label>
-   <label>حرارة راس الثيرموكبل: <b class="tc-hv"></b><input type="range" class="tc-hd" min="10" max="150" step="1" value="70" aria-label="حرارة الراس"></label>
+   <label>حرارة الفرن (الطرف الساخن): <b class="tc-thv"></b><input type="range" class="tc-th" min="0" max="1250" step="5" value="400" aria-label="حرارة الطرف الساخن"></label>
+   <label>حرارة رأس الثيرموكبل: <b class="tc-hv"></b><input type="range" class="tc-hd" min="10" max="150" step="1" value="70" aria-label="حرارة الرأس"></label>
    <label>حرارة اللوحة (عند الجهاز): <b class="tc-av"></b><input type="range" class="tc-amb" min="0" max="55" step="1" value="30" aria-label="حرارة اللوحة"></label></div>
-  <div class="flt" role="group" aria-label="تجارب وأعطال"><button type="button" class="btn" data-k="cjc" aria-pressed="false">اقفل الـ CJC</button><button type="button" class="btn" data-k="cu" aria-pressed="false">كابل نحاس عادي بدل كابل التعويض</button><button type="button" class="btn" data-k="rev" aria-pressed="false">اعكس القطبية</button><button type="button" class="btn" data-k="open" aria-pressed="false">اقطع الثيرموكبل</button></div>
+  <div class="flt" role="group" aria-label="تجارب وأعطال"><button type="button" class="btn" data-k="cjc" aria-pressed="false">أوقف الـ CJC</button><button type="button" class="btn" data-k="cu" aria-pressed="false">كابل نحاس عادي بدل كابل التعويض</button><button type="button" class="btn" data-k="rev" aria-pressed="false">اعكس القطبية</button><button type="button" class="btn" data-k="open" aria-pressed="false">اقطع الثيرموكبل</button></div>
   <p class="msg tc-msg" aria-live="polite"></p>
-  <p class="chal tc-chal">التحدّي: جرّب <b>اقفل الـ CJC</b> و<b>كابل نحاس</b> و<b>اعكس القطبية</b>، وفي كل مرة شوف الغلط كام درجة ومن فين جه.</p>`;
+  <p class="chal tc-chal">التحدّي: جرّب <b>أوقف الـ CJC</b> و<b>كابل نحاس</b> و<b>اعكس القطبية</b>، ولاحظ في كل مرة كم درجة الخطأ ومن أين جاء.</p>`;
   const q = s => $(s, host), fin = chal(host, '.tc-chal', L, 'tc');
   function cable(){
     const col = S.cable === 'cu' ? ['#b87333', '#b87333'] : [C.TC_COL[S.type][0], '#f2f2f2'], sheath = S.cable === 'cu' ? '#5d6469' : C.TC_COL[S.type][0];
@@ -1131,7 +1131,7 @@ IL.tcBench = function(host, opt){
     if (S.open) s += `<path d="M150 56l12 12M162 56l-12 12" stroke="var(--bad)" stroke-width="3.5"/>`;
     void pa; void pb;
     q('.tc-cab').innerHTML = s;
-    const cj = S.cable === 'cu' ? [100, 46, 'الطرف البارد هنا (الراس)'] : [236, 100, 'الطرف البارد هنا'];
+    const cj = S.cable === 'cu' ? [100, 46, 'الطرف البارد هنا (الرأس)'] : [236, 100, 'الطرف البارد هنا'];
     q('.tc-cjm').innerHTML = `<circle cx="${cj[0]}" cy="${cj[1]}" r="5.5" fill="var(--cold)" stroke="#fff" stroke-width="1.5"/><text x="${cj[0] + (S.cable === 'cu' ? 0 : -6)}" y="${cj[1] + (S.cable === 'cu' ? -10 : 26)}" text-anchor="${S.cable === 'cu' ? 'start' : 'end'}" class="svg-ar" style="font-size:10px;font-weight:700;fill:var(--cold)">${cj[2]}</text>`;
   }
   function ui(){
@@ -1140,21 +1140,21 @@ IL.tcBench = function(host, opt){
     cable();
     const disp = r.status === 'open' ? 'OPEN' : r.status === 'under' ? 'LLLL' : r.status === 'over' ? 'HHHH' : fmt(r.shown, 1);
     q('.tc-disp').textContent = disp; q('.tc-ty').textContent = S.type; q('.tc-cj').textContent = S.cjc ? 'ON' : 'OFF';
-    q('.tc-tht').textContent = S.th + '°C'; q('.tc-headt').textContent = 'الراس \u2066' + S.thead + ' °C\u2069'; q('.tc-headt').setAttribute('class', 'tc-headt svg-ar w-tx');
+    q('.tc-tht').textContent = S.th + '°C'; q('.tc-headt').textContent = 'الرأس ⁦' + S.thead + ' °C\u2069'; q('.tc-headt').setAttribute('class', 'tc-headt svg-ar w-tx');
     q('.tc-ambt').textContent = 'اللوحة \u2066' + S.tamb + ' °C\u2069'; q('.tc-ambt').setAttribute('class', 'tc-ambt svg-ar w-mu');
     q('.tc-furn').style.opacity = 0.35 + Math.min(1, S.th / 900) * 0.65;
     q('.tc-thv').textContent = S.th + ' °C'; q('.tc-hv').textContent = S.thead + ' °C'; q('.tc-av').textContent = S.tamb + ' °C';
     const err = r.shown == null ? null : r.shown - S.th;
-    q('.tc-read').innerHTML = `<div><span>mV عند أطراف الجهاز</span><b>${isFinite(r.mv) ? fmt(r.mv, 3) + ' mV' : 'OL'}</b></div><div><span>الـ CJC بيضيف</span><b>${S.cjc ? '+' + fmt(E(S.tamb), 3) + ' mV' : '0'}</b></div><div><span>الجهاز بيعرض</span><b>${disp}${r.shown != null ? ' °C' : ''}</b></div><div><span>الغلط</span><b class="${err == null || Math.abs(err) > 3 ? 'bad' : 'ok'}">${err == null ? '—' : (err > 0 ? '+' : '') + fmt(err, 1) + ' °C'}</b></div>`;
+    q('.tc-read').innerHTML = `<div><span>mV عند أطراف الجهاز</span><b>${isFinite(r.mv) ? fmt(r.mv, 3) + ' mV' : 'OL'}</b></div><div><span>الـ CJC يضيف</span><b>${S.cjc ? '+' + fmt(E(S.tamb), 3) + ' mV' : '0'}</b></div><div><span>الجهاز يعرض</span><b>${disp}${r.shown != null ? ' °C' : ''}</b></div><div><span>الخطأ</span><b class="${err == null || Math.abs(err) > 3 ? 'bad' : 'ok'}">${err == null ? '—' : (err > 0 ? '+' : '') + fmt(err, 1) + ' °C'}</b></div>`;
     const st = q('.tc-st'); const good = err != null && Math.abs(err) <= 2.5;
     st.className = 'statline tc-st ' + (good ? 'ok' : 'bad');
     st.innerHTML = `<span><b>المعادلة:</b> <span class="eq">E(Th) − E(Tcj) = ${fmt(E(S.th), 3)} − ${fmt(E(S.cable === 'cu' ? S.thead : S.tamb), 3)} = ${fmt(E(S.th) - E(S.cable === 'cu' ? S.thead : S.tamb), 3)} mV</span></span>`;
     let m;
-    if (S.open) m = '<b>الثيرموكبل مقطوع:</b> مفيش دايرة. الجهاز بيبعت تيار صغير جدًا في الحساس (Burnout detection) فلما يتقطع الجهد يعلى، فبيعرض <b>OPEN</b> أو بيروح لأعلى قيمة (Upscale) والترانسميتر يطلّع 21+ mA. ده عشان الفرن ميفضلش يسخّن على قراية واطية.';
-    else if (S.rev) m = `<b>القطبية معكوسة:</b> الـ mV بقى بالسالب. لاحظ الغريبة: لو سخّنت الفرن أكتر، القراية <b>تنزل</b>! ${r.status === 'under' ? 'وهنا راحت تحت الرينج خالص (LLLL).' : ''} في الموقع: قراية بتقل والفرن بيسخن = قطبية معكوسة في حتة (الراس أو الجنكشن أو الجهاز).`;
-    else if (S.cable === 'cu') m = `<b>كابل نحاس عادي:</b> الثيرموكبل خلص عند <b>الراس</b> (<span class="eq">${S.thead} °C</span>)، فالطرف البارد بقى هناك. لكن الجهاز بيعوّض على حرارة <b>اللوحة</b> (<span class="eq">${S.tamb} °C</span>). الغلط تقريبًا = <span class="eq">${S.tamb} − ${S.thead} = ${S.tamb - S.thead} °C</span>. ولو الراس جنب فرن حرارته بتتغير، الغلط بيتغير معاها. الحل: <b>كابل تعويض من نفس النوع</b> لحد أطراف الجهاز.`;
-    else if (!S.cjc) m = `<b>الـ CJC مقفول:</b> الثيرموكبل بيقيس <b>الفرق</b> بين الطرف السخن والطرف البارد. الجهاز بيحوّل الـ mV كأن الطرف البارد على 0°C، فبيعرض تقريبًا <span class="eq">${S.th} − ${S.tamb}</span>. الغلط حوالي <b>−${S.tamb} °C</b> (حرارة اللوحة). وعشان كده الثيرموكبل من غير CJC "بيقرا الحرارة اللي في اللوحة" لما الفرن بارد: بيعرض صفر وهو فعلًا 30.`;
-    else m = `كله مظبوط: الجهاز قاس <b>${fmt(r.mv, 3)} mV</b>، وحساس CJC جوّاه قاس حرارة أطرافه (<span class="eq">${S.tamb} °C</span>) وضاف <b>${fmt(E(S.tamb), 3)} mV</b>، وبعدين حوّل من الجدول: <span class="eq">${fmt(r.mv + E(S.tamb), 3)} mV ⇐ ${fmt(r.shown, 1)} °C</span>.`;
+    if (S.open) m = '<b>الثيرموكبل مقطوع:</b> لا دائرة. يرسل الجهاز تيارًا صغيرًا جدًا في الحساس (Burnout detection) فعند الانقطاع يرتفع الجهد، فيعرض <b>OPEN</b> أو يذهب إلى أعلى قيمة (Upscale) ويُخرج الترانسميتر 21+ mA. وذلك حتى لا يستمر الفرن في التسخين على قراءة منخفضة.';
+    else if (S.rev) m = `<b>القطبية معكوسة:</b> أصبح الـ mV سالبًا. لاحظ الغريب: إذا سخّنت الفرن أكثر، <b>تنخفض</b> القراءة! ${r.status === 'under' ? 'وهنا نزلت تحت المدى تمامًا (LLLL).' : ''} في الموقع: قراءة تقلّ والفرن يسخن = قطبية معكوسة في نقطة ما (الرأس أو الجنكشن أو الجهاز).`;
+    else if (S.cable === 'cu') m = `<b>كابل نحاس عادي:</b> انتهى الثيرموكبل عند <b>الرأس</b> (<span class="eq">${S.thead} °C</span>)، فصار الطرف البارد هناك. لكن الجهاز يعوّض على حرارة <b>اللوحة</b> (<span class="eq">${S.tamb} °C</span>). الخطأ تقريبًا = <span class="eq">${S.tamb} − ${S.thead} = ${S.tamb - S.thead} °C</span>. وإذا كان الرأس بجانب فرن تتغيّر حرارته، تغيّر الخطأ معها. الحل: <b>كابل تعويض من النوع نفسه</b> حتى أطراف الجهاز.`;
+    else if (!S.cjc) m = `<b>الـ CJC متوقف:</b> الثيرموكبل يقيس <b>الفرق</b> بين الطرف الساخن والطرف البارد. يحوّل الجهاز الـ mV كأن الطرف البارد عند 0°C، فيعرض تقريبًا <span class="eq">${S.th} − ${S.tamb}</span>. والخطأ نحو <b>−${S.tamb} °C</b> (حرارة اللوحة). ولهذا فالثيرموكبل بدون CJC "لا يرى حرارة اللوحة" عندما يكون الفرن باردًا: يعرض صفرًا وهي فعلًا 30.`;
+    else m = `كل شيء دقيق: قاس الجهاز <b>${fmt(r.mv, 3)} mV</b>، وقاس حساس الـ CJC بداخله حرارة أطرافه (<span class="eq">${S.tamb} °C</span>) وأضاف <b>${fmt(E(S.tamb), 3)} mV</b>، ثم حوّل من الجدول: <span class="eq">${fmt(r.mv + E(S.tamb), 3)} mV ⇐ ${fmt(r.shown, 1)} °C</span>.`;
     q('.tc-msg').innerHTML = m;
     $$('[data-k]', host).forEach(b => { const k = b.dataset.k; b.setAttribute('aria-pressed', String(k === 'cjc' ? !S.cjc : k === 'cu' ? S.cable === 'cu' : S[k])); });
     if (['cjc', 'cu', 'rev'].every(k => S.seen.has(k))) fin();
@@ -1173,13 +1173,13 @@ IL.tcGen = function(){
   if (t < 0.6){
     const type = pick(['K', 'K', 'J', 'T']), tc = pick([20, 25, 30, 35]), [lo, hi] = C.TC[type].range, th = Math.round((Math.max(lo, 50) + Math.random() * (Math.min(hi, 900) - Math.max(lo, 50))) / 5) * 5;
     const mv = +(C.tcMv(type, th) - C.tcMv(type, tc)).toFixed(3), ans = C.tcT(type, mv + C.tcMv(type, tc));
-    return {input:true, unit:'°C', q:`ثيرموكبل <b>Type ${type}</b>. الأفوميتر على أطرافه في اللوحة بيقرا <b class="eq">${fmt(mv, 3)} mV</b>، وحرارة الأطراف <b class="eq">${tc} °C</b>. الطرف السخن حرارته كام؟ <small class="muted">(استخدم الجدول اللي فوق)</small>`, check:v => Math.abs(v - ans) <= 4, ans:fmt(ans, 0) + ' °C', why:`ضيف الـ mV بتاع الطرف البارد الأول: <span class="eq">${fmt(mv, 3)} + E(${tc}) ${fmt(C.tcMv(type, tc), 3)} = ${fmt(mv + C.tcMv(type, tc), 3)} mV ⇐ ${fmt(ans, 0)} °C</span>. لو حوّلت الـ mV على طول من غير ما تضيف، هتغلط حوالي ${tc} درجة.`};
+    return {input:true, unit:'°C', q:`ثيرموكبل <b>Type ${type}</b>. الأفوميتر على أطرافه في اللوحة يقرأ <b class="eq">${fmt(mv, 3)} mV</b>، وحرارة الأطراف <b class="eq">${tc} °C</b>. كم حرارة الطرف الساخن؟ <small class="muted">(استخدم الجدول أعلاه)</small>`, check:v => Math.abs(v - ans) <= 4, ans:fmt(ans, 0) + ' °C', why:`أضف mV الطرف البارد أولًا: <span class="eq">${fmt(mv, 3)} + E(${tc}) ${fmt(C.tcMv(type, tc), 3)} = ${fmt(mv + C.tcMv(type, tc), 3)} mV ⇐ ${fmt(ans, 0)} °C</span>. إذا حوّلت الـ mV مباشرةً دون إضافة، أخطأت بنحو ${tc} درجة.`};
   }
   const qs = [
-    {q:'ثيرموكبل لونه حسب IEC: السلك الموجب <b>أخضر</b> والسالب <b>أبيض</b>. ده نوع:', o:['K', 'J', 'T', 'S'], a:0, why:'IEC 60584: K أخضر، J أسود، T بني، N بمبي، S و R برتقاني.'},
-    {q:'كابل ثيرموكبل أمريكي (ANSI) سلكه <b>الأحمر</b> يبقى:', o:['السالب دايمًا', 'الموجب دايمًا', 'الشيلد', 'على حسب النوع'], a:0, why:'في ANSI السالب أحمر في كل الأنواع (عكس اللي متعودين عليه!). K: أصفر (+) وأحمر (−).'},
-    {q:'فرن 1500 °C. أنهي ثيرموكبل يستحمل؟', o:['Type S أو R أو B', 'Type T أو J عادي', 'Type K عادي', 'PT100 Class A'], a:0, why:'T لحد حوالي 350 و J لحد 750 و K لحد حوالي 1250. البلاتين للحرارة العالية جدًا.'},
-    {q:'ليه Type B مش محتاج CJC تقريبًا؟', o:['الـ mV بتاعه قرب الصفر', 'لأنه أغلى وأدق من K', 'لأنه بيتوصّل 4 سلك', 'لأنه فيه CJC جوه الراس'], a:0, why:'E(50 °C) ≈ 0.002 mV بس، فتأثير حرارة اللوحة مهمل.'}
+    {q:'ثيرموكبل لونه حسب IEC: السلك الموجب <b>أخضر</b> والسالب <b>أبيض</b>. هذا النوع:', o:['K', 'J', 'T', 'S'], a:0, why:'IEC 60584: K أخضر، وJ أسود، وT بني، وN وردي، وS وR برتقالي.'},
+    {q:'في كابل ثيرموكبل أمريكي (ANSI) السلك <b>الأحمر</b> هو:', o:['السالب دائمًا', 'الموجب دائمًا', 'الشيلد', 'حسب النوع'], a:0, why:'في ANSI السالب أحمر في كل الأنواع (عكس المعتاد!). K: أصفر (+) وأحمر (−).'},
+    {q:'فرن 1500 °C. أي ثيرموكبل يتحمّل؟', o:['Type S أو R أو B', 'Type T أو J عادي', 'Type K عادي', 'PT100 Class A'], a:0, why:'T حتى نحو 350، وJ حتى 750، وK حتى نحو 1250. والبلاتين للحرارة العالية جدًا.'},
+    {q:'لماذا لا يحتاج Type B إلى CJC تقريبًا؟', o:['لأن الـ mV له قريب من الصفر', 'لأنه أغلى وأدق من K', 'لأنه يوصَّل بـ 4 أسلاك', 'لأن فيه CJC داخل الرأس'], a:0, why:'E(50 °C) ≈ 0.002 mV فقط، فتأثير حرارة اللوحة مُهمَل.'}
   ];
   return pick(qs);
 };
@@ -1196,9 +1196,9 @@ IL.rtdBench = function(host, opt){
    <label>طول الكابل: <b class="rt-lv"></b><input type="range" class="rt-l" min="1" max="300" step="1" value="50" aria-label="طول الكابل"></label>
    <label style="flex:1 1 45%">مقطع السلك: <select class="inp rt-mm" dir="ltr">${[0.22, 0.5, 0.75, 1, 1.5].map(v => `<option value="${v}"${v === 0.5 ? ' selected' : ''}>${v} mm²</option>`).join('')}</select></label>
    <label style="flex:1 1 45%">الحساس: <select class="inp rt-r0" dir="ltr"><option value="100">PT100</option><option value="1000">PT1000</option></select></label></div>
-  <div class="flt"><button type="button" class="btn rt-loose" aria-pressed="false">ترمنال مرتخي (+1.5 Ω في سلك واحد)</button></div>
+  <div class="flt"><button type="button" class="btn rt-loose" aria-pressed="false">ترمنال مرتخٍ (+1.5 Ω في سلك واحد)</button></div>
   <p class="msg rt-msg" aria-live="polite"></p>
-  <p class="chal rt-chal">التحدّي: شوف الغلط في <b>2 سلك</b> مع كابل 50 م، وبعدين جرّب <b>3 سلك</b> و<b>4 سلك</b>. وجرّب الترمنال المرتخي على الـ 3 سلك.</p>`;
+  <p class="chal rt-chal">التحدّي: لاحظ الخطأ في <b>السلكين</b> مع كابل 50 م، ثم جرّب <b>3 أسلاك</b> و<b>4 أسلاك</b>. وجرّب الترمنال المرتخي على الـ 3 أسلاك.</p>`;
   const q = s => $(s, host), fin = chal(host, '.rt-chal', L, 'rtd');
   function draw(r){
     const cols = {2:['#d32f2f', '#f2f2f2'], 3:['#d32f2f', '#d32f2f', '#f2f2f2'], 4:['#d32f2f', '#d32f2f', '#f2f2f2', '#f2f2f2']}[S.w];
@@ -1219,14 +1219,14 @@ IL.rtdBench = function(host, opt){
     const rt = C.rtdR(S.t, S.r0), rl = C.leadR(S.len, S.mm2), rm = C.rtdMeasured(S.t, S.w, rl, S.loose ? 1.5 : 0, S.r0), tm = C.rtdT(rm, S.r0), err = tm - S.t;
     const r = {rt, rl, rm, tm, err}; draw(r);
     const tol = C.rtdTol('B', S.t), ma = C.pv2mA(clamp(tm, 0, 150), 0, 150);
-    q('.rt-read').innerHTML = `<div><span>مقاومة الحساس</span><b>${fmt(rt, 2)} Ω</b></div><div><span>الجهاز قاس</span><b>${fmt(rm, 2)} Ω</b></div><div><span>الجهاز بيعرض</span><b>${fmt(tm, 1)} °C</b></div><div><span>الغلط</span><b class="${Math.abs(err) > tol ? 'bad' : 'ok'}">${err >= 0 ? '+' : ''}${fmt(err, 2)} °C</b></div><div><span>خرج ترانسميتر ⁦0⁠–⁠150 °C⁩</span><b>${fmt(ma, 2)} mA</b></div>`;
+    q('.rt-read').innerHTML = `<div><span>مقاومة الحساس</span><b>${fmt(rt, 2)} Ω</b></div><div><span>قاس الجهاز</span><b>${fmt(rm, 2)} Ω</b></div><div><span>الجهاز يعرض</span><b>${fmt(tm, 1)} °C</b></div><div><span>الخطأ</span><b class="${Math.abs(err) > tol ? 'bad' : 'ok'}">${err >= 0 ? '+' : ''}${fmt(err, 2)} °C</b></div><div><span>خرج ترانسميتر ⁦0⁠–⁠150 °C⁩</span><b>${fmt(ma, 2)} mA</b></div>`;
     const st = q('.rt-st'); st.className = 'statline rt-st ' + (Math.abs(err) > tol ? 'bad' : 'ok');
-    st.innerHTML = Math.abs(err) > tol ? `الغلط أكبر من سماحية الحساس نفسه: Class B عند الحرارة دي <span class="eq">±${fmt(tol, 2)} °C</span>. يعني الكابل بوّظ القياس أكتر من الحساس!` : `الغلط جوه سماحية Class B: <span class="eq">±${fmt(tol, 2)} °C</span>.`;
+    st.innerHTML = Math.abs(err) > tol ? `الخطأ أكبر من سماحية الحساس نفسه: Class B عند هذه الحرارة <span class="eq">±${fmt(tol, 2)} °C</span>. أي إن الكابل أفسد القياس أكثر من الحساس!` : `الخطأ داخل سماحية Class B: <span class="eq">±${fmt(tol, 2)} °C</span>.`;
     const d = S.r0 === 100 ? 0.385 : 3.85;
     const M = {
-      2:`<b>2 سلك:</b> الجهاز بيقيس الحساس <b>+ السلكين</b>: <span class="eq">${fmt(rt, 2)} + 2 × ${fmt(rl, 2)}${S.loose ? ' + 1.5' : ''} = ${fmt(rm, 2)} Ω</span>. وكل 1 Ω زيادة في PT${S.r0} = حوالي <span class="eq">${fmt(1 / d, 2)} °C</span>. ${S.r0 === 1000 ? 'لاحظ: الـ PT1000 الغلط بتاعه أصغر 10 مرات لأن مقاومته أكبر 10 مرات.' : 'عشان كده الـ 2 سلك ينفع بس مع كابل قصير جدًا أو PT1000.'}`,
-      3:`<b>3 سلك:</b> الجهاز بيقيس مقاومة سلك زيادة لوحده ويطرحها، على افتراض إن <b>السلكين متساويين</b>. ${S.loose ? '<b>بس الترمنال المرتخي</b> زوّد مقاومة في سلك واحد بس، فالتعويض اتلخبط والغلط رجع: <span class="eq">+1.5 Ω ≈ +' + fmt(1.5 / d, 1) + ' °C</span>. ده عطل حقيقي بيحصل من أكسدة الترمنالات.' : 'وده الأشهر في المصانع: رخيص ودقيق كفاية.'}`,
-      4:`<b>4 سلك:</b> سلكين بيوصّلوا تيار القياس، وسلكين تانيين بيقيسوا الجهد على الحساس نفسه ومفيش فيهم تيار تقريبًا، فمقاومة الكابل <b>مش بتدخل خالص</b>${S.loose ? ' حتى مع الترمنال المرتخي' : ''}. ده للمختبرات والقياس الدقيق والمعايرة.`
+      2:`<b>سلكان:</b> يقيس الجهاز الحساس <b>+ السلكين</b>: <span class="eq">${fmt(rt, 2)} + 2 × ${fmt(rl, 2)}${S.loose ? ' + 1.5' : ''} = ${fmt(rm, 2)} Ω</span>. وكل 1 Ω زيادة في PT${S.r0} = نحو <span class="eq">${fmt(1 / d, 2)} °C</span>. ${S.r0 === 1000 ? 'لاحظ: خطأ الـ PT1000 أصغر 10 مرات لأن مقاومته أكبر 10 مرات.' : 'لذلك لا يصلح توصيل السلكين إلا مع كابل قصير جدًا أو PT1000.'}`,
+      3:`<b>3 أسلاك:</b> يقيس الجهاز مقاومة سلك إضافي وحده ويطرحها، على افتراض أن <b>السلكين متساويان</b>. ${S.loose ? '<b>لكن الترمنال المرتخي</b> زاد المقاومة في سلك واحد فقط، فاختلّ التعويض وعاد الخطأ: <span class="eq">+1.5 Ω ≈ +' + fmt(1.5 / d, 1) + ' °C</span>. وهذا عطل حقيقي يحدث من أكسدة الترمنالات.' : 'وهو الأشهر في المصانع: رخيص ودقيق بما يكفي.'}`,
+      4:`<b>4 أسلاك:</b> سلكان يوصّلان تيار القياس، وسلكان آخران يقيسان الجهد على الحساس نفسه ولا يمرّ فيهما تيار تقريبًا، فلا تدخل مقاومة الكابل <b>إطلاقًا</b>${S.loose ? ' حتى مع الترمنال المرتخي' : ''}. وهذا للمختبرات والقياس الدقيق والمعايرة.`
     };
     q('.rt-msg').innerHTML = M[S.w];
     q('.rt-tv').textContent = S.t + ' °C'; q('.rt-lv').textContent = S.len + ' m';
@@ -1248,23 +1248,23 @@ IL.ptGen = function(){
   const r0 = Math.random() < 0.75 ? 100 : 1000, t = Math.random();
   if (t < 0.45){
     const T = pick([-20, 0, 20, 25, 37, 50, 65, 80, 100, 120, 150, 180, 200, 250]), R = +C.rtdR(T, r0).toFixed(2);
-    return {input:true, unit:'°C', q:`فكّيت الـ PT${r0} من الجهاز وقست بالأفوميتر بين الطرفين (الأحمر والأبيض): <b class="eq">${fmt(R, 2)} Ω</b>. الحرارة تقريبًا كام؟ <small class="muted">(إهمل السلك)</small>`, check:v => Math.abs(v - T) <= 2, ans:T + ' °C', why:`تقريب سريع: <span class="eq">T ≈ (R − ${r0}) ÷ ${r0 === 100 ? '0.385' : '3.85'} = ${fmt((R - r0) / (r0 * 0.00385), 1)} °C</span>، والجدول الدقيق بيقول ${T} °C.`};
+    return {input:true, unit:'°C', q:`فككت الـ PT${r0} من الجهاز وقست بالأفوميتر بين الطرفين (الأحمر والأبيض): <b class="eq">${fmt(R, 2)} Ω</b>. كم الحرارة تقريبًا؟ <small class="muted">(أهمل السلك)</small>`, check:v => Math.abs(v - T) <= 2, ans:T + ' °C', why:`تقريب سريع: <span class="eq">T ≈ (R − ${r0}) ÷ ${r0 === 100 ? '0.385' : '3.85'} = ${fmt((R - r0) / (r0 * 0.00385), 1)} °C</span>، والجدول الدقيق يقول ${T} °C.`};
   }
   if (t < 0.75){
     const T = pick([0, 25, 50, 100, 150, 200]), R = C.rtdR(T, r0);
-    return {input:true, unit:'Ω', q:`PT${r0} على <b class="eq">${T} °C</b>. مقاومته المفروض تبقى كام أوم؟`, check:v => Math.abs(v - R) <= R * 0.006, ans:fmt(R, 2) + ' Ω', why:`من جدول IEC 60751: <span class="eq">R(${T}) = ${fmt(R, 2)} Ω</span>.`};
+    return {input:true, unit:'Ω', q:`PT${r0} عند <b class="eq">${T} °C</b>. كم أوم يُفترض أن تكون مقاومته؟`, check:v => Math.abs(v - R) <= R * 0.006, ans:fmt(R, 2) + ' Ω', why:`من جدول IEC 60751: <span class="eq">R(${T}) = ${fmt(R, 2)} Ω</span>.`};
   }
   return pick([
-    {q:'قست PT100 بالأفوميتر لقيت <b>OL</b> (مالانهاية). ده معناه:', o:['الحساس أو سلكه مقطوع', 'الحرارة عالية جدًا', 'الحساس مقصور', 'سليم'], a:0, why:'PT100 السليم بين 80 و 250 Ω تقريبًا في الشغل العادي.'},
-    {q:'قست PT100 لقيت <b>0.4 Ω</b>. ده معناه:', o:['قصر في الحساس أو الكابل', 'الحرارة −250 °C فعلًا', 'سليم والحرارة صفر', 'الحساس مقطوع من جوه'], a:0, why:'0.4 Ω مقاومة سلك مش حساس: فيه قصر. الجهاز هيعرض أقل قيمة أو Under range.'},
-    {q:'PT100 في 3 سلك. بين السلكين اللي لونهم <b>زي بعض</b> المفروض تقيس:', o:['أقل من 1 Ω', 'حوالي 100 Ω', 'حوالي 138 Ω', 'OL (مفتوح)'], a:0, why:'السلكين دول متوصّلين في نفس طرف الحساس.'},
-    {q:'الـ NTC لما الحرارة تزيد مقاومته:', o:['بتقل', 'بتزيد', 'ثابتة', 'بتبقى صفر'], a:0, why:'NTC = Negative Temperature Coefficient.'}
+    {q:'قست PT100 بالأفوميتر فوجدت <b>OL</b> (ما لا نهاية). هذا يعني:', o:['الحساس أو سلكه مقطوع', 'الحرارة عالية جدًا', 'الحساس مقصور', 'سليم'], a:0, why:'الـ PT100 السليم بين 80 و250 Ω تقريبًا في العمل العادي.'},
+    {q:'قست PT100 فوجدت <b>0.4 Ω</b>. هذا يعني:', o:['قصر في الحساس أو الكابل', 'الحرارة −250 °C فعلًا', 'سليم والحرارة صفر', 'الحساس مقطوع من الداخل'], a:0, why:'0.4 Ω مقاومة سلك لا حساس: يوجد قصر. سيعرض الجهاز أقل قيمة أو Under range.'},
+    {q:'PT100 بثلاثة أسلاك. بين السلكين <b>المتماثلين في اللون</b> يُفترض أن تقيس:', o:['أقل من 1 Ω', 'نحو 100 Ω', 'نحو 138 Ω', 'OL (مفتوح)'], a:0, why:'هذان السلكان موصولان بطرف الحساس نفسه.'},
+    {q:'عندما تزيد الحرارة فإن مقاومة الـ NTC:', o:['تقلّ', 'تزيد', 'ثابتة', 'تصبح صفرًا'], a:0, why:'NTC = Negative Temperature Coefficient.'}
   ]);
 };
 /* NTC vs PT100 curve */
 IL.ntcCurve = function(host){
   const S = {t:25, r25:10000, beta:3950};
-  host.innerHTML = `<div class="wd-art"><svg class="nt-svg" viewBox="0 0 360 210" role="img" aria-label="منحنى مقاومة NTC و PT100 مع الحرارة"></svg></div><div class="read nt-read"></div><div class="wd-ctl"><label>الحرارة: <b class="nt-tv"></b><input type="range" class="nt-t" min="-20" max="120" step="1" value="25" aria-label="الحرارة"></label></div>`;
+  host.innerHTML = `<div class="wd-art"><svg class="nt-svg" viewBox="0 0 360 210" role="img" aria-label="منحنى مقاومة NTC وPT100 مع الحرارة"></svg></div><div class="read nt-read"></div><div class="wd-ctl"><label>الحرارة: <b class="nt-tv"></b><input type="range" class="nt-t" min="-20" max="120" step="1" value="25" aria-label="الحرارة"></label></div>`;
   const q = s => $(s, host);
   function ui(){
     const X0 = 44, X1 = 300, Y0 = 12, Y1 = 180, xT = t => X0 + (t + 20) / 140 * (X1 - X0), lg = r => Y1 - (Math.log10(r) - 2) / 4 * (Y1 - Y0);
@@ -1338,14 +1338,14 @@ C.lcMeter = function(fault, mode, a, b, frac){
 IL.lcBench = function(host, opt){
   opt = opt || {}; const L = opt.lesson, g = U('lc'), CAP = 500, SENS = 2, VEX = 10;
   const S = {w:[], wires:6, len:100, tc:20, seen:new Set()};
-  host.innerHTML = `<div class="sim-grid two-col"><div class="wd-art"><svg class="lc-svg" viewBox="0 0 360 290" role="img" aria-label="لود سيل S-type شايل أوزان، والقنطرة بتاعته"></svg></div>
+  host.innerHTML = `<div class="sim-grid two-col"><div class="wd-art"><svg class="lc-svg" viewBox="0 0 360 290" role="img" aria-label="لود سيل S-type يحمل أوزانًا، وقنطرته"></svg></div>
   <div class="mm-side"><div class="read lc-read"></div><div class="statline lc-st" aria-live="polite"></div></div></div>
-  <div class="wd-ctl"><button type="button" class="btn" data-add="20"><span class="eq">+20 kg</span></button><button type="button" class="btn" data-add="50"><span class="eq">+50 kg</span></button><button type="button" class="btn" data-add="100"><span class="eq">+100 kg</span></button><button type="button" class="btn" data-add="200"><span class="eq">+200 kg</span></button><button type="button" class="btn" data-add="-1">شيل آخر وزن</button><button type="button" class="btn" data-add="0">فضّي</button></div>
-  <div class="tabs" role="group" aria-label="الكابل"><button type="button" class="btn" data-wr="4" aria-pressed="false">كابل 4 سلك</button><button type="button" class="btn" data-wr="6" aria-pressed="true">كابل 6 سلك (Sense)</button></div>
+  <div class="wd-ctl"><button type="button" class="btn" data-add="20"><span class="eq">+20 kg</span></button><button type="button" class="btn" data-add="50"><span class="eq">+50 kg</span></button><button type="button" class="btn" data-add="100"><span class="eq">+100 kg</span></button><button type="button" class="btn" data-add="200"><span class="eq">+200 kg</span></button><button type="button" class="btn" data-add="-1">أزل آخر وزن</button><button type="button" class="btn" data-add="0">فرّغ</button></div>
+  <div class="tabs" role="group" aria-label="الكابل"><button type="button" class="btn" data-wr="4" aria-pressed="false">كابل 4 أسلاك</button><button type="button" class="btn" data-wr="6" aria-pressed="true">كابل 6 أسلاك (Sense)</button></div>
   <div class="wd-ctl"><label>طول الكابل (0.5 mm²): <b class="lc-lv"></b><input type="range" class="lc-l" min="5" max="300" step="5" value="100" aria-label="طول الكابل"></label>
-   <label>حرارة الكابل (المعايرة اتعملت على 20 °C): <b class="lc-tv"></b><input type="range" class="lc-t" min="-5" max="60" step="1" value="20" aria-label="حرارة الكابل"></label></div>
+   <label>حرارة الكابل (أُجريت المعايرة عند 20 °C): <b class="lc-tv"></b><input type="range" class="lc-t" min="-5" max="60" step="1" value="20" aria-label="حرارة الكابل"></label></div>
   <p class="msg lc-msg" aria-live="polite"></p>
-  <p class="chal lc-chal">التحدّي: حط حمل قريب من <b>500 kg</b> وشوف الـ mV، وبعدين قارن <b>4 سلك</b> و<b>6 سلك</b> لما حرارة الكابل تبقى 50 °C.</p>`;
+  <p class="chal lc-chal">التحدّي: ضع حملًا قريبًا من <b>500 kg</b> ولاحظ الـ mV، ثم قارن <b>4 أسلاك</b> و<b>6 أسلاك</b> عندما تصبح حرارة الكابل 50 °C.</p>`;
   const q = s => $(s, host), fin = chal(host, '.lc-chal', L, 'lc');
   const load = () => S.w.reduce((a, b) => a + b, 0);
   function calc(){
@@ -1365,7 +1365,7 @@ IL.lcBench = function(host, opt){
     const yb = 22 + 150 * 0.8 * (1 + def / 100);
     s += `<path d="M86 ${yb}V${yb + 14}" stroke="#5d6469" stroke-width="4"/><path d="M86 ${yb + 14}l-40 26M86 ${yb + 14}l40 26" stroke="#7f8a92" stroke-width="2"/><rect x="36" y="${yb + 40}" width="100" height="8" rx="2" fill="#5d6469"/>`;
     let y = yb + 40; S.w.forEach(w => { const h = w >= 200 ? 22 : w >= 100 ? 17 : w >= 50 ? 13 : 9, wd = w >= 200 ? 80 : w >= 100 ? 66 : w >= 50 ? 52 : 40; y -= h; s += `<rect x="${86 - wd / 2}" y="${y}" width="${wd}" height="${h - 1}" rx="3" fill="#3a4248" stroke="#1c2125"/><text x="86" y="${y + h / 2 + 3.5}" text-anchor="middle" style="font:700 8px var(--font-mono);fill:#e9edf0">${w} kg</text>`; });
-    if (!n) s += `<text x="86" y="${yb + 70}" text-anchor="middle" class="svg-ar w-mu" style="font-size:10px">دوس + عشان تحط وزن</text>`;
+    if (!n) s += `<text x="86" y="${yb + 70}" text-anchor="middle" class="svg-ar w-mu" style="font-size:10px">اضغط + لتضع وزنًا</text>`;
     /* bridge */
     const cx = 252, cy = 124, d = 58, dR = 0.7 * f, col = (t, k) => t ? `rgb(${200 + Math.round(55 * k)},${Math.round(80 - 40 * k)},${Math.round(60 - 30 * k)})` : `rgb(${Math.round(40 - 20 * k)},${Math.round(110 + 20 * k)},${200 + Math.round(55 * k)})`;
     const arm = (x1, y1, x2, y2, lab, t) => { const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, ang = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI; return `<path d="M${x1} ${y1}L${x2} ${y2}" class="w-in" stroke-width="1.6"/><g transform="translate(${mx} ${my}) rotate(${ang})"><rect x="-17" y="-7" width="34" height="14" rx="2" fill="${col(t, f)}"/><path d="M-13 0h4l2-4 4 8 4-8 4 8 2-4h4" fill="none" stroke="#fff" stroke-width="1.2"/></g><text x="${mx + (mx < cx ? -14 : 14)}" y="${my + (my < cy ? -8 : 16)}" text-anchor="${mx < cx ? 'end' : 'start'}" style="font:600 8px var(--font-mono)" class="w-tx">${lab} ${t ? '+' : '−'}${fmt(dR, 2)}</text>`; };
@@ -1374,24 +1374,24 @@ IL.lcBench = function(host, opt){
     s += `<text x="${cx}" y="${cy - d - 10}" text-anchor="middle" style="font:700 9px var(--font-mono);fill:#d32f2f">+EXC ${fmt(r.vcell, 2)}V</text><text x="${cx}" y="${cy + d + 18}" text-anchor="middle" style="font:700 9px var(--font-mono)" class="w-tx">−EXC 0V</text>`;
     s += `<text x="${cx - d - 6}" y="${cy + 4}" text-anchor="end" style="font:700 9px var(--font-mono);fill:var(--good)">+SIG</text><text x="${cx + d + 6}" y="${cy + 4}" style="font:700 9px var(--font-mono);fill:var(--good)">−SIG</text>`;
     s += `<path d="M${cx - d + 8} ${cy}H${cx + d - 8}" stroke="var(--good)" stroke-dasharray="3 3"/><rect x="${cx - 30}" y="${cy - 11}" width="60" height="20" rx="4" fill="#06130b"/><text x="${cx}" y="${cy + 3}" text-anchor="middle" style="font:700 10px var(--font-mono);fill:#4dff88">${fmt(r.mv, 3)} mV</text>`;
-    s += `<text x="${cx}" y="226" text-anchor="middle" class="svg-ar w-mu" style="font-size:9.5px">أحمر = شد (R بتزيد) · أزرق = ضغط (R بتقل)</text><text x="${cx}" y="240" text-anchor="middle" class="w-mu" style="font:600 9px var(--font-mono)">ΔR in Ω · 350 Ω gauges</text>`;
+    s += `<text x="${cx}" y="226" text-anchor="middle" class="svg-ar w-mu" style="font-size:9.5px">أحمر = شدّ (R تزيد) · أزرق = ضغط (R تقلّ)</text><text x="${cx}" y="240" text-anchor="middle" class="w-mu" style="font:600 9px var(--font-mono)">ΔR in Ω · 350 Ω gauges</text>`;
     q('.lc-svg').innerHTML = s;
   }
   function ui(){
     const r = calc(); draw(r);
     const err = r.W ? (r.shown - r.W) / r.W * 100 : 0;
-    q('.lc-read').innerHTML = `<div><span>الحمل الحقيقي</span><b>${r.W} kg</b></div><div><span>خرج الخلية</span><b>${fmt(r.mv, 3)} mV</b></div><div><span>الجهد الواصل للخلية</span><b>${fmt(r.vcell, 3)} V</b></div><div><span>الميزان بيعرض</span><b class="${Math.abs(err) > 0.1 ? 'bad' : 'ok'}">${fmt(r.shown, 1)} kg</b></div>`;
+    q('.lc-read').innerHTML = `<div><span>الحمل الحقيقي</span><b>${r.W} kg</b></div><div><span>خرج الخلية</span><b>${fmt(r.mv, 3)} mV</b></div><div><span>الجهد الواصل إلى الخلية</span><b>${fmt(r.vcell, 3)} V</b></div><div><span>الميزان يعرض</span><b class="${Math.abs(err) > 0.1 ? 'bad' : 'ok'}">${fmt(r.shown, 1)} kg</b></div>`;
     const st = q('.lc-st'), over = r.W > CAP;
     st.className = 'statline lc-st ' + (over ? 'bad' : Math.abs(err) > 0.1 ? 'warn' : 'ok');
-    st.innerHTML = over ? `<b>Overload!</b> الحمل ${r.W} kg أكبر من سعة الخلية 500 kg. لحد 150 % (Safe overload) مش هيحصل ضرر دائم غالبًا، بعدها الخلية بتتشوّه ويتزحزح الزيرو بتاعها.` : `<span class="eq">mV = ${SENS} mV/V × ${fmt(r.vcell, 2)} V × ${r.W}/${CAP} = ${fmt(r.mv, 3)} mV</span>`;
-    q('.lc-msg').innerHTML = S.wires === 4 ? `<b>4 سلك:</b> مقاومة السلكين (كل واحد <span class="eq">${fmt(r.rw, 2)} Ω</span> على ${S.tc} °C) بتستهلك من الـ 10V، فالخلية بتاخد <span class="eq">${fmt(r.vcell, 3)} V</span> بس. المعايرة على 20 °C بتشيل الفرق ده، بس لما حرارة الكابل تتغيّر مقاومته بتتغيّر والقراية تزحف${Math.abs(err) > 0.01 ? `: الغلط دلوقتي <b class="eq">${fmt(err, 2)} %</b> يعني <span class="eq">${fmt(r.shown - r.W, 2)} kg</span> على الـ ${r.W} kg` : ''}.` : `<b>6 سلك:</b> سلكين Sense بيقيسوا الجهد <b>عند الخلية نفسها</b> (<span class="eq">${fmt(r.vcell, 3)} V</span>) ومفيهمش تيار، والإنديكيتور بيقسم الإشارة عليه (Ratiometric). فطول الكابل وحرارته مش بيأثروا: القراية ثابتة.`;
+    st.innerHTML = over ? `<b>Overload!</b> الحمل ${r.W} kg أكبر من سعة الخلية 500 kg. حتى 150 % (Safe overload) لا يحدث غالبًا ضرر دائم، وبعدها تتشوّه الخلية ويتزحزح الزيرو.` : `<span class="eq">mV = ${SENS} mV/V × ${fmt(r.vcell, 2)} V × ${r.W}/${CAP} = ${fmt(r.mv, 3)} mV</span>`;
+    q('.lc-msg').innerHTML = S.wires === 4 ? `<b>4 أسلاك:</b> مقاومة السلكين (كل منهما <span class="eq">${fmt(r.rw, 2)} Ω</span> عند ${S.tc} °C) تستهلك من الـ 10V، فلا تأخذ الخلية إلا <span class="eq">${fmt(r.vcell, 3)} V</span>. المعايرة عند 20 °C تلغي هذا الفرق، لكن عندما تتغيّر حرارة الكابل تتغيّر مقاومته فتزحف القراءة${Math.abs(err) > 0.01 ? `: الخطأ الآن <b class="eq">${fmt(err, 2)} %</b> أي <span class="eq">${fmt(r.shown - r.W, 2)} kg</span> على الـ ${r.W} kg` : ''}.` : `<b>6 أسلاك:</b> سلكا Sense يقيسان الجهد <b>عند الخلية نفسها</b> (<span class="eq">${fmt(r.vcell, 3)} V</span>) ولا يمرّ فيهما تيار، ويقسم الإنديكيتور الإشارة عليه (Ratiometric). فلا يؤثر طول الكابل ولا حرارته: القراءة ثابتة.`;
     q('.lc-lv').textContent = S.len + ' m'; q('.lc-tv').textContent = S.tc + ' °C';
     $$('[data-wr]', host).forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.wr === S.wires)));
     if (r.W >= 400 && r.W <= 500) S.seen.add('full'); if (Math.abs(S.tc - 20) >= 25) S.seen.add('w' + S.wires);
     if (S.seen.has('full') && S.seen.has('w4') && S.seen.has('w6')) fin();
     return r;
   }
-  onAct(host, '[data-add]', b => { const v = +b.dataset.add; if (v > 0){ if (load() + v > 700){ q('.lc-msg').innerHTML = '<b>كفاية!</b> مش هنحمّل الخلية أكتر من 140 % عشان متتشوّهش.'; return; } S.w.push(v); } else if (v < 0) S.w.pop(); else S.w = []; ui(); });
+  onAct(host, '[data-add]', b => { const v = +b.dataset.add; if (v > 0){ if (load() + v > 700){ q('.lc-msg').innerHTML = '<b>يكفي!</b> لن نحمّل الخلية أكثر من 140 % حتى لا تتشوّه.'; return; } S.w.push(v); } else if (v < 0) S.w.pop(); else S.w = []; ui(); });
   onAct(host, '[data-wr]', b => { S.wires = +b.dataset.wr; ui(); });
   q('.lc-l').addEventListener('input', e => { S.len = +e.target.value; ui(); });
   q('.lc-t').addEventListener('input', e => { S.tc = +e.target.value; ui(); });
@@ -1410,16 +1410,16 @@ C.indCal = function(){ /* pure state machine; returns object with step(action, a
   M.weight = () => C.weigh(cal(), mv());
   M.step = function(a, arg){
     M.err = '';
-    if (a === 'cal'){ M.state = 'cap'; M.ok = false; M.verZero = M.verLoad = false; return 'ادخل سعة الميزان (Capacity) من اليافطة.'; }
-    if (a === 'cap'){ if (M.state !== 'cap'){ M.err = 'ادخل على قايمة المعايرة الأول (CAL).'; return M.err; } if (arg !== CAP){ M.err = `السعة غلط. يافطة الميزان مكتوب عليها <b>Max ${CAP} kg</b>.`; return M.err; } M.cap = arg; M.state = 'zero'; return 'فضّي الميزان (الهوبر فاضي بس من غير أوزان) واستنى القراية تثبت، ودوس ZERO.'; }
-    if (a === 'zero'){ if (M.state !== 'zero'){ M.err = M.state === 'run' ? 'ده زرار الزيرو في المعايرة. لازم تدخل CAL وتدخل السعة الأول.' : 'لسه مدخلتش السعة.'; return M.err; } if (M.load !== 0){ M.err = '<b>غلط في الإجراء:</b> فيه أوزان على الميزان! نقطة الزيرو لازم تتاخد والميزان فاضي، وإلا كل القرايات هتطلع ناقصة بالوزن ده.'; return M.err; } M.z = mv(); M.state = 'span'; return 'حط وزن المعايرة (Test weight) المعروف، واكتب قيمته، ودوس SPAN.'; }
-    if (a === 'span'){ if (M.state !== 'span'){ M.err = M.state === 'zero' ? '<b>غلط في الإجراء:</b> لازم تعمل ZERO الأول وبعدين SPAN.' : 'ادخل CAL الأول.'; return M.err; }
+    if (a === 'cal'){ M.state = 'cap'; M.ok = false; M.verZero = M.verLoad = false; return 'أدخل سعة الميزان (Capacity) من لوحة البيانات.'; }
+    if (a === 'cap'){ if (M.state !== 'cap'){ M.err = 'ادخل قائمة المعايرة أولًا (CAL).'; return M.err; } if (arg !== CAP){ M.err = `السعة خطأ. مكتوب على لوحة بيانات الميزان <b>Max ${CAP} kg</b>.`; return M.err; } M.cap = arg; M.state = 'zero'; return 'فرّغ الميزان (الهوبر فارغ بدون أوزان) وانتظر حتى تثبت القراءة، ثم اضغط ZERO.'; }
+    if (a === 'zero'){ if (M.state !== 'zero'){ M.err = M.state === 'run' ? 'هذا زر الزيرو في المعايرة. يجب أن تدخل CAL وتُدخل السعة أولًا.' : 'لم تُدخل السعة بعد.'; return M.err; } if (M.load !== 0){ M.err = '<b>خطأ في الإجراء:</b> توجد أوزان على الميزان! يجب أخذ نقطة الزيرو والميزان فارغ، وإلا خرجت كل القراءات ناقصة بهذا الوزن.'; return M.err; } M.z = mv(); M.state = 'span'; return 'ضع وزن المعايرة (Test weight) المعروف، واكتب قيمته، واضغط SPAN.'; }
+    if (a === 'span'){ if (M.state !== 'span'){ M.err = M.state === 'zero' ? '<b>خطأ في الإجراء:</b> يجب تنفيذ ZERO أولًا ثم SPAN.' : 'ادخل CAL أولًا.'; return M.err; }
       if (!(arg > 0)){ M.err = 'اكتب قيمة وزن المعايرة.'; return M.err; }
-      if (M.load === 0){ M.err = 'مفيش وزن على الميزان! حط وزن المعايرة الأول.'; return M.err; }
-      if (Math.abs(arg - M.load) > 0.01){ M.err = `<b>القيمة اللي كتبتها (${arg} kg) غير الوزن اللي على الميزان (${M.load} kg).</b> لو كمّلت كده كل القرايات هتطلع غلط بنسبة ${fmt((arg / M.load - 1) * 100, 1)} %.`; return M.err; }
-      if (M.load < CAP * 0.2){ M.err = `<b>وزن المعايرة صغير قوي</b> (${M.load} kg = ${fmt(M.load / CAP * 100, 0)} % من السعة). أي غلط صغير هيتضرب ويكبر عند السعة الكاملة. استخدم 20 % من السعة على الأقل (والأحسن ⁦50⁠–⁠100 %⁩).`; return M.err; }
-      M.k = arg / (mv() - M.z); M.state = 'run'; M.ok = true; return 'تمام: المعايرة اتسجّلت. دلوقتي <b>اتأكد</b>: شيل كل الأوزان (لازم 0)، وحط وزن تاني (لازم يقرا صح).'; }
-    if (a === 'exit'){ M.state = 'run'; return 'خرجت من المعايرة من غير حفظ.'; }
+      if (M.load === 0){ M.err = 'لا يوجد وزن على الميزان! ضع وزن المعايرة أولًا.'; return M.err; }
+      if (Math.abs(arg - M.load) > 0.01){ M.err = `<b>القيمة التي كتبتها (${arg} kg) تختلف عن الوزن الموجود على الميزان (${M.load} kg).</b> إذا تابعت هكذا خرجت كل القراءات خطأً بنسبة ${fmt((arg / M.load - 1) * 100, 1)} %.`; return M.err; }
+      if (M.load < CAP * 0.2){ M.err = `<b>وزن المعايرة صغير جدًا</b> (${M.load} kg = ${fmt(M.load / CAP * 100, 0)} % من السعة). أي خطأ صغير يتضاعف ويكبر عند السعة الكاملة. استخدم 20 % من السعة على الأقل (والأفضل ⁦50⁠–⁠100 %⁩).`; return M.err; }
+      M.k = arg / (mv() - M.z); M.state = 'run'; M.ok = true; return 'أحسنت: سُجّلت المعايرة. الآن <b>تحقّق</b>: أزل كل الأوزان (يجب 0)، وضع وزنًا آخر (يجب أن يقرأ صحيحًا).'; }
+    if (a === 'exit'){ M.state = 'run'; return 'خرجت من المعايرة دون حفظ.'; }
     if (a === 'load'){ M.load = arg; if (M.ok && M.state === 'run'){ const w = M.weight(); if (M.load === 0 && Math.abs(w) < 0.3) M.verZero = true; if (M.load > 0 && Math.abs(w - M.load) <= Math.max(0.5, M.load * 0.002)) M.verLoad = true; } return ''; }
     return '';
   };
@@ -1429,12 +1429,12 @@ IL.indicator = function(host, opt){
   opt = opt || {}; const L = opt.lesson, g = U('in');
   const M = C.indCal(); const S = {w:[]};
   host.innerHTML = `<div class="sim-grid two-col"><div class="wd-art"><svg class="in-svg" viewBox="0 0 360 250" role="img" aria-label="هوبر على لود سيل وإنديكيتور وزن"></svg></div>
-  <div class="mm-side"><ol class="steps-l in-steps"><li>دوس <b>CAL</b>، اكتب السعة <b>Capacity</b> من اليافطة، ودوس <b>ENTER</b></li><li><b>ZERO</b> والميزان فاضي</li><li>حط وزن معايرة معروف، اكتبه، ودوس <b>SPAN</b></li><li>اتأكد: فاضي = 0</li><li>اتأكد: وزن تاني بيقرا صح</li></ol></div></div>
+  <div class="mm-side"><ol class="steps-l in-steps"><li>اضغط <b>CAL</b>، واكتب السعة <b>Capacity</b> من لوحة البيانات، واضغط <b>ENTER</b></li><li><b>ZERO</b> والميزان فارغ</li><li>ضع وزن معايرة معروفًا، واكتبه، واضغط <b>SPAN</b></li><li>تحقّق: فارغ = 0</li><li>تحقّق: وزن آخر يقرأ صحيحًا</li></ol></div></div>
   <div class="wd-ctl"><button type="button" class="btn pri" data-k="cal">CAL</button><button type="button" class="btn" data-k="ent">ENTER</button><button type="button" class="btn" data-k="zero">ZERO</button><button type="button" class="btn" data-k="span">SPAN</button><button type="button" class="btn" data-k="tare">TARE</button><button type="button" class="btn" data-k="exit">EXIT</button></div>
   <div class="wd-ctl"><label style="flex:1 1 100%">الرقم (السعة أو وزن المعايرة kg): <input type="number" class="in-n" inputmode="decimal" value="" placeholder="مثلًا 500" aria-label="الرقم"></label></div>
-  <div class="wd-ctl"><span style="flex:1 1 100%;font-size:.9rem">أوزان معايرة معتمدة (M1):</span><button type="button" class="btn" data-a="20"><span class="eq">+20 kg</span></button><button type="button" class="btn" data-a="50"><span class="eq">+50 kg</span></button><button type="button" class="btn" data-a="100"><span class="eq">+100 kg</span></button><button type="button" class="btn" data-a="-1">شيل آخر وزن</button><button type="button" class="btn" data-a="0">فضّي</button></div>
+  <div class="wd-ctl"><span style="flex:1 1 100%;font-size:.9rem">أوزان معايرة معتمدة (M1):</span><button type="button" class="btn" data-a="20"><span class="eq">+20 kg</span></button><button type="button" class="btn" data-a="50"><span class="eq">+50 kg</span></button><button type="button" class="btn" data-a="100"><span class="eq">+100 kg</span></button><button type="button" class="btn" data-a="-1">أزل آخر وزن</button><button type="button" class="btn" data-a="0">فرّغ</button></div>
   <div class="statline in-st" aria-live="polite"></div>
-  <p class="chal in-chal">التحدّي: اعمل المعايرة كاملة <b>بالترتيب الصح</b>، وبعدين اتأكد بالخطوتين 4 و 5.</p>`;
+  <p class="chal in-chal">التحدّي: نفّذ المعايرة كاملة <b>بالترتيب الصحيح</b>، ثم تحقّق بالخطوتين 4 و5.</p>`;
   const q = s => $(s, host), fin = chal(host, '.in-chal', L, 'cal');
   let tare = 0;
   function draw(){
@@ -1456,34 +1456,34 @@ IL.indicator = function(host, opt){
   const total = () => S.w.reduce((a, b) => a + b, 0);
   onAct(host, '[data-k]', b => {
     const k = b.dataset.k, n = num(q('.in-n').value);
-    if (k === 'tare'){ if (M.state !== 'run'){ say('الـ TARE مش جزء من المعايرة.', true); return; } tare = M.weight(); say('<b>TARE:</b> الميزان شال الوزن الحالي (زي وزن البرميل الفاضي) وبيعرض الصافي (Net). ده غير ZERO المعايرة: الـ Tare بيتمسح ومش بيغيّر المعايرة.'); draw(); return; }
+    if (k === 'tare'){ if (M.state !== 'run'){ say('الـ TARE ليس جزءًا من المعايرة.', true); return; } tare = M.weight(); say('<b>TARE:</b> طرح الميزان الوزن الحالي (مثل وزن البرميل الفارغ) ويعرض الصافي (Net). وهذا غير ZERO المعايرة: الـ Tare يُمسح ولا يغيّر المعايرة.'); draw(); return; }
     if (k === 'cal') tare = 0;
     let a = k;
     if (k === 'ent') a = M.state === 'cap' ? 'cap' : M.state === 'span' ? 'span' : M.state === 'zero' ? 'zero' : 'none';
-    if (a === 'none'){ say('ENTER بيأكد الرقم جوه قايمة المعايرة. دوس CAL الأول.', true); return; }
+    if (a === 'none'){ say('ENTER يؤكد الرقم داخل قائمة المعايرة. اضغط CAL أولًا.', true); return; }
     const t = M.step(a, a === 'cap' || a === 'span' ? n : undefined); say(t, !!M.err);
     if (a === 'cap' && !M.err) q('.in-n').value = '';
     draw();
   });
-  onAct(host, '[data-a]', b => { const v = +b.dataset.a; if (v > 0){ if (total() + v > 500){ say('كده هتعدّي سعة الميزان.', true); return; } S.w.push(v); } else if (v < 0) S.w.pop(); else S.w = []; M.step('load', total()); if (M.ok && M.state === 'run') say(M.verZero && M.verLoad ? '<b>المعايرة كاملة ومتأكَّد منها.</b> الزيرو صفر والوزن التاني بيقرا صح.' : M.verZero ? 'الزيرو تمام. حط وزن تاني (مختلف عن وزن المعايرة لو تقدر) واتأكد.' : 'فضّي الميزان واتأكد إنه بيقرا 0.'); draw(); });
-  say('الميزان جديد ومتعايرش (بيقرا أرقام غلط). اتبع الخطوات اللي جنب الرسمة.');
+  onAct(host, '[data-a]', b => { const v = +b.dataset.a; if (v > 0){ if (total() + v > 500){ say('هكذا تتجاوز سعة الميزان.', true); return; } S.w.push(v); } else if (v < 0) S.w.pop(); else S.w = []; M.step('load', total()); if (M.ok && M.state === 'run') say(M.verZero && M.verLoad ? '<b>المعايرة كاملة ومؤكَّدة.</b> الزيرو صفر والوزن الآخر يقرأ صحيحًا.' : M.verZero ? 'الزيرو سليم. ضع وزنًا آخر (مختلفًا عن وزن المعايرة إن أمكن) وتحقّق.' : 'فرّغ الميزان وتأكّد أنه يقرأ 0.'); draw(); });
+  say('الميزان جديد وغير معايَر (يقرأ أرقامًا خطأ). اتبع الخطوات بجانب الرسمة.');
   draw();
   return {M, S, press(k, n){ if (k === 'cap') k = 'ent'; if (n != null) q('.in-n').value = n; host.querySelector(`[data-k="${k}"]`).click(); return M.err; }, add(v){ host.querySelector(`[data-a="${v}"]`).click(); }, get disp(){ return M.state === 'run' ? M.weight() - tare : M.display(); }};
 };
 
 /* ---- load cell diagnosis with a multimeter ---- */
-IL.LC_FAULTS = [['', 'سليمة'], ['overload', 'اتحمّلت أوفرلود (الزيرو متزحزح)'], ['moisture', 'رطوبة / ميّة (العزل ضعيف)'], ['sense', 'سلك Sense مقطوع'], ['weld', 'بريدج محروق (تيار لحام عدّى فيها)'], ['sig', 'سلك إشارة مقطوع']];
+IL.LC_FAULTS = [['', 'سليمة'], ['overload', 'تحمّلت أوفرلود (الزيرو متزحزح)'], ['moisture', 'رطوبة / ماء (العزل ضعيف)'], ['sense', 'سلك Sense مقطوع'], ['weld', 'بريدج محترق (مرّ فيه تيار لحام)'], ['sig', 'سلك إشارة مقطوع']];
 IL.lcDiag = function(host, opt){
   opt = opt || {}; const L = opt.lesson, g = U('ld');
   const cells = shuffle(['', 'overload', 'moisture', 'sense', 'weld']).map((f, i) => ({f, n:i + 1, solved:false}));
   const S = {c:0, mode:'ohm', red:null, blk:null};
-  host.innerHTML = `<div class="tabs" role="group" aria-label="اختار الخلية">${cells.map((c, i) => `<button type="button" class="btn" data-c="${i}" aria-pressed="${i === 0}">خلية ${c.n}</button>`).join('')}</div>
+  host.innerHTML = `<div class="tabs" role="group" aria-label="اختر الخلية">${cells.map((c, i) => `<button type="button" class="btn" data-c="${i}" aria-pressed="${i === 0}">خلية ${c.n}</button>`).join('')}</div>
   <div class="sim-grid two-col"><div class="wd-art"><svg class="ld-svg" viewBox="0 0 360 256" role="group" aria-label="أطراف كابل اللود سيل في الجنكشن بوكس، وأفوميتر"></svg></div>
   <div class="mm-side"><div class="tabs" role="group" aria-label="وضع الأفوميتر"><button type="button" class="btn" data-m="ohm" aria-pressed="true">Ω (الخلية مفصولة)</button><button type="button" class="btn" data-m="mv" aria-pressed="false">mV DC (متوصّلة ومتغذّية 10V)</button></div>
-  <p class="msg ld-msg" aria-live="polite">دوس على طرف عشان تحط <b style="color:#d32f2f">المجس الأحمر</b>، وبعدين طرف تاني للـ <b>الأسود</b>.</p>
-  <div class="box" style="font-size:.88rem"><b>المفروض (خلية 350 Ω، 2 mV/V):</b><ul style="margin:4px 0 0;padding-inline-start:18px"><li>+EXC ↔ −EXC: <span class="eq">≈ 390 Ω</span></li><li>+SIG ↔ −SIG: <span class="eq">≈ 350 Ω</span></li><li>+SEN ↔ +EXC: <span class="eq">≈ 1 Ω</span> (سلك بس)</li><li>أي سلك ↔ SHLD: <span class="eq">OL</span></li><li>Zero balance (mV، من غير حمل): <span class="eq">&lt; ±0.2 mV</span></li></ul></div></div></div>
+  <p class="msg ld-msg" aria-live="polite">اضغط على طرف لتضع <b style="color:#d32f2f">المجس الأحمر</b>، ثم على طرف آخر للمجس <b>الأسود</b>.</p>
+  <div class="box" style="font-size:.88rem"><b>المفترض (خلية 350 Ω، 2 mV/V):</b><ul style="margin:4px 0 0;padding-inline-start:18px"><li>+EXC ↔ −EXC: <span class="eq">≈ 390 Ω</span></li><li>+SIG ↔ −SIG: <span class="eq">≈ 350 Ω</span></li><li>+SEN ↔ +EXC: <span class="eq">≈ 1 Ω</span> (سلك فقط)</li><li>أي سلك ↔ SHLD: <span class="eq">OL</span></li><li>Zero balance (mV، بدون حمل): <span class="eq">&lt; ±0.2 mV</span></li></ul></div></div></div>
   <div class="ld-dx"></div>
-  <p class="chal ld-chal">التحدّي: شخّص <b>4 خلايا</b> على الأقل صح من الخمسة. قيس قبل ما تحكم.</p>`;
+  <p class="chal ld-chal">التحدّي: شخّص <b>4 خلايا</b> صحيحًا على الأقل من الخمس. قِس قبل أن تحكم.</p>`;
   const q = s => $(s, host), fin = chal(host, '.ld-chal', L, 'lcdiag');
   const TP = {}; C.LC_TERMS.forEach((t, i) => { TP[t[0]] = [36 + i * 46, 200, t[1], t[2]]; });
   function reading(){
@@ -1491,34 +1491,34 @@ IL.lcDiag = function(host, opt){
     if (!S.red || !S.blk) return '----';
     const v = C.lcMeter(c.f, S.mode, S.red, S.blk, 0);
     if (S.mode === 'ohm') return v === Infinity ? 'OL' : v >= 1e6 ? fmt(v / 1e6, 2) + ' MΩ' : v >= 1000 ? fmt(v / 1000, 3) + ' kΩ' : fmt(v, 1) + ' Ω';
-    if (isNaN(v)) return '?? (مش ثابتة)';
+    if (isNaN(v)) return '?? (غير ثابتة)';
     return fmt(v, 2) + ' mV';
   }
   function draw(){
     const rd = reading();
     let s = `<rect x="8" y="160" width="344" height="92" rx="8" fill="#d7dde1" stroke="#5d6469"/><text x="180" y="246" text-anchor="middle" class="svg-ar" style="font-size:10px;font-weight:700;fill:#1c2125">ترمنالات الجنكشن بوكس · خلية ${cells[S.c].n}</text>`;
     C.LC_TERMS.forEach(([k, lab, col]) => { const [x, y] = TP[k]; s += `<rect x="${x - 16}" y="${y - 14}" width="32" height="28" rx="3" fill="#3a4248"/>${screw(x, y, 7)}<path d="M${x} ${y + 14}V${y + 30}" stroke="${col}" stroke-width="5"/><text x="${x}" y="${y - 20}" text-anchor="middle" style="font:700 9px var(--font-mono);fill:#1c2125">${lab}</text><circle data-t="${k}" cx="${x}" cy="${y}" r="17" fill="transparent" tabindex="0" role="button" aria-label="طرف ${lab}" style="cursor:pointer"/>`; });
-    s += `<g transform="translate(120 6)"><rect width="120" height="120" rx="12" fill="#f2b705" stroke="#6b5200"/><rect x="10" y="10" width="100" height="40" rx="4" fill="#c7d3b4"/><text x="104" y="38" text-anchor="end" style="font:700 ${rd.length > 9 ? 12 : 17}px var(--font-mono);fill:#1b2410">${esc(rd.replace(' (مش ثابتة)', ''))}</text><text x="14" y="62" style="font:700 9px var(--font-mono);fill:#3b2d00">${S.mode === 'ohm' ? 'Ω' : 'mV DC'}</text><circle cx="60" cy="88" r="16" fill="#2a3035"/><path d="M60 88l${S.mode === 'ohm' ? '-11 -8' : '11 -8'}" stroke="#f2b705" stroke-width="3"/><circle cx="34" cy="110" r="5" fill="#d32f2f"/><circle cx="86" cy="110" r="5" fill="#1c2125"/></g>`;
+    s += `<g transform="translate(120 6)"><rect width="120" height="120" rx="12" fill="#f2b705" stroke="#6b5200"/><rect x="10" y="10" width="100" height="40" rx="4" fill="#c7d3b4"/><text x="104" y="38" text-anchor="end" style="font:700 ${rd.length > 9 ? 12 : 17}px var(--font-mono);fill:#1b2410">${esc(rd.replace(' (غير ثابتة)', ''))}</text><text x="14" y="62" style="font:700 9px var(--font-mono);fill:#3b2d00">${S.mode === 'ohm' ? 'Ω' : 'mV DC'}</text><circle cx="60" cy="88" r="16" fill="#2a3035"/><path d="M60 88l${S.mode === 'ohm' ? '-11 -8' : '11 -8'}" stroke="#f2b705" stroke-width="3"/><circle cx="34" cy="110" r="5" fill="#d32f2f"/><circle cx="86" cy="110" r="5" fill="#1c2125"/></g>`;
     if (S.red){ const [x, y] = TP[S.red]; s += `<path d="M154 116C150 140 ${x} 130 ${x} ${y - 8}" fill="none" stroke="#d32f2f" stroke-width="3"/><circle cx="${x}" cy="${y}" r="9" fill="none" stroke="#d32f2f" stroke-width="3"/>`; }
     if (S.blk){ const [x, y] = TP[S.blk]; s += `<path d="M206 116C210 140 ${x} 130 ${x} ${y - 8}" fill="none" stroke="#1c2125" stroke-width="3"/><circle cx="${x}" cy="${y}" r="9" fill="none" stroke="#1c2125" stroke-width="3"/>`; }
     q('.ld-svg').innerHTML = s;
     $$('[data-c]', host).forEach((b, i) => { b.setAttribute('aria-pressed', String(i === S.c)); b.classList.toggle('done', cells[i].solved); });
     $$('[data-m]', host).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === S.mode)));
     const c = cells[S.c];
-    q('.ld-dx').innerHTML = `<div class="mm-diag"><b>التشخيص بتاعك لخلية ${c.n}:</b><div class="opts">${IL.LC_FAULTS.map(f => `<button type="button" class="btn" data-dx="${f[0]}"${c.ans != null ? ' disabled' : ''}>${f[1]}</button>`).join('')}</div><p class="qz-f ld-f" aria-live="polite"></p></div>`;
-    if (c.ans != null){ $$('[data-dx]', host).forEach(b => { if (b.dataset.dx === c.f) b.classList.add('ok'); else if (b.dataset.dx === c.ans) b.classList.add('no'); }); const f = q('.ld-f'); f.className = 'qz-f ld-f ' + (c.solved ? 'ok' : 'no'); f.innerHTML = (c.solved ? 'صح. ' : 'مش ده. ') + WHY[c.f]; }
+    q('.ld-dx').innerHTML = `<div class="mm-diag"><b>تشخيصك للخلية ${c.n}:</b><div class="opts">${IL.LC_FAULTS.map(f => `<button type="button" class="btn" data-dx="${f[0]}"${c.ans != null ? ' disabled' : ''}>${f[1]}</button>`).join('')}</div><p class="qz-f ld-f" aria-live="polite"></p></div>`;
+    if (c.ans != null){ $$('[data-dx]', host).forEach(b => { if (b.dataset.dx === c.f) b.classList.add('ok'); else if (b.dataset.dx === c.ans) b.classList.add('no'); }); const f = q('.ld-f'); f.className = 'qz-f ld-f ' + (c.solved ? 'ok' : 'no'); f.innerHTML = (c.solved ? 'صحيح. ' : 'ليس هذا. ') + WHY[c.f]; }
     if (cells.filter(x => x.solved).length >= 4) fin();
     return rd;
   }
-  const WHY = {'':'كل القرايات طبيعية: Input حوالي 390، Output حوالي 350، العزل OL، والزيرو قريب من صفر. المشكلة في حتة تانية (الإنديكيتور أو الميكانيكا).',
-    overload:'المقاومات قريبة من الطبيعي، بس الـ <b>Zero balance</b> بدون حمل حوالي <b>5 mV</b> (ربع الرينج!) والمقاومة من EXC+ لـ SIG+ مختلفة عن EXC+ لـ SIG−. الخلية اتشوّهت من حمل زيادة أو خبطة. لازم تتغيّر.',
-    moisture:'المقاومات الأساسية سليمة، بس بين أي سلك والشيلد/الجسم فيه <b>حوالي 1 MΩ</b> بدل OL. دي ميّة أو رطوبة دخلت الخلية أو الكابل: القراية هتزحف مع الجو. جرّب تنشّف الكابل، ولو فضلت يبقى الخلية.',
-    sense:'من +SEN لـ +EXC = <b>OL</b> بدل مقاومة سلك. سلك الـ Sense مقطوع: الإنديكيتور هيدّي Error أو قراية غلط. صلّح السلك، أو مؤقتًا اعمل جمبر Sense–Excitation عند الإنديكيتور (هيبقى 4 سلك).',
-    weld:'الـ Input والـ Output بعيدين خالص عن 390 و 350، والـ mV غريب جدًا. دي بريدج اتحرقت: غالبًا حد لحم في الهيكل وتيار اللحام عدّى في الخلية. القاعدة: <b>قبل اللحام افصل الخلايا أو اعمل لها بايباس بكابل أرضي</b>.',
+  const WHY = {'':'كل القراءات طبيعية: Input نحو 390، وOutput نحو 350، والعزل OL، والزيرو قريب من الصفر. المشكلة في مكان آخر (الإنديكيتور أو الميكانيكا).',
+    overload:'المقاومات قريبة من الطبيعي، لكن الـ <b>Zero balance</b> بدون حمل نحو <b>5 mV</b> (ربع المدى!) والمقاومة من EXC+ إلى SIG+ تختلف عن EXC+ إلى SIG−. تشوّهت الخلية من حمل زائد أو صدمة. يجب استبدالها.',
+    moisture:'المقاومات الأساسية سليمة، لكن بين أي سلك والشيلد/الجسم <b>نحو 1 MΩ</b> بدل OL. هذا ماء أو رطوبة دخلت الخلية أو الكابل: ستزحف القراءة مع الطقس. جرّب تجفيف الكابل، وإذا استمرت المشكلة فالعطل في الخلية.',
+    sense:'من +SEN إلى +EXC = <b>OL</b> بدل مقاومة سلك. سلك الـ Sense مقطوع: سيعطي الإنديكيتور Error أو قراءة خطأ. أصلح السلك، أو ضع مؤقتًا جمبر Sense–Excitation عند الإنديكيتور (فيصبح 4 أسلاك).',
+    weld:'الـ Input والـ Output بعيدان تمامًا عن 390 و350، والـ mV غريب جدًا. هذا بريدج محترق: غالبًا لحم أحدهم في الهيكل فمرّ تيار اللحام في الخلية. القاعدة: <b>قبل اللحام افصل الخلايا أو اعمل لها بايباس بكابل أرضي</b>.',
     sig:'سلك الإشارة مقطوع.'};
-  function tapT(k){ if (!S.red || (S.red && S.blk)){ S.red = k; S.blk = null; } else if (k !== S.red) S.blk = k; const rd = draw(); q('.ld-msg').innerHTML = S.red && S.blk ? `الأحمر على <b>${TP[S.red][2]}</b> والأسود على <b>${TP[S.blk][2]}</b> ⇐ <b class="eq">${esc(rd)}</b>` : `الأحمر على <b>${TP[S.red][2]}</b>. دوس طرف للأسود.`; }
+  function tapT(k){ if (!S.red || (S.red && S.blk)){ S.red = k; S.blk = null; } else if (k !== S.red) S.blk = k; const rd = draw(); q('.ld-msg').innerHTML = S.red && S.blk ? `الأحمر على <b>${TP[S.red][2]}</b> والأسود على <b>${TP[S.blk][2]}</b> ⇐ <b class="eq">${esc(rd)}</b>` : `الأحمر على <b>${TP[S.red][2]}</b>. اضغط طرفًا للأسود.`; }
   onAct(host, '[data-t]', t => tapT(t.dataset.t));
-  onAct(host, '[data-c]', b => { S.c = +b.dataset.c; S.red = S.blk = null; draw(); q('.ld-msg').innerHTML = 'دوس على طرف للمجس الأحمر.'; });
+  onAct(host, '[data-c]', b => { S.c = +b.dataset.c; S.red = S.blk = null; draw(); q('.ld-msg').innerHTML = 'اضغط على طرف للمجس الأحمر.'; });
   onAct(host, '[data-m]', b => { S.mode = b.dataset.m; draw(); if (S.red && S.blk) tapT(S.blk); });
   onAct(host, '[data-dx]', b => { const c = cells[S.c]; if (c.ans != null) return; c.ans = b.dataset.dx; c.solved = c.ans === c.f; draw(); });
   draw();
@@ -1526,7 +1526,7 @@ IL.lcDiag = function(host, opt){
 };
 
 /* ================= L9: hydrostatic / DP level tank ================= */
-IL.LIQ = [['water', 'ميّة', 1000], ['diesel', 'سولار', 840], ['milk', 'لبن', 1030], ['brine', 'محلول ملح', 1200], ['acid', 'حمض كبريتيك 98 %', 1840]];
+IL.LIQ = [['water', 'ماء', 1000], ['diesel', 'سولار', 840], ['milk', 'لبن', 1030], ['brine', 'محلول ملح', 1200], ['acid', 'حمض كبريتيك 98 %', 1840]];
 /* pure: tank model. o = {h (m), rho, rhoCfg, closed (gas pressure Pa), dp (true = DP with low side on the gas space)} */
 C.levelSim = function(o){
   const span = C.hydroP(4, o.rhoCfg); /* transmitter range 0 … 4 m of the configured liquid */
@@ -1539,13 +1539,13 @@ C.levelSim = function(o){
 IL.levelTank = function(host, opt){
   opt = opt || {}; const L = opt.lesson, g = U('lv');
   const S = {h:2.5, liq:'water', cfgRight:false, closed:false, dp:false, seen:new Set()};
-  host.innerHTML = `<div class="sim-grid two-col"><div class="wd-art"><svg class="lv-svg" viewBox="0 0 290 290" role="img" aria-label="تانك فيه سايل وترانسميتر مستوى بالضغط تحت"></svg></div>
+  host.innerHTML = `<div class="sim-grid two-col"><div class="wd-art"><svg class="lv-svg" viewBox="0 0 290 290" role="img" aria-label="خزان فيه سائل وترانسميتر مستوى بالضغط في الأسفل"></svg></div>
   <div class="mm-side"><div class="read lv-read"></div><div class="statline lv-st" aria-live="polite"></div></div></div>
   <div class="wd-ctl"><label>المستوى الحقيقي: <b class="lv-hv"></b><input type="range" class="lv-h" min="0" max="4" step="0.05" value="2.5" aria-label="المستوى"></label>
-   <label style="flex:1 1 100%">السايل في التانك: <select class="inp lv-liq">${IL.LIQ.map(l => `<option value="${l[0]}">${l[1]} (ρ = ${l[2]} kg/m³)</option>`).join('')}</select></label></div>
-  <div class="flt"><button type="button" class="btn" data-k="cfg" aria-pressed="false">اظبط الكثافة في الترانسميتر صح</button><button type="button" class="btn" data-k="closed" aria-pressed="false">تانك مقفول عليه ضغط 0.2 bar</button><button type="button" class="btn" data-k="dp" aria-pressed="false">استخدم ترانسميتر DP (الواطي على فوق)</button></div>
+   <label style="flex:1 1 100%">السائل في الخزان: <select class="inp lv-liq">${IL.LIQ.map(l => `<option value="${l[0]}">${l[1]} (ρ = ${l[2]} kg/m³)</option>`).join('')}</select></label></div>
+  <div class="flt"><button type="button" class="btn" data-k="cfg" aria-pressed="false">اضبط الكثافة في الترانسميتر ضبطًا صحيحًا</button><button type="button" class="btn" data-k="closed" aria-pressed="false">خزان مغلق عليه ضغط 0.2 bar</button><button type="button" class="btn" data-k="dp" aria-pressed="false">استخدم ترانسميتر DP (المنخفض في الأعلى)</button></div>
   <p class="msg lv-msg" aria-live="polite"></p>
-  <p class="chal lv-chal">التحدّي: (1) غيّر السايل لـ <b>سولار</b> أو <b>حمض</b> والترانسميتر لسه متظبط على الميّة وشوف الغلط. (2) اقفل التانك بضغط وشوف الترانسميتر العادي بيغلط إزاي، وصلّحها بالـ <b>DP</b>.</p>`;
+  <p class="chal lv-chal">التحدّي: (1) غيّر السائل إلى <b>سولار</b> أو <b>حمض</b> والترانسميتر ما زال مضبوطًا على الماء، ولاحظ الخطأ. (2) أغلق الخزان بضغط ولاحظ كيف يخطئ الترانسميتر العادي، ثم أصلحه بالـ <b>DP</b>.</p>`;
   const q = s => $(s, host), fin = chal(host, '.lv-chal', L, 'lvl');
   const liq = () => IL.LIQ.find(l => l[0] === S.liq);
   function ui(){
@@ -1554,7 +1554,7 @@ IL.levelTank = function(host, opt){
     const X = 40, Y = 30, W = 150, H = 200, yL = Y + H - S.h / 4 * H, col = {water:'#3a8fd8', diesel:'#c9a43a', milk:'#eef1f3', brine:'#7fb8c9', acid:'#8e9a4a'}[S.liq];
     let s = ART.defs(g);
     s += `<rect x="${X}" y="${yL}" width="${W}" height="${Y + H - yL}" fill="${col}" opacity=".85"/><path d="M${X} ${yL}h${W}" stroke="#fff" stroke-width="1.5" opacity=".7"/>`;
-    s += `<rect x="${X}" y="${Y}" width="${W}" height="${H}" rx="${S.closed ? 4 : 0}" fill="none" stroke="#5d6469" stroke-width="4"/>${S.closed ? `<path d="M${X} ${Y}h${W}" stroke="#5d6469" stroke-width="6"/><text x="${X + W / 2}" y="${Y + 16}" text-anchor="middle" style="font:700 10px var(--font-mono);fill:var(--warn)">N₂ 0.2 bar</text>` : `<path d="M${X - 2} ${Y}h12M${X + W - 10} ${Y}h12" stroke="#5d6469" stroke-width="4"/><text x="${X + W / 2}" y="${Y + 14}" text-anchor="middle" class="svg-ar w-mu" style="font-size:10px">مفتوح للجو</text>`}`;
+    s += `<rect x="${X}" y="${Y}" width="${W}" height="${H}" rx="${S.closed ? 4 : 0}" fill="none" stroke="#5d6469" stroke-width="4"/>${S.closed ? `<path d="M${X} ${Y}h${W}" stroke="#5d6469" stroke-width="6"/><text x="${X + W / 2}" y="${Y + 16}" text-anchor="middle" style="font:700 10px var(--font-mono);fill:var(--warn)">N₂ 0.2 bar</text>` : `<path d="M${X - 2} ${Y}h12M${X + W - 10} ${Y}h12" stroke="#5d6469" stroke-width="4"/><text x="${X + W / 2}" y="${Y + 14}" text-anchor="middle" class="svg-ar w-mu" style="font-size:10px">مفتوح على الجو</text>`}`;
     for (let m = 0; m <= 4; m++){ const y = Y + H - m / 4 * H; s += `<path d="M${X - 8} ${y}h8" class="w-in"/><text x="${X - 10}" y="${y + 4}" text-anchor="end" style="font:600 9px var(--font-mono)" class="w-tx">${m} m</text>`; }
     const bx = 196, by = Y + H + 20;
     s += `<path d="M${X + 20} ${Y + H}V${by + 11}H${bx}" fill="none" stroke="#7f8a92" stroke-width="5"/>`;
@@ -1564,15 +1564,15 @@ IL.levelTank = function(host, opt){
     s += `<text x="${bx + 22}" y="${by + 36}" text-anchor="middle" style="font:700 10px var(--font-mono)" class="w-tx">LT-301 ${S.dp ? 'DP' : 'GAUGE'}</text>`;
     s += `<text x="${X + W / 2}" y="${Math.max(Y + 30, yL - 6)}" text-anchor="middle" style="font:700 10px var(--font-mono)" class="w-tx">${fmt(S.h, 2)} m</text>`;
     q('.lv-svg').innerHTML = s;
-    q('.lv-read').innerHTML = `<div><span>الضغط تحت</span><b>${fmt(r.pBot / 1000, 2)} kPa</b></div><div><span>الترانسميتر بيقيس</span><b>${fmt(r.meas / 1000, 2)} kPa</b></div><div><span>الخرج</span><b>${fmt(r.mA, 2)} mA</b></div><div><span>المستوى في الـ PLC</span><b class="${Math.abs(r.err) > 0.02 ? 'bad' : 'ok'}">${fmt(r.shown, 2)} m</b></div>`;
+    q('.lv-read').innerHTML = `<div><span>الضغط في الأسفل</span><b>${fmt(r.pBot / 1000, 2)} kPa</b></div><div><span>الترانسميتر يقيس</span><b>${fmt(r.meas / 1000, 2)} kPa</b></div><div><span>الخرج</span><b>${fmt(r.mA, 2)} mA</b></div><div><span>المستوى في الـ PLC</span><b class="${Math.abs(r.err) > 0.02 ? 'bad' : 'ok'}">${fmt(r.shown, 2)} m</b></div>`;
     const st = q('.lv-st'), bad = Math.abs(r.err) > 0.02; st.className = 'statline lv-st ' + (bad ? 'bad' : 'ok');
-    st.innerHTML = `<span class="eq">P = ρ·g·h = ${rho} × 9.81 × ${fmt(S.h, 2)} = ${fmt(C.hydroP(S.h, rho) / 1000, 2)} kPa</span>${bad ? ` · الغلط <b class="eq">${r.err > 0 ? '+' : ''}${fmt(r.err * 100, 0)} cm</b>` : ''}`;
-    let m; const rhoMsg = !S.cfgRight && liq()[2] !== 1000 ? ` <b>وكمان</b> الترانسميتر متظبط على كثافة الميّة والسايل كثافته ${liq()[2]}، فالمستوى ${liq()[2] > 1000 ? 'هيطلع أعلى' : 'هيطلع أقل'} من الحقيقة.` : '';
+    st.innerHTML = `<span class="eq">P = ρ·g·h = ${rho} × 9.81 × ${fmt(S.h, 2)} = ${fmt(C.hydroP(S.h, rho) / 1000, 2)} kPa</span>${bad ? ` · الخطأ <b class="eq">${r.err > 0 ? '+' : ''}${fmt(r.err * 100, 0)} cm</b>` : ''}`;
+    let m; const rhoMsg = !S.cfgRight && liq()[2] !== 1000 ? ` <b>كما أن</b> الترانسميتر مضبوط على كثافة الماء والسائل كثافته ${liq()[2]}، فالمستوى ${liq()[2] > 1000 ? 'سيخرج أعلى' : 'سيخرج أقل'} من الحقيقة.` : '';
     q('.lv-liq').value = S.liq;
-    if (S.closed && !S.dp) m = '<b>التانك مقفول وعليه ضغط غاز:</b> الترانسميتر العادي (Gauge) بيقيس ضغط السايل <b>+ ضغط الغاز</b> اللي فوقه. 0.2 bar = 20 kPa = حوالي <b>2 متر ميّة زيادة</b>! الحل: ترانسميتر <b>DP</b>: الطرف العالي تحت، والطرف الواطي متوصّل بالمساحة اللي فوق السايل، فضغط الغاز بيتلغي.' + rhoMsg;
-    else if (S.closed && S.dp) m = '<b>DP:</b> الطرف الواطي شايف ضغط الغاز بس، والعالي شايف الغاز + السايل. الفرق = السايل بس. ده الحل الصح للتنكات المقفولة والغلايات.' + rhoMsg;
-    else if (!S.cfgRight && liq()[2] !== 1000) m = `<b>الترانسميتر متظبط على كثافة الميّة (1000)</b> والسايل كثافته ${liq()[2]}. الضغط هو اللي بيتقاس، فالمستوى المحسوب = <span class="eq">P ÷ (1000 × g)</span>. ${liq()[2] > 1000 ? 'السايل أتقل ⇐ القراية <b>أعلى</b> من الحقيقة، وممكن الـ PLC يقفل الطلمبة بدري.' : 'السايل أخف ⇐ القراية <b>أقل</b> من الحقيقة، وممكن التانك <b>يفيض</b> والـ PLC فاكره لسه فيه مكان!'}`;
-    else m = 'القياس بالضغط (Hydrostatic) بيقيس <b>الضغط</b> مش المستوى. لازم الكثافة تبقى معروفة وثابتة. لو الكثافة بتتغيّر (خلط، حرارة، رغوة)، استخدم رادار أو لود سيل.';
+    if (S.closed && !S.dp) m = '<b>الخزان مغلق وعليه ضغط غاز:</b> الترانسميتر العادي (Gauge) يقيس ضغط السائل <b>+ ضغط الغاز</b> فوقه. 0.2 bar = 20 kPa = نحو <b>2 متر ماء زيادة</b>! الحل: ترانسميتر <b>DP</b>: الطرف العالي في الأسفل، والطرف المنخفض موصول بالفراغ فوق السائل، فيُلغى ضغط الغاز.' + rhoMsg;
+    else if (S.closed && S.dp) m = '<b>DP:</b> الطرف المنخفض يرى ضغط الغاز فقط، والعالي يرى الغاز + السائل. الفرق = السائل فقط. وهذا هو الحل الصحيح للخزانات المغلقة والغلايات.' + rhoMsg;
+    else if (!S.cfgRight && liq()[2] !== 1000) m = `<b>الترانسميتر مضبوط على كثافة الماء (1000)</b> والسائل كثافته ${liq()[2]}. المقاس هو الضغط، فالمستوى المحسوب = <span class="eq">P ÷ (1000 × g)</span>. ${liq()[2] > 1000 ? 'السائل أثقل ⇐ القراءة <b>أعلى</b> من الحقيقة، وقد يوقف الـ PLC المضخة مبكرًا.' : 'السائل أخف ⇐ القراءة <b>أقل</b> من الحقيقة، وقد <b>يفيض</b> الخزان والـ PLC يظن أن فيه متسعًا!'}`;
+    else m = 'القياس بالضغط (Hydrostatic) يقيس <b>الضغط</b> لا المستوى. يجب أن تكون الكثافة معروفة وثابتة. وإذا كانت الكثافة تتغيّر (خلط، حرارة، رغوة)، فاستخدم رادار أو لود سيل.';
     q('.lv-msg').innerHTML = m;
     q('.lv-hv').textContent = fmt(S.h, 2) + ' m';
     $$('[data-k]', host).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.k === 'cfg' ? S.cfgRight : S[b.dataset.k])));
@@ -1588,16 +1588,16 @@ IL.levelTank = function(host, opt){
   return {S, ui, set(o){ Object.assign(S, o); return ui(); }};
 };
 IL.PICK = [
-  {q:'فلو <b>ميّة DM (منزوعة الأملاح)</b> في محطة غلايات. أنهي فلومتر <b>مش</b> هينفع؟', o:['ماجنتيك', 'فورتكس', 'كوريوليس', 'أولتراسونيك'], a:0, why:'الماجنتيك محتاج سايل موصّل (أكتر من حوالي 5 µS/cm)، والميّة المنزوعة الأملاح موصليتها أقل بكتير.'},
-  {q:'فلو <b>مجاري / طينة (Slurry)</b> فيها رمل:', o:['ماجنتيك', 'تربينة', 'أوريفيس DP', 'فورتكس'], a:0, why:'الماجنتيك مفيهوش أي جزء جوه الماسورة، فمفيش حاجة تتسد أو تتآكل.'},
-  {q:'فلو <b>بخار</b> لغلاية:', o:['فورتكس أو أوريفيس DP', 'ماجنتيك', 'كوريوليس صغير', 'أولتراسونيك Clamp-on'], a:0, why:'الفورتكس والـ DP شغّالين ممتاز مع البخار والغازات.'},
-  {q:'جرعة كيماوي لازم تتقاس <b>بالكيلو جرام (Mass flow)</b> بدقة عالية:', o:['كوريوليس', 'فورتكس', 'أوريفيس', 'فلوت سويتش'], a:0, why:'الكوريوليس بيقيس الكتلة مباشرة (وكمان الكثافة).'},
-  {q:'مستوى <b>بودرة أو حبيبات بلاستيك</b> في سايلو عالي:', o:['رادار 80 GHz', 'ترانسميتر ضغط تحت', 'فلوت سويتش', 'ماجنتيك فلوت'], a:0, why:'الضغط مش بينفع مع المواد الصلبة، والرادار بيقيس المسافة لسطحها.'},
-  {q:'مستوى تانك <b>مقفول وعليه ضغط</b> (Vessel):', o:['ترانسميتر DP', 'ترانسميتر ضغط Gauge تحت بس', 'سويتش فلوت', 'ثيرموكبل'], a:0, why:'الـ DP بيلغي ضغط الغاز اللي فوق.'},
-  {q:'حماية طلمبة من <b>الشغل على الناشف</b> (Dry run):', o:['سويتش مستوى واطي (LSL)', 'إنكودر على الموتور', 'PT100 على المواسير', 'لود سيل تحت الطلمبة'], a:0, why:'إشارة ON/OFF بسيطة بتفصل الطلمبة لما المستوى ينزل.'},
-  {q:'مستوى تانك عليه <b>رغوة كتير</b>:', o:['رادار Guided wave', 'أولتراسونيك من فوق', 'فوتوسيل', 'بروكسيميتي كاباسيتيف'], a:0, why:'الرغوة بتمتص صدى الأولتراسونيك فبيقرا غلط أو يفقد الإشارة.'},
-  {q:'وزن تانك خلط فيه <b>مواد كثافتها بتتغيّر</b> وفيه خلاط:', o:['لود سيل تحت الرجول', 'ترانسميتر ضغط تحت', 'فلوت', 'كاباسيتيف'], a:0, why:'اللود سيل بيوزن الكتلة نفسها مهما الكثافة أو الرغوة.'},
-  {q:'فلو بماسورة <b>أوريفيس + DP</b>. الفلو زاد الضعف. فرق الضغط:', o:['بيزيد 4 أضعاف', 'بيزيد الضعف', 'بيقل للنص', 'بيفضل ثابت'], a:0, why:'Q ∝ √ΔP ⇐ ΔP ∝ Q². عشان كده الـ DP بيحتاج Square root extraction.'}
+  {q:'تدفق <b>ماء DM (منزوع الأملاح)</b> في محطة غلايات. أي فلوميتر <b>لا</b> يصلح؟', o:['ماجنتيك', 'فورتكس', 'كوريوليس', 'أولتراسونيك'], a:0, why:'الماجنتيك يحتاج سائلًا موصّلًا (أكثر من نحو 5 µS/cm)، والماء منزوع الأملاح موصليته أقل بكثير.'},
+  {q:'تدفق <b>صرف / طين (Slurry)</b> فيه رمل:', o:['ماجنتيك', 'توربينة', 'أوريفيس DP', 'فورتكس'], a:0, why:'الماجنتيك ليس فيه أي جزء داخل الماسورة، فلا شيء ينسدّ أو يتآكل.'},
+  {q:'تدفق <b>بخار</b> لغلاية:', o:['فورتكس أو أوريفيس DP', 'ماجنتيك', 'كوريوليس صغير', 'أولتراسونيك Clamp-on'], a:0, why:'الفورتكس والـ DP يعملان بامتياز مع البخار والغازات.'},
+  {q:'جرعة كيماوي يجب أن تُقاس <b>بالكيلوجرام (Mass flow)</b> بدقة عالية:', o:['كوريوليس', 'فورتكس', 'أوريفيس', 'فلوت سويتش'], a:0, why:'الكوريوليس يقيس الكتلة مباشرةً (والكثافة أيضًا).'},
+  {q:'مستوى <b>بودرة أو حبيبات بلاستيك</b> في صومعة عالية:', o:['رادار 80 GHz', 'ترانسميتر ضغط في الأسفل', 'فلوت سويتش', 'ماجنتيك فلوت'], a:0, why:'الضغط لا يصلح مع المواد الصلبة، والرادار يقيس المسافة إلى سطحها.'},
+  {q:'مستوى خزان <b>مغلق وعليه ضغط</b> (Vessel):', o:['ترانسميتر DP', 'ترانسميتر ضغط Gauge في الأسفل فقط', 'سويتش فلوت', 'ثيرموكبل'], a:0, why:'الـ DP يلغي ضغط الغاز في الأعلى.'},
+  {q:'حماية مضخة من <b>التشغيل على الجاف</b> (Dry run):', o:['سويتش مستوى منخفض (LSL)', 'إنكودر على المحرك', 'PT100 على المواسير', 'لود سيل تحت المضخة'], a:0, why:'إشارة ON/OFF بسيطة تفصل المضخة عندما ينخفض المستوى.'},
+  {q:'مستوى خزان عليه <b>رغوة كثيرة</b>:', o:['رادار Guided wave', 'أولتراسونيك من الأعلى', 'فوتوسيل', 'بروكسيميتي كاباسيتيف'], a:0, why:'الرغوة تمتص صدى الأولتراسونيك فيقرأ خطأً أو يفقد الإشارة.'},
+  {q:'وزن خزان خلط فيه <b>مواد تتغيّر كثافتها</b> وفيه خلّاط:', o:['لود سيل تحت الأرجل', 'ترانسميتر ضغط في الأسفل', 'عوّامة', 'كاباسيتيف'], a:0, why:'اللود سيل يزن الكتلة نفسها مهما كانت الكثافة أو الرغوة.'},
+  {q:'تدفق بماسورة <b>أوريفيس + DP</b>. تضاعف التدفق. فرق الضغط:', o:['يزيد 4 أضعاف', 'يزيد الضعف', 'يقلّ إلى النصف', 'يبقى ثابتًا'], a:0, why:'Q ∝ √ΔP ⇐ ΔP ∝ Q². لذلك يحتاج الـ DP إلى Square root extraction.'}
 ];
 
 /* ================= L10: 5-point calibration (as-found / as-left) ================= */
@@ -1605,13 +1605,13 @@ C.txOut = (p, cal) => 4 + (p / 10) * 16 * (1 + cal.gain) + cal.zero; /* ⁦0⁠�
 IL.calTable = function(host, opt){
   opt = opt || {}; const L = opt.lesson, TOL = 0.25, PTS = [0, 25, 50, 75, 100];
   const S = {cal:{zero:0.10, gain:-0.012}, phase:'found', applied:null, found:{}, left:{}, judged:null};
-  host.innerHTML = `<div class="sim-grid two-col"><div class="wd-art"><svg class="ct-svg" viewBox="0 0 360 200" role="img" aria-label="كاليبريتور ضغط متوصّل بترانسميتر"></svg></div>
+  host.innerHTML = `<div class="sim-grid two-col"><div class="wd-art"><svg class="ct-svg" viewBox="0 0 360 200" role="img" aria-label="كاليبريتور ضغط موصّل بترانسميتر"></svg></div>
   <div class="mm-side"><div class="statline ct-st" aria-live="polite"></div><div class="chips-t ct-pts">${PTS.map(p => `<button type="button" class="btn" data-p="${p}"><span class="eq">${p} % · ${p / 10} bar</span></button>`).join('')}</div>
   <div class="wd-ctl ct-adj"><button type="button" class="btn" data-a="zero">Zero trim</button><button type="button" class="btn" data-a="span">Span trim</button></div></div></div>
   <div class="tblw"><table class="tbl ct-tab"></table></div>
   <div class="ct-judge"></div>
   <p class="msg ct-msg" aria-live="polite"></p>
-  <p class="chal ct-chal">التحدّي: سجّل الـ <b>As-found</b> على 5 نقط، احكم Pass ولا Fail (السماحية ±${TOL} % من السبان)، اعمل Zero و Span trim، وسجّل <b>As-left</b> كله Pass.</p>`;
+  <p class="chal ct-chal">التحدّي: سجّل الـ <b>As-found</b> على 5 نقاط، واحكم Pass أم Fail (السماحية ±${TOL} % من السبان)، ونفّذ Zero وSpan trim، وسجّل <b>As-left</b> وكله Pass.</p>`;
   const q = s => $(s, host), fin = chal(host, '.ct-chal', L, 'caltab');
   const ideal = p => 4 + p / 100 * 16;
   const read = p => C.txOut(p / 10, S.cal);
@@ -1631,7 +1631,7 @@ IL.calTable = function(host, opt){
   }
   function table(){
     const row = (p) => { const f = S.found[p], l = S.left[p], e = v => C.errPct(v, ideal(p)), cell = v => v == null ? '<td>—</td><td>—</td>' : `<td class="mono">${fmt(v, 3)}</td><td class="mono" style="color:${Math.abs(e(v)) <= TOL ? 'var(--good)' : 'var(--bad)'};font-weight:700">${e(v) >= 0 ? '+' : ''}${fmt(e(v), 2)} %</td>`; return `<tr><td class="mono">${p} %<br><small>${fmt(p / 10, 1)} bar</small></td><td class="mono">${fmt(ideal(p), 2)}</td>${cell(f)}${cell(l)}</tr>`; };
-    q('.ct-tab').innerHTML = `<thead><tr><th rowspan="2">النقطة</th><th rowspan="2">المفروض mA</th><th colspan="2">As-found</th><th colspan="2">As-left</th></tr><tr><th>mA</th><th>غلط %</th><th>mA</th><th>غلط %</th></tr></thead><tbody>${PTS.map(row).join('')}</tbody>`;
+    q('.ct-tab').innerHTML = `<thead><tr><th rowspan="2">النقطة</th><th rowspan="2">المفترض mA</th><th colspan="2">As-found</th><th colspan="2">As-left</th></tr><tr><th>mA</th><th>الخطأ %</th><th>mA</th><th>الخطأ %</th></tr></thead><tbody>${PTS.map(row).join('')}</tbody>`;
   }
   const allIn = o => PTS.every(p => o[p] != null);
   const passes = o => PTS.every(p => Math.abs(C.errPct(o[p], ideal(p))) <= TOL);
@@ -1640,31 +1640,31 @@ IL.calTable = function(host, opt){
     draw(); table();
     const adj = S.phase === 'adjust' || S.phase === 'left';
     $$('[data-a]', host).forEach(b => b.disabled = !adj);
-    if (S.phase === 'found') status(`<b>1) As-found:</b> اضغط كل نقطة من الخمسة وسجّل القراية زي ما هي <b>قبل أي ظبط</b>. (${Object.keys(S.found).length}/5)`);
-    if (S.phase === 'judge'){ status('<b>2) احكم:</b> الترانسميتر As-found جوه السماحية ولا لأ؟'); q('.ct-judge').innerHTML = `<div class="mm-diag"><b>As-found النتيجة:</b><div class="opts"><button type="button" class="btn" data-j="pass">Pass: كله جوه ±${TOL} %</button><button type="button" class="btn" data-j="fail">Fail: محتاج ظبط</button></div></div>`; }
+    if (S.phase === 'found') status(`<b>1) As-found:</b> اضغط كل نقطة من الخمس وسجّل القراءة كما هي <b>قبل أي ضبط</b>. (${Object.keys(S.found).length}/5)`);
+    if (S.phase === 'judge'){ status('<b>2) احكم:</b> هل الترانسميتر As-found داخل السماحية أم لا؟'); q('.ct-judge').innerHTML = `<div class="mm-diag"><b>نتيجة As-found:</b><div class="opts"><button type="button" class="btn" data-j="pass">Pass: الكل داخل ±${TOL} %</button><button type="button" class="btn" data-j="fail">Fail: يحتاج ضبطًا</button></div></div>`; }
     else q('.ct-judge').innerHTML = '';
-    if (S.phase === 'adjust') status('<b>3) الظبط:</b> طبّق <b>0 %</b> واضغط <b>Zero trim</b>، وبعدين طبّق <b>100 %</b> واضغط <b>Span trim</b>.', 'warn');
-    if (S.phase === 'left') status(`<b>4) As-left:</b> سجّل الخمس نقط تاني بعد الظبط. (${Object.keys(S.left).length}/5)`, 'warn');
-    if (S.phase === 'done') status('<b>تمام:</b> As-left كله جوه السماحية. اكتب التقرير (التاريخ، رقم الكاليبريتور وشهادته، As-found و As-left) والصق ستيكر المعايرة.', 'ok');
+    if (S.phase === 'adjust') status('<b>3) الضبط:</b> طبّق <b>0 %</b> واضغط <b>Zero trim</b>، ثم طبّق <b>100 %</b> واضغط <b>Span trim</b>.', 'warn');
+    if (S.phase === 'left') status(`<b>4) As-left:</b> سجّل النقاط الخمس مرة أخرى بعد الضبط. (${Object.keys(S.left).length}/5)`, 'warn');
+    if (S.phase === 'done') status('<b>أحسنت:</b> As-left كله داخل السماحية. اكتب التقرير (التاريخ، ورقم الكاليبريتور وشهادته، وAs-found وAs-left) والصق ملصق المعايرة.', 'ok');
   }
   onAct(host, '[data-p]', b => {
     const p = +b.dataset.p; S.applied = p; const v = read(p);
     if (S.phase === 'found'){ S.found[p] = v; if (allIn(S.found)) S.phase = 'judge'; }
-    else if (S.phase === 'left'){ S.left[p] = v; if (allIn(S.left)){ if (passes(S.left)){ S.phase = 'done'; fin(); } else { q('.ct-msg').innerHTML = 'لسه فيه نقط برا السماحية. اعمل Zero trim على 0 % و Span trim على 100 % تاني.'; S.left = {}; S.phase = 'adjust'; } } }
-    q('.ct-msg').innerHTML = `طبّقت <b class="eq">${fmt(p / 10, 2)} bar</b> والترانسميتر طلّع <b class="eq">${fmt(v, 3)} mA</b> والمفروض <span class="eq">${fmt(ideal(p), 3)} mA</span>.`;
+    else if (S.phase === 'left'){ S.left[p] = v; if (allIn(S.left)){ if (passes(S.left)){ S.phase = 'done'; fin(); } else { q('.ct-msg').innerHTML = 'ما زالت هناك نقاط خارج السماحية. نفّذ Zero trim على 0 % وSpan trim على 100 % مرة أخرى.'; S.left = {}; S.phase = 'adjust'; } } }
+    q('.ct-msg').innerHTML = `طبّقت <b class="eq">${fmt(p / 10, 2)} bar</b> فأخرج الترانسميتر <b class="eq">${fmt(v, 3)} mA</b> والمفترض <span class="eq">${fmt(ideal(p), 3)} mA</span>.`;
     ui();
   });
   onAct(host, '[data-j]', b => {
     const sayFail = b.dataset.j === 'fail', truth = !passes(S.found);
-    if (sayFail === truth){ S.phase = 'adjust'; q('.ct-msg').innerHTML = 'صح: الـ As-found <b>Fail</b>. الزيرو عالي (+0.10 mA = +0.6 %) والسبان واطي. سجّلها زي ما هي في التقرير: الـ As-found بيقول للمهندسين قد إيه الجهاز كان بيغلط في الإنتاج.'; }
-    else q('.ct-msg').innerHTML = '<b>بص على عمود الغلط تاني:</b> فيه نقط لونها أحمر يعني برا ±' + TOL + ' %.';
+    if (sayFail === truth){ S.phase = 'adjust'; q('.ct-msg').innerHTML = 'صحيح: الـ As-found <b>Fail</b>. الزيرو عالٍ (+0.10 mA = +0.6 %) والسبان منخفض. سجّلها كما هي في التقرير: فالـ As-found يخبر المهندسين بمقدار خطأ الجهاز أثناء الإنتاج.'; }
+    else q('.ct-msg').innerHTML = '<b>انظر إلى عمود الخطأ مرة أخرى:</b> هناك نقاط حمراء أي خارج ±' + TOL + ' %.';
     ui();
   });
   onAct(host, '[data-a]', b => {
     const a = b.dataset.a;
-    if (S.applied == null){ q('.ct-msg').textContent = 'طبّق ضغط الأول.'; return; }
-    if (a === 'zero'){ if (S.applied !== 0){ q('.ct-msg').innerHTML = '<b>Zero trim</b> بيتعمل والضغط المطبّق = <b>LRV</b> (0 %) بالظبط. طبّق 0 bar الأول.'; return; } S.cal.zero = 0; q('.ct-msg').innerHTML = 'الزيرو اتظبط: 0 bar ⇐ 4.000 mA.'; }
-    if (a === 'span'){ if (S.applied !== 100){ q('.ct-msg').innerHTML = '<b>Span trim</b> بيتعمل والضغط = <b>URV</b> (100 %). طبّق 10 bar الأول.'; return; } if (S.cal.zero !== 0){ q('.ct-msg').innerHTML = 'اعمل <b>Zero trim</b> الأول: الظبط بيبدأ بالزيرو لأن غلطه بيدخل في كل النقط.'; return; } S.cal.gain = 0; q('.ct-msg').innerHTML = 'السبان اتظبط: 10 bar ⇐ 20.000 mA. سجّل As-left.'; }
+    if (S.applied == null){ q('.ct-msg').textContent = 'طبّق ضغطًا أولًا.'; return; }
+    if (a === 'zero'){ if (S.applied !== 0){ q('.ct-msg').innerHTML = 'يُنفَّذ <b>Zero trim</b> والضغط المطبّق = <b>LRV</b> (0 %) تمامًا. طبّق 0 bar أولًا.'; return; } S.cal.zero = 0; q('.ct-msg').innerHTML = 'ضُبط الزيرو: 0 bar ⇐ 4.000 mA.'; }
+    if (a === 'span'){ if (S.applied !== 100){ q('.ct-msg').innerHTML = 'يُنفَّذ <b>Span trim</b> والضغط = <b>URV</b> (100 %). طبّق 10 bar أولًا.'; return; } if (S.cal.zero !== 0){ q('.ct-msg').innerHTML = 'نفّذ <b>Zero trim</b> أولًا: يبدأ الضبط بالزيرو لأن خطأه يدخل في كل النقاط.'; return; } S.cal.gain = 0; q('.ct-msg').innerHTML = 'ضُبط السبان: 10 bar ⇐ 20.000 mA. سجّل As-left.'; }
     if (S.cal.zero === 0 && S.cal.gain === 0 && S.phase === 'adjust'){ S.phase = 'left'; S.left = {}; }
     ui();
   });
@@ -1672,16 +1672,16 @@ IL.calTable = function(host, opt){
   return {S, apply(p){ host.querySelector(`[data-p="${p}"]`).click(); }, judge(j){ host.querySelector(`[data-j="${j}"]`).click(); }, adj(a){ host.querySelector(`[data-a="${a}"]`).click(); }};
 };
 IL.FIELD_CASES = [
-  {t:'الـ HMI بيقول −25 %', s:'ترانسميتر ضغط ⁦0⁠–⁠10 bar⁩. الشاشة بتعرض <b class="eq">−2.5 bar (−25 %)</b> وفيه إنذار Wire break.', clues:[['الأفوميتر في اللوب', 'التيار <b class="eq">0.00 mA</b>. الجهد على أطراف الترانسميتر <b class="eq">0 V</b>.']], o:['اللوب مفتوح أو مفيش باور', 'الترانسميتر محتاج معايرة', 'نويز على الكابل', 'الرينج في الـ PLC غلط'], a:0, why:'(0 − 4) ÷ 16 = −25 %. صفر تيار وصفر جهد على الترانسميتر = الباور مش واصل. افحص الفيوز والترمنالات.'},
-  {t:'القراية واقفة فوق الـ 100 %', s:'ترانسميتر مستوى بيقرا <b class="eq">115 %</b> ثابت حتى والتانك فاضي، بعد مطرة جامدة.', clues:[['الأفوميتر', 'التيار <b class="eq">23.8 mA</b>. علبة الجنكشن اللي في الطريق فيها ميّة.']], o:['قصر في الكابل من الميّة', 'التانك مليان فعلًا', 'قطع في سلك اللوب', 'الشيلد مش متأرّض'], a:0, why:'أكتر من 21 mA وثابت = قصر أو Fail-high. نشّف الجنكشن واعزله وغيّر الجلاند.'},
-  {t:'القراية بتتنطط', s:'ترانسميتر حرارة القراية بتتهز ±3 °C كل ثانية والحرارة الحقيقية ثابتة. المشكلة بدأت بعد تركيب إنفرتر جديد.', clues:[['التركيب', 'كابل الإشارة ماشي في نفس الصينية مع كابل الموتور، والشيلد متأرّض من الطرفين.']], o:['نويز و Ground loop في الشيلد', 'الحساس بايظ ومحتاج يتغيّر', 'الرينج غلط', 'الباور ضعيف'], a:0, why:'افصل الكابلات، أرّض الشيلد من طرف واحد (لإشارات ⁦4⁠–⁠20⁩)، واستخدم فلتر في الـ PLC بحدود.'},
-  {t:'القراية أقل بنسبة ثابتة', s:'الترانسميتر على شاشته بيقول <b class="eq">8.0 bar</b>، والـ PLC بيعرض <b class="eq">5.0 bar</b>. وعلى 0 الاتنين صفر.', clues:[['البيانات', 'يافطة الترانسميتر: <b class="eq">0–16 bar</b>. بلوك الـ Scale في الـ PLC: <b class="eq">0–10 bar</b>.']], o:['السكيلنج في الـ PLC غلط', 'الترانسميتر محتاج معايرة', 'سلك مرتخي', 'الكارت بايظ'], a:0, why:'8 bar على رينج 16 = 12 mA = 50 %، والـ PLC حوّلها 50 % من 10 = 5. وحّد الرينج.'},
-  {t:'الثيرموكبل بيقرا حرارة الغرفة', s:'فرن على 600 °C والشاشة بتعرض <b class="eq">32 °C</b> ثابتة تقريبًا.', clues:[['الفحص', 'لقيت السلكين بتوع الثيرموكبل لامسين بعض جوه علبة جنكشن جنب اللوحة (العزل ساح).']], o:['قصر في سلك الثيرموكبل', 'الـ CJC مقفول', 'نوع الثيرموكبل غلط', 'الثيرموكبل مقطوع'], a:0, why:'الثيرموكبل بيقيس عند أول نقطة السلكين يتلامسوا فيها. القصر عمل "Junction" جديدة على حرارة العلبة.'},
-  {t:'PT100 بيقرا أعلى بـ 7 درجات', s:'PT100 على تانك بعيد 120 م، والقراية دايمًا أعلى من الترمومتر اليدوي بحوالي 7 °C.', clues:[['التوصيل', 'الكابل 2×1.5 mm² والجهاز متظبط <b>2 سلك</b>.']], o:['مقاومة السلك في 2 سلك', 'الحساس Class B مش A', 'نويز من الكابل الطويل', 'الـ CJC مقفول'], a:0, why:'كل سلك ≈ 0.0175 × 120 ÷ 1.5 = 1.4 Ω ⇐ السلكين 2.8 Ω ⇐ 2.8 ÷ 0.385 ≈ 7.3 °C. الحل: 3 أو 4 سلك أو ترانسميتر في الراس.'},
-  {t:'الميزان بيزحف', s:'ميزان تانك: الصبح بيقرا 0 وهو فاضي، والضهر بيقرا <b class="eq">+35 kg</b> وهو فاضي برضه.', clues:[['الفحص', 'غطا الجنكشن بوكس مكسور ومافيش سيليكا، وفيه ندى جوه. الكابل 4 سلك 80 م في الشمس.']], o:['رطوبة في الجنكشن بوكس', 'لود سيل ناقص', 'المعايرة غلط من الأول', 'الإنديكيتور سريع'], a:0, why:'الرطوبة بتعمل تسريب صغير يغيّر الإشارة، والحرارة بتغيّر مقاومة الكابل في الـ 4 سلك. صلّح العلبة واستخدم 6 سلك.'},
-  {t:'العدّاد بيعدّ غلط', s:'مكنة قص: الألواح أطول بـ ⁦3⁠–⁠4⁩ مم بشكل عشوائي. المشكلة بتزيد لما مكنة اللحام اللي جنبها تشتغل.', clues:[['السكوب', IL.scopeTr([{lab:'A', col:'#ffd23f', fn:t => ((t * 29) % 1 < 0.015 ? 0.9 : C.encAB(t * 5).A)}])]], o:['نويز على كابل الإنكودر', 'الإنكودر متركّب بالعكس', 'الـ PPR غلط في الـ PLC', 'العجلة بتزحلق'], a:0, why:'نبضات زيادة من النويز. شيلد وكابل تفاضلي وفصل المسارات.'},
-  {t:'المستوى بيقرا زيادة في تانك مقفول', s:'تانك عليه غاز نيتروجين 0.3 bar. ترانسميتر الضغط تحت بيقول المستوى 3 م زيادة عن الزجاجة (Sight glass).', clues:[['الترانسميتر', 'ترانسميتر Gauge عادي، مافيش خط للطرف الواطي.']], o:['بيقيس ضغط الغاز كمان', 'الكثافة اتغيّرت', 'الزجاجة مسدودة', 'الترانسميتر محتاج Zero'], a:0, why:'0.3 bar ≈ 3 م ميّة. الـ DP بيطرح ضغط الغاز.'},
-  {t:'القراية ثابتة والضغط بيتغيّر', s:'ترانسميتر ضغط بيقرا <b class="eq">4.2 bar</b> طول الوردية مهما الطلمبة اشتغلت أو وقفت. التيار في اللوب سليم 10.7 mA.', clues:[['الفحص', 'صمام العزل اللي قبل الترانسميتر لقيته مقفول من آخر صيانة.']], o:['صمام العزل مقفول', 'الكارت بايظ', 'نويز على اللوب', 'الباور ضعيف'], a:0, why:'اللوب سليم والإشارة ثابتة = المشكلة في ناحية العملية: صمام، أو خط مسدود أو متجمّد.'}
+  {t:'الـ HMI يعرض −25 %', s:'ترانسميتر ضغط ⁦0⁠–⁠10 bar⁩. الشاشة تعرض <b class="eq">−2.5 bar (−25 %)</b> ويوجد إنذار Wire break.', clues:[['الأفوميتر في اللوب', 'التيار <b class="eq">0.00 mA</b>. الجهد على أطراف الترانسميتر <b class="eq">0 V</b>.']], o:['اللوب مفتوح أو لا توجد تغذية', 'الترانسميتر يحتاج معايرة', 'تشويش على الكابل', 'المدى في الـ PLC خطأ'], a:0, why:'(0 − 4) ÷ 16 = −25 %. صفر تيار وصفر جهد على الترانسميتر = التغذية لا تصل. افحص الفيوز والترمنالات.'},
+  {t:'القراءة ثابتة فوق 100 %', s:'ترانسميتر مستوى يقرأ <b class="eq">115 %</b> ثابتة حتى والخزان فارغ، بعد مطر غزير.', clues:[['الأفوميتر', 'التيار <b class="eq">23.8 mA</b>. وعلبة الجنكشن في الطريق فيها ماء.']], o:['قصر في الكابل بسبب الماء', 'الخزان ممتلئ فعلًا', 'انقطاع في سلك اللوب', 'الشيلد غير مؤرَّض'], a:0, why:'أكثر من 21 mA وثابت = قصر أو Fail-high. جفّف الجنكشن واعزله واستبدل الجلاند.'},
+  {t:'القراءة تقفز', s:'قراءة ترانسميتر حرارة تتذبذب ±3 °C كل ثانية والحرارة الحقيقية ثابتة. بدأت المشكلة بعد تركيب انفرتر جديد.', clues:[['التركيب', 'كابل الإشارة يمرّ في الصينية نفسها مع كابل المحرك، والشيلد مؤرَّض من الطرفين.']], o:['تشويش وGround loop في الشيلد', 'الحساس تالف ويحتاج استبدالًا', 'المدى خطأ', 'التغذية ضعيفة'], a:0, why:'افصل الكابلات، وأرّض الشيلد من طرف واحد (لإشارات ⁦4⁠–⁠20⁩)، واستخدم فلترًا في الـ PLC باعتدال.'},
+  {t:'القراءة أقل بنسبة ثابتة', s:'شاشة الترانسميتر تعرض <b class="eq">8.0 bar</b>، والـ PLC يعرض <b class="eq">5.0 bar</b>. وعند 0 كلاهما صفر.', clues:[['البيانات', 'لوحة بيانات الترانسميتر: <b class="eq">0–16 bar</b>. بلوك الـ Scale في الـ PLC: <b class="eq">0–10 bar</b>.']], o:['السكيلنج في الـ PLC خطأ', 'الترانسميتر يحتاج معايرة', 'سلك مرتخٍ', 'الكارت تالف'], a:0, why:'8 bar على مدى 16 = 12 mA = 50 %، وحوّلها الـ PLC إلى 50 % من 10 = 5. وحّد المدى.'},
+  {t:'الثيرموكبل يقرأ حرارة الغرفة', s:'فرن على 600 °C والشاشة تعرض <b class="eq">32 °C</b> ثابتة تقريبًا.', clues:[['الفحص', 'وجدت سلكي الثيرموكبل متلامسين داخل علبة جنكشن بجانب اللوحة (ذاب العزل).']], o:['قصر في سلك الثيرموكبل', 'الـ CJC متوقف', 'نوع الثيرموكبل خطأ', 'الثيرموكبل مقطوع'], a:0, why:'الثيرموكبل يقيس عند أول نقطة يتلامس فيها السلكان. فأحدث القصر "Junction" جديدة عند حرارة العلبة.'},
+  {t:'PT100 يقرأ أعلى بـ 7 درجات', s:'PT100 على خزان على بعد 120 م، والقراءة دائمًا أعلى من الترمومتر اليدوي بنحو 7 °C.', clues:[['التوصيل', 'الكابل 2×1.5 mm² والجهاز مضبوط على <b>سلكين</b>.']], o:['مقاومة السلك في توصيل السلكين', 'الحساس Class B لا A', 'تشويش من الكابل الطويل', 'الـ CJC متوقف'], a:0, why:'كل سلك ≈ 0.0175 × 120 ÷ 1.5 = 1.4 Ω ⇐ السلكان 2.8 Ω ⇐ 2.8 ÷ 0.385 ≈ 7.3 °C. الحل: 3 أو 4 أسلاك أو ترانسميتر في الرأس.'},
+  {t:'الميزان يزحف', s:'ميزان خزان: صباحًا يقرأ 0 وهو فارغ، وظهرًا يقرأ <b class="eq">+35 kg</b> وهو فارغ أيضًا.', clues:[['الفحص', 'غطاء الجنكشن بوكس مكسور ولا توجد سيليكا، وبداخله ندى. والكابل 4 أسلاك بطول 80 م في الشمس.']], o:['رطوبة في الجنكشن بوكس', 'لود سيل ناقصة', 'المعايرة خطأ من البداية', 'الإنديكيتور سريع'], a:0, why:'الرطوبة تُحدث تسريبًا صغيرًا يغيّر الإشارة، والحرارة تغيّر مقاومة الكابل في توصيل الـ 4 أسلاك. أصلح العلبة واستخدم 6 أسلاك.'},
+  {t:'العدّاد يعدّ خطأً', s:'ماكينة قصّ: الألواح أطول بـ ⁦3⁠–⁠4⁩ مم بشكل عشوائي. وتزيد المشكلة عندما تعمل ماكينة اللحام المجاورة.', clues:[['السكوب', IL.scopeTr([{lab:'A', col:'#ffd23f', fn:t => ((t * 29) % 1 < 0.015 ? 0.9 : C.encAB(t * 5).A)}])]], o:['تشويش على كابل الإنكودر', 'الإنكودر مركّب بالعكس', 'الـ PPR خطأ في الـ PLC', 'العجلة تنزلق'], a:0, why:'نبضات زائدة من التشويش. شيلد وكابل تفاضلي وفصل المسارات.'},
+  {t:'المستوى يقرأ زيادة في خزان مغلق', s:'خزان عليه غاز نيتروجين 0.3 bar. ترانسميتر الضغط في الأسفل يقول إن المستوى أعلى بـ 3 م من الزجاجة (Sight glass).', clues:[['الترانسميتر', 'ترانسميتر Gauge عادي، لا يوجد خط للطرف المنخفض.']], o:['يقيس ضغط الغاز أيضًا', 'تغيّرت الكثافة', 'الزجاجة مسدودة', 'الترانسميتر يحتاج Zero'], a:0, why:'0.3 bar ≈ 3 م ماء. الـ DP يطرح ضغط الغاز.'},
+  {t:'القراءة ثابتة والضغط يتغيّر', s:'ترانسميتر ضغط يقرأ <b class="eq">4.2 bar</b> طوال الوردية سواء عملت المضخة أو توقفت. التيار في اللوب سليم 10.7 mA.', clues:[['الفحص', 'وجدت صمام العزل قبل الترانسميتر مغلقًا منذ آخر صيانة.']], o:['صمام العزل مغلق', 'الكارت تالف', 'تشويش على اللوب', 'التغذية ضعيفة'], a:0, why:'اللوب سليم والإشارة ثابتة = المشكلة في جهة العملية: صمام، أو خط مسدود أو متجمّد.'}
 ];
 
 })();
