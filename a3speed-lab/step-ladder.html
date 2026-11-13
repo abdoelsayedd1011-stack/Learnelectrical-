@@ -1,0 +1,870 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="محاكي سلم خطوات برنامج A3/Speed: 15 خطوة بشروطها وتايمراتها وإنذاراتها.">
+<link rel="canonical" href="https://www.learnelectricals.com/a3speed-lab/step-ladder.html">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>سلم خطوات A3/Speed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* v3: rebuilt on the A3/Speed 0300 workbook + the real PLC sequencer (MC _02010_Sequencer). Colors = workbook media colors on white. */
+:root{
+  color-scheme: light;
+  --bg:#f4f4f4; --panel:#ffffff; --panel2:#f7f7f7; --line:#c5c5c5; --ink:#040505; --fg:#1c1d1d; --muted:#5c5c5c;
+  --air:#98d8e4; --hot:#ee2643; --pre:#f1bcd7; --steam:#a177b4; --prod:#feea05; --water:#b9d532; --h2o2:#f79027; --cair:#4687c7; --grey:#dfe0e0;
+  --g-prep:#4687c7; --g-ster:#ee2643; --g-wait:#7fa31a; --g-prod:#e2c800; --g-after:#a177b4;
+  --ok:#7fa31a;
+  --bad-bg:#fde4e7; --ok-bg:#eef6d6; --warn-bg:#fffbd1; --info-bg:#e8f0f8;
+  --f-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Arabic",system-ui,"Segoe UI",Tahoma,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--fg);margin:0}
+body{font-family:var(--f-body);font-size:15px;line-height:1.6}
+.wrap{direction:rtl;max-width:1400px;margin:0 auto;padding-block:16px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:12px}
+h1{font-family:var(--f-display);font-size:clamp(21px,3vw,30px);margin:0;color:var(--ink);text-wrap:balance}
+h2{font-family:var(--f-display);font-size:16px;margin:0 0 10px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px;flex-wrap:wrap;text-wrap:balance}
+h2::before{content:"";width:6px;height:18px;border-radius:2px;background:var(--hc,var(--cair));border:1px solid var(--ink)}
+.sub{color:var(--muted);margin:0;font-size:14px;max-width:75ch}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:end;justify-content:space-between}
+.en{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-size:.8em;color:var(--muted)}
+.mono{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-variant-numeric:tabular-nums}
+button,select,input{font-family:var(--f-body);font-size:14px;color:var(--fg)}
+button{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer;touch-action:manipulation}
+button:hover{border-color:var(--ink)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--cair);outline-offset:2px}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.sel{border-color:var(--cair);color:#1f5a96;background:var(--info-bg);font-weight:700}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.note{font-size:12.5px;color:var(--muted)}
+.simp{display:inline-block;background:var(--warn-bg);border:1px solid #e2c800;color:#5c5200;border-radius:6px;padding:0 6px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.g-prep{--gc:var(--g-prep);--gt:#fff}.g-ster{--gc:var(--g-ster);--gt:#fff}.g-wait{--gc:var(--g-wait);--gt:#fff}.g-prod{--gc:var(--g-prod);--gt:#040505}.g-after{--gc:var(--g-after);--gt:#fff}
+.phases{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted)}
+.phases span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;background:var(--gc);border:1px solid var(--ink);vertical-align:-1px;margin-left:5px}
+
+/* TPOP */
+.tpop{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center;background:var(--panel);border:1px solid var(--line);border-top:6px solid var(--gc);border-radius:12px;padding:14px}
+@media (max-width:860px){.tpop{grid-template-columns:auto minmax(0,1fr)}.tpop .ops{grid-column:1/-1}}
+.bignum{width:92px;height:92px;border-radius:14px;background:var(--gc);color:var(--gt);border:2px solid var(--ink);display:grid;place-items:center;font-family:var(--f-mono);font-size:44px;font-weight:700;direction:ltr;line-height:1}
+.stepname{font-family:var(--f-display);font-size:clamp(19px,2.6vw,26px);font-weight:700;line-height:1.3;color:var(--ink)}
+.waitmsg{font-size:15px;line-height:1.65;min-height:2.6em;text-wrap:pretty}
+.pill{display:inline-block;border-radius:99px;padding:1px 10px;font-size:12.5px;font-weight:700;white-space:nowrap;border:1px solid var(--ink)}
+.pill.ok{background:var(--water)}.pill.idle{background:var(--grey)}.pill.run{background:var(--prod)}
+.tbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;margin-top:4px}
+.prog{height:10px;background:var(--panel2);border:1px solid var(--ink);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--gc);transition:width .25s linear}
+.ops{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;min-width:280px}
+.ops button{padding:8px 8px;font-weight:600;line-height:1.3}
+.ops button small{display:block;font-weight:400;font-size:11px;color:var(--muted)}
+.ops .up{background:var(--ok-bg);border-color:var(--ok)}
+.ops .dn{background:var(--info-bg);border-color:var(--cair)}
+.ops .stop{background:var(--bad-bg);border-color:var(--hot);color:#9b1023}
+.ops .lamp{animation:lamp 1s steps(1) infinite}
+@keyframes lamp{50%{box-shadow:0 0 0 3px var(--prod)}}
+
+/* stage */
+.stage{display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);gap:12px;align-items:start}
+@media (max-width:1140px){.stage{grid-template-columns:minmax(0,1fr)}}
+.ladgrid{display:grid;grid-template-columns:240px minmax(0,1fr);gap:12px;align-items:start}
+@media (max-width:640px){.ladgrid{grid-template-columns:minmax(0,1fr)}}
+.ladder{position:relative;display:grid;gap:4px;padding:2px 18px}
+.ladder::before,.ladder::after{content:"";position:absolute;top:0;bottom:0;width:6px;background:var(--grey);border:1px solid var(--ink);border-radius:2px}
+.ladder::before{right:4px}.ladder::after{left:4px}
+.rung{position:relative;z-index:1;display:grid;grid-template-columns:30px minmax(0,1fr);gap:8px;align-items:center;text-align:right;width:100%;padding:4px 8px;border-radius:8px;background:var(--panel);border:1px solid var(--line)}
+.rung .n{font-family:var(--f-mono);font-weight:700;font-size:13px;width:28px;height:28px;border-radius:6px;display:grid;place-items:center;background:var(--panel);border:2px solid var(--gc);color:var(--ink)}
+.rung .t{min-width:0;font-size:13.5px;line-height:1.3}
+.rung .t small{display:block;color:var(--muted);font-family:var(--f-mono);font-size:10.5px;direction:ltr;text-align:right}
+.rung.done .n{background:var(--gc);color:var(--gt);border-color:var(--ink)}
+.rung.cur{background:color-mix(in srgb,var(--gc) 18%,#fff);border-color:var(--ink);box-shadow:0 0 0 2px var(--gc)}
+.rung.cur .n{background:var(--gc);color:var(--gt);border-color:var(--ink)}
+.rung.cur .t{font-weight:700}
+.rung.view{outline:2px dashed var(--ink);outline-offset:2px}
+.rung.fall{animation:fall 1s ease}
+@keyframes fall{0%{background:#f8b3bd}100%{background:var(--panel)}}
+#detail{background:var(--panel2);border:1px solid var(--line);border-top:5px solid var(--gc);border-radius:10px;padding:12px;min-width:0}
+.dhead{font-family:var(--f-display);font-weight:700;font-size:18px;color:var(--ink);line-height:1.3}
+.dlabel{font-size:12.5px;font-weight:700;color:var(--muted);margin:12px 0 5px}
+.conds{display:grid;gap:5px}
+.cond{display:grid;grid-template-columns:18px minmax(0,1fr);gap:6px;align-items:start;font-size:13.5px;line-height:1.5;background:var(--bad-bg);border-radius:6px;padding:4px 8px}
+.cond i{width:13px;height:13px;border-radius:50%;margin-top:5px;background:#fff;border:2px solid var(--hot)}
+.cond.ok{background:var(--ok-bg)}.cond.ok i{background:var(--ok);border-color:var(--ink)}
+.cond.na{background:var(--panel)}.cond.na i{border-color:var(--line)}
+.does{margin:0;padding-inline-start:18px;display:grid;gap:3px;font-size:13.5px}
+.box{margin-top:8px;font-size:13.5px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+.code{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-size:11.5px;background:#f0f0f0;border:1px solid var(--line);border-radius:4px;padding:0 4px;color:#313232}
+
+/* machine */
+.machine{--hc:var(--hot)}
+.sv{overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:10px}
+.sv svg{direction:ltr;display:block;width:100%;height:auto;min-width:620px}
+.sv text{font-family:var(--f-body)}
+.pipeO{fill:none;stroke:var(--ink);stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+.pipe{fill:none;stroke:var(--grey);stroke-width:5;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s}
+.dash{fill:none;stroke:#fff;stroke-width:1.2;stroke-dasharray:2 16;opacity:0;stroke-linecap:round}
+.dash.on{opacity:.55;animation:dash 1s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-30}}
+.comp{fill:#fff;stroke:var(--ink);stroke-width:1.5}
+.valve{fill:#fff;stroke:var(--ink);stroke-width:1.5}
+.valve.open{fill:var(--water)}
+.tag{font-family:var(--f-mono);font-size:10.5px;fill:#313232}
+.val{font-family:var(--f-mono);font-size:13px;font-weight:700;fill:var(--ink)}
+.lbl{font-size:12px;fill:var(--ink);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:20px;height:7px;border:1px solid var(--ink);vertical-align:middle;margin-left:5px}
+.gauges{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;margin-top:10px}
+.kv{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 9px;display:grid}
+.kv span{font-size:12px;color:var(--muted);line-height:1.35}
+.kv strong{font-family:var(--f-mono);font-size:17px;direction:ltr;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+.kv.bad{background:var(--bad-bg);border-color:var(--hot)}.kv.bad strong{color:#b0122a}
+
+/* controls + log */
+.duo{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:12px;align-items:start}
+@media (max-width:1000px){.duo{grid-template-columns:minmax(0,1fr)}}
+.controls{--hc:var(--h2o2)}
+.subh{font-size:13.5px;font-weight:700;margin:0 0 6px;color:var(--ink)}
+.cgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:14px}
+@media (max-width:720px){.cgrid{grid-template-columns:minmax(0,1fr)}}
+.inputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.sw{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:center;text-align:right;padding:6px 8px;font-size:13px;line-height:1.35}
+.sw b{width:32px;height:18px;border-radius:9px;background:var(--bad-bg);border:1px solid var(--ink);position:relative}
+.sw b::after{content:"";position:absolute;top:2px;right:2px;width:12px;height:12px;border-radius:50%;background:var(--hot);transition:right .15s}
+.sw[aria-pressed="true"] b{background:var(--ok-bg)}
+.sw[aria-pressed="true"] b::after{right:16px;background:var(--ok)}
+input[type=range]{width:100%;accent-color:var(--h2o2)}
+.faults{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px}
+.faults button{text-align:right;line-height:1.4;padding:7px 10px;font-size:13px;display:grid;gap:2px}
+.faults button small{color:var(--muted);font-size:11.5px}
+.faults button.on{background:var(--bad-bg);border-color:var(--hot);color:#9b1023;font-weight:700}
+.faults button.on small{color:#9b1023;font-weight:400}
+.logbox{--hc:var(--prod)}
+.log{display:grid;gap:4px;max-height:440px;overflow:auto;font-size:13px}
+.log div{display:grid;grid-template-columns:58px 10px minmax(0,1fr);gap:8px;align-items:start;padding:5px 8px;border-radius:6px;background:var(--panel2);line-height:1.45}
+.log time{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);direction:ltr;text-align:right}
+.log i{width:10px;height:10px;border:1px solid var(--ink);margin-top:5px}
+.log .blue i{background:var(--cair)}.log .yellow i{background:var(--prod)}.log .red i{background:var(--hot)}.log .step i{background:var(--water)}.log .down i{background:var(--hot)}.log .info i{background:var(--grey)}
+.log .yellow{background:var(--warn-bg)}.log .down,.log .red{background:var(--bad-bg)}.log .blue{background:var(--info-bg)}
+.log .an{font-family:var(--f-mono);font-size:11px;direction:ltr;unicode-bidi:isolate;color:#313232}
+
+/* charts */
+.charts{--hc:var(--steam)}
+.cpair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media (max-width:900px){.cpair{grid-template-columns:minmax(0,1fr)}}
+canvas{display:block;width:100%;max-width:100%}
+.ckey{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--muted);margin-top:4px}
+.ckey i{display:inline-block;width:16px;height:3px;vertical-align:middle;margin-left:4px}
+
+/* quiz */
+.quiz{--hc:var(--prod);background:#fffef0;border-color:#e2c800}
+.qopts{display:grid;gap:6px;margin-top:8px}
+.qopts button{text-align:right;padding:9px 12px}
+.qopts button.right{border-color:var(--ok);background:var(--ok-bg);font-weight:700}
+.qopts button.wrong{border-color:var(--hot);background:var(--bad-bg)}
+.score{font-family:var(--f-mono);font-size:20px;direction:ltr;font-weight:700;color:var(--ink)}
+
+/* table */
+.tblbox{--hc:var(--cair)}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:13px}
+th,td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:right;vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:12px}
+td.k span{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:6px;background:var(--gc);color:var(--gt);border:1px solid var(--ink);font-family:var(--f-mono);font-weight:700}
+.alr{display:grid;gap:6px;font-size:13px}
+.alr div{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:start}
+.alr b{display:inline-grid;place-items:center;min-width:34px;height:22px;border:1px solid var(--ink);border-radius:4px;font-family:var(--f-mono);font-size:12px}
+@media (prefers-reduced-motion:reduce){.dash.on,.ops .lamp,.rung.fall{animation:none}}
+</style>
+</head>
+<body>
+<nav aria-label="تنقل" style="direction:rtl;display:flex;flex-wrap:wrap;gap:8px;max-width:1400px;margin:0 auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 0;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:14px"><a href="/a3speed-lab/" style="color:#1f5a96;text-decoration:none;font-weight:600;padding:4px 10px;border:1px solid #c5c5c5;border-radius:8px;background:#fff">← كل محاكيات A3/Speed</a></nav>
+<div class="wrap">
+<header>
+  <div style="display:grid;gap:4px">
+    <h1>سلم خطوات البرنامج <span class="en" style="font-size:.7em">A3/Speed 0300</span></h1>
+    <p class="sub">الخطوات من 0 لـ 14 بنفس الأرقام والأسماء اللي في برنامج الماكينة. كل خطوة ليها شرط طلوع وشرط نزول، وفيه خطوات بتطلع لوحدها وخطوات محتاجة زرار من المشغّل.</p>
+    <div class="phases"><span class="g-prep">تحضير 0–3</span><span class="g-ster">تعقيم 4–6</span><span class="g-wait">معقّمة ومستنية 7–9</span><span class="g-prod">إنتاج 10–11</span><span class="g-after">بعد الإنتاج 12–14</span></div>
+  </div>
+  <div class="row">
+    <span class="note">سرعة المحاكاة</span>
+    <div class="row" id="speeds" role="group" aria-label="سرعة المحاكاة"></div>
+    <button id="pauseBtn">إيقاف مؤقت</button>
+    <button id="resetBtn">من الأول</button>
+  </div>
+</header>
+
+<section class="tpop g-prep" id="tpop" aria-live="polite">
+  <div class="bignum" id="bigNum">0</div>
+  <div style="min-width:0;display:grid;gap:4px">
+    <div class="row" style="gap:10px"><span class="stepname" id="stepName">—</span><span class="en" id="stepEn"></span><span class="pill idle" id="sterPill">مش معقّمة</span><span class="pill idle" id="runPill">الموتور واقف</span></div>
+    <div class="waitmsg" id="waitMsg"></div>
+    <div class="tbar"><div class="prog"><i id="progBar"></i></div><span class="mono note" id="progTxt"></span></div>
+  </div>
+  <div class="ops" role="group" aria-label="أزرار شاشة التشغيل">
+    <button class="up" id="upBtn">▲ اطلع خطوة<small>ضغطة عادية</small></button>
+    <button class="up" id="upLongBtn">▲ اطلع (3 ثواني)<small>لإنهاء الإنتاج والتهوية</small></button>
+    <button class="dn" id="dnBtn">▼ انزل خطوة<small>ضغطة عادية</small></button>
+    <button class="dn" id="dnLongBtn">▼ انزل (3 ثواني)<small>في التعقيم والمعقّمة</small></button>
+    <button class="stop" id="stopBtn">■ إيقاف <span class="en">Stop</span></button>
+    <button id="resetAlrBtn">تصفير الإنذارات <span class="en">Reset</span></button>
+    <button id="nextBtn" aria-pressed="false">تجهيز للإنتاج التالي: لأ</button>
+    <button id="autoBtn" aria-pressed="true">المشغّل الآلي: شغّال</button>
+  </div>
+</section>
+
+<div class="stage">
+  <section class="panel" style="--hc:var(--hot)">
+    <h2>السلم وتفاصيل الخطوة <span class="note">(اضغط على أي درجة تشوف تفاصيلها)</span></h2>
+    <div class="ladgrid">
+      <nav aria-label="سلم الخطوات"><div class="ladder" id="ladder"></div></nav>
+      <div id="detail" class="g-prep"></div>
+    </div>
+  </section>
+  <section class="panel machine">
+    <h2>النظام المعقّم دلوقتي <span class="note" id="schemNote"></span></h2>
+    <div class="sv"><svg viewBox="0 0 700 410" id="svg" role="img" aria-label="رسم مبسط للنظام المعقم: ضاغط، سخان هوا، مبادل حراري، صمام التسخين المسبق، صمام B، غرفة التعقيم، خزان الرش، حوض البيروكسيد، ماسورة المنتج">
+      <g id="pipes"></g>
+      <circle class="comp" cx="70" cy="350" r="24"/><text class="tag" x="70" y="354" text-anchor="middle" style="font-size:8.5px">U70T0300</text>
+      <text class="lbl" x="104" y="345">ضاغط</text><text class="tag" x="104" y="360">سريان U70B2470</text>
+      <rect class="comp" x="50" y="215" width="40" height="58" rx="6"/><text class="lbl" x="98" y="238">فاصل المية</text>
+      <rect x="52" y="262" width="36" height="9" fill="var(--water)"/>
+      <rect class="comp" x="140" y="96" width="92" height="48" rx="4" id="shBox"/>
+      <text class="lbl" x="186" y="88" text-anchor="middle">سخان الهوا</text>
+      <text class="val" x="186" y="125" text-anchor="middle" id="vSh">25°</text>
+      <text class="tag" x="186" y="160" text-anchor="middle">U70Q0450</text>
+      <rect class="comp" x="272" y="96" width="92" height="48" rx="4"/>
+      <text class="lbl" x="318" y="88" text-anchor="middle">المبادل الحراري</text>
+      <text class="tag" x="318" y="124" text-anchor="middle" id="hxMode">—</text>
+      <text class="tag" x="318" y="160" text-anchor="middle">U70M2450</text>
+      <text class="val" x="380" y="104" id="vHs">25°</text><text class="tag" x="380" y="160">U70B3520</text>
+      <g id="vPre"><path class="valve" d="M440 112 l12 8 l-12 8 z M464 112 l-12 8 l12 8 z"/></g>
+      <text class="tag" x="420" y="146" text-anchor="middle">U70K2300</text>
+      <text class="tag" x="452" y="40" text-anchor="middle" id="exhTxt">للعادم</text>
+      <g id="vBf"><circle class="valve" cx="452" cy="168" r="7"/><line x1="446" y1="168" x2="458" y2="168" stroke="#040505" stroke-width="1.5" id="bfLine"/></g>
+      <text class="tag" x="462" y="182">فراشة U70K2350</text>
+      <g id="vB"><rect class="valve" x="580" y="110" width="20" height="20" rx="3"/></g>
+      <text class="tag" x="590" y="100" text-anchor="middle">صمام B U70K1520</text>
+      <text class="val" x="606" y="150" id="vBv">25°</text><text class="tag" x="606" y="162">U70B1740</text>
+      <rect x="390" y="190" width="200" height="112" rx="6" fill="#eef8fb" stroke="#040505" stroke-width="2" id="acBox"/>
+      <text class="lbl" x="400" y="210">غرفة التعقيم</text>
+      <text class="val" x="400" y="232" id="vAc">25°</text><text class="tag" x="440" y="232">U70B3540</text>
+      <rect x="528" y="196" width="18" height="190" fill="#f6f2e4" stroke="#040505" stroke-width="1.2" id="tube"/>
+      <text class="tag" x="552" y="390">الأنبوبة</text>
+      <rect x="512" y="336" width="50" height="10" fill="#3b5959" stroke="#040505" id="jawL"/>
+      <g id="vA"><rect class="valve" x="527" y="18" width="20" height="16" rx="3"/></g>
+      <text class="lbl" x="520" y="16" text-anchor="end">صمام A (منتج)</text>
+      <text class="tag" x="566" y="80">حاجز بخار</text><text class="val" x="630" y="80" id="vSt">25°</text>
+      <rect class="comp" x="630" y="196" width="40" height="70" rx="4"/>
+      <rect id="sprayLvl" x="632" y="264" width="36" height="0" fill="var(--h2o2)"/>
+      <text class="lbl" x="650" y="190" text-anchor="middle">خزان الرش</text>
+      <text class="tag" x="676" y="232" text-anchor="middle" transform="rotate(90 676 232)">U70B3180</text>
+      <g id="vFill"><rect class="valve" x="642" y="290" width="16" height="12" rx="2"/></g><text class="tag" x="664" y="300">ملء</text><text class="tag" x="600" y="322">U70K3290</text>
+      <g id="vSpray"><rect class="valve" x="606" y="222" width="14" height="12" rx="2"/></g><text class="tag" x="618" y="214" text-anchor="middle" style="font-size:9px">U70K3300</text>
+      <rect x="390" y="338" width="110" height="40" rx="4" fill="#fff" stroke="#040505" stroke-width="1.5"/>
+      <rect x="392" y="356" width="106" height="20" fill="var(--h2o2)" opacity=".85"/>
+      <text class="lbl" x="398" y="352">حوض البيروكسيد</text>
+      <text class="val" x="398" y="398" id="vBath">25°</text>
+      <g id="vAk"><rect class="valve" x="500" y="292" width="20" height="10" rx="2"/></g><text class="tag" x="400" y="320">سكينة الهوا U70K2440</text>
+      <text class="tag" x="10" y="400">مية الحلقة U70B2010</text>
+    </svg></div>
+    <div class="legend"><span><i style="background:var(--air)"></i>هوا</span><span><i style="background:var(--hot)"></i>هوا سخن</span><span><i style="background:var(--pre)"></i>هوا متسخّن مسبقًا</span><span><i style="background:var(--steam)"></i>بخار</span><span><i style="background:var(--prod)"></i>منتج</span><span><i style="background:var(--water)"></i>مية</span><span><i style="background:var(--h2o2)"></i>بيروكسيد</span><span><i style="background:var(--grey)"></i>واقف</span></div>
+    <div class="gauges" id="gauges"></div>
+  </section>
+</div>
+
+<div class="duo">
+  <section class="panel controls">
+    <h2>الحساسات والأعطال <span class="note">(غيّر حاجة وشوف السلم بيعمل إيه)</span></h2>
+    <div class="cgrid">
+      <div>
+        <p class="subh">حالة الماكينة</p>
+        <div class="inputs" id="inputs"></div>
+        <p class="subh" style="margin-top:12px">تركيز البيروكسيد <span class="mono" id="concVal">35%</span></p>
+        <input type="range" id="conc" min="20" max="55" value="35" aria-label="تركيز البيروكسيد">
+        <p class="note" style="margin:4px 0 0">في التحضير لو التركيز فوق 42% الماكينة مش هتطلع. في الإنتاج الإنذار تحت 31% أو فوق 50%.</p>
+      </div>
+      <div>
+        <p class="subh">أعطال تقدر تعملها</p>
+        <div class="faults" id="faults"></div>
+      </div>
+    </div>
+  </section>
+  <section class="panel logbox">
+    <h2>سجل الإنذارات والخطوات</h2>
+    <div class="log" id="log" aria-live="polite"></div>
+  </section>
+</div>
+
+<section class="panel charts">
+  <h2>المنحنيات <span class="note">(آخر 30 دقيقة من وقت الماكينة، والشريط اللي تحت بلون الخطوة)</span></h2>
+  <div class="cpair">
+    <div><p class="subh">الحرارة العالية</p><canvas dir="ltr" id="c1" height="210" aria-label="منحنى سخان الهوا وحرارة التعقيم وصمام B"></canvas>
+      <div class="ckey"><span><i style="background:#ee2643"></i>سخان الهوا U70Q0450</span><span><i style="background:#f79027"></i>حرارة التعقيم U70B3520</span><span><i style="background:#a177b4"></i>صمام B U70B1740</span></div></div>
+    <div><p class="subh">غرفة التعقيم والبخار والسريان</p><canvas dir="ltr" id="c2" height="210" aria-label="منحنى حرارة غرفة التعقيم والبخار وسريان الهوا"></canvas>
+      <div class="ckey"><span><i style="background:#4687c7"></i>غرفة التعقيم U70B3540</span><span><i style="background:#a177b4"></i>حاجز البخار</span><span><i style="background:#7fa31a"></i>سريان الهوا م³/س</span></div></div>
+  </div>
+</section>
+
+<section class="panel quiz">
+  <h2>إيه العطل؟ <span class="note">المحاكي يعمل مشكلة وانت تعرف السبب من السلم والسجل</span></h2>
+  <div class="row"><button id="qStart">ابدأ سؤال جديد</button><span class="note">النتيجة</span><span class="score" id="qScore">0 / 0</span></div>
+  <p id="qText" style="margin:10px 0 0;font-weight:600"></p>
+  <div class="qopts" id="qOpts"></div>
+  <p class="note" id="qExp" style="margin-top:8px"></p>
+</section>
+
+<section class="panel tblbox">
+  <h2>جدول الخطوات كلها</h2>
+  <div class="tbl"><table><thead><tr><th>رقم</th><th>الخطوة</th><th>اسمها في البرنامج</th><th>تطلع إزاي</th><th>تنزل إزاي</th><th>الوقت</th></tr></thead><tbody id="tbody"></tbody></table></div>
+  <div class="dlabel" style="margin-top:14px">ألوان الإنذارات في البرنامج</div>
+  <div class="alr">
+    <div><b style="background:var(--cair);color:#fff">B</b><span>أزرق: تنبيه، الماكينة بتكمّل. مثال <span class="code">ALR_PFU_BE_SealMonTS</span></span></div>
+    <div><b style="background:var(--prod)">Y</b><span>أصفر: وقوف. لو حصل في التعقيم بيرجّع التعقيم من الأول. مثال <span class="code">ALR_PER_YE_SlowFilling</span></span></div>
+    <div><b style="background:var(--hot);color:#fff">R</b><span>أحمر: وقوف سريع.</span></div>
+    <div><b>E/O</b><span>الحرف التاني في اسم الإنذار: E للفني و O للمشغّل <span class="simp">تبسيط توضيحي</span></span></div>
+  </div>
+</section>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const fmt=s=>{s=Math.max(0,Math.floor(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return (h?h+':'+String(m).padStart(2,'0'):m)+':'+String(x).padStart(2,'0')};
+const grp=n=>n<=3?'prep':n<=6?'ster':n<=9?'wait':n<=11?'prod':'after';
+
+/* ---------- steps (numbers, names and rules from the PLC sequencer) ---------- */
+const STEPS=[
+ {ar:'الماكينة واقفة',en:'Idle',up:'زرار "اطلع" ← 1 (أو ← 14 لو مختار تجهيز الإنتاج التالي)',down:'—',time:'الوقفة القصيرة 15 دقيقة بعد الإنتاج',
+  does:['كل الموديولات مفصولة (التعقيم، الفكوك، القفلات، الوصلات).','لو الماكينة وقفت بعد إنتاج بيتحسب وقت "الوقفة القصيرة" 15 دقيقة.'],
+  conds:['noStop','recipe'],code:'NOT FastStop AND NOT NormalStop AND RecipeValid'},
+ {ar:'التحضير',en:'Preparation',up:'زرار "اطلع" ← 2',down:'زرار "انزل" ← 0',time:'—',
+  does:['كل الموديولات بتاخد كهربا.','بيتشيك: تركيز البيروكسيد، عطل جهاز القياس، مستوى تنك البيروكسيد، مكان صمام التحويل والفراشة، صمام المبادل، كوباية الـCIP، مستوى فاصل المية، أسلاك الحرارة.'],
+  conds:['modules','noStop','conc42','h2o2lvl','cipcup','seplvl','valves'],code:'MdlsFunctionsOk AND NOT FastStop AND NOT NormalStop'},
+ {ar:'تجهيز لحام الأنبوبة',en:'PrepareToTubeSealing',up:'زرار "اطلع" ← 3',down:'Stop أو عدّى 5 دقايق أو إنذار ← 1',time:'أقصى حاجة 5 دقايق',
+  does:['ماسورة الملء في مكانها التحتاني، غشاء صمام التنظيم، حركة صمام السيرفو.','الضاغط جاهز، تركيز ومستوى البيروكسيد تمام.','لو الـPLC كان اتطفى: الفكوك بتعمل Referencing لوحدها هنا.'],
+  conds:['modules','fillpipe','compReady','conc42','h2o2lvl'],code:'ConditionsToRun AND MdlsFunctionsOk'},
+ {ar:'لحام الأنبوبة',en:'TubeSealing',up:'زرار "اطلع" ← 4 (بعد ما اللحام يخلص)',down:'Stop أو باب غرفة التعقيم اتفتح ← 2',time:'—',
+  does:['الفكوك بتلف بسرعة لحام الأنبوبة 8000 عبوة/ساعة.','لازم أبواب غرفة التعقيم مقفولة ودورة تنظيف الأنبوبة تخلص.'],
+  conds:['doors','tubeDone','noStop'],code:'TubeSealingFinished AND NOT CPIEInCriticalArea'},
+ {ar:'التعقيم بالحرارة',en:'HeatSterilization',up:'لوحدها ← 5 لما الحرارة تفضل 280° لمدة 30 ثانية',down:'زرار "انزل" 3 ثواني ← 2 · إنذار تعقيم ← 1',time:'حوالي 6–8 دقايق',
+  does:['الضاغط شغّال والسريان 100 م³/س (إنذار تحت 93%). مية الحلقة 7 لتر/د (إنذار تحت 5.5).','سخان الهوا على 400°، والهوا السخن بيعدّي على المبادل By-pass.','صمام التسخين المسبق: 40 ثانية للعادم، دقيقة تهوية مواسير، وبعدين بيتحكم في حرارة الغرفة على 40°.','تنظيف بزبوز الرش 5 دقايق، والفراشة بتقفل عند 279°.'],
+  conds:['hs280','nozzle'],code:'STR_T.Spray  (PerReadyHeatSter AND SasReadyHeatSter)'},
+ {ar:'الرش',en:'Spraying',up:'لوحدها ← 6 بعد 55 ثانية',down:'إنذار أثناء الملء ← 1 · إنذار أثناء التفضية ← تجفيف بعد إنذار',time:'55 ثانية',
+  does:['صمام الملء بيملا خزان الرش 11 ثانية: لازم يتملى بعد 3 ثواني وقبل 10.','وقفة ثانية، وبعدين الرش 43 ثانية (من ثانية 12 لـ 55).','لازم الخزان يفضى بعد 18 ثانية وقبل 38 ثانية من بداية الرش.'],
+  conds:['sprayEnd'],code:'STR_T.Drying OR STR_T.DryingAfterAlarm'},
+ {ar:'التجفيف',en:'Drying',up:'لوحدها ← 7 بعد 15 دقيقة لو مفيش إنذار',down:'إنذار ← تجفيف 10 دقايق وبعدين ← 1',time:'15 دقيقة (20 مع الحقن HI)',
+  does:['أول دقيقة صمام B مقفول (وقفة ماسورة الملء)، وبعدين يفتح لحد الدقيقة 14.','90% من الهوا لغرفة التعقيم و10% لسكينة الهوا.','البخار عند صمام C لازم يتجمّع له 13 دقيقة وهو 126° أو أكتر.'],
+  conds:['dry15','steam13'],code:'MachineIsSterile AND NOT DryingAfterAlarm'},
+ {ar:'التعقيم خلص',en:'SterilizationDone',up:'زرار "اطلع" ← 8',down:'زرار "انزل" 3 ثواني ← 12',time:'—',
+  does:['الماكينة معقّمة. كل موديول عامل التعقيم بتاعه تمام.','ممكن تحرّك الفكوك ببطء (Inching) وهي معقّمة.'],
+  conds:['modules','noStop'],code:'MdlsFunctionsOk AND NOT Stop alarms AND RunSynchronizer Idle'},
+ {ar:'إشارة للمعقّم',en:'SignalToSterilizer',up:'زرار "اطلع" ← 9',down:'زرار "انزل" 3 ثواني ← 7',time:'—',
+  does:['الماكينة جاهزة للإنتاج وبتبلّغ المعقّم (الـUHT).','لازم كل الموديولات تمام.'],
+  conds:['modules','noStop'],code:'MdlsFunctionsOk AND NOT Stop alarms'},
+ {ar:'تجهيز الإنتاج',en:'PrepareToProduction',up:'زرار "اطلع" ← 10 (ولازم حرارة هوا الحقن ≥ 357°)',down:'Stop أو عدّى 5 دقايق أو إنذار ← 8',time:'أقصى حاجة 5 دقايق',
+  does:['الورق بيتجهّز للحركة.','حرارة سخانات القفلات لازم تكون تمام.','لو عدّت 5 دقايق من غير ما تطلع، الماكينة تنزل خطوة.'],
+  conds:['modules','flap','hiAir','noStop'],code:'ConditionsToRun AND MdlsFunctionsOk  +  AI_U70B4360 >= 3570'},
+ {ar:'تشغيل الموتور',en:'MotorStart',up:'لوحدها ← 11 لما الملء والتصميم يبقوا تمام',down:'Stop ← 8',time:'ثواني',
+  does:['الفكوك بتسرّع لسرعة الإنتاج وصمام A بيفتح.','الملء تمام = صمام A مفتوح وسريان المنتج أكتر من 60% ونافذة الملء تمام.','التصميم تمام = ±1.5 مم.'],
+  conds:['paper','fillOK','designOK'],code:'PaperMoving AND FillingOk AND PackageDesignOK'},
+ {ar:'الإنتاج',en:'Production',up:'زرار "اطلع" 3 ثواني ← 12',down:'Stop ← 8',time:'—',
+  does:['الماكينة بتنتج 24000 عبوة/ساعة. حوض البيروكسيد على 85°.','أي إنذار أصفر هنا بيوقّف الموتور ويرجّعها للخطوة 8.'],
+  conds:['long3'],code:'StepUpCond AND StepUp button 3 s'},
+ {ar:'انتهاء الإنتاج',en:'EndProduction',up:'لوحدها بعد 5 دقايق أو "اطلع" 3 ثواني ← 13',down:'زرار "انزل" ← 8 (لو لسه معقّمة)',time:'الموتور يكمّل 60 ثانية بالكتير · 5 دقايق',
+  does:['الموتور بيكمّل لحد 60 ثانية علشان يفضّي الأنبوبة وبعدين يقف.','لو الماكينة مش معقّمة الوقت 30 ثانية بس بدل 5 دقايق.'],
+  conds:['endTimer'],code:'TMR_EndProduction.DN OR (StepUpCond AND StepUp 3 s)'},
+ {ar:'التهوية',en:'Venting',up:'لوحدها ← 14 بعد 10 دقايق',down:'—',time:'10 دقايق',
+  does:['الهوا بيطرد بخار البيروكسيد من غرفة التعقيم.','الماكينة مبقتش معقّمة.'],
+  conds:['vent10'],code:'STR_T.TmrVenting.DN'},
+ {ar:'تجهيز للإنتاج التالي',en:'PrepareToNextProduction',up:'—',down:'زرار "انزل" ← 1',time:'—',
+  does:['هنا بيتعمل التنظيف (CIP) والتنظيف الخارجي وتغيير الورق.','الموديولات كلها عليها كهربا بما فيها وحدة التنظيف ICU.'],
+  conds:[],code:'StepDown → Preparation'}
+];
+
+/* ---------- faults (alarm names as in the program) ---------- */
+const FAULTS={
+ estop:{ar:'زرار طوارئ اتداس',sm:'أي خطوة ← 0',an:'Pluto'},
+ slowFill:{ar:'خزان الرش بيتملى ببطء',sm:'أكتر من 10 ث في الرش ← 1',an:'ALR_PER_YE_SlowFilling'},
+ slowEmpty:{ar:'خزان الرش بيفضى ببطء',sm:'أكتر من 38 ث ← تجفيف بعد إنذار ← 1',an:'ALR_PER_YE_SlowEmptying'},
+ sealWater:{ar:'مية حلقة الضاغط قليلة',sm:'أقل من 5.5 لتر/د لمدة 30 ث',an:'ALR_SAS_YE_SealWaterLowFlow'},
+ airFlow:{ar:'سريان الهوا المعقّم قليل',sm:'أقل من 93% من المطلوب 30 ث',an:'ALR_SAS_YE_SterileAirLowFlowrate'},
+ superheater:{ar:'سخان الهوا مش بيسخن',sm:'التعقيم مش هيوصل 280°',an:'ALR_SAS_YE_SuperheaterMalfunction'},
+ steam:{ar:'البخار عند صمام C واطي',sm:'أقل من 126° في التجفيف',an:'ALR_FIL_YE_SteamWrongSterilization'},
+ doors:{ar:'باب غرفة التعقيم اتفتح',sm:'في اللحام ← 2 · في التعقيم ← 1',an:'ALR_SAS_YE_SterileDoorsOpen'},
+ hiAir:{ar:'سخان هوا الحقن مش سخن',sm:'الخطوة 9 مش هتطلع',an:'AI_U70B4360'},
+ design:{ar:'التصميم بايظ (الفوتوسل)',sm:'عبوات كتير برا التصميم ← وقوف',an:'ALR_PFU_YE_JawAuxFunDCSOutOfDesign'},
+ filling:{ar:'سريان المنتج قليل',sm:'الملء مش هيبقى تمام',an:'TMCC FillingOK'}
+};
+
+/* ---------- state ---------- */
+let S;
+function fresh(){
+  S={step:0,st:0,t:0,speed:20,paused:false,auto:true,next:false,sterile:false,run:false,
+   inp:{power:true,air:true,doors:true,cipcup:true,seplvl:true,h2o2lvl:true,valves:true,fillpipe:true,flap:true,conc:35},
+   T:{sh:25,hs:25,ac:25,bv:25,st:25,bath:25,hi:25,flow:0,seal:0},
+   faults:new Set(),act:new Map(),ster:{dryAlarm:false,dryAlarmT:0},sealLow:0,flowLow:0,
+   hsHold:0,nozzle:0,spray:{lvl:0,fillChk:false,emptyChk:false},steam13:0,tubeT:0,motorT:0,pk:0,outPk:0,dErr:9,okPk:0,designOK:false,fillOK:false,flowPct:0,
+   endRun:0,hist:[],maxStep:0,view:null,autoHoldUntil:0};
+}
+fresh();
+
+/* ---------- log + alarms ---------- */
+const logEl=$('log');
+function log(kind,text,an){
+  const d=document.createElement('div');d.className=kind;
+  d.innerHTML='<time>'+fmt(S.t)+'</time><i></i><span>'+text+(an?' <span class="an">'+an+'</span>':'')+'</span>';
+  logEl.prepend(d);while(logEl.children.length>90)logEl.lastChild.remove();
+}
+function alarm(id,cls,text,an){if(S.act.has(id))return;S.act.set(id,cls);log(cls,text,an)}
+function clearAlarm(id){S.act.delete(id)}
+function stopAlarms(){let n=0;S.act.forEach(c=>{if(c==='yellow'||c==='red')n++});return n}
+function resetAlarms(auto){if(!S.act.size)return;S.act.clear();log('info',auto?'المشغّل صفّر الإنذارات':'تصفير الإنذارات (Reset)')}
+
+/* ---------- conditions ---------- */
+const C={
+ noStop:{ar:'مفيش إنذار وقوف (أصفر أو أحمر) — لو فيه دوس Reset',t:()=>stopAlarms()===0},
+ recipe:{ar:'الوصفة (Recipe) سليمة',t:()=>true},
+ modules:{ar:'كل الموديولات تمام (كهربا وهوا مضغوط)',t:()=>S.inp.power&&S.inp.air&&!S.faults.has('estop')},
+ conc42:{ar:'تركيز البيروكسيد مش فوق 42%',t:()=>S.inp.conc<=42&&S.inp.conc>=30},
+ h2o2lvl:{ar:'مستوى تنك البيروكسيد تمام',t:()=>S.inp.h2o2lvl},
+ cipcup:{ar:'كوباية الـCIP مفصولة',t:()=>S.inp.cipcup},
+ seplvl:{ar:'مستوى فاصل المية مش عالي',t:()=>S.inp.seplvl},
+ valves:{ar:'صمام التحويل والفراشة وصمام المبادل في مكانهم',t:()=>S.inp.valves},
+ fillpipe:{ar:'ماسورة الملء تحت وصمام التنظيم جاهز',t:()=>S.inp.fillpipe},
+ compReady:{ar:'الضاغط جاهز',t:()=>S.inp.power&&!S.faults.has('sealWater')},
+ doors:{ar:'أبواب غرفة التعقيم مقفولة',t:()=>S.inp.doors&&!S.faults.has('doors')},
+ tubeDone:{ar:'لحام الأنبوبة خلص',t:()=>S.tubeT>=40},
+ hs280:{ar:'حرارة التعقيم 280° أو أكتر لمدة 30 ثانية',t:()=>S.hsHold>=30},
+ nozzle:{ar:'تنظيف بزبوز الرش خلص (5 دقايق)',t:()=>S.nozzle>=300},
+ sprayEnd:{ar:'الرش خلص (55 ثانية)',t:()=>S.step===5&&S.st>=55},
+ dry15:{ar:'15 دقيقة تجفيف خلصت',t:()=>S.step===6&&S.st>=900},
+ steam13:{ar:'البخار 126° أو أكتر لمدة 13 دقيقة',t:()=>S.steam13>=780},
+ flap:{ar:'سخانات القفلات وصلت حرارتها',t:()=>S.inp.flap},
+ hiAir:{ar:'حرارة هوا الحقن ≥ 357°',t:()=>S.T.hi>=357},
+ paper:{ar:'الورق بيتحرك',t:()=>S.run},
+ fillOK:{ar:'الملء تمام (صمام A مفتوح وسريان أكتر من 60%)',t:()=>S.fillOK},
+ designOK:{ar:'التصميم تمام (±1.5 مم لـ 3 عبوات ورا بعض)',t:()=>S.designOK},
+ long3:{ar:'ضغطة "اطلع" لمدة 3 ثواني',t:()=>false},
+ endTimer:{ar:'عدّت 5 دقايق (أو ضغطة 3 ثواني)',t:()=>S.step===12&&S.st>=300},
+ vent10:{ar:'عدّت 10 دقايق تهوية',t:()=>S.step===13&&S.st>=600}
+};
+const condsOk=n=>STEPS[n].conds.every(k=>C[k].t());
+
+/* ---------- step changes ---------- */
+function gotoStep(n,why,kind){
+  const from=S.step;if(n===from)return;
+  S.step=n;S.st=0;
+  if(n===3)S.tubeT=0;
+  if(n===4){S.hsHold=0;S.nozzle=0}
+  if(n===5){S.spray={lvl:0,fillChk:false,emptyChk:false}}
+  if(n===6){S.steam13=0}
+  if(n<=6||n===13)S.sterile=false;
+  if(n===7)S.sterile=true;
+  if(n===10){S.motorT=0;S.okPk=0;S.designOK=false;S.wasOK=false;S.fillOK=false;S.outPk=0;S.dErr=9}
+  if(n===12)S.endRun=0;
+  S.maxStep=Math.max(S.maxStep,n);
+  S.autoHoldUntil=S.t+4;
+  const label=n+' '+STEPS[n].ar;
+  if(kind==='down'){log('down','نزول من '+from+' لـ '+label+(why?' — '+why:''));flashRung(n)}
+  else log('step','الخطوة '+label+(why?' — '+why:''));
+  buildLadder();
+}
+function sterAlarm(an,text){
+  // program: alarm in heat sterilisation / spray filling = sterilisation failure -> Preparation now;
+  // alarm in spray emptying / drying = drying after alarm 10 min -> Preparation
+  const s=S.step;
+  if(s===4||(s===5&&S.st<12)){alarm('ster_'+an,'yellow',text+' — التعقيم فشل',an);gotoStep(1,'إنذار أثناء التعقيم: لازم يبدأ من الأول','down');return}
+  if(s===5||s===6){alarm('ster_'+an,'yellow',text,an);if(!S.ster.dryAlarm){S.ster.dryAlarm=true;S.ster.dryAlarmT=0;log('yellow','تجفيف بعد إنذار: 10 دقايق وبعدين نزول للتحضير','STR DryingAfterAlarm');if(s===5)gotoStep(6,'الرش اتقطع، بيجفف بعد الإنذار')}}
+}
+function stopMachine(why,an){
+  const s=S.step;alarm('stop_'+(an||why),'yellow','إيقاف: '+why,an);
+  if(s===9||s===10||s===11){S.run=false;gotoStep(8,why,'down')}
+  else if(s===3){S.run=false;gotoStep(2,why,'down')}
+  else if(s===2){gotoStep(1,why,'down')}
+}
+
+/* ---------- buttons (rules from the sequencer transitions) ---------- */
+function stepUp(auto){
+  const s=S.step;
+  if(s===0){if(condsOk(0))gotoStep(S.next?14:1,'');else if(!auto)log('info','الزرار مش شغال: فيه إنذار وقوف، دوس Reset الأول')}
+  else if(s===1){if(condsOk(1))gotoStep(S.next?14:2,'');else if(!auto)log('info','لسه شرط في التحضير ناقص (بص على الدواير الحمرا)')}
+  else if(s===2){if(condsOk(2))gotoStep(3,'');else if(!auto)log('info','شروط تجهيز اللحام لسه ناقصة')}
+  else if(s===3){if(condsOk(3))gotoStep(4,'التعقيم بالحرارة بدأ');else if(!auto)log('info','لحام الأنبوبة لسه ما خلصش أو الأبواب مفتوحة')}
+  else if(s===7){if(condsOk(7))gotoStep(8,'');else if(!auto)log('info','موديول مش جاهز أو فيه إنذار')}
+  else if(s===8){if(condsOk(8))gotoStep(9,'');else if(!auto)log('info','موديول مش جاهز أو فيه إنذار')}
+  else if(s===9){if(condsOk(9)){gotoStep(10,'الموتور بيبدأ');S.run=true}else if(!auto)log('info',!C.hiAir.t()?'الزرار مش شغال: حرارة هوا الحقن أقل من 357°':'شرط تجهيز الإنتاج لسه ناقص')}
+  else if(!auto&&(s===11||s===12))log('info','هنا محتاج ضغطة 3 ثواني على "اطلع"');
+  else if(!auto&&[4,5,6,10,13].includes(s))log('info','الخطوة دي بتطلع لوحدها لما الشرط يتحقق');
+  else if(!auto&&s===14)log('info','من هنا بترجع للتحضير بزرار "انزل"');
+}
+function stepUpLong(){
+  const s=S.step;
+  if(s===11)gotoStep(12,'المشغّل أنهى الإنتاج (ضغطة 3 ثواني)');
+  else if(s===12){if(!S.run)gotoStep(13,'ضغطة 3 ثواني');else log('info','استنى الموتور يقف الأول')}
+  else stepUp(false);
+}
+function stepDown(){
+  const s=S.step;
+  if(s===1)gotoStep(0,'زرار انزل','down');
+  else if(s===14)gotoStep(1,'رجوع للتحضير');
+  else if(s===12&&S.sterile&&!S.run)gotoStep(8,'لسه معقّمة: رجوع لإشارة المعقّم','down');
+  else if([4,7,8].includes(s))log('info','هنا محتاج ضغطة 3 ثواني على "انزل"');
+  else log('info','الزرار ده مش بيعمل حاجة في الخطوة دي');
+}
+function stepDownLong(){
+  const s=S.step;
+  if(s===4)gotoStep(2,'المشغّل وقّف التعقيم (ضغطة 3 ثواني)','down');
+  else if(s===7)gotoStep(12,'المشغّل اختار انتهاء الإنتاج','down');
+  else if(s===8)gotoStep(7,'ضغطة 3 ثواني','down');
+  else stepDown();
+}
+function stopBtn(){
+  const s=S.step;
+  if([9,10,11].includes(s)){S.run=false;gotoStep(8,'زرار Stop','down')}
+  else if(s===3){S.run=false;gotoStep(2,'زرار Stop','down')}
+  else if(s===2)gotoStep(1,'زرار Stop','down');
+  else log('info','Stop مش بيغيّر الخطوة هنا');
+}
+
+/* ---------- outputs ---------- */
+function outs(){
+  const s=S.step,t=S.st,o={};
+  o.comp=(s>=4&&s<=13);
+  o.sh=(s>=4&&s<=12)&&!S.faults.has('superheater');
+  o.preExh=s===4&&t<40;
+  o.preAC=(s===4&&t>=100)||(s>=5&&s<=12);
+  o.bValve=s===4||s===5||(s===6&&t>=60&&t<840);
+  o.bf=s===4&&S.T.hs>=279;
+  o.fill=s===5&&t<11;
+  o.spray=s===5&&t>=12&&t<55;
+  o.A=s===10||s===11;
+  o.steam=s>=1&&s<=12;
+  o.ak=s>=6&&s<=11;
+  o.hx=(s===4||s===5)?'By-pass':(s>=6&&s<=12?'تحكم':'—');
+  return o;
+}
+
+/* ---------- physics ---------- */
+function approach(k,target,tau,dt){S.T[k]+=(target-S.T[k])*(1-Math.exp(-dt/tau))}
+function physics(dt,o){
+  const s=S.step,F=S.faults;
+  approach('sh',o.sh?(s<=5?400:330):25,s>=4?90:300,dt);
+  let hs=25;if(s===4)hs=Math.min(S.T.sh*0.74,300);else if(s===5)hs=282;else if(s===6)hs=170;else if(s>=7&&s<=12)hs=150;
+  approach('hs',hs,s===4?140:80,dt);
+  let ac=25;if(s===4)ac=40;else if(s===5)ac=46;else if(s===6)ac=85;else if(s>=7&&s<=11)ac=82;else if(s===12||s===13)ac=50;
+  approach('ac',ac,s===6?160:90,dt);
+  approach('bv',o.bValve?Math.min(S.T.hs*0.75,210):(s>=6&&s<=12?90:25),70,dt);
+  let st=25;if(o.steam)st=s>=6?130:105;if(F.has('steam')&&o.steam)st=118;
+  approach('st',st,40,dt);
+  approach('bath',s>=2&&s<=12?(s>=7?85:80):25,240,dt);
+  approach('hi',(s>=4&&s<=12&&!F.has('hiAir'))?372:25,120,dt);
+  let fl=0;if(o.comp)fl=(s>=7&&s<=11)?120:(s===12||s===13?90:100);if(F.has('airFlow')&&fl)fl*=0.84;
+  approach('flow',fl,15,dt);
+  approach('seal',o.comp?(F.has('sealWater')?4.2:7):0,8,dt);
+}
+
+/* ---------- monitors ---------- */
+function monitors(dt){
+  const s=S.step,T=S.T,F=S.faults;
+  if(F.has('estop')){if(s!==0){alarm('estop','red','زرار طوارئ: السلامة (Pluto) فصلت','Pluto');S.run=false;gotoStep(0,'إشارة السلامة اتقطعت','down')}return}
+  if(F.has('doors')){
+    if(s===3){alarm('doors3','yellow','باب غرفة التعقيم اتفتح','ALR_SAS_YE_SterileDoorsOpen');S.run=false;gotoStep(2,'الباب اتفتح أثناء اللحام','down');return}
+    if(s>=4&&s<=6){sterAlarm('ALR_SAS_YE_SterileDoorsOpen','باب غرفة التعقيم اتفتح');return}
+    if(s>=7&&s<=11){alarm('doorsS','yellow','باب غرفة التعقيم اتفتح: الماكينة مبقتش معقّمة','ALR_SAS_YE_SterileDoorsOpen');S.run=false;gotoStep(12,'المكان مبقاش معقّم','down');S.sterile=false;return}
+  }
+  if(s>=4&&s<=13&&T.seal<5.5){S.sealLow+=dt;if(S.sealLow>30){S.sealLow=-1e9;if(s<=6)sterAlarm('ALR_SAS_YE_SealWaterLowFlow','مية حلقة الضاغط أقل من 5.5 لتر/د');else stopMachine('مية حلقة الضاغط قليلة','ALR_SAS_YE_SealWaterLowFlow');return}}else if(T.seal>=5.5)S.sealLow=0;
+  const sp=(s>=7&&s<=11)?120:100;
+  if(s>=4&&s<=11&&S.st>40&&T.flow<sp*0.93){S.flowLow+=dt;if(S.flowLow>30){S.flowLow=-1e9;if(s<=6)sterAlarm('ALR_SAS_YE_SterileAirLowFlowrate','سريان الهوا المعقّم أقل من 93%');else stopMachine('سريان الهوا المعقّم قليل','ALR_SAS_YE_SterileAirLowFlowrate');return}}else if(T.flow>=sp*0.93)S.flowLow=0;
+  if(s===4&&F.has('superheater')&&S.st>420){sterAlarm('ALR_SAS_YE_SuperheaterMalfunction','سخان الهوا ما وصلش حرارته');return}
+  if((s===10||s===11)&&(S.inp.conc<31||S.inp.conc>50)){stopMachine('تركيز البيروكسيد '+S.inp.conc+'% برا 31–50%','ALR_PER_YO_ConcOutOfRange');return}
+  if(s===4&&S.inp.conc>42){sterAlarm('ALR_PER_YO_ConcOutOfRange','تركيز البيروكسيد عالي');return}
+  if(S.inp.conc>=48&&S.inp.conc<=50&&s>=10&&s<=11)alarm('concW','blue','تحذير: التركيز قرّب من الحد العالي','PAR_PerConcWarningHighProduction');else clearAlarm('concW');
+}
+
+/* ---------- sequence ---------- */
+function sequence(dt){
+  const s=S.step,T=S.T,F=S.faults;
+  if(s===2&&S.st>=300){log('yellow','عدّت 5 دقايق في تجهيز اللحام');gotoStep(1,'وقت تجهيز اللحام خلص','down');return}
+  if(s===3){const was=S.tubeT;S.tubeT+=dt;S.run=S.tubeT<40;if(S.tubeT>=40&&was<40)log('info','لحام الأنبوبة خلص — دوس "اطلع" للتعقيم')}
+  else if(s===4){
+    S.nozzle+=dt;
+    if(T.hs>=280)S.hsHold+=dt;else S.hsHold=0;
+    if(C.hs280.t()&&C.nozzle.t())gotoStep(5,'280° لمدة 30 ثانية وتنظيف البزبوز خلص');
+  }
+  else if(s===5){
+    const t=S.st;
+    if(t<11){if(F.has('slowFill'))S.spray.lvl=Math.min(.35,S.spray.lvl+dt/30);else if(t>=4)S.spray.lvl=Math.min(1,S.spray.lvl+dt/4)}
+    if(t>=10&&!S.spray.fillChk){S.spray.fillChk=true;if(S.spray.lvl<.95){sterAlarm('ALR_PER_YE_SlowFilling','خزان الرش ما اتملاش قبل 10 ثواني');return}}
+    if(t>=12&&t<55)S.spray.lvl=Math.max(0,S.spray.lvl-dt/(F.has('slowEmpty')?90:26));
+    if(t>=50&&!S.spray.emptyChk){S.spray.emptyChk=true;if(S.spray.lvl>.05){sterAlarm('ALR_PER_YE_SlowEmptying','خزان الرش ما فضيش قبل 38 ثانية');return}}
+    if(t>=55)gotoStep(6,'الرش خلص');
+  }
+  else if(s===6){
+    if(T.st>=126)S.steam13+=dt;
+    if(S.ster.dryAlarm){S.ster.dryAlarmT+=dt;if(S.ster.dryAlarmT>=600){S.ster.dryAlarm=false;gotoStep(1,'التجفيف بعد الإنذار خلص (10 دقايق): لازم يعقّم من الأول','down')}return}
+    if(S.st>=900){
+      if(S.steam13<780){sterAlarm('ALR_FIL_YE_SteamWrongSterilization','البخار ما فضلش 126° لمدة 13 دقيقة ('+fmt(S.steam13)+' بس)');return}
+      gotoStep(7,'التجفيف خلص: الماكينة معقّمة');
+    }
+  }
+  else if(s===9&&S.st>=300){log('yellow','عدّت 5 دقايق في تجهيز الإنتاج من غير تشغيل');gotoStep(8,'وقت تجهيز الإنتاج خلص','down')}
+  else if(s===10||s===11){
+    S.motorT+=dt;
+    const rate=24000/3600;S.pk+=rate*dt;
+    if(s===10){S.flowPct=Math.min(F.has('filling')?38:100,S.flowPct+dt*25);S.fillOK=S.flowPct>60}
+    const target=F.has('design')?4.5:0.3;S.dErr+=(target-S.dErr)*(1-Math.exp(-dt/2.5));
+    if(Math.abs(S.dErr)<=1.5){S.okPk+=rate*dt;if(S.okPk>=3&&!S.designOK){S.designOK=true;S.wasOK=true;S.outPk=0}}else{S.okPk=0;S.designOK=false;S.outPk+=rate*dt}
+    const allow=S.wasOK?20:80;
+    if(S.outPk>=allow){S.outPk=0;stopMachine('عبوات كتير برا التصميم','ALR_PFU_YE_JawAuxFunDCSOutOfDesign');return}
+    if(s===10&&C.fillOK.t()&&C.designOK.t())gotoStep(11,'الملء والتصميم تمام');
+    else if(s===10&&S.motorT>30&&!S.fillOK){stopMachine('الملء ما بقاش تمام','TMCC FillingOK');return}
+  }
+  else if(s===12){
+    if(S.run){S.endRun+=dt;S.pk+=24000/3600*dt;if(S.endRun>=60){S.run=false;log('info','الموتور وقف (60 ثانية بالكتير)')}}
+    if(S.st>=300&&!S.run)gotoStep(13,'عدّت 5 دقايق');
+  }
+  else if(s===13){if(S.st>=600)gotoStep(14,'التهوية خلصت')}
+  if(![3,10,11,12].includes(S.step))S.run=false;
+  if(S.step!==10&&S.step!==11)S.flowPct=0;
+}
+
+/* ---------- auto operator ---------- */
+function autoOp(){
+  if(!S.auto||S.t<S.autoHoldUntil||Q.hold)return;
+  const s=S.step;
+  if(stopAlarms()>0&&[0,1,2,7,8].includes(s)&&S.st>6){
+    const live=[...S.faults].length>0;if(!live){resetAlarms(true);S.autoHoldUntil=S.t+3;return}
+  }
+  if([0,1,2,3,7,8,9].includes(s)&&condsOk(s)&&S.st>3){
+    if(s===0&&S.maxStep>=13&&!S.next)return;
+    stepUp(true);
+  }
+  else if(s===11&&S.st>90)stepUpLong();
+}
+
+/* ---------- UI build ---------- */
+function buildLadder(){
+  const el=$('ladder');el.innerHTML='';
+  for(let n=14;n>=0;n--){
+    const b=document.createElement('button');b.className='rung g-'+grp(n);b.dataset.n=n;
+    if(n===S.step)b.classList.add('cur');else if(n<S.step)b.classList.add('done');
+    if(S.view===n)b.classList.add('view');
+    b.innerHTML='<span class="n">'+n+'</span><span class="t">'+STEPS[n].ar+'<small>'+STEPS[n].en+'</small></span>';
+    b.onclick=()=>{S.view=S.view===n?null:n;buildLadder()};
+    el.appendChild(b);
+  }
+  renderDetail();
+}
+function flashRung(n){requestAnimationFrame(()=>{const r=document.querySelector('.rung[data-n="'+n+'"]');if(r)r.classList.add('fall')})}
+function renderDetail(){
+  const n=S.view??S.step,st=STEPS[n],d=$('detail');
+  d.className='g-'+grp(n);
+  d.innerHTML='<div class="dhead">'+n+' · '+st.ar+'</div><div class="en">'+st.en+'</div>'+
+   '<div class="dlabel">بيحصل إيه</div><ul class="does">'+st.does.map(x=>'<li>'+x+'</li>').join('')+'</ul>'+
+   (st.conds.length?'<div class="dlabel">شرط الطلوع'+(n===S.step?' (دلوقتي)':'')+'</div><div class="conds" id="dconds"></div>':'')+
+   '<div class="box"><b>تطلع:</b> '+st.up+'<br><b>تنزل:</b> '+st.down+'<br><b>الوقت:</b> '+st.time+'</div>'+
+   '<div class="box">في البرنامج: <span class="code">'+st.code+'</span></div>';
+  refreshDetail();
+}
+function refreshDetail(){
+  const n=S.view??S.step,el=$('dconds');if(!el)return;
+  el.innerHTML=STEPS[n].conds.map(k=>{const live=n===S.step;const ok=C[k].t();return '<div class="cond '+(live?(ok?'ok':''):'na')+'"><i></i><span>'+C[k].ar+'</span></div>'}).join('');
+}
+const INPUTS=[['power','الكهربا'],['air','الهوا المضغوط'],['doors','أبواب غرفة التعقيم مقفولة'],['cipcup','كوباية الـCIP مفصولة'],['seplvl','مستوى فاصل المية تمام'],['h2o2lvl','مستوى تنك البيروكسيد تمام'],['valves','الصمامات في مكانها'],['fillpipe','ماسورة الملء تحت'],['flap','سخانات القفلات سخنة']];
+function renderInputs(){
+  $('inputs').innerHTML=INPUTS.map(([k,ar])=>'<button class="sw" aria-pressed="'+S.inp[k]+'" data-k="'+k+'"><b></b><span>'+ar+'</span></button>').join('');
+  [...$('inputs').children].forEach(b=>b.onclick=()=>{const k=b.dataset.k;S.inp[k]=!S.inp[k];log('info',(S.inp[k]?'رجع: ':'اتغيّر: ')+INPUTS.find(x=>x[0]===k)[1]);
+    if(!S.inp[k]&&(k==='power'||k==='air')&&S.step>0){alarm('util_'+k,'yellow',k==='power'?'الكهربا قطعت':'ضغط الهوا وقع');S.run=false;gotoStep(0,'الموديولات فصلت','down')}
+    if(k==='doors'){if(!S.inp.doors)S.faults.add('doors');else S.faults.delete('doors');renderFaults()}
+    renderInputs();refreshDetail()});
+}
+function renderFaults(){
+  $('faults').innerHTML=Object.entries(FAULTS).map(([k,f])=>'<button data-k="'+k+'" class="'+(S.faults.has(k)?'on':'')+'"><span>'+f.ar+'</span><small>'+f.sm+'</small></button>').join('');
+  [...$('faults').children].forEach(b=>b.onclick=()=>{const k=b.dataset.k;
+    if(S.faults.has(k)){S.faults.delete(k);log('info','اتصلّح: '+FAULTS[k].ar+' — دوس Reset');if(k==='doors'){S.inp.doors=true;renderInputs()}}
+    else{S.faults.add(k);log('info','عطل: '+FAULTS[k].ar);if(k==='doors'){S.inp.doors=false;renderInputs()}}
+    renderFaults()});
+}
+const GAUGES=[['sh','سخان الهوا','U70Q0450','°'],['hs','حرارة التعقيم','U70B3520','°'],['ac','غرفة التعقيم','U70B3540','°'],['bv','صمام B','U70B1740','°'],['st','حاجز البخار','','°'],['bath','حوض البيروكسيد','','°'],['flow','سريان الهوا','U70B2470',' م³/س'],['seal','مية الحلقة','U70B2010',' ل/د'],['hi','هوا الحقن','U70B4360','°']];
+function buildGauges(){$('gauges').innerHTML=GAUGES.map(([k,ar,tag])=>'<div class="kv" id="g_'+k+'"><span>'+ar+' <span class="en">'+tag+'</span></span><strong>—</strong></div>').join('')+'<div class="kv" id="g_err"><span>خطأ التصميم</span><strong>—</strong></div><div class="kv" id="g_pk"><span>عبوات</span><strong>0</strong></div>'}
+function gaugeBad(k){const T=S.T,s=S.step;
+  if(k==='seal')return s>=4&&s<=13&&T.seal<5.5;
+  if(k==='flow')return s>=4&&s<=11&&S.st>40&&T.flow<((s>=7&&s<=11)?120:100)*0.93;
+  if(k==='st')return s===6&&T.st<126;
+  if(k==='hi')return s===9&&T.hi<357;
+  if(k==='hs')return s===4&&S.st>300&&T.hs<280;
+  return false}
+function renderGauges(){
+  GAUGES.forEach(([k,,,u])=>{const e=$('g_'+k);const v=S.T[k];e.querySelector('strong').textContent=(k==='seal'?v.toFixed(1):Math.round(v))+u;e.classList.toggle('bad',gaugeBad(k))});
+  const on=S.step===10||S.step===11,ge=$('g_err');ge.querySelector('strong').textContent=on?(S.dErr>=0?'+':'')+S.dErr.toFixed(1)+' مم':'—';ge.classList.toggle('bad',on&&Math.abs(S.dErr)>1.5);
+  $('g_pk').querySelector('strong').textContent=Math.floor(S.pk);
+}
+function waitText(){
+  const s=S.step,t=S.st;
+  const miss=STEPS[s].conds.filter(k=>!C[k].t()).map(k=>C[k].ar);
+  if(s===3&&S.tubeT<40)return 'الفكوك بتلحم الأنبوبة بسرعة 8000 عبوة/ساعة ('+Math.floor(S.tubeT)+' من 40 ث) '+'<span class="simp">تبسيط توضيحي</span>';
+  if(s===4)return 'حرارة التعقيم <b>'+Math.round(S.T.hs)+'°</b> من 280°'+(S.hsHold>0?' — ثابتة من '+Math.floor(S.hsHold)+' ث':'')+' · تنظيف البزبوز '+fmt(Math.min(S.nozzle,300))+' من 5:00';
+  if(s===5)return t<11?'بيملا خزان الرش ('+Math.round(S.spray.lvl*100)+'%)':t<12?'وقفة ثانية':'بيرش البيروكسيد في الهوا السخن ('+Math.floor(t-12)+' من 43 ث)';
+  if(s===6)return S.ster.dryAlarm?'<b>تجفيف بعد إنذار</b>: '+fmt(S.ster.dryAlarmT)+' من 10:00 وبعدين نزول للتحضير':'تجفيف '+fmt(t)+' من 15:00 · البخار فوق 126° بقاله '+fmt(S.steam13);
+  if(s===10)return 'سريان المنتج '+Math.round(S.flowPct)+'% · خطأ التصميم '+S.dErr.toFixed(1)+' مم · مستنية الملء والتصميم يبقوا تمام';
+  if(s===11)return 'بتنتج 24000 عبوة/ساعة. لإنهاء الإنتاج: ضغطة 3 ثواني على "اطلع".';
+  if(s===12)return S.run?'الموتور بيفضّي الأنبوبة ('+Math.floor(S.endRun)+' من 60 ث)':'مستنية '+fmt(Math.max(0,300-t))+' وبعدين التهوية';
+  if(s===13)return 'تهوية '+fmt(t)+' من 10:00';
+  if(s===14)return 'وقت التنظيف وتغيير الورق. علشان ترجع للتحضير: زرار "انزل".';
+  if(miss.length)return 'مستنية: '+miss.join('، ');
+  if([0,1,2,3,7,8,9].includes(s))return 'كل الشروط تمام — دوس <b>"اطلع خطوة"</b>';
+  return '';
+}
+function progress(){const s=S.step,t=S.st;
+  if(s===2||s===9)return [t/300,fmt(300-t)+' متبقي'];
+  if(s===3)return [Math.min(1,S.tubeT/40),''];
+  if(s===4)return [Math.min(1,S.nozzle/300)*.5+Math.min(1,S.hsHold/30)*.5,''];
+  if(s===5)return [t/55,Math.floor(t)+' / 55 ث'];
+  if(s===6)return S.ster.dryAlarm?[S.ster.dryAlarmT/600,fmt(S.ster.dryAlarmT)+' / 10:00']:[t/900,fmt(t)+' / 15:00'];
+  if(s===12)return [t/300,fmt(t)+' / 5:00'];
+  if(s===13)return [t/600,fmt(t)+' / 10:00'];
+  return [0,'']}
+
+/* ---------- schematic ---------- */
+const PIPES={
+ seal:{c:'var(--water)',d:'M10 380 H40 Q70 380 70 374'},
+ air:{c:'var(--air)',d:'M70 326 V273 M70 215 V150 Q70 120 100 120 H140'},
+ hot:{c:'var(--hot)',d:'M232 120 H272 M364 120 H440'},
+ exh:{c:'var(--hot)',d:'M452 112 V48'},
+ pre:{c:'var(--pre)',d:'M452 128 V161 M452 175 V190'},
+ bv:{c:'var(--hot)',d:'M464 120 H580 M600 120 H537 V196'},
+ spray:{c:'var(--h2o2)',d:'M630 228 H620 M606 228 H590'},
+ fillp:{c:'var(--h2o2)',d:'M650 266 V290 M650 302 V330 H500'},
+ prod:{c:'var(--prod)',d:'M537 34 V196'},
+ steam:{c:'var(--steam)',d:'M690 66 H560 Q548 66 548 60'},
+ ak:{c:'var(--air)',d:'M470 297 H500'}
+};
+function buildPipes(){
+  $('pipes').innerHTML=Object.entries(PIPES).map(([k,p])=>'<path class="pipeO" d="'+p.d+'"/><path class="pipe" id="p_'+k+'" d="'+p.d+'"/><path class="dash" id="d_'+k+'" d="'+p.d+'"/>').join('');
+}
+function setPipe(k,on){$('p_'+k).style.stroke=on?PIPES[k].c:'var(--grey)';$('d_'+k).classList.toggle('on',!!on)}
+function setValve(id,on){$(id).firstElementChild.classList.toggle('open',!!on)}
+function drawSchem(o){
+  const s=S.step;
+  setPipe('seal',o.comp);setPipe('air',o.comp);setPipe('hot',o.sh&&o.comp);setPipe('exh',o.preExh);setPipe('pre',o.preAC&&o.comp);setPipe('bv',o.bValve);
+  setPipe('spray',o.spray);setPipe('fillp',o.fill);setPipe('prod',o.A);setPipe('steam',o.steam);setPipe('ak',o.ak);
+  setValve('vPre',o.preExh||o.preAC);setValve('vB',o.bValve);setValve('vA',o.A);setValve('vFill',o.fill);setValve('vSpray',o.spray);setValve('vAk',o.ak);setValve('vBf',o.comp&&!o.bf);
+  $('bfLine').setAttribute('transform',o.bf?'rotate(90 452 168)':'');
+  $('exhTxt').style.opacity=o.preExh?1:.35;
+  $('vSh').textContent=Math.round(S.T.sh)+'°';$('vHs').textContent=Math.round(S.T.hs)+'°';$('vAc').textContent=Math.round(S.T.ac)+'°';
+  $('vBv').textContent=Math.round(S.T.bv)+'°';$('vSt').textContent=Math.round(S.T.st)+'°';$('vBath').textContent=Math.round(S.T.bath)+'°';
+  $('hxMode').textContent=o.hx;
+  $('shBox').style.fill=o.sh?'#fde4e7':'#fff';
+  $('acBox').style.fill=o.spray?'#fff1e0':(S.sterile?'#f2f8e0':'#eef8fb');
+  const lvl=s===5?S.spray.lvl:0;$('sprayLvl').setAttribute('height',66*lvl);$('sprayLvl').setAttribute('y',264-66*lvl);
+  $('tube').style.fill=o.A?'#fff7a8':'#f6f2e4';
+  $('jawL').setAttribute('y',S.run?336+((S.t*30)%40):336);
+  $('schemNote').textContent=S.sterile?'· الماكينة معقّمة':'';
+}
+
+/* ---------- charts ---------- */
+function sizeCanvas(c){const dpr=window.devicePixelRatio||1;const w=c.clientWidth||300;const h=+c.getAttribute('height');if(c.width!==Math.round(w*dpr)){c.width=Math.round(w*dpr);c.height=Math.round(h*dpr)}const x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);return [x,w,h]}
+const GC={prep:'#4687c7',ster:'#ee2643',wait:'#7fa31a',prod:'#e2c800',after:'#a177b4'};
+function chart(id,series,max,ticks){
+  const [x,w,h]=sizeCanvas($(id));x.clearRect(0,0,w,h);
+  const L=34,R=6,T=6,B=22,pw=w-L-R,ph=h-T-B;const H=S.hist;const span=1800;const t0=S.t-span;
+  x.font='11px "JetBrains Mono",monospace';x.fillStyle='#5c5c5c';x.strokeStyle='#e3e3e3';x.lineWidth=1;
+  ticks.forEach(v=>{const y=T+ph-(v/max)*ph;x.beginPath();x.moveTo(L,y);x.lineTo(w-R,y);x.stroke();x.fillText(v,2,y+4)});
+  for(let i=1;i<H.length;i++){const a=H[i-1],b=H[i];if(b.t<t0)continue;const xa=L+Math.max(0,(a.t-t0)/span)*pw,xb=L+((b.t-t0)/span)*pw;x.fillStyle=GC[grp(a.s)];x.fillRect(xa,h-B+6,Math.max(1,xb-xa),8)}
+  x.strokeStyle='#040505';x.strokeRect(L,h-B+6,pw,8);
+  series.forEach(([k,col])=>{x.strokeStyle=col;x.lineWidth=2;x.beginPath();let st=false;
+    for(const p of H){if(p.t<t0)continue;const X=L+((p.t-t0)/span)*pw,Y=T+ph-Math.min(1,p[k]/max)*ph;if(!st){x.moveTo(X,Y);st=true}else x.lineTo(X,Y)}x.stroke()});
+}
+function drawCharts(){chart('c1',[['sh','#ee2643'],['hs','#f79027'],['bv','#a177b4']],450,[0,100,200,280,400]);chart('c2',[['ac','#4687c7'],['st','#a177b4'],['flow','#7fa31a']],150,[0,40,85,126,150])}
+
+/* ---------- table ---------- */
+function buildTable(){$('tbody').innerHTML=STEPS.map((s,n)=>'<tr class="g-'+grp(n)+'"><td class="k"><span>'+n+'</span></td><td>'+s.ar+'</td><td class="en">'+s.en+'</td><td>'+s.up+'</td><td>'+s.down+'</td><td>'+s.time+'</td></tr>').join('')}
+
+/* ---------- quiz ---------- */
+const Q={score:0,total:0,cur:null,hold:false,answered:true,
+ list:[
+  {setup:5,start:()=>S.faults.add('slowFill'),q:'الماكينة كانت في الرش ونزلت للتحضير على طول. ليه؟',opts:['خزان الرش ما اتملاش في الوقت','خزان الرش ما فضيش في الوقت','البخار واطي','التركيز عالي'],a:0,exp:'إنذار أثناء ملء خزان الرش = فشل تعقيم، والبرنامج بيرجّعها للتحضير (1) على طول.'},
+  {setup:5,start:()=>S.faults.add('slowEmpty'),q:'بعد الرش الماكينة دخلت تجفيف، بس بعد 10 دقايق نزلت للتحضير بدل ما تكمّل. ليه؟',opts:['خزان الرش ما فضيش قبل 38 ثانية','الفراشة ما قفلتش','سخان الهوا','سريان المنتج قليل'],a:0,exp:'إنذار أثناء تفضية الخزان أو التجفيف = "تجفيف بعد إنذار" 10 دقايق وبعدين التحضير.'},
+  {setup:6,start:()=>{S.faults.add('steam');S.st=850},q:'التجفيف خلص 15 دقيقة بس الماكينة ما بقتش معقّمة. السبب؟',opts:['البخار عند صمام C ما فضلش 126° لمدة 13 دقيقة','سخان الهوا','الضاغط','التصميم'],a:0,exp:'في التجفيف لازم البخار يتجمّع له 13 دقيقة فوق 126°، وإلا إنذار SteamWrongSterilization.'},
+  {setup:9,start:()=>{},q:'الماكينة كانت في الخطوة 9 ورجعت للخطوة 8 لوحدها. ليه؟',opts:['عدّت 5 دقايق من غير ما تطلع','الملء بايظ','الأبواب مفتوحة','الكهربا قطعت'],a:0,exp:'تجهيز الإنتاج ليه أقصى وقت 5 دقايق، بعدها تنزل للخطوة 8.'},
+  {setup:9,start:()=>{S.faults.add('hiAir');S.T.hi=300},q:'المشغّل بيدوس "اطلع" في الخطوة 9 ومفيش حاجة بتحصل. ليه؟',opts:['حرارة هوا الحقن أقل من 357°','الضاغط واقف','مستوى الفاصل','الورق خلص'],a:0,exp:'الانتقال من 9 لـ 10 في البرنامج ده محتاج AI_U70B4360 ≥ 3570 (يعني 357.0°).'},
+  {setup:10,start:()=>S.faults.add('design'),q:'الموتور اشتغل وبعد ثواني وقف ورجع للخطوة 8. ليه؟',opts:['عبوات كتير برا التصميم','التهوية','التركيز','البخار'],a:0,exp:'لو التصميم ما رجعش ±1.5 مم، عداد العبوات اللي برا التصميم بيوصل حده (80 في الأول و20 بعد كده) وتطلع وقفة صفرا.'},
+  {setup:4,start:()=>S.faults.add('sealWater'),q:'الماكينة كانت بتعقّم بالحرارة ورجعت للتحضير. شوف القراءات: السبب؟',opts:['مية حلقة الضاغط أقل من 5.5 لتر/د','حرارة الغرفة','الرش','الوصفة'],a:0,exp:'أي إنذار في التعقيم بالحرارة = فشل تعقيم ← التحضير.'},
+  {setup:1,start:()=>{S.inp.conc=46;$('conc').value=46;$('concVal').textContent='46%'},q:'المشغّل بيدوس "اطلع" في التحضير والماكينة مش راضية. ليه؟',opts:['تركيز البيروكسيد فوق 42%','الفكوك','سخانات القفلات','التهوية'],a:0,exp:'في التحضير الحد العالي للتركيز 42%.'}
+ ],
+ start(){const c=this.list[Math.floor(Math.random()*this.list.length)];this.cur=c;this.answered=false;
+  resetAll(true);jumpTo(c.setup);c.start();this.hold=true;renderFaults();renderInputs();
+  $('qText').textContent=c.q;$('qExp').textContent='';
+  const order=c.opts.map((o,i)=>i).sort(()=>Math.random()-.5);
+  $('qOpts').innerHTML=order.map(i=>'<button data-i="'+i+'">'+c.opts[i]+'</button>').join('');
+  [...$('qOpts').children].forEach(b=>b.onclick=()=>{if(this.answered)return;this.answered=true;this.total++;const ok=+b.dataset.i===c.a;if(ok)this.score++;
+    b.classList.add(ok?'right':'wrong');[...$('qOpts').children].forEach(x=>{if(+x.dataset.i===c.a)x.classList.add('right')});
+    $('qExp').textContent=c.exp;$('qScore').textContent=this.score+' / '+this.total;this.hold=false});
+ }
+};
+
+/* ---------- jump / reset / loop ---------- */
+function jumpTo(n){
+  S.step=n;S.st=0;S.maxStep=n;S.view=null;
+  const T=S.T;
+  if(n>=1){T.bath=70;T.st=100}
+  if(n>=4){T.sh=n<=5?395:330;T.flow=n>=7&&n<=11?120:100;T.seal=7;T.bath=n>=7?85:80;T.hi=372;T.st=n>=6?130:105}
+  if(n===4){T.hs=240;S.nozzle=240;T.ac=40}
+  if(n===5){T.hs=282;T.ac=45}
+  if(n===6){T.hs=170;T.ac=85}
+  if(n>=7){S.sterile=true;T.ac=82;T.hs=150}
+  if(n===10||n===11){S.run=true;S.motorT=0;S.dErr=n===11?0.3:9}
+  if(n===11){S.designOK=true;S.fillOK=true;S.flowPct=100}
+  log('info','بداية من الخطوة '+n);buildLadder();
+}
+function resetAll(keepQuiz){const sp=S.speed,au=S.auto;fresh();S.speed=sp;S.auto=au;logEl.innerHTML='';$('conc').value=35;$('concVal').textContent='35%';
+  if(!keepQuiz){Q.hold=false;Q.answered=true;$('qText').textContent='';$('qOpts').innerHTML='';$('qExp').textContent=''}
+  renderInputs();renderFaults();buildLadder();log('info','الماكينة واقفة في الخطوة 0. دوس "اطلع خطوة" أو سيب المشغّل الآلي يشتغل.')}
+const SPEEDS=[1,5,20,60];
+function buildSpeeds(){$('speeds').innerHTML=SPEEDS.map(v=>'<button data-v="'+v+'">×'+v+'</button>').join('');[...$('speeds').children].forEach(b=>b.onclick=()=>{S.speed=+b.dataset.v;syncSpeeds()});syncSpeeds()}
+function syncSpeeds(){[...$('speeds').children].forEach(b=>b.classList.toggle('sel',+b.dataset.v===S.speed))}
+function syncPause(){$('pauseBtn').textContent=S.paused?'كمّل':'إيقاف مؤقت';$('pauseBtn').classList.toggle('sel',S.paused)}
+
+let last=performance.now(),histT=0,uiT=0;
+function tick(dt){
+  S.t+=dt;S.st+=dt;
+  const o=outs();physics(dt,o);monitors(dt);sequence(dt);autoOp();
+  histT+=dt;if(histT>=5){histT=0;S.hist.push({t:S.t,s:S.step,sh:S.T.sh,hs:S.T.hs,bv:S.T.bv,ac:S.T.ac,st:S.T.st,flow:S.T.flow});while(S.hist.length&&S.hist[0].t<S.t-1900)S.hist.shift()}
+}
+function frame(now){
+  const real=Math.min(.25,(now-last)/1000);last=now;
+  if(!S.paused){let sim=real*S.speed;while(sim>0){const d=Math.min(.5,sim);tick(d);sim-=d}}
+  uiT+=real;if(uiT>.12){uiT=0;render()}
+  requestAnimationFrame(frame);
+}
+function render(){
+  const s=S.step;
+  $('tpop').className='tpop g-'+grp(s);$('bigNum').textContent=s;$('stepName').textContent=STEPS[s].ar;$('stepEn').textContent=STEPS[s].en;
+  $('sterPill').textContent=S.sterile?'معقّمة':'مش معقّمة';$('sterPill').className='pill '+(S.sterile?'ok':'idle');
+  $('runPill').textContent=S.run?'الموتور شغّال':'الموتور واقف';$('runPill').className='pill '+(S.run?'run':'idle');
+  $('waitMsg').innerHTML=waitText();const [p,pt]=progress();$('progBar').style.width=Math.max(0,Math.min(1,p))*100+'%';$('progTxt').textContent=pt;
+  $('upBtn').classList.toggle('lamp',[0,1,2,3,7,8,9].includes(s)&&condsOk(s));$('upLongBtn').classList.toggle('lamp',s===11||(s===12&&!S.run));
+  $('dnBtn').classList.toggle('lamp',s===14);$('resetAlrBtn').classList.toggle('lamp',stopAlarms()>0);
+  drawSchem(outs());renderGauges();refreshDetail();drawCharts();
+}
+
+/* ---------- wire ---------- */
+$('upBtn').onclick=()=>{S.autoHoldUntil=S.t+3;stepUp(false)};
+$('upLongBtn').onclick=()=>{S.autoHoldUntil=S.t+3;stepUpLong()};
+$('dnBtn').onclick=()=>{S.autoHoldUntil=S.t+3;stepDown()};
+$('dnLongBtn').onclick=()=>{S.autoHoldUntil=S.t+3;stepDownLong()};
+$('stopBtn').onclick=()=>{S.autoHoldUntil=S.t+30;stopBtn()};
+$('resetAlrBtn').onclick=()=>resetAlarms(false);
+$('nextBtn').onclick=()=>{S.next=!S.next;$('nextBtn').setAttribute('aria-pressed',S.next);$('nextBtn').textContent='تجهيز للإنتاج التالي: '+(S.next?'أيوه':'لأ');$('nextBtn').classList.toggle('sel',S.next)};
+$('autoBtn').onclick=()=>{S.auto=!S.auto;$('autoBtn').setAttribute('aria-pressed',S.auto);$('autoBtn').textContent='المشغّل الآلي: '+(S.auto?'شغّال':'واقف');$('autoBtn').classList.toggle('sel',!S.auto)};
+$('pauseBtn').onclick=()=>{S.paused=!S.paused;syncPause()};
+$('resetBtn').onclick=()=>resetAll(false);
+$('conc').oninput=e=>{S.inp.conc=+e.target.value;$('concVal').textContent=S.inp.conc+'%'};
+$('qStart').onclick=()=>Q.start();
+buildSpeeds();buildPipes();buildGauges();buildTable();resetAll(false);requestAnimationFrame(frame);
+</script>
+
+</body>
+</html>

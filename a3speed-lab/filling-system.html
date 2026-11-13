@@ -1,0 +1,1006 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta name="description" content="محاكي نظام التعبئة في A3/Speed.">
+<link rel="canonical" href="https://www.learnelectricals.com/a3speed-lab/filling-system.html">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>محاكي نظام التعبئة A3/Speed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=Readex+Pro:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* Light training-workbook look: white sheet, black outlines, product yellow, steam purple, flow blue / level red
+   in the graphs, DeviceNet red, Ethernet green, RS485 grey, SERCOS blue. Single light look by design. */
+:root{
+  color-scheme: light;
+  --bg:#eef0f1; --sheet:#ffffff; --ink:#040505; --muted:#5d6670; --line:#c9cfd4; --line2:#e2e5e8;
+  --air:#98d8e4; --hot:#ee2643; --steam:#a177b4; --prod:#feea05; --water:#b9d532; --cair:#4687c7; --grey:#dfe0e0;
+  --flow:#2b47b5; --level:#e0242f; --valve:#3b5959; --dnet:#e3232c; --eth:#7bc043; --rs485:#9aa0a6; --sercos:#2b4fa8;
+  --ok:#1d8448; --okbg:#e3f4ea; --alarm:#c41e33; --alarmbg:#fde6e8; --warn:#8a5d00; --warnbg:#fff4c4; --info:#2a5f9e; --infobg:#e3eefa;
+  --gProd:#fffbd6; --gProdH:#e6d200; --gCtl:#e8f0fa; --gCtlH:#2b5fa8; --gLev:#fdedf0; --gLevH:#d61f3a; --gFault:#f2eef8; --gFaultH:#7a5aa8;
+  --f-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Arabic",system-ui,"Segoe UI",Tahoma,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink);margin:0}
+body{font-family:var(--f-body);font-size:15px;line-height:1.6}
+.wrap{direction:rtl;max-width:1400px;margin:0 auto;padding-block:16px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:16px}
+h1{font-family:var(--f-display);font-size:clamp(21px,3vw,30px);margin:0;text-wrap:balance}
+h2{font-family:var(--f-display);font-size:15.5px;margin:0 0 8px;font-weight:700;text-wrap:balance}
+.sub{color:var(--muted);margin:0;font-size:14px;max-width:80ch}
+header{display:grid;gap:4px}
+.en{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-size:.82em;color:#38424b}
+.mono{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-variant-numeric:tabular-nums}
+button,select,input{font-family:var(--f-body);font-size:14px;color:var(--ink)}
+button,select{background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer;touch-action:manipulation}
+button:hover{border-color:#8a96a0}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cair);outline-offset:2px}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.go{background:#1d8448;border-color:#1d8448;color:#fff;font-weight:700}
+button.stop{background:#c41e33;border-color:#c41e33;color:#fff;font-weight:700}
+button.amber{background:#fdf3c2;border-color:#d8b44a;color:#5e4200;font-weight:600}
+button.on{border-color:var(--alarm);color:var(--alarm);background:var(--alarmbg);font-weight:600}
+button.sel{background:var(--ink);color:#fff;border-color:var(--ink)}
+.note{font-size:12.5px;color:var(--muted)}
+.simp{font-size:12px;color:var(--warn);background:var(--warnbg);border:1px dashed #d8b44a;border-radius:6px;padding:0 7px;display:inline-block}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+.group{border-radius:16px;padding:0 0 14px;border:1px solid var(--line);overflow:hidden}
+.group>.gh{display:flex;align-items:center;gap:10px;padding:9px 16px;color:#fff;font-family:var(--f-display);font-weight:700;font-size:16px}
+.group>.gh .gn{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.28);font-family:var(--f-mono);font-size:14px}
+.group>.gb{padding:14px 14px 0;display:grid;gap:12px}
+.g-prod{background:var(--gProd)} .g-prod>.gh{background:var(--gProdH);color:var(--ink)} .g-prod>.gh .gn{background:rgba(0,0,0,.12)}
+.g-ctl{background:var(--gCtl)} .g-ctl>.gh{background:var(--gCtlH)}
+.g-lev{background:var(--gLev)} .g-lev>.gh{background:var(--gLevH)}
+.g-fault{background:var(--gFault)} .g-fault>.gh{background:var(--gFaultH)}
+.card{background:var(--sheet);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0;box-shadow:0 1px 2px rgba(20,30,40,.05)}
+.cols{display:grid;gap:12px;align-items:start}
+.c2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.c21{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}
+@media (max-width:1050px){.c3{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.c21{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:720px){.c2,.c3{grid-template-columns:minmax(0,1fr)}}
+
+.strip{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center;background:var(--sheet);border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:0 1px 3px rgba(20,30,40,.06)}
+@media (max-width:900px){.strip{grid-template-columns:minmax(0,1fr)}}
+.value{width:112px;height:94px;border-radius:14px;background:#10161b;border:3px solid var(--level);display:grid;place-items:center;align-content:center;font-family:var(--f-mono);font-size:36px;font-weight:700;color:var(--prod);direction:ltr;line-height:1}
+.value small{display:block;font-size:10.5px;color:#b9c3cb;margin-top:6px;font-weight:500;text-align:center;font-family:var(--f-body)}
+.value.bad{border-color:var(--alarm);animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{border-color:#10161b}}
+@media (prefers-reduced-motion:reduce){.value.bad{animation:none}}
+.state{font-family:var(--f-display);font-size:clamp(18px,2.4vw,24px);font-weight:700;line-height:1.3}
+.state .en{font-size:.6em;color:var(--muted);margin-inline-start:6px}
+.msg{font-size:14.5px;min-height:2.4em;text-wrap:pretty}
+.ctrls{display:grid;gap:8px;min-width:0}
+.ctrls .row button{padding:9px 14px}
+.kv{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:8px}
+@media (max-width:900px){.kv{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.kv div{background:#f6f8f9;border:1px solid var(--line2);border-inline-start:5px solid var(--c,#9aa5ae);border-radius:8px;padding:4px 8px;min-width:0}
+.kv b{display:block;font-family:var(--f-mono);font-size:17px;direction:ltr;text-align:right;font-variant-numeric:tabular-nums}
+.kv span{font-size:11.5px;color:var(--muted)}
+.kv div.badv{background:var(--alarmbg);border-color:#f2b8bd}.kv div.badv b{color:var(--alarm)}
+
+canvas{display:block;width:100%;max-width:100%;border-radius:10px;background:#fff}
+.scrollx{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px;border:1px solid var(--line2)}
+.scrollx canvas{min-width:640px}
+#cvDia{aspect-ratio:1000/620}
+#cvTrend{height:240px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:16px;height:9px;border-radius:2px;margin-inline-end:5px;vertical-align:0;border:1px solid #333}
+.legend i.ln{height:3px;border:0;vertical-align:3px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font-size:12.5px;padding:3px 9px}
+.chips button .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-inline-end:5px;vertical-align:-1px;border:1px solid rgba(0,0,0,.3)}
+.chips button.off{opacity:.4}
+
+.ladder{display:grid;gap:4px;font-size:13px}
+.ladder div{display:grid;grid-template-columns:24px minmax(0,1fr);gap:8px;align-items:start;padding:5px 8px;border-radius:8px;border:1px solid transparent;background:#f6f8f9}
+.ladder div b{font-family:var(--f-mono);font-size:12px;color:var(--muted);text-align:center;padding-top:1px}
+.ladder div span small{display:block;color:var(--muted);font-size:11.5px;line-height:1.4}
+.ladder div.cur{background:#fff8bf;border-color:#d9c300;box-shadow:0 0 0 2px var(--prod) inset}
+
+.lamps{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px}
+.lamp{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 7px;align-items:center;background:#f6f8f9;border:1px solid var(--line2);border-radius:8px;padding:4px 8px;font-size:12.5px;min-width:0}
+.lamp i{grid-row:span 2;flex:none;width:12px;height:12px;border-radius:50%;background:#d5dbe0;border:1px solid #9aa5ae}
+.lamp.on i{background:#2fbf63;border-color:#1d8448;box-shadow:0 0 6px #2fbf63}
+.lamp.bad i{background:var(--hot);border-color:#a3101d;box-shadow:0 0 6px var(--hot)}
+.lamp b{font-family:var(--f-mono);font-size:10.5px;direction:ltr;text-align:right;color:#38424b;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lamp span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* level window */
+.lw{display:grid;grid-template-columns:64px minmax(0,1fr);gap:10px}
+.lwbar{position:relative;height:300px;border:2px solid #333;border-radius:6px;background:#fff;overflow:hidden}
+.lwbar .z{position:absolute;left:0;right:0}
+.lwbar .mk{position:absolute;left:-2px;right:-2px;height:4px;background:#10161b;transition:bottom .2s}
+.lwbar .real{position:absolute;left:30%;right:30%;height:3px;background:var(--level);opacity:.8;transition:bottom .2s}
+.lwtxt{position:relative;height:300px;font-size:12px}
+.lwtxt div{position:absolute;right:0;left:0;transform:translateY(50%);line-height:1.25;border-top:1px dashed #b7bec5;padding-top:1px}
+.lwtxt div b{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate}
+.lwtxt div.hit{color:var(--alarm);font-weight:700}
+
+/* control structure */
+#svgCtl{direction:ltr;width:100%;height:auto;display:block;background:#fff;border-radius:10px;border:1px solid var(--line2)}
+#svgCtl text{font-family:var(--f-mono);font-size:11px;fill:#1c252c}
+#svgCtl .bx{fill:#fff;stroke:#1c252c;stroke-width:1.4}
+#svgCtl .tm{fill:#e9ebec;stroke:#1c252c}
+#svgCtl .w{stroke:#1c252c;stroke-width:1.6;fill:none}
+#svgCtl .act{stroke:var(--flow);stroke-width:3}
+#svgCtl .sw{stroke:#1c252c;stroke-width:2.4;stroke-linecap:round;transition:transform .25s;transform-box:fill-box}
+#svgCtl .swon{stroke:var(--ok)}
+
+.set{display:grid;gap:8px}
+.set label{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;font-size:13px;align-items:center}
+.set label input[type=range]{direction:ltr;grid-column:1/-1;width:100%;accent-color:var(--cair)}
+.set label output{font-family:var(--f-mono);font-weight:600;direction:ltr}
+
+.alist{display:grid;gap:5px}
+.alarm{border-radius:8px;padding:5px 9px;font-size:13px;border:1px solid;display:grid;gap:1px}
+.alarm .en{font-size:10px;color:inherit;opacity:.85;word-break:break-all}
+.alarm.Y{background:var(--warnbg);border-color:#e7c85a;color:#5e4200}
+.alarm.B{background:var(--infobg);border-color:#9cc0ea;color:#123e72}
+.alarm.ack{opacity:.65}
+.empty{color:var(--muted);font-size:13px}
+.atable{width:100%;border-collapse:collapse;font-size:12.5px}
+.atable th,.atable td{border-bottom:1px solid var(--line2);padding:4px 6px;text-align:right;vertical-align:top}
+.atable th{color:var(--muted);font-weight:600;font-size:12px}
+.atable td.m{font-family:var(--f-mono);direction:ltr;text-align:left;white-space:nowrap}
+.tblwrap{overflow-x:auto}
+.faults{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
+.faults button{text-align:right;font-size:13px;line-height:1.35;padding:7px 10px}
+.faults button small{display:block;color:var(--muted);font-size:11.5px}
+.log{max-height:240px;overflow:auto;font-size:12.5px;display:grid;gap:3px;align-content:start}
+.log div{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:baseline;border-bottom:1px solid var(--line2);padding-bottom:2px}
+.log .t{font-family:var(--f-mono);color:var(--muted);font-size:11px;direction:ltr}
+.sev-Y{color:#7a5600}.sev-B{color:var(--info)}.sev-i{color:var(--muted)}.sev-ok{color:var(--ok)}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;margin-top:8px}
+.opts button{text-align:right}
+.opts button.right{border-color:var(--ok);color:var(--ok);background:var(--okbg);font-weight:700}
+.opts button.wrong{border-color:var(--alarm);color:var(--alarm);background:var(--alarmbg)}
+.banner{border-radius:10px;padding:8px 12px;font-size:14px;font-weight:600;background:var(--alarmbg);color:var(--alarm);border:1px solid #f2b8bd}
+.hidden{display:none!important}
+.phone-only{display:none}
+@media (max-width:700px){.phone-only{display:block}}
+.tagtbl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 10px;font-size:12.5px;margin-top:6px}
+.tagtbl code{font-family:var(--f-mono);direction:ltr;text-align:left;background:#fffbd6;border:1px solid #e6d200;border-radius:4px;padding:0 5px;font-size:11.5px}
+</style>
+</head>
+<body>
+<nav aria-label="تنقل" style="direction:rtl;display:flex;flex-wrap:wrap;gap:8px;max-width:1400px;margin:0 auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 0;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:14px"><a href="/a3speed-lab/" style="color:#1f5a96;text-decoration:none;font-weight:600;padding:4px 10px;border:1px solid #c5c5c5;border-radius:8px;background:#fff">← كل محاكيات A3/Speed</a></nav>
+
+<div class="wrap">
+<header>
+  <h1>محاكي نظام التعبئة <span class="en">Tetra Pak A3/Speed</span></h1>
+  <p class="sub">المنتج بيدخل من صمام C، يعدّي على عداد التدفق وصمام التنظيم والصمام A، وينزل في أنبوب الورق. كارت TMCC2 بيقرا مستوى المنتج من العوامة، وبيحرّك صمام التنظيم علشان المستوى يفضل ثابت على 60%. شغّل الماكينة، غيّر الإعدادات، واعمل أعطال وشوف الإنذار بييجي إمتى.</p>
+</header>
+
+<!-- status strip -->
+<section class="strip" aria-live="polite">
+  <div class="value" id="vLevel">--<small>مستوى المنتج %</small></div>
+  <div style="min-width:0">
+    <div class="state" id="stTitle">الماكينة معقّمة ومستنية</div>
+    <div class="msg" id="stMsg">الأنبوب فاضي. دوس «تشغيل إنتاج» علشان تبدأ التعبئة.</div>
+    <div class="kv">
+      <div style="--c:var(--level)"><span>المستوى المقروء</span><b id="kL">0</b></div>
+      <div style="--c:var(--flow)"><span>التدفق % من الاسمي</span><b id="kQ">0</b></div>
+      <div style="--c:var(--valve)"><span>فتحة صمام التنظيم %</span><b id="kV">0</b></div>
+      <div style="--c:#9aa5ae"><span>سرعة الماكينة %</span><b id="kS">0</b></div>
+      <div style="--c:var(--ok)"><span>باكو سليم</span><b id="kG">0</b></div>
+      <div style="--c:#7d858c"><span>باكو مهدر</span><b id="kW">0</b></div>
+    </div>
+  </div>
+  <div class="ctrls">
+    <div class="row">
+      <button class="go" id="bStart">تشغيل إنتاج</button>
+      <button class="stop" id="bStop">إيقاف</button>
+    </div>
+    <div class="row">
+      <button class="amber" id="bEmpty">تفريغ الأنبوب</button>
+      <button id="bReset">ريست إنذارات</button>
+    </div>
+    <div class="row">
+      <button id="bSter" class="hidden">تعقيم جديد (مختصر)</button>
+    </div>
+    <div class="row" role="group" aria-label="سرعة المحاكاة">
+      <span class="note">سرعة المحاكاة:</span>
+      <button data-sp="1" class="sel">×1</button><button data-sp="2">×2</button><button data-sp="5">×5</button>
+    </div>
+  </div>
+</section>
+
+<!-- GROUP 1 -->
+<section class="group g-prod">
+  <div class="gh"><span class="gn">1</span>خط المنتج والأنبوب</div>
+  <div class="gb">
+    <div class="cols c21">
+      <div class="card">
+        <h2>الرسم الحي</h2>
+        <div class="scrollx"><canvas id="cvDia" width="1000" height="620" role="img" aria-label="رسم متحرك لخط المنتج من صمام C حتى أنبوب الورق، مع كارت TMCC2 والشبكات"></canvas></div>
+        <div class="legend">
+          <span><i style="background:var(--prod)"></i>منتج</span>
+          <span><i style="background:var(--steam)"></i>بخار</span>
+          <span><i class="ln" style="background:var(--dnet)"></i>DeviceNet</span>
+          <span><i class="ln" style="background:var(--eth)"></i>Ethernet</span>
+          <span><i class="ln" style="background:var(--rs485)"></i>RS485</span>
+          <span><i class="ln" style="background:var(--sercos)"></i>SERCOS</span>
+          <span><i class="ln" style="background:#1c252c"></i>إشارة المستوى (أنالوج)</span>
+        </div>
+        <p class="note phone-only" style="margin:4px 0 0">اسحب الرسم يمين وشمال علشان تشوف الخط كله.</p>
+        <div class="banner hidden" id="sterBanner" style="margin-top:8px">الماكينة فقدت التعقيم بسبب تسريب في صمام التنظيم. لازم تعقيم جديد قبل الإنتاج.</div>
+      </div>
+      <div class="card">
+        <h2>خطوات صمام المنتج في البرنامج</h2>
+        <div class="ladder" id="ladder"></div>
+        <p class="note" style="margin:8px 0 0">بعد التعقيم أول <b class="mono">30</b> باكو بتتهدر قبل ما التعبئة تبدأ. في الوقوف صمام التنظيم بيقفل لحد <b class="mono">20%</b> وبعدها الصمام A يقفل، وأقصى وقت <b class="mono">5</b> ثواني. التفريغ بيهدر <b class="mono">25</b> باكو.</p>
+      </div>
+    </div>
+    <div class="cols c2">
+      <div class="card" style="border-top:5px solid var(--steam)">
+        <h2>حاجز البخار عند الصمام C</h2>
+        <p class="note" style="margin:0 0 6px">البخار بيلف حوالين قاعدة الصمام C علشان يفصل المنتج المعقّم عن الخط اللي جاي. الحساس بيقيس الحرارة طول الوقت.</p>
+        <div class="row" style="align-items:end;gap:14px">
+          <div><span class="note">حرارة البخار</span><div class="mono" style="font-size:26px;font-weight:700;color:var(--steam)" id="steamT">121.0 °C</div></div>
+          <div style="flex:1;min-width:160px">
+            <div style="position:relative;height:22px;border-radius:11px;border:1px solid #888;background:linear-gradient(90deg,#d9e6f2 0%,#d9e6f2 30%,var(--steam) 60%,#5d3b74 100%);direction:ltr">
+              <div id="steamK" style="position:absolute;top:-4px;width:8px;height:28px;border-radius:3px;background:#10161b;transform:translateX(-4px);left:50%;transition:left .3s"></div>
+              <div style="position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--alarm);left:43.3%"></div>
+            </div>
+            <div class="row" style="justify-content:space-between;direction:ltr;font-family:var(--f-mono);font-size:10.5px;color:var(--muted)"><span>80</span><span style="color:var(--alarm)">106</span><span>140 °C</span></div>
+          </div>
+        </div>
+        <p class="note" style="margin:6px 0 0">تحت <b class="mono">106 °C</b> لمدة <b class="mono">30</b> ث يطلع تحذير أزرق، ولو فضلت واطية <b class="mono">30</b> ث كمان يطلع إنذار أصفر ويوقف. في التعقيم البخار لازم يوصل <b class="mono">126 °C</b> لمدة <b class="mono">13</b> دقيقة.</p>
+      </div>
+      <div class="card">
+        <h2>إشارات البرنامج</h2>
+        <div class="lamps" id="lamps"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GROUP 2 -->
+<section class="group g-ctl">
+  <div class="gh"><span class="gn">2</span>التحكم: كارت TMCC2</div>
+  <div class="gb">
+    <div class="cols c21">
+      <div class="card">
+        <h2>الرسم البياني الحي (آخر 60 ثانية)</h2>
+        <div class="chips" id="chips"></div>
+        <canvas id="cvTrend" width="900" height="240" role="img" aria-label="رسم بياني للتدفق والمستوى وفتحة الصمام مع الوقت"></canvas>
+        <p class="note" style="margin:6px 0 0">زي رسمة الورك بوك: التدفق بالأزرق والمستوى بالأحمر. الخط المنقط هو المستوى الحقيقي جوه الأنبوب، ويبان بس لو الحساس بيقرا غلط.</p>
+      </div>
+      <div class="card">
+        <h2>هيكل التحكم: مفاتيح A و B و C</h2>
+        <svg id="svgCtl" direction="ltr" viewBox="0 0 420 250" role="img" aria-label="هيكل التحكم داخل TMCC2">
+          <rect class="tm" x="6" y="6" width="408" height="238" rx="8"/>
+          <text x="14" y="22" style="font-weight:600">TMCC2</text>
+          <!-- start flow -->
+          <rect class="bx" x="14" y="44" width="78" height="28" rx="4"/><text x="21" y="62">START FLOW</text>
+          <line class="w" id="wA1" x1="92" y1="58" x2="112" y2="58"/>
+          <line class="sw" id="swA" x1="112" y1="58" x2="134" y2="58"/>
+          <text x="117" y="48">A</text>
+          <line class="w" id="wA2" x1="136" y1="58" x2="152" y2="58"/>
+          <rect class="bx" x="152" y="44" width="52" height="28" rx="4"/><text x="162" y="62">RAMP</text>
+          <line class="w" id="wA3" x1="204" y1="58" x2="240" y2="58"/><line class="w" id="wA4" x1="240" y1="58" x2="240" y2="104"/>
+          <!-- nominal -->
+          <rect class="bx" x="14" y="96" width="78" height="28" rx="4"/><text x="25" y="114">NOMINAL</text>
+          <line class="w" id="wB1" x1="92" y1="110" x2="112" y2="110"/>
+          <line class="sw" id="swB" x1="112" y1="110" x2="134" y2="110"/>
+          <text x="117" y="100">B</text>
+          <line class="w" id="wB2" x1="136" y1="110" x2="230" y2="110"/>
+          <circle cx="240" cy="110" r="10" class="bx"/><text x="236" y="114">+</text>
+          <!-- level pid -->
+          <rect class="bx" x="14" y="160" width="78" height="28" rx="4"/><text x="22" y="178">LEVEL SP</text>
+          <line class="w" x1="92" y1="174" x2="112" y2="174"/>
+          <rect class="bx" x="112" y="160" width="64" height="28" rx="4"/><text x="118" y="178">LEVEL PID</text>
+          <line class="w" id="wC1" x1="176" y1="174" x2="190" y2="174"/>
+          <line class="sw" id="swC" x1="190" y1="174" x2="212" y2="174"/>
+          <text x="196" y="164">C</text>
+          <line class="w" id="wC2" x1="214" y1="174" x2="240" y2="174"/><line class="w" id="wC3" x1="240" y1="174" x2="240" y2="120"/>
+          <!-- level feedback -->
+          <line class="w" x1="144" y1="188" x2="144" y2="222"/><line class="w" x1="144" y1="222" x2="300" y2="222"/>
+          <text x="196" y="236">LEVEL ←</text>
+          <!-- flow pid -->
+          <line class="w" id="wF1" x1="250" y1="110" x2="270" y2="110"/>
+          <rect class="bx" x="270" y="96" width="62" height="28" rx="4"/><text x="276" y="114">FLOW PID</text>
+          <line class="w" id="wF2" x1="332" y1="110" x2="350" y2="110"/>
+          <rect class="bx" x="350" y="96" width="56" height="28" rx="4"/><text x="360" y="114">SERVO</text>
+          <line class="w" x1="301" y1="96" x2="301" y2="76"/><text x="268" y="70">FLOW ←</text>
+          <text x="14" y="146" id="ctlTxt" style="font-size:12px;font-weight:600">--</text>
+        </svg>
+        <p class="note" style="margin:6px 0 0">في البداية المفتاح <b class="mono">A</b> مقفول: التدفق ثابت على «تدفق البداية». أول ما المستوى يعدّي <b class="mono">20%</b> المفتاح A يفتح و<b class="mono">B</b> و<b class="mono">C</b> يقفلوا: التدفق = الاسمي + تصحيح منظم المستوى.</p>
+      </div>
+    </div>
+    <div class="cols c2">
+      <div class="card">
+        <h2>الإعدادات</h2>
+        <div class="set">
+          <div class="row">
+            <span class="note">حجم العبوة:</span>
+            <select id="selVol" aria-label="حجم العبوة"><option value="100">100 ml</option><option value="125" selected>125 ml</option><option value="160">160 ml</option></select>
+            <span class="note">القدرة:</span>
+            <select id="selCap" aria-label="القدرة"><option value="16000">16000 باكو/ساعة</option><option value="24000" selected>24000 باكو/ساعة</option></select>
+          </div>
+          <label>تدفق البداية % <output id="oSF">120</output><input type="range" id="rSF" min="60" max="160" step="5" value="120"></label>
+          <label>نقطة ضبط المستوى % <output id="oSP">60</output><input type="range" id="rSP" min="40" max="85" step="1" value="60"></label>
+          <label>كسب منظم المستوى <span class="en">P level</span> <output id="oPL">25</output><input type="range" id="rPL" min="5" max="120" step="1" value="25"></label>
+          <label>كسب منظم التدفق <span class="en">P flow</span> <output id="oPF">400</output><input type="range" id="rPF" min="50" max="2000" step="10" value="400"></label>
+          <label>تكامل منظم التدفق <span class="en">I flow</span> <output id="oIF">400</output><input type="range" id="rIF" min="20" max="2500" step="10" value="400"></label>
+          <div class="row"><button id="bDef">رجّع قيم البرنامج</button><span class="note" id="nomTxt"></span></div>
+          <span class="simp">تبسيط توضيحي: تحويل أرقام الكسب لسلوك الصمام تقريبي، علشان تشوف أثر الكسب العالي (رقص) والواطي (بطء).</span>
+        </div>
+      </div>
+      <div class="card">
+        <h2>كارت TMCC2 من قدّام</h2>
+        <p class="note" style="margin:0 0 6px">العمود الأحمر في الرسم الحي هو شاشة المستوى (10 لمبات). اللمبات الصغيرة فوقه: إنتاج، تنظيف، تعقيم.</p>
+        <div class="tagtbl">
+          <code>U70X5210</code><span>كارت DeviceNet بين PLC و TMCC2</span>
+          <code>U70X9522</code><span>محوّل RS485 لعداد التدفق</span>
+          <code>DO_APValveA</code><span>أمر فتح الصمام A</span>
+          <code>DI_ApValveAPosition</code><span>حساس وضع الصمام A</span>
+          <code>DO_APValveC</code><span>أمر فتح الصمام C</span>
+          <code>AI_TempCValveSteam</code><span>حرارة بخار الصمام C</span>
+          <code>DI_RegulatingValveLeakage</code><span>كاشف تسريب صمام التنظيم</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GROUP 3 -->
+<section class="group g-lev">
+  <div class="gh"><span class="gn">3</span>المستوى والإنذارات</div>
+  <div class="gb">
+    <div class="cols c3">
+      <div class="card">
+        <h2>نافذة المستوى</h2>
+        <div class="lw">
+          <div class="lwbar" id="lwbar">
+            <div class="z" style="bottom:98%;top:0;background:#f7b5bb"></div>
+            <div class="z" style="bottom:30%;top:2%;background:#d6efdc"></div>
+            <div class="z" style="bottom:3%;top:70%;background:#ffe9a8"></div>
+            <div class="z" style="bottom:0;top:97%;background:#f7b5bb"></div>
+            <div class="z" id="lwSP" style="bottom:60%;height:0;border-top:2px dashed var(--ok)"></div>
+            <div class="real" id="lwReal" style="bottom:0"></div>
+            <div class="mk" id="lwMk" style="bottom:0"></div>
+          </div>
+          <div class="lwtxt" id="lwtxt">
+            <div style="bottom:100%" data-z="hi"><b>100%</b> مستوى عالي ← تفريغ الأنبوب ← وقوف</div>
+            <div style="bottom:91%" data-z="98"><b>&gt;98%</b> الإنتاج يكمّل 30 ث ← وقوف</div>
+            <div style="bottom:60%" data-z="sp"><b id="lwSPt">60%</b> نقطة الضبط (نافذة سليمة)</div>
+            <div style="bottom:30%" data-z="30"><b>&lt;30%</b> الإنتاج يكمّل 30 ث ← وقوف</div>
+            <div style="bottom:7%" data-z="lo"><b>&lt;3%</b> عطل قراءة ← تفريغ ← وقوف</div>
+          </div>
+        </div>
+        <p class="note" style="margin:6px 0 0">العوامة وهي واقفة في القاع بتقرا <b class="mono">7%</b>، فالقراءة تحت <b class="mono">3%</b> معناها إن الحساس مش شايف المغناطيس أصلًا.</p>
+      </div>
+      <div class="card">
+        <h2>الإنذارات الحالية</h2>
+        <div class="alist" id="alist"><div class="empty">مفيش إنذارات.</div></div>
+        <h2 style="margin-top:12px">سجل الأحداث</h2>
+        <div class="log" id="log"></div>
+      </div>
+      <div class="card">
+        <h2>جدول الإنذارات وتوقيتها</h2>
+        <div class="tblwrap"><table class="atable" id="atable"></table></div>
+        <p class="note" style="margin:6px 0 0">الأصفر بيوقف الماكينة، والأزرق تحذير بس. إنذار تسريب صمام التنظيم بيلغي التعقيم كمان.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GROUP 4 -->
+<section class="group g-fault">
+  <div class="gh"><span class="gn">4</span>الأعطال والتحدي</div>
+  <div class="gb">
+    <div class="cols c2">
+      <div class="card">
+        <h2>اعمل عطل</h2>
+        <p class="note" style="margin:0 0 8px">دوس على العطل يشتغل، ودوس تاني يتشال. الأفضل تعمله والماكينة شغالة إنتاج.</p>
+        <div class="faults" id="faults"></div>
+        <div class="row" style="margin-top:8px"><button id="bClr">شيل كل الأعطال</button></div>
+      </div>
+      <div class="card">
+        <h2>تحدي: إيه العطل؟</h2>
+        <p class="note" style="margin:0 0 8px">المحاكي هيشغّل الإنتاج ويعمل عطل مستخبي. بص على الرسم البياني والقراءات والإنذارات، وبعدين اختار السبب.</p>
+        <div class="row"><button class="go" id="bCh">ابدأ تحدي جديد</button><span class="note" id="chScore">النتيجة: 0 من 0</span></div>
+        <div id="chBox" class="hidden">
+          <p id="chQ" style="margin:10px 0 0;font-weight:600"></p>
+          <div class="opts" id="chOpts"></div>
+          <p id="chAns" class="note" style="margin:8px 0 0"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<script>
+(()=>{
+'use strict';
+const $=id=>document.getElementById(id);
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+
+/* ---------------- program values (A3/Speed STR program) ---------------- */
+const P={
+  initWasteFirst:30,     // PAR_FillInitialWasteFirstStart
+  emptyWaste:25,         // PAR_EmptyTubeWasteFilling
+  stopDelay:5,           // PAR_StopDelayFilling 5000 ms
+  rvClose:20,            // PAR_EndProdRVClosingPoint
+  emptyLevel:15,         // level < 15 counts end waste
+  emptyTimeout:10,       // TMR_ProdEndTimeout 10 s
+  prefillLevel:50,       // prefill reached at 50 %
+  prefillFlow:10,        // STR_VAR_FillParPrefillStartFlow
+  regSwitch:20,          // TMCC switches start flow -> regulation at 20 %
+  okLo:30, okHi:98,      // filling OK window
+  malfMin:3, malfMax:98, // PAR_LevelSensorMalfMin / Max
+  tMalf:5, tRange:30, tHigh:1, tA:1.5, tC:6, tSig:2, sigDiff:50,
+  steamLow:106, steamWrn:30, steamAlr:30, steamHigh:200,
+  cDelay:1.5,            // TMR_LatchCValveDelayProduction
+  floatRest:7
+};
+
+/* ---------------- settings ---------------- */
+const set={vol:125,cap:24000,sf:120,sp:60,pl:25,pf:400,if:400};
+function defGains(){ if(set.cap>16000){set.pf=400;set.if=400}else{set.pf=300;set.if=150} set.pl=25; set.sf=120; set.sp=60; }
+
+/* ---------------- state ---------------- */
+let S;
+function fresh(){
+  S={t:0,ph:'sterile',sub:'',phT:0,firstStart:true,sterileLost:false,
+     speed:0,L:0,raw:P.floatRest,Lf:P.floatRest,hallHold:null,drift:0,noise:0,
+     valve:0,cmd:0,I:0,q:0,qm:0,fsp:0,mode:'off',
+     A:false,Afb:false,C:false,Cfb:false,cTimer:0,lineFilled:false,
+     steamT:121,packAcc:0,good:0,waste:0,initCnt:0,endCnt:0,endT:0,stopT:0,prefDone:false,
+     emptyReason:'',reqStop:null,
+     ladder:'Idle', jaw:0, packs:[], flowAnim:0};
+}
+fresh();
+const faults={};
+const AL={}; // alarm runtime
+const ADEF=[
+ {k:'LevelSensorMalfunction',c:'Y',tag:'ALR_FIL_YE_LevelSensorMalfunction',ar:'عطل في قراءة المستوى',when:'القراءة تحت 3% (أو فوق 98% في التعقيم)',d:P.tMalf,act:'empty'},
+ {k:'ProductLevelOutOfRange',c:'Y',tag:'ALR_FIL_YE_ProductLevelOutOfRange',ar:'المستوى خارج نافذة التعبئة',when:'المستوى برّه 30–98% في الإنتاج',d:P.tRange,act:'stop'},
+ {k:'HighProductLevel',c:'Y',tag:'ALR_FIL_YE_HighProductLevel',ar:'مستوى المنتج عالي',when:'TMCC بيدي مستوى عالي والورق ماشي',d:P.tHigh,act:'empty'},
+ {k:'AvalvePosition',c:'Y',tag:'ALR_FIL_YE_AvalvePosition',ar:'وضع الصمام A مش مطابق للأمر',when:'الأمر والحساس مختلفين',d:P.tA,act:'stop'},
+ {k:'CvalvePosition',c:'Y',tag:'ALR_FIL_YE_CvalvePosition',ar:'وضع الصمام C مش مطابق للأمر',when:'الأمر والحساس مختلفين',d:P.tC,act:'stop'},
+ {k:'RegValveLeakage',c:'Y',tag:'ALR_FIL_YE_RegValveLeakage',ar:'تسريب في صمام التنظيم',when:'كاشف التسريب اشتغل',d:0,act:'stop',sterile:true},
+ {k:'FlowMeterCommError',c:'Y',tag:'ALR_FIL_YE_FlowMeterCommError',ar:'خطأ اتصال عداد التدفق',when:'TMCC مش قادر يكلّم العداد',d:0,act:'stop'},
+ {k:'TMCCSignalFault',c:'Y',tag:'ALR_FIL_YE_TMCCSignalFault',ar:'أمر TMCC ومكان السيرفو مختلفين',when:'الفرق أكبر من 50',d:P.tSig,act:'stop'},
+ {k:'ServoRegValveFault',c:'Y',tag:'ALR_FIL_YE_ServoRegValveFault',ar:'عطل سيرفو صمام التنظيم',when:'الدرايف أعلن عطل',d:0,act:'stop'},
+ {k:'SteamBarrierLowTempB',c:'B',tag:'ALR_FIL_BE_SteamBarrierLowTemp',ar:'حرارة حاجز البخار واطية (تحذير)',when:'تحت 106 °C',d:P.steamWrn,act:'none'},
+ {k:'SteamBarrierLowTemp',c:'Y',tag:'ALR_FIL_YE_SteamBarrierLowTemp',ar:'حرارة حاجز البخار واطية',when:'بعد التحذير وفضلت واطية',d:P.steamAlr,act:'stop'},
+];
+ADEF.forEach(a=>AL[a.k]={acc:0,cond:false,unack:false,on:false,def:a});
+
+const FAULTS=[
+ {id:'floatLeak',ar:'منتج دخل جوه العوامة',d:'العوامة تتقل وتغطس فالقراءة تبقى أقل من الحقيقة'},
+ {id:'magnet',ar:'مغناطيس العوامة واقع',d:'الحساس مش شايف العوامة خالص'},
+ {id:'moisture',ar:'رطوبة جوه حساس المستوى',d:'قراءة بتتنطط'},
+ {id:'hall',ar:'حساس Hall بايظ في نص المدى',d:'منطقة ميتة حوالين نقطة الضبط'},
+ {id:'center',ar:'الحساس مش في السنتر أو مش رأسي',d:'القراءة أعلى من الحقيقة'},
+ {id:'fmComm',ar:'قطع اتصال RS485 مع عداد التدفق',d:'القراءة بتقف'},
+ {id:'fmDrift',ar:'عداد التدفق بيقرا زيادة 20%',d:'قراءة أعلى من الحقيقي'},
+ {id:'supply',ar:'ضغط المنتج الداخل ضعيف',d:'من التانك المعقّم أو المعقِّم'},
+ {id:'leak',ar:'تسريب في صمام التنظيم',d:'كاشف التسريب اشتغل'},
+ {id:'servoStuck',ar:'صمام التنظيم علّق مفتوح',d:'السيرفو مش بيتحرك'},
+ {id:'servoDrv',ar:'عطل في درايف سيرفو صمام التنظيم',d:'الدرايف فصل والصمام بيقفل'},
+ {id:'aValve',ar:'الصمام A مش بيفتح',d:'هوا مضغوط أو الصمام نفسه'},
+ {id:'cValve',ar:'الصمام C مش بيفتح',d:'المنتج مش داخل'},
+ {id:'steam',ar:'بخار حاجز البخار ضعيف',d:'الحرارة بتنزل'},
+];
+
+/* ---------------- logging ---------------- */
+const logEl=$('log');
+function fmtT(t){const m=Math.floor(t/60),s=Math.floor(t%60);return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
+function log(txt,sev='i'){const d=document.createElement('div');d.innerHTML=`<span class="t">${fmtT(S.t)}</span><span class="sev-${sev}">${txt}</span>`;logEl.prepend(d);while(logEl.children.length>60)logEl.lastChild.remove()}
+
+/* ---------------- commands ---------------- */
+function anyY(){return ADEF.some(a=>a.c==='Y'&&(AL[a.k].on))}
+function start(){
+  if(S.ph!=='sterile'&&S.ph!=='stopped')return;
+  if(S.sterileLost){log('لازم تعقيم جديد الأول','Y');return}
+  if(anyY()){log('فيه إنذار أصفر. اعمل ريست الأول (ولو العطل لسه موجود الإنذار هيرجع)','Y');return}
+  S.ph='startseq';S.phT=0;S.initCnt=0;S.prefDone=S.L>=P.prefillLevel;S.endCnt=0;
+  log('تشغيل: بداية تسلسل البدء (الفكوك بتتزامن والورق واقف)');
+}
+function stop(reason){
+  if(['startseq','start','prod'].includes(S.ph)){S.ph='stopping';S.stopT=0;log(reason||'إيقاف: السرعة بتنزل وصمام التنظيم بيقفل لحد 20% وبعدين الصمام A يقفل')}
+}
+function emptyTube(reason){
+  if(['start','prod','stopping'].includes(S.ph)||(S.ph==='startseq')){
+    S.ph='emptying';S.endCnt=0;S.endT=0;S.emptyReason=reason||'';
+    log(reason||'تفريغ الأنبوب: الصمام A يقفل والماكينة تكمّل لحد ما الأنبوب يفضى (25 باكو مهدرة)');
+  }
+}
+function resetAlarms(){ADEF.forEach(a=>{const r=AL[a.k];if(r.unack){r.unack=false}});log('ريست إنذارات','i')}
+function resterilize(){
+  if(S.ph!=='sterile'&&S.ph!=='stopped')return;
+  const keep={good:S.good,waste:S.waste,t:S.t};fresh();Object.assign(S,keep);
+  ADEF.forEach(a=>{AL[a.k].unack=false;AL[a.k].acc=0});
+  log('تعقيم جديد (مختصر): الأنبوب فاضي والخط اتعقّم تاني','ok');
+}
+
+/* ---------------- physics + control ---------------- */
+const G=12;          // % level per s for 100 % flow imbalance  (illustrative)
+const KV=2.0;        // flow % per valve %, normal supply
+function step(dt){
+  S.t+=dt;S.phT+=dt;
+  const ph=S.ph;
+  /* machine speed */
+  let spT=0;
+  if(ph==='start'||ph==='prod'||ph==='emptying') spT=1;
+  const rate=ph==='stopping'?1/3:1/6;
+  S.speed+=clamp(spT-S.speed,-rate*dt,rate*dt);
+  const moving=S.speed>0.01;
+
+  /* C valve: opens 1.5 s after paper moves in production, closes 2.5 s after A closed at stop/end */
+  if((ph==='start'||ph==='prod')&&moving){S.cTimer+=dt;if(S.cTimer>=P.cDelay)S.C=true}
+  else if(ph==='startseq'&&S.L>=15&&!S.prefDone){S.C=true}
+  else{S.cTimer=0; if(!S.A&&(ph==='sterile'||ph==='stopped')) S.C=false}
+  S.Cfb=S.C&&!faults.cValve;
+  if(S.Cfb)S.lineFilled=true;
+
+  /* product valve sequence (simplified from STS_FillProdValve_*) */
+  let wantA=false, tmccMode='off';
+  if(ph==='startseq'){
+    S.ladder='FillingCond';
+    if(S.L>=15&&!S.prefDone){wantA=true;tmccMode='prefill';if(S.Lf>=P.prefillLevel)S.prefDone=true}
+    if(S.phT>=5){S.ph='start';S.phT=0;log(S.firstStart?'الورق بيتحرك. أول 30 باكو بعد التعقيم هتتهدر قبل فتح الصمام A':'الورق بيتحرك والتعبئة بتبدأ')}
+  }else if(ph==='start'||ph==='prod'){
+    const needWaste=S.firstStart?P.initWasteFirst:0;
+    if(S.initCnt<needWaste){S.ladder='FillingCond'}
+    else if(!S.Cfb){S.ladder='FillingCond'}
+    else{
+      wantA=true;
+      if(ph==='start'){S.ph='prod';S.phT=0;S.firstStart=false;log('الصمام A اتفتح: TMCC بيبدأ بتدفق البداية '+set.sf+'%')}
+      S.ladder='StartFlowProduction';
+      tmccMode=(S.mode==='reg'||S.Lf>P.regSwitch)?'reg':'start';
+    }
+  }else if(ph==='stopping'){
+    S.ladder='CloseProdValve';S.stopT+=dt;
+    if(S.A){tmccMode='reg';wantA=!(S.valve<P.rvClose&&S.stopT>0.4)&&S.stopT<P.stopDelay}
+    if(!wantA&&S.speed<=0.001){S.ph='stopped';S.phT=0;S.reqStop=null;log('الماكينة وقفت. المنتج فاضل في الأنبوب (وقفة قصيرة)')}
+  }else if(ph==='emptying'){
+    S.ladder='FillingOFF';S.endT+=dt;
+    if(S.A&&S.valve>=P.rvClose&&S.endT<P.stopDelay){wantA=true;tmccMode='close'}
+    if((S.endCnt>=P.emptyWaste)||S.endT>=P.emptyTimeout+P.stopDelay){
+      S.ph='stopping';S.stopT=P.stopDelay;S.reqStop='end';S.emptyReason='';log('التفريغ خلص: الماكينة بتقف');
+    }
+  }else{S.ladder='Idle'}
+
+  /* A valve output and feedback */
+  S.A=wantA;
+  S.Afb=S.A&&!faults.aValve;
+
+  /* TMCC: flow set point */
+  if(tmccMode!==S.mode){
+    if(tmccMode==='reg'&&S.mode==='start')log('المستوى عدّى 20%: TMCC قلب من تدفق البداية لتنظيم المستوى (A مفتوح، B و C مقفولين)');
+    if(tmccMode==='prefill')log('تعبئة مسبقة: الأنبوب فيه منتج قليل، TMCC بيملا بتدفق 10% لحد 50%');
+    S.mode=tmccMode;
+  }
+  const nominal=100*S.speed;
+  let target=0;
+  if(S.mode==='start'){target=set.sf}
+  else if(S.mode==='reg'){target=nominal+(set.pl/10)*(set.sp-S.Lf)}
+  else if(S.mode==='prefill'){target=P.prefillFlow}
+  else if(S.mode==='close'){target=0}
+  target=clamp(target,0,200);
+  if(S.mode==='start') S.fsp+=clamp(target-S.fsp,-80*dt,80*dt); else S.fsp=target;
+  if(S.mode==='off'){S.fsp=0}
+
+  /* flow PI -> servo command */
+  const kp=set.pf/1000, ki=set.if/100;
+  if(S.A&&S.mode!=='off'){
+    const e=S.fsp-S.qm;
+    S.I=clamp(S.I+ki*e*dt,0,100);
+    S.cmd=clamp(S.I+kp*e,0,100);
+    if(S.mode==='close'){S.cmd=Math.max(0,S.valve-60*dt);S.I=S.cmd}
+  }else{S.I=0;S.cmd=0}
+  /* servo */
+  if(!faults.servoStuck&&!faults.servoDrv){
+    const want=S.cmd;const dv=(want-S.valve)*Math.min(1,dt/0.12);
+    S.valve+=clamp(dv,-160*dt,160*dt);
+  }else if(faults.servoStuck){S.valve+=clamp(82-S.valve,-60*dt,60*dt)}
+  else{S.valve=Math.max(0,S.valve-40*dt)}
+  /* actual flow */
+  const supply=faults.supply?0.46:1;
+  const open=S.Afb&&S.Cfb&&!faults.aValve;
+  const qT=open?S.valve*KV*supply:0;
+  S.q+=(qT-S.q)*Math.min(1,dt/0.1);
+  /* flowmeter */
+  if(!faults.fmComm){const qmT=S.q*(faults.fmDrift?1.2:1);S.qm+=(qmT-S.qm)*Math.min(1,dt/0.15)}
+
+  /* tube level */
+  const qout=(S.L>0.01?S.speed*100:0);
+  S.L=clamp(S.L+G*(S.q-qout)/100*dt,0,104);
+
+  /* level sensor */
+  let real=S.L; let raw;
+  if(faults.floatLeak){S.drift=Math.min(28,S.drift+dt*0.7)}else S.drift=Math.max(0,S.drift-dt*5);
+  let fl=real-S.drift;
+  raw=Math.max(P.floatRest,Math.min(100,fl));
+  if(faults.center) raw=Math.min(100,Math.max(P.floatRest,real+12));
+  if(faults.moisture){S.noise+=(Math.random()-.5)*160*dt;S.noise*=Math.exp(-dt*0.8);raw=clamp(raw+S.noise+(Math.random()-.5)*12,0,100)}
+  if(faults.hall){ if(raw>53&&raw<67){ if(S.hallHold==null)S.hallHold=raw<60?53:67; raw=S.hallHold } else S.hallHold=null }
+  if(faults.magnet) raw=0;
+  S.raw=raw;
+  S.Lf+=(raw-S.Lf)*Math.min(1,dt/0.5);
+
+  /* steam */
+  const stT=faults.steam?96:121;
+  S.steamT+=(stT-S.steamT)*Math.min(1,dt/14)+(Math.random()-.5)*0.08;
+
+  /* packages */
+  if(moving){
+    S.packAcc+=S.speed*set.cap/3600*dt;
+    while(S.packAcc>=1){S.packAcc-=1;onPack()}
+  }
+  S.jaw=(S.jaw+S.speed*set.cap/3600*dt)%1;
+
+  alarms(dt);
+}
+function onPack(){
+  let good=false;
+  if(S.ph==='startseq'||S.ph==='start'){S.initCnt++}
+  if(S.ph==='emptying'&&!S.A&&S.Lf<P.emptyLevel)S.endCnt++;
+  if(S.ph==='emptying'&&!S.A&&S.Lf>=P.emptyLevel&&S.endT>2)S.endCnt+=0;
+  const fillingOk=S.mode==='reg'&&S.Afb&&S.Lf>=P.okLo&&S.Lf<=P.okHi&&S.L>=25&&S.L<=100;
+  if((S.ph==='prod'||S.ph==='stopping')&&fillingOk)good=true;
+  if(good)S.good++;else S.waste++;
+  S.packs.push({x:0,good});if(S.packs.length>14)S.packs.shift();
+}
+
+/* ---------------- alarms ---------------- */
+function alarms(dt){
+  const running=['startseq','start','prod','stopping','emptying'].includes(S.ph);
+  const prodRun=(S.ph==='start'||S.ph==='prod');
+  const tmccProd=S.mode==='reg'&&S.Afb;
+  const fillingOK=S.Lf>=P.okLo&&S.Lf<=P.okHi;
+  const c={
+    LevelSensorMalfunction:S.Lf<P.malfMin,
+    ProductLevelOutOfRange:S.ph==='prod'&&tmccProd&&!fillingOK,
+    HighProductLevel:prodRun&&S.speed>0.01&&S.Lf>=99.5,
+    AvalvePosition:S.A!==S.Afb,
+    CvalvePosition:S.C!==S.Cfb,
+    RegValveLeakage:!!faults.leak,
+    FlowMeterCommError:!!faults.fmComm&&(running||S.lineFilled),
+    TMCCSignalFault:Math.abs(S.cmd-S.valve)>P.sigDiff&&S.A,
+    ServoRegValveFault:!!faults.servoDrv,
+    SteamBarrierLowTempB:S.steamT<P.steamLow&&!AL.SteamBarrierLowTemp.on,
+    SteamBarrierLowTemp:S.steamT<P.steamLow&&AL.SteamBarrierLowTempB.acc>=P.steamWrn,
+  };
+  for(const a of ADEF){
+    const r=AL[a.k];const cond=c[a.k];
+    if(a.k==='SteamBarrierLowTempB'){ if(S.steamT<P.steamLow)r.acc+=dt;else r.acc=0; }
+    else { r.acc=cond?r.acc+dt:0; }
+    const fire=(a.k==='SteamBarrierLowTempB')?(r.acc>=a.d&&cond):(cond&&r.acc>=a.d);
+    if(fire&&!r.cond){r.unack=a.c==='Y';onAlarm(a)}
+    r.cond=fire;
+    r.on=r.cond||r.unack;
+    if(a.c==='B'&&!r.cond)r.unack=false;
+  }
+}
+function onAlarm(a){
+  log(`${a.c==='Y'?'إنذار أصفر':'تحذير أزرق'}: ${a.ar} <span class="en">${a.tag}</span>`,a.c);
+  if(a.sterile){S.sterileLost=true;log('الماكينة مبقتش معقّمة','Y')}
+  if(a.act==='empty'&&['startseq','start','prod','stopping'].includes(S.ph)){S.reqStop='alarm';emptyTube('الإنذار ده بيفرّغ الأنبوب الأول وبعدين يوقف الماكينة')}
+  else if(a.act==='stop'&&['startseq','start','prod'].includes(S.ph)){S.reqStop='alarm';stop('إيقاف بسبب الإنذار')}
+  if(ch.on&&!ch.firstAlarm)ch.firstAlarm=a.ar;
+}
+
+/* ---------------- UI build ---------------- */
+const LADDER=[
+ ['Idle','مستني','الماكينة معقّمة والصمام A مقفول'],
+ ['FillingCond','ظروف التعبئة','تزامن الفكوك، باكوات الهدر الأولى (30 بعد التعقيم)، فتح الصمام C، أو تعبئة مسبقة'],
+ ['StartFlowProduction','تعبئة وإنتاج','A مفتوح: تدفق البداية لحد 20% وبعدين تنظيم المستوى'],
+ ['CloseProdValve','قفل صمام المنتج','وقوف: صمام التنظيم لحد 20% ثم A يقفل (أقصى 5 ث)'],
+ ['FillingOFF','تفريغ الأنبوب','A مقفول والماكينة تكمّل: 25 باكو تحت 15% أو انتهاء الوقت'],
+];
+$('ladder').innerHTML=LADDER.map((l,i)=>`<div data-k="${l[0]}"><b>${i+1}</b><span>${l[1]} <span class="en">${l[0]}</span><small>${l[2]}</small></span></div>`).join('');
+
+const LAMPS=[
+ ['DO_APValveA','أمر فتح الصمام A',()=>S.A],
+ ['DI_ApValveAPosition','الصمام A مفتوح فعلًا',()=>S.Afb,()=>S.A!==S.Afb],
+ ['DO_APValveC','أمر فتح الصمام C',()=>S.C],
+ ['DI_ApValveCPosition','الصمام C مفتوح فعلًا',()=>S.Cfb,()=>S.C!==S.Cfb],
+ ['Out.Prefilling','TMCC تعبئة مسبقة',()=>S.mode==='prefill'],
+ ['Out.Production','TMCC إنتاج',()=>S.mode==='reg'&&S.A],
+ ['In.FillingOK','المستوى في النافذة',()=>S.mode==='reg'&&S.Lf>=P.okLo&&S.Lf<=P.okHi],
+ ['In.HighLevelAlarm','مستوى عالي من TMCC',()=>false,()=>S.Lf>=99.5],
+ ['SO_T.TubeFilled','الأنبوب مليان',()=>S.Lf>=30],
+ ['SO_T.FillingOk','التعبئة تمام',()=>S.A&&S.Lf>=P.okLo&&S.Lf<=P.okHi&&S.mode==='reg'],
+ ['DI_RegulatingValveLeakage','كاشف التسريب',()=>false,()=>!!faults.leak],
+ ['SO_T.SteamBarrierON','حاجز البخار جاهز',()=>!S.C&&S.steamT>=P.steamLow],
+];
+$('lamps').innerHTML=LAMPS.map((l,i)=>`<div class="lamp" id="lp${i}"><i></i><span>${l[1]}</span><b>${l[0]}</b></div>`).join('');
+
+$('atable').innerHTML='<tr><th>الإنذار</th><th>بيطلع لما</th><th>التأخير</th></tr>'+ADEF.map(a=>`<tr><td><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${a.c==='Y'?'#f0c419':'#4a8ad6'};margin-inline-end:5px"></span>${a.ar}<div class="en" style="font-size:10px">${a.tag}</div></td><td>${a.when}${a.act==='empty'?' ← تفريغ':''}</td><td class="m">${a.d?a.d+' s':'فوري'}</td></tr>`).join('');
+
+const fEl=$('faults');
+fEl.innerHTML=FAULTS.map(f=>`<button data-f="${f.id}">${f.ar}<small>${f.d}</small></button>`).join('');
+fEl.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;toggleFault(b.dataset.f)});
+function toggleFault(id,force){
+  const on=force!==undefined?force:!faults[id];
+  if(on)faults[id]=true;else delete faults[id];
+  const b=fEl.querySelector(`[data-f="${id}"]`);if(b)b.classList.toggle('on',on);
+  if(!ch.on){const f=FAULTS.find(x=>x.id===id);log((on?'عطل اتعمل: ':'عطل اتشال: ')+f.ar,'i')}
+}
+$('bClr').onclick=()=>{FAULTS.forEach(f=>toggleFault(f.id,false))};
+
+/* trend */
+const SER=[
+ {k:'Lf',ar:'المستوى المقروء',c:'#e0242f',w:2.2,on:true},
+ {k:'L',ar:'المستوى الحقيقي',c:'#e0242f',w:1.4,dash:[3,3],on:true},
+ {k:'qm',ar:'التدفق المقروء',c:'#2b47b5',w:2.2,on:true},
+ {k:'valve',ar:'فتحة صمام التنظيم',c:'#3b5959',w:1.6,on:true},
+ {k:'spd',ar:'سرعة الماكينة',c:'#9aa5ae',w:1.4,dash:[6,4],on:true},
+];
+$('chips').innerHTML=SER.map((s,i)=>`<button data-i="${i}"><span class="dot" style="background:${s.c}"></span>${s.ar}</button>`).join('');
+$('chips').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const s=SER[+b.dataset.i];s.on=!s.on;b.classList.toggle('off',!s.on)});
+let hist=[],histAcc=0;
+
+/* settings */
+function syncSet(){
+  for(const [r,o,k] of [['rSF','oSF','sf'],['rSP','oSP','sp'],['rPL','oPL','pl'],['rPF','oPF','pf'],['rIF','oIF','if']]){$(r).value=set[k];$(o).textContent=set[k]}
+  const nom=set.cap*set.vol/1000;
+  $('nomTxt').innerHTML=`التدفق الاسمي = <b class="mono">${nom.toLocaleString('en')}</b> لتر/ساعة`;
+  $('lwSP').style.bottom=set.sp+'%';$('lwSPt').textContent=set.sp+'%';
+  document.querySelector('[data-z="sp"]').style.bottom=set.sp+'%';
+}
+for(const [r,o,k] of [['rSF','oSF','sf'],['rSP','oSP','sp'],['rPL','oPL','pl'],['rPF','oPF','pf'],['rIF','oIF','if']]){
+  $(r).addEventListener('input',()=>{set[k]=+$(r).value;$(o).textContent=set[k];syncSet()});
+}
+$('selVol').onchange=e=>{set.vol=+e.target.value;syncSet()};
+$('selCap').onchange=e=>{set.cap=+e.target.value;defGains();syncSet();log('القدرة اتغيرت: البرنامج بيبعت كسب منظم التدفق '+set.pf+'/'+set.if+' للـ TMCC')};
+$('bDef').onclick=()=>{defGains();syncSet()};
+syncSet();
+
+/* buttons */
+$('bStart').onclick=start;$('bStop').onclick=()=>stop();$('bEmpty').onclick=()=>emptyTube();$('bReset').onclick=resetAlarms;$('bSter').onclick=resterilize;
+let simSpeed=1;
+document.querySelectorAll('[data-sp]').forEach(b=>b.onclick=()=>{simSpeed=+b.dataset.sp;document.querySelectorAll('[data-sp]').forEach(x=>x.classList.toggle('sel',x===b))});
+
+/* ---------------- challenge ---------------- */
+const ch={on:false,fault:null,n:0,ok:0,answered:false,firstAlarm:null};
+const CH_POOL=['floatLeak','magnet','moisture','hall','center','fmDrift','supply','servoStuck','aValve','cValve','steam','fmComm','leak'];
+$('bCh').onclick=()=>{
+  FAULTS.forEach(f=>toggleFault(f.id,false));
+  ADEF.forEach(a=>{AL[a.k].unack=false;AL[a.k].acc=0});
+  const keep={good:S.good,waste:S.waste,t:S.t};fresh();Object.assign(S,keep);
+  // jump to steady production
+  S.firstStart=false;S.ph='prod';S.speed=1;S.L=set.sp;S.Lf=set.sp;S.raw=set.sp;S.mode='reg';S.A=S.Afb=S.C=S.Cfb=true;S.lineFilled=true;S.valve=50;S.I=50;S.cmd=50;S.q=100;S.qm=100;S.fsp=100;S.cTimer=2;S.ladder='StartFlowProduction';
+  hist=[];
+  ch.fault=CH_POOL[Math.floor(Math.random()*CH_POOL.length)];
+  ch.on=true;ch.answered=false;ch.firstAlarm=null;ch.n++;
+  const delay=4+Math.random()*4;
+  ch.armAt=S.t+delay;
+  log('تحدي جديد: الماكينة شغالة إنتاج… راقب كويس','i');
+  const others=CH_POOL.filter(x=>x!==ch.fault).sort(()=>Math.random()-.5).slice(0,3);
+  const opts=[ch.fault,...others].sort(()=>Math.random()-.5);
+  $('chBox').classList.remove('hidden');
+  $('chQ').textContent='إيه سبب اللي حصل؟ (العطل هيتعمل بعد ثواني)';
+  $('chAns').textContent='';
+  $('chOpts').innerHTML=opts.map(id=>`<button data-c="${id}">${FAULTS.find(f=>f.id===id).ar}</button>`).join('');
+  updScore();
+};
+$('chOpts').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b||ch.answered||!ch.on)return;
+  if(S.t<ch.armAt){$('chAns').textContent='استنى لما تشوف حاجة غريبة الأول.';return}
+  ch.answered=true;const right=b.dataset.c===ch.fault;if(right)ch.ok++;
+  $('chOpts').querySelectorAll('button').forEach(x=>{if(x.dataset.c===ch.fault)x.classList.add('right');else if(x===b)x.classList.add('wrong')});
+  $('chAns').innerHTML=(right?'<b style="color:var(--ok)">صح.</b> ':'<b style="color:var(--alarm)">لأ.</b> ')+HINT[ch.fault];
+  updScore();
+  const fb=fEl.querySelector(`[data-f="${ch.fault}"]`);if(fb)fb.classList.add('on');
+});
+function updScore(){$('chScore').textContent=`النتيجة: ${ch.ok} من ${ch.n}`}
+const HINT={
+ floatLeak:'العوامة اتملت منتج فبقت تقيلة وتقرا أقل من الحقيقة. TMCC يفتكر المستوى واطي فيزوّد التدفق، والمستوى الحقيقي (المنقط) يطلع فوق. مفيش إنذار، والعلامة إن المنتج يوصل لمنطقة اللحام العرضي.',
+ magnet:'الحساس مش شايف المغناطيس فالقراءة صفر (أقل من 7% اللي العوامة بتقراها في القاع). بعد 5 ثواني تحت 3% يطلع عطل قراءة المستوى ويتفرغ الأنبوب.',
+ moisture:'القراءة بتتنطط فمنظم المستوى بيطارد الأرقام وصمام التنظيم بيرقص، والمستوى الحقيقي ثابت تقريبًا.',
+ hall:'في منطقة ميتة حوالين نقطة الضبط: القراءة بتقفز من 53 لـ 67 مرة واحدة، فالصمام بيفتح ويقفل بشكل دوري.',
+ center:'الحساس بيقرا أعلى من الحقيقة بحوالي 12%، فالمستوى المقروء على 60 والحقيقي حوالي 48. مفيش إنذار.',
+ fmDrift:'العداد بيقرا التدفق 120% والماكينة على سرعة 100%. منظم التدفق بيقلل الحقيقي، والمستوى ينزل شوية لحد ما منظم المستوى يعوّض.',
+ supply:'صمام التنظيم بيفتح للآخر ومش قادر يجيب التدفق المطلوب، فالمستوى ينزل تحت 30% ويطلع إنذار «خارج النافذة» بعد 30 ثانية.',
+ servoStuck:'السيرفو واقف على فتحة كبيرة. TMCC بيطلب يقفل والصمام مش بيتحرك، فالفرق يعدّي 50 لمدة 2 ث ويطلع إنذار TMCC Signal Fault.',
+ aValve:'البرنامج أمر الصمام A يفتح والحساس ما أكدش، والتدفق صفر. بعد 1.5 ث يطلع إنذار وضع الصمام A.',
+ cValve:'الصمام C ما فتحش، فالصمام A مش بيفتح والباكوات بتتهدر، وبعد 6 ث يطلع إنذار وضع الصمام C.',
+ steam:'حرارة حاجز البخار بتنزل تحت 106 °C: تحذير أزرق بعد 30 ث، وبعد 30 ث كمان إنذار أصفر ووقوف.',
+ servoDrv:'درايف السيرفو فصل: إنذار فوري، والصمام بيقفل فالتدفق يقف.',
+ fmComm:'TMCC فقد الاتصال بعداد التدفق على RS485 والإنذار فوري.',
+ leak:'كاشف التسريب في صمام التنظيم اشتغل: إنذار فوري، والماكينة بتفقد التعقيم.',
+};
+
+/* ---------------- drawing: diagram ---------------- */
+const cv=$('cvDia'),ctx=cv.getContext('2d');
+function pipe(path,col,w=16){ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#040505';ctx.lineWidth=w+4;ctx.beginPath();path.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();ctx.strokeStyle=col;ctx.lineWidth=w;ctx.stroke()}
+function flowDash(path,on,spd){if(!on)return;ctx.save();ctx.strokeStyle='rgba(120,90,0,.55)';ctx.lineWidth=3;ctx.setLineDash([8,14]);ctx.lineDashOffset=-S.flowAnim*spd;ctx.beginPath();path.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();ctx.restore()}
+function net(pts,col,active,dash){ctx.save();ctx.strokeStyle=col;ctx.lineWidth=3;if(dash)ctx.setLineDash(dash);ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();if(active){ctx.setLineDash([3,9]);ctx.lineDashOffset=-S.t*30;ctx.strokeStyle='#fff';ctx.lineWidth=1.6;ctx.stroke()}ctx.restore()}
+function box(x,y,w,h,fill,stroke='#040505',r=6){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();ctx.lineWidth=1.6;ctx.strokeStyle=stroke;ctx.stroke()}
+function txt(s,x,y,o={}){ctx.font=`${o.w||600} ${o.s||13}px ${o.mono?'"JetBrains Mono",monospace':'"IBM Plex Sans Arabic",system-ui,sans-serif'}`;ctx.fillStyle=o.c||'#040505';ctx.textAlign=o.a||'center';ctx.textBaseline=o.b||'middle';ctx.direction=o.mono?'ltr':'rtl';ctx.fillText(s,x,y)}
+function tag(s,x,y){ctx.font='600 11px "JetBrains Mono",monospace';const w=ctx.measureText(s).width+10;box(x-w/2,y-9,w,18,'#feea05','#040505',3);txt(s,x,y+.5,{mono:1,s:11})}
+function bowtie(x,y,open,col='#fff'){ctx.beginPath();ctx.moveTo(x-16,y-14);ctx.lineTo(x+16,y+14);ctx.lineTo(x+16,y-14);ctx.lineTo(x-16,y+14);ctx.closePath();ctx.fillStyle=open?'#2fbf63':col;ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='#040505';ctx.stroke()}
+function draw(){
+  const W=1000,H=620;ctx.clearRect(0,0,W,H);ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+  const Y=120, X_C=150, X_FM=320, X_RV=480, X_A=620, X_D=720;
+  const prodCol='#feea05', emptyCol='#eef0f1';
+  const down=S.lineFilled?prodCol:emptyCol;
+  const flowing=S.q>1;
+  /* steam supply */
+  pipe([[X_C,28],[X_C,Y-26]],'#a177b4',10);
+  txt('بخار',X_C+26,40,{c:'#5d3b74',s:12,a:'left'});
+  /* product pipe */
+  pipe([[24,Y],[X_C,Y]],prodCol);
+  pipe([[X_C,Y],[X_D,Y],[X_D,500]],down);
+  flowDash([[24,Y],[X_D,Y],[X_D,500]],flowing,0.9+S.q/60);
+  txt('منتج معقّم من التانك',70,Y-26,{s:12});
+  /* C valve with steam jacket */
+  ctx.beginPath();ctx.arc(X_C,Y,28,0,Math.PI*2);ctx.fillStyle=S.steamT>=P.steamLow?'rgba(161,119,180,.55)':'rgba(161,119,180,.18)';ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle='#5d3b74';ctx.stroke();
+  bowtie(X_C,Y,S.Cfb);
+  txt('صمام C',X_C,Y+44);tag(S.steamT.toFixed(0)+' °C',X_C,Y+66);
+  /* flowmeter */
+  box(X_FM-28,Y-24,56,48,'#f6f8f9');txt('FM',X_FM,Y-8,{mono:1,s:12});
+  txt(faults.fmComm?'----':S.qm.toFixed(0)+'%',X_FM,Y+10,{mono:1,s:12,c:faults.fmComm?'#c41e33':'#2b47b5'});
+  txt('عداد التدفق',X_FM,Y+42);
+  /* regulating valve + servo */
+  ctx.beginPath();ctx.arc(X_RV,Y,22,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='#040505';ctx.stroke();
+  // opening indicator
+  ctx.beginPath();ctx.moveTo(X_RV,Y);ctx.arc(X_RV,Y,18,-Math.PI/2,-Math.PI/2+Math.PI*2*S.valve/100);ctx.closePath();ctx.fillStyle='rgba(59,89,89,.6)';ctx.fill();
+  ctx.fillStyle='#040505';ctx.fillRect(X_RV-3,Y-52,6,30);
+  box(X_RV-30,Y-86,60,36,faults.servoDrv?'#fde6e8':'#dfe0e0');txt('SERVO',X_RV,Y-68,{mono:1,s:11});
+  txt('صمام التنظيم',X_RV,Y+40);tag(S.valve.toFixed(0)+'%',X_RV,Y+62);
+  // leakage detector
+  box(X_RV+30,Y+14,46,22,faults.leak?'#ee2643':'#fff');txt('LD',X_RV+53,Y+25,{mono:1,s:10,c:faults.leak?'#fff':'#040505'});
+  /* A valve */
+  bowtie(X_A,Y,S.Afb);
+  ctx.fillStyle='#040505';ctx.fillRect(X_A-2,Y-40,4,24);box(X_A-18,Y-58,36,20,'#c8e3f5');
+  txt('صمام A',X_A,Y+40);
+  /* tube */
+  const TX=X_D-46,TW=92,TT=210,TB=540,TH=TB-TT;
+  ctx.fillStyle='#fbf8f0';ctx.fillRect(TX,TT,TW,TH);
+  const lvlPx=Math.min(S.L,104)/100*TH;
+  if(lvlPx>0){ctx.fillStyle=prodCol;ctx.fillRect(TX,TB-lvlPx,TW,lvlPx);
+    ctx.strokeStyle='rgba(120,90,0,.45)';ctx.lineWidth=1.5;ctx.beginPath();for(let x=TX;x<=TX+TW;x+=4){const yy=TB-lvlPx+Math.sin(x/9+S.t*4)*1.6;x===TX?ctx.moveTo(x,yy):ctx.lineTo(x,yy)}ctx.stroke()}
+  ctx.lineWidth=2.5;ctx.strokeStyle='#8a6d3b';ctx.strokeRect(TX,TT,TW,TH);
+  txt('أنبوب الورق',TX-8,TT+18,{s:12,c:'#6b5530',a:'right'});
+  // fill pipe already drawn down to 500; outlet
+  if(flowing){ctx.fillStyle=prodCol;ctx.fillRect(X_D-6,500,12,Math.max(0,TB-lvlPx-500));}
+  /* level sensor rod + float */
+  const RX=X_D+26;ctx.fillStyle='#99a8a8';ctx.fillRect(RX-3,TT-30,6,TH+20);
+  const flPos=Math.max(P.floatRest,Math.min(100,S.L-S.drift));
+  const fy=TB-flPos/100*TH;
+  ctx.beginPath();ctx.roundRect(RX-11,fy-12,22,24,6);ctx.fillStyle=faults.floatLeak?'#d9c96b':'#fff';ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='#040505';ctx.stroke();
+  if(!faults.magnet){ctx.fillStyle='#ee2643';ctx.fillRect(RX-11,fy-3,6,6)}
+  if(faults.floatLeak){ctx.fillStyle=prodCol;ctx.fillRect(RX-9,fy+2,18,8)}
+  /* level scale */
+  const SX=X_D+70;
+  const z=(a,b,c)=>{ctx.fillStyle=c;ctx.fillRect(SX,TB-b/100*TH,16,(b-a)/100*TH)};
+  z(0,3,'#f7b5bb');z(3,30,'#ffe9a8');z(30,98,'#d6efdc');z(98,100,'#f7b5bb');
+  ctx.strokeStyle='#040505';ctx.lineWidth=1.2;ctx.strokeRect(SX,TT,16,TH);
+  const spy=TB-set.sp/100*TH;ctx.setLineDash([4,3]);ctx.strokeStyle='#1d8448';ctx.beginPath();ctx.moveTo(SX-4,spy);ctx.lineTo(SX+22,spy);ctx.stroke();ctx.setLineDash([]);
+  const my=TB-clamp(S.Lf,0,100)/100*TH;
+  ctx.beginPath();ctx.moveTo(SX+18,my);ctx.lineTo(SX+30,my-7);ctx.lineTo(SX+30,my+7);ctx.closePath();ctx.fillStyle='#040505';ctx.fill();
+  txt(S.Lf.toFixed(0)+'%',SX+34,my,{mono:1,s:13,a:'left',c:'#e0242f'});
+  txt(set.sp+'%',SX-6,spy-10,{mono:1,s:10,a:'right',c:'#1d8448'});
+  txt('حساس المستوى (عوامة)',RX+12,TT-14,{s:12,a:'left'});
+  if(S.L>92){txt('المنتج وصل قرب منطقة اللحام!',TX+TW/2,TT+16,{s:12,c:'#c41e33',w:700})}
+  /* jaws + packages */
+  const jy=TB+18, jo=Math.abs(Math.sin(S.jaw*Math.PI))*14;
+  box(TX-30+jo,jy-8,34,16,'#3b5959');box(TX+TW-4-jo,jy-8,34,16,'#3b5959');
+  const n=S.packs.length;
+  S.packs.forEach((p,i)=>{const px=X_D+60+(n-1-i)*34+(S.packAcc*34);if(px>W-16)return;box(px,TB+48,26,30,p.good?'#feea05':'#dfe0e0','#040505',3);if(!p.good){ctx.strokeStyle='#c41e33';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(px+6,TB+54);ctx.lineTo(px+20,TB+72);ctx.moveTo(px+20,TB+54);ctx.lineTo(px+6,TB+72);ctx.stroke()}});
+  txt('باكوات',X_D+60+120,TB+92,{s:11,c:'#5d6670'});
+  /* control boxes */
+  const tmX=40,tmY=250;
+  box(tmX,tmY,130,270,'#e9ebec');txt('TMCC2',tmX+65,tmY+18,{mono:1,s:15,w:700});
+  // mode LEDs
+  const modes=[['إنتاج',S.mode==='reg'||S.mode==='start'||S.mode==='prefill'],['تنظيف',false],['تعقيم',false]];
+  modes.forEach((m,i)=>{ctx.beginPath();ctx.arc(tmX+100,tmY+44+i*18,5,0,7);ctx.fillStyle=m[1]?'#2fbf63':'#c9cfd4';ctx.fill();ctx.strokeStyle='#040505';ctx.lineWidth=1;ctx.stroke();txt(m[0],tmX+88,tmY+44+i*18,{s:11,a:'right'})});
+  // LED bar 10
+  for(let i=0;i<10;i++){const on=S.Lf>=(i+0.5)*10;box(tmX+90,tmY+230-i*16,22,13,on?'#ee2643':'#f3d6d9','#7a1a22',2)}
+  txt('مستوى',tmX+44,tmY+150,{s:11});
+  txt({off:'OFF',start:'START FLOW',reg:'REGULATION',prefill:'PREFILL',close:'CLOSING'}[S.mode],tmX+44,tmY+172,{mono:1,s:10,c:'#2b47b5'});
+  box(tmX+12,tmY+196,56,34,'#3a4a8a');txt('RS485',tmX+40,tmY+213,{mono:1,s:10,c:'#fff'});
+  // PLC, TPOP, servo drive
+  const plX=230,plY=330; box(plX,plY,110,44,'#fff');txt('PLC',plX+55,plY+22,{mono:1,s:15,w:700});
+  box(plX,240,110,40,'#fff');txt('TPOP',plX+55,260,{mono:1,s:14,w:700});
+  box(plX,430,110,40,'#fff');txt('Servo drive',plX+55,450,{mono:1,s:12});
+  net([[plX+55,280],[plX+55,plY]],'#7bc043',true);
+  net([[tmX+130,plY+22],[plX,plY+22]],'#e3232c',true);
+  net([[plX+55,plY+44],[plX+55,430]],'#2b4fa8',S.A);
+  net([[plX+110,450],[400,450],[400,Y-68],[X_RV-30,Y-68]],'#2b4fa8',S.A);
+  net([[tmX+40,tmY+196],[tmX+40,200],[X_FM,200],[X_FM,Y+24]],'#9aa0a6',!faults.fmComm,faults.fmComm?[6,5]:null);
+  if(faults.fmComm){txt('✕',(tmX+40+X_FM)/2,200,{s:20,c:'#c41e33',w:700})}
+  net([[RX,TT-30],[RX,180],[600,180],[600,560],[tmX+65,560],[tmX+65,tmY+270]],'#1c252c',!faults.magnet);
+  txt('إشارة المستوى',520,570,{s:11,c:'#5d6670'});
+}
+
+/* ---------------- trend drawing ---------------- */
+const tv=$('cvTrend'),tx=tv.getContext('2d');
+function fitCanvas(c,h){const r=c.getBoundingClientRect();const d=window.devicePixelRatio||1;const w=Math.max(300,Math.round(r.width));if(c.width!==Math.round(w*d)){c.width=Math.round(w*d);c.height=Math.round(h*d)}return {w,h,d}}
+function drawTrend(){
+  const {w,h,d}=fitCanvas(tv,240);tx.setTransform(d,0,0,d,0,0);tx.clearRect(0,0,w,h);
+  const l=34,r=8,t=8,b=22,pw=w-l-r,phh=h-t-b;
+  const yMax=160;
+  tx.font='10.5px "JetBrains Mono",monospace';tx.fillStyle='#5d6670';tx.textAlign='right';tx.textBaseline='middle';
+  for(let v=0;v<=yMax;v+=20){const y=t+phh-v/yMax*phh;tx.strokeStyle=v===100?'#c9cfd4':'#eef0f1';tx.lineWidth=1;tx.beginPath();tx.moveTo(l,y);tx.lineTo(w-r,y);tx.stroke();tx.fillText(v,l-4,y)}
+  // window band
+  const yy=v=>t+phh-v/yMax*phh;
+  tx.fillStyle='rgba(29,132,72,.06)';tx.fillRect(l,yy(98),pw,yy(30)-yy(98));
+  tx.setLineDash([4,3]);tx.strokeStyle='#1d8448';tx.beginPath();tx.moveTo(l,yy(set.sp));tx.lineTo(w-r,yy(set.sp));tx.stroke();tx.setLineDash([]);
+  const T1=S.t,T0=T1-60;
+  tx.textAlign='center';tx.fillStyle='#5d6670';
+  for(let k=0;k<=6;k++){const x=l+pw*k/6;tx.fillText(Math.round(k*10-60)+'s',x,h-9)}
+  for(const s of SER){if(!s.on)continue;
+    if(s.k==='L'&&!hist.some(p=>Math.abs(p.L-p.Lf)>3))continue;
+    tx.strokeStyle=s.c;tx.lineWidth=s.w;tx.setLineDash(s.dash||[]);tx.beginPath();let st=false;
+    for(const p of hist){if(p.t<T0)continue;const x=l+(p.t-T0)/60*pw;const y=yy(clamp(p[s.k],0,yMax));st?tx.lineTo(x,y):(tx.moveTo(x,y),st=true)}tx.stroke();tx.setLineDash([])}
+}
+
+/* ---------------- UI update ---------------- */
+const PHT={sterile:'الماكينة معقّمة ومستنية',startseq:'تسلسل البدء',start:'بداية الإنتاج',prod:'إنتاج',stopping:'بتقف',stopped:'واقفة',emptying:'تفريغ الأنبوب'};
+function ui(){
+  const lv=$('vLevel');lv.firstChild.nodeValue=S.Lf.toFixed(0);
+  const bad=S.Lf<P.okLo||S.Lf>P.okHi;lv.classList.toggle('bad',bad&&S.ph==='prod');
+  $('stTitle').textContent=PHT[S.ph]+(S.ph==='stopped'&&anyY()?' بسبب إنذار':'');
+  let m='';
+  if(S.ph==='sterile')m=S.L<1?'الأنبوب فاضي. دوس «تشغيل إنتاج» علشان تبدأ التعبئة.':'جاهزة.';
+  else if(S.ph==='startseq')m=S.mode==='prefill'?'تعبئة مسبقة للأنبوب قبل ما الورق يتحرك.':'الفكوك بتتزامن قبل ما الورق يتحرك.';
+  else if(S.ph==='start')m=S.firstStart?`باكوات الهدر الأولى: ${Math.min(S.initCnt,P.initWasteFirst)} من ${P.initWasteFirst}`:(S.Cfb?'':'مستني الصمام C يفتح');
+  else if(S.ph==='prod')m=S.mode==='start'?'TMCC بيملا بتدفق البداية لحد ما المستوى يعدّي 20%':(S.Lf>=P.okLo&&S.Lf<=P.okHi?'المستوى في النافذة والباكوات سليمة':'المستوى برّه النافذة: الباكوات بتتحسب مهدرة');
+  else if(S.ph==='stopping')m=S.A?'صمام التنظيم بيقفل لحد 20% وبعدها A يقفل':'السرعة بتنزل';
+  else if(S.ph==='emptying')m=(S.emptyReason?S.emptyReason+'. ':'')+`باكوات التفريغ تحت 15%: ${S.endCnt} من ${P.emptyWaste}`;
+  else if(S.ph==='stopped')m=anyY()?'شوف الإنذار، صلّح العطل، وبعدين ريست وشغّل تاني.':(S.L>15?'المنتج فاضل في الأنبوب. التشغيل الجاي هيبدأ على طول من غير هدر.':'الأنبوب فاضي.');
+  $('stMsg').textContent=m;
+  $('kL').textContent=S.Lf.toFixed(1);$('kQ').textContent=faults.fmComm?'----':S.qm.toFixed(0);$('kV').textContent=S.valve.toFixed(0);$('kS').textContent=(S.speed*100).toFixed(0);$('kG').textContent=S.good;$('kW').textContent=S.waste;
+  $('kL').parentElement.classList.toggle('badv',bad&&S.ph==='prod');
+  $('bStart').disabled=!(S.ph==='sterile'||S.ph==='stopped')||S.sterileLost;
+  $('bStop').disabled=!['startseq','start','prod'].includes(S.ph);
+  $('bEmpty').disabled=!['start','prod','stopping'].includes(S.ph);
+  $('bSter').classList.toggle('hidden',!S.sterileLost);$('bSter').disabled=!(S.ph==='sterile'||S.ph==='stopped');
+  $('sterBanner').classList.toggle('hidden',!S.sterileLost);
+  document.querySelectorAll('#ladder div').forEach(d=>d.classList.toggle('cur',d.dataset.k===S.ladder));
+  LAMPS.forEach((l,i)=>{const e=$('lp'+i);const b=l[3]?l[3]():false;e.classList.toggle('on',!!l[2]()&&!b);e.classList.toggle('bad',b)});
+  // steam
+  $('steamT').textContent=S.steamT.toFixed(1)+' °C';$('steamT').style.color=S.steamT<P.steamLow?'var(--alarm)':'var(--steam)';
+  $('steamK').style.left=clamp((S.steamT-80)/60*100,0,100)+'%';
+  // level window
+  $('lwMk').style.bottom=clamp(S.Lf,0,100)+'%';
+  const showReal=Math.abs(S.L-S.Lf)>3;$('lwReal').style.bottom=clamp(S.L,0,100)+'%';$('lwReal').style.display=showReal?'block':'none';
+  document.querySelectorAll('#lwtxt div').forEach(d=>{const z=d.dataset.z;let hit=false;
+    if(z==='hi')hit=S.Lf>=99.5;else if(z==='98')hit=S.Lf>98&&S.Lf<99.5;else if(z==='30')hit=S.Lf<30&&S.Lf>=3&&S.ph==='prod';else if(z==='lo')hit=S.Lf<3;d.classList.toggle('hit',hit)});
+  // alarms
+  const act=ADEF.filter(a=>AL[a.k].on);
+  $('alist').innerHTML=act.length?act.map(a=>`<div class="alarm ${a.c} ${AL[a.k].cond?'':'ack'}">${a.ar}${AL[a.k].cond?'':' (العطل راح، محتاج ريست)'}<span class="en">${a.tag}</span></div>`).join(''):'<div class="empty">مفيش إنذارات.</div>';
+  // control structure
+  const A=S.mode==='start'||S.mode==='prefill', BC=S.mode==='reg';
+  const sw=(id,on)=>{const e=$(id);e.setAttribute('transform',on?'':'rotate(-28)');e.classList.toggle('swon',on)};
+  sw('swA',A);sw('swB',BC);sw('swC',BC);
+  ['wA1','wA2','wA3','wA4'].forEach(i=>$(i).classList.toggle('act',A));
+  ['wB1','wB2','wC1','wC2','wC3'].forEach(i=>$(i).classList.toggle('act',BC));
+  ['wF1','wF2'].forEach(i=>$(i).classList.toggle('act',S.mode!=='off'));
+  $('ctlTxt').textContent=`FLOW SP ${S.fsp.toFixed(0)}%   LEVEL ${S.Lf.toFixed(0)}%`;
+}
+
+/* ---------------- loop ---------------- */
+let last=performance.now();
+function frame(now){
+  let dt=Math.min(0.1,(now-last)/1000);last=now;
+  const tot=dt*simSpeed;const n=Math.ceil(tot/0.02);
+  for(let i=0;i<n;i++){step(tot/n);
+    if(ch.on&&!faults[ch.fault]&&S.t>=ch.armAt&&!ch.answered){faults[ch.fault]=true}
+    histAcc+=tot/n;if(histAcc>=0.1){histAcc=0;hist.push({t:S.t,Lf:S.Lf,L:S.L,qm:faults.fmComm?S.qm:S.qm,valve:S.valve,spd:S.speed*100});if(hist.length>700)hist.shift()}}
+  S.flowAnim+=dt*60;
+  draw();drawTrend();ui();
+  requestAnimationFrame(frame);
+}
+window.__sim={S:()=>S,step,faults,AL,start,stop,emptyTube,toggleFault,resetAlarms,set};
+log('الماكينة خلصت التعقيم وجاهزة للإنتاج','ok');
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
