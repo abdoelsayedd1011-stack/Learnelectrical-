@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>أوضاع التحكم والـ Autotune</title>
-<meta name="description" content="الدرس 7 في كورس الانفرتر: الفرق بين V/f و Sensorless Vector و Vector بإنكودر، الـ Slip ودقة السرعة، العزم على السرعات الواطية، والـ Autotune الثابت والدوّار، مع تحدّي سير محمّل على 5 Hz.">
+<meta name="description" content="الدرس 7 في كورس الانفرتر: الفرق بين V/f وSensorless Vector وVector بإنكودر، والـ Slip ودقة السرعة، والعزم على السرعات المنخفضة، والـ Autotune الثابت والدوّار، مع تحدّي سير محمّل على 5 Hz.">
 <link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/vfd-course/lesson-07.html">
 <link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/vfd-course/lesson-07.html">
 <link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/vfd-course/lesson-07.html">
@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <link rel="stylesheet" href="vfd.css?v=20261021w">
-<script src="vfd.js?v=20261101y"></script>
+<script src="vfd.js?v=20261113m"></script>
 <link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
 <link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
 <link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
@@ -26,60 +26,60 @@
   <div>
     <p class="kick">كورس الانفرتر · الدرس 7 من 12</p>
     <h1>أوضاع التحكم والـ Autotune</h1>
-    <p>نفس الانفرتر يقدر يشغّل الموتور بأكتر من «مخ». الـ V/f بسيط ومناسب للمراوح، والـ Vector بيفهم الموتور من جوه فبيطلّع عزم ودقة أعلى بكتير على السرعات الواطية. جرّب الاتنين على سير محمّل وشوف الفرق بعينك.</p>
+    <p>يستطيع الانفرتر نفسه تشغيل المحرك بأكثر من «عقل». الـ V/f بسيط ومناسب للمراوح، والـ Vector يفهم المحرك من الداخل فيعطي عزمًا ودقة أعلى بكثير على السرعات المنخفضة. جرّب الاثنين على سير محمّل وشاهد الفرق بنفسك.</p>
   </div>
   <div class="chips"><a class="btn" href="index.html">‹ الدروس</a><a class="btn" href="../labs.html">← كل الكورسات</a><a class="btn lang-btn" href="/en/vfd-course/lesson-07.html" lang="en" hreflang="en" data-keep aria-label="Read this page in English" title="Read this page in English" onclick="try{localStorage.setItem('le-lang','en')}catch(e){}">EN</a></div>
 </header>
 
 <div id="lesson-intro" data-course="vfd-course" data-lesson="07"></div>
-<script src="/assets/lesson-intro-data/vfd-course.ar.js?v=20261021r" defer></script>
+<script src="/assets/lesson-intro-data/vfd-course.ar.js?v=20261113m" defer></script>
 <script src="/assets/lesson-intro.js?v=20261113n" defer></script>
 
 <section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
 
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>ليه السرعة بتقل لما الموتور يتحمّل؟</h2>
-  <p>الموتور وهو محمّل بيلف أبطأ شوية من السرعة اللي التردد بيحددها، والفرق ده اسمه <b>Slip</b>. وهو ثابت تقريبًا: حوالي <bdi dir="ltr">50 rpm</bdi>.</p>
-  <p>على <bdi dir="ltr">50 Hz</bdi> الفرق مش باين: 1500 تبقى 1450، يعني غلط 3 % بس. لكن على <bdi dir="ltr">5 Hz</bdi> نفس الـ 50 لفة بتنزّل السرعة من 150 لـ 100، يعني غلط <b>33 %</b>. عشان كده السرعات الواطية محتاجة تحكم أذكى.</p>
+  <h2 id="s1"><span class="k">1</span>لماذا تقل السرعة عند تحميل المحرك؟</h2>
+  <p>المحرك المحمّل يدور أبطأ قليلًا من السرعة التي يحددها التردد، وهذا الفرق اسمه <b>Slip</b>. وهو ثابت تقريبًا: نحو <bdi dir="ltr">50 rpm</bdi>.</p>
+  <p>على <bdi dir="ltr">50 Hz</bdi> لا يظهر الفرق: 1500 تصبح 1450، أي خطأ 3 % فقط. لكن على <bdi dir="ltr">5 Hz</bdi> تُنزل اللفات الخمسون نفسها السرعة من 150 إلى 100، أي خطأ <b>33 %</b>. لذلك تحتاج السرعات المنخفضة إلى تحكم أذكى.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>3 أوضاع تحكم: تختار أنهي؟</h2>
-  <p><b>V/f</b> أبسط وضع، وكفاية للمراوح والطلمبات ولما الانفرتر يشغّل كذا موتور مع بعض. عيبه إن العزم بيضعف تحت <bdi dir="ltr">5–10 Hz</bdi>.</p>
-  <p><b>SVC</b> (Sensorless Vector) بيدّي عزم عالي لحد <bdi dir="ltr">1 Hz</bdi> من غير إنكودر. مناسب للسيور والخلاطات.</p>
-  <p><b>FVC</b> هو Vector بإنكودر على الموتور، فبيدّي عزم كامل حتى على صفر سرعة. ده للونش والـ Winder.</p>
+  <h2 id="s2"><span class="k">2</span>3 أوضاع تحكم: أيها تختار؟</h2>
+  <p><b>V/f</b> أبسط وضع، ويكفي للمراوح والمضخات وعندما يشغّل الانفرتر عدة محركات معًا. عيبه أن العزم يضعف تحت <bdi dir="ltr">5–10 Hz</bdi>.</p>
+  <p><b>SVC</b> (Sensorless Vector) يعطي عزمًا عاليًا حتى <bdi dir="ltr">1 Hz</bdi> دون إنكودر. مناسب للسيور والخلاطات.</p>
+  <p><b>FVC</b> هو Vector بإنكودر على المحرك، فيعطي عزمًا كاملًا حتى عند السرعة صفر. وهو للونش والـ Winder.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>التحدّي: سير محمّل على سرعة واطية</h2>
-  <p>جرّب الأوضاع التلاتة على نفس الحمل وشوف الفرق بينهم.</p>
+  <h2 id="s3"><span class="k">3</span>التحدّي: سير محمّل على سرعة منخفضة</h2>
+  <p>جرّب الأوضاع الثلاثة على الحمل نفسه، وقارن بينها.</p>
   <div class="wd"><h3>أوضاع التحكم</h3><div id="modes"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>الـ Autotune: الانفرتر يتعرّف على الموتور</h2>
-  <p>أوضاع الـ Vector محتاجة تعرف خواص الموتور <b>من جوّه</b>، والـ Autotune هو اللي بيقيسها. وليه نوعين: الـ <b>Static</b> بيقيس والموتور واقف والحمل متركّب، والـ <b>Rotating</b> بيلفّ الموتور فيبقى أدق، لكن الحمل لازم يكون مفكوك.</p>
-  <p>وقبل ما تعمله اتأكد من 4 حاجات: بيانات اليافطة مدخّلة، الموتور بارد، الكابل النهائي متوصّل، ومفيش كونتاكتور مفتوح في الخرج.</p>
-  <div class="box safe"><b>Rotating:</b> الموتور هيلف لوحده. ابعد الناس وفك الحمل، خصوصًا في الونش.</div>
-  <div class="wd"><h3>تمرين: اختار الوضع المناسب</h3><div id="pick"></div></div>
+  <h2 id="s4"><span class="k">4</span>الـ Autotune: الانفرتر يتعرّف على المحرك</h2>
+  <p>تحتاج أوضاع الـ Vector إلى معرفة خواص المحرك <b>الداخلية</b>، والـ Autotune هو الذي يقيسها. وله نوعان: الـ <b>Static</b> يقيس والمحرك متوقف والحمل مركّب، والـ <b>Rotating</b> يدير المحرك فيكون أدق، لكن يجب فك الحمل.</p>
+  <p>وقبل تنفيذه تأكد من 4 أمور: بيانات لوحة البيانات مُدخلة، والمحرك بارد، والكابل النهائي موصّل، ولا يوجد كونتاكتور مفتوح في الخرج.</p>
+  <div class="box safe"><b>Rotating:</b> سيدور المحرك وحده. أبعد الناس وفك الحمل، خاصة في الونش.</div>
+  <div class="wd"><h3>تمرين: اختر الوضع المناسب</h3><div id="pick"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">؟</span>أسئلة الدرس</h2>
-  <p>جاوب على 5 من 6 صح على الأقل عشان الدرس يتعلّم عليه.</p>
+  <p>أجب إجابة صحيحة عن 5 من 6 على الأقل ليُسجَّل الدرس مكتملًا.</p>
   <div id="quiz"></div>
 </section>
 
 <nav class="lnav" id="lnav" aria-label="التنقل بين الدروس"></nav>
-<p class="foot">الأرقام والأمثلة هنا قيم تدريب شائعة، وأسماء الباراميترات والأطراف بتختلف من ماركة لماركة ومن موديل لموديل: <b>مانيوال الانفرتر بتاعك هو المرجع</b>. تقدّمك بيتسجّل على الجهاز ده.<br>© &#x2066;2026 LearnElectricals&#x2069;. كل الحقوق محفوظة. الموقع غير تابع لأي من الشركات المذكورة (مثل &#x2066;Siemens&#x2069; و &#x2066;Allen-Bradley&#x2069; و &#x2066;Delta&#x2069; و &#x2066;Schneider&#x2069; وغيرها)، والأسماء والعلامات التجارية ملك لأصحابها، ومستخدمة لشرح الأجهزة فقط.</p>
+<p class="foot">الأرقام والأمثلة هنا قيم تدريبية شائعة، وأسماء الباراميترات والأطراف تختلف من ماركة إلى أخرى ومن موديل إلى آخر: <b>دليل الانفرتر الذي تستخدمه هو المرجع</b>. يُحفظ تقدّمك على هذا الجهاز.<br>© &#x2066;2026 LearnElectricals&#x2069;. جميع الحقوق محفوظة. الموقع غير تابع لأي من الشركات المذكورة (مثل &#x2066;Siemens&#x2069; و &#x2066;Allen-Bradley&#x2069; و &#x2066;Delta&#x2069; و &#x2066;Schneider&#x2069; وغيرها)، والأسماء والعلامات التجارية ملك لأصحابها، وتُستخدم لشرح الأجهزة فقط.</p>
 </div>
 <script>
 VF.lesson('l7');
 window.MD = VF.modes(document.getElementById('modes'), {lesson:'l7'});
-VF.drill(document.getElementById('pick'), VF.pickGen, {lesson:'l7', task:'pick', need:4, goal:'جاوب <b>4</b> صح عشان التمرين يتعلّم عليه.'});
+VF.drill(document.getElementById('pick'), VF.pickGen, {lesson:'l7', task:'pick', need:4, goal:'أجب <b>4</b> إجابات صحيحة ليُسجَّل التمرين مكتملًا.'});
 VF.quiz(document.getElementById('quiz'), [
-  {q:'4 مواتير على انفرتر واحد. الوضع:', o:['V/f', 'Sensorless Vector', 'Vector بإنكودر', 'أي واحد'], a:0, why:'الـ Vector بيحتاج موتور واحد يعرفه.'},
-  {q:'الـ Slip معناه:', o:['فرق التزامنية عن الفعلية', 'زمن الـ Accel', 'تردد الكارير', 'تيار البدء لحظة التشغيل'], a:0, why:'وبيزيد مع الحمل.'},
-  {q:'قبل الـ Autotune لازم:', o:['تدخّل بيانات اليافطة', 'ترفع الكارير للآخر', 'تشيل الأرضي', 'تفعّل الـ PID'], a:0, why:'الحسبة مبنية عليها.'},
-  {q:'ونش لازم يمسك الحمل على صفر سرعة. الوضع:', o:['Vector بإنكودر', 'V/f خطي', 'V/f تربيعي', 'V/f مع Boost عالي'], a:0, why:'Closed loop.'},
-  {q:'الـ Rotating autotune محتاج:', o:['الموتور من غير حمل', 'الموتور يكون سخن', 'الكابل مفصول', 'الموتور بحمله الكامل'], a:0, why:'الموتور هيلف لوحده.'},
-  {q:'على 5 Hz بحمل كامل في V/f، المشكلة:', o:['غلط في السرعة وعزم ضعيف', 'الجهد عالي على الموتور', 'عطل OV على طول', 'مفيش مشكلة'], a:0, why:'الـ Slip كبير بالنسبة للسرعة.'}
+  {q:'4 محركات على انفرتر واحد. الوضع:', o:['V/f', 'Sensorless Vector', 'Vector بإنكودر', 'أيّ وضع'], a:0, why:'الـ Vector يحتاج إلى محرك واحد يعرفه.'},
+  {q:'الـ Slip معناه:', o:['فرق السرعة التزامنية عن الفعلية', 'زمن الـ Accel', 'تردد الكارير', 'تيار البدء لحظة التشغيل'], a:0, why:'ويزيد مع الحمل.'},
+  {q:'قبل الـ Autotune يجب:', o:['إدخال بيانات لوحة البيانات', 'رفع الكارير إلى أقصاه', 'فك الأرضي', 'تفعيل الـ PID'], a:0, why:'الحساب مبني عليها.'},
+  {q:'ونش يجب أن يمسك الحمل عند السرعة صفر. الوضع:', o:['Vector بإنكودر', 'V/f خطي', 'V/f تربيعي', 'V/f مع Boost عالٍ'], a:0, why:'Closed loop.'},
+  {q:'الـ Rotating autotune يحتاج إلى:', o:['محرك بلا حمل', 'محرك ساخن', 'كابل مفصول', 'محرك بحمله الكامل'], a:0, why:'سيدور المحرك وحده.'},
+  {q:'على 5 Hz بحمل كامل في V/f، المشكلة:', o:['خطأ في السرعة وعزم ضعيف', 'جهد عالٍ على المحرك', 'عطل OV دائمًا', 'لا توجد مشكلة'], a:0, why:'الـ Slip كبير بالنسبة إلى السرعة.'}
 ], {lesson:'l7', pass:0.8});
 </script>
 <script src="/assets/i18n.js?v=20261021w"></script>
