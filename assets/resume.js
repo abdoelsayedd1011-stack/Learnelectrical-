@@ -98,10 +98,10 @@
     var m = Math.round((Date.now() - t) / 60000);
     if (!(m >= 0)) return "";
     if (EN) return EN.ago(m);
-    if (m < 2) return "دلوقتي";
-    if (m < 60) return "من " + m + (m <= 10 ? " دقايق" : " دقيقة");
-    var h = Math.round(m / 60); if (h < 24) return h === 1 ? "من ساعة" : h === 2 ? "من ساعتين" : "من " + h + (h <= 10 ? " ساعات" : " ساعة");
-    var d = Math.round(h / 24); return d === 1 ? "امبارح" : d === 2 ? "من يومين" : "من " + d + (d <= 10 ? " أيام" : " يوم");
+    if (m < 2) return "الآن";
+    if (m < 60) return "منذ " + m + (m <= 10 ? " دقائق" : " دقيقة");
+    var h = Math.round(m / 60); if (h < 24) return h === 1 ? "منذ ساعة" : h === 2 ? "منذ ساعتين" : "منذ " + h + (h <= 10 ? " ساعات" : " ساعة");
+    var d = Math.round(h / 24); return d === 1 ? "أمس" : d === 2 ? "منذ يومين" : "منذ " + d + (d <= 10 ? " أيام" : " يوم");
   }
   function bar(pct, label){ return '<span class="rs-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '" aria-label="' + esc(label) + '"><i style="width:' + pct + '%"></i></span>'; }
   // Arabic home: relative link as before. English home: the /en/ twin when there is one, else the Arabic page.
@@ -116,18 +116,18 @@
     var going = rows.filter(function(r){ return r.done > 0 && r.pct < 100; });
     if (!main && going.length) main = { lab: going[0].lab, row: going[0], href: going[0].lab.href || going[0].lab.path, sub: "", t: 0 };
     if (!main) return;
-    var name = main.lab ? main.lab.name : (main.sub || (EN ? EN.lastOpened : "آخر حاجة فتحتها"));
+    var name = main.lab ? main.lab.name : (main.sub || (EN ? EN.lastOpened : "آخر ما فتحته"));
     var kind = main.lab ? (main.lab.course || main.lab.brand === "كورس" ? "" : EN ? EN.simOf(main.lab.brand) : "محاكي " + main.lab.brand) : "";
     var pct = main.row ? main.row.pct : null;
-    var h = '<div class="rs-main"><div class="rs-txt"><span class="eyebrow">' + (EN ? EN.resume : "كمّل من حيث وقفت") + (main.t ? ' · <span class="rs-ago">' + esc(ago(main.t)) + "</span>" : "") + "</span>" +
+    var h = '<div class="rs-main"><div class="rs-txt"><span class="eyebrow">' + (EN ? EN.resume : "أكمل من حيث توقفت") + (main.t ? ' · <span class="rs-ago">' + esc(ago(main.t)) + "</span>" : "") + "</span>" +
       "<h2" + (main.lab && !main.lab.rtlName ? ' class="ltr-name"' : "") + ">" + esc(name) + "</h2>" +
       (main.sub && main.lab ? '<p class="rs-sub">' + esc(main.sub) + "</p>" : "") +
       (kind ? '<p class="rs-kind">' + esc(kind) + "</p>" : "") +
       (pct !== null ? '<div class="rs-prog">' + bar(pct, EN ? EN.progressIn(name) : "التقدّم في " + name) + "<b>" + pct + "%</b><small>" + (EN ? EN.of(main.row.done, main.row.total) : main.row.done + " من " + main.row.total) + "</small></div>" : "") +
-      '</div><a class="btn btn-primary rs-go" href="' + esc(main.href) + '">' + (EN ? EN.resumeGo : "كمّل ←") + "</a></div>";
+      '</div><a class="btn btn-primary rs-go" href="' + esc(main.href) + '">' + (EN ? EN.resumeGo : "أكمل ←") + "</a></div>";
     var others = going.filter(function(r){ return !main.lab || r.lab.id !== main.lab.id; }).sort(function(a, b){ return b.pct - a.pct; }).slice(0, 6);
     if (others.length){
-      h += '<h3 class="rs-h">' + (EN ? EN.resumeOthers : "كورسات ومحاكيات لسه مخلّصتهاش") + '</h3><ul class="rs-list">' + others.map(function(r){
+      h += '<h3 class="rs-h">' + (EN ? EN.resumeOthers : "كورسات ومحاكيات لم تكملها بعد") + '</h3><ul class="rs-list">' + others.map(function(r){
         return '<li><a href="' + esc(r.lab.href || r.lab.path) + '"><span class="rs-n"' + (r.lab.rtlName ? "" : ' dir="ltr"') + ">" + esc(r.lab.name) + "</span>" + bar(r.pct, EN ? EN.progressIn(r.lab.name) : "التقدّم في " + r.lab.name) + '<span class="rs-p">' + r.pct + "%</span></a></li>";
       }).join("") + "</ul>";
     }

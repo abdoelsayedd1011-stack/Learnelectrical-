@@ -3,7 +3,7 @@
   "use strict";
   // English pages (/en/): strings from assets/i18n-en.js; API errors are mapped by their code (LE_I18N.msg)
   var I18N = window.LE_I18N || {}, EN = I18N.isEn && I18N.en ? I18N.en : null;
-  var OFFLINE = EN ? EN.offline : "العضوية لسه مش متفعّلة على النسخة دي من الموقع.";
+  var OFFLINE = EN ? EN.offline : "العضوية غير مفعّلة على هذه النسخة من الموقع.";
   var M = function(r, fb){ return I18N.msg ? I18N.msg(r, fb) : (r && r.message) || fb; };
   var DLOC = EN ? "en-GB" : "ar-EG";
 
@@ -58,11 +58,11 @@
     // back from Google (or a blocked account) with ?err=code
     var errCode = new URLSearchParams(location.search).get("err");
     if (errCode){
-      var AR_ERR = { no_google: "الدخول بجوجل لسه مش متفعّل على الموقع. ادخل بالإيميل والباسورد.", google_failed: "معرفناش نكمّل الدخول بجوجل. جرّب تاني.",
-        google_state: "المتصفح ده مش بيحفظ الكوكيز، فمعرفناش نكمّل الدخول بجوجل. افتح الموقع في Chrome أو Safari وجرّب تاني، أو ادخل بالإيميل والباسورد.",
-        google_secret: "إعداد جوجل على الموقع فيه خطأ (كود 2). ادخل بالإيميل والباسورد مؤقتًا.",
-        google_token: "إعداد جوجل على الموقع فيه خطأ (كود 3). ادخل بالإيميل والباسورد مؤقتًا.",
-        suspended: "الحساب ده موقوف، كلّم الإدارة." };
+      var AR_ERR = { no_google: "الدخول بحساب Google غير مفعّل على الموقع. ادخل بالبريد وكلمة المرور.", google_failed: "تعذّر إتمام الدخول بحساب Google. حاول مرة أخرى.",
+        google_state: "هذا المتصفح لا يحفظ ملفات تعريف الارتباط، فتعذّر إتمام الدخول بحساب Google. افتح الموقع في Chrome أو Safari وحاول مرة أخرى، أو ادخل بالبريد وكلمة المرور.",
+        google_secret: "في إعداد Google على الموقع خطأ (كود 2). ادخل بالبريد وكلمة المرور مؤقتًا.",
+        google_token: "في إعداد Google على الموقع خطأ (كود 3). ادخل بالبريد وكلمة المرور مؤقتًا.",
+        suspended: "هذا الحساب موقوف. تواصل مع الإدارة." };
       var t = EN ? (EN.err && EN.err[errCode]) : AR_ERR[errCode];
       if (t){ setTab("login"); showMsg(fLogin.querySelector(".auth-msg"), t); }
     }
@@ -75,7 +75,7 @@
         if (!fWa || !waNum) return;
         var em = (fLogin.elements.email.value || "").trim();
         var site = (window.SITE || {}).name || "LearnElectricals";
-        fWa.href = "https://wa.me/" + waNum + "?text=" + encodeURIComponent(EN ? EN.forgotWa(site, em) : "السلام عليكم، نسيت باسورد حسابي على " + site + (em ? ". الإيميل: " + em : ". الإيميل: "));
+        fWa.href = "https://wa.me/" + waNum + "?text=" + encodeURIComponent(EN ? EN.forgotWa(site, em) : "السلام عليكم، نسيت كلمة مرور حسابي على " + site + (em ? ". البريد: " + em : ". البريد: "));
         fWa.hidden = false;
       };
       fBtn.addEventListener("click", function(){
@@ -109,8 +109,8 @@
     fReset.addEventListener("submit", function(e){
       e.preventDefault();
       var p1 = fReset.elements.password.value, p2 = fReset.elements.password2.value;
-      if (p1.length < 8){ showMsg(rMsg, EN ? EN.pwShort : "الباسورد لازم يكون 8 حروف أو أرقام على الأقل."); return; }
-      if (p1 !== p2){ showMsg(rMsg, EN ? EN.pwMismatch : "الباسوردين مش زي بعض. اكتبهم تاني."); return; }
+      if (p1.length < 8){ showMsg(rMsg, EN ? EN.pwShort : "يجب ألا تقل كلمة المرور عن 8 أحرف أو أرقام."); return; }
+      if (p1 !== p2){ showMsg(rMsg, EN ? EN.pwMismatch : "كلمتا المرور غير متطابقتين. أعد كتابتهما."); return; }
       showMsg(rMsg, ""); rBtn.disabled = true;
       api("reset", { token: token, password: p1 }).then(function(r){
         if (r.ok){ try{ sessionStorage.setItem("le-user", JSON.stringify(r.user)); }catch(x){} location.replace("account.html"); return; }
@@ -127,14 +127,14 @@
       if (r.ok && !r.user){ location.replace("login.html?next=" + encodeURIComponent(location.pathname)); return; }
       if (!r.ok){ showMsg(msg, M(r, OFFLINE)); return; }
       var u = r.user;
-      document.getElementById("acc-hello").textContent = EN ? EN.hello(u.name.split(" ")[0]) : "أهلاً يا " + u.name.split(" ")[0];
+      document.getElementById("acc-hello").textContent = EN ? EN.hello(u.name.split(" ")[0]) : "أهلًا يا " + u.name.split(" ")[0];
       document.getElementById("acc-name").textContent = u.name;
       document.getElementById("acc-email").textContent = u.email;
       var adm = document.getElementById("acc-admin"); if (adm) adm.hidden = !u.admin; // /api/auth/me says admin only for ADMIN_EMAILS
       var pro = u.plan === "pro" && u.pro_until > Date.now(), dt = function(t){ return new Date(t).toLocaleDateString(DLOC, { year: "numeric", month: "long", day: "numeric" }); };
       var planEl = document.getElementById("acc-plan");
       planEl.textContent = EN ? (pro ? EN.planPro(dt(u.pro_until)) : u.plan === "pro" && u.pro_until ? EN.planEnded(dt(u.pro_until)) : EN.planFree)
-        : pro ? "\u2066Pro\u2069 لحد " + dt(u.pro_until) : u.plan === "pro" && u.pro_until ? "مجاني (الاشتراك خلص " + dt(u.pro_until) + ")" : "مجاني";
+        : pro ? "\u2066Pro\u2069 حتى " + dt(u.pro_until) : u.plan === "pro" && u.pro_until ? "بلا اشتراك (انتهى في " + dt(u.pro_until) + ")" : "بلا اشتراك";
       // لينك «اشتري كورس» بيظهر لما كورس واحد على الأقل يبقى للبيع، ومعاه طريقة دفع (أرقام الدفع، أو لينك كارت / واتساب لبرّه مصر)
       var P = (window.SITE || {}).pay || {};
       var addSub = function(x){
@@ -143,14 +143,14 @@
         var eg = (x.instapay || x.vodafone || P.instapay || P.vodafoneCash) && ks.some(function(k){ return cs[k] && cs[k].price > 0; });
         var intl = ks.some(function(k){ return cs[k] && cs[k].usd > 0 && (cs[k].link || x.whatsapp || (window.SITE || {}).whatsapp); });
         if (!eg && !intl) return;
-        var sa = document.createElement("a"); sa.href = "subscribe.html"; sa.className = "acc-sub"; sa.textContent = EN ? EN.buyCourse : "اشتري كورس ←";
+        var sa = document.createElement("a"); sa.href = "subscribe.html"; sa.className = "acc-sub"; sa.textContent = EN ? EN.buyCourse : "اشترِ كورسًا ←";
         planEl.appendChild(document.createTextNode(" · ")); planEl.appendChild(sa);
       };
       fetch("/api/prices").then(function(x){ return x.json(); }).then(addSub, function(){ addSub(null); });
       // جاي من صفحة محتاجة اشتراك (لما الاشتراك يتفعّل في functions/_lib/plan.js)
       if (new URLSearchParams(location.search).get("need") === "pro" && !pro){
-        showMsg(msg, EN ? EN.needPro : "الصفحة اللي كنت رايحلها محتاجة تشتري الكورس بتاعها. ");
-        var na = document.createElement("a"); na.href = "subscribe.html"; na.textContent = EN ? EN.howBuy : "اعرف إزاي تشتري ←"; msg.appendChild(na);
+        showMsg(msg, EN ? EN.needPro : "الصفحة التي قصدتها تتطلب شراء كورسها. ");
+        var na = document.createElement("a"); na.href = "subscribe.html"; na.textContent = EN ? EN.howBuy : "طريقة الشراء ←"; msg.appendChild(na);
       }
       document.getElementById("acc-since").textContent = new Date(u.created_at).toLocaleDateString(DLOC, { year: "numeric", month: "long", day: "numeric" });
       var sync = window.LESync ? window.LESync.ready : Promise.resolve();
@@ -163,13 +163,13 @@
       fPw.addEventListener("submit", function(e){
         e.preventDefault();
         var p1 = fPw.elements.password.value, p2 = fPw.elements.password2.value;
-        if (p1.length < 8){ showMsg(pMsg, EN ? EN.pwShort : "الباسورد لازم يكون 8 حروف أو أرقام على الأقل."); return; }
-        if (p1 !== p2){ showMsg(pMsg, EN ? EN.pwMismatch : "الباسوردين مش زي بعض. اكتبهم تاني."); return; }
+        if (p1.length < 8){ showMsg(pMsg, EN ? EN.pwShort : "يجب ألا تقل كلمة المرور عن 8 أحرف أو أرقام."); return; }
+        if (p1 !== p2){ showMsg(pMsg, EN ? EN.pwMismatch : "كلمتا المرور غير متطابقتين. أعد كتابتهما."); return; }
         showMsg(pMsg, ""); pBtn.disabled = true;
         api("password", { password: p1 }).then(function(r){
           pBtn.disabled = false;
           if (!r.ok){ showMsg(pMsg, M(r, OFFLINE)); return; }
-          fPw.reset(); showMsg(pMsg, EN ? EN.pwSaved : "تم حفظ الباسورد الجديد، والأجهزة التانية خرجت من الحساب.");
+          fPw.reset(); showMsg(pMsg, EN ? EN.pwSaved : "حُفظت كلمة المرور الجديدة، وسُجّل الخروج من الأجهزة الأخرى.");
         });
       });
     }
@@ -180,15 +180,15 @@
     function certCard(c){
       if (EN) return certCardEn(c);
       var pct = c.total ? Math.round(c.done / c.total * 100) : 0, h = '<article class="cert-item' + (c.cert ? " has" : "") + '"><div class="ci-head"><h3>' + esc(c.title) + "</h3>";
-      if (c.cert) h += '<span class="ci-tag ok">✓ الشهادة طلعت</span></div>' +
+      if (c.cert) h += '<span class="ci-tag ok">✓ صدرت الشهادة</span></div>' +
         '<p class="ci-meta">باسم <b>' + esc(c.cert.name) + "</b> · " + esc(fmtDate(c.cert.issued_at)) + ' · كود <span class="ltr mono">' + esc(c.cert.code) + "</span></p>" +
         '<div class="btn-row"><a class="btn btn-primary" href="cert.html?c=' + encodeURIComponent(c.cert.code) + '">افتح الشهادة ←</a></div>';
-      else if (c.complete) h += '<span class="ci-tag ok">خلّصته ✓</span></div>' +
-        '<form class="ci-form" data-course="' + esc(c.id) + '" novalidate><label class="field"><span>الاسم اللي هيتكتب على الشهادة</span><input name="name" maxlength="60" autocomplete="name" required value="' + esc(c.name) + '"></label>' +
-        '<p class="auth-msg" role="alert" hidden></p><button class="btn btn-primary" type="submit">اطلع شهادة</button></form>';
+      else if (c.complete) h += '<span class="ci-tag ok">أتممته ✓</span></div>' +
+        '<form class="ci-form" data-course="' + esc(c.id) + '" novalidate><label class="field"><span>الاسم الذي يُكتب على الشهادة</span><input name="name" maxlength="60" autocomplete="name" required value="' + esc(c.name) + '"></label>' +
+        '<p class="auth-msg" role="alert" hidden></p><button class="btn btn-primary" type="submit">إصدار الشهادة</button></form>';
       else h += '<span class="ci-tag">' + (c.total ? pct + "%" : "") + "</span></div>" +
-        (c.total ? '<div class="ci-bar" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100" aria-label="التقدّم ' + pct + '%"><i style="width:' + pct + '%"></i></div><p class="ci-meta">' + c.done + " من " + c.total + " خطوة. الشهادة بتفتح لما تخلّص الكورس كله.</p>" : "") +
-        '<div class="btn-row"><a class="btn btn-ghost" href="' + esc(c.hub) + '">' + (c.done ? "كمّل الكورس ←" : "ابدأ الكورس ←") + "</a></div>";
+        (c.total ? '<div class="ci-bar" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100" aria-label="التقدّم ' + pct + '%"><i style="width:' + pct + '%"></i></div><p class="ci-meta">' + c.done + " من " + c.total + " خطوة. تُفتح الشهادة عند إتمام الكورس كله.</p>" : "") +
+        '<div class="btn-row"><a class="btn btn-ghost" href="' + esc(c.hub) + '">' + (c.done ? "أكمل الكورس ←" : "ابدأ الكورس ←") + "</a></div>";
       return h + "</article>";
     }
     function certCardEn(c){

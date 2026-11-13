@@ -23,8 +23,8 @@
     aria: "Before you start", sum: "What you will learn in this lesson", terms: "Key words", go: "Now practice ↓",
     hide: "Hide summary", bar: "Lesson summary", open: "Show", cc: "Video captions are in Arabic", vid: "Lesson video"
   } : {
-    aria: "قبل ما تبدأ", sum: "هتتعلم إيه في الدرس ده؟", terms: "كلمات مهمة", go: "يلا طبّق ↓",
-    hide: "اخفي الملخص", bar: "ملخص الدرس", open: "اعرض", cc: "", vid: "فيديو الدرس"
+    aria: "قبل أن تبدأ", sum: "ماذا ستتعلّم في هذا الدرس؟", terms: "مصطلحات مهمة", go: "طبّق الآن ↓",
+    hide: "إخفاء الملخص", bar: "ملخص الدرس", open: "عرض", cc: "", vid: "فيديو الدرس"
   };
   var id = dir + "/" + num;
 

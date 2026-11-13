@@ -1202,4 +1202,4 @@ VF.hubArt = () => [VF.art.drive({disp:'50.00'}), VF.art.motor(), VF.art.resistor
 })();
 
 /* قفل الدروس بالترتيب: assets/lesson-gate.js */
-;(function(){ if (typeof document === "undefined" || window.LEGate) return; var s = document.createElement("script"); s.src = "/assets/lesson-gate.js?v=20261029g1"; document.head.appendChild(s); })();
+;(function(){ if (typeof document === "undefined" || window.LEGate) return; var s = document.createElement("script"); s.src = "/assets/lesson-gate.js?v=20261113n"; document.head.appendChild(s); })();

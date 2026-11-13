@@ -34,15 +34,15 @@ export const DEFAULT_PRICES = {
 
 // ids match _lib/courses.js (certificates) so one id means one course everywhere.
 export const PRODUCTS = {
-  basics:  { title: "أساسيات الكهربا",          dirs: ["basics-lab"] },
+  basics:  { title: "أساسيات الكهرباء",          dirs: ["basics-lab"] },
   classic: { title: "الكلاسيك كنترول",           dirs: ["classic-control-lab"] },
-  safety:  { title: "السيفتي PLC",               dirs: ["safety-lab"] },                    // RT9, Vital 1, Pluto B20
-  drw:     { title: "قراية الرسومات الكهربية",   dirs: ["drawings-lab"] },
-  instr:   { title: "الإنسترومنتيشن",            dirs: ["instrumentation-lab", "e5cc-lab", "clm223-lab"] }, // E5CC: temperature control (thermocouple / PT100)
+  safety:  { title: "أنظمة الأمان Safety PLC",               dirs: ["safety-lab"] },                    // RT9, Vital 1, Pluto B20
+  drw:     { title: "قراءة الرسومات الكهربية",   dirs: ["drawings-lab"] },
+  instr:   { title: "أجهزة القياس",            dirs: ["instrumentation-lab", "e5cc-lab", "clm223-lab"] }, // E5CC: temperature control (thermocouple / PT100)
   plc:     { title: "الـ PLC",                    dirs: ["plc-lab"] },                         // includes the Siemens / Delta / AB brand pages
   vfd:     { title: "الانفرتر VFD",               dirs: ["vfd-course", "vfd-simulator", "ab1336-simulator", "pf40-lab", "v20-lab", "atv320-lab", "atv630-lab",
                                                          "ms300-lab", "fc51-lab", "vlt2800-lab", "acs580-lab", "g120-lab", "fre800-lab", "ga500-lab", "ig5a-lab", "gd20-lab", "c2000-lab", "frenic-lab"] },
-  srv:     { title: "السيرفو موتور والدرايف",     dirs: ["servo-course", "servo-simulator", "mrje-servo", "sigma7-servo", "kinetix300-servo"] },
+  srv:     { title: "محرك السيرفو والدرايف",     dirs: ["servo-course", "servo-simulator", "mrje-servo", "sigma7-servo", "kinetix300-servo"] },
   iiot:    { title: "IIoT والشبكات الصناعية",      dirs: ["iiot-lab"] },
   scada:   { title: "SCADA و HMI",                 dirs: ["scada-lab"] },
   panel:   { title: "تصميم اللوحات الكهربية",      dirs: ["panel-lab"] },

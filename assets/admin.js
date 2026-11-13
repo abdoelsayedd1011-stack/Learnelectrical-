@@ -6,7 +6,7 @@
   var $ = function(id){ return document.getElementById(id); };
   var OFFLINE = "مقدرناش نوصل للسيرفر. جرّب تاني بعد شوية.";
   var SITE_NAME = (window.SITE || {}).name || "LearnElectricals";
-  var COURSE_NAMES = { basics: "أساسيات الكهربا", classic: "الكلاسيك كنترول", instr: "الإنسترومنتيشن" };
+  var COURSE_NAMES = { basics: "أساسيات الكهرباء", classic: "الكلاسيك كنترول", instr: "أجهزة القياس" };
   var SIM_NAMES = { pf525: "PowerFlex 525", pf40: "PowerFlex 40", ab1336: "1336 PLUS II", v20: "SINAMICS V20", atv320: "Altivar ATV320",
     atv630: "Altivar ATV630", ms300: "Delta MS300", fc51: "Danfoss FC 51", vlt2800: "Danfoss VLT 2800", e5cc: "Omron E5CC", clm223: "E+H Liquisys M", servo: "Delta ASDA-B2", vfd: "محاكي الانفرتر الشامل" };
 
@@ -97,7 +97,7 @@
   var METHOD_AR = { instapay: "InstaPay", vodafone: "فودافون كاش", intl: "من خارج مصر" };
   var prList = $("pr-list"), prDone = $("pr-done"), prCount = $("pr-count");
   function prodName(r){ return r.plan === "course" ? "كورس " + ((PRODUCT_NAMES[r.product]) || r.product) : "كل الكورسات " + (PLAN_AR[r.plan] || r.plan); }
-  var PRODUCT_NAMES = { basics: "أساسيات الكهربا", classic: "الكلاسيك كنترول", safety: "السيفتي PLC", drw: "قراية الرسومات الكهربية", instr: "الإنسترومنتيشن", plc: "الـ PLC", vfd: "الانفرتر VFD", srv: "السيرفو موتور والدرايف", iiot: "IIoT والشبكات الصناعية", scada: "SCADA و HMI", panel: "تصميم اللوحات الكهربية", maint: "صيانة المحركات والمحولات", srvm: "صيانة محركات السيرفو", mech: "أساسيات الميكانيكا", mfit: "ميكانيكا الماكينات" };
+  var PRODUCT_NAMES = { basics: "أساسيات الكهرباء", classic: "الكلاسيك كنترول", safety: "أنظمة الأمان Safety PLC", drw: "قراءة الرسومات الكهربية", instr: "أجهزة القياس", plc: "الـ PLC", vfd: "الانفرتر VFD", srv: "محرك السيرفو والدرايف", iiot: "IIoT والشبكات الصناعية", scada: "SCADA و HMI", panel: "تصميم اللوحات الكهربية", maint: "صيانة المحركات والمحولات", srvm: "صيانة محركات السيرفو", mech: "أساسيات الميكانيكا", mfit: "ميكانيكا الماكينات" };
   function money(r){ return "⁦" + r.amount + "⁩ " + (r.currency === "USD" ? "دولار" : ((window.SITE || {}).pay || {}).currency || "جنيه"); }
   function reqRow(r){
     var done = r.status !== "pending";
