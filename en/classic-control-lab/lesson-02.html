@@ -79,12 +79,11 @@ CL.lesson({
    steps:[
     {kind:'text', title:'Definition', html:`
      <div class="lsec lb">
-     <p class="bf"><span class="ic">🧲</span><span>A relay = a <b>coil</b> that becomes a magnet and flips the <b>contacts</b>.</span></p>
-     <ol class="steps"><li>Voltage on A1-A2</li><li>Coil pulls in</li><li>Contacts flip</li><li>Remove voltage → reset</li></ol>
-     <ul class="fx"><li><b><span class="term">11</span></b><span>Common</span></li><li><b><span class="term">12</span></b><span><span class="nc">NC</span>: joined to 11 when off</span></li><li><b><span class="term">14</span></b><span><span class="no">NO</span>: joins 11 when the coil pulls in</span></li></ul>
-     <div class="tiles"><div class="tile"><span class="big">8 pin</span><span>2 CO contacts</span></div><div class="tile"><span class="big">11 pin</span><span>3 CO contacts</span></div><div class="tile"><span class="big">14 pin</span><span>4 CO contacts</span></div></div>
-     <p class="alert">Coil voltage must match: a 24V relay on 230V <b>burns out</b>.</p>
-     <p class="tip">Coil and contacts are isolated: a 24V DC coil can switch 230V AC.</p>
+     <p>A relay has a <b>coil</b> inside. When the coil gets voltage on A1-A2 it becomes a magnet and pulls in, so <b>the contacts change over</b>. Remove the voltage and they go back.</p>
+     <p>Each contact has three terminals: <span class="term">11</span> is the common. <span class="term">12</span> is <span class="nc">NC</span>, connected to 11 with no voltage. And <span class="term">14</span> is <span class="no">NO</span>, which closes to 11 when the coil pulls in.</p>
+     <p>Relays come as 8 pin with 2 changeover contacts, 11 pin with 3, or 14 pin with 4.</p>
+     <p class="alert">The coil voltage must match: a 24V relay on 230V <b>burns out</b>.</p>
+     <p class="tip">The coil is isolated from the contacts: a 24V DC coil can switch 230V AC.</p>
      </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'8-pin relay in its socket', dev:K1CO, nema:[{k:'coil', opt:{letter:'CR'}}, 'crNO', 'crNC'], cap:'The relay with its clear cover plugged into the socket on a DIN rail, with the copper coil, armature and two CO contacts inside. The socket screws: 11-12-14 and 21-22-24 for the contacts, and A1-A2 for the coil. The round drawing: the pins from below. In the IEC symbol: the rectangle is the coil, and the dashed line links it to the contacts it moves. In NEMA: the coil is a circle with CR (control relay) inside, and a contact is two parallel lines, with a slash if it\'s NC.'}]},
@@ -101,11 +100,11 @@ CL.lesson({
    steps:[
     {kind:'text', title:'Definition', html:`
      <div class="lsec lb">
-     <p class="bf"><span class="ic">🔒</span><span>K1's contact <b>in parallel</b> with START → the relay <b>holds itself</b>.</span></p>
-     <ol class="steps"><li>Press START</li><li>K1 pulls in</li><li>11-14 closes</li><li>Release START → stays on</li><li class="on">STOP → drops out</li></ol>
-     <ul class="fx"><li><b><span class="nc">STOP (NC)</span></b><span>in series, first in line</span></li><li><b><span class="no">START (NO)</span></b><span>parallel with the holding contact</span></li><li><b>Both pressed</b><span>STOP wins</span></li></ul>
-     <p class="tip">Power cut and back? The machine <b>won't restart by itself</b>.</p>
-     <p class="alert">Holding contact <b>in series</b> with START = the coil never energizes.</p>
+     <p>The START button is momentary. So to keep the relay on we wire a K1 contact <b>in parallel</b> with START, and the relay <b>holds itself</b>.</p>
+     <p>What happens: you press START, K1 pulls in and its 11-14 contact closes. You release START and the relay stays on. Press STOP and it drops.</p>
+     <p>In the wiring: STOP (<span class="nc">NC</span>) is in series at the start of the line, and START (<span class="no">NO</span>) is in parallel with the holding contact. If you press both together, STOP wins.</p>
+     <p class="tip">Power went off and came back? The machine <b>will not start by itself</b>.</p>
+     <p class="alert">If the holding contact is wired <b>in series</b> with START, the coil never energizes.</p>
      </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'START / STOP circuit with seal-in', dev:K1CO, art:function(){ return CL.art.dolLayout({tag:'K1', power:false, h2:false, holdT:['11','14'], ctlTitle:'Seal-in circuit'}); }, noSym:true, cap:'The drawing in standard form: L at the top and N at the bottom, with the circuit running vertically. F1 is the control breaker, S0 the STOP button (NC) in series, S1 the START button (NO) with K1\'s own seal-in contact 11-14 in parallel beside it, then the K1 coil between A1 and A2 (A2 to N). Lamp H1 is wired in parallel with the coil, so it lights while K1 is on.'}]},
@@ -122,10 +121,10 @@ CL.lesson({
    steps:[
     {kind:'text', title:'Definition', html:`
      <div class="lsec lb">
-     <p class="bf"><span class="ic">⛔</span><span>Interlock: <b>never both at once</b>.</span></p>
-     <div class="vs"><div class="side"><b>K1 coil path</b><span>has <span class="nc">NC</span> from K2</span></div><i>⇄</i><div class="side"><b>K2 coil path</b><span>has <span class="nc">NC</span> from K1</span></div></div>
-     <p class="alert">Forward and reverse together = <b>phase-to-phase short</b>.</p>
-     <p class="tip">Contactors also get a <b>mechanical</b> interlock. Use both.</p>
+     <p>An interlock means <b>the two can never be on together</b>.</p>
+     <p>We make it like this: in K1's coil path we put an <span class="nc">NC</span> of K2, and in K2's coil path an <span class="nc">NC</span> of K1. So whichever comes on first blocks the other.</p>
+     <p class="alert">Forward and reverse together = <b>a phase-to-phase short</b>.</p>
+     <p class="tip">On contactors we also add a <b>mechanical</b> interlock. Both together is safer.</p>
      </div>`},
     {kind:'art', title:'Look and symbol', items:[
       {title:'Electrical interlock between K1 and K2', dev:K1NN, art:'interlockLayout', noSym:true, cap:'Two branches in parallel after the common STOP button. In the left branch: S1 in parallel with K1\'s seal-in contact 13-14, then K2\'s NC contact 21-22, then the K1 coil. The right branch is the same the other way round. When K1 pulls in, its contact 21-22 (in K2\'s branch) opens, so K2 can\'t start.'}]},
