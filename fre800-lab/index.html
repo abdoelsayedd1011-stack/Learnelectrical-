@@ -473,7 +473,7 @@ body.guided .keyguide,body.guided #faceHint{display:none}
       </div>
       <p class="hint" id="faceHint" style="text-align:center"><span class="tagc">تحكم</span> الأزرار والـ M dial (اسحبه في دواير أو استخدم عجلة الماوس) <span class="tagv">بيان</span> الشاشة واللمبات (Hz و A، RUN، MON و PRM، PU و EXT)</p>
       <ul class="keyguide">
-<li><b>M dial</b> (العجلة): أدرها لتغيير التردد في PU أو لاختيار الباراميتر وتغيير قيمته. الدوران السريع = خطوات أكبر.</li><li><b>SET</b> يكتب القيمة (القيمة ورقمها ينوّروا بالتبادل)، وفي المونيتور يقلب Hz و A و V.</li><li><b>MODE</b> يتنقل: المراقبة ← الباراميترات (P.) ← سجل الأعطال.</li><li><b>PU/EXT</b> يقلب بين PU (الكيباد) و EXT (الأطراف) لما Pr.79 = 0. الكتابة في الباراميترات في PU بس، وإلا يظهر Er4.</li><li><b>RUN</b> تشغيل في PU. <b>STOP/RESET</b> إيقاف ومسح العطل.</li>
+<li><b>M dial</b> (العجلة): أدرها لتغيير التردد في PU أو لاختيار الباراميتر وتغيير قيمته. الدوران السريع = خطوات أكبر.</li><li><b>SET</b> يكتب القيمة (تومض القيمة ورقمها بالتبادل)، وفي المونيتور يبدّل بين Hz و A و V.</li><li><b>MODE</b> يتنقل: المراقبة ← الباراميترات (P.) ← سجل الأعطال.</li><li><b>PU/EXT</b> يبدّل بين PU (الكيباد) و EXT (الأطراف) عندما يكون Pr.79 = 0. الكتابة في الباراميترات في PU فقط، وإلا يظهر Er4.</li><li><b>RUN</b> تشغيل في PU. <b>STOP/RESET</b> إيقاف ومسح العطل.</li>
       </ul>
     </div>
 
@@ -708,7 +708,7 @@ const DRIVE={
   ov_a:{c:'E.OV1',d:'E.OV1',n:'Regenerative overvoltage during acceleration',w:'ارتفع الـ DC bus أثناء التسارع (الحمل يدير المحرك أسرع)',f:'قلل Pr.7 أو فعّل Pr.882'},
   ov_n:{c:'E.OV2',d:'E.OV2',n:'Regenerative overvoltage during constant speed',w:'الحمل يعيد طاقة والسرعة ثابتة، أو جهد المصدر عالٍ',f:'راجع جهد المصدر، فعّل Pr.882، أو ركّب مقاومة فرملة'},
   ov_d:{c:'E.OV3',d:'E.OV3',n:'Regenerative overvoltage during deceleration/stop',w:'رفعت الطاقة العائدة من الحمل أثناء التباطؤ جهد الـ DC bus: Pr.8 قليل والقصور الذاتي كبير و Pr.882 = 0',f:'زوّد Pr.8، أو Pr.882 = 1 (Regeneration avoidance)، أو ركّب مقاومة على + و PR مع Pr.30 = 1'},
-  old:{c:'E.THT',d:'E.THT',n:'Inverter overload trip',w:'الانفرتر نفسه شايل أكتر من مقننه مدة طويلة',f:'قلل الحمل أو استخدم انفرتر أكبر'},
+  old:{c:'E.THT',d:'E.THT',n:'Inverter overload trip',w:'الانفرتر نفسه يحمل أكثر من مقننه مدة طويلة',f:'قلل الحمل أو استخدم انفرتر أكبر'},
   olm:{c:'E.THM',d:'E.THM',n:'Motor overload trip (electronic thermal)',w:'الحماية الحرارية الإلكترونية للمحرك (Pr.9) وصلت الحد',f:'قلّل الحمل، وتأكد أن Pr.9 = تيار لوحة المحرك، وانتظر حتى يبرد المحرك'},
   oh:{c:'E.FIN',d:'E.FIN',n:'Heatsink overheat',w:'المشتت ساخن: المروحة متوقفة أو اللوحة ساخنة',f:'راجع المروحة والتهوية وحرارة اللوحة'},
   pl:{c:'E.IPF',d:'E.IPF',n:'Instantaneous power failure',w:'انقطعت الكهرباء لحظة والانفرتر يعمل',f:'راجع المصدر، ثم STOP/RESET'},
@@ -745,7 +745,7 @@ const DRIVE={
   return K;
  },
  onSet:(c,v)=>{
-  if(c==='ALLC'&&v===1){resetParams();S.loc=false;log('ALLC = 1: كل الباراميترات رجعت لقيم المصنع');}
+  if(c==='ALLC'&&v===1){resetParams();S.loc=false;log('ALLC = 1: عادت كل الباراميترات إلى قيم المصنع');}
   if(c==='Pr.79'){if(v===0)S.loc=false;log('Pr.79 = '+v+': '+PM['Pr.79'].o[v]);}
  }
 };
@@ -765,15 +765,15 @@ def('Pr.20','Acceleration/deceleration reference frequency','تردد مرجع �
 def('Pr.22','Stall prevention operation level','حد التيار (Stall prevention)',{mn:0,mx:200,st:.1,dc:1,u:'%',d:150,x:'نسبة من تيار الانفرتر المقنّن. يقلل الانفرتر التسارع أو التردد حتى لا يتجاوز الحد.'});
 [24,25,26,27].forEach((n,i)=>def('Pr.'+n,'Multi-speed setting (speed '+(i+4)+')','السرعة '+(i+4),{mn:0,mx:9999,st:.01,dc:2,u:'Hz',d:9999,fmt:v=>v===9999?'9999':(+v).toFixed(2),x:['RL + RM','RL + RH','RM + RH','RL + RM + RH'][i]+'. 9999 = غير مستخدمة (الأولوية للسرعة المنخفضة).'}));
 def('Pr.30','Regenerative function selection','اختيار الفرملة',{o:{0:'Built-in brake (no resistor)',1:'Brake resistor (MRS type)'},d:0,x:'1 = توجد مقاومة فرملة على + و PR.'});
-def('Pr.40','RUN key rotation direction selection','اتجاه زر RUN',{o:{0:'Forward',1:'Reverse'},d:0,x:'اتجاه الدوران لما تشغّل من زر RUN.'});
-def('Pr.72','PWM frequency selection','تردد التقطيع',{mn:0,mx:15,st:1,u:'kHz',d:1,x:'أعلى = المحرك أهدى والانفرتر أسخن.'});
+def('Pr.40','RUN key rotation direction selection','اتجاه زر RUN',{o:{0:'Forward',1:'Reverse'},d:0,x:'اتجاه الدوران عند التشغيل من زر RUN.'});
+def('Pr.72','PWM frequency selection','تردد التقطيع',{mn:0,mx:15,st:1,u:'kHz',d:1,x:'القيمة الأعلى = المحرك أهدأ والانفرتر أسخن.'});
 def('Pr.73','Analog input selection','نوع إشارة طرف 2',{o:{0:'0–10V',1:'0–5V'},d:1,x:'المصنع 1 (0-5V) لأن طرف 10 يُخرج 5V للبوتنشيوميتر. إذا كانت الإشارة قادمة من PLC بـ 0-10V فاجعله 0.'});
 def('Pr.77','Parameter write selection','السماح بكتابة الباراميترات',{o:{0:'Write only during stop',1:'Write disabled',2:'Write always'},d:0,x:'1 = مقفل (يظهر Er1 إذا حاولت الكتابة).'});
 def('Pr.78','Reverse rotation prevention selection','منع العكس',{o:{0:'Both directions',1:'Reverse disabled',2:'Forward disabled'},d:0,x:''});
 def('Pr.79','Operation mode selection','وضع التشغيل',{o:{0:'External/PU switchover (PU/EXT key)',1:'PU fixed',2:'External fixed',3:'External/PU combined 1',4:'External/PU combined 2',6:'Switchover'},d:0,x:'0 (المصنع) = يبدأ EXT وزر PU/EXT يبدّل. 1 = PU فقط (RUN والـ M dial). 2 = EXT فقط (STF/STR والسرعة من الأطراف). 3 = التشغيل من STF/STR والتردد من الـ M dial (أو multi-speed). 4 = التشغيل من RUN والتردد من طرف 2.'});
 def('Pr.80','Motor capacity','قدرة المحرك',{mn:.1,mx:9999,st:.01,dc:2,u:'kW',d:9999,rl:1,fmt:v=>v===9999?'9999':(+v).toFixed(2),x:'9999 = V/F. إذا كتبت القدرة يعمل Advanced magnetic flux vector (يحتاج Pr.81 أيضًا).'});
 def('Pr.81','Number of motor poles','عدد أقطاب المحرك',{o:{2:'2',4:'4',6:'6',8:'8',9999:'9999 (V/F)'},d:9999,rl:1,x:''});
-def('Pr.125','Terminal 2 frequency setting gain frequency','التردد عند أعلى إشارة على طرف 2',{mn:0,mx:590,st:.01,dc:2,u:'Hz',d:50,x:'التردد عند 5V (أو 10V لو Pr.73 = 0). (60 Hz في موديلات اليابان.)'});
+def('Pr.125','Terminal 2 frequency setting gain frequency','التردد عند أعلى إشارة على طرف 2',{mn:0,mx:590,st:.01,dc:2,u:'Hz',d:50,x:'التردد عند 5V (أو 10V إذا كان Pr.73 = 0). (60 Hz في موديلات اليابان.)'});
 def('Pr.126','Terminal 4 frequency setting gain frequency','التردد عند 20mA على طرف 4',{mn:0,mx:590,st:.01,dc:2,u:'Hz',d:50,x:'يعمل طرف 4 عندما تكون إشارة AU ON.'});
 def('Pr.158','AM terminal function selection','وظيفة خرج AM',{o:{1:'Output frequency',2:'Output current',3:'Output voltage'},d:1,x:'AM بالنسبة لطرف 5. 10V = أقصى قيمة.'});
 def('Pr.160','User group read selection','الباراميترات الظاهرة',{o:{0:'Simple + extended',9999:'Simple mode only'},d:9999,x:'9999 = يظهر في الكيباد Pr.0…Pr.9 و Pr.79 و Pr.125 و Pr.126 و Pr.160 فقط. 0 = كل الباراميترات (مثل Pr.178 و Pr.882). (القيمة الافتراضية تختلف حسب الموديل.)'});
@@ -783,7 +783,7 @@ def('Pr.192','A,B,C terminal function selection','وظيفة ريليه A B C',{
 def('Pr.251','Output phase loss protection selection','حماية فقد فاز الخرج',{o:{0:'Without',1:'With'},d:1,x:'1 = إذا انفصل فاز من U V W يظهر E.LF.'});
 def('Pr.882','Regeneration avoidance operation selection','منع الـ Overvoltage',{o:{0:'Disabled',1:'Enabled',2:'Enabled during constant speed'},d:0,x:'المصنع 0. إذا كان 1: عندما يرتفع الـ DC bus أثناء التباطؤ، يطيل الانفرتر التباطؤ وحده حتى لا يظهر E.OV3.'});
 def('C2','Terminal 2 frequency setting bias frequency','التردد عند 0V على طرف 2',{mn:0,mx:590,st:.01,dc:2,u:'Hz',d:0,g:'ANA',x:'(Pr.902)'});
-def('ALLC','All parameter clear','رجوع للمصنع',{o:{0:'—',1:'Clear'},d:0,rl:1,act:1,x:'1 = كل الباراميترات ترجع للمصنع.'});
+def('ALLC','All parameter clear','رجوع للمصنع',{o:{0:'—',1:'Clear'},d:0,rl:1,act:1,x:'1 = تعود كل الباراميترات إلى قيم المصنع.'});
 /* ---------- operation panel ---------- */
 const KP=(function(){
  const H={m:'mon',mi:0,pv:'list',pi:0,list:[],ev:null,fs:null,flk:null,msg:null,ps:false,ai:0,boot:0,lastD:0};
@@ -881,7 +881,7 @@ const SOLX=()=>[
   io:{kpRef:30},su:{load:'conv',lp:40,jr:3},hint:'PU/EXT ← PU، ثم RUN ← 30 Hz'},
  {t:'2-Wire: STF أمامي و STR عكسي',g:'Pr.79 = 3 (combined 1): التشغيل من STF و STR والتردد من الـ M dial (30 Hz). كونتاكت أوفرلود خارجي NC على طرف MRS بعد ما تخلي وظيفته OH (Pr.183 = 7).',svg:()=>SV.w2('PU 30 Hz'),
   p:[['Pr.160',0,'ليظهر Pr.183 في الكيباد'],['Pr.79',3,'تشغيل من الأطراف، تردد من الكيباد'],['Pr.178',60,'STF'],['Pr.179',61,'STR'],['Pr.183',7,'أصبح MRS هو OH (أوفرلود خارجي)'],['Pr.7',5,'تسارع'],['Pr.8',5,'تباطؤ']],
-  steps:['السلكتور: الكومن على <code>SD</code>، ووضع FWD على <code>STF</code> ووضع REV على <code>STR</code> (Sink logic: يعمل الطرف عند إغلاقه على SD).','كونتاكت الأوفرلود الخارجي (NC) بين <code>MRS</code> و <code>SD</code>.','اكتب الجدول وانت في PU، و Pr.79 = 3 في الآخر (لمبتين PU و EXT ينوّروا).','أغلق STF (زر RUN FWD): يصل المحرك إلى 30 Hz.','أغلق STR: STF و STR معًا = توقف. افتح STF فيدور عكسيًا. افتح الاثنين فيتوقف.'],
+  steps:['السلكتور: الكومن على <code>SD</code>، ووضع FWD على <code>STF</code> ووضع REV على <code>STR</code> (Sink logic: يعمل الطرف عند إغلاقه على SD).','كونتاكت الأوفرلود الخارجي (NC) بين <code>MRS</code> و <code>SD</code>.','أدخل الجدول وأنت في PU، ثم Pr.79 = 3 في النهاية (يضيء مصباحا PU و EXT).','أغلق STF (زر RUN FWD): يصل المحرك إلى 30 Hz.','أغلق STR: STF و STR معًا = توقف. افتح STF فيدور عكسيًا. افتح الاثنين فيتوقف.'],
   io:{kpRef:30},su:{load:'conv',lp:40,jr:3},hint:'أغلق STF ← 30 Hz'},
  {t:'السرعة من بوت على طرف 2 (0-5V)',g:'يتغذى البوتنشيوميتر من طرف 10 (5V) ونهايته على 5، والوسط على 2. لذلك المصنع Pr.73 = 1 (0-5V). 5V = Pr.125 = 50 Hz.',svg:SV.pot,
   p:[['Pr.79',2,'External fixed'],['Pr.73',1,'طرف 2 = 0-5V'],['Pr.125',50,'5V = 50 Hz'],['C2',0,'0V = 0 Hz'],['Pr.1',50,'أقصى تردد']],
@@ -1049,7 +1049,7 @@ function kpRefStep(sg,mult){
 function powerUp(){
  S.ctrl=true;S.boot=1.6;S.fault=null;S.run=false;S.st='off';S.retries=0;S.need2w=true;S.ton=0;
  if(KP.onPower)KP.onPower(true);
- log('التحكم اشتغل. DC bus = '+S.bus.toFixed(0)+'V');
+ log('بدأ التحكم بالعمل. DC bus = '+S.bus.toFixed(0)+'V');
 }
 function powerDown(){
  S.ctrl=false;S.st='off';S.run=false;S.jog=false;S.fault=null;S.retryT=0;
@@ -1347,7 +1347,7 @@ function devAct(dev,ev){
  else if(dev==='run'){if(!isMom()){if(ev==='click')io.di[T.fwd]=!io.di[T.fwd];}else if(ev==='down')io.di[T.fwd]=true;else if(ev==='up')io.di[T.fwd]=false;}
  else if(dev==='rev'&&ev==='click')io.di[T.rev]=!io.di[T.rev];
  else if(dev==='spd'&&ev==='click'){io.spd=((io.spd||0)+1)%4;io.di[T.ms1]=!!(io.spd&1);io.di[T.ms2]=!!(io.spd&2);}
- else if(dev==='ext'&&ev==='click'){S.inj.ext=!S.inj.ext;log(S.inj.ext?'الحماية الخارجية فصلت (طرف '+tn(T.ext)+')':'الحماية الخارجية رجعت OK',S.inj.ext);syncInj();}
+ else if(dev==='ext'&&ev==='click'){S.inj.ext=!S.inj.ext;log(S.inj.ext?'الحماية الخارجية فصلت (طرف '+tn(T.ext)+')':'عادت الحماية الخارجية OK',S.inj.ext);syncInj();}
  else if(dev==='rst'){if(ev==='down')io.di[T.rst]=true;else if(ev==='up')io.di[T.rst]=false;}
  updStation();
 }
@@ -1681,7 +1681,7 @@ function power(o){
  }else{
   s+=motor(90,215,'4 kW · 1440 rpm');
   const J=DRIVE.JUMPS||[];let x=200;
-  if(!J.length)s+=T_(270,190,'أطراف التحكم فاضية','sv-ar','middle');
+  if(!J.length)s+=T_(270,190,'أطراف التحكم غير موصولة','sv-ar','middle');
   J.forEach(([ids,lab])=>{const x0=x;ids.forEach((id,k)=>{s+='<circle class="sv-term" cx="'+(x0+k*24)+'" cy="160" r="3.6"/>'+T_(x0+k*24,153,id,'sv-tn','middle');});const x1=x0+(ids.length-1)*24;s+=W('M'+x0+' 164v12h'+(x1-x0)+'v-12','dig')+T_((x0+x1)/2,194,lab,'sv-ar','middle');x=x1+40;});
  }
  return s;
@@ -1824,7 +1824,7 @@ function guideRender(){
   const hand=GUI.hand==='hand';
   const tb='<div class="tablewrap"><table class="g-tbl"><thead><tr><th>الباراميتر</th><th>القيمة</th><th>السبب</th></tr></thead><tbody>'+a.p.map(([c,v,why])=>{const p=PM[c];return '<tr data-pc="'+c+'"><td class="code">'+c+'<small>'+esc(p.nm)+(p.ar?' · '+p.ar:'')+'</small><small class="gpath">'+DRIVE.kpPath(p)+(p.rl?' · يتغير والانفرتر متوقف فقط':'')+'</small></td><td class="v"><bdi class="vv" dir="ltr">'+esc(fmtV(p,v))+'</bdi> <span class="okc" data-ok="'+c+'"></span><span class="cur" data-cur="'+c+'" dir="rtl"></span></td><td class="why">'+why+'</td></tr>';}).join('')+'</tbody></table></div>';
   h+='<p class="g-lead">هذه الباراميترات التي يحتاجها التمرين. هل تفضّل إدخالها بيدك من كيباد الانفرتر لتتعوّد يدك، أم يكتبها الزر تلقائيًا؟</p>'+
-   '<div class="g-choice" role="group" aria-label="طريقة ضبط الباراميترات"><button type="button" class="btn" id="gByHand" aria-pressed="'+hand+'">ادخلها بإيدك من الكيباد<span class="rec">الأحسن للتدريب</span></button><button type="button" class="btn" id="gByAuto" aria-pressed="'+(GUI.hand==='auto')+'">اضبطها تلقائيًا<span class="tagc">تحكم</span></button></div>';
+   '<div class="g-choice" role="group" aria-label="طريقة ضبط الباراميترات"><button type="button" class="btn" id="gByHand" aria-pressed="'+hand+'">أدخلها يدويًا من الكيباد<span class="rec">الأفضل للتدريب</span></button><button type="button" class="btn" id="gByAuto" aria-pressed="'+(GUI.hand==='auto')+'">اضبطها تلقائيًا<span class="tagc">تحكم</span></button></div>';
   if(hand){
    h+='<p class="g-pwr" id="gPwrNote" hidden></p>'+
     '<div class="g-howto"><h4>طريقة الدخول على الـ '+DRIVE.short+'</h4><p>'+KP.howto+'</p></div>'+

@@ -880,7 +880,7 @@ function powerUp(){
  S.ctrl=true;S.boot=1.6;S.fault=0;S.run=false;S.st='off';S.retries=0;S.need2w=true;
  H.scr='boot';H.ed=null;H.msg=null;
  S.puRun=P[14]===1&&P[241]===1;
- log('التحكم اشتغل. DC bus = '+S.bus.toFixed(0)+'V');
+ log('بدأ التحكم بالعمل. DC bus = '+S.bus.toFixed(0)+'V');
 }
 function powerDown(){
  S.ctrl=false;S.st='off';S.run=false;S.jog=false;S.fault=0;S.retryT=0;H.scr='off';H.ed=null;H.msg=null;H.logged=false;
@@ -1139,7 +1139,7 @@ function doEE(){
  if(k===0){
   if(S.st!=='off'){H.scr='ee';return hmsg('Stop Drive First');}
   for(const p of PD)if(p.t!=='ro')P[p.n]=p.d;
-  S.himRef=0;log('EEprom: Reset Defaults. كل الباراميترات رجعت لقيم المصنع');
+  S.himRef=0;log('EEprom: Reset Defaults. عادت كل الباراميترات إلى قيم المصنع');
   H.scr='status';save();renderParams();updLabels();trip(48);
  }else if(k===1){
   H.copy={};for(const p of PD)if(p.t!=='ro')H.copy[p.n]=P[p.n];S.copy=H.copy;save();
@@ -1823,7 +1823,7 @@ function guideRender(){
  }else if(st===1){
   const hand=GUI.hand==='hand';
   h+='<p class="g-lead">هذه الباراميترات التي يحتاجها التمرين. هل تفضّل إدخالها بيدك من الكيباد لتتعوّد يدك، أم يكتبها الانفرتر تلقائيًا؟</p>'+
-   '<div class="g-choice"><button type="button" class="btn big pri" id="gHand" aria-pressed="'+hand+'">ادخلها بإيدك من الكيباد<span class="tagc">تحكم</span></button><button type="button" class="btn big" id="gApply" aria-pressed="'+(GUI.hand==='auto')+'">اضبطها تلقائيًا<span class="tagc">تحكم</span></button></div>';
+   '<div class="g-choice"><button type="button" class="btn big pri" id="gHand" aria-pressed="'+hand+'">أدخلها يدويًا من الكيباد<span class="tagc">تحكم</span></button><button type="button" class="btn big" id="gApply" aria-pressed="'+(GUI.hand==='auto')+'">اضبطها تلقائيًا<span class="tagc">تحكم</span></button></div>';
   const tbl='<div class="tablewrap"><table class="sv-tbl g-tbl"><thead><tr><th>الباراميتر</th><th>القيمة</th><th>السبب</th></tr></thead><tbody>'+a.p.map(([c,v,why])=>{const p=PM[c];return '<tr data-pc="'+c+'"><td class="code">'+c+'<small>'+p.nm+' · '+p.ar+(p.rl?' · <span class="badge s">Stop</span>':'')+'</small>'+(hand?gGroupOf(p):'')+'</td><td class="v">'+fmtVal(p,v)+' <span class="okc" data-ok="'+c+'"></span><span class="cur" data-cur="'+c+'" hidden></span>'+(p.rl?'<span class="stopf" data-rl="'+c+'" hidden>وقّف المحرك الأول</span>':'')+'</td><td class="why">'+why+'</td></tr>';}).join('')+'</tbody></table></div>';
   if(hand){
    h+='<div class="g-how"><span class="ttl">طريقة الدخول على الـ HIM</span>من الشاشة الرئيسية: <b>ESC</b> تفتح <b>Choose Mode</b> ← <b>▲▼</b> لحد <b>Program</b> ← <b>⏎</b> ← <b>Choose Group</b>: <b>▲▼</b> لحد الجروب ← <b>⏎</b> ← <b>▲▼</b> لحد الباراميتر ← <b>SEL</b> (القيمة ترمش) ← <b>▲▼</b> للقيمة (امسك عشان يسرع) ← <b>⏎</b> تحفظ. <b>ESC</b> ترجع خطوة لورا من غير حفظ.</div>'+

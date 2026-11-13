@@ -672,7 +672,7 @@ function def(c,nm,g,ar,o){const p=Object.assign({c,nm,g,ar,t:'n',mn:0,mx:0,st:1,
 const z2=n=>String(n).padStart(2,'0');
 /* 00 */
 def('00-01','Display AC motor drive rated current','00','التيار المقنن للانفرتر',{get:()=>DRV.In,dc:1,u:'A',x:'بيان بس: التيار المقنن للانفرتر ده 9.0A (Heavy duty). كل النسب في جروب 06 (حد التيار، Over-torque) محسوبة منه.'});
-def('00-02','Parameter reset','00','رجوع المصنع / حماية',{o:O({0:'No function',1:'Write protection for parameters',5:'Reset kWh display',6:'Reset PLC',9:'Reset all parameters (base frequency 50Hz)',10:'Reset all parameters (base frequency 60Hz)'}),d:0,rl:1,x:'9 = كل الباراميترات ترجع للمصنع على أساس 50 هرتز (01-00 و 01-01 = 50 و 01-02 = 400V)، ودي اللي تستخدمها في مصر. 10 = المصنع على 60 هرتز. 1 = قفل الكتابة: كل الباراميترات تتقري بس لحد ما ترجّعه 0. بعد 9 أو 10 القيمة نفسها بترجع 0.'});
+def('00-02','Parameter reset','00','رجوع المصنع / حماية',{o:O({0:'No function',1:'Write protection for parameters',5:'Reset kWh display',6:'Reset PLC',9:'Reset all parameters (base frequency 50Hz)',10:'Reset all parameters (base frequency 60Hz)'}),d:0,rl:1,x:'9 = تعود كل الباراميترات إلى قيم المصنع على أساس 50 هرتز (01-00 و 01-01 = 50 و 01-02 = 400V)، ودي اللي تستخدمها في مصر. 10 = المصنع على 60 هرتز. 1 = قفل الكتابة: كل الباراميترات تتقري بس لحد ما ترجّعه 0. بعد 9 أو 10 القيمة نفسها بترجع 0.'});
 def('00-03','Start-up display selection','00','الشاشة اللي تظهر أول ما يشتغل',{o:O({0:'Display frequency command (F)',1:'Display actual output frequency (H)',2:'Display user-defined content (U)',3:'Output current (A)'}),d:0,x:'الشاشة اللي الكيباد يبدأ عليها بعد ما الكهرباء تيجي.'});
 def('00-04','Content of multi-function display','00','محتوى شاشة U',{o:Object.entries(UDISP).map(([k,v])=>[+k,v[1]+' ('+v[0]+')']),d:3,x:'إيه اللي يظهر في شاشة U (اللي بعد H بضغطة MODE). المصنع 3 = جهد الـ DC bus. 16 بيعرض حالة الدخول MI كأرقام: كل bit طرف.'});
 def('00-06','Firmware version','00','إصدار السوفتوير',{get:()=>1.12,dc:2,x:'إصدار سوفتوير التحكم (قيمة للعرض في المحاكي).'});
@@ -919,7 +919,7 @@ function enabledBase(){return ctlOk()&&!S.fault&&stoS1()&&stoS2();}
 function powerUp(){
  S.ctrl=true;S.boot=1.4;S.fault='';S.run=false;S.tRun=false;S.st='off';S.retries=0;S.need2w=true;S.unlk=S.pwd===0;S.pwTries=0;
  H.scr='boot';H.ed=null;H.msg=null;H.shift=false;H.fb=false;
- log('التحكم اشتغل. DC bus = '+S.bus.toFixed(0)+'V');
+ log('بدأ التحكم بالعمل. DC bus = '+S.bus.toFixed(0)+'V');
 }
 function powerDown(){
  S.ctrl=false;S.st='off';S.run=false;S.tRun=false;S.jog=false;S.fault='';S.retryT=0;H.scr='off';H.ed=null;H.msg=null;H.shift=false;
@@ -1326,7 +1326,7 @@ function setParam(c,v,src){
  if(c==='00-07'){
   if(!S.pwd)return 'same';
   if(v===S.pwd){S.unlk=true;S.pwTries=0;log('00-07: الباسورد صح، الباراميترات اتفتحت');EV.pwOk=1;return 'ok';}
-  S.pwTries++;log('00-07: باسورد غلط (محاولة '+S.pwTries+' من 3)',1);if(S.pwTries>=3)trip('Pcod');return 'bad';}
+  S.pwTries++;log('00-07: كلمة مرور خاطئة (محاولة '+S.pwTries+' من 3)',1);if(S.pwTries>=3)trip('Pcod');return 'bad';}
  if(S.pwd&&!S.unlk){EV.pwBlocked=1;return 'lock';}
  if(P['00-02']===1&&c!=='00-02')return 'wp';
  if(p.rl&&S.st!=='off')return 'run';
@@ -1334,7 +1334,7 @@ function setParam(c,v,src){
  else if(!p.o.some(o=>o[0]===v))return 'bad';
  if(S.inj.eep&&S.ctrl){trip('cF1');return 'eep';}
  if(c==='00-08'){if(v===(S.pwd?1:0)&&v<=1&&S.pwd)return 'same';S.pwd=v;S.unlk=v===0;log(v?'00-08: الباراميترات اتقفلت بباسورد':'00-08: الباسورد اتلغى');save();renderParams();return 'ok';}
- if(c==='00-02'&&(v===9||v===10)){factory(v===9);S.kpF=0;log('00-02 = '+v+': كل الباراميترات رجعت للمصنع على '+(v===9?'50':'60')+' هرتز');if(v===9)EV.reset50=1;save();renderParams();updLabels();return 'ok';}
+ if(c==='00-02'&&(v===9||v===10)){factory(v===9);S.kpF=0;log('00-02 = '+v+': عادت كل الباراميترات إلى قيم المصنع على '+(v===9?'50':'60')+' هرتز');if(v===9)EV.reset50=1;save();renderParams();updLabels();return 'ok';}
  if(c==='00-02'&&(v===5||v===6)){log('00-02 = '+v+': اتعمل ('+(v===5?'Reset kWh':'Reset PLC')+')');return 'ok';}
  if(P[c]===v)return 'same';
  const old=P[c];P[c]=v;
@@ -2064,7 +2064,7 @@ function guideRender(){
  }else if(st===1){
   const hand=GUI.hand==='hand',auto=GUI.hand==='auto';
   h+='<p class="g-lead">دي الباراميترات اللي التمرين محتاجها ('+a.ps.length+'). تحب تدخلها بإيدك من الكيباد عشان إيدك تتعود، ولا الانفرتر يكتبها لوحده؟</p>'+
-   '<div class="g-choice"><button type="button" class="btn big" id="gHand" aria-pressed="'+hand+'">ادخلها بإيدك من الكيباد<span class="rec">موصى به</span><span class="tagc">تحكم</span></button><button type="button" class="btn big'+(auto?' pri':'')+'" id="gAuto" aria-pressed="'+auto+'">اضبطها تلقائيًا<span class="tagc">تحكم</span></button></div>';
+   '<div class="g-choice"><button type="button" class="btn big" id="gHand" aria-pressed="'+hand+'">أدخلها يدويًا من الكيباد<span class="rec">موصى به</span><span class="tagc">تحكم</span></button><button type="button" class="btn big'+(auto?' pri':'')+'" id="gAuto" aria-pressed="'+auto+'">اضبطها تلقائيًا<span class="tagc">تحكم</span></button></div>';
   if(hand){
    h+='<details class="g-how" open><summary>طريقة الدخول على الباراميتر في MS300</summary><ol>'+
     '<li>دوس <b class="k">MODE</b> كذا مرة لحد ما الشاشة تكتب <b class="k">00-</b> (شاشة الجروبات): F ← H ← U ← A ← Frd ← PLC ← 00-.</li>'+
@@ -2312,7 +2312,7 @@ SIMTOUR_OLD({lab:'ms300-lab',name:'Delta MS300',short:'MS300',disp:'#seg',statio
  tourRun:[['tap',K('RUN'),'نشغّل من الكيباد: زر <b>RUN</b>.']],
  ex:[
   {run:[['tap',K('RUN'),'السبب: زر <b>RUN</b>، والسرعة من بكرة الكيباد (60%).'],wOk(),say('وصل حوالي 30 Hz ✓. لف البكرة والتردد يمشي وراها.')]},
-  {run:[['tap','#dMI1','السبب: <b>MI1</b> (FWD) اتقفل، والسرعة من البوتنشيوميتر الخارجي (80%).'],wOk('النتيجة: بيطلع لـ 40 Hz ولمبة MO1 بتنور…'),say('ثابت على 40 Hz ✓ ولمبة MO1 منورة.'),['tap','#dMI1','نفتح MI1…'],['tap','#dMI2','…ونقفل <b>MI2</b> (REV).'],['until',rev,30000,'النتيجة: يتباطأ حتى الصفر ويدور في الاتجاه العكسي…'],['tap','#dMI2','نرجّع: نفتح MI2…'],['tap','#dMI1','…ونقفل MI1.'],wOk()]},
+  {run:[['tap','#dMI1','السبب: <b>MI1</b> (FWD) اتقفل، والسرعة من البوتنشيوميتر الخارجي (80%).'],wOk('النتيجة: بيطلع لـ 40 Hz ولمبة MO1 بتنور…'),say('ثابت على 40 Hz ✓ ولمبة MO1 منورة.'),['tap','#dMI1','نفتح MI1…'],['tap','#dMI2','…ونغلق <b>MI2</b> (REV).'],['until',rev,30000,'النتيجة: يتباطأ حتى الصفر ويدور في الاتجاه العكسي…'],['tap','#dMI2','نرجّع: نفتح MI2…'],['tap','#dMI1','…ونقفل MI1.'],wOk()]},
   {run:[['tap','#dMI1','السبب: دوسة واحدة على زر <b>MI1</b> وسيبناه.'],wOk('النتيجة: الانفرتر بيمسك وحده (3-wire) وبيطلع لـ 35 Hz…'),say('فضل شغال ✓ مع إن الزر اتساب. MI3 (STOP NC) هو اللي يوقفه.')]},
   {run:[['tap','#dMI1','السبب: <b>MI1</b> (RUN) اتقفل، و<b>MI3</b> مقفول.'],wOk('النتيجة: بيثبت على السرعة الأولى 15 Hz…'),say('15 Hz ✓.'),['tap','#dMI4','السبب: <b>MI4</b> اتقفل كمان.'],['until',()=>Math.abs(S.fOut)>40,20000,'النتيجة: بيطلع على 45 Hz بالرامب…'],['tap','#dMI4','ونرجّعه.'],wOk()]},
   {run:[['tap','#dMI1','السبب: كونتاكت ريليه الـ PLC على <b>MI1</b>، والإشارة 12mA.'],wOk('النتيجة: الطلمبة بتطلع لـ 25 Hz ولمبة MO1 بتنور…'),say('شغالة ✓ على 25 Hz والـ PLC شايف إشارة "يعمل".')]},

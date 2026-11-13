@@ -452,7 +452,7 @@ body.guided .keyguide,body.guided #faceHint{display:none}
       </div>
       <p class="hint" id="faceHint" style="text-align:center"><span class="tagc">تحكم</span> كل أزرار الكيباد <span class="tagv">بيان</span> الشاشة واللمبات (ALM، REV، DRV، FOUT، LO/RE، RUN)</p>
       <ul class="keyguide">
-<li><b>▲ ▼</b> يلفوا على الشاشات (Fref، Fout، Iout، Vout، dir، Mon، vErFy، StUP، PAr) والباراميترات، ويغيّروا الرقم المختار (امسكهم يكرروا).</li><li><b>ENTER</b> يدخل ويكتب القيمة (يظهر <code>End</code>).</li><li><b>RESET</b> أثناء التعديل = الرقم المجاور (▶). وفي غير ذلك = مسح العطل.</li><li><b>ESC</b> يرجع خطوة.</li><li><b>LO/RE</b> يبدّل بين LOCAL (الكيباد) و REMOTE (حسب b1-01 و b1-02)، والانفرتر متوقف.</li><li><b>RUN</b> و <b>STOP</b>. يوقف STOP أيضًا في REMOTE (o2-02 = 1).</li>
+<li><b>▲ ▼</b> للتنقل بين الشاشات (Fref، Fout، Iout، Vout، dir، Mon، vErFy، StUP، PAr) والباراميترات، وتغيير الرقم المختار (الضغط المطوّل يكرر).</li><li><b>ENTER</b> يدخل ويكتب القيمة (يظهر <code>End</code>).</li><li><b>RESET</b> أثناء التعديل = الرقم المجاور (▶). وفي غير ذلك = مسح العطل.</li><li><b>ESC</b> يرجع خطوة.</li><li><b>LO/RE</b> يبدّل بين LOCAL (الكيباد) و REMOTE (حسب b1-01 و b1-02)، والانفرتر متوقف.</li><li><b>RUN</b> و <b>STOP</b>. يوقف STOP أيضًا في REMOTE (o2-02 = 1).</li>
       </ul>
     </div>
 
@@ -684,7 +684,7 @@ const DRIVE={
   ov:{c:'ov',d:'ov',n:'Overvoltage',w:'تجاوز جهد الـ DC bus الحد: تباطؤ سريع لحمل ثقيل و L3-04 = 0 دون مقاومة فرملة',f:'اجعل L3-04 = 1 (stall prevention أثناء التباطؤ)، أو زِد C1-02، أو ركّب مقاومة على B1 B2'},
   uv:{c:'Uv1',d:'Uv1',n:'DC bus undervoltage',w:'انخفض جهد الـ DC bus والانفرتر يعمل: انقطعت الكهرباء أو انخفضت',f:'راجع المصدر والكونتاكتور، ثم RESET'},
   olm:{c:'oL1',d:'oL1',n:'Motor overload',w:'الحماية الحرارية للمحرك (على أساس E2-01) وصلت الحد',f:'قلّل الحمل، وتأكد أن E2-01 = تيار اللوحة، وانتظر حتى يبرد المحرك'},
-  old:{c:'oL2',d:'oL2',n:'Drive overload',w:'الانفرتر شايل أكتر من مقننه مدة طويلة',f:'قلل الحمل أو استخدم انفرتر أكبر'},
+  old:{c:'oL2',d:'oL2',n:'Drive overload',w:'الانفرتر يحمل أكثر من مقننه مدة طويلة',f:'قلل الحمل أو استخدم انفرتر أكبر'},
   oh:{c:'oH1',d:'oH1',n:'Heatsink overheat',w:'المشتت ساخن: المروحة متوقفة أو الحرارة عالية',f:'راجع المروحة والتهوية'},
   lf:{c:'LF',d:'LF',n:'Output phase loss',w:'فاز من U V W مفصول و L8-07 مفعّل',f:'راجع كابل المحرك والأطراف'},
   ext:{c:'EF3',d:'EF3',n:'External fault (terminal S3)',w:'الحماية الخارجية على S3 اشتغلت (H1-03 = 24 أو 25)',f:'افحص الحماية التي فصلت وأصلحها، ثم RESET'},
@@ -724,7 +724,7 @@ def('U1-06','Output voltage','جهد الخرج',{get:()=>S.V,dc:1,u:'V',x:''});
 def('U1-07','DC bus voltage','جهد الـ DC bus',{get:()=>S.bus,dc:0,u:'V',x:'إذا تجاوز نحو 820V يظهر ov، وإذا انخفض والانفرتر يعمل يظهر Uv1.'});
 def('U1-10','Input terminal status','حالة الدخول',{get:()=>0,fmt:()=>['S7','S6','S5','S4','S3','S2','S1'].map(t=>tc(t)?'1':'0').join(''),x:'من اليمين S1 حتى S7.'});
 def('A1-02','Control method selection','طريقة التحكم',{o:{0:'0: V/f',2:'2: Open Loop Vector (OLV)',5:'5: OLV for PM'},d:2,rl:1,x:'المصنع 2 (OLV) في الـ GA500. وفي الـ V1000 المصنع 0 (V/f). يحتاج OLV بيانات محرك صحيحة و Auto-tuning.'});
-def('A1-03','Initialize parameters','رجوع للمصنع',{o:{0:'0: No initialization',2220:'2220: 2-wire initialization',3330:'3330: 3-wire initialization'},d:0,rl:1,act:1,x:'2220 = كل الباراميترات ترجع للمصنع بتوصيل 2-wire (S1 أمامي، S2 عكسي).'});
+def('A1-03','Initialize parameters','رجوع للمصنع',{o:{0:'0: No initialization',2220:'2220: 2-wire initialization',3330:'3330: 3-wire initialization'},d:0,rl:1,act:1,x:'2220 = تعود كل الباراميترات إلى قيم المصنع بتوصيل 2-wire (S1 أمامي، S2 عكسي).'});
 def('b1-01','Frequency reference selection 1','مصدر السرعة',{o:{0:'0: Keypad (d1-01)',1:'1: Analog input',2:'2: Memobus',3:'3: Option'},d:1,rl:1,x:'1 (المصنع) = A1 + A2. 0 = القيمة التي في d1-01 (التي تكتبها من الكيباد). الـ Multi-step تتقدّم على الاثنين. في LOCAL تكون السرعة من الكيباد دائمًا.'});
 def('b1-02','Run command selection 1','مصدر أمر التشغيل',{o:{0:'0: Keypad',1:'1: Digital input',2:'2: Memobus',3:'3: Option'},d:1,rl:1,x:'1 (المصنع) = من الأطراف (S1 و S2). في LOCAL (لمبة LO/RE مضيئة) يكون الأمر من RUN و STOP مهما كانت القيمة.'});
 def('b1-03','Stopping method selection','طريقة الوقوف',{o:{0:'0: Ramp to stop',1:'1: Coast to stop'},d:0,x:'0 = يتباطأ على C1-02. 1 = يفصل ويتوقف المحرك وحده.'});
@@ -741,7 +741,7 @@ def('E2-02','Motor rated slip','انزلاق المحرك',{mn:0,mx:20,st:.01,dc
 def('E2-04','Number of motor poles','عدد الأقطاب',{o:{2:'2',4:'4',6:'6',8:'8'},d:4,rl:1,x:''});
 def('E2-11','Motor rated power','قدرة المحرك',{mn:0,mx:100,st:.01,dc:2,u:'kW',d:4,rl:1,x:''});
 for(let i=1;i<=7;i++)def('H1-0'+i,'Terminal S'+i+' function selection','وظيفة طرف S'+i,{o:H1O,d:[0x40,0x41,0x24,0x14,3,4,6][i-1],rl:1,fmt:hxf,x:'المصنع لهذا الطرف '+HX([0x40,0x41,0x24,0x14,3,4,6][i-1])+'. القيم بالـ hex: 40 أمامي، 41 عكسي، 24 عطل خارجي N.O.، 25 عطل خارجي N.C.، 14 Reset، 3 و 4 Multi-step، F غير مستخدم.'});
-def('H2-01','Terminal MA, MB, MC function','وظيفة ريليه MA MB MC',{o:H2O,d:0xE,fmt:hxf,x:'E (المصنع) = Fault: مع العطل MA-MC يقفل و MB-MC يفتح.'});
+def('H2-01','Terminal MA, MB, MC function','وظيفة ريليه MA MB MC',{o:H2O,d:0xE,fmt:hxf,x:'E (المصنع) = Fault: مع العطل MA-MC يُغلق و MB-MC يُفتح.'});
 def('H2-02','Terminal P1 function','وظيفة خرج P1',{o:H2O,d:0,fmt:hxf,x:'Photocoupler بين P1 و PC. 0 = During run.'});
 def('H3-01','Terminal A1 signal level','نوع إشارة A1',{o:{0:'0: 0-10V',1:'1: -10…+10V'},d:0,x:''});
 def('H3-03','Terminal A1 gain','A1: النسبة عند 10V',{mn:-999.9,mx:999.9,st:.1,dc:1,u:'%',d:100,x:'نسبة من E1-04 عند 10V.'});
@@ -1018,7 +1018,7 @@ function kpRefStep(sg,mult){
 function powerUp(){
  S.ctrl=true;S.boot=1.6;S.fault=null;S.run=false;S.st='off';S.retries=0;S.need2w=true;S.ton=0;
  if(KP.onPower)KP.onPower(true);
- log('التحكم اشتغل. DC bus = '+S.bus.toFixed(0)+'V');
+ log('بدأ التحكم بالعمل. DC bus = '+S.bus.toFixed(0)+'V');
 }
 function powerDown(){
  S.ctrl=false;S.st='off';S.run=false;S.jog=false;S.fault=null;S.retryT=0;
@@ -1316,7 +1316,7 @@ function devAct(dev,ev){
  else if(dev==='run'){if(!isMom()){if(ev==='click')io.di[T.fwd]=!io.di[T.fwd];}else if(ev==='down')io.di[T.fwd]=true;else if(ev==='up')io.di[T.fwd]=false;}
  else if(dev==='rev'&&ev==='click')io.di[T.rev]=!io.di[T.rev];
  else if(dev==='spd'&&ev==='click'){io.spd=((io.spd||0)+1)%4;io.di[T.ms1]=!!(io.spd&1);io.di[T.ms2]=!!(io.spd&2);}
- else if(dev==='ext'&&ev==='click'){S.inj.ext=!S.inj.ext;log(S.inj.ext?'الحماية الخارجية فصلت (طرف '+tn(T.ext)+')':'الحماية الخارجية رجعت OK',S.inj.ext);syncInj();}
+ else if(dev==='ext'&&ev==='click'){S.inj.ext=!S.inj.ext;log(S.inj.ext?'الحماية الخارجية فصلت (طرف '+tn(T.ext)+')':'عادت الحماية الخارجية OK',S.inj.ext);syncInj();}
  else if(dev==='rst'){if(ev==='down')io.di[T.rst]=true;else if(ev==='up')io.di[T.rst]=false;}
  updStation();
 }
@@ -1650,7 +1650,7 @@ function power(o){
  }else{
   s+=motor(90,215,'4 kW · 1440 rpm');
   const J=DRIVE.JUMPS||[];let x=200;
-  if(!J.length)s+=T_(270,190,'أطراف التحكم فاضية','sv-ar','middle');
+  if(!J.length)s+=T_(270,190,'أطراف التحكم غير موصولة','sv-ar','middle');
   J.forEach(([ids,lab])=>{const x0=x;ids.forEach((id,k)=>{s+='<circle class="sv-term" cx="'+(x0+k*24)+'" cy="160" r="3.6"/>'+T_(x0+k*24,153,id,'sv-tn','middle');});const x1=x0+(ids.length-1)*24;s+=W('M'+x0+' 164v12h'+(x1-x0)+'v-12','dig')+T_((x0+x1)/2,194,lab,'sv-ar','middle');x=x1+40;});
  }
  return s;
@@ -1793,7 +1793,7 @@ function guideRender(){
   const hand=GUI.hand==='hand';
   const tb='<div class="tablewrap"><table class="g-tbl"><thead><tr><th>الباراميتر</th><th>القيمة</th><th>السبب</th></tr></thead><tbody>'+a.p.map(([c,v,why])=>{const p=PM[c];return '<tr data-pc="'+c+'"><td class="code">'+c+'<small>'+esc(p.nm)+(p.ar?' · '+p.ar:'')+'</small><small class="gpath">'+DRIVE.kpPath(p)+(p.rl?' · يتغير والانفرتر متوقف فقط':'')+'</small></td><td class="v"><bdi class="vv" dir="ltr">'+esc(fmtV(p,v))+'</bdi> <span class="okc" data-ok="'+c+'"></span><span class="cur" data-cur="'+c+'" dir="rtl"></span></td><td class="why">'+why+'</td></tr>';}).join('')+'</tbody></table></div>';
   h+='<p class="g-lead">هذه الباراميترات التي يحتاجها التمرين. هل تفضّل إدخالها بيدك من كيباد الانفرتر لتتعوّد يدك، أم يكتبها الزر تلقائيًا؟</p>'+
-   '<div class="g-choice" role="group" aria-label="طريقة ضبط الباراميترات"><button type="button" class="btn" id="gByHand" aria-pressed="'+hand+'">ادخلها بإيدك من الكيباد<span class="rec">الأحسن للتدريب</span></button><button type="button" class="btn" id="gByAuto" aria-pressed="'+(GUI.hand==='auto')+'">اضبطها تلقائيًا<span class="tagc">تحكم</span></button></div>';
+   '<div class="g-choice" role="group" aria-label="طريقة ضبط الباراميترات"><button type="button" class="btn" id="gByHand" aria-pressed="'+hand+'">أدخلها يدويًا من الكيباد<span class="rec">الأفضل للتدريب</span></button><button type="button" class="btn" id="gByAuto" aria-pressed="'+(GUI.hand==='auto')+'">اضبطها تلقائيًا<span class="tagc">تحكم</span></button></div>';
   if(hand){
    h+='<p class="g-pwr" id="gPwrNote" hidden></p>'+
     '<div class="g-howto"><h4>طريقة الدخول على الـ '+DRIVE.short+'</h4><p>'+KP.howto+'</p></div>'+

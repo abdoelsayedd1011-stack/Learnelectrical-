@@ -801,7 +801,7 @@ def('L191','Stp Logic Time 1','زمن الخطوة 1',{mn:0,mx:999.9,st:.1,dc:1,
 /* d: Advanced Display */
 def('d360','Analog In 0-10V','قيمة طرف 13',{get:()=>S.io.pot*10,dc:1,u:'%',x:'إشارة طرف 13 كنسبة من 10V.'});
 def('d361','Analog In 4-20mA','قيمة طرف 15',{get:()=>clamp((maIn()-4)/16*100,0,100),dc:1,u:'%',x:'إشارة طرف 15 كنسبة من مدى 4-20mA.'});
-def('d362','Elapsed Time-hr','ساعات التشغيل منذ التوصيل',{get:()=>Math.floor(S.ton/3600),x:'الساعات من ساعة ما التحكم اشتغل.'});
+def('d362','Elapsed Time-hr','ساعات التشغيل منذ التوصيل',{get:()=>Math.floor(S.ton/3600),x:'الساعات من ساعة ما بدأ التحكم بالعمل.'});
 def('d363','Elapsed Time-min','دقائق التشغيل',{get:()=>Math.floor(S.ton/60)%60,dc:0,x:'الدقايق (مع d362).'});
 def('d367','Drive Type','موديل الانفرتر',{get:()=>0,fmt:()=>'D010',x:'25B = PowerFlex 525، D = 380-480V تلات فاز، 010 = 10.5A، N1 = من غير فلتر EMC، 04 = IP20.'});
 def('d369','Motor OL Level','عدّاد حماية المحرك',{get:()=>S.olM,dc:0,u:'%',x:'لما يوصل 100% يطلع F007. بيقل لما المحرك يبرد.'});
@@ -976,7 +976,7 @@ function powerUp(){
  S.ipOk=P.C128===1&&P.C129>0&&P.C132>0;
  H.scr='boot';H.ed=null;H.msg=null;
  S.puRun=P.A543===1&&P.P046===2;
- log('التحكم اشتغل. DC bus = '+S.bus.toFixed(0)+'V'+(S.ipOk?' · IP '+[P.C129,P.C130,P.C131,P.C132].join('.'):' · مفيش IP (C128 = '+(P.C128===2?'BOOTP':'Parameters')+')'));
+ log('بدأ التحكم بالعمل. DC bus = '+S.bus.toFixed(0)+'V'+(S.ipOk?' · IP '+[P.C129,P.C130,P.C131,P.C132].join('.'):' · مفيش IP (C128 = '+(P.C128===2?'BOOTP':'Parameters')+')'));
 }
 function powerDown(){
  S.ctrl=false;S.st='off';S.run=false;S.jog=false;S.fault=0;S.retryT=0;H.scr='off';H.ed=null;H.msg=null;
@@ -1922,7 +1922,7 @@ const SOL=[
  {t:'كيباد + البوتنشيوميتر اللي على الانفرتر',
   g:'أبسط تشغيل: خلاط أو سير صغير العامل بيشغله ويوقفه ويغيّر سرعته من على وش الانفرتر نفسه. مفيش ولا سلك كنترول غير جمبرات المصنع.',
   svg:()=>svg(250,'توصيل القوى: قاطع وانفرتر وموتور، وجمبر 01-11 وجمبر STO',power(false))+leg(['pwr','pe','mot','dig']),
-  p:[['P031',400,'جهد لوحة المحرك'],['P032',50,'المحرك 50 هرتز مش 60'],['P033',8.2,'الحماية الحرارية على تيار المحرك'],['P034',8.2,'تيار لوحة المحرك'],['P035',4,'1440 rpm يعني 4 أقطاب'],['P036',1440,'سرعة اللوحة، للـ Slip Comp'],['P044',50,'أقصى سرعة = تردد المحرك'],['P041',5,'يوصل لـ 50 Hz في 5 ثوانٍ'],['P042',5,'يتوقف في 5 ثوانٍ'],['P045',0,'وقوف برامب ومسح عطل'],['P046',1,'التشغيل من زر Start الأخضر'],['P047',1,'السرعة من بوت الانفرتر']],
+  p:[['P031',400,'جهد لوحة المحرك'],['P032',50,'المحرك 50 هرتز مش 60'],['P033',8.2,'الحماية الحرارية على تيار المحرك'],['P034',8.2,'تيار لوحة المحرك'],['P035',4,'1440 rpm يعني 4 أقطاب'],['P036',1440,'سرعة اللوحة، للـ Slip Comp'],['P044',50,'أقصى سرعة = تردد المحرك'],['P041',5,'يصل إلى 50 Hz في 5 ثوانٍ'],['P042',5,'يتوقف في 5 ثوانٍ'],['P045',0,'وقوف برامب ومسح عطل'],['P046',1,'التشغيل من زر Start الأخضر'],['P047',1,'السرعة من بوت الانفرتر']],
   steps:['اقفل الكهرباء وتأكد إن لمبة BUS طفت. وصّل L1 L2 L3 على R/L1 S/L2 T/L3، والمحرك على U/T1 V/T2 W/T3، والأرضي على PE في الناحيتين.','سيب جمبر المصنع بين 01 و 11 (الـ Stop) والجمبر بين S1 و S2 و S+ (الـ STO)، من غيرهم الانفرتر مش هيدوّر.','ولّع ودخّل بيانات لوحة المحرك P031 لحد P036، وبعدين P044 = 50.','خلي P046 = 1 و P047 = 1 (دي قيم المصنع).','دوس Start الأخضر ولف البوتنشيوميتر لحد ما b001 يقرا حوالي 30 Hz (بيزيد شوية من الـ Slip Comp). هتلاقي FWD منورة والمحرك 860 rpm تقريبًا.','دوس Stop الأحمر: المحرك يهدّي في 5 ثوانٍ ويقف.'],
   io:{dpot:.6},su:{load:'conv',lp:40,jr:3},hint:'دوس Start الأخضر على الكيباد ← 30 Hz'},
  {t:'2-Wire: سلكتور أمامي/عكسي + بوت خارجي 0-10V',
@@ -2077,7 +2077,7 @@ function guideRender(){
   const hand=GUI.hand==='hand',gname=c=>{const g=G.find(x=>x[0]===c[0]);return g?g[1]:'';};
   const tbl='<div class="tablewrap"><table class="g-tbl"><thead><tr><th>الباراميتر</th><th>القيمة</th><th>السبب</th></tr></thead><tbody>'+a.p.map(([c,v,why])=>{const p=PM[c];return '<tr data-pc="'+c+'"><td class="code">'+c+'<small>'+p.nm+(p.ar?' · '+p.ar:'')+'</small><small class="gpath">الباراميتر ده في جروب <b>'+c[0]+'</b> · '+gname(c)+' ← رقم '+c.slice(1)+(p.rl?' · يتغير والانفرتر متوقف فقط':'')+'</small></td><td class="v">'+fmtV(p,v)+' <span class="okc" data-ok="'+c+'"></span><span class="cur" data-cur="'+c+'"></span></td><td class="why">'+why+'</td></tr>';}).join('')+'</tbody></table></div>';
   h+='<p class="g-lead">هذه الباراميترات التي يحتاجها التمرين. هل تفضّل إدخالها بيدك من كيباد الانفرتر لتتعوّد يدك، أم يكتبها الزر تلقائيًا؟</p>'+
-   '<div class="g-choice" role="group" aria-label="طريقة ضبط الباراميترات"><button type="button" class="btn" id="gByHand" aria-pressed="'+hand+'">ادخلها بإيدك من الكيباد<span class="rec">الأحسن للتدريب</span></button><button type="button" class="btn" id="gByAuto" aria-pressed="'+(GUI.hand==='auto')+'">اضبطها تلقائيًا<span class="tagc">تحكم</span></button></div>';
+   '<div class="g-choice" role="group" aria-label="طريقة ضبط الباراميترات"><button type="button" class="btn" id="gByHand" aria-pressed="'+hand+'">أدخلها يدويًا من الكيباد<span class="rec">الأفضل للتدريب</span></button><button type="button" class="btn" id="gByAuto" aria-pressed="'+(GUI.hand==='auto')+'">اضبطها تلقائيًا<span class="tagc">تحكم</span></button></div>';
   if(hand){
    h+='<p class="g-pwr" id="gPwrNote" hidden></p>'+
     '<div class="g-howto"><h4>طريقة الدخول على الـ PowerFlex 525</h4><p><kbd>Esc</kbd> <kbd>Esc</kbd> لحد ما حرف الجروب يرمش ← <kbd>▲</kbd><kbd>▼</kbd> لحد حرف الجروب (b P t C L d A) ← <kbd>↵</kbd> ← <kbd>▲</kbd><kbd>▼</kbd> لحد رقم الباراميتر ← <kbd>↵</kbd> تشوف القيمة ← <kbd>↵</kbd> تاني (PROGRAM تنور) ← <kbd>Sel</kbd> ينقل الخانة اللي بترمش و <kbd>▲</kbd><kbd>▼</kbd> يغيّروها (امسك الزر يكرر) ← <kbd>↵</kbd> يحفظ. الباراميتر اللي بعده في نفس الجروب: <kbd>Esc</kbd> مرة و <kbd>▲</kbd><kbd>▼</kbd>.</p></div>'+
