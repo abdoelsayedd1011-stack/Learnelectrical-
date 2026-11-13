@@ -24,8 +24,11 @@
   var AR = /[؀-ۿ]/;
   var keys = Object.keys(D).filter(function(k){ return k && AR.test(k); }).sort(function(a,b){ return b.length - a.length; });
   var esc = function(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); };
-  var RX = null;
-  try { RX = keys.length ? new RegExp('(?<![\\u0600-\\u06FF])(?:' + keys.map(esc).join('|') + ')(?![\\u0600-\\u06FF])', 'g') : null; }
+  // a key that begins/ends with an Arabic letter must not match inside a longer Arabic word
+  var A = '\\u0600-\\u06FF', RX = null;
+  try { RX = keys.length ? new RegExp(keys.map(function(k){
+      return (AR.test(k.charAt(0)) ? '(?<![' + A + '])' : '') + esc(k) + (AR.test(k.charAt(k.length - 1)) ? '(?![' + A + '])' : '');
+    }).join('|'), 'g') : null; }
   catch(e){ RX = keys.length ? new RegExp(keys.map(esc).join('|'), 'g') : null; }
   var norm = function(s){ return s.replace(/\s+/g, ' ').trim(); };
   function tr(s){
@@ -91,13 +94,19 @@
   }
   document.addEventListener('DOMContentLoaded', function(){
     setDir(); walk(document.body); btn();
-    new MutationObserver(function(ms){
-      ms.forEach(function(m){
-        if (m.type === 'characterData') walk(m.target);
-        else if (m.type === 'attributes') walk(m.target);
-        else m.addedNodes.forEach(walk);
-      });
-    }).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATTR });
+    var OPT = { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATTR };
+    // our own text writes must not wake the observer again (that loops forever)
+    var obs = new MutationObserver(function(ms){
+      obs.disconnect();
+      try {
+        ms.forEach(function(m){
+          if (m.type === 'characterData') walk(m.target);
+          else if (m.type === 'attributes') walk(m.target);
+          else m.addedNodes.forEach(walk);
+        });
+      } finally { obs.takeRecords(); obs.observe(document.body, OPT); }
+    });
+    obs.observe(document.body, OPT);
   });
 })();
 </script>
