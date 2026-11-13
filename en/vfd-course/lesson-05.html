@@ -40,55 +40,32 @@
 <section class="panel lprog" id="lprog" aria-label="Your progress"></section>
 
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>Digital inputs (DI)</h2>
-  <p class="bf"><span class="ic">🔘</span><span>Each DI is programmed for a job: Run · Reverse · Stop · preset speed · Reset.</span></p>
-  <div class="vs">
-    <div class="side"><b>PNP / Source</b><span>Active at +24 V</span></div>
-    <i>vs</i>
-    <div class="side"><b>NPN / Sink</b><span>Active at 0 V</span></div>
-  </div>
-  <div class="vs">
-    <div class="side"><b>2-Wire</b><span>Maintained selector</span><span>⚠️ Restarts when power returns</span></div>
-    <i>vs</i>
-    <div class="side"><b>3-Wire</b><span>Momentary Start + Stop</span><span>✅ Safer</span></div>
-  </div>
-  <ul class="fx">
-    <li><b class="mono">00</b><span>Analog</span></li>
-    <li><b class="mono">01</b><span>Preset 1</span></li>
-    <li><b class="mono">10</b><span>Preset 2</span></li>
-    <li><b class="mono">11</b><span>Preset 3</span></li>
-  </ul>
+  <h2 id="s1"><span class="k">1</span>Digital inputs (DI): how do you give a command?</h2>
+  <p>The digital inputs are where you give the drive its commands. Each DI is programmed for one function: run, reverse, stop, a preset speed, or reset.</p>
+  <p>For a DI to see the command you need to know its type. <b>PNP (source)</b> turns on when it gets +24 V, and <b>NPN (sink)</b> turns on when it is connected to 0 V.</p>
+  <p>The run command itself has two styles. <b>2-wire</b> is a maintained selector, and its drawback is that the motor restarts by itself when power returns. <b>3-wire</b> is a momentary Start button plus a Stop button, which is safer.</p>
+  <p>For preset speeds you use 2 DIs together: <b class="mono">00</b> means speed from the analog input, and <b class="mono">01</b>, <b class="mono">10</b> and <b class="mono">11</b> mean Preset 1, 2 and 3.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>The speed signal (AI)</h2>
-  <div class="tiles">
-    <div class="tile"><span class="ic">🎛️</span><b>10 kΩ pot</b><span>+10V · AI · 0V</span></div>
-    <div class="tile"><span class="big">0–10 V</span><b>From a PLC</b><span>Noise sensitive</span></div>
-    <div class="tile"><span class="big">4–20 mA</span><b>Best</b><span>Long runs · detects a broken wire</span></div>
-  </div>
-  <p class="tip">Pot works backwards? Swap the two outer wires.</p>
+  <h2 id="s2"><span class="k">2</span>The speed signal (AI): where does the drive get the speed?</h2>
+  <p>The speed you want comes in on the analog input. The simplest way is a <b>10 kΩ pot</b> wired to +10V, AI and 0V. If it works backwards, swap the two outer wires.</p>
+  <p>If the signal comes from a PLC it is <b>0–10 V</b> or <b>4–20 mA</b>. The first picks up noise. The second is better: it travels long distances and reveals a broken wire.</p>
+  <p>The drive converts the signal to a frequency in proportion, between the minimum and maximum frequency:</p>
   <div class="formula">f = f<sub>min</sub> + (signal − min) ÷ span × (f<sub>max</sub> − f<sub>min</sub>)</div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>Outputs: relay and analog</h2>
-  <ul class="fx">
-    <li><b>Relay NO/NC</b><span>Fault · Run · Ready · at speed</span></li>
-    <li><b>Analog output</b><span>Speed or current to a meter or PLC</span></li>
-    <li><b>STO</b><span>Hardware torque cut · no jumper, no run</span></li>
-  </ul>
+  <h2 id="s3"><span class="k">3</span>Outputs: how does the drive answer back?</h2>
+  <p>The drive also sends signals out. The <b>relay output</b> (NO/NC) is programmed to report a state: fault, run, ready, or at speed. The <b>analog output</b> sends the speed or current to a meter or a PLC.</p>
+  <p>There is also a safety input called <b>STO</b>: it cuts motor torque in hardware. If its jumper is missing, the drive will not run.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Wire it and run it</h2>
-  <ol class="steps">
-    <li>Run → DI1</li>
-    <li>Direction → DI2</li>
-    <li>Pot → AI1</li>
-    <li>Lamp → relay</li>
-  </ol>
+  <p>Now put it all together: wire Run to <b>DI1</b>, direction to <b>DI2</b>, the pot to <b>AI1</b>, and the lamp to the <b>relay</b>.</p>
   <div id="ctl"></div>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>Drill: from signal to frequency</h2>
+  <p>Use the conversion formula above to work out the frequency from the signal.</p>
   <div class="wd"><h3>Drill: speed signal</h3><div id="scale"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
