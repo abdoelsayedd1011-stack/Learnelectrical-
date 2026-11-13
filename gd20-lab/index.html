@@ -452,9 +452,9 @@ body.guided .keyguide,body.guided #faceHint{display:none}
 </div>
 
       </div>
-      <p class="hint" id="faceHint" style="text-align:center"><span class="tagc">تحكم</span> كل أزرار الكيباد <span class="tagv">بيان</span> الشاشة واللمبات (RUN/TUNE، FWD/REV، LOCAL/REMOT، TRIP، والوحدات)</p>
+      <p class="hint" id="faceHint" style="text-align:center"><span class="tagc">تحكم</span> كل أزرار الكيباد <span class="tagv">بيان</span> الشاشة والمصابيح (RUN/TUNE، FWD/REV، LOCAL/REMOT، TRIP، والوحدات)</p>
       <ul class="keyguide">
-<li><b>PRG/ESC</b> يدخل الجروبات ويرجع خطوة.</li><li><b>DATA/ENT</b> يدخل ويحفظ (وينقلك إلى الباراميتر التالي).</li><li><b>▲ ▼</b> يغيّران القيمة. في الشاشة الرئيسية يغيّران السرعة P00.10 مباشرة.</li><li><b>SHIFT</b> يختار الرقم أثناء التعديل، وفي الشاشة الرئيسية يبدّل القراءات.</li><li><b>QUICK/JOG</b> وظيفته من P07.02.</li><li><b>RUN</b> و <b>STOP/RST</b> (إيقاف ومسح العطل).</li>
+<li><b>PRG/ESC</b> يدخل المجموعات ويرجع خطوة.</li><li><b>DATA/ENT</b> يدخل ويحفظ (وينقلك إلى الباراميتر التالي).</li><li><b>▲ ▼</b> يغيّران القيمة. في الشاشة الرئيسية يغيّران السرعة P00.10 مباشرة.</li><li><b>SHIFT</b> يختار الرقم أثناء التعديل، وفي الشاشة الرئيسية يبدّل القراءات.</li><li><b>QUICK/JOG</b> وظيفته من P07.02.</li><li><b>RUN</b> و <b>STOP/RST</b> (إيقاف ومسح العطل).</li>
       </ul>
     </div>
 
@@ -520,7 +520,7 @@ body.guided .keyguide,body.guided #faceHint{display:none}
       <div class="fields">
         <div class="field"><span class="label">المحرك المركّب</span><select id="motSel"><option value="iec">4 kW · 400V · 50Hz · 1440 rpm</option><option value="nema">5 HP · 460V · 60Hz · 1750 rpm</option></select></div>
         <div class="field"><span class="label">جهد المصدر</span><select id="lineSel"><option>380</option><option selected>400</option><option>415</option><option>460</option><option>480</option></select></div>
-        <div class="field"><span class="label">نوع الحمل</span><select id="loadSel"><option value="conv">سير ناقل (عزم ثابت)</option><option value="fan">مروحة / طلمبة (عزم ∝ السرعة²)</option><option value="hoist">ونش (الحمل يشد لأسفل)</option></select></div>
+        <div class="field"><span class="label">نوع الحمل</span><select id="loadSel"><option value="conv">سير ناقل (عزم ثابت)</option><option value="fan">مروحة / مضخة (عزم ∝ السرعة²)</option><option value="hoist">ونش (الحمل يشد لأسفل)</option></select></div>
         <div class="field"><span class="label">الحمل: <b id="lpV" class="mono">40%</b> من عزم المحرك</span><input type="range" id="lp" min="0" max="160" step="1" value="40"></div>
         <div class="field"><span class="label">قصور الحمل ÷ قصور المحرك: <b id="jrV" class="mono">3</b></span><input type="range" id="jr" min="0" max="40" step="0.5" value="3"></div>
         <div class="field"><span class="label">حرارة الجو: <b id="ambV" class="mono">35°C</b></span><input type="range" id="amb" min="10" max="50" step="1" value="35"></div>
@@ -676,7 +676,7 @@ const DRIVE={
  PWR:[['R','L1'],['S','L2'],['T','L3'],['⏚','PE'],['(+)','B1'],['PB','B2'],['(−)','DC-'],['U','U'],['V','V'],['W','W']],
  JUMPS:[[['PW','P24'],'جمبر PW على +24V (NPN)']],
  kpPath:p=>'PRG/ESC (يظهر '+p.g+') ← ▲▼ حتى '+p.g+' ← DATA/ENT ← ▲▼ حتى '+p.c+' ← DATA/ENT ← ▲▼ و SHIFT ← DATA/ENT',
- resetHow:'بزر <b>STOP/RST</b>',faultLamp:' وأضاءت لمبة TRIP',
+ resetHow:'بزر <b>STOP/RST</b>',faultLamp:' وأضاء مصباح TRIP',
  BASE:[['P02.01',4],['P02.02',50],['P02.03',1440],['P02.04',400],['P02.05',8.2]],
  firstParams:['P00.01','P00.06','P05.13'],
  FL:{
@@ -719,7 +719,7 @@ const DRIVE={
 };
 /* ---------- parameters ---------- */
 def('P00.00','Speed control mode','طريقة التحكم',{o:{0:'0: SVC 0',1:'1: SVC 1',2:'2: V/F control'},d:2,rl:1,x:'2 (المصنع) = V/F. 0 و 1 = Sensorless vector (يحتاج بيانات محرك صحيحة و Autotune).'});
-def('P00.01','Run command channel','مصدر أمر التشغيل',{o:{0:'0: Keypad',1:'1: Terminal',2:'2: Communication'},d:0,rl:1,x:'0 (المصنع) = RUN و STOP/RST. 1 = الأطراف (تضيء لمبة LOCAL/REMOT).'});
+def('P00.01','Run command channel','مصدر أمر التشغيل',{o:{0:'0: Keypad',1:'1: Terminal',2:'2: Communication'},d:0,rl:1,x:'0 (المصنع) = RUN و STOP/RST. 1 = الأطراف (يضيء مصباح LOCAL/REMOT).'});
 def('P00.03','Max output frequency','أقصى تردد',{mn:10,mx:400,st:.01,dc:2,u:'Hz',d:50,rl:1,x:'وهو أيضًا مرجع أزمنة التسارع والتباطؤ ونسبة التناظري والسرعات المتعددة.'});
 def('P00.04','Upper limit of running frequency','الحد الأعلى',{mn:0,mx:400,st:.01,dc:2,u:'Hz',d:50,x:''});
 def('P00.05','Lower limit of running frequency','الحد الأدنى',{mn:0,mx:400,st:.01,dc:2,u:'Hz',d:0,x:''});
@@ -738,7 +738,7 @@ def('P02.05','Motor rated current','تيار المحرك',{mn:.1,mx:50,st:.1,dc
 def('P04.01','Torque boost','رفع الجهد',{mn:0,mx:10,st:.1,dc:1,u:'%',d:0,x:'0 = تلقائيًا.'});
 def('P05.00','HDI input type','نوع طرف HDI',{o:{0:'0: High-speed pulse',1:'1: Digital input'},d:0,x:'1 = يصبح HDI دخلًا رقميًا عاديًا ووظيفته في P05.09.'});
 [['P05.01','S1',1],['P05.02','S2',4],['P05.03','S3',7],['P05.04','S4',0],['P05.09','HDI',0]].forEach(([c,t,d])=>def(c,t+' terminal function','وظيفة طرف '+t,{o:SFO,d,rl:1,x:'1 أمامي، 2 عكسي، 4 Jog، 6 وقوف حر، 7 Reset، 9 عطل خارجي (EF)، 16 و 17 Multi-step.'}));
-def('P05.13','Terminal control running mode','طريقة التشغيل من الأطراف',{o:{0:'0: 2-wire control 1',1:'1: 2-wire control 2',2:'2: 3-wire control 1',3:'3: 3-wire control 2'},d:0,rl:1,x:'0 = FWD أمامي و REV عكسي (الاتنين = وقوف). 1 = FWD تشغيل و REV اتجاه.'});
+def('P05.13','Terminal control running mode','طريقة التشغيل من الأطراف',{o:{0:'0: 2-wire control 1',1:'1: 2-wire control 2',2:'2: 3-wire control 1',3:'3: 3-wire control 2'},d:0,rl:1,x:'0 = FWD أمامي و REV عكسي (كلاهما = وقوف). 1 = FWD تشغيل و REV اتجاه.'});
 def('P05.32','AI1 lower limit','AI1: أقل جهد',{mn:0,mx:10,st:.01,dc:2,u:'V',d:0,x:''});
 def('P05.33','Corresponding setting of AI1 lower limit','AI1: النسبة عند الأقل',{mn:-100,mx:100,st:.1,dc:1,u:'%',d:0,x:'% من P00.03.'});
 def('P05.34','AI1 upper limit','AI1: أعلى جهد',{mn:0,mx:10,st:.01,dc:2,u:'V',d:10,x:''});
@@ -752,7 +752,7 @@ def('P06.03','Relay RO1 output selection','وظيفة ريليه RO1',{o:OUTO,d:
 def('P06.14','AO1 output selection','وظيفة خرج AO1',{o:{0:'0: Running frequency',3:'3: Output current',5:'5: Output voltage'},d:0,x:''});
 def('P07.02','QUICK/JOG function selection','وظيفة زر QUICK/JOG',{o:{0:'0: No function',1:'1: Jogging',3:'3: FWD/REV switching'},d:1,x:'1 = Jog (غير ممثَّل في المحاكي). 3 = يعكس الاتجاه في تشغيل الكيباد.'});
 def('P07.04','STOP/RST stop function','زر STOP في تشغيل الأطراف',{o:{0:'0: Valid only for keypad control',1:'1: Valid for keypad and terminal'},d:0,x:'0 = يوقف STOP في تشغيل الكيباد فقط (ومسح العطل يعمل دائمًا).'});
-[[0,0],[1,0],[2,0],[3,0]].forEach(([n,d])=>def('P10.'+z2(2+2*n),'Multi-step speed '+n,'سرعة '+n,{mn:-100,mx:100,st:.1,dc:1,u:'%',d,x:'% من P00.03. '+['دون أي طرف (عندما P00.06 = 6)','Multi-step 1 وحده','Multi-step 2 وحده','الاتنين مع بعض'][n]+'.'}));
+[[0,0],[1,0],[2,0],[3,0]].forEach(([n,d])=>def('P10.'+z2(2+2*n),'Multi-step speed '+n,'سرعة '+n,{mn:-100,mx:100,st:.1,dc:1,u:'%',d,x:'% من P00.03. '+['دون أي طرف (عندما P00.06 = 6)','Multi-step 1 وحده','Multi-step 2 وحده','كلاهما معًا'][n]+'.'}));
 def('P11.00','Phase loss protection','حماية فقد الفاز',{o:{0:'00: Disabled',1:'01: Input only',10:'10: Output only',11:'11: Input and output'},d:11,x:'الرقم الأيمن = الدخل، والأيسر = الخرج. إذا كان الخرج مفعّلًا وانفصل فاز يظهر SPO.'});
 def('P11.03','Overvoltage stall protection','منع الـ Overvoltage',{o:{0:'0: Disabled',1:'1: Enabled'},d:1,x:'1 (المصنع): إذا ارتفع الـ DC bus أثناء التباطؤ، يطيل الانفرتر التباطؤ وحده.'});
 def('P11.06','Automatic current limit level','حد التيار',{mn:50,mx:200,st:1,u:'%',d:160,x:'نسبة من تيار الانفرتر.'});
@@ -825,34 +825,34 @@ const KP=(function(){
    L('#iRun',S.st!=='off','g');L('#iFR',S.dir<0,'g');L('#iLR',K.runSrc!=='kp','g',K.runSrc==='none');L('#iTrip',!!S.fault,'r',true);
   },
   get state(){return H;},
-  howto:'<kbd>PRG/ESC</kbd> يدخلك إلى الجروبات (P00، P01…) ← <kbd>▲</kbd><kbd>▼</kbd> حتى الجروب ← <kbd>DATA/ENT</kbd> ← <kbd>▲</kbd><kbd>▼</kbd> حتى الباراميتر (مثلًا <code>P00.11</code>) ← <kbd>DATA/ENT</kbd>: يومض الرقم المختار ← <kbd>SHIFT</kbd> يختار الرقم و <kbd>▲</kbd><kbd>▼</kbd> يغيّرانه ← <kbd>DATA/ENT</kbd> يحفظ وينقلك إلى التالي. <kbd>PRG/ESC</kbd> يرجع. في الشاشة الرئيسية يغيّر <kbd>▲</kbd><kbd>▼</kbd> P00.10 مباشرة و <kbd>SHIFT</kbd> يبدّل القراءات.'
+  howto:'<kbd>PRG/ESC</kbd> يدخلك إلى المجموعات (P00، P01…) ← <kbd>▲</kbd><kbd>▼</kbd> حتى المجموعة ← <kbd>DATA/ENT</kbd> ← <kbd>▲</kbd><kbd>▼</kbd> حتى الباراميتر (مثلًا <code>P00.11</code>) ← <kbd>DATA/ENT</kbd>: يومض الرقم المختار ← <kbd>SHIFT</kbd> يختار الرقم و <kbd>▲</kbd><kbd>▼</kbd> يغيّرانه ← <kbd>DATA/ENT</kbd> يحفظ وينقلك إلى التالي. <kbd>PRG/ESC</kbd> يرجع. في الشاشة الرئيسية يغيّر <kbd>▲</kbd><kbd>▼</kbd> P00.10 مباشرة و <kbd>SHIFT</kbd> يبدّل القراءات.'
  };
 })();
 /* ---------- solved exercises ---------- */
 const SOLX=()=>[
  {t:'تشغيل من الكيباد',g:'المصنع P00.01 = 0 (التشغيل من RUN و STOP/RST) و P00.06 = 0 (السرعة من P00.10). يغيّر ▲▼ في الشاشة الرئيسية السرعة مباشرة.',svg:SV.kp,
   p:[['P00.01',0,'التشغيل من الكيباد'],['P00.06',0,'السرعة من P00.10'],['P00.03',50,'أقصى تردد'],['P00.11',5,'تسارع 5 ثوانٍ'],['P00.12',5,'تباطؤ 5 ثوانٍ']],
-  steps:['وصّل 3 فاز على R S T والمحرك على U V W والأرضي.','اكتب الجدول (PRG/ESC ← P00).','في الشاشة الرئيسية ▲▼ حتى <b>30.00</b> (أو اكتب P00.10 = 30).','اضغط <b>RUN</b>: يصل المحرك إلى 30 Hz وتضيء لمبة RUN/TUNE.','<b>STOP/RST</b>: يتباطأ ويتوقف.'],
+  steps:['وصّل 3 فاز على R S T والمحرك على U V W والأرضي.','اكتب الجدول (PRG/ESC ← P00).','في الشاشة الرئيسية ▲▼ حتى <b>30.00</b> (أو اكتب P00.10 = 30).','اضغط <b>RUN</b>: يصل المحرك إلى 30 Hz ويضيء مصباح RUN/TUNE.','<b>STOP/RST</b>: يتباطأ ويتوقف.'],
   io:{kpRef:30},su:{load:'conv',lp:40,jr:3},hint:'RUN ← 30 Hz'},
  {t:'2-Wire: S1 أمامي و S2 عكسي',g:'P00.01 = 1 والأطراف بالـ 2-wire control 1: S1 = Forward running (1)، S2 = Reverse running (2). المصنع S2 = Jog فلازم تغيّره. كونتاكت حماية خارجية N.O. على S3 بوظيفة 9 (EF).',svg:()=>SV.w2('P00.10 = 30 Hz'),
   p:[['P00.01',1,'التشغيل من الأطراف'],['P05.13',0,'2-wire control 1'],['P05.01',1,'S1 = Forward'],['P05.02',2,'S2 = Reverse'],['P05.03',9,'S3 = External fault'],['P00.06',0,'السرعة من P00.10'],['P00.10',30,'30 Hz'],['P00.11',5,'تسارع'],['P00.12',5,'تباطؤ']],
-  steps:['جمبر PW على +24V (NPN). السلكتور: الكومن على <code>COM</code>، FWD على <code>S1</code> و REV على <code>S2</code>.','كونتاكت الحماية الخارجية (N.O.) بين <code>S3</code> و <code>COM</code>.','اكتب الجدول (تضيء لمبة LOCAL/REMOT).','أغلق S1 (RUN FWD): يصل المحرك إلى 30 Hz.','S1 و S2 مع بعض = وقوف. S2 وحده = عكسي.'],
+  steps:['جمبر PW على +24V (NPN). السلكتور: الكومن على <code>COM</code>، FWD على <code>S1</code> و REV على <code>S2</code>.','كونتاكت الحماية الخارجية (N.O.) بين <code>S3</code> و <code>COM</code>.','اكتب الجدول (يضيء مصباح LOCAL/REMOT).','أغلق S1 (RUN FWD): يصل المحرك إلى 30 Hz.','S1 و S2 معًا = وقوف. S2 وحده = عكسي.'],
   io:{kpRef:30},su:{load:'conv',lp:40,jr:3},hint:'أغلق S1 ← 30 Hz'},
  {t:'السرعة من بوت 0-10V على AI1',g:'بوت 10kΩ: الطرفين على +10V و GND والوسط على AI1. P00.06 = 1. 10V = 100% من P00.03.',svg:SV.pot,
   p:[['P00.01',1,'التشغيل من الأطراف'],['P00.06',1,'السرعة من AI1'],['P05.32',0,'0V'],['P05.33',0,'= 0%'],['P05.34',10,'10V'],['P05.35',100,'= 100%'],['P00.03',50,'100% = 50 Hz']],
   steps:['البوتنشيوميتر: الطرف العالي على <code>+10V</code>، والواطي على <code>GND</code>، والوسط على <code>AI1</code>.','سلكتور التشغيل بين <code>S1</code> و <code>COM</code> (S1 = 1 Forward).','اكتب الجدول.','أدر البوتنشيوميتر إلى 6V وأغلق S1: يثبت المحرك على 30 Hz.','أدر البوتنشيوميتر: يتبعه التردد.'],
   io:{pot:.6},su:{load:'fan',lp:60,jr:3},hint:'البوتنشيوميتر على 6V، أغلق S1 ← 30 Hz'},
- {t:'سرعات متعددة من S4 و HDI',g:'S4 = Multi-step 1 (16) و HDI = Multi-step 2 (17) بعد ما تخلي HDI دخل ديجيتال (P05.00 = 1). السرعات في جروب P10 بالـ % من P00.03.',svg:()=>SV.preset([['0','P00.10'],['1','10Hz'],['2','25Hz'],['3','40Hz']]),
+ {t:'سرعات متعددة من S4 و HDI',g:'S4 = Multi-step 1 (16) و HDI = Multi-step 2 (17) بعد ما تخلي HDI دخل ديجيتال (P05.00 = 1). السرعات في مجموعة P10 بالـ % من P00.03.',svg:()=>SV.preset([['0','P00.10'],['1','10Hz'],['2','25Hz'],['3','40Hz']]),
   p:[['P00.01',1,'التشغيل من الأطراف'],['P05.04',16,'S4 = Multi-step 1'],['P05.00',1,'HDI دخل ديجيتال'],['P05.09',17,'HDI = Multi-step 2'],['P10.04',20,'سرعة 1 = 20% = 10 Hz'],['P10.06',50,'سرعة 2 = 50% = 25 Hz'],['P10.08',80,'سرعة 3 = 80% = 40 Hz']],
   steps:['سلكتور التشغيل بين <code>S1</code> و <code>COM</code>.','سلكتور السرعات: كونتاكت على <code>S4</code> وكونتاكت على <code>HDI</code> من COM.','اكتب الجدول.','السلكتور على 2 (HDI فقط) وأغلق S1: يثبت المحرك على 25 Hz.','غيّر الوضع: 1 = 10، 2 = 25، 3 = 40 Hz.'],
   io:{spd:2},su:{load:'conv',lp:40,jr:3},hint:'السلكتور على 2، أغلق S1 ← 25 Hz'},
- {t:'بيانات المحرك والتسارع والتباطؤ',g:'تكتب بيانات اللوحة في جروب P02 لتُحسب الحماية OL1 والتحكم صحيحًا، وتضبط P00.11 و P00.12.',svg:SV.plate,
+ {t:'بيانات المحرك والتسارع والتباطؤ',g:'تكتب بيانات اللوحة في مجموعة P02 لتُحسب الحماية OL1 والتحكم صحيحًا، وتضبط P00.11 و P00.12.',svg:SV.plate,
   p:[['P02.01',4,'4 kW'],['P02.02',50,'50 Hz'],['P02.03',1440,'1440 rpm'],['P02.04',400,'400V'],['P02.05',8.2,'8.2A'],['P00.03',50,'أقصى تردد'],['P00.11',8,'تسارع 8 ثوانٍ'],['P00.12',8,'تباطؤ 8 ثوانٍ'],['P00.01',0,'من الكيباد'],['P00.06',0,'من P00.10']],
   steps:['اقرأ لوحة المحرك: 4 kW · 400V · 50 Hz · 8.2A · 1440 rpm.','اكتب الجدول والانفرتر متوقف (P02 لا يُكتب إلا أثناء التوقف).','P00.10 = 50.','RUN: يصل إلى 50 Hz في 8 ثوانٍ والتيار أقل من 8.2A بحمل 60%.','STOP/RST: يتوقف في 8 ثوانٍ.'],
   io:{kpRef:50},su:{load:'conv',lp:60,jr:3},hint:'P00.10 = 50، RUN ← التيار تحت 8.2A'},
  {t:'عطل OV2 وحله',g:'حمل قصوره الذاتي كبير وتريد إيقافه في ثانية. الطاقة العائدة ترفع الـ DC bus، وإذا كان P11.03 = 0 ولا توجد مقاومة، يظهر OV2 (Deceleration overvoltage).',svg:SV.heavy,
   p:[['P11.03',0,'عطّل منع الـ Overvoltage'],['P00.12',1,'تباطؤ ثانية واحدة'],['P00.11',5,'تسارع 5 ثوانٍ'],['P01.08',0,'وقوف بالتباطؤ'],['P00.01',0,'من الكيباد'],['P00.06',0,'من P00.10']],
-  steps:['نفس توصيل الباور، والحمل قصوره 20 ضعف المحرك.','اكتب الجدول.','P00.10 = 50، RUN وانتظر حتى يصل.','STOP/RST: يرتفع الـ DC bus ويفصل <code>OV2</code> وتضيء لمبة TRIP.','الحل: STOP/RST يمسح، ثم P11.03 = 1 أو P00.12 = 6 وجرّب مرة أخرى.'],
+  steps:['نفس توصيل الباور، والحمل قصوره 20 ضعف المحرك.','اكتب الجدول.','P00.10 = 50، RUN وانتظر حتى يصل.','STOP/RST: يرتفع الـ DC bus ويفصل <code>OV2</code> ويضيء مصباح TRIP.','الحل: STOP/RST يمسح، ثم P11.03 = 1 أو P00.12 = 6 وجرّب مرة أخرى.'],
   io:{kpRef:50},su:{load:'conv',lp:20,jr:20,db:false},hint:'RUN حتى 50، ثم STOP ← OV2'}];
 DRIVE.SOL=SOLX;
 DRIVE.GD=()=>[
@@ -866,7 +866,7 @@ DRIVE.GD=()=>[
    c1:['مسحت العطل',()=>!!EV.f_ov&&!S.fault],c2:['صلّحت ووقّفت من 50 Hz من غير عطل',()=>!!EV.decelOk&&!S.fault]}}];
 DRIVE.EXX=()=>[{t:'تعديل باراميتر من الكيباد',p:'دون الجدول: بالكيباد فقط.',s:[['PRG/ESC ← P00 ← P00.11 = 8.0 ← DATA/ENT',()=>EV['kpw_P00.11']&&Math.abs(P['P00.11']-8)<1e-6],['اجعل P07.02 = 3 واعكس الاتجاه بزر QUICK/JOG',()=>P['P07.02']===3&&S.kdir<0]]}];
 DRIVE.REF=()=>({
- key:['الكيباد','<ol><li>الشاشة 5 أرقام، وفوقها لمبات: <code>RUN/TUNE</code> (يعمل)، و<code>FWD/REV</code> (مضيئة = عكسي)، و<code>LOCAL/REMOT</code> (مطفأة = كيباد، مضيئة = أطراف)، و<code>TRIP</code> (عطل). وبجوارها لمبات الوحدة: Hz و A و V و RPM و %.</li><li><code>PRG/ESC</code> يدخل الجروبات ويرجع، و <code>DATA/ENT</code> يدخل ويحفظ، و <code>SHIFT</code> يختار الرقم (وفي الشاشة الرئيسية يبدّل القراءات).</li><li>في الشاشة الرئيسية يغيّر <code>▲ ▼</code> P00.10 مباشرة عندما P00.06 = 0.</li><li><code>QUICK/JOG</code> وظيفته من P07.02.</li><li><code>STOP/RST</code> يوقف في تشغيل الكيباد، ويمسح العطل دائمًا.</li></ol>'],
+ key:['الكيباد','<ol><li>الشاشة 5 أرقام، وفوقها مصابيح: <code>RUN/TUNE</code> (يعمل)، و<code>FWD/REV</code> (مضيئة = عكسي)، و<code>LOCAL/REMOT</code> (مطفأة = كيباد، مضيئة = أطراف)، و<code>TRIP</code> (عطل). وبجوارها مصابيح الوحدة: Hz و A و V و RPM و %.</li><li><code>PRG/ESC</code> يدخل المجموعات ويرجع، و <code>DATA/ENT</code> يدخل ويحفظ، و <code>SHIFT</code> يختار الرقم (وفي الشاشة الرئيسية يبدّل القراءات).</li><li>في الشاشة الرئيسية يغيّر <code>▲ ▼</code> P00.10 مباشرة عندما P00.06 = 0.</li><li><code>QUICK/JOG</code> وظيفته من P07.02.</li><li><code>STOP/RST</code> يوقف في تشغيل الكيباد، ويمسح العطل دائمًا.</li></ol>'],
  ctl:['أطراف التحكم',()=>tbl(['الطرف','الوظيفة الآن','ملاحظات'],[
   ['S1',SFO[P['P05.01']],'P05.01'],['S2',SFO[P['P05.02']],'P05.02'],['S3',SFO[P['P05.03']],'P05.03'],['S4',SFO[P['P05.04']],'P05.04'],['HDI',P['P05.00']===1?SFO[P['P05.09']]:'High-speed pulse','P05.00 · P05.09'],
   ['COM','DI common','NPN: يعمل الدخل عند إغلاقه على COM'],['PW','DI supply','جمبر على +24V (NPN) أو على COM (PNP)'],['+24V','24V out',''],['+10V','Ref','تغذية البوتنشيوميتر'],['AI1','0-10V','P05.32…P05.35'],['AI2','0-20mA / 0-10V','جمبر · P05.37…P05.40'],['GND','Analog 0V',''],['AO1',PM['P06.14'].o[P['P06.14']],'P06.14'],
@@ -1350,7 +1350,7 @@ function bindRange(id,key,fmt){const el=$('#'+id),o=$('#'+id+'V');el.value=S[key
 bindRange('lp','lp',v=>v+'%');bindRange('jr','jr',v=>String(v));bindRange('amb','amb',v=>v+'°C');
 function loadHint(){
  const m=MOT[S.mot],J=m.J*(1+S.jr),E=.5*J*m.wn*m.wn/1000;
- const t={conv:'سير ناقل: العزم ثابت تقريبًا من أول ما يتحرك.',fan:'مروحة / طلمبة: يزيد العزم مع مربع السرعة، فيكون التيار منخفضًا في السرعات المنخفضة.',hoist:'ونش: يشد الحمل لأسفل دائمًا. عند الرفع يحمل المحرك الحمل، وعند الإنزال يدير الحمل المحرك وتعود الطاقة إلى الـ DC bus.'}[S.load];
+ const t={conv:'سير ناقل: العزم ثابت تقريبًا من أول ما يتحرك.',fan:'مروحة / مضخة: يزيد العزم مع مربع السرعة، فيكون التيار منخفضًا في السرعات المنخفضة.',hoist:'ونش: يشد الحمل لأسفل دائمًا. عند الرفع يحمل المحرك الحمل، وعند الإنزال يدير الحمل المحرك وتعود الطاقة إلى الـ DC bus.'}[S.load];
  $('#loadHint').textContent=t+' القصور الكلي '+J.toFixed(3)+' kg·m²، وطاقة الحركة عند السرعة المقننة حوالي '+E.toFixed(2)+' kJ، وهي التي تعود إلى الـ DC bus عند الإيقاف السريع. مكثفات انفرتر صغير كهذا تستوعب جزءًا صغيرًا فقط قبل أن يفصل OverVoltage.';
 }
 $('#motSel').addEventListener('change',e=>{S.mot=e.target.value;updMotor();loadHint();save();log('تغيّر المحرك: '+MOT[S.mot].plate.join(' · '));});
@@ -1439,7 +1439,7 @@ function buildWD(){
  o.push('<line id="rb2" x1="270" y1="318" x2="270" y2="346" stroke="#e9ebec" stroke-width="2.2" stroke-linecap="round"/><path d="M262 318H270M262 346H276" stroke="#9aa3a9" stroke-width="1.5"/>');
  tx(286,226,r1.nm||'Relay 1','font-size="11" font-weight="700" fill="#e9ebec"');tx(286,240,'','id="rf1" font-size="9.5" fill="#9aa3a9"');
  tx(286,336,r2.nm||'Relay 2','font-size="11" font-weight="700" fill="#e9ebec"');tx(286,350,'','id="rf2" font-size="9.5" fill="#9aa3a9"');
- if(oc)tx(120,380,'(خرج ترانزستور: في الواقع لمبة 24V DC)','font-size="9" fill="#555" text-anchor="middle" class="ar"');
+ if(oc)tx(120,380,'(خرج ترانزستور: في الواقع مصباح 24V DC)','font-size="9" fill="#555" text-anchor="middle" class="ar"');
  /* control terminals */
  DRIVE.CT.forEach(([id,nm])=>{const x=CTX[id];term(x,470,tw);tx(x,496,nm,'font-size="'+(CTX._s<34?8:9.5)+'" fill="#333" text-anchor="middle"');tx(0,0,'','id="tf'+wid(id)+'" font-size="9" fill="#c9cfd3" transform="translate('+(x+3)+' 455) rotate(-90)"');});
  tx(700,372,'أطراف التحكم','font-size="12" fill="#9aa3a9" text-anchor="middle" class="ar"');
@@ -1793,7 +1793,7 @@ function guideRender(){
   h+='<p class="g-lead">'+g.do+'</p><div id="gWarnP" class="g-warn" hidden>لم تُكتب الباراميترات بعد. ارجع إلى الخطوة 2 واضغط «اضبط هذه الباراميترات».</div>'+
    '<div class="g-check" id="gChkR"><i>✓</i><span>'+(g.okTxt||'المحرك يعمل كما يطلب التمرين')+'<span class="sub">'+a.hint+'</span></span></div>'+
    '<div class="g-live"><span>الحالة <b id="gSt">—</b></span><span>تردد الخرج <b id="gHz">0.0 Hz</b></span><span>التيار <b id="gA">0.00 A</b></span><span>التشغيل من <b id="gSrc">—</b></span><span>السرعة من <b id="gRef">—</b></span></div>'+
-   '<p class="g-note"><span class="tagc">تحكم</span> الكيباد ولوحة التشغيل تحت <span class="tagv">بيان</span> الشاشة واللمبات والمحرك</p>'+
+   '<p class="g-note"><span class="tagc">تحكم</span> الكيباد ولوحة التشغيل في الأسفل <span class="tagv">بيان</span> الشاشة والمصابيح والمحرك</p>'+
    (sp.run.length?'<details><summary style="cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center">باقي خطوات التمرين</summary><ol class="g-list" style="margin-top:8px">'+sp.run.map(x=>'<li>'+x+'</li>').join('')+'</ol></details>':'');
  }else{
   const f=g.flt;
@@ -2001,7 +2001,7 @@ window.SIMTOUR_VFD8=function(o){
   ['until',chk('#gChkF2'),20000,'النتيجة: مُسح العطل وعاد الانفرتر جاهزًا ✓','F2'],
   ['look',()=>{const m=document.querySelector('.mview');return m&&(m.closest('.panel')||m);}]]);
  const EX=[
-  {run:[['look',MV]].concat(runKp(),[waitOk(),say('وصل إلى السرعة المطلوبة وثبت عليها ✓. لاحظ التيار: يرتفع قليلًا أثناء التسارع، ثم ينخفض.'),['tap',K(stp),'ولما ندوس <b>'+o.stopName+'</b>: يتوقف بالرامب، أي يخفض التردد تدريجيًا حتى الصفر.'],['until',()=>Math.abs(S.fOut)<0.5,15000,'المحرك يتباطأ…'],['tap',K(sk),'نشغّله من جديد لنجرّب العطل أثناء التشغيل.'],['until',()=>Math.abs(S.fOut)>20,15000]]),flt:flt()},
+  {run:[['look',MV]].concat(runKp(),[waitOk(),say('وصل إلى السرعة المطلوبة وثبت عليها ✓. لاحظ التيار: يرتفع قليلًا أثناء التسارع، ثم ينخفض.'),['tap',K(stp),'وعندما نضغط <b>'+o.stopName+'</b>: يتوقف بالرامب، أي يخفض التردد تدريجيًا حتى الصفر.'],['until',()=>Math.abs(S.fOut)<0.5,15000,'المحرك يتباطأ…'],['tap',K(sk),'نشغّله من جديد لنجرّب العطل أثناء التشغيل.'],['until',()=>Math.abs(S.fOut)>20,15000]]),flt:flt()},
   {run:[['look',MV]].concat(runDi(),[waitOk(),say('يعمل للأمام ✓. السلكتور ثابت: ما دام مغلقًا يعمل المحرك.'),].concat(o.revRun?[['tap','#dRun','نفتح <b>RUN FWD</b>…',1,'quiet'],['tap','#dRev','السبب: فُتح <b>RUN FWD</b> وأُغلق <b>RUN REV</b>.'],['until',()=>S.fOut<-5,15000,'النتيجة: يتباطأ حتى الصفر، ثم يدور في الاتجاه العكسي…'],['tap','#dRev','نعيده للأمام: نفتح REV ونغلق FWD.'],['tap','#dRun',''],['until',()=>S.fOut>20,15000]]:[['tap','#dRev','السبب: أُغلق سلكتور <b>RUN REV</b> (أمر الاتجاه).'],['until',()=>S.fOut<-5,15000,'النتيجة: يتباطأ حتى الصفر، ثم يدور في الاتجاه العكسي بالسرعة نفسها…'],['tap','#dRev','نعيده للأمام.'],['until',()=>S.fOut>20,15000]]).concat([])),flt:flt()},
   {run:[['look',MV]].concat(runDi('السبب: أُغلق سلكتور <b>RUN FWD</b>، والسرعة قادمة من البوتنشيوميتر الخارجي.'),[waitOk(),say('ثابت على سرعة البوتنشيوميتر ✓.'),].concat(o.ex3ma?[['js',()=>{io.ma=8;if(typeof updMa==='function')updMa();},'السبب: إشارة الـ 4-20mA قلت لـ 8mA.'],['until',()=>Math.abs(S.fOut)<20,12000,'النتيجة: تنخفض السرعة معها على الرامب…'],['js',()=>{io.ma=13.6;if(typeof updMa==='function')updMa();},'نعيد الإشارة إلى 13.6mA: ترتفع السرعة من جديد.']]:[['js',()=>{io.pot=0.3;if(typeof updPot==='function')updPot();},'السبب: البوتنشيوميتر اتلف للنص (الجهد قل).'],['until',()=>Math.abs(S.fOut)<20,12000,'النتيجة: تنخفض السرعة معه على الرامب…'],['js',()=>{io.pot=0.6;if(typeof updPot==='function')updPot();},'نعيد البوتنشيوميتر إلى مكانه: ترتفع السرعة من جديد.']]).concat([['until',chk('#gChkR'),15000]])),flt:flt()},
   {run:[['look',MV]].concat(runDi(),[waitOk('النتيجة: يصل المحرك إلى السرعة الثابتة التي اختارها السلكتور…'),say('ثابت على السرعة رقم 2 ✓.'),['tap','#dSpd','السبب: سلكتور السرعات اتلف على 3.'],['until',()=>Math.abs(S.fOut)>Math.abs(S.fTgt)-1&&S.code===3,15000,'النتيجة: ينتقل إلى السرعة رقم 3 بالرامب…'],['tap','#dSpd','ونرجّعه على 2.',3],['until',chk('#gChkR'),15000]]),flt:flt()},
@@ -2025,9 +2025,9 @@ window.SIMTOUR_VFD8=function(o){
   edit:[['js',()=>{if(o.home)o.home();}],['until',()=>ctlOk(),12000,'لحظة حتى تعمل الشاشة…']].concat(o.edit,[['until',()=>Math.abs(P[o.editP]-o.editV)<1e-6,4000,null,'edit-value']]),
   editOk:'#gBody tr[data-pc="'+o.editP+'"]',
   run:[
-   {cap:'نخلّي المحاكي يكمّل باقي الباراميترات أوتوماتيك، وننتقل لخطوة التشغيل…',k:'التشغيل',ops:[['js',async A=>{if(typeof applySol==='function'){applySol(GUI.ex);}await A.until(()=>typeof gParamsOk==='function'&&gParamsOk(GUI.ex),25000);}]],opt:1},
+   {cap:'نترك المحاكي يكمل باقي الباراميترات تلقائيًا، وننتقل إلى خطوة التشغيل…',k:'التشغيل',ops:[['js',async A=>{if(typeof applySol==='function'){applySol(GUI.ex);}await A.until(()=>typeof gParamsOk==='function'&&gParamsOk(GUI.ex),25000);}]],opt:1},
    {t:'#gBody .g-live',cap:'الخطوة 3 التشغيل: هنا ترى الحالة، والتردد، والتيار، ومصدر أمر التشغيل، ومصدر السرعة.'},
-   {t:'#station',cap:'لوحة التشغيل: سلكتورات وزراير ومقابض متوصلة على أطراف الانفرتر. دوسة على السلكتور تقفله أو تفتحه، والمقبض تلفه بالسحب لفوق وتحت أو بعجلة الماوس.'},
+   {t:'#station',cap:'لوحة التشغيل: سلكتورات وأزرار ومقابض موصولة على أطراف الانفرتر. الضغط على السلكتور يغلقه أو يفتحه، والمقبض تديره بالسحب للأعلى والأسفل أو بعجلة الماوس.'},
    {ops:toLocal.concat([['tap',K(sk),'نشغّل من الكيباد: زر <b>'+o.startName+'</b>.']])},
    {t:MV,cap:'المحرك يدور، والأرقام تحته تتغير معه: التردد Hz، والسرعة rpm، والتيار A، والجهد V، وجهد الـ DC bus.',act:async A=>{window.SIMTOUR.state.live=live;await A.until(()=>Math.abs(S.fOut)>20,15000);}},
    {t:'#gChkR',cap:'عندما تنفّذ المطلوب صحيحًا، تصبح هذه العلامة ✓ خضراء ويمكنك المتابعة.',ops:[['until',chk('#gChkR'),20000,null,'tour-gChkR']]}
@@ -2049,7 +2049,7 @@ SIMTOUR_VFD8({lab:'gd20-lab',revRun:1,name:'INVT GD20',short:'GD20',kr:'.vfd',di
  fix6:['P11.03',1],
  home:()=>{const H=KP.state;H.lv=0;H.gi=0;H.ed=null;},
  keys:[
-  ['.vfd [data-k="PRG"]','<b>PRG/ESC</b> يدخلك إلى الجروبات (P00 و P01…) ويرجع خطوة.'],
+  ['.vfd [data-k="PRG"]','<b>PRG/ESC</b> يدخلك إلى المجموعات (P00 و P01…) ويرجع خطوة.'],
   ['.vfd [data-k="ENT"]','<b>DATA/ENT</b> يدخل ويحفظ، وينقلك إلى الباراميتر التالي.'],
   ['.vfd [data-k="UP"]','<b>▲ ▼</b> يغيّران القيمة. في الشاشة الرئيسية يغيّران السرعة مباشرة.'],
   ['.vfd [data-k="SHIFT"]','<b>SHIFT</b> يختار الرقم أثناء التعديل، وفي الشاشة الرئيسية يبدّل القراءات (Hz و A و V).'],
@@ -2057,8 +2057,8 @@ SIMTOUR_VFD8({lab:'gd20-lab',revRun:1,name:'INVT GD20',short:'GD20',kr:'.vfd',di
  ],
  editP:'P00.11',editV:5,
  edit:[
-  ['tap','.vfd [data-k="PRG"]','نغيّر زمن التسارع <b>P00.11</b> كمثال. <b>PRG/ESC</b> يدخل على الجروبات.'],
-  ['tap','.vfd [data-k="ENT"]','جروب <b>P00</b> ← <b>DATA/ENT</b>.'],
+  ['tap','.vfd [data-k="PRG"]','نغيّر زمن التسارع <b>P00.11</b> كمثال. <b>PRG/ESC</b> يدخل على المجموعات.'],
+  ['tap','.vfd [data-k="ENT"]','مجموعة <b>P00</b> ← <b>DATA/ENT</b>.'],
   ['tap','.vfd [data-k="UP"]','<b>▲</b> حتى <b>P00.11</b>.',()=>PD.filter(p=>p.g==='P00').map(p=>p.c).indexOf('P00.11')],
   ['tap','.vfd [data-k="ENT"]','<b>DATA/ENT</b>: يومض الرقم المختار.'],
   ['tap','.vfd [data-k="SHIFT"]','<b>SHIFT</b> يختار خانة الآحاد.'],
