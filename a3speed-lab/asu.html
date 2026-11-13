@@ -336,8 +336,8 @@ details[open] summary{margin-bottom:6px}
 <nav aria-label="تنقل" style="direction:rtl;display:flex;flex-wrap:wrap;gap:8px;max-width:1400px;margin:0 auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 0;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:14px"><a href="/a3speed-lab/" data-en-href="/en/a3speed-lab/" style="color:#1f5a96;text-decoration:none;font-weight:600;padding:4px 10px;border:1px solid #c5c5c5;border-radius:8px;background:#fff">← كل محاكيات A3/Speed</a></nav>
 <div class="wrap" dir="rtl" lang="ar">
 <header>
-  <h1>محاكي وحدة اللحام الأوتوماتيك ASU <span class="en">Tetra Pak A3/Speed</span></h1>
-  <p class="sub">لما البكرة تخلص، الوحدة بتلحم آخر الورق القديم في أول البكرة الجديدة والماكينة شغالة وبتسحب من مخزن الورق. دوس «تشغيل إنتاج» وبعدين «قرّب نهاية البكرة».</p>
+  <h1>محاكي وحدة اللحام التلقائي ASU <span class="en">Tetra Pak A3/Speed</span></h1>
+  <p class="sub">عندما تنتهي البكرة، تلحم الوحدة نهاية الورق القديم في بداية البكرة الجديدة والماكينة تعمل وتسحب من مخزن الورق. اضغط «تشغيل إنتاج» ثم «قرّب نهاية البكرة».</p>
 </header>
 
 <section class="console">
@@ -346,19 +346,19 @@ details[open] summary{margin-bottom:6px}
     <div class="scrollx"><canvas id="cvDia" width="1000" height="600" role="img" aria-label="رسم متحرك للبكرتين ورأس اللحام وبكرة السحب واللوب ومخزن الورق"></canvas></div>
     <div class="kv">
       <div style="--c:#a66828"><span>ورق في المخزن (م)</span><b id="vMag">0</b></div>
-      <div style="--c:var(--reelE)"><span>باقي في البكرة (م)</span><b id="kR">0</b></div>
+      <div style="--c:var(--reelE)"><span>المتبقي في البكرة (م)</span><b id="kR">0</b></div>
       <div style="--c:#5d6670"><span>سرعة الورق (م/ث)</span><b id="kV">0</b></div>
-      <div style="--c:var(--rollD)"><span>موتور اللوب (مم/ث)</span><b id="kL">0</b></div>
-      <div style="--c:var(--rail)"><span>موتور المخزن (مم/ث)</span><b id="kM">0</b></div>
+      <div style="--c:var(--rollD)"><span>محرك اللوب (مم/ث)</span><b id="kL">0</b></div>
+      <div style="--c:var(--rail)"><span>محرك المخزن (مم/ث)</span><b id="kM">0</b></div>
       <div style="--c:var(--heat)"><span>حرارة البار °C</span><b id="kT">0</b></div>
       <div style="--c:var(--ok)"><span>لحامات ناجحة</span><b id="kS">0</b></div>
     </div>
     <div class="banner hidden" id="banner"></div>
-    <p class="note" style="margin:0"><span class="simp">تبسيط توضيحي: حركة الرأس الجانبية مرسومة يمين وشمال، وطول البكرة مختصر.</span> <span class="phone-only">اسحب الرسم يمين وشمال.</span></p>
+    <p class="note" style="margin:0"><span class="simp">تبسيط توضيحي: حركة الرأس الجانبية مرسومة يمينًا ويسارًا، وطول البكرة مختصر.</span> <span class="phone-only">اسحب الرسم يمينًا ويسارًا.</span></p>
   </div>
   <div class="side">
     <div class="card stat">
-      <div class="state" id="stTitle">الماكينة واقفة</div>
+      <div class="state" id="stTitle">الماكينة متوقفة</div>
       <div class="msg" id="stMsg"></div>
       <div class="row">
         <button class="go" id="bStart">تشغيل إنتاج</button>
@@ -370,7 +370,7 @@ details[open] summary{margin-bottom:6px}
         <button id="bSplice">لحام يدوي</button>
         <button id="bPrep">حضّر البكرة الجديدة</button>
       </div>
-      <div class="row hidden" id="forceRow"><button class="amber" id="bForce">لحام يدوي إجباري (برا التصميم)</button></div>
+      <div class="row hidden" id="forceRow"><button class="amber" id="bForce">لحام يدوي إجباري (خارج التصميم)</button></div>
       <div class="row" role="group" aria-label="سرعة المحاكاة">
         <span class="note">السرعة:</span>
         <button data-sp="1" class="sel">×1</button><button data-sp="2">×2</button><button data-sp="5">×5</button><button data-sp="10">×10</button>
@@ -378,7 +378,7 @@ details[open] summary{margin-bottom:6px}
     </div>
     <div class="card">
       <h2>الإنذارات</h2>
-      <div class="alist" id="alist"><div class="empty">مفيش إنذارات.</div></div>
+      <div class="alist" id="alist"><div class="empty">لا توجد إنذارات.</div></div>
     </div>
     <div class="card">
       <h2>نتيجة آخر لحام</h2>
@@ -393,14 +393,14 @@ details[open] summary{margin-bottom:6px}
 
 <section class="cols c2">
   <div class="card" style="border-top:4px solid var(--gSealH)">
-    <h2>مخطط التوقيت لآخر لحام <span class="note">(بالملي ثانية من طلب اللحام، زي رسمة الورك بوك)</span></h2>
+    <h2>مخطط التوقيت لآخر لحام <span class="note">(بالملّي ثانية من طلب اللحام، كما في رسم الـ Workbook)</span></h2>
     <div class="scrollx"><canvas id="cvTime" width="900" height="410" role="img" aria-label="مخطط توقيت إشارات اللحام"></canvas></div>
   </div>
   <div class="card" style="border-top:4px solid var(--gMagH)">
     <h2>السرعات والمخزن (آخر 90 ث)</h2>
     <div class="chips" id="chips"></div>
     <canvas id="cvTrend" width="900" height="200" role="img" aria-label="رسم بياني للسرعات ومحتوى المخزن"></canvas>
-    <p class="note" style="margin:4px 0 0">الأخضر الفاتح = وقت اللحام: الموتورين واقفين والمخزن بيفضى. بعده موتور المخزن ×1.1 ويزيد 0.06 كل نص ثانية لحد ما يتملي.</p>
+    <p class="note" style="margin:4px 0 0">الأخضر الفاتح = وقت اللحام: المحركان متوقفان والمخزن يفرغ. بعده محرك المخزن ×1.1 ويزيد 0.06 كل نصف ثانية حتى يمتلئ.</p>
     <h2 style="margin-top:8px">علامات التسجيل الافتراضية</h2>
     <div class="marks">
       <span>الإنكودر</span><div class="mrow" id="mrV"></div>
@@ -429,7 +429,7 @@ details[open] summary{margin-bottom:6px}
     <span class="note">النافذة ±3 °C</span>
     <div class="bar" id="chWin"><b id="chK" style="left:50%"></b></div>
     <div class="row" style="justify-content:space-between;direction:ltr;font-family:var(--f-mono);font-size:10.5px;color:var(--muted)"><span id="chLo">162</span><span id="chMid">170</span><span id="chHi">178</span></div>
-    <p class="note" style="margin:2px 0 0">برا ±3 = تحذير أزرق، ولو وقت اللحام = أصفر واللحام يتلغي. <span class="en">PID KP 50, KI 1 s, KD 0.5 s</span></p>
+    <p class="note" style="margin:2px 0 0">خارج ±3 = تحذير أزرق، وإذا كان وقت اللحام = أصفر ويُلغى اللحام. <span class="en">PID KP 50, KI 1 s, KD 0.5 s</span></p>
   </div>
   <div class="card" style="border-top:4px solid var(--rollD)">
     <h2>سيرفو رأس اللحام</h2>
@@ -442,22 +442,22 @@ details[open] summary{margin-bottom:6px}
       <div class="h" id="svH" style="left:1%"></div>
       <span style="left:1%">0</span><span style="left:50%">246</span><span style="left:98%">492</span>
     </div>
-    <p class="note" style="margin:22px 0 0">المحطة 1 = <b class="mono">0</b> مم، المحطة 2 = <b class="mono">492</b> مم (±4). <b class="mono">1200</b> مم/ث، حوالي <b class="mono">0.65</b> ث. خطأ موضع فوق <b class="mono">7</b> مم = عطل سيرفو.</p>
+    <p class="note" style="margin:22px 0 0">المحطة 1 = <b class="mono">0</b> مم، المحطة 2 = <b class="mono">492</b> مم (±4). <b class="mono">1200</b> مم/ث، نحو <b class="mono">0.65</b> ث. خطأ موضع فوق <b class="mono">7</b> مم = عطل سيرفو.</p>
   </div>
   <div class="card" style="border-top:4px solid var(--reelE)">
     <h2>الإعدادات</h2>
     <div class="set">
       <div class="row">
-        <select id="selPk" aria-label="نوع الباكو">
+        <select id="selPk" aria-label="نوع العبوة">
           <option value="125S">TBA 125 Slim</option><option value="200B">TBA 200 Base</option>
           <option value="200S">TBA 200 Slim</option><option value="250B">TBA 250 Base</option><option value="250S" selected>TBA 250 Slim</option>
         </select>
         <select id="selCap" aria-label="القدرة"><option value="16000">16000 ب/س</option><option value="20000">20000 ب/س</option><option value="24000" selected>24000 ب/س</option></select>
       </div>
       <label>حرارة البار °C <output id="oT">170</output><input type="range" id="rT" min="110" max="220" step="1" value="170"></label>
-      <label>وقت اللحام (مللي) <output id="oST">2500</output><input type="range" id="rST" min="1000" max="4000" step="100" value="2500"></label>
-      <label>تعديل نقطة الوقوف (مم) <output id="oOff">0</output><input type="range" id="rOff" min="-20" max="20" step="0.5" value="0"></label>
-      <div class="row"><button id="bDef">رجّع قيم البرنامج</button></div>
+      <label>وقت اللحام (ملّي) <output id="oST">2500</output><input type="range" id="rST" min="1000" max="4000" step="100" value="2500"></label>
+      <label>تعديل نقطة التوقف (مم) <output id="oOff">0</output><input type="range" id="rOff" min="-20" max="20" step="0.5" value="0"></label>
+      <div class="row"><button id="bDef">أعد قيم البرنامج</button></div>
       <p class="note" id="pkTxt" style="margin:0"></p>
     </div>
   </div>
@@ -469,14 +469,14 @@ details[open] summary{margin-bottom:6px}
 
 <section class="cols c21">
   <div class="card" style="border-top:4px solid var(--gFaultH)">
-    <h2>اعمل عطل <span class="note">(دوس يشتغل، ودوس تاني يتشال. أغلبها بيبان وقت اللحام)</span></h2>
+    <h2>اصنع عطلًا <span class="note">(اضغط ليعمل، واضغط مرة أخرى ليُزال. يظهر أغلبها وقت اللحام)</span></h2>
     <div class="faults" id="faults"></div>
-    <div class="row" style="margin-top:6px"><button id="bClr">شيل كل الأعطال</button></div>
+    <div class="row" style="margin-top:6px"><button id="bClr">أزل كل الأعطال</button></div>
   </div>
   <div class="card" style="border-top:4px solid var(--gFaultH)">
-    <h2>تحدي: إيه العطل؟</h2>
-    <p class="note" style="margin:0 0 6px">المحاكي هيشغّل ويقرّب نهاية البكرة ويعمل عطل مستخبي. تابع الرسم والإنذارات واختار السبب.</p>
-    <div class="row"><button class="go" id="bCh">ابدأ تحدي جديد</button><span class="note" id="chScore">النتيجة: 0 من 0</span></div>
+    <h2>تحدٍّ: ما العطل؟</h2>
+    <p class="note" style="margin:0 0 6px">سيشغّل المحاكي الماكينة ويقرّب نهاية البكرة ويُحدث عطلًا مخفيًا. تابع الرسم والإنذارات واختر السبب.</p>
+    <div class="row"><button class="go" id="bCh">ابدأ تحديًا جديدًا</button><span class="note" id="chScore">النتيجة: 0 من 0</span></div>
     <div id="chBox" class="hidden">
       <p id="chQ" style="margin:8px 0 0;font-weight:600"></p>
       <div class="opts" id="chOpts"></div>
@@ -486,7 +486,7 @@ details[open] summary{margin-bottom:6px}
 </section>
 
 <details class="card">
-  <summary><b>جدول كل الإنذارات وتوقيتها</b> <span class="note">(الأزرق تحذير، الأصفر وقوف عادي، اللوب أو المخزن فاضي = وقوف سريع)</span></summary>
+  <summary><b>جدول كل الإنذارات وتوقيتها</b> <span class="note">(الأزرق تحذير، والأصفر توقف عادي، واللوب أو المخزن فارغ = توقف سريع)</span></summary>
   <div class="tblwrap"><table class="atable" id="atable"></table></div>
 </details>
 </div>
@@ -512,43 +512,43 @@ const RMAX=92,RCORE=30,BEAM=33;
 /* ---------- state ---------- */
 let set={pk:'250S',cap:24000,T:170,st:2500,off:0};
 let F={};const FDEF=[
- {k:'reelPC',t:'حساس نهاية البكرة مش شايف',s:'T10B1240 / T10B1250 متسخ أو بايظ'},
- {k:'notPrep',t:'البكرة الجديدة مش متحضرة',s:'المشغل محضّرش بداية الورق في الرأس'},
- {k:'air',t:'ضغط هوا الـ ASU واطي',s:'DI_AsuAirPressure'},
- {k:'heater',t:'سخان بار اللحام فاصل',s:'DO_PaperSpliceHeaterPower بس مفيش حرارة'},
- {k:'regPC',t:'حساس علامة التسجيل متسخ',s:'A01K5200: علامات بتضيع'},
- {k:'enc',t:'إنكودر اللوب بايظ',s:'AXI_ASULoopEncoder مش بيعد'},
+ {k:'reelPC',t:'حساس نهاية البكرة لا يرى',s:'T10B1240 / T10B1250 متسخ أو تالف'},
+ {k:'notPrep',t:'البكرة الجديدة غير مجهّزة',s:'لم يجهّز المشغل بداية الورق في الرأس'},
+ {k:'air',t:'ضغط هواء الـ ASU منخفض',s:'DI_AsuAirPressure'},
+ {k:'heater',t:'سخان بار اللحام مفصول',s:'DO_PaperSpliceHeaterPower يعمل لكن لا توجد حرارة'},
+ {k:'regPC',t:'حساس علامة التسجيل متسخ',s:'A01K5200: علامات تضيع'},
+ {k:'enc',t:'إنكودر اللوب تالف',s:'AXI_ASULoopEncoder لا يعدّ'},
  {k:'servo',t:'عطل في سيرفو رأس اللحام',s:'T50M9020 / Kinetix 6000'},
- {k:'knife',t:'سكينة القص مقصّتش',s:'سلندر القص T10K1631 ضعيف'},
- {k:'fqL',t:'عطل إنفرتر موتور اللوب',s:'FQ_AsuLoop Fault'},
- {k:'fqM',t:'عطل إنفرتر موتور المخزن',s:'FQ_AsuMagazine Fault'},
- {k:'magS',t:'حساس ضبط المخزن واقف على «مليان»',s:'DI_AsuMagazineAdjustment'},
- {k:'loopS',t:'حساس ضبط اللوب واقف على «ناقص»',s:'DI_AsuLoopAdjustment'},
+ {k:'knife',t:'سكين القص لم يقص',s:'سلندر القص T10K1631 ضعيف'},
+ {k:'fqL',t:'عطل انفرتر محرك اللوب',s:'FQ_AsuLoop Fault'},
+ {k:'fqM',t:'عطل انفرتر محرك المخزن',s:'FQ_AsuMagazine Fault'},
+ {k:'magS',t:'حساس ضبط المخزن ثابت على «ممتلئ»',s:'DI_AsuMagazineAdjustment'},
+ {k:'loopS',t:'حساس ضبط اللوب ثابت على «ناقص»',s:'DI_AsuLoopAdjustment'},
  {k:'door',t:'باب الـ ASU مفتوح',s:'DI_L1081'},
- {k:'hold',t:'ماسك الورق مش في مكانه',s:'DI_SpliceTable1/2Position'}];
+ {k:'hold',t:'ماسك الورق ليس في مكانه',s:'DI_SpliceTable1/2Position'}];
 const ADEF=[
- {k:'notPrepY',n:'ALR_ASU_YO_PackMtrlEndSpliceNotPrepared',c:'Y',a:'الورق خلص والبكرة الجديدة مش متحضرة',w:'لحظة الوقوف للّحام',e:'وقوف عادي + اللحام يتلغي'},
- {k:'notPrepB',n:'ALR_ASU_BO_PackMtrlNotPrepared',c:'B',a:'البكرة الجديدة لسه مش متحضرة',w:'طول ما المحطة التانية مش جاهزة',e:'تحذير، حضّرها قبل ما البكرة تخلص'},
- {k:'airY',n:'ALR_ASU_YE_PackMtrlEndAirPressureNotOK',c:'Y',a:'ضغط الهوا مش تمام وقت اللحام',w:'لحظة الوقوف للّحام',e:'وقوف عادي + اللحام يتلغي'},
- {k:'airB',n:'ALR_ASU_BO_MainAirSupply',c:'B',a:'هوا الـ ASU الرئيسي واطي',w:'والورق بيتسحب',e:'تحذير'},
- {k:'chY',n:'ALR_ASU_YE_PackMtrlEndCHBarTempNotOK',c:'Y',a:'حرارة بار اللحام مش مظبوطة وقت اللحام',w:'برا ±3 °C لحظة الوقوف للّحام',e:'وقوف عادي + اللحام يتلغي'},
- {k:'chB',n:'ALR_ASU_BE_CHBarTempNotOk',c:'B',a:'حرارة بار اللحام برا النافذة',w:'برا ±3 °C',e:'تحذير'},
- {k:'doorY',n:'ALR_ASU_YO_PackMtrlEndDoorOpen',c:'Y',a:'باب مفتوح وقت اللحام',w:'لحظة الوقوف للّحام',e:'وقوف عادي + اللحام يتلغي'},
- {k:'doorB',n:'ALR_ASU_BO_RunDoorsOpen',c:'B',a:'باب الـ ASU مفتوح والماكينة شغالة',w:'بعد 90 ث',e:'تحذير + سرينة'},
- {k:'holdY',n:'ALR_ASU_YO_PackMtrlEndMatHoldNotInPlace',c:'Y',a:'ماسك الورق مش في مكانه وقت اللحام',w:'لحظة الوقوف للّحام',e:'وقوف عادي + اللحام يتلغي'},
- {k:'holdB',n:'ALR_ASU_BO_MaterialHoldersNotInPlace',c:'B',a:'ماسك الورق مش في مكانه',w:'على طول',e:'تحذير'},
- {k:'intr',n:'ALR_ASU_YE_SpliceSequenceInterrupted',c:'Y',a:'تسلسل اللحام اتقطع',w:'أي شرط من اللي فوق، أو اللحام أخد أكتر من 30 ث',e:'وقوف عادي'},
- {k:'regB',n:'ALR_ASU_BE_BarCodePhotocells',c:'B',a:'حساس علامة التسجيل بيضيّع علامات',w:'الأخطاء المتجمعة = 2',e:'تحذير'},
- {k:'regY',n:'ALR_ASU_YE_BarCodePhotocells',c:'Y',a:'حساس علامة التسجيل مش قاري',w:'الأخطاء المتجمعة = 12',e:'وقوف عادي'},
- {k:'encB',n:'ALR_ASU_BE_LoopEncoderFault',c:'B',a:'عطل في إنكودر اللوب',w:'الأخطاء المتجمعة = −2',e:'تحذير + اللحام الأوتوماتيك يتمنع'},
- {k:'servo',n:'ALR_ASU_YE_SealingHeadServoFault',c:'Y',a:'عطل في سيرفو رأس اللحام',w:'فوري (خطأ موضع أكتر من 7 مم أو عطل درايف)',e:'وقوف عادي'},
- {k:'fqL',n:'ALR_ASU_YE_FqLoopError',c:'Y',a:'عطل إنفرتر موتور اللوب',w:'فوري',e:'وقوف عادي'},
- {k:'fqM',n:'ALR_ASU_YE_FqMagazineError',c:'Y',a:'عطل إنفرتر موتور المخزن',w:'فوري',e:'وقوف عادي'},
- {k:'lReg',n:'ALR_ASU_YE_LoopRegTout',c:'Y',a:'تنظيم اللوب مش شغال',w:'حساس ضبط اللوب ما اتغيرش 10 ث',e:'وقوف عادي'},
- {k:'mReg',n:'ALR_ASU_YE_MagazineRegTout',c:'Y',a:'تنظيم المخزن مش شغال',w:'حساس ضبط المخزن ما اتغيرش 8 ث',e:'وقوف عادي'},
- {k:'lEmpty',n:'ALR_ASU_YE_LoopEmpty',c:'Y',a:'اللوب فاضي',w:'حساس اللوب الفاضي 0.7 ث',e:'وقوف سريع'},
- {k:'mEmpty',n:'ALR_ASU_YE_MagazineEmpty',c:'Y',a:'المخزن فاضي',w:'فوري',e:'وقوف سريع'},
- {k:'magNF',n:'ALR_ASU_BO_MagazineNotFullWhenSpliceReq',c:'B',a:'طلبت لحام يدوي والمخزن مش مليان',w:'لحظة الطلب',e:'الطلب يترفض'}];
+ {k:'notPrepY',n:'ALR_ASU_YO_PackMtrlEndSpliceNotPrepared',c:'Y',a:'انتهى الورق والبكرة الجديدة غير مجهّزة',w:'لحظة التوقف للّحام',e:'توقف عادي + يُلغى اللحام'},
+ {k:'notPrepB',n:'ALR_ASU_BO_PackMtrlNotPrepared',c:'B',a:'البكرة الجديدة ما زالت غير مجهّزة',w:'ما دامت المحطة الأخرى غير جاهزة',e:'تحذير، جهّزها قبل أن تنتهي البكرة'},
+ {k:'airY',n:'ALR_ASU_YE_PackMtrlEndAirPressureNotOK',c:'Y',a:'ضغط الهواء غير سليم وقت اللحام',w:'لحظة التوقف للّحام',e:'توقف عادي + يُلغى اللحام'},
+ {k:'airB',n:'ALR_ASU_BO_MainAirSupply',c:'B',a:'هواء الـ ASU الرئيسي منخفض',w:'والورق يُسحب',e:'تحذير'},
+ {k:'chY',n:'ALR_ASU_YE_PackMtrlEndCHBarTempNotOK',c:'Y',a:'حرارة بار اللحام غير مضبوطة وقت اللحام',w:'خارج ±3 °C لحظة التوقف للّحام',e:'توقف عادي + يُلغى اللحام'},
+ {k:'chB',n:'ALR_ASU_BE_CHBarTempNotOk',c:'B',a:'حرارة بار اللحام خارج النافذة',w:'خارج ±3 °C',e:'تحذير'},
+ {k:'doorY',n:'ALR_ASU_YO_PackMtrlEndDoorOpen',c:'Y',a:'باب مفتوح وقت اللحام',w:'لحظة التوقف للّحام',e:'توقف عادي + يُلغى اللحام'},
+ {k:'doorB',n:'ALR_ASU_BO_RunDoorsOpen',c:'B',a:'باب الـ ASU مفتوح والماكينة تعمل',w:'بعد 90 ث',e:'تحذير + سرينة'},
+ {k:'holdY',n:'ALR_ASU_YO_PackMtrlEndMatHoldNotInPlace',c:'Y',a:'ماسك الورق ليس في مكانه وقت اللحام',w:'لحظة التوقف للّحام',e:'توقف عادي + يُلغى اللحام'},
+ {k:'holdB',n:'ALR_ASU_BO_MaterialHoldersNotInPlace',c:'B',a:'ماسك الورق ليس في مكانه',w:'فورًا',e:'تحذير'},
+ {k:'intr',n:'ALR_ASU_YE_SpliceSequenceInterrupted',c:'Y',a:'انقطع تسلسل اللحام',w:'أي شرط مما سبق، أو استغرق اللحام أكثر من 30 ث',e:'توقف عادي'},
+ {k:'regB',n:'ALR_ASU_BE_BarCodePhotocells',c:'B',a:'حساس علامة التسجيل يُضيّع علامات',w:'الأخطاء المتجمعة = 2',e:'تحذير'},
+ {k:'regY',n:'ALR_ASU_YE_BarCodePhotocells',c:'Y',a:'حساس علامة التسجيل لا يقرأ',w:'الأخطاء المتجمعة = 12',e:'توقف عادي'},
+ {k:'encB',n:'ALR_ASU_BE_LoopEncoderFault',c:'B',a:'عطل في إنكودر اللوب',w:'الأخطاء المتجمعة = −2',e:'تحذير + يُمنع اللحام التلقائي'},
+ {k:'servo',n:'ALR_ASU_YE_SealingHeadServoFault',c:'Y',a:'عطل في سيرفو رأس اللحام',w:'فوري (خطأ موضع أكثر من 7 مم أو عطل درايف)',e:'توقف عادي'},
+ {k:'fqL',n:'ALR_ASU_YE_FqLoopError',c:'Y',a:'عطل انفرتر محرك اللوب',w:'فوري',e:'توقف عادي'},
+ {k:'fqM',n:'ALR_ASU_YE_FqMagazineError',c:'Y',a:'عطل انفرتر محرك المخزن',w:'فوري',e:'توقف عادي'},
+ {k:'lReg',n:'ALR_ASU_YE_LoopRegTout',c:'Y',a:'تنظيم اللوب لا يعمل',w:'حساس ضبط اللوب لم يتغير 10 ث',e:'توقف عادي'},
+ {k:'mReg',n:'ALR_ASU_YE_MagazineRegTout',c:'Y',a:'تنظيم المخزن لا يعمل',w:'حساس ضبط المخزن لم يتغير 8 ث',e:'توقف عادي'},
+ {k:'lEmpty',n:'ALR_ASU_YE_LoopEmpty',c:'Y',a:'اللوب فارغ',w:'حساس اللوب الفارغ 0.7 ث',e:'توقف سريع'},
+ {k:'mEmpty',n:'ALR_ASU_YE_MagazineEmpty',c:'Y',a:'المخزن فارغ',w:'فوري',e:'توقف سريع'},
+ {k:'magNF',n:'ALR_ASU_BO_MagazineNotFullWhenSpliceReq',c:'B',a:'طلبت لحامًا يدويًا والمخزن غير ممتلئ',w:'لحظة الطلب',e:'يُرفض الطلب'}];
 const FAST=new Set(['lEmpty','mEmpty']);
 let S,AL,rec=null,lastRec=null,hist=[],simSp=1,ch={on:false,n:0,ok:0,f:null,ans:false};
 function fresh(){
@@ -579,13 +579,13 @@ function onAlarm(k){const a=ADEF.find(x=>x.k===k);log(`${a.c==='Y'?'إنذار �
 /* ---------- machine ---------- */
 function start(){
   if(S.run)return;
-  if(anyY()){log('مينفعش تشغّل: فيه إنذار أصفر، اعمل ريست بعد ما تشيل السبب','Y');return}
-  if(S.seq==='splice'){log('استنى اللحام يخلص','i');return}
-  if(S.R[S.act]<=0){log('مفيش ورق في البكرة الشغالة. اعمل لحام يدوي الأول','Y');return}
-  if(S.M<MAGEMPTY+0.3){log('المخزن فاضي، استنى يتملي','i');return}
+  if(anyY()){log('لا يمكن التشغيل: يوجد إنذار أصفر، نفّذ ريست بعد إزالة السبب','Y');return}
+  if(S.seq==='splice'){log('انتظر حتى ينتهي اللحام','i');return}
+  if(S.R[S.act]<=0){log('لا يوجد ورق في البكرة العاملة. نفّذ لحامًا يدويًا أولًا','Y');return}
+  if(S.M<MAGEMPTY+0.3){log('المخزن فارغ، انتظر حتى يمتلئ','i');return}
   S.run=true;S.stopMode=null;S.vT=vNom();S.seq='run';S.lastMagEdge=S.t;S.lastLoopEdge=S.t;log('تشغيل إنتاج','ok');
 }
-function stopMachine(mode){ if(!S.run&&S.v<=0)return; if(S.stopMode==='fast')return; S.stopMode=mode;S.vT=0; log(mode==='fast'?'وقوف سريع':'وقوف عادي','i')}
+function stopMachine(mode){ if(!S.run&&S.v<=0)return; if(S.stopMode==='fast')return; S.stopMode=mode;S.vT=0; log(mode==='fast'?'توقف سريع':'توقف عادي','i')}
 function resetAlarms(){
   ADEF.forEach(a=>{AL[a.k].latch=false});
   S.acc=0;S.okRun=0;AL.regB.on=AL.regY.on=AL.encB.on=false;
@@ -595,11 +595,11 @@ function resetAlarms(){
 /* ---------- splice ---------- */
 function requestSplice(cause){
   if(S.seq==='splice')return;
-  if(S.encBroken){S.needForce=true;if(S.reqCause!=='enc'){log('طلب لحام اترفض: الإنكودر بايظ. لازم لحام يدوي إجباري','B');S.reqCause='enc'}return}
+  if(S.encBroken){S.needForce=true;if(S.reqCause!=='enc'){log('رُفض طلب اللحام: الإنكودر تالف. يلزم لحام يدوي إجباري','B');S.reqCause='enc'}return}
   S.seq='splice';S.ph='req';S.pt=0;S.spT=0;S.waitMark=true;S.reqCause=cause;
   S.spl={t0:S.t,cause,stopAt:null,err:null,Ts:0,Tn:0,minM:S.M,forced:false,intr:null,cutOk:true};
   rec={t0:S.t,s:[],ph:[[0,'طلب اللحام']],ev:{}};
-  log(cause==='end'?'حساس نهاية البكرة شاف آخر الورق: بداية اللحام':'طلب لحام يدوي','ok');
+  log(cause==='end'?'رأى حساس نهاية البكرة نهاية الورق: بداية اللحام':'طلب لحام يدوي','ok');
 }
 function forceSplice(){
   if(S.seq==='splice')return;
@@ -607,7 +607,7 @@ function forceSplice(){
   const e=(Math.random()<.5?-1:1)*(18+Math.random()*30);
   S.spl={t0:S.t,cause:'force',stopAt:0,err:e,Ts:0,Tn:0,minM:S.M,forced:true,intr:null,cutOk:true};
   rec={t0:S.t,s:[],ph:[[0,'لحام إجباري']],ev:{stop:0}};
-  S.needForce=false;S.encBroken=false;S.acc=0;log('لحام يدوي إجباري: الورق وقف في أي مكان، اللحام هيقع برا التصميم','B');
+  S.needForce=false;S.encBroken=false;S.acc=0;log('لحام يدوي إجباري: توقف الورق في أي موضع، وسيقع اللحام خارج التصميم','B');
   if(!checkAtStop())return;
 }
 function checkAtStop(){
@@ -619,10 +619,10 @@ function checkAtStop(){
 function abortSplice(why){
   if(S.seq!=='splice')return;
   S.spl.intr=S.ph;S.lastRes={...S.spl,ok:false,why};
-  if(rec){rec.ph.push([(S.t-rec.t0)*1000,'اتقطع']);lastRec=rec;rec.end=(S.t-rec.t0)*1000;}
+  if(rec){rec.ph.push([(S.t-rec.t0)*1000,'انقطع']);lastRec=rec;rec.end=(S.t-rec.t0)*1000;}
   S.resume=(S.ph==='side'||S.ph==='part2')?'side':null;
   S.seq='alarm';S.ph=null;S.lock=true;
-  log('اللحام اتلغى','Y');
+  log('أُلغي اللحام','Y');
 }
 function phase(name,label){S.ph=name;S.pt=0;if(rec)rec.ph.push([(S.t-rec.t0)*1000,label])}
 function stepSplice(dt){
@@ -630,17 +630,17 @@ function stepSplice(dt){
   if(S.spT>30000&&S.ph){raise('intr');return}
   const vSl=SLOW;
   if(S.ph==='req'){ // web tension on, head to default position
-    if(S.pt>=150)phase('find','البحث عن نقطة الوقوف');
+    if(S.pt>=150)phase('find','البحث عن نقطة التوقف');
   }else if(S.ph==='find'){
     S.vL=Math.max(vSl,S.vL-12000*dt);S.vM=Math.max(vSl,S.vM-12000*dt);
     if(!S.run&&S.v<=0){S.vL=Math.max(S.vL,vSl)} // idle splice
     const stopPos=L+PK[set.pk].off+set.off;
-    if(S.R[S.act]<=0){S.vL=0;S.vM=0;S.spl.stopAt=S.spT;S.spl.err=(Math.random()<.5?-1:1)*(15+Math.random()*40);S.spl.forced=true;if(rec)rec.ev.stop=(S.t-rec.t0)*1000;phase('part1','الوقوف والقص');checkAtStop();return}
+    if(S.R[S.act]<=0){S.vL=0;S.vM=0;S.spl.stopAt=S.spT;S.spl.err=(Math.random()<.5?-1:1)*(15+Math.random()*40);S.spl.forced=true;if(rec)rec.ev.stop=(S.t-rec.t0)*1000;phase('part1','التوقف والقص');checkAtStop();return}
     if(S.vL<=vSl+1&&!S.waitMark&&S.enc>=stopPos){
       S.vL=0;S.vM=0;S.spl.stopAt=S.spT;S.spl.err=(S.P-(L+PK[set.pk].off))+((Math.random()-.5)*0.8);
       if(S.spl.err>L/2)S.spl.err-=L; if(S.spl.err<-L/2)S.spl.err+=L;
       if(rec)rec.ev.stop=(S.t-rec.t0)*1000;
-      phase('part1','الوقوف والقص');
+      phase('part1','التوقف والقص');
       if(!checkAtStop())return;
     }
   }else if(S.ph==='part1'){
@@ -650,7 +650,7 @@ function stepSplice(dt){
   }else if(S.ph==='side'){
     S.vL=0;S.vM=0;
     const tgt=S.act===0?POS2:0;const d=tgt-S.hx,dir=Math.sign(d),ad=Math.abs(d);
-    if(!S.spl.cutOk&&Math.abs(S.hx-(S.act===0?0:POS2))>POS2*0.35){log('الورق القديم متقصّش: الرأس اتشد بالورق وخطأ الموضع عدّى 7 مم','Y');raise('servo');return}
+    if(!S.spl.cutOk&&Math.abs(S.hx-(S.act===0?0:POS2))>POS2*0.35){log('لم يُقص الورق القديم: انشد الرأس مع الورق وتجاوز خطأ الموضع 7 مم','Y');raise('servo');return}
     const vmax=Math.min(SRV_V,Math.sqrt(2*SRV_A*ad));
     S.hv=Math.min(vmax,Math.abs(S.hv)+SRV_A*dt)*dir;
     if(ad<=Math.abs(S.hv*dt)||ad<0.3){S.hx=tgt;S.hv=0;S.spl.sideMs=S.pt;phase('part2','اللحام');}else S.hx+=S.hv*dt;
@@ -670,29 +670,29 @@ function joinWeb(){
   S.spl.joined=true;const o=other();
   const Tav=S.spl.Tn?S.spl.Ts/S.spl.Tn:S.T;
   const def=PK[set.pk].T;let q='جيد';
-  if(Tav<def-25||set.st<1400)q='ضعيف جدًا';else if(Tav<def-12||set.st<1900)q='ضعيف';else if(Tav>def+30)q='محروق';
+  if(Tav<def-25||set.st<1400)q='ضعيف جدًا';else if(Tav<def-12||set.st<1900)q='ضعيف';else if(Tav>def+30)q='محترق';
   S.spl.Tav=Tav;S.spl.q=q;
   S.prep[S.act]=false;S.act=o;S.angR=0;
   S.pts.push({at:S.Wm+(FIXED+S.Lp+S.M)*1000,q,err:S.spl.err});
 }
 function endSplice(){
   S.splices++;S.spl.total=S.spT;S.lastRes={...S.spl,ok:true};
-  if(rec){rec.ph.push([(S.t-rec.t0)*1000,'اللحام خلص']);rec.end=(S.t-rec.t0)*1000;rec.tail=1000;}
+  if(rec){rec.ph.push([(S.t-rec.t0)*1000,'انتهى اللحام']);rec.end=(S.t-rec.t0)*1000;rec.tail=1000;}
   S.seq=S.run?'run':'idle';S.ph=null;S.refill=true;S.coef=1.1;S.coefT=0;S.lastMagEdge=S.t;S.lastLoopEdge=S.t;S.reqCause='';S.resume=null;
-  log(`اللحام خلص في ${(S.spT/1000).toFixed(1)} ث. البكرة ${S.act+1} بقت شغالة`,'ok');
+  log(`انتهى اللحام في ${(S.spT/1000).toFixed(1)} ث. أصبحت البكرة ${S.act+1} هي العاملة`,'ok');
   if(S.spl.q!=='جيد')log(`جودة اللحام: ${S.spl.q}`,'B');
-  if(Math.abs(S.spl.err)>10)log(`اللحام وقع بعيد عن مكانه في التصميم بـ ${S.spl.err.toFixed(1)} مم`,'B');
+  if(Math.abs(S.spl.err)>10)log(`وقع اللحام بعيدًا عن مكانه في التصميم بمقدار ${S.spl.err.toFixed(1)} مم`,'B');
 }
 function manualSplice(){
   S.btnT=0.4;
   if(S.seq==='splice')return;
   if(S.resume==='side'&&!S.run){ // finish an interrupted splice after cut
-    if(anyY()){log('اعمل ريست الأول','Y');return}
-    S.seq='splice';S.spT=0;S.spl.intr=null;S.spl.cutOk=!F.knife||true;rec={t0:S.t,s:[],ph:[[0,'تكملة اللحام']],ev:{}};phase('side','الحركة الجانبية');S.resume=null;return}
+    if(anyY()){log('نفّذ ريست أولًا','Y');return}
+    S.seq='splice';S.spT=0;S.spl.intr=null;S.spl.cutOk=!F.knife||true;rec={t0:S.t,s:[],ph:[[0,'استكمال اللحام']],ev:{}};phase('side','الحركة الجانبية');S.resume=null;return}
   if(S.run){
     if(S.magFullT>5){raise('magNF');S.magNFT=5;return}
     requestSplice('man');
-  }else{ if(anyY()){log('اعمل ريست الأول','Y');return} requestSplice('man') }
+  }else{ if(anyY()){log('نفّذ ريست أولًا','Y');return} requestSplice('man') }
 }
 /* ---------- main step ---------- */
 function step(dt){
@@ -787,8 +787,8 @@ function step(dt){
   if(S.run&&S.v>0&&S.seq!=='splice')S.lock=false;
   if(S.btnT>0)S.btnT-=dt;
   // splice points reaching the tube
-  while(S.pts.length&&S.Wm>=S.pts[0].at){const p=S.pts.shift();S.waste+=6;log('اللحام وصل للأنبوب: 6 باكو بيترموا','i');
-    if(p.q==='ضعيف جدًا'&&S.run){log('اللحام الضعيف اتفتح في الأنبوب والورق اتقطع','Y');stopMachine('fast')}}
+  while(S.pts.length&&S.Wm>=S.pts[0].at){const p=S.pts.shift();S.waste+=6;log('وصل اللحام إلى الأنبوب: تُرمى 6 عبوات','i');
+    if(p.q==='ضعيف جدًا'&&S.run){log('انفتح اللحام الضعيف في الأنبوب وانقطع الورق','Y');stopMachine('fast')}}
   // recorder
   if(rec){const tt=(S.t-rec.t0)*1000;
     const ph=S.ph;const t2=S.pt;const st=set.st;
@@ -806,51 +806,51 @@ function pushMark(v,a){S.marks.push({v,a});if(S.marks.length>34)S.marks.shift()}
 function toggleFault(k,force){
   F[k]=force!==undefined?force:!F[k];
   const b=document.querySelector(`[data-f="${k}"]`);if(b)b.classList.toggle('on',!!F[k]);
-  if(!ch.on)log((F[k]?'عطل: ':'اتشال العطل: ')+FDEF.find(x=>x.k===k).t,F[k]?'B':'ok');
+  if(!ch.on)log((F[k]?'عطل: ':'أُزيل العطل: ')+FDEF.find(x=>x.k===k).t,F[k]?'B':'ok');
   if(k==='notPrep'&&!F[k])S.prep[other()]=true;
 }
-function prepReel(){const o=other();if(S.seq==='splice'&&S.ph!=='find'&&S.ph!=='req'){log('مينفعش تحضّر وانت بتلحم','i');return}
-  S.R[o]=REELFULL;S.prep[o]=true;if(F.notPrep)toggleFault('notPrep',false);log(`البكرة ${o+1}: اتركبت بكرة جديدة وبداية الورق اتحطت في الرأس`,'ok')}
+function prepReel(){const o=other();if(S.seq==='splice'&&S.ph!=='find'&&S.ph!=='req'){log('لا يمكن التجهيز أثناء اللحام','i');return}
+  S.R[o]=REELFULL;S.prep[o]=true;if(F.notPrep)toggleFault('notPrep',false);log(`البكرة ${o+1}: رُكّبت بكرة جديدة ووُضعت بداية الورق في الرأس`,'ok')}
 /* ---------- UI build ---------- */
 const fwrap=$('faults');
 FDEF.forEach(f=>{const b=document.createElement('button');b.dataset.f=f.k;b.innerHTML=`${f.t}<small class="en">${f.s}</small>`;b.onclick=()=>{if(ch.on&&!ch.ans){return}toggleFault(f.k)};fwrap.appendChild(b)});
-const at=$('atable');at.innerHTML='<tr><th>اللون</th><th>الإنذار</th><th>يطلع إمتى</th><th>النتيجة</th></tr>'+ADEF.map(a=>`<tr><td>${a.c==='Y'?'<span style="color:#8a5d00;font-weight:700">أصفر</span>':'<span style="color:#2a5f9e;font-weight:700">أزرق</span>'}</td><td>${a.a}<div class="en" style="font-size:10px">${a.n}</div></td><td>${a.w}</td><td>${a.e}</td></tr>`).join('');
+const at=$('atable');at.innerHTML='<tr><th>اللون</th><th>الإنذار</th><th>متى يظهر</th><th>النتيجة</th></tr>'+ADEF.map(a=>`<tr><td>${a.c==='Y'?'<span style="color:#8a5d00;font-weight:700">أصفر</span>':'<span style="color:#2a5f9e;font-weight:700">أزرق</span>'}</td><td>${a.a}<div class="en" style="font-size:10px">${a.n}</div></td><td>${a.w}</td><td>${a.e}</td></tr>`).join('');
 const LADDER=[
- {k:'idle',t:'Idle',a:'واقفة: المخزن يتملي ببطء 200 مم/ث'},
+ {k:'idle',t:'Idle',a:'متوقفة: يمتلئ المخزن ببطء 200 مم/ث'},
  {k:'run',t:'Running',a:'إنتاج: تنظيم اللوب والمخزن بالحساسات'},
  {k:'splice',t:'Splice',a:'تسلسل اللحام (أقصى 30 ث)'},
- {k:'req',sub:1,t:'طلب اللحام',a:'سلندر شد الورق يشتغل والرأس يرجع لمكانه الأساسي'},
- {k:'find',sub:1,t:'البحث عن نقطة الوقوف',a:'الموتورات تهدّي لـ 200 مم/ث وتعد نبضات الإنكودر بعد العلامة'},
- {k:'stop',sub:1,t:'الوقوف في مكان التصميم',a:'مسطرة الضغط عند 50 مللي وسلندرات القفل'},
- {k:'cut',sub:1,t:'القص',a:'سلندر القص من 200 لـ 600 مللي'},
- {k:'retract',sub:1,t:'رجوع السلندرات',a:'انتظار 400 مللي، شد الورق ماسك الطرف على البار'},
- {k:'side',sub:1,t:'الحركة الجانبية',a:'السيرفو ينقل الرأس للمحطة التانية'},
+ {k:'req',sub:1,t:'طلب اللحام',a:'يعمل سلندر شد الورق ويعود الرأس إلى مكانه الأساسي'},
+ {k:'find',sub:1,t:'البحث عن نقطة التوقف',a:'تتباطأ المحركات إلى 200 مم/ث وتعدّ نبضات الإنكودر بعد العلامة'},
+ {k:'stop',sub:1,t:'التوقف في مكان التصميم',a:'مسطرة الضغط عند 50 ملّي وسلندرات القفل'},
+ {k:'cut',sub:1,t:'القص',a:'سلندر القص من 200 إلى 600 ملّي'},
+ {k:'retract',sub:1,t:'عودة السلندرات',a:'انتظار 400 ملّي، شد الورق يمسك الطرف على البار'},
+ {k:'side',sub:1,t:'الحركة الجانبية',a:'ينقل السيرفو الرأس إلى المحطة الأخرى'},
  {k:'seal',sub:1,t:'اللحام',a:'مسطرة الضغط تكبس الورق القديم على الجديد'},
- {k:'unstick',sub:1,t:'فك اللزق والقيام البطيء',a:'نبضة 8 Hz لموتور اللوب ثم من 5 Hz ويزيد 4 Hz كل 300 مللي'},
- {k:'refill',sub:1,t:'ملء المخزن',a:'موتور المخزن أسرع من الماكينة لحد ما يتملي'},
- {k:'alarm',t:'Alarms',a:'إنذار: الموتورات واقفة لحد الريست'}];
+ {k:'unstick',sub:1,t:'فك اللصق والبدء البطيء',a:'نبضة 8 Hz لمحرك اللوب ثم من 5 Hz ويزيد 4 Hz كل 300 ملّي'},
+ {k:'refill',sub:1,t:'ملء المخزن',a:'محرك المخزن أسرع من الماكينة حتى يمتلئ'},
+ {k:'alarm',t:'Alarms',a:'إنذار: المحركات متوقفة حتى الريست'}];
 const ladEl=$('ladder');ladEl.innerHTML=LADDER.map((s,i)=>`<div data-k="${s.k}" class="${s.sub?'sub':''}"><b>${s.sub?'•':i<3?i:3}</b><span>${s.t}<small>${s.a}</small></span></div>`).join('');
 const LAMPS=[
  ['DI_AsuReel1Empty','نهاية بكرة 1',()=>S.act===0&&rad(S.R[0])<BEAM&&!F.reelPC,'bad'],
  ['DI_AsuReel2Empty','نهاية بكرة 2',()=>S.act===1&&rad(S.R[1])<BEAM&&!F.reelPC,'bad'],
- ['DI_StartPaperSplice','زرار اللحام اليدوي',()=>S.btnT>0],
+ ['DI_StartPaperSplice','زر اللحام اليدوي',()=>S.btnT>0],
  ['DO_WebTension','سلندر شد الورق',()=>S.seq==='splice'&&!(S.ph==='part2'&&S.pt>=set.st+PRESS_DLY)],
  ['DO_PressureRail','مسطرة الضغط',()=>S.seq==='splice'&&((S.ph==='part1'&&S.pt>=P1_PR&&S.pt<P1_END)||(S.ph==='part2'&&S.pt<set.st))],
  ['DO_PaperCutting','سلندر القص',()=>S.seq==='splice'&&S.ph==='part1'&&S.pt>=P1_CUT&&S.pt<P1_END],
  ['VAR_LoopMotorLockCylinder','سلندرات قفل الورق',()=>S.lock||(S.seq==='splice'&&(S.ph==='part1'||S.ph==='side'||(S.ph==='part2'&&S.pt<set.st+PRESS_DLY)))],
  ['DO_ReelBrakesPressure','فرامل البكرة',()=>S.brakeT>0],
  ['DO_PaperSpliceHeaterPower','سخان بار اللحام',()=>S.u>1],
- ['DO_FcAsuLoopEnable','تشغيل موتور اللوب',()=>S.vL>1],
+ ['DO_FcAsuLoopEnable','تشغيل محرك اللوب',()=>S.vL>1],
  ['DI_AsuLoopAdjustment','ضبط اللوب',()=>S.loopS],
- ['DI_AsuLoopEmpty','فيه ورق في اللوب',()=>S.Lp>=LOOPEMPTY],
- ['DI_AsuMagazineAdjustment','المخزن مليان',()=>S.magS],
- ['DI_AsuMagazinEmpty','المخزن فاضي',()=>S.M<MAGEMPTY,'bad'],
- ['DI_AsuAirPressure','ضغط الهوا تمام',()=>!F.air],
- ['DI_L1081','الأبواب مقفولة',()=>!F.door],
+ ['DI_AsuLoopEmpty','يوجد ورق في اللوب',()=>S.Lp>=LOOPEMPTY],
+ ['DI_AsuMagazineAdjustment','المخزن ممتلئ',()=>S.magS],
+ ['DI_AsuMagazinEmpty','المخزن فارغ',()=>S.M<MAGEMPTY,'bad'],
+ ['DI_AsuAirPressure','ضغط الهواء سليم',()=>!F.air],
+ ['DI_L1081','الأبواب مغلقة',()=>!F.door],
  ['DI_SpliceTable1/2Position','ماسك الورق في مكانه',()=>!F.hold]];
 $('lamps').innerHTML=LAMPS.map((l,i)=>`<div class="lamp" id="lp${i}"><i></i><span>${l[1]}</span><b>${l[0]}</b></div>`).join('');
 /* trend chips */
-const SER=[{k:'v',n:'سرعة الماكينة',c:'#5d6670',mx:2000},{k:'vL',n:'موتور اللوب',c:'#4f8a1e',mx:2000},{k:'vM',n:'موتور المخزن',c:'#2b5fa8',mx:2000},{k:'M',n:'ورق المخزن (م)',c:'#a66828',mx:16},{k:'T',n:'حرارة البار',c:'#e07b00',mn:100,mx:220}];
+const SER=[{k:'v',n:'سرعة الماكينة',c:'#5d6670',mx:2000},{k:'vL',n:'محرك اللوب',c:'#4f8a1e',mx:2000},{k:'vM',n:'محرك المخزن',c:'#2b5fa8',mx:2000},{k:'M',n:'ورق المخزن (م)',c:'#a66828',mx:16},{k:'T',n:'حرارة البار',c:'#e07b00',mn:100,mx:220}];
 const vis={v:1,vL:1,vM:1,M:1,T:0};
 $('chips').innerHTML=SER.map(s=>`<button data-s="${s.k}" class="${vis[s.k]?'':'off'}"><span class="dot" style="background:${s.c}"></span>${s.n}</button>`).join('');
 document.querySelectorAll('#chips button').forEach(b=>b.onclick=()=>{vis[b.dataset.s]^=1;b.classList.toggle('off',!vis[b.dataset.s])});
@@ -858,17 +858,17 @@ document.querySelectorAll('#chips button').forEach(b=>b.onclick=()=>{vis[b.datas
 function syncSet(){
   $('oT').textContent=set.T;$('oST').textContent=set.st;$('oOff').textContent=(set.off>0?'+':'')+set.off;
   $('rT').value=set.T;$('rST').value=set.st;$('rOff').value=set.off;$('selPk').value=set.pk;$('selCap').value=set.cap;
-  const p=PK[set.pk];$('pkTxt').innerHTML=`قيم البرنامج للـ <span class="en">${p.n}</span>: حرارة البار <b class="mono">${p.T}</b> °C، وقت اللحام <b class="mono">2500</b> مللي، تعويض نقطة الوقوف <b class="mono">${p.off}</b> مم، يعني الورق يقف بعد <b class="mono">${(L+p.off+set.off).toFixed(1)}</b> مم من آخر علامة.`;
+  const p=PK[set.pk];$('pkTxt').innerHTML=`قيم البرنامج لـ <span class="en">${p.n}</span>: حرارة البار <b class="mono">${p.T}</b> °C، وقت اللحام <b class="mono">2500</b> ملّي، تعويض نقطة التوقف <b class="mono">${p.off}</b> مم، أي أن الورق يتوقف بعد <b class="mono">${(L+p.off+set.off).toFixed(1)}</b> مم من آخر علامة.`;
 }
 $('rT').oninput=e=>{set.T=+e.target.value;syncSet()};
 $('rST').oninput=e=>{set.st=+e.target.value;syncSet()};
 $('rOff').oninput=e=>{set.off=+e.target.value;syncSet()};
-$('selPk').onchange=e=>{set.pk=e.target.value;set.T=PK[set.pk].T;set.st=2500;set.off=0;syncSet();log('نوع الباكو اتغير: '+PK[set.pk].n,'i')};
+$('selPk').onchange=e=>{set.pk=e.target.value;set.T=PK[set.pk].T;set.st=2500;set.off=0;syncSet();log('تغيّر نوع العبوة: '+PK[set.pk].n,'i')};
 $('selCap').onchange=e=>{set.cap=+e.target.value;syncSet()};
 $('bDef').onclick=()=>{set.T=PK[set.pk].T;set.st=2500;set.off=0;syncSet()};
 syncSet();
 $('bStart').onclick=start;$('bStop').onclick=()=>stopMachine('normal');$('bReset').onclick=resetAlarms;
-$('bNear').onclick=()=>{S.R[S.act]=Math.min(S.R[S.act],22);log('البكرة الشغالة قرّبت تخلص (22 م)','i')};
+$('bNear').onclick=()=>{S.R[S.act]=Math.min(S.R[S.act],22);log('البكرة العاملة قاربت على الانتهاء (22 م)','i')};
 $('bSplice').onclick=manualSplice;$('bPrep').onclick=prepReel;$('bForce').onclick=forceSplice;
 $('bClr').onclick=()=>{FDEF.forEach(f=>{if(F[f.k])toggleFault(f.k,false)})};
 document.querySelectorAll('[data-sp]').forEach(b=>b.onclick=()=>{simSp=+b.dataset.sp;document.querySelectorAll('[data-sp]').forEach(x=>x.classList.toggle('sel',x===b))});
@@ -884,30 +884,30 @@ $('bCh').onclick=()=>{
   start();
   const opts=[f];while(opts.length<4){const x=CHF[Math.floor(Math.random()*CHF.length)];if(!opts.includes(x))opts.push(x)}
   opts.sort(()=>Math.random()-.5);
-  $('chBox').classList.remove('hidden');$('chQ').textContent='الماكينة شغالة والبكرة قرّبت تخلص. فيه عطل واحد مستخبي، إيه هو؟';$('chAns').textContent='';
+  $('chBox').classList.remove('hidden');$('chQ').textContent='الماكينة تعمل والبكرة قاربت على الانتهاء. يوجد عطل واحد مخفي، فما هو؟';$('chAns').textContent='';
   $('chOpts').innerHTML=opts.map(k=>`<button data-o="${k}">${FDEF.find(x=>x.k===k).t}</button>`).join('');
   document.querySelectorAll('#chOpts button').forEach(b=>b.onclick=()=>{
     if(ch.ans)return;ch.ans=true;ch.n++;const right=b.dataset.o===ch.f;if(right)ch.ok++;updScore();
     document.querySelectorAll('#chOpts button').forEach(x=>x.classList.add(x.dataset.o===ch.f?'right':(x===b?'wrong':'x')));
-    $('chAns').innerHTML=(right?'صح! ':'مش ده. ')+'العطل كان: <b>'+FDEF.find(x=>x.k===ch.f).t+'</b>. '+HINT[ch.f];
+    $('chAns').innerHTML=(right?'صحيح! ':'ليس هذا. ')+'كان العطل: <b>'+FDEF.find(x=>x.k===ch.f).t+'</b>. '+HINT[ch.f];
     const fb=document.querySelector(`[data-f="${ch.f}"]`);fb.classList.add('on');ch.on=false;
   });
-  log('بدأ تحدي جديد','i');
+  log('بدأ تحدٍّ جديد','i');
 };
 const HINT={
- reelPC:'الحساس ما شافش آخر الورق، فاللحام ما اتطلبش، والبكرة خلصت لحد ما اللوب فضي ووقفت وقوف سريع.',
- notPrep:'اللحام بدأ ووقف في مكانه، وساعة الكشف لقى البكرة الجديدة مش متحضرة فطلع إنذار أصفر واللحام اتلغى.',
- air:'تحذير الهوا الأزرق بيطلع الأول، وساعة الوقوف للّحام البرنامج بيرفض يكمّل.',
- heater:'حرارة البار نزلت برا ±3 فطلع تحذير أزرق، وساعة اللحام البرنامج لغاه.',
- regPC:'علامات بتضيع (مربعات فاضية في العلامات الحقيقية) والعداد بيطلع لـ 2 ثم 12.',
- enc:'الحساس شايف علامات والإنكودر مش عادّ، فالعداد راح سالب، واللحام الأوتوماتيك اتمنع.',
- servo:'التسلسل وصل للحركة الجانبية ووقف هناك بعطل سيرفو.',
- knife:'القص اتعمل في التوقيت، بس الرأس اتشد بالورق في نص الحركة الجانبية.',
- fqL:'موتور اللوب وقف خالص، والإنذار طلع فوري.',
- magS:'حساس المخزن ما اتغيرش 8 ث، والمخزن بيفضى ببطء.',
- loopS:'حساس اللوب ما اتغيرش 10 ث، واللوب اتملى للآخر.',
- door:'تحذير الباب بعد 90 ث، وساعة اللحام اتلغى.',
- hold:'تحذير ماسك الورق أزرق من الأول، وساعة اللحام اتلغى.'};
+ reelPC:'لم يرَ الحساس نهاية الورق، فلم يُطلب اللحام، وانتهت البكرة حتى فرغ اللوب وتوقفت الماكينة توقفًا سريعًا.',
+ notPrep:'بدأ اللحام وتوقف في مكانه، وعند الفحص وجد البكرة الجديدة غير مجهّزة فظهر إنذار أصفر وأُلغي اللحام.',
+ air:'يظهر تحذير الهواء الأزرق أولًا، وعند التوقف للّحام يرفض البرنامج المتابعة.',
+ heater:'نزلت حرارة البار خارج ±3 فظهر تحذير أزرق، وعند اللحام ألغاه البرنامج.',
+ regPC:'علامات تضيع (مربعات فارغة في العلامات الحقيقية) ويرتفع العداد إلى 2 ثم 12.',
+ enc:'يرى الحساس علامات والإنكودر لا يعدّ، فأصبح العداد سالبًا، ومُنع اللحام التلقائي.',
+ servo:'وصل التسلسل إلى الحركة الجانبية وتوقف هناك بعطل سيرفو.',
+ knife:'تم القص في موعده، لكن الرأس انشد مع الورق في منتصف الحركة الجانبية.',
+ fqL:'توقف محرك اللوب تمامًا، وظهر الإنذار فورًا.',
+ magS:'لم يتغير حساس المخزن 8 ث، والمخزن يفرغ ببطء.',
+ loopS:'لم يتغير حساس اللوب 10 ث، وامتلأ اللوب تمامًا.',
+ door:'تحذير الباب بعد 90 ث، وعند اللحام أُلغي.',
+ hold:'تحذير ماسك الورق أزرق من البداية، وعند اللحام أُلغي.'};
 /* ---------- drawing ---------- */
 const cv=$('cvDia'),ctx=cv.getContext('2d');cv.width=2000;cv.height=1200;
 function box(x,y,w,h,fill,stroke='#040505',r=6,lw=1.6){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();ctx.lineWidth=lw;ctx.strokeStyle=stroke;ctx.stroke()}
@@ -956,7 +956,7 @@ function draw(){
         box(cx-16,264,32,8,F.hold?'#e0242f':'#75923b','#040505',2);
       }
     }else{circ(bx,by,13,'#99a8a8');}
-    const st=isAct?'شغالة':(prepared(i)?'متحضرة للّحام':'محتاجة تحضير');
+    const st=isAct?'تعمل':(prepared(i)?'مجهّزة للّحام':'تحتاج إلى تجهيز');
     txt(`بكرة ${i+1}: ${st}`,cx,RY+RMAX+14,{s:12.5,w:700,c:isAct?'#040505':(prepared(i)?'#1d8448':'#c41e33')});
     txt(`${S.R[i].toFixed(0)} م`,cx,RY+RMAX+29,{s:11,mono:1,c:'#5d6670'});
   }
@@ -997,18 +997,18 @@ function draw(){
   circ(520,110,11,F.enc?'#f7b5bb':'#99a8a8');
   ctx.strokeStyle='#040505';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(528,102);ctx.bezierCurveTo(560,70,600,60,600,30);ctx.stroke();
   txt('إنكودر',612,26,{s:10.5,a:'left',c:'#38424b'});
-  txt('بكرة السحب (موتور اللوب)',520,58,{s:11.5,w:700});tag('T10T0160',520,40);
+  txt('بكرة السحب (محرك اللوب)',520,58,{s:11.5,w:700});tag('T10T0160',520,40);
   ctx.beginPath();ctx.arc(520,110,40,Math.PI*1.22,Math.PI*2);ctx.strokeStyle='#a66828';ctx.lineWidth=3.5;ctx.stroke();
   // loop
   const yb=150+S.Lp/LOOPCAP*200;const lx1=560,lx2=622;
   web([[lx1,110],[lx1,yb-18],[lx1+10,yb-2],[(lx1+lx2)/2,yb+2],[lx2-10,yb-2],[lx2,yb-18],[lx2,110]]);
   const yAdj=150+LOOPADJ/LOOPCAP*200,yEm=150+LOOPEMPTY/LOOPCAP*200;
   pc(592,yAdj,S.loopS,'',1);pc(592,yEm,S.Lp>=LOOPEMPTY,'',1);
-  txt('ضبط اللوب',632,yAdj,{s:10.5,a:'left',c:'#38424b'});txt('اللوب فاضي',632,yEm,{s:10.5,a:'left',c:'#38424b'});
+  txt('ضبط اللوب',632,yAdj,{s:10.5,a:'left',c:'#38424b'});txt('اللوب فارغ',632,yEm,{s:10.5,a:'left',c:'#38424b'});
   txt('اللوب',591,yb+16,{s:11.5,w:700});
   // magazine motor roller
   circ(640,110,18,'#99a8a8',2);ctx.save();ctx.translate(640,110);ctx.rotate(S.angR*1.4);ctx.strokeStyle='#3b5959';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(-14,0);ctx.lineTo(14,0);ctx.stroke();ctx.restore();
-  txt('موتور المخزن',640,74,{s:11.5,w:700});
+  txt('محرك المخزن',640,74,{s:11.5,w:700});
   // festoon magazine
   const yd=150+S.M/MAGCAP*380;const tops=[690,750,810,870],bots=[720,780,840];
   box(676,64,208,8,'#dfe0e0','#040505',3);
@@ -1018,39 +1018,39 @@ function draw(){
   box(708,yd+14,144,8,'#3b5959','#040505',3);bots.forEach(x=>circ(x,yd,12,'#99a8a8'));
   const yFull=150+MAGFULL/MAGCAP*380,yEmp=150+MAGEMPTY/MAGCAP*380;
   pc(905,yFull,S.magS,'',1);pc(905,yEmp,S.M<MAGEMPTY,'',1);
-  txt('المخزن مليان',922,yFull,{s:10.5,a:'left',c:'#38424b'});txt('المخزن فاضي',922,yEmp,{s:10.5,a:'left',c:'#38424b'});
+  txt('المخزن ممتلئ',922,yFull,{s:10.5,a:'left',c:'#38424b'});txt('المخزن فارغ',922,yEmp,{s:10.5,a:'left',c:'#38424b'});
   ctx.save();ctx.setLineDash([3,4]);ctx.strokeStyle='#9aa5ae';ctx.beginPath();ctx.moveTo(860,yFull);ctx.lineTo(896,yFull);ctx.moveTo(860,yEmp);ctx.lineTo(896,yEmp);ctx.stroke();ctx.restore();
   txt('مخزن الورق',780,yd+40,{s:12,w:700});txt(`${S.M.toFixed(2)} م`,780,yd+56,{s:11,mono:1,c:'#5d6670'});
   // machine
   box(912,8,82,22,'#f3f5f6','#040505',5);txt('للأنبوب ↑',953,19,{s:11,w:700});
-  txt(`باكو: ${S.packs}`,948,46,{s:11,a:'right',c:'#38424b'});
+  txt(`عبوة: ${S.packs}`,948,46,{s:11,a:'right',c:'#38424b'});
   // splice point travelling
   if(S.pts.length){const p=S.pts[0];const rem=(p.at-S.Wm)/1000;
     const full=[[hx,206],B,[lx1,110],[lx1,yb],[lx2,yb],[lx2,110],...path];const tl=FIXED+S.Lp+S.M;const PL=polyLen(full);
     const d=Math.max(0,Math.min(PL,PL*(1-rem/tl)));const q=pointAt(full,d);
     ctx.save();ctx.shadowColor='#c41e33';ctx.shadowBlur=10;circ(q[0],q[1],6,'#c41e33',1.5);ctx.restore();
-    txt(`اللحام في الطريق: باقي ${rem.toFixed(1)} م للأنبوب`,700,580,{s:12,w:700,c:'#c41e33'});
+    txt(`اللحام في الطريق: باقٍ ${rem.toFixed(1)} م حتى الأنبوب`,700,580,{s:12,w:700,c:'#c41e33'});
   }
   // phase banner on canvas
   let ptxt='';if(sp){const L2=LADDER.find(x=>x.k===curSub());ptxt='اللحام: '+(L2?L2.t:'');}
-  else if(S.seq==='alarm')ptxt='إنذار: الموتورات واقفة';else if(S.run)ptxt=S.refill?'إنتاج: بيملا المخزن بعد اللحام':'إنتاج: تنظيم اللوب والمخزن';else ptxt='واقفة';
+  else if(S.seq==='alarm')ptxt='إنذار: المحركات متوقفة';else if(S.run)ptxt=S.refill?'إنتاج: يملأ المخزن بعد اللحام':'إنتاج: تنظيم اللوب والمخزن';else ptxt='متوقفة';
   box(470,486,280,40,sp?'#eef7dc':'#f6f8f9',sp?'#6f9a2c':'#c9cfd4',10);txt(ptxt,610,500,{s:13,w:700});
   if(sp)txt(`${(S.spT/1000).toFixed(2)} ث من طلب اللحام`,610,516,{s:10.5,c:'#5d6670'});
-  if(S.brakeT>0)txt('فرامل البكرة شغالة 2.5 ث',260,560,{s:11,w:700,c:'#2b5fa8'});
+  if(S.brakeT>0)txt('فرامل البكرة تعمل 2.5 ث',260,560,{s:11,w:700,c:'#2b5fa8'});
 }
 function curSub(){if(S.seq!=='splice')return S.refill&&S.run?'refill':null;const p=S.ph;
   if(p==='part1')return S.pt<P1_CUT?'stop':S.pt<P1_END?'cut':'retract';
   if(p==='part2')return S.pt<set.st?'seal':'unstick';return p}
 /* timing chart */
 function fitCanvas(c,h){const r=c.getBoundingClientRect();const d=window.devicePixelRatio||1;const w=Math.max(300,Math.round(r.width));if(c.width!==Math.round(w*d)||c.height!==Math.round(h*d)){c.width=Math.round(w*d);c.height=Math.round(h*d)}return {w,h,d}}
-const ROWS=[['mend','نهاية الورق / زرار اللحام','T10B1240 · T10S1100'],['web','شد الورق','T10K1641'],['mark','علامة التسجيل','A01K5200'],['vl','سرعة موتور اللوب','T10T0160'],['stop','نقطة الوقوف بالإنكودر','T10B9023'],['pr','مسطرة الضغط','T10K1621'],['cut','قص الورق','T10K1631'],['h1','الرأس في المحطة 1','SealingHeadPos1'],['h2','الرأس في المحطة 2','SealingHeadPos2'],['srv','حركة سيرفو الرأس','T50M9020'],['p1','تايمر الجزء 1','TMR_SplicePart1'],['p2','تايمر الجزء 2','TMR_SplicePart2']];
+const ROWS=[['mend','نهاية الورق / زر اللحام','T10B1240 · T10S1100'],['web','شد الورق','T10K1641'],['mark','علامة التسجيل','A01K5200'],['vl','سرعة محرك اللوب','T10T0160'],['stop','نقطة التوقف بالإنكودر','T10B9023'],['pr','مسطرة الضغط','T10K1621'],['cut','قص الورق','T10K1631'],['h1','الرأس في المحطة 1','SealingHeadPos1'],['h2','الرأس في المحطة 2','SealingHeadPos2'],['srv','حركة سيرفو الرأس','T50M9020'],['p1','تايمر الجزء 1','TMR_SplicePart1'],['p2','تايمر الجزء 2','TMR_SplicePart2']];
 function drawTime(){
   const c=$('cvTime');const {w,h,d}=fitCanvas(c,410);const g=c.getContext('2d');g.setTransform(d,0,0,d,0,0);g.clearRect(0,0,w,h);g.fillStyle='#fff';g.fillRect(0,0,w,h);
   const lx=170,rx=w-12,top=10,rh=26;const R=rec||lastRec;
   g.font='600 11.5px "IBM Plex Sans Arabic",sans-serif';
   ROWS.forEach((r,i)=>{const y=top+i*rh;g.fillStyle=i%2?'#fafbfb':'#f2f4f5';g.fillRect(0,y,w,rh);g.direction='rtl';g.textAlign='right';g.fillStyle='#040505';g.font='600 11.5px "IBM Plex Sans Arabic",sans-serif';g.fillText(r[1],lx-8,y+11);g.font='500 9px "JetBrains Mono",monospace';g.direction='ltr';g.fillStyle='#5d6670';g.fillText(r[2],lx-8,y+22)});
   const yAx=top+ROWS.length*rh;
-  if(!R){g.direction='rtl';g.textAlign='center';g.fillStyle='#5d6670';g.font='600 14px "IBM Plex Sans Arabic",sans-serif';g.fillText('مستني أول لحام… شغّل الإنتاج ودوس «قرّب نهاية البكرة»',(lx+rx)/2,top+5*rh);return}
+  if(!R){g.direction='rtl';g.textAlign='center';g.fillStyle='#5d6670';g.font='600 14px "IBM Plex Sans Arabic",sans-serif';g.fillText('في انتظار أول لحام… شغّل الإنتاج واضغط «قرّب نهاية البكرة»',(lx+rx)/2,top+5*rh);return}
   const tEnd=Math.max(9000,(R.s.length?R.s[R.s.length-1].t:0)+200);const X=t=>lx+(rx-lx)*t/tEnd;
   g.strokeStyle='#d5dbe0';g.lineWidth=1;g.font='500 10px "JetBrains Mono",monospace';g.fillStyle='#5d6670';g.textAlign='center';g.direction='ltr';
   for(let t=0;t<=tEnd;t+=1000){g.beginPath();g.moveTo(X(t),top);g.lineTo(X(t),yAx);g.stroke();g.fillText(t,X(t),yAx+11)}
@@ -1089,15 +1089,15 @@ function ui(){
   $('vMag').textContent=S.M.toFixed(2);$('vMag').parentNode.classList.toggle('badv',S.M<3);
   $('kR').textContent=S.R[S.act].toFixed(1);$('kV').textContent=(S.v/1000).toFixed(2);$('kL').textContent=Math.round(S.vL);$('kM').textContent=Math.round(S.vM);$('kT').textContent=S.T.toFixed(1);$('kS').textContent=S.splices;
   let tt,mm;
-  if(S.seq==='splice'){const L2=LADDER.find(x=>x.k===curSub());tt='اللحام شغال: '+(L2?L2.t:'');mm=L2?L2.a+'. الماكينة بتسحب من المخزن.':'';}
-  else if(S.seq==='alarm'||anyY()){tt='وقوف بإنذار';mm=S.resume==='side'?'الورق اتقص بس اللحام ما خلصش. شيل السبب واعمل ريست، وبعدين دوس «لحام يدوي» يكمّل.':'شيل سبب الإنذار، واعمل ريست، وبعدين شغّل. لو البكرة خلصت حضّر الجديدة واعمل لحام يدوي.'}
-  else if(S.run){tt=S.refill?'إنتاج: بيملا المخزن':'إنتاج';mm=`البكرة ${S.act+1} شغالة، باقي ${S.R[S.act].toFixed(0)} م. حساس نهاية البكرة هيطلب اللحام لوحده.`}
-  else{tt='الماكينة واقفة';mm=S.R[S.act]<=0?'البكرة الشغالة خلصت. حضّر الجديدة ودوس «لحام يدوي».':`البكرة ${S.act+1} شغالة، والبكرة ${other()+1} ${prepared(other())?'متحضرة':'محتاجة تحضير'}. دوس «تشغيل إنتاج».`}
+  if(S.seq==='splice'){const L2=LADDER.find(x=>x.k===curSub());tt='اللحام يعمل: '+(L2?L2.t:'');mm=L2?L2.a+'. تسحب الماكينة من المخزن.':'';}
+  else if(S.seq==='alarm'||anyY()){tt='توقف بإنذار';mm=S.resume==='side'?'قُصّ الورق لكن اللحام لم ينتهِ. أزل السبب ونفّذ ريست، ثم اضغط «لحام يدوي» ليكمل.':'أزل سبب الإنذار، ونفّذ ريست، ثم شغّل. إذا انتهت البكرة فجهّز الجديدة ونفّذ لحامًا يدويًا.'}
+  else if(S.run){tt=S.refill?'إنتاج: يملأ المخزن':'إنتاج';mm=`البكرة ${S.act+1} تعمل، والمتبقي ${S.R[S.act].toFixed(0)} م. سيطلب حساس نهاية البكرة اللحام تلقائيًا.`}
+  else{tt='الماكينة متوقفة';mm=S.R[S.act]<=0?'انتهت البكرة العاملة. جهّز الجديدة واضغط «لحام يدوي».':`البكرة ${S.act+1} تعمل، والبكرة ${other()+1} ${prepared(other())?'مجهّزة':'تحتاج إلى تجهيز'}. اضغط «تشغيل إنتاج».`}
   $('stTitle').textContent=tt;$('stMsg').textContent=mm;
   $('forceRow').classList.toggle('hidden',!(S.needForce||S.encBroken));
   const bn=$('banner');
-  if(S.encBroken){bn.className='banner';bn.textContent='الإنكودر بايظ: اللحام الأوتوماتيك ممنوع. اعمل «لحام يدوي إجباري» قبل ما البكرة تخلص (اللحام هيقع برا مكان التصميم).'}
-  else if(!prepared(other())&&S.seq!=='splice'){bn.className='banner info';bn.textContent=`البكرة ${other()+1} محتاجة تحضير: دوس «حضّر البكرة الجديدة» قبل ما البكرة الشغالة تخلص.`}
+  if(S.encBroken){bn.className='banner';bn.textContent='الإنكودر تالف: اللحام التلقائي ممنوع. نفّذ «لحام يدوي إجباري» قبل أن تنتهي البكرة (سيقع اللحام خارج مكان التصميم).'}
+  else if(!prepared(other())&&S.seq!=='splice'){bn.className='banner info';bn.textContent=`البكرة ${other()+1} تحتاج إلى تجهيز: اضغط «حضّر البكرة الجديدة» قبل أن تنتهي البكرة العاملة.`}
   else bn.className='banner hidden';
   // ladder
   const sub=curSub();
@@ -1105,28 +1105,28 @@ function ui(){
   // lamps
   LAMPS.forEach((l,i)=>{const on=!!l[2]();const el=$('lp'+i);el.classList.toggle('on',on&&l[3]!=='bad');el.classList.toggle('bad',on&&l[3]==='bad')});
   // alarms
-  const al=ADEF.filter(a=>act(a.k));$('alist').innerHTML=al.length?al.map(a=>`<div class="alarm ${a.c} ${AL[a.k].on?'':'ack'}">${a.a}<span class="en">${a.n}</span></div>`).join(''):'<div class="empty">مفيش إنذارات.</div>';
+  const al=ADEF.filter(a=>act(a.k));$('alist').innerHTML=al.length?al.map(a=>`<div class="alarm ${a.c} ${AL[a.k].on?'':'ack'}">${a.a}<span class="en">${a.n}</span></div>`).join(''):'<div class="empty">لا توجد إنذارات.</div>';
   // CH bar
   $('chT').textContent=S.T.toFixed(1)+' °C';$('chSP').textContent=set.T+' °C';$('chU').style.width=(S.u/65*100)+'%';
   $('chK').style.left=Math.max(0,Math.min(100,50+(S.T-set.T)/(8)*50/1))+'%';
   $('chLo').textContent=set.T-8;$('chMid').textContent=set.T;$('chHi').textContent=set.T+8;
   $('chWin').style.background=`linear-gradient(90deg,#f7b5bb 0%,#f7b5bb ${50-3/8*50}%,#d6efdc ${50-3/8*50}%,#d6efdc ${50+3/8*50}%,#f7b5bb ${50+3/8*50}%)`;
   // servo
-  $('svPos').textContent=S.hx.toFixed(0)+' mm';$('svSt').textContent=Math.abs(S.hx)<4?'1':Math.abs(S.hx-POS2)<4?'2':'بيتحرك';$('svH').style.left=(1+S.hx/POS2*97)+'%';
+  $('svPos').textContent=S.hx.toFixed(0)+' mm';$('svSt').textContent=Math.abs(S.hx)<4?'1':Math.abs(S.hx-POS2)<4?'2':'يتحرك';$('svH').style.left=(1+S.hx/POS2*97)+'%';
   // marks
   $('mrV').innerHTML=S.marks.map(m=>m.a==='extra'?'<i class="miss"></i>':'<i></i>').join('');
   $('mrA').innerHTML=S.marks.map(m=>m.a==='miss'?'<i class="miss"></i>':(m.a==='extra'?'<i class="extra"></i>':'<i></i>')).join('');
   $('accN').textContent=(S.acc>0?'+':'')+S.acc;$('accK').style.left=`calc(${50+S.acc/15*50}% - 3px)`;
   // result
   const r=S.lastRes;const rs=$('res');
-  if(!r)rs.innerHTML='<div style="grid-column:1/-1">لسه مفيش لحام.</div>';
+  if(!r)rs.innerHTML='<div style="grid-column:1/-1">لا يوجد لحام بعد.</div>';
   else{const e=r.err;const cells=[
     ['مكان اللحام عن التصميم',e==null?'--':(e>0?'+':'')+e.toFixed(1)+' mm',e!=null&&Math.abs(e)>10?'badv':(e!=null?'okv':'')],
-    ['الوقوف بعد الطلب',r.stopAt==null?'--':Math.round(r.stopAt)+' ms',''],
+    ['التوقف بعد الطلب',r.stopAt==null?'--':Math.round(r.stopAt)+' ms',''],
     ['الحركة الجانبية',r.sideMs==null?'--':Math.round(r.sideMs)+' ms',r.sideMs>1500?'badv':''],
     ['أقل ورق في المخزن',r.minM.toFixed(2)+' m',r.minM<2?'badv':''],
     ['حرارة البار وقت اللحام',r.Tav==null?'--':r.Tav.toFixed(1)+' °C',''],
-    ['النتيجة',r.ok?(r.q||'جيد'):'اتلغى',r.ok&&r.q==='جيد'?'okv':'badv']];
+    ['النتيجة',r.ok?(r.q||'جيد'):'أُلغي',r.ok&&r.q==='جيد'?'okv':'badv']];
     rs.innerHTML=cells.map(c=>`<div class="${c[2]}">${c[0]}<b>${c[1]}</b></div>`).join('')}
   $('bSplice').disabled=S.seq==='splice';
 }
@@ -1139,7 +1139,7 @@ function frame(now){
   draw();uiT+=dt;if(uiT>0.1){uiT=0;ui();drawTrend();drawTime()}
   requestAnimationFrame(frame);
 }
-log('المحاكي جاهز. البكرة 1 شغالة والبكرة 2 متحضرة.','i');
+log('المحاكي جاهز. البكرة 1 تعمل والبكرة 2 مجهّزة.','i');
 requestAnimationFrame(frame);
 
 </script>
