@@ -3,562 +3,161 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Advanced topics: star/delta, motor braking methods, the central AC compressor circuit, and the soft starter</title>
-<meta name="description" content="Lesson 9, the last in the Classic Control course: automatic star/delta with a Y-Δ timer and manual with two buttons, motor braking by DC injection, phase reversal (plugging) and an electromagnetic brake, a 24V central AC compressor control circuit (transformer, thermostat, HP/LP, anti-short-cycle timer, manual-reset alarm), and the soft starter with a bypass and fault relay. 13 exercises on the wiring board with deliberate mistakes.">
+<title>Direct reversing with double buttons | Classic Control Course | LearnElectricals</title>
+<meta name="description" content="Interactive control course: buttons, contactor, overload and motor, then the starter circuits in order, then the timer and its circuits such as star-delta. Every circuit shows power, control and the panel, and runs when you press start.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/classic-control-lab/lesson-09.html">
 <link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/classic-control-lab/lesson-09.html">
 <link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/classic-control-lab/lesson-09.html">
 <link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/classic-control-lab/lesson-09.html">
+<meta name="theme-color" content="#0b1013">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="/en/classic-control-lab/engine.css?v=20261104c">
-<link rel="stylesheet" href="/en/classic-control-lab/fx.css?v=20261030r1">
-<link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
-<link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
-<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
-<script src="/assets/lesson-light.js?v=20261029L2" defer></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=Readex+Pro:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/classic-control-lab/cc.css?v=20261113cd">
 </head>
 <body>
-<div class="app">
-<header class="top site-header">
-  <div>
-    <h1>Lesson 9: Advanced topics: star/delta, braking, the AC compressor, and the soft starter</h1>
-    <p>The last lesson in the course, with the four topics you'll meet in large panels: <b>star/delta</b> for the starting current, <b>braking</b> so the motor stops on time, the <b>central AC compressor circuit</b> on 24V with pressure switches and a delay, and the <b>soft starter</b>, which raises the voltage gently. Each topic: definition → look and symbol → simulation → hands-on wiring → questions, and every exercise has its own circuit diagram.</p>
-  </div>
-  <div class="chips">
-    <a class="btn" href="/en/classic-control-lab/index.html">‹ Lessons</a>
-    <a class="btn" href="/en/labs.html">← All courses</a><span class="bar lang-slot"></span>
-  </div>
-</header>
 
-<div id="lesson-intro" data-course="classic-control-lab" data-lesson="09"></div>
-<script src="/assets/lesson-intro-data/classic-control-lab.en.js?v=20261021r" defer></script>
-<script src="/assets/lesson-intro.js?v=20261113n" defer></script>
+<div class="wrap">
+  <header>
+    <div class="ht">
+      <h1 data-t="title"></h1>
+      <p class="sub" data-t="sub"></p>
+    </div>
+    <div class="row hdrbtns"><a id="homeA" class="hbtn" href="/" hidden></a><a id="hubA" class="hbtn" href="index.html" hidden></a>
+    <button id="langBtn" type="button" aria-label="Language">English</button></div>
+  </header>
 
-<div id="lesson"></div>
+  <nav class="units" id="units" aria-label="lessons"></nav>
 
-<p class="foot">Symbols according to <span class="mono">IEC 60617</span> and <span class="mono">NEMA ICS 19</span>, and the Y-Δ timer terminal numbers (<span class="mono">17-18 / 17-28</span>) and soft starter terminals (<span class="mono">13-14 · 23-24 · 95-96</span>) according to common catalogues. Timer and ramp times in the simulation are short so you can see the result quickly: in reality the compressor's anti-short-cycle timer is 3 minutes, and the soft starter ramp is 5–30 seconds.<br>© &#x2066;2026 LearnElectricals&#x2069;. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+  <section class="simgrid">
+    <div class="scene card">
+      <div class="scenehead">
+        <h2 id="cTitle"></h2>
+        <div class="row">
+          <div class="row" id="viewTg">
+            <button type="button" id="vDia" class="sel" data-t="vDia"></button>
+            <button type="button" id="vPan" class="sel" data-t="vPan"></button>
+          </div>
+          <span id="cState" class="pill off"></span>
+        </div>
+      </div>
+      <div id="cScene">
+        <div id="diaWrap">
+          <div class="diagrams" id="diagrams">
+            <figure><figcaption data-t="power"></figcaption><svg id="pw" role="img" aria-label="power circuit"></svg></figure>
+            <figure class="figc"><figcaption data-t="control"></figcaption><svg id="ct" role="img" aria-label="control circuit"></svg></figure>
+          </div>
+          <div class="legend">
+            <span><i style="background:var(--live)"></i><span data-t="lgLive"></span></span>
+            <span><i style="background:var(--flow)"></i><span data-t="lgFlow"></span></span>
+            <span><i style="background:var(--dead)"></i><span data-t="lgDead"></span></span>
+            <span><i style="background:var(--nrail)"></i><span data-t="lgN"></span></span>
+            <span data-t="lgTp"></span>
+          </div>
+        </div>
+        <figure id="pnFig" class="pnfig"><figcaption data-t="panelCap"></figcaption><div class="pnscroll"><svg id="pn" role="img" aria-label="panel"></svg></div></figure>
+      </div>
+      <div id="dScene" hidden><figure class="dvfig"><div class="pnscroll"><svg id="dv" role="img" aria-label="device"></svg></div></figure></div>
+    </div>
+
+    <aside class="side">
+      <div id="sideD" class="sidegrp" hidden></div>
+      <div id="sideC" class="sidegrp">
+      <div class="card">
+        <h2 data-t="mode"></h2>
+        <div class="seg">
+          <button type="button" id="mFree" class="sel" data-t="free"></button>
+          <button type="button" id="mTrace" data-t="trace"></button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span data-t="station"></span><span class="note" data-t="holdHint"></span></h2>
+        <div class="station">
+          <div class="lamps" id="lamps"></div>
+          <div class="btns" id="btns"></div>
+          <div id="selWrap" class="selw" hidden></div>
+        </div>
+        <label class="chk" style="margin-top:8px"><input type="checkbox" id="latch"><span data-t="latch"></span></label>
+      </div>
+
+      <div class="card" id="timerCard" hidden style="display:grid;gap:10px">
+        <h2 data-t="timers"></h2>
+        <div id="timerList" style="display:grid;gap:10px"></div>
+      </div>
+
+      <div class="card" id="procCard" hidden style="display:grid;gap:10px"></div>
+
+      <div class="card" style="display:grid;gap:10px">
+        <h2 data-t="supplyBox"></h2>
+        <div class="sw"><span data-t="mains"></span><button type="button" id="bMains"></button></div>
+        <div class="sw"><span data-t="q1"></span><button type="button" id="bQ1"></button></div>
+        <div class="ctl"><label for="rLoad"><span data-t="load"></span><span class="mono" id="vLoad"></span></label><input type="range" id="rLoad" min="0" max="200" step="5" value="70"></div>
+        <div class="ctl"><label for="rIr"><span data-t="ir"></span><span class="mono" id="vIr"></span></label><input type="range" id="rIr" min="4" max="16" step="0.5" value="11"><span class="note" id="irNote"></span></div>
+        <div class="ctl"><label><span data-t="heat"></span><span class="mono" id="vHeat"></span></label><div class="bar"><i id="heatBar"></i></div></div>
+        <div id="resetBtns" class="row"></div>
+        <span class="note" id="resetNote"></span>
+      </div>
+
+      <div class="card" id="faultCard">
+        <h2><span data-t="faults"></span><button type="button" id="bClear" data-t="clear" style="font-size:12px;padding:4px 10px"></button></h2>
+        <div class="flist" id="flist"></div>
+      </div>
+
+      <div class="card" id="traceCard" hidden>
+        <h2><span data-t="traceTitle"></span><span class="pill in" id="score"></span></h2>
+        <div style="display:grid;gap:8px">
+          <div class="msg in" data-t="traceIntro"></div>
+          <label for="suspect" class="note" data-t="suspect"></label>
+          <select id="suspect"></select>
+          <div class="row"><button type="button" id="bCheck" data-t="check"></button><button type="button" id="bNew" data-t="newFault"></button><button type="button" id="bShow" data-t="showAns"></button></div>
+          <div id="traceMsg"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="meter">
+          <div class="mh"><span data-t="meter"></span><button type="button" id="bProbes" data-t="meterClear"></button></div>
+          <div class="lcd" id="lcd">-- <small>V~</small></div>
+          <div class="probes"><span><i style="background:#111;border:1px solid #fff"></i>COM: <b id="pB">—</b></span><span><i style="background:#d33"></i>V: <b id="pR">—</b></span></div>
+        </div>
+        <p class="note" style="margin:8px 0 0" data-t="meterHint"></p>
+      </div>
+      </div>
+    </aside>
+
+    <div class="below">
+      <div id="belowD" class="sidegrp" hidden></div>
+      <div id="belowC" class="sidegrp">
+      <div class="tiles" id="tiles">
+        <div class="tile"><span class="k" data-t="tMotor"></span><span class="v txt" id="tMotor"></span></div>
+        <div class="tile"><span class="k" data-t="tSpeed"></span><span class="v" id="tSpeed"></span></div>
+        <div class="tile"><span class="k" data-t="tCur"></span><span class="v" id="tCur"></span></div>
+        <div class="tile"><span class="k" data-t="tHeat"></span><span class="v" id="tHeat"></span></div>
+        <div class="tile"><span class="k" data-t="tCtrl"></span><span class="v txt" id="tCtrl"></span></div>
+        <div class="tile" id="tProcW" hidden><span class="k" id="tProcK"></span><span class="v txt" id="tProc"></span></div>
+      </div>
+      <div class="c2">
+        <div class="card"><h2 data-t="steps"></h2><ol class="steps" id="steps"></ol></div>
+        <div class="card"><h2 data-t="log"></h2><ul class="log" id="log"></ul></div>
+      </div>
+      <div class="card"><h2 data-t="devices"></h2><div class="tbl"><table><thead><tr><th data-t="thTag"></th><th data-t="thDesc"></th><th data-t="thState"></th></tr></thead><tbody id="devs"></tbody></table></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="learn">
+    <div class="card"><h2 data-t="explain"></h2><div id="explain"></div></div>
+    <div style="display:grid;gap:16px">
+      <div class="card"><h2 data-t="challenges"></h2><ul class="chal" id="chal"></ul></div>
+      <div class="card"><h2 data-t="quiz"></h2><div class="quiz" id="quiz"></div></div>
+    </div>
+  </section>
+  <nav class="row" id="pager" style="justify-content:space-between"></nav>
 </div>
-<script src="/site-config.js?v=20261021v"></script>
-<script src="/assets/i18n.js?v=20261021w"></script>
-<script src="/assets/i18n-en.js?v=20261113jk"></script>
-<script src="/assets/next-hint.js?v=20261021nh"></script>
-<script src="/assets/real-art.js?v=20261030h1"></script>
-<script src="/en/classic-control-lab/engine.js?v=20261104c"></script>
-<script src="/en/classic-control-lab/fx.js?v=20261030r1"></script>
-<script>
-(function(){
-/* lesson-09 exercise data: star/delta (sd1–sd4), braking (br1–br3), A/C compressor (ac1–ac3), soft starter (ss1–ss3). Embedded by build9.sh; also loaded by the Node tests. */
-const G   = {id:'G', type:'supply3P', name:'supply'};
-const Q3  = (label) => ({id:'Q1', type:'mcb', cfg:{poles:3, label:label || 'C16'}, name:'power breaker'});
-const F1  = {id:'F1', type:'mcb', cfg:{poles:1, label:'C2'}, name:'control breaker'};
-const PB  = (id, color, label, blocks) => ({id, type:'pb', cfg:{color, label, blocks:blocks || [color === 'red' ? 'NC' : 'NO']}});
-const KM  = (id, aux, name, extra) => ({id, type:'contactor', cfg:Object.assign({v:230, aux:aux || ['NO','NC']}, extra || {}), name:name || 'contactor'});
-const OL  = (Ir, o) => ({id:'F2', type:'ol', cfg:Object.assign({Ir, lo:4, hi:6.5, model:'LRD10', range:'4-6 A'}, o || {}), name:'Overload'});
-const MOT = (id, name, o) => ({id, type:'motor', cfg:Object.assign({term:3, kW:2.2, In:4.9, look:'motor'}, o || {}), name:name || 'motor'});
-const M6  = {id:'M1', type:'motor', cfg:{term:6, kW:7.5, In:15, vD:400, vY:690, cosf:0.85, rpm:1455, tStart:1.5, load:0.8, model:'1LE1'}, name:'Motor 7.5 kW (400Δ/690Y)'};
-const lamp = (id, color, name, v) => ({id, type:'lamp', cfg:{color, v:v || 230}, name});
-const X1  = {id:'X1', type:'tb', cfg:{n:6, bridges:[[1,2,3],[4,5,6]], labels:{1:'L',2:'L',3:'L',4:'N',5:'N',6:'N'}}, name:'Terminal block (L bar and N bar)'};
-const X24 = {id:'X1', type:'tb', cfg:{n:6, bridges:[[1,2,3],[4,5,6]], labels:{1:'24V',2:'24V',3:'24V',4:'0V',5:'0V',6:'0V'}}, name:'Terminal block (24V bar and 0V bar)'};
-const S0 = PB('S0', 'red', 'STOP'), S1 = PB('S1', 'green', 'START');
-const off = ids => { const o = {}; ids.forEach(i => o[i] = 0); return o; };
-// seq cases: a key missing from a case keeps the previous case's expectation (the first case lists every output)
-const SEQ = list => { let prev = {}; return list.map(c => { const e = Object.assign({}, prev, c.expect); prev = e; return Object.assign({}, c, {expect:e}); }); };
-const HOLD = (pb, km) => [[km+':13', pb+':13'], [km+':14', pb+':14']];
-const FEED_OL = [['G:L1','F1:1'],['F1:2','F2:95'],['F2:96','S0:11'],['S0:12','X1:1a'],['G:N','X1:4a']];
-// 3-phase power: Q1 → KM1 → F2 → motor (3 terminals)
-const PWR_DOL = [['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','KM1:1'],['Q1:4','KM1:3'],['Q1:6','KM1:5'],['KM1:2','F2:1'],['KM1:4','F2:3'],['KM1:6','F2:5'],['F2:2','M1:U'],['F2:4','M1:V'],['F2:6','M1:W']];
-const PWR_REV = [['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','KM1:1'],['Q1:4','KM1:3'],['Q1:6','KM1:5'],['KM1:1','KM2:1'],['KM1:3','KM2:3'],['KM1:5','KM2:5'],['KM1:2','F2:1'],['KM1:4','F2:3'],['KM1:6','F2:5'],['KM2:2','F2:5'],['KM2:4','F2:3'],['KM2:6','F2:1'],['F2:2','M1:U'],['F2:4','M1:V'],['F2:6','M1:W']];
-// star/delta power: Q1 → KM1 (main) → F2 (in the phase line) → U1 V1 W1 ; Q1 → KM3 (delta) → W2 U2 V2 (the cross) ; KM2 (star) joins W2 U2 V2 through its bridged 2-4-6
-const PWR_SD = [['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','KM1:1'],['Q1:4','KM1:3'],['Q1:6','KM1:5'],['Q1:2','KM3:1'],['Q1:4','KM3:3'],['Q1:6','KM3:5'],
-  ['KM1:2','F2:1'],['KM1:4','F2:3'],['KM1:6','F2:5'],['F2:2','M1:U1'],['F2:4','M1:V1'],['F2:6','M1:W1'],
-  ['KM3:2','M1:W2'],['KM3:4','M1:U2'],['KM3:6','M1:V2'],['KM2:1','M1:W2'],['KM2:3','M1:U2'],['KM2:5','M1:V2'],['KM2:2','KM2:4'],['KM2:4','KM2:6']];
-const PWR_SD_STEPS = ["L1 L2 L3 → Q1 1/3/5","Q1 2/4/6 → KM1 and KM3 1/3/5","KM1 2/4/6 → F2 1/3/5","F2 2/4/6 → U1 V1 W1","KM3:2 → W2, KM3:4 → U2, KM3:6 → V2","KM2:1 → W2, KM2:3 → U2, KM2:5 → V2","Star point: KM2:2 → KM2:4 → KM2:6"];
-const SD_DEVS = (mech) => [G, Q3('C32'), F1, S0, S1, KM('KM1', ['NO','NO'], 'Main contactor', {model:'MC-18b', ac3:'18A · 7.5kW'}), KM('KM2', ['NO','NC'], 'Star contactor', mech ? {mech:'KM3'} : {}), KM('KM3', ['NO','NC'], 'Delta contactor', mech ? {mech:'KM2'} : {}), {id:'KT', type:'timer', cfg:{mode:'sd', t:5, model:'RE22R Y-Δ', range:'1–30 s'}, name:'Star/delta timer'}, OL(8.7, {lo:7, hi:10, model:'LRD14', range:'7-10 A'}), M6, lamp('H1', 'green', 'running'), lamp('H2', 'amber', 'star'), lamp('H3', 'blue', 'delta'), X1];
-const SD_CTL = FEED_OL.concat([['X1:1b','S1:13'],['S1:14','KM1:A1']], HOLD('S1', 'KM1'), [['KM1:A2','X1:4b'],['KM1:A1','KT:A1'],['KT:A2','X1:5a'],['KT:A1','H1:X1'],['H1:X2','X1:4b'],
-  ['X1:2a','KT:17'],['KT:18','KM3:21'],['KM3:22','KM2:A1'],['KM2:A2','X1:5b'],['KM2:A1','H2:X1'],['H2:X2','X1:5b'],
-  ['KT:28','KM2:21'],['KM2:22','KM3:A1'],['KM3:A2','X1:6a'],['KM3:A1','H3:X1'],['H3:X2','X1:6a']]);
-const SD_CASES = SEQ([
-  {label:'nothing pressed', set:{}, expect:{M1:0, KM1:0, KM2:0, KM3:0, H1:0, H2:0, H3:0}},
-  {label:'START pressed', set:{S1:{p:1}}, expect:{M1:'Y', KM1:1, KM2:1, KM3:0, H1:1, H2:1, H3:0}},
-  {label:'Released START (the timer is counting)', set:{S1:{p:0}}, expect:{M1:'Y', KM1:1, KM2:1, KM3:0, H1:1, H2:1, H3:0}},
-  {label:'After 4 seconds (still star)', set:{}, wait:4, expect:{M1:'Y', KM1:1, KM2:1, KM3:0, H2:1, H3:0}},
-  {label:'After the time t=5 s (delta)', set:{}, wait:1.5, expect:{M1:'D', KM1:1, KM2:0, KM3:1, H1:1, H2:0, H3:1}},
-  {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, KM1:0, KM2:0, KM3:0, H1:0, H2:0, H3:0}},
-  {label:'STOP released', set:{S0:{p:0}}, expect:{M1:0, KM1:0, KM2:0, KM3:0}}]);
-const SD_SHORT = "Interlock missing: KM2 through KM3 21-22, and KM3 through KM2 21-22.";
 
-const L9EX = {
-  /* ------------------------------------------------ 1. star / delta */
-  sd1:{story:{icon:'⭐', text:"Brick plant: a 15 kW mixer starts in star, runs in delta.", ask:""}, machine:'gauge', title:'Automatic star/delta with a Y-Δ timer + lamps', short:'Automatic star/delta',
-    goal:"Starts in star; switches to delta by itself.",
-    idea:"KT 17-18 for star KM2, 17-28 for delta KM3, NC interlock.",
-    steps:{power:PWR_SD_STEPS, control:["L1 → F1 → F2 95-96 → S0 → L bar","N → N bar (X1:4)","L bar → S1:13, and S1:14 → KM1:A1","Hold-in: KM1:13 → S1:13, KM1:14 → S1:14","KT:A1 and H1:X1 → KM1:A1","Star: L bar → KT:17, KT:18 → KM3:21","KM3:22 → KM2:A1, and H2 on KM2:A1","Delta: KT:28 → KM2:21, KM2:22 → KM3:A1","H3 on KM3:A1","Every A2 and X2 → N bar"]},
-    tip:"",
-    devices:SD_DEVS(true), solution:PWR_SD.concat(SD_CTL), seq:true, cases:SD_CASES, shortMsg:SD_SHORT,
-    patterns:[{sig:{KM2:'0000000'}, msg:"KM2 never pulls in: L bar → KT:17, KT:18 → KM3:21 → KM2:A1."}, {sig:{KM3:'0000000'}, msg:"KM3 never pulls in: KT:28 → KM2:21, and KM2:22 → KM3:A1."}, {sig:{KM2:'0111100'}, msg:"KM2 doesn't drop after the time: its coil from KT:18, not the L bar."}],
-    okMsg:"Star current is a third of delta; the change-over is automatic."},
-  sd2:{story:{icon:'⭐', text:"Irrigation pump without a timer: star on one button, delta on another.", ask:""}, machine:'gauge', title:'Manual star/delta with two buttons (star, then delta)', short:'Manual star/delta',
-    goal:"Star button starts; delta button switches over.",
-    idea:"The delta button's NC cuts star; its NO starts delta.",
-    steps:{power:PWR_SD_STEPS, control:["L1 → F1 → F2 95-96 → S0 → L bar","N → N bar (X1:4)","Star: L bar → S1:13, S1:14 → S2:21","S2:22 → KM3:21, and KM3:22 → KM2:A1","Hold-in: KM2:13 → S1:13, KM2:14 → S1:14","Main: L bar → KM2:33, KM2:34 → KM1:A1","Hold-in: KM1:13 → KM2:33, KM1:14 → KM2:34","Delta: L bar → KM1:23, KM1:24 → S2:13","S2:14 → KM2:21, and KM2:22 → KM3:A1","Hold-in: KM3:13 → S2:13, KM3:14 → S2:14","H1 on KM1:24, and H2 on KM2:A1","H3 on KM3:A1","Every A2 and X2 → N bar"]},
-    tip:"",
-    devices:[G, Q3('C32'), F1, S0, PB('S1', 'green', 'Star Y'), PB('S2', 'black', 'Delta Δ', ['NO','NC']), KM('KM1', ['NO','NO'], 'Main contactor', {model:'MC-18b', ac3:'18A · 7.5kW'}), KM('KM2', ['NO','NC','NO'], 'Star contactor', {mech:'KM3'}), KM('KM3', ['NO','NC'], 'Delta contactor', {mech:'KM2'}), OL(8.7, {lo:7, hi:10, model:'LRD14', range:'7-10 A'}), M6, lamp('H1', 'green', 'running'), lamp('H2', 'amber', 'star'), lamp('H3', 'blue', 'delta'), X1],
-    solution:PWR_SD.concat(FEED_OL, [['X1:1b','S1:13'],['KM2:13','S1:13'],['S1:14','S2:21'],['KM2:14','S1:14'],['S2:22','KM3:21'],['KM3:22','KM2:A1'],['KM2:A2','X1:4b'],['KM2:A1','H2:X1'],['H2:X2','X1:4b'],
-      ['X1:2a','KM2:33'],['KM2:34','KM1:A1'],['KM1:13','KM2:33'],['KM1:14','KM2:34'],['KM1:A2','X1:5a'],
-      ['X1:2b','KM1:23'],['KM1:24','S2:13'],['KM3:13','S2:13'],['S2:14','KM2:21'],['KM3:14','S2:14'],['KM2:22','KM3:A1'],['KM3:A2','X1:5b'],['KM3:A1','H3:X1'],['H3:X2','X1:5b'],['KM1:24','H1:X1'],['H1:X2','X1:6a']]),
-    seq:true, cases:SEQ([
-      {label:'nothing pressed', set:{}, expect:{M1:0, KM1:0, KM2:0, KM3:0, H1:0, H2:0, H3:0}},
-      {label:'“Delta” pressed and the motor stopped', set:{S2:{p:1}}, expect:{M1:0, KM1:0, KM2:0, KM3:0}},
-      {label:'Released “Delta”', set:{S2:{p:0}}, expect:{M1:0, KM3:0}},
-      {label:'“Star” pressed', set:{S1:{p:1}}, expect:{M1:'Y', KM1:1, KM2:1, KM3:0, H2:1, H3:0, H1:1}},
-      {label:'Released “Star”', set:{S1:{p:0}}, expect:{M1:'Y', KM1:1, KM2:1, KM3:0, H2:1}},
-      {label:'“Delta” pressed', set:{S2:{p:1}}, expect:{M1:'D', KM1:1, KM2:0, KM3:1, H2:0, H3:1}},
-      {label:'Released “Delta”', set:{S2:{p:0}}, expect:{M1:'D', KM1:1, KM2:0, KM3:1, H3:1}},
-      {label:'“Star” pressed while the motor is in delta', set:{S1:{p:1}}, expect:{M1:'D', KM2:0, KM3:1}},
-      {label:'Released “Star”', set:{S1:{p:0}}, expect:{M1:'D', KM2:0}},
-      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, KM1:0, KM2:0, KM3:0, H1:0, H2:0, H3:0}},
-      {label:'STOP released', set:{S0:{p:0}}, expect:{M1:0, KM1:0, KM2:0, KM3:0}}]),
-    shortMsg:"Interlock missing: S2 21-22 and KM3 21-22 in the star line.",
-    patterns:[{sig:{KM3:'01?????????'}, msg:"Delta runs with the motor stopped: the delta line starts at KM1 23-24."}, {sig:{KM2:'00011111???'}, msg:"Star doesn't drop on the delta button: the star line goes through S2 21-22."}, {sig:{KM1:'00011100000'}, msg:"KM1 drops with star: KM1 hold-in 13-14 on KM2 33-34 is missing."}],
-    okMsg:"Wait for the motor to reach speed, then press delta."},
-  sd3:{story:{icon:'🔧', text:"Fault report: «it starts straight in delta and trips the breaker».", ask:""}, machine:'gauge', title:'Mistake: star jumpers on the wrong terminals (the motor starts straight in delta)', short:'Mistake: wrong star jumpers',
-    goal:"Start in star, then delta after the time.",
-    idea:"KM2 is wired like a delta contactor, with no star point.",
-    steps:["Power up, press START: delta from the start.","Power off, remove KM2's top and bottom wires.","KM2:1 → W2, KM2:3 → U2, KM2:5 → V2","Star point: KM2:2 → KM2:4 → KM2:6","Power up: star, then delta after the time."],
-    tip:"",
-    devices:SD_DEVS(true),
-    preset:PWR_SD.filter(w => !/^KM2:/.test(w[0])).concat([['KM3:1','KM2:1'],['KM3:3','KM2:3'],['KM3:5','KM2:5'],['KM2:2','M1:W2'],['KM2:4','M1:U2'],['KM2:6','M1:V2']], SD_CTL),
-    solution:PWR_SD.concat(SD_CTL), seq:true, cases:SD_CASES, shortMsg:SD_SHORT,
-    diagnose(byId, W){ const has = (a, b) => W.some(w => (w.a === a && w.b === b) || (w.a === b && w.b === a)); const bridged = has('KM2:2', 'KM2:4') || has('KM2:4', 'KM2:6') || has('KM2:2', 'KM2:6'); const fed = W.some(w => [w.a, w.b].some(t => /^KM2:[135]$/.test(t)) && [w.a, w.b].some(t => /^(KM3|KM1|Q1):[1-6]$/.test(t))); if (fed || (!bridged && W.some(w => [w.a, w.b].some(t => /^KM2:[2-6]$/.test(t)) && [w.a, w.b].some(t => /^M1:/.test(t))))) return 'KM2 is wired like delta: W2 U2 V2 on KM2:1/3/5, bridge 2-4-6.'; return ''; },
-    okMsg:"KM2 now only makes the star point."},
-  sd4:{story:{icon:'💥', text:"A short at change-over: the interlock is missing.", ask:""}, machine:'gauge', title:'Mistake: the interlock between KM2 and KM3 is missing (short circuit and the breaker trips)', short:'Mistake: Y/Δ interlock missing',
-    goal:"KM2 drops before KM3 pulls in.",
-    idea:"KM2 fed from the L bar and KM3 from KT:28, no NC.",
-    steps:["Power up, START, wait: short, Q1 trips.","Power off, remove the wrong KM2 and KM3 coil wires.","KT:18 → KM3:21, and KM3:22 → KM2:A1","KT:28 → KM2:21, and KM2:22 → KM3:A1","Reset Q1 and power up again."],
-    tip:"",
-    devices:SD_DEVS(false),
-    preset:PWR_SD.concat(FEED_OL, [['X1:1b','S1:13'],['S1:14','KM1:A1']], HOLD('S1', 'KM1'), [['KM1:A2','X1:4b'],['KM1:A1','KT:A1'],['KT:A2','X1:5a'],['KT:A1','H1:X1'],['H1:X2','X1:4b'],
-      ['X1:2a','KT:17'],['X1:2b','KM2:A1'],['KM2:A2','X1:5b'],['KM2:A1','H2:X1'],['H2:X2','X1:5b'],
-      ['KT:28','KM3:A1'],['KM3:A2','X1:6a'],['KM3:A1','H3:X1'],['H3:X2','X1:6a']]),
-    solution:PWR_SD.concat(SD_CTL), seq:true, cases:SD_CASES, shortMsg:SD_SHORT,
-    okMsg:"Each one now blocks the other with its NC."},
-
-  /* ------------------------------------------------ 2. braking */
-  br1:{story:{icon:'🛑', text:"Circular saw: stop quickly with DC injection after STOP.", ask:""}, machine:'gauge', title:'DC injection braking with contactor KM4 and a timer after STOP', short:'DC braking',
-    goal:"After STOP, KM4 injects DC and the motor stops.",
-    idea:"Off-delay KT with KM1; KT 15-18 → KM1 NC → KM4.",
-    steps:{"power":["L1 L2 L3 → Q1 1/3/5","Q1 2/4/6 → KM1 1/3/5","KM1 2/4/6 → F2 1/3/5","F2 2/4/6 → M1 U V W","V1:DC+ → KM4:1, and KM4:2 → M1:U","V1:DC- → KM4:3, and KM4:4 → M1:V"],"control":["L1 → F1 → F2 95-96 → S0 → L bar","N → N bar (X1:4)","L bar → S1:13, S1:14 → KM4:21","KM4:22 → KM1:A1, KM1 hold-in 13-14 on S1","KT:A1 and H1:X1 → KM1:A1","Braking: F2:96 → KT:15, KT:18 → KM1:21","KM1:22 → KM4:A1, and H2 on KM4:A1","Rectifier: KT:15 → KM4:13, KM4:14 → V1:AC1","V1:AC2 → N bar","Every A2 and X2 → N bar"]},
-    tip:"",
-    devices:[G, Q3('C16'), F1, S0, S1, KM('KM1', ['NO','NC'], 'Run contactor'), KM('KM4', ['NO','NC'], 'Braking contactor', {model:'MC-9b'}), {id:'KT', type:'timer', cfg:{mode:'off', t:2}, name:'Off-delay timer'}, {id:'V1', type:'rectifier', cfg:{}, name:'Braking rectifier'}, OL(4.9), MOT('M1', 'motor', {coast:6, tBrake:0.8}), lamp('H1', 'green', 'running'), lamp('H2', 'blue', 'DC braking'), X1],
-    solution:PWR_DOL.concat([['V1:DC+','KM4:1'],['KM4:2','M1:U'],['V1:DC-','KM4:3'],['KM4:4','M1:V']], FEED_OL, [['X1:1b','S1:13'],['S1:14','KM4:21'],['KM4:22','KM1:A1']], HOLD('S1', 'KM1'), [['KM1:A2','X1:4b'],['KM1:A1','KT:A1'],['KT:A2','X1:5a'],['KT:A1','H1:X1'],['H1:X2','X1:4b'],
-      ['F2:96','KT:15'],['KT:18','KM1:21'],['KM1:22','KM4:A1'],['KM4:A2','X1:5b'],['KM4:A1','H2:X1'],['H2:X2','X1:5b'],['KT:15','KM4:13'],['KM4:14','V1:AC1'],['V1:AC2','X1:6a']]),
-    seq:true, cases:SEQ([
-      {label:'nothing pressed', set:{}, expect:{M1:0, KM1:0, KM4:0, H1:0, H2:0}},
-      {label:'START pressed', set:{S1:{p:1}}, expect:{M1:1, KM1:1, KM4:0, H1:1, H2:0}},
-      {label:'Released START, after two seconds (full speed)', set:{S1:{p:0}}, wait:2, expect:{M1:1, KM1:1, KM4:0, H1:1}},
-      {label:'STOP pressed (after 0.3 s)', set:{S0:{p:1}}, wait:0.3, expect:{M1:'B', KM1:0, KM4:1, H1:0, H2:1}},
-      {label:'Released STOP (after one second)', set:{S0:{p:0}}, wait:1, expect:{M1:'S', KM4:1, H2:1}},
-      {label:'After the timer\'s time (two seconds)', set:{}, wait:2.2, expect:{M1:'S', KM1:0, KM4:0, H2:0}},
-      {label:'START again', set:{S1:{p:1}}, expect:{M1:1, KM1:1, KM4:0, H1:1, H2:0}}]),
-    shortMsg:"KM4 must go through KM1's NC, and KM1 through KM4's NC.",
-    patterns:[{sig:{KM4:'0000000'}, msg:"KM4 never pulls in: F2:96 → KT:15, KT:18 → KM1:21 → KM4."}, {sig:{KM4:'0000001'}, msg:"KM4 pulls in with START: use KM1 21-22 (NC), not NO."}],
-    okMsg:"Set just enough time to stop: DC heats the windings."},
-  br2:{story:{icon:'🛑', text:"Packing machine: stop at once with a short phase reversal.", ask:""}, machine:'gauge', title:'Phase-reversal braking (plugging) with a short pulse timer', short:'Plugging braking',
-    goal:"After STOP, KM2 reverses for a second, then drops.",
-    idea:"Off-delay KT with KM1; KT 15-18 → KM1 NC → KM2.",
-    steps:{"power":["L1 L2 L3 → Q1 1/3/5","Q1 2/4/6 → KM1 1/3/5","Bridges KM1 1/3/5 → KM2 1/3/5","KM1 2/4/6 → F2 1/3/5","KM2:2 → F2:5, KM2:4 → F2:3, KM2:6 → F2:1","F2 2/4/6 → M1 U V W"],"control":["L1 → F1 → F2 95-96 → S0 → L bar","N → N bar (X1:4)","L bar → S1:13, S1:14 → KM2:21","KM2:22 → KM1:A1, KM1 hold-in 13-14 on S1","KT:A1 and H1:X1 → KM1:A1","Reverse: F2:96 → KT:15, KT:18 → KM1:21","KM1:22 → KM2:A1, and H2 on KM2:A1","Every A2 and X2 → N bar"]},
-    tip:"",
-    devices:[G, Q3('C16'), F1, S0, S1, KM('KM1', ['NO','NC'], 'Forward contactor', {mech:'KM2'}), KM('KM2', ['NO','NC'], 'Reverse contactor (braking)', {mech:'KM1'}), {id:'KT', type:'timer', cfg:{mode:'off', t:1}, name:'Off-delay timer'}, OL(4.9), MOT('M1', 'motor', {coast:6}), lamp('H1', 'green', 'running forward'), lamp('H2', 'amber', 'Reverse braking'), X1],
-    solution:PWR_REV.concat(FEED_OL, [['X1:1b','S1:13'],['S1:14','KM2:21'],['KM2:22','KM1:A1']], HOLD('S1', 'KM1'), [['KM1:A2','X1:4b'],['KM1:A1','KT:A1'],['KT:A2','X1:5a'],['KT:A1','H1:X1'],['H1:X2','X1:4b'],
-      ['F2:96','KT:15'],['KT:18','KM1:21'],['KM1:22','KM2:A1'],['KM2:A2','X1:5b'],['KM2:A1','H2:X1'],['H2:X2','X1:5b']]),
-    seq:true, cases:SEQ([
-      {label:'nothing pressed', set:{}, expect:{M1:0, KM1:0, KM2:0, H1:0, H2:0}},
-      {label:'START pressed, after 1.5 s', set:{S1:{p:1}}, wait:1.5, expect:{M1:'F', KM1:1, KM2:0, H1:1}},
-      {label:'START released', set:{S1:{p:0}}, expect:{M1:'F', KM1:1, KM2:0}},
-      {label:'STOP pressed (after 0.4 s: the reverse pulse)', set:{S0:{p:1}}, wait:0.4, expect:{M1:'R', KM1:0, KM2:1, H1:0, H2:1}},
-      {label:'Released STOP, after 1.5 s (the pulse is over)', set:{S0:{p:0}}, wait:1.6, expect:{M1:'S', KM1:0, KM2:0, H2:0}},
-      {label:'START again', set:{S1:{p:1}}, wait:0.3, expect:{M1:'F', KM1:1, KM2:0, H1:1, H2:0}}]),
-    shortMsg:"KM2 must go through KM1's NC, and KM1 through KM2's NC.",
-    patterns:[{sig:{KM2:'000000'}, msg:"KM2 never pulls in: F2:96 → KT:15, KT:18 → KM1:21 → KM2."}, {sig:{KM2:'011000'}, msg:"KM2 pulls in with KM1: the reverse line goes through KM1's NC, not NO."}],
-    okMsg:"The harshest, fastest braking; used with a zero-speed switch."},
-  br3:{story:{icon:'🏗️', text:"Hoist: the brake must hold by itself if power is lost.", ask:""}, machine:'hoist', title:'Electromagnetic brake (hoist): the coil releases the brake from a KM1 contact', short:'Mechanical brake (hoist)',
-    goal:"KM1 in: brake opens. KM1 out: it closes.",
-    idea:"Brake coil Y1 fed from KM1 23-24 (NO).",
-    steps:{"power":["L1 L2 L3 → Q1 1/3/5","Q1 2/4/6 → KM1 1/3/5","KM1 2/4/6 → F2 1/3/5","F2 2/4/6 → M1 U V W"],"control":["L1 → F1 → F2 95-96 → S0 → L bar","N → N bar (X1:4)","L bar → S1:13, and S1:14 → KM1:A1","Hold-in: KM1:13 → S1:13, KM1:14 → S1:14","H1 on KM1:A1","Brake: L bar → KM1:23, KM1:24 → Y1:A1","Every A2 and X2 → N bar"]},
-    tip:"",
-    devices:[G, Q3('C16'), F1, S0, PB('S1', 'green', 'Up'), KM('KM1', ['NO','NO'], 'Hoist contactor'), OL(4.9), MOT('M1', 'Hoist motor', {coast:6}), {id:'Y1', type:'brake', cfg:{motor:'M1'}, name:'Hoist brake'}, lamp('H1', 'green', 'running'), X1],
-    solution:PWR_DOL.concat(FEED_OL, [['X1:1b','S1:13'],['S1:14','KM1:A1']], HOLD('S1', 'KM1'), [['KM1:A2','X1:4b'],['KM1:A1','H1:X1'],['H1:X2','X1:4b'],['X1:2a','KM1:23'],['KM1:24','Y1:A1'],['Y1:A2','X1:5a']]),
-    seq:true, cases:SEQ([
-      {label:'Nothing pressed (the brake is closed)', set:{}, expect:{M1:'S', KM1:0, Y1:0}},
-      {label:'“Up” pressed', set:{S1:{p:1}}, expect:{M1:1, KM1:1, Y1:1, H1:1}},
-      {label:'Released the button, after 1.2 s', set:{S1:{p:0}}, wait:1.2, expect:{M1:1, KM1:1, Y1:1}},
-      {label:'STOP pressed (after 0.3 s)', set:{S0:{p:1}}, wait:0.3, expect:{M1:'S', KM1:0, Y1:0, H1:0}},
-      {label:'STOP released', set:{S0:{p:0}}, expect:{M1:'S', KM1:0, Y1:0}}]),
-    patterns:[{sig:{Y1:'11111'}, msg:"The brake is always open: Y1 must come from KM1 23-24, not the L bar."}, {sig:{Y1:'00000'}, msg:"The brake never opens: Y1:A1 → KM1:24, and Y1:A2 → N."}],
-    okMsg:"The brake closes on any stop or power loss."},
-
-  /* ------------------------------------------------ 3. A/C compressor */
-  ac1:{story:{icon:'❄️', text:"Mall air conditioning: the compressor follows the thermostat, protected by pressure.", ask:""}, machine:'compressor', title:'A 24V central AC compressor control circuit: thermostat + HP/LP + anti-short-cycle timer', short:'AC compressor (complete)',
-    goal:"Thermostat calls; after the delay, compressor and fan run.",
-    idea:"24V safety chain: B1 → HP NC → LP NC → 95-96 → KT.",
-    steps:{"power":["L1 L2 L3 → Q1 1/3/5","Q1 2/4/6 → KM1 and KM2 1/3/5","KM1 2/4/6 → F2 1/3/5","F2 2/4/6 → M1, and KM2 2/4/6 → M2"],"control":["L1 → F1:1, and F1:2 → T1:H1, T1:H2 → N","T1:X1 → F3 → 24V bar, and T1:X2 → 0V bar","24V bar → B1:13, and B1:14 → B2:21","B2:22 → B3:21, and B3:22 → F2:95","F2:96 → KT:A1, and F2:96 → KT:15","KT:18 → KM1:A1, and KM1:A1 → KM2:A1","H1 on KM2:A1","Heater: 24V bar → KM1:21, KM1:22 → E1:X1","Every A2 and X2 → 0V bar"]},
-    tip:"",
-    devices:[G, Q3('C16'), F1, {id:'T1', type:'xfmr', cfg:{v:230, vs:24}, name:'Control transformer'}, {id:'F3', type:'fuse', cfg:{poles:1, label:'2A'}, name:'24V fuse'}, {id:'B1', type:'level', cfg:{look:'thermo', at:0.6, max:40, hyst:0.05, blocks:['NO'], label:'thermostat'}, name:'Room thermostat'}, {id:'B2', type:'level', cfg:{look:'press', at:0.9, max:30, hyst:0.1, blocks:['NO','NC'], label:'HP high pressure'}, name:'High-pressure switch'}, {id:'B3', type:'level', cfg:{look:'press', below:true, at:0.15, max:30, hyst:0.05, blocks:['NO','NC'], label:'LP low pressure'}, name:'Low-pressure switch'}, {id:'KT', type:'timer', cfg:{mode:'on', t:5, v:24, model:'RE22R 24V'}, name:'Anti-short-cycle timer'}, KM('KM1', ['NO','NC'], 'Compressor contactor', {v:24, model:'MC-18b', ac3:'18A · 7.5kW'}), KM('KM2', ['NO'], 'Fan contactor', {v:24}), OL(8.4, {lo:7, hi:10, model:'LRD14', range:'7-10 A'}), MOT('M1', 'compressor', {kW:5.5, In:11, look:'pump'}), MOT('M2', 'condenser fan', {kW:0.75, In:1.9}), lamp('E1', 'amber', 'Crankcase heater', 24), lamp('H1', 'green', 'Compressor running', 24), X24],
-    solution:[['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','KM1:1'],['Q1:4','KM1:3'],['Q1:6','KM1:5'],['Q1:2','KM2:1'],['Q1:4','KM2:3'],['Q1:6','KM2:5'],['KM1:2','F2:1'],['KM1:4','F2:3'],['KM1:6','F2:5'],['F2:2','M1:U'],['F2:4','M1:V'],['F2:6','M1:W'],['KM2:2','M2:U'],['KM2:4','M2:V'],['KM2:6','M2:W'],
-      ['G:L1','F1:1'],['F1:2','T1:H1'],['T1:H2','G:N'],['T1:X1','F3:1'],['F3:2','X1:1a'],['T1:X2','X1:4a'],
-      ['X1:1b','B1:13'],['B1:14','B2:21'],['B2:22','B3:21'],['B3:22','F2:95'],['F2:96','KT:A1'],['KT:A2','X1:4b'],['F2:96','KT:15'],['KT:18','KM1:A1'],['KM1:A2','X1:5a'],['KM1:A1','KM2:A1'],['KM2:A2','X1:5b'],['KM2:A1','H1:X1'],['H1:X2','X1:5b'],
-      ['X1:2a','KM1:21'],['KM1:22','E1:X1'],['E1:X2','X1:6a']],
-    seq:true, noWarnNeutral:true, cases:SEQ([
-      {label:'Cool weather (the thermostat isn\'t calling)', set:{}, expect:{KM1:0, KM2:0, M1:0, M2:0, H1:0, E1:1, KT:0}},
-      {label:'The thermostat called for cooling', set:{B1:{a:1}}, expect:{KM1:0, KM2:0, M1:0, E1:1, KT:1}},
-      {label:'After the timer\'s time (5 s)', set:{}, wait:5.8, expect:{KM1:1, KM2:1, M1:1, M2:1, H1:1, E1:0}},
-      {label:'High pressure HP reached', set:{B2:{a:1}}, expect:{KM1:0, KM2:0, M1:0, M2:0, H1:0, E1:1, KT:0}},
-      {label:'High pressure dropped (the timer counts from the beginning)', set:{B2:{a:0}}, expect:{KM1:0, KM2:0, M1:0, M2:0, H1:0, E1:1, KT:1}},
-      {label:'After the timer\'s time', set:{}, wait:5.8, expect:{KM1:1, KM2:1, M1:1, M2:1, H1:1, E1:0, KT:1}},
-      {label:'Low pressure LP reached (low on gas)', set:{B3:{a:1}}, expect:{KM1:0, KM2:0, M1:0, M2:0, H1:0, E1:1, KT:0}},
-      {label:'Low pressure recovered, after the timer\'s time', set:{B3:{a:0}}, wait:5.8, expect:{KM1:1, KM2:1, M1:1, M2:1, H1:1, E1:0, KT:1}},
-      {label:'The thermostat is satisfied', set:{B1:{a:0}}, expect:{KM1:0, KM2:0, M1:0, M2:0, H1:0, E1:1, KT:0}}]),
-    patterns:[{sig:{KM1:'011?1?1?0'}, msg:"The compressor starts at once: KM1 from KT:18, not from the chain."}, {sig:{KM1:'001100???'}, msg:"It doesn't stop on high pressure: HP B2 21-22 (NC) in the chain."}, {sig:{E1:'000000000'}, msg:"The heater never runs: 24V bar → KM1:21, KM1:22 → E1."}, {sig:{E1:'111111111'}, msg:"The heater runs with the compressor: it must come from KM1 21-22 (NC)."}],
-    okMsg:"An NC safety chain, a start delay, and a crankcase heater while stopped."},
-  ac2:{story:{icon:'🔧', text:"Fault report: «the compressor hasn't run since the service».", ask:""}, machine:'compressor', title:'Mistake: low-pressure switch LP wired NO (the compressor never runs)', short:'Mistake: LP on NO',
-    goal:"The compressor runs after the delay with healthy pressures.",
-    idea:"LP is wired on NO 13-14 instead of NC 21-22.",
-    steps:["Power up, warm the thermostat, wait: nothing.","Power off, remove the LP 13 and 14 wires.","B2:22 → B3:21, and B3:22 → F2:95","Power up; drop LP pressure and see it stop."],
-    tip:"",
-    devices:null, preset:null, solution:null, seq:true, noWarnNeutral:true, cases:null,
-    diagnose(byId, W){ if (W.some(w => w.a === 'B3:13' || w.b === 'B3:13' || w.a === 'B3:14' || w.b === 'B3:14')) return 'LP (B3) is on NO 13-14: wire it on NC 21-22.'; return ''; },
-    okMsg:"LP now opens only when the gas is low."},
-  ac3:{story:{icon:'🚨', text:"Plant room: the high-pressure alarm stays until RESET.", ask:""}, machine:'compressor', title:'High-pressure alarm with manual reset: relay K1 latches and an alarm lamp', short:'HP alarm with reset',
-    goal:"HP trips: K1 holds; alarm until RESET.",
-    idea:"HP NO drives K1, K1 11-14 holds, K1 21-22 sits in the chain.",
-    steps:{"power":["L1 L2 L3 → Q1 1/3/5","Q1 2/4/6 → KM1 and KM2 1/3/5","KM1 2/4/6 → F2 1/3/5","F2 2/4/6 → M1, and KM2 2/4/6 → M2"],"control":["Transformer, fuse and bars as in ac1","24V bar → B1:13, and B1:14 → K1:21","K1:22 → B3:21, and B3:22 → F2:95","F2:96 → KT:A1 and KT:15, KT:18 → KM1:A1","KM1:A1 → KM2:A1, and H1 on KM2:A1","Heater: 24V bar → KM1:21, KM1:22 → E1:X1","Alarm: 24V bar → S1:11, S1:12 → B2:13","B2:14 → K1:A1, and H2 on K1:A1","Hold-in: K1:11 → S1:12, and K1:14 → B2:14","Every A2 and X2 → 0V bar"]},
-    tip:"",
-    devices:null, solution:null, seq:true, noWarnNeutral:true, cases:SEQ([
-      {label:'Cool weather', set:{}, expect:{KM1:0, M1:0, K1:0, H2:0, E1:1}},
-      {label:'The thermostat called, after the timer\'s time', set:{B1:{a:1}}, wait:5.8, expect:{KM1:1, M1:1, K1:0, H2:0, E1:0}},
-      {label:'High pressure reached', set:{B2:{a:1}}, expect:{KM1:0, M1:0, K1:1, H2:1, E1:1}},
-      {label:'The pressure dropped and the timer\'s time passed (still latched)', set:{B2:{a:0}}, wait:5.8, expect:{KM1:0, M1:0, K1:1, H2:1}},
-      {label:'RESET pressed', set:{S1:{p:1}}, expect:{K1:0, H2:0, KM1:0, E1:1}},
-      {label:'Released RESET, after the timer\'s time', set:{S1:{p:0}}, wait:5.8, expect:{KM1:1, M1:1, K1:0, H2:0, E1:0}}]),
-    patterns:[{sig:{K1:'001000'}, msg:"The alarm clears by itself: K1 hold-in 11-14 across HP 13-14 is missing."}, {sig:{KM1:'010110'}, msg:"The compressor restarted with the alarm on: K1 21-22 inside the chain."}, {sig:{K1:'000000'}, msg:"K1 never pulls in: 24V bar → RESET → HP 13-14 → K1:A1."}, {sig:{K1:'001111'}, msg:"RESET doesn't clear it: S1 11-12 before HP and the hold-in."}],
-    okMsg:"A manual reset makes the technician find the cause."},
-
-  /* ------------------------------------------------ 4. soft starter */
-  ss1:{story:{icon:'🌊', text:"45 kW pump: a soft starter with bypass against water hammer.", ask:""}, machine:'gauge', title:'Soft starter with a bypass contactor from the end-of-ramp relay (13-14)', short:'Soft starter + bypass',
-    goal:"Ramp, then bypass KM1 pulls in at 100%.",
-    idea:"KM1 across the thyristors, fed from end-of-ramp relay 13-14.",
-    steps:{"power":["L1 L2 L3 → Q1 1/3/5","Q1 2/4/6 → SS L1 L2 L3","Q1 2/4/6 → KM1 1/3/5","SS T1 T2 T3 → F2 1/3/5","KM1 2/4/6 → SS T1 T2 T3","F2 2/4/6 → M1 U V W"],"control":["L1 → F1 → F2 95-96 → L bar","N → N bar (X1:4)","L bar → SS:A1, and SS:A2 → N bar","L bar → S0:11, and S0:12 → SS:IN2","S0:12 → S1:13, and S1:14 → SS:IN1","Bypass: L bar → SS:13, SS:14 → KM1:A1","H2 on KM1:A1","Running: L bar → SS:23, SS:24 → H1:X1","Every A2 and X2 → N bar"]},
-    tip:"",
-    devices:[G, Q3('C16'), F1, S0, S1, {id:'SS', type:'softstarter', cfg:{ctl:'3w', tRamp:3, vInit:0.3, ilim:3.5, In:9}, name:'Soft starter'}, KM('KM1', ['NO'], 'Bypass contactor'), OL(4.9), MOT('M1', 'motor'), lamp('H1', 'green', 'running'), lamp('H2', 'blue', 'Bypass'), X1],
-    solution:[['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','SS:L1'],['Q1:4','SS:L2'],['Q1:6','SS:L3'],['Q1:2','KM1:1'],['Q1:4','KM1:3'],['Q1:6','KM1:5'],['SS:T1','F2:1'],['SS:T2','F2:3'],['SS:T3','F2:5'],['KM1:2','SS:T1'],['KM1:4','SS:T2'],['KM1:6','SS:T3'],['F2:2','M1:U'],['F2:4','M1:V'],['F2:6','M1:W'],
-      ['G:L1','F1:1'],['F1:2','F2:95'],['F2:96','X1:1a'],['G:N','X1:4a'],['X1:1b','SS:A1'],['SS:A2','X1:4b'],
-      ['X1:2a','S0:11'],['S0:12','SS:IN2'],['S0:12','S1:13'],['S1:14','SS:IN1'],
-      ['X1:2b','SS:13'],['SS:14','KM1:A1'],['KM1:A2','X1:5a'],['KM1:A1','H2:X1'],['H2:X2','X1:5a'],
-      ['X1:3a','SS:23'],['SS:24','H1:X1'],['H1:X2','X1:5b']],
-    seq:true, cases:SEQ([
-      {label:'nothing pressed', set:{}, expect:{M1:0, KM1:0, H1:0, H2:0}},
-      {label:'START pressed (start of the ramp)', set:{S1:{p:1}}, expect:{M1:1, KM1:0, H1:1, H2:0}},
-      {label:'Released START, after one second (still ramping)', set:{S1:{p:0}}, wait:1, expect:{M1:1, KM1:0, H1:1}},
-      {label:'After the ramp (3 s): bypass', set:{}, wait:2.5, expect:{M1:1, KM1:1, H1:1, H2:1}},
-      {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, KM1:0, H1:0, H2:0}},
-      {label:'STOP released', set:{S0:{p:0}}, expect:{M1:0, KM1:0}}]),
-    patterns:[{sig:{KM1:'011100'}, msg:"KM1 pulls in with START: its coil from SS 13-14 (end of ramp)."}, {sig:{KM1:'000000'}, msg:"KM1 never pulls in: L bar → SS:13, and SS:14 → KM1:A1."}, {sig:{M1:'000000'}, msg:"The motor doesn't run: check SS A1-A2, IN2 through STOP, IN1 from START."}],
-    diagnose(byId, W){ const has = (a, b) => W.some(w => (w.a === a && w.b === b) || (w.a === b && w.b === a)); if (has('SS:24', 'KM1:A1') || has('S1:14', 'KM1:A1') || has('SS:IN1', 'KM1:A1')) return 'KM1 feeds from RUN/START: wire it to SS 13-14 (end of ramp).'; return ''; },
-    okMsg:"After bypass the thyristors cool down."},
-  ss2:{story:{icon:'🌀', text:"Tunnel fan: 2-wire selector, and an alarm lamp for faults.", ask:""}, machine:'fan', title:'Soft starter with 2-wire control from a selector + the fault relay on an alarm lamp', short:'2-wire + fault relay',
-    goal:"I ramps up, 0 stops, a fault lights H2.",
-    idea:"95-96 cuts the run command, 97-98 for the alarm, 23-24 for running.",
-    steps:{"power":["L1 L2 L3 → Q1 1/3/5","Q1 2/4/6 → SS L1 L2 L3","SS T1 T2 T3 → F2 1/3/5","F2 2/4/6 → M1 U V W"],"control":["L1 → F1 → F2 95-96 → L bar","N → N bar (X1:4)","L bar → SS:A1, and SS:A2 → N bar","L bar → SS:95, SS:96 → S1:13","S1:14 → SS:IN1","Running: L bar → SS:23, SS:24 → H1:X1","Alarm: L bar → SS:97, SS:98 → H2:X1","Every X2 → N bar"]},
-    tip:"⚠️ With 2-wire: after RESET with the selector on I, the motor restarts by itself.",
-    devices:[G, Q3('C16'), F1, {id:'S1', type:'sel', cfg:{pos:['0','I'], blocks:[{k:'NO', on:[1]}]}, name:'RUN selector'}, {id:'SS', type:'softstarter', cfg:{ctl:'2w', tRamp:3, vInit:0.3, ilim:3.5, In:9}, name:'Soft starter'}, OL(4.9), MOT('M1', 'motor'), lamp('H1', 'green', 'running'), lamp('H2', 'red', 'fault'), X1],
-    solution:[['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','SS:L1'],['Q1:4','SS:L2'],['Q1:6','SS:L3'],['SS:T1','F2:1'],['SS:T2','F2:3'],['SS:T3','F2:5'],['F2:2','M1:U'],['F2:4','M1:V'],['F2:6','M1:W'],
-      ['G:L1','F1:1'],['F1:2','F2:95'],['F2:96','X1:1a'],['G:N','X1:4a'],['X1:1b','SS:A1'],['SS:A2','X1:4b'],
-      ['X1:2a','SS:95'],['SS:96','S1:13'],['S1:14','SS:IN1'],['X1:2b','SS:23'],['SS:24','H1:X1'],['H1:X2','X1:5a'],['X1:3a','SS:97'],['SS:98','H2:X1'],['H2:X2','X1:5b']],
-    seq:true, cases:SEQ([
-      {label:'Selector on 0', set:{}, expect:{M1:0, H1:0, H2:0}},
-      {label:'Selector on I (ramp)', set:{S1:{pos:1}}, expect:{M1:1, H1:1, H2:0}},
-      {label:'After the ramp', set:{}, wait:3.5, expect:{M1:1, H1:1, H2:0}},
-      {label:'Soft starter fault', set:{SS:{fault:1}}, expect:{M1:0, H1:0, H2:1}},
-      {label:'RESET with the selector still on I', set:{SS:{reset:1}}, expect:{M1:1, H1:1, H2:0}},
-      {label:'Selector on 0', set:{S1:{pos:0}}, expect:{M1:0, H1:0, H2:0}}]),
-    patterns:[{sig:{H2:'000000'}, msg:"The alarm doesn't light on a fault: H2 from SS 97-98."}, {sig:{H2:'111011'}, msg:"The alarm is on with no fault: move it from 95-96 to 97-98."}, {sig:{H1:'000000'}, msg:"H1 doesn't light: L bar → SS:23, and SS:24 → H1:X1."}],
-    okMsg:"2-wire is the simplest hookup and suits a PLC."},
-  ss3:{story:{icon:'🔧', text:"Fault report: «the motor starts as hard as DOL».", ask:""}, machine:'gauge', title:'Mistake: the bypass contactor pulls in with START (the ramp is skipped)', short:'Mistake: bypass from START',
-    goal:"Bypass pulls in only after the ramp.",
-    idea:"The KM1 coil is on RUN relay 23-24 instead of 13-14.",
-    steps:["Power up and START: bypass pulls in at once.","Power off, remove the SS:23 and SS:24 wires.","Bypass: L bar → SS:13, and SS:14 → KM1:A1","Running: L bar → SS:23, and SS:24 → H1:X1","Power up: 3 s ramp, then KM1."],
-    tip:"",
-    devices:null, preset:null, solution:null, seq:true, cases:null, diagnose:null,
-    okMsg:"The bypass now waits for the end of the ramp."}
-};
-// ac2 / ac3 / ss3 share devices with ac1 / ss1
-L9EX.ac2.devices = L9EX.ac1.devices; L9EX.ac2.solution = L9EX.ac1.solution; L9EX.ac2.cases = L9EX.ac1.cases;
-L9EX.ac2.preset = L9EX.ac1.solution.filter(w => !(w[0] === 'B2:22' && w[1] === 'B3:21') && !(w[0] === 'B3:22' && w[1] === 'F2:95')).concat([['B2:22','B3:13'],['B3:14','F2:95']]);
-L9EX.ac3.devices = L9EX.ac1.devices.filter(d => d.id !== 'X1').concat([{id:'K1', type:'relay', cfg:{v:24, blocks:['CO','CO']}, name:'HP alarm relay'}, PB('S1', 'black', 'RESET', ['NC']), lamp('H2', 'red', 'High-pressure alarm', 24), X24]);
-L9EX.ac3.solution = L9EX.ac1.solution.filter(w => !(w[0] === 'B1:14' && w[1] === 'B2:21') && !(w[0] === 'B2:22' && w[1] === 'B3:21') && !(w[0] === 'X1:2a' && w[1] === 'KM1:21')).concat([['B1:14','K1:21'],['K1:22','B3:21'],['X1:2b','KM1:21'],
-  ['X1:2a','S1:11'],['S1:12','B2:13'],['B2:14','K1:A1'],['K1:A2','X1:6b'],['K1:11','S1:12'],['K1:14','B2:14'],['K1:A1','H2:X1'],['H2:X2','X1:6b']]);
-L9EX.ss3.devices = L9EX.ss1.devices; L9EX.ss3.solution = L9EX.ss1.solution; L9EX.ss3.cases = L9EX.ss1.cases; L9EX.ss3.diagnose = L9EX.ss1.diagnose; L9EX.ss3.patterns = L9EX.ss1.patterns;
-L9EX.ss3.preset = L9EX.ss1.solution.filter(w => !(w[0] === 'X1:2b' && w[1] === 'SS:13') && !(w[0] === 'SS:14' && w[1] === 'KM1:A1') && !(w[0] === 'X1:3a' && w[1] === 'SS:23') && !(w[0] === 'SS:24' && w[1] === 'H1:X1')).concat([['X1:2b','SS:23'],['SS:24','KM1:A1'],['SS:24','H1:X1']]);
-/* ---------- lesson-9 figures and custom sims ---------- */
-const esc = CL.esc;
-const simShell = (host, o, ctl) => { host.innerHTML = `<div class="sim">${o.title ? `<h3>${esc(o.title)}</h3>` : ''}<div class="sim-grid"><figure class="sim-art"></figure><figure class="sim-sym"><div class="sim-iec"></div><ul class="sim-cont"></ul></figure></div><div class="sim-ctl">${ctl}</div><div class="tblw"><table class="tbl sim-tt"></table></div>${o.note ? `<p class="sim-note">${o.note}</p>` : ''}</div>`; return {art:host.querySelector('.sim-art'), iec:host.querySelector('.sim-iec'), cont:host.querySelector('.sim-cont'), ctl:host.querySelector('.sim-ctl'), tt:host.querySelector('.sim-tt')}; };
-const schem = ex => () => CL.art.schematic(Object.assign({id:ex}, L9EX[ex])).control;
-const schemPw = ex => () => CL.art.schematic(Object.assign({id:ex}, L9EX[ex])).power;
-const row = (lab, val, on, cls) => `<li class="${on ? 'on' : ''}"><span>${lab}</span><span class="${cls || 'st'}">${val}</span></li>`;
-const r1 = v => Math.round(v * 10) / 10;
-// time-series chart: series = [{name, pts:[[t, v]…], color, dash}], ymax, marks = [{t, lab}]
-function chart(series, o){
-  const W = 440, H = 190, x0 = 36, x1 = W - 10, y0 = 20, y1 = H - 28, tmax = o.tmax || 10, ymax = o.ymax || 1;
-  const X = t => x0 + (x1 - x0) * Math.min(1, t / tmax), Y = v => y1 - (y1 - y0) * Math.min(1.08, v / ymax);
-  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.label || 'Timing chart')}"><g style="color:var(--ink)">`;
-  for (let i = 0; i <= 4; i++){ const v = ymax * i / 4, y = Y(v); s += `<path d="M${x0} ${y}H${x1}" stroke="var(--line)" stroke-width="1"/><text x="${x0 - 4}" y="${y + 3}" font-size="8" text-anchor="end" fill="currentColor">${o.yfmt ? o.yfmt(v) : v}</text>`; }
-  for (let t = 0; t <= tmax; t += (o.tstep || 2)) s += `<text x="${X(t)}" y="${H - 14}" font-size="8" text-anchor="middle" fill="currentColor">${t}s</text>`;
-  (o.marks || []).forEach(m => { s += `<path d="M${X(m.t)} ${y0}V${y1}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3"/><text class="ar" x="${X(m.t)}" y="${y0 - 6}" font-size="8" text-anchor="middle" fill="var(--muted)">${esc(m.lab)}</text>`; });
-  series.forEach(sr => { if (!sr.pts.length) return; s += `<path d="${sr.pts.map((p, i) => (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ' ' + Y(p[1]).toFixed(1)).join('')}" fill="none" stroke="${sr.color}" stroke-width="2.4" ${sr.dash ? 'stroke-dasharray="5 4"' : ''}/>`; });
-  let lx = x0 + 4; series.forEach(sr => { s += `<rect x="${lx}" y="${H - 8}" width="14" height="3" fill="${sr.color}"/><text class="ar" x="${lx + 17}" y="${H - 4}" font-size="8.5" fill="currentColor">${esc(sr.name)}</text>`; lx += 20 + sr.name.length * 5.5; });
-  return s + '</g></svg>';
-}
-/* 1. star/delta: current and speed traces vs DOL */
-function simSD(host, o){
-  let t = 0, run = 0, timer = null, T = 5, mode = 'sd', pts = {I:[], n:[], dol:[]}, spd = 0, phase = 'off';
-  const In = 15;
-  const ui = simShell(host, o, `<button type="button" class="btn big pri" data-k="start">START</button><button type="button" class="btn big" data-k="stop">STOP</button><label>Timer time t: <b class="mono" data-t>5 s</b><input type="range" dir="ltr" min="2" max="9" step="1" value="5" aria-label="Star time"></label><label><input type="checkbox" data-k="dol"> Plot DOL for comparison</label><div class="sim-clock" role="status" aria-live="polite"></div>`);
-  function step(){
-    const dt = 0.1; t = r1(t + dt);
-    if (run){ const Y = t < T; phase = Y ? 'Y' : 'D'; const acc = Y ? 0.25 : 0.7; spd = Math.min(1, spd + dt * acc * (1.2 - spd)); const load = 0.8;
-      const I = Y ? Math.max(load * 0.6, 2 * (1 - spd * 0.75)) : (t < T + 0.3 ? 2.6 : Math.max(load, 6 * (1 - spd) * 0.5 + load)); pts.I.push([t, I]); pts.n.push([t, spd]);
-      const sd = Math.min(1, t * 0.9); pts.dol.push([t, Math.max(load, 6 * (1 - Math.min(1, t / 1.4)) + load * 0.3)]); void sd; }
-    else { spd = Math.max(0, spd - dt / 6); pts.n.push([t, spd]); pts.I.push([t, 0]); }
-    if (t >= 10){ clearInterval(timer); timer = null; }
-    render();
-  }
-  function render(){
-    const marks = run || pts.I.length ? [{t:T, lab:'Y→Δ at t'}] : [];
-    const series = [{name:'Current I/In', pts:pts.I, color:'#c0352b'}, {name:'Speed', pts:pts.n.map(p => [p[0], p[1] * 6]), color:'#2b7a3d'}];
-    if (ui.ctl.querySelector('[data-k=dol]').checked) series.push({name:'DOL for comparison', pts:pts.dol, color:'#56656f', dash:true});
-    ui.art.innerHTML = chart(series, {tmax:10, ymax:6, yfmt:v => v + '×', marks, label:'Motor current and speed in a star/delta start'});
-    const Y = run && phase === 'Y', D = run && phase === 'D';
-    ui.iec.innerHTML = `<div class="box" style="font-size:.9rem"><b>KM1 main:</b> ${run ? '<span class="no">pulled in</span>' : 'stopped'} · <b>KM2 star:</b> ${Y ? '<span class="no">pulled in</span>' : 'stopped'} · <b>KM3 delta:</b> ${D ? '<span class="no">pulled in</span>' : 'stopped'}<br><b>Timer 17-18:</b> ${Y ? 'closed' : 'open'} · <b>17-28:</b> ${D ? 'closed' : 'open'}</div>`;
-    ui.cont.innerHTML = row('Each winding gets', run ? (Y ? '230V (400/√3): ⅓ torque' : '400V: full torque') : '—', run) + row('Current now', pts.I.length ? r1(pts.I[pts.I.length - 1][1] * In) + ' A (' + r1(pts.I[pts.I.length - 1][1]) + '×In)' : '—', run, 'om') + row('Speed', Math.round(spd * 100) + '%', spd > 0.9);
-    ui.tt.innerHTML = `<thead><tr><th class="r">Start</th><th>Starting current</th><th>Starting torque</th><th>When</th></tr></thead><tbody><tr class="${!run ? '' : Y ? 'cur' : ''}"><td class="r">Star (Y)</td><td>≈ 2×In</td><td>⅓ the torque</td><td>A large motor on a weak supply, a light load at start (a fan, a pump)</td></tr><tr class="${D ? 'cur' : ''}"><td class="r">Delta (Δ) / DOL</td><td>6–8×In</td><td>Full torque</td><td>A small motor, or a heavy load from the start</td></tr></tbody>`;
-    ui.ctl.querySelector('.sim-clock').innerHTML = run ? `Time ${t} s · ${Y ? `Star: the timer is counting, remaining ${r1(Math.max(0, T - t))} s` : 'Delta: changeover done, the motor is at full voltage'}` : (t ? 'STOP: the motor is stopping' : 'Press START and watch the current: star ≈ 2×In, and after t it changes to delta.');
-    ui.ctl.querySelector('[data-t]').textContent = T + ' s';
-  }
-  ui.ctl.addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return;
-    if (b.dataset.k === 'start'){ run = 1; t = 0; spd = 0; pts = {I:[], n:[], dol:[]}; if (!timer) timer = setInterval(step, 100); }
-    if (b.dataset.k === 'stop'){ run = 0; phase = 'off'; }
-    render(); o.onAct && o.onAct(); });
-  ui.ctl.querySelector('input[type=range]').addEventListener('input', e => { T = +e.target.value; render(); o.onAct && o.onAct(); });
-  ui.ctl.querySelector('[data-k=dol]').addEventListener('change', () => { render(); o.onAct && o.onAct(); });
-  render(); return {destroy(){ if (timer) clearInterval(timer); }};
-}
-/* 2. braking: speed trace for coasting / DC injection / plugging / mechanical brake */
-function simBrake(host, o){
-  let t = 0, run = 0, timer = null, spd = 0, mode = 'coast', pts = [], stopAt = null, plug = 0, info = '';
-  const ui = simShell(host, o, `<button type="button" class="btn big pri" data-k="start">START</button><button type="button" class="btn big" data-k="stop">STOP</button><label>Stopping method<select data-k="mode" aria-label="Braking method"><option value="coast">No braking (coasting)</option><option value="dc">DC injection (KM4 contactor + timer)</option><option value="plug">Phase reversal / plugging (1 s pulse)</option><option value="mech">Electromagnetic brake (hoist)</option></select></label><div class="sim-clock" role="status" aria-live="polite"></div>`);
-  function step(){
-    const dt = 0.1; t = r1(t + dt);
-    if (run) spd = Math.min(1, spd + dt / 1);
-    else if (stopAt != null){ const el = t - stopAt;
-      if (mode === 'coast') spd = Math.max(0, spd - dt / 6);
-      else if (mode === 'dc') spd = el < 2 ? Math.max(0, spd - dt / 0.8) : Math.max(0, spd - dt / 6);
-      else if (mode === 'plug'){ if (el < 1){ spd = spd - dt / 1; plug = 1; } else { plug = 0; spd = spd > 0 ? Math.max(0, spd - dt / 6) : Math.min(0, spd + dt / 6); } }
-      else spd = 0; }
-    pts.push([t, spd]);
-    if (t >= 12){ clearInterval(timer); timer = null; }
-    render();
-  }
-  function render(){
-    const marks = stopAt != null ? [{t:stopAt, lab:'STOP'}].concat(mode === 'dc' ? [{t:stopAt + 2, lab:'KM4 drops out'}] : mode === 'plug' ? [{t:stopAt + 1, lab:'KM2 drops out'}] : []) : [];
-    ui.art.innerHTML = chart([{name:'Speed (+ forward / − reverse)', pts:pts.map(p => [p[0], p[1] + 1]), color:'#2b7a3d'}], {tmax:12, ymax:2, yfmt:v => Math.round((v - 1) * 100) + '%', marks, label:'Motor speed after STOP with the different braking methods'});
-    const st = run ? 'running' : stopAt == null ? 'stopped' : Math.abs(spd) < 0.02 ? 'stopped' : mode === 'dc' && t - stopAt < 2 ? 'braking with DC' : plug ? 'braking by reversal' : 'coasting';
-    ui.iec.innerHTML = `<div class="box" style="font-size:.9rem"><b>Motor:</b> ${st} · <b>Speed:</b> ${Math.round(spd * 100)}%<br>${mode === 'dc' ? `<b>KM4 (DC):</b> ${stopAt != null && t - stopAt < 2 && !run ? '<span class="no">pulled in</span>' : 'stopped'}` : mode === 'plug' ? `<b>KM2 (reverse):</b> ${plug ? '<span class="no">pulled in</span>' : 'stopped'}` : mode === 'mech' ? `<b>Brake:</b> ${run ? 'released (the coil is energised)' : '<span class="nc">closed</span>'}` : '<b>No braking:</b> the motor stops by friction only'}</div>`;
-    ui.cont.innerHTML = row('Approximate stopping time', mode === 'coast' ? '~6 s' : mode === 'dc' ? '~0.8 s' : mode === 'plug' ? '~1 s' : 'instant', mode !== 'coast') + row('Extra components', mode === 'coast' ? 'None' : mode === 'dc' ? 'Rectifier + KM4 + off-delay timer' : mode === 'plug' ? 'KM2 reverse + timer (or a zero-speed switch)' : 'A brake with a coil on the motor', true, 'om') + row('The risk', mode === 'coast' ? 'The load keeps moving' : mode === 'dc' ? 'DC heats the windings if the time is long' : mode === 'plug' ? 'If the pulse is long the motor turns in reverse' : 'The brake lining wears', false);
-    ui.tt.innerHTML = `<thead><tr><th class="r">Method</th><th>How</th><th>Used in</th></tr></thead><tbody><tr class="${mode === 'dc' ? 'cur' : ''}"><td class="r">DC injection</td><td>Direct current into two windings after the AC is cut: a stationary field brakes the rotor</td><td>Woodworking machines, washing machines, conveyors</td></tr><tr class="${mode === 'plug' ? 'cur' : ''}"><td class="r">Plugging</td><td>Two phases reversed for a moment; the reverse torque stops the motor quickly</td><td>Presses, crushers, wherever it must stop immediately</td></tr><tr class="${mode === 'mech' ? 'cur' : ''}"><td class="r">Mechanical brake</td><td>Springs close the brake, and the coil releases it when running</td><td>Hoists, lifts, any suspended load</td></tr></tbody>`;
-    ui.ctl.querySelector('.sim-clock').innerHTML = info || (run ? `Running ${t} s. Press STOP and see the speed curve.` : 'Choose the method, START, then STOP.');
-  }
-  ui.ctl.addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; info = '';
-    if (b.dataset.k === 'start'){ run = 1; t = 0; spd = 0; pts = []; stopAt = null; plug = 0; if (!timer) timer = setInterval(step, 100); }
-    if (b.dataset.k === 'stop' && run){ run = 0; stopAt = t; info = mode === 'coast' ? 'STOP: the contactor dropped out and the motor is coasting.' : mode === 'dc' ? 'STOP: KM1 dropped out, the timer is still holding, KM4 pulled in and injected DC.' : mode === 'plug' ? 'STOP: KM1 dropped out and KM2 pulled in for one second in reverse.' : 'STOP: the coil de-energised and the springs closed the brake immediately.'; }
-    render(); o.onAct && o.onAct(); });
-  ui.ctl.querySelector('select').addEventListener('change', e => { mode = e.target.value; render(); o.onAct && o.onAct(); });
-  render(); return {destroy(){ if (timer) clearInterval(timer); }};
-}
-/* 3. A/C compressor: room temperature, discharge/suction pressure, safety chain and the anti-short-cycle timer */
-function simAC(host, o){
-  let temp = 27, hp = 12, lp = 4, comp = 0, timerEl = 0, lastStop = -999, t = 0, timer = null, call = 0, hpTrip = 0, blockCond = 0, leak = 0, msg = '';
-  const SET = 24, ASC = 180; // °C set point · anti-short-cycle 3 min
-  const ui = simShell(host, o, `<button type="button" class="btn big pri" data-k="run" aria-pressed="false">▶ Run time (×30)</button><button type="button" class="btn" data-k="cond" aria-pressed="false">Block the condenser (HP rises)</button><button type="button" class="btn" data-k="leak" aria-pressed="false">Gas leak (LP drops)</button><button type="button" class="btn" data-k="reset">RESET alarm</button><div class="sim-clock" role="status" aria-live="polite"></div>`);
-  const chain = () => ({th:temp > SET + 0.5 ? 1 : temp < SET - 0.5 ? 0 : call, hpOk:hp < 28, lpOk:lp > 1.5});
-  function step(){
-    const dt = 3; t += dt; const c = chain(); call = c.th;
-    if (hp >= 28 && !hpTrip){ hpTrip = 1; msg = 'HP reached 28 bar: the alarm latched and the compressor dropped out. Fix the cause and press RESET.'; }
-    const allow = call && c.lpOk && !hpTrip;
-    if (allow && !comp){ if (t - lastStop >= ASC){ comp = 1; timerEl = 0; msg = 'The timer finished: the compressor and fan started.'; } else timerEl = t - lastStop; }
-    if (!allow && comp){ comp = 0; lastStop = t; msg = !call ? 'The thermostat is satisfied: the compressor stopped, and the timer prevents it restarting within 3 minutes.' : !c.lpOk ? 'LP low: low on gas, the compressor stopped so it doesn\'t run empty.' : msg; }
-    temp += dt * (comp ? -0.012 : 0.006);
-    hp += dt * (comp ? (blockCond ? 0.12 : (hp < 18 ? 0.05 : 0)) : (hp > 12 ? -0.04 : 0));
-    lp += dt * (leak ? -0.01 : (comp ? (lp > 3 ? -0.01 : 0) : (lp < 4 ? 0.02 : 0)));
-    render();
-  }
-  function render(){
-    const c = chain(), wait = !comp && call && c.lpOk && !hpTrip && t - lastStop < ASC ? ASC - (t - lastStop) : 0;
-    ui.art.innerHTML = `<svg viewBox="0 0 440 200" role="img" aria-label="AC status"><g style="color:var(--ink)">
-      <rect x="10" y="10" width="130" height="180" rx="10" fill="var(--panel)" stroke="var(--line)"/><text class="ar" x="75" y="34" font-size="11" text-anchor="middle" fill="currentColor" font-weight="700">Room</text><text x="75" y="80" font-size="30" text-anchor="middle" fill="${temp > SET + 0.5 ? '#c0352b' : '#2b7a3d'}" font-weight="700">${temp.toFixed(1)}°</text><text class="ar" x="75" y="104" font-size="10" text-anchor="middle" fill="var(--muted)">Setpoint ${SET}°C</text><text class="ar" x="75" y="130" font-size="10" text-anchor="middle" fill="${call ? '#2b7a3d' : 'var(--muted)'}" font-weight="700">${call ? 'Thermostat calling' : 'No demand'}</text>
-      <g transform="translate(160 10)"><rect width="130" height="180" rx="10" fill="var(--panel)" stroke="var(--line)"/><text class="ar" x="65" y="24" font-size="11" text-anchor="middle" fill="currentColor" font-weight="700">Compressor</text><circle cx="65" cy="80" r="34" fill="${comp ? '#dff3e4' : '#e9eaec'}" stroke="${comp ? '#1f8a3b' : '#9aa1a6'}" stroke-width="3"/><text x="65" y="86" font-size="16" text-anchor="middle" fill="${comp ? '#1f8a3b' : '#56656f'}" font-weight="700">${comp ? 'ON' : 'OFF'}</text><text class="ar" x="65" y="135" font-size="10" text-anchor="middle" fill="${wait ? '#a86a00' : 'var(--muted)'}" font-weight="700">${wait ? 'Timer: ' + Math.ceil(wait) + ' s left' : comp ? 'Fan running' : 'Heater on'}</text><text class="ar" x="65" y="160" font-size="10" text-anchor="middle" fill="${hpTrip ? '#c0352b' : 'var(--muted)'}" font-weight="700">${hpTrip ? '⚠ HP alarm' : ''}</text></g>
-      <g transform="translate(310 10)"><rect width="120" height="180" rx="10" fill="var(--panel)" stroke="var(--line)"/><text class="ar" x="60" y="24" font-size="11" text-anchor="middle" fill="currentColor" font-weight="700">Pressures</text>
-      <rect x="20" y="36" width="30" height="120" rx="4" fill="var(--bg)" stroke="var(--line)"/><rect x="22" y="${156 - 118 * Math.min(1, hp / 32)}" width="26" height="${118 * Math.min(1, hp / 32)}" fill="${hp >= 28 ? '#c0352b' : '#d9924f'}"/><text x="35" y="170" font-size="9" text-anchor="middle" fill="currentColor">HP ${hp.toFixed(0)}</text>
-      <rect x="70" y="36" width="30" height="120" rx="4" fill="var(--bg)" stroke="var(--line)"/><rect x="72" y="${156 - 118 * Math.min(1, lp / 8)}" width="26" height="${118 * Math.min(1, lp / 8)}" fill="${lp <= 1.5 ? '#c0352b' : '#4ea0ff'}"/><text x="85" y="170" font-size="9" text-anchor="middle" fill="currentColor">LP ${lp.toFixed(1)}</text><path d="M18 ${156 - 118 * 28 / 32}H52" stroke="#c0352b" stroke-dasharray="3 2"/><path d="M68 ${156 - 118 * 1.5 / 8}H102" stroke="#c0352b" stroke-dasharray="3 2"/></g></g></svg>`;
-    ui.iec.innerHTML = '';
-    ui.cont.innerHTML = row('B1 thermostat NO', call ? 'closed (calling for cooling)' : 'open', call) + row('K1/HP NC in the chain', hpTrip ? 'open (alarm latched)' : 'closed', !hpTrip, hpTrip ? 'om' : 'st') + row('B3 LP NC', c.lpOk ? 'closed (pressure OK)' : 'open (low on gas)', c.lpOk) + row('KT anti-short-cycle timer', wait ? 'counting: ' + Math.ceil(wait) + ' s left' : comp ? '15-18 closed' : 'stopped', !!comp, 'om') + row('KM1 compressor + KM2 fan', comp ? 'pulled in' : 'stopped', comp) + row('E1 crankcase heater (KM1 NC)', comp ? 'off' : 'running', !comp);
-    ui.tt.innerHTML = `<thead><tr><th class="r">Component</th><th>Protects against</th><th>Wired as</th></tr></thead><tbody><tr><td class="r">HP</td><td>High discharge pressure (dirty condenser, stopped fan)</td><td>NC + manual-reset alarm</td></tr><tr><td class="r">LP</td><td>Gas leak, blocked filter: the compressor runs empty and overheats</td><td>NC, automatic</td></tr><tr><td class="r">3-minute timer</td><td>Starting while the pressures are still high: the compressor tries to start against the pressure</td><td>On-delay after the thermostat</td></tr><tr><td class="r">Crankcase heater</td><td>Refrigerant condensing in the oil while stopped</td><td>On KM1's NC</td></tr></tbody>`;
-    ui.ctl.querySelector('.sim-clock').innerHTML = msg || 'Run the time: the room warms up, the thermostat calls, and the compressor starts after the timer. Try blocking the condenser or making a leak.';
-    ui.ctl.querySelector('[data-k=run]').setAttribute('aria-pressed', timer ? 'true' : 'false'); ui.ctl.querySelector('[data-k=run]').textContent = timer ? '⏸ Pause time' : '▶ Run time (×30)';
-  }
-  ui.ctl.addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; const k = b.dataset.k;
-    if (k === 'run'){ if (timer){ clearInterval(timer); timer = null; } else timer = setInterval(step, 100); }
-    if (k === 'cond'){ blockCond = blockCond ? 0 : 1; b.setAttribute('aria-pressed', blockCond ? 'true' : 'false'); msg = blockCond ? 'The condenser is blocked: the discharge pressure will rise until HP trips.' : 'The condenser has been cleaned.'; if (!timer) timer = setInterval(step, 100); }
-    if (k === 'leak'){ leak = leak ? 0 : 1; b.setAttribute('aria-pressed', leak ? 'true' : 'false'); msg = leak ? 'Gas leak: the suction pressure drops until LP trips.' : 'The leak has been fixed and the gas recharged.'; if (!leak) lp = 4; if (!timer) timer = setInterval(step, 100); }
-    if (k === 'reset'){ if (hpTrip && hp < 28){ hpTrip = 0; msg = 'RESET: the alarm is cleared, and the compressor will come back after the timer if the thermostat is calling.'; } else if (hpTrip) msg = 'The pressure is still high: fix the cause (the blocked condenser) first.'; else msg = 'No alarm.'; }
-    render(); o.onAct && o.onAct(); });
-  render(); return {destroy(){ if (timer) clearInterval(timer); }};
-}
-/* 4. soft starter: voltage / current / speed ramp with settings sliders, vs DOL */
-function simSS(host, o){
-  let t = 0, run = 0, timer = null, v = 0, spd = 0, pts = {v:[], i:[], n:[], dol:[]}, vInit = 30, tRamp = 5, ilim = 350, byp = 0, msg = '';
-  const ui = simShell(host, o, `<button type="button" class="btn big pri" data-k="start">START</button><button type="button" class="btn big" data-k="stop">STOP</button><label>Initial voltage Uini: <b class="mono" data-v>30%</b><input type="range" dir="ltr" data-s="vInit" min="20" max="70" step="5" value="30" aria-label="Initial voltage"></label><label>Ramp time: <b class="mono" data-t>5 s</b><input type="range" dir="ltr" data-s="tRamp" min="1" max="10" step="1" value="5" aria-label="Ramp time"></label><label>Current limit Ilim: <b class="mono" data-i>3.5×In</b><input type="range" dir="ltr" data-s="ilim" min="200" max="500" step="50" value="350" aria-label="Current limit"></label><div class="sim-clock" role="status" aria-live="polite"></div>`);
-  function step(){
-    const dt = 0.1; t = r1(t + dt);
-    if (run){ v = Math.min(1, Math.max(vInit / 100, v + dt * (1 - vInit / 100) / tRamp)); spd = Math.min(v, spd + dt * 0.5 * (v + 0.2)); if (v >= 1 && spd >= 0.95 && !byp){ byp = 1; msg = 'The ramp has finished: relay 13-14 closed and the bypass contactor pulled in.'; }
-      const i = byp ? 0.8 : Math.min(ilim / 100, Math.max(0.8, 6 * v * (1 - spd * 0.85))); pts.v.push([t, v]); pts.i.push([t, i]); pts.n.push([t, spd]); pts.dol.push([t, Math.max(0.8, 6 * (1 - Math.min(1, t / 1.4)))]); }
-    else { v = 0; spd = Math.max(0, spd - dt / 6); pts.n.push([t, spd]); pts.v.push([t, 0]); pts.i.push([t, 0]); }
-    if (t >= 12){ clearInterval(timer); timer = null; }
-    render();
-  }
-  function render(){
-    ui.art.innerHTML = chart([{name:'Voltage U', pts:pts.v.map(p => [p[0], p[1] * 6]), color:'#1f6fd1'}, {name:'Current I/In', pts:pts.i, color:'#c0352b'}, {name:'Speed', pts:pts.n.map(p => [p[0], p[1] * 6]), color:'#2b7a3d'}, {name:'DOL', pts:pts.dol, color:'#56656f', dash:true}], {tmax:12, ymax:6, yfmt:v => v + '×', marks:run || byp ? [{t:tRamp, lab:'End of ramp'}] : [], label:'Voltage, current and speed with the soft starter'});
-    ui.iec.innerHTML = `<div class="box" style="font-size:.9rem"><b>Display:</b> ${run ? Math.round(v * 100) + '%' : 'READY'} · <b>Status:</b> ${run ? (byp ? 'Bypass' : v < 1 ? 'ramp' : 'running 100%') : 'stopped'}<br><b>23-24 RUN:</b> ${run ? 'closed' : 'open'} · <b>13-14 bypass:</b> ${byp ? 'closed' : 'open'} · <b>95-96:</b> closed (no fault)</div>`;
-    ui.cont.innerHTML = row('Uini', vInit + '% of the voltage', true) + row('Ramp time', tRamp + ' s', true, 'om') + row('Ilim', (ilim / 100) + '×In', true) + row('Starting current', run && !byp ? r1(Math.min(ilim / 100, 6 * v)) + '×In' : '—', run && !byp, 'om');
-    ui.tt.innerHTML = `<thead><tr><th class="r">Comparison</th><th>DOL</th><th>Star/delta</th><th>Soft starter</th><th>VFD inverter</th></tr></thead><tbody><tr><td class="r">Starting current</td><td>6–8×In</td><td>2–2.5×In</td><td>2–4×In (adjustable)</td><td>≈1×In</td></tr><tr><td class="r">Starting torque</td><td>Full</td><td>⅓</td><td>Gradual</td><td>Full from zero</td></tr><tr><td class="r">Speed control</td><td>No</td><td>No</td><td>No (start and stop only)</td><td>Yes</td></tr><tr><td class="r">Price / size</td><td>Cheapest</td><td>3 contactors + 6 motor wires</td><td>One unit + 3 wires</td><td>Most expensive</td></tr></tbody>`;
-    ui.ctl.querySelector('[data-v]').textContent = vInit + '%'; ui.ctl.querySelector('[data-t]').textContent = tRamp + ' s'; ui.ctl.querySelector('[data-i]').textContent = (ilim / 100) + '×In';
-    ui.ctl.querySelector('.sim-clock').innerHTML = msg || (run ? `Time ${t} s · voltage ${Math.round(v * 100)}%` : 'Set the parameters and press START: the voltage rises from Uini to 100% over the ramp time, and the current is limited to Ilim.');
-  }
-  ui.ctl.addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; msg = '';
-    if (b.dataset.k === 'start'){ run = 1; t = 0; v = 0; spd = 0; byp = 0; pts = {v:[], i:[], n:[], dol:[]}; if (!timer) timer = setInterval(step, 100); }
-    if (b.dataset.k === 'stop'){ run = 0; byp = 0; msg = 'STOP: the bypass dropped out and the thyristors switched off; the motor is coasting (free-wheel).'; }
-    render(); o.onAct && o.onAct(); });
-  ui.ctl.querySelectorAll('input[type=range]').forEach(inp => inp.addEventListener('input', e => { const k = e.target.dataset.s; if (k === 'vInit') vInit = +e.target.value; if (k === 'tRamp') tRamp = +e.target.value; if (k === 'ilim') ilim = +e.target.value; render(); o.onAct && o.onAct(); }));
-  render(); return {destroy(){ if (timer) clearInterval(timer); }};
-}
-
-/* ---------- the lesson ---------- */
-const SDT = {id:'KT', type:'timer', cfg:{mode:'sd', t:5, model:'RE22R Y-Δ', range:'1–30 s'}, name:'Star/delta timer'};
-CL.lesson({
-  id:'l9', n:9, title:'Lesson 9: Advanced topics',
-  intro:'<p>Pick a topic and follow it: <b>Definition</b> → <b>Look and symbol</b> → <b>Try it</b> → <b>Wire it</b> → <b>Questions</b>. 13 exercises on the wiring board, including 4 deliberate mistakes to hunt for: wrong star jumpers, a missing Y/Δ interlock, LP wired NO, and a bypass that pulls in with START. If you finish all the exercises in the course, you\'ll find the <b>completion certificate</b> on the lessons page.</p>',
-  elements:[
-  /* ---------------------------------------------------------------- 1. star/delta */
-  {id:'sd', icon:'tbox', title:'Automatic and manual star/delta', goal:'3 contactors: KM1 main, KM2 star, KM3 delta, and a Y-Δ timer with two contacts <b>17-18</b> and <b>17-28</b>. The motor starts in star (⅓ current) and after the time changes to delta. With the interlock and the correct cross-over in the power circuit.',
-   steps:[
-    {kind:'text', title:'Definition', html:`
-     <div class="lsec lb">
-     <p>The motor starts in <b>star</b>, drawing a third of the current, and after a time t it switches to <b>delta</b> and carries on normally.</p>
-     <ul class="lsec scale"><li><b>DOL</b><span class="bar"><i style="width:100%"></i><em>6–8×In</em></span></li><li><b>Star/delta</b><span class="bar"><i style="width:30%"></i><em>~2×In</em></span></li></ul>
-     <p class="alert">It needs a <b>6-terminal</b> motor rated 400Δ/690Y. Torque is also ⅓, so this is for light starting loads only.</p>
-     <p>There are 3 contactors: <b>KM1 main</b> connects L1 L2 L3 to U1 V1 W1. <b>KM2 star</b> shorts W2 U2 V2 together. And <b>KM3 delta</b> connects L1 to W2, L2 to U2 and L3 to V2.</p>
-     <p>The timer puts them in order: its 17-18 contact runs the star, after the time t it drops it, and after a 50 ms gap its 17-28 contact brings in the delta.</p>
-     <p class="tip">KM2 and KM3 have an electrical and a mechanical interlock. The overload is in the winding line, so set it to <b>In ÷ √3</b>.</p>
-     </div>`},
-    {kind:'art', title:'Look and symbol', items:[
-      {title:'Star/delta timer: 17-18, then 17-28 after a 50 ms gap', dev:SDT, art:'timerArt', nema:['tr', 'notc', 'ncto'], cap:'A1-A2 the coil. 17 the common, 18 closes immediately and opens after t, 28 closes after t + 50 ms. The dial sets t (usually 1–30 seconds).'},
-      {title:'Motor terminal box: star and delta', dev:{id:'M1', type:'motor', cfg:{term:6, kW:7.5, In:15, vD:400, vY:690}}, art:() => CL.art.tbox({mode:'D', vD:400, vY:690, sup:400}), noSym:true, cap:'In automatic star/delta there are no jumpers in the box: the six terminals go out to the panel on six wires, and the contactors make the star (KM2) or the delta (KM3).'},
-      {title:'Power circuit: main + star + delta (the cross-over)', dev:{id:'M1', type:'motor', cfg:{term:6}}, art:schemPw('sd1'), noSym:true, cap:'KM1 → the overload → U1 V1 W1. KM3 connects L1 to W2, L2 to U2 and L3 to V2 (the cross-over). KM2 has its inputs on W2 U2 V2 and its outputs shorted together.'},
-      {title:'Automatic control circuit (sd1)', dev:{id:'G', type:'supply3P'}, art:schem('sd1'), noSym:true, cap:'KM1 with self-hold and the timer alongside it. 17-18 → KM3\'s NC → KM2\'s coil. And 17-28 → KM2\'s NC → KM3\'s coil.'},
-      {title:'Manual control circuit with two buttons (sd2)', dev:{id:'G', type:'supply3P'}, art:schem('sd2'), noSym:true, cap:'The “Star” button drives KM2, and KM2 drives KM1, which seals itself in. The double “Delta” button: its NC cuts the star and its NO drives KM3 through a KM1 contact.'}]},
-    {kind:'sim', title:'Try it', lead:'Press START and watch the current curve: in star ≈ 2×In, and after the time a changeover to delta with a small spike. Turn on “DOL for comparison” and see the difference.', sims:[
-      {title:'Star/delta start: current and speed over time', custom:simSD, note:'If you change to delta too early (the motor still slow) the spike is almost as big as DOL. The right time: when the motor is close to full speed (3–10 seconds depending on the load).'}]},
-    {kind:'bench', title:'Wire it', ex:['sd1','sd2','sd3','sd4']},
-    {kind:'quiz', title:'Questions', qs:[
-      {q:'A motor with a 230Δ/400Y nameplate on a 400V supply. Can it use star/delta?', a:['Yes, no problem','No, star only','Yes, with a longer timer'], c:1, why:'Delta gives each winding 400V when it\'s designed for 230V. Star/delta needs a 400Δ/690Y motor.', w:['','','The time isn\'t the problem; the voltage on the winding is.']},
-      {q:'The Y-Δ timer contact that drives the delta:', a:['17-18','17-28','15-18'], c:1, why:'17-28 closes after the time + 50 ms. 17-18 is for the star.', w:['That\'s the star (closed before the time).','','15-18 is a normal on-delay timer.']},
-      {q:'The overload in the winding line (between KM1 and the motor) for a 15 A motor is set to:', a:['15 A','8.7 A (15 ÷ √3)','26 A (15 × √3)'], c:1, why:'In delta the winding current = the line current ÷ √3.', w:['That\'s if the overload is in the line before KM1.','','']}]}
-   ]},
-  /* ---------------------------------------------------------------- 2. braking */
-  {id:'br', icon:'motor', title:'Motor braking methods', goal:'When you switch off, the motor keeps coasting for a few seconds. 3 ways to stop it: <b>DC injection</b> with a rectifier, a contactor and a timer, <b>phase reversal (plugging)</b> with a short pulse, and the <b>electromagnetic brake</b>, which closes on springs when the coil de-energises (the hoist).',
-   steps:[
-    {kind:'text', title:'Definition', html:`
-     <div class="lsec lb">
-     <p>The contactor only cuts the power, and the motor keeps turning for a while. <b>Braking</b> is what stops the motion quickly:</p>
-     <ul class="lsec scale"><li><b>Coasting</b><span class="bar"><i style="width:100%"></i><em>~6 s</em></span></li><li><b>Plugging</b><span class="bar"><i style="width:17%"></i><em>~1 s</em></span></li><li><b>DC</b><span class="bar"><i style="width:12%"></i><em>&lt; 1 s</em></span></li><li><b>Mechanical</b><span class="bar"><i style="width:4%"></i><em>instant</em></span></li></ul>
-     <p><b>DC injection:</b> KM4 runs from an off-delay timer with KM1's NC, and its drawback is that it heats the windings. <b>Plugging:</b> a short KM2 pulse with a zero-speed switch, which is a harsh brake. And the <b>electromagnetic brake:</b> closed with no power, and the coil releases it.</p>
-     <p class="alert">Phase and DC on the same terminal = <b>a short</b>. The interlock is a must.</p>
-     <p class="tip">Hoists and lifts: a <b>fail-safe</b> brake is required.</p>
-     </div>`},
-    {kind:'art', title:'Look and symbol', items:[
-      {title:'The braking rectifier and its symbol', dev:{id:'V1', type:'rectifier', cfg:{}}, noSym:true, cap:'It takes 230V AC on AC1-AC2 and outputs direct current on DC+ / DC−. In practice it comes with a transformer and a resistor that set the braking current (1.5–2×In for a few seconds).'},
-      {title:'Spring-applied electromagnetic brake on a hoist motor', dev:{id:'Y1', type:'brake', cfg:{motor:'M1'}}, noSym:true, cap:'The jaws (red = closed) on the disc. The coil is under the disc. No voltage = closed. Its symbol is the coil rectangle with the two brake lines.'},
-      {title:'DC braking (br1): off-delay timer and KM4', dev:{id:'G', type:'supply3P'}, art:schem('br1'), noSym:true, cap:'KM1 and timer KT in parallel. The braking line from before STOP: KT 15-18 → KM1 NC → KM4. KM4 also connects the rectifier with its 13-14 contact.'},
-      {title:'Plugging (br2): a reverse pulse after STOP', dev:{id:'G', type:'supply3P'}, art:schem('br2'), noSym:true, cap:'The same off-delay timer idea, but it drives reverse contactor KM2 for one second. NC interlock in both directions.'},
-      {title:'Hoist brake (br3): the coil from a KM1 contact', dev:{id:'G', type:'supply3P'}, art:schem('br3'), noSym:true, cap:'Brake coil Y1 on KM1 NO contact 23-24: it releases with the motor and closes with it.'}]},
-    {kind:'sim', title:'Try it', lead:'Start the motor, choose the stopping method, and press STOP: compare the speed curve in the four cases.', sims:[
-      {title:'Speed curve after STOP: coasting, DC, plugging, brake', custom:simBrake, note:'With plugging, notice that the speed crosses zero if the pulse is longer than needed: that\'s the reason for the zero-speed switch.'}]},
-    {kind:'bench', title:'Wire it', ex:['br1','br2','br3']},
-    {kind:'quiz', title:'Questions', qs:[
-      {q:'In DC braking, braking contactor KM4 feeds from:', a:['KM1\'s NO (runs with it)','Off-delay + KM1\'s NC','The START button directly'], c:1, why:'After KM1 drops out its NC closes while the timer is still holding, so KM4 pulls in for a time t.', w:['That puts DC and the phase together = a short circuit.','','START starts the motor, it doesn\'t brake it.']},
-      {q:'A hoist\'s electromagnetic brake when the power is suddenly cut:', a:['It releases, the load drops','Springs close it, it holds','It stays as it was'], c:1, why:'Spring-applied: the coil releases the brake, and the springs close it with no voltage.', w:['That would be a dangerous design.','','']},
-      {q:'Why does plugging need a zero-speed switch?', a:['To raise braking torque','Cuts reverse once stopped','To protect the overload'], c:1, why:'The timer is an estimate; the switch senses the actual speed.', w:['','','The overload is a different matter.']}]}
-   ]},
-  /* ---------------------------------------------------------------- 3. A/C compressor */
-  {id:'ac', icon:'press', title:'Central A/C compressor control circuit', goal:'A <b>24V</b> control circuit from a transformer: a thermostat calls for cooling → a safety chain <b>HP and LP (NC)</b> → a <b>3-minute timer</b> preventing short cycling → the compressor contactor and condenser fan. The crankcase heater on KM1\'s NC, and the HP alarm latches until RESET.',
-   steps:[
-    {kind:'text', title:'Definition', html:`
-     <div class="lsec lb">
-     <p>Compressor control runs on <b>24V</b>, with special protections wired in series: a 24V transformer and fuse, then the thermostat NO, then HP NC, then LP NC, then a 3-minute timer, and finally KM1 and KM2.</p>
-     <p><b>HP</b> opens when the pressure goes high, usually from a dirty condenser. <b>LP</b> opens when the pressure goes low, usually from low gas. And the <b>anti-short-cycle timer</b> waits for the pressures to equalize before the compressor starts again.</p>
-     <p>The <b>crankcase heater</b> is on KM1's NC, so it is on while the compressor is off. And the <b>HP alarm</b>: relay K1 latches itself and only clears with a manual RESET.</p>
-     </div>`},
-    {kind:'art', title:'Look and symbol', items:[
-      {title:'230/24V control transformer and its symbol', dev:{id:'T1', type:'xfmr', cfg:{v:230, vs:24}}, noSym:true, cap:'H1-H2 the primary (230V), X1-X2 the secondary (24V). The secondary is treated as a new source: a 24V bar and a 0V bar, and a fuse on X1.'},
-      {title:'Room thermostat', dev:{id:'B1', type:'level', cfg:{look:'thermo', at:0.6, max:40, blocks:['NO'], lvl0:0.7, a0:1}}, noSym:true, cap:'The setpoint dial (24°C). When the room temperature goes above the setpoint, the NO contact closes = call for cooling. In IEC the symbol is a contact marked θ.'},
-      {title:'High-pressure switch HP (NC opens when the pressure rises)', dev:{id:'B2', type:'level', cfg:{look:'press', at:0.9, max:30, hyst:0.1, blocks:['NO','NC'], lvl0:0.5}}, nema:['pressNO','pressNC'], cap:'Setpoint 27 bar: above it the contact changes over, NC opens and NO closes (for the alarm). It resets when the pressure drops below (setpoint − differential).'},
-      {title:'The complete 24V circuit (ac1)', dev:{id:'G', type:'supply3P'}, art:schem('ac1'), noSym:true, cap:'Safety chain → timer → KM1 and KM2. The heater on KM1 NC. Note the two circuits: 230V for the transformer, and 24V for control.'},
-      {title:'HP alarm with manual reset (ac3)', dev:{id:'G', type:'supply3P'}, art:schem('ac3'), noSym:true, cap:'RESET (NC) → HP NO → K1 with seal-in. K1 NC in place of HP in the chain. The alarm lamp across K1\'s coil.'}]},
-    {kind:'sim', title:'Try it', lead:'Run the time (sped up ×30): the room warms up, the thermostat calls, the timer counts, and the compressor starts. Try blocking the condenser and watch HP, or a gas leak and watch LP.', sims:[
-      {title:'The AC unit: temperature, pressures and the safety chain', custom:simAC, note:'Notice that after the compressor stops it doesn\'t come back within 3 minutes, even if the thermostat calls straight away: that\'s the anti-short-cycle timer.'}]},
-    {kind:'bench', title:'Wire it', ex:['ac1','ac2','ac3']},
-    {kind:'quiz', title:'Questions', qs:[
-      {q:'The low-pressure switch LP in the compressor safety chain is wired as:', a:['NO: closes on low pressure','NC: opens on low pressure','Not part of the chain'], c:1, why:'Every element in the chain is “closed in the healthy state”. LP operates when the pressure drops, so it\'s its NC that opens.', w:['Then the compressor would never run.','','']},
-      {q:'The purpose of the 3-minute timer after the thermostat:', a:['Saving electricity','No start against high pressure','Starting the fan first, then it'], c:1, why:'Anti-short-cycle: it gives the pressures a chance to equalise.', w:['','','The fan runs together with the compressor.']},
-      {q:'The crankcase heater is on:', a:['While it\'s running','While it\'s stopped','All the time, day and night'], c:1, why:'It stops the refrigerant condensing in the oil while stopped. With the compressor running it serves no purpose.', w:['','','All the time = waste and heat.']}]}
-   ]},
-  /* ---------------------------------------------------------------- 4. soft starter */
-  {id:'ss', icon:'k', title:'The soft starter', goal:'A thyristor device that raises the motor voltage gradually (a <b>ramp</b>) so the starting current drops to 2–4×In without star/delta contactors. Its terminals: L1-3/T1-3, A1/A2 control supply, START/STOP inputs, relay <b>13-14</b> for end of ramp (the bypass), <b>23-24</b> RUN, and <b>95-96 / 97-98</b> for faults.',
-   steps:[
-    {kind:'text', title:'Definition', html:`
-     <div class="lsec lb">
-     <p>A soft starter <b>ramps the voltage up gently</b> with thyristors, so the motor starts smoothly.</p>
-     <p>Its terminals: <span class="term">A1-A2</span> is the electronics supply. <b>IN1 / IN2</b> are START and STOP, wired 2-wire or 3-wire. <span class="term">13-14</span> closes at the top of the ramp and brings in the bypass contactor. And <span class="term">95-96</span> opens on a fault, so it goes in the control chain.</p>
-     <p>You set three things on it: <b>Uini</b> the starting voltage 30–50%, <b>Ramp</b> the ramp time 2–30 s, and <b>Ilim</b> the current limit 2–4×In.</p>
-     <p>Which to choose? <b>Star/delta</b> is cheaper and needs 6 wires. A <b>soft starter</b> is adjustable and stops softly. And a <b>VFD</b> when you need <b>speed</b> control.</p>
-     </div>`},
-    {kind:'art', title:'Look and symbol', items:[
-      {title:'Soft starter and its IEC symbol', dev:{id:'SS', type:'softstarter', cfg:{}}, noSym:true, cap:'The display shows the voltage percentage and the status. Below: the cooling fins. The knobs: Uini, ramp time, Ilim. The symbol: a box with a diagonal line (voltage change) and the thyristor symbol.'},
-      {title:'Soft starter + bypass with relay 13-14 (ss1)', dev:{id:'G', type:'supply3P'}, art:schem('ss1'), noSym:true, cap:'3-wire: STOP on IN2 and START on IN1. 13-14 → bypass coil KM1. 23-24 → the “running” lamp.'},
-      {title:'The power circuit with the bypass', dev:{id:'M1', type:'motor', cfg:{}}, art:schemPw('ss1'), noSym:true, cap:'KM1 in parallel with the soft starter: the same inputs L1 L2 L3 and the same outputs T1 T2 T3. The overload after them.'},
-      {title:'2-wire from a selector + the fault relay (ss2)', dev:{id:'G', type:'supply3P'}, art:schem('ss2'), noSym:true, cap:'95-96 in the selector line, and 97-98 on the red alarm lamp. Note: after RESET with the selector on I the motor restarts by itself.'}]},
-    {kind:'sim', title:'Try it', lead:'Set Uini, the ramp time and Ilim, and press START: see the voltage, current and speed, and compare with the dashed line (DOL).', sims:[
-      {title:'The soft starter ramp: voltage, current, speed', custom:simSS, note:'If Ilim is too low and the load heavy, the motor may not reach its speed and the unit trips on a “Start too long” fault. If Uini is too high you lose the benefit of the ramp.'}]},
-    {kind:'bench', title:'Wire it', ex:['ss1','ss2','ss3']},
-    {kind:'quiz', title:'Questions', qs:[
-      {q:'The bypass contactor takes its coil supply from:', a:['RUN relay 23-24','End-of-ramp relay 13-14','The START button with a seal-in'], c:1, why:'13-14 closes only when the voltage reaches 100%. RUN closes immediately with the command, which cancels the ramp.', w:['It closes immediately with the run command.','','']},
-      {q:'The main difference between a soft starter and an inverter:', a:['The soft starter costs more','The inverter controls speed','No difference at all'], c:1, why:'The soft starter changes only the voltage; the inverter changes the frequency and the voltage.', w:['The inverter is more expensive.','','']},
-      {q:'In 2-wire control, after a fault and RESET with the selector still on I:', a:['The motor waits for START','The motor restarts by itself','The unit stays in fault until switched off'], c:1, why:'The run command is held on IN1, so as soon as the fault clears the unit starts. If that\'s dangerous, use 3-wire.', w:['','','RESET clears the fault.']}]}
-   ]}
-  ],
-  exercises:L9EX
-});
-})();
-</script>
+<script>window.CC_PAGES=1;window.CC_LESSON="drev";window.CC_LANG="en";</script>
+<script src="/classic-control-lab/cc.js?v=20261113cd"></script>
 </body>
 </html>

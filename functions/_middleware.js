@@ -26,7 +26,7 @@ const MEMBER_LABS = new Set([
 // To open more, add their numbers here and the «مفتوح للكل» tags on the course page in /courses/.
 const FREE_LESSONS_BY_DIR = {
   "basics-lab": "all",              // 13 lessons: the whole course is open
-  "classic-control-lab": [1, 2],    // 9
+  "classic-control-lab": [1, 2],    // 17
   "safety-lab": [1, 2],             // 8
   "instrumentation-lab": [1, 2],    // 10
   "plc-lab": [1, 2],                // 10

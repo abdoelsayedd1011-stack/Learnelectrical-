@@ -21,7 +21,7 @@
   // الكورسات بنفس ترتيب الكتالوج. الـ id نفسه اللي في functions/_lib/products.js
   var COURSES = [
     { id: "basics", title: "أساسيات الكهرباء", hub: "basics-lab/index.html", inc: "كل الدروس والامتحان والشهادة" },
-    { id: "classic", title: "الكلاسيك كنترول", hub: "classic-control-lab/index.html", inc: "كل الدروس والتمارين والشهادة" },
+    { id: "classic", title: "الكلاسيك كنترول", hub: "classic-control-lab/index.html", inc: "كل الدروس الـ17 ومحاكيات الدوائر" },
     { id: "safety", title: "السيفتي PLC", hub: "safety-lab/index.html", inc: "كل الدروس + محاكي Pluto وRT9 وPNOZ وVital والامتحان" },
     { id: "drw", title: "قراءة الرسومات الكهربية", hub: "drawings-lab/index.html", inc: "كل الدروس والامتحان والشهادة" },
     { id: "instr", title: "أجهزة القياس", hub: "instrumentation-lab/index.html", inc: "كل الدروس + محاكي Omron E5CC" },

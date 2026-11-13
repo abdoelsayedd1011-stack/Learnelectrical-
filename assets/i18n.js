@@ -21,7 +21,7 @@
     "basics-lab/lesson-08.html", "basics-lab/lesson-09.html", "basics-lab/lesson-10.html", "basics-lab/lesson-11.html",
     "basics-lab/lesson-12.html", "basics-lab/lesson-13.html", "classic-control-lab/index.html", "classic-control-lab/lesson-01.html",
     "classic-control-lab/lesson-02.html", "classic-control-lab/lesson-03.html", "classic-control-lab/lesson-04.html", "classic-control-lab/lesson-05.html",
-    "classic-control-lab/lesson-06.html", "classic-control-lab/lesson-07.html", "classic-control-lab/lesson-08.html", "classic-control-lab/lesson-09.html",
+    "classic-control-lab/lesson-06.html", "classic-control-lab/lesson-07.html", "classic-control-lab/lesson-08.html", "classic-control-lab/lesson-09.html", "classic-control-lab/lesson-10.html", "classic-control-lab/lesson-11.html", "classic-control-lab/lesson-12.html", "classic-control-lab/lesson-13.html", "classic-control-lab/lesson-14.html", "classic-control-lab/lesson-15.html", "classic-control-lab/lesson-16.html", "classic-control-lab/lesson-17.html",
     "drawings-lab/index.html", "drawings-lab/lesson-01.html", "drawings-lab/lesson-02.html", "drawings-lab/lesson-03.html",
     "drawings-lab/lesson-04.html", "drawings-lab/lesson-05.html", "drawings-lab/lesson-06.html", "drawings-lab/lesson-07.html",
     "instrumentation-lab/index.html", "instrumentation-lab/lesson-01.html", "instrumentation-lab/lesson-02.html", "instrumentation-lab/lesson-03.html",

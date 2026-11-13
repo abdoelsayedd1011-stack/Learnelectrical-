@@ -3,496 +3,161 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>التايمرات: On-delay و Off-delay والدوري ودوائر التايمر</title>
-<meta name="description" content="الدرس 5 في كورس الكلاسيك كنترول: التايمر On-delay (TON) والكونتاكت 15-16-18، والتايمر Off-delay (TOF)، والتايمر الدوري Flasher ومتعدد الوظائف، ودوائر التايمر: التتابع والحلقة والعربة والمضخة (التمارين العملية 14 إلى 24)، مع التوصيل بيدك ومحاكاة بزمن حقيقي.">
+<title>تشغيل وإيقاف مباشر بكونتاكت تثبيت | كورس الكنترول الكلاسيك | LearnElectricals</title>
+<meta name="description" content="كورس كنترول تفاعلي: الأزرار والكونتاكتور والأوفرلود والموتور، ثم دوائر التشغيل بالترتيب، ثم التايمر ودوائره مثل الستار/دلتا. كل دائرة مرسومة قوى وتحكم وشكل لوحة، وتشتغل لما تضغط تشغيل.">
+<link rel="canonical" href="https://www.learnelectricals.com/classic-control-lab/lesson-05.html">
 <link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/classic-control-lab/lesson-05.html">
 <link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/classic-control-lab/lesson-05.html">
 <link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/classic-control-lab/lesson-05.html">
-<style>.lang-slot{display:contents}.lang-btn{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:6px 10px;border:1px solid var(--line);background:var(--panel);border-radius:8px;color:var(--ink);text-decoration:none;font:600 1rem/1 "IBM Plex Sans Arabic","IBM Plex Sans",system-ui,sans-serif}.lang-btn:hover{border-color:var(--accent)}</style>
+<meta name="theme-color" content="#0b1013">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="engine.css?v=20261104c">
-<link rel="stylesheet" href="fx.css?v=20261030r1">
-<link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
-<link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
-<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
-<script src="/assets/lesson-light.js?v=20261029L2" defer></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=Readex+Pro:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/classic-control-lab/cc.css?v=20261113cd">
 </head>
 <body>
-<div class="app">
-<header class="top site-header">
-  <div>
-    <h1>الدرس 5: التايمرات</h1>
-    <p>حتى الآن يعمل المحرك عندما تضغط ويتوقف عندما تضغط. لكن أغلب الدوائر في الصناعة تحتاج إلى <b>زمن</b>: المحرك الثاني يعمل بعد الأول بخمس ثوانٍ، والمروحة تستمر دقيقة بعد توقف الماكينة، والمضخة تملأ 3 ثوانٍ وتتوقف. هذه وظيفة <b>التايمر (Timer)</b>. ستتعرف على <b>On-delay</b> و<b>Off-delay</b> و<b>الدوري</b>، وتوصّل بيدك كل تمارين التايمر الخاصة بالمدرب (العملي 14 إلى 24) على اللوحة بزمن حقيقي وعدّاد يعدّ على التايمر.</p>
-  </div>
-  <div class="chips">
-    <a class="btn" href="index.html">‹ الدروس</a>
-    <a class="btn" href="../index.html">← كل الكورسات</a><span class="bar lang-slot"></span>
-  </div>
-</header>
 
-<div id="lesson-intro" data-course="classic-control-lab" data-lesson="05"></div>
-<script src="/assets/lesson-intro-data/classic-control-lab.ar.js?v=20261113m" defer></script>
-<script src="/assets/lesson-intro.js?v=20261113n" defer></script>
+<div class="wrap">
+  <header>
+    <div class="ht">
+      <h1 data-t="title"></h1>
+      <p class="sub" data-t="sub"></p>
+    </div>
+    <div class="row hdrbtns"><a id="homeA" class="hbtn" href="/" hidden></a><a id="hubA" class="hbtn" href="index.html" hidden></a>
+    <button id="langBtn" type="button" aria-label="Language">English</button></div>
+  </header>
 
-<div id="lesson"></div>
+  <nav class="units" id="units" aria-label="lessons"></nav>
 
-<script src="/assets/next-hint.js?v=20261021nh"></script>
-<script src="/assets/real-art.js?v=20261030h1"></script>
-<script src="engine.js?v=20261113m"></script>
-<script src="fx.js?v=20261113m"></script>
-<script>
-(function(){
-/* lesson-05 exercise data (embedded into lesson-05.html by build5.py; also loaded by the Node model test) */
-const G   = {id:'G', type:'supply3P', name:'المصدر'};
-const SUP = {id:'Q1', type:'supplyAC', name:'القاطع'};
-const Q3  = {id:'Q1', type:'mcb', cfg:{poles:3, label:'C10'}, name:'قاطع القوى'};
-const F1  = {id:'F1', type:'mcb', cfg:{poles:1, label:'C2'}, name:'قاطع التحكم'};
-const PB  = (id, color, label) => ({id, type:'pb', cfg:{color, label, blocks:[color === 'red' ? 'NC' : 'NO']}});
-const SEL = {id:'S1', type:'sel', cfg:{pos:['0','I'], label:'0 / I', blocks:[{k:'NO', on:[1]}]}};
-const KM  = (id, aux, name, extra) => ({id, type:'contactor', cfg:Object.assign({v:230, aux:aux || ['NO','NC']}, extra || {}), name:name || 'كونتاكتور'});
-const MOT = (id, name, look) => ({id, type:'motor', cfg:{term:3, kW:2.2, look:look || 'motor'}, name:name || 'محرك'});
-const lamp = (id, color, name) => ({id, type:'lamp', cfg:{color, v:230}, name});
-const KT  = (id, mode, t, name, extra) => ({id, type:'timer', cfg:Object.assign({v:230, mode:mode || 'on', t:t || 5}, extra || {}), name:name || 'تايمر'});
-const X1  = {id:'X1', type:'tb', cfg:{n:6, bridges:[[1,2,3],[4,5,6]], labels:{1:'L',2:'L',3:'L',4:'N',5:'N',6:'N'}}, name:'ترمنال بلوك (بار L وبار N)'};
-const K1  = (blocks) => ({id:'K1', type:'relay', cfg:{v:230, blocks:blocks || ['CO','CO']}, name:'ريلاي مساعد'});
-const S0 = PB('S0', 'red', 'STOP'), S1 = PB('S1', 'green', 'START');
-const M1 = MOT('M1', 'محرك 1'), M2 = MOT('M2', 'محرك 2'), M3 = MOT('M3', 'محرك 3');
-const H1 = lamp('H1', 'green', 'M1 يعمل'), H2 = lamp('H2', 'green', 'M2 يعمل'), H3 = lamp('H3', 'green', 'M3 يعمل');
-// power: Q1 → each contactor (Q1:2/4/6 feed KM1 and KM2, KM2 feeds KM3 by a bridge) → its motor. rev:true swaps L1/L3 at the motor.
-const POWER = list => { const w = [['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5']]; list.forEach(([km, m, rev], i) => { const src = i < 2 ? 'Q1' : list[1][0], st = i < 2 ? ['2','4','6'] : ['1','3','5']; w.push([src+':'+st[0], km+':1'], [src+':'+st[1], km+':3'], [src+':'+st[2], km+':5']); w.push([km+':2', m+':'+(rev ? 'W' : 'U')], [km+':4', m+':V'], [km+':6', m+':'+(rev ? 'U' : 'W')]); }); return w; };
-// control feed: L1 → F1 → STOP → L bar of X1 (1a) ; N → N bar (4a)
-const FEED = [['G:L1','F1:1'],['F1:2','S0:11'],['S0:12','X1:1a'],['G:N','X1:4a']];
-const FEED_SEL = [['G:L1','F1:1'],['F1:2','S1:13'],['S1:14','X1:1a'],['G:N','X1:4a']];
-const HOLD = (pb, km, via) => [['X1:1b', pb+':13'], [pb+':14', via || km+':A1'], [km+':13', pb+':13'], [km+':14', pb+':14']]; // START || hold → (via) → coil
-const PAR = (from, to) => [[from, to]];
-const noneOff = (ids) => { const o = {}; ids.forEach(i => o[i] = 0); return o; };
-const ex = (a, b) => Object.assign({}, a, b);
+  <section class="simgrid">
+    <div class="scene card">
+      <div class="scenehead">
+        <h2 id="cTitle"></h2>
+        <div class="row">
+          <div class="row" id="viewTg">
+            <button type="button" id="vDia" class="sel" data-t="vDia"></button>
+            <button type="button" id="vPan" class="sel" data-t="vPan"></button>
+          </div>
+          <span id="cState" class="pill off"></span>
+        </div>
+      </div>
+      <div id="cScene">
+        <div id="diaWrap">
+          <div class="diagrams" id="diagrams">
+            <figure><figcaption data-t="power"></figcaption><svg id="pw" role="img" aria-label="power circuit"></svg></figure>
+            <figure class="figc"><figcaption data-t="control"></figcaption><svg id="ct" role="img" aria-label="control circuit"></svg></figure>
+          </div>
+          <div class="legend">
+            <span><i style="background:var(--live)"></i><span data-t="lgLive"></span></span>
+            <span><i style="background:var(--flow)"></i><span data-t="lgFlow"></span></span>
+            <span><i style="background:var(--dead)"></i><span data-t="lgDead"></span></span>
+            <span><i style="background:var(--nrail)"></i><span data-t="lgN"></span></span>
+            <span data-t="lgTp"></span>
+          </div>
+        </div>
+        <figure id="pnFig" class="pnfig"><figcaption data-t="panelCap"></figcaption><div class="pnscroll"><svg id="pn" role="img" aria-label="panel"></svg></div></figure>
+      </div>
+      <div id="dScene" hidden><figure class="dvfig"><div class="pnscroll"><svg id="dv" role="img" aria-label="device"></svg></div></figure></div>
+    </div>
 
-const E14_CTL = FEED.concat(HOLD('S1', 'KM1'), [['KM1:A2','X1:4b'],['KM1:A1','KT1:A1'],['KT1:A2','X1:4b'],['KT1:A1','H1:X1'],['H1:X2','X1:5a'],
-  ['X1:2a','KT1:15'],['KT1:18','KM2:A1'],['KM2:A2','X1:5a'],['KM2:A1','H2:X1'],['H2:X2','X1:5b']]);
-const E14_DEVS = [G, Q3, F1, S0, S1, KM('KM1'), KM('KM2'), KT('KT1', 'on', 5, 'تايمر On-delay'), M1, M2, H1, H2, X1];
-const E14_CASES = [
-  {label:'لا شيء مضغوط', set:{}, expect:{M1:0, M2:0, H1:0, H2:0}},
-  {label:'START مضغوط', set:{S1:{p:1}}, expect:{M1:1, M2:0, H1:1, H2:0}},
-  {label:'تركت START ومرّت ثانيتان', set:{S1:{p:0}}, wait:2, expect:{M1:1, M2:0, H1:1, H2:0}},
-  {label:'مرّت 4 ثوانٍ أخرى (أكثر من t = 5 ث)', set:{}, wait:4, expect:{M1:1, M2:1, H1:1, H2:1}},
-  {label:'STOP مضغوط', set:{S0:{p:1}}, expect:{M1:0, M2:0, H1:0, H2:0}},
-  {label:'تركت STOP', set:{S0:{p:0}}, expect:{M1:0, M2:0, H1:0, H2:0}}];
-const E14_PATTERNS = [
-  {sig:{M2:'011101'}, msg:"M2 يعمل فورًا: التايمر على Off-delay. اجعله ON-DELAY بـ FUNC."},
-  {sig:{M2:'111001'}, msg:"M2 يعمل دون START: ملف KM2 على 16، انقله إلى 18."},
-  {sig:{M2:'000000'}, msg:"M2 لا يعمل: ملف KT1 مع KM1، و15-18 من بار L إلى KM2."},
-  {sig:{M2:'011100'}, msg:"M2 يعمل فورًا: يجب أن يمر ملف KM2 عبر KT1 15-18."}];
+    <aside class="side">
+      <div id="sideD" class="sidegrp" hidden></div>
+      <div id="sideC" class="sidegrp">
+      <div class="card">
+        <h2 data-t="mode"></h2>
+        <div class="seg">
+          <button type="button" id="mFree" class="sel" data-t="free"></button>
+          <button type="button" id="mTrace" data-t="trace"></button>
+        </div>
+      </div>
 
-const L5EX = {
-  /* ------------------------------------------------ TON */
-  e14:{story:{icon:'🧃', text:"خط تعبئة: يبدأ سير التغليف بعد السير الأول بـ 5 ث.", ask:""}, machine:'conveyor', title:'التمرين العملي 14: محركان، الثاني تلقائيًا بعد الأول بزمن', short:'عملي 14: M2 بعد M1 بزمن',
-    task:'<b>M1</b> يعمل بـ START ويثبّت نفسه، والتايمر <b>KT1</b> (On-delay، 5 ث) ملفه <b>موازٍ لملف KM1</b>. بعد 5 ثوانٍ يشغّل الكونتاكت <b>15-18</b> الكونتاكتور <b>KM2</b> فيعمل M2. يوقف STOP الاثنين. لكل محرك مصباح. استخدم الترمنال بلوك X1: بار <span class="term">L</span> (1-2-3 مجسّرة) بعد STOP، وبار <span class="term">N</span> (4-5-6).', goal:"START يشغّل M1، و M2 بعد 5 ث.", idea:"KT1 On-delay مع ملف KM1، و15-18 يشغّل KM2.", steps:{"power":["L1 L2 L3 \u200f← Q1 1/3/5","Q1 2/4/6 \u200f← KM1 و KM2 1/3/5","KM1 2/4/6 \u200f← M1، و KM2 2/4/6 \u200f← M2"],"control":["L1 \u200f← F1 \u200f← S0 \u200f← بار L (X1:1)","N \u200f← بار N (X1:4)","بار L \u200f← S1:13، و S1:14 \u200f← KM1:A1","التثبيت: KM1:13 \u200f← S1:13، و KM1:14 \u200f← S1:14","KT1:A1 \u200f← KM1:A1","بار L \u200f← KT1:15، و KT1:18 \u200f← KM2:A1","H1 على KM1:A1، و H2 على KM2:A1","كل A2 و X2 \u200f← بار N"]},
-    tip:"",
-    devices:E14_DEVS, solution:POWER([['KM1','M1'],['KM2','M2']]).concat(E14_CTL),
-    seq:true, cases:E14_CASES, patterns:E14_PATTERNS,
-    okMsg:"اضغط START وراقب العدّاد."},
-  e15:{story:{icon:'🌾', text:"مطحنة: يبدأ الصغير، وبعد زمن يكمل الكبير وحده.", ask:""}, machine:'conveyor', title:'التمرين العملي 15: مثل 14 لكن الأول يتوقف عندما يعمل الثاني', short:'عملي 15: M1 يتوقف عندما يعمل M2',
-    task:'التمرين 14 نفسه، لكن عندما يعمل <b>KM2</b> بعد الزمن يجب أن <b>يفصل KM1</b>: ضع الكونتاكت <b>KM2 21-22</b> (NC) في خط ملف KM1. وبما أن ملف KT1 مع KM1 وسيفصل معه، يجب أن <b>يثبّت KM2 نفسه</b> بكونتاكته 13-14 على التوازي مع كونتاكت التايمر 15-18، وإلا فسيفصل ويعود M1 (تذبذب).', goal:"M2 بعد 5 ث، ويتوقف M1 حينها.", idea:"KM2 21-22 يقطع KM1، و KM2 يثبّت نفسه بـ 13-14.", steps:{"power":["L1 L2 L3 \u200f← Q1 1/3/5","Q1 2/4/6 \u200f← KM1 و KM2 1/3/5","KM1 2/4/6 \u200f← M1، و KM2 2/4/6 \u200f← M2"],"control":["L1 \u200f← F1 \u200f← S0 \u200f← بار L (X1:1)","N \u200f← بار N (X1:4)","بار L \u200f← S1:13، و S1:14 \u200f← KM2:21","KM2:22 \u200f← KM1:A1","التثبيت: KM1:13 \u200f← S1:13، و KM1:14 \u200f← S1:14","KT1:A1 \u200f← KM1:A1، و بار L \u200f← KT1:15","KT1:18 \u200f← KM2:A1","تثبيت KM2: KM2:13 \u200f← KT1:15، KM2:14 \u200f← KT1:18","H1 على KM1:A1، و H2 على KM2:A1","كل A2 و X2 \u200f← بار N"]},
-    tip:"",
-    devices:E14_DEVS,
-    solution:POWER([['KM1','M1'],['KM2','M2']]).concat(FEED, [['X1:1b','S1:13'],['S1:14','KM2:21'],['KM2:22','KM1:A1'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KM1:A2','X1:4b'],['KM1:A1','KT1:A1'],['KT1:A2','X1:4b'],['KT1:A1','H1:X1'],['H1:X2','X1:5a'],
-      ['X1:2a','KT1:15'],['KT1:18','KM2:A1'],['KM2:13','KT1:15'],['KM2:14','KT1:18'],['KM2:A2','X1:5a'],['KM2:A1','H2:X1'],['H2:X2','X1:5b']]),
-    seq:true, cases:[
-      {label:'لا شيء مضغوط', set:{}, expect:{M1:0, M2:0, H1:0, H2:0}},
-      {label:'START مضغوط', set:{S1:{p:1}}, expect:{M1:1, M2:0, H1:1, H2:0}},
-      {label:'تركت START ومرّت ثانيتان', set:{S1:{p:0}}, wait:2, expect:{M1:1, M2:0, H1:1, H2:0}},
-      {label:'مرّت 4 ثوانٍ أخرى (بعد t = 5 ث)', set:{}, wait:4, expect:{M1:0, M2:1, H1:0, H2:1}},
-      {label:'مرّت 3 ثوانٍ أخرى', set:{}, wait:3, expect:{M1:0, M2:1, H1:0, H2:1}},
-      {label:'STOP مضغوط', set:{S0:{p:1}}, expect:{M1:0, M2:0, H1:0, H2:0}},
-      {label:'تركت STOP', set:{S0:{p:0}}, expect:{M1:0, M2:0, H1:0, H2:0}}],
-    patterns:[{sig:{M1:'0111100'}, msg:"M1 لا يتوقف: KM2 21-22 على التوالي قبل KM1:A1."},
-      {sig:{M2:'0001000'}, msg:"M2 يفصل فورًا: ثبّت KM2 بـ 13-14 موازيًا لـ KT1 15-18."}],
-    okMsg:"KM2 يجذب ويثبّت، و21-22 يقطع KM1."},
-  e16:{story:{icon:'🧃', text:"3 سيور: كل سير بعد سابقه بـ 5 ث.", ask:""}, machine:'conveyor', title:'التمرين العملي 16: 3 محركات بالتتابع، كل محرك بعد سابقه بزمن', short:'عملي 16: 3 محركات بالتتابع',
-    task:'<b>M1</b> بـ START، وبعد <b>KT1</b> (5 ث) يعمل <b>M2</b>، وبعد <b>KT2</b> (5 ث من تشغيل M2) يعمل <b>M3</b>. يوقف STOP الجميع. ملف كل تايمر موازٍ لملف الكونتاكتور الذي قبله، وكونتاكته 15-18 يشغّل الذي بعده.', goal:"M1، ثم M2 بعده بـ 5 ث، ثم M3.", idea:"سلسلة: كل تايمر مع كونتاكتور، و15-18 يشغّل الذي بعده.", steps:{"power":["L1 L2 L3 \u200f← Q1 1/3/5","Q1 2/4/6 \u200f← KM1 و KM2 1/3/5","وصلة KM2 1/3/5 ‏← KM3 1/3/5","كل KM 2/4/6 ‏← محركه"],"control":["L1 \u200f← F1 \u200f← S0 \u200f← بار L (X1:1)","N \u200f← بار N (X1:4)","بار L \u200f← S1:13، و S1:14 \u200f← KM1:A1","التثبيت: KM1:13 \u200f← S1:13، و KM1:14 \u200f← S1:14","KT1:A1 \u200f← KM1:A1، و بار L \u200f← KT1:15","KT1:18 \u200f← KM2:A1، و KT2:A1 \u200f← KM2:A1","بار L \u200f← KT2:15، و KT2:18 \u200f← KM3:A1","كل مصباح على A1 الخاص بكونتاكتوره","كل A2 و X2 \u200f← بار N"]},
-    tip:"",
-    devices:[G, Q3, F1, S0, S1, KM('KM1'), KM('KM2'), KM('KM3'), KT('KT1', 'on', 5, 'تايمر 1'), KT('KT2', 'on', 5, 'تايمر 2'), M1, M2, M3, H1, H2, H3, X1],
-    solution:POWER([['KM1','M1'],['KM2','M2'],['KM3','M3']]).concat(FEED, HOLD('S1', 'KM1'), [['KM1:A2','X1:4b'],['KM1:A1','KT1:A1'],['KT1:A2','X1:4b'],['KT1:A1','H1:X1'],['H1:X2','X1:5a'],
-      ['X1:2a','KT1:15'],['KT1:18','KM2:A1'],['KM2:A2','X1:5a'],['KM2:A1','KT2:A1'],['KT2:A1','H2:X1'],['H2:X2','X1:5b'],['KT2:A2','X1:5b'],
-      ['X1:2b','KT2:15'],['KT2:18','KM3:A1'],['KM3:A1','H3:X1'],['H3:X2','X1:6a'],['KM3:A2','X1:6a']]),
-    seq:true, cases:[
-      {label:'لا شيء مضغوط', set:{}, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}},
-      {label:'START مضغوط', set:{S1:{p:1}}, expect:{M1:1, M2:0, M3:0, H1:1, H2:0, H3:0}},
-      {label:'تركت START ومرّت ثانيتان', set:{S1:{p:0}}, wait:2, expect:{M1:1, M2:0, M3:0, H1:1, H2:0, H3:0}},
-      {label:'مرّت 4 ثوانٍ (بعد KT1)', set:{}, wait:4, expect:{M1:1, M2:1, M3:0, H1:1, H2:1, H3:0}},
-      {label:'مرّت 5 ثوانٍ (بعد KT2)', set:{}, wait:5, expect:{M1:1, M2:1, M3:1, H1:1, H2:1, H3:1}},
-      {label:'STOP مضغوط', set:{S0:{p:1}}, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}}],
-    patterns:[{sig:{M3:'000110'}, msg:"M3 مع M2 فورًا: KT2 مع KM2، و KM3 من KT2 15-18."}],
-    okMsg:"كل تايمر يبدأ عندما يعمل الذي قبله."},
-  /* ------------------------------------------------ TOF + cyclic */
-  f1:{story:{icon:'🌀', text:"فرن: مروحة التبريد تستمر 5 ث بعد التوقف.", ask:""}, machine:'fan', title:'تمرين: مروحة تستمر بعد توقف الماكينة (Off-delay)', short:'Off-delay: مروحة بعد التوقف',
-    task:'<b>M1</b> (الماكينة) يعمل بالسلكتور S1 على I، ومعه فورًا <b>M2</b> (مروحة التبريد). عند إعادة السلكتور إلى 0 تتوقف الماكينة، لكن المروحة <b>تستمر 5 ثوانٍ</b> ثم تتوقف وحدها. استخدم تايمر <b>Off-delay</b>: ملفه موازٍ لملف KM1، وكونتاكته 15-18 يغذّي ملف KM2 من بعد F1.', goal:"على 0 يتوقف M1، وتستمر M2 خمس ثوانٍ.", idea:"KT1 Off-delay مع KM1: يبقى 15-18 مغلقًا 5 ث.", steps:{"power":["L1 L2 L3 \u200f← Q1 1/3/5","Q1 2/4/6 \u200f← KM1 و KM2 1/3/5","KM1 2/4/6 \u200f← M1، و KM2 2/4/6 \u200f← M2"],"control":["L1 \u200f← F1:1، و F1:2 \u200f← S1:13","S1:14 \u200f← KM1:A1، و KM1:A2 \u200f← N","KT1:A1 \u200f← KM1:A1، و KT1:A2 \u200f← KM1:A2","H1: KT1:A1 \u200f← H1:X1، و H1:X2 \u200f← KT1:A2","F1:2 \u200f← KT1:15، و KT1:18 \u200f← KM2:A1","KM2:A2 \u200f← H1:X2","H2 موازٍ لملف KM2"]},
-    tip:"",
-    devices:[G, Q3, F1, SEL, KM('KM1', ['NO'], 'كونتاكتور الماكينة'), KM('KM2', ['NO'], 'كونتاكتور المروحة'), KT('KT1', 'off', 5, 'تايمر Off-delay'), M1, MOT('M2', 'مروحة'), lamp('H1', 'green', 'ماكينة'), lamp('H2', 'blue', 'مروحة')],
-    solution:POWER([['KM1','M1'],['KM2','M2']]).concat([['G:L1','F1:1'],['F1:2','S1:13'],['S1:14','KM1:A1'],['KM1:A2','G:N'],['KM1:A1','KT1:A1'],['KT1:A2','KM1:A2'],['KT1:A1','H1:X1'],['H1:X2','KT1:A2'],
-      ['F1:2','KT1:15'],['KT1:18','KM2:A1'],['KM2:A2','H1:X2'],['KM2:A1','H2:X1'],['H2:X2','KM2:A2']]),
-    seq:true, cases:[
-      {label:'السلكتور على 0', set:{S1:{pos:0}}, expect:{M1:0, M2:0, H1:0, H2:0}},
-      {label:'السلكتور على I', set:{S1:{pos:1}}, wait:1, expect:{M1:1, M2:1, H1:1, H2:1}},
-      {label:'أعدته إلى 0 ومرّت ثانيتان', set:{S1:{pos:0}}, wait:2, expect:{M1:0, M2:1, H1:0, H2:1}},
-      {label:'مرّت 4 ثوانٍ أخرى (بعد t = 5 ث)', set:{}, wait:4, expect:{M1:0, M2:0, H1:0, H2:0}}],
-    patterns:[{sig:{M2:'0100'}, msg:"المروحة تتوقف فورًا: KM2 من KT1 15-18، والتايمر Off-delay."},
-      {sig:{M2:'0001'}, msg:"المروحة تعمل بعد التوقف فقط: استخدم 15-18 مع Off-delay."}],
-    okMsg:"يبدأ العدّاد عندما ينقطع الجهد."},
-  c1:{story:{icon:'🚨', text:"بوابة مصنع: مصباح تحذير يضيء وينطفئ.", ask:""}, title:'تمرين: مصباح يضيء وينطفئ (Flasher)', short:'Flasher: مصباح وامض',
-    task:'السلكتور <b>S1</b> على I يغذّي ملف التايمر الدوري <b>KT1</b> (ton = 1 ث، toff = 1 ث)، وكونتاكته <b>15-18</b> يضيء المصباح <b>H1</b> بالتبادل: ثانية مضيء وثانية مطفأ طالما السلكتور على I.', goal:"S1 على I: H1 يضيء وينطفئ بالتبادل.", idea:"الفلاشر: 15-18 يُغلق ويُفتح، ويأخذ من خط الملف.", steps:["L \u200f← S1:13، و S1:14 \u200f← KT1:A1","KT1:A2 \u200f← N","جمبر KT1:A1 \u200f← KT1:15","KT1:18 \u200f← H1:X1، و H1:X2 \u200f← KT1:A2"],
-    tip:"",
-    devices:[SUP, SEL, KT('KT1', 'cyc', 1, 'تايمر دوري', {ton:1, toff:1}), lamp('H1', 'yellow', 'إشارة')],
-    solution:[['Q1:L','S1:13'],['S1:14','KT1:A1'],['KT1:A2','Q1:N'],['KT1:A1','KT1:15'],['KT1:18','H1:X1'],['H1:X2','KT1:A2']],
-    seq:true, cases:[
-      {label:'السلكتور على 0', set:{S1:{pos:0}}, expect:{H1:0}},
-      {label:'السلكتور على I (أول فترة ON)', set:{S1:{pos:1}}, wait:0.5, expect:{H1:1}},
-      {label:'مرّت ثانية (فترة OFF)', set:{}, wait:1, expect:{H1:0}},
-      {label:'مرّت ثانية أخرى (ON مرة أخرى)', set:{}, wait:1, expect:{H1:1}},
-      {label:'أعدته إلى 0', set:{S1:{pos:0}}, expect:{H1:0}}],
-    patterns:[{sig:{H1:'01010'}, msg:""}, {sig:{H1:'01110'}, msg:"H1 مضيء دائمًا: يجب أن يأخذ من KT1 15-18."}, {sig:{H1:'00100'}, msg:"H1 يضيء في OFF: استخدم 15-18 لا 15-16."}],
-    okMsg:"يبدأ الفلاشر بفترة ON."},
-  e21:{story:{icon:'💧', text:"مضختا مياه: بالتبادل كل 5 ث، ويستحيل عملهما معًا.", ask:""}, machine:'conveyor', title:'التمرين العملي 21: محركان بالتبادل بزمن (الأول، ثم الثاني ويفصل الأول…)', short:'عملي 21: تبادل محركين',
-    task:'START يشغّل الريلاي المساعد <b>K1</b> ويثبّته (11-14)، وكونتاكته الثاني <b>21-24</b> يغذّي ملف التايمر الدوري <b>KT1</b> (ton = 5 ث، toff = 5 ث) وطرفه المشترك 15. الكونتاكت <b>15-18</b> يشغّل <b>KM1</b> (M1) و<b>15-16</b> يشغّل <b>KM2</b> (M2): أي 5 ثوانٍ M1، ثم 5 ثوانٍ M2، وهكذا حتى تضغط STOP. ضع إنترلوكًا كهربيًا بين KM1 و KM2 (NC كل منهما في خط الآخر).', goal:"START: M1 و M2 بالتبادل كل 5 ث.", idea:"K1 يثبّت ويغذّي فلاشر: 18 لـ KM1، و16 لـ KM2.", steps:{"power":["L1 L2 L3 \u200f← Q1 1/3/5","Q1 2/4/6 \u200f← KM1 و KM2 1/3/5","KM1 2/4/6 \u200f← M1، و KM2 2/4/6 \u200f← M2"],"control":["L1 \u200f← F1 \u200f← S0 \u200f← بار L (X1:1)","N \u200f← بار N (X1:4)","بار L \u200f← S1:13، و S1:14 \u200f← K1:A1","التثبيت: K1:11 \u200f← S1:13، و K1:14 \u200f← S1:14","بار L \u200f← K1:21، و K1:24 \u200f← KT1:A1","جمبر KT1:A1 \u200f← KT1:15","KT1:18 \u200f← KM2:21، و KM2:22 \u200f← KM1:A1","KT1:16 \u200f← KM1:21، و KM1:22 \u200f← KM2:A1","H1 على KM1:A1، و H2 على KM2:A1","كل A2 و X2 \u200f← بار N"]},
-    tip:"",
-    devices:[G, Q3, F1, S0, S1, K1(), KT('KT1', 'cyc', 5, 'تايمر دوري', {ton:5, toff:5}), KM('KM1'), KM('KM2'), M1, M2, H1, H2, X1],
-    solution:POWER([['KM1','M1'],['KM2','M2']]).concat(FEED, [['X1:1b','S1:13'],['S1:14','K1:A1'],['K1:11','S1:13'],['K1:14','S1:14'],['K1:A2','X1:4b'],
-      ['X1:2a','K1:21'],['K1:24','KT1:A1'],['KT1:A1','KT1:15'],['KT1:A2','X1:4b'],['KT1:18','KM2:21'],['KM2:22','KM1:A1'],['KM1:A1','H1:X1'],['KT1:16','KM1:21'],['KM1:22','KM2:A1'],['KM2:A1','H2:X1'],
-      ['KM1:A2','X1:5a'],['H1:X2','X1:5a'],['KM2:A2','X1:5b'],['H2:X2','X1:5b']]),
-    seq:true, cases:[
-      {label:'لا شيء مضغوط', set:{}, expect:{M1:0, M2:0, H1:0, H2:0}},
-      {label:'START مضغوط', set:{S1:{p:1}}, expect:{M1:1, M2:0, H1:1, H2:0}},
-      {label:'تركت START ومرّت ثانيتان', set:{S1:{p:0}}, wait:2, expect:{M1:1, M2:0, H1:1, H2:0}},
-      {label:'مرّت 4 ثوانٍ (بعد ton = 5 ث)', set:{}, wait:4, expect:{M1:0, M2:1, H1:0, H2:1}},
-      {label:'مرّت 5 ثوانٍ (بعد toff)', set:{}, wait:5, expect:{M1:1, M2:0, H1:1, H2:0}},
-      {label:'مرّت 5 ثوانٍ أخرى', set:{}, wait:5, expect:{M1:0, M2:1, H1:0, H2:1}},
-      {label:'STOP مضغوط', set:{S0:{p:1}}, expect:{M1:0, M2:0, H1:0, H2:0}},
-      {label:'تركت STOP', set:{S0:{p:0}}, expect:{M1:0, M2:0, H1:0, H2:0}}],
-    patterns:[{sig:{M1:'0100000'}, msg:"K1 غير مثبّت: K1 11-14 موازٍ لـ START."}, {sig:{M1:'0111111'}, msg:"STOP لا يوقف: S0 قبل بار L."}],
-    okMsg:"تبادل حتى STOP. جرّب تغيير الزمن."},
-  /* ------------------------------------------------ circuits */
-  e17:{story:{icon:'🏭', text:"3 خلاطات: كل خلاط 5 ث ثم يسلّم الذي بعده.", ask:""}, machine:'conveyor', title:'التمرين العملي 17: حلقة 3 محركات بتوقيت (الأول، ثم الثاني ويفصل الأول، ثم الثالث ويفصل الثاني، ثم الأول…)', short:'عملي 17: حلقة 3 محركات',
-    task:'3 مراحل في حلقة: كل مرحلة = كونتاكتور <b>يثبّت نفسه</b> + تايمر ملفه موازٍ لملفه. كونتاكت تايمر المرحلة <b>15-18</b> يشغّل المرحلة التالية، وكونتاكت <b>21-22</b> (NC) الخاص بالمرحلة الجديدة <b>يقطع</b> المرحلة السابقة. آخر تايمر (KT3) يعيد تشغيل KM1. يبدأ START بـ KM1 (موازيًا لـ KT3 15-18)، ويوقف STOP الجميع.', goal:"حلقة: M1 ‏← M2 ‏← M3 ‏← M1، كل 5 ث.", idea:"كل مرحلة: كونتاكتور يثبّت + تايمر، و NC الجديد يقطع القديم.", steps:{"power":["L1 L2 L3 \u200f← Q1 1/3/5","Q1 2/4/6 \u200f← KM1 و KM2 1/3/5","وصلة KM2 1/3/5 ‏← KM3 1/3/5","كل KM 2/4/6 ‏← محركه"],"control":["L1 \u200f← F1 \u200f← S0 \u200f← بار L (X1:1)","N \u200f← بار N (X1:4)","KM1: بار L \u200f← S1:13، S1:14 \u200f← KM2:21","KM2:22 \u200f← KM1:A1","تثبيت KM1: KM1:13 \u200f← S1:13، KM1:14 \u200f← S1:14","عودة الحلقة: بار L ‏← KT3:15، KT3:18 ‏← KM1:14","KM2: بار L \u200f← KT1:15، KT1:18 \u200f← KM3:21","KM3:22 \u200f← KM2:A1","تثبيت KM2: KM2:13 \u200f← KT1:15، KM2:14 \u200f← KT1:18","KM3: بار L \u200f← KT2:15، KT2:18 \u200f← KM1:21","KM1:22 \u200f← KM3:A1","تثبيت KM3: KM3:13 \u200f← KT2:15، KM3:14 \u200f← KT2:18","كل KT ومصباح على A1 الخاص بكونتاكتوره","كل A2 و X2 \u200f← بار N"]},
-    tip:"",
-    devices:[G, Q3, F1, S0, S1, KM('KM1'), KM('KM2'), KM('KM3'), KT('KT1', 'on', 5, 'تايمر 1'), KT('KT2', 'on', 5, 'تايمر 2'), KT('KT3', 'on', 5, 'تايمر 3'), M1, M2, M3, H1, H2, H3, X1],
-    solution:POWER([['KM1','M1'],['KM2','M2'],['KM3','M3']]).concat(FEED, [
-      ['X1:1b','S1:13'],['S1:14','KM2:21'],['KM2:22','KM1:A1'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KT3:18','KM1:14'],['X1:3b','KT3:15'],['KM1:A1','KT1:A1'],['KT1:A1','H1:X1'],['KM1:A2','X1:4b'],['KT1:A2','X1:4b'],['H1:X2','X1:5a'],
-      ['X1:2a','KT1:15'],['KT1:18','KM3:21'],['KM3:22','KM2:A1'],['KM2:13','KT1:15'],['KM2:14','KT1:18'],['KM2:A1','KT2:A1'],['KT2:A1','H2:X1'],['KM2:A2','X1:5a'],['KT2:A2','X1:5b'],['H2:X2','X1:5b'],
-      ['X1:2b','KT2:15'],['KT2:18','KM1:21'],['KM1:22','KM3:A1'],['KM3:13','KT2:15'],['KM3:14','KT2:18'],['KM3:A1','KT3:A1'],['KT3:A1','H3:X1'],['KM3:A2','X1:6a'],['KT3:A2','X1:6a'],['H3:X2','X1:6b']]),
-    seq:true, cases:[
-      {label:'لا شيء مضغوط', set:{}, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}},
-      {label:'START مضغوط', set:{S1:{p:1}}, expect:{M1:1, M2:0, M3:0, H1:1, H2:0, H3:0}},
-      {label:'تركت START ومرّت ثانية', set:{S1:{p:0}}, wait:1, expect:{M1:1, M2:0, M3:0, H1:1, H2:0, H3:0}},
-      {label:'مرّت 5 ثوانٍ (انتهى KT1)', set:{}, wait:5, expect:{M1:0, M2:1, M3:0, H1:0, H2:1, H3:0}},
-      {label:'مرّت 5 ثوانٍ (انتهى KT2)', set:{}, wait:5, expect:{M1:0, M2:0, M3:1, H1:0, H2:0, H3:1}},
-      {label:'مرّت 5 ثوانٍ (انتهى KT3: الأول مرة أخرى)', set:{}, wait:5, expect:{M1:1, M2:0, M3:0, H1:1, H2:0, H3:0}},
-      {label:'مرّت 5 ثوانٍ (دورة ثانية)', set:{}, wait:5, expect:{M1:0, M2:1, M3:0, H1:0, H2:1, H3:0}},
-      {label:'STOP مضغوط', set:{S0:{p:1}}, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}}],
-    patterns:[{sig:{M1:'01100000'}, msg:"الحلقة لا تدور: KT3:18 ‏← KM1:14 (موازٍ لـ START)."}, {sig:{M1:'01111110'}, msg:"M1 لا يتوقف: KM2 21-22 على التوالي قبل KM1:A1."}],
-    okMsg:"راقب العدّادات الثلاثة."},
-  e18:{story:{icon:'🍞', text:"خط عجين: خلاط وسير، ثم مكبس، ثم يتوقف الجميع.", ask:""}, machine:'conveyor', title:'التمرين العملي 18: الأول والثاني معًا، وبعد زمن يفصل الأول ويعمل الثالث، وبعد زمن يفصل الجميع', short:'عملي 18: M1+M2 ثم M3 ثم يتوقف الجميع',
-    task:'عند الضغط على START يعمل <b>M1</b> و<b>M2</b>. بعد <b>KT1</b> (5 ث) يفصل M1 ويعمل <b>M3</b>. وبعد <b>KT2</b> (5 ث من تشغيل M3) يفصل الجميع تلقائيًا. الفكرة: <b>KM2</b> هو «الرئيسي» الذي يثبّت نفسه، وخط تثبيته يمر عبر <b>KT2 15-16</b> ليفصل في النهاية. ملف KT1 مع KM2، و<b>15-16</b> الخاص به يغذّي KM1 و<b>15-18</b> يغذّي KM3. وملف KT2 مع KM3.', goal:"M1+M2، ثم M3 بدل M1، ثم توقف.", idea:"KM2 رئيسي يثبّت عبر KT2 15-16، و KT1 يوزّع 16 و18.", steps:{"power":["L1 L2 L3 \u200f← Q1 1/3/5","Q1 2/4/6 \u200f← KM1 و KM2 1/3/5","وصلة KM2 1/3/5 ‏← KM3 1/3/5","كل KM 2/4/6 ‏← محركه"],"control":["L1 \u200f← F1 \u200f← S0 \u200f← بار L (X1:1)","N \u200f← بار N (X1:4)","بار L \u200f← S1:13، و S1:14 \u200f← KT2:15","KT2:16 \u200f← KM2:A1","تثبيت KM2: KM2:13 \u200f← S1:13، KM2:14 \u200f← S1:14","KT1:A1 \u200f← KM2:A1، وجمبر KT1:A1 \u200f← KT1:15","KT1:16 \u200f← KM1:A1، و KT1:18 \u200f← KM3:A1","KT2:A1 \u200f← KM3:A1","H1 على KM1:A1، و H2 على KT1:15","H3 على KT2:A1","كل A2 و X2 \u200f← بار N"]},
-    tip:"",
-    devices:[G, Q3, F1, S0, S1, KM('KM1'), KM('KM2'), KM('KM3'), KT('KT1', 'on', 5, 'تايمر 1'), KT('KT2', 'on', 5, 'تايمر 2'), M1, M2, M3, H1, H2, H3, X1],
-    solution:POWER([['KM1','M1'],['KM2','M2'],['KM3','M3']]).concat(FEED, [
-      ['X1:1b','S1:13'],['S1:14','KT2:15'],['KT2:16','KM2:A1'],['KM2:13','S1:13'],['KM2:14','S1:14'],['KM2:A1','KT1:A1'],['KT1:A1','KT1:15'],['KT1:15','H2:X1'],
-      ['KT1:16','KM1:A1'],['KM1:A1','H1:X1'],['KT1:18','KM3:A1'],['KM3:A1','KT2:A1'],['KT2:A1','H3:X1'],
-      ['KM2:A2','X1:4b'],['KT1:A2','X1:4b'],['KM1:A2','X1:5a'],['H1:X2','X1:5a'],['H2:X2','X1:5b'],['KM3:A2','X1:5b'],['KT2:A2','X1:6a'],['H3:X2','X1:6a']]),
-    seq:true, cases:[
-      {label:'لا شيء مضغوط', set:{}, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}},
-      {label:'START مضغوط', set:{S1:{p:1}}, expect:{M1:1, M2:1, M3:0, H1:1, H2:1, H3:0}},
-      {label:'تركت START ومرّت ثانيتان', set:{S1:{p:0}}, wait:2, expect:{M1:1, M2:1, M3:0, H1:1, H2:1, H3:0}},
-      {label:'مرّت 4 ثوانٍ (انتهى KT1)', set:{}, wait:4, expect:{M1:0, M2:1, M3:1, H1:0, H2:1, H3:1}},
-      {label:'مرّت 5 ثوانٍ (انتهى KT2: يتوقف الجميع)', set:{}, wait:5, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}},
-      {label:'START مرة أخرى', set:{S1:{p:1}}, expect:{M1:1, M2:1, M3:0, H1:1, H2:1, H3:0}},
-      {label:'STOP مضغوط', set:{S0:{p:1}}, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}}],
-    patterns:[{sig:{M2:'0111110'}, msg:"لا يفصل في النهاية: تثبيت KM2 يمر عبر KT2 15-16."}, {sig:{M1:'0111000'}, msg:"M1 لا يفصل: KM1 من KT1 15-16 لا من الخط."}],
-    okMsg:"تتوقف الدائرة وحدها وتنتظر START."},
-  e19:{story:{icon:'🏭', text:"ماكينة تعبئة: الرئيسي، ثم محركان مساعدان لفترة.", ask:""}, machine:'conveyor', title:'التمرين العملي 19: الأول، وبعد زمن الثاني والثالث، وبعد زمن يفصل الثاني والثالث', short:'عملي 19: M1 ثم M2+M3 ثم يفصلان',
-    task:'<b>M1</b> بـ START ويثبّت نفسه. ملف <b>KT1</b> مع KM1؛ وبعد 5 ث يشغّل كونتاكته <b>15-18</b> ملف <b>KT2</b> ويغذّي <b>KM2</b> و<b>KM3</b> عبر <b>KT2 15-16</b>. وبعد 5 ث أخرى يفتح KT2 الكونتاكت 15-16 فيفصل M2 و M3، ويبقى M1 يعمل حتى STOP. لاحظ أن KT2 يأخذ جهده من KT1 15-18 (لا من KM2) حتى لا يفصل ثم يعيد تشغيلهما.', goal:"M1 يبقى، و M2+M3 يعملان 5 ث فقط.", idea:"KT1 18 يغذّي KT2، و KT2 15-16 يغذّي KM2 و KM3.", steps:{"power":["L1 L2 L3 \u200f← Q1 1/3/5","Q1 2/4/6 \u200f← KM1 و KM2 1/3/5","وصلة KM2 1/3/5 ‏← KM3 1/3/5","كل KM 2/4/6 ‏← محركه"],"control":["L1 \u200f← F1 \u200f← S0 \u200f← بار L (X1:1)","N \u200f← بار N (X1:4)","بار L \u200f← S1:13، و S1:14 \u200f← KM1:A1","تثبيت: KM1:13 \u200f← S1:13، KM1:14 \u200f← S1:14","KT1:A1 \u200f← KM1:A1، و بار L \u200f← KT1:15","KT1:18 \u200f← KT2:A1، و KT1:18 \u200f← KT2:15","KT2:16 \u200f← KM2:A1، وجمبر KM2:A1 \u200f← KM3:A1","H1 على KM1:A1، و H2 و H3 على KM3:A1","كل A2 و X2 \u200f← بار N"]},
-    tip:"",
-    devices:[G, Q3, F1, S0, S1, KM('KM1'), KM('KM2'), KM('KM3'), KT('KT1', 'on', 5, 'تايمر 1'), KT('KT2', 'on', 5, 'تايمر 2'), M1, M2, M3, H1, H2, H3, X1],
-    solution:POWER([['KM1','M1'],['KM2','M2'],['KM3','M3']]).concat(FEED, HOLD('S1', 'KM1'), [['KM1:A1','KT1:A1'],['KT1:A1','H1:X1'],
-      ['X1:2a','KT1:15'],['KT1:18','KT2:A1'],['KT1:18','KT2:15'],['KT2:16','KM2:A1'],['KM2:A1','KM3:A1'],['KM3:A1','H2:X1'],['H2:X1','H3:X1'],
-      ['KM1:A2','X1:4b'],['KT1:A2','X1:4b'],['H1:X2','X1:5a'],['KT2:A2','X1:5a'],['KM2:A2','X1:5b'],['KM3:A2','X1:5b'],['H2:X2','X1:6a'],['H3:X2','X1:6a']]),
-    seq:true, cases:[
-      {label:'لا شيء مضغوط', set:{}, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}},
-      {label:'START مضغوط', set:{S1:{p:1}}, expect:{M1:1, M2:0, M3:0, H1:1, H2:0, H3:0}},
-      {label:'تركت START ومرّت ثانيتان', set:{S1:{p:0}}, wait:2, expect:{M1:1, M2:0, M3:0, H1:1, H2:0, H3:0}},
-      {label:'مرّت 4 ثوانٍ (انتهى KT1)', set:{}, wait:4, expect:{M1:1, M2:1, M3:1, H1:1, H2:1, H3:1}},
-      {label:'مرّت 5 ثوانٍ (انتهى KT2)', set:{}, wait:5, expect:{M1:1, M2:0, M3:0, H1:1, H2:0, H3:0}},
-      {label:'مرّت 5 ثوانٍ أخرى (ثابتان)', set:{}, wait:5, expect:{M1:1, M2:0, M3:0, H1:1, H2:0, H3:0}},
-      {label:'STOP مضغوط', set:{S0:{p:1}}, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}}],
-    patterns:[{sig:{M2:'0001110'}, msg:"M2 و M3 لا يفصلان: من KT2 15-16، و KT2 من KT1 18."}],
-    okMsg:"يبقى KT2 متغذيًا، فلا يعود M2 و M3."},
-  e20:{story:{icon:'🏭', text:"غسيل خزان: 4 مراحل بثلاثة تايمرات.", ask:""}, machine:'conveyor', title:'التمرين العملي 20: الجميع معًا، وبعد زمن يفصل الثاني والثالث، وبعد زمن يعود الثالث، وبعد زمن يفصل الجميع', short:'عملي 20: الجميع ← M1 ← M1+M3 ← توقف',
-    task:'START يشغّل <b>KM1</b> (يثبّت نفسه) ومعه <b>KM2</b> عبر <b>KT1 15-16</b>، و<b>KM3</b> عبر كونتاكت <b>KM2 13-14</b>. بعد KT1 (5 ث): يفصل KM2 و KM3 ويبدأ <b>KT2</b> (من KT1 15-18). بعد KT2 (5 ث): يعيد <b>15-18</b> الخاص به KM3، ويبدأ <b>KT3</b> (ملفه من كونتاكت <b>KM3 13-14</b> المغذّى من بعد KT1 15-18، حتى لا يعمل في المرحلة الأولى). بعد KT3 (5 ث): يفصل <b>15-16</b> الخاص به في خط تثبيت KM1 الجميع.', goal:"الجميع، ثم M1، ثم M1+M3، ثم توقف.", idea:"KM1 رئيسي عبر KT3 15-16، و KT1 و KT2 يبدّلان.", steps:{"power":["L1 L2 L3 \u200f← Q1 1/3/5","Q1 2/4/6 \u200f← KM1 و KM2 1/3/5","وصلة KM2 1/3/5 ‏← KM3 1/3/5","كل KM 2/4/6 ‏← محركه"],"control":["L1 \u200f← F1 \u200f← S0 \u200f← بار L (X1:1)","N \u200f← بار N (X1:4)","بار L \u200f← S1:13، و S1:14 \u200f← KT3:15","KT3:16 \u200f← KM1:A1","تثبيت: KM1:13 \u200f← S1:13، KM1:14 \u200f← S1:14","KT1:A1 \u200f← KM1:A1، وجمبر KT1:A1 \u200f← KT1:15","KT1:15 \u200f← KM2:13، و KT1:16 \u200f← KM2:A1","KM2:14 \u200f← KM3:A1","KT1:18 \u200f← KT2:A1، و KT1:18 \u200f← KT2:15","KT2:18 \u200f← KM3:A1","KT2:15 \u200f← KM3:13، و KM3:14 \u200f← KT3:A1","H1 على KM2:13، و H2 على KM2:A1","H3 على KM3:A1","كل A2 و X2 \u200f← بار N"]},
-    tip:"KT3 يأخذ من KM3 13-14، لا من KT2:18.",
-    devices:[G, Q3, F1, S0, S1, KM('KM1'), KM('KM2'), KM('KM3'), KT('KT1', 'on', 5, 'تايمر 1'), KT('KT2', 'on', 5, 'تايمر 2'), KT('KT3', 'on', 5, 'تايمر 3'), M1, M2, M3, H1, H2, H3, X1],
-    solution:POWER([['KM1','M1'],['KM2','M2'],['KM3','M3']]).concat(FEED, [
-      ['X1:1b','S1:13'],['S1:14','KT3:15'],['KT3:16','KM1:A1'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KM1:A1','KT1:A1'],['KT1:A1','KT1:15'],['KT1:15','KM2:13'],['KM2:13','H1:X1'],
-      ['KT1:16','KM2:A1'],['KM2:A1','H2:X1'],['KM2:14','H3:X1'],['H3:X1','KM3:A1'],['KT2:18','KM3:A1'],['KT1:18','KT2:A1'],['KT1:18','KT2:15'],['KT2:15','KM3:13'],['KM3:14','KT3:A1'],
-      ['KM1:A2','X1:4b'],['KT1:A2','X1:4b'],['KM2:A2','X1:5a'],['H1:X2','X1:5a'],['H2:X2','X1:5b'],['KM3:A2','X1:5b'],['KT2:A2','X1:6a'],['KT3:A2','X1:6a'],['H3:X2','X1:6b']]),
-    seq:true, cases:[
-      {label:'لا شيء مضغوط', set:{}, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}},
-      {label:'START مضغوط', set:{S1:{p:1}}, expect:{M1:1, M2:1, M3:1, H1:1, H2:1, H3:1}},
-      {label:'تركت START ومرّت ثانيتان', set:{S1:{p:0}}, wait:2, expect:{M1:1, M2:1, M3:1, H1:1, H2:1, H3:1}},
-      {label:'مرّت 4 ثوانٍ (انتهى KT1)', set:{}, wait:4, expect:{M1:1, M2:0, M3:0, H1:1, H2:0, H3:0}},
-      {label:'مرّت 5 ثوانٍ (انتهى KT2: يعود الثالث)', set:{}, wait:5, expect:{M1:1, M2:0, M3:1, H1:1, H2:0, H3:1}},
-      {label:'مرّت 5 ثوانٍ (انتهى KT3: يتوقف الجميع)', set:{}, wait:5, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}},
-      {label:'STOP (لا شيء يعمل أصلًا)', set:{S0:{p:1}}, expect:{M1:0, M2:0, M3:0, H1:0, H2:0, H3:0}}],
-    patterns:[{sig:{M3:'0111110'}, msg:"M3 لا يفصل مع M2: KM3 من KM2 13-14 لا من الخط."}, {sig:{M1:'0111110'}, msg:"لا يفصل في النهاية: تثبيت KM1 يمر عبر KT3 15-16."}],
-    okMsg:"KM3 يعمل مرتين: من KM2 ومن KT2."},
-  e22:{story:{icon:'🧺', text:"غسالة صناعية: يمين، توقف، يسار، توقف.", ask:""}, machine:'gauge', title:'التمرين العملي 22: محرك يمين ويسار بالتبادل، وبين كل اتجاه وآخر توقف', short:'عملي 22: يمين/يسار مع توقف',
-    task:'السلكتور <b>S1</b> على I يبدأ الدورة: توقف (<b>KT3</b>، 2 ث) ← يمين 5 ث (<b>KM1</b> + <b>KT1</b>) ← توقف 2 ث ← يسار 5 ث (<b>KM2</b> + <b>KT2</b>) ← توقف ← يمين… حتى تعيد السلكتور إلى 0. الريلاي <b>K1</b> (3 كونتاكتات CO) هو «ذاكرة الاتجاه»: يشغّله KT1 15-18 فيثبّت نفسه بـ 11-14، ويعيده KT2 15-16. ملف تايمر التوقف KT3 يمر عبر <b>31-32</b> (NC) الخاصين بالكونتاكتورين (أي يعدّ فقط عندما يكون الاثنان متوقفين)، وكونتاكته 15-18 يغذّي المشترك 21 الخاص بـ K1: 22 لليمين و24 لليسار. الإنترلوك: كهربي (21-22 لكل كونتاكتور في خط الآخر) + ميكانيكي.', goal:"على I: توقف، يمين، توقف، يسار، وتتكرر.", idea:"K1 ذاكرة الاتجاه، و KT3 للتوقف، و KT1/KT2 لكل اتجاه.", steps:{"power":["L1 L2 L3 \u200f← Q1 1/3/5","Q1 2/4/6 \u200f← KM1 و KM2 1/3/5","KM1 2/4/6 \u200f← M1 U V W","KM2 2/4/6 \u200f← M1 W V U (عكس)"],"control":["L1 \u200f← F1:1، و F1:2 \u200f← S1:13","S1:14 \u200f← بار L (X1:1)، و N \u200f← بار N","الذاكرة: بار L ‏← KT2:15، KT2:16 ‏← K1:11","K1:14 \u200f← K1:A1","التوقف: بار L ‏← KM1:31، KM1:32 ‏← KM2:31","KM2:32 \u200f← KT3:A1، و بار L \u200f← KT3:15","KT3:18 \u200f← K1:21","يمين: K1:22 \u200f← KM2:21، KM2:22 \u200f← KT1:15","KT1:16 \u200f← KM1:A1، و KT1:18 \u200f← K1:A1","تثبيت يمين: بار L \u200f← KM1:13، KM1:14 \u200f← KM2:21","يسار: K1:24 ‏← KM1:21، KM1:22 ‏← KM2:A1","تثبيت يسار: بار L ‏← K1:31، K1:34 ‏← KM2:13","KM2:14 \u200f← KM1:21","KT1:A1 و H1:X1 \u200f← KM1:A1","KT2:A1 و H2:X1 \u200f← KM2:A1","كل A2 و X2 \u200f← بار N"]},
-    tip:"KT3:15 من بار L، لا من KT3:A1.",
-    devices:[G, Q3, F1, SEL, K1(['CO','CO','CO']), KT('KT1', 'on', 5, 'زمن اليمين'), KT('KT2', 'on', 5, 'زمن اليسار'), KT('KT3', 'on', 2, 'زمن التوقف'), KM('KM1', ['NO','NC','NC'], 'كونتاكتور يمين', {mech:'KM2'}), KM('KM2', ['NO','NC','NC'], 'كونتاكتور يسار', {mech:'KM1'}), M1, lamp('H1', 'green', 'يمين'), lamp('H2', 'yellow', 'يسار'), X1],
-    solution:POWER([['KM1','M1'],['KM2','M1',true]]).concat(FEED_SEL, [
-      ['X1:1b','KT2:15'],['KT2:16','K1:11'],['K1:14','K1:A1'],['K1:A2','X1:4b'],
-      ['X1:2a','KM1:31'],['KM1:32','KM2:31'],['KM2:32','KT3:A1'],['X1:3b','KT3:15'],['KT3:A2','X1:4b'],['KT3:18','K1:21'],
-      ['K1:22','KM2:21'],['KM2:22','KT1:15'],['KT1:16','KM1:A1'],['KT1:18','K1:A1'],['X1:2b','KM1:13'],['KM1:14','KM2:21'],['KM1:A1','KT1:A1'],['KT1:A1','H1:X1'],['KM1:A2','X1:5a'],['KT1:A2','X1:5a'],['H1:X2','X1:5b'],
-      ['K1:24','KM1:21'],['KM1:22','KM2:A1'],['X1:3a','K1:31'],['K1:34','KM2:13'],['KM2:14','KM1:21'],['KM2:A1','KT2:A1'],['KT2:A1','H2:X1'],['KM2:A2','X1:5b'],['KT2:A2','X1:6a'],['H2:X2','X1:6a']]),
-    seq:true, cases:[
-      {label:'السلكتور على 0', set:{S1:{pos:0}}, expect:{M1:0, H1:0, H2:0}},
-      {label:'السلكتور على I ومرّت ثانية (توقف البداية)', set:{S1:{pos:1}}, wait:1, expect:{M1:0, H1:0, H2:0}},
-      {label:'مرّت ثانيتان (بعد توقف 2 ث: يمين)', set:{}, wait:2, expect:{M1:'F', H1:1, H2:0}},
-      {label:'مرّت 5 ثوانٍ (انتهى اليمين: توقف)', set:{}, wait:5, expect:{M1:0, H1:0, H2:0}},
-      {label:'مرّت ثانيتان (يسار)', set:{}, wait:2, expect:{M1:'R', H1:0, H2:1}},
-      {label:'مرّت 5 ثوانٍ (انتهى اليسار: توقف)', set:{}, wait:5, expect:{M1:0, H1:0, H2:0}},
-      {label:'مرّت ثانيتان (يمين مرة أخرى)', set:{}, wait:2, expect:{M1:'F', H1:1, H2:0}},
-      {label:'أعدت السلكتور إلى 0', set:{S1:{pos:0}}, expect:{M1:0, H1:0, H2:0}}],
-    patterns:[{sig:{M1:'00111110'}, msg:"لا يوجد توقف: KT3:18 ‏← K1:21، وملف KT3 عبر 31-32 الخاصين بهما."},
-      {sig:{M1:'00100000'}, msg:"يمين مرة ثم يتوقف: KT1 18 يشغّل K1، و K1 يثبّت عبر KT2 15-16."}],
-    okMsg:"شغّل مع التسريع ⏩ وتتبّع من يشغّل من."},
-  e23:{story:{icon:'🚃', text:"عربة تعبئة: تذهب إلى B، وتمتلئ 3 ث، وتعود إلى A.", ask:""}, machine:'pump', title:'التمرين العملي 23: عربة على سير تذهب إلى B، ومضخة تملأ 3 ثوانٍ، ثم تعود إلى A', short:'عملي 23: عربة + مضخة + ليمت سويتش',
-    task:'العربة متوقفة عند <b>A</b> (الليمت سويتش <b>LS1</b> مضغوط). START يشغّل <b>KM1</b> (يمين) فتتحرك حتى <b>B</b>: يقطع <b>LS2 21-22</b> الكونتاكتور KM1 فتتوقف، ويشغّل <b>LS2 13-14</b> المضخة <b>KM3</b> عبر <b>KT1 15-16</b> ويغذّي ملف KT1. بعد 3 ثوانٍ: يُفتح 15-16 فتتوقف المضخة، ويشغّل <b>15-18</b> الكونتاكتور <b>KM2</b> (يسار) الذي يثبّت نفسه ويعيد العربة حتى يقطعه <b>LS1 21-22</b> عند A. إنترلوك NC بين KM1 و KM2. 3 مصابيح: ذاهبة / مضخة / عائدة.', goal:"START: ذهاب إلى B، ملء 3 ث، عودة إلى A.", idea:"LS2 عند B يوقف KM1 ويبدأ KT1، و KT1 يعيد بـ KM2.", steps:{"power":["L1 L2 L3 \u200f← Q1 1/3/5","Q1 2/4/6 \u200f← KM1 و KM2 1/3/5","وصلة KM2 1/3/5 ‏← KM3 1/3/5","KM1 2/4/6 \u200f← M1 U V W","KM2 2/4/6 \u200f← M1 W V U (عكس)","KM3 2/4/6 \u200f← M2"],"control":["L1 \u200f← F1 \u200f← S0 \u200f← بار L (X1:1)","N \u200f← بار N (X1:4)","ذهاب: بار L ‏← S1:13، S1:14 ‏← LS2:21","LS2:22 \u200f← KM2:21، و KM2:22 \u200f← KM1:A1","تثبيت: KM1:13 \u200f← S1:13، KM1:14 \u200f← S1:14","مضخة: بار L ‏← LS2:13، LS2:14 ‏← KT1:A1","جمبر KT1:A1 \u200f← KT1:15، و KT1:16 \u200f← KM3:A1","عودة: KT1:18 ‏← LS1:21","تثبيت: بار L \u200f← KM2:13، KM2:14 \u200f← LS1:21","LS1:22 \u200f← KM1:21، و KM1:22 \u200f← KM2:A1","H1 على KM1:A1، و H2 على KM3:A1","H3 على KM2:A1","كل A2 و X2 \u200f← بار N"]},
-    tip:"",
-    devices:[G, Q3, F1, S0, S1, KM('KM1', ['NO','NC'], 'كونتاكتور يمين (إلى B)', {mech:'KM2'}), KM('KM2', ['NO','NC'], 'كونتاكتور يسار (إلى A)', {mech:'KM1'}), KM('KM3', ['NO'], 'كونتاكتور المضخة'),
-      MOT('M1', 'محرك السير'), MOT('M2', 'مضخة', 'pump'), {id:'CART', type:'cart', cfg:{motor:'M1', len:6, labA:'A', labB:'B'}, name:'عربة'}, {id:'T1', type:'tank', cfg:{pump:'M2', fill:0.25, drain:0.02}, name:'خزان'},
-      {id:'LS1', type:'ls', cfg:{cart:'CART', at:0, label:'ليمت A'}, name:'ليمت سويتش A'}, {id:'LS2', type:'ls', cfg:{cart:'CART', at:1, label:'ليمت B'}, name:'ليمت سويتش B'},
-      KT('KT1', 'on', 3, 'زمن المضخة'), lamp('H1', 'green', 'ذاهبة إلى B'), lamp('H2', 'blue', 'المضخة'), lamp('H3', 'yellow', 'عائدة إلى A'), X1],
-    solution:POWER([['KM1','M1'],['KM2','M1',true],['KM3','M2']]).concat(FEED, [
-      ['X1:1b','S1:13'],['S1:14','LS2:21'],['LS2:22','KM2:21'],['KM2:22','KM1:A1'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KM1:A1','H1:X1'],['KM1:A2','X1:4b'],['H1:X2','X1:4b'],
-      ['X1:2a','LS2:13'],['LS2:14','KT1:A1'],['KT1:A1','KT1:15'],['KT1:A2','X1:5a'],['KT1:16','KM3:A1'],['KM3:A1','H2:X1'],['KM3:A2','X1:5a'],['H2:X2','X1:5b'],
-      ['KT1:18','LS1:21'],['X1:2b','KM2:13'],['KM2:14','LS1:21'],['LS1:22','KM1:21'],['KM1:22','KM2:A1'],['KM2:A1','H3:X1'],['KM2:A2','X1:5b'],['H3:X2','X1:6a']]),
-    seq:true, cases:[
-      {label:'العربة عند A ولا شيء مضغوط', set:{}, expect:{M1:0, M2:0, H1:0, H2:0, H3:0}},
-      {label:'START مضغوط', set:{S1:{p:1}}, expect:{M1:'F', M2:0, H1:1, H2:0, H3:0}},
-      {label:'تركت START ومرّت 7 ثوانٍ (وصلت B)', set:{S1:{p:0}}, wait:7, expect:{M1:0, M2:1, H1:0, H2:1, H3:0}},
-      {label:'مرّت 3.5 ثانية (انتهت المضخة: عائدة)', set:{}, wait:3.5, expect:{M1:'R', M2:0, H1:0, H2:0, H3:1}},
-      {label:'مرّت 7 ثوانٍ (وصلت A)', set:{}, wait:7, expect:{M1:0, M2:0, H1:0, H2:0, H3:0}},
-      {label:'STOP مضغوط', set:{S0:{p:1}}, expect:{M1:0, M2:0, H1:0, H2:0, H3:0}}],
-    patterns:[{sig:{M2:'001000'}, msg:"العربة لا تعود: KT1 15-18 يشغّل KM2، و KM2 يثبّت بـ 13-14."},
-      {sig:{M2:'001100'}, msg:"المضخة لا تتوقف: KM3 من KT1 15-16، و KT1 من LS2 13-14."},
-      {sig:{M1:'011000'}, msg:"لا تتوقف عند B: LS2 21-22 على التوالي قبل KM1:A1."}],
-    okMsg:"دورة كاملة أوتوماتيكية. راقب الخزان يمتلئ."},
-  e24:{story:{icon:'🏭', text:"ماكينة تقطيع: محرك بزر، والثاني يتوقف ويعود بالتوقيت.", ask:""}, machine:'conveyor', title:'التمرين العملي 24: الأول بمفتاح، والثاني بعده بـ 5 ث، يتوقف بعد 5 ث، ويعود بعد 5 ث، وبعد 5 ث يتوقف الاثنان', short:'عملي 24: M2 يعمل/يتوقف/يعود ثم يتوقف الجميع',
-    task:'START يشغّل <b>M1</b> (KM1 يثبّت نفسه عبر <b>KT4 15-16</b>). سلسلة 4 تايمرات: ملف <b>KT1</b> مع KM1؛ وبعد 5 ث يغذّي 15-18 الخاص به <b>KT2</b> و<b>KM2</b> (عبر KT2 15-16). بعد 5 ث يفتح KT2 الكونتاكت 15-16 (يتوقف M2) ويُغلق 15-18 فيبدأ <b>KT3</b>. بعد 5 ث يعيد KT3 15-18 الكونتاكتور KM2، ويبدأ <b>KT4</b> من كونتاكت <b>KM2 13-14</b> (المغذّى من بعد KT2 15-18). بعد 5 ث يقطع KT4 15-16 تثبيت KM1 فيتوقف الجميع.', goal:"M1، ثم M2 يعمل/يتوقف/يعمل، ثم توقف.", idea:"سلسلة 4 تايمرات، و KT4 15-16 يقطع تثبيت KM1.", steps:{"power":["L1 L2 L3 \u200f← Q1 1/3/5","Q1 2/4/6 \u200f← KM1 و KM2 1/3/5","KM1 2/4/6 \u200f← M1، و KM2 2/4/6 \u200f← M2"],"control":["L1 \u200f← F1 \u200f← S0 \u200f← بار L (X1:1)","N \u200f← بار N (X1:4)","بار L \u200f← S1:13، و S1:14 \u200f← KT4:15","KT4:16 \u200f← KM1:A1","تثبيت: KM1:13 \u200f← S1:13، KM1:14 \u200f← S1:14","KT1:A1 \u200f← KM1:A1، وجمبر KT1:A1 \u200f← KT1:15","KT1:18 \u200f← KT2:A1، و KT1:18 \u200f← KT2:15","KT2:16 \u200f← KM2:A1","KT2:18 \u200f← KT3:A1، و KT2:18 \u200f← KT3:15","KT3:18 \u200f← H2:X1، و H2:X1 \u200f← KM2:A1","KT3:15 \u200f← KM2:13، و KM2:14 \u200f← KT4:A1","H1 على KT1:15","كل A2 و X2 \u200f← بار N"]},
-    tip:"KT4 يأخذ من KM2 13-14، لا من KT3:18.",
-    devices:[G, Q3, F1, S0, S1, KM('KM1'), KM('KM2'), KT('KT1', 'on', 5, 'تايمر 1'), KT('KT2', 'on', 5, 'تايمر 2'), KT('KT3', 'on', 5, 'تايمر 3'), KT('KT4', 'on', 5, 'تايمر 4'), M1, M2, H1, H2, X1],
-    solution:POWER([['KM1','M1'],['KM2','M2']]).concat(FEED, [
-      ['X1:1b','S1:13'],['S1:14','KT4:15'],['KT4:16','KM1:A1'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KM1:A1','KT1:A1'],['KT1:A1','KT1:15'],['KT1:15','H1:X1'],
-      ['KT1:18','KT2:A1'],['KT1:18','KT2:15'],['KT2:16','KM2:A1'],['KT2:18','KT3:A1'],['KT2:18','KT3:15'],['KT3:15','KM2:13'],['KM2:14','KT4:A1'],['KT3:18','H2:X1'],['H2:X1','KM2:A1'],
-      ['KM1:A2','X1:4b'],['KT1:A2','X1:4b'],['H1:X2','X1:5a'],['KT2:A2','X1:5a'],['KM2:A2','X1:5b'],['KT3:A2','X1:5b'],['KT4:A2','X1:6a'],['H2:X2','X1:6a']]),
-    seq:true, cases:[
-      {label:'لا شيء مضغوط', set:{}, expect:{M1:0, M2:0, H1:0, H2:0}},
-      {label:'START مضغوط', set:{S1:{p:1}}, expect:{M1:1, M2:0, H1:1, H2:0}},
-      {label:'تركت START ومرّت ثانيتان', set:{S1:{p:0}}, wait:2, expect:{M1:1, M2:0, H1:1, H2:0}},
-      {label:'مرّت 4 ثوانٍ (KT1: يعمل الثاني)', set:{}, wait:4, expect:{M1:1, M2:1, H1:1, H2:1}},
-      {label:'مرّت 5 ثوانٍ (KT2: يتوقف الثاني)', set:{}, wait:5, expect:{M1:1, M2:0, H1:1, H2:0}},
-      {label:'مرّت 5 ثوانٍ (KT3: يعود الثاني)', set:{}, wait:5, expect:{M1:1, M2:1, H1:1, H2:1}},
-      {label:'مرّت 5 ثوانٍ (KT4: يتوقف الاثنان)', set:{}, wait:5, expect:{M1:0, M2:0, H1:0, H2:0}},
-      {label:'STOP مضغوط', set:{S0:{p:1}}, expect:{M1:0, M2:0, H1:0, H2:0}}],
-    patterns:[{sig:{M1:'01111110'}, msg:"لا يتوقف في النهاية: تثبيت KM1 يمر عبر KT4 15-16."}, {sig:{M2:'00011100'}, msg:"M2 لا يتوقف: KM2 من KT2 15-16، ويعود من KT3 15-18."}],
-    okMsg:"آخر تايمر يقطع التثبيت فيتوقف الجميع."},
-  /* ------------------------------------------------ mistakes */
-  w1:{story:{icon:'🔧', text:"بلاغ: «M2 يعمل مع M1 فورًا».", ask:""}, machine:'conveyor', title:'خطأ: التايمر على Off-delay والمطلوب On-delay', short:'خطأ: وضع التايمر خاطئ',
-    task:'هذه الدائرة هي التمرين 14 تمامًا، لكن التايمر متعدد الوظائف <b>KT1</b> مضبوط على الوضع <b>B: Off-delay</b>. شغّل واضغط START: سيعمل M2 <b>مع M1 فورًا</b>، وعند ضغط STOP وتركه سيعود للعمل 5 ثوانٍ! افصل الكهرباء، واضغط <b>FUNC</b> على التايمر حتى يصبح <b>ON-DELAY</b>، ثم شغّل مرة أخرى.', goal:"M2 يعمل بعد M1 بـ 5 ث.", idea:"التايمر على Off-delay (B)، والمطلوب On-delay (A).", steps:["شغّل واضغط START: M2 فورًا.","افصل، ثم FUNC حتى ON-DELAY.","شغّل مرة أخرى واضغط START."],
-    tip:"",
-    devices:[G, Q3, F1, S0, S1, KM('KM1'), KM('KM2'), KT('KT1', 'off', 5, 'تايمر متعدد الوظائف', {multi:true}), M1, M2, H1, H2, X1],
-    preset:POWER([['KM1','M1'],['KM2','M2']]).concat(E14_CTL), solution:POWER([['KM1','M1'],['KM2','M2']]).concat(E14_CTL),
-    seq:true, cases:E14_CASES, patterns:E14_PATTERNS,
-    okMsg:"التوصيل نفسه، والفرق في وظيفة التايمر."},
-  w2:{story:{icon:'🔧', text:"بلاغ: «M2 يعمل وحده ويتوقف بعد 5 ث».", ask:""}, machine:'conveyor', title:'خطأ: 15-16 بدل 15-18', short:'خطأ: 15-16 بدل 15-18',
-    task:'هذه الدائرة هي التمرين 14 لكن فيها سلك خاطئ: ملف <b>KM2</b> موصول على كونتاكت التايمر <b>15-16</b> بدل <b>15-18</b>. شغّل الكهرباء دون ضغط أي زر: سيعمل M2 وحده! واضغط START: بعد 5 ثوانٍ سيتوقف M2 بدل أن يعمل. افصل وأصلح السلك.', goal:"M2 يعمل بعد M1 بـ 5 ث.", idea:"ملف KM2 على 15-16 (NC) بدل 15-18 (NO).", steps:["شغّل دون START: يعمل M2 وحده.","افصل، وانقل سلك KM2 من KT1:16 إلى KT1:18.","شغّل واضغط START."],
-    tip:"",
-    devices:E14_DEVS,
-    preset:POWER([['KM1','M1'],['KM2','M2']]).concat(E14_CTL.map(w => w[0] === 'KT1:18' ? ['KT1:16', w[1]] : w)), solution:POWER([['KM1','M1'],['KM2','M2']]).concat(E14_CTL),
-    seq:true, cases:E14_CASES, patterns:E14_PATTERNS,
-    okMsg:"18 لما يعمل بعد الزمن، و16 لما يتوقف."}
-};
-/* ---------- lesson-5 figures: the three timer-circuit patterns (ladder style, same classes as the engine symbols) ---------- */
-const TX = (x, y, t, anc, sz) => `<text class="sy-n" x="${x}" y="${y}" text-anchor="${anc || 'start'}" style="font-size:${sz || 11}px">${t}</text>`;
-const AR = (x, y, t, cls) => `<text class="ar ${cls || ''}" x="${x}" y="${y}" font-size="12" text-anchor="middle" fill="currentColor" font-weight="700">${t}</text>`;
-const cNO = (x, y) => `<path class="sy" d="M${x} ${y}V${y+10}M${x} ${y+40}V${y+30}L${x-9} ${y+12}"/>`;
-const cNC = (x, y) => `<path class="sy" d="M${x} ${y}V${y+10}H${x+7}M${x} ${y+40}V${y+30}L${x-9} ${y+12}"/>`;
-const tArc = (x, y, up) => up ? `<path class="sy" d="M${x-14} ${y+18}A9 9 0 0 1 ${x+4} ${y+18}" style="stroke-width:1.8"/>` : `<path class="sy" d="M${x-14} ${y+22}A9 9 0 0 0 ${x+4} ${y+22}" style="stroke-width:1.8"/>`;
-const tNO = (x, y) => cNO(x, y) + tArc(x, y, false); // timed-closing NO (15-18, On-delay)
-const tNC = (x, y) => cNC(x, y) + tArc(x, y, false); // timed-opening NC (15-16, On-delay)
-const coil = (x, y, tag, a, b) => `<rect class="sy" x="${x-14}" y="${y}" width="28" height="28"/>` + TX(x + 18, y + 18, tag) + TX(x - 18, y + 6, a || 'A1', 'end') + TX(x - 18, y + 34, b || 'A2', 'end');
-const tcoil = (x, y, tag) => coil(x, y, tag) + `<path class="sy" d="M${x-10} ${y+8}H${x+10}" style="stroke-width:3"/>`;
-const dot = (x, y) => `<circle class="sy-f" cx="${x}" cy="${y}" r="3"/>`;
-const nums = (x, y, a, b) => TX(x - 12, y + 8, a, 'end') + TX(x - 12, y + 40, b, 'end');
-const wrap = (W, H, body, label) => `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${label}"><g style="color:var(--sym)">${body}</g></svg>`;
-const buses = (W, L, N) => `<path class="sy" d="M30 ${L}H${W-20}M30 ${N}H${W-20}"/>` + TX(26, L + 4, 'L', 'end') + TX(26, N + 4, 'N', 'end');
-// pattern 1: the timer in the hold circuit (exercise 14)
-const patHold = () => {
-  const L = 40, N = 330, W = 470; let s = buses(W, L, N), x = 90;
-  s += `<path class="sy" d="M${x} ${L}V70"/>` + cNC(x, 70) + TX(x + 10, 94, 'S0') + nums(x, 70, '21', '22');
-  s += `<path class="sy" d="M${x} 110V130"/>` + cNO(x, 130) + TX(x + 8, 154, 'S1') + nums(x, 130, '13', '14');
-  s += `<path class="sy" d="M${x} 122H${x+50}V130M${x+50} 170V180H${x}M${x} 170V210"/>` + cNO(x + 50, 130) + TX(x + 58, 154, 'KM1') + TX(x + 62, 138, '13') + TX(x + 62, 170, '14') + dot(x, 122) + dot(x, 180);
-  s += coil(x, 210, 'KM1') + `<path class="sy" d="M${x} 238V${N}"/>`;
-  // timer coil in parallel with KM1 coil
-  const tx = x + 110;
-  s += `<path class="sy" d="M${x} 196H${tx}V210M${tx} 238V${N}"/>` + dot(x, 196) + tcoil(tx, 210, 'KT1') + AR(tx + 10, 262, 'ملف التايمر على التوازي', 'sy-s') + AR(tx + 10, 276, 'ملف الكونتاكتور', 'sy-s');
-  // second rung: timed contact → KM2
-  const rx = 330;
-  s += `<path class="sy" d="M${rx} ${L}V130"/>` + tNO(rx, 130) + TX(rx + 8, 150, 'KT1') + nums(rx, 130, '15', '18') + AR(rx + 60, 170, 'يُغلق بعد t', 'sy-s');
-  s += `<path class="sy" d="M${rx} 170V210"/>` + coil(rx, 210, 'KM2') + `<path class="sy" d="M${rx} 238V${N}"/>`;
-  s += AR(x + 40, 22, 'الخطوة 1: KM1 + KT1') + AR(rx + 30, 22, 'الخطوة 2 بعد t: KM2');
-  return wrap(W, 350, s, 'نمط التايمر في دائرة التثبيت');
-};
-// pattern 2: the timer contact replaces START (and breaks the previous step)
-const patStart = () => {
-  const L = 40, N = 330, W = 470; let s = buses(W, L, N), x = 90;
-  s += `<path class="sy" d="M${x} ${L}V70"/>` + cNC(x, 70) + TX(x + 10, 94, 'S0') + nums(x, 70, '21', '22');
-  s += `<path class="sy" d="M${x} 110V130"/>` + cNO(x, 130) + TX(x + 8, 154, 'S1') + nums(x, 130, '13', '14');
-  s += `<path class="sy" d="M${x} 122H${x+50}V130M${x+50} 170V180H${x}M${x} 170V190"/>` + cNO(x + 50, 130) + TX(x + 58, 154, 'KM1') + dot(x, 122) + dot(x, 180);
-  s += cNC(x, 190) + TX(x + 10, 214, 'KM2') + nums(x, 190, '21', '22') + AR(x + 70, 206, 'KM2 يوقف KM1', 'sy-s');
-  s += `<path class="sy" d="M${x} 230V250"/>` + coil(x, 250, 'KM1') + `<path class="sy" d="M${x} 278V${N}"/>`;
-  const tx = x + 110; s += `<path class="sy" d="M${x} 240H${tx}V250M${tx} 278V${N}"/>` + dot(x, 240) + tcoil(tx, 250, 'KT1');
-  const rx = 330;
-  s += `<path class="sy" d="M${rx} ${L}V130"/>` + tNO(rx, 130) + TX(rx + 8, 150, 'KT1') + nums(rx, 130, '15', '18') + AR(rx + 64, 118, 'مكان START', 'sy-s');
-  s += `<path class="sy" d="M${rx} 122H${rx+50}V130M${rx+50} 170V180H${rx}M${rx} 170V250"/>` + cNO(rx + 50, 130) + TX(rx + 58, 154, 'KM2') + TX(rx + 62, 138, '13') + TX(rx + 62, 170, '14') + dot(rx, 122) + dot(rx, 180) + AR(rx + 60, 200, 'التثبيت لازم', 'sy-s') + AR(rx + 60, 214, '(سيفصل التايمر)', 'sy-s');
-  s += coil(rx, 250, 'KM2') + `<path class="sy" d="M${rx} 278V${N}"/>`;
-  s += AR(x + 40, 22, 'الخطوة 1') + AR(rx + 30, 22, 'الخطوة 2 بدل START');
-  return wrap(W, 350, s, 'نمط كونتاكت التايمر بدل START');
-};
-// pattern 3: the ring (three steps, the last timer restarts the first)
-const patRing = () => {
-  const L = 40, N = 300, W = 520; let s = buses(W, L, N);
-  const step = (x, prevT, nextKM, tag, tt) => {
-    s += `<path class="sy" d="M${x} ${L}V70"/>` + (prevT ? tNO(x, 70) + TX(x + 8, 90, prevT) + nums(x, 70, '15', '18') : cNO(x, 70) + TX(x + 8, 94, 'S1') + nums(x, 70, '13', '14'));
-    s += `<path class="sy" d="M${x} 62H${x+44}V70M${x+44} 110V120H${x}M${x} 110V130"/>` + cNO(x + 44, 70) + TX(x + 52, 94, tag) + dot(x, 62) + dot(x, 120);
-    s += cNC(x, 130) + TX(x + 10, 154, nextKM) + nums(x, 130, '21', '22');
-    s += `<path class="sy" d="M${x} 170V190"/>` + coil(x, 190, tag) + `<path class="sy" d="M${x} 218V${N}"/>`;
-    s += `<path class="sy" d="M${x} 180H${x+66}V190M${x+66} 218V${N}"/>` + dot(x, 180) + tcoil(x + 66, 190, tt);
-  };
-  step(70, null, 'KM2', 'KM1', 'KT1'); step(230, 'KT1', 'KM3', 'KM2', 'KT2'); step(390, 'KT2', 'KM1', 'KM3', 'KT3');
-  // the loop back: KT3 15-18 in parallel with S1
-  s += `<path class="sy-d" d="M70 62H46V256H500V240"/><path class="sy" d="M494 246l6 -8l6 8" style="stroke-width:1.5"/>` + AR(270, 274, 'KT3 15-18 موازٍ لـ START: تعود الحلقة إلى بدايتها', '') + AR(270, 292, 'و STOP وحده يوقفها', '');
-  s += AR(110, 22, 'المرحلة 1') + AR(270, 22, 'المرحلة 2') + AR(430, 22, 'المرحلة 3');
-  return wrap(W, 304, s, 'نمط الحلقة: كل مرحلة توقف السابقة، وتايمرها يبدأ التالية');
-};
-// timing diagram of exercise 18 (as a figure)
-const seqChart = () => {
-  const W = 470, rows = [['M1', [[0, 5]]], ['M2', [[0, 10]]], ['M3', [[5, 10]]]], x0 = 70, px = 34, L = 'ب';
-  let s = `<path class="sy" d="M${x0} 20V140"/>` + TX(x0, 160, 'START', 'middle') + `<path class="sy-d" d="M${x0 + 5 * px} 20V140M${x0 + 10 * px} 20V140"/>` + TX(x0 + 5 * px, 160, 'T1 = 5 ث', 'middle') + TX(x0 + 10 * px, 160, 'T1 + T2 = 10 ث', 'middle');
-  rows.forEach((r, i) => { const y = 40 + i * 36; s += TX(x0 - 10, y + 16, r[0], 'end', 13) + `<path class="sy-d" d="M${x0} ${y+20}H${x0 + 11 * px}"/>`; r[1].forEach(seg => s += `<rect x="${x0 + seg[0] * px}" y="${y}" width="${(seg[1] - seg[0]) * px}" height="20" rx="3" fill="var(--good)" opacity=".8"/>`); });
-  return wrap(W, 170, s, 'مخطط الزمن للتمرين 18');
-};
+      <div class="card">
+        <h2><span data-t="station"></span><span class="note" data-t="holdHint"></span></h2>
+        <div class="station">
+          <div class="lamps" id="lamps"></div>
+          <div class="btns" id="btns"></div>
+          <div id="selWrap" class="selw" hidden></div>
+        </div>
+        <label class="chk" style="margin-top:8px"><input type="checkbox" id="latch"><span data-t="latch"></span></label>
+      </div>
 
-CL.lesson({
-  id:'l5', n:5, title:'الدرس 5: التايمرات',
-  intro:'<p>اختر عنصرًا وتابعه: <b>تعريف</b> ← <b>الشكل والرمز</b> ← <b>جرّب</b> ← <b>وصّل بيدك</b> ← <b>أسئلة</b>. في التايمر يمضي الزمن فعليًا: على اللوحة <b>عدّاد</b> لكل تايمر وزر <b>⏩</b> يسرّع الزمن، وأزرار <b>t −/+</b> تغيّر الزمن المضبوط. التمارين العملية 14 إلى 24 كلها هنا، وكالعادة: «<b>أرني الحل</b>» يُظهر خطوطًا متقطعة، وأنت من يوصّل بيده.</p>',
-  elements:[
-  /* ---------------------------------------------------------------- 1. TON */
-  {id:'ton', icon:'timer', title:'تايمر On-delay (TON)', goal:'<b>تأخير عند التشغيل</b>: يصل الجهد إلى الملف، ويُعدّ الزمن، وبعد <span class="term">t</span> ينقلب الكونتاكت <span class="term">15-16-18</span>. إنه أشهر تايمر في اللوحات.',
-   steps:[
-    {kind:'text', title:'تعريف', html:`
-     <div class="lsec lb">
-     <p>التايمر <bdi dir="ltr">On-delay</bdi>: يصل الجهد إلى الملف، ثم <b>ينتظر الزمن t</b>، وبعدها ينقلب الكونتاكت.</p>
-     <p>أطرافه: <span class="term">A1-A2</span> الملف، و<span class="term">15</span> المشترك، و<span class="term">16</span> NC <b>يُفتح</b> بعد الزمن، و<span class="term">18</span> NO <b>يُغلق</b> بعد الزمن. فإذا أردت تشغيل شيء بعد الزمن فاستخدم 18، وإذا أردت إيقافه بعد الزمن فاستخدم 16.</p>
-     <p>الزمن = <b>القرص × المدى</b>: القرص على 5 والمدى 10 s يعني 5 ثوانٍ. وفي التايمرات ذات القاعدة: الأطراف 5-6-8 كونتاكت مؤقّت، و1-2-4 كونتاكت لحظي.</p>
-     <p class="alert">إذا كان المدى على 1 min والمطلوب 10 s فستبدو الدائرة «لا تعمل» وهي ما زالت تنتظر.</p>
-     </div>`},
-    {kind:'art', title:'الشكل والرمز', items:[
-      {title:'تايمر On-delay على قضيب DIN ومخطط الزمن', dev:KT('KT1', 'on', 5, 'تايمر On-delay'), art:'timerArt', nema:['tr', 'notc', 'ncto'], cap:'من الأمام: القرص المدرّج، ومفتاح المدى RANGE، وLED للجهد U وللعدّ R، والأطراف A1 و15 في الأعلى، وA2 و16 و18 في الأسفل. مخطط الزمن: يرتفع الملف، وينتظر الكونتاكت t ثم ينقلب. رمز IEC: مستطيل الملف وبداخله خط (علامة التأخير)، وعلى الكونتاكت نصف دائرة (مظلة) باتجاه التأخير. NEMA: ملف TR، والكونتاكتات NOTC (مفتوح، يُغلق بعد زمن) و NCTO (مغلق، يُفتح بعد زمن) وعليها السهم.'},
-      {title:'تايمر بكونتاكت لحظي 21-22-24', dev:KT('KT2', 'on', 5, 'تايمر بكونتاكت لحظي', {inst:true}), art:'timerArt', nema:['tr', 'notc'], cap:'التايمر نفسه لكن بصف أطراف إضافي: 21-22-24 كونتاكت ينقلب فورًا مع الملف (دون مظلة في الرمز). تستخدمه عند الحاجة إلى تثبيت أو إشارة «بدأ التايمر» دون ريلاي إضافي.'}]},
-    {kind:'sim', title:'جرّب', lead:'أعطِ جهدًا للملف وراقب المصباح الأحمر والعدّاد: 15-18 مفتوح و15-16 مغلق حتى ينتهي الزمن ثم ينقلبان. اقطع الجهد: يعودان فورًا ويُصفَّر الزمن. غيّر t بالشريط، وجرّب الكونتاكت اللحظي في التايمر الثاني.', sims:[
-      {title:'تايمر On-delay (t = 5 ث)', dev:KT('KT1', 'on', 5, 'تايمر On-delay'), note:'صفوف الاستمرارية تُظهر 15-16 و15-18 في كل لحظة. اقطع الجهد قبل انتهاء الزمن: لن يحدث شيء أبدًا.'},
-      {title:'تايمر On-delay بكونتاكت لحظي', dev:KT('KT2', 'on', 3, 'تايمر بكونتاكت لحظي', {inst:true}), note:'21-24 يُغلق فورًا مع الملف، و15-18 بعد 3 ثوانٍ.'}]},
-    {kind:'bench', title:'وصّل بيدك', ex:['e14','e15','e16','w1','w2']},
-    {kind:'quiz', title:'أسئلة', qs:[
-      {q:'وصل الجهد إلى ملف تايمر On-delay. متى يُغلق 15-18؟', a:['فورًا مع الملف','بعد انتهاء الزمن t','عندما يفصل الملف'], c:1, why:'هذا معنى On-delay: يبدأ التأخير عندما يعمل الملف، وينقلب الكونتاكت بعد t.', w:['الذي يُغلق فورًا هو الكونتاكت اللحظي 21-24 إن وُجد.','','هذا Off-delay.']},
-      {q:'محرك يجب أن يتوقف بعد 10 ثوانٍ من بدء العدّ. على أي طرف يُوصَّل ملفه؟', a:['15-18','15-16','21-24'], c:1, why:'16 هو NC: مغلق ويغذّي الملف، ويُفتح بعد الزمن فيتوقف المحرك.', w:['18 مفتوح ويُغلق بعد الزمن: كان المحرك سيعمل بعد الزمن لا يتوقف.','','اللحظي لا تأخير فيه.']},
-      {q:'القرص على 3 ومفتاح المدى على 1 min. كم الزمن؟', a:['نحو 3 ثوانٍ','نحو 30 ثانية','نحو 3 دقائق'], c:2, why:'الزمن = القرص × المدى. يتدرّج القرص من 0 إلى 10 كنسبة من المدى: 3 على مدى 1 min (10 أجزاء) ≈ 18 ث في بعض الأنواع، و3 دقائق إذا كان المدى يُقرأ «لكل درجة». ارجع دائمًا إلى نشرة الجهاز، لكن المؤكد أنه لن يكون 3 ثوانٍ.', w:['3 ثوانٍ تحتاج مدى 10 s.','','']},
-      {q:'قطعت الجهد عن تايمر On-delay بعد 3 ثوانٍ من أصل 5. ماذا يحدث عند إعادته؟', a:['يكمل الثانيتين المتبقيتين','يبدأ من جديد','يُغلق الكونتاكت فورًا'], c:1, why:'التايمر العادي يُصفَّر عندما يفصل الملف. (التايمر «التراكمي» يكمل، لكنه نوع خاص.)', w:['','','']}]}
-   ]},
-  /* ---------------------------------------------------------------- 2. TOF */
-  {id:'tof', icon:'timer', title:'تايمر Off-delay (TOF)', goal:'<b>تأخير عند الفصل</b>: ينقلب الكونتاكت <b>فورًا</b> مع الملف، وعندما يفصل الملف يبقى منقلبًا <span class="term">t</span> ثم يعود. يُستخدم للمروحة والمضخة اللتين تستمران بعد التوقف.',
-   steps:[
-    {kind:'text', title:'تعريف', html:`
-     <div class="lsec lb">
-     <p>التايمر <bdi dir="ltr">Off-delay</bdi> عكسه: يُغلق الكونتاكت <b>فورًا</b> بمجرد وصول الجهد إلى الملف، وعندما يفصل الملف <b>يكمل الكونتاكت الزمن t</b> ثم يعود.</p>
-     <p>نستخدمه في مروحة تبريد تستمر بعد توقف الماكينة، ومضخة تفريغ، وإنارة سلّم.</p>
-     <p>وهو نوعان: نوع <b>بجهد</b>، ملفه عليه جهد دائم والإشارة تدخل على B1. ونوع <b>دون جهد</b>، يكمل العدّ من مكثف بداخله.</p>
-     <p class="alert">يعمل فورًا أو يستمر بعد STOP؟ غالبًا <b>وضع التايمر خاطئ</b>.</p>
-     </div>`},
-    {kind:'art', title:'الشكل والرمز', items:[
-      {title:'تايمر Off-delay ومخطط الزمن', dev:KT('KT1', 'off', 5, 'تايمر Off-delay'), art:'timerArt', nema:['tr', 'noto', 'nctc'], cap:'الجسم نفسه والأطراف نفسها، والفرق في الوظيفة (الخط في رمز الملف في الأسفل بدل الأعلى، والمظلة على الكونتاكت مقلوبة). مخطط الزمن: يرتفع الكونتاكت مع الملف فورًا وينزل بعد الملف بـ t. NEMA: NOTO (مفتوح، يُفتح بعد زمن) و NCTC (مغلق، يُغلق بعد زمن).'}]},
-    {kind:'sim', title:'جرّب', lead:'أعطِ جهدًا: يُغلق 15-18 فورًا. اقطع الجهد: يبدأ العدّاد ويبقى 15-18 مغلقًا حتى ينتهي t. أعطِ جهدًا مرة أخرى قبل انتهاء الزمن: يُصفَّر الزمن ويبقى مغلقًا.', sims:[
-      {title:'تايمر Off-delay (t = 5 ث)', dev:KT('KT1', 'off', 5, 'تايمر Off-delay'), note:'قارنه بتايمر On-delay في العنصر الأول: هنا يبدأ العدّ عند الفصل.'}]},
-    {kind:'bench', title:'وصّل بيدك', ex:['f1']},
-    {kind:'quiz', title:'أسئلة', qs:[
-      {q:'مروحة يجب أن تستمر دقيقة بعد توقف الفرن. ماذا تستخدم؟', a:['On-delay','Off-delay','تايمر دوري'], c:1, why:'التأخير مطلوب عند الفصل: Off-delay، والمروحة على 15-18.', w:['On-delay كان سيؤخّر تشغيل المروحة لا توقفها.','','']},
-      {q:'في تايمر Off-delay، متى يُغلق 15-18؟', a:['فورًا مع الملف','بعد t من التشغيل','بعد t من الفصل'], c:0, why:'في Off-delay ينقلب الكونتاكت فورًا، والتأخير كله عند الفصل (يُفتح بعد t من فصل الملف).', w:['','هذا On-delay.','هذا وقت فتحه لا غلقه.']},
-      {q:'ما الفرق بين Off-delay بطرف B1 و True off-delay؟', a:['لا فرق، اسمان للتايمر نفسه','الأول بإشارة B1، والثاني بالملف','الثاني أدق في التوقيت'], c:1, why:'True off-delay يخزن طاقة بداخله ليكمل التأخير دون جهد.', w:['','','الدقة واحدة، والفرق في طريقة التوصيل.']}]}
-   ]},
-  /* ---------------------------------------------------------------- 3. cyclic + multi-function */
-  {id:'cyc', icon:'cycle', title:'التايمر الدوري ومتعدد الوظائف', goal:'<b>Flasher</b>: يعمل <span class="term">ton</span> ويتوقف <span class="term">toff</span>، وهكذا… طالما على الملف جهد. و<b>متعدد الوظائف</b>: تايمر واحد بمفتاح تختار منه الوظيفة.',
-   steps:[
-    {kind:'text', title:'تعريف', html:`
-     <div class="lsec lb">
-     <p>يُغلق التايمر الدوري زمن <b>ton</b> ويُفتح زمن <b>toff</b> ثم يعيد. نستخدمه في مصباح وامض، وتزييت دوري، وتبادل محركين.</p>
-     <p>وفي التايمر متعدد الوظائف تختار الوضع بحرف: <b>A</b> يعني On-delay، و<b>B</b> يعني Off-delay، و<b>C / D</b> يعني Flasher يبدأ بـ OFF أو ON، و<b>E / F</b> نبضة.</p>
-     <p class="tip">بعد الضبط أغلق الغطاء الشفاف. في المحاكي: زر <b>FUNC</b> والتايمر مفصول.</p>
-     </div>`},
-    {kind:'art', title:'الشكل والرمز', items:[
-      {title:'تايمر متعدد الوظائف على وضع Flasher', dev:KT('KT1', 'cyc', 5, 'تايمر متعدد الوظائف', {multi:true, ton:2, toff:2, range:'0.1 s – 100 h'}), art:'timerArt', nema:['tr'], cap:'الجسم نفسه مع مفتاح FUNC لاختيار الوظيفة. في مخطط الزمن: يُغلق الكونتاكت ton ويُفتح toff طالما على الملف جهد. في رمز IEC: علامة النبضات في الملف وخط متقطع على الكونتاكت. وفي NEMA لا يوجد رمز خاص للدوري: ملف TR ويُكتب بجانبه «Repeat cycle».'}]},
-    {kind:'sim', title:'جرّب', lead:'أعطِ جهدًا واتركه: يُغلق الكونتاكت ويُفتح بالتبادل وترى العدّاد يعيد. في التايمر متعدد الوظائف اختر الوظيفة من القائمة ولاحظ أن الملف نفسه يعطي 3 سلوكيات مختلفة.', sims:[
-      {title:'تايمر دوري (ton = toff = 3 ث)', dev:KT('KT1', 'cyc', 3, 'تايمر دوري', {ton:3, toff:3}), note:'يبدأ بـ ON. إذا أردته أن يبدأ بـ OFF فاختر الوضع C بدل D في التايمر متعدد الوظائف.'},
-      {title:'تايمر متعدد الوظائف (A / B / C)', dev:KT('KT2', 'on', 4, 'تايمر متعدد الوظائف', {multi:true}), note:'غيّر الوظيفة وكرر التجربة: أعطِ جهدًا، وانتظر، ثم اقطع.'}]},
-    {kind:'bench', title:'وصّل بيدك', ex:['c1','e21']},
-    {kind:'quiz', title:'أسئلة', qs:[
-      {q:'مصباح إنذار يجب أن يومض ثانية مضيئًا وثانية مطفأً طالما العطل موجود. ماذا تستخدم؟', a:['On-delay','Off-delay','تايمر دوري'], c:2, why:'الدوري هو الذي يقلب كونتاكته بالتبادل طالما على ملفه جهد.', w:['On-delay ينقلب مرة واحدة فقط.','','']},
-      {q:'تايمر متعدد الوظائف في دائرة تتابع «لا تعمل»: M2 يعمل مع M1 فورًا. ما أول ما تفحصه؟', a:['الأسلاك كلها من البداية','مفتاح الوظيفة FUNC','ملف الكونتاكتور KM2'], c:1, why:'هذه الأعراض هي أعراض Off-delay بالضبط: يُغلق الكونتاكت فورًا. افحص مفتاح الوظيفة قبل الأسلاك.', w:['','','']},
-      {q:'ماذا يوجد في التايمر الدوري غير المتماثل (Asymmetric)؟', a:['قرص واحد للزمنين','قرصان: ton و toff','كونتاكتان منفصلان'], c:1, why:'الزمنان مستقلان: مثلًا يعمل 5 ثوانٍ ويتوقف دقيقة.', w:['','','']}]}
-   ]},
-  /* ---------------------------------------------------------------- 4. timer circuits */
-  {id:'cir', icon:'ring', title:'دوائر بالتايمر', goal:'الأنماط الثلاثة التي تُبنى منها كل دوائر التايمر: <b>التايمر في دائرة التثبيت</b>، و<b>كونتاكت التايمر بدل START</b>، و<b>الحلقة</b>. ومعها كل تمارين المدرب من 17 إلى 24.',
-   steps:[
-    {kind:'text', title:'تعريف', html:`
-     <div class="lsec lb">
-     <p>كل دائرة تايمر مبنية من <b>ثلاث أفكار</b>. الأولى <b>تايمر في التثبيت</b>: ملفه على التوازي مع KM1، وكونتاكته 15-18 يشغّل KM2.</p>
-     <p>الثانية <b>كونتاكت تايمر بدل START</b>، فتصنع سلسلة: KT1 ثم KM2 ثم KT2 ثم KM3. والثالثة <b>الحلقة</b>: كونتاكت آخر تايمر 15-18 على التوازي مع START، فتعيد الدورة نفسها.</p>
-     <p>وعندما تقرأ أي دائرة اسأل عن كل عنصر فيها: من يشغّله؟ ومن يثبّته؟ ومن يوقفه؟</p>
-     <p class="alert">يجب أن يبقى على ملف التايمر جهد <b>طوال العدّ</b>.</p>
-     <p class="tip">في التمرين 23 يبدّل الليمت سويتش الخطوات بدل التايمر.</p>
-     </div>`},
-    {kind:'art', title:'الشكل والرمز', items:[
-      {title:'نمط 1: التايمر في دائرة التثبيت', dev:KT('KT1', 'on', 5), art:patHold, noSym:true, cap:'دائرة التحكم فقط (القوى مثل DOL لكل محرك). ملف KT1 موازٍ لملف KM1، والكونتاكت 15-18 في خط KM2. يوقف STOP الجميع لأنه قبل الاثنين.'},
-      {title:'نمط 2: كونتاكت التايمر بدل START', dev:KT('KT1', 'on', 5), art:patStart, noSym:true, cap:'تبدأ الخطوة الثانية بكونتاكت التايمر مكان START وتثبّت نفسها، وكونتاكتها NC يوقف الخطوة الأولى (التمرين 15). التثبيت ضروري لأن التايمر سيفصل مع KM1.'},
-      {title:'نمط 3: الحلقة', dev:KT('KT1', 'on', 5), art:patRing, noSym:true, cap:'ثلاث مراحل، كل مرحلة توقف السابقة (NC) وتايمرها يبدأ التالية، وآخر تايمر يعود إلى المرحلة الأولى موازيًا لـ START. تدور حتى STOP (التمرين 17).'},
-      {title:'مخطط الزمن للتمرين 18', dev:KT('KT1', 'on', 5), art:seqChart, noSym:true, cap:'قبل توصيل أي تمرين ارسم مخطط الزمن هذا: ما الذي يعمل في كل فترة. هو الذي يحدد عدد التايمرات المطلوبة، ومن يبدأ من، ومن يوقف من.'}]},
-    {kind:'sim', title:'جرّب', lead:'قبل الدخول إلى اللوحة راجع سلوك الكونتاكتين اللذين ستستخدمهما في السلسلة: 15-18 (يُغلق بعد الزمن) و15-16 (يُفتح بعد الزمن). الزمن هنا 5 ثوانٍ مثل التمارين.', sims:[
-      {title:'تايمر On-delay (t = 5 ث)', dev:KT('KT1', 'on', 5, 'تايمر المرحلة'), note:'في السلسلة: ما سيبدأ على 18، وما سيتوقف على 16.'}]},
-    {kind:'bench', title:'وصّل بيدك', ex:['e17','e18','e19','e20','e22','e23','e24']},
-    {kind:'quiz', title:'أسئلة', qs:[
-      {q:'في دائرة التتابع، أين يُوصَّل ملف التايمر KT1؟', a:['بعد كونتاكته 15-18','على التوازي مع ملف KM1','على زر START مباشرة'], c:1, why:'يجب أن يبقى عليه جهد طوال العدّ، وملف KM1 المثبّت هو أنسب مكان.', w:['بعد كونتاكته هو سيرتعش: يُغلق فيعمل فيُفتح.','','START نبضة، وسيُصفَّر التايمر بمجرد تركه.']},
-      {q:'تريد أن يعمل M2 بعد M1 بزمن، وأن يتوقف M1 عندما يعمل M2. ماذا يحتاج KM2؟', a:['كونتاكت التايمر فقط','تايمر + تثبيت + NC في KM1','تايمر ثانٍ بعد الأول بزمن'], c:1, why:'عندما يفصل KM1 يفصل التايمر معه ويُفتح 15-18، لذا يجب أن يكون KM2 قد ثبّت نفسه.', w:['','','']},
-      {q:'حلقة 3 محركات تتوقف بعد دورة واحدة. ما السبب غالبًا؟', a:['15-18 الثالث لا يعود إلى START','المحرك الثالث تالف ولا يجذب','زمن التايمرات قصير'], c:0, why:'العودة إلى الخطوة الأولى هي التي تصنع الحلقة، ودونها تصبح سلسلة تنتهي.', w:['','','']},
-      {q:'محرك يمين/يسار بالتبادل مع توقف. متى يصل الجهد إلى ملف تايمر التوقف؟', a:['طوال الوقت','مع كونتاكتور اليمين','والاثنان متوقفان'], c:2, why:'التوقف هو الفترة التي لا يعمل فيها أي اتجاه، فيعدّ التايمر فيها فقط، وبعدها يبدأ الاتجاه التالي.', w:['','','']},
-      {q:'في التمرين 23، من يوقف العربة عند B؟', a:['التايمر بعد زمنه','الليمت LS2 بـ NC في KM1','زر STOP في البداية'], c:1, why:'يستشعر الليمت سويتش مكان العربة ويقطع كونتاكتور الذهاب، وبكونتاكته NO يبدأ المضخة والتايمر.', w:['التايمر يحدد زمن المضخة فقط.','','']}]}
-   ]}
-  ],
-  exercises:L5EX
-});
-})();
-</script>
-<script src="/assets/i18n.js?v=20261021w"></script>
+      <div class="card" id="timerCard" hidden style="display:grid;gap:10px">
+        <h2 data-t="timers"></h2>
+        <div id="timerList" style="display:grid;gap:10px"></div>
+      </div>
+
+      <div class="card" id="procCard" hidden style="display:grid;gap:10px"></div>
+
+      <div class="card" style="display:grid;gap:10px">
+        <h2 data-t="supplyBox"></h2>
+        <div class="sw"><span data-t="mains"></span><button type="button" id="bMains"></button></div>
+        <div class="sw"><span data-t="q1"></span><button type="button" id="bQ1"></button></div>
+        <div class="ctl"><label for="rLoad"><span data-t="load"></span><span class="mono" id="vLoad"></span></label><input type="range" id="rLoad" min="0" max="200" step="5" value="70"></div>
+        <div class="ctl"><label for="rIr"><span data-t="ir"></span><span class="mono" id="vIr"></span></label><input type="range" id="rIr" min="4" max="16" step="0.5" value="11"><span class="note" id="irNote"></span></div>
+        <div class="ctl"><label><span data-t="heat"></span><span class="mono" id="vHeat"></span></label><div class="bar"><i id="heatBar"></i></div></div>
+        <div id="resetBtns" class="row"></div>
+        <span class="note" id="resetNote"></span>
+      </div>
+
+      <div class="card" id="faultCard">
+        <h2><span data-t="faults"></span><button type="button" id="bClear" data-t="clear" style="font-size:12px;padding:4px 10px"></button></h2>
+        <div class="flist" id="flist"></div>
+      </div>
+
+      <div class="card" id="traceCard" hidden>
+        <h2><span data-t="traceTitle"></span><span class="pill in" id="score"></span></h2>
+        <div style="display:grid;gap:8px">
+          <div class="msg in" data-t="traceIntro"></div>
+          <label for="suspect" class="note" data-t="suspect"></label>
+          <select id="suspect"></select>
+          <div class="row"><button type="button" id="bCheck" data-t="check"></button><button type="button" id="bNew" data-t="newFault"></button><button type="button" id="bShow" data-t="showAns"></button></div>
+          <div id="traceMsg"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="meter">
+          <div class="mh"><span data-t="meter"></span><button type="button" id="bProbes" data-t="meterClear"></button></div>
+          <div class="lcd" id="lcd">-- <small>V~</small></div>
+          <div class="probes"><span><i style="background:#111;border:1px solid #fff"></i>COM: <b id="pB">—</b></span><span><i style="background:#d33"></i>V: <b id="pR">—</b></span></div>
+        </div>
+        <p class="note" style="margin:8px 0 0" data-t="meterHint"></p>
+      </div>
+      </div>
+    </aside>
+
+    <div class="below">
+      <div id="belowD" class="sidegrp" hidden></div>
+      <div id="belowC" class="sidegrp">
+      <div class="tiles" id="tiles">
+        <div class="tile"><span class="k" data-t="tMotor"></span><span class="v txt" id="tMotor"></span></div>
+        <div class="tile"><span class="k" data-t="tSpeed"></span><span class="v" id="tSpeed"></span></div>
+        <div class="tile"><span class="k" data-t="tCur"></span><span class="v" id="tCur"></span></div>
+        <div class="tile"><span class="k" data-t="tHeat"></span><span class="v" id="tHeat"></span></div>
+        <div class="tile"><span class="k" data-t="tCtrl"></span><span class="v txt" id="tCtrl"></span></div>
+        <div class="tile" id="tProcW" hidden><span class="k" id="tProcK"></span><span class="v txt" id="tProc"></span></div>
+      </div>
+      <div class="c2">
+        <div class="card"><h2 data-t="steps"></h2><ol class="steps" id="steps"></ol></div>
+        <div class="card"><h2 data-t="log"></h2><ul class="log" id="log"></ul></div>
+      </div>
+      <div class="card"><h2 data-t="devices"></h2><div class="tbl"><table><thead><tr><th data-t="thTag"></th><th data-t="thDesc"></th><th data-t="thState"></th></tr></thead><tbody id="devs"></tbody></table></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="learn">
+    <div class="card"><h2 data-t="explain"></h2><div id="explain"></div></div>
+    <div style="display:grid;gap:16px">
+      <div class="card"><h2 data-t="challenges"></h2><ul class="chal" id="chal"></ul></div>
+      <div class="card"><h2 data-t="quiz"></h2><div class="quiz" id="quiz"></div></div>
+    </div>
+  </section>
+  <nav class="row" id="pager" style="justify-content:space-between"></nav>
+</div>
+
+<script>window.CC_PAGES=1;window.CC_LESSON="dol";window.CC_LANG="ar";</script>
+<script src="/classic-control-lab/cc.js?v=20261113cd"></script>
 </body>
 </html>
