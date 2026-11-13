@@ -67,7 +67,7 @@ const SND = FX.sound = {
     if (level > 0){ S.hum.g.gain.cancelScheduledValues(t); S.hum.g.gain.setTargetAtTime(0.07 * clamp(level, 0.3, 1), t, 0.25); }
     else { const h = S.hum; S.hum = null; h.g.gain.cancelScheduledValues(t); h.g.gain.setTargetAtTime(0.0001, t, 0.15); try { h.o1.stop(t + 0.8); h.o2.stop(t + 0.8); } catch (_) {} }
   },
-  mute(v){ S.muted = !!v; st.set('mute', S.muted ? 1 : null); if (S.master) S.master.gain.setTargetAtTime(S.muted ? 0 : 0.25, S.ctx.currentTime, 0.05); if (S.muted) SND.hum(0); document.querySelectorAll('.fx-mute').forEach(b => { b.textContent = S.muted ? '🔇' : '🔊'; b.setAttribute('aria-pressed', S.muted ? 'true' : 'false'); b.title = S.muted ? 'الصوت مقفول: دوس عشان تفتحه' : 'الصوت شغال: دوس عشان تقفله'; }); },
+  mute(v){ S.muted = !!v; st.set('mute', S.muted ? 1 : null); if (S.master) S.master.gain.setTargetAtTime(S.muted ? 0 : 0.25, S.ctx.currentTime, 0.05); if (S.muted) SND.hum(0); document.querySelectorAll('.fx-mute').forEach(b => { b.textContent = S.muted ? '🔇' : '🔊'; b.setAttribute('aria-pressed', S.muted ? 'true' : 'false'); b.title = S.muted ? 'الصوت مغلق: اضغط لتشغيله' : 'الصوت يعمل: اضغط لإغلاقه'; }); },
   get muted(){ return S.muted; }, get ctx(){ return S.ctx; }, get voices(){ return S.voices; }, get created(){ return S.created; }
 };
 function mountMute(){
@@ -92,7 +92,7 @@ if (typeof CL.taskCard === 'function' && !/storyCard/.test(String(CL.taskCard)))
 
 /* =========================== 3. live machines =========================== */
 const M = FX.machines = {};
-const MOTOR_AR = {line:'الماكينة', conveyor:'السير', hoist:'الونش', pump:'الطلمبة', fan:'المروحة', compressor:'الكباس', lathe:'المخرطة', door:'الباب', gauge:'الموتور', mixer:'الخلاط'};
+const MOTOR_AR = {line:'الماكينة', conveyor:'السير', hoist:'الونش', pump:'المضخة', fan:'المروحة', compressor:'الضاغط', lathe:'المخرطة', door:'الباب', gauge:'المحرك', mixer:'الخلاط'};
 const lampDot = (x, y, id) => `<circle class="lamp" data-lamp="${id}" cx="${x}" cy="${y}" r="4"/>`;
 const motorIcon = (x, y, id, lab) => `<g data-motor="${id}">${window.RA ? RA.minimotor(x - 2, y - 7, 40, 30) : `<rect x="${x}" y="${y}" width="34" height="20" rx="6" fill="#5d7f96"/><rect x="${x + 9}" y="${y - 5}" width="16" height="6" rx="1.5" fill="#8f979c"/>`}<text x="${x + 17}" y="${y + 14}" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">${esc(id)}</text>${lampDot(x + 40, y + 10, id)}<text x="${x + 17}" y="${y + 33}" text-anchor="middle" font-size="9.5">${esc(lab || '')}</text></g>`;
 const spin = (x, y, r, id) => `<g class="spin" data-spin="${id}">${[0, 90, 180, 270].map(a => `<path d="M${x} ${y}L${x + r * Math.cos(a * Math.PI / 180)} ${y + r * Math.sin(a * Math.PI / 180)}" stroke="#2a2d30" stroke-width="2.4"/>`).join('')}<circle cx="${x}" cy="${y}" r="${r * .3}" fill="#2a2d30"/></g>`;
@@ -112,14 +112,14 @@ M.conveyor = {
 // ---- hoist: cage between two limit switches, driven by the cart position
 M.hoist = {
   title: () => 'الونش',
-  draw(c){ const id = c.motors[0]; return {W:320, H:150, svg:`<rect x="140" y="8" width="60" height="6" fill="#e0a21b" stroke="#8a6200"/><rect x="40" y="14" width="6" height="128" fill="#8f979c"/><rect x="254" y="14" width="6" height="128" fill="#8f979c"/><path d="M46 20L254 20M46 142L254 142" stroke="#8f979c" stroke-width="3"/><rect x="48" y="24" width="30" height="8" fill="#c3c7ca" stroke="#6d7479"/><text x="86" y="31" font-size="9">LS فوق</text><rect x="48" y="122" width="30" height="8" fill="#c3c7ca" stroke="#6d7479"/><text x="86" y="129" font-size="9">LS تحت</text><path data-rope="1" d="M170 14V96" stroke="#333" stroke-width="2"/><g data-cage="1" transform="translate(120 96)"><rect width="100" height="42" rx="3" fill="#8a9096" stroke="#333"/><path d="M0 14h100M0 28h100M25 0v42M50 0v42M75 0v42" stroke="#5a6065"/><rect x="8" y="14" width="18" height="14" fill="#c99a5b" stroke="#6b4a1f"/></g><path class="arrow" data-arrow="1" d="M290 90V50m-7 8l7-8l7 8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>${motorIcon(268, 110, id, 'الونش')}`}; },
+  draw(c){ const id = c.motors[0]; return {W:320, H:150, svg:`<rect x="140" y="8" width="60" height="6" fill="#e0a21b" stroke="#8a6200"/><rect x="40" y="14" width="6" height="128" fill="#8f979c"/><rect x="254" y="14" width="6" height="128" fill="#8f979c"/><path d="M46 20L254 20M46 142L254 142" stroke="#8f979c" stroke-width="3"/><rect x="48" y="24" width="30" height="8" fill="#c3c7ca" stroke="#6d7479"/><text x="86" y="31" font-size="9">LS أعلى</text><rect x="48" y="122" width="30" height="8" fill="#c3c7ca" stroke="#6d7479"/><text x="86" y="129" font-size="9">LS أسفل</text><path data-rope="1" d="M170 14V96" stroke="#333" stroke-width="2"/><g data-cage="1" transform="translate(120 96)"><rect width="100" height="42" rx="3" fill="#8a9096" stroke="#333"/><path d="M0 14h100M0 28h100M25 0v42M50 0v42M75 0v42" stroke="#5a6065"/><rect x="8" y="14" width="18" height="14" fill="#c99a5b" stroke="#6b4a1f"/></g><path class="arrow" data-arrow="1" d="M290 90V50m-7 8l7-8l7 8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>${motorIcon(268, 110, id, 'الونش')}`}; },
   update(root, S){ const id = root.dataset.m0, m = S.mot[id] || {}, x = S.cart ? S.cart.x : 0.5, y = 32 + (1 - clamp(x, 0, 1)) * 64; const cg = root.querySelector('[data-cage]'); if (cg) cg.setAttribute('transform', `translate(120 ${y.toFixed(1)})`); const rp = root.querySelector('[data-rope]'); if (rp) rp.setAttribute('d', `M170 14V${y.toFixed(1)}`); const ar = root.querySelector('[data-arrow]'); if (ar){ ar.classList.toggle('on', !!m.run); ar.setAttribute('transform', (m.dir || 1) * (S.cartSign || 1) < 0 ? 'translate(0 140) scale(1 -1)' : ''); } setLamp(root, id, m.run, m.fault); }
 };
 // ---- pump: fills a tank, float switches marked
 M.pump = {
-  title: () => 'الطلمبة والخزان',
+  title: () => 'المضخة والخزان',
   draw(c){ const id = c.motors[0]; const fl = c.levels.map(l => `<g><path d="M${86} ${118 - l.at * 90}h148" stroke="#1f6fd1" stroke-dasharray="3 3"/><text x="238" y="${121 - l.at * 90}" font-size="9">${esc(l.id)}</text></g>`).join('');
-    return {W:320, H:150, svg:`<rect x="84" y="24" width="150" height="96" rx="4" fill="none" stroke="#56656f" stroke-width="3"/><rect class="water" data-water="1" x="86" y="118" width="146" height="0"/>${fl}<g data-rip="1" transform="translate(159 0)"><circle class="ripple" data-ripy="1" cx="0" cy="118" r="14"/><circle class="ripple r2" data-ripy="2" cx="0" cy="118" r="14"/></g><path d="M60 120V132H84M60 120V96H84" fill="none" stroke="#8f979c" stroke-width="5"/><path d="M234 60h30" stroke="#8f979c" stroke-width="5"/><circle cx="48" cy="120" r="16" fill="#5d7f96" stroke="#2a2d30"/>${spin(48, 120, 11, id)}${motorIcon(12, 20, id, 'الطلمبة')}<text data-lvl="1" x="160" y="18" text-anchor="middle" class="mono" font-size="11">0 %</text>`}; },
+    return {W:320, H:150, svg:`<rect x="84" y="24" width="150" height="96" rx="4" fill="none" stroke="#56656f" stroke-width="3"/><rect class="water" data-water="1" x="86" y="118" width="146" height="0"/>${fl}<g data-rip="1" transform="translate(159 0)"><circle class="ripple" data-ripy="1" cx="0" cy="118" r="14"/><circle class="ripple r2" data-ripy="2" cx="0" cy="118" r="14"/></g><path d="M60 120V132H84M60 120V96H84" fill="none" stroke="#8f979c" stroke-width="5"/><path d="M234 60h30" stroke="#8f979c" stroke-width="5"/><circle cx="48" cy="120" r="16" fill="#5d7f96" stroke="#2a2d30"/>${spin(48, 120, 11, id)}${motorIcon(12, 20, id, 'المضخة')}<text data-lvl="1" x="160" y="18" text-anchor="middle" class="mono" font-size="11">0 %</text>`}; },
   update(root, S, dt){ const id = root.dataset.m0, m = S.mot[id] || {}, lvl = S.tank ? S.tank.lvl : 0, h = 94 * clamp(lvl, 0, 1); const w = root.querySelector('[data-water]'); if (w){ w.setAttribute('y', (118 - h).toFixed(1)); w.setAttribute('height', h.toFixed(1)); } root.querySelectorAll('[data-ripy]').forEach(r => r.setAttribute('cy', (118 - h).toFixed(1))); const t = root.querySelector('[data-lvl]'); if (t) t.textContent = Math.round(lvl * 100) + ' %'; rot(root, id, m.run ? (m.dir || 1) * 540 * dt : 0); setLamp(root, id, m.run, m.fault); }
 };
 // ---- fan
@@ -130,27 +130,27 @@ M.fan = {
 };
 // ---- compressor: air tank + pressure gauge needle + piston
 M.compressor = {
-  title: () => 'كباس الهوا',
-  draw(c){ const id = c.motors[0], max = c.max || 10; return {W:320, H:150, svg:`<rect x="110" y="70" width="150" height="56" rx="26" fill="#8f979c" stroke="#4b5257" stroke-width="2"/><path d="M120 98h130" stroke="#6d7479"/><circle cx="230" cy="40" r="28" fill="#f4f4f1" stroke="#555" stroke-width="2"/>${[0, 1, 2, 3, 4].map(k => { const a = (-210 + k * 60) * Math.PI / 180; return `<path d="M${230 + 22 * Math.cos(a)} ${40 + 22 * Math.sin(a)}L${230 + 26 * Math.cos(a)} ${40 + 26 * Math.sin(a)}" stroke="#333" stroke-width="1.5"/>`; }).join('')}<text x="230" y="60" text-anchor="middle" font-size="8">bar · max ${max}</text><path class="needle" data-needle="1" d="M230 40L230 18" stroke="#d32f2f" stroke-width="2.5" stroke-linecap="round" transform="rotate(-120)"/><circle cx="230" cy="40" r="3" fill="#333"/><rect x="40" y="80" width="56" height="40" rx="6" fill="#3b3f43"/><rect x="60" y="56" width="16" height="30" fill="#aab1b6" stroke="#4b5257"/><rect data-piston="1" x="62" y="60" width="12" height="10" fill="#d9924f"/><path d="M96 100h14" stroke="#6d7479" stroke-width="5"/><text data-bar="1" x="230" y="44" text-anchor="middle" class="mono" font-size="0"></text><text data-bart="1" x="185" y="118" text-anchor="middle" class="mono" font-size="11">0.0 bar</text>${motorIcon(8, 20, id, 'الكباس')}`}; },
+  title: () => 'ضاغط الهواء',
+  draw(c){ const id = c.motors[0], max = c.max || 10; return {W:320, H:150, svg:`<rect x="110" y="70" width="150" height="56" rx="26" fill="#8f979c" stroke="#4b5257" stroke-width="2"/><path d="M120 98h130" stroke="#6d7479"/><circle cx="230" cy="40" r="28" fill="#f4f4f1" stroke="#555" stroke-width="2"/>${[0, 1, 2, 3, 4].map(k => { const a = (-210 + k * 60) * Math.PI / 180; return `<path d="M${230 + 22 * Math.cos(a)} ${40 + 22 * Math.sin(a)}L${230 + 26 * Math.cos(a)} ${40 + 26 * Math.sin(a)}" stroke="#333" stroke-width="1.5"/>`; }).join('')}<text x="230" y="60" text-anchor="middle" font-size="8">bar · max ${max}</text><path class="needle" data-needle="1" d="M230 40L230 18" stroke="#d32f2f" stroke-width="2.5" stroke-linecap="round" transform="rotate(-120)"/><circle cx="230" cy="40" r="3" fill="#333"/><rect x="40" y="80" width="56" height="40" rx="6" fill="#3b3f43"/><rect x="60" y="56" width="16" height="30" fill="#aab1b6" stroke="#4b5257"/><rect data-piston="1" x="62" y="60" width="12" height="10" fill="#d9924f"/><path d="M96 100h14" stroke="#6d7479" stroke-width="5"/><text data-bar="1" x="230" y="44" text-anchor="middle" class="mono" font-size="0"></text><text data-bart="1" x="185" y="118" text-anchor="middle" class="mono" font-size="11">0.0 bar</text>${motorIcon(8, 20, id, 'الضاغط')}`}; },
   update(root, S, dt){ const id = root.dataset.m0, m = S.mot[id] || {}, max = +root.dataset.max || 10, bar = (S.tank ? S.tank.lvl : 0) * max, a = -120 + clamp(bar / max, 0, 1) * 240; const n = root.querySelector('[data-needle]'); if (n) n.setAttribute('transform', `rotate(${a.toFixed(1)})`); const t = root.querySelector('[data-bart]'); if (t) t.textContent = bar.toFixed(1) + ' bar'; const ph = (+root.dataset.ph || 0) + (m.run ? dt * 9 : 0); root.dataset.ph = ph; const p = root.querySelector('[data-piston]'); if (p) p.setAttribute('y', (60 + 14 * (0.5 + 0.5 * Math.sin(ph))).toFixed(1)); setLamp(root, id, m.run, m.fault); }
 };
 // ---- lathe: chuck (M1 direction) + tool carriage (M2 up/down)
 M.lathe = {
-  title: () => 'ماكينة الخرط',
-  draw(c){ const [a, b] = c.motors; return {W:320, H:150, svg:`<rect x="20" y="112" width="280" height="14" fill="#56656f"/><rect x="30" y="52" width="60" height="60" fill="#3b3f43"/><g class="spin" data-spin="${a}"><circle cx="100" cy="82" r="20" fill="#8f979c" stroke="#2a2d30" stroke-width="2"/>${[0, 120, 240].map(g => `<rect x="97" y="62" width="6" height="12" fill="#2a2d30" transform="rotate(${g} 100 82)"/>`).join('')}</g><rect x="120" y="76" width="110" height="12" fill="#d9924f" stroke="#8a4f1d"/><rect x="230" y="62" width="30" height="40" fill="#3b3f43"/><g data-carriage="1" transform="translate(160 40)"><rect width="36" height="26" fill="#aab1b6" stroke="#4b5257"/><path d="M18 26v10" stroke="#2a2d30" stroke-width="4"/><text x="18" y="17" text-anchor="middle" font-size="8">القلم</text></g><path class="arrow" data-arrow="${a}" d="M100 40c14 0 22 8 22 20m-6-5l6 6l6-6" fill="none" stroke="var(--accent)" stroke-width="2.2"/>${motorIcon(8, 14, a, 'الخرط')}${motorIcon(262, 14, b, 'الارتفاع')}`}; },
+  title: () => 'ماكينة الخراطة',
+  draw(c){ const [a, b] = c.motors; return {W:320, H:150, svg:`<rect x="20" y="112" width="280" height="14" fill="#56656f"/><rect x="30" y="52" width="60" height="60" fill="#3b3f43"/><g class="spin" data-spin="${a}"><circle cx="100" cy="82" r="20" fill="#8f979c" stroke="#2a2d30" stroke-width="2"/>${[0, 120, 240].map(g => `<rect x="97" y="62" width="6" height="12" fill="#2a2d30" transform="rotate(${g} 100 82)"/>`).join('')}</g><rect x="120" y="76" width="110" height="12" fill="#d9924f" stroke="#8a4f1d"/><rect x="230" y="62" width="30" height="40" fill="#3b3f43"/><g data-carriage="1" transform="translate(160 40)"><rect width="36" height="26" fill="#aab1b6" stroke="#4b5257"/><path d="M18 26v10" stroke="#2a2d30" stroke-width="4"/><text x="18" y="17" text-anchor="middle" font-size="8">القلم</text></g><path class="arrow" data-arrow="${a}" d="M100 40c14 0 22 8 22 20m-6-5l6 6l6-6" fill="none" stroke="var(--accent)" stroke-width="2.2"/>${motorIcon(8, 14, a, 'الخراطة')}${motorIcon(262, 14, b, 'الارتفاع')}`}; },
   update(root, S, dt){ const ids = (root.dataset.ms || '').split(','), ma = S.mot[ids[0]] || {}, mb = S.mot[ids[1]] || {}; rot(root, ids[0], ma.run ? (ma.dir || 1) * 500 * dt : 0); let y = +root.dataset.cy; if (isNaN(y)) y = 40; if (mb.run) y = clamp(y - (mb.dir || 1) * 18 * dt, 16, 56); root.dataset.cy = y; const cg = root.querySelector('[data-carriage]'); if (cg) cg.setAttribute('transform', `translate(160 ${y.toFixed(1)})`); const ar = root.querySelector('[data-arrow]'); if (ar){ ar.classList.toggle('on', !!ma.run); ar.setAttribute('transform', (ma.dir || 1) < 0 ? 'translate(200 0) scale(-1 1)' : ''); } setLamp(root, ids[0], ma.run, ma.fault); setLamp(root, ids[1], mb.run, mb.fault); }
 };
 // ---- garage / factory door: panel goes up or down between limits
 M.door = {
   title: () => 'باب الجراج',
-  draw(c){ const id = c.motors[0]; return {W:320, H:150, svg:`<rect x="90" y="14" width="150" height="124" fill="#e9eaec" stroke="#6d7479" stroke-width="3"/><rect x="96" y="20" width="138" height="112" fill="#1d1f21"/><g data-door="1"><rect data-panel="1" x="96" y="20" width="138" height="112" fill="#c3c7ca"/><g data-lines="1">${[0, 1, 2, 3].map(k => `<path d="M96 ${48 + k * 28}h138" stroke="#8a9096" stroke-width="2"/>`).join('')}</g></g><rect x="78" y="22" width="10" height="8" fill="#c3c7ca" stroke="#6d7479"/><rect x="78" y="122" width="10" height="8" fill="#c3c7ca" stroke="#6d7479"/><text x="60" y="30" font-size="9">LS فوق</text><text x="60" y="130" font-size="9">LS تحت</text><path class="arrow" data-arrow="1" d="M270 100V50m-7 8l7-8l7 8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>${motorIcon(250, 112, id, 'الباب')}`}; },
+  draw(c){ const id = c.motors[0]; return {W:320, H:150, svg:`<rect x="90" y="14" width="150" height="124" fill="#e9eaec" stroke="#6d7479" stroke-width="3"/><rect x="96" y="20" width="138" height="112" fill="#1d1f21"/><g data-door="1"><rect data-panel="1" x="96" y="20" width="138" height="112" fill="#c3c7ca"/><g data-lines="1">${[0, 1, 2, 3].map(k => `<path d="M96 ${48 + k * 28}h138" stroke="#8a9096" stroke-width="2"/>`).join('')}</g></g><rect x="78" y="22" width="10" height="8" fill="#c3c7ca" stroke="#6d7479"/><rect x="78" y="122" width="10" height="8" fill="#c3c7ca" stroke="#6d7479"/><text x="60" y="30" font-size="9">LS أعلى</text><text x="60" y="130" font-size="9">LS أسفل</text><path class="arrow" data-arrow="1" d="M270 100V50m-7 8l7-8l7 8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>${motorIcon(250, 112, id, 'الباب')}`}; },
   update(root, S, dt){ const id = root.dataset.m0, m = S.mot[id] || {}; let h = S.cart ? 1 - clamp(S.cart.x, 0, 1) : +root.dataset.h; if (isNaN(h)) h = 1; if (!S.cart && m.run) h = clamp(h - (m.dir || 1) * dt / 6, 0, 1); root.dataset.h = h; const p = root.querySelector('[data-panel]'); if (p) p.setAttribute('height', (112 * h).toFixed(1)); const ln = root.querySelector('[data-lines]'); if (ln) ln.setAttribute('transform', `translate(0 ${(-112 * (1 - h)).toFixed(1)})`); const ar = root.querySelector('[data-arrow]'); if (ar){ ar.classList.toggle('on', !!m.run); ar.setAttribute('transform', (m.dir || 1) < 0 ? 'translate(0 150) scale(1 -1)' : ''); } setLamp(root, id, m.run, m.fault); }
 };
 // ---- gauge: motor with speed gauge, direction arrow and star/delta mode
 M.gauge = {
-  title: () => 'الموتور وعداد السرعة',
-  draw(c){ const id = c.motors[0]; return {W:320, H:150, svg:`<rect x="40" y="56" width="110" height="60" rx="14" fill="#5d7f96"/><rect x="70" y="40" width="50" height="18" rx="3" fill="#8f979c"/><rect x="150" y="78" width="24" height="16" fill="#aab1b6"/><g class="spin" data-spin="${id}" transform="translate(186 86)"><circle r="12" fill="#cfd3d6" stroke="#4b5257"/><path d="M-12 0H12M0 -12V12" stroke="#4b5257" stroke-width="3"/></g><path class="arrow" data-arrow="1" d="M186 60a26 26 0 1 1 -26 26m2 -10l-2 10l-10 -3" fill="none" stroke="var(--accent)" stroke-width="2.5"/><circle cx="262" cy="70" r="34" fill="#f4f4f1" stroke="#555" stroke-width="2"/>${[0, 1, 2, 3, 4, 5, 6].map(k => { const a = (-210 + k * 40) * Math.PI / 180; return `<path d="M${262 + 27 * Math.cos(a)} ${70 + 27 * Math.sin(a)}L${262 + 31 * Math.cos(a)} ${70 + 31 * Math.sin(a)}" stroke="#333" stroke-width="1.5"/>`; }).join('')}<text x="262" y="92" text-anchor="middle" font-size="8">rpm</text><path class="needle" data-needle="1" d="M262 70L262 44" stroke="#d32f2f" stroke-width="2.5" stroke-linecap="round" transform="rotate(-120)"/><circle cx="262" cy="70" r="3" fill="#333"/><text data-rpm="1" x="262" y="118" text-anchor="middle" class="mono" font-size="11">0 rpm</text><text class="mode" data-mode="1" x="95" y="92" text-anchor="middle" fill="#fff"></text>${lampDot(60, 70, id)}<text x="95" y="134" text-anchor="middle" font-size="10">${esc(c.labels[id] || 'الموتور')}</text>`}; },
-  update(root, S, dt){ const id = root.dataset.m0, m = S.mot[id] || {}, rpm = +root.dataset.rpm || 0, tgt = m.run ? (m.mode === 'Y' ? 1000 : 1440) : 0, nr = rpm + (tgt - rpm) * clamp(dt * 2.5, 0, 1); root.dataset.rpm = nr; const n = root.querySelector('[data-needle]'); if (n) n.setAttribute('transform', `rotate(${(-120 + 240 * clamp(nr / 1800, 0, 1)).toFixed(1)})`); const t = root.querySelector('[data-rpm]'); if (t) t.textContent = Math.round(nr) + ' rpm'; const md = root.querySelector('[data-mode]'); if (md) md.textContent = m.run ? (m.mode === 'Y' ? 'Y ستار' : 'Δ دلتا') + (m.dir < 0 ? ' ↺' : ' ↻') : (m.fault === '1ph' ? '⚠ فازة ناقصة' : m.fault === 'burn' ? '🔥' : ''); rot(root, id, nr > 10 ? (m.dir || 1) * nr * 0.5 * dt : 0); const ar = root.querySelector('[data-arrow]'); if (ar){ ar.classList.toggle('on', !!m.run); ar.setAttribute('transform', (m.dir || 1) < 0 ? 'translate(372 0) scale(-1 1)' : ''); } setLamp(root, id, m.run, m.fault); }
+  title: () => 'المحرك ومقياس السرعة',
+  draw(c){ const id = c.motors[0]; return {W:320, H:150, svg:`<rect x="40" y="56" width="110" height="60" rx="14" fill="#5d7f96"/><rect x="70" y="40" width="50" height="18" rx="3" fill="#8f979c"/><rect x="150" y="78" width="24" height="16" fill="#aab1b6"/><g class="spin" data-spin="${id}" transform="translate(186 86)"><circle r="12" fill="#cfd3d6" stroke="#4b5257"/><path d="M-12 0H12M0 -12V12" stroke="#4b5257" stroke-width="3"/></g><path class="arrow" data-arrow="1" d="M186 60a26 26 0 1 1 -26 26m2 -10l-2 10l-10 -3" fill="none" stroke="var(--accent)" stroke-width="2.5"/><circle cx="262" cy="70" r="34" fill="#f4f4f1" stroke="#555" stroke-width="2"/>${[0, 1, 2, 3, 4, 5, 6].map(k => { const a = (-210 + k * 40) * Math.PI / 180; return `<path d="M${262 + 27 * Math.cos(a)} ${70 + 27 * Math.sin(a)}L${262 + 31 * Math.cos(a)} ${70 + 31 * Math.sin(a)}" stroke="#333" stroke-width="1.5"/>`; }).join('')}<text x="262" y="92" text-anchor="middle" font-size="8">rpm</text><path class="needle" data-needle="1" d="M262 70L262 44" stroke="#d32f2f" stroke-width="2.5" stroke-linecap="round" transform="rotate(-120)"/><circle cx="262" cy="70" r="3" fill="#333"/><text data-rpm="1" x="262" y="118" text-anchor="middle" class="mono" font-size="11">0 rpm</text><text class="mode" data-mode="1" x="95" y="92" text-anchor="middle" fill="#fff"></text>${lampDot(60, 70, id)}<text x="95" y="134" text-anchor="middle" font-size="10">${esc(c.labels[id] || 'المحرك')}</text>`}; },
+  update(root, S, dt){ const id = root.dataset.m0, m = S.mot[id] || {}, rpm = +root.dataset.rpm || 0, tgt = m.run ? (m.mode === 'Y' ? 1000 : 1440) : 0, nr = rpm + (tgt - rpm) * clamp(dt * 2.5, 0, 1); root.dataset.rpm = nr; const n = root.querySelector('[data-needle]'); if (n) n.setAttribute('transform', `rotate(${(-120 + 240 * clamp(nr / 1800, 0, 1)).toFixed(1)})`); const t = root.querySelector('[data-rpm]'); if (t) t.textContent = Math.round(nr) + ' rpm'; const md = root.querySelector('[data-mode]'); if (md) md.textContent = m.run ? (m.mode === 'Y' ? 'Y ستار' : 'Δ دلتا') + (m.dir < 0 ? ' ↺' : ' ↻') : (m.fault === '1ph' ? '⚠ فاز ناقص' : m.fault === 'burn' ? '🔥' : ''); rot(root, id, nr > 10 ? (m.dir || 1) * nr * 0.5 * dt : 0); const ar = root.querySelector('[data-arrow]'); if (ar){ ar.classList.toggle('on', !!m.run); ar.setAttribute('transform', (m.dir || 1) < 0 ? 'translate(372 0) scale(-1 1)' : ''); } setLamp(root, id, m.run, m.fault); }
 };
 // ---- line: one mini-machine per motor, chosen per exercise from the story (LINE_MAP below)
 const UT = {
@@ -197,40 +197,40 @@ M.line = {
 };
 // per exercise (lesson/exercise key): [machine title, {motor: [unit type, label]}]
 const LINE_MAP = {
-  'l3/c1': ['موتور الطاحونة', {M1: ['grinder', 'الطاحونة']}],
+  'l3/c1': ['محرك المطحنة', {M1: ['grinder', 'الطاحونة']}],
   'l3/x4': ['المطحنة: الطاحونة والسير', {M1: ['grinder', 'الطاحونة'], M2: ['belt', 'السير']}],
-  'l4/p2': ['كباس الهوا', {M1: ['comp', 'الكباس']}],
-  'l4/o1': ['طلمبة الصرف', {M1: ['pump', 'طلمبة الصرف']}],
+  'l4/p2': ['ضاغط الهواء', {M1: ['comp', 'الضاغط']}],
+  'l4/o1': ['مضخة الصرف', {M1: ['pump', 'مضخة الصرف']}],
   'l5/e14': ['خط التعبئة', {M1: ['belt', 'سير التعبئة'], M2: ['belt', 'سير التغليف']}],
   'l5/w1': ['خط التعبئة', {M1: ['belt', 'سير التعبئة'], M2: ['belt', 'سير التغليف']}],
   'l5/w2': ['خط التعبئة', {M1: ['belt', 'سير التعبئة'], M2: ['belt', 'سير التغليف']}],
-  'l5/e15': ['المطحنة', {M1: ['motor', 'الموتور الصغير'], M2: ['grinder', 'الطاحونة (الكبير)']}],
-  'l5/e16': ['3 سيور ورا بعض', {M1: ['belt', 'سير 1'], M2: ['belt', 'سير 2'], M3: ['belt', 'سير 3']}],
-  'l5/e21': ['طلمبتين مية بالتبادل', {M1: ['pump', 'طلمبة 1'], M2: ['pump', 'طلمبة 2']}],
+  'l5/e15': ['المطحنة', {M1: ['motor', 'المحرك الصغير'], M2: ['grinder', 'الطاحونة (الكبير)']}],
+  'l5/e16': ['3 سيور متتالية', {M1: ['belt', 'سير 1'], M2: ['belt', 'سير 2'], M3: ['belt', 'سير 3']}],
+  'l5/e21': ['مضختا مياه بالتبادل', {M1: ['pump', 'مضخة 1'], M2: ['pump', 'مضخة 2']}],
   'l5/e17': ['3 خلاطات دهانات', {M1: ['mixer', 'خلاط 1'], M2: ['mixer', 'خلاط 2'], M3: ['mixer', 'خلاط 3']}],
   'l5/e18': ['خط العجين', {M1: ['mixer', 'الخلاط'], M2: ['belt', 'السير'], M3: ['press', 'المكبس']}],
   'l5/e19': ['ماكينة التعبئة', {M1: ['belt', 'الرئيسي (السير)'], M2: ['pump', 'مساعد 1'], M3: ['pump', 'مساعد 2']}],
-  'l5/e20': ['دورة غسيل الخزان', {M1: ['mixer', 'خلاط الخزان'], M2: ['pump', 'طلمبة الغسيل'], M3: ['pump', 'طلمبة الشطف']}],
-  'l5/e22': ['الغسالة الصناعية', {M1: ['drum', 'حلة الغسالة']}],
-  'l5/e23': ['محطة تعبئة السايل', {M1: ['cart', 'العربية'], M2: ['pump', 'الطلمبة']}],
-  'l5/e24': ['ماكينة التقطيع', {M1: ['belt', 'سير التغذية'], M2: ['saw', 'سكينة التقطيع']}],
+  'l5/e20': ['دورة غسيل الخزان', {M1: ['mixer', 'خلاط الخزان'], M2: ['pump', 'مضخة الغسيل'], M3: ['pump', 'مضخة الشطف']}],
+  'l5/e22': ['الغسالة الصناعية', {M1: ['drum', 'حوض الغسالة']}],
+  'l5/e23': ['محطة تعبئة السائل', {M1: ['cart', 'العربة'], M2: ['pump', 'المضخة']}],
+  'l5/e24': ['ماكينة التقطيع', {M1: ['belt', 'سير التغذية'], M2: ['saw', 'سكين التقطيع']}],
   'l6/m1': ['منشار الخشب', {M1: ['saw', 'المنشار']}],
   'l6/m7': ['منشار الخشب', {M1: ['saw', 'المنشار']}],
   'l8/e5': ['مصنع العصير', {M1: ['belt', 'سير التعبئة'], M2: ['belt', 'سير التغليف']}],
-  'l8/e7': ['الورشة: الكباس واللحام', {M1: ['comp', 'الكباس'], M2: ['welder', 'ماكينة اللحام']}],
+  'l8/e7': ['الورشة: الضاغط واللحام', {M1: ['comp', 'الضاغط'], M2: ['welder', 'ماكينة اللحام']}],
   'l8/e8': ['المطحنة', {M1: ['grinder', 'الطاحونة'], M2: ['drum', 'الفرّازة'], M3: ['belt', 'السير']}],
   'l8/e9': ['ماكينة الطباعة', {M1: ['belt', 'سير الورق']}],
   'l8/e12': ['ماكينة اللف', {M1: ['winder', 'بكرة اللف']}],
   'l9/sd1': ['خلاط مصنع الطوب', {M1: ['mixer', 'الخلاط 7.5 kW']}],
-  'l9/sd2': ['طلمبة الري', {M1: ['pump', 'طلمبة الري']}],
+  'l9/sd2': ['مضخة الري', {M1: ['pump', 'مضخة الري']}],
   'l9/br1': ['المنشار الدائري', {M1: ['saw', 'المنشار']}],
   'l9/br2': ['ماكينة التغليف', {M1: ['belt', 'سير التغليف']}],
   'l9/br3': ['الونش', {M1: ['hoist', 'الونش']}],
-  'l9/ac1': ['التكييف المركزي', {M1: ['comp', 'الكباس'], M2: ['fan', 'مروحة المكثّف']}],
-  'l9/ac2': ['التكييف المركزي', {M1: ['comp', 'الكباس'], M2: ['fan', 'مروحة المكثّف']}],
-  'l9/ac3': ['التكييف المركزي', {M1: ['comp', 'الكباس'], M2: ['fan', 'مروحة المكثّف']}],
-  'l9/ss1': ['طلمبة المية', {M1: ['pump', 'الطلمبة 45 kW']}],
-  'l9/ss3': ['طلمبة المية', {M1: ['pump', 'الطلمبة']}]
+  'l9/ac1': ['التكييف المركزي', {M1: ['comp', 'الضاغط'], M2: ['fan', 'مروحة المكثّف']}],
+  'l9/ac2': ['التكييف المركزي', {M1: ['comp', 'الضاغط'], M2: ['fan', 'مروحة المكثّف']}],
+  'l9/ac3': ['التكييف المركزي', {M1: ['comp', 'الضاغط'], M2: ['fan', 'مروحة المكثّف']}],
+  'l9/ss1': ['مضخة المياه', {M1: ['pump', 'المضخة 45 kW']}],
+  'l9/ss3': ['مضخة المياه', {M1: ['pump', 'المضخة']}]
 };
 FX.LINE_MAP = LINE_MAP;
 function setLamp(root, id, run, fault){ const l = root.querySelector(`[data-lamp="${id}"]`); if (!l) return; l.classList.toggle('on', !!run && !fault); l.classList.toggle('f', !!fault); }
@@ -266,12 +266,12 @@ function mountMachine(e){
   if (!slot){ slot = document.createElement('div'); slot.className = 'bn-machine'; const b = host.querySelector('.bn-board'); if (b && b.parentNode) b.parentNode.insertBefore(slot, b.nextSibling); else host.appendChild(slot); }
   const d = mc.m.draw(mc), hide = !!st.get('machine/hide');
   slot.hidden = false; slot.classList.toggle('off', hide);
-  slot.innerHTML = `<div class="fx-mh"><h4>🏭 الماكينة: ${esc(mc.m.title(mc.motors.length, mc))}</h4><span class="fx-mst">واقفة</span><button type="button" class="btn" data-fx="mtoggle" aria-pressed="${hide ? 'false' : 'true'}">${hide ? 'وريني الماكينة' : 'اخفي'}</button></div><svg class="fx-m" data-kind="${mc.kind}" data-m0="${esc(mc.motors[0])}" data-ms="${esc(mc.motors.join(','))}" data-max="${mc.max}" data-run="0" data-dir="1" viewBox="0 0 ${d.W} ${d.H}" role="img" aria-label="رسمة متحركة للماكينة">${d.svg}</svg>`;
+  slot.innerHTML = `<div class="fx-mh"><h4>🏭 الماكينة: ${esc(mc.m.title(mc.motors.length, mc))}</h4><span class="fx-mst">متوقفة</span><button type="button" class="btn" data-fx="mtoggle" aria-pressed="${hide ? 'false' : 'true'}">${hide ? 'أرني الماكينة' : 'إخفاء'}</button></div><svg class="fx-m" data-kind="${mc.kind}" data-m0="${esc(mc.motors[0])}" data-ms="${esc(mc.motors.join(','))}" data-max="${mc.max}" data-run="0" data-dir="1" viewBox="0 0 ${d.W} ${d.H}" role="img" aria-label="رسمة متحركة للماكينة">${d.svg}</svg>`;
   const svg = slot.querySelector('svg'), stEl = slot.querySelector('.fx-mst');
-  slot.querySelector('[data-fx=mtoggle]').addEventListener('click', ev => { const h = !slot.classList.contains('off'); slot.classList.toggle('off', h); st.set('machine/hide', h ? 1 : null); ev.target.textContent = h ? 'وريني الماكينة' : 'اخفي'; ev.target.setAttribute('aria-pressed', h ? 'false' : 'true'); });
+  slot.querySelector('[data-fx=mtoggle]').addEventListener('click', ev => { const h = !slot.classList.contains('off'); slot.classList.toggle('off', h); st.set('machine/hide', h ? 1 : null); ev.target.textContent = h ? 'أرني الماكينة' : 'إخفاء'; ev.target.setAttribute('aria-pressed', h ? 'false' : 'true'); });
   const mach = {slot, svg, mc, S:{mot:{}, live:false}, raf:null, last:0,
     state(res, live){ const o = {mot:{}, live:!!live}; mc.motors.forEach(id => { const m = live && res && res.mot && res.mot[id]; o.mot[id] = m ? {run:m.run ? 1 : 0, dir:m.dir || 1, mode:m.mode, fault:m.fault} : {run:0, dir:1, mode:'', fault: live && res && res.mot && res.mot[id] ? res.mot[id].fault : ''}; }); if (mc.cart){ o.cart = {x:mc.cart.st.x}; o.cartSign = mc.cart.cfg.sign || 1; } if (mc.tank) o.tank = {lvl:mc.tank.st.lvl}; return o; },
-    apply(res, live){ this.S = this.state(res, live); const any = mc.motors.some(id => this.S.mot[id].run); const first = mc.motors.find(id => this.S.mot[id].run); svg.dataset.run = any ? '1' : '0'; svg.dataset.dir = first ? String(this.S.mot[first].dir) : svg.dataset.dir; svg.dataset.mode = first ? (this.S.mot[first].mode || '') : ''; stEl.textContent = any ? 'شغالة ' + (this.S.mot[first].dir < 0 ? '↺ شمال' : '↻ يمين') + (this.S.mot[first].mode === 'Y' ? ' (ستار)' : '') : mc.motors.some(id => this.S.mot[id].fault) ? '⚠ عطل' : 'واقفة'; stEl.classList.toggle('on', any); this.step(true); if (any && !this.raf) this.loop(); },
+    apply(res, live){ this.S = this.state(res, live); const any = mc.motors.some(id => this.S.mot[id].run); const first = mc.motors.find(id => this.S.mot[id].run); svg.dataset.run = any ? '1' : '0'; svg.dataset.dir = first ? String(this.S.mot[first].dir) : svg.dataset.dir; svg.dataset.mode = first ? (this.S.mot[first].mode || '') : ''; stEl.textContent = any ? 'تعمل ' + (this.S.mot[first].dir < 0 ? '↺ يسار' : '↻ يمين') + (this.S.mot[first].mode === 'Y' ? ' (ستار)' : '') : mc.motors.some(id => this.S.mot[id].fault) ? '⚠ عطل' : 'متوقفة'; stEl.classList.toggle('on', any); this.step(true); if (any && !this.raf) this.loop(); },
     step(force){ const t = now(), dt = this.last ? Math.min(0.1, (t - this.last) / 1000) : 0.016; this.last = t; if (slot.classList.contains('off') && !force) return; mc.m.update(svg, this.S, dt); },
     loop(){ const run = () => { if (this.dead) return; this.step(); const any = mc.motors.some(id => this.S.mot[id].run); if (any) this.raf = requestAnimationFrame(run); else { this.raf = null; this.last = 0; } }; this.raf = requestAnimationFrame(run); },
     destroy(){ this.dead = true; if (this.raf) cancelAnimationFrame(this.raf); }
@@ -282,7 +282,7 @@ function mountMachine(e){
 
 /* =========================== 4. points, timer, leaderboard, badges =========================== */
 const BADGES_ALL = [
-  {id:'first', ico:'🔌', t:'أول دايرة', d:'أول تمرين يعدّي'},
+  {id:'first', ico:'🔌', t:'أول دائرة', d:'أول تمرين يعدّي'},
   {id:'interlock', ico:'🔒', t:'ملك الإنترلوك', d:'3 دواير إنترلوك (عكس الاتجاه أو ريلايين)'},
   {id:'hunter', ico:'🔍', t:'صايد أعطال', d:'5 أعطال مخفية لقيتها وصلّحتها'},
   {id:'fast', ico:'⚡', t:'أسرع من الزمن', d:'5 تمارين قبل الوقت المستهدف'},
@@ -356,13 +356,13 @@ try { if (!SC.me() && CL.store.get('cert/name')) SC.setName(CL.store.get('cert/n
 const COIL_R = d => d.type === 'timer' ? 8200 : (d.cfg.v || 230) <= 24 ? 310 : 1350;
 const LAMP_R = d => (d.cfg.v || 230) <= 24 ? 95 : 11800;
 const KINDS = {
-  wire:{t:'سلك مقطوع', sym:'الدايرة مش بتكمّل: الجهاز اللي بعد السلك ده مش بيوصله جهد.', fix:'replace', how:'بالأوم (والكهربا مفصولة): حط المسبارين على طرفَي السلك. سلك سليم يقرا 0 Ω ويزن؛ المقطوع يقرا OL. أو بالفولت والكهربا شغالة: جهد على أول السلك ومفيش على آخره.'},
-  loose:{t:'طرف سايب (مسمار مش مربوط)', sym:'الأسلاك اللي على المسمار ده كأنها مش موصّلة: الدايرة بتقف عنده.', fix:'fix', how:'شدّ الأسلاك بإيدك واحد واحد، أو قيس بالأوم من المسمار لطرف السلك التاني: OL يعني المسمار سايب. ربط المسمار بيصلّح العطل.'},
-  coil:{t:'كويل محروق', sym:'الكويل عليه جهد لكن مش بيشد: مفيش صوت ولا حركة.', fix:'replace', how:'بالفولت: على A1-A2 في 230 V (أو 24 V) والكويل مش شادد → الكويل محروق. أكّد بالأوم والكهربا مفصولة: كويل سليم ≈ 1 kΩ، المحروق OL.'},
-  weld:{t:'كونتاكت ملحوم', sym:'الكونتاكت ده مقفول على طول حتى والكويل من غير جهد: الحمل بيشتغل لوحده أو مش بيقف.', fix:'replace', how:'بالأوم والكهربا مفصولة والكويل من غير جهد: كونتاكت NO سليم يقرا OL؛ الملحوم يقرا 0 Ω. غيّر الكونتاكتور (أو بلوك الأوكسيليري).'},
-  open:{t:'كونتاكت مفتوح (متسخ أو مكسور)', sym:'الكونتاكت ده مش بيقفل خالص: الدايرة بتقف عنده.', fix:'fix', how:'بالأوم: NC سليم يقرا 0 Ω من غير ما تدوس؛ NO سليم يقرا 0 Ω وانت دايس. لو بيقرا OL في الحالتين → الكونتاكت بايظ. نضّفه أو غيّر البلوك.'},
-  fuse:{t:'قاطع التحكم فاصل من جوه (أو فيوز ضارب)', sym:'مفيش جهد على دايرة التحكم كلها.', fix:'replace', how:'بالفولت: على مدخل القاطع فيه جهد، وعلى مخرجه 0 V (أو 230 V بين مدخل ومخرج نفس القاطع) → القاطع/الفيوز مفتوح. غيّره.'},
-  ol:{t:'الأوفرلود مضبوط غلط (Ir أقل من تيار الموتور)', sym:'الموتور بيبدأ وبعد شوية الأوفرلود بيفصل ولمبة العطل بتنور.', fix:'fix', how:'بصّ على قرص Ir وقارن بتيار اليافطة. لو Ir أقل من In الموتور هيفصل على حمله العادي. اضبط Ir على In.'}
+  wire:{t:'سلك مقطوع', sym:'الدائرة لا تكتمل: الجهاز الذي بعد هذا السلك لا يصله جهد.', fix:'replace', how:'بالأوم (والكهرباء مفصولة): ضع المسبارين على طرفَي السلك. السلك السليم يقرأ 0 Ω ويصفّر، والمقطوع يقرأ OL. أو بالفولت والكهرباء موصولة: جهد على بداية السلك ولا جهد على نهايته.'},
+  loose:{t:'طرف مفكوك (مسمار غير مربوط)', sym:'الأسلاك التي على هذا المسمار كأنها غير موصولة: تتوقف الدائرة عنده.', fix:'fix', how:'اسحب الأسلاك بيدك واحدًا واحدًا، أو قِس بالأوم من المسمار إلى طرف السلك الآخر: OL يعني أن المسمار مفكوك. ربط المسمار يصلح العطل.'},
+  coil:{t:'ملف محترق', sym:'على الملف جهد لكنه لا يجذب: لا صوت ولا حركة.', fix:'replace', how:'بالفولت: على A1-A2 يوجد 230 V (أو 24 V) والملف لا يجذب → الملف محترق. أكّد بالأوم والكهرباء مفصولة: الملف السليم ≈ 1 kΩ، والمحترق OL.'},
+  weld:{t:'كونتاكت ملحوم', sym:'هذا الكونتاكت مغلق دائمًا حتى والملف بلا جهد: الحمل يعمل وحده أو لا يتوقف.', fix:'replace', how:'بالأوم والكهرباء مفصولة والملف بلا جهد: الكونتاكت NO السليم يقرأ OL، والملحوم يقرأ 0 Ω. استبدل الكونتاكتور (أو البلوك المساعد).'},
+  open:{t:'كونتاكت مفتوح (متسخ أو مكسور)', sym:'هذا الكونتاكت لا يُغلق إطلاقًا: تتوقف الدائرة عنده.', fix:'fix', how:'بالأوم: الـ NC السليم يقرأ 0 Ω دون ضغط، والـ NO السليم يقرأ 0 Ω أثناء الضغط. إذا قرأ OL في الحالتين → الكونتاكت تالف. نظّفه أو استبدل البلوك.'},
+  fuse:{t:'قاطع التحكم مفصول من الداخل (أو فيوز منصهر)', sym:'لا يوجد جهد على دائرة التحكم كلها.', fix:'replace', how:'بالفولت: يوجد جهد على مدخل القاطع، وعلى مخرجه 0 V (أو 230 V بين مدخل ومخرج القاطع نفسه) → القاطع/الفيوز مفتوح. استبدله.'},
+  ol:{t:'الأوفرلود مضبوط خطأ (Ir أقل من تيار المحرك)', sym:'يبدأ المحرك وبعد قليل يفصل الأوفرلود ويضيء مصباح العطل.', fix:'fix', how:'انظر إلى قرص Ir وقارنه بتيار لوحة البيانات. إذا كان Ir أقل من In فسيفصل المحرك على حمله العادي. اضبط Ir على In.'}
 };
 const FA = FX.faults = {
   cur:null, // {kind, dev, pair, wire, term, meas, wrong, ex, key, api, host, origIr}
@@ -415,7 +415,7 @@ const FA = FX.faults = {
   inject(c, kind){
     const api = c.api, host = c.host, ex = c.ex; if (!api) return;
     FA.hook(); FA.clear();
-    const f = FA.pick(ex, api, kind); if (!f){ FA.note(host, 'التمرين ده صغير على الأعطال المخفية. جرّب تمرين فيه كونتاكتور.', 'bad'); return; }
+    const f = FA.pick(ex, api, kind); if (!f){ FA.note(host, 'هذا التمرين صغير على الأعطال المخفية. جرّب تمرينًا فيه كونتاكتور.', 'bad'); return; }
     Object.assign(f, {ex, key:c.key, api, host, meas:0, wrong:0, t0:now(), found:false});
     if (f.kind === 'ol'){ const o = api.byId[f.dev]; o.cfg.Ir = Math.max(1, Math.round((api.devs.find(d => TYPES[d.type].motor).cfg.In || 5) * 0.4 * 2) / 2); }
     FA.cur = f;
@@ -426,10 +426,10 @@ const FA = FX.faults = {
   },
   clear(){ const f = FA.cur; if (!f) return; if (f.kind === 'ol' && f.origIr != null){ const o = f.api.byId[f.dev]; if (o) o.cfg.Ir = f.origIr; } FA.cur = null; FA.meterOff(f); FA.pickOff(f); },
   note(host, t, cls){ const p = host.querySelector('[data-fx=fnote]'); if (p){ p.textContent = t; p.className = 'fx-fnote' + (cls ? ' ' + cls : ''); } },
-  symptom(f){ const K = KINDS[f.kind]; const d = f.dev && f.api.byId[f.dev]; let s = K.sym; if (f.kind === 'ol') s = `الموتور بيبدأ وبعد شوية ${d.tag} بيفصل (شغّل الزمن ×10 عشان متستناش).`; return s; },
+  symptom(f){ const K = KINDS[f.kind]; const d = f.dev && f.api.byId[f.dev]; let s = K.sym; if (f.kind === 'ol') s = `يبدأ المحرك وبعد قليل يفصل ${d.tag} (شغّل الزمن ×10 حتى لا تنتظر).`; return s; },
   panel(f){
     const host = f.host, slot = host.querySelector('[data-fx=fault-panel]'); if (!slot) return;
-    slot.innerHTML = `<div class="fx-fault" data-fx="fault-ui"><h4>🔍 دوّر على العطل</h4><p class="fx-sym">حطّيت <b>عطل مخفي واحد</b> في اللوحة. شغّل الكهربا وجرّب الدايرة، وشوف العرض: <i data-fx="sym">—</i></p><p class="fx-sym muted">خد الأفوميتر وقيس بين الأطراف لحد ما تحدد العنصر البايظ، وبعدين دوس «لقيت العطل».</p><div class="fx-fbtns"><button type="button" class="btn" data-fx="meter" aria-pressed="false">📟 الأفوميتر</button><button type="button" class="btn pri" data-fx="found">🎯 لقيت العطل</button><button type="button" class="btn" data-fx="giveup">استسلمت، وريني</button></div><div data-fx="meter-ui"></div><div data-fx="pick-ui"></div><p class="fx-fnote" data-fx="fnote"></p><div data-fx="explain"></div></div>`;
+    slot.innerHTML = `<div class="fx-fault" data-fx="fault-ui"><h4>🔍 ابحث عن العطل</h4><p class="fx-sym">وضعت <b>عطلًا مخفيًا واحدًا</b> في اللوحة. شغّل الكهرباء وجرّب الدائرة، ولاحظ العَرَض: <i data-fx="sym">—</i></p><p class="fx-sym muted">خذ الأفوميتر وقِس بين الأطراف حتى تحدد العنصر التالف، ثم اضغط «وجدت العطل».</p><div class="fx-fbtns"><button type="button" class="btn" data-fx="meter" aria-pressed="false">📟 الأفوميتر</button><button type="button" class="btn pri" data-fx="found">🎯 وجدت العطل</button><button type="button" class="btn" data-fx="giveup">استسلمت، أرني</button></div><div data-fx="meter-ui"></div><div data-fx="pick-ui"></div><p class="fx-fnote" data-fx="fnote"></p><div data-fx="explain"></div></div>`;
     slot.querySelector('[data-fx=sym]').textContent = FA.symptom(f);
     slot.querySelector('[data-fx=meter]').addEventListener('click', ev => { FA.pickOff(f); if (f.meter) FA.meterOff(f); else FA.meterOn(f); ev.currentTarget.setAttribute('aria-pressed', f.meter ? 'true' : 'false'); });
     slot.querySelector('[data-fx=found]').addEventListener('click', () => { FA.meterOff(f); FA.pickOn(f); });
@@ -437,11 +437,11 @@ const FA = FX.faults = {
   },
   // ---- multimeter
   meterOn(f){ f.meter = true; f.mode = f.mode || 'V'; f.probes = []; const host = f.host, ui = host.querySelector('[data-fx=meter-ui]'); host.querySelector('.bn').classList.add('fx-metering');
-    ui.innerHTML = `<div class="fx-meter" role="group" aria-label="الأفوميتر"><div class="lcd" data-fx="lcd">----<small>V</small></div><div class="modes"><button type="button" data-mode="V" aria-pressed="true">V فولت</button><button type="button" data-mode="R" aria-pressed="false">Ω أوم / بيب</button></div><div class="probes">المسبار <b>الأحمر</b>: <span class="mono" data-fx="pa">—</span> · <b class="blk">الأسود</b>: <span class="mono" data-fx="pb">—</span> <span class="muted">(دوس على طرفين في اللوحة)</span></div></div>`;
+    ui.innerHTML = `<div class="fx-meter" role="group" aria-label="الأفوميتر"><div class="lcd" data-fx="lcd">----<small>V</small></div><div class="modes"><button type="button" data-mode="V" aria-pressed="true">V فولت</button><button type="button" data-mode="R" aria-pressed="false">Ω أوم / صافرة</button></div><div class="probes">المسبار <b>الأحمر</b>: <span class="mono" data-fx="pa">—</span> · <b class="blk">الأسود</b>: <span class="mono" data-fx="pb">—</span> <span class="muted">(اضغط على طرفين في اللوحة)</span></div></div>`;
     ui.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => { f.mode = b.dataset.mode; ui.querySelectorAll('[data-mode]').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false')); f.probes = []; FA.lcd(f, '----', f.mode === 'V' ? 'V' : 'Ω'); FA.probesTxt(f); }));
     f.onTerm = ev => { const t = ev.target.closest && ev.target.closest('[data-t]'); if (!t) return; ev.stopPropagation(); ev.preventDefault(); FA.probe(f, t.dataset.t); };
     host.querySelector('.bn-board').addEventListener('click', f.onTerm, true);
-    FA.note(host, 'الأفوميتر شغال: دوس على طرف وبعدين على طرف تاني.');
+    FA.note(host, 'الأفوميتر يعمل: اضغط على طرف ثم على طرف آخر.');
   },
   meterOff(f){ if (!f.meter) return; f.meter = false; const host = f.host; host.querySelector('.bn').classList.remove('fx-metering'); if (f.onTerm) host.querySelector('.bn-board').removeEventListener('click', f.onTerm, true); const ui = host.querySelector('[data-fx=meter-ui]'); if (ui) ui.innerHTML = ''; const b = host.querySelector('[data-fx=meter]'); if (b) b.setAttribute('aria-pressed', 'false'); },
   lcd(f, v, u){ const l = f.host.querySelector('[data-fx=lcd]'); if (l) l.innerHTML = `${esc(v)}<small>${esc(u || '')}</small>`; },
@@ -454,26 +454,26 @@ const FA = FX.faults = {
     if (A === B) return {txt:'0.0', unit:f.mode === 'V' ? 'V' : 'Ω', beep:f.mode !== 'V'};
     const wires = api.wires().map((w, i) => ({id:i + 1, a:w[0], b:w[1]}));
     if (f.mode === 'V'){
-      if (!live) return {txt:'0.0', unit:'V', note:'الكهربا مفصولة: مفيش جهد تقيسه. شغّل الكهربا لقياس الفولت، أو حوّل على الأوم.'};
+      if (!live) return {txt:'0.0', unit:'V', note:'الكهرباء مفصولة: لا يوجد جهد لتقيسه. شغّل الكهرباء لقياس الفولت، أو حوّل إلى الأوم.'};
       const cl = api.devs.map(d => Object.assign({}, d, {st:Object.assign({}, d.st), cfg:d.cfg}));
       const res = CL.solve(cl, wires, {}); const pa = res.poles(res.find(A)), pb = res.poles(res.find(B));
       let v = 0; if (pa && pb) pa.forEach(p => pb.forEach(q => { v = Math.max(v, CL.voltBetween(p, q)); }));
       return {txt:v ? v.toFixed(0) : '0.0', unit:dc && v <= 24 ? 'V⎓' : 'V~', beep:false};
     }
-    if (live) return {err:'⚠ افصل الكهربا الأول! قياس الأوم والدايرة عليها جهد بيحرق الأفوميتر.'};
+    if (live) return {err:'⚠ افصل الكهرباء أولًا! قياس الأوم والدائرة عليها جهد يحرق الأفوميتر.'};
     // resistance: wires + closed links (fault hooks apply) → same node = continuity; a single load between = its resistance
     const par = new Map(); const find = x => { while (par.has(x) && par.get(x) !== x) x = par.get(x); return x; }; const uni = (a, b) => { const ra = find(a), rb = find(b); if (ra !== rb) par.set(ra, rb); };
     api.devs.forEach(d => TYPES[d.type].terms(d).forEach(t => par.set(d.id + ':' + t.n, d.id + ':' + t.n)));
     FA.wiresOf(wires).forEach(w => { if (par.has(w.a) && par.has(w.b)) uni(w.a, w.b); });
     api.devs.forEach(d => (TYPES[d.type].links(d, false) || []).forEach(([x, y]) => { const a = d.id + ':' + x, b = d.id + ':' + y; if (par.has(a) && par.has(b)) uni(a, b); }));
-    const ra = find(A), rb = find(B); if (ra === rb) return {txt:'0.2', unit:'Ω', beep:true, note:`بيزن: ${A} و ${B} موصّلين ببعض (مقاومة ≈ 0).`};
+    const ra = find(A), rb = find(B); if (ra === rb) return {txt:'0.2', unit:'Ω', beep:true, note:`صافرة: ${A} و ${B} متصلان ببعضهما (مقاومة ≈ 0).`};
     let R = null; api.devs.forEach(d => { const T = TYPES[d.type]; if (!T.loads) return; T.loads(d).forEach(L => { const x = find(d.id + ':' + L.a), y = find(d.id + ':' + L.b); if ((x === ra && y === rb) || (x === rb && y === ra)){ const r = L.k === 'coil' ? COIL_R(d) : L.k === 'lamp' ? LAMP_R(d) : 5000; R = R == null ? r : (R * r) / (R + r); } }); });
-    if (R != null) return {txt:R >= 1000 ? (R / 1000).toFixed(2) : String(Math.round(R)), unit:R >= 1000 ? 'kΩ' : 'Ω', beep:false, note:`مقاومة ${R >= 1000 ? (R / 1000).toFixed(2) + ' kΩ' : Math.round(R) + ' Ω'}: ده حمل (كويل أو لمبة) بين الطرفين.`};
-    return {txt:'OL', unit:'Ω', beep:false, note:'OL: مفيش توصيل بين الطرفين (دايرة مفتوحة).'};
+    if (R != null) return {txt:R >= 1000 ? (R / 1000).toFixed(2) : String(Math.round(R)), unit:R >= 1000 ? 'kΩ' : 'Ω', beep:false, note:`مقاومة ${R >= 1000 ? (R / 1000).toFixed(2) + ' kΩ' : Math.round(R) + ' Ω'}: هذا حمل (ملف أو مصباح) بين الطرفين.`};
+    return {txt:'OL', unit:'Ω', beep:false, note:'OL: لا يوجد توصيل بين الطرفين (دائرة مفتوحة).'};
   },
   // ---- pick the faulty element
   pickOn(f){ if (f.pick) return; f.pick = true; const host = f.host; host.querySelector('.bn').classList.add('fx-picking');
-    const ui = host.querySelector('[data-fx=pick-ui]'); ui.innerHTML = `<div class="fx-pick"><b>دوس على العنصر أو السلك أو المسمار اللي فيه العطل</b><button type="button" class="btn" data-fx="pickcancel">رجوع</button></div>`;
+    const ui = host.querySelector('[data-fx=pick-ui]'); ui.innerHTML = `<div class="fx-pick"><b>اضغط على العنصر أو السلك أو المسمار الذي فيه العطل</b><button type="button" class="btn" data-fx="pickcancel">رجوع</button></div>`;
     ui.querySelector('[data-fx=pickcancel]').addEventListener('click', () => FA.pickOff(f));
     f.onPick = ev => { const w = ev.target.closest && ev.target.closest('[data-w]'); const t = ev.target.closest && ev.target.closest('[data-t]'); const c = ev.target.closest && ev.target.closest('[data-cell],[data-dev]'); if (!w && !t && !c) return; ev.stopPropagation(); ev.preventDefault();
       if (w){ const lab = w.getAttribute('aria-label') || ''; FA.chooser(f, {kind:'wire', id:+w.dataset.w, lab:lab.replace(/: اضغط.*$/, '')}); }
@@ -484,8 +484,8 @@ const FA = FX.faults = {
   },
   swallow(ev){ if (ev.target.closest && ev.target.closest('[data-act]')){ ev.stopPropagation(); ev.preventDefault(); } },
   pickOff(f){ if (!f.pick) return; f.pick = false; const host = f.host; host.querySelector('.bn').classList.remove('fx-picking'); const b = host.querySelector('.bn-board'); if (f.onPick) b.removeEventListener('click', f.onPick, true); b.removeEventListener('pointerdown', FA.swallow, true); const ui = host.querySelector('[data-fx=pick-ui]'); if (ui) ui.innerHTML = ''; },
-  chooser(f, sel){ const ui = f.host.querySelector('[data-fx=pick-ui]'); ui.innerHTML = `<div class="fx-pick"><b>${esc(sel.lab)}</b>: <button type="button" class="btn pri" data-fx="act" data-a="replace">🔁 غيّر</button><button type="button" class="btn pri" data-fx="act" data-a="fix">🔧 أصلح</button><button type="button" class="btn" data-fx="act" data-a="no">لا، رجوع</button></div>`;
-    ui.querySelectorAll('[data-fx=act]').forEach(b => b.addEventListener('click', () => { if (b.dataset.a === 'no'){ ui.innerHTML = `<div class="fx-pick"><b>دوس على العنصر أو السلك أو المسمار اللي فيه العطل</b><button type="button" class="btn" data-fx="pickcancel">رجوع</button></div>`; ui.querySelector('[data-fx=pickcancel]').addEventListener('click', () => FA.pickOff(f)); return; } FA.guess(f, sel, b.dataset.a); })); },
+  chooser(f, sel){ const ui = f.host.querySelector('[data-fx=pick-ui]'); ui.innerHTML = `<div class="fx-pick"><b>${esc(sel.lab)}</b>: <button type="button" class="btn pri" data-fx="act" data-a="replace">🔁 استبدل</button><button type="button" class="btn pri" data-fx="act" data-a="fix">🔧 أصلح</button><button type="button" class="btn" data-fx="act" data-a="no">لا، رجوع</button></div>`;
+    ui.querySelectorAll('[data-fx=act]').forEach(b => b.addEventListener('click', () => { if (b.dataset.a === 'no'){ ui.innerHTML = `<div class="fx-pick"><b>اضغط على العنصر أو السلك أو المسمار الذي فيه العطل</b><button type="button" class="btn" data-fx="pickcancel">رجوع</button></div>`; ui.querySelector('[data-fx=pickcancel]').addEventListener('click', () => FA.pickOff(f)); return; } FA.guess(f, sel, b.dataset.a); })); },
   isTarget(f, sel){ if (f.kind === 'wire'){ if (sel.kind !== 'wire') return false; const ws = f.api.wires(); const w = ws[sel.id - 1]; const same = (a, p) => a && ((a[0] === p[0] && a[1] === p[1]) || (a[0] === p[1] && a[1] === p[0])); if (same(w, f.wire)) return true; return /\b/.test(sel.lab) && f.wire.every(t => sel.lab.indexOf(t) > -1); }
     if (f.kind === 'loose') return sel.kind === 'term' && sel.id === f.term;
     return sel.kind === 'dev' && sel.id === f.dev; },
@@ -495,10 +495,10 @@ const FA = FX.faults = {
     f.wrong++; SND.error();
     const ui = f.host.querySelector('[data-fx=pick-ui]'); if (ui) ui.innerHTML = '';
     f.pick = false; FA.pickOn(f);
-    if (hit) FA.note(f.host, `العنصر صح، بس الإجراء غلط: ده محتاج «${K.fix === 'fix' ? 'أصلح' : 'غيّر'}». جرّب تاني.`, 'bad');
-    else FA.note(f.host, `مش هنا. (${f.wrong} غلط)` + (f.wrong >= 3 ? ' ' + FA.hint(f) : ' قيس أكتر بالأفوميتر قبل ما تخمّن.'), 'bad');
+    if (hit) FA.note(f.host, `العنصر صحيح، لكن الإجراء خاطئ: هذا يحتاج إلى «${K.fix === 'fix' ? 'أصلح' : 'استبدل'}». جرّب مرة أخرى.`, 'bad');
+    else FA.note(f.host, `ليس هنا. (${f.wrong} خطأ)` + (f.wrong >= 3 ? ' ' + FA.hint(f) : ' قِس أكثر بالأفوميتر قبل أن تخمّن.'), 'bad');
   },
-  hint(f){ const d = f.dev && f.api.byId[f.dev]; if (f.kind === 'wire') return `💡 تلميح: العطل في سلك بين ${f.wire[0]} و ${f.wire[1]}... شوف السلك اللي بين الاتنين دول.`; if (f.kind === 'loose') return `💡 تلميح: العطل عند مسمار على ${f.term.split(':')[0]}.`; return `💡 تلميح: العطل في ${d ? d.tag : '؟'}${f.pair ? ' (الكونتاكت ' + f.pair.join('-') + ')' : ''}.`; },
+  hint(f){ const d = f.dev && f.api.byId[f.dev]; if (f.kind === 'wire') return `💡 تلميح: العطل في سلك بين ${f.wire[0]} و ${f.wire[1]}... افحص السلك الذي بينهما.`; if (f.kind === 'loose') return `💡 تلميح: العطل عند مسمار على ${f.term.split(':')[0]}.`; return `💡 تلميح: العطل في ${d ? d.tag : '؟'}${f.pair ? ' (الكونتاكت ' + f.pair.join('-') + ')' : ''}.`; },
   resolve(f, gaveUp){
     FA.meterOff(f); FA.pickOff(f);
     const K = KINDS[f.kind], d = f.dev && f.api.byId[f.dev], where = f.kind === 'wire' ? `السلك ${f.wire[0]} ↔ ${f.wire[1]}` : f.kind === 'loose' ? `المسمار ${f.term}` : `${d.tag}${f.pair ? ' (' + f.pair.join('-') + ')' : ''}`;
@@ -506,7 +506,7 @@ const FA = FX.faults = {
     FA.cur = null; if (f.kind === 'ol' && f.origIr != null && d) d.cfg.Ir = f.origIr;
     if (!gaveUp){ st.set('faultsFixed', (st.get('faultsFixed') || 0) + 1); SC.record(SC.me(), 'fault/' + f.key + '/' + Date.now(), {pts, t, kind:f.kind}); SND.chime(); }
     const got = SC.award();
-    const ex = f.host.querySelector('[data-fx=explain]'); if (ex) ex.innerHTML = `<div class="fx-explain"><p>${gaveUp ? '😅 العطل كان:' : '✅ صح! العطل:'} <b>${esc(K.t)}</b> في <b>${esc(where)}</b>.${gaveUp ? '' : ` <b>+${pts} نقطة</b> (${f.meas} قياس · ${f.wrong} غلط · ${mmss(t)})`}</p><p><b>إزاي الكهربائي بيلاقيها:</b> ${K.how}</p><p class="muted">${gaveUp ? 'صلّحتهالك.' : 'اتصلّح.'} شغّل الكهربا وتأكد إن اللوحة رجعت تشتغل. ${got.length ? got.map(id => { const b = bOf(id); return `<span class="fx-badge-new">${b.ico} ${esc(b.t)}</span>`; }).join('') + ' شارة جديدة!' : ''}</p><p><button type="button" class="btn" data-fx="again">🔍 عطل تاني</button></p></div>`;
+    const ex = f.host.querySelector('[data-fx=explain]'); if (ex) ex.innerHTML = `<div class="fx-explain"><p>${gaveUp ? '😅 العطل كان:' : '✅ صحيح! العطل:'} <b>${esc(K.t)}</b> في <b>${esc(where)}</b>.${gaveUp ? '' : ` <b>+${pts} نقطة</b> (${f.meas} قياس · ${f.wrong} غلط · ${mmss(t)})`}</p><p><b>كيف يجده الكهربائي:</b> ${K.how}</p><p class="muted">${gaveUp ? 'أصلحته لك.' : 'تم الإصلاح.'} شغّل الكهرباء وتأكد أن اللوحة عادت تعمل. ${got.length ? got.map(id => { const b = bOf(id); return `<span class="fx-badge-new">${b.ico} ${esc(b.t)}</span>`; }).join('') + ' شارة جديدة!' : ''}</p><p><button type="button" class="btn" data-fx="again">🔍 عطل آخر</button></p></div>`;
     const ag = ex && ex.querySelector('[data-fx=again]'); if (ag) ag.addEventListener('click', () => { const c = SC.cur; if (c) FA.inject(c); });
     FA.note(f.host, '');
     try { f.api.power(false); } catch (_) {}
