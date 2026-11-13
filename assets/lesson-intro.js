@@ -20,10 +20,10 @@
   var all = window.LE_INTRO || {}, L = (all[dir + (en ? ".en" : ".ar")] || {})[num];
   if (!L) return;
   var T = en ? {
-    aria: "Before you start", sum: "This lesson in a minute", terms: "Key words", go: "Now practice ↓",
+    aria: "Before you start", sum: "What you will learn in this lesson", terms: "Key words", go: "Now practice ↓",
     hide: "Hide summary", bar: "Lesson summary", open: "Show", cc: "Video captions are in Arabic", vid: "Lesson video"
   } : {
-    aria: "قبل ما تبدأ", sum: "الدرس ده في دقيقة", terms: "كلمات مهمة", go: "يلا طبّق ↓",
+    aria: "قبل ما تبدأ", sum: "هتتعلم إيه في الدرس ده؟", terms: "كلمات مهمة", go: "يلا طبّق ↓",
     hide: "اخفي الملخص", bar: "ملخص الدرس", open: "اعرض", cc: "", vid: "فيديو الدرس"
   };
   var id = dir + "/" + num;
