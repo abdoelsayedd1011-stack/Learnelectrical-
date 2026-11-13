@@ -282,7 +282,7 @@ function mountMachine(e){
 
 /* =========================== 4. points, timer, leaderboard, badges =========================== */
 const BADGES_ALL = [
-  {id:'first', ico:'🔌', t:'أول دايرة', d:'أول تمرين يعدّي'},
+  {id:'first', ico:'🔌', t:'أول دائرة', d:'أول تمرين يعدّي'},
   {id:'interlock', ico:'🔒', t:'ملك الإنترلوك', d:'3 دواير إنترلوك (عكس الاتجاه أو ريلايين)'},
   {id:'hunter', ico:'🔍', t:'صايد أعطال', d:'5 أعطال مخفية لقيتها وصلّحتها'},
   {id:'fast', ico:'⚡', t:'أسرع من الزمن', d:'5 تمارين قبل الوقت المستهدف'},
@@ -506,7 +506,7 @@ const FA = FX.faults = {
     FA.cur = null; if (f.kind === 'ol' && f.origIr != null && d) d.cfg.Ir = f.origIr;
     if (!gaveUp){ st.set('faultsFixed', (st.get('faultsFixed') || 0) + 1); SC.record(SC.me(), 'fault/' + f.key + '/' + Date.now(), {pts, t, kind:f.kind}); SND.chime(); }
     const got = SC.award();
-    const ex = f.host.querySelector('[data-fx=explain]'); if (ex) ex.innerHTML = `<div class="fx-explain"><p>${gaveUp ? '😅 العطل كان:' : '✅ صحيح! العطل:'} <b>${esc(K.t)}</b> في <b>${esc(where)}</b>.${gaveUp ? '' : ` <b>+${pts} نقطة</b> (${f.meas} قياس · ${f.wrong} غلط · ${mmss(t)})`}</p><p><b>كيف يجده الكهربائي:</b> ${K.how}</p><p class="muted">${gaveUp ? 'أصلحته لك.' : 'تم الإصلاح.'} شغّل الكهربا وتأكد إن اللوحة رجعت تشتغل. ${got.length ? got.map(id => { const b = bOf(id); return `<span class="fx-badge-new">${b.ico} ${esc(b.t)}</span>`; }).join('') + ' شارة جديدة!' : ''}</p><p><button type="button" class="btn" data-fx="again">🔍 عطل آخر</button></p></div>`;
+    const ex = f.host.querySelector('[data-fx=explain]'); if (ex) ex.innerHTML = `<div class="fx-explain"><p>${gaveUp ? '😅 العطل كان:' : '✅ صحيح! العطل:'} <b>${esc(K.t)}</b> في <b>${esc(where)}</b>.${gaveUp ? '' : ` <b>+${pts} نقطة</b> (${f.meas} قياس · ${f.wrong} غلط · ${mmss(t)})`}</p><p><b>كيف يجده الكهربائي:</b> ${K.how}</p><p class="muted">${gaveUp ? 'أصلحته لك.' : 'تم الإصلاح.'} شغّل الكهرباء وتأكد أن اللوحة عادت تعمل. ${got.length ? got.map(id => { const b = bOf(id); return `<span class="fx-badge-new">${b.ico} ${esc(b.t)}</span>`; }).join('') + ' شارة جديدة!' : ''}</p><p><button type="button" class="btn" data-fx="again">🔍 عطل آخر</button></p></div>`;
     const ag = ex && ex.querySelector('[data-fx=again]'); if (ag) ag.addEventListener('click', () => { const c = SC.cur; if (c) FA.inject(c); });
     FA.note(f.host, '');
     try { f.api.power(false); } catch (_) {}
