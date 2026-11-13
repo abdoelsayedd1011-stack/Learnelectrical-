@@ -65,6 +65,7 @@ const UNITS=[
  {n:2,ar:'الوحدة 2: الدوائر الأساسية',en:'Unit 2: Basic circuits'},
  {n:3,ar:'الوحدة 3: التايمر ودوائره',en:'Unit 3: The timer and its circuits'},
  {n:4,ar:'الوحدة 4: الليمت سويتش والعوامة',en:'Unit 4: Limit switches and floats'},
+ {n:5,ar:'الوحدة 5: تايمرات وستار/دلتا ودوائر أكتر',en:'Unit 5: More timers, star-delta and circuits'},
 ];
 
 /* ================= circuit building helpers ================= */
@@ -341,7 +342,7 @@ const PLANNED=[];
 /* ================= state ================= */
 const S={btn:{},k:{},tim:{},ol:{},fault:{},pfault:{},mains:true,q1:true,q1trip:false,load:70,ir:11,mot:{},ctrl:true,lamps:{},time:0,sel:'0',ls:{},fl:{}};
 let C=null,TPL=null,PW=null,ROOT=null,PTS=[],LPT=null,NPT=null,ELS=[];
-const UPD={control:[],power:[],panel:[]};
+const UPD={control:[],power:[],panel:[],app:[]};
 let MODE='free',TRACE=null,SCORE={ok:0,n:0},PROBE={b:null,r:null};
 const FLAGS=new Set(); let lastBtn={id:null,t:-9}; let wasRunningBeforeLoss=false,lossT=-1,trippedOnce=false; let HM={};
 const LOG=[];
@@ -367,6 +368,7 @@ function closedOf(e){
     case 'tNO': return !!(S.tim[e.ref]&&S.tim[e.ref].done);
     case 'tNC': return !(S.tim[e.ref]&&S.tim[e.ref].done);
     case 'lsNO': return !!S.ls[e.ls]; case 'lsNC': return !S.ls[e.ls];
+    case 'snNO': return !!S.ls[e.ls];
     case 'flNO': return !!S.fl[e.fl]; case 'flNC': return !S.fl[e.fl];
     case 'selH': return S.sel==='H'; case 'selA': return S.sel==='A';
   } return false;
@@ -403,7 +405,8 @@ function solve(){
     ELS.forEach(e=>{
       if(e.type==='coil'){ nk[e.ref]=!!e.on; if(!!S.k[e.ref]!==nk[e.ref]) ch=true; }
       if(e.type==='lamp') S.lamps[e.id]=!!e.on;
-      if(e.type==='tcoil'){ const tm=S.tim[e.ref]; if(tm.on!==!!e.on){ tm.on=!!e.on; if(tm.on) addLog(e.ref+t('ev_tstart')); else { if(tm.done) ch=true; tm.t=0; tm.done=false; } } }
+      if(e.type==='tcoil'&&S.tim[e.ref].off){ const tm=S.tim[e.ref]; if(tm.on!==!!e.on){ tm.on=!!e.on; if(tm.on){ if(!tm.done) ch=true; tm.done=true; tm.t=0; } else if(tm.done) addLog(e.ref+t('ev_tstart')); } }
+      else if(e.type==='tcoil'){ const tm=S.tim[e.ref]; if(tm.on!==!!e.on){ tm.on=!!e.on; if(tm.on) addLog(e.ref+t('ev_tstart')); else { if(tm.done) ch=true; tm.t=0; tm.done=false; } } }
     });
     for(const r in nk){ if(!!S.k[r]!==nk[r]) onK(r,nk[r]); }
     Object.assign(S.k,nk);
@@ -582,7 +585,7 @@ function powerStep(dt){
 }
 function timerStep(dt){
   let ch=false;
-  for(const r in S.tim){ const tm=S.tim[r]; if(tm.on&&!tm.done){ tm.t+=dt; if(tm.t>=tm.pre){ tm.done=true; ch=true; addLog(r+t('ev_tdone')); } } }
+  for(const r in S.tim){ const tm=S.tim[r]; if(tm.off){ if(!tm.on&&tm.done){ tm.t+=dt; if(tm.t>=tm.pre){ tm.done=false; tm.t=0; ch=true; addLog(r+t('ev_tdone')); } } continue; } if(tm.on&&!tm.done){ tm.t+=dt; if(tm.t>=tm.pre){ tm.done=true; ch=true; addLog(r+t('ev_tdone')); } } }
   if(ch) solve();
 }
 /* ================= Unit 3: timer circuits (templates + circuits) ================= */
@@ -916,6 +919,266 @@ CIRCUITS.push(
   ]
 }
 );
+/* ================= Unit 5: more timers, star-delta and nice circuits ================= */
+const tcoilOff=(ref,pre)=>E(ref+'c','tcoil',ref,{ref,pre,off:true});
+const sn=(id)=>E(id||'BSo','snNO','BS',{ls:'BS',t:['13','14']});
+function motor6(g,cx,cy,xs,live,cur){ // motor with 6 terminals, top at cy-40, bottom at cy+40
+  sv('rect',{x:xs[0]-16,y:cy-46,width:xs[2]-xs[0]+32,height:92,rx:8,class:'sym'},g);
+  const mc=sv('circle',{cx,cy,r:28,class:'sym'},g);
+  txt(g,cx,cy-4,'M','tag','middle'); txt(g,cx,cy+12,'3~','tag','middle');
+  const rot=sv('g',{},g); for(let k=0;k<3;k++) sv('path',{d:`M${cx} ${cy-22} a22 22 0 0 1 12 4`,stroke:'#e9a640','stroke-width':3,fill:'none','stroke-linecap':'round',transform:`rotate(${k*120} ${cx} ${cy})`},rot);
+  ['U1','V1','W1'].forEach((u,i)=>{ sv('circle',{cx:xs[i],cy:cy-40,r:3,class:'sym'},g); txt(g,xs[i]+4,cy-48,u,'trm'); });
+  ['U2','V2','W2'].forEach((u,i)=>{ sv('circle',{cx:xs[i],cy:cy+40,r:3,class:'sym'},g); txt(g,xs[i]+4,cy+56,u,'trm'); });
+  txt(g,xs[0]-58,cy+4,'M1','tag');
+  UPD.power.push(()=>{ const mm=S.mot.M1; rot.setAttribute('transform',`rotate(${mm.state==='hum'?Math.sin(S.time*60)*4:mm.ang} ${cx} ${cy})`); rot.style.opacity=Math.abs(mm.speed)>2||mm.state==='hum'?1:.35;
+    mc.setAttribute('stroke',mm.state==='run'||mm.state==='start'?'#5fd08b':['hum','jam'].includes(mm.state)?'#ff5d50':'#b9c7c4'); });
+}
+/* star-delta with reversing: KM1 fwd, KM2 rev (L1<->L3), then KS / KD after the line contactors */
+TPLS.sdr={ motors:['M1'], ols:{F1:'M1'}, olOf:{KM1:'F1'}, w:360, h:800,
+  state(){ const p0=sup(), p1=p0.map(v=>v&&S.q1), A=!!S.k.KM1, B=!!S.k.KM2, Dl=!!S.k.KD, St=!!S.k.KS;
+    const a=p1.map(v=>v&&A), b=p1.map(v=>v&&B), m=[a[0]||b[2],a[1]||b[1],a[2]||b[0]];
+    const d=m.map(v=>v&&Dl), on=(A||B)&&!(A&&B);
+    const star=on&&St&&!Dl, delta=on&&Dl&&!St;
+    const bt=[d[1],d[2],d[0]].map((v,i)=>v||m[i]);
+    const n=star?cnt(m):delta?cnt(m):0, dir=A&&!B?1:B&&!A?-1:0;
+    return {p0,p1,a,b,m,d,bt,star,delta,sp:St&&bt.some(Boolean),short:((A&&B)||(St&&Dl&&on))&&cnt(p1)>=2,
+      motors:{M1:{v:m,n:dir?n:0,tf:star?1/3:1,dir,sync:1500}},
+      olCur:{F1:()=>star||!delta?S.mot.M1.cur:S.mot.M1.cur/1.732}}; },
+  draw(g){
+    const xs=[120,150,180], xr=[240,270,300], xd=[240,270,300], cy=560;
+    const run=()=>PW.motors.M1.n>=2&&S.mot.M1.cur>0.1;
+    const cA=i=>run()&&S.k.KM1&&PW.a[i], cB=j=>run()&&S.k.KM2&&PW.b[j], cM=i=>run()&&PW.m[i];
+    const cD=i=>run()&&PW.delta&&PW.d[i], cS=()=>run()&&PW.star;
+    ['L1','L2','L3'].forEach((l,i)=>txt(g,xs[i],22,l,'tag','middle'));
+    xs.forEach((x,i)=>{ pw(g,[[x,30],[x,70]],()=>PW.p0[i],()=>cA(i)||cB(i)); pw(g,[[x,122],[x,190]],()=>PW.p1[i],()=>cA(i)||cB(i)); });
+    breaker3(g,xs,70,i=>PW.p0[i],i=>PW.p1[i],i=>cA(i)||cB(i));
+    xs.forEach((x,i)=>{ const y=140+i*10; pw(g,[[x,y],[xr[i],y],[xr[i],190]],()=>PW.p1[i],()=>cB(i)); sv('circle',{cx:x,cy:y,r:2.6,fill:'#b9c7c4'},g); });
+    contact3(g,xs,190,'KM1',()=>!!S.k.KM1,i=>PW.p1[i],i=>PW.a[i],cA,1);
+    contact3(g,xr,190,'',()=>!!S.k.KM2,i=>PW.p1[i],i=>PW.b[i],cB,1); txt(g,xr[2]+12,220,'KM2','tag');
+    xs.forEach((x,i)=>{ const jy=262+i*10; pw(g,[[x,242],[x,jy]],()=>PW.a[i],()=>cA(i)); pw(g,[[x,jy],[x,300]],()=>PW.m[i],()=>cM(i)); sv('circle',{cx:x,cy:jy,r:2.6,fill:'#b9c7c4'},g); });
+    xr.forEach((x,j)=>{ const tI=2-j, jy=262+tI*10; pw(g,[[x,242],[x,jy],[xs[tI],jy]],()=>PW.b[j],()=>cB(j)); });
+    txt(g,xr[2]+10,272,'L1↔L3','trm');
+    thermal3(g,xs,300,'F1',i=>PW.m[i],cM);
+    xs.forEach((x,i)=>{ const ty=360+i*10; pw(g,[[x,344],[x,ty]],()=>PW.m[i],()=>cM(i)); pw(g,[[x,ty],[x,cy-40]],()=>PW.m[i],()=>cM(i)&&!cD(i)||cM(i));
+      pw(g,[[x,ty],[xd[i],ty],[xd[i],400]],()=>PW.m[i],()=>cD(i)); sv('circle',{cx:x,cy:ty,r:2.6,fill:'#b9c7c4'},g); });
+    contact3(g,xd,400,'',()=>!!S.k.KD,i=>PW.m[i],i=>PW.d[i],cD,1); txt(g,xd[2]+12,430,'KD Δ','tag');
+    motor6(g,150,cy,xs,i=>PW.m[i],cM);
+    const tapY=[650,670,630], kdOf=[1,2,0];
+    xs.forEach((x,i)=>{ pw(g,[[x,cy+40],[x,tapY[i]]],()=>PW.bt[i],()=>cS()||cD(kdOf[i])); pw(g,[[x,tapY[i]],[x,690]],()=>PW.bt[i],()=>cS());
+      sv('circle',{cx:x,cy:tapY[i],r:2.6,fill:'#b9c7c4'},g);
+      const j=kdOf[i]; pw(g,[[xd[j],452],[xd[j],tapY[i]],[x,tapY[i]]],()=>PW.d[j],()=>cD(j)); });
+    contact3(g,xs,690,'KS',()=>!!S.k.KS,i=>PW.bt[i],()=>PW.sp,()=>cS(),1); txt(g,xs[0]-46,736,'Y','tag');
+    pw(g,[[xs[0],742],[xs[0],758],[xs[2],758],[xs[2],742]],()=>PW.sp,()=>cS()); pw(g,[[xs[1],742],[xs[1],758]],()=>PW.sp,()=>cS());
+    const md=txt(g,270,cy-6,'','tag','middle'), dt=txt(g,270,cy+14,'','trm','middle');
+    UPD.power.push(()=>{ const mm=S.mot.M1; md.textContent=PW.star?(LANG==='ar'?'ستار Y':'STAR Y'):PW.delta?(LANG==='ar'?'دلتا Δ':'DELTA Δ'):''; md.style.fill=PW.star?'#ffc629':'#5fd08b';
+      dt.textContent=Math.abs(mm.speed)>5?Math.round(Math.abs(mm.speed))+' rpm '+(mm.speed>0?'↻':'↺'):''; });
+  }};
+/* Dahlander 2-speed: KL low (feeds U1V1W1, delta), KH high (feeds U2V2W2) + KY (shorts U1V1W1, YY) */
+TPLS.dahl={ motors:['M1'], ols:{F1:'M1',F2:'M1'}, olOf:{KL:'F1',KH:'F2'}, w:400, h:640,
+  state(){ const p0=sup(), p1=p0.map(v=>v&&S.q1), L=!!S.k.KL, H=!!S.k.KH, Y=!!S.k.KY;
+    const l=p1.map(v=>v&&L), h=p1.map(v=>v&&H);
+    const low=L&&!H&&!Y, high=H&&Y&&!L;
+    const n=low?cnt(l):high?cnt(h):0;
+    return {p0,p1,l,h,low,high,yp:Y&&(high||l.some(Boolean)),short:L&&(Y||H)&&cnt(p1)>=2,
+      motors:{M1:{v:low?l:h,n,tf:1,dir:n?1:0,sync:high?3000:1500}},
+      olCur:{F1:()=>low?S.mot.M1.cur:0,F2:()=>high?S.mot.M1.cur:0}}; },
+  draw(g){
+    const xs=[150,180,210], xh=[270,300,330], xk=[50,80,110], cy=470;
+    const run=()=>PW.motors.M1.n>=2&&S.mot.M1.cur>0.1;
+    const cL=i=>run()&&PW.low&&PW.l[i], cH=i=>run()&&PW.high&&PW.h[i], cY=()=>run()&&PW.high;
+    ['L1','L2','L3'].forEach((l,i)=>txt(g,xs[i],22,l,'tag','middle'));
+    xs.forEach((x,i)=>{ pw(g,[[x,30],[x,70]],()=>PW.p0[i],()=>cL(i)||cH(i)); pw(g,[[x,122],[x,190]],()=>PW.p1[i],()=>cL(i)||cH(i)); });
+    breaker3(g,xs,70,i=>PW.p0[i],i=>PW.p1[i],i=>cL(i)||cH(i));
+    xs.forEach((x,i)=>{ const y=140+i*10; pw(g,[[x,y],[xh[i],y],[xh[i],190]],()=>PW.p1[i],()=>cH(i)); sv('circle',{cx:x,cy:y,r:2.6,fill:'#b9c7c4'},g); });
+    contact3(g,xs,190,'',()=>!!S.k.KL,i=>PW.p1[i],i=>PW.l[i],cL,1); txt(g,xs[0]-52,214,'KL','tag'); txt(g,xs[0]-52,230,LANG==='ar'?'بطيء':'low','trm');
+    contact3(g,xh,190,'',()=>!!S.k.KH,i=>PW.p1[i],i=>PW.h[i],cH,1); txt(g,xh[2]+12,214,'KH','tag'); txt(g,xh[2]+12,230,LANG==='ar'?'سريع':'high','trm');
+    xs.forEach((x,i)=>pw(g,[[x,242],[x,262]],()=>PW.l[i],()=>cL(i)));
+    thermal3(g,xs,262,'F1',i=>PW.l[i],cL);
+    xh.forEach((x,i)=>pw(g,[[x,242],[x,262]],()=>PW.h[i],()=>cH(i)));
+    thermal3(g,xh,262,'F2',i=>PW.h[i],cH);
+    // U1V1W1: from KL (via F1) and the KY taps
+    const top=i=>PW.l[i]||PW.high;
+    xs.forEach((x,i)=>{ const ty=330+i*10; pw(g,[[x,306],[x,ty]],()=>PW.l[i],()=>cL(i)); pw(g,[[x,ty],[x,cy-40]],()=>top(i),()=>cL(i)||cY());
+      pw(g,[[x,ty],[xk[i],ty],[xk[i],360]],()=>top(i),()=>cY()); sv('circle',{cx:x,cy:ty,r:2.6,fill:'#b9c7c4'},g); });
+    contact3(g,xk,360,'',()=>!!S.k.KY,i=>top(i),()=>PW.yp,()=>cY(),1); txt(g,xk[0]-6,354,'KY','tag','end');
+    pw(g,[[xk[0],412],[xk[0],426],[xk[2],426],[xk[2],412]],()=>PW.yp,()=>cY()); pw(g,[[xk[1],412],[xk[1],426]],()=>PW.yp,()=>cY());
+    motor6(g,180,cy,xs,i=>top(i),i=>cL(i)||cH(i));
+    // U2V2W2 from KH via F2
+    xh.forEach((x,i)=>{ const by=560+i*16; pw(g,[[x,306],[x,by],[xs[i],by],[xs[i],cy+40]],()=>PW.h[i]||PW.low,()=>cH(i)); });
+    const md=txt(g,300,cy-6,'','tag','middle'), dt=txt(g,300,cy+14,'','trm','middle');
+    UPD.power.push(()=>{ const mm=S.mot.M1; md.textContent=PW.low?(LANG==='ar'?'بطيء Δ':'LOW Δ'):PW.high?(LANG==='ar'?'سريع YY':'HIGH YY'):''; md.style.fill=PW.high?'#55b6ea':'#5fd08b';
+      dt.textContent=Math.abs(mm.speed)>5?Math.round(Math.abs(mm.speed))+' rpm':''; });
+  }};
+
+CIRCUITS.push(
+/* ---------- 5.1 timed run ---------- */
+{ key:'trun', unit:5, kind:'circuit', tpl:'dol',
+  name:{ar:'تشغيل لفترة محددة (يقف لوحده بالتايمر)',en:'Run for a set time (timer stops it)'},
+  buttons:[{btn:'S1',color:'green',face:'I',l:{ar:'تشغيل',en:'Start'}},{btn:'S0',color:'red',face:'O',l:{ar:'إيقاف',en:'Stop'}}],
+  lamps:[LP.H1g,LP.H3a],
+  desc:{KTs:{ar:'كونتاكت التايمر المقفول 15-16: يفصل K1 بعد الزمن',en:'Timer NC 15-16: drops K1 after the time'}},
+  tree:S_(fuse0(), SP( S_(pbnc('S0'), olc('F1'), P_(pbno('S1'), no('K1','13','14','K1h')), tnc('KT','KTs'), SP( S_(coil('K1')), S_(tcoil('KT',8)) )),
+    runL('K1'), tripL('F1') )),
+  faults:[{id:'KTs',kind:'stuck',l:{ar:'كونتاكت التايمر 15-16 ملحوم',en:'Timer contact 15-16 welded'}},{id:'KTc',kind:'burnt',l:{ar:'ملف التايمر محروق',en:'Timer coil burnt'}},fHold('K1'),fF0],
+  trace:['F0','S0','F1c','S1','K1h','KTs','K1c','KTc'],
+  steps:[
+    {l:{ar:'S1 يشغّل K1 والتايمر مع بعض، وK1 يثبّت نفسه.',en:'S1 starts K1 and the timer together, and K1 holds itself.'},on:s=>s.k.K1},
+    {l:{ar:'بعد الزمن، كونتاكت التايمر 15-16 يفتح فيفصل K1، والتايمر نفسه يفصل معاه ويرجع صفر.',en:'After the time, timer contact 15-16 opens and drops K1; the timer drops with it and resets.'},on:s=>!s.k.K1&&s.mot.M1.speed>50}
+  ],
+  challenges:[
+    {l:{ar:'شغّل الموتور وسيبه يقف لوحده بعد الزمن.',en:'Start the motor and let it stop by itself after the time.'},f:'autoStop'},
+    {l:{ar:'اضبط التايمر على 4 ثواني وكرر.',en:'Set the timer to 4 s and repeat.'},f:'pre4&autoStop'},
+    {l:{ar:'في وضع تتبع العطل، اكتشف عطلًا واحدًا.',en:'In fault-finding mode, find one fault.'},f:'solved'}
+  ],
+  hook:(dt,m)=>{ if(S.k.K1) m.r=1; if(m.r&&!S.k.K1&&!Object.values(S.btn).some(v=>v)&&!S.ol.F1.trip) FLAGS.add('autoStop'); if(!S.k.K1&&S.btn.S0) m.r=0; if(S.tim.KT&&S.tim.KT.pre<=4) FLAGS.add('pre4'); },
+  explain:{ar:['دايرة بسيطة ومفيدة: خلاط أو غسالة أو مضخة تشتغل زمن معين وتقف لوحدها.','التايمر متوصل جنب ملف K1، وكونتاكته المقفول 15-16 على التوالي في دايرة K1. لما الزمن يخلص الكونتاكت يفتح فيفصل K1 والتايمر مع بعض، فالدايرة ترجع جاهزة للمرة الجاية.','لو كونتاكت التايمر اتلحم، الموتور هيفضل شغال ومش هيقف لوحده أبدًا.'],
+    en:['A simple, useful circuit: a mixer, washer or pump that runs for a set time and stops by itself.','The timer sits beside K1 coil, and its NC 15-16 is in series in the K1 rung. When the time is up the contact opens and drops K1 and the timer together, so the circuit is ready for next time.','If the timer contact welds, the motor keeps running and never stops by itself.']},
+  quiz:[{q:{ar:'ليه التايمر بيرجع صفر بعد ما الموتور يقف؟',en:'Why does the timer reset after the motor stops?'},o:[{ar:'لأنه متوصل بعد كونتاكت التثبيت فبيفصل مع K1',en:'It is fed after the holding contact, so it drops with K1'},{ar:'لأنه تايمر تأخير فصل',en:'Because it is off-delay'}],a:0,w:{ar:'كونتاكت 15-16 فصل الاتنين.',en:'15-16 dropped both.'}}]
+},
+/* ---------- 5.2 off-delay cooling fan ---------- */
+{ key:'fan', unit:5, kind:'circuit', tpl:'two',
+  name:{ar:'مروحة تبريد تكمل بعد وقوف الموتور (تأخير فصل)',en:'Cooling fan that runs on after the motor (off-delay)'},
+  buttons:[{btn:'S1',color:'green',face:'I',l:{ar:'تشغيل',en:'Start'}},{btn:'S0',color:'red',face:'O',l:{ar:'إيقاف',en:'Stop'}}],
+  lamps:[{id:'H1',color:'green',l:{ar:'الموتور شغال',en:'Motor run'}},{id:'H4',color:'blue',l:{ar:'المروحة شغالة',en:'Fan run'}},LP.H3a],
+  desc:{KTd:{ar:'كونتاكت التايمر (تأخير فصل): يقفل في الحال ويفتح بعد الزمن',en:'Off-delay contact: closes at once, opens after the time'}},
+  tree:S_(fuse0(), SP( S_(olc('F1'), pbnc('S0'), P_(pbno('S1'), no('K1','13','14','K1h')), SP( S_(coil('K1')), S_(tcoilOff('KT',8)) )),
+    S_(olc('F2'), tno('KT','KTd'), coil('K2')),
+    runL('K1','H1','green'), runL('K2','H4','blue'), tripL('F1','F2') )),
+  faults:[{id:'KTc',kind:'burnt',l:{ar:'ملف التايمر محروق',en:'Timer coil burnt'}},{id:'KTd',kind:'open',l:{ar:'كونتاكت التايمر تالف',en:'Timer contact worn'}},fCoil('K2'),fHold('K1'),fF0],
+  trace:['F0','F1c','S0','S1','K1h','K1c','KTc','F2c','KTd','K2c'],
+  steps:[
+    {l:{ar:'S1 يشغّل الموتور، والتايمر يتغذى فكونتاكته يقفل في الحال وتشتغل المروحة.',en:'S1 starts the motor; the timer is fed, its contact closes at once and the fan runs.'},on:s=>s.k.K1&&s.k.K2},
+    {l:{ar:'اضغط إيقاف: الموتور يقف، لكن المروحة تكمل لحد ما زمن التايمر يخلص.',en:'Press stop: the motor stops, but the fan carries on until the timer runs out.'},on:s=>!s.k.K1&&s.k.K2},
+    {l:{ar:'بعد الزمن المروحة تقف.',en:'After the time the fan stops.'},on:s=>!s.k.K1&&!s.k.K2&&s.mot.M2.speed>50}
+  ],
+  challenges:[
+    {l:{ar:'شغّل وبعدين وقّف: لاحظ المروحة بتكمل لوحدها وبعدين تقف.',en:'Start then stop: see the fan carry on and then stop by itself.'},f:'runOn'},
+    {l:{ar:'افصل الأوفرلود F1 (زوّد الحمل): المروحة برضه تكمل تبرّد الموتور.',en:'Trip overload F1 (raise the load): the fan still runs on to cool the motor.'},f:'olFan'},
+    {l:{ar:'في وضع تتبع العطل، اكتشف عطلًا واحدًا.',en:'In fault-finding mode, find one fault.'},f:'solved'}
+  ],
+  hook:(dt,m)=>{ if(S.k.K1&&S.k.K2) m.b=1; if(m.b&&!S.k.K1&&S.k.K2) m.on=1; if(m.on&&!S.k.K2){ FLAGS.add('runOn'); m.on=0; m.b=0; } if(S.ol.F1.trip&&S.k.K2&&!S.k.K1) FLAGS.add('olFan'); },
+  explain:{ar:['موتور كبير بيسخن، فعايزين مروحة تكمل تبرّده شوية بعد ما يقف. ده شغل تايمر تأخير الفصل.','ملف التايمر جنب ملف K1. أول ما K1 يشتغل، كونتاكت التايمر يقفل في الحال فالمروحة K2 تشتغل. لما K1 يقف، التايمر يبدأ يعد، والمروحة تفضل شغالة لحد ما الزمن يخلص.','لاحظ إن المروحة ليها أوفرلود لوحدها F2، ومش متوصلة بعد زر الإيقاف، عشان تكمل حتى لو الموتور فصل من الأوفرلود.'],
+    en:['A large motor gets hot, so we want a fan to keep cooling it for a while after it stops. That is a job for an off-delay timer.','The timer coil sits beside K1. As soon as K1 runs, the timer contact closes at once and fan K2 runs. When K1 stops, the timer starts counting and the fan keeps running until the time is up.','Note the fan has its own overload F2 and is not wired after the stop button, so it runs on even if the motor tripped on overload.']},
+  quiz:[{q:{ar:'لو استخدمنا تايمر تأخير تشغيل بدل تأخير الفصل هنا؟',en:'If we used an on-delay timer here instead?'},o:[{ar:'المروحة تبدأ متأخرة وتقف مع الموتور',en:'The fan starts late and stops with the motor'},{ar:'نفس الشغل',en:'Same result'}],a:0,w:{ar:'تأخير التشغيل بيأخر البداية مش النهاية.',en:'On-delay delays the start, not the end.'}}]
+},
+/* ---------- 5.3 flashing alarm lamp ---------- */
+{ key:'flash', unit:5, kind:'circuit', tpl:'dol',
+  name:{ar:'لمبة إنذار بتفلش بتايمرين',en:'Flashing alarm lamp with two timers'},
+  buttons:[{btn:'S1',color:'green',face:'I',l:{ar:'تشغيل',en:'Start'}},{btn:'S0',color:'red',face:'O',l:{ar:'إيقاف',en:'Stop'}}],
+  lamps:[LP.H1g,{id:'H3',color:'amber',l:{ar:'أوفرلود (بتفلش)',en:'Overload (flashing)'}}],
+  desc:{KT1o:{ar:'KT1 17-18: يقفل بعد زمن KT1 فيشغل KT2 واللمبة',en:'KT1 17-18: closes after KT1 time, starts KT2 and the lamp'},KT2s:{ar:'KT2 15-16: يفتح بعد زمن KT2 فيرجّع KT1 صفر',en:'KT2 15-16: opens after KT2 time and resets KT1'}},
+  tree:S_(fuse0(), SP( S_(olc('F1'), pbnc('S0'), P_(pbno('S1'), no('K1','13','14','K1h')), coil('K1')),
+    runL('K1'),
+    S_(olt('F1'), SP( S_(tnc('KT2','KT2s'), tcoil('KT1',1)), S_(tno('KT1','KT1o'), SP( S_(tcoil('KT2',1)), S_(lamp('H3','amber')) )) )) )),
+  faults:[{id:'KT2s',kind:'stuck',l:{ar:'كونتاكت KT2 15-16 ملحوم',en:'KT2 contact 15-16 welded'}},{id:'KT1c',kind:'burnt',l:{ar:'ملف KT1 محروق',en:'KT1 coil burnt'}},fHold('K1'),fF0],
+  trace:['F0','F1c','S0','S1','K1h','K1c','F1t','KT2s','KT1c','KT1o','KT2c'],
+  steps:[
+    {l:{ar:'شغّل الموتور وزوّد الحمل لحد ما الأوفرلود يفصل.',en:'Run the motor and raise the load until the overload trips.'},on:s=>s.ol.F1&&s.ol.F1.trip},
+    {l:{ar:'كونتاكت الأوفرلود 97-98 يغذي KT1. بعد زمنه، KT1 يشغّل KT2 واللمبة تنور.',en:'Overload contact 97-98 feeds KT1. After its time, KT1 starts KT2 and the lamp lights.'},on:s=>s.lamps.H3},
+    {l:{ar:'بعد زمن KT2، كونتاكته 15-16 يفصل KT1، فالكل يرجع ويبدأ من الأول: اللمبة تفلش.',en:'After KT2 time, its 15-16 drops KT1, so everything resets and starts over: the lamp flashes.'},on:s=>s.ol.F1&&s.ol.F1.trip&&!s.lamps.H3}
+  ],
+  challenges:[
+    {l:{ar:'افصل الأوفرلود ولاحظ اللمبة بتفلش.',en:'Trip the overload and watch the lamp flash.'},f:'flashing'},
+    {l:{ar:'غيّر زمن KT1 و KT2 من العمود الجانبي: واحد بيحدد الإطفاء والتاني الإنارة.',en:'Change KT1 and KT2 in the side column: one sets off time, the other on time.'},f:'preF'},
+    {l:{ar:'في وضع تتبع العطل، اكتشف عطلًا واحدًا.',en:'In fault-finding mode, find one fault.'},f:'solved'}
+  ],
+  hook:(dt,m)=>{ if(S.lamps.H3&&!m.on){ m.on=1; m.n=(m.n||0)+1; if(m.n>=3) FLAGS.add('flashing'); } if(!S.lamps.H3) m.on=0; if(S.tim.KT1&&S.tim.KT2&&(S.tim.KT1.pre!==1||S.tim.KT2.pre!==1)) FLAGS.add('preF'); },
+  explain:{ar:['لمبة بتفلش بتلفت النظر أكتر من لمبة ثابتة. بنعملها بتايمرين تأخير تشغيل بيشغلوا بعض في دايرة مقفولة.','KT1 يتغذى، يعد زمنه، وبعدين يشغل KT2 واللمبة. KT2 يعد زمنه، وبعدين كونتاكته المقفول يفصل KT1. لما KT1 يفصل، KT2 واللمبة يفصلوا، و KT2 يرجع يقفل كونتاكته فـ KT1 يبدأ تاني.','زمن KT1 = وقت اللمبة مطفية، وزمن KT2 = وقت اللمبة منورة. في السوق فيه تايمر جاهز اسمه Flasher بيعمل نفس الشغل في جهاز واحد.'],
+    en:['A flashing lamp catches the eye more than a steady one. We build it with two on-delay timers that drive each other in a loop.','KT1 is fed, counts its time, then starts KT2 and the lamp. KT2 counts its time, then its NC drops KT1. When KT1 drops, KT2 and the lamp drop, KT2 recloses its contact and KT1 starts again.','KT1 time = lamp off time, KT2 time = lamp on time. Ready-made "flasher" timers do the same in one device.']},
+  quiz:[{q:{ar:'عايز اللمبة تنور ثانيتين وتطفي ثانية. تضبط إيه؟',en:'You want the lamp on 2 s and off 1 s. Set what?'},o:[{ar:'KT1 = 1 ثانية و KT2 = 2 ثانية',en:'KT1 = 1 s, KT2 = 2 s'},{ar:'KT1 = 2 ثانية و KT2 = 1 ثانية',en:'KT1 = 2 s, KT2 = 1 s'}],a:0,w:{ar:'KT2 بيحدد وقت الإنارة.',en:'KT2 sets the on time.'}}]
+},
+/* ---------- 5.4 star-delta with reversing ---------- */
+{ key:'sdr', unit:5, kind:'circuit', tpl:'sdr', ir:6.4,
+  irNote:{ar:'الأوفرلود بعد كونتاكتورات الاتجاه وقبل الستار/دلتا، فبيشوف تيار الملف: 11 ÷ 1.73 = 6.4 أمبير.',en:'The overload sits after the direction contactors, before star/delta, so it sees winding current: 11 ÷ 1.73 = 6.4 A.'},
+  name:{ar:'ستار/دلتا مع عكس الحركة',en:'Star-delta with reversing'},
+  buttons:[{btn:'S1',color:'green',face:'↻',l:{ar:'أمام',en:'Forward'}},{btn:'S2',color:'green',face:'↺',l:{ar:'خلف',en:'Reverse'}},{btn:'S0',color:'red',face:'O',l:{ar:'إيقاف',en:'Stop'}}],
+  lamps:[{id:'H1',color:'green',l:{ar:'أمام',en:'Forward'}},{id:'H4',color:'blue',l:{ar:'خلف',en:'Reverse'}},{id:'H5',color:'amber',l:{ar:'ستار',en:'Star'}},{id:'H3',color:'red',l:{ar:'أوفرلود',en:'Overload'}}],
+  tree:S_(fuse0(), SP( S_(pbnc('S0'), olc('F1'), SP(
+      S_(P_(pbno('S1'), no('KM1','13','14','KM1h')), nc('KM2','21','22','KM2i'), coil('KM1')),
+      S_(P_(pbno('S2'), no('KM2','13','14','KM2h')), nc('KM1','21','22','KM1i'), coil('KM2')),
+      S_(P_(no('KM1','53','54','KM1s'), no('KM2','53','54','KM2s')), SP(
+        S_(nc('KD','31','32','KDt'), tcoil('KT',5)),
+        S_(tnc('KT','KTs'), nc('KD','21','22','KDi'), coil('KS')),
+        S_(P_(tno('KT','KTd'), no('KD','13','14','KDh')), nc('KS','21','22','KSi'), coil('KD')) )) )),
+    runL('KM1','H1','green'), runL('KM2','H4','blue'), runL('KS','H5','amber'), S_(olt('F1'),lamp('H3','red')) )),
+  faults:[{id:'KM1i',kind:'stuck',l:{ar:'إنترلوك KM1 21-22 مقصور',en:'Interlock KM1 21-22 bridged'}},{id:'KTc',kind:'burnt',l:{ar:'ملف التايمر محروق',en:'Timer coil burnt'}},{id:'KDh',kind:'open',l:{ar:'كونتاكت تثبيت KD تالف',en:'KD holding contact worn'}},{id:'KM2s',kind:'open',l:{ar:'كونتاكت KM2 53-54 تالف',en:'KM2 contact 53-54 worn'}},fF0,PF.phL3],
+  trace:['F0','S0','F1c','S1','KM1h','KM2i','KM1c','S2','KM2h','KM1i','KM2c','KM1s','KM2s','KDt','KTc','KTs','KDi','KSc','KTd','KDh','KSi','KDc'],
+  steps:[
+    {l:{ar:'S1 (أمام) أو S2 (خلف) يشغّل كونتاكتور الاتجاه. الاتنين متربطين إنترلوك.',en:'S1 (forward) or S2 (reverse) starts a direction contactor. The two are interlocked.'},on:s=>s.k.KM1||s.k.KM2},
+    {l:{ar:'كونتاكت 53-54 من أي اتجاه يغذي جزء الستار/دلتا: الموتور يبدأ ستار.',en:'Contact 53-54 of either direction feeds the star-delta part: the motor starts in star.'},on:s=>s.k.KS},
+    {l:{ar:'بعد التايمر يحول دلتا. عشان تعكس، لازم تضغط إيقاف الأول.',en:'After the timer it changes to delta. To reverse you must press stop first.'},on:s=>s.k.KD}
+  ],
+  challenges:[
+    {l:{ar:'شغّل أمام لحد الدلتا، وقّف، وبعدين شغّل خلف لحد الدلتا.',en:'Run forward to delta, stop, then run reverse to delta.'},f:'fwdD&revD'},
+    {l:{ar:'جرّب تضغط خلف والموتور شغال أمام: الإنترلوك يمنعه.',en:'Press reverse while running forward: the interlock blocks it.'},f:'blocked'},
+    {l:{ar:'في وضع تتبع العطل، اكتشف عطلًا واحدًا.',en:'In fault-finding mode, find one fault.'},f:'solved'}
+  ],
+  hook:(dt,m)=>{ if(S.k.KD&&S.k.KM1) FLAGS.add('fwdD'); if(S.k.KD&&S.k.KM2) FLAGS.add('revD'); if(S.k.KM1&&S.btn.S2===1&&!S.k.KM2) FLAGS.add('blocked'); if(S.k.KM2&&S.btn.S1===1&&!S.k.KM1) FLAGS.add('blocked'); },
+  explain:{ar:['ده مزيج من دايرتين اتعلمتهم: عكس الحركة والستار/دلتا. كونتاكتورين للاتجاه (KM1 أمام، KM2 خلف بتبديل L1 و L3)، وبعدهم KS و KD زي الستار/دلتا العادي.','الجزء بتاع الستار/دلتا والتايمر بيتغذى من كونتاكت 53-54 من KM1 أو KM2 على التوازي، فبيشتغل في الاتجاهين.','الإنترلوك هنا مرتين: بين KM1 و KM2 (عشان شورت بين الفازات)، وبين KS و KD.'],
+    en:['This combines two circuits you learned: reversing and star-delta. Two direction contactors (KM1 forward, KM2 reverse by swapping L1 and L3), then KS and KD as in normal star-delta.','The star-delta part and the timer are fed through 53-54 of KM1 or KM2 in parallel, so it works in both directions.','There are two interlocks here: between KM1 and KM2 (phase short), and between KS and KD.']},
+  quiz:[{q:{ar:'الموتور بيلف أمام بس، وخلف بيبدأ ستار وعمره ما بيحول دلتا. الأقرب؟',en:'Forward works fully, but reverse starts in star and never changes to delta. Most likely?'},o:[{ar:'التايمر',en:'The timer'},{ar:'مش ممكن يكون التايمر لأنه شغال في الأمام',en:'Not the timer, it works forward'}],a:1,w:{ar:'التايمر مشترك. دوّر في اللي خاص بالخلف بس.',en:'The timer is shared. Look at what is reverse-only.'}}]
+},
+/* ---------- 5.5 Dahlander two-speed ---------- */
+{ key:'dahl', unit:5, kind:'circuit', tpl:'dahl',
+  name:{ar:'موتور بسرعتين (دالاندر)',en:'Two-speed motor (Dahlander)'},
+  buttons:[{btn:'S1',color:'green',face:'1',l:{ar:'بطيء',en:'Low'}},{btn:'S2',color:'green',face:'2',l:{ar:'سريع',en:'High'}},{btn:'S0',color:'red',face:'O',l:{ar:'إيقاف',en:'Stop'}}],
+  lamps:[{id:'H1',color:'green',l:{ar:'بطيء',en:'Low'}},{id:'H4',color:'blue',l:{ar:'سريع',en:'High'}},LP.H3a],
+  desc:{KYp:{ar:'كونتاكت KY: KH مايشتغلش غير بعد ما نقطة النجمة تتقفل',en:'KY contact: KH only runs once the star point is closed'}},
+  tree:S_(fuse0(), SP( S_(pbnc('S0'), olc('F1'), olc('F2'), SP(
+      S_(P_(pbno('S1'), no('KL','13','14','KLh')), pbnc('S2','S2b'), nc('KY','21','22','KYi'), nc('KH','21','22','KHi'), coil('KL')),
+      S_(P_(pbno('S2'), no('KY','13','14','KYh')), pbnc('S1','S1b'), nc('KL','21','22','KLi'), SP( S_(coil('KY')), S_(no('KY','43','44','KYp'), coil('KH')) )) )),
+    runL('KL','H1','green'), runL('KH','H4','blue'), tripL('F1','F2') )),
+  faults:[{id:'KYp',kind:'open',l:{ar:'كونتاكت KY 43-44 تالف',en:'KY contact 43-44 worn'}},{id:'KLi',kind:'stuck',l:{ar:'إنترلوك KL مقصور',en:'KL interlock bridged'}},fCoil('KH'),fHold('KL'),fF0,PF.phL3],
+  trace:['F0','S0','F1c','F2c','S1','KLh','S2b','KYi','KHi','KLc','S2','KYh','S1b','KLi','KYc','KYp','KHc'],
+  steps:[
+    {l:{ar:'S1: KL يغذي U1 V1 W1 والموتور يلف بطيء (دلتا، 4 أقطاب، حوالي 1450 لفة).',en:'S1: KL feeds U1 V1 W1 and the motor runs slow (delta, 4 poles, about 1450 rpm).'},on:s=>s.k.KL},
+    {l:{ar:'S2: الزر المزدوج يفصل KL الأول، وبعدين KY يقفل نقطة النجمة و KH يغذي U2 V2 W2: سريع (نجمة مزدوجة YY، حوالي 2900 لفة).',en:'S2: the double button drops KL first, then KY closes the star point and KH feeds U2 V2 W2: fast (double star YY, about 2900 rpm).'},on:s=>s.k.KH},
+    {l:{ar:'كل سرعة ليها أوفرلود مضبوط على تيارها.',en:'Each speed has an overload set to its own current.'},on:s=>s.btn.S0===1}
+  ],
+  challenges:[
+    {l:{ar:'شغّل بطيء وبعدين حوّل سريع من غير ما توقف.',en:'Run low, then switch to high without stopping.'},f:'lowHigh'},
+    {l:{ar:'جرّب عطل KY 43-44: KH مش هيشتغل، وده بيحمي الموتور.',en:'Try the KY 43-44 fault: KH will not run, which protects the motor.'},f:'kyFault'},
+    {l:{ar:'في وضع تتبع العطل، اكتشف عطلًا واحدًا.',en:'In fault-finding mode, find one fault.'},f:'solved'}
+  ],
+  hook:(dt,m)=>{ if(S.k.KL&&S.mot.M1.speed>1300) m.l=1; if(m.l&&S.k.KH&&S.mot.M1.speed>2700) FLAGS.add('lowHigh'); if(S.fault.KYp==='open'&&S.k.KY&&!S.k.KH) FLAGS.add('kyFault'); },
+  explain:{ar:['موتور الدالاندر ملفاته متقسمة نصين، وبتغيير طريقة التوصيل بنغير عدد الأقطاب: دلتا = 4 أقطاب = سرعة بطيئة، ونجمة مزدوجة YY = 2 قطب = ضعف السرعة.','بطيء: KL يغذي U1 V1 W1 وأطراف U2 V2 W2 مفتوحة. سريع: KY يقصّر U1 V1 W1 مع بعض (نقطة نجمة)، و KH يغذي U2 V2 W2.','KL لازم ميشتغلش أبدًا مع KY أو KH، وإلا يبقى شورت. عشان كده فيه إنترلوك بالكونتاكتات وبالأزرار المزدوجة.','الاستخدام: مراوح التهوية، الأوناش، والمخارط اللي محتاجة سرعتين.'],
+    en:['A Dahlander motor has its windings split in halves; changing the connection changes the pole count: delta = 4 poles = low speed, double star YY = 2 poles = double speed.','Low: KL feeds U1 V1 W1 and U2 V2 W2 are open. High: KY shorts U1 V1 W1 together (star point) and KH feeds U2 V2 W2.','KL must never run with KY or KH, or there is a short. Hence the contact and double-button interlocks.','Used in ventilation fans, hoists and lathes that need two speeds.']},
+  quiz:[{q:{ar:'في السرعة العالية، إيه اللي بيقصّر U1 V1 W1؟',en:'At high speed, what shorts U1 V1 W1?'},o:[{ar:'KY',en:'KY'},{ar:'KL',en:'KL'},{ar:'KH',en:'KH'}],a:0,w:{ar:'KY بيعمل نقطة النجمة.',en:'KY makes the star point.'}}]
+},
+/* ---------- 5.6 plugging brake with speed switch ---------- */
+{ key:'plug', unit:5, kind:'circuit', tpl:'rev',
+  name:{ar:'فرملة الموتور بالعكس ومفتاح السرعة',en:'Plugging brake with a speed switch'},
+  buttons:[{btn:'S1',color:'green',face:'I',l:{ar:'تشغيل',en:'Start'}},{btn:'S0',color:'red',face:'O',l:{ar:'إيقاف بفرملة',en:'Stop with brake'}}],
+  lamps:[LP.H1g,{id:'H4',color:'amber',l:{ar:'بيفرمل',en:'Braking'}},LP.H3a],
+  desc:{BSo:{ar:'مفتاح السرعة: مقفول طول ما الموتور بيلف أمام، ويفتح قرب الصفر',en:'Speed switch: closed while running forward, opens near zero'},S0b:{ar:'كونتاكت S0 المفتوح: يبدأ الفرملة',en:'S0 NO contact: starts braking'}},
+  tree:S_(fuse0(), SP( S_(olc('F1'), SP(
+      S_(pbnc('S0'), P_(pbno('S1'), no('K1','13','14','K1h')), nc('K2','21','22','K2i'), coil('K1')),
+      S_(P_(pbno('S0','S0b'), no('K2','13','14','K2h')), sn('BSo'), nc('K1','21','22','K1i'), coil('K2')) )),
+    runL('K1'), runL('K2','H4','amber'), tripL('F1') )),
+  faults:[{id:'BSo',kind:'stuck',l:{ar:'مفتاح السرعة متزنق مقفول',en:'Speed switch stuck closed'}},fCoil('K2'),{id:'K2h',kind:'open',l:{ar:'كونتاكت تثبيت K2 تالف',en:'K2 holding contact worn'}},fF0],
+  trace:['F0','F1c','S0','S1','K1h','K2i','K1c','S0b','K2h','BSo','K1i','K2c'],
+  reset(){ S.ls={BS:false}; },
+  process(dt){ S.ls.BS=S.mot.M1.speed>80; },
+  tile:()=>({k:{ar:'زمن الوقوف',en:'Stop time'},v:PR.stopT!=null?PR.stopT.toFixed(1)+' s':'—'}),
+  steps:[
+    {l:{ar:'S1 يشغّل K1. لما الموتور يلف، مفتاح السرعة BS يقفل.',en:'S1 starts K1. Once the motor turns, speed switch BS closes.'},on:s=>s.k.K1&&s.ls.BS},
+    {l:{ar:'S0: يفصل K1 ويشغّل K2 (عكس) فالموتور يفرمل بقوة.',en:'S0 drops K1 and starts K2 (reverse), so the motor brakes hard.'},on:s=>s.k.K2},
+    {l:{ar:'قرب الصفر BS يفتح ويفصل K2 قبل ما الموتور يلف عكس.',en:'Near zero BS opens and drops K2 before the motor reverses.'},on:s=>!s.k.K1&&!s.k.K2&&!s.ls.BS}
+  ],
+  challenges:[
+    {l:{ar:'شغّل ووقّف بالفرملة، وبص على زمن الوقوف.',en:'Start and stop with the brake, and look at the stop time.'},f:'braked'},
+    {l:{ar:'جرّب عطل ملف K2 المحروق وقارن: الموتور يقف بالدوران الحر وياخد وقت أطول.',en:'Try the burnt K2 coil and compare: the motor coasts and takes longer.'},f:'coasted'},
+    {l:{ar:'جرّب مفتاح السرعة المتزنق: الموتور يقف ويلف عكس!',en:'Try the stuck speed switch: the motor stops and runs backwards!'},f:'reversed'}
+  ],
+  hook:(dt,m)=>{ const sp=S.mot.M1.speed;
+    if(m.t0==null&&sp>1300&&!S.k.K1){ m.t0=S.time; m.brk=!!S.k.K2; }
+    if(m.t0!=null&&Math.abs(sp)<20){ PR.stopT=S.time-m.t0; if(m.brk) FLAGS.add('braked'); else FLAGS.add('coasted'); m.t0=null; }
+    if(S.k.K1) m.t0=null; if(sp<-200) FLAGS.add('reversed'); },
+  explain:{ar:['الفرملة بالعكس (Plugging): بدل ما نسيب الموتور يقف لوحده، بنعكس فازتين وهو بيلف، فالمجال الدوار يشده عكس ويقف بسرعة.','المشكلة إن لو سبنا K2 شغال، الموتور هيقف ويلف عكس. عشان كده بنحط مفتاح سرعة BS على العمود: مقفول طول ما الموتور بيلف، ويفتح قرب الصفر فيفصل K2 في الوقت المظبوط.','الفرملة دي بتسحب تيار كبير وبتسخن الموتور، فبتنفع للوقوف السريع مش للتشغيل الكتير ورا بعض.'],
+    en:['Plugging: instead of letting the motor coast, we swap two phases while it turns, so the rotating field pulls it backwards and it stops fast.','The catch: if K2 stays on, the motor stops and then runs backwards. So a speed switch BS on the shaft is closed while the motor turns and opens near zero, dropping K2 at the right moment.','Plugging draws a large current and heats the motor, so it suits quick stops, not frequent cycling.']},
+  quiz:[{q:{ar:'وظيفة مفتاح السرعة في الدايرة دي؟',en:'What does the speed switch do here?'},o:[{ar:'يفصل الفرملة قرب الصفر عشان الموتور ما يلفش عكس',en:'Ends braking near zero so the motor does not reverse'},{ar:'يحمي من الأوفرلود',en:'Overload protection'}],a:0,w:{ar:'من غيره الموتور يلف عكس.',en:'Without it the motor would reverse.'}}]
+}
+);
 /* ================= drawing: control ================= */
 const CW=100, RH=66, BUS=20;
 function measure(n){
@@ -977,7 +1240,7 @@ function descOf(e){
     no:{ar:'كونتاكت مفتوح من '+e.ref,en:e.ref+' NO contact'},nc:{ar:'كونتاكت مقفول من '+e.ref,en:e.ref+' NC contact'},
     coil:{ar:'ملف الكونتاكتور '+e.ref,en:'Contactor '+e.ref+' coil'},tcoil:{ar:'ملف التايمر '+e.ref,en:'Timer '+e.ref+' coil'},
     tNO:{ar:'كونتاكت تايمر '+e.ref+' يقفل بعد الزمن',en:'Timer '+e.ref+' contact, closes after delay'},tNC:{ar:'كونتاكت تايمر '+e.ref+' يفتح بعد الزمن',en:'Timer '+e.ref+' contact, opens after delay'},
-    lamp:{ar:'لمبة '+e.id,en:'Lamp '+e.id},lsNO:{ar:'ليمت سويتش '+e.tag+' (مفتوح)',en:'Limit switch '+e.tag+' (NO)'},lsNC:{ar:'ليمت سويتش '+e.tag+' (مقفول)',en:'Limit switch '+e.tag+' (NC)'},
+    lamp:{ar:'لمبة '+e.id,en:'Lamp '+e.id},lsNO:{ar:'ليمت سويتش '+e.tag+' (مفتوح)',en:'Limit switch '+e.tag+' (NO)'},lsNC:{ar:'ليمت سويتش '+e.tag+' (مقفول)',en:'Limit switch '+e.tag+' (NC)'},snNO:{ar:'مفتاح سرعة '+e.tag+': مقفول طول ما الموتور بيلف',en:'Speed switch '+e.tag+': closed while the motor turns'},
     flNO:{ar:'عوامة '+e.tag+' (مفتوح)',en:'Float '+e.tag+' (NO)'},flNC:{ar:'عوامة '+e.tag+' (مقفول)',en:'Float '+e.tag+' (NC)'},selH:{ar:'مفتاح الاختيار وضع يدوي',en:'Selector, HAND'},selA:{ar:'مفتاح الاختيار وضع أوتوماتيك',en:'Selector, AUTO'}};
   return tx(G[e.type]||{ar:e.tag,en:e.tag});
 }
@@ -985,7 +1248,7 @@ function drawEl(e,x,y){
   const g=sv('g',{},GL); e.g=g;
   const lin=()=>e.inPt.live, lout=()=>e.type&&isLoad(e)?false:e.outPt.live, cur=()=>e.current;
   const T=e.t||[];
-  const isC=['pbNO','pbNC','no','nc','olNC','olNO','tNO','tNC','lsNO','lsNC','flNO','flNC','selH','selA'].includes(e.type);
+  const isC=['pbNO','pbNC','no','nc','olNC','olNO','tNO','tNC','lsNO','lsNC','snNO','flNO','flNC','selH','selA'].includes(e.type);
   if(isC){
     lead(x,y,y+18,lin,cur); lead(x,y+46,y+RH,lout,cur);
     const nc=['pbNC','nc','olNC','tNC','lsNC','flNC'].includes(e.type);
@@ -999,6 +1262,8 @@ function drawEl(e,x,y){
       sv('path',{d:`M${x-7} ${y+30} H${x-22} M${x-22} ${y+24} a7 7 0 0 0 0 14`,class:'sym'},act);
     }else if(e.type==='lsNO'||e.type==='lsNC'){
       sv('path',{d:`M${x-7} ${y+32} H${x-18} l-8 -7 v14 z`,class:'sym'},act);
+    }else if(e.type==='snNO'){
+      sv('path',{d:`M${x-7} ${y+32} H${x-16}`,class:'sym dash'},act); sv('rect',{x:x-30,y:y+25,width:14,height:14,class:'sym'},act); txt(act,x-23,y+36,'n','trm','middle');
     }else if(e.type==='flNO'||e.type==='flNC'){
       sv('path',{d:`M${x-7} ${y+32} H${x-18}`,class:'sym dash'},act); sv('circle',{cx:x-24,cy:y+32,r:6,class:'sym'},act);
     }else if(e.type==='selH'||e.type==='selA'){
@@ -1034,11 +1299,11 @@ function drawEl(e,x,y){
   }else if(e.type==='tcoil'){
     lead(x,y,y+16,lin,cur); lead(x,y+50,y+RH,()=>false,cur);
     const r=sv('rect',{x:x-17,y:y+16,width:34,height:34,rx:3,class:'sym'},g);
-    sv('rect',{x:x-28,y:y+22,width:11,height:22,class:'sym'},g); sv('path',{d:`M${x-28} ${y+22} l11 22`,class:'sym'},g);
+    sv('rect',{x:x-28,y:y+22,width:11,height:22,class:'sym',fill:e.off?'#b9c7c4':'none'},g); if(!e.off) sv('path',{d:`M${x-28} ${y+22} l11 22`,class:'sym'},g);
     txt(g,x+22,y+33,e.tag,'tag'); const pt=txt(g,x+22,y+47,'','trm'); txt(g,x+5,y+12,'A1','trm'); txt(g,x+5,y+62,'A2','trm');
     const pr=sv('rect',{x:x-15,y:y+46,width:0,height:3,fill:'#ffd84d'},g);
     const fm=txt(g,x,y+38,'','flt','middle');
-    UPD.control.push(()=>{ const tm=S.tim[e.ref]; r.setAttribute('fill',tm.on?'rgba(233,166,64,.35)':'none'); r.setAttribute('stroke',tm.on?'#e9a640':'#b9c7c4'); pt.textContent=(tm.on?tm.t.toFixed(1)+'/':'')+tm.pre+'s'; pr.setAttribute('width',tm.on?30*Math.min(1,tm.t/tm.pre):0); fm.textContent=(MODE==='free'&&S.fault[e.id])?'X':''; });
+    UPD.control.push(()=>{ const tm=S.tim[e.ref]; r.setAttribute('fill',tm.on?'rgba(233,166,64,.35)':'none'); r.setAttribute('stroke',tm.on?'#e9a640':'#b9c7c4'); const cnt=tm.off?(!tm.on&&tm.done):tm.on; pt.textContent=(cnt?tm.t.toFixed(1)+'/':'')+tm.pre+'s'+(tm.off?' TOF':''); pr.setAttribute('width',cnt?30*Math.min(1,tm.t/tm.pre):0); fm.textContent=(MODE==='free'&&S.fault[e.id])?'X':''; });
   }else if(e.type==='lamp'){
     lead(x,y,y+19,lin,cur); lead(x,y+47,y+RH,()=>false,cur);
     const col={green:'#3dff8a',white:'#f4f8ff',amber:'#ffb22e',red:'#ff4b3e',blue:'#4aa3ff'}[e.color]||'#fff';
@@ -1308,6 +1573,196 @@ function drawPumpPlant(g,P){
     tilt(f1,'B1',TX+TW-40,TY+20); tilt(f2,'B2',WX+WW-40,WY+30); });
 }
 function drawBelts(g,P){}
+/* ================= application scene: the real machine moving with the circuit ================= */
+const AP={a:{},p:{},lt:0};
+function apDt(){ const d=Math.max(0,Math.min(0.1,S.time-AP.lt)); AP.lt=S.time; return d; }
+const spd=m=>S.mot[m]?S.mot[m].speed/1500:0;
+const AT=(g,x,y,s,cls,anchor)=>{const e=sv('text',{x,y,class:cls||'apt','text-anchor':anchor||'middle'},g); e.textContent=s; return e;};
+function apMotor(g,x,y,id,flip){ /* small geared motor drawn at a roller */
+  const k=flip?-1:1;
+  sv('rect',{x:x-(flip?0:44),y:y-14,width:44,height:28,rx:5,fill:'#3d5a6c',stroke:'#7d97a5'},g);
+  for(let i=0;i<4;i++) sv('line',{x1:x-(flip?-6-i*9:38-i*9),y1:y-12,x2:x-(flip?-6-i*9:38-i*9),y2:y+12,stroke:'#2a404d','stroke-width':2},g);
+  const lab=AT(g,x-k*22,y+30,id,'apm'); const led=sv('circle',{cx:x-k*22,cy:y-20,r:4,fill:'#2a3439'},g);
+  UPD.app.push(()=>{const m=S.mot[id]; if(!m) return; const on=Math.abs(m.speed)>20; led.setAttribute('fill',['trip','hum','jam'].includes(m.state)?'#ff4b3e':on?'#3dff8a':'#2a3439');});
+  return lab;
+}
+function apRoller(g,cx,cy,r,key){ const gr=sv('g',{},g); sv('circle',{cx,cy,r,fill:'#56636a',stroke:'#9fb0ad','stroke-width':1.5},gr);
+  const sp=sv('path',{d:`M${cx-r+3} ${cy} H${cx+r-3} M${cx} ${cy-r+3} V${cy+r-3}`,stroke:'#22292c','stroke-width':2},gr);
+  UPD.app.push(()=>sp.setAttribute('transform',`rotate(${(AP.a[key]||0)} ${cx} ${cy})`)); }
+/* belt: boxes ride on top, offset integrates with motor speed */
+function apBelt(g,x,y,w,id,o={}){
+  const key='b'+id+x, r=13, dir=o.rev?-1:1;
+  sv('rect',{x:x-r,y:y-r,width:w+2*r,height:2*r,rx:r,fill:'#1f272b',stroke:'#3f4c52','stroke-width':2},g);
+  const tread=sv('path',{d:`M${x} ${y-r} H${x+w}`,stroke:'#59666b','stroke-width':3,'stroke-dasharray':'10 8'},g);
+  apRoller(g,x,y,r-3,key); apRoller(g,x+w,y,r-3,key);
+  sv('path',{d:`M${x+w*0.25} ${y+r} l-10 34 M${x+w*0.25} ${y+r} l10 34 M${x+w*0.75} ${y+r} l-10 34 M${x+w*0.75} ${y+r} l10 34`,stroke:'#3f4c52','stroke-width':3},g);
+  apMotor(g,o.motorRight?x+w+r+2:x-r-2,y,id,!!o.motorRight);
+  if(o.target!=null){ const tx0=x+w*o.target; sv('rect',{x:tx0-26,y:y-r-62,width:52,height:20,fill:'#2b3439',stroke:'#7d97a5'},g); sv('path',{d:`M${tx0} ${y-r-42} v10`,stroke:'#ffd84d','stroke-width':3},g); sv('rect',{x:tx0-22,y:y-r-36,width:44,height:36,fill:'none',stroke:'#ffd84d','stroke-dasharray':'4 3'},g); AT(g,tx0,y-r-68,tx(o.tlabel),'aps'); }
+  const n=o.boxes||3, gap=w/n, bx=[];
+  for(let i=0;i<n;i++){ const b=sv('g',{},g); sv('rect',{x:-16,y:-28,width:32,height:28,rx:2,fill:'#b98a4e',stroke:'#7a5527'},b); sv('path',{d:'M-16 -20 H16 M0 -28 V-20',stroke:'#7a5527'},b); bx.push(b); }
+  AP.p[key]=o.start||0;
+  UPD.app.push(()=>{ const v=spd(id)*dir; const d=AP._dt;
+    AP.p[key]=(AP.p[key]+v*d*(o.px||90)); AP.a[key]=((AP.a[key]||0)+v*d*400)%360;
+    tread.setAttribute('stroke-dashoffset',-AP.p[key]);
+    bx.forEach((b,i)=>{ let p=((i*gap+AP.p[key])%w+w)%w; if(o.one&&i>0){b.style.display='none';return;} if(o.one) p=Math.max(0,Math.min(w,AP.p[key])); b.setAttribute('transform',`translate(${x+p},${y-r})`); }); });
+  return key;
+}
+function apFan(g,cx,cy,r,id,o={}){
+  const key='f'+id+cx;
+  sv('circle',{cx,cy,r:r+8,fill:'#141c20',stroke:'#4a5a62','stroke-width':3},g);
+  const bl=sv('g',{},g);
+  for(let i=0;i<(o.n||5);i++){ const a=i*360/(o.n||5); sv('path',{d:`M${cx} ${cy} q${r*0.25} ${-r*0.55} ${r*0.05} ${-r*0.95} q${-r*0.35} ${r*0.15} ${-r*0.4} ${r*0.55} z`,fill:'#9fb0ad',transform:`rotate(${a} ${cx} ${cy})`},bl); }
+  sv('circle',{cx,cy,r:r*0.14,fill:'#56636a',stroke:'#cfd8d6'},g);
+  for(let i=0;i<8;i++) sv('line',{x1:cx-r-8,y1:cy-r+i*r/3.5,x2:cx+r+8,y2:cy-r+i*r/3.5,stroke:'#2a3439','stroke-width':1},g);
+  const air=sv('g',{},g); for(let i=0;i<3;i++) sv('path',{d:`M${cx+r+18} ${cy-24+i*24} q20 -8 40 0 t40 0`,class:'apair'},air);
+  if(o.label) AT(g,cx,cy+r+26,tx(o.label),'aps');
+  UPD.app.push(()=>{ const v=spd(id); AP.a[key]=((AP.a[key]||0)+v*AP._dt*900)%360; bl.setAttribute('transform',`rotate(${AP.a[key]} ${cx} ${cy})`);
+    air.style.opacity=Math.min(1,Math.abs(v)); air.style.strokeDashoffset=-(S.time*60*Math.abs(v))%40; });
+}
+function apBadge(g,x,y,fn){ const b=sv('g',{},g); const r=sv('rect',{x:x-60,y:y-14,width:120,height:26,rx:13,fill:'#17232a',stroke:'#26363e'},b); const tt=AT(b,x,y+4,'','apb');
+  UPD.app.push(()=>{ const s=fn(); tt.textContent=s?tx(s.t):''; b.style.display=s?'':'none'; if(s) r.setAttribute('stroke',s.c||'#26363e'); tt.setAttribute('fill',s&&s.c||'#e4ece9'); }); }
+function apStations(g,x,y){ /* button stations of the circuit, glow when pressed */
+  (C.buttons||[]).forEach((b,i)=>{ const cx=x+i*48; const ring=sv('circle',{cx,cy:y,r:15,fill:'none',stroke:'#59666b','stroke-width':4},g);
+    const col={green:'#2fa35d',red:'#c9473b',black:'#3a454b',blue:'#2f6fc4',yellow:'#c9a227'}[b.color]||'#3a454b';
+    const k=sv('circle',{cx,cy:y,r:10,fill:col},g); AT(g,cx,y+30,b.btn,'apm');
+    UPD.app.push(()=>{const on=S.btn[b.btn]===1; ring.setAttribute('stroke',on?'#ffd84d':'#59666b'); k.setAttribute('r',on?8:10);}); });
+}
+function apDoor(g,id){
+  const X=360,Y=20,W=280,H=170; const key='door';
+  sv('rect',{x:X-14,y:Y-6,width:W+28,height:H+12,fill:'none',stroke:'#59666b','stroke-width':10},g);
+  sv('rect',{x:X-24,y:Y-26,width:W+48,height:26,rx:6,fill:'#2b3439',stroke:'#59666b'},g);
+  const pan=sv('g',{},g); for(let i=0;i<10;i++) sv('rect',{x:X,y:Y+i*17,width:W,height:16,fill:i%2?'#8d9ba0':'#7a888d',stroke:'#5d6a6f'},pan);
+  sv('rect',{x:X,y:Y+H,width:W,height:4,fill:'#ffd84d'},g);
+  apMotor(g,X+W+80,Y-12,id,true); AT(g,X+W/2,Y+H+28,'','aps');
+  if(AP.p[key]==null) AP.p[key]=0;
+  const cl=sv('rect',{x:X,y:Y,width:W,height:H},g); cl.setAttribute('fill','none');
+  const clip=sv('clipPath',{id:'dclip'},g); sv('rect',{x:X,y:Y,width:W,height:H},clip); pan.setAttribute('clip-path','url(#dclip)');
+  const st=AT(g,X+W/2,Y+H+28,'','aps');
+  UPD.app.push(()=>{ const v=spd(id); AP.p[key]=Math.max(0,Math.min(1,AP.p[key]+v*AP._dt*0.12)); pan.setAttribute('transform',`translate(0,${-AP.p[key]*H})`);
+    st.textContent=tx(v>0.05?{ar:'الباب بيفتح ▲',en:'Door opening ▲'}:v<-0.05?{ar:'الباب بيقفل ▼',en:'Door closing ▼'}:AP.p[key]>0.98?{ar:'مفتوح',en:'Open'}:AP.p[key]<0.02?{ar:'مقفول',en:'Closed'}:{ar:'واقف في النص',en:'Stopped half way'}); });
+}
+function apCrane(g,id){
+  const X0=170,X1=830,Y=40,key='crane';
+  sv('rect',{x:X0-30,y:Y-12,width:X1-X0+60,height:16,fill:'#c9a227',stroke:'#7a6418'},g);
+  for(let x=X0-20;x<X1+30;x+=40) sv('path',{d:`M${x} ${Y-12} l20 16 l20 -16`,stroke:'#7a6418',fill:'none'},g);
+  sv('rect',{x:X0-44,y:Y-12,width:14,height:200,fill:'#56636a'},g); sv('rect',{x:X1+30,y:Y-12,width:14,height:200,fill:'#56636a'},g);
+  const tr=sv('g',{},g); sv('rect',{x:-34,y:4,width:68,height:26,rx:4,fill:'#e07a1f',stroke:'#8a4a12'},tr); sv('circle',{cx:-20,cy:4,r:6,fill:'#222'},tr); sv('circle',{cx:20,cy:4,r:6,fill:'#222'},tr);
+  sv('line',{x1:0,y1:30,x2:0,y2:120,stroke:'#cfd8d6','stroke-width':2},tr); sv('path',{d:'M0 120 v10 a10 10 0 1 1 -10 10',stroke:'#cfd8d6','stroke-width':4,fill:'none'},tr);
+  sv('rect',{x:-26,y:142,width:52,height:34,fill:'#5b6e78',stroke:'#2a404d'},tr);
+  const lab=AT(tr,0,22,id,'apmw');
+  if(AP.p[key]==null) AP.p[key]=0.5;
+  UPD.app.push(()=>{ const v=spd(id); AP.p[key]=Math.max(0,Math.min(1,AP.p[key]+v*AP._dt*0.1)); tr.setAttribute('transform',`translate(${X0+AP.p[key]*(X1-X0)},${Y})`); });
+}
+function apMixer(g,cx,id,o={}){
+  const key='mx'+id, top=40, w=170, h=150;
+  sv('path',{d:`M${cx-w/2} ${top} V${top+h-20} q0 20 20 20 H${cx+w/2-20} q20 0 20 -20 V${top}`,fill:'#0f1a20',stroke:'#7d97a5','stroke-width':3},g);
+  const liq=sv('path',{d:'',fill:'#2d6f9a',opacity:.75},g);
+  sv('rect',{x:cx-30,y:top-34,width:60,height:30,rx:4,fill:'#3d5a6c',stroke:'#7d97a5'},g); AT(g,cx,top-14,id,'apmw');
+  sv('line',{x1:cx,y1:top-4,x2:cx,y2:top+h-24,stroke:'#cfd8d6','stroke-width':4},g);
+  const pad=sv('g',{},g); const p1=sv('rect',{x:cx-50,y:top+h-44,width:100,height:12,rx:3,fill:'#cfd8d6'},pad); const p2=sv('rect',{x:cx-40,y:top+h-90,width:80,height:10,rx:3,fill:'#cfd8d6'},pad);
+  UPD.app.push(()=>{ const v=spd(id); AP.a[key]=((AP.a[key]||0)+v*AP._dt*700)%360; const c=Math.cos(AP.a[key]*Math.PI/180);
+    p1.setAttribute('transform',`translate(${cx} 0) scale(${c.toFixed(3)} 1) translate(${-cx} 0)`); p2.setAttribute('transform',`translate(${cx} 0) scale(${Math.cos((AP.a[key]+90)*Math.PI/180).toFixed(3)} 1) translate(${-cx} 0)`);
+    const sw=Math.min(14,Math.abs(v)*14); const y0=top+40; liq.setAttribute('d',`M${cx-w/2+2} ${y0+sw} Q${cx} ${y0-sw} ${cx+w/2-2} ${y0+sw} V${top+h-20} q0 18 -18 18 H${cx-w/2+20} q-18 0 -18 -18 Z`); });
+}
+function apDrum(g,cx,cy,id){
+  const key='dr', R=78;
+  sv('path',{d:`M${cx-R-60} ${cy+R+20} H${cx+R+60}`,stroke:'#3f4c52','stroke-width':6},g);
+  sv('path',{d:`M${cx-R+10} ${cy+R+20} l14 -40 M${cx+R-10} ${cy+R+20} l-14 -40`,stroke:'#56636a','stroke-width':8},g);
+  const d=sv('g',{},g); sv('circle',{cx,cy,r:R,fill:'#3d4a50',stroke:'#9fb0ad','stroke-width':4},d); sv('circle',{cx,cy,r:R-14,fill:'#1f272b'},d);
+  for(let i=0;i<8;i++) sv('rect',{x:cx-6,y:cy-R+12,width:12,height:18,fill:'#9fb0ad',transform:`rotate(${i*45} ${cx} ${cy})`},d);
+  const balls=sv('g',{},g);
+  for(let i=0;i<9;i++) sv('circle',{cx:cx-30+(i%5)*15,cy:cy+R-34-Math.floor(i/5)*14,r:7,fill:'#b9c7c4'},balls);
+  sv('rect',{x:cx+R+40,y:cy-18,width:60,height:36,rx:5,fill:'#3d5a6c',stroke:'#7d97a5'},g); AT(g,cx+R+70,cy+5,id,'apmw'); sv('line',{x1:cx+R,y1:cy,x2:cx+R+40,y2:cy,stroke:'#cfd8d6','stroke-width':6},g);
+  UPD.app.push(()=>{ const v=spd(id); AP.a[key]=((AP.a[key]||0)+v*AP._dt*240)%360; d.setAttribute('transform',`rotate(${AP.a[key]} ${cx} ${cy})`);
+    balls.setAttribute('transform',`rotate(${Math.max(-40,Math.min(40,v*40))} ${cx} ${cy})`); });
+}
+function apSaw(g,cx,cy,id){
+  const key='saw', R=74;
+  sv('rect',{x:cx-260,y:cy+30,width:520,height:16,fill:'#56636a'},g); sv('rect',{x:cx-240,y:cy+46,width:20,height:100,fill:'#3f4c52'},g); sv('rect',{x:cx+220,y:cy+46,width:20,height:100,fill:'#3f4c52'},g);
+  const b=sv('g',{},g); let d=''; for(let i=0;i<36;i++){ const a=i*10*Math.PI/180, a2=(i*10+6)*Math.PI/180; d+=(i?'L':'M')+(cx+R*Math.cos(a)).toFixed(1)+' '+(cy+R*Math.sin(a)).toFixed(1)+' L'+(cx+(R+9)*Math.cos(a2)).toFixed(1)+' '+(cy+(R+9)*Math.sin(a2)).toFixed(1)+' '; }
+  sv('path',{d:d+'Z',fill:'#cfd8d6',stroke:'#7d8a8f'},b); sv('circle',{cx,cy,r:16,fill:'#56636a'},b); sv('path',{d:`M${cx-R+16} ${cy} H${cx+R-16}`,stroke:'#9aa7ab','stroke-width':3},b);
+  sv('path',{d:`M${cx-R-20} ${cy-10} A${R+20} ${R+20} 0 0 1 ${cx+R+20} ${cy-10} Z`,fill:'#e07a1f',opacity:.85},g);
+  sv('rect',{x:cx-230,y:cy+4,width:150,height:26,fill:'#b98a4e',stroke:'#7a5527'},g);
+  const spk=sv('g',{},g); for(let i=0;i<7;i++) sv('line',{x1:cx-14,y1:cy+8,x2:cx-60+i*14,y2:cy+56+(i%2)*10,stroke:'#ffb22e','stroke-width':2},spk);
+  AT(g,cx+R+40,cy-R+10,id,'apm');
+  UPD.app.push(()=>{ const v=spd(id); AP.a[key]=((AP.a[key]||0)+v*AP._dt*1400)%360; b.setAttribute('transform',`rotate(${AP.a[key]} ${cx} ${cy})`); spk.style.display=S.lamps.H4&&Math.abs(v)>0.03?'':'none'; spk.style.opacity=0.5+0.5*Math.random(); });
+}
+function apBeacon(g,x,y){
+  sv('rect',{x:x-6,y:y+60,width:12,height:110,fill:'#56636a'},g);
+  const cols=[['H3','#ffb22e'],['H1','#3dff8a']]; const L=[];
+  cols.forEach(([id,c],i)=>{ const r=sv('rect',{x:x-24,y:y+i*34,width:48,height:32,rx:6,fill:'#22292c',stroke:'#59666b'},g); L.push([id,c,r]); });
+  const glow=sv('circle',{cx:x,cy:y+16,r:60,fill:'#ffb22e',opacity:0},g);
+  UPD.app.push(()=>{ L.forEach(([id,c,r])=>{ r.setAttribute('fill',S.lamps[id]?c:'#22292c'); }); glow.setAttribute('opacity',S.lamps.H3?0.18:0); });
+}
+function apCarriage(g){
+  const X0=180,X1=820,Y=140;
+  sv('rect',{x:X0-50,y:Y+26,width:X1-X0+100,height:10,fill:'#56636a'},g);
+  for(let x=X0-40;x<X1+50;x+=30) sv('rect',{x,y:Y+36,width:16,height:8,fill:'#3f4c52'},g);
+  sv('rect',{x:X0-70,y:Y-40,width:16,height:76,fill:'#7a3b2e'},g); sv('rect',{x:X1+54,y:Y-40,width:16,height:76,fill:'#7a3b2e'},g);
+  const ls=(x,id)=>{ const b=sv('rect',{x:x-12,y:Y-56,width:24,height:24,rx:3,fill:'#2b3439',stroke:'#c9a227'},g); AT(g,x,Y-64,id,'apm'); const arm=sv('line',{x1:x,y1:Y-32,x2:x,y2:Y-12,stroke:'#cfd8d6','stroke-width':3},g);
+    UPD.app.push(()=>{ const on=!!S.ls[id]; b.setAttribute('fill',on?'#c9a227':'#2b3439'); arm.setAttribute('x2',on?(id==='S6'?x+8:x-8):x); }); };
+  ls(X0,'S6'); ls(X1,'S7');
+  const c=sv('g',{},g); sv('rect',{x:-50,y:-20,width:100,height:44,rx:6,fill:'#2f6fc4',stroke:'#1c4f94'},c); sv('circle',{cx:-30,cy:24,r:8,fill:'#222'},c); sv('circle',{cx:30,cy:24,r:8,fill:'#222'},c);
+  sv('rect',{x:-30,y:-44,width:60,height:24,fill:'#b98a4e',stroke:'#7a5527'},c); AT(c,0,6,'M1','apmw');
+  UPD.app.push(()=>{ c.setAttribute('transform',`translate(${X0+Math.max(-0.05,Math.min(1.05,PR.x))*(X1-X0)},${Y})`); });
+}
+function apPump(g){
+  const wellX=120, tankX=700;
+  sv('rect',{x:wellX-50,y:60,width:100,height:150,fill:'#0f1a20',stroke:'#7d97a5','stroke-width':2},g); AT(g,wellX,50,tx({ar:'البير',en:'Well'}),'aps');
+  const ww=sv('rect',{x:wellX-48,y:0,width:96,height:0,fill:'#2d6f9a'},g);
+  sv('rect',{x:tankX-80,y:30,width:160,height:180,fill:'#0f1a20',stroke:'#7d97a5','stroke-width':2},g); AT(g,tankX,22,tx({ar:'الخزان',en:'Tank'}),'aps');
+  const tw=sv('rect',{x:tankX-78,y:0,width:156,height:0,fill:'#2d6f9a'},g);
+  const pipe=sv('path',{d:`M${wellX} 190 V20 H${tankX-40} V34`,stroke:'#59666b','stroke-width':10,fill:'none'},g);
+  const flow=sv('path',{d:`M${wellX} 190 V20 H${tankX-40} V34`,stroke:'#55b6ea','stroke-width':4,fill:'none','stroke-dasharray':'8 10'},g);
+  const px=380; sv('circle',{cx:px,cy:20,r:26,fill:'#3d5a6c',stroke:'#7d97a5','stroke-width':2},g);
+  const imp=sv('g',{},g); for(let i=0;i<6;i++) sv('path',{d:`M${px} 20 l0 -18`,stroke:'#cfd8d6','stroke-width':3,transform:`rotate(${i*60} ${px} 20)`},imp);
+  sv('rect',{x:px-30,y:52,width:60,height:30,rx:4,fill:'#3d5a6c',stroke:'#7d97a5'},g); AT(g,px,72,'M1','apmw'); sv('line',{x1:px,y1:46,x2:px,y2:52,stroke:'#cfd8d6','stroke-width':5},g);
+  const fl=(x,yHi,id,lab)=>{ const f=sv('g',{},g); sv('line',{x1:0,y1:-14,x2:0,y2:0,stroke:'#cfd8d6','stroke-width':2},f); sv('ellipse',{cx:0,cy:6,rx:14,ry:8,fill:'#c9a227'},f); AT(g,x+34,yHi,id+' '+tx(lab),'aps','start'); return f; };
+  const f1=fl(tankX+50,48,'B1',{ar:'عوامة الخزان',en:'tank float'}), f2=fl(wellX+30,90,'B2',{ar:'عوامة البير',en:'well float'});
+  const out=sv('path',{d:`M${tankX+80} 196 H${tankX+150}`,stroke:'#59666b','stroke-width':8},g);
+  UPD.app.push(()=>{ const lw=PR.lw, lt=PR.lt; const wh=lw*146, th=lt*176;
+    ww.setAttribute('y',208-wh); ww.setAttribute('height',wh); tw.setAttribute('y',208-th); tw.setAttribute('height',th);
+    f1.setAttribute('transform',`translate(${tankX+40},${Math.max(40,208-th-6)})`); f2.setAttribute('transform',`translate(${wellX+20},${Math.max(66,208-wh-6)})`);
+    const run=S.mot.M1&&S.mot.M1.speed>300&&lw>0.02; flow.style.display=run?'':'none'; flow.setAttribute('stroke-dashoffset',-(S.time*60)%36);
+    AP.a.imp=((AP.a.imp||0)+spd('M1')*AP._dt*900)%360; imp.setAttribute('transform',`rotate(${AP.a.imp} ${px} 20)`); });
+}
+const APPS={
+  dol:{cap:{ar:'السير اللي الموتور بيشغله',en:'The conveyor the motor drives'},b:g=>{ apBelt(g,220,150,600,'M1',{boxes:4}); }},
+  two:{cap:{ar:'خلاط بيتشغل من مكانين: جنب الماكينة وأوضة التحكم',en:'A mixer started from two places: at the machine and in the control room'},b:g=>{ apMixer(g,500,'M1'); AT(g,170,40,tx({ar:'الأزرار',en:'Buttons'}),'aps'); apStations(g,120,80); }},
+  jog:{cap:{ar:'ظبط مكان الكرتونة تحت المكبس بالـ Jog',en:'Jogging the box under the press'},b:g=>{ apBelt(g,220,160,600,'M1',{one:true,px:60,start:40,target:0.62,tlabel:{ar:'المكبس',en:'Press'}}); }},
+  rev:{cap:{ar:'باب صاج (شتر) بيفتح ويقفل',en:'A roller shutter door opening and closing'},b:g=>{ apDoor(g,'M1'); }},
+  drev:{cap:{ar:'ونش علوي رايح جاي',en:'An overhead crane travelling back and forth'},b:g=>{ apCrane(g,'M1'); }},
+  seq:{cap:{ar:'سيرين: M2 بيرمي على M1، فلازم M1 يدور الأول',en:'Two conveyors: M2 feeds M1, so M1 must run first'},b:g=>{ apBelt(g,560,175,350,'M1',{boxes:3,motorRight:true}); apBelt(g,90,95,400,'M2',{boxes:3}); }},
+  tseq:{cap:{ar:'سيرين: التايمر يشغّل M2 بعد M1',en:'Two conveyors: the timer starts M2 after M1'},b:g=>{ apBelt(g,560,175,350,'M1',{boxes:3,motorRight:true}); apBelt(g,90,95,400,'M2',{boxes:3});
+    apBadge(g,500,30,()=>S.tim.KT&&S.tim.KT.on&&!S.tim.KT.done?{t:{ar:'KT: '+S.tim.KT.t.toFixed(1)+' ث',en:'KT: '+S.tim.KT.t.toFixed(1)+' s'},c:'#ffc629'}:null); }},
+  sd:{cap:{ar:'مروحة شفط كبيرة بتقوم ستار وبعدين دلتا',en:'A large exhaust fan starting in star, then delta'},b:g=>{ apFan(g,500,115,90,'M1',{n:6});
+    apBadge(g,800,40,()=>S.lamps.H4?{t:{ar:'ستار ★',en:'Star ★'},c:'#ffb22e'}:S.lamps.H1?{t:{ar:'دلتا Δ',en:'Delta Δ'},c:'#5fd08b'}:null); }},
+  conv:{cap:{ar:'خط سيور: الخامة ماشية من M1 لـ M3، فآخر سير (M3) يدور الأول',en:'A conveyor line: material flows M1 to M3, so the last belt (M3) starts first'},b:g=>{ apBelt(g,90,80,250,'M1',{boxes:2}); apBelt(g,400,130,250,'M2',{boxes:2}); apBelt(g,710,180,210,'M3',{boxes:2,motorRight:true});
+    apBadge(g,840,40,()=>S.btn.S0===1?{t:{ar:'طوارئ مضغوط',en:'E-stop pressed'},c:'#ff5d50'}:null); }},
+  auto:{cap:{ar:'عربة رايحة جاية بين ليمتين',en:'A carriage going back and forth between two limit switches'},b:g=>apCarriage(g)},
+  pump:{cap:{ar:'طلمبة بتملا الخزان من البير',en:'A pump filling the tank from the well'},b:g=>apPump(g)},
+  trun:{cap:{ar:'خلاط بيقف لوحده بعد الوقت',en:'A mixer that stops by itself after the set time'},b:g=>{ apMixer(g,500,'M1');
+    apBadge(g,800,40,()=>S.tim.KT&&S.tim.KT.on&&!S.tim.KT.done?{t:{ar:'باقي '+Math.max(0,S.tim.KT.pre-S.tim.KT.t).toFixed(1)+' ث',en:Math.max(0,S.tim.KT.pre-S.tim.KT.t).toFixed(1)+' s left'},c:'#ffc629'}:null); }},
+  fan:{cap:{ar:'الماكينة ومروحة التبريد بتكمّل بعد الوقوف',en:'The machine, and its cooling fan running on after the stop'},b:g=>{ apDrum(g,330,110,'M1'); apFan(g,760,110,70,'M2',{label:{ar:'مروحة التبريد M2',en:'Cooling fan M2'}});
+    apBadge(g,760,22,()=>S.tim.KT&&S.tim.KT.done&&!S.k.K1?{t:{ar:'المروحة بتكمّل',en:'Fan running on'},c:'#55b6ea'}:null); }},
+  flash:{cap:{ar:'عمود إشارة فوق الماكينة: الكهرمان بيفلش لما الأوفرلود يفصل',en:'A signal tower on the machine: amber flashes when the overload trips'},b:g=>{ apBelt(g,120,170,520,'M1',{boxes:3}); apBeacon(g,820,24); }},
+  sdr:{cap:{ar:'طاحونة (درم) بتلف في الاتجاهين بستار/دلتا',en:'A drum mill turning both ways with star-delta'},b:g=>{ apDrum(g,440,105,'M1');
+    apBadge(g,800,40,()=>S.lamps.H5?{t:{ar:'ستار ★',en:'Star ★'},c:'#ffb22e'}:(S.lamps.H1||S.lamps.H4)?{t:{ar:'دلتا Δ',en:'Delta Δ'},c:'#5fd08b'}:null); }},
+  dahl:{cap:{ar:'مروحة بسرعتين',en:'A two-speed fan'},b:g=>{ apFan(g,500,115,90,'M1',{n:5});
+    apBadge(g,800,40,()=>S.lamps.H4?{t:{ar:'سريع',en:'High'},c:'#55b6ea'}:S.lamps.H1?{t:{ar:'بطيء',en:'Low'},c:'#5fd08b'}:null); }},
+  plug:{cap:{ar:'منشار لازم يقف بسرعة',en:'A saw that must stop quickly'},b:g=>{ apSaw(g,500,110,'M1');
+    apBadge(g,820,40,()=>S.lamps.H4?{t:{ar:'فرملة عكسية',en:'Plug braking'},c:'#ffb22e'}:null); }},
+};
+function buildApp(){
+  const svg=$('#ap'), fig=$('#apFig'); svg.innerHTML=''; UPD.app=[];
+  const A=APPS[C.key]; fig.hidden=!A; if(!A) return;
+  svg.setAttribute('viewBox','0 0 1000 230');
+  $('#apCap').textContent=tx(A.cap);
+  const g=sv('g',{},svg); AP.lt=S.time; AP._dt=0;
+  if(!['auto','pump','rev','drev'].includes(C.key)) Object.keys(AP.p).forEach(k=>{ if(k!=='door'&&k!=='crane') delete AP.p[k]; });
+  A.b(g);
+}
+function refreshApp(){ AP._dt=apDt(); UPD.app.forEach(f=>f()); }
 
 /* ================= Unit 1: device lessons ================= */
 const DU=[]; // device updaters
@@ -2174,6 +2629,7 @@ function refreshAll(){
   refreshChal(C);
   if(++refreshTick%6===0) renderDevices();
   if(C.procRefresh) C.procRefresh();
+  refreshApp();
 }
 function refreshChal(L){ (L.challenges||[]).forEach((c,i)=>{const e=$('#ch'+i); if(e){const d=chalDone(c.f); e.classList.toggle('done',d); e.querySelector('i').textContent=d?'✓':'';}}); }
 let refreshTick=0;
@@ -2182,7 +2638,7 @@ function resetRun(){
   S.ol={}; for(const o in TPL.ols) S.ol[o]={heat:0,trip:false};
   S.mot={}; TPL.motors.forEach(m=>S.mot[m]={speed:0,cur:0,ang:0,state:'stop',endJam:false});
   const pres={}; for(const r in S.tim) pres[r]=S.tim[r].pre; S.tim={};
-  if(C) collectEls(C.tree).filter(e=>e.type==='tcoil').forEach(e=>S.tim[e.ref]={t:0,done:false,on:false,pre:pres[e.ref]||e.pre||5});
+  if(C) collectEls(C.tree).filter(e=>e.type==='tcoil').forEach(e=>S.tim[e.ref]={t:0,done:false,on:false,off:!!e.off,pre:pres[e.ref]||e.pre||5});
   if(C&&C.reset) C.reset();
   if(C) syncButtons();
 }
@@ -2216,7 +2672,7 @@ function loadLesson(key){
     DEV=null; C=CUR; TPL=TPLS[C.tpl]; S.ir=C.ir||11; $('#rIr').value=S.ir; $('#vIr').textContent=S.ir.toFixed(1)+' A';
     S.tim={}; resetRun(); S.fault={}; S.pfault={}; S.sel=C.sel0||'0'; PROBE={b:null,r:null}; trippedOnce=false; lossT=-1; S.mains=true; S.ctrl=true;
     buildControl(); PW=TPL.state(); const pg=$('#pw'); pg.innerHTML=''; pg.setAttribute('viewBox',`0 0 ${TPL.w} ${TPL.h}`); UPD.power=[]; TPL.draw(sv('g',{},pg));
-    buildPanel(); buildStation(); buildFaults(); buildSideExtras(); renderSteps();
+    buildPanel(); buildApp(); buildStation(); buildFaults(); buildSideExtras(); renderSteps();
     if(MODE==='trace'){ buildSuspects(); newTrace(); }
     solve(); refreshProbes(); applyView(); refreshAll(); renderDevices(); updScore();
   }else{
