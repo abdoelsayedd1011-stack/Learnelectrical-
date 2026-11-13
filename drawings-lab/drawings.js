@@ -31,19 +31,19 @@ function themeBtn(){
 
 /* ---------------- course map ---------------- */
 DR.COURSE = [
-  {id:'l1', n:1, file:'lesson-01.html', title:'أنواع الرسومات الكهربية', sub:'الـ Single line ودايرة القوى ودايرة التحكم والـ Wiring والـ Terminal ورسمة اللوحة والـ P&ID وجدول الكابلات: كل واحدة بتجاوب على سؤال',
-    tasks:[['types','جولة في الرسومات'],['which','أنهي رسمة أفتحها؟'],['quiz','أسئلة الدرس']]},
-  {id:'l2', n:2, file:'lesson-02.html', title:'الرموز: IEC و ANSI/NEMA', sub:'الكونتاكتات NO و NC، الكويل، الزراير، السليكتور، الليميت، التايمر، الأوفرلود، القاطع، الفيوز، الموتور، المحوّل، اللمبات والحساسات',
-    tasks:[['cards','كروت الرموز'],['match','تمرين طابق الرمز'],['quiz','أسئلة الدرس']]},
-  {id:'l3', n:3, file:'lesson-03.html', title:'ترقيم الأجهزة والأطراف والكروس ريفرنس', sub:'تاجات ⁦-K1⁩ و ⁦-Q1⁩ و ⁦-F1⁩، أطراف ⁦13-14⁩ و ⁦21-22⁩ و ⁦A1-A2⁩ و ⁦95-96⁩، أرقام السلوك، والمرجع ⁦/3.4⁩',
-    tasks:[['xref','نط بالكروس ريفرنس'],['num','تمرين الأرقام'],['quiz','أسئلة الدرس']]},
-  {id:'l4', n:4, file:'lesson-04.html', title:'قراية دايرة التحكم', sub:'خطوة بخطوة في دايرة DOL ودايرة العكس، ومسار التيار وإنت بتدوس الزراير',
-    tasks:[['dol','تشغيل دايرة DOL'],['rev','دايرة العكس والإنترلوك'],['quiz','أسئلة الدرس']]},
-  {id:'l5', n:5, file:'lesson-05.html', title:'الـ Single line ودايرة القوى', sub:'من المحوّل للـ MDB للقواطع للـ MCC للموتور: الريتنج ومقاسات الكابلات على الرسمة',
-    tasks:[['sld','اقرا الـ Single line'],['trace','من المحوّل للموتور'],['rate','تمرين الريتنج'],['quiz','أسئلة الدرس']]},
-  {id:'l6', n:6, file:'lesson-06.html', title:'رسمة اللوحة والـ Terminal strip', sub:'الدين ريل والمجاري والأجهزة، الترمنالات ⁦X1⁩ و ⁦X2⁩، عروق الكابل والفيرول، وتتبّع سلك من الحساس للـ PLC',
+  {id:'l1', n:1, file:'lesson-01.html', title:'أنواع الرسومات الكهربية', sub:'الـ Single line ودائرة القوى ودائرة التحكم والـ Wiring والـ Terminal ورسمة اللوحة والـ P&ID وجدول الكابلات: كل منها يجيب عن سؤال',
+    tasks:[['types','جولة في الرسومات'],['which','أي رسمة أفتح؟'],['quiz','أسئلة الدرس']]},
+  {id:'l2', n:2, file:'lesson-02.html', title:'الرموز: IEC و ANSI/NEMA', sub:'التلامسات NO وNC، والملف، والأزرار، والسلكتور، والليمت، والتايمر، والأوفرلود، والقاطع، والفيوز، والمحرك، والمحوّل، والمصابيح والحساسات',
+    tasks:[['cards','بطاقات الرموز'],['match','تمرين مطابقة الرمز'],['quiz','أسئلة الدرس']]},
+  {id:'l3', n:3, file:'lesson-03.html', title:'ترقيم الأجهزة والأطراف والكروس ريفرنس', sub:'تاجات ⁦-K1⁩ و⁦-Q1⁩ و⁦-F1⁩، وأطراف ⁦13-14⁩ و⁦21-22⁩ و⁦A1-A2⁩ و⁦95-96⁩، وأرقام الأسلاك، والمرجع ⁦/3.4⁩',
+    tasks:[['xref','تنقّل بالكروس ريفرنس'],['num','تمرين الأرقام'],['quiz','أسئلة الدرس']]},
+  {id:'l4', n:4, file:'lesson-04.html', title:'قراءة دائرة التحكم', sub:'خطوة بخطوة في دائرة DOL ودائرة العكس، ومسار التيار وأنت تضغط الأزرار',
+    tasks:[['dol','تشغيل دائرة DOL'],['rev','دائرة العكس والإنترلوك'],['quiz','أسئلة الدرس']]},
+  {id:'l5', n:5, file:'lesson-05.html', title:'الـ Single line ودائرة القوى', sub:'من المحوّل إلى الـ MDB فالقواطع فالـ MCC فالمحرك: التصنيفات ومقاسات الكابلات على الرسمة',
+    tasks:[['sld','اقرأ الـ Single line'],['trace','من المحوّل إلى المحرك'],['rate','تمرين التصنيفات'],['quiz','أسئلة الدرس']]},
+  {id:'l6', n:6, file:'lesson-06.html', title:'رسمة اللوحة والـ Terminal strip', sub:'الدين ريل والمجاري والأجهزة، والترمنالات ⁦X1⁩ و⁦X2⁩، وعروق الكابل والفيرول، وتتبّع سلك من الحساس إلى الـ PLC',
     tasks:[['layout','استكشف اللوحة'],['follow','تتبّع السلك'],['quiz','أسئلة الدرس']]},
-  {id:'l7', n:7, file:'lesson-07.html', title:'تتبّع العطل من الرسمة + الامتحان النهائي', sub:'العَرَض ← الرسمة ← نقطة القياس ← العطل، لعبة الأعطال، والامتحان النهائي',
+  {id:'l7', n:7, file:'lesson-07.html', title:'تتبّع العطل من الرسمة + الامتحان النهائي', sub:'العَرَض ← الرسمة ← نقطة القياس ← العطل، ولعبة الأعطال، والامتحان النهائي',
     tasks:[['tgame','لعبة تتبّع الأعطال'],['quiz','أسئلة الدرس'],['final','الامتحان النهائي']]}
 ];
 DR.lessonById = id => DR.COURSE.find(l => l.id === id);
@@ -62,7 +62,7 @@ const fmt = (v, d) => { const p = Math.pow(10, d); const r = Math.round(v * p) /
 DR.fmt = fmt;
 function shuffle(a){ a = a.slice(); for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 /* answer options: shuffled, but catch-all choices («الاتنين», «ولا واحد», "Both", "None"…) always stay last */
-const QZ_PIN = /^(الاتنين|الاثنين|كلهم|ولا واحد|ولا حاجة|مفيش فرق|مش فارقة|زي بعض|كلهم زي بعض|both|neither|none|all of them|all the same|no difference|it makes no difference)$/i;
+const QZ_PIN = /^(لا فرق|لا فرق إطلاقًا|الاثنان|كلاهما|لا شيء|ولا أحد منهما|جميعها|الاتنين|الاثنين|كلهم|ولا واحد|ولا حاجة|مفيش فرق|مش فارقة|زي بعض|كلهم زي بعض|both|neither|none|all of them|all the same|no difference|it makes no difference)$/i;
 function qzOrder(o, keep){ const idx = o.map((_, i) => i); if (keep) return idx; const pin = idx.filter(i => QZ_PIN.test(String(o[i]).replace(/<[^>]*>/g, '').replace(/[⁦-⁩⁠.!]/g, '').trim())); return shuffle(idx.filter(i => !pin.includes(i))).concat(pin); }
 /* Latin / number runs inside an RTL option ("+24V", "0.05 A", "DC−", "حوالي +26 °C") would flip: isolate them as LTR */
 const QZ_LTR = /[+\-−±]?[0-9A-Za-zΩµ°][0-9A-Za-zΩµ°%.,:/·×_\-–−+ ]*[0-9A-Za-zΩµ°%+\-−]|[+\-−±]?[0-9A-Za-zΩµ°]/g;
@@ -120,7 +120,7 @@ DR.hubTheme = () => { const ch = $('header.top .chips'); if (ch) ch.appendChild(
 
 /* ---------------- select, then confirm ----------------
    tapping an option only selects it (.sel); right/wrong shows after the learner presses the check / confirm button */
-const QZ_T = {check:'صحّح إجاباتي', need:'جاوب على كل الأسئلة الأول', cnt:(n, t) => `جاوبت ${n} من ${t}`, ok:'تأكيد'};
+const QZ_T = {check:'صحّح إجاباتي', need:'أجب عن كل الأسئلة أولًا', cnt:(n, t) => `أجبت عن ${n} من ${t}`, ok:'تأكيد'};
 const QZ_CF = () => `<div class="dr-cf"><button type="button" class="btn pri dr-ok" disabled>${QZ_T.ok}</button></div>`;
 function qzSel(box, o){ $$('.qz-o', box).forEach(x => { const on = x === o; x.classList.toggle('sel', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); }); }
 function qzUnsel(box){ $$('.qz-o', box).forEach(x => { x.classList.remove('sel'); x.removeAttribute('aria-pressed'); }); }
@@ -175,7 +175,7 @@ DR.quiz = function(host, qs, opt){
       qzUnsel(box);
       $$('.qz-o', box).forEach(x => { x.disabled = true; const j = +x.dataset.i; if (j === it.q.a) x.classList.add('ok'); else if (j === i) x.classList.add('no'); });
       if (ok) box.classList.add('ok');
-      const f = $('.qz-f', box); f.className = 'qz-f ' + (ok ? 'ok' : 'no'); f.innerHTML = (ok ? 'صح. ' : 'مش دي. ') + (it.q.why || '');
+      const f = $('.qz-f', box); f.className = 'qz-f ' + (ok ? 'ok' : 'no'); f.innerHTML = (ok ? 'صحيح. ' : 'ليست هذه. ') + (it.q.why || '');
     });
     $('.qz-chk', host).hidden = true;
     finish();
@@ -183,7 +183,7 @@ DR.quiz = function(host, qs, opt){
   function finish(){
     const n = ans.filter(Boolean).length, tot = ans.length, ok = n / tot >= pass - 1e-9;
     const sum = $('.qz-sum', host); sum.hidden = false; sum.className = 'qz-sum ' + (ok ? 'ok' : 'no');
-    sum.innerHTML = `<b>نتيجتك: ${n} من ${tot}</b><span>${ok ? 'ممتاز، كده عدّيت ✓' : `محتاج ${Math.ceil(pass * tot - 1e-9)} صح على الأقل. راجع الشرح وجرّب تاني.`}</span><button type="button" class="btn" data-qz="again">${ok ? 'حلّ تاني' : 'جرّب تاني'}</button>`;
+    sum.innerHTML = `<b>نتيجتك: ${n} من ${tot}</b><span>${ok ? 'ممتاز، لقد نجحت ✓' : `تحتاج ${Math.ceil(pass * tot - 1e-9)} إجابات صحيحة على الأقل. راجع الشرح وحاول مرة أخرى.`}</span><button type="button" class="btn" data-qz="again">${ok ? 'حلّ مرة أخرى' : 'حاول مرة أخرى'}</button>`;
     if (ok && opt.lesson) DR.mark(opt.lesson, opt.task || 'quiz');
     if (opt.onDone) opt.onDone(n, tot, ok);
   }
@@ -200,10 +200,10 @@ DR.drill = function(host, gen, opt){
   opt = opt || {};
   const need = opt.need || 5;
   let ok = 0, tries = 0, cur = null, answered = false;
-  host.innerHTML = `<div class="dr"><div class="dr-top"><span class="dr-sc" aria-live="polite"></span><span class="bar dr-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${need}" aria-label="الإجابات الصح"><i></i></span></div><div class="dr-card"></div><div class="dr-act"><button type="button" class="btn pri dr-next" hidden>السؤال اللي بعده ←</button></div><p class="chal dr-chal">${opt.goal || `جاوب <b>${need}</b> صح عشان التمرين يتعلّم عليه.`}</p></div>`;
+  host.innerHTML = `<div class="dr"><div class="dr-top"><span class="dr-sc" aria-live="polite"></span><span class="bar dr-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${need}" aria-label="الإجابات الصح"><i></i></span></div><div class="dr-card"></div><div class="dr-act"><button type="button" class="btn pri dr-next" hidden>السؤال التالي ←</button></div><p class="chal dr-chal">${opt.goal || `أجب <b>${need}</b> إجابات صحيحة ليُسجَّل التمرين مكتملًا.`}</p></div>`;
   const fin = chal(host, '.dr-chal', opt.lesson, opt.task);
   const card = $('.dr-card', host), nx = $('.dr-next', host);
-  function score(){ $('.dr-sc', host).innerHTML = `صح: <b>${ok}</b> من ${tries}`; const p = Math.min(1, ok / need) * 100; $('.dr-bar i', host).style.width = p + '%'; $('.dr-bar', host).setAttribute('aria-valuenow', Math.min(ok, need)); }
+  function score(){ $('.dr-sc', host).innerHTML = `الصحيح: <b>${ok}</b> من ${tries}`; const p = Math.min(1, ok / need) * 100; $('.dr-bar i', host).style.width = p + '%'; $('.dr-bar', host).setAttribute('aria-valuenow', Math.min(ok, need)); }
   function next(){
     cur = gen(); answered = false; nx.hidden = true;
     if (cur.input){
@@ -217,7 +217,7 @@ DR.drill = function(host, gen, opt){
   function result(good, chosen){
     answered = true; tries++; if (good) ok++;
     const f = $('.qz-f', card); f.className = 'qz-f ' + (good ? 'ok' : 'no');
-    f.innerHTML = (good ? 'صح. ' : 'مش مظبوطة. ') + (cur.ans != null && !good ? `الإجابة: <b class="eq">${cur.ans}</b>. ` : '') + (cur.why || '');
+    f.innerHTML = (good ? 'صحيح. ' : 'غير دقيقة. ') + (cur.ans != null && !good ? `الإجابة: <b class="eq">${cur.ans}</b>. ` : '') + (cur.why || '');
     if (!cur.input) $$('.qz-o', card).forEach(x => { x.disabled = true; if (+x.dataset.i === cur.a) x.classList.add('ok'); else if (x === chosen) x.classList.add('no'); });
     else $$('input,button', card).forEach(x => x.disabled = true);
     score(); nx.hidden = false;
@@ -225,7 +225,7 @@ DR.drill = function(host, gen, opt){
     nx.focus({preventScroll:true});
   }
   card.addEventListener('click', e => { if (answered) return; const b = pickConfirm(e, card); if (b) result(+b.dataset.i === cur.a, b); });
-  card.addEventListener('submit', e => { e.preventDefault(); if (answered) return; const v = num($('input', card).value); if (!isFinite(v)){ const f = $('.qz-f', card); f.className = 'qz-f no'; f.textContent = 'اكتب رقم.'; return; } result(!!cur.check(v)); });
+  card.addEventListener('submit', e => { e.preventDefault(); if (answered) return; const v = num($('input', card).value); if (!isFinite(v)){ const f = $('.qz-f', card); f.className = 'qz-f no'; f.textContent = 'اكتب رقمًا.'; return; } result(!!cur.check(v)); });
   nx.addEventListener('click', next);
   next();
   return {get cur(){ return cur; }, answer(v){ if (cur.input){ $('input', card).value = v; $('.dr-in button', card).click(); } else { const b = card.querySelector(`.qz-o[data-i="${v}"]`); if (b){ b.click(); $('.dr-ok', card).click(); } } }, next, get ok(){ return ok; }};
@@ -237,12 +237,12 @@ DR.caseGame = function(host, cases, opt){
   opt = opt || {};
   const need = opt.need || Math.ceil(cases.length * 0.7);
   const order = shuffle(cases.map((_, i) => i)); let k = 0, ok = 0, ans = 0;
-  host.innerHTML = `<div class="dr-top"><span class="cg-sc" aria-live="polite"></span><span class="bar"><i class="cg-bar"></i></span></div><div class="cg-card dr-card"></div><div class="dr-act"><button type="button" class="btn pri cg-next" hidden>اللي بعده ←</button></div><p class="chal cg-chal">${opt.goal || `حلّ <b>${need}</b> حالات صح على الأقل.`}</p>`;
+  host.innerHTML = `<div class="dr-top"><span class="cg-sc" aria-live="polite"></span><span class="bar"><i class="cg-bar"></i></span></div><div class="cg-card dr-card"></div><div class="dr-act"><button type="button" class="btn pri cg-next" hidden>التالي ←</button></div><p class="chal cg-chal">${opt.goal || `حلّ <b>${need}</b> حالات صحيحة على الأقل.`}</p>`;
   const q = s => $(s, host), fin = chal(host, '.cg-chal', opt.lesson, opt.task), card = q('.cg-card');
-  function score(){ q('.cg-sc').innerHTML = `الحالة <b>${Math.min(k + 1, cases.length)}</b> من ${cases.length} · صح: <b>${ok}</b>`; q('.cg-bar').style.width = (ok / need * 100 > 100 ? 100 : ok / need * 100) + '%'; }
+  function score(){ q('.cg-sc').innerHTML = `الحالة <b>${Math.min(k + 1, cases.length)}</b> من ${cases.length} · الصحيح: <b>${ok}</b>`; q('.cg-bar').style.width = (ok / need * 100 > 100 ? 100 : ok / need * 100) + '%'; }
   function show(){
     const c = cases[order[k]], oi = qzOrder(c.o, c.keep);
-    card.innerHTML = `<h4>${c.t}</h4><div class="dr-q" style="font-weight:500">${c.s}</div>${c.clues && c.clues.length ? `<div class="chips-t">${c.clues.map((cl, i) => `<button type="button" class="btn" data-cl="${i}" aria-expanded="false">افحص: ${cl[0]}</button>`).join('')}</div><div class="cg-clue"></div>` : ''}<p style="margin:4px 0 0;font-weight:600">السبب غالبًا إيه؟</p><div class="qz-a">${oi.map(i => `<button type="button" class="btn qz-o" data-i="${i}">${qzTxt(c.o[i])}</button>`).join('')}</div>${QZ_CF()}<p class="qz-f" aria-live="polite"></p>`;
+    card.innerHTML = `<h4>${c.t}</h4><div class="dr-q" style="font-weight:500">${c.s}</div>${c.clues && c.clues.length ? `<div class="chips-t">${c.clues.map((cl, i) => `<button type="button" class="btn" data-cl="${i}" aria-expanded="false">افحص: ${cl[0]}</button>`).join('')}</div><div class="cg-clue"></div>` : ''}<p style="margin:4px 0 0;font-weight:600">ما السبب غالبًا؟</p><div class="qz-a">${oi.map(i => `<button type="button" class="btn qz-o" data-i="${i}">${qzTxt(c.o[i])}</button>`).join('')}</div>${QZ_CF()}<p class="qz-f" aria-live="polite"></p>`;
     q('.cg-next').hidden = true; ans = 0; score();
   }
   card.addEventListener('click', e => {
@@ -251,10 +251,10 @@ DR.caseGame = function(host, cases, opt){
     if (ans) return; const b = pickConfirm(e, card); if (!b) return;
     const c = cases[order[k]], good = +b.dataset.i === c.a; ans = 1; if (good) ok++;
     $$('.qz-o', card).forEach(x => { x.disabled = true; if (+x.dataset.i === c.a) x.classList.add('ok'); else if (x === b) x.classList.add('no'); });
-    const f = $('.qz-f', card); f.className = 'qz-f ' + (good ? 'ok' : 'no'); f.innerHTML = (good ? 'صح. ' : 'مش ده. ') + c.why;
+    const f = $('.qz-f', card); f.className = 'qz-f ' + (good ? 'ok' : 'no'); f.innerHTML = (good ? 'صحيح. ' : 'ليس هذا. ') + c.why;
     score(); if (ok >= need) fin();
     const nx = q('.cg-next'); nx.hidden = false;
-    nx.textContent = k + 1 < cases.length ? 'الحالة اللي بعدها ←' : (ok >= need ? 'العب تاني' : 'جرّب تاني من الأول');
+    nx.textContent = k + 1 < cases.length ? 'الحالة التالية ←' : (ok >= need ? 'العب مرة أخرى' : 'ابدأ من جديد');
   });
   q('.cg-next').addEventListener('click', () => { if (k + 1 < cases.length) k++; else { k = 0; ok = 0; order.sort(() => Math.random() - 0.5); } show(); });
   show();
@@ -361,7 +361,7 @@ DR.pole3 = function(k, x, y, pitch, link, std){
 DR.viewer = function(host, o){
   o = o || {};
   host.classList.add('vw');
-  host.innerHTML = `<div class="vw-bar"><span class="vw-t">${o.title || ''}</span><span class="vw-z" aria-live="polite">100%</span><button type="button" class="btn" data-z="out" aria-label="تصغير">−</button><button type="button" class="btn" data-z="in" aria-label="تكبير">+</button><button type="button" class="btn" data-z="fit" aria-label="الرسمة كلها" title="الرسمة كلها">⤢</button></div><div class="vw-port" tabindex="0" role="group" aria-label="${esc(o.label || 'رسمة: كبّر وحرّك')}"></div>${o.hint === false ? '' : `<p class="vw-hint">${o.hint || 'كبّر بصباعين أو بزرار <b>+</b>، وحرّك الرسمة بصباعك لما تكون مكبّرة. زرار <b>⤢</b> بيرجّعها كاملة.'}</p>`}`;
+  host.innerHTML = `<div class="vw-bar"><span class="vw-t">${o.title || ''}</span><span class="vw-z" aria-live="polite">100%</span><button type="button" class="btn" data-z="out" aria-label="تصغير">−</button><button type="button" class="btn" data-z="in" aria-label="تكبير">+</button><button type="button" class="btn" data-z="fit" aria-label="الرسمة كلها" title="الرسمة كلها">⤢</button></div><div class="vw-port" tabindex="0" role="group" aria-label="${esc(o.label || 'رسمة: كبّر وحرّك')}"></div>${o.hint === false ? '' : `<p class="vw-hint">${o.hint || 'كبّر بإصبعين أو بزر <b>+</b>، وحرّك الرسمة بإصبعك وهي مكبّرة. الزر <b>⤢</b> يعيدها كاملة.'}</p>`}`;
   const port = $('.vw-port', host), zl = $('.vw-z', host);
   let W = o.w, H = o.h, svg, cw = 1, ch = 1, s0 = 1, s = 1, cx = W / 2, cy = H / 2, anim = 0;
   function setSvg(markup, w, h){
@@ -676,8 +676,8 @@ DR.renderCircuit = function(M, opt){
       if (r !== 'load'){
         const coil = M.coilOf(el.dev);
         const ext3 = !coil && opt.extRef && opt.extRef[el.dev];
-        if (ext3 && dir === 'v') labs += `<g class="xr-g" tabindex="0" role="button" data-goto="${ext3.go}" aria-label="روح لـ ${esc(el.tag)} في دايرة القوى"><rect class="hit" x="${x - 58}" y="${y + 1}" width="44" height="14"/><text class="xr" x="${x - (act ? 24 : 13)}" y="${y + 11}" text-anchor="end">${ext3.ref}</text></g>`;
-        if (coil && dir === 'v') labs += `<g class="xr-g" tabindex="0" role="button" data-goto="${coil.id}" aria-label="روح للكويل ${esc(coil.el.tag)}"><rect class="hit" x="${x - 58}" y="${y + 1}" width="44" height="14"/><text class="xr" x="${x - (act ? 24 : 13)}" y="${y + 11}" text-anchor="end">${colRef(coil)}</text></g>`;
+        if (ext3 && dir === 'v') labs += `<g class="xr-g" tabindex="0" role="button" data-goto="${ext3.go}" aria-label="انتقل إلى ${esc(el.tag)} في دائرة القوى"><rect class="hit" x="${x - 58}" y="${y + 1}" width="44" height="14"/><text class="xr" x="${x - (act ? 24 : 13)}" y="${y + 11}" text-anchor="end">${ext3.ref}</text></g>`;
+        if (coil && dir === 'v') labs += `<g class="xr-g" tabindex="0" role="button" data-goto="${coil.id}" aria-label="انتقل إلى الملف ${esc(coil.el.tag)}"><rect class="hit" x="${x - 58}" y="${y + 1}" width="44" height="14"/><text class="xr" x="${x - (act ? 24 : 13)}" y="${y + 11}" text-anchor="end">${colRef(coil)}</text></g>`;
       } else if (el.k !== 'lamp'){
         const cs = M.byDev(el.dev).filter(c => ROLE[c.el.k] !== 'load');
         const ext2 = (opt.mirrorExtra && opt.mirrorExtra[el.dev]) || [];
@@ -686,7 +686,7 @@ DR.renderCircuit = function(M, opt){
           const by = (opt.mirrorY || (M.oy + M.U + 30));
           rows.forEach((rw, k) => {
             const yy = by + k * 22;
-            extra += `<g class="xr-g" tabindex="0" role="button" data-goto="${rw.go}" aria-label="روح للكونتاكت ${esc(rw.t.join('-'))}"><rect class="hit" x="${x - 26}" y="${yy - 10}" width="62" height="21"/><g transform="translate(${x - 14} ${yy}) scale(.55)"><g>${SY.iec[rw.k === 'nc' ? 'nc' : rw.k === 'kno' ? 'kno' : 'no']}</g></g><text class="dsm" x="${x - 22}" y="${yy - 3}" text-anchor="end">${esc(rw.t[0] || '')}</text><text class="dsm" x="${x - 22}" y="${yy + 8}" text-anchor="end">${esc(rw.t[1] || '')}</text><text class="xr" x="${x - 4}" y="${yy + 3.5}">${esc(rw.ref)}</text></g>`;
+            extra += `<g class="xr-g" tabindex="0" role="button" data-goto="${rw.go}" aria-label="انتقل إلى التلامس ${esc(rw.t.join('-'))}"><rect class="hit" x="${x - 26}" y="${yy - 10}" width="62" height="21"/><g transform="translate(${x - 14} ${yy}) scale(.55)"><g>${SY.iec[rw.k === 'nc' ? 'nc' : rw.k === 'kno' ? 'kno' : 'no']}</g></g><text class="dsm" x="${x - 22}" y="${yy - 3}" text-anchor="end">${esc(rw.t[0] || '')}</text><text class="dsm" x="${x - 22}" y="${yy + 8}" text-anchor="end">${esc(rw.t[1] || '')}</text><text class="xr" x="${x - 4}" y="${yy + 3.5}">${esc(rw.ref)}</text></g>`;
           });
         } else {
           const ls = cs.map(c => ({n:lineNo(c.v), nc:ROLE[c.el.k] === 'nc', go:c.id}));
@@ -735,12 +735,12 @@ const E = (k, tag, dev, t, more) => Object.assign({k, tag, dev, t}, more || {});
 DR.defDOL = () => ({srcLab:'L', endLab:'N', seq:[
   E('fuse', '-F1', 'F1', ['1', '2'], {nt:'FU1', name:'فيوز التحكم'}),
   {par:[
-    [E('olc', '-F2', 'F2', ['95', '96'], {nt:'OL', name:'كونتاكت الأوفرلود'}), E('pbnc', '-S0', 'S0', ['11', '12'], {nt:'STOP', name:'زرار الإيقاف'}),
-      {par:[[E('pbno', '-S1', 'S1', ['13', '14'], {nt:'START', name:'زرار التشغيل'})], [E('no', '-K1', 'K1', ['13', '14'], {nt:'M', name:'كونتاكت التثبيت'})]]},
-      E('coil', '-K1', 'K1', ['A1', 'A2'], {nt:'M', name:'كويل الكونتاكتور'})],
-    [E('no', '-K1', 'K1', ['33', '34'], {nt:'M'}), E('lamp', '-H1', 'H1', ['X1', 'X2'], {nt:'R', note:'RUN', name:'لمبة شغّال'})],
-    [E('nc', '-K1', 'K1', ['21', '22'], {nt:'M'}), E('lamp', '-H2', 'H2', ['X1', 'X2'], {nt:'G', note:'STOP', name:'لمبة واقف'})],
-    [E('olo', '-F2', 'F2', ['97', '98'], {nt:'OL'}), E('lamp', '-H3', 'H3', ['X1', 'X2'], {nt:'A', note:'TRIP', name:'لمبة عطل'})]
+    [E('olc', '-F2', 'F2', ['95', '96'], {nt:'OL', name:'تلامس الأوفرلود'}), E('pbnc', '-S0', 'S0', ['11', '12'], {nt:'STOP', name:'زر الإيقاف'}),
+      {par:[[E('pbno', '-S1', 'S1', ['13', '14'], {nt:'START', name:'زر التشغيل'})], [E('no', '-K1', 'K1', ['13', '14'], {nt:'M', name:'تلامس التثبيت'})]]},
+      E('coil', '-K1', 'K1', ['A1', 'A2'], {nt:'M', name:'ملف الكونتاكتور'})],
+    [E('no', '-K1', 'K1', ['33', '34'], {nt:'M'}), E('lamp', '-H1', 'H1', ['X1', 'X2'], {nt:'R', note:'RUN', name:'مصباح يعمل'})],
+    [E('nc', '-K1', 'K1', ['21', '22'], {nt:'M'}), E('lamp', '-H2', 'H2', ['X1', 'X2'], {nt:'G', note:'STOP', name:'مصباح متوقف'})],
+    [E('olo', '-F2', 'F2', ['97', '98'], {nt:'OL'}), E('lamp', '-H3', 'H3', ['X1', 'X2'], {nt:'A', note:'TRIP', name:'مصباح عطل'})]
   ]}
 ]});
 DR.defREV = () => ({srcLab:'L', endLab:'N', seq:[
@@ -793,9 +793,9 @@ DR.drawPower = function(o){
   const grp = (id, inner, lab, x, y, ww, hh) => `<g class="hot" id="${id}" tabindex="0" role="button" aria-label="${esc(lab)}"><rect class="hlbox" x="${x}" y="${y}" width="${ww}" height="${hh}"/>${inner}<rect class="hit" x="${x}" y="${y}" width="${ww}" height="${hh}"/></g>`;
   s += grp('pw-Q1', DR.pole3('cb', P0, yQ, pitch) + tn(yQ, ['1', '3', '5'], ['2', '4', '6']) + `<text class="dtag" x="${P0 - 26}" y="${yQ + 2}" text-anchor="end">-Q1</text><text class="dsm" x="${P0 - 26}" y="${yQ + 14}" text-anchor="end">10–16A</text>`, '-Q1', P0 - 70, yQ - 24, 3 * pitch + 70, 52);
   s += grp('pw-K1', DR.pole3('kno', P0, yK, pitch) + tn(yK, ['1', '3', '5'], ['2', '4', '6']) + `<text class="dtag" x="${P0 - 26}" y="${yK + 2}" text-anchor="end">-K1</text>`, '-K1', P0 - 70, yK - 24, 3 * pitch + 70, 52);
-  if (o.k1ref) s += `<g class="xr-g" tabindex="0" role="button" data-goto="${o.k1go}" aria-label="روح للكويل -K1"><rect class="hit" x="${P0 - 70}" y="${yK + 4}" width="46" height="16"/><text class="xr" x="${P0 - 26}" y="${yK + 15}" text-anchor="end">${o.k1ref}</text></g>`;
+  if (o.k1ref) s += `<g class="xr-g" tabindex="0" role="button" data-goto="${o.k1go}" aria-label="انتقل إلى الملف -K1"><rect class="hit" x="${P0 - 70}" y="${yK + 4}" width="46" height="16"/><text class="xr" x="${P0 - 26}" y="${yK + 15}" text-anchor="end">${o.k1ref}</text></g>`;
   s += grp('pw-F2', [0, 1, 2].map(i => DR.sym('iec', 'olt', P0 + i * pitch, yF, 'v')).join('') + P(`M${P0 + 7} ${yF}H${P0 + 2 * pitch - 7}`, 'dk thin dash') + tn(yF, ['1', '3', '5'], ['2', '4', '6']) + `<text class="dtag" x="${P0 - 26}" y="${yF + 2}" text-anchor="end">-F2</text>`, '-F2', P0 - 70, yF - 24, 3 * pitch + 70, 52);
-  if (o.f2ref) s += `<g class="xr-g" tabindex="0" role="button" data-goto="${o.f2go}" aria-label="روح لكونتاكت -F2"><rect class="hit" x="${P0 - 70}" y="${yF + 4}" width="46" height="16"/><text class="xr" x="${P0 - 26}" y="${yF + 15}" text-anchor="end">${o.f2ref}</text></g>`;
+  if (o.f2ref) s += `<g class="xr-g" tabindex="0" role="button" data-goto="${o.f2go}" aria-label="انتقل إلى تلامس -F2"><rect class="hit" x="${P0 - 70}" y="${yF + 4}" width="46" height="16"/><text class="xr" x="${P0 - 26}" y="${yF + 15}" text-anchor="end">${o.f2ref}</text></g>`;
   ['U', 'V', 'W', 'PE'].forEach((l, i) => { const x = i < 3 ? P0 + i * pitch : P0 + 3 * pitch + 6; s += `<circle class="dk coilf" cx="${x}" cy="${yX}" r="4.5"/><text class="dterm" x="${x + 6}" y="${yX + 3}">${l}</text>`; });
   s += `<text class="dtag" x="${P0 - 26}" y="${yX + 4}" text-anchor="end">-X1</text>`;
   s += `<path class="dk" d="M${P0} ${yX + 5}V${yM - 34}L${cx - 8} ${yM - 14}M${P0 + pitch} ${yX + 5}V${yM - 14}M${P0 + 2 * pitch} ${yX + 5}V${yM - 34}L${cx + 8} ${yM - 14}"/><path class="dk thin" d="M${P0 + 3 * pitch + 6} ${yX + 5}V${yM}H${cx + 22}"/>`;
@@ -818,21 +818,21 @@ DR.drawPowerSL = function(o){
 
 /* ================= single line diagram (L5) ================= */
 DR.SLD_ITEMS = {
-  grid:['المصدر 11 kV', 'التغذية جاية من شبكة الكهربا على الجهد المتوسط <span class="eq">11 kV</span> عن طريق خلية RMU. السهم معناه "جاي من برا الرسمة".'],
-  tr:['المحوّل TR-1', '<span class="eq">1000 kVA · 11/0.4 kV · Dyn11 · uk 6%</span>. <b>Dyn11</b>: الابتدائي دلتا والثانوي ستار بنيوترال طالع (n) وفرق الزاوية 330°. تيار الثانوي الكامل ≈ <span class="eq">1000 ÷ (1.732 × 0.4) ≈ 1443 A</span>. والـ uk بتقولك تيار القصر ≈ <span class="eq">1443 ÷ 0.06 ≈ 24 kA</span>.'],
-  acb:['القاطع الرئيسي Q1 (ACB)', '<span class="eq">ACB 1600 A · 4P · Icu 50 kA · Ir 0.9</span>. الـ <b>In</b> 1600 هو مقاس الفريم، والـ <b>Ir = 0.9 × In = 1440 A</b> هو الظبط الحقيقي للحماية، على قد تيار المحوّل. و<b>Icu 50 kA</b> أكبر من تيار القصر 24 kA.'],
-  mdb:['البسبار الرئيسي MDB', '<span class="eq">MDB · 400 V 3Ph+N · 1600 A · 50 kA/1s</span>. الخط التخين في الـ Single line هو البسبار. الرقم 1600 A تحمّل البسبار، و50 kA لمدة ثانية هو اللي يستحمله وقت القصر.'],
-  q2:['Q2: لوحة الإنارة', '<span class="eq">MCCB 250 A · Ir 0.8 → 200 A</span> بيغذّي <b>DB-L</b> لوحة الإنارة والبرايز.'],
-  q3:['Q3: مغذّي الـ MCC', '<span class="eq">MCCB 400 A · 3P · Icu 50 kA · Ir 1.0</span>. ده القاطع اللي بيحمي الكابل W-03 ولوحة MCC-1 كلها.'],
-  w03:['الكابل W-03', '<span class="eq">4C×185 mm² Cu/XLPE/SWA/PVC · 45 m</span>: 4 عروق (3 فازات + نيوترال) مقطع كل عرق 185 مم²، نحاس، عازل XLPE، مسلّح بسلك صلب (SWA)، وغلاف خارجي PVC. طوله 45 متر.'],
-  mcc:['بسبار MCC-1', '<span class="eq">MCC-1 · 400 V · 400 A · 36 kA</span>. لوحة مراكز تحكم الموتورات: كل خانة (Bucket) فيها حماية وتشغيل موتور.'],
-  q11:['Q11 (MPCB)', '<span class="eq">MPCB 10–16 A · Ir 15</span>: قاطع حماية موتور فيه حماية قصر (مغناطيسي) وأوفرلود (حراري) قابل للظبط. اتظبط على تيار يافطة الموتور 15 A.'],
-  k11:['K11: الكونتاكتور', '<span class="eq">AC-3 · 18 A · 230V AC coil</span>. الـ <b>AC-3</b> يعني فئة الاستخدام لموتورات القفص السنجابي (تقويم وفصل وهو شغّال).'],
-  m101:['الموتور M-101', '<span class="eq">7.5 kW · 400 V · 15 A</span>. تشغيل مباشر DOL. الكابل <span class="eq">4C×4 mm² Cu</span>.'],
-  q12:['Q12: مغذّي الإنفرتر', '<span class="eq">MCCB 100 A · Ir 0.8 → 80 A</span> قبل الإنفرتر. والقاطع هنا بيحمي الكابل والإنفرتر من القصر، والإنفرتر نفسه بيحمي الموتور.'],
-  vfd:['الإنفرتر U12', '<span class="eq">VFD 37 kW · 400 V</span>. الرمز مربع فيه خط مايل (تحويل). كابل الموتور بعده لازم يكون <b>مشيلد</b> (Shielded).'],
-  m102:['الموتور M-102', '<span class="eq">37 kW · 400 V · ≈ 68 A</span>، الكابل <span class="eq">4C×25 mm² Cu shielded</span>.'],
-  sp:['خانة احتياطي', '<b>Spare</b>: قاطع متركّب ومش متوصّل عشان أي حمل يتضاف بعدين.']
+  grid:['المصدر 11 kV', 'التغذية قادمة من شبكة الكهرباء على الجهد المتوسط <span class="eq">11 kV</span> عن طريق خلية RMU. السهم يعني "قادم من خارج الرسمة".'],
+  tr:['المحوّل TR-1', '<span class="eq">1000 kVA · 11/0.4 kV · Dyn11 · uk 6%</span>. <b>Dyn11</b>: الابتدائي دلتا والثانوي ستار بنيوترال خارج (n) وفرق الزاوية 330°. تيار الثانوي الكامل ≈ <span class="eq">1000 ÷ (1.732 × 0.4) ≈ 1443 A</span>. والـ uk تعطيك تيار القصر ≈ <span class="eq">1443 ÷ 0.06 ≈ 24 kA</span>.'],
+  acb:['القاطع الرئيسي Q1 (ACB)', '<span class="eq">ACB 1600 A · 4P · Icu 50 kA · Ir 0.9</span>. الـ <b>In</b> 1600 هو مقاس الإطار، والـ <b>Ir = 0.9 × In = 1440 A</b> هو الضبط الفعلي للحماية، بحسب تيار المحوّل. و<b>Icu 50 kA</b> أكبر من تيار القصر 24 kA.'],
+  mdb:['البسبار الرئيسي MDB', '<span class="eq">MDB · 400 V 3Ph+N · 1600 A · 50 kA/1s</span>. الخط العريض في الـ Single line هو البسبار. الرقم 1600 A تحمّل البسبار، و50 kA لمدة ثانية هو ما يتحمّله أثناء القصر.'],
+  q2:['Q2: لوحة الإنارة', '<span class="eq">MCCB 250 A · Ir 0.8 → 200 A</span> يغذّي <b>DB-L</b> لوحة الإنارة والمقابس.'],
+  q3:['Q3: مغذّي الـ MCC', '<span class="eq">MCCB 400 A · 3P · Icu 50 kA · Ir 1.0</span>. هذا القاطع يحمي الكابل W-03 ولوحة MCC-1 كلها.'],
+  w03:['الكابل W-03', '<span class="eq">4C×185 mm² Cu/XLPE/SWA/PVC · 45 m</span>: 4 عروق (3 فازات + نيوترال) مقطع كل عرق 185 مم²، نحاس، عازل XLPE، مسلّح بسلك صلب (SWA)، وغلاف خارجي PVC. طوله 45 مترًا.'],
+  mcc:['بسبار MCC-1', '<span class="eq">MCC-1 · 400 V · 400 A · 36 kA</span>. لوحة مراكز التحكم في المحركات: كل خانة (Bucket) فيها حماية وتشغيل محرك.'],
+  q11:['Q11 (MPCB)', '<span class="eq">MPCB 10–16 A · Ir 15</span>: قاطع حماية محرك فيه حماية قصر (مغناطيسية) وأوفرلود (حرارية) قابلة للضبط. مضبوط على تيار لوحة بيانات المحرك 15 A.'],
+  k11:['K11: الكونتاكتور', '<span class="eq">AC-3 · 18 A · 230V AC coil</span>. <b>AC-3</b> تعني فئة الاستخدام لمحركات القفص السنجابي (بدء وفصل أثناء الدوران).'],
+  m101:['المحرك M-101', '<span class="eq">7.5 kW · 400 V · 15 A</span>. تشغيل مباشر DOL. الكابل <span class="eq">4C×4 mm² Cu</span>.'],
+  q12:['Q12: مغذّي الانفرتر', '<span class="eq">MCCB 100 A · Ir 0.8 → 80 A</span> قبل الانفرتر. القاطع هنا يحمي الكابل والانفرتر من القصر، والانفرتر نفسه يحمي المحرك.'],
+  vfd:['الانفرتر U12', '<span class="eq">VFD 37 kW · 400 V</span>. الرمز مربع فيه خط مائل (تحويل). كابل المحرك بعده يجب أن يكون <b>مُغلَّفًا بشيلد</b> (Shielded).'],
+  m102:['المحرك M-102', '<span class="eq">37 kW · 400 V · ≈ 68 A</span>، الكابل <span class="eq">4C×25 mm² Cu shielded</span>.'],
+  sp:['خانة احتياطي', '<b>Spare</b>: قاطع مركّب وغير موصّل لأي حمل يُضاف لاحقًا.']
 };
 DR.drawSLD = function(){
   const W = 560, H = 730, x = 150; let s = '';
@@ -874,23 +874,23 @@ DR.drawSLD = function(){
 
 /* ================= panel layout (L6) ================= */
 DR.PANEL_ITEMS = {
-  plate:['الـ Mounting plate', 'اللوح الصاج المجلفن اللي بيتركّب جوه الصندوق وكل حاجة بتتربط عليه. الرسمة بتتعمل بمقاس حقيقي (Scale) عشان تعرف الحاجات هتكفّي ولا لأ.'],
-  duct:['مجرى السلك (Wiring duct)', 'مجرى بلاستيك بفتحات جانبية، السلوك بتمشي جوّاه من جهاز لجهاز. مقاسه مكتوب على الرسمة زي <span class="eq">60×80</span> (عرض × عمق). اسيب فاضي ⁦30⁠–⁠40%⁩ للتعديلات.'],
-  rail:['الدين ريل DIN rail', 'قضيب معدني <span class="eq">TS35</span> (عرضه 35 مم) الأجهزة الصغيرة بتتكبس عليه: قواطع وكونتاكتورات وترمنالات وباور سبلاي.'],
-  Q1:['-Q1 السكينة الرئيسية', 'Main switch <span class="eq">3P 63 A</span> بيد على باب اللوحة. بيفصل الكهربا عن اللوحة كلها، ويتقفل بقفل وقت الصيانة (LOTO).'],
-  F1:['-F1 قاطع 3 فاز', 'MCB <span class="eq">3P C16</span> بيغذّي دواير القوى الصغيرة.'],
-  F2:['-F2 فيوز/قاطع التحكم', 'MCB <span class="eq">2P C6</span> بيحمي دايرة التحكم 230V.'],
-  G1:['-G1 باور سبلاي 24V DC', 'بيحوّل 230V AC لـ <span class="eq">24V DC 5 A</span> للـ PLC والحساسات. على رسمة الدايرة اسمه ⁦-G1⁩ أو ⁦-T1⁩.'],
-  F3:['-F3 قاطع الـ 24V', 'MCB <span class="eq">1P C2</span> على خرج الـ 24V بيحمي سلوك الحساسات من القصر.'],
-  Q11:['-Q11 قاطع حماية الموتور', 'MPCB <span class="eq">10–16 A</span> متظبط على تيار يافطة الموتور. حماية قصر + أوفرلود.'],
-  K11:['-K11 الكونتاكتور', 'كونتاكتور <span class="eq">AC-3 18 A</span> بكويل 230V. جنب القاطع بتاعه عشان السلوك تبقى قصيرة.'],
-  U12:['-U12 الإنفرتر', 'إنفرتر <span class="eq">37 kW</span>. متركّب لوحده وفوقه وتحته مسافة للتهوية زي ما الكتالوج بيقول (غالبًا 100 مم).'],
-  A1:['-A1 الـ PLC (CPU)', 'وحدة المعالجة: فيها البرنامج والاتصال. الكروت جنبها بالترتيب اللي في الرسمة.'],
-  A2:['-A2 كارت الدخل DI', 'كارت <span class="eq">16 DI 24V DC</span>. الحساسات والزراير بتدخل عليه عن طريق ترمنالات ⁦-X2⁩.'],
-  X1:['-X1 ترمنالات القوى', 'دخول الكهربا <span class="eq">L1 L2 L3 N PE</span> وخروج الموتور <span class="eq">U V W PE</span>. ترمنالات أكبر مقاس (مثلًا 16 mm²).'],
-  X2:['-X2 ترمنالات التحكم', 'ترمنالات الإشارات من وإلى الموقع (حساسات وليميتات وزراير). 1 لـ 3 عليهم <span class="eq">+24V</span> متوصّلين ببريدج، و9 و10 عليهم <span class="eq">0V</span>.'],
-  PE:['بار الأرضي PE', 'بار نحاس كل سلوك الأرضي (أخضر/أصفر) بتتربط عليه، وهو متربط بجسم اللوحة وبأرضي المبنى.'],
-  sp:['مكان احتياطي', 'مساحة فاضية مقصودة (Spare ⁦20%⁩) عشان أي جهاز يتضاف بعدين من غير ما نغيّر اللوحة.']
+  plate:['الـ Mounting plate', 'لوح الصاج المجلفن المركّب داخل الصندوق، ويُثبّت عليه كل شيء. تُرسم الرسمة بالمقاس الحقيقي (Scale) لتعرف هل تكفي المساحة أم لا.'],
+  duct:['مجرى السلك (Wiring duct)', 'مجرى بلاستيكي بفتحات جانبية، تمر فيه الأسلاك من جهاز إلى جهاز. مقاسه مكتوب على الرسمة مثل <span class="eq">60×80</span> (عرض × عمق). اترك ⁦30⁠–⁠40%⁩ فارغًا للتعديلات.'],
+  rail:['الدين ريل DIN rail', 'قضيب معدني <span class="eq">TS35</span> (عرضه 35 مم) تُكبس عليه الأجهزة الصغيرة: قواطع وكونتاكتورات وترمنالات ومصادر تغذية.'],
+  Q1:['-Q1 السكين الرئيسي', 'Main switch <span class="eq">3P 63 A</span> بمقبض على باب اللوحة. يفصل الكهرباء عن اللوحة كلها، ويُقفل بقفل أثناء الصيانة (LOTO).'],
+  F1:['-F1 قاطع 3 فاز', 'MCB <span class="eq">3P C16</span> يغذّي دوائر القوى الصغيرة.'],
+  F2:['-F2 فيوز/قاطع التحكم', 'MCB <span class="eq">2P C6</span> يحمي دائرة التحكم 230V.'],
+  G1:['-G1 مصدر تغذية 24V DC', 'يحوّل 230V AC إلى <span class="eq">24V DC 5 A</span> للـ PLC والحساسات. اسمه على رسمة الدائرة ⁦-G1⁩ أو ⁦-T1⁩.'],
+  F3:['-F3 قاطع الـ 24V', 'MCB <span class="eq">1P C2</span> على خرج الـ 24V يحمي أسلاك الحساسات من القصر.'],
+  Q11:['-Q11 قاطع حماية المحرك', 'MPCB <span class="eq">10–16 A</span> مضبوط على تيار لوحة بيانات المحرك. حماية قصر + أوفرلود.'],
+  K11:['-K11 الكونتاكتور', 'كونتاكتور <span class="eq">AC-3 18 A</span> بملف 230V. بجانب قاطعه لتكون الأسلاك قصيرة.'],
+  U12:['-U12 الانفرتر', 'انفرتر <span class="eq">37 kW</span>. مركّب منفردًا، وفوقه وتحته مسافة للتهوية كما يذكر الكتالوج (غالبًا 100 مم).'],
+  A1:['-A1 الـ PLC (CPU)', 'وحدة المعالجة: فيها البرنامج والاتصال. والكروت بجانبها بالترتيب الذي في الرسمة.'],
+  A2:['-A2 كارت الدخل DI', 'كارت <span class="eq">16 DI 24V DC</span>. تدخل عليه الحساسات والأزرار عن طريق ترمنالات ⁦-X2⁩.'],
+  X1:['-X1 ترمنالات القوى', 'دخول الكهرباء <span class="eq">L1 L2 L3 N PE</span> وخروج المحرك <span class="eq">U V W PE</span>. ترمنالات أكبر مقاسًا (مثلًا 16 mm²).'],
+  X2:['-X2 ترمنالات التحكم', 'ترمنالات الإشارات من الموقع وإليه (حساسات وليمتات وأزرار). من 1 إلى 3 عليها <span class="eq">+24V</span> موصّلة ببريدج، و9 و10 عليها <span class="eq">0V</span>.'],
+  PE:['بار الأرضي PE', 'قضيب نحاسي تُربط عليه كل أسلاك الأرضي (أخضر/أصفر)، وهو مربوط بجسم اللوحة وبأرضي المبنى.'],
+  sp:['مكان احتياطي', 'مساحة فارغة مقصودة (Spare ⁦20%⁩) لإضافة أي جهاز لاحقًا دون تغيير اللوحة.']
 };
 DR.drawPanel = function(){
   const W = 600, H = 830; let s = '';
@@ -935,7 +935,7 @@ DR.TERM = {
   cables:[
     {id:'W20', dev:'-B1', what:'حساس بروكسيميتي PNP', type:'3×0.34 mm²', y:2.6, cores:[['BN', 1], ['BK', 4], ['BU', 9]], col:['#8a4b1f', '#1d1d1d', '#2f6fd6']},
     {id:'W22', dev:'-B3', what:'عوّامة مستوى', type:'2×1.0 mm²', y:5.2, cores:[['1', 3], ['2', 5]]},
-    {id:'W21', dev:'-S5', what:'ليميت سويتش', type:'3G1.5 mm²', y:7.6, cores:[['1', 2], ['2', 6], ['GNYE', 0]]}
+    {id:'W21', dev:'-S5', what:'ليمت سويتش', type:'3G1.5 mm²', y:7.6, cores:[['1', 2], ['2', 6], ['GNYE', 0]]}
   ],
   plc:{'4':'I0.3', '5':'I0.0', '6':'I0.5', '10':'1M'},
   wn:{'4':'103', '5':'100', '6':'105', '10':'0V'}
@@ -943,7 +943,7 @@ DR.TERM = {
 DR.drawTerm = function(){
   const W = 600, H = 470, T = DR.TERM, ry = n => 70 + (n - 1) * 36, X = 262;
   let s = `<rect class="dfr" x="4" y="4" width="${W - 8}" height="${H - 8}" rx="2"/><text class="dsm" x="14" y="20">TERMINAL DIAGRAM -X2 · =A1 +CP1 · Page 12</text>`;
-  s += `<text class="dars" x="60" y="36" text-anchor="middle">الموقع (Field)</text><text class="dars" x="190" y="36" text-anchor="middle">الكابل والعروق</text><text class="dtag" x="${X + 20}" y="36" text-anchor="middle">-X2</text><text class="dars" x="380" y="36" text-anchor="middle">سلوك جوه اللوحة</text><text class="dtag" x="${W - 62}" y="36" text-anchor="middle">-A2 (DI)</text>`;
+  s += `<text class="dars" x="60" y="36" text-anchor="middle">الموقع (Field)</text><text class="dars" x="190" y="36" text-anchor="middle">الكابل والعروق</text><text class="dtag" x="${X + 20}" y="36" text-anchor="middle">-X2</text><text class="dars" x="380" y="36" text-anchor="middle">أسلاك داخل اللوحة</text><text class="dtag" x="${W - 62}" y="36" text-anchor="middle">-A2 (DI)</text>`;
   /* terminals */
   T.rows.forEach((r, i) => { const n = i + 1, y = ry(n); s += `<g class="hot" data-t="X2:${n}" tabindex="0" role="button" aria-label="ترمنال X2:${n}"><rect class="hlbox" x="${X - 3}" y="${y - 17}" width="46" height="34"/><rect class="pl-term" x="${X}" y="${y - 15}" width="40" height="30" rx="2"/><text class="dt" x="${X + 20}" y="${y + 4}" text-anchor="middle">${n}</text><rect class="hit" x="${X - 3}" y="${y - 17}" width="46" height="34"/></g>`; });
   s += `<path class="pl-bridgeL" d="M${X + 47} ${ry(1)}V${ry(3)}M${X + 47} ${ry(9)}V${ry(10)}"/>` + [1, 2, 3, 9, 10].map(n => `<circle class="dkf" cx="${X + 47}" cy="${ry(n)}" r="2.6"/><path class="dk thin" d="M${X + 40} ${ry(n)}H${X + 47}"/>`).join('');
@@ -974,7 +974,7 @@ DR.drawTerm = function(){
   return {svg:s, w:W, h:H};
 };
 DR.FOLLOW = [
-  {dev:'-S5', what:'الليميت سويتش', c:'W21-2', t:'X2:6', p:'I0.5'},
+  {dev:'-S5', what:'الليمت سويتش', c:'W21-2', t:'X2:6', p:'I0.5'},
   {dev:'-B1', what:'حساس البروكسيميتي', c:'W20-BK', t:'X2:4', p:'I0.3'},
   {dev:'-B3', what:'العوّامة', c:'W22-2', t:'X2:5', p:'I0.0'}
 ];
@@ -1009,7 +1009,7 @@ DR.drawWiring = function(){
   box(290, 96, 240, 96, '-K1', [['1', '-Q1:2'], ['3', '-Q1:4'], ['5', '-Q1:6'], ['13', '-S1:13', '2'], ['A1', '-S1:14', '3']], [['2', '-F2:1'], ['4', '-F2:3'], ['6', '-F2:5'], ['14', '-S1:14', '3'], ['A2', '-X1:N', 'N']]);
   box(40, 96, 200, 96, '-S0 / -S1', [], [['11', '-F2:96', '1'], ['12', ''], ['13', '-K1:13', '2'], ['14', '-K1:A1', '3']]);
   s += `<path class="cw" d="M115 205V212H165V205"/><text class="dwn" x="140" y="208" text-anchor="middle" dy="-2">2</text>`;
-  s += `<text class="dars" x="140" y="76" text-anchor="middle">على باب اللوحة</text><text class="dars" x="410" y="50" text-anchor="middle">على الصاج جوه اللوحة</text>`;
+  s += `<text class="dars" x="140" y="76" text-anchor="middle">على باب اللوحة</text><text class="dars" x="410" y="50" text-anchor="middle">على الصاج داخل اللوحة</text>`;
   return {svg:s, w:W, h:H};
 };
 DR.CABLE_SCHEDULE = [
@@ -1024,24 +1024,24 @@ DR.cableTable = () => `<div class="tblw"><table class="tbl cs-tbl"><thead><tr><t
 
 /* ================= L1: drawing types explorer ================= */
 DR.TYPES = [
-  {id:'sld', name:'Single line diagram', ar:'الرسمة أحادية الخط', q:'الكهربا جاية منين ورايحة فين، وبأي مقاسات؟', use:['توزيع الكهربا في المصنع كله: محوّل، لوحات، قواطع، كابلات وموتورات', 'خط واحد بيمثّل الـ 3 فازات (الشرط المايلة /// بتقولك عددهم)', 'عليها الريتنج: kVA، A، kA، ومقاسات الكابلات'], draw:() => DR.drawSLD()},
-  {id:'power', name:'Power circuit', ar:'دايرة القوى', q:'الموتور بيتغذّى إزاي بالتفصيل؟', use:['كل فاز مرسوم لوحده: L1 و L2 و L3 و PE', 'القاطع وكونتاكتات الكونتاكتور الرئيسية والأوفرلود والموتور', 'أطراف القوى ⁦1-2⁩ و ⁦3-4⁩ و ⁦5-6⁩ ومقاس الكابل'], draw:() => ({svg:DR.drawPower({sheet:true, w:320, h:500, cx:150}), w:320, h:500})},
-  {id:'control', name:'Control circuit (Schematic)', ar:'دايرة التحكم', q:'المكنة بتشتغل وتقف إزاي؟ وإيه اللي بيمنعها؟', use:['الزراير والكونتاكتات والكويلات واللمبات بين L و N (أو +24V و 0V)', 'بتتقري "مسار مسار" (Current path / Rung)', 'دي أكتر رسمة هتفتحها وإنت بتدوّر على عطل'], draw:() => DR.iecPage(DR.defDOL(), {page:3, title:'Control · Motor M1'})},
-  {id:'wiring', name:'Wiring diagram', ar:'رسمة التوصيل', q:'السلك ده متربط فين بالظبط على الجهاز؟', use:['الأجهزة مرسومة بشكلها الحقيقي وأطرافها في أماكنها', 'كل طرف عليه رايح فين (Destination) ورقم السلك', 'بتستخدمها وإنت بتوصّل أو بتفك سلوك'], draw:() => DR.drawWiring()},
-  {id:'terminal', name:'Terminal diagram', ar:'رسمة الترمنالات', q:'الكابل اللي جاي من الموقع داخل على أنهي ترمنال؟', use:['شريط الترمنالات ⁦-X2⁩ بأرقامه', 'من بره: الكابل وعروقه (ألوان أو أرقام)', 'من جوه: السلك رايح أنهي جهاز أو أنهي دخل PLC'], draw:() => DR.drawTerm()},
-  {id:'layout', name:'Panel layout', ar:'رسمة اللوحة (الترتيب)', q:'الجهاز ده متركّب فين في اللوحة؟', use:['منظر أمامي للـ Mounting plate بمقاس', 'المجاري والدين ريل وكل جهاز بالتاج بتاعه', 'بتستخدمها في التصنيع وعشان تلاقي الجهاز بسرعة'], draw:() => DR.drawPanel()},
-  {id:'pid', name:'P&ID', ar:'رسمة المواسير والأجهزة', q:'الحساس ده بيقيس إيه وفين في العملية؟', use:['التانكات والطلمبات والمواسير والصمامات', 'دواير بتاجات زي ⁦LT-101⁩ و ⁦FIC-101⁩', 'الخط المتقطّع = إشارة، والخط المليان = ماسورة'], draw:() => DR.drawPID()},
-  {id:'cable', name:'Cable schedule', ar:'جدول الكابلات', q:'الكابل ده رايح فين، نوعه إيه، وطوله كام؟', use:['جدول مش رسمة: كل كابل في سطر', 'رقم الكابل، من فين لفين، النوع، عدد العروق والمقطع، الطول والجلاند', 'بتطلب بيه الكابلات وبتعلّم عليه وإنت بتمدّ'], html:() => DR.cableTable()}
+  {id:'sld', name:'Single line diagram', ar:'الرسمة أحادية الخط', q:'من أين تأتي الكهرباء وإلى أين تذهب، وبأي مقاسات؟', use:['توزيع الكهرباء في المصنع كله: محوّل، ولوحات، وقواطع، وكابلات، ومحركات', 'خط واحد يمثّل الفازات الثلاثة (الشرطات المائلة /// تبيّن عددها)', 'عليها التصنيفات: kVA وA وkA ومقاسات الكابلات'], draw:() => DR.drawSLD()},
+  {id:'power', name:'Power circuit', ar:'دائرة القوى', q:'كيف يتغذّى المحرك بالتفصيل؟', use:['كل فاز مرسوم على حدة: L1 وL2 وL3 وPE', 'القاطع وتلامسات الكونتاكتور الرئيسية والأوفرلود والمحرك', 'أطراف القوى ⁦1-2⁩ و⁦3-4⁩ و⁦5-6⁩ ومقاس الكابل'], draw:() => ({svg:DR.drawPower({sheet:true, w:320, h:500, cx:150}), w:320, h:500})},
+  {id:'control', name:'Control circuit (Schematic)', ar:'دائرة التحكم', q:'كيف تعمل الماكينة وتتوقف؟ وما الذي يمنعها؟', use:['الأزرار والتلامسات والملفات والمصابيح بين L وN (أو +24V و0V)', 'تُقرأ "مسارًا مسارًا" (Current path / Rung)', 'هي أكثر رسمة ستفتحها وأنت تبحث عن عطل'], draw:() => DR.iecPage(DR.defDOL(), {page:3, title:'Control · Motor M1'})},
+  {id:'wiring', name:'Wiring diagram', ar:'رسمة التوصيل', q:'أين يُربط هذا السلك بالضبط على الجهاز؟', use:['الأجهزة مرسومة بشكلها الحقيقي وأطرافها في أماكنها', 'على كل طرف وجهته (Destination) ورقم السلك', 'تستخدمها وأنت توصّل الأسلاك أو تفكّها'], draw:() => DR.drawWiring()},
+  {id:'terminal', name:'Terminal diagram', ar:'رسمة الترمنالات', q:'على أي ترمنال يدخل الكابل القادم من الموقع؟', use:['شريط الترمنالات ⁦-X2⁩ بأرقامه', 'من الخارج: الكابل وعروقه (ألوان أو أرقام)', 'من الداخل: إلى أي جهاز أو أي دخل PLC يذهب السلك'], draw:() => DR.drawTerm()},
+  {id:'layout', name:'Panel layout', ar:'رسمة اللوحة (الترتيب)', q:'أين رُكّب هذا الجهاز في اللوحة؟', use:['منظر أمامي للـ Mounting plate بالمقاس', 'المجاري والدين ريل وكل جهاز بتاجه', 'تستخدمها في التصنيع ولتجد الجهاز بسرعة'], draw:() => DR.drawPanel()},
+  {id:'pid', name:'P&ID', ar:'رسمة المواسير والأجهزة', q:'ماذا يقيس هذا الحساس وأين في العملية؟', use:['الخزانات والمضخات والمواسير والصمامات', 'دوائر بتاجات مثل ⁦LT-101⁩ و⁦FIC-101⁩', 'الخط المتقطّع = إشارة، والخط المتصل = ماسورة'], draw:() => DR.drawPID()},
+  {id:'cable', name:'Cable schedule', ar:'جدول الكابلات', q:'إلى أين يذهب هذا الكابل، وما نوعه، وكم طوله؟', use:['جدول لا رسمة: كل كابل في سطر', 'رقم الكابل، ومن أين إلى أين، والنوع، وعدد العروق والمقطع، والطول والجلاند', 'تطلب به الكابلات وتعلّم عليه أثناء التمديد'], html:() => DR.cableTable()}
 ];
 DR.typeExplorer = function(host, opt){
   opt = opt || {}; const L = opt.lesson, seen = new Set();
-  host.innerHTML = `<div class="type-tabs" role="tablist">${DR.TYPES.map(t => `<button type="button" class="btn" role="tab" data-t="${t.id}" aria-selected="false">${t.ar}</button>`).join('')}</div><div class="tdesc"></div><div class="tx-v"></div><div class="tx-h"></div><p class="chal">افتح الـ <b>8</b> أنواع وبص على كل رسمة عشان الجولة تتعلّم عليها.</p>`;
+  host.innerHTML = `<div class="type-tabs" role="tablist">${DR.TYPES.map(t => `<button type="button" class="btn" role="tab" data-t="${t.id}" aria-selected="false">${t.ar}</button>`).join('')}</div><div class="tdesc"></div><div class="tx-v"></div><div class="tx-h"></div><p class="chal">افتح الأنواع الـ <b>8</b> وانظر إلى كل رسمة لتُسجَّل الجولة مكتملة.</p>`;
   const fin = chal(host, '.chal', L, opt.task || 'types');
   const v = DR.viewer($('.tx-v', host), {w:100, h:100, svg:'', title:'', label:'الرسمة'});
   function show(id){
     const t = DR.TYPES.find(x => x.id === id); seen.add(id);
     $$('[data-t]', host).forEach(b => { const on = b.dataset.t === id; b.setAttribute('aria-selected', String(on)); b.setAttribute('aria-pressed', String(on)); if (seen.has(b.dataset.t)) b.classList.add('seen'); });
-    $('.tdesc', host).innerHTML = `<h4><span class="term">${esc(t.name)}</span> · ${t.ar}</h4><p><b>بتجاوب على:</b> ${t.q}</p><ul>${t.use.map(u => `<li>${u}</li>`).join('')}</ul>`;
+    $('.tdesc', host).innerHTML = `<h4><span class="term">${esc(t.name)}</span> · ${t.ar}</h4><p><b>تجيب عن:</b> ${t.q}</p><ul>${t.use.map(u => `<li>${u}</li>`).join('')}</ul>`;
     if (t.html){ $('.tx-v', host).hidden = true; $('.tx-h', host).hidden = false; $('.tx-h', host).innerHTML = t.html(); }
     else { $('.tx-h', host).hidden = true; $('.tx-v', host).hidden = false; const d = t.draw(); v.set(d.svg, d.w, d.h); $('.vw-t', host).textContent = t.name; }
     if (seen.size >= DR.TYPES.length) fin();
@@ -1051,52 +1051,52 @@ DR.typeExplorer = function(host, opt){
   return {show, seen, v};
 };
 DR.WHICH = [
-  ['عايز تعرف الكابل اللي رايح للطلمبة مقاسه كام وطوله قد إيه عشان تطلبه من المخزن.', 'cable'],
-  ['الموتور مش بيقوم لما تدوس Start، وعايز تعرف الكويل بياخد الكهربا منين.', 'control'],
-  ['إنت قدام اللوحة ومش لاقي الكونتاكتور ⁦-K11⁩ متركّب فين.', 'layout'],
-  ['عايز تعرف القاطع اللي بيغذّي لوحة MCC-1 كام أمبير وجاي من أنهي لوحة.', 'sld'],
-  ['الكابل اللي جاي من الليميت سويتش داخل على أنهي ترمنال في اللوحة.', 'terminal'],
-  ['هتغيّر الكونتاكتور وعايز تعرف كل سلك مربوط في أنهي طرف عليه.', 'wiring'],
-  ['عايز تعرف الأوفرلود وكونتاكتات القوى متوصّلين إزاي بالموتور فاز فاز.', 'power'],
-  ['الأوبريتور بيقول "LT-101 بيقرا غلط" وعايز تعرف الحساس ده على أنهي تانك.', 'pid'],
-  ['عايز تعرف تيار القصر المتوقّع عند البسبار الرئيسي ومقاس القاطع الرئيسي.', 'sld'],
-  ['زرار الطوارئ مش بيفصل الموتور، وعايز تعرف هو متوصّل في أنهي مسار.', 'control'],
-  ['هتضيف حساس جديد وعايز تعرف فيه ترمنالات فاضية (Spare) ولا لأ.', 'terminal'],
-  ['عايز تعرف فيه مساحة فاضية على الدين ريل لقاطع جديد.', 'layout']
+  ['تريد معرفة مقاس كابل المضخة وطوله لتطلبه من المخزن.', 'cable'],
+  ['المحرك لا يبدأ عند الضغط على Start، وتريد معرفة من أين يأخذ الملف الكهرباء.', 'control'],
+  ['أنت أمام اللوحة ولا تجد مكان الكونتاكتور ⁦-K11⁩.', 'layout'],
+  ['تريد معرفة أمبير القاطع الذي يغذّي لوحة MCC-1 ومن أي لوحة يأتي.', 'sld'],
+  ['على أي ترمنال في اللوحة يدخل الكابل القادم من الليمت سويتش؟', 'terminal'],
+  ['ستغيّر الكونتاكتور وتريد معرفة أي سلك مربوط على أي طرف.', 'wiring'],
+  ['تريد معرفة كيف يتصل الأوفرلود وتلامسات القوى بالمحرك فازًا فازًا.', 'power'],
+  ['المشغّل يقول "LT-101 يقرأ خطأ" وتريد معرفة على أي خزان هذا الحساس.', 'pid'],
+  ['تريد معرفة تيار القصر المتوقّع عند البسبار الرئيسي ومقاس القاطع الرئيسي.', 'sld'],
+  ['زر الطوارئ لا يفصل المحرك، وتريد معرفة في أي مسار هو موصّل.', 'control'],
+  ['ستضيف حساسًا جديدًا وتريد معرفة هل توجد ترمنالات فارغة (Spare).', 'terminal'],
+  ['تريد معرفة هل توجد مساحة فارغة على الدين ريل لقاطع جديد.', 'layout']
 ];
-DR.whichGen = (() => { let last = -1; return () => { let i; do { i = Math.floor(Math.random() * DR.WHICH.length); } while (i === last); last = i; const [q, a] = DR.WHICH[i]; const others = shuffle(DR.TYPES.filter(t => t.id !== a)).slice(0, 3); const opts = shuffle([DR.TYPES.find(t => t.id === a)].concat(others)); return {q:`${q}<br><span class="muted" style="font-weight:500">تفتح أنهي رسمة؟</span>`, o:opts.map(t => `${t.ar} <span class="term">${esc(t.name)}</span>`), a:opts.findIndex(t => t.id === a), why:`${DR.TYPES.find(t => t.id === a).ar} بتجاوب على: ${DR.TYPES.find(t => t.id === a).q}`}; }; })();
+DR.whichGen = (() => { let last = -1; return () => { let i; do { i = Math.floor(Math.random() * DR.WHICH.length); } while (i === last); last = i; const [q, a] = DR.WHICH[i]; const others = shuffle(DR.TYPES.filter(t => t.id !== a)).slice(0, 3); const opts = shuffle([DR.TYPES.find(t => t.id === a)].concat(others)); return {q:`${q}<br><span class="muted" style="font-weight:500">أي رسمة تفتح؟</span>`, o:opts.map(t => `${t.ar} <span class="term">${esc(t.name)}</span>`), a:opts.findIndex(t => t.id === a), why:`${DR.TYPES.find(t => t.id === a).ar} تجيب عن: ${DR.TYPES.find(t => t.id === a).q}`}; }; })();
 
 /* ================= L2: symbols ================= */
 DR.SYMLIST = [
-  {k:'no', ar:'كونتاكت مفتوح NO', en:'Normally Open contact (make)', iec:'-K1 13-14', nema:'CR / M', note:'مفتوح والجهاز مفصول، بيقفل لما الكويل بتاعه يشتغل. في IEC خط مايل، وفي NEMA خطين متوازيين ⁦-| |-⁩.'},
-  {k:'nc', ar:'كونتاكت مقفول NC', en:'Normally Closed contact (break)', iec:'-K1 21-22', nema:'CR / M', note:'مقفول والجهاز مفصول، بيفتح لما الكويل يشتغل. في NEMA نفس الخطين وعليهم خط مايل.'},
-  {k:'coil', ar:'كويل ريلاي / كونتاكتور', en:'Relay / contactor coil', iec:'-K1 A1-A2', nema:'CR / M', note:'IEC مستطيل، و NEMA دايرة جواها اسم الجهاز (CR ريلاي تحكم، M كونتاكتور موتور).'},
-  {k:'pbno', ar:'زرار تشغيل NO', en:'Push button NO (Start)', iec:'-S1 13-14', nema:'PB', note:'زرار بيرجع لوحده (Momentary). في IEC الكونتاكت وعليه مسكة الزرار ⁦[⁩ بخط متقطّع.'},
-  {k:'pbnc', ar:'زرار إيقاف NC', en:'Push button NC (Stop)', iec:'-S0 11-12', nema:'PB', note:'مقفول طول الوقت وبيفتح لما تدوس. زرار الـ Stop دايمًا NC عشان لو السلك اتقطع المكنة تقف.'},
-  {k:'estop', ar:'زرار طوارئ', en:'Emergency stop (mushroom)', iec:'-S10 11-12', nema:'E-STOP', note:'زرار راس مشروم بيعلّق (Latching) لحد ما تلفه. دايمًا NC.'},
-  {k:'sel', ar:'سليكتور (مفتاح اختيار)', en:'Selector switch', iec:'-S3 13-14', nema:'SS', note:'بيفضل في مكانه (Maintained). زي Hand / Off / Auto.'},
-  {k:'lsno', ar:'ليميت سويتش NO', en:'Limit (position) switch NO', iec:'-S5 13-14', nema:'LS', note:'بيتحرّك بحتة ميكانيكية (كامة). في IEC المثلث الصغير هو الذراع.'},
-  {k:'lsnc', ar:'ليميت سويتش NC', en:'Limit (position) switch NC', iec:'-S6 21-22', nema:'LS', note:'بيفتح لما الحركة توصل لآخرها. بيستخدم كحماية نهاية مشوار.'},
-  {k:'prox', ar:'حساس تقارب NO', en:'Proximity sensor NO', iec:'-B1', nema:'PRS', note:'الشكل المعيّن (Rhombus) = حساس من غير لمس. الخرج PNP أو NPN.'},
-  {k:'tcoil', ar:'كويل تايمر On-delay', en:'Timer coil (on-delay)', iec:'-K2T A1-A2', nema:'TR', note:'IEC: مستطيل الكويل وجنبه مربع فيه X. وفي NEMA دايرة مكتوب جواها TR.'},
-  {k:'tno', ar:'كونتاكت تايمر NO متأخر', en:'On-delay NO timed contact', iec:'-K2T 17-18', nema:'TR (NOTC)', note:'بيقفل بعد الوقت ما يخلص. الشكل اللي زي البراشوت بيبيّن إن الحركة متأخّرة.'},
-  {k:'olt', ar:'عنصر الأوفرلود الحراري', en:'Thermal overload element', iec:'-F2 1-2', nema:'OL', note:'بيتركّب في دايرة القوى على كل فاز. لما التيار يزيد يسخن ويفصل كونتاكته.'},
-  {k:'olc', ar:'كونتاكت الأوفرلود NC', en:'Overload trip contact NC', iec:'-F2 95-96', nema:'OL', note:'في دايرة التحكم في سكة الكويل. لما الأوفرلود يفصل بيفتح فالكونتاكتور يقع.'},
-  {k:'cb', ar:'قاطع (Circuit breaker)', en:'Circuit breaker', iec:'-Q1 1-2', nema:'CB', note:'IEC: كونتاكت وعلى طرفه X. NEMA: قوس فوق الطرفين.'},
-  {k:'fuse', ar:'فيوز', en:'Fuse', iec:'-F1 1-2', nema:'FU', note:'IEC: مستطيل والخط معدّي جوّاه. NEMA: شكل حرف S أو مستطيل.'},
-  {k:'motor', ar:'موتور 3 فاز', en:'Three-phase motor', iec:'-M1', nema:'MTR', note:'دايرة جواها M و ⁦3~⁩. في NEMA ممكن يتكتب MTR أو يترسم بأطراف T1 T2 T3.'},
-  {k:'tr', ar:'محوّل', en:'Transformer', iec:'-T1', nema:'T / CPT', note:'IEC: دايرتين داخلين في بعض. NEMA: ملفّين (حلزونات) وبينهم خطين القلب. أطراف الابتدائي H1 H2 والثانوي X1 X2.'},
-  {k:'lamp', ar:'لمبة بيان', en:'Pilot lamp', iec:'-H1 X1-X2', nema:'PL (R / G / A)', note:'IEC: دايرة فيها X. NEMA: دايرة بأشعة وجواها حرف اللون: R أحمر، G أخضر، A كهرماني.'}
+  {k:'no', ar:'تلامس مفتوح NO', en:'Normally Open contact (make)', iec:'-K1 13-14', nema:'CR / M', note:'مفتوح والجهاز مفصول، ويُغلق عندما يعمل ملفه. في IEC خط مائل، وفي NEMA خطان متوازيان ⁦-| |-⁩.'},
+  {k:'nc', ar:'تلامس مغلق NC', en:'Normally Closed contact (break)', iec:'-K1 21-22', nema:'CR / M', note:'مغلق والجهاز مفصول، ويفتح عندما يعمل الملف. في NEMA الخطان نفسهما وعليهما خط مائل.'},
+  {k:'coil', ar:'ملف ريلاي / كونتاكتور', en:'Relay / contactor coil', iec:'-K1 A1-A2', nema:'CR / M', note:'في IEC مستطيل، وفي NEMA دائرة بداخلها اسم الجهاز (CR ريلاي تحكم، M كونتاكتور محرك).'},
+  {k:'pbno', ar:'زر تشغيل NO', en:'Push button NO (Start)', iec:'-S1 13-14', nema:'PB', note:'زر يعود وحده (Momentary). في IEC التلامس وعليه مقبض الزر ⁦[⁩ بخط متقطّع.'},
+  {k:'pbnc', ar:'زر إيقاف NC', en:'Push button NC (Stop)', iec:'-S0 11-12', nema:'PB', note:'مغلق طوال الوقت ويفتح عند الضغط. زر الـ Stop دائمًا NC لكي تتوقف الماكينة إذا انقطع السلك.'},
+  {k:'estop', ar:'زر طوارئ', en:'Emergency stop (mushroom)', iec:'-S10 11-12', nema:'E-STOP', note:'زر برأس الفطر يبقى مضغوطًا (Latching) حتى تديره. دائمًا NC.'},
+  {k:'sel', ar:'سلكتور (مفتاح اختيار)', en:'Selector switch', iec:'-S3 13-14', nema:'SS', note:'يبقى في موضعه (Maintained). مثل Hand / Off / Auto.'},
+  {k:'lsno', ar:'ليمت سويتش NO', en:'Limit (position) switch NO', iec:'-S5 13-14', nema:'LS', note:'يتحرّك بقطعة ميكانيكية (كامة). في IEC المثلث الصغير هو الذراع.'},
+  {k:'lsnc', ar:'ليمت سويتش NC', en:'Limit (position) switch NC', iec:'-S6 21-22', nema:'LS', note:'يفتح عندما تصل الحركة إلى نهايتها. يُستخدم حماية لنهاية الشوط.'},
+  {k:'prox', ar:'حساس تقارب NO', en:'Proximity sensor NO', iec:'-B1', nema:'PRS', note:'الشكل المعيّن (Rhombus) = حساس بدون لمس. الخرج PNP أو NPN.'},
+  {k:'tcoil', ar:'ملف تايمر On-delay', en:'Timer coil (on-delay)', iec:'-K2T A1-A2', nema:'TR', note:'في IEC: مستطيل الملف وبجانبه مربع فيه X. وفي NEMA دائرة مكتوب داخلها TR.'},
+  {k:'tno', ar:'تلامس تايمر NO متأخر', en:'On-delay NO timed contact', iec:'-K2T 17-18', nema:'TR (NOTC)', note:'يُغلق بعد انتهاء الزمن. الشكل الذي يشبه المظلة يبيّن أن الحركة متأخرة.'},
+  {k:'olt', ar:'عنصر الأوفرلود الحراري', en:'Thermal overload element', iec:'-F2 1-2', nema:'OL', note:'يُركّب في دائرة القوى على كل فاز. عندما يزيد التيار يسخن ويفصل تلامسه.'},
+  {k:'olc', ar:'تلامس الأوفرلود NC', en:'Overload trip contact NC', iec:'-F2 95-96', nema:'OL', note:'في دائرة التحكم في مسار الملف. عندما يفصل الأوفرلود يفتح فيفصل الكونتاكتور.'},
+  {k:'cb', ar:'قاطع (Circuit breaker)', en:'Circuit breaker', iec:'-Q1 1-2', nema:'CB', note:'IEC: تلامس وعلى طرفه X. NEMA: قوس فوق الطرفين.'},
+  {k:'fuse', ar:'فيوز', en:'Fuse', iec:'-F1 1-2', nema:'FU', note:'IEC: مستطيل يمر الخط داخله. NEMA: شكل حرف S أو مستطيل.'},
+  {k:'motor', ar:'محرك ثلاثي الفاز', en:'Three-phase motor', iec:'-M1', nema:'MTR', note:'دائرة بداخلها M و⁦3~⁩. في NEMA قد يُكتب MTR أو يُرسم بأطراف T1 T2 T3.'},
+  {k:'tr', ar:'محوّل', en:'Transformer', iec:'-T1', nema:'T / CPT', note:'IEC: دائرتان متداخلتان. NEMA: ملفّان (حلزونان) وبينهما خطّا القلب. أطراف الابتدائي H1 H2 والثانوي X1 X2.'},
+  {k:'lamp', ar:'مصباح بيان', en:'Pilot lamp', iec:'-H1 X1-X2', nema:'PL (R / G / A)', note:'IEC: دائرة فيها X. NEMA: دائرة بأشعة وداخلها حرف اللون: R أحمر، G أخضر، A كهرماني.'}
 ];
 DR.flashcards = function(host, opt){
   opt = opt || {}; const L = opt.lesson, seen = new Set(); let i = 0, open = false;
-  host.innerHTML = `<div class="fc-wrap"><div class="fc" aria-live="polite"></div><div class="fc-nav"><button type="button" class="btn" data-f="prev">→ اللي قبله</button><button type="button" class="btn pri" data-f="flip">اقلب الكارت</button><button type="button" class="btn" data-f="next">اللي بعده ←</button></div><div class="fc-dots" aria-hidden="true"></div><p class="chal">اقلب كل الكروت (<b>${DR.SYMLIST.length}</b>) عشان تتعلّم عليهم.</p></div>`;
+  host.innerHTML = `<div class="fc-wrap"><div class="fc" aria-live="polite"></div><div class="fc-nav"><button type="button" class="btn" data-f="prev">→ السابق</button><button type="button" class="btn pri" data-f="flip">اقلب البطاقة</button><button type="button" class="btn" data-f="next">التالي ←</button></div><div class="fc-dots" aria-hidden="true"></div><p class="chal">اقلب كل البطاقات (<b>${DR.SYMLIST.length}</b>) لتُسجَّل مكتملة.</p></div>`;
   const fin = chal(host, '.chal', L, opt.task || 'cards');
   function render(){
     const c = DR.SYMLIST[i];
-    $('.fc', host).innerHTML = `<div class="fc-pair"><figure>${DR.symFig('iec', c.k, {label:'IEC ' + c.en})}<figcaption>IEC 60617</figcaption></figure><figure>${DR.symFig('ansi', c.k, {label:'ANSI ' + c.en})}<figcaption>ANSI / NEMA</figcaption></figure></div>${open ? `<div class="fc-back"><div class="fc-name">${c.ar}</div><div><span class="term">${esc(c.en)}</span></div><div>IEC: <span class="term">${esc(c.iec)}</span> · NEMA: <span class="term">${esc(c.nema)}</span></div><div>${c.note}</div></div>` : `<div class="fc-back"><div class="fc-name">ده رمز إيه؟</div><div class="muted">فكّر الأول، وبعدين اقلب الكارت. (${i + 1} من ${DR.SYMLIST.length})</div></div>`}`;
+    $('.fc', host).innerHTML = `<div class="fc-pair"><figure>${DR.symFig('iec', c.k, {label:'IEC ' + c.en})}<figcaption>IEC 60617</figcaption></figure><figure>${DR.symFig('ansi', c.k, {label:'ANSI ' + c.en})}<figcaption>ANSI / NEMA</figcaption></figure></div>${open ? `<div class="fc-back"><div class="fc-name">${c.ar}</div><div><span class="term">${esc(c.en)}</span></div><div>IEC: <span class="term">${esc(c.iec)}</span> · NEMA: <span class="term">${esc(c.nema)}</span></div><div>${c.note}</div></div>` : `<div class="fc-back"><div class="fc-name">ما هذا الرمز؟</div><div class="muted">فكّر أولًا، ثم اقلب البطاقة. (${i + 1} من ${DR.SYMLIST.length})</div></div>`}`;
     $('.fc-dots', host).innerHTML = DR.SYMLIST.map((x, k) => `<i class="${seen.has(k) ? 'seen' : ''}${k === i ? ' cur' : ''}"></i>`).join('');
-    $('[data-f=flip]', host).textContent = open ? 'اخفي الاسم' : 'اقلب الكارت';
+    $('[data-f=flip]', host).textContent = open ? 'أخفِ الاسم' : 'اقلب البطاقة';
   }
   onAct(host, '[data-f]', b => {
     const f = b.dataset.f;
@@ -1113,9 +1113,9 @@ DR.matchGen = (() => { let last = ''; return () => {
   const mode = pick(['name', 'name', 'i2a', 'a2i']);
   const others = shuffle(DR.SYMLIST.filter(x => x.k !== c.k && !(x.k.slice(0, 2) === c.k.slice(0, 2) && mode !== 'name'))).slice(0, 3);
   const opts = shuffle([c].concat(others)), a = opts.indexOf(c);
-  if (mode === 'name'){ const std = pick(['iec', 'ansi']); return {q:`الرمز ده <span class="std-b">${std === 'iec' ? 'IEC' : 'ANSI/NEMA'}</span> معناه إيه؟<div class="sym-q">${DR.symFig(std, c.k)}</div>`, o:opts.map(x => x.ar), a, why:`${c.ar} (<span class="term">${esc(c.en)}</span>).`}; }
+  if (mode === 'name'){ const std = pick(['iec', 'ansi']); return {q:`ما معنى هذا الرمز <span class="std-b">${std === 'iec' ? 'IEC' : 'ANSI/NEMA'}</span>؟<div class="sym-q">${DR.symFig(std, c.k)}</div>`, o:opts.map(x => x.ar), a, why:`${c.ar} (<span class="term">${esc(c.en)}</span>).`}; }
   const from = mode === 'i2a' ? 'iec' : 'ansi', to = mode === 'i2a' ? 'ansi' : 'iec';
-  return {q:`ده رمز <b>${c.ar}</b> في <span class="std-b">${from === 'iec' ? 'IEC' : 'ANSI/NEMA'}</span>. أنهي رمز هو نفسه في <span class="std-b">${to === 'iec' ? 'IEC' : 'ANSI/NEMA'}</span>؟<div class="sym-q">${DR.symFig(from, c.k)}</div>`, o:opts.map(x => DR.symFig(to, x.k, {label:x.en})), a, cls:'sym-opts', why:`${c.ar}: ${c.note}`};
+  return {q:`هذا رمز <b>${c.ar}</b> في <span class="std-b">${from === 'iec' ? 'IEC' : 'ANSI/NEMA'}</span>. أي رمز يقابله في <span class="std-b">${to === 'iec' ? 'IEC' : 'ANSI/NEMA'}</span>؟<div class="sym-q">${DR.symFig(from, c.k)}</div>`, o:opts.map(x => DR.symFig(to, x.k, {label:x.en})), a, cls:'sym-opts', why:`${c.ar}: ${c.note}`};
 }; })();
 
 /* ================= L3: cross reference sheets ================= */
@@ -1127,11 +1127,11 @@ DR.xrefSheets = function(host, opt){
   const k1ref = `/3.${DR.colOf(pg3.sheet, coil.x)}`, f2ref = `/3.${DR.colOf(pg3.sheet, f2c.x)}`;
   const pg3b = DR.iecPage(DR.defDOL(), {x:340, y:0, page:3, title:'Control · Motor M1', idp:'p3', minW:470, mirrorExtra:{K1:[['kno', '1', '2', `/2.${colK}`, 'pw-K1'], ['kno', '3', '4', `/2.${colK}`, 'pw-K1'], ['kno', '5', '6', `/2.${colK}`, 'pw-K1']]}, extRef:{F2:{ref:`/2.${colK}`, go:'pw-F2'}}});
   const svg = DR.drawPower({x:0, y:0, sheet:true, w:320, h:pg3b.h, cols:6, cx:150, k1ref, k1go:pg3b.M.coilOf('K1').id, f2ref, f2go:pg3b.M.els.find(e => e.el.dev === 'F2' && e.el.t[0] === '95').id}) + pg3b.svg;
-  host.innerHTML = `<div class="xv"></div><div class="info" aria-live="polite"><h4>دوس على أي مرجع أزرق</h4>تحت كل كونتاكت مكتوب مكان الكويل بتاعه (زي <span class="eq">${k1ref}</span>)، وتحت كل كويل جدول بكل الكونتاكتات بتاعته وأماكنها. دوس على المرجع والرسمة هتنط للمكان.</div><p class="chal">نُط <b>4</b> نطّات على الأقل: منهم واحدة من كونتاكت لكويل، وواحدة من جدول الكويل لكونتاكت.</p>`;
+  host.innerHTML = `<div class="xv"></div><div class="info" aria-live="polite"><h4>اضغط على أي مرجع أزرق</h4>تحت كل تلامس مكتوب مكان ملفه (مثل <span class="eq">${k1ref}</span>)، وتحت كل ملف جدول بكل تلامساته وأماكنها. اضغط على المرجع فتنتقل الرسمة إلى المكان.</div><p class="chal">تنقّل <b>4</b> مرات على الأقل: منها مرة من تلامس إلى ملف، ومرة من جدول الملف إلى تلامس.</p>`;
   const fin = chal(host, '.chal', L, opt.task || 'xref');
   const v = DR.viewer($('.xv', host), {w:340 + pg3b.w, h:pg3b.h, svg, title:'صفحة 2: القوى · صفحة 3: التحكم', maxH:520});
   const done = {n:0, toCoil:0, toContact:0}; let tmr = 0;
-  const desc = el => { if (!el) return ''; if (el.id && el.id.startsWith('pw-')) return `<span class="term">${el.id.slice(3).replace(/^/, '-')}</span> في صفحة 2 (دايرة القوى)`; const e = pg3b.M.elById(el.id); return e ? `<span class="term">${esc(e.el.tag)} ${esc((e.el.t || []).join('-'))}</span> في <span class="eq">/3.${DR.colOf(pg3b.sheet, e.x)}</span>` : ''; };
+  const desc = el => { if (!el) return ''; if (el.id && el.id.startsWith('pw-')) return `<span class="term">${el.id.slice(3).replace(/^/, '-')}</span> في صفحة 2 (دائرة القوى)`; const e = pg3b.M.elById(el.id); return e ? `<span class="term">${esc(e.el.tag)} ${esc((e.el.t || []).join('-'))}</span> في <span class="eq">/3.${DR.colOf(pg3b.sheet, e.x)}</span>` : ''; };
   v.port.addEventListener('click', e => {
     const g = e.target.closest('[data-goto]'); if (!g) return;
     const id = g.dataset.goto, el = v.svg.getElementById ? v.svg.getElementById(id) : v.q('#' + id); if (!el) return;
@@ -1140,34 +1140,34 @@ DR.xrefSheets = function(host, opt){
     v.qa('.hl').forEach(x => x.classList.remove('hl')); el.classList.add('hl'); clearTimeout(tmr); tmr = setTimeout(() => el.classList.remove('hl'), 3200);
     v.focusEl(el, 2.2);
     done.n++; if (toCoil) done.toCoil++; if (fromMirror || id.startsWith('pw-') && !toCoil) done.toContact++;
-    $('.info', host).innerHTML = `<h4>نطّيت لـ ${desc(el)}</h4>${toCoil ? 'ده الكويل اللي بيحرّك الكونتاكت ده. بص تحته على جدول الكونتاكتات (Contact mirror): كل كونتاكت ومكانه.' : 'ده الكونتاكت. المرجع اللي تحته بيرجّعك للكويل أو للجهاز اللي بيحرّكه.'} <span class="muted">(${done.n} نطّات)</span>`;
+    $('.info', host).innerHTML = `<h4>انتقلت إلى ${desc(el)}</h4>${toCoil ? 'هذا هو الملف الذي يحرّك هذا التلامس. انظر تحته إلى جدول التلامسات (Contact mirror): كل تلامس ومكانه.' : 'هذا هو التلامس. والمرجع تحته يعيدك إلى الملف أو الجهاز الذي يحرّكه.'} <span class="muted">(${done.n} تنقّلات)</span>`;
     if (done.n >= 4 && done.toCoil >= 1 && done.toContact >= 1) fin();
   });
   return {v, M:pg3b.M, done, jump(sel){ const g = v.q(sel); if (g) g.dispatchEvent(new MouseEvent('click', {bubbles:true})); }};
 };
 DR.numGen = (() => { const pool = [
-  () => { const sq = 1 + Math.floor(Math.random() * 8), f = pick([[1, 2], [3, 4]]); const nc = f[0] === 1; return {q:`كونتاكت مساعد أطرافه <span class="term">${sq}${f[0]}-${sq}${f[1]}</span>. ده:`, o:['NC (مقفول)', 'NO (مفتوح)', 'كويل', 'كونتاكت قوى'], a:nc ? 0 : 1, why:`الرقم التاني (الوظيفة): ⁦1-2⁩ = NC و ⁦3-4⁩ = NO. والرقم الأول (${sq}) ترتيب الكونتاكت.`}; },
-  () => ({q:'أطراف كويل الكونتاكتور في IEC:', o:['A1 و A2', '13 و 14', '95 و 96', 'L و N'], a:0, why:'الكويل دايمًا A1 و A2.'}),
-  () => ({q:'أطراف كونتاكت الأوفرلود اللي بيفصل الكويل (NC):', o:['95-96', '97-98', '13-14', 'A1-A2'], a:0, why:'⁦95-96⁩ NC في سكة الكويل، و ⁦97-98⁩ NO للمبة العطل.'}),
-  () => ({q:'الأوفرلود فصل. اللمبة اللي متوصّلة على <span class="term">97-98</span> هتعمل إيه؟', o:['هتنوّر', 'هتطفي', 'مش هيحصل حاجة', 'هتفصل الفيوز'], a:0, why:'⁦97-98⁩ NO بيقفل لما الأوفرلود يفصل فاللمبة تنوّر.'}),
-  () => ({q:'أطراف القوى الرئيسية في الكونتاكتور:', o:['1-2، 3-4، 5-6', '13-14، 21-22', 'A1-A2', '95-96، 97-98'], a:0, why:'الدخل 1 و 3 و 5 من فوق، والخرج 2 و 4 و 6 من تحت.'}),
-  () => { const it = pick([['-K', 'ريلاي أو كونتاكتور'], ['-Q', 'قاطع أو جهاز فصل قوى'], ['-F', 'حماية (فيوز / أوفرلود / MCB)'], ['-S', 'زرار أو مفتاح'], ['-H', 'لمبة بيان'], ['-M', 'موتور'], ['-B', 'حساس'], ['-X', 'ترمنال'], ['-W', 'كابل'], ['-T', 'محوّل'], ['-A', 'PLC أو موديول']]); const n = 1 + Math.floor(Math.random() * 9); const others = shuffle(['ريلاي أو كونتاكتور', 'قاطع أو جهاز فصل قوى', 'حماية (فيوز / أوفرلود / MCB)', 'زرار أو مفتاح', 'لمبة بيان', 'موتور', 'حساس', 'ترمنال', 'كابل', 'محوّل', 'PLC أو موديول'].filter(x => x !== it[1])).slice(0, 3); const o = shuffle([it[1]].concat(others)); return {q:`التاج <span class="term">${it[0]}${n}</span> في رسمة IEC غالبًا يعني:`, o, a:o.indexOf(it[1]), why:`الحرف الأول بيقول نوع الجهاز: <span class="term">${it[0]}</span> = ${it[1]}.`}; },
-  () => { const it = pick([['CR', 'ريلاي تحكم'], ['M', 'كونتاكتور موتور (Starter)'], ['OL', 'أوفرلود'], ['PB', 'زرار'], ['LS', 'ليميت سويتش'], ['TR', 'تايمر'], ['FU', 'فيوز'], ['CB', 'قاطع']]); const all = ['ريلاي تحكم', 'كونتاكتور موتور (Starter)', 'أوفرلود', 'زرار', 'ليميت سويتش', 'تايمر', 'فيوز', 'قاطع']; const o = shuffle([it[1]].concat(shuffle(all.filter(x => x !== it[1])).slice(0, 3))); return {q:`في رسمة أمريكاني (NEMA) الجهاز <span class="term">${it[0]}</span> يعني:`, o, a:o.indexOf(it[1]), why:`${it[0]} = ${it[1]}.`}; },
-  () => { const p = 2 + Math.floor(Math.random() * 8), c = 1 + Math.floor(Math.random() * 8); return {q:`جنب كونتاكت مكتوب <span class="term">/${p}.${c}</span>. معناها:`, o:[`الكويل بتاعه في صفحة ${p} عمود ${c}`, `السلك رقم ${p}${c}`, `الترمنال ${p} في الشريط ${c}`, `الكونتاكت رقم ${c} من ${p}`], a:0, why:'المرجع = صفحة.عمود. الأرقام اللي فوق إطار الصفحة هي أرقام الأعمدة.'}; },
-  () => ({q:'المكتوب <span class="term">-K1:13</span> معناه:', o:['الطرف 13 على ⁦-K1⁩', 'السلك 13 في صفحة 1', 'الكونتاكتور رقم 13', 'العمود 13 في صفحة 1'], a:0, why:'الجهاز وبعده نقطتين وبعدهم رقم الطرف.'}),
-  () => ({q:'السلك اللي عليه فيرول <span class="term">104</span> من الطرفين معناه:', o:['رقم السلك', 'طوله 104 سم', 'مقطعه 1.04 mm²', 'رقم الترمنال اللي داخل عليه'], a:0, why:'رقم السلك بيتكتب على الفيرول من الناحيتين. كل سلك متوصّل بنفس النقطة الكهربية بياخد نفس الرقم.'})
+  () => { const sq = 1 + Math.floor(Math.random() * 8), f = pick([[1, 2], [3, 4]]); const nc = f[0] === 1; return {q:`تلامس مساعد أطرافه <span class="term">${sq}${f[0]}-${sq}${f[1]}</span>. هذا:`, o:['NC (مغلق)', 'NO (مفتوح)', 'ملف', 'تلامس قوى'], a:nc ? 0 : 1, why:`الرقم الثاني (الوظيفة): ⁦1-2⁩ = NC و⁦3-4⁩ = NO. والرقم الأول (${sq}) ترتيب التلامس.`}; },
+  () => ({q:'أطراف ملف الكونتاكتور في IEC:', o:['A1 و A2', '13 و 14', '95 و 96', 'L و N'], a:0, why:'الملف دائمًا A1 وA2.'}),
+  () => ({q:'أطراف تلامس الأوفرلود الذي يفصل الملف (NC):', o:['95-96', '97-98', '13-14', 'A1-A2'], a:0, why:'⁦95-96⁩ NC في مسار الملف، و⁦97-98⁩ NO لمصباح العطل.'}),
+  () => ({q:'فصل الأوفرلود. ماذا يفعل المصباح الموصّل على <span class="term">97-98</span>؟', o:['يضيء', 'ينطفئ', 'لا يحدث شيء', 'يفصل الفيوز'], a:0, why:'⁦97-98⁩ NO يُغلق عندما يفصل الأوفرلود فيضيء المصباح.'}),
+  () => ({q:'أطراف القوى الرئيسية في الكونتاكتور:', o:['1-2، 3-4، 5-6', '13-14، 21-22', 'A1-A2', '95-96، 97-98'], a:0, why:'الدخل 1 و3 و5 من أعلى، والخرج 2 و4 و6 من أسفل.'}),
+  () => { const it = pick([['-K', 'ريلاي أو كونتاكتور'], ['-Q', 'قاطع أو جهاز فصل قوى'], ['-F', 'حماية (فيوز / أوفرلود / MCB)'], ['-S', 'زر أو مفتاح'], ['-H', 'مصباح بيان'], ['-M', 'محرك'], ['-B', 'حساس'], ['-X', 'ترمنال'], ['-W', 'كابل'], ['-T', 'محوّل'], ['-A', 'PLC أو موديول']]); const n = 1 + Math.floor(Math.random() * 9); const others = shuffle(['ريلاي أو كونتاكتور', 'قاطع أو جهاز فصل قوى', 'حماية (فيوز / أوفرلود / MCB)', 'زر أو مفتاح', 'مصباح بيان', 'محرك', 'حساس', 'ترمنال', 'كابل', 'محوّل', 'PLC أو موديول'].filter(x => x !== it[1])).slice(0, 3); const o = shuffle([it[1]].concat(others)); return {q:`التاج <span class="term">${it[0]}${n}</span> في رسمة IEC يعني غالبًا:`, o, a:o.indexOf(it[1]), why:`الحرف الأول يبيّن نوع الجهاز: <span class="term">${it[0]}</span> = ${it[1]}.`}; },
+  () => { const it = pick([['CR', 'ريلاي تحكم'], ['M', 'كونتاكتور محرك (Starter)'], ['OL', 'أوفرلود'], ['PB', 'زر'], ['LS', 'ليمت سويتش'], ['TR', 'تايمر'], ['FU', 'فيوز'], ['CB', 'قاطع']]); const all = ['ريلاي تحكم', 'كونتاكتور محرك (Starter)', 'أوفرلود', 'زر', 'ليمت سويتش', 'تايمر', 'فيوز', 'قاطع']; const o = shuffle([it[1]].concat(shuffle(all.filter(x => x !== it[1])).slice(0, 3))); return {q:`في الرسمة الأمريكية (NEMA) الجهاز <span class="term">${it[0]}</span> يعني:`, o, a:o.indexOf(it[1]), why:`${it[0]} = ${it[1]}.`}; },
+  () => { const p = 2 + Math.floor(Math.random() * 8), c = 1 + Math.floor(Math.random() * 8); return {q:`بجانب تلامس مكتوب <span class="term">/${p}.${c}</span>. المعنى:`, o:[`ملفه في صفحة ${p} عمود ${c}`, `السلك رقم ${p}${c}`, `الترمنال ${p} في الشريط ${c}`, `التلامس رقم ${c} من ${p}`], a:0, why:'المرجع = صفحة.عمود. الأرقام فوق إطار الصفحة هي أرقام الأعمدة.'}; },
+  () => ({q:'المكتوب <span class="term">-K1:13</span> يعني:', o:['الطرف 13 على ⁦-K1⁩', 'السلك 13 في صفحة 1', 'الكونتاكتور رقم 13', 'العمود 13 في صفحة 1'], a:0, why:'الجهاز ثم نقطتان ثم رقم الطرف.'}),
+  () => ({q:'السلك الذي عليه فيرول <span class="term">104</span> من الطرفين يعني:', o:['رقم السلك', 'طوله 104 سم', 'مقطعه 1.04 mm²', 'رقم الترمنال الذي يدخل عليه'], a:0, why:'يُكتب رقم السلك على الفيرول من الجهتين. وكل سلك موصّل بالنقطة الكهربية نفسها يأخذ الرقم نفسه.'})
 ]; return () => pick(pool)(); })();
 
 /* ================= L4: control circuit simulator ================= */
 DR.ctlSim = function(host, opt){
   opt = opt || {}; const L = opt.lesson, rev = opt.kind === 'rev';
   const mk = rev ? DR.defREV : DR.defDOL;
-  const btns = rev ? [['S0', 'إيقاف', 'S0 · 11-12', 'pb-r'], ['S1', 'أمام FWD', 'S1 · 13-14', 'pb-g'], ['S2', 'ورا REV', 'S2 · 13-14', 'pb-g']] : [['S0', 'إيقاف Stop', 'S0 · 11-12', 'pb-r'], ['S1', 'تشغيل Start', 'S1 · 13-14', 'pb-g']];
-  const goals = rev ? [['fwd', 'شغّل لقدّام (FWD) والموتور يكمّل بعد ما تسيب الزرار'], ['lock', 'والموتور شغّال لقدّام، دوس REV: لازم ⁦-K2⁩ ميشتغلش (الإنترلوك)'], ['stop', 'وقّف بـ S0'], ['rv', 'شغّل لورا (REV)']] : [['seal', 'دوس Start وسيبه: الموتور يكمّل (التثبيت الذاتي)'], ['stop', 'وقّف بـ Stop'], ['trip', 'والموتور شغّال، اعمل Trip للأوفرلود: الموتور يقف ولمبة TRIP تنوّر'], ['again', 'اعمل Reset للأوفرلود وشغّل تاني']];
+  const btns = rev ? [['S0', 'إيقاف', 'S0 · 11-12', 'pb-r'], ['S1', 'أمام FWD', 'S1 · 13-14', 'pb-g'], ['S2', 'خلف REV', 'S2 · 13-14', 'pb-g']] : [['S0', 'إيقاف Stop', 'S0 · 11-12', 'pb-r'], ['S1', 'تشغيل Start', 'S1 · 13-14', 'pb-g']];
+  const goals = rev ? [['fwd', 'شغّل للأمام (FWD) ويستمر المحرك بعد ترك الزر'], ['lock', 'والمحرك يعمل للأمام، اضغط REV: يجب ألا يعمل ⁦-K2⁩ (الإنترلوك)'], ['stop', 'أوقف بـ S0'], ['rv', 'شغّل للخلف (REV)']] : [['seal', 'اضغط Start واتركه: يستمر المحرك (التثبيت الذاتي)'], ['stop', 'أوقف بـ Stop'], ['trip', 'والمحرك يعمل، افصل الأوفرلود (Trip): يتوقف المحرك ويضيء مصباح TRIP'], ['again', 'أعد ضبط الأوفرلود (Reset) وشغّل مرة أخرى']];
   const got = {}; let std = 'iec', page, M, R, st = {on:{}, prev:{}};
-  host.innerHTML = `<div class="std-row" role="group" aria-label="نوع الرسمة"><button type="button" class="btn" data-std="iec" aria-pressed="true">IEC (رأسي)</button><button type="button" class="btn" data-std="ansi" aria-pressed="false">NEMA Ladder (أفقي)</button></div><div class="sv"></div><div class="legend"><span><i class="l"></i>عليه جهد (L)</span><span><i class="f"></i>تيار ماشي</span><span><i class="o"></i>كونتاكت مقفول دلوقتي</span></div><div class="sim-ctl">${btns.map(b => `<button type="button" class="btn ${b[3]}" data-pb="${b[0]}">${b[1]}<small>⁦${b[2]}⁩</small></button>`).join('')}<button type="button" class="btn tog" data-ol aria-pressed="false">Trip أوفرلود<small>F2</small></button></div><div class="motor-st"><svg viewBox="0 0 54 54" aria-hidden="true"><circle cx="27" cy="27" r="24" fill="var(--panel)" stroke="var(--dink)" stroke-width="2"/><g class="mspin"><path d="M27 8V46M8 27H46" stroke="var(--accent)" stroke-width="5" stroke-linecap="round"/></g><circle cx="27" cy="27" r="5" fill="var(--dink)"/></svg><div class="statline sm-st" aria-live="polite"></div></div><div class="lamps"></div><ul class="steps-l">${goals.map(g => `<li data-g="${g[0]}">${g[1]}</li>`).join('')}</ul><p class="chal">نفّذ الخطوات اللي فوق كلها.</p>`;
+  host.innerHTML = `<div class="std-row" role="group" aria-label="نوع الرسمة"><button type="button" class="btn" data-std="iec" aria-pressed="true">IEC (رأسي)</button><button type="button" class="btn" data-std="ansi" aria-pressed="false">NEMA Ladder (أفقي)</button></div><div class="sv"></div><div class="legend"><span><i class="l"></i>عليه جهد (L)</span><span><i class="f"></i>تيار يسري</span><span><i class="o"></i>تلامس مغلق الآن</span></div><div class="sim-ctl">${btns.map(b => `<button type="button" class="btn ${b[3]}" data-pb="${b[0]}">${b[1]}<small>⁦${b[2]}⁩</small></button>`).join('')}<button type="button" class="btn tog" data-ol aria-pressed="false">Trip أوفرلود<small>F2</small></button></div><div class="motor-st"><svg viewBox="0 0 54 54" aria-hidden="true"><circle cx="27" cy="27" r="24" fill="var(--panel)" stroke="var(--dink)" stroke-width="2"/><g class="mspin"><path d="M27 8V46M8 27H46" stroke="var(--accent)" stroke-width="5" stroke-linecap="round"/></g><circle cx="27" cy="27" r="5" fill="var(--dink)"/></svg><div class="statline sm-st" aria-live="polite"></div></div><div class="lamps"></div><ul class="steps-l">${goals.map(g => `<li data-g="${g[0]}">${g[1]}</li>`).join('')}</ul><p class="chal">نفّذ كل الخطوات السابقة.</p>`;
   const fin = chal(host, '.chal', L, opt.task || (rev ? 'rev' : 'dol'));
-  const v = DR.viewer($('.sv', host), {w:100, h:100, svg:'', title:'', label:'دايرة التحكم', maxH:540});
+  const v = DR.viewer($('.sv', host), {w:100, h:100, svg:'', title:'', label:'دائرة التحكم', maxH:540});
   const TAP = rev ? ['S0', 'S1', 'S2'] : ['S0', 'S1'];
   function build(){
     const def = mk();
@@ -1183,7 +1183,7 @@ DR.ctlSim = function(host, opt){
     const lit = id => !!(R.lit[id]);
     const lamps = rev ? [['H1', 'FWD', 'g'], ['H2', 'REV', 'g'], ['H3', 'TRIP', 'y']] : [['H1', 'RUN', 'g'], ['H2', 'STOP', 'r'], ['H3', 'TRIP', 'y']];
     $('.lamps', host).innerHTML = lamps.map(l => `<span class="lamp ${l[2]}${lit(l[0]) ? ' on' : ''}"><i></i><span class="term">-${l[0]}</span> ${l[1]}</span>`).join('');
-    const msg = st.on.F2 ? '<b>الأوفرلود فاصل:</b> كونتاكت ⁦95-96⁩ فتح فالكويل فقد الجهد، و ⁦97-98⁩ قفل فلمبة TRIP نوّرت.' : run ? (rev ? (k1 ? '<b>شغّال لقدّام:</b> ⁦-K1⁩ ماسك نفسه بـ ⁦13-14⁩، و ⁦-K1⁩ ⁦21-22⁩ فتح في سكة ⁦-K2⁩ (إنترلوك).' : '<b>شغّال لورا:</b> ⁦-K2⁩ ماسك نفسه، و ⁦-K2⁩ ⁦21-22⁩ فاتح في سكة ⁦-K1⁩.') : (st.on.S1 ? '<b>الكويل ⁦-K1⁩ واخد جهد</b> من سكة ⁦S1⁩ وكمان من ⁦-K1⁩ ⁦13-14⁩ اللي لسه قفل.' : '<b>شغّال ومثبّت:</b> التيار ماشي في ⁦-K1⁩ ⁦13-14⁩ بدل الزرار.')) : '<b>واقف:</b> اتبع الخط الأحمر: الجهد واقف عند أول كونتاكت مفتوح.';
+    const msg = st.on.F2 ? '<b>الأوفرلود فاصل:</b> فتح التلامس ⁦95-96⁩ ففقد الملف الجهد، وأغلق ⁦97-98⁩ فأضاء مصباح TRIP.' : run ? (rev ? (k1 ? '<b>يعمل للأمام:</b> ⁦-K1⁩ يثبّت نفسه بـ ⁦13-14⁩، و⁦-K1⁩ ⁦21-22⁩ فتح في مسار ⁦-K2⁩ (إنترلوك).' : '<b>يعمل للخلف:</b> ⁦-K2⁩ يثبّت نفسه، و⁦-K2⁩ ⁦21-22⁩ مفتوح في مسار ⁦-K1⁩.') : (st.on.S1 ? '<b>الملف ⁦-K1⁩ يأخذ جهدًا</b> من مسار ⁦S1⁩ ومن ⁦-K1⁩ ⁦13-14⁩ الذي أُغلق للتو.' : '<b>يعمل ومثبّت:</b> التيار يسري في ⁦-K1⁩ ⁦13-14⁩ بدل الزر.')) : '<b>متوقف:</b> اتبع الخط الأحمر: يتوقف الجهد عند أول تلامس مفتوح.';
     $('.sm-st', host).innerHTML = msg; $('.sm-st', host).className = 'statline sm-st ' + (st.on.F2 ? 'bad' : run ? 'ok' : '');
     $$('[data-pb]', host).forEach(b => b.classList.toggle('down', !!st.on[b.dataset.pb]));
     $('[data-ol]', host).setAttribute('aria-pressed', String(!!st.on.F2)); $('[data-ol]', host).innerHTML = st.on.F2 ? 'Reset أوفرلود<small>F2</small>' : 'Trip أوفرلود<small>F2</small>';
@@ -1224,7 +1224,7 @@ DR.ctlSim = function(host, opt){
 /* reading a circuit one path at a time */
 DR.readSteps = function(host, sim, steps){
   let i = -1;
-  host.innerHTML = `<div class="read-steps"><div class="rs-t" aria-live="polite">دوس <b>ابدأ القراية</b> وهنمشي على الدايرة مسار مسار. الجزء اللي بنتكلم عنه هيتعلّم باللون الأزرق.</div><div class="rs-nav"><button type="button" class="btn" data-r="prev" disabled>→ اللي قبله</button><button type="button" class="btn pri" data-r="next">ابدأ القراية ←</button></div></div>`;
+  host.innerHTML = `<div class="read-steps"><div class="rs-t" aria-live="polite">اضغط <b>ابدأ القراءة</b> وسنمر على الدائرة مسارًا مسارًا. ويُعلَّم الجزء الذي نتحدث عنه باللون الأزرق.</div><div class="rs-nav"><button type="button" class="btn" data-r="prev" disabled>→ السابق</button><button type="button" class="btn pri" data-r="next">ابدأ القراءة ←</button></div></div>`;
   function show(){
     const s = steps[i]; const svg = sim.v.svg; svg.querySelectorAll('.hl').forEach(x => x.classList.remove('hl'));
     const els = []; s.on.forEach(([tag, t0, k]) => sim.M.els.forEach(e => { if ((e.el.itag || e.el.tag) === tag && (sim.M.std === 'ansi' ? (!k || e.el.k === k) : (!t0 || (e.el.t || [])[0] === t0))) els.push(e); }));
@@ -1232,7 +1232,7 @@ DR.readSteps = function(host, sim, steps){
     els.forEach(e => { const g = svg.querySelector(`[data-e="${e.i}"]`); if (g) g.classList.add('hl'); const b = {x:e.x - 30, y:e.y - 30, w:60, h:60}; box = box ? {x:Math.min(box.x, b.x), y:Math.min(box.y, b.y), w:Math.max(box.x + box.w, b.x + b.w) - Math.min(box.x, b.x), h:Math.max(box.y + box.h, b.y + b.h) - Math.min(box.y, b.y)} : b; });
     if (box) sim.v.focus(box, 1.3);
     $('.rs-t', host).innerHTML = `<b class="rs-n">${i + 1}/${steps.length} · ${s.t}</b><br>${s.d}`;
-    $('[data-r=prev]', host).disabled = i <= 0; $('[data-r=next]', host).textContent = i < steps.length - 1 ? 'اللي بعده ←' : 'من الأول ←';
+    $('[data-r=prev]', host).disabled = i <= 0; $('[data-r=next]', host).textContent = i < steps.length - 1 ? 'التالي ←' : 'من البداية ←';
   }
   onAct(host, '[data-r]', b => { if (b.dataset.r === 'next') i = i < steps.length - 1 ? i + 1 : 0; else i = Math.max(0, i - 1); show(); });
   return {next(){ $('[data-r=next]', host).click(); }, get i(){ return i; }};
@@ -1243,11 +1243,11 @@ DR.sldExplorer = function(host, opt){
   opt = opt || {}; const L = opt.lesson, d = DR.drawSLD(), seen = new Set();
   const PATH = ['tr', 'acb', 'mdb', 'q3', 'w03', 'mcc', 'q12', 'vfd', 'm102'];
   let mode = 'x', k = 0;
-  host.innerHTML = `<div class="std-row" role="group"><button type="button" class="btn" data-m="x" aria-pressed="true">استكشف: دوس على أي جزء</button><button type="button" class="btn" data-m="t" aria-pressed="false">تحدّي: من المحوّل لـ ⁦M-102⁩</button></div><div class="sv"></div><div class="info" aria-live="polite"><h4>دوس على أي جزء في الرسمة</h4>كل قاطع وكابل وبسبار عليه بيانات. دوس عليه وهتعرف كل رقم معناه إيه.</div><p class="chal c1">اقرا <b>8</b> أجزاء على الأقل من الرسمة.</p><p class="chal c2">في التحدّي: دوس على الأجزاء اللي الكهربا بتعدّي عليها بالترتيب من <b>المحوّل</b> لحد الموتور <b>⁦M-102⁩</b>.</p>`;
+  host.innerHTML = `<div class="std-row" role="group"><button type="button" class="btn" data-m="x" aria-pressed="true">استكشف: اضغط على أي جزء</button><button type="button" class="btn" data-m="t" aria-pressed="false">تحدٍّ: من المحوّل إلى ⁦M-102⁩</button></div><div class="sv"></div><div class="info" aria-live="polite"><h4>اضغط على أي جزء في الرسمة</h4>على كل قاطع وكابل وبسبار بيانات. اضغط عليه لتعرف معنى كل رقم.</div><p class="chal c1">اقرأ <b>8</b> أجزاء على الأقل من الرسمة.</p><p class="chal c2">في التحدّي: اضغط بالترتيب على الأجزاء التي تمر بها الكهرباء من <b>المحوّل</b> حتى المحرك <b>⁦M-102⁩</b>.</p>`;
   const f1 = chal(host, '.c1', L, 'sld'), f2 = chal(host, '.c2', L, 'trace');
   const v = DR.viewer($('.sv', host), {w:d.w, h:d.h, svg:d.svg, title:'Single line · المصنع', maxH:560});
   const info = $('.info', host);
-  function setMode(m){ mode = m; k = 0; $$('[data-m]', host).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === m))); v.qa('.hl').forEach(x => x.classList.remove('hl')); info.innerHTML = m === 't' ? `<h4>التحدّي</h4>ابدأ بالمحوّل <b>TR-1</b> ودوس على كل جزء الكهربا بتعدّي عليه لحد <b>⁦M-102⁩</b>. (0/${PATH.length})` : '<h4>استكشف</h4>دوس على أي جزء.'; if (m === 't') v.fit(); }
+  function setMode(m){ mode = m; k = 0; $$('[data-m]', host).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === m))); v.qa('.hl').forEach(x => x.classList.remove('hl')); info.innerHTML = m === 't' ? `<h4>التحدّي</h4>ابدأ بالمحوّل <b>TR-1</b> واضغط على كل جزء تمر به الكهرباء حتى <b>⁦M-102⁩</b>. (0/${PATH.length})` : '<h4>استكشف</h4>اضغط على أي جزء.'; if (m === 't') v.fit(); }
   v.port.addEventListener('click', e => {
     const g = e.target.closest('.hot[data-i]'); if (!g) return; const id = g.dataset.i, it = DR.SLD_ITEMS[id];
     if (mode === 'x'){
@@ -1255,9 +1255,9 @@ DR.sldExplorer = function(host, opt){
       info.innerHTML = `<h4>${it[0]}</h4>${it[1]} <span class="muted">(${seen.size} من 8)</span>`;
       if (seen.size >= 8) f1();
     } else {
-      if (id === PATH[k]){ g.classList.add('hl'); k++; info.innerHTML = `<h4>صح: ${it[0]} (${k}/${PATH.length})</h4>${k < PATH.length ? 'كمّل: الكهربا بتروح فين بعده؟' : '<b>تمام!</b> ده المسار كله: محوّل ← قاطع رئيسي ← بسبار MDB ← قاطع المغذّي ← الكابل ← بسبار MCC ← قاطع الموتور ← الإنفرتر ← الموتور.'}`; if (k >= PATH.length) f2(); }
-      else if (PATH.indexOf(id) >= 0 && PATH.indexOf(id) < k){ info.innerHTML = `<h4>${it[0]}</h4>ده خلّصته. اللي بعده؟ (${k}/${PATH.length})`; }
-      else info.innerHTML = `<h4>مش ده (${k}/${PATH.length})</h4>${it[0]} مش على الطريق ده${k === 0 ? '. ابدأ من المحوّل TR-1.' : '. ارجع للخط اللي بيوصل لـ MCC-1 ومنه لـ M-102.'}`;
+      if (id === PATH[k]){ g.classList.add('hl'); k++; info.innerHTML = `<h4>الصحيح: ${it[0]} (${k}/${PATH.length})</h4>${k < PATH.length ? 'تابع: إلى أين تذهب الكهرباء بعده؟' : '<b>أحسنت!</b> هذا هو المسار كله: محوّل ← قاطع رئيسي ← بسبار MDB ← قاطع المغذّي ← الكابل ← بسبار MCC ← قاطع المحرك ← الانفرتر ← المحرك.'}`; if (k >= PATH.length) f2(); }
+      else if (PATH.indexOf(id) >= 0 && PATH.indexOf(id) < k){ info.innerHTML = `<h4>${it[0]}</h4>أنهيت هذا. ما التالي؟ (${k}/${PATH.length})`; }
+      else info.innerHTML = `<h4>ليس هذا (${k}/${PATH.length})</h4>${it[0]} ليس على هذا الطريق${k === 0 ? '. ابدأ من المحوّل TR-1.' : '. عُد إلى الخط الذي يصل إلى MCC-1 ومنه إلى M-102.'}`;
     }
   });
   onAct(host, '[data-m]', b => setMode(b.dataset.m));
@@ -1265,28 +1265,28 @@ DR.sldExplorer = function(host, opt){
   return {v, tap, setMode, PATH, seen};
 };
 DR.powerCompare = function(host){
-  host.innerHTML = `<div class="std-row" role="group"><button type="button" class="btn" data-p="m" aria-pressed="true">دايرة القوى (3 خطوط)</button><button type="button" class="btn" data-p="s" aria-pressed="false">نفس المغذّي Single line</button></div><div class="sv"></div>`;
+  host.innerHTML = `<div class="std-row" role="group"><button type="button" class="btn" data-p="m" aria-pressed="true">دائرة القوى (3 خطوط)</button><button type="button" class="btn" data-p="s" aria-pressed="false">المغذّي نفسه Single line</button></div><div class="sv"></div>`;
   const v = DR.viewer($('.sv', host), {w:320, h:480, svg:DR.drawPower({sheet:false, cx:150}), title:'Power circuit', maxH:480});
   onAct(host, '[data-p]', b => { $$('[data-p]', host).forEach(x => x.setAttribute('aria-pressed', String(x === b))); if (b.dataset.p === 'm') v.set(DR.drawPower({sheet:false, cx:150}), 320, 480); else v.set(DR.drawPowerSL({}), 320, 480); $('.vw-t', host).textContent = b.dataset.p === 'm' ? 'Power circuit' : 'Single line'; });
   return v;
 };
 DR.rateGen = (() => { const kva = [500, 630, 800, 1000, 1250, 1600, 2000]; const pool = [
-  () => { const s = pick(kva), I = s / (1.732 * 0.4); const r = Math.round(I); return {q:`محوّل <span class="eq">${s} kVA · 11/0.4 kV</span>. تيار الثانوي الكامل تقريبًا كام أمبير؟`, input:true, unit:'A', check:x => Math.abs(x - I) / I <= 0.04, ans:`${r} A`, why:`I = S ÷ (1.732 × V) = ${s} ÷ (1.732 × 0.4) ≈ ${r} A.`}; },
-  () => { const s = pick(kva), uk = pick([4, 5, 6]), I = s / (1.732 * 0.4), Isc = I / (uk / 100) / 1000; const r = Math.round(Isc * 10) / 10; return {q:`محوّل <span class="eq">${s} kVA · 400 V · uk ${uk}%</span>. تيار القصر عند أطرافه تقريبًا كام kA؟`, input:true, unit:'kA', check:x => Math.abs(x - Isc) / Isc <= 0.06, ans:`${r} kA`, why:`I = ${Math.round(I)} A، و Isc ≈ I ÷ uk = ${Math.round(I)} ÷ ${uk / 100} ≈ ${r} kA. القاطع الرئيسي لازم الـ Icu بتاعه أكبر من كده.`}; },
-  () => { const kw = pick([5.5, 7.5, 11, 15, 22, 30, 37, 45, 55]), I = kw * 1000 / (1.732 * 400 * 0.85 * 0.9); const r = Math.round(I); return {q:`موتور <span class="eq">${kw} kW · 400 V</span>. تياره تقريبًا (pf 0.85 وكفاءة 0.9)؟`, input:true, unit:'A', check:x => Math.abs(x - I) / I <= 0.12, ans:`≈ ${r} A`, why:`I = P ÷ (1.732 × V × pf × η) ≈ ${r} A. وقاعدة سريعة على 400V: حوالي <b>2 A لكل kW</b>.`}; },
-  () => ({q:'على الرسمة مكتوب <span class="eq">4C×25 mm² Cu/XLPE/SWA/PVC</span>. الـ <b>SWA</b> معناها:', o:['مسلّح بسلك صلب', 'عازل سيليكون للحرارة', 'كابل مرن بشيلد', 'شيلد نحاس مضفّر'], a:0, why:'SWA = Steel Wire Armour، طبقة سلك صلب بتحمي الكابل ميكانيكيًا ومعاها بيتعمل الأرضي في الجلاند.'}),
-  () => ({q:'كابل <span class="eq">4C×185 mm²</span>. الـ 185 هي:', o:['مقطع العرق الواحد', 'مجموع مقطع العروق', 'طول الكابل بالمتر', 'التيار المسموح بالأمبير'], a:0, why:'4C = 4 عروق، و185 = مقطع كل عرق.'}),
-  () => ({q:'قاطع <span class="eq">MCCB 250 A · Ir 0.8</span>. هيفصل أوفرلود على حوالي كام؟', o:['200 A', '250 A', '312 A', '80 A'], a:0, why:'Ir × In = 0.8 × 250 = 200 A. الـ In مقاس الفريم والـ Ir الظبط.'}),
-  () => ({q:'قاطع مكتوب عليه <span class="eq">Icu 36 kA</span>. ده:', o:['أقصى تيار قصر يفصله', 'التيار المقنّن بتاعه', 'تيار فصل الأوفرلود', 'أقصى تيار يعدّي ساعة'], a:0, why:'Icu = Ultimate breaking capacity. لازم يكون أكبر من تيار القصر المتوقّع عند مكانه.'}),
-  () => ({q:'الشرط المايلة الـ 3 <span class="eq">///</span> على خط في الـ Single line معناها:', o:['الخط ده 3 فازات', '3 كابلات احتياطي', 'كابل تالف', 'أرضي'], a:0, why:'الـ Single line بيرسم خط واحد، والشرط بتقولك هو بيمثّل كام موصّل.'}),
-  () => ({q:'محوّل مكتوب عليه <span class="eq">Dyn11</span>. الـ <b>n</b> معناها:', o:['النيوترال طالع من الثانوي', 'التردد 50Hz', 'عدد لفات الثانوي', 'تبريد طبيعي من غير مروحة'], a:0, why:'D = الابتدائي دلتا، y = الثانوي ستار، n = نيوترال طالع، و11 = فرق الزاوية 330°.'}),
-  () => ({q:'كونتاكتور مكتوب عليه <span class="eq">AC-3 18 A</span>. الـ AC-3 معناها:', o:['فئة لتشغيل موتورات القفص', 'جهد الكويل 230V AC', 'عدد الأقطاب الرئيسية', 'الكونتاكتور للأحمال المقاومة بس'], a:0, why:'AC-1 أحمال مقاومة، AC-3 موتورات قفص سنجابي بتتفصل وهي دايرة.'})
+  () => { const s = pick(kva), I = s / (1.732 * 0.4); const r = Math.round(I); return {q:`محوّل <span class="eq">${s} kVA · 11/0.4 kV</span>. كم أمبيرًا تقريبًا تيار الثانوي الكامل؟`, input:true, unit:'A', check:x => Math.abs(x - I) / I <= 0.04, ans:`${r} A`, why:`I = S ÷ (1.732 × V) = ${s} ÷ (1.732 × 0.4) ≈ ${r} A.`}; },
+  () => { const s = pick(kva), uk = pick([4, 5, 6]), I = s / (1.732 * 0.4), Isc = I / (uk / 100) / 1000; const r = Math.round(Isc * 10) / 10; return {q:`محوّل <span class="eq">${s} kVA · 400 V · uk ${uk}%</span>. كم kA تقريبًا تيار القصر عند أطرافه؟`, input:true, unit:'kA', check:x => Math.abs(x - Isc) / Isc <= 0.06, ans:`${r} kA`, why:`I = ${Math.round(I)} A، وIsc ≈ I ÷ uk = ${Math.round(I)} ÷ ${uk / 100} ≈ ${r} kA. يجب أن يكون Icu القاطع الرئيسي أكبر من ذلك.`}; },
+  () => { const kw = pick([5.5, 7.5, 11, 15, 22, 30, 37, 45, 55]), I = kw * 1000 / (1.732 * 400 * 0.85 * 0.9); const r = Math.round(I); return {q:`محرك <span class="eq">${kw} kW · 400 V</span>. كم تياره تقريبًا (pf 0.85 وكفاءة 0.9)؟`, input:true, unit:'A', check:x => Math.abs(x - I) / I <= 0.12, ans:`≈ ${r} A`, why:`I = P ÷ (1.732 × V × pf × η) ≈ ${r} A. وقاعدة سريعة على 400V: نحو <b>2 A لكل kW</b>.`}; },
+  () => ({q:'على الرسمة مكتوب <span class="eq">4C×25 mm² Cu/XLPE/SWA/PVC</span>. <b>SWA</b> تعني:', o:['مسلّح بسلك صلب', 'عازل سيليكون للحرارة', 'كابل مرن بشيلد', 'شيلد نحاس مضفّر'], a:0, why:'SWA = Steel Wire Armour، طبقة سلك صلب تحمي الكابل ميكانيكيًا، ومن خلالها يُوصَّل الأرضي في الجلاند.'}),
+  () => ({q:'كابل <span class="eq">4C×185 mm²</span>. الرقم 185 هو:', o:['مقطع العرق الواحد', 'مجموع مقطع العروق', 'طول الكابل بالمتر', 'التيار المسموح بالأمبير'], a:0, why:'4C = 4 عروق، و185 = مقطع كل عرق.'}),
+  () => ({q:'قاطع <span class="eq">MCCB 250 A · Ir 0.8</span>. عند كم تقريبًا يفصل الأوفرلود؟', o:['200 A', '250 A', '312 A', '80 A'], a:0, why:'Ir × In = 0.8 × 250 = 200 A. الـ In مقاس الإطار والـ Ir الضبط.'}),
+  () => ({q:'قاطع مكتوب عليه <span class="eq">Icu 36 kA</span>. هذا:', o:['أقصى تيار قصر يفصله', 'تياره المقنّن', 'تيار فصل الأوفرلود', 'أقصى تيار يمر لمدة ساعة'], a:0, why:'Icu = Ultimate breaking capacity. يجب أن يكون أكبر من تيار القصر المتوقّع في مكانه.'}),
+  () => ({q:'الشرطات المائلة الثلاث <span class="eq">///</span> على خط في الـ Single line تعني:', o:['هذا الخط 3 فازات', '3 كابلات احتياطي', 'كابل تالف', 'أرضي'], a:0, why:'الـ Single line ترسم خطًا واحدًا، والشرطات تبيّن كم موصّلًا يمثّل.'}),
+  () => ({q:'محوّل مكتوب عليه <span class="eq">Dyn11</span>. <b>n</b> تعني:', o:['النيوترال خارج من الثانوي', 'التردد 50Hz', 'عدد لفات الثانوي', 'تبريد طبيعي بدون مروحة'], a:0, why:'D = الابتدائي دلتا، y = الثانوي ستار، n = نيوترال خارج، و11 = فرق الزاوية 330°.'}),
+  () => ({q:'كونتاكتور مكتوب عليه <span class="eq">AC-3 18 A</span>. AC-3 تعني:', o:['فئة لتشغيل محركات القفص', 'جهد الملف 230V AC', 'عدد الأقطاب الرئيسية', 'الكونتاكتور للأحمال المقاومة فقط'], a:0, why:'AC-1 أحمال مقاومة، وAC-3 محركات قفص سنجابي تُفصل وهي تدور.'})
 ]; return () => pick(pool)(); })();
 
 /* ================= L6: panel explorer + wire follow ================= */
 DR.panelExplorer = function(host, opt){
   opt = opt || {}; const L = opt.lesson, d = DR.drawPanel(), seen = new Set();
-  host.innerHTML = `<div class="sv"></div><div class="info" aria-live="polite"><h4>دوس على أي جهاز في اللوحة</h4>الرسمة دي منظر أمامي للـ Mounting plate بمقياس رسم. كل جهاز عليه التاج اللي في الدايرة.</div><p class="chal">اقرا <b>6</b> حاجات على الأقل في اللوحة.</p>`;
+  host.innerHTML = `<div class="sv"></div><div class="info" aria-live="polite"><h4>اضغط على أي جهاز في اللوحة</h4>هذه الرسمة منظر أمامي للـ Mounting plate بمقياس رسم. وعلى كل جهاز التاج الموجود في الدائرة.</div><p class="chal">اقرأ <b>6</b> عناصر على الأقل في اللوحة.</p>`;
   const fin = chal(host, '.chal', L, opt.task || 'layout');
   const v = DR.viewer($('.sv', host), {w:d.w, h:d.h, svg:d.svg, title:'Panel layout =A1 +CP1', maxH:560});
   v.port.addEventListener('click', e => { const g = e.target.closest('.hot[data-i]'); if (!g) return; const it = DR.PANEL_ITEMS[g.dataset.i]; v.qa('.hl').forEach(x => x.classList.remove('hl')); g.classList.add('hl'); seen.add(g.dataset.i); $('.info', host).innerHTML = `<h4>${it[0]}</h4>${it[1]} <span class="muted">(${seen.size} من 6)</span>`; if (seen.size >= 6) fin(); });
@@ -1295,14 +1295,14 @@ DR.panelExplorer = function(host, opt){
 DR.wireFollow = function(host, opt){
   opt = opt || {}; const L = opt.lesson, d = DR.drawTerm(), F = DR.FOLLOW;
   let si = 0, step = 0, doneN = 0;
-  host.innerHTML = `<div class="sv"></div><div class="info" aria-live="polite"></div><ul class="steps-l">${F.map((f, i) => `<li data-s="${i}">تتبّع <span class="term">${f.dev}</span> (${f.what}) لحد دخل الـ PLC</li>`).join('')}</ul><p class="chal">تتبّع الـ <b>3</b> إشارات من الجهاز للـ PLC.</p>`;
+  host.innerHTML = `<div class="sv"></div><div class="info" aria-live="polite"></div><ul class="steps-l">${F.map((f, i) => `<li data-s="${i}">تتبّع <span class="term">${f.dev}</span> (${f.what}) حتى دخل الـ PLC</li>`).join('')}</ul><p class="chal">تتبّع الإشارات الـ <b>3</b> من الجهاز إلى الـ PLC.</p>`;
   const fin = chal(host, '.chal', L, opt.task || 'follow');
   const v = DR.viewer($('.sv', host), {w:d.w, h:d.h, svg:d.svg, title:'Terminal diagram -X2', maxH:520});
-  const STEP = ['العرق (Core) اللي شايل الإشارة من الكابل', 'الترمنال اللي العرق ده داخل عليه في ⁦-X2⁩', 'دخل الـ PLC اللي السلك ده رايح له'];
+  const STEP = ['العرق (Core) الذي يحمل الإشارة في الكابل', 'الترمنال الذي يدخل عليه هذا العرق في ⁦-X2⁩', 'دخل الـ PLC الذي يذهب إليه هذا السلك'];
   function prompt(extra){
     const f = F[si];
     $$('[data-s]', host).forEach(li => { const i = +li.dataset.s; li.classList.toggle('cur', i === si && doneN < F.length); });
-    $('.info', host).innerHTML = (extra || '') + (doneN >= F.length ? '<h4>تمام: تتبّعت الـ 3 إشارات ✓</h4>كده تقدر تمسك أي إشارة: <b>الجهاز ← الكابل والعرق ← الترمنال ← رقم السلك (الفيرول) ← الكارت والدخل</b>.' : `<h4>${f.dev}: الخطوة ${step + 1} من 3</h4>دوس على <b>${STEP[step]}</b>.`);
+    $('.info', host).innerHTML = (extra || '') + (doneN >= F.length ? '<h4>أحسنت: تتبّعت الإشارات الثلاث ✓</h4>هكذا تستطيع تتبّع أي إشارة: <b>الجهاز ← الكابل والعرق ← الترمنال ← رقم السلك (الفيرول) ← الكارت والدخل</b>.' : `<h4>${f.dev}: الخطوة ${step + 1} من 3</h4>اضغط على <b>${STEP[step]}</b>.`);
   }
   const keyOf = g => g.dataset.c ? 'c:' + g.dataset.c : g.dataset.t ? 't:' + g.dataset.t : g.dataset.p ? 'p:' + g.dataset.p : '';
   v.port.addEventListener('click', e => {
@@ -1310,10 +1310,10 @@ DR.wireFollow = function(host, opt){
     const f = F[si], want = step === 0 ? 'c:' + f.c : step === 1 ? 't:' + f.t : 'p:' + f.p, k = keyOf(g);
     if (k === want){
       g.classList.add('hl'); step++;
-      const say = step === 1 ? `صح: العرق <b>${f.c.split('-')[1]}</b> في الكابل <span class="term">-${f.c.split('-')[0]}</span>. ` : step === 2 ? `صح: داخل على <span class="term">${f.t}</span>. ` : `صح: <span class="term">${f.t}</span> ← سلك <b>${DR.TERM.wn[f.t.split(':')[1]]}</b> ← دخل <span class="term">${f.p}</span>. `;
+      const say = step === 1 ? `صحيح: العرق <b>${f.c.split('-')[1]}</b> في الكابل <span class="term">-${f.c.split('-')[0]}</span>. ` : step === 2 ? `صحيح: يدخل على <span class="term">${f.t}</span>. ` : `صحيح: <span class="term">${f.t}</span> ← السلك <b>${DR.TERM.wn[f.t.split(':')[1]]}</b> ← الدخل <span class="term">${f.p}</span>. `;
       if (step >= 3){ doneN++; const li = $(`[data-s="${si}"]`, host); if (li) li.classList.add('ok'); si++; step = 0; setTimeout(() => v.qa('.hl').forEach(x => x.classList.remove('hl')), 900); if (doneN >= F.length) fin(); }
       prompt(`<p class="done-note">${say}</p>`);
-    } else prompt(`<p class="msg bad">مش ده. ${step === 0 ? 'ابدأ من الجهاز وامشي على الكابل بتاعه لحد ما العروق تتفرّق.' : step === 1 ? 'امشي على نفس العرق لحد ما يخبط في الشريط.' : 'من الترمنال امشي على السلك اللي طالع من الناحية التانية.'}</p>`);
+    } else prompt(`<p class="msg bad">ليس هذا. ${step === 0 ? 'ابدأ من الجهاز وتتبّع كابله حتى تتفرّق العروق.' : step === 1 ? 'تتبّع العرق نفسه حتى يصل إلى الشريط.' : 'من الترمنال تتبّع السلك الخارج من الجهة الأخرى.'}</p>`);
   });
   prompt();
   const tapK = k => { const t = k.slice(0, k.indexOf(':')), val = k.slice(k.indexOf(':') + 1); const g = v.q(`.hot[data-${t}="${val}"]`); if (g) g.dispatchEvent(new MouseEvent('click', {bubbles:true})); };
@@ -1330,28 +1330,28 @@ DR.tsGame = function(host, opt){
   const brk = wireAt(S0.b);
   const wn3 = M.net(S0.b), wnA2 = M.net(K1c.b);
   const CASES = [
-    {t:'كله مطفي', s:'مفيش ولا لمبة منوّرة على باب اللوحة (حتى لمبة STOP)، والموتور مش بيدور لما تدوس Start.', cond:{on:{S1:true}}, hold:'زميلك ماسك زرار <b>Start</b>.', fault:{[F1.id]:'open'}, o:['فيوز ⁦-F1⁩ ضارب', 'زرار Stop بايظ', 'كويل ⁦-K1⁩ محروق', 'الأوفرلود ⁦-F2⁩ فاصل'], a:0, why:'جهد على <span class="eq">-F1:1</span> ومفيش على <span class="eq">-F1:2</span>: الفيوز مفتوح. قبل ما تغيّره دوّر ليه ضرب (قصر في سلك أو كويل).'},
-    {t:'Start مش بيعمل حاجة', s:'لمبة STOP منوّرة. بتدوس Start والكونتاكتور مش بيلقط خالص.', cond:{on:{S1:true}}, hold:'زميلك ماسك زرار <b>Start</b>.', fault:{[S0.id]:'open'}, o:['كونتاكت ⁦-S0⁩ مفتوح', 'كويل ⁦-K1⁩ محروق', 'فيوز ⁦-F1⁩ ضارب', 'لمبة ⁦-H1⁩ محروقة'], a:0, why:'<span class="eq">-S0:11 = 230 V</span> و <span class="eq">-S0:12 = 0 V</span> والزرار مش مضغوط: الكونتاكت الـ NC مش بيوصّل (متّسخ أو السوستة مكسورة).'},
-    {t:'الكويل مش بيلقط وعليه جهد', s:'لمبة STOP منوّرة. بتدوس Start والكونتاكتور مش بيلقط، وريحة حريق خفيفة من اللوحة.', cond:{on:{S1:true}}, hold:'زميلك ماسك زرار <b>Start</b>.', fault:{[K1c.id]:'open'}, o:['كويل ⁦-K1⁩ مفتوح (محروق)', 'زرار Start بايظ', 'سلك النيوترال مقطوع عند A2', 'الأوفرلود فاصل'], a:0, why:'<span class="eq">A1 = 230 V</span> و <span class="eq">A2 = 0 V</span> = الجهد كامل على الكويل ومش بيلقط: الكويل نفسه مفتوح. قيس مقاومته وهو مفصول للتأكيد.'},
-    {t:'جهد على الطرفين!', s:'بتدوس Start والكونتاكتور مش بيلقط. الكويل جديد ومقاومته سليمة.', cond:{on:{S1:true}}, hold:'زميلك ماسك زرار <b>Start</b>.', fault:{[K1c.id]:'liftB'}, o:[`سلك N عند ⁦A2⁩ مفكوك`,`الكويل محروق`,`زرار Stop بايظ`,`فيوز التحكم ⁦-F1⁩ ضارب`], a:0, why:'لو <span class="eq">A1 = 230 V</span> و <span class="eq">A2 = 230 V</span> كمان، يبقى مفيش فرق جهد على الكويل: الرجوع (N) مقطوع بعده. الكويل السليم بيوصّل الجهد للطرف التاني لما مفيش تيار.'},
-    {t:'الموتور بيشتغل بس وإنت ضاغط', s:'الموتور بيدور طول ما إنت ماسك Start، وأول ما تسيبه يقف.', cond:{on:{S1:true}}, hold:'زميلك ماسك زرار <b>Start</b> (الموتور شغّال دلوقتي).', fault:{[K1s.id]:'open'}, o:['كونتاكت التثبيت ⁦13-14⁩', 'زرار Stop بايظ', 'الأوفرلود ⁦-F2⁩ متظبط واطي', 'كويل ⁦-K1⁩ محروق ومش بيمسك'], a:0, why:'ده عَرَض التثبيت الذاتي: الكونتاكت ⁦13-14⁩ المتوازي مع Start هو اللي بيمسك الكويل. قيس: والكونتاكتور لاقط، <span class="eq">-K1:13 = 230 V</span> ولازم <span class="eq">-K1:14</span> يبقى 230 V من خلاله. افحص الكونتاكت المساعد وسلوكه.'},
-    {t:'لمبة TRIP منوّرة', s:'الموتور وقف لوحده في نص الوردية، ولمبة TRIP الصفرا منوّرة.', cond:{on:{F2:true, S1:true}}, hold:'زميلك ماسك زرار <b>Start</b>.', fault:{}, o:['الأوفرلود ⁦-F2⁩ فاصل', 'فيوز ⁦-F1⁩ ضارب', 'كويل ⁦-K1⁩ محروق', 'زرار Start ⁦-S1⁩ بايظ'], a:0, why:'<span class="eq">-F2:95 = 230 V</span> و <span class="eq">-F2:96 = 0 V</span>، و ⁦97-98⁩ قفل فلمبة TRIP نوّرت. قبل الـ Reset: قيس تيار الموتور وشوف الحمل والفاز والتهوية.'},
-    {t:'جهد قبل وجهد مفيش بعد', s:'لمبة STOP منوّرة. بتدوس Start ومفيش حاجة. الزراير جديدة ومجرّبة.', cond:{on:{S1:true}}, hold:'زميلك ماسك زرار <b>Start</b>.', fault:{[brk.i]:'open'}, o:[`السلك رقم ${wn3} بين ⁦-S0:12⁩ و ⁦-S1:13⁩ مقطوع`, 'كويل ⁦-K1⁩ محروق', 'فيوز ⁦-F1⁩ ضارب', 'الأوفرلود فاصل'], a:0, why:`<span class="eq">-S0:12 = 230 V</span> و <span class="eq">-S1:13 = 0 V</span>، والاتنين على نفس رقم السلك (${wn3}) يعني المفروض نفس الجهد: السلك اللي بينهم مقطوع أو الترمنال مفكوك.`},
-    {t:'الموتور شغّال واللمبة طافية', s:'الموتور دوّار تمام، بس لمبة RUN الخضرا مش منوّرة.', cond:{on:{}, prev:{K1:true}}, hold:'الموتور <b>شغّال</b> دلوقتي.', fault:{[H1.id]:'open'}, o:['لمبة ⁦-H1⁩ محروقة', 'كونتاكت ⁦-K1⁩ ⁦33-34⁩ بايظ', 'فيوز ⁦-F1⁩ ضارب', 'الأوفرلود فاصل'], a:0, why:'<span class="eq">-H1:X1 = 230 V</span> و <span class="eq">X2 = 0 V</span>: الجهد واصل للمبة ومش بتنوّر يبقى اللمبة نفسها. لو X1 كان 0 V كانت المشكلة في الكونتاكت ⁦33-34⁩.'}
+    {t:'كل شيء مطفأ', s:'لا يضيء أي مصباح على باب اللوحة (حتى مصباح STOP)، والمحرك لا يدور عند الضغط على Start.', cond:{on:{S1:true}}, hold:'زميلك يضغط زر <b>Start</b>.', fault:{[F1.id]:'open'}, o:['فيوز ⁦-F1⁩ منصهر', 'زر Stop تالف', 'ملف ⁦-K1⁩ محترق', 'الأوفرلود ⁦-F2⁩ فاصل'], a:0, why:'جهد على <span class="eq">-F1:1</span> ولا جهد على <span class="eq">-F1:2</span>: الفيوز مفتوح. قبل تغييره ابحث عن سبب انصهاره (قصر في سلك أو ملف).'},
+    {t:'Start لا يفعل شيئًا', s:'مصباح STOP مضيء. تضغط Start ولا يجذب الكونتاكتور إطلاقًا.', cond:{on:{S1:true}}, hold:'زميلك يضغط زر <b>Start</b>.', fault:{[S0.id]:'open'}, o:['تلامس ⁦-S0⁩ مفتوح', 'ملف ⁦-K1⁩ محترق', 'فيوز ⁦-F1⁩ منصهر', 'مصباح ⁦-H1⁩ محترق'], a:0, why:'<span class="eq">-S0:11 = 230 V</span> و<span class="eq">-S0:12 = 0 V</span> والزر غير مضغوط: التلامس NC لا يوصّل (متّسخ أو النابض مكسور).'},
+    {t:'الملف لا يجذب وعليه جهد', s:'مصباح STOP مضيء. تضغط Start ولا يجذب الكونتاكتور، وفي اللوحة رائحة احتراق خفيفة.', cond:{on:{S1:true}}, hold:'زميلك يضغط زر <b>Start</b>.', fault:{[K1c.id]:'open'}, o:['ملف ⁦-K1⁩ مفتوح (محترق)', 'زر Start تالف', 'سلك النيوترال مقطوع عند A2', 'الأوفرلود فاصل'], a:0, why:'<span class="eq">A1 = 230 V</span> و<span class="eq">A2 = 0 V</span> = الجهد كامل على الملف ولا يجذب: الملف نفسه مفتوح. قِس مقاومته وهو مفصول للتأكيد.'},
+    {t:'جهد على الطرفين!', s:'تضغط Start ولا يجذب الكونتاكتور. الملف جديد ومقاومته سليمة.', cond:{on:{S1:true}}, hold:'زميلك يضغط زر <b>Start</b>.', fault:{[K1c.id]:'liftB'}, o:[`سلك N عند ⁦A2⁩ مفكوك`,`الملف محترق`,`زر Stop تالف`,`فيوز التحكم ⁦-F1⁩ منصهر`], a:0, why:'إذا كان <span class="eq">A1 = 230 V</span> و<span class="eq">A2 = 230 V</span> أيضًا، فلا فرق جهد على الملف: الرجوع (N) مقطوع بعده. والملف السليم ينقل الجهد إلى طرفه الآخر عند عدم مرور تيار.'},
+    {t:'المحرك يعمل فقط وأنت ضاغط', s:'يدور المحرك ما دمت ضاغطًا على Start، ويتوقف بمجرد تركه.', cond:{on:{S1:true}}, hold:'زميلك يضغط زر <b>Start</b> (المحرك يعمل الآن).', fault:{[K1s.id]:'open'}, o:['تلامس التثبيت ⁦13-14⁩', 'زر Stop تالف', 'الأوفرلود ⁦-F2⁩ مضبوط على قيمة منخفضة', 'ملف ⁦-K1⁩ محترق ولا يمسك'], a:0, why:'هذا عَرَض التثبيت الذاتي: التلامس ⁦13-14⁩ الموصّل على التوازي مع Start هو الذي يمسك الملف. قِس والكونتاكتور جاذب: <span class="eq">-K1:13 = 230 V</span> ويجب أن يكون <span class="eq">-K1:14</span> 230 V من خلاله. افحص التلامس المساعد وأسلاكه.'},
+    {t:'مصباح TRIP مضيء', s:'توقف المحرك وحده في منتصف الوردية، ومصباح TRIP الأصفر مضيء.', cond:{on:{F2:true, S1:true}}, hold:'زميلك يضغط زر <b>Start</b>.', fault:{}, o:['الأوفرلود ⁦-F2⁩ فاصل', 'فيوز ⁦-F1⁩ منصهر', 'ملف ⁦-K1⁩ محترق', 'زر Start ⁦-S1⁩ تالف'], a:0, why:'<span class="eq">-F2:95 = 230 V</span> و<span class="eq">-F2:96 = 0 V</span>، و⁦97-98⁩ أُغلق فأضاء مصباح TRIP. قبل الـ Reset: قِس تيار المحرك وافحص الحمل والفازات والتهوية.'},
+    {t:'جهد قبل وانعدام جهد بعد', s:'مصباح STOP مضيء. تضغط Start ولا يحدث شيء. الأزرار جديدة ومجرّبة.', cond:{on:{S1:true}}, hold:'زميلك يضغط زر <b>Start</b>.', fault:{[brk.i]:'open'}, o:[`السلك رقم ${wn3} بين ⁦-S0:12⁩ و ⁦-S1:13⁩ مقطوع`, 'ملف ⁦-K1⁩ محترق', 'فيوز ⁦-F1⁩ منصهر', 'الأوفرلود فاصل'], a:0, why:`<span class="eq">-S0:12 = 230 V</span> و<span class="eq">-S1:13 = 0 V</span>، وكلاهما على رقم السلك نفسه (${wn3})، أي يُفترض أن يكون الجهد نفسه: السلك بينهما مقطوع أو الترمنال مفكوك.`},
+    {t:'المحرك يعمل والمصباح مطفأ', s:'المحرك يدور جيدًا، لكن مصباح RUN الأخضر لا يضيء.', cond:{on:{}, prev:{K1:true}}, hold:'المحرك <b>يعمل</b> الآن.', fault:{[H1.id]:'open'}, o:['مصباح ⁦-H1⁩ محترق', 'تلامس ⁦-K1⁩ ⁦33-34⁩ تالف', 'فيوز ⁦-F1⁩ منصهر', 'الأوفرلود فاصل'], a:0, why:'<span class="eq">-H1:X1 = 230 V</span> و<span class="eq">X2 = 0 V</span>: الجهد يصل إلى المصباح ولا يضيء، فالعطل في المصباح نفسه. لو كان X1 = 0 V لكانت المشكلة في التلامس ⁦33-34⁩.'}
   ];
   const need = opt.need || 6; let order = shuffle(CASES.map((_, i) => i)), k = 0, ok = 0, ans = false, R = null, log = [];
-  host.innerHTML = `<div class="dr-top"><span class="cg-sc" aria-live="polite"></span><span class="bar"><i class="cg-bar"></i></span></div><div class="dr-card tsg-case"></div><div class="sv"></div><div class="meter-l"><div class="seg ts-m" aria-live="polite">--- V</div><span class="muted ts-w">الأسود على <b>N</b>. دوس على أي نقطة زرقا (طرف جهاز) للأحمر.</span></div><ul class="mlog"></ul><div class="dr-card ts-q"></div><div class="dr-act"><button type="button" class="btn pri ts-next" hidden>الحالة اللي بعدها ←</button></div><p class="chal">حلّ <b>${need}</b> حالات صح على الأقل من ${CASES.length}.</p>`;
+  host.innerHTML = `<div class="dr-top"><span class="cg-sc" aria-live="polite"></span><span class="bar"><i class="cg-bar"></i></span></div><div class="dr-card tsg-case"></div><div class="sv"></div><div class="meter-l"><div class="seg ts-m" aria-live="polite">--- V</div><span class="muted ts-w">الطرف الأسود على <b>N</b>. اضغط على أي نقطة زرقاء (طرف جهاز) للطرف الأحمر.</span></div><ul class="mlog"></ul><div class="dr-card ts-q"></div><div class="dr-act"><button type="button" class="btn pri ts-next" hidden>الحالة التالية ←</button></div><p class="chal">حلّ <b>${need}</b> حالات صحيحة على الأقل من ${CASES.length}.</p>`;
   const fin = chal(host, '.chal', L, opt.task || 'tgame'), q = s => $(s, host);
-  const v = DR.viewer(q('.sv'), {w:pg.w, h:pg.h, svg:pg.svg, title:'Control · DOL M1 · نقط القياس', maxH:540});
+  const v = DR.viewer(q('.sv'), {w:pg.w, h:pg.h, svg:pg.svg, title:'Control · DOL M1 · نقاط القياس', maxH:540});
   const cur = () => CASES[order[k]];
-  function score(){ q('.cg-sc').innerHTML = `الحالة <b>${k + 1}</b> من ${CASES.length} · صح: <b>${ok}</b>`; q('.cg-bar').style.width = Math.min(100, ok / need * 100) + '%'; }
+  function score(){ q('.cg-sc').innerHTML = `الحالة <b>${k + 1}</b> من ${CASES.length} · الصحيح: <b>${ok}</b>`; q('.cg-bar').style.width = Math.min(100, ok / need * 100) + '%'; }
   function show(){
     const c = cur(); ans = false; log = [];
     R = DR.solve(M, {on:c.cond.on, prev:c.cond.prev || {}, fault:c.fault, Vs:230});
-    q('.tsg-case').innerHTML = `<h4>${c.t}</h4><div class="tsg-sym">${c.s}</div><p style="margin:0">${c.hold} قيس بالأفوميتر على الرسمة، وبعدين اختار العطل.</p>`;
+    q('.tsg-case').innerHTML = `<h4>${c.t}</h4><div class="tsg-sym">${c.s}</div><p style="margin:0">${c.hold} قِس بالأفوميتر على الرسمة، ثم اختر العطل.</p>`;
     q('.ts-m').textContent = '--- V'; q('.mlog').innerHTML = '';
     const oi = qzOrder(c.o, c.keep);
-    q('.ts-q').innerHTML = `<p style="margin:0;font-weight:600">العطل غالبًا إيه؟</p><div class="qz-a">${oi.map(i => `<button type="button" class="btn qz-o" data-i="${i}">${qzTxt(c.o[i])}</button>`).join('')}</div>${QZ_CF()}<p class="qz-f" aria-live="polite"></p>`;
+    q('.ts-q').innerHTML = `<p style="margin:0;font-weight:600">ما العطل غالبًا؟</p><div class="qz-a">${oi.map(i => `<button type="button" class="btn qz-o" data-i="${i}">${qzTxt(c.o[i])}</button>`).join('')}</div>${QZ_CF()}<p class="qz-f" aria-live="polite"></p>`;
     q('.ts-next').hidden = true; v.qa('.tp.m').forEach(x => x.classList.remove('m')); score();
   }
   function measure(id){
@@ -1365,9 +1365,9 @@ DR.tsGame = function(host, opt){
   q('.ts-q').addEventListener('click', e => {
     if (ans) return; const b = pickConfirm(e, q('.ts-q')); if (!b) return; const c = cur(), good = +b.dataset.i === c.a; ans = true; if (good) ok++;
     $$('.qz-o', q('.ts-q')).forEach(x => { x.disabled = true; if (+x.dataset.i === c.a) x.classList.add('ok'); else if (x === b) x.classList.add('no'); });
-    const f = $('.qz-f', q('.ts-q')); f.className = 'qz-f ' + (good ? 'ok' : 'no'); f.innerHTML = (good ? 'صح. ' : 'مش ده. ') + c.why + (log.length ? '' : ' <b>المرة الجاية قيس الأول قبل ما تحكم.</b>');
+    const f = $('.qz-f', q('.ts-q')); f.className = 'qz-f ' + (good ? 'ok' : 'no'); f.innerHTML = (good ? 'صحيح. ' : 'ليس هذا. ') + c.why + (log.length ? '' : ' <b>في المرة القادمة قِس أولًا قبل أن تحكم.</b>');
     score(); if (ok >= need) fin();
-    const nx = q('.ts-next'); nx.hidden = false; nx.textContent = k + 1 < CASES.length ? 'الحالة اللي بعدها ←' : (ok >= need ? 'العب تاني' : 'جرّب تاني من الأول');
+    const nx = q('.ts-next'); nx.hidden = false; nx.textContent = k + 1 < CASES.length ? 'الحالة التالية ←' : (ok >= need ? 'العب مرة أخرى' : 'ابدأ من جديد');
   });
   q('.ts-next').addEventListener('click', () => { if (k + 1 < CASES.length) k++; else { k = 0; ok = 0; order = shuffle(order); } show(); });
   show();
