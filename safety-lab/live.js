@@ -77,7 +77,7 @@
         { from:'S13', to:'S34', items:[['es','21-22'], ['d1','21-22'], ['d2','21-22']] }
       ],
       top:[ { from:'S53', to:'X1', items:['k2','reset'] } ],
-      outs:[['13','14'], ['43','44']], k:['VFD', 'K1'], mtxt:'K1 + K2 (53-54)',
+      use:['53','54'], outs:[['13','14'], ['43','44']], k:['VFD', 'K1'], mtxt:'K1 + K2 (53-54)',
       leds:[['On','pow'], ['In1','c0'], ['In2','c1'], ['1','out'], ['2','out'], ['t','outd']],
       note:'الخرج المباشر 13-14 يعطي أمر إيقاف للانفرتر فيفرمل المحرك بهدوء، والخرجان المتأخران 43-44 و53-54 يفصلان K1 وK2 بعد زمن التأخير (هنا 1.5 ثانية: بريدج T0-T1 وبريدج T1-T2. و1 ثانية = T0-T2 فقط، و0.5 ثانية = T0-T1 فقط، وبدون بريدج = 0). هذا اسمه Stop Category 1. وبريدج S23-S24 زي RT6. القنوات مثل RT6: <span class="lx-ch">S13 → E-Stop → Door 1 → Door 2 → S14 / S34</span> والريست: <span class="lx-ch">S53 → K1 NC → K2 NC → RESET → X1</span>'
     },
@@ -158,6 +158,7 @@
     C.top.forEach(function(T){ if (T.from !== 'rail') a(T.from); a(T.to); });
     C.outs.forEach(function(o){ a(o[0]); a(o[1]); });
     (C.br || []).forEach(function(b){ a(b[0]); a(b[1]); });
+    (C.use || []).forEach(a);
     return u;
   }
   function boxSvg(C, P, U, st, dev){
@@ -327,7 +328,7 @@
       s += '<path d="M8 ' + RAIL + 'H' + (W - 8) + '" stroke="' + RED + '" stroke-width="3"/><text x="10" y="' + (RAIL - 8) + '" font-weight="700" font-size="12" fill="' + RED + '">+24V</text>';
       s += '<path d="M8 ' + GND + 'H' + (W - 8) + '" stroke="' + BLUE + '" stroke-width="3"/><text x="10" y="' + (GND + 18) + '" font-weight="700" font-size="12" fill="' + BLUE + '">0V</text>';
       /* device box (wires are drawn over it, terminals last) */
-      var st = { pow:true, out:S.out, outd:S.outD && !S.out && !!C.delay, rst:S.reset && inputsOk() && fbOk(), all:ok, c0:C.loops[0] && loopOk(C.loops[0]), c1:C.loops[1] && loopOk(C.loops[1]), c2:C.loops[2] && loopOk(C.loops[2]) };
+      var st = { pow:true, out:S.out, outd:S.outD && !!C.delay, rst:S.reset && inputsOk() && fbOk(), all:ok, c0:C.loops[0] && loopOk(C.loops[0]), c1:C.loops[1] && loopOk(C.loops[1]), c2:C.loops[2] && loopOk(C.loops[2]) };
       s += boxSvg(C, P, USED, st, dev);
 
       /* supply */
