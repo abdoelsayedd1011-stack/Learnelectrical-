@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A3/Flex 150/160 Filling Simulator · TMCC2 | LearnElectricals</title>
+<meta name="description" content="Interactive simulator of the A3/Flex 150 and 160 filling system: TMCC2 A401 card, flow and level loops, faults, card menu and hyperterminal.">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: control-room HMI. Process view + trend on the main column, TMCC2 card and PLC signals on the side, tuning desk below, narrated tour bar on top. Single dark look by design. */
+:root{
+  color-scheme: dark;
+  --bg:#0d1316; --panel:#141c20; --panel2:#1a242a; --line:#26353c; --fg:#e2ebe8; --muted:#8ea39f;
+  --product:#ffc629; --paper:#c9b98f; --flow:#55b6ea; --sp:#e9a640; --ok:#5fd08b; --alarm:#ff5d50; --led:#ff9a2e; --air:#9ad0c9;
+  --f-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Arabic",system-ui,"Segoe UI",Tahoma,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.6}
+.wrap{direction:ltr;max-width:1320px;margin:0 auto;padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:14px}
+h1{font-family:var(--f-display);font-size:clamp(20px,3vw,28px);margin:0;text-wrap:balance}
+.sub{color:var(--muted);margin:0;font-size:14px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:end;justify-content:space-between}
+.mono{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-variant-numeric:tabular-nums}
+button{font-family:var(--f-body);font-size:14px;color:var(--fg);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 14px;cursor:pointer}
+button:hover{border-color:var(--muted)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--sp);outline-offset:2px}
+button.primary{background:var(--sp);color:#1b1206;border-color:var(--sp);font-weight:700}
+button.on{border-color:var(--ok);color:var(--ok)}
+button.danger{border-color:#6b3430}
+button.danger.on{border-color:var(--alarm);color:var(--alarm)}
+
+/* tour bar */
+.tour{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:10px}
+.tour-top{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tour-top .grow{flex:1 1 200px}
+.caption{font-size:clamp(16px,2.2vw,20px);font-weight:600;min-height:3.2em;line-height:1.6;text-wrap:pretty}
+.scene-title{font-family:var(--f-display);color:var(--sp);font-size:13px;letter-spacing:.02em}
+.dots{display:flex;gap:5px;flex-wrap:wrap}
+.dots i{width:18px;height:5px;border-radius:3px;background:var(--line);display:block;cursor:pointer}
+.dots i.done{background:#5a6d68}.dots i.cur{background:var(--sp)}
+.note{font-size:12.5px;color:var(--muted)}
+
+.main{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:14px}
+@media (max-width:980px){.main{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;min-width:0}
+.card h2{font-family:var(--f-display);font-size:14px;margin:0 0 8px;color:var(--muted);font-weight:500}
+canvas{display:block;width:100%}
+#proc{aspect-ratio:1000/600;max-width:100%;border-radius:8px;background:#0f171a}
+#trend{height:190px}
+.stick{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--panel);padding-block:4px}
+#deskCard{margin-top:12px;padding:10px;background:var(--bg)}
+@media (min-width:981px){.stick{top:8px}}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:10px}
+.ro{background:var(--panel2);border-radius:8px;padding:8px 10px;display:grid;gap:2px}
+.ro b{font-family:var(--f-mono);font-size:20px;direction:ltr;text-align:right;font-variant-numeric:tabular-nums}
+.ro span{font-size:12px;color:var(--muted)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-inline-end:6px;vertical-align:middle}
+
+/* TMCC card */
+.side{display:grid;gap:14px;align-content:start}
+.tmcc{background:#20262a;border:1px solid #3a4549;border-radius:10px;padding:12px;display:grid;gap:10px}
+.tmcc.hl,.plc.hl{box-shadow:0 0 0 2px var(--sp)}
+.tmcc .lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.disp{direction:ltr;display:grid;grid-template-columns:repeat(8,1fr);gap:4px;background:#0b0d0c;border-radius:6px;padding:8px}
+.cell{height:40px;border-radius:3px;background:#140e08;display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-weight:700;font-size:22px;color:var(--led);text-shadow:0 0 8px rgba(255,154,46,.6)}
+.cell.bars{flex-direction:column-reverse;justify-content:flex-start;gap:2px;padding:3px}
+.cell.bars u{display:block;width:100%;height:5px;background:#2a1a0b;border-radius:1px;text-decoration:none}
+.cell.bars u.lit{background:var(--led);box-shadow:0 0 6px rgba(255,154,46,.7)}
+.tmcc.err .cell{color:var(--alarm);text-shadow:0 0 8px rgba(255,93,80,.7)}
+.btnrow{display:flex;gap:6px;justify-content:center;direction:ltr}
+.btnrow button{min-width:54px;padding:6px 10px;border-radius:6px;background:#3b4448;border:1px solid #56636a;color:#e8eeec;font-family:var(--f-mono);font-size:14px;font-weight:700}
+.btnrow button:active{background:#56636a}
+.mpath{font-family:var(--f-mono);direction:ltr;font-size:12px;color:var(--led);text-align:left;min-height:16px}
+.term{background:#0a0f0c;border:1px solid #2c3a33;border-radius:12px;padding:12px;display:grid;gap:8px}
+.term h2{font-family:var(--f-display);font-size:14px;margin:0;color:var(--muted);font-weight:500}
+.tset{font-size:12px;color:#7fd39b;background:#111a15;border-radius:6px;padding:6px 8px;direction:ltr;text-align:left;overflow-x:auto;white-space:nowrap}
+.tout{margin:0;height:220px;overflow:auto;background:#050806;border-radius:6px;padding:8px;font-family:var(--f-mono);font-size:12.5px;line-height:1.45;color:#9cf0b4;direction:ltr;text-align:left;white-space:pre-wrap;word-break:break-word}
+.tout .ec{color:#4f7a5c}.tout .wr{color:#ff9a8f}.tout .hd{color:#ffd27a}
+.tform{display:flex;gap:6px;direction:ltr}
+.tin{flex:1;min-width:0;background:#050806;border:1px solid #2c3a33;border-radius:6px;color:#9cf0b4;padding:8px;font-size:14px}
+.tq{display:flex;flex-wrap:wrap;gap:5px;direction:ltr}
+.tq button{font-family:var(--f-mono);font-size:12px;padding:4px 8px}
+.tq button.dang{border-color:#7a3a33;color:#ff9a8f}
+
+.plc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+.sig{display:grid;grid-template-columns:14px 1fr auto;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--line);font-size:13px}
+.sig:last-of-type{border-bottom:0}
+.led{width:12px;height:12px;border-radius:50%;background:#2c3a3e}
+.led.on{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.led.bad{background:var(--alarm);box-shadow:0 0 8px var(--alarm)}
+.sig .addr{font-family:var(--f-mono);font-size:12px;color:var(--muted);direction:ltr}
+.timer{margin-top:8px;font-size:12.5px;color:var(--muted)}
+.tbar{height:8px;background:var(--panel2);border-radius:4px;overflow:hidden;margin-top:4px}
+.tbar div{height:100%;width:0;background:var(--sp)}
+.alarmbox{margin-top:10px;border-radius:8px;padding:8px 10px;font-weight:700;font-size:13.5px;background:var(--panel2);color:var(--muted)}
+.alarmbox.on{background:#3a1512;color:var(--alarm);animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.55}}
+@media (prefers-reduced-motion:reduce){.alarmbox.on{animation:none}}
+.alist{display:grid;gap:5px;margin-top:8px}
+.arow{display:grid;grid-template-columns:10px 1fr auto;gap:8px;align-items:center;font-size:12.5px;padding:6px 8px;border-radius:6px;background:var(--panel2)}
+.arow i{width:9px;height:9px;border-radius:50%;background:var(--sp)}
+.arow.on i{background:var(--alarm);box-shadow:0 0 6px var(--alarm)}
+.arow.on{color:#ffb4ad}
+.arow .mono{font-size:11.5px;color:var(--muted)}
+
+/* desk */
+.desk{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:12px 18px}
+.grp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 10px;align-content:start;background:var(--panel2);border-radius:10px;padding:10px}
+.grp>h2{grid-column:1/-1;margin:0}
+.grp>.formula,.grp>.actions,.grp>small{grid-column:1/-1}
+.grp:has(.actions){grid-template-columns:1fr}
+.ctl small{display:block;font-size:11px!important;line-height:1.35}
+.ctl label{font-size:12.5px;flex-wrap:wrap;gap:2px 6px}
+.ctl{display:grid;gap:2px}
+.ctl label{display:flex;justify-content:space-between;gap:8px;font-size:13.5px}
+.ctl label .mono{color:var(--sp)}
+.ctl small{color:var(--muted);font-size:12px}
+input[type=range]{width:100%;accent-color:var(--sp)}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.formula{font-family:var(--f-mono);direction:ltr;background:var(--panel2);border-radius:8px;padding:8px 10px;font-size:13px;color:var(--fg);text-align:left;overflow-x:auto}
+.speeds{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted)}
+.speeds button{padding:5px 10px}
+footer{color:var(--muted);font-size:12.5px}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>TMCC2 Filling System Simulator · A3/Flex 150/160</h1>
+      <p class="sub">Tank, valve, flowmeter, tube, A401 card and PLC, all running in front of you. Try the values and listen to the machine.</p>
+    </div>
+    <div class="actions">
+      <a href="index.html" style="color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px 14px;text-decoration:none">← Written guide</a>
+      <a href="/a3flex-filling-lab/simulator.html" style="color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px 14px;text-decoration:none">عربي</a>
+      <button id="soundBtn">Sound effects on</button>
+      <button id="voiceBtn" class="on">Narrator: on</button>
+    </div>
+  </header>
+
+  <section class="tour" aria-label="Guided tour">
+    <div class="tour-top">
+      <button class="primary" id="tourPlay">▶ Play the tour (movie mode)</button>
+      <button id="tourPrev" aria-label="Previous scene">Previous</button>
+      <button id="tourNext" aria-label="Next scene">Next</button>
+      <div class="grow"></div>
+      <div class="dots" id="dots"></div>
+    </div>
+    <div class="scene-title" id="sceneTitle">Ready</div>
+    <div class="caption" id="caption">Press "Play the tour" to watch the system step by step with narration, or play with the controls below yourself.</div>
+    <div class="note" id="voiceNote"></div>
+  </section>
+
+  <div class="main">
+    <div class="card">
+      <div class="stick"><canvas id="proc" width="1000" height="600" aria-label="Animated drawing of the filling system"></canvas></div>
+      <div class="readouts">
+        <div class="ro"><span>Nominal flow</span><b id="roNom">0</b></div>
+        <div class="ro"><span>Flow setpoint (SP)</span><b id="roSp">0</b></div>
+        <div class="ro"><span>Flowmeter reading</span><b id="roFlow">0</b></div>
+        <div class="ro"><span>Tube level</span><b id="roLev">0</b></div>
+        <div class="ro"><span>Valve opening / I/P</span><b id="roValve">0</b></div>
+        <div class="ro"><span>Packages made</span><b id="roPk">0</b></div>
+      </div>
+      <h2 style="margin-top:14px">Last 30 seconds</h2>
+      <canvas id="trend" aria-label="Flow and level trend"></canvas>
+      <div class="legend">
+        <span><i style="background:var(--sp)"></i>Flow setpoint (l/h, right axis)</span>
+        <span><i style="background:var(--flow)"></i>Flowmeter reading</span>
+        <span><i style="background:var(--product)"></i>Level (%, left axis)</span>
+        <span><i style="background:var(--air)"></i>Valve opening %</span>
+      </div>
+    </div>
+
+    <div class="side">
+      <div class="tmcc" id="tmcc">
+        <div class="lbl"><span>TMCC2 card &nbsp;A401</span><span class="mono">FCSFA3F</span></div>
+        <div class="disp" id="disp"></div>
+        <div class="mpath" id="mpath"></div>
+        <div class="btnrow"><button data-k="up" aria-label="Arrow up">▲</button><button data-k="down" aria-label="Arrow down">▼</button><button data-k="enter" aria-label="Enter">ENTER</button></div>
+        <div class="note" id="tmccNote">P = production, V = fixed, bars = tube level (5% per row).</div>
+      </div>
+
+      <div class="plc" id="plc">
+        <h2 style="font-family:var(--f-display);font-size:14px;margin:0 0 6px;color:var(--muted);font-weight:500">PLC signals</h2>
+        <div class="sig"><span class="led" id="lEn"></span><span>Card ready (Enabled)</span><span class="addr">%I269</span></div>
+        <div class="sig"><span class="led" id="lOk"></span><span>Filling OK</span><span class="addr">%I268</span></div>
+        <div class="sig"><span class="led" id="lHi"></span><span>High level</span><span class="addr">%I266</span></div>
+        <div class="sig"><span class="led" id="lPr"></span><span>Production command to card</span><span class="addr">%Q146</span></div>
+        <div class="sig"><span class="led" id="lSs"></span><span>Short stop to card</span><span class="addr">%Q148</span></div>
+        <div class="sig"><span class="led" id="lFm"></span><span>Flowmeter link RS485</span><span class="addr">B1316</span></div>
+        <div class="timer">Alarm timer <span class="mono">DEL0249</span>: <span class="mono" id="tVal">0.0 / 25.0 s</span>
+          <div class="tbar"><div id="tBar"></div></div></div>
+        <div class="alarmbox" id="alarm">No alarm</div>
+        <div class="alist" id="alist" aria-live="polite"></div>
+      </div>
+
+      <div class="term" id="termCard">
+        <h2>Hyperterminal: laptop connected with an RS232 cable to the A401 service port</h2>
+        <div class="tset mono">COM1 &nbsp;|&nbsp; 9600 baud &nbsp;|&nbsp; Parity None &nbsp;|&nbsp; 8 bits &nbsp;|&nbsp; 1 stop &nbsp;|&nbsp; Flow control None</div>
+        <pre class="tout" id="tout" aria-live="polite"></pre>
+        <form class="tform" id="tform"><input class="tin mono" id="tin" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="type command, e.g. S" aria-label="Type a command"><button type="submit">Enter</button></form>
+        <div class="tq" id="tq"></div>
+        <div class="note">On the real card the characters you type are not echoed (the manual says so); here they are shown dimmed so you can follow. Command names are from the maintenance manual (page 9-500); the reply format and numbers are approximate, for teaching.</div>
+      </div>
+    </div>
+  </div>
+
+  <section class="card" id="deskCard">
+    <div class="actions" style="margin-bottom:12px">
+      <button class="primary" id="runBtn">Start production</button>
+      <button id="shortBtn">Short stop</button>
+      <button id="resetBtn">Reset</button>
+      <span class="speeds">Sim speed:
+        <button data-rate="1" class="on">1×</button><button data-rate="2">2×</button><button data-rate="4">4×</button></span>
+    </div>
+    <div class="desk">
+      <div class="grp">
+        <h2>Flow loop (Flow PID)</h2>
+        <div class="ctl"><label for="kP">P <span class="mono" id="vP"></span></label><input type="range" id="kP" min="0" max="2.5" step="0.05"><small>Opens the valve in proportion to the error now</small></div>
+        <div class="ctl"><label for="kI">I <span class="mono" id="vI"></span></label><input type="range" id="kI" min="0" max="5" step="0.1"><small>Removes the remaining error over time</small></div>
+        <div class="ctl"><label for="kD">D <span class="mono" id="vD"></span></label><input type="range" id="kD" min="0" max="0.3" step="0.01"><small>Brakes when the error changes fast</small></div>
+      </div>
+      <div class="grp">
+        <h2>Level loop (Level PID)</h2>
+        <div class="ctl"><label for="kU">U <span class="mono" id="vU"></span></label><input type="range" id="kU" min="0" max="8" step="0.1"><small>Raises or lowers the flow by how far the level is off</small></div>
+        <div class="ctl"><label for="kV">V <span class="mono" id="vV"></span></label><input type="range" id="kV" min="0" max="1.5" step="0.05"><small>Brings the level exactly back to target</small></div>
+        <div class="ctl"><label for="kW">W <span class="mono" id="vW"></span></label><input type="range" id="kW" min="0" max="2" step="0.1"><small>Anticipates when the level drops fast</small></div>
+        <div class="ctl"><label for="kL">Level setpoint (L) <span class="mono" id="vL"></span></label><input type="range" id="kL" min="35" max="80" step="1"><small>Change it and watch how U gets there</small></div>
+        <div class="ctl" style="grid-column:span 2;align-self:center"><button id="fDist" style="width:100%">Disturb the level (drop 20%)</button></div>
+      </div>
+      <div class="grp">
+        <h2>Start-up</h2>
+        <div class="ctl"><label for="kB">Start (B) <span class="mono" id="vB"></span></label><input type="range" id="kB" min="80" max="160" step="5"></div>
+        <div class="ctl"><label for="kT">Ramp (T) <span class="mono" id="vT"></span></label><input type="range" id="kT" min="0.5" max="10" step="0.5"></div>
+        <div class="ctl"><label for="kPF">Prefill <span class="mono" id="vPF"></span></label><input type="range" id="kPF" min="30" max="120" step="5"></div>
+        <div class="ctl"><label for="kG">Switch point (G) <span class="mono" id="vG"></span></label><input type="range" id="kG" min="20" max="60" step="1"></div>
+      </div>
+      <div class="grp">
+        <h2>Machine and product</h2>
+        <div class="ctl"><label for="kVol">Package volume <span class="mono" id="vVol"></span></label><input type="range" id="kVol" min="125" max="1000" step="25"></div>
+        <div class="ctl"><label for="kSpd">Machine speed <span class="mono" id="vSpd"></span></label><input type="range" id="kSpd" min="3000" max="9000" step="250"></div>
+        <div class="ctl"><label for="kPr">Product pressure <span class="mono" id="vPr"></span></label><input type="range" id="kPr" min="0.4" max="2.5" step="0.05"></div>
+        <div class="formula" id="formula"></div>
+      </div>
+      <div class="grp">
+        <h2>Faults to try</h2>
+        <div class="actions">
+          <button class="danger" id="fComm">Cut flowmeter link</button>
+          <button class="danger" id="fNoise">Air in product</button>
+          <button class="danger" id="fStuck">Sticking valve</button>
+          <button class="danger" id="fHighP">High P</button>
+          <button class="danger" id="fAir">I/P air supply lost</button>
+          <button class="danger" id="fIP">Wrong I/P calibration</button>
+          <button class="danger" id="fEmpty">Tank empty</button>
+          <button class="danger" id="fFloat">Floater stuck</button>
+          <button id="fClear">Reset everything to normal</button>
+        </div>
+        <small class="note">After the link is cut, the card closes the valve and drops Enabled, and the PLC counts 25 seconds before stopping the machine. Use 4× so you don’t have to wait.</small>
+      </div>
+    </div>
+  </section>
+  <footer>Educational simulation: numbers are approximate, based on the tuning guide and the A3/Flex 150/160 PLC program, not real machine values. Do not copy PID values from here to the machine.</footer>
+</div>
+
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+document.querySelector('.readouts').after($('deskCard'));
+const DEF={P:0.6,I:1.6,D:0,U:1.5,V:0.1,W:0,L:60,B:120,T:4,G:45,PF:70,vol:250,spd:7000,press:1.5,WIN:30,EPD:1,EPTH:3000,M:1,N:0.5,O:0};
+const K={...DEF};
+const QMAX=3600, QREF=1750, DEADT=0.15, VLAG=0.25, LEVK=12; let TARGET=60;
+const S={};
+function resetState(){
+  Object.assign(S,{t:0,running:false,phase:'idle',valve:0,cmd:0,flow:0,meas:0,buf:[],level:8,iF:0,pF:0,iL:0,pL:0,sp:0,spd:0,phaseT:0,
+    comm:S.comm||false,noise:S.noise||false,stuck:S.stuck||false,commLost:0,tmccErr:false,enabled:true,plcT:0,alarm:false,pk:0,pkAcc:0,
+    hist:[],histAcc:0,pkgs:[],jaw:0,dValve:0});
+}
+resetState();
+const qnom=()=>K.vol/1000*K.spd;
+function warm(){ // running steady in level control
+  S.running=true;S.phase='level';S.spd=1;S.level=TARGET;const q=qnom();S.flow=q;S.meas=q;S.sp=q;
+  S.valve=q/(QMAX*Math.sqrt(K.press/1.5));S.cmd=S.valve;S.iF=S.valve;S.iL=0;S.buf=[];S.enabled=true;S.tmccErr=false;S.plcT=0;S.alarm=false;
+}
+function startProd(){
+  if(S.alarm) return;
+  S.running=true;S.short=false;S.phase='start';S.phaseT=0;S.iF=0;S.iL=0;
+  sfx.chime();
+}
+function stopProd(){S.running=false;S.short=false;S.phase='idle';sfx.chime(true);}
+function shortStop(){ if(!S.running)return; if(!S.short){S.short=true;S.phase='short';sfx.chime(true);} else {S.short=false;S.phase='prefill';S.phaseT=0;S.iF=0;sfx.chime();} }
+
+const gauss=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+function step(dt){
+  S.t+=dt;
+  const Qn=qnom();
+  if(S.levM==null||isNaN(S.levM))S.levM=S.level;
+  if(isNaN(S.iL))S.iL=0;
+  const machOn=S.running&&!S.short&&S.phase!=='prefill';
+  S.spd+= ((machOn?1:0)-S.spd)*Math.min(1,dt/1.5);
+  const qout=Qn*S.spd;
+  if(S.short&&S.spd<0.05) S.level=Math.max(5,S.level-0.9*dt);
+  if(!S.running&&S.spd<0.05) S.level=Math.max(4,S.level-2*dt);
+  // setpoint logic
+  if(!S.running||S.short){S.sp=0;}
+  else if(S.phase==='prefill'){
+    S.phaseT+=dt;S.sp=Qn*K.PF/100*Math.min(1,S.phaseT/1);
+    if(S.level>=Math.min(K.G+10,TARGET)){S.phase='level';const eL=(TARGET-S.level)/100;S.iL=0;S.pL=eL;}
+  }
+  else if(S.phase==='start'){
+    S.phaseT+=dt;
+    S.sp=Qn*K.B/100*Math.min(1,S.phaseT/Math.max(.1,K.T));
+    if(S.level>=K.G){S.phase='level';const eL=(TARGET-S.level)/100;S.iL=S.sp/Qn-1-K.U*eL;S.pL=eL;}
+  } else if(S.phase==='level'){
+    const eL=(TARGET-S.levM)/100;
+    S.iL=Math.max(-.6,Math.min(.6,S.iL+K.V*eL*dt));
+    const d=(eL-S.pL)/dt;S.pL=eL;
+    S.sp=Math.max(0,Math.min(2*Qn,Qn*(1+K.U*eL+S.iL+K.W*d)));
+  }
+  // flowmeter comms
+  const commOK=!S.comm;
+  if(!commOK){S.commLost+=dt;if(S.commLost>1.5&&!S.tmccErr){S.tmccErr=true;sfx.err();}}
+  else S.commLost=0;
+  S.enabled=!S.tmccErr&&!S.stopped;
+  // flow PID
+  const used=S.meas;
+  let cmd=0;
+  if(S.enabled&&S.sp>0){
+    const e=(S.sp-used)/QREF;
+    S.iF=Math.max(0,Math.min(1,S.iF+K.I*e*dt));
+    const d=(e-S.pF)/dt;S.pF=e;
+    cmd=Math.max(0,Math.min(1,K.P*e+S.iF+K.D*d));
+  } else {S.iF=0;S.pF=0;}
+  if(S.force>0) cmd=S.force;
+  S.cmd=cmd;
+  const prevV=S.valve;
+  let target=cmd;
+  if(S.ipcal) target*=0.42;
+  if(S.air) target=0;
+  if(S.stuck){ if(Math.abs(cmd-S.valve)<0.07) target=S.valve; }
+  S.valve+=(target-S.valve)*Math.min(1,dt/VLAG);
+  S.dValve=Math.abs(S.valve-prevV)/dt;
+  if(S.tankL==null)S.tankL=1;
+  S.tankL=S.empty?Math.max(0,S.tankL-dt/5):Math.min(1,S.tankL+dt/3);
+  S.flow=QMAX*S.valve*Math.sqrt(Math.max(0,K.press)/1.5)*Math.min(1,S.tankL/0.15);
+  // measurement with dead time
+  S.buf.push(S.flow);const n=Math.max(1,Math.round(DEADT/dt));while(S.buf.length>n)S.buf.shift();
+  let m=S.buf[0]*(1+gauss()*0.004);
+  if(S.noise) m+=gauss()*0.07*QREF+ (Math.sin(S.t*9)*0.03*QREF);
+  S.freq=(S.tankL<0.05?3300:850)+gauss()*60;
+  S.epipe=K.EPD&&S.freq>K.EPTH;
+  if(S.epipe) m=0; else if(S.tankL<0.05) m=Math.abs(gauss())*0.25*QREF;
+  if(commOK) S.meas=Math.max(0,m);
+  // level
+  const wob=S.spd>0.5?(0.07*Math.sin(S.t*0.55)+0.05*Math.sin(S.t*1.7+1)):0;
+  S.level=Math.max(0,Math.min(100,S.level+LEVK*(S.flow-qout*(1+wob))/QREF*dt));
+  if(!S.floater) S.levM+=(S.level-S.levM)*Math.min(1,dt/0.6);
+  evalAlarms(dt,Qn);
+  // PLC
+  if(S.running&&!S.enabled){S.plcT+=dt;if(S.plcT>=25&&!S.alarm){S.alarm=true;S.running=false;S.phase='idle';sfx.chime(true);}}
+  else if(S.enabled) S.plcT=0;
+  // packages
+  S.pkAcc+=K.spd/3600*S.spd*dt;
+  while(S.pkAcc>=1){S.pkAcc-=1;S.pk++;S.pkgs.push({x:300,full:S.level>3});if(S.pkgs.length>14)S.pkgs.shift();sfx.thunk();}
+  S.jaw=(S.jaw+K.spd/3600*S.spd*dt)%1;
+  // history
+  S.histAcc+=dt;if(S.histAcc>=0.1){S.histAcc=0;S.hist.push([S.sp,commOK?S.meas:null,S.level,S.valve*100]);if(S.hist.length>300)S.hist.shift();}
+}
+
+/* ---------- Audio ---------- */
+const sfx=(()=>{
+  let ctx=null,flowG,motorG,motorO,alarmG,master,on=false;
+  function init(){
+    ctx=new (window.AudioContext||window.webkitAudioContext)();
+    master=ctx.createGain();master.gain.value=0.9;master.connect(ctx.destination);
+    const len=ctx.sampleRate*2,b=ctx.createBuffer(1,len,ctx.sampleRate),d=b.getChannelData(0);
+    for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
+    const src=ctx.createBufferSource();src.buffer=b;src.loop=true;
+    const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=520;bp.Q.value=0.7;
+    const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1400;
+    flowG=ctx.createGain();flowG.gain.value=0;src.connect(bp).connect(lp).connect(flowG).connect(master);src.start();
+    motorO=ctx.createOscillator();motorO.type='sawtooth';motorO.frequency.value=95;
+    const mf=ctx.createBiquadFilter();mf.type='lowpass';mf.frequency.value=600;
+    motorG=ctx.createGain();motorG.gain.value=0;motorO.connect(mf).connect(motorG).connect(master);motorO.start();
+    alarmG=ctx.createGain();alarmG.gain.value=0;
+    const ao=ctx.createOscillator();ao.type='sine';ao.frequency.value=880;ao.connect(alarmG).connect(master);ao.start();
+    alarmG._o=ao;
+  }
+  function tone(f,dur,type='sine',vol=0.2,when=0){
+    if(!on)return;const t=ctx.currentTime+when;const o=ctx.createOscillator(),g=ctx.createGain();
+    o.type=type;o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g).connect(master);o.start(t);o.stop(t+dur+0.05);return o;
+  }
+  return{
+    toggle(){ if(!ctx)init(); on=!on; if(on)ctx.resume(); else{flowG.gain.value=0;motorG.gain.value=0;alarmG.gain.value=0;} return on;},
+    get on(){return on},
+    update(){
+      if(!on)return;const t=ctx.currentTime;
+      flowG.gain.setTargetAtTime(Math.min(0.08,0.035*S.flow/QREF),t,0.15);
+      motorG.gain.setTargetAtTime(Math.min(0.025,S.dValve*0.06),t,0.05);
+      motorO.frequency.setTargetAtTime(80+S.dValve*120,t,0.05);
+      const beep=(S.alarm||S.tmccErr)&&(Math.floor(performance.now()/350)%2===0);
+      alarmG.gain.setTargetAtTime(beep?(S.alarm?0.06:0.025):0,t,0.02);
+      alarmG._o.frequency.setValueAtTime(S.alarm?880:660,t);
+    },
+    thunk(){ if(!on)return; const o=tone(140,0.1,'sine',0.08); if(o)o.frequency.exponentialRampToValueAtTime(60,ctx.currentTime+0.1);},
+    chime(low){ tone(low?392:660,0.35,'sine',0.12); tone(low?311:880,0.45,'sine',0.1,0.12); },
+    err(){ tone(330,0.3,'triangle',0.08); tone(247,0.4,'triangle',0.08,0.28); },
+    click(){ tone(1200,0.04,'triangle',0.05); }
+  };
+})();
+$('soundBtn').onclick=()=>{const on=sfx.toggle();$('soundBtn').textContent=on?'Sound effects off':'Sound effects on';$('soundBtn').classList.toggle('on',on);};
+let useVoice=true;
+$('voiceBtn').onclick=()=>{useVoice=!useVoice;$('voiceBtn').textContent='Narrator: '+(useVoice?'on':'off');$('voiceBtn').classList.toggle('on',useVoice);if(!useVoice&&'speechSynthesis' in window)speechSynthesis.cancel();};
+
+/* ---------- Process drawing ---------- */
+const cv=$('proc'),cx=cv.getContext('2d');
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const C={};function readColors(){['--product','--paper','--flow','--sp','--ok','--alarm','--fg','--muted','--line','--air','--panel2','--led'].forEach(k=>C[k.slice(2)]=css(k));}
+readColors();
+function fit(c,w,h){const r=Math.min(2,window.devicePixelRatio||1);const W=c.clientWidth;c.width=W*r;c.height=(h?h:W*w)*r;return r;}
+let pr=1;function resize(){pr=fit(cv,0.6);fit(tr,0,190);}
+const HL={tank:[890,140,95],ip:[680,140,60],valve:[680,280,55],fm:[520,280,55],link:[560,170,70],tube:[380,390,110],sensor:[470,390,45],jaws:[380,535,60]};
+let highlight=[];
+const path=[[860,226],[860,280],[400,280],[400,250],[380,250],[380,490]]; // tank->pipe->tube filling pipe
+const segs=[];let plen=0;for(let i=1;i<path.length;i++){const[a,b]=[path[i-1],path[i]];const l=Math.hypot(b[0]-a[0],b[1]-a[1]);segs.push({a,b,l,s:plen});plen+=l;}
+const parts=Array.from({length:46},(_,i)=>i/46*plen);
+function at(s){for(const g of segs){if(s<=g.s+g.l){const f=(s-g.s)/g.l;return[g.a[0]+(g.b[0]-g.a[0])*f,g.a[1]+(g.b[1]-g.a[1])*f];}}return path[path.length-1];}
+function rr(x,y,w,h,r){cx.beginPath();cx.roundRect?cx.roundRect(x,y,w,h,r):cx.rect(x,y,w,h);}
+function label(t,x,y,col,size=14,w=600,align='center'){cx.font=`${w} ${size}px "IBM Plex Sans Arabic",Tahoma,sans-serif`;cx.fillStyle=col;cx.textAlign=align;cx.direction='ltr';cx.fillText(t,x,y);}
+function mono(t,x,y,col,size=14,align='center'){cx.font=`700 ${size}px "JetBrains Mono",Consolas,monospace`;cx.fillStyle=col;cx.textAlign=align;cx.direction='ltr';cx.fillText(t,x,y);}
+function draw(dt){
+  const s=cv.width/1000;cx.setTransform(s,0,0,s,0,0);cx.clearRect(0,0,1000,600);
+  const t=S.t;
+  // grid
+  cx.strokeStyle='rgba(120,150,150,0.06)';cx.lineWidth=1;for(let x=0;x<1000;x+=40){cx.beginPath();cx.moveTo(x,0);cx.lineTo(x,600);cx.stroke();}for(let y=0;y<600;y+=40){cx.beginPath();cx.moveTo(0,y);cx.lineTo(1000,y);cx.stroke();}
+  // TMCC box + signal links
+  const err=S.tmccErr, commBad=S.comm;
+  rr(500,40,140,56,8);cx.fillStyle='#20262a';cx.fill();cx.strokeStyle=err?C.alarm:'#3a4549';cx.lineWidth=2;cx.stroke();
+  label('TMCC2 card',570,64,C.fg,14);mono('A401',570,86,err?C.alarm:C.led,14);
+  cx.setLineDash([6,5]);cx.lineWidth=2;
+  const lt=(t*40)%22;cx.lineDashOffset=-lt;
+  cx.strokeStyle=commBad?(Math.floor(t*4)%2?C.alarm:'#5a2622'):'rgba(85,182,234,.8)';
+  cx.beginPath();cx.moveTo(540,96);cx.lineTo(540,180);cx.lineTo(520,180);cx.lineTo(520,250);cx.stroke();
+  cx.strokeStyle='rgba(233,166,64,.75)';cx.beginPath();cx.moveTo(620,68);cx.lineTo(680,68);cx.lineTo(680,112);cx.stroke();
+  cx.strokeStyle='rgba(243,239,228,.45)';cx.beginPath();cx.moveTo(500,68);cx.lineTo(470,68);cx.lineTo(470,365);cx.stroke();
+  cx.setLineDash([]);
+  label(commBad?'RS485 LOST':'RS485',548,200,commBad?C.alarm:C.flow,12,600,'left');
+  if(commBad){mono('✕',528,206,C.alarm,22);}
+  // tank
+  rr(820,60,140,166,14);cx.fillStyle='#1c272c';cx.fill();cx.strokeStyle='#4a5c62';cx.lineWidth=3;cx.stroke();
+  const tl=140+(1-(S.tankL==null?1:S.tankL))*112+Math.sin(t*1.3)*3;cx.save();rr(822,62,136,162,12);cx.clip();cx.fillStyle=C.product;cx.globalAlpha=.85;cx.beginPath();cx.moveTo(822,226);
+  for(let x=822;x<=960;x+=6)cx.lineTo(x,tl-30+Math.sin(x*.07+t*3)*3);cx.lineTo(960,226);cx.fill();cx.restore();cx.globalAlpha=1;
+  label('Product tank',890,48,C.fg,14);
+  // pressure gauge
+  cx.beginPath();cx.arc(930,92,20,0,7);cx.fillStyle='#0f171a';cx.fill();cx.strokeStyle='#6b7f84';cx.lineWidth=2;cx.stroke();
+  const ga=Math.PI*0.8+Math.min(1,K.press/3)*Math.PI*1.4;cx.strokeStyle=K.press<1?C.alarm:C.sp;cx.beginPath();cx.moveTo(930,92);cx.lineTo(930+Math.cos(ga)*15,92+Math.sin(ga)*15);cx.stroke();
+  mono(K.press.toFixed(2)+' bar',930,130,K.press<1?C.alarm:'#2b3a3f',12);
+  // pipes
+  cx.lineCap='round';cx.lineJoin='round';
+  cx.strokeStyle='#3c4d53';cx.lineWidth=16;cx.beginPath();path.forEach((p,i)=>i?cx.lineTo(...p):cx.moveTo(...p));cx.stroke();
+  cx.strokeStyle='#182226';cx.lineWidth=10;cx.stroke();
+  if(S.flow>20){cx.strokeStyle='rgba(255,198,41,'+Math.min(.45,S.flow/QREF*.3)+')';cx.lineWidth=8;cx.stroke();}
+  // particles
+  const fr=S.flow/QREF, v=30+fr*240;
+  cx.fillStyle=C.product;
+  for(let i=0;i<parts.length;i++){ if(fr>0.02) parts[i]=(parts[i]+v*dt)%plen; const p=at(parts[i]); cx.globalAlpha=Math.min(1,0.25+fr*0.9); cx.beginPath();cx.arc(p[0],p[1],4.2,0,7);cx.fill(); }
+  cx.globalAlpha=1;
+  // I/P transducer
+  rr(645,112,70,52,8);cx.fillStyle='#232d31';cx.fill();cx.strokeStyle='#55666b';cx.lineWidth=2;cx.stroke();
+  mono('I/P',680,134,C.fg,14);const volt=S.cmd*10, bar=0.1+S.cmd*3.9;mono(bar.toFixed(1)+' bar',680,154,C.air,12);
+  label('I/P transducer',722,142,C.muted,12,600,'left');
+  cx.strokeStyle='rgba(154,208,201,.8)';cx.lineWidth=3;cx.setLineDash([3,4]);cx.lineDashOffset=-(t*30*S.cmd);cx.beginPath();cx.moveTo(680,164);cx.lineTo(680,252);cx.stroke();cx.setLineDash([]);
+  mono(volt.toFixed(1)+' V',688,96,C.sp,12,'left');
+  // valve
+  cx.fillStyle='#2b383d';cx.beginPath();cx.moveTo(650,262);cx.lineTo(710,298);cx.lineTo(710,262);cx.lineTo(650,298);cx.closePath();cx.fill();cx.strokeStyle='#6c8086';cx.lineWidth=2;cx.stroke();
+  rr(668,240,24,14,3);cx.fillStyle='#55666b';cx.fill();
+  const gap=Math.max(1,S.valve*16);cx.fillStyle=S.stuck?C.alarm:C.air;cx.fillRect(676,280-8-0,8,8-gap/2+0);cx.fillRect(676,280+gap/2,8,8-gap/2);
+  label('Regulating valve',680,330,C.fg,14);mono((S.valve*100).toFixed(0)+' %',680,348,C.air,13);
+  // flowmeter
+  rr(492,258,56,44,8);cx.fillStyle=commBad?'#3a1512':'#1e2a2f';cx.fill();cx.strokeStyle=commBad?C.alarm:'#6c8086';cx.lineWidth=2;cx.stroke();
+  cx.strokeStyle=C.flow;cx.lineWidth=2;cx.beginPath();cx.arc(520,280,9,0,7);cx.stroke();
+  label('Flowmeter B1316',520,330,C.fg,14);
+  mono(commBad?'----':Math.round(S.meas)+' l/h',520,348,commBad?C.alarm:C.flow,13);
+  // tube
+  const ty0=250, ty1=520, tx=345, tw=70;
+  rr(tx,ty0,tw,ty1-ty0,6);cx.fillStyle='#d8cba6';cx.fill();
+  cx.save();rr(tx+4,ty0,tw-8,ty1-ty0,4);cx.clip();cx.fillStyle='#2a3236';cx.fillRect(tx,ty0,tw,ty1-ty0);
+  const ly=ty1-(ty1-ty0)*S.level/100;
+  cx.fillStyle=C.product;cx.beginPath();cx.moveTo(tx,ty1);for(let x=tx;x<=tx+tw;x+=5)cx.lineTo(x,ly+Math.sin(x*.3+t*6)*1.6);cx.lineTo(tx+tw,ty1);cx.fill();
+  cx.fillStyle='rgba(255,255,255,.12)';cx.fillRect(tx+8,ly,6,ty1-ly);
+  // filling pipe inside
+  cx.fillStyle='#8a9a9e';cx.fillRect(376,ty0,8,240);
+  // floater
+  cx.fillStyle='#2f3e44';rr(388,ly-7,20,12,5);cx.fill();
+  cx.restore();
+  cx.strokeStyle='#9b8b62';cx.lineWidth=2;rr(tx,ty0,tw,ty1-ty0,6);cx.stroke();
+  const ty60=ty1-(ty1-ty0)*TARGET/100;cx.setLineDash([5,4]);cx.strokeStyle=C.sp;cx.beginPath();cx.moveTo(tx-16,ty60);cx.lineTo(tx+tw+8,ty60);cx.stroke();cx.setLineDash([]);
+  mono(TARGET+'%',tx-20,ty60+4,C.sp,11,'right');
+  const tyG=ty1-(ty1-ty0)*K.G/100;cx.strokeStyle='rgba(154,208,201,.5)';cx.beginPath();cx.moveTo(tx-10,tyG);cx.lineTo(tx,tyG);cx.stroke();mono('G',tx-14,tyG+4,C.air,11,'right');
+  label('Paper tube',tx+tw/2,ty0-10,C.fg,14);
+  // level sensor
+  rr(452,365,36,50,6);cx.fillStyle='#232d31';cx.fill();cx.strokeStyle='#6c8086';cx.stroke();
+  mono('B1314',470,432,C.muted,11);mono(S.levM.toFixed(0)+'%',470,394,S.floater?C.alarm:C.product,13);
+  cx.strokeStyle='rgba(243,239,228,.35)';cx.beginPath();cx.moveTo(452,390);cx.lineTo(tx+tw,ly);cx.stroke();
+  // jaws
+  const jc=Math.abs(Math.sin(S.jaw*Math.PI));const jx=24*jc;
+  cx.fillStyle='#55666b';cx.fillRect(tx-38+jx,522,30,16);cx.fillRect(tx+tw+8-jx,522,30,16);
+  label('Jaws',tx+tw/2,560,C.muted,12);
+  // conveyor + packages
+  cx.fillStyle='#202b2f';cx.fillRect(20,572,330,10);
+  const vx=40+K.spd/3600*S.spd*30;
+  S.pkgs.forEach(p=>{p.x-=vx*dt;});S.pkgs=S.pkgs.filter(p=>p.x>10);
+  S.pkgs.forEach(p=>{rr(p.x-12,548,24,24,3);cx.fillStyle=p.full?'#f4f1e6':'#7a5c4a';cx.fill();cx.fillStyle=p.full?'#ffc629':'#a33';cx.fillRect(p.x-12,556,24,5);});
+  label('Packages',60,600-6,C.muted,12);
+  // status strip
+  const phaseTxt=S.alarm?'Machine stopped: alarm':!S.running?'Normal stop: tube draining':S.short?'Short stop: valve closed, machine waiting':S.phase==='prefill'?'Prefilling: filling the tube before the machine restarts':S.phase==='start'?'Start-up: Start Flow + Ramp':'Production: level loop in control';
+  label(phaseTxt,980,580,S.alarm?C.alarm:S.running?C.ok:C.muted,15,700,'right');
+  if(S.tmccErr){rr(140,150,300,46,8);cx.fillStyle='rgba(58,21,18,.92)';cx.fill();cx.strokeStyle=C.alarm;cx.lineWidth=2;cx.stroke();mono('FLOWMETER COMM ERROR',290,179,C.alarm,15);}
+  // highlights
+  const pulse=0.5+0.5*Math.sin(performance.now()/260);
+  highlight.forEach(k=>{const h=HL[k];if(!h)return;cx.strokeStyle=`rgba(233,166,64,${0.45+pulse*0.5})`;cx.lineWidth=3;cx.beginPath();cx.arc(h[0],h[1],h[2]+pulse*6,0,7);cx.stroke();});
+}
+
+/* ---------- Trend ---------- */
+const tr=$('trend'),tx2=tr.getContext('2d');
+function drawTrend(){
+  const r=pr,W=tr.width/r,H=tr.height/r;tx2.setTransform(r,0,0,r,0,0);tx2.clearRect(0,0,W,H);
+  const L=46,R=W-40,T=8,B=H-22;const Qn=qnom(),qmax=Math.max(2*Qn,500);
+  tx2.font='500 11px "JetBrains Mono",monospace';tx2.fillStyle=C.muted;tx2.strokeStyle='rgba(140,165,160,.12)';tx2.lineWidth=1;
+  for(let i=0;i<=4;i++){const y=B-(B-T)*i/4;tx2.beginPath();tx2.moveTo(L,y);tx2.lineTo(R,y);tx2.stroke();tx2.textAlign='right';tx2.fillText(Math.round(qmax*i/4),L-6,y+4);tx2.textAlign='left';tx2.fillText(25*i+'%',R+6,y+4);}
+    for(let s=0;s<=30;s+=10){const x=L+(R-L)*s/30;tx2.fillText((s-30)+'s',x,H-6);}
+  const h=S.hist,n=300;
+  const line=(idx,col,scale,dash,w=2)=>{tx2.strokeStyle=col;tx2.lineWidth=w;tx2.setLineDash(dash||[]);tx2.beginPath();let pen=false;
+    h.forEach((p,i)=>{const v=p[idx];const x=L+(R-L)*(i+n-h.length)/n;if(v==null){pen=false;return;}const y=B-(B-T)*Math.min(1,v/scale);pen?tx2.lineTo(x,y):tx2.moveTo(x,y);pen=true;});tx2.stroke();tx2.setLineDash([]);};
+  line(3,C.air,100,[2,3],1.5);line(2,C.product,100);line(0,C.sp,qmax,[6,4]);line(1,C.flow,qmax);
+}
+
+/* ---------- TMCC display + PLC ---------- */
+const disp=$('disp');const cells=[];for(let i=0;i<8;i++){const c=document.createElement('div');c.className='cell';disp.appendChild(c);cells.push(c);}
+let scrollI=0,scrollT=0;
+function drawTMCC(dt){
+  if(window.menuDraw&&menuDraw(dt))return;
+  const box=$('tmcc');
+  if(S.stopped){box.classList.add('err');const t='STOPPED ';for(let i=0;i<8;i++){cells[i].className='cell';cells[i].textContent=t[i];}$('tmccNote').textContent='Program FCSFA3F stopped (STOP command from the terminal). The card is in firmware mode and Enabled is dropped.';return;}box.classList.toggle('err',S.tmccErr||S.epipe);
+  if(S.tmccErr||S.epipe){
+    scrollT+=dt;if(scrollT>0.28){scrollT=0;scrollI++;}
+    const msg='        '+(S.tmccErr?'FLOWMETER COMM ERROR':'EMPTY PIPE')+'  ';
+    if(!S.tmccErr){const k=scrollI%msg.length;for(let i=0;i<8;i++){const c=cells[i];c.className='cell';c.textContent=msg[(k+i)%msg.length];}$('tmccNote').textContent='The flowmeter sees an empty pipe: no product coming from the tank.';return;}const k=scrollI%msg.length;
+    for(let i=0;i<8;i++){const c=cells[i];c.className='cell';c.textContent=msg[(k+i)%msg.length];}
+    $('tmccNote').textContent='The card says: cannot talk to the flowmeter. Valve closed, Enabled dropped.';
+    return;
+  }
+  const ch=[S.running?'P':'',' ',' ','V'];
+  for(let i=0;i<4;i++){cells[i].className='cell';cells[i].textContent=ch[i];}
+  const rows=Math.round(S.levM/5);
+  for(let i=4;i<8;i++){const c=cells[i];if(!c.classList.contains('bars')){c.className='cell bars';c.innerHTML='<u></u><u></u><u></u><u></u><u></u>';}
+    const us=c.children;for(let j=0;j<5;j++)us[j].classList.toggle('lit',(i-4)*5+j<rows);}
+  $('tmccNote').textContent='P = production, V = fixed, bars = tube level (5% per row).';
+}
+function setLed(id,on,bad){const e=$(id);e.className='led'+(bad?' bad':on?' on':'');}
+function drawPLC(){
+  const Qn=qnom();
+  setLed('lEn',S.enabled,!S.enabled);
+  const ok=S.running&&S.phase==='level'&&Math.abs(S.flow-Qn*S.spd)/Qn<K.WIN/100&&S.enabled;
+  setLed('lOk',ok);setLed('lHi',S.level>90,S.level>95);setLed('lPr',S.running&&!S.short);setLed('lSs',S.short);setLed('lFm',!S.comm,S.comm);
+  $('tVal').textContent=S.plcT.toFixed(1)+' / 25.0 s';$('tBar').style.width=Math.min(100,S.plcT/25*100)+'%';
+  const a=$('alarm');a.classList.toggle('on',S.alarm);
+  a.innerHTML=S.alarm?'ALARM: TMCC Filling system not enabled <span class="mono">(%M3765 SRVL_05)</span>':(S.plcT>0?'PLC counting... alarm if the signal does not return':'No alarm');
+}
+function readouts(){
+  const Qn=qnom();
+  $('roNom').textContent=Math.round(Qn)+' l/h';$('roSp').textContent=Math.round(S.sp)+' l/h';
+  $('roFlow').textContent=S.comm?'----':Math.round(S.meas)+' l/h';$('roFlow').style.color=S.comm?C.alarm:'';
+  $('roLev').textContent=S.level.toFixed(1)+' %'+(S.floater?' (sensor '+S.levM.toFixed(0)+')':'');
+  renderAlarms();$('roValve').textContent=(S.valve*100).toFixed(0)+'% / '+(0.1+S.cmd*3.9).toFixed(1)+' bar';
+  $('roPk').textContent=S.pk;
+  $('runBtn').textContent=S.running?'Normal stop':'Start production';
+  const sb=$('shortBtn');sb.textContent=S.short?'Resume after short stop':'Short stop';sb.disabled=!S.running;sb.classList.toggle('on',S.short);sb.style.opacity=S.running?1:.45;
+}
+
+/* ---------- Controls ---------- */
+const ctlMap={kP:['P',v=>v.toFixed(2)],kI:['I',v=>v.toFixed(1)],kD:['D',v=>v.toFixed(2)],kU:['U',v=>v.toFixed(1)],kV:['V',v=>v.toFixed(2)],kW:['W',v=>v.toFixed(1)],kL:['L',v=>v+' %'],
+  kB:['B',v=>v+' %'],kPF:['PF',v=>v+' %'],kT:['T',v=>v.toFixed(1)+' s'],kG:['G',v=>v+' %'],kVol:['vol',v=>v+' ml'],kSpd:['spd',v=>v+' pk/h'],kPr:['press',v=>v.toFixed(2)+' bar']};
+function syncCtl(){TARGET=K.L;for(const id in ctlMap){const[k,f]=ctlMap[id];$(id).value=K[k];$('v'+id.slice(1)).textContent=f(K[k]);}
+  const Qn=qnom();$('formula').textContent=`Nominal Flow = ${(K.vol/1000).toFixed(3)} L × ${K.spd} pk/h = ${Math.round(Qn)} l/h`;
+  $('fHighP').classList.toggle('on',K.P>1.4);}
+for(const id in ctlMap){$(id).addEventListener('input',e=>{K[ctlMap[id][0]]=parseFloat(e.target.value);syncCtl();});}
+$('runBtn').onclick=()=>{sfx.click();S.running?stopProd():startProd();};
+$('shortBtn').onclick=()=>{sfx.click();shortStop();};
+$('resetBtn').onclick=()=>{sfx.click();resetAlarm();};
+function resetAlarm(){ if(!S.comm){S.tmccErr=false;S.commLost=0;} S.alarm=false;S.plcT=0;S.ovf=false; }
+const ALM=[
+ {id:'fm',txt:'Flowmeter Communication error (card display)',d:0,c:()=>S.tmccErr},
+ {id:'srvl',txt:'TMCC Filling system not enabled (PLC alarm)',d:0,c:()=>S.alarm},
+ {id:'ep',txt:'Empty pipe',d:1,c:()=>S.epipe},
+ {id:'dev',txt:'Flow more than 20% away from setpoint',d:5,c:(Qn)=>S.running&&S.phase==='level'&&S.enabled&&Math.abs(S.meas-S.sp)>0.2*Qn},
+ {id:'sat',txt:'Valve fully open (I/P 100%)',d:4,c:()=>S.running&&S.cmd>0.98},
+ {id:'low',txt:'Low tube level: underfilled packages',d:3,c:()=>S.running&&!S.short&&S.phase==='level'&&S.level<15},
+ {id:'hi',txt:'High tube level (%I266)',d:2,c:()=>S.level>90},
+ {id:'ovf',txt:'Product overflow: machine stopped',d:3,c:()=>S.level>97||S.ovf,stop:1}
+];
+const AT={};
+function evalAlarms(dt,Qn){ALM.forEach(a=>{const o=AT[a.id]||(AT[a.id]={t:0,on:false});if(a.c(Qn)){o.t+=dt;if(o.t>=a.d&&!o.on){o.on=true;if(a.id!=='fm'&&a.id!=='srvl')sfx.err();if(a.stop){S.ovf=true;S.running=false;S.phase='idle';}}}else{o.t=0;o.on=false;}});}
+let almHTML='';
+function renderAlarms(){let h='';ALM.forEach(a=>{const o=AT[a.id];if(!o||o.t<=0)return;if(a.id==='srvl')return;
+  h+=o.on?`<div class="arow on"><i></i><span>${a.txt}</span><span class="mono">${o.t.toFixed(0)}s</span></div>`:`<div class="arow"><i></i><span>${a.txt}</span><span class="mono">in ${(a.d-o.t).toFixed(1)}s</span></div>`;});
+  if(h!==almHTML){almHTML=h;$('alist').innerHTML=h;}}
+function setFault(k,v){S[k]=v;$({comm:'fComm',noise:'fNoise',stuck:'fStuck',air:'fAir',ipcal:'fIP',empty:'fEmpty',floater:'fFloat'}[k]).classList.toggle('on',v);}
+[['fAir','air'],['fIP','ipcal'],['fEmpty','empty'],['fFloat','floater']].forEach(([id,k])=>$(id).onclick=()=>{sfx.click();setFault(k,!S[k]);});
+$('fComm').onclick=()=>{sfx.click();setFault('comm',!S.comm);};
+$('fNoise').onclick=()=>{sfx.click();setFault('noise',!S.noise);};
+$('fStuck').onclick=()=>{sfx.click();setFault('stuck',!S.stuck);};
+$('fHighP').onclick=()=>{sfx.click();K.P=K.P>1.4?DEF.P:1.9;syncCtl();};
+$('fClear').onclick=()=>{sfx.click();clearAll();};
+$('fDist').onclick=()=>{sfx.click();S.level=Math.max(0,S.level-20);};
+function clearAll(){['comm','noise','stuck','air','ipcal','empty','floater'].forEach(k=>setFault(k,false));S.ovf=false;S.force=0;S.stopped=false;if(window.menuExit)menuExit();Object.assign(K,DEF);syncCtl();resetAlarm();}
+let rate=1;
+document.querySelectorAll('[data-rate]').forEach(b=>b.onclick=()=>{setRate(+b.dataset.rate);sfx.click();});
+function setRate(r){rate=r;document.querySelectorAll('[data-rate]').forEach(x=>x.classList.toggle('on',+x.dataset.rate===r));}
+
+/* ---------- Tour ---------- */
+const scenes=[
+ {t:'Introduction',say:'Welcome. This is the filling system of the A3 machine. We will see how product is filled into the paper tube, and how the TMCC card controls it.',hl:[],act(){clearAll();warm();setRate(1);},d:7000},
+ {t:'Tank and pressure',say:'Product comes from the tank under pressure. If the pressure is not stable, all the tuning after it is spoiled. So the first thing we check is product pressure.',hl:['tank'],d:8000},
+ {t:'Valve and I/P transducer',say:'The card outputs 0 to 10 volts. The transducer turns it into 0 to 4 bar of air, and that air opens the regulating valve.',hl:['ip','valve'],d:9000},
+ {t:'Flowmeter',say:'The flowmeter measures flow in litres per hour and sends the reading to the card over an RS485 link. If that link is cut, the card is blind.',hl:['fm','link'],d:9000},
+ {t:'Tube and level sensor',say:'Inside the tube there is a floater, and the level sensor reads its position. The target level is 60%, the orange line.',hl:['tube','sensor'],d:8000},
+ {t:'Nominal flow',say:'Nominal flow = package volume in litres × machine speed. 0.25 L × 7000 packages per hour = 1750 litres per hour.',hl:[],d:9000},
+ {t:'Two control loops',say:'Control works in two loops. The flow loop is fast and moves the valve so the reading matches the setpoint. The level loop is slower and adjusts the flow setpoint until the level settles at 60%.',hl:['fm','valve','sensor'],d:11000},
+ {t:'Start-up',say:'Now a start from empty. The card asks for more than nominal flow, 120%, and ramps up to it over 4 seconds so the tube fills quickly without a shock.',hl:['tube'],act(){S.running=false;S.level=8;S.valve=0;S.iF=0;S.flow=0;S.meas=0;S.buf=[];S.spd=0;setTimeout(startProd,600);},d:12000},
+ {t:'Switch to level loop',say:'When the level reaches switch point G, the card hands control to the level loop, and the level approaches 60% and settles.',hl:['tube','sensor'],d:10000},
+ {t:'High P = oscillation',say:'Let’s raise P in the flow loop. Look at the valve: it moves nervously, and the blue trend line jumps. That is the symptom of a high P.',hl:['valve'],act(){K.P=1.9;syncCtl();},d:11000},
+ {t:'Back to the right value',say:'P is back to its value and the oscillation calms down. Rule: change one value at a time, let the machine settle, and write down the old and new values.',hl:[],act(){K.P=DEF.P;syncCtl();},d:9000},
+ {t:'Air in product',say:'Now there is air in the product. The flowmeter reading shakes. The fix is not in the PID: remove the air and check product pressure.',hl:['fm'],act(){setFault('noise',true);},d:10000},
+ {t:'Flowmeter link fault',say:'This is a real fault seen on these machines. The card cannot talk to the flowmeter. After about 1.5 seconds it shows Flowmeter Communication error, closes the valve, and drops the Enabled signal to the PLC.',hl:['fm','link'],act(){setFault('noise',false);setFault('comm',true);},d:11000},
+ {t:'PLC counts 25 seconds',say:'The PLC counts 25 seconds. We speed time up. If the signal does not return, the alarm TMCC Filling system not enabled appears and the machine stops.',hl:[],act(){setRate(4);},d:11000,until:()=>S.alarm},
+ {t:'The fix',say:'The fix: replace the corroded cable inside the flowmeter and close the cover and gasket properly. Then reset, the signal returns, and we start again.',hl:['fm'],act(){setRate(1);setFault('comm',false);setTimeout(()=>{resetAlarm();startProd();},2500);},d:12000},
+ {t:'Summary',say:'Summary: check mechanics, pressure and the flowmeter first, then start flow and ramp, and the PID last. Now try it yourself with the controls below.',hl:[],d:10000}
+];
+const EN=[
+'Welcome. This is the filling system of the A3 machine. Let us see how the product fills the paper tube, and how the TMCC2 card controls it.',
+'The product comes from the tank under pressure. If the pressure is not stable, every tuning step after this will fail. So always check product pressure first.',
+'The card sends zero to ten volts. The I P transducer turns it into zero to four bar of air, and that air opens the regulating valve.',
+'The flow meter measures the flow in litres per hour, and sends the reading to the card over an R S 485 link. If that link is cut, the card is blind.',
+'Inside the tube there is a floater, and the level sensor reads its position. The target level is sixty percent, the orange line.',
+'Nominal flow equals package volume in litres, times machine speed. A quarter litre at seven thousand packages per hour gives one thousand seven hundred fifty litres per hour.',
+'Control runs in two loops. The flow loop is fast, and moves the valve so the reading matches the set point. The level loop is slower, and corrects the flow set point until the level settles at sixty percent.',
+'Now we start from the beginning. The card asks for one hundred twenty percent start flow, ramped up over four seconds, so the tube fills fast without a hard kick.',
+'When the level reaches the switch point G, the card hands control to the level loop, and the level settles near sixty percent.',
+'Let us raise P in the flow loop. Watch the valve. It moves nervously, and the blue flow line oscillates. That is the sign of a P value that is too high.',
+'P is back to normal, and the oscillation is gone. The rule: change one value at a time, wait for the machine to settle, and write down the old and new values.',
+'Now there is air in the product. The flow reading becomes noisy. The fix is not in the P I D. Remove the air and check product pressure.',
+'This is a real fault seen on these machines. The card cannot talk to the flow meter. After about one and a half seconds it shows Flow meter Communication error, closes the valve, and drops the Enabled signal to the P L C.',
+'The P L C counts twenty five seconds. We speed up time. If the signal does not come back, the alarm T M C C Filling system not enabled appears, and the machine stops.',
+'The fix: replace the corroded ribbon cable inside the flow meter, and seal the cover and gasket well. Then reset. The signal returns, and we start again.',
+'Summary: check mechanics, pressure and the flow meter first. Then start flow and ramp. P I D comes last. Now try it yourself with the controls below.'];
+scenes.forEach((s,i)=>s.en=EN[i]);
+const dots=$('dots');scenes.forEach((s,i)=>{const d=document.createElement('i');d.title=s.t;d.onclick=()=>goScene(i,true);dots.appendChild(d);});
+let sc=-1,playing=false,sceneTimer=null,speechDone=true,sceneStart=0;
+let voice=null;
+function pickVoice(){if(!('speechSynthesis' in window))return;const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang));
+  const pref=[/natural/i,/neural/i,/enhanced|premium/i,/google us english/i,/google uk english/i,/samantha|daniel|karen|moira|aria|jenny|guy/i];
+  voice=null;for(const r of pref){voice=vs.find(v=>r.test(v.name));if(voice)break;}
+  voice=voice||vs.find(v=>/^en[-_]US/i.test(v.lang))||vs[0]||null;
+  $('voiceNote').textContent=voice?'The narrator speaks English and the caption follows along.':'';}
+if('speechSynthesis' in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice;}
+function speak(txt){
+  speechDone=true;
+  if(!useVoice||!voice||!('speechSynthesis' in window))return;
+  speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt);u.voice=voice;u.lang=voice.lang;u.rate=0.95;u.pitch=1;
+  speechDone=false;u.onend=u.onerror=()=>{speechDone=true;};speechSynthesis.speak(u);
+}
+function goScene(i,manual){
+  if(i<0||i>=scenes.length){stopTour(i>=scenes.length);return;}
+  sc=i;const s=scenes[i];sceneStart=performance.now();
+  $('sceneTitle').textContent=`Scene ${i+1} of ${scenes.length}: ${s.t}`;$('caption').textContent=s.say;
+  [...dots.children].forEach((d,k)=>d.className=k<i?'done':k===i?'cur':'');
+  highlight=s.hl||[];
+  $('tmcc').classList.toggle('hl',i===12||i===2);$('plc').classList.toggle('hl',i===13);
+  if(s.act)s.act();
+  sfx.chime();
+  if(playing||manual){speak(s.en||s.say);}
+  if(manual&&!playing){/* single scene preview */}
+}
+function tick(){
+  if(!playing)return;const s=scenes[sc];
+  const el=performance.now()-sceneStart;const minD=(useVoice&&voice)?s.d*0.6:Math.max(s.d,s.say.length*80);
+  const doneUntil=s.until?s.until()||el>s.d*2.2:true;
+  if(el>minD&&speechDone&&doneUntil&&el>2500) goScene(sc+1);
+}
+function startTour(){playing=true;$('tourPlay').textContent='⏸ Pause the tour';goScene(sc<0||sc>=scenes.length-1?0:sc);}
+function stopTour(ended){playing=false;$('tourPlay').textContent=ended?'↺ Play the tour again':'▶ Resume the tour';if('speechSynthesis' in window)speechSynthesis.cancel();
+  if(ended){highlight=[];$('sceneTitle').textContent='Tour finished';$('caption').textContent='Now play yourself: change P or U, or cut the flowmeter link, and see what happens.';sc=-1;[...dots.children].forEach(d=>d.className='done');$('tmcc').classList.remove('hl');$('plc').classList.remove('hl');}}
+$('tourPlay').onclick=()=>{playing?stopTour(false):startTour();};
+$('tourNext').onclick=()=>{goScene(Math.min(scenes.length-1,sc+1),true);};
+$('tourPrev').onclick=()=>{goScene(Math.max(0,sc-1),true);};
+
+/* ---------- A401 front-panel menu (tree from manual 9.7, p. 9-473/474) ---------- */
+const fx=(v,n)=>(+v).toFixed(n);
+const slid=id=>({min:+$(id).min,max:+$(id).max,step:+$(id).step||1});
+const ED=(k,id,fmt,ar)=>Object.assign({get:()=>K[k],set:v=>{K[k]=v;syncCtl();},fmt,ar},slid(id));
+const N_=(l,ar,o)=>Object.assign({l,ar},o||{});
+const BK=ar=>N_('BACK',ar||'Back to level 1',{back:1});
+const MENU=[
+ N_('MONITOR','Choose which reading to show on the display',{items:[
+   N_('LEVEL','Level as sensor B1314 reads it now',{mon:()=>'L='+fx(S.levM,1)+'%'}),
+   N_('FILT LEV','Filtered level (calmer than the raw reading)',{mon:()=>'FL='+fx(S.flev,1)+'%'}),
+   N_('FLOW','Flowmeter B1316 reading in l/h',{mon:()=>'F='+Math.round(S.meas)}),
+   N_('OUTPUT','Card output to the I/P (requested valve opening)',{mon:()=>'O='+fx(S.cmd*100,1)+'%'}),
+   BK()]}),
+ N_('SETTING','Set the filling parameters',{items:[
+   N_('FILL OK','Window for the Filling OK signal to the PLC',{edit:{get:()=>K.WIN,set:v=>{K.WIN=v;},min:5,max:50,step:1,fmt:v=>'WIND=±'+v,ar:'If flow is further from setpoint than this, Filling OK (%I268) drops'}}),
+   N_('FLOW PID','Flow loop tuning (P, I and D)',{items:[
+     N_('P CONST','Flow loop P constant',{edit:ED('P','kP',v=>'P='+fx(v,2),'Bigger P = faster, stronger valve moves; too much causes oscillation')}),
+     N_('I CONST','Flow loop I constant',{edit:ED('I','kI',v=>'I='+fx(v,1),'I removes the small remaining difference between setpoint and measurement over time')}),
+     N_('D CONST','Flow loop D constant',{edit:ED('D','kD',v=>'D='+fx(v,2),'D brakes fast changes; usually left at zero')}),
+     BK('Back to the SETTING menu')]}),
+   N_('LEV PID','Level loop tuning',{items:[
+     N_('P CONST','Level loop P constant (same as U in the terminal)',{edit:ED('U','kU',v=>'P='+fx(v,1),'This is U: how much the level affects the flow setpoint')}),
+     BK('Back to the SETTING menu')]}),
+   BK()]}),
+ N_('FORCE','Force a manual output to the I/P (for testing only, not in production)',{items:[
+   N_('OUTPUT','Force an output value on the I/P transducer',{edit:{get:()=>Math.round((S.force||0)*100),set:v=>{S.force=v/100;},min:0,max:99,step:1,fmt:v=>'O='+v,ar:'0 = no forcing, the card controls by itself. Any other number = valve opens to that percentage whatever the level'}}),
+   BK()]}),
+ N_('E.PIPE','Flowmeter empty pipe detection',{items:[
+   N_('E.P.DET','Turn empty pipe detection on or off',{edit:{get:()=>K.EPD,set:v=>{K.EPD=v;},min:0,max:1,step:1,fmt:v=>'EPD='+(v?'ON':'OFF'),ar:'Default ON. Turn off only for low-conductivity water (below 30 µS/cm)'}}),
+   N_('E.P.TH','Detection threshold in Hz (max 3000)',{edit:{get:()=>K.EPTH,set:v=>{K.EPTH=v;},min:100,max:3000,step:100,fmt:v=>'T='+v+'Hz',ar:'If set below the product’s reading, the card thinks the pipe is empty while it is full'}}),
+   BK()]}),
+ N_('BACK','Exit the menu and return to the production display',{back:1})
+];
+const mn={on:false,path:[],idx:0,mode:'list',cur:null,val:0,idle:0,flash:0};
+S.flev=S.flev||0;
+function mItems(){return mn.path.length?mn.path[mn.path.length-1].items:MENU;}
+function menuExit(){mn.on=false;mn.path=[];mn.idx=0;mn.mode='list';$('mpath').textContent='';}
+window.menuExit=menuExit;
+function menuKey(k){
+  sfx.click();mn.idle=0;
+  if(!mn.on){mn.on=true;mn.path=[];mn.idx=0;mn.mode='list';return;}
+  if(mn.mode==='mon'){mn.mode='list';return;}
+  if(mn.mode==='edit'){const e=mn.cur.edit;
+    if(k==='enter'){e.set(mn.val);mn.flash=1.2;mn.mode='list';return;}
+    mn.val=Math.max(e.min,Math.min(e.max,+(mn.val+(k==='up'?1:-1)*e.step).toFixed(3)));return;}
+  const it=mItems();
+  if(k==='up'){mn.idx=(mn.idx-1+it.length)%it.length;return;}
+  if(k==='down'){mn.idx=(mn.idx+1)%it.length;return;}
+  const n=it[mn.idx];
+  if(n.back){if(!mn.path.length){menuExit();return;}const par=mn.path.pop();mn.idx=Math.max(0,mItems().indexOf(par));return;}
+  if(n.items){mn.path.push(n);mn.idx=0;return;}
+  if(n.mon){mn.mode='mon';mn.cur=n;return;}
+  if(n.edit){mn.mode='edit';mn.cur=n;mn.val=n.edit.get();}
+}
+document.querySelectorAll('.btnrow button').forEach(b=>b.onclick=()=>menuKey(b.dataset.k));
+function menuDraw(dt){
+  S.flev+=(S.levM-S.flev)*Math.min(1,dt/3);
+  if(!mn.on)return false;
+  mn.idle+=dt;if(mn.idle>45){menuExit();return false;}
+  const box=$('tmcc');box.classList.remove('err');
+  let txt,note;const it=mItems();const n=mn.mode==='list'?it[mn.idx]:mn.cur;
+  const crumbs=mn.path.map(x=>x.l);
+  if(mn.flash>0){mn.flash-=dt;txt='SAVED';note='Value saved. The card uses it immediately.';}
+  else if(mn.mode==='list'){txt=n.l;note=n.ar+'. Use ▲ ▼ to move and ENTER to open.';}
+  else if(mn.mode==='mon'){txt=n.mon();crumbs.push(n.l);note=n.ar+'. Press any button to go back.';}
+  else{const e=n.edit;txt=(Math.floor(performance.now()/450)%4===0)?'':e.fmt(mn.val);crumbs.push(n.l);note=e.ar+'. ▲ ▼ change the value, ENTER saves.';}
+  txt=(txt+'        ').slice(0,8);
+  for(let i=0;i<8;i++){cells[i].className='cell';cells[i].textContent=txt[i];}
+  $('mpath').textContent='MENU'+(crumbs.length?' › '+crumbs.join(' › '):'')+(mn.mode==='list'?'   ['+(mn.idx+1)+'/'+it.length+']':'');
+  $('tmccNote').textContent=note;
+  return true;
+}
+window.menuDraw=menuDraw;
+
+/* ---------- Hyperterminal emulator (commands from manual p. 9-500/501) ---------- */
+const tout=$('tout');
+function tw(t,c){const d=document.createElement('div');if(c)d.className=c;d.textContent=t;tout.appendChild(d);while(tout.children.length>300)tout.firstChild.remove();tout.scrollTop=tout.scrollHeight;}
+const KEYS={P:'kP',I:'kI',D:'kD',U:'kU',V:'kV',W:'kW',L:'kL',T:'kT',B:'kB',G:'kG'};
+const KNAME={P:'Flow PID P',I:'Flow PID I',D:'Flow PID D',U:'Level PID P (U)',V:'Level PID I (V)',W:'Level PID D (W)',L:'Level setpoint %',T:'Start ramp time s',B:'Start flow %',G:'Virtual level trigger %'};
+let report=false;
+const HELP=['H        Help menu','S        Filling system status','P <val>  Flow PID proportional','I <val>  Flow PID integral','D <val>  Flow PID derivative','U <val>  Level PID proportional','V <val>  Level PID integral','W <val>  Level PID derivative','M/N/O    Cleaning PID P/I/D','L <val>  Level setpoint','T <val>  Start up ramp time','F <val>  Force output (0=off, 1..1000)','R <val>  Reporting 0=OFF 1=ON','B <val>  Start flow percentage','G <val>  Virtual level trigger','Z        Flowmeter parameters','SERVICE  Extra service commands','STOP     Stop application, enter firmware'];
+function stateTxt(){return S.stopped?'FIRMWARE (STOPPED)':S.tmccErr?'ERROR':!S.running?'IDLE':S.short?'SHORT STOP':S.phase==='level'?'PRODUCTION / LEVEL CTRL':S.phase==='ramp'?'START RAMP':'PREFILL';}
+function tcmd(raw){
+  const line=raw.trim().toUpperCase();if(!line)return;
+  tw('> '+line,'ec');
+  if(S.stopped&&line!=='RUN'&&line!=='H'){tw('fw> application not running. Type RUN (simulator) or power-cycle the card.','wr');return;}
+  const [c,a]=line.split(/\s+/);const v=a===undefined?null:parseFloat(a);
+  if(c==='H'){tw('FCSFA3F commands:','hd');HELP.forEach(h=>tw('  '+h));return;}
+  if(c==='S'){const Qn=qnom();
+    tw('--- FCSFA3F STATUS ---','hd');
+    tw('STATE      : '+stateTxt());
+    tw('ENABLED    : '+(S.enabled?'1':'0')+'   FILL OK: '+($('lOk').classList.contains('on')?'1':'0'));
+    tw('FLOW SP    : '+Math.round(S.sp)+' l/h   (nominal '+Math.round(Qn)+')');
+    tw('FLOW MEAS  : '+(S.comm?'----  (no flowmeter answer)':Math.round(S.meas)+' l/h'));
+    tw('LEVEL      : '+fx(S.levM,1)+' %   SP '+K.L+' %');
+    tw('OUTPUT     : '+fx(S.cmd*100,1)+' %'+(S.force>0?'   ** FORCED **':''));
+    tw('FLOW PID   : P='+fx(K.P,2)+' I='+fx(K.I,1)+' D='+fx(K.D,2));
+    tw('LEVEL PID  : U='+fx(K.U,1)+' V='+fx(K.V,2)+' W='+fx(K.W,1));
+    tw('START      : B='+K.B+'% T='+fx(K.T,1)+'s G='+K.G+'%');
+    if(S.tmccErr)tw('ERROR      : FLOWMETER COMMUNICATION ERROR','wr');
+    return;}
+  if(c==='Z'){tw('--- FLOWMETER B1316 ---','hd');
+    if(S.comm){tw('NO ANSWER FROM FLOWMETER (RS485 timeout)','wr');tw('-> check cable W1051, A401 X031 terms 19-24, flowmeter board','wr');return;}
+    tw('COMM       : OK');tw('FLOW       : '+Math.round(S.meas)+' l/h');tw('EPIPE DET  : '+(K.EPD?'ON':'OFF')+'   TH '+K.EPTH+' Hz');
+    tw('EPIPE FREQ : '+Math.round(S.freq)+' Hz  -> '+(S.epipe?'EMPTY PIPE':K.EPD?'pipe full':'(detection off)'),S.epipe?'wr':'');
+    if(S.noise)tw('SIGNAL     : unstable reading (noise)','wr');return;}
+  if(KEYS[c]){if(v===null||isNaN(v)){tw(c+' = '+K[c]+'   ('+KNAME[c]+')');return;}
+    const r=slid(KEYS[c]);const nv=Math.max(r.min,Math.min(r.max,v));K[c]=nv;syncCtl();
+    tw(KNAME[c]+' = '+nv+(nv!==v?'   (limited to '+r.min+'..'+r.max+' in simulator)':'')+'  OK');return;}
+  if(c==='M'||c==='N'||c==='O'){if(v!==null&&!isNaN(v))K[c]=v;tw('Cleaning PID '+c+' = '+K[c]+'  (used only during cleaning, no effect in production)');return;}
+  if(c==='F'){if(v===null||isNaN(v)){tw('F = '+Math.round((S.force||0)*1000));return;}
+    const nv=Math.max(0,Math.min(1000,Math.round(v)));S.force=nv/1000;
+    tw(nv?'Output FORCED = '+nv+'/1000 ('+fx(nv/100,1)+' V)':'Forcing disabled, PID in control',nv?'wr':'');return;}
+  if(c==='R'){report=v===1;tw('Reporting '+(report?'ON':'OFF'));return;}
+  if(c==='SERVICE'){tw('Extra service commands:','hd');['FCLEAR          restore default flowmeter configuration','EPIPE ON|OFF    empty pipe detection','EPIPETH <val>   empty pipe threshold (default 2300, max 3000 Hz)'].forEach(h=>tw('  '+h));return;}
+  if(c==='FCLEAR'){K.EPD=1;K.EPTH=2300;tw('Flowmeter configuration restored to default (EPIPE ON, TH 2300 Hz)');tw('!! On the real machine do not use this unless instructed: it erases the flowmeter setup.','wr');return;}
+  if(c==='EPIPE'){if(a==='ON'||a==='OFF'){K.EPD=a==='ON'?1:0;}tw('Empty pipe detection = '+(K.EPD?'ON':'OFF'));return;}
+  if(c==='EPIPETH'){if(v!==null&&!isNaN(v))K.EPTH=Math.max(100,Math.min(3000,Math.round(v)));tw('Empty pipe threshold = '+K.EPTH+' Hz');return;}
+  if(c==='STOP'){S.stopped=true;report=false;sfx.err();tw('Application stopped. Firmware mode.','wr');tw('Enabled signal to PLC dropped (%I269). PLC alarm after 25 s if machine is running.','wr');return;}
+  if(c==='RUN'){if(!S.stopped){tw('Application already running');return;}S.stopped=false;tw('Application FCSFA3F restarted (simulator only)');return;}
+  tw('Unknown command. Type H for help.','wr');
+}
+$('tform').onsubmit=e=>{e.preventDefault();tcmd($('tin').value);$('tin').value='';};
+[['H',''],['S',''],['Z',''],['P 0.9',''],['U 2.5',''],['L 65',''],['F 500','dang'],['F 0',''],['R 1',''],['R 0',''],['SERVICE',''],['EPIPETH 500','dang'],['EPIPETH 3000',''],['STOP','dang'],['RUN','']].forEach(([c,cl])=>{const b=document.createElement('button');b.type='button';b.textContent=c;if(cl)b.className=cl;b.onclick=()=>{sfx.click();tcmd(c);};$('tq').appendChild(b);});
+setInterval(()=>{if(report&&!S.stopped)tw('F='+(S.comm?'----':Math.round(S.meas))+' SP='+Math.round(S.sp)+' L='+fx(S.levM,1)+' O='+fx(S.cmd*100,1));},1000);
+tw('Connected COM1 9600 8N1. Type H and press Enter.','hd');
+
+/* ---------- Loop ---------- */
+window.addEventListener('resize',resize);
+let last=performance.now();
+function loop(now){
+  let dt=Math.min(0.1,(now-last)/1000);last=now;
+  const sub=Math.ceil(dt*rate/0.01);const h=dt*rate/sub;for(let i=0;i<sub;i++)step(h);
+  draw(dt*rate);drawTrend();drawTMCC(dt);drawPLC();readouts();sfx.update();tick();
+  requestAnimationFrame(loop);
+}
+syncCtl();resize();warm();
+// pre-fill history so the trend is not empty on first view
+for(let i=0;i<300;i++)step(0.1);
+requestAnimationFrame(t=>{last=t;loop(t);});
+if(document.fonts)document.fonts.ready.then(()=>{});
+})();
+</script>
+
+</body>
+</html>

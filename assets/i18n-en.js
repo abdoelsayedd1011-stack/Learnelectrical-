@@ -68,10 +68,12 @@
       plc: { title: "PLC", sub: "Ladder · timers · counters · analog · projects" },
       drives: { title: "VFDs (inverters)", sub: "Allen-Bradley · ABB · Siemens · Schneider · Mitsubishi · Yaskawa · Delta · LS · INVT · Danfoss · Fuji" },
       servo: { title: "Servo", sub: "Servo drives and motors" },
-      temp: { title: "Temperature control", sub: "Omron" }
+      temp: { title: "Temperature control", sub: "Omron" },
+      tetrapan: { title: "Tetrapan", sub: "A3/Flex 150/160 · A3/Speed" }
     },
     brands: { all: "All", beginner: "Beginners", basics: "Classic control", drawings: "Drawings", instr: "Instrumentation", vfdc: "VFD theory", srvc: "Servo theory", multi: "Compare" },
     labs: {
+      a3flexfill: { name: "TMCC2 filling system", kind: "Filling & level control", line: "The TMCC2 A401 card on the A3/Flex 150 and 160: flow and level loops, faults, card menu and hyperterminal, with a written guide, simulator and video.", inside: ["Flowmeter, level sensor and I/P valve", "Flow PID loop and level UVW loop", "Start-up, prefill and switch point G", "Faults, card menu and hyperterminal commands"] },
       basics: { name: "Electrical basics", kind: "Beginners", line: "Start here if you're new to electricity.", inside: ["Voltage, current, resistance and power", "Series, parallel and conductors", "The multimeter and measuring appliances", "Wiring a lamp and socket, home faults"], tags: "beginner basics electricity multimeter wiring" },
       classic: { name: "Classic control course", kind: "Classic control", line: "Wire contactor and motor circuits by hand, and the course checks them.", inside: ["Relays, contactors and protection", "Timers and 3-phase motor starting", "Star/delta, braking and reversing", "24 practical exercises and a certificate"], tags: "classic control contactor relay overload timer star delta motor dol reversing" },
       instr: { name: "Instrumentation course", kind: "Instrumentation", line: "The sensors and signals you meet in every plant.", inside: ["The 4–20 mA signal and its faults", "Encoders: incremental and absolute", "Temperature: thermocouples and PT100", "Load cells and scale calibration"], tags: "instrumentation sensor transmitter encoder thermocouple pt100 rtd load cell calibration" },

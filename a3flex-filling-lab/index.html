@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>نظام التعبئة في ماكينة A3/Flex 150/160 · TMCC2 | LearnElectricals</title>
+<meta name="description" content="شرح كامل بالعربي لنظام التعبئة في ماكينة A3/Flex 150 و 160: كارت TMCC2 A401، الفلوميتر وحساس المستوى، لوب التدفق والمستوى PID و UVW، البريفيل ونقطة التحويل، الأعطال، قايمة الكارت والهايبر ترمينال، مع محاكي تفاعلي وفيديو.">
+<link rel="canonical" href="https://www.learnelectricals.com/a3flex-filling-lab/">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/a3flex-filling-lab/">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/a3flex-filling-lab/">
+<meta property="og:title" content="نظام التعبئة في ماكينة A3/Flex 150/160 · TMCC2">
+<meta property="og:description" content="شرح مفصّل ومحاكي تفاعلي لكارت TMCC2 A401 ولوب التدفق والمستوى.">
+<meta property="og:url" content="https://www.learnelectricals.com/a3flex-filling-lab/">
+<meta property="og:image" content="https://www.learnelectricals.com/a3flex-filling-lab/poster.jpg">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Long-form guide page: one reading column, sticky table of contents on wide screens, same tokens as the other labs. */
+:root{
+  --bg:#e9edef; --panel:#ffffff; --ink:#152027; --muted:#56656f; --line:#cfd7dc;
+  --accent:#b85f00; --accent-soft:#f6e6d3; --cur:#0d7584; --product:#c99400;
+  --good:#2b7a3d; --warn:#a86a00; --bad:#c0352b; --code-bg:#f2f5f6;
+  --font-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --font-body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1417; --panel:#182025; --ink:#e3e9ec; --muted:#93a2ab; --line:#2a353c;
+  --accent:#f0a03c; --accent-soft:#3a2a17; --cur:#4cc0cf; --product:#ffc629;
+  --good:#5cc06f; --warn:#e3a43a; --bad:#ff6b5e; --code-bg:#11181c; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f1417; --panel:#182025; --ink:#e3e9ec; --muted:#93a2ab; --line:#2a353c;
+  --accent:#f0a03c; --accent-soft:#3a2a17; --cur:#4cc0cf; --product:#ffc629;
+  --good:#5cc06f; --warn:#e3a43a; --bad:#ff6b5e; --code-bg:#11181c; color-scheme:dark }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.75}
+a{color:var(--cur)}
+.app{max-width:1180px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-left,0px)) 64px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:900px){.app{grid-template-columns:minmax(0,1fr)}.toc{position:static!important}}
+h1,h2,h3{font-family:var(--font-display);line-height:1.3;text-wrap:balance;margin:0}
+h1{font-size:1.9rem}
+h2{font-size:1.35rem;margin:0 0 12px}
+h3{font-size:1.05rem;margin:18px 0 6px}
+p{margin:.5rem 0}
+.mono,code,pre{font-family:var(--font-mono);direction:ltr;unicode-bidi:isolate}
+code{font-size:.88em;background:var(--code-bg);border:1px solid var(--line);padding:0 .35em;border-radius:4px}
+pre{background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto;font-size:.88rem;line-height:1.55;text-align:left;margin:.6rem 0}
+.top{grid-column:1/-1;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
+.top p{color:var(--muted);max-width:70ch;margin:.4rem 0 0}
+.crumbs{font-size:.85rem;color:var(--muted);margin-bottom:6px}
+.crumbs a{color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:8px 14px;font-weight:600;color:var(--ink);text-decoration:none}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.toc{position:sticky;top:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:.92rem}
+.toc b{display:block;font-family:var(--font-display);margin-bottom:6px}
+.toc ol{margin:0;padding-inline-start:20px}
+.toc a{color:var(--ink);text-decoration:none}
+.toc a:hover{color:var(--accent)}
+main{display:flex;flex-direction:column;gap:18px;min-width:0}
+section.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0;scroll-margin-top:12px}
+.lead{font-size:1.05rem}
+.tbl{width:100%;border-collapse:collapse;font-size:.93rem;margin:.6rem 0}
+.tbl th,.tbl td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:start;vertical-align:top}
+.tbl th{font-family:var(--font-display);font-weight:500;color:var(--muted);font-size:.85rem}
+.tbl td.mono{white-space:nowrap}
+.scroll{overflow-x:auto}
+.note{border-inline-start:4px solid var(--cur);background:var(--code-bg);border-radius:8px;padding:10px 12px;margin:.8rem 0;font-size:.95rem}
+.warn{border-inline-start-color:var(--bad)}
+.ok{border-inline-start-color:var(--good)}
+.tag{display:inline-block;font-size:.75rem;font-weight:600;border-radius:999px;padding:0 8px;border:1px solid var(--line)}
+.tag.real{color:var(--good);border-color:var(--good)}
+.tag.sim{color:var(--warn);border-color:var(--warn)}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:.6rem 0}
+.flow span{background:var(--accent-soft);border-radius:8px;padding:4px 10px;font-weight:600;font-size:.9rem}
+.flow i{font-style:normal;color:var(--muted)}
+.tree{direction:ltr;text-align:left}
+video{width:100%;border-radius:10px;border:1px solid var(--line);background:#000;display:block}
+ol.steps li{margin:.3rem 0}
+footer{grid-column:1/-1;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:12px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div>
+      <div class="crumbs"><a href="../index.html">الرئيسية</a> › <a href="../tetrapan/index.html">تترابان</a> › نظام التعبئة A3/Flex 150/160</div>
+      <h1>نظام التعبئة في ماكينة A3/Flex 150/160</h1>
+      <p>شرح كامل لكارت TMCC2 A401 اللي بيتحكم في تعبئة المنتج: الأجزاء، إزاي بيضبط التدفق والمستوى، بداية التشغيل والبريفيل، الأعطال وإمتى بتظهر، قايمة الكارت بالترتيب، وأوامر الهايبر ترمينال. ومعاه محاكي تجرّب فيه كل حاجة بإيدك.</p>
+    </div>
+    <div class="row">
+      <a class="btn pri" href="simulator.html">▶ افتح المحاكي</a>
+      <a class="btn" href="#video">الفيديو</a>
+      <a class="btn" href="/en/a3flex-filling-lab/" hreflang="en" lang="en">English</a>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="محتويات الصفحة">
+    <b>المحتويات</b>
+    <ol>
+      <li><a href="#idea">فكرة النظام</a></li>
+      <li><a href="#parts">الأجزاء والإشارات</a></li>
+      <li><a href="#pid">لوب التدفق ولوب المستوى</a></li>
+      <li><a href="#start">بداية التشغيل والبريفيل</a></li>
+      <li><a href="#stops">الإيقاف العادي والشورت ستوب</a></li>
+      <li><a href="#faults">الأعطال وإمتى بتظهر</a></li>
+      <li><a href="#menu">قايمة الكارت بالترتيب</a></li>
+      <li><a href="#term">الهايبر ترمينال</a></li>
+      <li><a href="#force">الفورس</a></li>
+      <li><a href="#fmerr">حل عطل اتصال الفلوميتر</a></li>
+      <li><a href="#sim">إزاي تستخدم المحاكي</a></li>
+      <li><a href="#video">الفيديو</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <section class="panel" id="idea">
+      <h2>1. فكرة النظام</h2>
+      <p class="lead">الماكينة بتعمل أنبوب من الورق وبتملاه منتج، وبعدين تقفل العبوات وتقطعها. عشان كل عبوة تطلع بنفس الحجم، لازم مستوى المنتج جوه الأنبوب يفضل ثابت طول الوقت. ده شغل كارت TMCC2 A401.</p>
+      <div class="flow"><span>تانك المنتج</span><i>←</i><span>صمام التنظيم</span><i>←</i><span>الفلوميتر</span><i>←</i><span>أنبوب الورق</span><i>←</i><span>العبوات</span></div>
+      <p>الكارت بيقرا حاجتين: التدفق من الفلوميتر، والمستوى من حساس المستوى اللي بيقرا مكان عوّامة جوه الأنبوب. وبيطلّع حاجة واحدة: جهد بيروح لمحوّل I/P اللي بيفتح الصمام بالهوا. والـ PLC بيدّي للكارت أوامر التشغيل والوقوف، وبياخد منه إشارة إن كله تمام.</p>
+      <p>الشرح ده ينفع للنسختين A3/Flex 150 و A3/Flex 160: كارت التعبئة وبرنامجه وإشاراته مع الـ PLC واحدة في الاتنين.</p>
+      <p>المهم تفهمه من الأول: الكارت هو اللي بيتحكم في التعبئة لوحده. الـ PLC مش بيحسب حاجة في التعبئة، هو بس بيقول للكارت «اشتغل» أو «اقف»، وبيراقب إشارة الجاهزية.</p>
+    </section>
+
+    <section class="panel" id="parts">
+      <h2>2. الأجزاء والإشارات</h2>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th>الجزء</th><th>بيعمل إيه</th></tr></thead>
+        <tbody>
+          <tr><td>كارت TMCC2 A401</td><td>عليه برنامج التعبئة <code>FCSFA3F</code>. بيحسب فتحة الصمام كل لحظة. عليه شاشة صغيرة ٨ خانات وزراير قايمة، وبورت RS232 للصيانة.</td></tr>
+          <tr><td>الفلوميتر B1316</td><td>بيقيس التدفق باللتر في الساعة، وبيبعت القراية للكارت على خط اتصال RS485 (مش سلك أنالوج).</td></tr>
+          <tr><td>حساس المستوى B1314</td><td>بيقرا مكان العوّامة جوه الأنبوب، يعني مستوى المنتج بالنسبة المئوية.</td></tr>
+          <tr><td>محوّل I/P</td><td>بياخد من الكارت جهد من ٠ لـ ١٠ فولت، ويحوّله لضغط هوا من ٠ لـ ٤ بار.</td></tr>
+          <tr><td>صمام التنظيم</td><td>بيتفتح على قد ضغط الهوا اللي جاي من المحوّل.</td></tr>
+          <tr><td>الـ PLC</td><td>بيدّي أمر الإنتاج والشورت ستوب، وبيقرا إشارات الكارت.</td></tr>
+        </tbody>
+      </table></div>
+      <h3>الإشارات بين الكارت والـ PLC</h3>
+      <p>الكارت والـ PLC بيكلموا بعض بأسلاك عادية (ديجيتال)، مش بشبكة:</p>
+      <pre>%I269   Enabled        الكارت جاهز ومفيش عنده عطل
+%I268   Filling OK     التدفق قريب من المطلوب
+%I266   High level     المستوى في الأنبوب عالي
+%Q146   Production     أمر إنتاج من الـ PLC للكارت
+%Q148   Short stop     أمر شورت ستوب للكارت</pre>
+      <div class="note">لو إشارة الجاهزية <code>%I269</code> وقعت والماكينة شغالة، الـ PLC بيعدّ ٢٥ ثانية، ولو مارجعتش بيطلع الإنذار <b>TMCC Filling system not enabled</b>. الإنذار ده مش بيتقفل لوحده (مش latched)، يعني بيروح أول ما الإشارة ترجع.</div>
+    </section>
+
+    <section class="panel" id="pid">
+      <h2>3. لوب التدفق ولوب المستوى</h2>
+      <p>الكارت شغال بلوبين جوه بعض. اللوب الخارجي بيبص على المستوى ويقرر التدفق المطلوب، واللوب الداخلي بيحرّك الصمام عشان التدفق الحقيقي يوصل للمطلوب.</p>
+      <div class="flow"><span>المستوى المطلوب L</span><i>←</i><span>لوب المستوى U V W</span><i>←</i><span>التدفق المطلوب</span><i>←</i><span>لوب التدفق P I D</span><i>←</i><span>الصمام</span></div>
+      <h3>التدفق الاسمي</h3>
+      <p>نقطة البداية هي التدفق الاسمي: حجم العبوة في سرعة الماكينة.</p>
+      <pre>Nominal flow = 0.250 L × 7000 pk/h = 1750 l/h</pre>
+      <p>لوب المستوى بيزوّد على الرقم ده أو بيقلّل منه، على حسب المستوى أعلى ولا أقل من المطلوب.</p>
+      <h3>لوب التدفق (P و I و D)</h3>
+      <div class="scroll"><table class="tbl"><tbody>
+        <tr><td class="mono">P</td><td>قد إيه الصمام يتحرك على قد الفرق بين التدفق المطلوب والمقاس. لو كبّرته الاستجابة تبقى أسرع، ولو زوّدته أوي الصمام يتذبذب.</td></tr>
+        <tr><td class="mono">I</td><td>بيشيل الفرق الصغير اللي فاضل مع الوقت. من غيره التدفق يفضل أقل أو أكتر من المطلوب بشوية.</td></tr>
+        <tr><td class="mono">D</td><td>بيفرمل الحركة لو الفرق بيتغير بسرعة. عادة بيتساب صفر.</td></tr>
+      </tbody></table></div>
+      <h3>لوب المستوى (U و V و W)</h3>
+      <div class="scroll"><table class="tbl"><tbody>
+        <tr><td class="mono">U</td><td>زي P بس للمستوى: قد إيه المستوى يأثر على التدفق المطلوب. لو كبير المستوى يرجع بسرعة بس ممكن يتأرجح.</td></tr>
+        <tr><td class="mono">V</td><td>زي I للمستوى: بيرجّع المستوى بالظبط على الرقم المطلوب مع الوقت.</td></tr>
+        <tr><td class="mono">W</td><td>زي D للمستوى. عادة صفر.</td></tr>
+        <tr><td class="mono">L</td><td>المستوى المطلوب في الأنبوب بالنسبة المئوية.</td></tr>
+      </tbody></table></div>
+      <div class="note">قاعدة سهلة: لو التدفق نفسه بيتذبذب، ابص على P و I. لو التدفق ثابت بس المستوى بيطلع وينزل ببطء، ابص على U و V.</div>
+    </section>
+
+    <section class="panel" id="start">
+      <h2>4. بداية التشغيل والبريفيل</h2>
+      <h3>بداية التشغيل من أنبوب فاضي</h3>
+      <p>أول ما الإنتاج يبدأ، الأنبوب فاضي ولوب المستوى مش هيعرف يشتغل صح. فالكارت بيبدأ بتدفق ثابت محسوب:</p>
+      <div class="scroll"><table class="tbl"><tbody>
+        <tr><td class="mono">B</td><td>تدفق البداية كنسبة من التدفق الاسمي (مثلا ١٢٠٪ عشان الأنبوب يتملي بسرعة).</td></tr>
+        <tr><td class="mono">T</td><td>زمن الرامب: التدفق بيطلع من صفر لحد B في الزمن ده، عشان الصمام مايتفتحش مرة واحدة.</td></tr>
+        <tr><td class="mono">G</td><td>نقطة التحويل (Virtual level trigger): أول ما المستوى يوصل للنسبة دي، الكارت يسيب تدفق البداية ويسلّم التحكم للوب المستوى.</td></tr>
+      </tbody></table></div>
+      <p>يعني الترتيب: رامب لحد B، المستوى يطلع، يوصل G، التحويل للوب المستوى، والمستوى يستقر على L.</p>
+      <div class="note">لو G واطية أوي، التحويل بيحصل والأنبوب لسه فاضي تقريبا، فلوب المستوى يفتح الصمام جامد ويحصل طلوع زيادة. ولو G عالية أوي وقريبة من L، المستوى بيعدّي المطلوب قبل التحويل.</div>
+      <h3>البريفيل (Prefill)</h3>
+      <p>بعد شورت ستوب، الأنبوب مش فاضي بالكامل. فبدل ما الكارت يبدأ من الأول، بيعمل «بريفيل»: يملا الأنبوب بتدفق ثابت (نسبة من التدفق الاسمي) لحد ما المستوى يرجع قريب من المطلوب، وبعدين يرجع للوب المستوى. ده بيخلي الرجوع للإنتاج أسرع ومن غير عبوات ناقصة.</p>
+      <p class="muted">في المحاكي: نسبة البريفيل اسمها PF، والتحويل منها بيحصل عند G + ١٠٪ أو L أيهما أقل. الأرقام دي تقريبية للتعليم.</p>
+    </section>
+
+    <section class="panel" id="stops">
+      <h2>5. الإيقاف العادي والشورت ستوب</h2>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th></th><th>الإيقاف العادي</th><th>الشورت ستوب</th></tr></thead>
+        <tbody>
+          <tr><td>أمر الـ PLC</td><td><code>%Q146</code> بيقع</td><td><code>%Q148</code> بيشتغل</td></tr>
+          <tr><td>الصمام</td><td>بيتقفل</td><td>بيتقفل والماكينة مستنية</td></tr>
+          <tr><td>الأنبوب</td><td>بيفضى مع الوقت</td><td>المنتج بيفضل جوه</td></tr>
+          <tr><td>الرجوع</td><td>من الأول: رامب B و T ثم التحويل عند G</td><td>بريفيل ثم لوب المستوى</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="panel" id="faults">
+      <h2>6. الأعطال وإمتى بتظهر</h2>
+      <p>كل عطل هنا تقدر تعمله بزرار في المحاكي. العلامة <span class="tag real">حقيقي</span> معناها إن الرسالة موجودة في الكارت أو في برنامج الـ PLC أو في الكتالوج. والعلامة <span class="tag sim">للتعليم</span> معناها إن العطل نفسه حقيقي بيحصل، بس الرسالة والرقم اللي بتطلع عنده متعمولين في المحاكي عشان تفهم.</p>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th>العطل</th><th>اللي بتشوفه</th><th>بيظهر إمتى</th><th></th></tr></thead>
+        <tbody>
+          <tr><td>قطع اتصال الفلوميتر</td><td>شاشة الكارت: <code>FLOWMETER COMM ERROR</code>، الصمام يتقفل، Enabled تقع</td><td>بعد حوالي ثانية ونص من انقطاع الاتصال</td><td><span class="tag real">حقيقي</span></td></tr>
+          <tr><td>إنذار الـ PLC</td><td><code>TMCC Filling system not enabled</code></td><td>بعد ٢٥ ثانية من وقوع Enabled والماكينة شغالة</td><td><span class="tag real">حقيقي</span></td></tr>
+          <tr><td>مستوى عالي</td><td>إشارة <code>%I266</code></td><td>المستوى فوق ٩٠٪ لمدة ثانيتين</td><td><span class="tag real">حقيقي</span></td></tr>
+          <tr><td>الماسورة فاضية</td><td>شاشة الكارت: <code>EMPTY PIPE</code>، قراية التدفق صفر</td><td>التانك فضي، أو حد الكشف متظبط أقل من قراية المنتج</td><td><span class="tag real">حقيقي</span></td></tr>
+          <tr><td>تشويش على القراية</td><td>التدفق بيرقص والصمام بيتهز</td><td>على طول بعد تشغيل العطل</td><td><span class="tag sim">للتعليم</span></td></tr>
+          <tr><td>صمام ماسك (Stiction)</td><td>الصمام بيتحرك بنطّات، والمستوى بيتأرجح</td><td>بعد كام ثانية</td><td><span class="tag sim">للتعليم</span></td></tr>
+          <tr><td>الهوا قاطع عن الصمام</td><td>الصمام مقفول مهما الكارت طلب، والكارت يطلب ١٠٠٪</td><td>«الصمام مفتوح على الآخر» بعد ٤ ثواني، ثم مستوى واطي</td><td><span class="tag sim">للتعليم</span></td></tr>
+          <tr><td>معايرة I/P غلط</td><td>الصمام بيفتح أقل من المطلوب، والكارت بيعوّض لحد ما يتشبّع</td><td>«التدفق بعيد عن المطلوب أكتر من ٢٠٪» بعد ٥ ثواني</td><td><span class="tag sim">للتعليم</span></td></tr>
+          <tr><td>العوّامة ماسكة</td><td>قراية المستوى ثابتة والمستوى الحقيقي ماشي، فممكن يفيض</td><td>«المنتج فاض» عند ٩٧٪ لمدة ٣ ثواني، والماكينة تقف</td><td><span class="tag sim">للتعليم</span></td></tr>
+          <tr><td>P عالي أوي</td><td>تذبذب في التدفق والصمام</td><td>على طول</td><td><span class="tag sim">للتعليم</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="panel" id="menu">
+      <h2>7. قايمة الكارت بالترتيب</h2>
+      <p>أي زرار على الكارت بيدخّلك المستوى الأول من القايمة. الأسهم بتتنقل بين البنود، و ENTER بيدخل جوه البند. وجوه أي قيمة، الأسهم بتغيّرها و ENTER بيحفظها.</p>
+      <pre class="tree">MONITOR            اختار القراية اللي تظهر
+ ├ LEVEL           المستوى
+ ├ FILT LEV        المستوى بعد الفلتر
+ ├ FLOW            التدفق
+ ├ OUTPUT          خرج الكارت للـ I/P
+ └ BACK
+SETTING            ضبط التعبئة
+ ├ FILL OK
+ │  └ WIND=±XX%    شباك إشارة Filling OK
+ ├ FLOW PID
+ │  ├ P CONST → P = XX
+ │  ├ I CONST → I = XX
+ │  ├ D CONST → D = XX
+ │  └ BACK
+ ├ LEV PID
+ │  ├ P CONST → P = XX
+ │  └ BACK
+ └ BACK
+FORCE              فرض خرج يدوي
+ ├ OUTPUT → O=XX
+ └ BACK
+E.PIPE             كشف الماسورة الفاضية
+ ├ E.P.DET → EPD = ON/OFF
+ ├ E.P.TH  → T = XXXX Hz   (أقصى حاجة 3000)
+ └ BACK
+BACK               خروج من القايمة</pre>
+      <h3>مثال: تغيير P بتاع لوب التدفق</h3>
+      <ol class="steps">
+        <li>دوس أي زرار، تظهر <code>MONITOR</code>.</li>
+        <li>سهم لتحت مرة، تظهر <code>SETTING</code>، ودوس ENTER.</li>
+        <li>سهم لتحت مرة، تظهر <code>FLOW PID</code>، ودوس ENTER.</li>
+        <li>تظهر <code>P CONST</code>، دوس ENTER، تظهر القيمة الحالية.</li>
+        <li>غيّر بالأسهم، ودوس ENTER للحفظ.</li>
+        <li>اطلع بـ <code>BACK</code> لحد ما ترجع لشاشة الإنتاج.</li>
+      </ol>
+      <h3>كشف الماسورة الفاضية</h3>
+      <p>الافتراضي إن الكشف شغال وحده ٣٠٠٠ هرتز. بالحد ده الفلوميتر بيقرا منتج توصيله من ٣٠ لـ ٣٥ ميكروسيمنز/سم وأكتر. لو بتعدّي مية توصيلها أقل من كده، لازم الكشف يتقفل، وساعتها الفلوميتر يقرا لحد ٥ ميكروسيمنز/سم.</p>
+    </section>
+
+    <section class="panel" id="term">
+      <h2>8. الهايبر ترمينال</h2>
+      <p>توصّل لابتوب ببورت RS232 اللي على كارت A401 بكابل الصيانة، وتفتح برنامج زي HyperTerminal أو PuTTY بالإعدادات دي:</p>
+      <pre>Baud rate      9600
+Parity         None
+Data bits      8
+Stop bits      1
+Flow control   None</pre>
+      <p>تكتب الأمر وتدوس Enter. خلي بالك: الحروف اللي بتكتبها مش بتظهر على الشاشة، ده طبيعي.</p>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th>الأمر</th><th>بيعمل إيه</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">H</td><td>قايمة الأوامر</td></tr>
+          <tr><td class="mono">S</td><td>حالة نظام التعبئة</td></tr>
+          <tr><td class="mono">Z</td><td>بيانات الفلوميتر (أهم أمر في عطل الاتصال)</td></tr>
+          <tr><td class="mono">P / I / D &lt;val&gt;</td><td>ثوابت لوب التدفق</td></tr>
+          <tr><td class="mono">U / V / W &lt;val&gt;</td><td>ثوابت لوب المستوى</td></tr>
+          <tr><td class="mono">M / N / O &lt;val&gt;</td><td>ثوابت لوب الغسيل (بتشتغل في الغسيل بس)</td></tr>
+          <tr><td class="mono">L &lt;val&gt;</td><td>المستوى المطلوب</td></tr>
+          <tr><td class="mono">T &lt;val&gt;</td><td>زمن رامب البداية</td></tr>
+          <tr><td class="mono">B &lt;val&gt;</td><td>نسبة تدفق البداية</td></tr>
+          <tr><td class="mono">G &lt;val&gt;</td><td>نقطة التحويل للوب المستوى</td></tr>
+          <tr><td class="mono">F &lt;val&gt;</td><td>فرض خرج: ٠ يلغي الفرض، ومن ١ لـ ١٠٠٠ قيمة الخرج (يعني ٠ لـ ١٠ فولت)</td></tr>
+          <tr><td class="mono">R 0 / R 1</td><td>إيقاف أو تشغيل التقرير المستمر</td></tr>
+          <tr><td class="mono">SERVICE</td><td>أوامر الخدمة الإضافية</td></tr>
+          <tr><td class="mono">STOP</td><td>يوقف برنامج التعبئة ويدخل الكارت وضع الفيرموير</td></tr>
+        </tbody>
+      </table></div>
+      <p>أوامر الخدمة الإضافية:</p>
+      <pre>FCLEAR          يرجّع إعدادات الفلوميتر للافتراضي
+EPIPE ON|OFF    تشغيل أو إطفاء كشف الماسورة الفاضية
+EPIPETH <val>   حد الكشف (الافتراضي 2300، أقصى حاجة 3000 هرتز)</pre>
+      <div class="note warn"><b>على الماكينة الحقيقية:</b> للتشخيص استخدم <code>S</code> و <code>Z</code> و <code>H</code> بس. ماتكتبش <code>STOP</code> ولا <code>FCLEAR</code> ولا <code>F</code> والماكينة في الإنتاج. <code>STOP</code> بيوقف التعبئة، و <code>FCLEAR</code> بيمسح إعدادات الفلوميتر، و <code>F</code> بيفتح الصمام من غير تحكم.</div>
+      <p class="muted">ملحوظة: الكتالوج بيقول الافتراضي في قايمة الكارت ٣٠٠٠ هرتز، وفي صفحة أوامر الترمينال بيقول ٢٣٠٠. ارجع لقيمة ماكينتك قبل ما تغيّر.</p>
+    </section>
+
+    <section class="panel" id="force">
+      <h2>9. الفورس</h2>
+      <p>الفورس (من القايمة <code>FORCE › OUTPUT</code> أو بأمر <code>F</code>) بيخلي الكارت يسيب التحكم، والصمام يفضل مفتوح بالنسبة اللي انت كاتبها وبس. الكارت لسه بيقرا التدفق والمستوى، بس مش بيستخدمهم.</p>
+      <ul>
+        <li>لو الفورس أكبر من استهلاك الماكينة: المستوى يطلع لحد إشارة المستوى العالي، والأنبوب يغرق.</li>
+        <li>لو أقل: المستوى ينزل والعبوات تطلع ناقصة.</li>
+        <li>إشارة Filling OK ممكن تقع لو التدفق بعد عن المطلوب أكتر من الشباك WIND.</li>
+      </ul>
+      <p>الفورس معمول عشان تختبر محوّل I/P والصمام وقت التجهيز، مش وقت الإنتاج. وبعد أي اختبار لازم ترجّعه: <code>F 0</code> أو <code>O=0</code>.</p>
+      <p class="muted">الكتالوج مش بيقول هل الكارت الحقيقي بيشيل إشارة Enabled وقت الفورس ولا لأ. المحاكي بيفترض إنه مش بيشيلها (أسوأ حالة): يعني الـ PLC مش هيعرف إن فيه فورس.</p>
+    </section>
+
+    <section class="panel" id="fmerr">
+      <h2>10. حل عطل «Flowmeter Communication error»</h2>
+      <p>الرسالة دي بتظهر على شاشة الكارت نفسه، ومعناها إن الكارت مش قادر يكلم الفلوميتر على خط RS485. الكارت بيقفل الصمام ويشيل إشارة Enabled، وبعد ٢٥ ثانية الـ PLC يطلع إنذار «TMCC Filling system not enabled».</p>
+      <ol class="steps">
+        <li>اتأكد إن الفلوميتر واصله كهربا.</li>
+        <li>وصّل الترمينال واكتب <code>Z</code>. لو مفيش رد من الفلوميتر، المشكلة في الخط أو الفلوميتر، مش في إعدادات التعبئة.</li>
+        <li>افحص كابل RS485 بين الفلوميتر والكارت وأطرافه في الناحيتين: ربط، أكسدة، مية.</li>
+        <li>افتح غطا الفلوميتر وافحص الكابل المفلطح (Ribbon cable) اللي جوه وكونكتوراته.</li>
+        <li>لو كل ده سليم، جرّب فلوميتر تاني أو كارت تاني (بنفس البرنامج، لأن كروت TMCC2 مختلفة عن بعض ومينفعش تبدّلها).</li>
+      </ol>
+      <div class="note ok"><b>حالة حقيقية:</b> الرسالة دي طلعت على ماكينة، ولما اتفتح الفلوميتر لقينا صدا أخضر (أكسدة) على الكابل المفلطح اللي جوه. الحل: تغيير الكابل، وتنضيف الكونكتورات، وإحكام الغطا والجلاند عشان الرطوبة ماتدخلش تاني.</div>
+    </section>
+
+    <section class="panel" id="sim">
+      <h2>11. إزاي تستخدم المحاكي</h2>
+      <ol class="steps">
+        <li>افتح <a href="simulator.html">المحاكي</a> ودوس «شغّل الشرح» عشان تشوف جولة من ١٦ مشهد بصوت راوي بالإنجليزي. أو العب بنفسك على طول.</li>
+        <li>زراير التشغيل: إنتاج، إيقاف عادي، شورت ستوب، وريست للإنذار. وتقدر تسرّع المحاكاة.</li>
+        <li>حرّك P و I و D و U و V و W و L و B و T و G وشوف الصمام والمستوى والجراف بيتغيروا قدامك. الرسمة بتفضل ظاهرة فوق وانت بتحرّك.</li>
+        <li>أزرار الأعطال: اعمل أي عطل من الجدول اللي فوق، وشوف الإنذارات في لوحة الـ PLC.</li>
+        <li>كارت A401: زراير ▲ و ▼ و ENTER شغالة بنفس القايمة اللي في الفقرة ٧.</li>
+        <li>الهايبر ترمينال: لوحة سودا تحت إشارات الـ PLC، اكتب الأمر أو دوس على الأزرار الجاهزة.</li>
+      </ol>
+      <div class="note"><b>تجارب مفيدة:</b> اكتب <code>EPIPETH 500</code> وشوف الكارت فاكر الماسورة فاضية وهي مليانة، وبعدين <code>EPIPETH 3000</code>. اقطع اتصال الفلوميتر واكتب <code>Z</code>. اكتب <code>STOP</code> وعدّ ٢٥ ثانية لحد إنذار الـ PLC، وبعدين <code>RUN</code>.</div>
+      <p><a class="btn pri" href="simulator.html">▶ افتح المحاكي</a></p>
+      <p class="muted">على الموبايل: افتح المحاكي، ومن قايمة المتصفح اختار «إضافة للشاشة الرئيسية» عشان يبقى زي التطبيق.</p>
+    </section>
+
+    <section class="panel" id="video">
+      <h2>12. الفيديو</h2>
+      <p>جولة كاملة في النظام (حوالي دقيقتين ونص) بالكتابة الإنجليزي، مع زوم على كل جزء والجراف.</p>
+      <video controls preload="none" poster="poster.jpg" playsinline>
+        <source src="filling-video.mp4" type="video/mp4">
+      </video>
+    </section>
+
+  </main>
+
+  <footer>© LearnElectricals · المحتوى تعليمي، وأي تعديل على ماكينة حقيقية لازم يكون بموافقة المسؤول وحسب كتالوج الشركة المصنّعة.</footer>
+</div>
+</body>
+</html>
