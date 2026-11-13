@@ -3,345 +3,161 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>The 3-phase induction motor: construction, nameplate, star and delta terminal box, and direction</title>
-<meta name="description" content="Lesson 6 of the Classic Control course: construction of the 3-phase induction motor, the rotating field and slip, reading the motor nameplate, the power/current table and cable size, the U1 V1 W1 / W2 U2 V2 terminal box with star and delta links, and reversing, wired by hand with a simulation that calculates the winding voltage and current.">
+<title>Start/stop from two locations | Classic Control Course | LearnElectricals</title>
+<meta name="description" content="Interactive control course: buttons, contactor, overload and motor, then the starter circuits in order, then the timer and its circuits such as star-delta. Every circuit shows power, control and the panel, and runs when you press start.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/classic-control-lab/lesson-06.html">
 <link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/classic-control-lab/lesson-06.html">
 <link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/classic-control-lab/lesson-06.html">
 <link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/classic-control-lab/lesson-06.html">
+<meta name="theme-color" content="#0b1013">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="/en/classic-control-lab/engine.css?v=20261104c">
-<link rel="stylesheet" href="/en/classic-control-lab/fx.css?v=20261030r1">
-<link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
-<link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
-<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
-<script src="/assets/lesson-light.js?v=20261029L2" defer></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=Readex+Pro:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/classic-control-lab/cc.css?v=20261113cc">
 </head>
 <body>
-<div class="app">
-<header class="top site-header">
-  <div>
-    <h1>Lesson 6: The 3-phase induction motor</h1>
-    <p>Every circuit so far has run a “motor”, and now we'll open it up: what's inside and how it turns, how to read the <b>nameplate</b> and get the current, cable size and overload setting from it, how to open the <b>terminal box</b> and fit the <b>star</b> or <b>delta</b> links correctly (and what happens if you get it wrong), and how to reverse the direction. The simulation here calculates the voltage on each winding and the current, and the overload trips if you wire it wrong.</p>
-  </div>
-  <div class="chips">
-    <a class="btn" href="/en/classic-control-lab/index.html">‹ Lessons</a>
-    <a class="btn" href="/en/labs.html">← All courses</a><span class="bar lang-slot"></span>
-  </div>
-</header>
 
-<div id="lesson-intro" data-course="classic-control-lab" data-lesson="06"></div>
-<script src="/assets/lesson-intro-data/classic-control-lab.en.js?v=20261021r" defer></script>
-<script src="/assets/lesson-intro.js?v=20261113n" defer></script>
+<div class="wrap">
+  <header>
+    <div class="ht">
+      <h1 data-t="title"></h1>
+      <p class="sub" data-t="sub"></p>
+    </div>
+    <div class="row hdrbtns"><a id="homeA" class="hbtn" href="/" hidden></a><a id="hubA" class="hbtn" href="index.html" hidden></a>
+    <button id="langBtn" type="button" aria-label="Language">English</button></div>
+  </header>
 
-<div id="lesson"></div>
+  <nav class="units" id="units" aria-label="lessons"></nav>
 
-<p class="foot">Symbols according to <span class="mono">IEC 60617</span> and <span class="mono">NEMA ICS 19</span>. Motor terminals according to <span class="mono">IEC 60034-8</span>: <span class="mono">U1 V1 W1</span> are the winding starts and <span class="mono">U2 V2 W2</span> their ends, and the top row in the terminal box is <span class="mono">W2 U2 V2</span> so the delta links are vertical. The power and current figures are approximate catalogue values for IE3 four-pole motors at 400 V, and the cable size table is a rule of thumb (PVC copper in conduit, 30 °C); for real installations check the motor data sheet and your local code tables.<br>© &#x2066;2026 LearnElectricals&#x2069;. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+  <section class="simgrid">
+    <div class="scene card">
+      <div class="scenehead">
+        <h2 id="cTitle"></h2>
+        <div class="row">
+          <div class="row" id="viewTg">
+            <button type="button" id="vDia" class="sel" data-t="vDia"></button>
+            <button type="button" id="vPan" class="sel" data-t="vPan"></button>
+          </div>
+          <span id="cState" class="pill off"></span>
+        </div>
+      </div>
+      <div id="cScene">
+        <div id="diaWrap">
+          <div class="diagrams" id="diagrams">
+            <figure><figcaption data-t="power"></figcaption><svg id="pw" role="img" aria-label="power circuit"></svg></figure>
+            <figure class="figc"><figcaption data-t="control"></figcaption><svg id="ct" role="img" aria-label="control circuit"></svg></figure>
+          </div>
+          <div class="legend">
+            <span><i style="background:var(--live)"></i><span data-t="lgLive"></span></span>
+            <span><i style="background:var(--flow)"></i><span data-t="lgFlow"></span></span>
+            <span><i style="background:var(--dead)"></i><span data-t="lgDead"></span></span>
+            <span><i style="background:var(--nrail)"></i><span data-t="lgN"></span></span>
+            <span data-t="lgTp"></span>
+          </div>
+        </div>
+        <figure id="pnFig" class="pnfig"><figcaption data-t="panelCap"></figcaption><div class="pnscroll"><svg id="pn" role="img" aria-label="panel"></svg></div></figure>
+      </div>
+      <div id="dScene" hidden><figure class="dvfig"><div class="pnscroll"><svg id="dv" role="img" aria-label="device"></svg></div></figure></div>
+    </div>
+
+    <aside class="side">
+      <div id="sideD" class="sidegrp" hidden></div>
+      <div id="sideC" class="sidegrp">
+      <div class="card">
+        <h2 data-t="mode"></h2>
+        <div class="seg">
+          <button type="button" id="mFree" class="sel" data-t="free"></button>
+          <button type="button" id="mTrace" data-t="trace"></button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span data-t="station"></span><span class="note" data-t="holdHint"></span></h2>
+        <div class="station">
+          <div class="lamps" id="lamps"></div>
+          <div class="btns" id="btns"></div>
+          <div id="selWrap" class="selw" hidden></div>
+        </div>
+        <label class="chk" style="margin-top:8px"><input type="checkbox" id="latch"><span data-t="latch"></span></label>
+      </div>
+
+      <div class="card" id="timerCard" hidden style="display:grid;gap:10px">
+        <h2 data-t="timers"></h2>
+        <div id="timerList" style="display:grid;gap:10px"></div>
+      </div>
+
+      <div class="card" id="procCard" hidden style="display:grid;gap:10px"></div>
+
+      <div class="card" style="display:grid;gap:10px">
+        <h2 data-t="supplyBox"></h2>
+        <div class="sw"><span data-t="mains"></span><button type="button" id="bMains"></button></div>
+        <div class="sw"><span data-t="q1"></span><button type="button" id="bQ1"></button></div>
+        <div class="ctl"><label for="rLoad"><span data-t="load"></span><span class="mono" id="vLoad"></span></label><input type="range" id="rLoad" min="0" max="200" step="5" value="70"></div>
+        <div class="ctl"><label for="rIr"><span data-t="ir"></span><span class="mono" id="vIr"></span></label><input type="range" id="rIr" min="4" max="16" step="0.5" value="11"><span class="note" id="irNote"></span></div>
+        <div class="ctl"><label><span data-t="heat"></span><span class="mono" id="vHeat"></span></label><div class="bar"><i id="heatBar"></i></div></div>
+        <div id="resetBtns" class="row"></div>
+        <span class="note" id="resetNote"></span>
+      </div>
+
+      <div class="card" id="faultCard">
+        <h2><span data-t="faults"></span><button type="button" id="bClear" data-t="clear" style="font-size:12px;padding:4px 10px"></button></h2>
+        <div class="flist" id="flist"></div>
+      </div>
+
+      <div class="card" id="traceCard" hidden>
+        <h2><span data-t="traceTitle"></span><span class="pill in" id="score"></span></h2>
+        <div style="display:grid;gap:8px">
+          <div class="msg in" data-t="traceIntro"></div>
+          <label for="suspect" class="note" data-t="suspect"></label>
+          <select id="suspect"></select>
+          <div class="row"><button type="button" id="bCheck" data-t="check"></button><button type="button" id="bNew" data-t="newFault"></button><button type="button" id="bShow" data-t="showAns"></button></div>
+          <div id="traceMsg"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="meter">
+          <div class="mh"><span data-t="meter"></span><button type="button" id="bProbes" data-t="meterClear"></button></div>
+          <div class="lcd" id="lcd">-- <small>V~</small></div>
+          <div class="probes"><span><i style="background:#111;border:1px solid #fff"></i>COM: <b id="pB">—</b></span><span><i style="background:#d33"></i>V: <b id="pR">—</b></span></div>
+        </div>
+        <p class="note" style="margin:8px 0 0" data-t="meterHint"></p>
+      </div>
+      </div>
+    </aside>
+
+    <div class="below">
+      <div id="belowD" class="sidegrp" hidden></div>
+      <div id="belowC" class="sidegrp">
+      <div class="tiles" id="tiles">
+        <div class="tile"><span class="k" data-t="tMotor"></span><span class="v txt" id="tMotor"></span></div>
+        <div class="tile"><span class="k" data-t="tSpeed"></span><span class="v" id="tSpeed"></span></div>
+        <div class="tile"><span class="k" data-t="tCur"></span><span class="v" id="tCur"></span></div>
+        <div class="tile"><span class="k" data-t="tHeat"></span><span class="v" id="tHeat"></span></div>
+        <div class="tile"><span class="k" data-t="tCtrl"></span><span class="v txt" id="tCtrl"></span></div>
+        <div class="tile" id="tProcW" hidden><span class="k" id="tProcK"></span><span class="v txt" id="tProc"></span></div>
+      </div>
+      <div class="c2">
+        <div class="card"><h2 data-t="steps"></h2><ol class="steps" id="steps"></ol></div>
+        <div class="card"><h2 data-t="log"></h2><ul class="log" id="log"></ul></div>
+      </div>
+      <div class="card"><h2 data-t="devices"></h2><div class="tbl"><table><thead><tr><th data-t="thTag"></th><th data-t="thDesc"></th><th data-t="thState"></th></tr></thead><tbody id="devs"></tbody></table></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="learn">
+    <div class="card"><h2 data-t="explain"></h2><div id="explain"></div></div>
+    <div style="display:grid;gap:16px">
+      <div class="card"><h2 data-t="challenges"></h2><ul class="chal" id="chal"></ul></div>
+      <div class="card"><h2 data-t="quiz"></h2><div class="quiz" id="quiz"></div></div>
+    </div>
+  </section>
+  <nav class="row" id="pager" style="justify-content:space-between"></nav>
 </div>
 
-<script src="/site-config.js?v=20261021v"></script>
-<script src="/assets/i18n.js?v=20261021w"></script>
-<script src="/assets/i18n-en.js?v=20261113sf"></script>
-<script src="/assets/next-hint.js?v=20261021nh"></script>
-<script src="/assets/real-art.js?v=20261030h1"></script>
-<script src="/en/classic-control-lab/engine.js?v=20261104c"></script>
-<script src="/en/classic-control-lab/fx.js?v=20261030r1"></script>
-<script>
-(function(){
-/* lesson-06 exercise data (embedded into lesson-06.html by build6.sh; also loaded by the Node model test) */
-const G   = {id:'G', type:'supply3P', name:'supply'};
-const Q3  = {id:'Q1', type:'mcb', cfg:{poles:3, label:'C10'}, name:'power breaker'};
-const F1  = {id:'F1', type:'mcb', cfg:{poles:1, label:'C2'}, name:'control breaker'};
-const PB  = (id, color, label) => ({id, type:'pb', cfg:{color, label, blocks:[color === 'red' ? 'NC' : 'NO']}});
-const SEL = {id:'S1', type:'sel', cfg:{pos:['0','I'], label:'0 / I', blocks:[{k:'NO', on:[1]}]}};
-const KM  = (id, aux, name, extra) => ({id, type:'contactor', cfg:Object.assign({v:230, aux:aux || ['NO','NC']}, extra || {}), name:name || 'contactor'});
-const OL  = (Ir, extra) => ({id:'F2', type:'ol', cfg:Object.assign({Ir, lo:4, hi:6.5, model:'LRD10', range:'4-6 A'}, extra || {}), name:'Overload'});
-const lamp = (id, color, name) => ({id, type:'lamp', cfg:{color, v:230}, name});
-// motors: 2.2 kW 230Δ/400Y (In 4.9 A in star at 400 V) and 4 kW 400Δ/690Y (In 8.4 A in delta at 400 V)
-const M3  = {id:'M1', type:'motor', cfg:{term:3, kW:2.2, In:4.9, vD:230, vY:400, cosf:0.81, rpm:1430, frame:'100L'}, name:'2.2 kW motor'};
-const M6a = {id:'M1', type:'motor', cfg:{term:6, kW:2.2, In:4.9, vD:230, vY:400, cosf:0.81, rpm:1430, frame:'100L'}, name:'2.2 kW motor (230Δ/400Y)'};
-const M6b = {id:'M1', type:'motor', cfg:{term:6, kW:4, In:8.4, vD:400, vY:690, cosf:0.83, rpm:1450, frame:'112M'}, name:'4 kW motor (400Δ/690Y)'};
-const S0 = PB('S0', 'red', 'STOP'), S1 = PB('S1', 'green', 'START');
-// power: supply → Q1 → KM1 → F2 → motor (u, v, w = the motor terminals in phase order)
-const PWR = (u, v, w) => [['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','KM1:1'],['Q1:4','KM1:3'],['Q1:6','KM1:5'],['KM1:2','F2:1'],['KM1:4','F2:3'],['KM1:6','F2:5'],['F2:2','M1:' + u],['F2:4','M1:' + v],['F2:6','M1:' + w]];
-const STAR  = [['M1:W2','M1:U2'],['M1:U2','M1:V2']];
-const DELTA = [['M1:U1','M1:W2'],['M1:V1','M1:U2'],['M1:W1','M1:V2']];
-// control with the selector: L1 → F1 → F2 95-96 → S1 → coil → N
-const CTL_SEL = [['G:L1','F1:1'],['F1:2','F2:95'],['F2:96','S1:13'],['S1:14','KM1:A1'],['KM1:A2','G:N']];
-// control DOL: L1 → F1 → F2 95-96 → S0 → S1 || KM1 13-14 → coil → N, H1 run
-const CTL_DOL = [['G:L1','F1:1'],['F1:2','F2:95'],['F2:96','S0:11'],['S0:12','S1:13'],['S1:14','KM1:A1'],['KM1:A2','G:N'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KM1:A1','H1:X1'],['H1:X2','G:N']];
-const selCases = exp => [{label:'Selector on 0', set:{S1:{pos:0}}, expect:{M1:0}}, {label:'Selector on I', set:{S1:{pos:1}}, expect:{M1:exp}}];
-const SEL_PAT_OFF = [{sig:{M1:'00'}, msg:"The motor doesn't turn: trace Q1 → KM1 → F2 → M1, and F1 → 95-96 → S1 → A1."}];
-
-const L6EX = {
-  m1:{story:{icon:'🪚', text:"Saw machine: a 3-lead motor, DOL with overload and selector.", ask:""}, machine:'gauge', title:'Exercise 1: a 3-terminal motor, DOL with the overload', short:'3-terminal motor DOL',
-    task:'Wire the <b>power circuit</b>: L1 L2 L3 → <b>Q1</b> → <b>KM1</b> → <b>F2</b> (the overload: 1/3/5 on top, 2/4/6 at the bottom) → motor <b>M1</b> (U V W in order). And the control: L1 → F1 → <b>F2 95-96</b> → selector <b>S1</b> → KM1 coil → N. Turn the selector to I: the motor turns <b>forward</b> and you see the starting current on the motor and the overload heating.', goal:"S1 on I: M1 turns forward; on 0 it stops.", idea:"Power: Q1 → KM1 → F2 → M1; 95-96 first in control.", steps:{"power":["L1 L2 L3 → Q1 1/3/5","Q1 2/4/6 → KM1 1/3/5","KM1 2/4/6 → F2 1/3/5","F2 2/4/6 → M1 U V W"],"control":["L1 → F1:1, and F1:2 → F2:95","F2:96 → S1:13, and S1:14 → KM1:A1","KM1:A2 → N"]},
-    tip:"",
-    devices:[G, Q3, F1, SEL, KM('KM1', ['NO']), OL(4.9), M3],
-    solution:PWR('U', 'V', 'W').concat(CTL_SEL), cases:selCases('F'), patterns:SEL_PAT_OFF,
-    okMsg:"Change «M1 load» and watch the current and the overload."},
-  m7:{story:{icon:'⚠️', text:"Same machine: the motor hums and won't turn.", ask:""}, machine:'gauge', title:'Exercise 7: mistake: a missing phase and the motor hums', short:'Fault: a missing phase',
-    task:'This panel is already wired but it\'s missing a wire in the power circuit. Switch on and turn the selector to I: the motor <b>hums and doesn\'t turn</b> (single-phasing), the current is high in the two remaining phases, and the overload <b>trips quickly</b> with its phase-loss mechanism. Switch off, find the missing phase and connect it.', goal:"Complete the power side: M1 runs on 3 phases.", idea:"A missing power wire: the motor hums; the overload trips (phase loss).", steps:["Power up, S1 to I: it hums and trips.","Power off, trace L2 → KM1 3-4 → F2 3-4 → V","Add the wire, Reset once cool, run."],
-    tip:"",
-    devices:[G, Q3, F1, SEL, KM('KM1', ['NO']), OL(4.9), M3],
-    preset:PWR('U', 'V', 'W').filter(w => !(w[0] === 'KM1:4')).concat(CTL_SEL),
-    solution:PWR('U', 'V', 'W').concat(CTL_SEL), cases:selCases('F'),
-    tripHint:"Connect the missing phase, let it cool, press Reset.",
-    okMsg:"All three phases arrive and the motor turns."},
-  m2:{story:{icon:'⭐', text:"A 230Δ/400Y motor on 400 V: delta would burn it.", ask:""}, machine:'gauge', title:'Exercise 2: a 6-terminal 230Δ/400Y motor on 400 V: wire it in star', short:'6 terminals: star',
-    task:'Motor <b>M1</b> is rated <b>230 Δ / 400 Y</b> and the supply is 400 V, so it must be <b>star</b>: each winding gets 230 V. Wire the power to <b>U1 V1 W1</b> (the bottom row in the terminal box), and put the <b>star links</b> on the top row: a wire from <b>W2</b> to <b>U2</b> and a wire from <b>U2</b> to <b>V2</b>. Control with the selector as in exercise 1.', goal:"Connect M1 in star: 230 V per winding.", idea:"Supply = the higher nameplate voltage → star.", steps:{"power":["L1 L2 L3 → Q1 → KM1 → F2","F2 2/4/6 → U1 V1 W1","Star bridges: W2 → U2, and U2 → V2"],"control":["L1 → F1 → F2 95-96 → S1 → KM1:A1","KM1:A2 → N"]},
-    tip:"",
-    devices:[G, Q3, F1, SEL, KM('KM1', ['NO']), OL(4.9), M6a],
-    solution:PWR('U1', 'V1', 'W1').concat(STAR, CTL_SEL), cases:selCases('Y'),
-    patterns:[{sig:{M1:'00'}, msg:"The motor doesn't turn: the W2-U2-V2 star bridge is missing."}],
-    okMsg:"Correct star: 230 V per winding."},
-  m3:{story:{icon:'🔺', text:"A 400Δ/690Y motor on 400 V: 400 V per winding.", ask:""}, machine:'gauge', title:'Exercise 3: a 6-terminal 400Δ/690Y motor on 400 V: wire it in delta', short:'6 terminals: delta',
-    task:'Motor <b>M1</b> (4 kW) is rated <b>400 Δ / 690 Y</b> and the supply is 400 V, so it must be <b>delta</b>: each winding between two phases gets 400 V. Power to <b>U1 V1 W1</b>, and the <b>delta links</b> are vertical: <b>U1-W2</b>, <b>V1-U2</b>, <b>W1-V2</b>. Control with the selector.', goal:"Connect M1 in delta: 400 V per winding.", idea:"Supply = the lower voltage → delta: vertical bridges.", steps:{"power":["L1 L2 L3 → Q1 → KM1 → F2","F2 2/4/6 → U1 V1 W1","Bridges: U1 → W2, V1 → U2, W1 → V2"],"control":["L1 → F1 → F2 95-96 → S1 → KM1:A1","KM1:A2 → N"]},
-    tip:"",
-    devices:[G, Q3, F1, SEL, KM('KM1', ['NO']), OL(8.4, {lo:7, hi:10, model:'LRD14', range:'7-10 A'}), M6b],
-    solution:PWR('U1', 'V1', 'W1').concat(DELTA, CTL_SEL), cases:selCases('D'),
-    patterns:[{sig:{M1:'00'}, msg:"The motor doesn't turn: delta bridges U1-W2, V1-U2, W1-V2 are missing."}],
-    okMsg:"Correct delta: 400 V per winding."},
-  m4:{story:{icon:'🔥', text:"The motor runs hot and smells: wrongly in delta.", ask:""}, machine:'gauge', title:'Exercise 4: mistake: delta on a 230/400 motor on 400 V', short:'Mistake: wrong delta',
-    task:'This panel is already wired: a <b>230 Δ / 400 Y</b> motor on a 400 V supply, but whoever wired it fitted the <b>delta links</b>. Switch on, turn the selector to I and watch: the motor turns, but each winding gets <b>400 V instead of 230 V</b>, the current rises several times over, and the overload heats up and trips (and without an overload the motor would burn after a while). Switch off, <b>remove the delta links</b> and fit the <b>star link</b> on W2-U2-V2.', goal:"Change the bridges to star: 230 V per winding.", idea:"Delta on 400 V puts 400 V on a 230 V winding.", steps:["Power up, S1 to I, watch the current ⏩.","Power off, remove the three delta bridges.","Star bridge: W2 → U2, and U2 → V2"],
-    tip:"",
-    devices:[G, Q3, F1, SEL, KM('KM1', ['NO']), OL(4.9), M6a],
-    preset:PWR('U1', 'V1', 'W1').concat(DELTA, CTL_SEL),
-    solution:PWR('U1', 'V1', 'W1').concat(STAR, CTL_SEL), cases:selCases('Y'),
-    okMsg:"Star: 230 V per winding, normal current."},
-  m5:{story:{icon:'🔄', text:"The belt runs backwards: swap two phases.", ask:""}, machine:'conveyor', title:'Exercise 5: reversing the direction: swap two phases', short:'Reversing direction',
-    task:'The same circuit as exercise 1, but the motor must turn in <b>reverse</b>. To reverse the direction, <b>swap only two phases</b> at the motor (for example L1 to W and L3 to U, with L2 staying on V). Don\'t swap all three: it will turn forward again.', goal:"Same as exercise 1, but M1 turns in reverse.", idea:"Swapping two phases at the motor reverses it.", steps:{"power":["L1 L2 L3 → Q1 → KM1 → F2","F2:2 → W, F2:4 → V, F2:6 → U"],"control":["L1 → F1 → F2 95-96 → S1 → KM1:A1","KM1:A2 → N"]},
-    tip:"",
-    devices:[G, Q3, F1, SEL, KM('KM1', ['NO']), OL(4.9), M3],
-    solution:PWR('W', 'V', 'U').concat(CTL_SEL), cases:selCases('R'),
-    okMsg:"The order is reversed and the motor turns in reverse."},
-  m6:{story:{icon:'🏷️', text:"The overload is set to 4 A; the nameplate says 4.9 A.", ask:""}, machine:'gauge', title:'Exercise 6: from the nameplate: set the overload to In', short:'Set Ir from the nameplate',
-    task:'A <b>2.2 kW</b> motor with the nameplate: <b>400 V Y · 4.9 A · cos φ 0.81 · 1430 r/min</b>. Wire a complete DOL (STOP, START, seal-in, lamp H1, and overload F2 in the power circuit with 95-96 in the control circuit), then <b>set Ir</b> on the overload to the nameplate current with the <b>Ir −/+</b> buttons. The overload came from the store set to 4 A.', goal:"DOL with a lamp, Ir set to 5 A.", idea:"Ir = nameplate In: lower trips, higher doesn't protect.", steps:{"power":["L1 L2 L3 → Q1 1/3/5","Q1 2/4/6 → KM1 1/3/5","KM1 2/4/6 → F2 1/3/5","F2 2/4/6 → M1 U V W"],"control":["L1 → F1:1, and F1:2 → F2:95","F2:96 → S0:11, and S0:12 → S1:13","S1:14 → KM1:A1, and KM1:A2 → N","Hold-in: KM1:13 → S1:13, and KM1:14 → S1:14","H1: KM1:A1 → H1:X1, and H1:X2 → N","Set Ir to 5 A before starting."]},
-    tip:"",
-    devices:[G, Q3, F1, S0, S1, KM('KM1', ['NO']), OL(4, {Ir:4}), M3, lamp('H1', 'green', 'running')],
-    solution:PWR('U', 'V', 'W').concat(CTL_DOL), seq:true,
-    cases:[{label:'nothing pressed', set:{}, expect:{M1:0, H1:0}}, {label:'START pressed', set:{S1:{p:1}}, expect:{M1:'F', H1:1}}, {label:'START released', set:{S1:{p:0}}, expect:{M1:'F', H1:1}}, {label:'STOP pressed', set:{S0:{p:1}}, expect:{M1:0, H1:0}}],
-    verify:byId => { const Ir = byId.F2.cfg.Ir, In = byId.M1.cfg.In; if (Ir < In * 0.9) return `Ir = ${Ir} A is below the nameplate: raise it with «Ir +» to ${Math.round(In)} A.`; if (Ir > In * 1.12) return `Ir = ${Ir} A is above the nameplate: lower it with «Ir −» to ${Math.round(In)} A.`; return null; },
-    okMsg:"Try «M1 load» at 150% and speed up time."}
-};
-/* ---------- lesson-6 figures and custom sims ---------- */
-const esc = CL.esc, r1 = v => Math.round(v * 10) / 10;
-const AR = (x, y, t, cls, sz) => `<text class="ar ${cls || ''}" x="${x}" y="${y}" font-size="${sz || 12}" text-anchor="middle" fill="currentColor" font-weight="700">${t}</text>`;
-const TX = (x, y, t, anc, sz) => `<text class="sy-n" x="${x}" y="${y}" text-anchor="${anc || 'start'}" style="font-size:${sz || 11}px">${t}</text>`;
-// IEC and NEMA motor symbols side by side
-const motorSym = () => {
-  let s = `<svg viewBox="0 0 440 180" role="img" aria-label="3-phase motor symbol, IEC and NEMA"><g style="color:var(--sym)">`;
-  s += AR(110, 20, 'IEC 60617') + `<path class="sy" d="M80 36V70M110 36V70M140 36V70"/>` + TX(84, 48, 'U') + TX(114, 48, 'V') + TX(144, 48, 'W') + `<path class="sy" d="M80 70L96 92M110 70V96M140 70L124 92"/><circle class="sy" cx="110" cy="118" r="30"/><text class="sy-n" x="110" y="116" text-anchor="middle" style="font-size:15px">M</text><text class="sy-n" x="110" y="131" text-anchor="middle">3~</text>` + TX(146, 122, 'M1') + AR(110, 168, 'A circle with M and 3~ and three terminals U V W', 'sy-s', 10);
-  s += AR(330, 20, 'NEMA / ANSI') + `<path class="sy" d="M300 36V70M330 36V70M360 36V70"/>` + TX(292, 48, 'T1') + TX(322, 48, 'T2') + TX(352, 48, 'T3') + `<path class="sy" d="M300 70L316 92M330 70V96M360 70L344 92"/><circle class="sy" cx="330" cy="118" r="30"/><text class="sy-n" x="330" y="123" text-anchor="middle" style="font-size:15px">MTR</text>` + AR(330, 168, 'Motor terminals T1 T2 T3, sometimes marked MOT', 'sy-s', 10);
-  return s + '</g></svg>';
-};
-// phase order diagram: L1 L2 L3 → the motor terminals (perm = terminal of each phase)
-const dirDiagram = perm => {
-  const X = {L1:60, L2:110, L3:160}, T = {U:60, V:110, W:160}, col = {L1:'#7b4a21', L2:'#1f1f1f', L3:'#8a8f94'};
-  let s = `<svg viewBox="0 0 220 150" role="img" aria-label="Phase order at the motor"><g style="color:var(--ink)">`;
-  ['L1','L2','L3'].forEach(l => { s += `<text x="${X[l]}" y="18" font-size="11" font-weight="700" text-anchor="middle" fill="currentColor">${l}</text><path d="M${X[l]} 24V44" stroke="${col[l]}" stroke-width="4"/><path d="M${X[l]} 44C${X[l]} 70 ${T[perm[l]]} 70 ${T[perm[l]]} 96" fill="none" stroke="${col[l]}" stroke-width="4"/>`; });
-  ['U','V','W'].forEach(t => s += `<circle cx="${T[t]}" cy="104" r="8" fill="#d8dbdd" stroke="#555"/><text x="${T[t]}" y="128" font-size="11" font-weight="700" text-anchor="middle" fill="currentColor">${t}</text>`);
-  s += `<rect x="40" y="134" width="140" height="10" rx="3" fill="#8f979c"/>`;
-  return s + '</g></svg>';
-};
-const seqDir = perm => { const idx = {L1:0, L2:1, L3:2}, inv = {}; Object.keys(perm).forEach(l => inv[perm[l]] = idx[l]); const a = [inv.U, inv.V, inv.W]; return ((a[1] - a[0] + 3) % 3 === 1 && (a[2] - a[1] + 3) % 3 === 1) ? 1 : -1; };
-const contactorFor = kW => { const t = [[4,'LC1D09 (9 A)'],[5.5,'LC1D12 (12 A)'],[7.5,'LC1D18 (18 A)'],[11,'LC1D25 (25 A)'],[15,'LC1D32 (32 A)'],[18.5,'LC1D38 (38 A)'],[22,'LC1D50 (50 A)'],[30,'LC1D65 (65 A)'],[37,'LC1D80 (80 A)'],[45,'LC1D95 (95 A)']]; const r = t.find(x => kW <= x[0]); return r ? r[1] : 'LC1D115'; };
-const olFor = In => { const t = [[1,'LRD05 0.63–1'],[1.6,'LRD06 1–1.6'],[2.5,'LRD07 1.6–2.5'],[4,'LRD08 2.5–4'],[6,'LRD10 4–6'],[8,'LRD12 5.5–8'],[10,'LRD14 7–10'],[13,'LRD16 9–13'],[18,'LRD21 12–18'],[25,'LRD22 17–25'],[32,'LRD32 23–32'],[40,'LRD35 30–40'],[50,'LRD3355 30–50'],[65,'LRD3357 37–50/48–65'],[80,'LRD3361 55–70/63–80'],[104,'LRD3363 63–80/80–104']]; const r = t.find(x => In <= x[0]); return r ? r[1] + ' A' : '—'; };
-
-const simShell = (host, o, ctl) => { host.innerHTML = `<div class="sim">${o.title ? `<h3>${esc(o.title)}</h3>` : ''}<div class="sim-grid"><figure class="sim-art"></figure><figure class="sim-sym"><div class="sim-iec"></div><ul class="sim-cont"></ul></figure></div><div class="sim-ctl">${ctl}</div><div class="tblw"><table class="tbl sim-tt"></table></div>${o.note ? `<p class="sim-note">${o.note}</p>` : ''}</div>`; return {art:host.querySelector('.sim-art'), iec:host.querySelector('.sim-iec'), cont:host.querySelector('.sim-cont'), ctl:host.querySelector('.sim-ctl'), tt:host.querySelector('.sim-tt')}; };
-
-// 1) rotating field, poles, slip
-function simField(host, o){
-  const d = CL.makeDevice({id:'M1', type:'motor', cfg:{term:3, kW:2.2, In:4.9}});
-  let poles = 4, load = 80, dir = 1, on = 1;
-  const ui = simShell(host, o, `<button type="button" class="btn big pri" data-k="on" aria-pressed="true">⏻ Disconnect the phases</button><button type="button" class="btn big" data-k="dir">↔ Swap two phases (reverse)</button><label>Number of poles<select data-k="poles" aria-label="Number of poles"><option value="2">2 poles</option><option value="4" selected>4 poles</option><option value="6">6 poles</option><option value="8">8 poles</option></select></label><label>Load on the shaft: <b class="mono" data-l>80%</b><input type="range" dir="ltr" min="0" max="120" value="80" aria-label="Load"></label><div class="sim-clock" role="status" aria-live="polite"></div>`);
-  function render(){
-    const ns = 6000 / poles, slip = on ? 0.004 + 0.036 * load / 100 : 0, n = Math.round(ns * (1 - slip));
-    ui.art.innerHTML = CL.art.motorCut(d, {run:on ? dir : 0, rpm:on ? n : 0});
-    ui.iec.innerHTML = motorSym();
-    ui.cont.innerHTML = `<li class="${on ? 'on' : ''}"><span>Synchronous speed n<sub>s</sub> = 120 × 50 ÷ ${poles}</span><span class="om">${ns} r/min</span></li><li class="${on ? 'on' : ''}"><span>Rotor speed n</span><span class="om">${on ? n : 0} r/min</span></li><li><span>Slip s = (n<sub>s</sub> − n) ÷ n<sub>s</sub></span><span class="om">${on ? (slip * 100).toFixed(1) : '—'} %</span></li>`;
-    ui.tt.innerHTML = `<thead><tr><th class="r">Poles</th><th>n<sub>s</sub> at 50 Hz</th><th>Approx. nameplate speed</th></tr></thead><tbody>${[2,4,6,8].map(p => `<tr class="${p === poles ? 'cur' : ''}"><td class="r">${p}${p === poles ? ' ◀' : ''}</td><td>${6000 / p}</td><td>${Math.round(6000 / p * 0.965)}–${Math.round(6000 / p * 0.985)}</td></tr>`).join('')}</tbody>`;
-    ui.ctl.querySelector('.sim-clock').innerHTML = on ? `The field turns ${dir > 0 ? 'forward' : 'reverse'} at ${ns} r/min, and the rotor follows it at ${n} r/min. Increase the load: the rotor slows a little (slip increases) and the current rises.` : 'No phases: the field is still and the rotor is still.';
-    ui.ctl.querySelector('[data-k=on]').textContent = on ? '⏻ Disconnect the phases' : '⚡ Connect all three phases';
-    ui.ctl.querySelector('[data-k=on]').setAttribute('aria-pressed', on ? 'true' : 'false');
-    ui.ctl.querySelector('[data-l]').textContent = load + '%';
-  }
-  ui.ctl.querySelector('[data-k=on]').addEventListener('click', () => { on = on ? 0 : 1; render(); o.onAct(); });
-  ui.ctl.querySelector('[data-k=dir]').addEventListener('click', () => { dir = -dir; render(); o.onAct(); });
-  ui.ctl.querySelector('[data-k=poles]').addEventListener('change', e => { poles = +e.target.value; render(); o.onAct(); });
-  ui.ctl.querySelector('input').addEventListener('input', e => { load = +e.target.value; render(); });
-  render();
-  return {destroy(){}};
-}
-// 2) nameplate picker
-function simPlate(host, o){
-  let i = 5;
-  const ui = simShell(host, o, `<label>Choose a motor from the store<select data-k="m" aria-label="Motor">${CL.MOTORS.map((m, k) => `<option value="${k}"${k === i ? ' selected' : ''}>${m.kW} kW · ${m.vD} Δ / ${m.vY} Y</option>`).join('')}</select></label><div class="sim-clock" role="status" aria-live="polite"></div>`);
-  function render(){
-    const m = CL.MOTORS[i], d = CL.makeDevice({id:'M1', type:'motor', cfg:Object.assign({term:6}, m)}), star = m.vD === 230, ID = star ? r1(m.In * Math.sqrt(3)) : m.In, IY = star ? m.In : r1(m.In / Math.sqrt(3)), Iused = m.In, cable = CL.cableFor(Iused);
-    ui.art.innerHTML = CL.art.nameplate(d);
-    ui.iec.innerHTML = CL.art.tbox({mode:star ? 'Y' : 'D', vD:m.vD, vY:m.vY, sup:400});
-    ui.cont.innerHTML = `<li class="on"><span>Connection on 400 V</span><span class="st">${star ? 'Star Y' : 'Delta Δ'}</span></li><li><span>Nameplate current you'll run at</span><span class="om">${Iused} A</span></li><li><span>Overload setting Ir</span><span class="om">${Iused} A</span></li><li><span>Suitable overload</span><span class="om">${olFor(Iused)}</span></li><li><span>Contactor (AC-3)</span><span class="om">${contactorFor(m.kW)}</span></li><li><span>Power cable size (rule of thumb)</span><span class="om">${cable} mm²</span></li>`;
-    ui.tt.innerHTML = `<thead><tr><th class="r">Item</th><th>Value</th><th class="r">What it means</th></tr></thead><tbody>
-      <tr><td class="r">kW</td><td>${m.kW}</td><td class="r">Mechanical power at the shaft (not what's drawn from the supply)</td></tr>
-      <tr><td class="r">V</td><td>${m.vD} Δ / ${m.vY} Y</td><td class="r">Voltage of one winding = ${m.vD} V. Supply 400 V → ${star ? 'star' : 'delta'}</td></tr>
-      <tr><td class="r">A</td><td>${ID} Δ / ${IY} Y</td><td class="r">Full-load current for each connection (star current = delta current ÷ √3). On 400 V you run in ${star ? 'star' : 'delta'}: ${Iused} A</td></tr>
-      <tr><td class="r">cos φ</td><td>${m.cosf}</td><td class="r">Power factor at full load. P = √3 × V × I × cos φ × η</td></tr>
-      <tr><td class="r">r/min</td><td>${m.rpm}</td><td class="r">Full-load speed: below 1500 by the slip → a 4-pole motor</td></tr>
-      <tr><td class="r">IP55</td><td>5 / 5</td><td class="r">Protection against dust (5) and water jets (5)</td></tr>
-      <tr><td class="r">Cl. F</td><td>155 °C</td><td class="r">Maximum temperature the insulation can withstand. (B = 130, H = 180)</td></tr>
-      <tr><td class="r">S1</td><td>Continuous</td><td class="r">Duty type: continuous duty. (S3 = intermittent, by time ratio)</td></tr></tbody>`;
-    ui.ctl.querySelector('.sim-clock').innerHTML = `${m.kW} kW ≈ ${r1(m.kW / 0.746)} HP · IEC frame ${m.frame}`;
-  }
-  ui.ctl.querySelector('select').addEventListener('change', e => { i = +e.target.value; render(); o.onAct(); });
-  render();
-  return {destroy(){}};
-}
-// 3) terminal box bridges
-function simTbox(host, o){
-  let mode = 'none', mi = 0;
-  const MS = [{lab:'230 Δ / 400 Y (2.2 kW)', vD:230, vY:400, In:4.9}, {lab:'400 Δ / 690 Y (4 kW)', vD:400, vY:690, In:8.4}];
-  const ui = simShell(host, o, `<label>Nameplate<select data-k="m" aria-label="Motor">${MS.map((m, k) => `<option value="${k}">${m.lab}</option>`).join('')}</select></label><button type="button" class="btn big" data-m="none" aria-pressed="true">No links</button><button type="button" class="btn big" data-m="Y">Star link Y</button><button type="button" class="btn big" data-m="D">Delta links Δ</button><div class="sim-clock" role="status" aria-live="polite"></div>`);
-  function render(){
-    const m = MS[mi], vw = mode === 'Y' ? 230 : mode === 'D' ? 400 : 0, k = vw / m.vD;
-    ui.art.innerHTML = CL.art.tbox({mode, vD:m.vD, vY:m.vY, sup:400});
-    const verdict = mode === 'none' ? ['No circuit: the motor won\'t turn', ''] : k > 1.4 ? ['Dangerously wrong', 'bad'] : k < 0.7 ? ['Turns, but weak', 'warn'] : ['Correct', 'on'];
-    ui.iec.innerHTML = `<div class="box ${verdict[1] === 'on' ? 'key' : ''}" style="text-align:center;font-weight:700;color:${verdict[1] === 'bad' ? 'var(--bad)' : verdict[1] === 'warn' ? 'var(--warn)' : verdict[1] === 'on' ? 'var(--good)' : 'var(--muted)'}">${verdict[0]}</div>`;
-    ui.cont.innerHTML = `<li class="${vw ? 'on' : ''}"><span>Supply voltage between two phases</span><span class="om">400 V</span></li><li class="${vw ? 'on' : ''}"><span>Voltage across each winding</span><span class="om">${vw || 0} V</span></li><li><span>Voltage the winding is designed for</span><span class="om">${m.vD} V</span></li><li class="${k > 1.4 ? '' : ''}"><span>Approximate current</span><span class="om">${mode === 'none' ? '0' : k > 1.4 ? '≈ ' + r1(m.In * 4) + ' A (several times!)' : k < 0.7 ? '≈ ' + r1(m.In * 0.6) + ' A' : m.In + ' A'}</span></li>`;
-    ui.tt.innerHTML = `<thead><tr><th class="r">Nameplate</th><th>230 V supply</th><th>400 V supply</th><th>690 V supply</th></tr></thead><tbody><tr class="${mi === 0 ? 'cur' : ''}"><td class="r">230 Δ / 400 Y</td><td class="c1">Delta</td><td class="c1">Star</td><td class="c0">Not possible</td></tr><tr class="${mi === 1 ? 'cur' : ''}"><td class="r">400 Δ / 690 Y</td><td class="c0">Not possible</td><td class="c1">Delta (or star/delta for starting)</td><td class="c1">Star</td></tr></tbody>`;
-    ui.ctl.querySelectorAll('[data-m]').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === mode ? 'true' : 'false'));
-    ui.ctl.querySelector('.sim-clock').innerHTML = mode === 'none' ? 'Fit the links and see the voltage on each winding.' : mode === 'Y' ? 'Star: each winding between a phase and the star point = 400 ÷ √3 = 230 V.' : 'Delta: each winding between two phases = 400 V.';
-  }
-  ui.ctl.addEventListener('click', e => { const b = e.target.closest('[data-m]'); if (!b) return; mode = b.dataset.m; render(); o.onAct(); });
-  ui.ctl.querySelector('select').addEventListener('change', e => { mi = +e.target.value; render(); o.onAct(); });
-  render();
-  return {destroy(){}};
-}
-// 4) direction: swap two phases
-function simDir(host, o){
-  const d = CL.makeDevice({id:'M1', type:'motor', cfg:{term:3, kW:2.2, In:4.9}});
-  let perm = {L1:'U', L2:'V', L3:'W'};
-  const ui = simShell(host, o, `<button type="button" class="btn big" data-s="L1,L3">Swap L1 ↔ L3</button><button type="button" class="btn big" data-s="L1,L2">Swap L1 ↔ L2</button><button type="button" class="btn big" data-s="L2,L3">Swap L2 ↔ L3</button><button type="button" class="btn big" data-s="reset">Restore the original order</button><div class="sim-clock" role="status" aria-live="polite"></div>`);
-  let swaps = 0;
-  function render(){
-    const dir = seqDir(perm);
-    ui.art.innerHTML = CL.art.motorCut(d, {run:dir, rpm:1430});
-    ui.iec.innerHTML = dirDiagram(perm);
-    ui.cont.innerHTML = ['L1','L2','L3'].map(l => `<li class="on"><span>${l}</span><span class="om">→ ${perm[l]}</span></li>`).join('') + `<li class="on"><span>Direction</span><span class="st">${dir > 0 ? 'fwd ↻' : 'rev ↺'}</span></li>`;
-    ui.tt.innerHTML = `<thead><tr><th class="r">Connection</th><th>Direction</th></tr></thead><tbody><tr><td class="r">L1-U, L2-V, L3-W (original)</td><td class="c1">Forward</td></tr><tr><td class="r">Swap two phases (any two)</td><td class="c1">Reverse</td></tr><tr><td class="r">Rotate all three phases (L1-V, L2-W, L3-U)</td><td class="c0">Forward again (the order didn't change)</td></tr></tbody>`;
-    ui.ctl.querySelector('.sim-clock').innerHTML = `Number of swaps: ${swaps}. ${dir > 0 ? 'The phase order on U V W is as original, so it turns forward.' : 'The phase order is reversed, so the rotating field turns in reverse.'}`;
-  }
-  ui.ctl.addEventListener('click', e => { const b = e.target.closest('[data-s]'); if (!b) return; if (b.dataset.s === 'reset'){ perm = {L1:'U', L2:'V', L3:'W'}; swaps = 0; } else { const [a, c] = b.dataset.s.split(','); const t = perm[a]; perm[a] = perm[c]; perm[c] = t; swaps++; } render(); o.onAct(); });
-  render();
-  return {destroy(){}};
-}
-const powerTable = () => `<div class="tblw"><table class="tbl"><thead><tr><th>kW</th><th>HP</th><th>In at 400 V (A)</th><th>cos φ</th><th>r/min</th><th>Connection on 400 V</th><th>Overload Ir</th><th>Cable size mm²</th></tr></thead><tbody>${CL.MOTORS.map(m => `<tr><td>${m.kW}</td><td>${r1(m.kW / 0.746)}</td><td><b>${m.In}</b></td><td>${m.cosf}</td><td>${m.rpm}</td><td>${m.vD === 230 ? 'Y (230Δ/400Y)' : 'Δ (400Δ/690Y)'}</td><td>${m.In} A</td><td>${CL.cableFor(m.In)}</td></tr>`).join('')}</tbody></table></div>`;
-const cableTable = () => `<div class="tblw"><table class="tbl"><thead><tr><th>Cable size (copper)</th><th>Approx. max current (PVC in conduit, 30 °C)</th><th>Enough for a motor up to (400 V)</th></tr></thead><tbody>${CL.CABLE.map((c, i) => { const prev = CL.CABLE[i - 1] ? CL.CABLE[i - 1][0] / 1.25 : 0; const kw = CL.MOTORS.filter(m => m.In * 1.25 <= c[0]).pop(); return `<tr><td><b>${c[1]} mm²</b></td><td>${c[0]} A</td><td>${kw ? kw.kW + ' kW (' + kw.In + ' A)' : '—'}</td></tr>`; }).join('')}</tbody></table></div>`;
-
-CL.lesson({
-  id:'l6', n:6, title:'Lesson 6: The 3-phase induction motor',
-  intro:'<p>Pick a device and follow it: <b>Definition</b> → <b>Look and symbol</b> → <b>Try it</b> → <b>Wire it</b> → <b>Questions</b>. In this lesson the simulation calculates the <b>voltage across each winding</b> and the <b>current</b> from the nameplate and the terminal box links: if you wire a 230/400 motor in delta you\'ll see the current rise and the overload trip, and if you wire a 400/690 motor in star it will turn with weak torque. As always: “<b>Show solution</b>” shows dashed lines, and you do the wiring.</p>',
-  elements:[
-  /* ---------------------------------------------------------------- 1. construction */
-  {id:'build', icon:'motor', title:'Construction and the rotating field', goal:'What\'s inside the motor, and how it turns with no brushes or contacts: the <b>rotating field</b>, the <b>synchronous speed</b> set by the number of poles, and <b>slip</b>.',
-   steps:[
-    {kind:'text', title:'Definition', html:`
-     <div class="lsec lb">
-     <p>When 3 phases feed 3 windings they make a <b>rotating magnetic field</b>, and the rotor chases it.</p>
-     <p>The motor parts: the <b>stator</b> is fixed and has 3 windings 120° apart. The <b>rotor</b> is a squirrel cage with no wires at all. The <b>bearings</b>, where most mechanical faults are. And the <b>fan</b>, which slows with speed so the motor heats up.</p>
-     <p>The field speed is called the <b>synchronous speed</b> = <span class="term">120 × f ÷ p</span>. The rotor never catches the field; it lags by 2–5%, which is called <b>slip</b>:</p>
-     <ul class="lsec scale"><li><b>2 poles</b><span class="bar"><i style="width:100%"></i><em>3000 → ~2900</em></span></li><li><b>4 poles</b><span class="bar"><i style="width:50%"></i><em>1500 → ~1450</em></span></li><li><b>6 poles</b><span class="bar"><i style="width:33%"></i><em>1000 → ~960</em></span></li><li><b>8 poles</b><span class="bar"><i style="width:25%"></i><em>750 → ~720</em></span></li></ul>
-     <p class="alert">Starting current is <b>6–8 times</b> until the motor is up to speed.</p>
-     </div>`},
-    {kind:'art', title:'Look and symbol', items:[
-      {title:'A cross-section of the motor while running', dev:{id:'M1', type:'motor', cfg:{term:3, kW:2.2, In:4.9}}, art:d => CL.art.motorCut(d, {run:1, rpm:1430}), noSym:true, cap:'On the left: a longitudinal section. The fixed stator with its laminations and windings (the copper on both sides), and inside it the rotor with its slightly skewed bars (to reduce noise and torque ripple) and its rings, carried by bearings in the two end shields, with the fan on the back of the shaft. On the right: seen from the shaft end, the green arrow is the rotating field and the rotor follows it a little slower (the slip).'},
-      {title:'The 3-phase motor symbol', dev:{id:'M1', type:'motor', cfg:{term:3, kW:2.2, In:4.9}}, art:motorSym, noSym:true, cap:'In IEC: a circle with M and 3~ and three terminals U V W (for 6 terminals they\'re marked U1 V1 W1 and U2 V2 W2). In NEMA: a circle with MTR or MOT and terminals T1 T2 T3. In the power drawing you\'ll find the breaker, the contactor and the overload before it, in that order.'}]},
-    {kind:'sim', title:'Try it', lead:'Connect the phases and watch the rotating field and the rotor. Change the number of poles and see the synchronous speed, and increase the load to see the slip grow. Swap two phases: the field reverses and the rotor reverses after it.', sims:[
-      {title:'The rotating field, speed and slip', custom:simField, note:'The drawing is 8 times slower than reality so you can follow it. In reality a 4-pole motor turns 24 revolutions per second.'}]},
-    {kind:'bench', title:'Wire it', ex:['m1','m7']},
-    {kind:'quiz', title:'Questions', qs:[
-      {q:'A motor\'s nameplate says 960 r/min at 50 Hz. How many poles?', a:['2','4','6'], c:2, why:'The nearest synchronous speed above 960 is 1000 = 6 poles (120×50÷6), and the slip is 4%.', w:['2 poles = 3000 r/min.','4 poles = 1500 r/min, much further from 960.','']},
-      {q:'Why does the rotor never reach the speed of the rotating field?', a:['Bearing friction only','At that speed, no induction or torque','Because there are 3 phases, not 4'], c:1, why:'Torque comes from induction, and induction needs a speed difference (slip).', w:['Friction is a small part; the main reason is the principle of induction itself.','','']},
-      {q:'A squirrel-cage motor: how does electricity reach the rotor?', a:['Brushes and slip rings','By induction from the stator','A cable inside the shaft'], c:1, why:'That\'s the difference between it and a slip-ring motor, which really does have rings and brushes.', w:['That\'s the slip-ring motor, a different type.','','']},
-      {q:'At the moment of starting the motor draws:', a:['A bit under rated current','The same as rated current','6–8 times rated current'], c:2, why:'The rotor is still = 100% slip = very high current until it gets up to speed.', w:['','','']}]}
-   ]},
-  /* ---------------------------------------------------------------- 2. nameplate */
-  {id:'plate', icon:'plate', title:'The motor nameplate', goal:'Read <b>kW · V Δ/Y · A · cos φ · r/min · IP · Class · S1</b> and work out from them: star or delta, the overload setting, the cable size, and the contactor size.',
-   steps:[
-    {kind:'text', title:'Definition', html:`
-     <div class="lsec lb">
-     <p>Every number on the <b>nameplate</b> leads to a decision in the panel.</p>
-     <p><b>kW</b> is the shaft power (1 HP = 0.746 kW). <b>230 Δ / 400 Y</b>: the lower voltage is the winding voltage. <b>A</b> is the current for each connection, and you set the overload to it. And <b>r/min</b> 1430 means 4 poles.</p>
-     <p><b>IP55</b> is protection against dust and water jets. <b>Ins. Cl. F</b> means the insulation withstands 155 °C, and every extra 10° halves its life. <b>S1</b> is continuous duty and <b>S3</b> intermittent.</p>
-     <p>From the nameplate current In you choose everything: overload Ir = In, contactor AC-3 ≥ In, breaker C or D ≥ In, and cable ≥ 1.25×In.</p>
-     <p class="tip">On 400 V: <b>current ≈ 2 × kW</b>.</p>
-     <h3>Power and current (4-pole, 400 V)</h3>
-     ${powerTable()}
-     <h3>Cable size</h3>
-     ${cableTable()}
-     <p class="tip">Runs over 30–50 m → upsize the cable. Use your local code for real installs.</p>
-     </div>`},
-    {kind:'art', title:'Look and symbol', items:[
-      {title:'Nameplate of a 2.2 kW motor', dev:{id:'M1', type:'motor', cfg:{term:6, kW:2.2, In:4.9, vD:230, vY:400, cosf:0.81, rpm:1430, frame:'100L'}}, art:'nameplate', noSym:true, cap:'An aluminium plate riveted to the motor body. Read the big row: V (the two voltages), Hz, kW, A (the two currents), cos φ, r/min. Below it the poles, slip and bearings. The last line tells you: on 400 V wire it in star and set the overload to 4.9 A.'},
-      {title:'Nameplate of an 11 kW motor (400 Δ / 690 Y)', dev:{id:'M1', type:'motor', cfg:{term:6, kW:11, In:21.5, vD:400, vY:690, cosf:0.86, rpm:1465, frame:'160M'}}, art:'nameplate', noSym:true, cap:'The same nameplate for a larger motor: the lower voltage is 400 V, so on a 400 V supply it\'s wired in delta and its current is 21.5 A. This is the type that works with star/delta starting (it starts in star on 690 Y at a third of the current, then switches to delta).'}]},
-    {kind:'sim', title:'Try it', lead:'Choose a motor from the store: the nameplate fills in, and below it the terminal box with the correct connection on 400 V, plus the suitable overload, contactor and cable size.', sims:[
-      {title:'Read the nameplate and choose the components', custom:simPlate, note:'The contactor is chosen by the motor power in category AC-3 (starting and stopping a squirrel-cage motor), and the overload by a setting range with In roughly in the middle.'}]},
-    {kind:'bench', title:'Wire it', ex:['m6']},
-    {kind:'quiz', title:'Questions', qs:[
-      {q:'A motor\'s nameplate says 230 Δ / 400 Y · 8.5 Δ / 4.9 Y A. On a 400 V supply you set the overload to:', a:['8.5 A','4.9 A','6.7 A (the average)'], c:1, why:'On 400 V it\'s wired in star, and the star current is 4.9 A.', w:['8.5 A is the delta current on 230 V.','','There\'s no average: the current follows the connection.']},
-      {q:'A 400 Δ / 690 Y motor on a 400 V supply is wired:', a:['star','delta','Either'], c:1, why:'The lower voltage (400) is the voltage of one winding = the delta voltage on 400 V.', w:['Star on 400 V would give each winding 230 V: it turns weakly with a third of the torque.','','']},
-      {q:'1430 r/min on the nameplate means:', a:['A 2-pole motor','A 4-pole motor','A 6-pole motor'], c:1, why:'The nearest synchronous speed above it is 1500 (4 poles), and the difference 70 ÷ 1500 ≈ 4.7%.', w:['2 poles is around 2900.','','6 poles is around 960.']},
-      {q:'IP55 means:', a:['Dust and water jets','Immersion in water','5-year insulation warranty'], c:0, why:'The first digit is for solid objects and dust, and the second for water. Immersion needs IP67/68.', w:['','Immersion is IP67 or IP68.','']},
-      {q:'A 7.5 kW motor on 400 V draws about:', a:['7.5 A','15 A','30 A'], c:1, why:'The rule current ≈ 2 × kW on 400 V: 15 A (the catalogue says 15–16 A).', w:['','','']}]}
-   ]},
-  /* ---------------------------------------------------------------- 3. terminal box */
-  {id:'tbox', icon:'tbox', title:'The terminal box: star and delta', goal:'<span class="term">U1 V1 W1</span> at the bottom and <span class="term">W2 U2 V2</span> on top, the <b>star link</b> horizontal and the <b>delta links</b> vertical, and when to use each.',
-   steps:[
-    {kind:'text', title:'Definition', html:`
-     <div class="lsec lb">
-     <p>The terminal box has two rows: the top <span class="term">W2 U2 V2</span>, and the bottom <span class="term">U1 V1 W1</span> where the phases go. The same three links make both connections: <b>horizontal = star</b>, <b>vertical = delta</b>.</p>
-     <p>In <b>star</b> each winding gets 230 V, which is for a motor with a 230/400 plate. In <b>delta</b> each winding gets 400 V, which is for a motor with a 400/690 plate.</p>
-     <p class="tip">Supply = the lower plate voltage? Connect delta. Supply = the higher voltage? Connect star.</p>
-     <p>A mistake here is expensive. <b>Delta on a 230/400 motor</b>: 174% voltage on the winding, so it <b>burns out</b>. <b>Star on a 400/690 motor</b>: torque drops to a third, so it labours and heats up. And <b>a missing link</b>: a missing phase, so the motor hums.</p>
-     <p class="tip">A motor with only 3 terminals: the connection is inside, and star/delta is not possible.</p>
-     </div>`},
-    {kind:'art', title:'Look and symbol', items:[
-      {title:'Star: a horizontal link', dev:{id:'M1', type:'motor', cfg:{term:6}}, art:() => CL.art.tbox({mode:'Y', vD:230, vY:400, sup:400}), noSym:true, cap:'The top row W2 U2 V2 is joined together = the star point. Each winding between a phase and this point gets 230 V. On the right, the shape of the windings: a star.'},
-      {title:'Delta: vertical links', dev:{id:'M1', type:'motor', cfg:{term:6}}, art:() => CL.art.tbox({mode:'D', vD:400, vY:690, sup:400}), noSym:true, cap:'Each bottom terminal with the one above it: U1 with W2 (the end of the third winding), V1 with U2, W1 with V2. Each winding between two phases gets 400 V. On the right, the shape of the windings: a triangle.'},
-      {title:'The windings with no links', dev:{id:'M1', type:'motor', cfg:{term:6}}, art:() => CL.art.tbox({mode:'none', vD:230, vY:400, sup:400, supply:false}), noSym:true, cap:'3 separate windings, each with a start (1) and an end (2). With no links there\'s no closed circuit and the motor won\'t turn. This is how a motor connected to a star/delta starter looks: the links are removed and the 6 terminals go to the contactors.'}]},
-    {kind:'sim', title:'Try it', lead:'Choose the motor nameplate and fit the links. The simulation calculates the voltage on each winding and tells you whether it\'s correct, weak, or will burn.', sims:[
-      {title:'Terminal box links and winding voltage', custom:simTbox, note:'Try all four possibilities: a 230/400 motor in star (correct) and delta (dangerous), and a 400/690 motor in delta (correct) and star (weak).'}]},
-    {kind:'bench', title:'Wire it', ex:['m2','m3','m4']},
-    {kind:'quiz', title:'Questions', qs:[
-      {q:'The order of the top row in the terminal box is:', a:['U2 V2 W2','W2 U2 V2','V2 W2 U2'], c:1, why:'So the delta links are vertical: U1 with W2, exactly above it.', w:['If it were like that, the delta links would be diagonal and cross each other.','','']},
-      {q:'One horizontal link across the whole top row means:', a:['delta','star','Wrong'], c:1, why:'W2 U2 V2 joined together = the star point.', w:['Delta is 3 vertical links.','','']},
-      {q:'A 230 Δ / 400 Y motor wired in delta on 400 V. What happens?', a:['It runs normally','It runs with a third of the torque','Draws several times over, overheats'], c:2, why:'Each winding gets 400 V when it\'s designed for 230 V.', w:['','That\'s what happens in the opposite case: star on a 400/690 motor.','']},
-      {q:'A 400 Δ / 690 Y motor wired in star on 400 V. What happens?', a:['It burns out at once','Runs with 1/3 torque','It won\'t turn at all'], c:1, why:'Each winding gets 230 V instead of 400: torque is proportional to the square of the voltage.', w:['The voltage is lower, not higher, so it won\'t burn if the load is light.','','It turns, but weakly.']}]}
-   ]},
-  /* ---------------------------------------------------------------- 4. direction */
-  {id:'dir', icon:'dir', title:'Direction', goal:'The direction is set by the <b>phase order</b> on U V W. Swapping <b>just two phases</b> reverses it. (Swapping all three doesn\'t.)',
-   steps:[
-    {kind:'text', title:'Definition', html:`
-     <div class="lsec lb">
-     <p>To reverse a motor, swap <b>any two phases</b>. But if you rotate all three, the direction stays the same.</p>
-     <p class="tip">Direction is viewed from the <b>shaft end</b>. Check it before running a pump or compressor.</p>
-     <p class="alert">Reversing in a panel = two contactors + an <b>interlock</b>, or you get a phase-to-phase short.</p>
-     </div>`},
-    {kind:'art', title:'Look and symbol', items:[
-      {title:'Phase order and direction', dev:{id:'M1', type:'motor', cfg:{term:3}}, art:() => `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start">${dirDiagram({L1:'U', L2:'V', L3:'W'})}${dirDiagram({L1:'W', L2:'V', L3:'U'})}</div>`, noSym:true, cap:'Left: L1-U, L2-V, L3-W → forward. Right: L1 and L3 swapped → reverse. The two crossing wires are the whole story.'}]},
-    {kind:'sim', title:'Try it', lead:'Swap two phases and watch the field and the rotor reverse. Swap again: it goes back. Try rotating all three (3 swaps) and see that the direction doesn\'t change.', sims:[
-      {title:'Swap two phases and reverse the direction', custom:simDir, note:'The swap counter: an odd number = reversed, an even number = original.'}]},
-    {kind:'bench', title:'Wire it', ex:['m5']},
-    {kind:'quiz', title:'Questions', qs:[
-      {q:'The motor turns the wrong way. To reverse it:', a:['Swap two phases at the motor','Swap all three phases','Turn the motor round on its base'], c:0, why:'Swapping any two phases reverses the phase order.', w:['Rotating all three leaves the order as it is.','','']},
-      {q:'You swapped L1 with L2, then L2 with L3, then L1 with L3. The direction is:', a:['Reversed','As original','The motor won\'t turn'], c:0, why:'Each swap reverses; 3 swaps = reversed.', w:['','The number is odd, so the result is reversed.','']},
-      {q:'In a two-contactor reversing circuit, if both pull in together:', a:['It runs at double speed','A short between two phases','No problem, it just stops'], c:1, why:'One puts L1 on U and the other puts L3 on the same terminal: two phases shorted together.', w:['','','']}]}
-   ]}
-  ],
-  exercises:L6EX
-});
-})();
-</script>
+<script>window.CC_PAGES=1;window.CC_LESSON="two";window.CC_LANG="en";</script>
+<script src="/classic-control-lab/cc.js?v=20261113cc"></script>
 </body>
 </html>

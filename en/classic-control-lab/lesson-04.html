@@ -3,263 +3,161 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Protection: fuses, circuit breakers and overloads</title>
-<meta name="description" content="Lesson 4 of the Classic Control course: fuses and their types, MCBs and B/C/D curves, the thermal overload relay (Ir, class 10, 95-96 and 97-98, phase loss), the MPCB, and complete protection of a DOL circuit, wired by hand with a real thermal simulation.">
+<title>Three-phase motor: star, delta, direction | Classic Control Course | LearnElectricals</title>
+<meta name="description" content="Interactive control course: buttons, contactor, overload and motor, then the starter circuits in order, then the timer and its circuits such as star-delta. Every circuit shows power, control and the panel, and runs when you press start.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/classic-control-lab/lesson-04.html">
 <link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/classic-control-lab/lesson-04.html">
 <link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/classic-control-lab/lesson-04.html">
 <link rel="alternate" hreflang="x-default" href="https://www.learnelectricals.com/classic-control-lab/lesson-04.html">
+<meta name="theme-color" content="#0b1013">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="/en/classic-control-lab/engine.css?v=20261104c">
-<link rel="stylesheet" href="/en/classic-control-lab/fx.css?v=20261030r1">
-<link rel="stylesheet" href="/assets/lesson-intro.css?v=20261029a">
-<link rel="stylesheet" href="/assets/lesson-light.css?v=20261029L2">
-<link rel="stylesheet" href="/assets/lesson-brief.css?v=20261030b9">
-<script src="/assets/lesson-light.js?v=20261029L2" defer></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=Readex+Pro:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/classic-control-lab/cc.css?v=20261113cc">
 </head>
 <body>
-<div class="app">
-<header class="top site-header">
-  <div>
-    <h1>Lesson 4: Protection</h1>
-    <p>The circuit you built in lesson 3 works, but if there's a short circuit or the motor is overloaded, nothing protects it. Here you'll learn the <b>fuse</b> and the <b>MCB</b> (for short circuits), the <b>thermal overload relay</b> (for overload and phase loss), and the <b>MPCB</b> that combines them, and wire them into a complete DOL circuit with a fault lamp. The overload here heats up and trips <b>in real time</b>, so try loading the motor and wait.</p>
-  </div>
-  <div class="chips">
-    <a class="btn" href="/en/classic-control-lab/index.html">‹ Lessons</a>
-    <a class="btn" href="/en/labs.html">← All courses</a><span class="bar lang-slot"></span>
-  </div>
-</header>
 
-<div id="lesson-intro" data-course="classic-control-lab" data-lesson="04"></div>
-<script src="/assets/lesson-intro-data/classic-control-lab.en.js?v=20261021r" defer></script>
-<script src="/assets/lesson-intro.js?v=20261113n" defer></script>
+<div class="wrap">
+  <header>
+    <div class="ht">
+      <h1 data-t="title"></h1>
+      <p class="sub" data-t="sub"></p>
+    </div>
+    <div class="row hdrbtns"><a id="homeA" class="hbtn" href="/" hidden></a><a id="hubA" class="hbtn" href="index.html" hidden></a>
+    <button id="langBtn" type="button" aria-label="Language">English</button></div>
+  </header>
 
-<div id="lesson"></div>
+  <nav class="units" id="units" aria-label="lessons"></nav>
 
-<p class="foot">Symbols according to <span class="mono">IEC 60617</span> and <span class="mono">NEMA ICS 19</span>. Miniature circuit breaker curves <span class="mono">B/C/D</span> according to <span class="mono">IEC 60898-1</span> (B: 3–5×In, C: 5–10×In, D: 10–20×In). Overload trip classes (Class 10/10A/20/30) according to <span class="mono">IEC 60947-4-1</span>: Class 10 trips within 4–10 seconds at 7.2×Ir. Overload terminals <span class="mono">95-96</span> (NC) and <span class="mono">97-98</span> (NO) according to <span class="mono">IEC 60947-5-1</span>. The thermal simulation is an approximation for teaching; check the catalogue curve before choosing real protection.<br>© &#x2066;2026 LearnElectricals&#x2069;. All rights reserved. This site is not affiliated with any of the companies mentioned (such as Siemens, Allen-Bradley, Delta, Schneider and others); names and trademarks belong to their owners and are used only to explain the devices.</p>
+  <section class="simgrid">
+    <div class="scene card">
+      <div class="scenehead">
+        <h2 id="cTitle"></h2>
+        <div class="row">
+          <div class="row" id="viewTg">
+            <button type="button" id="vDia" class="sel" data-t="vDia"></button>
+            <button type="button" id="vPan" class="sel" data-t="vPan"></button>
+          </div>
+          <span id="cState" class="pill off"></span>
+        </div>
+      </div>
+      <div id="cScene">
+        <div id="diaWrap">
+          <div class="diagrams" id="diagrams">
+            <figure><figcaption data-t="power"></figcaption><svg id="pw" role="img" aria-label="power circuit"></svg></figure>
+            <figure class="figc"><figcaption data-t="control"></figcaption><svg id="ct" role="img" aria-label="control circuit"></svg></figure>
+          </div>
+          <div class="legend">
+            <span><i style="background:var(--live)"></i><span data-t="lgLive"></span></span>
+            <span><i style="background:var(--flow)"></i><span data-t="lgFlow"></span></span>
+            <span><i style="background:var(--dead)"></i><span data-t="lgDead"></span></span>
+            <span><i style="background:var(--nrail)"></i><span data-t="lgN"></span></span>
+            <span data-t="lgTp"></span>
+          </div>
+        </div>
+        <figure id="pnFig" class="pnfig"><figcaption data-t="panelCap"></figcaption><div class="pnscroll"><svg id="pn" role="img" aria-label="panel"></svg></div></figure>
+      </div>
+      <div id="dScene" hidden><figure class="dvfig"><div class="pnscroll"><svg id="dv" role="img" aria-label="device"></svg></div></figure></div>
+    </div>
+
+    <aside class="side">
+      <div id="sideD" class="sidegrp" hidden></div>
+      <div id="sideC" class="sidegrp">
+      <div class="card">
+        <h2 data-t="mode"></h2>
+        <div class="seg">
+          <button type="button" id="mFree" class="sel" data-t="free"></button>
+          <button type="button" id="mTrace" data-t="trace"></button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span data-t="station"></span><span class="note" data-t="holdHint"></span></h2>
+        <div class="station">
+          <div class="lamps" id="lamps"></div>
+          <div class="btns" id="btns"></div>
+          <div id="selWrap" class="selw" hidden></div>
+        </div>
+        <label class="chk" style="margin-top:8px"><input type="checkbox" id="latch"><span data-t="latch"></span></label>
+      </div>
+
+      <div class="card" id="timerCard" hidden style="display:grid;gap:10px">
+        <h2 data-t="timers"></h2>
+        <div id="timerList" style="display:grid;gap:10px"></div>
+      </div>
+
+      <div class="card" id="procCard" hidden style="display:grid;gap:10px"></div>
+
+      <div class="card" style="display:grid;gap:10px">
+        <h2 data-t="supplyBox"></h2>
+        <div class="sw"><span data-t="mains"></span><button type="button" id="bMains"></button></div>
+        <div class="sw"><span data-t="q1"></span><button type="button" id="bQ1"></button></div>
+        <div class="ctl"><label for="rLoad"><span data-t="load"></span><span class="mono" id="vLoad"></span></label><input type="range" id="rLoad" min="0" max="200" step="5" value="70"></div>
+        <div class="ctl"><label for="rIr"><span data-t="ir"></span><span class="mono" id="vIr"></span></label><input type="range" id="rIr" min="4" max="16" step="0.5" value="11"><span class="note" id="irNote"></span></div>
+        <div class="ctl"><label><span data-t="heat"></span><span class="mono" id="vHeat"></span></label><div class="bar"><i id="heatBar"></i></div></div>
+        <div id="resetBtns" class="row"></div>
+        <span class="note" id="resetNote"></span>
+      </div>
+
+      <div class="card" id="faultCard">
+        <h2><span data-t="faults"></span><button type="button" id="bClear" data-t="clear" style="font-size:12px;padding:4px 10px"></button></h2>
+        <div class="flist" id="flist"></div>
+      </div>
+
+      <div class="card" id="traceCard" hidden>
+        <h2><span data-t="traceTitle"></span><span class="pill in" id="score"></span></h2>
+        <div style="display:grid;gap:8px">
+          <div class="msg in" data-t="traceIntro"></div>
+          <label for="suspect" class="note" data-t="suspect"></label>
+          <select id="suspect"></select>
+          <div class="row"><button type="button" id="bCheck" data-t="check"></button><button type="button" id="bNew" data-t="newFault"></button><button type="button" id="bShow" data-t="showAns"></button></div>
+          <div id="traceMsg"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="meter">
+          <div class="mh"><span data-t="meter"></span><button type="button" id="bProbes" data-t="meterClear"></button></div>
+          <div class="lcd" id="lcd">-- <small>V~</small></div>
+          <div class="probes"><span><i style="background:#111;border:1px solid #fff"></i>COM: <b id="pB">—</b></span><span><i style="background:#d33"></i>V: <b id="pR">—</b></span></div>
+        </div>
+        <p class="note" style="margin:8px 0 0" data-t="meterHint"></p>
+      </div>
+      </div>
+    </aside>
+
+    <div class="below">
+      <div id="belowD" class="sidegrp" hidden></div>
+      <div id="belowC" class="sidegrp">
+      <div class="tiles" id="tiles">
+        <div class="tile"><span class="k" data-t="tMotor"></span><span class="v txt" id="tMotor"></span></div>
+        <div class="tile"><span class="k" data-t="tSpeed"></span><span class="v" id="tSpeed"></span></div>
+        <div class="tile"><span class="k" data-t="tCur"></span><span class="v" id="tCur"></span></div>
+        <div class="tile"><span class="k" data-t="tHeat"></span><span class="v" id="tHeat"></span></div>
+        <div class="tile"><span class="k" data-t="tCtrl"></span><span class="v txt" id="tCtrl"></span></div>
+        <div class="tile" id="tProcW" hidden><span class="k" id="tProcK"></span><span class="v txt" id="tProc"></span></div>
+      </div>
+      <div class="c2">
+        <div class="card"><h2 data-t="steps"></h2><ol class="steps" id="steps"></ol></div>
+        <div class="card"><h2 data-t="log"></h2><ul class="log" id="log"></ul></div>
+      </div>
+      <div class="card"><h2 data-t="devices"></h2><div class="tbl"><table><thead><tr><th data-t="thTag"></th><th data-t="thDesc"></th><th data-t="thState"></th></tr></thead><tbody id="devs"></tbody></table></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="learn">
+    <div class="card"><h2 data-t="explain"></h2><div id="explain"></div></div>
+    <div style="display:grid;gap:16px">
+      <div class="card"><h2 data-t="challenges"></h2><ul class="chal" id="chal"></ul></div>
+      <div class="card"><h2 data-t="quiz"></h2><div class="quiz" id="quiz"></div></div>
+    </div>
+  </section>
+  <nav class="row" id="pager" style="justify-content:space-between"></nav>
 </div>
 
-<script src="/site-config.js?v=20261021v"></script>
-<script src="/assets/i18n.js?v=20261021w"></script>
-<script src="/assets/i18n-en.js?v=20261113sf"></script>
-<script src="/assets/next-hint.js?v=20261021nh"></script>
-<script src="/assets/real-art.js?v=20261030h1"></script>
-<script src="/en/classic-control-lab/engine.js?v=20261104c"></script>
-<script src="/en/classic-control-lab/fx.js?v=20261030r1"></script>
-<script>
-(function(){
-const G   = {id:'G', type:'supply3P', name:'supply'};
-const SUP = {id:'Q1', type:'supplyAC', name:'the breaker'};
-const Q3  = {id:'Q1', type:'mcb', cfg:{poles:3, label:'C10'}, name:'power breaker'};
-const F1  = {id:'F1', type:'mcb', cfg:{poles:1, label:'C2'}, name:'control breaker'};
-const PB  = (id, color, label) => ({id, type:'pb', cfg:{color, label, blocks:[color === 'red' ? 'NC' : 'NO']}});
-const SEL = {id:'S1', type:'sel', cfg:{pos:['0','I'], label:'0 / I', blocks:[{k:'NO', on:[1]}]}};
-const KM  = (id, aux, name) => ({id, type:'contactor', cfg:{v:230, aux:aux || ['NO','NC']}, name:name || 'contactor'});
-const MOT = (id, In, load) => ({id, type:'motor', cfg:{term:3, kW:2.2, In:In || 5, load:load == null ? 0.8 : load}, name:'motor'});
-const lamp = (id, color, name) => ({id, type:'lamp', cfg:{color, v:230}, name});
-const OL  = (Ir, extra) => Object.assign({id:'F2', type:'ol', cfg:Object.assign({Ir:Ir || 5, model:'LRD10', range:'4–6.5 A', lo:4, hi:6.5}, extra || {}), name:'Thermal overload'});
-const MP  = {id:'Q2', type:'mpcb', cfg:{Ir:5, label:'GV2ME10', lo:4, hi:6.3, aux:true}, name:'MPCB'};
-const FUSE = {id:'F1', type:'fuse', cfg:{poles:1, label:'2A', kind:'gG'}, name:'Control fuse'};
-const KM1 = KM('KM1'), M1 = MOT('M1'), H1 = lamp('H1', 'green', 'running'), H3 = lamp('H3', 'yellow', 'fault');
-const Qb = {id:'Q1', type:'mcb', cfg:{poles:3, label:'B6'}, name:'Curve B breaker'}, Qc = {id:'Q2', type:'mcb', cfg:{poles:3, label:'C6'}, name:'Curve C breaker'};
-// power circuit with the overload after the contactor
-const POWER = (q, km, ol, m) => [['G:L1',q+':1'],['G:L2',q+':3'],['G:L3',q+':5'],[q+':2',km+':1'],[q+':4',km+':3'],[q+':6',km+':5']].concat(ol ? [[km+':2',ol+':1'],[km+':4',ol+':3'],[km+':6',ol+':5'],[ol+':2',m+':U'],[ol+':4',m+':V'],[ol+':6',m+':W']] : [[km+':2',m+':U'],[km+':4',m+':V'],[km+':6',m+':W']]);
-// control: F1 → 95-96 → S0 → S1 || KM1 13-14 → coil; H1 run; H3 fault on 97-98
-const CTL_OL = [['G:L1','F1:1'],['F1:2','F2:95'],['F2:96','S0:11'],['S0:12','S1:13'],['S1:14','KM1:A1'],['KM1:A2','G:N'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KM1:A1','H1:X1'],['H1:X2','G:N'],['F1:2','F2:97'],['F2:98','H3:X1'],['H3:X2','H1:X2']];
-const OL_DEVS = [G, Q3, F1, PB('S0', 'red', 'STOP'), PB('S1', 'green', 'START'), KM1, OL(5), M1, H1, H3];
-const olCases = [
-  {label:'nothing pressed', set:{}, expect:{M1:0, H1:0, H3:0}},
-  {label:'START pressed', set:{S1:{p:1}}, expect:{M1:1, H1:1, H3:0}},
-  {label:'Pressed START (motor running on its normal load)', set:{S1:{p:0}}, wait:2, expect:{M1:1, H1:1, H3:0}},
-  {label:'Loaded the motor to 250% for a minute', set:{M1:{load:2.5}}, wait:60, expect:{M1:0, H1:0, H3:1}},
-  {label:'Load back to normal and waited 45 seconds (still tripped)', set:{M1:{load:0.8}}, wait:45, expect:{M1:0, H1:0, H3:1}},
-  {label:'Pressed Reset on the overload', set:{F2:{reset:1}}, expect:{M1:0, H1:0, H3:0}},
-  {label:'START again', set:{S1:{p:1}}, expect:{M1:1, H1:1, H3:0}}];
-const olPatterns = [
-  {sig:{M1:'0111111'}, msg:"The overload tripped but the motor runs: 95-96 is bypassed. Remove the wire across it."},
-  {sig:{H1:'0111111'}, msg:"The contactor stays in: remove the wire bypassing 95-96."},
-  {sig:{M1:'0000000'}, msg:"The motor never starts and the fault lamp is on: 95-96 for control, 97-98 for the lamp."},
-  {sig:{H3:'1111111'}, msg:"H3 is on with a healthy overload: H3 goes on 97-98, not 95-96."},
-  {sig:{H3:'0000000'}, msg:"H3 stays off on a trip: F1:2 → F2:97, and F2:98 → H3:X1."}];
-const olConventions = [{test:(W) => W.some(w => /^(Q1):[246]$/.test(w.a) && /^F2:[135]$/.test(w.b) || /^(Q1):[246]$/.test(w.b) && /^F2:[135]$/.test(w.a)), msg:"Note: the overload goes after the contactor: Q1 → KM1 → F2 → M."}];
-
-CL.lesson({
-  id:'l4', n:4, title:'Lesson 4: Protection',
-  intro:'<p>Pick a device and follow it: <b>Definition</b> → <b>Look and symbol</b> → <b>Try it</b> → <b>Wire it</b> → <b>Questions</b>. In “Try it” time runs and heat builds up: use “Faster ×10 / ×60” so you don\'t wait minutes. In wiring, the motor panel has a <b>load slider</b> to raise the motor load and watch the overload trip, and a <b>⏩</b> button to speed up time.</p>',
-  elements:[
-  /* ---------------------------------------------------------------- 1. fuse + MCB */
-  {id:'fz', icon:'fuse', title:'Fuse and MCB', goal:'Protection against <b>short circuit</b>: a fuse blows once, a breaker trips and is reset. Curves <span class="term">B / C / D</span>.',
-   steps:[
-    {kind:'text', title:'Definition', html:`
-     <div class="lsec lb">
-     <p>A short circuit passes thousands of amps in an instant, so the protection must <b>trip at once</b>. We have two devices: a <b>fuse</b> melts and is replaced, and it is cheap and fast. An <b>MCB</b> trips and you reset it by hand, and it has a thermal and a magnetic trip inside.</p>
-     <p>Fuse types: <b>gG</b> is general purpose, for overload and short circuit. <b>aM</b> is for motors, it protects against short circuit only and needs an overload with it. <b>NH</b> is for large currents and is pulled with an insulated handle.</p>
-     <p>An MCB has curves, and each curve trips instantly at a different multiple of its rating:</p>
-     <ul class="lsec scale"><li><b>B</b><span class="bar"><i style="width:25%"></i><em>3–5×In</em></span></li><li><b>C</b><span class="bar"><i style="width:50%"></i><em>5–10×In</em></span></li><li><b>D</b><span class="bar"><i style="width:100%"></i><em>10–20×In</em></span></li></ul>
-     <p class="tip">A motor draws <b>6–8 times</b> its current at start, so its breaker is C or D. "C16" means curve C, 16 amps.</p>
-     <p class="tip">Selectivity: the smallest protection nearest the fault is the one that trips.</p>
-     </div>`},
-    {kind:'art', title:'Look and symbol', items:[
-      {title:'Types of fuses', dev:FUSE, art:'fuseArt', nema:[{k:'fuse', opt:{lab:'FU'}}], cap:'Glass: the wire is visible inside the glass; when it blows you find it broken or the glass blackened. The cartridge in a DIN holder: the lever opens and the cartridge comes out. NH: two metal blades, a ceramic body and an indicator that turns red when it blows. IEC symbol: a rectangle with a line through it. NEMA symbol: a wavy line.'},
-      {title:'The MCB: 1P and 3P and a cross-section', dev:Q3, art:'mcbArt', nema:['cb', 'cb3'], cap:'Odd terminals on top (1, 3, 5) and even ones at the bottom (2, 4, 6). Inside: a contact, a bimetal for overload (slow), a magnetic coil for short circuit (instant), and an arc chamber. In the IEC symbol the contact has a × mark with two boxes: θ for thermal and I> for magnetic. In NEMA: a contact with a half circle at both ends.'},
-      {title:'Trip curves B, C and D', dev:Q3, art:'tripCurve', noSym:true, cap:'Horizontal axis: current as multiples of In. Vertical: time (logarithmic). The sloping part is the thermal trip (the higher the current, the shorter the time), and the vertical drop is the instant magnetic trip. The orange box is the motor starting current: it falls right of the B line (trips) and left of C and D (they withstand it).'}]},
-    {kind:'sim', title:'Try it', lead:'Set the current flowing through the breaker (as a multiple of In) and run time. At 1.45×In it trips thermally after a while, and at the magnetic limit it trips instantly. Try the “Motor starting current” button: B trips and C doesn\'t. Then the fuse: it doesn\'t reset, it gets replaced.', sims:[
-      {title:'C6 breaker (curve C, 6 A)', dev:{id:'Q1', type:'mcb', cfg:{poles:3, label:'C6'}, name:'3P breaker'}, note:'The table shows the approximate trip time for each current. What separates B from C is the “instant” column.'},
-      {title:'B6 breaker (curve B, 6 A)', dev:{id:'Q1', type:'mcb', cfg:{poles:3, label:'B6'}, name:'3P breaker'}, note:'Press “Motor starting current”: 6×In is above the B limit (about 4×In) so it trips magnetically at once.'},
-      {title:'gG 2A fuse (control)', dev:FUSE, note:'When it blows you must “Replace the fuse”. A gG fuse also trips on overload (slowly) and on short circuit instantly.'}]},
-    {kind:'bench', title:'Wire it', ex:['p1','p2']},
-    {kind:'quiz', title:'Questions', qs:[
-      {q:'A breaker is marked C16. What does it mean?', a:['Trips at exactly 16A','16A, magnetic trip at 5–10×','Withstands and breaks a 16 kA short'], c:1, why:'The letter is the curve (instant trip limit) and the number is the rating In.', w:['It carries 1.13×In for an hour and trips at 1.45×In within an hour, not at exactly 16.','','Breaking capacity (6000/10000) is a separate number marked on its own.']},
-      {q:'A 5A motor on a B6 breaker trips on every start. Why?', a:['The motor is faulty, needs rewinding','Starting current exceeds curve B','The breaker is thermally too small'], c:1, why:'B trips instantly at 3–5×In, and motor starting current is 6–8×In. Use C or D.', w:['If it were faulty it would trip while running, not only on start.','','The thermal trip is slow and isn\'t what trips in the one-second start.']},
-      {q:'The difference between a gG and an aM fuse?', a:['gG for DC, aM for AC','gG general, aM for motors','No difference but shape and colour'], c:1, why:'aM leaves overload to the overload relay and only protects against short circuit.', w:['','','']},
-      {q:'A short circuit happens in the control circuit, which has a 2A fuse, and the main breaker is 63A. Which one trips?', a:['Both','The 63A main breaker','The 2A control fuse'], c:2, why:'That\'s selectivity: the smallest protection closest to the fault trips first so the rest of the panel keeps running.', w:['If both tripped there would be no selectivity and the whole panel would go down.','','']}]}
-   ]},
-  /* ---------------------------------------------------------------- 2. thermal overload relay */
-  {id:'ol', icon:'ol', title:'Thermal overload', goal:'Protects the motor from <b>overload</b> and <b>phase loss</b>: a bimetal that heats with the current, an <span class="term">Ir</span> setting, contact <span class="term">95-96</span> in the control circuit and <span class="term">97-98</span> for the fault lamp.',
-   steps:[
-    {kind:'text', title:'Definition', html:`
-     <div class="lsec lb">
-     <p>The overload protects the motor from <b>overload and phase loss</b>, not from short circuit. It is mounted <b>directly under the contactor</b>; when it senses a fault it opens its contact, and the contactor is what disconnects the motor.</p>
-     <p>It has two contacts: <span class="nc">NC</span> 95-96 goes in series in the control line, so when it opens everything stops. And <span class="no">NO</span> 97-98 is for the yellow fault lamp.</p>
-     <p>Its settings: <b>Ir</b> on the motor nameplate current. <b>Class 10</b> means that at 7.2×Ir it trips in 4–10 s. <b>Reset</b> on H means manual, which is the right way for motors. And on phase loss it trips faster.</p>
-     </div>`},
-    {kind:'art', title:'Look and symbol', items:[
-      {title:'LRD overload: front view and bimetal cross-section', dev:OL(5), nema:[{k:'olh', opt:{three:true}}, 'olNC', 'olNO'], cap:'Front: the three pins on top (plug into the contactor), the blue Ir dial, the blue RESET button, the red TEST, the H/A switch (manual/automatic), the indicator window (green OK / red TRIP), terminals 95-96 and 97-98 on the right, and 2/T1 4/T2 6/T3 at the bottom for the motor. Cross-section: the heater around each bimetal; the strips bend as they heat and push the trip bar, which flips 95-96 and 97-98. IEC symbol: a rectangle with a notch in each phase (thermal element) and a dashed line to the NC and NO contacts with the heat symbol. NEMA: OL, a wavy element in each phase, and the NC contact carries the heat mark.'}]},
-    {kind:'sim', title:'Try it', lead:'Set the motor load and run time: the bar shows the bimetal temperature. At 80% it doesn\'t heat up. Raise it to 150% or 250% and see after how many seconds it trips (use ×60 so you don\'t wait). Try “Start the motor” (6×In for a second): it doesn\'t trip. And try “Phase missing”. After tripping: wait for it to cool, then Reset.', sims:[
-      {title:'LRD10 overload set to Ir = 5A (Class 10)', dev:OL(5), note:'The table: approximate trip time for each current per the Class 10 curve. Note that 1.05×Ir never trips, and 7.2×Ir trips within seconds.'}]},
-    {kind:'bench', title:'Wire it', ex:['o1','o2','o3']},
-    {kind:'quiz', title:'Questions', qs:[
-      {q:'Where is the overload\'s 95-96 contact wired?', a:['In the power circuit between the contactor and the motor','In series in the control line before STOP','In parallel with the running lamp'], c:1, why:'NC in series: when it opens the coil drops out and the motor stops. Pins 1-6 are the ones in the power circuit.', w:['95-96 is a small control contact, not for the motor.','','In parallel it won\'t break anything.']},
-      {q:'A motor\'s nameplate says 5A. What do you set Ir to?', a:['5A (the nameplate current)','10A so it doesn\'t trip on starting','2.5A for safety'], c:0, why:'Ir = In. The overload withstands the starting current because it\'s slow (Class 10). Set it lower and it trips on normal load; set it higher and it doesn\'t protect.', w:['','10A means the motor can draw double its current without it noticing.','2.5A will trip while the motor is running normally.']},
-      {q:'The overload has tripped. What do you do?', a:['Reset at once and restart','Let it cool, find the cause','Raise Ir so it won\'t trip'], c:1, why:'The overload trips for a reason. And while it\'s hot it won\'t accept a Reset at all.', w:['It won\'t reset while hot, and if it did it would trip again shortly after.','','Raising Ir without a reason = a burnt motor.']},
-      {q:'A motor is running and a phase breaks. What happens?', a:['It stops at once by itself','Runs on two phases, overload trips','It runs on fine, no problem'], c:1, why:'That\'s single-phasing: dangerous for the windings, and a modern overload detects it and trips faster.', w:['A running motor keeps going on two phases; it\'s a stopped motor that won\'t start.','','']}]}
-   ]},
-  /* ---------------------------------------------------------------- 3. MPCB */
-  {id:'mp', icon:'mpcb', title:'MPCB: the motor protection circuit breaker', goal:'One breaker with <b>magnetic</b> protection for short circuit + <b>thermal</b> with an <span class="term">Ir</span> setting for overload + a manual disconnect, and an auxiliary contact for control.',
-   steps:[
-    {kind:'text', title:'Definition', html:`
-     <div class="lsec lb">
-     <p>An <b>MPCB</b> is one device with three jobs: a <b>magnetic</b> trip for short circuit, a <b>thermal Ir</b> trip for overload, and a <b>manual isolator</b> you can padlock for maintenance.</p>
-     <p>Its auxiliary contact <span class="no">NO</span> 13-14 goes in series in the control line, and <span class="nc">NC</span> 21-22 is for the fault lamp.</p>
-     <p>Which to choose? An MPCB with a contactor is just two devices, and after a fault you reset the handle, which suits small motors. A fuse with a contactor and an overload is cheaper for large motors.</p>
-     </div>`},
-    {kind:'art', title:'Look and symbol', items:[
-      {title:'MPCB (GV2-ME) with a rotary handle, Ir dial and auxiliary block', dev:MP, nema:['cb3', {k:'olh', opt:{three:true}}], cap:'The big handle: I on, O off, and it stops in the TRIP position when it trips. The small blue dial: the Ir setting (4 to 6.3 A here). The block on the side: 13-14 and 21-22. IEC symbol: 3 contacts with a × mark, with a θ box (thermal) and an I> box (magnetic) on one mechanical line, and the auxiliary contacts beside them. NEMA doesn\'t distinguish it: a breaker + overload elements.'}]},
-    {kind:'sim', title:'Try it', lead:'The same idea as the overload (Ir and heating) plus the magnetic trip: raise the current to 300% and run time, and it trips thermally after seconds; and see in the table that a short circuit (12×Ir) trips instantly. After tripping it must cool before you reset it.', sims:[
-      {title:'MPCB GV2ME10 set to Ir = 5A', dev:MP, note:'Note the auxiliary contact: 13-14 is closed while it\'s on, and 21-22 is closed when it trips.'}]},
-    {kind:'bench', title:'Wire it', ex:['m1']},
-    {kind:'quiz', title:'Questions', qs:[
-      {q:'In a motor circuit, an MPCB replaces what?', a:['The contactor','The breaker and overload','The pilot lamps and buttons'], c:1, why:'It has magnetic protection for short circuit and thermal with Ir for overload. The contactor is still needed for starting and stopping from the control circuit.', w:['The contactor is still needed for remote starting and the seal-in.','','']},
-      {q:'Where is the MPCB\'s 13-14 contact wired?', a:['In series in the control line','With the motor in the power circuit','It isn\'t wired at all'], c:0, why:'Like 95-96 on the overload, but here it\'s an NO that closes when the handle is on I.', w:['','13-14 is a small auxiliary contact.','If it isn\'t wired, the contactor stays pulled in while it\'s tripped, and when you reset it the motor starts suddenly.']},
-      {q:'The MPCB tripped on overload. How do you reset it?', a:['Turn it to I at once','Let it cool, O then I','Replace the fuse inside'], c:1, why:'The thermal part needs to cool like the overload, and there\'s no fuse inside.', w:['While it\'s hot the handle won\'t stay on I.','','No fuse: it\'s a breaker that resets.']}]}
-   ]},
-  /* ---------------------------------------------------------------- 4. protection in the DOL circuit */
-  {id:'dolp', icon:'shield', title:'Protection in a DOL circuit', goal:'The complete standard circuit: <b>Q1</b> for short circuit, <b>F1</b> for control, <b>F2</b> overload after the contactor, <span class="term">95-96</span> in the STOP line, and <span class="term">97-98</span> for a yellow fault lamp.',
-   steps:[
-    {kind:'text', title:'Definition', html:`
-     <div class="lsec lb">
-     <p>The full DOL is the same DOL circuit, with <b>overload F2</b> and a <b>fault lamp</b> added.</p>
-     <p>The control line is now: L1, then F1, then <b>F2 95-96</b>, then STOP, then START with KM1 in parallel, then the KM1 coil, then N.</p>
-     <p class="tip">All the stopping contacts go at the <b>start of the line</b>, and the coil is the last thing before N.</p>
-     <p>Classic mistakes: <b>95-96 bridged with a wire</b>, the most dangerous one, the motor won't stop on a fault. <b>97-98 used instead of 95-96</b>, the motor won't start. And <b>Ir set at random</b>: too low trips for nothing, too high doesn't protect.</p>
-     </div>`},
-    {kind:'art', title:'Look and symbol', items:[
-      {title:'DOL with full protection', dev:KM1, art:'dolProt', noSym:true, cap:'Left: power through Q1, then KM1, then F2 (3 thermal elements on a dashed line), then the motor. Right: control from L1 → F1 → 95-96 (an NC contact with the heat symbol) → S0 → S1 || 13-14 → KM1 coil → N, with lamp H1 across the coil, and the yellow fault lamp H3 on 97-98 from after F1. When F2 trips: 95-96 opens so the coil drops out, and 97-98 closes so H3 lights.'}]},
-    {kind:'sim', title:'Try it', lead:'A quick review of the two devices you\'ll wire: the overload (95-96 and 97-98) and the contactor with its auxiliary contact. Try Test on the overload and watch 95-96 open and 97-98 close.', sims:[
-      {title:'F2: the overload', dev:OL(5)},
-      {title:'KM1: the contactor', dev:KM1}]},
-    {kind:'bench', title:'Wire it', ex:['w1','w2','w3']},
-    {kind:'quiz', title:'Questions', qs:[
-      {q:'In a DOL circuit, where is overload F2 wired in the power circuit?', a:['Before breaker Q1','Between Q1 and the contactor','After the contactor'], c:2, why:'It mounts directly on the contactor, and the motor goes on its 2/T1 4/T2 6/T3 terminals.', w:['','It works electrically but is wrong by convention and installation.','']},
-      {q:'The yellow fault lamp is wired on?', a:['97-98 (NO, closes on trip)','95-96 (NC, opens on trip)','The contactor\'s 13-14'], c:0, why:'97-98 is open normally and closes on a trip, so the lamp lights only during a fault.', w:['','95-96 would keep it lit all the time and turn it off during a fault.','13-14 is the running lamp.']},
-      {q:'The overload tripped but the motor kept running. Most likely cause?', a:['The overload itself is faulty','95-96 bypassed or not wired','The contactor is too big'], c:1, why:'The overload doesn\'t cut the power itself: if 95-96 doesn\'t break the coil circuit, the motor won\'t stop.', w:['If it tripped, it\'s working; the problem is in the wiring.','','']}]}
-   ]}
-  ],
-
-  exercises:{
-    p1:{story:{icon:'🔥', text:"Machine lamp: a short in the wiring blew the fuse.", ask:""}, title:'Exercise 1: the fuse protects the lamp from a short circuit', short:'Fuse + lamp + short',
-       task:'This circuit is already wired (L → fuse F1 → button S1 → lamp H1 → N), but it has <b>a wrong wire that makes a short circuit</b>. Switch on and press S1: the fuse will blow. Switch off, find the shorting wire and remove it, <b>replace the fuse</b> (tap it), and switch on again: the lamp lights with the button.', goal:"Remove the short; H1 lights with S1.", idea:"A wire joining X1 to X2 is a short. Replace the fuse by hand.", steps:["Power up, press S1: the fuse blows.","Power off, remove wire H1:X1 → H1:X2.","Tap the fuse to replace it, power up."],
-       tip:"",
-       devices:[SUP, FUSE, PB('S1', 'green', 'START'), lamp('H1', 'green', 'lamp')],
-       preset:[['Q1:L','F1:1'],['F1:2','S1:13'],['S1:14','H1:X1'],['H1:X2','Q1:N'],['H1:X1','H1:X2']],
-       solution:[['Q1:L','F1:1'],['F1:2','S1:13'],['S1:14','H1:X1'],['H1:X2','Q1:N']],
-       cases:[{label:'S1 released', set:{S1:{p:0}}, expect:{H1:0}}, {label:'S1 pressed', set:{S1:{p:1}}, expect:{H1:1}}],
-       okMsg:"The fuse protects the circuit again."},
-    p2:{story:{icon:'🌬️', text:"Air compressor: the breaker trips on every start.", ask:""}, machine:'gauge', title:'Exercise 2: choose the right breaker for the motor (B or C)', short:'Breaker B or C',
-       task:'The board has two 3-pole breakers: <b>Q1</b> curve <b>B6</b> and <b>Q2</b> curve <b>C6</b>, and the motor current is 5A. Wire the power circuit from the supply through <b>one of them</b> → KM1 → M1, and the control circuit (F1 → S1 → KM1 coil). When you turn the selector the motor must start and keep running. If you choose wrong it will trip at the moment of starting.', goal:"M1 (5A) starts without tripping the breaker.", idea:"Starting current ≈ 30A: B6 trips on it, C6 rides through.", steps:{"power":["L1 L2 L3 → Q2 (C6) 1/3/5","Q2 2/4/6 → KM1 1/3/5","KM1 2/4/6 → M1 U V W"],"control":["L1 → F1:1, and F1:2 → S1:13","S1:14 → KM1:A1, and KM1:A2 → N"]},
-       tip:"",
-       devices:[G, Qb, Qc, F1, SEL, KM('KM1', ['NO']), MOT('M1', 5, 0.8)],
-       solution:[['G:L1','Q2:1'],['G:L2','Q2:3'],['G:L3','Q2:5'],['Q2:2','KM1:1'],['Q2:4','KM1:3'],['Q2:6','KM1:5'],['KM1:2','M1:U'],['KM1:4','M1:V'],['KM1:6','M1:W'],['G:L1','F1:1'],['F1:2','S1:13'],['S1:14','KM1:A1'],['KM1:A2','G:N']],
-       cases:[{label:'Selector on 0', set:{S1:{pos:0}}, expect:{M1:0}}, {label:'Selector on I (start, then run for two seconds)', set:{S1:{pos:1}}, wait:2, expect:{M1:'F'}}],
-       tripHint:"Use Q2 (curve C6) for the motor.",
-       okMsg:"Curve C rode through the starting current ⚡."},
-    o1:{story:{icon:'🟡', text:"Drain pump: a yellow lamp when the overload trips.", ask:""}, machine:'gauge', title:'Exercise 3: the overload in a DOL circuit + fault lamp', short:'Overload in DOL',
-       task:'Wire a complete DOL with protection: power <b>Q1 → KM1 → F2 → M1</b>, and control <b>F1 → F2 95-96 → S0 → S1 || KM1 13-14 → KM1 coil → N</b>, the “running” lamp <b>H1</b> across the coil, and the yellow “fault” lamp <b>H3</b> from after F1 through <b>F2 97-98</b>. After switching on: start the motor, raise the load with the slider to 250%, wait for the overload to trip (⏩ speeds it up), see the yellow lamp, wait for it to cool, Reset, and start again.', goal:"DOL with overload: on trip, motor stops, H3 lights.", idea:"F2 after KM1; 95-96 cuts the coil, 97-98 lights the fault lamp.", steps:{"power":["L1 L2 L3 → Q1 1/3/5","Q1 2/4/6 → KM1 1/3/5","KM1 2/4/6 → F2 1/3/5","F2 2/4/6 → M1 U V W"],"control":["L1 → F1:1, and F1:2 → F2:95","F2:96 → S0:11, and S0:12 → S1:13","S1:14 → KM1:A1, and KM1:A2 → N","Hold-in: KM1:13 → S1:13, and KM1:14 → S1:14","H1: KM1:A1 → H1:X1, and H1:X2 → N","H3: F1:2 → F2:97, and F2:98 → H3:X1","H3:X2 → H1:X2"]},
-       tip:"",
-       devices:OL_DEVS, solution:POWER('Q1', 'KM1', 'F2', 'M1').concat(CTL_OL),
-       seq:true, cases:olCases, patterns:olPatterns, conventions:olConventions,
-       okMsg:"Load the motor to 250% and watch the overload trip."},
-    o2:{story:{icon:'🏷️', text:"The overload trips on normal load: Ir is set wrong.", ask:""}, machine:'gauge', title:'Exercise 4: set Ir from the motor nameplate', short:'Setting Ir',
-       task:'This circuit is wired correctly, but the overload is set to <b>Ir = 2A</b> and the motor nameplate says <b>In = 5A</b>. Switch on and start the motor: it runs on its normal load (4A) and after a while the overload trips for no reason. Switch off, set <b>Ir</b> to the nameplate current with the “Ir −/+” buttons on the board, and switch on again.', goal:"The motor runs on its load without tripping.", idea:"Ir = nameplate In (5A). Lower than that, it trips.", steps:["Power up and start: it trips after a while.","Power off, set Ir to 5A with «Ir −/+».","Reset once it cools, then run again."],
-       tip:"",
-       devices:[G, Q3, F1, PB('S0', 'red', 'STOP'), PB('S1', 'green', 'START'), KM1, OL(2, {range:'1.6–6.5 A', lo:1.6, hi:6.5}), M1, H1, H3],
-       preset:POWER('Q1', 'KM1', 'F2', 'M1').concat(CTL_OL), solution:POWER('Q1', 'KM1', 'F2', 'M1').concat(CTL_OL),
-       seq:true, cases:[
-         {label:'nothing pressed', set:{}, expect:{M1:0, H1:0, H3:0}},
-         {label:'START pressed', set:{S1:{p:1}}, expect:{M1:1, H1:1, H3:0}},
-         {label:'Released START and it kept running on its normal load for 100 seconds', set:{S1:{p:0}}, wait:100, expect:{M1:1, H1:1, H3:0}},
-         {label:'STOP', set:{S0:{p:1}}, expect:{M1:0, H1:0, H3:0}}],
-       tripHint:"The motor draws 4A and Ir = 2A. Set Ir to 5A.",
-       okMsg:"Ir = In: it trips only on a real overload."},
-    o3:{story:{icon:'⚠️', text:"The motor hums and the overload trips: a phase is missing.", ask:""}, machine:'gauge', title:'Exercise 5: a missing phase and the overload trips', short:'Missing phase',
-       task:'This circuit is missing a phase wire in the power circuit between the overload and the motor. Switch on and start the motor: it hums and doesn\'t turn, the current in the two phases rises, and the overload trips <b>quickly</b> (phase loss) and the fault lamp lights. Switch off, complete the missing phase, Reset after it cools, and switch on again.', goal:"M1 runs on 3 phases without tripping.", idea:"A missing phase: the overload senses it and trips fast (phase loss).", steps:["Power up and start: it hums and trips.","Power off, trace F2 2/4/6 → M1; check W.","Add the phase, Reset, run again."],
-       tip:"",
-       devices:OL_DEVS,
-       preset:POWER('Q1', 'KM1', 'F2', 'M1').filter(w => w[0] !== 'F2:6').concat(CTL_OL), solution:POWER('Q1', 'KM1', 'F2', 'M1').concat(CTL_OL),
-       seq:true, cases:olCases.slice(0, 3).concat([{label:'STOP', set:{S0:{p:1}}, expect:{M1:0, H1:0, H3:0}}]), patterns:olPatterns,
-       okMsg:"All three phases arrive; the current is normal."},
-    m1:{story:{icon:'📦', text:"Small panel: one MPCB instead of a fuse and an overload.", ask:""}, machine:'gauge', title:'Exercise 6: an MPCB instead of the fuse and overload in DOL', short:'MPCB in DOL',
-       task:'The same DOL but with <b>Q2 (MPCB)</b> in place of the breaker and the overload: power <b>Q2 → KM1 → M1</b>, and control <b>F1 → Q2 13-14 → S0 → S1 || KM1 13-14 → coil → N</b>, lamp H1 across the coil, and the fault lamp <b>H3</b> from after F1 through <b>Q2 21-22</b>. After switching on, load the motor to 250% and wait for it to trip.', goal:"DOL with MPCB Q2, H3 for faults.", idea:"Q2 13-14 is closed while on; 21-22 closes when it trips.", steps:{"power":["L1 L2 L3 → Q2 1/3/5","Q2 2/4/6 → KM1 1/3/5","KM1 2/4/6 → M1 U V W"],"control":["L1 → F1:1, and F1:2 → Q2:13","Q2:14 → S0:11, and S0:12 → S1:13","S1:14 → KM1:A1, and KM1:A2 → N","Hold-in: KM1:13 → S1:13, and KM1:14 → S1:14","H1: KM1:A1 → H1:X1, and H1:X2 → N","H3: F1:2 → Q2:21, and Q2:22 → H3:X1","H3:X2 → H1:X2"]},
-       tip:"",
-       devices:[G, MP, F1, PB('S0', 'red', 'STOP'), PB('S1', 'green', 'START'), KM1, M1, H1, H3],
-       solution:POWER('Q2', 'KM1', null, 'M1').concat([['G:L1','F1:1'],['F1:2','Q2:13'],['Q2:14','S0:11'],['S0:12','S1:13'],['S1:14','KM1:A1'],['KM1:A2','G:N'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KM1:A1','H1:X1'],['H1:X2','G:N'],['F1:2','Q2:21'],['Q2:22','H3:X1'],['H3:X2','H1:X2']]),
-       seq:true, cases:[
-         {label:'nothing pressed', set:{}, expect:{M1:0, H1:0, H3:0}},
-         {label:'START pressed', set:{S1:{p:1}}, expect:{M1:1, H1:1, H3:0}},
-         {label:'START released', set:{S1:{p:0}}, wait:2, expect:{M1:1, H1:1, H3:0}},
-         {label:'Loaded the motor to 250% for a minute', set:{M1:{load:2.5}}, wait:60, expect:{M1:0, H1:0, H3:1}},
-         {label:'Load back to normal and waited 45 seconds', set:{M1:{load:0.8}}, wait:45, expect:{M1:0, H1:0, H3:1}},
-         {label:'Turned the MPCB back to I', set:{Q2:{reset:1}}, expect:{M1:0, H1:0, H3:0}},
-         {label:'START again', set:{S1:{p:1}}, expect:{M1:1, H1:1, H3:0}}],
-       patterns:[{sig:{M1:'0111111'}, msg:"Q2 tripped but the motor runs: F1:2 → Q2:13, and Q2:14 → S0:11."}, {sig:{H3:'1111111'}, msg:"H3 is on while Q2 is on: H3 goes on 21-22, not 13-14."}],
-       okMsg:"Load the motor: Q2 trips and H3 lights."},
-    w1:{story:{icon:'🔧', text:"Fault report: «the overload tripped and the motor is still running!»", ask:""}, machine:'gauge', title:'Exercise 7: mistake: 95-96 bypassed (the motor doesn\'t stop when it trips)', short:'Mistake: 95-96 bypassed',
-       task:'This circuit looks right, but it has <b>an extra wire</b> bypassing contact 95-96. Switch on, start the motor, load it to 250% and wait for the overload to trip: the fault lamp lights but <b>the motor keeps running</b>! This is the most dangerous mistake. Switch off, find the wire and remove it, and switch on again.', goal:"On a trip: the motor stops, H3 lights.", idea:"An extra wire bypasses 95-96, so the coil stays fed.", steps:["Power up, load to 250%, wait for the trip.","Power off, find a wire from 95 to 96.","Remove the extra wire."],
-       tip:"",
-       devices:OL_DEVS,
-       preset:POWER('Q1', 'KM1', 'F2', 'M1').concat(CTL_OL).concat([['F2:95','S0:11']]), solution:POWER('Q1', 'KM1', 'F2', 'M1').concat(CTL_OL),
-       seq:true, cases:olCases, patterns:olPatterns, conventions:olConventions,
-       okMsg:"The overload trips and the motor stops."},
-    w2:{story:{icon:'🔧', text:"Fault report: «the motor won't start and the fault lamp is on».", ask:""}, machine:'gauge', title:'Exercise 8: mistake: 97-98 instead of 95-96 in the control line', short:'Mistake: 97-98 instead of 95-96',
-       task:'Here they\'re swapped: the control line runs through <b>97-98</b> and the fault lamp is on <b>95-96</b>. Switch on and press START: the motor <b>won\'t start</b> and the fault lamp is on all the time. Think about why, then switch off and fix the wiring.', goal:"START runs it; H3 lights only on a trip.", idea:"The two contacts are swapped: 97-98 in control, 95-96 on the lamp.", steps:["Power up, press START: nothing runs.","Power off: 95-96 for control, 97-98 for the lamp.","Power up, try START and a 250% load."],
-       tip:"",
-       devices:OL_DEVS,
-       preset:POWER('Q1', 'KM1', 'F2', 'M1').concat([['G:L1','F1:1'],['F1:2','F2:97'],['F2:98','S0:11'],['S0:12','S1:13'],['S1:14','KM1:A1'],['KM1:A2','G:N'],['KM1:13','S1:13'],['KM1:14','S1:14'],['KM1:A1','H1:X1'],['H1:X2','G:N'],['F1:2','F2:95'],['F2:96','H3:X1'],['H3:X2','H1:X2']]),
-       solution:POWER('Q1', 'KM1', 'F2', 'M1').concat(CTL_OL),
-       seq:true, cases:olCases, patterns:olPatterns, conventions:olConventions,
-       okMsg:"95-96 for control and 97-98 for the lamp."},
-    w3:{story:{icon:'📋', text:"The inspector rejected the panel: the overload is before the contactor.", ask:""}, machine:'gauge', title:'Exercise 9: the overload before the contactor (works, but wrong by convention)', short:'Overload before the contactor',
-       task:'This circuit is wired <b>Q1 → F2 → KM1 → M1</b>: the overload is before the contactor. Switch it on: you\'ll find it works and the protection works. But the proper way is for the overload to come <b>after</b> the contactor (it mounts on it with its pins). Rearrange the power wires so it\'s Q1 → KM1 → F2 → M1 and the warning disappears.', goal:"Order the power side: Q1 → KM1 → F2 → M1.", idea:"It works, but the overload mounts on the contactor, after it.", steps:["Power up and read the warning.","Power off: Q1 2/4/6 → KM1 1/3/5","KM1 2/4/6 → F2 1/3/5, and F2 2/4/6 → M1"],
-       tip:"",
-       devices:OL_DEVS,
-       preset:[['G:L1','Q1:1'],['G:L2','Q1:3'],['G:L3','Q1:5'],['Q1:2','F2:1'],['Q1:4','F2:3'],['Q1:6','F2:5'],['F2:2','KM1:1'],['F2:4','KM1:3'],['F2:6','KM1:5'],['KM1:2','M1:U'],['KM1:4','M1:V'],['KM1:6','M1:W']].concat(CTL_OL),
-       solution:POWER('Q1', 'KM1', 'F2', 'M1').concat(CTL_OL),
-       seq:true, cases:olCases, patterns:olPatterns, conventions:olConventions,
-       okMsg:"Standard order: Q1 → KM1 → F2 → M."}
-  }
-});
-})();
-</script>
+<script>window.CC_PAGES=1;window.CC_LESSON="mot";window.CC_LANG="en";</script>
+<script src="/classic-control-lab/cc.js?v=20261113cc"></script>
 </body>
 </html>
