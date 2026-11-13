@@ -34,7 +34,7 @@
     { id: "srvm", title: "صيانة محركات السيرفو", hub: "servo-maint-lab/index.html", inc: "كل الدروس + منضدة صيانة محرك السيرفو ومحطة صيانة الدرايف والامتحان والشهادة" },
     { id: "mech", title: "أساسيات الميكانيكا", hub: "mech-lab/index.html", inc: "كل الدروس + 11 لعبة تفاعلية والامتحان والشهادة" },
     { id: "mfit", title: "ميكانيكا الماكينات", hub: "mfit-lab/index.html", inc: "كل الدروس + 16 تمرين ورشة والامتحان والشهادة" },
-    { id: "a3s", title: "محاكيات A3/Speed", hub: "a3speed-lab/index.html", inc: "7 محاكيات تفاعلية لماكينة A3/Speed مبنية على برنامجها" }
+    { id: "a3s", title: "محاكيات A3/Speed", hub: "a3speed-lab/index.html", inc: "8 محاكيات تفاعلية لماكينة A3/Speed مبنية على برنامجها" }
   ];
   if (EN) COURSES.forEach(function(c){ c.title = EN.courses[c.id] || c.title; c.inc = EN.payInc[c.id] || c.inc; });
   COURSES.forEach(function(c){ c.href = EN ? L(c.hub) : c.hub; c.ar = !!EN && !/^\/en\//.test(c.href); });
