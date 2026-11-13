@@ -41,51 +41,45 @@
 <section class="panel lprog" id="lprog" aria-label="Your progress"></section>
 <section class="panel lvid" aria-label="Lesson video"><h2 style="margin:0 0 8px">▶ The lesson in 5 minutes</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">Illustrated explanation, the simulator task solved, and the quiz answered. Made for the phone.</p><video src="/media/lessons/plc-lab/lesson-03-en.mp4" poster="/media/lessons/plc-lab/lesson-03-en.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>The contact and the coil</h2>
+  <h2 id="s1"><span class="k">1</span>What is Ladder made of?</h2>
+  <p>Three basic symbols. An <b>NO</b> contact passes when its bit = 1. An <b>NC</b> contact passes when the bit = 0. And the <b>coil</b> at the end of the rung writes the result to a bit.</p>
   <div class="tiles">
     <div class="tile"><div class="ladfig" id="fNO"></div><b>NO <span class="mono">-| |-</span></b><span>Bit = 1? Passes</span></div>
     <div class="tile"><div class="ladfig" id="fNC"></div><b>NC <span class="mono">-|/|-</span></b><span>Bit = 0? Passes</span></div>
     <div class="tile"><div class="ladfig" id="fCO"></div><b>Coil <span class="mono">-( )-</span></b><span>Writes the bit · end of rung</span></div>
   </div>
-  <div class="box key">A contact isn't a wire: it asks about a <b>bit</b> in memory. You can ask about the same bit many times.</div>
+  <div class="box key">A contact in the program isn't a wire: it asks about a <b>bit</b> in memory. You can ask about the same bit many times.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>AND and OR</h2>
+  <h2 id="s2"><span class="k">2</span>How do you make AND and OR?</h2>
+  <p>Two contacts <b>one after the other</b> (series) mean AND: both must be 1. Two contacts <b>one above the other</b> (parallel) mean OR: either one is enough.</p>
   <div class="vs">
     <div class="side"><b>AND = series</b><span>Both 1</span><div class="ladfig" id="fAND"></div></div>
     <i>vs</i>
     <div class="side"><b>OR = parallel</b><span>Either 1</span><div class="ladfig" id="fOR"></div></div>
   </div>
-  <p class="tip">A branch in the simulator: tap the contact ⇒ <b>"⫴ parallel branch"</b> ⇒ pick the address.</p>
+  <p class="tip">To add a branch in the simulator: tap the contact, choose <b>"⫴ parallel branch"</b>, then pick the address.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
   <h2 id="s3"><span class="k">3</span>Simulator: AND and OR</h2>
-  <ul class="fx">
-    <li><b>🦾 The press</b><span>Both hands only</span></li>
-    <li><b>💡 Stair light</b><span>From either switch</span></li>
-  </ul>
-  <p class="tip">Write ⇒ <b>RUN</b> ⇒ try it ⇒ <b>"Test program"</b>.</p>
+  <p>There are two exercises. <b>The press</b> runs with both hands only (AND). <b>The stair light</b> turns on from either switch (OR). Write the program, press <b>RUN</b>, try it, then <b>"Test program"</b>.</p>
   <div class="wd"><h3>Ladder simulator</h3><div id="sim1"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>The trap: the NC-wired Stop button</h2>
-  <p class="bf"><span class="ic">🪤</span><span>Stop wired <b>NC</b> ⇒ not pressed = <b>I0.1 = 1</b>.</span></p>
+  <p>The Stop button in the panel is wired <b>NC</b>. So when nobody is pressing it, input <b>I0.1 = 1</b>.</p>
+  <p>If you write it as NC in the program, the contact opens and the motor never runs. The right way is <b>NO</b>: it passes while the button is released, drops when you press, and also drops if the wire breaks.</p>
   <div class="vs">
     <div class="side"><b>❌ NC in the program</b><span>The motor never runs</span><div class="ladfig" id="fBAD"></div></div>
     <i>vs</i>
     <div class="side"><b>✅ NO in the program</b><span>Passes · and stops if the wire breaks</span><div class="ladfig" id="fGOOD"></div></div>
   </div>
-  <div class="box key">Ask for <b>the state you want to run in</b>. NC Stop and overload 95–96 ⇒ <b>NO</b> in the program.</div>
-  <p class="tip">Try the trap yourself:</p>
+  <div class="box key">The rule: ask for <b>the state you want the machine to run in</b>. Stop and the overload contact 95–96 are wired NC, so you write them <b>NO</b> in the program.</div>
   <div class="wd"><h3>Try the trap yourself</h3><div id="sim2"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
-  <h2 id="s5"><span class="k">5</span>Addresses in different brands</h2>
-  <ul class="fx">
-    <li><b>Siemens</b><span>I0.0 · Q0.0 · M0.0</span></li>
-    <li><b>Allen-Bradley</b><span>I:0/0 · O:0/0 · or tags</span></li>
-    <li><b>Delta / Mitsubishi</b><span>X0 · Y0 · M0 (octal)</span></li>
-  </ul>
+  <h2 id="s5"><span class="k">5</span>How does each brand write addresses?</h2>
+  <p><b>Siemens</b> writes I0.0 for an input, Q0.0 for an output and M0.0 for memory. <b>Allen-Bradley</b> writes I:0/0 and O:0/0, or tag names. <b>Delta and Mitsubishi</b> write X0, Y0 and M0, numbered in octal.</p>
   <div class="tblw"><table class="tbl addr-t">
     <thead><tr><th>Item</th><th>IEC / Siemens (simulator)</th><th>Allen-Bradley (SLC / MicroLogix)</th><th>Delta / Mitsubishi</th></tr></thead>
     <tbody>
@@ -99,12 +93,8 @@
   <div class="brand-note">Try each brand with its own addresses: <a href="siemens.html">Siemens</a>, <a href="delta.html">Delta</a> and <a href="ab.html">Allen-Bradley</a>, after <a href="lesson-10.html#sb">the end of lesson 10</a>.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s6">
-  <h2 id="s6"><span class="k">6</span>Common faults on site</h2>
-  <ul class="fx">
-    <li><b>Motor won't run, program "looks right"</b><span>NC on Stop or overload</span></li>
-    <li><b>Branch does nothing</b><span>Missing a vertical link</span></li>
-    <li><b>Wrong address</b><span>Name every address after its device</span></li>
-  </ul>
+  <h2 id="s6"><span class="k">6</span>Faults you meet on site</h2>
+  <p><b>Motor won't run and the program "looks right":</b> an NC is written on Stop or the overload. <b>A branch does nothing:</b> it is missing the vertical link. And <b>wrong address:</b> name every address after the device wired to it so you don't mix them up.</p>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson questions</h2>

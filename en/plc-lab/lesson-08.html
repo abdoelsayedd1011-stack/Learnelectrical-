@@ -41,12 +41,9 @@
 <section class="panel lprog" id="lprog" aria-label="Your progress"></section>
 <section class="panel lvid" aria-label="Lesson video"><h2 style="margin:0 0 8px">▶ The lesson in 5 minutes</h2><p style="margin:0 0 10px;color:var(--muted,#6b7280)">Illustrated explanation, the simulator task solved, and the quiz answered. Made for the phone.</p><video src="/media/lessons/plc-lab/lesson-08-en.mp4" poster="/media/lessons/plc-lab/lesson-08-en.jpg" controls playsinline preload="none" style="width:100%;max-width:400px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:12px;background:#000"></video></section>
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>From the tank to a number</h2>
-  <ol class="steps">
-    <li>Transmitter: 4–20 mA</li>
-    <li>AI card: 0 → 27648</li>
-    <li class="on">Scaling: metres or %</li>
-  </ol>
+  <h2 id="s1"><span class="k">1</span>How does the tank level reach the PLC?</h2>
+  <p>First the <b>transmitter</b> turns the level into a current from 4 to 20 mA. Then the <b>AI card</b> turns the current into a raw number from 0 to 27648.</p>
+  <p>Finally a <b>scaling</b> instruction in the program turns the raw number into a meaningful value: metres or percent.</p>
   <div class="formula">Value = Lo + Raw ÷ 27648 × (Hi − Lo)</div>
   <div class="wd"><h3>The signal chain</h3><div id="chain"></div></div>
   <ul class="scale">
@@ -56,37 +53,30 @@
     <li><bdi dir="ltr">16 mA · 20736</bdi><div class="bar"><i style="width:75%"></i><em><bdi dir="ltr">3 m</bdi></em></div></li>
     <li><bdi dir="ltr">20 mA · 27648</bdi><div class="bar"><i style="width:100%"></i><em><bdi dir="ltr">4 m</bdi></em></div></li>
   </ul>
-  <p class="tip">Why 4 and not zero? <a href="../instrumentation-lab/lesson-02.html">The 4–20mA lesson</a>.</p>
+  <p class="tip">Why does the current start at 4 and not zero? The answer is in <a href="../instrumentation-lab/lesson-02.html">the 4–20mA lesson</a>.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
   <h2 id="s2"><span class="k">2</span>Conversion drill</h2>
-  <p class="tip">Type a number; small rounding is allowed.</p>
+  <p>Convert between the raw number, the value and the current. Type a number; small rounding is allowed.</p>
   <div class="wd"><h3>Raw ↔ value ↔ mA</h3><div id="drill"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>In the program: scale and compare</h2>
-  <ul class="fx">
-    <li><b>TIA Portal</b><span>NORM_X + SCALE_X</span></li>
-    <li><b>Allen-Bradley</b><span>SCP</span></li>
-    <li><b>Simulator</b><span>Scale: IW64 ⇒ MW10</span></li>
-  </ul>
+  <h2 id="s3"><span class="k">3</span>How do we write it in the program?</h2>
+  <p>Each brand has a scaling instruction with a different name. In <b>TIA Portal</b> it is NORM_X and SCALE_X, and in <b>Allen-Bradley</b> it is SCP. In <b>the simulator</b> here, the Scale instruction reads IW64 and puts the result in MW10.</p>
   <div class="ladfig" id="fScl"></div>
-  <div class="box key"><b>Hysteresis:</b> start at <b>20%</b>, stop at <b>80%</b> (Set and Reset), not both at 20% or the contactor burns.</div>
+  <p>Once the value is in MW10, we compare it with numbers to start and stop.</p>
+  <div class="box key"><b>Hysteresis:</b> the pump starts at <b>20%</b> and stops at <b>80%</b> (Set and Reset). If both are at 20%, the contactor chatters on and off until it burns.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
   <h2 id="s4"><span class="k">4</span>Project: a tank with alarms</h2>
-  <p class="tip">Level on <b>IW64</b> · pump <b>Q0.0</b> · try "cut the transmitter wire": what should the program do?</p>
+  <p>The level comes in on <b>IW64</b> and the pump is on <b>Q0.0</b>. After you run it, try the "cut the transmitter wire" button and think: what should the program do?</p>
   <div class="wd"><h3>Simulator: the tank</h3><div id="sim1"></div></div>
-  <p class="alert">Wire cut ⇒ "0%" ⇒ the pump fills until it <b>overflows</b>. Use the diagnostic bit and a hard-wired high-high float.</p>
+  <p class="alert">If the wire is cut, the program reads "0%", so the pump keeps filling until the tank <b>overflows</b>. So use the diagnostic bit, and fit a hard-wired high-high float.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
-  <h2 id="s5"><span class="k">5</span>Common faults on site</h2>
-  <ul class="fx">
-    <li><b>Stuck at 32767 or negative</b><span>Broken wire or no power</span></li>
-    <li><b>Off by a fixed ratio</b><span>Scale range ≠ transmitter range</span></li>
-    <li><b>Channel 0–10V, transmitter mA</b><span>Set the channel type · jumper</span></li>
-    <li><b>Reading jitters</b><span>Shield · away from motor cables · filter</span></li>
-  </ul>
+  <h2 id="s5"><span class="k">5</span>Faults you meet on site</h2>
+  <p><b>Reading stuck at 32767 or negative:</b> a broken wire or no power to the transmitter. <b>Reading wrong by a fixed ratio:</b> the scale range differs from the transmitter range.</p>
+  <p><b>Channel set to 0–10V but the transmitter is mA:</b> set the channel type or the jumper. And <b>the reading jitters:</b> use shielded cable, keep it away from the motor cable, and turn on the filter.</p>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson questions</h2>
