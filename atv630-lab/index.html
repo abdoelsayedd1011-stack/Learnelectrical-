@@ -562,7 +562,7 @@ body.guided .keyguide{display:none}
         <div class="tile"><div class="label">التيار</div><div class="v" id="tI">0.0<small>A</small></div><div class="bar"><i id="bI"></i></div></div>
         <div class="tile"><div class="label">القدرة</div><div class="v" id="tP">0.0<small>kW</small></div></div>
         <div class="tile"><div class="label">ضغط الخط</div><div class="v" id="tPr">0.00<small>bar</small></div><div class="bar"><i id="bPr"></i></div></div>
-        <div class="tile"><div class="label">التصرف (تقديري)</div><div class="v" id="tQ">0<small>m³/h</small></div></div>
+        <div class="tile"><div class="label">الفلو (تقديري)</div><div class="v" id="tQ">0<small>m³/h</small></div></div>
         <div class="tile"><div class="label">DC Bus</div><div class="v" id="tB">0<small>V</small></div><div class="bar"><i id="bB"></i></div></div>
         <div class="tile"><div class="label">tHr حرارة الموتور</div><div class="v" id="tOL">0<small>%</small></div><div class="bar"><i id="bOL"></i></div></div>
       </div>
@@ -585,7 +585,7 @@ body.guided .keyguide{display:none}
       <div class="fields">
         <div class="field"><span class="label">الموتور المركّب</span><select id="motSel"><option value="iec">11 kW · 400V · 50Hz · 1460 rpm</option><option value="nema">15 HP · 460V · 60Hz · 1765 rpm</option></select></div>
         <div class="field"><span class="label">جهد المصدر</span><select id="lineSel"><option>380</option><option selected>400</option><option>415</option><option>460</option><option>480</option></select></div>
-        <div class="field"><span class="label">نوع الحمل</span><select id="loadSel"><option value="pump">طلمبة طرد مركزي (ضغط وتصرف)</option><option value="fan">مروحة (عزم ∝ السرعة²)</option><option value="conv">سير ناقل (عزم ثابت)</option></select></div>
+        <div class="field"><span class="label">نوع الحمل</span><select id="loadSel"><option value="pump">طلمبة طرد مركزي (ضغط وفلو)</option><option value="fan">مروحة (عزم ∝ السرعة²)</option><option value="conv">سير ناقل (عزم ثابت)</option></select></div>
         <div class="field" id="fValve"><span class="label">فتحة محبس الاستهلاك: <b id="vlV" class="mono">50%</b></span><input type="range" id="vl" min="0" max="100" step="1" value="50"></div>
         <div class="field" id="fLp"><span class="label">الحمل: <b id="lpV" class="mono">60%</b> من عزم الموتور</span><input type="range" id="lp" min="0" max="160" step="1" value="60"></div>
         <div class="field"><span class="label">قصور الحمل ÷ قصور الموتور: <b id="jrV" class="mono">2</b></span><input type="range" id="jr" min="0" max="40" step="0.5" value="2"></div>
@@ -799,7 +799,7 @@ RO('rPF','PID feedback','pid','قراية الضغط',()=>S.pid.fb,{dc:2,u:'bar'
 RO('rPE','PID error','pid','الخطأ',()=>S.pid.ref-S.pid.fb,{dc:2,u:'bar',x:'المطلوب ناقص الفعلي.'});
 RO('rPO','PID output','pid','خرج الـ PID',()=>S.pid.out,{dc:1,u:'Hz',x:'السرعة اللي الـ PID طالبها.'});
 RO('PrS','Outlet pressure','pid','ضغط الطرد الحقيقي',()=>S.pr,{dc:2,u:'bar',x:'الضغط الحقيقي في الماسورة (للمقارنة بـ rPF).'});
-RO('FLO','Pump flow (est.)','pid','التصرف التقديري',()=>S.q,{dc:0,u:'m3/h',x:'التصرف محسوب من منحنى الطلمبة.'});
+RO('FLO','Pump flow (est.)','pid','الفلو التقديري',()=>S.q,{dc:0,u:'m3/h',x:'الفلو محسوب من منحنى الطلمبة.'});
 RO('AI1C','AI1 physical value','io','قيمة AI1',()=>S.ai1,{dc:2,fmt:v=>v.toFixed(2)+(P.AI1t===1?' mA':' V'),x:'الإشارة الفعلية على AI1.'});
 RO('AI2C','AI2 physical value','io','قيمة AI2',()=>S.ai2,{dc:2,u:'V',x:'الإشارة الفعلية على AI2.'});
 RO('AI3C','AI3 physical value','io','قيمة AI3',()=>S.ai3,{dc:2,fmt:v=>v.toFixed(2)+(P.AI3t===1?' V':' mA'),x:'الإشارة الفعلية على AI3.'});
@@ -1689,7 +1689,7 @@ bindRange('lp','lp',v=>v+'%');bindRange('vl','vl',v=>v+'%');bindRange('jr','jr',
 function loadHint(){
  const m=MOT[S.mot],J=m.J*(1+S.jr),E=.5*J*m.wn*m.wn/1000;
  $('#fValve').hidden=S.load!=='pump';$('#fLp').hidden=S.load==='pump';
- const t={pump:'طلمبة طرد مركزي: الضغط ∝ السرعة² والتصرف ∝ السرعة، والقدرة ∝ السرعة³. في 50 Hz والمحبس مفتوح نص الضغط حوالي 4.8 bar. محتاجة حوالي 20 Hz عشان تغلب الرفع الاستاتيكي (1 bar) وتبدأ تضخ. ترانسميتر الضغط (0-10 bar = 4-20 mA) على AI3.',fan:'مروحة: العزم بيزيد مع مربع السرعة، فالتيار واطي في السرعات الواطية.',conv:'سير ناقل: العزم ثابت تقريباً من أول ما يتحرك. لاحظ إن U/F quadratic مبتنفعش هنا.'}[S.load];
+ const t={pump:'طلمبة طرد مركزي: الضغط ∝ السرعة² والفلو ∝ السرعة، والقدرة ∝ السرعة³. في 50 Hz والمحبس مفتوح نص الضغط حوالي 4.8 bar. محتاجة حوالي 20 Hz عشان تغلب الرفع الاستاتيكي (1 bar) وتبدأ تضخ. ترانسميتر الضغط (0-10 bar = 4-20 mA) على AI3.',fan:'مروحة: العزم بيزيد مع مربع السرعة، فالتيار واطي في السرعات الواطية.',conv:'سير ناقل: العزم ثابت تقريباً من أول ما يتحرك. لاحظ إن U/F quadratic مبتنفعش هنا.'}[S.load];
  $('#loadHint').textContent=t+' الحماية الحرارية للموتور (tHr) في المحاكي أسرع حوالي 10 مرات من الحقيقة عشان متستناش. القصور الكلي '+J.toFixed(2)+' kg·m²، وطاقة الحركة عند السرعة المقننة حوالي '+E.toFixed(1)+' kJ، ودي اللي بترجع للـ DC bus لما توقف بسرعة.';
 }
 $('#motSel').addEventListener('change',e=>{S.mot=e.target.value;updMotor();loadHint();save();log('الموتور اتغيّر: '+MOT[S.mot].plate.join(' · '));});
@@ -1926,7 +1926,7 @@ function caption(){
   else if(pg.t==='list'){const it=pg.items()[pg.i];if(it&&it.c){const p=PM[it.c];h='<b>'+p.c+'</b> '+p.nm+': '+p.ar+'. '+(p.t==='ro'?'قراية بس.':'دوس <b>OK</b> للتعديل.')+(p.rl?' يتغير والموتور واقف بس.':'');}else h=(pg.main?'القايمة الرئيسية. ':'')+'لف الـ Jog dial أو ▲▼ تختار، <b>OK</b> تدخل، <b>ESC</b> ترجع، <b>F1</b> تعرض الأكواد بدل الأسامي.'+(it&&it.code?' كود القايمة: <b>'+it.code+'</b>.':'');}
   else if(pg.t==='edit'){const p=PM[pg.c];h='بتعدّل <b>'+p.c+'</b> ('+p.ar+'). الخانة المعكوسة هي اللي بتتغير: لف الـ Jog dial أو ▲▼ يغيّرها، <b>F2 &lt;&lt;</b> و <b>F3 &gt;&gt;</b> (أو ◀ ▶) ينقلوا بين الخانات، <b>OK</b> يحفظ و <b>ESC</b> يلغي.';}
   else if(pg.t==='enum'){const p=PM[pg.c];h='اختار قيمة <b>'+p.c+'</b> ('+p.ar+') بالـ Jog dial ودوس <b>OK</b>. الدايرة المليانة هي القيمة المتسجلة دلوقتي.';}
-  else if(pg.t==='dash')h='الـ Dashboard: التردد والقدرة والطاقة والضغط والتصرف في شاشة واحدة.';
+  else if(pg.t==='dash')h='الـ Dashboard: التردد والقدرة والطاقة والضغط والفلو في شاشة واحدة.';
   else if(pg.t==='iomap')h='I/O map: حالة المداخل DI1–DI6 و STO، وقيم AI1 و AI2 و AI3، والخارجين AQ1 و AQ2، والريليهات.';
   else if(pg.t==='hist')h='Error history: آخر 8 أعطال، الأحدث فوق. دوس <b>OK</b> على أي عطل تشوف حالة الانفرتر وقت ما حصل.';
   else if(pg.t==='histd')h='تفاصيل العطل: الحالة والتردد والتيار وجهد المصدر والحرارة لحظة الفصل. مفيدة جداً عشان تعرف السبب.';
@@ -2013,7 +2013,7 @@ const REF={
   ['الهيدر','أول سطر: الحالة (RDY, RUN, ACC, DEC, CLI, OBR, NST, STO, TUN, FLT)، قناة الأمر (Term/HMI)، قناة المرجع (AI1, PID, LFr…)، التردد، التيار، و LOC/REM.']].map(x=>card(x[0],x[1])).join('')+'</div><h4>مثال: تغيير ACC لـ 5 ثواني</h4><ol><li>من الشاشة الرئيسية دوس <code>OK</code> تظهر <code>Main menu</code>.</li><li>لف لحد <code>Simply start</code> ودوس <code>OK</code>.</li><li>لف لحد <code>Acceleration</code> ودوس <code>OK</code>: الرقم يظهر كبير وخانة منه معكوسة.</li><li><code>F2 &lt;&lt;</code> أو <code>F3 &gt;&gt;</code> عشان تختار خانة الآحاد، ولف لحد <code>5.0</code>.</li><li><code>OK</code> يحفظ، و <code>🏠</code> يرجعك للرئيسية.</li></ol>'],
  menu:['شجرة القوايم',tbl(['القايمة','الكود','فيها إيه'],[
   ['Simply start','SYS-','بيانات لوحة الموتور، Autotuning، ACC و dEC، LSP و HSP. أول حاجة تعملها في أي تشغيل.'],
-  ['Dashboard','dSH-','عداد التردد والقدرة والطاقة والضغط والتصرف.'],
+  ['Dashboard','dSH-','عداد التردد والقدرة والطاقة والضغط والفلو.'],
   ['Diagnostics','dIA-','Diag. data (آخر عطل)، Error history (pFH-) لآخر 8 أعطال بتفاصيلها، ومسح التاريخ.'],
   ['Display','MOn-','قراءات الموتور، الانفرتر، الـ PID، وخريطة المداخل والمخارج I/O map.'],
   ['Complete settings','CSt-','كل الباراميترات مقسّمة: Motor parameters، Command and reference، Ramp and stop، Preset speeds / Jog، PID controller، DI and relays، Analog I/O، Error/Warning handling.'],
