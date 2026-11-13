@@ -114,10 +114,10 @@
       (disabled ? ' aria-disabled="true"' : "") + (k === sel ? "" : ' tabindex="-1"') + ">" + inner + "</button>";
   }
   // Price on a card: this tab's currency first. English pages also show the other currency (USD first, EGP second);
-  // Arabic shows the EGP price under the dollar one in «من خارج مصر».
+  // The Egypt tab shows the dollar price under it, labelled «من خارج مصر» / Outside Egypt.
   function priceBlock(pr){
     var main = region === "eg" ? [pr.price, pr.was, "EGP"] : [pr.usd, pr.usd_was, "USD"];
-    var alt = region === "eg" ? (EN && pr.usd ? money(pr.usd, "USD") : "") : (pr.price ? money(pr.price, "EGP") + (EN ? " " + EN.egpNote : " في مصر") : "");
+    var alt = region === "eg" ? (pr.usd ? (EN ? "Outside Egypt: " : "من خارج مصر: ") + money(pr.usd, "USD") : "") : (pr.price ? money(pr.price, "EGP") + (EN ? " " + EN.egpNote : " في مصر") : "");
     return '<span class="pl-price"><b>' + esc(money(main[0], main[2])) + "</b>" + (main[1] ? " <s>" + esc(money(main[1], main[2])) + "</s>" : "") + "</span>" +
       (alt ? '<span class="pl-alt">' + esc(alt) + "</span>" : "");
   }
