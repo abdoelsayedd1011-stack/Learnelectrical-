@@ -44,7 +44,7 @@ const FREE_LESSONS_BY_DIR = {
 const COURSE_DIRS = new Set(["classic-control-lab", "safety-lab", "basics-lab", "instrumentation-lab", "plc-lab", "drawings-lab", "vfd-course", "servo-course", "iiot-lab", "scada-lab", "panel-lab", "maint-lab", "servo-maint-lab", "mech-lab", "mfit-lab"]);
 const OPEN_DIRS = new Set(["courses", "pdf-tools"]); // pdf-tools: the free PDF editor is open to visitors without an account
 // Courses still being prepared: only admins can open their pages (remove the folder from here to publish)
-const HIDDEN_DIRS = new Set(["safety-lab"]); // folders whose pages stay open without an account
+const HIDDEN_DIRS = new Set([]); // folders whose pages stay open without an account
 
 // "/plc-lab/", "/plc-lab/lesson-01.html", "/interview/" are pages; "/assets/site.js", "/og.png" are not.
 function isPage(pathname){
