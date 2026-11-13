@@ -127,6 +127,14 @@ input[type=range]{width:100%;accent-color:var(--sp)}
 .speeds{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted)}
 .speeds button{padding:5px 10px}
 footer{color:var(--muted);font-size:12.5px}
+
+/* layout: controls beside the scene, card / PLC / terminal below it */
+.main{grid-template-columns:minmax(0,1fr) 400px}
+@media (max-width:980px){.main{grid-template-columns:minmax(0,1fr)}}
+.side-ctl #deskCard{margin-top:0}
+.side-ctl .desk{grid-template-columns:1fr}
+.side-ctl .grp{grid-template-columns:repeat(2,minmax(0,1fr))}
+.bottom{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px;margin-top:14px;align-items:start}
 </style>
 
 </head>
@@ -179,101 +187,103 @@ footer{color:var(--muted);font-size:12.5px}
       </div>
     </div>
 
-    <div class="side">
-      <div class="tmcc" id="tmcc">
-        <div class="lbl"><span>TMCC2 card &nbsp;A401</span><span class="mono">FCSFA3F</span></div>
-        <div class="disp" id="disp"></div>
-        <div class="mpath" id="mpath"></div>
-        <div class="btnrow"><button data-k="up" aria-label="Arrow up">▲</button><button data-k="down" aria-label="Arrow down">▼</button><button data-k="enter" aria-label="Enter">ENTER</button></div>
-        <div class="note" id="tmccNote">P = production, V = fixed, bars = tube level (5% per row).</div>
+    <div class="side side-ctl">
+    <section class="card" id="deskCard">
+      <div class="actions" style="margin-bottom:12px">
+        <button class="primary" id="runBtn">Start production</button>
+        <button id="shortBtn">Short stop</button>
+        <button id="resetBtn">Reset</button>
+        <span class="speeds">Sim speed:
+          <button data-rate="1" class="on">1×</button><button data-rate="2">2×</button><button data-rate="4">4×</button></span>
       </div>
-
-      <div class="plc" id="plc">
-        <h2 style="font-family:var(--f-display);font-size:14px;margin:0 0 6px;color:var(--muted);font-weight:500">PLC signals</h2>
-        <div class="sig"><span class="led" id="lEn"></span><span>Card ready (Enabled)</span><span class="addr">%I269</span></div>
-        <div class="sig"><span class="led" id="lOk"></span><span>Filling OK</span><span class="addr">%I268</span></div>
-        <div class="sig"><span class="led" id="lHi"></span><span>High level</span><span class="addr">%I266</span></div>
-        <div class="sig"><span class="led" id="lPr"></span><span>Production command to card</span><span class="addr">%Q146</span></div>
-        <div class="sig"><span class="led" id="lSs"></span><span>Short stop to card</span><span class="addr">%Q148</span></div>
-        <div class="sig"><span class="led" id="lFm"></span><span>Flowmeter link RS485</span><span class="addr">B1316</span></div>
-        <div class="timer">Alarm timer <span class="mono">DEL0249</span>: <span class="mono" id="tVal">0.0 / 25.0 s</span>
-          <div class="tbar"><div id="tBar"></div></div></div>
-        <div class="alarmbox" id="alarm">No alarm</div>
-        <div class="alist" id="alist" aria-live="polite"></div>
+      <div class="desk">
+        <div class="grp">
+          <h2>Flow loop (Flow PID)</h2>
+          <div class="ctl"><label for="kP">P <span class="mono" id="vP"></span></label><input type="range" id="kP" min="0" max="2.5" step="0.05"><small>Opens the valve in proportion to the error now</small></div>
+          <div class="ctl"><label for="kI">I <span class="mono" id="vI"></span></label><input type="range" id="kI" min="0" max="5" step="0.1"><small>Removes the remaining error over time</small></div>
+          <div class="ctl"><label for="kD">D <span class="mono" id="vD"></span></label><input type="range" id="kD" min="0" max="0.3" step="0.01"><small>Brakes when the error changes fast</small></div>
+        </div>
+        <div class="grp">
+          <h2>Level loop (Level PID)</h2>
+          <div class="ctl"><label for="kU">U <span class="mono" id="vU"></span></label><input type="range" id="kU" min="0" max="8" step="0.1"><small>Raises or lowers the flow by how far the level is off</small></div>
+          <div class="ctl"><label for="kV">V <span class="mono" id="vV"></span></label><input type="range" id="kV" min="0" max="1.5" step="0.05"><small>Brings the level exactly back to target</small></div>
+          <div class="ctl"><label for="kW">W <span class="mono" id="vW"></span></label><input type="range" id="kW" min="0" max="2" step="0.1"><small>Anticipates when the level drops fast</small></div>
+          <div class="ctl"><label for="kL">Level setpoint (L) <span class="mono" id="vL"></span></label><input type="range" id="kL" min="35" max="80" step="1"><small>Change it and watch how U gets there</small></div>
+          <div class="ctl" style="grid-column:span 2;align-self:center"><button id="fDist" style="width:100%">Disturb the level (drop 20%)</button></div>
+        </div>
+        <div class="grp">
+          <h2>Start-up</h2>
+          <div class="ctl"><label for="kB">Start (B) <span class="mono" id="vB"></span></label><input type="range" id="kB" min="80" max="160" step="5"></div>
+          <div class="ctl"><label for="kT">Ramp (T) <span class="mono" id="vT"></span></label><input type="range" id="kT" min="0.5" max="10" step="0.5"></div>
+          <div class="ctl"><label for="kPF">Prefill <span class="mono" id="vPF"></span></label><input type="range" id="kPF" min="30" max="120" step="5"></div>
+          <div class="ctl"><label for="kG">Switch point (G) <span class="mono" id="vG"></span></label><input type="range" id="kG" min="20" max="60" step="1"></div>
+        </div>
+        <div class="grp">
+          <h2>Machine and product</h2>
+          <div class="ctl"><label for="kVol">Package volume <span class="mono" id="vVol"></span></label><input type="range" id="kVol" min="125" max="1000" step="25"></div>
+          <div class="ctl"><label for="kSpd">Machine speed <span class="mono" id="vSpd"></span></label><input type="range" id="kSpd" min="3000" max="9000" step="250"></div>
+          <div class="ctl"><label for="kPr">Product pressure <span class="mono" id="vPr"></span></label><input type="range" id="kPr" min="0.4" max="2.5" step="0.05"></div>
+          <div class="formula" id="formula"></div>
+        </div>
+        <div class="grp">
+          <h2>Faults to try</h2>
+          <div class="actions">
+            <button class="danger" id="fComm">Cut flowmeter link</button>
+            <button class="danger" id="fNoise">Air in product</button>
+            <button class="danger" id="fStuck">Sticking valve</button>
+            <button class="danger" id="fHighP">High P</button>
+            <button class="danger" id="fAir">I/P air supply lost</button>
+            <button class="danger" id="fIP">Wrong I/P calibration</button>
+            <button class="danger" id="fEmpty">Tank empty</button>
+            <button class="danger" id="fFloat">Floater stuck</button>
+            <button id="fClear">Reset everything to normal</button>
+          </div>
+          <small class="note">After the link is cut, the card closes the valve and drops Enabled, and the PLC counts 25 seconds before stopping the machine. Use 4× so you don’t have to wait.</small>
+        </div>
       </div>
-
-      <div class="term" id="termCard">
-        <h2>Hyperterminal: laptop connected with an RS232 cable to the A401 service port</h2>
-        <div class="tset mono">COM1 &nbsp;|&nbsp; 9600 baud &nbsp;|&nbsp; Parity None &nbsp;|&nbsp; 8 bits &nbsp;|&nbsp; 1 stop &nbsp;|&nbsp; Flow control None</div>
-        <pre class="tout" id="tout" aria-live="polite"></pre>
-        <form class="tform" id="tform"><input class="tin mono" id="tin" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="type command, e.g. S" aria-label="Type a command"><button type="submit">Enter</button></form>
-        <div class="tq" id="tq"></div>
-        <div class="note">On the real card the characters you type are not echoed (the manual says so); here they are shown dimmed so you can follow. Command names are from the maintenance manual (page 9-500); the reply format and numbers are approximate, for teaching.</div>
-      </div>
+    </section>
     </div>
   </div>
 
-  <section class="card" id="deskCard">
-    <div class="actions" style="margin-bottom:12px">
-      <button class="primary" id="runBtn">Start production</button>
-      <button id="shortBtn">Short stop</button>
-      <button id="resetBtn">Reset</button>
-      <span class="speeds">Sim speed:
-        <button data-rate="1" class="on">1×</button><button data-rate="2">2×</button><button data-rate="4">4×</button></span>
+  <div class="bottom">
+    <div class="tmcc" id="tmcc">
+      <div class="lbl"><span>TMCC2 card &nbsp;A401</span><span class="mono">FCSFA3F</span></div>
+      <div class="disp" id="disp"></div>
+      <div class="mpath" id="mpath"></div>
+      <div class="btnrow"><button data-k="up" aria-label="Arrow up">▲</button><button data-k="down" aria-label="Arrow down">▼</button><button data-k="enter" aria-label="Enter">ENTER</button></div>
+      <div class="note" id="tmccNote">P = production, V = fixed, bars = tube level (5% per row).</div>
     </div>
-    <div class="desk">
-      <div class="grp">
-        <h2>Flow loop (Flow PID)</h2>
-        <div class="ctl"><label for="kP">P <span class="mono" id="vP"></span></label><input type="range" id="kP" min="0" max="2.5" step="0.05"><small>Opens the valve in proportion to the error now</small></div>
-        <div class="ctl"><label for="kI">I <span class="mono" id="vI"></span></label><input type="range" id="kI" min="0" max="5" step="0.1"><small>Removes the remaining error over time</small></div>
-        <div class="ctl"><label for="kD">D <span class="mono" id="vD"></span></label><input type="range" id="kD" min="0" max="0.3" step="0.01"><small>Brakes when the error changes fast</small></div>
-      </div>
-      <div class="grp">
-        <h2>Level loop (Level PID)</h2>
-        <div class="ctl"><label for="kU">U <span class="mono" id="vU"></span></label><input type="range" id="kU" min="0" max="8" step="0.1"><small>Raises or lowers the flow by how far the level is off</small></div>
-        <div class="ctl"><label for="kV">V <span class="mono" id="vV"></span></label><input type="range" id="kV" min="0" max="1.5" step="0.05"><small>Brings the level exactly back to target</small></div>
-        <div class="ctl"><label for="kW">W <span class="mono" id="vW"></span></label><input type="range" id="kW" min="0" max="2" step="0.1"><small>Anticipates when the level drops fast</small></div>
-        <div class="ctl"><label for="kL">Level setpoint (L) <span class="mono" id="vL"></span></label><input type="range" id="kL" min="35" max="80" step="1"><small>Change it and watch how U gets there</small></div>
-        <div class="ctl" style="grid-column:span 2;align-self:center"><button id="fDist" style="width:100%">Disturb the level (drop 20%)</button></div>
-      </div>
-      <div class="grp">
-        <h2>Start-up</h2>
-        <div class="ctl"><label for="kB">Start (B) <span class="mono" id="vB"></span></label><input type="range" id="kB" min="80" max="160" step="5"></div>
-        <div class="ctl"><label for="kT">Ramp (T) <span class="mono" id="vT"></span></label><input type="range" id="kT" min="0.5" max="10" step="0.5"></div>
-        <div class="ctl"><label for="kPF">Prefill <span class="mono" id="vPF"></span></label><input type="range" id="kPF" min="30" max="120" step="5"></div>
-        <div class="ctl"><label for="kG">Switch point (G) <span class="mono" id="vG"></span></label><input type="range" id="kG" min="20" max="60" step="1"></div>
-      </div>
-      <div class="grp">
-        <h2>Machine and product</h2>
-        <div class="ctl"><label for="kVol">Package volume <span class="mono" id="vVol"></span></label><input type="range" id="kVol" min="125" max="1000" step="25"></div>
-        <div class="ctl"><label for="kSpd">Machine speed <span class="mono" id="vSpd"></span></label><input type="range" id="kSpd" min="3000" max="9000" step="250"></div>
-        <div class="ctl"><label for="kPr">Product pressure <span class="mono" id="vPr"></span></label><input type="range" id="kPr" min="0.4" max="2.5" step="0.05"></div>
-        <div class="formula" id="formula"></div>
-      </div>
-      <div class="grp">
-        <h2>Faults to try</h2>
-        <div class="actions">
-          <button class="danger" id="fComm">Cut flowmeter link</button>
-          <button class="danger" id="fNoise">Air in product</button>
-          <button class="danger" id="fStuck">Sticking valve</button>
-          <button class="danger" id="fHighP">High P</button>
-          <button class="danger" id="fAir">I/P air supply lost</button>
-          <button class="danger" id="fIP">Wrong I/P calibration</button>
-          <button class="danger" id="fEmpty">Tank empty</button>
-          <button class="danger" id="fFloat">Floater stuck</button>
-          <button id="fClear">Reset everything to normal</button>
-        </div>
-        <small class="note">After the link is cut, the card closes the valve and drops Enabled, and the PLC counts 25 seconds before stopping the machine. Use 4× so you don’t have to wait.</small>
-      </div>
+
+    <div class="plc" id="plc">
+      <h2 style="font-family:var(--f-display);font-size:14px;margin:0 0 6px;color:var(--muted);font-weight:500">PLC signals</h2>
+      <div class="sig"><span class="led" id="lEn"></span><span>Card ready (Enabled)</span><span class="addr">%I269</span></div>
+      <div class="sig"><span class="led" id="lOk"></span><span>Filling OK</span><span class="addr">%I268</span></div>
+      <div class="sig"><span class="led" id="lHi"></span><span>High level</span><span class="addr">%I266</span></div>
+      <div class="sig"><span class="led" id="lPr"></span><span>Production command to card</span><span class="addr">%Q146</span></div>
+      <div class="sig"><span class="led" id="lSs"></span><span>Short stop to card</span><span class="addr">%Q148</span></div>
+      <div class="sig"><span class="led" id="lFm"></span><span>Flowmeter link RS485</span><span class="addr">B1316</span></div>
+      <div class="timer">Alarm timer <span class="mono">DEL0249</span>: <span class="mono" id="tVal">0.0 / 25.0 s</span>
+        <div class="tbar"><div id="tBar"></div></div></div>
+      <div class="alarmbox" id="alarm">No alarm</div>
+      <div class="alist" id="alist" aria-live="polite"></div>
     </div>
-  </section>
+
+    <div class="term" id="termCard">
+      <h2>Hyperterminal: laptop connected with an RS232 cable to the A401 service port</h2>
+      <div class="tset mono">COM1 &nbsp;|&nbsp; 9600 baud &nbsp;|&nbsp; Parity None &nbsp;|&nbsp; 8 bits &nbsp;|&nbsp; 1 stop &nbsp;|&nbsp; Flow control None</div>
+      <pre class="tout" id="tout" aria-live="polite"></pre>
+      <form class="tform" id="tform"><input class="tin mono" id="tin" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="type command, e.g. S" aria-label="Type a command"><button type="submit">Enter</button></form>
+      <div class="tq" id="tq"></div>
+      <div class="note">On the real card the characters you type are not echoed (the manual says so); here they are shown dimmed so you can follow. Command names are from the maintenance manual (page 9-500); the reply format and numbers are approximate, for teaching.</div>
+    </div>
+  </div>
   <footer>Educational simulation: numbers are approximate, based on the tuning guide and the A3/Flex 150/160 PLC program, not real machine values. Do not copy PID values from here to the machine.</footer>
 </div>
 
 <script>
 (()=>{
 const $=id=>document.getElementById(id);
-document.querySelector('.readouts').after($('deskCard'));
+// controls stay in the side column (person's rule: controls on the side)
 const DEF={P:0.6,I:1.6,D:0,U:1.5,V:0.1,W:0,L:60,B:120,T:4,G:45,PF:70,vol:250,spd:7000,press:1.5,WIN:30,EPD:1,EPTH:3000,M:1,N:0.5,O:0};
 const K={...DEF};
 const QMAX=3600, QREF=1750, DEADT=0.15, VLAG=0.25, LEVK=12; let TARGET=60;

@@ -79,7 +79,7 @@ button,select,input{font-family:inherit;font-size:13px}
 .tab.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .lad-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
 .lad-tools input{flex:1 1 200px;min-width:0;padding:6px 10px;border-radius:7px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);font-family:var(--f-mono)}
-.ladder{height:calc(100vh - 400px);min-height:420px;overflow:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+.ladder{position:relative;height:calc(100vh - 400px);min-height:420px;overflow:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
 .rung{border-bottom:1px solid var(--line);direction:ltr;position:relative}
 .rung.hl{background:color-mix(in srgb,var(--accent) 8%,transparent)}
 .rung svg{display:block}
@@ -95,7 +95,9 @@ svg text{font-family:var(--f-mono)}
 .lbl:hover{fill:var(--accent)}
 .lbl.forced{fill:#e07b00;font-weight:700}
 .tag{fill:var(--power);font-size:5.6px;font-weight:600;pointer-events:none} .tdesc{fill:var(--muted);font-size:4.8px;pointer-events:none}
-.notags .tag,.notags .tdesc{display:none}
+.notags .tag,.notags .tdesc,.notags .leg{display:none}
+.leg{display:flex;flex-wrap:wrap;gap:2px 14px;padding:2px 10px 6px 34px;font-size:11.5px;color:var(--muted);direction:ltr}
+.leg b{font-family:var(--f-mono);font-weight:600;color:var(--accent);cursor:pointer;font-size:11px} .leg i{font-style:normal;color:var(--power);font-family:var(--f-mono);font-size:11px}
 .lbl.hitl{fill:var(--accent);font-weight:700;text-decoration:underline}
 .tgl{cursor:pointer} .tgl:hover .ctbg,.tgl:hover .coil{stroke:var(--accent)} .tgl .hit{fill:transparent}
 .rung.hit{background:color-mix(in srgb,var(--warn) 7%,transparent)}
@@ -127,7 +129,14 @@ svg text{font-family:var(--f-mono)}
 .regs input{width:84px;padding:3px 6px;border:1px solid var(--line);border-radius:5px;background:var(--panel2);color:var(--fg);font-family:var(--f-mono)}
 .note{font-size:11.5px;color:var(--muted);line-height:1.6}
 .tabs2{display:flex;gap:4px;margin-bottom:8px}
-.machine{padding:10px 12px}
+.machine{padding:10px 12px;position:relative}
+.minfo{position:absolute;z-index:5;width:min(340px,calc(100% - 24px));background:var(--panel);border:1px solid var(--line);border-inline-start:4px solid var(--accent);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.22);padding:12px 14px;font-size:13.5px;line-height:1.7}
+.minfo .hd{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.minfo .hd b{font-family:var(--f-mono);font-size:15px;color:var(--power)} .minfo .hd .ad{font-family:var(--f-mono);font-size:12px;color:var(--accent)}
+.minfo .st{font-family:var(--f-mono);font-size:11.5px;padding:1px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted)} .minfo .st.on{background:var(--powerbg);border-color:var(--power);color:var(--fg)}
+.minfo .x{margin-inline-start:auto;border:0;background:none;font-size:18px;color:var(--muted);cursor:pointer;line-height:1}
+.minfo .en{font-size:11.5px;color:var(--muted);font-family:var(--f-mono);direction:ltr;text-align:right}
+.minfo .bt{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px} .minfo .bt .btn{padding:4px 10px;font-size:12.5px}
 .mhead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
 .mhead h2{margin:0}
 .mview{overflow-x:auto;direction:ltr;border-radius:8px;border:1px solid var(--line);background:var(--m-floor)}
@@ -205,7 +214,7 @@ svg text{font-family:var(--f-mono)}
 <div class="wrap" dir="rtl">
   <header class="bar">
     <div class="brand">
-      <a href="../index.html" style="font-size:12px;color:var(--accent);text-decoration:none">← LearnElectricals · صفحة خاصة بيك</a>
+      <a href="../tetrapan/index.html" style="font-size:12px;color:var(--accent);text-decoration:none">← تترابان · صفحة خاصة بيك</a>
       <h1>محاكي TCP 70 – خط 2</h1>
       <p>برنامج LIN2CBP70 · GE 90-70 · كل الرانجات متحوّلة من الطباعة الأصلية</p>
     </div>
@@ -228,7 +237,8 @@ svg text{font-family:var(--f-mono)}
   <section class="card machine" aria-label="المكنة">
     <div class="mhead"><h2>المكنة · منظر من فوق (Z-infeed، خط واحد)</h2><div class="qctl" id="qctl"><button class="btn" data-in="I00007"><b>S03H</b> Reset</button><button class="btn" data-in="I00005"><b>S01H</b> Step up</button><button class="btn" data-in="I00006"><b>S02H</b> Step down</button><button class="btn es" id="qes">E-STOP</button><span class="stat" id="mstat"></span></div></div>
     <div class="mview"><svg id="msvg" role="img" aria-label="رسم متحرك للمكنة"></svg></div>
-    <div class="mlegend"><span><i style="background:var(--power)"></i>حساس أو أوتبوت شغال</span><span><i style="background:#ff4d4d"></i>فوتوسيل مقطوع</span><span><i style="background:var(--accent)"></i>البوشرات</span><span>دوس على أي جزء في الرسمة (موتور، سلندر، حساس) علشان تشوف الرانجات اللي بتكتبه وبتقراه تحت.</span></div>
+    <div class="minfo" id="minfo" hidden role="dialog" aria-label="وظيفة الجزء"></div>
+    <div class="mlegend"><span><i style="background:var(--power)"></i>حساس أو أوتبوت شغال</span><span><i style="background:#ff4d4d"></i>فوتوسيل مقطوع</span><span><i style="background:var(--accent)"></i>البوشرات</span><span>دوس على أي جزء في الرسمة (موتور، سلندر، حساس) علشان يطلعلك شرح وظيفته، ومنه تروح للرانج بتاعه في اللادر.</span></div>
   </section>
 
   <div class="grid">
@@ -738,7 +748,67 @@ window.__DESC={"M03156":["","\" roy Peers down"],"G00032":["","G21-SF Infeed con
   if (typeof module !== 'undefined') module.exports = Model; else root.Model = Model;
 })(typeof window !== 'undefined' ? window : globalThis);
 </script>
-<script>// Animated top view of the TCP 70 (Z-infeed, single lane), drawn from model state + PLC outputs.
+<script>// Arabic "what does it do in the machine" text for every part of the machine drawing (shown on click).
+window.__FUNC = {
+  I00004: 'بريشر سويتش الهوا (B100). بيقول للـ PLC إن ضغط الهوا موجود. من غير هوا السلندرات كلها مش هتتحرك، والمكنة مش هتشتغل.',
+  I00033: 'حساس الـ transfer plate فوق (B120). بيأكد إن البلاطة اللي بين منطقة البوشر ومحطة التعبئة طلعت، علشان البوشر يقدر يزق العلب عليها من غير ما تقع.',
+  I00034: 'البوشر Y103 في الهوم (B121). معناه إن البوشر راجع خالص، فسير البوشر يقدر يدخّل باترن جديد في منطقة البوشر.',
+  I00035: 'البوشر Y103 في النص (B122). البرنامج بيستخدمه علشان يعرف إن البوشر عدّى نص المشوار وهو بيزق العلب على الكرتونة.',
+  I00036: 'البوشر Y103 قدام خالص (B123). معناه إن العلب وصلت على الكرتونة في محطة التعبئة، وبعدها البوشر يرجع.',
+  I00037: 'الـ end stop في منطقة البوشر جوه (B124). ده الصد اللي الباترن بيقف عليه في آخر منطقة البوشر. لما يكون 1 يبقى الصد راجع (Q12 مطفي).',
+  I00038: 'فوتوسيل وصول العلب للبوشر (B125). بيكون 1 طول ما الباترن بيعدّي داخل منطقة البوشر على سير البوشر.',
+  I00039: 'فوتوسيل آخر سير التجميع (B126). بيكون 1 لما الباترن يوصل لآخر سير التجميع G24 وجاهز يدخل منطقة البوشر.',
+  I00042: 'فيه كرتونة في محطة التعبئة (B113). من غيرها البوشر مش هيزق العلب، علشان مفيش حاجة تستقبلها.',
+  I00044: 'زحمة على سير الخروج (B112). لو الكراتين اتراكمت بعد المكنة، البرنامج بيوقف المكنة لحد ما السير يفضى.',
+  I00047: 'حساس رصّة الكرتون في المجلة (B118). لما الرصة توصل لمكان السحب بيوقف موتور تغذية المجلة Y162.',
+  I00048: 'مستوى الكرتون في المجلة (B119). لو الكرتون قرب يخلص بيطلع إنذار "Low level blanks"، علشان المشغل يملا المجلة.',
+  I00049: 'أقل طابور على سير الدخول (B903). بيتأكد إن فيه علب كفاية جاية قبل ما المكنة تبدأ تجمّع صف.',
+  I00051: 'بوشر التجميع في الهوم (B132). معناه إن بوشر التجميع Y102 راجع، فالصف الجديد يقدر يتكوّن قدامه.',
+  I00052: 'بوشر التجميع عمل المشوار القصير (B133). المشوار القصير بيزق صف واحد لجوه قسم التجميع.',
+  I00053: 'بوشر التجميع عمل المشوار الطويل (B134). المشوار الطويل بيزق الباترن كله (كل الصفوف) على سير التجميع.',
+  I00054: 'فوتوسيل التجميع (B137). بيعدّ العلب وهي داخلة قسم التجميع. ولو العلب واقفة عند ذراع الإيقاف بيفضل 1.',
+  I00057: 'الـ end stop بتاع التجميع جوه (B140). بيأكد إن الصد اللي بيقفل قسم التجميع في مكانه.',
+  I00058: 'ذراع الإيقاف فوق (B141). ذراع الإيقاف وهو فوق بيقفل الطريق على العلب الجاية، علشان الصف اللي قدام بوشر التجميع ميتزقش وفيه علب داخلة.',
+  I00059: 'الـ dolly في المشوار الأول (B142). الـ dolly بيمسك الباترن وهو بيتنقل، والحساس ده بيأكد إنه وصل لمكانه.',
+  I00060: 'الـ guide rail تحت (B143). الدليل اللي بيمسك العلب من فوق في قسم التجميع نزل في مكانه.',
+  I00061: 'حساس منع الكبس (B144) عند فاصل العلب. بيكون 1 طول ما العلب معدّية تحته. لو حصل حاجة غلط وهو مش شايف علب، المكنة بتقف علشان العلب متتكبسش.',
+  I00062: 'فيه علب على سير الدخول (B200). لو مفيش علب جاية من المكنة اللي قبلها، المكنة مش هتلاقي حاجة تجمّعها.',
+  I00065: 'الـ WA flap folder فوق (B150). ده اللي بيطبّق جناح الكرتونة، والحساس بيأكد إنه رجع فوق.',
+  I00066: 'الـ WA flap folder تحت (B151). بيأكد إن الطابّة نزلت وطبّقت الجناح.',
+  I00082: 'مستوى زيت التزييت طبيعي (B138-2). لو الزيت قل بيطلع إنذار.',
+  I00083: 'بريشر سويتش التزييت (B139). بيأكد إن الضغط اتبنى لما طرمبة التزييت Y114 اشتغلت.',
+  I00084: 'تغذية المجلة خلصت (B145). بيقول إن رصّة الكرتون اتقدمت لمكان السحب.',
+  Q00002: 'العمود الرئيسي G22 على السرعة البطيئة. بتستخدم في الـ inching والبداية.',
+  Q00003: 'العمود الرئيسي G22 على السرعة العادية بتاعة الإنتاج.',
+  Q00004: 'تشغيل موتور العمود الرئيسي G22. لفة كاملة للعمود (360°) معناها كرتونة واحدة: الكرتونة المليانة بتخرج عند حوالي 60°، والكرتونة الفاضية الجديدة بتوصل محطة التعبئة عند حوالي 200°. لازم الكونتاكتور K001 (Q1) يكون شغال.',
+  Q00005: 'موتور التغذية G23 على السرعة العالية.',
+  Q00006: 'تشغيل موتور التغذية G23. ده اللي بيشغّل سلسلة التغذية اللي بتنقل الكرتونة من المجلة لمحطة التعبئة.',
+  Q00008: 'سير البوشر K006. بيدخّل الباترن من آخر سير التجميع لجوه منطقة البوشر، لحد الـ end stop.',
+  Q00010: 'رفع الـ guide rail (Y101). الدليل بيطلع علشان الصف يتحرك، وبينزل علشان يمسك العلب.',
+  Q00011: 'بوشر التجميع (Y102). بيزق الصف اللي اتكوّن جوه قسم التجميع (مشوار قصير)، وبعدين يزق الباترن كله على سير التجميع (مشوار طويل).',
+  Q00012: 'الـ end stop بتاع منطقة البوشر (Y104). الصد اللي بيوقف الباترن في المكان الصح قدام البوشر.',
+  Q00016: 'نزول ذراع الإيقاف (Y110). وهو نازل العلب بتعدّي لقسم التجميع، ولما يطلع بيقفل عليها علشان بوشر التجميع يشتغل.',
+  Q00017: 'تحريك الـ dolly للمشوار الأول (Y109-1). الـ dolly بيمسك الباترن أثناء نقله.',
+  Q00019: 'رفع الـ transfer plate (Y105-1). البلاطة بتطلع تعمل جسر بين منطقة البوشر ومحطة التعبئة، علشان العلب تتزق عليها.',
+  Q00021: 'فتح فرامل الدخول (Y106). الفرامل بتمسك العلب على سير الدخول، ولما تفتح العلب بتعدّي لقسم التجميع.',
+  Q00024: 'طرمبة التزييت (Y114). بتشتغل كل فترة وتزيّت سلاسل المكنة.',
+  Q00028: 'جن الغرا السفلي الشمال (Y120). بيرش هوتميلت على أجناب الكرتونة وهي معدّية علشان تتقفل.',
+  Q00029: 'جن الغرا السفلي اليمين (Y121). بيرش هوتميلت على أجناب الكرتونة وهي معدّية علشان تتقفل.',
+  Q00032: 'تشغيل سير الدخول G21. ده اللي بيجيب العلب من المكنة اللي قبلها لحد الفرامل وقسم التجميع.',
+  Q00038: 'شفط الكرتون من المجلة (Y130B). الشفاطات بتمسك كرتونة واحدة من الرصّة وتحطها على سلسلة التغذية.',
+  Q00039: 'البوشر Y103. ده السلندر الكبير اللي بيزق الباترن كله من منطقة البوشر على الكرتونة في محطة التعبئة، وبعدين يرجع الهوم.',
+  Q00041: 'لمبة البرج الزرقا (H101). حسب المانيوال: المكنة محتاجة تدخّل من المشغل، والنور بيفلاش لحد ما المشغل يتصرف.',
+  Q00042: 'لمبة البرج الصفرا (H101). حسب المانيوال: حالة مش طبيعية، يعني في مشكلة جاية لو محدش اتصرف.',
+  Q00043: 'لمبة البرج الحمرا (H101). حسب المانيوال: حالة خطر أو طوارئ.',
+  Q00049: 'جن الغرا العلوي الشمال (Y122). بيرش هوتميلت على الأجناب العلوية للكرتونة.',
+  Q00050: 'جن الغرا العلوي اليمين (Y123). بيرش هوتميلت على الأجناب العلوية للكرتونة.',
+  Q00054: 'الـ WA flap folder (Y141). الطابّة اللي بتطبّق جناح الكرتونة بعد التعبئة.',
+  Q00058: 'تغذية المجلة (Y162). بتقدّم رصّة الكرتون لحد ما توصل لمكان السحب عند حساس B118.',
+  Q00060: 'دخول الـ end stop بتاع التجميع (Y107-2). الصد بيقفل قسم التجميع وبيطلع بـ Q51.',
+  Q00067: 'تشغيل انفرتر سير التجميع G24. السير بيودّي الباترن من قسم التجميع لحد آخره عند حساس B126.'
+};
+
+// Animated top view of the TCP 70 (Z-infeed, single lane), drawn from model state + PLC outputs.
 // Layout follows OM-1381609-0106 ch.1 "Machine Overview": lower module = infeed + grouping + pusher section,
 // upper module = blanks magazine -> pack station -> flap folding / hotmelt -> outfeed.
 (function (root) {
@@ -812,7 +882,8 @@ window.__DESC={"M03156":["","\" roy Peers down"],"G00032":["","G21-SF Infeed con
     svg.innerHTML = S + '<g id="mvDyn"></g>';
     const dyn = svg.querySelector('#mvDyn');
     for (const [id, w] of [['bInfeed', 0], ['bGroup', 0], ['bPbelt', 0], ['bOut', 0]]) belts[id] = svg.querySelector('#' + id);
-    svg.addEventListener('click', e => { const t = e.target.closest('[data-a]'); if (t && opts.onPick) opts.onPick(t.dataset.a); });
+    // pointerdown, not click: the dynamic layer is redrawn every frame, so the element under the mouse changes between press and release and a click never fires
+    svg.addEventListener('pointerdown', e => { if (e.button > 0) return; const t = e.target.closest('[data-a]'); if (t && opts.onPick) { e.preventDefault(); opts.onPick(t.dataset.a, e); } });
 
     // ---------- helpers for the dynamic layer ----------
     const P = (x, y, ghost) => '<use href="#' + (ghost ? 'pkG' : 'pk') + '" x="' + f1(x) + '" y="' + f1(y) + '" width="16" height="14"/>';
@@ -1201,8 +1272,10 @@ function openBlock(b, scrollNo){
   if (scrollNo!=null){ const el=document.getElementById('r_'+b+'_'+scrollNo); if(el){ el.scrollIntoView({block:'start'}); el.classList.add('hl'); setTimeout(()=>el.classList.remove('hl'),2500);} }
   else ladder.scrollTop=0;
 }
-function tagText(a){ const d=desc(a); return [d[0]||'', (d[1]||'').length>18 ? d[1].slice(0,17)+'…' : (d[1]||'')]; }
-function addTags(g,a,cx,yTop,yBot){ const [nk,ds]=tagText(a); if(nk){ const t=svg('text',{x:cx,y:yTop,'text-anchor':'middle',class:'tag'},g); t.textContent=nk; } if(ds){ const t=svg('text',{x:cx,y:yBot,'text-anchor':'middle',class:'tdesc'},g); t.textContent=ds; } }
+function wrapDesc(t,w,max){ const out=[]; let line=''; for (const word of (t||'').split(/\s+/).filter(Boolean)){ if(!line) line=word; else if((line+' '+word).length<=w) line+=' '+word; else { out.push(line); line=word; } } if(line) out.push(line);
+  if (out.length>max){ const rest=out.slice(max-1).join(' '); out.length=max-1; out.push(rest.length>w? rest.slice(0,w-1)+'…' : rest); } return out; }
+function tagText(a){ const d=desc(a); return [d[0]||'', wrapDesc(d[1]||'',15,2)]; }
+function addTags(g,a,cx,yTop,yBot){ const [nk,ds]=tagText(a); if(nk){ const t=svg('text',{x:cx,y:yTop,'text-anchor':'middle',class:'tag'},g); t.textContent=nk; } ds.forEach((ln,i)=>{ const t=svg('text',{x:cx,y:yBot+i*5,'text-anchor':'middle',class:'tdesc'},g); t.textContent=ln; }); }
 function buildRung(d){
   d._built=true; const r=d._r;
   if (!r.els.length){ d.innerHTML='<div class="cm">'+r.no+'  '+(r.cm||'')+'</div>'; d.style.height='auto'; return; }
@@ -1252,6 +1325,13 @@ function buildRung(d){
     }
   }
   d.appendChild(s); d._wires=wires; d._els=els;
+  // full comments of every address in this rung (nothing cut)
+  const seen=new Set(), items=[];
+  const addA=a=>{ if(!a||typeof a!=='string'||seen.has(a)||!/^[IQMGTR]\d{5}$/.test(a)) return; const dd=desc(a); if(!dd[0]&&!dd[1]) return; seen.add(a); items.push([a,dd]); };
+  for (const e of r.els){ if (e.t==='C'||e.t==='O') addA(e.a); else { if(e.ref) addA(e.ref); for (const v of Object.values(e.ins).concat(Object.values(e.outs))) if('v' in v) addA(v.v); } }
+  if (items.length){ const lg=document.createElement('div'); lg.className='leg';
+    lg.innerHTML=items.map(([a,dd])=>'<span><b data-a="'+a+'">'+a+'</b>'+(dd[0]?' <i>'+dd[0]+'</i>':'')+' '+(dd[1]||'')+'</span>').join('');
+    lg.querySelectorAll('[data-a]').forEach(el=>el.onclick=()=>showXref(el.dataset.a)); d.appendChild(lg); d.style.height='auto'; d.style.minHeight=(H*1.45)+'px'; }
   paintRung(d);
 }
 function paintRung(d){
@@ -1284,11 +1364,13 @@ function gotoHit(){
   if (!hits.length) return; const [b,n]=hits[hitIdx];
   if (b!==curBlock) openBlock(b);
   ladder.querySelectorAll('.rung.cur').forEach(el=>el.classList.remove('cur'));
-  const el=document.getElementById('r_'+b+'_'+n); if (el){ el.classList.add('cur'); el.scrollIntoView({block:'center'}); }
-  qinfo.textContent=(hitIdx+1)+' / '+hits.length+' · '+b+' رانج '+n;
+  const el=document.getElementById('r_'+b+'_'+n); if (el){ el.classList.add('cur'); const ctr=()=>{ ladder.scrollTop = Math.max(0, el.offsetTop - ladder.clientHeight/2 + Math.min(el.offsetHeight, ladder.clientHeight)/2); }; ctr(); setTimeout(ctr,120); setTimeout(ctr,400); }
+  const nk=desc(hitAddr)[0]; qinfo.textContent=hitAddr+(nk?' ('+nk+')':'')+' · '+(hitIdx+1)+' / '+hits.length+' · '+b+' رانج '+n;
 }
-function stepHit(d){ if(!hits.length){ const a=normAddr(q.value); if(a) startSearch(a); return; } hitIdx=(hitIdx+d+hits.length)%hits.length; gotoHit(); }
-q.addEventListener('keydown',e=>{ if(e.key==='Enter'){ const a=normAddr(q.value); if(!a) return; q.value=a; if (a===hitAddr && hits.length) stepHit(e.shiftKey?-1:1); else startSearch(a); } });
+let qTimer=null;
+q.addEventListener('input',()=>{ clearTimeout(qTimer); qTimer=setTimeout(()=>{ const v=q.value.trim(); const a=resolveQ(v); if(a && a!==hitAddr && (normAddr(v) || TAGMAP[v.toUpperCase()])) startSearch(a); },350); });
+function stepHit(d){ if(!hits.length){ const a=resolveQ(q.value); if(a) startSearch(a); return; } hitIdx=(hitIdx+d+hits.length)%hits.length; gotoHit(); }
+q.addEventListener('keydown',e=>{ if(e.key==='Enter'){ clearTimeout(qTimer); const a=resolveQ(q.value); if(!a){ qinfo.textContent='مش لاقي «'+q.value.trim()+'»'; return; } if (a===hitAddr && hits.length) stepHit(e.shiftKey?-1:1); else startSearch(a); } });
 document.getElementById('qnext').onclick=()=>stepHit(1);
 document.getElementById('qprev').onclick=()=>stepHit(-1);
 document.getElementById('qtags').onchange=e=>ladder.classList.toggle('notags',!e.target.checked);
@@ -1301,6 +1383,12 @@ const XREF = (function(){ const x={}; for (const b in PROG) for (const r of PROG
   if (e.t==='C') add(e.a,0); else if (e.t==='O') add(e.a,1);
   else { for (const v of Object.values(e.ins)) if('v' in v) add(v.v,0); for (const v of Object.values(e.outs)) if('v' in v) add(v.v,1); if(e.ref) add(e.ref,1); }
 } return x; })();
+const TAGMAP={}; for (const a of Object.keys(DESC).sort((x,y)=>((XREF[y]?1:0)-(XREF[x]?1:0)))){ const nk=(DESC[a][0]||'').trim().toUpperCase(); if(nk && !TAGMAP[nk]) TAGMAP[nk]=a; }
+function resolveQ(v){ v=(v||'').trim(); if(!v) return null; const a=normAddr(v); if(a && (XREF[a]||DESC[a])) return a; const t=TAGMAP[v.toUpperCase()]; if(t) return t;
+  const m=/^([^·]+)·/.exec(v); if(m) return resolveQ(m[1]); if(a) return a;
+  const lw=v.toLowerCase(); if(lw.length<3) return null; const hit=Object.keys(DESC).find(x=>XREF[x] && (DESC[x][1]||'').toLowerCase().includes(lw)); return hit||null; }
+(function(){ const dl=document.createElement('datalist'); dl.id='tagsdl'; dl.innerHTML=Object.keys(TAGMAP).sort().map(k=>'<option value="'+k+'">'+TAGMAP[k]+' '+(DESC[TAGMAP[k]][1]||'')+'</option>').join(''); document.body.appendChild(dl); q.setAttribute('list','tagsdl'); q.placeholder='دوّر بالعنوان أو التاج: Q00004 أو B142 أو Y103 أو G22'; })();
+
 function isForced(a){ return !!a && ((a in plc.force) || (a[0]==='I' && modelOn && MSENS.has(a) && override[a]) || (a[0]==='I' && !MSENS.has(a) && inState[a]!==(DEFAULT_ON.includes(a)?1:0))); }
 function forceCtl(a){
   const p=PLC.parseAddr(a); if(!p) return '';
@@ -1382,9 +1470,28 @@ document.getElementById('resetplc').onclick=()=>{ model.reset(); mview.reset(); 
 document.getElementById('modelbtn').onclick=e=>{ modelOn=!modelOn; override={}; e.target.textContent='موديل المكنة: '+(modelOn?'شغال':'مطفي'); e.target.classList.toggle('primary',modelOn); refreshInputsUI(); renderForces(); };
 // ---- machine drawing (machine.js)
 const mstat=document.getElementById('mstat');
-const mview = MachineView(document.getElementById('msvg'), { model, getBit: a=>plc.getBit(a), timeMs: ()=>plc.timeMs, onPick: a=>{ q.value=a; startSearch(a); const wr=(XREF[a]&&XREF[a].w[0]); if (wr){ const i=hits.findIndex(h=>h[0]===wr[0]&&h[1]===wr[1]); if(i>=0){ hitIdx=i; gotoHit(); } } document.getElementById('ladder').scrollIntoView({block:'nearest',behavior:'smooth'}); } });
+const minfo=document.getElementById('minfo'); let minfoA=null;
+function jumpTo(a){ q.value=a; startSearch(a); const wr=(XREF[a]&&XREF[a].w[0]); if (wr){ const i=hits.findIndex(h=>h[0]===wr[0]&&h[1]===wr[1]); if(i>=0){ hitIdx=i; gotoHit(); } } const lc=document.getElementById('ladder'); window.scrollTo({top: window.scrollY + lc.getBoundingClientRect().top - 90, behavior:'smooth'}); }
+function showInfo(a, ev){
+  minfoA=a; const d=desc(a), f=(window.__FUNC||{})[a]||'';
+  minfo.innerHTML='<div class="hd"><b>'+(d[0]||a)+'</b><span class="ad">'+a+'</span><span class="st" id="minfoSt"></span><button class="x" aria-label="اقفل">×</button></div>'+
+    (d[1]?'<div class="en">'+d[1]+'</div>':'')+'<div>'+(f||'الجزء ده مالوش شرح لسه. دوس على "روح للرانج" علشان تشوف البرنامج بيعمل بيه إيه.')+'</div>'+
+    '<div class="bt"><button class="btn primary" data-go>روح للرانج في اللادر</button>'+(a[0]==='I'?'<button class="btn" data-tg>اقلب الحساس (توجل)</button>':'<button class="btn" data-tg>Force / إلغاء</button>')+'</div>';
+  minfo.hidden=false;
+  const card=minfo.parentElement.getBoundingClientRect(); let x=ev.clientX-card.left+14, y=ev.clientY-card.top+14;
+  const w=minfo.offsetWidth, h=minfo.offsetHeight; if (x+w>card.width-8) x=Math.max(8, ev.clientX-card.left-w-14); if (y+h>card.height-8) y=Math.max(8, ev.clientY-card.top-h-14);
+  minfo.style.left=x+'px'; minfo.style.top=y+'px';
+  minfo.querySelector('.x').onclick=()=>{ minfo.hidden=true; minfoA=null; };
+  minfo.querySelector('[data-go]').onclick=()=>{ minfo.hidden=true; minfoA=null; jumpTo(a); };
+  minfo.querySelector('[data-tg]').onclick=()=>{ toggleAddr(a); paintInfo(); };
+  paintInfo();
+}
+function paintInfo(){ if(!minfoA) return; const el=document.getElementById('minfoSt'); if(!el) return; const v=plc.getBit(minfoA); const f=isForced(minfoA); el.textContent=(v?'1 · شغال':'0 · مطفي')+(f?' · Force':''); el.classList.toggle('on',!!v); }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape' && !minfo.hidden){ minfo.hidden=true; minfoA=null; } });
+document.getElementById('msvg').addEventListener('pointerdown',e=>{ if(!e.target.closest('[data-a]')){ minfo.hidden=true; minfoA=null; } });
+const mview = MachineView(document.getElementById('msvg'), { model, getBit: a=>plc.getBit(a), timeMs: ()=>plc.timeMs, onPick: (a,ev)=>showInfo(a,ev) });
 function paintMachine(){
-  mview.paint();
+  mview.paint(); paintInfo();
   mstat.textContent = modelOn ? 'الحساسات من الموديل' : 'الموديل مطفي · الإنبوتات يدوي';
 }
 newPLC(); buildIO(); refreshInputsUI(); openBlock('_MAIN'); requestAnimationFrame(frame);
