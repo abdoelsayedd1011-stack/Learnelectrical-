@@ -4,6 +4,13 @@ import { sessionUser, HttpError } from "./auth.js";
 // اكتب إيميلات الإدارة هنا بحروف صغيرة، مثال: ["you@example.com"]. وهي فاضية محدش يقدر يدخل لوحة الإدارة.
 export const ADMIN_EMAILS = ["abdoelsayedd1011@gmail.com", "mohamedabohabsa84@gmail.com"];
 
+// The site owner only (not the other admins): private pages such as /my-files/ open for these emails
+// and answer 404 to everyone else. See PRIVATE_DIRS in functions/_middleware.js.
+export const OWNER_EMAILS = ["abdoelsayedd1011@gmail.com"];
+export function isOwner(user){
+  return !!(user && user.email && OWNER_EMAILS.map(e => String(e).trim().toLowerCase()).includes(String(user.email).toLowerCase()));
+}
+
 export function isAdmin(user){
   return !!(user && user.email && ADMIN_EMAILS.map(e => String(e).trim().toLowerCase()).includes(String(user.email).toLowerCase()));
 }
@@ -47,4 +54,11 @@ export function memberWhere(q, f, now = Date.now()){
   else if (f === "suspended") parts.push("COALESCE(u.suspended, 0) = 1");
   else if (f === "idle"){ parts.push("COALESCE(u.last_seen, u.created_at) < ?"); binds.push(now - 30 * 864e5); }
   return { where: parts.length ? " WHERE " + parts.join(" AND ") : "", binds };
+}
+
+// The owner only (see OWNER_EMAILS), for the private file storage (/api/files/*).
+export async function requireOwner(db, request){
+  const s = await sessionUser(db, request);
+  if (!s || !isOwner(s.user)) throw new HttpError(404, "not_found"); // others can't tell it exists
+  return s;
 }

@@ -12,7 +12,7 @@ import { getDb, sessionUser, COOKIE } from "./_lib/auth.js";
 // LOGIN WALL: the site's own pages stay open to look around (home, about, simulators list, subscribe, contact,
 // legal, and the course pages in /courses/), but every page inside a course, simulator or the interview bank
 // (any other folder) needs a signed-in member. Scripts, styles, images and /api/ are not pages and stay open.
-import { isAdmin } from "./_lib/admin.js";
+import { isAdmin, isOwner } from "./_lib/admin.js";
 import { paywallOn, isPro } from "./_lib/plan.js";
 import { productOfDir, ownsCourse } from "./_lib/products.js";
 
@@ -42,9 +42,12 @@ const FREE_LESSONS_BY_DIR = {
   "mfit-lab": [1, 2],                // 16
 };
 const COURSE_DIRS = new Set(["classic-control-lab", "safety-lab", "basics-lab", "instrumentation-lab", "plc-lab", "drawings-lab", "vfd-course", "servo-course", "iiot-lab", "scada-lab", "panel-lab", "maint-lab", "servo-maint-lab", "mech-lab", "mfit-lab"]);
-const OPEN_DIRS = new Set(["courses"]);
+const OPEN_DIRS = new Set(["courses", "pdf-tools"]); // pdf-tools: the free PDF editor is open to visitors without an account
 // Courses still being prepared: only admins can open their pages (remove the folder from here to publish)
-const HIDDEN_DIRS = new Set(["safety-lab"]); // folders whose pages stay open without an account
+const HIDDEN_DIRS = new Set(["safety-lab"]);
+// The owner's private tools: their pages open only for OWNER_EMAILS (_lib/admin.js); everyone else, signed in or not,
+// gets the normal 404 page, so nobody can tell they exist. Not linked anywhere and marked noindex.
+const PRIVATE_DIRS = new Set(["my-files"]); // folders whose pages stay open without an account
 
 // "/plc-lab/", "/plc-lab/lesson-01.html", "/interview/" are pages; "/assets/site.js", "/og.png" are not.
 function isPage(pathname){
@@ -116,6 +119,18 @@ async function withSync(ctx){
   return h;
 }
 
+// the site's own 404 page with a real 404 status
+async function notFound(ctx, url){
+  let body = "Not found", type = "text/plain; charset=utf-8";
+  try {
+    // a path that doesn't exist: Pages answers it with /404.html
+    const r = await ctx.env.ASSETS.fetch(new URL("/__no-such-page-" + Date.now(), url));
+    const t = r.headers.get("content-type") || "";
+    if (t.includes("text/html")){ body = await r.text(); type = "text/html; charset=utf-8"; }
+  } catch (e) {}
+  return new Response(body, { status: 404, headers: { "content-type": type, "cache-control": "no-store" } });
+}
+
 // "/en/plc-lab/lesson-03.html" → { en: true, path: "/plc-lab/lesson-03.html" }
 function splitLang(pathname){
   const m = /^\/en(\/.*)$/.exec(pathname);
@@ -132,11 +147,23 @@ export async function onRequest(ctx){
     return Response.redirect(url.toString(), m === "GET" || m === "HEAD" ? 301 : 308);
   }
   const lang = splitLang(url.pathname), path = lang.path, pre = lang.en ? "/en" : "";
+  // public download links of the owner's stored files (functions/f/[id].js): no login wall
+  if (/^\/f\/[A-Za-z0-9]{20}$/.test(url.pathname)) return ctx.next();
   // Promo videos (/media/promo/*.mp4) download as files instead of playing inline (_headers rules are skipped here).
   if (/^\/media\/promo\/[^/]+\.mp4$/.test(url.pathname)){
     const r = await ctx.next();
     const o = new Response(r.body, r);
     o.headers.set("content-disposition", 'attachment; filename="' + url.pathname.split("/").pop() + '"');
+    return o;
+  }
+  if (PRIVATE_DIRS.has(path.split("/")[1]) && isPage(path)){
+    let owner = false;
+    try { owner = isOwner((await sessionUser(await getDb(ctx.env), ctx.request) || {}).user); } catch (e) {}
+    if (!owner) return notFound(ctx, url);
+    const r = await ctx.next();
+    const o = new Response(r.body, r);
+    o.headers.set("cache-control", "private, no-store");
+    o.headers.set("x-robots-tag", "noindex, nofollow");
     return o;
   }
   const sync = syncDir(path) && hasSessionCookie(ctx.request);
