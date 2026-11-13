@@ -229,7 +229,13 @@
       line:"كنترولر حرارة Omron: توصيل الحساس وضبط الحرارة.",
       guided:6, exercises:10, params:76, faults:12,
       inside:["توصيل الثيرموكبل و PT100", "ضبط درجة الحرارة المطلوبة", "PID والـ Auto-tuning", "الإنذارات والخرج"],
-      tags:"omron e5cc temperature pid حرارة كنترولر حرارة على فرن، ON/OFF و PID و Autotuning وإنذارات.  كنترولر حرارة متوصل على فرن   ON/OFF و PID و Autotuning   إنذارات الحرارة وأخطاء الحساس " }
+      tags:"omron e5cc temperature pid حرارة كنترولر حرارة على فرن، ON/OFF و PID و Autotuning وإنذارات.  كنترولر حرارة متوصل على فرن   ON/OFF و PID و Autotuning   إنذارات الحرارة وأخطاء الحساس " },
+    { id:"a3fill", path:"a3-filling-lab/index.html", group:"temp", brand:"Tetra Pak A3", brandKey:"tp",
+      name:"نظام التعبئة TMCC2", kind:"تعبئة وكنترول مستوى", disp:"1750 l/h", dispClass:"lcd", rtlName:true,
+      line:"كارت TMCC2 A401 في ماكينة A3/Flex: لوب التدفق والمستوى، الأعطال، قايمة الكارت والهايبر ترمينال، بشرح مكتوب ومحاكي وفيديو.",
+      guided:16, exercises:0, params:14, faults:10,
+      inside:["الفلوميتر وحساس المستوى وصمام I/P", "لوب التدفق PID ولوب المستوى UVW", "البداية والبريفيل ونقطة التحويل G", "الأعطال وقايمة الكارت وأوامر الهايبر ترمينال"],
+      tags:"tetra pak a3 flex a3/flex تترا باك تعبئة filling tmcc tmcc2 a401 fcsfa3f flowmeter فلوميتر فلو ميتر level مستوى floater عوامة pid uvw i/p صمام valve prefill بريفيل short stop شورت ستوب hyperterminal هايبر ترمينال rs485 rs232 empty pipe ماسورة فاضية flowmeter communication error عطل اتصال الفلوميتر aseptic" },
   ];
   var GROUPS = [
     { key:"basics", title:"أساسيات الكهربا", sub:"للمبتدئين خالص · قبل الكلاسيك", land:"courses/basics.html" },
@@ -252,7 +258,7 @@
     { key:"panel", title:"تصميم اللوحات الكهربية", sub:"الأحمال · القواطع · الكابلات · البارات · الانتقائية · MCC · الإضاءة", land:"courses/panel.html" },
     { key:"maint", title:"صيانة المحركات والمحولات", sub:"الميجر و PI · الملفات · المحامل · الاهتزاز والمحاذاة · TTR · زيت المحول و DGA", land:"courses/maint.html" },
     { key:"srvm", title:"صيانة محركات السيرفو", sub:"الملفات و Back-EMF · الإنكودر · الفرامل · الدرايف و IGBT · الإنذارات · Notch", land:"courses/srvm.html" },
-    { key:"temp", title:"كنترول حرارة وقياس", sub:"Omron · Endress+Hauser" }
+    { key:"temp", title:"كنترول حرارة وقياس", sub:"Omron · Endress+Hauser · تعبئة Tetra Pak A3" }
   ];
   /* محتوى كل كورس بالترتيب (عناوين الدروس) — بيظهر على كارت الكورس في الكتالوج وعلى الغلاف (assets/courses/covers/).
      لو غيّرت عنوان درس أو زوّدت درس: عدّله هنا وفي toc في assets/i18n-en.js */
