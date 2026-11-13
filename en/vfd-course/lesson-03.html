@@ -39,39 +39,29 @@
 <section class="panel lprog" id="lprog" aria-label="Your progress"></section>
 
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>PWM in a nutshell</h2>
-  <p class="bf"><span class="ic">〰️</span><span>Pulses whose <b>width grows and shrinks</b> with the sine; the motor smooths them into a near-sine current.</span></p>
-  <div class="vs">
-    <div class="side"><b>Lower frequency</b><span>Slower reference</span></div>
-    <i>·</i>
-    <div class="side"><b>Lower voltage</b><span>Smaller reference ⇒ narrower pulses</span></div>
-  </div>
+  <h2 id="s1"><span class="k">1</span>How does the drive make a sine wave?</h2>
+  <p>An IGBT can only give two things: full voltage or zero. So the drive sends very fast <b>pulses</b> and makes their <b>width grow and shrink</b> in the shape of a sine wave. This is <b>PWM</b>.</p>
+  <p>The motor windings smooth those pulses, so the current that flows is close to a sine wave.</p>
+  <p>When the drive wants a <b>lower frequency</b> it slows the reference wave down, and when it wants a <b>lower voltage</b> it makes the reference smaller, so the pulses get narrower.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>Try it yourself</h2>
+  <h2 id="s2"><span class="k">2</span>Watch the pulses</h2>
+  <p>Change the frequency and watch the pulse width and the voltage change with it.</p>
   <div class="wd"><h3>PWM and V/f simulator</h3><div id="pwm"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>Why constant V/f?</h2>
-  <p class="bf"><span class="ic">🧲</span><span>Flux = <b>V ÷ f</b>. Keep it constant ⇒ full torque at any speed.</span></p>
+  <h2 id="s3"><span class="k">3</span>Why must voltage drop with frequency?</h2>
+  <p>The magnetic flux inside the motor is roughly <b>V ÷ f</b>. If that ratio stays constant, the flux stays constant and the motor gives <b>full torque at any speed</b>. So the drive lowers the voltage with the frequency in the same ratio:</p>
   <div class="formula">V/f = 400 V ÷ 50 Hz = 8 V/Hz</div>
-  <ul class="fx">
-    <li><b>High V · low f</b><span>Saturation and heat</span></li>
-    <li><b>Low V · high f</b><span>Weak torque</span></li>
-    <li><b>Below 10 Hz</b><span>Boost compensates</span></li>
-    <li><b>Above 50 Hz</b><span>Field weakening: more speed, less torque</span></li>
-  </ul>
-  <p class="tip">Pumps and fans: a <b>quadratic</b> V/f curve saves more.</p>
+  <p>If the ratio is off, problems appear: high voltage at low frequency saturates the motor and heats it, and low voltage at high frequency weakens the torque.</p>
+  <p>There are two special cases. Below 10 Hz the drive adds a little voltage (<b>boost</b>) to compensate. Above 50 Hz the voltage has reached its limit, so speed rises but torque falls. This is <b>field weakening</b>.</p>
+  <p class="tip">For pumps and fans we pick a <b>quadratic</b> V/f curve because it saves more.</p>
   <div class="wd"><h3>Drill: work out the voltage</h3><div id="vf"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>Carrier frequency</h2>
-  <div class="vs">
-    <div class="side"><b>Low 2–4 kHz</b><span>🔊 Whine · cooler drive · better for long cables</span></div>
-    <i>vs</i>
-    <div class="side"><b>High 8–16 kHz</b><span>🔇 Quiet · hotter drive ⇒ derating</span></div>
-  </div>
-  <p class="tip">Raised the carrier? Check the <b>derating table</b> in the manual.</p>
+  <h2 id="s4"><span class="k">4</span>Carrier frequency: a quiet motor or a cool drive?</h2>
+  <p>The carrier frequency is how fast the pulses themselves switch. When it is <b>low</b> (2–4 kHz) the motor whines, but the drive stays cooler, and this suits long cables better.</p>
+  <p>When it is <b>high</b> (8–16 kHz) the motor is quiet, but the drive runs hotter, so its allowed current drops (<b>derating</b>). So if you raise the carrier, check the derating table in the manual.</p>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
   <h2 id="sq"><span class="k">?</span>Lesson quiz</h2>

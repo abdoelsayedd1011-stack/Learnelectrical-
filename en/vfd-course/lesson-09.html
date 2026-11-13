@@ -39,46 +39,26 @@
 <section class="panel lprog" id="lprog" aria-label="Your progress"></section>
 
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>The idea</h2>
-  <div class="tiles">
-    <div class="tile"><span class="big">SP</span><b>Wanted</b><span>4 bar</span></div>
-    <div class="tile"><span class="big">PV</span><b>Actual</b><span>4–20 mA transmitter on AI2</span></div>
-    <div class="tile"><span class="big">OUT</span><b>Pump speed</b><span>Low pressure ⇒ faster</span></div>
-  </div>
-  <ul class="fx">
-    <li><b>Kp</b><span>Reaction · too big = oscillation</span></li>
-    <li><b>Ti</b><span>Removes leftover error · shorter = stronger</span></li>
-    <li><b>Td</b><span>Usually zero on pumps</span></li>
-  </ul>
+  <h2 id="s1"><span class="k">1</span>What does PID do?</h2>
+  <p>PID lets the drive hold a value by itself, such as water pressure. You give it the setpoint <b>SP</b> (say 4 bar), and it reads the real value <b>PV</b> from a 4–20 mA transmitter on AI2. If the pressure is below the setpoint it speeds the pump up, and if it is above it slows the pump down.</p>
+  <p>You tune its response with 3 numbers. <b>Kp</b> is how hard it reacts, and too much makes the pressure oscillate. <b>Ti</b> removes the leftover error, and shorter means stronger. <b>Td</b> is usually left at zero on pumps.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>Try it: a constant-pressure pump</h2>
-  <p class="tip">The pressure oscillates: tune the PID, then change the demand.</p>
+  <h2 id="s2"><span class="k">2</span>Try it: tune a constant-pressure pump</h2>
+  <p>The pressure here is oscillating. Tune it in this order: start with a small Kp and a long Ti, raise Kp until the pressure starts to oscillate, go back to half of that, then shorten Ti without bringing the oscillation back. Once it is steady, change the demand and watch.</p>
   <div class="wd"><h3>Constant-pressure pump with PID</h3><div id="pid"></div></div>
-  <ol class="steps">
-    <li>Small Kp · long Ti</li>
-    <li>Raise Kp until it oscillates</li>
-    <li>Back to half</li>
-    <li>Shorten Ti without oscillation</li>
-  </ol>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>Sleep and wake</h2>
-  <div class="vs">
-    <div class="side"><span class="ic">😴</span><b>Sleep</b><span>Low speed for a while ⇒ stop</span></div>
-    <i>⇄</i>
-    <div class="side"><span class="ic">⏰</span><b>Wake</b><span>Pressure drops ⇒ start</span></div>
-  </div>
-  <p class="tip">Try it: close every tap (0 %) and wait.</p>
+  <h2 id="s3"><span class="k">3</span>Sleep and wake: the pump rests by itself</h2>
+  <p>When demand stops, the pump keeps turning at low speed for nothing. <b>Sleep</b> stops it after it has stayed at that low speed for a while, and <b>wake</b> starts it again as soon as the pressure drops.</p>
+  <p class="tip">Try it in the simulator above: close all the taps (0 %) and wait.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>Settings by application</h2>
-  <ul class="fx">
-    <li><b>🚰 Pump / fan</b><span>Quadratic V/f · PID · sleep · flying start</span></li>
-    <li><b>📦 Conveyor</b><span>Sensorless vector · S-curve · presets</span></li>
-    <li><b>🏗️ Hoist</b><span>Vector with encoder · resistor · brake from relay</span></li>
-    <li><b>🌀 Compressor / mixer</b><span>High starting torque · min speed</span></li>
-  </ul>
+  <h2 id="s4"><span class="k">4</span>Each application and its settings</h2>
+  <p><b>Pump and fan:</b> quadratic V/f, PID, sleep, and flying start.</p>
+  <p><b>Conveyor:</b> sensorless vector, an S-curve for smooth motion, and preset speeds.</p>
+  <p><b>Hoist:</b> vector with encoder, a braking resistor, and the mechanical brake controlled from the drive relay.</p>
+  <p><b>Compressor and mixer:</b> high starting torque and a minimum speed.</p>
   <div class="wd"><h3>Drill: the key setting for the application</h3><div id="app"></div></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
