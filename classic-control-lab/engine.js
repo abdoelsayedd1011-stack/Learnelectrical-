@@ -70,7 +70,7 @@
      devices:[DEVSPEC…],                       // laid out in this order on the bench
      solution:[['Q:L','S1:13'], …],            // «وريني الحل»
      seq:false,                                // true: cases run in order without reset (latching, timers)
-     cases:[ {label:'الزرار مدوس', set:{S1:{p:1}}, wait:0, expect:{H1:1, M1:'F'}} ],
+     cases:[ {label:'الزر مضغوط', set:{S1:{p:1}}, wait:0, expect:{H1:1, M1:'F'}} ],
         expect values: lamps/coils 1|0 ; motors 1 (runs) 0 (stopped) 'F' 'R' (direction) 'Y' 'D' (star/delta)
         wait: seconds of simulated time after `set` (timers, carts, overloads)
      patterns:[{sig:{H1:'0111'}, msg:'…'}],    // optional extra diagnoses, sig = expected-order 0/1 per case
@@ -147,15 +147,15 @@ CL.store = {
 /* =========================== curriculum (hub) =========================== */
 CL.CURRICULUM = {
   fundamentals: [
-    {n:1, id:'l1', file:'lesson-01.html', open:true, title:'عناصر التحكم البسيطة', sub:'مفتاح، سلكتور، بوش بوتن، طوارئ، ليمت سويتش، لمبة، مصدر'},
-    {n:2, id:'l2', file:'lesson-02.html', open:true, title:'الريلاي المساعد والتثبيت الذاتي', sub:'الكويل والكونتاكتات CO، الريلاي 8/11/14 pin والسوكت، التثبيت الذاتي (Latching)، والإنترلوك'},
-    {n:3, id:'l3', file:'lesson-03.html', open:true, title:'الكونتاكتور', sub:'كونتاكتات الباور والأوكسيليري، AC-1/AC-3، دايرة القوى ودايرة التحكم، وDOL بالتثبيت الذاتي'},
-    {n:4, id:'l4', file:'lesson-04.html', open:true, title:'الحماية: الفيوز والقاطع والأوفرلود', sub:'الفيوز وأنواعه، MCB ومنحنيات B/C/D، الأوفرلود الحراري (Ir، class 10، 95-96 و 97-98، فقد فاز)، MPCB، والحماية في دايرة DOL'},
-    {n:5, id:'l5', file:'lesson-05.html', open:true, title:'التايمرات', sub:'On-delay، Off-delay، والتايمر الدوري ومتعدد الوظائف، ودواير التايمر: التتابع، الحلقة، العربية والطلمبة (العملي 14–24)'},
-    {n:6, id:'l6', file:'lesson-06.html', open:true, title:'الموتور الإندكشن 3 فاز', sub:'التركيب والمجال الدوّار، اليافطة، علبة الأطراف ستار ودلتا، الاتجاه، جدول القدرات والتيارات، مقطع السلك'},
-    {n:7, id:'l7', file:'lesson-07.html', open:true, title:'مفاتيح الضغط والمستوى والحساسات', sub:'البريشر سويتش، العوامة، حساسات التقارب PNP/NPN، والخلية الضوئية، ودواير الطلمبة والكباس والسير'},
-    {n:8, id:'l8', file:'lesson-08.html', open:true, title:'تمارين التتابع والـ Jog وعكس الحركة (5–13)', sub:'التشغيل بشرط، التتابع، الـ Jog، عكس الاتجاه بالإنترلوك، الونش بالليمت سويتش، والمخرطة (العملي 5–13)'},
-    {n:9, id:'l9', file:'lesson-09.html', open:true, title:'مواضيع متقدمة: ستار/دلتا، الفرملة، التكييف، السوفت ستارتر', sub:'ستار/دلتا أوتوماتيك ويدوي بتايمر Y-Δ، فرملة DC وعكس الفازات والفرامل الميكانيكية، دايرة كباس التكييف المركزي على 24V، والسوفت ستارتر بالبايباس'}
+    {n:1, id:'l1', file:'lesson-01.html', open:true, title:'عناصر التحكم البسيطة', sub:'مفتاح، سلكتور، بوش بوتن، طوارئ، ليمت سويتش، مصباح، مصدر'},
+    {n:2, id:'l2', file:'lesson-02.html', open:true, title:'الريلاي المساعد والتثبيت الذاتي', sub:'الملف والكونتاكتات CO، والريلاي 8/11/14 pin والسوكت، والتثبيت الذاتي (Latching)، والإنترلوك'},
+    {n:3, id:'l3', file:'lesson-03.html', open:true, title:'الكونتاكتور', sub:'كونتاكتات القوى والمساعدة، وAC-1/AC-3، ودائرة القوى ودائرة التحكم، وDOL بالتثبيت الذاتي'},
+    {n:4, id:'l4', file:'lesson-04.html', open:true, title:'الحماية: الفيوز والقاطع والأوفرلود', sub:'الفيوز وأنواعه، وMCB ومنحنيات B/C/D، والأوفرلود الحراري (Ir، class 10، 95-96 و97-98، فقد فاز)، وMPCB، والحماية في دائرة DOL'},
+    {n:5, id:'l5', file:'lesson-05.html', open:true, title:'التايمرات', sub:'On-delay وOff-delay والتايمر الدوري ومتعدد الوظائف، ودوائر التايمر: التتابع والحلقة والعربة والمضخة (العملي 14–24)'},
+    {n:6, id:'l6', file:'lesson-06.html', open:true, title:'المحرك الحثي ثلاثي الفاز', sub:'التركيب والمجال الدوّار، ولوحة البيانات، وعلبة الأطراف ستار ودلتا، والاتجاه، وجدول القدرات والتيارات، ومقطع السلك'},
+    {n:7, id:'l7', file:'lesson-07.html', open:true, title:'مفاتيح الضغط والمستوى والحساسات', sub:'البريشر سويتش، والعوامة، وحساسات التقارب PNP/NPN، والخلية الضوئية، ودوائر المضخة والضاغط والسير'},
+    {n:8, id:'l8', file:'lesson-08.html', open:true, title:'تمارين التتابع والـ Jog وعكس الحركة (5–13)', sub:'التشغيل بشرط، والتتابع، والـ Jog، وعكس الاتجاه بالإنترلوك، والونش بالليمت سويتش، والمخرطة (العملي 5–13)'},
+    {n:9, id:'l9', file:'lesson-09.html', open:true, title:'مواضيع متقدمة: ستار/دلتا، الفرملة، التكييف، السوفت ستارتر', sub:'ستار/دلتا أوتوماتيكي ويدوي بتايمر Y-Δ، وفرملة DC وعكس الفازات والفرامل الميكانيكية، ودائرة ضاغط التكييف المركزي على 24V، والسوفت ستارتر مع البايباس'}
   ],
   // exercise ids per lesson (the hub's completion certificate counts `${id}/ex/${x}` passes)
   exercises: {l1:['a','e','b','c','g','f1','f2','d1','d2','p'], l2:['r1','r2','r3','h1','h2','h3','h4','w','il'], l3:['c1','c2','c3','pf1','pf2','x1','x2','x3','x4'], l4:['p1','p2','o1','o2','o3','m1','w1','w2','w3'],
@@ -167,42 +167,42 @@ CL.CURRICULUM = {
     14:'lesson-05.html#ton/4/e14', 15:'lesson-05.html#ton/4/e15', 16:'lesson-05.html#ton/4/e16', 17:'lesson-05.html#cir/4/e17', 18:'lesson-05.html#cir/4/e18', 19:'lesson-05.html#cir/4/e19', 20:'lesson-05.html#cir/4/e20',
     21:'lesson-05.html#cyc/4/e21', 22:'lesson-05.html#cir/4/e22', 23:'lesson-05.html#cir/4/e23', 24:'lesson-05.html#cir/4/e24'},
   practicalGroups: [
-    {title:'تشغيل وإيقاف من أكتر من مكان', from:1, to:4},
+    {title:'تشغيل وإيقاف من أكثر من مكان', from:1, to:4},
     {title:'تشغيل بشرط وبالتتابع', from:5, to:8},
     {title:'التشغيل اللحظي (Jog) وعكس الحركة', from:9, to:13},
-    {title:'دواير بالتايمرات', from:14, to:24}
+    {title:'دوائر بالتايمرات', from:14, to:24}
   ],
   practical: [
-    'محرك يعمل ويقف من مكان واحد + مصابيح إشارة',
-    'محرك يعمل ويقف من مكانين + مصابيح إشارة',
-    'محرك يعمل من 3 أماكن ويقف من مكان واحد + مصابيح إشارة',
-    'محركين كل واحد يعمل ويقف لوحده + مصابيح إشارة',
-    'محركين: الأول في أي وقت، والتاني لا يعمل إلا لو الأول دوّار + مصابيح',
-    '3 محركات: الأول في أي وقت، التاني بشرط دوران الأول، والتالت بشرط دوران التاني + مصابيح',
-    'محركين: الأول في أي وقت، والتاني لا يعمل إلا لو الأول واقف + مصابيح',
-    '3 محركات: الأول في أي وقت، التاني بشرط وقوف الأول، والتالت بشرط دوران الأول',
+    'محرك يعمل ويتوقف من مكان واحد + مصابيح إشارة',
+    'محرك يعمل ويتوقف من مكانين + مصابيح إشارة',
+    'محرك يعمل من 3 أماكن ويتوقف من مكان واحد + مصابيح إشارة',
+    'محركان يعمل ويتوقف كلٌّ منهما مستقلًا + مصابيح إشارة',
+    'محركان: الأول في أي وقت، والثاني لا يعمل إلا إذا كان الأول دائرًا + مصابيح',
+    '3 محركات: الأول في أي وقت، والثاني بشرط دوران الأول، والثالث بشرط دوران الثاني + مصابيح',
+    'محركان: الأول في أي وقت، والثاني لا يعمل إلا إذا كان الأول متوقفًا + مصابيح',
+    '3 محركات: الأول في أي وقت، والثاني بشرط توقف الأول، والثالث بشرط دوران الأول',
     'محرك بمفتاح تشغيل وإيقاف + مفتاح مزدوج للتشغيل لحظات قصيرة (Jog) + مصابيح',
-    'محرك في اتجاهين ويقف من مكان واحد + مصابيح',
+    'محرك في اتجاهين ويتوقف من مكان واحد + مصابيح',
     'محرك في اتجاهين + مفاتيح نهاية الشوط (ونش عادي) + مصابيح',
-    'محرك في اتجاهين، وتغيير الاتجاه مباشرة من غير الضغط على الإيقاف + مصابيح',
-    'ماكينة خرط: محرك يمين/يسار للخرط ومحرك يمين/يسار لضبط ارتفاع القطعة',
-    'محركين: التاني يعمل أوتوماتيك بعد الأول بزمن محدد',
-    'زي 14 بس الأول يقف لما التاني يشتغل',
-    '3 محركات: التاني بعد الأول بزمن، والتالت بعد التاني بزمن',
-    '3 محركات: الأول ثم التاني ويفصل الأول، ثم التالت ويفصل التاني، ثم الأول ويفصل التالت… وهكذا بتوقيت',
-    '3 محركات: بالضغط يشتغل الأول والتاني، بعد زمن يفصل الأول ويشتغل التالت، وبعد زمن تاني يفصل الكل أوتوماتيك',
-    '3 محركات: يشتغل الأول، بعد زمن التاني والتالت، وبعد زمن يفصل التاني والتالت',
-    '3 محركات: الكل يشتغل مع بعض، بعد زمن يفصل التاني والتالت، بعد زمن يرجع التالت، وبعد زمن يفصل الكل أوتوماتيك',
-    'محركين: الأول، بعد زمن التاني ويفصل الأول، بعد زمن الأول ويفصل التاني… وهكذا بتوقيت محدود',
-    'محرك يمين ويسار بالتبادل وبين كل اتجاه وقفة زمن معيّن',
-    'محركين: عربية على سير تقف عند النقطة B، تشتغل الطلمبة 3 ثواني تملا السائل، تقف، وترجع العربية للنقطة A',
-    'محركين: الأول بمفتاح، التاني بعده بـ 5 ث، يقف بعد 5 ث، يرجع بعد 5 ث، وبعد 5 ث يقف الاتنين'
+    'محرك في اتجاهين، وتغيير الاتجاه مباشرة دون الضغط على الإيقاف + مصابيح',
+    'ماكينة خراطة: محرك يمين/يسار للخراطة ومحرك يمين/يسار لضبط ارتفاع القطعة',
+    'محركان: الثاني يعمل تلقائيًا بعد الأول بزمن محدد',
+    'مثل 14 لكن الأول يتوقف عندما يعمل الثاني',
+    '3 محركات: الثاني بعد الأول بزمن، والثالث بعد الثاني بزمن',
+    '3 محركات: الأول ثم الثاني ويفصل الأول، ثم الثالث ويفصل الثاني، ثم الأول ويفصل الثالث… وهكذا بتوقيت',
+    '3 محركات: عند الضغط يعمل الأول والثاني، وبعد زمن يفصل الأول ويعمل الثالث، وبعد زمن آخر يفصل الجميع تلقائيًا',
+    '3 محركات: يعمل الأول، وبعد زمن الثاني والثالث، وبعد زمن يفصل الثاني والثالث',
+    '3 محركات: تعمل كلها معًا، وبعد زمن يفصل الثاني والثالث، وبعد زمن يعود الثالث، وبعد زمن يفصل الجميع تلقائيًا',
+    'محركان: الأول، وبعد زمن الثاني ويفصل الأول، وبعد زمن الأول ويفصل الثاني… وهكذا بتوقيت محدد',
+    'محرك يمين ويسار بالتبادل، وبين كل اتجاه وآخر توقف لزمن معيّن',
+    'محركان: عربة على سير تتوقف عند النقطة B، فتعمل المضخة 3 ثوانٍ لتملأ السائل ثم تتوقف، وتعود العربة إلى النقطة A',
+    'محركان: الأول بمفتاح، والثاني بعده بـ 5 ث، يتوقف بعد 5 ث، ويعود بعد 5 ث، وبعد 5 ث يتوقف الاثنان'
   ],
   advanced: [ // قرار المدرّب (2026-10-20): 4 مواضيع بس، كلها في الدرس 9
-    {title:'ستار / دلتا', sub:'يدوي وأوتوماتيك بتايمر ستار دلتا، وغلطتين: كباري غلط وإنترلوك ناقص', href:'lesson-09.html#sd/1', el:'sd'},
+    {title:'ستار / دلتا', sub:'يدوي وأوتوماتيكي بتايمر ستار دلتا، وخطآن: وصلات خاطئة وإنترلوك ناقص', href:'lesson-09.html#sd/1', el:'sd'},
     {title:'طرق فرملة المحرك', sub:'فرملة DC بموحّد، عكس الفازات (Plugging) بتايمر، وفرامل ميكانيكية للونش', href:'lesson-09.html#br/1', el:'br'},
-    {title:'دايرة تحكم كباس تكييف مركزي', sub:'محوّل 24V، ثرموستات، HP/LP، تايمر منع التشغيل المتكرر، وإنذار HP بريست', href:'lesson-09.html#ac/1', el:'ac'},
-    {title:'السوفت ستارتر', sub:'Soft starter: الرامب والبايباس وريلاي العطل، وغلطة البايباس من START', href:'lesson-09.html#ss/1', el:'ss'}
+    {title:'دائرة تحكم ضاغط تكييف مركزي', sub:'محوّل 24V، وثرموستات، وHP/LP، وتايمر منع التشغيل المتكرر، وإنذار HP مع ريست', href:'lesson-09.html#ac/1', el:'ac'},
+    {title:'السوفت ستارتر', sub:'Soft starter: الرامب والبايباس وريلاي العطل، وخطأ البايباس من START', href:'lesson-09.html#ss/1', el:'ss'}
   ]
 };
 
@@ -340,7 +340,7 @@ CL.defineType('fuse', {
   links(d, force){ if (!force && d.st.trip) return []; const a = []; for (let i = 0; i < d.cfg.poles; i++) a.push([String(2*i+1), String(2*i+2)]); return a; },
   apply(d, s){ if (s.replace){ d.st.trip = 0; d.st.heat = 0; d.st.why = ''; } else Object.assign(d.st, s); },
   tick: protTick, protect:true, span(d){ return d.cfg.poles > 2 ? 2 : 1; }, h(){ return 170; },
-  states(){ return [{label:'سليم', st:{trip:0}}, {label:'ضرب (انصهر)', st:{trip:1}}]; }, ctl:'prot', art(d){ return CL.art.fuseArt(d); }
+  states(){ return [{label:'سليم', st:{trip:0}}, {label:'انصهر', st:{trip:1}}]; }, ctl:'prot', art(d){ return CL.art.fuseArt(d); }
 });
 
 /* ---- manual control devices ---- */
@@ -349,14 +349,14 @@ CL.defineType('pb', {
   init(){ return {p:0, pin:0, mid:0}; },
   op(d, b){ if (d.st.mid) return !!(b && b.k === 'NC'); return !!(d.st.p || d.st.pin); }, // mid: released double-contact button, NO already open and NC not yet closed
   apply(d, s){ const was = TYPES.pb.op(d); Object.assign(d.st, s); if ('p' in s) d.st.pin = 0; if (was && !TYPES.pb.op(d) && CL.isJog(d)) d.st.mid = 1; },
-  states(){ return [{label:'سايب (مش مدوس)', st:{p:0}}, {label:'مدوس', st:{p:1}}]; },
+  states(){ return [{label:'حر (غير مضغوط)', st:{p:0}}, {label:'مضغوط', st:{p:1}}]; },
   ctl:'hold', art(d){ return CL.art.pbSide(d); }, iecAct:'push', h(){ return 224; }
 });
 CL.defineType('estop', {
   def:{color:'red', label:'EMERGENCY', blocks:['NC']}, blocks:true,
   init(){ return {p:0}; },
   op(d){ return !!d.st.p; },
-  states(){ return [{label:'مش مدوس (جاهز)', st:{p:0}}, {label:'مدوس ومتثبّت', st:{p:1}}]; },
+  states(){ return [{label:'غير مضغوط (جاهز)', st:{p:0}}, {label:'مضغوط ومنحبس', st:{p:1}}]; },
   ctl:'latch', art(d){ return CL.art.pbSide(d, true); }, iecAct:'mush', h(){ return 224; }
 });
 CL.defineType('sel', {
@@ -371,7 +371,7 @@ CL.defineType('ls', {
   init(){ return {a:0, x:0}; },
   op(d){ return !!d.st.a; },
   apply(d, s){ Object.assign(d.st, s); if ('a' in s && !('x' in s)) d.st.x = s.a ? 1 : 0; },
-  states(){ return [{label:'العربية بعيد', st:{a:0, x:0}}, {label:'العربية ضاغطة على البكرة', st:{a:1, x:1}}]; },
+  states(){ return [{label:'العربة بعيدة', st:{a:0, x:0}}, {label:'العربة تضغط على البكرة', st:{a:1, x:1}}]; },
   tick(d, dt, ctx){
     if (!d.cfg.cart) return false;
     const c = ctx.byId[d.cfg.cart]; if (!c) return false;
@@ -386,7 +386,7 @@ CL.defineType('level', {
   def:{blocks:['NO','NC'], at:0.8, hyst:0.05, look:'float', max:10}, blocks:true,
   init(cfg){ return {a:cfg.a0 ? 1 : 0, lvl:cfg.lvl0 == null ? 0.5 : cfg.lvl0}; }, // a0: starts operated (the linked tank starts above the set point)
   op(d){ return !!d.st.a; },
-  states(){ return [{label:'تحت نقطة الضبط', st:{a:0}}, {label:'وصل لنقطة الضبط', st:{a:1}}]; },
+  states(){ return [{label:'تحت نقطة الضبط', st:{a:0}}, {label:'وصل إلى نقطة الضبط', st:{a:1}}]; },
   tick(d, dt, ctx){ const t = ctx.byId[d.cfg.tank]; if (!t) return false; const a = TYPES.level.aOf(d, t.st.lvl); const ch = a !== d.st.a; d.st.a = a; d.st.lvl = t.st.lvl; return ch; },
   aOf(d, v){ const h = d.cfg.hyst || 0.05; if (d.cfg.below) return v <= d.cfg.at ? 1 : (v > d.cfg.at + h ? 0 : d.st.a); return v >= d.cfg.at ? 1 : (v < d.cfg.at - h ? 0 : d.st.a); },
   setLevel(d, v){ d.st.lvl = v; d.st.a = TYPES.level.aOf(d, v); },
@@ -399,7 +399,7 @@ CL.defineType('lamp', {
   terms(){ return [{n:'X1'}, {n:'X2'}]; },
   init(){ return {burnt:0}; },
   loads(d){ return [{a:'X1', b:'X2', k:'lamp', v:d.cfg.v}]; },
-  states(){ return [{label:'مفيش جهد', st:{v:0}}, {label:'عليها جهد', st:{v:1}}]; },
+  states(){ return [{label:'لا يوجد جهد', st:{v:0}}, {label:'عليه جهد', st:{v:1}}]; },
   ctl:'toggle', art(d){ return CL.art.lampArt(d); }
 });
 CL.defineType('relay', {
@@ -408,8 +408,8 @@ CL.defineType('relay', {
   init(){ return {coil:0, burnt:0}; },
   op(d){ return !!d.st.coil; },
   loads(d){ return [{a:'A1', b:'A2', k:'coil', v:d.cfg.v}]; },
-  states(){ return [{label:'الكويل من غير جهد', st:{coil:0}}, {label:'الكويل عليه جهد (A1-A2)', st:{coil:1}}]; },
-  ctl:'hold', holdLabel:'اضغط واستمر: ادّي جهد للكويل A1-A2', art(d){ return CL.art.relayArt(d); }, iecAct:'coil',
+  states(){ return [{label:'الملف بلا جهد', st:{coil:0}}, {label:'الملف عليه جهد (A1-A2)', st:{coil:1}}]; },
+  ctl:'hold', holdLabel:'اضغط باستمرار: أعطِ جهدًا للملف A1-A2', art(d){ return CL.art.relayArt(d); }, iecAct:'coil',
   span(){ return 2; }
 });
 CL.defineType('contactor', {
@@ -422,9 +422,9 @@ CL.defineType('contactor', {
     return a.concat(blockLinks(d.blocks, () => !!d.st.closed, force));
   },
   loads(d){ return [{a:'A1', b:'A2', k:'coil', v:d.cfg.v}]; },
-  states(){ return [{label:'الكويل من غير جهد', st:{coil:0, closed:0}}, {label:'الكويل عليه جهد (A1-A2)', st:{coil:1, closed:1}}]; },
+  states(){ return [{label:'الملف بلا جهد', st:{coil:0, closed:0}}, {label:'الملف عليه جهد (A1-A2)', st:{coil:1, closed:1}}]; },
   mains:[{k:'NO', t:['1','2'], main:true}, {k:'NO', t:['3','4'], main:true}, {k:'NO', t:['5','6'], main:true}], zone:'P',
-  ctl:'hold', holdLabel:'اضغط واستمر: ادّي جهد للكويل A1-A2', art(d){ return CL.art.contactorArt(d); }, iecAct:'coil',
+  ctl:'hold', holdLabel:'اضغط باستمرار: أعطِ جهدًا للملف A1-A2', art(d){ return CL.art.contactorArt(d); }, iecAct:'coil',
   span(){ return 2; }, h(d){ return d.blocks.length > 2 ? 258 : 208; }
 });
 TYPES.contactor.init = function(cfg, d){ if (d) d.blocks = normBlocks(cfg.aux); return {coil:0, closed:0, burnt:0}; };
@@ -452,9 +452,9 @@ CL.defineType('timer', {
   apply(d, s){ s = s || {}; if ('t' in s) d.cfg.t = s.t; if ('mode' in s) d.cfg.mode = s.mode; Object.keys(s).forEach(k => { if (k !== 't' && k !== 'mode') d.st[k] = s[k]; }); },
   states(d){
     const m = d.cfg.mode;
-    if (m === 'off') return [{label:'الكويل من غير جهد (لسه ما اشتغلش)', st:{coil:0, out:0, el:0}}, {label:'الكويل عليه جهد', st:{coil:1, out:1, el:0}}, {label:'الجهد اتقطع والزمن بيعد', st:{coil:0, out:1, el:0}}, {label:'الزمن خلص (t)', st:{coil:0, out:0, el:0}}];
-    if (m === 'cyc') return [{label:'الكويل من غير جهد', st:{coil:0, out:0, el:0}}, {label:'فترة ON (ton)', st:{coil:1, out:1, el:0}}, {label:'فترة OFF (toff)', st:{coil:1, out:0, el:0}}];
-    return [{label:'الكويل من غير جهد', st:{coil:0, out:0, el:0}}, {label:'الكويل عليه جهد والزمن بيعد', st:{coil:1, out:0, el:0}}, {label:'الزمن خلص (t)', st:{coil:1, out:1, el:0}}];
+    if (m === 'off') return [{label:'الملف بلا جهد (لم يعمل بعد)', st:{coil:0, out:0, el:0}}, {label:'الملف عليه جهد', st:{coil:1, out:1, el:0}}, {label:'انقطع الجهد والزمن يُعدّ', st:{coil:0, out:1, el:0}}, {label:'انتهى الزمن (t)', st:{coil:0, out:0, el:0}}];
+    if (m === 'cyc') return [{label:'الملف بلا جهد', st:{coil:0, out:0, el:0}}, {label:'فترة ON (ton)', st:{coil:1, out:1, el:0}}, {label:'فترة OFF (toff)', st:{coil:1, out:0, el:0}}];
+    return [{label:'الملف بلا جهد', st:{coil:0, out:0, el:0}}, {label:'الملف عليه جهد والزمن يُعدّ', st:{coil:1, out:0, el:0}}, {label:'انتهى الزمن (t)', st:{coil:1, out:1, el:0}}];
   },
   ctl:'timer', art(d, o){ return CL.art.timerArt(d, o); },
   onCoil(d, on){
@@ -507,7 +507,7 @@ CL.defineType('mpcb', {
   init(){ return {on:1, trip:0, heat:0, I:0, sp:0, why:''}; },
   links(d, force){ const on = d.st.on && !d.st.trip; const a = (force || on) ? [['1','2'],['3','4'],['5','6']] : []; if (d.cfg.aux){ if (force || on) a.push(['13','14']); if (force || !on) a.push(['21','22']); } return a; },
   apply: olApply, protect:true, tick: heatTick, zone:'P', span(){ return 2; }, h(){ return 180; },
-  states(){ return [{label:'ON (شغال)', st:{on:1, trip:0}}, {label:'فصل أو OFF', st:{on:0, trip:0}}]; },
+  states(){ return [{label:'ON (يعمل)', st:{on:1, trip:0}}, {label:'فصل أو OFF', st:{on:0, trip:0}}]; },
   ctl:'ol', art(d){ return CL.art.mpcbArt(d); }
 });
 
@@ -723,21 +723,21 @@ CL.tripText = function(d){
   const w = d.st.why, I = r1(d.st.I || d.st.Ipk || 0), tag = d.tag;
   if (d.type === 'ol' || d.type === 'mpcb'){
     const Ir = d.cfg.Ir || 5, nm = d.type === 'ol' ? 'الأوفرلود' : 'الـ MPCB';
-    if (w === 'sp') return `${nm} <b>${tag}</b> فصل: <b>فازة ناقصة</b> (Single-phasing).`;
+    if (w === 'sp') return `${nm} <b>${tag}</b> فصل: <b>فاز ناقص</b> (Single-phasing).`;
     if (w === 'mag') return `${nm} <b>${tag}</b> فصل مغناطيسي: قصر (${I}A).`;
-    if (w === 'test') return `${nm} <b>${tag}</b> فصل بزرار TEST.`;
-    return `${nm} <b>${tag}</b> فصل: ${I}A أعلى من Ir=${Ir}A. ${d.type === 'ol' ? 'استنى وبعدين Reset.' : 'استنى وارفعه تاني.'}`;
+    if (w === 'test') return `${nm} <b>${tag}</b> فصل بزر TEST.`;
+    return `${nm} <b>${tag}</b> فصل: ${I}A أعلى من Ir=${Ir}A. ${d.type === 'ol' ? 'انتظر ثم اضغط Reset.' : 'انتظر ثم ارفعه مرة أخرى.'}`;
   }
   if (d.type === 'mcb'){
     const In = ratingOf(d), cv = curveOf(d);
     if (w === 'short') return `القاطع <b>${tag}</b> فصل على قصر (Short circuit).`;
-    if (w === 'mag') return `القاطع <b>${tag}</b> (${esc(d.cfg.label)}) فصل مغناطيسي: ${I}A > ${MAG[cv]}×In. ${cv === 'B' ? 'للموتور استخدم منحنى <b>C</b>.' : 'كبّر القاطع أو منحنى D.'}`;
+    if (w === 'mag') return `القاطع <b>${tag}</b> (${esc(d.cfg.label)}) فصل مغناطيسي: ${I}A > ${MAG[cv]}×In. ${cv === 'B' ? 'للمحرك استخدم المنحنى <b>C</b>.' : 'كبّر القاطع أو استخدم المنحنى D.'}`;
     return `القاطع <b>${tag}</b> فصل حراري: ${I}A أعلى من In=${In}A.`;
   }
   if (d.type === 'fuse'){
     const In = ratingOf(d);
-    if (w === 'th') return `الفيوز <b>${tag}</b> ضرب: ${I}A أعلى من ${In}A. غيّره (دوس عليه).`;
-    return `الفيوز <b>${tag}</b> ضرب على قصر. صلّح وغيّره (دوس عليه).`;
+    if (w === 'th') return `الفيوز <b>${tag}</b> انصهر: ${I}A أعلى من ${In}A. استبدله (اضغط عليه).`;
+    return `الفيوز <b>${tag}</b> انصهر بسبب قصر. أصلح العطل واستبدله (اضغط عليه).`;
   }
   return `${tag} فصل.`;
 };
@@ -752,7 +752,7 @@ function supplyNames(devs){
   return {L:'L', N:'N', brk:'القاطع'};
 }
 function devLabel(d){ return d.name ? `${d.tag} (${d.name})` : d.tag; }
-function fmtExp(v, coil){ if (v === 'F') return 'يمين'; if (v === 'R') return 'شمال'; if (v === 'Y') return 'ستار'; if (v === 'D') return 'دلتا'; if (v === 'S') return 'واقف تمامًا'; if (v === 'C') return 'بيلف بالقصور'; if (v === 'B') return 'بيفرمل DC'; return coil ? (v ? 'شغال' : 'واقف') : (v ? 'منورة' : 'مطفية'); }
+function fmtExp(v, coil){ if (v === 'F') return 'يمين'; if (v === 'R') return 'يسار'; if (v === 'Y') return 'ستار'; if (v === 'D') return 'دلتا'; if (v === 'S') return 'متوقف تمامًا'; if (v === 'C') return 'يدور بالقصور الذاتي'; if (v === 'B') return 'يُفرمل DC'; return coil ? (v ? 'يعمل' : 'متوقف') : (v ? 'مضيء' : 'مطفأ'); }
 function actualOf(d, r){
   if (TYPES[d.type].motor){ const m = r.mot[d.id] || {}; return m; }
   return !!r.energ[d.id];
@@ -774,7 +774,7 @@ CL.check = function(ex, wires, opt){
   const nm = supplyNames(devs);
   const outs = Object.keys(ex.cases[0].expect);
   const msgs = [], rows = [];
-  if (!W.length) return {ok:false, msgs:[{lv:'bad', t:`لسه مفيش ولا سلك. ابدأ من طرف ${nm.L} في المصدر.`}], rows, outs, empty:true};
+  if (!W.length) return {ok:false, msgs:[{lv:'bad', t:`لا يوجد أي سلك بعد. ابدأ من طرف ${nm.L} في المصدر.`}], rows, outs, empty:true};
   const powerUp = () => devs.forEach(d => { if (isSupply(d)){ d.st.on = 1; d.st.trip = 0; } });
   powerUp();
   ex.cases.forEach((c, i) => {
@@ -792,13 +792,13 @@ CL.check = function(ex, wires, opt){
   if (sr > -1){
     const p = rows[sr].short.poles;
     const pair = p.map(x => x === 'L1' && nm.L === 'L' ? 'L' : x === 'P' ? '+24V' : x === 'M' ? '0V' : x).join(' و ');
-    const when = ex.cases.length > 1 ? ` لما «${rows[sr].c.label}»` : '';
-    msgs.push({lv:'bad', t:ex.shortMsg ? `⚡ قصر بين ${pair}${when}: ` + ex.shortMsg : `⚡ ${pair} متوصلين ببعض${when}: قصر.`, hl:{w:rows[sr].short.wires || []}});
+    const when = ex.cases.length > 1 ? ` عندما «${rows[sr].c.label}»` : '';
+    msgs.push({lv:'bad', t:ex.shortMsg ? `⚡ قصر بين ${pair}${when}: ` + ex.shortMsg : `⚡ ${pair} متصلان ببعضهما${when}: قصر.`, hl:{w:rows[sr].short.wires || []}});
     return {ok:false, msgs, rows, outs, short:sr};
   }
   // 2) wrong voltage
   const ov = rows.find(x => x.over && x.over.length);
-  if (ov){ const o = ov.over[0], d = byId[o.dev]; msgs.push({lv:'bad', t:`🔥 ${devLabel(d)} ${d.cfg.v}V وواخدة ${o.V}V: طرفها التاني على ${nm.N}.`, hl:{t:TYPES[d.type].loads ? [d.id + ':' + TYPES[d.type].loads(d)[0].b] : []}}); return {ok:false, msgs, rows, outs}; }
+  if (ov){ const o = ov.over[0], d = byId[o.dev]; msgs.push({lv:'bad', t:`🔥 ${devLabel(d)} ${d.cfg.v}V ويصلها ${o.V}V: طرفها الآخر على ${nm.N}.`, hl:{t:TYPES[d.type].loads ? [d.id + ':' + TYPES[d.type].loads(d)[0].b] : []}}); return {ok:false, msgs, rows, outs}; }
   const allOk = rows.every(x => x.ok.every(Boolean));
   if (!allOk && ex.diagnose){ const dm = ex.diagnose(byId, W, rows); if (dm){ msgs.push({lv:'bad', t:dm}); return {ok:false, msgs, rows, outs}; } }
   if (allOk && ex.verify){ const vm = ex.verify(byId, W, rows); if (vm){ msgs.push({lv:'bad', t:vm}); return {ok:false, msgs, rows, outs}; } }
@@ -810,7 +810,7 @@ CL.check = function(ex, wires, opt){
         const d = byId[o]; if (!d || TYPES[d.type].motor || rw.exp[j]) return;
         const L = TYPES[d.type].loads(d)[0];
         const live = [L.a, L.b].some(t => { const s = rw.res.poles(rw.res.find(d.id+':'+t)); return s && [...s].some(p => p in PHASES || p === 'P' || p === 'S'); });
-        if (live && !msgs.length) msgs.push({lv:'warn', t:`شغالة ✓، بس ${nm.L} واصل لـ ${devLabel(d)} وهي مطفية: اقطع ناحية ${nm.L}.`});
+        if (live && !msgs.length) msgs.push({lv:'warn', t:`يعمل ✓، لكن ${nm.L} يصل إلى ${devLabel(d)} وهو مطفأ: اقطع من جهة ${nm.L}.`});
       }));
     }
     return {ok:true, msgs, rows, outs};
@@ -827,25 +827,25 @@ CL.check = function(ex, wires, opt){
     const pat = (ex.patterns || []).find(p => p.sig && p.sig[o] != null && (p.sig[o] === sig || (/[?\[]/.test(p.sig[o]) && new RegExp('^' + p.sig[o].replace(/\?/g, '.') + '$').test(sig)))); // '?' = any, [01] allowed
     { const wm = wireHint(ex, W, byId, 'miss'); if (wm){ msgs.push(wm); return; } } // an unwired terminal of the reference wiring is the most concrete first problem
     if (pat){ msgs.push({lv:'bad', t:pat.msg}); return; }
-    if (TYPES[d.type].motor){ const md = motorDiag(d, rows, j, nm), mf = (rows.find(x => !x.ok[j]).res.mot[d.id] || {}).fault; const wh = (!md || mf === '1ph') ? wireHint(ex, W, byId) : null; msgs.push(wh || (md ? {lv:'bad', t:md} : null) || ({lv:'bad', t:`${devLabel(d)} مش بيلف: راجع القوى ودايرة الكويل.`})); return; }
+    if (TYPES[d.type].motor){ const md = motorDiag(d, rows, j, nm), mf = (rows.find(x => !x.ok[j]).res.mot[d.id] || {}).fault; const wh = (!md || mf === '1ph') ? wireHint(ex, W, byId) : null; msgs.push(wh || (md ? {lv:'bad', t:md} : null) || ({lv:'bad', t:`${devLabel(d)} لا يدور: راجع القوى ودائرة الملف.`})); return; }
     if (act.every(v => !v)){ const od = openDiag(d, devs, W, nm, ex); msgs.push(typeof od === 'string' ? {lv:'bad', t:od} : Object.assign({lv:'bad'}, od)); return; }
     if (ex.seq){ // drops out as soon as a START button is released → no seal-in contact
       const i = okv.findIndex(v => !v), st = ex.cases[i] && ex.cases[i].set || {};
       const rel = Object.keys(st).filter(id => st[id] && st[id].p === 0 && byId[id] && byId[id].type === 'pb');
       const coils = devs.filter(x => TYPES[x.type].coil);
-      if (i > 0 && e[i] && !act[i] && act[i-1] && rel.length && coils.length){ msgs.push({lv:'bad', t:`${devLabel(d)} بتفصل لما تسيب ${rel.map(id => byId[id].tag).join(' و ')}: ناقص سلك التثبيت 13–14.`, hl:{t:[coils[0].id + ':13', coils[0].id + ':14']}}); return; }
+      if (i > 0 && e[i] && !act[i] && act[i-1] && rel.length && coils.length){ msgs.push({lv:'bad', t:`${devLabel(d)} يفصل عند ترك ${rel.map(id => byId[id].tag).join(' و ')}: ينقص سلك التثبيت 13–14.`, hl:{t:[coils[0].id + ':13', coils[0].id + ':14']}}); return; }
     }
-    if (act.every(v => v) && e.some(v => !v)){ msgs.push({lv:'bad', t:`${devLabel(d)} منورة على طول: ${nm.L} واصلها من غير الكونتاكت.`}); return; }
+    if (act.every(v => v) && e.some(v => !v)){ msgs.push({lv:'bad', t:`${devLabel(d)} مضيء دائمًا: ${nm.L} يصله دون الكونتاكت.`}); return; }
     if (act.every((v, i) => v !== e[i])){
       msgs.push({lv:'bad', t: e[0] === 0
-        ? `${devLabel(d)} بالعكس: استخدمت <b>NC</b> بدل <b>NO</b> (13-14).`
-        : `${devLabel(d)} بالعكس: استخدمت <b>NO</b> بدل <b>NC</b> (21-22).`});
+        ? `${devLabel(d)} معكوس: استخدمت <b>NC</b> بدل <b>NO</b> (13-14).`
+        : `${devLabel(d)} معكوس: استخدمت <b>NO</b> بدل <b>NC</b> (21-22).`});
       return;
     }
     // swapped with another output?
     const other = outs.findIndex((o2, k) => k !== j && rows.every(x => !!x.act[j] === !!x.exp[k]));
-    if (other > -1){ msgs.push({lv:'bad', t:`${devLabel(d)} و ${devLabel(byId[outs[other]])} متبدلين.`}); return; }
-    msgs.push(wireHint(ex, W, byId) || {lv:'bad', t:`${devLabel(d)} مش زي المطلوب في «${esc(rows[okv.findIndex(v => !v)].c.label)}».`});
+    if (other > -1){ msgs.push({lv:'bad', t:`${devLabel(d)} و ${devLabel(byId[outs[other]])} مبدّلان.`}); return; }
+    msgs.push(wireHint(ex, W, byId) || {lv:'bad', t:`${devLabel(d)} ليس كما هو مطلوب في «${esc(rows[okv.findIndex(v => !v)].c.label)}».`});
   });
   return {ok:false, msgs: dedupe(msgs), rows, outs};
 };
@@ -860,24 +860,24 @@ function wireHint(ex, W, byId, only){ // the first concrete wiring problem, meas
     if (!inSol(w.a) || !inSol(w.b) || S.f(w.a) === S.f(w.b)) continue;
     for (const [k, o] of [[w.a, w.b], [w.b, w.a]]){ // k is right, o should be another terminal of the same device
       const want = Object.keys(S.P).find(t => S.f(t) === S.f(k) && t !== k && dv(t) === dv(o) && !has(t));
-      if (want) return {lv:'bad', t:`السلك من ${tg(k)}:${tn(k)} رايح لـ ${tn(o)} والمفروض ${tn(want)}.`, hl:{w:[w.id], t:[o, want]}};
+      if (want) return {lv:'bad', t:`السلك من ${tg(k)}:${tn(k)} يذهب إلى ${tn(o)} والصحيح ${tn(want)}.`, hl:{w:[w.id], t:[o, want]}};
     }
-    return {lv:'bad', t:`السلك ${tg(w.a)}:${tn(w.a)} – ${tg(w.b)}:${tn(w.b)} في مكان غلط.`, hl:{w:[w.id], t:[w.a, w.b]}};
+    return {lv:'bad', t:`السلك ${tg(w.a)}:${tn(w.a)} – ${tg(w.b)}:${tn(w.b)} في مكان خاطئ.`, hl:{w:[w.id], t:[w.a, w.b]}};
   }
   for (const p of sol) for (const t of p) if (!has(t)){
-    for (const w of W) for (const [k, o] of [[w.a, w.b], [w.b, w.a]]) if (k !== t && inSol(k) && S.f(k) === S.f(t) && dv(o) === dv(t) && (!inSol(o) || S.f(o) !== S.f(t))) return {lv:'bad', t:`السلك من ${tg(k)}:${tn(k)} رايح لـ ${tn(o)} والمفروض ${tn(t)}.`, hl:{w:[w.id], t:[o, t]}};
-    return {lv:'bad', t:`الطرف ${tn(t)} في ${tg(t)} مش متوصل.`, hl:{t:[t]}}; }
+    for (const w of W) for (const [k, o] of [[w.a, w.b], [w.b, w.a]]) if (k !== t && inSol(k) && S.f(k) === S.f(t) && dv(o) === dv(t) && (!inSol(o) || S.f(o) !== S.f(t))) return {lv:'bad', t:`السلك من ${tg(k)}:${tn(k)} يذهب إلى ${tn(o)} والصحيح ${tn(t)}.`, hl:{w:[w.id], t:[o, t]}};
+    return {lv:'bad', t:`الطرف ${tn(t)} في ${tg(t)} غير موصول.`, hl:{t:[t]}}; }
   if (only) return null;
   const U = uf(); W.forEach(w => U.u(w.a, w.b));
-  for (const p of sol) if (U.f(p[0]) !== U.f(p[1])) return {lv:'bad', t:`ناقص سلك بين ${tg(p[0])}:${tn(p[0])} و ${tg(p[1])}:${tn(p[1])}.`, hl:{t:[p[0], p[1]]}};
+  for (const p of sol) if (U.f(p[0]) !== U.f(p[1])) return {lv:'bad', t:`ينقص سلك بين ${tg(p[0])}:${tn(p[0])} و ${tg(p[1])}:${tn(p[1])}.`, hl:{t:[p[0], p[1]]}};
   return null;
 }
 function openDiag(d, devs, W, nm, ex0){
   const L = TYPES[d.type].loads(d)[0];
   const at = t => W.filter(w => w.a === d.id+':'+t || w.b === d.id+':'+t).length;
   const miss = [L.a, L.b].filter(t => !at(t));
-  if (miss.length === 2) return {t:`${devLabel(d)} مش متوصلة: ${L.a} و ${L.b} من غير سلك.`, hl:{t:[d.id+':'+L.a, d.id+':'+L.b]}};
-  if (miss.length) return {t:`الطرف ${miss[0]} في ${devLabel(d)} مش متوصل.`, hl:{t:[d.id+':'+miss[0]]}};
+  if (miss.length === 2) return {t:`${devLabel(d)} غير موصول: ${L.a} و ${L.b} بلا سلك.`, hl:{t:[d.id+':'+L.a, d.id+':'+L.b]}};
+  if (miss.length) return {t:`الطرف ${miss[0]} في ${devLabel(d)} غير موصول.`, hl:{t:[d.id+':'+miss[0]]}};
   { const wm = ex0 && wireHint(ex0, W, Object.fromEntries(devs.map(x => [x.id, x])), 'miss'); if (wm) return wm; }
   devs.forEach(x => { if (isSupply(x)){ x.st.on = 1; x.st.trip = 0; } });
   const r = CL.solve(devs, W, {force:true});
@@ -892,31 +892,31 @@ function openDiag(d, devs, W, nm, ex0){
     const combos = []; for (let m = 0; m < (1 << pbs.length); m++){ const c = pbs.filter((_, i) => m & (1 << i)); combos.push(c); } combos.sort((a, b) => a.length - b.length);
     for (const fc of [false, true]) for (const c of combos){ if (!tryIt(c, fc)) continue;
       const extra = c.filter(x => wantSet.indexOf(x.id) < 0), names = extra.map(devLabel).join(' و ');
-      if (fc) return {t:`تثبيت ${coils.map(x => x.tag).join('/')} على التوالي مع START: خليه توازي (13–13، 14–14).`, hl:{t:[coils[0].id + ':13', coils[0].id + ':14']}};
-      if (extra.length) return `${who} محتاج ${names} يتداس: وصّله على <b>NC</b> (21-22) مش NO.`;
+      if (fc) return {t:`تثبيت ${coils.map(x => x.tag).join('/')} على التوالي مع START: اجعله على التوازي (13–13، 14–14).`, hl:{t:[coils[0].id + ':13', coils[0].id + ':14']}};
+      if (extra.length) return `${who} يحتاج إلى ضغط ${names}: وصّله على <b>NC</b> (21-22) لا NO.`;
       break;
     }
-    return wireHint(ex0, W, Object.fromEntries(devs.map(x => [x.id, x]))) || `${who} مبيشتغلش أبدًا: كونتاكتات على التوالي عمرها ما بتقفل سوا.`;
+    return wireHint(ex0, W, Object.fromEntries(devs.map(x => [x.id, x]))) || `${who} لا يعمل أبدًا: كونتاكتات على التوالي لا تُغلق معًا أبدًا.`;
   }
   const loadsIn = side => { const rt = r.find(d.id+':'+side); return devs.some(o => o !== d && TYPES[o.type].loads && TYPES[o.type].loads(o).some(l => r.find(o.id+':'+l.a) === rt || r.find(o.id+':'+l.b) === rt)); };
-  if ((hasL(pa) && !pb && loadsIn(L.b)) || (hasL(pb) && !pa && loadsIn(L.a))) return {t:`اللمبات على التوالي: وصّل كل لمبة بين الكونتاكت و ${nm.N}.`, hl:{t:[d.id+':'+(hasL(pa) ? L.b : L.a)]}};
-  if ((hasL(pa) && hasL(pb)) ) return {t:`طرفين ${devLabel(d)} على ${nm.L}: واحد منهم يروح ${nm.N}.`, hl:{t:[d.id+':'+L.b]}};
-  if ((hasN(pa) && hasN(pb))) return {t:`طرفين ${devLabel(d)} على ${nm.N}: واحد ييجي من الكونتاكت.`, hl:{t:[d.id+':'+L.a]}};
-  if ((hasL(pa) || hasL(pb)) && !(hasN(pa) || hasN(pb))) return {t:`${devLabel(d)} مش راجعة على ${nm.N}.`, hl:{t:[d.id+':'+(hasL(pa) ? L.b : L.a)]}};
-  if ((hasN(pa) || hasN(pb)) && !(hasL(pa) || hasL(pb))) return wireHint(ex0, W, Object.fromEntries(devs.map(x => [x.id, x]))) || {t:`مفيش ${nm.L} واصل لـ ${devLabel(d)}: راجع الكونتاكت.`, hl:{t:[d.id+':'+(hasN(pa) ? L.b : L.a)]}};
-  return wireHint(ex0, W, Object.fromEntries(devs.map(x => [x.id, x]))) || `${devLabel(d)} مش واصلها ${nm.L} ولا ${nm.N}.`;
+  if ((hasL(pa) && !pb && loadsIn(L.b)) || (hasL(pb) && !pa && loadsIn(L.a))) return {t:`المصابيح على التوالي: وصّل كل مصباح بين الكونتاكت و ${nm.N}.`, hl:{t:[d.id+':'+(hasL(pa) ? L.b : L.a)]}};
+  if ((hasL(pa) && hasL(pb)) ) return {t:`طرفا ${devLabel(d)} على ${nm.L}: أحدهما يذهب إلى ${nm.N}.`, hl:{t:[d.id+':'+L.b]}};
+  if ((hasN(pa) && hasN(pb))) return {t:`طرفا ${devLabel(d)} على ${nm.N}: أحدهما يأتي من الكونتاكت.`, hl:{t:[d.id+':'+L.a]}};
+  if ((hasL(pa) || hasL(pb)) && !(hasN(pa) || hasN(pb))) return {t:`${devLabel(d)} لا يعود إلى ${nm.N}.`, hl:{t:[d.id+':'+(hasL(pa) ? L.b : L.a)]}};
+  if ((hasN(pa) || hasN(pb)) && !(hasL(pa) || hasL(pb))) return wireHint(ex0, W, Object.fromEntries(devs.map(x => [x.id, x]))) || {t:`لا يوجد ${nm.L} يصل إلى ${devLabel(d)}: راجع الكونتاكت.`, hl:{t:[d.id+':'+(hasN(pa) ? L.b : L.a)]}};
+  return wireHint(ex0, W, Object.fromEntries(devs.map(x => [x.id, x]))) || `${devLabel(d)} لا يصله ${nm.L} ولا ${nm.N}.`;
 }
 function motorDiag(d, rows, j, nm){
   const bad = rows.find(x => !x.ok[j]); const m = bad.res.mot[d.id] || {}; const e = bad.exp[j];
   const when = rows.length > 1 ? ` في «${bad.c.label}»` : '';
-  if (m.fault === '1ph') return `${devLabel(d)} واخد فازتين بس: وصّل L1 و L2 و L3.`;
-  if (m.fault === 'burn') return `${devLabel(d)} اتحرق${when}: دلتا على ${d.cfg.vD || 230} V. وصّله ستار.`;
-  if (e === 'Y' && m.run && m.over) return `${devLabel(d)} دلتا على 400 V${when}: لازم ستار (W2-U2-V2).`;
-  if (e === 'D' && m.run && m.weak) return `${devLabel(d)} ستار والمفروض دلتا${when}: U1-W2، V1-U2، W1-V2.`;
-  if ((e === 'F' || e === 'R') && m.run) return `${devLabel(d)} بيلف بالعكس${when}: بدّل فازتين بس.`;
-  if (e === 'Y' && m.run) return `${devLabel(d)} دلتا مش ستار${when}: اقفل U2 و V2 و W2 سوا.`;
-  if (e === 'D' && m.run) return `${devLabel(d)} ستار مش دلتا${when}: U1-W2، V1-U2، W1-V2.`;
-  if (!e && m.run) return `${devLabel(d)} شغال وهو المفروض واقف${when}.`;
+  if (m.fault === '1ph') return `${devLabel(d)} يأخذ فازين فقط: وصّل L1 و L2 و L3.`;
+  if (m.fault === 'burn') return `${devLabel(d)} احترق${when}: دلتا على ${d.cfg.vD || 230} V. وصّله ستار.`;
+  if (e === 'Y' && m.run && m.over) return `${devLabel(d)} دلتا على 400 V${when}: يجب أن يكون ستار (W2-U2-V2).`;
+  if (e === 'D' && m.run && m.weak) return `${devLabel(d)} ستار والصحيح دلتا${when}: U1-W2، V1-U2، W1-V2.`;
+  if ((e === 'F' || e === 'R') && m.run) return `${devLabel(d)} يدور عكسيًا${when}: بدّل فازين فقط.`;
+  if (e === 'Y' && m.run) return `${devLabel(d)} دلتا لا ستار${when}: اربط U2 و V2 و W2 معًا.`;
+  if (e === 'D' && m.run) return `${devLabel(d)} ستار لا دلتا${when}: U1-W2، V1-U2، W1-V2.`;
+  if (!e && m.run) return `${devLabel(d)} يعمل والمفروض أن يكون متوقفًا${when}.`;
   return null;
 }
 
@@ -978,7 +978,7 @@ function proxIec(dev, opt){
   else if (k === 'cap') s += `<path class="sy" d="M50 68V92M70 68V92" style="stroke-width:2"/><path class="sy" d="M38 80H50M70 80H82"/>`;
   else s += `<path class="sy" d="M44 72H76M44 72V88M76 72V88" style="stroke-width:2"/><text class="sy-n" x="60" y="100" text-anchor="middle" style="font-size:9px">Fe</text>`;
   s += `</g><path class="sy-d" d="M96 80H126"/>`;
-  s += iecContact(150, {k:nc ? 'NC' : 'NO', t:['', '']}, out, {who:'فيه جسم'});
+  s += iecContact(150, {k:nc ? 'NC' : 'NO', t:['', '']}, out, {who:'يوجد جسم'});
   s += `<text class="sy-n" x="130" y="30" style="font-size:10px">BN +</text><text class="sy-n" x="130" y="150" style="font-size:10px">BK ${pnp ? 'PNP' : 'NPN'}</text><text class="sy-n" x="190" y="30" style="font-size:10px">BU −</text><path class="sy" d="M150 22H190V60" style="stroke-width:1.2;stroke-dasharray:3 3"/>`;
   s += `<text class="sy-s ar" x="222" y="150" text-anchor="end">${k === 'photo' ? 'ضوئي' : k === 'cap' ? 'سعوي' : 'حثّي'}</text>`;
   return s + '</svg>';
@@ -1008,7 +1008,7 @@ CL.sym.iec = function(dev, opt){
   if (dev.type === 'prox') return proxIec(dev, opt);
   if (dev.type === 'lamp'){
     const on = opt.on;
-    return `<svg viewBox="0 0 150 160" role="img" aria-label="رمز IEC للمبة"><text class="sy-tag" x="8" y="18">${esc(dev.tag)}</text>
+    return `<svg viewBox="0 0 150 160" role="img" aria-label="رمز IEC للمصباح"><text class="sy-tag" x="8" y="18">${esc(dev.tag)}</text>
       <g class="${on ? 'sy-on' : ''}"><path class="sy" d="M75 22V58M75 102V138"/><circle class="sy ${on ? 'sy-lamp-on' : ''}" cx="75" cy="80" r="22"/><path class="sy" d="M59.4 64.4L90.6 95.6M90.6 64.4L59.4 95.6"/>
       <circle class="sy-t" cx="75" cy="22" r="4"/><circle class="sy-t" cx="75" cy="138" r="4"/><text class="sy-n" x="84" y="27">X1</text><text class="sy-n" x="84" y="143">X2</text></g></svg>`;
   }
@@ -1018,10 +1018,10 @@ CL.sym.iec = function(dev, opt){
     // coil (A1 top, A2 bottom) + main poles (contactor) + auxiliary contacts, all driven by the dashed line
     const mains = T.mains || [], all = mains.concat(blocks), on = !!(opt.on != null ? opt.on : (dev.st && (dev.st.closed || dev.st.coil)));
     const x0c = 84, colW = all.some(b => b.k === 'CO') ? 80 : 66, W = x0c + all.length * colW + 6;
-    let s = `<svg viewBox="0 0 ${W} 160" role="img" aria-label="رمز IEC لكويل وكونتاكتات" data-on="${on ? 1 : 0}"><text class="sy-tag" x="6" y="18">${esc(dev.tag)}</text>`;
+    let s = `<svg viewBox="0 0 ${W} 160" role="img" aria-label="رمز IEC لملف وكونتاكتات" data-on="${on ? 1 : 0}"><text class="sy-tag" x="6" y="18">${esc(dev.tag)}</text>`;
     s += `<g class="${on ? 'sy-on' : ''}"><path class="sy" d="M40 22V62M40 98V138"/><rect class="sy" x="22" y="62" width="36" height="36"/><circle class="sy-t" cx="40" cy="22" r="4"/><circle class="sy-t" cx="40" cy="138" r="4"/><text class="sy-n" x="48" y="27">A1</text><text class="sy-n" x="48" y="143">A2</text></g>`;
     let lastMid = 0;
-    all.forEach((b, i) => { const x = x0c + i * colW + 12, c = opt.closed ? opt.closed[i] : (b.k === 'CO' ? on : blockClosed(b, on)); s += iecContact(x, b, c, {main:b.main, who:'شغال'}); lastMid = bladeMid(x, b, c); });
+    all.forEach((b, i) => { const x = x0c + i * colW + 12, c = opt.closed ? opt.closed[i] : (b.k === 'CO' ? on : blockClosed(b, on)); s += iecContact(x, b, c, {main:b.main, who:'يعمل'}); lastMid = bladeMid(x, b, c); });
     if (all.length) s += `<path class="sy-d" d="M58 80H${lastMid}"/>`;
     return s + '</svg>';
   }
@@ -1041,7 +1041,7 @@ CL.sym.iecProt = function(dev, opt){
   const T = dev.type, st = dev.st || {}, on = T === 'fuse' ? !st.trip : T === 'ol' ? !st.trip : (st.on && !st.trip);
   const n = T === 'fuse' || T === 'mcb' ? (dev.cfg.poles || 1) : 3, colW = 52, x0 = 36;
   const tn = (x, y, t, anc) => `<text class="sy-n" x="${x}" y="${y}" text-anchor="${anc || 'start'}">${esc(t)}</text>`;
-  const lab = T === 'fuse' ? 'رمز IEC للفيوز' : T === 'mcb' ? 'رمز IEC للقاطع الآلي' : T === 'ol' ? 'رمز IEC للأوفرلود الحراري' : 'رمز IEC للقاطع الحراري المغناطيسي للموتور';
+  const lab = T === 'fuse' ? 'رمز IEC للفيوز' : T === 'mcb' ? 'رمز IEC للقاطع الآلي' : T === 'ol' ? 'رمز IEC للأوفرلود الحراري' : 'رمز IEC للقاطع الحراري المغناطيسي للمحرك';
   const aux = T === 'ol' ? [{k:'NC', t:['95','96'], th:true}, {k:'NO', t:['97','98'], th:true}] : (T === 'mpcb' && dev.cfg.aux ? [{k:'NO', t:['13','14']}, {k:'NC', t:['21','22']}] : []);
   const W = x0 + n * colW + (aux.length ? 24 + aux.length * 60 : 0) + 10;
   let s = `<svg viewBox="0 0 ${W} 160" role="img" aria-label="${lab}" data-on="${on ? 1 : 0}"><text class="sy-tag" x="6" y="18">${esc(dev.tag)}</text>`;
@@ -1071,7 +1071,7 @@ CL.sym.iecProt = function(dev, opt){
   // auxiliary contacts (thermal actuator for the overload)
   aux.forEach((b, i) => { const x = x0 + n * colW + 44 + i * 60, op = T === 'ol' ? !!st.trip : !on; const c = blockClosed(b, op);
     s += iecContact(x, b, c); if (b.th) s += `<path class="sy" d="M${x-26} 78A8 8 0 0 0 ${x-26} 94" style="stroke-width:2"/><path class="sy-d" d="M${x-22} 86H${x-10}"/>`; });
-  if (T === 'ol') s += `<text class="sy-s ar" x="${W - 6}" y="156" text-anchor="end">95-96 يفتح و 97-98 يقفل لما يسخن</text>`;
+  if (T === 'ol') s += `<text class="sy-s ar" x="${W - 6}" y="156" text-anchor="end">95-96 يُفتح و97-98 يُغلق عند السخونة</text>`;
   return s + '</svg>';
 };
 // NEMA / ANSI (ICS 19) symbols, horizontal, normal (un-operated) state.
@@ -1111,7 +1111,7 @@ CL.sym.nema = function(kind, opt){
     case 'fuse': s = `<path class="sy" d="M8 50H40M130 50H162"/><path class="sy" d="M40 50C60 20 80 80 100 50S120 30 130 50"/>` + (opt.lab ? `<text class="sy-n" x="85" y="22" text-anchor="middle">${esc(opt.lab)}</text>` : ''); break;
     case 'cb': s = leads(56) + t(50,56) + t(120,56) + '<path class="sy" d="M55 56L118 30"/><path class="sy" d="M44 56A10 10 0 0 1 56 46" style="stroke-width:1.8"/><path class="sy" d="M126 56A10 10 0 0 0 114 46" style="stroke-width:1.8"/>' + `<text class="sy-n" x="85" y="80" text-anchor="middle">${esc(opt.lab || 'CB')}</text>`; break;
     case 'cb3': { s = ''; [['L1','T1'],['L2','T2'],['L3','T3']].forEach((p, i) => { const y = 22 + i * 30; s += `<path class="sy" d="M8 ${y}H45M125 ${y}H162"/>` + t(50, y) + t(120, y) + `<path class="sy" d="M55 ${y}L118 ${y-22}"/><path class="sy" d="M44 ${y}A9 9 0 0 1 55 ${y-9}" style="stroke-width:1.6"/>`; }); s += '<path class="sy-d" d="M86 11V71"/><text class="sy-n" x="85" y="100" text-anchor="middle">CB</text>'; return `<svg viewBox="0 0 170 106" role="img" aria-label="رمز NEMA لقاطع 3 أقطاب">${s}</svg>`; }
-    case 'olh': s = `<path class="sy" d="M8 50H60M110 50H162"/><path class="sy" d="M60 50V36H110V50M60 50V64H110V50" style="stroke-width:1.6"/><path class="sy" d="M68 50C72 38 78 38 82 50S92 62 96 50S104 40 106 50" style="stroke-width:1.8"/><text class="sy-n" x="85" y="22" text-anchor="middle">OL</text>` + (opt.three ? `<text class="sy-s ar" x="85" y="80" text-anchor="middle">واحد في كل فازة</text>` : ''); break;
+    case 'olh': s = `<path class="sy" d="M8 50H60M110 50H162"/><path class="sy" d="M60 50V36H110V50M60 50V64H110V50" style="stroke-width:1.6"/><path class="sy" d="M68 50C72 38 78 38 82 50S92 62 96 50S104 40 106 50" style="stroke-width:1.8"/><text class="sy-n" x="85" y="22" text-anchor="middle">OL</text>` + (opt.three ? `<text class="sy-s ar" x="85" y="80" text-anchor="middle">واحد في كل فاز</text>` : ''); break;
     case 'olNC': s = leads(56) + t(50,56) + t(120,56) + '<path class="sy" d="M42 63H128"/><path class="sy" d="M72 44C80 34 90 34 98 44" style="stroke-width:1.8"/><path class="sy" d="M64 44H106" style="stroke-width:1.2"/>' + nums(60, opt.a || '95', opt.b || '96') + '<text class="sy-n" x="85" y="22" text-anchor="middle">OL</text>'; break;
     case 'olNO': s = leads(56) + t(50,56) + t(120,56) + '<path class="sy" d="M42 40H128"/><path class="sy" d="M72 28C80 18 90 18 98 28" style="stroke-width:1.8"/>' + nums(56, opt.a || '97', opt.b || '98') + '<text class="sy-n" x="85" y="14" text-anchor="middle">OL</text>'; break;
     case 'coil': s = `<path class="sy" d="M8 50H67M103 50H162"/><circle class="sy" cx="85" cy="50" r="18"/><text class="sy-n" x="85" y="55" text-anchor="middle">${esc(opt.letter || 'CR')}</text>` + nums(50, opt.a || 'A1', opt.b || 'A2'); break;
@@ -1165,8 +1165,8 @@ function blockCut(x0, top, h, b, pressed, closed, numsRight){
 CL.art.pbSide = function(d, mush){
   const id = ++UID, c = colOf(d.cfg.color), p = TYPES[d.type].op(d), off = p ? 9 : 0, bl = d.blocks;
   const n = bl.length, gap = 10, h = Math.min(80, (190 - (n - 1) * gap) / n), t0 = 115 - (n * h + (n - 1) * gap) / 2;
-  let s = `<svg viewBox="0 0 420 240" role="img" aria-label="رسم جانبي للزرار والبلوكات">${DEFS(id, c)}<g style="color:var(--ink)">`;
-  s += `<text class="ar" x="70" y="24" font-size="12" text-anchor="middle" fill="currentColor">قدّام الباب</text><text class="ar" x="${mush ? 300 : 300}" y="${Math.max(14, t0 - 8)}" font-size="12" text-anchor="middle" fill="currentColor">ورا الباب: بلوكات الكونتاكت</text>`;
+  let s = `<svg viewBox="0 0 420 240" role="img" aria-label="رسم جانبي للزر والبلوكات">${DEFS(id, c)}<g style="color:var(--ink)">`;
+  s += `<text class="ar" x="70" y="24" font-size="12" text-anchor="middle" fill="currentColor">أمام الباب</text><text class="ar" x="${mush ? 300 : 300}" y="${Math.max(14, t0 - 8)}" font-size="12" text-anchor="middle" fill="currentColor">خلف الباب: بلوكات الكونتاكت</text>`;
   s += `<rect x="${112+off}" y="108" width="62" height="14" fill="#6b7075"/>`; // plunger
   if (mush){
     s += `<rect x="118" y="34" width="10" height="162" rx="2" fill="#f3c613" stroke="#a88500"/>`;
@@ -1179,18 +1179,18 @@ CL.art.pbSide = function(d, mush){
   s += `<rect x="128" y="10" width="10" height="220" fill="url(#stl${id})" stroke="#6d757b" stroke-width=".8"/><text class="ar" x="133" y="236" font-size="11" text-anchor="middle" fill="currentColor">الصاج</text>`;
   s += `<rect x="138" y="80" width="10" height="70" fill="#4e5357"/><rect x="148" y="${t0 - 4}" width="30" height="${n*h + (n-1)*gap + 8}" rx="3" fill="#2c2f31"/>`;
   bl.forEach((b, i) => { const top = t0 + i * (h + gap); s += blockCut(178, top, h, b, p, blockClosed(b, p)); });
-  if (mush && p) s += `<text class="ar" x="70" y="214" font-size="12" text-anchor="middle" fill="#d6332a" font-weight="700">متثبّت: لِفّه عشان يرجع ↻</text>`;
-  if (!mush && p) s += `<text class="ar" x="70" y="200" font-size="12" text-anchor="middle" fill="currentColor">← مدوس</text>`;
+  if (mush && p) s += `<text class="ar" x="70" y="214" font-size="12" text-anchor="middle" fill="#d6332a" font-weight="700">منحبس: أدِره ليعود ↻</text>`;
+  if (!mush && p) s += `<text class="ar" x="70" y="200" font-size="12" text-anchor="middle" fill="currentColor">← مضغوط</text>`;
   return s + '</g></svg>';
 };
 CL.art.selFront = function(d){
   const id = ++UID, c = COL.black, P = d.cfg.pos, n = P.length, angs = n === 3 ? [-45, 0, 45] : [-45, 45], a = angs[d.st.pos] || 0;
   const bl = d.blocks, h = Math.min(70, (190 - (bl.length - 1) * 10) / bl.length), t0 = 120 - (bl.length * h + (bl.length - 1) * 10) / 2;
-  let s = `<svg viewBox="0 0 440 240" role="img" aria-label="سلكتور من قدّام والبلوكات">${DEFS(id, c)}<g style="color:var(--ink)">`;
+  let s = `<svg viewBox="0 0 440 240" role="img" aria-label="سلكتور من الأمام مع البلوكات">${DEFS(id, c)}<g style="color:var(--ink)">`;
   s += `<circle cx="100" cy="132" r="60" fill="url(#chr${id})" stroke="#7d8388"/><circle cx="100" cy="132" r="50" fill="#1c1e20"/>`;
   angs.forEach((g, i) => { const rad = (g - 90) * Math.PI / 180; s += `<text x="${100 + 76*Math.cos(rad)}" y="${132 + 76*Math.sin(rad) + 5}" font-size="15" font-weight="700" text-anchor="middle" fill="${i === d.st.pos ? 'var(--accent)' : 'currentColor'}">${esc(P[i])}</text>`; });
   s += `<g transform="rotate(${a} 100 132)"><rect x="88" y="90" width="24" height="84" rx="11" fill="url(#cap${id})" stroke="#000"/><rect x="98" y="94" width="4" height="30" rx="2" fill="#f2f2f2"/></g>`;
-  s += `<text class="ar" x="100" y="22" font-size="12" text-anchor="middle" fill="currentColor">من قدّام الباب</text><text class="ar" x="320" y="${Math.max(14, t0 - 8)}" font-size="12" text-anchor="middle" fill="currentColor">البلوكات ورا المفتاح</text>`;
+  s += `<text class="ar" x="100" y="22" font-size="12" text-anchor="middle" fill="currentColor">من أمام الباب</text><text class="ar" x="320" y="${Math.max(14, t0 - 8)}" font-size="12" text-anchor="middle" fill="currentColor">البلوكات خلف المفتاح</text>`;
   bl.forEach((b, i) => { const op = TYPES.sel.op(d, b); s += blockCut(250, t0 + i * (h + 10), h, b, op, blockClosed(b, op)); s += `<text class="ar" x="244" y="${t0 + i*(h+10) + h/2 + 4}" font-size="10" text-anchor="end" fill="currentColor">${(b.on || []).map(k => P[k]).join('/')}</text>`; });
   return s + '</g></svg>';
 };
@@ -1201,12 +1201,12 @@ function lsGeom(x){ // x: 0..1 cart travel in the scene
 CL.lsOperatedAt = x => lsGeom(x).op;
 CL.art.lsScene = function(d){
   const g = lsGeom(d.st.x || 0), cr = g.cr;
-  let s = `<svg viewBox="0 0 400 236" role="img" aria-label="عربية بتخبط في بكرة الليمت سويتش"><g style="color:var(--ink)">`;
+  let s = `<svg viewBox="0 0 400 236" role="img" aria-label="عربة تصطدم ببكرة الليمت سويتش"><g style="color:var(--ink)">`;
   s += `<rect x="10" y="196" width="320" height="8" rx="2" fill="#7b8389"/><path d="M8 212H392" stroke="currentColor" stroke-width="1.5" opacity=".4"/>`;
   // cart
   s += `<rect x="${cr-122}" y="146" width="66" height="42" rx="5" fill="#2f6fb5" stroke="#173b63"/><circle cx="${cr-108}" cy="194" r="9" fill="#2a2d30"/><circle cx="${cr-70}" cy="194" r="9" fill="#2a2d30"/>`;
   s += `<rect x="${cr-72}" y="44" width="10" height="104" fill="#59636b"/><rect x="${cr-72}" y="44" width="72" height="14" rx="3" fill="#e0a21b" stroke="#8a6200"/>`;
-  s += `<text class="ar" x="${cr-89}" y="172" font-size="12" fill="#fff" text-anchor="middle">عربية</text>`;
+  s += `<text class="ar" x="${cr-89}" y="172" font-size="12" fill="#fff" text-anchor="middle">عربة</text>`;
   // limit switch on a stand
   s += `<rect x="326" y="200" width="66" height="8" fill="#59636b"/><rect x="330" y="110" width="52" height="90" rx="6" fill="#c3c7ca" stroke="#6d7479"/><rect x="336" y="118" width="40" height="34" rx="3" fill="#d7dadc" stroke="#9aa1a6"/>`;
   [[340,122],[372,122],[340,148],[372,148]].forEach(p => s += `<circle cx="${p[0]}" cy="${p[1]}" r="2" fill="#6d7479"/>`);
@@ -1214,7 +1214,7 @@ CL.art.lsScene = function(d){
   s += `<rect x="336" y="90" width="28" height="22" rx="4" fill="#3a3e41"/>`;
   s += `<line x1="350" y1="100" x2="${g.rx}" y2="${g.ry}" stroke="#4b5257" stroke-width="7" stroke-linecap="round"/><circle cx="350" cy="100" r="5" fill="#9aa1a6"/>`;
   s += `<circle cx="${g.rx}" cy="${g.ry}" r="11" fill="#ecebe6" stroke="#4b5257" stroke-width="2"/><circle cx="${g.rx}" cy="${g.ry}" r="3" fill="#4b5257"/>`;
-  s += `<text class="ar" x="356" y="232" font-size="12" text-anchor="middle" fill="${g.op ? GOOD : 'currentColor'}" font-weight="700">${g.op ? 'اشتغل ✓' : 'ليمت سويتش'}</text>`;
+  s += `<text class="ar" x="356" y="232" font-size="12" text-anchor="middle" fill="${g.op ? GOOD : 'currentColor'}" font-weight="700">${g.op ? 'يعمل ✓' : 'ليمت سويتش'}</text>`;
   s += `<text class="ar" x="${cr-89}" y="138" font-size="13" text-anchor="middle" fill="currentColor">→</text>`;
   return s + '</g></svg>';
 };
@@ -1222,7 +1222,7 @@ CL.art.lampArt = function(d, on){
   const id = ++UID, c = colOf(d.cfg.color);
   on = on == null ? !!d.st.v : on;
   const lens = on ? c.lens : c.off;
-  let s = `<svg viewBox="0 0 420 200" role="img" aria-label="لمبة بيان من قدّام ومن الجنب">${DEFS(id, c)}<g style="color:var(--ink)">`;
+  let s = `<svg viewBox="0 0 420 200" role="img" aria-label="مصباح بيان من الأمام ومن الجانب">${DEFS(id, c)}<g style="color:var(--ink)">`;
   s += `<circle cx="96" cy="100" r="58" fill="url(#chr${id})" stroke="#7d8388"/><circle cx="96" cy="100" r="58" fill="none" stroke="#5f666b" stroke-width="3" stroke-dasharray="2 4"/>`;
   s += `<g class="${on ? 'lit' : ''}" style="--glow:${c.lens}"><circle cx="96" cy="100" r="44" fill="${lens}" stroke="#333"/></g>`;
   s += `<circle cx="96" cy="100" r="44" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-dasharray="1 5"/><ellipse cx="82" cy="84" rx="14" ry="8" fill="rgba(255,255,255,${on ? .55 : .25})"/>`;
@@ -1236,7 +1236,7 @@ CL.art.lampArt = function(d, on){
 };
 CL.art.supplyArt = function(){
   const id = ++UID;
-  let s = `<svg viewBox="0 0 420 230" role="img" aria-label="قاطع MCB وباور سبلاي 24 فولت">${DEFS(id, COL.black)}<g style="color:var(--ink)">`;
+  let s = `<svg viewBox="0 0 420 230" role="img" aria-label="قاطع MCB ومصدر تغذية 24 فولت">${DEFS(id, COL.black)}<g style="color:var(--ink)">`;
   s += `<rect x="40" y="26" width="88" height="170" rx="6" fill="#f4f4f1" stroke="#8c8f8a"/><path d="M84 26V196" stroke="#cfcfc8"/>`;
   [[62,'1'],[106,'N']].forEach(([x,l]) => { s += `<circle cx="${x}" cy="44" r="7" fill="#d8dbdd" stroke="#6d7479"/><text x="${x}" y="64" font-size="11" text-anchor="middle" fill="#333">${l}</text><circle cx="${x}" cy="178" r="7" fill="#d8dbdd" stroke="#6d7479"/><text x="${x}" y="164" font-size="11" text-anchor="middle" fill="#333">${l === '1' ? '2' : 'N'}</text>`; });
   s += `<rect x="58" y="88" width="52" height="46" rx="4" fill="#3a3e41"/><rect x="64" y="92" width="40" height="20" rx="3" fill="#1f6fd1"/><text x="84" y="106" font-size="10" fill="#fff" text-anchor="middle">I ON</text><text x="84" y="128" font-size="9" fill="#ccc" text-anchor="middle">O OFF</text>`;
@@ -1246,7 +1246,7 @@ CL.art.supplyArt = function(){
   s += `<circle cx="346" cy="146" r="5" fill="#36e070"/><text x="336" y="150" font-size="9" fill="#333" text-anchor="end">DC OK</text>`;
   ['L','N','⏚'].forEach((l, i) => { const x = 246 + i * 34; s += `<circle cx="${x}" cy="44" r="7" fill="#d8dbdd" stroke="#6d7479"/><text x="${x}" y="64" font-size="11" text-anchor="middle" fill="#333">${l}</text>`; });
   ['+V','+V','−V','−V'].forEach((l, i) => { const x = 240 + i * 36; s += `<circle cx="${x}" cy="178" r="7" fill="#d8dbdd" stroke="#6d7479"/><text x="${x}" y="164" font-size="11" text-anchor="middle" fill="#333">${l}</text>`; });
-  s += `<text class="ar" x="296" y="216" font-size="12" text-anchor="middle" fill="currentColor">باور سبلاي 24V DC</text>`;
+  s += `<text class="ar" x="296" y="216" font-size="12" text-anchor="middle" fill="currentColor">مصدر تغذية 24V DC</text>`;
   return s + '</g></svg>';
 };
 
@@ -1261,7 +1261,7 @@ const copper = id => `<linearGradient id="cu${id}" x1="0" x2="1"><stop offset="0
 // plug-in relay in its DIN socket + pin numbering
 CL.art.relayArt = function(d, o){
   o = o || {}; const id = ++UID, on = !!(d.st.coil || d.st.pin), dc = d.cfg.v <= 48, bl = d.blocks, n = bl.length, pins = n >= 4 ? 14 : n === 3 ? 11 : 8;
-  let s = `<svg viewBox="0 0 440 284" role="img" aria-label="ريلاي بيتركب في سوكت على سكة DIN"><defs>${copper(id)}<linearGradient id="gl${id}" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="rgba(225,240,255,.85)"/><stop offset="1" stop-color="rgba(170,200,230,.55)"/></linearGradient></defs><g style="color:var(--ink)">`;
+  let s = `<svg viewBox="0 0 440 284" role="img" aria-label="ريلاي يُركّب في سوكت على قضيب DIN"><defs>${copper(id)}<linearGradient id="gl${id}" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="rgba(225,240,255,.85)"/><stop offset="1" stop-color="rgba(170,200,230,.55)"/></linearGradient></defs><g style="color:var(--ink)">`;
   // DIN rail + socket
   s += `<rect x="16" y="228" width="232" height="16" fill="#aab1b6" stroke="#6d757b"/><path d="M16 236H248" stroke="#7d8388" stroke-dasharray="6 6"/>`;
   s += `<rect x="40" y="152" width="184" height="78" rx="4" fill="#2c2f31" stroke="#111"/>`;
@@ -1290,26 +1290,26 @@ CL.art.relayArt = function(d, o){
     s += `<text x="${x}" y="153" font-size="7" fill="#243b52" text-anchor="middle">${esc(b.t[0])}</text>`;
   });
   s += `<text class="ar" x="132" y="26" font-size="12" text-anchor="middle" fill="currentColor">ريلاي في السوكت</text>`;
-  s += `<text class="ar" x="132" y="262" font-size="11" text-anchor="middle" fill="${on ? GOOD : 'currentColor'}" font-weight="${on ? 700 : 400}">${on ? 'الكويل شغال: الأرماتشر اتجذب والكونتاكتات قلبت' : 'الكويل من غير جهد: السوستة سايبة الأرماتشر'}</text>`;
+  s += `<text class="ar" x="132" y="262" font-size="11" text-anchor="middle" fill="${on ? GOOD : 'currentColor'}" font-weight="${on ? 700 : 400}">${on ? 'الملف يعمل: انجذب الأرماتشر وانقلبت الكونتاكتات' : 'الملف بلا جهد: السوستة تُبعد الأرماتشر'}</text>`;
   // pin diagram (bottom view)
   const cx = 346, cy = 112, R = 54;
-  s += `<text class="ar" x="${cx}" y="26" font-size="12" text-anchor="middle" fill="currentColor">الرجول من تحت (${pins} pin)</text><circle cx="${cx}" cy="${cy}" r="${R + 14}" fill="#1f2224" stroke="#000"/>`;
+  s += `<text class="ar" x="${cx}" y="26" font-size="12" text-anchor="middle" fill="currentColor">الأرجل من الأسفل (${pins} pin)</text><circle cx="${cx}" cy="${cy}" r="${R + 14}" fill="#1f2224" stroke="#000"/>`;
   const N = pins === 8 ? 8 : pins, lab8 = {1:'11',2:'A1',3:'14',4:'12',5:'22',6:'24',7:'A2',8:'21'};
   for (let i = 0; i < N; i++){ const a = Math.PI / 2 + (i + 0.5) * 2 * Math.PI / N, x = cx + R * Math.cos(a), y = cy + R * Math.sin(a); const k = i + 1;
     s += `<rect x="${x-4}" y="${y-7}" width="8" height="14" rx="1" fill="#d8dbdd" stroke="#555" transform="rotate(${a * 180 / Math.PI - 90} ${x} ${y})"/><text x="${cx + (R - 18) * Math.cos(a)}" y="${cy + (R - 18) * Math.sin(a) + 4}" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">${k}</text>`;
     if (pins === 8) s += `<text x="${cx + (R + 24) * Math.cos(a)}" y="${cy + (R + 24) * Math.sin(a) + 4}" font-size="9" fill="currentColor" text-anchor="middle">${lab8[k]}</text>`; }
   s += `<circle cx="${cx}" cy="${cy}" r="7" fill="#444"/><path d="M${cx} ${cy-7}V${cy-R-14}" stroke="#777" stroke-width="3"/>`;
-  if (pins === 8) s += `<text class="ar" x="${cx}" y="206" font-size="10" text-anchor="middle" fill="currentColor">2 و 7 = الكويل A1 / A2</text><text x="${cx}" y="222" font-size="10" text-anchor="middle" fill="currentColor">1-3-4 = 11-14-12 · 8-6-5 = 21-24-22</text>`;
-  else s += `<text class="ar" x="${cx}" y="206" font-size="10" text-anchor="middle" fill="currentColor">${pins === 11 ? '11 pin = 3 كونتاكت CO' : '14 pin = 4 كونتاكت CO'}</text>`;
-  s += `<text class="ar" x="220" y="280" font-size="10" text-anchor="middle" fill="var(--muted)">الأرقام بتختلف من شركة للتانية: بص على الرسمة المطبوعة على الريلاي أو السوكت</text>`;
+  if (pins === 8) s += `<text class="ar" x="${cx}" y="206" font-size="10" text-anchor="middle" fill="currentColor">2 و7 = الملف A1 / A2</text><text x="${cx}" y="222" font-size="10" text-anchor="middle" fill="currentColor">1-3-4 = 11-14-12 · 8-6-5 = 21-24-22</text>`;
+  else s += `<text class="ar" x="${cx}" y="206" font-size="10" text-anchor="middle" fill="currentColor">${pins === 11 ? '11 pin = 3 كونتاكتات CO' : '14 pin = 4 كونتاكتات CO'}</text>`;
+  s += `<text class="ar" x="220" y="280" font-size="10" text-anchor="middle" fill="var(--muted)">تختلف الأرقام من شركة لأخرى: راجع الرسم المطبوع على الريلاي أو السوكت</text>`;
   return s + '</g></svg>';
 };
 // TeSys-D style contactor: front view + side cut
 CL.art.contactorArt = function(d, o){
   o = o || {}; const id = ++UID, on = !!(d.st.closed || d.st.coil), aux = d.blocks;
-  let s = `<svg viewBox="0 0 440 262" role="img" aria-label="كونتاكتور من قدّام وقطاع جانبي"><defs>${copper(id)}</defs><g style="color:var(--ink)">`;
+  let s = `<svg viewBox="0 0 440 262" role="img" aria-label="كونتاكتور من الأمام وقطاع جانبي"><defs>${copper(id)}</defs><g style="color:var(--ink)">`;
   // ---- front
-  s += `<text class="ar" x="120" y="22" font-size="12" text-anchor="middle" fill="currentColor">من قدّام</text>`;
+  s += `<text class="ar" x="120" y="22" font-size="12" text-anchor="middle" fill="currentColor">من الأمام</text>`;
   s += `<rect x="30" y="30" width="180" height="200" rx="7" fill="#3b3f43" stroke="#1d2022"/>`;
   const scr = (x, y, lab, side) => `<circle cx="${x}" cy="${y}" r="8" fill="#d8dbdd" stroke="#555"/><path d="M${x-4} ${y-4}L${x+4} ${y+4}" stroke="#444" stroke-width="2"/><text x="${x}" y="${side < 0 ? y - 13 : y + 20}" font-size="8" fill="#eee" text-anchor="middle">${lab}</text>`;
   s += scr(48, 52, 'A1', -1) + scr(84, 52, '1/L1', -1) + scr(120, 52, '3/L2', -1) + scr(156, 52, '5/L3', -1) + scr(192, 52, aux[0] ? aux[0].t[0] : '13', -1);
@@ -1319,10 +1319,10 @@ CL.art.contactorArt = function(d, o){
   s += mover(0, 8, on, o.anim, `<rect x="70" y="80" width="100" height="16" rx="2" fill="#cfd2d4"/><text x="120" y="92" font-size="10" fill="#222" text-anchor="middle" font-weight="700">${on ? '▼ I' : '0'}</text>`);
   s += `<rect x="60" y="118" width="120" height="70" rx="3" fill="#e9eaec" stroke="#9aa1a6"/><text x="120" y="134" font-size="10" fill="#222" text-anchor="middle" font-weight="700">${esc(d.cfg.model)}</text><text x="120" y="148" font-size="8" fill="#333" text-anchor="middle">AC-3: ${esc(d.cfg.ac3)}</text><text x="120" y="160" font-size="8" fill="#333" text-anchor="middle">AC-1: 25A · Ui 690V</text><text x="120" y="178" font-size="9" fill="#222" text-anchor="middle" font-weight="700">COIL ${d.cfg.v}V ${d.cfg.v <= 48 ? 'DC' : '50/60Hz'}</text>`;
   if (aux.length > 1) s += `<rect x="178" y="88" width="40" height="88" rx="3" fill="#565c61" stroke="#2a2d30"/><text x="198" y="104" font-size="7" fill="#eee" text-anchor="middle">LADN</text>${aux.slice(1).map((b, i) => `<text x="198" y="${122 + i * 14}" font-size="8" fill="#eee" text-anchor="middle">${esc(b.t[0])}-${esc(b.t[1])} ${b.k}</text>`).join('')}<text class="ar" x="198" y="168" font-size="7" fill="#ddd" text-anchor="middle">بلوك إضافي</text>`;
-  s += `<text class="ar" x="120" y="250" font-size="11" text-anchor="middle" fill="${on ? GOOD : 'currentColor'}" font-weight="${on ? 700 : 400}">${on ? 'الكويل شغال: كل الكونتاكتات قفلت' : 'الكويل من غير جهد: الكونتاكتات مفتوحة'}</text>`;
+  s += `<text class="ar" x="120" y="250" font-size="11" text-anchor="middle" fill="${on ? GOOD : 'currentColor'}" font-weight="${on ? 700 : 400}">${on ? 'الملف يعمل: أُغلقت كل الكونتاكتات' : 'الملف بلا جهد: الكونتاكتات مفتوحة'}</text>`;
   // ---- side cut
   const X = 262, armY = on ? 118 : 102;
-  s += `<text class="ar" x="${X+82}" y="22" font-size="12" text-anchor="middle" fill="currentColor">قطاع من الجنب</text>`;
+  s += `<text class="ar" x="${X+82}" y="22" font-size="12" text-anchor="middle" fill="currentColor">قطاع جانبي</text>`;
   s += `<rect x="${X}" y="30" width="164" height="200" rx="7" fill="none" stroke="#6d757b" stroke-dasharray="4 3"/>`;
   // fixed contacts + terminals
   s += `<path d="M${X+18} 40V84H${X+34}M${X+146} 40V84H${X+130}" stroke="#7a4f1c" stroke-width="3" fill="none"/>`;
@@ -1332,14 +1332,14 @@ CL.art.contactorArt = function(d, o){
   const lam = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#8a9096" stroke="#444"/>${[1,2,3].map(i => `<path d="M${x} ${y + h * i / 4}H${x + w}" stroke="#5d656b" stroke-width=".7"/>`).join('')}`;
   s += lam(X+36, 180, 92, 18) + lam(X+36, 142, 16, 38) + lam(X+74, 142, 16, 38) + lam(X+112, 142, 16, 38);
   s += `<rect x="${X+58}" y="146" width="48" height="32" rx="3" fill="url(#cu${id})" stroke="#5a3410"/><text x="${X+82}" y="166" font-size="8" fill="#fff" text-anchor="middle" font-weight="700">COIL</text>`;
-  s += `<text class="ar" x="${X+82}" y="214" font-size="9" text-anchor="middle" fill="currentColor">القلب الثابت (شرايح حديد) والكويل</text>`;
+  s += `<text class="ar" x="${X+82}" y="214" font-size="9" text-anchor="middle" fill="currentColor">القلب الثابت (رقائق حديد) والملف</text>`;
   // moving part
   s += mover(0, 16, on, o.anim, `${lam(X+36, 102, 92, 14)}${lam(X+36, 116, 16, 10)}${lam(X+74, 116, 16, 10)}${lam(X+112, 116, 16, 10)}<rect x="${X+76}" y="70" width="12" height="32" fill="#55595c"/><rect x="${X+22}" y="60" width="120" height="8" rx="2" fill="#6d757b"/><rect x="${X+22}" y="64" width="14" height="6" fill="${on ? GOOD : '#b87333'}"/><rect x="${X+128}" y="64" width="14" height="6" fill="${on ? GOOD : '#b87333'}"/>`);
   // return spring
   let z = `M${X+150} 104`; for (let i = 1; i <= 6; i++) z += `L${X + 150 + (i % 2 ? 6 : -6)} ${104 + i * 12}`; z += `L${X+150} 180`;
   s += `<path d="${z}" fill="none" stroke="#9aa0a5" stroke-width="1.6"/>`;
-  s += `<text class="ar" x="${X+82}" y="52" font-size="9" text-anchor="middle" fill="currentColor">كوبري الكونتاكت المتحرك</text><text class="ar" x="${X+92}" y="${armY - 3}" font-size="9" text-anchor="start" fill="currentColor">القلب المتحرك</text>`;
-  s += `<text class="ar" x="${X+82}" y="250" font-size="10" text-anchor="middle" fill="var(--muted)">${on ? 'الفجوة قفلت (زن خفيف مع كويل AC)' : 'سوستة الرجوع فاتحة الفجوة'}</text>`;
+  s += `<text class="ar" x="${X+82}" y="52" font-size="9" text-anchor="middle" fill="currentColor">قنطرة الكونتاكت المتحركة</text><text class="ar" x="${X+92}" y="${armY - 3}" font-size="9" text-anchor="start" fill="currentColor">القلب المتحرك</text>`;
+  s += `<text class="ar" x="${X+82}" y="250" font-size="10" text-anchor="middle" fill="var(--muted)">${on ? 'أُغلقت الفجوة (طنين خفيف مع ملف AC)' : 'سوستة الرجوع تفتح الفجوة'}</text>`;
   return s + '</g></svg>';
 };
 // DIN-rail electronic timer (22.5 mm module): dial, range knob, function knob, LEDs, terminals, live countdown + timing diagram
@@ -1347,9 +1347,9 @@ CL.art.timerArt = function(d, o){
   o = o || {}; const id = ++UID, m = d.cfg.mode, on = !!d.st.coil, out = !!d.st.out, T = d.cfg.t, inst = !!d.cfg.inst, multi = !!d.cfg.multi;
   const el = d.st.el || 0, rem = m === 'cyc' ? (d.cfg.ton + d.cfg.toff) - (el % (d.cfg.ton + d.cfg.toff)) : Math.max(0, T - el);
   const timing = (m === 'on' && on) || (m === 'off' && !on && out) || (m === 'cyc' && on);
-  let s = `<svg viewBox="0 0 440 262" role="img" aria-label="تايمر على سكة DIN من قدّام ورسمة الزمن"><g style="color:var(--ink)">`;
+  let s = `<svg viewBox="0 0 440 262" role="img" aria-label="تايمر على قضيب DIN من الأمام ومخطط الزمن"><g style="color:var(--ink)">`;
   // ---- front
-  s += `<text class="ar" x="110" y="20" font-size="12" text-anchor="middle" fill="currentColor">من قدّام</text>`;
+  s += `<text class="ar" x="110" y="20" font-size="12" text-anchor="middle" fill="currentColor">من الأمام</text>`;
   s += `<rect x="40" y="26" width="140" height="210" rx="7" fill="#4b5560" stroke="#242a30"/><rect x="48" y="60" width="124" height="138" rx="5" fill="#e9eaec" stroke="#9aa1a6"/>`;
   const scr = (x, y, lab, side) => `<circle cx="${x}" cy="${y}" r="7" fill="#d8dbdd" stroke="#555"/><path d="M${x-3.5} ${y-3.5}L${x+3.5} ${y+3.5}" stroke="#444" stroke-width="1.8"/><text x="${x}" y="${side < 0 ? y - 11 : y + 17}" font-size="8" fill="#eee" text-anchor="middle">${lab}</text>`;
   const top = inst ? [['A1', 58], ['A2', 82], ['21', 118], ['22', 142], ['24', 166]] : [['A1', 70], ['A2', 110]];
@@ -1372,11 +1372,11 @@ CL.art.timerArt = function(d, o){
   s += `<circle cx="78" cy="182" r="4" fill="${out ? '#ffd24d' : '#4a3d10'}"/>${out ? '<circle cx="78" cy="182" r="7" fill="#ffd24d" opacity=".4"/>' : ''}<text x="78" y="194" font-size="6" fill="#222" text-anchor="middle">R</text>`;
   // countdown badge (simulation overlay)
   s += `<rect x="92" y="172" width="74" height="20" rx="4" fill="#26313a"/><text x="129" y="186" font-size="11" font-weight="700" text-anchor="middle" fill="${timing ? '#5cff7a' : '#8aa0ad'}">${timing ? r1(rem).toFixed(1) + ' s' : (out ? 'OUT ✓' : '--.- s')}</text>`;
-  s += `<text class="ar" x="110" y="252" font-size="11" text-anchor="middle" fill="${out ? GOOD : 'currentColor'}" font-weight="${out ? 700 : 400}">${out ? '15-18 مقفول (الريلاي شد)' : on ? 'الكويل عليه جهد: 15-16 مقفول' : 'من غير جهد: 15-16 مقفول'}</text>`;
+  s += `<text class="ar" x="110" y="252" font-size="11" text-anchor="middle" fill="${out ? GOOD : 'currentColor'}" font-weight="${out ? 700 : 400}">${out ? '15-18 مغلق (جذب الريلاي)' : on ? 'الملف عليه جهد: 15-16 مغلق' : 'دون جهد: 15-16 مغلق'}</text>`;
   // ---- timing diagram
   const X = 206, W = 220, y1 = 70, y2 = 140, per = m === 'cyc' ? d.cfg.ton + d.cfg.toff : T;
   const span = m === 'cyc' ? per * 2.5 : T * 2.4, px = v => X + 10 + (W - 20) * clamp(v / span, 0, 1);
-  s += `<text class="ar" x="${X + W/2}" y="20" font-size="12" text-anchor="middle" fill="currentColor">رسمة الزمن: ${CL.TIMER_MODES_AR[m]}</text>`;
+  s += `<text class="ar" x="${X + W/2}" y="20" font-size="12" text-anchor="middle" fill="currentColor">مخطط الزمن: ${CL.TIMER_MODES_AR[m]}</text>`;
   s += `<text x="${X}" y="${y1 - 24}" font-size="9" fill="currentColor">A1-A2</text><text x="${X}" y="${y2 - 24}" font-size="9" fill="currentColor">15-18</text>`;
   s += `<path d="M${X + 8} ${y1}H${X + W - 4}M${X + 8} ${y2}H${X + W - 4}" stroke="currentColor" stroke-width=".8" opacity=".4"/>`;
   const H = 18, step = (y, pts) => `<path d="${pts.map((p, i) => (i ? 'L' : 'M') + px(p[0]) + ' ' + (y - H * p[1])).join('')}" fill="none" stroke="${y === y1 ? '#1f6fd1' : GOOD}" stroke-width="2.2"/>`;
@@ -1390,11 +1390,11 @@ CL.art.timerArt = function(d, o){
   else s += `<text x="${px(t0 + d.cfg.ton / 2)}" y="${y2 + 22}" font-size="9" text-anchor="middle" fill="currentColor">ton ${d.cfg.ton}s</text><text x="${px(t0 + d.cfg.ton + d.cfg.toff / 2)}" y="${y2 + 22}" font-size="9" text-anchor="middle" fill="currentColor">toff ${d.cfg.toff}s</text>`;
   // live cursor
   if (timing || (on && m !== 'cyc')){ const cur = m === 'on' ? t0 + Math.min(el, span * 0.82 - t0) : m === 'off' ? (on ? t0 : span * 0.4 + el) : t0 + (el % (span - t0)); s += `<path d="M${px(cur)} ${y1 - H - 6}V${y2 + 6}" stroke="var(--bad)" stroke-width="1.6" stroke-dasharray="3 3"/>`; }
-  s += `<text class="ar" x="${X + W/2}" y="${y2 + 44}" font-size="10" text-anchor="middle" fill="var(--muted)">${m === 'on' ? 'الكويل ياخد جهد ← بعد t يقفل 15-18 · يقطع الجهد ← يرجع فورًا' : m === 'off' ? 'الكويل ياخد جهد ← 15-18 يقفل فورًا · يقطع الجهد ← يفضل مقفول t وبعدين يفتح' : 'طول ما الكويل عليه جهد: 15-18 يقفل ton ويفتح toff بالتبادل'}</text>`;
+  s += `<text class="ar" x="${X + W/2}" y="${y2 + 44}" font-size="10" text-anchor="middle" fill="var(--muted)">${m === 'on' ? 'يصل الجهد إلى الملف ← بعد t يُغلق 15-18 · ينقطع الجهد ← يعود فورًا' : m === 'off' ? 'يصل الجهد إلى الملف ← 15-18 يُغلق فورًا · ينقطع الجهد ← يبقى مغلقًا t ثم يُفتح' : 'طالما على الملف جهد: 15-18 يُغلق ton ويُفتح toff بالتبادل'}</text>`;
   if (o.sim) s += `<text class="ar" x="${X + W/2}" y="${y2 + 60}" font-size="10" text-anchor="middle" fill="var(--muted)">الخط الأحمر المتقطع = اللحظة الحالية</text>`;
   return s + '</g></svg>';
 };
-CL.art.motorArt = function(d){ return `<svg viewBox="0 0 170 208" style="max-width:280px" role="img" aria-label="موتور 3 فاز بعلبة الأطراف">${benchMotor(d, {}).svg}</svg>`; };
+CL.art.motorArt = function(d){ return `<svg viewBox="0 0 170 208" style="max-width:280px" role="img" aria-label="محرك ثلاثي الفاز بعلبة الأطراف">${benchMotor(d, {}).svg}</svg>`; };
 // two-relay electrical interlock (control circuit only)
 CL.art.interlockLayout = function(){
   const T = (x, y, t, anc) => `<text class="sy-n" x="${x}" y="${y}" text-anchor="${anc || 'start'}" style="font-size:11px">${t}</text>`;
@@ -1410,14 +1410,14 @@ CL.art.interlockLayout = function(){
     s += `<path class="sy" d="M${x} 226V244M${x} 272V300"/>` + coil(x, 244, k);
     s += `<circle class="sy-f" cx="${x}" cy="116" r="3"/><circle class="sy-f" cx="${x}" cy="172" r="3"/>`;
   });
-  s += `<circle class="sy-f" cx="60" cy="112" r="0"/><text class="ar" x="120" y="326" font-size="11" text-anchor="middle" fill="currentColor">K1 بيشتغل بشرط إن K2 واقف</text><text class="ar" x="280" y="326" font-size="11" text-anchor="middle" fill="currentColor">K2 بيشتغل بشرط إن K1 واقف</text>`;
+  s += `<circle class="sy-f" cx="60" cy="112" r="0"/><text class="ar" x="120" y="326" font-size="11" text-anchor="middle" fill="currentColor">K1 يعمل بشرط أن يكون K2 متوقفًا</text><text class="ar" x="280" y="326" font-size="11" text-anchor="middle" fill="currentColor">K2 يعمل بشرط أن يكون K1 متوقفًا</text>`;
   return s + '</g></svg>';
 };
 // standard DOL drawing: power circuit (left) + control circuit (right)
 CL.art.dolLayout = function(opt){
   opt = Object.assign({tag:'KM1', power:true, h1:true, h2:true}, opt || {});
   const power = opt.power, ox = power ? 0 : -226, W = (opt.h2 ? 560 : 480) + ox;
-  let s = `<svg viewBox="0 0 ${W} 372" role="img" aria-label="رسمة دايرة القوى ودايرة التحكم"><g style="color:var(--sym)" transform="translate(${ox} 0)">`;
+  let s = `<svg viewBox="0 0 ${W} 372" role="img" aria-label="رسم دائرة القوى ودائرة التحكم"><g style="color:var(--sym)" transform="translate(${ox} 0)">`;
   const tag = opt.tag;
   const T = (x, y, t, anc) => `<text class="sy-n" x="${x}" y="${y}" text-anchor="${anc || 'start'}" style="font-size:11px">${t}</text>`;
   const AR = (x, y, t, cls) => `<text class="ar ${cls || ''}" x="${x}" y="${y}" font-size="12" text-anchor="middle" fill="currentColor" font-weight="700">${t}</text>`;
@@ -1426,9 +1426,9 @@ CL.art.dolLayout = function(opt){
   const cMain = (x, y) => cNO(x, y) + `<path class="sy" d="M${x-4} ${y+10}A4 4 0 0 1 ${x+4} ${y+10}" style="stroke-width:1.6"/>`;
   // ---- power (3 phases)
   const px = [60, 92, 124];
-  s += AR(400, 22, opt.ctlTitle || 'دايرة التحكم');
+  s += AR(400, 22, opt.ctlTitle || 'دائرة التحكم');
   if (power){
-  s += AR(92, 22, 'دايرة القوى');
+  s += AR(92, 22, 'دائرة القوى');
   ['L1','L2','L3'].forEach((l, i) => { s += `<path class="sy" d="M${px[i]} 34V86"/>` + T(px[i] + 4, 46, l); });
   px.forEach(x => s += cMain(x, 86) + `<path class="sy" d="M${x} 126V166"/>`);
   s += `<path class="sy-d" d="M${px[0]-9} 102H${px[2]-9}"/><path class="sy" d="M${px[2]-9} 96l6 6l-6 6" style="stroke-width:1.5"/>` + T(px[2] + 10, 110, 'Q1');
@@ -1436,7 +1436,7 @@ CL.art.dolLayout = function(opt){
   s += `<path class="sy-d" d="M${px[0]-9} 182H${px[2]-9}"/>` + T(px[2] + 10, 190, 'KM1') + T(px[0] - 4, 236, '1', 'end') + T(px[1] - 4, 236, '3', 'end') + T(px[2] - 4, 236, '5', 'end');
   s += `<path class="sy" d="M${px[0]} 250L${92-22} 282M${px[1]} 250V274M${px[2]} 250L${92+22} 282"/>`;
   s += `<circle class="sy" cx="92" cy="306" r="30"/><text class="sy-n" x="92" y="302" text-anchor="middle" style="font-size:14px">M</text><text class="sy-n" x="92" y="318" text-anchor="middle">3~</text>` + T(70, 276, 'U', 'end') + T(96, 270, 'V') + T(118, 276, 'W') + T(128, 312, 'M1');
-  if (opt.ol) s += AR(92, 356, 'الأوفرلود F2 ييجي هنا في درس الحماية', '');
+  if (opt.ol) s += AR(92, 356, 'يأتي الأوفرلود F2 هنا في درس الحماية', '');
   }
   // ---- control
   const L1y = 40, Ny = 340;
@@ -1452,12 +1452,12 @@ CL.art.dolLayout = function(opt){
   s += AR(cx + 62, 158, 'كونتاكت التثبيت', 'sy-s');
   // H1 RUN via KM1 14 (same node as A1): branch from the node under S1
   const hx = 430;
-  if (opt.h1) s += `<path class="sy" d="M${cx} 236H${hx}V270"/><circle class="sy-f" cx="${cx}" cy="236" r="3"/><circle class="sy" cx="${hx}" cy="292" r="20"/><path class="sy" d="M${hx-14} 278L${hx+14} 306M${hx+14} 278L${hx-14} 306M${hx} 312V${Ny}"/>` + T(hx + 24, 296, 'H1') + AR(hx, 330, 'شغال (أخضر)', 'sy-s');
+  if (opt.h1) s += `<path class="sy" d="M${cx} 236H${hx}V270"/><circle class="sy-f" cx="${cx}" cy="236" r="3"/><circle class="sy" cx="${hx}" cy="292" r="20"/><path class="sy" d="M${hx-14} 278L${hx+14} 306M${hx+14} 278L${hx-14} 306M${hx} 312V${Ny}"/>` + T(hx + 24, 296, 'H1') + AR(hx, 330, 'يعمل (أخضر)', 'sy-s');
   if (!opt.h2) return s + '</g></svg>';
   // H2 STOP via KM1 21-22, fed after F1 (before S0) so it stays lit while STOP is pressed
   const kx = 500;
   s += `<path class="sy" d="M${cx} 103H${kx}V180"/><circle class="sy-f" cx="${cx}" cy="103" r="3"/>` + cNC(kx, 180) + T(kx + 8, 204, tag) + T(kx - 12, 188, '21', 'end') + T(kx - 12, 220, '22', 'end');
-  s += `<path class="sy" d="M${kx} 220V270"/><circle class="sy" cx="${kx}" cy="292" r="20"/><path class="sy" d="M${kx-14} 278L${kx+14} 306M${kx+14} 278L${kx-14} 306M${kx} 312V${Ny}"/>` + T(kx + 24, 296, 'H2') + AR(kx, 330, 'واقف (أحمر)', '');
+  s += `<path class="sy" d="M${kx} 220V270"/><circle class="sy" cx="${kx}" cy="292" r="20"/><path class="sy" d="M${kx-14} 278L${kx+14} 306M${kx+14} 278L${kx-14} 306M${kx} 312V${Ny}"/>` + T(kx + 24, 296, 'H2') + AR(kx, 330, 'متوقف (أحمر)', '');
   return s + '</g></svg>';
 };
 
@@ -1467,21 +1467,21 @@ const scrw = (x, y, r, on) => `<circle cx="${x}" cy="${y}" r="${r || 7}" fill="#
 // three fuse types side by side
 CL.art.fuseArt = function(d){
   const id = ++UID, blown = !!(d.st && d.st.trip);
-  let s = `<svg viewBox="0 0 440 236" role="img" aria-label="أنواع الفيوزات: زجاجي، خرطوشة في حامل، وشفرة NH"><defs>${copper(id)}<linearGradient id="gl${id}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="rgba(255,255,255,.9)"/><stop offset=".5" stop-color="rgba(200,225,245,.45)"/><stop offset="1" stop-color="rgba(120,150,180,.5)"/></linearGradient><linearGradient id="cer${id}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fbf6e4"/><stop offset="1" stop-color="#d9cfae"/></linearGradient></defs><g style="color:var(--ink)">`;
+  let s = `<svg viewBox="0 0 440 236" role="img" aria-label="أنواع الفيوزات: زجاجي، وخرطوشة في حامل، وشفرة NH"><defs>${copper(id)}<linearGradient id="gl${id}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="rgba(255,255,255,.9)"/><stop offset=".5" stop-color="rgba(200,225,245,.45)"/><stop offset="1" stop-color="rgba(120,150,180,.5)"/></linearGradient><linearGradient id="cer${id}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fbf6e4"/><stop offset="1" stop-color="#d9cfae"/></linearGradient></defs><g style="color:var(--ink)">`;
   // 1) glass fuse 5x20
   s += `<text class="ar" x="72" y="20" font-size="12" text-anchor="middle" fill="currentColor" font-weight="700">فيوز زجاجي 5×20</text>`;
   s += `<rect x="16" y="60" width="18" height="34" rx="2" fill="url(#chr${id})" stroke="#666"/><rect x="110" y="60" width="18" height="34" rx="2" fill="url(#chr${id})" stroke="#666"/><rect x="34" y="62" width="76" height="30" rx="4" fill="url(#gl${id})" stroke="#6f8aa6"/>`;
-  s += blown ? `<path d="M34 77H58M86 77H110" stroke="#8a4f1d" stroke-width="1.6"/><circle cx="72" cy="77" r="4" fill="#333" opacity=".6"/><text class="ar" x="72" y="112" font-size="11" text-anchor="middle" fill="var(--bad)" font-weight="700">السلك انقطع (ضرب)</text>` : `<path d="M34 77H110" stroke="#8a4f1d" stroke-width="1.6"/><text class="ar" x="72" y="112" font-size="11" text-anchor="middle" fill="currentColor">سلك رفيع جوه الزجاج</text>`;
+  s += blown ? `<path d="M34 77H58M86 77H110" stroke="#8a4f1d" stroke-width="1.6"/><circle cx="72" cy="77" r="4" fill="#333" opacity=".6"/><text class="ar" x="72" y="112" font-size="11" text-anchor="middle" fill="var(--bad)" font-weight="700">انقطع السلك (انصهر)</text>` : `<path d="M34 77H110" stroke="#8a4f1d" stroke-width="1.6"/><text class="ar" x="72" y="112" font-size="11" text-anchor="middle" fill="currentColor">سلك رفيع داخل الزجاج</text>`;
   s += `<text x="72" y="130" font-size="10" text-anchor="middle" fill="var(--muted)">F 2A 250V</text><text class="ar" x="72" y="146" font-size="10" text-anchor="middle" fill="var(--muted)">للإلكترونيات ولوحات التحكم الصغيرة</text>`;
   // 2) cartridge 10x38 gG in a DIN holder, lever open
   s += `<text class="ar" x="220" y="20" font-size="12" text-anchor="middle" fill="currentColor" font-weight="700">خرطوشة 10×38 في حامل DIN</text>`;
   s += `<rect x="178" y="30" width="84" height="150" rx="5" fill="#8f979c" stroke="#4b5257"/><rect x="186" y="40" width="68" height="20" rx="3" fill="#6d7479"/><rect x="186" y="150" width="68" height="20" rx="3" fill="#6d7479"/>`;
   s += `<g transform="rotate(-28 220 150)"><rect x="196" y="60" width="48" height="96" rx="5" fill="#b9bfc4" stroke="#4b5257"/><rect x="208" y="68" width="24" height="80" rx="3" fill="url(#cer${id})" stroke="#8a7a52"/><rect x="208" y="68" width="24" height="12" fill="url(#chr${id})" stroke="#666"/><rect x="208" y="136" width="24" height="12" fill="url(#chr${id})" stroke="#666"/><text x="220" y="112" font-size="7" text-anchor="middle" fill="#5a4a22" font-weight="700">gG 10A</text><circle cx="220" cy="90" r="3" fill="${blown ? '#d32f2f' : '#eee'}"/></g>`;
-  s += `<text class="ar" x="220" y="200" font-size="10" text-anchor="middle" fill="currentColor">الذراع بيفتح وتطلع الخرطوشة وتغيّرها</text><text class="ar" x="220" y="216" font-size="10" text-anchor="middle" fill="var(--muted)">gG للأحمال العادية · aM للموتورات (بيستحمل تيار البدء)</text>`;
+  s += `<text class="ar" x="220" y="200" font-size="10" text-anchor="middle" fill="currentColor">يُفتح الذراع فتخرج الخرطوشة وتستبدلها</text><text class="ar" x="220" y="216" font-size="10" text-anchor="middle" fill="var(--muted)">gG للأحمال العادية · aM للمحركات (يتحمل تيار البدء)</text>`;
   // 3) NH blade fuse
   s += `<text class="ar" x="366" y="20" font-size="12" text-anchor="middle" fill="currentColor" font-weight="700">فيوز شفرة NH00</text>`;
   s += `<rect x="358" y="36" width="16" height="28" fill="url(#chr${id})" stroke="#666"/><rect x="358" y="150" width="16" height="28" fill="url(#chr${id})" stroke="#666"/><rect x="334" y="60" width="64" height="94" rx="6" fill="url(#cer${id})" stroke="#8a7a52"/><rect x="344" y="70" width="44" height="34" rx="3" fill="#f4f4f1" stroke="#999"/><text x="366" y="84" font-size="8" text-anchor="middle" fill="#333" font-weight="700">NH00 gG</text><text x="366" y="97" font-size="8" text-anchor="middle" fill="#333">100A 500V</text><circle cx="366" cy="128" r="6" fill="#ddd" stroke="#777"/><rect x="363" y="120" width="6" height="8" fill="${blown ? '#d32f2f' : '#1f9d55'}"/>`;
-  s += `<text class="ar" x="366" y="200" font-size="10" text-anchor="middle" fill="currentColor">للتيارات الكبيرة (من 6A لـ 1250A)</text><text class="ar" x="366" y="216" font-size="10" text-anchor="middle" fill="var(--muted)">بيتشال بمقبض عازل خاص · مؤشر يبقى أحمر لما يضرب</text>`;
+  s += `<text class="ar" x="366" y="200" font-size="10" text-anchor="middle" fill="currentColor">للتيارات الكبيرة (من 6A إلى 1250A)</text><text class="ar" x="366" y="216" font-size="10" text-anchor="middle" fill="var(--muted)">يُنزع بمقبض عازل خاص · يصبح المؤشر أحمر عند الانصهار</text>`;
   return s + '</g></svg>';
 };
 // MCB: 1P and 3P fronts + cut-away showing the thermal (bimetal) and magnetic (solenoid) releases
@@ -1497,24 +1497,24 @@ CL.art.mcbArt = function(d){
     q += `<text x="${x + w/2}" y="86" font-size="11" font-weight="700" fill="#333" text-anchor="middle">${esc(label)}</text><text x="${x + w/2}" y="184" font-size="7" fill="#555" text-anchor="middle">${n > 1 ? '400V~' : '230V~'} 6000</text>`;
     return q;
   };
-  s += `<text class="ar" x="56" y="20" font-size="12" text-anchor="middle" fill="currentColor">قطب واحد (1P)</text>` + pole(36, 40, lab, true) + `<text class="ar" x="56" y="240" font-size="10" text-anchor="middle" fill="var(--muted)">للتحكم واللمبات</text>`;
-  s += `<text class="ar" x="166" y="20" font-size="12" text-anchor="middle" fill="currentColor">3 أقطاب (3P) للموتور</text>`;
+  s += `<text class="ar" x="56" y="20" font-size="12" text-anchor="middle" fill="currentColor">قطب واحد (1P)</text>` + pole(36, 40, lab, true) + `<text class="ar" x="56" y="240" font-size="10" text-anchor="middle" fill="var(--muted)">للتحكم والمصابيح</text>`;
+  s += `<text class="ar" x="166" y="20" font-size="12" text-anchor="middle" fill="currentColor">3 أقطاب (3P) للمحرك</text>`;
   [0, 1, 2].forEach(i => { s += pole(108 + i * 40, 40, i === 1 ? lab : '', false); });
-  s += `<rect x="112" y="124" width="112" height="4" fill="#1f6fd1" opacity=".7"/><text class="ar" x="166" y="240" font-size="10" text-anchor="middle" fill="var(--muted)">المقبض مشترك: الـ 3 بيفصلوا مع بعض</text>`;
+  s += `<rect x="112" y="124" width="112" height="4" fill="#1f6fd1" opacity=".7"/><text class="ar" x="166" y="240" font-size="10" text-anchor="middle" fill="var(--muted)">المقبض مشترك: تفصل الأقطاب الثلاثة معًا</text>`;
   // cut-away
   const X = 252;
-  s += `<text class="ar" x="${X + 90}" y="20" font-size="12" text-anchor="middle" fill="currentColor">جوه القاطع</text><rect x="${X}" y="30" width="180" height="190" rx="6" fill="none" stroke="#6d757b" stroke-dasharray="4 3"/>`;
+  s += `<text class="ar" x="${X + 90}" y="20" font-size="12" text-anchor="middle" fill="currentColor">داخل القاطع</text><rect x="${X}" y="30" width="180" height="190" rx="6" fill="none" stroke="#6d757b" stroke-dasharray="4 3"/>`;
   s += scrw(X + 24, 46, 7) + `<path d="M${X + 24} 54V84" stroke="#b87333" stroke-width="3"/>`;
   s += `<path d="M${X + 24} 84L${on ? X + 24 : X + 44} ${on ? 118 : 108}" stroke="${on ? GOOD : '#8a9096'}" stroke-width="3"/><circle cx="${X + 24}" cy="118" r="4" fill="#b87333"/><text class="ar" x="${X + 56}" y="86" font-size="8" fill="currentColor">الكونتاكت</text>`;
   s += `<path d="M${X + 24} 122V140" stroke="#b87333" stroke-width="3"/>`;
   // bimetal strip (thermal) + heater
-  s += `<rect x="${X + 20}" y="140" width="8" height="40" fill="#d9924f" stroke="#8a4f1d"/><rect x="${X + 16}" y="140" width="4" height="40" fill="#8a9096"/><text class="ar" x="${X + 60}" y="150" font-size="8" fill="currentColor">بيميتال (حراري)</text><text class="ar" x="${X + 60}" y="162" font-size="7.5" fill="var(--muted)">بيسخن مع الحمل الزيادة</text><text class="ar" x="${X + 60}" y="173" font-size="7.5" fill="var(--muted)">وينحني ببطء → يفصل بعد ثواني/دقايق</text>`;
+  s += `<rect x="${X + 20}" y="140" width="8" height="40" fill="#d9924f" stroke="#8a4f1d"/><rect x="${X + 16}" y="140" width="4" height="40" fill="#8a9096"/><text class="ar" x="${X + 60}" y="150" font-size="8" fill="currentColor">بايميتال (حراري)</text><text class="ar" x="${X + 60}" y="162" font-size="7.5" fill="var(--muted)">يسخن مع الحمل الزائد</text><text class="ar" x="${X + 60}" y="173" font-size="7.5" fill="var(--muted)">وينحني ببطء → يفصل بعد ثوانٍ أو دقائق</text>`;
   // solenoid (magnetic)
-  s += `<rect x="${X + 110}" y="60" width="40" height="46" rx="3" fill="url(#cu${id})" stroke="#5a3410"/><rect x="${X + 126}" y="50" width="8" height="66" fill="#55595c"/><text class="ar" x="${X + 130}" y="128" font-size="8" fill="currentColor" text-anchor="middle">ملف مغناطيسي</text><text class="ar" x="${X + 130}" y="140" font-size="7.5" fill="var(--muted)" text-anchor="middle">قصر = تيار ضخم</text><text class="ar" x="${X + 130}" y="151" font-size="7.5" fill="var(--muted)" text-anchor="middle">يشد القلب ويفصل في لحظة</text>`;
+  s += `<rect x="${X + 110}" y="60" width="40" height="46" rx="3" fill="url(#cu${id})" stroke="#5a3410"/><rect x="${X + 126}" y="50" width="8" height="66" fill="#55595c"/><text class="ar" x="${X + 130}" y="128" font-size="8" fill="currentColor" text-anchor="middle">ملف مغناطيسي</text><text class="ar" x="${X + 130}" y="140" font-size="7.5" fill="var(--muted)" text-anchor="middle">قصر = تيار ضخم</text><text class="ar" x="${X + 130}" y="151" font-size="7.5" fill="var(--muted)" text-anchor="middle">يجذب القلب ويفصل في لحظة</text>`;
   // arc chute
   s += `${[0,1,2,3,4,5].map(i => `<rect x="${X + 100 + i * 7}" y="168" width="4" height="34" fill="#6d7479"/>`).join('')}<text class="ar" x="${X + 120}" y="214" font-size="8" fill="currentColor" text-anchor="middle">غرفة إطفاء الشرارة</text>`;
   s += scrw(X + 24, 204, 7) + `<path d="M${X + 24} 180V196" stroke="#b87333" stroke-width="3"/>`;
-  s += `<text class="ar" x="${X + 90}" y="240" font-size="10" text-anchor="middle" fill="var(--muted)">حراري للحمل الزيادة + مغناطيسي للقصر</text>`;
+  s += `<text class="ar" x="${X + 90}" y="240" font-size="10" text-anchor="middle" fill="var(--muted)">حراري للحمل الزائد + مغناطيسي للقصر</text>`;
   return s + '</g></svg>';
 };
 // I-t trip curves B / C / D (log-log) with the motor start marker
@@ -1530,15 +1530,15 @@ CL.art.tripCurve = function(d){
   const curve = (mag, col, name) => { let p = ''; for (let k = 1.15; k <= mag; k *= 1.06){ const t = Math.min(3600, 100 / (k*k - 1)); p += (p ? 'L' : 'M') + lx(k).toFixed(1) + ' ' + ly(t).toFixed(1); } p += `L${lx(mag)} ${ly(0.01)}`; return `<path d="${p}" fill="none" stroke="${col}" stroke-width="2.4"/><text x="${lx(mag) + 3}" y="${ly(0.04)}" font-size="11" font-weight="700" fill="${col}">${name}</text>`; };
   s += curve(4, '#1f6fd1', 'B') + curve(8, '#1f9d55', 'C') + curve(15, '#d32f2f', 'D');
   // motor inrush 6×In for 1 s
-  s += `<rect x="${lx(5.5)}" y="${ly(1.2)}" width="${lx(7.5) - lx(5.5)}" height="${ly(0.6) - ly(1.2)}" fill="#f0a03c" opacity=".55"/><text class="ar" x="${lx(6.5)}" y="${ly(1.2) - 6}" font-size="9" text-anchor="middle" fill="currentColor" font-weight="700">تيار بدء الموتور (6–7×In لثانية)</text>`;
-  s += `<text class="ar" x="${(X0 + X1) / 2}" y="${Y1 + 30}" font-size="10" text-anchor="middle" fill="var(--muted)">اللي على يمين/فوق الخط بيفصل. B بيفصل مع بدء الموتور، C و D لأ.</text>`;
+  s += `<rect x="${lx(5.5)}" y="${ly(1.2)}" width="${lx(7.5) - lx(5.5)}" height="${ly(0.6) - ly(1.2)}" fill="#f0a03c" opacity=".55"/><text class="ar" x="${lx(6.5)}" y="${ly(1.2) - 6}" font-size="9" text-anchor="middle" fill="currentColor" font-weight="700">تيار بدء المحرك (6–7×In لثانية)</text>`;
+  s += `<text class="ar" x="${(X0 + X1) / 2}" y="${Y1 + 30}" font-size="10" text-anchor="middle" fill="var(--muted)">ما يقع يمين الخط أو فوقه يفصل. B يفصل مع بدء المحرك، و C و D لا يفصلان.</text>`;
   return s + '</g></svg>';
 };
 // thermal overload relay (LRD style): front + bimetal cut-away
 CL.art.olArt = function(d, o){
   o = o || {}; const id = ++UID, st = d.st || {}, trip = !!st.trip, heat = st.heat || 0, Ir = d.cfg.Ir || 5;
-  let s = `<svg viewBox="0 0 440 292" role="img" aria-label="أوفرلود حراري من قدّام وقطاع البيميتال"><defs>${copper(id)}</defs><g style="color:var(--ink)">`;
-  s += `<text class="ar" x="110" y="18" font-size="12" text-anchor="middle" fill="currentColor">من قدّام (LRD / TeSys)</text>`;
+  let s = `<svg viewBox="0 0 440 292" role="img" aria-label="أوفرلود حراري من الأمام وقطاع البايميتال"><defs>${copper(id)}</defs><g style="color:var(--ink)">`;
+  s += `<text class="ar" x="110" y="18" font-size="12" text-anchor="middle" fill="currentColor">من الأمام (LRD / TeSys)</text>`;
   // pins into the contactor
   [60, 100, 140].forEach((x, i) => { s += `<rect x="${x - 5}" y="26" width="10" height="22" fill="#b87333" stroke="#5a3410"/><text x="${x}" y="22" font-size="8" text-anchor="middle" fill="currentColor">${['1/L1','3/L2','5/L3'][i]}</text>`; });
   s += `<rect x="30" y="48" width="160" height="200" rx="7" fill="#3b3f43" stroke="#1d2022"/>`;
@@ -1554,13 +1554,13 @@ CL.art.olArt = function(d, o){
   s += `<rect x="124" y="164" width="40" height="14" rx="2" fill="#e9eaec"/><rect x="${d.cfg.reset === 'auto' ? 145 : 126}" y="166" width="17" height="10" rx="2" fill="#555"/><text x="134" y="174" font-size="7" fill="${d.cfg.reset === 'auto' ? '#333' : '#fff'}" text-anchor="middle">H</text><text x="154" y="174" font-size="7" fill="${d.cfg.reset === 'auto' ? '#fff' : '#333'}" text-anchor="middle">A</text><text class="ar" x="144" y="190" font-size="7" fill="#eee" text-anchor="middle">يدوي / أوتوماتيك</text>`;
   s += `<rect x="124" y="60" width="0" height="0"/><rect x="42" y="194" width="30" height="14" rx="2" fill="${trip ? '#d32f2f' : '#1f9d55'}"/><text x="57" y="204" font-size="7" fill="#fff" text-anchor="middle" font-weight="700">${trip ? 'TRIP' : 'OK'}</text>`;
   // heat bar
-  s += `<rect x="42" y="214" width="136" height="8" rx="3" fill="#1b1d1f"/><rect x="42" y="214" width="${136 * heat}" height="8" rx="3" fill="${trip ? '#d32f2f' : heat > .7 ? '#e8590c' : '#e0a21b'}"/><text class="ar" x="110" y="236" font-size="8" fill="#eee" text-anchor="middle">سخونة البيميتال ${Math.round(heat * 100)}% · I = ${r1(st.I || 0)}A</text>`;
+  s += `<rect x="42" y="214" width="136" height="8" rx="3" fill="#1b1d1f"/><rect x="42" y="214" width="${136 * heat}" height="8" rx="3" fill="${trip ? '#d32f2f' : heat > .7 ? '#e8590c' : '#e0a21b'}"/><text class="ar" x="110" y="236" font-size="8" fill="#eee" text-anchor="middle">سخونة البايميتال ${Math.round(heat * 100)}% · I = ${r1(st.I || 0)}A</text>`;
   // terminals at the bottom
   [60, 100, 140].forEach((x, i) => { s += scrw(x, 262, 7) + `<text x="${x}" y="282" font-size="8" text-anchor="middle" fill="currentColor">${['2/T1','4/T2','6/T3'][i]}</text>`; });
   [[172, 118, '95'], [172, 142, '96'], [172, 170, '97'], [172, 194, '98']].forEach(([x, y, t]) => { s += scrw(x + 4, y, 5, (t === '95' || t === '96') ? !trip : trip) + `<text x="${x + 14}" y="${y + 3}" font-size="7" fill="currentColor">${t}</text>`; });
   // ---- cut-away
   const X = 236;
-  s += `<text class="ar" x="${X + 100}" y="18" font-size="12" text-anchor="middle" fill="currentColor">القطاع: البيميتال والسقّاطة</text><rect x="${X}" y="26" width="200" height="222" rx="6" fill="none" stroke="#6d757b" stroke-dasharray="4 3"/>`;
+  s += `<text class="ar" x="${X + 100}" y="18" font-size="12" text-anchor="middle" fill="currentColor">القطاع: البايميتال والسقّاطة</text><rect x="${X}" y="26" width="200" height="222" rx="6" fill="none" stroke="#6d757b" stroke-dasharray="4 3"/>`;
   const bend = trip ? 16 : heat * 12;
   [0, 1, 2].forEach(i => { const x = X + 30 + i * 36;
     s += `<path d="M${x} 36V60" stroke="#b87333" stroke-width="3"/>`;
@@ -1570,7 +1570,7 @@ CL.art.olArt = function(d, o){
     s += `<path d="M${x + bend} 150V176" stroke="#b87333" stroke-width="3"/>`;
   });
   // trip bar (slide) pushed right when bent
-  s += `<rect x="${X + 20 + bend}" y="152" width="110" height="8" rx="2" fill="${trip ? '#d32f2f' : '#6d757b'}"/><text class="ar" x="${X + 75}" y="172" font-size="8" fill="currentColor" text-anchor="middle">${trip ? 'الشريحة اتزحلقت وفصلت' : 'شريحة الفصل'}</text>`;
+  s += `<rect x="${X + 20 + bend}" y="152" width="110" height="8" rx="2" fill="${trip ? '#d32f2f' : '#6d757b'}"/><text class="ar" x="${X + 75}" y="172" font-size="8" fill="currentColor" text-anchor="middle">${trip ? 'انزلقت الشريحة وفصلت' : 'شريحة الفصل'}</text>`;
   // contacts 95-96 (NC) and 97-98 (NO) driven by the bar
   const cx = X + 160;
   s += `<path d="M${cx - 10} 60V84" stroke="#7a4f1c" stroke-width="2"/><path d="M${cx - 18} 84H${cx - 2}" stroke="${trip ? '#7a4f1c' : GOOD}" stroke-width="3"/><text x="${cx - 28}" y="66" font-size="7" fill="currentColor">95</text><text x="${cx - 28}" y="100" font-size="7" fill="currentColor">96</text>`;
@@ -1578,15 +1578,15 @@ CL.art.olArt = function(d, o){
   s += `<path d="M${cx + 20} 60V84" stroke="#7a4f1c" stroke-width="2"/><path d="M${cx + 12} 112H${cx + 28}" stroke="${trip ? GOOD : '#7a4f1c'}" stroke-width="3"/><text x="${cx + 30}" y="66" font-size="7" fill="currentColor">97</text><text x="${cx + 30}" y="124" font-size="7" fill="currentColor">98</text>`;
   s += `<path d="M${cx + 20} 84L${cx + 20} ${trip ? 112 : 100}" stroke="${trip ? GOOD : '#c7893b'}" stroke-width="3"/>`;
   s += `<path class="sy-d" d="M${X + 130 + bend} 156V130H${cx + 4}"/>`;
-  s += `<text class="ar" x="${X + 100}" y="196" font-size="9" fill="currentColor" text-anchor="middle">التيار بيعدّي في سخّان حوالين شريحة من معدنين</text><text class="ar" x="${X + 100}" y="210" font-size="9" fill="currentColor" text-anchor="middle">(بيميتال). بتسخن وتنحني → تدفع شريحة الفصل →</text><text class="ar" x="${X + 100}" y="224" font-size="9" fill="currentColor" text-anchor="middle">95-96 يفتح (يفصل الكونتاكتور) و 97-98 يقفل (لمبة عطل)</text>`;
-  s += `<text class="ar" x="${X + 100}" y="242" font-size="9" fill="${trip ? 'var(--bad)' : 'var(--muted)'}" text-anchor="middle" font-weight="${trip ? 700 : 400}">${trip ? 'فصل! لازم يبرد وتدوس RESET' : heat > 0.5 ? 'بيسخن…' : 'بارد وفي وضعه الطبيعي'}</text>`;
+  s += `<text class="ar" x="${X + 100}" y="196" font-size="9" fill="currentColor" text-anchor="middle">يمر التيار في سخّان حول شريحة من معدنين</text><text class="ar" x="${X + 100}" y="210" font-size="9" fill="currentColor" text-anchor="middle">(بايميتال). تسخن وتنحني → تدفع شريحة الفصل →</text><text class="ar" x="${X + 100}" y="224" font-size="9" fill="currentColor" text-anchor="middle">95-96 يُفتح (يفصل الكونتاكتور) و97-98 يُغلق (مصباح عطل)</text>`;
+  s += `<text class="ar" x="${X + 100}" y="242" font-size="9" fill="${trip ? 'var(--bad)' : 'var(--muted)'}" text-anchor="middle" font-weight="${trip ? 700 : 400}">${trip ? 'فصل! يجب أن يبرد ثم تضغط RESET' : heat > 0.5 ? 'يسخن…' : 'بارد وفي وضعه الطبيعي'}</text>`;
   return s + '</g></svg>';
 };
 // motor protection circuit breaker (GV2-ME style)
 CL.art.mpcbArt = function(d){
   const id = ++UID, st = d.st || {}, on = !!(st.on && !st.trip), trip = !!st.trip, Ir = d.cfg.Ir || 5, lo = d.cfg.lo || 4, hi = d.cfg.hi || 6.3;
-  let s = `<svg viewBox="0 0 440 262" role="img" aria-label="قاطع حماية موتور MPCB من قدّام"><defs>${copper(id)}</defs><g style="color:var(--ink)">`;
-  s += `<text class="ar" x="120" y="18" font-size="12" text-anchor="middle" fill="currentColor">MPCB (GV2-ME) من قدّام</text>`;
+  let s = `<svg viewBox="0 0 440 262" role="img" aria-label="قاطع حماية محرك MPCB من الأمام"><defs>${copper(id)}</defs><g style="color:var(--ink)">`;
+  s += `<text class="ar" x="120" y="18" font-size="12" text-anchor="middle" fill="currentColor">MPCB (GV2-ME) من الأمام</text>`;
   [70, 120, 170].forEach((x, i) => { s += scrw(x, 40, 7) + `<text x="${x}" y="26" font-size="8" text-anchor="middle" fill="currentColor">${['1/L1','3/L2','5/L3'][i]}</text>`; s += scrw(x, 226, 7) + `<text x="${x}" y="246" font-size="8" text-anchor="middle" fill="currentColor">${['2/T1','4/T2','6/T3'][i]}</text>`; });
   s += `<rect x="40" y="52" width="160" height="166" rx="7" fill="#3b3f43" stroke="#1d2022"/>`;
   // rotary knob
@@ -1604,12 +1604,12 @@ CL.art.mpcbArt = function(d){
   s += `<text class="ar" x="224" y="200" font-size="6.5" fill="#ddd" text-anchor="middle">كونتاكت مساعد</text>`;
   // explanation
   const X = 262;
-  s += `<text class="ar" x="${X + 85}" y="18" font-size="12" text-anchor="middle" fill="currentColor">إيه اللي جواه؟</text><rect x="${X}" y="28" width="170" height="214" rx="6" fill="none" stroke="#6d757b" stroke-dasharray="4 3"/>`;
-  s += `<text class="ar" x="${X + 85}" y="52" font-size="10" fill="currentColor" text-anchor="middle" font-weight="700">1. مغناطيسي: قصر</text><text class="ar" x="${X + 85}" y="66" font-size="8.5" fill="var(--muted)" text-anchor="middle">بيفصل في لحظة (≈ 12×Ir)</text>`;
-  s += `<text class="ar" x="${X + 85}" y="92" font-size="10" fill="currentColor" text-anchor="middle" font-weight="700">2. حراري: حمل زيادة</text><text class="ar" x="${X + 85}" y="106" font-size="8.5" fill="var(--muted)" text-anchor="middle">بيميتال بيتضبط على Ir زي الأوفرلود</text><text class="ar" x="${X + 85}" y="118" font-size="8.5" fill="var(--muted)" text-anchor="middle">Class 10 وحماية فقد فاز</text>`;
-  s += `<text class="ar" x="${X + 85}" y="144" font-size="10" fill="currentColor" text-anchor="middle" font-weight="700">3. مفتاح فصل يدوي</text><text class="ar" x="${X + 85}" y="158" font-size="8.5" fill="var(--muted)" text-anchor="middle">تقفل الموتور وتقفل عليه بقفل (Lockout)</text>`;
-  s += `<text class="ar" x="${X + 85}" y="184" font-size="10" fill="currentColor" text-anchor="middle" font-weight="700">= فيوز + أوفرلود في قطعة واحدة</text><text class="ar" x="${X + 85}" y="198" font-size="8.5" fill="var(--muted)" text-anchor="middle">مع الكونتاكتور بيعمل Starter كامل</text>`;
-  s += `<text class="ar" x="${X + 85}" y="226" font-size="9" fill="${trip ? 'var(--bad)' : on ? GOOD : 'var(--muted)'}" text-anchor="middle" font-weight="700">${trip ? 'فصل (TRIP): لفّ المقبض على OFF وبعدين ON' : on ? 'شغال: 13-14 مقفول' : 'مفصول: 21-22 مقفول'}</text>`;
+  s += `<text class="ar" x="${X + 85}" y="18" font-size="12" text-anchor="middle" fill="currentColor">ماذا بداخله؟</text><rect x="${X}" y="28" width="170" height="214" rx="6" fill="none" stroke="#6d757b" stroke-dasharray="4 3"/>`;
+  s += `<text class="ar" x="${X + 85}" y="52" font-size="10" fill="currentColor" text-anchor="middle" font-weight="700">1. مغناطيسي: قصر</text><text class="ar" x="${X + 85}" y="66" font-size="8.5" fill="var(--muted)" text-anchor="middle">يفصل في لحظة (≈ 12×Ir)</text>`;
+  s += `<text class="ar" x="${X + 85}" y="92" font-size="10" fill="currentColor" text-anchor="middle" font-weight="700">2. حراري: حمل زائد</text><text class="ar" x="${X + 85}" y="106" font-size="8.5" fill="var(--muted)" text-anchor="middle">بايميتال يُضبط على Ir مثل الأوفرلود</text><text class="ar" x="${X + 85}" y="118" font-size="8.5" fill="var(--muted)" text-anchor="middle">Class 10 وحماية فقد فاز</text>`;
+  s += `<text class="ar" x="${X + 85}" y="144" font-size="10" fill="currentColor" text-anchor="middle" font-weight="700">3. مفتاح فصل يدوي</text><text class="ar" x="${X + 85}" y="158" font-size="8.5" fill="var(--muted)" text-anchor="middle">تفصل المحرك وتقفل عليه بقفل (Lockout)</text>`;
+  s += `<text class="ar" x="${X + 85}" y="184" font-size="10" fill="currentColor" text-anchor="middle" font-weight="700">= فيوز + أوفرلود في قطعة واحدة</text><text class="ar" x="${X + 85}" y="198" font-size="8.5" fill="var(--muted)" text-anchor="middle">مع الكونتاكتور يكوّن Starter كاملًا</text>`;
+  s += `<text class="ar" x="${X + 85}" y="226" font-size="9" fill="${trip ? 'var(--bad)' : on ? GOOD : 'var(--muted)'}" text-anchor="middle" font-weight="700">${trip ? 'فصل (TRIP): أدِر المقبض إلى OFF ثم ON' : on ? 'يعمل: 13-14 مغلق' : 'مفصول: 21-22 مغلق'}</text>`;
   return s + '</g></svg>';
 };
 // DOL with full protection: Q1 → KM1 → F2 → M in the power circuit; F1 → 95-96 → S0 → S1||KM1 → coil; H1 run, H2 stop, H3 fault on 97-98
@@ -1625,7 +1625,7 @@ CL.art.dolProt = function(opt){
   let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="DOL بالحماية الكاملة: قوى وتحكم"><g style="color:var(--sym)">`;
   // ---- power
   const px = [60, 92, 124];
-  s += AR(92, 22, 'دايرة القوى');
+  s += AR(92, 22, 'دائرة القوى');
   ['L1','L2','L3'].forEach((l, i) => { s += `<path class="sy" d="M${px[i]} 34V70"/>` + T(px[i] + 4, 46, l); });
   px.forEach(x => s += cMain(x, 70) + `<path class="sy" d="M${x} 110V140"/>`);
   s += `<path class="sy-d" d="M${px[0]-9} 86H${px[2]-9}"/>` + T(px[2] + 10, 92, 'Q1');
@@ -1636,10 +1636,10 @@ CL.art.dolProt = function(opt){
   s += `<path class="sy-d" d="M${px[0]} 240V250H${px[2]}V240"/>` + T(px[2] + 12, 230, 'F2') + T(px[0] - 4, 266, '2', 'end') + T(px[1] - 4, 266, '4', 'end') + T(px[2] - 4, 266, '6', 'end');
   s += `<path class="sy" d="M${px[0]} 280L${92-22} 312M${px[1]} 280V304M${px[2]} 280L${92+22} 312"/>`;
   s += `<circle class="sy" cx="92" cy="336" r="30"/><text class="sy-n" x="92" y="332" text-anchor="middle" style="font-size:14px">M</text><text class="sy-n" x="92" y="348" text-anchor="middle">3~</text>` + T(70, 306, 'U', 'end') + T(96, 300, 'V') + T(118, 306, 'W') + T(128, 342, 'M1');
-  s += `<text class="ar sy-s" x="92" y="392" font-size="10" text-anchor="middle">Q1 للقصر · F2 للحمل الزيادة</text>`;
+  s += `<text class="ar sy-s" x="92" y="392" font-size="10" text-anchor="middle">Q1 للقصر · F2 للحمل الزائد</text>`;
   // ---- control
   const L1y = 40, Ny = 410, cx = 290;
-  s += AR(420, 22, 'دايرة التحكم');
+  s += AR(420, 22, 'دائرة التحكم');
   s += `<path class="sy" d="M230 ${L1y}H590M230 ${Ny}H590"/>` + T(226, L1y + 4, 'L1', 'end') + T(226, Ny + 4, 'N', 'end');
   s += `<path class="sy" d="M${cx} ${L1y}V52"/>` + cNO(cx, 52) + `<path class="sy" d="M${cx-11} 68l6 6l-6 6" style="stroke-width:1.5"/>` + T(cx + 8, 76, 'F1');
   // F2 95-96 with thermal actuator
@@ -1651,12 +1651,12 @@ CL.art.dolProt = function(opt){
   s += `<circle class="sy-f" cx="${cx}" cy="208" r="3"/><circle class="sy-f" cx="${cx}" cy="266" r="3"/>`;
   // H1 run (parallel to the coil)
   const hx = 410;
-  s += `<path class="sy" d="M${cx} 282H${hx}V318"/><circle class="sy-f" cx="${cx}" cy="282" r="3"/>` + lamp(hx, 336, 'H1', 'شغال') + `<path class="sy" d="M${hx} 354V${Ny}"/>`;
+  s += `<path class="sy" d="M${cx} 282H${hx}V318"/><circle class="sy-f" cx="${cx}" cy="282" r="3"/>` + lamp(hx, 336, 'H1', 'يعمل') + `<path class="sy" d="M${hx} 354V${Ny}"/>`;
   // H3 fault on 97-98 (fed after F1)
   const fx = 500;
   s += `<path class="sy" d="M${cx} 98H${fx}V104"/><circle class="sy-f" cx="${cx}" cy="98" r="3"/>` + cNO(fx, 104) + `<path class="sy" d="M${fx-30} 118A8 8 0 0 0 ${fx-30} 134" style="stroke-width:2"/><path class="sy-d" d="M${fx-26} 126H${fx-12}"/>` + T(fx + 10, 128, 'F2') + T(fx - 12, 110, '97', 'end') + T(fx - 12, 148, '98', 'end');
   s += `<path class="sy" d="M${fx} 144V318"/>` + lamp(fx, 336, 'H3', 'عطل (أصفر)') + `<path class="sy" d="M${fx} 354V${Ny}"/>`;
-  s += `<text class="ar sy-s" x="420" y="${Ny + 24}" font-size="10" text-anchor="middle">لما F2 يفصل: 95-96 يفتح فالكونتاكتور يقع، و 97-98 يقفل فـ H3 تنور</text>`;
+  s += `<text class="ar sy-s" x="420" y="${Ny + 24}" font-size="10" text-anchor="middle">عندما يفصل F2: يُفتح 95-96 فيفصل الكونتاكتور، ويُغلق 97-98 فيضيء H3</text>`;
   return s + '</g></svg>';
 };
 
@@ -1666,8 +1666,8 @@ const CW = 170;
 function railSvg(w, h){ const y = Math.round(h * 0.55) - 9; return `<g class="bd-rail" aria-hidden="true"><rect x="-6" y="${y}" width="${w + 12}" height="18" fill="#8e9398"/><rect x="-6" y="${y + 2}" width="${w + 12}" height="5" fill="#e2e5e7"/><rect x="-6" y="${y + 11}" width="${w + 12}" height="4" fill="#70757a"/>${Array.from({length:Math.max(1, Math.floor((w + 12) / 34))}, (_, i) => `<rect x="${i * 34 + 4}" y="${y + 7}" width="18" height="5" rx="2.5" fill="#55595d"/>`).join('')}</g>`; }
 function cellHead(d, sub, w){ return `<text class="bd-id" x="${w/2}" y="15">${esc(d.tag)}${sub ? ' · ' : ''}<tspan class="bd-sub">${esc(sub || '')}</tspan></text>`; }
 // caption of a contact block: the type never changes, the state word and colour follow the live state
-CL.capState = function(k, closed, op, who){ return `${k} · ${closed ? 'مقفول' : 'مفتوح'}${op ? ' (' + (who || 'مدوس') + ')' : ''}`; };
-const WHO = d => d.type === 'level' ? 'وصل' : ['pb','estop','sel','ls'].indexOf(d.type) > -1 ? 'مدوس' : d.type === 'ol' || d.type === 'mpcb' || d.type === 'mcb' ? 'فاصل' : 'شغال';
+CL.capState = function(k, closed, op, who){ return `${k} · ${closed ? 'مغلق' : 'مفتوح'}${op ? ' (' + (who || 'مضغوط') + ')' : ''}`; };
+const WHO = d => d.type === 'level' ? 'موصول' : ['pb','estop','sel','ls'].indexOf(d.type) > -1 ? 'مضغوط' : d.type === 'ol' || d.type === 'mpcb' || d.type === 'mcb' ? 'مفصول' : 'يعمل';
 const CAPRED = '#d6332a', CAPRED_D = '#ff8a80', CAPGRN_D = '#4ee07a';
 // a row of contact blocks with screws top/bottom; returns {svg, terms}
 function benchBlocks(d, cx0, opFn, live, y0){
@@ -1681,7 +1681,7 @@ function benchBlocks(d, cx0, opFn, live, y0){
       terms[b.t[0]] = {x, y:y0+12, dir:-1}; terms[b.t[1]] = {x:x-14, y:y0+72, dir:1}; terms[b.t[2]] = {x:x+14, y:y0+72, dir:1};
       s += `<text x="${x}" y="${y0-4}" font-size="11" text-anchor="middle" font-weight="700" fill="var(--ink)">${b.t[0]}</text><text x="${x-14}" y="${y0+98}" font-size="11" text-anchor="middle" font-weight="700" fill="var(--ink)">${b.t[1]}</text><text x="${x+14}" y="${y0+98}" font-size="11" text-anchor="middle" font-weight="700" fill="var(--ink)">${b.t[2]}</text>`;
       s += `<path d="M${x} ${y0+52}L${op ? x+12 : x-12} ${y0+36}" stroke="${GOOD}" stroke-width="2.4"/>`;
-      s += `<text class="blk-cap" x="${x}" y="${y0+114}" font-size="8.5" text-anchor="middle" font-weight="700" fill="${GOOD}">CO · ${b.t[0]}-${op ? b.t[2] : b.t[1]} مقفول${op ? ' (' + WHO(d) + ')' : ''}</text>`;
+      s += `<text class="blk-cap" x="${x}" y="${y0+114}" font-size="8.5" text-anchor="middle" font-weight="700" fill="${GOOD}">CO · ${b.t[0]}-${op ? b.t[2] : b.t[1]} مغلق${op ? ' (' + WHO(d) + ')' : ''}</text>`;
       return;
     }
     s += `<rect x="${x-22}" y="${y0}" width="44" height="84" rx="4" fill="#efeee9" stroke="#8c8f8a"/><rect x="${x-22}" y="${y0}" width="44" height="7" rx="3" fill="${tab}"/>`;
@@ -1706,15 +1706,15 @@ function benchPb(d, ctx){
     s += `<circle cx="85" cy="58" r="33" fill="#c9cdd0" stroke="#7d8388"/><circle cx="85" cy="58" r="28" fill="${p ? '#0b0c0d' : '#1d1f21'}"/><circle cx="85" cy="58" r="${p ? 20 : 23}" fill="url(#bc${id})" stroke="${p ? '#111' : c.d}" stroke-width="${p ? 3 : 1}"/>`;
     if (!p) s += `<ellipse cx="78" cy="50" rx="8" ry="5" fill="rgba(255,255,255,.35)"/>`;
     else s += `<circle cx="85" cy="58" r="${p ? 20 : 23}" fill="rgba(0,0,0,.28)"/>`;
-    if (d.st.pin) s += `<rect class="bpin-badge" x="126" y="74" width="40" height="14" rx="7" fill="#d6332a"/><text x="146" y="84" font-size="8.5" font-weight="700" fill="#fff" text-anchor="middle">مدوس</text>`;
+    if (d.st.pin) s += `<rect class="bpin-badge" x="126" y="74" width="40" height="14" rx="7" fill="#d6332a"/><text x="146" y="84" font-size="8.5" font-weight="700" fill="#fff" text-anchor="middle">مضغوط</text>`;
   }
   s += '<!--/dh-->';
   const B = benchBlocks(d, 85, b => TYPES[d.type].op(d, b), ctx.live);
   s += B.svg;
-  let hit = `<circle class="ba${mush ? '' : ' hold'}" data-dev="${d.id}" data-act="${mush ? 'latch' : 'press'}" cx="85" cy="58" r="36" tabindex="0" role="button" aria-label="${mush ? 'زرار الطوارئ: اضغط عشان تدوس، واضغط تاني عشان تلفه' : 'اضغط واستمر على ' + esc(d.tag)}"/>`;
+  let hit = `<circle class="ba${mush ? '' : ' hold'}" data-dev="${d.id}" data-act="${mush ? 'latch' : 'press'}" cx="85" cy="58" r="36" tabindex="0" role="button" aria-label="${mush ? 'زر الطوارئ: اضغط ليُضغط، واضغط مرة أخرى لتديره' : 'اضغط باستمرار على ' + esc(d.tag)}"/>`;
   if (!mush && (d.blocks.some(b => b.k !== 'NC') || ctx.allowPinStop)){ // no pin on a STOP / NC-only button unless the exercise allows it
     const on = d.st.pin;
-    hit += `<g class="bpin${on ? ' on' : ''}" data-dev="${d.id}" data-act="pin" tabindex="0" role="button" aria-pressed="${on ? 'true' : 'false'}" aria-label="يخلي الزرار مدوس من غير ما تمسكه"><title>يخلي الزرار مدوس من غير ما تمسكه</title><rect x="126" y="24" width="40" height="44" rx="8"/><text x="146" y="42" font-size="9">${on ? 'سيبه' : 'خليه'}</text><text x="146" y="53" font-size="9">${on ? '' : 'مدوس'}</text><text x="146" y="64">📌</text></g>`;
+    hit += `<g class="bpin${on ? ' on' : ''}" data-dev="${d.id}" data-act="pin" tabindex="0" role="button" aria-pressed="${on ? 'true' : 'false'}" aria-label="يُبقي الزر مضغوطًا دون أن تمسكه"><title>يُبقي الزر مضغوطًا دون أن تمسكه</title><rect x="126" y="24" width="40" height="44" rx="8"/><text x="146" y="42" font-size="9">${on ? 'اتركه' : 'ثبّته'}</text><text x="146" y="53" font-size="9">${on ? '' : 'مضغوط'}</text><text x="146" y="64">📌</text></g>`;
   }
   return {svg:s, hit, terms:B.terms};
 }
@@ -1728,7 +1728,7 @@ function benchSel(d, ctx){
   s += '<!--/dh-->';
   const B = benchBlocks(d, 85, b => TYPES.sel.op(d, b), ctx.live);
   s += B.svg;
-  const hit = `<rect class="ba" data-dev="${d.id}" data-act="selL" x="4" y="22" width="81" height="76" tabindex="0" role="button" aria-label="لف ${esc(d.tag)} شمال"/><rect class="ba" data-dev="${d.id}" data-act="selR" x="85" y="22" width="81" height="76" tabindex="0" role="button" aria-label="لف ${esc(d.tag)} يمين"/>`;
+  const hit = `<rect class="ba" data-dev="${d.id}" data-act="selL" x="4" y="22" width="81" height="76" tabindex="0" role="button" aria-label="أدِر ${esc(d.tag)} يسارًا"/><rect class="ba" data-dev="${d.id}" data-act="selR" x="85" y="22" width="81" height="76" tabindex="0" role="button" aria-label="أدِر ${esc(d.tag)} يمينًا"/>`;
   return {svg:s, hit, terms:B.terms};
 }
 function benchLs(d, ctx){
@@ -1741,11 +1741,11 @@ function benchLs(d, ctx){
   if (!linked){
     s += `<rect x="6" y="94" width="150" height="4" fill="#7b8389"/><rect x="${cr-44}" y="72" width="36" height="18" rx="3" fill="#2f6fb5"/><rect x="${cr-10}" y="72" width="10" height="20" fill="#e0a21b"/><circle cx="${cr-36}" cy="92" r="4" fill="#2a2d30"/><circle cx="${cr-16}" cy="92" r="4" fill="#2a2d30"/>`;
     s += `<text x="${cr-26}" y="68" font-size="12" text-anchor="middle" fill="var(--muted)">${x > 0.5 ? '←' : '→'}</text>`;
-  } else s += `<text class="ar" x="56" y="70" font-size="11" text-anchor="middle" fill="var(--muted)">بيتحرك مع ${esc(d.cfg.cart)}</text>`;
+  } else s += `<text class="ar" x="56" y="70" font-size="11" text-anchor="middle" fill="var(--muted)">يتحرك مع ${esc(d.cfg.cart)}</text>`;
   s += '<!--/dh-->';
   const B = benchBlocks(d, 85, () => !!d.st.a, ctx.live);
   s += B.svg;
-  const hit = linked ? '' : `<rect class="ba" data-dev="${d.id}" data-act="cart" x="4" y="58" width="108" height="42" tabindex="0" role="button" aria-label="حرّك العربية ناحية الليمت سويتش أو رجّعها"/>`;
+  const hit = linked ? '' : `<rect class="ba" data-dev="${d.id}" data-act="cart" x="4" y="58" width="108" height="42" tabindex="0" role="button" aria-label="حرّك العربة نحو الليمت سويتش أو أعِدها"/>`;
   return {svg:s, hit, terms:B.terms};
 }
 function benchLamp(d, ctx){
@@ -1755,7 +1755,7 @@ function benchLamp(d, ctx){
   s += `<circle cx="85" cy="58" r="33" fill="#c9cdd0" stroke="#7d8388"/><circle cx="85" cy="58" r="33" fill="none" stroke="#5f666b" stroke-width="2" stroke-dasharray="2 3"/>`;
   s += `<g class="${on ? 'lit' : ''}" style="--glow:${c.lens}"><circle cx="85" cy="58" r="24" fill="${on ? `url(#ll${id})` : c.off}" stroke="#333"/></g>`;
   if (!on) s += `<ellipse cx="78" cy="50" rx="8" ry="5" fill="rgba(255,255,255,.22)"/>`;
-  if (burnt) s += `<path d="M70 43L100 73M100 43L70 73" stroke="#111" stroke-width="3"/><text class="ar" x="85" y="102" font-size="10" text-anchor="middle" fill="var(--bad)">اتحرقت</text>`;
+  if (burnt) s += `<path d="M70 43L100 73M100 43L70 73" stroke="#111" stroke-width="3"/><text class="ar" x="85" y="102" font-size="10" text-anchor="middle" fill="var(--bad)">احترق</text>`;
   s += '<!--/dh-->';
   const x = 85, y0 = 106;
   s += `<rect x="${x-22}" y="${y0}" width="44" height="84" rx="4" fill="#efeee9" stroke="#8c8f8a"/><text x="${x}" y="${y0-4}" font-size="12" text-anchor="middle" font-weight="700" fill="var(--ink)">X1</text><text x="${x}" y="${y0+100}" font-size="12" text-anchor="middle" font-weight="700" fill="var(--ink)">X2</text>`;
@@ -1790,7 +1790,7 @@ function benchSupply(d, ctx){
   const a = dc ? ['P24','0V'] : ['L','N'], lab = dc ? ['+24V','0V'] : ['L','N'];
   const terms = {};
   a.forEach((n, i) => { const x = 60 + i * 50; terms[n] = {x, y:118, dir:1}; s += `<text x="${x}" y="108" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink)">${lab[i]}</text>`; });
-  return {svg:s, hit:`<rect class="ba" data-dev="${d.id}" data-act="mcb" x="32" y="24" width="106" height="72" tabindex="0" role="button" aria-label="${dc ? 'مفتاح الباور سبلاي' : 'القاطع'}: شغّل أو افصل"/>`, terms};
+  return {svg:s, hit:`<rect class="ba" data-dev="${d.id}" data-act="mcb" x="32" y="24" width="106" height="72" tabindex="0" role="button" aria-label="${dc ? 'مفتاح مصدر التغذية' : 'القاطع'}: شغّل أو افصل"/>`, terms};
 }
 // generic DIN-style box for relays, contactors, timers, overloads, breakers, motors…
 function benchBox(d, o){
@@ -1808,7 +1808,7 @@ function benchGeneric(d, ctx){
   const T = d.type, w = ctx.w || CW * TYPES[T].span(d), mid = 95;
   if (T === 'contactor'){
     const aux = d.blocks, cl = d.st.closed;
-    const body = `<rect x="${w/2-44}" y="${mid-16}" width="88" height="30" rx="4" fill="#cfd2d4" stroke="#8a9096"/><rect x="${w/2-10}" y="${mid - (cl ? 6 : 12)}" width="20" height="12" fill="${cl ? '#1f9d55' : '#3a3e41'}"/><text x="${w/2}" y="${mid+10}" font-size="9" text-anchor="middle" fill="#333">${cl ? 'مقفول' : 'مفتوح'}</text>`;
+    const body = `<rect x="${w/2-44}" y="${mid-16}" width="88" height="30" rx="4" fill="#cfd2d4" stroke="#8a9096"/><rect x="${w/2-10}" y="${mid - (cl ? 6 : 12)}" width="20" height="12" fill="${cl ? '#1f9d55' : '#3a3e41'}"/><text x="${w/2}" y="${mid+10}" font-size="9" text-anchor="middle" fill="#333">${cl ? 'مغلق' : 'مفتوح'}</text>`;
     return benchBox(d, {w, sub:'كونتاكتور', top:tl(['A1',{n:'1',lab:'1/L1'},{n:'3',lab:'3/L2'},{n:'5',lab:'5/L3'}].concat(aux.map(b => b.t[0]))), bot:tl(['A2',{n:'2',lab:'2/T1'},{n:'4',lab:'4/T2'},{n:'6',lab:'6/T3'}].concat(aux.map(b => b.t[1]))), body});
   }
   if (T === 'relay'){
@@ -1819,7 +1819,7 @@ function benchGeneric(d, ctx){
   if (T === 'timer') return benchTimer(d, ctx);
   if (T === 'ol'){
     const h = d.st.heat || 0, c = w < 300;
-    const body = `<rect x="24" y="${mid-16}" width="${w-48}" height="10" rx="4" fill="#cfd2d4"/><rect x="24" y="${mid-16}" width="${(w-48) * h}" height="10" rx="4" fill="${d.st.trip ? '#d32f2f' : h > 0.7 ? '#e8590c' : '#e0a21b'}"/><text x="${w/2}" y="${mid+6}" font-size="${c ? 8.5 : 10}" text-anchor="middle" fill="${d.st.trip ? '#d32f2f' : '#333'}" font-weight="${d.st.trip ? 700 : 400}">Ir=${d.cfg.Ir}A · I=${r1(d.st.I || 0)}A${d.st.trip ? ' · TRIP ✗' : d.st.sp ? ' · فازة ناقصة!' : ''}</text>` + (d.st.trip ? `<rect x="${w/2-14}" y="${mid-40}" width="28" height="14" rx="2" fill="#d32f2f"/><text x="${w/2}" y="${mid-29}" font-size="9" font-weight="700" fill="#fff" text-anchor="middle">TRIP</text>` : '');
+    const body = `<rect x="24" y="${mid-16}" width="${w-48}" height="10" rx="4" fill="#cfd2d4"/><rect x="24" y="${mid-16}" width="${(w-48) * h}" height="10" rx="4" fill="${d.st.trip ? '#d32f2f' : h > 0.7 ? '#e8590c' : '#e0a21b'}"/><text x="${w/2}" y="${mid+6}" font-size="${c ? 8.5 : 10}" text-anchor="middle" fill="${d.st.trip ? '#d32f2f' : '#333'}" font-weight="${d.st.trip ? 700 : 400}">Ir=${d.cfg.Ir}A · I=${r1(d.st.I || 0)}A${d.st.trip ? ' · TRIP ✗' : d.st.sp ? ' · فاز ناقص!' : ''}</text>` + (d.st.trip ? `<rect x="${w/2-14}" y="${mid-40}" width="28" height="14" rx="2" fill="#d32f2f"/><text x="${w/2}" y="${mid-29}" font-size="9" font-weight="700" fill="#fff" text-anchor="middle">TRIP</text>` : '');
     const hit = `<g class="bpin" data-dev="${d.id}" data-act="olReset" tabindex="0" role="button" aria-label="ريست الأوفرلود"><rect x="${w/2-60}" y="${mid+12}" width="56" height="22" rx="5"/><text x="${w/2-32}" y="${mid+27}">Reset</text></g><g class="bpin" data-dev="${d.id}" data-act="olTest" tabindex="0" role="button" aria-label="اختبار فصل الأوفرلود"><rect x="${w/2+4}" y="${mid+12}" width="56" height="22" rx="5"/><text x="${w/2+32}" y="${mid+27}">Test</text></g>` +
       (d.cfg.fixed ? '' : `<g class="bpin" data-dev="${d.id}" data-act="irDn" tabindex="0" role="button" aria-label="قلّل Ir"><rect x="${w/2-60}" y="${mid-44}" width="40" height="20" rx="5"/><text x="${w/2-40}" y="${mid-30}">Ir −</text></g><g class="bpin" data-dev="${d.id}" data-act="irUp" tabindex="0" role="button" aria-label="زوّد Ir"><rect x="${w/2+20}" y="${mid-44}" width="40" height="20" rx="5"/><text x="${w/2+40}" y="${mid-30}">Ir +</text></g>`);
     return benchBox(d, {w, sub:'أوفرلود ' + (d.cfg.model || 'LRD'), top:tl(['1','3','5','95','97']), bot:tl(['2','4','6','96','98']), body, hit});
@@ -1827,9 +1827,9 @@ function benchGeneric(d, ctx){
   if (T === 'mcb' || T === 'fuse' || T === 'mpcb'){
     const n = d.cfg.poles || 3, top = [], bot = []; for (let i = 0; i < n; i++){ top.push(String(2*i+1)); bot.push(String(2*i+2)); }
     const on = d.st.on && !d.st.trip;
-    const body = T === 'fuse' ? (() => { let b = ''; for (let i = 0; i < n; i++){ const x = w/2 + (i - (n-1)/2) * Math.min(54, (w-40)/n); b += `<rect x="${x-9}" y="${mid-26}" width="18" height="52" rx="4" fill="#e9eaec" stroke="#7d8388"/><rect x="${x-5}" y="${mid-18}" width="10" height="36" rx="2" fill="${d.st.trip ? '#555' : '#f1dca6'}" stroke="#8a6d3b"/>${d.st.trip ? `<path d="M${x-5} ${mid-12}L${x+5} ${mid+12}M${x+5} ${mid-12}L${x-5} ${mid+12}" stroke="#d32f2f" stroke-width="2"/>` : `<path d="M${x} ${mid-16}V${mid+16}" stroke="#b87333" stroke-width="1.5"/>`}`; } return b + `<text class="ar" x="${w/2}" y="${mid+40}" font-size="9" text-anchor="middle" fill="${d.st.trip ? '#d32f2f' : '#333'}" font-weight="700">${d.st.trip ? 'ضرب ✗ (دوس عشان تغيّره)' : 'فيوز ' + esc(d.cfg.kind || 'gG') + ' ' + esc(d.cfg.label)}</text>`; })()
-      : `<rect x="${w/2-26}" y="${on ? mid-22 : mid-4}" width="52" height="18" rx="3" fill="${on ? '#1f9d55' : '#3a3e41'}"/><text x="${w/2}" y="${on ? mid-9 : mid+9}" font-size="10" font-weight="700" fill="#fff" text-anchor="middle">${on ? 'I ON' : 'O OFF'}</text>${d.st.trip ? `<rect x="${w/2+30}" y="${mid-24}" width="34" height="14" rx="2" fill="#d32f2f"/><text x="${w/2+47}" y="${mid-13}" font-size="9" font-weight="700" fill="#fff" text-anchor="middle">TRIP</text>` : ''}${T === 'mcb' && d.cfg.poles >= 3 ? `<text x="${w/2}" y="${mid+34}" font-size="8" text-anchor="middle" fill="#555">In=${ratingOf(d)}A · منحنى ${curveOf(d)} · I=${r1(d.st.I || 0)}A</text>` : T === 'mpcb' ? `<text x="${w/2}" y="${mid+34}" font-size="8" text-anchor="middle" fill="${d.st.trip ? '#d32f2f' : '#555'}">Ir=${d.cfg.Ir}A · I=${r1(d.st.I || 0)}A${d.st.sp ? ' · فازة ناقصة!' : ''}</text><rect x="${w/2-40}" y="${mid+40}" width="80" height="5" rx="2" fill="#cfd2d4"/><rect x="${w/2-40}" y="${mid+40}" width="${80 * (d.st.heat || 0)}" height="5" rx="2" fill="#e0a21b"/>` : ''}`;
-    const hit = T === 'fuse' ? `<rect class="ba" data-dev="${d.id}" data-act="fuse" x="20" y="${mid-24}" width="${w-40}" height="40" tabindex="0" role="button" aria-label="غيّر الفيوز"/>` : `<rect class="ba" data-dev="${d.id}" data-act="brk" x="${w/2-40}" y="${mid-26}" width="80" height="44" tabindex="0" role="button" aria-label="شغّل أو افصل ${esc(d.tag)}"/>`;
+    const body = T === 'fuse' ? (() => { let b = ''; for (let i = 0; i < n; i++){ const x = w/2 + (i - (n-1)/2) * Math.min(54, (w-40)/n); b += `<rect x="${x-9}" y="${mid-26}" width="18" height="52" rx="4" fill="#e9eaec" stroke="#7d8388"/><rect x="${x-5}" y="${mid-18}" width="10" height="36" rx="2" fill="${d.st.trip ? '#555' : '#f1dca6'}" stroke="#8a6d3b"/>${d.st.trip ? `<path d="M${x-5} ${mid-12}L${x+5} ${mid+12}M${x+5} ${mid-12}L${x-5} ${mid+12}" stroke="#d32f2f" stroke-width="2"/>` : `<path d="M${x} ${mid-16}V${mid+16}" stroke="#b87333" stroke-width="1.5"/>`}`; } return b + `<text class="ar" x="${w/2}" y="${mid+40}" font-size="9" text-anchor="middle" fill="${d.st.trip ? '#d32f2f' : '#333'}" font-weight="700">${d.st.trip ? 'انصهر ✗ (اضغط لاستبداله)' : 'فيوز ' + esc(d.cfg.kind || 'gG') + ' ' + esc(d.cfg.label)}</text>`; })()
+      : `<rect x="${w/2-26}" y="${on ? mid-22 : mid-4}" width="52" height="18" rx="3" fill="${on ? '#1f9d55' : '#3a3e41'}"/><text x="${w/2}" y="${on ? mid-9 : mid+9}" font-size="10" font-weight="700" fill="#fff" text-anchor="middle">${on ? 'I ON' : 'O OFF'}</text>${d.st.trip ? `<rect x="${w/2+30}" y="${mid-24}" width="34" height="14" rx="2" fill="#d32f2f"/><text x="${w/2+47}" y="${mid-13}" font-size="9" font-weight="700" fill="#fff" text-anchor="middle">TRIP</text>` : ''}${T === 'mcb' && d.cfg.poles >= 3 ? `<text x="${w/2}" y="${mid+34}" font-size="8" text-anchor="middle" fill="#555">In=${ratingOf(d)}A · منحنى ${curveOf(d)} · I=${r1(d.st.I || 0)}A</text>` : T === 'mpcb' ? `<text x="${w/2}" y="${mid+34}" font-size="8" text-anchor="middle" fill="${d.st.trip ? '#d32f2f' : '#555'}">Ir=${d.cfg.Ir}A · I=${r1(d.st.I || 0)}A${d.st.sp ? ' · فاز ناقص!' : ''}</text><rect x="${w/2-40}" y="${mid+40}" width="80" height="5" rx="2" fill="#cfd2d4"/><rect x="${w/2-40}" y="${mid+40}" width="${80 * (d.st.heat || 0)}" height="5" rx="2" fill="#e0a21b"/>` : ''}`;
+    const hit = T === 'fuse' ? `<rect class="ba" data-dev="${d.id}" data-act="fuse" x="20" y="${mid-24}" width="${w-40}" height="40" tabindex="0" role="button" aria-label="استبدل الفيوز"/>` : `<rect class="ba" data-dev="${d.id}" data-act="brk" x="${w/2-40}" y="${mid-26}" width="80" height="44" tabindex="0" role="button" aria-label="شغّل أو افصل ${esc(d.tag)}"/>`;
     if (T === 'mpcb' && d.cfg.aux){ top.push('13', '21'); bot.push('14', '22'); }
     return benchBox(d, {w, sub:T === 'mpcb' ? 'MPCB Ir=' + d.cfg.Ir + 'A' : T === 'fuse' ? 'فيوز' : 'MCB ' + d.cfg.label, top:tl(top), bot:tl(bot), body, hit, y2:150});
   }
@@ -1838,21 +1838,21 @@ function benchGeneric(d, ctx){
     const run = d.st.run, ang = d.st.ang || 0, six = d.cfg.term === 6, cx = six ? 90 : w/2, cy = 150;
     let body = `<circle cx="${cx}" cy="${cy}" r="30" fill="${d.cfg.look === 'pump' ? '#2f6fb5' : '#5d7f96'}" stroke="#2d4352"/><g transform="rotate(${ang} ${cx} ${cy})"><path d="M${cx} ${cy-22}V${cy+22}M${cx-22} ${cy}H${cx+22}" stroke="#e5e8ea" stroke-width="5" stroke-linecap="round"/></g><circle cx="${cx}" cy="${cy}" r="5" fill="#d32f2f"/>`;
     const mm6 = ctx.res && ctx.res.mot && ctx.res.mot[d.id];
-    body += `<text class="ar" x="${cx}" y="${cy+46}" font-size="11" text-anchor="middle" fill="${d.st.fault ? 'var(--bad)' : run ? GOOD : 'var(--ink)'}" font-weight="700">${run ? (run > 0 ? 'يمين ↻' : 'شمال ↺') + (d.st.mode === 'Y' ? ' · ستار Y' : d.st.mode === 'D' && six ? ' · دلتا Δ' : '') : d.st.fault === 'burn' ? 'اتحرق 🔥' : d.st.fault ? 'بيزن (فازتين)' : 'واقف'}</text>`;
-    if (mm6 && mm6.run) body += `<text class="ar" x="${cx}" y="${cy+60}" font-size="9" text-anchor="middle" fill="${mm6.over ? 'var(--bad)' : mm6.weak ? 'var(--warn)' : 'var(--muted)'}" font-weight="${mm6.over || mm6.weak ? 700 : 400}">${mm6.over ? '⚠ ' + mm6.vw + 'V على ملف ' + d.cfg.vD + 'V: هيتحرق' : mm6.weak ? mm6.vw + 'V على ملف ' + d.cfg.vD + 'V: عزم ضعيف' : 'كل ملف ' + mm6.vw + 'V ✓'} · I=${r1(mm6.I * (d.cfg.In || 5))}A</text>`;
+    body += `<text class="ar" x="${cx}" y="${cy+46}" font-size="11" text-anchor="middle" fill="${d.st.fault ? 'var(--bad)' : run ? GOOD : 'var(--ink)'}" font-weight="700">${run ? (run > 0 ? 'يمين ↻' : 'يسار ↺') + (d.st.mode === 'Y' ? ' · ستار Y' : d.st.mode === 'D' && six ? ' · دلتا Δ' : '') : d.st.fault === 'burn' ? 'احترق 🔥' : d.st.fault ? 'يطنّ (فازان)' : 'متوقف'}</text>`;
+    if (mm6 && mm6.run) body += `<text class="ar" x="${cx}" y="${cy+60}" font-size="9" text-anchor="middle" fill="${mm6.over ? 'var(--bad)' : mm6.weak ? 'var(--warn)' : 'var(--muted)'}" font-weight="${mm6.over || mm6.weak ? 700 : 400}">${mm6.over ? '⚠ ' + mm6.vw + 'V على ملف ' + d.cfg.vD + 'V: سيحترق' : mm6.weak ? mm6.vw + 'V على ملف ' + d.cfg.vD + 'V: عزم ضعيف' : 'كل ملف ' + mm6.vw + 'V ✓'} · I=${r1(mm6.I * (d.cfg.In || 5))}A</text>`;
     else body += `<text x="${cx}" y="${cy+60}" font-size="8" text-anchor="middle" fill="var(--muted)">${d.cfg.vD} Δ / ${d.cfg.vY} Y · ${d.cfg.In}A</text>`;
     if (six){
-      const terms = {}; let s = cellHead(d, (d.cfg.look === 'pump' ? 'طلمبة' : 'موتور 3~') + ' ' + d.cfg.kW + 'kW · 6 أطراف', w) + body;
+      const terms = {}; let s = cellHead(d, (d.cfg.look === 'pump' ? 'مضخة' : 'محرك 3~') + ' ' + d.cfg.kW + 'kW · 6 أطراف', w) + body;
       s += `<rect x="176" y="34" width="150" height="110" rx="6" fill="#d9dcde" stroke="#7d8388"/>`;
       [['W2','U2','V2'],['U1','V1','W1']].forEach((row, r) => row.forEach((n, i) => { const x = 206 + i * 46, y = r ? 118 : 60; terms[n] = {x, y, dir:r ? 1 : -1}; s += `<text x="${x}" y="${r ? y - 14 : y + 24}" font-size="11" font-weight="700" text-anchor="middle" fill="#222">${n}</text>`; }));
       s += `<text x="251" y="92" font-size="7.5" text-anchor="middle" fill="#555">TERMINAL BOX</text>`;
       return {svg:s, hit:'', terms};
     }
-    return benchBox(d, {w, sub:d.cfg.look === 'pump' ? 'طلمبة' : 'موتور 3~', top:tl(['U','V','W']), bot:[], body, y1:40, y2:80});
+    return benchBox(d, {w, sub:d.cfg.look === 'pump' ? 'مضخة' : 'محرك 3~', top:tl(['U','V','W']), bot:[], body, y1:40, y2:80});
   }
   if (T === 'cart'){
     const x = d.st.x, x0 = 40, x1 = w - 40, X = x0 + clamp(x, -0.04, 1.04) * (x1 - x0), m = ctx.res && ctx.res.mot && ctx.res.mot[d.cfg.motor], mv = m && m.run ? m.dir * d.cfg.sign : 0;
-    let s = cellHead(d, d.cfg.title || (d.cfg.box ? 'سير وكرتونة' : d.cfg.hoist ? 'ونش' : 'عربية على سير'), w);
+    let s = cellHead(d, d.cfg.title || (d.cfg.box ? 'سير وكرتونة' : d.cfg.hoist ? 'ونش' : 'عربة على سير'), w);
     s += `<rect x="${x0 - 20}" y="96" width="${x1 - x0 + 40}" height="8" rx="2" fill="#7b8389"/><path d="M${x0 - 20} 108H${x1 + 20}" stroke="var(--muted)" stroke-width="1" opacity=".5"/>`;
     if (d.cfg.box || d.cfg.hoist) s += `<circle cx="${x0 - 14}" cy="100" r="7" fill="#3a3e41"/><circle cx="${x1 + 14}" cy="100" r="7" fill="#3a3e41"/>`;
     s += `<rect x="${x0 - 4}" y="72" width="8" height="24" fill="#e0a21b" stroke="#8a6200"/><rect x="${x1 - 4}" y="72" width="8" height="24" fill="#e0a21b" stroke="#8a6200"/>`;
@@ -1861,7 +1861,7 @@ function benchGeneric(d, ctx){
     else if (d.cfg.hoist) s += `<rect x="${X-14}" y="40" width="28" height="10" fill="#e0a21b" stroke="#8a6200"/><path d="M${X} 50V62" stroke="#333" stroke-width="2"/><rect x="${X-22}" y="62" width="44" height="34" rx="3" fill="#8a9096" stroke="#333"/><text class="ar" x="${X}" y="84" font-size="9" fill="#fff" text-anchor="middle">حمولة</text>`;
     else s += `<rect x="${X-22}" y="60" width="44" height="30" rx="5" fill="#2f6fb5" stroke="#173b63"/><circle cx="${X-12}" cy="94" r="6" fill="#2a2d30"/><circle cx="${X+12}" cy="94" r="6" fill="#2a2d30"/>`;
     if (mv) s += `<text x="${X}" y="52" font-size="14" text-anchor="middle" fill="${GOOD}" font-weight="700">${mv > 0 ? '→' : '←'}</text>`;
-    s += `<text class="ar" x="${w/2}" y="146" font-size="10" text-anchor="middle" fill="${d.st.crash ? 'var(--bad)' : 'var(--muted)'}" font-weight="${d.st.crash ? 700 : 400}">${d.st.crash ? (d.cfg.hoist ? 'الونش عدّى نهاية الشوط! (خطر)' : 'العربية عدّت آخر المشوار!') : mv > 0 ? (d.cfg.hoist ? 'طالع ناحية ' : 'ماشية ناحية ') + esc(d.cfg.labB) : mv < 0 ? (d.cfg.hoist ? 'نازل ناحية ' : 'راجعة ناحية ') + esc(d.cfg.labA) : (d.cfg.box ? 'السير واقف' : 'واقفة')}</text>`;
+    s += `<text class="ar" x="${w/2}" y="146" font-size="10" text-anchor="middle" fill="${d.st.crash ? 'var(--bad)' : 'var(--muted)'}" font-weight="${d.st.crash ? 700 : 400}">${d.st.crash ? (d.cfg.hoist ? 'تجاوز الونش نهاية الشوط! (خطر)' : 'تجاوزت العربة نهاية المشوار!') : mv > 0 ? (d.cfg.hoist ? 'صاعد نحو ' : 'تتحرك نحو ') + esc(d.cfg.labB) : mv < 0 ? (d.cfg.hoist ? 'نازل نحو ' : 'عائدة نحو ') + esc(d.cfg.labA) : (d.cfg.box ? 'السير متوقف' : 'متوقفة')}</text>`;
     return {svg:s, hit:'', terms:{}};
   }
   if (T === 'tank'){
@@ -1898,9 +1898,9 @@ function benchTimer(d, ctx){
   s += `<text x="${w - 20}" y="70" font-size="6.5" fill="#333" text-anchor="end">${esc(d.cfg.model)}</text>`;
   s += `<rect x="70" y="82" width="${w - 86}" height="20" rx="4" fill="#26313a"/><text x="${70 + (w - 86) / 2}" y="96" font-size="12" font-weight="700" text-anchor="middle" fill="${timing ? '#5cff7a' : '#8aa0ad'}">${timing ? r1(rem).toFixed(1) + ' s' : out ? 'OUT ✓' : '--.- s'}</text>`;
   s += `<text x="${70 + (w - 86) / 2}" y="111" font-size="7" fill="#222" text-anchor="middle" font-weight="700">${sd ? 'STAR-DELTA' : CL.TIMER_MODES[m]}${m === 'cyc' ? ' ' + d.cfg.ton + '/' + d.cfg.toff + 's' : ''}</text>`;
-  s += `<text class="ar" x="${70 + (w - 86) / 2}" y="121" font-size="7.5" text-anchor="middle" fill="${out ? GOOD : '#555'}" font-weight="${out ? 700 : 400}">${sd ? (on && el >= T ? '17-28 مقفول' : on ? '17-18 مقفول' : 'مفتوح') : out ? '15-18 مقفول' : '15-16 مقفول'}</text>`;
+  s += `<text class="ar" x="${70 + (w - 86) / 2}" y="121" font-size="7.5" text-anchor="middle" fill="${out ? GOOD : '#555'}" font-weight="${out ? 700 : 400}">${sd ? (on && el >= T ? '17-28 مغلق' : on ? '17-18 مغلق' : 'مفتوح') : out ? '15-18 مغلق' : '15-16 مغلق'}</text>`;
   const bw = d.cfg.multi ? 44 : 50;
-  let hit = `<g class="bpin" data-dev="${d.id}" data-act="tDn" tabindex="0" role="button" aria-label="قلّل الزمن"><rect x="12" y="132" width="${bw}" height="20" rx="5"/><text x="${12 + bw/2}" y="146">− زمن</text></g><g class="bpin" data-dev="${d.id}" data-act="tUp" tabindex="0" role="button" aria-label="زوّد الزمن"><rect x="${w - 12 - bw}" y="132" width="${bw}" height="20" rx="5"/><text x="${w - 12 - bw/2}" y="146">+ زمن</text></g>`;
+  let hit = `<g class="bpin" data-dev="${d.id}" data-act="tDn" tabindex="0" role="button" aria-label="قلّل الزمن"><rect x="12" y="132" width="${bw}" height="20" rx="5"/><text x="${12 + bw/2}" y="146">− زمن</text></g><g class="bpin" data-dev="${d.id}" data-act="tUp" tabindex="0" role="button" aria-label="زِد الزمن"><rect x="${w - 12 - bw}" y="132" width="${bw}" height="20" rx="5"/><text x="${w - 12 - bw/2}" y="146">+ زمن</text></g>`;
   if (d.cfg.multi) hit += `<g class="bpin" data-dev="${d.id}" data-act="tMode" tabindex="0" role="button" aria-label="غيّر وظيفة التايمر"><rect x="${w/2 - 24}" y="132" width="48" height="20" rx="5"/><text x="${w/2}" y="146">FUNC</text></g>`;
   place(sd ? ['A1','17'] : ['A1','15'], 44, -1); place(sd ? ['A2','18','28'] : ['A2','16','18'], 172, 1);
   return {svg:s, hit, terms};
@@ -1934,8 +1934,8 @@ function benchRelay(d, ctx){
     if (no) s += `<path d="M${x-8} 138H${x-2}" stroke="${on ? GOOD : '#7a4f1c'}" stroke-width="2.4"/>`;
     s += `<path d="M${x+8} 130L${x-2} ${on ? (no ? 138 : 126) : (nc ? 122 : 134)}" stroke="${GOOD}" stroke-width="2"/>`;
     s += `<text x="${x-10}" y="${nc ? 125 : 141}" font-size="6" fill="#243b52" text-anchor="end">${esc(nc ? b.t[1] : b.t[1])}</text>${co ? `<text x="${x-10}" y="141" font-size="6" fill="#243b52" text-anchor="end">${esc(b.t[2])}</text>` : ''}`;
-    const rcl = co ? true : blockClosed(b, on), rcap = co ? `${b.t[0]}-${on ? b.t[2] : b.t[1]} مقفول` : `${b.k} · ${rcl ? 'مقفول' : 'مفتوح'}`;
-    s += `<text class="blk-cap" data-blk="${b.t[0]}-${b.t[1]}" x="${x}" y="161" font-size="6" font-weight="700" fill="${rcl ? CAPGRN_D : CAPRED_D}" text-anchor="middle">${rcap}${on ? ' (شغال)' : ''}</text>`;
+    const rcl = co ? true : blockClosed(b, on), rcap = co ? `${b.t[0]}-${on ? b.t[2] : b.t[1]} مغلق` : `${b.k} · ${rcl ? 'مغلق' : 'مفتوح'}`;
+    s += `<text class="blk-cap" data-blk="${b.t[0]}-${b.t[1]}" x="${x}" y="161" font-size="6" font-weight="700" fill="${rcl ? CAPGRN_D : CAPRED_D}" text-anchor="middle">${rcap}${on ? ' (يعمل)' : ''}</text>`;
   });
   place(top, 44, -1); place(bot, 162, 1);
   return {svg:s, hit:'', terms};
@@ -1952,11 +1952,11 @@ function benchContactor(d, ctx){
     const sl = [['A1', 50], ['A2', 76]]; aux.forEach((b, i) => { sl.push([b.t[0], 106 + i * 50], [b.t[1], 130 + i * 50]); });
     s += `<rect x="${bx - 4}" y="36" width="${w - bx - 12}" height="${140 + ex3}" rx="6" fill="#3b3f43" stroke="#1d2022"/>`;
     sl.forEach(([n, y]) => { terms[n] = {x:16, y, dir:0, side:'l'}; s += `<text x="34" y="${y + 4}" font-size="10" font-weight="700" fill="#eee">${esc(n)}</text>`; });
-    if (aux.length) s += aux.map((b, i) => { const acl = blockClosed(b, cl); return `<rect x="${bx + 2}" y="${100 + i * 50}" width="30" height="36" rx="3" fill="#565c61" stroke="#2a2d30"/><text x="${bx + 17}" y="${110 + i * 50}" font-size="8" fill="#eee" text-anchor="middle">${b.k}</text><text class="blk-cap" data-blk="${b.t[0]}-${b.t[1]}" x="${bx + 17}" y="${121 + i * 50}" font-size="7" font-weight="700" fill="${acl ? CAPGRN_D : CAPRED_D}" text-anchor="middle">${acl ? 'مقفول' : 'مفتوح'}</text>${cl ? `<text x="${bx + 17}" y="${131 + i * 50}" font-size="6.5" fill="${acl ? CAPGRN_D : CAPRED_D}" text-anchor="middle">(شغال)</text>` : ''}`; }).join('');
+    if (aux.length) s += aux.map((b, i) => { const acl = blockClosed(b, cl); return `<rect x="${bx + 2}" y="${100 + i * 50}" width="30" height="36" rx="3" fill="#565c61" stroke="#2a2d30"/><text x="${bx + 17}" y="${110 + i * 50}" font-size="8" fill="#eee" text-anchor="middle">${b.k}</text><text class="blk-cap" data-blk="${b.t[0]}-${b.t[1]}" x="${bx + 17}" y="${121 + i * 50}" font-size="7" font-weight="700" fill="${acl ? CAPGRN_D : CAPRED_D}" text-anchor="middle">${acl ? 'مغلق' : 'مفتوح'}</text>${cl ? `<text x="${bx + 17}" y="${131 + i * 50}" font-size="6.5" fill="${acl ? CAPGRN_D : CAPRED_D}" text-anchor="middle">(يعمل)</text>` : ''}`; }).join('');
     const px = c ? 76 : 100, pw = c ? 84 : 128;
     s += `<rect x="${px}" y="64" width="${pw}" height="22" rx="3" fill="#1b1d1f"/><rect x="${px + 4}" y="${cl ? 72 : 66}" width="${pw - 8}" height="12" rx="2" fill="#cfd2d4"/><text x="${px + pw/2}" y="${cl ? 81 : 75}" font-size="8" fill="#222" text-anchor="middle" font-weight="700">${cl ? '▼ I' : '0'}</text>`;
     s += `<rect x="${px}" y="92" width="${pw}" height="56" rx="3" fill="#e9eaec" stroke="#9aa1a6"/><text x="${px + pw/2}" y="106" font-size="9" fill="#222" text-anchor="middle" font-weight="700">${esc(d.cfg.model)}</text><text x="${px + pw/2}" y="118" font-size="7" fill="#333" text-anchor="middle">AC-3 ${esc(d.cfg.ac3)}</text><text x="${px + pw/2}" y="130" font-size="8" fill="#222" text-anchor="middle" font-weight="700">COIL ${d.cfg.v}V${d.cfg.v <= 48 ? 'DC' : '~'}</text><text x="${px + pw/2}" y="142" font-size="7" fill="${en ? GOOD : '#777'}" text-anchor="middle" font-weight="700">${en ? 'A1-A2 ON' : 'A1-A2 OFF'}</text>`;
-    s += `<text class="ar" x="${w/2}" y="${H - 5}" font-size="10" text-anchor="middle" fill="${cl ? GOOD : 'var(--bad)'}" font-weight="700">${cl ? 'شغال ✓' : (en ? 'متقفل ميكانيكيًا' : '')}</text>`;
+    s += `<text class="ar" x="${w/2}" y="${H - 5}" font-size="10" text-anchor="middle" fill="${cl ? GOOD : 'var(--bad)'}" font-weight="700">${cl ? 'يعمل ✓' : (en ? 'مقفل ميكانيكيًا' : '')}</text>`;
     return {svg:s, hit:'', terms};
   }
   if (c) return benchGeneric(d, ctx);
@@ -1967,11 +1967,11 @@ function benchContactor(d, ctx){
   top.forEach((t, i) => { terms[t.n] = {x:xs(i), y:44, dir:-1}; s += screwLab(xs(i), 44, t.lab || t.n, -1); });
   bot.forEach((t, i) => { terms[t.n] = {x:xs(i), y:162, dir:1}; s += screwLab(xs(i), 162, t.lab || t.n, 1); });
   // aux block face
-  if (aux.length) s += `<rect x="${xs(4) - 22}" y="64" width="${aux.length === 3 ? 136 : aux.length * 52 - 8}" height="86" rx="3" fill="#565c61" stroke="#2a2d30"/>${aux.map((b, i) => { const acl = blockClosed(b, cl); return `<text x="${xs(4 + i)}" y="98" font-size="8" fill="#eee" text-anchor="middle">${b.k}</text><text class="blk-cap" data-blk="${b.t[0]}-${b.t[1]}" x="${xs(4 + i)}" y="113" font-size="7.5" font-weight="700" fill="${acl ? CAPGRN_D : CAPRED_D}" text-anchor="middle">${acl ? 'مقفول' : 'مفتوح'}</text>${cl ? `<text x="${xs(4 + i)}" y="125" font-size="7" fill="${acl ? CAPGRN_D : CAPRED_D}" text-anchor="middle">(شغال)</text>` : ''}`; }).join('')}`;
+  if (aux.length) s += `<rect x="${xs(4) - 22}" y="64" width="${aux.length === 3 ? 136 : aux.length * 52 - 8}" height="86" rx="3" fill="#565c61" stroke="#2a2d30"/>${aux.map((b, i) => { const acl = blockClosed(b, cl); return `<text x="${xs(4 + i)}" y="98" font-size="8" fill="#eee" text-anchor="middle">${b.k}</text><text class="blk-cap" data-blk="${b.t[0]}-${b.t[1]}" x="${xs(4 + i)}" y="113" font-size="7.5" font-weight="700" fill="${acl ? CAPGRN_D : CAPRED_D}" text-anchor="middle">${acl ? 'مغلق' : 'مفتوح'}</text>${cl ? `<text x="${xs(4 + i)}" y="125" font-size="7" fill="${acl ? CAPGRN_D : CAPRED_D}" text-anchor="middle">(يعمل)</text>` : ''}`; }).join('')}`;
   // carrier window + label plate
   s += `<rect x="60" y="64" width="128" height="22" rx="3" fill="#1b1d1f"/><rect x="64" y="${cl ? 72 : 66}" width="120" height="12" rx="2" fill="#cfd2d4"/><text x="124" y="${cl ? 81 : 75}" font-size="8" fill="#222" text-anchor="middle" font-weight="700">${cl ? '▼ I' : '0'}</text>`;
   s += `<rect x="60" y="92" width="128" height="56" rx="3" fill="#e9eaec" stroke="#9aa1a6"/><text x="124" y="106" font-size="9" fill="#222" text-anchor="middle" font-weight="700">${esc(d.cfg.model)}</text><text x="124" y="118" font-size="7" fill="#333" text-anchor="middle">AC-3 ${esc(d.cfg.ac3)}</text><text x="124" y="130" font-size="8" fill="#222" text-anchor="middle" font-weight="700">COIL ${d.cfg.v}V${d.cfg.v <= 48 ? 'DC' : '~'}</text><text x="124" y="142" font-size="7" fill="${en ? GOOD : '#777'}" text-anchor="middle" font-weight="700">${en ? 'A1-A2 ON' : 'A1-A2 OFF'}</text>`;
-  s += `<text class="ar" x="${w/2}" y="203" font-size="10" text-anchor="middle" fill="${cl ? GOOD : 'var(--bad)'}" font-weight="700">${cl ? 'شغال ✓' : (en ? 'متقفل ميكانيكيًا' : '')}</text>`;
+  s += `<text class="ar" x="${w/2}" y="203" font-size="10" text-anchor="middle" fill="${cl ? GOOD : 'var(--bad)'}" font-weight="700">${cl ? 'يعمل ✓' : (en ? 'مقفل ميكانيكيًا' : '')}</text>`;
   return {svg:s, hit:'', terms};
 }
 // 3-phase motor with terminal box (1 cell)
@@ -1993,11 +1993,11 @@ function benchMotor(d, ctx){
   s += `<circle cx="${cx}" cy="${cy}" r="18" fill="#243745" stroke="#111"/>`;
   s += `<g>${run ? `<animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="${run > 0 ? 360 : -360} ${cx} ${cy}" dur="1.2s" repeatCount="indefinite"/>` : ''}<path d="M${cx} ${cy-14}V${cy+14}M${cx-14} ${cy}H${cx+14}" stroke="#e5e8ea" stroke-width="4" stroke-linecap="round"/><circle cx="${cx}" cy="${cy-10}" r="3.5" fill="#f3c613"/></g>`;
   s += `<circle cx="${cx}" cy="${cy}" r="4" fill="#d32f2f"/>`;
-  s += `<text class="ar" x="${cx + 38}" y="${cy + 4}" font-size="11" text-anchor="middle" fill="${fault ? 'var(--bad)' : run ? GOOD : 'var(--muted)'}" font-weight="700">${run ? (run > 0 ? 'يمين ↻' : 'شمال ↺') : fault === 'burn' ? 'اتحرق 🔥' : fault ? 'بيزن!' : 'واقف'}</text>`;
+  s += `<text class="ar" x="${cx + 38}" y="${cy + 4}" font-size="11" text-anchor="middle" fill="${fault ? 'var(--bad)' : run ? GOOD : 'var(--muted)'}" font-weight="700">${run ? (run > 0 ? 'يمين ↻' : 'يسار ↺') : fault === 'burn' ? 'احترق 🔥' : fault ? 'يطنّ!' : 'متوقف'}</text>`;
   const mm = ctx.res && ctx.res.mot && ctx.res.mot[d.id];
   if (mm && (mm.run || mm.fault)) s += `<text x="${cx + 38}" y="${cy + 17}" font-size="9" text-anchor="middle" fill="${mm.start || mm.fault ? 'var(--bad)' : 'var(--muted)'}" font-weight="700">I=${r1(mm.I * (d.cfg.In || 5))}A${mm.start ? ' ⚡بدء' : ''}</text>`;
   else s += `<text x="${cx + 38}" y="${cy + 17}" font-size="8" text-anchor="middle" fill="var(--muted)">In=${d.cfg.In || 5}A</text>`;
-  if (fault === '1ph') s += `<text class="ar" x="${cx - 36}" y="${cy + 4}" font-size="9" text-anchor="middle" fill="var(--bad)" font-weight="700">فازتين بس</text>`;
+  if (fault === '1ph') s += `<text class="ar" x="${cx - 36}" y="${cy + 4}" font-size="9" text-anchor="middle" fill="var(--bad)" font-weight="700">فازان فقط</text>`;
   return {svg:s, hit:'', terms};
 }
 
@@ -2035,8 +2035,8 @@ CL.defineType('prox', {
   links(d, force){ if (force) return [['BN','BK'], ['BU','BK']]; return TYPES.prox.op(d) ? [[d.cfg.pnp ? 'BN' : 'BU', 'BK']] : []; },
   loads(d){ return [{a:'BN', b:'BU', k:'coil', v:d.cfg.v}]; },
   apply(d, s){ Object.assign(d.st, s); if ('a' in s && !('x' in s)) d.st.x = s.a ? 1 : 0; },
-  states(d){ return [{label:d.cfg.kind === 'photo' ? 'الشعاع واصل (مفيش حاجة)' : 'مفيش جسم قدامه', st:{a:0}}, {label:d.cfg.kind === 'photo' ? 'جسم قاطع الشعاع' : 'جسم في مدى الحساس', st:{a:1}}]; },
-  simRows(d){ const on = !!d.st.a !== !!d.cfg.nc; return [{lab:'BK', k:(d.cfg.pnp ? 'PNP' : 'NPN') + ' ' + (d.cfg.nc ? 'NC' : 'NO'), c:on, txt:on ? (d.cfg.pnp ? 'خرج +24V' : 'خرج 0V') : 'مفيش خرج'}]; },
+  states(d){ return [{label:d.cfg.kind === 'photo' ? 'الشعاع متصل (لا يوجد جسم)' : 'لا يوجد جسم أمامه', st:{a:0}}, {label:d.cfg.kind === 'photo' ? 'جسم يقطع الشعاع' : 'جسم في مدى الحساس', st:{a:1}}]; },
+  simRows(d){ const on = !!d.st.a !== !!d.cfg.nc; return [{lab:'BK', k:(d.cfg.pnp ? 'PNP' : 'NPN') + ' ' + (d.cfg.nc ? 'NC' : 'NO'), c:on, txt:on ? (d.cfg.pnp ? 'خرج +24V' : 'خرج 0V') : 'لا يوجد خرج'}]; },
   tick(d, dt, ctx){
     if (!d.cfg.cart) return false;
     const c = ctx.byId[d.cfg.cart]; if (!c) return false;
@@ -2052,7 +2052,7 @@ CL.PROX_AR = {ind:'حساس تقارب حثّي (Inductive)', cap:'حساس تق
 CL.art.motorCut = function(d, o){
   o = o || {}; const id = ++UID, run = o.run != null ? o.run : (d.st && d.st.run), dir = run > 0 || run === true ? 1 : run < 0 ? -1 : 0;
   const rpm = o.rpm || (d.cfg && d.cfg.rpm) || 1430, T = 60 / Math.max(60, rpm) * 8; // animation period (slowed ×8 so the eye can follow)
-  let s = `<svg viewBox="0 0 440 262" role="img" aria-label="قطاع في موتور إندكشن 3 فاز"><defs>${copper(id)}<linearGradient id="fr${id}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#8aa6b8"/><stop offset=".5" stop-color="#4f6f86"/><stop offset="1" stop-color="#2f4659"/></linearGradient><linearGradient id="sh${id}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#e6e9eb"/><stop offset=".5" stop-color="#9aa4ab"/><stop offset="1" stop-color="#5d6871"/></linearGradient></defs><g style="color:var(--ink)">`;
+  let s = `<svg viewBox="0 0 440 262" role="img" aria-label="قطاع في محرك حثي ثلاثي الفاز"><defs>${copper(id)}<linearGradient id="fr${id}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#8aa6b8"/><stop offset=".5" stop-color="#4f6f86"/><stop offset="1" stop-color="#2f4659"/></linearGradient><linearGradient id="sh${id}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#e6e9eb"/><stop offset=".5" stop-color="#9aa4ab"/><stop offset="1" stop-color="#5d6871"/></linearGradient></defs><g style="color:var(--ink)">`;
   s += `<text class="ar" x="150" y="18" font-size="12" text-anchor="middle" fill="currentColor">قطاع طولي</text>`;
   // frame with fins (upper half cut away)
   s += `<rect x="60" y="120" width="190" height="60" rx="8" fill="url(#fr${id})" stroke="#243745"/>${[0,1,2,3,4,5,6,7,8,9,10].map(i => `<path d="M${72 + i * 16} 122V178" stroke="#2f4659" stroke-width="1.4" opacity=".7"/>`).join('')}`;
@@ -2074,17 +2074,17 @@ CL.art.motorCut = function(d, o){
   s += `<rect x="120" y="36" width="70" height="26" rx="3" fill="#8f979c" stroke="#4b5257"/><text x="155" y="52" font-size="7" fill="#222" text-anchor="middle">TERMINAL BOX</text><path d="M135 62V64M155 62V64M175 62V64" stroke="#b87333" stroke-width="3"/>`;
   // labels
   const lab = (x1, y1, x2, y2, t, anc) => `<path d="M${x1} ${y1}L${x2} ${y2}" stroke="currentColor" stroke-width=".9" opacity=".7"/><text class="ar" x="${x2 + (anc === 'end' ? -3 : 3)}" y="${y2 + 4}" font-size="10" fill="currentColor" text-anchor="${anc || 'start'}">${t}</text>`;
-  s += lab(155, 40, 220, 28, 'علبة الأطراف (U1 V1 W1 / W2 U2 V2)') + lab(150, 70, 262, 70, 'الاستاتور: شرايح حديد وملفات 3 فاز') + lab(150, 124, 262, 96, 'الروتور: قفص سنجابي (قضبان ألومنيوم + حلقتين)') + lab(238, 112, 300, 160, 'رولمان بلي') + lab(47, 100, 40, 200, 'المروحة (تبريد ذاتي)') + lab(296, 125, 330, 190, 'العمود (الحمل)') + lab(155, 180, 200, 212, 'الجسم بزعانف التبريد');
+  s += lab(155, 40, 220, 28, 'علبة الأطراف (U1 V1 W1 / W2 U2 V2)') + lab(150, 70, 262, 70, 'الستاتور: رقائق حديد وملفات ثلاثية الفاز') + lab(150, 124, 262, 96, 'الروتور: قفص سنجابي (قضبان ألومنيوم + حلقتان)') + lab(238, 112, 300, 160, 'رولمان بلي') + lab(47, 100, 40, 200, 'المروحة (تبريد ذاتي)') + lab(296, 125, 330, 190, 'العمود (الحمل)') + lab(155, 180, 200, 212, 'الجسم بزعانف التبريد');
   // end view with rotating field (right)
   const cx = 372, cy = 92, R = 44;
-  s += `<text class="ar" x="${cx}" y="18" font-size="12" text-anchor="middle" fill="currentColor">من الناحية (المجال الدوّار)</text><circle cx="${cx}" cy="${cy}" r="${R + 10}" fill="#8a9096" stroke="#444"/>`;
+  s += `<text class="ar" x="${cx}" y="18" font-size="12" text-anchor="middle" fill="currentColor">من الجهة (المجال الدوّار)</text><circle cx="${cx}" cy="${cy}" r="${R + 10}" fill="#8a9096" stroke="#444"/>`;
   for (let i = 0; i < 12; i++){ const a = i * 30 * Math.PI / 180; s += `<path d="M${cx + (R + 1) * Math.cos(a)} ${cy + (R + 1) * Math.sin(a)}L${cx + (R + 9) * Math.cos(a)} ${cy + (R + 9) * Math.sin(a)}" stroke="#d9924f" stroke-width="4"/>`; }
   s += `<circle cx="${cx}" cy="${cy}" r="${R - 2}" fill="#6d7479" stroke="#333"/>`;
   s += `<g>${dir ? `<animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="${dir * 360} ${cx} ${cy}" dur="${(T * 0.95).toFixed(2)}s" repeatCount="indefinite"/>` : ''}${[0,1,2,3,4,5,6,7,8,9,10,11,12,13].map(i => { const a = i * 360 / 14 * Math.PI / 180; return `<circle cx="${cx + (R - 9) * Math.cos(a)}" cy="${cy + (R - 9) * Math.sin(a)}" r="3" fill="#d9924f"/>`; }).join('')}<circle cx="${cx}" cy="${cy}" r="7" fill="url(#sh${id})" stroke="#555"/><rect x="${cx - 2}" y="${cy - 7}" width="4" height="5" fill="#333"/></g>`;
   // the stator field: a rotating arrow (slightly faster than the rotor = slip)
   s += `<g>${dir ? `<animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="${dir * 360} ${cx} ${cy}" dur="${(T * 0.95 * 0.96).toFixed(2)}s" repeatCount="indefinite"/>` : ''}<path d="M${cx} ${cy - R + 2}L${cx - 6} ${cy - R + 14}L${cx + 6} ${cy - R + 14}Z" fill="${dir ? '#36e070' : '#aaa'}"/><text x="${cx}" y="${cy - R + 24}" font-size="7" fill="#fff" text-anchor="middle">N</text></g>`;
-  s += `<text class="ar" x="${cx}" y="${cy + R + 26}" font-size="10" text-anchor="middle" fill="currentColor">${dir ? (dir > 0 ? 'المجال بيلف يمين ↻ والروتور بيجري وراه' : 'المجال بيلف شمال ↺ والروتور بيجري وراه') : 'المجال واقف: مفيش فازات'}</text>`;
-  s += `<text class="ar" x="${cx}" y="${cy + R + 40}" font-size="9" text-anchor="middle" fill="var(--muted)">${dir ? 'الروتور أبطأ شوية من المجال = الانزلاق (Slip)' : 'وصّل 3 فازات على U V W يبدأ يلف'}</text>`;
+  s += `<text class="ar" x="${cx}" y="${cy + R + 26}" font-size="10" text-anchor="middle" fill="currentColor">${dir ? (dir > 0 ? 'المجال يدور يمينًا ↻ والروتور يلحق به' : 'المجال يدور يسارًا ↺ والروتور يلحق به') : 'المجال ساكن: لا توجد فازات'}</text>`;
+  s += `<text class="ar" x="${cx}" y="${cy + R + 40}" font-size="9" text-anchor="middle" fill="var(--muted)">${dir ? 'الروتور أبطأ قليلًا من المجال = الانزلاق (Slip)' : 'وصّل 3 فازات على U V W فيبدأ الدوران'}</text>`;
   return s + '</g></svg>';
 };
 /* ---------- nameplate ---------- */
@@ -2092,7 +2092,7 @@ CL.art.nameplate = function(d){
   const id = ++UID, c = d.cfg || {}, kW = c.kW || 2.2, In = c.In || 4.9, vD = c.vD || 230, vY = c.vY || 400, cosf = c.cosf || 0.81, rpm = c.rpm || 1430, poles = c.poles || Math.round(6000 / Math.ceil(rpm / 100) / 10) * 2;
   // In is the nameplate current at 400 V: in star for a 230Δ/400Y motor, in delta for a 400Δ/690Y motor
   const ID = vD === 230 ? r1(In * Math.sqrt(3)) : In, IY = vD === 230 ? In : r1(In / Math.sqrt(3)), nsync = Math.round(6000 / (poles / 2)) , iec = c.frame || '100L';
-  let s = `<svg viewBox="0 0 440 236" role="img" aria-label="يافطة موتور 3 فاز"><defs><linearGradient id="al${id}" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#f1f2f0"/><stop offset=".5" stop-color="#cfd3d6"/><stop offset="1" stop-color="#aab1b6"/></linearGradient></defs><g style="color:var(--ink)">`;
+  let s = `<svg viewBox="0 0 440 236" role="img" aria-label="لوحة بيانات محرك ثلاثي الفاز"><defs><linearGradient id="al${id}" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#f1f2f0"/><stop offset=".5" stop-color="#cfd3d6"/><stop offset="1" stop-color="#aab1b6"/></linearGradient></defs><g style="color:var(--ink)">`;
   s += `<rect x="14" y="14" width="412" height="208" rx="8" fill="url(#al${id})" stroke="#6d757b" stroke-width="1.5"/>`;
   [[28, 28], [412, 28], [28, 208], [412, 208]].forEach(([x, y]) => s += `<circle cx="${x}" cy="${y}" r="5" fill="#9aa4ab" stroke="#555"/><path d="M${x - 2.5} ${y - 2.5}L${x + 2.5} ${y + 2.5}" stroke="#444" stroke-width="1.2"/>`);
   s += `<text x="44" y="38" font-size="13" font-weight="700" fill="#1d2226">LEARN MOTORS</text><text x="398" y="38" font-size="11" fill="#1d2226" text-anchor="end">3~ Mot. ${esc(c.model || '1LE1')} · IEC ${iec} · IE3</text>`;
@@ -2117,10 +2117,10 @@ CL.art.nameplate = function(d){
 CL.art.tbox = function(o){
   o = o || {}; const id = ++UID, mode = o.mode || 'none', vD = o.vD || 230, vY = o.vY || 400, sup = o.sup || 400;
   const vw = mode === 'Y' ? Math.round(sup / Math.sqrt(3)) : mode === 'D' ? sup : 0, k = vw / vD;
-  const verdict = mode === 'none' ? 'مفيش كباري: الموتور مش هيلف (الملفات مفتوحة)' : k > 1.4 ? `خطر: كل ملف بياخد ${vw} V وهو متصمم على ${vD} V ← تيار عالي والموتور يتحرق` : k < 0.7 ? `ضعيف: كل ملف بياخد ${vw} V بدل ${vD} V ← عزم تلت العزم` : `صح: كل ملف بياخد ${vw} V = جهد الملف المقنن ${vD} V`;
+  const verdict = mode === 'none' ? 'لا توجد وصلات: لن يدور المحرك (الملفات مفتوحة)' : k > 1.4 ? `خطر: كل ملف يأخذ ${vw} V وهو مصمّم على ${vD} V ← تيار عالٍ ويحترق المحرك` : k < 0.7 ? `ضعيف: كل ملف يأخذ ${vw} V بدل ${vD} V ← العزم ثلث العزم المقنن` : `صحيح: كل ملف يأخذ ${vw} V = جهد الملف المقنن ${vD} V`;
   const col = mode === 'none' ? 'var(--muted)' : k > 1.4 ? 'var(--bad)' : k < 0.7 ? 'var(--warn)' : 'var(--good)';
-  let s = `<svg viewBox="0 0 440 262" role="img" aria-label="علبة أطراف الموتور والكباري"><defs>${copper(id)}</defs><g style="color:var(--ink)">`;
-  s += `<text class="ar" x="110" y="18" font-size="12" text-anchor="middle" fill="currentColor">علبة الأطراف من فوق</text>`;
+  let s = `<svg viewBox="0 0 440 262" role="img" aria-label="علبة أطراف المحرك والوصلات"><defs>${copper(id)}</defs><g style="color:var(--ink)">`;
+  s += `<text class="ar" x="110" y="18" font-size="12" text-anchor="middle" fill="currentColor">علبة الأطراف من الأعلى</text>`;
   s += `<rect x="20" y="28" width="180" height="150" rx="8" fill="#8f979c" stroke="#4b5257"/><rect x="30" y="38" width="160" height="130" rx="5" fill="#d9dcde" stroke="#7d8388"/>`;
   const px = [60, 110, 160], top = 74, bot = 134, T = {W2:[px[0], top], U2:[px[1], top], V2:[px[2], top], U1:[px[0], bot], V1:[px[1], bot], W1:[px[2], bot]};
   // bridges
@@ -2129,10 +2129,10 @@ CL.art.tbox = function(o){
   Object.keys(T).forEach(n => { const [x, y] = T[n]; s += `<circle cx="${x}" cy="${y}" r="9" fill="#d8dbdd" stroke="#555" stroke-width="1.5"/><circle cx="${x}" cy="${y}" r="4" fill="#b87333"/><text x="${x}" y="${y + (y === top ? -14 : 24)}" font-size="11" font-weight="700" fill="#1d2226" text-anchor="middle">${n}</text>`; });
   // supply cables
   if (o.supply !== false) [['L1', px[0], '#7b4a21'], ['L2', px[1], '#1f1f1f'], ['L3', px[2], '#8a8f94']].forEach(([l, x, c]) => s += `<path d="M${x} ${bot + 9}V176" stroke="${c}" stroke-width="5"/><text x="${x}" y="190" font-size="9" fill="currentColor" text-anchor="middle">${l}</text>`);
-  s += `<text class="ar" x="110" y="208" font-size="10" text-anchor="middle" fill="currentColor">${mode === 'Y' ? 'كباري الستار: W2-U2-V2 متقفلين على بعض' : mode === 'D' ? 'كباري الدلتا: U1-W2 · V1-U2 · W1-V2' : 'من غير كباري'}</text>`;
+  s += `<text class="ar" x="110" y="208" font-size="10" text-anchor="middle" fill="currentColor">${mode === 'Y' ? 'وصلات الستار: W2-U2-V2 مربوطة معًا' : mode === 'D' ? 'وصلات الدلتا: U1-W2 · V1-U2 · W1-V2' : 'دون وصلات'}</text>`;
   // winding diagram
   const X = 240;
-  s += `<text class="ar" x="${X + 90}" y="18" font-size="12" text-anchor="middle" fill="currentColor">الملفات جوه الموتور</text>`;
+  s += `<text class="ar" x="${X + 90}" y="18" font-size="12" text-anchor="middle" fill="currentColor">الملفات داخل المحرك</text>`;
   const coilV = (x, y1, y2) => { let z = `M${x} ${y1}`; const n = 5, h = (y2 - y1) / n; for (let i = 0; i < n; i++) z += `A6 6 0 0 1 ${x} ${y1 + (i + 1) * h}`; return `<path d="${z}" fill="none" stroke="#b87333" stroke-width="2.4"/>`; };
   if (mode === 'Y'){
     const cx = X + 90, cy = 110;
@@ -2141,13 +2141,13 @@ CL.art.tbox = function(o){
   } else if (mode === 'D'){
     const cx = X + 90, cy = 112, R = 58, P = [[cx, cy - R], [cx + R * 0.866, cy + R / 2], [cx - R * 0.866, cy + R / 2]], names = ['U1', 'V1', 'W1'];
     P.forEach((p, i) => { const q = P[(i + 1) % 3], ang = Math.atan2(q[1] - p[1], q[0] - p[0]) * 180 / Math.PI; const L = Math.hypot(q[0] - p[0], q[1] - p[1]); s += `<g transform="translate(${p[0]} ${p[1]}) rotate(${ang - 90})">${coilV(0, 6, L - 6)}</g><text x="${p[0] + (p[0] - cx) * 0.3}" y="${p[1] + (p[1] - cy) * 0.3 + 4}" font-size="10" font-weight="700" fill="currentColor" text-anchor="middle">${names[i]}</text>`; });
-    s += `<text class="ar" x="${cx}" y="${cy + 100}" font-size="10" text-anchor="middle" fill="currentColor">كل ملف بين فازتين</text>`;
+    s += `<text class="ar" x="${cx}" y="${cy + 100}" font-size="10" text-anchor="middle" fill="currentColor">كل ملف بين فازين</text>`;
   } else {
     [0, 1, 2].forEach(i => { const x = X + 40 + i * 50; s += coilV(x, 60, 150) + `<text x="${x}" y="52" font-size="10" font-weight="700" fill="currentColor" text-anchor="middle">${['U1','V1','W1'][i]}</text><text x="${x}" y="166" font-size="10" font-weight="700" fill="currentColor" text-anchor="middle">${['U2','V2','W2'][i]}</text>`; });
     s += `<text class="ar" x="${X + 90}" y="212" font-size="10" text-anchor="middle" fill="currentColor">3 ملفات منفصلة، 6 أطراف</text>`;
   }
   s += `<text class="ar" x="${X + 90}" y="236" font-size="10" text-anchor="middle" fill="${col}" font-weight="700">${verdict}</text>`;
-  s += `<text class="ar" x="220" y="256" font-size="9" text-anchor="middle" fill="var(--muted)">المصدر ${sup} V · اليافطة ${vD} Δ / ${vY} Y</text>`;
+  s += `<text class="ar" x="220" y="256" font-size="9" text-anchor="middle" fill="var(--muted)">المصدر ${sup} V · لوحة البيانات ${vD} Δ / ${vY} Y</text>`;
   return s + '</g></svg>';
 };
 /* ---------- float switch (cable float) ---------- */
@@ -2162,27 +2162,27 @@ CL.art.floatArt = function(d){
   const fx = tx + tw / 2, cy0 = ty - 8, fy = Math.max(ty + 40, Math.min(ty + th - 30, wy + (on ? -6 : 26)));
   s += `<rect x="${fx - 14}" y="${cy0 - 10}" width="28" height="10" fill="#555"/><path d="M${fx} ${cy0}V${fy - 26}" stroke="#222" stroke-width="2.4"/>`;
   s += `<g transform="rotate(${on ? -60 : 55} ${fx} ${fy - 26})"><ellipse cx="${fx}" cy="${fy}" rx="16" ry="28" fill="#1f6fd1" stroke="#0f3e7a" stroke-width="1.5"/><rect x="${fx - 6}" y="${fy - 10}" width="12" height="20" rx="3" fill="#fff" opacity=".35"/><circle cx="${fx}" cy="${fy + (on ? 16 : -16)}" r="5" fill="#8a9096" stroke="#444"/></g>`;
-  s += `<text class="ar" x="${fx}" y="${ty + th + 20}" font-size="11" text-anchor="middle" fill="${on ? GOOD : 'currentColor'}" font-weight="700">${on ? 'العوامة طافية فوق: الكورة اتزحلقت وقلبت الكونتاكت' : 'العوامة مدلدلة: الكونتاكت في وضعه الطبيعي'}</text>`;
+  s += `<text class="ar" x="${fx}" y="${ty + th + 20}" font-size="11" text-anchor="middle" fill="${on ? GOOD : 'currentColor'}" font-weight="700">${on ? 'العوامة طافية في الأعلى: انزلقت الكرة وقلبت الكونتاكت' : 'العوامة متدلية: الكونتاكت في وضعه الطبيعي'}</text>`;
   s += `<text x="${tx + 8}" y="${wy - 4}" font-size="9" fill="currentColor">${Math.round(lvl * 100)}%</text>`;
   // inside the float: a ball on a ramp with two contact sets
   const X = 250;
-  s += `<text class="ar" x="${X + 90}" y="22" font-size="12" text-anchor="middle" fill="currentColor">جوه العوامة</text><rect x="${X}" y="30" width="180" height="110" rx="8" fill="none" stroke="#6d757b" stroke-dasharray="4 3"/>`;
+  s += `<text class="ar" x="${X + 90}" y="22" font-size="12" text-anchor="middle" fill="currentColor">داخل العوامة</text><rect x="${X}" y="30" width="180" height="110" rx="8" fill="none" stroke="#6d757b" stroke-dasharray="4 3"/>`;
   s += `<g transform="rotate(${on ? -14 : 14} ${X + 90} 90)"><rect x="${X + 20}" y="70" width="140" height="40" rx="18" fill="#cfe3f7" stroke="#4f6f8f"/><path d="M${X + 30} 90H${X + 150}" stroke="#7a4f1c" stroke-width="2"/><circle cx="${X + (on ? 140 : 40)}" cy="88" r="9" fill="#8a9096" stroke="#333"/><text x="${X + 30}" y="66" font-size="8" fill="currentColor">NC</text><text x="${X + 150}" y="66" font-size="8" fill="currentColor" text-anchor="end">NO</text></g>`;
-  s += `<text class="ar" x="${X + 90}" y="158" font-size="10" text-anchor="middle" fill="currentColor">كورة معدنية بتتزحلق مع الميل وتقفل طرف أو التاني</text>`;
+  s += `<text class="ar" x="${X + 90}" y="158" font-size="10" text-anchor="middle" fill="currentColor">كرة معدنية تنزلق مع الميل وتُغلق أحد الطرفين</text>`;
   // 3-wire cable legend
   s += `<text class="ar" x="${X + 90}" y="186" font-size="11" text-anchor="middle" fill="currentColor" font-weight="700">كابل 3 أسلاك: مشترك + NO + NC</text>`;
-  [['أزرق', 'مشترك', '#3a9be0'], ['أسود', 'NO (يقفل لما تطفو)', '#1f1f1f'], ['بني', 'NC (يفتح لما تطفو)', '#7b4a21']].forEach(([c, t, col], i) => { s += `<path d="M${X + 10} ${202 + i * 16}H${X + 40}" stroke="${col}" stroke-width="4"/><text class="ar" x="${X + 48}" y="${206 + i * 16}" font-size="9.5" fill="currentColor">${c}: ${t}</text>`; });
-  s += `<text class="ar" x="${X + 90}" y="256" font-size="9" text-anchor="middle" fill="var(--muted)">اقلب العوامة (علّقها بالعكس) تتبدل NO و NC: ده «الاتجاه»</text>`;
+  [['أزرق', 'مشترك', '#3a9be0'], ['أسود', 'NO (يُغلق عندما تطفو)', '#1f1f1f'], ['بني', 'NC (يُفتح عندما تطفو)', '#7b4a21']].forEach(([c, t, col], i) => { s += `<path d="M${X + 10} ${202 + i * 16}H${X + 40}" stroke="${col}" stroke-width="4"/><text class="ar" x="${X + 48}" y="${206 + i * 16}" font-size="9.5" fill="currentColor">${c}: ${t}</text>`; });
+  s += `<text class="ar" x="${X + 90}" y="256" font-size="9" text-anchor="middle" fill="var(--muted)">اقلب العوامة (علّقها بالعكس) فيتبادل NO و NC: هذا هو «الاتجاه»</text>`;
   return s + '</g></svg>';
 };
 /* ---------- pressure switch (bourdon / diaphragm with range and differential) ---------- */
 CL.art.pressArt = function(d){
   const id = ++UID, lvl = d.st.lvl == null ? 0.5 : d.st.lvl, at = d.cfg.at == null ? 0.8 : d.cfg.at, hy = d.cfg.hyst == null ? 0.2 : d.cfg.hyst, on = !!d.st.a, max = d.cfg.max || 10;
   const bar = v => r1(v * max);
-  let s = `<svg viewBox="0 0 440 262" role="img" aria-label="بريشر سويتش وعداد ضغط"><defs>${copper(id)}</defs><g style="color:var(--ink)">`;
+  let s = `<svg viewBox="0 0 440 262" role="img" aria-label="بريشر سويتش ومقياس ضغط"><defs>${copper(id)}</defs><g style="color:var(--ink)">`;
   // gauge
   const cx = 90, cy = 110, R = 62;
-  s += `<text class="ar" x="${cx}" y="22" font-size="12" text-anchor="middle" fill="currentColor">عداد الضغط (bar)</text><circle cx="${cx}" cy="${cy}" r="${R + 8}" fill="#2a2d30" stroke="#111"/><circle cx="${cx}" cy="${cy}" r="${R}" fill="#f4f4f1" stroke="#555"/>`;
+  s += `<text class="ar" x="${cx}" y="22" font-size="12" text-anchor="middle" fill="currentColor">مقياس الضغط (bar)</text><circle cx="${cx}" cy="${cy}" r="${R + 8}" fill="#2a2d30" stroke="#111"/><circle cx="${cx}" cy="${cy}" r="${R}" fill="#f4f4f1" stroke="#555"/>`;
   for (let i = 0; i <= max; i++){ const a = (-135 + 270 * i / max) * Math.PI / 180; s += `<path d="M${cx + (R - 2) * Math.sin(a)} ${cy - (R - 2) * Math.cos(a)}L${cx + (R - (i % 2 ? 7 : 11)) * Math.sin(a)} ${cy - (R - (i % 2 ? 7 : 11)) * Math.cos(a)}" stroke="#222" stroke-width="${i % 2 ? 1 : 1.6}"/>` + (i % 2 ? '' : `<text x="${cx + (R - 20) * Math.sin(a)}" y="${cy - (R - 20) * Math.cos(a) + 4}" font-size="9" fill="#222" text-anchor="middle">${i}</text>`); }
   // cut-in / cut-out band
   const arc = (v0, v1, col) => { const a0 = (-135 + 270 * v0) * Math.PI / 180, a1 = (-135 + 270 * v1) * Math.PI / 180, r = R - 4; return `<path d="M${cx + r * Math.sin(a0)} ${cy - r * Math.cos(a0)}A${r} ${r} 0 ${v1 - v0 > 0.5 ? 1 : 0} 1 ${cx + r * Math.sin(a1)} ${cy - r * Math.cos(a1)}" fill="none" stroke="${col}" stroke-width="5" opacity=".7"/>`; };
@@ -2193,19 +2193,19 @@ CL.art.pressArt = function(d){
   s += `<text class="ar" x="${cx}" y="${cy + R + 28}" font-size="10" text-anchor="middle" fill="currentColor">الأخضر: بين الدخول ${bar(at - hy)} والخروج ${bar(at)} bar</text>`;
   // switch body: diaphragm, spring, set screws, contacts
   const X = 220;
-  s += `<text class="ar" x="${X + 100}" y="22" font-size="12" text-anchor="middle" fill="currentColor">جوه البريشر سويتش</text><rect x="${X}" y="30" width="200" height="190" rx="8" fill="#e9eaec" stroke="#7d8388"/>`;
+  s += `<text class="ar" x="${X + 100}" y="22" font-size="12" text-anchor="middle" fill="currentColor">داخل البريشر سويتش</text><rect x="${X}" y="30" width="200" height="190" rx="8" fill="#e9eaec" stroke="#7d8388"/>`;
   s += `<rect x="${X + 20}" y="170" width="70" height="30" rx="4" fill="#8f979c" stroke="#4b5257"/><path d="M${X + 55} 200V222" stroke="#8f979c" stroke-width="10"/><text class="ar" x="${X + 55}" y="236" font-size="9" text-anchor="middle" fill="currentColor">مدخل الضغط ¼"</text>`;
   const dia = 170 - 30 * clamp(lvl, 0, 1);
   s += `<path d="M${X + 20} 170Q${X + 55} ${dia} ${X + 90} 170" fill="#f0a03c" stroke="#8a4f00" stroke-width="2"/><rect x="${X + 51}" y="${dia - 60}" width="8" height="${60 + (170 - dia) * 0.4}" fill="#55595c"/>`;
   // main spring (range) and differential spring
   let z = `M${X + 55} ${dia - 60}`; for (let i = 1; i <= 6; i++) z += `L${X + 55 + (i % 2 ? 8 : -8)} ${dia - 60 - i * 9}`; z += `L${X + 55} ${dia - 120}`;
   s += `<path d="${z}" fill="none" stroke="#9aa0a5" stroke-width="2"/><rect x="${X + 40}" y="${dia - 134}" width="30" height="10" fill="#1f6fd1"/><text class="ar" x="${X + 55}" y="${dia - 140}" font-size="8" text-anchor="middle" fill="currentColor">مسمار الضبط (Range)</text>`;
-  s += `<rect x="${X + 110}" y="60" width="24" height="10" fill="#d32f2f"/><text class="ar" x="${X + 122}" y="54" font-size="8" text-anchor="middle" fill="currentColor">الفرق (Diff.)</text><text class="ar" x="${X + 122}" y="82" font-size="7.5" text-anchor="middle" fill="var(--muted)">بيحدد نقطة الدخول</text>`;
+  s += `<rect x="${X + 110}" y="60" width="24" height="10" fill="#d32f2f"/><text class="ar" x="${X + 122}" y="54" font-size="8" text-anchor="middle" fill="currentColor">الفرق (Diff.)</text><text class="ar" x="${X + 122}" y="82" font-size="7.5" text-anchor="middle" fill="var(--muted)">يحدد نقطة الدخول</text>`;
   // contact lever
   s += `<path d="M${X + 59} ${dia - 40}L${X + 150} ${on ? dia - 60 : dia - 30}" stroke="#7a4f1c" stroke-width="3"/><path d="M${X + 150} 100V118" stroke="#7a4f1c" stroke-width="2"/><path d="M${X + 140} 118H${X + 160}" stroke="${on ? '#7a4f1c' : GOOD}" stroke-width="3"/><text x="${X + 165}" y="112" font-size="8" fill="currentColor">NC</text><path d="M${X + 140} 142H${X + 160}" stroke="${on ? GOOD : '#7a4f1c'}" stroke-width="3"/><text x="${X + 165}" y="152" font-size="8" fill="currentColor">NO</text>`;
   s += `<text class="ar" x="${X + 100}" y="${dia - 10 < 100 ? 96 : 96}" font-size="0"> </text>`;
-  s += `<text class="ar" x="${X + 100}" y="212" font-size="10" text-anchor="middle" fill="${on ? GOOD : 'currentColor'}" font-weight="700">${on ? 'الضغط وصل نقطة الخروج: الكونتاكت قلب' : 'الضغط تحت الضبط: الكونتاكت طبيعي'}</text>`;
-  s += `<text class="ar" x="220" y="256" font-size="9" text-anchor="middle" fill="var(--muted)">الضغط بيدفع الديافرام ضد السوستة؛ لما يغلبها الكونتاكت يقلب، وميرجعش غير لما ينزل بمقدار الفرق</text>`;
+  s += `<text class="ar" x="${X + 100}" y="212" font-size="10" text-anchor="middle" fill="${on ? GOOD : 'currentColor'}" font-weight="700">${on ? 'وصل الضغط إلى نقطة الخروج: انقلب الكونتاكت' : 'الضغط تحت الضبط: الكونتاكت طبيعي'}</text>`;
+  s += `<text class="ar" x="220" y="256" font-size="9" text-anchor="middle" fill="var(--muted)">يدفع الضغط الديافرام ضد السوستة؛ وعندما يتغلب عليها ينقلب الكونتاكت، ولا يعود إلا عندما ينخفض الضغط بمقدار الفرق</text>`;
   return s + '</g></svg>';
 };
 /* ---------- proximity sensor / photocell with the object and the PNP/NPN wiring inset ---------- */
@@ -2224,7 +2224,7 @@ CL.art.proxArt = function(d){
     s += `<path d="M176 122Q${176 + 34} 100 ${176 + 54} 122Q${176 + 34} 144 176 122Z" fill="${a ? '#ffd24d' : '#36e070'}" opacity=".25"/><text x="${176 + 27}" y="156" font-size="8" fill="currentColor" text-anchor="middle">Sn = ${d.cfg.sn} mm</text>`;
     const ox = far + (1 - x) * 90;
     s += `<rect x="${ox}" y="96" width="${k === 'cap' ? 48 : 14}" height="52" rx="3" fill="${k === 'cap' ? '#c99a5b' : '#8a9096'}" stroke="#333"/><text class="ar" x="${ox + (k === 'cap' ? 24 : 7)}" y="${k === 'cap' ? 126 : 90}" font-size="8" fill="${k === 'cap' ? '#fff' : 'currentColor'}" text-anchor="middle">${k === 'cap' ? 'كرتونة / سائل' : 'حديد'}</text>`;
-    s += `<text class="ar" x="${ox + 20}" y="166" font-size="9" fill="currentColor" text-anchor="middle">${a ? '← جوه المدى' : 'بعيد →'}</text>`;
+    s += `<text class="ar" x="${ox + 20}" y="166" font-size="9" fill="currentColor" text-anchor="middle">${a ? '← داخل المدى' : 'بعيد →'}</text>`;
     // cable
     s += `<path d="M32 122H20V200" stroke="#2a2d30" stroke-width="6"/>`;
   } else {
@@ -2235,7 +2235,7 @@ CL.art.proxArt = function(d){
     else s += `<rect x="320" y="92" width="14" height="60" rx="2" fill="#fff" stroke="#555"/>${[0,1,2,3,4].map(i => `<path d="M322 ${98 + i * 12}l10 6l-10 6" fill="none" stroke="#999" stroke-width="1"/>`).join('')}<text x="327" y="86" font-size="8" fill="currentColor" text-anchor="middle">عاكس</text>`;
     const bx = 120 + (1 - x) * 160;
     s += `<path d="M68 122H${a ? bx : (thru ? 296 : 320)}" stroke="#ff4a3d" stroke-width="2" stroke-dasharray="6 4"/>` + (!a && !thru ? `<path d="M320 118H68" stroke="#ff8a80" stroke-width="1.2" stroke-dasharray="3 5"/>` : '');
-    s += `<rect x="${bx}" y="88" width="52" height="66" rx="3" fill="#c99a5b" stroke="#6b4a1f"/><text class="ar" x="${bx + 26}" y="124" font-size="9" fill="#fff" text-anchor="middle">كرتونة</text><text class="ar" x="${bx + 26}" y="170" font-size="9" fill="currentColor" text-anchor="middle">${a ? 'قاطعة الشعاع' : 'بعيد عن الشعاع'}</text>`;
+    s += `<rect x="${bx}" y="88" width="52" height="66" rx="3" fill="#c99a5b" stroke="#6b4a1f"/><text class="ar" x="${bx + 26}" y="124" font-size="9" fill="#fff" text-anchor="middle">كرتونة</text><text class="ar" x="${bx + 26}" y="170" font-size="9" fill="currentColor" text-anchor="middle">${a ? 'تقطع الشعاع' : 'بعيدة عن الشعاع'}</text>`;
     s += `<path d="M46 148V200" stroke="#2a2d30" stroke-width="6"/>`;
   }
   // 3 wires
@@ -2246,8 +2246,8 @@ CL.art.proxArt = function(d){
   s += `<path d="M${X + 20} ${Y + 20}H${X + 160}" stroke="#7b4a21" stroke-width="2.5"/><text x="${X + 10}" y="${Y + 24}" font-size="8" fill="currentColor">+</text><path d="M${X + 20} ${Y + 56}H${X + 160}" stroke="#3a9be0" stroke-width="2.5"/><text x="${X + 10}" y="${Y + 60}" font-size="8" fill="currentColor">−</text>`;
   s += `<rect x="${X + 60}" y="${Y + 26}" width="40" height="24" rx="3" fill="#e9eaec" stroke="#555"/><text x="${X + 80}" y="${Y + 41}" font-size="7" fill="#222" text-anchor="middle">SENSOR</text>`;
   s += pnp ? `<path d="M${X + 100} ${Y + 38}H${X + 126}V${Y + 44}" stroke="#1f1f1f" stroke-width="2"/><rect class="sy" x="${X + 118}" y="${Y + 44}" width="16" height="10" style="stroke-width:1.4"/><text x="${X + 142}" y="${Y + 52}" font-size="7" fill="currentColor">K1</text>` : `<path d="M${X + 100} ${Y + 38}H${X + 126}V${Y + 32}" stroke="#1f1f1f" stroke-width="2"/><rect class="sy" x="${X + 118}" y="${Y + 22}" width="16" height="10" style="stroke-width:1.4"/><text x="${X + 142}" y="${Y + 30}" font-size="7" fill="currentColor">K1</text>`;
-  s += `<text class="ar" x="${X + 90}" y="${Y + 76}" font-size="8.5" text-anchor="middle" fill="${out ? GOOD : 'var(--muted)'}" font-weight="700">${out ? (pnp ? 'الخرج BK = +24V (شغال)' : 'الخرج BK = 0V (شغال)') : 'الخرج مفصول'}</text>`;
-  s += `<text class="ar" x="120" y="256" font-size="9" text-anchor="middle" fill="var(--muted)">${nc ? 'NC: الخرج شغال لما مفيش جسم' : 'NO: الخرج شغال لما فيه جسم'}</text>`;
+  s += `<text class="ar" x="${X + 90}" y="${Y + 76}" font-size="8.5" text-anchor="middle" fill="${out ? GOOD : 'var(--muted)'}" font-weight="700">${out ? (pnp ? 'الخرج BK = +24V (يعمل)' : 'الخرج BK = 0V (يعمل)') : 'الخرج مفصول'}</text>`;
+  s += `<text class="ar" x="120" y="256" font-size="9" text-anchor="middle" fill="var(--muted)">${nc ? 'NC: الخرج يعمل عند عدم وجود جسم' : 'NO: الخرج يعمل عند وجود جسم'}</text>`;
   return s + '</g></svg>';
 };
 CL.art.levelArt = function(d){ return d.cfg.look === 'press' ? CL.art.pressArt(d) : d.cfg.look === 'thermo' ? CL.art.thermoArt(d) : CL.art.floatArt(d); };
@@ -2258,7 +2258,7 @@ CL.art.mechInterlock = function(o){
   [[40, 'KM1', on === 1], [250, 'KM2', on === 2]].forEach(([x, tag, cl]) => {
     s += `<rect x="${x}" y="40" width="150" height="150" rx="7" fill="#3b3f43" stroke="#1d2022"/><text x="${x + 75}" y="32" font-size="12" font-weight="700" fill="currentColor" text-anchor="middle">${tag}</text>`;
     s += `<rect x="${x + 30}" y="70" width="90" height="26" rx="3" fill="#1b1d1f"/><rect x="${x + 34}" y="${cl ? 80 : 72}" width="82" height="12" rx="2" fill="#cfd2d4"/><text x="${x + 75}" y="${cl ? 89 : 81}" font-size="8" fill="#222" text-anchor="middle" font-weight="700">${cl ? '▼ I' : '0'}</text>`;
-    s += `<rect x="${x + 30}" y="106" width="90" height="60" rx="3" fill="#e9eaec" stroke="#9aa1a6"/><text x="${x + 75}" y="130" font-size="9" fill="#222" text-anchor="middle" font-weight="700">LC1D09</text><text x="${x + 75}" y="146" font-size="8" fill="${cl ? GOOD : '#777'}" text-anchor="middle" font-weight="700">${cl ? 'شغال' : 'واقف'}</text>`;
+    s += `<rect x="${x + 30}" y="106" width="90" height="60" rx="3" fill="#e9eaec" stroke="#9aa1a6"/><text x="${x + 75}" y="130" font-size="9" fill="#222" text-anchor="middle" font-weight="700">LC1D09</text><text x="${x + 75}" y="146" font-size="8" fill="${cl ? GOOD : '#777'}" text-anchor="middle" font-weight="700">${cl ? 'يعمل' : 'متوقف'}</text>`;
   });
   // the interlock block in between: a rocker lever that the moving carrier of one contactor pushes to block the other
   s += `<rect x="190" y="60" width="60" height="110" rx="4" fill="#565c61" stroke="#2a2d30"/><text x="220" y="76" font-size="7" fill="#eee" text-anchor="middle">LAD4CM</text>`;
@@ -2266,8 +2266,8 @@ CL.art.mechInterlock = function(o){
   s += `<g transform="rotate(${tilt} 220 118)"><rect x="196" y="112" width="48" height="12" rx="3" fill="#d6332a" stroke="#7d1414"/></g><circle cx="220" cy="118" r="5" fill="#222"/>`;
   s += `<path d="M190 ${on === 1 ? 108 : 118}L${on === 1 ? 182 : 186} ${on === 1 ? 86 : 118}" stroke="#cfd2d4" stroke-width="4"/><path d="M250 ${on === 2 ? 108 : 118}L${on === 2 ? 258 : 254} ${on === 2 ? 86 : 118}" stroke="#cfd2d4" stroke-width="4"/>`;
   s += `<text class="ar" x="220" y="150" font-size="7.5" fill="#eee" text-anchor="middle">الرافعة</text>`;
-  s += `<text class="ar" x="220" y="214" font-size="11" text-anchor="middle" fill="${on ? 'var(--bad)' : 'currentColor'}" font-weight="700">${on === 1 ? 'KM1 شد فالرافعة مالت وقفلت على KM2: مستحيل يشد حتى لو كويله اتغذى' : on === 2 ? 'KM2 شد فالرافعة مالت وقفلت على KM1' : 'الاتنين واقفين: الرافعة في النص، أي واحد ممكن يشد'}</text>`;
-  s += `<text class="ar" x="220" y="230" font-size="9" text-anchor="middle" fill="var(--muted)">بيتركب بين الكونتاكتورين جنب بعض على السكة. الإنترلوك الكهربي (21-22) بيحمي الكويل، والميكانيكي بيحمي لو الكونتاكت لزق</text>`;
+  s += `<text class="ar" x="220" y="214" font-size="11" text-anchor="middle" fill="${on ? 'var(--bad)' : 'currentColor'}" font-weight="700">${on === 1 ? 'جذب KM1 فمالت الرافعة وقفلت على KM2: يستحيل أن يجذب حتى لو تغذّى ملفه' : on === 2 ? 'جذب KM2 فمالت الرافعة وقفلت على KM1' : 'الاثنان متوقفان: الرافعة في المنتصف، ويمكن لأي منهما أن يجذب'}</text>`;
+  s += `<text class="ar" x="220" y="230" font-size="9" text-anchor="middle" fill="var(--muted)">يُركّب بين الكونتاكتورين المتجاورين على القضيب. الإنترلوك الكهربي (21-22) يحمي الملف، والميكانيكي يحمي إذا التصق الكونتاكت</text>`;
   return s + '</g></svg>';
 };
 
@@ -2286,22 +2286,22 @@ function benchProx(d, ctx){
     const bx = a ? 86 : 110;
     s += `<path d="M45 65H${a ? bx : 146}" stroke="#ff4a3d" stroke-width="1.6" stroke-dasharray="4 3"/><rect x="${bx}" y="46" width="30" height="38" rx="2" fill="#c99a5b" stroke="#6b4a1f"/>`;
   }
-  s += `<text class="ar" x="85" y="98" font-size="9.5" text-anchor="middle" fill="${out ? GOOD : 'var(--muted)'}" font-weight="700">${a ? (k === 'photo' ? 'جسم قاطع الشعاع' : 'جسم في المدى') : (k === 'photo' ? 'الشعاع واصل' : 'مفيش جسم')} · ${out ? 'خرج ' + (pnp ? '+24V' : '0V') : 'مفيش خرج'}</text>`;
-  if (linked) s += `<text class="ar" x="85" y="112" font-size="9" text-anchor="middle" fill="var(--muted)">بيحس بـ ${esc(d.cfg.cart)}</text>`;
+  s += `<text class="ar" x="85" y="98" font-size="9.5" text-anchor="middle" fill="${out ? GOOD : 'var(--muted)'}" font-weight="700">${a ? (k === 'photo' ? 'جسم يقطع الشعاع' : 'جسم في المدى') : (k === 'photo' ? 'الشعاع متصل' : 'لا يوجد جسم')} · ${out ? 'خرج ' + (pnp ? '+24V' : '0V') : 'لا يوجد خرج'}</text>`;
+  if (linked) s += `<text class="ar" x="85" y="112" font-size="9" text-anchor="middle" fill="var(--muted)">يستشعر ${esc(d.cfg.cart)}</text>`;
   // 3-wire terminal strip
   const y0 = 126;
   s += `<rect x="20" y="${y0}" width="130" height="58" rx="4" fill="#efeee9" stroke="#8c8f8a"/>`;
   [['BN', 46, '#7b4a21', '+24V'], ['BK', 85, '#1f1f1f', (pnp ? 'PNP' : 'NPN') + ' ' + (d.cfg.nc ? 'NC' : 'NO')], ['BU', 124, '#3a9be0', '0V']].forEach(([n, x, c, t]) => { terms[n] = {x, y:y0 + 46, dir:1}; s += `<path d="M${x} ${y0 + 6}V${y0 + 36}" stroke="${c}" stroke-width="4"/><text x="${x}" y="${y0 + 74}" font-size="11" font-weight="700" text-anchor="middle" fill="var(--ink)">${n}</text><text x="${x}" y="${y0 + 86}" font-size="7.5" text-anchor="middle" fill="var(--muted)">${t}</text>`; });
-  const hit = linked ? '' : `<rect class="ba" data-dev="${d.id}" data-act="latchA" x="4" y="30" width="162" height="76" tabindex="0" role="button" aria-label="${k === 'photo' ? 'حط كرتونة في الشعاع أو شيلها' : 'قرّب جسم من الحساس أو بعّده'}"/>`;
+  const hit = linked ? '' : `<rect class="ba" data-dev="${d.id}" data-act="latchA" x="4" y="30" width="162" height="76" tabindex="0" role="button" aria-label="${k === 'photo' ? 'ضع كرتونة في الشعاع أو أزِلها' : 'قرّب جسمًا من الحساس أو أبعده'}"/>`;
   return {svg:s, hit, terms};
 }
 function benchTank(d, ctx){
   const air = d.cfg.look === 'air', lvl = d.st.lvl, max = d.cfg.max || 10, w = CW;
-  let s = cellHead(d, d.cfg.label || (air ? 'خزان هوا (كباس)' : 'خزان'), w);
+  let s = cellHead(d, d.cfg.label || (air ? 'خزان هواء (ضاغط)' : 'خزان'), w);
   if (!air){
     s += `<rect x="45" y="30" width="80" height="140" rx="6" fill="none" stroke="var(--ink)" stroke-width="2"/><rect x="47" y="${32 + 136 * (1 - lvl)}" width="76" height="${136 * lvl}" fill="#4ea0ff" opacity=".8"/><text x="85" y="190" font-size="11" text-anchor="middle" fill="var(--ink)">${Math.round(lvl * 100)}%</text>`;
-    if (d.cfg.drain) s += `<path d="M125 160H150" stroke="#4ea0ff" stroke-width="3"/><text class="ar" x="150" y="150" font-size="8" text-anchor="end" fill="var(--muted)">${d.cfg.drain < 0 ? 'مايه داخلة' : 'استهلاك'}</text>`;
-    if (d.cfg.fill < 0) s += `<text class="ar" x="85" y="202" font-size="8.5" text-anchor="middle" fill="var(--muted)">${d.cfg.pump} بتسحب من الخزان ده</text>`;
+    if (d.cfg.drain) s += `<path d="M125 160H150" stroke="#4ea0ff" stroke-width="3"/><text class="ar" x="150" y="150" font-size="8" text-anchor="end" fill="var(--muted)">${d.cfg.drain < 0 ? 'ماء داخل' : 'استهلاك'}</text>`;
+    if (d.cfg.fill < 0) s += `<text class="ar" x="85" y="202" font-size="8.5" text-anchor="middle" fill="var(--muted)">${d.cfg.pump} تسحب من هذا الخزان</text>`;
     return {svg:s, hit:'', terms:{}};
   }
   // air receiver: horizontal cylinder + gauge
@@ -2313,7 +2313,7 @@ function benchTank(d, ctx){
   s += `<g transform="rotate(${an} ${cx} ${cy})"><path d="M${cx} ${cy + 5}L${cx - 2} ${cy}L${cx} ${cy - R + 6}L${cx + 2} ${cy}Z" fill="#d32f2f"/></g><circle cx="${cx}" cy="${cy}" r="3" fill="#333"/>`;
   s += `<text x="85" y="150" font-size="12" font-weight="700" text-anchor="middle" fill="#222">${r1(lvl * max)} bar</text>`;
   if (d.cfg.drain) s += `<path d="M150 145H164" stroke="#8f979c" stroke-width="3"/><text class="ar" x="164" y="138" font-size="8" text-anchor="end" fill="var(--muted)">استهلاك</text>`;
-  s += `<text class="ar" x="85" y="200" font-size="9" text-anchor="middle" fill="var(--muted)">${d.cfg.pump} بيضغط هوا جوه الخزان</text>`;
+  s += `<text class="ar" x="85" y="200" font-size="9" text-anchor="middle" fill="var(--muted)">${d.cfg.pump} يضغط الهواء داخل الخزان</text>`;
   return {svg:s, hit:'', terms:{}};
 }
 function benchLevel(d, ctx){
@@ -2323,20 +2323,20 @@ function benchLevel(d, ctx){
   let s = cellHead(d, d.cfg.label || (press ? 'بريشر سويتش' : thermo ? 'ثرموستات' : 'عوامة'), w);
   if (thermo){
     s += `<rect x="40" y="26" width="90" height="62" rx="6" fill="#f1f1ec" stroke="#8f8f88"/><circle cx="85" cy="52" r="18" fill="#fff" stroke="#8f8f88"/><g transform="rotate(${-135 + 270 * (d.cfg.at == null ? 0.6 : d.cfg.at)} 85 52)"><path d="M85 52V38" stroke="#d32f2f" stroke-width="2.5" stroke-linecap="round"/></g><circle cx="85" cy="52" r="3" fill="#333"/>`;
-    s += `<text x="85" y="82" font-size="7.5" fill="${d.st.a ? GOOD : '#555'}" text-anchor="middle" font-weight="700">${d.st.a ? 'طالب تبريد ✓' : 'الحرارة مظبوطة'}</text><text x="50" y="36" font-size="7" fill="#222">${Math.round((d.cfg.at == null ? 0.6 : d.cfg.at) * max)}°C</text>`;
+    s += `<text x="85" y="82" font-size="7.5" fill="${d.st.a ? GOOD : '#555'}" text-anchor="middle" font-weight="700">${d.st.a ? 'يطلب تبريدًا ✓' : 'الحرارة مضبوطة'}</text><text x="50" y="36" font-size="7" fill="#222">${Math.round((d.cfg.at == null ? 0.6 : d.cfg.at) * max)}°C</text>`;
   } else if (press){
     s += `<rect x="40" y="26" width="90" height="56" rx="5" fill="#e9eaec" stroke="#7d8388"/><rect x="48" y="32" width="36" height="18" rx="3" fill="#1f6fd1"/><text x="66" y="44" font-size="7" fill="#fff" text-anchor="middle">RANGE</text><rect x="92" y="32" width="30" height="18" rx="3" fill="#d32f2f"/><text x="107" y="44" font-size="7" fill="#fff" text-anchor="middle">DIFF</text>`;
-    s += `<text x="85" y="66" font-size="8" fill="#222" text-anchor="middle">${d.cfg.below ? r1(d.cfg.at * max) + ' → ' + r1((d.cfg.at + (d.cfg.hyst || 0)) * max) : r1((d.cfg.at - (d.cfg.hyst || 0)) * max) + ' ← ' + r1(d.cfg.at * max)} bar</text><text x="85" y="77" font-size="7.5" fill="${d.st.a ? (d.cfg.below ? CAPRED : GOOD) : '#555'}" text-anchor="middle" font-weight="700">${d.st.a ? (d.cfg.below ? 'الضغط واطي: وصل ✗' : 'وصل الخروج ✓') : (d.cfg.below ? 'الضغط سليم' : 'تحت الضبط')}</text>`;
+    s += `<text x="85" y="66" font-size="8" fill="#222" text-anchor="middle">${d.cfg.below ? r1(d.cfg.at * max) + ' → ' + r1((d.cfg.at + (d.cfg.hyst || 0)) * max) : r1((d.cfg.at - (d.cfg.hyst || 0)) * max) + ' ← ' + r1(d.cfg.at * max)} bar</text><text x="85" y="77" font-size="7.5" fill="${d.st.a ? (d.cfg.below ? CAPRED : GOOD) : '#555'}" text-anchor="middle" font-weight="700">${d.st.a ? (d.cfg.below ? 'الضغط منخفض: موصول ✗' : 'وصل إلى الخروج ✓') : (d.cfg.below ? 'الضغط سليم' : 'تحت الضبط')}</text>`;
     s += `<rect x="80" y="82" width="10" height="12" fill="#8f979c"/>`;
   } else {
     const wy = 82 - 48 * clamp(lvl, 0, 1);
     s += `<rect x="50" y="30" width="70" height="56" rx="4" fill="none" stroke="var(--ink)" stroke-width="1.5"/><rect x="52" y="${wy}" width="66" height="${84 - wy}" fill="#4ea0ff" opacity=".7"/>`;
     s += `<path d="M85 22V${d.st.a ? 44 : 56}" stroke="#222" stroke-width="1.8"/><g transform="rotate(${d.st.a ? -55 : 50} 85 ${d.st.a ? 44 : 56})"><ellipse cx="85" cy="${d.st.a ? 58 : 70}" rx="7" ry="13" fill="#1f6fd1" stroke="#0f3e7a"/></g>`;
     s += `<path d="M46 ${82 - 48 * d.cfg.at}H124" stroke="var(--bad)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="128" y="${86 - 48 * d.cfg.at}" font-size="7" fill="var(--bad)">${Math.round(d.cfg.at * 100)}%</text>`;
-    s += `<text class="ar" x="85" y="98" font-size="8.5" text-anchor="middle" fill="${d.st.a ? GOOD : 'var(--muted)'}" font-weight="700">${d.st.a ? 'طافية (وصل)' : 'مدلدلة'}</text>`;
+    s += `<text class="ar" x="85" y="98" font-size="8.5" text-anchor="middle" fill="${d.st.a ? GOOD : 'var(--muted)'}" font-weight="700">${d.st.a ? 'طافية (موصول)' : 'متدلية'}</text>`;
   }
   const B = benchBlocks(d, 85, () => !!d.st.a, ctx.live); s += B.svg;
-  return {svg:s, hit:linked ? '' : `<rect class="ba" data-dev="${d.id}" data-act="latchA" x="30" y="22" width="110" height="80" tabindex="0" role="button" aria-label="${press ? 'الضغط وصل / نزل' : thermo ? 'الحرارة علت / نزلت' : 'المستوى وصل / نزل'}"/>`, terms:B.terms};
+  return {svg:s, hit:linked ? '' : `<rect class="ba" data-dev="${d.id}" data-act="latchA" x="30" y="22" width="110" height="80" tabindex="0" role="button" aria-label="${press ? 'وصل الضغط / انخفض' : thermo ? 'ارتفعت الحرارة / انخفضت' : 'وصل المستوى / انخفض'}"/>`, terms:B.terms};
 }
 
 // ---------- automatic schematic: control ladder + power circuit derived from ex.solution and ex.devices ----------
@@ -2467,7 +2467,7 @@ function benchLevel(d, ctx){
       const W = Math.max(...rows.map(x => x.sz.w)) + 40; maxW = W + 140;
       rows.forEach(({e, sz}) => { const Y = y + sz.top; s += draw(e.el, 70, Y, W); s += `<path class="sc sc-rail" d="M70 ${Y - 10}V${Y + 10}M${70 + W} ${Y - 10}V${Y + 10}"/>`; s += ar(62, Y + 4, lab(e.a), {anc:'end', c:'sc-tag', sz:11}) + ar(78 + W, Y + 4, lab(e.b), {anc:'start', c:'sc-tag', sz:11}); y += sz.h + 12; });
       const H = y + 8, single = E.length === 1;
-      let head = `<svg class="schem" viewBox="0 0 ${maxW} ${H}" role="img" aria-label="رسمة دايرة التحكم"><g style="color:var(--sym)">`;
+      let head = `<svg class="schem" viewBox="0 0 ${maxW} ${H}" role="img" aria-label="رسم دائرة التحكم"><g style="color:var(--sym)">`;
       if (single){ head += `<path class="sc sc-rail" d="M70 20V${H - 8}M${70 + W} 20V${H - 8}"/>`; }
       s = head + s + (tbs.length ? ar(maxW / 2, H - 2, 'الفروع موزّعة على ' + tbs.join('، ') + ' (بار L وبار N)', {sz:9, c:'sc-note'}) : '') + '</g></svg>';
       out.push({svg:s, nonSP:!single, w:maxW, h:H});
@@ -2500,7 +2500,7 @@ function benchLevel(d, ctx){
       const PW = 26, DW = d => polesOf(d).length * PW + 12, GAP = 14, ROW = 78;
       const stageW = ks.map(k => stages[k].reduce((a, d) => a + DW(d) + GAP, 0) - GAP);
       const W = Math.max(ph.length * PW + 12, ...stageW, 150) + 40, H = 60 + ks.length * ROW + 96;
-      let s = `<svg class="schem" viewBox="0 0 ${W} ${H}" role="img" aria-label="رسمة دايرة القوى ${esc(m.tag)}"><g style="color:var(--sym)">`;
+      let s = `<svg class="schem" viewBox="0 0 ${W} ${H}" role="img" aria-label="رسم دائرة القوى ${esc(m.tag)}"><g style="color:var(--sym)">`;
       // supply bar
       const pos = {}; // node → x of a terminal already drawn (for lines)
       const sx = (W - (ph.length * PW)) / 2 + PW / 2;
@@ -2545,7 +2545,7 @@ function benchLevel(d, ctx){
     const ttl = esc((ex.id ? ex.id + ' · ' : '') + (ex.title || '')), tag = `<title>${ttl}</title>`;
     const stamp = svg => svg.replace(/<svg([^>]*)>/g, (m, a) => { const vb = /viewBox="0 0 (\S+) (\S+)"/.exec(a); const k = vb && vb[1] > 560 ? 1.2 : 1.45, wide = vb && vb[1] * k > 600; return `<svg${a.replace('class="schem"', 'class="schem' + (wide ? ' sc-wide' : '') + '"')}${vb ? ` width="${Math.round(vb[1] * k)}" height="${Math.round(vb[2] * k)}"` : ''} data-schem="${esc(ex.id || '')}">${tag}`; });
     const ctl = controlSvgs(devs, wires).map(c => ({...c, svg:stamp(c.svg)})), pw = stamp(powerSvg(devs, wires));
-    return {control:ctl.map(c => c.svg).join(''), power:pw, nonSP:ctl.some(c => c.nonSP), html:`<div class="schem-wrap"><div class="schem-title">${ttl}</div><div class="schem-sheet">${pw ? `<div class="schem-pw"><b>دايرة القوى</b>${pw}</div>` : ''}<div class="schem-ctl"><b>دايرة التحكم</b>${ctl.map(c => c.svg).join('') || '<p class="muted">مفيش دايرة تحكم في التمرين ده.</p>'}</div></div></div>`};
+    return {control:ctl.map(c => c.svg).join(''), power:pw, nonSP:ctl.some(c => c.nonSP), html:`<div class="schem-wrap"><div class="schem-title">${ttl}</div><div class="schem-sheet">${pw ? `<div class="schem-pw"><b>دائرة القوى</b>${pw}</div>` : ''}<div class="schem-ctl"><b>دائرة التحكم</b>${ctl.map(c => c.svg).join('') || '<p class="muted">لا توجد دائرة تحكم في هذا التمرين.</p>'}</div></div></div>`};
   };
 })();
 
@@ -2562,11 +2562,11 @@ CL.wireTable = (ex, devs) => {
   const pw = sol.filter(w => CL.isPowerWire(w, byId)), cw = sol.filter(w => !CL.isPowerWire(w, byId));
   const tbl = (cap, ws) => ws.length ? `<table class="bn-wt"><caption>${cap} <span class="muted">(${ws.length} سلك)</span></caption><thead><tr><th>من</th><th>إلى</th></tr></thead><tbody>${ws.map(row).join('')}</tbody></table>` : '';
   const strip = devs.some(d => d.type === 'tb');
-  return `<details class="bn-wires"><summary>قايمة التوصيلات بالتفصيل ▾</summary>${pw.length && cw.length ? tbl('دايرة القوى', pw) + tbl('دايرة التحكم', cw) : tbl('التوصيلات', sol)}<p class="note">كل طرف (مسمار) ياخد سلكين بس${strip ? '؛ وزّع على مسامير الترمنال بلوك' : ''}. ${ex.tip && (ex.tip.match(/←/g) || []).length > 2 ? '<br>' + ex.tip : ''}</p></details>`;
+  return `<details class="bn-wires"><summary>قائمة التوصيلات بالتفصيل ▾</summary>${pw.length && cw.length ? tbl('دائرة القوى', pw) + tbl('دائرة التحكم', cw) : tbl('التوصيلات', sol)}<p class="note">كل طرف (مسمار) يأخذ سلكين فقط${strip ? '؛ وزّع على مسامير الترمنال بلوك' : ''}. ${ex.tip && (ex.tip.match(/←/g) || []).length > 2 ? '<br>' + ex.tip : ''}</p></details>`;
 };
 CL.taskCard = (ex, devs) => {
-  let s = `<div class="bn-task"><h3>${esc(ex.title)}</h3>${ex.preset ? '<span class="bn-badge">اللوحة موصّلة قبل، دوّر على الغلطة</span>' : ''}${CL.storyCard ? CL.storyCard(ex) : ''}`;
-  if (ex.solution && ex.solution.length){ let sc = ''; try { sc = CL.art.schematic(ex, devs).html; } catch (e) { sc = ''; } if (sc) s += `<details class="bn-schem" open><summary>رسمة الدايرة ▾ <span class="muted">(مرسومة من حل التمرين ده)</span></summary>${sc}</details>`; }
+  let s = `<div class="bn-task"><h3>${esc(ex.title)}</h3>${ex.preset ? '<span class="bn-badge">اللوحة موصولة مسبقًا، ابحث عن الخطأ</span>' : ''}${CL.storyCard ? CL.storyCard(ex) : ''}`;
+  if (ex.solution && ex.solution.length){ let sc = ''; try { sc = CL.art.schematic(ex, devs).html; } catch (e) { sc = ''; } if (sc) s += `<details class="bn-schem" open><summary>رسم الدائرة ▾ <span class="muted">(مرسوم من حل هذا التمرين)</span></summary>${sc}</details>`; }
   if (ex.goal || ex.steps){
     if (ex.goal) s += `<p class="bn-goal"><b>الهدف:</b> ${ex.goal}</p>`;
     if (ex.idea) s += `<p class="bn-idea"><b>الفكرة:</b> ${ex.idea}</p>`;
@@ -2758,17 +2758,17 @@ CL.bench = function(host, ex, opt){
   host.innerHTML = `<div class="bn">
     ${CL.taskCard(ex.id || !opt.key ? ex : Object.assign({}, ex, {id:String(opt.key).split('/').pop()}), devs)}
     <div class="bn-bar"><div class="bn-tools">
-      <button type="button" class="btn big pri pwr" data-b="pwr">⚡ شغّل الكهربا</button>
+      <button type="button" class="btn big pri pwr" data-b="pwr">⚡ شغّل الكهرباء</button>
       <button type="button" class="btn" data-b="undo">↶ تراجع</button>
       <button type="button" class="btn" data-b="clear">امسح الكل</button>
-      <button type="button" class="btn" data-b="sol" aria-pressed="false">وريني الحل</button>
+      <button type="button" class="btn" data-b="sol" aria-pressed="false">أرني الحل</button>
       ${devs.some(d => d.type === 'ol' || d.type === 'mpcb' || d.type === 'timer' || TYPES[d.type].motor) ? '<button type="button" class="btn spd" data-b="spd" aria-label="سرعة الزمن">⏩ ×1</button>' : ''}
     </div>${devs.filter(d => TYPES[d.type].motor).map(d => `<label class="bn-load">حمل ${esc(d.tag)}: <b data-load="${d.id}">${Math.round((d.st.load || 0) * 100)}%</b><input type="range" dir="ltr" min="0" max="300" step="5" value="${Math.round((d.st.load || 0) * 100)}" data-motor="${d.id}" aria-label="حمل ${esc(d.tag)}"></label>`).join('')}<div class="bn-msg" role="status" aria-live="polite"></div></div>
     <div class="bn-res" aria-live="polite"></div>
     <div class="bn-fx"></div>
     <div class="bn-board"></div>
     <div class="bn-machine" hidden></div>
-    <div class="bn-legend">${has3P ? '<span><i class="pw" style="background:#7b4a21"></i>L1 بني</span><span><i class="pw" style="background:#1f1f1f"></i>L2 أسود</span><span><i class="pw" style="background:#8a8f94"></i>L3 رمادي</span><span class="lg-note">(أسلاك القوى تخينة)</span>' : ''}<span><i style="background:${dc ? '#1f3f9a' : '#c62828'}"></i>${dc ? 'سلك +24V (أزرق غامق)' : 'سلك تحكم L (أحمر' + (has3P ? '، رفيع' : '') + ')'}</span><span><i style="background:#3a9be0"></i>${dc ? 'سلك 0V' : 'سلك N (أزرق فاتح)'}</span><span><i style="background:repeating-linear-gradient(90deg,#fff6b0 0 4px,#c62828 4px 13px)"></i>تيار ماشي</span></div>
+    <div class="bn-legend">${has3P ? '<span><i class="pw" style="background:#7b4a21"></i>L1 بني</span><span><i class="pw" style="background:#1f1f1f"></i>L2 أسود</span><span><i class="pw" style="background:#8a8f94"></i>L3 رمادي</span><span class="lg-note">(أسلاك القوى سميكة)</span>' : ''}<span><i style="background:${dc ? '#1f3f9a' : '#c62828'}"></i>${dc ? 'سلك +24V (أزرق غامق)' : 'سلك تحكم L (أحمر' + (has3P ? '، رفيع' : '') + ')'}</span><span><i style="background:#3a9be0"></i>${dc ? 'سلك 0V' : 'سلك N (أزرق فاتح)'}</span><span><i style="background:repeating-linear-gradient(90deg,#fff6b0 0 4px,#c62828 4px 13px)"></i>تيار يمر</span></div>
   </div>`;
   if (opt.open) host.querySelector('.bn').classList.add('bn-open');
   const board = host.querySelector('.bn-board'), msgEl = host.querySelector('.bn-msg'), resEl = host.querySelector('.bn-res'), pwrBtn = host.querySelector('[data-b=pwr]');
@@ -2776,7 +2776,7 @@ CL.bench = function(host, ex, opt){
   let speed = 1; const spdBtn = host.querySelector('[data-b=spd]');
   const curSpeed = () => CL.sim.speed || speed;
   host.querySelectorAll('[data-motor]').forEach(inp => inp.addEventListener('input', () => { const d = byId[inp.dataset.motor]; d.st.load = inp.value / 100; const b = host.querySelector(`[data-load="${d.id}"]`); if (b) b.textContent = inp.value + '%'; render(); }));
-  msg(wires.length ? 'التوصيل اللي عملته قبل كده متسجّل. كمّل أو دوس «شغّل الكهربا».' : `دوس على طرف (مثلًا ${nm.L} في المصدر)، وبعدين دوس على الطرف التاني عشان توصّل سلك.`);
+  msg(wires.length ? 'التوصيل الذي عملته سابقًا محفوظ. أكمل أو اضغط «شغّل الكهرباء».' : `اضغط على طرف (مثلًا ${nm.L} في المصدر)، ثم اضغط على الطرف الآخر لتوصيل سلك.`);
   const powered = () => devs.some(d => isSupply(d) && d.st.on && !d.st.trip);
   const termLab = id => { const [dv, t] = id.split(':'); const d = byId[dv]; const tt = TYPES[d.type].terms(d).find(x => x.n === t); return `${d.tag}:${tt && tt.lab ? tt.lab : t}`; };
 
@@ -3010,23 +3010,23 @@ CL.bench = function(host, ex, opt){
       if (res.tripped.length){
         const tr = res.tripped[0], p = tr.poles.map(x => x === 'L1' && nm.L === 'L' ? 'L' : x === 'P' ? '+24V' : x === 'M' ? '0V' : x).join(' و ');
         flash = {wires:new Set(tr.wires), until:Date.now() + 4000};
-        msg(`⚡ قصر بين ${p}${lastAct ? ' ' + lastAct : ''}: ${byId[tr.dev].tag} فصل. افصل وصلّح.`, 'bad');
+        msg(`⚡ قصر بين ${p}${lastAct ? ' ' + lastAct : ''}: ${byId[tr.dev].tag} فصل. افصل الكهرباء وأصلح.`, 'bad');
         CL.emit('short', EVB({dev:byId[tr.dev], wires:tr.wires, poles:tr.poles}));
         setTimeout(() => { if (!destroyed) render(); }, 4100);
         res = CL.solve(devs, wires, {trip:true}); lastRes = res;
       }
-      if (res.burnt && res.burnt.length){ const b = byId[res.burnt[0].dev]; msg(`🔥 ${b.tag} اتحرقت: جالها ${res.burnt[0].V} فولت وهي ${b.cfg.v} فولت.`, 'bad'); CL.emit('burnt', EVB({dev:b, V:res.burnt[0].V})); }
+      if (res.burnt && res.burnt.length){ const b = byId[res.burnt[0].dev]; msg(`🔥 ${b.tag} احترق: وصله ${res.burnt[0].V} فولت وهو ${b.cfg.v} فولت.`, 'bad'); CL.emit('burnt', EVB({dev:b, V:res.burnt[0].V})); }
       devs.forEach(d => { if (isSupply(d)) return; if (d.st.trip && d.st.why && d.st.why !== 'short'){ if (!d.st.noted){ d.st.noted = 1; msg('⚠ ' + CL.tripText(d), 'bad'); } } else d.st.noted = 0; });
     } else lastRes = null;
     { const lv = powered(); devs.forEach(d => { const T = TYPES[d.type], k = d.id; const cur = T.coil ? (lv && d.st.coil ? 1 : 0) : T.motor ? (lv && d.st.run ? d.st.run + (d.st.mode || '') : 0) : null;
         if (cur !== null){ if (prevSt[k] !== undefined && prevSt[k] !== cur) CL.emit(T.coil ? 'coil' : 'motor', EVB({dev:d, on:!!cur, run:lv ? d.st.run : 0, mode:d.st.mode})); prevSt[k] = cur; }
         const tr = d.st.trip ? 1 : 0; if (prevTrip[k] !== undefined && tr && !prevTrip[k]) CL.emit('trip', EVB({dev:d, why:d.st.why})); prevTrip[k] = tr; }); }
-    pwrBtn.textContent = powered() ? '⏻ افصل الكهربا' : '⚡ شغّل الكهربا';
+    pwrBtn.textContent = powered() ? '⏻ افصل الكهرباء' : '⚡ شغّل الكهرباء';
     pwrBtn.classList.toggle('on', powered());
     pwrBtn.setAttribute('aria-pressed', powered() ? 'true' : 'false');
     const TT = {}; let devSvg = '', hitSvg = '';
     if (L.grid){
-      const ZN = {P:'دايرة القوى', C:'دايرة التحكم'};
+      const ZN = {P:'دائرة القوى', C:'دائرة التحكم'};
       ['P','C'].forEach(z => { const r = L.zr[z]; if (!r) return; devSvg += `<rect class="bd-zone bd-zone-${z}" x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="12"/><text class="bd-zh ar" x="${r.hx}" y="${r.hy}">${ZN[z]}</text>`; });
     }
     devs.forEach(d => {
@@ -3050,7 +3050,7 @@ CL.bench = function(host, ex, opt){
       const A = TT[w.a], B = TT[w.b]; if (!A || !B) return;
       const d = route(A, B), col = wireColor(w, fr), act = res && res.active.has(res.find(w.a));
       const bad = (flash && flash.wires.has(w.id)) || (errHl && errHl.w.has(w.id)), pw = col !== '#3a9be0' && (powerTerm(w.a) || powerTerm(w.b));
-      wSvg += `<g class="bw${bad ? ' bad' : ''}${pw ? ' pw' : ''}"><path class="bw-sh" d="${d}" transform="translate(1.5 2.5)"/><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${col}"/><path class="bw-h" d="${d}"/><path class="bw-hl" d="${d}"/>${act ? `<path class="bw-flow" d="${d}"/>` : ''}${ferrule(A, col)}${ferrule(B, col)}<path class="bw-hit" d="${d}" data-w="${w.id}" tabindex="0" role="button" aria-label="سلك من ${esc(termLab(w.a))} لـ ${esc(termLab(w.b))}: اضغط عشان تشيله"/></g>`;
+      wSvg += `<g class="bw${bad ? ' bad' : ''}${pw ? ' pw' : ''}"><path class="bw-sh" d="${d}" transform="translate(1.5 2.5)"/><path class="bw-o" d="${d}"/><path class="bw-c" d="${d}" stroke="${col}"/><path class="bw-h" d="${d}"/><path class="bw-hl" d="${d}"/>${act ? `<path class="bw-flow" d="${d}"/>` : ''}${ferrule(A, col)}${ferrule(B, col)}<path class="bw-hit" d="${d}" data-w="${w.id}" tabindex="0" role="button" aria-label="سلك من ${esc(termLab(w.a))} إلى ${esc(termLab(w.b))}: اضغط لإزالته"/></g>`;
     });
     let tSvg = '', tHit = '';
     Object.keys(TT).forEach(id => {
@@ -3081,7 +3081,7 @@ CL.bench = function(host, ex, opt){
     const cfg = {}; devs.forEach(d => { if (d.type === 'ol' || d.type === 'mpcb') cfg[d.id] = {Ir:d.cfg.Ir}; if (d.type === 'timer') cfg[d.id] = {t:d.cfg.t, mode:d.cfg.mode}; });
     const r = CL.check(ex, wires, {cfg});
     if (r.ok){
-      let h = `<div class="bn-ok"><b>✓ صح!</b> التوصيل سليم. ${ex.okMsg || 'شغّل الجهاز بإيدك على اللوحة وشوف اللمبة بتعمل إيه.'}</div>`;
+      let h = `<div class="bn-ok"><b>✓ صحيح!</b> التوصيل سليم. ${ex.okMsg || 'شغّل الجهاز بيدك على اللوحة وراقب ما يفعله المصباح.'}</div>`;
       r.msgs.forEach(m => { h += `<div class="bn-warn">${m.t}</div>`; });
       resEl.innerHTML = h;
       if (!passed){ passed = true; CL.emit('pass', EVB({first: !(opt.passKey && CL.store.has(opt.passKey)), msgs:r.msgs})); if (opt.onPass) opt.onPass(); }
@@ -3092,61 +3092,61 @@ CL.bench = function(host, ex, opt){
     pulse(m0.hl);
     let h = `<div class="bn-bad"><b>✗</b> ${m0.t}</div>`;
     if (r.rows.length && !r.empty){
-      h += `<details class="bn-cmp"><summary>المطلوب واللي حصل ▾</summary><div class="tblw"><table class="tbl"><thead><tr><th class="r">الحالة</th>${r.outs.map(o => `<th>${esc(byId[o].tag)} المطلوب</th><th>اللي حصل</th>`).join('')}</tr></thead><tbody>`;
-      r.rows.forEach(rw => { h += `<tr><td class="r">${esc(rw.c.label)}</td>${r.outs.map((o, j) => { const d = byId[o], mot = TYPES[d.type].motor; const coil = !!TYPES[d.type].coil; const a = mot ? (rw.act[j].run ? (rw.act[j].dir > 0 ? 'يمين' : 'شمال') + (rw.act[j].mode === 'Y' ? ' ستار' : '') : rw.act[j].fault ? 'بيزن' : rw.act[j].brake ? 'بيفرمل DC' : Math.abs(rw.act[j].spd || 0) >= 0.1 ? 'بيلف بالقصور' : 'واقف') : rw.short ? 'قصر ⚡' : fmtExp(rw.act[j] ? 1 : 0, coil); const e = mot ? (rw.exp[j] ? (rw.exp[j] === 'R' ? 'شمال' : rw.exp[j] === 'F' ? 'يمين' : rw.exp[j] === 'Y' ? 'ستار' : rw.exp[j] === 'D' ? 'دلتا' : rw.exp[j] === 'S' ? 'واقف تمامًا' : rw.exp[j] === 'C' ? 'بيلف بالقصور' : rw.exp[j] === 'B' ? 'بيفرمل DC' : 'يلف') : 'واقف') : fmtExp(rw.exp[j], coil); return `<td>${e}</td><td class="${rw.ok[j] ? 'ok' : 'x'}">${a}</td>`; }).join('')}</tr>`; });
+      h += `<details class="bn-cmp"><summary>المطلوب وما حدث ▾</summary><div class="tblw"><table class="tbl"><thead><tr><th class="r">الحالة</th>${r.outs.map(o => `<th>${esc(byId[o].tag)} المطلوب</th><th>ما حدث</th>`).join('')}</tr></thead><tbody>`;
+      r.rows.forEach(rw => { h += `<tr><td class="r">${esc(rw.c.label)}</td>${r.outs.map((o, j) => { const d = byId[o], mot = TYPES[d.type].motor; const coil = !!TYPES[d.type].coil; const a = mot ? (rw.act[j].run ? (rw.act[j].dir > 0 ? 'يمين' : 'يسار') + (rw.act[j].mode === 'Y' ? ' ستار' : '') : rw.act[j].fault ? 'يطنّ' : rw.act[j].brake ? 'يُفرمل DC' : Math.abs(rw.act[j].spd || 0) >= 0.1 ? 'يدور بالقصور الذاتي' : 'متوقف') : rw.short ? 'قصر ⚡' : fmtExp(rw.act[j] ? 1 : 0, coil); const e = mot ? (rw.exp[j] ? (rw.exp[j] === 'R' ? 'يسار' : rw.exp[j] === 'F' ? 'يمين' : rw.exp[j] === 'Y' ? 'ستار' : rw.exp[j] === 'D' ? 'دلتا' : rw.exp[j] === 'S' ? 'متوقف تمامًا' : rw.exp[j] === 'C' ? 'يدور بالقصور الذاتي' : rw.exp[j] === 'B' ? 'يُفرمل DC' : 'يدور') : 'متوقف') : fmtExp(rw.exp[j], coil); return `<td>${e}</td><td class="${rw.ok[j] ? 'ok' : 'x'}">${a}</td>`; }).join('')}</tr>`; });
       h += '</tbody></table></div></details>';
     }
     resEl.innerHTML = h;
     return r;
   }
   // «وريني الحل» بيظهر توصيلة واحدة مع كل ضغطة بنفس ترتيب «الخطوة الجاية» (القوى الأول)، ولما الحل يكمل الضغطة اللي بعدها تخبّيه
-  function setGhost(v){ const N = nhSol.length; ghost = v === true ? N : !v ? 0 : Math.min(+v, N); const sb = host.querySelector('[data-b=sol]'); if (sb){ sb.textContent = ghost === 0 ? 'وريني الحل' : ghost < N ? `وريني التوصيلة ${ghost + 1} من ${N}` : 'اخفي الحل'; sb.setAttribute('aria-pressed', ghost ? 'true' : 'false'); } }
+  function setGhost(v){ const N = nhSol.length; ghost = v === true ? N : !v ? 0 : Math.min(+v, N); const sb = host.querySelector('[data-b=sol]'); if (sb){ sb.textContent = ghost === 0 ? 'أرني الحل' : ghost < N ? `أرني التوصيلة ${ghost + 1} من ${N}` : 'أخفِ الحل'; sb.setAttribute('aria-pressed', ghost ? 'true' : 'false'); } }
   function setPower(on){ setPower0(on); nhUpdate(); }
   function setPower0(on){
     lastAct = '';
     if (on){
       if (ghost){ setGhost(false); }
       devs.forEach(d => { if (isSupply(d)){ d.st.on = 1; d.st.trip = 0; } if (TYPES[d.type].src && !isSupply(d)) d.st.trip = 0; if (d.type === 'lamp' || d.type === 'prox') d.st.burnt = 0; if (TYPES[d.type].motor){ d.st.burnt = 0; d.st.hot = 0; d.st.fault = ''; } });
-      msg('الكهربا شغالة. افصلها عشان تعدّل سلك.', 'ok');
+      msg('الكهرباء تعمل. افصلها لتعديل سلك.', 'ok');
       CL.emit('power', EVB({on:true}));
       render();
       showCheck();
       render();
     } else {
       devs.forEach(d => { if (isSupply(d)) d.st.on = 0; if (d.st.pin) d.st.pin = 0; });
-      msg('الكهربا مفصولة. تقدر تعدّل التوصيل.');
+      msg('الكهرباء مفصولة. يمكنك تعديل التوصيل.');
       CL.emit('power', EVB({on:false}));
       render();
     }
   }
   function changed(){ passed = false; resEl.innerHTML = ''; persist(); render(); nhUpdate(); }
   function termClick(id){
-    if (powered()){ msg('⚡ افصل الكهربا الأول قبل ما تلمس الأطراف أو الأسلاك.', 'bad'); return; }
-    if (!pend){ if (wires.filter(w => w.a === id || w.b === id).length >= 2){ msg(`الطرف ${termLab(id)} فيه سلكين خلاص. مينفعش أكتر من سلكين تحت مسمار واحد.`, 'bad'); return; } pend = id; msg(`طرف السلك في <b class="term">${esc(termLab(id))}</b>. دلوقتي دوس على الطرف التاني.`); render(); return; }
-    if (pend === id){ pend = null; msg('لغيت السلك.'); render(); return; }
-    if (wires.filter(w => w.a === id || w.b === id).length >= 2){ msg(`الطرف ${termLab(id)} فيه سلكين خلاص. مينفعش أكتر من سلكين تحت مسمار واحد.`, 'bad'); return; }
-    if (wires.some(w => (w.a === pend && w.b === id) || (w.a === id && w.b === pend))){ msg('السلك ده موجود خلاص.'); pend = null; render(); return; }
+    if (powered()){ msg('⚡ افصل الكهرباء أولًا قبل لمس الأطراف أو الأسلاك.', 'bad'); return; }
+    if (!pend){ if (wires.filter(w => w.a === id || w.b === id).length >= 2){ msg(`الطرف ${termLab(id)} عليه سلكان بالفعل. لا يجوز أكثر من سلكين تحت مسمار واحد.`, 'bad'); return; } pend = id; msg(`طرف السلك في <b class="term">${esc(termLab(id))}</b>. الآن اضغط على الطرف الآخر.`); render(); return; }
+    if (pend === id){ pend = null; msg('ألغيت السلك.'); render(); return; }
+    if (wires.filter(w => w.a === id || w.b === id).length >= 2){ msg(`الطرف ${termLab(id)} عليه سلكان بالفعل. لا يجوز أكثر من سلكين تحت مسمار واحد.`, 'bad'); return; }
+    if (wires.some(w => (w.a === pend && w.b === id) || (w.a === id && w.b === pend))){ msg('هذا السلك موجود بالفعل.'); pend = null; render(); return; }
     const w = addW(pend, id); hist.push({op:'add', w});
     CL.emit('wire', EVB({a:pend, b:id, n:wires.length}));
-    msg(`✓ وصّلت سلك من <b class="term">${esc(termLab(pend))}</b> لـ <b class="term">${esc(termLab(id))}</b>. عشان تشيله دوس عليه.`);
+    msg(`✓ وصّلت سلكًا من <b class="term">${esc(termLab(pend))}</b> إلى <b class="term">${esc(termLab(id))}</b>. لإزالته اضغط عليه.`);
     pend = null; changed();
   }
   function cut(id){
-    if (powered()){ msg('⚡ افصل الكهربا الأول قبل ما تشيل سلك.', 'bad'); return; }
+    if (powered()){ msg('⚡ افصل الكهرباء أولًا قبل إزالة أي سلك.', 'bad'); return; }
     const w = wires.find(x => x.id === id); if (!w) return;
     wires = wires.filter(x => x !== w); hist.push({op:'del', w});
     CL.emit('unwire', EVB({a:w.a, b:w.b, n:wires.length}));
-    msg(`شلت السلك (${esc(termLab(w.a))} ↔ ${esc(termLab(w.b))}). «↶ تراجع» ترجّعه.`); changed();
+    msg(`أزلت السلك (${esc(termLab(w.a))} ↔ ${esc(termLab(w.b))}). «↶ تراجع» يعيده.`); changed();
   }
   function undo(){
-    if (powered()){ msg('⚡ افصل الكهربا الأول.', 'bad'); return; }
+    if (powered()){ msg('⚡ افصل الكهرباء أولًا.', 'bad'); return; }
     pend = null; const h = hist.pop();
-    if (!h){ msg('مفيش خطوات ترجع فيها.'); render(); return; }
+    if (!h){ msg('لا توجد خطوات للتراجع.'); render(); return; }
     if (h.op === 'add') wires = wires.filter(x => x.id !== h.w.id);
     else if (h.op === 'del') wires.push(h.w);
     else wires = h.prev;
     CL.emit(h.op === 'del' ? 'wire' : 'unwire', EVB({undo:true, n:wires.length}));
-    msg('↶ رجعت خطوة.'); changed();
+    msg('↶ تراجعت خطوة.'); changed();
   }
   function setAll(list, why){
     if (powered()) setPower(false);
@@ -3156,7 +3156,7 @@ CL.bench = function(host, ex, opt){
   function moveCart(d){
     const from = d.st.x, to = from > 0.5 ? 0 : 1, t0 = performance.now();
     if (anim) cancelAnimationFrame(anim);
-    lastAct = to ? 'لما العربية وصلت' : 'لما العربية رجعت';
+    lastAct = to ? 'عندما وصلت العربة' : 'عندما عادت العربة';
     const step = now => { const k = Math.min(1, (now - t0) / ANIM_MS); d.st.x = from + (to - from) * (k < .5 ? 2*k*k : 1 - Math.pow(-2*k + 2, 2) / 2); d.st.a = CL.lsOperatedAt(d.st.x) || d.st.x > 0.9 ? 1 : 0; if (k >= 1){ d.st.x = to; d.st.a = to; } render(); if (k < 1) anim = requestAnimationFrame(step); else anim = null; };
     anim = requestAnimationFrame(step);
   }
@@ -3164,21 +3164,21 @@ CL.bench = function(host, ex, opt){
     const d = byId[id]; if (!d) return;
     const T = d.type;
     const relJog = () => { if (!CL.isJog(d)) return; d.st.mid = 1; if (powered()){ lastRes = CL.solve(devs, wires, {trip:true}); } d.st.mid = 0; }; // break-before-make: the NO opens before the NC closes again
-    if (a === 'press'){ d.st.p = down ? 1 : 0; lastAct = down ? `لما دست ${d.tag}` : ''; if (!down) relJog(); }
-    else if (a === 'pin'){ d.st.pin = d.st.pin ? 0 : 1; if (!d.st.pin) relJog(); lastAct = d.st.pin ? `لما خلّيت ${d.tag} مدوس` : ''; msg(d.st.pin ? `${d.tag} مدوس دلوقتي من غير ما تمسكه. دوس «سيبه» عشان يرجع.` : `سيبت ${d.tag}.`); }
-    else if (a === 'latch'){ d.st.p = d.st.p ? 0 : 1; lastAct = d.st.p ? `لما دست ${d.tag}` : ''; msg(d.st.p ? `${d.tag} اتداس واتثبّت. اضغط عليه تاني عشان «تلفه» ويرجع.` : `لفّيت ${d.tag} فرجع لوضعه.`); }
-    else if (a === 'selL' || a === 'selR'){ d.st.pos = clamp(d.st.pos + (a === 'selR' ? 1 : -1), 0, d.cfg.pos.length - 1); lastAct = `لما لفّيت ${d.tag} على ${d.cfg.pos[d.st.pos]}`; }
+    if (a === 'press'){ d.st.p = down ? 1 : 0; lastAct = down ? `عندما ضغطت ${d.tag}` : ''; if (!down) relJog(); }
+    else if (a === 'pin'){ d.st.pin = d.st.pin ? 0 : 1; if (!d.st.pin) relJog(); lastAct = d.st.pin ? `عندما ثبّتّ ${d.tag} مضغوطًا` : ''; msg(d.st.pin ? `${d.tag} مضغوط الآن دون أن تمسكه. اضغط «اتركه» ليعود.` : `تركت ${d.tag}.`); }
+    else if (a === 'latch'){ d.st.p = d.st.p ? 0 : 1; lastAct = d.st.p ? `عندما ضغطت ${d.tag}` : ''; msg(d.st.p ? `${d.tag} ضُغط وانحبس. اضغط عليه مرة أخرى «لتديره» فيعود.` : `أدرت ${d.tag} فعاد إلى وضعه.`); }
+    else if (a === 'selL' || a === 'selR'){ d.st.pos = clamp(d.st.pos + (a === 'selR' ? 1 : -1), 0, d.cfg.pos.length - 1); lastAct = `عندما أدرت ${d.tag} إلى ${d.cfg.pos[d.st.pos]}`; }
     else if (a === 'cart'){ moveCart(d); return; }
-    else if (a === 'latchA'){ d.st.a = d.st.a ? 0 : 1; d.st.x = d.st.a ? 1 : 0; if (d.type === 'level') d.st.lvl = d.cfg.below ? (d.st.a ? Math.max(0, d.cfg.at - 0.1) : Math.min(1, d.cfg.at + (d.cfg.hyst || 0.05) + 0.1)) : (d.st.a ? Math.min(1, d.cfg.at + 0.1) : Math.max(0, d.cfg.at - (d.cfg.hyst || 0.05) - 0.1)); lastAct = d.st.a ? (d.type === 'prox' ? `لما الجسم وصل قدام ${d.tag}` : `لما ${d.tag} وصل للضبط`) : ''; }
+    else if (a === 'latchA'){ d.st.a = d.st.a ? 0 : 1; d.st.x = d.st.a ? 1 : 0; if (d.type === 'level') d.st.lvl = d.cfg.below ? (d.st.a ? Math.max(0, d.cfg.at - 0.1) : Math.min(1, d.cfg.at + (d.cfg.hyst || 0.05) + 0.1)) : (d.st.a ? Math.min(1, d.cfg.at + 0.1) : Math.max(0, d.cfg.at - (d.cfg.hyst || 0.05) - 0.1)); lastAct = d.st.a ? (d.type === 'prox' ? `عندما وصل الجسم أمام ${d.tag}` : `عندما وصل ${d.tag} إلى نقطة الضبط`) : ''; }
     else if (a === 'mcb'){ setPower(!powered()); return; }
-    else if (a === 'brk'){ if (d.st.trip){ if (d.type === 'mpcb' && d.st.heat >= 0.6){ msg('الـ MPCB لسه سخن. استنى شوية يبرد وبعدين ارفعه.', 'bad'); return; } d.st.trip = 0; d.st.why = ''; d.st.heat = 0; d.st.on = 1; msg(`رجّعت ${d.tag} (ON).`); } else d.st.on = d.st.on ? 0 : 1; }
-    else if (a === 'fuse'){ if (!d.st.trip){ msg('الفيوز سليم.'); return; } d.st.trip = 0; d.st.heat = 0; d.st.why = ''; msg('✓ غيّرت الفيوز بواحد جديد.'); }
+    else if (a === 'brk'){ if (d.st.trip){ if (d.type === 'mpcb' && d.st.heat >= 0.6){ msg('الـ MPCB ما زال ساخنًا. انتظر قليلًا حتى يبرد ثم ارفعه.', 'bad'); return; } d.st.trip = 0; d.st.why = ''; d.st.heat = 0; d.st.on = 1; msg(`أعدت ${d.tag} (ON).`); } else d.st.on = d.st.on ? 0 : 1; }
+    else if (a === 'fuse'){ if (!d.st.trip){ msg('الفيوز سليم.'); return; } d.st.trip = 0; d.st.heat = 0; d.st.why = ''; msg('✓ استبدلت الفيوز بآخر جديد.'); }
     else if (a === 'tUp' || a === 'tDn'){ d.cfg.t = clamp(r1(d.cfg.t + (a === 'tUp' ? (d.cfg.t >= 10 ? 5 : 1) : (d.cfg.t > 10 ? -5 : -1))), 1, 60); msg(`ضبطت ${d.tag} على ${d.cfg.t} ثانية.`); if (!powered()){ passed = false; resEl.innerHTML = ''; } }
-    else if (a === 'tMode'){ if (powered()){ msg('⚡ افصل الكهربا الأول قبل ما تغيّر وظيفة التايمر.', 'bad'); return; } const ms = ['on','off','cyc']; d.cfg.mode = ms[(ms.indexOf(d.cfg.mode) + 1) % ms.length]; resetDev(d); msg(`${d.tag} دلوقتي على وضع ${CL.TIMER_MODES_AR[d.cfg.mode]}.`); passed = false; resEl.innerHTML = ''; }
-    else if (a === 'olReset'){ if (!d.st.trip){ msg('الأوفرلود مش فاصل أصلًا.'); return; } if (d.st.heat >= 0.6 && d.st.why !== 'test'){ msg(`الأوفرلود لسه سخن (${Math.round(d.st.heat * 100)}%). استنى شوية يبرد وبعدين اعمل Reset.`, 'bad'); return; } d.st.trip = 0; d.st.why = ''; msg('✓ Reset: 95-96 قفل تاني و 97-98 فتح.'); }
+    else if (a === 'tMode'){ if (powered()){ msg('⚡ افصل الكهرباء أولًا قبل تغيير وظيفة التايمر.', 'bad'); return; } const ms = ['on','off','cyc']; d.cfg.mode = ms[(ms.indexOf(d.cfg.mode) + 1) % ms.length]; resetDev(d); msg(`${d.tag} الآن على وضع ${CL.TIMER_MODES_AR[d.cfg.mode]}.`); passed = false; resEl.innerHTML = ''; }
+    else if (a === 'olReset'){ if (!d.st.trip){ msg('الأوفرلود غير فاصل أصلًا.'); return; } if (d.st.heat >= 0.6 && d.st.why !== 'test'){ msg(`الأوفرلود ما زال ساخنًا (${Math.round(d.st.heat * 100)}%). انتظر قليلًا حتى يبرد ثم اعمل Reset.`, 'bad'); return; } d.st.trip = 0; d.st.why = ''; msg('✓ Reset: أُغلق 95-96 مرة أخرى وفُتح 97-98.'); }
     else if (a === 'olTest'){ d.st.trip = 1; d.st.why = 'test'; }
-    else if (a === 'ssFault'){ TYPES.softstarter.apply(d, {fault:1}); msg(`⚠ ${d.tag} عطل (FAULT): الثايرستورات فصلت، 95-96 فتح و 97-98 قفل. دوس RESET بعد ما تصلّح السبب.`, 'bad'); }
-    else if (a === 'ssReset'){ if (!d.st.fault){ msg(`${d.tag} مفيهوش عطل.`); return; } TYPES.softstarter.apply(d, {reset:1}); msg(`✓ RESET: ${d.tag} جاهز تاني.`); }
+    else if (a === 'ssFault'){ TYPES.softstarter.apply(d, {fault:1}); msg(`⚠ ${d.tag} عطل (FAULT): فصلت الثايرستورات، وفُتح 95-96 وأُغلق 97-98. اضغط RESET بعد إصلاح السبب.`, 'bad'); }
+    else if (a === 'ssReset'){ if (!d.st.fault){ msg(`${d.tag} لا يوجد فيه عطل.`); return; } TYPES.softstarter.apply(d, {reset:1}); msg(`✓ RESET: ${d.tag} جاهز مرة أخرى.`); }
     else if (a === 'irUp' || a === 'irDn'){ d.cfg.Ir = clamp(r1(d.cfg.Ir + (a === 'irUp' ? 0.5 : -0.5)), 1, 12); msg(`ضبطت Ir على ${d.cfg.Ir}A.`); if (!powered()){ passed = false; resEl.innerHTML = ''; } }
     void T;
     render();
@@ -3217,7 +3217,7 @@ CL.bench = function(host, ex, opt){
   window.addEventListener('pointerup', onUp); window.addEventListener('pointercancel', onUp);
   board.addEventListener('click', e => {
     const t = e.target.closest('[data-t]'); if (t){ termClick(t.dataset.t); return; }
-    const w = e.target.closest('[data-w]'); if (w){ if (pend){ msg('اختار طرف مش سلك. أو دوس على نفس الطرف عشان تلغي.'); return; } cut(+w.dataset.w); }
+    const w = e.target.closest('[data-w]'); if (w){ if (pend){ msg('اختر طرفًا لا سلكًا، أو اضغط على الطرف نفسه للإلغاء.'); return; } cut(+w.dataset.w); }
   });
   board.addEventListener('keydown', e => {
     if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Delete' && e.key !== 'Backspace') return;
@@ -3231,9 +3231,9 @@ CL.bench = function(host, ex, opt){
     const b = e.target.closest('[data-b]'); if (!b) return;
     if (b.dataset.b === 'pwr') setPower(!powered());
     else if (b.dataset.b === 'undo') undo();
-    else if (b.dataset.b === 'clear'){ if (powered()) setPower(false); devs.forEach(d => { if (d.st.pin) d.st.pin = 0; }); setGhost(false); if (opt.key) CL.store.bench(opt.key, null); if (opt.onReset) opt.onReset(); passed = false; CL.emit('clear', EVB({})); if (!wires.length){ resEl.innerHTML = ''; msg('اللوحة فاضية وبدأت من الأول.'); render(); return; } setAll([], 'مسحت كل الأسلاك وبدأت من الأول. «↶ تراجع» ترجّعهم.'); }
-    else if (b.dataset.b === 'sol'){ if (powered()){ msg('⚡ افصل الكهربا الأول.', 'bad'); return; } const N = nhSol.length; setGhost(ghost >= N ? 0 : ghost + 1); if (ghost) CL.emit('hint', EVB({})); const p = nhSol[ghost - 1]; msg(!ghost ? 'خبّيت الحل.' : `التوصيلة ${ghost} من ${N}: من ${termLab(p[0])} لـ ${termLab(p[1])} (الخط المتقطع الغامق). وصّلها بإيدك، ودوس تاني عشان تظهر اللي بعدها.` + (ghost === N ? ' دي آخر توصيلة.' : '')); render(); }
-    else if (b.dataset.b === 'spd'){ speed = speed === 1 ? 10 : speed === 10 ? 60 : 1; spdBtn.textContent = '⏩ ×' + speed; msg(speed === 1 ? 'الزمن بسرعته الطبيعية.' : `الزمن أسرع ${speed} مرة: التايمرات والأوفرلود والعربية بيمشوا أسرع عشان متستناش.`); }
+    else if (b.dataset.b === 'clear'){ if (powered()) setPower(false); devs.forEach(d => { if (d.st.pin) d.st.pin = 0; }); setGhost(false); if (opt.key) CL.store.bench(opt.key, null); if (opt.onReset) opt.onReset(); passed = false; CL.emit('clear', EVB({})); if (!wires.length){ resEl.innerHTML = ''; msg('اللوحة فارغة وبدأت من جديد.'); render(); return; } setAll([], 'مسحت كل الأسلاك وبدأت من جديد. «↶ تراجع» يعيدها.'); }
+    else if (b.dataset.b === 'sol'){ if (powered()){ msg('⚡ افصل الكهرباء أولًا.', 'bad'); return; } const N = nhSol.length; setGhost(ghost >= N ? 0 : ghost + 1); if (ghost) CL.emit('hint', EVB({})); const p = nhSol[ghost - 1]; msg(!ghost ? 'أخفيت الحل.' : `التوصيلة ${ghost} من ${N}: من ${termLab(p[0])} إلى ${termLab(p[1])} (الخط المتقطع الغامق). وصّلها بيدك، واضغط مرة أخرى لتظهر التالية.` + (ghost === N ? ' هذه آخر توصيلة.' : '')); render(); }
+    else if (b.dataset.b === 'spd'){ speed = speed === 1 ? 10 : speed === 10 ? 60 : 1; spdBtn.textContent = '⏩ ×' + speed; msg(speed === 1 ? 'الزمن بسرعته الطبيعية.' : `الزمن أسرع ${speed} مرات: التايمرات والأوفرلود والعربة تتحرك أسرع حتى لا تنتظر.`); }
   });
   let lastCols = 0;
   const layoutKey = () => { const W = board.clientWidth || 340; return zoned ? (W >= 820 ? 4 : W >= 600 ? 3 : 2) : (W < 520 ? 2 : W < 820 ? 3 : 4); };
@@ -3263,8 +3263,8 @@ CL.defineType('xfmr', {
   init(){ return {coil:0, burnt:0, trip:0}; },
   loads(d){ return [{a:'H1', b:'H2', k:'coil', v:d.cfg.v}]; },
   src(d, force){ return (force || (d.st.coil && !d.st.trip)) ? [{t:'X1', p:'S'}, {t:'X2', p:'T'}] : []; },
-  states(){ return [{label:'الملف الابتدائي من غير جهد', st:{coil:0}}, {label:'230V على H1-H2: 24V على X1-X2', st:{coil:1}}]; },
-  ctl:'hold', holdLabel:'اضغط واستمر: ادّي 230V للملف الابتدائي H1-H2', art(d){ return CL.art.xfmrArt(d); }, h(){ return 208; },
+  states(){ return [{label:'الملف الابتدائي بلا جهد', st:{coil:0}}, {label:'230V على H1-H2: 24V على X1-X2', st:{coil:1}}]; },
+  ctl:'hold', holdLabel:'اضغط باستمرار: أعطِ 230V للملف الابتدائي H1-H2', art(d){ return CL.art.xfmrArt(d); }, h(){ return 208; },
   bench(d, ctx){
     const w = ctx.w || CW, on = !!ctx.en, terms = {};
     let s = cellHead(d, 'محوّل تحكم 230/' + d.cfg.vs + 'V', w);
@@ -3290,7 +3290,7 @@ CL.art.xfmrArt = function(d){
     <text class="sy-n" x="268" y="106">230V</text><text class="sy-n" x="268" y="150">24V</text>
     <circle class="sy-t" cx="300" cy="44" r="4"/><circle class="sy-t" cx="300" cy="190" r="4"/><text class="sy-n" x="308" y="48">H1</text><text class="sy-n" x="308" y="196">X1</text>
     <circle class="sy-t" cx="380" cy="44" r="4"/><circle class="sy-t" cx="380" cy="190" r="4"/><text class="sy-n" x="388" y="48">H2</text><text class="sy-n" x="388" y="196">X2</text>
-    <path class="sy" d="M380 74V88M380 160V146" style="stroke-dasharray:4 3"/><text class="sy-s" x="340" y="226" text-anchor="middle">${on ? 'الثانوي عليه 24V~' : 'الثانوي من غير جهد'}</text></g></g></svg>`;
+    <path class="sy" d="M380 74V88M380 160V146" style="stroke-dasharray:4 3"/><text class="sy-s" x="340" y="226" text-anchor="middle">${on ? 'الثانوي عليه 24V~' : 'الثانوي بلا جهد'}</text></g></g></svg>`;
 };
 // rectifier for DC injection braking: AC1-AC2 is a 230 V load, DC+/DC- become a DC source (poles P/M) while it is fed
 CL.defineType('rectifier', {
@@ -3299,8 +3299,8 @@ CL.defineType('rectifier', {
   init(){ return {coil:0, burnt:0, trip:0}; },
   loads(d){ return [{a:'AC1', b:'AC2', k:'coil', v:d.cfg.v}]; },
   src(d, force){ return (force || (d.st.coil && !d.st.trip)) ? [{t:'DC+', p:'P'}, {t:'DC-', p:'M'}] : []; },
-  states(){ return [{label:'مفيش جهد متردد على AC1-AC2', st:{coil:0}}, {label:'230V~ على AC1-AC2: جهد مستمر على DC+ / DC−', st:{coil:1}}];},
-  ctl:'hold', holdLabel:'اضغط واستمر: ادّي جهد متردد لـ AC1-AC2', art(d){ return CL.art.rectArt(d); }, h(){ return 208; },
+  states(){ return [{label:'لا يوجد جهد متردد على AC1-AC2', st:{coil:0}}, {label:'230V~ على AC1-AC2: جهد مستمر على DC+ / DC−', st:{coil:1}}];},
+  ctl:'hold', holdLabel:'اضغط باستمرار: أعطِ جهدًا مترددًا لـ AC1-AC2', art(d){ return CL.art.rectArt(d); }, h(){ return 208; },
   bench(d, ctx){
     const w = ctx.w || CW, on = !!ctx.en, terms = {};
     let s = cellHead(d, 'موحّد (Rectifier) للفرملة DC', w);
@@ -3318,7 +3318,7 @@ CL.art.rectArt = function(d){
   return `<svg viewBox="0 0 440 230" role="img" aria-label="موحّد فرملة DC"><g style="color:var(--ink)">
     <rect x="30" y="40" width="190" height="150" rx="8" fill="#2b3238" stroke="#1a1f23"/><rect x="60" y="70" width="130" height="70" rx="4" fill="#d9dcde" stroke="#7d8388"/>
     <path d="M80 105h22l12 -12v24l-12 -12M136 105h22M126 93v24M146 93v24" stroke="#222" stroke-width="2.5" fill="none"/>
-    <text x="125" y="162" font-size="10" fill="#e3e9ec" text-anchor="middle" font-weight="700">BRIDGE 20 A · DC 24 V</text><text x="125" y="176" font-size="8.5" fill="#9fb0ba" text-anchor="middle">فيه مقاومة بتحدّد تيار الفرملة</text>
+    <text x="125" y="162" font-size="10" fill="#e3e9ec" text-anchor="middle" font-weight="700">BRIDGE 20 A · DC 24 V</text><text x="125" y="176" font-size="8.5" fill="#9fb0ba" text-anchor="middle">فيه مقاومة تحدد تيار الفرملة</text>
     ${['AC1','AC2'].map((t, i) => `<circle cx="${80 + i * 90}" cy="46" r="6" fill="#d8dbdd" stroke="#555"/><text x="${80 + i * 90}" y="30" font-size="10" text-anchor="middle" fill="currentColor" font-weight="700">${t}</text>`).join('')}
     ${['DC+','DC−'].map((t, i) => `<circle cx="${80 + i * 90}" cy="184" r="6" fill="#d8dbdd" stroke="#555"/><text x="${80 + i * 90}" y="208" font-size="10" text-anchor="middle" fill="currentColor" font-weight="700">${t}</text>`).join('')}
     <g class="${on ? 'sy-on' : ''}"><text class="sy-tag" x="262" y="26">${esc(d.tag)} · رمز IEC</text>
@@ -3326,7 +3326,7 @@ CL.art.rectArt = function(d){
     <path class="sy" d="M310 44V70M370 44V70M310 140V166M370 140V166"/>
     <circle class="sy-t" cx="310" cy="44" r="4"/><circle class="sy-t" cx="370" cy="44" r="4"/><circle class="sy-t" cx="310" cy="166" r="4"/><circle class="sy-t" cx="370" cy="166" r="4"/>
     <text class="sy-n" x="318" y="48">AC1</text><text class="sy-n" x="378" y="48">AC2</text><text class="sy-n" x="318" y="172">DC+</text><text class="sy-n" x="378" y="172">DC−</text>
-    <text class="sy-s" x="340" y="198" text-anchor="middle">${on ? 'بيطلّع DC' : 'واقف'}</text></g></g></svg>`;
+    <text class="sy-s" x="340" y="198" text-anchor="middle">${on ? 'يُخرج DC' : 'متوقف'}</text></g></g></svg>`;
 };
 // electromagnetic (spring-applied) brake: the coil A1-A2 releases the brake; no voltage = brake applied, the linked motor stops at once
 CL.defineType('brake', {
@@ -3334,13 +3334,13 @@ CL.defineType('brake', {
   terms(){ return [{n:'A1'}, {n:'A2'}]; },
   init(){ return {coil:0, burnt:0}; },
   loads(d){ return [{a:'A1', b:'A2', k:'coil', v:d.cfg.v}]; },
-  states(){ return [{label:'الكويل من غير جهد: الفرامل قافلة (السوست)', st:{coil:0}}, {label:'الكويل عليه جهد: الفرامل مفتوحة', st:{coil:1}}]; },
-  ctl:'hold', holdLabel:'اضغط واستمر: ادّي جهد لكويل الفرامل A1-A2', art(d){ return CL.art.brakeArt(d); }, h(){ return 208; },
+  states(){ return [{label:'الملف بلا جهد: الفرامل مغلقة (السوست)', st:{coil:0}}, {label:'الملف عليه جهد: الفرامل مفتوحة', st:{coil:1}}]; },
+  ctl:'hold', holdLabel:'اضغط باستمرار: أعطِ جهدًا لملف الفرامل A1-A2', art(d){ return CL.art.brakeArt(d); }, h(){ return 208; },
   bench(d, ctx){
     const w = ctx.w || CW, on = !!ctx.en, terms = {};
     let s = cellHead(d, 'فرامل كهرومغناطيسية ' + esc(d.cfg.motor), w);
     [['A1', 55], ['A2', 115]].forEach(([t, x]) => { terms[t] = {x, y:44, dir:-1}; s += screwLab(x, 44, t, -1); });
-    s += CL.art.brakeDisc(w / 2, 118, on, 0.9) + `<text class="ar" x="${w / 2}" y="190" font-size="10" text-anchor="middle" fill="${on ? GOOD : 'var(--bad)'}" font-weight="700">${on ? 'الفرامل مفتوحة: الموتور حر' : 'الفرامل قافلة على ' + esc(d.cfg.motor)}</text>`;
+    s += CL.art.brakeDisc(w / 2, 118, on, 0.9) + `<text class="ar" x="${w / 2}" y="190" font-size="10" text-anchor="middle" fill="${on ? GOOD : 'var(--bad)'}" font-weight="700">${on ? 'الفرامل مفتوحة: المحرك حر' : 'الفرامل مغلقة على ' + esc(d.cfg.motor)}</text>`;
     return {svg:s, hit:'', terms};
   }
 });
@@ -3353,17 +3353,17 @@ CL.art.brakeDisc = function(cx, cy, released, k){
 };
 CL.art.brakeArt = function(d){
   const on = !!(d.st && d.st.coil);
-  return `<svg viewBox="0 0 440 230" role="img" aria-label="فرامل كهرومغناطيسية على موتور ونش"><g style="color:var(--ink)">
+  return `<svg viewBox="0 0 440 230" role="img" aria-label="فرامل كهرومغناطيسية على محرك ونش"><g style="color:var(--ink)">
     <rect x="20" y="70" width="110" height="60" rx="10" fill="#5d7f96" stroke="#2d4352"/><text x="75" y="104" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">M 3~</text>
     <rect x="130" y="94" width="40" height="12" fill="#aab1b6" stroke="#555"/>${CL.art.brakeDisc(205, 100, on, 1)}
-    <text class="ar" x="110" y="180" font-size="11" text-anchor="middle" fill="${on ? GOOD : 'var(--bad)'}" font-weight="700">${on ? 'الكويل شغال: الفرامل مفتوحة والعمود حر' : 'مفيش جهد: السوست قفلت الفرامل على العمود'}</text>
+    <text class="ar" x="110" y="180" font-size="11" text-anchor="middle" fill="${on ? GOOD : 'var(--bad)'}" font-weight="700">${on ? 'الملف يعمل: الفرامل مفتوحة والعمود حر' : 'لا يوجد جهد: أغلقت السوست الفرامل على العمود'}</text>
     <g class="${on ? 'sy-on' : ''}"><text class="sy-tag" x="282" y="26">${esc(d.tag)} · رمز IEC</text>
     <path class="sy" d="M330 44V74M330 110V140"/><rect class="sy" x="312" y="74" width="36" height="36"/><path class="sy" d="M348 92h18M366 80v24M372 80v24" style="stroke-width:2"/>
     <circle class="sy-t" cx="330" cy="44" r="4"/><circle class="sy-t" cx="330" cy="140" r="4"/><text class="sy-n" x="338" y="48">A1</text><text class="sy-n" x="338" y="146">A2</text>
-    <text class="sy-s" x="340" y="170" text-anchor="middle">كويل فرامل: جهد = فتح</text></g></g></svg>`;
+    <text class="sy-s" x="340" y="170" text-anchor="middle">ملف فرامل: جهد = فتح</text></g></g></svg>`;
 };
 // soft starter: thyristors ramp the voltage L1-3 → T1-3 (vInit → 100 % over tRamp), relays 13-14 (top of ramp / bypass), 23-24 (run), 95-96 / 97-98 (fault)
-CL.SS_PHASE_AR = {off:'واقف', ramp:'بيرفع الجهد (Ramp)', run:'شغال 100%', down:'بينزّل الجهد', fault:'عطل'};
+CL.SS_PHASE_AR = {off:'متوقف', ramp:'يرفع الجهد (Ramp)', run:'يعمل 100%', down:'يخفض الجهد', fault:'عطل'};
 CL.defineType('softstarter', {
   def:{v:230, model:'ATS01', In:9, ctl:'2w', vInit:0.3, tRamp:3, tDown:0, ilim:3.5}, coil:true, zone:'P',
   terms(){ return [{n:'L1', lab:'1/L1'}, {n:'L2', lab:'3/L2'}, {n:'L3', lab:'5/L3'}, {n:'T1', lab:'2/T1'}, {n:'T2', lab:'4/T2'}, {n:'T3', lab:'6/T3'}, {n:'A1'}, {n:'A2'}, {n:'IN1', lab:'IN1 RUN'}, {n:'IN2', lab:'IN2 STOP'}, {n:'13'}, {n:'14'}, {n:'23'}, {n:'24'}, {n:'95'}, {n:'96'}, {n:'97'}, {n:'98'}]; },
@@ -3398,7 +3398,7 @@ CL.defineType('softstarter', {
     return s.v !== v0 || s.top !== t0;
   },
   apply(d, s){ s = s || {}; if (s.fault){ Object.assign(d.st, {fault:1, cmd:0, run:0, v:0, top:0, phase:'fault'}); } else if (s.reset){ d.st.fault = 0; d.st.phase = 'off'; } else { ['vInit','tRamp','ilim','ctl','tDown'].forEach(k => { if (k in s) d.cfg[k] = s[k]; }); Object.keys(s).forEach(k => { if (['vInit','tRamp','ilim','ctl','tDown'].indexOf(k) < 0) d.st[k] = s[k]; }); } },
-  states(){ return [{label:'من غير أمر تشغيل', st:{cmd:0, v:0, run:0, top:0}}, {label:'بيرفع الجهد (Ramp)', st:{cmd:1, v:0.5, run:1, top:0}}, {label:'وصل 100% (Top of ramp)', st:{cmd:1, v:1, run:1, top:1}}, {label:'عطل', st:{cmd:0, v:0, run:0, top:0, fault:1}}]; },
+  states(){ return [{label:'دون أمر تشغيل', st:{cmd:0, v:0, run:0, top:0}}, {label:'يرفع الجهد (Ramp)', st:{cmd:1, v:0.5, run:1, top:0}}, {label:'وصل 100% (Top of ramp)', st:{cmd:1, v:1, run:1, top:1}}, {label:'عطل', st:{cmd:0, v:0, run:0, top:0, fault:1}}]; },
   span(){ return 2; }, h(){ return 236; }, art(d){ return CL.art.ssArt(d); },
   bench(d, ctx){
     const w = ctx.w || CW * 2, s0 = d.st, terms = {}, en = !!ctx.en, H = 236, c = w < 300;
@@ -3419,7 +3419,7 @@ CL.defineType('softstarter', {
       `<circle cx="${bx + 50}" cy="130" r="3.5" fill="${s0.run ? '#ffd24d' : '#4a3d10'}"/><text x="${bx + 58}" y="133" font-size="6.5" fill="#eee">RUN</text>` +
       `<circle cx="${bx + 86}" cy="130" r="3.5" fill="${s0.fault ? '#ff4a3d' : '#5a1f1b'}"/><text x="${bx + 94}" y="133" font-size="6.5" fill="#eee">FLT</text>` +
       `<text x="${w / 2}" y="150" font-size="6.5" fill="#cfd8dc" text-anchor="middle">Uini ${Math.round(d.cfg.vInit * 100)}% · t ${d.cfg.tRamp}s · Ilim ${d.cfg.ilim}×In · ${d.cfg.ctl === '3w' ? '3-wire' : '2-wire'}</text>`;
-    const hit = `<g class="bpin" data-dev="${d.id}" data-act="ssFault" tabindex="0" role="button" aria-label="اعمل عطل في السوفت ستارتر"><rect x="${bx + 8}" y="156" width="${(bw - 24) / 2}" height="20" rx="5"/><text x="${bx + 8 + (bw - 24) / 4}" y="170">FAULT</text></g><g class="bpin" data-dev="${d.id}" data-act="ssReset" tabindex="0" role="button" aria-label="ريست السوفت ستارتر"><rect x="${w / 2 + 4}" y="156" width="${(bw - 24) / 2}" height="20" rx="5"/><text x="${w / 2 + 4 + (bw - 24) / 4}" y="170">RESET</text></g>`;
+    const hit = `<g class="bpin" data-dev="${d.id}" data-act="ssFault" tabindex="0" role="button" aria-label="اصنع عطلًا في السوفت ستارتر"><rect x="${bx + 8}" y="156" width="${(bw - 24) / 2}" height="20" rx="5"/><text x="${bx + 8 + (bw - 24) / 4}" y="170">FAULT</text></g><g class="bpin" data-dev="${d.id}" data-act="ssReset" tabindex="0" role="button" aria-label="ريست السوفت ستارتر"><rect x="${w / 2 + 4}" y="156" width="${(bw - 24) / 2}" height="20" rx="5"/><text x="${w / 2 + 4 + (bw - 24) / 4}" y="170">RESET</text></g>`;
     s = cellHead(d, (c ? '' : 'سوفت ستارتر ') + d.cfg.model, w) + body + s;
     return {svg:s, hit, terms};
   }
@@ -3441,7 +3441,7 @@ CL.art.ssArt = function(d){
     ${['L1','L2','L3'].map((t, i) => `<circle class="sy-t" cx="${300 + i * 30}" cy="44" r="4"/><text class="sy-n" x="${292 + i * 30}" y="38" style="font-size:9px">${t}</text>`).join('')}
     ${['T1','T2','T3'].map((t, i) => `<circle class="sy-t" cx="${300 + i * 30}" cy="176" r="4"/><text class="sy-n" x="${292 + i * 30}" y="194" style="font-size:9px">${t}</text>`).join('')}
     <path class="sy-d" d="M380 110H410"/><text class="sy-s" x="412" y="106">A1/A2</text><text class="sy-s" x="412" y="118">IN1</text>
-    <text class="sy-s" x="340" y="226" text-anchor="middle">مربع بخط مايل = بادئ ناعم (تغيير جهد)</text></g></g></svg>`;
+    <text class="sy-s" x="340" y="226" text-anchor="middle">مربع بخط مائل = بادئ ناعم (تغيير جهد)</text></g></g></svg>`;
 };
 // thermostat (room temperature switch): the `level` type with look:'thermo' (operates when the temperature is ABOVE the set point = a call for cooling)
 CL.art.thermoArt = function(d){
@@ -3453,11 +3453,11 @@ CL.art.thermoArt = function(d){
     <g transform="rotate(${-135 + 270 * at} 120 100)"><path d="M120 100V58" stroke="#d32f2f" stroke-width="3" stroke-linecap="round"/></g><circle cx="120" cy="100" r="6" fill="#333"/>
     <text x="120" y="166" font-size="10" text-anchor="middle" fill="#222" font-weight="700">ضبط ${deg(at)}°C · الغرفة ${deg(lvl)}°C</text>
     <rect x="52" y="40" width="26" height="12" rx="2" fill="${on ? '#36e070' : '#cfd2d4'}"/><text x="65" y="49" font-size="7" text-anchor="middle" fill="#222">COOL</text>
-    <text class="ar" x="120" y="200" font-size="11" text-anchor="middle" fill="${on ? GOOD : 'var(--muted)'}" font-weight="700">${on ? 'الحرارة فوق الضبط: الثرموستات بيطلب تبريد (الكونتاكت قفل)' : 'الحرارة تحت الضبط: مفيش طلب'}</text>
+    <text class="ar" x="120" y="200" font-size="11" text-anchor="middle" fill="${on ? GOOD : 'var(--muted)'}" font-weight="700">${on ? 'الحرارة فوق الضبط: الثرموستات يطلب تبريدًا (أُغلق الكونتاكت)' : 'الحرارة تحت الضبط: لا يوجد طلب'}</text>
     <g class="${on ? 'sy-on' : ''}"><text class="sy-tag" x="262" y="26">${esc(d.tag)} · رمز IEC</text>
     <path class="sy" d="M330 44V74M330 110V140"/><path class="sy" d="M330 110L${on ? 332 : 346} 76"/><path class="sy" d="M300 92A10 10 0 0 1 320 92M300 92H320" /><text class="sy-n" x="310" y="84" text-anchor="middle" style="font-size:10px">θ</text>
     <circle class="sy-t" cx="330" cy="44" r="4"/><circle class="sy-t" cx="330" cy="140" r="4"/><text class="sy-n" x="338" y="48">13</text><text class="sy-n" x="338" y="146">14</text>
-    <text class="sy-s" x="340" y="170" text-anchor="middle">NO بيقفل لما θ تعدّي الضبط</text></g></g></svg>`;
+    <text class="sy-s" x="340" y="170" text-anchor="middle">NO يُغلق عندما تتجاوز θ الضبط</text></g></g></svg>`;
 };
 
 /* =========================== interactive device simulation =========================== */
@@ -3489,17 +3489,17 @@ CL.sim = function(host, spec, opt){
     first = false;
     if (isLamp){
       iec.innerHTML = CL.sym.iec(d, {on:!!d.st.v});
-      cont.innerHTML = `<li class="${d.st.v ? 'on' : ''}"><span>بين X1 و X2</span><span class="om">${d.st.v ? d.cfg.v + ' V' : '0 V'}</span><span class="st">${d.st.v ? 'منورة' : 'مطفية'}</span></li>`;
+      cont.innerHTML = `<li class="${d.st.v ? 'on' : ''}"><span>بين X1 و X2</span><span class="om">${d.st.v ? d.cfg.v + ' V' : '0 V'}</span><span class="st">${d.st.v ? 'مضيء' : 'مطفأ'}</span></li>`;
     } else {
       iec.innerHTML = CL.sym.iec(d);
-      cont.innerHTML = rows(d).map(r => `<li class="${r.c ? 'on' : ''}"><span><b class="term">${r.lab}</b> ${r.main ? 'رئيسي' : r.k}</span><span class="st">${r.txt ? r.txt : r.main ? (r.c ? 'مقفول ✓' : 'مفتوح') : CL.capState(r.k, r.c, r.c !== (r.k === 'NC'), WHO(d))}</span><span class="om">${r.txt ? (r.c ? (d.cfg.pnp ? '+24 V' : '0 V') : '—') : r.c ? '0.0 Ω' : 'OL'}</span></li>`).join('');
+      cont.innerHTML = rows(d).map(r => `<li class="${r.c ? 'on' : ''}"><span><b class="term">${r.lab}</b> ${r.main ? 'رئيسي' : r.k}</span><span class="st">${r.txt ? r.txt : r.main ? (r.c ? 'مغلق ✓' : 'مفتوح') : CL.capState(r.k, r.c, r.c !== (r.k === 'NC'), WHO(d))}</span><span class="om">${r.txt ? (r.c ? (d.cfg.pnp ? '+24 V' : '0 V') : '—') : r.c ? '0.0 Ω' : 'OL'}</span></li>`).join('');
     }
     const cur = stateIdx();
-    if (isLamp) tt.innerHTML = `<thead><tr><th class="r">الحالة</th><th>اللمبة</th></tr></thead><tbody>${['القاطع فاصل (مفيش جهد)', 'القاطع شغال (' + d.cfg.v + 'V بين X1 و X2)'].map((l, i) => `<tr class="${i === cur ? 'cur' : ''}"><td class="r">${l}</td><td class="${i ? 'c1' : 'c0'}">${i ? 'منورة' : 'مطفية'}</td></tr>`).join('')}</tbody>`;
-    else tt.innerHTML = `<thead><tr><th class="r">الحالة</th>${rows(d).map(r => `<th><span class="term">${r.lab}</span> ${r.main ? '' : r.k}</th>`).join('')}</tr></thead><tbody>${states.map((s, i) => { const tmp = {st:Object.assign({}, d.st, s.st), cfg:d.cfg, blocks:d.blocks, type:d.type}; return `<tr class="${i === cur ? 'cur' : ''}"><td class="r">${esc(s.label)}${i === cur ? ' ◀' : ''}</td>${rows(tmp).map(r => `<td class="${r.c ? 'c1' : 'c0'}">${r.txt ? r.txt : r.c ? 'مقفول' : 'مفتوح'}</td>`).join('')}</tr>`; }).join('')}</tbody>`;
+    if (isLamp) tt.innerHTML = `<thead><tr><th class="r">الحالة</th><th>المصباح</th></tr></thead><tbody>${['القاطع مفصول (لا يوجد جهد)', 'القاطع موصول (' + d.cfg.v + 'V بين X1 و X2)'].map((l, i) => `<tr class="${i === cur ? 'cur' : ''}"><td class="r">${l}</td><td class="${i ? 'c1' : 'c0'}">${i ? 'مضيء' : 'مطفأ'}</td></tr>`).join('')}</tbody>`;
+    else tt.innerHTML = `<thead><tr><th class="r">الحالة</th>${rows(d).map(r => `<th><span class="term">${r.lab}</span> ${r.main ? '' : r.k}</th>`).join('')}</tr></thead><tbody>${states.map((s, i) => { const tmp = {st:Object.assign({}, d.st, s.st), cfg:d.cfg, blocks:d.blocks, type:d.type}; return `<tr class="${i === cur ? 'cur' : ''}"><td class="r">${esc(s.label)}${i === cur ? ' ◀' : ''}</td>${rows(tmp).map(r => `<td class="${r.c ? 'c1' : 'c0'}">${r.txt ? r.txt : r.c ? 'مغلق' : 'مفتوح'}</td>`).join('')}</tr>`; }).join('')}</tbody>`;
     ctl.querySelectorAll('[data-pos]').forEach(b => b.setAttribute('aria-pressed', +b.dataset.pos === d.st.pos ? 'true' : 'false'));
-    const lt = ctl.querySelector('[data-k=latch]'); if (lt) lt.textContent = d.st.p ? '↻ لِفّه عشان يرجع' : 'اضغط زرار الطوارئ';
-    const tg = ctl.querySelector('[data-k=toggle]'); if (tg) tg.textContent = d.st.v ? 'افصل القاطع' : 'ارفع القاطع (وصّل الكهربا)';
+    const lt = ctl.querySelector('[data-k=latch]'); if (lt) lt.textContent = d.st.p ? '↻ أدِره ليعود' : 'اضغط زر الطوارئ';
+    const tg = ctl.querySelector('[data-k=toggle]'); if (tg) tg.textContent = d.st.v ? 'افصل القاطع' : 'ارفع القاطع (وصّل الكهرباء)';
     const rg = ctl.querySelector('input[type=range]'); if (rg && document.activeElement !== rg && kind !== 'level') rg.value = Math.round((d.st.x || 0) * 100);
   }
   const kind = T.ctl;
@@ -3508,7 +3508,7 @@ CL.sim = function(host, spec, opt){
   if (kind === 'ol' || kind === 'prot'){ const c = simProt(d, T, {art, iec, cont, ctl, tt, used, first:() => first, setFirst:v => { first = v; }}); return c; }
   if (kind === 'hold'){
     const coilDev = !!T.coil;
-    ctl.innerHTML = `<button type="button" class="btn big hold" data-k="hold">${esc(T.holdLabel || 'اضغط واستمر (دوس على الزرار)')}</button>${coilDev ? '<button type="button" class="btn big" data-k="pin" aria-pressed="false">📌 ثبّت الجهد على الكويل</button>' : ''}`;
+    ctl.innerHTML = `<button type="button" class="btn big hold" data-k="hold">${esc(T.holdLabel || 'اضغط باستمرار (اضغط على الزر)')}</button>${coilDev ? '<button type="button" class="btn big" data-k="pin" aria-pressed="false">📌 ثبّت الجهد على الملف</button>' : ''}`;
     const hb = ctl.querySelector('.hold');
     let pinned = 0;
     const setOn = v => { if (coilDev){ d.st.coil = v ? 1 : 0; d.st.closed = v ? 1 : 0; } else d.st.p = v ? 1 : 0; };
@@ -3530,21 +3530,21 @@ CL.sim = function(host, spec, opt){
     ctl.addEventListener('click', e => { const b = e.target.closest('[data-pos]'); if (!b) return; d.st.pos = +b.dataset.pos; render(); used(); });
     art.addEventListener('click', e => { const r = art.getBoundingClientRect(), rel = (e.clientX - r.left) / r.width; if (rel > 0.42) return; const left = rel < 0.227; d.st.pos = clamp(d.st.pos + (left ? -1 : 1), 0, d.cfg.pos.length - 1); render(); used(); });
   } else if (kind === 'slider'){
-    ctl.innerHTML = `<label>حرّك العربية ناحية الليمت سويتش<input type="range" dir="ltr" min="0" max="100" value="0" aria-label="مكان العربية"></label><button type="button" class="btn big" data-k="end">ودّيها للآخر</button><button type="button" class="btn big" data-k="back">رجّعها</button>`;
+    ctl.innerHTML = `<label>حرّك العربة نحو الليمت سويتش<input type="range" dir="ltr" min="0" max="100" value="0" aria-label="مكان العربة"></label><button type="button" class="btn big" data-k="end">أوصِلها إلى النهاية</button><button type="button" class="btn big" data-k="back">أعِدها</button>`;
     const set = v => { d.st.x = v; d.st.a = CL.lsOperatedAt(v) ? 1 : 0; render(); used(); };
     ctl.querySelector('input').addEventListener('input', e => set(e.target.value / 100));
     ctl.querySelector('[data-k=end]').addEventListener('click', () => set(1));
     ctl.querySelector('[data-k=back]').addEventListener('click', () => set(0));
   } else if (kind === 'prox'){
     const photo = d.cfg.kind === 'photo';
-    ctl.innerHTML = `<label>${photo ? 'حرّك الكرتونة ناحية الشعاع' : 'قرّب الجسم من الحساس'}<input type="range" dir="ltr" min="0" max="100" value="0" aria-label="مكان الجسم"></label><button type="button" class="btn big" data-k="near">${photo ? 'حطها في الشعاع' : 'حطه قدام الحساس'}</button><button type="button" class="btn big" data-k="far">${photo ? 'شيلها' : 'بعّده'}</button>`;
+    ctl.innerHTML = `<label>${photo ? 'حرّك الكرتونة نحو الشعاع' : 'قرّب الجسم من الحساس'}<input type="range" dir="ltr" min="0" max="100" value="0" aria-label="مكان الجسم"></label><button type="button" class="btn big" data-k="near">${photo ? 'ضعها في الشعاع' : 'ضعه أمام الحساس'}</button><button type="button" class="btn big" data-k="far">${photo ? 'أزِلها' : 'أبعِده'}</button>`;
     const set = v => { d.st.x = v; d.st.a = v >= 0.72 ? 1 : 0; render(); used(); };
     ctl.querySelector('input').addEventListener('input', e => set(e.target.value / 100));
     ctl.querySelector('[data-k=near]').addEventListener('click', () => set(1));
     ctl.querySelector('[data-k=far]').addEventListener('click', () => set(0));
   } else if (kind === 'level'){
     const press = d.cfg.look === 'press', thermo = d.cfg.look === 'thermo', max = d.cfg.max || 10;
-    ctl.innerHTML = `<label>${press ? 'الضغط في الخزان: ' : thermo ? 'حرارة الغرفة: ' : 'مستوى السايل: '}<b class="mono" data-lv></b><input type="range" dir="ltr" min="0" max="100" value="${Math.round((d.st.lvl || 0) * 100)}" aria-label="${press ? 'الضغط' : thermo ? 'الحرارة' : 'المستوى'}"></label><button type="button" class="btn big" data-k="up">${press ? 'الكباس يضغط ↑' : thermo ? 'الجو سخن ↑' : 'الطلمبة تملا ↑'}</button><button type="button" class="btn big" data-k="dn">${press ? 'استهلاك هوا ↓' : thermo ? 'التكييف برّد ↓' : 'استهلاك ↓'}</button>`;
+    ctl.innerHTML = `<label>${press ? 'الضغط في الخزان: ' : thermo ? 'حرارة الغرفة: ' : 'مستوى السائل: '}<b class="mono" data-lv></b><input type="range" dir="ltr" min="0" max="100" value="${Math.round((d.st.lvl || 0) * 100)}" aria-label="${press ? 'الضغط' : thermo ? 'الحرارة' : 'المستوى'}"></label><button type="button" class="btn big" data-k="up">${press ? 'الضاغط يضغط ↑' : thermo ? 'الجو حار ↑' : 'المضخة تملأ ↑'}</button><button type="button" class="btn big" data-k="dn">${press ? 'استهلاك هواء ↓' : thermo ? 'التكييف برّد ↓' : 'استهلاك ↓'}</button>`;
     const lab = () => { const b = ctl.querySelector('[data-lv]'); if (b) b.textContent = press ? r1(d.st.lvl * max) + ' bar' : thermo ? Math.round(d.st.lvl * max) + '°C' : Math.round(d.st.lvl * 100) + '%'; };
     const set = v => { T.setLevel(d, clamp(v, 0, 1)); render(); lab(); used(); };
     ctl.querySelector('input').addEventListener('input', e => set(e.target.value / 100));
@@ -3563,7 +3563,7 @@ CL.sim = function(host, spec, opt){
 function simTimer(d, T, ui){
   let run = 0, speed = 1, timer = null, t = 0, ev = [];
   const multi = !!d.cfg.multi;
-  ui.ctl.innerHTML = `<button type="button" class="btn big pri" data-k="coil" aria-pressed="false">⚡ ادّي جهد للكويل A1-A2</button>
+  ui.ctl.innerHTML = `<button type="button" class="btn big pri" data-k="coil" aria-pressed="false">⚡ أعطِ جهدًا للملف A1-A2</button>
     ${multi ? '<select data-k="mode" aria-label="وظيفة التايمر"><option value="on">A: On-delay (تأخير عند التشغيل)</option><option value="off">B: Off-delay (تأخير عند الفصل)</option><option value="cyc">C: Flasher (دوري)</option></select>' : ''}
     <label>الزمن المضبوط t: <b class="mono" data-t></b><input type="range" dir="ltr" min="1" max="10" step="1" value="${d.cfg.t}" aria-label="الزمن"></label>
     <select data-k="spd" aria-label="سرعة الزمن"><option value="1">زمن حقيقي ×1</option><option value="5">أسرع ×5</option></select>
@@ -3574,21 +3574,21 @@ function simTimer(d, T, ui){
   function render(){
     const states = T.states(d);
     ui.art.innerHTML = T.art(d, {sim:true}); ui.iec.innerHTML = CL.sym.iec(d);
-    ui.cont.innerHTML = rows().map(r => `<li class="${r.c ? 'on' : ''}"><span><b class="term">${r.lab}</b> ${r.k}</span><span class="st">${CL.capState(r.k, r.c, r.c !== (r.k.indexOf('NC') === 0), 'شغال')}</span><span class="om">${r.c ? '0.0 Ω' : 'OL'}</span></li>`).join('');
+    ui.cont.innerHTML = rows().map(r => `<li class="${r.c ? 'on' : ''}"><span><b class="term">${r.lab}</b> ${r.k}</span><span class="st">${CL.capState(r.k, r.c, r.c !== (r.k.indexOf('NC') === 0), 'يعمل')}</span><span class="om">${r.c ? '0.0 Ω' : 'OL'}</span></li>`).join('');
     const cur = stIdx();
-    ui.tt.innerHTML = `<thead><tr><th class="r">الحالة</th><th><span class="term">15-16</span> NC</th><th><span class="term">15-18</span> NO</th></tr></thead><tbody>${states.map((s, i) => `<tr class="${i === cur ? 'cur' : ''}"><td class="r">${esc(s.label)}${i === cur ? ' ◀' : ''}</td><td class="${s.st.out ? 'c0' : 'c1'}">${s.st.out ? 'مفتوح' : 'مقفول'}</td><td class="${s.st.out ? 'c1' : 'c0'}">${s.st.out ? 'مقفول' : 'مفتوح'}</td></tr>`).join('')}</tbody>`;
+    ui.tt.innerHTML = `<thead><tr><th class="r">الحالة</th><th><span class="term">15-16</span> NC</th><th><span class="term">15-18</span> NO</th></tr></thead><tbody>${states.map((s, i) => `<tr class="${i === cur ? 'cur' : ''}"><td class="r">${esc(s.label)}${i === cur ? ' ◀' : ''}</td><td class="${s.st.out ? 'c0' : 'c1'}">${s.st.out ? 'مفتوح' : 'مغلق'}</td><td class="${s.st.out ? 'c1' : 'c0'}">${s.st.out ? 'مغلق' : 'مفتوح'}</td></tr>`).join('')}</tbody>`;
     const b = ui.ctl.querySelector('[data-t]'); if (b) b.textContent = d.cfg.t + ' s';
-    const cb = ui.ctl.querySelector('[data-k=coil]'); cb.setAttribute('aria-pressed', d.st.coil ? 'true' : 'false'); cb.textContent = d.st.coil ? '⏻ اقطع الجهد عن الكويل' : '⚡ ادّي جهد للكويل A1-A2';
+    const cb = ui.ctl.querySelector('[data-k=coil]'); cb.setAttribute('aria-pressed', d.st.coil ? 'true' : 'false'); cb.textContent = d.st.coil ? '⏻ اقطع الجهد عن الملف' : '⚡ أعطِ جهدًا للملف A1-A2';
     const m = d.cfg.mode, el = d.st.el || 0;
-    const what = m === 'on' ? (d.st.coil ? (d.st.out ? `الزمن خلص بعد ${d.cfg.t} ث: 15-18 قفل` : `بيعد: فاضل ${r1(Math.max(0, d.cfg.t - el)).toFixed(1)} ث`) : 'مستني جهد على الكويل') : m === 'off' ? (d.st.coil ? '15-18 قفل فورًا مع الجهد' : d.st.out ? `الجهد اتقطع: 15-18 لسه مقفول، فاضل ${r1(Math.max(0, d.cfg.t - el)).toFixed(1)} ث` : 'مفتوح') : (d.st.coil ? (d.st.out ? 'فترة ON' : 'فترة OFF') : 'واقف');
+    const what = m === 'on' ? (d.st.coil ? (d.st.out ? `انتهى الزمن بعد ${d.cfg.t} ث: أُغلق 15-18` : `يُعدّ: متبقٍّ ${r1(Math.max(0, d.cfg.t - el)).toFixed(1)} ث`) : 'في انتظار جهد على الملف') : m === 'off' ? (d.st.coil ? '15-18 أُغلق فورًا مع الجهد' : d.st.out ? `انقطع الجهد: 15-18 ما زال مغلقًا، متبقٍّ ${r1(Math.max(0, d.cfg.t - el)).toFixed(1)} ث` : 'مفتوح') : (d.st.coil ? (d.st.out ? 'فترة ON' : 'فترة OFF') : 'متوقف');
     ui.ctl.querySelector('.sim-clock').innerHTML = `الزمن: <b class="mono">${r1(t)} s</b> · ${what}${ev.length ? ' · آخر حدث: ' + ev[ev.length - 1] : ''}`;
   }
-  function step(){ const total = 0.1 * speed; let rem = total; while (rem > 1e-9){ const dt = Math.min(0.1, rem); const o = d.st.out; T.tick(d, dt, {devs:[]}); t = r1(t + dt); if (o !== d.st.out) ev.push(`${d.st.out ? '15-18 قفل' : '15-18 فتح'} عند ${r1(t)} ث`); rem -= dt; } render(); const m = d.cfg.mode; const need = (m === 'on' && d.st.coil && !d.st.out) || (m === 'off' && !d.st.coil && d.st.out) || (m === 'cyc' && d.st.coil); if (!need) setRun(0); }
+  function step(){ const total = 0.1 * speed; let rem = total; while (rem > 1e-9){ const dt = Math.min(0.1, rem); const o = d.st.out; T.tick(d, dt, {devs:[]}); t = r1(t + dt); if (o !== d.st.out) ev.push(`${d.st.out ? '15-18 أُغلق' : '15-18 فُتح'} عند ${r1(t)} ث`); rem -= dt; } render(); const m = d.cfg.mode; const need = (m === 'on' && d.st.coil && !d.st.out) || (m === 'off' && !d.st.coil && d.st.out) || (m === 'cyc' && d.st.coil); if (!need) setRun(0); }
   const setRun = v => { run = v ? 1 : 0; if (run && !timer) timer = setInterval(step, 100); if (!run && timer){ clearInterval(timer); timer = null; } };
   ui.ctl.querySelector('input').addEventListener('input', e => { d.cfg.t = +e.target.value; render(); ui.used(); });
   ui.ctl.querySelector('[data-k=spd]').addEventListener('change', e => { speed = +e.target.value; });
   if (multi) ui.ctl.querySelector('[data-k=mode]').addEventListener('change', e => { d.cfg.mode = e.target.value; resetDev(d); t = 0; ev = []; setRun(0); render(); ui.used(); });
-  ui.ctl.querySelector('[data-k=coil]').addEventListener('click', () => { const on = !d.st.coil; d.st.coil = on ? 1 : 0; T.onCoil(d, on); t = 0; ev = []; ev.push(on ? 'الكويل اتغذى' : 'الجهد اتقطع'); if (d.cfg.mode === 'off' && !on && !d.st.out){ } setRun(1); render(); ui.used(); });
+  ui.ctl.querySelector('[data-k=coil]').addEventListener('click', () => { const on = !d.st.coil; d.st.coil = on ? 1 : 0; T.onCoil(d, on); t = 0; ev = []; ev.push(on ? 'تغذّى الملف' : 'انقطع الجهد'); if (d.cfg.mode === 'off' && !on && !d.st.out){ } setRun(1); render(); ui.used(); });
   render();
   return {dev:d, render, destroy(){ if (timer) clearInterval(timer); }};
 }
@@ -3599,20 +3599,20 @@ function simProt(d, T, ui){
   let pct = 80, sp = 0, run = 0, speed = 1, t = 0, timer = null, startT = -1, trips = [], note = '';
   const motorIn = d.cfg.motorIn || In;
   const I = () => { let k = pct / 100; if (startT >= 0 && t - startT < 1) k = Math.max(k, 6 * motorIn / In); return k * In; };
-  ui.ctl.innerHTML = `<label>${isOL ? 'حمل الموتور (نسبة من In)' : 'التيار الماشي في الجهاز (نسبة من ' + unit + ')'}: <b class="mono" data-i></b><input type="range" dir="ltr" min="0" max="${isOL ? 300 : 1500}" step="5" value="${pct}" aria-label="التيار"></label>
-    ${isOL ? '<button type="button" class="btn" data-k="start">▶ ابدأ الموتور (6×In لثانية)</button><button type="button" class="btn" data-k="sp" aria-pressed="false">فازة ناقصة</button>' : '<button type="button" class="btn" data-k="start">▶ تيار بدء موتور (6× لثانية)</button>'}
+  ui.ctl.innerHTML = `<label>${isOL ? 'حمل المحرك (نسبة من In)' : 'التيار المار في الجهاز (نسبة من ' + unit + ')'}: <b class="mono" data-i></b><input type="range" dir="ltr" min="0" max="${isOL ? 300 : 1500}" step="5" value="${pct}" aria-label="التيار"></label>
+    ${isOL ? '<button type="button" class="btn" data-k="start">▶ ابدأ المحرك (6×In لثانية)</button><button type="button" class="btn" data-k="sp" aria-pressed="false">فاز ناقص</button>' : '<button type="button" class="btn" data-k="start">▶ تيار بدء محرك (6× لثانية)</button>'}
     <button type="button" class="btn pri" data-k="run" aria-pressed="false">⏱ شغّل الزمن</button>
     <select data-k="spd" aria-label="سرعة الزمن"><option value="1">زمن حقيقي ×1</option><option value="10">أسرع ×10</option><option value="60">أسرع ×60</option></select>
-    ${isOL ? '<button type="button" class="btn" data-k="reset">Reset</button><button type="button" class="btn" data-k="test">Test</button>' : isFuse ? '<button type="button" class="btn" data-k="replace">غيّر الفيوز</button>' : '<button type="button" class="btn" data-k="on">ارفع القاطع / رجّعه</button>'}
+    ${isOL ? '<button type="button" class="btn" data-k="reset">Reset</button><button type="button" class="btn" data-k="test">Test</button>' : isFuse ? '<button type="button" class="btn" data-k="replace">استبدل الفيوز</button>' : '<button type="button" class="btn" data-k="on">ارفع القاطع / أعِده</button>'}
     <div class="sim-clock" role="status" aria-live="polite"></div>`;
   const rows = () => { const L = T.links(d, false), has = (a, b) => L.some(l => (l[0] === a && l[1] === b)); const r = [['1','2'],['3','4'],['5','6']].slice(0, isFuse || isMcb ? (d.cfg.poles || 1) : 3).map(p => ({lab:p.join('-'), k:'قطب', c:has(p[0], p[1])}));
     if (d.type === 'ol') r.push({lab:'95-96', k:'NC', c:has('95','96')}, {lab:'97-98', k:'NO', c:has('97','98')}); if (d.type === 'mpcb' && d.cfg.aux) r.push({lab:'13-14', k:'NO', c:has('13','14')}, {lab:'21-22', k:'NC', c:has('21','22')}); return r; };
   const ks = isOL ? [1, 1.2, 1.5, 2, 3, 6, 7.2] : isFuse ? [1, 1.6, 2, 4, 6.3, 10] : [1, 1.45, 2.55, 4, 8, 15];
   const tripAt = k => { if (isOL) return CL.olTripTime(k, false); if (isMcb){ if (k >= MAG[curveOf(d)]) return 0.01; return k > 1.13 ? 100 / (k*k - 1) : Infinity; } if (d.cfg.kind === 'aM') return k >= 6.3 ? 60 / (k*k - 1) : Infinity; return k > 1.3 ? 60 / (k*k - 1) : Infinity; };
-  const fmtT = v => v === Infinity ? 'مبيفصلش' : v < 0.05 ? 'لحظي' : v < 60 ? r1(v) + ' ث' : v < 3600 ? Math.round(v / 60) + ' د' : '> ساعة';
+  const fmtT = v => v === Infinity ? 'لا يفصل' : v < 0.05 ? 'لحظي' : v < 60 ? r1(v) + ' ث' : v < 3600 ? Math.round(v / 60) + ' د' : '> ساعة';
   function render(){
     ui.art.innerHTML = T.art(d, {}); ui.iec.innerHTML = CL.sym.iec(d);
-    ui.cont.innerHTML = rows().map(r => `<li class="${r.c ? 'on' : ''}"><span><b class="term">${r.lab}</b> ${r.k}</span><span class="st">${r.k === 'NC' || r.k === 'NO' ? CL.capState(r.k, r.c, r.c !== (r.k === 'NC'), 'فاصل') : (r.c ? 'مقفول ✓ في توصيل' : 'مفتوح، مفيش توصيل')}</span><span class="om">${r.c ? '0.0 Ω' : 'OL'}</span></li>`).join('');
+    ui.cont.innerHTML = rows().map(r => `<li class="${r.c ? 'on' : ''}"><span><b class="term">${r.lab}</b> ${r.k}</span><span class="st">${r.k === 'NC' || r.k === 'NO' ? CL.capState(r.k, r.c, r.c !== (r.k === 'NC'), 'مفصول') : (r.c ? 'مغلق ✓ يوجد توصيل' : 'مفتوح، لا يوجد توصيل')}</span><span class="om">${r.c ? '0.0 Ω' : 'OL'}</span></li>`).join('');
     const kNow = I() / In;
     ui.tt.innerHTML = `<thead><tr><th class="r">التيار</th><th>زمن الفصل التقريبي</th></tr></thead><tbody>${ks.map(k => { const cur = Math.abs(kNow - k) < (k < 2 ? 0.15 : 0.8) && ks.every(o => Math.abs(kNow - o) >= Math.abs(kNow - k)); return `<tr class="${cur ? 'cur' : ''}"><td class="r">${k}×${unit} = ${r1(k * In)}A${cur ? ' ◀' : ''}</td><td class="${tripAt(k) === Infinity ? 'c0' : 'c1'}">${fmtT(tripAt(k))}</td></tr>`; }).join('')}</tbody>`;
     const b = ui.ctl.querySelector('[data-i]'); if (b) b.textContent = `I = ${r1(I())}A (${r1(kNow)}×${unit})`;
@@ -3628,10 +3628,10 @@ function simProt(d, T, ui){
     if (k === 'run'){ setRun(!run); }
     else if (k === 'start'){ startT = t; if (!run) setRun(1); }
     else if (k === 'sp'){ sp = sp ? 0 : 1; if (!run) setRun(1); }
-    else if (k === 'reset'){ T.apply(d, {reset:1}); if (d.st.trip) note = 'لسه سخن، استنى يبرد'; else { t = 0; trips = []; } }
+    else if (k === 'reset'){ T.apply(d, {reset:1}); if (d.st.trip) note = 'ما زال ساخنًا، انتظر حتى يبرد'; else { t = 0; trips = []; } }
     else if (k === 'test'){ T.apply(d, {test:1}); }
     else if (k === 'replace'){ T.apply(d, {replace:1}); t = 0; trips = []; }
-    else if (k === 'on'){ if (d.st.trip){ if ((d.st.heat || 0) >= 0.6) note = 'لسه سخن، استنى يبرد'; else { d.st.trip = 0; d.st.why = ''; d.st.on = 1; t = 0; trips = []; } } else d.st.on = d.st.on ? 0 : 1; }
+    else if (k === 'on'){ if (d.st.trip){ if ((d.st.heat || 0) >= 0.6) note = 'ما زال ساخنًا، انتظر حتى يبرد'; else { d.st.trip = 0; d.st.why = ''; d.st.on = 1; t = 0; trips = []; } } else d.st.on = d.st.on ? 0 : 1; }
     render(); ui.used(); });
   render();
   return {dev:d, render, destroy(){ if (timer) clearInterval(timer); }};
@@ -3640,7 +3640,7 @@ function simProt(d, T, ui){
 /* =========================== quiz =========================== */
 CL.quiz = function(host, qs, pref, onChange){
   // options are shuffled on every visit (data-j keeps the original index); catch-all choices («الاتنين», "Both", "None"…) always stay last
-  const PIN = /^(الاتنين|الاثنين|كلهم|ولا واحد|ولا حاجة|مفيش فرق|مش فارقة|زي بعض|كلهم زي بعض|both|neither|none|all of them|all the same|no difference|it makes no difference)$/i;
+  const PIN = /^(لا فرق|لا فرق إطلاقًا|الاثنان|كلاهما|لا شيء|ولا أحد منهما|جميعها|الاتنين|الاثنين|كلهم|ولا واحد|ولا حاجة|مفيش فرق|مش فارقة|زي بعض|كلهم زي بعض|both|neither|none|all of them|all the same|no difference|it makes no difference)$/i;
   const pinned = a => PIN.test(String(a).replace(/<[^>]*>/g, '').replace(/[\u2066-\u2069\u2060.!]/g, '').trim());
   // Latin / number runs inside RTL options ("+24V", "6–8", "DC−") would flip: isolate them as LTR
   const LTR = /[+\-−±]?[0-9A-Za-zΩµ°][0-9A-Za-zΩµ°%.,:/·×_\-–−+ ]*[0-9A-Za-zΩµ°%+\-−]|[+\-−±]?[0-9A-Za-zΩµ°]/g;
@@ -3649,17 +3649,17 @@ CL.quiz = function(host, qs, pref, onChange){
   host.innerHTML = `<div class="qz-list">${qs.map((q, i) => `<div class="qz" data-i="${i}"><p class="qz-q">${i + 1}. ${q.q}</p><div class="qz-a">${order(q).map(j => `<button type="button" class="btn qz-o" data-j="${j}">${ltr(q.a[j])}</button>`).join('')}</div><p class="qz-f" aria-live="polite"></p></div>`).join('')}</div><div class="qz-chk"><button type="button" class="btn pri" data-qz="check" aria-disabled="true">صحّح إجاباتي</button><span class="qz-cnt" aria-live="polite"></span></div>`;
   // tapping an option only selects it; right/wrong shows after «check». Correct → saved + locked, wrong → marked and cleared
   const sel = qs.map(() => null), done = qs.map(() => false), boxes = [...host.querySelectorAll('.qz')];
-  const T = {need:'جاوب على كل الأسئلة الأول', cnt:(n, t) => `جاوبت ${n} من ${t}`};
+  const T = {need:'أجب عن كل الأسئلة أولًا', cnt:(n, t) => `أجبت عن ${n} من ${t}`};
   const mark = (box, q, j, restore) => {
     const i = +box.dataset.i, btns = box.querySelectorAll('.qz-o'), f = box.querySelector('.qz-f');
     btns.forEach(b => { b.classList.remove('sel'); b.removeAttribute('aria-pressed'); });
     if (j === q.c){
       done[i] = true;
       btns.forEach(b => { b.classList.remove('no'); b.disabled = true; }); box.querySelector(`.qz-o[data-j="${j}"]`).classList.add('ok'); box.classList.add('ok');
-      f.className = 'qz-f ok'; f.innerHTML = '✓ صح. ' + (q.why || '');
+      f.className = 'qz-f ok'; f.innerHTML = '✓ صحيح. ' + (q.why || '');
       if (!restore) CL.store.set(pref + '/' + i, 1);
     } else {
-      box.querySelector(`.qz-o[data-j="${j}"]`).classList.add('no'); f.className = 'qz-f no'; f.innerHTML = '✗ مش دي. ' + ((q.w && q.w[j]) || 'فكّر تاني وجرّب إجابة تانية.');
+      box.querySelector(`.qz-o[data-j="${j}"]`).classList.add('no'); f.className = 'qz-f no'; f.innerHTML = '✗ ليست هذه. ' + ((q.w && q.w[j]) || 'فكّر مرة أخرى وجرّب إجابة أخرى.');
     }
   };
   const cnt = warn => {
@@ -3742,11 +3742,11 @@ CL.lesson = function(Ld){
   let benchNext = null, benchKey = '';
   CL.test.lesson = Ld;
   root.innerHTML = `<section class="panel guide" aria-label="${esc(Ld.title)}">
-    <div id="gStart"><div class="g-head"><h2>${esc(Ld.pick || 'اختار عنصر وابدأ')}</h2><div class="g-sub">${Ld.intro || ''}</div></div>
+    <div id="gStart"><div class="g-head"><h2>${esc(Ld.pick || 'اختر عنصرًا وابدأ')}</h2><div class="g-sub">${Ld.intro || ''}</div></div>
       <div class="g-total"><span id="gTotT"></span><div class="bar"><i id="gTotB" style="width:0"></i></div></div>
       <div class="g-cards" id="gCards"></div></div>
     <div id="gRun" hidden>
-      <div class="g-bar"><button class="btn" id="gBack" type="button">‹ رجوع للعناصر</button><div class="g-prog" id="gProg" aria-label="الخطوات"></div></div>
+      <div class="g-bar"><button class="btn" id="gBack" type="button">‹ العودة إلى العناصر</button><div class="g-prog" id="gProg" aria-label="الخطوات"></div></div>
       <div class="g-steps" id="gSteps"></div>
       <h2 class="g-title" id="gTitle"></h2>
       <div class="g-body" id="gBody"></div>
@@ -3755,7 +3755,7 @@ CL.lesson = function(Ld){
   const $ = s => root.querySelector(s);
   function cards(){
     const k = allKeys(), done = cnt(k);
-    $('#gTotT').textContent = `اتقدمت ${done} من ${k.length}`;
+    $('#gTotT').textContent = `أنجزت ${done} من ${k.length}`;
     $('#gTotB').style.width = (k.length ? done / k.length * 100 : 0) + '%';
     $('#gCards').innerHTML = Ld.elements.map((el, i) => { const ks = elKeys(el), dn = cnt(ks), full = dn === ks.length; const nEx = el.steps.filter(s => s.kind === 'bench').reduce((a, s) => a + s.ex.length, 0);
       return `<button type="button" class="g-card${full ? ' done' : ''}" data-el="${i}"><span class="n">${full ? '✓' : i + 1}</span><span class="t">${esc(el.title)}</span><span class="g">${el.goal}</span><span class="ico">${ICONS[el.icon] || ''}<span class="bar" aria-hidden="true"><i style="width:${dn / ks.length * 100}%"></i></span><span>${dn}/${ks.length} · ${nEx} تمرين</span></span></button>`; }).join('');
@@ -3800,12 +3800,12 @@ CL.lesson = function(Ld){
       const show = CL.SHOW && (cur.mode || 'show') === 'show' && Ld.exercises[sel].solution && Ld.exercises[sel].solution.length;
       const doneN = () => exs.filter(x => CL.store.has(`${LID}/ex/${x}`)).length;
       benchKey = s.ex.join(); benchNext = exs.length > 1 && exs.indexOf(sel) < exs.length - 1 ? exs[exs.indexOf(sel) + 1] : null;
-      body.innerHTML = (exs.length > 1 ? `<p class="ex-head">📋 هنا <b>${exs.length} تمارين</b>. اعملهم واحد ورا التاني. خلصت <b class="ex-cnt">${doneN()}</b> من ${exs.length}</p>` : '') + (exs.length > 1 ? `<div class="ex-tabs" role="group" aria-label="التمارين">${exs.map((x, i) => `<button type="button" class="btn${CL.store.has(`${LID}/ex/${x}`) ? ' done' : ''}" data-ex="${x}" aria-pressed="${x === sel}"><span class="k">${CL.store.has(`${LID}/ex/${x}`) ? '✓' : i + 1}</span>${esc(Ld.exercises[x].short || Ld.exercises[x].title)}</button>`).join('')}</div>` : '') + (CL.SHOW ? `<div class="ex-mode" role="group"><button type="button" class="btn" data-mode="show" aria-pressed="${!!show}">▶ شوف الحل شغال</button><button type="button" class="btn" data-mode="do" aria-pressed="${!show}">✍ وصّلها بنفسك</button></div>` : '') + `<div class="bn-host${show ? ' ex-show' : ''}"></div><div class="ex-next" hidden></div>`;
+      body.innerHTML = (exs.length > 1 ? `<p class="ex-head">📋 هنا <b>${exs.length} تمارين</b>. أنجزها واحدًا تلو الآخر. أنهيت <b class="ex-cnt">${doneN()}</b> من ${exs.length}</p>` : '') + (exs.length > 1 ? `<div class="ex-tabs" role="group" aria-label="التمارين">${exs.map((x, i) => `<button type="button" class="btn${CL.store.has(`${LID}/ex/${x}`) ? ' done' : ''}" data-ex="${x}" aria-pressed="${x === sel}"><span class="k">${CL.store.has(`${LID}/ex/${x}`) ? '✓' : i + 1}</span>${esc(Ld.exercises[x].short || Ld.exercises[x].title)}</button>`).join('')}</div>` : '') + (CL.SHOW ? `<div class="ex-mode" role="group"><button type="button" class="btn" data-mode="show" aria-pressed="${!!show}">▶ شاهد الحل يعمل</button><button type="button" class="btn" data-mode="do" aria-pressed="${!show}">✍ وصّلها بنفسك</button></div>` : '') + `<div class="bn-host${show ? ' ex-show' : ''}"></div><div class="ex-next" hidden></div>`;
       const md = body.querySelector('.ex-mode'); if (md) md.addEventListener('click', e => { const b = e.target.closest('[data-mode]'); if (!b) return; cur.mode = b.dataset.mode; cleanup(); render(); });
       const nxBox = body.querySelector('.ex-next');
       const showNext = () => { if (exs.length < 2) return; const cnt = body.querySelector('.ex-cnt'); if (cnt) cnt.textContent = doneN(); if (!CL.store.has(`${LID}/ex/${sel}`)){ nxBox.hidden = true; return; }
         const i0 = exs.indexOf(sel), nx = exs.slice(i0 + 1).concat(exs.slice(0, i0)).find(x => !CL.store.has(`${LID}/ex/${x}`)), rem = exs.length - doneN();
-        nxBox.innerHTML = nx ? `<p>✓ برافو، خلصت التمرين ده. فاضل ${rem}.</p><button type="button" class="btn pri" data-go="${nx}">التمرين الجاي: ${esc(Ld.exercises[nx].short || Ld.exercises[nx].title)} ←</button>` : `<p>🎉 خلصت كل التمارين.</p><button type="button" class="btn pri" data-go="">كمّل للخطوة الجاية ›</button>`;
+        nxBox.innerHTML = nx ? `<p>✓ أحسنت، أنهيت هذا التمرين. متبقٍّ ${rem}.</p><button type="button" class="btn pri" data-go="${nx}">التمرين التالي: ${esc(Ld.exercises[nx].short || Ld.exercises[nx].title)} ←</button>` : `<p>🎉 أنهيت كل التمارين.</p><button type="button" class="btn pri" data-go="">أكمل إلى الخطوة التالية ›</button>`;
         nxBox.hidden = false; };
       nxBox.addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (!b) return; if (b.dataset.go){ cur.ex[s.ex.join()] = b.dataset.go; cleanup(); render(true); } else { benchNext = null; $('#gNext').click(); } });
       const tabs = body.querySelector('.ex-tabs');
@@ -3814,7 +3814,7 @@ CL.lesson = function(Ld){
       const bOpt = show ? {open:true, netColors:true} : {key:`${LID}/${sel}`};
       live.push(CL.bench(body.querySelector('.bn-host'), bx, Object.assign(bOpt, {passKey:`${LID}/ex/${sel}`, onPass: () => { mark(`${LID}/ex/${sel}`); const b = tabs && tabs.querySelector(`[data-ex="${sel}"]`); if (b){ b.classList.add('done'); b.querySelector('.k').textContent = '✓'; } showNext(); },
         onReset: () => { CL.store.set(`${LID}/ex/${sel}`, null); summary(); progress(); const b = tabs && tabs.querySelector(`[data-ex="${sel}"]`); if (b){ b.classList.remove('done'); b.querySelector('.k').textContent = String(exs.indexOf(sel) + 1); } showNext(); }})));
-      if (show){ const bApi = live[live.length - 1]; bApi.power(true); const m = body.querySelector('.bn-msg'); if (m){ m.className = 'bn-msg ok'; m.textContent = 'الدايرة متوصّلة وشغالة. دوس على الزراير وشوف كل حاجة بتعمل إيه.'; } }
+      if (show){ const bApi = live[live.length - 1]; bApi.power(true); const m = body.querySelector('.bn-msg'); if (m){ m.className = 'bn-msg ok'; m.textContent = 'الدائرة موصولة وتعمل. اضغط على الأزرار وراقب ما يفعله كل جزء.'; } }
       showNext();
     }
     else if (s.kind === 'quiz'){
@@ -3824,8 +3824,8 @@ CL.lesson = function(Ld){
     progress();
     const last = cur.si === el.steps.length - 1;
     $('#gPrev').textContent = cur.si === 0 ? '‹ العناصر' : 'السابق';
-    $('#gNext').textContent = last ? (cur.el < Ld.elements.length - 1 ? 'العنصر اللي بعده ›' : 'خلصت ✓ رجوع للعناصر') : 'التالي';
-    if (benchNext) $('#gNext').textContent = 'التمرين الجاي ›';
+    $('#gNext').textContent = last ? (cur.el < Ld.elements.length - 1 ? 'العنصر التالي ›' : 'انتهيت ✓ العودة إلى العناصر') : 'التالي';
+    if (benchNext) $('#gNext').textContent = 'التمرين التالي ›';
     if (scroll) $('#gRun').scrollIntoView({block:'start'});
   }
   $('#gCards').addEventListener('click', e => { const b = e.target.closest('[data-el]'); if (b) go(+b.dataset.el, 0, true); });
