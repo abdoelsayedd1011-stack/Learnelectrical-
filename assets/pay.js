@@ -33,12 +33,13 @@
     { id: "maint", title: "صيانة المحركات والمحولات", hub: "maint-lab/index.html", inc: "كل الدروس + ورشة صيانة المحركات ومحطة صيانة المحولات والامتحان والشهادة" },
     { id: "srvm", title: "صيانة محركات السيرفو", hub: "servo-maint-lab/index.html", inc: "كل الدروس + منضدة صيانة محرك السيرفو ومحطة صيانة الدرايف والامتحان والشهادة" },
     { id: "mech", title: "أساسيات الميكانيكا", hub: "mech-lab/index.html", inc: "كل الدروس + 11 لعبة تفاعلية والامتحان والشهادة" },
-    { id: "mfit", title: "ميكانيكا الماكينات", hub: "mfit-lab/index.html", inc: "كل الدروس + 16 تمرين ورشة والامتحان والشهادة" }
+    { id: "mfit", title: "ميكانيكا الماكينات", hub: "mfit-lab/index.html", inc: "كل الدروس + 16 تمرين ورشة والامتحان والشهادة" },
+    { id: "a3s", title: "محاكيات A3/Speed", hub: "a3speed-lab/index.html", inc: "8 محاكيات تفاعلية لماكينة A3/Speed مبنية على برنامجها" }
   ];
   if (EN) COURSES.forEach(function(c){ c.title = EN.courses[c.id] || c.title; c.inc = EN.payInc[c.id] || c.inc; });
   COURSES.forEach(function(c){ c.href = EN ? L(c.hub) : c.hub; c.ar = !!EN && !/^\/en\//.test(c.href); });
   var BY_ID = {}; COURSES.forEach(function(c){ BY_ID[c.id] = c; });
-  var ALIAS = { "safety-plc": "safety", drawings: "drw", servo: "srv", instrumentation: "instr", inverters: "vfd", vfdc: "vfd", networks: "iiot", hmi: "scada", panels: "panel", "panel-design": "panel", motors: "maint", transformers: "maint", maintenance: "maint", "motor-maintenance": "maint", "servo-maintenance": "srvm", "servo-repair": "srvm", encoder: "srvm", mechanics: "mech", physics: "mech", fitter: "mfit", "machine-mechanics": "mfit", "mechanical-maintenance": "mfit" };
+  var ALIAS = { a3speed: "a3s", "a3-speed": "a3s", "safety-plc": "safety", drawings: "drw", servo: "srv", instrumentation: "instr", inverters: "vfd", vfdc: "vfd", networks: "iiot", hmi: "scada", panels: "panel", "panel-design": "panel", motors: "maint", transformers: "maint", maintenance: "maint", "motor-maintenance": "maint", "servo-maintenance": "srvm", "servo-repair": "srvm", encoder: "srvm", mechanics: "mech", physics: "mech", fitter: "mfit", "machine-mechanics": "mfit", "mechanical-maintenance": "mfit" };
   var AR_BADGE = EN ? '<span class="ar-badge" title="' + esc(EN.arBadgeTitle) + '">' + esc(EN.arBadge) + "</span>" : "";
 
   var CUR = EN ? EN.currency : str(P.currency) || "جنيه";

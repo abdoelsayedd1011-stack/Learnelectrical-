@@ -1,0 +1,984 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="محاكي تشكيل الأنبوبة في A3/Speed: مسار الورق والبندول وشد الورق وحلقات التشكيل.">
+<link rel="canonical" href="https://www.learnelectricals.com/a3speed-lab/tube-forming.html">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>محاكي تشكيل التيوب A3/Speed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Old A3/Speed simulator look (dark control-room HMI). Compact: diagram + live tags together, controls/alarms beside, trends right under, faults next to trends. Single dark look by design. */
+:root{
+  color-scheme: dark;
+  --bg:#0c1215; --panel:#131b1f; --panel2:#19232a; --line:#26353d; --fg:#e3ece9; --muted:#8fa4a0;
+  --web:#d9cfb4; --strip:#c792ea; --ls:#55b6ea; --sa:#ff7a8a; --heat:#ff8a3d; --roll:#9ccc65; --sens:#ffc629; --steel:#7f9198;
+  --ok:#5fd08b; --alarm:#ff5d50; --warn:#ffc629; --blue:#5aa9ff; --accent:#e9a640;
+  --f-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Arabic",system-ui,"Segoe UI",Tahoma,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--fg);margin:0}
+body{font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{direction:rtl;max-width:1380px;margin:0 auto;padding-block:12px 36px;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));display:grid;gap:10px}
+header{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;justify-content:space-between}
+h1{font-family:var(--f-display);font-size:clamp(19px,2.6vw,26px);margin:0;text-wrap:balance}
+h2{font-family:var(--f-display);font-size:14.5px;margin:0 0 6px;font-weight:700;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sub{color:var(--muted);margin:0;font-size:13.5px}
+.en{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-size:.84em;color:#bcd0cb}
+.mono{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-variant-numeric:tabular-nums}
+button,select,input{font-family:var(--f-body);font-size:13.5px;color:var(--fg)}
+button{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 11px;cursor:pointer;touch-action:manipulation;line-height:1.35}
+button:hover{border-color:var(--muted)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.primary{background:var(--accent);color:#1b1206;border-color:var(--accent);font-weight:700}
+button.stop{border-color:#6b3430;color:#ffb3ab}
+button.sel{border-color:var(--accent);color:var(--accent);font-weight:700}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.note{font-size:12px;color:var(--muted)}
+.simp{display:inline-block;font-size:11px;color:#1b1206;background:var(--warn);border-radius:5px;padding:0 6px;font-weight:600;white-space:nowrap}
+canvas{display:block;width:100%}
+
+/* main grid: diagram | side ; trends | faults */
+.main{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:10px;align-items:start;min-width:0}.main>*,.col>*{min-width:0;max-width:100%}
+@media (max-width:1020px){.main{display:flex;flex-direction:column}.main>.col{display:contents}.o1{order:1}.o2{order:2}.o3{order:3}.o4{order:4}.o5{order:5}.o6{order:6}}
+.col{display:grid;gap:10px;min-width:0;align-content:start}
+.dia{padding:6px}
+.dia .scroll{direction:ltr;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.dia svg{display:block;width:100%;min-width:560px;height:auto;direction:ltr}
+.dia .hint{display:none;font-size:11.5px;color:var(--muted);text-align:center}
+@media (max-width:600px){.dia .hint{display:block}}
+
+/* status head */
+.state{font-family:var(--f-display);font-size:18px;font-weight:700;line-height:1.3}
+.state .en{font-size:.62em;color:var(--muted);margin-inline-start:6px}
+.msg{font-size:13.5px;min-height:2.6em;color:#cfdcd8;text-wrap:pretty}
+.ops{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.ops button{padding:7px 4px;font-weight:600}
+.ops button small{display:block;font-weight:400;font-size:10.5px;color:var(--muted)}
+.ops .go{border-color:#2f6b47;color:#bff5d2}
+.kvs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.kv{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:4px 8px;display:grid;line-height:1.3;min-width:0}
+.kv span{font-size:11.5px;color:var(--muted)}
+.kv strong{font-family:var(--f-mono);font-size:16px;direction:ltr;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.kv.bad{border-color:var(--alarm);background:#2a1715}.kv.bad strong{color:#ffb3ab}
+.kv.wn{border-color:#7a6216;background:#2a2410}.kv.wn strong{color:var(--warn)}
+.kv.good strong{color:var(--ok)}
+.slrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;font-size:12.5px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+
+/* alarms */
+.alarms{display:grid;gap:4px;max-height:210px;overflow:auto}
+.alarm{border:1px solid var(--line);border-inline-start:5px solid var(--warn);background:var(--panel2);border-radius:7px;padding:4px 8px;display:grid;gap:0;font-size:12.5px;line-height:1.4}
+.alarm.Y{border-inline-start-color:var(--warn)}
+.alarm.B{border-inline-start-color:var(--blue)}
+.alarm strong{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-size:11.5px;color:#ffd7a0;text-align:right}
+.alarm.B strong{color:#a9d0ff}
+.alarm .t{font-size:11px;color:var(--muted)}
+.alarm.cleared{opacity:.5}
+.empty{font-size:12.5px;color:var(--muted);padding:4px}
+
+/* trends + faults row */
+.under{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (max-width:760px){.under{grid-template-columns:minmax(0,1fr)}}
+.tr{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 8px}
+.tr h3{font-size:12.5px;margin:0 0 2px;font-weight:600;display:flex;justify-content:space-between;gap:6px;flex-wrap:wrap}
+.lg{font-size:11px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+.lg i{display:inline-block;width:12px;height:3px;vertical-align:middle;margin-left:3px}
+.fgrp{display:grid;gap:4px;margin-bottom:6px}
+.fgrp>b{font-size:12px;color:var(--muted);font-weight:600}
+.fbt{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+.fbt button{text-align:right;font-size:12.5px;padding:5px 8px;display:grid;line-height:1.3}
+.fbt button small{font-size:10.5px;color:var(--muted)}
+.fbt button.on{border-color:var(--alarm);background:#2a1715;color:#ffb3ab}
+.fbt button.on small{color:#ffb3ab}
+.chal{border:1px dashed #5a4a7a;border-radius:10px;padding:8px;display:grid;gap:6px;background:#17131f}
+.chal select{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px;width:100%}
+.res{font-size:13px;line-height:1.55}
+.res.ok{color:var(--ok)}.res.bad{color:#ffb3ab}
+
+/* TMCC2 panel */
+.tm-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:10px;align-items:start}
+@media (max-width:760px){.tm-grid{grid-template-columns:minmax(0,1fr)}}
+.tm-svg{background:#0b1013;border:1px solid var(--line);border-radius:10px;display:block;width:100%;height:auto;direction:ltr}
+.tm-read{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.tm-st{border-radius:8px;padding:6px 9px;font-size:13px;font-weight:600;border:1px solid var(--line);background:var(--panel2)}
+.tm-st.ok{border-color:#2f6b47;color:#bff5d2}.tm-st.b{border-color:var(--blue);color:#cfe4ff;background:#12223a}.tm-st.y{border-color:var(--warn);color:#ffe7a0;background:#2a2410}
+.tm-ctl{display:grid;gap:6px;margin-top:8px}
+.chain2{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:12px;margin-top:8px;direction:ltr;justify-content:flex-end}
+.chain2 span{border:1px solid var(--line);background:var(--panel2);border-radius:6px;padding:2px 7px;font-family:var(--f-mono)}
+.chain2 i{color:var(--muted);font-style:normal}
+.chain2 span.hot{border-color:var(--accent);color:var(--accent)}
+.gauge{position:relative;height:16px;border:1px solid var(--line);border-radius:4px;background:#0b1013;overflow:hidden;direction:ltr}
+.gauge b{position:absolute;top:0;bottom:0;background:rgba(90,169,255,.18)}
+.gauge u{position:absolute;top:0;bottom:0;width:1px;background:#4a5a62}
+.gauge i{position:absolute;top:-1px;bottom:-1px;width:4px;margin-left:-2px;background:var(--accent);border-radius:2px}
+/* tabs */
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.tabs button{font-size:13px}
+.tab{display:none}.tab.on{display:block}
+.steps{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
+@media (max-width:760px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.st{border:1px solid var(--line);border-radius:8px;padding:6px;background:var(--panel2);font-size:12.5px;line-height:1.35}
+<style>
+/* tube forming additions */
+.steps{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.st .d{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+.slowbadge{font-family:var(--f-mono)}
+.calc{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12.5px;line-height:1.8;overflow-x:auto;white-space:nowrap}
+.calc b{color:var(--accent)}
+.hdrrow{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
+.hdrrow .grp{display:flex;gap:4px;align-items:center}
+.ctl2{display:grid;gap:6px;margin-top:8px}
+.ops4{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-top:6px}
+.ops4 button{padding:6px 4px;font-size:12.5px}
+.ops4 button small{display:block;font-size:10.5px;color:var(--muted)}
+</style>
+
+</head>
+<body>
+<nav aria-label="تنقل" style="direction:rtl;display:flex;flex-wrap:wrap;gap:8px;max-width:1400px;margin:0 auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 0;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:14px"><a href="/a3speed-lab/" style="color:#1f5a96;text-decoration:none;font-weight:600;padding:4px 10px;border:1px solid #c5c5c5;border-radius:8px;background:#fff">← كل محاكيات A3/Speed</a></nav>
+<div class="wrap">
+<header>
+  <div>
+    <h1>تشكيل التيوب — A3/Speed</h1>
+    <p class="sub">مسار الورق ← بكرة الثني المتحركة والبندول (شد ثابت للورق) ← حلقات التشكيل ← اللحام الطولي ← توجيه الأنبوب ← الفكوك. اضغط على أي علامة <b style="color:var(--alarm)">!</b> في الرسمة عشان تعمل عطل في المكان ده.</p>
+  </div>
+  <div class="hdrrow">
+    <div class="grp"><span class="note">سرعة المحاكاة</span>
+      <button data-sp="1" class="sel">×1</button><button data-sp="5">×5</button><button data-sp="20">×20</button></div>
+    <div class="grp"><span class="note">تصوير بطيء وقت الحدث المهم</span>
+      <button data-slow="1">لأ</button><button data-slow="0.25" class="sel">×0.25</button><button data-slow="0.1">×0.1</button></div>
+  </div>
+</header>
+
+<div class="main">
+  <div class="col">
+    <div class="panel dia o1">
+      <div class="scroll">
+      <svg id="svg" viewBox="0 0 760 640" role="img" aria-label="رسمة متحركة لمسار الورق وتشكيل الأنبوب في A3/Speed">
+        <defs>
+          <linearGradient id="tubeG" x1="0" x2="1"><stop offset="0" stop-color="#8d8571"/><stop offset=".45" stop-color="#e6dcc2"/><stop offset="1" stop-color="#7c745f"/></linearGradient>
+          <linearGradient id="webG" x1="0" x2="1"><stop offset="0" stop-color="#a99f86"/><stop offset=".5" stop-color="#ddd3b8"/><stop offset="1" stop-color="#a99f86"/></linearGradient>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4"/></filter>
+          <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#2c3d45" stroke-width="2"/></pattern>
+        </defs>
+        <rect x="0" y="0" width="760" height="640" fill="#0f171b"/>
+        <!-- aseptic chamber background -->
+        <rect x="355" y="96" width="190" height="330" rx="10" fill="#121d22" stroke="#22313a"/>
+        <text x="364" y="412" font-size="11" fill="#5d7480">الحيز المعقم</text>
+        <!-- incoming web label -->
+        <text x="72" y="632" font-size="11" fill="#8fa4a0">↑ من الـ ASU وحوض البيروكسيد</text>
+
+        <!-- web side view path -->
+        <path id="webSide" fill="none" stroke="#5d564a" stroke-width="7" stroke-linejoin="round"/>
+        <path id="webSideHi" fill="none" stroke="#d9cfb4" stroke-width="4" stroke-linejoin="round"/>
+        <path id="webSideMv" fill="none" stroke="#6b6250" stroke-width="4" stroke-dasharray="3 33" stroke-linejoin="round"/>
+
+        <!-- TPAC edge sensor -->
+        <g id="tpac">
+          <rect x="40" y="458" width="10" height="26" rx="2" fill="#ffc629" stroke="#111"/>
+          <rect x="70" y="458" width="10" height="26" rx="2" fill="#ffc629" stroke="#111"/>
+          <line x1="50" y1="471" x2="70" y2="471" stroke="#ff5d50" stroke-width="1" stroke-dasharray="2 2" id="tpacBeam"/>
+          <rect id="tpacGuide" x="28" y="510" width="72" height="8" rx="3" fill="#7f9198"/>
+        </g>
+        <g id="tagTpac"></g>
+
+        <!-- Air knife -->
+        <g id="ak">
+          <path d="M30,320 L52,330 L52,340 L30,350 Z" fill="#40c7f4" stroke="#111"/>
+          <path d="M90,320 L68,330 L68,340 L90,350 Z" fill="#40c7f4" stroke="#111"/>
+          <g id="akAir" opacity=".6"><line x1="52" y1="335" x2="58" y2="335" stroke="#98d8e4" stroke-width="2"/><line x1="68" y1="335" x2="62" y2="335" stroke="#98d8e4" stroke-width="2"/></g>
+        </g>
+        <g id="tagAk"></g>
+
+        <!-- calender roller -->
+        <g id="cal"><circle cx="82" cy="50" r="20" fill="#2c3a40" stroke="#99a8a8" stroke-width="2"/><line id="calSp" x1="82" y1="50" x2="82" y2="32" stroke="#99a8a8" stroke-width="2"/></g>
+        <text x="82" y="88" font-size="11" fill="#8fa4a0" text-anchor="middle">رول الكالندر</text>
+
+        <!-- counter roller + cylinder -->
+        <g id="crCyl"><rect x="232" y="0" width="16" height="10" fill="#3b5959" stroke="#111"/><rect id="crRod" x="238" y="10" width="4" height="6" fill="#9fb0b6"/></g>
+        <g id="cr"><circle id="crC" cx="240" cy="26" r="11" fill="#2f4a1f" stroke="#9ccc65" stroke-width="2"/></g>
+        <!-- driven bending roller -->
+        <g id="dr"><circle cx="240" cy="64" r="24" fill="#2f4a1f" stroke="#b9d983" stroke-width="2.5"/><line id="drSp" x1="240" y1="64" x2="240" y2="42" stroke="#b9d983" stroke-width="3"/><circle cx="240" cy="64" r="5" fill="#b9d983"/></g>
+        <g id="drMot"><circle cx="196" cy="64" r="11" fill="#fdb935" stroke="#111"/><text x="196" y="68" font-size="11" text-anchor="middle" font-weight="700" fill="#1b1206">M</text><line x1="207" y1="64" x2="216" y2="64" stroke="#99a8a8" stroke-width="3"/></g>
+        <g id="tagDr"></g><g id="tagCr"></g>
+
+        <!-- pendulum -->
+        <g id="pendCyl"><line id="pcBody" stroke="#3b5959" stroke-width="12" stroke-linecap="round"/><line id="pcRod" stroke="#9fb0b6" stroke-width="4"/></g>
+        <line id="pArm" stroke="#7f9198" stroke-width="7" stroke-linecap="round"/>
+        <g id="pRoll"><circle id="pRc" r="16" fill="#2f4a1f" stroke="#9ccc65" stroke-width="2.5"/><line id="pRs" stroke="#9ccc65" stroke-width="2.5"/></g>
+        <g id="pivot"><circle cx="200" cy="165" r="9" fill="#ffc629" stroke="#111"/><circle cx="200" cy="165" r="3" fill="#111"/></g>
+        <g id="ipBox"><rect x="104" y="262" width="34" height="20" rx="3" fill="#4687c7" stroke="#111"/><text x="121" y="276" font-size="10" text-anchor="middle" fill="#fff" class="m">I/P</text></g>
+        <g id="pvBox"><rect x="104" y="292" width="34" height="18" rx="3" id="pvR" fill="#33444c" stroke="#111"/><text x="121" y="305" font-size="9.5" text-anchor="middle" fill="#fff" class="m">K2420</text></g>
+        <g id="tagPend"></g><g id="tagPress"></g>
+        <!-- loop scale -->
+        <g id="loopScale"></g>
+
+        <!-- guide rollers -->
+        <circle cx="360" cy="52" r="12" fill="#2c3a40" stroke="#99a8a8" stroke-width="2"/>
+        <circle cx="438" cy="52" r="12" fill="#2c3a40" stroke="#99a8a8" stroke-width="2"/>
+
+        <!-- web front band (tube) -->
+        <path id="band" fill="url(#webG)" stroke="#5d564a" stroke-width="1"/>
+        <g id="crease"></g>
+        <path id="seam" fill="none" stroke="#c792ea" stroke-width="3"/>
+        <!-- edge rollers -->
+        <g><circle cx="388" cy="150" r="8" fill="#2c3a40" stroke="#99a8a8" stroke-width="2"/><circle cx="512" cy="150" r="8" fill="#2c3a40" stroke="#99a8a8" stroke-width="2"/></g>
+        <!-- forming rings -->
+        <ellipse cx="450" cy="200" rx="50" ry="10" fill="none" stroke="#7f9198" stroke-width="5"/>
+        <ellipse cx="450" cy="262" rx="34" ry="8" fill="none" stroke="#7f9198" stroke-width="5"/>
+        <!-- LS inductor -->
+        <rect id="lsGlow" x="440" y="284" width="20" height="74" rx="4" fill="#ff8a3d" opacity="0" filter="url(#glow)"/>
+        <rect x="443" y="286" width="14" height="70" rx="3" fill="#3a2a2a" stroke="#ff8a3d" stroke-width="1.5" id="lsInd"/>
+        <ellipse cx="450" cy="384" rx="28" ry="7" fill="none" stroke="#7f9198" stroke-width="5"/>
+        <!-- aseptic chamber seal -->
+        <rect x="360" y="418" width="180" height="10" rx="3" fill="url(#hatch)" stroke="#3b5959"/>
+        <!-- steering device -->
+        <ellipse cx="450" cy="470" rx="36" ry="10" fill="none" stroke="#fde900" stroke-width="7" id="steerRing"/>
+        <circle id="steerMk" r="4" fill="#111" stroke="#fde900" stroke-width="1.5"/>
+        <!-- tube support -->
+        <path d="M418,528 L408,540 L492,540 L482,528" fill="none" stroke="#99a8a8" stroke-width="3"/>
+        <!-- jaws -->
+        <g id="jaws"><rect id="jawL" y="584" width="44" height="14" rx="3" fill="#7f9198"/><rect id="jawR" y="584" width="44" height="14" rx="3" fill="#7f9198"/></g>
+        <text x="450" y="626" font-size="11" fill="#8fa4a0" text-anchor="middle">إلى الفكوك ↓</text>
+        <g id="tagJaw"></g>
+
+        <!-- station labels (right side) -->
+        <g id="stations"></g>
+        <!-- cross sections -->
+        <g id="xs"></g>
+
+        <g id="slowB" visibility="hidden"><rect x="590" y="8" width="160" height="22" rx="11" fill="#2b2110" stroke="#e9a640"/><text x="670" y="23" font-size="11.5" fill="#e9a640" text-anchor="middle" id="slowT">تصوير بطيء ×0.25</text></g>
+        <g id="hots"></g>
+      </svg>
+      </div>
+      <div class="hint">اسحب الرسمة يمين وشمال على الموبايل</div>
+    </div>
+
+    <div class="under o4">
+      <div class="tr"><h3>مكان البندول <span class="lg"><span><i style="background:#9ccc65"></i>AI_U70B3480 mV</span><span><i style="background:#5fd08b"></i>SP</span><span><i style="background:#ff5d50"></i>Min/Max</span></span></h3><canvas id="c1" height="150"></canvas></div>
+      <div class="tr"><h3>سرعة بكرة الثني <span class="lg"><span><i style="background:#fdb935"></i>الأمر Hz</span><span><i style="background:#8fa4a0"></i>FF</span><span><i style="background:#55b6ea"></i>تصحيح PID ×</span></span></h3><canvas id="c2" height="150"></canvas></div>
+      <div class="tr"><h3>حرف الورق وضغط البندول <span class="lg"><span><i style="background:#ffc629"></i>حرف mm</span><span><i style="background:#4687c7"></i>bar</span></span></h3><canvas id="c3" height="150"></canvas></div>
+    </div>
+
+<div class="panel o6">
+  <div class="tabs">
+    <button data-tab="t1" class="sel">خطوات شد الورق</button>
+    <button data-tab="t2">حساب سرعة البكرة</button>
+    <button data-tab="t3">الفكرة باختصار</button>
+    <button data-tab="t4">أهم القيم والتاجات</button>
+  </div>
+  <div class="tab on" id="t1">
+    <p class="note" style="margin:0 0 6px">التسلسل <span class="en">SEQ_PMTension</span> في الروتين <span class="en">_23010_PMTension_A3</span>. الخطوة المنورة هي اللي الماكينة فيها دلوقتي.</p>
+    <div class="steps" id="steps"></div>
+    <p class="note" id="seqT" style="margin:6px 0 0"></p>
+  </div>
+  <div class="tab" id="t2">
+    <p class="note" style="margin:0 0 6px">البرنامج بيحسب سرعة الموتور اللي تمشي الورق بنفس سرعة الفكوك (Feed forward)، وبعدين الـ PID بيزوّد أو ينقّص شوية عشان يرجّع البندول لنقطة الضبط. الأرقام دي حية من المحاكي.</p>
+    <div class="calc" id="calc"></div>
+  </div>
+  <div class="tab" id="t3">
+    <div class="cards">
+      <div><b>ليه شد ثابت؟</b> الفكوك بتسحب الأنبوب بسرعة ثابتة، والورق جاي من بكرة كبيرة تقيلة. لو الشد اتغير، الأنبوب يتلف أو يلف، وخط اللحام الطولي يتحرك والتراكب يبوظ. علشان كده فيه بكرة متحركة بتغذي الورق وبندول بيقيس الفرق.</div>
+      <div><b>بكرة الثني المتحركة:</b> موتور بإنفرتر <span class="en">FQ_DriveRoller</span> (من 0 لـ 600 يعني 0 لـ 60 Hz) على الديفايس نت. الرول المقابل <span class="en">U70M2410</span> بيكبس الورق عليها بضغط ثابت 2.5 بار عشان ما تزحلقش.</div>
+      <div><b>البندول:</b> رول على دراع، والسلندر <span class="en">U70M2422</span> بيدفعه ضد شد الورق بضغط من صمام تناسبي <span class="en">U70T2540</span> (0 لـ 10 فولت = 0 لـ 6 بار). حساس الزاوية <span class="en">U70B3480</span> (4500 مللي فولت لكل 90 درجة) بيقول البندول فين.</div>
+      <div><b>الـ PID:</b> لو البندول طلع لفوق يبقى الورق اللي داخل أقل من اللي الفكوك بتسحبه، فالبرنامج يزوّد سرعة البكرة. لو نزل لتحت يقلّل. نقطة الضبط 41.6% من مشوار البندول بين الحد الأدنى والأقصى.</div>
+      <div><b>المعايرة:</b> لما تغيّر الحساس أو الدراع لازم تعاير. البرنامج بيرخي البندول بنص الضغط 3 ثواني ويقرا مكانه تحت، وبعدين يرفعه بالصمام <span class="en">U70K2420</span> 3 ثواني ويقرا فوق. الحد الأدنى = تحت × 1.02 والأقصى = فوق × 0.98، والمشوار لازم يكون 2075 ± 300 مللي فولت.</div>
+      <div><b>التشكيل:</b> رولات الحرف وحلقة التشكيل بيبدأوا يقوّسوا الورق، الحلقة العليا تقفله، إندكتور اللحام الطولي يلحم التراكب، والحلقة السفلية تكبس. جهاز التوجيه تحت بيلف الأنبوب شوية (أوفست) عشان خط اللحام يبقى في مكانه، وحساس TPAC بيمسك حرف الورق في النص.</div>
+      <div><span class="simp">تبسيط توضيحي</span> زمن تسارع الفكوك، طول الورق اللي في البندول، مكان حساس TPAC في الرسمة، أثر الحرف والتوجيه على مكان خط اللحام، والجودة كنسبة مئوية، كلها مقرّبة عشان الفكرة تبان. الأزمنة والحدود والجينات وأسماء الإنذارات من برنامج الماكينة.</div>
+    </div>
+  </div>
+  <div class="tab" id="t4"><div class="tw"><table id="vals"></table></div></div>
+</div>
+
+  </div>
+
+  <div class="col">
+    <div class="panel o2">
+      <div class="state" id="state">بتبدأ <span class="en">INIT</span></div>
+      <div class="msg" id="msg"></div>
+      <div class="ops" style="margin-top:6px">
+        <button class="go" id="bProd">تشغيل إنتاج<small>Production</small></button>
+        <button class="go" id="bTube">لحام الأنبوب<small>Tube sealing</small></button>
+        <button class="stop" id="bStop">إيقاف<small>Stop</small></button>
+      </div>
+      <div class="ops4">
+        <button id="bInch">إنشينج الفكوك<small>Inching</small></button>
+        <button id="bRef">معايرة البندول<small>Pendulum ref.</small></button>
+        <button id="bSter">دورة التعقيم<small>Sterile seq.</small></button>
+        <button id="bDoor">باب الوحدة<small>Door</small></button>
+        <button id="bReset">ريسيت<small>Reset</small></button>
+        <button id="bSplice">وصلة ورق<small>PM splice</small></button>
+      </div>
+      <div class="ctl2">
+        <div class="slrow"><span>السرعة</span><input type="range" id="spd" min="12000" max="24000" step="1000" value="24000"><span class="mono" id="spdV">24000</span></div>
+        <div class="slrow"><span>ضغط البندول</span><input type="range" id="prs" min="0" max="60" step="1" value="45"><span class="mono" id="prsV">4.5 bar</span></div>
+        <div class="slrow"><span>أوفست التوجيه</span><input type="range" id="str" min="-8" max="8" step="1" value="3"><span class="mono" id="strV">3</span></div>
+      </div>
+      <div class="kvs" style="margin-top:8px" id="kvs"></div>
+    </div>
+    <div class="panel o3">
+      <h2>الإنذارات <span class="note">أصفر = وقوف · أزرق = تحذير والماكينة شغالة</span></h2>
+      <div class="alarms" id="alarms"></div>
+    </div>
+    <div class="panel o5">
+      <h2>الأعطال <span class="note">نفس علامات <b style="color:var(--alarm)">!</b> اللي على الرسمة</span></h2>
+      <div id="faults"></div>
+      <div class="chal">
+        <div class="row" style="justify-content:space-between"><b>تحدي: إيه العطل؟</b><span class="note" id="score">النتيجة 0 / 0</span></div>
+        <div class="note" id="chalTxt">هنعمل عطل مخفي والماكينة شغالة. راقب البندول والسرعة والإنذارات وبعدين اختار السبب.</div>
+        <button class="primary" id="bChal">ابدأ تحدي جديد</button>
+        <select id="chalSel" disabled><option>— اختار السبب —</option></select>
+        <button id="bAns" disabled>تأكيد الإجابة</button>
+        <div class="res" id="res"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const toward=(x,t,r)=>x<t?Math.min(t,x+r):Math.max(t,x-r);
+
+/* ---------- program values (TPFU_Process, TPAC, SAS) ---------- */
+const P={rep:185, Dr:100, gear:10, poles:2, fMax:600,
+  KpRamp:1.5, KiRamp:0.7, KpStand:1.0, KiStand:0.1, KpStop:1.0, cyc:0.05, outMin:-50, outMax:50,
+  spPerc:41.6, hiPerc:80, loPerc:50, stroke:2075, margin:300,
+  Ldown:1667, Lup:3639, manHz:15, cr:2.5, prsMax:6,
+  edgeSP:10, edgeAlrLo:2, edgeAlrHi:17, spot:20, stab:5000, steerMax:8,
+  mvPerM:7155, ffCorr:1.006};
+const ffOf=pph=>pph/3600*(P.rep/P.Dr)*(P.gear/Math.PI)*(P.poles/2)*10;   // VAR_FrequencyFF [0.1 Hz]
+const vOfF=f=>f*0.1*2*Math.PI/(P.poles/2)/P.gear*(P.Dr/2)/1000;           // m/s of paper at drive roller
+const vJawOf=pph=>pph/3600*P.rep/1000;                                   // m/s pulled by jaws
+
+/* ---------- alarms ---------- */
+const ALR={
+  DriveFault:{tag:"ALR_TFU_YE_PMTensionDriveFault",c:"Y",t:"عطل في إنفرتر بكرة الثني المتحركة FQ_DriveRoller"},
+  LoopTop:{tag:"ALR_TFU_YE_PMTensionLoopTopPos",c:"Y",t:"البندول فضل فوق الحد الأقصى: الورق مشدود والبكرة مش ملاحقة على الفكوك"},
+  LoopBottom:{tag:"ALR_TFU_YE_PMTensionLoopBottomPos",c:"Y",t:"البندول تحت الحد الأدنى: ورق زيادة، أو الورق مقطوع، أو الحساس بيقرا غلط"},
+  NotRefer:{tag:"ALR_TFU_YE_PendulumNotRefer",c:"Y",t:"البندول مش متعاير. اعمل معايرة البندول"},
+  ColRot:{tag:"ALR_TFU_YE_PMTensionColumnRotMon",c:"Y",t:"مراقب حركة الورق: حركة الورق مش ماشية مع الفكوك"},
+  Edge:{tag:"ALR_TPAC_YE_EdgeSensorOutOfRange",c:"Y",t:"حرف الورق خارج حدود حساس TPAC"},
+  SteerY:{tag:"ALR_TFU_YE_TubeSteering",c:"Y",t:"عطل في جهاز توجيه الأنبوب (كود 3: الدرايف عطلان)"},
+  SteerB:{tag:"ALR_TFU_BE_TubeSteering",c:"B",t:"جهاز توجيه الأنبوب بيتحرك (كود 0)"},
+  AK:{tag:"ALR_SAS_YE_AirKnifePosition",c:"Y",t:"سكينة الهوا مش في مكانها: السلندر مقفلش"}
+};
+
+/* ---------- faults ---------- */
+const FAULTS=[
+ {id:"fq",area:"drive",n:"إنفرتر بكرة الثني فصل",s:"إنذار فوري",x:182,y:84,
+  why:"الإنفرتر بعت FQ_DriveRoller.In.Fault، والبرنامج طلّع ALR_TFU_YE_PMTensionDriveFault على طول. البكرة وقفت، فالفكوك فضلت تسحب ورق من البندول وهي بتقف، ولاحظ البندول طالع لفوق. لو الإنفرتر مش Ready وقت التشغيل، البرنامج بيستنى 25 ثانية (TMR_PMTensionStartUpTimeout) قبل نفس الإنذار."},
+ {id:"slip",area:"drive",n:"الرول المقابل مش كابس (ضغط 2.5 بار راح)",s:"إنذار بعد 3 ث فوق الحد",x:214,y:30,
+  why:"البكرة بتلف بس الورق بيزحلق عليها، فالورق اللي داخل أقل من اللي الفكوك بتسحبه. الـ PID زوّد السرعة لحد آخره (+50%) والبندول برضه طلع لفوق. لما البندول فضل ≥ الحد الأقصى 3 ثواني (TMR_DelayPaperMovingTopPos) طلع ALR_TFU_YE_PMTensionLoopTopPos. العلامة المميزة: الأمر Hz عالي والبندول فوق. افحص U70R2414 والسلندر U70M2410."},
+ {id:"brk",area:"drive",n:"الورق اتقطع قبل بكرة الثني",s:"إنذار خلال 1 ث",x:160,y:52,
+  why:"البندول وقع لتحت في لحظة (السلندر بيدفعه ومفيش ورق يمسكه)، وحساس حركة الورق شاف إن الورق مش ماشي. بعد 0.9 + 0.1 ث تحت الحد طلع ALR_TFU_YE_PMTensionLoopBottomPos، وبعد ثانية (TMR_ColumnRotGuardCheckA) طلع ALR_TFU_YE_PMTensionColumnRotMon."},
+ {id:"crs",area:"drive",n:"حساس حركة الورق علق على \"ماشي\"",s:"إنذار بعد الوقوف بـ 5 ث",x:398,y:80,
+  why:"وأنت شغال مفيش حاجة بتبان، لأن الحساس بيقول الورق ماشي وده صح. أول ما الماكينة تقف والبرنامج في ReadyIdle، الحساس لسه بيقول ماشي، فبعد 5 ثواني (TMR_ColumnRotGuardMalf) طلع ALR_TFU_YE_PMTensionColumnRotMon. ده البرنامج بيكشف إن الحساس نفسه بايظ."},
+ {id:"sens",area:"pend",n:"سلك حساس البندول U70B3480 اتقطع",s:"إنذار بعد 0.9 + 0.1 ث",x:222,y:150,
+  why:"القراءة AI_U70B3480 بقت صفر مرة واحدة والبندول نفسه في مكانه. البرنامج شاف القراءة ≤ الحد الأدنى في التشغيل الثابت: بيستنى 0.9 ث (TMR_DelayBottomPosCheck) وبعدها 0.1 ث (TMR_DelayPaperMovingBottomPos) ويطلع ALR_TFU_YE_PMTensionLoopBottomPos. قبل ما يقف، الـ PID نزّل السرعة لأقل حاجة. لو شغلت والسلك مقطوع، الإنذار بيطلع بعد 2 ثانية من حركة الفكوك (TMR_TimeoutJawMoving)."},
+ {id:"ip",area:"pend",n:"الصمام التناسبي U70T2540 مش بيدي ضغط",s:"من غير إنذار!",x:121,y:240,
+  why:"مفيش ولا إنذار. الضغط الفعلي AI_PendulumRollerPressure حوالي 1 بار والمطلوب 4.5. شد الورق بقى ضعيف، فالأنبوب بيتهز وخط اللحام بيلف شمال ويمين والجودة وقعت. لازم تقارن الضغط المطلوب بالفعلي. ده مثال إن مش كل مشكلة بتطلع إنذار."},
+ {id:"pv",area:"pend",n:"صمام رفع البندول U70K2420 علق مفتوح",s:"إنذار بعد 3 ث",x:90,y:288,
+  why:"الصمام ده المفروض يرفع البندول بس وقت الرش والتجفيف والمعايرة. علق مفتوح وقت الإنتاج، فالبندول اترفع لآخر مشواره فوق. القراءة ≥ الحد الأقصى 3 ثواني فطلع ALR_TFU_YE_PMTensionLoopTopPos. الـ PID زوّد السرعة على الفاضي والورق اتكوم."},
+ {id:"ref",area:"pend",n:"حساس جديد اتركب ومحتاج معايرة",s:"إنذار فوري",x:176,y:190,
+  why:"بعد تغيير الحساس البرنامج بيعتبر المعايرة مش صالحة (VAR_PendulumReferValid = 0) فطلع ALR_TFU_YE_PendulumNotRefer والريسيت مش هيشيله. الحل: اضغط 'معايرة البندول'. البرنامج يرخيه بنص الضغط 3 ث ويقرا تحت، يرفعه 3 ث ويقرا فوق، ولو المشوار 2075 ± 300 مللي فولت المعايرة تبقى صالحة."},
+ {id:"tpac",area:"pos",n:"موتور دليل الحرف TPAC علق",s:"إنذار بعد 5 ث بره الحد",x:112,y:530,
+  why:"الدليل مش بيصحح، والورق بيزحف ناحية واحدة. خط اللحام بيلف والتراكب بيتغير والجودة بتقع. لما الحرف خرج بره 2 لـ 17 مم (نقطة الضبط 10 مم، -8 / +7 مم) لمدة 5 ثواني (TMR_EdgeSensorOutOfLimitDelay) طلع ALR_TPAC_YE_EdgeSensorOutOfRange."},
+ {id:"steer",area:"pos",n:"درايف توجيه الأنبوب بايظ",s:"يبان لما تحرّك الأوفست",x:500,y:494,
+  why:"البرنامج مش بيشوف عطل الدرايف وهو واقف في Ready. أول ما تطلب حركة (تغيّر الأوفست) يطلع الأزرق ALR_TFU_BE_TubeSteering (بيتحرك) وبعدين الأصفر ALR_TFU_YE_TubeSteering بكود 3. لو الحركة ما خلصتش في 45 ثانية (TMR_TubeSteerTimeOut) بيطلع كود 2."},
+ {id:"ak",area:"pos",n:"سكينة الهوا مقفلتش",s:"إنذار بعد 3 ث",x:18,y:308,
+  why:"البرنامج أمر سلندر السكاكين يقفل (DO_AirKnivesCylinder) بس حساس DI_AirKnivesClosed ما جاش. بعد 3 ثواني (TMR_AKPositionAlrDelay) طلع ALR_SAS_YE_AirKnifePosition. السكاكين دي بتنشّف البيروكسيد من على الورق قبل التشكيل."}
+];
+const fOn={};FAULTS.forEach(f=>fOn[f.id]=false);
+
+/* ---------- state ---------- */
+const S={t:0, run:"idle", mode:"prod", pph:0, target:24000, seqT:0, inchT:0, ramp:0,
+  pm:"INIT", pmT:0, refValid:1, Min:P.Ldown*1.02, Max:P.Lup*0.98, Lweb:2476, L:2476, AIm:2476,
+  f:0, ref:0, ff:0, cv:0, I:0, pidT:0, start:false, paperMoving:false, pmAfter:false, cr:true, valve:false,
+  prsSet:4.5, aoBar:4.5, prsAct:4.5, emptyPos:0, jawWasMoving:false,
+  ster:null, sterile:true, guidedInit:false, refSt:null, door:false,
+  edge:10, guide:0, drift:0, dStab:0, bump:0,
+  steer:{st:"Ready",set:3,act:3,t:0}, phi:0, q:1,
+  alarms:[], cond:{}, tmr:{}, packs:0, bad:0, feedD:0, jawD:0, msg:"", keyT:0, slowNote:""};
+let simSpeed=1, slowSel=0.25, chal=null, score={ok:0,n:0};
+const SPv=()=>S.Min+(S.Max-S.Min)*P.spPerc/100;
+const HIv=()=>S.Min+(S.Max-S.Min)*P.hiPerc/100;
+const LOv=()=>S.Min+(S.Max-S.Min)*P.loPerc/100;
+const ready2run=()=>["ReadyIdle","RunwithJawCheck","ManualPull","RunwithJaw"].includes(S.pm);
+const feedCtl=()=>["PowerON","StartUp","Alarm"].includes(S.pm)||ready2run();
+
+function tmr(name,cond,dt){S.tmr[name]=cond?(S.tmr[name]||0)+dt:0;return S.tmr[name];}
+function raise(key){
+  if(S.alarms.some(a=>a.k===key&&!a.cleared))return;
+  const a=ALR[key];S.alarms.unshift({k:key,tag:a.tag,c:a.c,t:a.t,at:S.t,cleared:false});
+  if(a.c==="Y"){stop();key2(1.6);}
+  renderAlarms();
+}
+function key2(t){S.keyT=Math.max(S.keyT,t);}
+const activeYellow=()=>S.alarms.some(a=>!a.cleared&&a.c==="Y");
+const pmAlarmActive=()=>S.alarms.some(a=>!a.cleared&&["DriveFault","LoopTop","LoopBottom","NotRefer"].includes(a.k));
+function stop(){if(S.run==="idle")return;S.run="stopping";}
+function setPM(st){if(S.pm!==st){S.pm=st;S.pmT=0;S.tmr.pmLocal=0;}}
+function fmtT(t){const m=Math.floor(t/60),s=Math.floor(t%60);return (m<10?"0":"")+m+":"+(s<10?"0":"")+s;}
+let msgTO;function say(m){S.msg=m;clearTimeout(msgTO);msgTO=setTimeout(()=>{S.msg="";},6000);}
+
+function start(mode){
+  if(S.run!=="idle"){return;}
+  if(activeYellow()){say("فيه إنذار أصفر. شيل سبب العطل واضغط ريسيت الأول.");return;}
+  if(!["ReadyIdle","ManualPull"].includes(S.pm)){say("شد الورق مش جاهز (الخطوة دلوقتي "+S.pm+"). استنى لحد ReadyIdle.");return;}
+  if(mode==="prod"&&!S.sterile){say("الماكينة مش معقمة (الباب اتفتح). اعمل دورة التعقيم الأول، أو شغّل لحام الأنبوب.");return;}
+  S.mode=mode;S.target=mode==="tube"?8000:+$("spd").value;S.run="start";S.seqT=0;S.dStab=0;
+}
+
+/* ---------- simulation step ---------- */
+function step(dt){
+  S.t+=dt;S.pmT+=dt;
+  if(S.keyT>0)S.keyT=Math.max(0,S.keyT-dt);
+  // ---- jaws ----
+  const prevPph=S.pph;
+  if(S.run==="start"){S.seqT+=dt;if(S.seqT>=3){S.run="run";key2(2.5);}}
+  if(S.run==="run"){S.pph=toward(S.pph,S.target,4000*dt);}
+  else if(S.run==="stopping"){S.pph=toward(S.pph,0,9000*dt);if(S.pph<=0){S.pph=0;S.run="idle";}}
+  else if(S.run==="start"){S.pph=0;}
+  if(S.run==="idle"){S.pph=S.inchT>0?1500:0;if(S.inchT>0)S.inchT=Math.max(0,S.inchT-dt);}
+  const accel=S.pph>prevPph+0.01, decel=S.pph<prevPph-0.01, jawMv=S.pph>0;
+  const vJaw=vJawOf(S.pph);
+  const startSeq=S.run==="start"||S.run==="run";
+
+  // ---- pendulum pressure (VAR_PMTensionSetPoint -> AO filter) ----
+  let sp=S.prsSet;
+  if(S.pm==="PendReferencing"&&S.refSt&&S.refSt.act)sp=P.prsMax*0.5;
+  if(S.pm==="PaperNotGuided"&&S.ster&&S.ster.ph!=="heat")sp=0;
+  if(S.pm==="PaperGuided")sp=0;
+  if(S.pm==="SterileSequence")sp=S.ster.sp;
+  S.aoBar+= (sp-S.aoBar)*Math.min(1,dt*5);
+  S.prsAct=fOn.ip?1.0:S.aoBar;
+
+  // ---- PM tension sequence (SEQ_PMTension) ----
+  const drvReady=!fOn.fq;
+  switch(S.pm){
+    case "INIT": if(S.pmT>0.5&&!S.door)setPM("PowerON");break;
+    case "PowerON": S.valve=false; if(S.pmT>=5)setPM("StartUp");break;
+    case "StartUp": if(drvReady&&S.pmT>0.4)setPM("ReadyIdle"); else if(S.pmT>=25){raise("DriveFault");setPM("Alarm");}break;
+    case "ReadyIdle":
+      if(startSeq){setPM("RunwithJawCheck");S.emptyPos=S.AIm+(S.Max-S.Min)*0.01;if(S.emptyPos>=S.Max)S.emptyPos=S.AIm;S.jawWasMoving=false;S.cr=true;break;}
+      if(S.sterile)S.guidedInit=S.guidedInit; else S.guidedInit=false;
+      if(!S.guidedInit&&S.AIm>=HIv()){setPM("ManualPull");S.cr=true;key2(1.5);break;}
+      if(tmr("stopDly",!jawMv,dt)>=2)S.cr=false;
+      break;
+    case "ManualPull":{
+      if(startSeq){setPM("RunwithJawCheck");S.start=false;S.emptyPos=S.AIm+(S.Max-S.Min)*0.01;S.jawWasMoving=false;break;}
+      S.cr=true;
+      if(S.AIm>=HIv()&&!S.start){S.start=true;}
+      if(S.AIm<LOv()&&S.start){S.start=false;S.tmr.mpStop=0;}
+      if(S.start)S.ref=P.manHz*10;
+      break;}
+    case "RunwithJawCheck":{
+      S.cr=true;S.start=false;
+      const synch=jawMv&&S.AIm>=S.Min&&((S.target<=4000||S.mode==="tube")?S.AIm>=S.emptyPos:S.target>4000);
+      if(jawMv&&!S.jawWasMoving){S.jawWasMoving=true;S.tJM=S.AIm>=S.Min?0.5:2.0;S.tmr.jm=0;}
+      if(jawMv&&S.target>4000&&tmr("jm",true,dt)>=S.tJM){S.cond.LoopBottom=true;raise("LoopBottom");}
+      if(synch){setPM("RunwithJaw");S.I=0;S.cv=0;S.pidT=0;S.gain="ramp";S.tmr.pmAfter=0;key2(2.2);break;}
+      if(!startSeq&&tmr("jawStop",!jawMv,dt)>=0.5)setPM("ReadyIdle");
+      break;}
+    case "RunwithJaw":{
+      if(!jawMv&&S.run!=="run"&&S.run!=="start"){S.start=false;setPM("ReadyIdle");S.tmr.stopDly=0;break;}
+      S.start=true;S.cr=true;S.guidedInit=false;
+      S.pmAfter=tmr("pmAfter",true,dt)>=1.5;
+      // gains
+      if(S.run==="stopping"&&decel)S.gain="stop"; else if(!accel&&!decel)S.gain="stand";
+      const Kp=S.gain==="ramp"?P.KpRamp:P.KpStand, Ki=S.gain==="ramp"?P.KiRamp:P.KiStand;
+      const KpU=S.gain==="stop"?P.KpStop:Kp;
+      S.pidT+=dt;
+      if(S.pidT>=P.cyc){const e=(S.AIm-SPv())/100;S.I=clamp(S.I+Ki*e*S.pidT,P.outMin,P.outMax);S.cv=clamp(KpU*e+S.I,P.outMin,P.outMax);S.pidT=0;S.e=e;}
+      S.ff=ffOf(S.pph);
+      S.ref=clamp(S.ff+S.cv*6,0,P.fMax);
+      break;}
+    case "Alarm":
+      S.start=false;
+      if(!pmAlarmActive())setPM("ReadyIdle");
+      break;
+    case "DoorOpen": S.cr=false;if(!S.door)setPM("PowerON");break;
+    case "PaperNotGuided":
+      S.cr=false;
+      if(S.ster){if(S.ster.ph==="spray"){S.valve=true;S.ster.sp=0;setPM("SterileSequence");S.ster.cyc={grip:true,t:0,stage:0};S.cr=true;S.ster.tSeq=0;key2(10);}
+        else if(S.ster.ph==="done"){S.valve=false;S.cr=true;setPM("PaperGuided");}}
+      if(S.door)setPM("DoorOpen");
+      break;
+    case "SterileSequence":{
+      const c=S.ster.cyc;c.t+=dt;
+      if(S.ster.ph==="dry")S.ster.tSeq+=dt;
+      if(c.grip){ // counter roller holds the web, pendulum is released then pressed
+        S.cr=true;
+        if(c.t>=3){S.ster.sp=0;}
+        if(c.t>=3+1){S.valve=false;}
+        if(c.t>=3+1+2){S.ster.sp=P.prsMax;}
+        if(c.t>=3+1+2+1){ // TMR_CounterRollerGripDelay.DN
+          if(S.ster.tSeq>=S.ster.seqLen){S.ster.ph="done";S.cr=true;setPM("PaperNotGuided");S.keyT=0;S.sterile=true;break;}
+          c.grip=false;c.t=0;S.cr=false;}
+      } else { // counter roller open, pendulum grips at max pressure
+        S.ster.sp=P.prsMax;S.cr=false;
+        if(c.t>=3){c.grip=true;c.t=0;S.cr=true;S.valve=true;}
+      }
+      if(S.door)setPM("DoorOpen");
+      break;}
+    case "PaperGuided": S.valve=false;S.cr=true;if(S.pmT>=5){setPM("PowerON");S.ster=null;}if(S.door)setPM("DoorOpen");break;
+    case "PendReferencing":{
+      const r=S.refSt;r.t+=dt;
+      if(r.t<3){S.valve=false;r.act=true;}
+      else if(!r.downRead){r.down=S.AIm;S.Min=r.down*1.02;r.downRead=true;S.valve=true;}
+      if(r.downRead&&r.t>=6&&!r.upRead){r.up=S.AIm;S.Max=r.up*0.98;r.upRead=true;
+        const stroke=r.up-r.down;r.stroke=stroke;
+        S.refValid=(stroke>=P.stroke-P.margin&&stroke<=P.stroke+P.margin)?1:0;
+        if(S.refValid&&fOn.ref){fOn.ref=false;renderFaults();}
+        if(!S.refValid){S.Min=P.Ldown*1.02;S.Max=P.Lup*0.98;}
+        r.act=false;S.valve=false;S.keyT=0;setPM("PowerON");
+        say(S.refValid?"المعايرة خلصت (اضغط ريسيت بعدها): تحت "+Math.round(r.down)+" ، فوق "+Math.round(r.up)+" ، المشوار "+Math.round(stroke)+" مللي فولت (مسموح 1775 لـ 2375). الحد الأدنى "+Math.round(S.Min)+" والأقصى "+Math.round(S.Max)+".":"المعايرة فشلت: المشوار "+Math.round(stroke)+" مللي فولت بره 2075 ± 300. افحص الحساس.");
+        S.refSt=null;}
+      break;}
+  }
+  if(!["RunwithJaw","ManualPull"].includes(S.pm))S.start=false;
+  if(!S.start){S.ref=0;S.cv=S.pm==="RunwithJaw"?S.cv:0;}
+  if(S.pm!=="RunwithJaw")S.ff=0;
+  S.paperMoving=S.pm==="RunwithJaw"&&jawMv;
+  if(S.pm!=="RunwithJaw")S.pmAfter=false;
+  // door / sterilisation entry from PaperFeedControl
+  if(feedCtl()&&S.door&&!jawMv){setPM("DoorOpen");S.sterile=false;}
+  if(feedCtl()&&S.ster&&S.ster.ph==="heat"&&!jawMv)setPM("PaperNotGuided");
+  if(fOn.pv)S.valve=true;
+
+  // ---- sterilisation phase clock (simplified lengths) ----
+  if(S.ster){S.ster.T+=dt;
+    if(S.ster.ph==="heat"&&S.ster.T>=3){S.ster.ph="spray";S.ster.T=0;}
+    else if(S.ster.ph==="spray"&&S.ster.T>=4&&S.pm==="SterileSequence"){S.ster.ph="dry";S.ster.T=0;}}
+
+  // ---- drive roller (PowerFlex 40) ----
+  const target=fOn.fq?0:S.ref;
+  S.f=fOn.fq?toward(S.f,0,400*dt):toward(S.f,target,(target<S.f?3000:900)*dt);
+  let grip=S.cr?(fOn.slip?0.55:1):0.3;
+  const vFeed=fOn.brk?0:vOfF(S.f)*grip*P.ffCorr;
+  S.feedD+=vOfF(S.f)*dt;S.jawD+=vJaw*dt;
+
+  // ---- web loop & pendulum ----
+  if(!fOn.brk){
+    let d=P.mvPerM*(vJaw-vFeed);
+    if(S.paperMoving)d+=40*Math.sin(S.t*2.1)+(fOn.ip?260*Math.sin(S.t*3.3):0);
+    S.Lweb=clamp(S.Lweb+d*dt,P.Ldown,P.Lup);
+    if(S.bump>0){S.Lweb=clamp(S.Lweb+S.bump*dt,P.Ldown,P.Lup);}
+  }
+  let Lt=S.Lweb, rate=2200;
+  if(fOn.brk&&S.prsAct>0.3){Lt=P.Ldown;rate=3500;}
+  if(S.pm==="PendReferencing"&&S.refSt&&S.refSt.act&&!S.valve){Lt=P.Ldown;rate=900;}
+  if(S.pm==="SterileSequence"&&!S.cr&&S.prsAct>0.5&&!S.valve){Lt=P.Ldown;rate=900;}
+  if(S.valve){Lt=P.Lup;rate=1500;}
+  S.L=toward(S.L,Lt,rate*dt);
+  const noise=(fOn.ip&&S.paperMoving?25:6)*(Math.random()-.5);
+  S.AIm=fOn.sens?0:S.L+noise;
+
+  // ---- PM tension alarms ----
+  if(feedCtl()){
+    // top
+    const topPre=S.pm==="ManualPull"?6:3;
+    S.cond.LoopTop=tmr("top",(S.start||S.paperMoving)&&S.AIm>=S.Max,dt)>=topPre;
+    // bottom (steady run only)
+    const steady=S.paperMoving&&!accel&&!decel;
+    const chk=tmr("botChk",steady,dt)>=0.9;
+    S.cond.LoopBottom=(tmr("bot",chk&&S.AIm<=S.Min,dt)>=0.1)||(S.pm==="RunwithJawCheck"&&S.tmr.jm>=S.tJM&&S.target>4000);
+    S.cond.DriveFault=(ready2run()&&fOn.fq)||(S.cond.DriveFault&&S.pm==="Alarm"&&fOn.fq);
+    S.cond.NotRefer=!S.refValid;
+    // column rotation guard
+    const notMoving=fOn.crs?false:!(S.paperMoving&&!fOn.brk&&S.f>5);
+    const A=tmr("crA",S.pmAfter&&notMoving,dt)>=1;
+    const B=tmr("crB",jawMv&&S.run==="run"&&!S.paperMoving,dt)>=2;
+    const M=tmr("crM",S.pm==="ReadyIdle"&&!notMoving,dt)>=5;
+    S.cond.ColRot=A||B||M;
+  } else {S.cond.LoopTop=false;S.cond.LoopBottom=false;S.cond.ColRot=false;S.cond.NotRefer=false;}
+  ["LoopTop","LoopBottom","DriveFault","NotRefer","ColRot"].forEach(k=>{if(S.cond[k])raise(k);});
+  if(ready2run()&&pmAlarmActive()&&S.pm!=="Alarm"){setPM("Alarm");S.start=false;}
+
+  // ---- web edge (TPAC) ----
+  if(S.paperMoving){S.dStab+=vJaw*1000*dt;}
+  const stab=S.dStab<P.stab;
+  const weave=S.paperMoving?0.9*Math.sin(S.t*0.37)+0.5*Math.sin(S.t*1.13+1):0;
+  if(fOn.tpac&&S.paperMoving)S.drift+=0.45*dt;
+  if(!fOn.tpac&&!S.paperMoving)S.drift*=Math.max(0,1-dt*0.5);
+  S.bump=Math.max(0,S.bump-dt*120);
+  const raw=P.edgeSP+weave+S.drift+(S.spl>0?3*Math.sin(Math.PI*clamp(S.spl,0,1)):0);
+  if(S.spl>0)S.spl=Math.max(0,S.spl-dt/1.6);
+  if(S.paperMoving&&!stab&&!fOn.tpac)S.guide+=(raw-S.guide-P.edgeSP)*Math.min(1,dt*1.8);
+  if(!S.paperMoving&&!fOn.tpac)S.guide*=Math.max(0,1-dt*0.3);
+  S.edge=clamp(raw-S.guide,0,P.spot);
+  const out=S.edge<=P.edgeAlrLo||S.edge>=P.edgeAlrHi, spot=S.edge<=0.2||S.edge>=P.spot-0.2;
+  S.cond.Edge=S.paperMoving&&!stab&&!(S.splSupp>0)&&((tmr("edge",out,dt)>=5)||(tmr("spot",spot,dt)>=1));
+  if(S.splSupp>0)S.splSupp-=vJaw*1000*dt;
+  if(S.cond.Edge)raise("Edge");
+
+  // ---- air knife ----
+  S.cond.AK=tmr("ak",S.paperMoving&&fOn.ak,dt)>=3;if(S.cond.AK)raise("AK");
+
+  // ---- tube steering (SEQ_TubeSteer) ----
+  const st=S.steer;st.t+=dt;
+  if(st.st==="Ready"&&st.set!==st.act){st.st="Move";st.t=0;}
+  if(st.st==="Move"){S.cond.SteerB=true;raise("SteerB");
+    if(st.t>=0.75){if(fOn.steer){st.st="Alarm";st.t=0;S.cond.SteerY=true;raise("SteerY");}
+      else{st.act=toward(st.act,st.set,2*dt);if(st.act===st.set){st.st="Ready";}}}
+    if(st.t>=45){st.st="Alarm";S.cond.SteerY=true;raise("SteerY");}
+  } else S.cond.SteerB=false;
+  S.cond.SteerY=st.st==="Alarm"&&fOn.steer;
+  S.alarms.forEach(a=>{if(a.k==="SteerB"&&!a.cleared&&!S.cond.SteerB)a.cleared=true;});
+
+  // ---- tube geometry & quality ----
+  const wob=fOn.ip&&S.paperMoving?9*Math.sin(S.t*2.7):0;
+  S.phi=4*(3-st.act)+5*(S.edge-P.edgeSP)+wob;
+  const lowT=Math.max(0,2.5-S.prsAct)*0.12;
+  let q=1-Math.max(0,Math.abs(S.phi)-6)*0.035-Math.max(0,Math.abs(S.edge-P.edgeSP)-3)*0.07-lowT-(S.valve&&S.paperMoving?0.3:0);
+  S.q=clamp(q,0,1);
+  if(S.pph>0&&S.paperMoving){const n=S.pph/3600*dt;S.packs+=n;if(S.q<0.8)S.bad+=n;}
+}
+
+/* ---------- diagram ---------- */
+const PIV={x:200,y:165},AR=100;
+function pendPos(L){const th=(-38+(L-1500)/2300*76)*Math.PI/180;return {x:PIV.x+AR*Math.cos(th),y:PIV.y-AR*Math.sin(th),th};}
+const hw=y=>y<=150?58-2*(y-62)/88:y<=200?56-12*(y-150)/50:y<=262?44-16*(y-200)/62:y<=384?28-8*(y-262)/122:20;
+function bandPath(){let l="",r="";for(let y=62;y<=598;y+=8){l+=(l?" L":"M")+(450-hw(y)).toFixed(1)+","+y;}for(let y=598;y>=62;y-=8){r+=" L"+(450+hw(y)).toFixed(1)+","+y;}return l+r+" Z";}
+$("band").setAttribute("d",bandPath());
+function tagBox(g,x,y,lines,col){
+  g.innerHTML="";const w=Math.max(...lines.map(l=>l.length))*7.1+10,h=lines.length*14+6;
+  el("rect",{x,y,width:w,height:h,rx:4,fill:"#0b1013",stroke:col||"#3a4a52"},g);
+  lines.forEach((l,k)=>{el("text",{x:x+5,y:y+15+k*14,"font-size":11.5,fill:k===0?"#fff":"#cfdcd8",class:"m","font-weight":k===0?700:500},g).textContent=l;});
+}
+// station labels
+const ST=[[150,"رولات الحرف","Edge rollers"],[200,"حلقة التشكيل","Forming ring"],[262,"الحلقة العليا","Upper forming ring"],[322,"إندكتور اللحام الطولي","LS inductor"],[384,"الحلقة السفلية","Lower forming ring"],[423,"قفلة الحيز المعقم","Seal, aseptic chamber"],[470,"جهاز توجيه الأنبوب","Steering device"],[534,"سند الأنبوب","Tube support"]];
+ST.forEach(([y,a,e])=>{
+  el("line",{x1:450+hw(y)+(y===470?38:y===200?52:6),y1:y,x2:556,y2:y,stroke:"#2c3d45","stroke-dasharray":"2 3"},$("stations"));
+  el("text",{x:560,y:y-2,"font-size":12,fill:"#e3ece9","font-weight":600},$("stations")).textContent=a;
+  const t=el("text",{x:560,y:y+12,"font-size":10,fill:"#8fa4a0",class:"m",id:"stT"+y},$("stations"));t.textContent=e;
+});
+function xsDraw(){
+  const g=$("xs");g.innerHTML="";const X=730,r=13;
+  const arc=(cx,cy,a0,a1,col,w)=>{const p=a=>[cx+r*Math.sin(a*Math.PI/180),cy-r*Math.cos(a*Math.PI/180)];const [x0,y0]=p(a0),[x1,y1]=p(a1);const large=(a1-a0)>180?1:0;el("path",{d:`M${x0},${y0} A${r},${r} 0 ${large} 1 ${x1},${y1}`,fill:"none",stroke:col,"stroke-width":w||3.5,"stroke-linecap":"round"},g);};
+  const mv=S.paperMoving;
+  el("path",{d:`M${X-15},${153} Q${X},${145} ${X+15},${153}`,fill:"none",stroke:"#d9cfb4","stroke-width":3.5,"stroke-linecap":"round"},g);
+  arc(X,200,60,300,"#d9cfb4");
+  arc(X,262,20,340,"#d9cfb4");
+  const ov=clamp(14-(S.edge-P.edgeSP)*2.2,2,26);
+  const lsOn=mv&&S.pph>0;
+  if(lsOn)el("circle",{cx:X,cy:322,r:r+3,fill:"#ff8a3d",opacity:.35,filter:"url(#glow)"},g);
+  arc(X,322,-ov/2,360-ov/2-0.01,"#d9cfb4");arc(X,322,-ov/2-ov,ov/2,"#bfb497",2.5);
+  el("path",{d:`M${X-3},${322-r+3} L${X+3},${322-r+3}`,stroke:"#c792ea","stroke-width":2.5},g);
+  arc(X,384,0,359.9,"#d9cfb4",4.5);
+  el("circle",{cx:X,cy:470,r,fill:"none",stroke:"#d9cfb4","stroke-width":4},g);
+  const a=S.phi*Math.PI/180;el("circle",{cx:X+r*Math.sin(a),cy:470-r*Math.cos(a),r:3.5,fill:Math.abs(S.phi)>6?"#ff5d50":"#c792ea"},g);
+  el("line",{x1:X,y1:470-r-6,x2:X,y2:470-r+1,stroke:"#5fd08b","stroke-width":1.5},g);
+  el("text",{x:X,y:500,"font-size":10,fill:Math.abs(S.phi)>6?"#ff5d50":"#8fa4a0","text-anchor":"middle",class:"m"},g).textContent=(S.phi>0?"+":"")+S.phi.toFixed(0)+"°";
+}
+function drawDia(){
+  const pp=pendPos(S.L);
+  // web side path
+  const rx=pp.x,ry=pp.y;
+  const d=`M60,640 L60,50 A22,22 0 0 1 82,28 L240,38 A26,26 0 0 1 266,64 L${(rx-18).toFixed(1)},${ry.toFixed(1)} A18,18 0 0 0 ${(rx+18).toFixed(1)},${ry.toFixed(1)} L346,52 A14,14 0 0 1 360,38 L438,38 A14,14 0 0 1 452,52 L452,64`;
+  ["webSide","webSideHi","webSideMv"].forEach(id=>$(id).setAttribute("d",d));
+  const brk=fOn.brk&&S.pm!=="INIT";
+  $("webSideHi").setAttribute("stroke",brk?"#5d564a":"#d9cfb4");
+  $("webSideMv").setAttribute("stroke-dashoffset",(-S.jawD*1000/P.rep*36).toFixed(1));
+  // rollers rotate
+  const fa=S.feedD*1000/24;$("drSp").setAttribute("transform",`rotate(${(fa*57.3)%360} 240 64)`);
+  $("calSp").setAttribute("transform",`rotate(${(fa*57.3*1.2)%360} 82 50)`);
+  $("crC").setAttribute("cy",S.cr?26:16);$("crRod").setAttribute("height",S.cr?6:0);
+  $("crC").setAttribute("stroke",S.cr?"#9ccc65":"#5d7480");
+  // pendulum
+  $("pArm").setAttribute("x1",PIV.x);$("pArm").setAttribute("y1",PIV.y);$("pArm").setAttribute("x2",rx);$("pArm").setAttribute("y2",ry);
+  $("pRc").setAttribute("cx",rx);$("pRc").setAttribute("cy",ry);
+  const pa=S.jawD*1000/16;$("pRs").setAttribute("x1",rx);$("pRs").setAttribute("y1",ry);$("pRs").setAttribute("x2",rx+14*Math.cos(pa));$("pRs").setAttribute("y2",ry+14*Math.sin(pa));
+  const ax=PIV.x+55*Math.cos(pp.th),ay=PIV.y-55*Math.sin(pp.th),fx=150,fy=292;
+  const dx=ax-fx,dy=ay-fy,dl=Math.hypot(dx,dy),bx=fx+dx/dl*44,by=fy+dy/dl*44;
+  $("pcBody").setAttribute("x1",fx);$("pcBody").setAttribute("y1",fy);$("pcBody").setAttribute("x2",bx);$("pcBody").setAttribute("y2",by);
+  $("pcRod").setAttribute("x1",bx);$("pcRod").setAttribute("y1",by);$("pcRod").setAttribute("x2",ax);$("pcRod").setAttribute("y2",ay);
+  $("pvR").setAttribute("fill",S.valve?"#4687c7":"#33444c");
+  // crease lines on the tube band
+  const g=$("crease");g.innerHTML="";const off=(S.jawD*1000/P.rep*36)%36;
+  for(let y=62+off;y<598;y+=36){el("line",{x1:450-hw(y),x2:450+hw(y),y1:y,y2:y,stroke:"#8a8068","stroke-width":1,opacity:.7},g);}
+  // seam
+  let sd="";for(let y=262;y<=598;y+=6){const x=450+hw(y)*Math.sin(clamp(S.phi,-80,80)*Math.PI/180);sd+=(sd?" L":"M")+x.toFixed(1)+","+y;}
+  $("seam").setAttribute("d",sd);$("seam").setAttribute("stroke",Math.abs(S.phi)>6?"#ff5d50":"#c792ea");
+  const lsk=S.paperMoving?clamp(S.pph/24000,0.3,1):0;$("lsGlow").setAttribute("opacity",(lsk*0.9).toFixed(2));
+  // steering marker
+  const al=S.steer.act/8*60*Math.PI/180;$("steerMk").setAttribute("cx",450+36*Math.sin(al));$("steerMk").setAttribute("cy",470+10*Math.cos(al));
+  $("steerRing").setAttribute("stroke",S.steer.st==="Alarm"?"#ff5d50":S.steer.st==="Move"?"#5aa9ff":"#fde900");
+  // jaws
+  const ph=(S.packs%1),gap=3+14*Math.abs(Math.sin(Math.PI*ph));
+  $("jawL").setAttribute("x",450-20-gap-44);$("jawR").setAttribute("x",450+20+gap);
+  // air knife
+  $("akAir").setAttribute("opacity",S.paperMoving?0.9:0.25);
+  // TPAC
+  const ex=50+(S.edge/20)*20;$("tpacBeam").setAttribute("x2",ex);
+  $("tpacGuide").setAttribute("x",28+clamp(S.guide,-12,12)*1.5);
+  // tags
+  tagBox($("tagDr"),255,2,["FQ_DriveRoller",(S.f/10).toFixed(1)+" Hz · "+(S.start?"Start":"Stop")],fOn.fq?"#ff5d50":S.start?"#fdb935":null);
+  tagBox($("tagCr"),118,2,["U70M2410 "+(S.cr?"ON":"OFF")],S.cr?(fOn.slip?"#ff5d50":"#2f6b47"):null);
+  const bad=S.AIm<=S.Min||S.AIm>=S.Max;
+  tagBox($("tagPend"),214,244,["U70B3480 "+Math.round(S.AIm)+" mV","U70T2540 "+S.prsAct.toFixed(1)+" bar","U70K2420 "+(S.valve?"ON (رفع)":"OFF")],bad?"#ff5d50":Math.abs(S.prsAct-S.prsSet)>0.6&&feedCtl()?"#ffc629":"#3a4a52");
+  tagBox($("tagTpac"),90,448,["TPAC edge","PV "+S.edge.toFixed(1)+" mm"],(S.edge<=P.edgeAlrLo||S.edge>=P.edgeAlrHi)?"#ff5d50":Math.abs(S.edge-10)>5?"#ffc629":null);
+  tagBox($("tagAk"),98,322,["AirKnife",fOn.ak?"مفتوحة!":"مقفولة"],fOn.ak?"#ff5d50":null);
+  tagBox($("tagJaw"),538,584,["SO_T.ActualSpeed",Math.round(S.pph)+" p/h"]);
+  $("stT470").textContent="FQ_SteeringDevice · "+(S.steer.act>0?"+":"")+S.steer.act.toFixed(1);
+  $("stT322").textContent="LS inductor · TPIH";
+  xsDraw();
+  // slow badge
+  const slow=S.keyT>0&&slowSel<1;$("slowB").setAttribute("visibility",slow?"visible":"hidden");$("slowT").textContent="تصوير بطيء ×"+slowSel;
+}
+function drawHots(){
+  const g=$("hots");g.innerHTML="";
+  FAULTS.forEach(f=>{
+    const on=fOn[f.id]&&!(chal&&!chal.done);const hg=el("g",{style:"cursor:pointer",tabindex:0,role:"button","aria-label":f.n},g);
+    if(chal&&!chal.done)hg.setAttribute("opacity",.35);
+    el("circle",{cx:f.x,cy:f.y,r:9,fill:on?"#ff5d50":"#2a1715",stroke:"#ff5d50","stroke-width":1.5},hg);
+    el("text",{x:f.x,y:f.y+4.5,"text-anchor":"middle","font-size":13,"font-weight":700,fill:on?"#fff":"#ff5d50"},hg).textContent="!";
+    el("title",{},hg).textContent=f.n;
+    hg.addEventListener("click",()=>toggleFault(f.id));
+    hg.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggleFault(f.id);}});
+  });
+}
+
+/* ---------- side panel ---------- */
+const PMST=[
+ ["INIT","بداية","مستني الكهربا والهوا والباراميترات"],
+ ["PowerON","تشغيل الإنفرتر","5 ث (TMR_PMTensionPower)"],
+ ["StartUp","مستني الإنفرتر Ready","مهلة 25 ث وإلا إنذار عطل"],
+ ["ReadyIdle","جاهز وواقف","لو البندول ≥ 80% يروح سحب يدوي"],
+ ["ManualPull","سحب ورق يدوي","15 Hz لحد ما البندول ينزل تحت 50%"],
+ ["RunwithJawCheck","مستني الفكوك","يبدأ مع تايمر بدء التشغيل"],
+ ["RunwithJaw","ماشي مع الفكوك","FF + PID كل 50 ms"],
+ ["Alarm","إنذار","البكرة واقفة لحد الريسيت"],
+ ["DoorOpen","الباب مفتوح","الرول المقابل بيفتح"],
+ ["PaperNotGuided","الورق سايب","التعقيم: الرول المقابل مفتوح"],
+ ["SterileSequence","دورة التعقيم","تبديل المسكة بين الرول المقابل والبندول"],
+ ["PaperGuided","الورق اتمسك","البندول ينزل 5 ث"],
+ ["PendReferencing","معايرة البندول","تحت 3 ث ← فوق 3 ث"]];
+const PMAR=Object.fromEntries(PMST.map(s=>[s[0],s[1]]));
+function renderSide(){
+  let txt=PMAR[S.pm],en=S.pm;
+  if(S.run==="start")txt="بدء التشغيل · "+txt;
+  else if(S.run==="run")txt=(S.mode==="tube"?"لحام الأنبوب":"إنتاج")+" · "+txt;
+  else if(S.run==="stopping")txt="بتقف · "+txt;
+  else if(S.inchT>0)txt="إنشينج · "+txt;
+  $("state").innerHTML=txt+' <span class="en">'+en+'</span>';
+  let m=S.msg;
+  if(!m){
+    if(S.pm==="PendReferencing"&&S.refSt){const r=S.refSt;m=r.t<3?"معايرة: البندول بيترخى بنص الضغط (3 بار) لحد ما يقعد تحت. فاضل "+(3-r.t).toFixed(1)+" ث وبعدين البرنامج يسجل القراءة.":"معايرة: الصمام U70K2420 رفع البندول لفوق. القراءة تحت اتسجلت "+Math.round(r.down)+". فاضل "+(6-r.t).toFixed(1)+" ث.";}
+    else if(S.pm==="SterileSequence"){const c=S.ster.cyc;m=(S.ster.ph==="dry"?"تجفيف":"رش")+": "+(c.grip?"الرول المقابل ماسك الورق، والبندول بيترخى وبعدين ينضغط 6 بار.":"الرول المقابل فاتح والبندول ماسك الورق بـ 6 بار.")+" التبديل ده بيخلي البيروكسيد والهوا المعقم يوصلوا لكل حتة في الرولات."+(S.ster.ph==="dry"?" فاضل "+Math.max(0,S.ster.seqLen-S.ster.tSeq).toFixed(0)+" ث.":"");}
+    else if(S.pm==="PaperNotGuided")m=S.ster&&S.ster.ph==="heat"?"بداية التعقيم: الرول المقابل فتح والورق بقى سايب لحد خطوة الرش.":"الورق اتمسك تاني بعد التعقيم.";
+    else if(S.pm==="PaperGuided")m="الماكينة اتعقمت. البندول نازل على الورق (5 ث) وبعدين الإنفرتر يتشغل تاني.";
+    else if(S.pm==="DoorOpen")m="باب الوحدة مفتوح: الرول المقابل فاتح، والماكينة مش هتعتبر معقمة بعد كده.";
+    else if(S.pm==="ManualPull")m=S.start?"سحب ورق يدوي: البكرة بتلف 15 Hz لحد ما البندول ينزل تحت 50% ("+Math.round(LOv())+").":"البندول تحت 50%، البكرة وقفت. لو الفكوك سحبت تاني والبندول عدى 80% ("+Math.round(HIv())+") البكرة تسحب تاني.";
+    else if(S.run==="start")m="تايمر بدء التشغيل "+S.seqT.toFixed(1)+" ث. البرنامج في RunwithJawCheck ومستني الفكوك تتحرك عشان يشغّل البكرة معاها.";
+    else if(activeYellow())m="الماكينة وقفت بإنذار أصفر. شيل سبب العطل (اضغط عليه تاني) واضغط ريسيت.";
+    else if(S.pm==="RunwithJaw"&&S.dStab<P.stab)m="أول 5 متر ورق بعد البداية: حساس TPAC لسه في التثبيت الأولي والإنذار بتاعه مقفول. البندول بيقرب من نقطة الضبط.";
+    else if(S.pm==="RunwithJaw"&&S.q<0.85)m="الأنبوب مش متشكل كويس: خط اللحام بيلف أو التراكب اتغير. بص على حرف الورق وضغط البندول والتوجيه.";
+    else if(S.pm==="RunwithJaw")m="كل حاجة مظبوطة. الـ FF بيمشي البكرة بسرعة الفكوك، والـ PID بيصحح الفرق الصغير عشان البندول يفضل عند "+Math.round(SPv())+".";
+    else if(S.run==="idle")m="الماكينة واقفة. جرّب تشغيل إنتاج، أو إنشينج الفكوك عشان تشوف السحب اليدوي، أو معايرة البندول.";
+  }
+  $("msg").textContent=m;
+  const sp=SPv(),bad=S.AIm<=S.Min||S.AIm>=S.Max;
+  const kv=[
+    ["سرعة الفكوك",Math.round(S.pph).toLocaleString("en")+" p/h",""],
+    ["البندول AI",Math.round(S.AIm)+" mV",bad&&feedCtl()?"bad":Math.abs(S.AIm-sp)>400?"wn":""],
+    ["نقطة الضبط",Math.round(sp)+" mV",""],
+    ["أمر سرعة البكرة",(S.ref/10).toFixed(1)+" Hz",S.cv>=49.9?"wn":""],
+    ["تصحيح PID",(S.cv>=0?"+":"")+S.cv.toFixed(1)+" %",Math.abs(S.cv)>=49.9?"bad":Math.abs(S.cv)>10?"wn":""],
+    ["ضغط البندول",S.prsAct.toFixed(1)+" bar",Math.abs(S.prsAct-S.prsSet)>0.6&&ready2run()?"wn":""],
+    ["حرف الورق",S.edge.toFixed(1)+" mm",(S.edge<=P.edgeAlrLo||S.edge>=P.edgeAlrHi)?"bad":Math.abs(S.edge-10)>5?"wn":""],
+    ["جودة التشكيل",S.paperMoving?Math.round(S.q*100)+"%":"—",S.paperMoving?(S.q<0.8?"bad":S.q<0.92?"wn":"good"):""],
+    ["عبوات / مشكوك",Math.floor(S.packs).toLocaleString("en")+" / "+Math.floor(S.bad),S.bad>=1?"bad":""]
+  ];
+  $("kvs").innerHTML=kv.map(([k,v,c])=>`<div class="kv ${c}"><span>${k}</span><strong>${v}</strong></div>`).join("");
+  const idle=S.run==="idle"&&S.inchT<=0;
+  $("bInch").disabled=!(idle&&["ReadyIdle","ManualPull"].includes(S.pm));
+  $("bRef").disabled=!(idle&&["ReadyIdle","ManualPull","Alarm"].includes(S.pm)&&!S.door);
+  $("bSter").disabled=!(idle&&["ReadyIdle","ManualPull"].includes(S.pm)&&!S.door&&!activeYellow());
+  $("bDoor").disabled=!(S.run==="idle")||S.pm==="SterileSequence";
+  $("bDoor").classList.toggle("sel",S.door);
+  $("bSplice").disabled=!S.paperMoving;
+  $("bProd").disabled=$("bTube").disabled=S.run!=="idle";
+}
+function renderAlarms(){
+  const box=$("alarms");
+  if(!S.alarms.length){box.innerHTML='<div class="empty">مفيش إنذارات.</div>';return;}
+  box.innerHTML=S.alarms.slice(0,14).map(a=>`<div class="alarm ${a.c}${a.cleared?" cleared":""}"><strong>${a.tag}</strong><span>${a.t}</span><span class="t">${a.c==="Y"?"أصفر · وقوف":"أزرق · تحذير"} · ${fmtT(a.at)}${a.cleared?" · اتمسح":""}</span></div>`).join("");
+}
+function renderFaults(){
+  const groups={drive:"بكرة الثني وحركة الورق",pend:"البندول",pos:"مكان الورق والأنبوب"};
+  const lock=chal&&!chal.done;
+  $("faults").innerHTML=Object.keys(groups).map(g=>`<div class="fgrp"><b>${groups[g]}</b><div class="fbt">${FAULTS.filter(f=>f.area===g).map(f=>`<button data-f="${f.id}" class="${fOn[f.id]&&!lock?"on":""}" ${lock?"disabled":""}>${f.n}<small>${f.s}</small></button>`).join("")}</div></div>`).join("");
+  $("faults").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>toggleFault(b.dataset.f)));
+  drawHots();
+}
+function toggleFault(id){
+  if(chal&&!chal.done)return;
+  fOn[id]=!fOn[id];
+  if(id==="ref"){if(fOn.ref){S.refValid=0;}else{S.refValid=1;}}
+  if(id==="tpac"&&!fOn.tpac){S.drift=0;}
+  if(id==="pv"&&!fOn.pv){S.valve=false;}
+  say(fOn[id]?"عطل اتعمل: "+FAULTS.find(f=>f.id===id).n+". راقب إيه اللي هيحصل.":"العطل اتشال. اضغط ريسيت لو فيه إنذار.");
+  renderFaults();
+}
+function reset(){
+  let left=0;
+  S.alarms.forEach(a=>{if(a.cleared)return;if(S.cond[a.k]){left++;return;}a.cleared=true;});
+  S.tmr={};
+  if(S.steer.st==="Alarm"&&!fOn.steer){S.steer.st="Ready";S.steer.set=S.steer.act;$("str").value=Math.round(S.steer.act);$("strV").textContent=Math.round(S.steer.act);}
+  const still=FAULTS.filter(f=>fOn[f.id]).length;
+  say(left?"فيه "+left+" إنذار سببه لسه موجود. شيل العطل الأول.":still?"الإنذارات اتمسحت، بس لسه فيه عطل شغال وهيرجع الإنذار لما تشغّل.":"الإنذارات اتمسحت.");
+  renderAlarms();
+}
+
+/* ---------- buttons ---------- */
+$("bProd").onclick=()=>start("prod");
+$("bTube").onclick=()=>start("tube");
+$("bStop").onclick=()=>{stop();S.inchT=0;};
+$("bReset").onclick=reset;
+$("bInch").onclick=()=>{S.inchT=2.5;say("الفكوك بتتحرك إنشينج 2.5 ث وبتسحب ورق من البندول. لو البندول عدى 80% البرنامج هيروح سحب يدوي.");};
+$("bRef").onclick=()=>{setPM("PendReferencing");S.refSt={t:0,act:true,downRead:false,upRead:false};key2(99);};
+$("bSter").onclick=()=>{S.ster={ph:"heat",T:0,sp:0,seqLen:20,tSeq:0};S.sterile=false;say("بدأت دورة التعقيم (مختصرة). تعقيم بالحرارة ← رش ← تجفيف.");};
+$("bDoor").onclick=()=>{S.door=!S.door;if(!S.door&&S.pm==="DoorOpen")say("الباب اتقفل. البرنامج بيشغّل الإنفرتر تاني (PowerON 5 ث).");};
+$("bSplice").onclick=()=>{S.spl=1;S.bump=180;S.splSupp=10000+3500;say("وصلة ورق عدّت. الحرف اتهز شوية، والبرنامج قافل إنذار TPAC لحد ما الوصلة تعدي (10000 + 3500 مم ورق).");};
+$("spd").oninput=e=>{$("spdV").textContent=e.target.value;if(S.run==="run"&&S.mode==="prod")S.target=+e.target.value;};
+$("prs").oninput=e=>{S.prsSet=+e.target.value/10;$("prsV").textContent=S.prsSet.toFixed(1)+" bar";};
+$("str").oninput=e=>{$("strV").textContent=e.target.value;if(S.steer.st==="Ready"||S.steer.st==="Move")S.steer.set=+e.target.value;};
+document.querySelectorAll("[data-sp]").forEach(b=>b.onclick=()=>{simSpeed=+b.dataset.sp;document.querySelectorAll("[data-sp]").forEach(x=>x.classList.toggle("sel",x===b));});
+document.querySelectorAll("[data-slow]").forEach(b=>b.onclick=()=>{slowSel=+b.dataset.slow;document.querySelectorAll("[data-slow]").forEach(x=>x.classList.toggle("sel",x===b));});
+document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-tab]").forEach(x=>x.classList.toggle("sel",x===b));document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.id===b.dataset.tab));});
+
+/* ---------- challenge ---------- */
+const POOL=["fq","slip","brk","sens","ip","pv","tpac","ak","ref"];
+$("bChal").onclick=()=>{
+  FAULTS.forEach(f=>fOn[f.id]=false);
+  S.alarms=[];S.tmr={};S.cond={};S.drift=0;S.guide=0;S.refValid=1;S.valve=false;S.ster=null;S.refSt=null;S.door=false;S.sterile=true;
+  S.Min=P.Ldown*1.02;S.Max=P.Lup*0.98;S.Lweb=SPv();S.L=S.Lweb;
+  S.steer={st:"Ready",set:3,act:3,t:0};$("str").value=3;$("strV").textContent="3";
+  S.prsSet=4.5;$("prs").value=45;$("prsV").textContent="4.5 bar";
+  // machine already running in production
+  S.mode="prod";S.target=+$("spd").value;S.pph=S.target;S.run="run";setPM("RunwithJaw");S.gain="stand";S.I=-0.4;S.cv=-0.4;S.dStab=P.stab;S.start=true;S.f=ffOf(S.pph);S.tmr.pmAfter=2;
+  const id=POOL[Math.floor(Math.random()*POOL.length)];
+  chal={id,done:false};
+  setTimeout(()=>{fOn[id]=true;if(id==="ref")S.refValid=0;},1500);
+  const opts=POOL.map(i=>FAULTS.find(f=>f.id===i)).sort(()=>Math.random()-.5);
+  $("chalSel").innerHTML='<option value="">— اختار السبب —</option>'+opts.map(f=>`<option value="${f.id}">${f.n}</option>`).join("");
+  $("chalSel").disabled=false;$("bAns").disabled=false;$("res").textContent="";$("res").className="res";
+  $("chalTxt").textContent="العطل هيحصل بعد ثانية ونص. راقب البندول وأمر السرعة وتصحيح الـ PID والضغط وحرف الورق والإنذارات. لو مفيش إنذار، بص على الجودة والقراءات.";
+  renderFaults();renderAlarms();
+};
+$("bAns").onclick=()=>{
+  if(!chal||chal.done)return;const val=$("chalSel").value;if(!val){$("res").textContent="اختار سبب الأول.";return;}
+  chal.done=true;score.n++;const f=FAULTS.find(x=>x.id===chal.id);
+  if(val===chal.id){score.ok++;$("res").className="res ok";$("res").textContent="صح! "+f.why;}
+  else{$("res").className="res bad";$("res").textContent="لأ. العطل كان: "+f.n+". "+f.why;}
+  $("score").textContent="النتيجة "+score.ok+" / "+score.n;
+  $("chalSel").disabled=true;$("bAns").disabled=true;
+  $("chalTxt").textContent="العطل لسه شغال، تقدر تشوفه في قائمة الأعطال وتشيله.";
+  renderFaults();
+};
+
+/* ---------- trends ---------- */
+const hist=[];const WIN=60;
+function sample(){hist.push({t:S.t,ai:S.AIm,ref:S.ref/10,ff:S.ff/10,cv:S.cv,edge:S.edge,prs:S.prsAct});while(hist.length&&hist[0].t<S.t-WIN)hist.shift();}
+function chart(id,series,ymin,ymax,refs,right){
+  const c=$(id),dpr=window.devicePixelRatio||1,w=c.clientWidth,h=w<420?115:150;
+  if(c.width!==Math.round(w*dpr)||c.height!==h*dpr){c.width=Math.round(w*dpr);c.height=h*dpr;c.style.height=h+"px";}
+  const x=c.getContext("2d");x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,w,h);
+  const L=36,Rm=right?30:6,T=6,B=16,pw=w-L-Rm,ph=h-T-B;
+  x.strokeStyle="#22313a";x.lineWidth=1;x.font="10px JetBrains Mono";x.fillStyle="#8fa4a0";
+  for(let k=0;k<=4;k++){const y=T+ph*k/4;x.beginPath();x.moveTo(L,y);x.lineTo(L+pw,y);x.stroke();x.textAlign="right";x.fillText(Math.round(ymax-(ymax-ymin)*k/4),L-4,y+3);}
+  x.textAlign="left";x.fillText("-60s",L,h-3);x.textAlign="right";x.fillText("now",L+pw,h-3);
+  (refs||[]).forEach(([val,col])=>{const y=T+ph*(1-(val-ymin)/(ymax-ymin));x.strokeStyle=col;x.setLineDash([4,4]);x.beginPath();x.moveTo(L,y);x.lineTo(L+pw,y);x.stroke();x.setLineDash([]);});
+  if(right){x.fillStyle=right.col;x.textAlign="left";for(let k=0;k<=4;k++){const y=T+ph*k/4;x.fillText(+(right.max-(right.max-right.min)*k/4).toFixed(1),L+pw+3,y+3);}}
+  series.forEach(s=>{x.strokeStyle=s.col;x.lineWidth=1.8;if(s.dash)x.setLineDash(s.dash);x.beginPath();let first=true;
+    hist.forEach(p=>{const X=L+pw*(1-(S.t-p.t)/WIN);const val=s.k(p);const mn=s.min??ymin,mx=s.max??ymax;const Y=T+ph*(1-(clamp(val,mn,mx)-mn)/(mx-mn));if(first){x.moveTo(X,Y);first=false;}else x.lineTo(X,Y);});x.stroke();x.setLineDash([]);});
+}
+function drawCharts(){
+  chart("c1",[{k:p=>p.ai,col:"#9ccc65"}],1400,3900,[[S.Min,"#ff5d50"],[SPv(),"#5fd08b"],[S.Max,"#ff5d50"],[HIv(),"#3d5560"],[LOv(),"#3d5560"]]);
+  chart("c2",[{k:p=>p.ff,col:"#8fa4a0",dash:[4,3]},{k:p=>p.ref,col:"#fdb935"},{k:p=>p.cv,col:"#55b6ea",min:-50,max:50}],0,60,[],{min:-50,max:50,col:"#55b6ea"});
+  chart("c3",[{k:p=>p.edge,col:"#ffc629"},{k:p=>p.prs,col:"#4687c7",min:0,max:6}],0,20,[[10,"#5fd08b"],[2,"#ff5d50"],[17,"#ff5d50"]],{min:0,max:6,col:"#4687c7"});
+}
+
+/* ---------- tabs content ---------- */
+function renderSteps(){
+  $("steps").innerHTML=PMST.map(s=>`<div class="st ${s[0]===S.pm?"cur":""}"><b>${s[1]}</b><span class="en">${s[0]}</span><span class="d">${s[2]}</span></div>`).join("");
+  $("seqT").textContent="الخطوة دلوقتي: "+S.pm+" من "+S.pmT.toFixed(1)+" ث"+(S.pm==="RunwithJaw"?" · جينات الـ PID: "+(S.gain==="ramp"?"تسارع Kp 1.5 / Ki 0.7":S.gain==="stop"?"وقوف Kp 1.0":"ثابت Kp 1.0 / Ki 0.1"):"");
+}
+function renderCalc(){
+  const pph=S.pph||+$("spd").value, ff=ffOf(pph), sp=SPv(), e=(S.AIm-sp)/100;
+  const vref=vOfF(S.ref)*1000, vj=vJawOf(S.pph)*1000;
+  $("calc").innerHTML=
+  `<b>VAR_FrequencyFF</b> = TargetSpeed/3600 × (Repeat ${P.rep} / Ø${P.Dr}) × (Gear ${P.gear} / π) × (Poles ${P.poles}/2) × 10<br>`+
+  `&nbsp;&nbsp;= ${Math.round(pph)}/3600 × ${(P.rep/P.Dr).toFixed(2)} × ${(P.gear/Math.PI).toFixed(3)} × 1 × 10 = <b>${ff.toFixed(1)}</b> (= ${(ff/10).toFixed(1)} Hz)<br>`+
+  `<b>PID_PMFeeding</b>: E = (AI ${Math.round(S.AIm)} − SP ${Math.round(sp)}) / 100 = ${e.toFixed(2)} % → CV = ${S.cv.toFixed(2)} % (حد ±50 %) × 6 = ${(S.cv*6).toFixed(1)}<br>`+
+  `<b>FQ_DriveRoller.Out.SpeedRefence</b> = FF + CV = ${S.ref.toFixed(1)} (حد 0 … 600)<br>`+
+  `سرعة الورق عند البكرة = ${(S.ref/10).toFixed(1)} Hz × 2π / (2/2) / ${P.gear} × ${P.Dr/2} mm = <b>${vref.toFixed(0)} mm/s</b><br>`+
+  `سرعة الورق اللي الفكوك بتسحبها = ${Math.round(S.pph)}/3600 × ${P.rep} = <b>${vj.toFixed(0)} mm/s</b><br>`+
+  `SP = Min + (Max − Min) × 41.6 % = ${Math.round(S.Min)} + ${Math.round(S.Max-S.Min)} × 0.416 = <b>${Math.round(sp)} mV</b>`;
+}
+$("vals").innerHTML="<tr><th>القيمة</th><th>التاج في البرنامج</th><th>معناها</th></tr>"+[
+ ["0 … 600 (0 … 60 Hz)","FQ_DriveRoller.Out.SpeedRefence","أمر سرعة موتور بكرة الثني (PowerFlex 40 على الديفايس نت)"],
+ ["Ø100 mm · 10:1 · 2 قطب","CST_DriveRollerDiameter / MotorGearRatio / MotorNumberOfPoles","بيانات البكرة والموتور في حساب السرعة"],
+ ["185 mm","TPFU_VAR_PaperRepeatLenght","طول العبوة على الورق (TBA 200 S)"],
+ ["41.6 %","CST_LoopSetPointPerc","نقطة ضبط البندول من مشواره"],
+ ["80 % / 50 %","CST_LoopManFeedHighPerc / LowPerc","بداية ونهاية السحب اليدوي"],
+ ["15 Hz","PAR_ManualPullSpeed","سرعة السحب اليدوي"],
+ ["Kp 1.5 · Ki 0.7","CST_PMFeedingPIDKpRamp / KiRamp","جينات الـ PID وقت التسارع"],
+ ["Kp 1.0 · Ki 0.1","CST_PMFeedingPIDKpStand / KiStand","جينات الـ PID في السرعة الثابتة"],
+ ["Kp 1.0","CST_PMFeedingPIDKpStop","الجين وقت الوقوف"],
+ ["50 ms · ±50 %","CST_PMFeedingPIDLoopCycle / LoopOutMin/Max","دورة الـ PID وحد التصحيح"],
+ ["2075 ± 300 mV","PAR_LoopStroke / CST_LoopStrokeMargin","مشوار البندول المسموح في المعايرة (4500 mV = 90°)"],
+ ["تحت × 1.02 / فوق × 0.98","VAR_LoopMinPosition / VAR_LoopMaxPosition","الحد الأدنى والأقصى بعد المعايرة"],
+ ["3 ث + 3 ث","TMR_DelayReferDown / TMR_DelayReferUp","زمن قراءة تحت وفوق في المعايرة"],
+ ["0 … 10000 mV = 0 … 6 bar","AO_U70T2540","ضغط سلندر البندول"],
+ ["4.5 bar","PAR_PMTensionPressure (TBA200S)","ضغط البندول المظبوط من المصنع"],
+ ["2.5 bar","U70R2414","ضغط الرول المقابل (ثابت)"],
+ ["3 ث (6 ث سحب يدوي)","TMR_DelayPaperMovingTopPos","تأخير إنذار البندول فوق"],
+ ["0.9 + 0.1 ث","TMR_DelayBottomPosCheck / DelayPaperMovingBottomPos","تأخير إنذار البندول تحت"],
+ ["0.5 / 2 ث","TMR_TimeoutJawMoving","مهلة بداية الحركة مع الفكوك"],
+ ["5 ث / 25 ث","TMR_PMTensionPower / StartUpTimeout","تشغيل الإنفرتر ومهلة الـ Ready"],
+ ["1.5 ث","TMR_DelayPaperMoving","بعدها البرنامج يعتبر الورق ماشي بعد البكرة"],
+ ["1 / 2 / 5 ث","TMR_ColumnRotGuardCheckA / B / Malf","تأخيرات مراقب حركة الورق"],
+ ["2 ث","TMR_PaperMoveStopDelay","فتح الرول المقابل بعد الوقوف"],
+ ["3 / 1 / 2 / 1 / 3 ث","TMR_CounterRollerGrip / PendulumPressDelay / PendulumDownDelay / CounterRollerGripDelay / PendulumGrip","دورة تبديل المسكة وقت التعقيم"],
+ ["120 ث","TMR_SterileSequence","مدة دورة التبديل في التجفيف"],
+ ["10 mm (0 … 20)","PAR_PMReferenceSensorMidPos","نقطة ضبط حرف الورق في حساس TPAC"],
+ ["−8 / +7 mm · 5 ث","HMI_TPAC_PMPosOffset.AlrLo/AlrHi · TMR_EdgeSensorOutOfLimitDelay","حدود إنذار حرف الورق"],
+ ["5000 mm","PAR_PaperLengthStartToEdgeStabilizmm","طول الورق قبل ما TPAC يبدأ يصحح"],
+ ["±8","CST_TubeSteerMaxOffset","أقصى أوفست لتوجيه الأنبوب"],
+ ["750 ms · 45 ث","TMR_TubeSteer / TMR_TubeSteerTimeOut","تايمر الحركة ومهلتها"],
+ ["3 ث","TMR_AKPositionAlrDelay","تأخير إنذار مكان سكينة الهوا"]
+].map(r=>`<tr><td class="mono">${r[0]}</td><td><span class="en">${r[1]}</span></td><td>${r[2]}</td></tr>`).join("");
+
+/* ---------- loop ---------- */
+renderFaults();renderAlarms();
+let last=performance.now(),sAcc=0,uiAcc=0;
+function loop(now){
+  let dt=Math.min(0.1,(now-last)/1000);last=now;
+  let sim=dt*simSpeed*(S.keyT>0?slowSel:1);const h=0.01;
+  while(sim>0){const d=Math.min(h,sim);step(d);sim-=d;sAcc+=d;if(sAcc>=0.2){sAcc=0;sample();}}
+  drawDia();
+  uiAcc+=dt;if(uiAcc>0.15){uiAcc=0;renderSide();drawCharts();renderSteps();renderCalc();}
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+})();
+</script>
+
+</body>
+</html>
