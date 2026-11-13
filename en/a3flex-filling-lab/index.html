@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A3/Flex 150/160 Filling System · TMCC2 | LearnElectricals</title>
+<meta name="description" content="Complete guide to the A3/Flex 150/160 filling system: TMCC2 A401 card, flowmeter and level sensor, flow PID and level UVW loops, prefill and switch point, faults, card menu and hyperterminal commands, with an interactive simulator and video.">
+<link rel="canonical" href="https://www.learnelectricals.com/en/a3flex-filling-lab/">
+<link rel="alternate" hreflang="ar" href="https://www.learnelectricals.com/a3flex-filling-lab/">
+<link rel="alternate" hreflang="en" href="https://www.learnelectricals.com/en/a3flex-filling-lab/">
+<meta property="og:title" content="A3/Flex 150/160 Filling System · TMCC2">
+<meta property="og:description" content="Detailed guide and interactive simulator for the TMCC2 A401 card and the flow and level loops.">
+<meta property="og:url" content="https://www.learnelectricals.com/en/a3flex-filling-lab/">
+<meta property="og:image" content="https://www.learnelectricals.com/a3flex-filling-lab/poster.jpg">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Long-form guide page: one reading column, sticky table of contents on wide screens, same tokens as the other labs. */
+:root{
+  --bg:#e9edef; --panel:#ffffff; --ink:#152027; --muted:#56656f; --line:#cfd7dc;
+  --accent:#b85f00; --accent-soft:#f6e6d3; --cur:#0d7584; --product:#c99400;
+  --good:#2b7a3d; --warn:#a86a00; --bad:#c0352b; --code-bg:#f2f5f6;
+  --font-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --font-body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1417; --panel:#182025; --ink:#e3e9ec; --muted:#93a2ab; --line:#2a353c;
+  --accent:#f0a03c; --accent-soft:#3a2a17; --cur:#4cc0cf; --product:#ffc629;
+  --good:#5cc06f; --warn:#e3a43a; --bad:#ff6b5e; --code-bg:#11181c; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f1417; --panel:#182025; --ink:#e3e9ec; --muted:#93a2ab; --line:#2a353c;
+  --accent:#f0a03c; --accent-soft:#3a2a17; --cur:#4cc0cf; --product:#ffc629;
+  --good:#5cc06f; --warn:#e3a43a; --bad:#ff6b5e; --code-bg:#11181c; color-scheme:dark }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.75}
+a{color:var(--cur)}
+.app{max-width:1180px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-left,0px)) 64px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:900px){.app{grid-template-columns:minmax(0,1fr)}.toc{position:static!important}}
+h1,h2,h3{font-family:var(--font-display);line-height:1.3;text-wrap:balance;margin:0}
+h1{font-size:1.9rem}
+h2{font-size:1.35rem;margin:0 0 12px}
+h3{font-size:1.05rem;margin:18px 0 6px}
+p{margin:.5rem 0}
+.mono,code,pre{font-family:var(--font-mono);direction:ltr;unicode-bidi:isolate}
+code{font-size:.88em;background:var(--code-bg);border:1px solid var(--line);padding:0 .35em;border-radius:4px}
+pre{background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto;font-size:.88rem;line-height:1.55;text-align:left;margin:.6rem 0}
+.top{grid-column:1/-1;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
+.top p{color:var(--muted);max-width:70ch;margin:.4rem 0 0}
+.crumbs{font-size:.85rem;color:var(--muted);margin-bottom:6px}
+.crumbs a{color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:8px 14px;font-weight:600;color:var(--ink);text-decoration:none}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.toc{position:sticky;top:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:.92rem}
+.toc b{display:block;font-family:var(--font-display);margin-bottom:6px}
+.toc ol{margin:0;padding-inline-start:20px}
+.toc a{color:var(--ink);text-decoration:none}
+.toc a:hover{color:var(--accent)}
+main{display:flex;flex-direction:column;gap:18px;min-width:0}
+section.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0;scroll-margin-top:12px}
+.lead{font-size:1.05rem}
+.tbl{width:100%;border-collapse:collapse;font-size:.93rem;margin:.6rem 0}
+.tbl th,.tbl td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:start;vertical-align:top}
+.tbl th{font-family:var(--font-display);font-weight:500;color:var(--muted);font-size:.85rem}
+.tbl td.mono{white-space:nowrap}
+.scroll{overflow-x:auto}
+.note{border-inline-start:4px solid var(--cur);background:var(--code-bg);border-radius:8px;padding:10px 12px;margin:.8rem 0;font-size:.95rem}
+.warn{border-inline-start-color:var(--bad)}
+.ok{border-inline-start-color:var(--good)}
+.tag{display:inline-block;font-size:.75rem;font-weight:600;border-radius:999px;padding:0 8px;border:1px solid var(--line)}
+.tag.real{color:var(--good);border-color:var(--good)}
+.tag.sim{color:var(--warn);border-color:var(--warn)}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:.6rem 0}
+.flow span{background:var(--accent-soft);border-radius:8px;padding:4px 10px;font-weight:600;font-size:.9rem}
+.flow i{font-style:normal;color:var(--muted)}
+.tree{direction:ltr;text-align:left}
+video{width:100%;border-radius:10px;border:1px solid var(--line);background:#000;display:block}
+ol.steps li{margin:.3rem 0}
+footer{grid-column:1/-1;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:12px}
+</style>
+
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div>
+      <div class="crumbs"><a href="/en/">Home</a> › <a href="/en/tetrapan/">Tetrapan</a> › A3/Flex 150/160 filling system</div>
+      <h1>Filling system of the A3/Flex 150/160</h1>
+      <p>A complete guide to the TMCC2 A401 card that controls product filling: the parts, how it controls flow and level, start-up and prefill, faults and when they appear, the card menu in order, and the hyperterminal commands. With an interactive simulator to try everything yourself.</p>
+    </div>
+    <div class="row">
+      <a class="btn pri" href="simulator.html">▶ Open the simulator</a>
+      <a class="btn" href="#video">Video</a>
+      <a class="btn" href="/a3flex-filling-lab/" hreflang="ar" lang="ar">عربي</a>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="Contents">
+    <b>Contents</b>
+    <ol>
+      <li><a href="#idea">The idea</a></li>
+      <li><a href="#parts">Parts and signals</a></li>
+      <li><a href="#pid">Flow loop and level loop</a></li>
+      <li><a href="#start">Start-up and prefill</a></li>
+      <li><a href="#stops">Normal stop and short stop</a></li>
+      <li><a href="#faults">Faults and when they appear</a></li>
+      <li><a href="#menu">Card menu in order</a></li>
+      <li><a href="#term">Hyperterminal</a></li>
+      <li><a href="#force">Forcing</a></li>
+      <li><a href="#fmerr">Fixing the flowmeter link error</a></li>
+      <li><a href="#sim">Using the simulator</a></li>
+      <li><a href="#video">Video</a></li>
+      <li><a href="#src">Sources</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <section class="panel" id="idea">
+      <h2>1. The idea</h2>
+      <p class="lead">The machine forms a paper tube and fills it with product, then seals and cuts the packages. For every package to have the same volume, the product level inside the tube must stay constant all the time. That is the job of the TMCC2 A401 card.</p>
+      <div class="flow"><span>Product tank</span><i>→</i><span>Regulating valve</span><i>→</i><span>Flowmeter</span><i>→</i><span>Paper tube</span><i>→</i><span>Packages</span></div>
+      <p>The card reads two things: flow from the flowmeter, and level from a sensor that reads the position of a floater inside the tube. It outputs one thing: a voltage to the I/P transducer that opens the valve with air. The PLC gives the card run and stop commands and receives a "ready" signal from it.</p>
+      <p>This guide applies to both A3/Flex 150 and A3/Flex 160: the filling card, its program and its PLC signals are the same on both.</p>
+      <p>The key point: the card controls the filling on its own. The PLC does not calculate anything for the filling; it only tells the card "run" or "stop" and watches the ready signal.</p>
+    </section>
+
+    <section class="panel" id="parts">
+      <h2>2. Parts and signals</h2>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th>Part</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td>TMCC2 card A401</td><td>Runs the filling program <code>FCSFA3F</code> and calculates the valve opening continuously. It has a small 8-character display, menu buttons and an RS232 service port.</td></tr>
+          <tr><td>Flowmeter B1316</td><td>Measures flow in l/h and sends the reading to the card over an RS485 link (not an analog wire).</td></tr>
+          <tr><td>Level sensor B1314</td><td>Reads the floater position inside the tube, i.e. the product level in %.</td></tr>
+          <tr><td>I/P transducer</td><td>Takes 0 to 10 V from the card and converts it to 0 to 4 bar of air.</td></tr>
+          <tr><td>Regulating valve</td><td>Opens according to the air pressure from the transducer.</td></tr>
+          <tr><td>PLC</td><td>Gives the production and short stop commands and reads the card's signals.</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Signals between the card and the PLC</h3>
+      <p>They are plain digital wires, not a network:</p>
+      <pre>%I269   Enabled        card ready, no fault
+%I268   Filling OK     flow close to setpoint
+%I266   High level     tube level high
+%Q146   Production     production command from PLC to card
+%Q148   Short stop     short stop command to card</pre>
+      <div class="note">If <code>%I269</code> Enabled drops while the machine is running, the PLC counts 25 seconds; if it does not come back, the alarm <b>TMCC Filling system not enabled</b> appears. The alarm is not latched: it clears as soon as the signal returns.</div>
+    </section>
+
+    <section class="panel" id="pid">
+      <h2>3. Flow loop and level loop</h2>
+      <p>The card runs two nested loops. The outer loop watches the level and decides the required flow; the inner loop moves the valve so the real flow reaches that setpoint.</p>
+      <div class="flow"><span>Level setpoint L</span><i>→</i><span>Level loop U V W</span><i>→</i><span>Flow setpoint</span><i>→</i><span>Flow loop P I D</span><i>→</i><span>Valve</span></div>
+      <h3>Nominal flow</h3>
+      <p>The starting point is the nominal flow: package volume × machine speed.</p>
+      <pre>Nominal flow = 0.250 L × 7000 pk/h = 1750 l/h</pre>
+      <p>The level loop adds to or subtracts from this value depending on whether the level is above or below target.</p>
+      <h3>Flow loop (P, I, D)</h3>
+      <div class="scroll"><table class="tbl"><tbody>
+        <tr><td class="mono">P</td><td>How strongly the valve reacts to the difference between flow setpoint and measured flow. Bigger = faster response; too big = valve oscillates.</td></tr>
+        <tr><td class="mono">I</td><td>Removes the small remaining difference over time. Without it the flow stays a bit above or below the setpoint.</td></tr>
+        <tr><td class="mono">D</td><td>Brakes the movement when the difference changes quickly. Usually left at zero.</td></tr>
+      </tbody></table></div>
+      <h3>Level loop (U, V, W)</h3>
+      <div class="scroll"><table class="tbl"><tbody>
+        <tr><td class="mono">U</td><td>Like P but for level: how much the level affects the flow setpoint. Big = level returns quickly but may swing.</td></tr>
+        <tr><td class="mono">V</td><td>Like I for level: brings the level exactly back to the target over time.</td></tr>
+        <tr><td class="mono">W</td><td>Like D for level. Usually zero.</td></tr>
+        <tr><td class="mono">L</td><td>Level setpoint in the tube, in %.</td></tr>
+      </tbody></table></div>
+      <div class="note">Simple rule: if the flow itself oscillates, look at P and I. If the flow is steady but the level slowly rises and falls, look at U and V.</div>
+    </section>
+
+    <section class="panel" id="start">
+      <h2>4. Start-up and prefill</h2>
+      <h3>Starting with an empty tube</h3>
+      <p>When production starts the tube is empty and the level loop cannot work properly yet, so the card starts with a fixed, calculated flow:</p>
+      <div class="scroll"><table class="tbl"><tbody>
+        <tr><td class="mono">B</td><td>Start flow as a percentage of nominal flow (e.g. 120% to fill the tube quickly).</td></tr>
+        <tr><td class="mono">T</td><td>Ramp time: flow rises from zero to B over this time so the valve does not open all at once.</td></tr>
+        <tr><td class="mono">G</td><td>Switch point (virtual level trigger): when the level reaches this value, the card leaves the start flow and hands control to the level loop.</td></tr>
+      </tbody></table></div>
+      <p>Sequence: ramp to B, level rises, reaches G, switch to level loop, level settles at L.</p>
+      <div class="note">If G is too low, the switch happens while the tube is still almost empty, the level loop opens the valve hard and the level overshoots. If G is too high and close to L, the level passes the target before the switch.</div>
+      <h3>Prefill</h3>
+      <p>After a short stop the tube is not completely empty. Instead of starting from scratch, the card does a "prefill": it fills the tube at a fixed flow (a percentage of nominal) until the level is back near target, then returns to the level loop. This gets back to production faster and without underfilled packages.</p>
+      <p class="muted">In the simulator the prefill percentage is called PF, and the switch from it happens at G + 10% or L, whichever is lower. These numbers are approximate, for teaching.</p>
+    </section>
+
+    <section class="panel" id="stops">
+      <h2>5. Normal stop and short stop</h2>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th></th><th>Normal stop</th><th>Short stop</th></tr></thead>
+        <tbody>
+          <tr><td>PLC command</td><td><code>%Q146</code> drops</td><td><code>%Q148</code> on</td></tr>
+          <tr><td>Valve</td><td>Closes</td><td>Closes, machine waits</td></tr>
+          <tr><td>Tube</td><td>Drains over time</td><td>Product stays inside</td></tr>
+          <tr><td>Restart</td><td>From scratch: ramp B and T, then switch at G</td><td>Prefill, then level loop</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="panel" id="faults">
+      <h2>6. Faults and when they appear</h2>
+      <p>Each fault here can be triggered with a button in the simulator. <span class="tag real">real</span> means the message exists on the card, in the PLC program or in the manual. <span class="tag sim">teaching</span> means the fault itself really happens, but the message and threshold were made up in the simulator to help you understand.</p>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th>Fault</th><th>What you see</th><th>When it appears</th><th></th></tr></thead>
+        <tbody>
+          <tr><td>Flowmeter link lost</td><td>Card display: <code>FLOWMETER COMM ERROR</code>, valve closes, Enabled drops</td><td>About 1.5 s after the link is lost</td><td><span class="tag real">real</span></td></tr>
+          <tr><td>PLC alarm</td><td><code>TMCC Filling system not enabled</code></td><td>25 s after Enabled drops while running</td><td><span class="tag real">real</span></td></tr>
+          <tr><td>High level</td><td>Signal <code>%I266</code></td><td>Level above 90% for 2 s</td><td><span class="tag real">real</span></td></tr>
+          <tr><td>Empty pipe</td><td>Card display: <code>EMPTY PIPE</code>, flow reads zero</td><td>Tank empty, or detection threshold set below the product's reading</td><td><span class="tag real">real</span></td></tr>
+          <tr><td>Noisy reading</td><td>Flow jumps around and the valve shakes</td><td>Immediately</td><td><span class="tag sim">teaching</span></td></tr>
+          <tr><td>Sticking valve</td><td>Valve moves in jumps, level swings</td><td>After a few seconds</td><td><span class="tag sim">teaching</span></td></tr>
+          <tr><td>I/P air lost</td><td>Valve stays closed whatever the card asks; card asks 100%</td><td>"Valve fully open" after 4 s, then low level</td><td><span class="tag sim">teaching</span></td></tr>
+          <tr><td>Wrong I/P calibration</td><td>Valve opens less than requested; card compensates until saturated</td><td>"Flow more than 20% from setpoint" after 5 s</td><td><span class="tag sim">teaching</span></td></tr>
+          <tr><td>Floater stuck</td><td>Level reading frozen while real level moves; may overflow</td><td>"Product overflow" at 97% for 3 s, machine stops</td><td><span class="tag sim">teaching</span></td></tr>
+          <tr><td>P too high</td><td>Flow and valve oscillate</td><td>Immediately</td><td><span class="tag sim">teaching</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="panel" id="menu">
+      <h2>7. Card menu in order</h2>
+      <p>Pressing any button on the card enters level 1 of the menu. The arrows move between items and ENTER opens an item. Inside a value, the arrows change it and ENTER saves it.</p>
+      <pre class="tree">MONITOR            choose what to display
+ ├ LEVEL           level
+ ├ FILT LEV        filtered level
+ ├ FLOW            flow
+ ├ OUTPUT          card output to the I/P
+ └ BACK
+SETTING            filling settings
+ ├ FILL OK
+ │  └ WIND=±XX%    Filling OK window
+ ├ FLOW PID
+ │  ├ P CONST → P = XX
+ │  ├ I CONST → I = XX
+ │  ├ D CONST → D = XX
+ │  └ BACK
+ ├ LEV PID
+ │  ├ P CONST → P = XX
+ │  └ BACK
+ └ BACK
+FORCE              manual output forcing
+ ├ OUTPUT → O=XX
+ └ BACK
+E.PIPE             empty pipe detection
+ ├ E.P.DET → EPD = ON/OFF
+ ├ E.P.TH  → T = XXXX Hz   (max 3000)
+ └ BACK
+BACK               exit the menu</pre>
+      <h3>Example: changing the flow loop P</h3>
+      <ol class="steps">
+        <li>Press any button: <code>MONITOR</code> appears.</li>
+        <li>Arrow down once: <code>SETTING</code>; press ENTER.</li>
+        <li>Arrow down once: <code>FLOW PID</code>; press ENTER.</li>
+        <li><code>P CONST</code> appears; press ENTER to see the current value.</li>
+        <li>Change it with the arrows and press ENTER to save.</li>
+        <li>Leave with <code>BACK</code> until you are back at the production display.</li>
+      </ol>
+      <h3>Empty pipe detection</h3>
+      <p>By default detection is on with a 3000 Hz threshold. With that threshold the flowmeter reads products with a conductivity of 30 to 35 µS/cm and above. For water with lower conductivity, detection must be turned off; the flowmeter then reads down to 5 µS/cm.</p>
+    </section>
+
+    <section class="panel" id="term">
+      <h2>8. Hyperterminal</h2>
+      <p>Connect a laptop to the RS232 port on card A401 with the service cable and open HyperTerminal or PuTTY with these settings:</p>
+      <pre>Baud rate      9600
+Parity         None
+Data bits      8
+Stop bits      1
+Flow control   None</pre>
+      <p>Type the command and press Enter. Note: what you type is not echoed on the screen; that is normal.</p>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th>Command</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">H</td><td>Help (list of commands)</td></tr>
+          <tr><td class="mono">S</td><td>Filling system status</td></tr>
+          <tr><td class="mono">Z</td><td>Flowmeter data (the key command for a link fault)</td></tr>
+          <tr><td class="mono">P / I / D &lt;val&gt;</td><td>Flow loop constants</td></tr>
+          <tr><td class="mono">U / V / W &lt;val&gt;</td><td>Level loop constants</td></tr>
+          <tr><td class="mono">M / N / O &lt;val&gt;</td><td>Cleaning loop constants (used only during cleaning)</td></tr>
+          <tr><td class="mono">L &lt;val&gt;</td><td>Level setpoint</td></tr>
+          <tr><td class="mono">T &lt;val&gt;</td><td>Start-up ramp time</td></tr>
+          <tr><td class="mono">B &lt;val&gt;</td><td>Start flow percentage</td></tr>
+          <tr><td class="mono">G &lt;val&gt;</td><td>Switch point to the level loop</td></tr>
+          <tr><td class="mono">F &lt;val&gt;</td><td>Force output: 0 disables, 1 to 1000 is the output value (0 to 10 V)</td></tr>
+          <tr><td class="mono">R 0 / R 1</td><td>Continuous reporting off / on</td></tr>
+          <tr><td class="mono">SERVICE</td><td>Extra service commands</td></tr>
+          <tr><td class="mono">STOP</td><td>Stops the filling program and puts the card in firmware mode</td></tr>
+        </tbody>
+      </table></div>
+      <p>Extra service commands:</p>
+      <pre>FCLEAR          restore default flowmeter configuration
+EPIPE ON|OFF    empty pipe detection on / off
+EPIPETH <val>   detection threshold (default 2300, max 3000 Hz)</pre>
+      <div class="note warn"><b>On a real machine:</b> for diagnosis use only <code>S</code>, <code>Z</code> and <code>H</code>. Never type <code>STOP</code>, <code>FCLEAR</code> or <code>F</code> during production: <code>STOP</code> stops the filling, <code>FCLEAR</code> erases the flowmeter setup, and <code>F</code> opens the valve without control.</div>
+      <p class="muted">Note: the manual gives 3000 Hz as the default in the card menu section and 2300 Hz in the terminal commands section. Check your machine's value before changing it.</p>
+    </section>
+
+    <section class="panel" id="force">
+      <h2>9. Forcing</h2>
+      <p>Forcing (menu <code>FORCE › OUTPUT</code> or command <code>F</code>) makes the card stop controlling: the valve stays at the percentage you set, nothing else. The card still reads flow and level but does not use them.</p>
+      <ul>
+        <li>If the forced value is above what the machine consumes, the level rises until the high level signal and the tube floods.</li>
+        <li>If it is below, the level falls and packages are underfilled.</li>
+        <li>Filling OK may drop if the flow is further from setpoint than the WIND window.</li>
+      </ul>
+      <p>Forcing is meant for testing the I/P transducer and valve during preparation, not during production. Always undo it after a test: <code>F 0</code> or <code>O=0</code>.</p>
+      <p class="muted">The manual does not say whether the real card drops Enabled while forcing. The simulator assumes it does not (worst case): the PLC will not know the output is forced.</p>
+    </section>
+
+    <section class="panel" id="fmerr">
+      <h2>10. Fixing "Flowmeter Communication error"</h2>
+      <p>This message appears on the card's own display and means the card cannot talk to the flowmeter over RS485. The card closes the valve and drops Enabled, and after 25 s the PLC shows "TMCC Filling system not enabled".</p>
+      <ol class="steps">
+        <li>Check that the flowmeter has power.</li>
+        <li>Connect the terminal and type <code>Z</code>. If the flowmeter does not answer, the problem is the link or the flowmeter, not the filling settings.</li>
+        <li>Check the RS485 cable between flowmeter and card and its terminals at both ends: tightness, corrosion, water.</li>
+        <li>Open the flowmeter cover and check the internal ribbon cable and its connectors.</li>
+        <li>If all of that is fine, try another flowmeter or another card (with the same program: TMCC2 cards are not interchangeable).</li>
+      </ol>
+      <div class="note ok"><b>Real case:</b> this message appeared on a machine, and when the flowmeter was opened there was green corrosion on the internal ribbon cable. Fix: replace the cable, clean the connectors, and seal the cover and gland so moisture cannot get in again.</div>
+    </section>
+
+    <section class="panel" id="sim">
+      <h2>11. Using the simulator</h2>
+      <ol class="steps">
+        <li>Open the <a href="simulator.html">simulator</a> and press "Play the tour" for a 16-scene walkthrough with an English narrator, or start playing straight away.</li>
+        <li>Run buttons: production, normal stop, short stop, alarm reset, and simulation speed.</li>
+        <li>Move P, I, D, U, V, W, L, B, T and G and watch the valve, level and trend change. The drawing stays visible at the top while you move the controls.</li>
+        <li>Fault buttons: trigger any fault from the table above and watch the alarms in the PLC panel.</li>
+        <li>Card A401: the ▲, ▼ and ENTER buttons work with the menu from section 7.</li>
+        <li>Hyperterminal: the black panel under the PLC signals; type a command or use the quick buttons.</li>
+      </ol>
+      <div class="note"><b>Useful experiments:</b> type <code>EPIPETH 500</code> and watch the card think the pipe is empty while it is full, then <code>EPIPETH 3000</code>. Cut the flowmeter link and type <code>Z</code>. Type <code>STOP</code> and count 25 s to the PLC alarm, then <code>RUN</code>.</div>
+      <p><a class="btn pri" href="simulator.html">▶ Open the simulator</a></p>
+      <p class="muted">On a phone: open the simulator and choose "Add to Home screen" from the browser menu to use it like an app.</p>
+    </section>
+
+    <section class="panel" id="video">
+      <h2>12. Video</h2>
+      <p>A full walkthrough of the system (about two and a half minutes) with English captions, zooming in on each part and the trend.</p>
+      <video controls preload="none" poster="../../a3flex-filling-lab/poster.jpg" playsinline>
+        <source src="../../a3flex-filling-lab/filling-video.mp4" type="video/mp4">
+      </video>
+    </section>
+
+    <section class="panel" id="src">
+      <h2>13. Sources</h2>
+      <ul>
+        <li>Card menu, terminal commands, communication settings and empty pipe detection: from the A3/Flex 150 maintenance manual, TMCC2 chapter (same card on the 160).</li>
+        <li>PLC signals and the 25-second alarm: from the machine's PLC program (GE RX3i).</li>
+        <li>Simulator numbers (PID constants, times, thresholds marked "teaching", terminal reply format): approximate, for teaching. Do not copy values from the simulator to the machine.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>© LearnElectricals · Educational content. Any change on a real machine must be approved by the responsible person and follow the manufacturer's manual.</footer>
+</div>
+</body>
+</html>
