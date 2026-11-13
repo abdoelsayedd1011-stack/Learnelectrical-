@@ -22,6 +22,11 @@
     rotL: "Rotate left", rotR: "Rotate right", dup: "Duplicate page", del: "Delete page", edit: "Write / sign on this page",
     moveB: "Move earlier", moveF: "Move later", sel: "Select page",
     sigEmpty: "Draw your signature first.",
+    cut: "Cut here", uncut: "Remove cut",
+    noCuts: "Tap the scissors between two pages to mark where to cut first.",
+    parts: function(list){ return "You will get " + list.length + " files: " + list.join(" · "); },
+    noCutYet: "No cuts yet. Tap ✂ between the pages.",
+    badEvery: "Type how many pages go in each file (1 or more).",
     outName: "edited"
   } : {
     pages: function(n){ return n === 1 ? "صفحة واحدة" : n === 2 ? "صفحتين" : n + (n <= 10 ? " صفحات" : " صفحة"); },
@@ -39,6 +44,11 @@
     rotL: "تدوير شمال", rotR: "تدوير يمين", dup: "تكرار الصفحة", del: "حذف الصفحة", edit: "اكتب أو وقّع على الصفحة دي",
     moveB: "قدّم الصفحة", moveF: "أخّر الصفحة", sel: "تحديد الصفحة",
     sigEmpty: "ارسم توقيعك الأول.",
+    cut: "قص هنا", uncut: "شيل القص",
+    noCuts: "دوس على المقص اللي بين صفحتين الأول، عشان تحدد مكان القص.",
+    parts: function(list){ return "هيطلع " + list.length + " ملفات: " + list.join(" · "); },
+    noCutYet: "لسه مفيش قص. دوس على ✂ اللي بين الصفحات.",
+    badEvery: "اكتب عدد الصفحات في كل ملف (1 أو أكتر).",
     outName: "edited"
   };
 
@@ -214,6 +224,7 @@
     dup: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>',
     del: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
     edit: '<path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13 7l4 4"/>',
+    cut: '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8.1 15.9M14.5 14.5L20 20M8.1 8.1L12 12"/>',
     left: '<path d="M15 5l-7 7 7 7"/>', right: '<path d="M9 5l7 7-7 7"/>'
   };
   function iconBtn(name, label, fn){
@@ -249,6 +260,12 @@
         iconBtn(fwd, S.moveF, function(){ move(p, 1); })
       );
       card.append(top, th, bar);
+      if (i < pages.length - 1){
+        card.classList.toggle("cut", !!p.cut);
+        var cb2 = iconBtn("cut", p.cut ? S.uncut : S.cut, function(){ p.cut = !p.cut; renderGrid(); });
+        cb2.className = "pt-cutbtn" + (p.cut ? " on" : ""); cb2.setAttribute("aria-pressed", p.cut ? "true" : "false");
+        card.append(cb2);
+      }
       card.addEventListener("dragstart", function(ev){ dragId = p.id; card.classList.add("drag"); try { ev.dataTransfer.setData("text/plain", String(p.id)); ev.dataTransfer.effectAllowed = "move"; } catch (e) {} });
       card.addEventListener("dragend", function(){ dragId = null; card.classList.remove("drag"); });
       card.addEventListener("dragover", function(ev){ if (dragId != null){ ev.preventDefault(); card.classList.add("over"); } });
@@ -266,6 +283,18 @@
   function updateCount(){
     var n = pages.filter(function(p){ return p.sel; }).length;
     $("pt-count").textContent = S.pages(pages.length) + (n ? " · " + S.selected(n) : "");
+    var g = cutGroups(), sum = $("pt-cutsum");
+    if (sum){
+      if (g.length < 2){ sum.textContent = S.noCutYet; sum.classList.remove("on"); }
+      else { sum.textContent = S.parts(g.map(function(x){ var a = x[0] + 1, b = x[x.length - 1] + 1; return "\u2066" + (a === b ? String(a) : a + "-" + b) + "\u2069"; })); sum.classList.add("on"); }
+    }
+  }
+  // groups of page indices, broken after each page marked "cut"
+  function cutGroups(){
+    var out = [], cur = [];
+    pages.forEach(function(p, i){ cur.push(i); if (p.cut && i < pages.length - 1){ out.push(cur); cur = []; } });
+    if (cur.length) out.push(cur);
+    return out;
   }
   function selected(){ return pages.filter(function(p){ return p.sel; }); }
   function move(p, d){ var i = pages.indexOf(p), j = i + d; if (j < 0 || j >= pages.length) return; pages.splice(i, 1); pages.splice(j, 0, p); renderGrid(); }
@@ -374,13 +403,8 @@
     var list = selected(); if (!list.length) return say(S.noSel, "err");
     run(S.saving, async function(){ download(await buildPdf(list), outName(EN ? "-pages" : "-صفحات")); say(S.done, "ok"); });
   });
-  $("pt-split").addEventListener("click", function(){
-    if (!pages.length) return say(S.noPages, "err");
-    var v = $("pt-ranges").value.trim(), groups;
-    if (v === "*" || v === "") groups = pages.map(function(_, i){ return [i]; });
-    else groups = parseRanges(v);
-    if (!groups) return say(S.badRange, "err");
-    run(S.saving, async function(){
+  async function downloadGroups(groups){
+    await run(S.saving, async function(){
       for (var g = 0; g < groups.length; g++){
         var list = groups[g].map(function(i){ return pages[i]; });
         var a = groups[g][0] + 1, b = groups[g][groups[g].length - 1] + 1;
@@ -389,6 +413,26 @@
       }
       say(groups.length === 1 ? S.done : S.doneN(groups.length), "ok");
     });
+  }
+  $("pt-split").addEventListener("click", function(){
+    if (!pages.length) return say(S.noPages, "err");
+    var g = cutGroups(); if (g.length < 2) return say(S.noCuts, "err");
+    downloadGroups(g);
+  });
+  $("pt-split-each").addEventListener("click", function(){
+    if (!pages.length) return say(S.noPages, "err");
+    downloadGroups(pages.map(function(_, i){ return [i]; }));
+  });
+  $("pt-every").addEventListener("click", function(){
+    var n = parseInt(String($("pt-every-n").value).replace(/[\u0660-\u0669]/g, function(d){ return String(d.charCodeAt(0) - 0x660); }), 10);
+    if (!(n >= 1)) return say(S.badEvery, "err");
+    pages.forEach(function(p, i){ p.cut = (i + 1) % n === 0; }); renderGrid();
+  });
+  $("pt-uncut").addEventListener("click", function(){ pages.forEach(function(p){ p.cut = false; }); renderGrid(); });
+  $("pt-split-range").addEventListener("click", function(){
+    if (!pages.length) return say(S.noPages, "err");
+    var groups = parseRanges($("pt-ranges").value); if (!groups) return say(S.badRange, "err");
+    downloadGroups(groups);
   });
   $("pt-pick").addEventListener("click", function(){
     var groups = parseRanges($("pt-ranges").value); if (!groups) return say(S.badRange, "err");
