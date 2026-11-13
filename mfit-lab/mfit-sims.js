@@ -58,9 +58,9 @@ function rounds(g, list, lesson, start){
     win(t){
       if (won) return; won = true;
       const last = i === list.length - 1;
-      say('✓ ' + t + (last ? ' ' + T('خلصت التمرين كله 🎉', 'You finished the whole exercise 🎉') : ''), 'ok');
+      say('✓ ' + t + (last ? ' ' + T('أنهيت التمرين كله 🎉', 'You finished the whole exercise 🎉') : ''), 'ok');
       g.host.classList.add('won');
-      nextB.textContent = last ? T('العب من الأول', 'Play again') : T('الجولة الجاية ←', 'Next round →');
+      nextB.textContent = last ? T('العب من البداية', 'Play again') : T('الجولة التالية ←', 'Next round →');
       nextB.hidden = false;
       if (last) IL.mark(lesson, 'sim');
     },
@@ -162,15 +162,15 @@ MF.drive = function(host, opt){
   Object.keys(TAGPOS).forEach(k => { const e = el(s, 'text', {x:TAGPOS[k][0], y:TAGPOS[k][1], class:'tag', 'text-anchor':'middle'}); e.style.display = 'none'; tags[k] = e; });
 
   const NAME = {
-    motor:[T('الموتور', 'Motor'), T('بيدّي الحركة: <bdi dir="ltr">1450 rpm</bdi>', 'it makes the motion: 1450 rpm')],
-    coupling:[T('الكوبلنج', 'Coupling'), T('بيوصل عمود الموتور بعمود الجيربوكس', 'it joins the motor shaft to the gearbox shaft')],
-    gearbox:[T('الجيربوكس', 'Gearbox'), T('بيقلل السرعة ويكبّر العزم', 'it cuts the speed and multiplies the torque')],
-    key:[T('الخابور', 'Key'), T('بيمسك السبروكت في العمود عشان ما يلفّش عليه', 'it locks the sprocket to the shaft so it cannot slip')],
-    chain:[T('الجنزير', 'Chain'), T('بينقل الحركة لعمود تاني بعيد', 'it carries the motion to another shaft')],
-    bearing:[T('كرسي الرولمان', 'Bearing housing'), T('بيشيل العمود ويخلّيه يلف ناعم', 'it carries the shaft and lets it turn smoothly')],
-    drum:[T('الدرام (الحمل)', 'Drum (the load)'), T('ده الحمل اللي بيسحب سير الكونفاير', 'this is the load that pulls the conveyor belt')]
+    motor:[T('المحرك', 'Motor'), T('يعطي الحركة: <bdi dir="ltr">1450 rpm</bdi>', 'it makes the motion: 1450 rpm')],
+    coupling:[T('الكوبلنج', 'Coupling'), T('يوصل عمود المحرك بعمود الجيربوكس', 'it joins the motor shaft to the gearbox shaft')],
+    gearbox:[T('الجيربوكس', 'Gearbox'), T('يقلل السرعة ويكبّر العزم', 'it cuts the speed and multiplies the torque')],
+    key:[T('الخابور', 'Key'), T('يمسك السبروكت في العمود حتى لا يدور عليه', 'it locks the sprocket to the shaft so it cannot slip')],
+    chain:[T('الجنزير', 'Chain'), T('ينقل الحركة إلى عمود آخر بعيد', 'it carries the motion to another shaft')],
+    bearing:[T('كرسي الرولمان', 'Bearing housing'), T('يحمل العمود ويجعله يدور بنعومة', 'it carries the shaft and lets it turn smoothly')],
+    drum:[T('الدرام (الحمل)', 'Drum (the load)'), T('هذا هو الحمل الذي يسحب سير الناقل', 'this is the load that pulls the conveyor belt')]
   };
-  const rd = readouts(g, [['q', T('دوّر على', 'Find')], ['k', T('لقيت', 'Found')]]);
+  const rd = readouts(g, [['q', T('ابحث عن', 'Find')], ['k', T('وجدت', 'Found')]]);
   let cur = null, step = 0, misses = 0, lock = false;
   function ask(){
     const a = cur.asks[step];
@@ -196,7 +196,7 @@ MF.drive = function(host, opt){
     misses++;
     (P[id] || []).forEach(e => e.classList.add('no'));
     lock = true; setTimeout(() => { (P[id] || []).forEach(e => e.classList.remove('no')); lock = false; }, 700);
-    game.miss(T(`ده ${NAME[id][0]}: ${NAME[id][1]}.`, `That is the ${NAME[id][0].toLowerCase()}: ${NAME[id][1]}.`) + (misses >= 2 && a.hint ? ' 💡 ' + a.hint : ' ' + T('جرّب تاني.', 'Try again.')));
+    game.miss(T(`هذا ${NAME[id][0]}: ${NAME[id][1]}.`, `That is the ${NAME[id][0].toLowerCase()}: ${NAME[id][1]}.`) + (misses >= 2 && a.hint ? ' 💡 ' + a.hint : ' ' + T('جرّب مرة أخرى.', 'Try again.')));
   }
   IL.onAct(host, '.pt', t => tap(t.dataset.p));
   // turning: motor fast, gearbox output slow, drum slower; the chain moves at the sprocket rim speed
@@ -209,21 +209,21 @@ MF.drive = function(host, opt){
   });
   const q = (ar, en) => T(ar, en);
   const game = rounds(g, [
-    {goal:q('دوس على كل جزء نطلبه منك في الماكينة.', 'Tap each part we ask for.'), ok:q('عرفت الأجزاء الأساسية في أي خط نقل حركة.', 'You know the main parts of any drive train.'), asks:[
-      {q:q('الكوبلنج', 'the coupling'), want:['coupling'], hint:q('هو الوصلة الصغيرة اللي بين الموتور والجيربوكس.', 'It is the small joint between the motor and the gearbox.')},
-      {q:q('الجيربوكس', 'the gearbox'), want:['gearbox'], hint:q('الصندوق الأخضر اللي فيه عين الزيت.', 'The green box with the oil sight glass.')},
-      {q:q('الجنزير', 'the chain'), want:['chain'], hint:q('اللي طالع لفوق ورابط العمودين.', 'The strand going up between the two shafts.')},
-      {q:q('كرسي الرولمان', 'a bearing housing'), want:['bearing'], hint:q('اللي شايل عمود الدرام من تحت وفوقه بز الشحم.', 'It carries the drum shaft and has a grease nipple on top.')}]},
-    {goal:q('السرعة والعزم: دوس على الإجابة.', 'Speed and torque: tap the answer.'), ok:q('السرعة بتقل من الموتور للحمل، والعزم بيزيد بنفس النسبة تقريبًا.', 'Speed falls from motor to load, and torque rises by about the same ratio.'), asks:[
-      {q:q('أسرع جزء بيلف', 'the fastest turning part'), want:['motor', 'coupling'], ok:q('الموتور والكوبلنج بيلفّوا <bdi dir="ltr">1450 rpm</bdi>.', 'Motor and coupling turn at 1450 rpm.'), hint:q('بص على أرقام الـ rpm.', 'Look at the rpm numbers.')},
-      {q:q('اللي بيقلل السرعة 20 مرة', 'the part that cuts speed 20 times'), want:['gearbox'], ok:q('<bdi dir="ltr">1450 ÷ 20 ≈ 72 rpm</bdi>.', '1450 ÷ 20 ≈ 72 rpm.'), hint:q('<bdi dir="ltr">1450</bdi> بقت <bdi dir="ltr">72</bdi> بعد أنهي جزء؟', 'After which part does 1450 become 72?')},
-      {q:q('أعلى عزم في الماكينة', 'the highest torque in the machine'), want:['drum'], ok:q('أبطأ عمود = أعلى عزم. الدرام حوالي <bdi dir="ltr">275 N·m</bdi>.', 'The slowest shaft has the highest torque: about 275 N·m on the drum.'), hint:q('أبطأ حاجة بتلف هي اللي عزمها أعلى.', 'The slowest part has the highest torque.')},
-      {q:q('اللي بيمنع السبروكت يلف على العمود', 'what stops the sprocket slipping on its shaft'), want:['key'], hint:q('قطعة صغيرة صفرا على عمود خرج الجيربوكس.', 'A small yellow piece on the gearbox output shaft.')}]},
-    {goal:q('الصيانة: فين بتعمل كل حاجة؟', 'Maintenance: where do you do each job?'), ok:q('دي أهم 4 شغلانات صيانة، وكل واحدة ليها درس في الكورس.', 'These are the 4 key maintenance jobs, and each has its own lesson in this course.'), asks:[
-      {q:q('فين بتحط الشحم؟', 'where does the grease go?'), want:['bearing'], ok:q('بز الشحم فوق كرسي الرولمان.', 'Through the grease nipple on the bearing housing.'), hint:q('دوّر على البز الأصفر الصغير.', 'Look for the small yellow nipple.')},
-      {q:q('فين بتعمل المحاذاة (Alignment)؟', 'where do you check alignment?'), want:['coupling'], ok:q('بين عمود الموتور وعمود الجيربوكس، عند الكوبلنج.', 'Between the motor and gearbox shafts, at the coupling.'), hint:q('المكان اللي فيه عمودين بيتقابلوا وش لوش.', 'Where two shafts meet end to end.')},
-      {q:q('فين بتبص على مستوى الزيت؟', 'where do you check the oil level?'), want:['gearbox'], ok:q('عين الزيت في جنب الجيربوكس.', 'The sight glass on the gearbox side.'), hint:q('الجزء اللي جواه تروس شغالة في زيت.', 'The part with gears running in oil.')},
-      {q:q('فين بتظبط الشد والرخاوة؟', 'where do you set the slack?'), want:['chain'], ok:q('الجنزير لازم يبقى فيه رخاوة صغيرة، مش مشدود على الآخر.', 'The chain needs a little slack, never fully tight.'), hint:q('اللي ممكن يرتخي مع الوقت ويطلع صوت.', 'The one that stretches with time and starts to rattle.')}]}
+    {goal:q('اضغط على كل جزء نطلبه منك في الماكينة.', 'Tap each part we ask for.'), ok:q('عرفت الأجزاء الأساسية في أي خط نقل حركة.', 'You know the main parts of any drive train.'), asks:[
+      {q:q('الكوبلنج', 'the coupling'), want:['coupling'], hint:q('هو الوصلة الصغيرة بين المحرك والجيربوكس.', 'It is the small joint between the motor and the gearbox.')},
+      {q:q('الجيربوكس', 'the gearbox'), want:['gearbox'], hint:q('الصندوق الأخضر الذي فيه عين الزيت.', 'The green box with the oil sight glass.')},
+      {q:q('الجنزير', 'the chain'), want:['chain'], hint:q('الجزء الصاعد إلى أعلى والرابط بين العمودين.', 'The strand going up between the two shafts.')},
+      {q:q('كرسي الرولمان', 'a bearing housing'), want:['bearing'], hint:q('الجزء الذي يحمل عمود الدرام من أسفل وفوقه بز الشحم.', 'It carries the drum shaft and has a grease nipple on top.')}]},
+    {goal:q('السرعة والعزم: اضغط على الإجابة.', 'Speed and torque: tap the answer.'), ok:q('تقل السرعة من المحرك إلى الحمل، ويزيد العزم بالنسبة نفسها تقريبًا.', 'Speed falls from motor to load, and torque rises by about the same ratio.'), asks:[
+      {q:q('أسرع جزء يدور', 'the fastest turning part'), want:['motor', 'coupling'], ok:q('المحرك والكوبلنج يدوران <bdi dir="ltr">1450 rpm</bdi>.', 'Motor and coupling turn at 1450 rpm.'), hint:q('انظر إلى أرقام الـ rpm.', 'Look at the rpm numbers.')},
+      {q:q('الجزء الذي يقلل السرعة 20 مرة', 'the part that cuts speed 20 times'), want:['gearbox'], ok:q('<bdi dir="ltr">1450 ÷ 20 ≈ 72 rpm</bdi>.', '1450 ÷ 20 ≈ 72 rpm.'), hint:q('<bdi dir="ltr">1450</bdi> أصبحت <bdi dir="ltr">72</bdi> بعد أيّ جزء؟', 'After which part does 1450 become 72?')},
+      {q:q('أعلى عزم في الماكينة', 'the highest torque in the machine'), want:['drum'], ok:q('أبطأ عمود = أعلى عزم. الدرام حوالي <bdi dir="ltr">275 N·m</bdi>.', 'The slowest shaft has the highest torque: about 275 N·m on the drum.'), hint:q('أبطأ جزء يدور هو صاحب أعلى عزم.', 'The slowest part has the highest torque.')},
+      {q:q('الجزء الذي يمنع السبروكت من الدوران على العمود', 'what stops the sprocket slipping on its shaft'), want:['key'], hint:q('قطعة صغيرة صفراء على عمود خرج الجيربوكس.', 'A small yellow piece on the gearbox output shaft.')}]},
+    {goal:q('الصيانة: أين تنفّذ كل مهمة؟', 'Maintenance: where do you do each job?'), ok:q('هذه أهم 4 مهام صيانة، ولكل منها درس في الكورس.', 'These are the 4 key maintenance jobs, and each has its own lesson in this course.'), asks:[
+      {q:q('أين تضع الشحم؟', 'where does the grease go?'), want:['bearing'], ok:q('بز الشحم فوق كرسي الرولمان.', 'Through the grease nipple on the bearing housing.'), hint:q('ابحث عن البز الأصفر الصغير.', 'Look for the small yellow nipple.')},
+      {q:q('أين تنفّذ المحاذاة (Alignment)؟', 'where do you check alignment?'), want:['coupling'], ok:q('بين عمود المحرك وعمود الجيربوكس، عند الكوبلنج.', 'Between the motor and gearbox shafts, at the coupling.'), hint:q('المكان الذي يتقابل فيه عمودان وجهًا لوجه.', 'Where two shafts meet end to end.')},
+      {q:q('أين تنظر إلى مستوى الزيت؟', 'where do you check the oil level?'), want:['gearbox'], ok:q('عين الزيت في جانب الجيربوكس.', 'The sight glass on the gearbox side.'), hint:q('الجزء الذي بداخله تروس تعمل في الزيت.', 'The part with gears running in oil.')},
+      {q:q('أين تضبط الشد والرخاوة؟', 'where do you set the slack?'), want:['chain'], ok:q('يجب أن يكون في الجنزير رخاوة صغيرة، لا مشدودًا إلى أقصى حد.', 'The chain needs a little slack, never fully tight.'), hint:q('الجزء الذي قد يرتخي مع الوقت ويُصدر صوتًا.', 'The one that stretches with time and starts to rattle.')}]}
   ], L, setup);
 };
 
@@ -250,7 +250,7 @@ MF.pick = function(host, opt){
     const b = box.querySelector(`.qz-o[data-i="${sel}"]`);
     if (sel === cur.a){ b.classList.remove('sel'); b.classList.add('ok'); box.querySelectorAll('.qz-o').forEach(x => { x.disabled = true; }); cf.hidden = true; game.win(cur.ok); return; }
     tries++; b.classList.remove('sel'); b.classList.add('no'); b.disabled = true; sel = null; cf.disabled = true;
-    game.miss(T('مش دي. ', 'Not this one. ') + (cur.why || ''));
+    game.miss(T('ليس هذا. ', 'Not this one. ') + (cur.why || ''));
   });
   const game = rounds(g, opt.rounds, opt.lesson, setup);
 };
@@ -283,7 +283,7 @@ MF.flange = function(host, opt){
   const wb = el(wr, 'rect', {x:306, y:180, width:84, height:10, rx:5, fill:'var(--line)'});
   const wf = el(wr, 'rect', {x:306, y:180, width:0, height:10, rx:5, fill:'var(--accent)'});
   const rd = readouts(g, [['k', T('المطلوب', 'Target')]]);
-  const tq = slider(g, {label:T('ظبّط مفتاح العزم', 'Set the torque wrench'), min:0, max:250, step:5, value:20, unit:'N·m'}, v => showW(v));
+  const tq = slider(g, {label:T('اضبط مفتاح العزم', 'Set the torque wrench'), min:0, max:250, step:5, value:20, unit:'N·m'}, v => showW(v));
   const go = button(g, T('اربط', 'Tighten'), () => fire(), true);
   const ORDER = [0, 4, 2, 6, 1, 5, 3, 7];
   let cur = null, step = 0;
@@ -299,19 +299,19 @@ MF.flange = function(host, opt){
   IL.onAct(host, '.bolt', t => {
     if (!cur || cur.k !== 'seq' || game.won) return;
     const i = +t.dataset.b;
-    if (i === ORDER[step]){ step++; paint(); if (step === 8) game.win(cur.ok); else game.say(T(`تمام. فاضل ${8 - step}`, `Good. ${8 - step} to go`), ''); return; }
+    if (i === ORDER[step]){ step++; paint(); if (step === 8) game.win(cur.ok); else game.say(T(`تمام. بقي ${8 - step}`, `Good. ${8 - step} to go`), ''); return; }
     B[i].gg.classList.add('no'); setTimeout(() => B[i].gg.classList.remove('no'), 600);
-    game.miss(step === 0 ? T('ابدأ بالمسمار اللي فوق خالص (رقم 1).', 'Start with the top bolt (number 1).') : T('روح للمسمار اللي <b>قصاد</b> آخر واحد ربطته، أو لنص المسافة الفاضية.', 'Go to the bolt <b>opposite</b> the last one, or halfway round the gap.'));
+    game.miss(step === 0 ? T('ابدأ بالمسمار الأعلى تمامًا (رقم 1).', 'Start with the top bolt (number 1).') : T('انتقل إلى المسمار <b>المقابل</b> لآخر مسمار ربطته، أو إلى منتصف المسافة الفارغة.', 'Go to the bolt <b>opposite</b> the last one, or halfway round the gap.'));
   });
   function fire(){
     if (!cur || cur.k === 'seq' || game.won) return;
     const v = tq.get();
     if (Math.abs(v - cur.want) <= cur.tol){ B.forEach(b => set(b.hx, {fill:'#3fae5a'})); game.win(cur.ok); }
-    else game.miss(v < cur.want ? T(`<bdi dir="ltr">${v} N·m</bdi> قليل: المسمار هيفك مع الاهتزاز.`, `${v} N·m is too low: the bolt will shake loose.`) : T(`<bdi dir="ltr">${v} N·m</bdi> كتير: ممكن يتمط أو يتقطع.`, `${v} N·m is too much: it can stretch or snap.`));
+    else game.miss(v < cur.want ? T(`<bdi dir="ltr">${v} N·m</bdi> قليل: سينفك المسمار مع الاهتزاز.`, `${v} N·m is too low: the bolt will shake loose.`) : T(`<bdi dir="ltr">${v} N·m</bdi> كثير: قد يتمدد أو ينقطع.`, `${v} N·m is too much: it can stretch or snap.`));
   }
   const game = rounds(g, [
-    {k:'seq', goal:T('اربط المسامير بترتيب النجمة: ابدأ برقم 1 فوق.', 'Tighten in a star pattern: start with bolt 1 at the top.'), show:T('ترتيب النجمة', 'Star pattern'), ok:T('<bdi dir="ltr">1-5-3-7-2-6-4-8</bdi>: الضغط بيتوزّع والجوان ما بيتدفعش لناحية.', '1-5-3-7-2-6-4-8: the load spreads evenly and the gasket is not pushed to one side.')},
-    {k:'tq', want:85, tol:0, goal:T('مسمار <bdi dir="ltr">M12</bdi> درجة <bdi dir="ltr">8.8</bdi>. ظبّط المفتاح على العزم من الجدول.', 'An M12 grade 8.8 bolt. Set the wrench to the table torque.'), show:'<bdi dir="ltr">M10 = 49 · M12 = 85 · M16 = 210 N·m</bdi>', ok:T('<bdi dir="ltr">85 N·m</bdi> بالظبط. اسحب ببطء لحد ما المفتاح يطقطق.', 'Exactly 85 N·m. Pull slowly until the wrench clicks.')},
+    {k:'seq', goal:T('اربط المسامير بترتيب النجمة: ابدأ برقم 1 في الأعلى.', 'Tighten in a star pattern: start with bolt 1 at the top.'), show:T('ترتيب النجمة', 'Star pattern'), ok:T('<bdi dir="ltr">1-5-3-7-2-6-4-8</bdi>: يتوزّع الضغط ولا يندفع الجوان إلى جهة واحدة.', '1-5-3-7-2-6-4-8: the load spreads evenly and the gasket is not pushed to one side.')},
+    {k:'tq', want:85, tol:0, goal:T('مسمار <bdi dir="ltr">M12</bdi> درجة <bdi dir="ltr">8.8</bdi>. اضبط المفتاح على العزم من الجدول.', 'An M12 grade 8.8 bolt. Set the wrench to the table torque.'), show:'<bdi dir="ltr">M10 = 49 · M12 = 85 · M16 = 210 N·m</bdi>', ok:T('<bdi dir="ltr">85 N·m</bdi> بالضبط. اسحب ببطء حتى يطقطق المفتاح.', 'Exactly 85 N·m. Pull slowly until the wrench clicks.')},
     {k:'tq', want:65, tol:5, goal:T('فلانشة مسامير <bdi dir="ltr">M16 8.8</bdi>. المرحلة الأولى = <bdi dir="ltr">30%</bdi> من العزم.', 'M16 8.8 flange bolts. Stage one is 30% of the torque.'), show:'<bdi dir="ltr">M16 = 210 N·m</bdi>', ok:T('<bdi dir="ltr">30%</bdi> ثم <bdi dir="ltr">70%</bdi> ثم <bdi dir="ltr">100%</bdi>، وكل مرحلة بترتيب النجمة.', '30%, then 70%, then 100%, each stage in the star pattern.')}
   ], L, setup);
 };
@@ -320,7 +320,7 @@ MF.flange = function(host, opt){
    the gearbox shaft is fixed. Motor front feet are 200 mm and rear feet 500 mm behind the coupling face. */
 MF.align = function(host, opt){
   const L = opt.lesson;
-  const g = frame(host, T('محاذاة موتور على جيربوكس', 'Aligning a motor to a gearbox'), '0 0 440 240');
+  const g = frame(host, T('محاذاة محرك على جيربوكس', 'Aligning a motor to a gearbox'), '0 0 440 240');
   host.classList.add('mf-align');
   const s = g.svg, AX = 110, K = 90; // exaggeration: 1 mm → 90 px
   el(s, 'rect', {x:0, y:0, width:440, height:240, fill:'var(--panel)'});
@@ -334,10 +334,10 @@ MF.align = function(host, opt){
   const cpl = el(s, 'rect', {x:258, y:AX - 18, width:14, height:36, rx:3, fill:'#e07a1f'});
   const shR = el(s, 'rect', {x:56, width:28, fill:'#c99a1c'}), shF = el(s, 'rect', {x:176, width:28, fill:'#c99a1c'});
   const ftR = el(s, 'rect', {x:52, width:36, height:14, rx:2, fill:'#5c636a'}), ftF = el(s, 'rect', {x:172, width:36, height:14, rx:2, fill:'#5c636a'});
-  const lab = el(s, 'text', {x:220, y:232, 'text-anchor':'middle', 'font-size':11, fill:'var(--muted)', 'font-family':'var(--font-body)'}); lab.textContent = T('الرسمة مكبّرة 90 مرة عشان تبان', 'Drawing exaggerated ×90 so you can see it');
+  const lab = el(s, 'text', {x:220, y:232, 'text-anchor':'middle', 'font-size':11, fill:'var(--muted)', 'font-family':'var(--font-body)'}); lab.textContent = T('الرسمة مكبّرة 90 مرة لتظهر', 'Drawing exaggerated ×90 so you can see it');
   const rd = readouts(g, [['o', T('الإزاحة عند الكوبلنج', 'Offset at coupling')], ['a', T('الزاوية', 'Angle')]]);
-  const F = slider(g, {label:T('شيمز تحت الرجل القدّامية', 'Shims under the front feet'), min:0, max:1, step:.05, value:0, unit:'mm', dec:2}, () => upd(true));
-  const R = slider(g, {label:T('شيمز تحت الرجل الورّانية', 'Shims under the rear feet'), min:0, max:1, step:.05, value:0, unit:'mm', dec:2}, () => upd(true));
+  const F = slider(g, {label:T('شيمز تحت الرجل الأمامية', 'Shims under the front feet'), min:0, max:1, step:.05, value:0, unit:'mm', dec:2}, () => upd(true));
+  const R = slider(g, {label:T('شيمز تحت الرجل الخلفية', 'Shims under the rear feet'), min:0, max:1, step:.05, value:0, unit:'mm', dec:2}, () => upd(true));
   let cur = null, tmr = 0;
   function upd(chk){
     if (!cur) return;
@@ -350,19 +350,19 @@ MF.align = function(host, opt){
     set(shR, {y:(206 - Math.max(1, R.get() * 30)).toFixed(1), height:Math.max(1, R.get() * 30).toFixed(1)});
     set(shF, {y:(206 - Math.max(1, F.get() * 30)).toFixed(1), height:Math.max(1, F.get() * 30).toFixed(1)});
     set(ftR, {y:(192 - R.get() * 30).toFixed(1)}); set(ftF, {y:(192 - F.get() * 30).toFixed(1)});
-    rd('o', bd(n(Math.abs(off), 2) + ' mm') + ' ' + (off > 0.004 ? T('واطي', 'low') : off < -0.004 ? T('عالي', 'high') : '✓'));
+    rd('o', bd(n(Math.abs(off), 2) + ' mm') + ' ' + (off > 0.004 ? T('منخفض', 'low') : off < -0.004 ? T('مرتفع', 'high') : '✓'));
     rd('a', bd(n(Math.abs(slope * 100), 2) + ' mm/100mm'));
     if (!chk) return;
     clearTimeout(tmr); tmr = setTimeout(() => {
       if (Math.abs(eF) < .026 && Math.abs(eR) < .026) game.win(cur.ok);
-      else game.miss(T(`لسه: القدّامية ${eF > 0 ? 'واطية' : 'عالية'} <bdi dir="ltr">${n(Math.abs(eF), 2)} mm</bdi> والورّانية ${eR > 0 ? 'واطية' : 'عالية'} <bdi dir="ltr">${n(Math.abs(eR), 2)} mm</bdi>.`, `Not yet: front is ${n(Math.abs(eF), 2)} mm ${eF > 0 ? 'low' : 'high'}, rear ${n(Math.abs(eR), 2)} mm ${eR > 0 ? 'low' : 'high'}.`));
+      else game.miss(T(`ليس بعد: الأمامية ${eF > 0 ? 'منخفضة' : 'مرتفعة'} <bdi dir="ltr">${n(Math.abs(eF), 2)} mm</bdi> والخلفية ${eR > 0 ? 'منخفضة' : 'مرتفعة'} <bdi dir="ltr">${n(Math.abs(eR), 2)} mm</bdi>.`, `Not yet: front is ${n(Math.abs(eF), 2)} mm ${eF > 0 ? 'low' : 'high'}, rear ${n(Math.abs(eR), 2)} mm ${eR > 0 ? 'low' : 'high'}.`));
     }, 700);
   }
   function setup(r){ cur = r; F.set(0); R.set(0); upd(false); }
   const game = rounds(g, [
-    {f:.30, r:.50, goal:T('الموتور واطي ومايل. الحسبة بتقول: <bdi dir="ltr">0.30 mm</bdi> قدّام و<bdi dir="ltr">0.50 mm</bdi> ورا.', 'The motor sits low and tilted. The calculation says 0.30 mm front and 0.50 mm rear.'), ok:T('الإزاحة والزاوية بقوا صفر. اربط الرجول وقيس تاني.', 'Offset and angle are zero. Tighten the feet and measure again.')},
-    {f:.15, r:.60, goal:T('دلوقتي من غير أرقام جاهزة: خلّي الإزاحة والزاوية صفر.', 'Now without the numbers: bring offset and angle to zero.'), ok:T('ظبّطت الزاوية الأول بالفرق بين الرجلين، وبعدين رفعت الاتنين.', 'You fixed the angle with the difference between the feet, then raised both.')},
-    {f:.70, r:.40, goal:T('المرة دي الموتور مايل للناحية التانية.', 'This time the motor tilts the other way.'), ok:T('القدّامية محتاجة شيمز أكتر من الورّانية: الموتور كان مايل لقدّام.', 'The front needed more shims than the rear: the motor was nose-down.')}
+    {f:.30, r:.50, goal:T('المحرك منخفض ومائل. الحساب يقول: <bdi dir="ltr">0.30 mm</bdi> في الأمام و<bdi dir="ltr">0.50 mm</bdi> في الخلف.', 'The motor sits low and tilted. The calculation says 0.30 mm front and 0.50 mm rear.'), ok:T('أصبحت الإزاحة والزاوية صفرًا. اربط الأرجل وقِس مرة أخرى.', 'Offset and angle are zero. Tighten the feet and measure again.')},
+    {f:.15, r:.60, goal:T('الآن بلا أرقام جاهزة: اجعل الإزاحة والزاوية صفرًا.', 'Now without the numbers: bring offset and angle to zero.'), ok:T('ضبطت الزاوية أولًا بالفرق بين الرجلين، ثم رفعت الاثنتين.', 'You fixed the angle with the difference between the feet, then raised both.')},
+    {f:.70, r:.40, goal:T('هذه المرة المحرك مائل إلى الجهة الأخرى.', 'This time the motor tilts the other way.'), ok:T('الأمامية تحتاج شيمز أكثر من الخلفية: كان المحرك مائلًا إلى الأمام.', 'The front needed more shims than the rear: the motor was nose-down.')}
   ], L, setup);
 };
 
@@ -384,7 +384,7 @@ MF.order = function(host, opt){
     const i = +b.dataset.i;
     if (i === step){ step++; b.remove(); const li = document.createElement('li'); li.innerHTML = cur.steps[i]; done.appendChild(li); if (step === cur.steps.length) game.win(cur.ok); else game.say('✓', 'ok'); return; }
     b.classList.add('no'); setTimeout(() => b.classList.remove('no'), 600);
-    game.miss(T('مش دي الخطوة الجاية. ', 'That is not the next step. ') + (cur.hint ? cur.hint[step] || '' : ''));
+    game.miss(T('ليست هذه الخطوة التالية. ', 'That is not the next step. ') + (cur.hint ? cur.hint[step] || '' : ''));
   });
   const game = rounds(g, opt.rounds, opt.lesson, setup);
 };
@@ -400,7 +400,7 @@ MF.gears = function(host, opt){
   const d1 = el(s, 'circle', {r:6, fill:'#22272b'}), d2 = el(s, 'circle', {r:6, fill:'#22272b'});
   const l1 = el(s, 'text', {'font-size':12, 'font-weight':700, fill:'var(--ink)', 'text-anchor':'middle'}), l2 = el(s, 'text', {'font-size':12, 'font-weight':700, fill:'var(--ink)', 'text-anchor':'middle'});
   const rd = readouts(g, [['i', T('النسبة', 'Ratio')], ['n', T('سرعة الخرج', 'Output speed')], ['t', T('عزم الخرج', 'Output torque')]]);
-  const Z1 = slider(g, {label:T('أسنان الترس الصغير (على الموتور)', 'Pinion teeth (on the motor)'), min:10, max:40, step:1, value:20}, () => upd());
+  const Z1 = slider(g, {label:T('أسنان الترس الصغير (على المحرك)', 'Pinion teeth (on the motor)'), min:10, max:40, step:1, value:20}, () => upd());
   const Z2 = slider(g, {label:T('أسنان الترس الكبير', 'Wheel teeth'), min:10, max:120, step:1, value:20}, () => upd());
   let cur, a1 = 0, c1, c2, r1, r2, tmr = 0;
   const gearD = (z, r) => { let d = ''; const ro = r + 5, ri = r - 4; for (let i = 0; i < z; i++){ const a = i / z * 2 * Math.PI, w = Math.PI / z; [[ri, a - w * .5], [ro, a - w * .25], [ro, a + w * .25], [ri, a + w * .5], [ri, a + w * 1.5]].forEach(([rr, aa], j) => { d += (i || j ? 'L' : 'M') + (rr * Math.cos(aa)).toFixed(1) + ',' + (rr * Math.sin(aa)).toFixed(1); }); } return d + 'Z'; };
@@ -413,15 +413,15 @@ MF.gears = function(host, opt){
     set(l1, {x:c1, y:CY - r1 - 14}); l1.textContent = `z1 = ${z1}`; set(l2, {x:c2, y:Math.min(296, CY + r2 + 22)}); l2.textContent = `z2 = ${z2}`;
     rd('i', bd(n(z2 / z1, 2) + ' : 1')); rd('n', bd(n(n2, 0) + ' rpm')); rd('t', bd(n(t2, 1) + ' N·m'));
     if (!cur) return;
-    clearTimeout(tmr); tmr = setTimeout(() => { const v = cur.k === 'n' ? n2 : cur.k === 'i' ? z2 / z1 : t2; if (Math.abs(v - cur.want) <= cur.tol && (!cur.z1 || z1 === cur.z1)) game.win(cur.ok); else game.miss(cur.z1 && z1 !== cur.z1 ? T(`الترس الصغير لازم يفضل <bdi dir="ltr">${cur.z1}</bdi> سنة.`, `Keep the pinion at ${cur.z1} teeth.`) : T('لسه. بص على الأرقام تحت الرسمة.', 'Not yet. Check the numbers under the drawing.')); }, 600);
+    clearTimeout(tmr); tmr = setTimeout(() => { const v = cur.k === 'n' ? n2 : cur.k === 'i' ? z2 / z1 : t2; if (Math.abs(v - cur.want) <= cur.tol && (!cur.z1 || z1 === cur.z1)) game.win(cur.ok); else game.miss(cur.z1 && z1 !== cur.z1 ? T(`يجب أن يبقى الترس الصغير <bdi dir="ltr">${cur.z1}</bdi> سنة.`, `Keep the pinion at ${cur.z1} teeth.`) : T('ليس بعد. انظر إلى الأرقام تحت الرسمة.', 'Not yet. Check the numbers under the drawing.')); }, 600);
   }
   upd();
   IL.animate(host, dt => { a1 += dt * 1.6; const z1 = Z1.get(), z2 = Z2.get(), a2 = -a1 * z1 / z2 + Math.PI / z2; set(g1, {transform:`translate(${c1},${CY}) rotate(${(a1 * 180 / Math.PI).toFixed(1)})`}); set(g2, {transform:`translate(${c2},${CY}) rotate(${(a2 * 180 / Math.PI).toFixed(1)})`}); });
   function setup(r){ cur = r; Z1.set(20); Z2.set(20); upd(); }
   const game = rounds(g, [
-    {k:'n', want:290, tol:3, goal:T('الموتور <bdi dir="ltr">1450 rpm</bdi> والكونفاير محتاج <bdi dir="ltr">290 rpm</bdi>.', 'The motor runs at 1450 rpm and the conveyor needs 290 rpm.'), ok:T('نسبة <bdi dir="ltr">5 : 1</bdi>. السرعة = سرعة الموتور × z1 ÷ z2.', 'A 5 : 1 ratio. Speed = motor speed × z1 ÷ z2.')},
-    {k:'i', want:3, tol:.001, z1:15, goal:T('ترس الموتور <bdi dir="ltr">15</bdi> سنة واتكسر الكبير. محتاج نسبة <bdi dir="ltr">3 : 1</bdi>. الكبير كام سنة؟', 'The pinion has 15 teeth and the wheel broke. You need 3 : 1. How many teeth on the new wheel?'), ok:T('<bdi dir="ltr">15 × 3 = 45</bdi> سنة. ولازم نفس الموديول عشان يعشّقوا.', '15 × 3 = 45 teeth, and the same module so they mesh.')},
-    {k:'t', want:40, tol:.4, goal:T('الموتور بيدّي <bdi dir="ltr">10 N·m</bdi> والخلاط محتاج <bdi dir="ltr">40 N·m</bdi>.', 'The motor gives 10 N·m and the mixer needs 40 N·m.'), ok:T('نسبة <bdi dir="ltr">4 : 1</bdi>: العزم ×4 والسرعة ÷4.', 'A 4 : 1 ratio: torque ×4 and speed ÷4.')}
+    {k:'n', want:290, tol:3, goal:T('المحرك <bdi dir="ltr">1450 rpm</bdi> والناقل يحتاج <bdi dir="ltr">290 rpm</bdi>.', 'The motor runs at 1450 rpm and the conveyor needs 290 rpm.'), ok:T('نسبة <bdi dir="ltr">5 : 1</bdi>. السرعة = سرعة المحرك × z1 ÷ z2.', 'A 5 : 1 ratio. Speed = motor speed × z1 ÷ z2.')},
+    {k:'i', want:3, tol:.001, z1:15, goal:T('ترس المحرك <bdi dir="ltr">15</bdi> سنة وانكسر الترس الكبير. تحتاج نسبة <bdi dir="ltr">3 : 1</bdi>. كم سنة للكبير؟', 'The pinion has 15 teeth and the wheel broke. You need 3 : 1. How many teeth on the new wheel?'), ok:T('<bdi dir="ltr">15 × 3 = 45</bdi> سنة. ويجب أن يكون الموديول نفسه ليتعشّقا.', '15 × 3 = 45 teeth, and the same module so they mesh.')},
+    {k:'t', want:40, tol:.4, goal:T('المحرك يعطي <bdi dir="ltr">10 N·m</bdi> والخلاط يحتاج <bdi dir="ltr">40 N·m</bdi>.', 'The motor gives 10 N·m and the mixer needs 40 N·m.'), ok:T('نسبة <bdi dir="ltr">4 : 1</bdi>: العزم ×4 والسرعة ÷4.', 'A 4 : 1 ratio: torque ×4 and speed ÷4.')}
   ], L, setup);
 };
 
@@ -440,8 +440,8 @@ MF.belt = function(host, opt){
   const ruler = el(s, 'line', {stroke:'var(--accent)', 'stroke-width':2, 'stroke-dasharray':'3 3'});
   const dt = el(s, 'text', {'font-size':13, 'font-weight':700, fill:'var(--accent)', 'font-family':'var(--font-mono)', 'text-anchor':'middle'});
   const sp = el(s, 'text', {y:206, 'font-size':12, fill:'var(--muted)', 'text-anchor':'middle', 'font-family':'mono'});
-  const rd = readouts(g, [['span', T('طول البحر', 'Span')], ['d', T('الترخيم المطلوب', 'Target deflection')], ['m', T('الترخيم دلوقتي', 'Deflection now')]]);
-  const X = slider(g, {label:T('مسمار الشد (حرّك الموتور)', 'Tensioning screw (move the motor)'), min:0, max:12, step:.25, value:0, unit:'mm', dec:2}, () => upd(true));
+  const rd = readouts(g, [['span', T('المسافة بين البكرتين', 'Span')], ['d', T('الترخيم المطلوب', 'Target deflection')], ['m', T('الترخيم الآن', 'Deflection now')]]);
+  const X = slider(g, {label:T('مسمار الشد (حرّك المحرك)', 'Tensioning screw (move the motor)'), min:0, max:12, step:.25, value:0, unit:'mm', dec:2}, () => upd(true));
   let cur = null, tmr = 0;
   function upd(chk){
     if (!cur) return;
@@ -459,14 +459,14 @@ MF.belt = function(host, opt){
     if (!chk) return;
     clearTimeout(tmr); tmr = setTimeout(() => {
       if (Math.abs(d - want) <= 1) game.win(cur.ok);
-      else game.miss(d > want ? T('السير لسه مرخي: هيزحلق ويصفّر ويسخن.', 'Still loose: it will slip, squeal and heat up.') : T('مشدود زيادة: رولمان الموتور هيسخن ويبوظ بدري.', 'Too tight: the motor bearing will run hot and fail early.'));
+      else game.miss(d > want ? T('السير ما زال مرتخيًا: سينزلق ويصفّر ويسخن.', 'Still loose: it will slip, squeal and heat up.') : T('مشدود زيادة: سيسخن رولمان المحرك ويتلف مبكرًا.', 'Too tight: the motor bearing will run hot and fail early.'));
     }, 700);
   }
   function setup(r){ cur = r; X.set(0); upd(false); }
   const game = rounds(g, [
-    {span:1000, k:64, goal:T('البحر <bdi dir="ltr">1000 mm</bdi>. القاعدة: <bdi dir="ltr">16 mm</bdi> ترخيم لكل متر.', 'Span 1000 mm. The rule: 16 mm of deflection per metre.'), ok:T('<bdi dir="ltr">16 mm</bdi> بالظبط تحت قوة الاختبار.', 'Exactly 16 mm under the test force.')},
-    {span:750, k:72, goal:T('البحر <bdi dir="ltr">750 mm</bdi>. احسب الترخيم واشد.', 'Span 750 mm. Work out the deflection and tension.'), ok:T('<bdi dir="ltr">0.75 × 16 = 12 mm</bdi>.', '0.75 × 16 = 12 mm.')},
-    {span:500, k:40, goal:T('سير جديد على بحر <bdi dir="ltr">500 mm</bdi>.', 'A new belt on a 500 mm span.'), ok:T('<bdi dir="ltr">8 mm</bdi>. والسير الجديد شيّك على شده تاني بعد يوم شغل.', '8 mm. Check a new belt again after a day of running.')}
+    {span:1000, k:64, goal:T('المسافة <bdi dir="ltr">1000 mm</bdi>. القاعدة: <bdi dir="ltr">16 mm</bdi> ترخيم لكل متر.', 'Span 1000 mm. The rule: 16 mm of deflection per metre.'), ok:T('<bdi dir="ltr">16 mm</bdi> بالضبط تحت قوة الاختبار.', 'Exactly 16 mm under the test force.')},
+    {span:750, k:72, goal:T('المسافة <bdi dir="ltr">750 mm</bdi>. احسب الترخيم واشدد.', 'Span 750 mm. Work out the deflection and tension.'), ok:T('<bdi dir="ltr">0.75 × 16 = 12 mm</bdi>.', '0.75 × 16 = 12 mm.')},
+    {span:500, k:40, goal:T('سير جديد على مسافة <bdi dir="ltr">500 mm</bdi>.', 'A new belt on a 500 mm span.'), ok:T('<bdi dir="ltr">8 mm</bdi>. وفي السير الجديد افحص شده مرة أخرى بعد يوم تشغيل.', '8 mm. Check a new belt again after a day of running.')}
   ], L, setup);
 };
 
@@ -487,9 +487,9 @@ MF.grease = function(host, opt){
   const th = el(s, 'text', {x:60, y:115, 'text-anchor':'middle', 'font-size':22, 'font-weight':700, 'font-family':'var(--font-mono)'});
   el(s, 'text', {x:60, y:140, 'text-anchor':'middle', 'font-size':11, fill:'var(--muted)'}).textContent = T('حرارة الرولمان', 'Bearing temp');
   const nm = el(s, 'text', {x:380, y:200, 'text-anchor':'middle', 'font-size':16, 'font-weight':700, fill:'var(--ink)', 'font-family':'var(--font-mono)'});
-  const rd = readouts(g, [['b', T('الرولمان', 'Bearing')], ['G', T('الكمية المطلوبة', 'Amount needed')], ['now', T('اللي حطّيته', 'You put in')]]);
-  const S = slider(g, {label:T('عدد ضربات المسدس (الضربة ≈ 1.5 جم)', 'Grease-gun strokes (≈ 1.5 g each)'), min:0, max:40, step:1, value:0}, () => upd(false));
-  button(g, T('شغّل الماكينة وشوف', 'Run the machine and check'), () => upd(true), true);
+  const rd = readouts(g, [['b', T('الرولمان', 'Bearing')], ['G', T('الكمية المطلوبة', 'Amount needed')], ['now', T('ما وضعته', 'You put in')]]);
+  const S = slider(g, {label:T('عدد ضربات المسدس (الضربة ≈ 1.5 g)', 'Grease-gun strokes (≈ 1.5 g each)'), min:0, max:40, step:1, value:0}, () => upd(false));
+  button(g, T('شغّل الماكينة وشاهد', 'Run the machine and check'), () => upd(true), true);
   let cur = null;
   function upd(chk){
     if (!cur) return;
@@ -502,13 +502,13 @@ MF.grease = function(host, opt){
     if (!chk){ th.textContent = '–'; set(th, {fill:'var(--muted)'}); return; }
     th.textContent = Math.round(tC) + '°C'; set(th, {fill:tC > 65 ? 'var(--bad)' : 'var(--good)'});
     if (r >= .75 && r <= 1.3) game.win(cur.ok);
-    else game.miss(r < .75 ? T('قليل: الرولمان ناشف وبيزيّق وسخن.', 'Too little: the bearing runs dry, noisy and hot.') : T('كتير: الشحم بيتخض ويسخّن الرولمان، وممكن يطرد السيل.', 'Too much: the grease churns, heats the bearing and can push out the seal.'));
+    else game.miss(r < .75 ? T('قليل: الرولمان جاف ويزيّق وساخن.', 'Too little: the bearing runs dry, noisy and hot.') : T('كثير: يُخفق الشحم ويسخّن الرولمان، وقد يطرد السيل.', 'Too much: the grease churns, heats the bearing and can push out the seal.'));
   }
   function setup(r){ cur = r; S.set(0); upd(false); }
   const game = rounds(g, [
     {name:'6310', D:110, B:27, goal:T('رولمان <bdi dir="ltr">6310</bdi>: القطر الخارجي <bdi dir="ltr">D = 110</bdi> والعرض <bdi dir="ltr">B = 27 mm</bdi>.', 'Bearing 6310: outside diameter D = 110, width B = 27 mm.'), ok:T('<bdi dir="ltr">0.005 × 110 × 27 ≈ 15 g</bdi> = <bdi dir="ltr">10</bdi> ضربات.', '0.005 × 110 × 27 ≈ 15 g = 10 strokes.')},
-    {name:'6205', D:52, B:15, goal:T('رولمان صغير <bdi dir="ltr">6205</bdi>: <bdi dir="ltr">D = 52</bdi> و<bdi dir="ltr">B = 15</bdi>.', 'A small 6205: D = 52 and B = 15.'), ok:T('حوالي <bdi dir="ltr">4 g</bdi> بس، يعني <bdi dir="ltr">3</bdi> ضربات. الصغير بيتملي بسرعة!', 'Only about 4 g, so 3 strokes. Small bearings fill fast!')},
-    {name:'22220', D:180, B:46, goal:T('رولمان كبير <bdi dir="ltr">22220</bdi>: <bdi dir="ltr">D = 180</bdi> و<bdi dir="ltr">B = 46</bdi>.', 'A big 22220: D = 180 and B = 46.'), ok:T('حوالي <bdi dir="ltr">41 g</bdi> = <bdi dir="ltr">28</bdi> ضربة. احسب دايمًا، ما تعدّش على الإحساس.', 'About 41 g = 28 strokes. Always calculate, never guess.')}
+    {name:'6205', D:52, B:15, goal:T('رولمان صغير <bdi dir="ltr">6205</bdi>: <bdi dir="ltr">D = 52</bdi> و<bdi dir="ltr">B = 15</bdi>.', 'A small 6205: D = 52 and B = 15.'), ok:T('حوالي <bdi dir="ltr">4 g</bdi> فقط، أي <bdi dir="ltr">3</bdi> ضربات. الصغير يمتلئ بسرعة!', 'Only about 4 g, so 3 strokes. Small bearings fill fast!')},
+    {name:'22220', D:180, B:46, goal:T('رولمان كبير <bdi dir="ltr">22220</bdi>: <bdi dir="ltr">D = 180</bdi> و<bdi dir="ltr">B = 46</bdi>.', 'A big 22220: D = 180 and B = 46.'), ok:T('حوالي <bdi dir="ltr">41 g</bdi> = <bdi dir="ltr">28</bdi> ضربة. احسب دائمًا، ولا تعتمد على الإحساس.', 'About 41 g = 28 strokes. Always calculate, never guess.')}
   ], L, setup);
 };
 
@@ -531,10 +531,10 @@ MF.micro = function(host, opt){
   el(s, 'path', {d:`M${EDGE - 2},${Y} l-10,-6 v12 Z`, fill:'#d2552d'});
   const lab1 = el(s, 'text', {x:150, y:20, 'text-anchor':'middle', 'font-size':12, fill:'var(--muted)'}); lab1.textContent = T('الجلبة (التدريج الطولي)', 'Sleeve (linear scale)');
   const lab2 = el(s, 'text', {x:360, y:228, 'text-anchor':'middle', 'font-size':12, fill:'var(--muted)'}); lab2.textContent = T('الطنبورة (التدريج الدائري)', 'Thimble (circular scale)');
-  const rd = readouts(g, [['m', T('الجلبة', 'Sleeve')], ['t', T('الطنبورة', 'Thimble')], ['r', T('القراية', 'Reading')]]);
+  const rd = readouts(g, [['m', T('الجلبة', 'Sleeve')], ['t', T('الطنبورة', 'Thimble')], ['r', T('القراءة', 'Reading')]]);
   const box = document.createElement('div'); box.className = 'mf-opts'; g.ctl.appendChild(box);
   const cf = document.createElement('button'); cf.type = 'button'; cf.className = 'btn pri'; cf.textContent = T('تأكيد', 'Confirm'); g.ctl.appendChild(cf);
-  const S1 = slider(g, {label:T('لفّات كاملة (كل لفّة = ⁦0.5 mm⁩)', 'Full turns (each = 0.5 mm)'), min:0, max:49, step:1, value:10}, () => { draw(val()); check(); });
+  const S1 = slider(g, {label:T('لفّات كاملة (كل لفة = ⁦0.5 mm⁩)', 'Full turns (each = 0.5 mm)'), min:0, max:49, step:1, value:10}, () => { draw(val()); check(); });
   const S2 = slider(g, {label:T('شَرط الطنبورة (كل شَرطة = ⁦0.01 mm⁩)', 'Thimble divisions (each = 0.01 mm)'), min:0, max:49, step:1, value:0}, () => { draw(val()); check(); });
   const val = () => S1.get() * 0.5 + S2.get() * 0.01;
   let cur = null, sel = null, tmr = 0;
@@ -560,7 +560,7 @@ MF.micro = function(host, opt){
   }
   function check(){
     if (!cur || cur.k !== 'set' || game.won) return;
-    clearTimeout(tmr); tmr = setTimeout(() => { const v = val(); if (Math.abs(v - cur.want) < 0.005) game.win(cur.ok); else game.miss(T(`لسه: <bdi dir="ltr">${f2(v)} mm</bdi>`, `Not yet: ${f2(v)} mm`)); }, 700);
+    clearTimeout(tmr); tmr = setTimeout(() => { const v = val(); if (Math.abs(v - cur.want) < 0.005) game.win(cur.ok); else game.miss(T(`ليس بعد: <bdi dir="ltr">${f2(v)} mm</bdi>`, `Not yet: ${f2(v)} mm`)); }, 700);
   }
   function setup(r){
     cur = r; sel = null;
@@ -623,15 +623,15 @@ FILMS.bolts = [
   {d: 6, draw(t){
     const back = ease(seg(t, .15, .85)), vib = t > .1;
     const g = `<g transform="translate(${shake(t, vib)} 0)">` + shaft(60, 200) + plates() + hexSide(180, 62, 72, 24, 0) + hexSide(180, 134 + back * 18, 66, 22, back * 9) + '</g>';
-    return g + waves(t, vib) + (back > .9 ? mark(false, 268, 162) + label(268, 196, T('فكّت!', 'Loose!'), RD) : '');
+    return g + waves(t, vib) + (back > .9 ? mark(false, 268, 162) + label(268, 196, T('انفكّت!', 'Loose!'), RD) : '');
   }},
   /* 2 · flat washer: the load spreads */
   {d: 7, draw(t){
     const inW = ease(seg(t, .42, .62)), wx = 180 + (1 - inW) * 230, y = inW > .99 ? 56 : 62;
     let o = shaft(y, 200) + plates() + hexSide(180, y, 72, 24, 0) + hexSide(180, 134, 66, 22, 0);
     o += `<rect x="${wx - 58}" y="80" width="116" height="6" rx="2" fill="${AC}" stroke="${DK}" stroke-width="1.2"/>`;
-    if (t < .42){ const a = seg(t, .05, .2); o += `<g opacity="${a}">` + arrowV(158, 64, 86, RD) + arrowV(202, 64, 86, RD) + `<path d="M146 88 h68" stroke="${RD}" stroke-width="4"/></g>` + (t > .22 ? label(318, 104, T('الضغط متركّز', 'Load in one spot'), RD, 'start') : ''); }
-    if (t > .62){ const a = seg(t, .62, .75); o += `<g opacity="${a}">` + [130, 155, 205, 230].map(x => arrowV(x, 66, 86, GD)).join('') + `</g>` + label(318, 104, T('الضغط اتوزّع', 'Load spread out'), GD, 'start'); }
+    if (t < .42){ const a = seg(t, .05, .2); o += `<g opacity="${a}">` + arrowV(158, 64, 86, RD) + arrowV(202, 64, 86, RD) + `<path d="M146 88 h68" stroke="${RD}" stroke-width="4"/></g>` + (t > .22 ? label(318, 104, T('الضغط مركّز', 'Load in one spot'), RD, 'start') : ''); }
+    if (t > .62){ const a = seg(t, .62, .75); o += `<g opacity="${a}">` + [130, 155, 205, 230].map(x => arrowV(x, 66, 86, GD)).join('') + `</g>` + label(318, 104, T('الضغط توزّع', 'Load spread out'), GD, 'start'); }
     return o;
   }},
   /* 3 · nyloc nut: the nylon ring grips the thread */
@@ -654,7 +654,7 @@ FILMS.bolts = [
     const up = ease(seg(t, .05, .45)), vib = t > .7;
     const n2 = 156 + (1 - up) * 40;
     let o = `<g transform="translate(${shake(t, vib)} 0)">` + shaft(60, 210) + plates() + hexSide(180, 62, 72, 24, 0) + hexSide(180, 134, 66, 22, 0) + hexSide(180, n2, 66, 22, (1 - up) * 12, '#7c8a9c') + '</g>';
-    if (t > .48){ const a = seg(t, .48, .6); o += `<g opacity="${a}">` + arrowV(232, 152, 132, AC) + arrowV(232, 160, 182, AC) + `</g>` + label(250, 162, T('بيزنقوا في بعض', 'They lock each other'), AC, 'start'); }
+    if (t > .48){ const a = seg(t, .48, .6); o += `<g opacity="${a}">` + arrowV(232, 152, 132, AC) + arrowV(232, 160, 182, AC) + `</g>` + label(250, 162, T('تنحشران معًا', 'They lock each other'), AC, 'start'); }
     o += waves(t, vib);
     if (t > .85) o += mark(true, 70, 170);
     return o;
@@ -665,7 +665,7 @@ FILMS.bolts = [
     const ny = 134 + (1 - up) * 46;
     let o = shaft(60, 200, wet > 0 ? [150, 196, BL, (.35 + .4 * wet).toFixed(2)] : null) + plates() + hexSide(180, 62, 72, 24, 0) + hexSide(180, ny, 66, 22, (1 - up) * 14);
     if (drop < 1) o += `<path transform="translate(${232 - drop * 34} ${140 + drop * 18})" d="M0 -14 c-6 9 -9 13 -9 17 a9 9 0 0 0 18 0 c0 -4 -3 -8 -9 -17z" fill="${BL}" stroke="${DK}"/>`;
-    if (set > 0) o += `<g opacity="${set}">` + label(240, 160, T('أزرق: يتفك بالمفتاح', 'Blue: undo with a spanner'), BL, 'start') + label(240, 186, T('أحمر: دايم، يتفك بالتسخين', 'Red: permanent, needs heat'), RD, 'start') + `</g>`;
+    if (set > 0) o += `<g opacity="${set}">` + label(240, 160, T('أزرق: يُفك بالمفتاح', 'Blue: undo with a spanner'), BL, 'start') + label(240, 186, T('أحمر: دائم، يُفك بالتسخين', 'Red: permanent, needs heat'), RD, 'start') + `</g>`;
     return o;
   }},
   /* 6 · thread engagement: steel ≥ 1×d, aluminium / cast iron 1.5–2×d */
@@ -688,9 +688,9 @@ MF.film = function(host){
   host.innerHTML = `<div class="mf-stage"><svg viewBox="10 10 420 222" role="img" aria-label="${esc(caps.join(' '))}"></svg>
     <button type="button" class="mf-big" aria-label="${T('شغّل', 'Play')}">▶</button></div>
     <div class="mf-cap"><b class="mf-no"></b><span class="mf-tx" aria-live="polite"></span></div>
-    <div class="mf-bar"><button type="button" class="btn mf-prev" aria-label="${T('اللي قبله', 'Previous')}">${EN ? '⏮' : '⏭'}</button>
+    <div class="mf-bar"><button type="button" class="btn mf-prev" aria-label="${T('السابق', 'Previous')}">${EN ? '⏮' : '⏭'}</button>
       <button type="button" class="btn pri mf-play"></button>
-      <button type="button" class="btn mf-next" aria-label="${T('اللي بعده', 'Next')}">${EN ? '⏭' : '⏮'}</button>
+      <button type="button" class="btn mf-next" aria-label="${T('التالي', 'Next')}">${EN ? '⏭' : '⏮'}</button>
       <span class="mf-dots">${scenes.map((_, i) => `<i data-i="${i}"></i>`).join('')}</span></div>`;
   const q = s => host.querySelector(s), svg = q('svg'), big = q('.mf-big'), playB = q('.mf-play');
   let i = 0, t = 0, playing = false, last = 0, raf = 0;
@@ -701,7 +701,7 @@ MF.film = function(host){
     q('.mf-tx').innerHTML = caps[i] || '';
     host.querySelectorAll('.mf-dots i').forEach((d, k) => d.className = k < i ? 'done' : k === i ? 'on' : '');
     const end = i === scenes.length - 1 && t >= 1;
-    playB.textContent = playing ? T('⏸ وقّف', '⏸ Pause') : end ? T('↻ من الأول', '↻ Replay') : T('▶ شغّل', '▶ Play');
+    playB.textContent = playing ? T('⏸ إيقاف', '⏸ Pause') : end ? T('↻ من البداية', '↻ Replay') : T('▶ شغّل', '▶ Play');
     big.hidden = playing || i > 0 || t > 0;
   }
   function tick(now){

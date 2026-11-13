@@ -37,54 +37,54 @@ const T = IL.T = (ar, en) => EN ? en : ar;
 /* every lesson = one workshop game («sim», mfit-sims.js) + questions («quiz»); lesson 16 adds the final exam.
    Keep this a plain literal: functions/_lib/courses.js and assets/resume.js read the task ids from it. */
 IL.COURSE = [
-  {id:'l1', n:1, file:'lesson-01.html', title:T('الماكينة من جوّه: خط نقل الحركة', 'Inside the machine: the drive train'),
-    sub:T('الموتور والكوبلنج والجيربوكس والسير والجنزير والرولمان: كل جزء وشغلته، وإزاي السرعة بتقل والعزم بيزيد', 'Motor, coupling, gearbox, belt, chain and bearings: what each part does, and how speed drops while torque rises'),
+  {id:'l1', n:1, file:'lesson-01.html', title:T('الماكينة من الداخل: خط نقل الحركة', 'Inside the machine: the drive train'),
+    sub:T('المحرك والكوبلنج والجيربوكس والسير والجنزير والرولمان: كل جزء ووظيفته، وكيف تقل السرعة ويزيد العزم', 'Motor, coupling, gearbox, belt, chain and bearings: what each part does, and how speed drops while torque rises'),
     tasks:[['sim',T('اعرف أجزاء السير الناقل', 'Identify the parts of the conveyor drive')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l2', n:2, file:'lesson-02.html', title:T('المسامير والصواميل', 'Bolts and nuts'),
-    sub:T('مقاس المسمار M والخطوة، درجة الصلابة 8.8 و10.9، مقاس المفتاح، الوردة والصامولة المقفولة', 'M size and pitch, grades 8.8 and 10.9, spanner size, washers and locking nuts'),
-    tasks:[['sim',T('اختار المسمار والمفتاح الصح', 'Pick the right bolt and spanner')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+    sub:T('مقاس المسمار M والخطوة، ودرجة الصلابة 8.8 و10.9، ومقاس المفتاح، والوردة والصامولة المقفولة', 'M size and pitch, grades 8.8 and 10.9, spanner size, washers and locking nuts'),
+    tasks:[['sim',T('اختر المسمار والمفتاح الصحيحين', 'Pick the right bolt and spanner')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l3', n:3, file:'lesson-03.html', title:T('عزم الربط وترتيب الربط', 'Tightening torque and sequence'),
-    sub:T('مفتاح العزم، جدول العزم، الربط على مراحل بترتيب النجمة، ومانع الفك', 'The torque wrench, torque tables, star-pattern tightening in stages and thread locker'),
-    tasks:[['sim',T('اربط فلانشة 8 مسامير صح', 'Tighten an 8-bolt flange correctly')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+    sub:T('مفتاح العزم، وجدول العزم، والربط على مراحل بترتيب النجمة، ومانع الفك', 'The torque wrench, torque tables, star-pattern tightening in stages and thread locker'),
+    tasks:[['sim',T('اربط فلانشة 8 مسامير بطريقة صحيحة', 'Tighten an 8-bolt flange correctly')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l4', n:4, file:'lesson-04.html', title:T('الخوابير والجلب والتثبيت على العمود', 'Keys, bushes and fixing parts on a shaft'),
     sub:T('الخابور ومجراه، مقاس الخابور من قطر العمود، جلبة التيبر لوك، مسمار التثبيت والسيركلبس', 'Keys and keyways, key size from shaft diameter, taper-lock bushes, set screws and circlips'),
     tasks:[['sim',T('ركّب البكرة على العمود', 'Mount the pulley on the shaft')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l5', n:5, file:'lesson-05.html', title:T('الكوبلنجات', 'Couplings'),
-    sub:T('الجامد والمرن: الجو (العنكبوت)، الكاوتش، التروس، الديسك، والهيدروليك. تختار إيه لكل ماكينة', 'Rigid and flexible: jaw (spider), tyre, gear, disc and fluid couplings, and which one fits each machine'),
-    tasks:[['sim',T('اختار الكوبلنج المناسب', 'Choose the right coupling')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+    sub:T('الصلب والمرن: الجو (العنكبوت)، والمطاطي، والتروس، والديسك، والهيدروليك. ماذا تختار لكل ماكينة', 'Rigid and flexible: jaw (spider), tyre, gear, disc and fluid couplings, and which one fits each machine'),
+    tasks:[['sim',T('اختر الكوبلنج المناسب', 'Choose the right coupling')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l6', n:6, file:'lesson-06.html', title:T('محاذاة الأعمدة (Alignment)', 'Shaft alignment'),
-    sub:T('الانحراف الموازي والزاوي، المسطرة والساعة والليزر، الشيمز، والرجل الطايرة', 'Parallel and angular misalignment, straightedge, dial and laser, shims and soft foot'),
-    tasks:[['sim',T('شيّم الموتور لحد ما يتظبط', 'Shim the motor into alignment')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
-  {id:'l7', n:7, file:'lesson-07.html', title:T('قراية الميكرومتر', 'Reading a micrometer'),
-    sub:T('الجلبة (التدريج الطولي) والطنبورة (التدريج الدائري)، نص الملّي، القراية خطوة بخطوة، والتصفير', 'The sleeve (linear scale) and thimble (circular scale), the half millimetre, reading step by step, and zeroing'),
-    tasks:[['sim',T('اقرا الميكرومتر وظبّطه', 'Read and set the micrometer')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
-  {id:'l8', n:8, file:'lesson-08.html', title:T('الرولمان بلي: الأنواع والأرقام', 'Bearings: types and numbers'),
-    sub:T('البلي والرولر والمخروطي والكراسي، قراية رقم الرولمان 6205-2RS، والقطر الداخلي من الرقم', 'Ball, roller, taper and housed bearings, reading 6205-2RS, and the bore from the number'),
+    sub:T('الانحراف الموازي والزاوي، والمسطرة والساعة والليزر، والشيمز، والرجل الطائرة', 'Parallel and angular misalignment, straightedge, dial and laser, shims and soft foot'),
+    tasks:[['sim',T('اضبط المحرك بالشيمز حتى يستقيم', 'Shim the motor into alignment')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+  {id:'l7', n:7, file:'lesson-07.html', title:T('قراءة الميكرومتر', 'Reading a micrometer'),
+    sub:T('الجلبة (التدريج الطولي) والطنبورة (التدريج الدائري)، ونصف الملّي، والقراءة خطوة بخطوة، والتصفير', 'The sleeve (linear scale) and thimble (circular scale), the half millimetre, reading step by step, and zeroing'),
+    tasks:[['sim',T('اقرأ الميكرومتر واضبطه', 'Read and set the micrometer')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+  {id:'l8', n:8, file:'lesson-08.html', title:T('الرولمان: الأنواع والأرقام', 'Bearings: types and numbers'),
+    sub:T('البلي والرولر والمخروطي والكراسي، وقراءة رقم الرولمان 6205-2RS، والقطر الداخلي من الرقم', 'Ball, roller, taper and housed bearings, reading 6205-2RS, and the bore from the number'),
     tasks:[['sim',T('فك شفرة رقم الرولمان', 'Decode the bearing number')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l9', n:9, file:'lesson-09.html', title:T('فك وتركيب الرولمان', 'Removing and fitting bearings'),
-    sub:T('البولر، السخان لحد 110 °C، تضغط على الحلقة الصح بس، والأخطاء اللي بتموّت الرولمان بدري', 'Pullers, induction heating to 110 °C, pressing only on the right ring, and the mistakes that kill bearings early'),
-    tasks:[['sim',T('ركّب الرولمان بالخطوات الصح', 'Fit the bearing in the right steps')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+    sub:T('البولر، والسخان حتى 110 °C، والضغط على الحلقة الصحيحة فقط، والأخطاء التي تُتلف الرولمان مبكرًا', 'Pullers, induction heating to 110 °C, pressing only on the right ring, and the mistakes that kill bearings early'),
+    tasks:[['sim',T('ركّب الرولمان بالخطوات الصحيحة', 'Fit the bearing in the right steps')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l10', n:10, file:'lesson-10.html', title:T('الأورنج والسيل: منع التسريب', 'O-rings and seals: stopping leaks'),
-    sub:T('مقاس الأورنج، الخامات NBR وفايتون وEPDM، السيل (مانع التسريب) واتجاه شفّته، والتركيب من غير ما يتجرح', 'O-ring size, NBR, Viton and EPDM materials, the oil seal and which way its lip faces, and fitting without damage'),
-    tasks:[['sim',T('اختار الخامة وركّب السيل صح', 'Choose the material and fit the seal right')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+    sub:T('مقاس الأورنج، والخامات NBR وفايتون وEPDM، والسيل (مانع التسريب) واتجاه شفته، والتركيب دون أن يُجرح', 'O-ring size, NBR, Viton and EPDM materials, the oil seal and which way its lip faces, and fitting without damage'),
+    tasks:[['sim',T('اختر الخامة وركّب السيل بطريقة صحيحة', 'Choose the material and fit the seal right')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l11', n:11, file:'lesson-11.html', title:T('التروس وأنواعها ونسبة التخفيض', 'Gears, gear types and ratio'),
     sub:T('العدل والحلزوني والمخروطي والدودة والكوكبي، عدد الأسنان والنسبة، والموديول', 'Spur, helical, bevel, worm and planetary gears, tooth count and ratio, and the module'),
-    tasks:[['sim',T('اختار التروس للسرعة المطلوبة', 'Choose the gears for the target speed')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+    tasks:[['sim',T('اختر التروس للسرعة المطلوبة', 'Choose the gears for the target speed')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l12', n:12, file:'lesson-12.html', title:T('الجيربوكس: الاختيار والزيت', 'The gearbox: choosing it and its oil'),
     sub:T('لوحة البيانات، معامل الخدمة، مستوى الزيت والبريذر، تغيير الزيت، وعلامات تآكل التروس', 'The nameplate, service factor, oil level and breather, oil changes, and signs of gear wear'),
-    tasks:[['sim',T('اختار الجيربوكس وظبّط زيته', 'Pick the gearbox and set its oil')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+    tasks:[['sim',T('اختر الجيربوكس واضبط زيته', 'Pick the gearbox and set its oil')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l13', n:13, file:'lesson-13.html', title:T('السيور والبكر', 'Belts and pulleys'),
     sub:T('سيور V ومقاساتها، النسبة من أقطار البكر، شد السير بالترخيم، ومحاذاة البكر', 'V-belt sections, ratio from pulley diameters, tensioning by deflection, and pulley alignment'),
-    tasks:[['sim',T('اشُد السير صح', 'Tension the belt correctly')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+    tasks:[['sim',T('اشدد السير بطريقة صحيحة', 'Tension the belt correctly')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l14', n:14, file:'lesson-14.html', title:T('الجنازير والسبروكت', 'Chains and sprockets'),
-    sub:T('خطوة الجنزير، الوصلة والنص وصلة، الرخاوة 2%، الاستطالة 3% = غيّر، والتزييت', 'Chain pitch, connecting and offset links, 2% slack, 3% stretch means replace, and lubrication'),
-    tasks:[['sim',T('قيس الجنزير وقرّر', 'Measure the chain and decide')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+    sub:T('خطوة الجنزير، والوصلة ونصف الوصلة، والرخاوة 2%، والاستطالة 3% = غيّره، والتزييت', 'Chain pitch, connecting and offset links, 2% slack, 3% stretch means replace, and lubrication'),
+    tasks:[['sim',T('قِس الجنزير وقرّر', 'Measure the chain and decide')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l15', n:15, file:'lesson-15.html', title:T('التشحيم والتزييت', 'Greasing and oiling'),
-    sub:T('الشحم والزيت، درجة الشحم NLGI، لزوجة الزيت ISO VG، كمية الشحم ومواعيده، وخطر الشحم الزيادة', 'Grease vs oil, NLGI grade, ISO VG viscosity, how much grease and how often, and the danger of over-greasing'),
-    tasks:[['sim',T('شحّم الرولمان بالكمية الصح', 'Grease the bearing with the right amount')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
+    sub:T('الشحم والزيت، ودرجة الشحم NLGI، ولزوجة الزيت ISO VG، وكمية الشحم ومواعيده، وخطر الشحم الزائد', 'Grease vs oil, NLGI grade, ISO VG viscosity, how much grease and how often, and the danger of over-greasing'),
+    tasks:[['sim',T('شحّم الرولمان بالكمية الصحيحة', 'Grease the bearing with the right amount')],['quiz',T('أسئلة الدرس', 'Lesson questions')]]},
   {id:'l16', n:16, file:'lesson-16.html', title:T('تشخيص الأعطال + الامتحان النهائي', 'Fault finding + final exam'),
     sub:T('الصوت والحرارة والاهتزاز والتسريب: تعرف العطل من علامته، ثم الامتحان النهائي', 'Noise, heat, vibration and leaks: tell the fault from its sign, then the final exam'),
-    tasks:[['sim',T('شخّص 4 ماكينات عطلانة', 'Diagnose 4 faulty machines')],['quiz',T('أسئلة الدرس', 'Lesson questions')],['final',T('الامتحان النهائي', 'Final exam')]]}
+    tasks:[['sim',T('شخّص 4 ماكينات معطّلة', 'Diagnose 4 faulty machines')],['quiz',T('أسئلة الدرس', 'Lesson questions')],['final',T('الامتحان النهائي', 'Final exam')]]}
 ];
 IL.lessonById = id => IL.COURSE.find(l => l.id === id);
 IL.summary = id => { const l = IL.lessonById(id); const done = l.tasks.filter(t => IL.store.has(id + '/' + t[0])).length; return {done, total:l.tasks.length}; };
@@ -102,7 +102,7 @@ const fmt = (v, d) => { const p = Math.pow(10, d); const r = Math.round(v * p) /
 IL.fmt = fmt;
 function shuffle(a){ a = a.slice(); for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 /* answer options: shuffled, but catch-all choices («الاتنين», «ولا واحد», "Both", "None"…) always stay last */
-const QZ_PIN = /^(الاتنين|الاثنين|كلهم|ولا واحد|ولا حاجة|مفيش فرق|مش فارقة|زي بعض|كلهم زي بعض|both|neither|none|all of them|all the same|no difference|it makes no difference)$/i;
+const QZ_PIN = /^(لا فرق|الاثنان|كلاهما|كلها متساوية|لا شيء|ولا أحد منهما|جميعها|الاتنين|الاثنين|كلهم|ولا واحد|ولا حاجة|مفيش فرق|مش فارقة|زي بعض|كلهم زي بعض|both|neither|none|all of them|all the same|no difference|it makes no difference)$/i;
 function qzOrder(o, keep){ const idx = o.map((_, i) => i); if (keep) return idx; const pin = idx.filter(i => QZ_PIN.test(String(o[i]).replace(/<[^>]*>/g, '').replace(/[⁦-⁩⁠.!]/g, '').trim())); return shuffle(idx.filter(i => !pin.includes(i))).concat(pin); }
 /* Latin / number runs inside an RTL option ("+24V", "0.05 A", "DC−", "حوالي +26 °C") would flip: isolate them as LTR */
 const QZ_LTR = /[+\-−±]?[0-9A-Za-zΩµ°][0-9A-Za-zΩµ°%.,:/·×_\-–−+ ]*[0-9A-Za-zΩµ°%+\-−]|[+\-−±]?[0-9A-Za-zΩµ°]/g;
@@ -160,7 +160,7 @@ IL.hubTheme = () => { const ch = $('header.top .chips'); if (ch) ch.appendChild(
 
 /* ---------------- select, then confirm ----------------
    tapping an option only selects it (.sel); right/wrong shows after the learner presses the check / confirm button */
-const QZ_T = {check:T('صحّح إجاباتي', 'Check my answers'), need:T('جاوب على كل الأسئلة الأول', 'Answer every question first'), cnt:(n, t) => T(`جاوبت ${n} من ${t}`, `Answered ${n} of ${t}`), ok:T('تأكيد', 'Confirm')};
+const QZ_T = {check:T('صحّح إجاباتي', 'Check my answers'), need:T('أجب عن جميع الأسئلة أولًا', 'Answer every question first'), cnt:(n, t) => T(`أجبت عن ${n} من ${t}`, `Answered ${n} of ${t}`), ok:T('تأكيد', 'Confirm')};
 const QZ_CF = () => `<div class="dr-cf"><button type="button" class="btn pri dr-ok" disabled>${QZ_T.ok}</button></div>`;
 function qzSel(box, o){ $$('.qz-o', box).forEach(x => { const on = x === o; x.classList.toggle('sel', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); }); }
 function qzUnsel(box){ $$('.qz-o', box).forEach(x => { x.classList.remove('sel'); x.removeAttribute('aria-pressed'); }); }
@@ -215,7 +215,7 @@ IL.quiz = function(host, qs, opt){
       qzUnsel(box);
       $$('.qz-o', box).forEach(x => { x.disabled = true; const j = +x.dataset.i; if (j === it.q.a) x.classList.add('ok'); else if (j === i) x.classList.add('no'); });
       if (ok) box.classList.add('ok');
-      const f = $('.qz-f', box); f.className = 'qz-f ' + (ok ? 'ok' : 'no'); f.innerHTML = (ok ? T('صح. ', 'Correct. ') : T('مش دي. ', 'Not this one. ')) + (it.q.why || '');
+      const f = $('.qz-f', box); f.className = 'qz-f ' + (ok ? 'ok' : 'no'); f.innerHTML = (ok ? T('صحيح. ', 'Correct. ') : T('ليس هذا. ', 'Not this one. ')) + (it.q.why || '');
     });
     $('.qz-chk', host).hidden = true;
     finish();
@@ -223,7 +223,7 @@ IL.quiz = function(host, qs, opt){
   function finish(){
     const n = ans.filter(Boolean).length, tot = ans.length, ok = n / tot >= pass - 1e-9;
     const sum = $('.qz-sum', host); sum.hidden = false; sum.className = 'qz-sum ' + (ok ? 'ok' : 'no');
-    sum.innerHTML = `<b>${T('نتيجتك', 'Your score')}: ${n} ${T('من', 'of')} ${tot}</b><span>${ok ? T('ممتاز، عدّيت ✓', 'Great, you passed ✓') : T(`محتاج ${Math.ceil(pass * tot - 1e-9)} صح على الأقل. راجع وجرّب تاني.`, `You need at least ${Math.ceil(pass * tot - 1e-9)} right. Review and try again.`)}</span><button type="button" class="btn" data-qz="again">${ok ? T('حل تاني', 'Solve again') : T('جرّب تاني', 'Try again')}</button>`;
+    sum.innerHTML = `<b>${T('نتيجتك', 'Your score')}: ${n} ${T('من', 'of')} ${tot}</b><span>${ok ? T('ممتاز، نجحت ✓', 'Great, you passed ✓') : T(`تحتاج ${Math.ceil(pass * tot - 1e-9)} إجابات صحيحة على الأقل. راجع وجرّب مرة أخرى.`, `You need at least ${Math.ceil(pass * tot - 1e-9)} right. Review and try again.`)}</span><button type="button" class="btn" data-qz="again">${ok ? T('حل آخر', 'Solve again') : T('جرّب مرة أخرى', 'Try again')}</button>`;
     if (ok && opt.lesson) IL.mark(opt.lesson, opt.task || 'quiz');
     if (opt.onDone) opt.onDone(n, tot, ok);
   }
