@@ -64,6 +64,7 @@ const UNITS=[
  {n:1,ar:'الوحدة 1: الأجهزة',en:'Unit 1: The devices'},
  {n:2,ar:'الوحدة 2: الدوائر الأساسية',en:'Unit 2: Basic circuits'},
  {n:3,ar:'الوحدة 3: التايمر ودوائره',en:'Unit 3: The timer and its circuits'},
+ {n:4,ar:'الوحدة 4: الليمت سويتش والعوامة',en:'Unit 4: Limit switches and floats'},
 ];
 
 /* ================= circuit building helpers ================= */
@@ -805,6 +806,116 @@ CIRCUITS.push(
   ]
 }
 );
+/* ================= Unit 4: limit switches and floats ================= */
+const lsno=(ls,id,a,b)=>E(id,'lsNO',ls,{ls,t:[a||'13',b||'14']});
+const lsnc=(ls,id,a,b)=>E(id,'lsNC',ls,{ls,t:[a||'21',b||'22']});
+const flno=(fl,id,a,b)=>E(id,'flNO',fl,{fl,t:[a||'13',b||'14']});
+const flnc=(fl,id,a,b)=>E(id,'flNC',fl,{fl,t:[a||'21',b||'22']});
+const selh=id=>E(id||'S5h','selH','S5',{t:['13','14']});
+const sela=id=>E(id||'S5a','selA','S5',{t:['23','24']});
+const PR={x:0.5,lt:0.35,lw:0.8,use:0.02,feed:0.02,dry:false,over:false};
+
+CIRCUITS.push(
+/* ---------- 4.1 auto reverse with limit switches ---------- */
+{ key:'auto', unit:4, kind:'circuit', tpl:'rev', machine:'carriage',
+  name:{ar:'ذهاب وعودة أوتوماتيك بليمت سويتش',en:'Automatic back-and-forth with limit switches'},
+  buttons:[{btn:'S1',color:'green',face:'→',l:{ar:'يمين',en:'Right'}},{btn:'S2',color:'green',face:'←',l:{ar:'شمال',en:'Left'}},{btn:'S0',color:'red',face:'O',l:{ar:'إيقاف',en:'Stop'}}],
+  lamps:[{id:'H1',color:'green',l:{ar:'رايح يمين',en:'Moving right'}},{id:'H4',color:'blue',l:{ar:'راجع شمال',en:'Moving left'}},LP.H3a],
+  desc:{S7c:{ar:'ليمت سويتش آخر اليمين: المقفول يوقف الذهاب',en:'Right end limit: NC stops travel right'},S7o:{ar:'ليمت سويتش آخر اليمين: المفتوح يبدأ الرجوع',en:'Right end limit: NO starts travel left'},S6c:{ar:'ليمت سويتش آخر الشمال: المقفول يوقف الرجوع',en:'Left end limit: NC stops travel left'},S6o:{ar:'ليمت سويتش آخر الشمال: المفتوح يبدأ الذهاب',en:'Left end limit: NO starts travel right'}},
+  tree:S_(fuse0(), SP( S_(pbnc('S0'), olc('F1'), SP(
+      S_(P_(pbno('S1'), lsno('S6','S6o'), no('K1','13','14','K1h')), lsnc('S7','S7c'), nc('K2','21','22','K2i'), coil('K1')),
+      S_(P_(pbno('S2'), lsno('S7','S7o'), no('K2','13','14','K2h')), lsnc('S6','S6c'), nc('K1','21','22','K1i'), coil('K2')) )),
+    runL('K1','H1','green'), runL('K2','H4','blue'), tripL('F1') )),
+  faults:[{id:'S7c',kind:'stuck',l:{ar:'ليمت سويتش S7 اتكسر ومش بيفتح',en:'Limit switch S7 broken, never opens'}},{id:'S6o',kind:'open',l:{ar:'كونتاكت S6 المفتوح تالف',en:'S6 NO contact worn'}},fHold('K2'),fCoil('K2'),{id:'K1i',kind:'open',l:{ar:'كونتاكت الإنترلوك K1 21-22 تالف',en:'Interlock K1 21-22 worn'}},fF0,PF.phL3],
+  trace:['F0','S0','F1c','S1','S6o','K1h','S7c','K2i','K1c','S2','S7o','K2h','S6c','K1i','K2c'],
+  reset(){ S.ls={S6:false,S7:false}; PR.x=0.5; },
+  process(dt){ const m=S.mot.M1, v=m.speed/1450*0.1; PR.x+=v*dt;
+    if(PR.x>1.04){ PR.x=1.04; if(m.speed>=0) m.endJam=true; } if(PR.x<-0.04){ PR.x=-0.04; if(m.speed<=0) m.endJam=true; }
+    const d=PW&&PW.motors.M1.dir; if(m.endJam&&((PR.x>=1.04&&d<0)||(PR.x<=-0.04&&d>0)||PW.motors.M1.n<2)) m.endJam=false;
+    S.ls.S7=PR.x>=0.985; S.ls.S6=PR.x<=0.015; },
+  tile:()=>({k:{ar:'مكان العربة',en:'Carriage position'},v:Math.round(Math.max(0,Math.min(1,PR.x))*100)+' %'}),
+  procUI(pc){ pc.innerHTML=`<h2>${LANG==='ar'?'العربة':'The carriage'}</h2><div class="trk"><i id="cgT"></i></div><p class="note" id="cgN"></p>`; },
+  procRefresh(){ const t=$('#cgT'); if(t) t.style.left=(Math.max(0,Math.min(1,PR.x))*88)+'%'; const n=$('#cgN'); if(n) n.textContent=(S.ls.S6?'S6 ✓  ':'')+(S.ls.S7?'S7 ✓  ':'')+(S.mot.M1.endJam?(LANG==='ar'?'العربة خبطت في آخر السكة!':'Carriage hit the end stop!'):''); },
+  steps:[
+    {l:{ar:'S1 يشغّل K1 والعربة تمشي يمين.',en:'S1 starts K1 and the carriage moves right.'},on:s=>s.k.K1},
+    {l:{ar:'العربة توصل S7: المقفول يفصل K1، والمفتوح يشغّل K2 فترجع شمال لوحدها.',en:'At S7 the NC drops K1 and the NO starts K2, so it returns left by itself.'},on:s=>s.k.K2},
+    {l:{ar:'عند S6 نفس الحكاية بالعكس، والعربة تفضل رايحة جاية لحد ما تضغط S0.',en:'At S6 the same in reverse, and the carriage keeps cycling until you press S0.'},on:s=>s.btn.S0===1}
+  ],
+  challenges:[
+    {l:{ar:'شغّل العربة وسيبها تعمل لفة كاملة رايح جاي لوحدها.',en:'Start the carriage and let it do a full cycle by itself.'},f:'cycle'},
+    {l:{ar:'جرّب عطل S7 المكسور: العربة تخبط في الآخر والأوفرلود يفصل.',en:'Try the broken S7 fault: the carriage hits the end and the overload trips.'},f:'endTrip'},
+    {l:{ar:'في وضع تتبع العطل، اكتشف عطلًا واحدًا.',en:'In fault-finding mode, find one fault.'},f:'solved'}
+  ],
+  hook:(dt,m)=>{ if(S.k.K2&&m.r) m.l=1; if(S.k.K1&&!m.r) m.r=1; if(m.l&&S.k.K1&&S.ls.S6) FLAGS.add('cycle'); if(S.mot.M1.endJam) m.j=1; if(m.j&&S.ol.F1.trip) FLAGS.add('endTrip'); },
+  explain:{ar:[
+    'الليمت سويتش مفتاح بيتداس عليه بحاجة ماشية، زي عربة أو باب. هنا عندنا اتنين: S6 في آخر الشمال و S7 في آخر اليمين.',
+    'كل ليمت سويتش فيه كونتاكتين: مقفول بيوقف الحركة اللي رايحة ناحيته، ومفتوح بيبدأ الحركة العكسية. فالعربة ترجع لوحدها من غير ما حد يلمس زرار.',
+    'الإنترلوك بين K1 و K2 لسه موجود، لأن لحظة التحويل لازم K1 يفصل الأول قبل K2 ما يقفل.',
+    'لو الليمت سويتش اتكسر، العربة تكمّل وتخبط في آخر السكة والموتور يتزنق. عشان كده في الماكينات الحقيقية بيحطوا ليمت سويتش تاني بعده للأمان (Over-travel).'
+  ],en:[
+    'A limit switch is pressed by something moving, like a carriage or a door. Here there are two: S6 at the left end and S7 at the right end.',
+    'Each has two contacts: the NC stops the travel towards it and the NO starts the opposite travel. So the carriage returns by itself with nobody touching a button.',
+    'The K1/K2 interlock is still there, because at changeover K1 must drop before K2 closes.',
+    'If a limit switch breaks, the carriage carries on into the end stop and the motor stalls. That is why real machines add a second over-travel limit switch beyond it.'
+  ]},
+  quiz:[
+    {q:{ar:'العربة وصلت S7 ووقفت لكن ما رجعتش. الأقرب؟',en:'The carriage reached S7 and stopped but did not return. Most likely?'},o:[{ar:'كونتاكت S7 المفتوح أو ملف K2',en:'S7 NO contact or the K2 coil'},{ar:'كونتاكت S7 المقفول',en:'S7 NC contact'},{ar:'زر S0',en:'Button S0'}],a:0,w:{ar:'المقفول اشتغل (وقفت)، فالمشكلة في بدء الرجوع.',en:'The NC worked (it stopped), so the fault is in starting the return.'}},
+    {q:{ar:'ليه الليمت اللي بيوقف الحركة بيكون كونتاكت مقفول؟',en:'Why is the stopping limit an NC contact?'},o:[{ar:'لو السلك اتقطع الحركة تقف، فده أأمن',en:'A broken wire stops the travel, which is safer'},{ar:'أرخص',en:'It is cheaper'}],a:0,w:{ar:'المقفول يفشل ناحية الأمان.',en:'An NC fails safe.'}}
+  ]
+},
+/* ---------- 4.2 float pump hand/auto with dry-run protection ---------- */
+{ key:'pump', unit:4, kind:'circuit', tpl:'dol', machine:'pump', selector:true, sel0:'0',
+  name:{ar:'طلمبة بالعوامة يدوي/أوتو وحماية من الناشف',en:'Float pump hand/auto with dry-run protection'},
+  buttons:[],
+  lamps:[{id:'H1',color:'green',l:{ar:'الطلمبة شغالة',en:'Pump running'}},{id:'H6',color:'blue',l:{ar:'الخزان مليان',en:'Tank full'}},{id:'H5',color:'red',l:{ar:'مفيش مية في البير',en:'Well dry'}},LP.H3a],
+  desc:{B1c:{ar:'عوامة الخزان: مقفولة لما الخزان محتاج مية',en:'Tank float: closed while the tank needs water'},B2o:{ar:'عوامة البير: مقفولة طول ما فيه مية (حماية من الناشف)',en:'Well float: closed while there is water (dry-run protection)'},S5h:{ar:'مفتاح الاختيار على يدوي',en:'Selector on Hand'},S5a:{ar:'مفتاح الاختيار على أوتو',en:'Selector on Auto'}},
+  tree:S_(fuse0(), SP( S_(olc('F1'), flno('B2','B2o'), P_( S_(selh()), S_(sela(), flnc('B1','B1c')) ), coil('K1')),
+    runL('K1','H1','green'), S_(flno('B1','B1o','13','14'),lamp('H6','blue')), S_(flnc('B2','B2c','21','22'),lamp('H5','red')), tripL('F1') )),
+  faults:[{id:'B2o',kind:'stuck',l:{ar:'عوامة البير متزنقة فوق (الحماية مش شغالة)',en:'Well float stuck up (protection lost)'}},{id:'B1c',kind:'stuck',l:{ar:'عوامة الخزان متزنقة تحت',en:'Tank float stuck down'}},{id:'S5a',kind:'open',l:{ar:'كونتاكت الأوتو في مفتاح الاختيار تالف',en:'Selector Auto contact worn'}},fCoil('K1'),fF0,PF.phL3],
+  trace:['F0','F1c','B2o','S5h','S5a','B1c','K1c'],
+  reset(){ S.fl={B1:false,B2:true}; PR.lt=0.35; PR.lw=0.8; PR.dry=false; PR.over=false; },
+  process(dt){ const m=S.mot.M1, run=m.speed>300&&PR.lw>0.02;
+    const q=run?0.05*m.speed/1450:0;
+    PR.lt=Math.min(1,Math.max(0,PR.lt+(q-PR.use)*dt)); PR.lw=Math.min(1,Math.max(0,PR.lw+(PR.feed-q*0.8)*dt));
+    if(PR.lt>=0.999&&q>0) PR.over=true; PR.dry=m.speed>300&&PR.lw<=0.02;
+    if(PR.lt>=0.9) S.fl.B1=true; if(PR.lt<=0.3) S.fl.B1=false;
+    if(PR.lw<=0.12) S.fl.B2=false; if(PR.lw>=0.3) S.fl.B2=true; },
+  tile:()=>({k:{ar:'الخزان / البير',en:'Tank / well'},v:Math.round(PR.lt*100)+' / '+Math.round(PR.lw*100)+' %'}),
+  procUI(pc){ pc.innerHTML=`<h2>${LANG==='ar'?'المية':'The water'}</h2>`;
+    mkSlider(pc,'prU',{ar:'استهلاك البيت من الخزان',en:'House use from the tank'},0,0.05,0.005,PR.use,v=>Math.round(v*1000)/10+' %/s',v=>{PR.use=v;});
+    mkSlider(pc,'prF',{ar:'المية الداخلة للبير',en:'Water flowing into the well'},0,0.05,0.005,PR.feed,v=>Math.round(v*1000)/10+' %/s',v=>{PR.feed=v;});
+    const n=document.createElement('p'); n.className='note'; n.id='prN'; pc.appendChild(n); },
+  procRefresh(){ const n=$('#prN'); if(n){ n.textContent=PR.dry?(LANG==='ar'?'الطلمبة شغالة على الناشف!':'The pump is running dry!'):PR.over?(LANG==='ar'?'الخزان فاض!':'The tank overflowed!'):''; n.style.color=(PR.dry||PR.over)?'var(--alarm)':''; } },
+  steps:[
+    {l:{ar:'حط مفتاح الاختيار S5 على أوتو.',en:'Put selector S5 on Auto.'},on:s=>s.sel==='A'},
+    {l:{ar:'الخزان ناقص، فعوامة B1 مقفولة والطلمبة تشتغل.',en:'The tank is low, so float B1 is closed and the pump runs.'},on:s=>s.k.K1&&s.sel==='A'},
+    {l:{ar:'الخزان يتملي، B1 تفتح والطلمبة تقف، وترجع تشتغل لما المية تنزل.',en:'The tank fills, B1 opens and the pump stops, then restarts when the level falls.'},on:s=>s.sel==='A'&&s.fl.B1},
+    {l:{ar:'لو البير نشف، عوامة B2 تفصل الطلمبة في اليدوي والأوتو.',en:'If the well runs dry, float B2 stops the pump in Hand and Auto.'},on:s=>!s.fl.B2}
+  ],
+  challenges:[
+    {l:{ar:'شغّل على أوتو واستنى الطلمبة تقف لوحدها لما الخزان يتملي.',en:'Run on Auto and wait for the pump to stop by itself when the tank fills.'},f:'autoStop'},
+    {l:{ar:'قفّل المية الداخلة للبير، وشوف حماية الناشف بتفصل الطلمبة.',en:'Shut off the well inflow and watch the dry-run protection stop the pump.'},f:'dryStop'},
+    {l:{ar:'جرّب عطل عوامة البير المتزنقة: الطلمبة تشتغل على الناشف.',en:'Try the stuck well float: the pump runs dry.'},f:'dryRun'},
+    {l:{ar:'في وضع تتبع العطل، اكتشف عطلًا واحدًا.',en:'In fault-finding mode, find one fault.'},f:'solved'}
+  ],
+  hook:(dt,m)=>{ if(S.sel==='A'&&S.k.K1) m.a=1; if(m.a&&S.sel==='A'&&!S.k.K1&&S.fl.B1) FLAGS.add('autoStop'); if(S.k.K1) m.r=1; if(m.r&&!S.fl.B2&&!S.k.K1) FLAGS.add('dryStop'); if(PR.dry) FLAGS.add('dryRun'); },
+  explain:{ar:[
+    'العوامة مفتاح بيتحرك مع مستوى المية. عوامة الكابل بتتقلب لما المية تعلى، فالكونتاكت يتغير. وبين القلبة فوق والقلبة تحت فرق، وده بيمنع الطلمبة تفصل وتشتغل كل ثانية.',
+    'B1 في الخزان اللي فوق: كونتاكتها المقفول بيشغل الطلمبة طول ما الخزان ناقص، ويفتح لما يتملي.',
+    'B2 في البير: كونتاكتها المفتوح مقفول طول ما فيه مية. لو المية نزلت تحت، يفتح ويفصل الطلمبة حتى في اليدوي. الطلمبة لو اشتغلت على الناشف السيل بتاعها يتحرق.',
+    'مفتاح الاختيار S5: يدوي يشغل الطلمبة على طول (والحماية من الناشف شغالة)، أوتو يخلي العوامة هي اللي تتحكم، وصفر يوقف.'
+  ],en:[
+    'A float switch follows the water level. A cable float tilts as the water rises and its contact changes. There is a gap between the up and down tilt points, which stops the pump from cycling every second.',
+    'B1 is in the upper tank: its NC runs the pump while the tank is low and opens when it is full.',
+    'B2 is in the well: its NO is closed while there is water. If the level drops, it opens and stops the pump even in Hand. A pump that runs dry burns its seal.',
+    'Selector S5: Hand runs the pump continuously (dry-run protection still active), Auto lets the float control it, and 0 stops it.'
+  ]},
+  quiz:[
+    {q:{ar:'الطلمبة مش بتشتغل في الأوتو ولا اليدوي، والخزان فاضي. أول حاجة تبص عليها؟',en:'The pump will not run in Auto or Hand, and the tank is empty. First check?'},o:[{ar:'عوامة البير B2 ومستوى المية في البير',en:'Well float B2 and the well level'},{ar:'عوامة الخزان B1',en:'Tank float B1'},{ar:'كونتاكت الأوتو',en:'The Auto contact'}],a:0,w:{ar:'B2 متوصلة قبل اليدوي والأوتو الاتنين.',en:'B2 sits ahead of both Hand and Auto.'}},
+    {q:{ar:'ليه عوامة الخزان بتشتغل بكونتاكت مقفول (NC)؟',en:'Why does the tank float use an NC contact?'},o:[{ar:'عشان الطلمبة تشتغل لما المية ناقصة وتقف لما تتملي',en:'So the pump runs while low and stops when full'},{ar:'عشان تحمي من الناشف',en:'For dry-run protection'}],a:0,w:{ar:'المقفول بيفتح لما العوامة تتقلب فوق.',en:'The NC opens when the float tilts up.'}}
+  ]
+}
+);
 /* ================= drawing: control ================= */
 const CW=100, RH=66, BUS=20;
 function measure(n){
@@ -1111,7 +1222,7 @@ function drawDoor(g,P){
     P(()=>{ const on=!!S.lamps[l.id]; lens.setAttribute('fill',on?col:dim); lens.style.filter=on?`drop-shadow(0 0 8px ${col})`:''; });
   });
   // buttons
-  const B=C.buttons, perRow=Math.min(4,B.length), rows=Math.ceil(B.length/perRow);
+  const B=C.buttons, perRow=Math.min(4,B.length), rows=B.length?Math.ceil(B.length/perRow):0;
   B.forEach((b,i)=>{ const r=Math.floor(i/perRow), k=i%perRow, n=Math.min(perRow,B.length-r*perRow), bg=W/(n+1);
     const cx=X+bg*(k+1), cy=275+r*95;
     const grp=sv('g',{class:'clk',tabindex:'0',role:'button','aria-label':b.btn},g);
@@ -1149,8 +1260,53 @@ function drawMotorPic(g,x,m,P){
   P(()=>{ const mm=S.mot[m]; rot.setAttribute('transform',`rotate(${mm.state==='hum'?Math.sin(S.time*60)*3:mm.ang*3} ${cx} ${cy})`); body.setAttribute('stroke',['hum','jam'].includes(mm.state)?'#ff5d50':mm.state==='run'||mm.state==='start'?'#5fd08b':'#2c4b66');
     lb.textContent=`${m}  ${Math.round(Math.abs(mm.speed))} rpm ${Math.abs(mm.speed)>5?(mm.speed>0?'↻':'↺'):''}  ${mm.cur.toFixed(1)} A`; });
 }
-function drawCarriage(g,P){}
-function drawPumpPlant(g,P){}
+function lsPic(g,x,y,id,P,flip){
+  sv('rect',{x:x-13,y,width:26,height:38,rx:3,fill:'#c9a227',stroke:'#7a6212'},g); txt(g,x,y+52,id,'pvm','middle');
+  const lv=sv('line',{x1:x,y1:y,x2:x,y2:y-22,stroke:'#cfd5d7','stroke-width':3},g), rl=sv('circle',{cx:x,cy:y-22,r:6,fill:'#2b3134',stroke:'#cfd5d7','stroke-width':2},g);
+  P(()=>{ const on=S.ls[id]; const a=(on?28:0)*(flip?-1:1)*Math.PI/180; const ex=x+Math.sin(a)*22, ey=y-Math.cos(a)*22; lv.setAttribute('x2',ex); lv.setAttribute('y2',ey); rl.setAttribute('cx',ex); rl.setAttribute('cy',ey); rl.setAttribute('stroke',on?'#ffd84d':'#cfd5d7'); });
+}
+function drawCarriage(g,P){
+  const X0=330,X1=950,Y=690;
+  sv('rect',{x:300,y:Y+14,width:680,height:12,fill:'#59666b'},g);
+  sv('line',{x1:258,y1:592,x2:300,y2:592,stroke:'#a9b1b4','stroke-width':6},g); sv('line',{x1:300,y1:592,x2:300,y2:650,stroke:'#a9b1b4','stroke-width':6},g);
+  const scr=sv('line',{x1:300,y1:650,x2:975,y2:650,stroke:'#8d9093','stroke-width':6,'stroke-dasharray':'4 4'},g);
+  sv('rect',{x:290,y:Y-80,width:10,height:104,fill:'#3f474b'},g); sv('rect',{x:975,y:Y-80,width:10,height:104,fill:'#3f474b'},g);
+  lsPic(g,X0-6,Y-38,'S6',P,true); lsPic(g,X1+6,Y-38,'S7',P,false);
+  const cg=sv('g',{},g);
+  sv('rect',{x:-45,y:-58,width:90,height:46,rx:6,fill:'#e9a640',stroke:'#8a5d1a','stroke-width':2},cg);
+  sv('rect',{x:-30,y:-12,width:60,height:6,fill:'#5d4520'},cg);
+  [-28,28].forEach(dx=>sv('circle',{cx:dx,cy:4,r:9,fill:'#2b3134',stroke:'#cfd5d7','stroke-width':2},cg));
+  const ct=txt(cg,0,-30,'','pvw','middle');
+  P(()=>{ const x=Math.max(-0.04,Math.min(1.04,PR.x)); const px=X0+38+x*(X1-X0-76); cg.setAttribute('transform',`translate(${px},${Y})`); scr.setAttribute('stroke-dashoffset',(S.mot.M1.ang*0.4)%8);
+    ct.textContent=S.mot.M1.endJam?'!!':S.mot.M1.speed>20?'→':S.mot.M1.speed<-20?'←':''; });
+}
+function drawPumpPlant(g,P){
+  // well
+  const WX=330,WY=600,WW=150,WH=140;
+  sv('rect',{x:300,y:WY-8,width:200,height:8,fill:'#6b5a3a'},g);
+  sv('rect',{x:WX,y:WY,width:WW,height:WH,fill:'#1d2a30',stroke:'#59666b','stroke-width':3},g);
+  const ww=sv('rect',{x:WX+2,y:WY,width:WW-4,height:0,fill:'#2f7fc1',opacity:.85},g); txt(g,WX+WW/2,WY+WH+16,LANG==='ar'?'البير':'Well','pvm','middle');
+  // tank
+  const TX=760,TY=520,TW=170,TH=130;
+  [TX+20,TX+TW-20].forEach(x=>sv('line',{x1:x,y1:TY+TH,x2:x,y2:745,stroke:'#59666b','stroke-width':5},g));
+  sv('rect',{x:TX,y:TY,width:TW,height:TH,rx:6,fill:'#1d2a30',stroke:'#8d9093','stroke-width':3},g);
+  const tw=sv('rect',{x:TX+3,y:TY,width:TW-6,height:0,fill:'#2f7fc1',opacity:.85},g); txt(g,TX+TW/2,TY-8,LANG==='ar'?'الخزان':'Tank','pvm','middle');
+  // pipes
+  const pipe=sv('path',{d:`M${WX+40} ${WY+WH-12} V560 H600 V505 H${TX+60} V${TY}`,fill:'none',stroke:'#8d9093','stroke-width':7},g);
+  const flow=sv('path',{d:`M${WX+40} ${WY+WH-12} V560 H600 V505 H${TX+60} V${TY}`,fill:'none',stroke:'#7cc4ff','stroke-width':3,'stroke-dasharray':'8 8'},g);
+  sv('circle',{cx:600,cy:540,r:18,fill:'#4f7aa0',stroke:'#2c4b66','stroke-width':2},g); txt(g,600,545,'P','pvw','middle');
+  sv('path',{d:`M${TX+TW-30} ${TY+TH} V${TY+TH+30} H${TX+TW+30}`,fill:'none',stroke:'#8d9093','stroke-width':6},g);
+  const drop=sv('circle',{cx:TX+TW+30,cy:TY+TH+44,r:4,fill:'#7cc4ff'},g);
+  // floats
+  const fl=(x,y0,id)=>{ const c=sv('line',{x1:x,y1:y0,x2:x,y2:y0+30,stroke:'#cfd5d7','stroke-width':1.5},g), b=sv('ellipse',{cx:x,cy:y0+38,rx:6,ry:10,fill:'#f2c200',stroke:'#8a6d00'},g), t=txt(g,x-14,y0+8,id,'pvm','end'); return {c,b}; };
+  const f1=fl(TX+TW-40,TY+20,'B1'), f2=fl(WX+WW-40,WY+30,'B2');
+  P(()=>{ const hw=Math.round(PR.lw*(WH-4)); ww.setAttribute('y',WY+WH-2-hw); ww.setAttribute('height',hw);
+    const ht=Math.round(PR.lt*(TH-6)); tw.setAttribute('y',TY+TH-3-ht); tw.setAttribute('height',ht);
+    const run=S.mot.M1.speed>300&&PR.lw>0.02; flow.style.display=run?'':'none'; flow.setAttribute('stroke-dashoffset',-(S.time*40)%16); pipe.setAttribute('stroke',PR.dry?'#ff5d50':'#8d9093');
+    drop.style.display=PR.use>0&&PR.lt>0.01?'':'none'; drop.setAttribute('cy',TY+TH+38+((S.time*60)%20));
+    const tilt=(o,id,x,y0)=>{ const up=S.fl[id]; const a=up?-60:0; o.b.setAttribute('transform',`rotate(${a} ${x} ${y0+30})`); o.c.setAttribute('stroke',up?'#ffd84d':'#cfd5d7'); };
+    tilt(f1,'B1',TX+TW-40,TY+20); tilt(f2,'B2',WX+WW-40,WY+30); });
+}
 function drawBelts(g,P){}
 
 /* ================= Unit 1: device lessons ================= */
@@ -1765,6 +1921,95 @@ const D5={ key:'tim', unit:3, kind:'device', name:{ar:'التايمر: تأخي�
   ]
 };
 DEVS.push(D5);
+/* ---------- D6 (unit 4): limit switch and float switch ---------- */
+const D6={ key:'sens', unit:4, kind:'device', name:{ar:'الليمت سويتش والعوامة',en:'The limit switch and the float switch'},
+  st:null,
+  build(svg,side,below){
+    const st=this.st={x:0.2,auto:false,dir:1,lvl:0.4,fill:0,ls:false,fl:false,lsWire:false};
+    const g=dvG(svg,1000,470), AR=LANG==='ar';
+    const lamp=(x,y,col,fn)=>{ const c=sv('circle',{cx:x,cy:y,r:11,class:'sym'},g); sv('path',{d:`M${x-8} ${y-8} L${x+8} ${y+8} M${x+8} ${y-8} L${x-8} ${y+8}`,class:'sym'},g); DU.push(()=>{const on=fn(); c.setAttribute('fill',on?col:'none'); c.style.filter=on?`drop-shadow(0 0 6px ${col})`:'';}); };
+    /* limit switch */
+    txt(g,250,28,AR?'الليمت سويتش: العربة تدوس على البكرة':'Limit switch: the carriage presses the roller','dvt','middle');
+    sv('rect',{x:40,y:200,width:400,height:10,fill:'#59666b'},g);
+    const cg=sv('g',{},g); sv('rect',{x:-40,y:-44,width:80,height:40,rx:6,fill:'#e9a640',stroke:'#8a5d1a','stroke-width':2},cg); sv('path',{d:'M40 -30 l18 14 v10 h-18 z',fill:'#8a5d1a'},cg);
+    [-24,24].forEach(dx=>sv('circle',{cx:dx,cy:2,r:8,fill:'#2b3134',stroke:'#cfd5d7','stroke-width':2},cg));
+    const LX=400;
+    sv('rect',{x:LX,y:130,width:34,height:60,rx:4,fill:'#c9a227',stroke:'#7a6212','stroke-width':2},g); txt(g,LX+17,170,'S7','pvw','middle');
+    const lv=sv('line',{x1:LX+17,y1:150,x2:LX-8,y2:150,stroke:'#cfd5d7','stroke-width':4},g), rl=sv('circle',{cx:LX-8,cy:150,r:8,fill:'#2b3134',stroke:'#cfd5d7','stroke-width':2},g);
+    iecContact(g,120,250,'no',()=>st.ls,null,null,['13','14'],()=>true); iecContact(g,220,250,'nc',()=>!st.ls&&!st.lsWire,null,null,['21','22'],()=>true);
+    [120,220].forEach(x=>sv('path',{d:`M${x-7} 282 H${x-18} l-8 -7 v14 z`,class:'sym'},g));
+    txt(g,120,336,'NO','dvm','middle'); txt(g,220,336,'NC','dvm','middle');
+    lamp(120,362,'#3dff8a',()=>st.ls); lamp(220,362,'#f4f8ff',()=>!st.ls&&!st.lsWire);
+    const lt=txt(g,330,300,'','dvs','middle'), lt2=txt(g,330,318,'','dvs','middle');
+    DU.push(()=>{ const px=60+st.x*360; cg.setAttribute('transform',`translate(${px},196)`); const a=st.ls?-35:0, r=a*Math.PI/180; const ex=LX+17-Math.cos(r)*25, ey=150+Math.sin(r)*25;
+      lv.setAttribute('x2',ex); lv.setAttribute('y2',ey); rl.setAttribute('cx',ex); rl.setAttribute('cy',ey); rl.setAttribute('stroke',st.ls?'#ffd84d':'#cfd5d7');
+      lt.textContent=st.ls?(AR?'البكرة متداس عليها':'Roller pressed'):(AR?'البكرة حرة':'Roller free'); lt2.textContent=st.lsWire?(AR?'السلك مقطوع: المقفول بقى مفتوح':'Wire broken: the NC reads open'):''; lt2.style.fill='#ff5d50'; });
+    /* float */
+    txt(g,760,28,AR?'العوامة: بتتقلب مع مستوى المية':'Float switch: tilts with the water level','dvt','middle');
+    const TX=620,TY=60,TW=200,TH=260;
+    sv('rect',{x:TX,y:TY,width:TW,height:TH,rx:6,fill:'#1d2a30',stroke:'#8d9093','stroke-width':3},g);
+    const w=sv('rect',{x:TX+3,y:TY,width:TW-6,height:0,fill:'#2f7fc1',opacity:.85},g);
+    const hy=TY+TH-0.8*TH, ly=TY+TH-0.3*TH;
+    [[hy,AR?'تقلب فوق 80%':'tilts up 80%'],[ly,AR?'ترجع تحت 30%':'drops 30%']].forEach(([y,l])=>{ sv('line',{x1:TX,y1:y,x2:TX+TW,y2:y,stroke:'#ffd84d','stroke-dasharray':'5 5'},g); txt(g,TX+TW+8,y+4,l,'dvs'); });
+    const AX=TX+60, AY=TY+110; sv('circle',{cx:AX,cy:AY,r:3,fill:'#cfd5d7'},g); sv('line',{x1:AX,y1:TY,x2:AX,y2:AY,stroke:'#cfd5d7','stroke-width':2},g);
+    const cab=sv('line',{x1:AX,y1:AY,x2:AX,y2:AY+60,stroke:'#cfd5d7','stroke-width':2},g), fb=sv('ellipse',{cx:AX,cy:AY+72,rx:9,ry:15,fill:'#f2c200',stroke:'#8a6d00','stroke-width':2},g);
+    txt(g,AX-14,TY+20,'B1','pvw','end');
+    iecContact(g,880,90,'no',()=>st.fl,null,null,['13','14'],()=>true); iecContact(g,950,90,'nc',()=>!st.fl,null,null,['21','22'],()=>true);
+    [880,950].forEach(x=>{ sv('path',{d:`M${x-7} 122 H${x-18}`,class:'sym dash'},g); sv('circle',{cx:x-24,cy:122,r:6,class:'sym'},g); });
+    txt(g,880,176,'NO','dvm','middle'); txt(g,950,176,'NC','dvm','middle');
+    lamp(880,204,'#3dff8a',()=>st.fl); lamp(950,204,'#f4f8ff',()=>!st.fl);
+    const ft=txt(g,TX+TW/2,TY+TH+22,'','dvm','middle');
+    DU.push(()=>{ const h=Math.round(st.lvl*(TH-6)); w.setAttribute('y',TY+TH-3-h); w.setAttribute('height',h);
+      const a=st.fl?-100:0; cab.setAttribute('transform',`rotate(${a} ${AX} ${AY})`); fb.setAttribute('transform',`rotate(${a} ${AX} ${AY})`);
+      ft.textContent=(AR?'المستوى ':'Level ')+Math.round(st.lvl*100)+' %'; });
+    /* side */
+    const c1=mkCard(side,{ar:'الليمت سويتش',en:'Limit switch'});
+    this.xs=mkSlider(c1,'d6x',{ar:'مكان العربة',en:'Carriage position'},0,1,0.01,st.x,v=>Math.round(v*100)+' %',v=>{st.x=v;});
+    const b1=mkBtn(c1,{ar:'خلي العربة تمشي لوحدها',en:'Let the carriage move by itself'},()=>{ st.auto=!st.auto; b1.classList.toggle('sel',st.auto); });
+    const b2=mkBtn(c1,{ar:'اقطع سلك الليمت',en:'Break the limit switch wire'},()=>{ st.lsWire=!st.lsWire; b2.classList.toggle('sel',st.lsWire); if(st.lsWire) FLAGS.add('wire'); });
+    const c2=mkCard(side,{ar:'العوامة',en:'Float switch'});
+    this.ls_=mkSlider(c2,'d6l',{ar:'مستوى المية',en:'Water level'},0,1,0.01,st.lvl,v=>Math.round(v*100)+' %',v=>{st.lvl=v;});
+    mkSeg(c2,[[-1,{ar:'تفريغ',en:'Drain'}],[0,{ar:'ثابت',en:'Hold'}],[1,{ar:'ملء',en:'Fill'}]],0,v=>{st.fill=v;});
+    /* below */
+    this.tl=mkTiles(below,[['a',{ar:'الليمت 13-14',en:'Limit 13-14'}],['b',{ar:'الليمت 21-22',en:'Limit 21-22'}],['c',{ar:'العوامة 13-14',en:'Float 13-14'}],['d',{ar:'العوامة 21-22',en:'Float 21-22'}]]);
+    mkInfo(below,[
+      {h:{ar:'الليمت سويتش',en:'The limit switch'},b:{ar:'<p>مفتاح بيتداس عليه بحاجة ماشية: عربة، باب، ذراع. فيه أنواع بالبكرة والذراع، وبالضاغط المباشر.</p><p>جواه كونتاكت مفتوح 13-14 ومقفول 21-22 زي الزرار بالظبط، بس اللي بيدوس عليه الماكينة مش إيدك.</p>',en:'<p>A switch pressed by something moving: a carriage, door or arm. Types include roller lever and direct plunger.</p><p>Inside are an NO 13-14 and an NC 21-22, just like a push button, except the machine presses it instead of your hand.</p>'}},
+      {h:{ar:'ليه الإيقاف بالمقفول؟',en:'Why stop with the NC?'},b:{ar:'<p>لو سلك الليمت اتقطع، المقفول يبان كأنه اتفتح فالحركة تقف. يعني العطل بيخلي الماكينة تقف بدل ما تكمّل وتخبط.</p><p>جرّب زرار "اقطع سلك الليمت" وشوف.</p>',en:'<p>If the limit wire breaks, the NC reads as open and the travel stops. A fault makes the machine stop instead of carrying on into a crash.</p><p>Try the "break the wire" button.</p>'}},
+      {h:{ar:'العوامة',en:'The float switch'},b:{ar:'<p>عوامة الكابل بتتعلق من سلكها وتتقلب لما المية تعلى، فالكونتاكت جواها يتغير.</p><p>بتتقلب فوق عند مستوى وترجع تحت عند مستوى أوطى. الفرق ده بيمنع الطلمبة تفصل وتشتغل كل شوية.</p>',en:'<p>A cable float hangs from its cable and tilts as the water rises, changing its contact.</p><p>It tilts up at one level and drops back at a lower one. That gap stops the pump from cycling constantly.</p>'}},
+      {h:{ar:'ملء ولا تفريغ؟',en:'Fill or drain?'},b:{ar:'<p><b>ملء خزان</b>: الطلمبة تشتغل لما المية ناقصة، فنستخدم المقفول (21-22).</p><p><b>تفريغ بيارة</b>: الطلمبة تشتغل لما المية عالية، فنستخدم المفتوح (13-14).</p>',en:'<p><b>Filling a tank</b>: the pump runs while the level is low, so use the NC (21-22).</p><p><b>Emptying a sump</b>: the pump runs while the level is high, so use the NO (13-14).</p>'}},
+    ]);
+  },
+  tick(dt){ const st=this.st;
+    if(st.auto){ st.x+=st.dir*0.25*dt; if(st.x>=1){st.x=1;st.dir=-1;} if(st.x<=0){st.x=0;st.dir=1;} this.xs.value=st.x; const v=document.getElementById('d6x_v'); if(v) v.textContent=Math.round(st.x*100)+' %'; }
+    if(st.fill){ st.lvl=Math.max(0,Math.min(1,st.lvl+st.fill*0.06*dt)); this.ls_.value=st.lvl; const v=document.getElementById('d6l_v'); if(v) v.textContent=Math.round(st.lvl*100)+' %'; }
+    const was=st.ls; st.ls=st.x>=0.9; if(!was&&st.ls) FLAGS.add('lsHit');
+    const wf=st.fl; if(st.lvl>=0.8) st.fl=true; if(st.lvl<=0.3) st.fl=false; if(!wf&&st.fl) FLAGS.add('flUp'); if(wf&&!st.fl) FLAGS.add('flDown');
+    if(st.fl&&st.lvl<0.75&&st.lvl>0.35) FLAGS.add('hyst');
+  },
+  refresh(){ DU.forEach(f=>f()); const st=this.st,T=this.tl,AR=LANG==='ar'; const s=(c)=>c?(AR?'مقفول':'Closed'):(AR?'مفتوح':'Open');
+    const set=(e,c)=>{e.textContent=s(c); e.style.color=c?'var(--ok)':'var(--muted)';};
+    set(T.a,st.ls); set(T.b,!st.ls&&!st.lsWire); set(T.c,st.fl); set(T.d,!st.fl); },
+  challenges:[
+    {l:{ar:'حرّك العربة لحد ما تدوس على الليمت، ولاحظ الكونتاكتين اتغيروا.',en:'Move the carriage onto the limit switch and see both contacts change.'},f:'lsHit'},
+    {l:{ar:'اقطع سلك الليمت وشوف المقفول بقى زي ما يكون متداس.',en:'Break the limit wire and see the NC act as if pressed.'},f:'wire'},
+    {l:{ar:'املى الخزان لحد ما العوامة تتقلب، وبعدين فرّغه لحد ما ترجع.',en:'Fill the tank until the float tilts, then drain until it drops.'},f:'flUp&flDown'},
+    {l:{ar:'لاحظ إن العوامة بتفضل مقلوبة وإنت بتفرّغ لحد 30% بس.',en:'Notice the float stays up while draining until 30%.'},f:'hyst'},
+  ],
+  explain:{ar:[
+    'الليمت سويتش والعوامة الاتنين مفاتيح عادية فيها كونتاكت مفتوح ومقفول، بس اللي بيحركهم الماكينة نفسها: العربة بتدوس على الليمت، والمية بتقلب العوامة.',
+    'بالحاجات دي الدايرة تقدر تشتغل لوحدها: العربة ترجع لما توصل الآخر، والطلمبة تقف لما الخزان يتملي.',
+    'قاعدة الأمان: الكونتاكت اللي بيوقف حاجة خطر بيكون مقفول، عشان لو السلك اتقطع الحاجة تقف.'
+  ],en:[
+    'The limit switch and the float switch are ordinary switches with an NO and an NC, but the machine moves them: the carriage presses the limit switch and the water tilts the float.',
+    'With them a circuit can run by itself: the carriage returns at the end, and the pump stops when the tank is full.',
+    'Safety rule: a contact that stops something dangerous is an NC, so a broken wire stops it.'
+  ]},
+  quiz:[
+    {q:{ar:'عايز طلمبة تفرّغ بيارة لما المية تعلى. تستخدم أي كونتاكت في العوامة؟',en:'A pump must empty a sump when the water rises. Which float contact?'},o:[{ar:'المفتوح 13-14',en:'NO 13-14'},{ar:'المقفول 21-22',en:'NC 21-22'}],a:0,w:{ar:'المفتوح يقفل لما العوامة تتقلب فوق.',en:'The NO closes when the float tilts up.'}},
+    {q:{ar:'سلك ليمت الإيقاف اتقطع. لو متوصل صح (مقفول)، العربة:',en:'The stop limit wire breaks. Wired correctly (NC), the carriage:'},o:[{ar:'تقف',en:'Stops'},{ar:'تكمّل وتخبط',en:'Carries on and crashes'}],a:0,w:{ar:'المقفول المقطوع زي المفتوح.',en:'A broken NC is the same as open.'}}
+  ]
+};
+DEVS.push(D6);
 
 /* ================= interaction ================= */
 let latchMode=false, CUR=null, DEV=null;
