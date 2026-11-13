@@ -29,38 +29,26 @@
 <section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
 
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>ما الوسم؟ خارجي وداخلي</h2>
-  <p class="bf"><span class="ic">🏷️</span><span>الوسم <span class="term">Tag</span> = متغير باسم ونوع، تربطه الشاشة بعنصر.</span></p>
-  <div class="vs"><div class="side"><b>خارجي</b><span>قيمته في الـ PLC · يحتاج اتصالًا</span><span class="mono">Tank1_Level</span></div><i>×</i><div class="side"><b>داخلي</b><span>في ذاكرة الشاشة فقط</span><span>رقم الشاشة، اسم المستخدم</span></div></div>
-  <ul class="fx">
-    <li><b>الربط الرمزي</b><span>اختر الوسم باسمه، لا بعنوان <span class="mono">%MW20</span></span></li>
-    <li><b>لا يظهر في القائمة؟</b><span>فعّل الوصول من HMI/OPC UA في الـ DB</span></li>
-    <li><b>التسمية</b><span>معدّة_رقم_إشارة: <span class="mono">Pump1_Speed_SP</span></span></li>
-  </ul>
+  <h2 id="s1"><span class="k">1</span>ما الوسم؟</h2>
+  <p>الوسم <span class="term">Tag</span> متغير له اسم ونوع، تربطه الشاشة بعنصر عليها. الوسم <b>الخارجي</b> قيمته في الـ PLC ويحتاج اتصالًا، مثل <span class="mono">Tank1_Level</span>. والوسم <b>الداخلي</b> يعيش في ذاكرة الشاشة فقط، مثل رقم الشاشة أو اسم المستخدم.</p>
+  <p>اختر الوسم <b>باسمه الرمزي</b>، لا بعنوان مثل %MW20. وإن لم يظهر في القائمة ففعّل له الوصول من HMI/OPC UA في الـ DB. وسمِّه بالترتيب: معدّة ثم رقم ثم إشارة، مثل <span class="mono">Pump1_Speed_SP</span>.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>الاتصال بالـ PLC وفحصه</h2>
-  <div class="vs"><div class="side"><b>PLC S7-1500</b><span class="mono">192.168.0.1</span></div><i>⇄</i><div class="side"><b>الشاشة</b><span class="mono">192.168.0.10</span></div></div>
-  <ul class="fx">
-    <li><b>عنوان خاطئ</b><span>كل الحقول <span class="mono">####</span> أو رمادية</span></li>
-    <li><b>شبكة فرعية مختلفة</b><span>لا يصل حتى الـ ping</span></li>
-    <li><b>عنوان مكرر</b><span>انقطاع متقطع</span></li>
-  </ul>
-  <ol class="steps"><li>مصابيح المنفذ</li><li>نفس الشبكة + ping</li><li>عنوان مكرر؟</li><li>إعدادات الاتصال</li><li>حماية الوصول / PUT/GET</li></ol>
+  <h2 id="s2"><span class="k">2</span>كيف تتصل الشاشة بالـ PLC؟</h2>
+  <p>للـ PLC عنوان IP وللشاشة عنوان آخر في الشبكة نفسها:</p>
+  <div class="vs"><div class="side"><b>خارجي</b><span>قيمته في الـ PLC · يحتاج اتصالًا</span><span class="mono">Tank1_Level</span></div><i>×</i><div class="side"><b>داخلي</b><span>في ذاكرة الشاشة فقط</span><span>رقم الشاشة، اسم المستخدم</span></div></div>
+  <p><b>عنوان خاطئ</b> يجعل كل الحقول #### أو رمادية. و<b>شبكة فرعية مختلفة</b> تمنع حتى الـ ping. و<b>عنوان مكرر</b> يسبب انقطاعًا متقطعًا.</p>
+  <p>وللفحص سر بالترتيب: مصابيح المنفذ، ثم الشبكة نفسها مع ping، ثم العنوان المكرر، ثم إعدادات الاتصال، ثم حماية الوصول و PUT/GET.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>أنواع البيانات: الخطأ الذي يعطي رقمًا صحيح الشكل وخاطئ القيمة</h2>
-  <div class="tiles"><div class="tile"><span class="big">Bool</span><span>تعمل/متوقفة</span></div><div class="tile"><span class="big">Int</span><span>16 بت · القيمة الخام</span></div><div class="tile"><span class="big">DInt</span><span>32 بت · العدادات</span></div><div class="tile"><span class="big">Real</span><span>كسور · 4.5 bar</span></div></div>
-  <ul class="fx">
-    <li><b>4.5 تظهر 16528</b><span>Real عُرّف Int</span></li>
-    <li><b>32767 ثم −32768</b><span>DInt عُرّف Int</span></li>
-    <li><b>دائمًا 0 أو 1</b><span>تناظري عُرّف Bool</span></li>
-  </ul>
-  <p class="tip">قارن بجدول المراقبة في الـ PLC. الربط الرمزي يأخذ النوع تلقائيًا.</p>
+  <h2 id="s3"><span class="k">3</span>لماذا يظهر رقم صحيح الشكل وخاطئ القيمة؟</h2>
+  <p>لأن نوع البيانات في الشاشة لا يطابق نوعه في الـ PLC. الأنواع الأساسية: <b>Bool</b> لحالة تعمل أو متوقفة. <b>Int</b> 16 بت للقيمة الخام. <b>DInt</b> 32 بت للعدادات. و<b>Real</b> للكسور مثل 4.5 bar.</p>
+  <p>فإن ظهرت <b>4.5 على أنها 16528</b> فالوسم Real وعُرّف Int. وإن وصل العداد <b>32767 ثم قفز إلى −32768</b> فهو DInt وعُرّف Int. وإن كانت القيمة <b>دائمًا 0 أو 1</b> فهي تناظرية وعُرّفت Bool.</p>
+  <p class="tip">قارن بجدول المراقبة في الـ PLC. والربط الرمزي يأخذ النوع تلقائيًا.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>التحويل الخطي: من 27648 إلى نسبة مئوية</h2>
-  <p class="bf"><span class="ic">📐</span><span>بطاقة الدخل تعطي <b>0 إلى 27648</b>؛ المشغّل يريد % أو bar.</span></p>
+  <h2 id="s4"><span class="k">4</span>كيف تتحول 27648 إلى نسبة مئوية؟</h2>
+  <p>بطاقة الدخل التناظري تعطي رقمًا خامًا من <b>0 إلى 27648</b>، والمشغّل يريد أن يرى % أو bar. والتحويل الخطي يربط بينهما:</p>
   <figure class="fig">
 <svg viewBox="0 0 640 260" role="img" aria-label="منحنى التحويل الخطي من 0 إلى 27648 إلى 0 إلى 100 بالمئة" style="width:100%;max-width:640px;direction:ltr">
 <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs>
@@ -87,18 +75,14 @@
     <li><b>20 mA · 27648</b><span class="bar"><i style="width:100%"></i><em><bdi dir="ltr">100 %</bdi></em></span></li>
     <li class="danger"><b>32767</b><span class="bar"><i style="width:100%"></i><em>سلك مقطوع</em></span></li>
   </ul>
-  <p class="tip">حوّل في الـ PLC (<span class="mono">NORM_X</span> ثم <span class="mono">SCALE_X</span>) لتتفق الشاشة والإنذارات والأرشيف.</p>
+  <p class="tip">حوّل في الـ PLC (NORM_X ثم SCALE_X)، لتتفق الشاشة والإنذارات والأرشيف على القيمة نفسها.</p>
   <p class="alert"><b>لا تحوّل مرتين</b>: في الـ PLC وفي الشاشة معًا.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
-  <h2 id="s5"><span class="k">5</span>دورة القراءة وحِمل الاتصال</h2>
-  <ul class="fx">
-    <li><b>أزرار وحالات وإنذارات</b><span><bdi dir="ltr">100–500 ms</bdi></span></li>
-    <li><b>مستوى وضغط</b><span><bdi dir="ltr">500 ms – 1 s</bdi></span></li>
-    <li><b>حرارة فرن وساعات</b><span><bdi dir="ltr">2–10 s</bdi></span></li>
-  </ul>
-  <p class="alert">كل الوسوم 100 ms = اتصال ثقيل وشاشة بطيئة.</p>
-  <p class="tip">ضع رمز حالة الاتصال على كل شاشة: المشغّل يعرف فورًا أن القيم مجمّدة.</p>
+  <h2 id="s5"><span class="k">5</span>كم مرة تقرأ الشاشة كل وسم؟</h2>
+  <p>ليست كل القيم بالسرعة نفسها. <b>الأزرار والحالات والإنذارات</b> تُقرأ كل <bdi dir="ltr">100–500 ms</bdi>. و<b>المستوى والضغط</b> كل <bdi dir="ltr">500 ms – 1 s</bdi>. و<b>حرارة الفرن وساعات التشغيل</b> كل <bdi dir="ltr">2–10 s</bdi>.</p>
+  <p class="alert">إن جعلت كل الوسوم 100 ms صار الاتصال ثقيلًا والشاشة بطيئة.</p>
+  <p class="tip">ضع رمز حالة الاتصال على كل شاشة، فيعرف المشغّل فورًا أن القيم مجمّدة.</p>
   <div class="box key"><b>على المحاكي:</b> أصلح الاتصال، وصحّح Real و DInt، وأضف التحويل 0–27648 → 0–100 %. <a class="btn pri" href="scada.html#tags" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">

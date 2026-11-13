@@ -29,19 +29,19 @@
 <section class="panel lprog" id="lprog" aria-label="تقدّمك"></section>
 
 <section class="panel lsec" aria-labelledby="s1">
-  <h2 id="s1"><span class="k">1</span>ما الوصفة؟ ولماذا نحتاجها؟</h2>
-  <p class="bf"><span class="ic">📋</span><span>الوصفة = قيم منتج كاملة تُرسل إلى الـ PLC <b>دفعة واحدة</b>.</span></p>
-  <div class="tiles"><div class="tile"><b>البنية</b><span>العناصر + الوحدة + الحدود</span></div><div class="tile"><b>السجل</b><span>قيم منتج واحد</span></div><div class="tile"><b>الهدف</b><span>DB بنوع UDT مطابق</span></div></div>
+  <h2 id="s1"><span class="k">1</span>ما الوصفة ولماذا نحتاجها؟</h2>
+  <p>الوصفة مجموعة قيم منتج كاملة تُرسل إلى الـ PLC <b>دفعة واحدة</b>. <b>البنية</b> تحدد العناصر والوحدة والحدود. و<b>السجل</b> يحمل قيم منتج واحد. و<b>الهدف</b> DB في الـ PLC بنوع UDT مطابق.</p>
+  <p>مثال لثلاثة أحجام من المنتج:</p>
   <ul class="fx">
     <li><b>حجم التعبئة</b><span>1000 · 500 · 250 ml</span></li>
     <li><b>سرعة التعبئة</b><span>80 · 70 · 60 %</span></li>
     <li><b>عزم الغطاء</b><span>180 · 150 · 120 N·cm</span></li>
     <li><b>زمن الخلط</b><span>240 · 240 · 180 s</span></li>
   </ul>
-  <p class="tip">في Unified اسمها <b>Parameter Sets</b> وتُعرض في <b>Parameter Set Control</b>.</p>
+  <p class="tip">في Unified اسمها <b>Parameter Sets</b>، وتُعرض في <b>Parameter Set Control</b>.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s2">
-  <h2 id="s2"><span class="k">2</span>تحميل الوصفة إلى الـ PLC بأمان</h2>
+  <h2 id="s2"><span class="k">2</span>كيف تُحمَّل الوصفة بأمان؟</h2>
   <svg viewBox="0 0 640 250" role="img" aria-label="تسلسل تحميل الوصفة إلى الـ PLC بالمصافحة" style="width:100%;max-width:640px;direction:ltr">
 <g font-family="IBM Plex Mono,monospace" font-size="12" fill="currentColor" text-anchor="middle">
 <rect x="20" y="20" width="250" height="210" rx="10" fill="none" stroke="currentColor" stroke-width="2"/>
@@ -64,47 +64,29 @@
 </g>
 <defs><marker id="a9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1e5fd1"/></marker>
 <marker id="a9g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#2e7d32"/></marker></defs></svg>
-  <ol class="steps"><li>تحقّق الحدود</li><li><span class="mono">Line_Running</span> = 0</li><li>اكتب في Buffer</li><li>Req ← الـ PLC تتحقق وتنسخ ← Done</li></ol>
+  <p>أولًا تتحقق الشاشة من الحدود. ثم تتأكد أن الخط متوقف (<span class="mono">Line_Running = 0</span>). ثم تكتب القيم في منطقة مؤقتة (Buffer). ثم ترفع بت الطلب Req، فتتحقق الـ PLC من القيم وتنسخها وترد بـ Done.</p>
   <div class="box safe">الـ PLC <b>خط الدفاع الأخير</b>: ترفض أي قيمة خارج المدى مهما كان مصدرها.</div>
-  <ul class="fx">
-    <li><b>تحميل أثناء التشغيل</b><span>أحجام مختلطة ← شرط التوقف + المصافحة</span></li>
-    <li><b>وحدات مختلفة</b><span>1 ml بدل 1 L</span></li>
-    <li><b>UDT تغيّر</b><span>قيم منزاحة ← حدّث البنية</span></li>
-    <li><b>من غيّر الوصفة؟</b><span>صلاحية المهندس + سجل التدقيق</span></li>
-  </ul>
+  <p>وهذه مشكلات معروفة. <b>تحميل أثناء التشغيل:</b> تخرج أحجام مختلطة، وعلاجه شرط التوقف والمصافحة. <b>وحدات مختلفة:</b> 1 ml بدل 1 L. <b>UDT تغيّر:</b> القيم تنزاح، فحدّث البنية. و<b>من غيّر الوصفة؟</b> اجعلها بصلاحية المهندس مع سجل التدقيق.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s3">
-  <h2 id="s3"><span class="k">3</span>سكربتات JavaScript في WinCC Unified</h2>
-  <p class="bf"><span class="ic">📜</span><span>السكربت داخل <b>حدث</b>، والمشترك في <b>وحدة عامة</b>.</span></p>
-<pre class="box mono" dir="ltr" style="overflow-x:auto;white-space:pre;text-align:left;font-size:.85rem;line-height:1.6;margin:8px 0">let vol = Tags("Filler_Volume_SP").Read();
+  <h2 id="s3"><span class="k">3</span>كيف تُكتب السكربتات في WinCC Unified؟</h2>
+  <p>السكربت يُكتب بـ JavaScript داخل <b>حدث</b>، والكود المشترك يوضع في <b>وحدة عامة</b>. مثال:</p>
+  <pre class="box mono" dir="ltr" style="overflow-x:auto;white-space:pre;text-align:left;font-size:.85rem;line-height:1.6;margin:8px 0">let vol = Tags("Filler_Volume_SP").Read();
 if (vol &lt; 200 || vol &gt; 1050)
   HMIRuntime.Trace("refused " + vol);
 else Tags("Line_Start_Cmd").Write(true);</pre>
-  <ul class="fx">
-    <li class="ok"><b>افعل</b><span>قصير وسريع · وحدة عامة · سجّل بـ Trace</span></li>
-    <li><b>لا تفعل</b><span>حلقات انتظار · نسخ الكود · تعشيقات أمان</span></li>
-  </ul>
-  <p class="tip">ابدأ بالوظائف الجاهزة. Ignition: Python. Optix: C#.</p>
+  <p><b>افعل:</b> اكتب سكربتًا قصيرًا وسريعًا، وضع المشترك في وحدة عامة، وسجّل بـ Trace. و<b>لا تفعل:</b> حلقات انتظار، أو نسخ الكود، أو تعشيقات أمان في السكربت.</p>
+  <p class="tip">ابدأ بالوظائف الجاهزة. في Ignition اللغة Python، وفي Optix اللغة C#.</p>
 </section>
 <section class="panel lsec" aria-labelledby="s4">
-  <h2 id="s4"><span class="k">4</span>المهام المجدولة</h2>
-  <ul class="fx">
-    <li><b>وقت ثابت</b><span>06:00 تصدير تقرير الوردية</span></li>
-    <li><b>دوري</b><span>كل 10 دقائق متوسط زمن الدورة</span></li>
-    <li><b>تغيّر وسم</b><span>تسجيل اسم الوصفة الجديدة</span></li>
-    <li><b>إنذار</b><span>فتح شاشة الضاغط تلقائيًا</span></li>
-  </ul>
-  <div class="box safe">العدّادات وتصفيرها في <b>الـ PLC</b>، لا في مهمة على الشاشة.</div>
+  <h2 id="s4"><span class="k">4</span>ما المهام المجدولة؟</h2>
+  <p>هي سكربتات يشغّلها حدث لا نقرة. <b>وقت ثابت:</b> تصدير تقرير الوردية الساعة 06:00. <b>دوري:</b> حساب متوسط زمن الدورة كل 10 دقائق. <b>تغيّر وسم:</b> تسجيل اسم الوصفة الجديدة. و<b>إنذار:</b> فتح شاشة الضاغط تلقائيًا.</p>
+  <div class="box safe">العدّادات وتصفيرها مكانها <b>الـ PLC</b>، لا مهمة على الشاشة.</div>
 </section>
 <section class="panel lsec" aria-labelledby="s5">
   <h2 id="s5"><span class="k">5</span>كيف تعرف أين المشكلة؟</h2>
-  <ul class="fx">
-    <li><b>Req لم يرتفع</b><span>المشكلة في الـ HMI</span></li>
-    <li><b>Req بلا Done</b><span>الـ PLC رفضت القيم</span></li>
-    <li><b>قيمة في عنصر آخر</b><span>البنية لا تطابق الـ UDT</span></li>
-    <li><b>السكربت لا يعمل</b><span>Trace viewer: اسم وسم خطأ</span></li>
-    <li><b>المهمة لم تُنفَّذ</b><span>توقيت الخادم والمنطقة الزمنية</span></li>
-  </ul>
+  <p><b>Req لم يرتفع:</b> المشكلة في الـ HMI. <b>Req ارتفع بلا Done:</b> الـ PLC رفضت القيم. <b>القيمة ظهرت في عنصر آخر:</b> البنية لا تطابق الـ UDT.</p>
+  <p><b>السكربت لا يعمل:</b> افتح Trace viewer، والسبب غالبًا اسم وسم خطأ. و<b>المهمة لم تُنفَّذ:</b> راجع توقيت الخادم والمنطقة الزمنية.</p>
   <div class="box key"><b>على المحاكي:</b> جرّب قيمة خارج المدى، ثم التحميل والخط يعمل، ثم أوقفه وحمّل. <a class="btn pri" href="scada.html#recipe" style="margin-inline-start:8px">افتح المحاكي ←</a></div>
 </section>
 <section class="panel lsec" aria-labelledby="sq">
